@@ -6,7 +6,7 @@
 import { writeFile, mkdir } from "node:fs/promises";
 import { join, relative, sep, dirname, basename } from "node:path";
 import { existsSync } from "node:fs";
-import { querySessionsFull, readRemoteFile } from "../../../lib/network.mjs";
+import { querySessionsFull, readRemoteFile } from "../../../lib/io.mjs";
 import { API_X_TOKEN } from "./config.mjs";
 
 export function resolvePullFilter(localDir, projectRoot, projectPrefix) {

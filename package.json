@@ -14,8 +14,9 @@
     "version": "node -e \"console.log(require('./package.json').version)\""
   },
   "devDependencies": {
-    "vitest": "^3.2.4",
-    "@vitest/ui": "^3.2.4"
+    "@vitest/coverage-v8": "^3.2.6",
+    "@vitest/ui": "^3.2.4",
+    "vitest": "^3.2.4"
   },
   "engines": {
     "node": ">=18"

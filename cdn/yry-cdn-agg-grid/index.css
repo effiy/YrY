@@ -1,0 +1,21 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryCdnAggGrid · CDN 聚合中心卡片网格容器样式
+
+   完整迁移自 docs/index.html (原内联 723-726 行段)。
+   仅包含 <yry-cdn-agg-grid> 根容器的布局,卡片样式由 yry-cdn-agg-card 提供。
+
+   依赖 (页面级):
+     - yry-cdn-agg-card/index.css   卡片样式
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.cdn-agg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 640px) {
+  .cdn-agg-grid {
+    grid-template-columns: 1fr;
+  }
+}

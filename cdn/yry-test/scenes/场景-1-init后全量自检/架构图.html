@@ -4,62 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>init后全量自检 · 架构图</title>
-<link rel="stylesheet" href="../../../../cdn/fonts\/index\.css">
+<link rel="stylesheet" href="../../../../cdn/fonts/index.css">
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/theme-mono/index.css">
-<style>
-/* ═══ shared-a.css — Common styles for all Category A documents (Mono theme) ═══ */
-/* Inlined by rui-html/lib/templates.mjs buildHeadBlock() during generation */
-/* Cat-A pages: 架构图 · 知识图谱 — uses Mono dark theme with JetBrains Mono */
-/* Breadcrumb/Cross-nav/Header styles → now provided by yry-scene-chrome component */
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: 'JetBrains Mono', monospace;
-  background: #020617;
-  min-height: 100vh; padding: 2rem; color: white;
-}
-
-.yry-container { max-width: 1200px; margin: 0 auto; }
-
-/* ── Toolbar ── */
-.yry-toolbar { display: flex; gap: .5rem; margin-left: auto; flex-shrink: 0; align-items: center; }
-.yry-toolbar-toggle { background: transparent; border: none; color: #475569; cursor: pointer; font-size: 1.25rem; padding: .25rem .5rem; border-radius: .375rem; }
-.yry-toolbar-toggle:hover { color: #94a3b8; background: rgba(30,41,59,.5); }
-.yry-toolbar-actions { display: none; gap: .5rem; }
-.yry-toolbar.expanded .yry-toolbar-actions { display: flex; }
-.yry-toolbar-actions button { background: rgba(30,41,59,.8); border: 1px solid #334155; color: #94a3b8; padding: .375rem .75rem; border-radius: .375rem; font-family: inherit; font-size: .75rem; cursor: pointer; transition: all .2s; white-space: nowrap; }
-.yry-toolbar-actions button:hover { background: rgba(51,65,85,.8); color: white; border-color: #475569; }
-
-/* ── Cards ── */
-.yry-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-.yry-card { background: rgba(15,23,42,.5); border-radius: .75rem; border: 1px solid #1e293b; padding: 1.25rem; }
-.yry-card-header { display: flex; align-items: center; gap: .5rem; margin-bottom: .75rem; }
-.yry-card-dot { width: 8px; height: 8px; border-radius: 50%; }
-.yry-card-dot.cyan    { background: #22d3ee; }
-.yry-card-dot.emerald { background: #34d399; }
-.yry-card-dot.violet  { background: #a78bfa; }
-.yry-card-dot.amber   { background: #fbbf24; }
-.yry-card-dot.rose    { background: #fb7185; }
-.yry-card-dot.blue    { background: #3B82F6; }
-.yry-card-dot.scene   { background: #8B5CF6; }
-.yry-card-dot.check   { background: #EC4899; }
-.yry-card-dot.source  { background: #3B82F6; }
-.yry-card-dot.domain  { background: #22d3ee; }
-.yry-card h3 { font-size: .875rem; font-weight: 600; }
-.yry-card ul { list-style: none; color: #94a3b8; font-size: .75rem; }
-.yry-card li { margin-bottom: .375rem; }
-
-/* ── Footer ── */
-.yry-footer { text-align: center; color: #475569; font-size: .75rem; margin-top: 1rem; }
-
-@media print { body { background: #020617; padding: 1rem; } .yry-toolbar { display: none !important; } }</style>
+<link rel="stylesheet" href="../../../../cdn/yry-arch-base.css">
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
-
 <link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
 <link rel="stylesheet" href="../../../../cdn/yry-export-toolbar/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-info-cards/index.css">
 <style>
 /* Page-specific overrides — shared patterns in shared-a.css */
 .diagram-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1.5rem;overflow-x:auto;margin-bottom:1.5rem}
@@ -71,11 +25,11 @@ body {
 <div class="yry-container" id="report-container">
 <yry-scene-chrome
   theme="a"
-  title="自测 — 场景 1: 初始化后全量自检"
-  subtitle="初始化后全量自检 · vv1.1.0 · 2026-06-05"
-  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"自测 · 故事任务"},{"label":"场景 1 · init后全量自检"},{"label":"📐 架构图"}]'
+  title="yry-test — 场景 1: 初始化后全量自检"
+  subtitle="初始化后全量自检 · vv5.4.0 · 2026-06-22"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-test · 故事任务"},{"label":"场景 1 · init后全量自检"},{"label":"📐 架构图"}]'
   crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","active":true},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","href":"审查.html"}]'
-  toolbar='<div class="yry-export-toolbar yry-toolbar" data-target=".diagram-container" data-filename="自测-scene1-architecture" data-bg="#020617"><button data-action="copy-svg">📋 Copy SVG</button><button data-action="download-png">🖼 PNG</button><button data-action="download-svg">📄 SVG</button></div>'>
+  toolbar='<div class="yry-export-toolbar yry-toolbar" data-target=".diagram-container" data-filename="yry-test-scene1-architecture" data-bg="#020617"><button data-action="copy-svg">📋 Copy SVG</button><button data-action="download-png">🖼 PNG</button><button data-action="download-svg">📄 SVG</button></div>'>
 </yry-scene-chrome>
 
 <div class="diagram-container">
@@ -95,28 +49,30 @@ body {
   </svg>
 </div>
 
-<div class="yry-cards">
+<yry-info-cards>
   <div class="yry-card">
     <div class="yry-card-header"><div class="yry-card-dot cyan"></div><h3>场景信息</h3></div>
     <ul>
       <li><b>场景:</b> 1 · 初始化后全量自检</li>
-      <li><b>故事:</b> 自测 · 故事任务</li>
-      <li><b>版本:</b> vv1.1.0</li>
+      <li><b>故事:</b> yry-test · 故事任务</li>
+      <li><b>版本:</b> vv5.4.0</li>
     </ul>
   </div>
   <div class="yry-card">
     <div class="yry-card-header"><div class="yry-card-dot emerald"></div><h3>数据源</h3></div>
     <ul>
       <li><b>场景文档:</b> index.md §0 技术评审</li>
-      <li><b>生成日期:</b> 2026-06-05</li>
+      <li><b>生成日期:</b> 2026-06-22</li>
     </ul>
   </div>
-</div>
+</yry-info-cards>
 
-<div class="yry-footer">YrY vv1.1.0 · 2026-06-05</div>
+<yry-scene-footer version="v5.4.0" date="2026-06-22"></yry-scene-footer>
 </div>
 <script src="../../../../cdn/shared/index.js"></script>
 <script src="../../../../cdn/yry-scene-chrome/index.js"></script>
 <script src="../../../../cdn/yry-export-toolbar/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
+<script src="../../../../cdn/yry-info-cards/index.js"></script>
 </body>
 </html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>知识图谱 · 存量页面迁移 · CDN 共享前端资源库</title>
+<link rel="stylesheet" href="../../../shared/index.css">
+<link rel="stylesheet" href="../../../theme/index.css">
+<link rel="stylesheet" href="../../../yry-inline-helpers/index.css">
+<link rel="stylesheet" href="../../../yry-scene/index.css">
+<link rel="stylesheet" href="../../../yry-scene-header/index.css">
+<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
+<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
+<link rel="stylesheet" href="../../../yry-back-top/index.css">
+<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
+<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
+<link rel="stylesheet" href="../../../yry-a11y/index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
+  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
+  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
+  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
+  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
+  .delivery-story { font-size: .72rem; color: #4b5563; }
+  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
+  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
+  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
+  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
+  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
+  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
+  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
+</style>
+</head>
+<body>
+<yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
+<yry-scene-header id="header-app"
+  icon="🔗"
+  title-prefix="知识图谱"
+  accent="存量页面迁移"
+  meta="📖 CDN 共享前端资源库 · 🎬 存量页面迁移"
+  desc="CDN 共享前端资源库 — 存量页面迁移 场景的 知识图谱 交付物。查看场景详情与任务分解。">
+</yry-scene-header>
+
+<div class="scene-wrap">
+  <div class="delivery-header">
+    <div class="delivery-icon">🔗</div>
+    <div class="delivery-label">知识图谱</div>
+    <div class="delivery-scene">存量页面迁移</div>
+    <div class="delivery-story">CDN 共享前端资源库</div>
+  </div>
+
+  <div class="content-card">
+    <h2>🔗 内联样式 → CDN 组件映射图</h2>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">[迁移前: 内联样式]                [迁移后: CDN 组件]
+─────────────────────             ──────────────────────
+&lt;style&gt;                            &lt;link rel="stylesheet" href="yry-item-card/index.css"&gt;
+  .card { ... }                   &lt;link rel="stylesheet" href="yry-tag-chip/index.css"&gt;
+  .card h3 { ... }                &lt;script src="yry-item-card/index.js"&gt;&lt;/script&gt;
+  .card p { ... }                 &lt;script src="yry-tag-chip/index.js"&gt;&lt;/script&gt;
+  .card .tag { ... }
+&lt;/style&gt;
+                                  &lt;yry-item-card
+&lt;div class="card"&gt;                  icon="📋"
+  &lt;h3&gt;标题&lt;/h3&gt;                  name="标题"
+  &lt;p&gt;内容&lt;/p&gt;                    badge="Vue 3"
+  &lt;div class="tags"&gt;              desc="内容"
+    &lt;span class="tag"&gt;标签&lt;/span&gt;  tags='[{"text":"标签","modifier":"accent"}]'
+  &lt;/div&gt;                          meta="元信息"&gt;
+&lt;/div&gt;                            &lt;/yry-item-card&gt;</pre>
+    <p style="margin-top:16px">迁移图谱：内联 <code>&lt;style&gt;</code> 块替换为 CDN <code>&lt;link&gt;</code>/<code>&lt;script&gt;</code> 引用；内联 HTML 结构替换为 <code>&lt;yry-*&gt;</code> 自定义元素；内联样式数据通过 property 传入组件。</p>
+  </div>
+
+  <div class="content-card">
+    <h2>📁 页面专属 CSS 保留场景</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6">
+      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">场景</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">示例</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">原因</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">页面特有布局</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">特定网格列数 (如 5 列相册)</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">组件不提供通用网格</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">页面特有动画</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">首屏入场动画序列</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">组件应保持动画无关</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">视觉细节</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">特定间距微调</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">组件间距由设计令牌控制</td></tr>
+        <tr><td style="padding:8px 10px">临时样式</td><td style="padding:8px 10px">A/B 测试变体</td><td style="padding:8px 10px">不应污染组件样式</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:12px;font-size:.72rem;color:#fbbf24">⚠ 原则：页面专属 CSS 仅处理本页独有的样式，可复用模式必须提取为组件。</p>
+  </div>
+
+  <div class="content-card">
+    <h2>📊 内联消除度量方法</h2>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0"># 度量迁移前后的内联样式行数
+grep -c '&lt;style&gt;' page.html           # style 块数
+awk '/&lt;style&gt;/,/&lt;\/style&gt;/' file | wc -l  # 总行数
+# 消除率 = (前 - 后) / 前 × 100%</pre>
+    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6;margin-top:12px">
+      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">指标</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">度量方式</th><th style="padding:8px 10px;text-align:right;color:#22d3ee;font-weight:600">目标</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>&lt;style&gt;</code> 块数</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>grep -c '&lt;style&gt;'</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">≤ 1 (页面专属)</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">内联 style 行数</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">awk 区间统计</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">≤ 50 行</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">硬编码颜色</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>grep -E '#[0-9a-f]{3,8}'</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">≤ 0 (组件内)</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">重复类名</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>grep -o '\.yry-' | sort -u</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">≤ 1 处定义</td></tr>
+        <tr><td style="padding:8px 10px">组件引用率</td><td style="padding:8px 10px"><code>&lt;yry-*&gt;</code> 标签 / 总节点</td><td style="padding:8px 10px;text-align:right">≥ 30%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="nav-links">
+    <a class="nav-link" href="计划清单.html">📋 计划清单</a>
+    <a class="nav-link" href="架构图.html">📐 架构图</a>
+    <a class="nav-link current" href="知识图谱.html">🔗 知识图谱</a>
+    <a class="nav-link" href="测试面板.html">🧪 测试面板</a>
+    <a class="nav-link" href="源码.html">📄 源码</a>
+    <a class="nav-link" href="演示.html">💡 演示</a>
+    <a class="nav-link" href="审查.html">📝 审查</a>
+  </div>
+</div>
+
+<yry-cross-nav></yry-cross-nav>
+<yry-back-top></yry-back-top>
+<yry-footer-note version="1.2.0"></yry-footer-note>
+
+<script src="../../../shared/index.js" defer></script>
+<script src="../../../shared/vue-ce-loader.js"></script>
+  <script src="../../../yry-breadcrumb/index.js"></script>
+<script src="../../../yry-scene-header/index.js"></script>
+<script src="../../../yry-scene-nav/index.js"></script>
+<script src="../../../yry-cross-nav/index.js"></script>
+<script src="../../../yry-back-top/index.js"></script>
+<script src="../../../yry-footer-note/index.js"></script>
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    var bc = document.getElementById('breadcrumb-app');
+    if (bc) bc.items = [
+      { label: 'CDN 共享库', icon: '🌐', href: '../../../index.html' },
+      { label: '故事任务面板', icon: '📖', href: '../index.html' },
+      { label: 'CDN 共享前端资源库', icon: '📖', href: '../故事任务.md' },
+      { label: '存量页面迁移', icon: '🎬' }
+    ];
+    var sh = document.getElementById('header-app');
+    if (sh) {
+      sh.icon = '🔗';
+      sh.titlePrefix = '知识图谱';
+      sh.accent = '存量页面迁移';
+      sh.meta = '📖 CDN 共享前端资源库 · 🎬 存量页面迁移';
+      sh.desc = 'CDN 共享前端资源库 — 存量页面迁移 场景的 知识图谱 交付物。';
+    }
+  });
+</script>
+</body>
+</html>

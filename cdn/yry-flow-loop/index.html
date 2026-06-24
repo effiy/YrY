@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryFlowLoop · Demo & Template</title>
+  <meta name="description" content="YryFlowLoop Vue 3 闭环数据流图组件 — 四段闭环(观察→诊断→改进→评估)可视化 · 异步模板加载 · 3 文件拆分 · Demo 预览 + 模板源">
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <link rel="stylesheet" href="index.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 920px;
+      margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code { background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .72rem; color: #e0af68; }
+    hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+    .demo-section { margin: 20px 0; background: var(--yry-bg-flat, rgba(255,255,255,.03)); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 20px 22px; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); display: flex; align-items: center; gap: 8px; }
+    .demo-section h3 .demo-badge { font-size: .62rem; font-weight: 600; padding: 1px 7px; border-radius: 4px; background: rgba(255,193,7,.08); color: var(--yry-accent, #ffc107); border: 1px solid rgba(255,193,7,.15); }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+    .demo-footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <h1><span class="accent">🔄</span> YryFlowLoop · Vue 3 闭环数据流图组件</h1>
+  <p class="demo-hint">
+    展示 <strong>观察 → 诊断 → 改进 → 评估</strong> 四段闭环数据流,带回环箭头表示循环。<br>
+    模板源见下方 <code>&lt;script type="text/x-template" id="yry-flow-loop-tpl"&gt;</code> 块 — <code>index.js</code> 启动时 fetch 本文件并自动提取。
+  </p>
+
+  <div class="demo-section">
+    <h3><span class="demo-badge">Demo 1</span> 四段闭环 · 自改进仪表板默认配置</h3>
+    <div id="demo-1"></div>
+  </div>
+
+  <div class="demo-section">
+    <h3><span class="demo-badge">Demo 2</span> 自定义节点 · SDLC 管线四阶段</h3>
+    <div id="demo-2"></div>
+  </div>
+
+  <div class="demo-section">
+    <h3><span class="demo-badge">Demo 3</span> 无回环 · 仅线性流程</h3>
+    <div id="demo-3"></div>
+  </div>
+
+  <hr>
+  <p class="demo-hint">
+    👇 以下 <code>&lt;script type="text/x-template"&gt;</code> 即为组件的 <strong>template 源</strong>,<code>index.js</code> 会 fetch 本文件并提取此块
+  </p>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       TEMPLATE SOURCE OF TRUTH · YryFlowLoop 的 template
+       修改此块即可更新组件,index.js 会在加载时 fetch 本文件并提取 innerHTML
+       ════════════════════════════════════════════════════════════════════ -->
+  <script type="text/x-template" id="yry-flow-loop-tpl">
+    <div class="flow-loop">
+      <template v-for="(stage, i) in stages" :key="i">
+        <div class="flow-loop-node" :class="stage.variant">
+          <span class="flow-loop-icon">{{ stage.icon }}</span>
+          <span class="flow-loop-name">{{ stage.name }}</span>
+          <span v-if="stage.sub" class="flow-loop-sub">{{ stage.sub }}</span>
+        </div>
+        <span v-if="i < stages.length - 1" class="flow-loop-arrow" aria-hidden="true">{{ arrowIcon }}</span>
+      </template>
+      <span v-if="loopArrow" class="flow-loop-arrow loop" aria-hidden="true">{{ loopIcon }}</span>
+    </div>
+  </script>
+
+  <script src="index.js"></script>
+
+  <script>
+    function mountDemo(id, props) {
+      if (!window.Vue || !window.YryFlowLoop) return;
+      Vue.createApp(window.YryFlowLoop, props).mount('#' + id);
+    }
+    function mountAll() {
+      mountDemo('demo-1', {
+        stages: [
+          { icon: '①', name: '观察', sub: 'health-trend.jsonl · git · bot', variant: 'observe' },
+          { icon: '②', name: '诊断', sub: 'D0–D8 异常定位 + 严重等级', variant: 'diagnose' },
+          { icon: '③', name: '改进', sub: 'proposals + SKILL.md 技能化', variant: 'improve' },
+          { icon: '④', name: '评估', sub: 'E1–E4 效能验证 + 闭环回写', variant: 'evaluate' }
+        ],
+        loopArrow: true,
+        loopIcon: '↻'
+      });
+      mountDemo('demo-2', {
+        stages: [
+          { icon: '🏗', name: '设计', sub: '规约 + 故事', variant: 'observe' },
+          { icon: '⚙', name: '编码', sub: 'rui-code 管线', variant: 'diagnose' },
+          { icon: '✓', name: '审查', sub: 'Gate A/B', variant: 'improve' },
+          { icon: '🚀', name: '交付', sub: '三步 hook', variant: 'evaluate' }
+        ],
+        loopArrow: true,
+        loopIcon: '↺'
+      });
+      mountDemo('demo-3', {
+        stages: [
+          { icon: '1', name: '采集', sub: 'input', variant: 'observe' },
+          { icon: '2', name: '清洗', sub: 'transform', variant: 'diagnose' },
+          { icon: '3', name: '入库', sub: 'persist', variant: 'improve' }
+        ],
+        loopArrow: false
+      });
+    }
+    if (window.YryFlowLoop) mountAll();
+    else document.addEventListener('yry-flow-loop-ready', mountAll, { once: true });
+  </script>
+
+  <div class="demo-footer">
+    🔄 YryFlowLoop v1.0.0 ·
+    <a href="../index.html">CDN 首页</a> ·
+    <a href="../README.md">README</a>
+  </div>
+
+</body>
+</html>

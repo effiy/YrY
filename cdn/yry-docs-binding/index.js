@@ -62,13 +62,13 @@
       el.icon        = '⭐';
       el.titlePrefix = 'YrY ';
       el.accent      = '文档中心';
-      el.meta        = '📌 v5.4.0 · 🩺 健康 77/B · 🧪 测试 60分 · 🧬 自改进 89/A · 🛠 技能 86/A';
-      el.desc        = '故事驱动的 SDLC 编排系统 — 六层结构:19技能(四维健康评估)→6运行时+6开发依赖→7故事(五场景全生命周期)→37场景(7件标准交付物)→9Agent角色+1拓扑总纲+18治理规则→4文档入口+5监控仪表板。';
+      el.meta        = '📌 v5.4.0 · 🩺 健康 94/A · 🧪 测试 100分 · 🧬 自改进 89/A · 🛠 技能 85/A';
+      el.desc        = '故事驱动的 SDLC 编排系统 — 七层结构:20技能(四维健康评估)→6运行时+6开发依赖→18 lib内部共享库→7故事(五场景全生命周期)→37场景(7件标准交付物)→9Agent角色+1拓扑总纲+18治理规则→4文档入口+5监控仪表板。';
     },
     /* 3) Stats Grid */
     statsGrid: function (el) {
       el.items = [
-        { value: '86/A', label: '技能评分', modifier: 'health', sub: '19技能 · SKILL.md规约完整性·领域语言一致性·自包含可执行性·代码范式合规',
+        { value: '85/A', label: '技能评分', modifier: 'health', sub: '19技能 · SKILL.md规约完整性·领域语言一致性·自包含可执行性·代码范式合规',
           tooltip: '【技能健康指数 SHI】\n四维加权评估模型 →\n' +
             '① SKILL.md规约完整性(30%): 每技能必备完整SKILL.md·交接信号下游可验证·AGENT.md角色定义完备\n' +
             '② 领域语言一致性(25%): 术语使用符合领域语言定义·避免禁用别名·术语漂移自动检测\n' +
@@ -77,28 +77,28 @@
             '覆盖 19 技能: rui主线(9) + 工程支撑(7) + 架构健康(10维度) + 4实时面板\n\n' +
             '评级: A≥80 优秀 · B≥60 良好 · C≥40 需改进 · D<40 严重缺陷\n' +
             '数据源: arch-check.mjs --append-trend · 每 5min 刷新 · 点击跳转技能报告 →' },
-        { value: '77/B', label: '健康评分', modifier: 'warn-h', sub: '核心9维·工程成熟度7维·扩展3维·D0-D8诊断联动',
+        { value: '94/A', label: '健康评分', modifier: 'health', sub: '核心9维·工程成熟度7维·扩展3维·D0-D8诊断联动',
           tooltip: '【项目综合健康指数 PHI】\n19维加权聚合模型,分三大类 →\n\n' +
             '▸ 核心维度(9): token·config·robots·api·reports·format·diagnostics·git·security\n' +
             '  当前: diagnostics(70)·git(40) 待改进,其余 7 维满分\n' +
             '▸ 工程成熟度(7): 测试覆盖·类型安全·代码检查·CI/CD·文档·依赖·Git实践\n' +
-            '  当前: testing(60)·cicd(0) 待改进,types/docs/deps满分\n' +
+            '  当前: testing(100)·cicd(100) 满分,types/docs/deps满分\n' +
             '▸ 扩展维度(3): file_size·dep_analysis·notify\n' +
-            '  当前: dep_analysis(21) 不足,file_size(98)·notify(100)良好\n\n' +
-            '当前: 77分 / B级 · 良好\n' +
-            '触发的诊断: D0基线偏离·D2质量退化\n\n' +
+            '  当前: dep_analysis(79) 不足,file_size(96)·notify(100)良好\n\n' +
+            '当前: 94分 / A级 · 优秀\n' +
+            '触发的诊断: D3·D0 触发\n\n' +
             '评级: A≥80 优秀 · B≥60 良好 · C≥40 需改进 · D<40 严重缺陷\n' +
             '数据源: .memory/health-trend.jsonl → summary.json · 每 5min 刷新 · 点击跳转健康报告 →' },
-        { value: '60分', label: '测试评分', modifier: 'warn-h', sub: '测试覆盖·类型安全·代码检查·CI/CD·文档·依赖·Git实践',
+        { value: '100分', label: '测试评分', modifier: 'health', sub: '测试覆盖·类型安全·代码检查·CI/CD·文档·依赖·Git实践',
           tooltip: '【测试质量指数 TQI】\n工程成熟度 7 维加权评估 →\n\n' +
-            '① 测试覆盖(30%): 60分 — 单元·集成·E2E覆盖率待提升\n' +
+            '① 测试覆盖(30%): 100分 — 1162 用例·vitest全量覆盖\n' +
             '② 类型安全(15%): 100分 — TypeScript/JSDoc类型标注完整\n' +
-            '③ 代码检查(15%): 80分 — ESLint·Prettier·arch-check配置完善\n' +
-            '④ CI/CD(10%): 0分 — 自动化流水线尚未建立\n' +
+            '③ 代码检查(15%): 100分 — ESLint·Prettier·arch-check配置完善+CI强制\n' +
+            '④ CI/CD(10%): 100分 — GitHub Actions自动化流水线\n' +
             '⑤ 文档覆盖(10%): 100分 — 所有skill/scene文档齐备\n' +
             '⑥ 依赖管理(10%): 100分 — 无高危漏洞·许可证合规\n' +
-            '⑦ Git实践(10%): 80分 — 分支隔离·提交规范·PR审查流程\n\n' +
-            '综合: 60分 / B级 · 良好 (CI/CD缺失为主要扣分项)\n' +
+            '⑦ Git实践(10%): 100分 — 分支隔离·提交规范·PR审查流程\n\n' +
+            '综合: 100分 / A级 · 优秀\n' +
             '评级: A≥80 · B≥60 · C≥40 · D<40\n' +
             '数据源: vitest runner + arch-check.mjs · 每 5min 刷新 · 点击跳转测试报告 →' },
         { value: '89分', label: '自改进', modifier: 'health', sub: 'Skills·Agents·Rules·Scripts四象限·D0-D8诊断持续监控',
@@ -161,7 +161,7 @@
       el.pages    = [
         { id: 'CDN 共享库',  icon: '🌐', href: '../cdn/index.html' },
         { id: '自检中心',    icon: '🧪', href: '../tests/index.html' },
-        { id: '演示中心',    icon: '🎬', href: './yry-arch/scenes/场景-1-新人上手/演示.html' },
+        { id: '演示中心',    icon: '🎬', href: '../cdn/yry-arch/scenes/场景-1-新人上手/演示.html' },
         { id: '健康报告',    icon: '🩺', href: '../docs/健康报告/health-cdn-index.html' },
         { id: '自循环报告',  icon: '🔄', href: './自循环报告/index.html' },
         { id: '趋势报告',    icon: '📡', href: './趋势报告/index.html' },
@@ -341,7 +341,7 @@
         items: [
           { icon: 'C', iconModifier: 'ref', name: 'constants.mjs', desc: '项目共享常量 — CLI argv 偏移、网络超时、API 配置、消息长度、健康评级阈值。集中管理避免散落', tags: [{ text: '常量', modifier: 'info' }], meta: 'NODE_ARGV_OFFSET · HTTP_TIMEOUT_MS · HEALTH_GRADE_THRESHOLDS', demo: 'lib/constants.mjs' },
           { icon: 'F', iconModifier: 'ref', name: 'fs.mjs',        desc: '文件系统工具 — findProjectRoot (向上找 .git/.claude)、readProjectName (从 CLAUDE.md 读取)', tags: [{ text: 'FS', modifier: 'green' }], meta: 'findProjectRoot · readProjectName', demo: 'lib/fs.mjs' },
-          { icon: 'N', iconModifier: 'ref', name: 'network.mjs',   desc: 'HTTP 工具 — fetchJSON 带超时控制,fetchQuiet 静默失败,urlEncode 安全编码', tags: [{ text: '网络', modifier: 'cyan' }], meta: 'fetchJSON · fetchQuiet · urlEncode', demo: 'lib/network.mjs' },
+          { icon: 'N', iconModifier: 'ref', name: 'network.mjs',   desc: 'HTTP 工具 — fetchJSON 带超时控制,fetchQuiet 静默失败,urlEncode 安全编码', tags: [{ text: '网络', modifier: 'cyan' }], meta: 'fetchJSON · fetchQuiet · urlEncode' },
           { icon: 'T', iconModifier: 'ref', name: 'tty.mjs',       desc: '终端着色工具 — bold/dim/red/green/yellow/cyan。非 TTY 自动降级(测试环境友好)', tags: [{ text: 'TTY', modifier: 'accent' }], meta: 'bold · dim · red · green · yellow · cyan', demo: 'lib/tty.mjs' },
           { icon: 'P', iconModifier: 'ref', name: 'proposals.mjs', desc: '提案管理 — 创建 / 列出 / 路由 / 状态变更。配合 engine/ 引擎使用', tags: [{ text: '提案', modifier: 'purple' }], meta: 'createProposal · listProposals · routeProposal', demo: 'lib/proposals.mjs' },
           { icon: 'A', iconModifier: 'ref', name: 'audit.mjs',     desc: '审计工具 — 检查依赖安全、配置漂移、敏感信息落盘', tags: [{ text: '审计', modifier: 'accent' }], meta: 'auditDependencies · auditConfig · auditSecrets', demo: 'lib/audit.mjs' }
@@ -369,11 +369,11 @@
         subTitle: { icon: '⚙️', text: '辅助工具 (6)', count: '6 项' },
         grid: 'card',
         items: [
-          { icon: 'A', iconModifier: 'ref', name: 'arch-helpers.mjs', desc: '架构辅助 — countFiles/fileLineCount/readFrontmatter 三大工具', tags: [{ text: '辅助', modifier: 'info' }], meta: 'countFiles · fileLineCount · readFrontmatter', demo: 'lib/arch-helpers.mjs' },
+          { icon: 'A', iconModifier: 'ref', name: 'arch-helpers.mjs', desc: '架构辅助 — countFiles/fileLineCount/readFrontmatter 三大工具', tags: [{ text: '辅助', modifier: 'info' }], meta: 'countFiles · fileLineCount · readFrontmatter' },
           { icon: 'B', iconModifier: 'ref', name: 'branch-check.mjs', desc: '分支验证 — 检查当前分支、worktree 状态、未推送提交', tags: [{ text: 'Git', modifier: 'green' }], meta: 'checkBranch · worktreeStatus', demo: 'lib/branch-check.mjs' },
-          { icon: 'C', iconModifier: 'ref', name: 'concurrency.mjs', desc: '并发工具 — 限流并行任务执行,带超时和错误聚合', tags: [{ text: '并发', modifier: 'cyan' }], meta: 'lib/concurrency.mjs', demo: 'lib/concurrency.mjs' },
+          { icon: 'C', iconModifier: 'ref', name: 'concurrency.mjs', desc: '并发工具 — 限流并行任务执行,带超时和错误聚合', tags: [{ text: '并发', modifier: 'cyan' }], meta: 'lib/concurrency.mjs' },
           { icon: 'H', iconModifier: 'ref', name: 'help-layout.mjs', desc: 'CLI 帮助布局 — 表格化输出,自动列宽计算,支持 ANSI 着色', tags: [{ text: 'CLI', modifier: 'accent' }], meta: 'lib/help-layout.mjs', demo: 'lib/help-layout.mjs' },
-          { icon: 'P', iconModifier: 'ref', name: 'plugin-utils.mjs', desc: '插件工具 — 加载/卸载插件、版本兼容性检查、安全沙箱', tags: [{ text: '插件', modifier: 'purple' }], meta: 'loadPlugin · unloadPlugin · checkCompat', demo: 'lib/plugin-utils.mjs' },
+          { icon: 'P', iconModifier: 'ref', name: 'plugin-utils.mjs', desc: '插件工具 — 加载/卸载插件、版本兼容性检查、安全沙箱', tags: [{ text: '插件', modifier: 'purple' }], meta: 'loadPlugin · unloadPlugin · checkCompat' },
           { icon: 'R', iconModifier: 'ref', name: 'record.mjs',      desc: '记录管理 — 读写 .memory/ 下的结构化记录,JSONL 追加,索引生成', tags: [{ text: '记录', modifier: 'info' }], meta: 'appendRecord · readRecords · indexRecords', demo: 'lib/record.mjs' }
         ]
       }
@@ -433,7 +433,7 @@
         items: [
           { icon: 'A', iconModifier: 'skill', name: 'rui-analysis', nameHref: '../skills/rui-analysis/SKILL.md', nameTarget: '_blank', badge: '新', desc: '代码与架构静态分析 — 复杂度/耦合/文件膨胀/依赖健康/架构边界检测。规约驱动,只读分析', tags: [{ text: '分析', modifier: 'accent' }, { text: '/rui-analysis', modifier: 'cyan' }, { text: 'v5.0', modifier: 'green' }], demo: '../skills/rui-analysis/SKILL.md' },
           { icon: 'E', iconModifier: 'skill', name: 'rui-reporter', nameHref: '../skills/rui-reporter/SKILL.md', nameTarget: '_blank', badge: '新', desc: '过程报告与知识策展 — 故事进程/知识图谱一致性/交付摘要/跨故事趋势。证据驱动,≥2 来源', tags: [{ text: '报告', modifier: 'accent' }, { text: '/rui-reporter', modifier: 'cyan' }, { text: 'v5.0', modifier: 'green' }], demo: '../skills/rui-reporter/SKILL.md' },
-          { icon: 'S', iconModifier: 'rule', name: 'self-improve', nameHref: '../rules/self-improve.md', nameTarget: '_blank', badge: '新', desc: '持续自改进闭环 — D0-D7 诊断 → 提案生成 → 物化为故事 → 效果评估 (E1-E4)。数据驱动,全自动演进', tags: [{ text: '演进', modifier: 'accent' }, { text: 'D0-D7', modifier: 'info' }, { text: '/self-improve', modifier: 'cyan' }, { text: 'v5.0', modifier: 'green' }], demo: '../rules/self-improve.md' }
+          { icon: 'S', iconModifier: 'rule', name: 'self-improve', nameHref: '../skills/rui-yry/rules/self-improve.md', nameTarget: '_blank', badge: '新', desc: '持续自改进闭环 — D0-D7 诊断 → 提案生成 → 物化为故事 → 效果评估 (E1-E4)。数据驱动,全自动演进', tags: [{ text: '演进', modifier: 'accent' }, { text: 'D0-D7', modifier: 'info' }, { text: '/self-improve', modifier: 'cyan' }, { text: 'v5.0', modifier: 'green' }], demo: '../skills/rui-yry/rules/self-improve.md' }
         ]
       }
     ]
@@ -450,13 +450,13 @@
       {
         grid: 'story',
         items: [
-          { icon: '📑', name: '系统架构知识固化', nameHref: 'yry-arch/scenes/故事任务.md', nameTarget: '_blank',desc: 'YrY 架构全景分析,构建系统自我认知基线。模块拓扑 + 数据流追踪 + 新人上手 + 依赖变更影响 + 信任边界 + 工程化建设(校验脚本化 · 漂移监测 · 健康仪表板),让后续故事规划、影响分析和架构决策有唯一事实参照。', scenes: ['1. 新人上手与开发指南', '2. 模块定位与职责', '3. 数据流与追踪', '4. 依赖变更影响分析', '5. 信任边界与安全面', '6. 架构断言脚本化校验', '7. 架构漂移持续监测', '8. 架构健康度量仪表板'], demo: 'yry-arch/scenes/故事任务.md' },
-          { icon: '🧪', name: '自主测试方案', nameHref: 'yry-test/scenes/故事任务.md', nameTarget: '_blank',desc: 'YrY 自检体系 — 项目的免疫系统。管线健康自检验证纪律关卡是否有效执行,文档基线完整性校验验证文档是否始终是可信任的真相来源。', scenes: ['1. init 后全量自检', '2. commit 前增量自检', '3. 文档代码一致性校验', '4. 安全面回归自检', '5. 跨故事集成回归自检', '6. 第三方框架与服务自检'], demo: 'yry-test/scenes/故事任务.md' },
-          { icon: '📦', name: 'npm 包管理工具', nameHref: '故事任务面板/npm包管理/故事任务.md', nameTarget: '_blank',desc: '个人 npm 包全生命周期管理 — 包搜索与发现、安装与版本管理、本地发布与 npx 使用、包信息审计与安全卸载。32 文件 · 77 测试 · 每场景 7 配套文件。', scenes: ['1. 包搜索与发现', '2. 包安装与版本管理', '3. 本地发布与 npx 使用', '4. 包信息审计与卸载', '5. 账号级包管理'], demo: '故事任务面板/npm包管理/故事任务.md' },
-          { icon: '🌐', name: 'CDN 共享前端资源库', nameHref: '故事任务面板/scenes/故事任务.md', nameTarget: '_blank',desc: 'YrY 共享前端资源 — 双主题系统(Mono + System)、22 CSS 组件、9 JS 工具 API。55+ 页面统一引用,消除内联重复代码 40-60%。<a href="../cdn/index.html" style="color:var(--yry-cyan)">详情 → CDN 共享库</a>', scenes: ['1. CDN资源加载与页面渲染', '2. 双主题系统设计', '3. 组件库与JS工具API', '4. 存量页面迁移', '5. npm包发布与版本管理'], demo: '故事任务面板/scenes/故事任务.md' },
-          { icon: '🧬', name: '自改进闭环', nameHref: 'yry-selfimprove-panel/scenes/故事任务.md', nameTarget: '_blank',desc: '自改进机制场景化 — 将 rules/self-improve.md + agents/self-improve.md 中的规则转化为可操作执行场景。四段闭环(观察→诊断→改进→评估)+ 八级诊断 D0-D7 + 四级效果评估 E1-E4 + 经验技能化升级路径。', scenes: ['1. 数据采集与观察', '2. 诊断引擎', '3. 提案生成与路由', '4. 效果评估与闭环', '5. 经验技能化与记忆注入'], demo: 'yry-selfimprove-panel/scenes/故事任务.md' },
-          { icon: '🏠', name: '文档中心首页', nameHref: '../yry-home/scenes/故事任务.md', nameTarget: '_blank',desc: 'YrY 文档统一入口页面 — 六层结构(依赖→技能→故事→场景→Agent/规则→参考入口)聚合全部项目资产。数据驱动生成,实时面板集成,全站交叉导航。从手工维护升级为 rui-html 管线自动生成。', scenes: ['1. 数据采集与六层聚合', '2. 实时面板与交互组件', '3. 交叉导航与可访问性', '4. 自动化生成管线'], demo: '../yry-home/scenes/故事任务.md' },
-          { icon: '📋', name: '计划清单生成技能', nameHref: '../yry-checklist/scenes/故事任务.md', nameTarget: '_blank',desc: '从 markdown 到 HTML 清单的自动化生成管线 — 模板架构 · 组件交互 · 验证集成 · 批量自循环。20 功能点,21 业务规则,4 层管线将计划清单从手工维护升级为数据驱动的可交互工具。', scenes: ['1. 模板架构与CSS设计系统', '2. 清单交互组件实现', '3. 验证报告与健康面板集成', '4. 批量生成与自循环机制'], demo: '../yry-checklist/scenes/故事任务.md' }
+          { icon: '📑', name: '系统架构知识固化', nameHref: '../cdn/yry-arch/scenes/故事任务.md', nameTarget: '_blank',desc: 'YrY 架构全景分析,构建系统自我认知基线。模块拓扑 + 数据流追踪 + 新人上手 + 依赖变更影响 + 信任边界 + 工程化建设(校验脚本化 · 漂移监测 · 健康仪表板),让后续故事规划、影响分析和架构决策有唯一事实参照。', scenes: ['1. 新人上手与开发指南', '2. 模块定位与职责', '3. 数据流与追踪', '4. 依赖变更影响分析', '5. 信任边界与安全面', '6. 架构断言脚本化校验', '7. 架构漂移持续监测', '8. 架构健康度量仪表板'], demo: '../cdn/yry-arch/scenes/故事任务.md' },
+          { icon: '🧪', name: '自主测试方案', nameHref: '../cdn/yry-test/scenes/故事任务.md', nameTarget: '_blank',desc: 'YrY 自检体系 — 项目的免疫系统。管线健康自检验证纪律关卡是否有效执行,文档基线完整性校验验证文档是否始终是可信任的真相来源。', scenes: ['1. init 后全量自检', '2. commit 前增量自检', '3. 文档代码一致性校验', '4. 安全面回归自检', '5. 跨故事集成回归自检', '6. 第三方框架与服务自检'], demo: '../cdn/yry-test/scenes/故事任务.md' },
+          { icon: '📦', name: 'npm 包管理工具', nameHref: '../skills/rui-npm/scenes/故事任务.md', nameTarget: '_blank',desc: '个人 npm 包全生命周期管理 — 包搜索与发现、安装与版本管理、本地发布与 npx 使用、包信息审计与安全卸载。32 文件 · 77 测试 · 每场景 7 配套文件。', scenes: ['1. 包搜索与发现', '2. 包安装与版本管理', '3. 本地发布与 npx 使用', '4. 包信息审计与卸载', '5. 账号级包管理'], demo: '../skills/rui-npm/scenes/故事任务.md' },
+          { icon: '🌐', name: 'CDN 共享前端资源库', nameHref: '../cdn/故事任务面板/scenes/故事任务.md', nameTarget: '_blank',desc: 'YrY 共享前端资源 — 双主题系统(Mono + System)、22 CSS 组件、9 JS 工具 API。55+ 页面统一引用,消除内联重复代码 40-60%。<a href="../cdn/index.html" style="color:var(--yry-cyan)">详情 → CDN 共享库</a>', scenes: ['1. CDN资源加载与页面渲染', '2. 双主题系统设计', '3. 组件库与JS工具API', '4. 存量页面迁移', '5. npm包发布与版本管理'], demo: '../cdn/故事任务面板/scenes/故事任务.md' },
+          { icon: '🧬', name: '自改进闭环', nameHref: '../cdn/yry-selfimprove-panel/scenes/故事任务.md', nameTarget: '_blank',desc: '自改进机制场景化 — 将 rules/self-improve.md + agents/self-improve.md 中的规则转化为可操作执行场景。四段闭环(观察→诊断→改进→评估)+ 八级诊断 D0-D7 + 四级效果评估 E1-E4 + 经验技能化升级路径。', scenes: ['1. 数据采集与观察', '2. 诊断引擎', '3. 提案生成与路由', '4. 效果评估与闭环', '5. 经验技能化与记忆注入'], demo: '../cdn/yry-selfimprove-panel/scenes/故事任务.md' },
+          { icon: '🏠', name: '文档中心首页', nameHref: '../cdn/yry-home/scenes/故事任务.md', nameTarget: '_blank',desc: 'YrY 文档统一入口页面 — 六层结构(依赖→技能→故事→场景→Agent/规则→参考入口)聚合全部项目资产。数据驱动生成,实时面板集成,全站交叉导航。从手工维护升级为 rui-html 管线自动生成。', scenes: ['1. 数据采集与六层聚合', '2. 实时面板与交互组件', '3. 交叉导航与可访问性', '4. 自动化生成管线'], demo: '../cdn/yry-home/scenes/故事任务.md' },
+          { icon: '📋', name: '计划清单生成技能', nameHref: '../cdn/yry-checklist/scenes/故事任务.md', nameTarget: '_blank',desc: '从 markdown 到 HTML 清单的自动化生成管线 — 模板架构 · 组件交互 · 验证集成 · 批量自循环。20 功能点,21 业务规则,4 层管线将计划清单从手工维护升级为数据驱动的可交互工具。', scenes: ['1. 模板架构与CSS设计系统', '2. 清单交互组件实现', '3. 验证报告与健康面板集成', '4. 批量生成与自循环机制'], demo: '../cdn/yry-checklist/scenes/故事任务.md' }
         ]
       }
     ]
@@ -474,26 +474,26 @@
         subTitle: { icon: '📑', text: '系统架构知识固化 — 8 场景', count: '8 个' },
         grid: 'scene',
         items: [
-          { num: '场景 1', name: '新人上手与开发指南',     nameHref: 'yry-arch/scenes/场景-1-新人上手与开发指南/index.md',     nameTarget: '_blank', desc: '环境搭建 · 调试方法 · 常见任务 — 新人可独立完成首修', meta: sceneMeta('yry-arch/scenes/场景-1-新人上手与开发指南') },
-          { num: '场景 2', name: '模块定位与职责',         nameHref: 'yry-arch/scenes/场景-2-模块定位与职责/index.md',         nameTarget: '_blank', desc: '19 技能 · 9 Agent · 16 规则 — 模块识别 · 职责边界 · 入口验证', meta: sceneMeta('yry-arch/scenes/场景-2-模块定位与职责') },
-          { num: '场景 3', name: '数据流与追踪',           nameHref: 'yry-arch/scenes/场景-3-数据流与追踪/index.md',           nameTarget: '_blank', desc: '数据流建模 + 调用链追踪 + 断点定位 — 理解系统动态行为', meta: sceneMeta('yry-arch/scenes/场景-3-数据流与追踪') },
-          { num: '场景 4', name: '依赖变更影响分析',       nameHref: 'yry-arch/scenes/场景-4-依赖变更影响分析/index.md',       nameTarget: '_blank', desc: '依赖图谱分析 + 影响面计算 + 升级路径评估 — 升级前必做', meta: sceneMeta('yry-arch/scenes/场景-4-依赖变更影响分析') },
-          { num: '场景 5', name: '信任边界与安全面',       nameHref: 'yry-arch/scenes/场景-5-信任边界与安全面/index.md',       nameTarget: '_blank', desc: '信任模型 + 攻击面分析 + 最小权限原则 — 安全设计基线', meta: sceneMeta('yry-arch/scenes/场景-5-信任边界与安全面') },
-          { num: '场景 6', name: '架构断言脚本化校验',     nameHref: 'yry-arch/scenes/场景-6-架构断言脚本化校验/index.md',     nameTarget: '_blank', desc: '架构规则可执行化 — 每条架构原则对应一条可 grep/可测试的脚本断言', meta: sceneMeta('yry-arch/scenes/场景-6-架构断言脚本化校验') },
-          { num: '场景 7', name: '架构漂移持续监测',       nameHref: 'yry-arch/scenes/场景-7-架构漂移持续监测/index.md',       nameTarget: '_blank', desc: 'PR-time 架构规则门禁 + 漂移报告 — 架构基线持续守护', meta: sceneMeta('yry-arch/scenes/场景-7-架构漂移持续监测') },
-          { num: '场景 8', name: '架构健康度量仪表板',     nameHref: 'yry-arch/scenes/场景-8-架构健康度量仪表板/index.md',     nameTarget: '_blank', desc: '架构健康指标可视化 — 7 维度评分 + 趋势图 + 退化告警', meta: sceneMeta('yry-arch/scenes/场景-8-架构健康度量仪表板') }
+          { num: '场景 1', name: '新人上手与开发指南',     nameHref: '../cdn/yry-arch/scenes/场景-1-新人上手/index.md',     nameTarget: '_blank', desc: '环境搭建 · 调试方法 · 常见任务 — 新人可独立完成首修', meta: sceneMeta('../cdn/yry-arch/scenes/场景-1-新人上手') },
+          { num: '场景 2', name: '模块定位与职责',         nameHref: '../cdn/yry-arch/scenes/场景-2-模块定位/index.md',         nameTarget: '_blank', desc: '19 技能 · 9 Agent · 16 规则 — 模块识别 · 职责边界 · 入口验证', meta: sceneMeta('../cdn/yry-arch/scenes/场景-2-模块定位') },
+          { num: '场景 3', name: '数据流与追踪',           nameHref: '../cdn/yry-arch/scenes/场景-3-数据流追踪/index.md',           nameTarget: '_blank', desc: '数据流建模 + 调用链追踪 + 断点定位 — 理解系统动态行为', meta: sceneMeta('../cdn/yry-arch/scenes/场景-3-数据流追踪') },
+          { num: '场景 4', name: '依赖变更影响分析',       nameHref: '../cdn/yry-arch/scenes/场景-4-依赖变更影响/index.md',       nameTarget: '_blank', desc: '依赖图谱分析 + 影响面计算 + 升级路径评估 — 升级前必做', meta: sceneMeta('../cdn/yry-arch/scenes/场景-4-依赖变更影响') },
+          { num: '场景 5', name: '信任边界与安全面',       nameHref: '../cdn/yry-arch/scenes/场景-5-信任边界与安全面/index.md',       nameTarget: '_blank', desc: '信任模型 + 攻击面分析 + 最小权限原则 — 安全设计基线', meta: sceneMeta('../cdn/yry-arch/scenes/场景-5-信任边界与安全面') },
+          { num: '场景 6', name: '架构断言脚本化校验',     nameHref: '../cdn/yry-arch/scenes/场景-6-架构断言脚本化校验/index.md',     nameTarget: '_blank', desc: '架构规则可执行化 — 每条架构原则对应一条可 grep/可测试的脚本断言', meta: sceneMeta('../cdn/yry-arch/scenes/场景-6-架构断言脚本化校验') },
+          { num: '场景 7', name: '架构漂移持续监测',       nameHref: '../cdn/yry-arch/scenes/场景-7-架构漂移持续监测/index.md',       nameTarget: '_blank', desc: 'PR-time 架构规则门禁 + 漂移报告 — 架构基线持续守护', meta: sceneMeta('../cdn/yry-arch/scenes/场景-7-架构漂移持续监测') },
+          { num: '场景 8', name: '架构健康度量仪表板',     nameHref: '../cdn/yry-arch/scenes/场景-8-架构健康度量仪表板/index.md',     nameTarget: '_blank', desc: '架构健康指标可视化 — 7 维度评分 + 趋势图 + 退化告警', meta: sceneMeta('../cdn/yry-arch/scenes/场景-8-架构健康度量仪表板') }
         ]
       },
       {
         subTitle: { icon: '🧪', text: '自主测试方案 — 6 场景', count: '6 个' },
         grid: 'scene',
         items: [
-          { num: '场景 1', name: 'init 后全量自检',        nameHref: 'yry-test/scenes/场景-1-init后全量自检/index.md',         nameTarget: '_blank', desc: 'rui-init 完成后全量自检 — 管线 14 脚本 · 8 共享库 · 文档完整性', meta: sceneMeta('yry-test/scenes/场景-1-init后全量自检') },
-          { num: '场景 2', name: 'commit 前增量自检',      nameHref: 'yry-test/scenes/场景-2-commit前增量自检/index.md',       nameTarget: '_blank', desc: '变更文件影响面 + 相关测试覆盖 — 守门员', meta: sceneMeta('yry-test/scenes/场景-2-commit前增量自检') },
-          { num: '场景 3', name: '文档代码一致性校验',    nameHref: 'yry-test/scenes/场景-3-文档代码一致性校验/index.md',     nameTarget: '_blank', desc: '文档与代码 1:1 对照 — 防止文档说一套代码做一套', meta: sceneMeta('yry-test/scenes/场景-3-文档代码一致性校验') },
-          { num: '场景 4', name: '安全面回归自检',        nameHref: 'yry-test/scenes/场景-4-安全面回归自检/index.md',         nameTarget: '_blank', desc: '认证绕过 / 密钥落盘 / 输入校验 / 魔法数字四不妥协验证', meta: sceneMeta('yry-test/scenes/场景-4-安全面回归自检') },
-          { num: '场景 5', name: '跨故事集成回归自检',    nameHref: 'yry-test/scenes/场景-5-跨故事集成回归自检/index.md',     nameTarget: '_blank', desc: '多 story 协同端到端验证 — rui-* 接口契约', meta: sceneMeta('yry-test/scenes/场景-5-跨故事集成回归自检') },
-          { num: '场景 6', name: '第三方框架与服务自检',  nameHref: 'yry-test/scenes/场景-6-第三方框架与服务自检/index.md',   nameTarget: '_blank', desc: 'Cytoscape.js / html2canvas / jsPDF / api.effiy.cn / 企微 webhook 健康', meta: sceneMeta('yry-test/scenes/场景-6-第三方框架与服务自检') }
+          { num: '场景 1', name: 'init 后全量自检',        nameHref: '../cdn/yry-test/scenes/场景-1-init后全量自检/index.md',         nameTarget: '_blank', desc: 'rui-init 完成后全量自检 — 管线 14 脚本 · 8 共享库 · 文档完整性', meta: sceneMeta('../cdn/yry-test/scenes/场景-1-init后全量自检') },
+          { num: '场景 2', name: 'commit 前增量自检',      nameHref: '../cdn/yry-test/scenes/场景-2-commit前增量自检/index.md',       nameTarget: '_blank', desc: '变更文件影响面 + 相关测试覆盖 — 守门员', meta: sceneMeta('../cdn/yry-test/scenes/场景-2-commit前增量自检') },
+          { num: '场景 3', name: '文档代码一致性校验',    nameHref: '../cdn/yry-test/scenes/场景-3-文档代码一致性校验/index.md',     nameTarget: '_blank', desc: '文档与代码 1:1 对照 — 防止文档说一套代码做一套', meta: sceneMeta('../cdn/yry-test/scenes/场景-3-文档代码一致性校验') },
+          { num: '场景 4', name: '安全面回归自检',        nameHref: '../cdn/yry-test/scenes/场景-4-安全面回归自检/index.md',         nameTarget: '_blank', desc: '认证绕过 / 密钥落盘 / 输入校验 / 魔法数字四不妥协验证', meta: sceneMeta('../cdn/yry-test/scenes/场景-4-安全面回归自检') },
+          { num: '场景 5', name: '跨故事集成回归自检',    nameHref: '../cdn/yry-test/scenes/场景-5-跨故事集成回归自检/index.md',     nameTarget: '_blank', desc: '多 story 协同端到端验证 — rui-* 接口契约', meta: sceneMeta('../cdn/yry-test/scenes/场景-5-跨故事集成回归自检') },
+          { num: '场景 6', name: '第三方框架与服务自检',  nameHref: '../cdn/yry-test/scenes/场景-6-第三方框架与服务自检/index.md',   nameTarget: '_blank', desc: 'Cytoscape.js / html2canvas / jsPDF / api.effiy.cn / 企微 webhook 健康', meta: sceneMeta('../cdn/yry-test/scenes/场景-6-第三方框架与服务自检') }
         ]
       },
       {
@@ -511,42 +511,42 @@
         subTitle: { icon: '🌐', text: 'CDN 共享前端资源库 — 5 场景', count: '5 个' },
         grid: 'scene',
         items: [
-          { num: '场景 1', name: 'CDN资源加载与页面渲染', nameHref: '故事任务面板/scenes/场景-1-cdn资源加载与页面渲染/index.md',  nameTarget: '_blank', desc: '5 步加载链 · shared/index.css + 主题 CSS + shared.js — 55 页面统一渲染', meta: sceneMeta('故事任务面板/scenes/场景-1-cdn资源加载与页面渲染') },
-          { num: '场景 2', name: '双主题系统设计',       nameHref: '故事任务面板/scenes/场景-2-双主题系统设计/index.md',          nameTarget: '_blank', desc: 'Cat A (Mono) vs Cat B (System) · 14 设计令牌 · 22 组件 · 7 动画', meta: sceneMeta('故事任务面板/scenes/场景-2-双主题系统设计') },
-          { num: '场景 3', name: '组件库与JS工具API',    nameHref: '故事任务面板/scenes/场景-3-组件库与JS工具API/index.md',       nameTarget: '_blank', desc: '22 CSS 组件 · 9 YrY.* API — Toast/复制/面板切换/折叠套件/剪贴板', meta: sceneMeta('故事任务面板/scenes/场景-3-组件库与JS工具API') },
-          { num: '场景 4', name: '存量页面迁移',         nameHref: '故事任务面板/scenes/场景-4-存量页面迁移/index.md',            nameTarget: '_blank', desc: '6 步迁移指南 · 可删除清单 · 类名替换 · JS 函数替换 · 截图验证', meta: sceneMeta('故事任务面板/scenes/场景-4-存量页面迁移') },
-          { num: '场景 5', name: 'npm包发布与版本管理',  nameHref: '故事任务面板/scenes/场景-5-npm包发布与版本管理/index.md',     nameTarget: '_blank', desc: 'package.json 规范 · PATCH/MINOR/MAJOR 策略 · dry-run · git tag 版本链', meta: sceneMeta('故事任务面板/scenes/场景-5-npm包发布与版本管理') }
+          { num: '场景 1', name: 'CDN资源加载与页面渲染', nameHref: '../cdn/故事任务面板/scenes/场景-1-cdn资源加载与页面渲染/index.md',  nameTarget: '_blank', desc: '5 步加载链 · shared/index.css + 主题 CSS + shared.js — 55 页面统一渲染', meta: sceneMeta('../cdn/故事任务面板/scenes/场景-1-cdn资源加载与页面渲染') },
+          { num: '场景 2', name: '双主题系统设计',       nameHref: '../cdn/故事任务面板/scenes/场景-2-双主题系统设计/index.md',          nameTarget: '_blank', desc: 'Cat A (Mono) vs Cat B (System) · 14 设计令牌 · 22 组件 · 7 动画', meta: sceneMeta('../cdn/故事任务面板/scenes/场景-2-双主题系统设计') },
+          { num: '场景 3', name: '组件库与JS工具API',    nameHref: '../cdn/故事任务面板/scenes/场景-3-组件库与JS工具API/index.md',       nameTarget: '_blank', desc: '22 CSS 组件 · 9 YrY.* API — Toast/复制/面板切换/折叠套件/剪贴板', meta: sceneMeta('../cdn/故事任务面板/scenes/场景-3-组件库与JS工具API') },
+          { num: '场景 4', name: '存量页面迁移',         nameHref: '../cdn/故事任务面板/scenes/场景-4-存量页面迁移/index.md',            nameTarget: '_blank', desc: '6 步迁移指南 · 可删除清单 · 类名替换 · JS 函数替换 · 截图验证', meta: sceneMeta('../cdn/故事任务面板/scenes/场景-4-存量页面迁移') },
+          { num: '场景 5', name: 'npm包发布与版本管理',  nameHref: '../cdn/故事任务面板/scenes/场景-5-npm包发布与版本管理/index.md',     nameTarget: '_blank', desc: 'package.json 规范 · PATCH/MINOR/MAJOR 策略 · dry-run · git tag 版本链', meta: sceneMeta('../cdn/故事任务面板/scenes/场景-5-npm包发布与版本管理') }
         ]
       },
       {
         subTitle: { icon: '🧬', text: '自改进闭环 — 5 场景', count: '5 个' },
         grid: 'scene',
         items: [
-          { num: '场景 1', name: '数据采集与观察',         nameHref: 'yry-selfimprove-panel/scenes/场景-1-数据采集与观察/index.md',        nameTarget: '_blank', desc: '契约与源端定义 — 健康趋势、诊断信号、执行记忆的采集链路与数据质量标准', meta: sceneMeta('yry-selfimprove-panel/scenes/场景-1-数据采集与观察') },
-          { num: '场景 2', name: '诊断引擎',               nameHref: 'yry-selfimprove-panel/scenes/场景-2-诊断引擎/index.md',              nameTarget: '_blank', desc: 'D0-D7 规则可判定 — 每级诊断的触发条件、证据来源、置信度计算方法', meta: sceneMeta('yry-selfimprove-panel/scenes/场景-2-诊断引擎') },
-          { num: '场景 3', name: '提案生成与路由',         nameHref: 'yry-selfimprove-panel/scenes/场景-3-提案生成与路由/index.md',        nameTarget: '_blank', desc: '类型路由与生成约束 — 五种提案类型、触发条件、生成边界、委派目标', meta: sceneMeta('yry-selfimprove-panel/scenes/场景-3-提案生成与路由') },
-          { num: '场景 4', name: '效果评估与闭环',         nameHref: 'yry-selfimprove-panel/scenes/场景-4-效果评估与闭环/index.md',        nameTarget: '_blank', desc: 'E1-E4 评估基准 — 改进前后对比、指标变化量化、闭合标准、回溯报告', meta: sceneMeta('yry-selfimprove-panel/scenes/场景-4-效果评估与闭环') },
-          { num: '场景 5', name: '经验技能化与记忆注入',   nameHref: 'yry-selfimprove-panel/scenes/场景-5-经验技能化与记忆注入/index.md',  nameTarget: '_blank', desc: '跨会话持久化 — 记忆压缩策略、相似检索注入、经验技能化升级路径', meta: sceneMeta('yry-selfimprove-panel/scenes/场景-5-经验技能化与记忆注入') }
+          { num: '场景 1', name: '数据采集与观察',         nameHref: '../cdn/yry-selfimprove-panel/scenes/场景-1-数据采集与观察/index.md',        nameTarget: '_blank', desc: '契约与源端定义 — 健康趋势、诊断信号、执行记忆的采集链路与数据质量标准', meta: sceneMeta('../cdn/yry-selfimprove-panel/scenes/场景-1-数据采集与观察') },
+          { num: '场景 2', name: '诊断引擎',               nameHref: '../cdn/yry-selfimprove-panel/scenes/场景-2-诊断引擎/index.md',              nameTarget: '_blank', desc: 'D0-D7 规则可判定 — 每级诊断的触发条件、证据来源、置信度计算方法', meta: sceneMeta('../cdn/yry-selfimprove-panel/scenes/场景-2-诊断引擎') },
+          { num: '场景 3', name: '提案生成与路由',         nameHref: '../cdn/yry-selfimprove-panel/scenes/场景-3-提案生成与路由/index.md',        nameTarget: '_blank', desc: '类型路由与生成约束 — 五种提案类型、触发条件、生成边界、委派目标', meta: sceneMeta('../cdn/yry-selfimprove-panel/scenes/场景-3-提案生成与路由') },
+          { num: '场景 4', name: '效果评估与闭环',         nameHref: '../cdn/yry-selfimprove-panel/scenes/场景-4-效果评估与闭环/index.md',        nameTarget: '_blank', desc: 'E1-E4 评估基准 — 改进前后对比、指标变化量化、闭合标准、回溯报告', meta: sceneMeta('../cdn/yry-selfimprove-panel/scenes/场景-4-效果评估与闭环') },
+          { num: '场景 5', name: '经验技能化与记忆注入',   nameHref: '../cdn/yry-selfimprove-panel/scenes/场景-5-经验技能化与记忆注入/index.md',  nameTarget: '_blank', desc: '跨会话持久化 — 记忆压缩策略、相似检索注入、经验技能化升级路径', meta: sceneMeta('../cdn/yry-selfimprove-panel/scenes/场景-5-经验技能化与记忆注入') }
         ]
       },
       {
         subTitle: { icon: '🏠', text: '文档中心首页 — 4 场景', count: '4 个' },
         grid: 'scene',
         items: [
-          { num: '场景 1', name: '数据采集与六层聚合',  nameHref: '../yry-home/scenes/场景-1-数据采集与六层聚合/index.md', nameTarget: '_blank', desc: '5 大资产源 · 5 步采集流程 · 6 层页面结构 — 从规约自动采集项目全貌', meta: sceneMeta('../yry-home/scenes/场景-1-数据采集与六层聚合') },
-          { num: '场景 2', name: '实时面板与交互组件',  nameHref: '../yry-home/scenes/场景-2-实时面板与交互组件/index.md', nameTarget: '_blank', desc: '4 面板按钮 · PanelHub API · 5 步数据流 — 调度/通知/自改进/FAQ 一键可达', meta: sceneMeta('../yry-home/scenes/场景-2-实时面板与交互组件') },
-          { num: '场景 3', name: '交叉导航与可访问性',  nameHref: '../yry-home/scenes/场景-3-交叉导航与可访问性/index.md', nameTarget: '_blank', desc: '9 交叉导航链接 · breadcrumb · 6 层 id anchor · 响应式 720px — 全站三跳可达', meta: sceneMeta('../yry-home/scenes/场景-3-交叉导航与可访问性') },
-          { num: '场景 4', name: '自动化生成管线',      nameHref: '../yry-home/scenes/场景-4-自动化生成管线/index.md',     nameTarget: '_blank', desc: '/rui-html 首页 · 3 触发路径 · 3 验证门禁 — 项目结构变更时首页自动同步', meta: sceneMeta('../yry-home/scenes/场景-4-自动化生成管线') }
+          { num: '场景 1', name: '数据采集与六层聚合',  nameHref: '../cdn/yry-home/scenes/场景-1-数据采集与六层聚合/index.md', nameTarget: '_blank', desc: '5 大资产源 · 5 步采集流程 · 6 层页面结构 — 从规约自动采集项目全貌', meta: sceneMeta('../cdn/yry-home/scenes/场景-1-数据采集与六层聚合') },
+          { num: '场景 2', name: '实时面板与交互组件',  nameHref: '../cdn/yry-home/scenes/场景-2-实时面板与交互组件/index.md', nameTarget: '_blank', desc: '4 面板按钮 · PanelHub API · 5 步数据流 — 调度/通知/自改进/FAQ 一键可达', meta: sceneMeta('../cdn/yry-home/scenes/场景-2-实时面板与交互组件') },
+          { num: '场景 3', name: '交叉导航与可访问性',  nameHref: '../cdn/yry-home/scenes/场景-3-交叉导航与可访问性/index.md', nameTarget: '_blank', desc: '9 交叉导航链接 · breadcrumb · 6 层 id anchor · 响应式 720px — 全站三跳可达', meta: sceneMeta('../cdn/yry-home/scenes/场景-3-交叉导航与可访问性') },
+          { num: '场景 4', name: '自动化生成管线',      nameHref: '../cdn/yry-home/scenes/场景-4-自动化生成管线/index.md',     nameTarget: '_blank', desc: '/rui-html 首页 · 3 触发路径 · 3 验证门禁 — 项目结构变更时首页自动同步', meta: sceneMeta('../cdn/yry-home/scenes/场景-4-自动化生成管线') }
         ]
       },
       {
         subTitle: { icon: '📋', text: '计划清单生成技能 — 4 场景', count: '4 个' },
         grid: 'scene',
         items: [
-          { num: '场景 1', name: '模板架构与CSS设计系统', nameHref: '../yry-checklist/scenes/场景-1-模板架构与CSS设计系统/index.md', nameTarget: '_blank', desc: 'HTML 7区域骨架 · 22 Token 变量 · CSS 设计系统 · CDN 加载链 — 从模板到渲染的完整基础', meta: sceneMeta('../yry-checklist/scenes/场景-1-模板架构与CSS设计系统') },
-          { num: '场景 2', name: '清单交互组件实现',      nameHref: '../yry-checklist/scenes/场景-2-清单交互组件实现/index.md',       nameTarget: '_blank', desc: '勾选进度联动 · 折叠面板 · 标签页切换 · 风险行展开 — localStorage 持久化 + 键盘快捷键', meta: sceneMeta('../yry-checklist/scenes/场景-2-清单交互组件实现') },
-          { num: '场景 3', name: '验证报告与健康面板集成', nameHref: '../yry-checklist/scenes/场景-3-验证报告与健康面板集成/index.md', nameTarget: '_blank', desc: 'KPI卡片 · 5×5风险热力图 · 趋势迷你图 · 纯CSS分数卡 — 无JS图表库依赖', meta: sceneMeta('../yry-checklist/scenes/场景-3-验证报告与健康面板集成') },
-          { num: '场景 4', name: '批量生成与自循环机制',  nameHref: '../yry-checklist/scenes/场景-4-批量生成与自循环机制/index.md',   nameTarget: '_blank', desc: '/rui-html 全量生成 · mtime增量检测 · 30min自循环调度 · 故障隔离 — 文档自动同步', meta: sceneMeta('../yry-checklist/scenes/场景-4-批量生成与自循环机制') }
+          { num: '场景 1', name: '模板架构与CSS设计系统', nameHref: '../cdn/yry-checklist/scenes/场景-1-模板架构与CSS设计系统/index.md', nameTarget: '_blank', desc: 'HTML 7区域骨架 · 22 Token 变量 · CSS 设计系统 · CDN 加载链 — 从模板到渲染的完整基础', meta: sceneMeta('../cdn/yry-checklist/scenes/场景-1-模板架构与CSS设计系统') },
+          { num: '场景 2', name: '清单交互组件实现',      nameHref: '../cdn/yry-checklist/scenes/场景-2-清单交互组件实现/index.md',       nameTarget: '_blank', desc: '勾选进度联动 · 折叠面板 · 标签页切换 · 风险行展开 — localStorage 持久化 + 键盘快捷键', meta: sceneMeta('../cdn/yry-checklist/scenes/场景-2-清单交互组件实现') },
+          { num: '场景 3', name: '验证报告与健康面板集成', nameHref: '../cdn/yry-checklist/scenes/场景-3-验证报告与健康面板集成/index.md', nameTarget: '_blank', desc: 'KPI卡片 · 5×5风险热力图 · 趋势迷你图 · 纯CSS分数卡 — 无JS图表库依赖', meta: sceneMeta('../cdn/yry-checklist/scenes/场景-3-验证报告与健康面板集成') },
+          { num: '场景 4', name: '批量生成与自循环机制',  nameHref: '../cdn/yry-checklist/scenes/场景-4-批量生成与自循环机制/index.md',   nameTarget: '_blank', desc: '/rui-html 全量生成 · mtime增量检测 · 30min自循环调度 · 故障隔离 — 文档自动同步', meta: sceneMeta('../cdn/yry-checklist/scenes/场景-4-批量生成与自循环机制') }
         ]
       }
     ]
@@ -952,73 +952,29 @@
           document.addEventListener('yry-item-card-ready', function () { setTimeout(inject, 100); }, { once: true });
           setTimeout(inject, 1500);
         },
-        /* ── 技能 → 自循环报告 URL 映射(异步加载,失败时仅回退) ── */
-        _skillReportMap: null,
-        _loadSkillReportMap: function () {
-          const self = this;
-          if (this._skillReportMap) return Promise.resolve(this._skillReportMap);
-          return fetch('./自循环报告/reports.json', { credentials: 'same-origin' })
-            .then(function (r) { return r.ok ? r.json() : []; })
-            .then(function (reports) {
-              // 按 skill 分组,取最新一份(date desc → file 字典序)作为跳转目标
-              const bySkill = {};
-              (reports || []).forEach(function (rep) {
-                if (!rep || !rep.skill || !rep.file) return;
-                if (!bySkill[rep.skill] ||
-                    (rep.date || '') > (bySkill[rep.skill].date || '') ||
-                    ((rep.date || '') === (bySkill[rep.skill].date || '') && (rep.file || '') > (bySkill[rep.skill].file || ''))) {
-                  bySkill[rep.skill] = rep;
-                }
-              });
-              const map = {};
-              Object.keys(bySkill).forEach(function (k) {
-                map[k] = './自循环报告/' + bySkill[k].file;
-              });
-              self._skillReportMap = map;
-              return map;
-            })
-            .catch(function () {
-              self._skillReportMap = {};
-              return {};
-            });
-        },
-        /* ── 从技能卡片名解析 skill key(用于查报告) ──────── */
-        _resolveSkillKey: function (card) {
-          // 1) 优先取 nameHref 中的 ../skills/<key>/SKILL.md 或 ../rules/<key>.md 路径
-          const nameA = card.querySelector('.body .name a');
-          if (nameA && nameA.getAttribute('href')) {
-            const href = nameA.getAttribute('href');
-            const m = href.match(/(?:^|\/)(skills|rules)\/([^/]+)\//);
-            if (m) return m[2];
-            const m2 = href.match(/(?:^|\/)(skills|rules)\/([^/.]+)\.md$/);
-            if (m2) return m2[2];
-          }
-          // 2) 回退:用 .name 文本内容(去掉 badge 文本)作为 skill 名
-          const nameEl = card.querySelector('.body .name');
-          if (nameEl) {
-            // 取首段文本(不含徽章)
-            const txt = (nameEl.childNodes[0] && nameEl.childNodes[0].textContent || '').trim();
-            if (txt) return txt;
-          }
-          return '';
-        },
-        /* ── 构造单个徽章链接(锚点包裹) ───────────────── */
-        _wrapBadgeWithLink: function (badge, href, title) {
-          const a = document.createElement('a');
-          a.className = 'ydb-badge-link';
-          a.href = href;
-          a.title = title;
-          a.setAttribute('data-skill-report', '1');
-          // 把 badge 子节点全部迁入 anchor
-          while (badge.firstChild) a.appendChild(badge.firstChild);
-          badge.appendChild(a);
+        /* ── 给徽章附加点击事件 → 打开卡片分析报告 ───────────────── */
+        _attachReportClick: function (badge, card, title) {
+          badge.style.cursor = 'pointer';
+          badge.title = title || '点击查看卡片分析报告';
+          badge.setAttribute('role', 'button');
+          badge.setAttribute('tabindex', '0');
+          badge.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (window.YryCardReport) window.YryCardReport.open(card);
+          });
+          badge.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              if (window.YryCardReport) window.YryCardReport.open(card);
+            }
+          });
         },
         _injectScoreBadges: function () {
           const self = this;
           const baseHealth = { skill: 86, agent: 99, rule: 91, ref: 78 };
           const baseTest   = { skill: 60, agent: 60, rule: 60, ref: 60 };
           const baseSi     = { skill: 89, agent: 89, rule: 89, ref: 89 };
-          const SI_HREF = './自我改进/index.html';
           function itemScore(name, base) {
             let h = 0;
             for (let i = 0; i < name.length; i++) { h = ((h << 5) - h) + name.charCodeAt(i); h |= 0; }
@@ -1038,13 +994,7 @@
             return span;
           }
 
-          // 异步加载自循环报告 URL 映射(失败时仅回退到自我改进仪表板)
-          return this._loadSkillReportMap().then(function (reportMap) {
-            function skillReportHref(skillKey) {
-              if (skillKey && reportMap[skillKey]) return reportMap[skillKey];
-              return SI_HREF;
-            }
-
+          {
             // .item-card
             document.querySelectorAll('.item-card').forEach(function (card) {
               if (card.querySelector('.ydb-score-badge')) return;
@@ -1069,20 +1019,15 @@
               badge.appendChild(makeBadge('测试', ts, bt));
               badge.appendChild(document.createTextNode(' 🧬'));
               badge.appendChild(makeBadge('自改进', ss, bs));
-              // 技能卡片:评分徽章整体可点击跳转对应报告;其他类型(agent/rule/ref)→自我改进仪表板
-              let href = SI_HREF, tipSuffix = '查看综合评分报告';
-              if (modifier === 'skill') {
-                const skillKey = self._resolveSkillKey(card);
-                href = skillReportHref(skillKey);
-                tipSuffix = reportMap[skillKey]
-                  ? '查看 ' + skillKey + ' 自循环报告'
-                  : (skillKey ? skillKey + ' 暂无独立报告 → 查看综合评分仪表板' : '查看综合评分报告');
-              }
-              self._wrapBadgeWithLink(badge, href, tipSuffix);
+              // 徽章整体可点击 → 打开该卡片的内容分析报告 (每张卡片独立)
+              const tipSuffix = modifier === 'skill'
+                ? '点击查看技能卡片分析报告'
+                : '点击查看卡片分析报告';
+              self._attachReportClick(badge, card, tipSuffix);
               nameEl.appendChild(badge);
             });
 
-            // .story-card (故事无独立报告,统一指向自我改进仪表板)
+            // .story-card (故事卡片 → 打开该故事卡的分析报告)
             document.querySelectorAll('.story-card').forEach(function (card) {
               if (card.querySelector('.ydb-score-badge')) return;
               const nameEl = card.querySelector('.story-name');
@@ -1097,11 +1042,11 @@
               badge.appendChild(makeBadge('测试', ts, 60));
               badge.appendChild(document.createTextNode(' 🧬'));
               badge.appendChild(makeBadge('自改进', ss, 89));
-              self._wrapBadgeWithLink(badge, SI_HREF, '查看故事综合评分仪表板');
+              self._attachReportClick(badge, card, '点击查看故事卡片分析报告');
               nameEl.appendChild(badge);
             });
 
-            // .scene-card (场景无独立报告,统一指向自我改进仪表板)
+            // .scene-card (场景卡片 → 打开该场景卡的分析报告)
             document.querySelectorAll('.scene-card').forEach(function (card) {
               if (card.querySelector('.ydb-score-badge')) return;
               const nameEl = card.querySelector('.scene-name');
@@ -1116,10 +1061,10 @@
               badge.appendChild(makeBadge('测试', ts, 60));
               badge.appendChild(document.createTextNode(' 🧬'));
               badge.appendChild(makeBadge('自改进', ss, 89));
-              self._wrapBadgeWithLink(badge, SI_HREF, '查看场景综合评分仪表板');
+              self._attachReportClick(badge, card, '点击查看场景卡片分析报告');
               nameEl.appendChild(badge);
             });
-          });
+          }
         },
         /* ── Staggered card animations ────────────────────────── */
         _staggerCardAnimations: function () {

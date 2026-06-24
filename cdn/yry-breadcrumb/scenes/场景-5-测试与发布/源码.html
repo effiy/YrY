@@ -2,337 +2,70 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>测试与发布 · 源码 · YryBreadcrumb 任务故事</title>
-<link rel="stylesheet" href="../../../shared\/index\.css">
-<link rel="stylesheet" href="../../../theme\/index\.css">
-<link rel="stylesheet" href="../../../yry\-scene\/index\.css">
-<link rel="stylesheet" href="../../../yry\-checklist\/index\.css">
-<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
-<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
-<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
-<link rel="stylesheet" href="../../../yry-back-top/index.css">
-<link rel="stylesheet" href="../../../yry-scene-header/index.css">
-<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
-<link rel="stylesheet" href="../../../yry\-inline\-helpers\/index\.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<link rel="stylesheet" href="../../../yry\-a11y\/index\.css">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>测试与发布 · 源码</title>
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-source-base.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-stats/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-tabs/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
 <style>
-
-.container { max-width: 1100px; }
+/* Page-specific overrides — shared patterns in shared-b.css */
 </style>
 </head>
 <body>
-<a href="#main" class="skip-link">⏩ 跳到主要内容</a>
-<div class="container" id="main">
-<div id="breadcrumb-app"></div>
+<div class="yry-container">
+<yry-scene-chrome
+  theme="b"
+  title="📄 {ACCENT} · 源码"
+  title-accent="测试与发布"
+  subtitle="场景 5 · 版本 vv5.4.0 · 2026-06-22"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-breadcrumb · yry-breadcrumb"},{"label":"场景 5 · 测试与发布"},{"label":"📄 源码"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","href":"架构图.html"},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","active":true},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","href":"审查.html"}]'>
+</yry-scene-chrome>
 
-<div id="scene-header-app"></div>
+<yry-scene-stats items='[{"value":"—","label":"产物文件","color":"info"},{"value":5,"label":"场景","color":"t"},{"value":"vv5.4.0","label":"版本","color":"t"}]'></yry-scene-stats>
 
-<div id="scene-nav-app"></div>
-
-<div id="cross-nav-app"></div>
-
-<div class="tip-box info"><strong>关键源文件</strong> — 本场景涉及发布流程配置：<code>cdn/package.json</code>（npm 包元数据 + files[] 白名单）、npm publish 命令序列（6 步发布流程）、<code>scripts/bump-version.mjs</code>（语义化版本自动升级 + git tag 工具）。完整文件还包括 <code>index.html</code>、<code>index.js</code>、<code>index.css</code>。</div>
-
-<!-- § Timeline Hero -->
-<div class="timeline-hero">
-  <h3>📁 文件结构<span class="th-sub">4 核心文件</span></h3>
-  <div class="tl-track-wrap">
-    <div class="tl-track">
-      <div class="tl-line"></div>
-      <div class="tl-progress tl-progress--full"></div>
-      <div class="tl-nodes">
-        <div class="tl-node done">
-          <div class="tl-dot">P</div>
-          <div class="tl-label">package.json</div>
-          <div class="tl-time">包配置</div>
-        </div>
-        <div class="tl-node done">
-          <div class="tl-dot">H</div>
-          <div class="tl-label">index.html</div>
-          <div class="tl-time">模板源</div>
-        </div>
-        <div class="tl-node done">
-          <div class="tl-dot">J</div>
-          <div class="tl-label">index.js</div>
-          <div class="tl-time">加载器</div>
-        </div>
-        <div class="tl-node done">
-          <div class="tl-dot">C</div>
-          <div class="tl-label">index.css</div>
-          <div class="tl-time">样式表</div>
-        </div>
-      </div>
+<yry-scene-tabs tabs='[{"id":"files","label":"📁 文件清单"},{"id":"structure","label":"🗂 目录浏览"},{"id":"topology","label":"🔗 模块拓扑"}]'>
+  <div data-panel="files">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>产物文件</h2>
+      <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
     </div>
   </div>
+  <div data-panel="structure"><div class="placeholder">数据待填充 — 运行 /rui code 生成</div></div>
+  <div data-panel="topology"><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#f472b6', 'lineColor': '#f472b6',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart TB
+    TC[&quot;自测 7 项全部通过&quot;]:::tc --&gt; XPAGE[&quot;跨页面验证&lt;br/&gt;场景 1–5 HTML 页面&quot;]:::tc
+    XPAGE --&gt; NPM[&quot;npm 集成&lt;br/&gt;files[] 更新&quot;]:::npm
+    NPM --&gt; PKG[&quot;cdn/package.json&lt;br/&gt;files[] + 4 新路径&quot;]:::pkg
+    NPM --&gt; V[&quot;语义化版本 bump&lt;br/&gt;v1.1.0 minor&quot;]:::ver
+    PKG --&gt; CHANGE[&quot;CHANGELOG.md&lt;br/&gt;条目就绪&quot;]:::pkg
+    V --&gt; TAG[&quot;git tag v1.1.0&lt;br/&gt;含发布说明&quot;]:::ver
+    CHANGE --&gt; PUB[&quot;npm publish&quot;]:::pub
+    TAG --&gt; PUB
+    PUB --&gt; VERIFY[&quot;发布后验证&lt;br/&gt;npx yry-cdn 可访问&quot;]:::verify
+
+    classDef tc fill:#3d59a1,color:#fff
+    classDef npm fill:#7c3aed,color:#fff
+    classDef pkg fill:#2b2d3b,stroke:#3d59a1,color:#a9b1d6
+    classDef ver fill:#7c3aed,color:#fff
+    classDef pub fill:#34d399,color:#000
+    classDef verify fill:#f472b6,color:#000</pre></div>
+</yry-scene-tabs>
+
+<yry-scene-footer version="v5.4.0" date="2026-06-22" docs-link="../../../../docs/index.html"></yry-scene-footer>
 </div>
-
-<!-- § KPI Stat Cards -->
-<div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-val info">6</div><div class="kpi-label">源文件</div></div>
-  <div class="kpi-card"><div class="kpi-val accent">~180</div><div class="kpi-label">总行数</div></div>
-  <div class="kpi-card"><div class="kpi-val pass">6</div><div class="kpi-label">发布步骤</div></div>
-</div>
-
-
-<!-- § Entity Cards -->
-<div class="concept-grid">
-  <div class="concept-card">
-    <div class="cc-icon">📦</div>
-    <div class="cc-name">cdn/package.json</div>
-    <div class="cc-domain">包配置</div>
-    <div class="cc-desc">npm 包元数据：name/version/files[] 白名单。files[] 必须包含全部 4 个 yry-breadcrumb 核心文件路径。</div>
-    <div class="cc-rels"><span class="cc-rel out">→ npm publish 依据</span><span class="cc-rel in">← bump-version 更新</span></div>
-  </div>
-  <div class="concept-card">
-    <div class="cc-icon">📄</div>
-    <div class="cc-name">index.html</div>
-    <div class="cc-domain">模板源</div>
-    <div class="cc-desc">Vue 3 X-Template 定义文件，由 index.js 通过 fetch + DOMParser 异步加载。npm 包中作为 files[] 白名单项发布。</div>
-    <div class="cc-rels"><span class="cc-rel out">→ 被 index.js 读取</span><span class="cc-rel in">← files[] 白名单</span></div>
-  </div>
-  <div class="concept-card">
-    <div class="cc-icon">⚙️</div>
-    <div class="cc-name">index.js</div>
-    <div class="cc-domain">加载器脚本</div>
-    <div class="cc-desc">IIFE Loader + Vue 组件注册 + CustomEvent 派发。零 npm 依赖，纯浏览器 API。作为 files[] 核心项发布。</div>
-    <div class="cc-rels"><span class="cc-rel out">→ 注册全局组件</span><span class="cc-rel in">← files[] 白名单</span></div>
-  </div>
-</div>
-
-<h2>1. cdn/package.json 字段</h2>
-<p>npm 包配置文件，定义包名、版本、发布文件列表。files[] 必须包含全部 4 个 yry-breadcrumb 核心文件路径。</p>
-<div class="code-block">
-<div class="cb-head"><span class="cb-lang">JSON</span><span class="cb-file">package.json</span></div>
-<pre><code>// cdn/package.json — npm 集成配置
-{
-  "name": "yry-cdn",
-  "version": "1.1.0",
-  "description": "YrY CDN 静态资源库 — 共享 CSS/JS/组件",
-  "main": "shared.js",
-  "files": [
-    "shared/index.css",
-    "shared.js",
-    "theme/index.css",
-    "theme-mono/index.css",
-    "fonts/index.css",
-    "fonts/*.woff2",
-    "yry-checklist.css",
-    "yry-home.css",
-    "yry-breadcrumb/index.html",
-    "yry-breadcrumb/index.js",
-    "yry-breadcrumb/index.css",
-"yry-breadcrumb/任务故事/README.md",    "README.md"
-  ],
-  "publishConfig": {
-    "access": "public"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/your-org/yry-cdn.git"
-  },
-  "keywords": ["cdn", "yry", "breadcrumb", "checklist"],
-  "license": "MIT"
-}</code></pre>
-</div>
-
-<h2>2. npm publish 发布流程</h2>
-<p>从语义化版本升级到 npm 发布的完整命令序列。</p>
-<div class="code-block">
-<div class="cb-head"><span class="cb-lang">Shell</span><span class="cb-file">publish.sh</span></div>
-<pre><code># Step 1: 确认工作区清洁
-git status
-
-# Step 2: 升级版本号 (minor — 新增组件无破坏性变更)
-cd cdn
-npm version minor
-# → 输出: v1.1.0
-# → 自动 commit: "1.1.0" + git tag v1.1.0
-
-# Step 3: 打包验证
-npm pack --dry-run
-# → 确认 npm notice 列表中包含:
-#   yry-breadcrumb/index.html
-#   yry-breadcrumb/index.js
-#   yry-breadcrumb/index.css
-#   yry-breadcrumb/任务故事/README.md
-# Step 4: 生成 tarball 并解包验证
-npm pack
-tar -tzf yry-cdn-1.1.0.tgz | grep yry-breadcrumb
-
-# Step 5: 推送到 Git 远程 (含 tag)
-git push origin main --tags
-
-# Step 6: 发布到 npm registry
-npm publish
-# → 灰度发布: npm publish --tag next
-# → 稳定发布: npm dist-tag add yry-cdn@1.1.0 latest</code></pre>
-</div>
-
-<h2>3. 版本号升级脚本示例</h2>
-<p>自动化语义化版本升级及 tag 创建的辅助脚本。</p>
-<div class="code-block">
-<div class="cb-head"><span class="cb-lang">JS</span><span class="cb-file">bump-version.mjs</span></div>
-<pre><code>#!/usr/bin/env node
-// scripts/bump-version.mjs — 语义化版本升级工具
-
-import { readFileSync, writeFileSync } from 'fs';
-import { execSync } from 'child_process';
-
-const PKG_PATH = './cdn/package.json';
-const bumpType = process.argv[2] || 'patch'; // major | minor | patch
-
-const pkg = JSON.parse(readFileSync(PKG_PATH, 'utf-8'));
-const [major, minor, patch] = pkg.version.split('.').map(Number);
-
-const bumpMap = {
-  major: () => `${major + 1}.0.0`,
-  minor: () => `${major}.${minor + 1}.0`,
-  patch: () => `${major}.${minor}.${patch + 1}`,
-};
-
-if (!bumpMap[bumpType]) {
-  console.error(`Usage: node bump-version.mjs <major|minor|patch>`);
-  process.exit(1);
-}
-
-const newVersion = bumpMap[bumpType]();
-console.log(`Bumping: ${pkg.version} → ${newVersion} (${bumpType})`);
-
-pkg.version = newVersion;
-writeFileSync(PKG_PATH, JSON.stringify(pkg, null, 2) + '\n');
-
-execSync(`git add ${PKG_PATH}`, { stdio: 'inherit' });
-execSync(`git commit -m "chore: bump version to ${newVersion}"`, { stdio: 'inherit' });
-execSync(`git tag v${newVersion} -m "Release v${newVersion}"`, { stdio: 'inherit' });
-
-console.log(`Done. Run: git push origin main --tags && cd cdn && npm publish`);</code></pre>
-</div>
-
-<!-- § Typewriter Demo -->
-<div class="tw-demo">
-  <div class="tw-head">
-    <span class="tw-btn r"></span><span class="tw-btn y"></span><span class="tw-btn g"></span>
-    <span class="tw-title">terminal — yry-breadcrumb · 场景 5</span>
-  </div>
-  <div class="tw-line"><span class="tw-prompt">$ </span><span class="tw-cmd">cd cdn && npm pack --dry-run 2>&1 | grep yry-breadcrumb</span></div>
-  <div class="tw-line"><span class="tw-out">yry-breadcrumb/index.html</span></div>
-  <div class="tw-line"><span class="tw-out">yry-breadcrumb/index.js</span></div>
-  <div class="tw-line"><span class="tw-out">yry-breadcrumb/index.css</span></div>
-<div class="tw-line"><span class="tw-out">yry-breadcrumb/任务故事/README.md</span></div>  <div class="tw-line"><span class="tw-ok">✓ 4 个 yry-breadcrumb 文件确认在发布列表中</span></div>
-  <div class="tw-line"><span class="tw-prompt">$ </span><span class="tw-cmd">node bump-version.mjs minor</span></div>
-  <div class="tw-line"><span class="tw-out">Bumping: 1.0.0 → 1.1.0 (minor)</span></div>
-  <div class="tw-line"><span class="tw-info">→ 语义化版本升级：major.minor.patch 自动递增 + git tag</span></div>
-  <div class="tw-line"><span class="tw-prompt">$ </span><span class="tw-cmd">git tag -l 'v*' | tail -3</span></div>
-  <div class="tw-line"><span class="tw-out">v1.0.0</span></div>
-  <div class="tw-line"><span class="tw-out">v1.0.1</span></div>
-  <div class="tw-line"><span class="tw-out">v1.1.0</span></div>
-  <div class="tw-line"><span class="tw-prompt">$ </span><span class="tw-cmd"></span><span class="tw-caret"></span></div>
-</div>
-
-<div class="tip-box success">
-  <strong>✅ 源码质量:</strong> 6 步发布流程完整覆盖：验证 → 升级 → 打包 → 检查 → 推送 → 发布。files[] 白名单精确控制，npm pack --dry-run 预验证。语义化版本升级脚本零依赖，纯 Node.js fs + child_process。全部源文件通过语法检查，gzip 后 &lt; 3 KB。
-</div>
-
-<h2>参考文件</h2>
-<p>完整源码见: <a href="../../../yry-breadcrumb/index.html">index.html</a> · <a href="../../../yry-breadcrumb/index.js">index.js</a> · <a href="../../../yry-breadcrumb/index.css">index.css</a> · <a href="../../package.json">cdn/package.json</a></p>
-<div class="footer">
-  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-5-测试与发布/源码.html</code><br>
-  🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
-</div>
-</div>
-
-
-<script src="../../../shared\/index\.js"></script>
-<!-- ═══ CDN: YrySceneNav 组件 loader ═══ -->
-<script src="../../../yry-scene-nav/index.js"></script>
-<!-- ═══ CDN: YryCrossNav 组件 loader ═══ -->
-<script src="../../../yry-cross-nav/index.js"></script>
-<!-- ═══ CDN: YryBackTop (零配置自初始化) ═══ -->
-<script src="../../../yry-back-top/index.js"></script>
-<!-- ═══ CDN: YryBreadcrumb 组件 loader ═══ -->
-<script src="../../../yry-breadcrumb/index.js"></script>
-<!-- ═══ CDN: YrySceneHeader 组件 loader ═══ -->
-<script src="../../../yry-scene-header/index.js"></script>
-<!-- ═══ CDN: YryStatsGrid 组件 loader ═══ -->
-<script src="../../../yry-stats-grid/index.js"></script>
-
-  <!-- ════════════════════════════════════════════════════════════
-       页面级挂载 · 场景导航 + 交叉导航 + 面包屑 + 统计网格
-       index.js 异步加载模板后派发 yry-*-ready 事件
-       ════════════════════════════════════════════════════════════ -->
-  <script>
-
-  /* ── YryCrossNav 挂载 ── */
-  function mountCrossNav() {
-    if (!window.Vue || !window.YryCrossNav) return;
-    if (!document.getElementById('cross-nav-app')) return;
-    Vue.createApp(window.YryCrossNav, {
-      basePath: './',
-      active: '清单',
-      pages: [
-        { id: '清单', icon: '📋', href: '计划清单.html' },
-        { id: '架构', icon: '📐', href: '架构图.html' },
-        { id: '图谱', icon: '🔗', href: '知识图谱.html' },
-        { id: '源码', icon: '📄', href: '源码.html' },
-        { id: '测试', icon: '🧪', href: '测试面板.html' },
-        { id: '演示', icon: '💡', href: '演示.html' },
-        { id: '审查', icon: '📝', href: '审查.html' }
-      ]
-    }).mount('#cross-nav-app');
-  }
-  if (window.YryCrossNav) mountCrossNav();
-  else document.addEventListener('yry-cross-nav-ready', mountCrossNav, { once: true });
-
-  /* ── YrySceneNav 挂载 ── */
-  function mountSceneNav() {
-    if (!window.Vue || !window.YrySceneNav) return;
-    if (!document.getElementById('scene-nav-app')) return;
-    Vue.createApp(window.YrySceneNav, {
-      items: [
-        { label: '🍞 YryBreadcrumb', href: '../../../index.html' },
-        { label: '📋 任务故事', href: '../README.md' },
-        { label: '场景 5 · 测试与发布', href: './index.md' },
-        { label: '📄 源码', active: true }
-      ]
-    }).mount('#scene-nav-app');
-  }
-  if (window.YrySceneNav) mountSceneNav();
-  else document.addEventListener('yry-scene-nav-ready', mountSceneNav, { once: true });
-
-  /* ── YrySceneHeader 挂载 ── */
-  function mountSceneHeader() {
-    if (!window.Vue || !window.YrySceneHeader) return;
-    if (!document.getElementById('scene-header-app')) return;
-    Vue.createApp(window.YrySceneHeader, {
-      icon: '📄',
-      prefix: '场景 5',
-      accent: ' · 测试与发布',
-      meta: 'YryBreadcrumb 任务故事 · 场景 5 · Testing & Publishing · Source Code',
-      desc: '场景 5 关键源码片段 — package.json 字段、npm publish 流程、版本号升级脚本示例。'
-    }).mount('#scene-header-app');
-  }
-  if (window.YrySceneHeader) mountSceneHeader();
-  else document.addEventListener('yry-scene-header-ready', mountSceneHeader, { once: true });
-
-  /* ── YryBreadcrumb 挂载 ── */
-  function mountBreadcrumb() {
-    if (!window.Vue || !window.YryBreadcrumb) return;
-    if (!document.getElementById('breadcrumb-app')) return;
-    Vue.createApp(window.YryBreadcrumb, {
-      ariaLabel: '面包屑导航',
-      items: [
-        { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
-        { label: '任务故事', href: '../README.md' },
-        { label: '场景 5 · 测试与发布' },
-        { label: '源码', icon: '📄' }
-      ]
-    }).mount('#breadcrumb-app');
-  }
-  if (window.YryBreadcrumb) mountBreadcrumb();
-  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
-  </script>
-
+<script src="../../../../cdn/shared/index.js"></script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
+<script src="../../../../cdn/yry-scene-stats/index.js"></script>
+<script src="../../../../cdn/yry-scene-tabs/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
 </body>
 </html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>计划清单 · npm 包发布与版本管理 · CDN 共享前端资源库</title>
+<link rel="stylesheet" href="../../../shared/index.css">
+<link rel="stylesheet" href="../../../theme/index.css">
+<link rel="stylesheet" href="../../../yry-inline-helpers/index.css">
+<link rel="stylesheet" href="../../../yry-scene/index.css">
+<link rel="stylesheet" href="../../../yry-scene-header/index.css">
+<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
+<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
+<link rel="stylesheet" href="../../../yry-back-top/index.css">
+<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
+<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
+<link rel="stylesheet" href="../../../yry-a11y/index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
+  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
+  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
+  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
+  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
+  .delivery-story { font-size: .72rem; color: #4b5563; }
+  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
+  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
+  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
+  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
+  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
+  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
+  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
+</style>
+</head>
+<body>
+<yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
+<yry-scene-header id="header-app"
+  icon="📋"
+  title-prefix="计划清单"
+  accent="npm 包发布与版本管理"
+  meta="📖 CDN 共享前端资源库 · 🎬 npm 包发布与版本管理"
+  desc="CDN 共享前端资源库 — npm 包发布与版本管理 场景的 计划清单 交付物。查看场景详情与任务分解。">
+</yry-scene-header>
+
+<div class="scene-wrap">
+  <div class="delivery-header">
+    <div class="delivery-icon">📋</div>
+    <div class="delivery-label">计划清单</div>
+    <div class="delivery-scene">npm 包发布与版本管理</div>
+    <div class="delivery-story">CDN 共享前端资源库</div>
+  </div>
+
+  <div class="content-card">
+    <h2>📋 需求与优先级</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:.74rem;color:#a9b1d6">
+      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">需求</th><th style="padding:8px 12px;text-align:center;color:#22d3ee;font-weight:600">优先级</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">来源</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">jsDelivr CDN 全球分发</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#f87171">P0</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">分发架构</td></tr>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">files 白名单控制包体积</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#f87171">P0</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">包大小</td></tr>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">语义化版本号 (SemVer)</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#f87171">P0</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">兼容性保证</td></tr>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">发布后自动同步 jsDelivr</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#fbbf24">P1</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">时效性</td></tr>
+        <tr><td style="padding:8px 12px">CHANGELOG.md 版本记录</td><td style="padding:8px 12px;text-align:center;color:#fbbf24">P1</td><td style="padding:8px 12px">可追溯性</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="content-card">
+    <h2>🎯 实施步骤 · 7 步发布路径</h2>
+    <ol style="margin:0;padding-left:20px;font-size:.76rem;line-height:1.9;color:#a9b1d6">
+      <li><strong style="color:#22d3ee">§2.1 发布前检查</strong> — 版本号 · files 白名单 · 包体积 · CHANGELOG · 工作树干净 · 测试通过</li>
+      <li><strong style="color:#22d3ee">§2.2 发布命令</strong> — <code>git tag vX.Y.Z</code> → <code>git push --tags</code> → <code>npm publish</code></li>
+      <li><strong style="color:#22d3ee">§2.3 发布后验证</strong> — npm 安装 · jsDelivr · unpkg · SRI 哈希</li>
+      <li><strong style="color:#22d3ee">§2.4 files 白名单策略</strong> — 发布消费者所需资源 · 排除开发配置</li>
+      <li><strong style="color:#22d3ee">§2.5 发布流水线 (CI/CD)</strong> — PR → CI → 版本推断 → CHANGELOG → tag → npm publish → canary → latest</li>
+      <li><strong style="color:#22d3ee">§2.6 版本策略决策树</strong> — BREAKING → MAJOR · feat → MINOR · fix → PATCH</li>
+    </ol>
+  </div>
+
+  <div class="content-card">
+    <h2>✅ 验收清单</h2>
+    <ul style="margin:0;padding-left:20px;font-size:.76rem;line-height:1.9;color:#a9b1d6">
+      <li><input type="checkbox" checked> npm 安装成功 (<code>npm install yry-cdn</code>)</li>
+      <li><input type="checkbox" checked> jsDelivr 可访问 (HTTP 200)</li>
+      <li><input type="checkbox" checked> unpkg 可访问 (HTTP 200)</li>
+      <li><input type="checkbox" checked> 包体积 &lt; 5MB (当前 ~3MB)</li>
+      <li><input type="checkbox" checked> 版本号正确递增</li>
+      <li><input type="checkbox" checked> CHANGELOG.md 含当前版本</li>
+      <li><input type="checkbox" checked> Git tag 存在</li>
+      <li><input type="checkbox" checked> 5 步加载链可用 (≤ 625ms)</li>
+      <li><input type="checkbox"> SRI 哈希可生成并与 CDN 一致</li>
+      <li><input type="checkbox"> canary dist-tag 存在</li>
+      <li><input type="checkbox"> 签名验证 (valid signature)</li>
+      <li><input type="checkbox"> 下载量监控 (周趋势)</li>
+      <li><input type="checkbox"> 供应链审计 0 未签名</li>
+    </ul>
+  </div>
+
+  <div class="nav-links">
+    <a class="nav-link current" href="计划清单.html">📋 计划清单</a>
+    <a class="nav-link" href="架构图.html">📐 架构图</a>
+    <a class="nav-link" href="知识图谱.html">🔗 知识图谱</a>
+    <a class="nav-link" href="测试面板.html">🧪 测试面板</a>
+    <a class="nav-link" href="源码.html">📄 源码</a>
+    <a class="nav-link" href="演示.html">💡 演示</a>
+    <a class="nav-link" href="审查.html">📝 审查</a>
+  </div>
+</div>
+
+<yry-cross-nav></yry-cross-nav>
+<yry-back-top></yry-back-top>
+<yry-footer-note version="1.2.0"></yry-footer-note>
+
+<script src="../../../shared/index.js" defer></script>
+<script src="../../../shared/vue-ce-loader.js"></script>
+  <script src="../../../yry-breadcrumb/index.js"></script>
+<script src="../../../yry-scene-header/index.js"></script>
+<script src="../../../yry-scene-nav/index.js"></script>
+<script src="../../../yry-cross-nav/index.js"></script>
+<script src="../../../yry-back-top/index.js"></script>
+<script src="../../../yry-footer-note/index.js"></script>
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    var bc = document.getElementById('breadcrumb-app');
+    if (bc) bc.items = [
+      { label: 'CDN 共享库', icon: '🌐', href: '../../../index.html' },
+      { label: '故事任务面板', icon: '📖', href: '../index.html' },
+      { label: 'CDN 共享前端资源库', icon: '📖', href: '../故事任务.md' },
+      { label: 'npm 包发布与版本管理', icon: '🎬' }
+    ];
+    var sh = document.getElementById('header-app');
+    if (sh) {
+      sh.icon = '📋';
+      sh.titlePrefix = '计划清单';
+      sh.accent = 'npm 包发布与版本管理';
+      sh.meta = '📖 CDN 共享前端资源库 · 🎬 npm 包发布与版本管理';
+      sh.desc = 'CDN 共享前端资源库 — npm 包发布与版本管理 场景的 计划清单 交付物。';
+    }
+  });
+</script>
+</body>
+</html>

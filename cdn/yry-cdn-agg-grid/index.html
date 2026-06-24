@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  YryCdnAggGrid · 模板源 + Demo 预览页
+
+  本文件有 2 个用途:
+    1) **模板源** — index.js 通过 fetch 拉取本文件,提取 <script type="text/x-template"
+       id="yry-cdn-agg-grid-tpl"> 内容作为 Vue 组件的 template。
+    2) **Demo 预览** — 直接用浏览器打开本文件,即可看到 YryCdnAggGrid 的实际渲染效果。
+
+  加载链: ../shared/index.css → ../theme/index.css → index.css → Vue 3 → index.js
+  ═══════════════════════════════════════════════════════════════════════════
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryCdnAggGrid · Demo & Template</title>
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <link rel="stylesheet" href="../yry-cdn-agg-card/index.css">
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="../yry-inline-helpers/index.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 1100px;
+      margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #22d3ee); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+    .demo-section {
+      margin: 20px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+  </style>
+</head>
+<body>
+
+  <h1><span class="accent">🧭</span> YryCdnAggGrid · Vue 3 CDN 聚合卡片网格</h1>
+  <p class="demo-hint">
+    CDN 聚合中心的网格容器 — 接受 <code>items</code> 数组,自动渲染内部 <code>&lt;yry-cdn-agg-card&gt;</code>。<br>
+    子卡片样式由 <code>yry-cdn-agg-card/index.css</code> 提供,此处仅定义 grid 容器布局。<br>
+    模板源见下方 <code>&lt;script type="text/x-template" id="yry-cdn-agg-grid-tpl"&gt;</code> 块。
+  </p>
+
+  <div class="demo-section">
+    <h3>Demo 1 — 7 张聚合页卡片 (模拟 docs/index.html)</h3>
+    <yry-cdn-agg-grid id="demo-1"></yry-cdn-agg-grid>
+  </div>
+
+  <div class="demo-section">
+    <h3>Demo 2 — 3 张简化卡片 (最小字段集)</h3>
+    <yry-cdn-agg-grid id="demo-2"></yry-cdn-agg-grid>
+  </div>
+
+  <hr>
+  <p class="demo-hint">👇 以下 <code>&lt;script type="text/x-template"&gt;</code> 即为组件的 <strong>template 源</strong></p>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       TEMPLATE SOURCE OF TRUTH · YryCdnAggGrid 的 template
+       ════════════════════════════════════════════════════════════════════ -->
+  <script type="text/x-template" id="yry-cdn-agg-grid-tpl">
+    <div class="cdn-agg-grid" ref="grid">
+      <YryCdnAggCard
+        v-for="(item, i) in items" :key="i"
+        v-bind="item" />
+    </div>
+  </script>
+
+  <script src="../shared/vue-ce-loader.js"></script>
+  <script src="../yry-cdn-agg-card/index.js"></script>
+  <script src="index.js"></script>
+
+  <script>
+    var DEMO_7_ITEMS = [
+      {
+        href: '../cdn/checklist.html',
+        title: '全卡片文件清单 — 状态 · 类型 · 大小 · 跳转 · 名称模糊搜索 + 类型/状态过滤',
+        emoji: '📋', name: '清单聚合', badge: 'checklist.html', dataSource: 'manifest.json',
+        body: '全卡片文件清单 · 状态 · 类型 · 大小 · 跳转。数据由 <code>scripts/build-manifest.mjs</code> 自动扫描生成 · 名称模糊搜索 + 类型/状态过滤。',
+        chips: ['状态徽章','类型过滤','名称搜索','大小排序'],
+        cta: '浏览清单 →'
+      },
+      {
+        href: '../cdn/architecture.html',
+        title: '五步加载链 · 双主题 · 设计令牌 · 组件分层 · 版本演进 · 六维加权健康评估',
+        emoji: '🏗', name: '架构聚合', badge: 'architecture.html', dataSource: 'manifest.json',
+        body: '五步加载链 · 双主题系统 · 设计令牌 · 组件分层 · 版本演进。六维加权健康评估模型 · 架构合规 A 级 · 类别分布条形图。',
+        chips: ['加载链','双主题','设计令牌','组件分层','版本演进','六维健康'],
+        cta: '查看架构 →'
+      },
+      {
+        href: '../cdn/graph.html',
+        title: '组件依赖关系图 — SVG 环形布局 · 中心度排名 · 出度排名 · 依赖边清单',
+        emoji: '🕸', name: '图谱聚合', badge: 'graph.html', dataSource: 'deps-graph.json',
+        body: '扫描 <code>&lt;yry-*&gt;</code> 标签用法绘制组件→组件依赖图谱。SVG 环形布局 · 中心度排名 · 出度排名 · 依赖边清单 · 点击节点跳转演示。',
+        chips: ['SVG 环形','中心度排名','出度排名','依赖边清单','节点跳转'],
+        cta: '查看图谱 →'
+      },
+      {
+        href: '../cdn/tests.html',
+        title: 'vitest 结果中心 — TQI 三维评估 · 套件可展开 · 失败定位',
+        emoji: '🧪', name: '测试聚合', badge: 'tests.html', dataSource: 'tests-result.json',
+        body: 'vitest 执行结果 · 三维 TQI 评估(覆盖率 50%·通过率 30%·充分度 20%)。套件/用例可展开折叠 · 失败定位 · 按状态过滤。',
+        chips: ['覆盖率','通过率','充分度','套件展开','失败定位'],
+        cta: '查看测试 →'
+      },
+      {
+        href: '../cdn/source.html',
+        title: '源码浏览器 — html/js/css · 按需 fetch · 带行号 · Top 10 体积排行',
+        emoji: '📜', name: '源码聚合', badge: 'source.html', dataSource: 'manifest.json',
+        body: '浏览每张卡片的 <code>index.html/js/css</code> 源码 · 按需 fetch · 带行号 · Vue/Vanilla 过滤 · 体积 Top 10 排行 · 类型徽章。',
+        chips: ['按需 fetch','带行号','Vue/Vanilla','Top 10 体积','类型徽章'],
+        cta: '查看源码 →'
+      },
+      {
+        href: '../cdn/demo.html',
+        title: '全卡片 demo 预览 — iframe 缩略图 · 网格/列表双视图',
+        emoji: '🎬', name: '演示聚合', badge: 'demo.html', dataSource: 'manifest.json',
+        body: '网格预览全部 yry-* 卡片的 <code>index.html</code> 演示 · iframe 缩略图悬停打开 · 网格/列表双视图 · 类型过滤 + 名称搜索。',
+        chips: ['iframe 缩略图','网格/列表','类型过滤','名称搜索','悬停预览'],
+        cta: '查看演示 →'
+      },
+      {
+        href: '../cdn/review.html',
+        title: '六维健康评估 — 版本演进趋势 · 诊断引擎 · 改进建议',
+        emoji: '⚠️', name: '审查聚合', badge: 'review.html', dataSource: 'cdn-summary.json',
+        body: '六维健康评估 · 版本演进趋势 SVG 折线图 · D0-D8 诊断引擎 · 改进建议卡片 · 综合评分 Hero 区。',
+        chips: ['六维健康','版本演进趋势','D0-D8 诊断','改进建议','综合 Hero'],
+        cta: '查看审查 →'
+      }
+    ];
+
+    var DEMO_3_ITEMS = [
+      { href: '../cdn/checklist.html', emoji: '📋', name: '清单聚合', cta: '浏览清单 →' },
+      { href: '../cdn/graph.html',    emoji: '🕸', name: '图谱聚合', cta: '查看图谱 →' },
+      { href: '../cdn/review.html',   emoji: '⚠️', name: '审查聚合', cta: '查看审查 →' }
+    ];
+
+    function mountDemos() {
+      document.getElementById('demo-1').items = DEMO_7_ITEMS;
+      document.getElementById('demo-2').items = DEMO_3_ITEMS;
+    }
+    if (window.YryCdnAggGrid) mountDemos();
+    else document.addEventListener('yry-cdn-agg-grid-ready', mountDemos, { once: true });
+  </script>
+</body>
+</html>

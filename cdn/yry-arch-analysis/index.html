@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryArchAnalysis · Demo</title>
+<meta name="description" content="YryArchAnalysis 项目架构分析报告组件 Demo — 10 维度架构合规展示">
+<link rel="stylesheet" href="../shared/index.css">
+<link rel="stylesheet" href="../theme/index.css">
+<link rel="stylesheet" href="index.css">
+<style>
+body {
+  background: var(--yry-bg, #0a0a0a);
+  color: var(--yry-text, #f5f5f5);
+  font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  padding: 32px 24px 60px;
+  max-width: 920px;
+  margin: 0 auto;
+  line-height: 1.55;
+}
+h1 { font-size: 1.25rem; margin: 0 0 4px; }
+.demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; }
+.demo-hint code { background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px; font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68; }
+</style>
+</head>
+<body>
+<h1>🏗 YryArchAnalysis · Demo</h1>
+<p class="demo-hint">组件通过 <code>data-src</code> 加载 <code>reports.json</code>,渲染项目架构分析报告。</p>
+<div id="demo-1"></div>
+<script src="index.js"></script>
+<script>
+(function() {
+  var mockData = [{
+    date: "2026-06-16",
+    overallScore: 87,
+    overallGrade: "A",
+    checksPassed: 9,
+    checksTotal: 10,
+    fileCount: 320,
+    totalLines: 18500,
+    jsFiles: 95,
+    jsLines: 12500,
+    importCount: 280,
+    skills: 20,
+    rules: 45,
+    agents: 12,
+    libFiles: 18,
+    fileTypes: { js: 95, md: 120, css: 30, mjs: 18, json: 15, html: 42 },
+    dimensions: [
+      { name: "内核体积", score: 95, status: "pass" },
+      { name: "编排器行数", score: 88, status: "pass" },
+      { name: "范式合规", score: 92, status: "pass" },
+      { name: "扩展隔离", score: 55, status: "fail" },
+      { name: "导出范式", score: 90, status: "pass" }
+    ],
+    issues: [
+      { level: "warn", msg: "扩展隔离维度未达标,新增 Skill 修改了编排器", file: "lib/orchestrator.mjs" },
+      { level: "info", msg: "lib/ 文件数接近上限 (18/20)", file: "lib/" }
+    ],
+    failedDims: ["扩展隔离"]
+  }];
+  var el = document.getElementById('demo-1');
+  var ce = document.createElement('yry-arch-analysis');
+  ce.setAttribute('data-src', 'demo://mock');
+  el.appendChild(ce);
+  var origFetch = window.fetch;
+  window.fetch = function(url, opts) {
+    if (String(url).indexOf('demo://mock') === 0) {
+      return Promise.resolve({
+        ok: true, status: 200, statusText: 'OK',
+        json: function() { return Promise.resolve(mockData); }
+      });
+    }
+    return origFetch.apply(this, arguments);
+  };
+})();
+</script>
+</body>
+</html>

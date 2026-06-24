@@ -6,10 +6,11 @@
 <title>init后全量自检 · 源码</title>
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/theme/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-source/index.css">
-
+<link rel="stylesheet" href="../../../../cdn/yry-source-base.css">
 <link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
 <link rel="stylesheet" href="../../../../cdn/yry-scene-stats/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-tabs/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
 <style>
 /* Page-specific overrides — shared patterns in shared-b.css */
 </style>
@@ -20,32 +21,22 @@
   theme="b"
   title="📄 {ACCENT} · 源码"
   title-accent="初始化后全量自检"
-  subtitle="场景 1 · 版本 vv1.1.0 · 2026-06-05"
-  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"自测 · 故事任务"},{"label":"场景 1 · init后全量自检"},{"label":"📄 源码"}]'
+  subtitle="场景 1 · 版本 vv5.4.0 · 2026-06-22"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-test · 故事任务"},{"label":"场景 1 · init后全量自检"},{"label":"📄 源码"}]'
   crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","href":"架构图.html"},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","active":true},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","href":"审查.html"}]'>
 </yry-scene-chrome>
 
-<yry-scene-stats items='[{"value":13,"label":"产物文件","color":"info"},{"value":1,"label":"场景","color":"t"},{"value":"vv1.1.0","label":"版本","color":"t"}]'></yry-scene-stats>
+<yry-scene-stats items='[{"value":13,"label":"产物文件","color":"info"},{"value":1,"label":"场景","color":"t"},{"value":"vv5.4.0","label":"版本","color":"t"}]'></yry-scene-stats>
 
-<div class="yry-tabs">
-  <span class="yry-tab on" data-panel="files">📁 文件清单</span>
-  <span class="yry-tab" data-panel="structure">🗂 目录浏览</span>
-  <span class="yry-tab" data-panel="topology">🔗 模块拓扑</span>
-</div>
-
-<div class="yry-panel on" id="panelFiles">
-  <div class="yry-section">
-    <h2><span class="yry-dot"></span>产物文件</h2>
-    <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
+<yry-scene-tabs tabs='[{"id":"files","label":"📁 文件清单"},{"id":"structure","label":"🗂 目录浏览"},{"id":"topology","label":"🔗 模块拓扑"}]'>
+  <div data-panel="files">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>产物文件</h2>
+      <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
+    </div>
   </div>
-</div>
-
-<div class="yry-panel" id="panelStructure">
-  <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
-</div>
-
-<div class="yry-panel" id="panelTopology">
-  <pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  <div data-panel="structure"><div class="placeholder">数据待填充 — 运行 /rui code 生成</div></div>
+  <div data-panel="topology"><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
   'primaryColor': '#1e1f2b',
   'primaryTextColor': '#a9b1d6',
   'primaryBorderColor': '#3d59a1',
@@ -101,13 +92,34 @@ flowchart TD
     FS--&gt;&gt;SC: 文件存在性
     SC-&gt;&gt;RPT: 汇总逐项结果
     RPT--&gt;&gt;U: 输出自检报告（通过/警告/阻断）</pre>
-</div>
+<pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+sequenceDiagram
+    participant U as 维护者
+    participant S as 自检引擎
+    participant FS as 文件系统
+    participant R as 报告
+    U-&gt;&gt;S: /rui init 完成
+    S-&gt;&gt;FS: 检查 1: 指令标记
+    FS--&gt;&gt;S: 存在
+    S-&gt;&gt;FS: 检查 2: README
+    FS--&gt;&gt;S: 存在
+    S-&gt;&gt;FS: 检查 3-7: 逐项
+    FS--&gt;&gt;S: 部分缺失
+    S-&gt;&gt;R: 汇总报告
+    R--&gt;&gt;U: 5/7 通过 · 2 项阻断</pre></div>
+</yry-scene-tabs>
 
-<div class="yry-footer">YrY vv1.1.0 · 2026-06-05 · <a href="../../../../docs/index.html">文档中心</a></div>
+<yry-scene-footer version="v5.4.0" date="2026-06-22" docs-link="../../../../docs/index.html"></yry-scene-footer>
 </div>
 <script src="../../../../cdn/shared/index.js"></script>
 <script src="../../../../cdn/yry-scene-chrome/index.js"></script>
 <script src="../../../../cdn/yry-scene-stats/index.js"></script>
-<script>YrY.initTabs();</script>
+<script src="../../../../cdn/yry-scene-tabs/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
 </body>
 </html>

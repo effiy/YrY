@@ -1,72 +1,141 @@
 <!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  YryToast · Vue 3 Toast 通知组件 · 模板源 + Demo 预览页
+
+  本文件有 2 个用途:
+    1) **模板源** — index.js 通过 fetch 拉取本文件,提取
+       <script type="text/x-template" id="yry-toast-tpl"> 内容作为 Vue 组件 template。
+    2) **Demo 预览** — 浏览器直接打开本文件,即可看到 YryToast 的实际渲染效果。
+
+  加载链: ../shared/index.css → ../theme/index.css → index.css → Vue 3 → index.js
+  ═══════════════════════════════════════════════════════════════════════════
+-->
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YryToast · Demo & Template</title>
+  <meta name="description" content="YryToast Vue 3 全局 Toast 通知组件 — 懒加载挂载 · 5 种语义色 · 模板源 + Demo 预览">
   <link rel="stylesheet" href="../shared\/index\.css">
   <link rel="stylesheet" href="../theme\/index\.css">
   <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="../yry\-inline\-helpers\/index\.css">
+  <!-- Vue 3 (生产版) -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <style>
     body {
       background: var(--yry-bg, #0a0a0a);
       color: var(--yry-text, #f5f5f5);
       font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif);
       padding: 32px 24px 60px;
-      max-width: 920px; margin: 0 auto;
+      max-width: 920px;
+      margin: 0 auto;
       line-height: 1.55;
     }
     h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
     h1 .accent { color: var(--yry-accent, #ffc107); }
-    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint {
+      font-size: .78rem; color: var(--yry-text3, #888);
+      margin: 0 0 20px; line-height: 1.6;
+    }
     .demo-hint code {
       background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
       font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
     }
+    hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
     .demo-section {
       margin: 20px 0;
-      background: rgba(255,255,255,.03);
-      border: 1px solid rgba(255,255,255,.06);
+      background: var(--yry-bg-flat, rgba(255,255,255,.03));
+      border: 1px solid var(--yry-border, rgba(255,255,255,.06));
       border-radius: 10px;
       padding: 20px 22px;
     }
     .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
-    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
-    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
     .demo-btns { display: flex; gap: 8px; flex-wrap: wrap; }
     .demo-btn {
-      background: var(--yry-bg-flat, rgba(42,42,56,1)); color: var(--yry-text2, #d4d4d4);
+      background: var(--yry-bg-raised, rgba(42,42,56,1));
+      color: var(--yry-text2, #d4d4d4);
       border: var(--yry-border, 1px solid rgba(255,255,255,.06));
       border-radius: 20px; padding: 7px 16px; font-size: .76rem; cursor: pointer;
       transition: all .15s; font-family: inherit;
     }
-    .demo-btn:hover { border-color: rgba(255,193,7,.3); color: var(--yry-accent, #ffc107); }
+    .demo-btn:hover {
+      border-color: rgba(255,193,7,.3);
+      color: var(--yry-accent, #ffc107);
+    }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
   </style>
 </head>
 <body>
-  <h1><span class="accent">🔔</span> YryToast · 消息提示组件</h1>
+
+  <h1><span class="accent">🔔</span> YryToast · Vue 3 Toast 通知组件</h1>
   <p class="demo-hint">
-    自定义元素 <code>&lt;yry-toast&gt;</code> — 页面级消息通知。
-    通过 JS API <code>YryToast.show(msg, type, duration)</code> 调用。
-    支持 <strong>success / error / warn / info</strong> 四种类型，自动叠加、自动消失。
+    全局 Vue 3 组件 — 通过 <code>window.YryToast.show/success/error/warn/info</code> 调用。<br>
+    懒加载挂载: 首次调用时才创建 Vue 应用并渲染,平时零开销。<br>
+    5 种语义色 <code>success / warn / error / info / default</code> · 上限 5 条 · 自动消失 · 点击关闭。
   </p>
 
   <div class="demo-section">
-    <h3>Demo — 点击按钮触发提示</h3>
+    <h3>Demo 1 — 5 种类型快捷按钮</h3>
     <div class="demo-btns">
-      <button class="demo-btn" onclick="YryToast.success('✅ 架构合规检查通过 — 15/15 维度 A 级')">Success</button>
-      <button class="demo-btn" onclick="YryToast.error('❌ Gate A 未通过 — 发现 2 处空 catch')">Error</button>
-      <button class="demo-btn" onclick="YryToast.warn('⚠️ 2 个模块接近体积上限，建议拆分')">Warning</button>
-      <button class="demo-btn" onclick="YryToast.info('ℹ️ 健康报告已生成: docs/健康报告/health-2026-06-19.html')">Info</button>
-      <button class="demo-btn" onclick="YryToast.show('📋 自定义消息 · 停留 5 秒', 'default', 5000)">长停留</button>
+      <button class="demo-btn" onclick="YryToast.success('架构合规检查通过 — 15/15 维度 A 级', 'Gate A')">Success</button>
+      <button class="demo-btn" onclick="YryToast.error('Gate A 未通过 — 发现 2 处空 catch', '检查失败')">Error</button>
+      <button class="demo-btn" onclick="YryToast.warn('2 个模块接近体积上限,建议拆分', '体积预警')">Warning</button>
+      <button class="demo-btn" onclick="YryToast.info('健康报告已生成: docs/健康报告/health-2026-06-19.html', '提示')">Info</button>
+      <button class="demo-btn" onclick="YryToast.show('自定义消息 · 停留 5 秒', 'default', '长停留', 5000)">长停留</button>
     </div>
   </div>
 
-  <!-- Toast container (auto-created by JS) -->
-  <div id="yry-toast-container"></div>
+  <div class="demo-section">
+    <h3>Demo 2 — 触发多个叠加 (上限 5)</h3>
+    <div class="demo-btns">
+      <button class="demo-btn" onclick="for (var i = 1; i <= 6; i++) { YryToast.info('第 ' + i + ' 条 · 验证上限保护', '测试'); }">连发 6 条</button>
+      <button class="demo-btn" onclick="YryToast.dismiss()">清空全部</button>
+    </div>
+  </div>
+
+  <hr>
+  <p class="demo-hint">
+    👇 以下 <code>&lt;script type="text/x-template"&gt;</code> 即为组件的 <strong>template 源</strong>,
+    <code>index.js</code> 会在首次调用时 fetch 本文件并提取此块。
+  </p>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       TEMPLATE SOURCE OF TRUTH · YryToast 的 template
+       修改此块即可更新组件,index.js 会在首次调用时 fetch 本文件并提取 innerHTML
+       ════════════════════════════════════════════════════════════════════ -->
+  <script type="text/x-template" id="yry-toast-tpl">
+    <div class="yry-toast-container" role="region" aria-live="polite" aria-atomic="false">
+      <transition-group name="yry-toast-anim" tag="div" class="yry-toast-stack">
+        <div
+          v-for="item in items"
+          :key="item.id"
+          :class="['yry-toast', 'is-' + item.type]"
+          :role="item.type === 'error' ? 'alert' : 'status'"
+          @click="dismiss(item.id)"
+        >
+          <span class="yry-toast-icon" aria-hidden="true">{{ icons[item.type] || icons.default }}</span>
+          <div class="yry-toast-body">
+            <div v-if="item.title" class="yry-toast-title">{{ item.title }}</div>
+            <div v-if="item.text" class="yry-toast-text">{{ item.text }}</div>
+          </div>
+          <button
+            class="yry-toast-close"
+            aria-label="关闭通知"
+            type="button"
+            @click.stop="dismiss(item.id)"
+          >×</button>
+        </div>
+      </transition-group>
+    </div>
+  </script>
 
   <script src="index.js"></script>
 
-  <div class="demo-footer">🔔 YryToast v1.0.0 · <a href="../index.html">CDN 首页</a></div>
+  <div class="demo-footer">
+    🔔 YryToast v2.0.0 · <a href="../index.html">CDN 首页</a> · <a href="./README.md">README</a>
+  </div>
 </body>
 </html>

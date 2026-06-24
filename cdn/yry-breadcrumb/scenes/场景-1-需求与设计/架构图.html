@@ -2,237 +2,77 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>需求与设计 · 架构图 · YryBreadcrumb 任务故事</title>
-<link rel="stylesheet" href="../../../shared\/index\.css">
-<link rel="stylesheet" href="../../../theme\/index\.css">
-<link rel="stylesheet" href="../../../yry\-scene\/index\.css">
-<link rel="stylesheet" href="../../../yry\-checklist\/index\.css">
-<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
-<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
-<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
-<link rel="stylesheet" href="../../../yry-back-top/index.css">
-<link rel="stylesheet" href="../../../yry-scene-header/index.css">
-<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
-<link rel="stylesheet" href="../../../yry\-inline\-helpers\/index\.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<link rel="stylesheet" href="../../../yry\-a11y\/index\.css">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>需求与设计 · 架构图</title>
+<link rel="stylesheet" href="../../../../cdn/fonts/index.css">
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme-mono/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-arch-base.css">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-export-toolbar/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-info-cards/index.css">
 <style>
-
-.container { max-width: 1100px; }
+/* Page-specific overrides — shared patterns in shared-a.css */
+.diagram-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1.5rem;overflow-x:auto;margin-bottom:1.5rem}
+.diagram-container svg{width:100%;min-width:900px;display:block}
+.yry-container{max-width:1200px}
 </style>
 </head>
 <body>
-<a href="#main" class="skip-link">⏩ 跳到主要内容</a>
-<div class="container" id="main">
-<div id="breadcrumb-app"></div>
-<div id="scene-header-app"></div>
-<div id="scene-nav-app"></div>
+<div class="yry-container" id="report-container">
+<yry-scene-chrome
+  theme="a"
+  title="yry-breadcrumb — 场景 1: 需求与设计"
+  subtitle="需求与设计 · vv5.4.0 · 2026-06-22"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-breadcrumb · yry-breadcrumb"},{"label":"场景 1 · 需求与设计"},{"label":"📐 架构图"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","active":true},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","href":"审查.html"}]'
+  toolbar='<div class="yry-export-toolbar yry-toolbar" data-target=".diagram-container" data-filename="yry-breadcrumb-scene1-architecture" data-bg="#020617"><button data-action="copy-svg">📋 Copy SVG</button><button data-action="download-png">🖼 PNG</button><button data-action="download-svg">📄 SVG</button></div>'>
+</yry-scene-chrome>
 
-<div id="cross-nav-app"></div>
-
-<div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-val info">6</div><div class="kpi-label">关键节点</div></div>
-  <div class="kpi-card"><div class="kpi-val accent">7</div><div class="kpi-label">决策路径</div></div>
-  <div class="kpi-card"><div class="kpi-val pass">1</div><div class="kpi-label">出口节点</div></div>
+<div class="diagram-container">
+  <svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+      </marker>
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#grid)"/>
+    <text x="500" y="300" fill="#475569" font-size="14" text-anchor="middle" font-family="JetBrains Mono,monospace">
+      架构图数据待填充 — 运行 /rui code 生成
+    </text>
+  </svg>
 </div>
 
-<div class="stage-list">
-  <div class="stage-row done">
-    <div class="st-num">1</div>
-    <div class="st-info"><div class="st-name">需求收集</div><div class="st-detail">多场景复用 / 异步加载 / a11y / 轻量无依赖</div></div>
-    <span class="st-status ok">&#10003;</span>
-    <div class="st-bar"></div>
+<yry-info-cards>
+  <div class="yry-card">
+    <div class="yry-card-header"><div class="yry-card-dot cyan"></div><h3>场景信息</h3></div>
+    <ul>
+      <li><b>场景:</b> 1 · 需求与设计</li>
+      <li><b>故事:</b> yry-breadcrumb · yry-breadcrumb</li>
+      <li><b>版本:</b> vv5.4.0</li>
+    </ul>
   </div>
-  <div class="stage-row done">
-    <div class="st-num">2</div>
-    <div class="st-info"><div class="st-name">设计决策</div><div class="st-detail">3 文件拆分 / fetch+DOMParser / aria-current / Props API</div></div>
-    <span class="st-status ok">&#10003;</span>
-    <div class="st-bar"></div>
+  <div class="yry-card">
+    <div class="yry-card-header"><div class="yry-card-dot emerald"></div><h3>数据源</h3></div>
+    <ul>
+      <li><b>场景文档:</b> index.md §0 技术评审</li>
+      <li><b>生成日期:</b> 2026-06-22</li>
+    </ul>
   </div>
-  <div class="stage-row done">
-    <div class="st-num">3</div>
-    <div class="st-info"><div class="st-name">接口定义</div><div class="st-detail">Props API 草案 — items[] / ariaLabel / separator</div></div>
-    <span class="st-status ok">&#10003;</span>
-    <div class="st-bar"></div>
-  </div>
+</yry-info-cards>
+
+<yry-scene-footer version="v5.4.0" date="2026-06-22"></yry-scene-footer>
 </div>
-
-<div class="live-bar">
-  <span class="live-dot"></span> Mermaid 图表已渲染
-  <span class="live-resource"><span class="lr-name">flowchart</span><span class="lr-status">OK</span></span>
-  <span class="live-resource"><span class="lr-name">暗色主题</span><span class="lr-status">OK</span></span>
-</div>
-
-<h2>架构图</h2>
-<div class="diagram-wrap glass-card">
-  <span class="dm-badge">MERMAID</span>
-  <pre class="mermaid">
-%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#1e1f2b','primaryTextColor': '#a9b1d6','primaryBorderColor': '#22d3ee','lineColor': '#22d3ee','secondaryColor': '#2b2d3b'}}}%%
-flowchart LR
-    REQ[📋 需求来源] --> DEC[🎯 设计决策]
-    DEC --> SPLIT[3 文件拆分]
-    DEC --> ASYNC[异步加载]
-    DEC --> A11Y[a11y 优先]
-    SPLIT --> API[Props API 草案]
-    ASYNC --> API
-    A11Y --> API
-  </pre>
-  <div class="dm-caption">图: 需求→设计→Props API 草案 — 关键架构流程</div>
-</div>
-
-<div class="tip-box info">
-  <strong>架构洞察:</strong> 这是一个 <strong>fan-out / fan-in</strong> 模式 — 设计决策 (DEC) 作为扇出点分叉为三条并行设计路径，三条路径各自独立推进互不阻塞，最终在 Props API 草案 (API) 处汇聚收敛。这种模式体现了<strong>关注点分离</strong>原则：物理结构 (3 文件拆分)、加载策略 (异步加载)、可访问性 (a11y) 在设计阶段即可并行决策，无需相互等待。
-</div>
-
-<h2>概念视图</h2>
-<div class="concept-grid">
-  <div class="concept-card">
-    <div class="cc-icon">📋</div>
-    <div class="cc-name">需求来源</div>
-    <div class="cc-domain">入口节点</div>
-    <div class="cc-desc">收集 YryBreadcrumb 的初始需求：多场景复用、异步加载、a11y 合规、轻量无依赖。作为架构设计的驱动力。</div>
-    <div class="cc-rels">
-      <span class="cc-rel out">→ 设计决策</span>
-    </div>
-  </div>
-  <div class="concept-card">
-    <div class="cc-icon">🎯</div>
-    <div class="cc-name">设计决策</div>
-    <div class="cc-domain">扇出枢纽</div>
-    <div class="cc-desc">架构的中央决策点，将需求拆分为三条并行设计路径：文件拆分策略、异步加载机制、可访问性方案。</div>
-    <div class="cc-rels">
-      <span class="cc-rel in">← 需求来源</span>
-      <span class="cc-rel out">→ 3 文件拆分 · 异步加载 · a11y</span>
-    </div>
-  </div>
-  <div class="concept-card">
-    <div class="cc-icon">🔀</div>
-    <div class="cc-name">三路并行分支</div>
-    <div class="cc-domain">并行执行</div>
-    <div class="cc-desc">三条独立设计路径：物理文件组织 (HTML/JS/CSS)、fetch + DOMParser 异步模板加载、aria-current + aria-hidden a11y 标注。互不阻塞，并行推进。</div>
-    <div class="cc-rels">
-      <span class="cc-rel in">← 设计决策</span>
-      <span class="cc-rel out">→ Props API</span>
-    </div>
-  </div>
-  <div class="concept-card">
-    <div class="cc-icon">📝</div>
-    <div class="cc-name">Props API 草案</div>
-    <div class="cc-domain">出口节点</div>
-    <div class="cc-desc">三条并行路径的汇聚点，定义组件对外接口：ariaLabel、items[{label,href,icon}]。后续场景的模板、Loader、集成均以此 API 为契约。</div>
-    <div class="cc-rels">
-      <span class="cc-rel in">← 3 文件拆分 · 异步加载 · a11y</span>
-    </div>
-  </div>
-</div>
-
-<div class="tip-box success">
-  <strong>架构完整性:</strong> 场景 1 的架构流体现了清晰的 <strong>发散→收敛</strong> 拓扑：单一入口 → 扇形分叉 → 并行独立 → 统一出口。每个节点职责明确 (SRP)，节点间通过单向边耦合 (DIP 方向由抽象→具体)，无循环依赖。Props API 作为唯一出口契约，为下游 4 个场景提供了稳定的接口基线。
-</div>
-
-<h2>说明</h2>
-<p>上图展示场景 1 · <strong>需求与设计</strong> 的关键决策流：从需求来源出发，经过设计决策阶段，分叉为三条并行路径（3 文件拆分、异步加载、a11y），最终汇聚到 Props API 草案。</p>
-<p>其中三个分支各自独立推进，互不阻塞：<strong>3 文件拆分</strong>确定组件的物理组织结构（HTML/JS/CSS），<strong>异步加载</strong>确定模板获取策略（fetch + DOMParser），<strong>a11y</strong>确定可访问性标注方案（aria-current + aria-hidden）。三条路径在 Props API 处汇合，共同定义组件的对外接口。</p>
-<p>颜色 <code class="yry-color-tag yry-color-tag--cyan">#22d3ee</code> 为本场景主色，与场景 tag 和侧边栏指示一致。</p>
-
-<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-<script>mermaid.initialize({startOnLoad:true, theme:'dark'});</script>
-
-<div class="footer">
-  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-1-需求与设计/架构图.html</code><br>
-  🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
-</div>
-</div>
-
-<script src="../../../shared\/index\.js"></script>
-<!-- ═══ CDN: YrySceneNav 组件 loader ═══ -->
-<script src="../../../yry-scene-nav/index.js"></script>
-<!-- ═══ CDN: YryCrossNav 组件 loader ═══ -->
-<script src="../../../yry-cross-nav/index.js"></script>
-<!-- ═══ CDN: YryBackTop (零配置自初始化) ═══ -->
-<script src="../../../yry-back-top/index.js"></script>
-<!-- ═══ CDN: YryBreadcrumb 组件 loader ═══ -->
-<script src="../../../yry-breadcrumb/index.js"></script>
-<!-- ═══ CDN: YrySceneHeader 组件 loader ═══ -->
-<script src="../../../yry-scene-header/index.js"></script>
-<!-- ═══ CDN: YryStatsGrid 组件 loader ═══ -->
-<script src="../../../yry-stats-grid/index.js"></script>
-
-  <!-- ════════════════════════════════════════════════════════════
-       页面级挂载 · 场景导航 + 交叉导航 + 面包屑 + 统计网格
-       index.js 异步加载模板后派发 yry-*-ready 事件
-       ════════════════════════════════════════════════════════════ -->
-  <script>
-
-  /* ── YryCrossNav 挂载 ── */
-  function mountCrossNav() {
-    if (!window.Vue || !window.YryCrossNav) return;
-    if (!document.getElementById('cross-nav-app')) return;
-    Vue.createApp(window.YryCrossNav, {
-      basePath: './',
-      active: '架构',
-      pages: [
-        { id: '清单', icon: '📋', href: '计划清单.html' },
-        { id: '架构', icon: '📐', href: '架构图.html' },
-        { id: '图谱', icon: '🔗', href: '知识图谱.html' },
-        { id: '源码', icon: '📄', href: '源码.html' },
-        { id: '测试', icon: '🧪', href: '测试面板.html' },
-        { id: '演示', icon: '💡', href: '演示.html' },
-        { id: '审查', icon: '📝', href: '审查.html' }
-      ]
-    }).mount('#cross-nav-app');
-  }
-  if (window.YryCrossNav) mountCrossNav();
-  else document.addEventListener('yry-cross-nav-ready', mountCrossNav, { once: true });
-
-  /* ── YrySceneNav 挂载 ── */
-  function mountSceneNav() {
-    if (!window.Vue || !window.YrySceneNav) return;
-    if (!document.getElementById('scene-nav-app')) return;
-    Vue.createApp(window.YrySceneNav, {
-      items: [
-        { label: '📋 任务故事', href: '../README.md' },
-        { label: '需求与设计', href: './index.md' },
-        { label: '架构图', active: true }
-      ]
-    }).mount('#scene-nav-app');
-  }
-  if (window.YrySceneNav) mountSceneNav();
-  else document.addEventListener('yry-scene-nav-ready', mountSceneNav, { once: true });
-
-  /* ── YrySceneHeader 挂载 ── */
-  function mountSceneHeader() {
-    if (!window.Vue || !window.YrySceneHeader) return;
-    if (!document.getElementById('scene-header-app')) return;
-    Vue.createApp(window.YrySceneHeader, {
-      icon: '📐',
-      prefix: '场景 1',
-      accent: ' · 需求与设计',
-      meta: 'YryBreadcrumb 任务故事 · 场景 1 · Requirements & Design · 架构图',
-      desc: '梳理面包屑组件的需求来源，确定 3 文件拆分 / 异步加载 / a11y 等关键设计决策，产出 Props API 草案。'
-    }).mount('#scene-header-app');
-  }
-  if (window.YrySceneHeader) mountSceneHeader();
-  else document.addEventListener('yry-scene-header-ready', mountSceneHeader, { once: true });
-
-  /* ── YryBreadcrumb 挂载 ── */
-  function mountBreadcrumb() {
-    if (!window.Vue || !window.YryBreadcrumb) return;
-    if (!document.getElementById('breadcrumb-app')) return;
-    Vue.createApp(window.YryBreadcrumb, {
-      ariaLabel: '面包屑导航',
-      items: [
-        { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
-        { label: '任务故事', href: '../README.md' },
-        { label: '场景 1 · 需求与设计' },
-        { label: '架构图', icon: '📐' }
-      ]
-    }).mount('#breadcrumb-app');
-  }
-  if (window.YryBreadcrumb) mountBreadcrumb();
-  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
-  </script>
-
+<script src="../../../../cdn/shared/index.js"></script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
+<script src="../../../../cdn/yry-export-toolbar/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
+<script src="../../../../cdn/yry-info-cards/index.js"></script>
 </body>
 </html>

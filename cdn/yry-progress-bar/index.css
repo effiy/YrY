@@ -1,34 +1,101 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    YrY CDN — YryProgressBar · 进度条 样式
-   颜色通过 CSS 自定义属性注入 (由 shared-b.css :root 定义)
+   颜色通过 CSS 自定义属性注入 (由 tokens/index.css :root 定义)
+
+   默认视觉: 吸顶 (sticky-top) 玻璃仪表型进度条
+   ─────────────────────────────────────────────
+   - 主机: <yry-progress-bar> 自定义元素 — sticky 吸顶 + 全屏宽度
+   - 半透明深色渐变 + 强磨砂玻璃,保留背景氛围不遮挡正文
+   - 6px 厚轨 + 青紫渐变填充 + 持续光带扫光动画
+   - 仅展示进度条本体 (不含文案),保持顶部细薄
+   - 进度本体带微弱内/外发光,增加层次
    ═══════════════════════════════════════════════════════════════════════════ */
 
-:host {
+yry-progress-bar {
   display: block;
-  margin-bottom: 20px;
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 100;
+  margin: 0;
+  padding: 6px 0 8px;
+  background: linear-gradient(180deg,
+    rgba(22,22,32,.96) 0%,
+    rgba(22,22,32,.78) 100%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  backdrop-filter: blur(14px) saturate(160%);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  box-shadow: 0 8px 24px -14px rgba(0,0,0,.7);
+  font-family: var(--yry-font-sans, system-ui, sans-serif);
+  color: var(--yry-text, #f5f5f5);
 }
 
-.pb-wrap { }
-
-.pb-label {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.78rem;
-  margin-bottom: 6px;
-  color: var(--yry-text2, rgba(160,160,164,1));
-}
-
-.pb-bar {
+/* ── Track + Fill ───────────────────────────────────────────────────────── */
+.pb-track {
+  position: relative;
   width: 100%;
   height: 6px;
-  background: var(--yry-bg-flat, rgba(34,34,46,1));
-  border-radius: 3px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.06);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.28);
   overflow: hidden;
 }
 
 .pb-fill {
+  position: relative;
   height: 100%;
-  background: linear-gradient(90deg, #3d59a1, var(--yry-accent, #ffc107));
-  border-radius: 3px;
-  transition: width 0.4s ease;
+  min-width: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg,
+    var(--yry-cyan, #22d3ee) 0%,
+    var(--yry-violet, #a78bfa) 100%);
+  box-shadow:
+    0 0 8px rgba(34,211,238,.45),
+    0 0 18px rgba(167,139,250,.22);
+  transition: width 0.5s cubic-bezier(.22,.61,.36,1);
+  overflow: hidden;
+}
+
+/* 持续扫光带 — 在填充层上从左到右再离开 */
+.pb-shine {
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 45%;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,255,255,.38) 50%,
+    transparent 100%);
+  transform: translateX(-100%);
+  animation: pb-shine 2.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes pb-shine {
+  0%   { transform: translateX(-100%); }
+  55%  { transform: translateX(220%); }
+  100% { transform: translateX(220%); }
+}
+
+/* 100% 完成态: 配色切换为 pass/cyan 渐变,光晕更暖 */
+.pb-fill.is-done {
+  background: linear-gradient(90deg,
+    var(--yry-pass, #22c55e) 0%,
+    var(--yry-cyan, #22d3ee) 100%);
+  box-shadow:
+    0 0 10px rgba(34,197,94,.55),
+    0 0 22px rgba(34,211,238,.28);
+}
+
+/* 0% 初始态: 进度条占位但不发光 */
+.pb-fill.is-empty {
+  box-shadow: none;
+}
+
+/* 减小动效偏好 — 关闭过渡与发光,降低视觉负担 */
+@media (prefers-reduced-motion: reduce) {
+  yry-progress-bar { transition: none; }
+  .pb-fill        { transition: none; }
+  .pb-shine       { animation: none; opacity: 0; }
 }

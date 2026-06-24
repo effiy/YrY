@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CDN 资源加载与页面渲染 · 清单</title>
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../../cdn/shared-reports/index.css">
+<style>
+.scene-nav { display:flex; flex-wrap:wrap; gap:4px 8px; padding:8px 0; font-size:.72rem; border-bottom:var(--yry-border); margin-bottom:12px; }
+.scene-nav-link { color:var(--yry-text3); text-decoration:none; }
+.scene-nav-link:hover { color:var(--yry-accent); }
+.scene-nav-link.active { color:var(--yry-accent); font-weight:700; }
+.scene-nav-sep { color:var(--yry-text3); }
+.cross-nav { display:flex; gap:8px; padding:6px 0; font-size:.72rem; margin-bottom:12px; }
+.cross-link { color:var(--yry-text3); text-decoration:none; }
+.cross-link:hover { color:var(--yry-accent); }
+.cross-link.on { color:var(--yry-accent); font-weight:700; }
+.cross-sep { color:var(--yry-text3); }
+.header { margin-bottom:12px; }
+.header h1 { font-size:1.1rem; margin:0; }
+.accent { color:var(--yry-accent); }
+.meta { font-size:.68rem; color:var(--yry-text3); margin-top:4px; }
+.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:8px; }
+.stat-card { padding:10px; text-align:center; border-radius:6px; border:var(--yry-border); background:rgba(15,23,42,.4); }
+.stat-card .val { font-size:1.2rem; font-weight:700; }
+.stat-card .val.health { color:var(--yry-pass); }
+.stat-card .lbl { font-size:.62rem; color:var(--yry-text3); margin-top:2px; }
+.bar-wrap { margin-bottom:12px; }
+.bar-outer { height:6px; border-radius:3px; background:rgba(255,255,255,.06); overflow:hidden; display:flex; }
+.seg.strength { background:var(--yry-pass); }
+.seg.gap { background:rgba(255,255,255,.06); }
+.card { padding:16px 20px; border-radius:8px; border:var(--yry-border); background:rgba(15,23,42,.4); }
+.card h2 { font-size:.88rem; margin:0 0 12px 0; }
+.cl-item { display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.04); }
+.cl-num { min-width:24px; height:24px; border-radius:50%; background:rgba(34,197,94,.12); color:var(--yry-pass); display:flex; align-items:center; justify-content:center; font-size:.68rem; font-weight:700; }
+.cl-text { flex:1; font-size:.76rem; line-height:1.5; color:var(--yry-text2); }
+.ft { text-align:center; font-size:.64rem; color:var(--yry-text3); padding:20px 0; }
+@media (max-width:640px) { .stats-grid { grid-template-columns:repeat(2,1fr); }}
+</style>
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb"><a href="../../../index.html">文档中心</a><span class="bc-sep">/</span><span class="bc-current">CDN 故事任务面板</span><span class="bc-sep">/</span><span class="bc-current">场景 1 · CDN 资源加载与页面渲染</span><span class="bc-sep">/</span><span class="bc-current">清单</span></nav>
+
+<nav class="scene-nav">
+  <span class="scene-nav-link active">场景1 · cdn资源加载与页面渲染</span>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-2-双主题系统设计/清单.html">场景2 · 双主题系统设计</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-3-组件库与JS工具API/清单.html">场景3 · 组件库与JS工具API</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-4-存量页面迁移/清单.html">场景4 · 存量页面迁移</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-5-npm包发布与版本管理/清单.html">场景5 · npm包发布与版本管理</a>
+</nav>
+
+<nav class="cross-nav">
+<span class="cross-link on">清单</span><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">架构</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">源码</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">测试</a><span class="cross-sep">·</span>
+<a class="cross-link" href="演示.html">演示</a><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">审计</a>
+</nav>
+
+<div class="header">
+  <h1>场景-1<span class="accent"> · CDN 资源加载与页面渲染</span></h1>
+  <div class="meta">v1.2.0 · 2026-06-22 · 故事任务面板</div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="val health">5</div><div class="lbl">加载链步骤</div></div>
+  <div class="stat-card"><div class="val health">6</div><div class="lbl">性能策略</div></div>
+  <div class="stat-card"><div class="val health">4</div><div class="lbl">容错降级</div></div>
+  <div class="stat-card"><div class="val">≤625ms</div><div class="lbl">总加载</div></div>
+</div>
+<div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:100%"></div><div class="seg gap" style="width:0%"></div></div></div>
+
+<div class="card">
+  <h2>① 5 步加载链清单 (不可交换顺序)</h2>
+  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><code>shared/index.css</code> — Reset + 动画 + CSS 变量 · <code>&lt;link&gt;</code> 同步 · ~15ms</span></div>
+  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><code>theme/index.css</code> — Cat B System 主题 · <code>&lt;link&gt;</code> 同步 · ~10ms</span></div>
+  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text">组件 CSS (107 个) — 按需组件样式 · <code>&lt;link&gt;</code> 按类别 · ~80ms</span></div>
+  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text">Vue 3 运行时 — <code>vue.global.prod.js</code> · <code>&lt;script&gt;</code> 同步 · ~120ms</span></div>
+  <div class="cl-item"><span class="cl-num">5</span><span class="cl-text">组件 JS — Custom Elements 注册 · <code>&lt;script&gt;</code> 按序 · ~400ms</span></div>
+</div>
+
+<div class="card" style="margin-top:12px">
+  <h2>② 6 项性能优化策略</h2>
+  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong>字体预加载</strong> — <code>&lt;link rel="preload" as="font" type="font/woff2" crossorigin&gt;</code> · FOUT 消除</span></div>
+  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong>DNS 预解析</strong> — <code>&lt;link rel="dns-prefetch" href="https://unpkg.com"&gt;</code> · DNS 耗时 -50ms</span></div>
+  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong>资源预加载</strong> — <code>&lt;link rel="preload" as="script" crossorigin&gt;</code> · Vue 加载提前</span></div>
+  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong>动画延迟</strong> — <code>animation-delay: 100ms</code> · 避免首帧卡顿</span></div>
+  <div class="cl-item"><span class="cl-num">5</span><span class="cl-text"><strong>5s 超时容错</strong> — fetch + AbortController · 单点失败不阻塞</span></div>
+  <div class="cl-item"><span class="cl-num">6</span><span class="cl-text"><strong>组件按序加载</strong> — tag-chip → item-card → card-grid 先于 doc-layer</span></div>
+</div>
+
+<div class="card" style="margin-top:12px">
+  <h2>③ 4 项容错降级</h2>
+  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text">Vue 3 CDN 不可达 → 静态 HTML 渲染 (内容可读 · 交互不可用)</span></div>
+  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text">组件 CSS 加载失败 → 浏览器默认样式 (内容可读 · 布局降级)</span></div>
+  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text">组件 JS 加载失败 → 槽位显示占位符 (页面结构完整)</span></div>
+  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text">字体加载失败 → 系统等宽字体回退 (功能不受影响)</span></div>
+</div>
+
+<div class="card" style="margin-top:12px">
+  <h2>④ 性能预算</h2>
+  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text">HTML 体积 ≤ 30KB (当前 18KB) · 关键 CSS ≤ 14KB (当前 9KB)</span></div>
+  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text">JS 总量 gzip ≤ 80KB (当前 62KB) · 字体 woff2 ≤ 100KB (当前 88KB)</span></div>
+  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text">FCP ≤ 310ms · TTI ≤ 480ms · 总加载 ≤ 625ms (均边界)</span></div>
+  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text">首屏请求 ≤ 20 (当前 14) · 缓存命中率 ≥ 95%</span></div>
+</div>
+
+<div class="card" style="margin-top:12px">
+  <p style="font-size:.72rem;color:var(--yry-text3);text-align:center">
+    查看完整详细清单: <a href="计划清单.html">计划清单</a> · <a href="架构图.html">架构图</a> · <a href="index.md">源码 Markdown</a>
+  </p>
+</div>
+
+<footer class="ft">
+  场景 1 · CDN 资源加载与页面渲染 · CDN 故事任务面板 · v1.2.0<br>
+  <span style="color:var(--yry-text3)">清单 · 架构 · 图谱 · 源码 · 测试 · 演示 · 审计</span>
+</footer>
+
+</div>
+</body>
+</html>

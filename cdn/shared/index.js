@@ -479,6 +479,28 @@ window.YrY = (function() {
   }
 
 
+  /* ── 键盘快捷键 (在 input/textarea/contenteditable 中不触发) ─────────── */
+  function initKbShortcuts(opts) {
+    opts = opts || {};
+    var searchSel = opts.search || 'input[type="search"], input[id="q"]';
+    document.addEventListener('keydown', function(e) {
+      var tag = (e.target.tagName || '').toUpperCase();
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      var key = e.key.toLowerCase();
+      if (key === '/') {
+        var s = document.querySelector(searchSel);
+        if (s) { e.preventDefault(); s.focus(); s.select && s.select(); }
+      } else if (key === 't') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (key === 'r' && opts.refresh !== false) {
+        // 不强制刷新 — 让用户用刷新按钮；快捷键 r 仅在 opts.onRefresh 提供时触发
+        if (typeof opts.onRefresh === 'function') { e.preventDefault(); opts.onRefresh(); }
+      }
+    });
+  }
+
+
   /* ── DOM 元素创建辅助 ────────────────────────────────────────────────── */
   function elt(tag, className, textContent) {
     var d = document.createElement(tag || 'div');
@@ -505,6 +527,7 @@ window.YrY = (function() {
     initTimelineProgress: initTimelineProgress,
     initCodeCopy: initCodeCopy,
     initStepToggle: initStepToggle,
+    initKbShortcuts: initKbShortcuts,
     fmtDur: fmtDur,
     esc: esc,
     clipboardWrite: clipboardWrite,

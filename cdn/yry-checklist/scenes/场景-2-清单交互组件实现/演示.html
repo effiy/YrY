@@ -1,868 +1,224 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>清单交互组件实现 — 演示</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>清单交互组件实现 · 演示</title>
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/theme/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-page-nav/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-scene/index-base.css">
-<link rel="stylesheet" href="../../../../cdn/yry-demo/index-stage.css">
+<link rel="stylesheet" href="../../../../cdn/yry-demo.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-stats/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-tabs/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
+<style>
+/* Page-specific overrides — shared patterns in shared-b.css */
+</style>
 </head>
 <body>
-<div class="container">
-<script type="application/json" id="yry-page-config">
-{"story": "yry-checklist · 清单与自循环", "scene": {"num": "2", "name": "清单交互组件实现", "dir": "场景-2-清单交互组件实现"}, "depth": "../../../", "scenes": [{"num": "1", "name": "模板架构与 CSS 设计系统", "dir": "场景-1-模板架构与CSS设计系统"}, {"num": "2", "name": "清单交互组件实现", "dir": "场景-2-清单交互组件实现"}, {"num": "3", "name": "验证报告与健康面板集成", "dir": "场景-3-验证报告与健康面板集成"}, {"num": "4", "name": "批量生成与自循环机制", "dir": "场景-4-批量生成与自循环机制"}], "pages": [{"type": "清单", "icon": "📋", "file": "计划清单.html"}, {"type": "架构", "icon": "📐", "file": "架构图.html"}, {"type": "图谱", "icon": "🔗", "file": "知识图谱.html"}, {"type": "源码", "icon": "📄", "file": "源码.html"}, {"type": "测试", "icon": "🧪", "file": "测试面板.html"}, {"type": "演示", "icon": "💡", "file": "演示.html"}, {"type": "审计", "icon": "📝", "file": "审查.html"}], "page": {"type": "演示", "icon": "💡", "file": "演示.html"}}
-</script>
-<div id="yry-nav"></div>
-<script src="../../../../cdn/yry-page-nav/index.js"></script>
+<div class="yry-container">
+<yry-scene-chrome
+  theme="b"
+  title="💡 {ACCENT} — 演示"
+  title-accent="场景 2 · 清单交互组件实现"
+  subtitle="场景 2 · 版本 vv5.4.0 · 2026-06-22"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-checklist · 故事任务"},{"label":"场景 2 · 清单交互组件实现"},{"label":"💡 演示"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","href":"架构图.html"},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","active":true},{"label":"📝 审查","href":"审查.html"}]'>
+</yry-scene-chrome>
 
-<div class="header">
-  <h1>🌱 <span class="accent">清单交互组件实现</span> — 演示</h1>
-  <p class="sub">环境搭建 → 调试方法 → 常见任务 — 新人可独立完成首修</p>
-  <div class="sub-pills">
-    <span class="sub-pill"><span class="pulse"></span> 实时可交互</span>
-    <span class="sub-pill">⏱ 预计 4h 30min</span>
-    <span class="sub-pill">📚 6 组件 + 7 TC 套件</span>
-    <span class="sub-pill">🎯 6 步演示</span>
-    <span class="sub-pill">⌨ 按 <span class="kbd">?</span> 查看快捷键</span>
-  </div>
-</div>
+<yry-scene-stats items='[{"value":4,"label":"流程图","color":"info"},{"value":110,"label":"数据表","color":"t"},{"value":"vv5.4.0","label":"版本","color":"t"}]'></yry-scene-stats>
 
-<div class="live-bar" id="liveBar">
-  <span class="live-dot"></span> 本页 CDN 加载状态：
-  <span class="live-resource"><span class="lr-name">shared/index.css</span><span class="lr-status" id="lrCss">检测中</span><span class="lr-size">6.0KB</span></span>
-  <span class="live-resource"><span class="lr-name">theme/index.css</span><span class="lr-status" id="lrTheme">检测中</span><span class="lr-size">12.1KB</span></span>
-  <span class="live-resource"><span class="lr-name">shared.js</span><span class="lr-status" id="lrJs">检测中</span><span class="lr-size">5.3KB</span></span>
-  <span class="kbd-hint">1-9,0,C,S,Q</span> 切换 Tab · <span class="kbd-hint">?</span> 帮助
-</div>
+<yry-scene-tabs tabs='[{"id":"walkthrough","label":"🚶 操作演示"},{"id":"commands","label":"💻 命令列表"},{"id":"screenshots","label":"📸 效果截图"}]'>
+  <div data-panel="walkthrough"><h2>§0 技术评审</h2><p>交互组件是计划清单从"可读文档"升级为"可操作工具"的核心层。六个组件覆盖清单页面全部交互场景，均以零依赖内联 JS 实现，通过 localStorage 持久化用户状态。架构采用 Data/Template/Renderer 三层分离，2 个 <code><script></code> 块共 ~410 行（~270 + ~140）。</p><h3>交付物清单</h3><table><thead><tr><th>#</th><th>文件</th><th>类型</th><th>规模</th><th>用途</th></tr></thead><tbody><tr><td>1</td><td><code>计划清单.html</code></td><td>HTML+CSS+JS</td><td>~650 行 HTML + ~410 行 JS (2 blocks)</td><td>清单页面本体 — 7 标签页 · 进度条 · 风险行 · 交付物列表 · 6 组件完整实现</td></tr><tr><td>2</td><td><code>架构图.html</code></td><td>SVG 图表</td><td>5 tab</td><td>三层架构图 · 事件时序图 · TC 设计 · 质量门禁 · 里程碑时间线</td></tr><tr><td>3</td><td><code>知识图谱.html</code></td><td>Cytoscape.js</td><td>22 节点 · 42 边 · 8 类型</td><td>场景知识图谱 — 组件→存储→测试→源码 全关系</td></tr><tr><td>4</td><td><code>测试面板.html</code></td><td>HTML+JS</td><td>~1616 行</td><td>测试面板 Pro — 7 套件 26 断言 100% 通过 · SLI 监控 · 性能趋势 · 质量雷达</td></tr><tr><td>5</td><td><code>演示.html</code></td><td>HTML+JS</td><td>~1300 行</td><td>交互演示 — 6 步走查 · 时间线 · 概念雷达 · Day Plan · Mini Quiz</td></tr><tr><td>6</td><td><code>审查.html</code></td><td>HTML+JS</td><td>~550 行</td><td>审查报告 — 4 维 6 项 · 证据链 · fix diffs · 行动项 · 签收状态</td></tr><tr><td>7</td><td><code>源码.html</code></td><td>HTML+JS</td><td>~850 行</td><td>源码走读 — 三层架构拆解 · 调试命令 · 常见问题 · 文件索引 · 关系图</td></tr><tr><td>8</td><td><code>index.md</code></td><td>Markdown</td><td>本文件</td><td>场景总纲 — 技术评审 · 组件清单 · 测试设计 · 实施报告 · 自改进</td></tr></tbody></table><h3>效果示意</h3><p><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart TD
+    CHECK[&quot;☑️ 勾选→进度联动&quot;]:::c --&gt; LS[&quot;localStorage 持久化&quot;]:::s
+    CHECK --&gt; STATUS[&quot;步骤状态推导&lt;br/&gt;完成/就绪/待开始&quot;]:::s
+    FOLD[&quot;📂 折叠面板展开/收起&quot;]:::c --&gt; ANIM[&quot;CSS transition 300ms&quot;]:::s
+    TAB[&quot;📑 标签页切换&quot;]:::c --&gt; HASH[&quot;localStorage tab 记忆&quot;]:::s
+    TAB --&gt; KEY[&quot;键盘 1-9 快捷切换&quot;]:::s
+    RISK[&quot;⚠️ 风险行展开&quot;]:::c --&gt; DET[&quot;缓解步骤详情&quot;]:::s
+    DELIV[&quot;📦 交付物过滤&quot;]:::c --&gt; TYPE[&quot;类型过滤 + 展开/折叠&quot;]:::s
+    DELIV --&gt; COPY[&quot;一键复制路径&quot;]:::s
+    classDef c fill:#06b6d4,color:#000
+    classDef s fill:#8B5CF6,color:#fff</pre></p><h3>三层架构</h3><p><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    subgraph Data[&quot;Data 层&quot;]
+        D1[&quot;localStorage 读写&lt;br/&gt;yry-arch-s2-checklist&lt;br/&gt;yry-arch-s2-checklist-tab&quot;]:::d
+        D2[&quot;步骤状态推导&lt;br/&gt;deriveStatus()&quot;]:::d
+        D3[&quot;交付物自动标注&lt;br/&gt;autoAnnotate()&quot;]:::d
+    end
+    subgraph Template[&quot;Template 层&quot;]
+        T1[&quot;DOM 查询&lt;br/&gt;data-* 钩子&quot;]:::t
+        T2[&quot;事件绑定&lt;br/&gt;click / keydown&quot;]:::t
+        T3[&quot;CSS class 切换&lt;br/&gt;collapsed / open / dim / on&quot;]:::t
+    end
+    subgraph Renderer[&quot;Renderer 层&quot;]
+        R1[&quot;进度条更新&lt;br/&gt;updateProgress()&quot;]:::r
+        R2[&quot;标签页切换&lt;br/&gt;switchTab()&quot;]:::r
+        R3[&quot;Toast 提示&lt;br/&gt;showToast()&quot;]:::r
+    end
+    Data --&gt; Template --&gt; Renderer
+    classDef d fill:#34d399,color:#000
+    classDef t fill:#fbbf24,color:#000
+    classDef r fill:#8B5CF6,color:#fff</pre></p><h3>事件契约（与 <code>架构图.html</code> 事件契约段一致）</h3><table><thead><tr><th>事件源</th><th>事件类型</th><th>处理函数</th><th>副作用</th></tr></thead><tbody><tr><td>checkbox</td><td><code>click</code></td><td><code>onCheck(stepId)</code></td><td>进度条更新 · localStorage 写入 · 步骤状态重推导</td></tr><tr><td>交付物头部</td><td><code>click</code></td><td><code>toggleCollapse(groupId)</code></td><td>CSS class <code>collapsed</code> 切换 · max-height transition</td></tr><tr><td>标签页</td><td><code>click</code> / <code>keydown</code></td><td><code>switchTab(tabName)</code></td><td><code>.tab-panel.active</code> 切换 · tab localStorage 写入</td></tr><tr><td>风险行</td><td><code>click</code></td><td><code>toggleRisk(rowId)</code></td><td>CSS class <code>open</code> 切换 · 详情展开</td></tr><tr><td>过滤按钮</td><td><code>click</code></td><td><code>filterDeliv(type)</code></td><td><code>.deliv-link.dim</code> 切换 · 显隐动画</td></tr><tr><td>复制按钮</td><td><code>click</code></td><td><code>copyPath(path)</code></td><td>剪贴板写入 · <code>showToast()</code> 0.15s fade</td></tr><tr><td>document</td><td><code>keydown</code></td><td><code>onKeyShortcut(e)</code></td><td>数字键 1-9 → 标签页切换（跳过 input 聚焦）</td></tr><tr><td>window</td><td><code>hashchange</code></td><td><code>onHashChange()</code></td><td>跨 tab 跳转 · 自动展开折叠面板 · 高亮目标</td></tr></tbody></table><h3>状态流向（与 <code>架构图.html</code> 状态流向段一致）</h3><p><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    U[&quot;用户操作&quot;] --&gt; E[&quot;事件触发&quot;]:::e
+    E --&gt; S[&quot;状态更新&quot;]:::s
+    S --&gt; D[&quot;DOM 渲染&quot;]:::d
+    D --&gt; LS[&quot;localStorage 持久化&quot;]:::ls
 
-<div class="stats-grid">
-  <div class="stat-card" title="演示步骤数"><div class="val health">6</div><div class="lbl">📋 步骤</div></div>
-  <div class="stat-card" title="组件拆分数"><div class="val accent">6</div><div class="lbl">🧩 交互组件</div></div>
-  <div class="stat-card" title="已完成清单项数"><div class="val health" id="statCheckDone">0</div><div class="lbl">✅ 已完成</div><div class="stat-delta" id="statCheckDelta">+0</div></div>
-  <div class="stat-card" title="清单完成百分比"><div class="val accent" id="statCheckPct">0%</div><div class="lbl">📊 进度</div></div>
-  <div class="stat-card" title="CDN 资源加载耗时"><div class="val cyan" id="statTiming">—</div><div class="lbl">⏱ CDN 加载</div></div>
-  <div class="stat-card" title="自测得分"><div class="val purple" id="statQuiz">—</div><div class="lbl">🎯 测验得分</div></div>
-</div>
+    LOAD[&quot;页面加载&quot;] --&gt; LS2[&quot;读取 localStorage&quot;]:::ls
+    LS2 --&gt; R[&quot;恢复状态&quot;]:::r
+    R --&gt; D2[&quot;DOM 初始渲染&quot;]:::d
 
-<div class="tabs" id="tabs">
-  <span class="tab on" data-panel="walkthrough"><span class="tab-ico">🚶</span>演示<span class="tab-num">1</span></span>
-  <span class="tab" data-panel="timeline"><span class="tab-ico">🗺</span>时间线<span class="tab-num">2</span></span>
-  <span class="tab" data-panel="radar"><span class="tab-ico">📡</span>能力雷达<span class="tab-num">3</span></span>
-  <span class="tab" data-panel="replay"><span class="tab-ico">🎥</span>真实回放<span class="tab-num">4</span></span>
-  <span class="tab" data-panel="day"><span class="tab-ico">�</span>日程<span class="tab-num">5</span></span>
-  <span class="tab" data-panel="commands"><span class="tab-ico">⚡</span>命令<span class="tab-num">6</span></span>
-  <span class="tab" data-panel="overview"><span class="tab-ico">�</span>概览<span class="tab-num">7</span></span>
-  <span class="tab" data-panel="quiz"><span class="tab-ico">🎯</span>自测<span class="tab-num">8</span></span>
-  <span class="tab" data-panel="pitfalls"><span class="tab-ico">⚠</span>避坑<span class="tab-num">9</span></span>
-  <span class="tab" data-panel="files"><span class="tab-ico">📁</span>文件<span class="tab-num">0</span></span>
-  <span class="tab" data-panel="checklist"><span class="tab-ico">✅</span>清单<span class="tab-num">C</span></span>
-  <span class="tab" data-panel="simulator"><span class="tab-ico">🎬</span>演练<span class="tab-num">S</span></span>
-</div>
-
-<div class="panel on" id="panelWalkthrough">
-  <div class="subhead">
-    <h2 style="font-size:1rem;display:flex;align-items:center;gap:8px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></span>6 步交付清单交互组件</h2>
-    <div class="sh-meta">
-      <span class="sh-item">⏱ 总耗时 ~4.5h</span>
-      <span class="sh-item">📊 6/6 步骤</span>
-      <span class="sh-item">🎯 目标: checklist-interact.js v1.0.0 + 4 方签收</span>
+    classDef e fill:#fbbf24,color:#000
+    classDef s fill:#34d399,color:#000
+    classDef d fill:#8B5CF6,color:#fff
+    classDef ls fill:#06b6d4,color:#000
+    classDef r fill:#3B82F6,color:#fff</pre></p><p><b>两条流向</b>：
+<ul><li><b>操作流向</b>：用户操作 → 事件 → 状态更新 → DOM 渲染 → localStorage</li>
+<li><b>加载流向</b>：页面加载 → localStorage → 恢复状态 → DOM 初始渲染</li>
+</ul>
+<b>架构约束</b>：无全局 store，每个组件独立管理自身状态（6 组件 6 状态机）。</p><h3>组件清单</h3><table><thead><tr><th>组件</th><th>触发方式</th><th>状态存储</th><th>CSS 约定</th><th>动画</th></tr></thead><tbody><tr><td>勾选进度联动</td><td>点击 checkbox</td><td><code>yry-arch-s2-checklist</code> (JSON)</td><td>—</td><td>进度条 width 0.5s ease</td></tr><tr><td>折叠面板</td><td>点击交付物头部</td><td>CSS class <code>collapsed</code></td><td><code>.deliv-group.collapsed</code></td><td>max-height 0.3s ease-out</td></tr><tr><td>标签页切换</td><td>点击标签 / 键盘 1-9</td><td><code>yry-arch-s2-checklist-tab</code></td><td><code>.tab-panel.active</code></td><td>opacity 切换</td></tr><tr><td>风险行展开</td><td>点击风险行</td><td>CSS class <code>open</code></td><td><code>.risk-row.open</code></td><td>详情区 max-height 展开</td></tr><tr><td>交付物类型过滤</td><td>点击过滤按钮</td><td>CSS class <code>dim</code> / <code>on</code></td><td><code>.deliv-link.dim</code></td><td>链接 opacity 变暗</td></tr><tr><td>复制路径</td><td>点击复制按钮</td><td>—</td><td><code>.toast.show</code></td><td>toast 0.15s fade + 1.5s 自动消失</td></tr></tbody></table><h3>localStorage Schema</h3><p>``<code>json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Checklist State",
+  "type": "object",
+  "properties": {
+    "step-1": { "type": "boolean" },
+    "step-2": { "type": "boolean" }
+  },
+  "additionalProperties": { "type": "boolean" }
+}
+</code>`<code>
+<ul><li><b>Key</b>: </code>yry-arch-s2-checklist<code> — 步骤勾选状态 JSON，含场景标识 </code>s2<code> 避免跨场景冲突</li>
+<li><b>Key</b>: </code>yry-arch-s2-checklist-tab<code> — 最后活跃标签页名称字符串</li>
+<li><b>容错</b>: try/catch 包裹读写，隐私模式下静默降级</li>
+</ul>
+<h3>步骤状态推导</h3><table><thead><tr><th>状态</th><th>图标</th><th>推导规则</th></tr></thead><tbody><tr><td>已完成</td><td style="text-align:center">✅</td><td>当前步骤已勾选</td></tr><tr><td>就绪</td><td>🔶</td><td>当前步骤未勾选，但所有前置步骤已完成</td></tr><tr><td>待开始</td><td>⏳</td><td>当前步骤未勾选，且存在未完成的前置步骤</td></tr></tbody></table><h3>键盘快捷键</h3><table><thead><tr><th>按键</th><th>目标面板</th><th>说明</th></tr></thead><tbody><tr><td></code>1<code></td><td>overview</td><td>总览面板</td></tr><tr><td></code>2<code>-</code>8<code></td><td>步骤 1-7 面板</td><td>对应步骤详情</td></tr><tr><td></code>9<code></td><td>交付物面板</td><td>交付物列表</td></tr></tbody></table><p>跳过 </code>input<code>/</code>textarea<code> 聚焦状态，避免编辑时误触发。</p><h3>状态机与事件流</h3><p><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+stateDiagram-v2
+    [*] --&gt; Pending
+    Pending --&gt; Ready: 前置全完成
+    Ready --&gt; Done: 用户勾选
+    Done --&gt; Ready: 用户取消
+    Ready --&gt; Pending: 前置被取消
+    Done --&gt; [*]</pre></p><table><thead><tr><th>状态</th><th>触发</th><th>视觉</th><th>持久化</th></tr></thead><tbody><tr><td>Pending</td><td>初始 / 前置未完成</td><td>⏳ 灰色</td><td>✓</td></tr><tr><td>Ready</td><td>前置全完成 + 未勾选</td><td>🔶 黄色</td><td>✓</td></tr><tr><td>Done</td><td>用户勾选</td><td>✅ 绿色</td><td>✓</td></tr></tbody></table><h3>进度计算算法</h3><p></code>`<code>javascript
+function calculateProgress(steps) {
+  const done = steps.filter(s => s.done).length;
+  const total = steps.length;
+  const percent = (done / total) * 100;
+  return { done, total, percent };
+}</p><p>function deriveStepStatus(step, allSteps) {
+  const prerequisites = allSteps.slice(0, step.index);
+  const allPrereqDone = prerequisites.every(p => p.done);
+  if (step.done) return 'done';
+  if (allPrereqDone) return 'ready';
+  return 'pending';
+}
+</code>`<code></p><table><thead><tr><th>度量</th><th>公式</th><th>阈值</th></tr></thead><tbody><tr><td>进度百分比</td><td></code>done / total × 100<code></td><td>0-100%</td></tr><tr><td>就绪步骤数</td><td></code>∑ (status === 'ready' ? 1 : 0)<code></td><td>整数</td></tr><tr><td>阻塞步骤数</td><td></code>∑ (status === 'pending' && hasUnfinishedPrereq ? 1 : 0)<code></td><td>整数</td></tr><tr><td>完成率</td><td></code>done / (done + ready)<code></td><td>0-100%</td></tr></tbody></table><h3>localStorage 容错矩阵</h3><table><thead><tr><th>场景</th><th>行为</th><th>用户体验</th></tr></thead><tbody><tr><td>正常读写</td><td>JSON 序列化 + 存储</td><td>状态持久</td></tr><tr><td>隐私模式</td><td></code>try/catch` 静默降级</td><td>仅当前会话有效</td></tr><tr><td>存储已满</td><td>catch + 提示 + 旧 key 清理</td><td>保留最新状态</td></tr><tr><td>数据损坏</td><td>JSON.parse 失败 → 重置为默认</td><td>不崩溃</td></tr><tr><td>跨域限制</td><td>catch + console.warn</td><td>仅当前域有效</td></tr><tr><td>Safari ITP</td><td>7 天后清理</td><td>用户需重新勾选</td></tr></tbody></table><h3>动画与降级策略</h3><table><thead><tr><th>动画</th><th>时长</th><th>缓动</th><th>降级（prefers-reduced-motion）</th></tr></thead><tbody><tr><td>进度条 width</td><td>500ms</td><td>ease</td><td>立即更新</td></tr><tr><td>折叠面板 max-height</td><td>300ms</td><td>ease-out</td><td>立即显隐</td></tr><tr><td>标签页 opacity</td><td>200ms</td><td>linear</td><td>立即切换</td></tr><tr><td>Toast fade</td><td>150ms</td><td>ease</td><td>立即显示</td></tr><tr><td>风险行展开</td><td>300ms</td><td>ease-out</td><td>立即展开</td></tr></tbody></table></div>
+  <div data-panel="commands">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>命令参考</h2>
+      <h2>§1 测试设计</h2><table><thead><tr><th>TC#</th><th>用例</th><th>验证点</th><th>预期</th><th>优先级</th></tr></thead><tbody><tr><td>TC-10</td><td>勾选步骤</td><td>进度%更新 + 完成数+1 + 步骤状态推导</td><td>延迟 < 50ms</td><td>P0</td></tr><tr><td>TC-11</td><td>折叠面板动画</td><td>展开/收起过渡 + 交付物列表显隐</td><td>300ms 内完成</td><td>P0</td></tr><tr><td>TC-12</td><td>标签页全切换</td><td>7 面板逐一显示 + 键盘 1-9 映射</td><td>7/7 正常</td><td>P0</td></tr><tr><td>TC-13</td><td>刷新恢复状态</td><td>localStorage 回读勾选 + tab 状态</td><td>全部恢复</td><td>P0</td></tr><tr><td>TC-14</td><td>风险行点击</td><td>详情显示/隐藏 + toggle 箭头切换</td><td>切换正常</td><td>P1</td></tr><tr><td>TC-15</td><td>交付物类型过滤</td><td>全部/HTML/MD/CSS/Test/其他 六类过滤</td><td>过滤正确</td><td>P1</td></tr><tr><td>TC-16</td><td>复制路径</td><td>单步复制 + 全部复制 + 剪贴板写入</td><td>复制成功</td><td>P1</td></tr><tr><td>TC-17</td><td>哈希跳转</td><td><code>#step-N-deliv</code> 触发跨 tab 跳转</td><td>自动展开 + 高亮</td><td>P2</td></tr><tr><td>TC-18</td><td>prefers-reduced-motion</td><td>用户设置降级动画</td><td>CSS transition 禁用</td><td>P2</td></tr></tbody></table><h3>测试策略（与 <code>架构图.html</code> 测试策略段一致）</h3><table><thead><tr><th>测试层</th><th>范围</th><th>用例</th></tr></thead><tbody><tr><td>单元测试</td><td>组件级独立验证</td><td>TC-10 · TC-11 · TC-12</td></tr><tr><td>集成测试</td><td>localStorage 持久化</td><td>TC-13</td></tr><tr><td>交互测试</td><td>用户操作模拟</td><td>TC-14 · TC-15 · TC-16</td></tr><tr><td>回归测试</td><td>a11y 降级 · 哈希跳转</td><td>TC-17 · TC-18</td></tr></tbody></table>
     </div>
   </div>
+  <div data-panel="screenshots"><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart TD
+    CHECK[&quot;☑️ 勾选→进度联动&quot;]:::c --&gt; LS[&quot;localStorage 持久化&quot;]:::s
+    CHECK --&gt; STATUS[&quot;步骤状态推导&lt;br/&gt;完成/就绪/待开始&quot;]:::s
+    FOLD[&quot;📂 折叠面板展开/收起&quot;]:::c --&gt; ANIM[&quot;CSS transition 300ms&quot;]:::s
+    TAB[&quot;📑 标签页切换&quot;]:::c --&gt; HASH[&quot;localStorage tab 记忆&quot;]:::s
+    TAB --&gt; KEY[&quot;键盘 1-9 快捷切换&quot;]:::s
+    RISK[&quot;⚠️ 风险行展开&quot;]:::c --&gt; DET[&quot;缓解步骤详情&quot;]:::s
+    DELIV[&quot;📦 交付物过滤&quot;]:::c --&gt; TYPE[&quot;类型过滤 + 展开/折叠&quot;]:::s
+    DELIV --&gt; COPY[&quot;一键复制路径&quot;]:::s
+    classDef c fill:#06b6d4,color:#000
+    classDef s fill:#8B5CF6,color:#fff</pre>
+<pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    subgraph Data[&quot;Data 层&quot;]
+        D1[&quot;localStorage 读写&lt;br/&gt;yry-arch-s2-checklist&lt;br/&gt;yry-arch-s2-checklist-tab&quot;]:::d
+        D2[&quot;步骤状态推导&lt;br/&gt;deriveStatus()&quot;]:::d
+        D3[&quot;交付物自动标注&lt;br/&gt;autoAnnotate()&quot;]:::d
+    end
+    subgraph Template[&quot;Template 层&quot;]
+        T1[&quot;DOM 查询&lt;br/&gt;data-* 钩子&quot;]:::t
+        T2[&quot;事件绑定&lt;br/&gt;click / keydown&quot;]:::t
+        T3[&quot;CSS class 切换&lt;br/&gt;collapsed / open / dim / on&quot;]:::t
+    end
+    subgraph Renderer[&quot;Renderer 层&quot;]
+        R1[&quot;进度条更新&lt;br/&gt;updateProgress()&quot;]:::r
+        R2[&quot;标签页切换&lt;br/&gt;switchTab()&quot;]:::r
+        R3[&quot;Toast 提示&lt;br/&gt;showToast()&quot;]:::r
+    end
+    Data --&gt; Template --&gt; Renderer
+    classDef d fill:#34d399,color:#000
+    classDef t fill:#fbbf24,color:#000
+    classDef r fill:#8B5CF6,color:#fff</pre>
+<pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    U[&quot;用户操作&quot;] --&gt; E[&quot;事件触发&quot;]:::e
+    E --&gt; S[&quot;状态更新&quot;]:::s
+    S --&gt; D[&quot;DOM 渲染&quot;]:::d
+    D --&gt; LS[&quot;localStorage 持久化&quot;]:::ls
 
-  <div class="next-action" id="nextAction">
-    <span class="na-ico">🎯</span>
-    <div class="na-body">
-      <div class="na-title" id="naTitle">下一步: 拆解 6 组件(勾选/折叠/标签/风险行/过滤/复制)</div>
-      <div class="na-desc" id="naDesc">建议先从「6 组件事件契约 + DOM hook 命名」入手,定义清单交互的统一基线。约 30 分钟完成。</div>
-    </div>
-    <button class="na-cta" id="naBtn" onclick="goNextStep()">开始第 1 步 →</button>
-  </div>
+    LOAD[&quot;页面加载&quot;] --&gt; LS2[&quot;读取 localStorage&quot;]:::ls
+    LS2 --&gt; R[&quot;恢复状态&quot;]:::r
+    R --&gt; D2[&quot;DOM 初始渲染&quot;]:::d
 
-  <div class="walkthrough" id="walkthrough">
-    <div class="step" data-step="1"><div class="suite-body"><div class="s-title">了解项目全貌</div><div class="s-desc">阅读 README.md 了解系统全景和领域语言（20 个术语）。CLAUDE.md 定义四大铁律和不可妥协底线。</div><pre>cat README.md CLAUDE.md<span class="cb" onclick="YrY.copyCmd(this,'cat README.md CLAUDE.md')">📋</span></pre><div class="s-tags"><span class="s-tag t-p0">P0 阻断</span><span class="s-tag t-new">入门</span><span class="s-tag">心智模型</span></div><div class="s-result-desc">💡 说明: 这两个文件是新人必读的「第一小时文档」。README 回答「这是什么」，CLAUDE.md 回答「怎么操作」。领域语言的 Avoid 列特别重要 — 列出了历史中曾使用但已废弃的术语别名，防止新旧概念混淆（退化对策 L2 重生机制）。</div><div class="s-result"><span class="r-label">✅ 结果:</span> README.md: YrY 全景图 + 20 个领域语言术语定义（含 Avoid 禁用别名列）+ 6 个技能入口 + 角色拓扑概览。CLAUDE.md: 3 基础信念 + 4 铁律 + 项目约束 + 6 不可妥协底线 + 4 层退化对策。</div></div></div>
-    <div class="step" data-step="2"><div class="suite-body"><div class="s-title">设计测试用例 TC-10~16 <span class="s-time">~45 min</span></div><div class="s-desc">针对 6 个交互组件设计 7 个测试用例，覆盖正常路径 + localStorage 持久化 + 键盘快捷键。</div><pre>TC-10: 勾选步骤 → 进度%更新 + 步骤状态推导
-TC-11: 折叠面板 → 展开/收起过渡动画
-TC-12: 标签页切换 → 7 面板 + 键盘 1-9
-TC-13: 刷新恢复 → localStorage 回读
-TC-14: 风险行点击 → 详情显示/隐藏
-TC-15: 交付物过滤 → 6 类过滤
-TC-16: 复制路径 → 剪贴板写入<span class="cb" onclick="YrY.copyCmd(this,'TC-10~16: 7 用例 26 断言 100% 通过')">📋</span></pre><div class="s-tags"><span class="s-tag t-p0">P0 阻断</span><span class="s-tag">测试先行</span><span class="s-tag">TC 设计</span></div><div class="s-result-desc">💡 说明: 测试先行是「验现实」铁律的体现。每个 TC 定义明确的验证点和预期结果，所有断言延迟 < 50ms。TC-13 覆盖 localStorage 跨会话持久化，TC-12 覆盖键盘 hijacking 防护（跳过 input/textarea 聚焦）。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 7 个 TC 覆盖 26 个断言 → TC-10(5) · TC-11(3) · TC-12(7) · TC-13(3) · TC-14(1) · TC-15(6) · TC-16(2) → 全部通过率 100%。</div></div></div>
-    <div class="step" data-step="3"><div class="suite-body"><div class="s-title">核心实现 checklist-interact.js <span class="s-time">~90 min</span></div><div class="s-desc">实现 6 个交互组件的零依赖内联 JS（2 个 script 块），Data/Template/Renderer 三层架构。</div><pre>cat 计划清单.html | grep -A5 'script data-name="checklist-interact"'<span class="cb" onclick="YrY.copyCmd(this,'cat 计划清单.html | grep -A5 check')">📋</span></pre><div class="s-tags"><span class="s-tag t-p0">P0 阻断</span><span class="s-tag">核心</span><span class="s-tag">~270+140 行</span></div><div class="s-result-desc">💡 说明: checklist-interact.js 分为两个 script 块 — 勾选/折叠/标签/风险行（~270 行）+ 交付物过滤/复制/哈希定位（~140 行）。Data 层管理状态 + localStorage 适配器，Template 层通过 data-* 属性钩子识别 DOM，Renderer 层绑定事件 + CSS class 切换。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 6 组件全部实现 → 勾选进度联动 (change+bool) · 折叠面板 (click+collapsed) · 标签页切换 (click/keydown+on) · 风险行展开 (click+open) · 交付物过滤 (click+dim) · 路径复制 (click+clipboard) → 总 ~410 行零依赖 JS。</div></div></div>
-    <div class="step" data-step="4"><div class="suite-body"><div class="s-title">Schema 与 localStorage 持久化 <span class="s-time">~30 min</span></div><div class="s-desc">定义 localStorage Schema（yry-arch-s2-checklist + yry-arch-s2-checklist-tab），含场景标识避免跨场景冲突。</div><pre>localStorage.getItem('yry-arch-s2-checklist')<span class="cb" onclick="YrY.copyCmd(this,'localStorage.getItem("yry-arch-s2-checklist")')">📋</span></pre><div class="s-tags"><span class="s-tag t-p0">P0 阻断</span><span class="s-tag">持久化</span><span class="s-tag">2 keys</span></div><div class="s-result-desc">💡 说明: localStorage key 含场景标识 s2 避免跨场景冲突。勾选状态以 step-N: boolean 格式存储，tab 状态记录最后活跃标签页。步骤状态（已完成/就绪/待开始）根据前置步骤完成情况自动推导，无需手动标记。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 2 个 localStorage keys → yry-arch-s2-checklist (step-N booleans) + yry-arch-s2-checklist-tab (active tab) → 刷新恢复验证通过 (TC-13: 3/3 断言) → 步骤状态自动推导正确。</div></div></div>
-    <div class="step" data-step="5"><div class="suite-body"><div class="s-title">a11y 增强 + 测试验证 <span class="s-time">~60 min</span></div><div class="s-desc">执行 TC-10~16 全部 7 个测试用例 26 个断言，键盘 hijacking 防护 + 焦点环可见性验证。</div><pre># TC-10~16: 7 用例 26 断言 100% 通过率
-grep -c 'PASS' test-results.txt<span class="cb" onclick="YrY.copyCmd(this,'TC-10~16: 26/26 断言 PASS')">📋</span></pre><div class="s-tags"><span class="s-tag t-p0">P0 阻断</span><span class="s-tag">a11y</span><span class="s-tag">26 断言</span></div><div class="s-result-desc">💡 说明: 键盘快捷键跳过 input/textarea 聚焦状态避免误触发。交付物类型自动标注（根据扩展名 data-type），零维护成本。所有 CSS transition 统一 0.3s-0.5s，prefers-reduced-motion 自动降级。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 7 套件 26 断言 100% 通过 → TC-10(5) · TC-11(3) · TC-12(7) · TC-13(3) · TC-14(1) · TC-15(6) · TC-16(2) → 键盘 hijacking 防护验证通过 → 焦点环 2px 可见。</div></div></div>
-    <div class="step" data-step="6"><div class="suite-body"><div class="s-title">4 方签收交付 <span class="s-time">~15 min</span></div><div class="s-desc">PO + Tech Lead + QA + 新人官 4 方 RACI 签收，checklist-interact.js v1.0.0 正式发布。</div><pre>cat spec/interact-signoff.json | jq '.signatures'<span class="cb" onclick="YrY.copyCmd(this,'4 方签收: PO+Tech+QA+新人官 → v1.0.0')">📋</span></pre><div class="s-tags"><span class="s-tag t-p1">P1 交付</span><span class="s-tag">4 方 RACI</span><span class="s-tag">v1.0.0</span></div><div class="s-result-desc">💡 说明: 4 方签收确保清单交互组件从业务价值 (PO)、架构合理性 (Tech Lead)、测试覆盖 (QA)、文档可读性 (新人官) 四个维度全部达标。P2 改进项（撤销/重做、勾选动画）记录到 index.md §4 自改进跟踪。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 4 方全部签收 → PO 确认 6 组件交互闭环 · Tech Lead 确认 Data/Template/Renderer 三层架构 · QA 确认 26/26 断言 PASS · 新人官确认 index.md 可独立上手 → v1.0.0 tag 已打。</div></div></div>
-  </div>
+    classDef e fill:#fbbf24,color:#000
+    classDef s fill:#34d399,color:#000
+    classDef d fill:#8B5CF6,color:#fff
+    classDef ls fill:#06b6d4,color:#000
+    classDef r fill:#3B82F6,color:#fff</pre>
+<pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+stateDiagram-v2
+    [*] --&gt; Pending
+    Pending --&gt; Ready: 前置全完成
+    Ready --&gt; Done: 用户勾选
+    Done --&gt; Ready: 用户取消
+    Ready --&gt; Pending: 前置被取消
+    Done --&gt; [*]</pre></div>
+</yry-scene-tabs>
 
-  <div class="tip-box success"><strong>🎉 交付完成:</strong> 完成全部 6 步后，checklist-interact.js v1.0.0 已正式发布。后续可跟进 ① P2 撤销/重做支持 ② 勾选动画反馈 ③ 场景 3 验证报告与健康面板集成。</div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════ PANEL 2: 时间线 ═══ -->
-<div class="panel" id="panelTimeline">
-  <div class="timeline-hero">
-    <h2><span class="h-ico">🗺</span>清单交互组件实现全景时间线<span class="h-sub">点击节点跳转演示步骤</span></h2>
-    <div class="timeline">
-      <div class="timeline-track">
-        <div class="timeline-line"></div>
-        <div class="timeline-progress" id="tlProgress"></div>
-        <div class="timeline-nodes">
-          <div class="tl-node active" data-step="1" onclick="jumpStep(1)">
-            <div class="tl-dot">🧩</div>
-            <div class="tl-label">组件拆解</div>
-            <div class="tl-time">30m</div>
-            <div class="tl-tooltip">6 组件事件契约 + DOM hook</div>
-          </div>
-          <div class="tl-node" data-step="2" onclick="jumpStep(2)">
-            <div class="tl-dot">🧪</div>
-            <div class="tl-label">TC 设计</div>
-            <div class="tl-time">45m</div>
-            <div class="tl-tooltip">TC-10/11/12/13/14 + 23 项检查点</div>
-          </div>
-          <div class="tl-node" data-step="3" onclick="jumpStep(3)">
-            <div class="tl-dot">⚙️</div>
-            <div class="tl-label">核心实现</div>
-            <div class="tl-time">90m</div>
-            <div class="tl-tooltip">checklist-interact.js 落地</div>
-          </div>
-          <div class="tl-node" data-step="4" onclick="jumpStep(4)">
-            <div class="tl-dot">💾</div>
-            <div class="tl-label">Schema</div>
-            <div class="tl-time">30m</div>
-            <div class="tl-tooltip">localstorage-schema.json v1</div>
-          </div>
-          <div class="tl-node" data-step="5" onclick="jumpStep(5)">
-            <div class="tl-dot">♿</div>
-            <div class="tl-label">a11y + 测试</div>
-            <div class="tl-time">60m</div>
-            <div class="tl-tooltip">焦点环 + TC 全绿</div>
-          </div>
-          <div class="tl-node" data-step="6" onclick="jumpStep(6)">
-            <div class="tl-dot">✍️</div>
-            <div class="tl-label">签收交付</div>
-            <div class="tl-time">15m</div>
-            <div class="tl-tooltip">4 方 RACI 签收 + v1.0.0 tag</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="section">
-    <h2><span class="dot"></span>关键里程碑 <span class="h2-sub">每个里程碑都有可验证的完成标志</span></h2>
-    <div class="milestone-grid">
-      <div class="ms-card">
-        <div class="ms-ico">🧩</div>
-        <div class="ms-name">组件拆解</div>
-        <div class="ms-desc">6 组件各产出事件契约 + 状态机 + DOM hook 文档</div>
-        <div class="ms-time">D-3 · 30min</div>
-      </div>
-      <div class="ms-card">
-        <div class="ms-ico">🧪</div>
-        <div class="ms-name">TC 设计</div>
-        <div class="ms-desc">5 套测试用例 (TC-10/11/12/13/14) + 23 项检查点</div>
-        <div class="ms-time">D-2 · 45min</div>
-      </div>
-      <div class="ms-card">
-        <div class="ms-ico">⚡</div>
-        <div class="ms-name">核心实现</div>
-        <div class="ms-desc">checklist-interact.js (~410 行) + Gate A/B 通过</div>
-        <div class="ms-time">D-1 · 90min</div>
-      </div>
-      <div class="ms-card">
-        <div class="ms-ico">💾</div>
-        <div class="ms-name">Schema v1</div>
-        <div class="ms-desc">localstorage-schema.json + AJV 验证 + migrate 路径</div>
-        <div class="ms-time">D-1 · 30min</div>
-      </div>
-      <div class="ms-card">
-        <div class="ms-ico">♿</div>
-        <div class="ms-name">a11y + 验证</div>
-        <div class="ms-desc">焦点环 2px + TC-10/11/12/13/14 全绿 + Lighthouse 96</div>
-        <div class="ms-time">D-0 · 60min</div>
-      </div>
-      <div class="ms-card">
-        <div class="ms-ico">✍️</div>
-        <div class="ms-name">4 方签收</div>
-        <div class="ms-desc">PO + Tech Lead + QA + 新人官 + 交互测试官全签</div>
-        <div class="ms-time">D+1 · 15min</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="section">
-    <h2><span class="dot"></span>阶段依赖关系</h2>
-    <div class="flow-row">
-      <div class="flow-chip"><span class="n">读</span> 文档</div>
-      <span class="flow-arrow">→</span>
-      <div class="flow-chip"><span class="n">配</span> 环境</div>
-      <span class="flow-arrow">→</span>
-      <div class="flow-chip"><span class="n">反推</span> 文档</div>
-      <span class="flow-arrow">→</span>
-      <div class="flow-chip"><span class="n">首修</span> 走通</div>
-      <span class="flow-arrow">→</span>
-      <div class="flow-chip"><span class="n">学</span> 纪律</div>
-      <span class="flow-arrow">→</span>
-      <div class="flow-chip"><span class="n">同</span> 步</div>
-    </div>
-  </div>
-
-  <div class="tip-box"><strong>📌 阶段不可跳过:</strong> 每个阶段都有「前置依赖」。例如没有定义事件契约就写实现代码，会导致组件间状态不一致。6 组件遵循 Data → Template → Renderer 三层，每层独立可测试。</div>
-</div>
-
-<div class="panel" id="panelOverview">
-  <div class="subhead">
-    <h2 style="font-size:1rem;display:flex;align-items:center;gap:8px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></span>清单交互组件实现全景</h2>
-    <div class="sh-meta">
-      <span class="sh-item">📊 6 组件 · 6 步骤 · 7 TC 套件</span>
-      <span class="sh-item">⏱ ~4.5h 完成</span>
-    </div>
-  </div>
-
-  <div class="overview-grid">
-    <div class="ov-card">
-      <div class="ov-ico">🧩</div>
-      <div class="ov-title">组件拆解</div>
-      <div class="ov-desc">将 checklist-interact 模块按职责拆为勾选/折叠/标签/风险/过滤/复制 6 个独立组件,定义事件契约 + 状态机 + DOM hook 命名。</div>
-      <div class="ov-stat">
-        <span class="os accent">⏱ 30min</span>
-        6 组件
-        <span class="os">P0</span>
-      </div>
-    </div>
-    <div class="ov-card">
-      <div class="ov-ico">🧪</div>
-      <div class="ov-title">TC 设计</div>
-      <div class="ov-desc">为 6 组件各设计 1 套测试(TC-10~16),共 7 套件 · 26 断言</div>
-      <div class="ov-stat">
-        <span class="os accent">⏱ 45min</span>
-        <span class="os">7 套件</span>
-        <span class="os">P0</span>
-      </div>
-    </div>
-    <div class="ov-card">
-      <div class="ov-ico">⚙️</div>
-      <div class="ov-title">核心实现</div>
-      <div class="ov-desc">实现 checklist-interact.js (~410 行),Data/Template/Renderer 三层 + 6 组件 + ARIA 焦点环。</div>
-      <div class="ov-stat">
-        <span class="os accent">⏱ 90min</span>
-        <span class="os">1 模块</span>
-        <span class="os">P0</span>
-      </div>
-    </div>
-    <div class="ov-card">
-      <div class="ov-ico">💾</div>
-      <div class="ov-title">Schema v1</div>
-      <div class="ov-desc">发布 localstorage-schema.json v1,5 字段 + AJV 验证 + v0→v1 migrate 兼容路径。</div>
-      <div class="ov-stat">
-        <span class="os accent">⏱ 30min</span>
-        <span class="os">1 Schema</span>
-        <span class="os">P0</span>
-      </div>
-    </div>
-    <div class="ov-card">
-      <div class="ov-ico">♿</div>
-      <div class="ov-title">a11y + 验证</div>
-      <div class="ov-desc">焦点环 2px 可见 + 键盘事件劫持检测 + TC-10/11/12/13/14 全绿 + Lighthouse 96 分。</div>
-      <div class="ov-stat">
-        <span class="os accent">⏱ 60min</span>
-        <span class="os">5 TC</span>
-        <span class="os">P0</span>
-      </div>
-    </div>
-    <div class="ov-card">
-      <div class="ov-ico">✍️</div>
-      <div class="ov-title">4 方签收</div>
-      <div class="ov-desc">RACI 评审会议通过,PO + Tech Lead + QA + 新人官 + 交互测试官 5 方在 spec/interact.json 全签字。</div>
-      <div class="ov-stat">
-        <span class="os accent">⏱ 15min</span>
-        <span class="os">5 方</span>
-        <span class="os">P1</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="section"><h2><span class="dot"></span>关键概念速查</h2>
-    <div class="flow-row"><div class="flow-chip"><span class="n">铁律</span> 4 条不可妥协</div><span class="flow-arrow">·</span><div class="flow-chip"><span class="n">Gate A/B</span> 准入/交付关卡</div><span class="flow-arrow">·</span><div class="flow-chip"><span class="n">P0 清零</span> 逐模块执行</div><span class="flow-arrow">·</span><div class="flow-chip"><span class="n">表达优先</span> 图→文→表</div><span class="flow-arrow">·</span><div class="flow-chip"><span class="n">退化对策</span> L1-L4</div></div>
-  </div>
-
-  <div class="tip-box info">
-    <strong>💡 学习心法:</strong> 不要试图一次理解所有细节 — 先跑通流程获得「完整闭环」的体感，再回头看规约会事半功倍。YrY 的设计哲学是「验证先于理解」，先让 init 命令成功跑起来，再去读 why。
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════ PANEL: 能力雷达 ═══ -->
-<div class="panel" id="panelRadar">
-  <div class="subhead">
-    <h2 style="font-size:1rem;display:flex;align-items:center;gap:8px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></span>新人能力雷达图</h2>
-    <div class="sh-meta">
-      <span class="sh-item">📊 6 维度评估</span>
-      <span class="sh-item">🎯 悬停查看</span>
-    </div>
-  </div>
-
-  <div class="concept-radar">
-    <div class="radar-header">
-      <h3>📡 清单交互组件能力覆盖</h3>
-      <div class="radar-legend">
-        <span class="lg-item"><span class="lg-dot" style="background:var(--accent)"></span>完成 /rui init 后</span>
-        <span class="lg-item"><span class="lg-dot" style="background:rgba(34,211,238,.4);border:1px dashed rgba(34,211,238,.6)"></span>发布基线</span>
-      </div>
-    </div>
-    <svg class="radar-svg" viewBox="0 0 400 320" id="radarSvg">
-      <g transform="translate(200,160)">
-        <circle class="radar-grid" r="40"/>
-        <circle class="radar-grid" r="80"/>
-        <circle class="radar-grid" r="120"/>
-        <line class="radar-axis" x1="0" y1="0" x2="0" y2="-130"/>
-        <line class="radar-axis" x1="0" y1="0" x2="113" y2="-65"/>
-        <line class="radar-axis" x1="0" y1="0" x2="113" y2="65"/>
-        <line class="radar-axis" x1="0" y1="0" x2="0" y2="130"/>
-        <line class="radar-axis" x1="0" y1="0" x2="-113" y2="65"/>
-        <line class="radar-axis" x1="0" y1="0" x2="-113" y2="-65"/>
-        <polygon class="radar-shield-baseline" points="0,-80 69.3,-40 69.3,40 0,80 -69.3,40 -69.3,-40"/>
-        <polygon class="radar-shield" id="radarShield" points=""/>
-        <circle class="radar-point" data-i="0" cx="0" cy="-110" r="4"/>
-        <circle class="radar-point" data-i="1" cx="95.3" cy="-55" r="4"/>
-        <circle class="radar-point" data-i="2" cx="95.3" cy="55" r="4"/>
-        <circle class="radar-point" data-i="3" cx="0" cy="110" r="4"/>
-        <circle class="radar-point" data-i="4" cx="-95.3" cy="55" r="4"/>
-        <circle class="radar-point" data-i="5" cx="-95.3" cy="-55" r="4"/>
-        <circle class="radar-point" data-i="6" cx="0" cy="0" r="4"/>
-        <text class="radar-label" x="0" y="-138">事件绑定</text>
-        <text class="radar-label" x="118" y="-60">状态管理</text>
-        <text class="radar-label" x="118" y="78">持久化</text>
-        <text class="radar-label" x="0" y="148">CSS 动画</text>
-        <text class="radar-label" x="-118" y="78">a11y 无障碍</text>
-        <text class="radar-label" x="-118" y="-60">测试覆盖</text>
-      </g>
-    </svg>
-    <div class="radar-desc" id="radarDesc">
-      <strong>💡 悬停查看详情:</strong> 6 维度展示清单交互组件的核心能力覆盖。基线（青色虚线）是 checklist-interact.js 最低发布标准。悬停各维度查看具体掌握度。
-    </div>
-  </div>
-
-  <div class="section">
-    <h2><span class="dot"></span>6 维度说明</h2>
-    <div class="overview-grid">
-      <div class="ov-card">
-        <div class="ov-ico">🔗</div>
-        <div class="ov-title">事件绑定</div>
-        <div class="ov-desc">6 组件事件契约完整 — 5 click + 1 keydown，回调签名统一，DOM 钩子 data-* 命名一致。</div>
-        <div class="ov-stat"><span class="os accent">深度 95%</span></div>
-      </div>
-      <div class="ov-card">
-        <div class="ov-ico">📊</div>
-        <div class="ov-title">状态管理</div>
-        <div class="ov-desc">Data 层 step-N 布尔状态 + deriveStatus() 三态推导 + 单向数据流无 DOM 直接操作。</div>
-        <div class="ov-stat"><span class="os accent">深度 90%</span></div>
-      </div>
-      <div class="ov-card">
-        <div class="ov-ico">💾</div>
-        <div class="ov-title">持久化</div>
-        <div class="ov-desc">localStorage 双 key (s2-checklist + s2-checklist-tab) try/catch 容错 + 隐私模式降级。</div>
-        <div class="ov-stat"><span class="os accent">深度 85%</span></div>
-      </div>
-      <div class="ov-card">
-        <div class="ov-ico">🎨</div>
-        <div class="ov-title">CSS 动画</div>
-        <div class="ov-desc">4 class 驱动 (collapsed/open/dim/on) + 进度条 0.5s ease + 折叠 0.3s ease-out + toast 0.15s。</div>
-        <div class="ov-stat"><span class="os accent">深度 80%</span></div>
-      </div>
-      <div class="ov-card">
-        <div class="ov-ico">♿</div>
-        <div class="ov-title">a11y 无障碍</div>
-        <div class="ov-desc">焦点环 2px + 键盘劫持检测 + prefers-reduced-motion + ARIA 标签完整。</div>
-        <div class="ov-stat"><span class="os accent">深度 88%</span></div>
-      </div>
-      <div class="ov-card">
-        <div class="ov-ico">🧪</div>
-        <div class="ov-title">测试覆盖</div>
-        <div class="ov-desc">TC-10~16 共 7 套件 26 断言 100% 通过 + 边界条件 + 异常路径全覆盖。</div>
-        <div class="ov-stat"><span class="os accent">深度 92%</span></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="tip-box"><strong>📈 能力成长:</strong> 组件拆解 → 事件绑定 95% · TC 设计 → 测试覆盖 92% · 核心实现 → 状态管理 90% · Schema → 持久化 85% · a11y → 无障碍 88% · 签收 → 全部维度 ≥ 80%</div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════ PANEL: 真实回放 ═══ -->
-<div class="panel" id="panelReplay">
-  <div class="subhead">
-    <h2 style="font-size:1rem;display:flex;align-items:center;gap:8px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></span>组件实现回放</h2>
-    <div class="sh-meta">
-      <span class="sh-item">🖥 类终端</span>
-      <span class="sh-item">⏯ 播放控制</span>
-    </div>
-  </div>
-
-  <div class="tw-demo" id="twDemo">
-    <div class="tw-head">
-      <span class="tw-btn r"></span>
-      <span class="tw-btn y"></span>
-      <span class="tw-btn g"></span>
-      <span class="tw-title">~/yry-arch — zsh</span>
-    </div>
-    <div id="twContent"></div>
-  </div>
-
-  <div class="tw-controls">
-    <button class="tw-ctrl-btn on" data-scenario="bind" onclick="twRun('bind', this)">▶ 事件绑定</button>
-    <button class="tw-ctrl-btn" data-scenario="persist" onclick="twRun('persist', this)">▶ localStorage</button>
-    <button class="tw-ctrl-btn" data-scenario="test" onclick="twRun('test', this)">▶ TC 验证</button>
-    <button class="tw-ctrl-btn" onclick="twReset()">↺ 清屏</button>
-    <span style="font-size:.66rem;color:var(--text3);margin-left:auto">💡 模拟 6 组件实现过程，按阶段分类</span>
-  </div>
-
-  <div class="section">
-    <h2><span class="dot"></span>输出解读</h2>
-    <div class="tip-box info"><strong>🎨 颜色含义:</strong> <span style="color:var(--accent)">黄色</span> = 命令输入 · <span style="color:var(--text2)">灰色</span> = 普通输出 · <span style="color:var(--pass)">绿色</span> = 成功标记 · <span style="color:var(--cyan)">青色</span> = 阶段信息 · <span style="color:var(--warn)">橙色</span> = 警告 · <span style="color:var(--fail)">红色</span> = 错误</div>
-    <div class="tip-box"><strong>💡 学习要点:</strong> 注意每个阶段的 ① 组件名 ② Data/Template/Renderer 分层 ③ 验证标记。清单交互组件遵循「事件 → 状态 → 持久化 → 渲染」的数据流。</div>
-  </div>
-</div>
-<!-- ═══════════════════════════════════════════════════════ PANEL: 日程 ═══ -->
-<div class="panel" id="panelDay">
-  <div class="subhead">
-    <h2 style="font-size:1rem;display:flex;align-items:center;gap:8px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></span>3 天实现日程</h2>
-    <div class="sh-meta">
-      <span class="sh-item">📅 DAY 1-3 详细安排</span>
-      <span class="sh-item">⏱ 总计 ~6.5h</span>
-    </div>
-  </div>
-
-  <div class="day-plan">
-    <div class="day-card d1">
-      <div class="d-head">
-        <span class="d-tag">DAY 1</span>
-        <span class="d-title">组件拆解 + 事件绑定</span>
-      </div>
-      <div class="d-meta">
-        <span>⏱ 总耗时 2.5h</span>
-        <span>📐 6 组件拆解</span>
-        <span>🔗 事件契约</span>
-      </div>
-      <ul>
-        <li>拆解 6 组件交互边界<span class="li-time">30m</span></li>
-        <li>定义事件契约 (click/change/keydown)<span class="li-time">30m</span></li>
-        <li>Data 层: 状态结构 + 派生逻辑<span class="li-time">40m</span></li>
-        <li>Template 层: data-* 钩子 + ARIA<span class="li-time">30m</span></li>
-        <li>实现勾选进度联动 (~70 行)<span class="li-time">20m</span></li>
-      </ul>
-    </div>
-
-    <div class="day-card d2">
-      <div class="d-head">
-        <span class="d-tag">DAY 2</span>
-        <span class="d-title">持久化 + 动画 + a11y</span>
-      </div>
-      <div class="d-meta">
-        <span>⏱ 总耗时 2.5h</span>
-        <span>💾 localStorage</span>
-        <span>♿ 无障碍</span>
-      </div>
-      <ul>
-        <li>localStorage Schema 设计 (2 keys)<span class="li-time">20m</span></li>
-        <li>折叠面板 CSS transition 300ms<span class="li-time">20m</span></li>
-        <li>标签页切换 + 键盘 1-9 映射<span class="li-time">30m</span></li>
-        <li>风险行展开/收起动画<span class="li-time">20m</span></li>
-        <li>步骤状态自动推导 (✅/🔶/⏳)<span class="li-time">30m</span></li>
-        <li>焦点环 2px + 键盘劫持检测<span class="li-time">30m</span></li>
-      </ul>
-    </div>
-
-    <div class="day-card d3">
-      <div class="d-head">
-        <span class="d-tag">DAY 3</span>
-        <span class="d-title">测试验证 + 签收交付</span>
-      </div>
-      <div class="d-meta">
-        <span>⏱ 总耗时 1.5h</span>
-        <span>🧪 7 TC 套件</span>
-        <span>✍️ 4 方签收</span>
-      </div>
-      <ul>
-        <li>TC-10~16 全部 7 套件执行<span class="li-time">30m</span></li>
-        <li>交付物类型过滤 + 路径复制<span class="li-time">20m</span></li>
-        <li>localStorage 持久化回读验证<span class="li-time">10m</span></li>
-        <li>PO + Tech Lead + QA + 新人官签收<span class="li-time">20m</span></li>
-        <li>P2 改进项记录 (撤销/重做)<span class="li-time">10m</span></li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="section">
-    <h2><span class="dot"></span>实现心法</h2>
-    <div class="tip-box info"><strong>🎯 不必死板执行:</strong> 上述时间是参考值。有经验的前端可压缩到 1 天，新手可能需要 5 天。重点是 ① 事件契约先行 ② Data/Template/Renderer 三层分离 ③ localStorage 持久化 — 顺序不可乱。</div>
-    <div class="tip-box success"><strong>✅ 完成的标志:</strong> 当你能 ① 独立实现一个交互组件 (事件→状态→渲染) ② 写出可验证的 TC ③ 给他人讲解 Data/Template/Renderer 三层架构 — 你就从「清单交互」毕业了。</div>
-  </div>
-</div>
-<div class="panel" id="panelCommands">
-  <div class="subhead">
-    <h2 style="font-size:1rem;display:flex;align-items:center;gap:8px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></span>6 个核心操作</h2>
-    <div class="sh-meta">
-      <span class="sh-item">⚡ 一键复制</span>
-      <span class="sh-item">🛡 零依赖</span>
-    </div>
-  </div>
-  <div class="cmd-grid">
-    <div class="cmd-card"><div class="stage">状态管理</div><div class="name">localStorage 读/写</div><div class="desc">yry-arch-s2-checklist 存储 step-N 布尔值。JSON.stringify/parse 序列化，try/catch 容错。</div><pre>localStorage.getItem('yry-arch-s2-checklist')<span class="cb" onclick="YrY.copyCmd(this,"localStorage.getItem('yry-arch-s2-checklist')")">📋</span></pre><div class="cmd-meta"><span class="cmd-tag t-p0">P0 必用</span><span class="cmd-tag">2 keys</span><span class="cmd-tag">JSON</span></div></div>
-    <div class="cmd-card"><div class="stage">事件绑定</div><div class="name">addEventListener</div><div class="desc">6 组件通过 click/change/keydown 事件驱动。input/textarea 聚焦时跳过键盘快捷键。</div><pre>el.addEventListener('click', handler)<span class="cb" onclick="YrY.copyCmd(this,'el.addEventListener(\'click\', handler)')">📋</span></pre><div class="cmd-meta"><span class="cmd-tag t-p1">P1 核心</span><span class="cmd-tag">3 事件类型</span><span class="cmd-tag">6 组件</span></div></div>
-    <div class="cmd-card"><div class="stage">CSS 状态</div><div class="name">classList.toggle</div><div class="desc">折叠面板 collapsed、风险行 open、过滤按钮 dim/on。CSS class 驱动动画，无 JS 动画库。</div><pre>el.classList.toggle('collapsed')<span class="cb" onclick="YrY.copyCmd(this,"el.classList.toggle('collapsed')")">📋</span></pre><div class="cmd-meta"><span class="cmd-tag t-p1">P1 核心</span><span class="cmd-tag">4 class</span><span class="cmd-tag">CSS only</span></div></div>
-    <div class="cmd-card"><div class="stage">进度更新</div><div class="name">updateProgress()</div><div class="desc">勾选 → 计数 → 进度% → 进度条 width + overview 统计 + localStorage。双向同步。</div><pre>updateProgress()<span class="cb" onclick="YrY.copyCmd(this,'updateProgress()')">📋</span></pre><div class="cmd-meta"><span class="cmd-tag t-p1">P1 核心</span><span class="cmd-tag">双向同步</span><span class="cmd-tag"><50ms</span></div></div>
-    <div class="cmd-card"><div class="stage">步骤推导</div><div class="name">deriveStatus()</div><div class="desc">根据前置步骤完成情况推导: 已完成(✅) / 就绪(🔶) / 待开始(⏳)。自动标注无需手动。</div><pre>deriveStatus(stepIndex, checked)<span class="cb" onclick="YrY.copyCmd(this,'deriveStatus(stepIndex, checked)')">📋</span></pre><div class="cmd-meta"><span class="cmd-tag t-p2">P2 增强</span><span class="cmd-tag">3 状态</span><span class="cmd-tag">自动</span></div></div>
-    <div class="cmd-card"><div class="stage">交付物标注</div><div class="name">autoAnnotate()</div><div class="desc">扫描 .deliv-link 根据扩展名自动标注 data-type。HTML/MD/CSS/Test/其他 五类零维护。</div><pre>autoAnnotate()<span class="cb" onclick="YrY.copyCmd(this,'autoAnnotate()')">📋</span></pre><div class="cmd-meta"><span class="cmd-tag t-new">零维护</span><span class="cmd-tag">5 类型</span><span class="cmd-tag">自动</span></div></div>
-  </div>
-
-  <div class="section">
-    <h2><span class="dot"></span>操作速查表</h2>
-    <div class="cmd-grid">
-      <div class="cmd-card"><div class="name">grep "checklist-interact"</div><div class="desc">搜索清单交互 JS 代码块，定位 2 个 script 块。</div><pre>grep -n "checklist-interact" 计划清单.html<span class="cb" onclick="YrY.copyCmd(this,'grep -n "checklist-interact" 计划清单.html')">📋</span></pre></div>
-      <div class="cmd-card"><div class="name">localStorage 调试</div><div class="desc">在 DevTools Console 查看当前勾选状态和 tab 记忆。</div><pre>JSON.parse(localStorage['yry-arch-s2-checklist'])<span class="cb" onclick="YrY.copyCmd(this,"JSON.parse(localStorage['yry-arch-s2-checklist'])")">📋</span></pre></div>
-      <div class="cmd-card"><div class="name">TC 快速验证</div><div class="desc">打开测试面板查看 TC-10~16 全部 7 套件 26 断言结果。</div><pre>open 测试面板.html<span class="cb" onclick="YrY.copyCmd(this,'open 测试面板.html')">📋</span></pre></div>
-    </div>
-  </div>
-
-  <div class="tip-box"><strong>💡 操作命名规律:</strong> <span class="inline-code">Data</span> 层函数管理状态，<span class="inline-code">Template</span> 层函数管理 DOM 钩子，<span class="inline-code">Renderer</span> 层函数管理视觉更新。三层之间通过事件总线通信，不直接互相调用。</div>
-</div>
-<div class="panel" id="panelFiles">
-  <div class="subhead">
-    <h2 style="font-size:1rem;display:flex;align-items:center;gap:8px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></span>相关文件</h2>
-    <div class="sh-meta">
-      <span class="sh-item">📁 6 核心文件</span>
-      <span class="sh-item">🔍 源码可点击</span>
-    </div>
-  </div>
-  <div class="section">
-    <div class="file-list">
-      <div class="file-item">📄 计划清单.html<div class="fi-meta">主页面 · 6 组件内联 · <span class="fi-pri">P0</span></div></div>
-      <div class="file-item">📄 checklist-interact.js<div class="fi-meta">2 script 块 · ~410 行 · <span class="fi-pri">P0</span></div></div>
-      <div class="file-item">📐 index.md<div class="fi-meta">场景规约 · 技术评审 · <span class="fi-pri">P0</span></div></div>
-      <div class="file-item">📐 测试面板.html<div class="fi-meta">TC-10~16 · 26 断言</div></div>
-      <div class="file-item">📄 演示.html<div class="fi-meta">交互演示 · 12 面板</div></div>
-      <div class="file-item">⚡ 审查.html<div class="fi-meta">代码审查 · 架构合规</div></div>
-    </div>
-  </div>
-  <div class="section">
-    <h2><span class="dot"></span>模块归属</h2>
-    <div class="tip-box"><strong>📁 Data 层:</strong> 状态管理 + localStorage 适配器 + deriveStatus()<br>
-    <strong>📁 Template 层:</strong> data-* 钩子 + ARIA 角色 + 自动标注 autoAnnotate()<br>
-    <strong>📁 Renderer 层:</strong> 6 组件渲染 + 焦点环 2px + CSS transition<br>
-    <strong>📁 持久化:</strong> yry-arch-s2-checklist (step-N 布尔) + yry-arch-s2-checklist-tab (标签)</div>
-  </div>
-  <div class="links-row"><a href="计划清单.html">📋 计划清单</a><a href="架构图.html">📐 架构图</a><a href="知识图谱.html">🔗 知识图谱</a><a href="源码.html">📄 源码</a><a href="测试面板.html">🧪 测试面板</a><a href="审查.html">📝 审计</a></div>
-</div>
-<div class="panel" id="panelTests">
-  <div class="section"><h2><span class="dot"></span>测试覆盖</h2>
-    <div class="cmd-grid">
-      <div class="cmd-card"><div class="name">TC-10 勾选进度联动</div><div class="desc">5 断言: 勾选→进度%更新 + 完成数+1 + 步骤状态推导 + 进度条动画 <50ms。</div></div>
-      <div class="cmd-card"><div class="name">TC-11 折叠面板动画</div><div class="desc">3 断言: 展开/收起过渡 300ms + 交付物列表显隐 + collapsed class 切换。</div></div>
-      <div class="cmd-card"><div class="name">TC-12 标签页全切换</div><div class="desc">7 断言: 7 面板逐一显示 + 键盘 1-9 映射 + input 聚焦跳过 + tab 记忆恢复。</div></div>
-      <div class="cmd-card"><div class="name">TC-13 刷新恢复状态</div><div class="desc">3 断言: localStorage 回读勾选状态 + tab 状态恢复 + 跨会话持久化验证。</div></div>
-      <div class="cmd-card"><div class="name">TC-14 风险行展开</div><div class="desc">3 断言: 详情显示/隐藏 + toggle 箭头旋转 + open class 切换动画。</div></div>
-      <div class="cmd-card"><div class="name">TC-15 交付物类型过滤</div><div class="desc">6 断言: 全部/HTML/MD/CSS/Test/其他 六类过滤 + dim/on class 切换。</div></div>
-      <div class="cmd-card"><div class="name">TC-16 路径复制</div><div class="desc">2 断言: 单步复制 + 全部复制 + 剪贴板写入 + toast 提示 1.5s。</div></div>
-    </div>
-    <div style="text-align:center;margin-top:12px"><span style="color:var(--pass);font-weight:700">26/26 断言通过 · 100% 通过率</span> · 7 套件 0 失败</div>
-  </div>
-  <div class="links-row"><a href="测试面板.html">🧪 打开测试面板</a><a href="../../../index.html">📄 返回文档中心</a></div>
-</div>
-<div class="panel" id="panelChecklist">
-  <div class="subhead">
-    <h2 style="font-size:1rem;display:flex;align-items:center;gap:8px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></span>清单交互任务清单</h2>
-    <div class="sh-meta">
-      <span class="sh-item">📋 12 项任务</span>
-      <span class="sh-item">⏱ ~4h 30min</span>
-      <span class="sh-item">💾 自动保存</span>
-    </div>
-  </div>
-  <div class="section">
-    <p style="font-size:.76rem;color:var(--text3);margin-bottom:14px">逐项完成打勾。进度自动保存到 localStorage，刷新不丢失。覆盖 6 组件从拆解到签收的完整流程。</p>
-    <div class="check-progress"><div class="prog-text"><span>完成进度</span><span class="prog-pct" id="progLabel">0 / 12 (0%)</span></div><div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div></div>
-    <div class="checklist" id="checkList">
-      <div class="check-item" data-id="c1-decompose"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">1. 拆解 6 组件交互边界 <span class="ci-day">DAY 1</span></div><div class="ci-desc">勾选/折叠/标签/风险/过滤/复制 — 各自的事件类型和状态模型</div></div><div class="ci-time">~30 min</div><a class="ci-link" href="index.md" target="_blank">📄 规约</a></div>
-      <div class="check-item" data-id="c2-events"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">2. 定义事件契约 <span class="ci-day">DAY 1</span></div><div class="ci-desc">click/change/keydown 事件 → CSS class/状态映射 → 回调签名</div></div><div class="ci-time">~30 min</div></div>
-      <div class="check-item" data-id="c3-data"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">3. 实现 Data 层 <span class="ci-day">DAY 1</span></div><div class="ci-desc">状态结构 (step-N 布尔) + deriveStatus() 派生 + localStorage 适配器</div></div><div class="ci-time">~40 min</div></div>
-      <div class="check-item" data-id="c4-template"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">4. 实现 Template 层 <span class="ci-day">DAY 1</span></div><div class="ci-desc">data-* 钩子命名 + ARIA 角色分配 + autoAnnotate() 自动标注</div></div><div class="ci-time">~30 min</div></div>
-      <div class="check-item" data-id="c5-check"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">5. 勾选进度联动 <span class="ci-day">DAY 1</span></div><div class="ci-desc">checkbox click → updateProgress() → 进度条 + overview + localStorage</div></div><div class="ci-time">~20 min</div></div>
-      <div class="check-item" data-id="c6-fold"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">6. 折叠面板 + 标签切换 <span class="ci-day">DAY 2</span></div><div class="ci-desc">collapsed class toggle + CSS transition 300ms + tab 键盘 1-9 映射</div></div><div class="ci-time">~50 min</div></div>
-      <div class="check-item" data-id="c7-persist"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">7. localStorage 持久化 <span class="ci-day">DAY 2</span></div><div class="ci-desc">yry-arch-s2-checklist + yry-arch-s2-checklist-tab 双 key 读写</div></div><div class="ci-time">~20 min</div></div>
-      <div class="check-item" data-id="c8-risk"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">8. 风险行展开 + 交付物过滤 <span class="ci-day">DAY 2</span></div><div class="ci-desc">open class toggle + 六类过滤 (全部/HTML/MD/CSS/Test/其他)</div></div><div class="ci-time">~40 min</div></div>
-      <div class="check-item" data-id="c9-a11y"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">9. a11y 增强 <span class="ci-day">DAY 2</span></div><div class="ci-desc">焦点环 2px + 键盘劫持检测 + prefers-reduced-motion + ARIA 标签</div></div><div class="ci-time">~30 min</div></div>
-      <div class="check-item" data-id="c10-test"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">10. TC-10~16 全量验证 <span class="ci-day">DAY 3</span></div><div class="ci-desc">7 套件 26 断言执行 + 边界条件 + 异常路径覆盖</div></div><div class="ci-time">~30 min</div></div>
-      <div class="check-item" data-id="c11-copy"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">11. 路径复制 + 哈希定位 <span class="ci-day">DAY 3</span></div><div class="ci-desc">剪贴板写入 + toast 1.5s + #step-N-deliv 跨 tab 跳转</div></div><div class="ci-time">~20 min</div></div>
-      <div class="check-item" data-id="c12-signoff"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">12. 4 方签收交付 <span class="ci-day">DAY 3</span></div><div class="ci-desc">PO + Tech Lead + QA + 新人官 RACI 签收 + P2 改进项记录</div></div><div class="ci-time">~20 min</div></div>
-    </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn-clear-checks" onclick="clearAllChecks()">🗑 清除所有勾选</button>
-      <button class="btn-export" onclick="exportChecklist()">📥 导出进度</button>
-    </div>
-  </div>
-  <div class="tip-box"><strong>💡 预计总耗时:</strong> ~4 小时 30 分钟完成全部 12 项。进度自动保存到 localStorage (yry-arch-s2-checklist)，跨会话持久化。建议每天 1-2 小时，3 天内完成全部组件实现。</div>
-</div>
-<!-- ═══════════════════════════════════════════════════════ PANEL: 自测 ═══ -->
-<div class="panel" id="panelQuiz">
-  <div class="subhead">
-    <h2 style="font-size:1rem;display:flex;align-items:center;gap:8px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></span>知识自测</h2>
-    <div class="sh-meta">
-      <span class="sh-item">🎯 6 题</span>
-      <span class="sh-item">📊 即时反馈</span>
-      <span class="sh-item">🏆 满分 100</span>
-    </div>
-  </div>
-
-  <div class="tip-box info"><strong>📝 答题方式:</strong> 选择答案后立即显示对错与解析。完成全部 6 题后查看总分与建议。覆盖 6 组件核心知识点。</div>
-
-  <div class="quiz-list" id="quizList">
-    <div class="quiz-card" data-q="0">
-      <div class="quiz-q"><div class="q-num">1</div><span>清单交互 6 组件中，哪个组件使用 keydown 事件而非 click 事件？</span></div>
-      <div class="quiz-opts">
-        <div class="quiz-opt" data-idx="0" onclick="quizAnswer(0,0,2)"><span class="opt-letter">A</span><span class="opt-text">勾选进度联动</span></div>
-        <div class="quiz-opt" data-idx="1" onclick="quizAnswer(0,1,2)"><span class="opt-letter">B</span><span class="opt-text">折叠面板</span></div>
-        <div class="quiz-opt" data-idx="2" onclick="quizAnswer(0,2,2)"><span class="opt-letter">C</span><span class="opt-text">标签页切换</span></div>
-        <div class="quiz-opt" data-idx="3" onclick="quizAnswer(0,3,2)"><span class="opt-letter">D</span><span class="opt-text">风险行展开</span></div>
-      </div>
-      <div class="quiz-feedback"><strong>正确答案: C</strong> 标签页切换支持键盘 1-9 数字键快速切换（跳过 input/textarea 聚焦状态）。其余组件均使用 click 事件驱动，符合「最小事件类型」原则。</div>
-    </div>
-
-    <div class="quiz-card" data-q="1">
-      <div class="quiz-q"><div class="q-num">2</div><span>localStorage key yry-arch-s2-checklist 中 s2 的含义是？</span></div>
-      <div class="quiz-opts">
-        <div class="quiz-opt" data-idx="0" onclick="quizAnswer(1,0,1)"><span class="opt-letter">A</span><span class="opt-text">第 2 个步骤</span></div>
-        <div class="quiz-opt" data-idx="1" onclick="quizAnswer(1,1,1)"><span class="opt-letter">B</span><span class="opt-text">场景 2 标识，避免跨场景冲突</span></div>
-        <div class="quiz-opt" data-idx="2" onclick="quizAnswer(1,2,1)"><span class="opt-letter">C</span><span class="opt-text">Schema 版本号</span></div>
-        <div class="quiz-opt" data-idx="3" onclick="quizAnswer(1,3,1)"><span class="opt-letter">D</span><span class="opt-text">存储大小限制 2KB</span></div>
-      </div>
-      <div class="quiz-feedback"><strong>正确答案: B</strong> s2 = scene-2，含场景标识避免跨场景 localStorage 冲突。场景 1 用 s1，场景 3 用 s3。每个场景独立管理自己的持久化状态。</div>
-    </div>
-
-    <div class="quiz-card" data-q="2">
-      <div class="quiz-q"><div class="q-num">3</div><span>步骤状态推导的三个状态是？</span></div>
-      <div class="quiz-opts">
-        <div class="quiz-opt" data-idx="0" onclick="quizAnswer(2,0,1)"><span class="opt-letter">A</span><span class="opt-text">未开始/进行中/已完成</span></div>
-        <div class="quiz-opt" data-idx="1" onclick="quizAnswer(2,1,1)"><span class="opt-letter">B</span><span class="opt-text">已完成(✅)/就绪(🔶)/待开始(⏳)</span></div>
-        <div class="quiz-opt" data-idx="2" onclick="quizAnswer(2,2,1)"><span class="opt-letter">C</span><span class="opt-text">P0/P1/P2</span></div>
-        <div class="quiz-opt" data-idx="3" onclick="quizAnswer(2,3,1)"><span class="opt-letter">D</span><span class="opt-text">待审核/已通过/已驳回</span></div>
-      </div>
-      <div class="quiz-feedback"><strong>正确答案: B</strong> 已完成(✅ 当前步骤已勾选)、就绪(🔶 前置步骤已全部完成，当前可开始)、待开始(⏳ 前置步骤未完成，当前不可操作)。状态由 deriveStatus() 根据前置步骤完成情况自动推导，无需手动标记。</div>
-    </div>
-
-    <div class="quiz-card" data-q="3">
-      <div class="quiz-q"><div class="q-num">4</div><span>Data/Template/Renderer 三层架构中，Renderer 层的职责是？</span></div>
-      <div class="quiz-opts">
-        <div class="quiz-opt" data-idx="0" onclick="quizAnswer(3,0,2)"><span class="opt-letter">A</span><span class="opt-text">管理 localStorage 读写</span></div>
-        <div class="quiz-opt" data-idx="1" onclick="quizAnswer(3,1,2)"><span class="opt-letter">B</span><span class="opt-text">定义 data-* DOM 钩子</span></div>
-        <div class="quiz-opt" data-idx="2" onclick="quizAnswer(3,2,2)"><span class="opt-letter">C</span><span class="opt-text">视觉更新：CSS class 切换 + 动画 + 焦点环</span></div>
-        <div class="quiz-opt" data-idx="3" onclick="quizAnswer(3,3,2)"><span class="opt-letter">D</span><span class="opt-text">处理用户事件分发</span></div>
-      </div>
-      <div class="quiz-feedback"><strong>正确答案: C</strong> 三层职责分明 — Data 层：状态 + localStorage；Template 层：data-* 钩子 + ARIA；Renderer 层：classList.toggle + CSS transition + 焦点环 2px。三层通过事件总线通信，不直接互相调用。</div>
-    </div>
-
-    <div class="quiz-card" data-q="4">
-      <div class="quiz-q"><div class="q-num">5</div><span>键盘快捷键 1-9 映射中，哪个行为是正确的？</span></div>
-      <div class="quiz-opts">
-        <div class="quiz-opt" data-idx="0" onclick="quizAnswer(4,0,1)"><span class="opt-letter">A</span><span class="opt-text">任何情况下都拦截数字键</span></div>
-        <div class="quiz-opt" data-idx="1" onclick="quizAnswer(4,1,1)"><span class="opt-letter">B</span><span class="opt-text">input/textarea 聚焦时跳过快捷键</span></div>
-        <div class="quiz-opt" data-idx="2" onclick="quizAnswer(4,2,1)"><span class="opt-letter">C</span><span class="opt-text">使用 preventDefault 阻止所有默认行为</span></div>
-        <div class="quiz-opt" data-idx="3" onclick="quizAnswer(4,3,1)"><span class="opt-letter">D</span><span class="opt-text">快捷键覆盖所有键盘输入</span></div>
-      </div>
-      <div class="quiz-feedback"><strong>正确答案: B</strong> 键盘劫持检测：当焦点在 input/textarea/select 元素上时，跳过快捷键处理，避免用户正常输入被拦截。这是 a11y 的基本要求，防止键盘用户无法在表单中输入数字。</div>
-    </div>
-
-    <div class="quiz-card" data-q="5">
-      <div class="quiz-q"><div class="q-num">6</div><span>交付物类型过滤的数据来源是？</span></div>
-      <div class="quiz-opts">
-        <div class="quiz-opt" data-idx="0" onclick="quizAnswer(5,0,1)"><span class="opt-letter">A</span><span class="opt-text">手动在 HTML 中标注 data-type</span></div>
-        <div class="quiz-opt" data-idx="1" onclick="quizAnswer(5,1,1)"><span class="opt-letter">B</span><span class="opt-text">autoAnnotate() 根据文件扩展名自动标注</span></div>
-        <div class="quiz-opt" data-idx="2" onclick="quizAnswer(5,2,1)"><span class="opt-letter">C</span><span class="opt-text">从服务器 API 获取</span></div>
-        <div class="quiz-opt" data-idx="3" onclick="quizAnswer(5,3,1)"><span class="opt-letter">D</span><span class="opt-text">从 localStorage 读取</span></div>
-      </div>
-      <div class="quiz-feedback"><strong>正确答案: B</strong> 页面加载时 autoAnnotate() 扫描所有 .deliv-link，根据文件扩展名自动标注 data-type (HTML/MD/CSS/Test/其他)，零维护成本。新增交付物只需确保扩展名正确即可自动归类。</div>
-    </div>
-  </div>
-
-  <div class="quiz-score" id="quizScore">
-    <div class="qs-big" id="qsBig">0 / 6</div>
-    <div class="qs-sub" id="qsSub">继续努力！重温文档后再来挑战</div>
-  </div>
-
-  <div class="tip-box" style="margin-top:14px"><strong>💡 自测目的:</strong> 检验 ① 6 组件事件类型 ② localStorage Schema ③ 步骤状态推导 ④ Data/Template/Renderer 分层 ⑤ a11y 键盘劫持 ⑥ 交付物自动标注 的掌握。得分 ≥ 80% 表示可进入实际开发；60-80% 建议重读对应章节；< 60% 请从 index.md 重新开始。</div>
-</div>
-<!-- ═══════════════════════════════════════════════════════ PANEL: 避坑 ═══ -->
-<div class="panel" id="panelPitfalls">
-  <div class="subhead">
-    <h2 style="font-size:1rem;display:flex;align-items:center;gap:8px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></span>常见踩坑</h2>
-    <div class="sh-meta">
-      <span class="sh-item">⚠ 6 大类</span>
-      <span class="sh-item">🔧 含修复方案</span>
-    </div>
-  </div>
-
-  <div class="pitfall-list">
-    <div class="pitfall">
-      <div class="pf-head">
-        <span class="pf-ico">🔑</span>
-        <span class="pf-title">P0: localStorage key 未含场景标识导致跨场景冲突</span>
-        <span class="pf-sev s-high">HIGH</span>
-      </div>
-      <div class="pf-body">
-        <p>直接使用 checklist 作为 key 而非 yry-arch-s2-checklist，导致场景 1、场景 2、场景 3 的勾选状态互相覆盖。</p>
-        <p><strong>症状:</strong> 在场景 1 页面勾选步骤后，打开场景 2 页面发现步骤也被勾选了。</p>
-      </div>
-      <div class="pf-fix"><strong>修复:</strong> 1) 统一使用 yry-arch-{scene}-{purpose} 命名规范 2) 在每个场景的 key 中加入场景标识 s2 3) 在 index.md 的 localStorage Schema 章节记录所有 key</div>
-    </div>
-
-    <div class="pitfall warn">
-      <div class="pf-head">
-        <span class="pf-ico">🎨</span>
-        <span class="pf-title">P0: CSS class 命名不一致导致动画失效</span>
-        <span class="pf-sev s-high">HIGH</span>
-      </div>
-      <div class="pf-body">
-        <p>JS 使用 classList.toggle('collapsed') 但 CSS 定义了 .collapse，class 名不匹配导致折叠面板无动画。</p>
-        <p><strong>症状:</strong> 点击折叠按钮无反应；DevTools 显示 class 已添加但元素未隐藏。</p>
-      </div>
-      <div class="pf-fix"><strong>修复:</strong> 1) 统一 4 个 CSS class 命名: collapsed / open / dim / on 2) 在事件契约中明确列出每个组件使用的 class 名 3) TC-11 折叠测试会捕获此类不匹配</div>
-    </div>
-
-    <div class="pitfall warn">
-      <div class="pf-head">
-        <span class="pf-ico">⌨️</span>
-        <span class="pf-title">P1: 键盘快捷键劫持 input 输入</span>
-        <span class="pf-sev s-med">MED</span>
-      </div>
-      <div class="pf-body">
-        <p>keydown 事件处理中未检查 e.target.tagName，导致用户在 input 中按数字键时触发标签页切换而非正常输入。</p>
-        <p><strong>症状:</strong> 在搜索框中输入数字时页面突然切换到其他标签页。</p>
-      </div>
-      <div class="pf-fix"><strong>修复:</strong> 在 keydown handler 开头加入 if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return; 跳过表单元素。</div>
-    </div>
-
-    <div class="pitfall tip">
-      <div class="pf-head">
-        <span class="pf-ico">💾</span>
-        <span class="pf-title">P1: localStorage 未 try/catch 导致隐私模式下崩溃</span>
-        <span class="pf-sev s-med">MED</span>
-      </div>
-      <div class="pf-body">
-        <p>直接调用 localStorage.setItem/getItem 未包裹 try/catch。浏览器隐私模式或存储满时抛出 QuotaExceededError 导致整个组件初始化失败。</p>
-        <p><strong>症状:</strong> 隐私模式下页面 JS 报错，勾选功能完全不可用。</p>
-      </div>
-      <div class="pf-fix"><strong>修复:</strong> 所有 localStorage 操作包裹 try { ... } catch(e) {} 。读操作失败返回默认空对象 {}，写操作失败静默降级为内存模式。</div>
-    </div>
-
-    <div class="pitfall">
-      <div class="pf-head">
-        <span class="pf-ico">📐</span>
-        <span class="pf-title">P1: 跳过 Data 层直接操作 DOM 导致状态不一致</span>
-        <span class="pf-sev s-med">MED</span>
-      </div>
-      <div class="pf-body">
-        <p>在事件 handler 中直接修改 DOM (el.classList.toggle)，而不是先更新 Data 层状态再触发 Renderer 重绘。多次操作后 DOM 状态与 localStorage 不一致。</p>
-        <p><strong>症状:</strong> 刷新页面后勾选状态与页面显示不匹配；进度条百分比与实际勾选数不同。</p>
-      </div>
-      <div class="pf-fix"><strong>修复:</strong> 严格遵守 Data → Renderer 单向数据流：事件 → 更新状态 → 写 localStorage → 调用 render() 更新 DOM。永远不直接从事件 handler 修改 DOM。</div>
-    </div>
-
-    <div class="pitfall tip">
-      <div class="pf-head">
-        <span class="pf-ico">🧪</span>
-        <span class="pf-title">P2: 未定义事件契约就写实现代码</span>
-        <span class="pf-sev s-low">LOW</span>
-      </div>
-      <div class="pf-body">
-        <p>直接开始写 addEventListener 代码，未先定义事件类型、CSS class 映射、回调签名。导致后续组件间事件不一致，重构成本高。</p>
-        <p><strong>症状:</strong> 勾选组件用 change 事件，折叠组件用 click 事件，标签组件混用两种事件 — 维护困难。</p>
-      </div>
-      <div class="pf-fix"><strong>修复:</strong> 先在 index.md §0 中定义事件契约表格：组件 → 事件类型 → CSS class → 回调签名。6 组件统一为 click (5 个) + keydown (1 个) 两种事件类型。</div>
-    </div>
-  </div>
-
-  <div class="tip-box warn" style="margin-top:14px"><strong>⚠ 严重程度说明:</strong> <strong>HIGH</strong> = 触发功能阻断，需立即修复 · <strong>MED</strong> = 影响用户体验但不阻断核心功能 · <strong>LOW</strong> = 反模式但可后续改进。修复 HIGH 级错误后再继续后续步骤。</div>
-</div>
-<div class="panel" id="panelSimulator">
-  <div class="subhead">
-    <h2 style="font-size:1rem;display:flex;align-items:center;gap:8px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></span>清单交互模拟演练</h2>
-    <div class="sh-meta">
-      <span class="sh-item">🎬 6 阶段</span>
-      <span class="sh-item">⏯ 0.5x-3x 速度</span>
-      <span class="sh-item">📜 实时日志</span>
-    </div>
-  </div>
-  <div class="section">
-    <p style="font-size:.76rem;color:var(--text3);margin-bottom:14px">交互式模拟清单交互组件的六个核心阶段。点击播放观察从组件拆解到 4 方签收的完整流程。每个阶段都包含子任务和实时日志。</p>
-    <div class="play-bar">
-      <button class="btn-play" id="btnSimPlay" onclick="startSim()">▶ 开始模拟</button>
-      <button class="btn-reset" onclick="resetSim()">↺ 重置</button>
-      <select class="speed-select" id="speedSelect" onchange="setSpeed(this.value)">
-        <option value="1">1x 速度</option><option value="2">2x 快速</option><option value="0.5">0.5x 慢速</option><option value="3">3x 极速</option>
-      </select>
-    </div>
-    <div class="stage-list" id="stageList">
-      <div class="stage-row" id="stg0" data-stagetime="30"><div class="st-num">①</div><div class="st-info"><div class="st-name">组件拆解 <span class="st-time" id="stg0t">30s</span></div><div class="st-detail"><span class="st-sub">勾选</span> change + bool · <span class="st-sub">折叠</span> change + bool · <span class="st-sub">标签</span> change + string · <span class="st-sub">风险</span> persist + string</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
-      <div class="stage-row" id="stg1" data-stagetime="45"><div class="st-num">②</div><div class="st-info"><div class="st-name">TC 设计 <span class="st-time" id="stg1t">45s</span></div><div class="st-detail"><span class="st-sub">TC-10</span> 勾选联动 · <span class="st-sub">TC-11</span> 折叠展开 · <span class="st-sub">TC-12</span> 标签切换 · <span class="st-sub">TC-13</span> 风险行 · <span class="st-sub">TC-14</span> 持久化</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
-      <div class="stage-row" id="stg2" data-stagetime="90"><div class="st-num">③</div><div class="st-info"><div class="st-name">核心实现 <span class="st-time" id="stg2t">90s</span></div><div class="st-detail"><span class="st-sub">Data</span> 状态 + 事件 · <span class="st-sub">Template</span> data-* + ARIA · <span class="st-sub">Renderer</span> 6 组件 + 焦点环 2px</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
-      <div class="stage-row" id="stg3" data-stagetime="30"><div class="st-num">④</div><div class="st-info"><div class="st-name">Schema 发布 <span class="st-time" id="stg3t">30s</span></div><div class="st-detail"><span class="st-sub">checks</span> 状态数组 · <span class="st-sub">folds</span> 折叠数组 · <span class="st-sub">tabs</span> 标签数组 · <span class="st-sub">version</span> 1.0.0 · <span class="st-sub">migrate</span> v0→v1</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
-      <div class="stage-row" id="stg4" data-stagetime="60"><div class="st-num">⑤</div><div class="st-info"><div class="st-name">a11y + 验证 <span class="st-time" id="stg4t">60s</span></div><div class="st-detail"><span class="st-sub">焦点环</span> 2px · <span class="st-sub">键盘</span> 无劫持 · <span class="st-sub">TC</span> 23/23 · <span class="st-sub">Lighthouse</span> 96</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
-      <div class="stage-row" id="stg5" data-stagetime="15"><div class="st-num">⑥</div><div class="st-info"><div class="st-name">4 方签收 <span class="st-time" id="stg5t">15s</span></div><div class="st-detail"><span class="st-sub">PO</span> 业务价值 · <span class="st-sub">Tech</span> 架构 · <span class="st-sub">QA</span> TC · <span class="st-sub">新人官</span> 文档 · <span class="st-sub">交互</span> a11y</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
-    </div>
-    <div class="log-box" id="simLogBox"><div style="color:var(--text3)">等待模拟开始...</div></div>
-  </div>
-  <div class="tip-box info"><strong>💡 模拟说明:</strong> 上述模拟以 1x 速度（默认）总耗时 ~100s。点击「3x 极速」可压缩到 ~33s。模拟结束后实际执行时间可见右上角「⏱」统计。建议在快速预演后，再用真实命令复现。</div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<!-- Floating help button --></div>
-
-<script src="../../../../cdn/yry-typewriter/index.js"></script>
-<script src="../../../../cdn/yry-cdn-detect/index.js"></script>
-<script>/* ─── Typewriter Demo ─── */
-var twScenarios={bind:[{t:'cmd',p:'$ ',c:'# 阶段1: 事件绑定 — 6 组件事件契约'},{t:'out',c:'🔗 清单交互组件 — 事件契约定义'},{t:'info',c:'[1/6] 勾选进度联动 — checkbox change 事件...',d:300},{t:'ok',c:'  ✓ 事件: change | 状态: step-N 布尔 | CSS: checked'},{t:'ok',c:'  ✓ DOM 钩子: data-checklist-checked | ARIA: aria-checked'},{t:'info',c:'[2/6] 折叠面板 — click 事件...',d:400},{t:'ok',c:'  ✓ 事件: click | 状态: bool | CSS: collapsed'},{t:'ok',c:'  ✓ 动画: max-height 0.3s ease-out | ARIA: aria-expanded'},{t:'info',c:'[3/6] 标签页切换 — click + keydown 事件...',d:500},{t:'ok',c:'  ✓ 事件: click + keydown | 状态: string | CSS: opacity'},{t:'ok',c:'  ✓ 键盘: 1-9 映射 7 面板 + 跳过 input 聚焦'},{t:'info',c:'[4/6] 风险行展开 — click 事件...',d:400},{t:'ok',c:'  ✓ 事件: click | 状态: bool | CSS: open'},{t:'ok',c:'  ✓ 详情区展开 + 箭头旋转动画'},{t:'info',c:'[5/6] 交付物类型过滤 — click 事件...',d:400},{t:'ok',c:'  ✓ 事件: click | 状态: string | CSS: dim/on'},{t:'ok',c:'  ✓ 六类过滤: 全部/HTML/MD/CSS/Test/其他'},{t:'info',c:'[6/6] 路径复制 — click 事件...',d:400},{t:'ok',c:'  ✓ 事件: click | toast: 1.5s | 剪贴板写入'},{t:'ok',c:'  ✓ 哈希定位: #step-N-deliv 跨 tab 跳转'},{t:'ok',c:'',d:200},{t:'ok',c:'✅ 6 组件事件契约定义完成 — 5 click + 1 keydown'},{t:'muted',c:'💡 下一步: localStorage 持久化 + Data/Template/Renderer 实现',d:600}],persist:[{t:'cmd',p:'$ ',c:'# 阶段2: localStorage 持久化 + Data 层'},{t:'out',c:'💾 清单交互组件 — Schema 与持久化'},{t:'info',c:'[Data] 状态结构定义...',d:400},{t:'ok',c:'  ✓ step-N: boolean — 勾选状态'},{t:'ok',c:'  ✓ deriveStatus(): 已完成(✅)/就绪(🔶)/待开始(⏳)'},{t:'info',c:'[localStorage] Schema 发布...',d:500},{t:'ok',c:'  ✓ Key: yry-arch-s2-checklist — step-N 布尔 JSON'},{t:'ok',c:'  ✓ Key: yry-arch-s2-checklist-tab — 活跃标签页'},{t:'info',c:'[Adapter] 读写适配器...',d:400},{t:'ok',c:'  ✓ read(): try/catch + 默认 {} + 隐私模式兼容'},{t:'ok',c:'  ✓ write(): try/catch + QuotaExceededError 降级'},{t:'info',c:'[Template] data-* 钩子...',d:500},{t:'ok',c:'  ✓ data-checklist-checked / data-checklist-fold'},{t:'ok',c:'  ✓ data-checklist-tab / data-checklist-risk'},{t:'ok',c:'  ✓ autoAnnotate(): 扩展名 → data-type 自动标注'},{t:'info',c:'[Renderer] CSS class 驱动...',d:400},{t:'ok',c:'  ✓ progress bar: width transition 0.5s ease'},{t:'ok',c:'  ✓ fold panel: max-height 0.3s ease-out'},{t:'ok',c:'  ✓ toast: opacity 0.15s + translateY'},{t:'ok',c:'',d:200},{t:'ok',c:'✅ localStorage + Data/Template/Renderer 完成 (2 script 块 ~410 行)'},{t:'muted',c:'💡 下一步: TC-10~16 全量验证 26 断言',d:600}],test:[{t:'cmd',p:'$ ',c:'# 阶段3: TC 验证 + a11y + 签收'},{t:'out',c:'🧪 清单交互组件 — 测试验证'},{t:'info',c:'[TC-10] 勾选进度联动 — 5 断言...',d:400},{t:'ok',c:'  ✓ 勾选→进度%更新 + 完成数+1 + 状态推导 <50ms'},{t:'ok',c:'  ✓ 全选后进度=100% 验证正确'},{t:'info',c:'[TC-11] 折叠面板动画 — 3 断言...',d:400},{t:'ok',c:'  ✓ 展开/收起 300ms + collapsed class 切换'},{t:'info',c:'[TC-12] 标签页全切换 — 7 断言...',d:500},{t:'ok',c:'  ✓ 7/7 面板显示 + 键盘 1-9 映射 + input 跳过'},{t:'info',c:'[TC-13] 刷新恢复 — 3 断言...',d:400},{t:'ok',c:'  ✓ localStorage 回读勾选 + tab 状态全恢复'},{t:'info',c:'[TC-14] 风险行展开 — 3 断言...',d:400},{t:'ok',c:'  ✓ 详情显示/隐藏 + 箭头旋转 + open class 切换'},{t:'info',c:'[TC-15] 交付物过滤 — 6 断言...',d:500},{t:'ok',c:'  ✓ 全部/HTML/MD/CSS/Test/其他 — 六类全通过'},{t:'info',c:'[TC-16] 路径复制 — 2 断言...',d:400},{t:'ok',c:'  ✓ 单步复制 + 全部复制 + 剪贴板写入 + toast 1.5s'},{t:'info',c:'[a11y] 无障碍验证...',d:400},{t:'ok',c:'  ✓ 焦点环 2px + 键盘劫持检测 + prefers-reduced-motion'},{t:'ok',c:'  ✓ ARIA 标签完整 + Lighthouse a11y 100'},{t:'info',c:'[Signoff] 4 方签收...',d:400},{t:'ok',c:'  ✓ PO 业务价值 + Tech Lead 架构 + QA 26 断言'},{t:'ok',c:'  ✓ 新人官文档可读性 + 交互 a11y 通过'},{t:'ok',c:'',d:200},{t:'ok',c:'✅ 7/7 TC 套件 26/26 断言通过 — 4 方签收完成'},{t:'muted',c:'🎉 checklist-interact.js v1.0.0 已交付! P2 改进项: 撤销/重做 + 勾选动画',d:600}]};
-
-setTimeout(function(){twRun('bind')},400);
-/* ─── Help Overlay ─── */
-/* ─── Timeline Progress ─── */
-(function(){var completed={};try{var raw=localStorage.getItem('yry-arch-s2-checklist');if(raw)completed=JSON.parse(raw)}catch(e){}function updateTimeline(){var done=0;var active=false;document.querySelectorAll('.tl-node').forEach(function(n,i){var stepNum=i+1;n.classList.remove('done','active');if(completed['s'+(stepNum+1)+'-intro']||completed['s'+(stepNum+2)+'-code']||completed['s'+(stepNum+1)+'-clone']||(stepNum===3&&completed['s7-explore'])||(stepNum===5&&completed['s10-sync'])){n.classList.add('done');done++}else if(!active){n.classList.add('active');active=true}});var pct=done/6*100;var p=document.getElementById('tlProgress');if(p)p.style.width=pct+'%'}setTimeout(updateTimeline,200)})();
-
-/* ─── Sim Log ms (time delta) ─── */
-(function(){var origLog=function(msg,color){var box=document.getElementById('simLogBox');if(!box)return;box.style.display='block';var div=document.createElement('div');div.className='log-line';var now=new Date();var time=('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2)+':'+('0'+now.getSeconds()).slice(-2)+'.'+('00'+now.getMilliseconds()).slice(-3);div.innerHTML='<span class="log-time">'+time+'</span><span class="log-icon" style="color:'+(color||'var(--text2)')+'">●</span><span style="color:'+(color||'var(--text2)')+'">'+msg+'</span>';var ms=document.createElement('span');ms.className='log-ms';ms.textContent='+0ms';div.appendChild(ms);box.appendChild(div);box.scrollTop=box.scrollHeight;return div};var startTime=Date.now();window.simLog=function(msg,color){var div=origLog(msg,color);if(div){var ms=Date.now()-startTime;div.querySelector('.log-ms').textContent='+'+ms+'ms'}};setTimeout(function(){window.simLog=window.simLog;},0)})();
-
-var simRunning=false,simSpeed=1,simStageIds=['stg0','stg1','stg2','stg3','stg4','stg5'];
-var stageDefsS2=[{name:'组件拆解',detail:'6 组件事件契约 + DOM hook 命名 + 状态机设计',logLines:['🧩 打开 spec/interact.json — 6 组件事件契约 ...','  ✓ 勾选组件 (checkbox): change 事件 + bool 状态 + data-checklist-checked','  ✓ 折叠组件 (fold): click 事件 + bool 状态 + data-checklist-fold','  ✓ 标签组件 (tab): click/keydown 事件 + string 状态 + data-checklist-tab','  ✓ 风险行组件 (risk): click 事件 + bool 状态 + data-checklist-risk','  ✓ 过滤组件 (filter): click 事件 + string 状态 + data-checklist-filter','  ✓ 复制组件 (copy): click 事件 + clipboard API + data-checklist-copy','  ✓ 6 组件事件契约定义完成 — 独立可测试基线已建立']},{name:'TC 设计',detail:'7 套测试用例 (TC-10/11/12/13/14/15/16) + 26 项检查点',logLines:['🧪 打开 tests/checklist-interact/ — 7 套测试设计 ...','  ✓ TC-10: 勾选联动 — 5 项检查点 (change + progress + a11y)','  ✓ TC-11: 折叠展开 — 3 项检查点 (toggle + animation + a11y)','  ✓ TC-12: 标签切换 — 7 项检查点 (click/keydown + URL sync + a11y)','  ✓ TC-13: 持久化恢复 — 3 项检查点 (read/write/migrate)','  ✓ TC-14: 风险行展开 — 1 项检查点 (click + toggle)','  ✓ TC-15: 交付物过滤 — 6 项检查点 (click + dim/on + 6 types)','  ✓ TC-16: 路径复制 — 2 项检查点 (single + all + clipboard)','  ✓ TC 设计完成 — 26/26 检查点可验证']},{name:'核心实现',detail:'checklist-interact.js (~410 行) + Data/Template/Renderer 三层',logLines:['⚙️ 实现 checklist-interact.js — Data/Template/Renderer 三层 + 6 组件 ...','  ✓ Data 层: checks/folds/tabs/risks/filters/copy 状态 + 事件总线 + localStorage 适配器','  ✓ Template 层: data-* 钩子识别 + ARIA 角色分配 + 状态映射','  ✓ Renderer 层: 6 组件各 ~70 行内 + 焦点环 2px + 键盘劫持检测','  ✓ 总行数: ~410 — Gate A 通过 — TypeScript JSDoc 全覆盖','  ✓ checklist-interact.js v1.0.0 完成 — 6 组件独立可维护']},{name:'Schema 发布',detail:'localstorage-schema.json v1 + AJV 验证 + migrate 路径',logLines:['💾 发布 localstorage-schema.json v1 — 5 字段 ...','  ✓ checks: object[] — 勾选状态数组 + 元数据','  ✓ folds: object[] — 折叠状态数组 + 元数据','  ✓ tabs: object[] — 标签状态数组 + 元数据','  ✓ version: "1.0.0" — Schema 版本号 (AJV 必检)','  ✓ migratedFrom: string[] — 旧版 v0 标识 (向后兼容)','  ✓ migrate v0→v1 路径验证 — 旧用户数据无损升级']},{name:'a11y + 验证',detail:'焦点环 2px + TC-10~16 全绿 + Lighthouse 96',logLines:['♿ 执行 a11y 验证 + 7 TC 套件全跑 ...','  ✓ 焦点环 2px 可见 — 所有 data-* 元素满足 :focus-visible','  ✓ 键盘劫持检测: 6 组件无 preventDefault 滥用','  ✓ prefers-reduced-motion: 折叠动画自动降级为 0.3s','  ✓ TC-10~16: 26/26 检查点 PASS','  ✓ Lighthouse: 96 分 (a11y 100 / performance 94)','  ✓ a11y 验证完成 — checklist-interact.js 可发布']},{name:'4 方签收',detail:'PO + Tech Lead + QA + 新人官 + 交互测试官 全签字',logLines:['✍️ RACI 评审 + 5 方签收 ...','  ✓ PO 评审: 业务价值对齐 + 用户故事 16 项确认','  ✓ Tech Lead 评审: 架构合理性 + Data/Template/Renderer 三层清晰','  ✓ QA 评审: 23 项检查点全绿 + 回归测试 PASS','  ✓ 新人官 评审: 文档可读性 + 7 步上手路径 30min 可达','  ✓ 交互测试官 评审: 焦点环 + 键盘劫持 + a11y 100 分','  ✅ 4 方签收完成 — checklist-interact.js v1.0.0 发布']}];
-function updateStage(idx,statusCls,statusText,barPct){var row=document.getElementById(simStageIds[idx]);if(!row)return;row.classList.remove('done','active','failed');if(statusCls==='ok')row.classList.add('done');if(statusCls==='loading')row.classList.add('active');if(statusCls==='err')row.classList.add('failed');var st=row.querySelector('.st-status');st.textContent=statusText;st.className='st-status '+statusCls;row.querySelector('.st-bar').style.width=(barPct||0)+'%'}
-function resetSim(){if(simRunning)return;simStageIds.forEach(function(id,i){updateStage(i,'waiting','等待中',0);var t=document.getElementById(id+'t');if(t)t.textContent=id.replace('stg','')+'s'});var box=document.getElementById('simLogBox');if(box){box.innerHTML='<div style="color:var(--text3)">等待模拟开始...</div>';box.style.display='none'}var btn=document.getElementById('btnSimPlay');btn.classList.remove('running');btn.textContent='▶ 开始模拟'}
-function setSpeed(val){simSpeed=parseFloat(val)}
-function startSim(){if(simRunning)return;simRunning=true;var btn=document.getElementById('btnSimPlay');btn.classList.add('running');btn.textContent='⏳ 模拟中...';var box=document.getElementById('simLogBox');box.style.display='block';box.innerHTML='';simLog('🚀 开始清单交互模拟演练','var(--accent)');var baseDur=1000;var i=0;function next(){if(i>=stageDefsS2.length){setTimeout(function(){simLog('✅ 6 阶段模拟完成 — checklist-interact.js v1.0.0 已就绪 + 4 方签收完成','var(--pass)');btn.classList.remove('running');btn.textContent='✓ 模拟完成';simRunning=false;YrY.toast('清单交互模拟完成',2500);setTimeout(function(){btn.textContent='▶ 重新模拟'},2000)},400/simSpeed);return}var def=stageDefsS2[i];updateStage(i,'loading','学习中...',0);var tEl=document.getElementById(simStageIds[i]+'t');if(tEl){var orig=document.getElementById(simStageIds[i]).dataset.stagetime;if(orig)tEl.textContent=Math.round(parseInt(orig)/simSpeed)+'s'}simLog('⏳ '+def.name+' — '+def.detail,'var(--cyan)');var start=Date.now();var duration=baseDur/simSpeed;var tick=setInterval(function(){var pct=Math.min(100,((Date.now()-start)/duration)*100);var el=document.getElementById(simStageIds[i]);if(el)el.querySelector('.st-bar').style.width=pct+'%';if(pct>=100)clearInterval(tick)},16);var logDelay=duration/(def.logLines.length+2);def.logLines.forEach(function(line,li){setTimeout(function(){simLog(line,line.indexOf('✓')!==-1||line.indexOf('✅')!==-1?'var(--pass)':'var(--text2)')},logDelay*(li+1))});setTimeout(function(){clearInterval(tick);updateStage(i,'ok','完成 ✓',100);simLog('  ✅ '+def.name+' — 阶段完成','var(--pass)');i++;setTimeout(next,300/simSpeed)},duration)}setTimeout(next,300/simSpeed)}
-</script>
-
-<div class="footer">
-  <span>YrY · 场景演示 v4.5</span>
-  <span>·</span>
-  <a href="../../../index.html">📄 文档中心</a>
-  <span>·</span>
-  <a href="计划清单.html">📋 计划清单</a>
-  <span>·</span>
-  <a href="架构图.html">📐 架构图</a>
-  <span>·</span>
-  <a href="知识图谱.html">🔗 知识图谱</a>
-  <span>·</span>
-  <a href="源码.html">📄 源码</a>
-  <span>·</span>
-  <a href="测试面板.html">🧪 测试</a>
-  <span>·</span>
-  <a href="审查.html">📝 审计</a>
-  <span>·</span>
-  <span style="color:var(--accent)">💡 演示</span>
+<yry-scene-footer version="v5.4.0" date="2026-06-22" docs-link="../../../../docs/index.html"></yry-scene-footer>
 </div>
 <script src="../../../../cdn/shared/index.js"></script>
-<script>YrY.initDemoTabs('yry-arch-s2-demo')</script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
+<script src="../../../../cdn/yry-scene-stats/index.js"></script>
+<script src="../../../../cdn/yry-scene-tabs/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
 </body>
 </html>
-
-<script>YrY.initDocsQuiz({total:6,correctAnswers:{0:2,1:1,2:1,3:2,4:1,5:1},fbExcellent:'🏆 优秀!你已经掌握清单交互 6 组件核心知识,建议进入实际开发',fbGood:'👍 良好!建议重读错误题对应的章节',fbPoor:'📚 加油!请从 index.md 规约重新开始'})</script>
-<script>YrY.initRadar([0.95,0.90,0.85,0.80,0.88,0.92],[0.5,0.5,0.7,0.5,0.5,0.6],['<strong>事件绑定 (95%):</strong> 6 组件事件契约完整 — 5 click + 1 keydown，回调签名统一，DOM 钩子 data-* 命名一致。','<strong>状态管理 (90%):</strong> Data 层 step-N 布尔状态 + deriveStatus() 三态推导 + 单向数据流无 DOM 直接操作。','<strong>持久化 (85%):</strong> localStorage 双 key (s2-checklist + s2-checklist-tab) try/catch 容错 + 隐私模式降级。','<strong>CSS 动画 (80%):</strong> 4 class 驱动 (collapsed/open/dim/on) + 进度条 0.5s ease + 折叠 0.3s ease-out + toast 0.15s。','<strong>a11y 无障碍 (88%):</strong> 焦点环 2px + 键盘劫持检测 + prefers-reduced-motion + ARIA 标签完整。','<strong>测试覆盖 (92%):</strong> TC-10~16 共 7 套件 26 断言 100% 通过 + 边界条件 + 异常路径全覆盖。'],'💡 悬停查看详情')</script>
-<script>YrY.initChecklist({storageKey:'yry-arch-s2-checklist',exportTitle:'清单交互组件实现任务清单进度'})</script>
-<script>YrY.initNextAction([{t:'拆解 6 组件交互边界',d:'分析勾选/折叠/标签/风险/过滤/复制的事件类型、状态模型、CSS class。约 30 分钟。',cta:'开始第 1 步 →'},{t:'定义事件契约 + Data 层',d:'确定 5 click + 1 keydown 事件契约,实现 step-N 状态结构和 deriveStatus()。约 70 分钟。',cta:'开始第 2 步 →'},{t:'实现 Template + Renderer 层',d:'编写 data-* 钩子 + ARIA 标签 + autoAnnotate() + 4 CSS class 驱动动画。约 80 分钟。',cta:'开始第 3 步 →'},{t:'localStorage 持久化 + a11y',d:'实现双 key 读写 + try/catch 容错 + 焦点环 2px + 键盘劫持检测。约 50 分钟。',cta:'开始第 4 步 →'},{t:'TC-10~16 全量验证',d:'运行 7 套件 26 断言 + 边界条件 + 异常路径,确保 100% 通过。约 30 分钟。',cta:'开始第 5 步 →'},{t:'交付物过滤 + 路径复制',d:'实现六类过滤按钮 + 一键复制 + toast 1.5s + 哈希定位 #step-N-deliv。约 20 分钟。',cta:'开始第 6 步 →'},{t:'🎉 实现完成!',d:'你已经完成清单交互 6 组件全部实现。可进入时间线 Tab 查看完整路径,或在自测 Tab 检验掌握度。',cta:'查看时间线 →'}])</script>
-<script>YrY.renderHelpOverlay()</script>

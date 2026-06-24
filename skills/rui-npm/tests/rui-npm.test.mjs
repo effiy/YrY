@@ -17,7 +17,7 @@
  * 覆盖总数: 120+ 断言，每个 FP ≥3 类用例（正常路径 + 边界 + 异常）
  */
 
-import { describe, it, assert, run as runTests } from "../../../lib/test-harness.mjs";
+import { describe, it, assert, run as runTests } from "../../../lib/vitest-adapter.mjs";
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, writeFileSync, rmSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -813,4 +813,3 @@ describe("§R 回归测试 — 命令组合与集成", () => {
 
 // ── Run ────────────────────────────────────────────────────────────
 const exitCode = await runTests();
-process.exit(exitCode);

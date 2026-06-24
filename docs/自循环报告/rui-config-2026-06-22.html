@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自循环报告 · rui-config</title>
+<link rel="stylesheet" href="../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../cdn/theme/index.css">
+	<link rel="stylesheet" href="../../cdn/shared-reports/index.css">
+	<style>
+	.yry-container { max-width: 800px; }
+	.yry-header .icon { font-size: 2.5rem; }
+	.yry-header h1 { font-size: 1.6rem; margin: 12px 0 6px; }
+	/* common styles covered by shared-reports.css */
+	/* Enhanced sections — page-specific */
+	.yry-impact-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+	.yry-impact-badge { display: inline-block; padding: 4px 14px; border-radius: 6px; color: #fff; font-size: .8rem; font-weight: 600; }
+	.yry-impact-summary { font-size: .84rem; color: var(--yry-text2); }
+	.yry-impact-detail { padding: 12px; background: rgba(15,23,42,.4); border-radius: 8px; border: var(--yry-border); margin-top: 8px; }
+	.yry-hist-dot { transition: transform .15s; }
+	.yry-hist-dot:hover { transform: scale(1.8); }
+	.yry-cross-item { flex: 1; min-width: 200px; }
+	.yry-cross-label { font-size: .78rem; color: var(--yry-text3); margin-bottom: 4px; }
+	.yry-cross-desc { font-size: .88rem; font-weight: 600; color: var(--yry-accent); line-height: 1.5; }
+	.yry-cross-badge { text-align: center; padding: 8px 16px; background: rgba(15,23,42,.4); border-radius: 8px; border: var(--yry-border); flex-shrink: 0; min-width: 80px; }
+	</style>
+</head>
+<body>
+<div class="yry-container">
+
+<nav class="yry-breadcrumb">
+  <a href="../../docs/index.html">📄 文档中心</a>
+  <span class="yry-bc-sep">/</span>
+  <a href="../../docs/自循环报告/">🔄 自循环报告</a>
+  <span class="yry-bc-sep">/</span>
+  <span class="yry-bc-current">rui-config</span>
+</nav>
+
+<div class="yry-header">
+  <div class="icon">🔄</div>
+  <h1>自循环报告 · rui-config</h1>
+  <div class="meta">2026-06-22 02:12:37 · — · <span class="yry-badge fail">🚫 异常</span></div>
+</div>
+
+<div class="yry-stats">
+  <div class="yry-stat">
+    <div class="yry-val fail">✗</div>
+    <div class="yry-lbl">状态</div>
+  </div>
+  <div class="yry-stat">
+    <div class="yry-val pass">0</div>
+    <div class="yry-lbl">信息</div>
+  </div>
+  <div class="yry-stat">
+    <div class="yry-val warn">1</div>
+    <div class="yry-lbl">告警</div>
+  </div>
+  <div class="yry-stat">
+    <div class="yry-val fail">2</div>
+    <div class="yry-lbl">异常</div>
+  </div>
+  
+  <div class="yry-stat">
+    <a href="../../docs/健康报告/" style="text-decoration:none;color:inherit">
+      <div class="yry-val pass">75</div>
+      <div class="yry-lbl">🩺 健康度 B 级</div>
+    </a>
+  </div>
+</div>
+
+<div class="yry-summary">config.json 缺失，机器人 webhook 未配置</div>
+
+
+<div class="yry-card">
+  <h2>📋 检查详情</h2>
+  <div class="yry-finding fail">
+      <div class="yry-finding-head">1. config.json 缺失</div>
+      <div class="yry-finding-body">.claude/skills/rui-bot/config.json 文件不存在，通知功能不可用</div>
+      <div class="yry-finding-resolution"><span class="yry-resolution-badge fail">🔧 建议措施</span>补齐缺失的配置项，参考项目规约文档确保配置完整性；验证配置格式合规</div>
+    </div>
+<div class="yry-finding fail">
+      <div class="yry-finding-head">2. 机器人 webhook 未配置</div>
+      <div class="yry-finding-body">未配置任何机器人的 webhook_url，企微消息推送完全阻断</div>
+      <div class="yry-finding-resolution"><span class="yry-resolution-badge fail">🔧 建议措施</span>补齐缺失的配置项，参考项目规约文档确保配置完整性；验证配置格式合规</div>
+    </div>
+<div class="yry-finding warn">
+      <div class="yry-finding-head">3. API Token 已配置</div>
+      <div class="yry-finding-body">API_X_TOKEN 环境变量已设置，但缺少 config.json 无法路由消息</div>
+      <div class="yry-finding-resolution"><span class="yry-resolution-badge warn">🔧 建议措施</span>补齐缺失的配置项，参考项目规约文档确保配置完整性；验证配置格式合规</div>
+    </div>
+</div>
+
+
+<div class="yry-card">
+    <h2>🎯 影响评估 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">3 项需关注</span></h2>
+    <div class="yry-impact-header">
+      <span class="yry-impact-badge" style="background:var(--yry-fail)">需立即关注</span>
+      <span class="yry-impact-summary">异常 2 · 告警 1 · 信息 0</span>
+    </div>
+    <div class="yry-impact-detail"><strong>关键问题:</strong><ul style="margin-top:6px;padding-left:20px;color:var(--yry-text2);font-size:.84rem"><li>config.json 缺失<br><span style="color:var(--yry-text3);font-size:.76rem">.claude/skills/rui-bot/config.json 文件不存在，通知功能不可用</span></li><li>机器人 webhook 未配置<br><span style="color:var(--yry-text3);font-size:.76rem">未配置任何机器人的 webhook_url，企微消息推送完全阻断</span></li><li>API Token 已配置<br><span style="color:var(--yry-text3);font-size:.76rem">API_X_TOKEN 环境变量已设置，但缺少 config.json 无法路由消息</span></li></ul></div>
+    <div style="margin-top:10px;font-size:.78rem;color:var(--yry-text3)">📌 优先处理异常项，防止管线阻塞或数据丢失。建议在下一轮迭代中分配修复任务。</div>
+  </div>
+
+<div class="yry-card"><h2>📊 严重程度分布 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Severity Breakdown</span></h2><div style="margin-bottom:12px;padding:12px;background:rgba(239,68,68,.06);border-radius:8px;border-left:3px solid var(--yry-fail)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span style="font-weight:600;font-size:.88rem">🚫 异常 (Fail)</span>
+        <span style="font-size:.82rem;font-weight:700;color:var(--yry-fail)">2 项 (67%)</span>
+      </div>
+      <div style="font-size:.74rem;color:var(--yry-text3);margin-bottom:8px">需要立即处理的严重问题，可能导致管线阻塞、数据丢失或安全风险</div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div style="font-size:.76rem;color:var(--yry-text2);padding:4px 8px;background:var(--yry-bg-card);border-radius:4px">• config.json 缺失</div><div style="font-size:.76rem;color:var(--yry-text2);padding:4px 8px;background:var(--yry-bg-card);border-radius:4px">• 机器人 webhook 未配置</div>
+        
+      </div>
+    </div><div style="margin-bottom:12px;padding:12px;background:rgba(245,158,11,.06);border-radius:8px;border-left:3px solid var(--yry-warn)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span style="font-weight:600;font-size:.88rem">⚠️ 告警 (Warn)</span>
+        <span style="font-size:.82rem;font-weight:700;color:var(--yry-warn)">1 项 (33%)</span>
+      </div>
+      <div style="font-size:.74rem;color:var(--yry-text3);margin-bottom:8px">需要关注但非紧急的问题，建议在下一维护窗口处理</div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div style="font-size:.76rem;color:var(--yry-text2);padding:4px 8px;background:var(--yry-bg-card);border-radius:4px">• API Token 已配置</div>
+        
+      </div>
+    </div></div>
+
+<div class="yry-card">
+        <h2>📈 历史趋势</h2>
+        <div style="text-align:center;color:var(--yry-text3);padding:20px;font-size:.84rem">仅 1 份报告 — 积累更多数据后启用趋势对比</div>
+      </div>
+
+<div class="yry-card">
+    <h2>⏱️ SLA 追踪 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Service Level Agreement</span></h2>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px">
+      <div style="text-align:center;padding:12px;background:rgba(239,68,68,.06);border-radius:8px;border:1px solid rgba(239,68,68,.15)">
+        <div style="font-size:.7rem;color:var(--yry-text3)">🎯 目标响应</div>
+        <div style="font-size:1.1rem;font-weight:700;color:#ef4444">2 小时</div>
+      </div>
+      <div style="text-align:center;padding:12px;background:rgba(245,158,11,.06);border-radius:8px;border:1px solid rgba(245,158,11,.15)">
+        <div style="font-size:.7rem;color:var(--yry-text3)">⚠️ 升级阈值</div>
+        <div style="font-size:1.1rem;font-weight:700;color:#f59e0b">4 小时</div>
+      </div>
+      <div style="text-align:center;padding:12px;background:rgba(59,130,246,.06);border-radius:8px;border:1px solid rgba(59,130,246,.15)">
+        <div style="font-size:.7rem;color:var(--yry-text3)">🚨 强制升级</div>
+        <div style="font-size:1.1rem;font-weight:700;color:#3b82f6">8 小时</div>
+      </div>
+    </div>
+    <div style="font-size:.72rem;color:var(--yry-text3);padding:8px;background:var(--yry-bg-card);border-radius:6px">
+      📌 执行频率: — · 下次自动检查时将更新状态 · 若状态持续异常，SLA 计时器将继续累计
+    </div>
+  </div>
+
+
+
+
+
+<div class="yry-footer">
+  自循环报告 · rui-config · 2026-06-22 02:12:37<br>
+  <span style="color:var(--yry-text3)">由 rui-bot loop-report 自动生成</span>
+</div>
+
+</div>
+<script src="../../cdn/shared/index.js"></script>
+</body>
+</html>

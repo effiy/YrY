@@ -5,7 +5,7 @@
 
 import { bold, dim } from "../../../lib/tty.mjs";
 import { NODE_ARGV_OFFSET } from "../../../lib/constants.mjs";
-import { showPluginHelp } from "../../../lib/plugin-utils.mjs";
+import { showPluginHelp } from "../../../lib/io.mjs";
 
 export const SKILL_NAME = "rui-story";
 export const SHOW_MIN_ARGS = 2;

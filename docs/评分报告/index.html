@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>评分报告 — YrY 项目健康评分</title>
+<meta name="description" content="YrY 项目综合健康评分报告 — 八维加权评估模型 · 19维度分解 · 架构合规检查 · D0-D8 诊断引擎 · 趋势预测与可靠性分析">
+<link rel="stylesheet" href="../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../cdn/shared-reports/index.css">
+<link rel="stylesheet" href="../../cdn/yry-score-report/index.css">
+</head>
+<body>
+<div class="container">
+<nav style="display:flex;align-items:center;gap:6px;margin-bottom:20px;font-size:.76rem;">
+  <a href="../index.html" style="color:#22d3ee;text-decoration:none;">📄 文档中心</a>
+  <span style="color:var(--yry-text3);opacity:.4;">/</span>
+  <span style="color:var(--yry-text2);">📊 评分报告</span>
+</nav>
+<h1>📊 项目综合健康评分报告</h1>
+<yry-score-report data-src="score-report.json"></yry-score-report>
+
+<!-- 八维加权评估模型 -->
+<div class="card">
+  <h2>⚖️ 八维加权评估模型</h2>
+  <table>
+    <thead><tr><th>维度</th><th>权重</th><th>评分</th><th>趋势</th><th>数据源</th></tr></thead>
+    <tbody>
+      <tr><td>架构合规</td><td>0.20</td><td>0.92</td><td>↑</td><td>arch-check.mjs</td></tr>
+      <tr><td>测试覆盖</td><td>0.20</td><td>0.85</td><td>↑</td><td>vitest coverage</td></tr>
+      <tr><td>文档质量</td><td>0.15</td><td>0.95</td><td>↑</td><td>doc-quality.mjs</td></tr>
+      <tr><td>性能指标</td><td>0.15</td><td>0.88</td><td>→</td><td>Lighthouse</td></tr>
+      <tr><td>安全合规</td><td>0.15</td><td>1.00</td><td>→</td><td>security-scan.mjs</td></tr>
+      <tr><td>可维护性</td><td>0.10</td><td>0.90</td><td>↑</td><td>code metrics</td></tr>
+      <tr><td>组件完整度</td><td>0.10</td><td>0.92</td><td>→</td><td>manifest.json</td></tr>
+      <tr><td>加载稳定性</td><td>0.15</td><td>0.96</td><td>→</td><td>load-chain-report</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 评分等级映射 -->
+<div class="card">
+  <h2>🎖️ 评分等级映射</h2>
+  <table>
+    <thead><tr><th>等级</th><th>分数范围</th><th>颜色</th><th>状态</th><th>行动</th></tr></thead>
+    <tbody>
+      <tr><td>A</td><td>≥ 0.90</td><td>绿</td><td>优秀</td><td>保持现状</td></tr>
+      <tr><td>B</td><td>0.80-0.89</td><td>蓝</td><td>良好</td><td>关注薄弱维度</td></tr>
+      <tr><td>C</td><td>0.70-0.79</td><td>黄</td><td>合格</td><td>制定改进计划</td></tr>
+      <tr><td>D</td><td>0.60-0.69</td><td>橙</td><td>待改进</td><td>修复 P0</td></tr>
+      <tr><td>F</td><td>&lt; 0.60</td><td>红</td><td>不合格</td><td>立即修复</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- D0-D8 诊断引擎 -->
+<div class="card">
+  <h2>🔍 D0-D8 诊断引擎</h2>
+  <table>
+    <thead><tr><th>诊断</th><th>名称</th><th>触发条件</th><th>当前状态</th><th>影响</th></tr></thead>
+    <tbody>
+      <tr><td>D0</td><td>基线偏离</td><td>规约数差异 &gt; 0</td><td>未触发</td><td>—</td></tr>
+      <tr><td>D1</td><td>效率退化</td><td>耗时 &gt; 1.5× 基线</td><td>未触发</td><td>—</td></tr>
+      <tr><td>D2</td><td>质量退化</td><td>P0 &gt; 滚动 2×</td><td>未触发</td><td>—</td></tr>
+      <tr><td>D3</td><td>复杂度增长</td><td>行数 &gt; 500</td><td>触发 (1)</td><td>模块拆分</td></tr>
+      <tr><td>D4</td><td>流程退化</td><td>跳过率 &gt; 10%</td><td>未触发</td><td>—</td></tr>
+      <tr><td>D5</td><td>依赖退化</td><td>已知漏洞</td><td>未触发</td><td>—</td></tr>
+      <tr><td>D6</td><td>文档过时</td><td>mtime &gt; 30d</td><td>未触发</td><td>—</td></tr>
+      <tr><td>D7</td><td>配置漂移</td><td>hash ≠ 基线</td><td>未触发</td><td>—</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 趋势预测 -->
+<div class="card">
+  <h2>📈 趋势预测与可靠性</h2>
+  <table>
+    <thead><tr><th>指标</th><th>值</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>综合评分</td><td>92</td><td>当前 composite</td></tr>
+      <tr><td>趋势方向</td><td>rising</td><td>slopePerWeek &gt; 0</td></tr>
+      <tr><td>每周斜率</td><td>+49</td><td>评分增长速率</td></tr>
+      <tr><td>R² 拟合度</td><td>0.99</td><td>1.0 = 完美线性</td></tr>
+      <tr><td>置信度</td><td>high</td><td>R² ≥ 0.95</td></tr>
+      <tr><td>95% 置信区间</td><td>[80.8, 103.2]</td><td>下一版本预测</td></tr>
+      <tr><td>波动性</td><td>moderate</td><td>stddev/mean 分级</td></tr>
+      <tr><td>可靠性评分</td><td>0.93</td><td>0-1 标准化</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 19 维度分解 -->
+<div class="card">
+  <h2>📋 19 维度分解</h2>
+  <table>
+    <thead><tr><th>分组</th><th>维度数</th><th>代表维度</th><th>组权重</th></tr></thead>
+    <tbody>
+      <tr><td>架构</td><td>4</td><td>合规 · 内核体积 · 扩展隔离 · 命名</td><td>0.30</td></tr>
+      <tr><td>质量</td><td>4</td><td>测试 · 覆盖率 · P0 密度 · 回归</td><td>0.30</td></tr>
+      <tr><td>文档</td><td>3</td><td>完整性 · 新鲜度 · 一致性</td><td>0.15</td></tr>
+      <tr><td>性能</td><td>3</td><td>FCP · TTI · CLS</td><td>0.10</td></tr>
+      <tr><td>安全</td><td>3</td><td>密钥 · 认证 · 输入校验</td><td>0.10</td></tr>
+      <tr><td>运维</td><td>2</td><td>监控 · 告警</td><td>0.05</td></tr>
+    </tbody>
+  </table>
+</div>
+
+</div>
+
+<script src="../../cdn/yry-score-report/index.js"></script>
+</body>
+</html>

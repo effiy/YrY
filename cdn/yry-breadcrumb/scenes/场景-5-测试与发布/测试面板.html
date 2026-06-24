@@ -2,402 +2,63 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>测试与发布 · 测试面板 · YryBreadcrumb 任务故事</title>
-<link rel="stylesheet" href="../../../shared\/index\.css">
-<link rel="stylesheet" href="../../../theme\/index\.css">
-<link rel="stylesheet" href="../../../yry\-scene\/index\.css">
-<link rel="stylesheet" href="../../../yry\-checklist\/index\.css">
-<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
-<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
-<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
-<link rel="stylesheet" href="../../../yry-back-top/index.css">
-<link rel="stylesheet" href="../../../yry-scene-header/index.css">
-<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
-<link rel="stylesheet" href="../../../yry\-inline\-helpers\/index\.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<link rel="stylesheet" href="../../../yry\-a11y\/index\.css">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>测试与发布 · 测试面板</title>
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-test-base.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-stats/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-health-bar/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-tabs/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
 <style>
-
-.container { max-width: 1100px; }
+/* Page-specific overrides — shared patterns in shared-b.css */
 </style>
 </head>
 <body>
-<a href="#main" class="skip-link">⏩ 跳到主要内容</a>
-<div class="container" id="main">
-<div id="breadcrumb-app"></div>
+<div class="yry-container">
+<yry-scene-chrome
+  theme="b"
+  title="🧪 {ACCENT} · 测试面板"
+  title-accent="测试与发布"
+  subtitle="场景 5 · 版本 vv5.4.0 · 2026-06-22"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-breadcrumb · yry-breadcrumb"},{"label":"场景 5 · 测试与发布"},{"label":"🧪 测试面板"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","href":"架构图.html"},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","active":true},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","href":"审查.html"}]'>
+</yry-scene-chrome>
 
-<div id="scene-header-app"></div>
+<yry-scene-stats items='[{"value":"—","label":"总断言","color":"t"},{"value":"`node --check` · 3 demo 渲染 · console 无异常 · 硬刷新 · mount · Tab · SR 全部 PASS","label":"通过","color":"p"},{"value":"0","label":"失败","color":"f"},{"value":"0","label":"跳过","color":"s"},{"value":"—","label":"耗时","color":"info"}]'></yry-scene-stats>
+<yry-scene-health-bar segments=''></yry-scene-health-bar>
 
-<div id="scene-nav-app"></div>
-
-
-<h2>测试摘要</h2>
-<div class="summary-card yry-summary-row">
-  <div class="ring-wrap">
-    <svg viewBox="0 0 80 80">
-      <circle class="ring-bg" cx="40" cy="40" r="34"/>
-      <circle class="ring-fill pass" cx="40" cy="40" r="34" stroke-dasharray="213.6" stroke-dashoffset="0"/>
-    </svg>
-    <div class="ring-center">100%</div>
-  </div>
-  <div class="yry-flex-grid-80">
-    <div class="stat-card"><div class="val pass">7</div><div class="lbl">测试项总计</div></div>
-    <div class="stat-card"><div class="val pass">7</div><div class="lbl">PASS</div></div>
-    <div class="stat-card"><div class="val">0</div><div class="lbl">FAIL</div></div>
-    <div class="stat-card"><div class="val info">100%</div><div class="lbl">通过率</div></div>
-  </div>
-</div>
-<div class="seg-bar-wrap">
-  <div class="seg-bar-outer">
-    <div class="seg pass seg--full"></div>
-    <div class="seg fail seg--empty"></div>
-  </div>
-  <div class="seg-bar-legend">
-    <span><span class="dot pass"></span>PASS 100%</span>
-    <span><span class="dot fail"></span>FAIL 0%</span>
-  </div>
-</div>
-
-<div class="check-progress">
-  <div class="cp-text"><span>自测进度</span><span class="cp-pct">100%</span></div>
-  <div class="cp-bar"><div class="cp-fill cp-fill--full"></div></div>
-</div>
-<button class="btn-clear-checks" onclick="document.querySelectorAll('.check-item').forEach(function(el){el.classList.add('checked')});updateCheckProgress();">🔄 重置全部为通过</button>
-
-<div id="cross-nav-app"></div>
-
-<h2>7 项自测用例</h2>
-<div class="live-bar">
-  <span class="live-dot"></span> 所有测试资源已加载
-  <span class="live-resource"><span class="lr-name">yry-scene.css</span><span class="lr-status">OK</span></span>
-  <span class="live-resource"><span class="lr-name">yry-breadcrumb</span><span class="lr-status">OK</span></span>
-</div>
-<div class="play-bar">
-  <button class="btn-play" id="btnRunTests" title="运行全部测试">
-    ▶ 运行测试套件
-  </button>
-  <button class="btn-reset" id="btnResetTests" title="重置测试结果">
-    ↻ 重置
-  </button>
-</div>
-<div class="log-box log-box--hidden" id="testLog">
-  <div class="log-line"><span class="log-time">T+0ms</span><span class="log-icon log-info">▶</span><span>启动测试套件...</span></div>
-</div>
-<table class="table-highlight">
-  <thead><tr><th>ID</th><th>测试项</th><th>操作 / 命令</th><th>预期结果</th><th>状态</th></tr></thead>
-  <tbody>
-    <tr class="row-pass">
-      <td><code>TC-5.1</code></td>
-      <td>node --check 语法</td>
-      <td><code>node --check cdn/yry-breadcrumb/index.js</code></td>
-      <td>exit code 0，无语法错误</td>
-      <td><span class="verdict pass">PASS</span></td>
-    </tr>
-    <tr class="row-pass">
-      <td><code>TC-5.2</code></td>
-      <td>3 个 demo 全部渲染</td>
-      <td>浏览器直接打开 <code>cdn/yry-breadcrumb/index.html</code></td>
-      <td>3 个 div (#demo-1/2/3) 均显示面包屑 nav 元素</td>
-      <td><span class="verdict pass">PASS</span></td>
-    </tr>
-    <tr class="row-pass">
-      <td><code>TC-5.3</code></td>
-      <td>控制台清洁</td>
-      <td>打开 DevTools Console 检查</td>
-      <td>无 Vue warning、fetch error、404、JS 异常</td>
-      <td><span class="verdict pass">PASS</span></td>
-    </tr>
-    <tr class="row-pass">
-      <td><code>TC-5.4</code></td>
-      <td>硬刷新</td>
-      <td>Cmd+Shift+R 硬刷新页面</td>
-      <td><code>#breadcrumb-app</code> 内出现 <code>&lt;nav class="breadcrumb"&gt;</code></td>
-      <td><span class="verdict pass">PASS</span></td>
-    </tr>
-    <tr class="row-pass">
-      <td><code>TC-5.5</code></td>
-      <td>挂载脚本</td>
-      <td>打开计划清单页面</td>
-      <td>mount 脚本正确挂载，4 个条目全部显示</td>
-      <td><span class="verdict pass">PASS</span></td>
-    </tr>
-    <tr class="row-pass">
-      <td><code>TC-5.6</code></td>
-      <td>键盘 Tab</td>
-      <td>Tab 键逐项聚焦导航链接</td>
-      <td>从第 1 个链接依次聚焦到当前项前的最后链接，current 项不可聚焦</td>
-      <td><span class="verdict pass">PASS</span></td>
-    </tr>
-    <tr class="row-pass">
-      <td><code>TC-5.7</code></td>
-      <td>屏幕阅读器</td>
-      <td>VoiceOver / NVDA 朗读导航区域</td>
-      <td>朗读顺序: link → (separator skip) → link → ... → current</td>
-      <td><span class="verdict pass">PASS</span></td>
-    </tr>
-  </tbody>
-</table>
-
-<h2>交互式自测</h2>
-<div class="check-list">
-  <div class="check-item checked">
-    <div class="ci-box"><span class="ci-check">✓</span></div>
-    <div class="ci-body">
-      <div class="ci-name">TC-5.1: node --check 语法</div>
-      <div class="ci-desc">node --check cdn/yry-breadcrumb/index.js — exit code 0，无语法错误。</div>
+<yry-scene-tabs tabs='[{"id":"cases","label":"📋 测试用例"},{"id":"results","label":"📊 执行结果"},{"id":"gates","label":"🚦 门禁"}]'>
+  <div data-panel="cases">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>§1 测试设计 — 正常路径用例</h2>
+      <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
     </div>
-    <span class="ci-time">PASS</span>
   </div>
-  <div class="check-item checked">
-    <div class="ci-box"><span class="ci-check">✓</span></div>
-    <div class="ci-body">
-      <div class="ci-name">TC-5.2: 3 个 demo 全部渲染</div>
-      <div class="ci-desc">浏览器打开 index.html — 3 个 div (#demo-1/2/3) 均显示面包屑 nav 元素。</div>
+  <div data-panel="results">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>§3 测试报告</h2>
+      <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
     </div>
-    <span class="ci-time">PASS</span>
   </div>
-  <div class="check-item checked">
-    <div class="ci-box"><span class="ci-check">✓</span></div>
-    <div class="ci-body">
-      <div class="ci-name">TC-5.3: 控制台清洁</div>
-      <div class="ci-desc">打开 DevTools Console 检查 — 无 Vue warning、fetch error、404、JS 异常。</div>
+  <div data-panel="gates">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>Gate 门禁矩阵</h2>
+      <p class="yry-section-desc">P0 标记: 强制断言 · P1 标记: 建议开启 · P2 标记: 按需开启</p>
+      <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
     </div>
-    <span class="ci-time">PASS</span>
   </div>
-  <div class="check-item checked">
-    <div class="ci-box"><span class="ci-check">✓</span></div>
-    <div class="ci-body">
-      <div class="ci-name">TC-5.4: 硬刷新</div>
-      <div class="ci-desc">Cmd+Shift+R 硬刷新 — #breadcrumb-app 内出现 &lt;nav class="breadcrumb"&gt;。</div>
-    </div>
-    <span class="ci-time">PASS</span>
-  </div>
-  <div class="check-item checked">
-    <div class="ci-box"><span class="ci-check">✓</span></div>
-    <div class="ci-body">
-      <div class="ci-name">TC-5.5: 挂载脚本</div>
-      <div class="ci-desc">打开计划清单页面 — mount 脚本正确挂载，4 个条目全部显示。</div>
-    </div>
-    <span class="ci-time">PASS</span>
-  </div>
-  <div class="check-item checked">
-    <div class="ci-box"><span class="ci-check">✓</span></div>
-    <div class="ci-body">
-      <div class="ci-name">TC-5.6: 键盘 Tab</div>
-      <div class="ci-desc">Tab 键逐项聚焦 — 从第 1 个链接依次聚焦到当前项前，current 项不可聚焦。</div>
-    </div>
-    <span class="ci-time">PASS</span>
-  </div>
-  <div class="check-item checked">
-    <div class="ci-box"><span class="ci-check">✓</span></div>
-    <div class="ci-body">
-      <div class="ci-name">TC-5.7: 屏幕阅读器</div>
-      <div class="ci-desc">VoiceOver / NVDA 朗读 — 顺序: link → (separator skip) → link → ... → current。</div>
-    </div>
-    <span class="ci-time">PASS</span>
-  </div>
+</yry-scene-tabs>
+
+<yry-scene-footer version="v5.4.0" date="2026-06-22" docs-link="../../../../docs/index.html"></yry-scene-footer>
 </div>
-
-<h2>运行方式</h2>
-
-<h3>命令行</h3>
-<pre><code># 语法检查
-node --check cdn/yry-breadcrumb/index.js
-
-# npm 打包验证
-cd cdn && npm pack --dry-run
-
-# tarball 内容检查
-tar -tzf yry-cdn-1.1.0.tgz | grep yry-breadcrumb</code></pre>
-
-<h3>浏览器</h3>
-<p>打开 <a href="../../../yry-breadcrumb/index.html">Demo 预览页</a> 手动验证 3 种 items 模式渲染、键盘 Tab 可达性、屏幕阅读器朗读顺序。</p>
-
-<h3>跨页面</h3>
-<p>逐一打开场景 1-5 各 HTML 页面，确认面包屑组件在每个页面均正常渲染，无样式丢失或 JS 报错。</p>
-
-<h2>测试执行日志</h2>
-<div class="log-box">
-  <div class="log-line"><span class="log-time">T+0ms</span><span class="log-icon log-info">▶</span><span>开始测试套件...</span></div>
-  <div class="log-line"><span class="log-time">T+3ms</span><span class="log-icon log-pass">✓</span><span>TC-5.1 node --check 语法通过</span></div>
-  <div class="log-line"><span class="log-time">T+8ms</span><span class="log-icon log-pass">✓</span><span>TC-5.2 3 个 demo 全部渲染通过</span></div>
-  <div class="log-line"><span class="log-time">T+14ms</span><span class="log-icon log-pass">✓</span><span>TC-5.3 控制台清洁通过</span></div>
-  <div class="log-line"><span class="log-time">T+19ms</span><span class="log-icon log-pass">✓</span><span>TC-5.4 硬刷新通过</span></div>
-  <div class="log-line"><span class="log-time">T+25ms</span><span class="log-icon log-pass">✓</span><span>TC-5.5 挂载脚本通过</span></div>
-  <div class="log-line"><span class="log-time">T+30ms</span><span class="log-icon log-pass">✓</span><span>TC-5.6 键盘 Tab 通过</span></div>
-  <div class="log-line"><span class="log-time">T+36ms</span><span class="log-icon log-pass">✓</span><span>TC-5.7 屏幕阅读器通过</span></div>
-  <div class="log-line"><span class="log-time">T+42ms</span><span class="log-icon log-info">■</span><span>测试完成: 全部 PASS (7/7)</span></div>
-</div>
-
-<div class="tip-box success">
-  <strong>全部通过</strong> — 7 项自测用例全部 PASS，零失败零跳过。YryBreadcrumb 在语法检查、浏览器渲染、控制台清洁度、硬刷新恢复、页面集成、键盘无障碍、屏幕阅读器 7 个维度均达标，可进入发布流程。
-</div>
-
-<div class="footer">
-  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-5-测试与发布/测试面板.html</code><br>
-  🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
-</div>
-</div>
-
-
-<script>
-document.querySelectorAll('.check-item').forEach(function(item) {
-  item.addEventListener('click', function() {
-    this.classList.toggle('checked');
-    updateCheckProgress();
-  });
-});
-function updateCheckProgress() {
-  var items = document.querySelectorAll('.check-item');
-  var checked = document.querySelectorAll('.check-item.checked').length;
-  var pct = items.length ? Math.round(checked / items.length * 100) : 0;
-  var fill = document.querySelector('.cp-fill');
-  var text = document.querySelector('.cp-pct');
-  if (fill) fill.style.width = pct + '%';
-  if (text) text.textContent = pct + '%';
-}
-</script>
-<script>
-(function() {
-  var btnRun = document.getElementById('btnRunTests');
-  var btnReset = document.getElementById('btnResetTests');
-  var logBox = document.getElementById('testLog');
-  if (!btnRun || !logBox) return;
-
-  var testSteps = [
-    { time: 'T+0ms', icon: 'log-info', iconGlyph: '▶', msg: '启动测试套件...' },
-    { time: 'T+2ms', icon: 'log-info', iconGlyph: '▶', msg: '加载测试用例...' },
-    { time: 'T+8ms', icon: 'log-pass', iconGlyph: '✓', msg: '所有测试用例已加载' },
-    { time: 'T+15ms', icon: 'log-pass', iconGlyph: '✓', msg: '语法检查通过 (node --check)' },
-    { time: 'T+22ms', icon: 'log-pass', iconGlyph: '✓', msg: '渲染验证通过 (3 demo mount)' },
-    { time: 'T+30ms', icon: 'log-pass', iconGlyph: '✓', msg: '控制台清洁 (0 errors, 0 warnings)' },
-    { time: 'T+38ms', icon: 'log-pass', iconGlyph: '✓', msg: '全部测试通过 — 100% PASS' },
-  ];
-
-  var running = false;
-  btnRun.addEventListener('click', function() {
-    if (running) return;
-    running = true;
-    btnRun.classList.add('running');
-    btnRun.textContent = '⏳ 运行中...';
-    logBox.style.display = 'block';
-    logBox.innerHTML = '';
-    testSteps.forEach(function(step, i) {
-      setTimeout(function() {
-        var line = document.createElement('div');
-        line.className = 'log-line';
-        line.innerHTML = '<span class="log-time">' + step.time + '</span><span class="log-icon ' + step.icon + '">' + step.iconGlyph + '</span><span>' + step.msg + '</span>';
-        logBox.appendChild(line);
-        logBox.scrollTop = logBox.scrollHeight;
-        if (i === testSteps.length - 1) {
-          running = false;
-          btnRun.classList.remove('running');
-          btnRun.textContent = '▶ 重新运行';
-        }
-      }, i * 300);
-    });
-  });
-
-  btnReset.addEventListener('click', function() {
-    logBox.style.display = 'none';
-    logBox.innerHTML = '';
-    btnRun.textContent = '▶ 运行测试套件';
-    btnRun.classList.remove('running');
-    running = false;
-  });
-})();
-</script>
-
-<script src="../../../shared\/index\.js"></script>
-<!-- ═══ CDN: YrySceneNav 组件 loader ═══ -->
-<script src="../../../yry-scene-nav/index.js"></script>
-<!-- ═══ CDN: YryCrossNav 组件 loader ═══ -->
-<script src="../../../yry-cross-nav/index.js"></script>
-<!-- ═══ CDN: YryBackTop (零配置自初始化) ═══ -->
-<script src="../../../yry-back-top/index.js"></script>
-<!-- ═══ CDN: YryBreadcrumb 组件 loader ═══ -->
-<script src="../../../yry-breadcrumb/index.js"></script>
-<!-- ═══ CDN: YrySceneHeader 组件 loader ═══ -->
-<script src="../../../yry-scene-header/index.js"></script>
-<!-- ═══ CDN: YryStatsGrid 组件 loader ═══ -->
-<script src="../../../yry-stats-grid/index.js"></script>
-
-  <!-- ════════════════════════════════════════════════════════════
-       页面级挂载 · 场景导航 + 交叉导航 + 面包屑 + 统计网格
-       index.js 异步加载模板后派发 yry-*-ready 事件
-       ════════════════════════════════════════════════════════════ -->
-  <script>
-
-  /* ── YryCrossNav 挂载 ── */
-  function mountCrossNav() {
-    if (!window.Vue || !window.YryCrossNav) return;
-    if (!document.getElementById('cross-nav-app')) return;
-    Vue.createApp(window.YryCrossNav, {
-      basePath: './',
-      active: '测试',
-      pages: [
-        { id: '清单', icon: '📋', href: '计划清单.html' },
-        { id: '架构', icon: '📐', href: '架构图.html' },
-        { id: '图谱', icon: '🔗', href: '知识图谱.html' },
-        { id: '源码', icon: '📄', href: '源码.html' },
-        { id: '测试', icon: '🧪', href: '测试面板.html' },
-        { id: '演示', icon: '💡', href: '演示.html' },
-        { id: '审查', icon: '📝', href: '审查.html' }
-      ]
-    }).mount('#cross-nav-app');
-  }
-  if (window.YryCrossNav) mountCrossNav();
-  else document.addEventListener('yry-cross-nav-ready', mountCrossNav, { once: true });
-
-  /* ── YrySceneNav 挂载 ── */
-  function mountSceneNav() {
-    if (!window.Vue || !window.YrySceneNav) return;
-    if (!document.getElementById('scene-nav-app')) return;
-    Vue.createApp(window.YrySceneNav, {
-      items: [
-        { label: '🍞 YryBreadcrumb', href: '../../../index.html' },
-        { label: '📋 任务故事', href: '../README.md' },
-        { label: '场景 5 · 测试与发布', href: './index.md' },
-        { label: '🧪 测试面板', active: true }
-      ]
-    }).mount('#scene-nav-app');
-  }
-  if (window.YrySceneNav) mountSceneNav();
-  else document.addEventListener('yry-scene-nav-ready', mountSceneNav, { once: true });
-
-  /* ── YrySceneHeader 挂载 ── */
-  function mountSceneHeader() {
-    if (!window.Vue || !window.YrySceneHeader) return;
-    if (!document.getElementById('scene-header-app')) return;
-    Vue.createApp(window.YrySceneHeader, {
-      icon: '🧪',
-      prefix: '场景 5',
-      accent: ' · 测试与发布',
-      meta: 'YryBreadcrumb 任务故事 · 场景 5 · Testing & Publishing · Test Panel',
-      desc: '7 项自测清单全部 PASS — node 语法检查、3 demo 渲染、控制台清洁、硬刷新、挂载脚本、键盘 Tab、屏幕阅读器验证。'
-    }).mount('#scene-header-app');
-  }
-  if (window.YrySceneHeader) mountSceneHeader();
-  else document.addEventListener('yry-scene-header-ready', mountSceneHeader, { once: true });
-
-  /* ── YryBreadcrumb 挂载 ── */
-  function mountBreadcrumb() {
-    if (!window.Vue || !window.YryBreadcrumb) return;
-    if (!document.getElementById('breadcrumb-app')) return;
-    Vue.createApp(window.YryBreadcrumb, {
-      ariaLabel: '面包屑导航',
-      items: [
-        { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
-        { label: '任务故事', href: '../README.md' },
-        { label: '场景 5 · 测试与发布' },
-        { label: '测试面板', icon: '🧪' }
-      ]
-    }).mount('#breadcrumb-app');
-  }
-  if (window.YryBreadcrumb) mountBreadcrumb();
-  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
-  </script>
-
+<script src="../../../../cdn/shared/index.js"></script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
+<script src="../../../../cdn/yry-scene-stats/index.js"></script>
+<script src="../../../../cdn/yry-scene-health-bar/index.js"></script>
+<script src="../../../../cdn/yry-scene-tabs/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
 </body>
 </html>

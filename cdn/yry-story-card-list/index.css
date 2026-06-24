@@ -1,0 +1,139 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryStoryCardList · Vue 3 故事卡片列表组件 样式
+   适用: 故事任务面板 · 多故事卡 + 场景列表 + 摘要条
+
+   依赖 design tokens (来自 cdn/theme/index.css):
+     --yry-surface / --yry-surface-alt / --yry-border
+     --yry-text-primary / --yry-text-secondary / --yry-text-muted
+     --yry-accent
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.scl-body { padding: 0; }
+
+.scl-summary-bar {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.scl-summary-item {
+  background: var(--yry-surface, #1a1b2e);
+  border: 1px solid var(--yry-border, #2d2f45);
+  border-radius: 8px;
+  padding: 14px 20px;
+  text-align: center;
+  min-width: 100px;
+}
+
+.scl-summary-item .scl-si-val {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--yry-text-primary, #a9b1d6);
+}
+
+.scl-summary-item .scl-si-label {
+  font-size: .7rem;
+  color: var(--yry-text-muted, #4a4f6a);
+  margin-top: 2px;
+}
+
+.scl-story-card {
+  background: var(--yry-surface, #1a1b2e);
+  border: 1px solid var(--yry-border, #2d2f45);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  transition: border-color .2s;
+}
+
+.scl-story-card:hover { border-color: var(--yry-accent, #7c8cf8); }
+
+.scl-story-card h3 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+  color: var(--yry-text-primary, #a9b1d6);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.scl-story-card .scl-story-desc {
+  font-size: .78rem;
+  color: var(--yry-text-secondary, #6b708a);
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+
+.scl-story-card .scl-story-meta {
+  font-size: .7rem;
+  color: var(--yry-text-muted, #4a4f6a);
+  margin-bottom: 12px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.scl-scene-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 8px;
+}
+
+.scl-scene-item {
+  background: var(--yry-surface-alt, #1e2035);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: .76rem;
+  border-left: 3px solid var(--yry-border, #2d2f45);
+}
+
+.scl-scene-item a {
+  color: var(--yry-accent, #7c8cf8);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.scl-scene-item a:hover { text-decoration: underline; }
+
+.scl-scene-item .scl-desc {
+  color: var(--yry-text-muted, #4a4f6a);
+  font-size: .7rem;
+  margin-top: 4px;
+}
+
+.scl-scene-links {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.scl-scene-links a {
+  font-size: .66rem;
+  color: var(--yry-text-muted, #4a4f6a);
+  text-decoration: none;
+  padding: 1px 6px;
+  border: 1px solid var(--yry-border, #2d2f45);
+  border-radius: 3px;
+}
+
+.scl-scene-links a:hover {
+  border-color: var(--yry-accent, #7c8cf8);
+  color: var(--yry-accent, #7c8cf8);
+}
+
+/* badge variants */
+.scl-badge {
+  font-size: .66rem;
+  padding: 1px 8px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+.scl-badge-cdn  { background: #1e3a5f33; color: #60a5fa; }
+.scl-badge-home { background: #16653433; color: #4ade80; }
+.scl-badge-checklist { background: #7c2d1233; color: #fb923c; }
+.scl-badge-test { background: #7f1d1d33; color: #f87171; }
+.scl-badge-arch { background: #854d0e33; color: #fbbf24; }
+.scl-badge-self { background: #4c1d9533; color: #a78bfa; }

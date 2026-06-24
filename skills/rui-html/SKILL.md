@@ -12,6 +12,8 @@ lifecycle: default-pipeline
 > **--help / -h**：执行 `node skills/rui-html/help.mjs` 输出完整帮助。用户输入 `/rui-html --help` 或 `/rui-html -h` 或 `/rui-html help` 时，跳过管线逻辑，直接运行脚本。
 >
 > 模板参考源：`docs/故事任务面板/yry-self-test/场景-1-init后全量自检/` 下的 7 份 HTML 文件。
+>
+> **单一职责**：Markdown → 7 类 HTML 可视化文档。不负责 Markdown 文档内容生成（[rui-doc](../rui-doc/)），不负责架构图设计（[rui-plan](../rui-plan/) 的 architect agent），不负责代码实现（[rui-code](../rui-code/)）。
 
 <a id="iron-law"></a>
 ## 铁律
@@ -26,9 +28,7 @@ EACH SCENE'S 7 HTML DOCS MUST BE GENERATED FROM ITS index.md — NO INDEPENDENT 
 |------|------|---------|------|
 | **单源生** | 7 类 HTML = `index.md` §0–§4 的结构化投影 | HTML 出现 `index.md` 不存在的事实；`index.md` 更新后 HTML 未变；模板里硬编码场景专有名词 | 删除虚构内容，回归模板通用壳，跑 `--force` 重生 |
 
-> 本约束在 [rules/doc-generation.md §⑨ 单源生](./rules/doc-generation.md#single-source) 中以强制规则形式记录；本 SKILL.md 与之等价。
-
-[命令族全景](#命令族全景) · [7 文档全景](#7-文档全景) · [数据源](#数据源) · [操作边界](#操作边界) · [/rui-html](#rui-html) · [模板系统](#模板系统) · [核心规则](#核心规则) · [生效标志](#effectiveness)
+[命令族全景](#命令族全景) · [7 文档全景](#7-文档全景) · [数据源](#数据源) · [操作边界](#操作边界) · [/rui-html](#rui-html) · [模板系统](#模板系统) · [核心规则](#核心规则) · [生效标志](#effectiveness) · [自循环](#自循环)
 
 ## 命令族全景
 
@@ -49,6 +49,10 @@ flowchart TD
     Q2 -->|"--scene N"| ONE["单场景生成<br/>指定场景 × 7 文档"]:::write
     Q2 -->|"--type <name>"| TYPE["单类型生成<br/>所有场景 × 指定类型"]:::write
     Q2 -->|"--force"| FORCE["强制覆盖<br/>覆盖已有 HTML"]:::write
+
+    classDef entry fill:#3d59a1,color:#fff
+    classDef read fill:#34d399,color:#000
+    classDef write fill:#fbbf24,color:#000
 ```
 
 | 命令 | 类型 | 数据源 | 作用 |
@@ -86,40 +90,57 @@ flowchart LR
         B4["💡 演示<br/>步骤演示<br/>可复制命令"]:::doc
         B5["📝 审查<br/>发现+案例<br/>改进建议"]:::doc
     end
+
+    classDef doc fill:#2b2d3b,stroke:#3d59a1,color:#a9b1d6
 ```
 
-| # | 文档 | 类别 | 主题 | CDN | 关键数据源 |
-|---|------|:---:|------|-----|-----------|
-| 1 | 计划清单.html | B | System | shared/index.css + theme/index.css + yry-checklist.css | §2 实施报告 |
-| 2 | 架构图.html | A | Mono | fonts/index.css + shared/index.css + theme-mono/index.css | §0 技术评审 mermaid 图 |
-| 3 | 知识图谱.html | A | Mono | fonts/index.css + shared/index.css + theme-mono/index.css + Cytoscape.js | 知识图谱.json |
-| 4 | 源码.html | B | System | shared/index.css + theme/index.css | §2 产物清单 |
-| 5 | 测试面板.html | B | System | shared/index.css + theme/index.css | §1 测试设计 + §3 测试报告 |
-| 6 | 演示.html | B | System | shared/index.css + theme/index.css | §0 效果示意 + §2 架构决策 |
-| 7 | 审查.html | B | System | shared/index.css + theme/index.css | §4 自改进 |
+### 文档详情
+
+| # | 文档 | 类别 | 主题 | 关键数据源 | 主要功能 |
+|---|------|:---:|------|-----------|---------|
+| 1 | 计划清单.html | B | System | §2 实施报告 | 步骤+进度条、可勾选清单、任务状态 |
+| 2 | 架构图.html | A | Mono | §0 技术评审 mermaid 图 | 自包含 SVG、导出 PNG/SVG、缩放 |
+| 3 | 知识图谱.html | A | Mono | 知识图谱.json | Cytoscape.js 交互、三层节点+边、搜索 |
+| 4 | 源码.html | B | System | §2 产物清单 | 文件树+搜索、模块拓扑、代码引用 |
+| 5 | 测试面板.html | B | System | §1 测试设计 + §3 测试报告 | 套件+断言、结果筛选、通过率 |
+| 6 | 演示.html | B | System | §0 效果示意 + §2 架构决策 | 步骤演示、可复制命令、效果展示 |
+| 7 | 审查.html | B | System | §4 自改进 | D0-D8 发现、改进建议、案例 |
 
 ## 数据源
 
 > **唯一数据源：本地 markdown 文档。** 读取 `docs/故事任务面板/<story>/场景-N-<slug>/index.md`，按 §0–§4 章节提取结构化数据。不调用远端 API。
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart LR
     MD["index.md<br/>场景 markdown"]:::src --> PARSE["extractor.mjs<br/>章节拆分+表格解析"]:::tool
     PARSE --> CTX["Context 对象<br/>story·scene·sections"]:::data
     CTX --> GEN["generator.mjs<br/>模板渲染+写入"]:::tool
     GEN --> HTML["7 份 HTML 文件"]:::out
+
+    classDef src fill:#3d59a1,color:#fff
+    classDef tool fill:#2b2d3b,stroke:#3d59a1,color:#a9b1d6
+    classDef data fill:#7c3aed,color:#fff
+    classDef out fill:#34d399,color:#000
 ```
 
 ### 提取策略
 
-| 章节 | 提取内容 | 方法 |
-|------|---------|------|
-| 元数据 | 版本号、日期、场景标题 | 解析第一行标题 + 元数据行 |
-| §0 技术评审 | mermaid 图、模块表、基线溯源表、安全考量表 | mermaid 块提取 + 表格解析 |
-| §1 测试设计 | TC-N 正常用例、TC-B 边界用例、Gate A 交接 | 表格解析 |
-| §2 实施报告 | 产物清单、架构决策、关键发现 | 表格解析 + 列表解析 |
-| §3 测试报告 | 测试摘要、分套件结果、门禁判定 | 表格解析 |
-| §4 自改进 | D0–D7 诊断、改进建议 | 表格解析 + 列表解析 |
+| 章节 | 提取内容 | 方法 | 目标文档 |
+|------|---------|------|---------|
+| 元数据 | 版本号、日期、场景标题 | 解析第一行标题 + 元数据行 | 全部 7 文档 |
+| §0 技术评审 | mermaid 图、模块表、基线溯源表、安全考量表 | mermaid 块提取 + 表格解析 | 架构图、演示 |
+| §1 测试设计 | TC-N 正常用例、TC-B 边界用例、Gate A 交接 | 表格解析 | 测试面板、计划清单 |
+| §2 实施报告 | 产物清单、架构决策、关键发现 | 表格解析 + 列表解析 | 计划清单、源码、演示 |
+| §3 测试报告 | 测试摘要、分套件结果、门禁判定 | 表格解析 | 测试面板 |
+| §4 自改进 | D0-D8 诊断、改进建议 | 表格解析 + 列表解析 | 审查 |
 
 ### 占位符处理
 
@@ -128,11 +149,23 @@ flowchart LR
 ## 操作边界
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TD
     Q{"目标 HTML<br/>已存在?"}:::gate -->|"是"| Q2{"--force?"}:::gate
     Q -->|"否"| GEN["生成 HTML"]:::write
     Q2 -->|"是"| OVERWRITE["覆盖写入<br/>旧文件备份为 .bak"]:::write
     Q2 -->|"否"| SKIP["跳过<br/>输出提示"]:::skip
+
+    classDef gate fill:#fbbf24,color:#000
+    classDef write fill:#2b2d3b,stroke:#3d59a1,color:#a9b1d6
+    classDef skip fill:#6b708a,color:#fff
 ```
 
 | 操作 | 允许 | 条件 |
@@ -152,6 +185,14 @@ flowchart TD
 ### 执行流程
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TD
     PARSE["① parseArgs<br/>解析 CLI 参数"]:::s --> FIND["② findStory<br/>定位故事目录"]:::s
     FIND --> SCAN["③ scanScenes<br/>扫描场景目录"]:::s
@@ -162,6 +203,10 @@ flowchart TD
     ALL --> EXTRACT
     EXTRACT --> GEN["⑥ generate<br/>构建 Context → 渲染模板 → 写入文件"]:::s
     GEN --> REPORT["⑦ report<br/>输出生成摘要"]:::out
+
+    classDef s fill:#2b2d3b,stroke:#3d59a1,color:#a9b1d6
+    classDef gate fill:#fbbf24,color:#000
+    classDef out fill:#34d399,color:#000
 ```
 
 ### 分步说明
@@ -176,16 +221,6 @@ flowchart TD
 | ⑥ generate | 渲染模板写入文件 | Context + 模板 | HTML 文件 | 写入权限不足 |
 | ⑦ report | 输出生成摘要 | 生成结果 | 终端输出 | — |
 
-### 约束
-
-| 约束 | 规则 |
-|------|------|
-| 只读 markdown | 不修改 index.md 或 故事任务.md |
-| 安全覆盖 | 已有文件默认跳过；--force 备份后覆盖 |
-| 分支隔离 | 生成操作在 `docs/故事任务面板/` 下写入，走标准分支隔离 |
-| 表达优先 | 生成的 HTML 必须含图/表/结构化内容，不可纯文本占位 |
-| 一致性 | 同一场景 7 份 HTML 共享 breadcrumb + cross-nav |
-
 ## 模板系统
 
 ### 类别与 CDN 加载链
@@ -194,6 +229,15 @@ flowchart TD
 |------|------|-------------|-----|
 | A — Mono | 架构图、知识图谱 | fonts/index.css → shared/index.css → theme-mono/index.css | shared.js |
 | B — System | 计划清单、源码、测试面板、演示、审查 | shared/index.css → theme/index.css | shared.js |
+
+### 两类主题的区别
+
+| 特性 | Mono 主题 (A) | System 主题 (B) |
+|------|-------------|---------------|
+| 配色 | 单色系，深色背景 | 系统色系，多色功能区分 |
+| 适用场景 | 架构图、知识图谱（可视化优先） | 清单、面板、报告（信息密度优先） |
+| 字体 | 等宽代码字体 | 系统 UI 字体 |
+| 布局 | 全宽画布 | 居中内容区 |
 
 ### Token 变量
 
@@ -216,17 +260,40 @@ flowchart TD
 | `{{CSS_VARS}}` | 类别决定 | `:root { ... }` |
 | `{{CONTENT}}` | index.md 提取 | 页面主体 HTML |
 
+### 路径计算
+
+CDN 深度基于场景目录相对于项目根的层级自动计算：
+
+```
+场景路径: docs/故事任务面板/<story>/场景-N-<slug>/
+项目根:   ../../(depth)../../
+CDN 根:  ../../(depth)../cdn/
+
+depth = 场景路径中 / 的数量 - 项目根中 / 的数量 + 1
+```
+
 ## 核心规则
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TD
-    R1["① 只读 markdown — 不修改源文档"]:::rule --> R2["② 安全覆盖 — 默认跳过已有"]:::rule
-    R2 --> R3["③ 一致性 — 同场景 breadcrumb + cross-nav 完全相同"]:::rule
-    R3 --> R4["④ 表达优先 — 生成的 HTML 含结构化内容"]:::rule
-    R4 --> R5["⑤ 类别正确 — A/Mono vs B/System 加载链不可混"]:::rule
-    R5 --> R6["⑥ CDN 相对路径 — 基于场景深度计算"]:::rule
-    R6 --> R7["⑦ 占位诚实 — 缺数据标注而非编造"]:::rule --> R8["⑧ 分支隔离 — 写入走标准 feat/<name> 门禁"]:::rule
-    R8 --> R9["⑨ 单源生 — 7 类 HTML = index.md §0–§4 的结构化投影"]:::rule
+    R1["① 只读 markdown"]:::rule --> R2["② 安全覆盖 — 默认跳过已有"]:::rule
+    R2 --> R3["③ 一致性 — breadcrumb + cross-nav 相同"]:::rule
+    R3 --> R4["④ 表达优先 — 结构化内容"]:::rule
+    R4 --> R5["⑤ 类别正确 — A/Mono vs B/System"]:::rule
+    R5 --> R6["⑥ CDN 相对路径 — 基于场景深度"]:::rule
+    R6 --> R7["⑦ 占位诚实 — 缺数据标注而非编造"]:::rule
+    R7 --> R8["⑧ 分支隔离 — 写入走 feat 门禁"]:::rule
+    R8 --> R9["⑨ 单源生 — 7 HTML = index.md 投影"]:::rule
+
+    classDef rule fill:#3d59a1,color:#fff
 ```
 
 | # | 规则 | 违反处理 |
@@ -239,28 +306,90 @@ flowchart TD
 | 6 | CDN 路径基于场景目录深度计算 | 检查链接可达性 |
 | 7 | 缺数据时标注而非编造 | P0 — 替换编造内容 |
 | 8 | 写入操作走分支隔离 | `no-branch-isolation` 阻断 |
-| 9 | 7 类 HTML 唯一数据源 = 对应场景 `index.md`；不可独立创作；`index.md` 变更后必须 `--force` 重生 | 删除虚构内容，跑 `/rui-html <story> --force` |
+| 9 | 7 类 HTML 唯一数据源 = 对应场景 `index.md` | 删除虚构内容，跑 `--force` |
 
+
+## 测试
+
+> HTML 生成的模板渲染、CDN 路径计算、7 文档完整性和数据源提取的自动化验证。
+
+### 运行测试
+
+```bash
+npx vitest run skills/rui-html/tests/          # 全量运行
+npx vitest skills/rui-html/tests/              # 监听模式
+npx vitest run --coverage skills/rui-html/tests/  # 覆盖率报告
+```
+
+### 测试文件
+
+| 文件 | 测试范围 | 类型 |
+|------|---------|:---:|
+| `tests/rui-html.test.mjs` | 模板渲染、路径计算、章节提取、占位符处理 | 单元 |
+
+### 测试策略
+
+| 层级 | 范围 | 要求 |
+|------|------|------|
+| **路径计算测试** | CDN 深度计算、场景目录层级解析 | 各层级路径正确性 |
+| **模板渲染测试** | Token 替换、breadcrumb 生成、cross-nav 一致性 | 7 文档模板全覆盖 |
+| **数据提取测试** | §0-§4 章节解析、mermaid 块提取、表格解析 | 每章节有对应测试 |
+| **安全覆盖测试** | --force 覆盖行为、.bak 备份生成 | 覆盖不丢失数据 |
+
+### 覆盖要求
+
+| 维度 | 最低阈值 | 目标 |
+|------|:---:|:---:|
+| 7 文档模板 | 100% | 每种文档类型有渲染测试 |
+| Token 替换 | 100% | 14 个 token 变量全部验证 |
+| 章节提取 | 100% | §0-§4 五章节各有测试 |
+| 核心规则 | 100% | 9 条规则各有验证 |
+
+## 降级策略
+
+| 情况 | 降级行为 | 恢复方式 |
+|------|---------|---------|
+| index.md 不存在 | 跳过该场景，标注 `no-index` | 先执行 /rui-doc 生成文档基线 |
+| 模板文件缺失 | 使用内置最小模板，标注 `template-missing` | 恢复模板文件 |
+| 场景目录为空 | 跳过该场景，标注 `empty-scene` | 补全场景文档 |
+| HTML 生成失败 | 记录错误，继续处理其他场景 | 修复失败原因后重跑 --force |
+| CDN 不可达 | 仍生成 HTML，D3 图表不渲染 | 联网后刷新页面 |
+## 规则
+
+- [architecture-diagram.md](./rules/architecture-diagram.md) — 架构图生成规则：自包含 HTML+SVG 深色主题
+- [doc-generation-lifecycle.md](./rules/doc-generation-lifecycle.md) — 补充文档触发 · 策展 · 例外 · 生效标志
+- [doc-generation.md](./rules/doc-generation.md) — 文档生成约束：表达优先 · 图→结构化文本→表
+- [doc-quality.md](./rules/doc-quality.md) — 文档质量标准：A/B/C/D 证据等级 · 统一模版 · 退化检测
 ## 生效标志
 
-| 信号 | 含义 |
-|------|------|
-| `node skills/rui-html/rui-html.mjs --help` 正常输出 | 可执行脚本就绪 |
-| 生成后 `ls 场景-1-*/` 列出 7 份 HTML | 全量生成成功 |
-| 浏览器打开生成的 HTML，CDN 资源正常加载 | 路径计算正确 |
-| 同场景 7 文件 breadcrumb 完全一致 | 一致性保证生效 |
-| `--force` 覆盖前生成 `.bak` 备份 | 安全覆盖生效 |
-| 7 份 HTML 内的场景特异性内容（标题/版本/模块名/表格/mermaid）均能在 `index.md` 中找到来源 | 单源生原则生效 |
-| `index.md` mtime ≥ 对应 HTML mtime 时，自动触发 `--force` 覆盖 | 变更即重生链路生效 |
+| 信号 | 含义 | 验证方式 |
+|------|------|---------|
+| `node skills/rui-html/rui-html.mjs --help` 正常输出 | 可执行脚本就绪 | 运行命令 |
+| 生成后 `ls 场景-1-*/` 列出 7 份 HTML | 全量生成成功 | 文件计数 = 7 |
+| 浏览器打开生成的 HTML，CDN 资源正常加载 | 路径计算正确 | 手动检查 |
+| 同场景 7 文件 breadcrumb 完全一致 | 一致性保证生效 | diff breadcrumb 片段 |
+| `--force` 覆盖前生成 `.bak` 备份 | 安全覆盖生效 | 检查 .bak 文件 |
+| 7 份 HTML 内的场景特异性内容均能在 `index.md` 中找到来源 | 单源生原则生效 | grep 验证 |
+| `index.md` mtime ≥ 对应 HTML mtime 时，自动触发 `--force` 覆盖 | 变更即重生链路生效 | 比较 mtime |
 
 ## 与 rui 的关系
 
 `/rui-html` 是 `/rui doc` 的补充工具。`/rui doc` 生成 markdown 文档基线（故事任务.md + 场景-N-<slug>.md），`/rui-html` 基于这些 markdown 生成配套的 7 份 HTML 可视化文档。两者配合形成完整的文档产出：
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart LR
-    DOC["/rui doc<br/>markdown 基线"]:::phase --> DOCS["/rui-html<br/>HTML 可视化"]:::phase
-    DOCS --> CODE["/rui code<br/>实现+验证"]:::phase
+    DOC["/rui doc<br/>markdown 基线"]:::phase --> HTML["/rui-html<br/>HTML 可视化"]:::phase
+    HTML --> CODE["/rui code<br/>实现+验证"]:::phase
+
+    classDef phase fill:#2b2d3b,stroke:#3d59a1,color:#a9b1d6
 ```
 
 ## 自循环
@@ -272,5 +401,8 @@ flowchart LR
 | 推荐间隔 | `*/30 * * * *`（每 30 分钟） |
 | 触发条件 | 场景目录下 .md 文件的 mtime 晚于对应 .html |
 | 终止条件 | 所有 HTML 均为最新 |
-| 迭代动作 | 扫描故事面板 → 对比 .md vs .html mtime → 重新生成过期 HTML |
+| 迭代动作 | ① 扫描故事面板 → ② 对比 .md vs .html mtime → ③ 重新生成过期 HTML → ④ 输出更新摘要 |
+| 告警条件 | HTML 落后 .md > 1 小时 |
 | 收敛判定 | 所有场景 HTML 比对应 markdown 更新 |
+
+> 本技能 `checkMode: "cli"`——由 dispatcher 按 `*/30 * * * *` 自动调度。6 字段契约与调度规则详见 [rules/loop-engineering.md](../rui/rules/loop-engineering.md)。

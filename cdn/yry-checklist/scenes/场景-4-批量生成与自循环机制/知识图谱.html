@@ -4,82 +4,34 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>批量生成与自循环机制 · 知识图谱</title>
-<link rel="stylesheet" href="../../../../cdn/fonts\/index\.css">
+<link rel="stylesheet" href="../../../../cdn/fonts/index.css">
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/theme-mono/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-page-nav/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-graph/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-graph-base.css">
 <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
-
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-cytoscape-graph/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-export-toolbar/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-info-cards/index.css">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}
-.container{max-width:1400px;margin:0 auto}
-.header{margin-bottom:1.5rem}
-.header-row{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem}
-.pulse-dot{width:12px;height:12px;background:#22d3ee;border-radius:50%;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-h1{font-size:1.5rem;font-weight:700}
-.subtitle{color:#94a3b8;font-size:.875rem;margin-left:1.75rem}
-.toolbar-toggle{background:transparent;border:none;color:#475569;cursor:pointer;font-size:1.25rem;padding:.25rem .5rem;border-radius:.375rem}
-.toolbar-toggle:hover{color:#94a3b8;background:rgba(30,41,59,.5)}
-.toolbar.expanded .graph-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1rem;margin-bottom:1.5rem}
-#cy{width:100%;height:550px;border-radius:.5rem}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-bottom:1.5rem}
-.card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem}
-.card-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem}
-.card-dot{width:8px;height:8px;border-radius:50%}
-.card-dot.scene{background:#8B5CF6}.card-dot.check{background:#EC4899}.card-dot.source{background:#3B82F6}.card-dot.domain{background:#22d3ee}
-.card h3{font-size:.875rem;font-weight:600}
-.card ul{list-style:none;color:#94a3b8;font-size:.75rem}
-.card li{margin-bottom:.375rem}
-.legend{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:.75rem;padding:.75rem;background:rgba(15,23,42,.5);border-radius:.5rem;border:1px solid #1e293b;font-size:.75rem;color:#94a3b8}
-.legend-item{display:flex;align-items:center;gap:.375rem}
-.legend-dot{width:12px;height:12px;border-radius:50%;border:2px solid}
-.legend-dot.scene{background:rgba(139,92,246,.3);border-color:#8B5CF6}
-.legend-dot.check{background:rgba(236,72,153,.3);border-color:#EC4899}
-.legend-dot.source{background:rgba(59,130,246,.3);border-color:#3B82F6}
-.legend-dot.domain{background:rgba(34,211,238,.3);border-color:#22d3ee}
-.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
-.breadcrumb a{color:#7aa2f7;text-decoration:none}
-.breadcrumb a:hover{color:#fbbf24}
-.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
-.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
-.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
-.cross-link{color:#7aa2f7;text-decoration:none;font-size:0.76rem;padding:3px 10px;border-radius:4px}
-.cross-link:hover{color:#fbbf24;background:rgba(251,191,36,0.06)}
-.cross-link.on{color:#fbbf24;font-weight:600;cursor:default}
-.cross-sep{color:#475569;font-size:0.5rem;opacity:0.35;user-select:none}
-.footer{text-align:center;color:#475569;font-size:.75rem;margin-top:1rem}
-@media print{body{background:#020617;padding:1rem}}
+/* Page-specific overrides — shared patterns in shared-a.css */
+.yry-container{max-width:1400px}
+/* Legend is now handled by yry-cytoscape-graph component via JS */
 </style>
 </head>
 <body>
-<div class="container" id="report-container">
-<script type="application/json" id="yry-page-config">
-{"story": "yry-checklist · 清单与自循环", "scene": {"num": "4", "name": "批量生成与自循环机制", "dir": "场景-4-批量生成与自循环机制"}, "depth": "../../../", "scenes": [{"num": "1", "name": "模板架构与 CSS 设计系统", "dir": "场景-1-模板架构与CSS设计系统"}, {"num": "2", "name": "清单交互组件实现", "dir": "场景-2-清单交互组件实现"}, {"num": "3", "name": "验证报告与健康面板集成", "dir": "场景-3-验证报告与健康面板集成"}, {"num": "4", "name": "批量生成与自循环机制", "dir": "场景-4-批量生成与自循环机制"}], "pages": [{"type": "清单", "icon": "📋", "file": "计划清单.html"}, {"type": "架构", "icon": "📐", "file": "架构图.html"}, {"type": "图谱", "icon": "🔗", "file": "知识图谱.html"}, {"type": "源码", "icon": "📄", "file": "源码.html"}, {"type": "测试", "icon": "🧪", "file": "测试面板.html"}, {"type": "演示", "icon": "💡", "file": "演示.html"}, {"type": "审计", "icon": "📝", "file": "审查.html"}], "page": {"type": "图谱", "icon": "🔗", "file": "知识图谱.html"}}
-</script>
-<div id="yry-nav"></div>
-<script src="../../../../cdn/yry-page-nav/index.js"></script>
-
-<div class="header">
-  <div class="header-row">
-    <div class="pulse-dot"></div>
-    <h1>🔗 场景 5 · 批量生成与自循环机制 · 知识图谱</h1>
-    <div class="toolbar">
-      <div class="toolbar-actions">
-        <button onclick="copyAsImage(this)">📋 Copy</button>
-        <button onclick="downloadPNG(this)">🖼 PNG</button>
-        <button onclick="downloadPDF(this)">📄 PDF</button>
-      </div>
-      <button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')">⋯</button>
-    </div>
-  </div>
-  <p class="subtitle">计划清单 · 场景 4 · vv1.0.0</p>
-</div>
+<div class="yry-container" id="report-container">
+<yry-scene-chrome
+  theme="a"
+  title="🔗 场景 4 · 批量生成与自循环机制 · 知识图谱"
+  subtitle="yry-checklist · 场景 4 · vv5.4.0"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-checklist · 故事任务"},{"label":"场景 4 · 批量生成与自循环机制"},{"label":"🔗 知识图谱"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","href":"架构图.html"},{"label":"🔗 图谱","active":true},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","href":"审查.html"}]'
+  toolbar='<div class="yry-export-toolbar yry-toolbar" data-target=".yry-cy-container" data-filename="yry-checklist-scene4-kg" data-bg="#020617"><button data-action="copy-png">📋 Copy</button><button data-action="download-png">🖼 PNG</button><button data-action="download-pdf">📄 PDF</button></div>'>
+</yry-scene-chrome>
 
 <div class="legend">
   <span style="color:#94a3b8;font-weight:600;">节点:</span>
@@ -91,12 +43,12 @@ h1{font-size:1.5rem;font-weight:700}
   <span style="color:#64748b;">🖱 拖拽 · 滚轮缩放 · 点击节点高亮邻域</span>
 </div>
 
-<div class="graph-container"><div id="cy"></div></div>
+<div class="yry-cytoscape-graph graph-container" id="cy-graph" data-filename="yry-checklist-scene4-kg" data-layout="breadthfirst" data-legend="false" style="height:550px"></div>
 
-<div class="cards">
-  <div class="card">
-    <div class="card-header"><div class="card-dot scene"></div><h3>场景</h3></div>
-    <ul><li><b>场景 5 · 批量生成与自循环机制</b> — 场景 4</li></ul>
+<yry-info-cards>
+  <div class="yry-card">
+    <div class="yry-card-header"><div class="yry-card-dot scene"></div><h3>场景</h3></div>
+    <ul><li><b>场景 4 · 批量生成与自循环机制</b> — 场景 4</li></ul>
   </div>
   <h2>§0 技术评审</h2><p>批量生成引擎连接前四层的所有能力——模板→提取→组件→可视化，形成从 markdown 源到 HTML 产出的完整自动化管线。自循环机制确保 markdown 变更后 HTML 自动更新。</p><h3>效果示意</h3><p><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
   'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
@@ -114,19 +66,47 @@ flowchart TD
     classDef e fill:#3B82F6,color:#fff
     classDef p fill:#8B5CF6,color:#fff
     classDef o fill:#34d399,color:#000
-    classDef c fill:#f59e0b,color:#000</pre></p>
-</div>
+    classDef c fill:#f59e0b,color:#000</pre></p><h3>管线阶段</h3><table><thead><tr><th>阶段</th><th>输入</th><th>处理</th><th>输出</th><th>耗时</th></tr></thead><tbody><tr><td>① 扫描</td><td>故事目录路径</td><td>递归扫描 <code>场景-N-*/</code> 子目录</td><td>场景列表</td><td>< 50ms</td></tr><tr><td>② 提取</td><td>每场景 <code>index.md</code></td><td>解析 §0-§4 章节 + 表格 + mermaid</td><td>Context 对象</td><td>< 100ms/场景</td></tr><tr><td>③ 渲染</td><td>Context + 模板</td><td>Token 替换 + 模板渲染</td><td>HTML 字符串</td><td>< 50ms/文档</td></tr><tr><td>④ 写入</td><td>HTML 字符串</td><td>写入文件系统 + .bak 备份</td><td>7 个 HTML 文件</td><td>< 100ms/场景</td></tr><tr><td>⑤ 报告</td><td>生成结果</td><td>统计 created/updated/skipped</td><td>摘要报告</td><td>< 10ms</td></tr></tbody></table><h3>自循环检测逻辑</h3><p>``<code>
+每 30 分钟:
+  1. 扫描所有故事目录的场景-N-*/index.md
+  2. 对比 index.md 的 mtime 与对应 7 个 HTML 的 mtime
+  3. index.md 更新 → 标记为"过期"，重新生成
+  4. HTML 缺失 → 标记为"缺失"，生成新文件
+  5. 全部最新 → 跳过
+</code>`<code></p><h3>性能特征</h3><table><thead><tr><th>操作</th><th>1 场景</th><th>5 场景</th><th>10 场景</th></tr></thead><tbody><tr><td>全量生成</td><td>< 2s</td><td>< 10s</td><td>< 20s</td></tr><tr><td>增量检测</td><td>< 100ms</td><td>< 500ms</td><td>< 1s</td></tr><tr><td>单场景覆盖</td><td>< 2s</td><td>—</td><td>—</td></tr><tr><td>单类型生成</td><td>< 1s</td><td>< 3s</td><td>< 5s</td></tr></tbody></table><h3>并发与锁机制</h3><p><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+sequenceDiagram
+    participant A as 实例 A
+    participant FS as 文件系统
+    participant B as 实例 B
+    A-&gt;&gt;FS: 检查 .lock
+    FS--&gt;&gt;A: 不存在
+    A-&gt;&gt;FS: 写入 .lock (PID)
+    A-&gt;&gt;FS: 写入 HTML.tmp
+    A-&gt;&gt;FS: rename HTML.tmp → HTML
+    A-&gt;&gt;FS: 删除 .lock
+    B-&gt;&gt;FS: 检查 .lock
+    FS--&gt;&gt;B: 存在 (PID=A)
+    B-&gt;&gt;B: 等待 1s 重试
+    B-&gt;&gt;FS: 检查 .lock
+    FS--&gt;&gt;B: 不存在
+    B-&gt;&gt;FS: 写入 .lock (PID=B)</pre></p><table><thead><tr><th>锁策略</th><th>实现</th><th>优劣</th><th>超时</th></tr></thead><tbody><tr><td>文件锁 </code>.lock<code></td><td>flock 或 PID 写入</td><td>简单 · 跨进程</td><td>30s</td></tr><tr><td>内存锁 </code>Mutex<code></td><td>单进程</td><td>极快 · 不跨进程</td><td>—</td></tr><tr><td>数据库锁</td><td>事务隔离</td><td>强一致 · 重</td><td>—</td></tr><tr><td>无锁 + CAS</td><td>原子 rename</td><td>并发高 · 复杂</td><td>—</td></tr></tbody></table><p><b>推荐组合</b>：文件锁 + 原子 rename，生成完成后立即释放锁。</p><h3>原子写入流程</h3><table><thead><tr><th>步骤</th><th>操作</th><th>失败处理</th></tr></thead><tbody><tr><td>1</td><td>写入 </code>HTML.tmp.<pid><code></td><td>立即返回错误</td></tr><tr><td>2</td><td></code>fsync<code> 刷盘</td><td>忽略 · 下次重试</td></tr><tr><td>3</td><td></code>rename<code> 到目标路径</td><td>删除 tmp</td></tr><tr><td>4</td><td>清理 tmp 残留</td><td>启动时扫描</td></tr></tbody></table><h3>备份与清理策略</h3><table><thead><tr><th>策略</th><th>触发</th><th>保留</th><th>清理</th></tr></thead><tbody><tr><td></code>.bak<code> 备份</td><td></code>--force<code> 覆盖</td><td>7 天</td><td>cron 自动</td></tr><tr><td></code>.tmp<code> 残留</td><td>启动扫描</td><td>—</td><td>立即删除</td></tr><tr><td>归档目录</td><td>每周</td><td>4 周</td><td>自动迁移</td></tr></tbody></table><p><b>备份命名约定</b>:</p><p></code>`<code>
+场景-1-xxx/计划清单.html      ← 当前
+场景-1-xxx/计划清单.html.bak  ← 上次版本
+场景-1-xxx/计划清单.html.bak.<timestamp>  ← 带时间戳归档
+</code>``</p><h3>自循环调度矩阵</h3><table><thead><tr><th>触发方式</th><th>频率</th><th>范围</th><th>优劣</th></tr></thead><tbody><tr><td>Cron</td><td>30 分钟</td><td>全量 mtime 检测</td><td>稳定 · 有延迟</td></tr><tr><td>File watcher</td><td>实时</td><td>变更文件</td><td>即时 · 资源高</td></tr><tr><td>Git hook</td><td>commit</td><td>变更场景</td><td>精准 · 仅本地</td></tr><tr><td>手动</td><td>按需</td><td>指定场景</td><td>灵活 · 非自动</td></tr></tbody></table><p><b>推荐组合</b>：Cron 30min + Git pre-commit hook（commit 时立即同步变更场景）。</p>
+</yry-info-cards>
 
-<div class="footer">YrY vv1.0.0 · 2026-06-13</div>
+<yry-scene-footer version="v5.4.0" date="2026-06-22"></yry-scene-footer>
 </div>
 <script src="../../../../cdn/shared/index.js"></script>
-<script>
-(function(){
-  if(typeof cytoscape==='undefined'){document.getElementById('cy').innerHTML='<p style="color:#475569;text-align:center;padding:2rem;">Cytoscape.js 未加载 — 知识图谱数据待生成</p>';return}
-  var cy=cytoscape({container:document.getElementById('cy'),style:[{selector:'node',style:{label:'data(label)',color:'white','font-size':'10px','font-family':'JetBrains Mono,monospace','text-valign':'center','text-halign':'center','background-color':'#1e293b',border:'2px solid #475569'}}],elements:{nodes:[{data:{id:'placeholder',label:'数据待填充'}}],edges:[]},layout:{name:'grid'}});
-  document.querySelector('.toolbar-actions button:nth-child(1)').onclick=function(){navigator.clipboard.writeText(JSON.stringify(cy.json())).then(()=>{this.textContent='✅ Copied';setTimeout(()=>this.textContent='📋 Copy',1500)})};
-  document.querySelector('.toolbar-actions button:nth-child(2)').onclick=function(){if(typeof html2canvas==='undefined')return;html2canvas(document.getElementById('cy'),{backgroundColor:'#020617'}).then(c=>{var a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='计划清单-scene4-kg.png';a.click()})};
-})();
-</script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
+<script src="../../../../cdn/yry-cytoscape-graph/index.js"></script>
+<script src="../../../../cdn/yry-export-toolbar/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
+<script src="../../../../cdn/yry-info-cards/index.js"></script>
 </body>
 </html>

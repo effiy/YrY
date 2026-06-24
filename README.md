@@ -1,6 +1,6 @@
 # YrY <sub>v5.4.0</sub>
 
-> 故事驱动的 SDLC 编排系统 — 需求 → 文档 → 代码 → 交付。YrY 用自身管线管理自身演进。20 技能 + 9 Agent + 18 规则 + 18 共享库 + 9 维度健康检查 + 4 实时监控面板。
+> 故事驱动的 SDLC 编排系统 — 需求 → 文档 → 代码 → 交付。YrY 用自身管线管理自身演进。20 技能 + 9 Agent + 16 跨 skill 规则 + 20 共享库 + 9 维度健康检查 + 4 实时监控面板。
 
 [系统全景](#系统全景) · [管线](#管线) · [快速开始](#快速开始) · [命令](#命令) · [/rui](#rui) · [/rui-story](#rui-story) · [/rui-claude](#rui-claude) · [/rui-npm](#rui-npm) · [Agent 角色](#agent-角色) · [规则](#规则) · [技能](#技能) · [目录结构](#目录结构) · [领域语言](#领域语言) · [技术趋势](#技术趋势)
 
@@ -54,6 +54,14 @@ flowchart TD
 ## 管线
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart LR
     A[需求解析] --> B[自适应规划] --> C[影响分析] --> D[架构设计] --> E[文档基线]
     E --> F[预检·分支隔离]
@@ -86,11 +94,118 @@ flowchart LR
 
 > init 生成 CLAUDE.md 项目约束 + README 领域语言 + 故事面板目录。存量项目用 `doc --from-code` 反推文档基线。
 
+## 架构深潜
+
+### 分层架构
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
+flowchart TB
+    subgraph UX["表达层"]
+        CLI["/rui CLI"]:::ux
+        HTML["HTML 报告 · 仪表板"]:::ux
+        WX["企微通知"]:::ux
+    end
+
+    subgraph Core["编排内核"]
+        PM["pm · 决策中枢"]:::core
+        PIPE["管线引擎 · 5 阶段"]:::core
+        REC["推荐引擎 · 5 层评分"]:::core
+    end
+
+    subgraph Skills["技能层 (20)"]
+        MAIN["主线: init·doc·code·update·yry"]:::skill
+        QUAL["质量: plan·version·analysis·bundle"]:::skill
+        OPS["运营: story·claude·import·bot·npm"]:::skill
+        DOCS["文档: html·reporter·trends·skills"]:::skill
+    end
+
+    subgraph Agents["Agent 层 (9)"]
+        PM2["pm"]:::agent
+        ARCH["architect"]:::agent
+        CODER["coder"]:::agent
+        TESTER["tester"]:::agent
+        REPORTER["reporter"]:::agent
+        SEC["security"]:::agent
+    end
+
+    subgraph Infra["基础设施"]
+        LIB["lib/ · 20 共享模块"]:::infra
+        DIAG["诊断引擎 D0-D8"]:::infra
+        ARCH_C["架构合规 10 维"]:::infra
+        MEM[".memory/ · 执行记忆"]:::infra
+    end
+
+    UX --> Core
+    Core --> Skills
+    Skills --> Agents
+    Agents --> Infra
+    Infra --> Core
+
+    classDef ux fill:#7c3aed,color:#fff
+    classDef core fill:#3d59a1,color:#fff
+    classDef skill fill:#2b2d3b,stroke:#3d59a1,color:#a9b1d6
+    classDef agent fill:#1a2a1a,stroke:#34d399,color:#a9b1d6
+    classDef infra fill:#3a1a1a,stroke:#f87171,color:#a9b1d6
+```
+
+### 数据流
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    REQ["用户需求"] --> PARSE["需求解析<br/>pm agent"]
+    PARSE --> STORY["故事文档<br/>F.story.* 公式"]
+    STORY --> PLAN["实施计划<br/>planner + architect"]
+    PLAN --> CODE["源码实现<br/>coder + reviewer"]
+    CODE --> TEST["质量卡点<br/>tester · Gate A/B"]
+    TEST --> REPORT["过程报告<br/>reporter · 三报告"]
+    REPORT --> DELIVER["交付收口<br/>import + bot"]
+    DELIVER --> SI["自改进<br/>D0-D8 诊断 → 提案"]
+
+    SI -.反馈.-> PARSE
+```
+
+### 扩展机制
+
+YrY 采用**内核轻量、扩展丰富**的架构宪法。新增技能无需修改编排器：
+
+1. 在 `skills/` 下创建 `rui-<name>/` 目录
+2. 编写 `SKILL.md`（含 frontmatter：name/description/user_invocable/lifecycle）
+3. 编排器自动发现并集成到管线和推荐引擎
+4. 架构合规检查 (`node lib/arch-check.mjs`) 自动验证范式合规
+
+### 插件系统
+
+YrY 本身是 Claude Code 插件，通过 `CLAUDE.md` 项目约束 + `skills/` 目录驱动（纯规约形式，无 `.claude-plugin/plugin.json`）。技能市场 (`/rui-skills`) 支持发现和安装第三方技能包，所有技能遵循统一的 Agent 交接契约。
+
 ## 命令
 
 只读命令不触发末端 hook，写入命令末端自动执行交付三步。
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TD
     Q1{"改的是业务故事<br>还是 .claude/ 配置?"}
     Q1 -->|"业务故事"| Q2{"已有故事吗?"}
@@ -168,6 +283,14 @@ flowchart TD
 ## Agent 角色
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart LR
     PM[pm<br>决策中枢] -->|拆故事| ARCHITECT[architect<br>架构设计]
     ARCHITECT -->|设计规约| CODER[coder<br>代码实现]
@@ -196,6 +319,14 @@ flowchart LR
 ## 规则
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart LR
     subgraph 管线阶段
         direction TB
@@ -230,7 +361,7 @@ flowchart LR
 - **mermaid-theme** — Mermaid 统一配色：项目唯一色板真相源
 - **plan-execution** — 计划执行：创建→审查→执行→验证管线
 - **security-guardrails** — 安全护栏：防线在信任边界处，输入必校验
-- **self-improve** — 自改进闭环：D0-D7 诊断 · E1-E4 评估
+- **self-improve** — 自改进闭环：D0-D8 诊断 · E1-E4 评估
 - **rui-claude** — .claude/ 管理：仅限 `.claude/` · 禁自动 commit/push
 - **architecture-principles** — 架构宪法：内核轻量/扩展丰富/配置 API/代码范式/健康检测架构
 - **design-principles** — 十一条设计原则：SRP/高内聚/低耦合/DIP/OCP/ISP/DRY/YAGNI/组合/扩展至上/可健康检测
@@ -269,7 +400,7 @@ flowchart LR
 
 ### 健康与监控
 
-- **rui-health** — 系统健康诊断（从 rui-bot 按 SRP 拆分）：9 维度评分 + HTML 报告 + D0-D7 诊断 + 趋势持久化
+- **rui-health** — 系统健康诊断（从 rui-bot 按 SRP 拆分）：9 维度评分 + HTML 报告 + D0-D8 诊断 + 趋势持久化
 - **rui-bundle-analyze** — 打包产物分析：CDN 组件体积/依赖/覆盖率检测
 
 ### 质量与演进
@@ -277,9 +408,122 @@ flowchart LR
 - **rui-version** — 版本漂移检测与自动升级
 - **rui-plan** — 计划新鲜度检查与执行追踪
 - **rui-import** — 文档远端同步（per-document instant + batch safety-net）
-- **self-improve** — 持续自改进闭环：D0-D7 诊断 → 提案生成 → 物化为故事 → 效果评估 (E1-E4)
+- **self-improve** — 持续自改进闭环：D0-D8 诊断 → 提案生成 → 物化为故事 → 效果评估 (E1-E4)
 
-详见 [`skills/`](./skills/)。所有脚本通过 [`lib/`](./lib/)（18 文件含 `lib/engine/` 诊断/评估/物化/升级引擎及 `lib/arch-dimensions/` 架构检测）共享 TTY 格式化、项目工具、诊断引擎和常量定义。
+详见 [`skills/`](./skills/)。所有脚本通过 [`lib/`](./lib/)（20 文件含 `lib/engine/` 诊断/评估/物化/升级引擎及 `lib/arch-dimensions/` 架构检测）共享 TTY 格式化、项目工具、诊断引擎和常量定义。
+
+## 安全模型
+
+### 信任边界
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    subgraph External["外部不可信"]
+        USER["用户输入"]:::untrusted
+        API["远端 API"]:::untrusted
+        URL["外部 URL"]:::untrusted
+    end
+
+    subgraph Boundary["信任边界"]
+        VALIDATE["输入校验层"]:::boundary
+        SANITIZE["XSS/注入防护"]:::boundary
+        AUTH["Token 验证"]:::boundary
+    end
+
+    subgraph Internal["内部可信域"]
+        SKILLS["技能执行"]:::trusted
+        AGENTS["Agent 协作"]:::trusted
+        LIB["共享库"]:::trusted
+    end
+
+    External --> Boundary
+    Boundary --> Internal
+
+    classDef untrusted fill:#3a1a1a,stroke:#f87171,color:#f87171
+    classDef boundary fill:#3a2a1a,stroke:#fbbf24,color:#fbbf24
+    classDef trusted fill:#1a2a1a,stroke:#34d399,color:#34d399
+```
+
+### 安全原则
+
+| 原则 | 实现 | 验证 |
+|------|------|------|
+| **认证不可绕过** | 所有 API 调用强制 `X-Token` 头 | `API_X_TOKEN` 仅从环境变量注入 |
+| **密钥不落盘** | Token/密钥/凭据禁止出现在源码或配置文件 | arch-check 自动扫描敏感模式 |
+| **输入必校验** | 用户输入经过验证/转义后再进入管线 | XSS/注入检测为 P0 阻断项 |
+| **最小权限** | Agent 工具集最小化，仅授予完成职责所需工具 | ISP 合规检查 |
+| **纵深防御** | 多层校验：输入层 → 业务层 → 输出层 | 安全护栏规则注入各阶段 |
+| **分支隔离** | 任何写入操作前强制验证 `feat/<name>` 分支 | `lib/branch-check.mjs` 门禁 |
+
+### 威胁模型
+
+| 威胁 | 影响 | 缓解措施 |
+|------|------|---------|
+| 恶意输入注入 | 管线执行非预期命令 | 输入校验 + 参数化命令 |
+| Token 泄露 | 远端 API 被未授权访问 | 环境变量隔离 + 禁止落盘 |
+| 供应链攻击 | 恶意技能包 | 技能市场元数据验证 + 依赖审计 |
+| 分支混淆 | 代码写入错误分支 | 分支隔离强制门禁 |
+| 文档注入 | XSS 通过文档渲染 | HTML 输出转义 + CSP 头 |
+
+详见 [security-guardrails.md](./skills/rui/rules/security-guardrails.md)。
+
+## 架构决策记录 (ADR)
+
+关键架构决策，记录设计上下文与权衡：
+
+| ADR | 决策 | 理由 | 影响 |
+|-----|------|------|------|
+| **ADR-001** | 正则解析 import 而非 AST | 零依赖 · 5-10× 性能 · 容错 | 边界 case 覆盖率 ~95% |
+| **ADR-002** | 力导向图而非分层图 | 对任意图结构无假设 · 自然交互 | 布局非确定性 |
+| **ADR-003** | 文件级分析而非模块级 | 文件是开发者原子操作单元 | 不展开到导出/函数级 |
+| **ADR-004** | HTML 自包含（除 D3 CDN） | CDN 可缓存 · 报告体积可控 | 离线需预加载 D3 |
+| **ADR-005** | 规约驱动而非配置驱动 | 规约是唯一真相源 · 可被 Agent 解析 | 需要严格的规约完整性 |
+| **ADR-006** | 内核轻量 · 扩展丰富 | 技能独立演进 · 编排器不膨胀 | 扩展间需严格契约 |
+| **ADR-007** | 故事驱动 SDLC | 每个变更是独立故事 · 完整可追溯 | 小变更开销略高 |
+
+## 性能特征
+
+| 操作 | 典型耗时 | 瓶颈 |
+|------|---------|------|
+| 项目初始化 (`/rui init`) | 30-60s | 远端 API 调用 + 文件生成 |
+| 文档生成 (`/rui doc`) | 10-30s | Agent 推理 + 文件写入 |
+| 源码实现 (`/rui code`) | 按模块规模 | Agent 推理 + 测试执行 |
+| 架构合规检查 | < 500ms | 纯本地文件扫描 |
+| 健康检查 (9 维度) | 2-5s | 文件系统扫描 + API 探测 |
+| 打包分析 (56 维度) | < 300ms | 客户端 D3 渲染 |
+| 趋势报告生成 | 5-15s | 多源网络采集 |
+| 企微通知 | < 2s | 网络延迟 |
+
+## 贡献指南
+
+### 开发工作流
+
+1. **创建故事**：`/rui <需求描述>` — 自动拆分为故事任务
+2. **分支隔离**：确保在 `feat/<name>` 分支上工作
+3. **逐模块实现**：Gate A（测试先行）→ 逐模块 P0 清零 → Gate B（验证）
+4. **交付收口**：`rui-import` 同步文档 + `rui-bot` 推送通知
+5. **自改进**：`/rui-yry` 运行诊断并生成改进提案
+
+### 代码规范
+
+- **范式**：纯函数 + 具名导出，禁止 `class`/`extends`/`export default`/空 `catch`
+- **常量**：魔法数字禁止，共享常量统一定义在 `lib/constants.mjs`
+- **导入**：技能间禁止直接 import，共享代码放 `lib/`
+- **验证**：`node lib/arch-check.mjs` 自动检查 10 维度架构合规
+
+### 文档规范
+
+- **表达优先**：图 → 结构化文本 → 表，不可降级
+- **证据等级**：A=已验证(附路径) B=可推导(附推导链) C=未验证(标"待补充") D=幻觉(视为错误)
+- **Mermaid 主题**：统一使用项目色板，见 [mermaid-theme.md](./skills/rui/rules/mermaid-theme.md)
 
 ## 目录结构
 
@@ -315,8 +559,8 @@ YrY/
 │               ├── 源码.html      # 源码交叉引用
 │               ├── 测试面板.html  # 测试仪表盘
 │               ├── 演示.html      # 交互演示
-│               └── 审查.html      # D0-D7 审查报告
-├── lib/                     # 18 文件共享库（消除跨文件重复）
+│               └── 审查.html      # D0-D8 审查报告
+├── lib/                     # 20 文件共享库（消除跨文件重复）
 │   ├── constants.mjs        #   共享常量（超时/并发/阈值/路径）
 │   ├── tty.mjs / fs.mjs     #   TTY 格式化 / 文件系统工具
 │   ├── network.mjs          #   网络请求封装
@@ -331,7 +575,7 @@ YrY/
 │   ├── arch-helpers.mjs     #   架构辅助工具
 │   ├── arch-dimensions/     #   架构维度检测（kernel·paradigm·solid·quality）
 │   ├── engine/              #   诊断引擎
-│   │   ├── diagnostics.mjs  #     D0-D7 诊断（纯逻辑）
+│   │   ├── diagnostics.mjs  #     D0-D8 诊断（纯逻辑）
 │   │   ├── evaluate.mjs     #     E1-E4 效果评估
 │   │   ├── materialize.mjs  #     提案→故事物化
 │   │   └── upgrade.mjs      #     经验→规则升级检测
@@ -340,7 +584,6 @@ YrY/
 │   ├── run.mjs              #   测试运行器 (skills/rui/tests/)
 │   └── ...
 ├── .claude/                 # Claude Code 本地配置
-├── .claude-plugin/          # 插件清单与市场元数据
 ├── CLAUDE.md
 └── README.md
 ```
@@ -350,6 +593,14 @@ YrY/
 > 理解术语再动手。每术语含 _Avoid_ 别名防止漂移。
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TD
     REQ[需求] -->|拆为| STORY[故事]
     STORY -->|通过| PIPE[管线]
@@ -382,7 +633,7 @@ flowchart TD
 | **Agent** | 六大协作角色：pm coder tester reporter security self-improve。每角色有交接信号和验证方式。 | bot, worker, role |
 | **公式** | 结构化文档产出规范。分为通用元素 (F.meta/F.nav/F.evidence)、故事主线 (F.story.*)、补充文档 (F.supp.*)。区别于"模板"——公式是规约 (what)，模板是文件 (how)；本系统只用公式。 | template, format |
 | **交付收口** | rui-import + rui-bot 手动触发。 | delivery pipeline, post-steps |
-| **自改进** | D0–D7 诊断循环。采集执行数据→六维评估→生成改进提案→提案闭合。 | retrospective, post-mortem |
+| **自改进** | D0-D8 诊断循环。采集执行数据→六维评估→生成改进提案→提案闭合。 | retrospective, post-mortem |
 | **执行记忆** | `.memory/execution-memory.jsonl`（追加）+ `.memory/rui-state.json`（覆盖写）。 | state, log |
 | **项目类型** | frontend / backend / fullstack / meta / unknown。决定技术评审章节裁剪（纯前端跳过 API/数据/后端性能，纯后端跳过组件/状态/交互/样式/DOM）。 | stack type |
 | **需求** | `/rui` 的输入：纯文本、`@` 文件引用、或 URL。pm 解析后拆为一组故事。 | input, spec, feature request |
@@ -393,3 +644,34 @@ flowchart TD
 ## 技术趋势
 
 > 技术趋势通过 `/rui-trends` 实时查询；架构模式与方法论内联于各技能规约（自包含原则）。
+
+### 趋势分类与权重
+
+| 分类 | 权重 | 代表技术 | 数据源 |
+|------|:---:|------|------|
+| 前端框架 | 0.25 | React/Vue/Svelte/Angular | GitHub Trending |
+| 构建工具 | 0.15 | Vite/Webpack/Turbopack | OSS Insight |
+| 运行时 | 0.20 | Deno/Bun/Node.js/Edge | TrendShift |
+| CSS 方案 | 0.10 | Tailwind/UnoCSS | State of JS |
+| 测试框架 | 0.10 | Vitest/Jest/Playwright | GitHub |
+| AI 工具 | 0.20 | Claude/Copilot/Cursor | OSS Insight |
+
+### 信噪比与行动矩阵
+
+| SNR 范围 | 等级 | 含义 | 行动 |
+|:---:|:---:|------|------|
+| > 3.0 | 强信号 | 趋势明确 | 立即响应 |
+| 2.0-3.0 | 中信号 | 趋势可信 | 评估采纳 |
+| 1.0-2.0 | 弱信号 | 趋势存疑 | 持续观察 |
+| < 1.0 | 噪声 | 无明确趋势 | 不响应 |
+
+### 趋势刷新机制
+
+| 属性 | 值 |
+|------|-----|
+| 刷新频率 | 每周一 09:00 CST |
+| 数据源 | 4 (GitHub/OSS/TrendShift/State of JS) |
+| 生成命令 | `/rui-trends` |
+| 持久化 | `.memory/health-trend.jsonl` |
+| 通知 | 企微 Webhook |
+| 降级策略 | 缓存上次数据 |

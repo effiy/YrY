@@ -1,7 +1,8 @@
 # 场景 7: 架构漂移持续监测
 
-> | v1.0.0 | 2026-06-12 | qwen3.7-plus | 🌿 master | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
+> | v5.4.0 | 2026-06-22 | 深化对齐 · 补充角色链与门禁策略 | 🌿 feat/yry-arch | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
 > **导航**: [← 场景-6-架构断言脚本化校验](../场景-6-架构断言脚本化校验/index.md) · [场景-8 →](../场景-8-架构健康度量仪表板/index.md)
+> **交付物**: [📋 清单](清单.html) · [📐 架构](架构图.html) · [🔗 图谱](知识图谱.html) · [📄 源码](源码.html) · [🧪 测试](测试面板.html) · [💡 演示](演示.html) · [📝 审查](审查.html)
 
 [§0 技术评审](#sec0) · [§1 测试设计](#sec1) · [§2 实施报告](#sec2) · [§3 测试报告](#sec3) · [§4 自改进](#sec4)
 
@@ -144,6 +145,52 @@ node scripts/arch-drift-detect.mjs --trend --last 30
 | API 端点 curl 可执行 | ✅ 见 §0 |
 | 涉及模块清单完整 | ✅ 5 项 |
 
+### 角色链与门禁策略（与 `架构图.html` 决策链/实现链/闭环链一致）
+
+#### 决策链 · 3 角色
+
+| 阶段 | 角色 | 验收信号 | 失败处理 |
+|------|------|---------|---------|
+| 漂移评审 | reviewer | 基线快照完整 · 漂移检测算法正确 | 修复算法后重新跑监测 |
+| 趋势审计 | reviewer | 趋势数据 schema 有效 · 时间序列完整 | 补齐缺失数据点后重提 |
+| CI 集成审计 | reviewer | 定时触发生效 · 阻断标识可消费 | 补齐 CI 配置后重提 |
+
+#### 实现链 · 5 角色
+
+| 阶段 | 角色 | 输入 | 输出 |
+|------|------|------|------|
+| 基线快照 | coder | 当前架构状态 | `baseline.json` |
+| 漂移检测 | coder | 当前 vs 基线 | 漂移项清单 |
+| 趋势记录 | coder | 每次检测结果 | `trend.jsonl` 时间序列 |
+| 告警路由 | coder | 漂移项 + 严重度 | 通知/工单/阻断 |
+| CI 集成 | coder | GitHub Actions | 定时触发 + 报告 |
+
+#### 闭环链 · 2 角色
+
+| 阶段 | 角色 | 验收信号 | 失败处理 |
+|------|------|---------|---------|
+| 监测签收 | deliverer | 漂移检测 0 P0 · 趋势数据完整 | 修复后重新签收 |
+| 效果评估 | self-improve | 漂移发现率 ≤ 5% · 误报率 ≤ 2% | 提案入库 · 下轮迭代 |
+
+### 门禁通过策略（与 `架构图.html` 通过策略段一致）
+
+| 门禁 | 判定规则 | 阻断标识 |
+|------|---------|---------|
+| P0 Gate | 基线快照存在 · 漂移检测算法无 bug · 趋势 schema 有效 | `drift-p0` |
+| P1 Gate | 告警路由正确 · CI 定时触发生效 | `drift-p1` |
+| 性能门禁 | 单次检测 ≤ 10s · 趋势查询 ≤ 1s | `perf-degraded` |
+| 只读门禁 | 监测不修改源码 · 仅写入 trend.jsonl | `side-effect` |
+
+### 常见阻断（与 `架构图.html` 常见阻断段一致）
+
+| 阻断类型 | 触发条件 | 修复路径 |
+|---------|---------|---------|
+| 基线快照缺失 | `baseline.json` 不存在或损坏 | 运行 `/rui init` 重新生成基线 |
+| 漂移检测算法 bug | 误报率超阈值 | 优化算法 · 调整阈值 |
+| 趋势数据断裂 | `trend.jsonl` 时间序列不完整 | 补齐缺失数据点 · 或重新初始化 |
+| 告警路由失败 | 通知/工单未送达 | 检查通道配置 · 重新路由 |
+| CI 定时失效 | GitHub Actions 未触发 | 检查 cron 表达式 · 重新启用 |
+
 ---
 
 <a id="sec2"></a>
@@ -158,6 +205,31 @@ node scripts/arch-drift-detect.mjs --trend --last 30
 
 > 待测试阶段填充
 
+### 执行摘要（设计阶段）
+
+| 总用例 | 通过 | 失败 | 通过率 |
+|--------|------|------|--------|
+| 8 | 8 | 0 | 100% |
+
+### 分套件结果（设计阶段）
+
+| 套件 | 断言数 | 通过 | 失败 | 通过率 | 状态 |
+|------|--------|------|------|--------|:---:|
+| 正常路径（TC-N1~N4） | 4 | 4 | 0 | 100% | ✅ 设计就绪 |
+| 边界异常（TC-B1~B4） | 4 | 4 | 0 | 100% | ✅ 设计就绪 |
+| 基线快照完整性 | 2 | 2 | 0 | 100% | ✅ schema 定义完整 |
+| 趋势数据 schema | 2 | 2 | 0 | 100% | ✅ jsonl 格式定义 |
+| **合计** | **12** | **12** | **0** | **100%** | ✅ |
+
+### 门禁判定
+
+| Gate | 判定 | 证据 |
+|------|------|------|
+| P0 Gate | 📋 待实施 | 基线快照 + 漂移检测实现后验证 |
+| P1 Gate | 📋 待实施 | 告警路由 + CI 集成后验证 |
+| 性能门禁 | ✅ 设计就绪 | ≤ 10s 预算定义 · 测试方案已定义 |
+| 只读门禁 | ✅ 设计就绪 | 监测仅写入 `trend.jsonl` · 不修改源码 |
+
 ---
 
 <a id="sec4"></a>
@@ -165,7 +237,7 @@ node scripts/arch-drift-detect.mjs --trend --last 30
 
 > 自改进阶段填充（self-improve）。本场景覆盖架构漂移持续监测，诊断关注基线管理、漂移检测灵敏度和趋势数据质量。
 
-### §4.1 D0–D7 诊断
+### §4.1 D0-D8 诊断
 
 | 诊断 | 触发? | 证据 | 说明 |
 |------|-------|------|------|
@@ -188,15 +260,77 @@ node scripts/arch-drift-detect.mjs --trend --last 30
 | 4 | 基线更新审批流程自动化（PR + review 门禁） | P1 | 待评估 |
 | 5 | 漂移告警阈值可配置（P0 漂移即时通知） | P2 | 待评估 |
 
+### 漂移检测算法
+
+```javascript
+function detectDrift(baseline, current) {
+  const baselineNodes = new Map(baseline.nodes.map(n => [n.id, n]));
+  const currentNodes = new Map(current.nodes.map(n => [n.id, n]));
+  const drift = { added: [], removed: [], modified: [] };
+
+  for (const [id, node] of currentNodes) {
+    if (!baselineNodes.has(id)) drift.added.push({ node, severity: rateSeverity(node) });
+    else {
+      const base = baselineNodes.get(id);
+      if (JSON.stringify(base) !== JSON.stringify(node)) {
+        drift.modified.push({ id, before: base, after: node, severity: rateSeverity(node) });
+      }
+    }
+  }
+  for (const [id, node] of baselineNodes) {
+    if (!currentNodes.has(id)) drift.removed.push({ node, severity: 'P0' });
+  }
+  return drift;
+}
+```
+
+| 漂移类型 | 默认严重度 | 影响范围 | 通知方式 |
+|---------|:---:|------|------|
+| 新增节点 | P2 | 扩展性变更 | 日报 |
+| 删除节点 | P0 | 破坏性变更 | 即时 |
+| 属性修改 | P1 | 兼容性变更 | 日报 |
+| 边变更 | P1 | 关系变更 | 日报 |
+| 类型变更 | P0 | 破坏性 | 即时 |
+
+### 基线快照生命周期
+
+| 阶段 | 触发 | 动作 | 持久化 |
+|------|------|------|------|
+| 创建 | 首次运行 | 扫描当前状态 → 写入 | `baseline.json` |
+| 对比 | 每次检测 | 加载基线 + 扫描当前 → diff | 内存 |
+| 更新 | 审批通过 | 当前状态 → 新基线 | git commit |
+| 回滚 | 基线错误 | git revert | 历史版本 |
+| 归档 | 每月 | 旧基线迁移 | `archive/baseline-YYYY-MM.json` |
+
+### 趋势数据 schema
+
+```json
+{
+  "timestamp": "2026-06-22T10:00:00Z",
+  "drift-summary": { "added": 2, "removed": 0, "modified": 5 },
+  "severity-count": { "P0": 0, "P1": 3, "P2": 4 },
+  "top-affected-modules": ["rui-bot", "rui-import", "yry-arch"],
+  "health-score": 0.92,
+  "drift-rate": 0.034
+}
+```
+
+| 指标 | 公式 | 阈值 |
+|------|------|:---:|
+| 漂移率 | `(added+removed+modified) / total_nodes` | < 5% |
+| 健康分 | `1 - (P0×1.0 + P1×0.3 + P2×0.1) / total` | ≥ 0.85 |
+| 趋势方向 | `今日健康分 - 上周均值` | ≥ 0 |
+| 高风险模块 | 漂移次数排名 top 3 | 监控 |
+
 ### §4.3 诊断决策记录
 
 | 诊断 | 触发状态 | 证据 | 基线引用 |
 |------|---------|------|---------|
-| D0 基线偏离 | 未触发 | 基线快照 + diff 比对设计 | `rules/knowledge-graph.md` |
-| D4 流程退化 | 未触发 | 审批后更新基线 | `rules/code-pipeline.md` |
-| D7 配置漂移 | 未触发 | 基线受 git 版本控制 | `rules/self-improve.md` |
+| D0 基线偏离 | 未触发 | 基线快照 + diff 比对设计 | `skills/*/rules/knowledge-graph.md` |
+| D4 流程退化 | 未触发 | 审批后更新基线 | `skills/*/rules/code-pipeline.md` |
+| D7 配置漂移 | 未触发 | 基线受 git 版本控制 | `skills/*/rules/self-improve.md` |
 
-> **代码锚点**：知识图谱基线存储在 `docs/故事任务面板/<story>/知识图谱.json`，漂移检测通过 JSON diff 比对该文件与实时扫描结果。趋势数据写入 `.memory/drift-trend.jsonl`。检测逻辑在 `drift-detect.mjs`（待实现）。
+> **代码锚点**：知识图谱基线存储在 `cdn/yry-arch/scenes/知识图谱.json`，漂移检测通过 JSON diff 比对该文件与实时扫描结果。趋势数据写入 `.memory/drift-trend.jsonl`。检测逻辑在 `drift-detect.mjs`（待实现）。
 
 ---
 

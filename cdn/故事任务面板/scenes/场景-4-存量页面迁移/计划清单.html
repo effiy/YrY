@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>计划清单 · 存量页面迁移 · CDN 共享前端资源库</title>
+<link rel="stylesheet" href="../../../shared/index.css">
+<link rel="stylesheet" href="../../../theme/index.css">
+<link rel="stylesheet" href="../../../yry-inline-helpers/index.css">
+<link rel="stylesheet" href="../../../yry-scene/index.css">
+<link rel="stylesheet" href="../../../yry-scene-header/index.css">
+<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
+<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
+<link rel="stylesheet" href="../../../yry-back-top/index.css">
+<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
+<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
+<link rel="stylesheet" href="../../../yry-a11y/index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
+  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
+  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
+  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
+  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
+  .delivery-story { font-size: .72rem; color: #4b5563; }
+  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
+  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
+  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
+  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
+  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
+  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
+  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
+</style>
+</head>
+<body>
+<yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
+<yry-scene-header id="header-app"
+  icon="📋"
+  title-prefix="计划清单"
+  accent="存量页面迁移"
+  meta="📖 CDN 共享前端资源库 · 🎬 存量页面迁移"
+  desc="CDN 共享前端资源库 — 存量页面迁移 场景的 计划清单 交付物。查看场景详情与任务分解。">
+</yry-scene-header>
+
+<div class="scene-wrap">
+  <div class="delivery-header">
+    <div class="delivery-icon">📋</div>
+    <div class="delivery-label">计划清单</div>
+    <div class="delivery-scene">存量页面迁移</div>
+    <div class="delivery-story">CDN 共享前端资源库</div>
+  </div>
+
+  <div class="content-card">
+    <h2>📋 需求与优先级</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:.74rem;color:#a9b1d6">
+      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">需求</th><th style="padding:8px 12px;text-align:center;color:#22d3ee;font-weight:600">优先级</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">来源</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">55+ 页面迁移到 CDN 组件</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#f87171">P0</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">架构统一</td></tr>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">内联重复代码消除 40-60%</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#f87171">P0</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">代码质量</td></tr>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">页面专属 CSS 可保留</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#fbbf24">P1</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">渐进迁移</td></tr>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">迁移前后视觉一致</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#f87171">P0</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">回归要求</td></tr>
+        <tr><td style="padding:8px 12px">6 步迁移路径可复现</td><td style="padding:8px 12px;text-align:center;color:#fbbf24">P1</td><td style="padding:8px 12px">可操作性</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="content-card">
+    <h2>🎯 实施步骤 · 6 步迁移路径</h2>
+    <ol style="margin:0;padding-left:20px;font-size:.76rem;line-height:1.9;color:#a9b1d6">
+      <li><strong style="color:#22d3ee">§2.1 审计内联</strong> — 盘点重复样式 · 识别可替换模式</li>
+      <li><strong style="color:#22d3ee">§2.2 匹配组件</strong> — 查找 CDN 组件 · 确定替换方案</li>
+      <li><strong style="color:#22d3ee">§2.3 类名映射</strong> — 内联样式 → <code>.yry-*</code> · 组件属性赋值</li>
+      <li><strong style="color:#22d3ee">§2.4 视觉对比</strong> — 截图 diff · 前后对比</li>
+      <li><strong style="color:#22d3ee">§2.5 删除冗余</strong> — 移除内联代码 · 保留专属 CSS</li>
+      <li><strong style="color:#22d3ee">§2.6 回归测试</strong> — 功能验证 · 性能检查</li>
+    </ol>
+  </div>
+
+  <div class="content-card">
+    <h2>✅ 验收清单</h2>
+    <ul style="margin:0;padding-left:20px;font-size:.76rem;line-height:1.9;color:#a9b1d6">
+      <li><input type="checkbox" checked> 6 步路径完整执行</li>
+      <li><input type="checkbox" checked> 视觉一致性 0 差异 (Percy diff)</li>
+      <li><input type="checkbox"> 内联消除率 ≥ 40% (目标 60-80%)</li>
+      <li><input type="checkbox" checked> 功能完整性全部通过</li>
+      <li><input type="checkbox" checked> 加载性能不劣于迁移前</li>
+      <li><input type="checkbox" checked> 组件引用 HTTP 200</li>
+      <li><input type="checkbox" checked> 组件属性正确渲染</li>
+      <li><input type="checkbox" checked> a11y 0 新增违规 (axe-core)</li>
+      <li><input type="checkbox" checked> 控制台 0 error</li>
+      <li><input type="checkbox" checked> CLS ≤ 0.1</li>
+      <li><input type="checkbox" checked> FID ≤ 100ms</li>
+      <li><input type="checkbox" checked> TTI ≤ 500ms</li>
+      <li><input type="checkbox"> 灰度发布流程 (staging → canary → ramp → full)</li>
+      <li><input type="checkbox"> 回滚策略 (git revert 预案)</li>
+    </ul>
+  </div>
+
+  <div class="nav-links">
+    <a class="nav-link current" href="计划清单.html">📋 计划清单</a>
+    <a class="nav-link" href="架构图.html">📐 架构图</a>
+    <a class="nav-link" href="知识图谱.html">🔗 知识图谱</a>
+    <a class="nav-link" href="测试面板.html">🧪 测试面板</a>
+    <a class="nav-link" href="源码.html">📄 源码</a>
+    <a class="nav-link" href="演示.html">💡 演示</a>
+    <a class="nav-link" href="审查.html">📝 审查</a>
+  </div>
+</div>
+
+<yry-cross-nav></yry-cross-nav>
+<yry-back-top></yry-back-top>
+<yry-footer-note version="1.2.0"></yry-footer-note>
+
+<script src="../../../shared/index.js" defer></script>
+<script src="../../../shared/vue-ce-loader.js"></script>
+  <script src="../../../yry-breadcrumb/index.js"></script>
+<script src="../../../yry-scene-header/index.js"></script>
+<script src="../../../yry-scene-nav/index.js"></script>
+<script src="../../../yry-cross-nav/index.js"></script>
+<script src="../../../yry-back-top/index.js"></script>
+<script src="../../../yry-footer-note/index.js"></script>
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    var bc = document.getElementById('breadcrumb-app');
+    if (bc) bc.items = [
+      { label: 'CDN 共享库', icon: '🌐', href: '../../../index.html' },
+      { label: '故事任务面板', icon: '📖', href: '../index.html' },
+      { label: 'CDN 共享前端资源库', icon: '📖', href: '../故事任务.md' },
+      { label: '存量页面迁移', icon: '🎬' }
+    ];
+    var sh = document.getElementById('header-app');
+    if (sh) {
+      sh.icon = '📋';
+      sh.titlePrefix = '计划清单';
+      sh.accent = '存量页面迁移';
+      sh.meta = '📖 CDN 共享前端资源库 · 🎬 存量页面迁移';
+      sh.desc = 'CDN 共享前端资源库 — 存量页面迁移 场景的 计划清单 交付物。';
+    }
+  });
+</script>
+</body>
+</html>

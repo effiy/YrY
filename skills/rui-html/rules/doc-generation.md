@@ -24,7 +24,7 @@ NO MAGIC NUMBERS — EVERY NUMERIC LITERAL MUST BE SEMANTICALLY NAMED
 |------|------|------|---------|
 | **无魔数** | 惜注意 | 代码裸数值→命名常量，文档硬编码量级→语义描述 | `Math.max(2, 28)`、文档写"最近 5 个"、"通过率 ≥ 90%" |
 
-故事文档公式见 [formulas.md](../skills/rui/formulas.md)；目录与数据契约见 [coder.md](../skills/rui/coder.md)。
+故事文档公式见 [formulas.md](../../rui/formulas.md)；目录与数据契约见 [coder.md](../../rui/coder.md)。
 
 <a id="eight-constraints"></a>
 ## 九约束全景
@@ -104,7 +104,7 @@ flowchart TB
 
 `docs/故事任务面板/` 下的故事文档产出。`skills/` 目录下的规则与角色定义不受此约束。
 
-目录的创建、删除、重命名由 `/rui-story` 管理，详见 [rui-story SKILL.md](../skills/rui-story/SKILL.md)。文档内容生成由 `/rui doc` 负责。
+目录的创建、删除、重命名由 `/rui-story` 管理，详见 [rui-story SKILL.md](../../rui-story/SKILL.md)。文档内容生成由 `/rui doc` 负责。
 
 <a id="meta-nav"></a>
 ## ① 版头齐
@@ -238,7 +238,7 @@ flowchart LR
 
 > mermaid 语法错误是文档退化的重要来源。以下规则确保图在任何 mermaid 版本下可正常渲染。
 >
-> **统一配色系统见 [mermaid-theme.md](./mermaid-theme.md)**——所有 mermaid 图的 `%%{init}%%` 主题配置和 classDef 色板以该文件为唯一真相源。
+> **统一配色系统见 [mermaid-theme.md](../../rui/rules/mermaid-theme.md)**——所有 mermaid 图的 `%%{init}%%` 主题配置和 classDef 色板以该文件为唯一真相源。
 
 | # | 规则 | 错误 | 正确 |
 |---|------|------|------|
@@ -249,10 +249,10 @@ flowchart LR
 | M4 | **direction 必须在 subgraph 内声明** — 含 2+ 节点的 subgraph 必须首行声明 `direction LR` 或 `direction TB` | subgraph 内无 direction 声明 | `subgraph X["标题"]`<br/>`    direction LR`<br/>`    A --> B`<br/>`end` |
 | M5 | **style/classDef 目标 ID 必须精确匹配** — 节点 ID 不含引号和特殊字符 | `style A["xx"] ...` | `style A ...`（只写 ID 部分）|
 | M6 | **仅允许 `<br/>` 作为 HTML 标签** — `<br/>` 是 mermaid 中唯一支持的多行换行机制，可在双引号标签内使用；其他 HTML 标签（`<b>`、`<i>`、`<div>`、`<font>` 等）禁止 | `A["用户<b>输入</b>"]` | `A["用户<br/>输入"]` |
-| M7 | **简短的箭头标签** — 箭头上的标签（`-->|text|`）应简短（≤ 20 字符），避免换行和特殊字符 | `-->|"用户点击提交按钮后触发"|` | `-->|"点击提交"|` |
+| M7 | **简短的箭头标签** — 箭头上的标签（`-->\|text\|`）应简短（≤ 20 字符），避免换行和特殊字符 | `-->\|"用户点击提交按钮后触发"\|` | `-->\|"点击提交"\|` |
 | M8 | **htmlLabels 由渲染平台管理** — GitHub/VS Code Markdown Preview 的 mermaid 渲染器自动处理 htmlLabels。仅在导出为自包含 HTML 时需显式设置 `mermaid.initialize({htmlLabels: true})` | — | — |
-| M9 | **`%%{init}%%` 主题必须声明** — 每个文件的**第一个** mermaid 代码块必须包含 `%%{init}%%` 主题配置，配色取自 [mermaid-theme.md](./mermaid-theme.md) 的 Tokyo Night Dark 模板 | 文件中所有 mermaid 图均无 `%%{init}%%` | 首个 mermaid 块顶部加 `%%{init: {...}}%%` |
-| M10 | **classDef 使用统一语义色板** — `classDef` 定义的颜色必须来自 [mermaid-theme.md](./mermaid-theme.md#classdef) 中的 12 个语义类。每文件只定义其实际使用的类 | 自造 ad-hoc fill/stroke hex 值 | 从 mermaid-theme.md 色板复制语义 classDef |
+| M9 | **`%%{init}%%` 主题必须声明** — 每个文件的**第一个** mermaid 代码块必须包含 `%%{init}%%` 主题配置，配色取自 [mermaid-theme.md](../../rui/rules/mermaid-theme.md) 的 Tokyo Night Dark 模板 | 文件中所有 mermaid 图均无 `%%{init}%%` | 首个 mermaid 块顶部加 `%%{init: {...}}%%` |
+| M10 | **classDef 使用统一语义色板** — `classDef` 定义的颜色必须来自 [mermaid-theme.md](../../rui/rules/mermaid-theme.md#classdef) 中的 12 个语义类。每文件只定义其实际使用的类 | 自造 ad-hoc fill/stroke hex 值 | 从 mermaid-theme.md 色板复制语义 classDef |
 | M11 | **subgraph 方向必须声明** — 含 2+ 节点的每个 subgraph，首行必须声明 `direction`（同 M4 强化版） | subgraph 无 direction | `subgraph X["标题"]`<br/>`    direction LR` |
 | M12 | **语义类名优先** — classDef 名称使用抽象语义（`core`/`exec`/`review`/`risk`/`good`/`bad`），不使用视觉描述（`red`/`blue`/`green`/`yellow`） | `classDef red fill:#f87171` | `classDef risk fill:#2a1a1a,stroke:#f87171,color:#f87171` |
 
@@ -260,7 +260,7 @@ flowchart LR
 - 文件中首个 mermaid 代码块含 `%%{init}%%` 主题配置（`grep -c '%%{init' <file>`）
 - 含 2+ 节点的 subgraph 均有 `direction` 声明
 - 所有 `flowchart`/`graph` 图中引用的节点 ID 均在图中定义
-- `classDef` 颜色与 [mermaid-theme.md](./mermaid-theme.md) 色板一致
+- `classDef` 颜色与 [mermaid-theme.md](../../rui/rules/mermaid-theme.md) 色板一致
 - 无 `<b>`、`<i>`、`<div>`、`<font>` 等禁止的 HTML 标签（`<br/>` 除外）
 - mermaid.live 粘贴验证无语法错误
 
@@ -475,7 +475,7 @@ flowchart LR
 | §1 测试设计 | 测试面板.html | — | TC-N/TC-B 用例表 · Gate A 交接 |
 | §2 实施报告 | 计划清单.html · 源码.html | 演示.html | 步骤清单 · 产物清单 · 架构决策 |
 | §3 测试报告 | 测试面板.html | 审查.html | 套件结果 · 门禁判定 |
-| §4 自改进 | 审查.html | — | D0–D7 诊断 · 改进建议 |
+| §4 自改进 | 审查.html | — | D0-D8 诊断 · 改进建议 |
 | 元数据（首行 + 版本行） | 全部 7 份 | — | 标题 · 版本号 · 日期 |
 
 ### 反例与处置

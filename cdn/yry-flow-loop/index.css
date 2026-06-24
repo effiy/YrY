@@ -1,0 +1,76 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryFlowLoop · Vue 3 闭环数据流图组件 样式
+   适用: 自改进仪表板 · 管线概览 · 闭环流程演示
+
+   依赖 design tokens (来自 cdn/theme/index.css 或页面 :root):
+     --yry-border / --yry-text2 / --yry-text3
+     --yry-cyan / --yry-warn / --yry-accent / --yry-pass
+
+   所有颜色都带 fallback,即使页面未加载主题也能正常显示。
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.flow-loop {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  padding: 14px 0;
+}
+
+.flow-loop-node {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  background: rgba(15,23,42,.6);
+  text-align: center;
+  min-width: 110px;
+}
+
+.flow-loop-node.observe  { border-left: 3px solid var(--yry-cyan, #22d3ee); }
+.flow-loop-node.diagnose { border-left: 3px solid var(--yry-warn, #f59e0b); }
+.flow-loop-node.improve  { border-left: 3px solid var(--yry-accent, #ffc107); }
+.flow-loop-node.evaluate { border-left: 3px solid var(--yry-pass, #22c55e); }
+
+.flow-loop-icon {
+  font-size: 1.1rem;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.flow-loop-name {
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--yry-text, #f5f5f5);
+}
+
+.flow-loop-sub {
+  font-size: .58rem;
+  color: var(--yry-text3, #888);
+  margin-top: 2px;
+}
+
+.flow-loop-arrow {
+  display: flex;
+  align-items: center;
+  color: var(--yry-text3, #888);
+  font-size: 1.2rem;
+  padding: 0 4px;
+}
+
+.flow-loop-arrow.loop {
+  font-size: 1.4rem;
+  color: var(--yry-pass, #22c55e);
+}
+
+/* ── Responsive ──────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .flow-loop {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .flow-loop-arrow {
+    transform: rotate(90deg);
+    align-self: center;
+  }
+}

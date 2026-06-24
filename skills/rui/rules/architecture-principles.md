@@ -73,8 +73,8 @@ flowchart TB
 
 | 指标 | 上限 | 当前测量方式 |
 |------|------|------------|
-| lib/ 文件数 | ≤ 20 | `ls lib/*.mjs | wc -l` |
-| 内核规则文件数 | ≤ 8 | `find skills/*/rules -name "*.md" | wc -l`（核心规则分布在 skills/*/rules/） |
+| lib/ 文件数 | ≤ 20 | `ls lib/*.mjs \| wc -l` |
+| 内核规则文件数 | ≤ 8 | `find skills/*/rules -name "*.md" \| wc -l`（核心规则分布在 skills/*/rules/） |
 | rui 编排器文件行数 | ≤ 500 | `wc -l skills/rui/SKILL.md` |
 
 ---
@@ -354,7 +354,7 @@ flowchart TB
 
 ## 自循环改进架构
 
-> 架构本身是自改进循环的产物和输入。D0-D7 诊断覆盖架构退化，E1-E4 评估架构改进效果。
+> 架构本身是自改进循环的产物和输入。D0-D8 诊断覆盖架构退化，E1-E4 评估架构改进效果。
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {
@@ -436,7 +436,7 @@ flowchart LR
 
 | 标志 | 验证方式 |
 |------|---------|
-| 内核文件数在约束内 | `ls lib/*.mjs | wc -l` ≤ 20 |
+| 内核文件数在约束内 | `ls lib/*.mjs \| wc -l` ≤ 20 |
 | 扩展不修改内核 | 过去 N 次 skill 新增，`git diff --stat skills/rui/` 为空 |
 | 配置 frontmatter 完整 | 每个 SKILL.md 和 agent .md 的 frontmatter 含全部必填字段 |
 | 范式合规 | `grep -r "class \|extends \|export default" lib/ skills/` 返回空 |
@@ -446,3 +446,47 @@ flowchart LR
 
 > 本文件是 YrY 架构的**可执行规范** — 每条原则都有对应的验证手段，不作为无法落地的"最佳实践建议"存在。
 > 与本文件的偏差 = D0 诊断触发条件（基线偏离）。
+
+## 扩展生命周期
+
+### Skill 扩展生命周期
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    CREATE["创建<br/>skills/rui-xxx/"]:::stage --> REGISTER["注册<br/>plugin.json"]:::stage
+    REGISTER --> VERIFY["验证<br/>arch-check 合规"]:::stage
+    VERIFY --> ACTIVE["活跃<br/>管线集成"]:::stage
+    ACTIVE --> EVOLVE["演进<br/>rui-update"]:::stage
+    EVOLVE --> ACTIVE
+    ACTIVE --> DEPRECATE["废弃<br/>标记 deprecated"]:::stage
+    DEPRECATE --> REMOVE["移除<br/>从 plugin.json 注销"]:::stage
+
+    classDef stage fill:#2b2d3b,stroke:#3d59a1,color:#a9b1d6
+```
+
+| 阶段 | 操作 | 验证 | 阻断条件 |
+|------|------|------|---------|
+| 创建 | 在 `skills/` 下创建 `rui-<name>/` 目录 + SKILL.md | 目录名符合 kebab-case | 目录名冲突 |
+| 注册 | 在 `plugin.json` 中注册 skill | frontmatter 字段完整 | 必填字段缺失 |
+| 验证 | `node lib/arch-check.mjs` 全量检查 | 10 维度全部通过 | A 级以下阻断 |
+| 活跃 | 被管线编排和推荐引擎引用 | 功能正常、无退化 | — |
+| 演进 | 通过 `rui-update` 迭代 | 版本号升级、变更记录 | 架构合规降级 |
+| 废弃 | 标记为 deprecated，推荐替代方案 | 无活跃故事依赖 | 有未完成故事依赖 |
+| 移除 | 从 `plugin.json` 注销，删除目录 | 无残留引用 | 有其他 skill 依赖 |
+
+### 内核扩展边界守护
+
+| 边界 | 守护规则 | 检测方式 |
+|------|---------|---------|
+| 内核体积 | lib/ ≤ 20 文件，编排器 ≤ 500 行 | `ls lib/*.mjs \| wc -l` |
+| 扩展隔离 | 新增 Skill 不修改编排器 | `git diff --stat skills/rui/SKILL.md` |
+| 范式合规 | 无 class/extends/export default/空 catch | `node lib/arch-check.mjs` |
+| 导入合规 | Skill 间无直接 import | `grep -r "from.*skills/" skills/` |

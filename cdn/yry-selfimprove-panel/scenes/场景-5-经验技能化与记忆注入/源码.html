@@ -3,911 +3,148 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>场景-5-经验技能化与记忆注入 · 源码</title>
+<title>经验技能化与记忆注入 · 源码</title>
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/theme/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-source/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-source-base.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-stats/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-tabs/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
+<style>
+/* Page-specific overrides — shared patterns in shared-b.css */
+</style>
 </head>
 <body>
-<div class="container">
+<div class="yry-container">
+<yry-scene-chrome
+  theme="b"
+  title="📄 {ACCENT} · 源码"
+  title-accent="经验技能化与记忆注入"
+  subtitle="场景 5 · 版本 vv5.4.0 · 2026-06-22"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-selfimprove-panel · 故事任务"},{"label":"场景 5 · 经验技能化与记忆注入"},{"label":"📄 源码"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","href":"架构图.html"},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","active":true},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","href":"审查.html"}]'>
+</yry-scene-chrome>
 
-<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-self-improve · 诊断与闭环</span><span class="bc-sep">/</span><span class="bc-current">场景 5 · 经验技能化与记忆注入</span><span class="bc-sep">/</span><span class="bc-current">📜 源码</span></nav>
-<nav class="scene-nav">
-  <a class="scene-nav-link" href="../场景-1-数据采集与观察/计划清单.html">📋 场景1 · 数据采集与观察</a>
-  <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link" href="../场景-2-诊断引擎/计划清单.html">📋 场景2 · 诊断引擎</a>
-  <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link" href="../场景-3-提案生成与路由/计划清单.html">📋 场景3 · 提案生成与路由</a>
-  <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link" href="../场景-4-效果评估与闭环/计划清单.html">📋 场景4 · 效果评估与闭环</a>
-  <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link active" href="计划清单.html">📋 场景5 · 经验技能化与记忆注入</a>
-  <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link story" href="../故事任务.md">📖 故事任务</a>
-</nav>
+<yry-scene-stats items='[{"value":"—","label":"产物文件","color":"info"},{"value":5,"label":"场景","color":"t"},{"value":"vv5.4.0","label":"版本","color":"t"}]'></yry-scene-stats>
 
-<nav class="cross-nav">
-  <a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
-  <a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
-  <a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
-  <span class="cross-link on">📄 源码</span><span class="cross-sep">·</span>
-  <a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
-  <a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
-  <a class="cross-link" href="审查.html">📝 审计</a>
-</nav>
-
-<div class="header">
-  <h1>📄 经验技能化与记忆注入 · 源码中心</h1>
-  <p class="sub">自改进闭环 16 份核心源文件 — 诊断引擎 · 提案路由 · 效果评估 · 五条经验技能化升级路径 · 记忆压缩与注入</p>
-  <div class="badges">
-    <span class="badge">v5.4</span>
-    <span class="badge">📅 2026-06-18</span>
-    <span class="badge">🌿 feat/yry-arch</span>
-    <span class="badge">📦 16 文件</span>
-    <span class="badge">🎯 P0</span>
+<yry-scene-tabs tabs='[{"id":"files","label":"📁 文件清单"},{"id":"structure","label":"🗂 目录浏览"},{"id":"topology","label":"🔗 模块拓扑"}]'>
+  <div data-panel="files">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>产物文件</h2>
+      <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
+    </div>
   </div>
+  <div data-panel="structure"><div class="placeholder">数据待填充 — 运行 /rui code 生成</div></div>
+  <div data-panel="topology"><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
+flowchart TD
+    subgraph 升级[&quot;经验技能化&quot;]
+        PROP[&quot;proposals.jsonl&quot;]:::src --&gt; DETECT{&quot;同类型提案&lt;br/&gt;连续触发?&quot;}
+        DETECT --&gt;|&quot;process/quality/refactor&lt;br/&gt;连续 ≥ UPGRADE_STORIES_PROCESS 故事&quot;| UP1[&quot;升级至 skills/*/rules/ 或 skills/rui/AGENT.md&quot;]:::up
+        DETECT --&gt;|&quot;skill 类型&lt;br/&gt;连续 ≥ UPGRADE_STORIES_SKILL 故事&quot;| UP2[&quot;创建 skills/ 或 skills/*/rules/ 新条目&quot;]:::up
+        DETECT --&gt;|&quot;未达阈值&quot;| TRACK[&quot;继续跟踪&quot;]:::wait
+        UP1 &amp; UP2 --&gt; CHECK_DUP{&quot;目标已含类似规则?&quot;}
+        CHECK_DUP --&gt;|&quot;是&quot;| UPDATE[&quot;更新现有规则&lt;br/&gt;标注来源提案 ID&quot;]:::up
+        CHECK_DUP --&gt;|&quot;否&quot;| WRITE[&quot;写入新规则&lt;br/&gt;标注来源提案 ID&quot;]:::up
+    end
+
+    subgraph 记忆[&quot;记忆压缩与注入&quot;]
+        MEM[&quot;原始记忆&quot;]:::src --&gt; AGE{&quot;记忆年龄&quot;}
+        AGE --&gt;|&quot;≤ RETENTION_PROPOSAL_EFFECTS 故事&quot;| FULL_M[&quot;完整保留&quot;]:::good
+        AGE --&gt;|&quot;3-6 故事&quot;| COMPRESS[&quot;压缩为摘要&quot;]:::warn
+        AGE --&gt;|&quot;6-12 故事&quot;| STAT[&quot;降级为统计&quot;]:::fade
+        AGE --&gt;|&quot;&gt; RETENTION_BLOCK_EVENTS 故事&quot;| ARCHIVE[&quot;归档&quot;]:::fade
+    end
+
+    subgraph 注入[&quot;上下文注入触发&quot;]
+        TRIGGER[&quot;触发条件&lt;br/&gt;同类型阻断 · 相似模块变更&lt;br/&gt;新提案 · 自改进阶段&quot;]:::trigger --&gt; SEARCH[&quot;相似检索&lt;br/&gt;模块路径 + 错误模式&quot;]
+        SEARCH --&gt; PRIORITY[&quot;优先级排序&lt;br/&gt;相关性 → 时效性 → 严重性&quot;]
+        PRIORITY --&gt; BUDGET{&quot;上下文预算?&quot;}
+        BUDGET --&gt;|&quot;在预算内&quot;| INJECT[&quot;全量注入&quot;]:::good
+        BUDGET --&gt;|&quot;超出预算&quot;| TRIM[&quot;裁剪低优先级项&lt;br/&gt;保留摘要行&quot;]:::warn
+    end
+
+    classDef src fill:#1e1f2b,stroke:#3d59a1,color:#a9b1d6
+    classDef up fill:#06b6d4,color:#000
+    classDef good fill:#34d399,color:#000
+    classDef warn fill:#fbbf24,color:#000
+    classDef fade fill:#9CA3AF,color:#000
+    classDef wait fill:#f59e0b,color:#000
+    classDef trigger fill:#3B82F6,color:#fff</pre>
+<pre class="mermaid">sequenceDiagram
+    actor EVAL as 评估引擎
+    participant UPGRADE as 升级检测器
+    participant PROP as proposals.jsonl
+    participant TARGET as 目标规约文件
+    participant MEM as 记忆管理器
+    participant SESSION as 新会话
+
+    EVAL-&gt;&gt;UPGRADE: 传入闭合提案列表
+    UPGRADE-&gt;&gt;PROP: 统计同类型提案连续触发次数
+    PROP--&gt;&gt;UPGRADE: process 类型 × N · quality 类型 × M ...
+
+    alt 达到升级阈值
+        UPGRADE-&gt;&gt;TARGET: 检查目标文件是否已有类似规则
+        TARGET--&gt;&gt;UPGRADE: 相似度检测结果
+        UPGRADE-&gt;&gt;TARGET: 更新现有或写入新规则（标注来源提案 ID）
+    else 未达阈值
+        UPGRADE-&gt;&gt;UPGRADE: 记录跟踪计数，下次评估再检
+    end
+
+    Note over MEM,SESSION: 跨会话记忆流
+
+    SESSION-&gt;&gt;MEM: 会话启动，请求恢复状态
+    MEM-&gt;&gt;MEM: 加载压缩记忆 + rui-state
+    MEM--&gt;&gt;SESSION: 恢复的状态摘要
+
+    SESSION-&gt;&gt;MEM: 执行操作（编辑文件 / 遇到阻断 / 起草提案）
+    MEM-&gt;&gt;MEM: 相似检索历史模式
+    MEM--&gt;&gt;SESSION: 注入匹配的上下文片段
+
+    SESSION-&gt;&gt;MEM: 新记忆写入
+    MEM-&gt;&gt;MEM: 检查过期策略
+    MEM-&gt;&gt;MEM: 超窗口记忆降级或归档</pre>
+<pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
+sequenceDiagram
+    participant S as 新会话
+    participant FS as 文件系统
+    participant M as 记忆管理器
+    participant C as 上下文
+    S-&gt;&gt;FS: 检查 .memory/ 存在?
+    alt 存在
+        FS--&gt;&gt;S: 存在
+        S-&gt;&gt;M: 加载 rui-state.json
+        M--&gt;&gt;S: 管线进度恢复
+        S-&gt;&gt;M: 加载 proposals.jsonl
+        M--&gt;&gt;S: 待评估提案恢复
+        S-&gt;&gt;M: 加载 summary.md
+        M--&gt;&gt;C: 关键决策注入
+    else 不存在
+        FS--&gt;&gt;S: 不存在
+        S-&gt;&gt;S: 空白状态初始化
+    end</pre></div>
+</yry-scene-tabs>
+
+<yry-scene-footer version="v5.4.0" date="2026-06-22" docs-link="../../../../docs/index.html"></yry-scene-footer>
 </div>
-
-<div class="stats-grid" id="statsRow"></div>
-<div class="bar-wrap"><div class="bar-outer" id="bar" title="按行数分布"></div></div>
-
-<div class="toolbar">
-  <div class="search-box" id="searchBox">
-    <input type="text" id="searchInput" placeholder="搜索文件路径、名称、描述…  (例: diagnosis, proposal, recommend)" autocomplete="off" spellcheck="false">
-    <button class="search-clear" onclick="clearSearch()" title="清空">✕</button>
-  </div>
-  <div class="kbd-group">
-    <span class="kbd">1-7</span> 标签 · <span class="kbd">/</span> 搜索 · <span class="kbd">Esc</span> 关闭
-  </div>
-</div>
-
-<div class="tabs">
-  <span class="tab on" data-panel="overview">🎯 概览</span>
-  <span class="tab" data-panel="files">📁 文件清单 <span class="tab-count" id="cntFiles">16</span></span>
-  <span class="tab" data-panel="browse">📂 目录浏览</span>
-  <span class="tab" data-panel="learn">🗺️ 学习路径</span>
-  <span class="tab" data-panel="tasks">🛠️ 调试任务</span>
-  <span class="tab" data-panel="deps">🔗 模块拓扑</span>
-  <span class="tab" data-panel="spec">📋 模块清单</span>
-</div>
-
-<!-- ── 概览 ─────────────────────────────────────────────────────────── -->
-<div class="panel on" id="panelOverview">
-  <div class="info-box">
-    <div class="ib-icon">🔄</div>
-    <div class="ib-body">
-      <div class="ib-title">自改进闭环核心源码</div>
-      <div class="ib-desc">本页面聚合了 16 份自改进闭环核心源文件，覆盖<B>D0-D8 诊断引擎</B>、<B>E1-E4 效果评估</B>、<B>五条经验技能化升级路径</B>、<B>记忆压缩与跨会话注入</B>四大能力域。按"引擎 → 规则 → Agent → 技能"四层组织，建议按 <b>学习路径</b> 标签页的六步走，每步约 5 分钟，全流程约 30 分钟即可理解自改进闭环全貌。</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>📊 源码全景速览 <span class="h2-tag">实时统计 · 4 大类</span></h2>
-    <div class="role-grid">
-      <div class="role-mini" onclick="filterCat('rule')">
-        <div class="rm-name">📜 治理规则 <span style="margin-left:auto;font-size:.7rem;color:var(--pass)" id="ov-rule"></span></div>
-        <div class="rm-desc">自改进闭环规则 — D0-D7 诊断 · E1-E4 评估 · 升级路径</div>
-        <div class="rm-files">self-improve.md — 诊断决策表 · 提案类型路由 · 效果评估矩阵 · 经验技能化升级条件</div>
-      </div>
-      <div class="role-mini" onclick="filterCat('agent')">
-        <div class="rm-name">🤖 Agent 角色 <span style="margin-left:auto;font-size:.7rem;color:var(--purple)" id="ov-agent"></span></div>
-        <div class="rm-desc">自改进引擎 — 四段闭环 · 提案矩阵 · 记忆注入</div>
-        <div class="rm-files">self-improve.md — 数据采集→诊断→提案→评估完整行为定义</div>
-      </div>
-      <div class="role-mini" onclick="filterCat('lib')">
-        <div class="rm-name">📦 引擎库 Lib <span style="margin-left:auto;font-size:.7rem;color:var(--cyan)" id="ov-lib"></span></div>
-        <div class="rm-desc">诊断引擎 · 提案生成 · 执行记录 · 推荐系统</div>
-        <div class="rm-files">diagnostics · proposals · record · recommend · selfimprove-generator</div>
-      </div>
-      <div class="role-mini" onclick="filterCat('skill')">
-        <div class="rm-name">⚙️ 技能 Skills <span style="margin-left:auto;font-size:.7rem;color:var(--accent)" id="ov-skill"></span></div>
-        <div class="rm-desc">自改进技能入口 · 关注点注入 · Bot 诊断</div>
-        <div class="rm-files">rui-yry · concerns/diagnostics · concerns/architecture · concerns/integration · concerns/handoff · bot-health-diagnostics</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>🎯 重要度分级 <span class="h2-tag">按优先级阅读</span></h2>
-    <p style="margin-bottom:10px">所有源文件按重要度分为三级，建议按优先级阅读：</p>
-    <ul class="checklist">
-      <li><span class="chk" style="color:var(--fail)">★</span> <b style="color:var(--fail)">必读 (Must-Read)</b> — 理解自改进闭环必读：<code>rules/self-improve.md</code> · <code>agents/self-improve.md</code> · <code>lib/engine/diagnostics.mjs</code></li>
-      <li><span class="chk partial">◆</span> <b style="color:var(--warn)">推荐 (Recommended)</b> — 进入实操前需了解：<code>lib/proposals.mjs</code> · <code>lib/record.mjs</code> · <code>lib/recommend.mjs</code> · <code>skills/rui-yry/SKILL.md</code></li>
-      <li><span class="chk" style="color:var(--cyan)">○</span> <b style="color:var(--cyan)">参考 (Reference)</b> — 按需查阅，实现/排错时工具书：其余 9 份</li>
-    </ul>
-  </div>
-
-  <div class="card">
-    <h2>⚡ 快速操作台 <span class="h2-tag">点击复制命令</span></h2>
-    <p style="margin-bottom:12px">下列命令覆盖自改进闭环的日常操作，点击卡片即可复制：</p>
-    <div class="task-grid">
-      <div class="task-card" onclick="copyText('node lib/arch-check.mjs')">
-        <span class="t-diff easy">EASY</span>
-        <span class="t-icon">🏗️</span>
-        <div class="t-title">架构合规检查</div>
-        <div class="t-desc">15 维度 A 级架构合规自动验证</div>
-        <div class="t-cmd">node lib/arch-check.mjs</div>
-      </div>
-      <div class="task-card" onclick="copyText('node skills/rui-bot/send.mjs health')">
-        <span class="t-diff easy">EASY</span>
-        <span class="t-icon">🩺</span>
-        <div class="t-title">健康检查</div>
-        <div class="t-desc">9 维度项目健康 + D0-D7 诊断</div>
-        <div class="t-cmd">node skills/rui-bot/send.mjs health</div>
-      </div>
-      <div class="task-card" onclick="copyText('node lib/selfimprove-generator.mjs')">
-        <span class="t-diff medium">MED</span>
-        <span class="t-icon">📊</span>
-        <div class="t-title">生成自改进报告</div>
-        <div class="t-desc">从健康趋势生成自我改进巡检报告</div>
-        <div class="t-cmd">node lib/selfimprove-generator.mjs</div>
-      </div>
-      <div class="task-card" onclick="copyText('node lib/recommend-cli.mjs')">
-        <span class="t-diff medium">MED</span>
-        <span class="t-icon">💡</span>
-        <div class="t-title">推荐检测</div>
-        <div class="t-desc">检测可改进项并生成推荐提案</div>
-        <div class="t-cmd">node lib/recommend-cli.mjs</div>
-      </div>
-      <div class="task-card" onclick="copyText('cat .memory/health-trend.jsonl | tail -5')">
-        <span class="t-diff easy">EASY</span>
-        <span class="t-icon">📈</span>
-        <div class="t-title">查看健康趋势</div>
-        <div class="t-desc">查看最近 5 次健康检查记录</div>
-        <div class="t-cmd">cat .memory/health-trend.jsonl | tail -5</div>
-      </div>
-      <div class="task-card" onclick="copyText('node skills/rui-yry/help.mjs')">
-        <span class="t-diff easy">EASY</span>
-        <span class="t-icon">📖</span>
-        <div class="t-title">自改进帮助</div>
-        <div class="t-desc">查看 rui-yry 自改进技能帮助</div>
-        <div class="t-cmd">node skills/rui-yry/help.mjs</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── 文件清单 ──────────────────────────────────────────────────────── -->
-<div class="panel" id="panelFiles"><div id="filesContent"></div></div>
-
-<!-- ── 目录浏览 ──────────────────────────────────────────────────────── -->
-<div class="panel" id="panelBrowse"><div id="browseContent"></div></div>
-
-<!-- ── 学习路径 ──────────────────────────────────────────────────────── -->
-<div class="panel" id="panelLearn">
-  <div class="card">
-    <h2>🗺️ 六步理解自改进闭环 <span class="h2-tag">建议严格按序</span></h2>
-    <p style="margin-bottom:14px">每步约 5 分钟，全程 ~30 分钟。从规则到引擎到技能，逐层理解自改进闭环的完整运作机制。</p>
-    <div class="timeline">
-      <div class="t-step">
-        <div class="step-title"><span class="step-num">STEP 1 · 5 min</span> 阅读自改进规则</div>
-        <div class="step-desc">打开 <code>rules/self-improve.md</code>，理解 D0-D8 诊断维度、E1-E4 效果评估等级、五条经验技能化升级路径的触发条件与目标映射。</div>
-        <div class="step-action">→ 重点看诊断决策表和升级条件阈值</div>
-        <div class="step-time">✅ 完成标志：能列出 5 条升级路径及其触发条件</div>
-      </div>
-      <div class="t-step s2">
-        <div class="step-title"><span class="step-num">STEP 2 · 5 min</span> 理解 Agent 行为定义</div>
-        <div class="step-desc">阅读 <code>agents/self-improve.md</code>，掌握四段闭环（数据采集→诊断→提案→评估）的完整行为定义、提案矩阵和跨会话记忆注入机制。</div>
-        <div class="step-action">→ 重点看提案矩阵路由表和记忆压缩策略</div>
-        <div class="step-time">✅ 完成标志：能画出四段闭环的数据流图</div>
-      </div>
-      <div class="t-step s3">
-        <div class="step-title"><span class="step-num">STEP 3 · 5 min</span> 学习诊断引擎</div>
-        <div class="step-desc">打开 <code>lib/engine/diagnostics.mjs</code>，理解 D0-D7 诊断信号的生成逻辑、触发条件和评分计算。结合 <code>skills/rui/concerns/diagnostics.md</code> 了解诊断关注点注入。</div>
-        <div class="step-action">→ 跟踪一个诊断信号从触发到输出的完整路径</div>
-        <div class="step-time">✅ 完成标志：能解释 D0-D7 每个维度的诊断逻辑</div>
-      </div>
-      <div class="t-step s4">
-        <div class="step-title"><span class="step-num">STEP 4 · 5 min</span> 掌握提案与推荐系统</div>
-        <div class="step-desc">依次阅读 <code>lib/proposals.mjs</code> → <code>lib/recommend.mjs</code> → <code>lib/recommend-detect.mjs</code>，理解从诊断信号到改进提案的生成、路由、排序全流程。</div>
-        <div class="step-action">→ 重点看提案类型路由表和推荐排序算法</div>
-        <div class="step-time">✅ 完成标志：能说出 4 种提案类型的路由规则</div>
-      </div>
-      <div class="t-step">
-        <div class="step-title"><span class="step-num">STEP 5 · 5 min</span> 理解执行记录与记忆注入</div>
-        <div class="step-desc">阅读 <code>lib/record.mjs</code>，理解执行记忆的写入、压缩、检索和注入机制。了解 <code>.memory/health-trend.jsonl</code> 的数据结构和跨会话恢复流程。</div>
-        <div class="step-action">→ 跟踪一条健康趋势记录的完整生命周期</div>
-        <div class="step-time">✅ 完成标志：能解释记忆压缩策略和相似检索注入</div>
-      </div>
-      <div class="t-step s2">
-        <div class="step-title"><span class="step-num">STEP 6 · 5 min</span> 运行自改进技能</div>
-        <div class="step-desc">阅读 <code>skills/rui-yry/SKILL.md</code>，理解自改进技能的入口、参数和输出。执行 <code>node skills/rui-yry/help.mjs</code> 验证帮助输出，然后运行一次完整的自改进巡检。</div>
-        <div class="step-action">→ 运行 node skills/rui-bot/send.mjs health 验证健康检查</div>
-        <div class="step-time">✅ 完成标志：成功生成一份自改进报告并理解其内容</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>📚 阅读顺序推荐 <span class="h2-tag">按依赖深度</span></h2>
-    <div class="dep-graph">
-      <span class="dep-node root" onclick="viewSource('rules/self-improve.md')">rules/self-improve.md</span>
-      <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('agents/self-improve.md')">agents/self-improve.md</span>
-      <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('lib/engine/diagnostics.mjs')">lib/engine/diagnostics.mjs</span>
-      <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('lib/proposals.mjs')">lib/proposals.mjs</span>
-      <span class="dep-arrow">→</span>
-      <span class="dep-node leaf" onclick="viewSource('skills/rui-yry/SKILL.md')">skills/rui-yry/SKILL.md</span>
-    </div>
-    <p style="text-align:center;color:var(--text3);font-size:.78rem;margin-top:10px">自改进规则 → Agent 行为 → 诊断引擎 → 提案系统 → 技能入口（点击节点可直接查看）</p>
-  </div>
-
-  <div class="card">
-    <h2>💡 常见误区 <span class="h2-tag">避坑指南</span></h2>
-    <div class="tip-list">
-      <div class="tip warn">
-        <span class="tip-icon">⚠️</span>
-        <div class="tip-body">
-          <div class="tip-title">不要跳过规则直接看引擎代码</div>
-          <div class="tip-desc">自改进系统是规约驱动的——先读 <code>rules/self-improve.md</code> 理解"为什么这样诊断"和"升级条件是什么"，再看 <code>lib/engine/diagnostics.mjs</code> 才能理解实现细节。</div>
-        </div>
-      </div>
-      <div class="tip danger">
-        <span class="tip-icon">🚫</span>
-        <div class="tip-body">
-          <div class="tip-title">不要混淆 D0-D7 诊断与 E1-E4 评估</div>
-          <div class="tip-desc">D0-D7 是诊断维度（发现问题），E1-E4 是效果评估（衡量改进）。诊断触发提案，评估验证提案效果——两者是闭环的前后两段，不可混用。</div>
-        </div>
-      </div>
-      <div class="tip success">
-        <span class="tip-icon">✅</span>
-        <div class="tip-body">
-          <div class="tip-title">经验技能化需要连续触发</div>
-          <div class="tip-desc">五条升级路径有严格的触发条件：process/quality/refactor/security 类型需连续三个故事触发；skill 类型需连续两个故事触发。单次触发不会启动升级。</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── 调试任务 ──────────────────────────────────────────────────────── -->
-<div class="panel" id="panelTasks">
-  <div class="card">
-    <h2>🛠️ 常见调试任务 <span class="h2-tag">场景化命令 · 点击复制</span></h2>
-    <p style="margin-bottom:12px">下列任务覆盖自改进闭环的日常调试操作，每个卡片包含命令、说明、难度标识，点击卡片即可复制命令。</p>
-    <div class="task-grid">
-      <div class="task-card" onclick="copyText('node lib/arch-check.mjs --verbose')">
-        <span class="t-diff easy">EASY</span>
-        <span class="t-icon">🔍</span>
-        <div class="t-title">详细架构检查</div>
-        <div class="t-desc">输出 15 维度详细合规报告</div>
-        <div class="t-cmd">node lib/arch-check.mjs --verbose</div>
-      </div>
-      <div class="task-card" onclick="copyText('node skills/rui-bot/send.mjs health --diff')">
-        <span class="t-diff medium">MED</span>
-        <span class="t-icon">📊</span>
-        <div class="t-title">健康变化摘要</div>
-        <div class="t-desc">对比上次健康检查的变化</div>
-        <div class="t-cmd">node skills/rui-bot/send.mjs health --diff</div>
-      </div>
-      <div class="task-card" onclick="copyText('node skills/rui-bot/send.mjs health --alert')">
-        <span class="t-diff medium">MED</span>
-        <span class="t-icon">🚨</span>
-        <div class="t-title">智能告警检查</div>
-        <div class="t-desc">检测异常并触发告警</div>
-        <div class="t-cmd">node skills/rui-bot/send.mjs health --alert</div>
-      </div>
-      <div class="task-card" onclick="copyText('node lib/arch-check.mjs --fix')">
-        <span class="t-diff hard">HARD</span>
-        <span class="t-icon">🔧</span>
-        <div class="t-title">自动修复架构问题</div>
-        <div class="t-desc">自动修复可自动处理的架构合规问题</div>
-        <div class="t-cmd">node lib/arch-check.mjs --fix</div>
-      </div>
-      <div class="task-card" onclick="copyText('node lib/arch-check.mjs --append-trend')">
-        <span class="t-diff medium">MED</span>
-        <span class="t-icon">📈</span>
-        <div class="t-title">追加健康趋势</div>
-        <div class="t-desc">将当前检查结果写入趋势文件</div>
-        <div class="t-cmd">node lib/arch-check.mjs --append-trend</div>
-      </div>
-      <div class="task-card" onclick="copyText('node skills/rui-bot/send.mjs health --notify')">
-        <span class="t-diff medium">MED</span>
-        <span class="t-icon">📨</span>
-        <div class="t-title">企微推送健康报告</div>
-        <div class="t-desc">将健康报告推送到企微群</div>
-        <div class="t-cmd">node skills/rui-bot/send.mjs health --notify</div>
-      </div>
-      <div class="task-card" onclick="copyText('node skills/rui-bot/send.mjs health --html')">
-        <span class="t-diff medium">MED</span>
-        <span class="t-icon">📄</span>
-        <div class="t-title">生成健康 HTML 报告</div>
-        <div class="t-desc">生成可视化健康报告仪表板</div>
-        <div class="t-cmd">node skills/rui-bot/send.mjs health --html</div>
-      </div>
-      <div class="task-card" onclick="copyText('node skills/rui-bot/send.mjs health --short')">
-        <span class="t-diff easy">EASY</span>
-        <span class="t-icon">📝</span>
-        <div class="t-title">单行摘要</div>
-        <div class="t-desc">输出单行健康摘要</div>
-        <div class="t-cmd">node skills/rui-bot/send.mjs health --short</div>
-      </div>
-      <div class="task-card" onclick="copyText('node lib/recommend-detect.mjs')">
-        <span class="t-diff medium">MED</span>
-        <span class="t-icon">🔎</span>
-        <div class="t-title">检测改进机会</div>
-        <div class="t-desc">扫描项目检测可改进项</div>
-        <div class="t-cmd">node lib/recommend-detect.mjs</div>
-      </div>
-      <div class="task-card" onclick="copyText('node lib/selfimprove-generator.mjs --verbose')">
-        <span class="t-diff hard">HARD</span>
-        <span class="t-icon">📋</span>
-        <div class="t-title">详细自改进报告</div>
-        <div class="t-desc">生成详细的自改进巡检报告</div>
-        <div class="t-cmd">node lib/selfimprove-generator.mjs --verbose</div>
-      </div>
-      <div class="task-card" onclick="copyText('grep -n "D[0-7]" rules/self-improve.md')">
-        <span class="t-diff easy">EASY</span>
-        <span class="t-icon">🔬</span>
-        <div class="t-title">查看诊断规则</div>
-        <div class="t-desc">快速定位 D0-D7 诊断定义</div>
-        <div class="t-cmd">grep -n "D[0-7]" rules/self-improve.md</div>
-      </div>
-      <div class="task-card" onclick="copyText('grep -n "E[1-4]" rules/self-improve.md')">
-        <span class="t-diff easy">EASY</span>
-        <span class="t-icon">📐</span>
-        <div class="t-title">查看评估等级</div>
-        <div class="t-desc">快速定位 E1-E4 评估定义</div>
-        <div class="t-cmd">grep -n "E[1-4]" rules/self-improve.md</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>🐞 排错速查 <span class="h2-tag">高频问题</span></h2>
-    <div class="tip-list">
-      <div class="tip">
-        <span class="tip-icon">🔧</span>
-        <div class="tip-body">
-          <div class="tip-title">健康检查报错缺少模块</div>
-          <div class="tip-desc">症状：<code>Cannot find module</code>。修复：</div>
-          <div class="tip-code">npm install && node skills/rui-bot/send.mjs health</div>
-        </div>
-      </div>
-      <div class="tip warn">
-        <span class="tip-icon">⏱</span>
-        <div class="tip-body">
-          <div class="tip-title">健康趋势文件为空或损坏</div>
-          <div class="tip-desc">症状：<code>.memory/health-trend.jsonl</code> 解析失败。修复：删除损坏行或重建趋势文件。</div>
-          <div class="tip-code">tail -1 .memory/health-trend.jsonl | node -e "JSON.parse(require('fs').readFileSync('/dev/stdin','utf8'))"</div>
-        </div>
-      </div>
-      <div class="tip danger">
-        <span class="tip-icon">🔒</span>
-        <div class="tip-body">
-          <div class="tip-title">企微通知未触发</div>
-          <div class="tip-desc">症状：<code>WECHAT_WEBHOOK</code> 环境变量缺失。检查项：</div>
-          <div class="tip-code">echo $WECHAT_WEBHOOK && ls .env*</div>
-        </div>
-      </div>
-      <div class="tip success">
-        <span class="tip-icon">🧭</span>
-        <div class="tip-body">
-          <div class="tip-title">诊断维度触发异常</div>
-          <div class="tip-desc">症状：预期触发的诊断维度未触发。检查诊断规则定义和触发条件。</div>
-          <div class="tip-code">grep -A5 "D[0-7]" rules/self-improve.md | head -40</div>
-        </div>
-      </div>
-      <div class="tip">
-        <span class="tip-icon">📐</span>
-        <div class="tip-body">
-          <div class="tip-title">架构合规检查失败</div>
-          <div class="tip-desc">症状：arch-check 报告不合规。先用 --verbose 查看详情，再用 --fix 自动修复。</div>
-          <div class="tip-code">node lib/arch-check.mjs --verbose && node lib/arch-check.mjs --fix</div>
-        </div>
-      </div>
-      <div class="tip warn">
-        <span class="tip-icon">🔄</span>
-        <div class="tip-body">
-          <div class="tip-title">升级路径未触发</div>
-          <div class="tip-desc">症状：经验技能化升级条件满足但未触发。检查连续触发计数是否正确累加。</div>
-          <div class="tip-code">grep -n "连续" rules/self-improve.md agents/self-improve.md</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── 模块拓扑 ──────────────────────────────────────────────────────── -->
-<div class="panel" id="panelDeps">
-  <div class="card">
-    <h2>🧭 自改进闭环依赖拓扑 <span class="h2-tag">点击节点可查看源码</span></h2>
-    <div class="dep-graph">
-      <span class="dep-node root" onclick="viewSource('rules/self-improve.md')">rules/self-improve.md</span>
-      <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('agents/self-improve.md')">agents/self-improve.md</span>
-      <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('lib/engine/diagnostics.mjs')">diagnostics.mjs</span>
-      <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('lib/proposals.mjs')">proposals.mjs</span>
-      <span class="dep-arrow">→</span>
-      <span class="dep-node leaf" onclick="viewSource('lib/recommend.mjs')">recommend.mjs</span>
-    </div>
-    <p style="text-align:center;color:var(--text3);font-size:.78rem;margin-top:10px">规则定义 → Agent 行为 → 诊断引擎 → 提案生成 → 推荐排序（自改进闭环主链路）</p>
-  </div>
-
-  <div class="card">
-    <h2>🔑 关键入口文件 <span class="h2-tag">4 份必读</span></h2>
-    <ul class="checklist">
-      <li><span class="chk">★</span> <code>rules/self-improve.md</code> — 自改进闭环规则 · D0-D8 诊断 · E1-E4 评估 · 五条升级路径</li>
-      <li><span class="chk">★</span> <code>agents/self-improve.md</code> — 自改进 Agent 行为 · 四段闭环 · 提案矩阵 · 记忆注入</li>
-      <li><span class="chk">★</span> <code>lib/engine/diagnostics.mjs</code> — 诊断引擎实现 · D0-D7 信号生成</li>
-      <li><span class="chk">★</span> <code>lib/proposals.mjs</code> — 提案生成与路由 · 类型映射 · 优先级排序</li>
-    </ul>
-  </div>
-
-  <div class="card">
-    <h2>🔄 模块依赖矩阵 <span class="h2-tag">谁依赖谁</span></h2>
-    <p style="margin-bottom:12px">以下矩阵揭示自改进模块间的主要引用关系：</p>
-    <ul class="checklist">
-      <li><span class="chk">→</span> <code>lib/engine/diagnostics.mjs</code> → 依赖 <code>rules/self-improve.md</code>（诊断规则定义）</li>
-      <li><span class="chk">→</span> <code>lib/proposals.mjs</code> → 依赖 <code>lib/engine/diagnostics.mjs</code>（诊断信号输入）</li>
-      <li><span class="chk">→</span> <code>lib/recommend.mjs</code> → 依赖 <code>lib/proposals.mjs</code>（提案排序） · <code>lib/record.mjs</code>（历史记录）</li>
-      <li><span class="chk">→</span> <code>lib/selfimprove-generator.mjs</code> → 依赖 <code>lib/engine/diagnostics.mjs</code> · <code>lib/recommend.mjs</code> · <code>lib/record.mjs</code></li>
-      <li><span class="chk">→</span> <code>skills/rui-yry/SKILL.md</code> → 引用 <code>rules/self-improve.md</code> · <code>agents/self-improve.md</code></li>
-      <li><span class="chk">→</span> <code>skills/rui-bot/lib/bot-health-diagnostics.mjs</code> → 依赖 <code>lib/arch-check.mjs</code>（架构合规数据）</li>
-    </ul>
-  </div>
-</div>
-
-<!-- ── 模块清单 ──────────────────────────────────────────────────────── -->
-<div class="panel" id="panelSpec">
-  <div class="card">
-    <h2>📋 模块职责清单 <span class="h2-tag">4 大类 16 文件</span></h2>
-    <ul class="checklist">
-      <li><span class="chk">📜</span> <b>rules/</b> — 1 规则 · 自改进闭环定义 · D0-D8 诊断 · E1-E4 评估 · 五条升级路径</li>
-      <li><span class="chk">🤖</span> <b>agents/</b> — 1 Agent · 四段闭环行为 · 提案矩阵 · 记忆注入策略</li>
-      <li><span class="chk">📦</span> <b>lib/</b> — 7 引擎库 · 诊断引擎 · 提案生成 · 执行记录 · 推荐系统 · 报告生成</li>
-      <li><span class="chk">⚙️</span> <b>skills/</b> — 7 技能文件 · rui-yry 自改进入口 · 4 关注点注入 · Bot 诊断</li>
-    </ul>
-    <p style="margin-top:12px;font-size:.76rem;color:var(--text3)">👉 切换到 <b>文件清单</b> 标签查看完整的 16 份文件详情与描述。</p>
-  </div>
-
-  <div class="card">
-    <h2>🎓 关键术语对照 <span class="h2-tag">自改进领域</span></h2>
-    <ul class="checklist">
-      <li><span class="chk">→</span> <b>D0-D8</b> — 9 个诊断维度：D0 基线偏差 · D1 分支健康 · D2 质量退化 · D3 复杂度增长 · D4 测试覆盖 · D5 安全漏洞 · D6 依赖风险 · D7 文档同步 · D8 架构合规</li>
-      <li><span class="chk">→</span> <b>E1-E4</b> — 4 级效果评估：E1 无效 · E2 部分有效 · E3 有效 · E4 卓越</li>
-      <li><span class="chk">→</span> <b>四段闭环</b> — 数据采集 → 诊断分析 → 提案生成 → 效果评估</li>
-      <li><span class="chk">→</span> <b>五条升级路径</b> — process/quality/refactor/security/skill 五类经验技能化升级</li>
-      <li><span class="chk">→</span> <b>记忆压缩</b> — 将执行记忆从完整记录压缩为摘要向量，减少上下文占用</li>
-      <li><span class="chk">→</span> <b>相似检索注入</b> — 基于当前场景从历史记忆中检索相似经验并注入上下文</li>
-      <li><span class="chk">→</span> <b>提案矩阵</b> — 诊断信号 → 提案类型 → 路由目标的映射表</li>
-      <li><span class="chk">→</span> <b>健康趋势</b> — 每次健康检查追加到 <code>.memory/health-trend.jsonl</code> 的时间序列数据</li>
-    </ul>
-  </div>
-</div>
-
-<div class="footer-note">
-  YrY 系统架构 · 场景 5 源码中心 · <a href="../../../index.html">文档中心</a> · <a href="index.md">📄 Markdown 源</a> · 最后更新 2026-06-18
-</div>
-</div>
-
-<!-- 模态框 -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
-    <div class="m-head">
-      <span class="m-icon">📄</span>
-      <span class="m-title" id="modalTitle"></span>
-      <div class="m-actions">
-        <button class="m-btn" onclick="copySource()" title="复制全文">📋 复制</button>
-        <button class="m-btn" onclick="downloadSource()" title="下载文件">⬇ 下载</button>
-        <button class="m-btn" onclick="openInNewTab()" title="在新标签打开">↗ 打开</button>
-      </div>
-      <button class="m-close" onclick="closeModal()" title="关闭 (Esc)">✕</button>
-    </div>
-    <div class="m-meta" id="modalMeta">
-      <span class="m-meta-item">📦 <b id="mm-size">—</b></span>
-      <span class="m-meta-item">📏 <b id="mm-lines">—</b> 行</span>
-      <span class="m-meta-item">🏷 <b id="mm-cat">—</b></span>
-      <span class="m-meta-item">📝 <b id="mm-importance">—</b></span>
-      <div class="m-jump">
-        <span style="color:var(--text3)">跳转到行</span>
-        <input type="number" id="jumpInput" min="1" placeholder="#" onkeydown="if(event.key==='Enter')jumpToLine()">
-        <button class="m-btn" onclick="jumpToLine()" style="padding:3px 8px">Go</button>
-      </div>
-    </div>
-    <div class="m-body" id="modalBody">
-      <div style="padding:60px 20px;text-align:center;color:var(--text3)">
-        <div style="font-size:2rem;margin-bottom:8px;animation:glow 2s infinite">⏳</div>
-        <div>加载源码中…</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-<script>
-/* ═══════════════════════════════════════════════════════════════════════
-   场景 5 源码中心 · 经验技能化与记忆注入 · 状态 + 数据 + 逻辑
-   ═══════════════════════════════════════════════════════════════════════ */
-var activePanel='overview',fileQuery='',filterCatState=null;
-var currentSourcePath=null,currentSourceText=null;
-
-var manifest={"files":[
-  {"name":"self-improve.md","path":"rules/self-improve.md","cat":"rule","lines":288,"size":11133,"desc":"自改进闭环规则 — D0-D8 诊断维度 · E1-E4 效果评估 · 五条经验技能化升级路径 · 触发条件与目标映射","importance":"must","icon":"📜"},
-  {"name":"self-improve.md","path":"agents/self-improve.md","cat":"agent","lines":263,"size":11647,"desc":"自改进引擎 Agent — 四段闭环行为定义 · 提案矩阵 · 跨会话记忆压缩与注入策略","importance":"must","icon":"🤖"},
-  {"name":"diagnostics.mjs","path":"lib/engine/diagnostics.mjs","cat":"lib","lines":248,"size":10962,"desc":"诊断引擎 — D0-D7 诊断信号生成 · 触发条件判定 · 评分计算","importance":"must","icon":"📦"},
-  {"name":"proposals.mjs","path":"lib/proposals.mjs","cat":"lib","lines":444,"size":16701,"desc":"提案生成与路由 — 诊断信号→提案类型映射 · 路由目标分发 · 优先级排序","importance":"recommend","icon":"📦"},
-  {"name":"record.mjs","path":"lib/record.mjs","cat":"lib","lines":467,"size":16095,"desc":"执行记录 — 记忆写入 · 压缩策略 · 相似检索 · 跨会话注入","importance":"recommend","icon":"📦"},
-  {"name":"recommend.mjs","path":"lib/recommend.mjs","cat":"lib","lines":484,"size":17524,"desc":"推荐引擎 — 改进机会识别 · 提案排序算法 · 效果反馈权重调整","importance":"recommend","icon":"📦"},
-  {"name":"selfimprove-generator.mjs","path":"lib/selfimprove-generator.mjs","cat":"lib","lines":513,"size":17864,"desc":"自改进报告生成器 — 从健康趋势生成巡检报告 · 多维度评分 · 趋势图表","importance":"recommend","icon":"📦"},
-  {"name":"recommend-detect.mjs","path":"lib/recommend-detect.mjs","cat":"lib","lines":87,"size":3189,"desc":"推荐检测 — 扫描项目检测可改进项 · 模式匹配 · 规则触发","importance":"reference","icon":"📦"},
-  {"name":"recommend-cli.mjs","path":"lib/recommend-cli.mjs","cat":"lib","lines":121,"size":4763,"desc":"推荐命令行 — CLI 入口 · 参数解析 · 格式化输出","importance":"reference","icon":"📦"},
-  {"name":"SKILL.md","path":"skills/rui-yry/SKILL.md","cat":"skill","lines":122,"size":5455,"desc":"自改进技能入口 — rui-yry 自主自改进循环 · 参数定义 · 输出规范","importance":"recommend","icon":"⚙️"},
-  {"name":"help.mjs","path":"skills/rui-yry/help.mjs","cat":"skill","lines":32,"size":1309,"desc":"自改进帮助 — 命令列表 · 使用说明","importance":"reference","icon":"⚙️"},
-  {"name":"diagnostics.md","path":"skills/rui/concerns/diagnostics.md","cat":"skill","lines":42,"size":2312,"desc":"诊断关注点 — 诊断信号注入 · 关注点定义","importance":"reference","icon":"⚙️"},
-  {"name":"architecture.md","path":"skills/rui/concerns/architecture.md","cat":"skill","lines":13,"size":806,"desc":"架构关注点 — 架构合规关注点注入","importance":"reference","icon":"⚙️"},
-  {"name":"integration.md","path":"skills/rui/concerns/integration.md","cat":"skill","lines":38,"size":2284,"desc":"集成关注点 — 模块集成关注点注入","importance":"reference","icon":"⚙️"},
-  {"name":"handoff.md","path":"skills/rui/concerns/handoff.md","cat":"skill","lines":32,"size":940,"desc":"交接关注点 — Agent 交接关注点注入","importance":"reference","icon":"⚙️"},
-  {"name":"bot-health-diagnostics.mjs","path":"skills/rui-bot/lib/bot-health-diagnostics.mjs","cat":"skill","lines":350,"size":14270,"desc":"Bot 健康诊断 — 企微通知场景的健康诊断 · 失败队列分析 · Webhook 健康","importance":"reference","icon":"⚙️"}
-]};
-
-var CAT_ICONS={rule:'📜',agent:'🤖',lib:'📦',skill:'⚙️'};
-var CAT_LABELS={rule:'规则 Rules',agent:'Agent 角色',lib:'引擎库 Lib',skill:'技能 Skills'};
-var CAT_BADGE={rule:'RULE',agent:'AGENT',lib:'LIB',skill:'SKILL'};
-var IMPORTANCE_BADGES={must:{cls:'must',label:'必读'},recommend:{cls:'recommend',label:'推荐'},reference:{cls:'reference',label:'参考'}};
-var IMPORTANCE_PRIORITY={must:0,recommend:1,reference:2};
-
-/* ── 工具函数 ────────────────────────────────────────────────────────── */
-function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-function fmtSize(b){if(!b||b===0)return'—';if(b<1024)return b+'B';return (b/1024).toFixed(1)+'KB'}
-
-/* ── 渲染统计 ────────────────────────────────────────────────────────── */
-function renderStats(){
-  var files=manifest.files,total=files.length,totalLines=0;
-  var cc={rule:0,agent:0,lib:0,skill:0},cs={rule:0,agent:0,lib:0,skill:0},cl={rule:0,agent:0,lib:0,skill:0};
-  for(var i=0;i<files.length;i++){var f=files[i];cc[f.cat]=(cc[f.cat]||0)+1;cs[f.cat]=(cs[f.cat]||0)+(f.size||0);cl[f.cat]=(cl[f.cat]||0)+(f.lines||0);totalLines+=f.lines||0}
-  var importanceCount={must:0,recommend:0,reference:0};
-  for(var j=0;j<files.length;j++){var im=files[j].importance||'reference';importanceCount[im]=(importanceCount[im]||0)+1}
-
-  document.getElementById('statsRow').innerHTML=
-    '<div class="stat-card" onclick="filterCat(\'all\')" id="statAll"><div class="val c">'+total+'</div><div class="lbl">📄 文件总数</div></div>'+
-    '<div class="stat-card" onclick="filterCat(\'rule\')" id="statRule"><div class="val g">'+cc.rule+'</div><div class="lbl">📜 规则 ('+cl.rule+' 行)</div></div>'+
-    '<div class="stat-card" onclick="filterCat(\'agent\')" id="statAgent"><div class="val p">'+cc.agent+'</div><div class="lbl">🤖 Agent ('+cl.agent+' 行)</div></div>'+
-    '<div class="stat-card" onclick="filterCat(\'lib\')" id="statLib"><div class="val c">'+cc.lib+'</div><div class="lbl">📦 引擎库 ('+cl.lib+' 行)</div></div>'+
-    '<div class="stat-card" onclick="filterCat(\'skill\')" id="statSkill"><div class="val a">'+cc.skill+'</div><div class="lbl">⚙️ 技能 ('+cl.skill+' 行)</div></div>';
-
-  var ts=totalLines||1;
-  document.getElementById('bar').innerHTML=
-    '<div class="seg rule" style="width:'+(cl.rule/ts*100)+'%" data-tip="规则 '+cl.rule+' 行 '+cc.rule+' 文件" onclick="filterCat(\'rule\')"></div>'+
-    '<div class="seg agent" style="width:'+(cl.agent/ts*100)+'%" data-tip="Agent '+cl.agent+' 行 '+cc.agent+' 文件" onclick="filterCat(\'agent\')"></div>'+
-    '<div class="seg lib" style="width:'+(cl.lib/ts*100)+'%" data-tip="Lib '+cl.lib+' 行 '+cc.lib+' 文件" onclick="filterCat(\'lib\')"></div>'+
-    '<div class="seg skill" style="width:'+(cl.skill/ts*100)+'%" data-tip="技能 '+cl.skill+' 行 '+cc.skill+' 文件" onclick="filterCat(\'skill\')"></div>';
-
-  var ovRule=document.getElementById('ov-rule');if(ovRule)ovRule.textContent=cc.rule+' 文件';
-  var ovAgent=document.getElementById('ov-agent');if(ovAgent)ovAgent.textContent=cc.agent+' 文件';
-  var ovLib=document.getElementById('ov-lib');if(ovLib)ovLib.textContent=cc.lib+' 文件';
-  var ovSkill=document.getElementById('ov-skill');if(ovSkill)ovSkill.textContent=cc.skill+' 文件';
-}
-
-/* ── 文件过滤 ────────────────────────────────────────────────────────── */
-function filterFiles(files){
-  var q=fileQuery;
-  if(!q)return files.slice();
-  return files.filter(function(f){
-    if((f.name||'').toLowerCase().indexOf(q)>=0)return true;
-    if((f.path||'').toLowerCase().indexOf(q)>=0)return true;
-    if((f.desc||'').toLowerCase().indexOf(q)>=0)return true;
-    return false;
-  });
-}
-function sortByImportance(files){
-  return files.slice().sort(function(a,b){
-    var pa=IMPORTANCE_PRIORITY[a.importance]||99;
-    var pb=IMPORTANCE_PRIORITY[b.importance]||99;
-    if(pa!==pb)return pa-pb;
-    return (a.name||'').localeCompare(b.name||'');
-  });
-}
-
-/* ── 渲染文件清单 ────────────────────────────────────────────────────── */
-function renderFiles(){
-  var container=document.getElementById('filesContent');
-  if(!manifest||!manifest.files.length){container.innerHTML='<div class="state-msg"><div class="icon">📁</div><h3>暂无文件</h3></div>';return}
-
-  var filtered=sortByImportance(filterFiles(manifest.files));
-  if(!filtered.length){container.innerHTML='<div class="state-msg"><div class="icon">🔍</div><h3>无匹配文件</h3><p>试试调整搜索关键词或清空筛选</p><code>'+esc(fileQuery)+'</code></div>';return}
-
-  var groups={};
-  for(var i=0;i<filtered.length;i++){
-    var f=filtered[i];
-    var key=f.cat+'|'+(f.importance||'reference');
-    if(!groups[key])groups[key]=[];
-    groups[key].push(f);
-  }
-
-  var order=['rule','agent','lib','skill'];
-  var importanceOrder=['must','recommend','reference'];
-  var html='';
-
-  for(var o=0;o<order.length;o++){
-    var cat=order[o];
-    var allFiles=[];
-    for(var k=0;k<importanceOrder.length;k++){
-      var imp=importanceOrder[k];
-      var arr=groups[cat+'|'+imp]||[];
-      allFiles=allFiles.concat(arr);
-    }
-    if(!allFiles.length)continue;
-
-    html+='<div class="suite open"><div class="s-head" data-action="toggle"><span class="s-arrow">▶</span><span class="s-name">'+(CAT_ICONS[cat]||'')+' '+(CAT_LABELS[cat]||cat)+'</span><span class="s-count">'+allFiles.length+'</span><span class="s-meta">'+allFiles.reduce(function(s,f){return s+(f.lines||0)},0)+' 行</span></div><div class="s-body"><div class="file-grid">';
-
-    for(var j=0;j<allFiles.length;j++){
-      var f=allFiles[j];
-      var cardCls='';
-      if(f.importance==='must')cardCls=' critical';
-      else if(f.importance==='recommend')cardCls=' important';
-      else cardCls=' reference';
-
-      var ib=IMPORTANCE_BADGES[f.importance]||IMPORTANCE_BADGES.reference;
-      var catBadge='<span class="fc-badge '+f.cat+'">'+CAT_BADGE[f.cat]+'</span>';
-
-      html+='<div class="file-card'+cardCls+'" onclick="viewSource(\''+esc(f.path)+'\')">';
-      html+='<span class="fc-icon">'+f.icon+'</span>';
-      html+='<div class="fc-body">';
-      html+='<div class="fc-name">'+esc(f.name)+catBadge+'<span class="fc-badge '+ib.cls+'">★ '+ib.label+'</span></div>';
-      html+='<div class="fc-path">'+esc(f.path)+'</div>';
-      if(f.desc)html+='<div class="fc-desc">'+esc(f.desc)+'</div>';
-      html+='<div class="fc-meta">';
-      if(f.lines)html+='<span class="meta-item">📏 '+f.lines+' 行</span>';
-      html+='<span class="meta-item">📦 '+fmtSize(f.size)+'</span>';
-      html+='</div></div></div>';
-    }
-    html+='</div></div></div>';
-  }
-  container.innerHTML=html;
-}
-
-/* ── 目录浏览 ────────────────────────────────────────────────────────── */
-function renderBrowse(){
-  var container=document.getElementById('browseContent');
-  var html='';
-  var dirs=[
-    {path:'rules/',label:'📜 治理规则',desc:'自改进闭环规则定义'},
-    {path:'agents/',label:'🤖 Agent 角色',desc:'自改进引擎行为定义'},
-    {path:'lib/',label:'📦 引擎库',desc:'诊断 · 提案 · 记录 · 推荐 · 报告'},
-    {path:'skills/rui-yry/',label:'⚙️ 自改进技能',desc:'rui-yry 自主自改进循环'},
-    {path:'skills/rui/concerns/',label:'🎯 关注点注入',desc:'诊断 · 架构 · 集成 · 交接'},
-    {path:'skills/rui-bot/lib/',label:'📡 Bot 诊断',desc:'企微通知健康诊断'}
-  ];
-  for(var d=0;d<dirs.length;d++){
-    var dir=dirs[d];
-    var children=manifest.files.filter(function(f){return f.path.indexOf(dir.path)===0});
-    if(!children.length)continue;
-    children=sortByImportance(children);
-
-    html+='<div class="suite open"><div class="s-head" data-action="toggle"><span class="s-arrow">▶</span><span class="s-name">📁 '+dir.path+'</span><span class="s-count">'+children.length+'</span><span class="s-meta">'+dir.label+' · '+dir.desc+'</span></div><div class="s-body">';
-    html+='<div class="file-list">';
-    for(var i=0;i<children.length;i++){
-      var f=children[i];
-      var ib=IMPORTANCE_BADGES[f.importance]||IMPORTANCE_BADGES.reference;
-      var catBadge='<span class="fc-badge '+f.cat+'" style="font-size:.58rem;padding:1px 6px">'+CAT_BADGE[f.cat]+'</span>';
-      var impBadge='<span class="fc-badge '+ib.cls+'" style="font-size:.58rem;padding:1px 6px">'+ib.label+'</span>';
-      html+='<div class="t-row" onclick="viewSource(\''+esc(f.path)+'\')">';
-      html+='<span class="t-icon">'+f.icon+'</span>';
-      html+='<span class="t-name">'+esc(f.name)+catBadge+impBadge+'</span>';
-      html+='<span class="t-path">'+esc(f.path)+'</span>';
-      html+='<span class="t-meta">'+(f.lines||'—')+'L · '+fmtSize(f.size)+'</span>';
-      html+='</div>';
-    }
-    html+='</div></div></div>';
-  }
-  container.innerHTML=html;
-}
-
-/* ── 标签页切换 ──────────────────────────────────────────────────────── */
-function switchPanel(name){
-  activePanel=name;
-  document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.dataset.panel===name)});
-  document.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('on',p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1))});
-  if(name==='files')renderFiles();
-  else if(name==='browse')renderBrowse();
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-/* ── 按类型筛选 ──────────────────────────────────────────────────────── */
-function filterCat(cat){
-  filterCatState=cat==='all'?null:cat;
-  fileQuery='';
-  document.getElementById('searchInput').value='';
-  document.getElementById('searchBox').classList.remove('has-value');
-
-  document.querySelectorAll('.stat-card').forEach(function(c){c.classList.remove('active-filter')});
-  var id=cat==='all'?'statAll':cat==='rule'?'statRule':cat==='agent'?'statAgent':cat==='lib'?'statLib':cat==='skill'?'statSkill':null;
-  if(id){var el=document.getElementById(id);if(el)el.classList.add('active-filter')}
-
-  if(cat==='all'){switchPanel('files');renderFiles()}
-  else{
-    var filtered=manifest.files.filter(function(f){return f.cat===cat});
-    fileQuery='';
-    var container=document.getElementById('filesContent');
-    if(!filtered.length){container.innerHTML='<div class="state-msg"><div class="icon">🔍</div><h3>该类型暂无文件</h3></div>';return}
-    var groups={};
-    for(var i=0;i<filtered.length;i++){var f=filtered[i];if(!groups[f.cat])groups[f.cat]=[];groups[f.cat].push(f)}
-    var html='';
-    for(var c in groups){
-      var files=sortByImportance(groups[c]);
-      html+='<div class="suite open"><div class="s-head"><span class="s-arrow">▶</span><span class="s-name">'+(CAT_ICONS[c]||'')+' '+(CAT_LABELS[c]||c)+'</span><span class="s-count">'+files.length+'</span><span class="s-meta">已筛选</span></div><div class="s-body"><div class="file-grid">';
-      for(var j=0;j<files.length;j++){
-        var f=files[j];
-        var cardCls='';
-        if(f.importance==='must')cardCls=' critical';
-        else if(f.importance==='recommend')cardCls=' important';
-        else cardCls=' reference';
-        var ib=IMPORTANCE_BADGES[f.importance]||IMPORTANCE_BADGES.reference;
-        html+='<div class="file-card'+cardCls+'" onclick="viewSource(\''+esc(f.path)+'\')">';
-        html+='<span class="fc-icon">'+f.icon+'</span>';
-        html+='<div class="fc-body">';
-        html+='<div class="fc-name">'+esc(f.name)+'<span class="fc-badge '+f.cat+'">'+CAT_BADGE[f.cat]+'</span><span class="fc-badge '+ib.cls+'">'+ib.label+'</span></div>';
-        html+='<div class="fc-path">'+esc(f.path)+'</div>';
-        if(f.desc)html+='<div class="fc-desc">'+esc(f.desc)+'</div>';
-        html+='<div class="fc-meta"><span>📏 '+(f.lines||'—')+' 行</span><span>📦 '+fmtSize(f.size)+'</span></div>';
-        html+='</div></div>';
-      }
-      html+='</div></div></div>';
-    }
-    container.innerHTML=html;
-    switchPanel('files');
-  }
-}
-
-/* ── 搜索 ────────────────────────────────────────────────────────────── */
-function onSearchInput(){
-  var v=document.getElementById('searchInput').value;
-  fileQuery=v.toLowerCase().trim();
-  document.getElementById('searchBox').classList.toggle('has-value',v.length>0);
-  if(activePanel==='files')renderFiles();
-}
-function clearSearch(){
-  document.getElementById('searchInput').value='';
-  document.getElementById('searchBox').classList.remove('has-value');
-  fileQuery='';
-  if(activePanel==='files')renderFiles();
-  document.getElementById('searchInput').focus();
-}
-
-/* ── 复制文本 ────────────────────────────────────────────────────────── */
-function copyText(text){
-  text=text.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&').replace(/&quot;/g,'"');
-  if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).then(function(){toast('✅ 命令已复制到剪贴板')}).catch(function(){fallbackCopy(text)});
-  }else{fallbackCopy(text)}
-}
-function fallbackCopy(text){
-  var ta=document.createElement('textarea');
-  ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
-  document.body.appendChild(ta);ta.select();
-  try{document.execCommand('copy');toast('✅ 命令已复制到剪贴板')}catch(e){toast('❌ 复制失败，请手动选择')}
-  document.body.removeChild(ta);
-}
-
-/* ── 源码查看 ────────────────────────────────────────────────────────── */
-function viewSource(relPath){
-  currentSourcePath=relPath;
-  var overlay=document.getElementById('modalOverlay');
-  document.getElementById('modalTitle').textContent=relPath;
-  document.getElementById('jumpInput').value='';
-
-  var f=manifest.files.find(function(x){return x.path===relPath});
-  document.getElementById('mm-size').textContent=f?fmtSize(f.size):'—';
-  document.getElementById('mm-lines').textContent=f?(f.lines||'—'):'—';
-  document.getElementById('mm-cat').textContent=f?(CAT_LABELS[f.cat]||f.cat):'—';
-  var impMap={must:'必读 ★★★',recommend:'推荐 ◆◆○',reference:'参考 ○○○'};
-  document.getElementById('mm-importance').textContent=f?(impMap[f.importance]||'—'):'—';
-
-  var body=document.getElementById('modalBody');
-  body.innerHTML='<div style="padding:60px 20px;text-align:center;color:var(--text3)"><div style="font-size:2rem;margin-bottom:8px;animation:glow 2s infinite">⏳</div><div>加载源码中…</div></div>';
-  overlay.classList.add('show');
-  document.body.style.overflow='hidden';
-
-  fetch('../../../../'+relPath)
-    .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.text()})
-    .then(function(t){
-      currentSourceText=t;
-      var lines=t.split('\n');
-      var html='<pre>';
-      for(var i=0;i<lines.length;i++){
-        html+='<span class="code-line" data-line="'+(i+1)+'" id="line-'+(i+1)+'">';
-        html+='<span class="ln">'+(i+1)+'</span>'+esc(lines[i]);
-        html+='</span>';
-      }
-      html+='</pre>';
-      body.innerHTML=html;
-    })
-    .catch(function(e){
-      body.innerHTML='<div style="padding:60px 20px;text-align:center;color:var(--fail)"><div style="font-size:2.5rem;margin-bottom:10px">⚠️</div><h3 style="color:var(--fail);margin-bottom:8px">无法加载文件</h3><p style="color:var(--text3);font-size:.84rem">'+esc(e.message)+'</p><p style="color:var(--text3);font-size:.78rem;margin-top:14px">请检查路径是否正确，或文件是否存在</p><code style="display:inline-block;margin-top:14px;padding:6px 10px;background:var(--bg-flat);border-radius:4px;color:var(--cyan)">'+esc(relPath)+'</code></div>';
-    });
-}
-function closeModal(){
-  document.getElementById('modalOverlay').classList.remove('show');
-  document.body.style.overflow='';
-  currentSourcePath=null;
-  currentSourceText=null;
-}
-function copySource(){
-  if(!currentSourceText){toast('❌ 暂无可复制内容');return}
-  copyText(currentSourceText);
-}
-function downloadSource(){
-  if(!currentSourcePath||!currentSourceText){toast('❌ 暂无可下载内容');return}
-  var blob=new Blob([currentSourceText],{type:'text/plain;charset=utf-8'});
-  var url=URL.createObjectURL(blob);
-  var a=document.createElement('a');
-  a.href=url;a.download=currentSourcePath.split('/').pop();
-  document.body.appendChild(a);a.click();document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  toast('⬇ 已下载 '+a.download);
-}
-function openInNewTab(){
-  if(!currentSourcePath){toast('❌ 暂无可打开内容');return}
-  window.open('../../../../'+currentSourcePath,'_blank');
-}
-function jumpToLine(){
-  var n=parseInt(document.getElementById('jumpInput').value,10);
-  if(!n||n<1){toast('❌ 请输入有效的行号');return}
-  var el=document.getElementById('line-'+n);
-  if(!el){toast('❌ 行号 '+n+' 不存在');return}
-  document.querySelectorAll('.code-line.target').forEach(function(e){e.classList.remove('target')});
-  el.classList.add('target');
-  el.scrollIntoView({behavior:'smooth',block:'center'});
-  var ln=el.querySelector('.ln');
-  if(ln){
-    ln.style.color='var(--accent)';
-    setTimeout(function(){ln.style.color=''},2000);
-  }
-  toast('📍 已跳转到第 '+n+' 行');
-}
-
-/* ── Toast ───────────────────────────────────────────────────────────── */
-function toast(msg){
-  var el=document.getElementById('toast');
-  el.textContent=msg;
-  el.classList.add('show');
-  clearTimeout(el._t);
-  el._t=setTimeout(function(){el.classList.remove('show')},2000);
-}
-
-/* ── 事件绑定 ────────────────────────────────────────────────────────── */
-document.getElementById('searchInput').addEventListener('input',onSearchInput);
-document.addEventListener('keydown',function(e){
-  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
-  if(e.key==='Escape'){
-    if(document.getElementById('modalOverlay').classList.contains('show'))closeModal();
-    else if(fileQuery)clearSearch();
-    return;
-  }
-  if(e.key==='/'){e.preventDefault();document.getElementById('searchInput').focus();return}
-  var keyMap={'1':'overview','2':'files','3':'browse','4':'learn','5':'tasks','6':'deps','7':'spec'};
-  if(keyMap[e.key]){e.preventDefault();switchPanel(keyMap[e.key])}
-});
-
-document.querySelector('.tabs').addEventListener('click',function(e){
-  var tab=e.target.closest('.tab');
-  if(!tab)return;
-  switchPanel(tab.dataset.panel);
-});
-
-document.addEventListener('click',function(e){
-  var head=e.target.closest('.s-head');
-  if(head&&head.dataset.action==='toggle'){
-    var suite=head.closest('.suite');
-    if(suite)suite.classList.toggle('open');
-  }
-});
-
-document.getElementById('modalOverlay').addEventListener('click',function(e){
-  if(e.target===e.currentTarget)closeModal();
-});
-
-/* ── 初始化 ──────────────────────────────────────────────────────────── */
-window.addEventListener('DOMContentLoaded',function(){
-  renderStats();
-  switchPanel('overview');
-});
-</script>
 <script src="../../../../cdn/shared/index.js"></script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
+<script src="../../../../cdn/yry-scene-stats/index.js"></script>
+<script src="../../../../cdn/yry-scene-tabs/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
 </body>
 </html>

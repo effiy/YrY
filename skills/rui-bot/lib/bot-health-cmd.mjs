@@ -234,7 +234,7 @@ export async function cmdHealth(projectRoot, opts = {}) {
     for (const issue of formatIssues) console.log(`    ⚠️ ${issue}`);
   }
 
-  // ── 7. D0-D7 diagnostics (full engine) ────────────────
+  // ── 7. D0-D8 diagnostics (full engine) ────────────────
   const diagResult = getDiagnosticResult(projectRoot);
   scores.diagnostics = diagResult.score;
   const diagDetail = diagResult.skip
@@ -242,7 +242,7 @@ export async function cmdHealth(projectRoot, opts = {}) {
     : `${diagResult.execCount} 条记录, ${diagResult.triggered.length}/8 诊断触发`;
   details.push({
     dim: "diagnostics",
-    label: "D0-D7 诊断",
+    label: "D0-D8 诊断",
     status: scoreStatus(diagResult.score),
     detail: diagDetail,
     score: diagResult.score,
@@ -251,7 +251,7 @@ export async function cmdHealth(projectRoot, opts = {}) {
   });
   const diagIcon = diagResult.score >= PASS_THRESHOLD ? "✅" : diagResult.score >= WARN_THRESHOLD ? "⚠️" : diagResult.skip ? "⏭️" : "❌";
   const bootLabel = diagResult.bootstrapped ? " (Git 引导)" : "";
-  console.log(`  ${diagIcon} D0-D7 诊断:       ${diagDetail}${bootLabel}`);
+  console.log(`  ${diagIcon} D0-D8 诊断:       ${diagDetail}${bootLabel}`);
   if (diagResult.triggered?.length > 0) {
     for (const d of diagResult.triggered) {
       console.log(`    ⚠️ ${d.id} ${d.label}: ${d.evidence}`);

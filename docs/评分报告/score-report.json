@@ -1,22 +1,22 @@
 {
   "meta": {
     "title": "YrY 项目健康评分报告",
-    "date": "2026-06-20",
+    "date": "2026-06-22",
     "version": "5.4.0",
-    "generatedAt": "2026-06-20T01:32:14.179Z",
-    "dataPoints": 1,
+    "generatedAt": "2026-06-22T05:51:16.966Z",
+    "dataPoints": 2,
     "dateRange": {
       "from": "2026-06-19",
-      "to": "2026-06-19"
+      "to": "2026-06-22"
     },
     "dataSource": ".memory/health-trend.jsonl"
   },
   "composite": {
-    "score": 82,
-    "grade": "B",
-    "label": "良好",
-    "color": "#f59e0b",
-    "tier": "good",
+    "score": 94,
+    "grade": "A",
+    "label": "优秀",
+    "color": "#22c55e",
+    "tier": "excellent",
     "slo": "ok"
   },
   "trend": null,
@@ -31,17 +31,17 @@
       "dimCount": 10
     },
     "structural": {
-      "score": 60,
+      "score": 88,
       "weight": 16,
       "dimCount": 2
     },
     "engineering": {
-      "score": 73,
+      "score": 100,
       "weight": 54,
       "dimCount": 7
     },
     "quality": {
-      "score": 86,
+      "score": 84,
       "weight": 8,
       "dimCount": 1
     }
@@ -68,7 +68,7 @@
         "key": "em_testing",
         "label": "测试体系",
         "category": "engineering",
-        "score": 60,
+        "score": 100,
         "weight": 10,
         "fullScore": 100
       },
@@ -122,39 +122,13 @@
       {
         "key": "engineering",
         "label": "engineering",
-        "score": 60
+        "score": 100
       }
     ],
     "maxScore": 100,
-    "overall": 82
+    "overall": 93
   },
   "breakdown": [
-    {
-      "dim": "em_cicd",
-      "label": "CI/CD",
-      "category": "engineering",
-      "score": 0,
-      "grade": "D",
-      "weight": 8,
-      "status": "critical",
-      "trend": "→ 稳定",
-      "trendDirection": "stable",
-      "gap": 100,
-      "recommendation": "需立即采取改进措施，该项严重低于基线"
-    },
-    {
-      "dim": "dep_analysis",
-      "label": "依赖分析",
-      "category": "structural",
-      "score": 21,
-      "grade": "D",
-      "weight": 8,
-      "status": "critical",
-      "trend": "→ 稳定",
-      "trendDirection": "stable",
-      "gap": 79,
-      "recommendation": "需立即采取改进措施，该项严重低于基线"
-    },
     {
       "dim": "git",
       "label": "Git 仓库状态",
@@ -167,19 +141,6 @@
       "trendDirection": "stable",
       "gap": 60,
       "recommendation": "建议制定改进计划，提升至良好水平"
-    },
-    {
-      "dim": "em_testing",
-      "label": "测试体系",
-      "category": "engineering",
-      "score": 60,
-      "grade": "C",
-      "weight": 10,
-      "status": "ok",
-      "trend": "→ 稳定",
-      "trendDirection": "stable",
-      "gap": 40,
-      "recommendation": "仍有提升空间，可纳入优化计划"
     },
     {
       "dim": "diagnostics",
@@ -195,55 +156,42 @@
       "recommendation": "仍有提升空间，可纳入优化计划"
     },
     {
-      "dim": "em_linting",
-      "label": "代码规范",
-      "category": "engineering",
-      "score": 80,
+      "dim": "dep_analysis",
+      "label": "依赖分析",
+      "category": "structural",
+      "score": 79,
       "grade": "B",
       "weight": 8,
       "status": "ok",
       "trend": "→ 稳定",
       "trendDirection": "stable",
-      "gap": 20,
-      "recommendation": "保持当前水平，持续监控"
-    },
-    {
-      "dim": "em_git",
-      "label": "Git 纪律",
-      "category": "engineering",
-      "score": 80,
-      "grade": "B",
-      "weight": 6,
-      "status": "ok",
-      "trend": "→ 稳定",
-      "trendDirection": "stable",
-      "gap": 20,
-      "recommendation": "保持当前水平，持续监控"
+      "gap": 21,
+      "recommendation": "仍有提升空间，可纳入优化计划"
     },
     {
       "dim": "comp_qual",
       "label": "组件质量",
       "category": "quality",
-      "score": 86,
+      "score": 84,
       "grade": "B",
       "weight": 8,
       "status": "ok",
       "trend": "→ 稳定",
       "trendDirection": "stable",
-      "gap": 14,
+      "gap": 16,
       "recommendation": "保持当前水平，持续监控"
     },
     {
       "dim": "file_size",
       "label": "文件体积",
       "category": "structural",
-      "score": 98,
+      "score": 96,
       "grade": "A",
       "weight": 8,
       "status": "ok",
       "trend": "→ 稳定",
       "trendDirection": "stable",
-      "gap": 2,
+      "gap": 4,
       "recommendation": "保持当前水平，持续监控"
     },
     {
@@ -351,8 +299,47 @@
       "recommendation": "保持当前水平，持续监控"
     },
     {
+      "dim": "em_testing",
+      "label": "测试体系",
+      "category": "engineering",
+      "score": 100,
+      "grade": "A",
+      "weight": 10,
+      "status": "ok",
+      "trend": "→ 稳定",
+      "trendDirection": "stable",
+      "gap": 0,
+      "recommendation": "保持当前水平，持续监控"
+    },
+    {
       "dim": "em_types",
       "label": "类型安全",
+      "category": "engineering",
+      "score": 100,
+      "grade": "A",
+      "weight": 8,
+      "status": "ok",
+      "trend": "→ 稳定",
+      "trendDirection": "stable",
+      "gap": 0,
+      "recommendation": "保持当前水平，持续监控"
+    },
+    {
+      "dim": "em_linting",
+      "label": "代码规范",
+      "category": "engineering",
+      "score": 100,
+      "grade": "A",
+      "weight": 8,
+      "status": "ok",
+      "trend": "→ 稳定",
+      "trendDirection": "stable",
+      "gap": 0,
+      "recommendation": "保持当前水平，持续监控"
+    },
+    {
+      "dim": "em_cicd",
+      "label": "CI/CD",
       "category": "engineering",
       "score": 100,
       "grade": "A",
@@ -388,26 +375,23 @@
       "trendDirection": "stable",
       "gap": 0,
       "recommendation": "保持当前水平，持续监控"
+    },
+    {
+      "dim": "em_git",
+      "label": "Git 纪律",
+      "category": "engineering",
+      "score": 100,
+      "grade": "A",
+      "weight": 6,
+      "status": "ok",
+      "trend": "→ 稳定",
+      "trendDirection": "stable",
+      "gap": 0,
+      "recommendation": "保持当前水平，持续监控"
     }
   ],
   "contribution": {
     "topDrag": [
-      {
-        "dim": "em_cicd",
-        "score": 0,
-        "weight": 8,
-        "contribution": 0,
-        "maxContribution": 4.819277108433735,
-        "gap": 4.819277108433735
-      },
-      {
-        "dim": "dep_analysis",
-        "score": 21,
-        "weight": 8,
-        "contribution": 1.0120481927710843,
-        "maxContribution": 4.819277108433735,
-        "gap": 3.807228915662651
-      },
       {
         "dim": "git",
         "score": 40,
@@ -417,20 +401,36 @@
         "gap": 2.8915662650602414
       },
       {
-        "dim": "em_testing",
-        "score": 60,
-        "weight": 10,
-        "contribution": 3.6144578313253013,
-        "maxContribution": 6.024096385542169,
-        "gap": 2.4096385542168677
-      },
-      {
         "dim": "diagnostics",
         "score": 70,
         "weight": 8,
         "contribution": 3.3734939759036147,
         "maxContribution": 4.819277108433735,
         "gap": 1.4457831325301207
+      },
+      {
+        "dim": "dep_analysis",
+        "score": 79,
+        "weight": 8,
+        "contribution": 3.8072289156626504,
+        "maxContribution": 4.819277108433735,
+        "gap": 1.012048192771085
+      },
+      {
+        "dim": "comp_qual",
+        "score": 84,
+        "weight": 8,
+        "contribution": 4.048192771084337,
+        "maxContribution": 4.819277108433735,
+        "gap": 0.7710843373493983
+      },
+      {
+        "dim": "file_size",
+        "score": 96,
+        "weight": 8,
+        "contribution": 4.626506024096385,
+        "maxContribution": 4.819277108433735,
+        "gap": 0.19277108433735002
       }
     ],
     "topBoost": [
@@ -451,6 +451,14 @@
         "gap": 0
       },
       {
+        "dim": "em_testing",
+        "score": 100,
+        "weight": 10,
+        "contribution": 6.024096385542169,
+        "maxContribution": 6.024096385542169,
+        "gap": 0
+      },
+      {
         "dim": "config",
         "score": 100,
         "weight": 8,
@@ -465,45 +473,200 @@
         "contribution": 4.819277108433735,
         "maxContribution": 4.819277108433735,
         "gap": 0
+      }
+    ],
+    "dragTotal": 6.3
+  },
+  "comparison": {
+    "compositeDelta": 12,
+    "dimDeltas": [
+      {
+        "dim": "em_cicd",
+        "label": "em_cicd",
+        "current": 100,
+        "previous": 0,
+        "delta": 100,
+        "direction": "improved"
+      },
+      {
+        "dim": "dep_analysis",
+        "label": "dep_analysis",
+        "current": 79,
+        "previous": 21,
+        "delta": 58,
+        "direction": "improved"
+      },
+      {
+        "dim": "em_testing",
+        "label": "em_testing",
+        "current": 100,
+        "previous": 60,
+        "delta": 40,
+        "direction": "improved"
+      },
+      {
+        "dim": "em_linting",
+        "label": "em_linting",
+        "current": 100,
+        "previous": 80,
+        "delta": 20,
+        "direction": "improved"
+      },
+      {
+        "dim": "em_git",
+        "label": "em_git",
+        "current": 100,
+        "previous": 80,
+        "delta": 20,
+        "direction": "improved"
+      },
+      {
+        "dim": "file_size",
+        "label": "file_size",
+        "current": 96,
+        "previous": 98,
+        "delta": -2,
+        "direction": "declined"
+      },
+      {
+        "dim": "comp_qual",
+        "label": "comp_qual",
+        "current": 84,
+        "previous": 86,
+        "delta": -2,
+        "direction": "declined"
+      },
+      {
+        "dim": "token",
+        "label": "token",
+        "current": 100,
+        "previous": 100,
+        "delta": 0,
+        "direction": "stable"
+      },
+      {
+        "dim": "config",
+        "label": "config",
+        "current": 100,
+        "previous": 100,
+        "delta": 0,
+        "direction": "stable"
+      },
+      {
+        "dim": "robots",
+        "label": "robots",
+        "current": 100,
+        "previous": 100,
+        "delta": 0,
+        "direction": "stable"
+      },
+      {
+        "dim": "api",
+        "label": "api",
+        "current": 100,
+        "previous": 100,
+        "delta": 0,
+        "direction": "stable"
       },
       {
         "dim": "reports",
-        "score": 100,
-        "weight": 8,
-        "contribution": 4.819277108433735,
-        "maxContribution": 4.819277108433735,
-        "gap": 0
+        "label": "reports",
+        "current": 100,
+        "previous": 100,
+        "delta": 0,
+        "direction": "stable"
+      },
+      {
+        "dim": "format",
+        "label": "format",
+        "current": 100,
+        "previous": 100,
+        "delta": 0,
+        "direction": "stable"
+      },
+      {
+        "dim": "diagnostics",
+        "label": "diagnostics",
+        "current": 70,
+        "previous": 70,
+        "delta": 0,
+        "direction": "stable"
+      },
+      {
+        "dim": "git",
+        "label": "git",
+        "current": 40,
+        "previous": 40,
+        "delta": 0,
+        "direction": "stable"
+      },
+      {
+        "dim": "security",
+        "label": "security",
+        "current": 100,
+        "previous": 100,
+        "delta": 0,
+        "direction": "stable"
+      },
+      {
+        "dim": "em_types",
+        "label": "em_types",
+        "current": 100,
+        "previous": 100,
+        "delta": 0,
+        "direction": "stable"
+      },
+      {
+        "dim": "em_docs",
+        "label": "em_docs",
+        "current": 100,
+        "previous": 100,
+        "delta": 0,
+        "direction": "stable"
+      },
+      {
+        "dim": "em_deps",
+        "label": "em_deps",
+        "current": 100,
+        "previous": 100,
+        "delta": 0,
+        "direction": "stable"
+      },
+      {
+        "dim": "notify",
+        "label": "notify",
+        "current": 100,
+        "previous": 100,
+        "delta": 0,
+        "direction": "stable"
       }
     ],
-    "dragTotal": 15.4
+    "improved": [
+      "em_testing",
+      "em_linting",
+      "em_cicd",
+      "em_git",
+      "dep_analysis"
+    ],
+    "declined": [
+      "file_size",
+      "comp_qual"
+    ],
+    "biggestGain": {
+      "dim": "em_cicd",
+      "delta": 100
+    },
+    "biggestDrop": {
+      "dim": "file_size",
+      "delta": -2
+    },
+    "netChange": 3
   },
-  "comparison": null,
   "architecture": {
-    "grade": "C",
+    "grade": "A",
     "passed": 0,
-    "failed": 4,
-    "dims": [
-      {
-        "dim": "内核体积",
-        "passed": false,
-        "score": 0
-      },
-      {
-        "dim": "范式合规",
-        "passed": false,
-        "score": 0
-      },
-      {
-        "dim": "导入规范",
-        "passed": false,
-        "score": 0
-      },
-      {
-        "dim": "YAGNI 合规",
-        "passed": false,
-        "score": 0
-      }
-    ]
+    "failed": 0,
+    "dims": []
   },
   "diagnostics": {
     "triggered": 2,
@@ -511,30 +674,18 @@
     "rate": 25
   },
   "summary": {
-    "summary": "项目健康综合评分为 82 分（B级·良好），整体状态基本健康。核心运营中 2/10 项需关注；结构健康中 1/2 项需关注；工程成熟度中 2/7 项需关注；组件质量全部达标。架构合规检查发现 4 个失败维度（内核体积、范式合规、导入规范）。诊断引擎触发 2/8 项诊断，建议关注。",
+    "summary": "项目健康综合评分为 94 分（A级·优秀），整体状态健康。核心运营中 2/10 项需关注；结构健康中 1/2 项需关注；工程成熟度全部达标；组件质量全部达标。较上次检查提升 12 分。架构合规检查全部通过。诊断引擎触发 2/8 项诊断，建议关注。",
     "highlights": [
-      "需优先改进: CI/CD、依赖分析、Git 仓库状态",
-      "表现最佳: 通知投递质量、依赖管理、文档完整性"
+      "需优先改进: Git 仓库状态、D0-D7 诊断、依赖分析",
+      "表现最佳: 通知投递质量、Git 纪律、依赖管理"
     ],
     "risks": [
-      "CI/CD得分 0，需立即处理",
-      "依赖分析得分 21，需立即处理",
       "Git 仓库状态得分 40，需立即处理",
-      "测试体系得分 60，建议改进",
-      "D0-D7 诊断得分 70，建议改进"
+      "D0-D7 诊断得分 70，建议改进",
+      "依赖分析得分 79，建议改进"
     ]
   },
   "recommendations": [
-    {
-      "priority": "P0",
-      "dim": "CI/CD",
-      "action": "需立即采取改进措施，该项严重低于基线"
-    },
-    {
-      "priority": "P0",
-      "dim": "依赖分析",
-      "action": "需立即采取改进措施，该项严重低于基线"
-    },
     {
       "priority": "P1",
       "dim": "Git 仓库状态",

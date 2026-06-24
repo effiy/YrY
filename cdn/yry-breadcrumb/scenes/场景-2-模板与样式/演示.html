@@ -2,334 +2,78 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>模板与样式 · 演示 · YryBreadcrumb 任务故事</title>
-<link rel="stylesheet" href="../../../shared\/index\.css">
-<link rel="stylesheet" href="../../../theme\/index\.css">
-<link rel="stylesheet" href="../../../yry\-scene\/index\.css">
-<link rel="stylesheet" href="../../../yry\-checklist\/index\.css">
-<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
-<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
-<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
-<link rel="stylesheet" href="../../../yry-back-top/index.css">
-<link rel="stylesheet" href="../../../yry-scene-header/index.css">
-<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
-<link rel="stylesheet" href="../../../yry\-inline\-helpers\/index\.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<link rel="stylesheet" href="../../../yry\-a11y\/index\.css">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>模板与样式 · 演示</title>
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-demo.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-stats/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-tabs/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
 <style>
-
-.container { max-width: 1100px; }
+/* Page-specific overrides — shared patterns in shared-b.css */
 </style>
 </head>
 <body>
-<a href="#main" class="skip-link">⏩ 跳到主要内容</a>
-<div class="container" id="main">
+<div class="yry-container">
+<yry-scene-chrome
+  theme="b"
+  title="💡 {ACCENT} — 演示"
+  title-accent="模板与样式"
+  subtitle="场景 2 · 版本 vv5.4.0 · 2026-06-22"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-breadcrumb · yry-breadcrumb"},{"label":"场景 2 · 模板与样式"},{"label":"💡 演示"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","href":"架构图.html"},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","active":true},{"label":"📝 审查","href":"审查.html"}]'>
+</yry-scene-chrome>
 
-<div id="breadcrumb-app"></div>
+<yry-scene-stats items='[{"value":2,"label":"流程图","color":"info"},{"value":68,"label":"数据表","color":"t"},{"value":"vv5.4.0","label":"版本","color":"t"}]'></yry-scene-stats>
 
-<div id="scene-header-app"></div>
-
-<div id="scene-nav-app"></div>
-
-<h2>演示</h2>
-<div class="tip-box info">
-  <strong>💡 设计令牌驱动:</strong> 所有颜色通过 <code>var(--yry-color-*, #fallback)</code> 引用。无自定义属性环境自动降级为默认深色主题。下方 3 个静态演示块展示面包屑组件的不同渲染模式。
-</div>
-
-<!-- Demo 1: With icons -->
-<div class="demo-block">
-  <h3>模式 1: 含图标<span class="demo-label demo-label-icons">emoji 图标</span></h3>
-  <p>带 <code>href</code> + <code>icon</code> 的链接项，适用于有明确页面映射的路径。</p>
-  <div class="static-bc">
-    <a href="#">🍞 YryBreadcrumb</a>
-    <span class="bc-sep" aria-hidden="true">/</span>
-    <a href="#">📄 文档中心</a>
-    <span class="bc-sep" aria-hidden="true">/</span>
-    <a href="#">🧭 组件库</a>
-    <span class="bc-sep" aria-hidden="true">/</span>
-    <span class="bc-current">📦 面包屑</span>
-  </div>
-</div>
-
-<!-- Demo 2: Pure text -->
-<div class="demo-block">
-  <h3>模式 2: 纯文本路径<span class="demo-label demo-label-text">无链接</span></h3>
-  <p>全部为当前项（无 <code>href</code>），用于展示层级关系而不提供跳转。</p>
-  <div class="static-bc">
-    <span class="bc-current">YrY</span>
-    <span class="bc-sep" aria-hidden="true">/</span>
-    <span class="bc-current">故事面板</span>
-    <span class="bc-sep" aria-hidden="true">/</span>
-    <span class="bc-current">场景 2</span>
-    <span class="bc-sep" aria-hidden="true">/</span>
-    <span class="bc-current">模板与样式</span>
-  </div>
-</div>
-
-<!-- Demo 3: Long path -->
-<div class="demo-block">
-  <h3>模式 3: 长路径<span class="demo-label demo-label-long">深层嵌套</span></h3>
-  <p>混合 <code>href</code> 链接 + 当前项的深层路径，验证 <code>flex-wrap</code> 响应式换行。</p>
-  <div class="static-bc">
-    <a href="#">🍞 YryBreadcrumb</a>
-    <span class="bc-sep" aria-hidden="true">/</span>
-    <a href="#">📋 任务故事</a>
-    <span class="bc-sep" aria-hidden="true">/</span>
-    <a href="#">场景 2 · 模板与样式</a>
-    <span class="bc-sep" aria-hidden="true">/</span>
-    <a href="#">交付物</a>
-    <span class="bc-sep" aria-hidden="true">/</span>
-    <span class="bc-current">演示</span>
-  </div>
-</div>
-
-<div id="cross-nav-app"></div>
-
-<div class="timeline-hero">
-  <h3>🎨 5 种视觉模式<span class="th-sub">主题覆盖全景</span></h3>
-  <div class="tl-track-wrap">
-    <div class="tl-track">
-      <div class="tl-line"></div>
-      <div class="tl-progress tl-progress--full"></div>
-      <div class="tl-nodes">
-        <div class="tl-node done"><div class="tl-dot">🌙</div><div class="tl-label">默认深色</div><div class="tl-time">默认</div></div>
-        <div class="tl-node done"><div class="tl-dot">☀️</div><div class="tl-label">浅色模式</div><div class="tl-time">@media</div></div>
-        <div class="tl-node done"><div class="tl-dot">🔍</div><div class="tl-label">高对比度</div><div class="tl-time">@media</div></div>
-        <div class="tl-node done"><div class="tl-dot">🎨</div><div class="tl-label">自定义主题</div><div class="tl-time">:root</div></div>
-        <div class="tl-node done"><div class="tl-dot">🎯</div><div class="tl-label">组件覆盖</div><div class="tl-time">.custom-bc</div></div>
-      </div>
+<yry-scene-tabs tabs='[{"id":"walkthrough","label":"🚶 操作演示"},{"id":"commands","label":"💻 命令列表"},{"id":"screenshots","label":"📸 效果截图"}]'>
+  <div data-panel="walkthrough"><div class="placeholder">数据待填充 — 运行 /rui code 生成</div></div>
+  <div data-panel="commands">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>命令参考</h2>
+      <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
     </div>
   </div>
+  <div data-panel="screenshots"><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#ffc107', 'lineColor': '#ffc107',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    S1[&quot;场景 1&lt;br/&gt;Props API 草案&quot;] --&gt; TPL[&quot;Vue template&lt;br/&gt;v-for · v-if · aria-*&quot;]
+    S1 --&gt; CSS[&quot;index.css&lt;br/&gt;设计令牌 · BEM&quot;]
+    TPL --&gt; MODE5[&quot;5 视觉模式&lt;br/&gt;深色/浅色/高对比/自定义/组件级&quot;]
+    CSS --&gt; MODE5
+    MODE5 --&gt; VERIFY[&quot;4 项测试用例&lt;br/&gt;+ 交叉比对一致性&quot;]
+    VERIFY --&gt; NEXT[&quot;进入场景 3&lt;br/&gt;Loader 实现&quot;]</pre>
+<pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#ffc107', 'lineColor': '#ffc107',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart TB
+    subgraph T[&quot;index.html — 模板&quot;]
+      TP[&quot;Vue template&lt;br/&gt;v-for + v-if 条件渲染&quot;]:::tpl
+    end
+    subgraph S[&quot;index.css — 样式&quot;]
+      CS[&quot;.breadcrumb · .bc-sep · .bc-current&lt;br/&gt;设计令牌 + fallback + BEM&quot;]:::css
+    end
+    TP --&gt; R[&quot;Vue 渲染&quot;]
+    CS --&gt; R
+    R --&gt; P[&quot;#breadcrumb-app&lt;br/&gt;3 数据模式 × 5 视觉模式&quot;]
+
+    classDef tpl fill:#3B82F6,color:#fff
+    classDef css fill:#8B5CF6,color:#fff</pre></div>
+</yry-scene-tabs>
+
+<yry-scene-footer version="v5.4.0" date="2026-06-22" docs-link="../../../../docs/index.html"></yry-scene-footer>
 </div>
-
-<div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-val info">5</div><div class="kpi-label">视觉模式</div></div>
-  <div class="kpi-card"><div class="kpi-val accent">3</div><div class="kpi-label">渲染演示</div></div>
-  <div class="kpi-card"><div class="kpi-val pass">100%</div><div class="kpi-label">主题覆盖</div></div>
-</div>
-
-<div class="live-bar">
-  <span class="live-dot"></span> CSS 设计令牌就绪
-  <span class="live-resource"><span class="lr-name">theme/index.css</span><span class="lr-status">OK</span></span>
-  <span class="live-resource"><span class="lr-name">yry-scene.css</span><span class="lr-status">OK</span></span>
-  <span class="live-resource"><span class="lr-name">index.css</span><span class="lr-status">OK</span></span>
-</div>
-
-<h2>5 种视觉模式说明</h2>
-<table class="vis-mode-table">
-  <thead><tr><th>模式</th><th>触发条件</th><th>实现方式</th></tr></thead>
-  <tbody>
-    <tr><td>默认深色</td><td>无 <code>prefers-color-scheme</code> 匹配</td><td><code>:root</code> 基础令牌值</td></tr>
-    <tr><td>浅色模式</td><td><code>prefers-color-scheme: light</code></td><td><code>@media</code> 查询覆盖令牌</td></tr>
-    <tr><td>高对比度</td><td><code>prefers-contrast: high</code></td><td>额外 <code>@media</code> 增强边框/色差</td></tr>
-    <tr><td>自定义主题</td><td>宿主页面定义 <code>:root</code> 令牌</td><td>用户令牌覆盖组件默认值</td></tr>
-    <tr><td>组件级覆盖</td><td>父容器 <code>.custom-bc</code> 作用域</td><td>CSS 特异性覆盖 BEM 类</td></tr>
-  </tbody>
-</table>
-
-<h2>代码</h2>
-<div class="code-block">
-<div class="cb-head"><span class="cb-lang">JS</span><span class="cb-file">mount-demo.js</span></div>
-<pre><code>// 挂载 3 个独立 breadcrumb 实例的示例代码
-function mountDemo(id, items) {
-  Vue.createApp(window.YryBreadcrumb, { items }).mount('#' + id);
-}
-function mountAll() {
-  mountDemo('demo-1', [
-    { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
-    { label: '文档中心',     href: '#', icon: '📄' },
-    { label: '组件库',       href: '#' },
-    { label: '面包屑',       icon: '📦' }
-  ]);
-  mountDemo('demo-2', [
-    { label: 'YrY' },
-    { label: '故事面板' },
-    { label: '场景 2' },
-    { label: '模板与样式' }
-  ]);
-  mountDemo('demo-3', [
-    { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
-    { label: '任务故事',       href: '../README.md' },
-    { label: '场景 2 · 模板与样式', href: './index.md' },
-    { label: '交付物' },
-    { label: '演示',           icon: '💡' }
-  ]);
-}</code></pre>
-</div>
-
-<div class="tip-box success">
-  <strong>✅ 验证通过:</strong> 3 种模式在本页均可正常显示。深色/浅色/高对比度/自定义主题/组件级覆盖 — 5 种视觉模式均已在 <a href="./测试面板.html">测试面板</a> 中验证。
-</div>
-
-<h2>关键命令</h2>
-<div class="cmd-grid">
-  <div class="cmd-card">
-    <div class="cmd-stage">验证</div>
-    <div class="cmd-name">grep "var(--" cdn/yry-breadcrumb/index.css</div>
-    <span class="cmd-tag">CLI</span>
-  </div>
-  <div class="cmd-card">
-    <div class="cmd-stage">探索</div>
-    <div class="cmd-name">grep "\.bc-" cdn/yry-breadcrumb/index.css</div>
-    <span class="cmd-tag">CLI</span>
-  </div>
-  <div class="cmd-card">
-    <div class="cmd-stage">统计</div>
-    <div class="cmd-name">wc -l cdn/yry-breadcrumb/index.css</div>
-    <span class="cmd-tag">CLI</span>
-  </div>
-</div>
-
-<h2>自测</h2>
-<div class="quiz-list">
-  <div class="quiz-card" data-quiz="1">
-    <div class="quiz-q"><span class="q-num">1</span> YryBreadcrumb 的 CSS 类名采用 BEM 命名规范，正确的类名是？</div>
-    <div class="quiz-opts">
-      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">A</span><span class="opt-text">YryBreadcrumb、YryBreadcrumbItem、YryBreadcrumbLink</span></div>
-      <div class="quiz-opt correct" data-answer="correct"><span class="opt-letter">B</span><span class="opt-text">.breadcrumb、.breadcrumb__item、.breadcrumb__link</span></div>
-      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">C</span><span class="opt-text">.bc-container、.bc-item、.bc-link</span></div>
-    </div>
-    <div class="quiz-feedback"><strong>✓ 正确!</strong> 采用 BEM 命名：Block 为 .breadcrumb，Element 为 .breadcrumb__item 和 .breadcrumb__link，Modifier 为 .breadcrumb__link--current 标记当前项。</div>
-  </div>
-  <div class="quiz-card" data-quiz="2">
-    <div class="quiz-q"><span class="q-num">2</span> 组件 CSS 设计令牌使用什么语法引用，如何实现降级？</div>
-    <div class="quiz-opts">
-      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">A</span><span class="opt-text">@token(--yry-accent) + @supports 检测</span></div>
-      <div class="quiz-opt correct" data-answer="correct"><span class="opt-letter">B</span><span class="opt-text">var(--yry-accent, #fallback) 内联降级值</span></div>
-      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">C</span><span class="opt-text">env(--yry-accent) 环境变量回退</span></div>
-    </div>
-    <div class="quiz-feedback"><strong>✓ 正确!</strong> 所有颜色通过 var(--yry-*, #fallback) 引用，第二个参数为降级值。无自定义属性环境自动使用硬编码默认深色主题。</div>
-  </div>
-  <div class="quiz-card" data-quiz="3">
-    <div class="quiz-q"><span class="q-num">3</span> 5 种视觉模式中，自定义主题模式的实现方式是？</div>
-    <div class="quiz-opts">
-      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">A</span><span class="opt-text">修改 index.css 源码中的默认值</span></div>
-      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">B</span><span class="opt-text">通过 JavaScript 动态注入内联样式</span></div>
-      <div class="quiz-opt correct" data-answer="correct"><span class="opt-letter">C</span><span class="opt-text">宿主页面在 :root 中重新定义 --yry-* 令牌值</span></div>
-    </div>
-    <div class="quiz-feedback"><strong>✓ 正确!</strong> 宿主页面通过在 :root 中定义自定义属性（如 --yry-accent、--yry-bg 等）覆盖组件默认令牌，无需修改组件源码即可应用自定义主题。</div>
-  </div>
-</div>
-<div class="quiz-score">
-  <div class="qs-big">0/3</div>
-  <div class="qs-sub">完成自测</div>
-</div>
-
-<h2>场景文件</h2>
-<div class="file-grid">
-  <span class="file-item">📋 计划清单.html</span>
-  <span class="file-item">📐 架构图.html</span>
-  <span class="file-item">🔗 知识图谱.html</span>
-  <span class="file-item">📄 源码.html</span>
-  <span class="file-item">🧪 测试面板.html</span>
-  <span class="file-item">💡 演示.html</span>
-  <span class="file-item">📝 审查.html</span>
-</div>
-
-<div class="links-row">
-  <a href="../README.md">📋 场景 README</a>
-  <a href="./index.md">📄 场景正文</a>
-  <a href="../../../yry-breadcrumb/index.html">🍞 组件 Demo</a>
-</div>
-
-<div class="footer">
-  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-2-模板与样式/演示.html</code><br>
-  🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
-</div>
-
-</div>
-
-<script src="../../../yry\-quiz\/index\.js"></script>
-
-<script src="../../../shared\/index\.js"></script>
-<!-- ═══ CDN: YrySceneNav 组件 loader ═══ -->
-<script src="../../../yry-scene-nav/index.js"></script>
-<!-- ═══ CDN: YryCrossNav 组件 loader ═══ -->
-<script src="../../../yry-cross-nav/index.js"></script>
-<!-- ═══ CDN: YryBackTop (零配置自初始化) ═══ -->
-<script src="../../../yry-back-top/index.js"></script>
-<!-- ═══ CDN: YryBreadcrumb 组件 loader ═══ -->
-<script src="../../../yry-breadcrumb/index.js"></script>
-<!-- ═══ CDN: YrySceneHeader 组件 loader ═══ -->
-<script src="../../../yry-scene-header/index.js"></script>
-<!-- ═══ CDN: YryStatsGrid 组件 loader ═══ -->
-<script src="../../../yry-stats-grid/index.js"></script>
-
-  <!-- ════════════════════════════════════════════════════════════
-       页面级挂载 · 场景导航 + 交叉导航 + 面包屑 + 统计网格
-       index.js 异步加载模板后派发 yry-*-ready 事件
-       ════════════════════════════════════════════════════════════ -->
-  <script>
-
-  /* ── YryCrossNav 挂载 ── */
-  function mountCrossNav() {
-    if (!window.Vue || !window.YryCrossNav) return;
-    if (!document.getElementById('cross-nav-app')) return;
-    Vue.createApp(window.YryCrossNav, {
-      basePath: './',
-      active: '演示',
-      pages: [
-        { id: '清单', icon: '📋', href: '计划清单.html' },
-        { id: '架构', icon: '📐', href: '架构图.html' },
-        { id: '图谱', icon: '🔗', href: '知识图谱.html' },
-        { id: '源码', icon: '📄', href: '源码.html' },
-        { id: '测试', icon: '🧪', href: '测试面板.html' },
-        { id: '演示', icon: '💡', href: '演示.html' },
-        { id: '审查', icon: '📝', href: '审查.html' }
-      ]
-    }).mount('#cross-nav-app');
-  }
-  if (window.YryCrossNav) mountCrossNav();
-  else document.addEventListener('yry-cross-nav-ready', mountCrossNav, { once: true });
-
-  /* ── YrySceneNav 挂载 ── */
-  function mountSceneNav() {
-    if (!window.Vue || !window.YrySceneNav) return;
-    if (!document.getElementById('scene-nav-app')) return;
-    Vue.createApp(window.YrySceneNav, {
-      items: [
-        { label: '任务故事', href: '../README.md' },
-        { label: '模板与样式', href: './index.md' },
-        { label: '演示', active: true }
-      ]
-    }).mount('#scene-nav-app');
-  }
-  if (window.YrySceneNav) mountSceneNav();
-  else document.addEventListener('yry-scene-nav-ready', mountSceneNav, { once: true });
-
-  /* ── YrySceneHeader 挂载 ── */
-  function mountSceneHeader() {
-    if (!window.Vue || !window.YrySceneHeader) return;
-    if (!document.getElementById('scene-header-app')) return;
-    Vue.createApp(window.YrySceneHeader, {
-      icon: '💡',
-      prefix: '场景 2',
-      accent: ' · 模板与样式',
-      meta: 'YryBreadcrumb 任务故事 · 场景 2 · Template & Style · 演示',
-      desc: 'Vue 3 template 编写 · v-for / v-if / :class 设计 · CSS 设计令牌 + fallback 决策 · 5 视觉模式覆盖'
-    }).mount('#scene-header-app');
-  }
-  if (window.YrySceneHeader) mountSceneHeader();
-  else document.addEventListener('yry-scene-header-ready', mountSceneHeader, { once: true });
-
-  /* ── YryBreadcrumb 挂载 ── */
-  function mountBreadcrumb() {
-    if (!window.Vue || !window.YryBreadcrumb) return;
-    if (!document.getElementById('breadcrumb-app')) return;
-    Vue.createApp(window.YryBreadcrumb, {
-      ariaLabel: '面包屑导航',
-      items: [
-        { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
-        { label: '任务故事', href: '../README.md' },
-        { label: '场景 2 · 模板与样式' },
-        { label: '演示', icon: '💡' }
-      ]
-    }).mount('#breadcrumb-app');
-  }
-  if (window.YryBreadcrumb) mountBreadcrumb();
-  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
-  </script>
-
+<script src="../../../../cdn/shared/index.js"></script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
+<script src="../../../../cdn/yry-scene-stats/index.js"></script>
+<script src="../../../../cdn/yry-scene-tabs/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
 </body>
 </html>

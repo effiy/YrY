@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YrY 自检中心</title>
+  <meta name="description" content="YrY 测试自检中心 — vitest 测试套件 · 18 lib 测试 + 24 skill 测试 + 2 infra + 1 unit · 6 测试场景 · 覆盖率报告">
+  <link rel="stylesheet" href="../cdn/theme/index.css">
+  <link rel="stylesheet" href="../cdn/shared/index.css">
+  <link rel="stylesheet" href="../cdn/yry-inline-helpers/index.css">
+  <link rel="stylesheet" href="../cdn/yry-breadcrumb/index.css">
+  <link rel="stylesheet" href="../cdn/yry-scene-header/index.css">
+  <link rel="stylesheet" href="../cdn/yry-stats-grid/index.css">
+  <link rel="stylesheet" href="../cdn/yry-cross-nav/index.css">
+  <link rel="stylesheet" href="../cdn/yry-footer-note/index.css">
+  <link rel="stylesheet" href="../cdn/yry-test/index.css">
+  <style>
+    body { padding: 32px 24px 60px; max-width: 1100px; margin: 0 auto; line-height: 1.7; }
+    .test-section { margin: 28px 0 16px; }
+    .test-section h2 {
+      font-size: 1.05rem; font-weight: 700; color: var(--yry-text-primary, #a9b1d6);
+      margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+    }
+    .test-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 10px; margin-bottom: 16px;
+    }
+    .test-card {
+      background: var(--yry-surface, #1a1b2e); border: 1px solid var(--yry-border, #2d2f45);
+      border-radius: 8px; padding: 14px 16px; transition: border-color .2s;
+    }
+    .test-card:hover { border-color: var(--yry-accent, #7c8cf8); }
+    .test-card .tc-name {
+      font-weight: 600; font-size: .88rem; color: var(--yry-text-primary, #a9b1d6);
+      font-family: 'SF Mono', 'Cascadia Code', monospace; margin-bottom: 4px;
+    }
+    .test-card .tc-path {
+      font-size: .7rem; color: var(--yry-text-muted, #4a4f6a);
+      font-family: 'SF Mono', 'Cascadia Code', monospace; margin-bottom: 6px;
+      word-break: break-all;
+    }
+    .test-card .tc-meta {
+      font-size: .72rem; color: var(--yry-text-secondary, #6b708a);
+      display: flex; gap: 12px; flex-wrap: wrap;
+    }
+    .badge { font-size: .68rem; padding: 1px 8px; border-radius: 3px; font-weight: 600; }
+    .badge-lib { background: #1e3a5f33; color: #60a5fa; }
+    .badge-skill { background: #16653433; color: #4ade80; }
+    .badge-infra { background: #7c2d1233; color: #fb923c; }
+    .badge-unit { background: #854d0e33; color: #fbbf24; }
+    .run-card {
+      background: var(--yry-surface, #1a1b2e); border: 1px solid var(--yry-border, #2d2f45);
+      border-radius: 8px; padding: 16px; margin-bottom: 12px;
+    }
+    .run-card h3 { font-size: .9rem; color: var(--yry-text-primary, #a9b1d6); margin-bottom: 8px; }
+    .run-card pre {
+      background: rgba(0,0,0,.3); padding: 10px 14px; border-radius: 6px;
+      font-size: .78rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto;
+      margin: 4px 0;
+    }
+    .run-card .rc-desc { font-size: .78rem; color: var(--yry-text-secondary, #6b708a); margin-bottom: 6px; }
+    .scene-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 10px; margin-bottom: 16px;
+    }
+    .scene-card {
+      background: var(--yry-surface, #1a1b2e); border: 1px solid var(--yry-border, #2d2f45);
+      border-radius: 8px; padding: 14px 16px; transition: border-color .2s;
+      text-decoration: none; display: block; color: inherit;
+    }
+    .scene-card:hover { border-color: var(--yry-accent, #7c8cf8); }
+    .scene-card .sc-icon { font-size: 1.2rem; margin-bottom: 4px; }
+    .scene-card .sc-name { font-weight: 600; font-size: .85rem; color: var(--yry-text-primary, #a9b1d6); }
+    .scene-card .sc-desc { font-size: .72rem; color: var(--yry-text-secondary, #6b708a); margin-top: 4px; }
+    .summary-bar {
+      display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px;
+    }
+    .summary-item {
+      background: var(--yry-surface, #1a1b2e); border: 1px solid var(--yry-border, #2d2f45);
+      border-radius: 8px; padding: 14px 20px; text-align: center; min-width: 100px;
+    }
+    .summary-item .si-val { font-size: 1.5rem; font-weight: 800; color: var(--yry-text-primary, #a9b1d6); }
+    .summary-item .si-label { font-size: .7rem; color: var(--yry-text-muted, #4a4f6a); margin-top: 2px; }
+  </style>
+</head>
+<body>
+  <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
+  <yry-scene-header id="scene-header-app"></yry-scene-header>
+  <yry-stats-grid id="stats-grid-app"></yry-stats-grid>
+  <yry-cross-nav id="cross-nav-app"></yry-cross-nav>
+
+  <!-- ═══ 测试概览 ═══ -->
+  <div class="test-section">
+    <h2>📊 测试概览</h2>
+    <div class="summary-bar">
+      <div class="summary-item">
+        <div class="si-val">45</div><div class="si-label">测试文件</div>
+      </div>
+      <div class="summary-item">
+        <div class="si-val">18</div><div class="si-label">lib 测试</div>
+      </div>
+      <div class="summary-item">
+        <div class="si-val">27</div><div class="si-label">skill 测试</div>
+      </div>
+      <div class="summary-item">
+        <div class="si-val">6</div><div class="si-label">测试场景</div>
+      </div>
+      <div class="summary-item">
+        <div class="si-val">3</div><div class="si-label">测试层级</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 运行测试 ═══ -->
+  <div class="test-section">
+    <h2>🚀 运行测试</h2>
+    <div class="run-card">
+      <h3>全量测试</h3>
+      <div class="rc-desc">运行所有 vitest 测试 (lib + skills)</div>
+      <pre>npm test</pre>
+    </div>
+    <div class="run-card">
+      <h3>全量测试 + 遗留测试</h3>
+      <div class="rc-desc">vitest + 遗留测试一起运行</div>
+      <pre>npm run test:all</pre>
+    </div>
+    <div class="run-card">
+      <h3>监视模式</h3>
+      <div class="rc-desc">文件变更时自动重新运行测试</div>
+      <pre>npm run test:watch</pre>
+    </div>
+    <div class="run-card">
+      <h3>覆盖率报告</h3>
+      <div class="rc-desc">生成 HTML/JSON/text 覆盖率报告到 coverage/ 目录</div>
+      <pre>npm run test:coverage</pre>
+    </div>
+    <div class="run-card">
+      <h3>UI 模式</h3>
+      <div class="rc-desc">在浏览器中打开 vitest UI 交互式查看测试结果</div>
+      <pre>npm run test:ui</pre>
+    </div>
+  </div>
+
+  <!-- ═══ lib 测试文件 ═══ -->
+  <div class="test-section">
+    <h2>📦 lib 共享库测试 <span class="badge badge-lib">18 文件</span></h2>
+    <div class="test-grid" id="lib-tests"></div>
+  </div>
+
+  <!-- ═══ skill 测试文件 ═══ -->
+  <div class="test-section">
+    <h2>🛠 skill 技能测试 <span class="badge badge-skill">22 文件</span></h2>
+    <div class="test-grid" id="skill-tests"></div>
+  </div>
+
+  <!-- ═══ infrastructure 测试文件 ═══ -->
+  <div class="test-section">
+    <h2>🏗 基础设施测试 <span class="badge badge-infra">2 文件</span></h2>
+    <div class="test-grid" id="infra-tests"></div>
+  </div>
+
+  <!-- ═══ unit 测试文件 ═══ -->
+  <div class="test-section">
+    <h2>🔬 单元测试 <span class="badge badge-unit">1 文件</span></h2>
+    <div class="test-grid" id="unit-tests"></div>
+  </div>
+
+  <!-- ═══ 测试场景 ═══ -->
+  <div class="test-section">
+    <h2>🎬 测试场景</h2>
+    <div class="scene-grid">
+      <a class="scene-card" href="../cdn/yry-test/scenes/场景-1-init后全量自检/测试面板.html">
+        <div class="sc-icon">🏁</div>
+        <div class="sc-name">场景 1 · init 后全量自检</div>
+        <div class="sc-desc">项目初始化后的全量测试自检流程</div>
+      </a>
+      <a class="scene-card" href="../cdn/yry-test/scenes/场景-2-commit前增量自检/测试面板.html">
+        <div class="sc-icon">📝</div>
+        <div class="sc-name">场景 2 · commit 前增量自检</div>
+        <div class="sc-desc">提交前的增量变更测试自检</div>
+      </a>
+      <a class="scene-card" href="../cdn/yry-test/scenes/场景-3-文档代码一致性校验/测试面板.html">
+        <div class="sc-icon">📄</div>
+        <div class="sc-name">场景 3 · 文档代码一致性校验</div>
+        <div class="sc-desc">文档与代码的一致性验证</div>
+      </a>
+      <a class="scene-card" href="../cdn/yry-test/scenes/场景-4-安全面回归自检/测试面板.html">
+        <div class="sc-icon">🔒</div>
+        <div class="sc-name">场景 4 · 安全面回归自检</div>
+        <div class="sc-desc">安全相关的全面回归测试</div>
+      </a>
+      <a class="scene-card" href="../cdn/yry-test/scenes/场景-5-跨故事集成回归自检/测试面板.html">
+        <div class="sc-icon">🔗</div>
+        <div class="sc-name">场景 5 · 跨故事集成回归自检</div>
+        <div class="sc-desc">跨故事的集成回归测试</div>
+      </a>
+      <a class="scene-card" href="../cdn/yry-test/scenes/场景-6-第三方框架与服务自检/测试面板.html">
+        <div class="sc-icon">🌐</div>
+        <div class="sc-name">场景 6 · 第三方框架与服务自检</div>
+        <div class="sc-desc">第三方依赖和外部服务的可达性检查</div>
+      </a>
+    </div>
+  </div>
+
+  <yry-footer-note version="5.4.0"></yry-footer-note>
+
+  <script src="../cdn/shared/index.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="../cdn/yry-breadcrumb/index.js"></script>
+  <script src="../cdn/yry-scene-header/index.js"></script>
+  <script src="../cdn/yry-stats-grid/index.js"></script>
+  <script src="../cdn/yry-cross-nav/index.js"></script>
+  <script src="../cdn/yry-footer-note/index.js"></script>
+  <script>
+    /* ── 测试文件数据 ── */
+    var LIB_TESTS = [
+      'arch-check.test.mjs', 'arch-dimensions.test.mjs', 'arch-helpers.test.mjs',
+      'audit.test.mjs', 'branch-check.test.mjs', 'constants.test.mjs',
+      'diagnostics.test.mjs', 'fs.test.mjs', 'help-layout.test.mjs',
+      'io.test.mjs', 'recommend-detect.test.mjs', 'recommend.test.mjs',
+      'record.test.mjs', 'scoring.test.mjs', 'test-harness.test.mjs',
+      'test-helpers.test.mjs', 'tty.test.mjs', 'vitest-adapter.test.mjs'
+    ];
+    var SKILL_TESTS = [
+      'rui.test.mjs', 'rui-bot.test.mjs', 'rui-code.test.mjs', 'rui-doc.test.mjs',
+      'rui-health.test.mjs', 'rui-html.test.mjs', 'rui-import.test.mjs',
+      'rui-init.test.mjs', 'rui-plan.test.mjs', 'rui-reporter.test.mjs',
+      'rui-story.test.mjs', 'rui-trends.test.mjs', 'rui-update.test.mjs',
+      'rui-version.test.mjs', 'rui-yry.test.mjs', 'rui-analysis.test.mjs',
+      'rui-bundle-analyze.test.mjs', 'rui-claude.test.mjs', 'rui-npm.test.mjs',
+      'rui-skills.test.mjs', 'knowledge-graph.test.mjs', 'agents.test.mjs',
+      'cross-references.test.mjs', 'rules.test.mjs'
+    ];
+    var INFRA_TESTS = [
+      'framework-presence.test.mjs', 'third-party-reachability.test.mjs'
+    ];
+    var UNIT_TESTS = ['engine.test.mjs'];
+
+    function renderTestCards(containerId, files, basePath) {
+      var el = document.getElementById(containerId);
+      if (!el) return;
+      var html = '';
+      for (var i = 0; i < files.length; i++) {
+        var name = files[i];
+        var displayPath = basePath + '/' + name;
+        html += '<div class="test-card">' +
+          '<div class="tc-name">' + name + '</div>' +
+          '<div class="tc-path">' + displayPath + '</div>' +
+          '<div class="tc-meta"><span>🧪 vitest</span></div>' +
+          '</div>';
+      }
+      el.innerHTML = html;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      renderTestCards('lib-tests', LIB_TESTS, 'lib/tests');
+      renderTestCards('skill-tests', SKILL_TESTS, 'skills/*/tests');
+      renderTestCards('infra-tests', INFRA_TESTS, 'skills/rui/tests/infrastructure');
+      renderTestCards('unit-tests', UNIT_TESTS, 'skills/rui/tests/unit');
+
+      /* Breadcrumb */
+      var bc = document.getElementById('breadcrumb-app');
+      if (bc) bc.items = [{ label: 'YrY', href: '../', icon: '📚' }, { label: '自检中心' }];
+
+      /* Scene Header */
+      var sh = document.getElementById('scene-header-app');
+      if (sh) {
+        sh.icon = '🧪'; sh.titlePrefix = 'YrY '; sh.accent = '自检中心';
+        sh.meta = '📌 v5.4.0 · 🧪 45 测试文件 · 18 lib + 24 skill + 2 infra + 1 unit';
+        sh.desc = '测试自检中心 — 覆盖 lib 共享库(18)、skill 技能(24)、基础设施(2)、单元测试(1) 四大类别，6 个测试场景贯穿全生命周期。运行 vitest 执行全量测试，覆盖率报告输出到 coverage/ 目录。';
+      }
+
+      /* Stats Grid */
+      var sg = document.getElementById('stats-grid-app');
+      if (sg) sg.items = [
+        { value: '45', label: '测试文件', sub: 'lib(18) + skill(24) + infra(2) + unit(1)' },
+        { value: '18', label: 'lib 测试', sub: 'arch-check · scoring · diagnostics · tty · fs · io · constants …' },
+        { value: '24', label: 'skill 测试', sub: 'rui · rui-code · rui-story · rui-health · knowledge-graph · agents …' },
+        { value: '6', label: '测试场景', sub: 'init自检 · commit增量 · 文档一致性 · 安全回归 · 集成回归 · 三方服务' },
+        { value: '4', label: '测试类别', sub: 'lib · skill · infra · unit' }
+      ];
+
+      /* Cross Nav */
+      var cn = document.getElementById('cross-nav-app');
+      if (cn) {
+        cn.basePath = '';
+        cn.active = '';
+        cn.pages = [
+          { id: '文档中心', icon: '📚', href: '../docs/index.html' },
+          { id: 'CDN 共享库', icon: '🌐', href: '../cdn/index.html' },
+          { id: '健康报告', icon: '🩺', href: '../docs/健康报告/index.html' },
+          { id: 'CLAUDE.md', icon: '📜', href: '../CLAUDE.md' },
+          { id: 'README.md', icon: '📖', href: '../README.md' }
+        ];
+      }
+    });
+  </script>
+</body>
+</html>

@@ -20,7 +20,7 @@
     "comment-whitespace-inside": null,
     "declaration-block-single-line-max-declarations": null,
     "property-no-vendor-prefix": [true, {
-      "ignoreProperties": ["user-select", "appearance"]
+      "ignoreProperties": ["user-select", "appearance", "backdrop-filter"]
     }],
     "color-no-hex": [true, {
       "severity": "warning",

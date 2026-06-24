@@ -67,21 +67,21 @@
         <div v-else-if="tasks.length === 0" class="panel-empty yry-panel-empty">暂无调度任务<br><span class="hint">使用 Claude Code 的 <code>/loop</code> 命令创建定时任务</span></div>
         <ul v-else class="cron-list yry-cron-list">
           <li v-for="(t, i) in tasks" :key="i" :class="'cron-item yry-cron-item' + (t.isActive ? ' active-item' : '')">
-            <div class="cr-row1">
-              <span :class="t.isActive ? 'pulse-dot' : 'cr-dot-idle'"></span>
+            <div class="cr-row1 yry-cr-row1">
+              <span :class="t.isActive ? 'pulse-dot yry-pulse-dot' : 'cr-dot-idle yry-cr-dot-idle'"></span>
               <span class="cr-desc" v-html="t.desc"></span>
-              <span :class="'cr-badge ' + (t.isActive ? 'active' : 'idle')">{{ t.isActive ? '活跃' : '空闲' }}</span>
-              <span v-if="t.durable" class="cr-badge cr-badge-durable">💾持久</span>
-              <span v-if="t.cdHtml" :class="'cr-countdown ' + t.cdHtml.cls">{{ t.cdHtml.label }}</span>
+              <span :class="'cr-badge yry-cr-badge ' + (t.isActive ? 'active' : 'idle')">{{ t.isActive ? '活跃' : '空闲' }}</span>
+              <span v-if="t.durable" class="cr-badge yry-cr-badge cr-badge-durable yry-cr-badge-durable">💾持久</span>
+              <span v-if="t.cdHtml" :class="'cr-countdown yry-cr-countdown ' + t.cdHtml.cls">{{ t.cdHtml.label }}</span>
             </div>
-            <div class="cr-row2 cr-raw">{{ t.cron }}</div>
-            <div class="cr-row3">
-              <span class="cr-badge cr-badge-meta">{{ t.recurring }}</span>
-              <span class="cr-dot">·</span><span>创建: {{ t.created }}</span>
-              <span class="cr-dot">·</span><span>上次: {{ t.lastFired }}</span>
+            <div class="cr-row2 cr-raw yry-cr-raw">{{ t.cron }}</div>
+            <div class="cr-row3 yry-cr-row3">
+              <span class="cr-badge yry-cr-badge cr-badge-meta yry-cr-badge-meta">{{ t.recurring }}</span>
+              <span class="cr-dot yry-cr-dot">·</span><span>创建: {{ t.created }}</span>
+              <span class="cr-dot yry-cr-dot">·</span><span>上次: {{ t.lastFired }}</span>
             </div>
-            <div v-if="t.nextFire" class="cr-next">⏭ 预计下次: {{ t.nextFire }}</div>
-            <div v-if="t.prompt" :class="'cr-prompt' + (t.promptLong ? ' collapsed' : '')" :title="t.prompt">{{ t.prompt }}</div>
+            <div v-if="t.nextFire" class="cr-next yry-cr-next">⏭ 预计下次: {{ t.nextFire }}</div>
+            <div v-if="t.prompt" :class="'cr-prompt yry-cr-prompt' + (t.promptLong ? ' collapsed' : '')" :title="t.prompt">{{ t.prompt }}</div>
           </li>
         </ul>
       </div>

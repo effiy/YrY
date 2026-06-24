@@ -13,18 +13,49 @@
   <link rel="stylesheet" href="../theme/index.css">
   <link rel="stylesheet" href="index.css">
   <style>
-    body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
-    h1 { font-size: 1.4rem; color: var(--color-accent, var(--yry-accent, #FFC107)); }
-    pre { background: rgba(0,0,0,.3); padding: 10px 14px; border-radius: 6px; font-size: .76rem; color: var(--color-accent-2, var(--yry-cyan, #22d3ee)); overflow-x: auto; }
+    body { padding: 32px 24px 60px; max-width: 1040px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #FFC107); }
+    h2 { font-size: 1rem; color: var(--yry-text, #fafafc); margin-top: 32px; border-bottom: 1px solid rgba(255,255,255,.06); padding-bottom: 8px; }
+    pre { background: rgba(0,0,0,.3); padding: 10px 14px; border-radius: 6px; font-size: .76rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; }
+    .demo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+    .demo-card { background: var(--yry-bg-card, linear-gradient(135deg, rgba(34,34,46,1), rgba(42,42,56,1))); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 16px; }
+    .demo-card h3 { font-size: .82rem; color: var(--yry-accent, #FFC107); margin: 0 0 6px; }
+    .demo-card p { font-size: .72rem; color: var(--yry-text2, #a0a0a4); margin: 0; }
+    .token-map { font-size: .72rem; color: var(--yry-text2, #a0a0a4); }
+    .token-map code { color: var(--yry-cyan, #22d3ee); background: rgba(0,0,0,.2); padding: 1px 5px; border-radius: 3px; font-size: .7rem; }
   </style>
 </head>
 <body>
   <h1>🏠 yry-home · 首页样式</h1>
-  <p>文档中心首页专属样式。提供 token 别名映射 (<code>--color-accent → --yry-accent</code> 等) 与首页专属布局。</p>
+  <p>文档中心首页专属样式 (90KB CSS)。提供六层结构布局、token 别名映射、统计卡片、场景网格。</p>
 
   <h2>载入</h2>
   <pre>&lt;link rel="stylesheet" href="../cdn/yry-home/index.css"&gt;</pre>
 
-  <p style="margin-top: 32px; color: var(--text-muted, var(--yry-text3, #888)); font-size: .72rem;">YrY CDN · yry-home · 2026</p>
+  <h2>设计令牌别名映射</h2>
+  <p class="token-map">yry-home 定义了 <code>--color-accent</code> → <code>--yry-accent</code> 等别名，使首页可以使用更简短、语义化的变量名。</p>
+  <div class="demo-grid">
+    <div class="demo-card"><h3>--color-accent</h3><p>→ --yry-accent (#FFC107)</p></div>
+    <div class="demo-card"><h3>--color-accent-2</h3><p>→ --yry-cyan (#22d3ee)</p></div>
+    <div class="demo-card"><h3>--text-primary</h3><p>→ --yry-text (#fafafc)</p></div>
+    <div class="demo-card"><h3>--text-secondary</h3><p>→ --yry-text2 (#a0a0a4)</p></div>
+    <div class="demo-card"><h3>--text-muted</h3><p>→ --yry-text3 (#6e6e72)</p></div>
+    <div class="demo-card"><h3>--bg-content</h3><p>→ --yry-bg</p></div>
+    <div class="demo-card"><h3>--bg-card-flat</h3><p>→ --yry-bg-flat</p></div>
+    <div class="demo-card"><h3>--border-subtle</h3><p>→ --yry-border</p></div>
+    <div class="demo-card"><h3>--radius-card</h3><p>→ --yry-radius (12px)</p></div>
+    <div class="demo-card"><h3>--shadow-card</h3><p>→ --yry-shadow</p></div>
+    <div class="demo-card"><h3>--shadow-hover</h3><p>→ --yry-shadow-lg</p></div>
+    <div class="demo-card"><h3>--cyan</h3><p>→ --yry-cyan</p></div>
+  </div>
+
+  <h2>六层结构布局</h2>
+  <pre>hero → stats → stories → scenes → health → footer</pre>
+  <p style="font-size:.72rem;color:var(--yry-text3,#6e6e72)">每层使用独立的 CSS 类名空间，支持响应式断点适配。</p>
+
+  <h2>场景</h2>
+  <p>4 个场景任务故事。详见 <a href="scenes/README.md" style="color:var(--yry-cyan,#22d3ee)">scenes/README.md</a></p>
+
+  <p style="margin-top: 32px; color: var(--yry-text3, #6e6e72); font-size: .72rem;">YrY CDN · yry-home · 90KB CSS · 六层布局 · 2026</p>
 </body>
 </html>

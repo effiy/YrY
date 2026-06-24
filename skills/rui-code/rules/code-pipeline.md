@@ -75,7 +75,7 @@ flowchart TB
 
 > **进入 code 阶段前，故事级 plan.html 和全部场景的 计划清单.html 必须完整。零占位符，六项自审查通过。**
 >
-> 计划由 planner agent 在 doc 阶段完成后生成。详情见 [plan-execution.md](./plan-execution.md)。
+> 计划由 planner agent 在 doc 阶段完成后生成。详情见 [plan-execution.md](../../rui-plan/rules/plan-execution.md)。
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {
@@ -158,8 +158,8 @@ flowchart LR
 | 6 | 在 `main` 或非 `feat/` 前缀分支上执行 Edit/Write → 立即阻断 | `no-branch-isolation` |
 | 7 | 记忆/缓存系统（`.memory/`、本地状态文件等）禁止跨分支共享管线状态，不得用于绕过或削弱分支隔离 | `cache-leak` |
 
-**门禁执行者**：coder Agent、任何执行源码修改的 Agent。  
-**验证命令**：`git branch --show-current`  
+**门禁执行者**：coder Agent、任何执行源码修改的 Agent。
+**验证命令**：`git branch --show-current`
 **阻断恢复**：创建/切换到 `feat/<name>` 分支后重新执行。
 
 ## ② 实现 — 逐模块清零
@@ -322,3 +322,26 @@ flowchart LR
 | ⑧ 研究优先开发 | 影响分析 · 架构设计 | 猜 = 浪费上下文，查 = 建立事实基线 |
 | ⑨ 静默失败猎杀 | 验证 · 代码审查 · 安全审计 | 不被注意的错误仍在产生错误结果 |
 | ⑩ 置信度过滤 | 代码审查 · 验证清单 | 噪声淹没信号，精确的报告才帮助 P0 清零 |
+
+## 管线阶段耗时基线
+
+> 各阶段的预期耗时范围，用于 D5 诊断（阶段耗时异常检测）。
+
+| 阶段 | 典型耗时 | 告警阈值 | 异常信号 |
+|------|:---:|:---:|------|
+| ⓪ 计划门禁 | < 30s | > 2min | 计划生成卡住 |
+| ① 分支隔离 | < 5s | > 30s | 分支创建失败 |
+| ② Gate A | 1-5min | > 10min | 测试设计审查过慢 |
+| ③ 逐模块实现 | 按模块规模 | > 30min/模块 | 模块过大需拆分 |
+| ④ Gate B | 2-10min | > 20min | 修复轮次过多 |
+| ⑤ 自改进 | 1-5min | > 10min | 数据采集异常 |
+| ⑥ 交付 | < 2min | > 5min | 网络超时 |
+
+### 阶段耗时异常诊断
+
+| 异常 | 诊断 | 建议 |
+|------|------|------|
+| Gate A 耗时 > 10min | D4 流程退化：测试设计过于复杂 | 简化 AC，拆分场景 |
+| 单模块 > 30min | D3 复杂度增长：模块过大 | 按 FP# 拆分模块 |
+| Gate B > 20min | D4 流程退化：修复轮次过多 | 质疑架构设计 |
+| 总耗时 > 2h | D5 依赖退化：Agent 协作瓶颈 | 检查 Agent 交接信号 |

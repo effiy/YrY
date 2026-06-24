@@ -7,6 +7,113 @@ import { DIM_LABELS, DIM_WEIGHTS } from "./report-constants.mjs";
 import { PASS_THRESHOLD, WARN_THRESHOLD, scoreColor, scoreIcon, avgScore } from "./bot-health-analysis.mjs";
 import { contributionAnalysis, scoreDistribution, classifyScore } from "../../../lib/scoring.mjs";
 
+/**
+ * Build a comprehensive Executive Briefing narrative that synthesizes
+ * all health dimensions into a professional, readable summary.
+ * This is the "story" behind the numbers.
+ *
+ * @param {object} hr - Health result
+ * @param {object} prev - Previous health entry
+ * @param {Array} recommendations - Improvement recommendations
+ * @returns {string} HTML
+ */
+export function buildExecutiveBriefing(hr, prev, recommendations) {
+  var scores = hr.scores || {};
+  var grade = hr.grade || "C";
+  var composite = hr.composite || 0;
+
+  // Categorize dimensions
+  var critical = [], warning = [], healthy = [];
+  for (var _a = 0, _b = Object.entries(scores); _a < _b.length; _a++) {
+    var _c = _b[_a], dim = _c[0], score = _c[1];
+    var label = DIM_LABELS[dim] || dim;
+    if (score < 60) critical.push({ dim, label, score });
+    else if (score < 80) warning.push({ dim, label, score });
+    else healthy.push({ dim, label, score });
+  }
+
+  // Grade narrative
+  var gradeNarrative = {
+    A: "项目处于卓越健康状态，所有核心维度均达标，架构合规，工程实践成熟。建议保持当前节奏，关注趋势变化以防退化。",
+    B: "项目整体健康良好，多数维度达标，但存在个别需关注领域。建议优先处理告警维度，防止降级为严重问题。",
+    C: "项目存在明显健康风险，多个维度未达标。需立即制定改进计划，优先修复关键维度，避免进一步恶化。",
+    D: "项目健康严重告警，核心维度大面积不达标。需启动紧急响应机制，逐项排查根因并立即修复。",
+  };
+
+  var narrative = gradeNarrative[grade] || gradeNarrative.C;
+
+  // Trend narrative
+  var trendNarrative = "";
+  if (prev && prev.score) {
+    var diff = composite - prev.score;
+    if (diff > 5) trendNarrative = "较上次检查提升 " + diff + " 分，改进趋势明显。";
+    else if (diff < -5) trendNarrative = "较上次检查下降 " + Math.abs(diff) + " 分，需关注退化趋势。";
+    else trendNarrative = "较上次检查基本持平，状态稳定。";
+  }
+
+  // Critical items narrative
+  var criticalNarrative = "";
+  if (critical.length > 0) {
+    criticalNarrative = "当前 <b style='color:#ef4444'>" + critical.length + " 个维度处于严重告警状态</b>：" +
+      critical.map(function(c) { return c.label + "(" + c.score + "分)"; }).join("、") +
+      "。这些维度直接影响项目核心功能，建议立即处理。";
+  } else {
+    criticalNarrative = "当前<b style='color:#22c55e'>无严重告警维度</b>，所有核心指标均在安全线以上。";
+  }
+
+  // Warning items narrative
+  var warningNarrative = "";
+  if (warning.length > 0) {
+    warningNarrative = warning.length + " 个维度处于需关注状态：" +
+      warning.slice(0, 5).map(function(w) { return w.label + "(" + w.score + "分)"; }).join("、") +
+      (warning.length > 5 ? " 等" : "") + "。建议在下一维护窗口内处理。";
+  }
+
+  // Top strengths
+  var sorted = Object.entries(scores).sort(function(a, b) { return b[1] - a[1]; });
+  var top3 = sorted.slice(0, 3);
+  var strengthsNarrative = "表现最佳维度：" + top3.map(function(s) { return "<b style='color:#22c55e'>" + (DIM_LABELS[s[0]] || s[0]) + " " + s[1] + "分</b>"; }).join("、") + "。";
+
+  // Recommendation summary
+  var recNarrative = "";
+  if (recommendations.length > 0) {
+    var highRecs = recommendations.filter(function(r) { return r.priority === "high"; });
+    if (highRecs.length > 0) {
+      recNarrative = "已生成 <b>" + recommendations.length + " 项改进建议</b>，其中 <b style='color:#ef4444'>" + highRecs.length + " 项为高优先级</b>，建议优先执行。";
+    } else {
+      recNarrative = "已生成 <b>" + recommendations.length + " 项改进建议</b>，可按计划逐步执行。";
+    }
+  }
+
+  // Diagnostic summary
+  var diagNarrative = "";
+  var diagCount = (hr.diagnostics && hr.diagnostics.triggered && hr.diagnostics.triggered.length) || 0;
+  if (diagCount > 0) {
+    diagNarrative = "诊断引擎触发 <b style='color:#f59e0b'>" + diagCount + " 项诊断</b>，建议查看诊断详情面板了解具体问题和修复建议。";
+  } else {
+    diagNarrative = "诊断引擎<b style='color:#22c55e'>未触发任何诊断</b>，系统运行正常。";
+  }
+
+  return '<div class="h-section" style="border-left:3px solid var(--yry-accent);background:rgba(255,193,7,.04)">' +
+    '<h2>📋 执行简报 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Executive Briefing</span></h2>' +
+    '<div style="font-size:.88rem;line-height:1.9;color:var(--yry-text2);padding:8px 0">' +
+    '<p style="margin-bottom:12px"><b style="color:var(--yry-accent)">综合评估：</b>' + narrative + ' ' + trendNarrative + '</p>' +
+    '<p style="margin-bottom:12px"><b style="color:var(--yry-accent)">关键发现：</b>' + criticalNarrative + '</p>' +
+    (warningNarrative ? '<p style="margin-bottom:12px"><b style="color:var(--yry-accent)">需关注：</b>' + warningNarrative + '</p>' : '') +
+    '<p style="margin-bottom:12px"><b style="color:var(--yry-accent)">优势领域：</b>' + strengthsNarrative + '</p>' +
+    '<p style="margin-bottom:12px"><b style="color:var(--yry-accent)">改进建议：</b>' + recNarrative + '</p>' +
+    '<p style="margin-bottom:0"><b style="color:var(--yry-accent)">诊断状态：</b>' + diagNarrative + '</p>' +
+    '</div>' +
+    '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;padding-top:12px;border-top:var(--yry-border)">' +
+    '<span style="padding:4px 12px;background:rgba(34,197,94,.08);border-radius:6px;font-size:.72rem;color:#22c55e">✅ ' + healthy.length + ' 项健康</span>' +
+    (warning.length > 0 ? '<span style="padding:4px 12px;background:rgba(245,158,11,.08);border-radius:6px;font-size:.72rem;color:#f59e0b">⚠️ ' + warning.length + ' 项需关注</span>' : '') +
+    (critical.length > 0 ? '<span style="padding:4px 12px;background:rgba(239,68,68,.08);border-radius:6px;font-size:.72rem;color:#ef4444">🚫 ' + critical.length + ' 项严重</span>' : '') +
+    '<span style="padding:4px 12px;background:rgba(59,130,246,.08);border-radius:6px;font-size:.72rem;color:var(--yry-cyan)">🔬 ' + diagCount + ' 项诊断触发</span>' +
+    '<span style="padding:4px 12px;background:rgba(255,193,7,.08);border-radius:6px;font-size:.72rem;color:var(--yry-accent)">💡 ' + recommendations.length + ' 项建议</span>' +
+    '</div>' +
+    '</div>';
+}
+
 export function buildScoreTrend(history) {
   if (!history || history.length < 2) return "";
   const recent = history.slice(-10);
@@ -1097,6 +1204,301 @@ export function buildScoreDiffSection(hr, prev) {
     '</div>';
 }
 
+// ── Professional analysis sections ─────────────────────────────
+
+/**
+ * Build a Risk Matrix (probability × impact) for identified issues.
+ * Categorizes risks into Critical/High/Medium/Low based on dimension scores
+ * and diagnostic triggers.
+ *
+ * @param {object} hr - Health result with scores, diagnostics, structInfo
+ * @returns {string} HTML
+ */
+export function buildRiskMatrix(hr) {
+  var risks = [];
+
+  // Dimension-based risks
+  var scores = hr.scores || {};
+  for (var _a = 0, _b = Object.entries(scores); _a < _b.length; _a++) {
+    var _c = _b[_a], dim = _c[0], score = _c[1];
+    if (score >= 80) continue;
+    var label = DIM_LABELS[dim] || dim;
+    var weight = DIM_WEIGHTS[dim] || 0;
+    var probability = score < 40 ? "high" : score < 60 ? "medium" : "low";
+    var impact = weight >= 10 ? "critical" : weight >= 5 ? "high" : "medium";
+    risks.push({
+      id: dim, label: label, category: "维度评分",
+      probability: probability, impact: impact,
+      score: score, detail: "当前得分 " + score + " 分，权重 " + weight + "%",
+      mitigation: (DIM_FIX_GUIDANCE[dim] && DIM_FIX_GUIDANCE[dim].fix) || "检查并修复该维度相关问题",
+    });
+  }
+
+  // Diagnostic-based risks
+  if (hr.diagnostics && hr.diagnostics.triggered) {
+    for (var _d = 0, _e = hr.diagnostics.triggered; _d < _e.length; _d++) {
+      var diag = _e[_d];
+      risks.push({
+        id: diag.id, label: diag.label || diag.id, category: "诊断触发",
+        probability: diag.confidence === "high" ? "high" : "medium",
+        impact: diag.id === "D0" ? "critical" : diag.id === "D1" || diag.id === "D2" ? "high" : "medium",
+        score: 0, detail: diag.evidence || "",
+        mitigation: diag.suggestion || "参考诊断建议进行处理",
+      });
+    }
+  }
+
+  // Structural risks
+  if (hr.structInfo) {
+    var si = hr.structInfo;
+    if (si.critFileCount > 0) {
+      risks.push({
+        id: "struct-crit", label: "巨型文件风险", category: "结构健康",
+        probability: si.critFileCount > 3 ? "high" : "medium",
+        impact: "high", score: si.score || 0,
+        detail: si.critFileCount + " 个文件超过 1000 行，共 " + si.allLargeFileCount + " 个大文件",
+        mitigation: "拆分巨型文件，提取共享逻辑到独立模块，遵循单一职责原则",
+      });
+    }
+  }
+
+  if (risks.length === 0) {
+    return '<div class="h-section">' +
+      '<h2>🎲 风险矩阵 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Risk Matrix</span></h2>' +
+      '<div class="h-placeholder">✅ 未识别到显著风险 — 所有维度均处于健康状态</div>' +
+      '</div>';
+  }
+
+  // Risk level mapping
+  function riskLevel(prob, imp) {
+    if (imp === "critical" && prob === "high") return { level: "P0", label: "严重", color: "#ef4444", bg: "rgba(239,68,68,.12)" };
+    if (imp === "critical" || (imp === "high" && prob === "high")) return { level: "P1", label: "高", color: "#f97316", bg: "rgba(249,115,22,.12)" };
+    if (imp === "high" || (imp === "medium" && prob === "high")) return { level: "P2", label: "中", color: "#f59e0b", bg: "rgba(245,158,11,.12)" };
+    return { level: "P3", label: "低", color: "#3b82f6", bg: "rgba(59,130,246,.12)" };
+  }
+
+  // Sort by severity
+  var priorityOrder = { P0: 0, P1: 1, P2: 2, P3: 3 };
+  risks.sort(function(a, b) {
+    var la = riskLevel(a.probability, a.impact);
+    var lb = riskLevel(b.probability, b.impact);
+    return (priorityOrder[la.level] || 4) - (priorityOrder[lb.level] || 4);
+  });
+
+  var p0Count = 0, p1Count = 0, p2Count = 0, p3Count = 0;
+  var riskRows = risks.map(function(r) {
+    var rl = riskLevel(r.probability, r.impact);
+    if (rl.level === "P0") p0Count++;
+    else if (rl.level === "P1") p1Count++;
+    else if (rl.level === "P2") p2Count++;
+    else p3Count++;
+
+    var probLabel = { high: "高概率", medium: "中概率", low: "低概率" }[r.probability] || r.probability;
+    var impLabel = { critical: "严重", high: "高", medium: "中", low: "低" }[r.impact] || r.impact;
+
+    return '<div style="padding:14px;background:var(--bg1);border-radius:6px;border-left:3px solid ' + rl.color + ';margin-bottom:8px">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">' +
+      '<div style="display:flex;align-items:center;gap:8px">' +
+      '<span style="padding:3px 10px;border-radius:4px;font-size:.7rem;font-weight:700;background:' + rl.bg + ';color:' + rl.color + '">' + rl.level + ' ' + rl.label + '</span>' +
+      '<span style="font-weight:600;color:var(--yry-text)">' + r.label + '</span>' +
+      '<span style="font-size:.68rem;color:var(--yry-text3);padding:2px 6px;border-radius:3px;background:var(--bg2)">' + r.category + '</span>' +
+      '</div>' +
+      '<div style="display:flex;gap:8px;font-size:.68rem">' +
+      '<span style="color:var(--yry-text3)">概率: <b style="color:' + (r.probability === "high" ? "#ef4444" : r.probability === "medium" ? "#f59e0b" : "#3b82f6") + '">' + probLabel + '</b></span>' +
+      '<span style="color:var(--yry-text3)">影响: <b style="color:' + (r.impact === "critical" ? "#ef4444" : r.impact === "high" ? "#f97316" : "#f59e0b") + '">' + impLabel + '</b></span>' +
+      '</div>' +
+      '</div>' +
+      '<div style="font-size:.78rem;color:var(--yry-text2);margin-bottom:4px">' + r.detail + '</div>' +
+      '<div style="font-size:.74rem;color:#22c55e;padding:6px 8px;background:rgba(34,197,94,.06);border-radius:4px">💡 缓解措施: ' + r.mitigation + '</div>' +
+      '</div>';
+  }).join("");
+
+  var summaryBar = '<div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap">' +
+    (p0Count > 0 ? '<span style="padding:6px 14px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.2);border-radius:6px;font-size:.78rem;font-weight:600;color:#ef4444">🔴 P0 严重: ' + p0Count + '</span>' : '') +
+    (p1Count > 0 ? '<span style="padding:6px 14px;background:rgba(249,115,22,.12);border:1px solid rgba(249,115,22,.2);border-radius:6px;font-size:.78rem;font-weight:600;color:#f97316">🟠 P1 高: ' + p1Count + '</span>' : '') +
+    (p2Count > 0 ? '<span style="padding:6px 14px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.2);border-radius:6px;font-size:.78rem;font-weight:600;color:#f59e0b">🟡 P2 中: ' + p2Count + '</span>' : '') +
+    (p3Count > 0 ? '<span style="padding:6px 14px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.2);border-radius:6px;font-size:.78rem;font-weight:600;color:#3b82f6">🔵 P3 低: ' + p3Count + '</span>' : '') +
+    '</div>';
+
+  return '<div class="h-section">' +
+    '<h2>🎲 风险矩阵 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Probability × Impact · ' + risks.length + ' 项风险</span></h2>' +
+    summaryBar +
+    '<div style="padding:4px 0">' + riskRows + '</div>' +
+    '<div style="font-size:.68rem;color:var(--yry-text3);margin-top:8px">风险等级 = 概率 × 影响 · P0: 立即处理 · P1: 24h内 · P2: 本周 · P3: 持续监控</div>' +
+    '</div>';
+}
+
+/**
+ * Build an Improvement Roadmap with prioritized actions and estimated timelines.
+ *
+ * @param {object} hr - Health result
+ * @param {Array} recommendations - List of recommendation objects
+ * @returns {string} HTML
+ */
+export function buildImprovementRoadmap(hr, recommendations) {
+  if (!recommendations || recommendations.length === 0) {
+    return '<div class="h-section">' +
+      '<h2>🗺️ 改进路线图 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Improvement Roadmap</span></h2>' +
+      '<div class="h-placeholder">✅ 当前无改进项 — 所有维度健康</div>' +
+      '</div>';
+  }
+
+  // Categorize by timeline
+  var immediate = []; // 0-24h: P0 items
+  var shortTerm = [];  // 1-7 days: high priority
+  var midTerm = [];    // 1-4 weeks: medium priority
+  var longTerm = [];   // 1-3 months: low priority
+
+  for (var _i = 0; _i < recommendations.length; _i++) {
+    var r = recommendations[_i];
+    if (r.priority === "high") {
+      immediate.push(r);
+    } else if (r.priority === "medium") {
+      shortTerm.push(r);
+    } else {
+      midTerm.push(r);
+    }
+  }
+
+  // Add dimension-based long-term improvements
+  var scores = hr.scores || {};
+  var dimsForLongTerm = [];
+  for (var _a = 0, _b = Object.entries(scores); _a < _b.length; _a++) {
+    var _c = _b[_a], dim = _c[0], score = _c[1];
+    if (score >= 60 && score < 80 && DIM_FIX_GUIDANCE[dim]) {
+      dimsForLongTerm.push({
+        source: DIM_LABELS[dim] || dim,
+        text: DIM_FIX_GUIDANCE[dim].fix || "优化该维度评分",
+        priority: "low",
+      });
+    }
+  }
+  longTerm = longTerm.concat(dimsForLongTerm.slice(0, 3));
+
+  function buildPhase(label, icon, color, timeline, items) {
+    if (items.length === 0) return "";
+    var itemHtml = items.map(function(r) {
+      return '<div style="padding:10px 14px;background:rgba(15,23,42,.4);border-radius:6px;border:var(--yry-border);margin-bottom:6px">' +
+        '<div style="font-size:.82rem;font-weight:600;color:var(--yry-text)">' + (r.source || '') + '</div>' +
+        '<div style="font-size:.78rem;color:var(--yry-text2);margin-top:4px">' + (r.text || '') + '</div>' +
+        '</div>';
+    }).join("");
+
+    return '<div style="margin-bottom:16px">' +
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">' +
+      '<span style="padding:4px 12px;border-radius:6px;font-size:.78rem;font-weight:700;background:' + color.replace(')', ',.12)').replace('rgb', 'rgba') + ';color:' + color + '">' + icon + ' ' + label + '</span>' +
+      '<span style="font-size:.72rem;color:var(--yry-text3)">⏱️ ' + timeline + ' · ' + items.length + ' 项</span>' +
+      '</div>' +
+      itemHtml +
+      '</div>';
+  }
+
+  var phases = buildPhase("立即行动", "🔴", "#ef4444", "0–24 小时", immediate) +
+    buildPhase("短期计划", "🟠", "#f97316", "1–7 天", shortTerm) +
+    buildPhase("中期规划", "🟡", "#f59e0b", "1–4 周", midTerm) +
+    buildPhase("长期优化", "🔵", "#3b82f6", "1–3 月", longTerm);
+
+  // Calculate potential score improvement
+  var totalPotential = 0;
+  if (immediate.length > 0) totalPotential += Math.min(15, immediate.length * 5);
+  if (shortTerm.length > 0) totalPotential += Math.min(10, shortTerm.length * 3);
+  if (midTerm.length > 0) totalPotential += Math.min(5, midTerm.length * 2);
+
+  return '<div class="h-section">' +
+    '<h2>🗺️ 改进路线图 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">' + recommendations.length + ' 项改进 · 预计提升 ' + totalPotential + ' 分</span></h2>' +
+    (totalPotential > 0 ? '<div style="padding:10px;background:rgba(34,197,94,.06);border-radius:6px;border:1px solid rgba(34,197,94,.15);margin-bottom:12px;font-size:.78rem;color:var(--yry-text2)">📈 完成全部改进后，预计综合评分可达 <b style="color:#22c55e">' + Math.min(100, (hr.composite || 0) + totalPotential) + ' 分</b>（当前 ' + (hr.composite || 0) + ' 分）</div>' : '') +
+    phases +
+    '</div>';
+}
+
+/**
+ * Build a Key Metrics Dashboard with executive-level KPIs.
+ *
+ * @param {object} hr - Health result
+ * @param {object} prev - Previous health entry
+ * @param {object} healthTrend - Full health trend data
+ * @returns {string} HTML
+ */
+export function buildKeyMetricsDashboard(hr, prev, healthTrend) {
+  var scores = hr.scores || {};
+  var trendLen = healthTrend ? healthTrend.length : 0;
+
+  // KPI 1: System Availability (based on API + robots + config)
+  var availabilityScore = Math.round(
+    ((scores.api || 0) * 0.4 + (scores.robots || 0) * 0.3 + (scores.config || 0) * 0.3)
+  );
+
+  // KPI 2: Code Health Index (based on structure + deps + file_size)
+  var codeHealthScore = Math.round(
+    ((scores.file_size || 0) * 0.35 + (scores.dep_analysis || 0) * 0.35 + ((hr.structInfo && hr.structInfo.score) || 0) * 0.3)
+  );
+
+  // KPI 3: Security Posture (based on security + token)
+  var securityScore = Math.round(
+    ((scores.security || 0) * 0.5 + (scores.token || 0) * 0.5)
+  );
+
+  // KPI 4: Operational Maturity (based on reports + diagnostics + git + format)
+  var opsMaturity = Math.round(
+    ((scores.reports || 0) * 0.25 + (scores.diagnostics || 0) * 0.25 + (scores.git || 0) * 0.25 + (scores.format || 0) * 0.25)
+  );
+
+  // KPI 5: Engineering Maturity
+  var emDims = ["em_testing", "em_types", "em_linting", "em_cicd", "em_docs", "em_deps", "em_git"];
+  var emScores = emDims.map(function(d) { return scores[d]; }).filter(function(s) { return typeof s === "number"; });
+  var engMaturity = emScores.length > 0 ? Math.round(emScores.reduce(function(a, b) { return a + b; }, 0) / emScores.length) : null;
+
+  function kpiCard(label, value, icon, color, subtitle) {
+    if (value === null || value === undefined) return "";
+    var c = color || (value >= 80 ? "#22c55e" : value >= 60 ? "#f59e0b" : "#ef4444");
+    var grade = value >= 90 ? "A" : value >= 75 ? "B" : value >= 60 ? "C" : "D";
+    return '<div style="text-align:center;padding:14px 12px;background:var(--bg1);border-radius:8px;border:1px solid var(--border2);flex:1;min-width:110px">' +
+      '<div style="font-size:1.4rem;margin-bottom:4px">' + icon + '</div>' +
+      '<div style="font-size:1.8rem;font-weight:700;color:' + c + '">' + value + '</div>' +
+      '<div style="font-size:.68rem;color:var(--yry-text3);margin-top:2px">' + label + '</div>' +
+      '<div style="font-size:.65rem;color:var(--yry-text3);margin-top:2px">' + grade + ' 级' + (subtitle ? ' · ' + subtitle : '') + '</div>' +
+      '</div>';
+  }
+
+  // Trend indicators
+  var trendIndicators = "";
+  if (prev && prev.scores) {
+    var prevAvail = Math.round(((prev.scores.api || 0) * 0.4 + (prev.scores.robots || 0) * 0.3 + (prev.scores.config || 0) * 0.3));
+    var prevCode = Math.round(((prev.scores.file_size || 0) * 0.35 + (prev.scores.dep_analysis || 0) * 0.35 + ((prev.structScore) || 0) * 0.3));
+    var prevSec = Math.round(((prev.scores.security || 0) * 0.5 + (prev.scores.token || 0) * 0.5));
+    var prevOps = Math.round(((prev.scores.reports || 0) * 0.25 + (prev.scores.diagnostics || 0) * 0.25 + (prev.scores.git || 0) * 0.25 + (prev.scores.format || 0) * 0.25));
+
+    var changes = [
+      { label: "可用性", curr: availabilityScore, prev: prevAvail },
+      { label: "代码健康", curr: codeHealthScore, prev: prevCode },
+      { label: "安全态势", curr: securityScore, prev: prevSec },
+      { label: "运维成熟度", curr: opsMaturity, prev: prevOps },
+    ];
+
+    trendIndicators = '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:.68rem">' +
+      changes.map(function(ch) {
+        var d = ch.curr - ch.prev;
+        var icon = d > 2 ? "↑" : d < -2 ? "↓" : "→";
+        var color = d > 2 ? "#22c55e" : d < -2 ? "#ef4444" : "var(--yry-text3)";
+        return '<span style="color:' + color + '">' + ch.label + ' ' + icon + Math.abs(d) + '</span>';
+      }).join(' · ') +
+      '</div>';
+  }
+
+  return '<div class="h-section">' +
+    '<h2>📊 关键绩效指标 (KPI) <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Executive Dashboard</span></h2>' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">' +
+    kpiCard("系统可用性", availabilityScore, "🟢", null, "API+机器人+配置") +
+    kpiCard("代码健康度", codeHealthScore, "📐", null, "结构+依赖+体积") +
+    kpiCard("安全态势", securityScore, "🛡️", null, "Token+扫描") +
+    kpiCard("运维成熟度", opsMaturity, "⚙️", null, "报告+诊断+Git") +
+    (engMaturity !== null ? kpiCard("工程成熟度", engMaturity, "🏗️", null, "7项工程实践") : "") +
+    '</div>' +
+    trendIndicators +
+    '<div style="font-size:.65rem;color:var(--yry-text3);margin-top:8px">KPI 基于加权维度聚合计算 · 趋势对比上周期 · A≥90 B≥75 C≥60 D&lt;60</div>' +
+    '</div>';
+}
+
 // ── Correlation matrix visualization ────────────────────────────
 
 /**
@@ -1331,5 +1733,279 @@ export function buildScoreTraceabilityPanel(scores) {
     '<div style="margin-bottom:8px;font-size:.7rem;color:var(--yry-text3)">点击展开查看每个维度的评分公式、数据源和检查项详情</div>' +
     rows +
     '<div style="margin-top:8px;font-size:.62rem;color:var(--yry-text3);text-align:center">评分溯源按得分升序排列 · 所有评分均可通过数据源复现验证</div>' +
+    '</div>';
+}
+
+/**
+ * Build a forecast and projection panel showing predicted health trajectory.
+ * Uses enhanced trend data for 7-day and 30-day projections with confidence intervals.
+ *
+ * @param {object} enhancedTrend - From buildEnhancedTrendAnalysis()
+ * @param {object} hr - Current health result
+ * @returns {string} HTML
+ */
+export function buildForecastPanel(enhancedTrend, hr) {
+  if (!enhancedTrend || !enhancedTrend.forecast) return "";
+
+  var forecast = enhancedTrend.forecast;
+  var trend = enhancedTrend.trend;
+  var velocity = enhancedTrend.velocity;
+  var distribution = enhancedTrend.distribution;
+
+  var forecastColor = trend.direction === "rising" ? "#22c55e"
+    : trend.direction === "falling" ? "#ef4444" : "#f59e0b";
+  var forecastIcon = trend.direction === "rising" ? "📈"
+    : trend.direction === "falling" ? "📉" : "📊";
+
+  // 7-day projection
+  var day7Value = forecast.forecast || hr.composite;
+  var day7Range = forecast.range || [day7Value - 5, day7Value + 5];
+  var day7Change = day7Value - hr.composite;
+
+  // 30-day projection (extrapolate)
+  var day30Value = Math.round(day7Value + (trend.slopePerWeek || 0) * 3);
+  day30Value = Math.max(0, Math.min(100, day30Value));
+  var day30Change = day30Value - hr.composite;
+
+  // Confidence assessment
+  var confidenceLabel = trend.confidence === "high" ? "高置信度"
+    : trend.confidence === "medium" ? "中等置信度" : "低置信度";
+  var confidenceColor = trend.confidence === "high" ? "#22c55e"
+    : trend.confidence === "medium" ? "#f59e0b" : "#ef4444";
+  var confidenceNote = trend.confidence === "high"
+    ? "数据充足，预测可靠，可作为决策依据"
+    : trend.confidence === "medium"
+    ? "数据量适中，预测方向可信，具体数值仅供参考"
+    : "数据不足，预测仅供参考，建议积累更多数据后重新评估";
+
+  // Risk assessment for projection
+  var risks = [];
+  if (trend.direction === "falling") {
+    risks.push("评分持续下降，若不干预可能触发更多诊断告警");
+  }
+  if (velocity && velocity.accelerating && velocity.recent < 0) {
+    risks.push("下降趋势正在加速，需立即采取纠正措施");
+  }
+  if (distribution && distribution.stddev > 10) {
+    risks.push("评分波动较大(σ=" + distribution.stddev + ")，预测不确定性较高");
+  }
+  if (trend.r2 < 0.5) {
+    risks.push("趋势拟合度低(R²=" + trend.r2 + ")，评分变化缺乏明确方向性");
+  }
+
+  var changeColor7 = day7Change > 0 ? "#22c55e" : day7Change < 0 ? "#ef4444" : "var(--yry-text2)";
+  var changeColor30 = day30Change > 0 ? "#22c55e" : day30Change < 0 ? "#ef4444" : "var(--yry-text2)";
+
+  return '<div class="h-section">' +
+    '<h2>🔮 健康预测与投影 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Forecast & Projection</span></h2>' +
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px">' +
+    '<div style="text-align:center;padding:16px;background:var(--bg1);border-radius:8px;border:1px solid var(--border2)">' +
+    '<div style="font-size:2rem;margin-bottom:4px">' + forecastIcon + '</div>' +
+    '<div style="font-size:.7rem;color:var(--yry-text3);margin-bottom:4px">趋势方向</div>' +
+    '<div style="font-size:1rem;font-weight:700;color:' + forecastColor + '">' +
+    (trend.direction === "rising" ? "上升" : trend.direction === "falling" ? "下降" : "稳定") +
+    ' (' + (trend.slopePerWeek > 0 ? "+" : "") + trend.slopePerWeek + '/周)</div>' +
+    '</div>' +
+    '<div style="text-align:center;padding:16px;background:var(--bg1);border-radius:8px;border:1px solid var(--border2)">' +
+    '<div style="font-size:.7rem;color:var(--yry-text3);margin-bottom:4px">7 天预测</div>' +
+    '<div style="font-size:1.6rem;font-weight:700;color:' + forecastColor + '">' + day7Value + ' 分</div>' +
+    '<div style="font-size:.72rem;color:' + changeColor7 + '">' + (day7Change > 0 ? "+" : "") + day7Change + ' 分</div>' +
+    '<div style="font-size:.64rem;color:var(--yry-text3);margin-top:4px">区间: ' + day7Range[0] + '–' + day7Range[1] + ' 分</div>' +
+    '</div>' +
+    '<div style="text-align:center;padding:16px;background:var(--bg1);border-radius:8px;border:1px solid var(--border2)">' +
+    '<div style="font-size:.7rem;color:var(--yry-text3);margin-bottom:4px">30 天投影</div>' +
+    '<div style="font-size:1.6rem;font-weight:700;color:' + (day30Change > 0 ? "#22c55e" : "#ef4444") + '">' + day30Value + ' 分</div>' +
+    '<div style="font-size:.72rem;color:' + changeColor30 + '">' + (day30Change > 0 ? "+" : "") + day30Change + ' 分</div>' +
+    '<div style="font-size:.64rem;color:var(--yry-text3);margin-top:4px">基于当前趋势外推</div>' +
+    '</div>' +
+    '<div style="text-align:center;padding:16px;background:var(--bg1);border-radius:8px;border:1px solid var(--border2)">' +
+    '<div style="font-size:.7rem;color:var(--yry-text3);margin-bottom:4px">预测置信度</div>' +
+    '<div style="font-size:1.1rem;font-weight:700;color:' + confidenceColor + '">' + confidenceLabel + '</div>' +
+    '<div style="font-size:.68rem;color:var(--yry-text3);margin-top:4px">R² = ' + trend.r2 + '</div>' +
+    '<div style="font-size:.64rem;color:var(--yry-text3);margin-top:2px">' + confidenceNote + '</div>' +
+    '</div>' +
+    '</div>' +
+    (risks.length > 0 ? '<div style="padding:12px;background:rgba(245,158,11,.06);border-radius:8px;border:1px solid rgba(245,158,11,.15);margin-bottom:8px">' +
+    '<div style="font-size:.78rem;font-weight:600;color:#f59e0b;margin-bottom:6px">⚠️ 预测风险提示</div>' +
+    risks.map(function(r) { return '<div style="font-size:.74rem;color:var(--yry-text2);margin:4px 0">• ' + r + '</div>'; }).join("") +
+    '</div>' : '') +
+    '<div style="font-size:.68rem;color:var(--yry-text3);text-align:center">预测基于历史健康趋势数据的线性回归模型 · 30天投影 = 7天预测 + 趋势外推 · 实际结果受代码变更、配置调整等因素影响</div>' +
+    '</div>';
+}
+
+/**
+ * Build a Technical Debt Quantification section.
+ * Estimates the "cost" of current issues in terms of risk, effort, and score impact.
+ * Translates dimension scores into concrete remediation estimates.
+ *
+ * @param {object} hr - Health result
+ * @returns {string} HTML
+ */
+export function buildTechnicalDebtAnalysis(hr) {
+  var scores = hr.scores || {};
+  var structInfo = hr.structInfo || {};
+  var depInfo = hr.depInfo || {};
+
+  // Define debt items with remediation estimates
+  var debtItems = [];
+
+  // CI/CD missing
+  if ((scores.em_cicd || 0) < 30) {
+    debtItems.push({
+      category: "工程基础设施",
+      issue: "CI/CD 管线缺失",
+      severity: "high",
+      impact: "无自动化测试门禁和部署流水线，代码质量无法保证",
+      effort: "2-4 小时",
+      remediation: "在 .github/workflows/ 中添加 test.yml 和 deploy.yml，配置 vitest 自动运行和 lint 检查",
+      scoreGain: "+60-80 分 (em_cicd)",
+    });
+  }
+
+  // Bot configuration missing
+  if ((scores.robots || 0) < 30) {
+    debtItems.push({
+      category: "运维配置",
+      issue: "通知机器人未配置",
+      severity: "high",
+      impact: "健康告警、诊断触发、管线异常等无法推送通知，影响问题发现和响应速度",
+      effort: "30 分钟",
+      remediation: "在企业微信后台创建 Webhook 机器人，将 webhook_url 配置到 .claude/skills/rui-bot/config.json",
+      scoreGain: "+80-100 分 (robots)",
+    });
+  }
+
+  // Config health
+  if ((scores.config || 0) < 40) {
+    debtItems.push({
+      category: "运维配置",
+      issue: "配置文件不完整",
+      severity: "medium",
+      impact: "缺少必要的技能配置文件，部分功能可能无法正常启用",
+      effort: "1-2 小时",
+      remediation: "运行 rui-init 补全 .claude/skills/ 下的配置文件，确保每个技能有完整的 config.json",
+      scoreGain: "+40-60 分 (config)",
+    });
+  }
+
+  // Git discipline
+  if ((scores.git || 0) < 60) {
+    var uncommitted = hr.gitInfo ? hr.gitInfo.uncommitted : "?";
+    debtItems.push({
+      category: "开发规范",
+      issue: "Git 仓库状态不洁 (" + uncommitted + " 个未提交文件)",
+      severity: "medium",
+      impact: "未提交文件影响代码可追溯性和分支隔离策略，增加协作冲突风险",
+      effort: "15-30 分钟",
+      remediation: "审查未提交文件，将源码文件提交到对应功能分支，将临时文件添加到 .gitignore",
+      scoreGain: "+40-60 分 (git)",
+    });
+  }
+
+  // Large files
+  if (structInfo.critFileCount > 0 || structInfo.allLargeFileCount > 3) {
+    debtItems.push({
+      category: "代码结构",
+      issue: "大文件问题 (" + (structInfo.critFileCount || 0) + " 个巨型 + " + ((structInfo.allLargeFileCount || 0) - (structInfo.critFileCount || 0)) + " 个大型)",
+      severity: structInfo.critFileCount > 0 ? "high" : "medium",
+      impact: "大文件降低代码可读性和可维护性，增加代码审查难度和合并冲突概率",
+      effort: "4-8 小时",
+      remediation: "将巨型文件(>1000行)按职责拆分为多个模块，提取共享逻辑到 lib/，遵循单一职责原则",
+      scoreGain: "+10-20 分 (file_size)",
+    });
+  }
+
+  // Architecture compliance
+  if (hr.archResult && hr.archResult.archFailedDims && hr.archResult.archFailedDims.length > 0) {
+    var failedDims = hr.archResult.archFailedDims;
+    debtItems.push({
+      category: "架构合规",
+      issue: "架构合规失败 (" + failedDims.join("、") + ")",
+      severity: "medium",
+      impact: "架构合规是项目不可妥协底线，失败维度需要在下一迭代中修复",
+      effort: "2-4 小时",
+      remediation: "运行 node lib/arch-check.mjs --fix 自动修复可修复项，手动处理内核体积和 YAGNI 合规问题",
+      scoreGain: "+5-12 分 (综合)",
+    });
+  }
+
+  // Dependency issues
+  if (depInfo.cycles && depInfo.cycles.length > 0) {
+    debtItems.push({
+      category: "代码结构",
+      issue: "循环依赖 (" + depInfo.cycles.length + " 个)",
+      severity: "high",
+      impact: "循环依赖破坏模块边界，导致代码耦合、测试困难和重构风险",
+      effort: "2-6 小时",
+      remediation: "提取共享接口或抽象层打破循环，将双向依赖改为单向依赖",
+      scoreGain: "+10-20 分 (dep_analysis)",
+    });
+  }
+
+  if (debtItems.length === 0) {
+    return '<div class="h-section">' +
+      '<h2>🏗️ 技术债务分析 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Technical Debt</span></h2>' +
+      '<div class="h-placeholder">✅ 未检测到显著技术债务 — 所有维度均处于健康状态</div>' +
+      '</div>';
+  }
+
+  // Calculate total debt
+  var highCount = debtItems.filter(function(d) { return d.severity === "high"; }).length;
+  var mediumCount = debtItems.filter(function(d) { return d.severity === "medium"; }).length;
+  var totalEffort = debtItems.reduce(function(s, d) {
+    var match = d.effort.match(/(\d+)-(\d+)/);
+    return s + (match ? (parseInt(match[1]) + parseInt(match[2])) / 2 : 2);
+  }, 0);
+
+  var debtRows = debtItems.map(function(d) {
+    var sevColor = d.severity === "high" ? "#ef4444" : d.severity === "medium" ? "#f59e0b" : "#3b82f6";
+    var sevBg = d.severity === "high" ? "rgba(239,68,68,.08)" : d.severity === "medium" ? "rgba(245,158,11,.08)" : "rgba(59,130,246,.08)";
+    return '<div style="padding:14px;background:var(--bg1);border-radius:8px;border-left:3px solid ' + sevColor + ';margin-bottom:10px">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">' +
+      '<div style="display:flex;align-items:center;gap:8px">' +
+      '<span style="padding:2px 8px;border-radius:4px;font-size:.68rem;font-weight:700;background:' + sevBg + ';color:' + sevColor + '">' + (d.severity === "high" ? "严重" : d.severity === "medium" ? "中等" : "轻微") + '</span>' +
+      '<span style="font-weight:600;color:var(--yry-text)">' + d.issue + '</span>' +
+      '<span style="font-size:.68rem;color:var(--yry-text3);padding:2px 6px;background:var(--bg2);border-radius:4px">' + d.category + '</span>' +
+      '</div>' +
+      '<span style="font-size:.72rem;color:var(--yry-text3)">⏱️ ' + d.effort + '</span>' +
+      '</div>' +
+      '<div style="font-size:.78rem;color:var(--yry-text2);margin-bottom:6px">📋 ' + d.impact + '</div>' +
+      '<div style="font-size:.76rem;color:#22c55e;padding:6px 10px;background:rgba(34,197,94,.06);border-radius:4px;margin-bottom:4px">🔧 <b>修复方案：</b>' + d.remediation + '</div>' +
+      '<div style="font-size:.72rem;color:var(--yry-accent)">📈 预计提升：' + d.scoreGain + '</div>' +
+      '</div>';
+  }).join("");
+
+  var totalPotentialGain = debtItems.reduce(function(s, d) {
+    var match = d.scoreGain.match(/\+(\d+)-(\d+)/);
+    return s + (match ? (parseInt(match[1]) + parseInt(match[2])) / 2 : 10);
+  }, 0);
+
+  return '<div class="h-section">' +
+    '<h2>🏗️ 技术债务量化 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Technical Debt Quantification</span></h2>' +
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px">' +
+    '<div style="text-align:center;padding:14px;background:rgba(239,68,68,.06);border-radius:8px;border:1px solid rgba(239,68,68,.15)">' +
+    '<div style="font-size:1.8rem;font-weight:700;color:#ef4444">' + debtItems.length + '</div>' +
+    '<div style="font-size:.7rem;color:var(--yry-text3)">债务项</div>' +
+    '</div>' +
+    '<div style="text-align:center;padding:14px;background:rgba(239,68,68,.06);border-radius:8px;border:1px solid rgba(239,68,68,.15)">' +
+    '<div style="font-size:1.8rem;font-weight:700;color:#ef4444">' + highCount + '</div>' +
+    '<div style="font-size:.7rem;color:var(--yry-text3)">严重项</div>' +
+    '</div>' +
+    '<div style="text-align:center;padding:14px;background:rgba(245,158,11,.06);border-radius:8px;border:1px solid rgba(245,158,11,.15)">' +
+    '<div style="font-size:1.8rem;font-weight:700;color:#f59e0b">' + mediumCount + '</div>' +
+    '<div style="font-size:.7rem;color:var(--yry-text3)">中等项</div>' +
+    '</div>' +
+    '<div style="text-align:center;padding:14px;background:rgba(59,130,246,.06);border-radius:8px;border:1px solid rgba(59,130,246,.15)">' +
+    '<div style="font-size:1.8rem;font-weight:700;color:#3b82f6">~' + Math.round(totalEffort) + 'h</div>' +
+    '<div style="font-size:.7rem;color:var(--yry-text3)">预计工时</div>' +
+    '</div>' +
+    '<div style="text-align:center;padding:14px;background:rgba(34,197,94,.06);border-radius:8px;border:1px solid rgba(34,197,94,.15)">' +
+    '<div style="font-size:1.8rem;font-weight:700;color:#22c55e">+~' + Math.round(totalPotentialGain) + '</div>' +
+    '<div style="font-size:.7rem;color:var(--yry-text3)">预计评分提升</div>' +
+    '</div>' +
+    '</div>' +
+    '<div style="margin-bottom:8px;font-size:.78rem;color:var(--yry-text2);padding:10px;background:rgba(255,193,7,.04);border-radius:6px">📐 技术债务 = 当前评分与目标评分之间的差距 × 修复难度系数。以上估算基于行业标准修复速度和 YrY 项目实际代码结构。</div>' +
+    debtRows +
+    '<div style="font-size:.68rem;color:var(--yry-text3);text-align:center;margin-top:8px">工时估算基于熟练开发者单人操作 · 实际时间可能因代码复杂度、依赖关系和测试需求而有所不同</div>' +
     '</div>';
 }

@@ -12,46 +12,69 @@
 <link rel="stylesheet" href="index.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <style>
-  body { background: var(--yry-bg, #0e0f1a); color: var(--yry-text, #f5f5f5); padding: 32px 24px; max-width: 600px; margin: 0 auto; font-family: var(--yry-font-sans); }
-  h1 { font-size: 1.1rem; margin: 0 0 4px; }
-  .demo-hint { font-size: .74rem; color: var(--yry-text3, #888); margin: 0 0 20px; }
+  body { background: var(--yry-bg, #0e0f1a); color: var(--yry-text, #f5f5f5); padding: 0 24px; max-width: 720px; margin: 0 auto; font-family: var(--yry-font-sans); }
+  h1 { font-size: 1.1rem; margin: 24px 0 4px; }
+  .demo-hint { font-size: .74rem; color: var(--yry-text3, #888); margin: 0 0 8px; }
   .demo-section { margin: 16px 0; padding: 16px; background: rgba(255,255,255,.03); border-radius: 8px; }
   .demo-section h3 { font-size: .78rem; margin: 0 0 10px; color: var(--yry-text2); }
+  .scroll-filler { height: 60vh; padding: 20px 16px; background: rgba(255,255,255,.02); border-radius: 8px; color: var(--yry-text3); font-size: .78rem; line-height: 1.7; }
+  .scroll-filler h4 { color: var(--yry-text2); font-size: .82rem; margin: 0 0 8px; }
 </style>
 </head>
 <body>
 <h1>YryProgressBar</h1>
-<p class="demo-hint">进度条组件 — done / total / label</p>
+<p class="demo-hint">进度条组件 — done / total · 吸顶 + 玻璃质感 + 扫光动画 (顶部仅展示进度条本体)</p>
 
-<div class="demo-section">
-  <h3>Demo 1 — 3/8 步骤</h3>
-  <div id="demo-1"></div>
+<!-- Demo 1 — 实际吸顶进度条:滚动时吸附视口顶部 -->
+<yry-progress-bar id="pb-1" done="3" total="8"></yry-progress-bar>
+
+<div class="scroll-filler">
+  <h4>↓ 向下滚动观察吸顶</h4>
+  当页面滚动时,顶部的进度条会吸附在视口顶部,持续展示当前进度。
+  玻璃磨砂背景 + 青紫渐变填充 + 持续扫光,既不遮挡正文,又能让用户随时看到进度状态。
 </div>
 
 <div class="demo-section">
-  <h3>Demo 2 — 50% 进度</h3>
+  <h3>Demo 2 — 5/10 构建进度 (50%)</h3>
   <div id="demo-2"></div>
+</div>
+
+<div class="scroll-filler">
+  <h4>↓ 继续滚动 — 第二个进度条将吸顶</h4>
+  多个 <code>&lt;yry-progress-bar&gt;</code> 可在同一页面共存,各自在所属位置吸顶。
+  适合多阶段任务面板(如:总体 / 阶段 / 子任务)分层展示。
+</div>
+
+<div class="demo-section">
+  <h3>Demo 3 — 10/10 完成态</h3>
+  <div id="demo-3"></div>
 </div>
 
 <!-- ════════════════ TEMPLATE SOURCE ════════════════ -->
 <script type="text/x-template" id="yry-progress-bar-tpl">
-  <div class="pb-wrap">
-    <div class="pb-label">
-      <span>{{ label }}</span>
-      <span>{{ done }}/{{ total }} 步骤完成</span>
-    </div>
-    <div class="pb-bar">
-      <div class="pb-fill" :style="{ width: pct + '%' }"></div>
+  <div class="pb-wrap"
+       role="progressbar"
+       :aria-label="label || '进度'"
+       :aria-valuenow="pct" aria-valuemin="0" aria-valuemax="100">
+    <div class="pb-track">
+      <div class="pb-fill"
+           :class="{ 'is-done': pct >= 100, 'is-empty': pct <= 0 }"
+           :style="{ width: pct + '%' }">
+        <div class="pb-shine"></div>
+      </div>
     </div>
   </div>
 </script>
 
-<script src="index.js"></script>
+<script src="../shared/vue-ce-loader.js"></script>
+  <script src="index.js"></script>
 <script>
 function mountAll() {
   if (!window.YryProgressBar) return;
-  Vue.createApp(window.YryProgressBar, { done: 3, total: 8, label: '总体进度' }).mount('#demo-1');
+  // Demo 1 已通过 <yry-progress-bar> 自定义元素挂载
+  // Demo 2 / Demo 3 通过 createApp 演示两种用法并存
   Vue.createApp(window.YryProgressBar, { done: 5, total: 10, label: '构建进度' }).mount('#demo-2');
+  Vue.createApp(window.YryProgressBar, { done: 10, total: 10, label: '发布完成' }).mount('#demo-3');
 }
 if (window.YryProgressBar) mountAll();
 else document.addEventListener('yry-progress-bar-ready', mountAll, { once: true });

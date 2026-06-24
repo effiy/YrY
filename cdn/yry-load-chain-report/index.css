@@ -1,0 +1,239 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryLoadChainReport · 加载链报告组件 样式
+   适用: CDN 加载链稳定性分析 · 五步链路 · 三维评估
+
+   依赖 design tokens (来自 cdn/theme/index.css):
+     --yry-border / --yry-text2 / --yry-text3 / --yry-pass / --yry-warn / --yry-fail
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Load chain flow */
+.lcr-chain-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 20px 0;
+}
+
+.lcr-chain-step {
+  padding: 14px 20px;
+  border-radius: 10px;
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  background: rgba(15,23,42,.6);
+  text-align: center;
+  min-width: 100px;
+  transition: transform .15s;
+}
+
+.lcr-chain-step:hover { transform: translateY(-2px); }
+
+.lcr-chain-step .lcr-step-icon {
+  font-size: 1.3rem;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.lcr-chain-step .lcr-step-name {
+  font-size: .72rem;
+  font-weight: 600;
+}
+
+.lcr-chain-step .lcr-step-time {
+  font-size: .6rem;
+  color: var(--yry-text3, #888);
+  margin-top: 2px;
+}
+
+.lcr-chain-step .lcr-step-status {
+  font-size: .58rem;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+.lcr-chain-arrow {
+  color: var(--yry-text3, #888);
+  font-size: 1.2rem;
+}
+
+/* Step detail card */
+.lcr-step-detail {
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  background: rgba(15,23,42,.4);
+}
+
+.lcr-step-detail.A { border-left: 3px solid var(--yry-pass, #22c55e); }
+.lcr-step-detail.B { border-left: 3px solid #f59e0b; }
+.lcr-step-detail.C { border-left: 3px solid var(--yry-fail, #ef4444); }
+
+.lcr-step-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.lcr-step-name { font-size: .84rem; font-weight: 600; }
+.lcr-step-score {
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+.lcr-step-meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: .68rem;
+  color: var(--yry-text3, #888);
+  margin-top: 8px;
+}
+
+/* Reliability bar */
+.lcr-rel-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.lcr-rel-bar-label {
+  font-size: .7rem;
+  min-width: 90px;
+  color: var(--yry-text2, #d4d4d4);
+}
+
+.lcr-rel-bar-track {
+  flex: 1;
+  height: 10px;
+  border-radius: 5px;
+  background: rgba(255,255,255,.06);
+  overflow: hidden;
+}
+
+.lcr-rel-bar-fill {
+  height: 100%;
+  border-radius: 5px;
+  transition: width .4s;
+}
+
+.lcr-rel-bar-val {
+  font-size: .78rem;
+  font-weight: 700;
+  min-width: 44px;
+  text-align: right;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* Fallback strategy grid */
+.lcr-fb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+}
+
+.lcr-fb-card {
+  padding: 14px 18px;
+  border-radius: 8px;
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  background: rgba(15,23,42,.4);
+}
+
+.lcr-fb-card.full { border-left: 3px solid var(--yry-pass, #22c55e); }
+.lcr-fb-card.partial { border-left: 3px solid #f59e0b; }
+.lcr-fb-card.missing { border-left: 3px solid var(--yry-fail, #ef4444); }
+
+.lcr-fb-name {
+  font-size: .8rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.lcr-fb-desc {
+  font-size: .68rem;
+  color: var(--yry-text3, #888);
+  line-height: 1.5;
+}
+
+/* Performance table */
+.lcr-perf-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .74rem;
+}
+
+.lcr-perf-table th {
+  text-align: left;
+  padding: 10px 14px;
+  background: rgba(15,23,42,.4);
+  color: var(--yry-text2, #d4d4d4);
+  font-weight: 600;
+}
+
+.lcr-perf-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+}
+
+.lcr-empty { color: var(--yry-text3, #888); text-align: center; padding: 40px; }
+
+.lcr-diag-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  margin-bottom: 6px;
+  background: rgba(15,23,42,.4);
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.06);
+}
+
+.lcr-diag-icon { font-size: 1.2rem; }
+
+.lcr-diag-body { flex: 1; min-width: 0; }
+.lcr-diag-name { font-weight: 600; font-size: .84rem; }
+.lcr-diag-desc { font-size: .72rem; color: var(--yry-text3, #888); }
+
+.lcr-diag-score {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.lcr-diag-threshold {
+  font-size: .64rem;
+}
+
+.lcr-hl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.lcr-hl-card {
+  text-align: center;
+  padding: 14px;
+  background: rgba(15,23,42,.4);
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.06);
+}
+
+.lcr-hl-label {
+  font-size: .7rem;
+  color: var(--yry-text3, #888);
+  margin-bottom: 4px;
+}
+
+.lcr-hl-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .lcr-chain-flow { flex-direction: column; }
+  .lcr-chain-arrow { transform: rotate(90deg); }
+  .lcr-fb-grid { grid-template-columns: 1fr; }
+}

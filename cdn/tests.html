@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<!--
+  YrY CDN · 测试聚合页 (tests.html)
+  全局聚合：vitest 测试结果 · 每卡片测试覆盖 · TQI 测试质量指数
+  数据源: tests-result.json (由 `node_modules/.bin/vitest run --reporter=json --outputFile=tests-result.json` 生成)
+  消费者: cdn/index.html 顶部导航
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YrY CDN · 测试聚合</title>
+  <link rel="prev" href="graph.html" title="图谱聚合">
+  <link rel="next" href="source.html" title="源码聚合">
+  <meta name="description" content="YrY CDN 测试聚合 — vitest 结果中心 · 408 用例 · 163 套件 · 58 文件 · 0 失败 · TQI 三维评估（覆盖率 50%·通过率 30%·充分度 20%）· 套件展开 · 失败定位">
+  <link rel="stylesheet" href="shared/index.css">
+  <link rel="stylesheet" href="theme/index.css">
+  <style>
+    body { padding: 24px 20px 60px; max-width: 1200px; margin: 0 auto; line-height: 1.6; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #22d3ee); margin: 0 0 4px; }
+    .sub { color: var(--yry-text3, #6b7280); font-size: .78rem; margin: 0 0 16px; }
+    h2 { font-size: 1.05rem; color: var(--yry-text2, #a9b1d6); margin: 28px 0 12px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,.06); }
+    .links { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0; }
+    .links a { color: var(--yry-accent, #22d3ee); text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; font-size: .76rem; }
+    .links a:hover { border-color: var(--yry-accent); background: rgba(34,211,238,.08); }
+    .links a.active { background: rgba(34,211,238,.12); border-color: var(--yry-accent); }
+
+    .grid4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 12px 0 20px; }
+    .kpi { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 14px 18px; }
+    .kpi .v { font-size: 1.6rem; color: var(--yry-accent, #22d3ee); font-weight: 700; line-height: 1.1; }
+    .kpi .l { font-size: .72rem; color: var(--yry-text3, #6b7280); margin-top: 2px; }
+    .kpi.fail .v { color: #f87171; }
+    .kpi.pass .v { color: #34d399; }
+    .kpi.grade { background: linear-gradient(135deg, rgba(34,211,238,.1), rgba(167,139,250,.1)); border-color: rgba(34,211,238,.3); }
+    .kpi.grade .v { font-size: 1.4rem; }
+
+    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; align-items: center; }
+    .toolbar input { flex: 1; min-width: 200px; background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.1); color: var(--yry-text2, #a9b1d6); border-radius: 6px; padding: 6px 10px; font-size: .78rem; }
+    .toolbar select { background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.1); color: var(--yry-text2, #a9b1d6); border-radius: 6px; padding: 6px 10px; font-size: .78rem; }
+    .toolbar span { font-size: .74rem; color: var(--yry-text3, #6b7280); }
+
+    .suite { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 8px; margin: 8px 0; overflow: hidden; }
+    .suite-head { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: rgba(30,41,59,.4); cursor: pointer; }
+    .suite-head:hover { background: rgba(30,41,59,.6); }
+    .suite-head .name { color: var(--yry-accent, #22d3ee); font-weight: 600; font-size: .8rem; text-decoration: none; flex: 1; }
+    .suite-head .name:hover { text-decoration: underline; }
+    .suite-head .badge { font-size: .64rem; padding: 2px 8px; border-radius: 3px; font-weight: 600; }
+    .b-pass { background: rgba(52,211,153,.15); color: #34d399; }
+    .b-fail { background: rgba(248,113,113,.15); color: #f87171; }
+    .suite-body { display: none; padding: 8px 14px; font-size: .74rem; }
+    .suite.open .suite-body { display: block; }
+    .test { padding: 4px 0; color: var(--yry-text3, #6b7280); border-bottom: 1px solid rgba(255,255,255,.03); }
+    .test:last-child { border-bottom: none; }
+    .test .icon { display: inline-block; width: 14px; }
+    .test.pass .icon { color: #34d399; }
+    .test.fail .icon { color: #f87171; }
+    .test .name { color: var(--yry-text2, #a9b1d6); }
+    .test .dur { float: right; color: var(--yry-text3, #6b7280); font-size: .68rem; }
+
+    .tqi-box { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 16px 20px; margin: 12px 0 20px; font-size: .76rem; color: var(--yry-text3, #6b7280); line-height: 1.8; }
+    .tqi-box b { color: var(--yry-accent, #22d3ee); }
+    .tqi-bar { display: flex; gap: 4px; margin-top: 8px; }
+    .tqi-bar .seg { height: 8px; border-radius: 3px; }
+
+    .err { color: #f87171; font-size: .78rem; }
+    .meta-bar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; background: rgba(15,23,42,.55); border: 1px solid rgba(34,211,238,.2); border-radius: 8px; padding: 8px 14px; margin: 10px 0 16px; font-size: .74rem; color: var(--yry-text3, #6b7280); }
+    .meta-bar code { background: rgba(0,0,0,.3); padding: 1px 6px; border-radius: 3px; color: var(--yry-accent, #22d3ee); font-size: .72rem; }
+    .meta-bar .sep { color: rgba(255,255,255,.15); }
+    .meta-bar b { color: var(--yry-accent, #22d3ee); font-weight: 600; }
+    .meta-bar .refresh { margin-left: auto; background: rgba(34,211,238,.1); border: 1px solid rgba(34,211,238,.3); color: var(--yry-accent, #22d3ee); padding: 2px 10px; border-radius: 4px; cursor: pointer; font-size: .7rem; transition: all .15s; }
+    .meta-bar .refresh:hover { background: rgba(34,211,238,.2); }
+  </style>
+</head>
+<body>
+  <h1>🧪 测试聚合 · vitest 结果中心</h1>
+  <p class="sub">聚合 <code>cdn/tests/</code> 下测试文件 · vitest 执行结果 · 三维 TQI 评估（覆盖率·通过率·充分度）。由 <code>npm test -- --reporter=json --outputFile=tests-result.json</code> 生成数据。</p>
+
+  <div class="meta-bar" id="metaBar">
+    <span>📊 数据源 <code>tests-result.json</code> + <code>components-manifest/index.json</code></span>
+    <span class="sep">·</span>
+    <span id="metaCount">— 套件 / — 用例</span>
+    <span class="sep">·</span>
+    <span id="metaTime">最后更新 —</span>
+    <button class="refresh" onclick="location.reload()" title="重新拉取并刷新数据">🔄 刷新</button>
+    <span style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-left:8px"><kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">/</kbd> 搜索 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">t</kbd> 顶部 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">1-7</kbd> 跳转 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">0</kbd> 首页</span>
+  </div>
+
+  <div class="links">
+    <a href="index.html" title="CDN 首页 — 七卡聚合中心入口">← CDN 首页</a>
+    <a href="checklist.html" title="📋 清单聚合 — 125 组件全量清单 · 状态/类型/大小过滤 · 名称搜索">📋 清单</a>
+    <a href="architecture.html" title="🏗 架构聚合 — 五步加载链 · 双主题 · 设计令牌 · 组件分层 · 版本演进">🏗 架构</a>
+    <a href="graph.html" title="🕸 图谱聚合 — 组件依赖关系图 · SVG 环形 · 中心度/出度排名">🕸 图谱</a>
+    <a href="tests.html" title="🧪 测试聚合 — vitest 结果 · TQI 三维评估 · 套件展开 · 失败定位" class="active">🧪 测试</a>
+    <a href="source.html" title="📜 源码聚合 — html/js/css 按需 fetch · 带行号 · Top 10 体积排行">📜 源码</a>
+    <a href="demo.html" title="🎬 演示聚合 — iframe 缩略图 · 网格/列表双视图 · 类型过滤">🎬 演示</a>
+    <a href="review.html" title="⚠️ 审查聚合 — 六维健康评估 · 版本演进趋势 · D0-D8 诊断 · 改进建议">⚠️ 审查</a>
+  </div>
+
+  <div style="background:rgba(15,23,42,.55);border:1px solid rgba(34,211,238,.2);border-radius:8px;padding:8px 14px;margin:0 0 14px;font-size:.72rem;color:var(--yry-text3,#6b7280);line-height:1.7">
+    <b style="color:var(--yry-accent,#22d3ee)">📑 页面大纲</b> ·
+    <a href="#kpis" style="color:var(--yry-accent,#22d3ee);text-decoration:none">📊 KPI 概览</a> ·
+    <a href="#tqi" style="color:var(--yry-accent,#22d3ee);text-decoration:none">📐 TQI 指数</a> ·
+    <a href="#suites-section" style="color:var(--yry-accent,#22d3ee);text-decoration:none">🧪 测试套件</a> ·
+    <a href="#slowest" style="color:var(--yry-accent,#22d3ee);text-decoration:none">🐢 最慢 Top 10</a> ·
+    <a href="#dirDist" style="color:var(--yry-accent,#22d3ee);text-decoration:none">📁 目录分布</a> ·
+    <a href="#suiteSize" style="color:var(--yry-accent,#22d3ee);text-decoration:none">📊 套件规模</a> ·
+    <a href="#methodology" style="color:var(--yry-accent,#22d3ee);text-decoration:none">📐 TQI 方法论</a>
+  </div>
+
+  <div id="kpis" class="grid4"></div>
+
+  <div class="tqi-box" id="tqi">计算中…</div>
+
+  <div style="display:grid;grid-template-columns:160px 1fr;gap:16px;align-items:center;margin:12px 0 20px;background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:16px 20px" class="pass-rate-row">
+    <div style="position:relative">
+      <svg id="passDonut" viewBox="0 0 120 120" style="display:block;width:140px;height:140px;margin:0 auto"></svg>
+      <div id="passCenter" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center">
+        <div style="font-size:1.4rem;font-weight:700;color:#34d399">—</div>
+        <div style="font-size:.62rem;color:var(--yry-text3,#6b7280)">通过率</div>
+      </div>
+    </div>
+    <div style="font-size:.74rem;color:var(--yry-text3,#6b7280);line-height:1.8">
+      <div style="color:var(--yry-text2,#a9b1d6);font-weight:600;margin-bottom:6px">📊 通过率分解</div>
+      <div id="passBreakdown">加载中…</div>
+      <div id="testDistStack" style="display:flex;height:8px;border-radius:4px;overflow:hidden;margin-top:8px;background:rgba(0,0,0,.3)"></div>
+    </div>
+  </div>
+  <style>
+    @media (max-width: 700px) { .pass-rate-row { grid-template-columns: 1fr !important; text-align: center } }
+  </style>
+
+  <div class="toolbar">
+    <input id="q" type="search" placeholder="🔍 过滤测试套件 / 测试用例名…" autocomplete="off" />
+    <div id="searchHistory" style="display:flex;gap:4px;flex-wrap:wrap;font-size:.66rem"></div>
+    <select id="status">
+      <option value="">全部状态</option>
+      <option value="passed">已通过</option>
+      <option value="failed">失败</option>
+    </select>
+    <button id="onlyFail" style="background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.4);color:#f87171;padding:6px 12px;border-radius:6px;font-size:.76rem;cursor:pointer;transition:all .15s">⚠ 仅看失败</button>
+    <button id="expandAll" style="background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.4);color:#22d3ee;padding:6px 12px;border-radius:6px;font-size:.76rem;cursor:pointer;transition:all .15s">⊞ 全部展开</button>
+    <button id="collapseAll" style="background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.4);color:#a78bfa;padding:6px 12px;border-radius:6px;font-size:.76rem;cursor:pointer;transition:all .15s">⊟ 全部折叠</button>
+    <span id="count"></span>
+  </div>
+
+  <h2 id="suites-section">🧪 测试套件 · <span id="suiteSummary" style="font-size:.74rem;color:var(--yry-text3,#6b7280);font-weight:400">加载中…</span></h2>
+  <div id="suites"></div>
+
+  <h2 id="slowest">🐢 最慢用例 Top 10</h2>
+  <div id="slowest" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin:8px 0 0"></div>
+
+  <h2 id="dirDist" style="margin-top:28px">📁 测试用例目录分布 · Top 10</h2>
+  <div id="dirDistChart" style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 18px;margin:8px 0 16px">
+    <div id="dirDistBars" style="display:flex;flex-direction:column;gap:8px;margin:0 0 10px">加载中…</div>
+    <div id="dirDistNote" style="font-size:.68rem;color:var(--yry-text3,#6b7280);line-height:1.6">按测试文件所在目录聚合 · 显示套件数最多的前 10 个目录 · 柱长按比例缩放。</div>
+  </div>
+
+  <h2 id="suiteSize" style="margin-top:28px">📊 测试套件规模分布 · 用例数分桶</h2>
+  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">按每个测试套件包含的用例数分桶统计 · 揭示测试粒度结构。<b style="color:var(--yry-accent,#22d3ee)">小套件多</b>代表细粒度测试 · <b style="color:var(--yry-accent,#22d3ee)">大套件多</b>代表聚合测试 · 平衡两者有助于定位失败用例。</div>
+  <div id="suiteSizeChart" style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 18px;margin:8px 0 16px">
+    <div id="suiteSizeBars" style="display:flex;flex-direction:column;gap:8px;margin:0 0 10px">加载中…</div>
+    <div id="suiteSizeNote" style="font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.6">桶界限: 1 · 2-3 · 4-5 · 6-10 · 11-20 · 20+ · 0 用例套件单独计</div>
+  </div>
+
+  <h2 id="densityRank" style="margin-top:28px">🎯 测试密度 Top 10 · 单文件用例排行</h2>
+  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">按测试文件聚合用例数 · 揭示哪些组件测试覆盖最密集 · 条形长度按用例数归一化 · 数据源 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">tests-result.json</code>。</div>
+  <div id="densityRankList" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;margin:8px 0 16px">加载中…</div>
+
+  <h2 id="slowestFiles" style="margin-top:28px">🐌 最慢文件 Top 5 · 总耗时排行</h2>
+  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">按测试文件聚合所有用例耗时总和 · 揭示哪些测试文件执行最慢 · 帮助优化 CI 性能 · 数据源 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">tests-result.json</code>。</div>
+  <div id="slowestFilesList" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;margin:8px 0 16px">加载中…</div>
+
+  <h2 id="durBuckets" style="margin-top:28px">⏱ 用例耗时分布 · 单测执行速度分桶</h2>
+  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">按单测执行耗时（ms）分桶统计 · 揭示测试性能分布 · <b style="color:#34d399">绿色</b>代表极速（&lt;1ms）· <b style="color:#fbbf24">黄色</b>代表中速 · <b style="color:#f87171">红色</b>代表慢测（&gt;100ms）。</div>
+  <div id="durBucketsList" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;margin:8px 0 16px">加载中…</div>
+
+  <h2 id="statusOverview" style="margin-top:28px">🏁 测试状态总览 · 通过/失败/跳过/TODO 分布</h2>
+  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">所有 408 个用例按状态聚合 · 揭示测试套件健康度 · 数据源 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">tests-result.json</code>。</div>
+  <div id="statusOverviewGrid" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;margin:8px 0 16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px">加载中…</div>
+
+  <h2 id="topSlowest" style="margin-top:28px">📊 单测耗时 Top 10 · 最慢用例定位</h2>
+  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">从所有测试用例中按耗时降序排列 Top 10 · 帮助精准定位需要优化的测试 · 数据源 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">tests-result.json</code>。</div>
+  <div id="topSlowestList" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;margin:8px 0 16px">加载中…</div>
+
+  <h2 id="methodology">📐 TQI 测试质量指数 · 方法论</h2>
+    <div style="color:var(--yry-text2,#a9b1d6);font-weight:600;margin-bottom:8px">三维加权评分模型（满分 100）</div>
+    <table style="width:100%;border-collapse:collapse;font-size:.74rem">
+      <thead>
+        <tr style="background:rgba(30,41,59,.5);color:var(--yry-text2,#a9b1d6)">
+          <th style="text-align:left;padding:8px 10px;font-weight:600;width:120px">维度</th>
+          <th style="text-align:left;padding:8px 10px;font-weight:600">定义 · 数据来源</th>
+          <th style="text-align:right;padding:8px 10px;font-weight:600;width:60px">权重</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="padding:8px 10px;color:var(--yry-accent,#22d3ee)">📈 覆盖率</td><td style="padding:8px 10px">行覆盖率 · 分支覆盖率 · 函数覆盖率 · 语句覆盖率。代理值 = 通过率 × 0.9 + 10。</td><td style="text-align:right;padding:8px 10px;color:#34d399;font-weight:700">50%</td></tr>
+        <tr><td style="padding:8px 10px;color:var(--yry-accent,#22d3ee)">✓ 通过率</td><td style="padding:8px 10px">通过用例 / 总用例 · 直接来自 vitest numPassedTests / numTotalTests。</td><td style="text-align:right;padding:8px 10px;color:#34d399;font-weight:700">30%</td></tr>
+        <tr><td style="padding:8px 10px;color:var(--yry-accent,#22d3ee)">🧩 充分度</td><td style="padding:8px 10px">套件覆盖组件比例 = 套件数 / 组件数 × 1.2。数据源：components-manifest/index.json 统计。</td><td style="text-align:right;padding:8px 10px;color:#34d399;font-weight:700">20%</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:10px;padding:8px 12px;background:rgba(34,211,238,.06);border-left:3px solid var(--yry-accent,#22d3ee);border-radius:3px;color:var(--yry-text2,#a9b1d6);font-size:.72rem">
+      <b style="color:var(--yry-accent,#22d3ee)">公式</b>：TQI = 覆盖率 × 0.50 + 通过率 × 0.30 + 充分度 × 0.20<br>
+      <b style="color:var(--yry-accent,#22d3ee)">评级</b>：A ≥ 80 · B ≥ 60 · C ≥ 40 · D &lt; 40<br>
+      <b style="color:var(--yry-accent,#22d3ee)">目标</b>：≥ 80/A（优秀）
+    </div>
+  </div>
+
+  <p id="err" class="err" hidden></p>
+  <footer class="agg-footer" style="margin-top:32px;padding:14px 18px;background:rgba(15,23,42,.4);border:1px solid rgba(255,255,255,.06);border-radius:10px;font-size:.72rem;color:var(--yry-text3,#6b7280);line-height:1.8"><div style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-bottom:6px"><b style="color:var(--yry-accent,#22d3ee)">YrY CDN · Tests聚合</b><span style="color:rgba(255,255,255,.15)">·</span><span>v1.2.0 · 2026</span><span style="color:rgba(255,255,255,.15)">·</span><span>📊 数据源 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">tests-result.json</code></span><span style="color:rgba(255,255,255,.15)">·</span><span>🛠 生成 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">vitest JSON reporter</code></span></div><div style="display:flex;flex-wrap:wrap;gap:8px 12px;margin-top:6px"><a href="index.html" title="CDN 首页 — 七卡聚合中心入口" style="color:var(--yry-accent,#22d3ee);text-decoration:none">🏠 CDN 首页</a><a href="../docs/index.html" style="color:var(--yry-accent,#22d3ee);text-decoration:none">🏠 文档中心</a><a href="../README.md" style="color:var(--yry-accent,#22d3ee);text-decoration:none">📖 README</a><span style="margin-left:auto;font-size:.66rem">键盘 <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">1-7</kbd> 跳转 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">0</kbd> 首页 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">/</kbd> 搜索 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">t</kbd> 顶部</span></div></footer>
+
+  <script type="module">
+    const STATUS_ICON = { passed: '✓', failed: '✗', skipped: '↷', pending: '⋯', todo: '○' };
+    const STATUS_LABEL = { passed: '通过', failed: '失败', skipped: '跳过', pending: '等待', todo: '待办' };
+
+    fetch('tests-result.json').then(r => {
+      const lm = r.headers.get('last-modified');
+      if (lm) document.getElementById('metaTime').textContent = '最后更新 ' + new Date(lm).toLocaleString('zh-CN');
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(r => {
+      // metaTime 回退：若 Last-Modified 缺失（如 file:// 协议），用测试结果 startTime 推导
+      if (!document.getElementById('metaTime').textContent.includes('最后更新 ') && r.startTime) {
+        document.getElementById('metaTime').textContent = '最后更新 ' + new Date(r.startTime).toLocaleString('zh-CN');
+      }
+      // 同时拉取 manifest 以获取真实组件数
+      return fetch('components-manifest/index.json').then(rm => rm.ok ? rm.json() : null).then(m => {
+        const compCount = m?.stats?.total || 0;
+        return { r, compCount };
+      }).catch(() => ({ r, compCount: 0 }));
+    }).then(({ r, compCount }) => {
+      // 计算执行时长（套件累计时间）
+      const suiteSumMs = (r.testResults || []).reduce((s, x) => s + (((x.endTime || 0) - (x.startTime || 0)) || 0), 0);
+      const execDur = suiteSumMs >= 1000 ? (suiteSumMs/1000).toFixed(2) + 's' : suiteSumMs.toFixed(0) + 'ms';
+      const passRate = r.numTotalTests > 0 ? (r.numPassedTests / r.numTotalTests) : 0;
+      document.getElementById('metaCount').innerHTML = `${r.numTotalTestSuites || 0} 套件 / <b style="color:var(--yry-accent,#22d3ee)">${r.numTotalTests || 0}</b> 用例 · <b style="color:#34d399">${r.numPassedTests || 0}</b> 通过 · <b style="color:var(--yry-accent,#22d3ee)">⏱ ${execDur}</b> · 通过率 <b style="color:${passRate >= 0.9 ? '#34d399' : passRate >= 0.5 ? '#fbbf24' : '#f87171'}">${(passRate * 100).toFixed(1)}%</b>`;
+      // 动态计算 TQI 分数：通过率(30%) + 覆盖率模拟(50%·以套件充分度近似) + 充分度(20%)
+      // passRate declared above
+      const suitCount = r.numTotalTestSuites || 0;
+      const sufficiency = compCount > 0 ? Math.min(100, (suitCount / compCount) * 100 * 1.2) : 0; // 套件覆盖组件比例
+      const coverageProxy = Math.min(100, passRate * 100 * 0.9 + 10); // 通过率近似覆盖率代理
+      const tqiScore = Math.round(passRate * 100 * 0.30 + coverageProxy * 0.50 + sufficiency * 0.20);
+      const tqiGrade = tqiScore >= 80 ? 'A' : tqiScore >= 60 ? 'B' : tqiScore >= 40 ? 'C' : 'D';
+      const tqiLabel = tqiGrade === 'A' ? '优秀' : tqiGrade === 'B' ? '良好' : tqiGrade === 'C' ? '需改进' : '缺陷';
+      const compTotal = compCount || '—';
+      const testFileCount = (r.testResults || []).length;
+
+      const kpis = [
+        { v: r.numTotalTestSuites, l: '测试套件总数', cls: '' },
+        { v: r.numPassedTestSuites, l: '通过套件', cls: 'pass' },
+        { v: r.numFailedTestSuites, l: '失败套件', cls: r.numFailedTestSuites > 0 ? 'fail' : 'pass' },
+        { v: r.numTotalTests, l: '测试用例总数', cls: '' },
+        { v: r.numPassedTests, l: '通过用例', cls: 'pass' },
+        { v: r.numFailedTests, l: '失败用例', cls: r.numFailedTests > 0 ? 'fail' : 'pass' },
+        { v: testFileCount, l: '测试文件数', cls: '' },
+        { v: `${tqiScore}/${tqiGrade}`, l: `TQI 评分·${tqiLabel}`, cls: 'grade' },
+        { v: r.success ? '成功' : '失败', l: '总体状态', cls: r.success ? 'pass' : 'fail' }
+      ];
+      document.getElementById('kpis').innerHTML = kpis.map(k =>
+        `<div class="kpi ${k.cls}"><div class="v">${k.v}</div><div class="l">${k.l}</div></div>`
+      ).join('');
+
+      // 通过率环形图
+      const passRatePct = r.numTotalTests > 0 ? (r.numPassedTests / r.numTotalTests * 100) : 0;
+      const donut = document.getElementById('passDonut');
+      const NS = 'http://www.w3.org/2000/svg';
+      const dC = 50, dR = 38, dStroke = 14;
+      const circ = 2 * Math.PI * dR;
+      const passLen = (passRatePct / 100) * circ;
+      // 背景圆
+      donut.innerHTML = '';
+      const bg = document.createElementNS(NS, 'circle');
+      bg.setAttribute('cx', dC); bg.setAttribute('cy', dC); bg.setAttribute('r', dR);
+      bg.setAttribute('fill', 'none'); bg.setAttribute('stroke', 'rgba(0,0,0,.3)');
+      bg.setAttribute('stroke-width', dStroke);
+      donut.appendChild(bg);
+      // 通过弧
+      const pass = document.createElementNS(NS, 'circle');
+      pass.setAttribute('cx', dC); pass.setAttribute('cy', dC); pass.setAttribute('r', dR);
+      pass.setAttribute('fill', 'none');
+      pass.setAttribute('stroke', passRatePct >= 80 ? '#34d399' : passRatePct >= 50 ? '#fb923c' : '#f87171');
+      pass.setAttribute('stroke-width', dStroke);
+      pass.setAttribute('stroke-dasharray', `${passLen} ${circ - passLen}`);
+      pass.setAttribute('stroke-dashoffset', circ * 0.25);
+      pass.setAttribute('stroke-linecap', 'round');
+      pass.setAttribute('transform', `rotate(-90 ${dC} ${dC})`);
+      donut.appendChild(pass);
+      document.getElementById('passCenter').querySelector('div').textContent = passRatePct.toFixed(1) + '%';
+      document.getElementById('passBreakdown').innerHTML = `
+        <div><span style="color:#34d399">●</span> 通过 <b style="color:#34d399">${r.numPassedTests || 0}</b> / ${r.numTotalTests || 0}</div>
+        <div><span style="color:#f87171">●</span> 失败 <b style="color:#f87171">${r.numFailedTests || 0}</b></div>
+        <div><span style="color:var(--yry-text3,#6b7280)">●</span> 跳过/待办 <b style="color:var(--yry-text2,#a9b1d6)">${(r.numTotalTests || 0) - (r.numPassedTests || 0) - (r.numFailedTests || 0)}</b></div>
+      `;
+      // 测试状态分布条 — 通过/失败/跳过
+      const passedN = r.numPassedTests || 0;
+      const failedN = r.numFailedTests || 0;
+      const skippedN = (r.numTotalTests || 0) - passedN - failedN;
+      const distTotal = Math.max(1, r.numTotalTests || 1);
+      const TEST_DIST = [
+        { key: '通过', n: passedN, color: '#34d399' },
+        { key: '失败', n: failedN, color: '#f87171' },
+        { key: '跳过', n: skippedN, color: '#6b7280' }
+      ];
+      const stackEl = document.getElementById('testDistStack');
+      if (stackEl) stackEl.innerHTML = TEST_DIST.map(d =>
+        `<div title="${d.key} · ${d.n} 用例 · ${(d.n / distTotal * 100).toFixed(1)}%" style="flex:${d.n || 0.001};background:${d.color}"></div>`
+      ).join('');
+      document.getElementById('tqi').innerHTML = `
+        <b>🧪 TQI 测试质量指数 = ${tqiScore}/${tqiGrade} ${tqiLabel}</b> · 动态计算自实时测试结果<br>
+        三维加权评估：<b>通过率 (30%)</b>: ${r.numPassedTests}/${r.numTotalTests} = ${passRate.toFixed(1)}% · <b>覆盖率 (50%)</b>: 代理值 ${coverageProxy.toFixed(1)}%（通过率近似 · 完整覆盖率需 <code>--coverage</code> 生成 · 目标 行 ≥80% / 分支 ≥70% / 函数 ≥75% / 语句 ≥85%）· <b>充分度 (20%)</b>: ${suitCount} 套件 / ${compTotal} 组件 ≈ ${sufficiency.toFixed(1)}%<br>
+        <div class="tqi-bar">
+          <span class="seg" style="flex:50;background:rgba(34,211,238,.5)" title="覆盖率 50%·代理 ${coverageProxy.toFixed(1)}%"></span>
+          <span class="seg" style="flex:30;background:rgba(52,211,153,.5)" title="通过率 30%·${passRate.toFixed(1)}%"></span>
+          <span class="seg" style="flex:20;background:rgba(167,139,250,.5)" title="充分度 20%·${sufficiency.toFixed(1)}%"></span>
+        </div>
+      `;
+
+      // Render suites
+      const suitesEl = document.getElementById('suites');
+      const all = r.testResults || [];
+
+      function render(filter, status) {
+        const html = all.map(s => {
+          const tests = (s.assertionResults || []).filter(t =>
+            (!filter || (t.fullName || '').toLowerCase().includes(filter) || (s.name || '').toLowerCase().includes(filter)) &&
+            (!status || t.status === status)
+          );
+          if (filter && !tests.length && !(s.name || '').toLowerCase().includes(filter)) return '';
+          const passed = tests.filter(t => t.status === 'passed').length;
+          const failed = tests.filter(t => t.status === 'failed').length;
+          const cls = failed > 0 ? 'b-fail' : 'b-pass';
+          const label = failed > 0 ? `${failed} 失败` : `${passed} 通过`;
+          const fileName = (s.name || '').split('/').pop();
+          // 单套件耗时占总耗时的百分比
+          const totalDur = all.reduce((sum, x) => sum + (x.duration || 0), 0) || 1;
+          const suitePct = ((s.duration || 0) / totalDur * 100).toFixed(1);
+          const suiteBarColor = suitePct > 30 ? '#f87171' : suitePct > 15 ? '#fb923c' : '#34d399';
+          const testsHtml = tests.map(t => `
+            <div class="test ${t.status}">
+              <span class="icon">${STATUS_ICON[t.status] || '?'}</span>
+              <span class="name">${t.fullName || t.title}</span>
+              <span class="dur">${t.duration ? t.duration.toFixed(1) + 'ms' : ''}</span>
+            </div>
+          `).join('');
+          return `
+            <div class="suite">
+              <div class="suite-head" onclick="this.parentElement.classList.toggle('open')">
+                <a class="name" href="${s.name}" target="_blank" onclick="event.stopPropagation()">${fileName}</a>
+                <span class="badge ${cls}">${label}</span>
+                <span style="font-size:.7rem;color:var(--yry-text3,#6b7280)">${s.duration ? s.duration.toFixed(0)+'ms' : ''}</span>
+                <span style="font-size:.62rem;color:${suiteBarColor};min-width:48px;text-align:right" title="占总耗时 ${suitePct}%">${suitePct}%</span>
+                <span style="width:60px;height:4px;background:rgba(0,0,0,.3);border-radius:2px;overflow:hidden"><span style="display:block;height:100%;width:${suitePct}%;background:${suiteBarColor}"></span></span>
+                <span style="font-size:.9rem;color:var(--yry-text3,#6b7280)">▾</span>
+              </div>
+              <div class="suite-body">${testsHtml || '<div class="test">无匹配测试</div>'}</div>
+            </div>
+          `;
+        }).join('');
+        suitesEl.innerHTML = html || '<p style="font-size:.78rem;color:var(--yry-text3,#6b7280);padding:12px">无匹配套件</p>';
+        document.getElementById('count').textContent = `显示 ${all.length} 个套件`;
+      }
+
+      render('', '');
+      // 套件总耗时摘要
+      const totalDur = all.reduce((sum, x) => sum + (x.duration || 0), 0);
+      const avgDur = all.length ? (totalDur / all.length) : 0;
+      const slowestSuite = all.length ? all.reduce((a, b) => ((b.duration || 0) > (a.duration || 0) ? b : a)) : null;
+      const fmtDur = ms => ms >= 1000 ? (ms / 1000).toFixed(2) + 's' : ms.toFixed(0) + 'ms';
+      const summaryEl = document.getElementById('suiteSummary');
+      if (summaryEl) {
+        summaryEl.innerHTML = `共 <b style="color:var(--yry-accent,#22d3ee)">${all.length}</b> 套件 · 总耗时 <b style="color:#34d399">${fmtDur(totalDur)}</b> · 平均 <b>${fmtDur(avgDur)}</b>` +
+          (slowestSuite ? ` · 最慢 <b style="color:#fb923c" title="${slowestSuite.name}">${(slowestSuite.name || '').split('/').pop()} (${fmtDur(slowestSuite.duration || 0)})</b>` : '');
+      }
+      // 最慢用例 Top 10
+      const allTests = (r.testResults || []).flatMap(s =>
+        ((s.assertionResults || []) || []).filter(t => t.duration != null).map(t => ({
+          suite: (s.name || '').split('/').pop(),
+          name: t.fullName || t.title,
+          duration: t.duration,
+          status: t.status
+        }))
+      ).sort((a, b) => b.duration - a.duration).slice(0, 10);
+      const slowEl = document.getElementById('slowest');
+      if (allTests.length) {
+        const maxDur = allTests[0].duration || 1;
+        const fmtMs = ms => ms >= 1000 ? (ms/1000).toFixed(2)+'s' : ms.toFixed(0)+'ms';
+        slowEl.innerHTML = allTests.map(t => {
+          const pct = (t.duration / maxDur * 100).toFixed(0);
+          const color = t.duration > 1000 ? '#f87171' : t.duration > 300 ? '#fb923c' : '#34d399';
+          return `<div style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:10px 14px;font-size:.74rem">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+              <span style="color:${color};font-weight:700">⏱ ${fmtMs(t.duration)}</span>
+              <span style="color:var(--yry-text3,#6b7280);font-size:.66rem">${t.suite}</span>
+              <span style="margin-left:auto;font-size:.6rem;padding:1px 5px;border-radius:3px;background:${t.status==='passed'?'rgba(52,211,153,.15)':'rgba(248,113,113,.15)'};color:${t.status==='passed'?'#34d399':'#f87171'}">${t.status}</span>
+            </div>
+            <div style="color:var(--yry-text2,#a9b1d6);font-size:.72rem;line-height:1.4;margin-bottom:4px">${t.name}</div>
+            <div style="height:4px;background:rgba(0,0,0,.3);border-radius:2px;overflow:hidden"><span style="display:block;height:100%;width:${pct}%;background:${color}"></span></div>
+          </div>`;
+        }).join('');
+      } else {
+        slowEl.innerHTML = '<div style="font-size:.74rem;color:var(--yry-text3,#6b7280);padding:12px">无带时长的测试用例数据</div>';
+      }
+
+      // 测试用例目录分布 Top 10 —— 按测试文件路径所在目录聚合
+      const dirMap = new Map();
+      (r.testResults || []).forEach(s => {
+        const p = (s.name || '').replace(/^\.\//, '').replace(/^\//, '');
+        const parts = p.split('/');
+        const dir = parts.length > 1 ? parts.slice(0, -1).join('/') : '(root)';
+        const arr = dirMap.get(dir) || { suites: 0, tests: 0, dur: 0 };
+        arr.suites += 1;
+        arr.tests += (s.numPassedTests || 0) + (s.numFailedTests || 0) + (s.numPendingTests || 0);
+        arr.dur += (((s.endTime || 0) - (s.startTime || 0)) || 0);
+        dirMap.set(dir, arr);
+      });
+      const dirEl = document.getElementById('dirDistBars');
+      if (dirMap.size && dirEl) {
+        const dirArr = Array.from(dirMap.entries())
+          .map(([dir, v]) => ({ dir, ...v }))
+          .sort((a, b) => b.suites - a.suites || b.tests - a.tests)
+          .slice(0, 10);
+        const maxSuites = Math.max(1, dirArr[0].suites);
+        const dirColors = ['#22d3ee', '#a78bfa', '#34d399', '#fb923c', '#fbbf24', '#60a5fa', '#f472b6', '#2dd4bf', '#c084fc', '#facc15'];
+        dirEl.innerHTML = dirArr.map((d, i) => {
+          const pct = (d.suites / maxSuites * 100).toFixed(0);
+          const color = dirColors[i % dirColors.length];
+          const durStr = d.dur >= 1000 ? (d.dur/1000).toFixed(2)+'s' : d.dur.toFixed(0)+'ms';
+          const shortDir = d.dir.length > 42 ? d.dir.slice(0, 20) + '…/' + d.dir.split('/').slice(-2).join('/') : d.dir;
+          return `<div style="display:grid;grid-template-columns:1fr auto;gap:8px 10px;align-items:center;font-size:.72rem">
+            <div style="color:var(--yry-text2,#a9b1d6);font-family:ui-monospace,monospace;font-size:.68rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.dir}">${shortDir}</div>
+            <div style="color:var(--yry-text3,#6b7280);font-size:.66rem;white-space:nowrap"><b style="color:${color}">${d.suites}</b> 套件 · ${d.tests} 用例 · ⏱ ${durStr}</div>
+            <div style="grid-column:1/-1;height:6px;background:rgba(0,0,0,.3);border-radius:3px;overflow:hidden">
+              <span style="display:block;height:100%;width:${pct}%;background:linear-gradient(90deg,${color},${color}aa)"></span>
+            </div>
+          </div>`;
+        }).join('');
+      } else if (dirEl) {
+        dirEl.innerHTML = '<div style="font-size:.74rem;color:var(--yry-text3,#6b7280);padding:12px">无测试套件目录数据</div>';
+      }
+
+      // 📊 测试套件规模分布 — 按用例数分桶
+      const SIZE_BUCKETS = [
+        { label: '0',     test: n => n === 0,  desc: '空套件' },
+        { label: '1',     test: n => n === 1,  desc: '单用例' },
+        { label: '2-3',   test: n => n >= 2 && n <= 3, desc: '小套件' },
+        { label: '4-5',   test: n => n >= 4 && n <= 5, desc: '中小套件' },
+        { label: '6-10',  test: n => n >= 6 && n <= 10, desc: '中套件' },
+        { label: '11-20', test: n => n >= 11 && n <= 20, desc: '大套件' },
+        { label: '20+',   test: n => n >= 21, desc: '超大套件' }
+      ];
+      const sizeCounts = SIZE_BUCKETS.map(() => 0);
+      (r.testResults || []).forEach(s => {
+        const n = (s.numPassedTests || 0) + (s.numFailedTests || 0) + (s.numPendingTests || 0) + (s.numTodoTests || 0);
+        for (let i = 0; i < SIZE_BUCKETS.length; i++) {
+          if (SIZE_BUCKETS[i].test(n)) { sizeCounts[i]++; break; }
+        }
+      });
+      const sizeEl = document.getElementById('suiteSizeBars');
+      if (sizeEl) {
+        const maxSizeC = Math.max(1, ...sizeCounts);
+        const totalSuites = (r.testResults || []).length || 1;
+        const sizeColors = ['#6b7280', '#34d399', '#22d3ee', '#60a5fa', '#a78bfa', '#fb923c', '#f87171'];
+        sizeEl.innerHTML = SIZE_BUCKETS.map((b, i) => {
+          const n = sizeCounts[i];
+          const pct = (n / maxSizeC * 100).toFixed(0);
+          const share = (n / totalSuites * 100).toFixed(0);
+          const c = sizeColors[i % sizeColors.length];
+          return `<div style="display:grid;grid-template-columns:60px 1fr auto;gap:10px;align-items:center;font-size:.72rem">
+            <span style="color:${c};font-weight:700;text-align:right" title="${b.desc}">${b.label}</span>
+            <div style="height:14px;background:rgba(0,0,0,.4);border-radius:3px;overflow:hidden">
+              <span style="display:block;height:100%;width:${pct}%;background:linear-gradient(90deg,${c},${c}aa)"></span>
+            </div>
+            <span style="color:var(--yry-text2,#a9b1d6);font-weight:600;white-space:nowrap">${n} <span style="font-size:.6rem;color:var(--yry-text3,#6b7280);font-weight:400">·${share}%</span></span>
+          </div>`;
+        }).join('');
+        const noteEl = document.getElementById('suiteSizeNote');
+        if (noteEl) {
+          const avgTests = totalSuites ? (r.numTotalTests / totalSuites).toFixed(1) : '0';
+          noteEl.innerHTML = `桶界限: 0 · 1 · 2-3 · 4-5 · 6-10 · 11-20 · 20+ 用例 · 平均每套件 <b style="color:var(--yry-accent,#22d3ee)">${avgTests}</b> 个用例 · 共 <b>${totalSuites}</b> 套件 / <b>${r.numTotalTests || 0}</b> 用例`;
+        }
+      }
+      const qEl2 = document.getElementById('q');
+      const sEl2 = document.getElementById('status');
+      qEl2.addEventListener('input', e => render(e.target.value.trim().toLowerCase(), sEl2.value));
+      // 搜索历史：Enter 提交保存 · 显示最近 5 条
+      const HISTORY_KEY = 'yry-tests-search-history';
+      const renderHistory = () => {
+        const el = document.getElementById('searchHistory');
+        let hist = [];
+        try { hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch (_) {}
+        if (!hist.length) { el.innerHTML = ''; return; }
+        el.innerHTML = '<span style="color:var(--yry-text3,#6b7280);align-self:center">最近:</span>' + hist.slice(0, 5).map(h =>
+          `<button type="button" data-q="${h}" style="background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.2);color:#22d3ee;padding:2px 8px;border-radius:3px;cursor:pointer;font-size:.66rem">${h} ✕</button>`
+        ).join('');
+        el.querySelectorAll('button[data-q]').forEach(b => {
+          b.onclick = e => {
+            if (e.offsetX > b.offsetWidth - 14) {
+              // 点击 ✕ 删除
+              let arr = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+              arr = arr.filter(x => x !== b.dataset.q);
+              localStorage.setItem(HISTORY_KEY, JSON.stringify(arr));
+              renderHistory();
+            } else {
+              qEl2.value = b.dataset.q;
+              render(b.dataset.q.toLowerCase(), sEl2.value);
+            }
+          };
+        });
+      };
+      qEl2.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && qEl2.value.trim()) {
+          const v = qEl2.value.trim();
+          let arr = [];
+          try { arr = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch (_) {}
+          arr = [v, ...arr.filter(x => x !== v)].slice(0, 10);
+          try { localStorage.setItem(HISTORY_KEY, JSON.stringify(arr)); } catch (_) {}
+          renderHistory();
+        }
+      });
+      renderHistory();
+      sEl2.addEventListener('change', e => render(qEl2.value.trim().toLowerCase(), e.target.value));
+      const onlyFailBtn = document.getElementById('onlyFail');
+      onlyFailBtn.addEventListener('click', () => {
+        const isActive = onlyFailBtn.classList.toggle('active');
+        if (isActive) {
+          onlyFailBtn.style.background = 'rgba(248,113,113,.25)';
+          onlyFailBtn.style.borderColor = '#f87171';
+          sEl2.value = 'failed';
+        } else {
+          onlyFailBtn.style.background = 'rgba(248,113,113,.12)';
+          onlyFailBtn.style.borderColor = 'rgba(248,113,113,.4)';
+          sEl2.value = '';
+        }
+        render(qEl2.value.trim().toLowerCase(), sEl2.value);
+      });
+      // 🎯 测试密度 Top 10 · 单文件用例排行
+      const drEl2 = document.getElementById('densityRankList');
+      if (drEl2) {
+        const fileCounts = {};
+        (data.testResults || []).forEach(s => {
+          const f = (s.name || '').replace(/^.*\/cdn\/tests\//, '').replace(/\.test\.mjs$/, '');
+          if (!f) return;
+          if (!fileCounts[f]) fileCounts[f] = { tests: 0, dur: 0 };
+          fileCounts[f].tests += (s.assertionResults || []).length;
+          fileCounts[f].dur += (s.assertionResults || []).reduce((s2, t) => s2 + (t.duration || 0), 0);
+        });
+        const arr = Object.entries(fileCounts)
+          .map(([f, v]) => ({ file: f, ...v, avg: v.tests ? v.dur / v.tests : 0 }))
+          .sort((a, b) => b.tests - a.tests)
+          .slice(0, 10);
+        const maxT = Math.max(1, ...arr.map(x => x.tests));
+        if (arr.length === 0) {
+          drEl2.innerHTML = '<div style="padding:10px;font-size:.72rem;color:var(--yry-text3,#6b7280)">无密度数据</div>';
+        } else {
+          drEl2.innerHTML = arr.map((x, i) => {
+            const pct = (x.tests / maxT * 100).toFixed(0);
+            const c = ['#34d399', '#22d3ee', '#a78bfa', '#fb923c', '#fbbf24', '#60a5fa', '#f472b6', '#2dd4bf', '#c084fc', '#facc15'][i % 10];
+            const avgMs = x.avg.toFixed(1);
+            return `<div style="display:grid;grid-template-columns:30px 1fr 100px 70px;gap:10px;align-items:center;font-size:.72rem">
+              <div style="font-weight:700;color:${c};text-align:center">#${i+1}</div>
+              <div style="overflow:hidden"><span style="color:${c};font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.file}</span></div>
+              <div style="height:10px;background:rgba(0,0,0,.4);border-radius:3px;overflow:hidden"><div style="width:${pct}%;height:100%;background:linear-gradient(90deg,${c},${c}88)" title="${x.tests} 用例"></div></div>
+              <div style="text-align:right;white-space:nowrap">
+                <b style="color:${c}">${x.tests}</b><span style="color:var(--yry-text3,#6b7280);font-size:.62rem"> 用例</span>
+                <div style="color:var(--yry-text3,#6b7280);font-size:.6rem">均 ${avgMs}ms</div>
+              </div>
+            </div>`;
+          }).join('') + `<div style="font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.6;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.06)">Top 1 用例数 <b style="color:var(--yry-accent,#22d3ee)">${arr[0].tests}</b> · 10 文件总用例 <b>${arr.reduce((s,x)=>s+x.tests,0)}</b> · 高密度文件反映核心模块（安全/CE 加载/报告）</div>`;
+        }
+      }
+
+      // 🐌 最慢文件 Top 5 · 总耗时排行
+      const sfEl = document.getElementById('slowestFilesList');
+      if (sfEl) {
+        const files = (data.testResults || []).map(s => ({
+          name: (s.name || '').replace(/^.*\/cdn\/tests\//, '').replace(/\.test\.mjs$/, ''),
+          tests: (s.assertionResults || []).length,
+          dur: (s.assertionResults || []).reduce((s2, t) => s2 + (t.duration || 0), 0)
+        })).filter(f => f.dur > 0).sort((a, b) => b.dur - a.dur).slice(0, 5);
+        const maxDur = Math.max(1, ...files.map(f => f.dur));
+        if (files.length === 0) {
+          sfEl.innerHTML = '<div style="padding:10px;font-size:.72rem;color:var(--yry-text3,#6b7280)">无耗时数据</div>';
+        } else {
+          sfEl.innerHTML = files.map((f, i) => {
+            const pct = (f.dur / maxDur * 100).toFixed(0);
+            const c = ['#f87171', '#fb923c', '#fbbf24', '#22d3ee', '#a78bfa'][i % 5];
+            const ms = f.dur.toFixed(0);
+            const avg = (f.dur / f.tests).toFixed(1);
+            return `<div style="display:grid;grid-template-columns:30px 1fr 90px 70px;gap:10px;align-items:center;font-size:.72rem">
+              <div style="font-weight:700;color:${c};text-align:center">#${i+1}</div>
+              <div style="overflow:hidden"><span style="color:${c};font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${f.name}</span></div>
+              <div style="height:10px;background:rgba(0,0,0,.4);border-radius:3px;overflow:hidden"><div style="width:${pct}%;height:100%;background:linear-gradient(90deg,${c},${c}88)" title="${ms}ms"></div></div>
+              <div style="text-align:right;white-space:nowrap">
+                <b style="color:${c}">${ms}</b><span style="color:var(--yry-text3,#6b7280);font-size:.62rem">ms</span>
+                <div style="color:var(--yry-text3,#6b7280);font-size:.6rem">${f.tests} · 均 ${avg}ms</div>
+              </div>
+            </div>`;
+          }).join('') + `<div style="font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.6;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.06)">Top 1 总耗时 <b style="color:var(--yry-accent,#22d3ee)">${files[0].dur.toFixed(0)}ms</b> · 5 文件总耗时 <b>${files.reduce((s,f)=>s+f.dur,0).toFixed(0)}ms</b> · CI 优化重点</div>`;
+        }
+      }
+
+      // ⏱ 用例耗时分布 · 单测执行速度分桶
+      const dbEl2 = document.getElementById('durBucketsList');
+      if (dbEl2) {
+        const tests = (data.testResults || []).flatMap(s => s.assertionResults || []).map(t => t.duration || 0);
+        const BUCKETS = [
+          { label: '<1ms',     max: 1,    color: '#34d399' },
+          { label: '1-5ms',    max: 5,    color: '#22d3ee' },
+          { label: '5-20ms',   max: 20,   color: '#a78bfa' },
+          { label: '20-100ms', max: 100,  color: '#fb923c' },
+          { label: '>100ms',   max: Infinity, color: '#f87171' }
+        ];
+        const counts = BUCKETS.map(() => 0);
+        tests.forEach(d => {
+          let idx = BUCKETS.findIndex(b => d < b.max);
+          if (idx < 0) idx = BUCKETS.length - 1;
+          counts[idx]++;
+        });
+        const total = counts.reduce((s, n) => s + n, 0) || 1;
+        const maxCount = Math.max(1, ...counts);
+        dbEl2.innerHTML = BUCKETS.map((b, i) => {
+          const pct = (counts[i] / maxCount * 100).toFixed(0);
+          const share = (counts[i] / total * 100).toFixed(1);
+          const c = b.color;
+          return `<div style="display:grid;grid-template-columns:90px 1fr 90px;gap:10px;align-items:center;font-size:.72rem">
+            <div style="color:${c};font-weight:600;white-space:nowrap">${b.label}</div>
+            <div style="height:14px;background:rgba(0,0,0,.4);border-radius:3px;overflow:hidden"><div style="width:${pct}%;height:100%;background:linear-gradient(90deg,${c},${c}88)" title="${counts[i]} 用例 · ${share}%"></div></div>
+            <div style="text-align:right;white-space:nowrap">
+              <b style="color:${c}">${counts[i]}</b> <span style="color:var(--yry-text3,#6b7280);font-size:.62rem">(${share}%)</span>
+            </div>
+          </div>`;
+        }).join('') + `<div style="font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.6;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.06)">共 <b style="color:var(--yry-accent,#22d3ee)">${total}</b> 用例 · 极速（&lt;5ms）占 <b>${((counts[0]+counts[1])/total*100).toFixed(1)}%</b> · 慢测（&gt;100ms）<b style="color:#f87171">${counts[4]}</b> 个需优化</div>`;
+      }
+      // 🏁 测试状态总览
+      const soEl = document.getElementById('statusOverviewGrid');
+      if (soEl) {
+        const STATES = [
+          { key: 'passed',  label: '✓ 通过',  color: '#34d399', value: r.numPassedTests || 0 },
+          { key: 'failed',  label: '✗ 失败',  color: '#f87171', value: r.numFailedTests || 0 },
+          { key: 'pending', label: '⏸ 跳过',  color: '#fbbf24', value: r.numPendingTests || 0 },
+          { key: 'todo',    label: '📋 TODO',  color: '#a78bfa', value: r.numTodoTests || 0 }
+        ];
+        const total = Math.max(1, ...STATES.map(s => s.value), r.numTotalTests || 0);
+        const sumVal = STATES.reduce((s, st) => s + st.value, 0);
+        soEl.innerHTML = STATES.map(s => {
+          const pct = (s.value / sumVal * 100).toFixed(1);
+          return `<div style="background:rgba(13,17,23,.6);border:1px solid ${s.value === 0 ? 'rgba(255,255,255,.06)' : s.color + '55'};border-radius:6px;padding:10px 12px">
+            <div style="font-size:.6rem;color:var(--yry-text3,#6b7280);margin-bottom:4px">${s.label}</div>
+            <div style="display:flex;align-items:baseline;gap:4px">
+              <span style="font-size:1.3rem;font-weight:700;color:${s.color}">${s.value}</span>
+              <span style="font-size:.62rem;color:var(--yry-text3,#6b7280)">${pct}%</span>
+            </div>
+            <div style="height:6px;background:rgba(0,0,0,.4);border-radius:3px;overflow:hidden;margin-top:6px"><div style="width:${pct}%;height:100%;background:${s.color}" title="${s.value} 用例"></div></div>
+          </div>`;
+        }).join('') + `<div style="grid-column:1/-1;font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.7;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.06)">总用例 <b style="color:var(--yry-accent,#22d3ee)">${r.numTotalTests || 0}</b> · 通过率 <b style="color:#34d399">${((r.numPassedTests || 0) / Math.max(1, r.numTotalTests || 1) * 100).toFixed(2)}%</b> · 失败 <b style="color:${(r.numFailedTests||0) === 0 ? '#34d399' : '#f87171'}">${r.numFailedTests || 0}</b> · 套件 ${r.numPassedTestSuites || 0}/${r.numTotalTestSuites || 0} 全通过</div>`;
+      }
+      // 📊 单测耗时 Top 10
+      const tsEl = document.getElementById('topSlowestList');
+      if (tsEl) {
+        const allTests = [];
+        (r.testResults || []).forEach(f => {
+          (f.assertionResults || []).forEach((t, i) => {
+            allTests.push({
+              name: t.fullName || t.title || `用例 ${i + 1}`,
+              file: (f.name || '').replace(/.*\/([^/]+)$/, '$1'),
+              duration: t.duration || 0,
+              status: t.status || 'unknown'
+            });
+          });
+        });
+        const top = allTests.sort((a, b) => b.duration - a.duration).slice(0, 10);
+        const maxDur = Math.max(1, ...top.map(t => t.duration));
+        if (top.length === 0) {
+          tsEl.innerHTML = '<div style="padding:8px;font-size:.72rem;color:var(--yry-text3,#6b7280)">无用例数据</div>';
+        } else {
+          tsEl.innerHTML = top.map((t, i) => {
+            const pct = (t.duration / maxDur * 100).toFixed(0);
+            const color = t.duration > 100 ? '#f87171' : t.duration > 20 ? '#fb923c' : t.duration > 5 ? '#fbbf24' : '#34d399';
+            const rank = ['#fbbf24', '#22d3ee', '#a78bfa', '#60a5fa', '#60a5fa', '#60a5fa', '#60a5fa', '#60a5fa', '#60a5fa', '#60a5fa'][i];
+            return `<div style="display:grid;grid-template-columns:30px 1fr 70px 60px;gap:8px;align-items:center;font-size:.72rem;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04)">
+              <div style="color:${rank};font-weight:700">#${i + 1}</div>
+              <div style="overflow:hidden">
+                <div style="color:#a9b1d6;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${t.name}">${t.name}</div>
+                <div style="font-size:.6rem;color:var(--yry-text3,#6b7280);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.file}</div>
+              </div>
+              <div style="height:8px;background:rgba(0,0,0,.4);border-radius:3px;overflow:hidden"><div style="width:${pct}%;height:100%;background:linear-gradient(90deg,${color},${color}88)" title="${t.duration}ms"></div></div>
+              <div style="text-align:right;font-weight:700;color:${color}">${t.duration}ms</div>
+            </div>`;
+          }).join('') + `<div style="font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.6;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.06)">Top 1 <code style="color:#fbbf24">${top[0].name.slice(0, 60)}</code> 耗时 <b style="color:#fbbf24">${top[0].duration}ms</b> · Top 10 平均耗时 <b style="color:var(--yry-accent,#22d3ee)">${(top.reduce((s,t)=>s+t.duration,0)/top.length).toFixed(1)}ms</b> · 总耗时 <b>${top.reduce((s,t)=>s+t.duration,0)}ms</b></div>`;
+        }
+      }
+
+      // 展开/折叠全部
+      document.getElementById('expandAll').onclick = () => {
+        document.querySelectorAll('.suite').forEach(s => s.classList.add('open'));
+      };
+      document.getElementById('collapseAll').onclick = () => {
+        document.querySelectorAll('.suite').forEach(s => s.classList.remove('open'));
+      };
+    }).catch(e => {
+      const el = document.getElementById('err');
+      el.hidden = false;
+      el.textContent = '❌ 加载测试结果失败: ' + e.message + ' — 请先运行 `node_modules/.bin/vitest run --reporter=json --outputFile=tests-result.json`';
+    });
+  </script>
+  <button class="yry-back-to-top" id="yryBackToTop" title="回到顶部" aria-label="回到顶部">↑</button>
+  <script>
+    (function(){
+      var btn = document.getElementById('yryBackToTop');
+      if (!btn) return;
+      window.addEventListener('scroll', function(){
+        if (window.scrollY > 300) btn.classList.add('show');
+        else btn.classList.remove('show');
+      }, { passive: true });
+      btn.addEventListener('click', function(){
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      // 键盘快捷键: / = 聚焦搜索 · t = 回顶部
+      document.addEventListener('keydown', function(e){
+        var tag = (e.target.tagName || '').toUpperCase();
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable) return;
+        if (e.metaKey || e.ctrlKey || e.altKey) return;
+        var k = e.key.toLowerCase();
+        if (k === '/') {
+          var s = document.querySelector('input[type="search"], input[id="q"]');
+          if (s) { e.preventDefault(); s.focus(); s.select && s.select(); }
+        } else if (k === 't') {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (k >= '1' && k <= '7') {
+          var navMap = { '1':'checklist.html','2':'architecture.html','3':'graph.html','4':'tests.html','5':'source.html','6':'demo.html','7':'review.html' };
+          if (navMap[k]) window.location.href = navMap[k];
+        } else if (k === '0' || k === 'escape') {
+          window.location.href = 'index.html';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

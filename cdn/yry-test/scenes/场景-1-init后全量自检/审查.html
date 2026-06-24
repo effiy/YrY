@@ -6,103 +6,15 @@
 <title>init后全量自检 · 审查</title>
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/theme/index.css">
-<style>
-/* ═══ shared-b.css — Common styles for all Category B documents ═══ */
-/* Inlined by rui-html/lib/templates.mjs buildHeadBlock() during generation */
-/* Uses yry- prefixed CSS variables matching cdn/theme/index.css conventions */
-/* Breadcrumb/Cross-nav/Header styles → now provided by yry-scene-chrome component */
-
-:root {
-  --yry-bg: rgba(22,22,32,1);
-  --yry-bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
-  --yry-bg-flat: rgba(34,34,46,1);
-  --yry-bg-raised: rgba(42,42,56,1);
-  --yry-accent: #FFC107;
-  --yry-cyan: #22d3ee;
-  --yry-pass: #22c55e;
-  --yry-fail: #ef4444;
-  --yry-warn: #f59e0b;
-  --yry-skip: #6b7280;
-  --yry-text: rgba(250,250,252,1);
-  --yry-text2: rgba(160,160,164,1);
-  --yry-text3: rgba(110,110,114,1);
-  --yry-shadow: 0 4px 20px rgba(0,0,0,0.3);
-  --yry-shadow-lg: 0 12px 32px rgba(0,0,0,0.45);
-  --yry-radius: 12px;
-  --yry-border: 1px solid rgba(255,255,255,0.06);
-}
-
-@keyframes yry-fadeInUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes yry-fadeInDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  background: var(--yry-bg);
-  color: var(--yry-text);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif;
-  line-height: 1.6;
-  min-height: 100vh;
-}
-
-.yry-container { max-width: 1120px; margin: 0 auto; padding: 48px 24px 80px; }
-
-.yry-bar-wrap { margin-bottom: 24px; }
-.yry-bar-outer { height: 8px; border-radius: 4px; overflow: hidden; display: flex; background: rgba(255,255,255,.04); }
-.yry-bar-outer .yry-seg { height: 100%; transition: width .5s ease; min-width: 2px; }
-.yry-bar-outer .yry-seg.p { background: var(--yry-pass); }
-.yry-bar-outer .yry-seg.f { background: var(--yry-fail); }
-.yry-bar-outer .yry-seg.s { background: var(--yry-skip); }
-
-.yry-tabs { display: flex; gap: 0; border-bottom: var(--yry-border); margin-bottom: 0; }
-.yry-tab { padding: 10px 20px; cursor: pointer; font-size: .84rem; color: var(--yry-text3); border-bottom: 2px solid transparent; transition: all .15s; user-select: none; }
-.yry-tab:hover { color: var(--yry-text2); }
-.yry-tab.on { color: var(--yry-accent); border-bottom-color: var(--yry-accent); }
-
-.yry-panel { display: none; animation: yry-fadeInUp .4s ease both; padding-top: 28px; }
-.yry-panel.on { display: block; }
-
-.yry-section h2 { font-size: 1.1rem; font-weight: 600; margin: 24px 0 12px; display: flex; align-items: center; gap: 8px; }
-.yry-section h2 .yry-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--yry-accent); box-shadow: 0 0 6px rgba(255,193,7,.4); flex-shrink: 0; }
-.yry-section h3 { font-size: .9rem; font-weight: 600; margin: 16px 0 10px; color: var(--yry-text2); }
-.yry-section-desc { font-size: .8rem; color: var(--yry-text3); margin-bottom: 8px; }
-
-.yry-footer { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 2rem; }
-.yry-footer a { color: var(--yry-text2); }</style>
-
+<link rel="stylesheet" href="../../../../cdn/yry-review-base.css">
 <link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
 <link rel="stylesheet" href="../../../../cdn/yry-scene-stats/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-health-bar/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-tabs/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-review-cards/index.css">
 <style>
 .yry-container{max-width:1120px}
-.yry-bar-outer{height:10px;border-radius:5px}
-.yry-bar-outer .yry-seg{min-width:3px}
-/* ── Review-specific components ── */
-.dim-card{background:var(--yry-bg-card);border:var(--yry-border);border-radius:var(--yry-radius);padding:20px 22px;margin-bottom:10px;box-shadow:var(--yry-shadow)}
-.dim-card h3{font-size:.9rem;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.dim-card .dim-score{font-size:1.4rem;font-weight:700;margin-left:auto}
-.dim-card .dim-bar{height:6px;border-radius:3px;background:rgba(255,255,255,.04);overflow:hidden;margin-bottom:8px}
-.dim-card .dim-bar-inner{height:100%;border-radius:3px}
-.dim-card ul{list-style:none;color:var(--yry-text2);font-size:.78rem;margin-top:6px}
-.dim-card ul li{margin-bottom:4px;padding-left:16px;position:relative}
-.dim-card ul li::before{content:'•';position:absolute;left:2px;color:var(--yry-text3)}
-.case-card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem;margin-bottom:12px}
-.case-card.good{border-left:3px solid var(--yry-pass)}
-.case-card.bad{border-left:3px solid var(--yry-fail)}
-.case-card h4{font-size:.85rem;font-weight:600;margin-bottom:.5rem;display:flex;align-items:center;gap:6px}
-.case-tag{font-size:.65rem;font-weight:600;padding:2px 8px;border-radius:3px}
-.case-tag.good{background:rgba(34,197,94,.1);color:var(--yry-pass)}
-.case-tag.bad{background:rgba(239,68,68,.1);color:var(--yry-fail)}
-.case-card .case-loc{font-size:.7rem;color:var(--yry-text3);font-family:'JetBrains Mono',monospace;margin-bottom:6px}
-.case-card .case-desc{color:var(--yry-text2);font-size:.78rem;line-height:1.6;margin-bottom:6px}
-.rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px}
-.rec-card{background:var(--yry-bg-card);border:var(--yry-border);border-radius:var(--yry-radius);padding:18px 20px;box-shadow:var(--yry-shadow)}
-.rec-card.p1{border-left:3px solid var(--yry-fail)}.rec-card.p2{border-left:3px solid var(--yry-warn)}.rec-card.p3{border-left:3px solid var(--yry-skip)}
-.rec-pri{font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:3px;display:inline-block;margin-bottom:6px}
-.rec-pri.p1{background:rgba(239,68,68,.12);color:var(--yry-fail)}
-.rec-pri.p2{background:rgba(245,158,11,.12);color:var(--yry-warn)}
-.rec-pri.p3{background:rgba(107,114,128,.12);color:var(--yry-skip)}
-.rec-card h4{font-size:.82rem;font-weight:600;margin-bottom:4px}
-.rec-card p{color:var(--yry-text2);font-size:.74rem;line-height:1.5}
 </style>
 </head>
 <body>
@@ -111,64 +23,53 @@ body {
   theme="b"
   title="📝 {ACCENT} — 审查报告"
   title-accent="初始化后全量自检"
-  subtitle="审查日期 2026-06-05 · 版本 vv1.1.0 · 场景 1"
-  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"自测 · 故事任务"},{"label":"场景 1 · init后全量自检"},{"label":"📝 审查"}]'
+  subtitle="审查日期 2026-06-22 · 版本 vv5.4.0 · 场景 1"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-test · 故事任务"},{"label":"场景 1 · init后全量自检"},{"label":"📝 审查"}]'
   crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","href":"架构图.html"},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","active":true}]'>
 </yry-scene-chrome>
 
-<yry-scene-stats items='[{"value":"18/8","label":"诊断通过","color":"health"},{"value":"D0-D7","label":"覆盖范围","color":"t"},{"value":-10,"label":"改进建议","color":"warn-h"}]'></yry-scene-stats>
-<div class="yry-bar-wrap"><div class="yry-bar-outer"><div class="yry-seg strength" style="width:225%"></div><div class="yry-seg gap" style="width:-125%"></div></div></div>
+<yry-scene-stats items='[{"value":"28/8","label":"诊断通过","color":"health"},{"value":"D0-D8","label":"覆盖范围","color":"t"},{"value":-20,"label":"改进建议","color":"warn-h"}]'></yry-scene-stats>
+<yry-scene-health-bar segments='[{"pct":350,"cls":"strength"},{"pct":-250,"cls":"gap"}]'></yry-scene-health-bar>
 
-<div class="yry-tabs">
-  <span class="yry-tab on" data-panel="overview">📊 总览</span>
-  <span class="yry-tab" data-panel="good">✅ 好案例</span>
-  <span class="yry-tab" data-panel="bad">❌ 坏案例</span>
-  <span class="yry-tab" data-panel="recommendations">📝 改进建议</span>
-  <span class="yry-tab" data-panel="evidence">📎 证据链</span>
-</div>
-
-<div class="yry-panel on" id="panelOverview">
-  <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
-</div>
-
-<div class="yry-panel" id="panelGood">
-  <div class="case-card good">
-    <h4>✅ <span class="case-tag good">好案例</span> 文档基线完整</h4>
-    <div class="case-loc">📁 cdn/yry-test/scenes/场景-1-init后全量自检/index.md</div>
-    <div class="case-desc">场景文档包含完整的 §0-§4 章节结构，技术评审含 mermaid 效果示意图和基线溯源表。</div>
+<yry-scene-tabs tabs='[{"id":"overview","label":"📊 总览"},{"id":"good","label":"✅ 好案例"},{"id":"bad","label":"❌ 坏案例"},{"id":"recommendations","label":"📝 改进建议"},{"id":"evidence","label":"📎 证据链"}]'>
+  <div data-panel="overview"><div class="placeholder">数据待填充 — 运行 /rui code 生成</div></div>
+  <div data-panel="good">
+    <div class="case-card good">
+      <h4>✅ <span class="case-tag good">好案例</span> 文档基线完整</h4>
+      <div class="case-loc">📁 cdn/yry-test/场景-1-init后全量自检/index.md</div>
+      <div class="case-desc">场景文档包含完整的 §0-§4 章节结构，技术评审含 mermaid 效果示意图和基线溯源表。</div>
+    </div>
   </div>
-</div>
-
-<div class="yry-panel" id="panelBad">
-  <div class="case-card bad">
-    <h4>❌ <span class="case-tag bad">待审查</span> 需运行 /rui code 生成实施数据</h4>
-    <div class="case-loc">📁 cdn/yry-test/scenes/场景-1-init后全量自检/index.md §2-§4</div>
-    <div class="case-desc">§2 实施报告、§3 测试报告、§4 自改进章节数据待填充。运行 /rui code 后重新审查。</div>
+  <div data-panel="bad">
+    <div class="case-card bad">
+      <h4>❌ <span class="case-tag bad">待审查</span> 需运行 /rui code 生成实施数据</h4>
+      <div class="case-loc">📁 cdn/yry-test/场景-1-init后全量自检/index.md §2-§4</div>
+      <div class="case-desc">§2 实施报告、§3 测试报告、§4 自改进章节数据待填充。运行 /rui code 后重新审查。</div>
+    </div>
   </div>
-</div>
-
-<div class="yry-panel" id="panelRecommendations">
-  <div class="rec-grid">
-    <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
+  <div data-panel="recommendations">
+    <div class="rec-grid"><div class="placeholder">数据待填充 — 运行 /rui code 生成</div></div>
   </div>
-</div>
-
-<div class="yry-panel" id="panelEvidence">
-  <div class="dim-card">
-    <h3>📎 审查证据清单</h3>
-    <ul>
-      <li><strong>场景文档:</strong> index.md 存在，含 §0-§4 章节</li>
-      <li><strong>版本:</strong> vv1.1.0 · 2026-06-05</li>
-      <li><strong>故事:</strong> 自测 · 故事任务</li>
-    </ul>
+  <div data-panel="evidence">
+    <div class="dim-card">
+      <h3>📎 审查证据清单</h3>
+      <ul>
+        <li><strong>场景文档:</strong> index.md 存在，含 §0-§4 章节</li>
+        <li><strong>版本:</strong> vv5.4.0 · 2026-06-22</li>
+        <li><strong>故事:</strong> yry-test · 故事任务</li>
+      </ul>
+    </div>
   </div>
-</div>
+</yry-scene-tabs>
 
-<div class="yry-footer">YrY vv1.1.0 · 2026-06-05 · <a href="../../../../docs/index.html">文档中心</a></div>
+<yry-scene-footer version="v5.4.0" date="2026-06-22" docs-link="../../../../docs/index.html"></yry-scene-footer>
 </div>
 <script src="../../../../cdn/shared/index.js"></script>
 <script src="../../../../cdn/yry-scene-chrome/index.js"></script>
 <script src="../../../../cdn/yry-scene-stats/index.js"></script>
-<script>YrY.initTabs();</script>
+<script src="../../../../cdn/yry-scene-health-bar/index.js"></script>
+<script src="../../../../cdn/yry-scene-tabs/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
+<script src="../../../../cdn/yry-review-cards/index.js"></script>
 </body>
 </html>

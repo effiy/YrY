@@ -148,6 +148,12 @@
       "label": "配置漂移",
       "count": 0,
       "rate": 0
+    },
+    {
+      "id": "D8",
+      "label": "架构退化",
+      "count": 0,
+      "rate": 0
     }
   ],
   "diagLabels": {
@@ -158,7 +164,8 @@
     "D4": "流程退化",
     "D5": "依赖退化",
     "D6": "文档过时",
-    "D7": "配置漂移"
+    "D7": "配置漂移",
+    "D8": "架构退化"
   },
   "scoreTrend": [
     {
@@ -184,36 +191,32 @@
     {
       "type": "improvement",
       "icon": "📈",
-      "msg": "页面迁移率连续 3 版本上升至 85%,D0-D7 诊断覆盖率改善"
+      "msg": "页面迁移率连续 3 版本上升至 85%,D0-D8 诊断覆盖率改善"
     },
     {
       "type": "info",
       "icon": "ℹ️",
-      "msg": "CSS 组件已稳定在 22+ 个,后续 1.x 阶段不再新增类"
+      "msg": "CDN 组件已扩展至 125 个 (30 Vue + 83 Vanilla + 12 页面/样式基类), 文档覆盖率 100% · 完整 111 · 待补 14"
     }
   ],
   "componentHealth": {
-    "css": {
-      "count": 22,
-      "avgScore": 95
-    },
-    "themes": {
-      "count": 2,
-      "avgScore": 90
-    },
-    "apis": {
-      "count": 9,
-      "avgScore": 88
-    },
-    "scripts": {
-      "count": 2,
+    "vue": {
+      "count": 30,
       "avgScore": 92
     },
+    "vanilla": {
+      "count": 83,
+      "avgScore": 90
+    },
+    "baseClasses": {
+      "count": 12,
+      "avgScore": 95
+    },
     "overallAvg": 92,
-    "totalComponents": 35
+    "totalComponents": 125
   },
   "scoreReport": {
-    "updated": "2026-06-20T01:32:14.203Z",
+    "updated": "2026-06-23T11:05:28.453Z",
     "composite": 92,
     "grade": "A",
     "dataPoints": 3,
@@ -344,38 +347,31 @@
     "recommendations": [],
     "componentBreakdown": [
       {
-        "category": "css",
-        "label": "CSS 组件",
-        "score": 95,
-        "count": 22,
-        "grade": "excellent"
-      },
-      {
-        "category": "themes",
-        "label": "双主题",
-        "score": 90,
-        "count": 2,
-        "grade": "excellent"
-      },
-      {
-        "category": "apis",
-        "label": "JS API",
-        "score": 88,
-        "count": 9,
-        "grade": "good"
-      },
-      {
-        "category": "scripts",
-        "label": "脚本工具",
+        "category": "vue",
+        "label": "vue",
         "score": 92,
-        "count": 2,
+        "count": 54,
+        "grade": "excellent"
+      },
+      {
+        "category": "vanilla",
+        "label": "vanilla",
+        "score": 90,
+        "count": 44,
+        "grade": "excellent"
+      },
+      {
+        "category": "infrastructure",
+        "label": "infrastructure",
+        "score": 95,
+        "count": 9,
         "grade": "excellent"
       }
     ],
     "diagnostics": {
       "triggered": 1,
-      "total": 8,
-      "rate": 13,
+      "total": 9,
+      "rate": 11,
       "topDiags": [
         {
           "id": "D3",

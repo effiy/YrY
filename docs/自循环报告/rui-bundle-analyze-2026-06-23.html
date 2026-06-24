@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自循环报告 · 体积与依赖看门狗</title>
+<link rel="stylesheet" href="../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../cdn/theme/index.css">
+	<link rel="stylesheet" href="../../cdn/shared-reports/index.css">
+	<style>
+	.yry-container { max-width: 800px; }
+	.yry-header .icon { font-size: 2.5rem; }
+	.yry-header h1 { font-size: 1.6rem; margin: 12px 0 6px; }
+	/* common styles covered by shared-reports.css */
+	/* Enhanced sections — page-specific */
+	.yry-impact-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+	.yry-impact-badge { display: inline-block; padding: 4px 14px; border-radius: 6px; color: #fff; font-size: .8rem; font-weight: 600; }
+	.yry-impact-summary { font-size: .84rem; color: var(--yry-text2); }
+	.yry-impact-detail { padding: 12px; background: rgba(15,23,42,.4); border-radius: 8px; border: var(--yry-border); margin-top: 8px; }
+	.yry-hist-dot { transition: transform .15s; }
+	.yry-hist-dot:hover { transform: scale(1.8); }
+	.yry-cross-item { flex: 1; min-width: 200px; }
+	.yry-cross-label { font-size: .78rem; color: var(--yry-text3); margin-bottom: 4px; }
+	.yry-cross-desc { font-size: .88rem; font-weight: 600; color: var(--yry-accent); line-height: 1.5; }
+	.yry-cross-badge { text-align: center; padding: 8px 16px; background: rgba(15,23,42,.4); border-radius: 8px; border: var(--yry-border); flex-shrink: 0; min-width: 80px; }
+	</style>
+</head>
+<body>
+<div class="yry-container">
+
+<nav class="yry-breadcrumb">
+  <a href="../../docs/index.html">📄 文档中心</a>
+  <span class="yry-bc-sep">/</span>
+  <a href="../../docs/自循环报告/">🔄 自循环报告</a>
+  <span class="yry-bc-sep">/</span>
+  <span class="yry-bc-current">体积与依赖看门狗</span>
+</nav>
+
+<div class="yry-header">
+  <div class="icon">📊</div>
+  <h1>自循环报告 · 体积与依赖看门狗</h1>
+  <div class="meta">2026-06-23 01:52:28 · 每周一早 9 点 · <span class="yry-badge pass">✅ 通过</span></div>
+  <div class="desc" style="font-size:.84rem;color:var(--yry-text2);margin-top:12px;line-height:1.7;max-width:700px;margin-left:auto;margin-right:auto">项目体积与依赖图谱静态分析，检测体积异常、循环依赖、孤儿文件和重复文件组，被 rui-yry D3/D5 诊断调用</div>
+</div>
+
+<div class="yry-stats">
+  <div class="yry-stat">
+    <div class="yry-val pass">✓</div>
+    <div class="yry-lbl">状态</div>
+  </div>
+  <div class="yry-stat">
+    <div class="yry-val pass">0</div>
+    <div class="yry-lbl">信息</div>
+  </div>
+  <div class="yry-stat">
+    <div class="yry-val warn">0</div>
+    <div class="yry-lbl">告警</div>
+  </div>
+  <div class="yry-stat">
+    <div class="yry-val fail">0</div>
+    <div class="yry-lbl">异常</div>
+  </div>
+  
+  <div class="yry-stat">
+    <a href="../../docs/健康报告/" style="text-decoration:none;color:inherit">
+      <div class="yry-val pass">95</div>
+      <div class="yry-lbl">🩺 健康度 A 级</div>
+    </a>
+  </div>
+</div>
+
+<div class="yry-summary">rui-bundle-analyze 自循环通过 (exit 0)</div>
+
+<div class="yry-card"><h2>📋 检查清单 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">5/5 通过</span></h2><div style="margin-bottom:8px"><div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.78rem;border-bottom:1px solid rgba(255,255,255,.03)"><span style="color:var(--yry-pass)">✅</span><span style="color:var(--yry-text2)">体积增长检测</span><span style="color:var(--yry-text3);font-size:.68rem;margin-left:auto">≤15%</span></div><div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.78rem;border-bottom:1px solid rgba(255,255,255,.03)"><span style="color:var(--yry-pass)">✅</span><span style="color:var(--yry-text2)">大文件扫描</span><span style="color:var(--yry-text3);font-size:.68rem;margin-left:auto">0 个 >500KB</span></div><div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.78rem;border-bottom:1px solid rgba(255,255,255,.03)"><span style="color:var(--yry-pass)">✅</span><span style="color:var(--yry-text2)">循环依赖检测</span><span style="color:var(--yry-text3);font-size:.68rem;margin-left:auto">0 循环</span></div><div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.78rem;border-bottom:1px solid rgba(255,255,255,.03)"><span style="color:var(--yry-pass)">✅</span><span style="color:var(--yry-text2)">孤儿文件检测</span><span style="color:var(--yry-text3);font-size:.68rem;margin-left:auto">≤5 个</span></div><div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.78rem;border-bottom:1px solid rgba(255,255,255,.03)"><span style="color:var(--yry-pass)">✅</span><span style="color:var(--yry-text2)">重复文件组检测</span><span style="color:var(--yry-text3);font-size:.68rem;margin-left:auto">0 新增组</span></div></div><div style="padding:8px 12px;background:rgba(34,197,94,.04);border-radius:6px;font-size:.74rem;color:var(--yry-text2)">📌 所有检查项均通过，技能运行正常。下一个巡检周期将自动重新检查。 执行频率：每周一早 9 点。</div></div>
+
+
+
+
+
+
+
+<div class="yry-card">
+        <h2>📈 历史趋势</h2>
+        <div style="text-align:center;color:var(--yry-text3);padding:20px;font-size:.84rem">仅 1 份报告 — 积累更多数据后启用趋势对比</div>
+      </div>
+
+<div class="yry-card">
+      <h2>⏱️ SLA 追踪 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Service Level Agreement</span></h2>
+      <div style="text-align:center;padding:16px;color:#22c55e;font-size:.84rem">✅ 当前状态正常，无 SLA 计时器启动</div>
+    </div>
+
+
+
+<div class="yry-card">
+    <h2>🔗 关联分析 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">对项目健康的影响</span></h2>
+    <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:12px">
+      <div class="yry-cross-item">
+        <div class="yry-cross-label">关联诊断维度</div>
+        <div class="yry-cross-desc">D3 复杂度增长诊断</div>
+      </div>
+      <div class="yry-cross-item">
+        <div class="yry-cross-label">影响机制</div>
+        <div class="yry-cross-desc">体积与依赖分析结果输入 D3 复杂度增长诊断，Treemap 和依赖图谱是核心信号</div>
+      </div>
+      <div class="yry-cross-badge">
+        <div style="font-size:.7rem;color:var(--yry-text3)">当前状态</div>
+        <div style="font-size:1.1rem;font-weight:700;color:var(--yry-pass)">✓ 正常</div>
+      </div>
+    </div>
+    <div style="padding:10px;background:rgba(245,158,11,.04);border-radius:8px;border:1px solid rgba(245,158,11,.1);font-size:.78rem;color:var(--yry-text2);line-height:1.6"><strong>📊 升级策略：</strong>新增 >500KB 文件 → P1 · 新增循环依赖 → P0 · 与 D2 质量退化联动</div>
+  </div>
+
+
+
+<div class="yry-footer">
+  自循环报告 · rui-bundle-analyze · 2026-06-23 01:52:28<br>
+  <span style="color:var(--yry-text3)">由 rui-bot loop-report 自动生成</span>
+</div>
+
+</div>
+<script src="../../cdn/shared/index.js"></script>
+</body>
+</html>

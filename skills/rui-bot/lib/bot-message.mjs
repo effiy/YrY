@@ -186,7 +186,7 @@ export function buildVerboseBlock(opts, projectRoot) {
     try {
       const diagResult = getDiagnosticResult(projectRoot);
       if (diagResult.skip || diagResult.triggered.length === 0) {
-        lines.push("│ D0-D7: 无异常");
+        lines.push("│ D0-D8: 无异常");
       } else {
         for (const d of diagResult.triggered) {
           lines.push(`│ ${d.id}: ${d.label}`);
@@ -370,7 +370,7 @@ export function buildHealthNotification(hr, projectName) {
     const diagSummary = hr.diagnostics.triggered.map((d) => `${d.id} ${d.label}`).join(", ");
     lines.push(`⚠️ 触发诊断: ${diagSummary}`);
   } else {
-    lines.push(`✅ D0-D7: 全部通过`);
+    lines.push(`✅ D0-D8: 全部通过`);
   }
 
   // Dimension highlights — only show warnings/failures

@@ -14,8 +14,14 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { execSync } from "node:child_process";
 
 import { scoreIcon, clampScore } from "./bot-health-analysis.mjs";
+import { ENTRY_POINT_PATTERNS } from "../../../lib/constants.mjs";
 
 const SOURCE_EXT = new Set(["mjs", "js", "ts"]);
+const HTML_EXT = new Set(["html", "htm"]);
+
+function isEntryPoint(filePath) {
+  return ENTRY_POINT_PATTERNS.some((re) => re.test(filePath));
+}
 
 /**
  * Resolve a relative import specifier to a canonical project-relative path.
@@ -74,6 +80,46 @@ function extractImports(filePath, projectRoot) {
 }
 
 /**
+ * Extract script/link references from an HTML file.
+ * Captures non-external <script src="..."> and <link href="..."> asset references
+ * that resolve to tracked source files. Treats the HTML page as a consumer
+ * (edge: HTML → asset), so referenced files are no longer orphan.
+ */
+function extractHtmlReferences(filePath, projectRoot) {
+  const refs = [];
+  try {
+    const content = readFileSync(join(projectRoot, filePath), "utf-8");
+    // Normalize an HTML relative URL to a path resolveImport can handle.
+    // In HTML, "js/x.js" is relative (unlike JS imports where it'd be external).
+    const normalizeHtmlSpec = (spec) => {
+      if (/^(?:https?:)?\/\//i.test(spec) || spec.startsWith("data:")) return null;
+      if (spec.startsWith("/") || spec.startsWith("./") || spec.startsWith("../")) return spec;
+      return "./" + spec;
+    };
+    // <script src="..."> — skip external URLs (http://, //, data:)
+    const scriptRe = /<script\s+[^>]*\bsrc\s*=\s*['"]([^'"]+)['"]/g;
+    let m;
+    while ((m = scriptRe.exec(content)) !== null) {
+      const spec = normalizeHtmlSpec(m[1]);
+      if (!spec) continue;
+      const resolved = resolveImport(spec, filePath, projectRoot);
+      if (resolved) refs.push({ type: "html-script", from: resolved, specifier: m[1] });
+    }
+
+    // <link href="..."> — only stylesheet/script-ish refs, skip external
+    const linkRe = /<link\s+[^>]*\bhref\s*=\s*['"]([^'"]+)['"]/g;
+    while ((m = linkRe.exec(content)) !== null) {
+      const spec = normalizeHtmlSpec(m[1]);
+      if (!spec) continue;
+      const resolved = resolveImport(spec, filePath, projectRoot);
+      if (resolved) refs.push({ type: "html-link", from: resolved, specifier: m[1] });
+    }
+  } catch { /* skip unreadable */ }
+
+  return refs;
+}
+
+/**
  * Detect cycles using DFS in the dependency graph.
  */
 function detectCycles(graph) {
@@ -126,6 +172,7 @@ function shortPath(p) {
 export function getDependencyAnalysis(projectRoot) {
   // ── Collect all source files ──────────────────────────────
   const sourceFiles = [];
+  const htmlFiles = [];
   try {
     const tracked = execSync("git ls-files --cached --others --exclude-standard", {
       cwd: projectRoot, encoding: "utf-8", timeout: 8000,
@@ -134,9 +181,13 @@ export function getDependencyAnalysis(projectRoot) {
     for (const rel of tracked) {
       const dot = rel.lastIndexOf(".");
       const ext = dot > 0 ? rel.slice(dot + 1).toLowerCase() : "";
-      if (!SOURCE_EXT.has(ext)) continue;
-      if (rel.startsWith("node_modules/") || rel.startsWith("cdn/") || rel.startsWith("dist/")) continue;
-      sourceFiles.push(rel);
+      if (SOURCE_EXT.has(ext)) {
+        if (rel.startsWith("node_modules/") || rel.startsWith("cdn/") || rel.startsWith("dist/")) continue;
+        sourceFiles.push(rel);
+      } else if (HTML_EXT.has(ext)) {
+        if (rel.startsWith("node_modules/")) continue;
+        htmlFiles.push(rel);
+      }
     }
   } catch (err) {
     return { graph: null, cycles: [], orphans: [], fanIn: [], fanOut: [],
@@ -166,6 +217,22 @@ export function getDependencyAnalysis(projectRoot) {
     }
   }
 
+  // ── HTML script/link references ───────────────────────────
+  // HTML files are consumers but not source modules. Their references count
+  // as incoming edges for the target source files (prevents false orphans).
+  for (const html of htmlFiles) {
+    const refs = extractHtmlReferences(html, projectRoot);
+    for (const ref of refs) {
+      if (sourceFiles.includes(ref.from)) {
+        if (!revGraph.has(ref.from)) revGraph.set(ref.from, new Set());
+        if (!revGraph.get(ref.from).has(html)) {
+          revGraph.get(ref.from).add(html);
+          totalEdges++;
+        }
+      }
+    }
+  }
+
   // ── Circular dependency detection ─────────────────────────
   const cycles = detectCycles(graph);
 
@@ -173,6 +240,7 @@ export function getDependencyAnalysis(projectRoot) {
   const fanIn = [];
   const fanOut = [];
   const orphans = [];
+  const entryPoints = [];
 
   for (const [file, deps] of graph) {
     const inCount = (revGraph.get(file) || new Set()).size;
@@ -182,7 +250,11 @@ export function getDependencyAnalysis(projectRoot) {
     fanOut.push({ file, shortPath: shortPath(file), count: outCount });
 
     if (inCount === 0 && outCount === 0) {
-      orphans.push({ file, shortPath: shortPath(file) });
+      if (isEntryPoint(file)) {
+        entryPoints.push({ file, shortPath: shortPath(file) });
+      } else {
+        orphans.push({ file, shortPath: shortPath(file) });
+      }
     }
   }
 
@@ -205,10 +277,11 @@ export function getDependencyAnalysis(projectRoot) {
   const icon = scoreIcon(score);
   const summary = `${sourceFiles.length} 模块 · ${totalEdges} 依赖边` +
     (cycles.length > 0 ? ` · ${cycles.length} 循环依赖` : " · 无循环依赖") +
-    (orphans.length > 0 ? ` · ${orphans.length} 孤立文件` : "");
+    (orphans.length > 0 ? ` · ${orphans.length} 孤立文件` : "") +
+    (entryPoints.length > 0 ? ` · ${entryPoints.length} 入口文件` : "");
 
   return {
-    graph, cycles, orphans, isolated,
+    graph, cycles, orphans, entryPoints, isolated,
     fanIn: fanIn.slice(0, 10), fanOut: fanOut.slice(0, 10),
     highFanIn: highFanIn.slice(0, 10), highFanOut: highFanOut.slice(0, 10),
     totalFiles: sourceFiles.length, totalEdges,

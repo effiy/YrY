@@ -1,6 +1,7 @@
 # 场景 2 · 清单交互组件实现
 
-> | v1.1.0 | 2026-06-16 | 🏷️ checklist | 📎 [故事任务](../故事任务.md) |
+> | v5.4.0 | 2026-06-22 | 深化对齐 · 补充事件契约与状态流向 | 🏷️ checklist | 📎 [故事任务](../故事任务.md) |
+> **交付物**: [📋 清单](清单.html) · [📐 架构](架构图.html) · [🔗 图谱](知识图谱.html) · [📄 源码](源码.html) · [🧪 测试](测试面板.html) · [💡 演示](演示.html) · [📝 审查](审查.html)
 
 ## §0 技术评审
 
@@ -70,6 +71,50 @@ flowchart LR
     classDef r fill:#8B5CF6,color:#fff
 ```
 
+### 事件契约（与 `架构图.html` 事件契约段一致）
+
+| 事件源 | 事件类型 | 处理函数 | 副作用 |
+|--------|---------|---------|--------|
+| checkbox | `click` | `onCheck(stepId)` | 进度条更新 · localStorage 写入 · 步骤状态重推导 |
+| 交付物头部 | `click` | `toggleCollapse(groupId)` | CSS class `collapsed` 切换 · max-height transition |
+| 标签页 | `click` / `keydown` | `switchTab(tabName)` | `.tab-panel.active` 切换 · tab localStorage 写入 |
+| 风险行 | `click` | `toggleRisk(rowId)` | CSS class `open` 切换 · 详情展开 |
+| 过滤按钮 | `click` | `filterDeliv(type)` | `.deliv-link.dim` 切换 · 显隐动画 |
+| 复制按钮 | `click` | `copyPath(path)` | 剪贴板写入 · `showToast()` 0.15s fade |
+| document | `keydown` | `onKeyShortcut(e)` | 数字键 1-9 → 标签页切换（跳过 input 聚焦） |
+| window | `hashchange` | `onHashChange()` | 跨 tab 跳转 · 自动展开折叠面板 · 高亮目标 |
+
+### 状态流向（与 `架构图.html` 状态流向段一致）
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    U["用户操作"] --> E["事件触发"]:::e
+    E --> S["状态更新"]:::s
+    S --> D["DOM 渲染"]:::d
+    D --> LS["localStorage 持久化"]:::ls
+
+    LOAD["页面加载"] --> LS2["读取 localStorage"]:::ls
+    LS2 --> R["恢复状态"]:::r
+    R --> D2["DOM 初始渲染"]:::d
+
+    classDef e fill:#fbbf24,color:#000
+    classDef s fill:#34d399,color:#000
+    classDef d fill:#8B5CF6,color:#fff
+    classDef ls fill:#06b6d4,color:#000
+    classDef r fill:#3B82F6,color:#fff
+```
+
+**两条流向**：
+- **操作流向**：用户操作 → 事件 → 状态更新 → DOM 渲染 → localStorage
+- **加载流向**：页面加载 → localStorage → 恢复状态 → DOM 初始渲染
+
+**架构约束**：无全局 store，每个组件独立管理自身状态（6 组件 6 状态机）。
+
 ### 组件清单
 
 | 组件 | 触发方式 | 状态存储 | CSS 约定 | 动画 |
@@ -118,19 +163,102 @@ flowchart LR
 
 跳过 `input`/`textarea` 聚焦状态，避免编辑时误触发。
 
+### 状态机与事件流
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+stateDiagram-v2
+    [*] --> Pending
+    Pending --> Ready: 前置全完成
+    Ready --> Done: 用户勾选
+    Done --> Ready: 用户取消
+    Ready --> Pending: 前置被取消
+    Done --> [*]
+```
+
+| 状态 | 触发 | 视觉 | 持久化 |
+|------|------|------|:---:|
+| Pending | 初始 / 前置未完成 | ⏳ 灰色 | ✓ |
+| Ready | 前置全完成 + 未勾选 | 🔶 黄色 | ✓ |
+| Done | 用户勾选 | ✅ 绿色 | ✓ |
+
+### 进度计算算法
+
+```javascript
+function calculateProgress(steps) {
+  const done = steps.filter(s => s.done).length;
+  const total = steps.length;
+  const percent = (done / total) * 100;
+  return { done, total, percent };
+}
+
+function deriveStepStatus(step, allSteps) {
+  const prerequisites = allSteps.slice(0, step.index);
+  const allPrereqDone = prerequisites.every(p => p.done);
+  if (step.done) return 'done';
+  if (allPrereqDone) return 'ready';
+  return 'pending';
+}
+```
+
+| 度量 | 公式 | 阈值 |
+|------|------|:---:|
+| 进度百分比 | `done / total × 100` | 0-100% |
+| 就绪步骤数 | `∑ (status === 'ready' ? 1 : 0)` | 整数 |
+| 阻塞步骤数 | `∑ (status === 'pending' && hasUnfinishedPrereq ? 1 : 0)` | 整数 |
+| 完成率 | `done / (done + ready)` | 0-100% |
+
+### localStorage 容错矩阵
+
+| 场景 | 行为 | 用户体验 |
+|------|------|---------|
+| 正常读写 | JSON 序列化 + 存储 | 状态持久 |
+| 隐私模式 | `try/catch` 静默降级 | 仅当前会话有效 |
+| 存储已满 | catch + 提示 + 旧 key 清理 | 保留最新状态 |
+| 数据损坏 | JSON.parse 失败 → 重置为默认 | 不崩溃 |
+| 跨域限制 | catch + console.warn | 仅当前域有效 |
+| Safari ITP | 7 天后清理 | 用户需重新勾选 |
+
+### 动画与降级策略
+
+| 动画 | 时长 | 缓动 | 降级（prefers-reduced-motion） |
+|------|:---:|------|------|
+| 进度条 width | 500ms | ease | 立即更新 |
+| 折叠面板 max-height | 300ms | ease-out | 立即显隐 |
+| 标签页 opacity | 200ms | linear | 立即切换 |
+| Toast fade | 150ms | ease | 立即显示 |
+| 风险行展开 | 300ms | ease-out | 立即展开 |
+
 ## §1 测试设计
 
-| TC# | 用例 | 验证点 | 预期 |
-|-----|------|--------|------|
-| TC-10 | 勾选步骤 | 进度%更新 + 完成数+1 + 步骤状态推导 | 延迟 < 50ms |
-| TC-11 | 折叠面板动画 | 展开/收起过渡 + 交付物列表显隐 | 300ms 内完成 |
-| TC-12 | 标签页全切换 | 7 面板逐一显示 + 键盘 1-9 映射 | 7/7 正常 |
-| TC-13 | 刷新恢复状态 | localStorage 回读勾选 + tab 状态 | 全部恢复 |
-| TC-14 | 风险行点击 | 详情显示/隐藏 + toggle 箭头切换 | 切换正常 |
-| TC-15 | 交付物类型过滤 | 全部/HTML/MD/CSS/Test/其他 六类过滤 | 过滤正确 |
-| TC-16 | 复制路径 | 单步复制 + 全部复制 + 剪贴板写入 | 复制成功 |
+| TC# | 用例 | 验证点 | 预期 | 优先级 |
+|-----|------|--------|------|:---:|
+| TC-10 | 勾选步骤 | 进度%更新 + 完成数+1 + 步骤状态推导 | 延迟 < 50ms | P0 |
+| TC-11 | 折叠面板动画 | 展开/收起过渡 + 交付物列表显隐 | 300ms 内完成 | P0 |
+| TC-12 | 标签页全切换 | 7 面板逐一显示 + 键盘 1-9 映射 | 7/7 正常 | P0 |
+| TC-13 | 刷新恢复状态 | localStorage 回读勾选 + tab 状态 | 全部恢复 | P0 |
+| TC-14 | 风险行点击 | 详情显示/隐藏 + toggle 箭头切换 | 切换正常 | P1 |
+| TC-15 | 交付物类型过滤 | 全部/HTML/MD/CSS/Test/其他 六类过滤 | 过滤正确 | P1 |
+| TC-16 | 复制路径 | 单步复制 + 全部复制 + 剪贴板写入 | 复制成功 | P1 |
+| TC-17 | 哈希跳转 | `#step-N-deliv` 触发跨 tab 跳转 | 自动展开 + 高亮 | P2 |
+| TC-18 | prefers-reduced-motion | 用户设置降级动画 | CSS transition 禁用 | P2 |
+
+### 测试策略（与 `架构图.html` 测试策略段一致）
+
+| 测试层 | 范围 | 用例 |
+|:---:|------|------|
+| 单元测试 | 组件级独立验证 | TC-10 · TC-11 · TC-12 |
+| 集成测试 | localStorage 持久化 | TC-13 |
+| 交互测试 | 用户操作模拟 | TC-14 · TC-15 · TC-16 |
+| 回归测试 | a11y 降级 · 哈希跳转 | TC-17 · TC-18 |
 
 ## §2 实施报告
+
+### 产物清单（11 项 · 7 HTML 卡片 + 4 实施产物）
 
 | 产物 | 类型 | 规模 | 状态 |
 |------|------|------|------|
@@ -145,6 +273,16 @@ flowchart LR
 | 演示.html | 6 步走查 + 时间线 + Quiz | ~1300 行 | ✅ 已交付 |
 | 审查.html | 4 维审查 + 证据链 + 签收 | ~550 行 | ✅ 已交付 |
 | 源码.html | 三层架构拆解 + 调试命令 | ~850 行 | ✅ 已交付 |
+
+### 任务管线（5 步 · 与 `架构图.html` 里程碑一致）
+
+| # | 任务 | 验收信号 | 状态 |
+|:---:|------|---------|:---:|
+| 1 | Data 层 · localStorage schema 设计 | 2 keys · 含 `s2` 场景标识 · try/catch 容错 | ✅ |
+| 2 | Template 层 · DOM 钩子 + 事件绑定 | 8 事件契约（见 §0 事件契约表）全部就绪 | ✅ |
+| 3 | Renderer 层 · 进度条 + 标签页 + Toast | 3 个渲染函数 · 300ms 动画 · 0.15s toast | ✅ |
+| 4 | 6 组件实现 · 零依赖内联 JS | ~410 行 · 2 个 script 块 · 无外部依赖 | ✅ |
+| 5 | 测试面板 · 7 套件 26 断言 | 100% 通过 · 平均 14.8ms | ✅ |
 
 ### 实施要点
 

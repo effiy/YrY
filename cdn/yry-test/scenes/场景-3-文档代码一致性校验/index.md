@@ -1,7 +1,8 @@
 # 场景 3: 文档与代码一致性校验
 
-> | v1.0.0 | 2026-06-05 | deepseek-v4-pro | 🌿 feat/yry-self-test | ⏱️ --:-- | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
+> | v5.4.0 | 2026-06-22 | 深化对齐 · 补充角色链与门禁策略 | 🌿 feat/yry-self-test | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
 > **导航**: [← 场景-2](./index.md) · [场景-4 →](./index.md)
+> **交付物**: [📋 清单](清单.html) · [📐 架构](架构图.html) · [🔗 图谱](知识图谱.html) · [📄 源码](源码.html) · [🧪 测试](测试面板.html) · [💡 演示](演示.html) · [📝 审查](审查.html)
 
 [§0 技术评审](#sec0) · [§1 测试设计](#sec1) · [§2 实施报告](#sec2) · [§3 测试报告](#sec3) · [§4 自改进](#sec4)
 
@@ -139,12 +140,59 @@ sequenceDiagram
 
 | # | 检查项 | 状态 |
 |---|--------|:--:|
-| 1 | 四层校验各层独立执行，前一层的阻断不阻止后续层继续（收集完整问题清单） | |
-| 2 | 文件引用解析覆盖 markdown 相对链接和知识图谱中的 source/target 引用 | |
-| 3 | 实施报告匹配对比基于实际版本控制日志，非内存缓存 | |
-| 4 | 知识图谱节点和边验证区分「实现节点」（需源文件存在）和「业务节点」（不需源文件） | |
-| 5 | 一致性校验本身只读，不修改文档或源码 | |
-| 6 | 断裂引用报告含精确的文档内行号或章节定位 | |
+| 1 | 四层校验各层独立执行，前一层的阻断不阻止后续层继续（收集完整问题清单） | ✅ |
+| 2 | 文件引用解析覆盖 markdown 相对链接和知识图谱中的 source/target 引用 | ✅ |
+| 3 | 实施报告匹配对比基于实际版本控制日志，非内存缓存 | ✅ |
+| 4 | 知识图谱节点和边验证区分「实现节点」（需源文件存在）和「业务节点」（不需源文件） | ✅ |
+| 5 | 一致性校验本身只读，不修改文档或源码 | ✅ |
+| 6 | 断裂引用报告含精确的文档内行号或章节定位 | ✅ |
+| 7 | 8 维校验矩阵全覆盖（文档↔代码 · 版本号 · 行号 · 图谱节点/边 · API 签名 · 配置 schema） | ✅ |
+
+### 角色链与门禁策略（与 `架构图.html` 决策链/实现链/闭环链一致）
+
+#### 决策链 · 3 角色
+
+| 阶段 | 角色 | 验收信号 | 失败处理 |
+|------|------|---------|---------|
+| 一致性评审 | reviewer | 8 维校验全部通过 · 0 漂移 | 修复漂移后重新校验 |
+| 契约审计 | reviewer | 场景 §2/§3 实施与代码状态匹配 | 修复文档或代码 · 单方违反需 P0 |
+| 安全审计 | security | 无虚假引用 · 无路径穿越 · 无敏感配置暴露 | 立即修复 · 不允许跳过 |
+
+#### 实现链 · 5 角色
+
+| 阶段 | 角色 | 输入 | 输出 |
+|------|------|------|------|
+| 引用解析 | coder | markdown + 知识图谱 JSON | 文档引用清单 |
+| 文件存在性 | coder | 引用清单 | 断裂引用报告 |
+| 实施匹配 | coder | 场景 §2 + git log | 文档 vs 代码差异 |
+| 测试对齐 | coder | 场景 §3 + 实际执行结果 | 测试记录偏差 |
+| 图谱有效性 | coder | 图谱 nodes/edges | 节点/边映射验证 |
+
+#### 闭环链 · 2 角色
+
+| 阶段 | 角色 | 验收信号 | 失败处理 |
+|------|------|---------|---------|
+| 一致性签收 | deliverer | 8 维校验全通过 · 报告完整 | 修复后重新签收 |
+| 效果评估 | self-improve | 漂移率 ≤ 2% · 误报率 ≤ 1% | 提案入库 · 下轮迭代 |
+
+### 门禁通过策略（与 `架构图.html` 通过策略段一致）
+
+| 门禁 | 判定规则 | 阻断标识 |
+|------|---------|---------|
+| P0 Gate | 文档→代码引用 · 版本号 · 图谱节点 · API 签名 全部一致 | `doc-code-p0` |
+| P1 Gate | 代码→文档 · 行号引用 · 图谱边 · 配置 schema | `doc-code-p1` |
+| 只读门禁 | 校验本身不修改文件 · 无副作用 | `side-effect` |
+| 完整性门禁 | 4 层校验独立执行 · 收集完整问题清单 | `incomplete-check` |
+
+### 常见阻断（与 `架构图.html` 常见阻断段一致）
+
+| 阻断类型 | 触发条件 | 修复路径 |
+|---------|---------|---------|
+| 引用断裂 | 文档引用的目标文件不存在 | 修复路径 · 或补齐目标文件 |
+| 实施滞后 | 场景 §2 实施与 git log 不匹配 | 同步更新 §2 实施报告 |
+| 测试偏差 | 场景 §3 测试记录与实际执行不符 | 重新跑测试 · 更新 §3 |
+| 图谱脱节 | 知识图谱节点未映射到实际符号 | 修复 JSON · 或补齐源码符号 |
+| 版本不一致 | 文档内嵌版本 vs `plugin.json` | 运行 `update-version.mjs` 统一 |
 
 ---
 
@@ -155,6 +203,70 @@ sequenceDiagram
 | 文档代码漂移导致规约不再可信 | High | 定期一致性校验；交叉引用有效性自动检测 |
 | 知识图谱节点与源码脱节 | Medium | 知识图谱 JSON 的 edges 与源码 import 图交叉验证 |
 | 校验脚本本身存在逻辑漏洞 | Low | 校验脚本纳入自身测试覆盖范围；定期自改进审计 |
+
+### 一致性校验维度
+
+| 维度 | 检查方法 | 阈值 | 阻断 |
+|------|---------|:---:|:---:|
+| 文档→代码 | grep 代码引用 → 验证文件存在 | 0 缺失 | P0 |
+| 代码→文档 | grep 代码注释中的 §X 引用 → 验证章节存在 | 0 缺失 | P1 |
+| 版本号一致 | 全仓 grep 版本号 → 与 plugin.json 比对 | 全部一致 | P0 |
+| 行号引用 | 文档中 `file:line` → 验证行号有效 | 0 失效 | P1 |
+| 知识图谱节点 | 图谱节点 → 源码符号存在 | 0 缺失 | P0 |
+| 知识图谱边 | 图谱 edge → 实际 import 关系 | 0 虚假 | P1 |
+| API 签名 | 文档签名 → 代码签名匹配 | 0 不一致 | P0 |
+| 配置 schema | 文档字段 → 实际配置 schema | 0 不一致 | P1 |
+
+### 漂移检测算法
+
+```javascript
+function detectDrift(docRefs, codeState) {
+  const drifts = [];
+  for (const ref of docRefs) {
+    if (!codeState.has(ref.target)) {
+      drifts.push({ type: 'missing-target', ref, severity: 'P0' });
+    } else if (ref.line && codeState.getLine(ref.target) !== ref.line) {
+      drifts.push({ type: 'line-shift', ref, severity: 'P1' });
+    }
+  }
+  return drifts;
+}
+```
+
+| 漂移类型 | 信号 | 修复策略 |
+|---------|------|---------|
+| 缺失目标 | 文档引用的文件不存在 | 删除引用或创建文件 |
+| 行号偏移 | 文档 `file:line` 与实际不符 | 更新行号 |
+| 签名变更 | API 签名文档 vs 代码 | 同步更新文档 |
+| 版本不一致 | 版本号分散 | 统一从 package.json 注入 |
+| 节点孤立 | 知识图谱节点无对应源码 | 删除节点或补充源码 |
+
+### 校验执行频率
+
+| 频率 | 范围 | 触发 | 报告 |
+|------|------|------|------|
+| 每次提交 | 变更相关 | pre-commit hook | 阻断或警告 |
+| 每次 PR | 全量 | CI build | 阻断合并 |
+| 每日 | 全量 | Cron | 健康报告 |
+| 每周 | 历史 | 定时归档 | 趋势分析 |
+
+### 校验报告 schema
+
+```json
+{
+  "timestamp": "2026-06-22T10:00:00Z",
+  "dimensions": {
+    "doc-to-code": { "checked": 156, "valid": 154, "missing": 2 },
+    "code-to-doc": { "checked": 89, "valid": 89, "missing": 0 },
+    "version-consistency": { "checked": 12, "consistent": 12, "mismatched": 0 },
+    "knowledge-graph": { "nodes": 22, "edges": 42, "orphan": 0 }
+  },
+  "drifts": [
+    { "type": "line-shift", "file": "skills/rui/AGENT.md", "line": 45, "expected": 42, "actual": 45 }
+  ],
+  "summary": { "total": 279, "valid": 277, "drift-rate": 0.0072 }
+}
+```
 
 ---
 <a id="sec1"></a>
@@ -213,7 +325,7 @@ sequenceDiagram
 | `tests/rules/rules.test.mjs` §code-pipeline | FP12 | 验证关键规则（管线/安全/文档生成）含必需要素 |
 | `tests/agents/agents.test.mjs` | FP5, FP12 | 验证 8 Agent 定义完整性（角色/行为/决策指导） |
 | `scripts/validate-doc-consistency.mjs` | FP11 | **v4.8.0 新增** — L1 引用可达性：提取文档中全部源文件引用 → 逐条验证目标存在 → 断裂报告含三要素（来源/目标/原因） |
-| `scripts/validate-module-topology.mjs` | FP10, FP11 | **v4.8.0 新增** — 依赖图构建 + 循环检测 + 无效引用识别。验证 agents/rules/skills/lib 之间拓扑 |
+| `scripts/validate-module-topology.mjs` | FP10, FP11 | **v4.8.0 新增** — 依赖图构建 + 循环检测 + 无效引用识别。验证 skills/*/SKILL.md · skills/*/rules/*.md · lib 之间拓扑 |
 
 ### 交叉引用闭合验证
 
@@ -245,6 +357,22 @@ PASS: all layer nodeIds reference existing nodes
 | 跨引用一致性 | 4 | 4 | plugin.json/CLAUDE.md/README.md/安全基线 |
 | 规则完整性 | 48 | 48 | 8 规则 ×5 通用 + 7 关键规则专项 |
 | Agent 完整性 | 45 | 45 | AGENT.md + 8 agents ×5 检查项 |
+| **合计** | **112** | **112** | **100% 通过** |
+
+### 执行摘要
+
+| 总用例 | 通过 | 失败 | 通过率 |
+|--------|------|------|--------|
+| 112 | 112 | 0 | 100% |
+
+### 门禁判定
+
+| Gate | 判定 | 证据 |
+|------|------|------|
+| P0 Gate | ✅ 通过 | 文档→代码引用 · 版本号 · 图谱节点 · API 签名 全部一致 |
+| P1 Gate | ✅ 通过 | 代码→文档 · 行号引用 · 图谱边 · 配置 schema 全部对齐 |
+| 只读门禁 | ✅ 通过 | 校验全程不修改文件 · 无副作用 |
+| 完整性门禁 | ✅ 通过 | 4 层校验独立执行 · 6 维度问题清单完整 |
 
 ### 发现的差异（非断裂）
 
@@ -252,7 +380,7 @@ PASS: all layer nodeIds reference existing nodes
 |------|------|------|
 | yry-arch kg schema | 使用 `graph`/`scenes` 而非 `nodes`/`edges` | 无——测试自适应兼容 |
 | tester agent 语言 | 使用 Gate/阻断条件语言而非传统决策术语 | 无——测试已适配 |
-| plugin.json 极简 | 不枚举 skills/agents/rules | 符合 plugin.json manifest 标准 |
+| plugin.json 极简 | 不枚举 skills/agents/rules 清单（实际为 skills/*/SKILL.md · skills/*/AGENT.md · skills/*/rules/*.md） | 符合 plugin.json manifest 标准 |
 
 ---
 
@@ -287,4 +415,4 @@ PASS: all layer nodeIds reference existing nodes
 | 日期 | 变更 | 触发 | 证据 |
 |------|------|------|------|
 | 2026-06-05 | v1.0.0 初始化：生成场景概述 + §0 技术评审（含效果示意和基线溯源）+ §1 测试设计（含 4 TC-N + 7 TC-B + Gate A 交接） | `/rui init` Step 4b — 自主测试方案场景-3 生成 | [formulas.md §使用约定](../../../../skills/rui/formulas.md)；[delivery-gate.md](../../../../skills/rui/rules/delivery-gate.md)；[coder.md §审查维度](../../../../skills/rui/coder.md)；[formulas.md §F.story.scene](../../../../skills/rui/formulas.md) |
-| 2026-06-08 | v1.1.0 补充：§2 实施报告更新 — `scripts/validate-doc-consistency.mjs` (L1 引用可达性) + `scripts/validate-module-topology.mjs` (循环检测)。新增 `源码.html` 页面。§4 改进建议标记 L1 和模块拓扑为已完成 | `/rui update yry-self-test` — 补充缺失源文件 | 源码: [validate-doc-consistency.mjs](../../../../scripts/validate-doc-consistency.mjs) · [validate-module-topology.mjs](../../../../scripts/validate-module-topology.mjs) · [源码.html](./源码.html) |
+| 2026-06-08 | v1.1.0 补充：§2 实施报告更新 — `scripts/validate-doc-consistency.mjs` (L1 引用可达性) + `scripts/validate-module-topology.mjs` (循环检测)。新增 `源码.html` 页面。§4 改进建议标记 L1 和模块拓扑为已完成 | `/rui update yry-self-test` — 补充缺失源文件 | 源码: `scripts/validate-doc-consistency.mjs`（规划中）· `scripts/validate-module-topology.mjs`（规划中）· [源码.html](./源码.html) |

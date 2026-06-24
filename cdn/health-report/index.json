@@ -21,7 +21,7 @@
       {
         "id": "D3",
         "name": "发布元数据",
-        "desc": "package.json + README.md + .npmignore + releases.json 完整"
+        "desc": "package.json + README.md + .npmignore + changelog/index.json 完整"
       },
       {
         "id": "D4",
@@ -50,9 +50,282 @@
       "C": "70-84 — 需修复",
       "D": "< 70 — 需干预"
     },
-    "updatedAt": "2026-06-19"
+    "updatedAt": "2026-06-24"
   },
   "reports": [
+    {
+      "date": "2026-06-24",
+      "time": "2026-06-24 01:31:38",
+      "type": "project",
+      "score": 85,
+      "grade": "B",
+      "triggers": 1,
+      "dimTotal": 20,
+      "dims": {
+        "token": {
+          "score": 100,
+          "detail": "已配置 (8 字符)"
+        },
+        "config": {
+          "score": 100,
+          "detail": "存在 — 1 机器人, 0/4 通知开关已启用"
+        },
+        "robots": {
+          "score": 100,
+          "detail": "1/1 webhook 就绪 (general)"
+        },
+        "api": {
+          "score": 0,
+          "detail": "不可达 — This operation was aborted"
+        },
+        "reports": {
+          "score": 100,
+          "detail": "32 份报告, 31 份近 7 天"
+        },
+        "format": {
+          "score": 100,
+          "detail": "SKILL.md 格式约束全部满足"
+        },
+        "diagnostics": {
+          "score": 85,
+          "detail": "0 条记录, 1/8 诊断触发"
+        },
+        "git": {
+          "score": 80,
+          "detail": "main · 12 个未提交文件"
+        },
+        "security": {
+          "score": 100,
+          "detail": "未发现风险"
+        },
+        "em_testing": {
+          "score": 100,
+          "detail": "vitest, 1360 用例"
+        },
+        "em_types": {
+          "score": 100,
+          "detail": "TypeScript strict"
+        },
+        "em_linting": {
+          "score": 100,
+          "detail": "3 工具: ESLint, Prettier, EditorConfig + CI 强制"
+        },
+        "em_cicd": {
+          "score": 100,
+          "detail": "GitHub Actions"
+        },
+        "em_docs": {
+          "score": 100,
+          "detail": "3 文档: README, CLAUDE.md, docs/"
+        },
+        "em_deps": {
+          "score": 100,
+          "detail": "npm lockfile + 版本脚本"
+        },
+        "em_git": {
+          "score": 100,
+          "detail": "3 项: .gitignore, .gitattributes, PR 模板"
+        },
+        "file_size": {
+          "score": 96,
+          "detail": "280 文件 · 2.66 MB · 最大 319.6 KB · 0.0%"
+        },
+        "dep_analysis": {
+          "score": 83,
+          "detail": "162 模块 · 350 依赖边 · 无循环依赖 · 1 孤立文件 · 2 入口文件"
+        },
+        "notify": {
+          "score": 20,
+          "detail": "0/5 成功 (0%) · 均重试 3.0 次"
+        },
+        "comp_qual": {
+          "score": 84,
+          "detail": "120 组件均分 84 · 优秀 88 / 一般 32 / 待改进 0"
+        }
+      }
+    },
+    {
+      "date": "2026-06-23",
+      "time": "2026-06-23 23:38:00",
+      "type": "project",
+      "score": 84,
+      "grade": "B",
+      "triggers": 1,
+      "dimTotal": 20,
+      "dims": {
+        "token": {
+          "score": 100,
+          "detail": "已配置 (8 字符)"
+        },
+        "config": {
+          "score": 100,
+          "detail": "存在 — 1 机器人, 0/4 通知开关已启用"
+        },
+        "robots": {
+          "score": 100,
+          "detail": "1/1 webhook 就绪 (general)"
+        },
+        "api": {
+          "score": 0,
+          "detail": "不可达 — This operation was aborted"
+        },
+        "reports": {
+          "score": 100,
+          "detail": "27 份报告, 26 份近 7 天"
+        },
+        "format": {
+          "score": 100,
+          "detail": "SKILL.md 格式约束全部满足"
+        },
+        "diagnostics": {
+          "score": 85,
+          "detail": "0 条记录, 1/8 诊断触发"
+        },
+        "git": {
+          "score": 40,
+          "detail": "main · 38 个未提交文件"
+        },
+        "security": {
+          "score": 100,
+          "detail": "未发现风险"
+        },
+        "em_testing": {
+          "score": 100,
+          "detail": "vitest, 1360 用例"
+        },
+        "em_types": {
+          "score": 100,
+          "detail": "TypeScript strict"
+        },
+        "em_linting": {
+          "score": 100,
+          "detail": "3 工具: ESLint, Prettier, EditorConfig + CI 强制"
+        },
+        "em_cicd": {
+          "score": 100,
+          "detail": "GitHub Actions"
+        },
+        "em_docs": {
+          "score": 100,
+          "detail": "3 文档: README, CLAUDE.md, docs/"
+        },
+        "em_deps": {
+          "score": 100,
+          "detail": "npm lockfile + 版本脚本"
+        },
+        "em_git": {
+          "score": 100,
+          "detail": "3 项: .gitignore, .gitattributes, PR 模板"
+        },
+        "file_size": {
+          "score": 96,
+          "detail": "280 文件 · 2.66 MB · 最大 319.6 KB · 0.0%"
+        },
+        "dep_analysis": {
+          "score": 83,
+          "detail": "162 模块 · 350 依赖边 · 无循环依赖 · 1 孤立文件 · 2 入口文件"
+        },
+        "notify": {
+          "score": 20,
+          "detail": "0/5 成功 (0%) · 均重试 3.0 次"
+        },
+        "comp_qual": {
+          "score": 84,
+          "detail": "120 组件均分 84 · 优秀 88 / 一般 32 / 待改进 0"
+        }
+      }
+    },
+    {
+      "date": "2026-06-22",
+      "time": "2026-06-22 10:12:38",
+      "type": "project",
+      "score": 95,
+      "grade": "A",
+      "triggers": 1,
+      "dimTotal": 20,
+      "dims": {
+        "token": {
+          "score": 100,
+          "detail": "已配置 (8 字符)"
+        },
+        "config": {
+          "score": 100,
+          "detail": "存在 — 1 机器人, 0/4 通知开关已启用"
+        },
+        "robots": {
+          "score": 100,
+          "detail": "1/1 webhook 就绪 (general)"
+        },
+        "api": {
+          "score": 100,
+          "detail": "可达 (HTTP 400)"
+        },
+        "reports": {
+          "score": 100,
+          "detail": "18 份报告, 14 份近 7 天"
+        },
+        "format": {
+          "score": 100,
+          "detail": "SKILL.md 格式约束全部满足"
+        },
+        "diagnostics": {
+          "score": 85,
+          "detail": "0 条记录, 1/8 诊断触发"
+        },
+        "git": {
+          "score": 40,
+          "detail": "main · 117 个未提交文件"
+        },
+        "security": {
+          "score": 100,
+          "detail": "未发现风险"
+        },
+        "em_testing": {
+          "score": 100,
+          "detail": "vitest, 1360 用例"
+        },
+        "em_types": {
+          "score": 100,
+          "detail": "TypeScript strict"
+        },
+        "em_linting": {
+          "score": 100,
+          "detail": "3 工具: ESLint, Prettier, EditorConfig + CI 强制"
+        },
+        "em_cicd": {
+          "score": 100,
+          "detail": "GitHub Actions"
+        },
+        "em_docs": {
+          "score": 100,
+          "detail": "3 文档: README, CLAUDE.md, docs/"
+        },
+        "em_deps": {
+          "score": 100,
+          "detail": "npm lockfile + 版本脚本"
+        },
+        "em_git": {
+          "score": 100,
+          "detail": "3 项: .gitignore, .gitattributes, PR 模板"
+        },
+        "file_size": {
+          "score": 96,
+          "detail": "276 文件 · 2.60 MB · 最大 319.6 KB · 0.0%"
+        },
+        "dep_analysis": {
+          "score": 83,
+          "detail": "160 模块 · 345 依赖边 · 无循环依赖 · 1 孤立文件 · 2 入口文件"
+        },
+        "notify": {
+          "score": 100,
+          "detail": "暂无投递记录"
+        },
+        "comp_qual": {
+          "score": 84,
+          "detail": "118 组件均分 84 · 优秀 87 / 一般 31 / 待改进 0"
+        }
+      }
+    },
     {
       "date": "2026-06-19",
       "time": "2026-06-19 10:35:12",
@@ -259,7 +532,7 @@
         },
         "D3": {
           "score": 100,
-          "detail": "package.json / README.md / .npmignore / releases.json 完整"
+          "detail": "package.json / README.md / .npmignore / changelog/index.json 完整"
         },
         "D4": {
           "score": 100,

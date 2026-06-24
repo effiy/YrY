@@ -18,6 +18,7 @@ import { createInterface } from "node:readline";
 import { createHash } from "node:crypto";
 import { execSync } from "node:child_process";
 import { findProjectRoot } from "../../lib/fs.mjs";
+import { NODE_ARGV_OFFSET } from "../../lib/constants.mjs";
 
 // ── Version ──────────────────────────────────────────────────────────────────
 const ANALYSIS_VERSION = "2.0";
@@ -7278,7 +7279,7 @@ function renderSidebar(stats, diff) {
 // ── Main ───────────────────────────────────────────────────────────────────
 
 function main() {
-  const rawArgs = process.argv.slice(2);
+  const rawArgs = process.argv.slice(NODE_ARGV_OFFSET);
   const args = parseArgs(rawArgs);
 
   if (args.help) {

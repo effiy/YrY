@@ -11,7 +11,7 @@ paths:
 
 > YrY 代码基线。每一条都是可 grep 验证的硬约束，不是风格建议。
 >
-> 架构级范式定义见 [architecture-principles.md](./architecture-principles.md#代码范式约束)。本文件提供具体代码示例与反例。
+> 架构级范式定义见 [architecture-principles.md](../../rui/rules/architecture-principles.md#代码范式约束)。本文件提供具体代码示例与反例。
 
 [模块范式](#模块范式) · [函数范式](#函数范式) · [错误处理范式](#错误处理范式) · [导入范式](#导入范式) · [常量范式](#常量范式) · [审查速查](#审查速查)
 
@@ -418,3 +418,94 @@ node lib/arch-check.mjs --dim dry
 ---
 
 > 本文件的每一条约束都有对应的 grep 命令或 arch-check 维度。不可验证的约束不写进本文件。
+
+## 异步与并发范式
+
+### Promise 链式处理
+
+```javascript
+// ✅ 正确：async/await + 结构化错误处理
+async function processFiles(paths) {
+  const results = [];
+  for (const filePath of paths) {
+    try {
+      const content = await readFile(filePath, 'utf-8');
+      results.push({ path: filePath, content });
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        console.warn(`文件不存在: ${filePath}`);
+        continue;
+      }
+      throw err;
+    }
+  }
+  return results;
+}
+
+// ❌ 错误：Promise.all 无错误隔离
+async function processFiles(paths) {
+  const results = await Promise.all(paths.map(readFile)); // 一个失败全失败
+}
+```
+
+### 并发控制
+
+```javascript
+// ✅ 正确：限制并发数
+async function batchProcess(items, concurrency = 4) {
+  const results = [];
+  for (let i = 0; i < items.length; i += concurrency) {
+    const batch = items.slice(i, i + concurrency);
+    const batchResults = await Promise.allSettled(
+      batch.map(item => processItem(item))
+    );
+    results.push(...batchResults);
+  }
+  return results;
+}
+
+// ❌ 错误：无限制并发
+async function batchProcess(items) {
+  return Promise.all(items.map(processItem)); // 1000 个并发请求
+}
+```
+
+### 超时控制
+
+```javascript
+// ✅ 正确：带超时的异步操作
+async function withTimeout(promise, timeoutMs, label = 'operation') {
+  const TIMEOUT_SYMBOL = Symbol('timeout');
+  const result = await Promise.race([
+    promise.then(value => ({ value })),
+    new Promise(resolve =>
+      setTimeout(() => resolve({ timeout: TIMEOUT_SYMBOL }), timeoutMs)
+    )
+  ]);
+  if (result.timeout === TIMEOUT_SYMBOL) {
+    throw new Error(`${label} 超时 (${timeoutMs}ms)`);
+  }
+  return result.value;
+}
+
+// ❌ 错误：无超时、无错误处理
+const data = await fetch(url); // 永久挂起
+```
+
+### 错误传播
+
+```javascript
+// ✅ 正确：保留原始错误链
+try {
+  await parseConfig(filePath);
+} catch (err) {
+  throw new Error(`配置解析失败: ${filePath}`, { cause: err });
+}
+
+// ❌ 错误：丢失原始错误
+try {
+  await parseConfig(filePath);
+} catch (err) {
+  throw new Error('配置解析失败'); // 原始错误丢失
+}
+```

@@ -3,7 +3,7 @@
  * Tests evaluateProposal, computeMetrics — pure logic with no I/O dependencies.
  */
 
-import { describe, it, assert, run } from '../../../../lib/test-harness.mjs';
+import { describe, it, assert, run } from '../../../../lib/vitest-adapter.mjs';
 
 // Dynamic import since engine modules are ESM with relative imports
 let evaluateProposal, computeMetrics;

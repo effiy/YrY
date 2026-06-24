@@ -1,0 +1,99 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryDashboardQuicknav · 仪表板顶部快速锚点样式
+
+   使用方式:
+     <link rel="stylesheet" href="../../../../cdn/yry-dashboard-quicknav/index.css">
+     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+     <script src="../../../../cdn/yry-dashboard-quicknav/index.js"></script>
+     <yry-dashboard-quicknav id="sr-quicknav"></yry-dashboard-quicknav>
+     <script>
+       Vue.createApp(window.YryDashboardQuicknav, {
+         chips: [
+           { id: 'sm-snapshot', label: '📸 最新报告', title: '...', href: '#sm-snapshot' },
+           ...
+         ]
+       }).mount('#sr-quicknav');
+     </script>
+
+   命名约定 (与 docs/index.html 滚动间谍兼容):
+     .sr-quicknav · .sr-qn-chip · [data-target] · .is-active
+
+   来源: 从 cdn/yry-dashboard-report/index.css + docs/index.html 内联
+         <style> 中同名规则迁出,合并整理。
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 容器:胶囊导航条 (吸顶 + 玻璃) ───────────────────────────────── */
+.sr-quicknav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 12px;
+  margin: 0 0 16px;
+  background: linear-gradient(135deg, rgba(34,211,238,.06), rgba(167,139,250,.04));
+  border: 1px solid rgba(34,211,238,.18);
+  border-radius: 8px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ── 单个 chip ──────────────────────────────────────────────────── */
+.sr-qn-chip {
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--yry-text-secondary, #a9b1d6);
+  text-decoration: none;
+  padding: 4px 12px;
+  border: 1px solid var(--yry-border, #2d2f45);
+  border-radius: 999px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.sr-qn-chip:hover {
+  color: var(--yry-accent, #22d3ee);
+  border-color: var(--yry-accent, #22d3ee);
+  background: rgba(34,211,238,.08);
+  transform: translateY(-1px);
+}
+.sr-qn-chip:active { transform: translateY(0); }
+.sr-qn-chip:focus-visible {
+  outline: 2px solid var(--yry-accent, #22d3ee);
+  outline-offset: 2px;
+}
+
+/* ── 滚动联动高亮 (IntersectionObserver 切换) ───────────────────── */
+.sr-qn-chip.is-active {
+  background: rgba(34,211,238,.15);
+  border-color: var(--yry-accent, #22d3ee);
+  color: var(--yry-accent, #22d3ee);
+  font-weight: 600;
+  box-shadow: 0 0 0 1px rgba(34,211,238,.3);
+}
+
+/* ── 平滑滚动 + 锚点偏移 (吸顶时不被遮挡) ─────────────────────── */
+html { scroll-behavior: smooth; scroll-padding-top: 56px; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+/* ── 移动端:横向滚动 + 紧凑间距 ───────────────────────────────── */
+@media (max-width: 640px) {
+  .sr-quicknav {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+    padding: 8px 10px;
+  }
+  .sr-quicknav::-webkit-scrollbar { height: 4px; }
+  .sr-quicknav::-webkit-scrollbar-thumb { background: rgba(34,211,238,.3); border-radius: 2px; }
+  .sr-qn-chip { flex-shrink: 0; }
+}
+
+/* ── 打印隐藏 ─────────────────────────────────────────────────── */
+@media print {
+  .sr-quicknav { display: none !important; }
+}

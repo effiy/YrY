@@ -3,7 +3,7 @@
  * Extracted from sync.mjs for single-responsibility
  */
 
-import { fetchJson, querySessionsFull } from "../../../lib/network.mjs";
+import { fetchJson, querySessionsFull } from "../../../lib/io.mjs";
 import { API_X_TOKEN } from "./config.mjs";
 import { getTags } from "./scan.mjs";
 

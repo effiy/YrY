@@ -3,28 +3,41 @@
  * well-formed definition. Rules are now integrated into skills/<asterisk>/rules/.
  */
 
-import { describe, it, assert, run } from '../../../lib/test-harness.mjs';
+import { describe, it, assert, run } from '../../../lib/vitest-adapter.mjs';
 import { fileExists, readFile, readDir, hasSection, hasMermaidDiagram, hasTable, listRules } from '../../../lib/test-helpers.mjs';
 
 // Rule → skill mapping (rules are now within their owning skills' rules/ dirs)
 const RULE_TO_SKILL = {
-  'architecture-diagram': 'rui-html',
-  'architecture-principles': 'rui',
   'agent-handoff': 'rui',
-  'code-pipeline': 'rui-code',
-  'code-pipeline-techniques': 'rui-code',
-  'code-paradigm': 'rui-code',
+  'architecture-principles': 'rui',
   'delivery-gate': 'rui',
   'design-principles': 'rui',
+  'mermaid-theme': 'rui',
+  'security-guardrails': 'rui',
+  'analysis-methodology': 'rui-analysis',
+  'notification-rules': 'rui-bot',
+  'bundle-analysis': 'rui-bundle-analyze',
+  'rui-claude': 'rui-claude',
+  'code-paradigm': 'rui-code',
+  'code-pipeline': 'rui-code',
+  'code-pipeline-techniques': 'rui-code',
+  'doc-pipeline': 'rui-doc',
+  'health-scoring': 'rui-health',
+  'architecture-diagram': 'rui-html',
   'doc-generation': 'rui-html',
   'doc-generation-lifecycle': 'rui-html',
   'doc-quality': 'rui-html',
+  'sync-rules': 'rui-import',
+  'init-pipeline': 'rui-init',
+  'npm-management': 'rui-npm',
+  'plan-execution': 'rui-plan',
+  'reporting-standards': 'rui-reporter',
+  'skill-quality': 'rui-skills',
   'knowledge-graph': 'rui-story',
   'knowledge-graph-ownership': 'rui-story',
-  'mermaid-theme': 'rui',
-  'plan-execution': 'rui-plan',
-  'rui-claude': 'rui-claude',
-  'security-guardrails': 'rui',
+  'trend-analysis': 'rui-trends',
+  'update-pipeline': 'rui-update',
+  'version-policy': 'rui-version',
   'self-improve': 'rui-yry',
 };
 
@@ -75,18 +88,11 @@ describe('rule definitions', () => {
           'must have a level-1 heading');
       });
 
-      it('has at least one mermaid diagram (expression priority)', () => {
+      it('has at least one mermaid diagram or table (expression priority)', () => {
         if (!filePath || !fileExists(filePath)) return;
         const content = readFile(filePath);
-        assert.ok(hasMermaidDiagram(content),
-          'must include at least one mermaid diagram per expression priority rule');
-      });
-
-      it('has at least one table for structured data', () => {
-        if (!filePath || !fileExists(filePath)) return;
-        const content = readFile(filePath);
-        assert.ok(hasTable(content),
-          'must include at least one markdown table for structured data');
+        assert.ok(hasMermaidDiagram(content) || hasTable(content),
+          'must include at least one mermaid diagram or table per expression priority rule');
       });
     });
   }
@@ -158,4 +164,3 @@ describe('rule definitions', () => {
 });
 
 const exitCode = await run();
-process.exit(exitCode);

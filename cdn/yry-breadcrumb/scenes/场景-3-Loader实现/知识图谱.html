@@ -2,325 +2,64 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Loader 实现 · 知识图谱 · YryBreadcrumb 任务故事</title>
-<link rel="stylesheet" href="../../../shared\/index\.css">
-<link rel="stylesheet" href="../../../theme\/index\.css">
-<link rel="stylesheet" href="../../../yry\-scene\/index\.css">
-<link rel="stylesheet" href="../../../yry\-checklist\/index\.css">
-<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
-<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
-<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
-<link rel="stylesheet" href="../../../yry-back-top/index.css">
-<link rel="stylesheet" href="../../../yry-scene-header/index.css">
-<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
-<link rel="stylesheet" href="../../../yry\-inline\-helpers\/index\.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<link rel="stylesheet" href="../../../yry\-a11y\/index\.css">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Loader实现 · 知识图谱</title>
+<link rel="stylesheet" href="../../../../cdn/fonts/index.css">
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme-mono/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-graph-base.css">
+<script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-cytoscape-graph/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-export-toolbar/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-info-cards/index.css">
 <style>
-
-.container { max-width: 1100px; }
+/* Page-specific overrides — shared patterns in shared-a.css */
+.yry-container{max-width:1400px}
+/* Legend is now handled by yry-cytoscape-graph component via JS */
 </style>
 </head>
 <body>
-<a href="#main" class="skip-link">⏩ 跳到主要内容</a>
-<div class="container" id="main">
-<div id="breadcrumb-app"></div>
-<div id="scene-header-app"></div>
-<div id="scene-nav-app"></div>
+<div class="yry-container" id="report-container">
+<yry-scene-chrome
+  theme="a"
+  title="🔗 Loader 实现 · 知识图谱"
+  subtitle="yry-breadcrumb · 场景 3 · vv5.4.0"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-breadcrumb · yry-breadcrumb"},{"label":"场景 3 · Loader实现"},{"label":"🔗 知识图谱"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","href":"架构图.html"},{"label":"🔗 图谱","active":true},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","href":"审查.html"}]'
+  toolbar='<div class="yry-export-toolbar yry-toolbar" data-target=".yry-cy-container" data-filename="yry-breadcrumb-scene3-kg" data-bg="#020617"><button data-action="copy-png">📋 Copy</button><button data-action="download-png">🖼 PNG</button><button data-action="download-pdf">📄 PDF</button></div>'>
+</yry-scene-chrome>
 
-<div id="cross-nav-app"></div>
-
-<h2>概念关联表</h2>
-<div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-val info">9</div><div class="kpi-label">核心实体</div></div>
-  <div class="kpi-card"><div class="kpi-val accent">9</div><div class="kpi-label">关联关系</div></div>
-  <div class="kpi-card"><div class="kpi-val pass">4</div><div class="kpi-label">覆盖域</div></div>
-</div>
-<table class="table-highlight">
-  <thead><tr><th>概念</th><th>类型</th><th>关联</th><th>说明</th></tr></thead>
-  <tbody>
-    <tr><td>Loader</td><td>核心模块</td><td>fetch, DOMParser, ready 事件, 超时, 降级</td><td>YryBreadcrumb 异步加载器 (index.js)</td></tr>
-    <tr><td>fetch</td><td>API</td><td>index.html, Network, catch</td><td>获取模板 HTML 文本</td></tr>
-    <tr><td>DOMParser</td><td>API</td><td>parseFromString, getElementById</td><td>解析 HTML 提取 template</td></tr>
-    <tr><td>ready 事件</td><td>事件机制</td><td>CustomEvent, dispatchEvent, {once:true}</td><td>组件就绪通知，解耦加载与挂载</td></tr>
-    <tr><td>超时</td><td>防御</td><td>setTimeout 5s, timedOut 标志</td><td>5 秒超时保护，防止无限等待</td></tr>
-    <tr><td>降级</td><td>策略</td><td>console.error, 不注册组件</td><td>错误时静默降级，页面继续运行</td></tr>
-    <tr><td>document.currentScript</td><td>API</td><td>script.src, URL 构造</td><td>定位当前脚本 URL，推导模板路径</td></tr>
-    <tr><td>Vue 3</td><td>运行时依赖</td><td>window.Vue, createApp, mount</td><td>组件运行时，缺失时提前跳过</td></tr>
-    <tr><td>4 文件引用顺序</td><td>约束</td><td>CSS → CSS → CSS → JS</td><td>样式优先加载，Loader 最后执行</td></tr>
-  </tbody>
-</table>
-
-<div class="entity-card">
-  <div class="ec-head">
-    <span class="ec-icon">⚙️</span>
-    <span class="ec-name">Loader (index.js)</span>
-    <span class="ec-type">核心编排器</span>
-  </div>
-  <div class="ec-desc">YryBreadcrumb 异步加载器，IIFE 自执行格式，通过 document.currentScript 自定位推导模板路径，统一编排 fetch → DOMParser → 注册 → ready 事件全流程。</div>
-  <div class="ec-links">
-    <a href="./架构图.html">📐 架构图</a>
-    <a href="./源码.html">📄 源码</a>
-  </div>
-</div>
-<div class="entity-card">
-  <div class="ec-head">
-    <span class="ec-icon">🌐</span>
-    <span class="ec-name">fetch + DOMParser</span>
-    <span class="ec-type">数据获取与解析</span>
-  </div>
-  <div class="ec-desc">fetch(index.html) 以 same-origin 凭证获取模板 HTML 文本；DOMParser.parseFromString 将文本转为 DOM Document；getElementById 提取 yry-breadcrumb-tpl 模板节点。每步均有 catch 错误捕获。</div>
-  <div class="ec-links">
-    <a href="./架构图.html">📐 架构图</a>
-    <a href="./测试面板.html">🧪 测试</a>
-  </div>
-</div>
-<div class="entity-card">
-  <div class="ec-head">
-    <span class="ec-icon">📡</span>
-    <span class="ec-name">ready 事件</span>
-    <span class="ec-type">事件机制</span>
-  </div>
-  <div class="ec-desc">CustomEvent('yry-breadcrumb-ready') + dispatchEvent 实现加载与挂载的解耦通信。页面通过 {once:true} 监听器接收信号后执行 Vue.createApp mount，无轮询检查。</div>
-  <div class="ec-links">
-    <a href="./架构图.html">📐 架构图</a>
-    <a href="./演示.html">💡 演示</a>
-  </div>
-</div>
-<div class="entity-card">
-  <div class="ec-head">
-    <span class="ec-icon">🛡️</span>
-    <span class="ec-name">超时保护</span>
-    <span class="ec-type">防御策略</span>
-  </div>
-  <div class="ec-desc">setTimeout 5000ms + timedOut 标志，防止网络异常时无限等待。超时后 console.error 记录日志、不注册组件、不抛异常，页面其余内容正常显示 — 静默降级策略。</div>
-  <div class="ec-links">
-    <a href="./审查.html">📝 审查</a>
-    <a href="./测试面板.html">🧪 测试</a>
-  </div>
+<div class="legend">
+  <span style="color:#94a3b8;font-weight:600;">节点:</span>
+  <span class="legend-item"><span class="legend-dot scene"></span>场景</span>
+  <span class="legend-item"><span class="legend-dot check"></span>检查/功能</span>
+  <span class="legend-item"><span class="legend-dot source"></span>源文件</span>
+  <span class="legend-item"><span class="legend-dot domain"></span>概念域</span>
+  <span style="margin-left:1rem;color:#94a3b8;font-weight:600;">操作:</span>
+  <span style="color:#64748b;">🖱 拖拽 · 滚轮缩放 · 点击节点高亮邻域</span>
 </div>
 
-<div class="live-bar">
-  <span class="live-dot"></span> 概念图谱已就绪
-  <span class="live-resource"><span class="lr-name">Mermaid</span><span class="lr-status">OK</span></span>
-  <span class="live-resource"><span class="lr-name">实体节点</span><span class="lr-status">9</span></span>
-</div>
+<div class="yry-cytoscape-graph graph-container" id="cy-graph" data-filename="yry-breadcrumb-scene3-kg" data-layout="breadthfirst" data-legend="false" style="height:550px"></div>
 
-<h2>概念关系图</h2>
-<div class="diagram-wrap">
-  <span class="dm-badge">知识图谱</span>
-  <pre class="mermaid">
-%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#1e1f2b','primaryTextColor': '#a9b1d6','primaryBorderColor': '#a78bfa','lineColor': '#a78bfa','secondaryColor': '#2b2d3b'}}}%%
-flowchart TB
-    Loader["Loader (index.js)"]
-    subgraph 核心流程["核心加载流程"]
-        fetch["fetch(index.html)"]
-        DOMParser["DOMParser"]
-        getElementById["getElementById"]
-        register["注册组件定义"]
-    end
-    subgraph 事件机制["事件机制"]
-        readyEvent["ready 事件<br/>CustomEvent"]
-        mountVue["Vue.createApp<br/>mount"]
-    end
-    subgraph 防御策略["防御策略"]
-        timeout["5s 超时<br/>setTimeout"]
-        degrade["错误降级<br/>console.error + 跳过"]
-        vueCheck["Vue 检测<br/>!window.Vue"]
-    end
-    subgraph 页面引用["4 文件引用顺序"]
-        css1["shared/index.css"]
-        css2["theme/index.css"]
-        css3["index.css"]
-        js["index.js"]
-    end
-
-    Loader --> fetch
-    fetch --> DOMParser
-    DOMParser --> getElementById
-    getElementById --> register
-    register --> readyEvent
-    readyEvent --> mountVue
-
-    Loader -.防御.-> timeout
-    Loader -.防御.-> degrade
-    Loader -.防御.-> vueCheck
-
-    css1 --> css2 --> css3 --> js
-    js --> Loader
-</pre>
-  <div class="dm-caption">图: Loader 实现 — 概念关联图谱</div>
-</div>
-
-<h2>说明</h2>
-<p>上图展示场景 3 · <strong>Loader 实现</strong> 的概念关联。实线表示核心流程依赖，虚线表示防御策略。右侧为 4 文件引用顺序链。</p>
-<p>场景主色 <code class="yry-color-tag yry-color-tag--purple">#a78bfa</code>，与场景 tag 一致。</p>
-
-<div class="concept-grid">
-  <div class="concept-card">
-    <div class="cc-icon">⚙️</div>
-    <div class="cc-name">Loader</div>
-    <div class="cc-domain">核心模块</div>
-    <div class="cc-desc">YryBreadcrumb 异步加载器 (index.js)，通过 document.currentScript 定位脚本 URL 推导模板路径，统一编排 fetch → 解析 → 注册 → 通知全流程。</div>
-    <div class="cc-rels">
-      <span class="cc-rel out">→ fetch · DOMParser · ready</span>
-      <span class="cc-rel in">← 4 文件引用链</span>
-    </div>
+<yry-info-cards>
+  <div class="yry-card">
+    <div class="yry-card-header"><div class="yry-card-dot scene"></div><h3>场景</h3></div>
+    <ul><li><b>Loader 实现</b> — 场景 3</li></ul>
   </div>
-  <div class="concept-card">
-    <div class="cc-icon">🌐</div>
-    <div class="cc-name">fetch</div>
-    <div class="cc-domain">api</div>
-    <div class="cc-desc">fetch(index.html) 获取模板 HTML 文本，作为 Loader 核心流程的第一步，失败时触发降级策略。</div>
-    <div class="cc-rels">
-      <span class="cc-rel out">→ DOMParser</span>
-      <span class="cc-rel in">← Loader</span>
-    </div>
-  </div>
-  <div class="concept-card">
-    <div class="cc-icon">📡</div>
-    <div class="cc-name">ready 事件</div>
-    <div class="cc-domain">事件机制</div>
-    <div class="cc-desc">CustomEvent('yry-breadcrumb-ready') + dispatchEvent，配合 {once:true} 监听器实现加载与挂载的解耦通信。</div>
-    <div class="cc-rels">
-      <span class="cc-rel out">→ Vue.createApp mount</span>
-      <span class="cc-rel in">← 组件注册完成</span>
-    </div>
-  </div>
-  <div class="concept-card">
-    <div class="cc-icon">🛡️</div>
-    <div class="cc-name">超时保护</div>
-    <div class="cc-domain">防御</div>
-    <div class="cc-desc">setTimeout 5s + timedOut 标志，防止网络异常时无限等待。超时后不注册组件，页面其余内容正常显示。</div>
-    <div class="cc-rels">
-      <span class="cc-rel out">→ 降级策略</span>
-      <span class="cc-rel in">← Loader 防御层</span>
-    </div>
-  </div>
-  <div class="concept-card">
-    <div class="cc-icon">🔄</div>
-    <div class="cc-name">降级策略</div>
-    <div class="cc-domain">策略</div>
-    <div class="cc-desc">任何加载/解析/注册失败时静默降级 — console.error 记录日志、不注册组件、不抛异常，确保页面其余功能正常。</div>
-    <div class="cc-rels">
-      <span class="cc-rel out">→ 页面继续运行</span>
-      <span class="cc-rel in">← 超时 · fetch 失败</span>
-    </div>
-  </div>
-  <div class="concept-card">
-    <div class="cc-icon">📋</div>
-    <div class="cc-name">4 文件引用顺序</div>
-    <div class="cc-domain">约束</div>
-    <div class="cc-desc">CSS → CSS → CSS → JS 严格加载顺序：shared/index.css → theme/index.css → index.css → index.js，确保样式优先、无 FOUC 闪烁。</div>
-    <div class="cc-rels">
-      <span class="cc-rel out">→ Loader 执行</span>
-      <span class="cc-rel in">← shared/index.css 起始</span>
-    </div>
-  </div>
+  <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
+</yry-info-cards>
+
+<yry-scene-footer version="v5.4.0" date="2026-06-22"></yry-scene-footer>
 </div>
-
-<div class="tip-box info">
-  <strong>图谱洞察</strong> — 场景 3 的知识图谱以 Loader 为核心枢纽：实线链路 fetch → DOMParser → register → ready → mount 构成正常加载管线；虚线链路连接超时、降级、Vue 检测三个防御节点。4 文件引用顺序作为外部约束，保证 CSS 优先加载防止 FOUC。覆盖域：核心模块域 → API 域 → 事件机制域 → 防御策略域。
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-<script>mermaid.initialize({startOnLoad:true, theme:'dark'});</script>
-
-<div class="footer">
-  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-3-Loader实现/知识图谱.html</code><br>
-  🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
-</div>
-</div>
-
-<script src="../../../shared\/index\.js"></script>
-<!-- ═══ CDN: YrySceneNav 组件 loader ═══ -->
-<script src="../../../yry-scene-nav/index.js"></script>
-<!-- ═══ CDN: YryCrossNav 组件 loader ═══ -->
-<script src="../../../yry-cross-nav/index.js"></script>
-<!-- ═══ CDN: YryBackTop (零配置自初始化) ═══ -->
-<script src="../../../yry-back-top/index.js"></script>
-<!-- ═══ CDN: YryBreadcrumb 组件 loader ═══ -->
-<script src="../../../yry-breadcrumb/index.js"></script>
-<!-- ═══ CDN: YrySceneHeader 组件 loader ═══ -->
-<script src="../../../yry-scene-header/index.js"></script>
-<!-- ═══ CDN: YryStatsGrid 组件 loader ═══ -->
-<script src="../../../yry-stats-grid/index.js"></script>
-
-  <!-- ════════════════════════════════════════════════════════════
-       页面级挂载 · 场景导航 + 交叉导航 + 面包屑 + 统计网格
-       index.js 异步加载模板后派发 yry-*-ready 事件
-       ════════════════════════════════════════════════════════════ -->
-  <script>
-
-  /* ── YryCrossNav 挂载 ── */
-  function mountCrossNav() {
-    if (!window.Vue || !window.YryCrossNav) return;
-    if (!document.getElementById('cross-nav-app')) return;
-    Vue.createApp(window.YryCrossNav, {
-      basePath: './',
-      active: '图谱',
-      pages: [
-        { id: '清单', icon: '📋', href: '计划清单.html' },
-        { id: '架构', icon: '📐', href: '架构图.html' },
-        { id: '图谱', icon: '🔗', href: '知识图谱.html' },
-        { id: '源码', icon: '📄', href: '源码.html' },
-        { id: '测试', icon: '🧪', href: '测试面板.html' },
-        { id: '演示', icon: '💡', href: '演示.html' },
-        { id: '审查', icon: '📝', href: '审查.html' }
-      ]
-    }).mount('#cross-nav-app');
-  }
-  if (window.YryCrossNav) mountCrossNav();
-  else document.addEventListener('yry-cross-nav-ready', mountCrossNav, { once: true });
-
-  /* ── YrySceneNav 挂载 ── */
-  function mountSceneNav() {
-    if (!window.Vue || !window.YrySceneNav) return;
-    if (!document.getElementById('scene-nav-app')) return;
-    Vue.createApp(window.YrySceneNav, {
-      items: [
-        { label: '任务故事', href: '../README.md' },
-        { label: '场景 3 · Loader 实现', href: './index.md' },
-        { label: '知识图谱', active: true }
-      ]
-    }).mount('#scene-nav-app');
-  }
-  if (window.YrySceneNav) mountSceneNav();
-  else document.addEventListener('yry-scene-nav-ready', mountSceneNav, { once: true });
-
-  /* ── YrySceneHeader 挂载 ── */
-  function mountSceneHeader() {
-    if (!window.Vue || !window.YrySceneHeader) return;
-    if (!document.getElementById('scene-header-app')) return;
-    Vue.createApp(window.YrySceneHeader, {
-      icon: '🔗',
-      prefix: '场景 3',
-      accent: ' · Loader 实现',
-      meta: 'YryBreadcrumb 任务故事 · 场景 3 · Loader Implementation · Knowledge Graph',
-      desc: 'fetch + DOMParser + ready 事件 + 5s 超时 · 4 文件引用顺序 · 错误处理与降级 · 错误用例与诊断'
-    }).mount('#scene-header-app');
-  }
-  if (window.YrySceneHeader) mountSceneHeader();
-  else document.addEventListener('yry-scene-header-ready', mountSceneHeader, { once: true });
-
-  /* ── YryBreadcrumb 挂载 ── */
-  function mountBreadcrumb() {
-    if (!window.Vue || !window.YryBreadcrumb) return;
-    if (!document.getElementById('breadcrumb-app')) return;
-    Vue.createApp(window.YryBreadcrumb, {
-      ariaLabel: '面包屑导航',
-      items: [
-        { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
-        { label: '任务故事', href: '../README.md' },
-        { label: '场景 3 · Loader 实现' },
-        { label: '知识图谱', icon: '🔗' }
-      ]
-    }).mount('#breadcrumb-app');
-  }
-  if (window.YryBreadcrumb) mountBreadcrumb();
-  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
-  </script>
-
+<script src="../../../../cdn/shared/index.js"></script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
+<script src="../../../../cdn/yry-cytoscape-graph/index.js"></script>
+<script src="../../../../cdn/yry-export-toolbar/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
+<script src="../../../../cdn/yry-info-cards/index.js"></script>
 </body>
 </html>

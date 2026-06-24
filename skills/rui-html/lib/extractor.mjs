@@ -305,7 +305,7 @@ export function markdownToHtml(md) {
   mermaidBlocks.forEach((code, i) => {
     html = html.replace(
       `__MERMAID_${i}__`,
-      `<pre class="mermaid">${escapeHtml(code)}</pre>`
+      `<pre class="mermaid">${escHtml(code)}</pre>`
     );
   });
 

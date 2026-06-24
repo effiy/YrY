@@ -78,7 +78,7 @@ export function computeDocIssuesForHealth(projectRoot) {
 }
 
 /**
- * Bootstrap D0-D7 diagnostics from git history and project data when no
+ * Bootstrap D0-D8 diagnostics from git history and project data when no
  * execution memory exists. Derives approximate signals for each dimension.
  */
 export function getBootstrapDiagnostics(projectRoot) {
@@ -312,7 +312,7 @@ export function getBootstrapDiagnostics(projectRoot) {
 }
 
 /**
- * Run the full D0-D7 diagnostic engine and return a summary for the health check.
+ * Run the full D0-D8 diagnostic engine and return a summary for the health check.
  */
 export function getDiagnosticResult(projectRoot) {
   const data = collectHealthData(projectRoot);
@@ -333,7 +333,7 @@ export function getDiagnosticResult(projectRoot) {
 
     if (triggered.length === 0) {
       return {
-        score: 100, summary: `${execCount} 条记录 — D0-D7 无异常`,
+        score: 100, summary: `${execCount} 条记录 — D0-D8 无异常`,
         skip: false, diagnostics, triggered: [], execCount,
       };
     }

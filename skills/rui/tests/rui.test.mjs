@@ -3,7 +3,7 @@
  * Verifies SKILL.md integrity, executable scripts, and key constraints.
  */
 
-import { describe, it, assert, run } from '../../../lib/test-harness.mjs';
+import { describe, it, assert, run } from '../../../lib/vitest-adapter.mjs';
 import { fileExists, readFile, readDir, hasSection, hasMermaidDiagram, PROJECT_ROOT } from '../../../lib/test-helpers.mjs';
 
 const SKILL_DIR = 'skills/rui';
@@ -112,5 +112,19 @@ describe('rui skill', () => {
 });
 
 // ── Run ────────────────────────────────────────────────────────────
+
+describe('edge cases', () => {
+    it('SKILL.md documents all blocking identifiers', () => {
+      const content = readFile(`${SKILL_DIR}/SKILL.md`);
+      const requiredIds = ['no-branch-isolation', 'skip-gate-a', 'gate-b-limit', 'no-plan'];
+      for (const id of requiredIds) {
+        assert.ok(content.includes(id), `must document blocking id: ${id}`);
+      }
+    });
+
+    it('degradation strategy covers key failure modes', () => {
+      const content = readFile(`${SKILL_DIR}/SKILL.md`);
+      assert.ok(content.includes('降级') || content.includes('degrad'), 'must document degradation');
+    });
+  });
 const exitCode = await run();
-process.exit(exitCode);

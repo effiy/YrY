@@ -3,108 +3,73 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#161620">
-<title>🚀 验证报告与健康面板集成 · 测试面板 Pro</title>
-<!-- ═══ CDN: YrY 共享样式 ═══ -->
+<title>验证报告与健康面板集成 · 测试面板</title>
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/theme/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-page-nav/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-test/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-test-base.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-stats/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-health-bar/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-tabs/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
+<style>
+/* Page-specific overrides — shared patterns in shared-b.css */
+</style>
 </head>
 <body>
-<div class="container">
+<div class="yry-container">
+<yry-scene-chrome
+  theme="b"
+  title="🧪 {ACCENT} · 测试面板"
+  title-accent="场景 3 · 验证报告与健康面板集成"
+  subtitle="场景 3 · 版本 vv5.4.0 · 2026-06-22"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-checklist · 故事任务"},{"label":"场景 3 · 验证报告与健康面板集成"},{"label":"🧪 测试面板"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","href":"架构图.html"},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","active":true},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","href":"审查.html"}]'>
+</yry-scene-chrome>
 
-  <script type="application/json" id="yry-page-config">
-{"story": "yry-checklist · 清单与自循环", "scene": {"num": "3", "name": "验证报告与健康面板集成", "dir": "场景-3-验证报告与健康面板集成"}, "depth": "../../../", "scenes": [{"num": "1", "name": "模板架构与 CSS 设计系统", "dir": "场景-1-模板架构与CSS设计系统"}, {"num": "2", "name": "清单交互组件实现", "dir": "场景-2-清单交互组件实现"}, {"num": "3", "name": "验证报告与健康面板集成", "dir": "场景-3-验证报告与健康面板集成"}, {"num": "4", "name": "批量生成与自循环机制", "dir": "场景-4-批量生成与自循环机制"}], "pages": [{"type": "清单", "icon": "📋", "file": "计划清单.html"}, {"type": "架构", "icon": "📐", "file": "架构图.html"}, {"type": "图谱", "icon": "🔗", "file": "知识图谱.html"}, {"type": "源码", "icon": "📄", "file": "源码.html"}, {"type": "测试", "icon": "🧪", "file": "测试面板.html"}, {"type": "演示", "icon": "💡", "file": "演示.html"}, {"type": "审计", "icon": "📝", "file": "审查.html"}], "page": {"type": "测试", "icon": "🧪", "file": "测试面板.html"}}
-</script>
-<div id="yry-nav"></div>
-<script src="../../../../cdn/yry-page-nav/index.js"></script>
+<yry-scene-stats items='[{"value":"✅ 通过","label":"总断言","color":"t"},{"value":"KPI 卡片","label":"通过","color":"p"},{"value":"KPI 卡片","label":"失败","color":"f"},{"value":"KPI 卡片","label":"跳过","color":"s"},{"value":"—","label":"耗时","color":"info"}]'></yry-scene-stats>
+<yry-scene-health-bar segments=''></yry-scene-health-bar>
 
-  <div class="header">
-    <h1>🚀 <span class="accent">验证报告与健康面板集成</span> · 测试面板 Pro</h1>
-    <p class="sub">新人首次参与的端到端流程验证 · 从 CLAUDE.md 阅读、故事领取到测试运行 · 12 维度全景自检 · 含质量雷达 / 时间线 / 错误聚类 / SLI 指标</p>
-    <div class="badges">
-      <span class="badge"><span class="dot"></span>Node v4.5</span>
-      <span class="badge"><span class="dot"></span>commit a3f2d8e</span>
-      <span class="badge"><span class="dot warn"></span>main · CI #4287</span>
-      <span class="badge">⏱ 2026-06-13 08:30 UTC+8</span>
-      <span class="badge">⌘K 命令面板</span>
+<yry-scene-tabs tabs='[{"id":"cases","label":"📋 测试用例"},{"id":"results","label":"📊 执行结果"},{"id":"gates","label":"🚦 门禁"}]'>
+  <div data-panel="cases">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>§1 测试设计 — 正常路径用例</h2>
+      <h2>§1 测试设计</h2><table><thead><tr><th>TC#</th><th>用例</th><th>验证点</th><th>预期</th><th>优先级</th></tr></thead><tbody><tr><td>TC-15</td><td>KPI 卡片渲染</td><td>数字与源数据一致</td><td>0 偏差</td><td>P0</td></tr><tr><td>TC-16</td><td>热力图颜色</td><td>绿→黄→红渐变</td><td>等级正确</td><td>P0</td></tr><tr><td>TC-17</td><td>分数卡计算</td><td>加权和=总分</td><td>误差 < 1</td><td>P0</td></tr><tr><td>TC-18</td><td>空数据降级</td><td>缺失数据显示占位</td><td>不崩溃</td><td>P0</td></tr><tr><td>TC-19</td><td>数据刷新</td><td>5 分钟自动刷新</td><td>数据更新</td><td>P1</td></tr><tr><td>TC-20</td><td>门禁判定</td><td>通过/阻断/警告 三态正确</td><td>与源数据一致</td><td>P0</td></tr><tr><td>TC-21</td><td>响应式适配</td><td>移动端卡片堆叠</td><td>不溢出</td><td>P1</td></tr><tr><td>TC-22</td><td>色板一致性</td><td>热力图与 KPI 同色板</td><td>引用 <code>--yry-pass/warn/fail</code></td><td>P1</td></tr><tr><td>TC-23</td><td>加权算法验证</td><td><code>Σ(维度分 × 权重) / Σ权重</code></td><td>数学一致性</td><td>P1</td></tr></tbody></table>
     </div>
   </div>
+  <div data-panel="results">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>§3 测试报告</h2>
+      <h2>§3 测试报告</h2><h3>分套件结果</h3><table><thead><tr><th>套件</th><th>断言数</th><th>通过</th><th>失败</th><th>通过率</th></tr></thead><tbody><tr><td>数据准确性</td><td>12</td><td>12</td><td>0</td><td>100%</td></tr><tr><td>颜色编码</td><td>5</td><td>5</td><td>0</td><td>100%</td></tr><tr><td>边界情况</td><td>4</td><td>4</td><td>0</td><td>100%</td></tr><tr><td>降级渲染</td><td>6</td><td>6</td><td>0</td><td>100%</td></tr><tr><td>响应式适配</td><td>3</td><td>3</td><td>0</td><td>100%</td></tr><tr><td>色板一致性</td><td>3</td><td>3</td><td>0</td><td>100%</td></tr><tr><td>加权算法</td><td>4</td><td>4</td><td>0</td><td>100%</td></tr><tr><td><b>合计</b></td><td><b>37</b></td><td><b>37</b></td><td><b>0</b></td><td><b>100%</b></td></tr></tbody></table><h3>门禁判定</h3><table><thead><tr><th>Gate</th><th>判定</th><th>证据</th></tr></thead><tbody><tr><td>Gate A（测试先行）</td><td>✅ 通过</td><td>§1 测试设计先于实现 · 9 TC 覆盖 5 组件</td></tr><tr><td>Gate B（实现完成）</td><td>✅ 通过</td><td>5 组件全部交付 · 37 断言全通过</td></tr><tr><td>降级门禁</td><td>✅ 通过</td><td>6 种降级状态全覆盖 · 空数据不崩溃</td></tr><tr><td>响应式门禁</td><td>✅ 通过</td><td>3 断点 · 移动端不溢出</td></tr></tbody></table>
+    </div>
+  </div>
+  <div data-panel="gates">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>Gate 门禁矩阵</h2>
+      <p class="yry-section-desc">P0 标记: 强制断言 · P1 标记: 建议开启 · P2 标记: 按需开启</p>
+      <h2>§0 技术评审</h2><p>数据可视化组件将结构化验证数据转化为直观的图表——KPI 卡片、风险热力图、趋势迷你图、分数卡和门禁判定块，让计划清单从任务追踪升级为质量总控面板。</p><h3>效果示意</h3><p><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    VRF[&quot;§3 测试报告&quot;]:::d --&gt; KPI[&quot;KPI 卡片&lt;br/&gt;通过/失败/警告&quot;]:::v
+    RISK[&quot;§6 风险表&quot;]:::d --&gt; HEAT[&quot;5×5 热力图&lt;br/&gt;影响×概率&quot;]:::v
+    IMP[&quot;§4 自改进&quot;]:::d --&gt; TREND[&quot;趋势柱状图&lt;br/&gt;评分时序&quot;]:::v
+    KPI --&gt; SCORE[&quot;分数卡&lt;br/&gt;0-100 加权分&quot;]:::v
+    classDef d fill:#1e1f2b,stroke:#3d59a1,color:#a9b1d6
+    classDef v fill:#f59e0b,color:#000</pre></p><h3>数据流架构</h3><table><thead><tr><th>数据源</th><th>提取方式</th><th>目标组件</th><th>刷新频率</th></tr></thead><tbody><tr><td>场景 §3 测试报告</td><td>表格解析 → 通过/失败/跳过计数</td><td>KPI 卡片</td><td>页面加载时</td></tr><tr><td>场景 §6 风险表</td><td>表格解析 → 影响×概率矩阵</td><td>5×5 热力图</td><td>页面加载时</td></tr><tr><td>场景 §4 自改进</td><td>列表解析 → D0-D8 诊断状态</td><td>趋势柱状图</td><td>页面加载时</td></tr><tr><td>健康报告 JSON</td><td>fetch → 评分数据</td><td>分数卡</td><td>每 5 分钟</td></tr></tbody></table><h3>组件渲染策略</h3><table><thead><tr><th>组件</th><th>渲染方式</th><th>降级策略</th></tr></thead><tbody><tr><td>KPI 卡片</td><td>CSS Grid 纯 CSS</td><td>数据缺失显示 <code>—</code> 占位</td></tr><tr><td>风险热力图</td><td>CSS Grid + 颜色编码 (绿→黄→红)</td><td>无数据时显示空网格</td></tr><tr><td>趋势柱状图</td><td>CSS bar-chart (纯 CSS 无 JS 依赖)</td><td>数据 < 3 点时显示散点</td></tr><tr><td>分数卡</td><td>加权算法计算</td><td>无数据时显示 <code>N/A</code></td></tr><tr><td>门禁判定块</td><td>条件渲染 (通过/阻断/警告)</td><td>无判定时显示 <code>待评估</code></td></tr></tbody></table><h3>角色链与门禁策略（与 <code>架构图.html</code> 决策链/实现链/闭环链一致）</h3><h4>决策链 · 3 角色</h4><table><thead><tr><th>阶段</th><th>角色</th><th>验收信号</th><th>失败处理</th></tr></thead><tbody><tr><td>RED 验证</td><td>tester</td><td>失败用例先于实现 · <code>node tests/run.mjs</code> 全绿</td><td>修复 → 重提 · 不允许跳过</td></tr><tr><td>评审收敛</td><td>reviewer</td><td>反馈 ≤ 2 轮 · 无 P0 遗留</td><td>超限 → 升级 architect 介入</td></tr><tr><td>安全审计</td><td>security</td><td>无明文凭据/注入/依赖漏洞</td><td>立即回滚 + P0 修复任务</td></tr></tbody></table><h4>实现链 · 5 角色</h4><table><thead><tr><th>阶段</th><th>角色</th><th>输入</th><th>输出</th></tr></thead><tbody><tr><td>数据采集</td><td>pm</td><td>场景 §3/§4/§6 表格</td><td>结构化数据 JSON</td></tr><tr><td>组件设计</td><td>coder</td><td>数据 JSON + 设计稿</td><td>5 组件 BEM 结构</td></tr><tr><td>渲染实现</td><td>coder</td><td>BEM + CSS Grid</td><td>零依赖纯 CSS 图表</td></tr><tr><td>降级保护</td><td>coder</td><td>边界条件清单</td><td>6 种降级状态</td></tr><tr><td>响应式适配</td><td>coder</td><td>3 断点规格</td><td>移动端堆叠</td></tr></tbody></table><h4>闭环链 · 2 角色</h4><table><thead><tr><th>阶段</th><th>角色</th><th>验收信号</th><th>失败处理</th></tr></thead><tbody><tr><td>交付收口</td><td>deliverer</td><td>日志+同步+通知 三件套齐备</td><td>补齐缺失项后重提</td></tr><tr><td>效果评估</td><td>self-improve</td><td>E1-E4 评估闭环</td><td>提案入库 · 下轮迭代</td></tr></tbody></table><h3>门禁通过策略（与 <code>架构图.html</code> 通过策略段一致）</h3><table><thead><tr><th>门禁</th><th>判定规则</th><th>阻断信号</th></tr></thead><tbody><tr><td>Gate A</td><td>测试设计先于实现 · 每 FP ≥ 3 类用例</td><td>用例数不足 · 缺边界用例</td></tr><tr><td>Gate B</td><td>全部 TC 通过 · 0 P0 失败</td><td>任何 TC 失败 · P0 未清零</td></tr><tr><td>降级门禁</td><td>Hard 阻断必须修复 · Medium/Soft 可降级但必须记录</td><td>Hard 项未修复就进入下一模块</td></tr><tr><td>反馈门禁</td><td>门禁结果加入 self-improve 反馈输入</td><td>失败 TC 无根因分析</td></tr></tbody></table><h3>常见阻断（与 <code>架构图.html</code> 常见阻断段一致）</h3><table><thead><tr><th>阻断类型</th><th>触发条件</th><th>修复路径</th></tr></thead><tbody><tr><td>数据源缺失</td><td>场景 §3/§4/§6 表格未生成</td><td>先完成前置场景 · 再回此场景</td></tr><tr><td>颜色编码错乱</td><td>热力图色板与 KPI 状态色板不一致</td><td>统一引用 <code>cdn/tokens/index.css</code> 真相源</td></tr><tr><td>降级崩溃</td><td>空数据时抛错</td><td>先设计降级 · 再实现正常态</td></tr><tr><td>响应式溢出</td><td>移动端卡片超出视口</td><td><code>grid-template-columns: repeat(auto-fit, minmax(...))</code> 自适应</td></tr></tbody></table>
+    </div>
+  </div>
+</yry-scene-tabs>
 
-  <div class="stats-grid" id="statsRow"></div>
-  <!-- 验证报告与健康面板集成 7 步路径可视化 -->
-  <div class="card" style="padding:16px 18px">
-    <h2>🗺️ 验证报告与健康面板集成 7 步路径 × 测试覆盖</h2>
-    <div class="onb-flow" id="onbFlow"></div>
-    <p style="text-align:center;color:var(--text3);font-size:.7rem;margin-top:8px">点击任一步骤 → 筛选该步骤关联的测试用例</p>
-  </div>
-  <div class="bar-wrap"><div class="bar-outer" id="bar" title="点击进度条筛选状态"></div></div>
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;animation:yry-fadeInDown .5s .15s ease both" id="toolbar">
-    <div class="search-wrap"><span class="si">🔍</span><input id="searchInput" type="text" placeholder="搜索测试/源码…" oninput="onSearch(this.value)"><span class="kbd">⌘K</span></div>
-    <button class="btn" onclick="expandAllSuites()">📂 展开全部</button>
-    <button class="btn" onclick="collapseAllSuites()">📁 收起全部</button>
-    <button class="btn" id="btnSortDur" onclick="toggleSort()">⏱ 耗时排序</button>
-    <button class="btn" onclick="copyResultsMd()">📋 复制 MD</button>
-    <button class="btn btn-primary" onclick="exportProposal()" title="将改进建议导出为自改进提案 Markdown">🚀 导出改进提案</button>
-    <span style="font-size:.72rem;color:var(--text3);margin-left:auto;white-space:nowrap" id="navStatus"></span>
-  </div>
-
-  <div class="tabs-wrap">
-  <div class="tabs">
-    <span class="tab on" data-panel="overview">📊 总览<span class="tab-kbd">1</span></span>
-    <span class="tab" data-panel="files">📁 文件<span class="tab-kbd">2</span></span>
-    <span class="tab" data-panel="srcmap">🧭 源码地图<span class="tab-kbd">3</span></span>
-    <span class="tab" data-panel="results">� 结果<span class="tab-kbd">4</span></span>
-    <span class="tab" data-panel="normal">✅ 正常路径<span class="tab-kbd">5</span></span>
-    <span class="tab" data-panel="boundary">⚠️ 边界<span class="tab-kbd">6</span></span>
-    <span class="tab" data-panel="anomaly">🚨 异常<span class="tab-kbd">7</span><span class="tab-badge" id="anomalyBadge">5</span></span>
-    <span class="tab" data-panel="slow">🐢 慢测试<span class="tab-kbd">8</span></span>
-    <span class="tab" data-panel="perf">📈 性能<span class="tab-kbd">9</span></span>
-    <span class="tab" data-panel="improve">💡 改进<span class="tab-kbd">0</span></span>
-    <span class="tab" data-panel="insights">🧠 洞察<span class="tab-kbd">Q</span></span>
-    <span class="tab" data-panel="gate">🚦 门禁<span class="tab-kbd">G</span></span>
-  </div>
-  </div>
-
-  <div class="panel on" id="panelOverview"><div id="overviewContent"></div></div>
-  <div class="panel" id="panelFiles"><div id="filesContent"></div></div>
-  <div class="panel" id="panelSrcmap"><div id="srcmapContent"></div></div>
-  <div class="panel" id="panelResults"><div id="resultsContent"></div></div>
-  <div class="panel" id="panelNormal"><div id="normalContent"></div></div>
-  <div class="panel" id="panelBoundary"><div id="boundaryContent"></div></div>
-  <div class="panel" id="panelAnomaly"><div id="anomalyContent"></div></div>
-  <div class="panel" id="panelSlow"><div id="slowContent"></div></div>
-  <div class="panel" id="panelPerf"><div id="perfContent"></div></div>
-  <div class="panel" id="panelImprove"><div id="improveContent"></div></div>
-  <div class="panel" id="panelInsights"><div id="insightsContent"></div></div>
-  <div class="panel" id="panelGate">
-    <div class="card"><h2>📊 门禁状态</h2><div class="gate-lines" id="gateContent"></div></div>
-  </div>
-
-  <div class="footer-note">
-    YrY 自检体系 · 场景测试面板 Pro · <a href="../../../../tests/index.html">自检中心</a> · 12 维度全景 · 含 5 异常用例 · 7 改进建议 · 质量雷达 · 错误聚类 · SLI 指标
-    <div class="footer-stats" id="footerStats"></div>
-  </div>
+<yry-scene-footer version="v5.4.0" date="2026-06-22" docs-link="../../../../docs/index.html"></yry-scene-footer>
 </div>
-
-<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="返回顶部">↑</button>
-
-<div class="modal-overlay" id="modalOverlay"><div class="modal">
-  <div class="m-head">
-    <span class="m-title" id="modalTitle"></span>
-    <span class="m-meta" id="modalMeta"></span>
-    <button class="m-close" onclick="closeModal()">✕</button>
-  </div>
-  <div class="m-body" id="modalBody"></div>
-</div></div>
-
-<div class="cmd-palette" id="cmdPalette">
-  <input id="cmdInput" type="text" placeholder="输入命令、跳转到 Tab、搜索用例…">
-  <div class="cmd-list" id="cmdList"></div>
-</div>
-<div class="toast" id="toast"></div>
-<script src="../../../../cdn/yry-test/index.js"></script>
-
+<script src="../../../../cdn/shared/index.js"></script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
+<script src="../../../../cdn/yry-scene-stats/index.js"></script>
+<script src="../../../../cdn/yry-scene-health-bar/index.js"></script>
+<script src="../../../../cdn/yry-scene-tabs/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
 </body>
 </html>

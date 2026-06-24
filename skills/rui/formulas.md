@@ -188,7 +188,7 @@ flowchart LR
 
 ### F.story.task — 故事任务 `meta + Story×N`
 
-> 模板参考：[templates/docs/故事任务面板/故事任务.md](../../templates/docs/故事任务面板/故事任务.md)
+> 模板参考：[cdn/yry-arch/scenes/故事任务.md](../../cdn/yry-arch/scenes/故事任务.md)
 
 #### F.story.task 强制元素
 
@@ -258,7 +258,7 @@ flowchart LR
 
 ### F.story.scene — 场景-N-<slug>.md `meta + nav + §0 技术评审 + §1 测试设计 + §2 实施报告 + §3 测试报告 + §4 自改进`
 
-> 模板参考：[templates/docs/故事任务面板/场景-<N>-<slug>.md](../../templates/docs/故事任务面板/场景-<N>-<slug>.md)。每个场景自包含全生命周期文档。
+> 模板参考：[cdn/yry-arch/scenes/场景-1-新人上手/index.md](../../cdn/yry-arch/scenes/场景-1-新人上手/index.md)。每个场景自包含全生命周期文档。
 
 ```mermaid
 flowchart LR
@@ -266,7 +266,7 @@ flowchart LR
     S0 --> S1["§1 测试设计<br/>TC-N · TC-B · Gate A"]
     S1 --> S2["§2 实施报告<br/>操作步骤 · 源码清单 · P0 审查 · 效果验证"]
     S2 --> S3["§3 测试报告<br/>执行摘要 · 用例详情 · 失败分析"]
-    S3 --> S4["§4 自改进<br/>D0-D7 诊断 · 改进清单"]
+    S3 --> S4["§4 自改进<br/>D0-D8 诊断 · 改进清单"]
 
 ```
 
@@ -277,7 +277,7 @@ flowchart LR
 | §1 测试设计 | 正常路径用例(TC-N) + 边界/异常用例(TC-B) + Gate A 交接 | tester |
 | §2 实施报告 | 操作步骤记录 + 开发源码清单 + 测试源码清单 + 依赖图 + P0 审查表 + 效果验证(后端curl截图/前端UI截图编号步骤) | coder |
 | §3 测试报告 | 操作步骤记录 + 执行摘要 + 用例详情 + 失败分析与修复 | tester |
-| §4 自改进 | D0-D7 诊断 + 改进清单 + 评审清单 | self-improve |
+| §4 自改进 | D0-D8 诊断 + 改进清单 + 评审清单 | self-improve |
 
 > 场景文档内 §0-§4 按管线阶段顺序填充：文档生成→实现→验证→自改进。不可提前创建后续章节。
 

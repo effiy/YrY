@@ -2,332 +2,74 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>模板与样式 · 技术审查 · YryBreadcrumb 任务故事</title>
-<link rel="stylesheet" href="../../../shared\/index\.css">
-<link rel="stylesheet" href="../../../theme\/index\.css">
-<link rel="stylesheet" href="../../../yry\-scene\/index\.css">
-<link rel="stylesheet" href="../../../yry\-checklist\/index\.css">
-<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
-<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
-<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
-<link rel="stylesheet" href="../../../yry-back-top/index.css">
-<link rel="stylesheet" href="../../../yry-scene-header/index.css">
-<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
-<link rel="stylesheet" href="../../../yry\-inline\-helpers\/index\.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<link rel="stylesheet" href="../../../yry\-a11y\/index\.css">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>模板与样式 · 审查</title>
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-review-base.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-stats/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-health-bar/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-tabs/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-review-cards/index.css">
 <style>
-
-.container { max-width: 1100px; }
+.yry-container{max-width:1120px}
 </style>
 </head>
 <body>
-<a href="#main" class="skip-link">⏩ 跳到主要内容</a>
-<div class="container" id="main">
+<div class="yry-container">
+<yry-scene-chrome
+  theme="b"
+  title="📝 {ACCENT} — 审查报告"
+  title-accent="模板与样式"
+  subtitle="审查日期 2026-06-22 · 版本 vv5.4.0 · 场景 2"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-breadcrumb · yry-breadcrumb"},{"label":"场景 2 · 模板与样式"},{"label":"📝 审查"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","href":"架构图.html"},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","active":true}]'>
+</yry-scene-chrome>
 
-<div id="breadcrumb-app"></div>
+<yry-scene-stats items='[{"value":"10/8","label":"诊断通过","color":"health"},{"value":"D0-D8","label":"覆盖范围","color":"t"},{"value":-2,"label":"改进建议","color":"warn-h"}]'></yry-scene-stats>
+<yry-scene-health-bar segments='[{"pct":125,"cls":"strength"},{"pct":-25,"cls":"gap"}]'></yry-scene-health-bar>
 
-<div id="scene-header-app"></div>
-
-<div id="scene-nav-app"></div>
-
-<div id="cross-nav-app"></div>
-
-<div class="verdict-row">
-  <div class="vr-title">📝 技术评审报告</div>
-  <div class="vr-meta">
-    <span>审查场景: <code>场景 2 · 模板与样式</code></span>
-    <span>审查时间: <code>2026-06</code></span>
-  </div>
-  <div class="vr-metrics">
-    <div class="stat-card"><div class="val pass">7/7</div><div class="lbl">通过项</div></div>
-    <div class="stat-card"><div class="val info">0</div><div class="lbl">警告项</div></div>
-    <div class="stat-card"><div class="val info">0</div><div class="lbl">失败项</div></div>
-  </div>
-  <span class="vr-verdict pass">✅ 评审通过</span>
-</div>
-
-<h2>审查清单</h2>
-<p>逐项评审场景 2 模板与样式实现的 7 个关键维度。所有项目均已通过。</p>
-
-<table class="table-highlight">
-  <thead>
-    <tr><th>#</th><th>审查项</th><th>审查要点</th><th>状态</th><th>证据</th></tr>
-  </thead>
-  <tbody>
-    <tr class="row-pass">
-      <td><code>R1</code></td>
-      <td>模板结构正确性</td>
-      <td>语义化 <code>&lt;nav&gt;</code> · a11y 标记 (<code>aria-label</code> / <code>aria-current</code>) · 结构层级清晰</td>
-      <td><span class="verdict pass">✅ 通过</span></td>
-      <td><a href="./index.md#sec1">index.md §1 模板结构</a></td>
-    </tr>
-    <tr class="row-pass">
-      <td><code>R2</code></td>
-      <td>v-for / v-if 指令用法</td>
-      <td><code>v-for="(item, i) in items"</code> 正确迭代 · <code>v-if="i &gt; 0"</code> 分隔符条件 · <code>v-if="item.href"</code> 区分链接/当前项</td>
-      <td><span class="verdict pass">✅ 通过</span></td>
-      <td><a href="./源码.html">源码.html</a></td>
-    </tr>
-    <tr class="row-pass">
-      <td><code>R3</code></td>
-      <td>CSS 设计令牌使用</td>
-      <td><code>--yry-color-*</code> 变量全面应用 · <code>--yry-dur-*</code> 动画时长 · <code>--yry-ease-out</code> 缓动函数</td>
-      <td><span class="verdict pass">✅ 通过</span></td>
-      <td><a href="./源码.html">源码.html</a> · <a href="../../../yry-breadcrumb/index.css">index.css</a></td>
-</tr>    <tr class="row-pass">
-      <td><code>R4</code></td>
-      <td>BEM 命名规范</td>
-      <td><code>.breadcrumb</code> 块 · <code>.bc-sep</code> 分隔符元素 · <code>.bc-current</code> 当前项元素 · 无深层嵌套</td>
-      <td><span class="verdict pass">✅ 通过</span></td>
-      <td><a href="../../../yry-breadcrumb/index.css">index.css</a></td>
-</tr>    <tr class="row-pass">
-      <td><code>R5</code></td>
-      <td>Fallback 值决策</td>
-      <td>所有 <code>var()</code> 均有后备值 · token 不可用时仍可渲染 · 降级策略清晰</td>
-      <td><span class="verdict pass">✅ 通过</span></td>
-      <td><a href="./测试面板.html">测试面板.html</a> · TC3</td>
-    </tr>
-    <tr class="row-pass">
-      <td><code>R6</code></td>
-      <td>响应式设计</td>
-      <td><code>flex-wrap: wrap</code> 自动换行 · <code>gap: 6px</code> 合理间距 · 长路径不溢出</td>
-      <td><span class="verdict pass">✅ 通过</span></td>
-      <td><a href="./演示.html">演示.html</a> · 模式 3 长路径</td>
-    </tr>
-    <tr class="row-pass">
-      <td><code>R7</code></td>
-      <td>深色/浅色模式</td>
-      <td><code>prefers-color-scheme</code> 媒体查询 · 背景/文字色同步切换 · 设计令牌驱动</td>
-      <td><span class="verdict pass">✅ 通过</span></td>
-      <td><a href="./架构图.html">架构图.html</a> · 令牌层</td>
-    </tr>
-  </tbody>
-</table>
-
-<h2>审查维度评分</h2>
-
-<div class="dim-card">
-  <div class="dim-head">
-    <span class="dim-icon">📐</span>
-    <span class="dim-title">模板架构</span>
-    <span class="dim-score pass">94</span>
-  </div>
-  <div class="dim-bar"><div class="dim-bar-fill pass" style="width:94%"></div></div>
-  <div class="dim-detail">语义化 nav 标签，v-for/v-if 指令用法正确，模板结构层级清晰，分隔符条件渲染逻辑合理。</div>
-</div>
-
-<div class="dim-card">
-  <div class="dim-head">
-    <span class="dim-icon">🎨</span>
-    <span class="dim-title">样式系统</span>
-    <span class="dim-score pass">93</span>
-  </div>
-  <div class="dim-bar"><div class="dim-bar-fill pass" style="width:93%"></div></div>
-  <div class="dim-detail">CSS 设计令牌 --yry-color-* 全面应用，BEM 命名规范一致，fallback 降级策略完善。</div>
-</div>
-
-<div class="dim-card">
-  <div class="dim-head">
-    <span class="dim-icon">📱</span>
-    <span class="dim-title">响应式与主题</span>
-    <span class="dim-score pass">91</span>
-  </div>
-  <div class="dim-bar"><div class="dim-bar-fill pass" style="width:91%"></div></div>
-  <div class="dim-detail">flex-wrap 自动换行，深色/浅色模式 media query 同步切换，设计令牌驱动跨主题一致。</div>
-</div>
-
-<div class="dim-card">
-  <div class="dim-head">
-    <span class="dim-icon">♿</span>
-    <span class="dim-title">可访问性</span>
-    <span class="dim-score pass">90</span>
-  </div>
-  <div class="dim-bar"><div class="dim-bar-fill pass" style="width:90%"></div></div>
-  <div class="dim-detail">aria-label / aria-current 完整标注，focus-visible 键盘可达，屏幕阅读器适配到位。</div>
-</div>
-
-<h2>审查管线</h2>
-<div class="stage-list">
-  <div class="stage-row done">
-    <div class="st-num">1</div>
-    <div class="st-info"><div class="st-name">模板与结构审查</div><div class="st-detail">验证模板语义化、v-for/v-if 指令用法、BEM 命名规范</div></div>
-    <span class="st-status ok">✓ 通过</span>
-    <div class="st-bar"></div>
-  </div>
-  <div class="stage-row done">
-    <div class="st-num">2</div>
-    <div class="st-info"><div class="st-name">样式系统审查</div><div class="st-detail">CSS 设计令牌使用、fallback 降级、响应式与双模式适配</div></div>
-    <span class="st-status ok">✓ 通过</span>
-    <div class="st-bar"></div>
-  </div>
-  <div class="stage-row done">
-    <div class="st-num">3</div>
-    <div class="st-info"><div class="st-name">可访问性与交付审查</div><div class="st-detail">a11y 标注完整性、交付物就位、跨场景链接有效</div></div>
-    <span class="st-status ok">✓ 通过</span>
-    <div class="st-bar"></div>
-  </div>
-</div>
-
-<h2>逐项验证</h2>
-<div class="check-list">
-  <div class="verify-item checked">
-    <div class="vi-box"><span class="vi-check">✓</span></div>
-    <div class="vi-body">
-      <div class="vi-name">R1: 模板结构正确性</div>
-      <div class="vi-desc">语义化 nav 标签，a11y 标记 (aria-label / aria-current)，结构层级清晰。证据: <a href="./index.md#sec1">index.md §1</a></div>
+<yry-scene-tabs tabs='[{"id":"overview","label":"📊 总览"},{"id":"good","label":"✅ 好案例"},{"id":"bad","label":"❌ 坏案例"},{"id":"recommendations","label":"📝 改进建议"},{"id":"evidence","label":"📎 证据链"}]'>
+  <div data-panel="overview"><div class="placeholder">数据待填充 — 运行 /rui code 生成</div></div>
+  <div data-panel="good">
+    <div class="case-card good">
+      <h4>✅ <span class="case-tag good">好案例</span> 文档基线完整</h4>
+      <div class="case-loc">📁 cdn/yry-breadcrumb/场景-2-模板与样式/index.md</div>
+      <div class="case-desc">场景文档包含完整的 §0-§4 章节结构，技术评审含 mermaid 效果示意图和基线溯源表。</div>
     </div>
-    <span class="vi-time">✅ PASS</span>
   </div>
-  <div class="verify-item checked">
-    <div class="vi-box"><span class="vi-check">✓</span></div>
-    <div class="vi-body">
-      <div class="vi-name">R2: v-for / v-if 指令用法</div>
-      <div class="vi-desc">v-for="(item, i) in items" 正确迭代，v-if 分隔符条件与链接/当前项区分正确。证据: <a href="./源码.html">源码.html</a></div>
+  <div data-panel="bad">
+    <div class="case-card bad">
+      <h4>❌ <span class="case-tag bad">待审查</span> 需运行 /rui code 生成实施数据</h4>
+      <div class="case-loc">📁 cdn/yry-breadcrumb/场景-2-模板与样式/index.md §2-§4</div>
+      <div class="case-desc">§2 实施报告、§3 测试报告、§4 自改进章节数据待填充。运行 /rui code 后重新审查。</div>
     </div>
-    <span class="vi-time">✅ PASS</span>
   </div>
-  <div class="verify-item checked">
-    <div class="vi-box"><span class="vi-check">✓</span></div>
-    <div class="vi-body">
-      <div class="vi-name">R3: CSS 设计令牌使用</div>
-      <div class="vi-desc">--yry-color-* / --yry-dur-* / --yry-ease-out 变量全面应用。证据: <a href="../../../yry-breadcrumb/index.css">index.css</a></div>
-</div>    <span class="vi-time">✅ PASS</span>
+  <div data-panel="recommendations">
+    <div class="rec-grid"><div class="placeholder">数据待填充 — 运行 /rui code 生成</div></div>
   </div>
-  <div class="verify-item checked">
-    <div class="vi-box"><span class="vi-check">✓</span></div>
-    <div class="vi-body">
-      <div class="vi-name">R4: BEM 命名规范</div>
-      <div class="vi-desc">.breadcrumb 块 / .bc-sep 分隔符 / .bc-current 当前项，无深层嵌套。证据: <a href="../../../yry-breadcrumb/index.css">index.css</a></div>
-</div>    <span class="vi-time">✅ PASS</span>
-  </div>
-  <div class="verify-item checked">
-    <div class="vi-box"><span class="vi-check">✓</span></div>
-    <div class="vi-body">
-      <div class="vi-name">R5: Fallback 值决策</div>
-      <div class="vi-desc">所有 var() 均有后备值，token 不可用时仍可渲染，降级策略清晰。证据: <a href="./测试面板.html">测试面板 TC3</a></div>
+  <div data-panel="evidence">
+    <div class="dim-card">
+      <h3>📎 审查证据清单</h3>
+      <ul>
+        <li><strong>场景文档:</strong> index.md 存在，含 §0-§4 章节</li>
+        <li><strong>版本:</strong> vv5.4.0 · 2026-06-22</li>
+        <li><strong>故事:</strong> yry-breadcrumb · yry-breadcrumb</li>
+      </ul>
     </div>
-    <span class="vi-time">✅ PASS</span>
   </div>
-  <div class="verify-item checked">
-    <div class="vi-box"><span class="vi-check">✓</span></div>
-    <div class="vi-body">
-      <div class="vi-name">R6: 响应式设计</div>
-      <div class="vi-desc">flex-wrap: wrap 自动换行，gap: 6px 合理间距，长路径不溢出。证据: <a href="./演示.html">演示 模式 3</a></div>
-    </div>
-    <span class="vi-time">✅ PASS</span>
-  </div>
-  <div class="verify-item checked">
-    <div class="vi-box"><span class="vi-check">✓</span></div>
-    <div class="vi-body">
-      <div class="vi-name">R7: 深色/浅色模式</div>
-      <div class="vi-desc">prefers-color-scheme 媒体查询，背景/文字色同步切换，设计令牌驱动。证据: <a href="./架构图.html">架构图</a></div>
-    </div>
-    <span class="vi-time">✅ PASS</span>
-  </div>
+</yry-scene-tabs>
+
+<yry-scene-footer version="v5.4.0" date="2026-06-22" docs-link="../../../../docs/index.html"></yry-scene-footer>
 </div>
-
-<div class="tip-box success">
-  <strong>✅ 场景 2 评审结论</strong> — 7 项审查全部通过。模板结构语义清晰，v-for/v-if 指令使用正确，CSS 设计令牌体系完整，BEM 命名规范一致，fallback 降级策略完善，响应式与双模式适配到位。可进入场景 3。
-</div>
-
-<div class="footer">
-  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-2-模板与样式/审查.html</code><br>
-  🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
-</div>
-
-</div>
-
-
-<script src="../../../shared\/index\.js"></script>
-<!-- ═══ CDN: YrySceneNav 组件 loader ═══ -->
-<script src="../../../yry-scene-nav/index.js"></script>
-<!-- ═══ CDN: YryCrossNav 组件 loader ═══ -->
-<script src="../../../yry-cross-nav/index.js"></script>
-<!-- ═══ CDN: YryBackTop (零配置自初始化) ═══ -->
-<script src="../../../yry-back-top/index.js"></script>
-<!-- ═══ CDN: YryBreadcrumb 组件 loader ═══ -->
-<script src="../../../yry-breadcrumb/index.js"></script>
-<!-- ═══ CDN: YrySceneHeader 组件 loader ═══ -->
-<script src="../../../yry-scene-header/index.js"></script>
-<!-- ═══ CDN: YryStatsGrid 组件 loader ═══ -->
-<script src="../../../yry-stats-grid/index.js"></script>
-
-  <!-- ════════════════════════════════════════════════════════════
-       页面级挂载 · 场景导航 + 交叉导航 + 面包屑 + 统计网格
-       index.js 异步加载模板后派发 yry-*-ready 事件
-       ════════════════════════════════════════════════════════════ -->
-  <script>
-
-  /* ── YryCrossNav 挂载 ── */
-  function mountCrossNav() {
-    if (!window.Vue || !window.YryCrossNav) return;
-    if (!document.getElementById('cross-nav-app')) return;
-    Vue.createApp(window.YryCrossNav, {
-      basePath: './',
-      active: '清单',
-      pages: [
-        { id: '清单', icon: '📋', href: '计划清单.html' },
-        { id: '架构', icon: '📐', href: '架构图.html' },
-        { id: '图谱', icon: '🔗', href: '知识图谱.html' },
-        { id: '源码', icon: '📄', href: '源码.html' },
-        { id: '测试', icon: '🧪', href: '测试面板.html' },
-        { id: '演示', icon: '💡', href: '演示.html' },
-        { id: '审查', icon: '📝', href: '审查.html' }
-      ]
-    }).mount('#cross-nav-app');
-  }
-  if (window.YryCrossNav) mountCrossNav();
-  else document.addEventListener('yry-cross-nav-ready', mountCrossNav, { once: true });
-
-  /* ── YrySceneNav 挂载 ── */
-  function mountSceneNav() {
-    if (!window.Vue || !window.YrySceneNav) return;
-    if (!document.getElementById('scene-nav-app')) return;
-    Vue.createApp(window.YrySceneNav, {
-      items: [
-        { label: '任务故事', href: '../README.md' },
-        { label: '模板与样式', href: './index.md' },
-        { label: '技术审查', active: true }
-      ]
-    }).mount('#scene-nav-app');
-  }
-  if (window.YrySceneNav) mountSceneNav();
-  else document.addEventListener('yry-scene-nav-ready', mountSceneNav, { once: true });
-
-  /* ── YrySceneHeader 挂载 ── */
-  function mountSceneHeader() {
-    if (!window.Vue || !window.YrySceneHeader) return;
-    if (!document.getElementById('scene-header-app')) return;
-    Vue.createApp(window.YrySceneHeader, {
-      icon: '📝',
-      prefix: '场景 2',
-      accent: ' · 模板与样式',
-      meta: 'YryBreadcrumb 任务故事 · 场景 2 · Template & Style · 技术审查',
-      desc: 'Vue 3 template 编写 · v-for / v-if / :class 设计 · CSS 设计令牌 + fallback 决策 · 5 视觉模式覆盖'
-    }).mount('#scene-header-app');
-  }
-  if (window.YrySceneHeader) mountSceneHeader();
-  else document.addEventListener('yry-scene-header-ready', mountSceneHeader, { once: true });
-
-  /* ── YryBreadcrumb 挂载 ── */
-  function mountBreadcrumb() {
-    if (!window.Vue || !window.YryBreadcrumb) return;
-    if (!document.getElementById('breadcrumb-app')) return;
-    Vue.createApp(window.YryBreadcrumb, {
-      ariaLabel: '面包屑导航',
-      items: [
-        { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
-        { label: '任务故事', href: '../README.md' },
-        { label: '场景 2 · 模板与样式' },
-        { label: '技术审查', icon: '📝' }
-      ]
-    }).mount('#breadcrumb-app');
-  }
-  if (window.YryBreadcrumb) mountBreadcrumb();
-  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
-  </script>
-
+<script src="../../../../cdn/shared/index.js"></script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
+<script src="../../../../cdn/yry-scene-stats/index.js"></script>
+<script src="../../../../cdn/yry-scene-health-bar/index.js"></script>
+<script src="../../../../cdn/yry-scene-tabs/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
+<script src="../../../../cdn/yry-review-cards/index.js"></script>
 </body>
 </html>

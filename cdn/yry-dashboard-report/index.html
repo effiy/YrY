@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryDashboardReport · Demo</title>
+  <meta name="description" content="YryDashboardReport 评分仪表板报告组件 Demo — 八维加权评分模型 + 实时评分报告">
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <link rel="stylesheet" href="../shared-reports/index.css">
+  <link rel="stylesheet" href="../yry-tabs-panel/index.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 1100px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; }
+  </style>
+</head>
+<body>
+<h1>📊 YryDashboardReport · Demo</h1>
+<p class="demo-hint">组件提供八维加权评分方法卡片 + 实时评分报告渲染。数据从 <code>score-report.json</code> / <code>summary.json</code> / <code>cdn-summary/index.json</code> 优先级加载。</p>
+
+<section class="score-methodology">
+  <div class="sm-title">📊 评分机制 — 八维加权健康评估模型</div>
+  <div class="sm-intro">YrY 采用<strong>八维加权评分体系</strong>。评级标准: A ≥ 80 · B ≥ 60 · C ≥ 40 · D ＜ 40 · 每 5 分钟自动刷新</div>
+  <div class="sm-cards">
+    <div class="sm-card"><div class="sm-card-header"><span class="sm-card-title">🩺 PHI</span><span class="sm-card-grade grade-A">94/A</span></div><div class="sm-card-desc">项目综合健康指数 — 19 维加权聚合</div></div>
+    <div class="sm-card"><div class="sm-card-header"><span class="sm-card-title">🛠 SHI</span><span class="sm-card-grade grade-A">86/A</span></div><div class="sm-card-desc">技能健康指数 — 四维加权评估</div></div>
+    <div class="sm-card"><div class="sm-card-header"><span class="sm-card-title">🧪 TQI</span><span class="sm-card-grade grade-A">100/A</span></div><div class="sm-card-desc">测试质量指数 — 工程成熟度 7 维</div></div>
+  </div>
+</section>
+
+<section class="score-report" id="score-report">
+  <div class="sr-header">
+    <span class="sr-title">📋 实时评分报告</span>
+  </div>
+  <div id="sr-overview">加载中...</div>
+</section>
+
+<script src="../shared-reports/index.js"></script>
+<script src="../shared/index.js"></script>
+<script src="index.js"></script>
+</body>
+</html>

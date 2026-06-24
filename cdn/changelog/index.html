@@ -12,19 +12,70 @@
   <link rel="stylesheet" href="../shared/index.css">
   <link rel="stylesheet" href="../theme/index.css">
   <style>
-    body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
-    h1 { font-size: 1.4rem; color: var(--yry-accent, #FFC107); }
+    body { padding: 32px 24px 60px; max-width: 960px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #22d3ee); }
+    h2 { font-size: 1.1rem; margin: 28px 0 12px; color: var(--yry-text2, #a9b1d6); }
     pre { background: rgba(0,0,0,.3); padding: 12px 14px; border-radius: 6px; font-size: .72rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; max-height: 600px; overflow-y: auto; }
+    .links { display: flex; gap: 12px; flex-wrap: wrap; margin: 16px 0; }
+    .links a { color: var(--yry-accent, #22d3ee); text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; font-size: .76rem; }
+    .links a:hover { border-color: var(--yry-accent); background: rgba(34,211,238,.08); }
+    table { width: 100%; border-collapse: collapse; font-size: .76rem; margin: 12px 0; }
+    th { text-align: left; padding: 8px 12px; background: rgba(30,41,59,.5); color: var(--yry-text2, #a9b1d6); font-weight: 600; }
+    td { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,.04); color: var(--yry-text3, #6b7280); }
+    .card { background: rgba(15,23,42,.55); border: var(--yry-border, 1px solid rgba(255,255,255,.06)); border-radius: 10px; padding: 20px 24px; margin-bottom: 16px; }
+    .badge-major { background: rgba(248,113,113,.15); color: #f87171; font-size: .64rem; padding: 1px 6px; border-radius: 3px; font-weight: 600; }
+    .badge-minor { background: rgba(96,165,250,.15); color: #60a5fa; font-size: .64rem; padding: 1px 6px; border-radius: 3px; font-weight: 600; }
+    .badge-patch { background: rgba(74,222,128,.15); color: #4ade80; font-size: .64rem; padding: 1px 6px; border-radius: 3px; font-weight: 600; }
   </style>
 </head>
 <body>
   <h1>📜 changelog · 版本变更日志</h1>
-  <p>YrY CDN 包的版本变更日志:版本号、发布日期、变更摘要、影响维度。</p>
+  <p>YrY CDN 包 (<code>yry-cdn</code>) 的版本变更日志 — 遵循 <a href="https://keepachangelog.com/zh-CN/1.1.0/" style="color:var(--yry-accent)">Keep a Changelog</a> 格式和 <a href="https://semver.org/lang/zh-CN/" style="color:var(--yry-accent)">语义化版本</a> 规范。</p>
 
-  <h2>数据预览</h2>
+  <div class="links">
+    <a href="../index.html">← CDN 首页</a>
+    <a href="../CHANGELOG.md">📝 CHANGELOG.md</a>
+    <a href="../README.md">📖 README</a>
+    <a href="../cdn-summary/index.html">📊 CDN 摘要</a>
+  </div>
+
+  <h2>📋 版本历史</h2>
+  <div class="card">
+    <table>
+      <tr><th>版本</th><th>日期</th><th>类型</th><th>关键变更</th></tr>
+      <tr>
+        <td><strong>v1.2.0</strong></td>
+        <td>2026-06-16</td>
+        <td><span class="badge-minor">MINOR</span></td>
+        <td>107 组件 · yry-stats-grid · yry-panel-hub · yry-doc-layer · yry-story-card · yry-scene-card · YrY.copyCmd/toast 增强</td>
+      </tr>
+      <tr>
+        <td><strong>v1.1.0</strong></td>
+        <td>2026-05-20</td>
+        <td><span class="badge-minor">MINOR</span></td>
+        <td>theme-mono/index.css · 字体 (4 woff2) · 14 设计令牌固化 · yry-breadcrumb/yry-tabs-panel 稳定</td>
+      </tr>
+      <tr>
+        <td><strong>v1.0.0</strong></td>
+        <td>2026-04-08</td>
+        <td><span class="badge-major">MAJOR</span></td>
+        <td>初始发布 — shared/index.css + theme/index.css + shared.js (9 API) · npm 包 + jsDelivr 同步</td>
+      </tr>
+    </table>
+  </div>
+
+  <h2>🔄 版本策略</h2>
+  <table>
+    <tr><th>版本段</th><th>含义</th><th>示例</th></tr>
+    <tr><td><span class="badge-major">MAJOR</span></td><td>不兼容的 API 变更</td><td>移除组件 · 重命名令牌 · 变更 API 签名</td></tr>
+    <tr><td><span class="badge-minor">MINOR</span></td><td>向后兼容的新功能</td><td>新增组件 · 新增 API · 新增主题</td></tr>
+    <tr><td><span class="badge-patch">PATCH</span></td><td>向后兼容的修复</td><td>样式修复 · 性能优化 · 文档更新</td></tr>
+  </table>
+
+  <h2>📄 原始数据</h2>
   <pre id="data">加载中...</pre>
 
-  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · changelog · 2026</p>
+  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · changelog · v1.2.0 · 2026</p>
 
   <script>
     fetch('index.json').then(r => r.json()).then(d => {

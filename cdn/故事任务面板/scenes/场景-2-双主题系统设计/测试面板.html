@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>测试面板 · 双主题系统设计 · CDN 共享前端资源库</title>
+<link rel="stylesheet" href="../../../shared/index.css">
+<link rel="stylesheet" href="../../../theme/index.css">
+<link rel="stylesheet" href="../../../yry-inline-helpers/index.css">
+<link rel="stylesheet" href="../../../yry-scene/index.css">
+<link rel="stylesheet" href="../../../yry-scene-header/index.css">
+<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
+<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
+<link rel="stylesheet" href="../../../yry-back-top/index.css">
+<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
+<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
+<link rel="stylesheet" href="../../../yry-a11y/index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
+  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
+  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
+  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
+  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
+  .delivery-story { font-size: .72rem; color: #4b5563; }
+  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
+  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
+  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
+  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
+  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
+  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
+  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
+</style>
+</head>
+<body>
+<yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
+<yry-scene-header id="header-app"
+  icon="🧪"
+  title-prefix="测试面板"
+  accent="双主题系统设计"
+  meta="📖 CDN 共享前端资源库 · 🎬 双主题系统设计"
+  desc="CDN 共享前端资源库 — 双主题系统设计 场景的 测试面板 交付物。查看场景详情与任务分解。">
+</yry-scene-header>
+
+<div class="scene-wrap">
+  <div class="delivery-header">
+    <div class="delivery-icon">🧪</div>
+    <div class="delivery-label">测试面板</div>
+    <div class="delivery-scene">双主题系统设计</div>
+    <div class="delivery-story">CDN 共享前端资源库</div>
+  </div>
+
+  <div class="content-card">
+    <h2>🧪 验证矩阵 · 11 项</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6">
+      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">验证项</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">方法</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">阈值</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Cat A 页面渲染正确</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">打开架构图页面</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">视觉与设计稿一致</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Cat B 页面渲染正确</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">打开场景页面</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">视觉与设计稿一致</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">令牌 fallback 生效</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">移除 theme/index.css</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">组件仍可读</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">14 令牌全部定义</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">检查 <code>:root</code> 块</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">14/14</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">跨主题可移植</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">切换 CSS 引用 (Cat A↔Cat B)</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">组件样式自动适配</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">对比度合规</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">WCAG AA 检查</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">文字≥4.5:1 · 大文字≥3:1</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">令牌引用一致性</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>grep "var(--yry-" 组件 CSS</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">全部使用令牌</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">无硬编码颜色</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>grep -E '#[0-9a-fA-F]{3,8}' yry-*/index.css</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">仅 theme/ 内</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">主题切换无 FOUC</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">录屏首帧</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">无样式闪烁</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">高对比度模式</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>prefers-contrast: more</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">自动启用边框加强</td></tr>
+        <tr><td style="padding:8px 10px">暗色翻转</td><td style="padding:8px 10px"><code>prefers-color-scheme: light</code></td><td style="padding:8px 10px">检查亮色主题可用</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="content-card">
+    <h2>▶️ 回归命令</h2>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0"># 1. 14 令牌全部定义
+grep -E '^\s*--yry-' cdn/theme/index.css | wc -l   # 应 ≥ 14
+grep -E '^\s*--yry-' cdn/theme-mono/index.css | wc -l
+
+# 2. 组件 CSS 全部使用令牌 (无硬编码颜色)
+grep -rE '#[0-9a-fA-F]{3,8}' cdn/yry-*/index.css | grep -v 'cdn/theme' | grep -v 'cdn/theme-mono'
+# 预期: 无输出
+
+# 3. 组件 CSS 引用 var(--yry-*) 令牌
+grep -rE 'var\(--yry-' cdn/yry-*/index.css | wc -l   # 应 &gt; 100
+
+# 4. WCAG 对比度 (用 pa11y 或 Lighthouse)
+lighthouse https://your-page --only-categories=accessibility --view</pre>
+  </div>
+
+  <div class="content-card">
+    <h2>📊 令牌覆盖率</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:.74rem;color:#a9b1d6">
+      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">类别</th><th style="padding:8px 12px;text-align:right;color:#22d3ee;font-weight:600">已定义</th><th style="padding:8px 12px;text-align:right;color:#22d3ee;font-weight:600">目标</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">状态</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">Surfaces</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">3</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">3</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 达标</td></tr>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">Brand</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">2</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">2</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 达标</td></tr>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">Semantic</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">3</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">3</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 达标</td></tr>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">Text</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">3</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">3</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 达标</td></tr>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">Elevation</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">3</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">3</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 达标</td></tr>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">Spacing (待补)</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">0</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">5</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#fbbf24">⚠ P1</td></tr>
+        <tr><td style="padding:8px 12px">Font size (待补)</td><td style="padding:8px 12px;text-align:right">0</td><td style="padding:8px 12px;text-align:right">6</td><td style="padding:8px 12px;color:#fbbf24">⚠ P1</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="nav-links">
+    <a class="nav-link" href="计划清单.html">📋 计划清单</a>
+    <a class="nav-link" href="架构图.html">📐 架构图</a>
+    <a class="nav-link" href="知识图谱.html">🔗 知识图谱</a>
+    <a class="nav-link current" href="测试面板.html">🧪 测试面板</a>
+    <a class="nav-link" href="源码.html">📄 源码</a>
+    <a class="nav-link" href="演示.html">💡 演示</a>
+    <a class="nav-link" href="审查.html">📝 审查</a>
+  </div>
+</div>
+
+<yry-cross-nav></yry-cross-nav>
+<yry-back-top></yry-back-top>
+<yry-footer-note version="1.2.0"></yry-footer-note>
+
+<script src="../../../shared/index.js" defer></script>
+<script src="../../../shared/vue-ce-loader.js"></script>
+  <script src="../../../yry-breadcrumb/index.js"></script>
+<script src="../../../yry-scene-header/index.js"></script>
+<script src="../../../yry-scene-nav/index.js"></script>
+<script src="../../../yry-cross-nav/index.js"></script>
+<script src="../../../yry-back-top/index.js"></script>
+<script src="../../../yry-footer-note/index.js"></script>
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    var bc = document.getElementById('breadcrumb-app');
+    if (bc) bc.items = [
+      { label: 'CDN 共享库', icon: '🌐', href: '../../../index.html' },
+      { label: '故事任务面板', icon: '📖', href: '../index.html' },
+      { label: 'CDN 共享前端资源库', icon: '📖', href: '../故事任务.md' },
+      { label: '双主题系统设计', icon: '🎬' }
+    ];
+    var sh = document.getElementById('header-app');
+    if (sh) {
+      sh.icon = '🧪';
+      sh.titlePrefix = '测试面板';
+      sh.accent = '双主题系统设计';
+      sh.meta = '📖 CDN 共享前端资源库 · 🎬 双主题系统设计';
+      sh.desc = 'CDN 共享前端资源库 — 双主题系统设计 场景的 测试面板 交付物。';
+    }
+  });
+</script>
+</body>
+</html>

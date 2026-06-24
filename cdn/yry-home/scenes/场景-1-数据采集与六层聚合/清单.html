@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据采集与六层聚合 · 清单</title>
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../../cdn/shared-reports/index.css">
+<style>
+.scene-nav { display:flex; flex-wrap:wrap; gap:4px 8px; padding:8px 0; font-size:.72rem; border-bottom:var(--yry-border); margin-bottom:12px; }
+.scene-nav-link { color:var(--yry-text3); text-decoration:none; }
+.scene-nav-link:hover { color:var(--yry-accent); }
+.scene-nav-link.active { color:var(--yry-accent); font-weight:700; }
+.scene-nav-sep { color:var(--yry-text3); }
+.cross-nav { display:flex; gap:8px; padding:6px 0; font-size:.72rem; margin-bottom:12px; }
+.cross-link { color:var(--yry-text3); text-decoration:none; }
+.cross-link:hover { color:var(--yry-accent); }
+.cross-link.on { color:var(--yry-accent); font-weight:700; }
+.cross-sep { color:var(--yry-text3); }
+.header { margin-bottom:12px; }
+.header h1 { font-size:1.1rem; margin:0; }
+.accent { color:var(--yry-accent); }
+.meta { font-size:.68rem; color:var(--yry-text3); margin-top:4px; }
+.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:8px; }
+.stat-card { padding:10px; text-align:center; border-radius:6px; border:var(--yry-border); background:rgba(15,23,42,.4); }
+.stat-card .val { font-size:1.2rem; font-weight:700; }
+.stat-card .val.health { color:var(--yry-pass); }
+.stat-card .lbl { font-size:.62rem; color:var(--yry-text3); margin-top:2px; }
+.bar-wrap { margin-bottom:12px; }
+.bar-outer { height:6px; border-radius:3px; background:rgba(255,255,255,.06); overflow:hidden; display:flex; }
+.seg.strength { background:var(--yry-pass); }
+.seg.gap { background:rgba(255,255,255,.06); }
+.card { padding:16px 20px; border-radius:8px; border:var(--yry-border); background:rgba(15,23,42,.4); }
+.card h2 { font-size:.88rem; margin:0 0 12px 0; }
+.cl-item { display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.04); }
+.cl-num { min-width:24px; height:24px; border-radius:50%; background:rgba(34,197,94,.12); color:var(--yry-pass); display:flex; align-items:center; justify-content:center; font-size:.68rem; font-weight:700; }
+.cl-text { flex:1; font-size:.76rem; line-height:1.5; color:var(--yry-text2); }
+.ft { text-align:center; font-size:.64rem; color:var(--yry-text3); padding:20px 0; }
+@media (max-width:640px) { .stats-grid { grid-template-columns:repeat(2,1fr); }}
+</style>
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb"><a href="../../../index.html">文档中心</a><span class="bc-sep">/</span><span class="bc-current">YryIndex</span><span class="bc-sep">/</span><span class="bc-current">场景 1 · 数据采集与六层聚合</span><span class="bc-sep">/</span><span class="bc-current">清单</span></nav>
+
+<nav class="scene-nav">
+  <span class="scene-nav-link active">场景1 · 数据采集与六层聚合</span>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-2-实时面板与交互组件/清单.html">场景2 · 实时面板与交互组件</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-3-交叉导航与可访问性/清单.html">场景3 · 交叉导航与可访问性</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-4-自动化生成管线/清单.html">场景4 · 自动化生成管线</a>
+</nav>
+
+<nav class="cross-nav">
+<span class="cross-link on">清单</span><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">架构</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">源码</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">测试</a><span class="cross-sep">·</span>
+<a class="cross-link" href="演示.html">演示</a><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">审计</a>
+</nav>
+
+<div class="header">
+  <h1>场景-1<span class="accent"> · 数据采集与六层聚合</span></h1>
+  <div class="meta">v1.1.0 · 2026-06-22 · yry-home</div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="val health">5</div><div class="lbl">检查项</div></div>
+  <div class="stat-card"><div class="val health">4</div><div class="lbl">已完成</div></div>
+  <div class="stat-card"><div class="val">1</div><div class="lbl">待执行</div></div>
+  <div class="stat-card"><div class="val">80%</div><div class="lbl">进度</div></div>
+</div>
+<div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:80%"></div><div class="seg gap" style="width:20%"></div></div></div>
+
+<div class="card">
+  <h2>检查清单</h2>
+  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text">资产扫描覆盖全部规约目录（skills/ · agents/ · rules/ · docs/故事任务面板/）</span></div>
+<div class="cl-item"><span class="cl-num">2</span><span class="cl-text">统计数据可追溯到具体的 shell 命令</span></div>
+<div class="cl-item"><span class="cl-num">3</span><span class="cl-text">六层结构模型完整，无遗漏模块类型</span></div>
+<div class="cl-item"><span class="cl-num">4</span><span class="cl-text">元数据编目格式统一（名称、描述、版本、标签、链接）</span></div>
+<div class="cl-item"><span class="cl-num">5</span><span class="cl-text">链接解析正确，指向有效文件</span></div>
+</div>
+
+<div class="card" style="margin-top:12px">
+  <p style="font-size:.72rem;color:var(--yry-text3);text-align:center">
+    查看完整详细清单: <a href="计划清单.html">计划清单</a> · <a href="index.md">源码 Markdown</a>
+  </p>
+</div>
+
+<footer class="ft">
+  场景 1 · 数据采集与六层聚合 · YryIndex · v1.1.0<br>
+  <span style="color:var(--yry-text3)">清单 · 架构 · 图谱 · 源码 · 测试 · 演示 · 审计</span>
+</footer>
+
+</div>
+</body>
+</html>

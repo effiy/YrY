@@ -16,241 +16,9 @@
 <link rel="stylesheet" href="../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../cdn/theme/index.css">
 <link rel="stylesheet" href="../../cdn/shared-reports/index.css">
-<style>
-/* common reset/body covered by shared-reports.css */
-/* badge.A/.B/.C/.D/.triggered/.clear covered by shared-reports.css */
-
-/* diag grid */
-.diag-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
-.diag-card { padding: 14px 12px; text-align: center; }
-.diag-card:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.1); }
-.diag-card.triggered { border-color: rgba(245,158,11,.2); background: rgba(245,158,11,.03); }
-.diag-id { font-size: .8rem; font-weight: 700; }
-.diag-name { font-size: .72rem; color: var(--yry-text2); margin-top: 2px; }
-.diag-rate { font-size: .6rem; color: var(--yry-text3); margin-top: 4px; }
-
-/* dim score grid */
-.dim-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
-.dim-item { display: flex; align-items: center; gap: 8px; padding: 10px 14px; }
-.dim-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.dim-dot.A { background: var(--yry-pass); } .dim-dot.B { background: var(--yry-pass); }
-.dim-dot.C { background: var(--yry-warn); } .dim-dot.D { background: var(--yry-fail); }
-.dim-name { flex: 1; font-size: .74rem; }
-.dim-score { font-weight: 700; font-size: .82rem; }
-.dim-avg { font-size: .58rem; color: var(--yry-text3); }
-
-/* component health grid */
-.comp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
-.comp-item { padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; }
-.comp-item:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.08); }
-.comp-icon { font-size: 1.4rem; }
-.comp-count { font-size: .68rem; color: var(--yry-text3); }
-.comp-score { font-size: 1.5rem; font-weight: 700; }
-.comp-bar-wrap { height: 4px; border-radius: 2px; background: rgba(255,255,255,.06); overflow: hidden; margin-top: 4px; }
-.comp-bar-fill { height: 100%; border-radius: 2px; transition: width .4s ease; }
-
-/* arch health */
-.arch-summary { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 16px; }
-.arch-big { text-align: center; min-width: 100px; }
-.arch-big-score { font-size: 2.4rem; font-weight: 800; line-height: 1; }
-.arch-big-grade { font-size: .72rem; color: var(--yry-text2); margin-top: 4px; }
-.arch-meta { font-size: .72rem; color: var(--yry-text3); line-height: 1.6; }
-.arch-dim-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 6px; }
-.arch-dim-item { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 6px; border: var(--yry-border); background: rgba(15,23,42,.3); }
-.arch-dim-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-.arch-dim-label { flex: 1; font-size: .68rem; color: var(--yry-text2); }
-.arch-dim-score { font-weight: 700; font-size: .76rem; }
-.arch-dim-trend { font-size: .58rem; color: var(--yry-text3); }
-
-/* score trend */
-.trend-chart-wrap { position: relative; width: 100%; }
-.trend-chart-wrap svg { width: 100%; height: 200px; }
-.trend-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; font-size: .68rem; color: var(--yry-text3); }
-.trend-legend span { display: flex; align-items: center; gap: 4px; }
-.trend-legend .dot { width: 8px; height: 8px; border-radius: 50%; }
-.trend-stats { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 12px; }
-.trend-stat { text-align: center; }
-.trend-stat .tval { font-size: 1.2rem; font-weight: 700; }
-.trend-stat .tlbl { font-size: .62rem; color: var(--yry-text3); }
-
-/* day card */
-.day-card { padding: 14px 18px; margin-bottom: 8px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-.day-card:hover { transform: translateX(2px); }
-.day-date { font-weight: 600; font-size: .84rem; min-width: 80px; }
-.day-score { font-size: 1.1rem; font-weight: 700; min-width: 48px; }
-.day-bar { flex: 1; min-width: 100px; height: 8px; border-radius: 4px; background: rgba(255,255,255,.05); overflow: hidden; }
-.day-bar-fill { height: 100%; border-radius: 4px; transition: width .4s ease; }
-.day-range { font-size: .64rem; color: var(--yry-text3); min-width: 60px; text-align: right; }
-.day-grade { font-size: .62rem; }
-.day-delta { font-size: .64rem; font-weight: 600; min-width: 48px; }
-
-	/* signal */
-	.signal { padding: 10px 14px; margin-bottom: 6px; border-radius: 6px; font-size: .76rem; display: flex; align-items: flex-start; gap: 10px; line-height: 1.5; border: var(--yry-border); background: rgba(15,23,42,.4); }
-	.signal.critical { background: rgba(239,68,68,.06); border-left: 3px solid var(--yry-fail); }
-	.signal.warning   { background: rgba(245,158,11,.04); border-left: 3px solid var(--yry-warn); }
-	.signal.improvement { background: rgba(34,197,94,.04); border-left: 3px solid var(--yry-pass); }
-	.signal.info      { background: rgba(59,130,246,.04); border-left: 3px solid var(--yry-cyan); }
-	.signal-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
-
-	/* skeleton loading */
-	@keyframes skPulse { 0%, 100% { opacity: .3; } 50% { opacity: .6; } }
-	.sk { animation: skPulse 1.6s ease-in-out infinite; border-radius: 4px; background: rgba(255,255,255,.06); }
-	.sk-line { height: 12px; margin-bottom: 8px; }
-	.sk-line.w60 { width: 60%; } .sk-line.w80 { width: 80%; } .sk-line.w40 { width: 40%; }
-	.sk-block { height: 80px; }
-
-	/* intro dl */
-	.intro dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; align-items: baseline; }
-	.intro dt { font-weight: 700; color: var(--yry-accent); white-space: nowrap; }
-	.intro dd { margin: 0; }
-	@media (max-width: 640px) { .intro dl { grid-template-columns: 1fr; } .intro dt { margin-top: 8px; } }
-
-/* branch */
-.branch-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; margin-bottom: 6px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); }
-.branch-name { font-size: .78rem; font-weight: 600; font-family: 'JetBrains Mono', monospace; min-width: 120px; }
-.branch-count { font-size: .7rem; color: var(--yry-text3); min-width: 60px; }
-.branch-bar { flex: 1; height: 6px; border-radius: 3px; background: rgba(255,255,255,.05); overflow: hidden; }
-.branch-fill { height: 100%; border-radius: 3px; }
-
-/* time-tabs */
-.time-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
-.time-tab { padding: 6px 16px; border-radius: 6px; font-size: .72rem; font-weight: 600; cursor: pointer; border: var(--yry-border); background: rgba(15,23,42,.4); color: var(--yry-text3); transition: all .15s; }
-.time-tab.active { background: rgba(59,130,246,.12); border-color: rgba(59,130,246,.3); color: #22d3ee; }
-.time-tab:hover { border-color: rgba(255,255,255,.1); }
-
-/* grade dist bars */
-.grade-bar-wrap { display: flex; gap: 4px; height: 20px; border-radius: 4px; overflow: hidden; }
-.grade-bar { height: 100%; transition: width .3s; }
-.grade-bar.A { background: var(--yry-pass); }
-.grade-bar.B { background: #4ade80; }
-.grade-bar.C { background: var(--yry-warn); }
-.grade-bar.D { background: var(--yry-fail); }
-
-/* ── KPI Grid (改进能力指标) ─────────────────────────────────────────── */
-.kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 16px; }
-.kpi-item { padding: 14px 16px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); display: flex; flex-direction: column; gap: 4px; position: relative; overflow: hidden; }
-.kpi-item::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
-.kpi-item.pass::before { background: var(--yry-pass); }
-.kpi-item.warn::before { background: var(--yry-warn); }
-.kpi-item.fail::before { background: var(--yry-fail); }
-.kpi-item.info::before { background: var(--yry-cyan); }
-.kpi-label { font-size: .64rem; color: var(--yry-text3); text-transform: uppercase; letter-spacing: .4px; }
-.kpi-value { font-size: 1.4rem; font-weight: 700; line-height: 1.1; font-family: 'JetBrains Mono', monospace; }
-.kpi-value.pass { color: var(--yry-pass); }
-.kpi-value.warn { color: var(--yry-warn); }
-.kpi-value.fail { color: var(--yry-fail); }
-.kpi-value.info { color: var(--yry-cyan); }
-.kpi-suffix { font-size: .68rem; color: var(--yry-text2); margin-top: 2px; line-height: 1.4; }
-
-/* ── Priority Matrix ───────────────────────────────────────────────────── */
-.priority-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
-.priority-item { padding: 14px 16px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); display: flex; gap: 12px; align-items: flex-start; transition: transform .15s; }
-.priority-item:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.08); }
-.priority-item.p0 { border-left: 3px solid var(--yry-fail); }
-.priority-item.p1 { border-left: 3px solid var(--yry-warn); }
-.priority-item.p2 { border-left: 3px solid var(--yry-cyan); }
-.priority-rank { font-size: 1.1rem; font-weight: 800; min-width: 28px; color: var(--yry-text3); font-family: 'JetBrains Mono', monospace; }
-.priority-body { flex: 1; }
-.priority-title { font-size: .84rem; font-weight: 600; margin-bottom: 4px; }
-.priority-meta { font-size: .68rem; color: var(--yry-text3); display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
-.priority-meta span { display: inline-flex; align-items: center; gap: 3px; }
-.priority-action { font-size: .68rem; color: var(--yry-text2); margin-top: 6px; padding-top: 6px; border-top: 1px dashed rgba(255,255,255,.06); }
-
-/* ── Diagnostic trigger history mini chart ─────────────────────────────── */
-.diag-history { display: flex; flex-direction: column; gap: 8px; }
-.diag-history-row { display: flex; align-items: center; gap: 10px; }
-.diag-history-id { font-size: .72rem; font-weight: 700; min-width: 28px; color: var(--yry-text2); }
-.diag-history-name { font-size: .68rem; color: var(--yry-text3); min-width: 80px; }
-.diag-history-bars { display: flex; gap: 2px; flex: 1; align-items: center; height: 18px; }
-.diag-history-cell { flex: 1; min-width: 6px; max-width: 24px; height: 100%; border-radius: 2px; background: rgba(255,255,255,.04); transition: all .3s; position: relative; }
-.diag-history-cell.triggered { background: var(--yry-fail); }
-.diag-history-cell.warn { background: var(--yry-warn); }
-.diag-history-cell:hover { transform: scaleY(1.2); }
-.diag-history-rate { font-size: .68rem; min-width: 48px; text-align: right; font-family: 'JetBrains Mono', monospace; color: var(--yry-text2); }
-.diag-history-axis { display: flex; gap: 2px; padding-left: 118px; margin-top: 6px; }
-.diag-history-axis span { flex: 1; min-width: 6px; max-width: 24px; font-size: .56rem; color: var(--yry-text3); text-align: center; }
-
-/* ── Architecture drift indicator ──────────────────────────────────────── */
-.drift-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
-.drift-item { padding: 12px 14px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); }
-.drift-item.up { border-left: 3px solid var(--yry-pass); }
-.drift-item.flat { border-left: 3px solid var(--yry-cyan); }
-.drift-item.down { border-left: 3px solid var(--yry-fail); }
-.drift-name { font-size: .68rem; color: var(--yry-text2); margin-bottom: 4px; }
-.drift-score-row { display: flex; align-items: baseline; gap: 8px; }
-.drift-score { font-size: 1.2rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
-.drift-arrow { font-size: .82rem; font-weight: 700; }
-.drift-arrow.up { color: var(--yry-pass); }
-.drift-arrow.flat { color: var(--yry-text3); }
-.drift-arrow.down { color: var(--yry-fail); }
-.drift-threshold { font-size: .56rem; color: var(--yry-text3); margin-top: 4px; }
-
-/* ── Trend forecast band ───────────────────────────────────────────────── */
-.forecast-band { fill: rgba(34,211,238,.12); }
-.forecast-line { stroke: #22d3ee; stroke-width: 1.5; stroke-dasharray: 4,3; fill: none; }
-.forecast-dot { fill: #22d3ee; }
-.forecast-legend { display: inline-flex; align-items: center; gap: 4px; }
-.forecast-legend::before { content: ''; display: inline-block; width: 12px; height: 2px; background: #22d3ee; background-image: linear-gradient(to right, #22d3ee 60%, transparent 60%); background-size: 6px 2px; background-repeat: repeat-x; }
-
-/* ── Dimension recurrence ranking ──────────────────────────────────────── */
-.rec-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; margin-bottom: 6px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); }
-.rec-row:hover { transform: translateX(2px); }
-.rec-rank { min-width: 28px; font-size: .82rem; font-weight: 700; color: var(--yry-text3); font-family: 'JetBrains Mono', monospace; }
-.rec-name { flex: 1; font-size: .78rem; font-weight: 600; }
-.rec-bar { width: 100px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.05); overflow: hidden; }
-.rec-fill { height: 100%; border-radius: 3px; transition: width .4s; }
-.rec-score { min-width: 48px; text-align: right; font-weight: 700; font-size: .82rem; font-family: 'JetBrains Mono', monospace; }
-.rec-trend { min-width: 48px; text-align: right; font-size: .72rem; }
-
-/* ── Skillification tracker ────────────────────────────────────────────── */
-.skill-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
-.skill-card { padding: 14px 16px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); position: relative; }
-.skill-card.promoted { border-left: 3px solid var(--yry-pass); }
-.skill-card.candidate { border-left: 3px solid var(--yry-cyan); }
-.skill-card.observed { border-left: 3px solid var(--yry-text3); }
-.skill-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-.skill-name { font-size: .82rem; font-weight: 600; }
-.skill-count { font-size: .64rem; color: var(--yry-text3); margin-top: 4px; }
-.skill-prog { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
-.skill-prog-bar { flex: 1; height: 4px; border-radius: 2px; background: rgba(255,255,255,.06); overflow: hidden; }
-.skill-prog-fill { height: 100%; border-radius: 2px; }
-.skill-prog-label { font-size: .58rem; color: var(--yry-text3); font-family: 'JetBrains Mono', monospace; min-width: 36px; }
-
-/* ── Diagnostic → Proposal → Rule mapping table ───────────────────────── */
-.dpr-table th { background: rgba(15,23,42,.4); }
-.dpr-table td.dpr-id { font-weight: 700; font-family: 'JetBrains Mono', monospace; }
-.dpr-table td.dpr-rule { font-size: .68rem; color: var(--yry-cyan); font-family: 'JetBrains Mono', monospace; }
-
-/* ── Quick reference grid ──────────────────────────────────────────────── */
-.ref-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
-.ref-card { padding: 12px 14px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); font-size: .72rem; line-height: 1.6; }
-.ref-card strong { color: var(--yry-accent); }
-.ref-card code { background: rgba(59,130,246,.1); padding: 1px 5px; border-radius: 3px; font-size: .9em; color: var(--yry-cyan); }
-
-/* ── Data flow diagram (CSS only) ──────────────────────────────────────── */
-.flow-diagram { display: flex; align-items: stretch; justify-content: center; gap: 4px; flex-wrap: wrap; padding: 14px 0; }
-.flow-node { padding: 10px 14px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.6); text-align: center; min-width: 110px; }
-.flow-node.observe { border-left: 3px solid var(--yry-cyan); }
-.flow-node.diagnose { border-left: 3px solid var(--yry-warn); }
-.flow-node.improve { border-left: 3px solid var(--yry-accent); }
-.flow-node.evaluate { border-left: 3px solid var(--yry-pass); }
-.flow-node .flow-icon { font-size: 1.1rem; display: block; margin-bottom: 2px; }
-.flow-node .flow-name { font-size: .72rem; font-weight: 700; }
-.flow-node .flow-sub { font-size: .58rem; color: var(--yry-text3); margin-top: 2px; }
-.flow-arrow { display: flex; align-items: center; color: var(--yry-text3); font-size: 1.2rem; padding: 0 4px; }
-
-/* ── Responsive additions ──────────────────────────────────────────────── */
-@media (max-width: 640px) {
-	.kpi-grid, .priority-grid, .drift-grid, .skill-grid, .ref-grid { grid-template-columns: 1fr 1fr; }
-	.flow-diagram { flex-direction: column; align-items: stretch; }
-	.flow-arrow { transform: rotate(90deg); align-self: center; }
-}
-@media (max-width: 420px) {
-	.kpi-grid, .priority-grid, .drift-grid, .skill-grid, .ref-grid { grid-template-columns: 1fr; }
-}
-
-</style>
-</head>
+<link rel="stylesheet" href="../../cdn/yry-tabs-panel/index.css">
+<link rel="stylesheet" href="../../cdn/yry-flow-loop/index.css">
+<link rel="stylesheet" href="../../cdn/yry-selfimprove-styles/index.css"></head>
 <body>
 <main class="c" id="mainContent">
 
@@ -266,35 +34,20 @@
   <div class="meta"><span id="siCount">加载中...</span> · 数据刷新 <span id="siFreshness">—</span> · 闭环周期 <span id="siCycleCount">—</span></div>
 </div>
 
+<!-- ═══ Tab 导航 ═══ -->
+<div class="yry-tabs" id="main-tabs">
+  <span class="yry-tab on" data-panel="diagnostics">📊 诊断与评估</span>
+  <span class="yry-tab" data-panel="trends">📈 趋势与健康</span>
+  <span class="yry-tab" data-panel="improve">🔧 改进追踪</span>
+</div>
+
+<!-- ═══ Tab 1: 诊断与评估 ═══ -->
+<div class="yry-panel on" id="panelDiagnostics">
+
 <!-- 四段闭环数据流图 -->
 <div class="card" style="padding:18px 24px">
   <h2 style="font-size:.92rem;margin-bottom:4px">🔄 四段闭环 · 数据流图</h2>
-  <div class="flow-diagram">
-    <div class="flow-node observe">
-      <span class="flow-icon">①</span>
-      <span class="flow-name">观察</span>
-      <span class="flow-sub">health-trend.jsonl · arch-trend · git · bot</span>
-    </div>
-    <span class="flow-arrow">→</span>
-    <div class="flow-node diagnose">
-      <span class="flow-icon">②</span>
-      <span class="flow-name">诊断</span>
-      <span class="flow-sub">D0–D8 异常定位 + 严重等级</span>
-    </div>
-    <span class="flow-arrow">→</span>
-    <div class="flow-node improve">
-      <span class="flow-icon">③</span>
-      <span class="flow-name">改进</span>
-      <span class="flow-sub">proposals + SKILL.md 技能化</span>
-    </div>
-    <span class="flow-arrow">→</span>
-    <div class="flow-node evaluate">
-      <span class="flow-icon">④</span>
-      <span class="flow-name">评估</span>
-      <span class="flow-sub">E1–E4 效能验证 + 闭环回写</span>
-    </div>
-    <span class="flow-arrow" style="font-size:1.4rem;color:var(--yry-pass)">↻</span>
-  </div>
+  <yry-flow-loop id="flow-loop-app"></yry-flow-loop>
   <div style="font-size:.62rem;color:var(--yry-text3);text-align:center;margin-top:6px">观察 → 诊断 → 改进 → 评估 → (下次循环) · 单闭环 ≤5 分钟，异常信号 30 分钟内可追溯至根因</div>
 </div>
 
@@ -313,6 +66,51 @@
     <dt>诊断引擎</dt>
     <dd><code>lib/engine/diagnostics.mjs</code> (D0-D8 纯函数判定) + <code>lib/arch-check.mjs</code> (10 维度架构合规) + <code>lib/scoring.mjs</code> (评分聚合 + 趋势检测) + <code>lib/selfimprove-generator.mjs</code> (汇总生成器) — 权威定义见 <code>lib/constants.mjs</code></dd>
   </dl>
+</div>
+
+<div class="card" style="padding:18px 24px">
+  <h2 style="font-size:.92rem;margin-bottom:12px">🔬 D0-D8 九级诊断详解</h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;font-size:.76rem">
+    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid #ef4444">
+      <strong style="color:#ef4444">D0 基线偏离</strong>
+      <div style="color:var(--yry-text3);margin-top:4px;line-height:1.6">维度评分连续 2 次低于历史基线 15% 以上触发。检测范围：Git 仓库状态、API 可达性、配置完整性。严重时自动升级 P0。</div>
+    </div>
+    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid #f97316">
+      <strong style="color:#f97316">D1 效率退化</strong>
+      <div style="color:var(--yry-text3);margin-top:4px;line-height:1.6">构建时间延长、CI/CD 管线耗时增加、文件体积增长速率异常。检测范围：构建耗时、CI 执行时间、文件增长率。</div>
+    </div>
+    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid #f59e0b">
+      <strong style="color:#f59e0b">D2 质量退化</strong>
+      <div style="color:var(--yry-text3);margin-top:4px;line-height:1.6">测试覆盖率下降、Lint 违规增加、代码复杂度增长。检测范围：em_testing、em_linting、组件质量评分。</div>
+    </div>
+    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid #f59e0b">
+      <strong style="color:#f59e0b">D3 复杂度增长</strong>
+      <div style="color:var(--yry-text3);margin-top:4px;line-height:1.6">大文件数量增加、循环依赖新增、上帝模块膨胀。检测范围：structInfo 大文件、depInfo 依赖关系、文件体积趋势。</div>
+    </div>
+    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid #3b82f6">
+      <strong style="color:#3b82f6">D4 流程退化</strong>
+      <div style="color:var(--yry-text3);margin-top:4px;line-height:1.6">分支隔离违规、PR 审查缺失、Git 纪律下降。检测范围：git 分支状态、未提交文件数、commit 规范合规率。</div>
+    </div>
+    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid #3b82f6">
+      <strong style="color:#3b82f6">D5 依赖退化</strong>
+      <div style="color:var(--yry-text3);margin-top:4px;line-height:1.6">依赖版本过期、安全漏洞增长、许可证合规问题。检测范围：npm audit 结果、dep_analysis 维度、依赖更新频率。</div>
+    </div>
+    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid #8b5cf6">
+      <strong style="color:#8b5cf6">D6 文档过时</strong>
+      <div style="color:var(--yry-text3);margin-top:4px;line-height:1.6">文档过期超过 7 天、断链引用、SKILL.md 未更新。检测范围：em_docs 维度、文档新鲜度检查、链接有效性。</div>
+    </div>
+    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid #8b5cf6">
+      <strong style="color:#8b5cf6">D7 配置漂移</strong>
+      <div style="color:var(--yry-text3);margin-top:4px;line-height:1.6">版本号不一致、config.json 缺失、多目录配置不同步。检测范围：plugin.json vs 实际 skills、config 维度、版本漂移检测。</div>
+    </div>
+    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid #ec4899">
+      <strong style="color:#ec4899">D8 架构退化</strong>
+      <div style="color:var(--yry-text3);margin-top:4px;line-height:1.6">架构合规维度评分下降、范式违规新增、内核体积超标。检测范围：arch-check 10 维度、lib/ 文件数、编排器行数。</div>
+    </div>
+  </div>
+  <div style="margin-top:12px;font-size:.68rem;color:var(--yry-text3);text-align:center">
+    触发规则：单维度评分 &lt; 55 → 对应诊断自动触发 · 连续 2 次 C 级 → P1 · 连续 3 次 → P0 · 趋势下降 &gt;15 分/周 → 退化告警 · 诊断引擎由 <code>lib/engine/diagnostics.mjs</code> 纯函数实现
+  </div>
 </div>
 
 <!-- Stats -->
@@ -372,6 +170,18 @@
   <h2>E1–E4 评估效能矩阵</h2>
   <div id="evalMatrix"><div class="empty">加载中...</div></div>
 </div>
+
+<!-- Root Cause Analysis -->
+<div class="card">
+  <h2>🔍 根因分析 · Root Cause Hints</h2>
+  <div id="rootCausePanel"><div class="empty">加载中...</div></div>
+  <p style="font-size:.64rem;color:var(--yry-text3);margin-top:6px">对评分低于 80 的维度，自动关联触发诊断、相关维度和历史趋势，提供可操作的根因提示。数据来源: <code>DIAGNOSTIC_DIMENSION_MAP</code> + 维度相关性分析。</p>
+</div>
+
+</div><!-- /.yry-panel #panelDiagnostics -->
+
+<!-- ═══ Tab 2: 趋势与健康 ═══ -->
+<div class="yry-panel" id="panelTrends">
 
 <!-- Improvement Velocity -->
 <div class="card">
@@ -456,6 +266,13 @@
   <p style="font-size:.64rem;color:var(--yry-text3);margin-top:6px">对比当前评分与近 N 周期均值，判定架构各维度 <strong>↑ 改善</strong> · <strong>→ 持平</strong> · <strong>↓ 漂移</strong> · 阈值告警：单一维度连续 3 周期低于 70 = 立即启动架构修复（对应 D8 诊断）。</p>
 </div>
 
+<!-- Cross-Dimension Correlation Heatmap -->
+<div class="card">
+  <h2>🔗 维度相关性分析 · Cross-Dimension Correlation</h2>
+  <div id="correlationHeatmap"><div class="empty">加载中...</div></div>
+  <p style="font-size:.64rem;color:var(--yry-text3);margin-top:6px">Pearson 相关系数分析维度间联动关系 · <span style="color:var(--yry-pass)">r ≥ 0.7 强相关</span> · <span style="color:var(--yry-warn)">0.4 ≤ r &lt; 0.7 中等相关</span> · <span style="color:var(--yry-text3)">r &lt; 0.4 弱相关</span> · 强相关维度建议联动改进。</p>
+</div>
+
 <!-- Score Trend Sparkline -->
 <div class="card">
   <h2>评分趋势 + 预测带</h2>
@@ -474,11 +291,23 @@
   <div id="timePanel"></div>
 </div>
 
+</div><!-- /.yry-panel #panelTrends -->
+
+<!-- ═══ Tab 3: 改进追踪 ═══ -->
+<div class="yry-panel" id="panelImprove">
+
 <!-- Skillification Tracking -->
 <div class="card">
   <h2>📚 技能化追踪 · Skillification</h2>
   <div class="skill-grid" id="skillificationGrid"><div class="empty" style="grid-column:1/-1">加载中...</div></div>
   <p style="font-size:.64rem;color:var(--yry-text3);margin-top:6px">诊断模式累计触发次数 · <strong style="color:var(--yry-pass)">已固化</strong> = ≥3 次触发且已写入 SKILL.md 规约 · <strong style="color:var(--yry-cyan)">候选</strong> = 2 次触发待审 · <strong style="color:var(--yry-text3)">观察</strong> = 1 次触发 · 进度条表示距固化阈值还需触发次数。</p>
+</div>
+
+<!-- Improvement Potential Ranking -->
+<div class="card">
+  <h2>📈 改进潜力排序 · Improvement Potential</h2>
+  <div id="improvePotential"><div class="empty">加载中...</div></div>
+  <p style="font-size:.64rem;color:var(--yry-text3);margin-top:6px">按 <strong>影响度 (Impact) × 易修复度 (1/Volatility) × 紧迫度 (Trend)</strong> 计算 ROI 排序 · 优先处理 ROI 最高的维度以获得最大评分提升。</p>
 </div>
 
 <!-- Cross-reference Health Summary -->
@@ -520,6 +349,8 @@
   <a href="../../lib/selfimprove-generator.mjs">汇总生成器</a>
 </nav>
 
+</div><!-- /.yry-panel #panelImprove -->
+
 <footer class="ft">
   持续自改进分析仪表板 · 数据实时读取 · 自举引导模式<br>
   <span style="color:var(--yry-text3)">数据: .memory/health-trend.jsonl + summary.json + arch-trend.jsonl · D0-D8 诊断 · E1-E4 评估 · 改进能力 KPI · 趋势预测 · 优先级矩阵 · 技能化追踪</span><br>
@@ -535,6 +366,119 @@
 </noscript>
 
 <script src="../../cdn/shared-reports/index.js"></script>
+<script src="../../cdn/shared/index.js"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../../cdn/yry-flow-loop/index.js"></script>
+<script>
+  function mountFlowLoop() {
+    var el = document.getElementById('flow-loop-app');
+    if (el) {
+      el.stages = [
+        { icon: '①', name: '观察', sub: 'health-trend.jsonl · arch-trend · git · bot', variant: 'observe' },
+        { icon: '②', name: '诊断', sub: 'D0–D8 异常定位 + 严重等级', variant: 'diagnose' },
+        { icon: '③', name: '改进', sub: 'proposals + SKILL.md 技能化', variant: 'improve' },
+        { icon: '④', name: '评估', sub: 'E1–E4 效能验证 + 闭环回写', variant: 'evaluate' }
+      ];
+      el.loopArrow = true;
+      el.loopIcon = '↻';
+    }
+  }
+  if (window.YryFlowLoop) mountFlowLoop();
+  else document.addEventListener('yry-flow-loop-ready', mountFlowLoop, { once: true });
+</script>
 <script src="js/self-improve-index.js"></script>
+<script>YrY.initTabs('#main-tabs');</script>
+
+<!-- 四段闭环详情 -->
+<div class="card">
+  <h2>🔄 四段闭环详情</h2>
+  <table>
+    <thead><tr><th>阶段</th><th>输入</th><th>动作</th><th>输出</th><th>耗时</th></tr></thead>
+    <tbody>
+      <tr><td>① 观察</td><td>health-trend.jsonl</td><td>数据采集</td><td>采集报告</td><td>≤ 200ms</td></tr>
+      <tr><td>② 诊断</td><td>采集报告 + 基线</td><td>D0-D8 判定</td><td>诊断决策表</td><td>≤ 500ms</td></tr>
+      <tr><td>③ 改进</td><td>决策表</td><td>提案生成 + 路由</td><td>proposals.jsonl</td><td>≤ 100ms</td></tr>
+      <tr><td>④ 评估</td><td>proposals.jsonl</td><td>E1-E4 评估</td><td>评估报告</td><td>≤ 2s</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- D0-D8 诊断决策表 -->
+<div class="card">
+  <h2>🔍 D0-D8 诊断决策表</h2>
+  <table>
+    <thead><tr><th>诊断</th><th>名称</th><th>信号</th><th>阈值</th><th>触发</th><th>提案类型</th></tr></thead>
+    <tbody>
+      <tr><td>D0</td><td>基线偏离</td><td>规约差异</td><td>&gt; 0</td><td>否</td><td>process</td></tr>
+      <tr><td>D1</td><td>效率退化</td><td>耗时倍数</td><td>&gt; 1.5×</td><td>否</td><td>refactor</td></tr>
+      <tr><td>D2</td><td>质量退化</td><td>P0 密度</td><td>&gt; 2×</td><td>否</td><td>quality</td></tr>
+      <tr><td>D3</td><td>复杂度增长</td><td>模块行数</td><td>&gt; 500</td><td>是</td><td>security</td></tr>
+      <tr><td>D4</td><td>流程退化</td><td>跳过率</td><td>&gt; 10%</td><td>否</td><td>process</td></tr>
+      <tr><td>D5</td><td>依赖退化</td><td>漏洞</td><td>已知</td><td>否</td><td>security</td></tr>
+      <tr><td>D6</td><td>文档过时</td><td>mtime</td><td>&gt; 30d</td><td>否</td><td>process</td></tr>
+      <tr><td>D7</td><td>配置漂移</td><td>hash</td><td>≠ 基线</td><td>否</td><td>process</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- E1-E4 评估指标 -->
+<div class="card">
+  <h2>📊 E1-E4 评估指标</h2>
+  <table>
+    <thead><tr><th>指标</th><th>度量</th><th>通过</th><th>退化</th><th>待评估</th></tr></thead>
+    <tbody>
+      <tr><td>E1 改善幅度</td><td>after - before</td><td>&gt; 0 且 ≥ 80%</td><td>&lt; 0</td><td>数据不足</td></tr>
+      <tr><td>E2 回归率</td><td>new_p0/total</td><td>&lt; 5%</td><td>&gt; 10%</td><td>无 P0 数据</td></tr>
+      <tr><td>E3 副作用</td><td>impacted/total</td><td>&lt; 10%</td><td>&gt; 20%</td><td>无变更数据</td></tr>
+      <tr><td>E4 闭合时效</td><td>closed - created</td><td>≤ 7d</td><td>&gt; 14d</td><td>未闭合</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 经验升级路径 -->
+<div class="card">
+  <h2>⬆️ 经验升级路径</h2>
+  <table>
+    <thead><tr><th>提案类型</th><th>升级条件</th><th>升级目标</th><th>执行者</th></tr></thead>
+    <tbody>
+      <tr><td>process</td><td>连续 3 故事</td><td>rules/code-pipeline.md</td><td>pm + coder</td></tr>
+      <tr><td>quality</td><td>连续 3 故事</td><td>agents/tester.md</td><td>coder</td></tr>
+      <tr><td>refactor</td><td>连续 3 故事</td><td>rules/code-pipeline.md</td><td>coder</td></tr>
+      <tr><td>security</td><td>当前故事即修</td><td>agents/security.md</td><td>security</td></tr>
+      <tr><td>skill</td><td>连续 2 故事</td><td>skills/ 新条目</td><td>architect</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 记忆文件治理 -->
+<div class="card">
+  <h2>🧠 记忆文件治理</h2>
+  <table>
+    <thead><tr><th>文件</th><th>类型</th><th>增长率</th><th>保留期</th><th>治理策略</th></tr></thead>
+    <tbody>
+      <tr><td>execution-memory.jsonl</td><td>append</td><td>每故事 +1</td><td>30 天</td><td>滚动 100 条</td></tr>
+      <tr><td>rui-state.json</td><td>覆盖</td><td>每阶段 +1</td><td>当前</td><td>自动覆盖</td></tr>
+      <tr><td>proposals.jsonl</td><td>append</td><td>每提案 +1</td><td>永久</td><td>归档分片</td></tr>
+      <tr><td>health-trend.jsonl</td><td>append</td><td>每日 +1</td><td>1 年</td><td>滚动 365 天</td></tr>
+      <tr><td>summary.md</td><td>覆盖</td><td>每故事 +1</td><td>当前</td><td>自动压缩</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 自改进成熟度 -->
+<div class="card">
+  <h2>🏆 自改进成熟度模型</h2>
+  <table>
+    <thead><tr><th>级别</th><th>特征</th><th>自动化率</th><th>当前</th><th>目标</th></tr></thead>
+    <tbody>
+      <tr><td>L1 反应式</td><td>人工触发改进</td><td>0%</td><td>—</td><td>—</td></tr>
+      <tr><td>L2 半自动</td><td>诊断自动 + 提案人工</td><td>50%</td><td>✅</td><td>—</td></tr>
+      <tr><td>L3 全自动</td><td>诊断 + 提案 + 评估自动</td><td>80%</td><td>—</td><td>✅</td></tr>
+      <tr><td>L4 自优化</td><td>经验自动升级为规则</td><td>95%</td><td>—</td><td>远期</td></tr>
+      <tr><td>L5 自进化</td><td>跨项目知识迁移</td><td>100%</td><td>—</td><td>愿景</td></tr>
+    </tbody>
+  </table>
+</div>
+
 </body>
 </html>

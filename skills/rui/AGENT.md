@@ -7,7 +7,7 @@ description: Agent role topology, shared baselines, behavioral disciplines, exec
 
 > 每条决策必有人负责，每个结论必有证据，每个变更必收闭环。
 
-哲学源头 [CLAUDE.md](../CLAUDE.md)：信模型、惜注意、验现实。本文件是角色总览与共用底线，专项契约见各 agent 文件。
+哲学源头 [CLAUDE.md](../../CLAUDE.md)：信模型、惜注意、验现实。本文件是角色总览与共用底线，专项契约见各 agent 文件。
 
 [角色拓扑](#角色拓扑) · [管线阶段与 Agent 参与](#管线阶段与-agent-参与) · [共用底线](#共用底线) · [文档写作原则](#文档写作原则) · [设计原则](#设计原则) · [行为纪律](#行为纪律) · [执行准则](#执行准则) · [ADR](#adr架构决策记录)
 
@@ -64,14 +64,14 @@ flowchart TB
 | Agent | 一句话 | 核心动作 | 卡点 | 触发源 | 契约文件 |
 |-------|------|---------|------|--------|---------|
 | **pm** | 决定做/不做/延期 | 拆需求 → 排故事 → 委派 Agent → 检 AC → 放行/阻断 | 故事无 AC 不委派 | rui 入口 · 自适应规划 · 反思钩子 · init | [pm.md](./pm.md) |
-| **planner** | 从设计出实施计划 | 读设计 → 拆任务 → 排顺序 → 审查 → 交接 coder | 计划有占位符不交接 | pm 委派 · code 阶段前置 | [planner.md](./planner.md) |
+| **planner** | 从设计出实施计划 | 读设计 → 拆任务 → 排顺序 → 审查 → 交接 coder | 计划有占位符不交接 | pm 委派 · code 阶段前置 | [planner.md](../rui-plan/planner.md) |
 | **coder** | 逐模块实现，P0 清零 | 读设计 → 写代码 → P0 清零 → 进下一模块 | P0 未清零不进下一模块 | pm 委派 · rui 预检/实现/影响分析 | [coder.md](./coder.md) |
 | **tester** | 测试先行，Gate 阻不放行 | 写用例 → Gate A 审 → 执行 → Gate B 判 | Gate A 未通过不编码；Gate B 未通过不交付 | pm 委派 · rui 测试/验证 | [tester.md](./tester.md) |
-| **reporter** | 过程记录，交叉闭合 | 写场景文档各 § → 各 § 交叉引用闭合 | 场景文档各 § 不一致不闭合 | rui 验证/交付/策展 | [reporter.md](./reporter.md) |
+| **reporter** | 过程记录，交叉闭合 | 写场景文档各 § → 各 § 交叉引用闭合 | 场景文档各 § 不一致不闭合 | rui 验证/交付/策展 | [reporter.md](../rui-reporter/reporter.md) |
 | **security** | 威胁建模，P0 卡发布 | 建威胁模型 → 写 §3 安全约束 → 注入 P0 | P0 安全项未缓解卡发布 | pm 安全审查委派 | [security.md](./security.md) |
-| **self-improve** | 采数据 → 出诊断 → 写提案 | 采集执行数据 → 六维诊断 → 改进提案 → 闭环保案 | 不阻断主流程（降级 `no-metrics`） | rui 自改进阶段 | [self-improve.md](./self-improve.md) |
-| **code-reviewer** | 只读审查，查正确性/可维护性/简洁性 | 读 diff → 逐维度审查 → 四问门禁 → 输出报告 | 违反四问门禁的发现不报告 | coder 模块完成 / pm 触发 | [code-reviewer.md](./code-reviewer.md) |
-| **architect** | 系统架构设计，跨故事技术决策 | 现状分析 → 设计方案 → 取舍分析 → ADR | 不满足三条件不创建 ADR | pm 跨故事决策触发 | [architect.md](./architect.md) |
+| **self-improve** | 采数据 → 出诊断 → 写提案 | 采集执行数据 → 六维诊断 → 改进提案 → 闭环保案 | 不阻断主流程（降级 `no-metrics`） | rui 自改进阶段 | [self-improve.md](../rui-yry/self-improve.md) |
+| **code-reviewer** | 只读审查，查正确性/可维护性/简洁性 | 读 diff → 逐维度审查 → 四问门禁 → 输出报告 | 违反四问门禁的发现不报告 | coder 模块完成 / pm 触发 | [code-reviewer.md](../rui-code/code-reviewer.md) |
+| **architect** | 系统架构设计，跨故事技术决策 | 现状分析 → 设计方案 → 取舍分析 → ADR | 不满足三条件不创建 ADR | pm 跨故事决策触发 | [architect.md](../rui-plan/architect.md) |
 
 ## 管线阶段与 Agent 参与
 
@@ -215,19 +215,19 @@ flowchart LR
 |------|------|------|
 | 一句话定位 | 每份文件开头说明「这是什么、给谁看」 | 开头直接进入技术细节 |
 | 30 秒定位 | 任何角色 30 秒内找到所需 | 关键信息埋在长段落中 |
-| 图先文后 | 架构/流程/关系先用 mermaid，文字补细节。Mermaid 图必须遵循 [mermaid-theme.md](../rules/mermaid-theme.md) 的 `%%{init}%%` 主题配置和统一 classDef 色板 | 大段文字描述架构，无图 |
+| 图先文后 | 架构/流程/关系先用 mermaid，文字补细节。Mermaid 图必须遵循 [mermaid-theme.md](./rules/mermaid-theme.md) 的 `%%{init}%%` 主题配置和统一 classDef 色板 | 大段文字描述架构，无图 |
 | 事实优先 | 描述「是什么」而非「应该是什么」 | "建议使用 Redis 缓存" |
 | 可验证 | 路径/接口/模块名可通过 Read/Grep 验证（Level A/B） | "应该有个 UserService" |
 
 ### Mermaid 图创建检查清单
 
-> 在任何文档中创建 mermaid 图时，遵循以下检查清单。统一配色系统见 [rules/mermaid-theme.md](../rules/mermaid-theme.md)。
+> 在任何文档中创建 mermaid 图时，遵循以下检查清单。统一配色系统见 [rules/mermaid-theme.md](./rules/mermaid-theme.md)。
 
 **创建步骤**（按顺序）：
 
-1. **插入 `%%{init}%%`** — 在文件**第一个** mermaid 代码块顶部添加主题配置。直接从 [mermaid-theme.md](../rules/mermaid-theme.md#tokyo-night-dark) 的 Tokyo Night Dark 模板复制。同一文件后续图不需要重复 `%%{init}%%`。
+1. **插入 `%%{init}%%`** — 在文件**第一个** mermaid 代码块顶部添加主题配置。直接从 [mermaid-theme.md](./rules/mermaid-theme.md#tokyo-night-dark) 的 Tokyo Night Dark 模板复制。同一文件后续图不需要重复 `%%{init}%%`。
 
-2. **定义语义 classDef** — 从 [mermaid-theme.md](../rules/mermaid-theme.md#classdef) 的 12 个语义类中选择本图需要的。classDef 放在图的末尾（最后一条边之后）。只定义本图实际使用的类。
+2. **定义语义 classDef** — 从 [mermaid-theme.md](./rules/mermaid-theme.md#classdef) 的 12 个语义类中选择本图需要的。classDef 放在图的末尾（最后一条边之后）。只定义本图实际使用的类。
 
 3. **应用类到节点** — 使用 `:::className` 语法在节点标签后应用类。优先使用语义类名（`core`/`exec`/`review`/`risk`/`goal`），而非视觉描述（`red`/`blue`）。
 
@@ -264,7 +264,7 @@ flowchart LR
 | **释义** 说清楚 | 惜注意 | 人看不懂，正确也没意义 | 一段话三层从句解释一件事 |
 | **对等** 称轻重 | 全部 | 投入与改动量、风险等级匹配 | 改注释和重写核心循环走同套流程 |
 
-> 以上六条为 YrY 自有设计哲学。工程层面的十一条设计原则（SRP · 高内聚 · 低耦合 · DIP · OCP · ISP · DRY · YAGNI · 组合优于继承 · 扩展至上 · 可健康检测）见 [rules/design-principles.md](../rules/design-principles.md)，系统级架构原则见 [rules/architecture-principles.md](../rules/architecture-principles.md)。Agent/Skill/Lib 审查时三套原则并用：六条定方向，十一条定结构，架构宪法定边界。
+> 以上六条为 YrY 自有设计哲学。工程层面的十一条设计原则（SRP · 高内聚 · 低耦合 · DIP · OCP · ISP · DRY · YAGNI · 组合优于继承 · 扩展至上 · 可健康检测）见 [rules/design-principles.md](./rules/design-principles.md)，系统级架构原则见 [rules/architecture-principles.md](./rules/architecture-principles.md)。Agent/Skill/Lib 审查时三套原则并用：六条定方向，十一条定结构，架构宪法定边界。
 
 ## 行为纪律
 
@@ -274,7 +274,7 @@ flowchart LR
 
 ### Red Flags — 暂停并回到 Iron Law
 
-以下念头是你在合理化——停下来，回到 [CLAUDE.md 基础信念](../CLAUDE.md#基础信念)：
+以下念头是你在合理化——停下来，回到 [CLAUDE.md 基础信念](../../CLAUDE.md#基础信念)：
 
 - "这里不需要验证，我确认过了"
 - "这个 bug 很简单，直接修就行"
@@ -501,3 +501,60 @@ flowchart TD
 > 3. 是真实权衡的结果
 
 格式：`N{number}-{slug}.md`，1-3 句说清决策与原因。可选的：状态 frontmatter、考虑过的选项、后果。**不满足三条就不创建。**
+
+## Agent 决策树
+
+### pm 决策：做/不做/延期
+
+```
+收到需求:
+  ├─ 需求清晰、AC 可量化? → 拆分故事 → 委派 Agent
+  ├─ 需求模糊、AC 不可量化? → 追问澄清 → 不委派
+  ├─ 超出当前版本范围? → 延期，记录到 backlog
+  └─ 与现有故事 FP# 重叠 ≥ 70%? → 合并到已有故事
+```
+
+### coder 决策：模块实现顺序
+
+```
+选择下一模块:
+  ├─ 有未完成的 P0 依赖? → 先完成依赖模块
+  ├─ 可并行且无共享文件? → 并行实现
+  ├─ 复杂度最高? → 优先实现（高风险先暴露）
+  └─ 默认 → 按 plan.html 顺序
+```
+
+### tester 决策：Gate 判定
+
+```
+Gate A 判定:
+  ├─ 测试设计含 AC × 每 FP# ≥ 3? → 通过
+  ├─ 测试设计存在但覆盖不足? → 退回补 AC
+  └─ 测试设计不存在? → skip-gate-a 阻断
+
+Gate B 判定:
+  ├─ P0 100% 清零 + P1 ≥ 80% + 修复 ≤ 2 轮? → 通过
+  ├─ 修复 = 2 轮? → 通过但标注警告
+  └─ 修复 > 2 轮? → gate-b-limit 阻断
+```
+
+### security 决策：威胁优先级
+
+```
+威胁评估:
+  ├─ 影响用户数据/认证? → P0
+  ├─ 影响内部 API/配置? → P1
+  ├─ 理论风险、无已知利用? → P2
+  └─ 已有缓解措施覆盖? → 记录，不新增
+```
+
+## 多 Agent 协调反模式速查
+
+| 反模式 | 表现 | 根因 | 纠正 |
+|--------|------|------|------|
+| **双重实现** | coder 和 pm 各自实现了同一功能 | 交接信号不清晰 | 明确"谁写什么" |
+| **信号丢失** | tester 未收到 coder 的完成通知 | 交接信号未写入 rui-state | 强制写入交接信号 |
+| **版本冲突** | 两个 Agent 同时修改同一文件 | 缺乏文件锁 | 故事级串行，模块级并行 |
+| **上下文遗忘** | Agent 重启后丢失之前的决策 | 未写入执行记忆 | 关键决策写入 .memory/ |
+| **无限循环** | pm 和 coder 来回修改同一问题 | 缺乏终止条件 | 修复 ≤ 2 轮，超限阻断 |
+| **责任扩散** | 没人处理 P0 因为"别人应该处理" | 所有权不明确 | 每个 P0 指派唯一负责人 |

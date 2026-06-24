@@ -1,0 +1,118 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryArchAnalysis · 项目架构分析报告组件 样式
+   适用: 10 维度架构合规 · 文件统计 · 代码范式审计 · lib/ 内核体积监控
+
+   依赖 design tokens (来自 cdn/theme/index.css):
+     --yry-border / --yry-text3
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.aa-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.aa-header h1 { font-size: 1.1rem; font-weight: 700; }
+.aa-header .aa-date { font-size: .72rem; color: var(--yry-text3, #888); }
+
+.aa-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.aa-stat-card {
+  padding: 14px;
+  border-radius: 8px;
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  background: rgba(15,23,42,.4);
+  text-align: center;
+}
+
+.aa-stat-label {
+  font-size: .68rem;
+  color: var(--yry-text3, #888);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-bottom: 4px;
+}
+
+.aa-stat-value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+.aa-stat-sub {
+  font-size: .64rem;
+  color: var(--yry-text3, #888);
+  margin-top: 2px;
+}
+
+.aa-dim-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.aa-dim-card {
+  padding: 12px;
+  border-radius: 6px;
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  background: rgba(15,23,42,.4);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.aa-dim-card.pass { border-left: 3px solid #4ade80; }
+.aa-dim-card.warn { border-left: 3px solid #fbbf24; }
+.aa-dim-card.fail { border-left: 3px solid #f87171; }
+
+.aa-dim-name { font-size: .78rem; font-weight: 500; }
+.aa-dim-score {
+  font-size: .8rem;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+.aa-issue-card {
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  border-left: 3px solid;
+}
+
+.aa-issue-card.warn { border-color: #fbbf24; background: rgba(251,191,36,.04); }
+.aa-issue-card.info { border-color: #60a5fa; background: rgba(96,165,250,.04); }
+
+.aa-issue-msg { font-size: .78rem; }
+.aa-issue-file { font-size: .66rem; color: var(--yry-text3, #888); margin-top: 2px; }
+
+.aa-file-type-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 8px;
+}
+
+.aa-file-type-card {
+  padding: 10px;
+  border-radius: 6px;
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  background: rgba(15,23,42,.4);
+  text-align: center;
+}
+
+.aa-file-type-ext { font-size: .68rem; color: var(--yry-text3, #888); }
+.aa-file-type-count {
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+.aa-loading { color: var(--yry-text3, #888); text-align: center; padding: 40px; }

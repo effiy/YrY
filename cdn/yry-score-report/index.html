@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryScoreReport · Demo</title>
+<meta name="description" content="YryScoreReport 评分报告组件 Demo — 项目综合健康评分展示">
+<link rel="stylesheet" href="../shared/index.css">
+<link rel="stylesheet" href="../theme/index.css">
+<link rel="stylesheet" href="index.css">
+<style>
+body {
+  background: var(--yry-bg, #0a0a0a);
+  color: var(--yry-text, #f5f5f5);
+  font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", sans-serif);
+  padding: 32px 24px 60px;
+  max-width: 920px;
+  margin: 0 auto;
+  line-height: 1.55;
+}
+h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+h1 .accent { color: var(--yry-accent, #ffc107); }
+.demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+.demo-hint code { background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .72rem; color: #e0af68; }
+.demo-section { margin: 20px 0; background: var(--yry-bg-flat, rgba(255,255,255,.03)); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 20px 22px; }
+</style>
+</head>
+<body>
+<h1><span class="accent">📊</span> YryScoreReport · 评分报告组件 Demo</h1>
+<p class="demo-hint">
+  组件通过 <code>data-src</code> 属性加载 <code>score-report.json</code>,渲染完整评分报告。<br>
+  使用方式: <code>&lt;yry-score-report data-src="score-report.json"&gt;&lt;/yry-score-report&gt;</code>
+</p>
+
+<div class="demo-section">
+  <div id="demo-1"></div>
+</div>
+
+<script src="index.js"></script>
+<script>
+(function() {
+  var mockData = {
+    meta: { title: "YrY 综合健康评分", version: "5.4.0", date: "2026-06-22", dataPoints: 30 },
+    composite: { score: 87, grade: "A", label: "优秀" },
+    diagnostics: { triggered: 1, total: 8, rate: 12.5 },
+    architecture: {
+      grade: "A", passed: 9, failed: 1,
+      dims: [
+        { dim: "内核体积", passed: true },
+        { dim: "编排器行数", passed: true },
+        { dim: "范式合规", passed: true },
+        { dim: "扩展隔离", passed: false },
+        { dim: "导出范式", passed: true }
+      ]
+    },
+    contribution: { dragTotal: 5.2 },
+    categories: {
+      "代码": { score: 88, dimCount: 5, weight: "30%" },
+      "文档": { score: 82, dimCount: 4, weight: "20%" },
+      "架构": { score: 90, dimCount: 6, weight: "25%" }
+    },
+    breakdown: [
+      { label: "lib 体积", category: "代码", score: 95, grade: "A", weight: "10%", status: "ok", gap: 5, recommendation: "保持当前结构" },
+      { label: "编排器行数", category: "代码", score: 88, grade: "A", weight: "8%", status: "ok", gap: 12, recommendation: "继续模块化" },
+      { label: "SKILL.md 完整性", category: "文档", score: 72, grade: "B", weight: "15%", status: "warn", gap: 28, recommendation: "补充缺失规约" },
+      { label: "扩展隔离", category: "架构", score: 55, grade: "C", weight: "12%", status: "critical", gap: 45, recommendation: "重构以隔离扩展" }
+    ],
+    recommendations: [
+      { priority: "P0", dim: "扩展隔离", action: "重构编排器以隔离新增 Skill 的修改" },
+      { priority: "P1", dim: "SKILL.md 完整性", action: "补充 3 个缺失规约" }
+    ],
+    summary: {
+      summary: "YrY 综合健康评分 87 分 (A级),架构合规 9/10 通过,主要拖累项为扩展隔离 (−5.2)。建议优先处理 P0 级扩展隔离重构。",
+      highlights: ["lib 体积控制良好", "范式合规零违规"],
+      risks: ["扩展隔离不达标", "3 项 SKILL.md 规约缺失"]
+    }
+  };
+
+  // 使用 mock 数据: 劫持 fetch 或直接注入
+  var el = document.getElementById('demo-1');
+  var ce = document.createElement('yry-score-report');
+  ce.setAttribute('data-src', 'demo://mock');
+  el.appendChild(ce);
+
+  // 拦截 fetch 返回 mock 数据
+  var origFetch = window.fetch;
+  window.fetch = function(url, opts) {
+    if (String(url).indexOf('demo://mock') === 0) {
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        json: function() { return Promise.resolve(mockData); }
+      });
+    }
+    return origFetch.apply(this, arguments);
+  };
+})();
+</script>
+
+</body>
+</html>

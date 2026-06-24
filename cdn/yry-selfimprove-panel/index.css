@@ -84,3 +84,345 @@
   .selfimprove-panel { top: 60px; left: 8px; right: 8px; width: auto; margin-left: 0; max-height: 65vh; }
   .selfimprove-panel .yry-panel-body { max-height: calc(65vh - 56px); }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   结构内容样式 — 模板内层 si-* 类
+   说明:yry-home.css 中保留旧版 si-mx-card/si-summary-row 等,本段补齐当前模板
+   实际使用的结构类(hero/sum/matrix/diags/branches/trend/period/timeline/
+   wdays/phist 等),与模板 1:1 对齐。
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 容器 ── */
+.selfimprove-panel .yry-si-overview,
+.selfimprove-panel .yry-si-period { padding: 0 0 8px; }
+
+/* ── 通用 section 标题 (面板内重新作用域) ── */
+.selfimprove-panel .si-section-title {
+  display: block; font-size: .7rem; font-weight: 600;
+  color: rgba(var(--yry-violet-rgb),.7);
+  padding: 10px 16px 4px; letter-spacing: .02em;
+}
+
+/* ── Hero (全景头) ── */
+.selfimprove-panel .si-hero {
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px 20px 14px;
+  border-bottom: 1px solid rgba(var(--yry-violet-rgb),.08);
+}
+.selfimprove-panel .si-hero-score {
+  font-size: 2rem; font-weight: 800; line-height: 1;
+  font-family: 'JetBrains Mono', monospace;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  flex-shrink: 0;
+}
+.selfimprove-panel .si-hero-grade {
+  font-size: .58rem; font-weight: 700; color: #111;
+  padding: 2px 8px; border-radius: 6px; background: rgba(255,255,255,.85);
+}
+.selfimprove-panel .si-hero-meta {
+  flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0;
+}
+.selfimprove-panel .si-hero-row {
+  display: flex; align-items: center; gap: 8px; font-size: .7rem;
+}
+.selfimprove-panel .si-hero-key {
+  color: var(--text-muted); min-width: 72px; flex-shrink: 0;
+}
+.selfimprove-panel .si-hero-val { color: var(--text-primary); font-weight: 600; }
+.selfimprove-panel .si-hero-spark {
+  display: flex; gap: 2px; align-items: flex-end; margin-top: 4px;
+}
+.selfimprove-panel .si-spark-dot {
+  display: inline-block; border-radius: 50%;
+  transition: transform .12s;
+}
+.selfimprove-panel .si-spark-dot:hover { transform: scale(1.3); }
+
+/* ── Summary card ── */
+.selfimprove-panel .si-summary-card {
+  margin: 8px 16px; padding: 10px 14px;
+  background: rgba(255,255,255,.025);
+  border: 1px solid rgba(var(--yry-violet-rgb),.08);
+  border-radius: 8px;
+}
+.selfimprove-panel .si-sum-row {
+  display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: .72rem;
+}
+.selfimprove-panel .si-sum-row + .si-sum-row { border-top: 1px solid rgba(255,255,255,.04); }
+.selfimprove-panel .si-sum-key {
+  flex-shrink: 0; min-width: 72px; color: var(--text-muted); font-size: .66rem;
+}
+.selfimprove-panel .si-sum-val { flex: 1; color: var(--text-primary); font-weight: 500; }
+.selfimprove-panel .si-sum-icon { margin-right: 4px; }
+
+/* ── Recs ── */
+.selfimprove-panel .si-recs { padding: 4px 0 6px; }
+.selfimprove-panel .si-rec-item {
+  display: flex; gap: 8px; padding: 6px 10px;
+  margin: 4px 16px; border-radius: 4px;
+  background: rgba(255,255,255,.012);
+  border-left: 3px solid rgba(255,255,255,.06);
+}
+.selfimprove-panel .si-rec-item.prio-high { border-left-color: rgba(var(--yry-fail-rgb),.5); }
+.selfimprove-panel .si-rec-item.prio-mid  { border-left-color: rgba(var(--yry-warn-rgb),.5); }
+.selfimprove-panel .si-rec-item.prio-low  { border-left-color: rgba(var(--yry-pass-rgb),.5); }
+.selfimprove-panel .si-rec-source {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .62rem; color: var(--text-muted);
+  flex-shrink: 0; min-width: 56px;
+}
+.selfimprove-panel .si-rec-text {
+  font-size: .7rem; color: var(--text-secondary); line-height: 1.45;
+}
+
+/* ── Matrix (维度矩阵) ── */
+.selfimprove-panel .si-matrix { padding: 4px 16px 8px; }
+.selfimprove-panel .si-matrix-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;
+}
+.selfimprove-panel .si-mx-item {
+  background: rgba(255,255,255,.025);
+  border: 1px solid rgba(255,255,255,.04);
+  border-left-width: 2px;
+  border-radius: 6px; padding: 8px 10px;
+  display: flex; flex-direction: column; gap: 2px;
+  transition: transform .12s, background .12s;
+}
+.selfimprove-panel .si-mx-item:hover {
+  transform: translateY(-1px); background: rgba(255,255,255,.045);
+}
+.selfimprove-panel .si-mx-item.pass { border-left-color: rgba(var(--yry-pass-rgb),.5); }
+.selfimprove-panel .si-mx-item.warn { border-left-color: rgba(var(--yry-warn-rgb),.5); }
+.selfimprove-panel .si-mx-item.fail { border-left-color: rgba(var(--yry-fail-rgb),.5); }
+.selfimprove-panel .si-mx-label {
+  font-size: .58rem; color: var(--text-muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.selfimprove-panel .si-mx-score {
+  font-size: .9rem; font-weight: 700; font-family: 'JetBrains Mono', monospace;
+}
+.selfimprove-panel .si-mx-trend { font-size: .56rem; font-weight: 600; }
+
+/* ── Active diagnostics ── */
+.selfimprove-panel .si-diags { padding: 4px 16px 8px; }
+.selfimprove-panel .si-diag-list { list-style: none; padding: 0; margin: 0; }
+.selfimprove-panel .si-diag-item {
+  padding: 8px 10px; margin-bottom: 6px;
+  background: rgba(255,255,255,.02); border-radius: 6px;
+  border: 1px solid rgba(255,255,255,.04);
+}
+.selfimprove-panel .si-diag-head {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: .68rem;
+}
+.selfimprove-panel .si-diag-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700; color: var(--yry-warn); min-width: 28px;
+}
+.selfimprove-panel .si-diag-label { flex: 1; color: var(--text-primary); font-weight: 500; }
+.selfimprove-panel .si-diag-count {
+  color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: .62rem;
+}
+.selfimprove-panel .si-diag-bar {
+  height: 5px; border-radius: 3px;
+  background: rgba(255,255,255,.05); overflow: hidden;
+}
+.selfimprove-panel .si-diag-bar-fill { height: 100%; border-radius: 3px; transition: width .3s; }
+.selfimprove-panel .si-diag-desc {
+  font-size: .62rem; color: var(--text-muted); margin-top: 4px; line-height: 1.45;
+}
+.selfimprove-panel .si-diag-rec { font-size: .62rem; color: var(--yry-pass); margin-top: 2px; }
+
+/* ── Branches ── */
+.selfimprove-panel .si-branches { padding: 4px 16px 8px; }
+.selfimprove-panel .si-branch-list { list-style: none; padding: 0; margin: 0; }
+.selfimprove-panel .si-branch-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 0; font-size: .68rem;
+  border-bottom: 1px solid rgba(255,255,255,.03);
+}
+.selfimprove-panel .si-branch-name {
+  flex: 1; min-width: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  color: var(--text-secondary);
+  font-family: 'JetBrains Mono', monospace; font-size: .64rem;
+}
+.selfimprove-panel .si-branch-score {
+  font-family: 'JetBrains Mono', monospace; font-weight: 700;
+  min-width: 32px; text-align: right;
+}
+.selfimprove-panel .si-branch-count {
+  color: var(--text-muted); font-size: .6rem; min-width: 44px; text-align: right;
+}
+.selfimprove-panel .si-branch-uncommitted {
+  font-size: .6rem; min-width: 84px; text-align: right;
+}
+
+/* ── Trend bars (overview + period) ── */
+.selfimprove-panel .si-trend,
+.selfimprove-panel .si-period-trend { padding: 4px 16px 8px; }
+.selfimprove-panel .si-trend-bars {
+  display: flex; align-items: flex-end; gap: 3px;
+  padding: 8px 0 4px; min-height: 36px;
+}
+.selfimprove-panel .si-trend-bar {
+  flex: 1; min-width: 4px; max-width: 16px;
+  border-radius: 2px 2px 0 0; transition: opacity .12s;
+}
+.selfimprove-panel .si-trend-bar:hover { opacity: .85; }
+
+/* ── Period header ── */
+.selfimprove-panel .si-period-head {
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.selfimprove-panel .si-period-score {
+  font-size: 1.6rem; font-weight: 800; line-height: 1;
+  font-family: 'JetBrains Mono', monospace;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  flex-shrink: 0;
+}
+.selfimprove-panel .si-period-grade {
+  font-size: .56rem; font-weight: 700; color: #111;
+  padding: 2px 8px; border-radius: 6px; background: rgba(255,255,255,.85);
+}
+.selfimprove-panel .si-period-meta {
+  flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0;
+}
+.selfimprove-panel .si-period-row {
+  display: flex; align-items: center; gap: 8px; font-size: .68rem;
+}
+.selfimprove-panel .si-period-key {
+  color: var(--text-muted); min-width: 72px; flex-shrink: 0; font-size: .62rem;
+}
+.selfimprove-panel .si-period-val { color: var(--text-primary); font-weight: 500; }
+
+/* ── Grade distribution ── */
+.selfimprove-panel .si-grade-dist {
+  display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
+  padding: 8px 16px 4px;
+}
+.selfimprove-panel .si-grade-badge {
+  font-size: .62rem; font-weight: 600; padding: 2px 8px; border-radius: 8px;
+}
+.selfimprove-panel .si-grade-badge.grade-A { background: rgba(var(--yry-pass-rgb),.14); color: var(--yry-pass); }
+.selfimprove-panel .si-grade-badge.grade-B { background: rgba(74,222,128,.12); color: #4ade80; }
+.selfimprove-panel .si-grade-badge.grade-C { background: rgba(var(--yry-warn-rgb),.14); color: var(--yry-warn); }
+.selfimprove-panel .si-grade-badge.grade-D { background: rgba(var(--yry-fail-rgb),.14); color: var(--yry-fail); }
+
+/* ── Period dims ── */
+.selfimprove-panel .si-period-dims { padding: 4px 16px 8px; }
+.selfimprove-panel .si-period-dim-list { list-style: none; padding: 0; margin: 0; }
+.selfimprove-panel .si-period-dim-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 0; font-size: .66rem;
+}
+.selfimprove-panel .si-pd-label {
+  flex-shrink: 0; min-width: 88px; color: var(--text-muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.selfimprove-panel .si-pd-bar {
+  flex: 1; height: 5px; border-radius: 3px;
+  background: rgba(255,255,255,.05); overflow: hidden;
+}
+.selfimprove-panel .si-pd-fill { height: 100%; border-radius: 3px; transition: width .25s; }
+.selfimprove-panel .si-pd-score {
+  min-width: 32px; text-align: right; font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── Period diagnostics ── */
+.selfimprove-panel .si-period-diags { padding: 4px 16px 8px; }
+.selfimprove-panel .si-pdiag-list { list-style: none; padding: 0; margin: 0; }
+.selfimprove-panel .si-pdiag-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 0; font-size: .66rem;
+  border-bottom: 1px solid rgba(255,255,255,.03);
+}
+.selfimprove-panel .si-pdiag-id {
+  font-family: 'JetBrains Mono', monospace; font-weight: 700; min-width: 32px;
+}
+.selfimprove-panel .si-pdiag-label {
+  flex: 1; min-width: 0; color: var(--text-secondary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.selfimprove-panel .si-pdiag-count {
+  color: var(--text-muted); font-size: .6rem; font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── Period buckets / timeline / wdays / phist ── */
+.selfimprove-panel .si-period-buckets { padding: 4px 16px 8px; }
+.selfimprove-panel .si-period-history { padding: 4px 16px 8px; }
+
+.selfimprove-panel .si-timeline { list-style: none; padding: 0; margin: 0; }
+.selfimprove-panel .si-tl-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 0; font-size: .66rem;
+  border-bottom: 1px solid rgba(255,255,255,.03);
+}
+.selfimprove-panel .si-tl-time {
+  font-family: 'JetBrains Mono', monospace; color: var(--text-muted); min-width: 92px;
+}
+.selfimprove-panel .si-tl-score {
+  font-family: 'JetBrains Mono', monospace; font-weight: 700; min-width: 64px;
+}
+.selfimprove-panel .si-tl-branch {
+  flex: 1; min-width: 0; color: var(--text-secondary);
+  font-family: 'JetBrains Mono', monospace; font-size: .6rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.selfimprove-panel .si-tl-diag {
+  font-family: 'JetBrains Mono', monospace; font-size: .58rem; font-weight: 700;
+  padding: 1px 5px; border-radius: 4px;
+  background: rgba(var(--yry-warn-rgb),.12); color: var(--yry-warn);
+}
+
+.selfimprove-panel .si-wdays { list-style: none; padding: 0; margin: 0; }
+.selfimprove-panel .si-wday-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 0; font-size: .66rem;
+  border-bottom: 1px solid rgba(255,255,255,.03);
+}
+.selfimprove-panel .si-wday-name { flex-shrink: 0; min-width: 52px; color: var(--text-muted); }
+.selfimprove-panel .si-wday-score {
+  font-family: 'JetBrains Mono', monospace; font-weight: 700; min-width: 36px;
+}
+.selfimprove-panel .si-wday-entries {
+  flex: 1; text-align: right; color: var(--text-muted); font-size: .6rem;
+}
+
+.selfimprove-panel .si-phist-list { list-style: none; padding: 0; margin: 0; }
+.selfimprove-panel .si-phist-item {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+  padding: 5px 0; font-size: .64rem;
+  border-bottom: 1px solid rgba(255,255,255,.03);
+}
+.selfimprove-panel .si-phist-label { color: var(--text-muted); min-width: 88px; }
+.selfimprove-panel .si-phist-score {
+  font-family: 'JetBrains Mono', monospace; font-weight: 700; min-width: 64px;
+}
+.selfimprove-panel .si-phist-entries { color: var(--text-muted); font-size: .58rem; }
+.selfimprove-panel .si-phist-delta {
+  font-size: .58rem; font-family: 'JetBrains Mono', monospace;
+}
+.selfimprove-panel .si-phist-diag {
+  font-family: 'JetBrains Mono', monospace; font-size: .56rem;
+  padding: 1px 5px; border-radius: 3px;
+  background: rgba(255,255,255,.04); color: var(--text-muted);
+}
+.selfimprove-panel .si-phist-diag.hot {
+  background: rgba(var(--yry-warn-rgb),.16); color: var(--yry-warn);
+}
+
+@media (max-width: 768px) {
+  .selfimprove-panel .si-matrix-grid { grid-template-columns: repeat(2, 1fr); }
+  .selfimprove-panel .si-hero,
+  .selfimprove-panel .si-period-head { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .selfimprove-panel .si-hero-score,
+  .selfimprove-panel .si-period-score { flex-direction: row; font-size: 1.4rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .selfimprove-panel * { transition: none !important; animation: none !important; }
+}
+

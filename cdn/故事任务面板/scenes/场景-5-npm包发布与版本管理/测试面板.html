@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>测试面板 · npm 包发布与版本管理 · CDN 共享前端资源库</title>
+<link rel="stylesheet" href="../../../shared/index.css">
+<link rel="stylesheet" href="../../../theme/index.css">
+<link rel="stylesheet" href="../../../yry-inline-helpers/index.css">
+<link rel="stylesheet" href="../../../yry-scene/index.css">
+<link rel="stylesheet" href="../../../yry-scene-header/index.css">
+<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
+<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
+<link rel="stylesheet" href="../../../yry-back-top/index.css">
+<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
+<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
+<link rel="stylesheet" href="../../../yry-a11y/index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
+  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
+  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
+  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
+  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
+  .delivery-story { font-size: .72rem; color: #4b5563; }
+  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
+  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
+  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
+  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
+  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
+  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
+  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
+</style>
+</head>
+<body>
+<yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
+<yry-scene-header id="header-app"
+  icon="🧪"
+  title-prefix="测试面板"
+  accent="npm 包发布与版本管理"
+  meta="📖 CDN 共享前端资源库 · 🎬 npm 包发布与版本管理"
+  desc="CDN 共享前端资源库 — npm 包发布与版本管理 场景的 测试面板 交付物。查看场景详情与任务分解。">
+</yry-scene-header>
+
+<div class="scene-wrap">
+  <div class="delivery-header">
+    <div class="delivery-icon">🧪</div>
+    <div class="delivery-label">测试面板</div>
+    <div class="delivery-scene">npm 包发布与版本管理</div>
+    <div class="delivery-story">CDN 共享前端资源库</div>
+  </div>
+
+  <div class="content-card">
+    <h2>🧪 验证矩阵 · 13 项</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6">
+      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">验证项</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">方法</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">阈值</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">npm 安装成功</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>npm install yry-cdn</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">0 错误</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">jsDelivr 可访问</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>curl CDN URL</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">HTTP 200</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">unpkg 可访问</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>curl unpkg URL</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">HTTP 200</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">包体积合理</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>npm pack --dry-run</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">&lt; 5MB</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">版本号递增</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">对比上一版本 package.json</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">正确递增</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">CHANGELOG 更新</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">检查 CHANGELOG.md</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">含当前版本</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Git tag 存在</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>git tag -l "v*"</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">含当前版本 tag</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">5 步加载链可用</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">浏览器 Network 面板</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">全部 200 且 ≤ 625ms</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">SRI 哈希可生成</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>openssl dgst -sha384</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">与 CDN 一致</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">canary 标签存在</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>npm dist-tag ls yry-cdn</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">canary 存在</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">签名验证</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>npm verify</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">valid signature</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">下载量监控</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">npm-stat</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">周下载趋势</td></tr>
+        <tr><td style="padding:8px 10px">供应链审计</td><td style="padding:8px 10px"><code>npm audit signatures</code></td><td style="padding:8px 10px">0 未签名</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="content-card">
+    <h2>▶️ 回归命令</h2>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0"># 1. 发布前检查 (6 项)
+node -e "console.log(require('./package.json').version)"
+npm pack --dry-run | tail -1
+npm test
+git status
+
+# 2. 发布
+git tag v1.3.0
+git push origin main --tags
+npm publish
+
+# 3. 验证 npm 安装
+mkdir /tmp/yry-verify &amp;&amp; cd /tmp/yry-verify
+npm install yry-cdn@1.3.0
+ls node_modules/yry-cdn/  # 期望: shared theme theme-mono fonts yry-* *.md
+
+# 4. 验证 jsDelivr 5 步加载链
+for path in shared/index.css theme/index.css shared/index.js; do
+  curl -sI "https://cdn.jsdelivr.net/npm/yry-cdn@1.3.0/$path" | head -1
+done
+
+# 5. SRI 哈希生成
+openssl dgst -sha384 -binary shared/index.js | openssl base64 -A
+
+# 6. dist-tag 检查
+npm dist-tag ls yry-cdn  # 期望: canary · latest 同时存在
+
+# 7. 供应链审计
+npm audit signatures</pre>
+  </div>
+
+  <div class="content-card">
+    <h2>📊 发布状态对照</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:.74rem;color:#a9b1d6">
+      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">指标</th><th style="padding:8px 12px;text-align:right;color:#22d3ee;font-weight:600">当前</th><th style="padding:8px 12px;text-align:right;color:#22d3ee;font-weight:600">目标</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">状态</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">包体积</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">~3MB</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">&lt; 2MB</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#fbbf24">⚠ P1</td></tr>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">发布频率</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">月级</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">周级</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#fbbf24">⚠ P2</td></tr>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">发布自动化</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">手动</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">CI/CD 自动</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#f87171">✗ P0</td></tr>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">预发布验证</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">无</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">canary</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#f87171">✗ P0</td></tr>
+        <tr><td style="padding:8px 12px">回滚能力</td><td style="padding:8px 12px;text-align:right">手动</td><td style="padding:8px 12px;text-align:right"><code>npm unpublish</code></td><td style="padding:8px 12px;color:#fbbf24">⚠ P1</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="nav-links">
+    <a class="nav-link" href="计划清单.html">📋 计划清单</a>
+    <a class="nav-link" href="架构图.html">📐 架构图</a>
+    <a class="nav-link" href="知识图谱.html">🔗 知识图谱</a>
+    <a class="nav-link current" href="测试面板.html">🧪 测试面板</a>
+    <a class="nav-link" href="源码.html">📄 源码</a>
+    <a class="nav-link" href="演示.html">💡 演示</a>
+    <a class="nav-link" href="审查.html">📝 审查</a>
+  </div>
+</div>
+
+<yry-cross-nav></yry-cross-nav>
+<yry-back-top></yry-back-top>
+<yry-footer-note version="1.2.0"></yry-footer-note>
+
+<script src="../../../shared/index.js" defer></script>
+<script src="../../../shared/vue-ce-loader.js"></script>
+  <script src="../../../yry-breadcrumb/index.js"></script>
+<script src="../../../yry-scene-header/index.js"></script>
+<script src="../../../yry-scene-nav/index.js"></script>
+<script src="../../../yry-cross-nav/index.js"></script>
+<script src="../../../yry-back-top/index.js"></script>
+<script src="../../../yry-footer-note/index.js"></script>
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    var bc = document.getElementById('breadcrumb-app');
+    if (bc) bc.items = [
+      { label: 'CDN 共享库', icon: '🌐', href: '../../../index.html' },
+      { label: '故事任务面板', icon: '📖', href: '../index.html' },
+      { label: 'CDN 共享前端资源库', icon: '📖', href: '../故事任务.md' },
+      { label: 'npm 包发布与版本管理', icon: '🎬' }
+    ];
+    var sh = document.getElementById('header-app');
+    if (sh) {
+      sh.icon = '🧪';
+      sh.titlePrefix = '测试面板';
+      sh.accent = 'npm 包发布与版本管理';
+      sh.meta = '📖 CDN 共享前端资源库 · 🎬 npm 包发布与版本管理';
+      sh.desc = 'CDN 共享前端资源库 — npm 包发布与版本管理 场景的 测试面板 交付物。';
+    }
+  });
+</script>
+</body>
+</html>

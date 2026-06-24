@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryBreadcrumb · 知识图谱</title>
+<link rel="stylesheet" href="../../shared/index.css">
+<link rel="stylesheet" href="../../theme/index.css">
+<link rel="stylesheet" href="../../yry-graph/index.css">
+<style>
+body { padding: 32px 24px 60px; max-width: 1100px; margin: 0 auto; line-height: 1.7; }
+.breadcrumb { font-size:.72rem; padding:8px 0; }
+.breadcrumb a { color:var(--yry-text3); text-decoration:none; }
+.breadcrumb a:hover { color:var(--yry-accent); }
+.cross-nav { display:flex; gap:8px; padding:6px 0; font-size:.72rem; margin-bottom:12px; flex-wrap:wrap; }
+.cross-link { color:var(--yry-text3); text-decoration:none; }
+.cross-link:hover { color:var(--yry-accent); }
+.header h1 { font-size:1.1rem; margin:0; }
+.accent { color:var(--yry-accent); }
+.subtitle { font-size:.72rem; color:var(--yry-text3); margin-top:4px; }
+.card { padding:16px 20px; border-radius:8px; border:var(--yry-border); background:rgba(15,23,42,.4); margin-bottom:12px; }
+.card h2 { font-size:.88rem; margin:0 0 12px 0; }
+.node-list { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:8px; font-size:.72rem; }
+.node-item { padding:8px 10px; border-radius:6px; border:1px solid rgba(255,255,255,.06); background:rgba(30,41,59,.4); }
+.node-item .node-name { color:var(--yry-accent); font-weight:600; }
+.node-item .node-desc { color:var(--yry-text3); font-size:.66rem; margin-top:2px; }
+.legend { font-size:.68rem; color:var(--yry-text3); padding:8px 0; border-top:1px solid rgba(255,255,255,.06); margin-top:12px; }
+.ft { text-align:center; font-size:.64rem; color:var(--yry-text3); padding:20px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb">
+  <a href="../index.html">📄 文档中心</a>
+  <span class="bc-sep">/</span>
+  <a href="index.html">YryBreadcrumb</a>
+  <span class="bc-sep">/</span>
+  <span>知识图谱</span>
+</nav>
+
+<nav class="cross-nav">
+<a class="cross-link" href="场景-1-需求与设计/架构图.html">场景-1 · 需求与设计</a>
+<a class="cross-link" href="场景-2-模板与样式/架构图.html">场景-2 · 模板与样式</a>
+<a class="cross-link" href="场景-3-Loader实现/架构图.html">场景-3 · Loader 实现</a>
+<a class="cross-link" href="场景-4-页面集成/架构图.html">场景-4 · 页面集成</a>
+<a class="cross-link" href="场景-5-测试与发布/架构图.html">场景-5 · 测试与发布</a>
+</nav>
+
+<div class="header">
+  <h1>🧩 <span class="accent">YryBreadcrumb</span> · 知识图谱</h1>
+  <p class="subtitle">Vue 3 零打包面包屑组件 · 5 场景 · v1.1.0 · fetch+DOMParser · 5s 超时容错</p>
+</div>
+
+<div class="card">
+  <h2>📊 故事节点</h2>
+  <div class="node-list">
+    <div class="node-item"><div class="node-name">📋 需求与设计</div><div class="node-desc">功能规格 · 属性契约 · 事件定义</div></div>
+    <div class="node-item"><div class="node-name">🎨 模板与样式</div><div class="node-desc">Vue CE 模板 · CSS 变量 · 深色主题</div></div>
+    <div class="node-item"><div class="node-name">⚙️ Loader 实现</div><div class="node-desc">fetch + DOMParser · ready 事件 · 5s 超时</div></div>
+    <div class="node-item"><div class="node-name">🔗 页面集成</div><div class="node-desc">7 页面接入 · 跨页面导航 · 当前页高亮</div></div>
+    <div class="node-item"><div class="node-name">🧪 测试与发布</div><div class="node-desc">单元测试 · E2E · npm 发布</div></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>🔗 依赖关系</h2>
+  <div class="node-list">
+    <div class="node-item"><div class="node-name">Vue 3 → Custom Element</div><div class="node-desc">vue.global.prod.js · defineCustomElement</div></div>
+    <div class="node-item"><div class="node-name">fetch → DOMParser</div><div class="node-desc">HTML 拉取 · DOM 解析 · 选择器提取</div></div>
+    <div class="node-item"><div class="node-name">ready 事件 → 页面</div><div class="node-desc">就绪通知 · 5s 超时容错</div></div>
+    <div class="node-item"><div class="node-name">items 属性 → 渲染</div><div class="node-desc">数据驱动 · 响应式更新</div></div>
+  </div>
+</div>
+
+<div class="legend">
+  <strong>图例:</strong>
+  <span style="color:var(--yry-accent)">●</span> 故事节点 ·
+  <span style="color:var(--yry-text2)">●</span> 场景节点 ·
+  <span style="color:var(--yry-text3)">●</span> 依赖关系 ·
+  点击场景链接查看各场景详细架构图与知识图谱
+</div>
+
+<footer class="ft">
+  YryBreadcrumb · v1.1.0 · 5 场景 · Vue 3 零打包组件<br>
+  <span style="color:var(--yry-text3)">知识图谱 · 清单 · 架构 · 图谱 · 源码 · 测试 · 演示 · 审计</span>
+</footer>
+
+</div>
+</body>
+</html>

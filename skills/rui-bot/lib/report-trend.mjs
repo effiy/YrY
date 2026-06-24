@@ -14,7 +14,6 @@ import { nowDate } from "../../../lib/fs.mjs";
 import { PASS_THRESHOLD, WARN_THRESHOLD, scoreColor } from "./bot-health-analysis.mjs";
 import {
   movingAverage,
-  exponentialMA,
   detectTrend,
   forecastScore,
   detectAnomalies,
@@ -22,8 +21,36 @@ import {
   scoreVelocity,
   getGrade,
   classifyScore,
-  pearsonCorrelation,
 } from "../../../lib/scoring.mjs";
+
+function exponentialMA(history, alpha = 0.3) {
+  if (history.length === 0) return [];
+  const result = [history[0]];
+  for (let i = 1; i < history.length; i++) {
+    result.push(Math.round(alpha * history[i] + (1 - alpha) * result[i - 1]));
+  }
+  return result;
+}
+
+function pearsonCorrelation(xs, ys) {
+  const n = Math.min(xs.length, ys.length);
+  if (n < 3) return 0;
+
+  const xMean = xs.slice(0, n).reduce((a, b) => a + b, 0) / n;
+  const yMean = ys.slice(0, n).reduce((a, b) => a + b, 0) / n;
+
+  let ssXY = 0, ssXX = 0, ssYY = 0;
+  for (let i = 0; i < n; i++) {
+    const dx = xs[i] - xMean;
+    const dy = ys[i] - yMean;
+    ssXY += dx * dy;
+    ssXX += dx * dx;
+    ssYY += dy * dy;
+  }
+
+  const denom = Math.sqrt(ssXX * ssYY);
+  return denom !== 0 ? Math.round(ssXY / denom * 100) / 100 : 0;
+}
 
 export { nowDate };
 
@@ -591,6 +618,120 @@ export function buildBenchmarkHTML(benchmarks) {
     '<div style="padding:8px;background:rgba(245,158,11,.06);border-radius:6px;font-size:.7rem;color:var(--yry-text2);text-align:center">' +
     '📊 对比最佳: <span style="color:' + vsBestColor + ';font-weight:600">' + vsBest + '</span> · ' +
     '对比均值: <span style="color:' + vsAvgColor + ';font-weight:600">' + (bm.avgGap >= 0 ? '+' : '') + bm.avgGap + ' 分</span>' +
+    '</div>' +
+    '</div>';
+}
+
+/**
+ * Build a weekly digest summarizing key changes, regressions, and improvements
+ * over the past 7 days. Designed for executive-level consumption.
+ *
+ * @param {object} enhancedTrend - From buildEnhancedTrendAnalysis()
+ * @param {Array} healthTrend - Full health trend history
+ * @param {number} currentScore - Current composite score
+ * @returns {string} HTML
+ */
+export function buildWeeklyDigest(enhancedTrend, healthTrend, currentScore) {
+  if (!enhancedTrend || !healthTrend || healthTrend.length < 2) return "";
+
+  var regressing = enhancedTrend.regressingDimensions || [];
+  var improving = enhancedTrend.improvingDimensions || [];
+  var anomalies = enhancedTrend.anomalies || [];
+  var trend = enhancedTrend.trend || {};
+  var gradeDist = enhancedTrend.gradeDistribution || {};
+
+  // Calculate week-over-week changes
+  var recentEntries = healthTrend.slice(-7);
+  var weekChange = 0;
+  if (recentEntries.length >= 2) {
+    weekChange = currentScore - (recentEntries[0].composite || currentScore);
+  }
+
+  // Build digest items
+  var digestItems = [];
+
+  // Overall direction
+  var directionIcon = trend.direction === "rising" ? "📈" : trend.direction === "falling" ? "📉" : "📊";
+  var directionLabel = trend.direction === "rising" ? "持续改善" : trend.direction === "falling" ? "持续退化" : "保持稳定";
+  var directionColor = trend.direction === "rising" ? "#22c55e" : trend.direction === "falling" ? "#ef4444" : "var(--yry-text2)";
+  digestItems.push({
+    icon: directionIcon,
+    text: "整体趋势：<b style='color:" + directionColor + "'>" + directionLabel + "</b>，" +
+      "周变化 <b style='color:" + (weekChange >= 0 ? "#22c55e" : "#ef4444") + "'>" + (weekChange >= 0 ? "+" : "") + weekChange + " 分</b>，" +
+      "斜率 " + (trend.slopePerWeek > 0 ? "+" : "") + (trend.slopePerWeek || 0) + "/周",
+  });
+
+  // Grade distribution
+  var gradeSummary = [];
+  for (var _g = 0, _a = ["A", "B", "C", "D"]; _g < _a.length; _g++) {
+    var g = _a[_g];
+    if (gradeDist[g] > 0) gradeSummary.push(g + "级 " + gradeDist[g] + " 次");
+  }
+  if (gradeSummary.length > 0) {
+    digestItems.push({
+      icon: "📊",
+      text: "等级分布：" + gradeSummary.join(" · ") + "（共 " + enhancedTrend.totalEntries + " 次检查）",
+    });
+  }
+
+  // Regressing dimensions
+  if (regressing.length > 0) {
+    var regressText = regressing.slice(0, 3).map(function(r) {
+      return r.label + "(" + r.slope + "/周)";
+    }).join("、");
+    digestItems.push({
+      icon: "🔴",
+      text: "退化维度：<b style='color:#ef4444'>" + regressing.length + " 个</b> — " + regressText + (regressing.length > 3 ? " 等" : ""),
+    });
+  } else {
+    digestItems.push({
+      icon: "🟢",
+      text: "退化维度：<b style='color:#22c55e'>0 个</b>，所有维度保持稳定或改善",
+    });
+  }
+
+  // Improving dimensions
+  if (improving.length > 0) {
+    var improveText = improving.slice(0, 3).map(function(r) {
+      return r.label + "(+" + r.slope + "/周)";
+    }).join("、");
+    digestItems.push({
+      icon: "🟢",
+      text: "改善维度：<b style='color:#22c55e'>" + improving.length + " 个</b> — " + improveText + (improving.length > 3 ? " 等" : ""),
+    });
+  }
+
+  // Anomalies
+  if (anomalies.length > 0) {
+    digestItems.push({
+      icon: "⚠️",
+      text: "异常检测：<b style='color:#f59e0b'>" + anomalies.length + " 个异常点</b>，建议查看异常告警面板了解详情",
+    });
+  }
+
+  // Forecast
+  if (enhancedTrend.forecast) {
+    var fc = enhancedTrend.forecast;
+    var fcDir = fc.forecast > currentScore ? "上升" : fc.forecast < currentScore ? "下降" : "持平";
+    var fcColor = fc.forecast > currentScore ? "#22c55e" : fc.forecast < currentScore ? "#ef4444" : "var(--yry-text2)";
+    digestItems.push({
+      icon: "🔮",
+      text: "7 天预测：<b style='color:" + fcColor + "'>" + fc.forecast + " 分</b>（" + fcDir + " " + Math.abs(fc.forecast - currentScore) + " 分），置信度 " + (trend.confidence || "low"),
+    });
+  }
+
+  var digestHtml = digestItems.map(function(item) {
+    return '<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)">' +
+      '<span style="font-size:1rem;flex-shrink:0">' + item.icon + '</span>' +
+      '<span style="font-size:.82rem;color:var(--yry-text2);line-height:1.6">' + item.text + '</span>' +
+      '</div>';
+  }).join("");
+
+  return '<div class="h-section">' +
+    '<h2>📋 周度摘要 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Weekly Digest · 近 7 天关键变化</span></h2>' +
+    '<div style="padding:8px 0">' + digestHtml + '</div>' +
+    '<div style="margin-top:8px;font-size:.68rem;color:var(--yry-text3);text-align:center">' +
+    '基于 ' + enhancedTrend.totalEntries + ' 次历史检查数据分析 · 数据来源: .memory/health-trend.jsonl' +
     '</div>' +
     '</div>';
 }

@@ -2,347 +2,66 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>测试与发布 · 计划清单 · YryBreadcrumb 任务故事</title>
-<link rel="stylesheet" href="../../../shared\/index\.css">
-<link rel="stylesheet" href="../../../theme\/index\.css">
-<link rel="stylesheet" href="../../../yry\-scene\/index\.css">
-<link rel="stylesheet" href="../../../yry\-checklist\/index\.css">
-<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
-<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
-<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
-<link rel="stylesheet" href="../../../yry-back-top/index.css">
-<link rel="stylesheet" href="../../../yry-scene-header/index.css">
-<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
-<link rel="stylesheet" href="../../../yry\-inline\-helpers\/index\.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<link rel="stylesheet" href="../../../yry\-a11y\/index\.css">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>测试与发布 · 计划清单</title>
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-plan-base.css">
+<link rel="stylesheet" href="../../../../cdn/yry-checklist/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-stats/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-tabs/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-steps/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-progress-bar/index.css">
 <style>
-
-/* KPI 统计卡片网格 (stat-card 样式由 yry-scene.css 提供) */
-.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0 24px; }
-
-/* 交付网格增强 */
-.delivery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin: 12px 0; }
-.delivery-item {
-  padding: 12px 14px;
-  background: var(--yry-color-surface-1); border: 1px solid var(--yry-color-border);
-  border-radius: var(--yry-radius-lg); text-align: center;
-  transition: all .15s;
-}
-.delivery-item:hover {
-  border-color: rgba(255,193,7,.18);
-  transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.2);
-}
-.delivery-item a { color: var(--yry-color-cyan); text-decoration: none; font-size: .82rem; font-weight: 500; }
-.delivery-item a:hover { color: var(--yry-color-accent); text-decoration: underline; }
-
-@media (max-width: 640px) {
-  .stat-grid { grid-template-columns: repeat(2, 1fr); }
-  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-  .delivery-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-.container { max-width: 1100px; }
+.yry-container{max-width:960px;padding:40px 24px 80px}
+.st-bar{margin-bottom:24px}
+.st-tab{padding:8px 18px;font-size:0.82rem}
+.st-panel{padding-top:0;animation:none}
+.yry-section h2{font-size:0.95rem}
+.yry-section h2 .yry-dot{width:7px;height:7px}
 </style>
 </head>
 <body>
-<a href="#main" class="skip-link">⏩ 跳到主要内容</a>
-<div class="container" id="main">
-<div id="breadcrumb-app"></div>
+<div class="yry-container">
+<yry-scene-chrome
+  theme="b"
+  title="📋 {ACCENT} · 计划清单"
+  title-accent="测试与发布"
+  subtitle="场景 5 · 版本 vv5.4.0 · 2026-06-22"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-breadcrumb · yry-breadcrumb"},{"label":"场景 5 · 测试与发布"},{"label":"📋 计划清单"}]'
+  crossnav='[{"label":"📋 清单","active":true},{"label":"📐 架构","href":"架构图.html"},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","href":"审查.html"}]'>
+</yry-scene-chrome>
 
-<div id="scene-header-app"></div>
+<yry-scene-stats items='[{"value":5,"label":"场景序号","color":"health"},{"value":"—","label":"测试用例","color":"t"},{"value":"vv5.4.0","label":"版本","color":"t"}]'></yry-scene-stats>
 
-<div id="scene-nav-app"></div>
+<yry-progress-bar done="0" total="0" label="总体进度"></yry-progress-bar>
 
-
-<h2>KPI 摘要</h2>
-<div class="tip-box success"><strong>场景完成</strong> 5/5 测试与发布任务全部完成，7 项自测 PASS，v1.1.0 发布就绪。</div>
-
-<h2>KPI 指标</h2>
-<div id="stats-grid-app"></div>
-<div id="cross-nav-app"></div>
-
-<h2>任务管线</h2>
-<div class="stage-list">
-  <div class="stage-row done">
-    <div class="st-num">1</div>
-    <div class="st-info"><div class="st-name">自测验证</div><div class="st-detail">7 项自测清单逐项验证：语法检查、渲染、a11y、console 清洁</div></div>
-    <span class="st-status ok">✓ 完成</span>
-    <div class="st-bar"></div>
+<yry-scene-tabs tabs='[{"id":"checklist","label":"📋 清单"},{"id":"overview","label":"📊 概览"},{"id":"verify","label":"✅ 验证"}]'>
+  <div data-panel="checklist"><yry-scene-steps><div class="placeholder">数据待填充 — 运行 /rui code 生成</div></yry-scene-steps></div>
+  <div data-panel="overview">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>§0 场景概述</h2>
+      <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
+    </div>
   </div>
-  <div class="stage-row done">
-    <div class="st-num">2</div>
-    <div class="st-info"><div class="st-name">集成与兼容</div><div class="st-detail">跨页面兼容性测试 + npm 集成 + 类名体系复用验证</div></div>
-    <span class="st-status ok">✓ 完成</span>
-    <div class="st-bar"></div>
+  <div data-panel="verify">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>§3 验证标准</h2>
+      <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
+    </div>
   </div>
-  <div class="stage-row done">
-    <div class="st-num">3</div>
-    <div class="st-info"><div class="st-name">发布就绪</div><div class="st-detail">v1.1.0 语义化版本 + git tag + CHANGELOG + npm pack 干跑通过</div></div>
-    <span class="st-status ok">✓ 完成</span>
-    <div class="st-bar"></div>
-  </div>
+</yry-scene-tabs>
+
+<yry-scene-footer version="v5.4.0" date="2026-06-22" docs-link="../../../../docs/index.html"></yry-scene-footer>
 </div>
-
-<h2>任务清单</h2>
-<table>
-  <thead><tr><th>ID</th><th>任务</th><th>描述</th><th>状态</th><th>证据</th></tr></thead>
-  <tbody>
-    <tr>
-      <td><code>T5.1</code></td>
-      <td>7 项自测清单验证</td>
-      <td>逐项执行全部 7 项自测：node --check、3 demo 渲染、console 清洁、硬刷新、挂载脚本、键盘 Tab、屏幕阅读器</td>
-      <td><span class="badge badge-ok">完成</span></td>
-      <td><a href="./测试面板.html">测试面板.html</a></td>
-    </tr>
-    <tr>
-      <td><code>T5.2</code></td>
-      <td>跨页面兼容性测试</td>
-      <td>在场景 1-5 全部 HTML 页面中验证面包屑组件正常渲染，交叉链接有效，无样式丢失</td>
-      <td><span class="badge badge-ok">完成</span></td>
-      <td><a href="./审查.html">审查.html R2</a></td>
-    </tr>
-    <tr>
-      <td><code>T5.3</code></td>
-      <td>npm 集成 (package.json)</td>
-      <td>cdn/package.json 的 files[] 包含 yry-breadcrumb/ 下 3 个核心文件 + 任务故事 README，共 4 个路径</td>
-      <td><span class="badge badge-ok">完成</span></td>
-      <td><a href="./源码.html">源码.html</a> · cdn/package.json</td>
-    </tr>
-    <tr>
-      <td><code>T5.4</code></td>
-      <td>cdn-yry-checklist 类名复用</td>
-      <td>确认场景 1-5 全部 HTML 页面引用 yry-checklist.css，统一使用 .checklist / .badge / .badge-ok / .badge-warn 类名体系</td>
-      <td><span class="badge badge-ok">完成</span></td>
-      <td><a href="./审查.html">审查.html R4</a></td>
-    </tr>
-    <tr>
-      <td><code>T5.5</code></td>
-      <td>发布流程验证 (git tag)</td>
-      <td>语义化版本 v1.1.0，git tag 已创建，CHANGELOG 条目就绪，npm publish 干跑通过</td>
-      <td><span class="badge badge-ok">完成</span></td>
-      <td><code>git tag -l v1.1.0</code> · npm pack --dry-run</td>
-    </tr>
-  </tbody>
-</table>
-
-<h2>验收清单</h2>
-<div class="check-list">
-  <div class="verify-item checked">
-    <div class="vi-box"><span class="vi-check">✓</span></div>
-    <div class="vi-body">
-      <div class="vi-name">T5.1: 7 项自测清单验证</div>
-      <div class="vi-desc">逐项执行 node --check、3 demo 渲染、console 清洁、硬刷新、键盘 Tab、屏幕阅读器等全部 7 项自测。</div>
-    </div>
-    <span class="vi-time">✅ PASS</span>
-  </div>
-  <div class="verify-item checked">
-    <div class="vi-box"><span class="vi-check">✓</span></div>
-    <div class="vi-body">
-      <div class="vi-name">T5.2: 跨页面兼容性测试</div>
-      <div class="vi-desc">场景 1-5 全部 HTML 页面面包屑正常渲染，交叉链接有效，无样式丢失。</div>
-    </div>
-    <span class="vi-time">✅ PASS</span>
-  </div>
-  <div class="verify-item checked">
-    <div class="vi-box"><span class="vi-check">✓</span></div>
-    <div class="vi-body">
-      <div class="vi-name">T5.3: npm 集成 (package.json)</div>
-      <div class="vi-desc">cdn/package.json files[] 包含 yry-breadcrumb/ 下 3 个核心文件 + 任务故事 README。</div>
-    </div>
-    <span class="vi-time">✅ PASS</span>
-  </div>
-  <div class="verify-item checked">
-    <div class="vi-box"><span class="vi-check">✓</span></div>
-    <div class="vi-body">
-      <div class="vi-name">T5.4: 类名体系复用验证</div>
-      <div class="vi-desc">场景 1-5 全部页面引用 yry-checklist.css，统一使用 .checklist / .badge 类名体系。</div>
-    </div>
-    <span class="vi-time">✅ PASS</span>
-  </div>
-  <div class="verify-item checked">
-    <div class="vi-box"><span class="vi-check">✓</span></div>
-    <div class="vi-body">
-      <div class="vi-name">T5.5: 发布流程验证</div>
-      <div class="vi-desc">语义化版本 v1.1.0，git tag 已创建，CHANGELOG 就绪，npm pack --dry-run 通过。</div>
-    </div>
-    <span class="vi-time">✅ PASS</span>
-  </div>
-  <div class="verify-item checked">
-    <div class="vi-box"><span class="vi-check">✓</span></div>
-    <div class="vi-body">
-      <div class="vi-name">V1: 全场景交叉验证</div>
-      <div class="vi-desc">7 项自测全部 PASS，测试面板报告 100% 通过率，8 个交付物齐全。</div>
-    </div>
-    <span class="vi-time">✅ PASS</span>
-  </div>
-  <div class="verify-item checked">
-    <div class="vi-box"><span class="vi-check">✓</span></div>
-    <div class="vi-body">
-      <div class="vi-name">V2: 发布就绪与 dogfooding</div>
-      <div class="vi-desc">v1.1.0 语义化版本合规，本页 YryBreadcrumb 自举渲染正常，git tag 可追溯。</div>
-    </div>
-    <span class="vi-time">✅ PASS</span>
-  </div>
-</div>
-
-<h2>验收标准</h2>
-<ul class="checklist">
-  <li class="done">全部 5 项任务状态 = 完成，100% 完成率</li>
-  <li class="done">7 项自测全部 PASS，测试面板报告 100% 通过率</li>
-  <li class="done">场景 1-5 全部 HTML 页面面包屑正常渲染，跨页交叉链接有效</li>
-  <li class="done">cdn/package.json files[] 包含 4 个 yry-breadcrumb 路径，npm pack --dry-run 验证通过</li>
-  <li class="done">cdn-yry-checklist 类名在全部 5 个场景中一致复用，无自定义重复样式</li>
-  <li class="done">版本号 v1.1.0 符合语义化规范（minor 升级），git tag 已创建</li>
-  <li class="done">8 个标准交付物齐全：index.md + 7 个 HTML 文件</li>
-  <li class="done">本页使用 YryBreadcrumb 组件自身渲染面包屑（dogfooding 自举验证）</li>
-</ul>
-
-<h2>交付物</h2>
-<div class="deliver-grid">
-  <a class="deliver-item" href="./index.md"><span class="di-icon">📄</span><div><div class="di-name">index.md</div><div class="di-desc">场景概述</div></div><span class="di-status done">✓</span></a>
-  <a class="deliver-item" href="./审查.html"><span class="di-icon">📝</span><div><div class="di-name">审查</div><div class="di-desc">技术审查清单</div></div><span class="di-status done">✓</span></a>
-  <a class="deliver-item" href="./架构图.html"><span class="di-icon">📐</span><div><div class="di-name">架构图</div><div class="di-desc">流程架构图</div></div><span class="di-status done">✓</span></a>
-  <a class="deliver-item" href="./测试面板.html"><span class="di-icon">🧪</span><div><div class="di-name">测试面板</div><div class="di-desc">7 项自测用例</div></div><span class="di-status done">✓</span></a>
-  <a class="deliver-item" href="./源码.html"><span class="di-icon">📄</span><div><div class="di-name">源码</div><div class="di-desc">关键源码片段</div></div><span class="di-status done">✓</span></a>
-  <a class="deliver-item" href="./演示.html"><span class="di-icon">💡</span><div><div class="di-name">演示</div><div class="di-desc">验证结果汇总</div></div><span class="di-status done">✓</span></a>
-  <a class="deliver-item" href="./知识图谱.html"><span class="di-icon">🔗</span><div><div class="di-name">知识图谱</div><div class="di-desc">概念关联图</div></div><span class="di-status done">✓</span></a>
-  <a class="deliver-item" href="./计划清单.html"><span class="di-icon">📋</span><div><div class="di-name">计划清单</div><div class="di-desc">当前页面</div></div><span class="di-status done">✓</span></a>
-</div>
-
-<h2>交付清单</h2>
-<div class="delivery-grid">
-  <div class="delivery-item">📄 <a href="./index.md">index.md</a><br><span class="yry-mute-68">场景概述</span></div>
-  <div class="delivery-item">📝 <a href="./审查.html">审查.html</a><br><span class="yry-mute-68">技术审查清单</span></div>
-  <div class="delivery-item">📐 <a href="./架构图.html">架构图.html</a><br><span class="yry-mute-68">流程架构图</span></div>
-  <div class="delivery-item">🧪 <a href="./测试面板.html">测试面板.html</a><br><span class="yry-mute-68">7 项自测用例</span></div>
-  <div class="delivery-item">📄 <a href="./源码.html">源码.html</a><br><span class="yry-mute-68">关键源码片段</span></div>
-  <div class="delivery-item">💡 <a href="./演示.html">演示.html</a><br><span class="yry-mute-68">验证结果汇总</span></div>
-  <div class="delivery-item">🔗 <a href="./知识图谱.html">知识图谱.html</a><br><span class="yry-mute-68">概念关联图</span></div>
-  <div class="delivery-item">📋 <a href="./计划清单.html">计划清单.html</a><br><span class="yry-mute-68">当前页面</span></div>
-</div>
-
-<h2>相关链接</h2>
-<ul>
-  <li><a href="../../../yry-breadcrumb/index.html">YryBreadcrumb Demo 预览页</a> — 3 种 items 模式交互演示</li>
-  <li><a href="../../package.json">cdn/package.json</a> — npm 包配置文件</li>
-  <li><a href="../README.md">任务故事 README</a> — 5 个场景总览</li>
-  <li>场景 1-4: <a href="../场景-1-需求与设计/计划清单.html">需求与设计</a> · <a href="../场景-2-模板与样式/计划清单.html">模板与样式</a> · <a href="../场景-3-Loader实现/计划清单.html">Loader 实现</a> · <a href="../场景-4-页面集成/计划清单.html">页面集成</a></li>
-</ul>
-
-<div class="footer">
-  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-5-测试与发布/计划清单.html</code><br>
-  🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
-</div>
-</div>
-
-
-<script src="../../../shared\/index\.js"></script>
-<!-- ═══ CDN: YrySceneNav 组件 loader ═══ -->
-<script src="../../../yry-scene-nav/index.js"></script>
-<!-- ═══ CDN: YryCrossNav 组件 loader ═══ -->
-<script src="../../../yry-cross-nav/index.js"></script>
-<!-- ═══ CDN: YryBackTop (零配置自初始化) ═══ -->
-<script src="../../../yry-back-top/index.js"></script>
-<!-- ═══ CDN: YryBreadcrumb 组件 loader ═══ -->
-<script src="../../../yry-breadcrumb/index.js"></script>
-<!-- ═══ CDN: YrySceneHeader 组件 loader ═══ -->
-<script src="../../../yry-scene-header/index.js"></script>
-<!-- ═══ CDN: YryStatsGrid 组件 loader ═══ -->
-<script src="../../../yry-stats-grid/index.js"></script>
-
-  <!-- ════════════════════════════════════════════════════════════
-       页面级挂载 · 场景导航 + 交叉导航 + 面包屑 + 统计网格
-       index.js 异步加载模板后派发 yry-*-ready 事件
-       ════════════════════════════════════════════════════════════ -->
-  <script>
-
-  /* ── YryCrossNav 挂载 ── */
-  function mountCrossNav() {
-    if (!window.Vue || !window.YryCrossNav) return;
-    if (!document.getElementById('cross-nav-app')) return;
-    Vue.createApp(window.YryCrossNav, {
-      basePath: './',
-      active: '清单',
-      pages: [
-        { id: '清单', icon: '📋', href: '计划清单.html' },
-        { id: '架构', icon: '📐', href: '架构图.html' },
-        { id: '图谱', icon: '🔗', href: '知识图谱.html' },
-        { id: '源码', icon: '📄', href: '源码.html' },
-        { id: '测试', icon: '🧪', href: '测试面板.html' },
-        { id: '演示', icon: '💡', href: '演示.html' },
-        { id: '审查', icon: '📝', href: '审查.html' }
-      ]
-    }).mount('#cross-nav-app');
-  }
-  if (window.YryCrossNav) mountCrossNav();
-  else document.addEventListener('yry-cross-nav-ready', mountCrossNav, { once: true });
-
-  /* ── YrySceneNav 挂载 ── */
-  function mountSceneNav() {
-    if (!window.Vue || !window.YrySceneNav) return;
-    if (!document.getElementById('scene-nav-app')) return;
-    Vue.createApp(window.YrySceneNav, {
-      items: [
-        { label: '🍞 YryBreadcrumb', href: '../../../index.html' },
-        { label: '📋 任务故事', href: '../README.md' },
-        { label: '场景 5 · 测试与发布', href: './index.md' },
-        { label: '📋 计划清单', active: true }
-      ]
-    }).mount('#scene-nav-app');
-  }
-  if (window.YrySceneNav) mountSceneNav();
-  else document.addEventListener('yry-scene-nav-ready', mountSceneNav, { once: true });
-
-  /* ── YrySceneHeader 挂载 ── */
-  function mountSceneHeader() {
-    if (!window.Vue || !window.YrySceneHeader) return;
-    if (!document.getElementById('scene-header-app')) return;
-    Vue.createApp(window.YrySceneHeader, {
-      icon: '📋',
-      prefix: '场景 5',
-      accent: ' · 测试与发布',
-      meta: 'YryBreadcrumb 任务故事 · 场景 5 · Testing & Publishing · Plan Checklist',
-      desc: '场景 5 执行计划 — 5 项任务全部完成，KPI 摘要、任务逐项验证、验收标准及交付链接。'
-    }).mount('#scene-header-app');
-  }
-  if (window.YrySceneHeader) mountSceneHeader();
-  else document.addEventListener('yry-scene-header-ready', mountSceneHeader, { once: true });
-
-  /* ── YryBreadcrumb 挂载 ── */
-  function mountBreadcrumb() {
-    if (!window.Vue || !window.YryBreadcrumb) return;
-    if (!document.getElementById('breadcrumb-app')) return;
-    Vue.createApp(window.YryBreadcrumb, {
-      ariaLabel: '面包屑导航',
-      items: [
-        { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
-        { label: '任务故事', href: '../README.md' },
-        { label: '场景 5 · 测试与发布' },
-        { label: '计划清单', icon: '📋' }
-      ]
-    }).mount('#breadcrumb-app');
-  }
-  if (window.YryBreadcrumb) mountBreadcrumb();
-  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
-
-  /* ── YryStatsGrid 挂载 ── */
-  function mountStatsGrid() {
-    if (!window.Vue || !window.YryStatsGrid) return;
-    if (!document.getElementById('stats-grid-app')) return;
-    Vue.createApp(window.YryStatsGrid, {
-      items: [
-        { value: 5, label: '任务完成', modifier: 'health' },
-        { value: 0, label: '进行中', modifier: 'warn-h' },
-        { value: 0, label: '阻塞' },
-        { value: '100%', label: '完成率', modifier: 'accent' }
-      ]
-    }).mount('#stats-grid-app');
-  }
-  if (window.YryStatsGrid) mountStatsGrid();
-  else document.addEventListener('yry-stats-grid-ready', mountStatsGrid, { once: true });
-  </script>
-
+<script src="../../../../cdn/shared/index.js"></script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
+<script src="../../../../cdn/yry-scene-stats/index.js"></script>
+<script src="../../../../cdn/yry-scene-tabs/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
+<script src="../../../../cdn/yry-scene-steps/index.js"></script>
+<script src="../../../../cdn/yry-progress-bar/index.js"></script>
 </body>
 </html>

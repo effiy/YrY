@@ -1,0 +1,173 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YrySkillReport · 技能评分报告组件 样式
+   适用: 技能清单 · 四维评分 · 趋势图 · 成熟度 · 改进速率 · 风险调整
+   依赖: theme.css (设计令牌) + shared-reports.css (基础样式)
+
+   使用方式:
+     <link rel="stylesheet" href="../../../../cdn/yry-skill-report/index.css">
+     <script src="../../../../cdn/shared/index.js"></script>
+     <script src="../../../../cdn/shared-reports/index.js"></script>
+     <script src="../../../../cdn/yry-tabs-panel/index.css"></script>
+     <script src="../../../../cdn/yry-skill-report/index.js"></script>
+     <yry-skill-report data-summary-url="../自我改进/summary.json"></yry-skill-report>
+     <script>YrY.initTabs();</script>
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Skill Grid ─────────────────────────────────────────────────────── */
+.skill-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 10px;
+}
+.skill-item {
+  padding: 16px 18px;
+  border-radius: 8px;
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  background: rgba(15, 23, 42, .4);
+  transition: transform .15s;
+}
+.skill-item:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.08); }
+.skill-item.A { border-left: 3px solid var(--yry-pass, #22c55e); }
+.skill-item.B { border-left: 3px solid #f59e0b; }
+.skill-item.C { border-left: 3px solid var(--yry-warn, #f59e0b); }
+.skill-item.D { border-left: 3px solid var(--yry-fail, #ef4444); }
+.skill-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.skill-name { font-size: .86rem; font-weight: 600; }
+.skill-score { font-size: 1.2rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.skill-dims { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.skill-dim { font-size: .64rem; color: var(--yry-text3, #888); display: flex; align-items: center; gap: 3px; }
+.skill-dim-bar { width: 40px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.06); overflow: hidden; }
+.skill-dim-fill { height: 100%; border-radius: 2px; }
+
+/* ── Dim score bar ──────────────────────────────────────────────────── */
+.dim-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+.dim-card {
+  padding: 14px 18px;
+  border-radius: 8px;
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  background: rgba(15, 23, 42, .4);
+}
+.dim-card .dim-label { font-size: .72rem; color: var(--yry-text2, #d4d4d4); margin-bottom: 6px; }
+.dim-card .dim-bar-wrap {
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255,255,255,.06);
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.dim-card .dim-bar-fill { height: 100%; border-radius: 4px; transition: width .4s; }
+.dim-card .dim-val { font-size: 1.1rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.dim-card .dim-weight { font-size: .6rem; color: var(--yry-text3, #888); margin-left: 6px; }
+
+/* ── Trend chart ────────────────────────────────────────────────────── */
+.trend-wrap { position: relative; }
+.trend-wrap svg { width: 100%; height: 180px; }
+.trend-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; font-size: .68rem; color: var(--yry-text3, #888); }
+
+/* ── Arch summary ───────────────────────────────────────────────────── */
+.arch-kpi {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.arch-kpi-item {
+  padding: 14px;
+  text-align: center;
+  border-radius: 8px;
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  background: rgba(15, 23, 42, .4);
+}
+.arch-kpi-val { font-size: 1.6rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.arch-kpi-label { font-size: .64rem; color: var(--yry-text3, #888); margin-top: 4px; }
+
+/* ── Compliance table ───────────────────────────────────────────────── */
+.cmp-table { width: 100%; border-collapse: collapse; font-size: .76rem; }
+.cmp-table th {
+  text-align: left;
+  padding: 10px 14px;
+  background: rgba(15, 23, 42, .4);
+  color: var(--yry-text2, #d4d4d4);
+  font-weight: 600;
+}
+.cmp-table td { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,.04); }
+
+/* ── Signal cards ───────────────────────────────────────────────────── */
+.signal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
+.signal-item {
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  font-size: .78rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.signal-item.warning { background: rgba(245, 158, 11, .06); border-left: 3px solid var(--yry-warn, #f59e0b); }
+.signal-item.info { background: rgba(59, 130, 246, .04); border-left: 3px solid var(--yry-cyan, #22d3ee); }
+.signal-item .signal-icon { font-size: 1.1rem; flex-shrink: 0; }
+
+/* ── Component health grid ──────────────────────────────────────────── */
+.comp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+.comp-item {
+  padding: 14px;
+  text-align: center;
+  border-radius: 8px;
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  background: rgba(15, 23, 42, .4);
+}
+.comp-item .comp-val { font-size: 1.3rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.comp-item .comp-label { font-size: .64rem; color: var(--yry-text3, #888); margin-top: 4px; }
+.comp-item .comp-count { font-size: .6rem; color: var(--yry-text3, #888); margin-top: 2px; }
+
+/* ── Panel cards (maturity/velocity/risk) ───────────────────────────── */
+.panel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.panel-card {
+  text-align: center;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.06);
+  background: rgba(15, 23, 42, .4);
+}
+.panel-card .pc-val { font-size: 1.4rem; font-weight: 700; line-height: 1.2; }
+.panel-card .pc-label { font-size: .7rem; color: var(--yry-text3, #888); margin-bottom: 4px; }
+.panel-card .pc-sub { font-size: .68rem; color: var(--yry-text3, #888); margin-top: 4px; }
+.panel-note { padding: 12px; border-radius: 8px; font-size: .78rem; color: var(--yry-text2, #d4d4d4); margin-top: 12px; }
+.panel-note.info { background: rgba(59, 130, 246, .06); border: 1px solid rgba(59, 130, 246, .1); }
+.panel-note.warn { background: rgba(245, 158, 11, .06); border: 1px solid rgba(245, 158, 11, .1); }
+.panel-note.muted {
+  padding: 8px;
+  font-size: .72rem;
+  color: var(--yry-text3, #888);
+  background: rgba(15, 23, 42, .4);
+  border-radius: 6px;
+  margin-top: 12px;
+}
+
+/* ── Grade distribution bar ─────────────────────────────────────────── */
+.grade-bar { display: flex; height: 6px; border-radius: 4px; overflow: hidden; margin-bottom: 4px; }
+.grade-bar .gb-A { background: var(--yry-pass, #22c55e); }
+.grade-bar .gb-B { background: #f59e0b; }
+.grade-bar .gb-C { background: var(--yry-warn, #f59e0b); }
+.grade-bar .gb-D { background: var(--yry-fail, #ef4444); }
+
+/* ── Period summary ─────────────────────────────────────────────────── */
+.period-block { margin-bottom: 16px; }
+.period-block h3 { font-size: .88rem; margin-bottom: 8px; color: var(--yry-text2, #d4d4d4); }
+.period-meta { display: flex; gap: 8px; flex-wrap: wrap; font-size: .72rem; margin-bottom: 8px; }
+.period-detail { font-size: .64rem; color: var(--yry-text3, #888); }
+
+/* ── Responsive ─────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .skill-grid,
+  .dim-grid,
+  .arch-kpi,
+  .signal-grid,
+  .comp-grid,
+  .panel-grid { grid-template-columns: 1fr; }
+}

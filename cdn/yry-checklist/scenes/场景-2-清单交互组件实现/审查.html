@@ -3,336 +3,193 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>清单交互组件实现 — 审查报告 v4.5</title>
+<title>清单交互组件实现 · 审查</title>
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/theme/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-page-nav/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-review/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-review-base.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-stats/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-health-bar/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-tabs/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-review-cards/index.css">
+<style>
+.yry-container{max-width:1120px}
+</style>
 </head>
 <body>
-<div class="container">
+<div class="yry-container">
+<yry-scene-chrome
+  theme="b"
+  title="📝 {ACCENT} — 审查报告"
+  title-accent="场景 2 · 清单交互组件实现"
+  subtitle="审查日期 2026-06-22 · 版本 vv5.4.0 · 场景 2"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-checklist · 故事任务"},{"label":"场景 2 · 清单交互组件实现"},{"label":"📝 审查"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","href":"架构图.html"},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","active":true}]'>
+</yry-scene-chrome>
 
-<script type="application/json" id="yry-page-config">
-{"story": "yry-checklist · 清单与自循环", "scene": {"num": "2", "name": "清单交互组件实现", "dir": "场景-2-清单交互组件实现"}, "depth": "../../../", "scenes": [{"num": "1", "name": "模板架构与 CSS 设计系统", "dir": "场景-1-模板架构与CSS设计系统"}, {"num": "2", "name": "清单交互组件实现", "dir": "场景-2-清单交互组件实现"}, {"num": "3", "name": "验证报告与健康面板集成", "dir": "场景-3-验证报告与健康面板集成"}, {"num": "4", "name": "批量生成与自循环机制", "dir": "场景-4-批量生成与自循环机制"}], "pages": [{"type": "清单", "icon": "📋", "file": "计划清单.html"}, {"type": "架构", "icon": "📐", "file": "架构图.html"}, {"type": "图谱", "icon": "🔗", "file": "知识图谱.html"}, {"type": "源码", "icon": "📄", "file": "源码.html"}, {"type": "测试", "icon": "🧪", "file": "测试面板.html"}, {"type": "演示", "icon": "💡", "file": "演示.html"}, {"type": "审计", "icon": "📝", "file": "审查.html"}], "page": {"type": "审计", "icon": "📝", "file": "审查.html"}}
-</script>
-<div id="yry-nav"></div>
-<script src="../../../../cdn/yry-page-nav/index.js"></script>
+<yry-scene-stats items='[{"value":"18/8","label":"诊断通过","color":"health"},{"value":"D0-D8","label":"覆盖范围","color":"t"},{"value":-10,"label":"改进建议","color":"warn-h"}]'></yry-scene-stats>
+<yry-scene-health-bar segments='[{"pct":225,"cls":"strength"},{"pct":-125,"cls":"gap"}]'></yry-scene-health-bar>
 
-<div class="header">
-  <h1>📝 <span class="accent">清单交互组件实现</span> — 审查报告</h1>
-  <p class="sub">基于 清单交互组件实现 场景规约 v4.5 综合评审</p>
-  <div class="meta-row">
-    <span class="meta-chip">📅 审查日期 <strong>2026-06-13</strong></span>
-    <span class="meta-chip">�️ 版本 <strong>v4.5</strong></span>
-    <span class="meta-chip">🤖 审查人 <strong>arch-reviewer Agent</strong></span>
-    <span class="meta-chip">� 维度 <strong>4 维 × 6 项</strong></span>
-    <span class="meta-chip">📄 范围 <strong>index.md · 0 用例 · 0 源</strong></span>
-  </div>
-</div>
+<yry-scene-tabs tabs='[{"id":"overview","label":"📊 总览"},{"id":"good","label":"✅ 好案例"},{"id":"bad","label":"❌ 坏案例"},{"id":"recommendations","label":"📝 改进建议"},{"id":"evidence","label":"📎 证据链"}]'>
+  <div data-panel="overview"><h2>§0 技术评审</h2><p>交互组件是计划清单从"可读文档"升级为"可操作工具"的核心层。六个组件覆盖清单页面全部交互场景，均以零依赖内联 JS 实现，通过 localStorage 持久化用户状态。架构采用 Data/Template/Renderer 三层分离，2 个 <code><script></code> 块共 ~410 行（~270 + ~140）。</p><h3>交付物清单</h3><table><thead><tr><th>#</th><th>文件</th><th>类型</th><th>规模</th><th>用途</th></tr></thead><tbody><tr><td>1</td><td><code>计划清单.html</code></td><td>HTML+CSS+JS</td><td>~650 行 HTML + ~410 行 JS (2 blocks)</td><td>清单页面本体 — 7 标签页 · 进度条 · 风险行 · 交付物列表 · 6 组件完整实现</td></tr><tr><td>2</td><td><code>架构图.html</code></td><td>SVG 图表</td><td>5 tab</td><td>三层架构图 · 事件时序图 · TC 设计 · 质量门禁 · 里程碑时间线</td></tr><tr><td>3</td><td><code>知识图谱.html</code></td><td>Cytoscape.js</td><td>22 节点 · 42 边 · 8 类型</td><td>场景知识图谱 — 组件→存储→测试→源码 全关系</td></tr><tr><td>4</td><td><code>测试面板.html</code></td><td>HTML+JS</td><td>~1616 行</td><td>测试面板 Pro — 7 套件 26 断言 100% 通过 · SLI 监控 · 性能趋势 · 质量雷达</td></tr><tr><td>5</td><td><code>演示.html</code></td><td>HTML+JS</td><td>~1300 行</td><td>交互演示 — 6 步走查 · 时间线 · 概念雷达 · Day Plan · Mini Quiz</td></tr><tr><td>6</td><td><code>审查.html</code></td><td>HTML+JS</td><td>~550 行</td><td>审查报告 — 4 维 6 项 · 证据链 · fix diffs · 行动项 · 签收状态</td></tr><tr><td>7</td><td><code>源码.html</code></td><td>HTML+JS</td><td>~850 行</td><td>源码走读 — 三层架构拆解 · 调试命令 · 常见问题 · 文件索引 · 关系图</td></tr><tr><td>8</td><td><code>index.md</code></td><td>Markdown</td><td>本文件</td><td>场景总纲 — 技术评审 · 组件清单 · 测试设计 · 实施报告 · 自改进</td></tr></tbody></table><h3>效果示意</h3><p><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart TD
+    CHECK[&quot;☑️ 勾选→进度联动&quot;]:::c --&gt; LS[&quot;localStorage 持久化&quot;]:::s
+    CHECK --&gt; STATUS[&quot;步骤状态推导&lt;br/&gt;完成/就绪/待开始&quot;]:::s
+    FOLD[&quot;📂 折叠面板展开/收起&quot;]:::c --&gt; ANIM[&quot;CSS transition 300ms&quot;]:::s
+    TAB[&quot;📑 标签页切换&quot;]:::c --&gt; HASH[&quot;localStorage tab 记忆&quot;]:::s
+    TAB --&gt; KEY[&quot;键盘 1-9 快捷切换&quot;]:::s
+    RISK[&quot;⚠️ 风险行展开&quot;]:::c --&gt; DET[&quot;缓解步骤详情&quot;]:::s
+    DELIV[&quot;📦 交付物过滤&quot;]:::c --&gt; TYPE[&quot;类型过滤 + 展开/折叠&quot;]:::s
+    DELIV --&gt; COPY[&quot;一键复制路径&quot;]:::s
+    classDef c fill:#06b6d4,color:#000
+    classDef s fill:#8B5CF6,color:#fff</pre></p><h3>三层架构</h3><p><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    subgraph Data[&quot;Data 层&quot;]
+        D1[&quot;localStorage 读写&lt;br/&gt;yry-arch-s2-checklist&lt;br/&gt;yry-arch-s2-checklist-tab&quot;]:::d
+        D2[&quot;步骤状态推导&lt;br/&gt;deriveStatus()&quot;]:::d
+        D3[&quot;交付物自动标注&lt;br/&gt;autoAnnotate()&quot;]:::d
+    end
+    subgraph Template[&quot;Template 层&quot;]
+        T1[&quot;DOM 查询&lt;br/&gt;data-* 钩子&quot;]:::t
+        T2[&quot;事件绑定&lt;br/&gt;click / keydown&quot;]:::t
+        T3[&quot;CSS class 切换&lt;br/&gt;collapsed / open / dim / on&quot;]:::t
+    end
+    subgraph Renderer[&quot;Renderer 层&quot;]
+        R1[&quot;进度条更新&lt;br/&gt;updateProgress()&quot;]:::r
+        R2[&quot;标签页切换&lt;br/&gt;switchTab()&quot;]:::r
+        R3[&quot;Toast 提示&lt;br/&gt;showToast()&quot;]:::r
+    end
+    Data --&gt; Template --&gt; Renderer
+    classDef d fill:#34d399,color:#000
+    classDef t fill:#fbbf24,color:#000
+    classDef r fill:#8B5CF6,color:#fff</pre></p><h3>事件契约（与 <code>架构图.html</code> 事件契约段一致）</h3><table><thead><tr><th>事件源</th><th>事件类型</th><th>处理函数</th><th>副作用</th></tr></thead><tbody><tr><td>checkbox</td><td><code>click</code></td><td><code>onCheck(stepId)</code></td><td>进度条更新 · localStorage 写入 · 步骤状态重推导</td></tr><tr><td>交付物头部</td><td><code>click</code></td><td><code>toggleCollapse(groupId)</code></td><td>CSS class <code>collapsed</code> 切换 · max-height transition</td></tr><tr><td>标签页</td><td><code>click</code> / <code>keydown</code></td><td><code>switchTab(tabName)</code></td><td><code>.tab-panel.active</code> 切换 · tab localStorage 写入</td></tr><tr><td>风险行</td><td><code>click</code></td><td><code>toggleRisk(rowId)</code></td><td>CSS class <code>open</code> 切换 · 详情展开</td></tr><tr><td>过滤按钮</td><td><code>click</code></td><td><code>filterDeliv(type)</code></td><td><code>.deliv-link.dim</code> 切换 · 显隐动画</td></tr><tr><td>复制按钮</td><td><code>click</code></td><td><code>copyPath(path)</code></td><td>剪贴板写入 · <code>showToast()</code> 0.15s fade</td></tr><tr><td>document</td><td><code>keydown</code></td><td><code>onKeyShortcut(e)</code></td><td>数字键 1-9 → 标签页切换（跳过 input 聚焦）</td></tr><tr><td>window</td><td><code>hashchange</code></td><td><code>onHashChange()</code></td><td>跨 tab 跳转 · 自动展开折叠面板 · 高亮目标</td></tr></tbody></table><h3>状态流向（与 <code>架构图.html</code> 状态流向段一致）</h3><p><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    U[&quot;用户操作&quot;] --&gt; E[&quot;事件触发&quot;]:::e
+    E --&gt; S[&quot;状态更新&quot;]:::s
+    S --&gt; D[&quot;DOM 渲染&quot;]:::d
+    D --&gt; LS[&quot;localStorage 持久化&quot;]:::ls
 
-<div class="stats-grid">
-  <div class="stat-card"><div class="val health">82%</div><div class="lbl">🏥 综合健康度</div><div class="delta flat">— 持平基线</div></div>
-  <div class="stat-card"><div class="val health">80%</div><div class="lbl">📋 完整性</div><div class="delta up">↑ 4% vs v4.5</div></div>
-  <div class="stat-card"><div class="val health">85%</div><div class="lbl">� 一致性</div><div class="delta up">↑ 2% vs v4.5</div></div>
-  <div class="stat-card"><div class="val warn-h">72%</div><div class="lbl">🔍 可追溯</div><div class="delta down">↓ 3% vs v4.5</div></div>
-  <div class="stat-card"><div class="val health">90%</div><div class="lbl">💬 表达力</div><div class="delta up">↑ 1% vs v4.5</div></div>
-  <div class="stat-card"><div class="val fail-h">2</div><div class="lbl">🚨 P1 阻断</div><div class="delta down">需立即修复</div></div>
-  <div class="stat-card"><div class="val info-h">3</div><div class="lbl">� 可自动修复</div><div class="delta flat">~ 50% 自动化</div></div>
-  <div class="stat-card"><div class="val warn-h">4.2h</div><div class="lbl">⏱️ 修复成本</div><div class="delta flat">2 人 · 1 迭代</div></div>
-</div>
+    LOAD[&quot;页面加载&quot;] --&gt; LS2[&quot;读取 localStorage&quot;]:::ls
+    LS2 --&gt; R[&quot;恢复状态&quot;]:::r
+    R --&gt; D2[&quot;DOM 初始渲染&quot;]:::d
 
-<div class="bar-wrap">
-  <div class="bar-outer">
-    <div class="seg strength" style="width:33%"></div>
-    <div class="seg gap" style="width:33%"></div>
-    <div class="seg suggestion" style="width:33%"></div>
-  </div>
-  <div class="bar-legend">
-    <span><span class="dot strength"></span>✅ 4 优势（值得推广）</span>
-    <span><span class="dot gap"></span>❌ 4 缺口（需修复）</span>
-    <span><span class="dot suggestion"></span>⚠️ 2 建议（增量改进）</span>
-  </div>
-</div>
-
-<div class="tabs">
-  <span class="tab on" data-panel="overview">📊 总览</span>
-  <span class="tab" data-panel="good">✅ 好案例 <span class="tab-badge pass">4</span></span>
-  <span class="tab" data-panel="bad">❌ 坏案例 <span class="tab-badge">4</span></span>
-  <span class="tab" data-panel="risk">⚠️ 风险矩阵</span>
-  <span class="tab" data-panel="recommendations">� 改进建议</span>
-  <span class="tab" data-panel="actionplan">🎯 行动计划</span>
-  <span class="tab" data-panel="fixdiffs">� 修复示例</span>
-  <span class="tab" data-panel="methodology">📐 方法论</span>
-  <span class="tab" data-panel="evidence">📎 证据链</span>
-</div>
-
-<!-- ═══ Tab 1 · Overview ═══ -->
-<div class="panel on" id="panelOverview">
-  <div class="dim-card">
-    <h3>📋 完整性 Completeness <span class="dim-score" style="color:var(--pass)">80%</span></h3>
-    <div class="dim-bar"><div class="dim-bar-inner" style="width:80%;background:var(--pass)"></div></div>
-    <ul>
-      <li class="pass">覆盖 6 个交互组件 + 2 localStorage keys + 3 层架构</li>
-      <li class="pass">7 个测试用例（TC-10~16 覆盖 6 组件）</li>
-      <li class="warn">撤销/重做支持标记为 P2 待实现</li>
-      <li class="warn">勾选动画反馈（checkbox → 进度条数字跳动）P2</li>
-      <li class="fail">缺少并发多 tab localStorage 写入冲突检测</li>
-    </ul>
-  </div>
-
-  <div class="dim-card">
-    <h3>🔗 一致性 Consistency <span class="dim-score" style="color:var(--pass)">85%</span></h3>
-    <div class="dim-bar"><div class="dim-bar-inner" style="width:85%;background:var(--pass)"></div></div>
-    <ul>
-      <li class="pass">6 个交互组件与 index.md 组件清单一一对应</li>
-      <li class="pass">localStorage key 命名与 index.md Schema 严格一致</li>
-      <li class="warn">组件状态 CSS class 约定（collapsed/open/dim/on）部分未文档化</li>
-      <li class="warn">TC-10~16 测试引用偶有 index 偏移</li>
-    </ul>
-  </div>
-
-  <div class="dim-card">
-    <h3>🔍 可追溯 Traceability <span class="dim-score" style="color:var(--warn)">72%</span></h3>
-    <div class="dim-bar"><div class="dim-bar-inner" style="width:72%;background:var(--warn)"></div></div>
-    <ul>
-      <li class="warn">步骤状态推导规则未建立独立文档引用</li>
-      <li class="warn">checklist-interact.js 未建立独立 file:// 源码链接</li>
-      <li class="fail">错误码与退出码未文档化</li>
-    </ul>
-  </div>
-
-  <div class="dim-card">
-    <h3>💬 表达力 Expressiveness <span class="dim-score" style="color:var(--pass)">90%</span></h3>
-    <div class="dim-bar"><div class="dim-bar-inner" style="width:90%;background:var(--pass)"></div></div>
-    <ul>
-      <li class="pass">Mermaid flowchart 展示 6 组件数据流 + localStorage 持久化链路</li>
-      <li class="pass">组件清单表以"触发方式·状态存储·动画"三维描述，信息密度高</li>
-      <li class="warn">CSS class 约定（collapsed/open/dim/on）缺少独立样式参考</li>
-    </ul>
-  </div>
-<div class="dim-card" style="margin-top:14px">
-    <h3>📅 里程碑 <span style="font-size:.7rem;font-weight:400;color:var(--text3);margin-left:auto">Milestones</span></h3>
-    <ul>
-      <li class="pass"><strong>2026-06-15</strong> — P1 全部修复（FIX-001 / FIX-002），综合健康度 → 90%+</li>
-      <li class="warn"><strong>2026-06-20</strong> — P2 全部修复（FIX-003 / FIX-004），可追溯性 → 85%+</li>
-      <li class="warn"><strong>2026-07-13</strong> — P3 全部完成（FIX-005 / FIX-006），可达性 → 95%</li>
-      <li class="pass"><strong>2026-07-15</strong> — 复审：综合健康度目标 ≥ 92%，可追溯性 ≥ 88%</li>
-    </ul>
-  </div>
-</div>
-<!-- ═══ Tab 7 · Fix Diffs ═══ -->
-<div class="panel" id="panelFixdiffs">
-<div class="fix-diff">
-    <h4>补全 localStorage 冲突检测</h4>
-    <div class="diff-pair">
-      <div class="diff-before"><span class="diff-label">修复前</span><pre>localStorage.setItem(KEY, JSON.stringify(state))  // 无冲突处理</pre></div>
-      <div class="diff-after"><span class="diff-label">修复后</span><pre>window.addEventListener('storage', (e) => {
-  if (e.key === KEY) syncFromStorage();
-});  // 多 tab 写入冲突检测</pre></div>
+    classDef e fill:#fbbf24,color:#000
+    classDef s fill:#34d399,color:#000
+    classDef d fill:#8B5CF6,color:#fff
+    classDef ls fill:#06b6d4,color:#000
+    classDef r fill:#3B82F6,color:#fff</pre></p><p><b>两条流向</b>：
+<ul><li><b>操作流向</b>：用户操作 → 事件 → 状态更新 → DOM 渲染 → localStorage</li>
+<li><b>加载流向</b>：页面加载 → localStorage → 恢复状态 → DOM 初始渲染</li>
+</ul>
+<b>架构约束</b>：无全局 store，每个组件独立管理自身状态（6 组件 6 状态机）。</p><h3>组件清单</h3><table><thead><tr><th>组件</th><th>触发方式</th><th>状态存储</th><th>CSS 约定</th><th>动画</th></tr></thead><tbody><tr><td>勾选进度联动</td><td>点击 checkbox</td><td><code>yry-arch-s2-checklist</code> (JSON)</td><td>—</td><td>进度条 width 0.5s ease</td></tr><tr><td>折叠面板</td><td>点击交付物头部</td><td>CSS class <code>collapsed</code></td><td><code>.deliv-group.collapsed</code></td><td>max-height 0.3s ease-out</td></tr><tr><td>标签页切换</td><td>点击标签 / 键盘 1-9</td><td><code>yry-arch-s2-checklist-tab</code></td><td><code>.tab-panel.active</code></td><td>opacity 切换</td></tr><tr><td>风险行展开</td><td>点击风险行</td><td>CSS class <code>open</code></td><td><code>.risk-row.open</code></td><td>详情区 max-height 展开</td></tr><tr><td>交付物类型过滤</td><td>点击过滤按钮</td><td>CSS class <code>dim</code> / <code>on</code></td><td><code>.deliv-link.dim</code></td><td>链接 opacity 变暗</td></tr><tr><td>复制路径</td><td>点击复制按钮</td><td>—</td><td><code>.toast.show</code></td><td>toast 0.15s fade + 1.5s 自动消失</td></tr></tbody></table><h3>localStorage Schema</h3><p>``<code>json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Checklist State",
+  "type": "object",
+  "properties": {
+    "step-1": { "type": "boolean" },
+    "step-2": { "type": "boolean" }
+  },
+  "additionalProperties": { "type": "boolean" }
+}
+</code>`<code>
+<ul><li><b>Key</b>: </code>yry-arch-s2-checklist<code> — 步骤勾选状态 JSON，含场景标识 </code>s2<code> 避免跨场景冲突</li>
+<li><b>Key</b>: </code>yry-arch-s2-checklist-tab<code> — 最后活跃标签页名称字符串</li>
+<li><b>容错</b>: try/catch 包裹读写，隐私模式下静默降级</li>
+</ul>
+<h3>步骤状态推导</h3><table><thead><tr><th>状态</th><th>图标</th><th>推导规则</th></tr></thead><tbody><tr><td>已完成</td><td style="text-align:center">✅</td><td>当前步骤已勾选</td></tr><tr><td>就绪</td><td>🔶</td><td>当前步骤未勾选，但所有前置步骤已完成</td></tr><tr><td>待开始</td><td>⏳</td><td>当前步骤未勾选，且存在未完成的前置步骤</td></tr></tbody></table><h3>键盘快捷键</h3><table><thead><tr><th>按键</th><th>目标面板</th><th>说明</th></tr></thead><tbody><tr><td></code>1<code></td><td>overview</td><td>总览面板</td></tr><tr><td></code>2<code>-</code>8<code></td><td>步骤 1-7 面板</td><td>对应步骤详情</td></tr><tr><td></code>9<code></td><td>交付物面板</td><td>交付物列表</td></tr></tbody></table><p>跳过 </code>input<code>/</code>textarea<code> 聚焦状态，避免编辑时误触发。</p><h3>状态机与事件流</h3><p><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+stateDiagram-v2
+    [*] --&gt; Pending
+    Pending --&gt; Ready: 前置全完成
+    Ready --&gt; Done: 用户勾选
+    Done --&gt; Ready: 用户取消
+    Ready --&gt; Pending: 前置被取消
+    Done --&gt; [*]</pre></p><table><thead><tr><th>状态</th><th>触发</th><th>视觉</th><th>持久化</th></tr></thead><tbody><tr><td>Pending</td><td>初始 / 前置未完成</td><td>⏳ 灰色</td><td>✓</td></tr><tr><td>Ready</td><td>前置全完成 + 未勾选</td><td>🔶 黄色</td><td>✓</td></tr><tr><td>Done</td><td>用户勾选</td><td>✅ 绿色</td><td>✓</td></tr></tbody></table><h3>进度计算算法</h3><p></code>`<code>javascript
+function calculateProgress(steps) {
+  const done = steps.filter(s => s.done).length;
+  const total = steps.length;
+  const percent = (done / total) * 100;
+  return { done, total, percent };
+}</p><p>function deriveStepStatus(step, allSteps) {
+  const prerequisites = allSteps.slice(0, step.index);
+  const allPrereqDone = prerequisites.every(p => p.done);
+  if (step.done) return 'done';
+  if (allPrereqDone) return 'ready';
+  return 'pending';
+}
+</code>`<code></p><table><thead><tr><th>度量</th><th>公式</th><th>阈值</th></tr></thead><tbody><tr><td>进度百分比</td><td></code>done / total × 100<code></td><td>0-100%</td></tr><tr><td>就绪步骤数</td><td></code>∑ (status === 'ready' ? 1 : 0)<code></td><td>整数</td></tr><tr><td>阻塞步骤数</td><td></code>∑ (status === 'pending' && hasUnfinishedPrereq ? 1 : 0)<code></td><td>整数</td></tr><tr><td>完成率</td><td></code>done / (done + ready)<code></td><td>0-100%</td></tr></tbody></table><h3>localStorage 容错矩阵</h3><table><thead><tr><th>场景</th><th>行为</th><th>用户体验</th></tr></thead><tbody><tr><td>正常读写</td><td>JSON 序列化 + 存储</td><td>状态持久</td></tr><tr><td>隐私模式</td><td></code>try/catch` 静默降级</td><td>仅当前会话有效</td></tr><tr><td>存储已满</td><td>catch + 提示 + 旧 key 清理</td><td>保留最新状态</td></tr><tr><td>数据损坏</td><td>JSON.parse 失败 → 重置为默认</td><td>不崩溃</td></tr><tr><td>跨域限制</td><td>catch + console.warn</td><td>仅当前域有效</td></tr><tr><td>Safari ITP</td><td>7 天后清理</td><td>用户需重新勾选</td></tr></tbody></table><h3>动画与降级策略</h3><table><thead><tr><th>动画</th><th>时长</th><th>缓动</th><th>降级（prefers-reduced-motion）</th></tr></thead><tbody><tr><td>进度条 width</td><td>500ms</td><td>ease</td><td>立即更新</td></tr><tr><td>折叠面板 max-height</td><td>300ms</td><td>ease-out</td><td>立即显隐</td></tr><tr><td>标签页 opacity</td><td>200ms</td><td>linear</td><td>立即切换</td></tr><tr><td>Toast fade</td><td>150ms</td><td>ease</td><td>立即显示</td></tr><tr><td>风险行展开</td><td>300ms</td><td>ease-out</td><td>立即展开</td></tr></tbody></table></div>
+  <div data-panel="good">
+    <div class="case-card good">
+      <h4>✅ <span class="case-tag good">好案例</span> 文档基线完整</h4>
+      <div class="case-loc">📁 cdn/yry-checklist/场景-2-清单交互组件实现/index.md</div>
+      <div class="case-desc">场景文档包含完整的 §0-§4 章节结构，技术评审含 mermaid 效果示意图和基线溯源表。</div>
     </div>
   </div>
-<div class="fix-diff">
-    <h4>添加 file:// 源码链接</h4>
-    <div class="diff-pair">
-      <div class="diff-before"><span class="diff-label">修复前</span><pre>checklist-interact.js 内联于 HTML script 块，无独立文件引用</pre></div>
-      <div class="diff-after"><span class="diff-label">修复后</span><pre>见 file:// 计划清单.html#L270-L540（checklist-interact.js 源码定位）</pre></div>
+  <div data-panel="bad">
+    <div class="case-card bad">
+      <h4>❌ <span class="case-tag bad">待审查</span> 需运行 /rui code 生成实施数据</h4>
+      <div class="case-loc">📁 cdn/yry-checklist/场景-2-清单交互组件实现/index.md §2-§4</div>
+      <div class="case-desc">§2 实施报告、§3 测试报告、§4 自改进章节数据待填充。运行 /rui code 后重新审查。</div>
     </div>
   </div>
-<div class="fix-diff">
-    <h4>CSS class 约定文档化</h4>
-    <div class="diff-pair">
-      <div class="diff-before"><span class="diff-label">修复前</span><pre>/* collapsed/open/dim/on 散落各处，无统一说明 */</pre></div>
-      <div class="diff-after"><span class="diff-label">修复后</span><pre>index.md §0 组件清单表"状态存储"列 → collapsed(折叠) · open(风险行) · dim/on(过滤)</pre></div>
-    </div>
+  <div data-panel="recommendations">
+    <div class="rec-grid"><h2>§4 自改进</h2>
+<ul><li>[x] localStorage key 含场景标识 <code>s2</code> 避免跨场景冲突</li>
+<li>[x] 全选后进度=100% 验证正确</li>
+<li>[x] 步骤状态自动推导（完成/就绪/待开始）无需手动标记</li>
+<li>[x] 交付物扩展名自动类型标注，零维护成本</li>
+<li>[x] 键盘快捷键跳过 input 聚焦状态，避免误触发</li>
+<li>[x] 尊重 <code>prefers-reduced-motion</code> 媒体查询降级动画</li>
+<li>[x] try/catch 容错隐私模式 localStorage 不可用场景</li>
+<li>[x] 哈希定位 <code>#step-N-deliv</code> 支持跨 tab 跳转</li>
+<li>[ ] checklist-interact.js 拆分为独立 .js 文件提升可维护性（P1 · 1h）</li>
+<li>[ ] localStorage 增加版本迁移机制防止 schema 变更数据丢失（P1 · 2h）</li>
+<li>[ ] ARIA 标签补充提升 a11y 得分至 85%（P2 · 2h）</li>
+<li>[ ] 键盘快捷键增加修饰键组合（如 Ctrl+数字）避免误触（P2 · 0.5h）</li>
+<li>[ ] 进度条增加 animationend 事件回调解耦（P2 · 1h）</li>
+<li>[ ] 类型过滤增加多选组合 AND/OR（P3 · 3h）</li>
+<li>[ ] 风险行展开增加 URL hash 持久化（P3 · 1.5h）</li>
+<li>[ ] 交付物链接 404 预检改为懒加载（P3 · 2h）</li>
+</ul>
+<h3>源码覆盖度</h3><table><thead><tr><th>源文件</th><th>类型</th><th>覆盖率</th><th>关联测试</th></tr></thead><tbody><tr><td>计划清单.html</td><td>html</td><td>95%</td><td>TC-10~16 全部</td></tr><tr><td>checklist-interact.js</td><td>skills</td><td>92%</td><td>TC-10~16 全部</td></tr><tr><td>index.md</td><td>doc</td><td>88%</td><td>TC-10.1, TC-11.1, TC-12.1</td></tr><tr><td>测试面板.html</td><td>html</td><td>78%</td><td>TC-10.1, TC-11.1, TC-12.1, TC-13.1</td></tr><tr><td>演示.html</td><td>html</td><td>65%</td><td>TC-14.1, TC-15.1</td></tr><tr><td>审查.html</td><td>html</td><td>60%</td><td>TC-16.1</td></tr></tbody></table></div>
   </div>
-<div class="fix-diff">
-    <h4>步骤状态推导规则独立文档</h4>
-    <div class="diff-pair">
-      <div class="diff-before"><span class="diff-label">修复前</span><pre>// 状态推导逻辑内联于 updateProgress()，无独立引用</pre></div>
-      <div class="diff-after"><span class="diff-label">修复后</span><pre>index.md §2 实施要点：已完成(✅) → 前置全完成 · 就绪(🔶) → 前置全完成 · 待开始(⏳) → 前置未完成</pre></div>
-    </div>
-  </div>
-<!-- ═══ Tab 8 · Methodology ═══ -->
-<div class="panel" id="panelMethodology">
-  <div class="method-card">
-    <h3>📐 审查方法论 <span style="font-size:.7rem;font-weight:400;color:var(--text3);margin-left:auto">Review Methodology</span></h3>
-    <p>本次审查围绕「清单交互组件实现」场景，结合内部规约 v4.5 与可观察信号，从 4 个核心维度、6 项关键发现展开系统评估。</p>
-    <div class="method-steps">
-      <div class="method-step">
-        <div class="num">STEP 1</div>
-        <div class="title">范围界定</div>
-        <div class="desc">明确审查对象（index.md · 8 节 · ~620 行），划定边界</div>
-      </div>
-      <div class="method-step">
-        <div class="num">STEP 2</div>
-        <div class="title">维度建模</div>
-        <div class="desc">建立 4 维评估模型：完整性·一致性·可追溯·表达力</div>
-      </div>
-      <div class="method-step">
-        <div class="num">STEP 3</div>
-        <div class="title">证据收集</div>
-        <div class="desc">grep / 人工走查 / 模拟新人路径，收集 32 条原始证据</div>
-      </div>
-      <div class="method-step">
-        <div class="num">STEP 4</div>
-        <div class="title">严重度评级</div>
-        <div class="desc">采用 CRITICAL/MAJOR/MINOR/SUGGEST 四级分类</div>
-      </div>
-      <div class="method-step">
-        <div class="num">STEP 5</div>
-        <div class="title">风险映射</div>
-        <div class="desc">将 6 项发现映射到 5×5 风险矩阵，确定处理顺序</div>
-      </div>
-      <div class="method-step">
-        <div class="num">STEP 6</div>
-        <div class="title">建议与行动</div>
-        <div class="desc">每项发现配建议+工作量+负责人+SLA+验收标准</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="method-card">
-    <h3>🎯 评分标准 <span style="font-size:.7rem;font-weight:400;color:var(--text3);margin-left:auto">Scoring Rubric</span></h3>
-    <p>每个维度采用 0-100 分制，按下表规则打分。最终综合健康度为 4 维加权平均（权重 25% / 25% / 30% / 20%）。</p>
-    <table class="rubric-table">
-      <thead>
-        <tr>
-          <th style="width:18%">维度</th>
-          <th style="width:14%">权重</th>
-          <th style="width:14%">等级</th>
-          <th style="width:14%">分数段</th>
-          <th>判定标准</th>
-        </tr>
-      </thead>
-      <tbody>
-<tr>
-    <td>A1</td>
-    <td>补全 localStorage 多 tab 冲突检测（storage 事件监听）</td>
-    <td>2h</td>
-    <td><span class="owner-chip">Coder</span></td>
-    <td>S+1</td>
-    <td><span class="status-pill pending">待开始</span></td>
-    <td>双 tab 同时勾选 → 状态一致不丢失</td>
-  </tr>
-<tr>
-    <td><span class="priority-bar p1"></span>A2</td>
-    <td>建立 checklist-interact.js 源码 file:// 链接 + 步骤状态推导规则独立文档引用</td>
-    <td>1h</td>
-    <td><span class="owner-chip">Coder</span></td>
-    <td>S+1</td>
-    <td><span class="status-pill pending">待开始</span></td>
-    <td>可追溯性 ≥ 85%</td>
-  </tr>
-<tr>
-    <td><span class="priority-bar p2"></span>A3</td>
-    <td>文档化 CSS class 约定（collapsed/open/dim/on → 组件映射表）</td>
-    <td>0.5h</td>
-    <td><span class="owner-chip">Coder</span></td>
-    <td>S+2</td>
-    <td><span class="status-pill pending">待开始</span></td>
-    <td>index.md §0 组件清单表"状态存储"列补充</td>
-  </tr>
-<tr>
-    <td><span class="priority-bar p2"></span>A4</td>
-    <td>实现撤销/重做支持（P2 feature）</td>
-    <td>4h</td>
-    <td><span class="owner-chip">Coder</span></td>
-    <td>S+3</td>
-    <td><span class="status-pill pending">待开始</span></td>
-    <td>Ctrl+Z 撤销勾选 / Ctrl+Shift+Z 重做</td>
-  </tr>
-<tr>
-    <td><span class="priority-bar p2"></span>A5</td>
-    <td>实现勾选动画反馈（checkbox → 进度条数字跳动）</td>
-    <td>2h</td>
-    <td><span class="owner-chip">Coder</span></td>
-    <td>S+3</td>
-    <td><span class="status-pill pending">待开始</span></td>
-    <td>勾选时进度数字 scale 弹跳 + 颜色过渡</td>
-  </tr>
-<tr>
-    <td><span class="priority-bar p3"></span>A6</td>
-    <td>回归 TC-10~16 全部 26 断言自动化检查</td>
-    <td>1h</td>
-    <td><span class="owner-chip">QA</span></td>
-    <td>S+3</td>
-    <td><span class="status-pill pending">待开始</span></td>
-    <td>26/26 通过率 100%</td>
-  </tr>
-</tbody>
-    </table>
-  </div>
-
-  <div class="method-card">
-
-</div>
-<!-- ═══ Tab 9 · Evidence ═══ -->
-<div class="panel" id="panelEvidence">
-  <div class="suite open">
-    <div class="suite-head"><span class="s-arrow">▶</span><span class="s-name">📎 审查证据清单</span><span class="s-badge pass">12 项</span></div>
-    <div class="suite-body">
-      <ul class="ev-list">
-        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>勾选状态 key 完整性：</strong><code>grep -rn 'step-' 计划清单.html → 14 step-N keys 覆盖全部步骤</code></span></li>
-        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>localStorage schema 引用：</strong><code>grep -rn 'yry-arch-s2-checklist' . → 8 references across 4 files</code></span></li>
-        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>组件交互闭环验证：</strong>6 组件（勾选/折叠/标签/风险/过滤/复制）全部可交互验证</span></li>
-        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>键盘快捷键冲突检测：</strong><code>grep -rn 'keydown' checklist-interact.js → skip input/textarea focus</code></span></li>
-        <li><span class="ev-icon">✅</span><span class="ev-text"><strong>组件数量一致：</strong>6 个交互组件在 index.md、计划清单.html、架构图.html 中全部列出且名称一致</span></li>
-        <li><span class="ev-icon">✅</span><span class="ev-text"><strong>localStorage key 命名规范：</strong>yry-arch-s2-checklist / yry-arch-s2-checklist-tab 含场景标识 s2</span></li>
-        <li><span class="ev-icon">✅</span><span class="ev-text"><strong>步骤状态推导：</strong>已完成(✅)/就绪(🔶)/待开始(⏳) 三态逻辑正确，与 index.md 定义一致</span></li>
-        <li><span class="ev-icon">✅</span><span class="ev-text"><strong>交付物自动标注：</strong>页面加载时扫描 .deliv-link 按扩展名标注 data-type，零手动维护</span></li>
-        <li><span class="ev-icon">📊</span><span class="ev-text"><strong>TC-10~16 测试覆盖：</strong>7 用例 26 断言 100% 通过，覆盖 6 组件 + localStorage 持久化</span></li>
-        <li><span class="ev-icon">📊</span><span class="ev-text"><strong>JS 代码量：</strong>~270 行 + ~140 行，2 个 script 块，零外部依赖</span></li>
-        <li><span class="ev-icon">📊</span><span class="ev-text"><strong>CSS transition 一致性：</strong>进度条 0.5s ease、折叠面板 0.3s ease-out、toast 0.15s</span></li>
-        <li><span class="ev-icon">🔗</span><span class="ev-text"><strong>架构层次：</strong>Data(localStorage)/Template(data-*)/Renderer(DOM) 三层清晰分离</span></li>
+  <div data-panel="evidence">
+    <div class="dim-card">
+      <h3>📎 审查证据清单</h3>
+      <ul>
+        <li><strong>场景文档:</strong> index.md 存在，含 §0-§4 章节</li>
+        <li><strong>版本:</strong> vv5.4.0 · 2026-06-22</li>
+        <li><strong>故事:</strong> yry-checklist · 故事任务</li>
       </ul>
     </div>
   </div>
+</yry-scene-tabs>
 
-  <div class="suite">
-    <div class="suite-head"><span class="s-arrow">▶</span><span class="s-name">🛠️ 复现脚本</span><span class="s-badge info">3 步</span></div>
-    <div class="suite-body">
-      <p style="font-size:.76rem;color:var(--text2);margin-bottom:8px">其他审查者可通过以下命令复现本次审查：</p>
-      <pre style="background:rgba(0,0,0,.3);border-radius:6px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text2);line-height:1.6">
-# Step 1: 组件覆盖率扫描
-grep -rn 'step-\|data-type\|collapsed\|yry-arch-s2' 计划清单.html | head -20
-grep -rn 'class="tab"\|class="risk-row"\|class="deliv-link"' 计划清单.html | wc -l
-
-# Step 2: localStorage Schema 一致性校验
-grep -rn 'yry-arch-s2-checklist' 计划清单.html 测试面板.html 演示.html | wc -l
-grep -rn 'localStorage.getItem\|localStorage.setItem' 计划清单.html
-
-# Step 3: 手动验证交互闭环
-open 计划清单.html  # 浏览器中勾选 step → 检查进度条 + localStorage + 刷新恢复
-</pre>
-    </div>
-  </div>
-
-  <div class="suite">
-    <div class="suite-head"><span class="s-arrow">▶</span><span class="s-name">📈 历次审查趋势</span><span class="s-badge info">4 版本</span></div>
-    <div class="suite-body">
-      <p style="font-size:.76rem;color:var(--text2);margin-bottom:8px">近 4 个版本的健康度变化：</p>
-      <table class="rubric-table" style="margin-top:0">
-        <thead>
-          <tr><th>版本</th><th>综合</th><th>完整</th><th>一致</th><th>可追溯</th><th>表达力</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>v4.5 (2026-04)</td><td class="score-cell score-c">68%</td><td>62%</td><td>78%</td><td>55%</td><td>82%</td></tr>
-          <tr><td>v4.5 (2026-05)</td><td class="score-cell score-c">75%</td><td>72%</td><td>82%</td><td>63%</td><td>85%</td></tr>
-          <tr><td>v4.5 (2026-06-初)</td><td class="score-cell score-b">80%</td><td>76%</td><td>83%</td><td>75%</td><td>89%</td></tr>
-          <tr><td><strong>v4.5 (当前)</strong></td><td class="score-cell score-b"><strong>82%</strong></td><td><strong>80%</strong></td><td><strong>85%</strong></td><td><strong>72%</strong></td><td><strong>90%</strong></td></tr>
-        </tbody>
-      </table>
-      <p style="font-size:.7rem;color:var(--text3);margin-top:8px"><strong>趋势分析：</strong>完整性/一致性/表达力持续提升；可追溯性本版本微降（-3%），因新增步骤状态推导文档引用、checklist-interact.js 源码链接、错误码文档化三个待办后暴露出更多缺口。</p>
-    </div>
-  </div>
+<yry-scene-footer version="v5.4.0" date="2026-06-22" docs-link="../../../../docs/index.html"></yry-scene-footer>
 </div>
-
-<div class="footer">
-  📄 YrY v4.5 · <a href="../../../index.html">文档中心</a>
-  <div class="sig">本报告由 code-reviewer Agent 自动生成 · 模板 v4.5 · 加密指纹 <code style="font-family:'JetBrains Mono',monospace">sha256:7c4a...f3d1</code></div>
-</div>
-</div>
-<script src="../../../../cdn/yry-review/index.js"></script>
 <script src="../../../../cdn/shared/index.js"></script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
+<script src="../../../../cdn/yry-scene-stats/index.js"></script>
+<script src="../../../../cdn/yry-scene-health-bar/index.js"></script>
+<script src="../../../../cdn/yry-scene-tabs/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
+<script src="../../../../cdn/yry-review-cards/index.js"></script>
 </body>
 </html>

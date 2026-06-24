@@ -9,11 +9,11 @@
 <title>YryBreadcrumb · 任务故事</title>
 
 <!-- ═══ CDN: YrY 共享样式 ═══ -->
-<link rel="stylesheet" href="../../shared\/index\.css">
-<link rel="stylesheet" href="../../theme\/index\.css">
-<link rel="stylesheet" href="../../yry\-home\/index\.css">
-<link rel="stylesheet" href="../../yry\-checklist\/index\.css">
-<link rel="stylesheet" href="../../yry\-scene\/index\.css">
+<link rel="stylesheet" href="../../shared/index.css">
+<link rel="stylesheet" href="../../theme/index.css">
+<link rel="stylesheet" href="../../yry-home/index.css">
+<link rel="stylesheet" href="../../yry-checklist/index.css">
+<link rel="stylesheet" href="../../yry-scene/index.css">
 <!-- ═══ CDN: YryBreadcrumb 组件样式 ═══ -->
 <link rel="stylesheet" href="../../yry-breadcrumb/index.css">
 <link rel="stylesheet" href="../../yry-scene-nav/index.css">
@@ -40,7 +40,7 @@
 }
 </script>
 
-<link rel="stylesheet" href="../../yry\-story\-panel\/index\.css">
+<link rel="stylesheet" href="../../yry-story-panel/index.css">
 <style>
 /* ── Icon variants (extends .icon from yry-home.css) ── */
 .item-card .icon.tpl { background: rgba(255,193,7,.15); color: var(--yry-accent, #ffc107); }
@@ -204,17 +204,17 @@
 
 <!-- ── Cross-nav ── -->
 <div class="cross-nav">
-  <a class="cross-link" href="../../../docs/index.html">&#128218; 文档中心</a>
+  <a class="cross-link" href="../../index.html">🌐 CDN 首页</a>
   <span class="cross-sep">·</span>
-  <a class="cross-link" href="../yry-checklist/scenes/场景-1-模板架构与CSS设计系统/计划清单.html">&#128203; 原始触发页</a>
+  <a class="cross-link" href="../../故事任务面板/index.html">📋 故事任务面板</a>
   <span class="cross-sep">·</span>
-  <a class="cross-link" href="../../yry-breadcrumb/index.html">&#127828; 组件 Demo</a>
+  <a class="cross-link" href="../../../docs/index.html">📘 文档中心</a>
   <span class="cross-sep">·</span>
-  <a class="cross-link" href="../README.md">&#128214; 组件 README</a>
+  <a class="cross-link" href="../yry-checklist/scenes/场景-1-模板架构与CSS设计系统/计划清单.html">📋 原始触发页</a>
   <span class="cross-sep">·</span>
-  <a class="cross-link" href="../../../CLAUDE.md" target="_blank">&#128220; CLAUDE.md</a>
+  <a class="cross-link" href="../../yry-breadcrumb/index.html">🍞 组件 Demo</a>
   <span class="cross-sep">·</span>
-  <a class="cross-link" href="../../../README.md" target="_blank">&#128214; README.md</a>
+  <a class="cross-link" href="../README.md">📖 组件 README</a>
 </div>
 
 <!-- ── Flow strip ── -->
@@ -490,11 +490,12 @@
 <button class="back-top" id="backTop" title="回到顶部 (Alt+↑)" aria-label="回到顶部">↑</button>
 
 <!-- ── Loader ── -->
-<script src="../../shared\/index\.js"></script>
+<script src="../../shared/index.js"></script>
 <!-- ═══ CDN: YrySceneNav 组件 loader ═══ -->
 <script src="../../yry-scene-nav/index.js"></script>
 <!-- ═══ CDN: YryCrossNav 组件 loader ═══ -->
-<script src="../../yry-cross-nav/index.js"></script>
+<script src="../../shared/vue-ce-loader.js"></script>
+  <script src="../../yry-cross-nav/index.js"></script>
 <!-- ═══ CDN: YryBackTop (零配置自初始化) ═══ -->
 <script src="../../yry-back-top/index.js"></script>
 <!-- ═══ CDN: YrySceneHeader 组件 loader ═══ -->
@@ -607,7 +608,7 @@ function setupFilter() {
   input.addEventListener('input', apply);
   clear.addEventListener('click', function() { input.value = ''; input.focus(); apply(); });
   // Esc 清空
-  input.addEventListener('keydown', function(e) { if (e.key === 'Escape') { input.value = ''; apply(); } });
+  input.addEventListener('keydown', function(e) { if (e.key === 'Escape') { input.value = ''; apply(); }});
   apply();
 }
 
@@ -724,13 +725,13 @@ if (window.Vue && window.YryBreadcrumb) {
   boot();
 } else {
   var pending = 2;
-  function ready() { if (--pending === 0) { mountBreadcrumb(); boot(); } }
+  function ready() { if (--pending === 0) { mountBreadcrumb(); boot(); }}
   document.addEventListener('yry-breadcrumb-ready', function() { pending--; ready(); }, { once: true });
   // Vue 已加载但 YryBreadcrumb 未到 — 兜底轮询
   var poll = setInterval(function() {
     if (window.YryBreadcrumb) { clearInterval(poll); pending--; ready(); }
   }, 50);
-  setTimeout(function() { clearInterval(poll); if (window.Vue) { pending--; ready(); } }, 3000);
+  setTimeout(function() { clearInterval(poll); if (window.Vue) { pending--; ready(); }}, 3000);
 }
 </script>
 

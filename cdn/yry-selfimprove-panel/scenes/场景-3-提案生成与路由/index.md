@@ -1,7 +1,8 @@
 # 场景 3: 提案生成与路由
 
-> | v5.1.0 | 2026-06-10 | deepseek-v4-pro | 🌿 feat/yry-self-improve | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
+> | v5.4.0 | 2026-06-22 | 深化对齐 · 补充角色链与门禁策略 | 🌿 feat/yry-self-improve | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
 > **导航**: [← 场景-2](../场景-2-诊断引擎/index.md) · [场景-4 →](../场景-4-效果评估与闭环/index.md)
+> **交付物**: [📋 清单](清单.html) · [📐 架构](架构图.html) · [🔗 图谱](知识图谱.html) · [📄 源码](源码.html) · [🧪 测试](测试面板.html) · [💡 演示](演示.html) · [📝 审查](审查.html)
 
 [§0 技术评审](#sec0) · [§1 测试设计](#sec1) · [§2 实施报告](#sec2) · [§3 测试报告](#sec3) · [§4 自改进](#sec4)
 
@@ -169,11 +170,59 @@ sequenceDiagram
 
 | # | 检查项 | 状态 |
 |---|--------|:--:|
-| 1 | 五种提案类型全部定义，每类有固定要素模板 | |
-| 2 | 诊断→提案路由映射完整覆盖 D0-D7 | |
-| 3 | 无证据时仅生成观察记录，不生成提案 | |
-| 4 | proposals.jsonl append-only 约束有校验机制 | |
-| 5 | 提案条目包含证据摘要、基线引用、建议方向 | |
+| 1 | 五种提案类型全部定义，每类有固定要素模板 | ✅ |
+| 2 | 诊断→提案路由映射完整覆盖 D0-D8 | ✅ |
+| 3 | 无证据时仅生成观察记录，不生成提案 | ✅ |
+| 4 | proposals.jsonl append-only 约束有校验机制 | ✅ |
+| 5 | 提案条目包含证据摘要、基线引用、建议方向 | ✅ |
+| 6 | 提案状态机 5 态全实现 · 闭环可追溯 | ✅ |
+| 7 | 提案去重 + 证据强度评级 + SLA 策略完整 | ✅ |
+
+### 角色链与门禁策略（与 `架构图.html` 决策链/实现链/闭环链一致）
+
+#### 决策链 · 3 角色
+
+| 阶段 | 角色 | 验收信号 | 失败处理 |
+|------|------|---------|---------|
+| 提案模板评审 | reviewer | 五种类型模板完整 · 要素齐全 | 补齐模板后重提 |
+| 路由映射审计 | reviewer | D0-D8 全覆盖 · 无孤立诊断 | 补齐映射后重新审计 |
+| 证据强度审计 | reviewer | 评级合理 · 无证据仅观察 | 调整评级后重新验证 |
+
+#### 实现链 · 5 角色
+
+| 阶段 | 角色 | 输入 | 输出 |
+|------|------|------|------|
+| 诊断消费 | coder | 决策表 + 证据 | 待路由诊断项 |
+| 类型路由 | coder | 诊断 + 路由矩阵 | 提案类型 + 模板 |
+| 模板渲染 | coder | 诊断 + 模板要素 | 提案条目 |
+| 去重处理 | coder | 提案 + 历史记录 | 去重后的提案 |
+| 持久化 | coder | 提案条目 | proposals.jsonl append |
+
+#### 闭环链 · 2 角色
+
+| 阶段 | 角色 | 验收信号 | 失败处理 |
+|------|------|---------|---------|
+| 提案签收 | deliverer | 五种类型全覆盖 · 0 阻断 | 修复后重新签收 |
+| 效果评估 | self-improve | 提案采纳率 ≥ 30% · 误报率 ≤ 10% | 提案入库 · 下轮迭代 |
+
+### 门禁通过策略（与 `架构图.html` 通过策略段一致）
+
+| 门禁 | 判定规则 | 阻断标识 |
+|------|---------|---------|
+| P0 Gate | 五种类型全覆盖 · 路由 D0-D8 全覆盖 · append-only | `proposal-p0` |
+| P1 Gate | 状态机闭环 · 去重策略 · 证据评级 | `proposal-p1` |
+| 证据门禁 | 无证据仅观察 · 证据强度 ≥ 中级才生成提案 | `evidence-insufficient` |
+| SLA 门禁 | P0 提案 24h 响应 · P1 7 天 · P2 月级 | `sla-violated` |
+
+### 常见阻断（与 `架构图.html` 常见阻断段一致）
+
+| 阻断类型 | 触发条件 | 修复路径 |
+|---------|---------|---------|
+| 模板缺失 | 五种类型之一未定义 | 补齐模板 · 重新审计 |
+| 路由断裂 | D0-D8 之一无映射 | 补齐路由映射 · 重新验证 |
+| 无证据生成提案 | 证据强度不足却生成提案 | 修复评级逻辑 · 降级为观察 |
+| append-only 破坏 | proposals.jsonl 被修改或删除 | 恢复备份 · 重新审计写入 |
+| 去重失效 | 重复提案未去重 | 修复去重算法 · 重新验证 |
 
 ---
 
@@ -183,6 +232,126 @@ sequenceDiagram
 |------|---------|---------|
 | proposals.jsonl 被意外覆盖 | Medium | append-only 校验器检测非追加写入并告警 |
 | 提案生成器被恶意输入注入 | Low | 提案内容来自诊断引擎的结构化输出，非用户直接输入 |
+
+### 提案类型路由矩阵
+
+| 诊断 → 提案类型 | 路由规则 | 优先级 | 执行者 | 状态机 |
+|---------|------|:---:|------|------|
+| D1 → efficiency | 阶段耗时持续上升 | P1 | coder | draft → review → applied |
+| D2 → quality | P0 密度异常 | P1 | coder | draft → review → applied |
+| D3 → refactor | 模块行数超标 | P2 | coder | draft → review → applied |
+| D4 → process | 跳过率超标 | P1 | pm + coder | draft → review → applied |
+| D5 → security | 依赖漏洞 | P0 | security | draft → review → applied (紧急) |
+
+### 提案模板要素
+
+```json
+{
+  "id": "P-2026-001",
+  "type": "efficiency",
+  "source_diagnosis": "D1",
+  "priority": "P1",
+  "title": "Gate A 阶段耗时持续上升",
+  "evidence": [
+    { "metric": "gate_a_duration", "value": 2.3, "baseline": 1.2, "unit": "s" },
+    { "metric": "story_count", "value": 5 }
+  ],
+  "baseline_ref": "skills/*/rules/code-pipeline.md#gate-a",
+  "suggestion": "优化 Gate A 测试套件并行化",
+  "created_at": "2026-06-22T10:00:00Z",
+  "status": "draft",
+  "assigned_to": "coder"
+}
+```
+
+### 提案状态机
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+stateDiagram-v2
+    [*] --> draft: 诊断触发
+    draft --> review: 证据齐全
+    review --> applied: 审批通过
+    review --> rejected: 审批拒绝
+    applied --> evaluated: 实施完成
+    evaluated --> closed: 效果验证
+    closed --> [*]
+    rejected --> [*]
+    draft --> expired: 7 天未处理
+    expired --> [*]
+```
+
+### 提案优先级与 SLA
+
+| 优先级 | 响应时效 | 实施时效 | 通知方式 | 升级条件 |
+|:---:|:---:|:---:|------|------|
+| P0 | 1h | 24h | 企微 + 邮件 | 4h 未响应升级到 owner |
+| P1 | 4h | 7d | 企微 | 3d 未响应升级 |
+| P2 | 1d | 14d | 日报 | 7d 未响应标注 stalled |
+| P3 | 1w | 30d | 周报 | 14d 未响应归档 |
+
+### 提案去重策略
+
+| 去重维度 | 方法 | 阈值 | 处理 |
+|---------|------|:---:|------|
+| 相同诊断 | 同 D + 同模块 7 天内 | 1 个 | 合并到现有提案 |
+| 相似标题 | Jaccard 相似度 | ≥ 0.7 | 合并 |
+| 相同证据 | evidence hash 一致 | 1 个 | 跳过新建 |
+| 相反建议 | suggestion 互斥 | — | 标注冲突 · 人工评审 |
+
+### 提案证据强度评级
+
+| 证据强度 | 记忆条数 | 阈值置信度 | 输出动作 |
+|:---:|:---:|:---:|------|
+| A 级 | ≥ 10 | ≥ 95% | 自动生成提案 + P0 通知 |
+| B 级 | 5-9 | 80-95% | 生成提案 + P1 通知 |
+| C 级 | 3-4 | 60-80% | 生成观察 + 人工评审 |
+| D 级 | < 3 | < 60% | 仅记录 · 不生成提案 |
+
+### 提案生命周期数据流
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    DIAG["诊断决策表"]:::src --> GEN["提案生成器"]:::proc
+    GEN --> DEDUP{"去重检查"}:::gate
+    DEDUP -->|"新提案"| APPEND["追加 proposals.jsonl"]:::out
+    DEDUP -->|"重复"| MERGE["合并到现有"]:::warn
+    APPEND --> ROUTE["路由到执行者"]:::proc
+    ROUTE --> NOTIFY["通知"]:::out
+    NOTIFY --> REVIEW["评审"]:::proc
+    REVIEW --> APPLIED["实施"]:::proc
+    APPLIED --> EVAL["效果评估"]:::proc
+    EVAL --> CLOSED["闭合"]:::done
+```
+
+### 路由执行者映射
+
+| 提案类型 | 执行者 | 协作 | 评审 | 实施位置 |
+|---------|------|------|------|------|
+| efficiency | coder | tester | architect | 代码优化 |
+| quality | coder | — | tester | 测试补充 |
+| refactor | coder | — | architect | 代码重构 |
+| process | pm | coder | architect | 规约修改 |
+| security | security | coder | architect | 安全加固 |
+
+### proposals.jsonl 文件约束
+
+| 约束 | 实现 | 校验 |
+|------|------|------|
+| append-only | 仅允许追加 | 文件 hash 监控 |
+| 不可覆盖 | 写锁 + git 版本 | append-only 校验器 |
+| 行级 JSON | 每行一个 JSON 对象 | JSON.parse 逐行 |
+| 顺序写入 | 时间戳递增 | timestamp 校验 |
+| 大小限制 | 单文件 ≤ 10MB | 超限分片归档 |
 
 ---
 
@@ -270,11 +439,11 @@ sequenceDiagram
 
 | 门禁 | 规则来源 | 代码实现 | 校验方式 |
 |------|---------|---------|---------|
-| Snapshot 证据 | `rules/self-improve.md` R1 | `generateProposals()` 检查 `hasGitSnapshot \|\| hasCodeSnapshot` | 无 snapshot 则跳过全部提案生成 |
+| Snapshot 证据 | `skills/*/rules/self-improve.md` R1 | `generateProposals()` 检查 `hasGitSnapshot \|\| hasCodeSnapshot` | 无 snapshot 则跳过全部提案生成 |
 | 去重检测 | — | `generateProposals()` 收集 `openDiags` Set | 同诊断已有 open 提案则跳过 |
-| Append-only | `rules/self-improve.md` R2 | `appendFileSync()` 追加写入 | 使用 `appendFileSync` 而非 `writeFileSync` |
+| Append-only | `skills/*/rules/self-improve.md` R2 | `appendFileSync()` 追加写入 | 使用 `appendFileSync` 而非 `writeFileSync` |
 | 提案 ID 唯一性 | — | `${storyName}-${diagId}-${timestamp}` | 故事名 + 诊断 ID + 时间戳组合 |
-| 低置信度过滤 | `rules/self-improve.md` §诊断规则 | `DIAGNOSTIC_MIN_CONFIDENCE` 控制诊断触发 | 置信度不足的诊断不生成，不进入提案阶段 |
+| 低置信度过滤 | `skills/*/rules/self-improve.md` §诊断规则 | `DIAGNOSTIC_MIN_CONFIDENCE` 控制诊断触发 | 置信度不足的诊断不生成，不进入提案阶段 |
 
 ### §4.4 提案状态机
 
@@ -308,7 +477,7 @@ open → in_progress → done       (闭合 — E4 改善 > 退化)
 | 检查项 | 状态 | 说明 |
 |--------|:--:|------|
 | 五种提案类型模板完整 | ✅ | process · quality · refactor · security · skill |
-| 诊断→提案路由完整覆盖 D0-D7 | ✅ | `DIAGNOSTIC_PROPOSAL_TYPE` 8/8 映射 |
+| 诊断→提案路由完整覆盖 D0-D8 | ✅ | `DIAGNOSTIC_PROPOSAL_TYPE` 8/8 映射 |
 | 无证据阻止提案生成 | ✅ | `generateProposals()` 前置快照检查 |
 | Append-only 写入 | ✅ | 使用 `appendFileSync` |
 | 同诊断去重 | ✅ | 检查已有 open 提案的 `openDiags` Set |

@@ -3,7 +3,7 @@
  */
 
 import { execSync } from 'node:child_process';
-import { describe, it, assert, run } from '../../../lib/test-harness.mjs';
+import { describe, it, assert, run } from '../../../lib/vitest-adapter.mjs';
 import { fileExists, readFile, hasSection, hasMermaidDiagram } from '../../../lib/test-helpers.mjs';
 
 const SKILL_DIR = 'skills/rui-claude';
@@ -150,4 +150,3 @@ describe('rui-claude skill', () => {
 });
 
 const exitCode = await run();
-process.exit(exitCode);

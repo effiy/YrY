@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自循环报告 · 计划新鲜度检查</title>
+<link rel="stylesheet" href="../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../cdn/theme/index.css">
+	<link rel="stylesheet" href="../../cdn/shared-reports/index.css">
+	<style>
+	.yry-container { max-width: 800px; }
+	.yry-header .icon { font-size: 2.5rem; }
+	.yry-header h1 { font-size: 1.6rem; margin: 12px 0 6px; }
+	/* common styles covered by shared-reports.css */
+	/* Enhanced sections — page-specific */
+	.yry-impact-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+	.yry-impact-badge { display: inline-block; padding: 4px 14px; border-radius: 6px; color: #fff; font-size: .8rem; font-weight: 600; }
+	.yry-impact-summary { font-size: .84rem; color: var(--yry-text2); }
+	.yry-impact-detail { padding: 12px; background: rgba(15,23,42,.4); border-radius: 8px; border: var(--yry-border); margin-top: 8px; }
+	.yry-hist-dot { transition: transform .15s; }
+	.yry-hist-dot:hover { transform: scale(1.8); }
+	.yry-cross-item { flex: 1; min-width: 200px; }
+	.yry-cross-label { font-size: .78rem; color: var(--yry-text3); margin-bottom: 4px; }
+	.yry-cross-desc { font-size: .88rem; font-weight: 600; color: var(--yry-accent); line-height: 1.5; }
+	.yry-cross-badge { text-align: center; padding: 8px 16px; background: rgba(15,23,42,.4); border-radius: 8px; border: var(--yry-border); flex-shrink: 0; min-width: 80px; }
+	</style>
+</head>
+<body>
+<div class="yry-container">
+
+<nav class="yry-breadcrumb">
+  <a href="../../docs/index.html">📄 文档中心</a>
+  <span class="yry-bc-sep">/</span>
+  <a href="../../docs/自循环报告/">🔄 自循环报告</a>
+  <span class="yry-bc-sep">/</span>
+  <span class="yry-bc-current">计划新鲜度检查</span>
+</nav>
+
+<div class="yry-header">
+  <div class="icon">📐</div>
+  <h1>自循环报告 · 计划新鲜度检查</h1>
+  <div class="meta">2026-06-22 01:51:59 · 工作日早 8 点 · <span class="yry-badge pass">✅ 通过</span></div>
+</div>
+
+<div class="yry-stats">
+  <div class="yry-stat">
+    <div class="yry-val pass">✓</div>
+    <div class="yry-lbl">状态</div>
+  </div>
+  <div class="yry-stat">
+    <div class="yry-val pass">2</div>
+    <div class="yry-lbl">信息</div>
+  </div>
+  <div class="yry-stat">
+    <div class="yry-val warn">0</div>
+    <div class="yry-lbl">告警</div>
+  </div>
+  <div class="yry-stat">
+    <div class="yry-val fail">0</div>
+    <div class="yry-lbl">异常</div>
+  </div>
+  
+  <div class="yry-stat">
+    <a href="../../docs/健康报告/" style="text-decoration:none;color:inherit">
+      <div class="yry-val pass">79</div>
+      <div class="yry-lbl">🩺 健康度 B 级</div>
+    </a>
+  </div>
+</div>
+
+<div class="yry-summary">定时巡检通过，所有检查项正常</div>
+
+
+<div class="yry-card">
+  <h2>📋 检查详情</h2>
+  <div class="yry-finding info">
+      <div class="yry-finding-head">1. 定时巡检完成</div>
+      <div class="yry-finding-body">技能按预设间隔正常执行，无异常或告警</div>
+      
+    </div>
+<div class="yry-finding info">
+      <div class="yry-finding-head">2. 数据源可达</div>
+      <div class="yry-finding-body">依赖的外部资源和 API 端点均可正常访问</div>
+      
+    </div>
+</div>
+
+
+<div class="yry-card">
+    <h2>🎯 影响评估 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">0 项需关注</span></h2>
+    <div class="yry-impact-header">
+      <span class="yry-impact-badge" style="background:var(--yry-pass)">正常</span>
+      <span class="yry-impact-summary">异常 0 · 告警 0 · 信息 2</span>
+    </div>
+    
+    <div style="margin-top:10px;font-size:.78rem;color:var(--yry-text3)">📌 继续监控，维持当前良好状态。</div>
+  </div>
+
+<div class="yry-card"><h2>📊 严重程度分布 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Severity Breakdown</span></h2><div style="margin-bottom:12px;padding:12px;background:rgba(34,211,238,.06);border-radius:8px;border-left:3px solid var(--yry-cyan)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span style="font-weight:600;font-size:.88rem">ℹ️ 信息 (Info)</span>
+        <span style="font-size:.82rem;font-weight:700;color:var(--yry-cyan)">2 项 (100%)</span>
+      </div>
+      <div style="font-size:.74rem;color:var(--yry-text3);margin-bottom:8px">正常运行信息，无需处理，用于状态追踪和审计</div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div style="font-size:.76rem;color:var(--yry-text2);padding:4px 8px;background:var(--yry-bg-card);border-radius:4px">• 定时巡检完成</div><div style="font-size:.76rem;color:var(--yry-text2);padding:4px 8px;background:var(--yry-bg-card);border-radius:4px">• 数据源可达</div>
+        
+      </div>
+    </div></div>
+
+<div class="yry-card">
+        <h2>📈 历史趋势</h2>
+        <div style="text-align:center;color:var(--yry-text3);padding:20px;font-size:.84rem">仅 1 份报告 — 积累更多数据后启用趋势对比</div>
+      </div>
+
+<div class="yry-card">
+      <h2>⏱️ SLA 追踪 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Service Level Agreement</span></h2>
+      <div style="text-align:center;padding:16px;color:#22c55e;font-size:.84rem">✅ 当前状态正常，无 SLA 计时器启动</div>
+    </div>
+
+
+
+
+
+<div class="yry-footer">
+  自循环报告 · rui-plan · 2026-06-22 01:51:59<br>
+  <span style="color:var(--yry-text3)">由 rui-bot loop-report 自动生成</span>
+</div>
+
+</div>
+<script src="../../cdn/shared/index.js"></script>
+</body>
+</html>

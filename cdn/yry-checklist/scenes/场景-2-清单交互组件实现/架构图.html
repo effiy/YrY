@@ -3,614 +3,76 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>清单交互组件实现 — 架构图</title>
-<link rel="stylesheet" href="../../../../cdn/fonts\/index\.css">
-<link rel="stylesheet" href="../../../../cdn/yry-page-nav/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-export-toolbar/index.css">
+<title>清单交互组件实现 · 架构图</title>
+<link rel="stylesheet" href="../../../../cdn/fonts/index.css">
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme-mono/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-arch-base.css">
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
-<link rel="stylesheet" href="../../../../cdn/yry-arch/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-export-toolbar/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-info-cards/index.css">
+<style>
+/* Page-specific overrides — shared patterns in shared-a.css */
+.diagram-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1.5rem;overflow-x:auto;margin-bottom:1.5rem}
+.diagram-container svg{width:100%;min-width:900px;display:block}
+.yry-container{max-width:1200px}
+</style>
 </head>
 <body>
-<div class="container" id="rc">
-<script type="application/json" id="yry-page-config">
-{"story": "yry-checklist · 清单与自循环", "scene": {"num": "2", "name": "清单交互组件实现", "dir": "场景-2-清单交互组件实现"}, "depth": "../../../", "scenes": [{"num": "1", "name": "模板架构与 CSS 设计系统", "dir": "场景-1-模板架构与CSS设计系统"}, {"num": "2", "name": "清单交互组件实现", "dir": "场景-2-清单交互组件实现"}, {"num": "3", "name": "验证报告与健康面板集成", "dir": "场景-3-验证报告与健康面板集成"}, {"num": "4", "name": "批量生成与自循环机制", "dir": "场景-4-批量生成与自循环机制"}], "pages": [{"type": "清单", "icon": "📋", "file": "计划清单.html"}, {"type": "架构", "icon": "📐", "file": "架构图.html"}, {"type": "图谱", "icon": "🔗", "file": "知识图谱.html"}, {"type": "源码", "icon": "📄", "file": "源码.html"}, {"type": "测试", "icon": "🧪", "file": "测试面板.html"}, {"type": "演示", "icon": "💡", "file": "演示.html"}, {"type": "审计", "icon": "📝", "file": "审查.html"}], "page": {"type": "架构", "icon": "📐", "file": "架构图.html"}}
-</script>
-<div id="yry-nav"></div>
-<script src="../../../../cdn/yry-page-nav/index.js"></script>
+<div class="yry-container" id="report-container">
+<yry-scene-chrome
+  theme="a"
+  title="yry-checklist — 场景 2: 场景 2 · 清单交互组件实现"
+  subtitle="场景 2 · 清单交互组件实现 · vv5.4.0 · 2026-06-22"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-checklist · 故事任务"},{"label":"场景 2 · 清单交互组件实现"},{"label":"📐 架构图"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","active":true},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","href":"审查.html"}]'
+  toolbar='<div class="yry-export-toolbar yry-toolbar" data-target=".diagram-container" data-filename="yry-checklist-scene2-architecture" data-bg="#020617"><button data-action="copy-svg">📋 Copy SVG</button><button data-action="download-png">🖼 PNG</button><button data-action="download-svg">📄 SVG</button></div>'>
+</yry-scene-chrome>
 
-<div class="header">
-<div class="header-row">
-<div class="pulse-dot"></div>
-<h1>清单交互组件实现 — 架构图</h1>
-<div class="yry-export-toolbar" data-target="#rc" data-filename="场景2" data-bg="#020617">
-<button data-action="copy-png">📋 Copy PNG</button>
-<button data-action="download-png">🖼 PNG</button>
-<button data-action="download-pdf">📄 PDF</button>
-</div>
-</div>
-<p class="subtitle">6 组件分层 · Data/Template/Renderer 三层架构 · 7 个 TC 套件 · 2 个 localStorage Key · 零依赖内联 JS</p>
-</div>
-<div class="stat-strip">
-<div class="ss"><div class="ss-ico" style="background:rgba(34,211,238,.1);color:var(--cyan)">6</div><div class="ss-body"><div class="ss-val">6 个</div><div class="ss-lbl">交互组件</div></div></div>
-<div class="ss"><div class="ss-ico" style="background:rgba(167,139,250,.1);color:var(--violet)">3</div><div class="ss-body"><div class="ss-val">3 层</div><div class="ss-lbl">Data/Template/Renderer</div></div></div>
-<div class="ss"><div class="ss-ico" style="background:rgba(251,191,36,.1);color:var(--amber)">7</div><div class="ss-body"><div class="ss-val">7 套</div><div class="ss-lbl">TC-10 ~ TC-16</div></div></div>
-<div class="ss"><div class="ss-ico" style="background:rgba(52,211,153,.1);color:var(--emerald)">270</div><div class="ss-body"><div class="ss-val">~270 行</div><div class="ss-lbl">零依赖内联 JS</div></div></div>
-</div>
-<div class="banner">
-<div class="banner-icon">&#x1F9E9;</div>
-<div class="banner-text">
-<b>组件心智模型:</b> 6 组件独立（勾选/折叠/标签/风险行/交付物过滤/路径复制）· 共享 Data/Template/Renderer 三层架构 · localStorage 持久化 · 零外部依赖。
-</div>
-<div class="banner-progress">IC-1 / 场景-2</div>
-</div>
-<nav class="tabs" id="tabs">
-<div class="tab on" data-panel="arch">组件架构<span class="tab-badge">6</span></div>
-<div class="tab" data-panel="seq">事件时序<span class="tab-badge">6</span></div>
-<div class="tab" data-panel="test">测试覆盖<span class="tab-badge">7</span></div>
-<div class="tab" data-panel="gates">质量门禁<span class="tab-badge">4</span></div>
-<div class="tab" data-panel="mile">里程碑<span class="tab-badge">5</span></div>
-</nav>
-
-<!-- Tab 1: Component Architecture -->
-<section class="tab-panel on" id="panelArch">
 <div class="diagram-container">
-<svg viewBox="0 0 1100 540" xmlns="http://www.w3.org/2000/svg">
-<defs>
-<pattern id="g" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width=".5"/></pattern>
-<marker id="arr-cyan" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#22d3ee"/></marker>
-<marker id="arr-emerald" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#34d399"/></marker>
-<marker id="arr-violet" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#a78bfa"/></marker>
-</defs>
-<rect width="100%" height="100%" fill="url(#g)"/>
-
-<!-- Title -->
-<text x="50" y="30" fill="#22d3ee" font-size="11" font-weight="600">6 组件 · Data / Template / Renderer 三层架构 · localStorage 持久化</text>
-<text x="1050" y="30" fill="#475569" font-size="9" text-anchor="end">~270 行零依赖内联 JS</text>
-
-<!-- Layer 3: Renderer (top) -->
-<rect x="40" y="50" width="1020" height="95" rx="8" fill="rgba(167,139,250,.06)" stroke="#a78bfa" stroke-width="1.5"/>
-<text x="60" y="72" fill="#a78bfa" font-size="10" font-weight="700">Renderer 渲染层</text>
-<text x="210" y="72" fill="#64748b" font-size="8">DOM 更新 · CSS class toggle · 进度条动画 · toast 提示</text>
-
-<!-- 6 component boxes in Renderer -->
-<rect x="50" y="82" width="150" height="55" rx="5" fill="rgba(167,139,250,.1)" stroke="#a78bfa" stroke-width=".8"/>
-<text x="125" y="102" fill="#fff" font-size="9" font-weight="600" text-anchor="middle">勾选进度联动</text>
-<text x="125" y="118" fill="#94a3b8" font-size="7" text-anchor="middle">updateProgress()</text>
-<text x="125" y="130" fill="#64748b" font-size="6.5" text-anchor="middle">进度条 width transition</text>
-
-<rect x="215" y="82" width="150" height="55" rx="5" fill="rgba(167,139,250,.1)" stroke="#a78bfa" stroke-width=".8"/>
-<text x="290" y="102" fill="#fff" font-size="9" font-weight="600" text-anchor="middle">折叠面板</text>
-<text x="290" y="118" fill="#94a3b8" font-size="7" text-anchor="middle">CSS collapsed</text>
-<text x="290" y="130" fill="#64748b" font-size="6.5" text-anchor="middle">max-height 0.3s ease</text>
-
-<rect x="380" y="82" width="150" height="55" rx="5" fill="rgba(167,139,250,.1)" stroke="#a78bfa" stroke-width=".8"/>
-<text x="455" y="102" fill="#fff" font-size="9" font-weight="600" text-anchor="middle">标签页切换</text>
-<text x="455" y="118" fill="#94a3b8" font-size="7" text-anchor="middle">Tab switch</text>
-<text x="455" y="130" fill="#64748b" font-size="6.5" text-anchor="middle">opacity + 键盘 1-9</text>
-
-<rect x="545" y="82" width="150" height="55" rx="5" fill="rgba(167,139,250,.1)" stroke="#a78bfa" stroke-width=".8"/>
-<text x="620" y="102" fill="#fff" font-size="9" font-weight="600" text-anchor="middle">风险行展开</text>
-<text x="620" y="118" fill="#94a3b8" font-size="7" text-anchor="middle">CSS class open</text>
-<text x="620" y="130" fill="#64748b" font-size="6.5" text-anchor="middle">详情 toggle</text>
-
-<rect x="710" y="82" width="160" height="55" rx="5" fill="rgba(167,139,250,.1)" stroke="#a78bfa" stroke-width=".8"/>
-<text x="790" y="102" fill="#fff" font-size="9" font-weight="600" text-anchor="middle">交付物类型过滤</text>
-<text x="790" y="118" fill="#94a3b8" font-size="7" text-anchor="middle">6 类过滤 + 展开折叠</text>
-<text x="790" y="130" fill="#64748b" font-size="6.5" text-anchor="middle">CSS dim/on class</text>
-
-<rect x="885" y="82" width="160" height="55" rx="5" fill="rgba(167,139,250,.1)" stroke="#a78bfa" stroke-width=".8"/>
-<text x="965" y="102" fill="#fff" font-size="9" font-weight="600" text-anchor="middle">路径复制</text>
-<text x="965" y="118" fill="#94a3b8" font-size="7" text-anchor="middle">navigator.clipboard</text>
-<text x="965" y="130" fill="#64748b" font-size="6.5" text-anchor="middle">toast 1.5s</text>
-
-<!-- Layer 2: Template (middle) -->
-<rect x="40" y="170" width="1020" height="95" rx="8" fill="rgba(52,211,153,.06)" stroke="#34d399" stroke-width="1.5"/>
-<text x="60" y="192" fill="#34d399" font-size="10" font-weight="700">Template 模板层</text>
-<text x="230" y="192" fill="#64748b" font-size="8">HTML 结构 · data-* 属性 · CSS 变量 · checkbox/button 元素</text>
-
-<rect x="50" y="202" width="240" height="55" rx="5" fill="rgba(52,211,153,.1)" stroke="#34d399" stroke-width=".8"/>
-<text x="170" y="222" fill="#fff" font-size="9" font-weight="600" text-anchor="middle">data-step / data-type 属性</text>
-<text x="170" y="238" fill="#94a3b8" font-size="7" text-anchor="middle">步骤绑定 · 交付物自动标注</text>
-<text x="170" y="250" fill="#64748b" font-size="6.5" text-anchor="middle">data-step="step-N"</text>
-
-<rect x="310" y="202" width="240" height="55" rx="5" fill="rgba(52,211,153,.1)" stroke="#34d399" stroke-width=".8"/>
-<text x="430" y="222" fill="#fff" font-size="9" font-weight="600" text-anchor="middle">7 面板 tab 结构</text>
-<text x="430" y="238" fill="#94a3b8" font-size="7" text-anchor="middle">checklist/commands/verify/metrics</text>
-<text x="430" y="250" fill="#64748b" font-size="6.5" text-anchor="middle">/deliverables/risks/timeline</text>
-
-<rect x="570" y="202" width="240" height="55" rx="5" fill="rgba(52,211,153,.1)" stroke="#34d399" stroke-width=".8"/>
-<text x="690" y="222" fill="#fff" font-size="9" font-weight="600" text-anchor="middle">交付物 .deliv-link 标记</text>
-<text x="690" y="238" fill="#94a3b8" font-size="7" text-anchor="middle">扩展名自动类型标注</text>
-<text x="690" y="250" fill="#64748b" font-size="6.5" text-anchor="middle">data-type="html/md/css/test/other"</text>
-
-<rect x="830" y="202" width="215" height="55" rx="5" fill="rgba(52,211,153,.1)" stroke="#34d399" stroke-width=".8"/>
-<text x="937" y="222" fill="#fff" font-size="9" font-weight="600" text-anchor="middle">风险行 .risk-row 标记</text>
-<text x="937" y="238" fill="#94a3b8" font-size="7" text-anchor="middle">缓解步骤 .risk-detail</text>
-<text x="937" y="250" fill="#64748b" font-size="6.5" text-anchor="middle">arrow toggle</text>
-
-<!-- Layer 1: Data (bottom) -->
-<rect x="40" y="290" width="1020" height="95" rx="8" fill="rgba(34,211,238,.06)" stroke="#22d3ee" stroke-width="1.5"/>
-<text x="60" y="312" fill="#22d3ee" font-size="10" font-weight="700">Data 数据层</text>
-<text x="210" y="312" fill="#64748b" font-size="8">localStorage Schema · 步骤状态推导 · 事件总线</text>
-
-<rect x="50" y="322" width="310" height="55" rx="5" fill="rgba(34,211,238,.1)" stroke="#22d3ee" stroke-width=".8"/>
-<text x="205" y="342" fill="#fff" font-size="9" font-weight="600" text-anchor="middle">yry-arch-s2-checklist</text>
-<text x="205" y="358" fill="#94a3b8" font-size="7" text-anchor="middle">勾选状态 JSON · step-N: boolean</text>
-<text x="205" y="370" fill="#64748b" font-size="6.5" text-anchor="middle">JSON Schema Draft 2020-12</text>
-
-<rect x="380" y="322" width="310" height="55" rx="5" fill="rgba(34,211,238,.1)" stroke="#22d3ee" stroke-width=".8"/>
-<text x="535" y="342" fill="#fff" font-size="9" font-weight="600" text-anchor="middle">yry-arch-s2-checklist-tab</text>
-<text x="535" y="358" fill="#94a3b8" font-size="7" text-anchor="middle">最后活跃标签页 · string</text>
-<text x="535" y="370" fill="#64748b" font-size="6.5" text-anchor="middle">跨刷新 tab 记忆</text>
-
-<rect x="710" y="322" width="335" height="55" rx="5" fill="rgba(34,211,238,.1)" stroke="#22d3ee" stroke-width=".8"/>
-<text x="877" y="342" fill="#fff" font-size="9" font-weight="600" text-anchor="middle">步骤状态推导引擎</text>
-<text x="877" y="358" fill="#94a3b8" font-size="7" text-anchor="middle">已完成 / 就绪 / 待开始</text>
-<text x="877" y="370" fill="#64748b" font-size="6.5" text-anchor="middle">前置步骤完成情况 → 推导当前状态</text>
-
-<!-- Arrows between layers -->
-<line x1="550" y1="145" x2="550" y2="170" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arr-violet)" stroke-dasharray="4 2"/>
-<text x="560" y="162" fill="#a78bfa" font-size="7">DOM 写入</text>
-<line x1="550" y1="265" x2="550" y2="290" stroke="#34d399" stroke-width="1.5" marker-end="url(#arr-emerald)" stroke-dasharray="4 2"/>
-<text x="560" y="282" fill="#34d399" font-size="7">事件监听</text>
-
-<!-- Data flow legend -->
-<rect x="40" y="400" width="1020" height="130" rx="8" fill="rgba(251,191,36,.04)" stroke="#fbbf24" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="60" y="422" fill="#fbbf24" font-size="10" font-weight="600">数据流闭环</text>
-<g font-size="9" fill="#cbd5e1">
-<text x="60" y="448">1. 用户点击 checkbox → <tspan fill="#22d3ee">change 事件</tspan> → updateProgress() 读取所有勾选状态</text>
-<text x="60" y="468">2. updateProgress() → 计算完成数/总数 → 更新进度条 width + overview 统计 + 步骤状态推导</text>
-<text x="60" y="488">3. localStorage.setItem(<tspan fill="#a78bfa">'yry-arch-s2-checklist'</tspan>, JSON) 持久化当前状态</text>
-<text x="60" y="508">4. 页面加载时 localStorage.getItem() 恢复勾选 + tab 状态 → 刷新不丢失</text>
-</g>
-</svg>
+  <svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+      </marker>
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#grid)"/>
+    <text x="500" y="300" fill="#475569" font-size="14" text-anchor="middle" font-family="JetBrains Mono,monospace">
+      架构图数据待填充 — 运行 /rui code 生成
+    </text>
+  </svg>
 </div>
-<div class="cards">
-<div class="card" style="--accent:var(--cyan)">
-<div class="card-header"><div class="card-dot cyan"></div><h3>Data 层</h3><span class="card-sub">localStorage</span></div>
-<ul>
-<li><code>yry-arch-s2-checklist</code> — 勾选状态 JSON，含场景标识避免冲突</li>
-<li><code>yry-arch-s2-checklist-tab</code> — 最后活跃标签页</li>
-<li>步骤状态自动推导（完成/就绪/待开始），无需手动标记</li>
-</ul>
-<div class="chip-row"><span class="chip info">2 keys</span><span class="chip">JSON Schema</span><span class="chip">零依赖</span></div>
+
+<yry-info-cards>
+  <div class="yry-card">
+    <div class="yry-card-header"><div class="yry-card-dot cyan"></div><h3>场景信息</h3></div>
+    <ul>
+      <li><b>场景:</b> 2 · 场景 2 · 清单交互组件实现</li>
+      <li><b>故事:</b> yry-checklist · 故事任务</li>
+      <li><b>版本:</b> vv5.4.0</li>
+    </ul>
+  </div>
+  <div class="yry-card">
+    <div class="yry-card-header"><div class="yry-card-dot emerald"></div><h3>数据源</h3></div>
+    <ul>
+      <li><b>场景文档:</b> index.md §0 技术评审</li>
+      <li><b>生成日期:</b> 2026-06-22</li>
+    </ul>
+  </div>
+</yry-info-cards>
+
+<yry-scene-footer version="v5.4.0" date="2026-06-22"></yry-scene-footer>
 </div>
-<div class="card" style="--accent:var(--emerald)">
-<div class="card-header"><div class="card-dot emerald"></div><h3>Template 层</h3><span class="card-sub">HTML+CSS</span></div>
-<ul>
-<li><code>data-step</code> 属性绑定步骤与 checkbox</li>
-<li><code>.deliv-link</code> 交付物自动标注 <code>data-type</code></li>
-<li>7 面板 tab 结构 + 风险行标记 + CSS transition</li>
-</ul>
-<div class="chip-row"><span class="chip ok">语义标记</span><span class="chip">自动标注</span></div>
-</div>
-<div class="card" style="--accent:var(--violet)">
-<div class="card-header"><div class="card-dot violet"></div><h3>Renderer 层</h3><span class="card-sub">JS 内联</span></div>
-<ul>
-<li>6 组件 ~270 行，2 个 script 块内联于计划清单.html</li>
-<li>键盘 1-9 快捷切换（跳过 input 聚焦态）</li>
-<li>哈希定位支持 <code>#step-N-deliv</code> 跳转</li>
-</ul>
-<div class="chip-row"><span class="chip info">零外部依赖</span><span class="chip">内联 JS</span></div>
-</div>
-</div>
-</section>
-
-<!-- Tab 2: Event Sequence -->
-<section class="tab-panel" id="panelSeq">
-<div class="diagram-container">
-<svg viewBox="0 0 1100 480" xmlns="http://www.w3.org/2000/svg">
-<defs>
-<pattern id="g2" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width=".5"/></pattern>
-<marker id="arr-seq" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#22d3ee"/></marker>
-<marker id="arr-seq2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#34d399"/></marker>
-</defs>
-<rect width="100%" height="100%" fill="url(#g2)"/>
-<text x="50" y="28" fill="#22d3ee" font-size="10" font-weight="600">事件时序 · 6 组件从用户操作到状态持久化的端到端追踪</text>
-<text x="1050" y="28" fill="#475569" font-size="8" text-anchor="end">零依赖 · 同步执行</text>
-
-<!-- Swimlane headers -->
-<g font-size="9" font-weight="600">
-<rect x="50" y="45" width="110" height="30" rx="4" fill="rgba(34,211,238,.12)" stroke="#22d3ee"/>
-<text x="105" y="64" fill="#22d3ee" text-anchor="middle">用户操作</text>
-<line x1="105" y1="75" x2="105" y2="440" stroke="#22d3ee" stroke-width="1" stroke-dasharray="3 3" opacity=".4"/>
-
-<rect x="200" y="45" width="130" height="30" rx="4" fill="rgba(167,139,250,.12)" stroke="#a78bfa"/>
-<text x="265" y="64" fill="#a78bfa" text-anchor="middle">事件监听</text>
-<line x1="265" y1="75" x2="265" y2="440" stroke="#a78bfa" stroke-width="1" stroke-dasharray="3 3" opacity=".4"/>
-
-<rect x="370" y="45" width="130" height="30" rx="4" fill="rgba(52,211,153,.12)" stroke="#34d399"/>
-<text x="435" y="64" fill="#34d399" text-anchor="middle">状态更新</text>
-<line x1="435" y1="75" x2="435" y2="440" stroke="#34d399" stroke-width="1" stroke-dasharray="3 3" opacity=".4"/>
-
-<rect x="540" y="45" width="130" height="30" rx="4" fill="rgba(251,191,36,.12)" stroke="#fbbf24"/>
-<text x="605" y="64" fill="#fbbf24" text-anchor="middle">DOM 渲染</text>
-<line x1="605" y1="75" x2="605" y2="440" stroke="#fbbf24" stroke-width="1" stroke-dasharray="3 3" opacity=".4"/>
-
-<rect x="710" y="45" width="160" height="30" rx="4" fill="rgba(251,113,133,.12)" stroke="#fb7185"/>
-<text x="790" y="64" fill="#fb7185" text-anchor="middle">localStorage</text>
-<line x1="790" y1="75" x2="790" y2="440" stroke="#fb7185" stroke-width="1" stroke-dasharray="3 3" opacity=".4"/>
-
-<rect x="910" y="45" width="150" height="30" rx="4" fill="rgba(59,130,246,.12)" stroke="#3B82F6"/>
-<text x="985" y="64" fill="#3B82F6" text-anchor="middle">效果反馈</text>
-<line x1="985" y1="75" x2="985" y2="440" stroke="#3B82F6" stroke-width="1" stroke-dasharray="3 3" opacity=".4"/>
-</g>
-
-<!-- Component 1: Checkbox Progress -->
-<rect x="30" y="90" width="1040" height="55" fill="rgba(34,211,238,.03)"/>
-<text x="45" y="107" fill="#22d3ee" font-size="8" font-weight="600">1. 勾选进度联动</text>
-<line x1="105" y1="113" x2="255" y2="113" stroke="#22d3ee" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="180" y="106" fill="#94a3b8" font-size="7" text-anchor="middle">click checkbox</text>
-<line x1="265" y1="120" x2="425" y2="120" stroke="#a78bfa" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="345" y="135" fill="#94a3b8" font-size="7" text-anchor="middle">change → updateProgress()</text>
-<line x1="435" y1="120" x2="595" y2="120" stroke="#34d399" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="515" y="135" fill="#94a3b8" font-size="7" text-anchor="middle">进度条 width + 步骤状态推导</text>
-<line x1="605" y1="120" x2="780" y2="120" stroke="#fbbf24" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="692" y="113" fill="#94a3b8" font-size="7" text-anchor="middle">JSON.setItem</text>
-<line x1="790" y1="113" x2="975" y2="113" stroke="#fb7185" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="882" y="106" fill="#94a3b8" font-size="7" text-anchor="middle">进度条动画 + overview 更新</text>
-
-<!-- Component 2: Collapsible Panel -->
-<rect x="30" y="150" width="1040" height="55" fill="rgba(167,139,250,.03)"/>
-<text x="45" y="167" fill="#a78bfa" font-size="8" font-weight="600">2. 折叠面板</text>
-<line x1="105" y1="173" x2="255" y2="173" stroke="#22d3ee" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="180" y="166" fill="#94a3b8" font-size="7" text-anchor="middle">click 交付物头部</text>
-<line x1="265" y1="180" x2="425" y2="180" stroke="#a78bfa" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="345" y="195" fill="#94a3b8" font-size="7" text-anchor="middle">toggleClass('collapsed')</text>
-<line x1="435" y1="180" x2="595" y2="180" stroke="#34d399" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="515" y="195" fill="#94a3b8" font-size="7" text-anchor="middle">max-height: 0 ↔ auto</text>
-<line x1="605" y1="173" x2="975" y2="173" stroke="#fbbf24" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="790" y="166" fill="#94a3b8" font-size="7" text-anchor="middle">CSS transition 300ms ease-out</text>
-
-<!-- Component 3: Tab Switching -->
-<rect x="30" y="210" width="1040" height="55" fill="rgba(52,211,153,.03)"/>
-<text x="45" y="227" fill="#34d399" font-size="8" font-weight="600">3. 标签页切换</text>
-<line x1="105" y1="233" x2="255" y2="233" stroke="#22d3ee" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="180" y="226" fill="#94a3b8" font-size="7" text-anchor="middle">click tab / 按 1-9</text>
-<line x1="265" y1="240" x2="425" y2="240" stroke="#a78bfa" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="345" y="255" fill="#94a3b8" font-size="7" text-anchor="middle">switchTab(name) + 跳过 input 聚焦</text>
-<line x1="435" y1="240" x2="595" y2="240" stroke="#34d399" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="515" y="255" fill="#94a3b8" font-size="7" text-anchor="middle">面板 on class toggle</text>
-<line x1="605" y1="240" x2="780" y2="240" stroke="#fbbf24" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="692" y="233" fill="#94a3b8" font-size="7" text-anchor="middle">tab key 写入 localStorage</text>
-<line x1="790" y1="233" x2="975" y2="233" stroke="#fb7185" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="882" y="226" fill="#94a3b8" font-size="7" text-anchor="middle">opacity 切换 + tab 记忆恢复</text>
-
-<!-- Component 4: Risk Row -->
-<rect x="30" y="270" width="1040" height="55" fill="rgba(251,191,36,.03)"/>
-<text x="45" y="287" fill="#fbbf24" font-size="8" font-weight="600">4. 风险行展开</text>
-<line x1="105" y1="293" x2="255" y2="293" stroke="#22d3ee" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="180" y="286" fill="#94a3b8" font-size="7" text-anchor="middle">click .risk-row</text>
-<line x1="265" y1="300" x2="425" y2="300" stroke="#a78bfa" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="345" y="315" fill="#94a3b8" font-size="7" text-anchor="middle">toggleClass('open')</text>
-<line x1="435" y1="300" x2="595" y2="300" stroke="#34d399" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="515" y="315" fill="#94a3b8" font-size="7" text-anchor="middle">缓解步骤详情展开</text>
-<line x1="605" y1="293" x2="975" y2="293" stroke="#fbbf24" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="790" y="286" fill="#94a3b8" font-size="7" text-anchor="middle">箭头 toggle + 详情区展开</text>
-
-<!-- Component 5: Deliverable Filter -->
-<rect x="30" y="330" width="1040" height="55" fill="rgba(251,113,133,.03)"/>
-<text x="45" y="347" fill="#fb7185" font-size="8" font-weight="600">5. 交付物类型过滤</text>
-<line x1="105" y1="353" x2="255" y2="353" stroke="#22d3ee" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="180" y="346" fill="#94a3b8" font-size="7" text-anchor="middle">click 过滤按钮</text>
-<line x1="265" y1="360" x2="425" y2="360" stroke="#a78bfa" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="345" y="375" fill="#94a3b8" font-size="7" text-anchor="middle">filterByType(type)</text>
-<line x1="435" y1="360" x2="595" y2="360" stroke="#34d399" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="515" y="375" fill="#94a3b8" font-size="7" text-anchor="middle">遍历 .deliv-link data-type 匹配</text>
-<line x1="605" y1="353" x2="975" y2="353" stroke="#fbbf24" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="790" y="346" fill="#94a3b8" font-size="7" text-anchor="middle">链接变暗/显示 + 计数更新</text>
-
-<!-- Component 6: Copy Path -->
-<rect x="30" y="390" width="1040" height="55" fill="rgba(59,130,246,.03)"/>
-<text x="45" y="407" fill="#3B82F6" font-size="8" font-weight="600">6. 路径复制</text>
-<line x1="105" y1="413" x2="255" y2="413" stroke="#22d3ee" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="180" y="406" fill="#94a3b8" font-size="7" text-anchor="middle">click 复制按钮</text>
-<line x1="265" y1="420" x2="425" y2="420" stroke="#a78bfa" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="345" y="435" fill="#94a3b8" font-size="7" text-anchor="middle">navigator.clipboard.writeText()</text>
-<line x1="435" y1="420" x2="595" y2="420" stroke="#34d399" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="515" y="435" fill="#94a3b8" font-size="7" text-anchor="middle">剪贴板写入</text>
-<line x1="605" y1="413" x2="975" y2="413" stroke="#fbbf24" stroke-width="1.2" marker-end="url(#arr-seq)"/>
-<text x="790" y="406" fill="#94a3b8" font-size="7" text-anchor="middle">toast 提示 1.5s 自动消失</text>
-</svg>
-</div>
-<div class="cards">
-<div class="card" style="--accent:var(--cyan)">
-<div class="card-header"><div class="card-dot cyan"></div><h3>事件契约</h3><span class="card-sub">统一</span></div>
-<ul>
-<li>所有组件使用 <b>标准 DOM 事件</b>（click/change/input）</li>
-<li>键盘事件仅处理 <b>非 input 聚焦</b> 状态，避免误触发</li>
-<li>事件处理函数 <b>纯同步</b>，无 Promise/async</li>
-</ul>
-<div class="chip-row"><span class="chip info">同步</span><span class="chip">DOM 原生</span></div>
-</div>
-<div class="card" style="--accent:var(--emerald)">
-<div class="card-header"><div class="card-dot emerald"></div><h3>状态流向</h3><span class="card-sub">单向</span></div>
-<ul>
-<li>用户操作 → 事件 → 状态更新 → DOM 渲染 → localStorage</li>
-<li>页面加载 localStorage → 恢复状态 → DOM 初始渲染</li>
-<li>无全局 store，每个组件独立管理自身状态</li>
-</ul>
-<div class="chip-row"><span class="chip ok">单向数据流</span></div>
-</div>
-<div class="card" style="--accent:var(--amber)">
-<div class="card-header"><div class="card-dot amber"></div><h3>性能目标</h3><span class="card-sub">50ms</span></div>
-<ul>
-<li>勾选到进度更新延迟 <b>&lt; 50ms</b></li>
-<li>折叠动画 <b>300ms</b> CSS transition</li>
-<li>toast 提示 <b>1.5s</b> 自动消失</li>
-</ul>
-<div class="chip-row"><span class="chip warn">50ms SLO</span></div>
-</div>
-</div>
-</section>
-
-<!-- Tab 3: Test Coverage -->
-<section class="tab-panel" id="panelTest">
-<div class="diagram-container">
-<svg viewBox="0 0 1100 380" xmlns="http://www.w3.org/2000/svg">
-<defs>
-<pattern id="g3" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width=".5"/></pattern>
-<marker id="arr-t" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#22d3ee"/></marker>
-</defs>
-<rect width="100%" height="100%" fill="url(#g3)"/>
-<text x="50" y="28" fill="#a78bfa" font-size="10" font-weight="600">7 套测试用例 · 26 断言 · 100% 通过率</text>
-<text x="1050" y="28" fill="#475569" font-size="8" text-anchor="end">TC-10 ~ TC-16</text>
-
-<!-- 7 test case boxes -->
-<g>
-<!-- TC-10 -->
-<rect x="40" y="50" width="315" height="85" rx="6" fill="rgba(34,211,238,.06)" stroke="#22d3ee" stroke-width="1.2"/>
-<rect x="40" y="50" width="315" height="22" rx="6" fill="rgba(34,211,238,.15)"/>
-<text x="50" y="65" fill="#22d3ee" font-size="9" font-weight="600">TC-10 · 勾选步骤</text>
-<text x="340" y="65" fill="#34d399" font-size="8" font-weight="600" text-anchor="end">5/5 ✓</text>
-<text x="55" y="85" fill="#cbd5e1" font-size="8">验证点: 进度%更新 + 完成数+1</text>
-<text x="55" y="100" fill="#94a3b8" font-size="7.5">+ 步骤状态推导（完成/就绪/待开始）</text>
-<text x="55" y="115" fill="#94a3b8" font-size="7.5">+ 全选后进度=100%</text>
-<text x="55" y="130" fill="#64748b" font-size="7">预期: 延迟 &lt; 50ms</text>
-
-<!-- TC-11 -->
-<rect x="375" y="50" width="335" height="85" rx="6" fill="rgba(167,139,250,.06)" stroke="#a78bfa" stroke-width="1.2"/>
-<rect x="375" y="50" width="335" height="22" rx="6" fill="rgba(167,139,250,.15)"/>
-<text x="385" y="65" fill="#a78bfa" font-size="9" font-weight="600">TC-11 · 折叠面板动画</text>
-<text x="700" y="65" fill="#34d399" font-size="8" font-weight="600" text-anchor="end">3/3 ✓</text>
-<text x="390" y="85" fill="#cbd5e1" font-size="8">验证点: 展开/收起过渡 + 交付物列表显隐</text>
-<text x="390" y="100" fill="#94a3b8" font-size="7.5">+ collapsed class toggle</text>
-<text x="390" y="115" fill="#94a3b8" font-size="7.5">+ max-height transition</text>
-<text x="390" y="130" fill="#64748b" font-size="7">预期: 300ms 内完成</text>
-
-<!-- TC-12 -->
-<rect x="730" y="50" width="330" height="85" rx="6" fill="rgba(52,211,153,.06)" stroke="#34d399" stroke-width="1.2"/>
-<rect x="730" y="50" width="330" height="22" rx="6" fill="rgba(52,211,153,.15)"/>
-<text x="740" y="65" fill="#34d399" font-size="9" font-weight="600">TC-12 · 标签页全切换</text>
-<text x="1050" y="65" fill="#34d399" font-size="8" font-weight="600" text-anchor="end">7/7 ✓</text>
-<text x="745" y="85" fill="#cbd5e1" font-size="8">验证点: 7 面板逐一显示 + 键盘 1-9 映射</text>
-<text x="745" y="100" fill="#94a3b8" font-size="7.5">+ overview 面板键盘访问</text>
-<text x="745" y="115" fill="#94a3b8" font-size="7.5">+ input 聚焦态跳过</text>
-<text x="745" y="130" fill="#64748b" font-size="7">预期: 7/7 正常切换</text>
-
-<!-- TC-13 -->
-<rect x="40" y="155" width="315" height="85" rx="6" fill="rgba(251,191,36,.06)" stroke="#fbbf24" stroke-width="1.2"/>
-<rect x="40" y="155" width="315" height="22" rx="6" fill="rgba(251,191,36,.15)"/>
-<text x="50" y="170" fill="#fbbf24" font-size="9" font-weight="600">TC-13 · 刷新恢复状态</text>
-<text x="340" y="170" fill="#34d399" font-size="8" font-weight="600" text-anchor="end">3/3 ✓</text>
-<text x="55" y="190" fill="#cbd5e1" font-size="8">验证点: localStorage 回读勾选 + tab 状态</text>
-<text x="55" y="205" fill="#94a3b8" font-size="7.5">+ 两 key 均正确恢复</text>
-<text x="55" y="220" fill="#94a3b8" font-size="7.5">+ 进度条与勾选一致</text>
-<text x="55" y="235" fill="#64748b" font-size="7">预期: 全部恢复</text>
-
-<!-- TC-14 -->
-<rect x="375" y="155" width="335" height="85" rx="6" fill="rgba(251,113,133,.06)" stroke="#fb7185" stroke-width="1.2"/>
-<rect x="375" y="155" width="335" height="22" rx="6" fill="rgba(251,113,133,.15)"/>
-<text x="385" y="170" fill="#fb7185" font-size="9" font-weight="600">TC-14 · 风险行点击</text>
-<text x="700" y="170" fill="#34d399" font-size="8" font-weight="600" text-anchor="end">2/2 ✓</text>
-<text x="390" y="190" fill="#cbd5e1" font-size="8">验证点: 详情显示/隐藏 + toggle 箭头切换</text>
-<text x="390" y="205" fill="#94a3b8" font-size="7.5">+ 缓解步骤可见性</text>
-<text x="390" y="220" fill="#94a3b8" font-size="7.5">+ 多次 toggle 无状态错乱</text>
-<text x="390" y="235" fill="#64748b" font-size="7">预期: 切换正常</text>
-
-<!-- TC-15 -->
-<rect x="730" y="155" width="330" height="85" rx="6" fill="rgba(59,130,246,.06)" stroke="#3B82F6" stroke-width="1.2"/>
-<rect x="730" y="155" width="330" height="22" rx="6" fill="rgba(59,130,246,.15)"/>
-<text x="740" y="170" fill="#3B82F6" font-size="9" font-weight="600">TC-15 · 交付物类型过滤</text>
-<text x="1050" y="170" fill="#34d399" font-size="8" font-weight="600" text-anchor="end">6/6 ✓</text>
-<text x="745" y="190" fill="#cbd5e1" font-size="8">验证点: 全部/HTML/MD/CSS/Test/其他 六类过滤</text>
-<text x="745" y="205" fill="#94a3b8" font-size="7.5">+ 过滤后计数正确</text>
-<text x="745" y="220" fill="#94a3b8" font-size="7.5">+ 展开/折叠独立运作</text>
-<text x="745" y="235" fill="#64748b" font-size="7">预期: 过滤正确</text>
-
-<!-- TC-16 -->
-<rect x="40" y="260" width="480" height="85" rx="6" fill="rgba(139,92,246,.06)" stroke="#8B5CF6" stroke-width="1.2"/>
-<rect x="40" y="260" width="480" height="22" rx="6" fill="rgba(139,92,246,.15)"/>
-<text x="50" y="275" fill="#8B5CF6" font-size="9" font-weight="600">TC-16 · 复制路径</text>
-<text x="510" y="275" fill="#34d399" font-size="8" font-weight="600" text-anchor="end">2/2 ✓</text>
-<text x="55" y="295" fill="#cbd5e1" font-size="8">验证点: 单步复制 + 全部复制 + 剪贴板写入验证</text>
-<text x="55" y="310" fill="#94a3b8" font-size="7.5">+ navigator.clipboard.writeText() 调用成功</text>
-<text x="55" y="325" fill="#94a3b8" font-size="7.5">+ toast 提示 1.5s 后自动消失</text>
-<text x="55" y="340" fill="#64748b" font-size="7">预期: 复制成功</text>
-</g>
-</svg>
-</div>
-<div class="cards">
-<div class="card" style="--accent:var(--emerald)">
-<div class="card-header"><div class="card-dot emerald"></div><h3>测试结果</h3><span class="card-sub">100%</span></div>
-<ul>
-<li>勾选联动: <b>5/5</b> 通过</li>
-<li>折叠面板: <b>3/3</b> 通过</li>
-<li>标签页: <b>7/7</b> 通过</li>
-<li>持久化: <b>3/3</b> 通过</li>
-<li>交付物过滤: <b>6/6</b> 通过</li>
-<li>路径复制: <b>2/2</b> 通过</li>
-</ul>
-<div class="chip-row"><span class="chip ok">26 断言全绿</span></div>
-</div>
-<div class="card" style="--accent:var(--cyan)">
-<div class="card-header"><div class="card-dot cyan"></div><h3>测试策略</h3><span class="card-sub">分层</span></div>
-<ul>
-<li>TC-10~12: 组件级单元测试（独立验证）</li>
-<li>TC-13: 集成测试（localStorage 持久化）</li>
-<li>TC-14~16: 交互测试（用户操作模拟）</li>
-</ul>
-<div class="chip-row"><span class="chip info">3 层覆盖</span></div>
-</div>
-</div>
-</section>
-
-<!-- Tab 4: Quality Gates -->
-<section class="tab-panel" id="panelGates">
-<div class="diagram-container">
-<svg viewBox="0 0 1100 260" xmlns="http://www.w3.org/2000/svg">
-<defs>
-<pattern id="g4" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width=".5"/></pattern>
-</defs>
-<rect width="100%" height="100%" fill="url(#g4)"/>
-<text x="50" y="28" fill="#fbbf24" font-size="10" font-weight="600">4 道质量门禁 · 清单交互组件专项</text>
-<text x="1050" y="28" fill="#475569" font-size="8" text-anchor="end">任意一道失败需修复后重验</text>
-
-<!-- Gate 1: Functional -->
-<rect x="40" y="50" width="240" height="95" rx="6" fill="rgba(34,211,238,.08)" stroke="#22d3ee" stroke-width="1.5"/>
-<text x="55" y="70" fill="#22d3ee" font-size="10" font-weight="700">G1 · 功能完整性</text>
-<text x="55" y="88" fill="#cbd5e1" font-size="8">6 组件全部可交互</text>
-<text x="55" y="103" fill="#94a3b8" font-size="7.5">TC-10~16 全部通过</text>
-<text x="55" y="118" fill="#94a3b8" font-size="7.5">进度联动正确</text>
-<text x="55" y="133" fill="#22d3ee" font-size="7.5" font-weight="600">阻断: Hard</text>
-
-<!-- Gate 2: Persistence -->
-<rect x="300" y="50" width="240" height="95" rx="6" fill="rgba(52,211,153,.08)" stroke="#34d399" stroke-width="1.5"/>
-<text x="315" y="70" fill="#34d399" font-size="10" font-weight="700">G2 · 持久化正确</text>
-<text x="315" y="88" fill="#cbd5e1" font-size="8">localStorage 读写正确</text>
-<text x="315" y="103" fill="#94a3b8" font-size="7.5">刷新恢复勾选状态</text>
-<text x="315" y="118" fill="#94a3b8" font-size="7.5">tab 记忆不丢失</text>
-<text x="315" y="133" fill="#34d399" font-size="7.5" font-weight="600">阻断: Hard</text>
-
-<!-- Gate 3: Performance -->
-<rect x="560" y="50" width="240" height="95" rx="6" fill="rgba(251,191,36,.08)" stroke="#fbbf24" stroke-width="1.5"/>
-<text x="575" y="70" fill="#fbbf24" font-size="10" font-weight="700">G3 · 性能约束</text>
-<text x="575" y="88" fill="#cbd5e1" font-size="8">勾选延迟 &lt; 50ms</text>
-<text x="575" y="103" fill="#94a3b8" font-size="7.5">折叠动画 300ms 内</text>
-<text x="575" y="118" fill="#94a3b8" font-size="7.5">零依赖无外部请求</text>
-<text x="575" y="133" fill="#fbbf24" font-size="7.5" font-weight="600">阻断: Medium</text>
-
-<!-- Gate 4: Accessibility -->
-<rect x="820" y="50" width="240" height="95" rx="6" fill="rgba(251,113,133,.08)" stroke="#fb7185" stroke-width="1.5"/>
-<text x="835" y="70" fill="#fb7185" font-size="10" font-weight="700">G4 · 可访问性</text>
-<text x="835" y="88" fill="#cbd5e1" font-size="8">键盘快捷键可用</text>
-<text x="835" y="103" fill="#94a3b8" font-size="7.5">input 聚焦态跳过</text>
-<text x="835" y="118" fill="#94a3b8" font-size="7.5">toast 1.5s 自动消失</text>
-<text x="835" y="133" fill="#fb7185" font-size="7.5" font-weight="600">阻断: Soft</text>
-
-<!-- Pass conditions -->
-<rect x="40" y="165" width="500" height="80" rx="6" fill="rgba(52,211,153,.04)" stroke="#34d399" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="55" y="183" fill="#34d399" font-size="9" font-weight="600">通过条件</text>
-<text x="55" y="200" fill="#cbd5e1" font-size="8">G1: 6 组件交互正确，7 TC 全绿 · G2: localStorage 两 key 读写正确</text>
-<text x="55" y="218" fill="#cbd5e1" font-size="8">G3: 勾选→进度更新 &lt; 50ms · G4: 键盘 1-9 跳过 input 聚焦态</text>
-
-<rect x="560" y="165" width="500" height="80" rx="6" fill="rgba(251,113,133,.04)" stroke="#fb7185" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="575" y="183" fill="#fb7185" font-size="9" font-weight="600">阻断后果</text>
-<text x="575" y="200" fill="#cbd5e1" font-size="8">G1/G2 Hard 阻断: 必须修复，不允许绕过</text>
-<text x="575" y="218" fill="#cbd5e1" font-size="8">G3/G4 可降级处理，但需记录为 P1 改进项</text>
-</svg>
-</div>
-<div class="cards">
-<div class="card" style="--accent:var(--emerald)">
-<div class="card-header"><div class="card-dot emerald"></div><h3>通过策略</h3><span class="card-sub">P0</span></div>
-<ul>
-<li>每道门禁<b>独立判定</b>，不互相抵消</li>
-<li>Hard 阻断必须修复，Medium/Soft 可降级但必须记录</li>
-<li>门禁结果加入 self-improve 反馈输入</li>
-</ul>
-<div class="chip-row"><span class="chip ok">独立</span><span class="chip info">可追溯</span></div>
-</div>
-<div class="card" style="--accent:var(--rose)">
-<div class="card-header"><div class="card-dot rose"></div><h3>自改进清单</h3><span class="card-sub">P1/P2</span></div>
-<ul>
-<li>localStorage key 含场景标识 s2 避免冲突</li>
-<li>步骤状态自动推导无需手动标记</li>
-<li>交付物扩展名自动类型标注零维护成本</li>
-<li>撤销/重做支持（P2）· 勾选动画反馈（P2）</li>
-</ul>
-<div class="chip-row"><span class="chip ok">4/6 完成</span><span class="chip warn">2 P2 待办</span></div>
-</div>
-</div>
-</section>
-
-<!-- Tab 5: Milestones -->
-<section class="tab-panel" id="panelMile">
-<div class="diagram-container">
-<svg viewBox="0 0 1100 180" xmlns="http://www.w3.org/2000/svg">
-<defs>
-<pattern id="g5" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width=".5"/></pattern>
-</defs>
-<rect width="100%" height="100%" fill="url(#g5)"/>
-<text x="50" y="28" fill="#a78bfa" font-size="10" font-weight="600">5 个里程碑 · 从组件设计到签收交付</text>
-<text x="1050" y="28" fill="#475569" font-size="8" text-anchor="end">每个里程碑有可验证的完成标志</text>
-
-<line x1="80" y1="80" x2="1020" y2="80" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="4 3" opacity=".6"/>
-
-<!-- M1 -->
-<circle cx="100" cy="80" r="14" fill="#020617" stroke="#34d399" stroke-width="2.5"/>
-<path d="M 94 80 L 99 85 L 107 76" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="100" y="115" fill="#34d399" font-size="9" font-weight="600" text-anchor="middle">M1 · 组件拆分</text>
-<text x="100" y="130" fill="#cbd5e1" font-size="7.5" text-anchor="middle">6 组件独立定义</text>
-
-<!-- M2 -->
-<circle cx="310" cy="80" r="14" fill="#020617" stroke="#34d399" stroke-width="2.5"/>
-<path d="M 304 80 L 309 85 L 317 76" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="310" y="115" fill="#34d399" font-size="9" font-weight="600" text-anchor="middle">M2 · TC 设计</text>
-<text x="310" y="130" fill="#cbd5e1" font-size="7.5" text-anchor="middle">7 套 26 断言</text>
-
-<!-- M3 -->
-<circle cx="520" cy="80" r="14" fill="#020617" stroke="#fbbf24" stroke-width="2.5"/>
-<text x="520" y="85" fill="#fbbf24" font-size="12" font-weight="700" text-anchor="middle">3</text>
-<text x="520" y="115" fill="#fbbf24" font-size="9" font-weight="600" text-anchor="middle">M3 · JS 落地</text>
-<text x="520" y="130" fill="#cbd5e1" font-size="7.5" text-anchor="middle">~270 行内联 JS</text>
-
-<!-- M4 -->
-<circle cx="730" cy="80" r="14" fill="#020617" stroke="#a78bfa" stroke-width="2.5"/>
-<text x="730" y="85" fill="#a78bfa" font-size="12" font-weight="700" text-anchor="middle">4</text>
-<text x="730" y="115" fill="#a78bfa" font-size="9" font-weight="600" text-anchor="middle">M4 · Schema v1</text>
-<text x="730" y="130" fill="#cbd5e1" font-size="7.5" text-anchor="middle">2 localStorage keys</text>
-
-<!-- M5 -->
-<circle cx="940" cy="80" r="14" fill="#020617" stroke="#fb7185" stroke-width="2.5"/>
-<text x="940" y="85" fill="#fb7185" font-size="12" font-weight="700" text-anchor="middle">5</text>
-<text x="940" y="115" fill="#fb7185" font-size="9" font-weight="600" text-anchor="middle">M5 · 签收</text>
-<text x="940" y="130" fill="#cbd5e1" font-size="7.5" text-anchor="middle">5 方签收</text>
-</svg>
-</div>
-<div class="timeline">
-<div class="tl-item done">
-<div class="tl-title">M1 · 6 组件拆分完成 <span class="tl-when done">D-3</span></div>
-<div class="tl-meta">完成标志: 勾选/折叠/标签/风险行/交付物过滤/路径复制 6 组件事件+状态+DOM hook 定义</div>
-<div class="tl-desc">将 <code>checklist-interact</code> 模块按职责拆为 6 个独立组件，定义事件契约 + 状态机 + DOM hook（data-* 命名）。</div>
-</div>
-<div class="tl-item done">
-<div class="tl-title">M2 · TC-10~16 设计就绪 <span class="tl-when done">D-2</span></div>
-<div class="tl-meta">完成标志: 7 套测试用例 + 26 项检查点</div>
-<div class="tl-desc">为 6 组件各设计测试用例，含组件级单元测试 + 集成测试（TC-13 localStorage 持久化）+ 交互测试（TC-14~16）。</div>
-</div>
-<div class="tl-item warn">
-<div class="tl-title">M3 · checklist-interact.js 落地 <span class="tl-when warn">D-1</span></div>
-<div class="tl-meta">完成标志: Data/Template/Renderer 三层 + 6 组件 ~270 行零依赖内联 JS</div>
-<div class="tl-desc">实现 6 组件 + 2 个 script 块内联于计划清单.html。TC-10~16 全部通过，Gate G1-G4 全绿。</div>
-</div>
-<div class="tl-item warn">
-<div class="tl-title">M4 · localStorage Schema v1 发布 <span class="tl-when warn">D-0</span></div>
-<div class="tl-meta">完成标志: 2 个 localStorage key 含场景标识 s2</div>
-<div class="tl-desc">发布 <b>Schema v1.1</b>: <code>yry-arch-s2-checklist</code> + <code>yry-arch-s2-checklist-tab</code>。步骤状态自动推导（完成/就绪/待开始），交付物扩展名自动类型标注。</div>
-</div>
-<div class="tl-item future">
-<div class="tl-title">M5 · 签收 + P2 改进 <span class="tl-when">D+1</span></div>
-<div class="tl-meta">完成标志: 5 方签收 + P2 改进项进入 backlog</div>
-<div class="tl-desc">6 组件功能完整，TC 100% 通过。P2 改进项（撤销/重做、勾选动画反馈）进入下轮迭代。</div>
-</div>
-</div>
-</section>
-
-<p class="footer">YrY v4.5 · 系统架构 · 清单交互组件实现 · 6 组件 · 3 层架构</p>
-</div>
-<script src="../../../../cdn/yry-arch/index.js"></script>
 <script src="../../../../cdn/shared/index.js"></script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
 <script src="../../../../cdn/yry-export-toolbar/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
+<script src="../../../../cdn/yry-info-cards/index.js"></script>
 </body>
 </html>

@@ -17,6 +17,8 @@ lifecycle: default-pipeline
 
 技术趋势发现。查询 GitHub Trending、OSS Insight、TrendShift、Top-Starred 四个数据源，输出结构化趋势报告。可执行脚本：`node skills/rui-trends/rui-trends.mjs <command>`；Claude 上下文中由 implementing agent 执行 WebFetch + 结构化提取 + 格式化输出。
 
+**单一职责**：外部技术趋势数据采集。查询外部数据源，输出结构化趋势快照。不负责代码分析（[rui-analysis](../rui-analysis/)），不负责技能安装（[rui-skills](../rui-skills/)），不负责趋势持久化（[rui-bundle-analyze](../rui-bundle-analyze/)）。
+
 [数据源全景](#数据源全景) · [命令](#命令) · [工作流](#工作流) · [输出格式](#输出格式) · [自改进集成](#自改进集成) · [计划集成](#计划集成) · [降级策略](#降级策略) · [数据新鲜度](#数据新鲜度) · [通知面板集成](#通知面板集成)
 
 ## 数据源全景
@@ -152,7 +154,7 @@ flowchart LR
 
 > 本技能是自改进管线 D5 诊断的核心数据源，同时跨 D0/D3/D6 提供外部参照基线。趋势数据为实时快照，不替代基线文件判断——仅作为外部信号辅助诊断假设的证伪或支撑。
 >
-> 集成锚点：[skills/rui-yry/rules/self-improve.md](../rui-yry/rules/self-improve.md)（诊断规则 D0–D7 · 提案路由 · E1–E4）· [skills/rui-yry/self-improve.md](../rui-yry/self-improve.md)（数据源表 · 操作流程）
+> 集成锚点：[skills/rui-yry/rules/self-improve.md](../rui-yry/rules/self-improve.md)（诊断规则 D0-D8 · 提案路由 · E1-E4）· [skills/rui-yry/self-improve.md](../rui-yry/self-improve.md)（数据源表 · 操作流程）
 
 ### 诊断 × 子命令映射
 
@@ -166,7 +168,7 @@ flowchart LR
   'tertiaryColor': '#21232f'
 }}}%%
 flowchart LR
-    subgraph 诊断["D0–D7 诊断"]
+    subgraph 诊断["D0-D8 诊断"]
         D0["D0 基线偏离<br/>技术栈社区趋势下降"]
         D3["D3 复杂度增长<br/>新兴工具可简化架构"]
         D5["D5 依赖退化<br/>外部参考新鲜度验证"]
@@ -366,6 +368,46 @@ node skills/rui-trends/rui-trends.mjs all --html
 2. 追加条目到 `docs/趋势报告/reports.json`（最多 50 条）
 3. 前端面板刷新后自动展示最新快照
 
+
+## 测试
+
+> 技术趋势发现的数据源可达性、趋势信号分类、诊断映射和降级策略的自动化验证。
+
+### 运行测试
+
+```bash
+npx vitest run skills/rui-trends/tests/          # 全量运行
+npx vitest skills/rui-trends/tests/              # 监听模式
+npx vitest run --coverage skills/rui-trends/tests/  # 覆盖率报告
+```
+
+### 测试文件
+
+| 文件 | 测试范围 | 类型 |
+|------|---------|:---:|
+| `tests/rui-trends.test.mjs` | 数据源查询、趋势信号分类、诊断映射、输出格式 | 单元 |
+
+### 测试策略
+
+| 层级 | 范围 | 要求 |
+|------|------|------|
+| **数据源测试** | 4 数据源查询逻辑、响应解析 | mock 各数据源响应 |
+| **信号分类测试** | 新兴工具/持续增长/快速下降/高星验证/排名变化 | 每种信号类型有测试 |
+| **诊断映射测试** | D0/D3/D5/D6 诊断触发条件 | 触发/不触发双路径 |
+| **降级测试** | 数据源不可达、JS 渲染、API 限速、数据不足 | 每种降级路径有测试 |
+
+### 覆盖要求
+
+| 维度 | 最低阈值 | 目标 |
+|------|:---:|:---:|
+| 数据源覆盖 | 100% | 4 个数据源各有测试 |
+| 信号分类 | 100% | 5 种信号类型各有测试 |
+| 诊断映射 | 100% | D0/D3/D5/D6 各有测试 |
+| 降级路径 | 100% | 7 种降级情况各有测试 |
+
+## 规则
+
+- [trend-analysis.md](./rules/trend-analysis.md) — 技术趋势发现和分析的规则
 ## 自循环
 
 > 技术趋势持续监控。Agent 可按间隔周期性自主执行，无需人工触发。
@@ -394,4 +436,55 @@ flowchart LR
     classDef op fill:#2b2d3b,stroke:#3d59a1,color:#a9b1d6
     classDef warn fill:#fbbf24,color:#000
     classDef done fill:#34d399,color:#000
+```
+
+> 本技能 `checkMode: "cli"`——由 dispatcher（`lib/loop/dispatcher.mjs`）按 `0 9 * * 1` 自动调度。6 字段契约与调度规则详见 [rules/loop-engineering.md](../rui/rules/loop-engineering.md)。
+
+## 趋势分析方法论
+
+### 信号分类
+
+| 信号类型 | 来源 | 含义 | 响应 |
+|---------|------|------|------|
+| **新兴工具** | GitHub Trending 新上榜 | 社区关注度快速上升 | D0 诊断：评估是否应纳入技术栈 |
+| **持续增长** | TrendShift 90 天持续上升 | 稳定增长趋势，值得关注 | D5 诊断：评估替代现有依赖 |
+| **快速下降** | TrendShift 90 天持续下降 | 社区兴趣转移，可能被废弃 | D5 诊断：评估迁移需求 |
+| **高星验证** | Top-Starred 高星项目 | 社区验证的成熟方案 | 计划阶段：技术选型参考 |
+| **排名变化** | OSS Insight 排名变动 | 竞争格局变化 | D3 诊断：评估架构简化机会 |
+
+### 趋势信号 → 诊断映射
+
+| 趋势信号 | 触发诊断 | 诊断动作 |
+|---------|---------|---------|
+| 核心依赖在 TrendShift 中持续下降 | D5 依赖退化 | 评估替代方案，生成迁移提案 |
+| 新工具在 GitHub Trending 连续 3 周上榜 | D0 基线偏离 | 评估是否应纳入技术栈基线 |
+| 项目使用的技术栈在 OSS Insight 排名下降 | D6 文档过时 | 更新技术选型文档 |
+| 多个同类工具快速上升 | D3 架构简化 | 评估是否可简化现有架构 |
+
+### 趋势数据可信度
+
+| 数据源 | 可信度 | 偏差风险 | 补偿策略 |
+|--------|:---:|---------|---------|
+| GitHub Trending | 中 | 短期炒作、语言偏好 | 结合 TrendShift 长期趋势 |
+| OSS Insight | 高 | 仅统计 GitHub 公开数据 | 结合 npm/pypi 下载量 |
+| TrendShift | 高 | 依赖 star 数据，可能被刷 | 结合 OSS Insight 多维度 |
+| Top-Starred | 中 | 历史积累，非当前活跃度 | 结合近期 commit 频率 |
+
+## 与 rui 的关系
+
+`/rui-trends` 是独立于 rui 编排管线的外部数据采集技能。由 rui-yry 自改进闭环的 D0/D3/D5/D6 诊断调用，也被 plan 阶段的技术选型验证消费。不参与故事管线，但为诊断假设提供外部趋势信号。
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6', 'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1', 'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    YRY["rui-yry D0/D3/D5/D6"]:::sub -.->|"调用"| TRENDS["/rui-trends<br/>四源趋势采集"]:::phase
+    PLAN["rui-plan 技术选型"]:::sub -.->|"消费"| TRENDS
+    TRENDS --> REPORT["趋势快照 + HTML 报告"]:::out
+
+    classDef phase fill:#2b2d3b,stroke:#3d59a1,color:#a9b1d6
+    classDef sub fill:#7c3aed,color:#fff
+    classDef out fill:#34d399,color:#000
 ```

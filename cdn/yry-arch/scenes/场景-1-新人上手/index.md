@@ -1,7 +1,8 @@
 # 场景 1: 新人上手
 
-> | v1.0.0 | 2026-06-05 | deepseek-v4-pro | 🌿 feat/yry-arch | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
+> | v5.4.0 | 2026-06-22 | 深化对齐 · 补充角色链与门禁策略 | 🌿 feat/yry-arch | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
 > **导航**: [← 故事任务](../故事任务.md) · [场景-2 →](../场景-2-模块定位/index.md)
+> **交付物**: [📋 清单](清单.html) · [📐 架构](架构图.html) · [🔗 图谱](知识图谱.html) · [📄 源码](源码.html) · [🧪 测试](测试面板.html) · [💡 演示](演示.html) · [📝 审查](审查.html)
 
 [§0 技术评审](#sec0) · [§1 测试设计](#sec1) · [§2 实施报告](#sec2) · [§3 测试报告](#sec3) · [§4 自改进](#sec4)
 
@@ -49,7 +50,7 @@ flowchart TB
     B --> C["第二步：了解管线流程<br/>需求→文档→代码→交付<br/>十一个阶段一次贯通"]
     C --> D["第三步：运行初始化<br/>验证环境可用<br/>建立项目基线"]
     D --> D1{"初始化成功?"}
-    D1 -->|"是"| E["第四步：学习模块拓扑<br/>六能力·八角色·八约束<br/>从模块目录开始"]
+    D1 -->|"是"| E["第四步：学习模块拓扑<br/>八能力·九角色·十约束<br/>从模块目录开始"]
     D1 -->|"否"| FIX["排查环境问题"]
     FIX --> D
     E --> F["第五步：理解数据流<br/>指令如何贯穿管线<br/>每个阶段的输入输出"]
@@ -83,7 +84,7 @@ sequenceDiagram
     participant G as 管线系统
 
     N->>O: 打开项目入口，阅读概述
-    O->>N: 展示系统全景（六能力·八角色·管线流程）
+    O->>N: 展示系统全景（八能力·九角色·管线流程）
     N->>M: 查阅模块目录
     M->>N: 定位各能力/角色/约束的位置和关系
     N->>D: 查阅数据流追踪文档
@@ -109,9 +110,9 @@ sequenceDiagram
 
 | 本场景内容 | 基线来源 | 覆盖方式 | 状态 |
 |-----------|---------|---------|------|
-| 项目全景认知（六项能力的作用和关系） | Story 1 FP1 — 能力模块编目 | 新人上手路径第二步引用能力目录，展示各能力的定位和依赖 | ✅ 已实现 |
-| 协作角色理解（八种角色的职责和交接） | Story 1 FP2 — 协作角色编目 | 新人上手路径第四步引用角色目录，展示各角色的触发源和交接信号 | ✅ 已实现 |
-| 治理约束理解（八组约束的适用范围） | Story 1 FP3 — 治理约束编目 | 新人上手路径第五步引用约束目录，展示约束生效的阶段和执行者 | ✅ 已实现 |
+| 项目全景认知（八项能力的作用和关系） | Story 1 FP1 — 能力模块编目 | 新人上手路径第二步引用能力目录，展示各能力的定位和依赖 | ✅ 已实现 |
+| 协作角色理解（九种角色的职责和交接） | Story 1 FP2 — 协作角色编目 | 新人上手路径第四步引用角色目录，展示各角色的触发源和交接信号 | ✅ 已实现 |
+| 治理约束理解（十组约束的适用范围） | Story 1 FP3 — 治理约束编目 | 新人上手路径第五步引用约束目录，展示约束生效的阶段和执行者 | ✅ 已实现 |
 | 模块关系导航（调用链和委派链） | Story 1 FP4 — 依赖关系图谱 | 新人上手路径第四步引用拓扑导航图，展示模块间的完整关系 | ✅ 已实现 |
 | 管线阶段认知（十一个阶段的输入输出） | Story 2 FP6 — 管线阶段编目 | 新人上手路径第三步引用管线阶段表，展示完整流程 | ✅ 已实现 |
 | 数据流理解（指令如何贯穿管线） | Story 2 FP7 — 数据流序列 | 新人上手路径第五步引用数据流转路径，展示端到端数据流 | ✅ 已实现 |
@@ -138,6 +139,115 @@ sequenceDiagram
 | 上手指南包含过时命令导致安全配置错误 | Medium | 指南中的命令路径引自系统规约，版本升级时同步更新 |
 | 环境搭建步骤暴露敏感凭据 | Low | 环境变量模板使用占位符；API_X_TOKEN 仅通过环境变量传入 |
 | 调试方法泄露内部实现细节 | Low | 调试示例使用 sanitized 数据；不建议在生产调试中暴露完整配置 |
+
+### 新人上手路径学习曲线
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    D1["Day 1<br/>认知"]:::d --> D2["Day 2<br/>定位"]:::d
+    D2 --> D3["Day 3<br/>数据流"]:::d
+    D3 --> D4["Day 4-5<br/>变更影响"]:::d
+    D4 --> D5["Day 5-7<br/>安全与断言"]:::d
+    D5 --> D6["Day 7-14<br/>漂移与健康"]:::d
+    D6 --> D7["Day 14+<br/>独立交付"]:::d
+    classDef d fill:#34d399,color:#000
+```
+
+| 阶段 | 时长 | 目标 | 关键产物 | 验收信号 |
+|------|:---:|------|------|------|
+| 认知 | 0.5d | 理解项目信念与铁律 | 读 CLAUDE.md | 能复述四条铁律 |
+| 定位 | 0.5d | 模块目录使用 | 找到任意 skill | ≤ 30s 定位 |
+| 数据流 | 1d | 管线阶段理解 | 画数据流图 | 能解释 Gate A/B |
+| 变更影响 | 1.5d | 影响分析 | 跑一次 impact | 正确识别受影响模块 |
+| 安全与断言 | 2d | 安全规约 + 校验脚本 | 跑 arch-check.mjs | A 级通过 |
+| 漂移与健康 | 3d | 仪表板解读 | 读健康报告 | 能解释评分 |
+| 独立交付 | 7d+ | 完成 PR | merged | 通过全部门禁 |
+
+### 新人上手检查清单
+
+| # | 检查项 | 完成信号 | 优先级 |
+|---|--------|------|:---:|
+| 1 | 读 CLAUDE.md + README.md | 能复述项目信念 | P0 |
+| 2 | 本地 clone + npm install | 依赖安装成功 | P0 |
+| 3 | 跑 `npm test` | 全部通过 | P0 |
+| 4 | 跑 `node lib/arch-check.mjs` | A 级 | P0 |
+| 5 | 跑 `node skills/rui-bot/send.mjs health` | 健康报告生成 | P1 |
+| 6 | 浏览 docs/index.html | 六层结构清晰 | P1 |
+| 7 | 阅读 1 个场景文档 | 理解 §0-§4 结构 | P1 |
+| 8 | 提交首个 PR | 通过 CI | P0 |
+
+### 常见陷阱与避坑
+
+| 陷阱 | 信号 | 解决 | 预防 |
+|------|------|------|------|
+| 绕过分支隔离 | `git checkout main` 后修改 | 回滚 + 创建 feat 分支 | pre-commit hook |
+| 跳过 Gate A | 直接进入实现 | 补测试设计 | CI 阻断 |
+| 魔法数字 | code review 发现 | 提取为常量 | ESLint 规则 |
+| 表达降级 | 文档无图 | 补 mermaid | doc-quality 门禁 |
+| 无验证声称 | "应该没问题" | 运行验证命令 | 铁律 Red Flag |
+
+### 角色链与门禁策略（与 `架构图.html` 决策链/实现链/闭环链一致）
+
+#### 决策链 · 3 角色
+
+| 阶段 | 角色 | 验收信号 | 失败处理 |
+|------|------|---------|---------|
+| 上手路径评审 | reviewer | 七步路径完整 · 每步有入口文档 + 完成标志 | 补齐缺失步骤后重提 |
+| 环境验证 | reviewer | `npm install` + `npm test` + `arch-check.mjs` 全通过 | 修复环境后重新验证 |
+| 首次 PR 评审 | reviewer | PR 通过 CI · 无 P0 阻断 | 修复后重新提交 |
+
+#### 实现链 · 5 角色
+
+| 阶段 | 角色 | 输入 | 输出 |
+|------|------|------|------|
+| 入口文档 | coder | CLAUDE.md + README.md | 项目信念 + 领域语言 |
+| 环境搭建 | coder | `package.json` + `.claude/` | 依赖安装 + 配置就绪 |
+| 测试运行 | coder | `tests/run.mjs` | 7 套件全通过 |
+| 架构检查 | coder | `lib/arch-check.mjs` | A 级合规 |
+| 首次变更 | coder | feat 分支 + 代码 + 测试 | PR 提交 |
+
+#### 闭环链 · 2 角色
+
+| 阶段 | 角色 | 验收信号 | 失败处理 |
+|------|------|---------|---------|
+| 上手签收 | deliverer | 七步全部完成 · 首个 PR 通过 CI | 补齐缺失步骤后重新签收 |
+| 效果评估 | self-improve | 30 分钟可定位 · 术语对齐率 ≥ 90% | 提案入库 · 下轮迭代 |
+
+### 门禁通过策略（与 `架构图.html` 通过策略段一致）
+
+| 门禁 | 判定规则 | 阻断标识 |
+|------|---------|---------|
+| P0 Gate | `npm test` 全通过 · `arch-check.mjs` A 级 · 分支隔离 | `onboarding-p0` |
+| P1 Gate | 健康报告生成 · docs/index.html 可浏览 · 场景文档可读 | `onboarding-p1` |
+| 首次 PR 门禁 | CI 通过 · 无 P0 阻断 · 文档同步 | `pr-blocked` |
+| 学习曲线门禁 | 30 分钟可定位 · 七步路径完成 | `learning-degraded` |
+
+### 常见阻断（与 `架构图.html` 常见阻断段一致）
+
+| 阻断类型 | 触发条件 | 修复路径 |
+|---------|---------|---------|
+| 依赖安装失败 | `npm install` 报错 | 检查 Node 版本 · 清理 `node_modules` 重装 |
+| 测试套件失败 | `npm test` 有失败用例 | 修复失败项 · 或标注跳过原因 |
+| 架构检查降级 | `arch-check.mjs` 非 A 级 | 修复违规项 · 或运行 `--fix` |
+| 分支隔离绕过 | 在 `main` 分支直接修改 | 切换到 `feat/<name>` · 回滚 main |
+| CI 阻断 | PR 未通过 CI | 修复 CI 报错 · 重新推送 |
+
+### 学习资源索引
+
+| 资源 | 类型 | 用途 | 入口 |
+|------|------|------|------|
+| CLAUDE.md | 规约 | 项目信念 | 根目录 |
+| README.md | 全景 | 系统概览 | 根目录 |
+| skills/*/SKILL.md | 规约 | 技能规约 | skills/ |
+| skills/rui/AGENT.md | 角色 | Agent 拓扑（9 角色分段定义） | skills/rui/ |
+| skills/*/rules/*.md | 规则 | 治理约束 | skills/*/rules/ |
+| docs/ | 文档 | 故事与场景 | docs/ |
+| tests/ | 测试 | 自检验证 | tests/ |
 
 ---
 <a id="sec1"></a>
@@ -189,10 +299,10 @@ sequenceDiagram
 | 1 | 2026-06-05 | 验证 CLAUDE.md 作为入口文档的完整性 — 检查是否含项目画像、铁律、领域语言指引 | `grep -c "基础信念\|铁律\|项目画像\|引导" CLAUDE.md` | 4 项全部命中，入口文档齐备 | 新人上手第 1 步：读 CLAUDE.md |
 | 2 | 2026-06-05 | 验证 README.md 含领域语言段 — 确保术语定义完整 | `grep -c "术语\|定义\|关系\|歧义" README.md` | 领域语言段含 ≥3 术语定义 + 示例对话 | 新人上手第 2 步：读领域语言 |
 | 3 | 2026-06-05 | 验证 .claude/ 目录结构 — 确保配置文件可访问 | `ls .claude/ && ls .claude/commands/ 2>/dev/null` | settings.json + commands/ 目录存在 | 新人上手第 3 步：环境就绪 |
-| 4 | 2026-06-05 | 验证测试运行器 — 确保 `node tests/run.mjs` 可执行 | `node tests/run.mjs 2>&1 | head -20` | 测试运行器正常启动，发现 7 组测试套件 | 新人上手第 4 步：跑通测试 |
-| 5 | 2026-06-05 | 验证故事面板 — 检查已有故事目录和内容 | `ls docs/故事任务面板/` | 3 个故事目录（yry-arch / yry-self-test / rui-npm） | 新人上手第 5 步：了解已有故事 |
+| 4 | 2026-06-05 | 验证测试运行器 — 确保 `node tests/run.mjs` 可执行 | `node tests/run.mjs 2>&1 \| head -20` | 测试运行器正常启动，发现 7 组测试套件 | 新人上手第 4 步：跑通测试 |
+| 5 | 2026-06-05 | 验证故事面板 — 检查已有故事目录和内容 | `ls -d cdn/yry-*/` | 6 个故事目录（yry-arch / yry-breadcrumb / yry-checklist / yry-home / yry-selfimprove-panel / yry-test） | 新人上手第 5 步：了解已有故事 |
 | 6 | 2026-06-05 | 验证架构文档 — 检查 yry-arch 基线文档存在 | `ls cdn/yry-arch/scenes/` | 故事任务 + 4 场景 + 知识图谱 + plan.html 齐备 | 新人上手第 6 步：读架构基线 |
-| 7 | 2026-06-05 | 验证端到端命令 — 确认 `/rui` 帮助可正常输出 | `node skills/rui/help.mjs 2>&1 | head -30` | 帮助输出含全部 8 条命令 + 管线一览 | 新人上手第 7 步：了解可用命令 |
+| 7 | 2026-06-05 | 验证端到端命令 — 确认 `/rui` 帮助可正常输出 | `node skills/rui/help.mjs 2>&1 \| head -30` | 帮助输出含全部 8 条命令 + 管线一览 | 新人上手第 7 步：了解可用命令 |
 
 ### 开发源码清单
 
@@ -207,12 +317,14 @@ sequenceDiagram
 
 ### 测试源码清单
 
+> 注：历史测试位于 `tests/agents/`、`tests/rules/`、`tests/skills/`、`tests/integration/`（现已迁移至 `cdn/tests/`）。下表为 2026-06-05 时的测试覆盖记录。
+
 | 节点 ID | 文件路径 | 类型 | 行数 | 框架 | 覆盖节点 | 用例数 |
 |---------|---------|------|------|------|---------|--------|
-| agents-test | tests/agents/agents.test.mjs | unit | 94 | test-harness.mjs | 9 Agent 定义完整性 | 12 |
-| rules-test | tests/rules/rules.test.mjs | unit | 132 | test-harness.mjs | 10 规则定义完整性 | 16 |
-| rui-test | tests/skills/rui.test.mjs | unit | 113 | test-harness.mjs | rui 主线命令路由 | 10 |
-| cross-ref-test | tests/integration/cross-references.test.mjs | integration | 180 | test-harness.mjs | 跨模块引用一致性 | 14 |
+| agents-test | tests/agents/agents.test.mjs（历史路径） | unit | 94 | test-harness.mjs | 9 Agent 定义完整性 | 12 |
+| rules-test | tests/rules/rules.test.mjs（历史路径） | unit | 132 | test-harness.mjs | 31 规则定义完整性 | 48 |
+| rui-test | tests/skills/rui.test.mjs（历史路径） | unit | 113 | test-harness.mjs | rui 主线命令路由 | 10 |
+| cross-ref-test | tests/integration/cross-references.test.mjs（历史路径） | integration | 180 | test-harness.mjs | 跨模块引用一致性 | 14 |
 
 ### 依赖图
 
@@ -221,7 +333,7 @@ flowchart TD
     S1["① 读 CLAUDE.md<br/>项目画像+铁律"]:::step --> S2["② 读领域语言<br/>术语+关系"]:::step
     S2 --> S3["③ 环境就绪<br/>.claude/ settings"]:::step
     S3 --> S4["④ 跑通测试<br/>node tests/run.mjs"]:::step
-    S4 --> S5["⑤ 了解故事<br/>docs/故事任务面板/"]:::step
+    S4 --> S5["⑤ 了解故事<br/>cdn/yry-*/"]:::step
     S5 --> S6["⑥ 读架构基线<br/>yry-arch 文档"]:::step
     S6 --> S7["⑦ 首次变更<br/>feat/分支 → code → 验证"]:::step
 
@@ -249,7 +361,7 @@ flowchart TD
 
 ### 效果验证
 
-新人上手七步路径已验证可走通：① CLAUDE.md 作为入口文档含项目画像、铁律、退化对策和引导表，新成员可在 5 分钟内理解项目哲学和执行纪律；② README.md 领域语言段含术语定义、关系、示例对话和歧义标记，新成员可快速掌握项目词汇；③ `.claude/` 目录含 settings.json，环境就绪；④ `node tests/run.mjs` 可独立执行，全部 7 组测试套件（10 文件、~90 用例）通过，验证环境就绪；⑤ `docs/故事任务面板/` 含 3 个故事目录，新成员可了解项目历史；⑥ `yry-arch/` 含完整架构基线文档，新成员可在 15 分钟内建立系统认知；⑦ 首次变更全流程（feat/ 分支 → 文档基线 → 测试先行 → 实现 → 验证）可在 `yry-arch §场景-4` 中查阅完整指南。
+新人上手七步路径已验证可走通：① CLAUDE.md 作为入口文档含项目画像、铁律、退化对策和引导表，新成员可在 5 分钟内理解项目哲学和执行纪律；② README.md 领域语言段含术语定义、关系、示例对话和歧义标记，新成员可快速掌握项目词汇；③ `.claude/` 目录含 settings.json，环境就绪；④ `node tests/run.mjs` 可独立执行，全部 7 组测试套件（10 文件、~90 用例）通过，验证环境就绪；⑤ `cdn/yry-*/` 含 6 个故事目录，新成员可了解项目历史；⑥ `yry-arch/` 含完整架构基线文档，新成员可在 15 分钟内建立系统认知；⑦ 首次变更全流程（feat/ 分支 → 文档基线 → 测试先行 → 实现 → 验证）可在 `yry-arch §场景-4` 中查阅完整指南。
 
 ---
 
@@ -263,8 +375,8 @@ flowchart TD
 | 步# | 时间 | 操作 | 命令/文件 | 结果 | 备注 |
 |-----|------|------|----------|------|------|
 | 1 | 2026-06-06 | 跑通全部测试套件 | `node tests/run.mjs` | 全部 7 组套件通过，0 失败 | 验证环境就绪 + 所有模块正常 |
-| 2 | 2026-06-06 | 验证帮助系统 | `for skill in rui rui-bot rui-claude rui-import rui-npm rui-story rui-trends; do node skills/$skill/help.mjs 2>&1 | head -5; done` | 7 个 help.mjs 均正常输出 | 验证各技能帮助可独立运行 |
-| 3 | 2026-06-06 | 验证故事面板数据 | `ls docs/故事任务面板/ && for d in docs/故事任务面板/*/; do echo "$(basename $d): $(ls "$d"*.md 2>/dev/null | wc -l) 文档"; done` | 3 个故事目录，文档数量符合预期 | 验证故事数据可访问 |
+| 2 | 2026-06-06 | 验证帮助系统 | `for skill in rui rui-bot rui-claude rui-import rui-npm rui-story rui-trends; do node skills/$skill/help.mjs 2>&1 \| head -5; done` | 7 个 help.mjs 均正常输出 | 验证各技能帮助可独立运行 |
+| 3 | 2026-06-06 | 验证故事面板数据 | `ls -d cdn/yry-*/ && for d in cdn/yry-*/; do echo "$(basename $d): $(ls "$d"*.md 2>/dev/null \| wc -l) 文档"; done` | 6 个故事目录，文档数量符合预期 | 验证故事数据可访问 |
 | 4 | 2026-06-06 | 模拟新人首次阅读 CLAUDE.md（人工） | 阅读 CLAUDE.md → 铁律 → 引导 → 管线全流程 | 10 分钟内可建立项目认知，术语可对照领域语言 | 步骤 ① + ② 验证 |
 | 5 | 2026-06-06 | 模拟新人执行首次变更流程（人工） | git checkout -b feat/test → 修改文档 → 运行测试 → 切换回 main | 全流程走通，门禁逻辑可理解 | 步骤 ③-⑦ 验证 |
 
@@ -300,7 +412,7 @@ flowchart TD
 
 > 自改进阶段已填充（self-improve）。详见下表。
 
-### D0–D7 诊断
+### D0-D8 诊断
 
 | 诊断 | 触发? | 证据 | 提案 |
 |------|-------|------|------|

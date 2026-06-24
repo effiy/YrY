@@ -131,7 +131,7 @@ flowchart LR
 | 计划 | rui-plan | 故事目录 | plan.html + 计划清单.html | plan.html 存在 · 六项自审查通过 |
 | 实现 | rui-code | 故事目录 + 计划 | §2 实施报告 + 源码变更 | P0 全模块清零 · Gate B ≤2 轮 |
 | 增量更新 | rui-update | 故事名 + 变更上下文 | 按 T 级刷新的文档/代码 | 版本号 + version_history 已更新 |
-| 自改进 | rui-yry | 故事面板全量数据 | D0-D7 诊断 + proposals.jsonl | 提案已写入 · E1-E4 评估完成 |
+| 自改进 | rui-yry | 故事面板全量数据 | D0-D8 诊断 + proposals.jsonl | 提案已写入 · E1-E4 评估完成 |
 | 版本管理 | rui-version | 版本号/回退目标 | plugin.json + CLAUDE.md + 文档版本行 | 版本号全局一致 |
 | 面板管理 | rui-story | 故事名 (可选) | 状态概览/同步/删除 | 远端查询成功或同步完成 |
 | HTML 生成 | rui-html | 故事目录 | 7 类 HTML 文件 | 每场景 HTML 自包含可渲染 |
@@ -151,20 +151,69 @@ flowchart LR
 | 推荐评分 | [ranking.md](./ranking.md) — 5 层链式管线评分框架 |
 | 关注点 | [concerns/](./concerns/) — 集成 · 诊断 · 架构 · 交接 |
 | 共享脚本 | [lib/audit.mjs](../../lib/audit.mjs) · [lib/branch-check.mjs](../../lib/branch-check.mjs) · [lib/recommend.mjs](../../lib/recommend.mjs) · [lib/proposals.mjs](../../lib/proposals.mjs) · [lib/record.mjs](../../lib/record.mjs) |
-| 规则 | [code-pipeline](../rui-code/rules/code-pipeline.md) · [delivery-gate](./rules/delivery-gate.md) · [doc-generation](../rui-html/rules/doc-generation.md) · [self-improve](../rui-yry/rules/self-improve.md) · [rui-claude](../rui-claude/rules/rui-claude.md) |
+| 规则 | [code-pipeline](../rui-code/rules/code-pipeline.md) · [delivery-gate](./rules/delivery-gate.md) · [doc-generation](../rui-html/rules/doc-generation.md) · [self-improve](../rui-yry/rules/self-improve.md) · [rui-claude](../rui-claude/rules/rui-claude.md) · [agent-handoff](./rules/agent-handoff.md) · [architecture-principles](./rules/architecture-principles.md) · [design-principles](./rules/design-principles.md) · [mermaid-theme](./rules/mermaid-theme.md) · [security-guardrails](./rules/security-guardrails.md) |
+
+## 测试
+
+> 编排器路由、命令委托、阶段转换、Agent 契约和阻断标识的自动化验证。
+
+### 运行测试
+
+```bash
+npx vitest run skills/rui/tests/          # 全量运行
+npx vitest skills/rui/tests/              # 监听模式
+npx vitest run --coverage skills/rui/tests/  # 覆盖率报告
+```
+
+### 测试文件
+
+| 文件 | 测试范围 | 类型 |
+|------|---------|:---:|
+| `tests/rui.test.mjs` | 编排器路由、命令委托、阶段转换验证 | 单元 |
+| `tests/agents.test.mjs` | Agent 角色定义、交接信号契约格式 | 契约 |
+| `tests/rules.test.mjs` | 核心规则验证、铁律合规检查 | 单元 |
+| `tests/cross-references.test.mjs` | 跨技能引用完整性、文件路径可达性 | 集成 |
+| `tests/unit/engine.test.mjs` | 推荐引擎 5 层评分逻辑、排序算法 | 单元 |
+| `tests/infrastructure/framework-presence.test.mjs` | 测试框架就绪、vitest 配置验证 | 基础设施 |
+| `tests/infrastructure/third-party-reachability.test.mjs` | 外部资源可达性检查 | 基础设施 |
+
+### 测试策略
+
+| 层级 | 范围 | 要求 |
+|------|------|------|
+| **单元测试** | 路由表、阶段转换逻辑、推荐引擎评分 | 每个路由条目须有对应测试 |
+| **集成测试** | 编排器 → 子技能委托、管线闭合验证 | 关键路径全覆盖 |
+| **契约测试** | Agent 交接信号格式、子技能输入/输出边界 | 契约变更须同步更新测试 |
+| **基础设施测试** | 框架就绪、外部资源可达性 | CI 环境自动跳过不可达检查 |
+
+### 覆盖要求
+
+| 维度 | 最低阈值 | 目标 |
+|------|:---:|:---:|
+| 命令路由覆盖 | 100% | 每条路由规则有对应测试用例 |
+| 阻断标识覆盖 | 100% | 每个阻断标识有触发场景测试 |
+| 阶段转换覆盖 | 100% | 每个转换验证点有通过/阻断双路径测试 |
+| 降级策略覆盖 | ≥ 80% | 每种降级情况有对应测试 |
+
+### 测试编写规范
+
+- 测试文件命名：`tests/<feature>.test.mjs`
+- 使用 `describe`/`it` 结构，测试描述使用中文
+- 每个测试用例只验证一个行为
+- 外部依赖（API/网络）使用 mock，本地逻辑使用真实数据
 
 ## 降级策略
 
-| 情况 | 降级行为 |
-|------|---------|
-| 子技能执行失败 | 记录阻断标识，退回失败阶段 |
-| 需求无法解析 | 输出 `no-parse` 阻断，提示重新描述 |
-| 文档 P0 不通过且无法自修复 | 输出 `doc-p0` 阻断，人工介入 |
-| 分支隔离验证失败 | 输出 `no-branch-isolation` 阻断，引导切分支 |
-| Gate B > 2 轮 | 输出 `gate-b-limit` 阻断，质疑架构 |
-| self-improve 数据采集失败 | 输出 `no-metrics` 降级，不阻断交付 |
-| rui-import 同步失败 | 记录告警，不影响交付状态 |
-| rui-bot 通知失败 | 记录告警，不影响交付状态 |
+| 情况 | 降级行为 | 恢复方式 | 影响范围 |
+|------|---------|---------|---------|
+| 子技能执行失败 | 记录阻断标识，退回失败阶段 | 修复失败原因后重试 | 当前故事 |
+| 需求无法解析 | 输出 `no-parse` 阻断，提示重新描述 | 用户重新描述需求 | 当前故事 |
+| 文档 P0 不通过且无法自修复 | 输出 `doc-p0` 阻断，人工介入 | 人工修复文档 P0 | 当前故事 |
+| 分支隔离验证失败 | 输出 `no-branch-isolation` 阻断，引导切分支 | 切换到 feat/<name> 分支 | 当前故事 |
+| Gate B > 2 轮 | 输出 `gate-b-limit` 阻断，质疑架构 | 架构评审后重新设计 | 当前故事 |
+| self-improve 数据采集失败 | 输出 `no-metrics` 降级，不阻断交付 | 下次执行时重试采集 | 仅诊断 |
+| rui-import 同步失败 | 记录告警，不影响交付状态 | 手动执行 sync | 仅同步 |
+| rui-bot 通知失败 | 记录告警，不影响交付状态 | 入失败队列，flush 重试 | 仅通知 |
 
 ## 生效标志
 
@@ -185,3 +234,61 @@ flowchart LR
 | 分支隔离：写操作前 `git branch --show-current` 为 `feat/<name>` | 切到 feat 分支后重新执行 |
 | 文档公式：所有产出文档符合 F.meta + F.toc + F.nav | 补全缺失的公式元素 |
 | 交付收口：文档同步到远端 + 通知已发送 | 手动执行 sync + rui-bot |
+
+## 决策流
+
+> 编排器如何根据用户输入选择执行路径。
+
+```
+用户输入 /rui <sub> [args]
+  │
+  ├─ 无参数 → 推荐引擎 (5 层评分)
+  │
+  ├─ init → 直接委托 rui-init (六步管线)
+  │
+  ├─ doc <需求> → 委托 rui-doc
+  │   ├─ 需求可拆分 → 多故事串行
+  │   └─ 需求不可拆分 → 单故事
+  │
+  ├─ plan <name> → 委托 rui-plan
+  │   ├─ plan.html 不存在 → 生成计划
+  │   └─ plan.html 已存在 → 询问是否覆盖 (--force)
+  │
+  ├─ code <name> → 委托 rui-code
+  │   ├─ Gate A 通过 → 逐模块实现
+  │   ├─ Gate B 通过 → 交付
+  │   └─ 任一 Gate 失败 → 阻断 + 诊断
+  │
+  ├─ update <name> → 委托 rui-update
+  │   └─ 自动判定 T1/T2/T3 (可 --level 覆盖)
+  │
+  ├─ yry [--depth N] → 委托 rui-yry
+  │   └─ 循环至无改进空间或达到 depth 上限
+  │
+  └─ version --up|--rollback → 委托 rui-version
+```
+
+## 阶段转换验证
+
+> 编排器在每个阶段转换时验证子技能的输出。
+
+| 转换 | 验证点 | 阻断条件 |
+|------|--------|---------|
+| init → doc | CLAUDE.md + README.md + docs/index.html 存在且非空 | 任一文件缺失 |
+| doc → plan | 故事任务.md + 场景-N-<slug>.md 存在且 §0 含 mermaid | 文档基线不完整 |
+| plan → code | plan.html + 计划清单.html 存在且无 TODO/TBD | 计划缺失或有占位符 |
+| code → delivery | P0 全部清零 + Gate B ≤ 2 轮 | P0 未清零或 Gate B 超限 |
+| delivery → 完成 | import 同步 + bot 通知 | 同步/通知失败 (非阻断) |
+
+## 降级策略
+
+| 情况 | 降级行为 | 恢复方式 | 影响范围 |
+|------|---------|---------|---------|
+| 子技能执行失败 | 记录阻断标识，退回失败阶段 | 修复失败原因后重试 | 当前故事 |
+| 需求无法解析 | 输出 `no-parse` 阻断，提示重新描述 | 用户重新描述需求 | 当前故事 |
+| 文档 P0 不通过且无法自修复 | 输出 `doc-p0` 阻断，人工介入 | 人工修复文档 P0 | 当前故事 |
+| 分支隔离验证失败 | 输出 `no-branch-isolation` 阻断，引导切分支 | 切换到 feat/<name> 分支 | 当前故事 |
+| Gate B > 2 轮 | 输出 `gate-b-limit` 阻断，质疑架构 | 架构评审后重新设计 | 当前故事 |
+| self-improve 数据采集失败 | 输出 `no-metrics` 降级，不阻断交付 | 下次执行时重试采集 | 仅诊断 |
+| rui-import 同步失败 | 记录告警，不影响交付状态 | 手动执行 sync | 仅同步 |
+| rui-bot 通知失败 | 记录告警，不影响交付状态 | 入失败队列，flush 重试 | 仅通知 |

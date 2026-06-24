@@ -236,44 +236,302 @@ function analyzeTrendData(data, source) {
 function buildTechRecommendations(analysis) {
   if (!analysis.topLanguages || analysis.topLanguages.length === 0) return "";
 
-  const aiLangs = analysis.topLanguages.filter(([l]) =>
-    ["python", "typescript", "javascript", "rust"].includes(l.toLowerCase())
-  );
-  const recItems = [];
+  var aiLangs = analysis.topLanguages.filter(function(e) {
+    return ["python", "typescript", "javascript", "rust"].includes(e[0].toLowerCase());
+  });
+  var recItems = [];
 
+  // Language-specific recommendations
   if (aiLangs.length > 0) {
-    recItems.push("关注 <strong>" + aiLangs.map(([l]) => l).join("、") + "</strong> 生态的新工具和框架，评估引入 YrY 技术栈的可行性");
+    recItems.push({
+      icon: "🔤",
+      text: "关注 <strong>" + aiLangs.map(function(e) { return e[0]; }).join("、") + "</strong> 生态的新工具和框架，评估引入 YrY 技术栈的可行性",
+      action: "建议每季度进行一次技术栈审查，重点关注与 Claude Code 插件生态兼容的工具",
+    });
   }
 
-  const topCats = analysis.topCategories || [];
-  if (topCats.some(([c]) => c === "AI/ML")) {
-    recItems.push("AI/ML 领域持续活跃，可关注代码生成、自动化测试方向的 AI 工具，考虑集成到 SDLC 管线");
-  }
-  if (topCats.some(([c]) => c === "DevOps/Infra")) {
-    recItems.push("DevOps 工具热度上升，评估自动化部署和监控方案以提升工程化成熟度 CI/CD 维度评分");
-  }
-  if (topCats.some(([c]) => c === "语言/工具")) {
-    recItems.push("编程语言工具链活跃，关注 Rust/Go 等高性能语言的新进展，评估是否适合 YrY 性能敏感模块");
+  var topCats = analysis.topCategories || [];
+  var catNames = topCats.map(function(e) { return e[0]; });
+
+  // AI/ML recommendations
+  if (catNames.indexOf("AI/ML") >= 0) {
+    recItems.push({
+      icon: "🤖",
+      text: "AI/ML 领域持续活跃，可关注代码生成、自动化测试、智能代码审查方向的 AI 工具",
+      action: "评估 GitHub Copilot、Claude Code 等 AI 编码助手在 YrY 管线中的集成方式，优先在 rui-code 和 rui-analysis 技能中试点",
+    });
   }
 
+  // DevOps recommendations
+  if (catNames.indexOf("DevOps/Infra") >= 0) {
+    recItems.push({
+      icon: "🚀",
+      text: "DevOps 工具热度上升，自动化部署和监控方案值得关注",
+      action: "评估 GitHub Actions 工作流优化、容器化部署方案，目标是将 em_cicd 维度评分提升至 80+",
+    });
+  }
+
+  // Language/Tool recommendations
+  if (catNames.indexOf("语言/工具") >= 0) {
+    recItems.push({
+      icon: "🔧",
+      text: "编程语言工具链活跃，Rust/Go/TypeScript 等语言的新进展值得关注",
+      action: "关注 Rust 在 CLI 工具和 WASM 领域的应用，评估是否适合 YrY 性能敏感模块（如 arch-check、bundle-analyze）",
+    });
+  }
+
+  // Web/Frontend recommendations
+  if (catNames.indexOf("Web/前端") >= 0) {
+    recItems.push({
+      icon: "🎨",
+      text: "前端框架和工具链持续演进，Web Components 和 CSS 新特性值得关注",
+      action: "评估新 CSS 特性（Container Queries、View Transitions）在 YrY CDN 组件库中的应用，提升组件响应式评分",
+    });
+  }
+
+  // Security recommendations
+  if (catNames.indexOf("安全") >= 0) {
+    recItems.push({
+      icon: "🛡️",
+      text: "安全领域出现新工具和框架，依赖安全审计和漏洞检测工具值得关注",
+      action: "评估 npm audit 替代方案（如 Socket.dev、Snyk），增强 rui-npm 依赖安全审计的检测深度",
+    });
+  }
+
+  // Default recommendation
   if (recItems.length === 0) {
-    recItems.push("持续监控技术趋势，保持对新兴技术的敏感度，在技术选型决策时参考趋势数据");
+    recItems.push({
+      icon: "📡",
+      text: "持续监控技术趋势，保持对新兴技术的敏感度",
+      action: "建议在技术选型决策时参考趋势数据，优先选择社区活跃度高、更新频率稳定的技术",
+    });
+  }
+
+  var recHtml = recItems.map(function(r, i) {
+    return '<div style="padding:12px;margin-bottom:8px;background:rgba(15,23,42,.4);border-radius:8px;border:1px solid rgba(255,255,255,.06)">' +
+      '<div style="display:flex;align-items:flex-start;gap:10px">' +
+      '<span style="font-size:1.2rem;flex-shrink:0">' + r.icon + '</span>' +
+      '<div style="flex:1">' +
+      '<div style="font-size:.82rem;font-weight:600;color:var(--yry-text);margin-bottom:4px">' + (i + 1) + '. ' + r.text + '</div>' +
+      '<div style="font-size:.74rem;color:var(--yry-accent);line-height:1.5">💡 ' + r.action + '</div>' +
+      '</div>' +
+      '</div>' +
+      '</div>';
+  }).join("");
+
+  return '<div class="yry-card">' +
+    '<h2>🎯 技术选型建议 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">基于当前趋势的可行性分析</span></h2>' +
+    '<div style="margin-bottom:12px">' + recHtml + '</div>' +
+    '<div style="padding:10px 14px;border-radius:6px;background:rgba(59,130,246,.06);font-size:.78rem;color:var(--yry-text3);line-height:1.6">' +
+    '📌 以上建议基于 ' + (analysis.languages || 0) + ' 种语言、' + (analysis.topCategories ? analysis.topCategories.length : 0) + ' 个技术领域的自动分析。实际技术选型需结合项目具体需求、团队能力和维护成本综合评估。建议每季度进行一次全面的技术栈审查。' +
+    '</div>' +
+    '</div>';
+}
+
+/**
+ * Build a technology adoption lifecycle visualization.
+ * Categorizes technologies into Innovators → Early Adopters → Early Majority →
+ * Late Majority → Laggards based on star count and growth trajectory.
+ */
+function buildTechnologyAdoptionLifecycle(analysis) {
+  if (!analysis.maturity || analysis.maturity.length === 0) return "";
+
+  const lifecycleStages = [
+    { stage: "innovators", label: "🔬 创新者", range: "实验性技术", color: "#8b5cf6", desc: "前沿探索阶段，适合技术预研和原型验证" },
+    { stage: "earlyAdopters", label: "🚀 早期采用者", range: "快速增长期", color: "#22c55e", desc: "已验证价值，适合在非关键链路试点引入" },
+    { stage: "earlyMajority", label: "📈 早期大众", range: "规模化应用", color: "#3b82f6", desc: "生态成熟，适合作为核心基础设施选型" },
+    { stage: "lateMajority", label: "📊 晚期大众", range: "稳定维护期", color: "#f59e0b", desc: "广泛使用但增长放缓，关注替代方案" },
+    { stage: "laggards", label: "📉 落后者", range: "衰退/替换期", color: "#ef4444", desc: "技术债务积累，建议制定迁移计划" },
+  ];
+
+  // Map maturity stages to lifecycle stages
+  const lifecycleMap = {
+    emerging: "innovators",
+    growing: "earlyAdopters",
+    mature: "lateMajority",
+    declining: "laggards",
+  };
+
+  // Count by lifecycle stage
+  const stageCounts = {};
+  for (const m of analysis.maturity) {
+    const lc = lifecycleMap[m.stage] || "earlyMajority";
+    if (!stageCounts[lc]) stageCounts[lc] = { count: 0, samples: [] };
+    stageCounts[lc].count += m.count;
+    stageCounts[lc].samples.push(...m.samples.slice(0, 2));
+  }
+
+  const total = Object.values(stageCounts).reduce((s, v) => s + v.count, 0);
+  if (total === 0) return "";
+
+  const stages = lifecycleStages.map(ls => {
+    const data = stageCounts[ls.stage];
+    const count = data ? data.count : 0;
+    const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+    const samples = data ? data.samples.slice(0, 2).join(", ") : "";
+    const barWidth = Math.max(0, pct);
+
+    return `<div style="margin-bottom:10px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <span style="font-size:.78rem;font-weight:600">${ls.label} <span style="font-size:.68rem;color:var(--yry-text3);font-weight:400">${ls.range}</span></span>
+        <span style="font-size:.74rem;font-weight:700;color:${ls.color}">${count} 项 (${pct}%)</span>
+      </div>
+      <div style="height:8px;background:rgba(255,255,255,.05);border-radius:4px;overflow:hidden;margin-bottom:2px">
+        <div style="width:${barWidth}%;height:100%;background:${ls.color};border-radius:4px;transition:width .6s ease"></div>
+      </div>
+      <div style="font-size:.68rem;color:var(--yry-text3)">
+        ${ls.desc}${samples ? ` · 示例: ${samples}` : ""}
+      </div>
+    </div>`;
+  }).join("");
+
+  // Determine dominant stage
+  let dominantStage = lifecycleStages[2]; // default early majority
+  let maxCount = 0;
+  for (const ls of lifecycleStages) {
+    const count = (stageCounts[ls.stage] || {}).count || 0;
+    if (count > maxCount) { maxCount = count; dominantStage = ls; }
   }
 
   return `<div class="yry-card">
-    <h2>🎯 技术选型建议 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">基于当前趋势</span></h2>
-    <div style="display:flex;flex-direction:column;gap:8px">
-      ${recItems.map((r, i) => `<div class="yry-insight-item"><span class="yry-insight-icon">${i + 1}.</span><span class="yry-insight-text">${r}</span></div>`).join("")}
+    <h2>🔄 技术采用生命周期 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Technology Adoption Lifecycle</span></h2>
+    <div style="margin-bottom:12px;padding:10px;background:rgba(59,130,246,.08);border-radius:6px;border:1px solid rgba(59,130,246,.15)">
+      <span style="font-size:.78rem;color:var(--yry-text2)">📊 当前趋势数据处于 <b style="color:${dominantStage.color}">${dominantStage.label}</b> 阶段 — ${dominantStage.desc}</span>
     </div>
-    <div style="margin-top:12px;padding:10px 14px;border-radius:6px;background:rgba(59,130,246,.06);font-size:.78rem;color:var(--yry-text3)">
-      📌 以上建议基于当前快照的自动分析，实际技术选型需结合项目具体需求和团队能力综合评估
+    ${stages}
+    <div style="margin-top:8px;font-size:.68rem;color:var(--yry-text3)">
+      基于 Star 数、语言生态和项目年龄综合判断 · 创新者(&lt;500★) → 早期采用者(500-5K★) → 早期大众(5K-50K★) → 晚期大众(50K+★) → 落后者(衰退)
     </div>
   </div>`;
 }
 
 /**
- * Generate an HTML trend snapshot report and save to docs/趋势报告/.
+ * Build YrY-relevance analysis for trending projects.
+ * Scores each project for potential relevance to the YrY SDLC orchestration system.
  */
+function buildYrYRelevanceAnalysis(data, source) {
+  if (!data || data.length === 0) return "";
+
+  const YRY_KEYWORDS = {
+    high: ["claude", "anthropic", "llm", "ai-agent", "sdlc", "orchestrat", "pipeline", "workflow", "skill", "plugin", "code-generation", "code-review", "developer-tool", "devtools", "cli", "markdown", "documentation", "diagram", "mermaid"],
+    medium: ["typescript", "node", "vitest", "testing", "lint", "format", "git", "github", "api", "rest", "graphql", "json", "yaml", "config", "monorepo", "dependency", "bundle", "build", "ci-cd", "automation"],
+    low: ["react", "vue", "css", "html", "ui", "component", "design-system", "accessibility", "i18n", "database", "docker", "kubernetes", "monitoring", "logging"],
+  };
+
+  const scored = data.map(item => {
+    const name = (item.repo || item.name || "").toLowerCase();
+    const desc = (item.description || "").toLowerCase();
+    const lang = (item.language || "").toLowerCase();
+    const combined = name + " " + desc + " " + lang;
+
+    let score = 0;
+    let matchedKeywords = [];
+
+    for (const kw of YRY_KEYWORDS.high) {
+      if (combined.includes(kw)) { score += 5; matchedKeywords.push(kw); }
+    }
+    for (const kw of YRY_KEYWORDS.medium) {
+      if (combined.includes(kw)) { score += 3; matchedKeywords.push(kw); }
+    }
+    for (const kw of YRY_KEYWORDS.low) {
+      if (combined.includes(kw)) { score += 1; matchedKeywords.push(kw); }
+    }
+
+    return { ...item, yryScore: score, yryKeywords: matchedKeywords.slice(0, 5) };
+  });
+
+  const relevant = scored.filter(s => s.yryScore >= 5).sort((a, b) => b.yryScore - a.yryScore).slice(0, 8);
+
+  if (relevant.length === 0) {
+    // Fallback: show top projects even if low relevance
+    const top = scored.sort((a, b) => b.yryScore - a.yryScore).slice(0, 5);
+    if (top[0] && top[0].yryScore === 0) return "";
+    relevant.push(...top);
+  }
+
+  const relevanceLevel = (score) => {
+    if (score >= 15) return { label: "高相关", color: "#22c55e", bg: "rgba(34,197,94,.12)" };
+    if (score >= 8) return { label: "中相关", color: "#f59e0b", bg: "rgba(245,158,11,.12)" };
+    return { label: "低相关", color: "#3b82f6", bg: "rgba(59,130,246,.12)" };
+  };
+
+  const rows = relevant.map((r, i) => {
+    const rl = relevanceLevel(r.yryScore);
+    const stars = r.stars ? `⭐ ${r.stars}` : "";
+    return `<div style="padding:10px 14px;margin-bottom:6px;background:var(--yry-bg-card);border-radius:8px;border:var(--yry-border);display:flex;align-items:center;gap:12px">
+      <span style="font-size:.8rem;font-weight:700;color:var(--yry-accent);min-width:20px">${i + 1}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.84rem;font-weight:600;color:var(--yry-text)">${r.repo || r.name || "—"}</div>
+        <div style="font-size:.72rem;color:var(--yry-text3);margin-top:2px">${(r.description || "").slice(0, 80)}</div>
+        ${r.yryKeywords.length > 0 ? `<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">${r.yryKeywords.map(k => `<span style="padding:1px 6px;border-radius:3px;background:rgba(59,130,246,.1);font-size:.64rem;color:var(--yry-cyan)">${k}</span>`).join("")}</div>` : ""}
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <span style="padding:3px 8px;border-radius:4px;font-size:.68rem;font-weight:600;background:${rl.bg};color:${rl.color}">${rl.label} ${r.yryScore}</span>
+        ${stars ? `<div style="font-size:.68rem;color:var(--yry-text3);margin-top:2px">${stars}</div>` : ""}
+      </div>
+    </div>`;
+  }).join("");
+
+  return `<div class="yry-card">
+    <h2>🎯 YrY 相关性分析 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">YrY Relevance Scoring</span></h2>
+    <div style="margin-bottom:12px;font-size:.78rem;color:var(--yry-text2);padding:10px;background:rgba(59,130,246,.04);border-radius:6px">
+      📐 基于关键词匹配评估 trending 项目对 YrY (SDLC 编排系统) 的潜在价值 · 高相关(≥15): 直接可集成 · 中相关(≥8): 可参考设计 · 低相关(≥5): 有启发意义
+    </div>
+    ${rows}
+    ${relevant.length === 0 ? '<div style="text-align:center;color:var(--yry-text3);padding:12px;font-size:.78rem">当前快照中未发现与 YrY 技术栈高度相关的 trending 项目</div>' : ''}
+  </div>`;
+}
+
+/**
+ * Build a trend comparison summary showing changes from previous period.
+ * Uses historical data from reports.json to compare current vs previous snapshot.
+ */
+function buildTrendComparisonSummary(data, source) {
+  if (!data || data.length === 0) return "";
+
+  // Count by language for current data
+  const currentLangs = {};
+  for (const item of data) {
+    const lang = item.language || "Unknown";
+    currentLangs[lang] = (currentLangs[lang] || 0) + 1;
+  }
+
+  const sortedLangs = Object.entries(currentLangs)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 5);
+
+  if (sortedLangs.length === 0) return "";
+
+  // Overall summary statistics
+  const totalStars = data.reduce((s, item) => s + (parseInt(item.stars, 10) || 0), 0);
+  const uniqueLangs = Object.keys(currentLangs).length;
+
+  return `<div class="yry-card">
+    <h2>📊 数据快照摘要 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Snapshot Summary</span></h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:12px">
+      <div style="text-align:center;padding:12px;background:var(--yry-bg-card);border-radius:6px;border:var(--yry-border)">
+        <div style="font-size:1.4rem;font-weight:700;color:var(--yry-cyan)">${data.length}</div>
+        <div style="font-size:.68rem;color:var(--yry-text3)">总项目数</div>
+      </div>
+      <div style="text-align:center;padding:12px;background:var(--yry-bg-card);border-radius:6px;border:var(--yry-border)">
+        <div style="font-size:1.4rem;font-weight:700;color:var(--yry-accent)">${uniqueLangs}</div>
+        <div style="font-size:.68rem;color:var(--yry-text3)">编程语言</div>
+      </div>
+      <div style="text-align:center;padding:12px;background:var(--yry-bg-card);border-radius:6px;border:var(--yry-border)">
+        <div style="font-size:1.4rem;font-weight:700;color:#22c55e">${formatStarCount(totalStars)}</div>
+        <div style="font-size:.68rem;color:var(--yry-text3)">总 Star 数</div>
+      </div>
+      <div style="text-align:center;padding:12px;background:var(--yry-bg-card);border-radius:6px;border:var(--yry-border)">
+        <div style="font-size:1.4rem;font-weight:700;color:var(--yry-warn)">${sortedLangs[0] ? sortedLangs[0][0] : "—"}</div>
+        <div style="font-size:.68rem;color:var(--yry-text3)">主导语言</div>
+      </div>
+    </div>
+    <div style="font-size:.72rem;color:var(--yry-text3)">
+      📌 数据来源: ${SOURCE_META[source] ? SOURCE_META[source].label : source} · 快照时间: ${new Date().toISOString().slice(0, 10)} · 语言分布: ${sortedLangs.map(([l, c]) => `${l}(${c})`).join(", ")}
+    </div>
+  </div>`;
+}
+
 export function generateTrendReport({ source, url, data, trend, findings, ok }) {
   const meta = SOURCE_META[source] || { icon: '📡', label: source, url: '' };
   const ts = fmtDisplay(nowISO());
@@ -406,6 +664,12 @@ ${analysis.maturityHtml}
 
 ${buildTechRecommendations(analysis)}
 
+${buildTechnologyAdoptionLifecycle(analysis)}
+
+${buildYrYRelevanceAnalysis(data || [], source)}
+
+${buildTrendComparisonSummary(data || [], source)}
+
 <div class="yry-footer">
   趋势报告 · ${source} · ${ts}<br>
   <span style="color:var(--yry-text3)">由 rui-trends trend-report 自动生成</span>
@@ -433,7 +697,7 @@ export function updateTrendManifest(entry) {
     mkdirSync(REPORT_DIR, { recursive: true });
   }
 
-  const manifest = readJson(MANIFEST_FILE) || [];
+  let manifest = readJson(MANIFEST_FILE) || [];
 
   const normalized = { ...entry };
   const date = normalized.date || nowDate();

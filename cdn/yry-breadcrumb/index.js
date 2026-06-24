@@ -28,35 +28,23 @@
 (function () {
   'use strict';
 
-  /* ── 依赖检测: 必须先加载 Vue 3 ────────────────────────────────────── */
-  if (!window.Vue) {
-    console.warn('[YryBreadcrumb] Vue 3 未加载,组件已跳过注册。请先引入 vue.global.prod.js');
+  if (!window.YrYVueCE || typeof window.YrYVueCE.define !== 'function') {
+    console.warn('[YryBreadcrumb] shared/vue-ce-loader.js 未加载,组件已跳过注册');
     return;
   }
 
-  /* ── 常量 ──────────────────────────────────────────────────────────── */
   var TEMPLATE_ID = 'yry-breadcrumb-tpl';
+
   var READY_EVENT = 'yry-breadcrumb-ready';
+
   var TAG_NAME    = 'yry-breadcrumb';
+
   var LOAD_TIMEOUT_MS = 5000;
 
-  /* ── 计算 index.html 的绝对 URL (基于本脚本自身的 src) ────────────── */
-  var script = document.currentScript;
-  if (!script || !script.src) {
-    console.warn('[YryBreadcrumb] 无法获取当前脚本 URL,组件已跳过注册');
-    return;
-  }
-  var scriptUrl;
-  try {
-    scriptUrl = new URL(script.getAttribute('src'), window.location.href);
-  } catch (e) {
-    console.warn('[YryBreadcrumb] 解析脚本 URL 失败:', e);
-    return;
-  }
-  var templateUrl = new URL('index.html', scriptUrl).href;
-
-  /* ── 组件定义工厂 ──────────────────────────────────────────────────── */
-  function buildComponent(templateHTML) {
+  window.YrYVueCE.define({
+    componentName: 'YryBreadcrumb',
+    templateId: 'yry-breadcrumb-tpl',
+    buildComponent: function buildComponent(templateHTML) {
     return {
       name: 'YryBreadcrumb',
       props: {
@@ -71,53 +59,5 @@
       template: templateHTML
     };
   }
-
-  /* ── 派发 ready 事件 (页面挂载脚本监听) ───────────────────────────── */
-  function fireReady() {
-    document.dispatchEvent(new CustomEvent(READY_EVENT, { detail: { component: 'YryBreadcrumb' } }));
-  }
-
-  /* ── 加载模板并注册组件 ───────────────────────────────────────────── */
-  var timedOut = false;
-  var timeoutId = setTimeout(function () {
-    timedOut = true;
-    console.error('[YryBreadcrumb] 模板加载超时 (' + LOAD_TIMEOUT_MS + 'ms):', templateUrl);
-  }, LOAD_TIMEOUT_MS);
-
-  fetch(templateUrl, { credentials: 'same-origin' })
-    .then(function (r) {
-      if (!r.ok) throw new Error('HTTP ' + r.status + ' ' + r.statusText);
-      return r.text();
-    })
-    .then(function (htmlText) {
-      if (timedOut) return; // 已超时,放弃注册
-      clearTimeout(timeoutId);
-
-      var doc = new DOMParser().parseFromString(htmlText, 'text/html');
-      var tpl = doc.getElementById(TEMPLATE_ID);
-      if (!tpl) {
-        throw new Error('未找到 <script type="text/x-template" id="' + TEMPLATE_ID + '">');
-      }
-
-      var templateHTML = tpl.innerHTML;
-      window.YryBreadcrumb = buildComponent(templateHTML);
-
-      /* ── 注册为自定义元素(允许 <yry-breadcrumb> 标签直接使用) ───── */
-      if (typeof window.Vue.defineCustomElement === 'function') {
-        var YryBreadcrumbCE = window.Vue.defineCustomElement(
-          buildComponent(templateHTML),
-          { shadowRoot: false }
-        );
-        if (!customElements.get(TAG_NAME)) {
-          customElements.define(TAG_NAME, YryBreadcrumbCE);
-        }
-      }
-
-      fireReady();
-    })
-    .catch(function (err) {
-      if (timedOut) return;
-      clearTimeout(timeoutId);
-      console.error('[YryBreadcrumb] 模板加载失败:', err, '· URL:', templateUrl);
-    });
+  });
 })();

@@ -240,3 +240,11 @@ td a:hover { color: var(--yry-accent); }
   .health-summary, .health-ref { flex-direction: column; align-items: flex-start; text-align: center; }
   .cat-label { min-width: 80px; font-size: .68rem; }
 }
+
+/* ── Tab System (供报告子页面使用) ──────────────────────────────────── */
+.tab-nav { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,.06); padding-bottom: 0; flex-wrap: wrap; }
+.tab-btn { padding: 8px 20px; border-radius: 6px 6px 0 0; font-size: .78rem; font-weight: 600; cursor: pointer; border: 1px solid transparent; border-bottom: none; background: transparent; color: var(--yry-text3); transition: all .15s; }
+.tab-btn:hover { color: var(--yry-text); background: rgba(255,255,255,.03); }
+.tab-btn.active { color: #22d3ee; background: rgba(34,211,238,.06); border-color: rgba(34,211,238,.2); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }

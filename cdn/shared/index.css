@@ -99,6 +99,50 @@ html { scroll-behavior: smooth; }
 .yry-footer a { color: var(--yry-accent); text-decoration: none; }
 .yry-footer a:hover { text-decoration: underline; }
 
+/* ── Common Page Primitives ─────────────────────────────────────────────── */
+/* 主体淡入 — 避免首屏 FOUC 突兀 */
+.container { opacity: 0; transition: opacity .35s ease; }
+.container.is-ready { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .container { transition: none; }
+}
+
+/* skip-to-content 可访问性跳转 */
+.yry-skip-link {
+  position: absolute; left: -9999px; top: 0; z-index: 9999;
+  background: var(--yry-accent, #22d3ee); color: #0b0d14;
+  padding: 8px 14px; border-radius: 0 0 8px 0;
+  font-size: .8rem; font-weight: 600; text-decoration: none;
+}
+.yry-skip-link:focus { left: 0; }
+
+/* Vue 自定义元素骨架占位 — 挂载前避免布局跳动 */
+yry-breadcrumb, yry-scene-header, yry-stats-grid, yry-panel-hub {
+  display: block; min-height: 8px;
+}
+yry-scene-header:not(:defined), yry-stats-grid:not(:defined),
+yry-breadcrumb:not(:defined) {
+  background: linear-gradient(90deg,
+    rgba(30,41,59,.15) 0%, rgba(30,41,59,.4) 50%, rgba(30,41,59,.15) 100%);
+  background-size: 200% 100%; animation: yry-skel 1.4s ease-in-out infinite;
+  border-radius: 6px; min-height: 24px;
+}
+yry-scene-header:not(:defined) { min-height: 72px; margin: 8px 0; }
+yry-stats-grid:not(:defined)   { min-height: 64px; }
+@keyframes yry-skel {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  yry-scene-header:not(:defined), yry-stats-grid:not(:defined),
+  yry-breadcrumb:not(:defined) { animation: none; }
+}
+
+/* 锚点跳转修复 — 避免 sticky 元素遮挡 section 标题 */
+section[id], .sm-title[id], .sr-title[id] {
+  scroll-margin-top: 110px;
+}
+
 /* ── Health Report ───────────────────────────────────────────────────────── */
 .h-container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
 .h-tabs { display: flex; gap: 0; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 28px; animation: yry-fadeInDown .5s .1s ease both; }
@@ -257,3 +301,8 @@ html { scroll-behavior: smooth; }
 }
 
 @media print { .yry-toolbar { display: none !important; } }
+
+/* ═══ Back-to-top floating button ═══ */
+.yry-back-to-top { position: fixed; right: 20px; bottom: 20px; width: 36px; height: 36px; border-radius: 50%; background: rgba(34,211,238,.15); border: 1px solid rgba(34,211,238,.4); color: #22d3ee; font-size: 1rem; cursor: pointer; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s, background .15s; z-index: 1000; display: flex; align-items: center; justify-content: center; }
+.yry-back-to-top.show { opacity: 1; pointer-events: auto; }
+.yry-back-to-top:hover { background: rgba(34,211,238,.3); transform: translateY(-2px); }

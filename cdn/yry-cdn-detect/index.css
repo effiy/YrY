@@ -1,0 +1,43 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN · yry-cdn-detect · CDN 加载耗时检测样式
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Live Bar 容器 ── */
+.cdn-live-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 6px 16px;
+  font-size: .72rem;
+  font-family: var(--yry-font-mono, monospace);
+  background: rgba(15, 23, 42, .92);
+  border-top: 1px solid rgba(255, 255, 255, .06);
+  color: var(--yry-text2, #a0a0a4);
+  backdrop-filter: blur(8px);
+}
+
+.cdn-live-bar .lr-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cdn-live-bar .lr-label {
+  color: var(--yry-text3, #6e6e72);
+}
+
+.cdn-live-bar .lr-total {
+  color: var(--yry-accent, #FFC107);
+  font-weight: 600;
+}
+
+/* ── 颜色编码 ── */
+.cdn-live-bar .fast  { color: var(--yry-pass, #22c55e); }
+.cdn-live-bar .med   { color: var(--yry-warn, #f59e0b); }
+.cdn-live-bar .slow  { color: var(--yry-fail, #ef4444); }

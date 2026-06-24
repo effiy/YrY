@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  YryReportSection · 模板源 + Demo 预览页
+
+  本文件有 2 个用途:
+    1) **模板源** — index.js 通过 fetch 拉取本文件,提取 <script type="text/x-template"
+       id="yry-report-section-tpl"> 内容作为 Vue 组件的 template。
+    2) **Demo 预览** — 直接用浏览器打开本文件,即可看到 YryReportSection 的实际渲染效果。
+
+  加载链: ../shared/index.css → ../theme/index.css → index.css → Vue 3 → index.js
+  注: .sr-* 样式来自 docs/index.html 页面级 CSS,本页 demo 通过内联 style 模拟之
+  ═══════════════════════════════════════════════════════════════════════════
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryReportSection · Demo & Template</title>
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="../yry-inline-helpers/index.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    /* 模拟 docs/index.html 中的 .sr-* 样式 (页面级,非组件自带) */
+    .score-report {
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 12px;
+      padding: 18px 22px;
+      margin-bottom: 14px;
+    }
+    .sr-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .sr-title { color: var(--yry-text, #f5f5f5); font-size: .92rem; flex: 0 0 auto; }
+    .sr-meta-info { color: var(--yry-text3, #6b7280); font-size: .72rem; }
+    .sr-intro-box {
+      font-size: .72rem; color: var(--yry-text2, #a9b1d6); line-height: 1.8;
+      margin: 14px 0; padding: 10px 14px;
+      background: rgba(30, 41, 59, 0.3); border-radius: 6px;
+    }
+    .sr-links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+    .sr-links.is-tight-gap { gap: 8px 10px; }
+    .sr-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 10px; border: 1px solid rgba(255,255,255,.08);
+      border-radius: 6px; font-size: .74rem; color: var(--yry-text2, #d4d4d4);
+      text-decoration: none; background: rgba(255,255,255,.02);
+      transition: border-color .15s, background .15s;
+    }
+    .sr-link:hover {
+      border-color: var(--yry-accent, #22d3ee);
+      color: var(--yry-accent, #22d3ee);
+      background: rgba(34, 211, 238, .05);
+      text-decoration: none;
+    }
+    .sr-footer-note {
+      margin-top: 10px; font-size: .68rem;
+      color: var(--yry-text3, #6b7280); line-height: 1.6;
+    }
+    .sr-footer-note.is-tight { margin-top: 8px; }
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 1100px;
+      margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #22d3ee); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+  </style>
+</head>
+<body>
+
+  <h1><span class="accent">📋</span> YryReportSection · Vue 3 评分报告 Section 容器</h1>
+  <p class="demo-hint">
+    完整替换 docs/index.html 中的 <code>&lt;section class="score-report"&gt;</code> 结构。<br>
+    接受 <code>title</code> · <code>metaInfo</code> · <code>intro</code> · <code>links[]</code> · <code>footerNote</code> · 多个 id。<br>
+    内部使用 <code>&lt;yry-report-link&gt;</code> 渲染每条链接。<br>
+    模板源见下方 <code>&lt;script type="text/x-template" id="yry-report-section-tpl"&gt;</code> 块。
+  </p>
+
+  <yry-report-section id="demo-1"></yry-report-section>
+
+  <yry-report-section id="demo-2"></yry-report-section>
+
+  <hr>
+  <p class="demo-hint">👇 以下 <code>&lt;script type="text/x-template"&gt;</code> 即为组件的 <strong>template 源</strong></p>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       TEMPLATE SOURCE OF TRUTH · YryReportSection 的 template
+       ════════════════════════════════════════════════════════════════════ -->
+  <script type="text/x-template" id="yry-report-section-tpl">
+    <section :class="['score-report', sectionClass]" :id="id || null">
+      <div v-if="showHeader" class="sr-header">
+        <span class="sr-title" :id="titleId || null">{{ title }}</span>
+        <span v-if="metaInfo" class="sr-meta-info">{{ metaInfo }}</span>
+      </div>
+      <div v-if="intro" class="sr-intro-box" v-html="intro"></div>
+      <div v-if="links && links.length" :class="linksClass" :id="linksId || null">
+        <YryReportLink
+          v-for="(link, i) in links" :key="i"
+          v-bind="link" />
+      </div>
+      <div v-if="extraIntro" class="sr-intro-box" v-html="extraIntro"></div>
+      <div v-if="footerNote"
+           :class="['sr-footer-note', footerTight ? 'is-tight' : null]"
+           v-html="footerNote"></div>
+    </section>
+  </script>
+
+  <script src="../shared/vue-ce-loader.js"></script>
+  <script src="../yry-report-link/index.js"></script>
+  <script src="index.js"></script>
+
+  <script>
+    function mountDemos() {
+      /* Demo 1 — 标准用法:title + meta + intro + 4 links + footer */
+      var d1 = document.getElementById('demo-1');
+      d1.title = '🛠 技能市场 — 20 个 Skill 规约入口';
+      d1.metaInfo = '主线 5 · 管理 3 · 通知 2 · 工程 7 · 架构 3';
+      d1.intro = '每个 Skill 是<strong>自包含规约单元</strong>,含 frontmatter 元数据 + 触发条件 + IO 契约 + 退出码 + 示例。遵循 <strong>SRP 单一职责</strong>原则。';
+      d1.links = [
+        { href: '../skills/rui/SKILL.md',       emoji: '🛡', text: 'rui',       title: '主线编排器 — Gate A/B' },
+        { href: '../skills/rui-code/SKILL.md',  emoji: '⌨', text: 'rui-code',  title: '代码源码实现管线' },
+        { href: '../skills/rui-init/SKILL.md',   emoji: '🌱', text: 'rui-init',  title: '项目初始化' },
+        { href: '../skills/rui-yry/SKILL.md',    emoji: '🧬', text: 'rui-yry',   title: '自主自改进循环' }
+      ];
+      d1.footerNote = '共 20 个 SKILL.md 入口 · 每技能含 SKILL.md + 规则文件 · 全部 SKILL.md 已校验';
+
+      /* Demo 2 — 最小用法:仅 title + links */
+      var d2 = document.getElementById('demo-2');
+      d2.title = '📑 详细报告导航';
+      d2.links = [
+        { href: '健康报告/',  emoji: '🩺', text: '健康报告', title: '健康报告归档' },
+        { href: '评分报告/',  emoji: '📊', text: '评分报告', title: '八维加权评分详情' },
+        { href: '趋势报告/',  emoji: '📈', text: '趋势报告', title: '技术趋势发现与监控' }
+      ];
+      d2.linksClass = 'sr-links';
+    }
+    if (window.YryReportSection) mountDemos();
+    else document.addEventListener('yry-report-section-ready', mountDemos, { once: true });
+  </script>
+</body>
+</html>

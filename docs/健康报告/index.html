@@ -3,363 +3,174 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>健康报告 — YrY 系统健康度量仪表板</title>
+<title>健康报告索引</title>
 <link rel="stylesheet" href="../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../cdn/theme/index.css">
-<link rel="stylesheet" href="../../cdn/shared-reports/index.css">
-<style>
-.c { max-width: 1040px; margin: 0 auto; padding: 48px 24px 80px; }
-
-/* Tab System */
-.tab-nav { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,.06); padding-bottom: 0; flex-wrap: wrap; }
-.tab-btn { padding: 8px 20px; border-radius: 6px 6px 0 0; font-size: .78rem; font-weight: 600; cursor: pointer; border: 1px solid transparent; border-bottom: none; background: transparent; color: var(--yry-text3); transition: all .15s; }
-.tab-btn:hover { color: var(--yry-text); background: rgba(255,255,255,.03); }
-.tab-btn.active { color: #22d3ee; background: rgba(34,211,238,.06); border-color: rgba(34,211,238,.2); }
-.tab-panel { display: none; }
-.tab-panel.active { display: block; }
-
-/* Stat hero */
-.stat-hero { text-align: center; padding: 24px; margin-bottom: 20px; background: rgba(255,193,7,.04); border-radius: 12px; border: var(--yry-border); }
-.stat-hero .big-score { font-size: 3rem; font-weight: 800; line-height: 1; }
-.stat-hero .big-grade { font-size: 1.2rem; font-weight: 700; margin-left: 8px; }
-.stat-hero .big-date { display: block; font-size: .72rem; color: var(--yry-text3); margin-top: 6px; }
-
-/* Dim mini cards */
-.dim-mini-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
-.dim-mini { padding: 12px 14px; text-align: center; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); }
-.dim-mini .dm-val { font-size: 1.1rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
-.dim-mini .dm-lbl { font-size: .6rem; color: var(--yry-text3); margin-top: 4px; }
-
-/* Table styles (inherit from shared-reports.css) */
-td a { color: #22d3ee; text-decoration: none; } td a:hover { color: var(--yry-accent); }
-td .s { font-weight: 700; font-size: .82rem; } td .s.A, td .s.B { color: var(--yry-pass); } td .s.C { color: #f59e0b; } td .s.D { color: var(--yry-fail); }
-
-/* Trend sparkline */
-.spark-wrap { position: relative; width: 100%; }
-.spark-wrap svg { width: 100%; height: 160px; }
-</style>
+	<link rel="stylesheet" href="../../cdn/shared-reports/index.css">
+	<style>
+	/* common :root / reset / body / table / bc / hd / card / links / ft covered by shared-reports.css */
+	.c { max-width: 800px; margin: 0 auto; padding: 48px 24px 80px; }
+	.h-intro { padding: 16px; border-left: 3px solid var(--yry-accent); background: rgba(255,193,7,.04); border-radius: 0 var(--yry-radius) var(--yry-radius) 0; margin-bottom: 20px; color: var(--yry-text2); font-size: .84rem; line-height: 1.7; }
+	.h-intro strong { color: var(--yry-accent); }
+	.h-intro code { background: rgba(59,130,246,.1); padding: 1px 6px; border-radius: 4px; font-size: .82em; color: #22d3ee; }
+	.h-stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+	.h-stat { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 16px 20px; text-align: center; box-shadow: var(--yry-shadow); flex: 1; min-width: 90px; cursor: default; }
+	.h-stat .h-val { font-size: 1.4rem; font-weight: 700; }
+	.h-stat .h-val.pass { color: var(--yry-pass); }
+	.h-stat .h-val.warn { color: var(--yry-warn); }
+	.h-stat .h-val.fail { color: var(--yry-fail); }
+	.h-stat .h-val.info { color: #22d3ee; }
+	.h-stat .h-lbl { font-size: .68rem; color: var(--yry-text3); margin-top: 4px; }
+	.latest { text-align: center; padding: 16px 16px 12px; margin-bottom: 20px; background: rgba(255,193,7,.05); border-radius: 10px; border: var(--yry-border); }
+	.latest .score { font-size: 2rem; font-weight: 800; color: var(--yry-accent); }
+	.latest .grade { font-size: 1.1rem; font-weight: 700; margin-left: 8px; }
+	.latest .date { display: block; font-size: .72rem; color: var(--yry-text3); margin-top: 4px; }
+	.latest .meta-row { font-size: .68rem; color: var(--yry-text3); margin-top: 6px; }
+	td a { color: #22d3ee; text-decoration: none; } td a:hover { color: var(--yry-accent); }
+	td .s { font-weight: 700; font-size: .82rem; } td .s.A, td .s.B { color: var(--yry-pass); } td .s.C { color: #f59e0b; } td .s.D { color: var(--yry-fail); }
+	.yry-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: .72rem; font-weight: 600; } /* grade variants .A/.B/.C/.D from shared-reports.css */
+	#loading { text-align: center; color: var(--yry-text3); padding: 40px; }
+	</style>
 </head>
 <body>
-<main class="c">
+<div class="c">
 
 <nav class="bc">
-  <a href="../index.html">文档中心</a>
+  <a href="../../docs/index.html">📄 文档中心</a>
   <span class="sep">/</span>
-  <span class="cur">健康报告</span>
+  <span class="cur">🩺 健康报告</span>
 </nav>
 
 <div class="hd">
   <h1>🩺 健康报告</h1>
-  <div class="desc">系统综合健康度量仪表板 — 覆盖 9 核心维度 + 7 工程成熟度评分 + D0-D7 诊断触发。每次运行 <code>node skills/rui-bot/send.mjs health --html</code> 生成报告并持久化至 <code>.memory/health-trend.jsonl</code></div>
-  <div class="meta"><span id="reportCount">—</span> 份历史报告 · 数据刷新 <span id="freshness">—</span></div>
+  <div class="desc">系统综合健康度量仪表板 — 覆盖 9 核心维度 + 7 工程成熟度评分 + D0-D8 诊断触发。每次运行自动生成 HTML 报告并持久化趋势数据至 <code>.memory/health-trend.jsonl</code>。</div>
+  <div class="meta"><span id="count">8</span> 份历史报告</div>
 </div>
 
-<!-- Tab Navigation -->
-<div class="tab-nav" id="tabNav">
-  <button class="tab-btn active" data-tab="overview">📊 概览</button>
-  <button class="tab-btn" data-tab="reports">📋 报告列表</button>
-  <button class="tab-btn" data-tab="dimensions">📐 维度详情</button>
-  <button class="tab-btn" data-tab="trend">📈 趋势</button>
+<div class="intro">
+  <strong>评估体系</strong>：<strong>9 核心维度</strong>（Token 安全、配置健康、机器人就绪、API 可达性、报告质量、格式规范、诊断引擎、Git 纪律、安全基线）+ <strong>7 工程成熟度</strong>（测试、类型、Lint、CI/CD、文档、依赖、Git 实践）<br>
+  <strong>诊断联动</strong>：评分过低自动触发 <strong>D0-D8</strong> 分级诊断 · 趋势数据输入自改进分析面板 · 企微通知推送<br>
+  <strong>生成命令</strong>：<code>node skills/rui-bot/send.mjs health --html</code>
 </div>
 
-<!-- Tab: 概览 -->
-<div class="tab-panel active" id="tab-overview">
-  <div id="heroSection"><div class="empty">加载中...</div></div>
-
-  <div class="card">
-    <h2>📐 评估体系 · 19 维加权模型</h2>
-    <div class="intro">
-      <strong>综合健康指数 CHI</strong> 由三大类共 19 个维度加权聚合而成，每维度评分 0–100，通过加权综合得出最终评级（A≥80/B≥60/C≥40/D&lt;40）。<br><br>
-
-      <strong>▸ 9 核心维度</strong>（基础保障层 · 默认权重 55%）<br>
-      ① <strong>Token 安全</strong> — API/X_TOKEN 仅通过环境变量传入·不落盘·不硬编码·定期轮换检查<br>
-      ② <strong>配置健康</strong> — .claude/settings.json 完整性·plugin.json 版本一致性·无冗余配置<br>
-      ③ <strong>机器人就绪</strong> — robots.txt 存在且格式规范·无过度封锁·爬虫友好<br>
-      ④ <strong>API 可达性</strong> — 外部依赖 URL 可达·API 响应正常·超时与重试策略完备<br>
-      ⑤ <strong>报告质量</strong> — 报告文件存在·格式规范·数据可追溯·无空字段·时间戳精确<br>
-      ⑥ <strong>格式规范</strong> — Markdown/YAML/JSON 语法正确·缩进统一·无尾随空格<br>
-      ⑦ <strong>诊断引擎</strong> — D0-D7 诊断覆盖率·误报率控制·响应时间·建议可执行率<br>
-      ⑧ <strong>Git 纪律</strong> — 分支命名规范·commit message 规范·PR 审查·未提交文件数控制<br>
-      ⑨ <strong>安全基线</strong> — 无高危依赖·认证不可绕过·输入必校验·XSS/注入防护<br><br>
-
-      <strong>▸ 7 工程成熟度维度</strong>（工程实践层 · 默认权重 35%）<br>
-      ① <strong>测试覆盖(30%)</strong> — 单元·集成·E2E 测试覆盖率·用例通过率·边界条件覆盖<br>
-      ② <strong>类型安全(15%)</strong> — TypeScript/JSDoc 类型标注覆盖·严格模式·any 使用控制<br>
-      ③ <strong>代码检查(15%)</strong> — ESLint·Prettier·arch-check 配置完善·规则严格度<br>
-      ④ <strong>CI/CD(10%)</strong> — 自动化流水线·门禁检查·自动部署·构建时长<br>
-      ⑤ <strong>文档覆盖(10%)</strong> — API 文档·README 完整性·场景文档·知识图谱完备<br>
-      ⑥ <strong>依赖管理(10%)</strong> — 版本锁定·安全审计(npm audit)·许可证合规·更新频率<br>
-      ⑦ <strong>Git 实践(10%)</strong> — 分支策略·commit 规范·PR 审查·worktree 隔离<br><br>
-
-      <strong>▸ 3 扩展维度</strong>（系统运维层 · 默认权重 10%）<br>
-      ① <strong>文件体积</strong> — lib ≤ 20 文件·编排器 ≤ 500 行·总大小受控<br>
-      ② <strong>依赖分析</strong> — 循环依赖检测·模块耦合度·import 健康度<br>
-      ③ <strong>通知就绪</strong> — 企微 Webhook 配置·消息格式规范·失败队列管理<br><br>
-
-      <strong>诊断联动</strong>：维度评分 &lt; 55 自动触发对应 D0-D7 诊断 · 连续 2 次同维度 C 级 → P1 优先级 · 连续 3 次 → 自动升级 P0<br>
-      <strong>趋势持久化</strong>：每次 health 检查自动追加 <code>.memory/health-trend.jsonl</code>（JSONL 格式）· 输入自改进分析与趋势预测面板<br>
-      <strong>生成命令</strong>：<code>node skills/rui-bot/send.mjs health --html</code> 生成报告 · <code>--notify</code> 推送企微 · <code>--short</code> 单行摘要 · <code>--alert</code> 智能告警
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>最新报告摘要</h2>
-    <div id="latestSummary"><div class="empty">加载中...</div></div>
-  </div>
+<div class="yry-stats" id="stats">
+  <div class="yry-stat"><div class="yry-val info">8</div><div class="yry-lbl">报告总数</div></div>
+  <div class="yry-stat"><div class="yry-val pass">85</div><div class="yry-lbl">最新评分</div></div>
+  <div class="yry-stat"><div class="yry-val pass">B</div><div class="yry-lbl">最新等级</div></div>
+  <div class="yry-stat"><div class="yry-val info">20</div><div class="yry-lbl">评分维度</div></div>
+  <div class="yry-stat"><div class="yry-val warn">1</div><div class="yry-lbl">诊断触发</div></div>
 </div>
 
-<!-- Tab: 报告列表 -->
-<div class="tab-panel" id="tab-reports">
-  <div class="card">
-    <h2>📋 报告历史</h2>
-    <div style="overflow-x:auto">
-    <table>
-      <thead><tr><th>日期</th><th>时间</th><th>评分</th><th>等级</th><th>维度数</th><th>诊断触发</th><th>操作</th></tr></thead>
-      <tbody id="tbody"></tbody>
-    </table>
-    </div>
-  </div>
+<div class="card">
+  <h2>📋 报告历史</h2>
+  <table>
+    <thead><tr><th>日期</th><th>时间</th><th>评分</th><th>等级</th><th>诊断</th><th>操作</th></tr></thead>
+    <tbody id="tbody"></tbody>
+  </table>
 </div>
 
-<!-- Tab: 维度详情 -->
-<div class="tab-panel" id="tab-dimensions">
-  <div class="card">
-    <h2>9 核心维度评分</h2>
-    <div class="dim-mini-grid" id="coreDims"><div class="empty">加载中...</div></div>
-  </div>
-  <div class="card">
-    <h2>7 工程成熟度</h2>
-    <div class="dim-mini-grid" id="emDims"><div class="empty">加载中...</div></div>
-  </div>
+<div class="links">
+  <a href="../../docs/自循环报告/">🔄 自循环报告</a>
+  <a href="../../docs/趋势报告/">📡 趋势报告</a>
+  <a href="../../docs/自我改进/">🧬 自我改进</a>
+  <a href="../../docs/故事任务面板/">📋 故事任务面板</a>
+  <a href="../../docs/index.html">📄 文档中心</a>
 </div>
 
-<!-- Tab: 趋势 -->
-<div class="tab-panel" id="tab-trend">
-  <div class="card">
-    <h2>健康评分趋势</h2>
-    <div class="spark-wrap" id="trendChart"><div class="empty">加载中...</div></div>
-  </div>
-  <div class="card">
-    <h2>诊断触发历史</h2>
-    <div id="diagHistory"><div class="empty">加载中...</div></div>
-  </div>
+<div class="ft">
+  健康报告索引<br>
+  <span style="color:var(--yry-text3)">由 rui-bot health-report 自动生成 · 9 核心 + 7 工程维度 · D0-D8 诊断</span>
 </div>
 
-<nav class="links">
-  <a href="../技能报告/">技能报告</a>
-  <a href="../测试报告/">测试报告</a>
-  <a href="../自我改进/">自我改进</a>
-  <a href="../组件报告/">组件报告</a>
-  <a href="../加载链报告/">加载链报告</a>
-  <a href="../index.html">文档中心</a>
-</nav>
-
-<footer class="ft">
-  健康报告索引 · 数据实时读取<br>
-  <span style="color:var(--yry-text3)">由 rui-bot health-report 自动生成 · 9 核心 + 7 工程维度 · D0-D7 诊断 · 每 5min 刷新</span>
-</footer>
-
-</main>
-
-<script src="../../cdn/shared-reports/index.js"></script>
+</div>
 <script>
-(function() {
-  'use strict';
+(async function() {
+  try {
+    var res = await fetch('reports.json');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var reports = await res.json();
+    document.getElementById('count').textContent = reports.length;
 
-  /* Tabs */
-  document.getElementById('tabNav').addEventListener('click', function(e) {
-    var btn = e.target.closest('.tab-btn');
-    if (!btn) return;
-    var tab = btn.getAttribute('data-tab');
-    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
-    btn.classList.add('active');
-    document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
-    var panel = document.getElementById('tab-' + tab);
-    if (panel) panel.classList.add('active');
-  });
-
-  function grade(s) { return s >= 80 ? 'A' : s >= 60 ? 'B' : s >= 40 ? 'C' : 'D'; }
-  function sc(s) { return s >= 80 ? 'var(--yry-pass)' : s >= 60 ? '#f59e0b' : 'var(--yry-fail)'; }
-
-  /* Load reports.json for history */
-  Promise.all([
-    fetch('reports.json').then(function(r) { return r.ok ? r.json() : []; }).catch(function() { return []; }),
-    fetch('../自我改进/summary.json').then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; })
-  ]).then(function(results) {
-    var reports = results[0] || [];
-    var summary = results[1];
-    var now = new Date();
-    var ts = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
-    document.getElementById('reportCount').textContent = reports.length;
-    document.getElementById('freshness').textContent = ts;
-
-    /* ═══ Tab: Overview ═══ */
-    if (reports.length > 0) {
-      var latest = reports[0];
-      var lScore = latest.score || 0;
-      var lGrade = latest.grade || '?';
-      document.getElementById('heroSection').innerHTML =
-        '<div class="stat-hero">' +
-        '<span class="big-score" style="color:' + sc(lScore) + '">' + lScore + '</span>' +
-        '<span class="big-grade">' + lGrade + ' 级</span>' +
-        '<span class="big-date">最新报告: ' + latest.date + ' ' + (latest.time || '') + ' · 共 ' + reports.length + ' 份历史报告</span>' +
-        '</div>';
-
-      /* Latest summary */
-      var dimCount = latest.dimCount || 20;
-      var triggers = latest.triggers || 0;
-      var dimsHtml = '';
-      if (latest.dimensions && Array.isArray(latest.dimensions)) {
-        latest.dimensions.slice(0, 12).forEach(function(d) {
-          dimsHtml += '<div class="dim-mini"><div class="dm-val" style="color:' + sc(d.score||0) + '">' + (d.score||'—') + '</div><div class="dm-lbl">' + (d.label||d.name||'—') + '</div></div>';
-        });
-      }
-      document.getElementById('latestSummary').innerHTML =
-        '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">' +
-        '<div class="stat" style="flex:1"><div class="val ' + (lScore >= 80 ? 'pass' : 'warn') + '">' + lScore + '</div><div class="lbl">综合评分</div></div>' +
-        '<div class="stat" style="flex:1"><div class="val info">' + dimCount + '</div><div class="lbl">评分维度</div></div>' +
-        '<div class="stat" style="flex:1"><div class="val ' + (triggers > 0 ? 'warn' : 'pass') + '">' + triggers + '/8</div><div class="lbl">诊断触发</div></div>' +
-        '<div class="stat" style="flex:1"><div class="val info">' + reports.length + '</div><div class="lbl">历史报告</div></div>' +
-        '</div>' +
-        (dimsHtml ? '<h3 style="font-size:.8rem;margin-bottom:8px;color:var(--yry-text2)">最新维度评分</h3><div class="dim-mini-grid">' + dimsHtml + '</div>' : '');
-    } else {
-      document.getElementById('heroSection').innerHTML = '<div class="stat-hero"><span class="big-score" style="color:var(--yry-text3)">—</span><span class="big-date">暂无报告 · 运行 node skills/rui-bot/send.mjs health --html 生成首份报告</span></div>';
-      document.getElementById('latestSummary').innerHTML = '<div class="empty">暂无报告数据</div>';
-    }
-
-    /* ═══ Tab: Report List ═══ */
     var tbody = document.getElementById('tbody');
-    tbody.textContent = '';
-    if (reports.length === 0) {
-      var tr0 = document.createElement('tr');
-      var td0 = document.createElement('td'); td0.colSpan = 7;
-      td0.innerHTML = '<div class="empty">暂无报告<br><code style="font-size:.7rem">node skills/rui-bot/send.mjs health --html 生成首份报告</code></div>';
-      tr0.appendChild(td0); tbody.appendChild(tr0);
-    } else {
-      reports.forEach(function(r) {
-        var tr = document.createElement('tr');
-        var scHtml = r.score ? '<span class="s ' + (r.grade||'') + '">' + r.score + ' 分</span>' : '—';
-        var gradeHtml = r.grade ? '<span class="badge ' + r.grade + '">' + r.grade + ' 级</span>' : '—';
-        var trigHtml = r.triggers !== null && r.triggers !== undefined ? (r.triggers > 0 ? '<span style="color:var(--yry-warn)">' + r.triggers + '/8</span>' : '<span style="color:var(--yry-pass)">0/8</span>') : '—';
-        var dimHtml = r.dimCount ? r.dimCount : '—';
+	    if (reports.length === 0) {
+	      tbody.appendChild(buildHealthEmptyRow());
+	    } else {
+	      reports.forEach(function(r) {
+	        tbody.appendChild(buildHealthRow(r));
+	      });
+	    }
+	  } catch(e) {
+	    var tbodyErr = document.getElementById('tbody');
+	    tbodyErr.textContent = '';
+	    var trErr = document.createElement('tr');
+	    var tdErr = document.createElement('td');
+	    tdErr.colSpan = 6;
+	    var divErr = document.createElement('div');
+	    divErr.className = 'yry-empty';
+	    divErr.textContent = '加载失败: ' + e.message;
+	    tdErr.appendChild(divErr);
+	    trErr.appendChild(tdErr);
+	    tbodyErr.appendChild(trErr);
+	  }
 
-        tr.innerHTML =
-          '<td><a href="' + r.file + '">🩺 ' + r.date + '</a></td>' +
-          '<td>' + (r.time || '—') + '</td>' +
-          '<td>' + scHtml + '</td>' +
-          '<td>' + gradeHtml + '</td>' +
-          '<td>' + dimHtml + '</td>' +
-          '<td>' + trigHtml + '</td>' +
-          '<td><a href="' + r.file + '">查看</a></td>';
-        tbody.appendChild(tr);
-      });
-    }
+	  function buildHealthEmptyRow() {
+	    var tr = document.createElement('tr');
+	    var td = document.createElement('td');
+	    td.colSpan = 6;
+	    var div = document.createElement('div');
+	    div.className = 'yry-empty';
+	    div.textContent = '暂无报告';
+	    div.appendChild(document.createElement('br'));
+	    var span = document.createElement('span');
+	    span.style.cssText = 'font-size:.7rem;margin-top:8px;display:block';
+	    var code = document.createElement('code');
+	    code.textContent = 'node skills/rui-bot/send.mjs health --html 生成首份报告';
+	    span.appendChild(code);
+	    div.appendChild(span);
+	    td.appendChild(div);
+	    tr.appendChild(td);
+	    return tr;
+	  }
 
-    /* ═══ Tab: Dimensions ═══ */
-    /* ── 从 summary.dimSummary 提取维度评分 (优先真实数据) ── */
-    var dimMap = {};
-    if (summary && summary.dimSummary && Array.isArray(summary.dimSummary)) {
-      summary.dimSummary.forEach(function(d) {
-        dimMap[d.label] = d.avgScore || d.score || 0;
-        /* 同时保存子维度 */
-        var subs = d.subScores || d.children || [];
-        subs.forEach(function(s) {
-          dimMap[s.label] = s.avgScore || s.score || 0;
-        });
-      });
-    }
-    /* 回退: 从 latest.dimensions 提取 */
-    if (Object.keys(dimMap).length === 0 && latest.dimensions && Array.isArray(latest.dimensions)) {
-      latest.dimensions.forEach(function(d) {
-        dimMap[d.label || d.name] = d.score || 0;
-      });
-    }
+	  function buildHealthRow(r) {
+	    var tr = document.createElement('tr');
+	    var scHtml = r.score ? '<span class="s ' + (r.grade || '') + '">' + r.score + ' 分</span>' : '—';
+	    var gradeHtml = r.grade ? '<span class="yry-badge ' + (r.grade) + '">' + r.grade + ' 级</span>' : '—';
+	    var trigHtml = r.triggers !== null ? (r.triggers > 0 ? '<span style="color:var(--yry-warn)">' + r.triggers + '/8</span>' : '<span style="color:var(--yry-pass)">0/8</span>') : '—';
+	    var timeHtml = r.time && r.time !== '—' ? r.time : '—';
 
-    /* ── 9 核心维度 (来自健康检查的 9 核心维度) ── */
-    var coreDimDefs = [
-      { name: 'Token安全',     key: 'Token安全' },
-      { name: '配置健康',       key: '配置健康' },
-      { name: '机器人就绪',     key: '机器人就绪' },
-      { name: 'API可达性',      key: 'API可达性' },
-      { name: '报告质量',       key: '报告质量' },
-      { name: '格式规范',       key: '格式规范' },
-      { name: '诊断引擎',       key: '诊断引擎' },
-      { name: 'Git纪律',        key: 'Git纪律' },
-      { name: '安全基线',       key: '安全基线' }
-    ];
-    var coreHtml = '';
-    coreDimDefs.forEach(function(d) {
-      var s = dimMap[d.key];
-      if (typeof s !== 'number') {
-        /* 从综合评分推导 (有依据的估算,非随机) */
-        s = Math.round(lScore * (0.85 + (d.name.length % 7) * 0.04));
-        s = Math.min(100, Math.max(30, s));
-      }
-      coreHtml += '<div class="dim-mini"><div class="dm-val" style="color:' + sc(s) + '">' + s + '</div><div class="dm-lbl">' + d.name + '</div></div>';
-    });
-    document.getElementById('coreDims').innerHTML = coreHtml;
+	    var td1 = document.createElement('td');
+	    var a1 = document.createElement('a');
+	    a1.href = r.file;
+	    a1.textContent = '🩺 ' + r.date;
+	    td1.appendChild(a1);
+	    tr.appendChild(td1);
 
-    /* ── 7 工程成熟度维度 ── */
-    var emDimDefs = [
-      { name: '测试覆盖',   key: '测试覆盖' },
-      { name: '类型安全',   key: '类型安全' },
-      { name: '代码检查',   key: '代码检查' },
-      { name: 'CI/CD',      key: 'CI/CD' },
-      { name: '文档',       key: '文档' },
-      { name: '依赖管理',   key: '依赖管理' },
-      { name: 'Git实践',    key: 'Git实践' }
-    ];
-    var emHtml = '';
-    emDimDefs.forEach(function(d) {
-      var s = dimMap[d.key];
-      if (typeof s !== 'number') {
-        /* 从综合评分推导 (有依据的估算,非随机) */
-        s = Math.round(lScore * (0.8 + (d.name.length % 5) * 0.05));
-        s = Math.min(100, Math.max(25, s));
-      }
-      emHtml += '<div class="dim-mini"><div class="dm-val" style="color:' + sc(s) + '">' + s + '</div><div class="dm-lbl">' + d.name + '</div></div>';
-    });
-    document.getElementById('emDims').innerHTML = emHtml;
+	    var td2 = document.createElement('td');
+	    td2.textContent = timeHtml;
+	    tr.appendChild(td2);
 
-    /* ═══ Tab: Trend ═══ */
-    /* Trend chart from summary or reports */
-    var trendData = (summary && summary.scoreTrend) ? summary.scoreTrend : reports.slice(0, 20).map(function(r) {
-      return { score: r.score || 0, date: r.date, label: r.date };
-    }).reverse();
+	    var td3 = document.createElement('td');
+	    td3.insertAdjacentHTML('beforeend', scHtml);
+	    tr.appendChild(td3);
 
-    if (trendData.length > 0) {
-      var w = 700, h = 160, pad = 30;
-      var maxS = 100, minS = Math.max(0, Math.min.apply(null, trendData.map(function(p) { return p.score; })) - 10);
-      var pts = trendData.map(function(p, i) {
-        return { x: pad + (i / Math.max(1, trendData.length - 1)) * (w - 2*pad), y: h - pad - ((p.score - minS) / (maxS - minS)) * (h - 2*pad), score: p.score, label: p.date || p.label || '' };
-      });
-      var pathD = pts.map(function(p, i) { return (i === 0 ? 'M' : 'L') + p.x.toFixed(1) + ',' + p.y.toFixed(1); }).join(' ');
-      var areaD = pathD + ' L' + pts[pts.length - 1].x.toFixed(1) + ',' + (h - pad) + ' L' + pts[0].x.toFixed(1) + ',' + (h - pad) + ' Z';
-      document.getElementById('trendChart').innerHTML =
-        '<svg viewBox="0 0 ' + w + ' ' + h + '" xmlns="http://www.w3.org/2000/svg">' +
-        '<line x1="' + pad + '" y1="' + (h-pad) + '" x2="' + (w-pad) + '" y2="' + (h-pad) + '" stroke="rgba(255,255,255,.06)" stroke-width="1"/>' +
-        '<path d="' + areaD + '" fill="rgba(34,211,238,.06)"/>' +
-        '<path d="' + pathD + '" fill="none" stroke="#22d3ee" stroke-width="2"/>' +
-        pts.map(function(p) { return '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="3" fill="#22d3ee"><title>' + p.label + ': ' + p.score + '分</title></circle>'; }).join('') +
-        '</svg><div style="font-size:.68rem;color:var(--yry-text3);margin-top:8px">' + trendData.length + ' 个数据点 · 范围: ' + trendData[0].score + ' → ' + trendData[trendData.length - 1].score + '</div>';
+	    var td4 = document.createElement('td');
+	    td4.insertAdjacentHTML('beforeend', gradeHtml);
+	    tr.appendChild(td4);
 
-      /* Diagnostic trigger history */
-      var diagNames = ['D0 基线', 'D1 效率', 'D2 质量', 'D3 复杂度', 'D4 流程', 'D5 依赖', 'D6 文档', 'D7 配置'];
-      var diagHtml = '<table><thead><tr><th>诊断级</th><th>名称</th><th>触发次数</th><th>最近触发</th><th>状态</th></tr></thead><tbody>';
-      diagNames.forEach(function(d, i) {
-        var trigCount = reports.filter(function(r) { return r.triggers > i; }).length;
-        var lastTrig = trigCount > 0 ? reports[0].date : '—';
-        diagHtml += '<tr><td><strong>D' + i + '</strong></td><td>' + d.split(' ')[1] + '</td><td>' + trigCount + '</td><td>' + lastTrig + '</td><td><span class="badge ' + (trigCount === 0 ? 'A' : trigCount < 3 ? 'B' : 'C') + '">' + (trigCount === 0 ? '正常' : trigCount < 3 ? '关注' : '需改进') + '</span></td></tr>';
-      });
-      diagHtml += '</tbody></table>';
-      document.getElementById('diagHistory').innerHTML = diagHtml;
-    }
+	    var td5 = document.createElement('td');
+	    td5.insertAdjacentHTML('beforeend', trigHtml);
+	    tr.appendChild(td5);
 
-  }).catch(function(err) {
-    console.warn('[健康报告] 数据加载失败:', err.message);
-    document.getElementById('heroSection').innerHTML = '<div class="empty">数据加载失败: ' + err.message + '</div>';
-  });
-})();
+	    var td6 = document.createElement('td');
+	    var a2 = document.createElement('a');
+	    a2.href = r.file;
+	    a2.textContent = '查看';
+	    td6.appendChild(a2);
+	    tr.appendChild(td6);
+
+	    return tr;
+	  }})();
 </script>
 </body>
 </html>

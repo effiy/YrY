@@ -2,330 +2,63 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Loader 实现 · 测试面板 · YryBreadcrumb 任务故事</title>
-<link rel="stylesheet" href="../../../shared\/index\.css">
-<link rel="stylesheet" href="../../../theme\/index\.css">
-<link rel="stylesheet" href="../../../yry\-scene\/index\.css">
-<link rel="stylesheet" href="../../../yry\-checklist\/index\.css">
-<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
-<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
-<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
-<link rel="stylesheet" href="../../../yry-back-top/index.css">
-<link rel="stylesheet" href="../../../yry-scene-header/index.css">
-<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
-<link rel="stylesheet" href="../../../yry\-inline\-helpers\/index\.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<link rel="stylesheet" href="../../../yry\-a11y\/index\.css">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Loader实现 · 测试面板</title>
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-test-base.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-stats/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-health-bar/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-tabs/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
 <style>
-
-.container { max-width: 1100px; }
+/* Page-specific overrides — shared patterns in shared-b.css */
 </style>
 </head>
 <body>
-<a href="#main" class="skip-link">⏩ 跳到主要内容</a>
-<div class="container" id="main">
-<div id="breadcrumb-app"></div>
-<div id="scene-header-app"></div>
-<div id="scene-nav-app"></div>
+<div class="yry-container">
+<yry-scene-chrome
+  theme="b"
+  title="🧪 {ACCENT} · 测试面板"
+  title-accent="Loader 实现"
+  subtitle="场景 3 · 版本 vv5.4.0 · 2026-06-22"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-breadcrumb · yry-breadcrumb"},{"label":"场景 3 · Loader实现"},{"label":"🧪 测试面板"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","href":"架构图.html"},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","active":true},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","href":"审查.html"}]'>
+</yry-scene-chrome>
 
-<div id="cross-nav-app"></div>
+<yry-scene-stats items='[{"value":"—","label":"总断言","color":"t"},{"value":"—","label":"通过","color":"p"},{"value":"fetch reject 或 4xx/5xx","label":"失败","color":"f"},{"value":"0","label":"跳过","color":"s"},{"value":"—","label":"耗时","color":"info"}]'></yry-scene-stats>
+<yry-scene-health-bar segments=''></yry-scene-health-bar>
 
-<h2>测试摘要</h2>
-<div class="summary-card yry-summary-row">
-  <div class="ring-wrap">
-    <svg viewBox="0 0 80 80">
-      <circle class="ring-bg" cx="40" cy="40" r="34"/>
-      <circle class="ring-fill pass" cx="40" cy="40" r="34" stroke-dasharray="213.6" stroke-dashoffset="0"/>
-    </svg>
-    <div class="ring-center">100%</div>
-  </div>
-  <div class="yry-flex-grid-80">
-    <div class="stat-card"><div class="val pass">5</div><div class="lbl">测试项总计</div></div>
-    <div class="stat-card"><div class="val pass">5</div><div class="lbl">PASS</div></div>
-    <div class="stat-card"><div class="val">0</div><div class="lbl">FAIL</div></div>
-    <div class="stat-card"><div class="val info">100%</div><div class="lbl">通过率</div></div>
-  </div>
-</div>
-<div class="seg-bar-wrap">
-  <div class="seg-bar-outer">
-    <div class="seg pass seg--full"></div>
-    <div class="seg fail seg--empty"></div>
-  </div>
-  <div class="seg-bar-legend">
-    <span><span class="dot pass"></span>PASS 100%</span>
-    <span><span class="dot fail"></span>FAIL 0%</span>
-  </div>
-</div>
-
-<div class="check-progress">
-  <div class="cp-text"><span>自测进度</span><span class="cp-pct">100%</span></div>
-  <div class="cp-bar"><div class="cp-fill cp-fill--full"></div></div>
-</div>
-<button class="btn-clear-checks" onclick="document.querySelectorAll('.check-item').forEach(function(el){el.classList.add('checked')});updateCheckProgress();">🔄 重置全部为通过</button>
-
-<h2>测试用例</h2>
-<div class="live-bar">
-  <span class="live-dot"></span> 所有测试资源已加载
-  <span class="live-resource"><span class="lr-name">yry-scene.css</span><span class="lr-status">OK</span></span>
-  <span class="live-resource"><span class="lr-name">yry-breadcrumb</span><span class="lr-status">OK</span></span>
-</div>
-<div class="play-bar">
-  <button class="btn-play" id="btnRunTests" title="运行全部测试">
-    ▶ 运行测试套件
-  </button>
-  <button class="btn-reset" id="btnResetTests" title="重置测试结果">
-    ↻ 重置
-  </button>
-</div>
-<div class="log-box log-box--hidden" id="testLog">
-  <div class="log-line"><span class="log-time">T+0ms</span><span class="log-icon log-info">▶</span><span>启动测试套件...</span></div>
-</div>
-<table class="table-highlight">
-  <thead><tr><th>ID</th><th>用例名</th><th>输入 / 操作</th><th>预期结果</th><th>状态</th></tr></thead>
-  <tbody>
-    <tr class="row-pass"><td>TC1</td><td>正常加载流程</td><td>index.html 可正常访问，Vue 3 已加载</td><td>window.YryBreadcrumb 被赋值，ready 事件派发，页面挂载成功</td><td><span class="verdict pass">PASS</span></td></tr>
-    <tr class="row-pass"><td>TC2</td><td>fetch 超时降级</td><td>网络延迟 &gt; 5s 或人为阻塞</td><td>console.error 超时信息，timedOut=true，不注册组件</td><td><span class="verdict pass">PASS</span></td></tr>
-    <tr class="row-pass"><td>TC3</td><td>模板 id 缺失</td><td>index.html 中无 #yry-breadcrumb-tpl 元素</td><td>tpl 为 null，访问 .innerHTML 抛异常，catch 块捕获并 console.error</td><td><span class="verdict pass">PASS</span></td></tr>
-    <tr class="row-pass"><td>TC4</td><td>Vue 3 未加载</td><td>页面未引入 vue@3 CDN</td><td>console.warn 提示 Vue 3 未加载，提前 return，不抛异常</td><td><span class="verdict pass">PASS</span></td></tr>
-    <tr class="row-pass"><td>TC5</td><td>并发 mount 安全</td><td>多个脚本同时调用 mountBreadcrumb</td><td>{once:true} 保证 ready 事件只触发一次 mount，无重复挂载</td><td><span class="verdict pass">PASS</span></td></tr>
-  </tbody>
-</table>
-
-<h2>交互式自测</h2>
-<div class="check-list">
-  <div class="check-item checked">
-    <div class="ci-box"><span class="ci-check">✓</span></div>
-    <div class="ci-body">
-      <div class="ci-name">TC1: 正常加载流程</div>
-      <div class="ci-desc">index.html 可正常访问，Vue 3 已加载 — window.YryBreadcrumb 被赋值，ready 事件派发，挂载成功。</div>
+<yry-scene-tabs tabs='[{"id":"cases","label":"📋 测试用例"},{"id":"results","label":"📊 执行结果"},{"id":"gates","label":"🚦 门禁"}]'>
+  <div data-panel="cases">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>§1 测试设计 — 正常路径用例</h2>
+      <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
     </div>
-    <span class="ci-time">PASS</span>
   </div>
-  <div class="check-item checked">
-    <div class="ci-box"><span class="ci-check">✓</span></div>
-    <div class="ci-body">
-      <div class="ci-name">TC2: fetch 超时降级</div>
-      <div class="ci-desc">网络延迟 > 5s 或人为阻塞 — console.error 超时信息，timedOut=true，不注册组件。</div>
+  <div data-panel="results">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>§3 测试报告</h2>
+      <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
     </div>
-    <span class="ci-time">PASS</span>
   </div>
-  <div class="check-item checked">
-    <div class="ci-box"><span class="ci-check">✓</span></div>
-    <div class="ci-body">
-      <div class="ci-name">TC3: 模板 id 缺失</div>
-      <div class="ci-desc">index.html 中无 #yry-breadcrumb-tpl 元素 — tpl 为 null，异常被 catch 捕获并 console.error。</div>
+  <div data-panel="gates">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>Gate 门禁矩阵</h2>
+      <p class="yry-section-desc">P0 标记: 强制断言 · P1 标记: 建议开启 · P2 标记: 按需开启</p>
+      <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
     </div>
-    <span class="ci-time">PASS</span>
   </div>
-  <div class="check-item checked">
-    <div class="ci-box"><span class="ci-check">✓</span></div>
-    <div class="ci-body">
-      <div class="ci-name">TC4: Vue 3 未加载</div>
-      <div class="ci-desc">页面未引入 vue@3 CDN — console.warn 提示，提前 return，不抛异常。</div>
-    </div>
-    <span class="ci-time">PASS</span>
-  </div>
-  <div class="check-item checked">
-    <div class="ci-box"><span class="ci-check">✓</span></div>
-    <div class="ci-body">
-      <div class="ci-name">TC5: 并发 mount 安全</div>
-      <div class="ci-desc">多个脚本同时调用 mountBreadcrumb — {once:true} 保证事件只触发一次，无重复挂载。</div>
-    </div>
-    <span class="ci-time">PASS</span>
-  </div>
+</yry-scene-tabs>
+
+<yry-scene-footer version="v5.4.0" date="2026-06-22" docs-link="../../../../docs/index.html"></yry-scene-footer>
 </div>
-
-<h2>测试清单</h2>
-<ul class="checklist">
-  <li class="done">TC1 — 正常加载流程通过</li>
-  <li class="done">TC2 — fetch 超时降级正确</li>
-  <li class="done">TC3 — 模板 id 缺失时安全降级</li>
-  <li class="done">TC4 — Vue 3 未加载时静默跳过</li>
-  <li class="done">TC5 — 并发 mount 无竞态问题</li>
-</ul>
-
-<div class="tip-box success">
-  <strong>全部通过</strong> — 5 项 Loader 实现测试全部 PASS。正常加载流程、fetch 超时降级、模板 id 缺失安全降级、Vue 未加载静默跳过、并发 mount 无竞态问题均验证通过。
-</div>
-
-<h2>测试执行日志</h2>
-<div class="log-box">
-  <div class="log-line"><span class="log-time">T+0ms</span><span class="log-icon log-info">▶</span><span>开始测试套件...</span></div>
-  <div class="log-line"><span class="log-time">T+6ms</span><span class="log-icon log-pass">✓</span><span>TC1 正常加载流程通过</span></div>
-  <div class="log-line"><span class="log-time">T+14ms</span><span class="log-icon log-pass">✓</span><span>TC2 fetch 超时降级通过</span></div>
-  <div class="log-line"><span class="log-time">T+21ms</span><span class="log-icon log-pass">✓</span><span>TC3 模板 id 缺失安全降级通过</span></div>
-  <div class="log-line"><span class="log-time">T+27ms</span><span class="log-icon log-pass">✓</span><span>TC4 Vue 3 未加载静默跳过通过</span></div>
-  <div class="log-line"><span class="log-time">T+34ms</span><span class="log-icon log-pass">✓</span><span>TC5 并发 mount 无竞态通过</span></div>
-  <div class="log-line"><span class="log-time">T+40ms</span><span class="log-icon log-info">■</span><span>测试完成: 全部 PASS (5/5)</span></div>
-</div>
-
-<h2>验证方式</h2>
-<p>运行 <code>node --check cdn/yry-breadcrumb/index.js</code> 验证语法正确性。</p>
-<p>浏览器打开 <a href="../../../yry-breadcrumb/index.html">Demo 预览页</a> 验证 3 种 items 模式渲染。</p>
-<p>打开浏览器 DevTools Console，检查 ready 事件日志和组件注册状态。</p>
-
-<div class="footer">
-  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-3-Loader实现/测试面板.html</code><br>
-  🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
-</div>
-</div>
-<script>
-document.querySelectorAll('.check-item').forEach(function(item) {
-  item.addEventListener('click', function() {
-    this.classList.toggle('checked');
-    updateCheckProgress();
-  });
-});
-function updateCheckProgress() {
-  var items = document.querySelectorAll('.check-item');
-  var checked = document.querySelectorAll('.check-item.checked').length;
-  var pct = items.length ? Math.round(checked / items.length * 100) : 0;
-  var fill = document.querySelector('.cp-fill');
-  var text = document.querySelector('.cp-pct');
-  if (fill) fill.style.width = pct + '%';
-  if (text) text.textContent = pct + '%';
-}
-</script>
-<script>
-(function() {
-  var btnRun = document.getElementById('btnRunTests');
-  var btnReset = document.getElementById('btnResetTests');
-  var logBox = document.getElementById('testLog');
-  if (!btnRun || !logBox) return;
-
-  var testSteps = [
-    { time: 'T+0ms', icon: 'log-info', iconGlyph: '▶', msg: '启动测试套件...' },
-    { time: 'T+2ms', icon: 'log-info', iconGlyph: '▶', msg: '加载测试用例...' },
-    { time: 'T+8ms', icon: 'log-pass', iconGlyph: '✓', msg: '所有测试用例已加载' },
-    { time: 'T+15ms', icon: 'log-pass', iconGlyph: '✓', msg: '语法检查通过 (node --check)' },
-    { time: 'T+22ms', icon: 'log-pass', iconGlyph: '✓', msg: '渲染验证通过 (3 demo mount)' },
-    { time: 'T+30ms', icon: 'log-pass', iconGlyph: '✓', msg: '控制台清洁 (0 errors, 0 warnings)' },
-    { time: 'T+38ms', icon: 'log-pass', iconGlyph: '✓', msg: '全部测试通过 — 100% PASS' },
-  ];
-
-  var running = false;
-  btnRun.addEventListener('click', function() {
-    if (running) return;
-    running = true;
-    btnRun.classList.add('running');
-    btnRun.textContent = '⏳ 运行中...';
-    logBox.style.display = 'block';
-    logBox.innerHTML = '';
-    testSteps.forEach(function(step, i) {
-      setTimeout(function() {
-        var line = document.createElement('div');
-        line.className = 'log-line';
-        line.innerHTML = '<span class="log-time">' + step.time + '</span><span class="log-icon ' + step.icon + '">' + step.iconGlyph + '</span><span>' + step.msg + '</span>';
-        logBox.appendChild(line);
-        logBox.scrollTop = logBox.scrollHeight;
-        if (i === testSteps.length - 1) {
-          running = false;
-          btnRun.classList.remove('running');
-          btnRun.textContent = '▶ 重新运行';
-        }
-      }, i * 300);
-    });
-  });
-
-  btnReset.addEventListener('click', function() {
-    logBox.style.display = 'none';
-    logBox.innerHTML = '';
-    btnRun.textContent = '▶ 运行测试套件';
-    btnRun.classList.remove('running');
-    running = false;
-  });
-})();
-</script>
-
-<script src="../../../shared\/index\.js"></script>
-<!-- ═══ CDN: YrySceneNav 组件 loader ═══ -->
-<script src="../../../yry-scene-nav/index.js"></script>
-<!-- ═══ CDN: YryCrossNav 组件 loader ═══ -->
-<script src="../../../yry-cross-nav/index.js"></script>
-<!-- ═══ CDN: YryBackTop (零配置自初始化) ═══ -->
-<script src="../../../yry-back-top/index.js"></script>
-<!-- ═══ CDN: YryBreadcrumb 组件 loader ═══ -->
-<script src="../../../yry-breadcrumb/index.js"></script>
-<!-- ═══ CDN: YrySceneHeader 组件 loader ═══ -->
-<script src="../../../yry-scene-header/index.js"></script>
-<!-- ═══ CDN: YryStatsGrid 组件 loader ═══ -->
-<script src="../../../yry-stats-grid/index.js"></script>
-
-  <!-- ════════════════════════════════════════════════════════════
-       页面级挂载 · 场景导航 + 交叉导航 + 面包屑 + 统计网格
-       index.js 异步加载模板后派发 yry-*-ready 事件
-       ════════════════════════════════════════════════════════════ -->
-  <script>
-
-  /* ── YryCrossNav 挂载 ── */
-  function mountCrossNav() {
-    if (!window.Vue || !window.YryCrossNav) return;
-    if (!document.getElementById('cross-nav-app')) return;
-    Vue.createApp(window.YryCrossNav, {
-      basePath: './',
-      active: '测试',
-      pages: [
-        { id: '清单', icon: '📋', href: '计划清单.html' },
-        { id: '架构', icon: '📐', href: '架构图.html' },
-        { id: '图谱', icon: '🔗', href: '知识图谱.html' },
-        { id: '源码', icon: '📄', href: '源码.html' },
-        { id: '测试', icon: '🧪', href: '测试面板.html' },
-        { id: '演示', icon: '💡', href: '演示.html' },
-        { id: '审查', icon: '📝', href: '审查.html' }
-      ]
-    }).mount('#cross-nav-app');
-  }
-  if (window.YryCrossNav) mountCrossNav();
-  else document.addEventListener('yry-cross-nav-ready', mountCrossNav, { once: true });
-
-  /* ── YrySceneNav 挂载 ── */
-  function mountSceneNav() {
-    if (!window.Vue || !window.YrySceneNav) return;
-    if (!document.getElementById('scene-nav-app')) return;
-    Vue.createApp(window.YrySceneNav, {
-      items: [
-        { label: '任务故事', href: '../README.md' },
-        { label: '场景 3 · Loader 实现', href: './index.md' },
-        { label: '测试面板', active: true }
-      ]
-    }).mount('#scene-nav-app');
-  }
-  if (window.YrySceneNav) mountSceneNav();
-  else document.addEventListener('yry-scene-nav-ready', mountSceneNav, { once: true });
-
-  /* ── YrySceneHeader 挂载 ── */
-  function mountSceneHeader() {
-    if (!window.Vue || !window.YrySceneHeader) return;
-    if (!document.getElementById('scene-header-app')) return;
-    Vue.createApp(window.YrySceneHeader, {
-      icon: '🧪',
-      prefix: '场景 3',
-      accent: ' · Loader 实现',
-      meta: 'YryBreadcrumb 任务故事 · 场景 3 · Loader Implementation · Test Panel',
-      desc: 'fetch + DOMParser + ready 事件 + 5s 超时 · 4 文件引用顺序 · 错误处理与降级 · 错误用例与诊断'
-    }).mount('#scene-header-app');
-  }
-  if (window.YrySceneHeader) mountSceneHeader();
-  else document.addEventListener('yry-scene-header-ready', mountSceneHeader, { once: true });
-
-  /* ── YryBreadcrumb 挂载 ── */
-  function mountBreadcrumb() {
-    if (!window.Vue || !window.YryBreadcrumb) return;
-    if (!document.getElementById('breadcrumb-app')) return;
-    Vue.createApp(window.YryBreadcrumb, {
-      ariaLabel: '面包屑导航',
-      items: [
-        { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
-        { label: '任务故事', href: '../README.md' },
-        { label: '场景 3 · Loader 实现' },
-        { label: '测试面板', icon: '🧪' }
-      ]
-    }).mount('#breadcrumb-app');
-  }
-  if (window.YryBreadcrumb) mountBreadcrumb();
-  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
-  </script>
-
+<script src="../../../../cdn/shared/index.js"></script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
+<script src="../../../../cdn/yry-scene-stats/index.js"></script>
+<script src="../../../../cdn/yry-scene-health-bar/index.js"></script>
+<script src="../../../../cdn/yry-scene-tabs/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
 </body>
 </html>

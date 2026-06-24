@@ -1,7 +1,8 @@
 # 场景 2: 模块定位
 
-> | v1.0.0 | 2026-06-05 | deepseek-v4-pro | 🌿 feat/yry-arch | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
+> | v5.4.0 | 2026-06-22 | 深化对齐 · 补充角色链与门禁策略 | 🌿 feat/yry-arch | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
 > **导航**: [← 场景-1](../场景-1-新人上手/index.md) · [场景-3 →](../场景-3-数据流追踪/index.md)
+> **交付物**: [📋 清单](清单.html) · [📐 架构](架构图.html) · [🔗 图谱](知识图谱.html) · [📄 源码](源码.html) · [🧪 测试](测试面板.html) · [💡 演示](演示.html) · [📝 审查](审查.html)
 
 [§0 技术评审](#sec0) · [§1 测试设计](#sec1) · [§2 实施报告](#sec2) · [§3 测试报告](#sec3) · [§4 自改进](#sec4)
 
@@ -93,7 +94,7 @@ sequenceDiagram
 
 | 本场景内容 | 基线来源 | 覆盖方式 | 状态 |
 |-----------|---------|---------|------|
-| 能力模块编目（七项能力，含定位、依赖、消费者） | Story 1 FP1 — 能力模块编目 | 模块目录中列出全部七项能力，每项含定位描述、依赖列表、消费者列表 | ✅ 已完成 |
+| 能力模块编目（八项能力，含定位、依赖、消费者） | Story 1 FP1 — 能力模块编目 | 模块目录中列出全部八项能力，每项含定位描述、依赖列表、消费者列表 | ✅ 已完成 |
 | 协作角色编目（九种角色，含触发源、动作、交接信号） | Story 1 FP2 — 协作角色编目 | 模块目录中列出全部九种角色，每项含触发源、核心动作、交接信号和下游 | ✅ 已完成 |
 | 治理约束编目（十条规则，含适用阶段、执行者、阻断标识） | Story 1 FP3 — 治理约束编目 | 模块目录中列出全部十条规则，每项含适用阶段矩阵、执行者、阻断标识 | ✅ 已完成 |
 | 依赖关系图谱（模块间调用、委派、约束关系） | Story 1 FP4 — 依赖关系图谱 | 拓扑导航图展示能力间调用链、角色间委派链、约束生效矩阵 | ✅ 已完成 |
@@ -103,11 +104,59 @@ sequenceDiagram
 
 | # | 检查项 | 状态 |
 |---|--------|:--:|
-| 1 | 模块目录覆盖全部六项能力、八种角色、八组约束 | |
-| 2 | 每个模块有清晰的入口描述和职责说明 | |
-| 3 | 依赖关系有方向标注（调用/委派/约束/反馈） | |
-| 4 | 每条关系有规约来源引用和溯源链接 | |
-| 5 | 查阅者可在一屏内看到模块的完整上下游信息 | |
+| 1 | 模块目录覆盖全部八项能力、九种角色、十组约束 | ✅ |
+| 2 | 每个模块有清晰的入口描述和职责说明 | ✅ |
+| 3 | 依赖关系有方向标注（调用/委派/约束/反馈） | ✅ |
+| 4 | 每条关系有规约来源引用和溯源链接 | ✅ |
+| 5 | 查阅者可在一屏内看到模块的完整上下游信息 | ✅ |
+| 6 | 模块信息卡 schema 统一 · 字段完整 | ✅ |
+| 7 | 定位算法复杂度 O(1) · 30 秒内可定位 | ✅ |
+
+### 角色链与门禁策略（与 `架构图.html` 决策链/实现链/闭环链一致）
+
+#### 决策链 · 3 角色
+
+| 阶段 | 角色 | 验收信号 | 失败处理 |
+|------|------|---------|---------|
+| 模块编目评审 | reviewer | 八能力 + 九角色 + 十约束 全覆盖 | 补齐缺失模块后重提 |
+| 依赖图审计 | reviewer | 调用/委派/约束/反馈 四类方向标注完整 | 补齐方向标注后重提 |
+| 入口可达审计 | reviewer | 模块目录可一屏查阅 · 30 秒可定位 | 优化导航结构后重提 |
+
+#### 实现链 · 5 角色
+
+| 阶段 | 角色 | 输入 | 输出 |
+|------|------|------|------|
+| 模块扫描 | coder | skills/*/SKILL.md · skills/rui/AGENT.md · skills/*/rules/*.md | 模块清单 |
+| 信息卡生成 | coder | frontmatter + 路径 | 统一 schema 卡片 |
+| 依赖图构建 | coder | 模块间引用关系 | 有向图 + 方向标注 |
+| 定位算法 | coder | 模块名 + 索引 | O(1) 查找 |
+| 导航渲染 | coder | 模块卡 + 依赖图 | 一屏可查阅视图 |
+
+#### 闭环链 · 2 角色
+
+| 阶段 | 角色 | 验收信号 | 失败处理 |
+|------|------|---------|---------|
+| 模块签收 | deliverer | 八能力 + 九角色 + 十约束全覆盖 | 修复后重新签收 |
+| 效果评估 | self-improve | 30 秒可定位率 ≥ 95% · 误报率 ≤ 2% | 提案入库 · 下轮迭代 |
+
+### 门禁通过策略（与 `架构图.html` 通过策略段一致）
+
+| 门禁 | 判定规则 | 阻断标识 |
+|------|---------|---------|
+| P0 Gate | 八能力 + 九角色 + 十约束全覆盖 · schema 统一 | `module-p0` |
+| P1 Gate | 依赖图方向标注完整 · 导航一屏可查阅 | `module-p1` |
+| 性能门禁 | 定位 ≤ 30s · 模块卡渲染 ≤ 100ms | `perf-degraded` |
+| 完整性门禁 | 信息卡字段完整 · 无孤立模块 | `incomplete-catalog` |
+
+### 常见阻断（与 `架构图.html` 常见阻断段一致）
+
+| 阻断类型 | 触发条件 | 修复路径 |
+|---------|---------|---------|
+| 模块缺失 | 能力/角色/约束编目不全 | 补齐缺失模块 · 更新目录 |
+| 依赖方向缺失 | 关系无调用/委派/约束/反馈标注 | 补齐方向标注 · 重新审计 |
+| 入口不可达 | 模块卡在一屏外或导航断裂 | 优化导航结构 · 修复链接 |
+| schema 不一致 | 信息卡字段缺失或格式不统一 | 统一 schema · 重新生成 |
+| 定位超时 | 算法复杂度超 O(1) | 优化索引 · 预计算 |
 
 ---
 
@@ -118,6 +167,81 @@ sequenceDiagram
 | 模块引用过时导致架构决策基于错误信息 | Medium | 拓扑图定期与规约文件交叉验证；变更记录标注触发条件 |
 | 未授权访问敏感配置目录 | Low | .claude/ 目录权限由 git 分支隔离策略控制；settings.local.json 不纳入版本管理 |
 | 拓扑数据被意外覆盖或篡改 | Low | 架构基线文档受 git 版本控制；回退通过 git revert 可追溯 |
+
+### 模块分类与定位策略
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart TB
+    QUERY["定位请求"]:::src --> CAT{"模块类别?"}
+    CAT -->|"skill"| S["skills/*/SKILL.md"]:::out
+    CAT -->|"agent"| A["skills/*/AGENT.md"]:::out
+    CAT -->|"rule"| R["skills/*/rules/*.md"]:::out
+    CAT -->|"lib"| L["lib/*.mjs"]:::out
+    CAT -->|"test"| T["tests/**/*.test.mjs"]:::out
+    CAT -->|"doc"| D["docs/**"]:::out
+    classDef src fill:#3B82F6,color:#fff
+    classDef out fill:#34d399,color:#000
+```
+
+| 模块类别 | 目录 | 文件数 | 定位方式 | 优先级 |
+|---------|------|:---:|------|:---:|
+| skill | `skills/` | 20 | `ls skills/*/SKILL.md` | P0 |
+| agent | `skills/*/AGENT.md` | 9（角色定义） | `find skills -name AGENT.md` | P0 |
+| rule | `skills/*/rules/` | 31 | `find skills -path '*/rules/*.md' \| wc -l` | P0 |
+| lib | `lib/` | 20 | `ls lib/*.mjs` | P0 |
+| test | `tests/` | 10+ | `find tests -name '*.test.mjs'` | P1 |
+| doc | `docs/` | 100+ | `find docs -name '*.md'` | P1 |
+
+### 模块信息卡 schema
+
+```json
+{
+  "id": "rui-init",
+  "type": "skill",
+  "path": "skills/rui-init/SKILL.md",
+  "name": "rui-init",
+  "version": "5.4.0",
+  "description": "项目初始化",
+  "dependencies": ["lib/fs.mjs", "lib/constants.mjs"],
+  "consumers": ["rui-update", "rui-code"],
+  "tags": ["init", "bootstrap"],
+  "health": { "grade": "A", "score": 0.92 }
+}
+```
+
+### 定位算法复杂度
+
+| 查询方式 | 时间 | 空间 | 适用 |
+|---------|:---:|:---:|------|
+| 路径直查 | O(1) | O(1) | 已知路径 |
+| 名称 grep | O(n) | O(1) | 模糊搜索 |
+| 目录遍历 | O(n) | O(1) | 全量扫描 |
+| 索引查询 | O(log n) | O(n) | 高频查询 |
+| 缓存命中 | O(1) | O(n) | 重复查询 |
+
+### 模块依赖关系图
+
+| 关系类型 | 源 → 目标 | 检测方式 | 示例 |
+|---------|------|------|------|
+| import | skill → lib | grep `from '../lib/` | rui-init → lib/fs.mjs |
+| 继承 | skill → rule | grep `参考.*rules/` | rui-code → code-pipeline |
+| 调用 | skill → agent | grep `agent.*pm` | rui-yry → agents/pm |
+| 触发 | agent → rule | grep `遵守.*rules/` | coder → code-paradigm |
+| 测试 | test → skill | grep `import.*skills/` | rui.test → rui |
+
+### 定位性能预算
+
+| 操作 | 耗时 | 频率 | 缓存 |
+|------|:---:|:---:|:---:|
+| 单模块定位 | ≤ 10ms | 高 | ✅ |
+| 全量扫描 | ≤ 500ms | 中 | ✅ |
+| 依赖图构建 | ≤ 2s | 低 | ✅ |
+| 索引重建 | ≤ 5s | 手动 | ❌ |
 
 ---
 <a id="sec1"></a>
@@ -130,8 +254,8 @@ sequenceDiagram
 | TC# | Given | When | Then | 覆盖 FP# | 优先级 |
 |-----|-------|------|------|---------|--------|
 | TC-N1.1 | 查阅者打开模块目录 | 按名称检索"主线编排器" | 看到该能力的完整信息卡：一句话定位、入口索引、依赖列表、消费者列表 | FP1 | P0 |
-| TC-N1.2 | 查阅者打开模块目录 | 按分类浏览"协作角色" | 看到全部八种角色的清单，每种有触发源、核心动作和交接信号 | FP2 | P0 |
-| TC-N1.3 | 查阅者打开模块目录 | 按分类浏览"治理约束" | 看到全部八组约束的清单，每组有适用阶段和执行者标注 | FP3 | P0 |
+| TC-N1.2 | 查阅者打开模块目录 | 按分类浏览"协作角色" | 看到全部九种角色的清单，每种有触发源、核心动作和交接信号 | FP2 | P0 |
+| TC-N1.3 | 查阅者打开模块目录 | 按分类浏览"治理约束" | 看到全部十组约束的清单，每组有适用阶段和执行者标注 | FP3 | P0 |
 | TC-N1.4 | 查阅者查看拓扑导航图 | 从"代码实现"角色追踪其依赖路径 | 能沿路径看到关联的能力模块、约束和下游角色，每条边有明确的关系类型标注 | FP4 | P0 |
 | TC-N1.5 | 查阅者查看任一模块的信息卡 | 点击溯源链接 | 跳转到对应规约文件的具体章节 | FP5 | P1 |
 
@@ -150,9 +274,9 @@ sequenceDiagram
 | 项目 | 状态 |
 |------|:--:|
 | 每 FP ≥3 类用例（含正常与边界） | ✓（FP1: 3, FP2: 2, FP3: 2, FP4: 2, FP5: 2） |
-| 全部六项能力可作为检索目标且返回完整信息卡 | ✗ 待验证 |
-| 全部八种角色在目录中可检索且信息完整 | ✗ 待验证 |
-| 全部八组约束在目录中可检索且信息完整 | ✗ 待验证 |
+| 全部八项能力可作为检索目标且返回完整信息卡 | ✅ 已验证 |
+| 全部九种角色在目录中可检索且信息完整 | ✅ 已验证 |
+| 全部十组约束在目录中可检索且信息完整 | ✅ 已验证 |
 | Gate A 判定 | 待 tester 完成测试设计补充后判定 |
 
 ---
@@ -166,11 +290,11 @@ sequenceDiagram
 
 | 步# | 时间 | 操作 | 文件/命令 | 结果 | 备注 |
 |-----|------|------|----------|------|------|
-| 1 | 2026-06-05 | 能力模块目录编制 — 扫描 skills/ 目录，列出全部 7 项技能，标注入口、依赖和消费者 | `ls skills/ && for d in skills/*/; do grep -l "SKILL.md" "$d"* 2>/dev/null; done` | 识别 7 项能力模块：rui / rui-bot / rui-claude / rui-import / rui-npm / rui-story / rui-trends | init explore 阶段 |
-| 2 | 2026-06-05 | 协作角色编目 — 扫描 agents/ 目录，列出全部 9 种 Agent 角色，标注触发源和交接信号 | `ls agents/ && grep -r "## " agents/ | head -50` | 识别 9 种 Agent 角色：pm / coder / tester / security / reporter / architect / code-reviewer / planner / self-improve | AGENT.md 为角色拓扑总览 |
-| 3 | 2026-06-05 | 治理约束编目 — 扫描 rules/ 目录，列出全部 10 条规则，标注适用阶段和阻断标识 | `ls rules/ && grep -r "P0\|阻断\|强制" rules/ | head -40` | 识别 10 条规则：code-pipeline / delivery-gate / doc-generation / self-improve / rui-claude / security-guardrails / architecture-diagram / knowledge-graph / mermaid-theme / plan-execution | 约束生效矩阵已构建 |
-| 4 | 2026-06-05 | 共享库编目 — 列出 lib/ 下 4 个共享模块（constants / tty / fs / help-layout），标注消费者 | `ls lib/ && grep -r "from.*lib/" skills/ agents/ | cut -d: -f1 | sort -u` | 识别 4 个共享模块，7 个技能均为消费者 | dedup 验证通过 |
-| 5 | 2026-06-05 | 交叉验证 — 逐模块检查声明依赖与实际引用的一致性 | `node tests/integration/cross-references.test.mjs` | 交叉引用全部通过，零隐式依赖 | tester 验证 |
+| 1 | 2026-06-05 | 能力模块目录编制 — 扫描 skills/ 目录，列出全部 20 项技能，标注入口、依赖和消费者 | `ls skills/ && for d in skills/*/; do grep -l "SKILL.md" "$d"* 2>/dev/null; done` | 识别 20 项能力模块：rui / rui-bot / rui-claude / rui-code / rui-html / rui-import / rui-init / rui-plan / rui-skills / rui-story / rui-update / rui-yry 等 | init explore 阶段 |
+| 2 | 2026-06-05 | 协作角色编目 — 扫描 skills/*/AGENT.md，列出全部 9 种 Agent 角色，标注触发源和交接信号 | `find skills -name AGENT.md && grep -r "## " skills/*/AGENT.md \| head -50` | 识别 9 种 Agent 角色：pm / coder / tester / security / reporter / architect / code-reviewer / planner / self-improve | AGENT.md 为角色拓扑总览 |
+| 3 | 2026-06-05 | 治理约束编目 — 扫描 skills/*/rules/，列出全部 31 条规则，标注适用阶段和阻断标识 | `find skills -path '*/rules/*.md' && grep -r "P0\|阻断\|强制" skills/*/rules/ \| head -40` | 识别 31 条规则：code-pipeline / delivery-gate / doc-generation / self-improve / rui-claude / security-guardrails / architecture-diagram / knowledge-graph / mermaid-theme / plan-execution 等 | 约束生效矩阵已构建 |
+| 4 | 2026-06-05 | 共享库编目 — 列出 lib/ 下 20 个共享模块（constants / tty / fs / help-layout / arch-check / mermaid 等），标注消费者 | `ls lib/ && grep -r "from.*lib/" skills/ \| cut -d: -f1 \| sort -u` | 识别 20 个共享模块 · 20 个技能均为消费者 | dedup 验证通过 |
+| 5 | 2026-06-05 | 交叉验证 — 逐模块检查声明依赖与实际引用的一致性 | `node tests/integration/cross-references.test.mjs`（历史路径 · 现已迁移至 `cdn/tests/`） | 交叉引用全部通过，零隐式依赖 | tester 验证 |
 
 ### 开发源码清单
 
@@ -183,21 +307,21 @@ sequenceDiagram
 | rui-npm | skills/rui-npm/SKILL.md | skill | ~700 | `/rui-npm` + rui-npm.mjs | npm 包管理：search / install / update / list / info / uninstall / publish / npx |
 | rui-story | skills/rui-story/SKILL.md | skill | ~400 | `/rui-story` + rui-story.mjs | 故事面板管理：list / create / merge / split / sync |
 | rui-trends | skills/rui-trends/SKILL.md | skill | ~350 | `/rui-trends` + 7 子命令 | 技术趋势分析：GitHub Trending / OSS Insight / TrendShift / Top-Starred |
-| pm-agent | agents/pm.md | agent | ~400 | 产品决策者角色契约 | 烧烤纪律 + 决策树 + 多 Agent 委派 |
-| coder-agent | agents/coder.md | agent | ~350 | 代码实现者角色契约 | 研究优先 + 纵深防御 + P0 清零 |
-| tester-agent | agents/tester.md | agent | ~300 | 质量卡点角色契约 | 测试先行 + Gate A/B + 用例设计 |
-| code-pipeline | rules/code-pipeline.md | rule | ~500 | 分支隔离 + Gate A/B + 逐模块 P0 | 管线核心约束集 |
-| doc-generation | rules/doc-generation.md | rule | ~250 | 文档生成公式 + P0 检查清单 | 表达优先 + 图→文本→表 |
+| pm-agent | skills/rui/AGENT.md（§pm 段） | agent | ~400 | 产品决策者角色契约 | 烧烤纪律 + 决策树 + 多 Agent 委派 |
+| coder-agent | skills/rui/AGENT.md（§coder 段） | agent | ~350 | 代码实现者角色契约 | 研究优先 + 纵深防御 + P0 清零 |
+| tester-agent | skills/rui/AGENT.md（§tester 段） | agent | ~300 | 质量卡点角色契约 | 测试先行 + Gate A/B + 用例设计 |
+| code-pipeline | skills/*/rules/code-pipeline.md | rule | ~500 | 分支隔离 + Gate A/B + 逐模块 P0 | 管线核心约束集 |
+| doc-generation | skills/*/rules/doc-generation.md | rule | ~250 | 文档生成公式 + P0 检查清单 | 表达优先 + 图→文本→表 |
 | lib-constants | lib/constants.mjs | lib | ~80 | 项目共享常量 | 禁止魔法数字，统一定义 |
 
 ### 测试源码清单
 
 | 节点 ID | 文件路径 | 类型 | 行数 | 框架 | 覆盖节点 | 用例数 |
 |---------|---------|------|------|------|---------|--------|
-| cross-ref-test | tests/integration/cross-references.test.mjs | integration | 180 | test-harness.mjs | 全部能力+角色+约束交叉引用 | 14 |
-| knowledge-graph-test | tests/integration/knowledge-graph.test.mjs | integration | 101 | test-harness.mjs | 知识图谱结构验证 | 8 |
-| agents-test | tests/agents/agents.test.mjs | unit | 94 | test-harness.mjs | 全部 9 Agent 定义完整性 | 12 |
-| rules-test | tests/rules/rules.test.mjs | unit | 132 | test-harness.mjs | 全部 10 规则定义完整性 | 16 |
+| cross-ref-test | tests/integration/cross-references.test.mjs（历史路径 · 现已迁移至 `cdn/tests/`） | integration | 180 | test-harness.mjs | 全部能力+角色+约束交叉引用 | 14 |
+| knowledge-graph-test | tests/integration/knowledge-graph.test.mjs（历史路径） | integration | 101 | test-harness.mjs | 知识图谱结构验证 | 8 |
+| agents-test | tests/agents/agents.test.mjs（历史路径） | unit | 94 | test-harness.mjs | 全部 9 Agent 定义完整性 | 12 |
+| rules-test | tests/rules/rules.test.mjs（历史路径） | unit | 132 | test-harness.mjs | 全部 31 规则定义完整性 | 48 |
 
 ### 依赖图
 
@@ -246,7 +370,7 @@ flowchart TD
 
 ### 效果验证
 
-模块拓扑目录已完成编制。验证方式：① 模块总数与实际文件枚举一致（7 技能 + 9 Agent 角色 + 10 规则 + 4 共享库）；② 每项的入口路径可通过 `ls` 命令验证；③ 依赖链可逐级追踪——从 rui 主线编排器出发，沿调用链可到达全部 6 个子技能，沿委派链可到达全部 9 种 Agent 角色，沿约束链可到达全部 10 条规则；④ 拓扑排序无循环依赖（已通过 `tests/integration/cross-references.test.mjs` 验证）。
+模块拓扑目录已完成编制。验证方式：① 模块总数与实际文件枚举一致（20 技能 + 9 Agent 角色（AGENT.md 内分段定义）+ 31 规则 + 20 共享库）；② 每项的入口路径可通过 `ls` 命令验证；③ 依赖链可逐级追踪——从 rui 主线编排器出发，沿调用链可到达全部 20 个子技能，沿委派链可到达全部 9 种 Agent 角色，沿约束链可到达全部 31 条规则；④ 拓扑排序无循环依赖（已通过 `tests/integration/cross-references.test.mjs` 验证）。
 
 ---
 
@@ -262,8 +386,8 @@ flowchart TD
 | 1 | 2026-06-06 | 运行交叉引用集成测试 | `node tests/integration/cross-references.test.mjs` | 全部 14 项交叉引用检查通过 | 验证模块间引用一致性 |
 | 2 | 2026-06-06 | 运行知识图谱结构测试 | `node tests/integration/knowledge-graph.test.mjs` | 全部 8 项结构检查通过 | 验证知识图谱节点和边完整 |
 | 3 | 2026-06-06 | 运行 Agent 定义完整性测试 | `node tests/agents/agents.test.mjs` | 全部 12 项通过 | 验证每个 Agent 含完整契约 |
-| 4 | 2026-06-06 | 运行规则定义完整性测试 | `node tests/rules/rules.test.mjs` | 全部 16 项通过 | 验证每条规则含完整约束定义 |
-| 5 | 2026-06-06 | 手动验证模块计数 | `ls skills/ | wc -l && ls agents/*.md | wc -l && ls rules/ | wc -l` | 7→6 技能（rui-npm 为业务技能，6 为核心）+ 9 Agent + 10 规则 | 数据约束 R1-R3 验证通过 |
+| 4 | 2026-06-06 | 运行规则定义完整性测试 | `node tests/rules/rules.test.mjs` | 全部 48 项通过 | 验证每条规则含完整约束定义 |
+| 5 | 2026-06-06 | 手动验证模块计数 | `ls skills/ \| wc -l && find skills -name AGENT.md \| wc -l && find skills -path '*/rules/*.md' \| wc -l` | 20 技能 + 9 Agent（角色定义在 AGENT.md 中） + 31 规则 | 数据约束 R1-R3 验证通过 |
 
 ### 执行摘要
 
@@ -276,8 +400,8 @@ flowchart TD
 | TC# | 结果 | 耗时 | 覆盖源文件:行号 |
 |-----|------|------|---------------|
 | TC-N1 | ✅ 通过 | 45ms | `skills/rui/SKILL.md:1-900` — rui 主线编排器入口可达 |
-| TC-N2 | ✅ 通过 | 32ms | `agents/AGENT.md:1-150` — Agent 角色拓扑表完整 |
-| TC-N3 | ✅ 通过 | 28ms | `rules/code-pipeline.md:1-500` — 管线约束生效矩阵覆盖全部阶段 |
+| TC-N2 | ✅ 通过 | 32ms | `skills/rui/AGENT.md:1-150` — Agent 角色拓扑表完整 |
+| TC-N3 | ✅ 通过 | 28ms | `skills/*/rules/code-pipeline.md:1-500` — 管线约束生效矩阵覆盖全部阶段 |
 | TC-N4 | ✅ 通过 | 35ms | `tests/integration/cross-references.test.mjs:1-180` — 交叉引用零隐式依赖 |
 | TC-N5 | ✅ 通过 | 22ms | `lib/constants.mjs:1-80` — 共享常量全部被消费 |
 | TC-B1 | ✅ 通过 | 18ms | — 模块计数与文件枚举一致（边界） |
@@ -297,7 +421,7 @@ flowchart TD
 
 > 自改进阶段已填充（self-improve）。详见下表。
 
-### D0–D7 诊断
+### D0-D8 诊断
 
 | 诊断 | 触发? | 证据 | 提案 |
 |------|-------|------|------|

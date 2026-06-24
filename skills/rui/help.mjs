@@ -8,7 +8,7 @@ import { hdr, subhdr, item, flag, scene } from '../../lib/help-layout.mjs';
 const help = `
 ${bold("# rui — 故事驱动 SDLC 编排器")}
 
-${dim("需求 → 文档 → 代码 → 交付 | 17 技能 + 9 Agent 协同 | Gate A/B 门禁 | 三步强制交付")}
+${dim("需求 → 文档 → 代码 → 交付 | 20 技能 + 9 Agent 协同 | Gate A/B 门禁 | 三步强制交付")}
 
 ${hdr("快速入门")}
 ${item("/rui <需求>", "端到端：需求 → 文档基线 → 编码 → 交付", cyan)}

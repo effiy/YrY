@@ -48,7 +48,7 @@ export function assessEngineeringMaturity(projectRoot) {
   // 1. Testing infrastructure
   const testFrameworks = ["vitest", "jest", "mocha", "ava", "jasmine", "pytest", "go-test", "cargo-test"];
   const hasTestFramework = depNames.some(d => testFrameworks.includes(d));
-  const hasTestDir = existsSync(join(projectRoot, "tests")) || existsSync(join(projectRoot, "__tests__")) || existsSync(join(projectRoot, "test"));
+  const hasTestDir = existsSync(join(projectRoot, "tests")) || existsSync(join(projectRoot, "__tests__")) || existsSync(join(projectRoot, "test")) || existsSync(join(projectRoot, "lib", "tests"));
   const hasTestScript = pkg?.scripts?.test;
   const testCaseCount = countTestCases(projectRoot);
   let emTestScore = 0;
@@ -355,7 +355,7 @@ export function scanComponentScores(projectRoot) {
       const files = readdirSync(dir, { recursive: true, withFileTypes: true });
       for (const f of files) {
         if (!f.isFile() || !f.name.endsWith(".mjs")) continue;
-        const filePath = join(f.path || dir, f.name);
+        const filePath = join(f.path || f.parentPath || dir, f.name);
         const criteria = {};
         const recs = [];
         let score = 0;
@@ -417,7 +417,20 @@ export function scanComponentScores(projectRoot) {
  */
 export function countTestCases(projectRoot) {
   let count = 0;
-  const testDirs = ["tests", "__tests__", "test", "spec"];
+  const testDirs = ["tests", "__tests__", "test", "spec", "lib/tests"];
+
+  // Also scan skills/*/tests/ directories
+  const skillsDir = join(projectRoot, "skills");
+  if (existsSync(skillsDir)) {
+    try {
+      for (const skill of readdirSync(skillsDir, { withFileTypes: true })) {
+        if (skill.isDirectory()) {
+          testDirs.push(join("skills", skill.name, "tests"));
+        }
+      }
+    } catch { /* ignore */ }
+  }
+
   for (const dir of testDirs) {
     const p = join(projectRoot, dir);
     if (!existsSync(p)) continue;
@@ -426,7 +439,7 @@ export function countTestCases(projectRoot) {
       for (const f of files) {
         if (f.isFile() && /\.(test|spec)\.(m?js|ts|tsx|py|go|rs)$/.test(f.name)) {
           try {
-            const content = readFileSync(join(f.path || p, f.name), "utf-8");
+            const content = readFileSync(join(f.path || f.parentPath || p, f.name), "utf-8");
             const matches = content.match(/\b(it|test|describe|def test_|func Test)\b/g);
             if (matches) count += matches.length;
           } catch { /* skip unreadable test file */ }

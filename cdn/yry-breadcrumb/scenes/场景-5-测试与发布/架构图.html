@@ -2,264 +2,77 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>测试与发布 · 架构图 · YryBreadcrumb 任务故事</title>
-<link rel="stylesheet" href="../../../shared\/index\.css">
-<link rel="stylesheet" href="../../../theme\/index\.css">
-<link rel="stylesheet" href="../../../yry\-scene\/index\.css">
-<link rel="stylesheet" href="../../../yry\-checklist\/index\.css">
-<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
-<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
-<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
-<link rel="stylesheet" href="../../../yry-back-top/index.css">
-<link rel="stylesheet" href="../../../yry-scene-header/index.css">
-<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
-<link rel="stylesheet" href="../../../yry\-inline\-helpers\/index\.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<link rel="stylesheet" href="../../../yry\-a11y\/index\.css">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>测试与发布 · 架构图</title>
+<link rel="stylesheet" href="../../../../cdn/fonts/index.css">
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme-mono/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-arch-base.css">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-export-toolbar/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-info-cards/index.css">
 <style>
-
-.container { max-width: 1100px; }
+/* Page-specific overrides — shared patterns in shared-a.css */
+.diagram-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1.5rem;overflow-x:auto;margin-bottom:1.5rem}
+.diagram-container svg{width:100%;min-width:900px;display:block}
+.yry-container{max-width:1200px}
 </style>
 </head>
 <body>
-<a href="#main" class="skip-link">⏩ 跳到主要内容</a>
-<div class="container" id="main">
-<div id="breadcrumb-app"></div>
+<div class="yry-container" id="report-container">
+<yry-scene-chrome
+  theme="a"
+  title="yry-breadcrumb — 场景 5: 测试与发布"
+  subtitle="测试与发布 · vv5.4.0 · 2026-06-22"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-breadcrumb · yry-breadcrumb"},{"label":"场景 5 · 测试与发布"},{"label":"📐 架构图"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","active":true},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","href":"审查.html"}]'
+  toolbar='<div class="yry-export-toolbar yry-toolbar" data-target=".diagram-container" data-filename="yry-breadcrumb-scene5-architecture" data-bg="#020617"><button data-action="copy-svg">📋 Copy SVG</button><button data-action="download-png">🖼 PNG</button><button data-action="download-svg">📄 SVG</button></div>'>
+</yry-scene-chrome>
 
-<div id="scene-header-app"></div>
-
-<div id="scene-nav-app"></div>
-
-
-<div id="cross-nav-app"></div>
-
-<div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-val info">8</div><div class="kpi-label">流程阶段</div></div>
-  <div class="kpi-card"><div class="kpi-val accent">8</div><div class="kpi-label">门禁边</div></div>
-  <div class="kpi-card"><div class="kpi-val pass">1</div><div class="kpi-label">发布出口</div></div>
+<div class="diagram-container">
+  <svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+      </marker>
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#grid)"/>
+    <text x="500" y="300" fill="#475569" font-size="14" text-anchor="middle" font-family="JetBrains Mono,monospace">
+      架构图数据待填充 — 运行 /rui code 生成
+    </text>
+  </svg>
 </div>
 
-<div class="stage-list">
-  <div class="stage-row done">
-    <div class="st-num">1</div>
-    <div class="st-info"><div class="st-name">构建</div><div class="st-detail">7 项自测清单 / node --check / demo 渲染 / console 无错</div></div>
-    <span class="st-status ok">&#10003;</span>
-    <div class="st-bar"></div>
+<yry-info-cards>
+  <div class="yry-card">
+    <div class="yry-card-header"><div class="yry-card-dot cyan"></div><h3>场景信息</h3></div>
+    <ul>
+      <li><b>场景:</b> 5 · 测试与发布</li>
+      <li><b>故事:</b> yry-breadcrumb · yry-breadcrumb</li>
+      <li><b>版本:</b> vv5.4.0</li>
+    </ul>
   </div>
-  <div class="stage-row done">
-    <div class="st-num">2</div>
-    <div class="st-info"><div class="st-name">验证</div><div class="st-detail">跨页面验证 场景 1-5 / npm pack --dry-run / 类名复用</div></div>
-    <span class="st-status ok">&#10003;</span>
-    <div class="st-bar"></div>
+  <div class="yry-card">
+    <div class="yry-card-header"><div class="yry-card-dot emerald"></div><h3>数据源</h3></div>
+    <ul>
+      <li><b>场景文档:</b> index.md §0 技术评审</li>
+      <li><b>生成日期:</b> 2026-06-22</li>
+    </ul>
   </div>
-  <div class="stage-row done">
-    <div class="st-num">3</div>
-    <div class="st-info"><div class="st-name">发布</div><div class="st-detail">semver v1.1.0 → git tag → npm publish 灰度→稳定</div></div>
-    <span class="st-status ok">&#10003;</span>
-    <div class="st-bar"></div>
-  </div>
+</yry-info-cards>
+
+<yry-scene-footer version="v5.4.0" date="2026-06-22"></yry-scene-footer>
 </div>
-
-<div class="live-bar">
-  <span class="live-dot"></span> Mermaid 图表已渲染
-  <span class="live-resource"><span class="lr-name">pipeline</span><span class="lr-status">OK</span></span>
-  <span class="live-resource"><span class="lr-name">暗色主题</span><span class="lr-status">OK</span></span>
-</div>
-
-<h2>测试与发布流程架构</h2>
-<p>下图展示场景 5 从自测验证到最终发布的完整流程链路。</p>
-
-<div class="diagram-wrap glass-card">
-  <span class="dm-badge">PIPELINE</span>
-  <pre class="mermaid">
-%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#1e1f2b','primaryTextColor': '#a9b1d6','primaryBorderColor': '#f472b6','lineColor': '#f472b6','secondaryColor': '#2b2d3b','tertiaryColor': '#21232f'}}}%%
-flowchart TB
-    SELF["7 项自测清单<br/>node --check · 3 demo · console<br/>硬刷新 · mount · Tab · SR"]
-    CROSS["跨页面验证<br/>场景 1-5 面包屑渲染<br/>交叉链接有效性"]
-    NPM["npm 集成<br/>package.json files[]<br/>4 个 yry-breadcrumb 路径"]
-    PKG["package.json 字段<br/>name · version · description<br/>files · publishConfig"]
-    CLASS["类名复用验证<br/>cdn-yry-checklist<br/>.checklist · .badge"]
-    SEMVER["版本号语义化<br/>v1.1.0 minor<br/>无破坏性变更"]
-    TAG["git tag v1.1.0<br/>附发布说明"]
-    PUB["npm publish<br/>灰度 → 稳定"]
-
-    SELF -->|全 PASS| CROSS
-    CROSS -->|链接有效| NPM
-    NPM -->|files[] 齐全| PKG
-    NPM -->|类名一致| CLASS
-    PKG -->|字段完整| SEMVER
-    CLASS -->|复用通过| SEMVER
-    SEMVER -->|版本合规| TAG
-    TAG -->|tag 就绪| PUB
-  </pre>
-  <div class="dm-caption">图: 7 项自测 → npm publish — 8 阶段发布流水线</div>
-</div>
-
-<div class="tip-box info">
-  <strong>架构洞察:</strong> 这是一个 <strong>门禁流水线 (Gated Pipeline)</strong> 模式 — 每个阶段都是后续阶段的前置条件，通过边标签 (全 PASS / 链接有效 / files[] 齐全 / 字段完整 / 复用通过 / 版本合规 / tag 就绪) 明确门禁标准。关键设计特征：<strong>NPM 扇出为两条并行验证路径</strong>（PKG 字段完整性 + CLASS 类名复用验证），两条路径在 SEMVER 处汇聚收敛，体现了 <strong>并行门禁 → 汇聚决策</strong> 的发布前多重校验策略。
-</div>
-
-<h2>概念视图</h2>
-<div class="concept-grid">
-  <div class="concept-card">
-    <div class="cc-icon">✅</div>
-    <div class="cc-name">7 项自测清单</div>
-    <div class="cc-domain">入口阶段</div>
-    <div class="cc-desc">发布流水线的第一道关卡：node --check 语法检查、3 demo 目视验证、console 无错误、硬刷新验证、mount 挂载验证、Tab 键盘导航、SR 屏幕阅读器测试。全部 PASS 才能进入下一阶段。</div>
-    <div class="cc-rels">
-      <span class="cc-rel out">→ 跨页面验证</span>
-    </div>
-  </div>
-  <div class="concept-card">
-    <div class="cc-icon">📦</div>
-    <div class="cc-name">npm 集成 (扇出点)</div>
-    <div class="cc-domain">并行验证枢纽</div>
-    <div class="cc-desc">流水线的关键分叉点：从 NPM 节点分叉为两条并行验证路径 — left: package.json 字段完整性检查 (name/version/description/files/publishConfig)，right: 类名复用验证 (.checklist/.badge 跨模块一致性)。</div>
-    <div class="cc-rels">
-      <span class="cc-rel in">← 跨页面验证</span>
-      <span class="cc-rel out">→ PKG 字段 · CLASS 类名</span>
-    </div>
-  </div>
-  <div class="concept-card">
-    <div class="cc-icon">🔖</div>
-    <div class="cc-name">版本号与 Tag</div>
-    <div class="cc-domain">汇聚决策</div>
-    <div class="cc-desc">PKG 和 CLASS 两条并行路径在 SEMVER 处汇聚：验证版本号语义化合规 (v1.1.0 minor，无破坏性变更)，通过后打 git tag 附发布说明，作为 npm publish 的前置条件。</div>
-    <div class="cc-rels">
-      <span class="cc-rel in">← PKG · CLASS</span>
-      <span class="cc-rel out">→ git tag → npm publish</span>
-    </div>
-  </div>
-  <div class="concept-card">
-    <div class="cc-icon">🚀</div>
-    <div class="cc-name">npm publish 发布</div>
-    <div class="cc-domain">出口阶段</div>
-    <div class="cc-desc">流水线终点：灰度发布 → 稳定发布。所有前置门禁 (7 项自测 → 跨页面验证 → npm 集成 → 字段完整 → 版本合规 → tag 就绪) 均通过后执行 npm publish，将组件推送到 npm registry。</div>
-    <div class="cc-rels">
-      <span class="cc-rel in">← git tag (tag 就绪)</span>
-    </div>
-  </div>
-</div>
-
-<div class="tip-box success">
-  <strong>架构完整性:</strong> 场景 5 的发布流水线展现了 <strong>线性管道 + 并行验证 + 汇聚发布</strong> 的复合拓扑：前 3 阶段为严格线性 (SELF→CROSS→NPM)，中段 NPM→(PKG||CLASS)→SEMVER 为并行扇出/扇入，后 2 阶段 (SEMVER→TAG→PUB) 再次收敛为严格线性。每条边标注门禁条件 (如 "全 PASS" / "链接有效" / "files[] 齐全")，使流水线的每个决策点都可自动验证。8 阶段 8 门禁形成完整的 CI/CD 发布前置信链。
-</div>
-
-<h2>阶段说明</h2>
-
-<table>
-  <thead><tr><th>阶段</th><th>输入</th><th>验证方式</th><th>输出</th></tr></thead>
-  <tbody>
-    <tr><td>1. 自测</td><td>yry-breadcrumb 组件源码</td><td><code>node --check</code> · 浏览器目视 · 键盘/SR</td><td>7 项 PASS 报告</td></tr>
-    <tr><td>2. 跨页面验证</td><td>场景 1-5 全部 HTML</td><td>逐页打开检查面包屑渲染</td><td>跨场景链接清单</td></tr>
-    <tr><td>3. npm 集成</td><td>cdn/package.json</td><td><code>npm pack --dry-run</code></td><td>files[] 确认</td></tr>
-    <tr><td>4. package.json</td><td>package.json 字段</td><td>JSON 校验 · 字段完整性检查</td><td>合规 package.json</td></tr>
-    <tr><td>5. 发布</td><td>git tag · npm 登录态</td><td><code>npm publish --dry-run</code></td><td>v1.1.0 发布包</td></tr>
-  </tbody>
-</table>
-
-<p>颜色 <code class="yry-color-tag yry-color-tag--pink">#f472b6</code> 为本场景主色（Pink），与场景 tag 和侧边栏指示一致。</p>
-<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-<script>mermaid.initialize({startOnLoad:true, theme:'dark'});</script>
-
-<div class="footer">
-  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-5-测试与发布/架构图.html</code><br>
-  🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
-</div>
-
-</div>
-
-
-<script src="../../../shared\/index\.js"></script>
-<!-- ═══ CDN: YrySceneNav 组件 loader ═══ -->
-<script src="../../../yry-scene-nav/index.js"></script>
-<!-- ═══ CDN: YryCrossNav 组件 loader ═══ -->
-<script src="../../../yry-cross-nav/index.js"></script>
-<!-- ═══ CDN: YryBackTop (零配置自初始化) ═══ -->
-<script src="../../../yry-back-top/index.js"></script>
-<!-- ═══ CDN: YryBreadcrumb 组件 loader ═══ -->
-<script src="../../../yry-breadcrumb/index.js"></script>
-<!-- ═══ CDN: YrySceneHeader 组件 loader ═══ -->
-<script src="../../../yry-scene-header/index.js"></script>
-<!-- ═══ CDN: YryStatsGrid 组件 loader ═══ -->
-<script src="../../../yry-stats-grid/index.js"></script>
-
-  <!-- ════════════════════════════════════════════════════════════
-       页面级挂载 · 场景导航 + 交叉导航 + 面包屑 + 统计网格
-       index.js 异步加载模板后派发 yry-*-ready 事件
-       ════════════════════════════════════════════════════════════ -->
-  <script>
-
-  /* ── YryCrossNav 挂载 ── */
-  function mountCrossNav() {
-    if (!window.Vue || !window.YryCrossNav) return;
-    if (!document.getElementById('cross-nav-app')) return;
-    Vue.createApp(window.YryCrossNav, {
-      basePath: './',
-      active: '架构',
-      pages: [
-        { id: '清单', icon: '📋', href: '计划清单.html' },
-        { id: '架构', icon: '📐', href: '架构图.html' },
-        { id: '图谱', icon: '🔗', href: '知识图谱.html' },
-        { id: '源码', icon: '📄', href: '源码.html' },
-        { id: '测试', icon: '🧪', href: '测试面板.html' },
-        { id: '演示', icon: '💡', href: '演示.html' },
-        { id: '审查', icon: '📝', href: '审查.html' }
-      ]
-    }).mount('#cross-nav-app');
-  }
-  if (window.YryCrossNav) mountCrossNav();
-  else document.addEventListener('yry-cross-nav-ready', mountCrossNav, { once: true });
-
-  /* ── YrySceneNav 挂载 ── */
-  function mountSceneNav() {
-    if (!window.Vue || !window.YrySceneNav) return;
-    if (!document.getElementById('scene-nav-app')) return;
-    Vue.createApp(window.YrySceneNav, {
-      items: [
-        { label: '🍞 YryBreadcrumb', href: '../../../index.html' },
-        { label: '📋 任务故事', href: '../README.md' },
-        { label: '场景 5 · 测试与发布', href: './index.md' },
-        { label: '📐 架构图', active: true }
-      ]
-    }).mount('#scene-nav-app');
-  }
-  if (window.YrySceneNav) mountSceneNav();
-  else document.addEventListener('yry-scene-nav-ready', mountSceneNav, { once: true });
-
-  /* ── YrySceneHeader 挂载 ── */
-  function mountSceneHeader() {
-    if (!window.Vue || !window.YrySceneHeader) return;
-    if (!document.getElementById('scene-header-app')) return;
-    Vue.createApp(window.YrySceneHeader, {
-      icon: '📐',
-      prefix: '场景 5',
-      accent: ' · 测试与发布',
-      meta: 'YryBreadcrumb 任务故事 · 场景 5 · Testing & Publishing · Architecture Diagram',
-      desc: '场景 5 关键流程架构图 — 从 7 项自测开始，经跨页面验证、npm 集成、package.json 配置，到最终发布。'
-    }).mount('#scene-header-app');
-  }
-  if (window.YrySceneHeader) mountSceneHeader();
-  else document.addEventListener('yry-scene-header-ready', mountSceneHeader, { once: true });
-
-  /* ── YryBreadcrumb 挂载 ── */
-  function mountBreadcrumb() {
-    if (!window.Vue || !window.YryBreadcrumb) return;
-    if (!document.getElementById('breadcrumb-app')) return;
-    Vue.createApp(window.YryBreadcrumb, {
-      ariaLabel: '面包屑导航',
-      items: [
-        { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
-        { label: '任务故事', href: '../README.md' },
-        { label: '场景 5 · 测试与发布' },
-        { label: '架构图', icon: '📐' }
-      ]
-    }).mount('#breadcrumb-app');
-  }
-  if (window.YryBreadcrumb) mountBreadcrumb();
-  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
-  </script>
-
+<script src="../../../../cdn/shared/index.js"></script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
+<script src="../../../../cdn/yry-export-toolbar/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
+<script src="../../../../cdn/yry-info-cards/index.js"></script>
 </body>
 </html>

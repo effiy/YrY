@@ -1,7 +1,7 @@
 {
   "name": "yry-cdn",
   "version": "1.2.0",
-  "description": "YrY CDN — shared frontend resources: themes, CSS components, animations, JS utilities, Vue 3 custom-element components, vanilla JS tool components for story panel HTML pages",
+  "description": "YrY CDN — 125 shared frontend components: 30 Vue 3 custom elements + 83 Vanilla JS/Web Components + 12 page/style base classes. Dual theme system, 14 design tokens, 9 JS utility APIs, self-hosted JetBrains Mono fonts",
   "license": "MIT",
   "author": "effiyichengliang",
   "homepage": "https://github.com/effiyichengliang/YrY/tree/main/cdn#readme",
@@ -75,7 +75,7 @@
     "README.md",
     "CHANGELOG.md",
     "components-manifest/index.json",
-    "releases/index.json",
+    "changelog/index.json",
     "cdn-summary/index.json"
   ],
   "scripts": {
@@ -90,16 +90,26 @@
     "validate:manifest": "node scripts/validate.mjs --only=manifest",
     "validate:version": "node scripts/validate.mjs --only=version",
     "validate:components": "node scripts/validate.mjs --only=components",
-    "ci": "npm run lint && npm run validate && npm run build:manifest && npm run validate:manifest",
+    "ci": "npm run lint && npm run validate && npm run build:manifest && npm run validate:manifest && npm run test",
     "self-check": "node scripts/dev-check.mjs",
     "prepublishOnly": "npm run validate && npm run build:manifest && npm run validate:manifest",
-    "version": "node scripts/sync-version.mjs --bump && git add -A package.json README.md index.html CHANGELOG.md releases.json components.manifest.json"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "test:stats": "node scripts/test-stats.mjs",
+    "version": "node scripts/sync-version.mjs --bump && git add -A package.json README.md index.html CHANGELOG.md changelog/index.json components-manifest/index.json"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^3.2.6",
+    "@vue/test-utils": "^2.4.6",
     "eslint": "^9.13.0",
+    "happy-dom": "^15.11.7",
     "prettier": "^3.3.3",
     "stylelint": "^16.10.0",
-    "stylelint-config-standard": "^36.0.1"
+    "stylelint-config-standard": "^36.0.1",
+    "vitest": "^3.2.4",
+    "vue": "^3.5.13"
   },
   "peerDependencies": {
     "vue": "^3.0.0"

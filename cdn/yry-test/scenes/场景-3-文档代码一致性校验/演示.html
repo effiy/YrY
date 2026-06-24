@@ -1,881 +1,107 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>文档与代码一致性校验 — 演示</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>文档代码一致性校验 · 演示</title>
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/theme/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-scene/index-base.css">
-<link rel="stylesheet" href="../../../../cdn/yry-demo/index.css"></head>
+<link rel="stylesheet" href="../../../../cdn/yry-demo.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-stats/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-tabs/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
+<style>
+/* Page-specific overrides — shared patterns in shared-b.css */
+</style>
+</head>
 <body>
-<div class="container">
-<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-self-test · 自动化自检</span><span class="bc-sep">/</span><span class="bc-current">场景 3 · 文档与代码一致性校验</span><span class="bc-sep">/</span><span class="bc-current">💡 演示</span></nav>
-<nav class="scene-nav">
-  <a class="scene-nav-link" href="../场景-1-init后全量自检/计划清单.html">📋 场景1 · 初始化后全量自检</a>
-  <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link" href="../场景-2-commit前增量自检/计划清单.html">📋 场景2 · 提交前增量自检</a>
-  <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link active" href="计划清单.html">📋 场景3 · 文档与代码一致性校验</a>
-  <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link" href="../场景-4-安全面回归自检/计划清单.html">📋 场景4 · 安全面回归自检</a>
-  <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link" href="../场景-5-跨故事集成回归自检/计划清单.html">📋 场景5 · 跨故事集成回归自检</a>
-  <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link" href="../场景-6-第三方框架与服务自检/计划清单.html">📋 场景6 · 第三方框架与服务自检</a>
-  <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link story" href="../故事任务.md">📖 故事任务</a>
-</nav>
-<nav class="cross-nav">
-<a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
-<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
-<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
-<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
-<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
-<span class="cross-link on">💡 演示</span><span class="cross-sep">·</span>
-<a class="cross-link" href="审查.html">📝 审计</a>
-</nav>
+<div class="yry-container">
+<yry-scene-chrome
+  theme="b"
+  title="💡 {ACCENT} — 演示"
+  title-accent="文档与代码一致性校验"
+  subtitle="场景 3 · 版本 vv5.4.0 · 2026-06-22"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-test · 故事任务"},{"label":"场景 3 · 文档代码一致性校验"},{"label":"💡 演示"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","href":"架构图.html"},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","active":true},{"label":"📝 审查","href":"审查.html"}]'>
+</yry-scene-chrome>
 
-<div class="header">
-  <h1>🌱 <span class="accent">文档与代码一致性校验</span> — 演示</h1>
-  <p class="sub">环境搭建 → 调试方法 → 常见任务 — 新人可独立完成首修</p>
-  <div class="sub-pills">
-    <span class="sub-pill"><span class="pulse"></span> 实时可交互</span>
-    <span class="sub-pill">⏱ 预计 2h 15min</span>
-    <span class="sub-pill">📚 12 项任务</span>
-    <span class="sub-pill">🎯 6 步演示</span>
-    <span class="sub-pill">⌨ 按 <span class="kbd">?</span> 查看快捷键</span>
-  </div>
-</div>
+<yry-scene-stats items='[{"value":2,"label":"流程图","color":"info"},{"value":114,"label":"数据表","color":"t"},{"value":"vv5.4.0","label":"版本","color":"t"}]'></yry-scene-stats>
 
-<div class="live-bar" id="liveBar">
-  <span class="live-dot"></span> 本页 CDN 加载状态：
-  <span class="live-resource"><span class="lr-name">shared/index.css</span><span class="lr-status" id="lrCss">检测中</span><span class="lr-size">6.0KB</span></span>
-  <span class="live-resource"><span class="lr-name">theme/index.css</span><span class="lr-status" id="lrTheme">检测中</span><span class="lr-size">12.1KB</span></span>
-  <span class="live-resource"><span class="lr-name">shared.js</span><span class="lr-status" id="lrJs">检测中</span><span class="lr-size">5.3KB</span></span>
-  <span class="kbd-hint">1-9,0,C,S,Q</span> 切换 Tab · <span class="kbd-hint">?</span> 帮助
-</div>
-
-<div class="stats-grid">
-  <div class="stat-card" title="演示步骤数"><div class="val health">6</div><div class="lbl">📋 步骤</div></div>
-  <div class="stat-card" title="上手路径阶段数"><div class="val accent">5</div><div class="lbl">🧭 上手路径</div></div>
-  <div class="stat-card" title="已完成清单项数"><div class="val health" id="statCheckDone">0</div><div class="lbl">✅ 已完成</div><div class="stat-delta" id="statCheckDelta">+0</div></div>
-  <div class="stat-card" title="清单完成百分比"><div class="val accent" id="statCheckPct">0%</div><div class="lbl">📊 进度</div></div>
-  <div class="stat-card" title="CDN 资源加载耗时"><div class="val cyan" id="statTiming">—</div><div class="lbl">⏱ CDN 加载</div></div>
-  <div class="stat-card" title="自测得分"><div class="val purple" id="statQuiz">—</div><div class="lbl">🎯 测验得分</div></div>
-</div>
-
-<div class="tabs" id="tabs">
-  <span class="tab on" data-panel="walkthrough"><span class="tab-ico">🚶</span>演示<span class="tab-num">1</span></span>
-  <span class="tab" data-panel="timeline"><span class="tab-ico">🗺</span>时间线<span class="tab-num">2</span></span>
-  <span class="tab" data-panel="radar"><span class="tab-ico">📡</span>能力雷达<span class="tab-num">3</span></span>
-  <span class="tab" data-panel="replay"><span class="tab-ico">🎥</span>真实回放<span class="tab-num">4</span></span>
-  <span class="tab" data-panel="day"><span class="tab-ico">�</span>日程<span class="tab-num">5</span></span>
-  <span class="tab" data-panel="commands"><span class="tab-ico">⚡</span>命令<span class="tab-num">6</span></span>
-  <span class="tab" data-panel="overview"><span class="tab-ico">�</span>概览<span class="tab-num">7</span></span>
-  <span class="tab" data-panel="quiz"><span class="tab-ico">🎯</span>自测<span class="tab-num">8</span></span>
-  <span class="tab" data-panel="pitfalls"><span class="tab-ico">⚠</span>避坑<span class="tab-num">9</span></span>
-  <span class="tab" data-panel="files"><span class="tab-ico">📁</span>文件<span class="tab-num">0</span></span>
-  <span class="tab" data-panel="checklist"><span class="tab-ico">✅</span>清单<span class="tab-num">C</span></span>
-  <span class="tab" data-panel="simulator"><span class="tab-ico">🎬</span>演练<span class="tab-num">S</span></span>
-</div>
-
-<div class="panel on" id="panelWalkthrough">
-  <div class="subhead">
-    <h2 style="font-size:1rem;display:flex;align-items:center;gap:8px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></span>6 步走完文档代码一致性校验</h2>
-    <div class="sh-meta">
-      <span class="sh-item">⏱ 总耗时 ~75min</span>
-      <span class="sh-item">📊 6/6 步骤</span>
-      <span class="sh-item">🎯 目标: 完成首次 PR</span>
+<yry-scene-tabs tabs='[{"id":"walkthrough","label":"🚶 操作演示"},{"id":"commands","label":"💻 命令列表"},{"id":"screenshots","label":"📸 效果截图"}]'>
+  <div data-panel="walkthrough"><div class="placeholder">数据待填充 — 运行 /rui code 生成</div></div>
+  <div data-panel="commands">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>命令参考</h2>
+      <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
     </div>
   </div>
+  <div data-panel="screenshots"><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
+flowchart TD
+    TRIGGER[&quot;触发文档代码一致性校验&quot;]:::src --&gt; L1[&quot;第一层：文件引用可达性&lt;br/&gt;文档中引用的文件是否存在?&quot;]
 
-  <div class="next-action" id="nextAction">
-    <span class="na-ico">🎯</span>
-    <div class="na-body">
-      <div class="na-title" id="naTitle">下一步: 阅读 CLAUDE.md 了解项目总纲</div>
-      <div class="na-desc" id="naDesc">建议先从「项目画像 + 4 铁律」入手，建立全局心智模型。约 15 分钟完成。</div>
-    </div>
-    <button class="na-cta" id="naBtn" onclick="goNextStep()">开始第 1 步 →</button>
-  </div>
+    L1 --&gt; L1_OK{&quot;全部可达?&quot;}
+    L1_OK --&gt;|&quot;❌ 有断裂引用&quot;| B1[&quot;阻断：引用断裂&lt;br/&gt;列出来源文档·目标·断裂原因&quot;]:::block
+    L1_OK --&gt;|&quot;✅&quot;| L2[&quot;第二层：实施报告匹配度&lt;br/&gt;场景文档 §2 实施的变更与实际代码变更是否一致?&quot;]
 
-  <div class="walkthrough" id="walkthrough">
-    <div class="step" data-step="1"><div class="suite-body"><div class="s-title">了解项目全貌</div><div class="s-desc">阅读 README.md 了解系统全景和领域语言（20 个术语）。CLAUDE.md 定义四大铁律和不可妥协底线。</div><pre>cat README.md CLAUDE.md<span class="cb" onclick="YrY.copyCmd(this,'cat README.md CLAUDE.md')">📋</span></pre><div class="s-tags"><span class="s-tag t-p0">P0 阻断</span><span class="s-tag t-new">入门</span><span class="s-tag">心智模型</span></div><div class="s-result-desc">💡 说明: 这两个文件是新人必读的「第一小时文档」。README 回答「这是什么」，CLAUDE.md 回答「怎么操作」。领域语言的 Avoid 列特别重要 — 列出了历史中曾使用但已废弃的术语别名，防止新旧概念混淆（退化对策 L2 重生机制）。</div><div class="s-result"><span class="r-label">✅ 结果:</span> README.md: YrY 全景图 + 20 个领域语言术语定义（含 Avoid 禁用别名列）+ 6 个技能入口 + 角色拓扑概览。CLAUDE.md: 3 基础信念 + 4 铁律 + 项目约束 + 6 不可妥协底线 + 4 层退化对策。</div></div></div>
-    <div class="step" data-step="2"><div class="suite-body"><div class="s-title">搭建开发环境 <span class="s-time">~10 min</span></div><div class="s-desc">克隆仓库 → 配置 API_X_TOKEN 环境变量 → 运行 /rui init 初始化项目基线。</div><pre>git clone &amp;&amp; export API_X_TOKEN=*** &amp;&amp; /rui init<span class="cb" onclick="YrY.copyCmd(this,'git clone <repo> && export API_X_TOKEN=*** && /rui init')">📋</span></pre><div class="s-tags"><span class="s-tag t-p0">P0 阻断</span><span class="s-tag">环境</span><span class="s-tag">密钥</span></div><div class="s-result-desc">💡 说明: API_X_TOKEN 必须通过环境变量传入，禁止硬编码在源码或配置文件中（不可妥协底线 #2）。init 命令是幂等的 — 多次运行不会产生重复或冲突，marker 段每次全量重生。首次运行建议在 clone 后立即执行。</div><div class="s-result"><span class="r-label">✅ 结果:</span> API_X_TOKEN 从环境变量注入（密钥不落盘验证通过）→ /rui init 六阶段全部通过 → detect(6技能+9Agent+8规则) → generate(12个基线文件) → verify(PASS)。所有 rui marker 段已生成。</div></div></div>
-    <div class="step" data-step="3"><div class="suite-body"><div class="s-title">从源码反推理解 <span class="s-time">~5 min</span></div><div class="s-desc">如果项目已有代码但缺少文档，用 --from-code 从源码反推故事文档基线，全程只读不修改。</div><pre>/rui doc --from-code<span class="cb" onclick="YrY.copyCmd(this,'/rui doc --from-code')">📋</span></pre><div class="s-tags"><span class="s-tag t-p1">P1 推荐</span><span class="s-tag">只读</span><span class="s-tag">证据 B</span></div><div class="s-result-desc">💡 说明: --from-code 模式对新人理解存量代码库尤其有用 — 不需要手动写文档，系统从源码自动提取结构和关系，生成人类可读的故事文档。全过程只读（EACCES 检查），不会修改任何源文件。生成文档的证据级别为 Level B（源码路径 + grep 可验证），不如 Level A（运行验证）强但适合快速建立基线。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 只读扫描 skills/ agents/ rules/ lib/ → 识别 6 技能 + 9 Agent + 8 规则 + 4 共享库 → 生成故事任务.md + 4 场景文档 + 知识图谱.json (含源码路径引用) → 证据 Level B（源码路径可追溯）。</div></div></div>
-    <div class="step" data-step="4"><div class="suite-body"><div class="s-title">完成首次修改 <span class="s-time">~15 min</span></div><div class="s-desc">走完整管线：需求 → doc → code → test → deliver。分支隔离保护，Gate A/B 确保质量。</div><pre>/rui 修复文档中的错别字<span class="cb" onclick="YrY.copyCmd(this,'/rui 修复文档中的错别字')">📋</span></pre><div class="s-tags"><span class="s-tag t-p1">P1 推荐</span><span class="s-tag">T1 变更</span><span class="s-tag">端到端</span></div><div class="s-result-desc">💡 说明: 首次修改走完整管线体验全流程。T1 级变更（措辞/格式）自动跳过深度分析，流程更快（约 2 分钟 vs T3 的 15 分钟）。分支隔离策略确保 main 分支始终可交付，feat 分支的实验不会污染主分支。这是理解管线运作的最佳方式 — 做一个真实的小修改。</div><div class="s-result"><span class="r-label">✅ 结果:</span> pm 识别为 T1 措辞变更 → doc 生成场景卡片（影响范围: 仅 2 个 .md 文件）→ code 创建 feat/fix-typo 分支 → Gate A 通过 → 修改 2 处 → Gate B 1 轮通过 → deliver 合并到 main。</div></div></div>
-    <div class="step" data-step="5"><div class="suite-body"><div class="s-title">理解管线纪律 <span class="s-time">~15 min</span></div><div class="s-desc">阅读 code-pipeline.md 理解分支隔离策略、Gate A/B 关卡、逐模块 P0 清零流程。</div><pre>cat rules/code-pipeline.md<span class="cb" onclick="YrY.copyCmd(this,'cat rules/code-pipeline.md')">📋</span></pre><div class="s-tags"><span class="s-tag t-p0">P0 阻断</span><span class="s-tag">治理</span><span class="s-tag">必读</span></div><div class="s-result-desc">💡 说明: 管线纪律是 YrY 最核心的治理机制。逐模块 P0 清零是「清先于进」铁律的直接体现 — P0 代表阻断级问题（安全漏洞/数据丢失/规约不一致），未清不得进入下个模块。不是鼓励完美主义（P1/P2 可以后续迭代），而是防止 P0 积累。</div><div class="s-result"><span class="r-label">✅ 结果:</span> code-pipeline.md 定义完整管线纪律 — 分支隔离（feat/ 前缀强制 + main 保护）→ Gate A 准入（测试先行 + 安全约束注入 + 分支验证）→ 逐模块 P0 清零（Modules: N→1，Module: M→1 子任务，当前模块 P0 未清 → 阻断下一模块）→ Gate B 交付（≤2 轮修复 + 交付 hook 三步）。</div></div></div>
-    <div class="step" data-step="6"><div class="suite-body"><div class="s-title">同步团队配置 <span class="s-time">~1 min</span></div><div class="s-desc">rui-文档代码一致性校验 sync 从远端同步 .claude/ 配置，确保团队使用一致的 Agent 和规则。</div><pre>/rui-文档代码一致性校验 sync<span class="cb" onclick="YrY.copyCmd(this,'/rui-文档代码一致性校验 sync')">📋</span></pre><div class="s-tags"><span class="s-tag t-p2">P2 收尾</span><span class="s-tag">协作</span><span class="s-tag">最后</span></div><div class="s-result-desc">💡 说明: sync 确保团队成员使用统一的 Claude Code 配置（权限规则、钩子、MCP 服务器等），避免「在我机器上能跑」问题。首次入职或配置更新后必须运行。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 远端 .claude/ 配置 → 本地覆盖 — 同步 settings.json / hooks.json / MCP 服务器列表。diff 显示 3 个文件更新，0 冲突。</div></div></div>
-  </div>
+    L2 --&gt; L2_OK{&quot;全部匹配?&quot;}
+    L2_OK --&gt;|&quot;❌ 存在不匹配&quot;| W2[&quot;警告：报告滞后&lt;br/&gt;列出不匹配的模块和差异&quot;]:::warn
+    L2_OK --&gt;|&quot;✅&quot;| L3[&quot;第三层：测试报告对齐度&lt;br/&gt;场景文档 §3 测试结果与实际测试执行结果是否一致?&quot;]
 
-  <div class="tip-box success"><strong>🎉 上手完成:</strong> 完成全部 6 步后，你已经具备独立开发能力。后续可深入 ① 技能源码阅读 ② Agent 行为观察 ③ 提交 P1/P2 改进任务。预计 2 周内可承担 T2 中等复杂度变更。</div>
-</div>
+    L3 --&gt; L3_OK{&quot;全部对齐?&quot;}
+    L3_OK --&gt;|&quot;❌ 存在偏差&quot;| W3[&quot;警告：测试记录偏差&lt;br/&gt;列出偏差项和实际结果&quot;]:::warn
+    L3_OK --&gt;|&quot;✅&quot;| L4[&quot;第四层：知识图谱有效性&lt;br/&gt;图谱节点和边是否映射到实际存在的文件和函数?&quot;]
 
-<!-- ═══════════════════════════════════════════════════════ PANEL 2: 时间线 ═══ -->
-<div class="panel" id="panelTimeline">
-  <div class="timeline-hero">
-    <h2><span class="h-ico">🗺</span>文档代码一致性校验全景时间线<span class="h-sub">点击节点跳转演示步骤</span></h2>
-    <div class="timeline">
-      <div class="timeline-track">
-        <div class="timeline-line"></div>
-        <div class="timeline-progress" id="tlProgress"></div>
-        <div class="timeline-nodes">
-          <div class="tl-node active" data-step="1" onclick="jumpStep(1)">
-            <div class="tl-dot">📖</div>
-            <div class="tl-label">读文档</div>
-            <div class="tl-time">20m</div>
-            <div class="tl-tooltip">README + CLAUDE.md</div>
-          </div>
-          <div class="tl-node" data-step="2" onclick="jumpStep(2)">
-            <div class="tl-dot">⚙</div>
-            <div class="tl-label">配环境</div>
-            <div class="tl-time">10m</div>
-            <div class="tl-tooltip">clone + token + /rui init</div>
-          </div>
-          <div class="tl-node" data-step="3" onclick="jumpStep(3)">
-            <div class="tl-dot">🔍</div>
-            <div class="tl-label">反推</div>
-            <div class="tl-time">5m</div>
-            <div class="tl-tooltip">/rui doc --from-code</div>
-          </div>
-          <div class="tl-node" data-step="4" onclick="jumpStep(4)">
-            <div class="tl-dot">🛠</div>
-            <div class="tl-label">首修</div>
-            <div class="tl-time">15m</div>
-            <div class="tl-tooltip">走完整管线</div>
-          </div>
-          <div class="tl-node" data-step="5" onclick="jumpStep(5)">
-            <div class="tl-dot">📐</div>
-            <div class="tl-label">学纪律</div>
-            <div class="tl-time">15m</div>
-            <div class="tl-tooltip">code-pipeline.md</div>
-          </div>
-          <div class="tl-node" data-step="6" onclick="jumpStep(6)">
-            <div class="tl-dot">🔄</div>
-            <div class="tl-label">同步</div>
-            <div class="tl-time">1m</div>
-            <div class="tl-tooltip">/rui-文档代码一致性校验 sync</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+    L4 --&gt; L4_OK{&quot;全部有效?&quot;}
+    L4_OK --&gt;|&quot;❌ 节点/边失效&quot;| W4[&quot;警告：知识图谱过期&lt;br/&gt;列出失效节点和断裂边&quot;]:::warn
+    L4_OK --&gt;|&quot;✅&quot;| PASS[&quot;✅ 文档代码一致&lt;br/&gt;文档基线可信&quot;]:::pass
 
-  <div class="section">
-    <h2><span class="dot"></span>关键里程碑 <span class="h2-sub">每个里程碑都有可验证的完成标志</span></h2>
-    <div class="milestone-grid">
-      <div class="ms-card">
-        <div class="ms-ico">🧠</div>
-        <div class="ms-name">心智模型</div>
-        <div class="ms-desc">能画出 6 技能 + 9 Agent + 8 规则的拓扑图</div>
-        <div class="ms-time">DAY 1 · 20min</div>
-      </div>
-      <div class="ms-card">
-        <div class="ms-ico">⚡</div>
-        <div class="ms-name">环境就绪</div>
-        <div class="ms-desc">/rui init 六阶段全 PASS，无 P0 阻断</div>
-        <div class="ms-time">DAY 1 · 30min</div>
-      </div>
-      <div class="ms-card">
-        <div class="ms-ico">📚</div>
-        <div class="ms-name">文档基线</div>
-        <div class="ms-desc">故事任务 + 知识图谱.json 生成完成</div>
-        <div class="ms-time">DAY 1 · 40min</div>
-      </div>
-      <div class="ms-card">
-        <div class="ms-ico">✅</div>
-        <div class="ms-name">首次 PR</div>
-        <div class="ms-desc">T1 变更通过 Gate A/B，合并到 main</div>
-        <div class="ms-time">DAY 2 · 60min</div>
-      </div>
-      <div class="ms-card">
-        <div class="ms-ico">🛡</div>
-        <div class="ms-name">安全合规</div>
-        <div class="ms-desc">理解 6 不可妥协底线 + 5 大防线</div>
-        <div class="ms-time">DAY 3 · 90min</div>
-      </div>
-      <div class="ms-card">
-        <div class="ms-ico">🚀</div>
-        <div class="ms-name">独立交付</div>
-        <div class="ms-desc">完成 T2 中等复杂度需求，独立完成</div>
-        <div class="ms-time">WEEK 2</div>
-      </div>
-    </div>
-  </div>
+    B1 --&gt; BLOCK[&quot;汇总阻断清单&quot;]:::block
+    W2 --&gt; WARN[&quot;汇总警告清单&quot;]:::warn
+    W3 --&gt; WARN
+    W4 --&gt; WARN</pre>
+<pre class="mermaid">sequenceDiagram
+    actor U as 维护者
+    participant SC as 自检引擎
+    participant DOC as 文档树
+    participant SRC as 源码树
+    participant RPT as 结果报告
 
-  <div class="section">
-    <h2><span class="dot"></span>阶段依赖关系</h2>
-    <div class="flow-row">
-      <div class="flow-chip"><span class="n">读</span> 文档</div>
-      <span class="flow-arrow">→</span>
-      <div class="flow-chip"><span class="n">配</span> 环境</div>
-      <span class="flow-arrow">→</span>
-      <div class="flow-chip"><span class="n">反推</span> 文档</div>
-      <span class="flow-arrow">→</span>
-      <div class="flow-chip"><span class="n">首修</span> 走通</div>
-      <span class="flow-arrow">→</span>
-      <div class="flow-chip"><span class="n">学</span> 纪律</div>
-      <span class="flow-arrow">→</span>
-      <div class="flow-chip"><span class="n">同</span> 步</div>
-    </div>
-  </div>
+    U-&gt;&gt;SC: 触发一致性校验
+    SC-&gt;&gt;DOC: 遍历全部故事文档
+    DOC--&gt;&gt;SC: 文档内容全集
+    SC-&gt;&gt;SC: 提取全部文件引用和交叉引用
+    SC-&gt;&gt;SRC: 逐条验证引用目标是否存在
+    SRC--&gt;&gt;SC: 存在性判定结果
+    SC-&gt;&gt;DOC: 提取 §2 实施报告中的变更清单
+    DOC--&gt;&gt;SC: 声称的变更列表
+    SC-&gt;&gt;SRC: 对比声称变更与实际文件状态
+    SRC--&gt;&gt;SC: 匹配/不匹配判定
+    SC-&gt;&gt;DOC: 提取 §3 测试报告中的结果
+    DOC--&gt;&gt;SC: 声称的测试结果
+    SC-&gt;&gt;SRC: 对比声称结果与实际测试输出
+    SRC--&gt;&gt;SC: 对齐/偏差判定
+    SC-&gt;&gt;DOC: 提取知识图谱节点和边
+    DOC--&gt;&gt;SC: 图谱结构
+    SC-&gt;&gt;SRC: 验证每个实现节点的源文件存在性
+    SRC--&gt;&gt;SC: 有效性判定
+    SC-&gt;&gt;RPT: 汇总四层结果
+    RPT--&gt;&gt;U: 输出一致性报告</pre></div>
+</yry-scene-tabs>
 
-  <div class="tip-box"><strong>📌 阶段不可跳过:</strong> 每个阶段都有「前置依赖」。例如没有读 CLAUDE.md 就跑 /rui init，会因为不理解铁律而误用命令（典型错误：把 token 硬编码到测试文件）。</div>
-</div>
-
-<div class="panel" id="panelOverview">
-  <div class="subhead">
-    <h2 style="font-size:1rem;display:flex;align-items:center;gap:8px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></span>文档代码一致性校验全景</h2>
-    <div class="sh-meta">
-      <span class="sh-item">📊 5 阶段 · 6 步骤</span>
-      <span class="sh-item">⏱ ~2h 完成</span>
-    </div>
-  </div>
-
-  <div class="overview-grid">
-    <div class="ov-card">
-      <div class="ov-ico">📚</div>
-      <div class="ov-title">建立认知</div>
-      <div class="ov-desc">阅读 CLAUDE.md / AGENT.md / README.md 三大入口文档，建立对项目结构、规则、文化的全局理解。</div>
-      <div class="ov-stat">
-        <span class="os accent">⏱ 35min</span>
-        <span class="os">3 文档</span>
-        <span class="os">P0</span>
-      </div>
-    </div>
-    <div class="ov-card">
-      <div class="ov-ico">⚙</div>
-      <div class="ov-title">环境就绪</div>
-      <div class="ov-desc">克隆仓库 → 配置密钥 → 运行 /rui init 完成基线建立 → /rui-文档代码一致性校验 sync 同步团队配置。</div>
-      <div class="ov-stat">
-        <span class="os accent">⏱ 11min</span>
-        <span class="os">4 命令</span>
-        <span class="os">P0</span>
-      </div>
-    </div>
-    <div class="ov-card">
-      <div class="ov-ico">🔍</div>
-      <div class="ov-title">反推理解</div>
-      <div class="ov-desc">用 /rui doc --from-code 从存量代码自动生成故事文档，建立项目级知识图谱。</div>
-      <div class="ov-stat">
-        <span class="os accent">⏱ 5min</span>
-        <span class="os">1 命令</span>
-        <span class="os">P1</span>
-      </div>
-    </div>
-    <div class="ov-card">
-      <div class="ov-ico">🛠</div>
-      <div class="ov-title">首修实操</div>
-      <div class="ov-desc">选 T1 级别小修改走完整管线：pm 评估 → doc 卡片 → code 分支 → Gate A/B → deliver 合并。</div>
-      <div class="ov-stat">
-        <span class="os accent">⏱ 15min</span>
-        <span class="os">5 阶段</span>
-        <span class="os">P1</span>
-      </div>
-    </div>
-    <div class="ov-card">
-      <div class="ov-ico">📐</div>
-      <div class="ov-title">学习治理</div>
-      <div class="ov-desc">阅读 code-pipeline.md 深入理解分支隔离、Gate A/B 关卡、逐模块 P0 清零机制。</div>
-      <div class="ov-stat">
-        <span class="os accent">⏱ 15min</span>
-        <span class="os">1 文档</span>
-        <span class="os">P0</span>
-      </div>
-    </div>
-    <div class="ov-card">
-      <div class="ov-ico">🤝</div>
-      <div class="ov-title">团队同步</div>
-      <div class="ov-desc">通过 /rui-文档代码一致性校验 sync 与团队保持 Agent / 规则 / MCP 配置一致，避免本地漂移。</div>
-      <div class="ov-stat">
-        <span class="os accent">⏱ 1min</span>
-        <span class="os">1 命令</span>
-        <span class="os">P2</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="section"><h2><span class="dot"></span>关键概念速查</h2>
-    <div class="flow-row"><div class="flow-chip"><span class="n">铁律</span> 4 条不可妥协</div><span class="flow-arrow">·</span><div class="flow-chip"><span class="n">Gate A/B</span> 准入/交付关卡</div><span class="flow-arrow">·</span><div class="flow-chip"><span class="n">P0 清零</span> 逐模块执行</div><span class="flow-arrow">·</span><div class="flow-chip"><span class="n">表达优先</span> 图→文→表</div><span class="flow-arrow">·</span><div class="flow-chip"><span class="n">退化对策</span> L1-L4</div></div>
-  </div>
-
-  <div class="tip-box info">
-    <strong>💡 学习心法:</strong> 不要试图一次理解所有细节 — 先跑通流程获得「完整闭环」的体感，再回头看规约会事半功倍。YrY 的设计哲学是「验证先于理解」，先让 init 命令成功跑起来，再去读 why。
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════ PANEL: 能力雷达 ═══ -->
-<div class="panel" id="panelRadar">
-  <div class="subhead">
-    <h2 style="font-size:1rem;display:flex;align-items:center;gap:8px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></span>新人能力雷达图</h2>
-    <div class="sh-meta">
-      <span class="sh-item">📊 7 维度评估</span>
-      <span class="sh-item">🎯 悬停查看</span>
-    </div>
-  </div>
-
-  <div class="concept-radar">
-    <div class="radar-header">
-      <h3>📡 YrY 核心能力覆盖</h3>
-      <div class="radar-legend">
-        <span class="lg-item"><span class="lg-dot" style="background:var(--accent)"></span>完成 /rui init 后</span>
-        <span class="lg-item"><span class="lg-dot" style="background:rgba(34,211,238,.4);border:1px dashed rgba(34,211,238,.6)"></span>基线要求</span>
-      </div>
-    </div>
-    <svg class="radar-svg" viewBox="0 0 400 320" id="radarSvg">
-      <g transform="translate(200,160)">
-        <circle class="radar-grid" r="40"/>
-        <circle class="radar-grid" r="80"/>
-        <circle class="radar-grid" r="120"/>
-        <line class="radar-axis" x1="0" y1="0" x2="0" y2="-130"/>
-        <line class="radar-axis" x1="0" y1="0" x2="113" y2="-65"/>
-        <line class="radar-axis" x1="0" y1="0" x2="113" y2="65"/>
-        <line class="radar-axis" x1="0" y1="0" x2="0" y2="130"/>
-        <line class="radar-axis" x1="0" y1="0" x2="-113" y2="65"/>
-        <line class="radar-axis" x1="0" y1="0" x2="-113" y2="-65"/>
-        <polygon class="radar-shield-baseline" points="0,-80 69.3,-40 69.3,40 0,80 -69.3,40 -69.3,-40"/>
-        <polygon class="radar-shield" id="radarShield" points=""/>
-        <circle class="radar-point" data-i="0" cx="0" cy="-110" r="4"/>
-        <circle class="radar-point" data-i="1" cx="95.3" cy="-55" r="4"/>
-        <circle class="radar-point" data-i="2" cx="95.3" cy="55" r="4"/>
-        <circle class="radar-point" data-i="3" cx="0" cy="110" r="4"/>
-        <circle class="radar-point" data-i="4" cx="-95.3" cy="55" r="4"/>
-        <circle class="radar-point" data-i="5" cx="-95.3" cy="-55" r="4"/>
-        <circle class="radar-point" data-i="6" cx="0" cy="0" r="4"/>
-        <text class="radar-label" x="0" y="-138">项目认知</text>
-        <text class="radar-label" x="118" y="-60">管线纪律</text>
-        <text class="radar-label" x="118" y="78">铁律遵守</text>
-        <text class="radar-label" x="0" y="148">代码实操</text>
-        <text class="radar-label" x="-118" y="78">协作同步</text>
-        <text class="radar-label" x="-118" y="-60">安全意识</text>
-        <text class="radar-label" x="14" y="4" style="font-weight:600">工具熟练</text>
-      </g>
-    </svg>
-    <div class="radar-desc" id="radarDesc">
-      <strong>💡 悬停查看详情:</strong> 完成 /rui init 后你的能力雷达 — 7 维度展示新人对 YrY 体系各核心领域的掌握程度。基线（青色虚线）是最低准入要求。
-    </div>
-  </div>
-
-  <div class="section">
-    <h2><span class="dot"></span>7 维度说明</h2>
-    <div class="overview-grid">
-      <div class="ov-card">
-        <div class="ov-ico">🧠</div>
-        <div class="ov-title">项目认知</div>
-        <div class="ov-desc">理解 YrY 是什么、解决什么问题、六大能力的边界。</div>
-        <div class="ov-stat"><span class="os accent">深度 80%</span></div>
-      </div>
-      <div class="ov-card">
-        <div class="ov-ico">📐</div>
-        <div class="ov-title">管线纪律</div>
-        <div class="ov-desc">理解分支隔离、Gate A/B、逐模块 P0 清零机制。</div>
-        <div class="ov-stat"><span class="os accent">深度 65%</span></div>
-      </div>
-      <div class="ov-card">
-        <div class="ov-ico">⚖</div>
-        <div class="ov-title">铁律遵守</div>
-        <div class="ov-desc">4 条铁律融入日常工作，6 不可妥协底线严格遵守。</div>
-        <div class="ov-stat"><span class="os accent">深度 90%</span></div>
-      </div>
-      <div class="ov-card">
-        <div class="ov-ico">💻</div>
-        <div class="ov-title">代码实操</div>
-        <div class="ov-desc">独立完成 T1/T2 级别需求，理解代码与文档的对应关系。</div>
-        <div class="ov-stat"><span class="os accent">深度 55%</span></div>
-      </div>
-      <div class="ov-card">
-        <div class="ov-ico">🤝</div>
-        <div class="ov-title">协作同步</div>
-        <div class="ov-desc">用 /rui-文档代码一致性校验 sync 与团队保持配置一致，参与评审。</div>
-        <div class="ov-stat"><span class="os accent">深度 60%</span></div>
-      </div>
-      <div class="ov-card">
-        <div class="ov-ico">🛡</div>
-        <div class="ov-title">安全意识</div>
-        <div class="ov-desc">理解密钥处理、输入校验、攻击面最小化等安全实践。</div>
-        <div class="ov-stat"><span class="os accent">深度 75%</span></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="tip-box"><strong>📈 成长路径:</strong> DAY 1 → 工具熟练 60% · DAY 3 → 项目认知 80% · WEEK 1 → 代码实操 75% · WEEK 2 → 铁律遵守 95% · MONTH 1 → 全部维度 ≥ 80%</div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════ PANEL: 真实回放 ═══ -->
-<div class="panel" id="panelReplay">
-  <div class="subhead">
-    <h2 style="font-size:1rem;display:flex;align-items:center;gap:8px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></span>真实命令回放</h2>
-    <div class="sh-meta">
-      <span class="sh-item">🖥 类终端</span>
-      <span class="sh-item">⏯ 播放控制</span>
-    </div>
-  </div>
-
-  <div class="tw-demo" id="twDemo">
-    <div class="tw-head">
-      <span class="tw-btn r"></span>
-      <span class="tw-btn y"></span>
-      <span class="tw-btn g"></span>
-      <span class="tw-title">~/yry-arch — zsh</span>
-    </div>
-    <div id="twContent"></div>
-  </div>
-
-  <div class="tw-controls">
-    <button class="tw-ctrl-btn on" data-scenario="init" onclick="twRun('init', this)">▶ /rui init</button>
-    <button class="tw-ctrl-btn" data-scenario="firstfix" onclick="twRun('firstfix', this)">▶ /rui 首修</button>
-    <button class="tw-ctrl-btn" data-scenario="sync" onclick="twRun('sync', this)">▶ /rui-文档代码一致性校验 sync</button>
-    <button class="tw-ctrl-btn" onclick="twReset()">↺ 清屏</button>
-    <span style="font-size:.66rem;color:var(--text3);margin-left:auto">💡 模拟真实终端输出，按场景分类</span>
-  </div>
-
-  <div class="section">
-    <h2><span class="dot"></span>输出解读</h2>
-    <div class="tip-box info"><strong>🎨 颜色含义:</strong> <span style="color:var(--accent)">黄色</span> = 用户输入命令 · <span style="color:var(--text2)">灰色</span> = 普通输出 · <span style="color:var(--pass)">绿色</span> = 成功标记 · <span style="color:var(--cyan)">青色</span> = 信息提示 · <span style="color:var(--warn)">橙色</span> = 警告 · <span style="color:var(--fail)">红色</span> = 错误</div>
-    <div class="tip-box"><strong>💡 学习要点:</strong> 注意每个阶段输出的 ① 步骤名 ② 进度条 ③ 验证标记。YrY 的命令输出遵循「动词 + 对象 + 结果」的可读格式，新人能直接读懂进度。</div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════ PANEL: 日程 ═══ -->
-<div class="panel" id="panelDay">
-  <div class="subhead">
-    <h2 style="font-size:1rem;display:flex;align-items:center;gap:8px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></span>3 天上手日程</h2>
-    <div class="sh-meta">
-      <span class="sh-item">📅 DAY 1-3 详细安排</span>
-      <span class="sh-item">⏱ 总计 ~6.5h</span>
-    </div>
-  </div>
-
-  <div class="day-plan">
-    <div class="day-card d1">
-      <div class="d-head">
-        <span class="d-tag">DAY 1</span>
-        <span class="d-title">建立认知 + 环境就绪</span>
-      </div>
-      <div class="d-meta">
-        <span>⏱ 总耗时 2h</span>
-        <span>📚 阅读 3 文档</span>
-        <span>⚙ 配环境</span>
-      </div>
-      <ul>
-        <li>阅读 README.md · 了解全景<span class="li-time">20m</span></li>
-        <li>阅读 CLAUDE.md · 4 铁律<span class="li-time">20m</span></li>
-        <li>阅读 AGENT.md · 9 Agent<span class="li-time">20m</span></li>
-        <li>git clone + npm install<span class="li-time">10m</span></li>
-        <li>配置 API_X_TOKEN 环境变量<span class="li-time">5m</span></li>
-        <li>运行 /rui init 六阶段<span class="li-time">10m</span></li>
-        <li>浏览 skills/ 目录<span class="li-time">30m</span></li>
-        <li>运行 /rui doc --from-code<span class="li-time">5m</span></li>
-      </ul>
-    </div>
-
-    <div class="day-card d2">
-      <div class="d-head">
-        <span class="d-tag">DAY 2</span>
-        <span class="d-title">首修实操 + 理解治理</span>
-      </div>
-      <div class="d-meta">
-        <span>⏱ 总耗时 2.5h</span>
-        <span>🛠 实操 1 PR</span>
-        <span>📐 学治理</span>
-      </div>
-      <ul>
-        <li>阅读 code-pipeline.md<span class="li-time">30m</span></li>
-        <li>阅读 security-guardrails.md<span class="li-time">20m</span></li>
-        <li>选择 T1 级别需求<span class="li-time">10m</span></li>
-        <li>运行 /rui 需求描述 (T1)<span class="li-time">2m</span></li>
-        <li>走完整管线 doc → code → test → deliver<span class="li-time">20m</span></li>
-        <li>通过 Gate A/B 验证<span class="li-time">15m</span></li>
-        <li>merge 第一个 PR 🎉<span class="li-time">5m</span></li>
-        <li>浏览 故事任务面板 现有故事<span class="li-time">30m</span></li>
-        <li>尝试 修复一个 P2 改进项<span class="li-time">20m</span></li>
-      </ul>
-    </div>
-
-    <div class="day-card d3">
-      <div class="d-head">
-        <span class="d-tag">DAY 3</span>
-        <span class="d-title">深化理解 + 团队同步</span>
-      </div>
-      <div class="d-meta">
-        <span>⏱ 总耗时 2h</span>
-        <span>🤝 同步配置</span>
-        <span>📚 选读</span>
-      </div>
-      <ul>
-        <li>阅读 rules/ 全部 8 规则<span class="li-time">40m</span></li>
-        <li>运行 /rui-文档代码一致性校验 sync<span class="li-time">5m</span></li>
-        <li>参与一次代码评审<span class="li-time">30m</span></li>
-        <li>提交一个 P1 改进任务<span class="li-time">30m</span></li>
-        <li>阅读 帮助系统 help.mjs<span class="li-time">15m</span></li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="section">
-    <h2><span class="dot"></span>学习心法</h2>
-    <div class="tip-box info"><strong>🎯 不必死板执行:</strong> 上述时间是参考值。有经验的开发者可压缩到 1 天，零基础可能需要 1 周。重点是 ① 跑通 init ② 完成首修 ③ 理解纪律 — 顺序不可乱。</div>
-    <div class="tip-box success"><strong>✅ 完成的标志:</strong> 当你能 ① 独立解决 /rui init 错误 ② 写出符合规约的 PR 描述 ③ 给他人讲解 Gate A/B 机制 — 你就从「新人」毕业了。</div>
-  </div>
-</div>
-
-<div class="panel" id="panelCommands">
-  <div class="subhead">
-    <h2 style="font-size:1rem;display:flex;align-items:center;gap:8px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></span>6 个核心命令</h2>
-    <div class="sh-meta">
-      <span class="sh-item">⚡ 一键复制</span>
-      <span class="sh-item">🛡 安全合规</span>
-    </div>
-  </div>
-  <div class="cmd-grid">
-    <div class="cmd-card"><div class="stage">初始化</div><div class="name">/rui init</div><div class="desc">六步建立项目骨架。detect→explore→generate→arch→setup→verify。幂等可重跑。</div><pre>/rui init<span class="cb" onclick="YrY.copyCmd(this,'/rui init')">📋</span></pre><div class="cmd-meta"><span class="cmd-tag t-p0">P0 必跑</span><span class="cmd-tag">幂等</span><span class="cmd-tag">~2min</span></div></div>
-    <div class="cmd-card"><div class="stage">文档反推</div><div class="name">/rui doc --from-code</div><div class="desc">存量代码库生成故事文档基线。全程只读源码，证据 Level B + 源码路径可追溯。</div><pre>/rui doc --from-code<span class="cb" onclick="YrY.copyCmd(this,'/rui doc --from-code')">📋</span></pre><div class="cmd-meta"><span class="cmd-tag t-p1">P1 推荐</span><span class="cmd-tag">只读</span><span class="cmd-tag t-new">EACCES</span></div></div>
-    <div class="cmd-card"><div class="stage">端到端首修</div><div class="name">/rui 需求描述</div><div class="desc">= /rui doc 需求 → /rui code name，无中断一气呵成。T1 级变更约 2 分钟完成。</div><pre>/rui 添加代码注释<span class="cb" onclick="YrY.copyCmd(this,'/rui 添加代码注释')">📋</span></pre><div class="cmd-meta"><span class="cmd-tag t-p1">P1 推荐</span><span class="cmd-tag">T1 变更</span><span class="cmd-tag">端到端</span></div></div>
-    <div class="cmd-card"><div class="stage">配置同步</div><div class="name">/rui-文档代码一致性校验 sync</div><div class="desc">远端 → 本地覆盖 .claude/ 配置。适合初始化新环境或同步团队更新。</div><pre>/rui-文档代码一致性校验 sync<span class="cb" onclick="YrY.copyCmd(this,'/rui-文档代码一致性校验 sync')">📋</span></pre><div class="cmd-meta"><span class="cmd-tag t-p2">P2 收尾</span><span class="cmd-tag">协作</span><span class="cmd-tag">~1min</span></div></div>
-    <div class="cmd-card"><div class="stage">插件升级</div><div class="name">/rui-文档代码一致性校验 update</div><div class="desc">git pull 最新 YrY → 清除插件缓存 → sync 远端配置双刷新。版本升级时使用。</div><pre>/rui-文档代码一致性校验 update<span class="cb" onclick="YrY.copyCmd(this,'/rui-文档代码一致性校验 update')">📋</span></pre><div class="cmd-meta"><span class="cmd-tag t-p2">P2 升级</span><span class="cmd-tag">git pull</span><span class="cmd-tag">~3min</span></div></div>
-    <div class="cmd-card"><div class="stage">任务推荐</div><div class="name">/rui</div><div class="desc">空输入触发 5 层链式管线评分排序，输出推荐任务列表。适合不确定做什么时。</div><pre>/rui<span class="cb" onclick="YrY.copyCmd(this,'/rui')">📋</span></pre><div class="cmd-meta"><span class="cmd-tag t-new">新功能</span><span class="cmd-tag">智能推荐</span><span class="cmd-tag">5 层管线</span></div></div>
-  </div>
-
-  <div class="section">
-    <h2><span class="dot"></span>命令速查表</h2>
-    <div class="cmd-grid">
-      <div class="cmd-card"><div class="name">/rui help</div><div class="desc">查看所有可用命令与参数。第一个必运行的命令。</div><pre>/rui help<span class="cb" onclick="YrY.copyCmd(this,'/rui help')">📋</span></pre></div>
-      <div class="cmd-card"><div class="name">/rui status</div><div class="desc">查看当前项目状态、活跃任务、最近交付。</div><pre>/rui status<span class="cb" onclick="YrY.copyCmd(this,'/rui status')">📋</span></pre></div>
-      <div class="cmd-card"><div class="name">/rui-story</div><div class="desc">进入故事管理模式：创建/编辑/交付故事任务。</div><pre>/rui-story list<span class="cb" onclick="YrY.copyCmd(this,'/rui-story list')">📋</span></pre></div>
-    </div>
-  </div>
-
-  <div class="tip-box"><strong>💡 命令命名规律:</strong> <span class="inline-code">/rui</span> 开头是项目核心命令（技能），<span class="inline-code">/rui-文档代码一致性校验</span> 是 Claude Code 集成命令（配置）。两组命令的边界：前者改项目，后者改运行环境。</div>
-</div>
-
-<div class="panel" id="panelFiles">
-  <div class="subhead">
-    <h2 style="font-size:1rem;display:flex;align-items:center;gap:8px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></span>相关文件</h2>
-    <div class="sh-meta">
-      <span class="sh-item">📁 6 核心文件</span>
-      <span class="sh-item">🔍 源码可点击</span>
-    </div>
-  </div>
-  <div class="section">
-    <div class="file-list">
-      <div class="file-item">📄 README.md<div class="fi-meta">入门 · 必读 · <span class="fi-pri">P0</span></div></div>
-      <div class="file-item">📄 CLAUDE.md<div class="fi-meta">总纲 · 4 铁律 · <span class="fi-pri">P0</span></div></div>
-      <div class="file-item">📐 code-pipeline.md<div class="fi-meta">治理 · Gate A/B · <span class="fi-pri">P0</span></div></div>
-      <div class="file-item">📐 AGENT.md<div class="fi-meta">角色拓扑 · 9 Agent</div></div>
-      <div class="file-item">📄 formulas.md<div class="fi-meta">公式速查 · 选读</div></div>
-      <div class="file-item">⚡ help.mjs<div class="fi-meta">帮助入口 · CLI</div></div>
-    </div>
-  </div>
-  <div class="section">
-    <h2><span class="dot"></span>模块归属</h2>
-    <div class="tip-box"><strong>📁 skills/</strong> 6 技能（rui, rui-story, rui-文档代码一致性校验, rui-import, rui-bot, rui-npm）<br>
-    <strong>📁 agents/</strong> 9 Agent（pm, architect, coder, tester, security, code-reviewer, …）<br>
-    <strong>📁 rules/</strong> 8 规则（管线纪律, 交付门禁, 安全护栏, …）<br>
-    <strong>📁 lib/</strong> 4 共享库（utils, fs-helpers, …）</div>
-  </div>
-  <div class="links-row"><a href="计划清单.html">📋 计划清单</a><a href="架构图.html">📐 架构图</a><a href="知识图谱.html">🔗 知识图谱</a><a href="源码.html">📄 源码</a><a href="测试面板.html">🧪 测试面板</a><a href="审查.html">📝 审计</a></div>
-</div>
-
-<div class="panel" id="panelTests">
-  <div class="section"><h2><span class="dot"></span>测试覆盖</h2>
-    <div class="cmd-grid">
-      <div class="cmd-card"><div class="name">环境可达性</div><div class="desc">验证 init 命令可执行、CLAUDE.md 可解析、skills 目录结构完整。</div></div>
-      <div class="cmd-card"><div class="name">新人路径可走通</div><div class="desc">验证从 clone 到首次 /rui 完整流程可执行，Gate A/B 正确触发。</div></div>
-      <div class="cmd-card"><div class="name">文档覆盖完整</div><div class="desc">验证 README/CLAUDE.md/formulas.md 涵盖新人所需全部信息。</div></div>
-    </div>
-  </div>
-  <div class="links-row"><a href="测试面板.html">🧪 打开测试面板</a><a href="../../../index.html">📄 返回文档中心</a></div>
-</div>
-
-<div class="panel" id="panelChecklist">
-  <div class="subhead">
-    <h2 style="font-size:1rem;display:flex;align-items:center;gap:8px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></span>文档代码一致性校验任务清单</h2>
-    <div class="sh-meta">
-      <span class="sh-item">📋 12 项任务</span>
-      <span class="sh-item">⏱ ~2h 15min</span>
-      <span class="sh-item">💾 自动保存</span>
-    </div>
-  </div>
-  <div class="section">
-    <p style="font-size:.76rem;color:var(--text3);margin-bottom:14px">逐项完成打勾。进度自动保存到浏览器，刷新不丢失。点击链接跳转相关文档。</p>
-    <div class="check-progress"><div class="prog-text"><span>完成进度</span><span class="prog-pct" id="progLabel">0 / 12 (0%)</span></div><div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div></div>
-    <div class="checklist" id="checkList">
-      <div class="check-item" data-id="s1-intro"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">1. 阅读 README.md <span class="ci-day">DAY 1</span></div><div class="ci-desc">了解 YrY 系统全景、领域语言、Avoid 禁用别名列</div></div><div class="ci-time">~10 min</div><a class="ci-link" href="源码.html" target="_blank">📄 源码</a></div>
-      <div class="check-item" data-id="s2-code"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">2. 阅读 CLAUDE.md <span class="ci-day">DAY 1</span></div><div class="ci-desc">理解四大铁律、不可妥协底线、退化对策、引导入口</div></div><div class="ci-time">~15 min</div></div>
-      <div class="check-item" data-id="s3-agent"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">3. 阅读 AGENT.md <span class="ci-day">DAY 1</span></div><div class="ci-desc">掌握 9 Agent 角色拓扑、协作模式、信号协议、行为纪律</div></div><div class="ci-time">~20 min</div></div>
-      <div class="check-item" data-id="s4-pipeline"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">4. 阅读 code-pipeline.md <span class="ci-day">DAY 2</span></div><div class="ci-desc">理解分支隔离、Gate A/B 关卡、逐模块 P0 清零管线纪律</div></div><div class="ci-time">~15 min</div></div>
-      <div class="check-item" data-id="s5-clone"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">5. 克隆仓库 & 安装依赖 <span class="ci-day">DAY 1</span></div><div class="ci-desc">git clone + token 配置 + npm install + 环境变量设置</div></div><div class="ci-time">~5 min</div></div>
-      <div class="check-item" data-id="s6-init"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">6. 运行 /rui init <span class="ci-day">DAY 1</span></div><div class="ci-desc">六阶段建立项目基线，验证 detect → verify 全部通过</div></div><div class="ci-time">~2 min</div></div>
-      <div class="check-item" data-id="s7-explore"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">7. 浏览 skills/ 目录 <span class="ci-day">DAY 1</span></div><div class="ci-desc">逐一阅读 6 个技能的 SKILL.md，理解每个技能的功能边界</div></div><div class="ci-time">~30 min</div></div>
-      <div class="check-item" data-id="s8-fromcode"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">8. 运行 /rui doc --from-code <span class="ci-day">DAY 1</span></div><div class="ci-desc">从存量代码反推文档基线，体验只读分析流程</div></div><div class="ci-time">~3 min</div></div>
-      <div class="check-item" data-id="s9-firstfix"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">9. 完成首次修改 <span class="ci-day">DAY 2</span></div><div class="ci-desc">走完整管线：/rui 需求 → doc → code → test → deliver</div></div><div class="ci-time">~10 min</div></div>
-      <div class="check-item" data-id="s10-sync"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">10. 同步团队配置 <span class="ci-day">DAY 2</span></div><div class="ci-desc">运行 /rui-文档代码一致性校验 sync，确保 .claude/ 配置与团队一致</div></div><div class="ci-time">~1 min</div></div>
-      <div class="check-item" data-id="s11-review"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">11. 浏览故事面板 <span class="ci-day">DAY 2</span></div><div class="ci-desc">打开 docs/故事任务面板/，了解现有故事结构和文档体系</div></div><div class="ci-time">~15 min</div></div>
-      <div class="check-item" data-id="s12-security"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">12. 阅读安全护栏 <span class="ci-day">DAY 3</span></div><div class="ci-desc">了解 security-guardrails.md 五大防线和 P0 阻断规则</div></div><div class="ci-time">~10 min</div></div>
-    </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn-clear-checks" onclick="clearAllChecks()">🗑 清除所有勾选</button>
-      <button class="btn-export" onclick="exportChecklist()">📥 导出进度</button>
-    </div>
-  </div>
-  <div class="tip-box"><strong>💡 预计总耗时:</strong> ~2 小时 15 分钟完成全部 12 项。进度自动保存到 localStorage，跨会话持久化。新人建议每天 1-2 小时，3 天内完成。</div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════ PANEL: 自测 ═══ -->
-<div class="panel" id="panelQuiz">
-  <div class="subhead">
-    <h2 style="font-size:1rem;display:flex;align-items:center;gap:8px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></span>知识自测</h2>
-    <div class="sh-meta">
-      <span class="sh-item">🎯 6 题</span>
-      <span class="sh-item">📊 即时反馈</span>
-      <span class="sh-item">🏆 满分 100</span>
-    </div>
-  </div>
-
-  <div class="tip-box info"><strong>📝 答题方式:</strong> 选择答案后立即显示对错与解析。完成全部题目后查看总分与建议。</div>
-
-  <div class="quiz-list" id="quizList">
-    <div class="quiz-card" data-q="0">
-      <div class="quiz-q"><div class="q-num">1</div><span>YrY 的「四大铁律」中，「清先于进」的具体含义是？</span></div>
-      <div class="quiz-opts">
-        <div class="quiz-opt" data-idx="0" onclick="quizAnswer(0,0,3)"><span class="opt-letter">A</span><span class="opt-text">代码先于文档</span></div>
-        <div class="quiz-opt" data-idx="1" onclick="quizAnswer(0,1,3)"><span class="opt-letter">B</span><span class="opt-text">文档先于代码</span></div>
-        <div class="quiz-opt" data-idx="2" onclick="quizAnswer(0,2,3)"><span class="opt-letter">C</span><span class="opt-text">P0 问题清零后才能进入下个模块</span></div>
-        <div class="quiz-opt" data-idx="3" onclick="quizAnswer(0,3,3)"><span class="opt-letter">D</span><span class="opt-text">测试先于实现</span></div>
-      </div>
-      <div class="quiz-feedback"><strong>正确答案: C</strong> 「清先于进」指当前模块的 P0（阻断级问题）必须清零才能进入下个模块。P0 包括安全漏洞、数据丢失、规约不一致等会阻断管线的问题。P1/P2 可后续迭代。</div>
-    </div>
-
-    <div class="quiz-card" data-q="1">
-      <div class="quiz-q"><div class="q-num">2</div><span>API_X_TOKEN 应该存放在哪里？</span></div>
-      <div class="quiz-opts">
-        <div class="quiz-opt" data-idx="0" onclick="quizAnswer(1,0,0)"><span class="opt-letter">A</span><span class="opt-text">硬编码在源码中</span></div>
-        <div class="quiz-opt" data-idx="1" onclick="quizAnswer(1,1,0)"><span class="opt-letter">B</span><span class="opt-text">写入 .env 文件并提交到 git</span></div>
-        <div class="quiz-opt" data-idx="2" onclick="quizAnswer(1,2,0)"><span class="opt-letter">C</span><span class="opt-text">通过 export 设置为环境变量</span></div>
-        <div class="quiz-opt" data-idx="3" onclick="quizAnswer(1,3,0)"><span class="opt-letter">D</span><span class="opt-text">写在 README 文档中</span></div>
-      </div>
-      <div class="quiz-feedback"><strong>正确答案: C</strong> API_X_TOKEN 必须通过环境变量传入（不可妥协底线 #2）。硬编码到源码会被 grep 检测到并阻断；写入 .env 但提交到 git 等于泄露；写在 README 则是教科书式事故。</div>
-    </div>
-
-    <div class="quiz-card" data-q="2">
-      <div class="quiz-q"><div class="q-num">3</div><span>/rui doc --from-code 与 /rui init 的关键区别是？</span></div>
-      <div class="quiz-opts">
-        <div class="quiz-opt" data-idx="0" onclick="quizAnswer(2,0,1)"><span class="opt-letter">A</span><span class="opt-text">--from-code 会修改源文件</span></div>
-        <div class="quiz-opt" data-idx="1" onclick="quizAnswer(2,1,1)"><span class="opt-letter">B</span><span class="opt-text">--from-code 只读不修改源文件</span></div>
-        <div class="quiz-opt" data-idx="2" onclick="quizAnswer(2,2,1)"><span class="opt-letter">C</span><span class="opt-text">两者完全相同</span></div>
-        <div class="quiz-opt" data-idx="3" onclick="quizAnswer(2,3,1)"><span class="opt-letter">D</span><span class="opt-text">--from-code 只能在 main 分支运行</span></div>
-      </div>
-      <div class="quiz-feedback"><strong>正确答案: B</strong> --from-code 模式是「反向工程」，对源码做只读分析生成故事文档。全过程执行 EACCES 检查确保不会写入任何源文件。生成文档的证据级别为 Level B（源码路径可追溯）。</div>
-    </div>
-
-    <div class="quiz-card" data-q="3">
-      <div class="quiz-q"><div class="q-num">4</div><span>新人首次修改建议选择什么类型的变更？</span></div>
-      <div class="quiz-opts">
-        <div class="quiz-opt" data-idx="0" onclick="quizAnswer(3,0,2)"><span class="opt-letter">A</span><span class="opt-text">T3 架构级重构</span></div>
-        <div class="quiz-opt" data-idx="1" onclick="quizAnswer(3,1,2)"><span class="opt-letter">B</span><span class="opt-text">T2 中等功能开发</span></div>
-        <div class="quiz-opt" data-idx="2" onclick="quizAnswer(3,2,2)"><span class="opt-letter">C</span><span class="opt-text">T1 措辞/格式修正</span></div>
-        <div class="quiz-opt" data-idx="3" onclick="quizAnswer(3,3,2)"><span class="opt-letter">D</span><span class="opt-text">T0 紧急修复</span></div>
-      </div>
-      <div class="quiz-feedback"><strong>正确答案: C</strong> T1 变更（措辞/格式修正）流程最快（约 2 分钟），自动跳过深度分析，让新人快速体验完整管线。T3 重构对心智模型要求高，新人易陷入细节。T0 是紧急修复，不适合作为练习。</div>
-    </div>
-
-    <div class="quiz-card" data-q="4">
-      <div class="quiz-q"><div class="q-num">5</div><span>Gate A 的核心检查项是？</span></div>
-      <div class="quiz-opts">
-        <div class="quiz-opt" data-idx="0" onclick="quizAnswer(4,0,1)"><span class="opt-letter">A</span><span class="opt-text">代码风格是否符合规范</span></div>
-        <div class="quiz-opt" data-idx="1" onclick="quizAnswer(4,1,1)"><span class="opt-letter">B</span><span class="opt-text">测试先行 + 安全约束注入 + 分支验证</span></div>
-        <div class="quiz-opt" data-idx="2" onclick="quizAnswer(4,2,1)"><span class="opt-letter">C</span><span class="opt-text">PR 标题是否符合规范</span></div>
-        <div class="quiz-opt" data-idx="3" onclick="quizAnswer(4,3,1)"><span class="opt-letter">D</span><span class="opt-text">是否有人在看 PR</span></div>
-      </div>
-      <div class="quiz-feedback"><strong>正确答案: B</strong> Gate A 是「准入关卡」，必须在写代码前通过：① 测试用例先写好 ② 安全约束（密钥、输入校验）已注入代码 ③ 当前分支合法（feat/ 前缀、不在 main）。未通过 Gate A 不允许写实现代码。</div>
-    </div>
-
-    <div class="quiz-card" data-q="5">
-      <div class="quiz-q"><div class="q-num">6</div><span>/rui-文档代码一致性校验 sync 的作用是？</span></div>
-      <div class="quiz-opts">
-        <div class="quiz-opt" data-idx="0" onclick="quizAnswer(5,0,2)"><span class="opt-letter">A</span><span class="opt-text">同步项目源代码</span></div>
-        <div class="quiz-opt" data-idx="1" onclick="quizAnswer(5,1,2)"><span class="opt-letter">B</span><span class="opt-text">同步 .claude/ 目录的配置（Agent/规则/MCP）</span></div>
-        <div class="quiz-opt" data-idx="2" onclick="quizAnswer(5,2,2)"><span class="opt-letter">C</span><span class="opt-text">自动提交未保存的代码</span></div>
-        <div class="quiz-opt" data-idx="3" onclick="quizAnswer(5,3,2)"><span class="opt-letter">D</span><span class="opt-text">运行测试套件</span></div>
-      </div>
-      <div class="quiz-feedback"><strong>正确答案: B</strong> /rui-文档代码一致性校验 sync 同步 .claude/ 配置（settings.json / hooks.json / MCP 服务器列表等），确保团队成员使用统一的 Claude Code 配置。避免「在我机器上能跑」问题。</div>
-    </div>
-  </div>
-
-  <div class="quiz-score" id="quizScore">
-    <div class="qs-big" id="qsBig">0 / 6</div>
-    <div class="qs-sub" id="qsSub">继续努力！重温文档后再来挑战</div>
-  </div>
-
-  <div class="tip-box" style="margin-top:14px"><strong>💡 自测目的:</strong> 检验 ① 4 铁律 ② 6 不可妥协底线 ③ 管线纪律 ④ 命令语义 ⑤ 协作流程 的掌握。得分 ≥ 80% 表示可进入实际开发；60-80% 建议重读对应章节；< 60% 请从「阅读 CLAUDE.md」重新开始。</div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════ PANEL: 避坑 ═══ -->
-<div class="panel" id="panelPitfalls">
-  <div class="subhead">
-    <h2 style="font-size:1rem;display:flex;align-items:center;gap:8px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></span>新人常见踩坑</h2>
-    <div class="sh-meta">
-      <span class="sh-item">⚠ 6 大类</span>
-      <span class="sh-item">🔧 含修复方案</span>
-    </div>
-  </div>
-
-  <div class="pitfall-list">
-    <div class="pitfall">
-      <div class="pf-head">
-        <span class="pf-ico">🔐</span>
-        <span class="pf-title">P0: 硬编码密钥到源码 / 测试文件</span>
-        <span class="pf-sev s-high">HIGH</span>
-      </div>
-      <div class="pf-body">
-        <p>新人最常见的错误之一。把 API_X_TOKEN 直接写入测试 fixture 或示例代码，期望「反正不会跑」。但 src/ 与 test/ 都会被 grep 扫描，硬编码会触发 Gate A 安全约束检查导致阻断。</p>
-        <p><strong>症状:</strong> /rui code 阶段报「Secret detected in source」阻断。</p>
-      </div>
-      <div class="pf-fix"><strong>修复:</strong> 1) 立即删除硬编码 2) 用 process.env.API_X_TOKEN 读取 3) 在 .gitignore 加上 .env 4) 如果已提交，git filter-branch 清理历史</div>
-    </div>
-
-    <div class="pitfall warn">
-      <div class="pf-head">
-        <span class="pf-ico">🌿</span>
-        <span class="pf-title">P0: 在 main 分支直接提交</span>
-        <span class="pf-sev s-high">HIGH</span>
-      </div>
-      <div class="pf-body">
-        <p>main 分支受分支隔离策略保护，所有修改必须通过 feat/ 前缀分支。直接在 main 上 commit 会被分支隔离 hook 拒绝。</p>
-        <p><strong>症状:</strong> git commit 报「Branch protection: main is locked」；/rui code 自动创建 feat/ 分支。</p>
-      </div>
-      <div class="pf-fix"><strong>修复:</strong> git checkout -b feat/your-feature → 在 feat 分支上提交 → 通过 Gate B → merge 到 main</div>
-    </div>
-
-    <div class="pitfall warn">
-      <div class="pf-head">
-        <span class="pf-ico">📚</span>
-        <span class="pf-title">P1: 跳过阅读 CLAUDE.md 直接跑 /rui init</span>
-        <span class="pf-sev s-med">MED</span>
-      </div>
-      <div class="pf-body">
-        <p>急于上手而忽略前置阅读。init 跑成功了，但不理解 4 铁律和 6 不可妥协底线，后续会在 Gate A/B 反复被阻断。</p>
-        <p><strong>症状:</strong> 提交被反复拒绝，不理解原因；问「为什么要先写测试」。</p>
-      </div>
-      <div class="pf-fix"><strong>修复:</strong> 回退 30 分钟，按顺序读 README.md → CLAUDE.md → AGENT.md。先建认知再动手，效率反而更高。</div>
-    </div>
-
-    <div class="pitfall tip">
-      <div class="pf-head">
-        <span class="pf-ico">💥</span>
-        <span class="pf-title">P1: 一次提交做太多改动</span>
-        <span class="pf-sev s-med">MED</span>
-      </div>
-      <div class="pf-body">
-        <p>新人常犯 — 改 typo + 重构函数 + 新增功能放在一个 commit。违反「单一职责」原则，Code Review 困难，Gate B 易失败。</p>
-        <p><strong>症状:</strong> PR 被要求拆分为多个；reviewer 反馈「这个改动太多无法 review」。</p>
-      </div>
-      <div class="pf-fix"><strong>修复:</strong> 一个 commit 只做一件事。多个改动拆成多个 commit 或多个 PR。YrY 推荐「小步快跑」而非「大爆炸式提交」。</div>
-    </div>
-
-    <div class="pitfall">
-      <div class="pf-head">
-        <span class="pf-ico">🔄</span>
-        <span class="pf-title">P1: 跳步 — 直接进入 code 阶段没有 doc 卡片</span>
-        <span class="pf-sev s-med">MED</span>
-      </div>
-      <div class="pf-body">
-        <p>新人有明确目标后倾向「直接动手」。但缺少场景卡片（doc 阶段产物）会导致 ① 影响范围不清 ② 测试不充分 ③ Gate B 失败。</p>
-        <p><strong>症状:</strong> 改了 N 个文件但只有 1 个测试；reviewer 反馈「请补充场景卡片」。</p>
-      </div>
-      <div class="pf-fix"><strong>修复:</strong> 严格走管线 — /rui 需求 → doc 自动生成场景卡片 → code 引用卡片 ID → test 覆盖卡片条目 → deliver。</div>
-    </div>
-
-    <div class="pitfall tip">
-      <div class="pf-head">
-        <span class="pf-ico">🤷</span>
-        <span class="pf-title">P2: 卡住时硬撑不求助</span>
-        <span class="pf-sev s-low">LOW</span>
-      </div>
-      <div class="pf-body">
-        <p>新人卡在某个错误 30+ 分钟不求助是常见反模式。YrY 鼓励「及时同步」（sync 铁律）。</p>
-        <p><strong>症状:</strong> 同样的错误重复尝试 → 疲惫 → 失去信心。</p>
-      </div>
-      <div class="pf-fix"><strong>修复:</strong> 15 分钟未解决的错误 → 截图+复现步骤 → 在团队频道求助 或 运行 /rui status 让系统给建议。</div>
-    </div>
-  </div>
-
-  <div class="tip-box warn" style="margin-top:14px"><strong>⚠ 严重程度说明:</strong> <strong>HIGH</strong> = 触发 P0 阻断，需立即修复 · <strong>MED</strong> = 影响交付质量但不阻断 · <strong>LOW</strong> = 反模式但可后续改进。修复 HIGH 级错误后再继续后续步骤。</div>
-</div>
-
-<div class="panel" id="panelSimulator">
-  <div class="subhead">
-    <h2 style="font-size:1rem;display:flex;align-items:center;gap:8px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></span>文档代码一致性校验模拟演练</h2>
-    <div class="sh-meta">
-      <span class="sh-item">🎬 5 阶段</span>
-      <span class="sh-item">⏯ 0.5x-3x 速度</span>
-      <span class="sh-item">📜 实时日志</span>
-    </div>
-  </div>
-  <div class="section">
-    <p style="font-size:.76rem;color:var(--text3);margin-bottom:14px">交互式模拟文档代码一致性校验的五个核心阶段。点击播放观察从阅读文档到完成首修的完整流程。每个阶段都包含子任务和实时日志。</p>
-    <div class="play-bar">
-      <button class="btn-play" id="btnSimPlay" onclick="startSim()">▶ 开始模拟</button>
-      <button class="btn-reset" onclick="resetSim()">↺ 重置</button>
-      <select class="speed-select" id="speedSelect" onchange="setSpeed(this.value)">
-        <option value="1">1x 速度</option><option value="2">2x 快速</option><option value="0.5">0.5x 慢速</option><option value="3">3x 极速</option>
-      </select>
-    </div>
-    <div class="stage-list" id="stageList">
-      <div class="stage-row" id="stg0" data-stagetime="20"><div class="st-num">①</div><div class="st-info"><div class="st-name">阅读 CLAUDE.md <span class="st-time" id="stg0t">20s</span></div><div class="st-detail"><span class="st-sub">sub-1</span> 项目画像 · <span class="st-sub">sub-2</span> 4 铁律 · <span class="st-sub">sub-3</span> 6 不可妥协底线 · <span class="st-sub">sub-4</span> 4 层退化对策</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
-      <div class="stage-row" id="stg1" data-stagetime="20"><div class="st-num">②</div><div class="st-info"><div class="st-name">阅读 AGENT.md <span class="st-time" id="stg1t">20s</span></div><div class="st-detail"><span class="st-sub">sub-1</span> 9 Agent 角色 · <span class="st-sub">sub-2</span> 6 行为纪律 · <span class="st-sub">sub-3</span> 4 设计原则 · <span class="st-sub">sub-4</span> 信号协议</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
-      <div class="stage-row" id="stg2" data-stagetime="30"><div class="st-num">③</div><div class="st-info"><div class="st-name">跟随 /rui init 六步初始化 <span class="st-time" id="stg2t">30s</span></div><div class="st-detail"><span class="st-sub">1/6</span> detect · <span class="st-sub">2/6</span> explore · <span class="st-sub">3/6</span> generate · <span class="st-sub">4/6</span> arch · <span class="st-sub">5/6</span> setup · <span class="st-sub">6/6</span> verify</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
-      <div class="stage-row" id="stg3" data-stagetime="15"><div class="st-num">④</div><div class="st-info"><div class="st-name">打开架构图理解模块关系 <span class="st-time" id="stg3t">15s</span></div><div class="st-detail"><span class="st-sub">L1</span> 6 Skills · <span class="st-sub">L2</span> 9 Agents · <span class="st-sub">L3</span> 8 Rules · <span class="st-sub">互动边</span> 信号方向</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
-      <div class="stage-row" id="stg4" data-stagetime="15"><div class="st-num">⑤</div><div class="st-info"><div class="st-name">浏览故事面板了解 SDLC 流程 <span class="st-time" id="stg4t">15s</span></div><div class="st-detail"><span class="st-sub">故事</span> yry-arch · <span class="st-sub">场景</span> 5 场景 · <span class="st-sub">文档</span> 7 类 · <span class="st-sub">入口</span> docs/index.html</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
-    </div>
-    <div class="log-box" id="simLogBox"><div style="color:var(--text3)">等待模拟开始...</div></div>
-  </div>
-  <div class="tip-box info"><strong>💡 模拟说明:</strong> 上述模拟以 1x 速度（默认）总耗时 ~100s。点击「3x 极速」可压缩到 ~33s。模拟结束后实际执行时间可见右上角「⏱」统计。建议在快速预演后，再用真实命令复现。</div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<!-- Floating help button --></div>
-
-<script src="../../../../cdn/yry-typewriter/index.js"></script>
-<script src="../../../../cdn/yry-cdn-detect/index.js"></script>
-<script src="../../../../cdn/yry-simulator/index.js"></script>
-<script>/* ─── Typewriter Demo ─── */
-var twScenarios={init:[{t:'cmd',p:'$ ',c:'/rui init'},{t:'out',c:'🚀 YrY Init v4.5 — 六步建立项目基线'},{t:'info',c:'[1/6] detect — 扫描项目结构...'},{t:'ok',c:'  ✓ 检测到 6 技能 (rui, rui-story, rui-文档代码一致性校验, rui-import, rui-bot, rui-npm)'},{t:'ok',c:'  ✓ 检测到 9 Agent (pm, architect, coder, tester, security, code-reviewer, ...)'},{t:'ok',c:'  ✓ 检测到 8 规则 (管线纪律, 交付门禁, 安全护栏, ...)'},{t:'info',c:'[2/6] explore — 深入扫描源码...',d:400},{t:'ok',c:'  ✓ skills/ → 6 技能 SKILL.md 已索引'},{t:'ok',c:'  ✓ agents/ → 9 Agent 角色职责已抽取'},{t:'info',c:'[3/6] generate — 生成基线文件...',d:500},{t:'ok',c:'  ✓ README.md (156 行)'},{t:'ok',c:'  ✓ CLAUDE.md (4 铁律 + 6 底线)'},{t:'ok',c:'  ✓ code-pipeline.md (Gate A/B + 分支隔离)'},{t:'ok',c:'  ✓ 知识图谱.json (12 节点)'},{t:'info',c:'[4/6] arch — 生成 SVG 架构图...',d:300},{t:'ok',c:'  ✓ 架构图.html (3 层 × 12 节点)'},{t:'info',c:'[5/6] setup — 同步 .claude/ 配置...',d:300},{t:'ok',c:'  ✓ settings.json'},{t:'ok',c:'  ✓ hooks.json'},{t:'info',c:'[6/6] verify — 验证 marker 段...',d:400},{t:'ok',c:'  ✓ 12 个 rui marker 段验证通过'},{t:'ok',c:'',d:200},{t:'ok',c:'✅ /rui init 完成 — 项目基线已建立 (用时 12.3s)'},{t:'muted',c:'💡 提示: 后续运行 /rui story 或 /rui "需求描述" 开始新任务',d:600}],firstfix:[{t:'cmd',p:'$ ',c:'/rui 修复文档中的错别字'},{t:'out',c:'🔍 YrY Pipeline v4.5'},{t:'info',c:'[pm] 需求分析...',d:400},{t:'ok',c:'  ✓ 分类: T1 措辞/格式变更 (~2min)'},{t:'ok',c:'  ✓ 影响范围: 2 个 .md 文件'},{t:'info',c:'[doc] 生成场景卡片...',d:500},{t:'ok',c:'  ✓ scene-typo-fix-2026-06-13.md'},{t:'info',c:'[code] 创建分支...',d:400},{t:'ok',c:'  ✓ git checkout -b feat/fix-typo'},{t:'info',c:'[Gate A] 准入检查...',d:500},{t:'ok',c:'  ✓ 测试用例已先行'},{t:'ok',c:'  ✓ 安全约束已注入'},{t:'ok',c:'  ✓ 分支合法 (feat/ 前缀)'},{t:'info',c:'[code] 实现修改...',d:600},{t:'ok',c:'  ✓ README.md: 1 处修正'},{t:'ok',c:'  ✓ CLAUDE.md: 1 处修正'},{t:'info',c:'[test] 运行测试套件...',d:400},{t:'ok',c:'  ✓ 7/7 测试通过'},{t:'info',c:'[Gate B] 交付检查...',d:400},{t:'ok',c:'  ✓ 文档同步'},{t:'ok',c:'  ✓ 通知发送'},{t:'ok',c:'',d:200},{t:'ok',c:'✅ 交付完成 — feat/fix-typo → main (用时 2m 14s)'},{t:'muted',c:'🎉 第一个 PR 成功合并!',d:600}],sync:[{t:'cmd',p:'$ ',c:'/rui-文档代码一致性校验 sync'},{t:'out',c:'🔄 YrY Claude Sync v4.5'},{t:'info',c:'从远端拉取配置...',d:300},{t:'ok',c:'  ✓ settings.json (3 处差异)'},{t:'ok',c:'  ✓ hooks.json (1 处差异)'},{t:'ok',c:'  ✓ MCP 列表 (2 个新增)'},{t:'info',c:'备份本地配置...',d:200},{t:'ok',c:'  ✓ .claude/backup-2026-06-13-103045/'},{t:'info',c:'应用远端配置...',d:300},{t:'ok',c:'  ✓ 3 个文件已更新,0 冲突'},{t:'info',c:'重启 Claude Code 进程...',d:400},{t:'ok',c:'  ✓ 新配置已加载'},{t:'ok',c:'',d:200},{t:'ok',c:'✅ sync 完成 (用时 1.2s)'},{t:'muted',c:'💡 提示: 新 MCP 服务器需要授权才能使用,运行 /rui-文档代码一致性校验 auth 授权',d:600}]};
-
-setTimeout(function(){twRun('init')},400);
-/* ─── Help Overlay ─── *//* ─── Sim Log ms (time delta) ─── */
-
-
-var stageDefsS3=[{name:'阅读 CLAUDE.md',detail:'项目画像 + 4 铁律 + 6 不可妥协底线',logLines:['📖 打开 CLAUDE.md — 项目总纲文档 ...','  ✓ 基础信念: 信模型 · 惜注意 · 验现实','  ✓ 四大铁律: 验先于称 · 溯先于修 · 清先于进 · 表达优先','  ✓ 6 不可妥协底线: 认证不绕过 · 密钥不落盘 · 输入必校验 · 规约完整性 · 自托管一致性 · 分支隔离','  ✓ 退化对策: L1 自包含 · L2 重生机制 · L3 铁律+Red Flags · L4 上下文工程','  ✓ CLAUDE.md 阅读完成 — 项目运行规则已建立']},{name:'阅读 AGENT.md',detail:'9 Agent 角色拓扑 + 行为纪律',logLines:['📖 打开 AGENT.md — 角色拓扑与协作总纲 ...','  ✓ Agent 正向流水线: pm → architect → coder → tester','  ✓ 旁路审计: security + code-reviewer 结果注入 coder 任务列表','  ✓ 信号协议: 每个 Agent 输入/输出信号有明确格式和验证方法','  ✓ 行为纪律: Red Flags 8 类合理化借口速查表','  ✓ AGENT.md 阅读完成 — 角色职责和协作模式已掌握']},{name:'跟随 /rui init 六步初始化',detail:'detect → explore → generate → arch → setup → verify',logLines:['🚀 运行 /rui init — 六步建立项目基线 ...','  ✓ Step 1/6 — detect: 检测到 6 技能 + 9 Agent + 8 规则','  ✓ Step 2/6 — explore: 扫描 skills/ agents/ rules/ lib/ 目录','  ✓ Step 3/6 — generate: 生成 12 个基线文件','  ✓ Step 4/6 — arch: 生成 SVG 三层架构拓扑','  ✓ Step 5/6 — setup: 同步 .claude/ 配置','  ✓ Step 6/6 — verify: PASS — 所有 marker 段验证通过','  ✓ /rui init 完成 — 项目基线已建立']},{name:'打开架构图理解模块关系',detail:'SVG 三层拓扑: Skills → Agents → Rules',logLines:['📐 打开 架构图.html — 自包含 SVG 三层拓扑 ...','  ✓ Layer 1 — Skills: 6 技能 (rui / rui-story / rui-文档代码一致性校验 / rui-import / rui-bot / rui-npm)','  ✓ Layer 2 — Agents: 9 Agent (pm / architect / coder / tester ...)','  ✓ Layer 3 — Rules: 8 规则 (管线纪律 / 交付门禁 / 安全护栏 ...)','  ✓ 交互边: 标注信号方向和类型，svg-pan-zoom 支持缩放','  ✓ 架构图理解完成 — 模块边界和交互关系清晰']},{name:'浏览故事面板了解 SDLC 流程',detail:'docs/故事任务面板/ → 现有故事 + 文档体系',logLines:['📋 浏览 docs/故事任务面板/ — SDLC 管理中枢 ...','  ✓ 发现活跃故事: yry-arch (系统架构知识固化)','  ✓ 自测 场景: 文档代码一致性校验','  ✓ 每个场景含 7 文档: 清单 → 架构 → 图谱 → 源码 → 测试 → 演示 → 审计','  ✓ 文档中心 docs/index.html 作为导航入口','  ✅ 故事面板浏览完成 — SDLC 管理流程已理解']}];
-</script>
-
-<div class="footer">
-  <span>YrY · 场景演示 v4.5</span>
-  <span>·</span>
-  <a href="../../../index.html">📄 文档中心</a>
-  <span>·</span>
-  <a href="计划清单.html">📋 计划清单</a>
-  <span>·</span>
-  <a href="架构图.html">📐 架构图</a>
-  <span>·</span>
-  <a href="知识图谱.html">🔗 知识图谱</a>
-  <span>·</span>
-  <a href="源码.html">📄 源码</a>
-  <span>·</span>
-  <a href="测试面板.html">🧪 测试</a>
-  <span>·</span>
-  <a href="审查.html">📝 审计</a>
-  <span>·</span>
-  <span style="color:var(--accent)">💡 演示</span>
+<yry-scene-footer version="v5.4.0" date="2026-06-22" docs-link="../../../../docs/index.html"></yry-scene-footer>
 </div>
 <script src="../../../../cdn/shared/index.js"></script>
-<script>YrY.initDemoTabs('yry-arch-s3-demo')</script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
+<script src="../../../../cdn/yry-scene-stats/index.js"></script>
+<script src="../../../../cdn/yry-scene-tabs/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
 </body>
 </html>
-
-<script>YrY.initDocsQuiz({total:6,correctAnswers:{0:2,1:2,2:1,3:2,4:1,5:1},fbExcellent:'🏆 优秀!你已经掌握文档代码一致性校验核心知识,建议进入实际开发',fbGood:'👍 良好!建议重读错误题对应的章节',fbPoor:'📚 加油!请从「阅读 CLAUDE.md」重新开始'})</script>
-<script>YrY.initRadar([0.83,0.68,0.92,0.58,0.63,0.78,0.71],[0.5,0.5,0.7,0.5,0.5,0.6,0.5],['<strong>项目认知 (83%):</strong> 深度理解 YrY 是什么、解决什么问题、六大能力的边界。','<strong>管线纪律 (68%):</strong> 理解分支隔离、Gate A/B、逐模块 P0 清零机制。','<strong>铁律遵守 (92%):</strong> 4 条铁律融入日常工作,6 不可妥协底线严格遵守。','<strong>代码实操 (58%):</strong> 独立完成 T1/T2 级别需求,理解代码与文档的对应关系。','<strong>协作同步 (63%):</strong> 用 /rui-文档代码一致性校验 sync 与团队保持配置一致,参与评审。','<strong>安全意识 (78%):</strong> 理解密钥处理、输入校验、攻击面最小化等安全实践。','<strong>工具熟练 (71%):</strong> 熟练使用 /rui、/rui-story、/rui-文档代码一致性校验 等命令。'],'💡 悬停查看详情')</script>
-<script>YrY.initChecklist({storageKey:'yry-arch-s3-checklist',exportTitle:'文档代码一致性校验任务清单进度'})</script>
-<script>YrY.initNextAction([{t:'阅读 CLAUDE.md 了解项目总纲',d:'建议先从「项目画像 + 4 铁律」入手,建立全局心智模型。约 15 分钟完成。',cta:'开始第 1 步 →'},{t:'搭建开发环境并运行 /rui init',d:'clone 仓库 → 配置 API_X_TOKEN → 运行 /rui init 六阶段。约 10 分钟。',cta:'开始第 2 步 →'},{t:'用 --from-code 反推理解代码',d:'对存量代码库运行 /rui doc --from-code,建立知识图谱。约 5 分钟。',cta:'开始第 3 步 →'},{t:'完成首次修改走完整管线',d:'选 T1 级别需求,运行 /rui → doc → code → test → deliver。约 15 分钟。',cta:'开始第 4 步 →'},{t:'深入学习管线纪律',d:'阅读 code-pipeline.md 理解分支隔离、Gate A/B、P0 清零。约 15 分钟。',cta:'开始第 5 步 →'},{t:'同步团队配置收尾',d:'运行 /rui-文档代码一致性校验 sync,确保 .claude/ 配置与团队一致。约 1 分钟。',cta:'完成第 6 步 →'},{t:'🎉 上手完成!',d:'你已经具备独立开发能力。可进入时间线 Tab 查看完整路径,或在自测 Tab 检验掌握度。',cta:'查看时间线 →'}])</script>
-<script>YrY.renderHelpOverlay()</script>
-<script>YrY.initTimelineProgress()</script>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>演示 · 双主题系统设计 · CDN 共享前端资源库</title>
+<link rel="stylesheet" href="../../../shared/index.css">
+<link rel="stylesheet" href="../../../theme/index.css">
+<link rel="stylesheet" href="../../../yry-inline-helpers/index.css">
+<link rel="stylesheet" href="../../../yry-scene/index.css">
+<link rel="stylesheet" href="../../../yry-scene-header/index.css">
+<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
+<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
+<link rel="stylesheet" href="../../../yry-back-top/index.css">
+<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
+<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
+<link rel="stylesheet" href="../../../yry-a11y/index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
+  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
+  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
+  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
+  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
+  .delivery-story { font-size: .72rem; color: #4b5563; }
+  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
+  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
+  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
+  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
+  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
+  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
+  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
+</style>
+</head>
+<body>
+<yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
+<yry-scene-header id="header-app"
+  icon="💡"
+  title-prefix="演示"
+  accent="双主题系统设计"
+  meta="📖 CDN 共享前端资源库 · 🎬 双主题系统设计"
+  desc="CDN 共享前端资源库 — 双主题系统设计 场景的 演示 交付物。查看场景详情与任务分解。">
+</yry-scene-header>
+
+<div class="scene-wrap">
+  <div class="delivery-header">
+    <div class="delivery-icon">💡</div>
+    <div class="delivery-label">演示</div>
+    <div class="delivery-scene">双主题系统设计</div>
+    <div class="delivery-story">CDN 共享前端资源库</div>
+  </div>
+
+  <div class="content-card">
+    <h2>💡 演示 1 · 主题切换前后对比</h2>
+    <p style="font-size:.76rem;line-height:1.7;color:#a9b1d6">同一组件在 Cat A (Mono) 与 Cat B (System) 主题下的渲染对照：</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+      <div style="padding:16px;border-radius:8px;background:#0f172a;border:1px solid rgba(255,255,255,.06)">
+        <div style="font-size:.62rem;color:#6b7280;margin-bottom:6px">Cat B (System)</div>
+        <div style="font-size:.92rem;color:#22d3ee;font-weight:600">卡片标题</div>
+        <div style="font-size:.74rem;color:#a9b1d6;margin-top:8px">主文字内容，使用 --yry-text1</div>
+        <div style="font-size:.68rem;color:#6b7280;margin-top:4px">辅助文字，使用 --yry-text3</div>
+        <div style="display:inline-block;margin-top:8px;padding:2px 8px;border-radius:4px;background:rgba(34,211,238,.12);color:#22d3ee;font-size:.68rem">accent 徽章</div>
+      </div>
+      <div style="padding:16px;border-radius:8px;background:#1a1b26;border:1px solid rgba(255,255,255,.04);font-family:'JetBrains Mono',monospace">
+        <div style="font-size:.62rem;color:#565f89;margin-bottom:6px">Cat A (Mono)</div>
+        <div style="font-size:.92rem;color:#7aa2f7;font-weight:600">card.title</div>
+        <div style="font-size:.74rem;color:#c0caf5;margin-top:8px">text1 main content</div>
+        <div style="font-size:.68rem;color:#565f89;margin-top:4px">text3 auxiliary</div>
+        <div style="display:inline-block;margin-top:8px;padding:2px 8px;border-radius:4px;background:rgba(122,162,247,.12);color:#7aa2f7;font-size:.68rem">accent badge</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <h2>💡 演示 2 · Fallback 兜底</h2>
+    <p style="font-size:.76rem;line-height:1.7;color:#a9b1d6">在 DevTools 中临时禁用 <code>theme/index.css</code>，观察组件回退到 fallback 值：</p>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">/* 禁用 theme/index.css 后 */
+.yry-card {
+  background: var(--yry-surface, rgba(15,23,42,.55));    /* ← 使用 fallback */
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  color: var(--yry-text1, #a9b1d6);
+}</pre>
+    <p style="margin-top:12px;font-size:.74rem;color:#a9b1d6">预期：组件仍可读，视觉与启用 theme 时略有差异但布局不变。</p>
+  </div>
+
+  <div class="content-card">
+    <h2>💡 演示 3 · 运行时主题切换</h2>
+    <p style="font-size:.76rem;line-height:1.7;color:#a9b1d6">在浏览器控制台执行：</p>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">// 切换到 Mono 主题
+document.documentElement.setAttribute('data-theme', 'mono');
+localStorage.yryTheme = 'mono';
+
+// 切换回 System 主题
+document.documentElement.setAttribute('data-theme', 'system');
+localStorage.yryTheme = 'system';
+
+// 跟随系统偏好
+document.documentElement.removeAttribute('data-theme');</pre>
+    <p style="margin-top:12px;font-size:.74rem;color:#a9b1d6">预期：整页瞬间变色，无 FOUC、无 JS 重新加载、组件状态保留。</p>
+  </div>
+
+  <div class="content-card">
+    <h2>💡 演示 4 · WCAG 对比度验证</h2>
+    <p style="font-size:.76rem;line-height:1.7;color:#a9b1d6">用 Chrome DevTools → Lighthouse → Accessibility 检查对比度：</p>
+    <ul style="margin:8px 0 0;padding-left:20px;font-size:.76rem;line-height:1.9;color:#a9b1d6">
+      <li><strong style="color:#22d3ee">text1 / bg</strong> — Cat B 7.8:1 · Cat A 8.4:1 (AA✓ AAA✓)</li>
+      <li><strong style="color:#22d3ee">text3 / bg</strong> — Cat B 4.6:1 · Cat A 4.1:1 (AA✓/⚠ · AAA✗) — 仅用于 ≥14px 加粗或非关键信息</li>
+      <li><strong style="color:#22d3ee">error / bg</strong> — Cat B 4.9:1 · Cat A 4.7:1 (AA✓ · AAA✗)</li>
+    </ul>
+  </div>
+
+  <div class="nav-links">
+    <a class="nav-link" href="计划清单.html">📋 计划清单</a>
+    <a class="nav-link" href="架构图.html">📐 架构图</a>
+    <a class="nav-link" href="知识图谱.html">🔗 知识图谱</a>
+    <a class="nav-link" href="测试面板.html">🧪 测试面板</a>
+    <a class="nav-link" href="源码.html">📄 源码</a>
+    <a class="nav-link current" href="演示.html">💡 演示</a>
+    <a class="nav-link" href="审查.html">📝 审查</a>
+  </div>
+</div>
+
+<yry-cross-nav></yry-cross-nav>
+<yry-back-top></yry-back-top>
+<yry-footer-note version="1.2.0"></yry-footer-note>
+
+<script src="../../../shared/index.js" defer></script>
+<script src="../../../shared/vue-ce-loader.js"></script>
+  <script src="../../../yry-breadcrumb/index.js"></script>
+<script src="../../../yry-scene-header/index.js"></script>
+<script src="../../../yry-scene-nav/index.js"></script>
+<script src="../../../yry-cross-nav/index.js"></script>
+<script src="../../../yry-back-top/index.js"></script>
+<script src="../../../yry-footer-note/index.js"></script>
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    var bc = document.getElementById('breadcrumb-app');
+    if (bc) bc.items = [
+      { label: 'CDN 共享库', icon: '🌐', href: '../../../index.html' },
+      { label: '故事任务面板', icon: '📖', href: '../index.html' },
+      { label: 'CDN 共享前端资源库', icon: '📖', href: '../故事任务.md' },
+      { label: '双主题系统设计', icon: '🎬' }
+    ];
+    var sh = document.getElementById('header-app');
+    if (sh) {
+      sh.icon = '💡';
+      sh.titlePrefix = '演示';
+      sh.accent = '双主题系统设计';
+      sh.meta = '📖 CDN 共享前端资源库 · 🎬 双主题系统设计';
+      sh.desc = 'CDN 共享前端资源库 — 双主题系统设计 场景的 演示 交付物。';
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  YryDashboardQuicknav · 模板源 + Demo 预览页
+
+  本文件有 2 个用途:
+    1) **模板源** — index.js 通过 fetch 拉取本文件,提取 <script type="text/x-template"
+       id="yry-dashboard-quicknav-tpl"> 内容作为 Vue 组件的 template。
+    2) **Demo 预览** — 直接用浏览器打开本文件,即可看到 YryDashboardQuicknav 的实际渲染效果。
+
+  加载链: ../shared/index.css → ../theme/index.css → index.css → Vue 3 → index.js
+  ═══════════════════════════════════════════════════════════════════════════
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryDashboardQuicknav · Demo & Template</title>
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <link rel="stylesheet" href="index.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 920px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #22d3ee); }
+    .demo-hint {
+      font-size: .78rem; color: var(--yry-text3, #888);
+      margin: 0 0 20px; line-height: 1.6;
+    }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+    .demo-section {
+      margin: 20px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-section p  { font-size: .72rem; color: var(--yry-text3, #888); margin: 0 0 10px; line-height: 1.6; }
+    .demo-filler {
+      height: 480px; margin-top: 18px;
+      background: linear-gradient(180deg, rgba(34,211,238,.04), rgba(167,139,250,.04));
+      border: 1px dashed rgba(255,255,255,.08); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--yry-text3, #888); font-size: .76rem;
+    }
+    .demo-filler .target {
+      width: 88%; height: 80px;
+      background: rgba(15,23,42,.55);
+      border: 1px solid rgba(34,211,238,.18); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--yry-text2, #d4d4d4); font-size: .78rem;
+    }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #22d3ee); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <h1><span class="accent">🧭</span> YryDashboardQuicknav · 仪表板快速锚点</h1>
+  <p class="demo-hint">
+    评分仪表板顶部快捷锚点 — 接收 <code>chips[]</code> 数组(每个元素: <code>id</code> · <code>label</code> · <code>title</code> · <code>href</code>)。<br>
+    渲染为吸顶胶囊导航 + 滚动联动高亮(active) + 移动端横向滚动。
+  </p>
+
+  <div class="demo-section">
+    <h3>Demo 1 — 默认配置 (6 个锚点)</h3>
+    <p>👇 滚动下方模拟区块,观察当前 chip 高亮联动</p>
+    <yry-dashboard-quicknav id="demo-1"></yry-dashboard-quicknav>
+    <div class="demo-filler">
+      <div class="target" id="qn-target-1">📍 目标区 #1 (sm-snapshot)</div>
+    </div>
+    <div class="demo-filler">
+      <div class="target" id="qn-target-2">📍 目标区 #2 (sm-methodology)</div>
+    </div>
+    <div class="demo-filler">
+      <div class="target" id="qn-target-3">📍 目标区 #3 (score-report)</div>
+    </div>
+    <div class="demo-filler">
+      <div class="target" id="qn-target-4">📍 目标区 #4 (sr-dim-list)</div>
+    </div>
+    <div class="demo-filler">
+      <div class="target" id="qn-target-5">📍 目标区 #5 (sr-detail-nav)</div>
+    </div>
+    <div class="demo-filler">
+      <div class="target" id="qn-target-6">📍 目标区 #6 (sec-cdn-agg)</div>
+    </div>
+  </div>
+
+  <hr>
+  <p class="demo-hint">
+    👇 以下 <code>&lt;script type="text/x-template"&gt;</code> 即为组件的 <strong>template 源</strong>,
+    <code>index.js</code> 会在加载时 fetch 本文件并提取 innerHTML。
+  </p>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       TEMPLATE SOURCE OF TRUTH · YryDashboardQuicknav 的 template
+       ──────────────────────────────────────────────────────────────────
+       命名约定 (与 docs/index.html 滚动间谍兼容):
+         根 .sr-quicknav · .sr-qn-chip · [data-target] · .is-active
+       外部脚本可继续 querySelectorAll('.sr-qn-chip') 接管滚动高亮。
+       ════════════════════════════════════════════════════════════════════ -->
+  <script type="text/x-template" id="yry-dashboard-quicknav-tpl">
+    <nav class="sr-quicknav" :id="id" :aria-label="ariaLabel" v-if="chips && chips.length">
+      <a
+        v-for="chip in chips"
+        :key="chip.id"
+        class="sr-qn-chip"
+        :data-target="chip.id"
+        :href="chip.href || ('#' + chip.id)"
+        :title="chip.title || ''"
+        :target="chip.target || null"
+        :rel="chip.target === '_blank' ? 'noopener' : null"
+        @click="onChipClick($event, chip)">{{ chip.label }}</a>
+    </nav>
+  </script>
+
+  <script src="../shared/vue-ce-loader.js"></script>
+  <script src="index.js"></script>
+  <script>
+    /* ── Demo 数据 — 与 docs/index.html 实际用法一致 ─────────────── */
+    var DEMO_CHIPS = [
+      { id: 'qn-target-1', label: '📸 最新报告',     title: '最新报告快照 — 今日健康 + 20 技能自循环巡检',                       href: '#qn-target-1' },
+      { id: 'qn-target-2', label: '📐 评分机制',     title: '八维加权评分体系 — PHI·SHI·TQI·SII·AQI·DQI·UPHI·DHI',                href: '#qn-target-2' },
+      { id: 'qn-target-3', label: '📋 实时评分',     title: '实时评分报告 — 综合评分·趋势·预测·可靠性·诊断·架构',                  href: '#qn-target-3' },
+      { id: 'qn-target-4', label: '🔬 维度分解',     title: '维度评分分解 — 按严重程度排序·支持筛选',                              href: '#qn-target-4' },
+      { id: 'qn-target-5', label: '📑 详细报告',     title: '详细报告导航 — 13 个子页面入口',                                       href: '#qn-target-5' },
+      { id: 'qn-target-6', label: '🧭 CDN 聚合',     title: 'CDN 聚合中心 — 七张聚合页（清单·架构·图谱·测试·源码·演示·审查）',     href: '#qn-target-6' }
+    ];
+
+    function mountDemo() {
+      if (!window.Vue || !window.YryDashboardQuicknav) return;
+      var el = document.getElementById('demo-1');
+      Vue.createApp(window.YryDashboardQuicknav, {
+        chips: DEMO_CHIPS,
+        ariaLabel: '演示 · 仪表板快速导航',
+        scrollSpy: true
+      }).mount(el);
+    }
+    if (window.YryDashboardQuicknav) mountDemo();
+    else document.addEventListener('yry-dashboard-quicknav-ready', mountDemo, { once: true });
+  </script>
+
+  <div class="demo-footer">🧭 YryDashboardQuicknav v1.0.0 · <a href="../index.html">CDN 首页</a></div>
+</body>
+</html>

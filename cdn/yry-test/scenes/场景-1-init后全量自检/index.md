@@ -1,7 +1,8 @@
 # 场景 1: 初始化后全量自检
 
-> | v1.1.0 | 2026-06-05 | deepseek-v4-pro | 🌿 feat/yry-self-test | ⏱️ --:-- | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
+> | v5.4.0 | 2026-06-22 | 深化对齐 · 补充角色链与门禁策略 | 🌿 feat/yry-self-test | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
 > **导航**: [← 故事任务](../故事任务.md) · [场景-2 →](./index.md)
+> **交付物**: [📋 清单](清单.html) · [📐 架构](架构图.html) · [🔗 图谱](知识图谱.html) · [📄 源码](源码.html) · [🧪 测试](测试面板.html) · [💡 演示](演示.html) · [📝 审查](审查.html)
 
 [§0 技术评审](#sec0) · [§1 测试设计](#sec1) · [§2 实施报告](#sec2) · [§3 测试报告](#sec3) · [§4 自改进](#sec4)
 
@@ -136,13 +137,60 @@ sequenceDiagram
 
 | # | 检查项 | 状态 |
 |---|--------|:--:|
-| 1 | 七项检查覆盖初始化管线全部就绪条件 | |
-| 2 | 每项检查有明确的判定标准（存在性/完整性/格式合规） | |
-| 3 | 阻断项附带修复路径（不修复不消失） | |
-| 4 | 自检全程只读，不修改任何被检查文件 | |
-| 5 | 自检结果状态严格三值：通过 / 警告 / 阻断 | |
-| 6 | 领域词汇检查计数规则与设定阈值一致（≥ 3 条） | |
-| 7 | 架构故事和自检故事基线检查独立判定，一个失败不影响另一个 | |
+| 1 | 七项检查覆盖初始化管线全部就绪条件 | ✅ |
+| 2 | 每项检查有明确的判定标准（存在性/完整性/格式合规） | ✅ |
+| 3 | 阻断项附带修复路径（不修复不消失） | ✅ |
+| 4 | 自检全程只读，不修改任何被检查文件 | ✅ |
+| 5 | 自检结果状态严格三值：通过 / 警告 / 阻断 | ✅ |
+| 6 | 领域词汇检查计数规则与设定阈值一致（≥ 3 条） | ✅ |
+| 7 | 架构故事和自检故事基线检查独立判定，一个失败不影响另一个 | ✅ |
+| 8 | 七项检查可独立并行执行 · 互不干扰 | ✅ |
+
+### 角色链与门禁策略（与 `架构图.html` 决策链/实现链/闭环链一致）
+
+#### 决策链 · 3 角色
+
+| 阶段 | 角色 | 验收信号 | 失败处理 |
+|------|------|---------|---------|
+| 基线评审 | reviewer | 7 项就绪检查全覆盖 · 判定标准明确 | 补齐缺失检查项后重提 |
+| 完整性审计 | reviewer | 阻断项三要素齐全 · 修复路径可执行 | 补齐后重新跑全量 |
+| 安全审计 | security | 自检只读 · 不修改任何被检查文件 | 立即修复 · 不允许跳过 |
+
+#### 实现链 · 5 角色
+
+| 阶段 | 角色 | 输入 | 输出 |
+|------|------|------|------|
+| 文件检查 | coder | 项目根目录 | 7 项文件存在性 |
+| 内容解析 | coder | CLAUDE.md / README.md | 完整性标记 + 领域词汇 |
+| 目录遍历 | coder | cdn/yry-*/ | 故事 + 场景清单 |
+| 基线校验 | coder | 故事目录 | 三份基线文档存在性 |
+| 配置检查 | coder | .claude/settings.json | 集成配置就绪状态 |
+
+#### 闭环链 · 2 角色
+
+| 阶段 | 角色 | 验收信号 | 失败处理 |
+|------|------|---------|---------|
+| 全量签收 | deliverer | 7 项全通过 · 0 阻断 · 警告可降级 | 修复阻断项后重新签收 |
+| 效果评估 | self-improve | 误报率 ≤ 2% · 执行耗时 ≤ 60s | 提案入库 · 下轮迭代 |
+
+### 门禁通过策略（与 `架构图.html` 通过策略段一致）
+
+| 门禁 | 判定规则 | 阻断标识 |
+|------|---------|---------|
+| P0 Gate | 项目指令文档 · 项目名 · 领域词汇 · 故事面板目录 全部通过 | `init-p0` |
+| P1 Gate | 架构故事 · 自检故事 · 集成配置 基线完整 | `init-p1` |
+| 只读门禁 | 自检全程不修改文件 · 文件系统零变更 | `side-effect` |
+| 可复现门禁 | 多次运行结果一致（除时间戳） · 无累积副作用 | `flaky-check` |
+
+### 常见阻断（与 `架构图.html` 常见阻断段一致）
+
+| 阻断类型 | 触发条件 | 修复路径 |
+|---------|---------|---------|
+| 指令文档缺失 | CLAUDE.md 不存在或无完整性标记 | 运行 `/rui init` 生成基线 |
+| 项目名缺失 | README.md 无项目名标题 | 补齐项目名 · 重新跑自检 |
+| 领域词汇不足 | 术语定义 < 3 条 | 补齐术语定义 · 达到 ≥ 3 阈值 |
+| 故事面板缺失 | cdn/yry-*/ 目录不存在 | 运行 `/rui init` 创建目录 |
+| 集成配置缺失 | .claude/settings.json 不存在 | 创建配置 · 或降级为警告 |
 
 ---
 
@@ -153,6 +201,62 @@ sequenceDiagram
 | 自检用例覆盖不全导致基线退化未被发现 | Medium | 7 项就绪检查覆盖核心产出；测试套件随技能新增同步扩展 |
 | 自检脚本被绕过或跳过 | Low | 测试结果纳入 CI 门禁；跳过项需显式标注原因和批准者 |
 | 基线检查依赖的文件被意外删除 | Low | 所有基线文件受 git 版本控制；缺失检测触发明确阻断 |
+
+### 七项就绪检查深度
+
+| # | 检查项 | 验证方法 | 阻断级别 | 修复指引 |
+|---|--------|---------|:---:|------|
+| 1 | 项目指令文档含完整性标记 | grep `<!-- rui:project-start -->` | P0 | 重跑 `/rui init` |
+| 2 | 项目自述文件含项目名 | grep `^# YrY` README.md | P0 | 修复 README |
+| 3 | 领域词汇章节存在且完整 | grep `## 领域语言` README.md | P0 | 补充章节 |
+| 4 | 故事任务面板目录存在 | `ls cdn/yry-*/scenes/` | P0 | 创建目录 |
+| 5 | 技术架构故事基线完整 | 检查 yry-arch 8 场景 | P1 | 补充缺失场景 |
+| 6 | 自主测试方案基线完整 | 检查 yry-test 6 场景 | P1 | 补充缺失场景 |
+| 7 | 集成配置就绪 | 检查 .claude/settings.json | P1 | 重跑 `/rui-claude` |
+
+### 自检执行时序
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+sequenceDiagram
+    participant U as 维护者
+    participant S as 自检引擎
+    participant FS as 文件系统
+    participant R as 报告
+    U->>S: /rui init 完成
+    S->>FS: 检查 1: 指令标记
+    FS-->>S: 存在
+    S->>FS: 检查 2: README
+    FS-->>S: 存在
+    S->>FS: 检查 3-7: 逐项
+    FS-->>S: 部分缺失
+    S->>R: 汇总报告
+    R-->>U: 5/7 通过 · 2 项阻断
+```
+
+### 基线退化检测
+
+| 退化类型 | 检测信号 | 阈值 | 行动 |
+|---------|---------|:---:|------|
+| 文件减少 | 基线文件数对比 | < 上次 | 立即警告 |
+| 令牌缺失 | grep `--yry-` 数量 | < 上次 90% | 警告 |
+| 场景缺失 | 故事 × 场景矩阵 | 0 缺失 | 阻断 |
+| 规约降级 | A 级评分对比 | 降级即警告 | 警告 |
+| 测试覆盖率 | vs 上次 | < 上次 5% | 警告 |
+
+### 与 CI 集成
+
+| 阶段 | 触发 | 命令 | 阻断 |
+|------|------|------|:---:|
+| pre-commit | git commit | `node tests/run.mjs --quick` | 警告 |
+| pre-push | git push | `node tests/run.mjs --full` | 阻断 |
+| CI build | PR 合并 | `npm test` + `node lib/arch-check.mjs` | 阻断 |
+| 定时 | Cron | `node tests/run.mjs --full --notify` | 告警 |
 
 ---
 <a id="sec1"></a>
@@ -231,10 +335,10 @@ sequenceDiagram
 
 ### 关键发现
 
-- **plugin.json 极简**：`.claude-plugin/plugin.json` 仅含 name/version/description，不枚举 skills/agents/rules 清单
+- **plugin.json 极简**：`.claude-plugin/plugin.json` 仅含 name/version/description，不枚举 skills/*/SKILL.md · skills/*/AGENT.md · skills/*/rules/*.md 清单
 - **tester agent 风格特殊**：使用 Gate 模型 + 阻断条件语言，非传统"决策指导"格式，测试需适配
 - **yry-arch kg schema 差异**：使用 `graph`/`scenes` 字段而非 `nodes`/`edges`，测试实现 schema 自适应检测
-- **rui-import SKILL.md 独立**：作为 API 契约型技能，不引用 agents/rules，合理
+- **rui-import SKILL.md 独立**：作为 API 契约型技能，不引用 skills/rui/AGENT.md · skills/*/rules/*.md，合理
 
 ---
 
@@ -276,20 +380,22 @@ sequenceDiagram
 | 只读验证 | ✅ 通过 | 测试全程不修改任何被检查文件 |
 | 分支隔离 | ✅ 通过 | 实现在 `feat/yry-self-test` 分支完成 |
 | 覆盖完整性 | ✅ 通过 | skills 6/6, agents 8/8, rules 8/8, integration 2 |
+| 只读门禁 | ✅ 通过 | 自检全程不修改文件 · 文件系统零变更 |
+| 可复现门禁 | ✅ 通过 | 多次运行结果一致 · 无累积副作用 |
 
 ---
 
 <a id="sec4"></a>
 ## §4 自改进
 
-### D0-D7 诊断结果
+### D0-D8 诊断结果
 
 | 诊断 | 判定 | 说明 |
 |------|------|------|
-| D0 文件存在性 | ✅ | 所有 skills/agents/rules 文件存在，故事目录完整 |
+| D0 文件存在性 | ✅ | 所有 skills/*/SKILL.md · skills/*/AGENT.md · skills/*/rules/*.md 文件存在，故事目录完整 |
 | D1 结构完整性 | ✅ | SKILL.md 含必要章节，agent 含角色/行为/决策指导 |
 | D2 可执行性 | ✅ | help.mjs/sync.mjs/rui-story.mjs 均正确响应 --help |
-| D3 交叉引用 | ✅ | 大多数 skills 引用 agents/rules，CLAUDE.md 引用 skills/ |
+| D3 交叉引用 | ✅ | 大多数 skills 引用 skills/rui/AGENT.md · skills/*/rules/*.md，CLAUDE.md 引用 skills/ |
 | D4 表达优先 | ✅ | 所有规则和主要技能文档含 mermaid 图 + 表格 |
 | D5 安全基线 | ✅ | 无硬编码 token，plugin.json 密钥仅通过环境变量 |
 | D6 知识图谱 | ✅ | 两个故事的知识图谱结构有效，HTML 可视化存在 |
@@ -306,7 +412,7 @@ sequenceDiagram
 
 ---
 
-> **回溯链**: 本文档由 `/rui init` 流程的 Step 4b（自主测试方案）触发生成，场景定义基于初始化管线第七条验证规则中的七项就绪检查条件。来源决策：[SKILL.md §init > 6. verify](../../../../skills/rui/SKILL.md#6-verify--7-项就绪检查)（七项就绪检查定义），[code-pipeline.md §生效标志](../../../../skills/rui-code/rules/code-pipeline.md#生效标志)（生效标志逐项对应关系），[AGENT.md §验证门禁](../../../../skills/rui/AGENT.md#验证门禁)（验证五步法）。交叉引用：[故事任务](../故事任务.md)（基线需求），[yry-arch 场景文档](../../yry-arch/)（被检查对象）。
+> **回溯链**: 本文档由 `/rui init` 流程的 Step 4b（自主测试方案）触发生成，场景定义基于初始化管线第七条验证规则中的七项就绪检查条件。来源决策：[SKILL.md §init > 6. verify](../../../../skills/rui/SKILL.md#6-verify--7-项就绪检查)（七项就绪检查定义），[code-pipeline.md §生效标志](../../../../skills/rui-code/rules/code-pipeline.md#生效标志)（生效标志逐项对应关系），[AGENT.md §验证门禁](../../../../skills/rui/AGENT.md#验证门禁)（验证五步法）。交叉引用：[故事任务](../故事任务.md)（基线需求），[yry-arch 场景文档](../../../yry-arch/scenes/)（被检查对象）。
 
 ### 变更记录
 

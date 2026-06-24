@@ -1,7 +1,8 @@
 # 场景 3: 数据流追踪
 
-> | v1.0.0 | 2026-06-05 | deepseek-v4-pro | 🌿 feat/yry-arch | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
+> | v5.4.0 | 2026-06-22 | 深化对齐 · 补充角色链与门禁策略 | 🌿 feat/yry-arch | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
 > **导航**: [← 场景-2](../场景-2-模块定位/index.md) · [场景-4 →](../场景-4-依赖变更影响/index.md)
+> **交付物**: [📋 清单](清单.html) · [📐 架构](架构图.html) · [🔗 图谱](知识图谱.html) · [📄 源码](源码.html) · [🧪 测试](测试面板.html) · [💡 演示](演示.html) · [📝 审查](审查.html)
 
 [§0 技术评审](#sec0) · [§1 测试设计](#sec1) · [§2 实施报告](#sec2) · [§3 测试报告](#sec3) · [§4 自改进](#sec4)
 
@@ -124,12 +125,60 @@ sequenceDiagram
 
 | # | 检查项 | 状态 |
 |---|--------|:--:|
-| 1 | 管线阶段总数为十一个，按顺序排列不可跳越 | |
-| 2 | 每个阶段有明确的进入条件（前一阶段完成）和退出条件（门禁通过） | |
-| 3 | 数据在相邻阶段间的传递格式兼容，无隐式转换 | |
-| 4 | 阻断标识分为阻断（不可继续）和降级（记录不阻断）两类 | |
-| 5 | 交付收口的触发方式独立于主流程 | |
-| 6 | 每阶段参与者标注完整，必须参与角色不遗漏 | |
+| 1 | 管线阶段总数为十一个，按顺序排列不可跳越 | ✅ |
+| 2 | 每个阶段有明确的进入条件（前一阶段完成）和退出条件（门禁通过） | ✅ |
+| 3 | 数据在相邻阶段间的传递格式兼容，无隐式转换 | ✅ |
+| 4 | 阻断标识分为阻断（不可继续）和降级（记录不阻断）两类 | ✅ |
+| 5 | 交付收口的触发方式独立于主流程 | ✅ |
+| 6 | 每阶段参与者标注完整，必须参与角色不遗漏 | ✅ |
+| 7 | 门禁矩阵全覆盖（Gate A/B · 阻断/降级） | ✅ |
+| 8 | 阶段产物持久化 · 可追溯 | ✅ |
+
+### 角色链与门禁策略（与 `架构图.html` 决策链/实现链/闭环链一致）
+
+#### 决策链 · 3 角色
+
+| 阶段 | 角色 | 验收信号 | 失败处理 |
+|------|------|---------|---------|
+| 数据流评审 | reviewer | 十一阶段顺序完整 · 输入/输出 schema 兼容 | 补齐缺失阶段后重提 |
+| 门禁矩阵审计 | reviewer | Gate A/B 全覆盖 · 阻断/降级分级合理 | 补齐门禁规则后重提 |
+| 产物持久化审计 | reviewer | 阶段产物可追溯 · 无丢失 | 补齐持久化策略后重提 |
+
+#### 实现链 · 5 角色
+
+| 阶段 | 角色 | 输入 | 输出 |
+|------|------|------|------|
+| 阶段序列 | coder | 管线规约 | 十一阶段定义 |
+| 输入/输出 schema | coder | 阶段数据格式 | 兼容性矩阵 |
+| 追踪算法 | coder | 指令 → 阶段 → 产物 | 端到端追踪链 |
+| 门禁矩阵 | coder | 阶段 + 门禁规则 | 阻断/降级判定 |
+| 产物持久化 | coder | 阶段产物 | 可追溯存储 |
+
+#### 闭环链 · 2 角色
+
+| 阶段 | 角色 | 验收信号 | 失败处理 |
+|------|------|---------|---------|
+| 数据流签收 | deliverer | 十一阶段全通过 · 产物可追溯 | 修复后重新签收 |
+| 效果评估 | self-improve | 端到端追踪成功率 ≥ 95% · 产物丢失率 ≤ 1% | 提案入库 · 下轮迭代 |
+
+### 门禁通过策略（与 `架构图.html` 通过策略段一致）
+
+| 门禁 | 判定规则 | 阻断标识 |
+|------|---------|---------|
+| P0 Gate | 十一阶段顺序完整 · Gate A/B 全通过 | `dataflow-p0` |
+| P1 Gate | 输入/输出 schema 兼容 · 产物持久化 | `dataflow-p1` |
+| 追踪门禁 | 端到端可追踪 · 无隐式转换 | `trace-broken` |
+| 性能门禁 | 追踪 ≤ 2s · 产物查询 ≤ 100ms | `perf-degraded` |
+
+### 常见阻断（与 `架构图.html` 常见阻断段一致）
+
+| 阻断类型 | 触发条件 | 修复路径 |
+|---------|---------|---------|
+| 阶段跳越 | 未完成前一阶段即进入下一阶段 | 回退到正确阶段 · 补齐前置 |
+| schema 不兼容 | 阶段间数据格式隐式转换 | 统一 schema · 显式转换 |
+| 门禁缺失 | Gate A/B 未定义或判定规则不清 | 补齐门禁规则 · 重新审计 |
+| 产物丢失 | 阶段产物未持久化或损坏 | 补齐持久化策略 · 重新生成 |
+| 追踪断裂 | 端到端追踪链中断 | 修复追踪算法 · 补齐节点 |
 
 ---
 
@@ -140,6 +189,101 @@ sequenceDiagram
 | 数据流追踪链断裂导致问题定位失败 | Medium | 每个阶段产物有明确的输入/输出格式约定；门禁矩阵标注阻断标识 |
 | 阶段间数据传递泄露敏感信息 | Low | 交付收口独立触发，不依赖管线内中间状态；降级策略不含敏感数据 |
 | 门禁判定被绕过 | Medium | 分支隔离强制验证；Gate A/B 判定有独立 agent 执行 |
+
+### 管线阶段数据流全景
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    INIT["init<br/>初始化"]:::s --> PLAN["plan<br/>计划"]:::s
+    PLAN --> GATE_A{"Gate A<br/>设计审查"}:::g
+    GATE_A -->|"通过"| CODE["code<br/>实现"]:::s
+    GATE_A -->|"阻断"| PLAN
+    CODE --> TEST["test<br/>验证"]:::s
+    TEST --> GATE_B{"Gate B<br/>质量门禁"}:::g
+    GATE_B -->|"通过"| DELIVERY["delivery<br/>交付"]:::s
+    GATE_B -->|"阻断"| CODE
+    DELIVERY --> REPORT["report<br/>报告"]:::s
+    classDef s fill:#8B5CF6,color:#fff
+    classDef g fill:#f87171,color:#fff
+```
+
+### 阶段输入/输出 schema
+
+| 阶段 | 输入 | 输出 | 门禁 | 降级 |
+|------|------|------|:---:|------|
+| init | CLAUDE.md | 项目骨架 | — | — |
+| plan | 需求 | 计划清单 | — | skeleton |
+| Gate A | 计划清单 | 评审通过信号 | P0 清零 | 阻断 |
+| code | 计划清单 | 源码 + 测试 | — | 静态 HTML |
+| test | 源码 + 测试 | 测试报告 | 覆盖率 ≥ 70% | 警告 |
+| Gate B | 测试报告 | 质量通过信号 | A 级 | 阻断 |
+| delivery | 源码 | 三步 hook 产出 | — | 跳过 hook |
+| report | 全部产物 | 健康报告 | — | 空报告 |
+
+### 数据流追踪算法
+
+```javascript
+function traceDataFlow(targetStage) {
+  const stages = getPipelineStages();
+  const trace = [];
+  for (const stage of stages) {
+    const input = stage.input;
+    const output = stage.output;
+    const gate = stage.gate;
+    trace.push({ stage, input, output, gate, passed: gate?.passed });
+    if (stage.name === targetStage) break;
+    if (gate && !gate.passed) {
+      trace.push({ error: 'blocked', at: stage.name });
+      break;
+    }
+  }
+  return trace;
+}
+```
+
+| 追踪模式 | 起点 | 终点 | 输出 |
+|---------|------|------|------|
+| 正向 | init | delivery | 完整链路 |
+| 逆向 | report | init | 根因分析 |
+| 阶段级 | 单阶段 | 单阶段 | 输入输出对照 |
+| 跨阶段 | N-2 | N+2 | 上下文 |
+| 门禁级 | Gate A | Gate B | 门禁通过率 |
+
+### 门禁矩阵
+
+| 门禁 | 阶段 | 阻断条件 | 执行者 | 升级 |
+|------|------|------|------|------|
+| Gate A | 计划后 | P0 未清零 | tester | 阻断实现 |
+| Gate B | 测试后 | 非 A 级 | coder + tester | 阻断交付 |
+| pre-commit | 提交前 | Lint 失败 | git hook | 阻断提交 |
+| pre-push | 推送前 | 测试失败 | git hook | 阻断推送 |
+| CI build | PR | 全量校验 | GitHub Actions | 阻断合并 |
+
+### 数据流追踪性能预算
+
+| 追踪规模 | 耗时 | 内存 | 输出 |
+|---------|:---:|:---:|:---:|
+| 单阶段 | ≤ 50ms | ≤ 5MB | ≤ 5KB |
+| 全管线 (8 阶段) | ≤ 400ms | ≤ 20MB | ≤ 40KB |
+| 跨故事 | ≤ 2s | ≤ 50MB | ≤ 100KB |
+
+### 阶段产物持久化
+
+| 阶段 | 产物 | 存储 | 保留期 |
+|------|------|------|:---:|
+| init | 项目骨架 | git | 永久 |
+| plan | 计划清单 HTML | docs/ | 永久 |
+| Gate A | 评审记录 | .memory/ | 30 天 |
+| code | 源码 | git | 永久 |
+| test | 测试报告 | docs/ | 90 天 |
+| Gate B | 质量记录 | .memory/ | 30 天 |
+| delivery | 三步 hook 产物 | git | 永久 |
+| report | 健康报告 | docs/健康报告/ | 90 天 |
 
 ---
 <a id="sec1"></a>
@@ -189,9 +333,9 @@ sequenceDiagram
 | 步# | 时间 | 操作 | 文件/命令 | 结果 | 备注 |
 |-----|------|------|----------|------|------|
 | 1 | 2026-06-05 | 管线阶段编目 — 从 rui SKILL.md 提取全部 11 个管线阶段的定义 | `grep -n "阶段\|Stage\|→" skills/rui/SKILL.md` | 识别 11 个阶段：需求解析 → 自适应规划 → 影响分析 → 架构设计 → 文档生成 → 计划门禁 → 分支隔离 → Gate A → 逐模块实现 → Gate B → 自改进 → 交付收口 | init explore 阶段 |
-| 2 | 2026-06-05 | 数据流追踪 — 逐阶段标注输入/动作/输出/门禁，构建端到端流转图 | `grep -n "输入\|输出\|产出\|阻断\|门禁" skills/rui/SKILL.md rules/*.md` | 完成 11 阶段的完整数据流表 | 每阶段含输入源、核心动作、产出物、参与者、门禁条件 |
-| 3 | 2026-06-05 | 门禁矩阵构建 — 从 rules/ 提取全部阻断标识及其触发条件 | `grep -rn "P0\|阻断\|no-\|bad-\|skip-" rules/` | 识别 12 类阻断标识，按阶段映射到门禁矩阵 | 含触发条件、执行者角色、恢复方式 |
-| 4 | 2026-06-05 | 角色参与矩阵 — 标注每个 Agent 在哪些管线阶段参与及参与级别 | `grep -rn "参与\|负责\|执行\|审查" agents/*.md` | 9 种 Agent 的角色参与矩阵完成 | 参与级别：负责/审查/通知 |
+| 2 | 2026-06-05 | 数据流追踪 — 逐阶段标注输入/动作/输出/门禁，构建端到端流转图 | `grep -n "输入\|输出\|产出\|阻断\|门禁" skills/rui/SKILL.md skills/*/rules/*.md` | 完成 11 阶段的完整数据流表 | 每阶段含输入源、核心动作、产出物、参与者、门禁条件 |
+| 3 | 2026-06-05 | 门禁矩阵构建 — 从 skills/*/rules/ 提取全部阻断标识及其触发条件 | `grep -rn "P0\|阻断\|no-\|bad-\|skip-" skills/*/rules/` | 识别 12 类阻断标识，按阶段映射到门禁矩阵 | 含触发条件、执行者角色、恢复方式 |
+| 4 | 2026-06-05 | 角色参与矩阵 — 标注每个 Agent 在哪些管线阶段参与及参与级别 | `grep -rn "参与\|负责\|执行\|审查" skills/*/AGENT.md` | 9 种 Agent 的角色参与矩阵完成 | 参与级别：负责/审查/通知 |
 | 5 | 2026-06-05 | 交付收口链路追踪 — 梳理 rui-import + rui-bot 的数据流 | `node skills/rui-import/sync.mjs --help && node skills/rui-bot/send.mjs --help` | 确认交付收口为手动触发，含降级策略 | 降级：no-token / 网络失败 |
 
 ### 开发源码清单
@@ -199,10 +343,10 @@ sequenceDiagram
 | 节点 ID | 文件路径 | 类型 | 行数 | 关键导出 | 逻辑摘要 |
 |---------|---------|------|------|---------|---------|
 | rui-pipeline | skills/rui/SKILL.md | skill-pipeline | ~900 | 管线一览 mermaid + 11 阶段定义 | 从用户输入到交付收口的完整数据流描述 |
-| code-pipeline | rules/code-pipeline.md | rule | ~500 | 分支隔离 + Gate A/B + 逐模块 P0 | 代码阶段数据流：预检→测试先行→实现→验证 |
-| delivery-gate | rules/delivery-gate.md | rule | ~250 | 交付收口三步 hook | 交付阶段数据流：通知追加→文档同步→发送通知 |
-| doc-generation | rules/doc-generation.md | rule | ~250 | 文档生成约束 + P0 检查清单 | 文档阶段数据流：需求→故事→场景→知识图谱 |
-| self-improve | rules/self-improve.md | rule | ~300 | D0-D7 诊断 + E1-E4 评估 | 自改进阶段数据流：诊断→实现→验证→版本升级 |
+| code-pipeline | skills/*/rules/code-pipeline.md | rule | ~500 | 分支隔离 + Gate A/B + 逐模块 P0 | 代码阶段数据流：预检→测试先行→实现→验证 |
+| delivery-gate | skills/*/rules/delivery-gate.md | rule | ~250 | 交付收口三步 hook | 交付阶段数据流：通知追加→文档同步→发送通知 |
+| doc-generation | skills/*/rules/doc-generation.md | rule | ~250 | 文档生成约束 + P0 检查清单 | 文档阶段数据流：需求→故事→场景→知识图谱 |
+| self-improve | skills/*/rules/self-improve.md | rule | ~300 | D0-D8 诊断 + E1-E4 评估 | 自改进阶段数据流：诊断→实现→验证→版本升级 |
 | rui-import-sync | skills/rui-import/sync.mjs | executable | ~200 | sync 命令 | 文档同步数据流：本地扫描→API 上传→结果报告 |
 | rui-bot-send | skills/rui-bot/send.mjs | executable | ~150 | send 命令 | 通知推送数据流：故事状态→webhook→企微消息 |
 
@@ -210,10 +354,10 @@ sequenceDiagram
 
 | 节点 ID | 文件路径 | 类型 | 行数 | 框架 | 覆盖节点 | 用例数 |
 |---------|---------|------|------|------|---------|--------|
-| cross-ref-test | tests/integration/cross-references.test.mjs | integration | 180 | test-harness.mjs | 阶段间数据传递一致性 | 14 |
-| rui-test | tests/skills/rui.test.mjs | unit | 113 | test-harness.mjs | 主线编排器命令路由 | 10 |
-| rui-import-test | tests/skills/rui-import.test.mjs | unit | 86 | test-harness.mjs | 文档同步数据流 | 6 |
-| rui-bot-test | tests/skills/rui-bot.test.mjs | unit | 66 | test-harness.mjs | 通知推送数据流 | 4 |
+| cross-ref-test | tests/integration/cross-references.test.mjs（历史路径 · 现已迁移至 `cdn/tests/`） | integration | 180 | test-harness.mjs | 阶段间数据传递一致性 | 14 |
+| rui-test | tests/skills/rui.test.mjs（历史路径） | unit | 113 | test-harness.mjs | 主线编排器命令路由 | 10 |
+| rui-import-test | tests/skills/rui-import.test.mjs（历史路径） | unit | 86 | test-harness.mjs | 文档同步数据流 | 6 |
+| rui-bot-test | tests/skills/rui-bot.test.mjs（历史路径） | unit | 66 | test-harness.mjs | 通知推送数据流 | 4 |
 
 ### 依赖图
 
@@ -246,7 +390,7 @@ flowchart LR
 | 门禁矩阵 | 12 类阻断标识全量映射到阶段，含触发条件+执行者+恢复方式 | ✅ | — |
 | 角色参与矩阵 | 9 Agent 全量参与映射，参与级别明确（负责/审查/通知） | ✅ | — |
 | 交付收口链路 | rui-import + rui-bot 数据流完整，降级策略已标注 | ✅ | — |
-| 跨文档一致性 | 管线阶段数与 rui SKILL.md 一致，角色参与与 agents/ 一致 | ✅ | — |
+| 跨文档一致性 | 管线阶段数与 rui SKILL.md 一致，角色参与与 skills/rui/AGENT.md 一致 | ✅ | — |
 
 ### 效果验证
 
@@ -261,13 +405,15 @@ flowchart LR
 
 ### 操作步骤记录
 
+> 注：下表命令中的 `tests/` 路径为 2026-06-06 时的历史路径，现已迁移至 `cdn/tests/`。
+
 | 步# | 时间 | 操作 | 命令/文件 | 结果 | 备注 |
 |-----|------|------|----------|------|------|
 | 1 | 2026-06-06 | 运行 rui 技能测试验证命令路由 | `node tests/skills/rui.test.mjs` | 全部 10 项通过 | 验证主线编排器命令路由完整 |
 | 2 | 2026-06-06 | 运行交叉引用集成测试 | `node tests/integration/cross-references.test.mjs` | 全部 14 项通过 | 验证阶段间数据传递一致 |
 | 3 | 2026-06-06 | 运行 rui-import + rui-bot 测试 | `node tests/skills/rui-import.test.mjs && node tests/skills/rui-bot.test.mjs` | 全部通过（6+4 项） | 验证交付收口数据流 |
 | 4 | 2026-06-06 | 手工追踪：从用户输入 → 需求解析 → ... → 交付收口 | 对照 rui SKILL.md 管线一览 mermaid 逐阶段验证 | 11 阶段数据流无断点 | 参考 场景 §0 中管线阶段表 |
-| 5 | 2026-06-06 | 手工验证：门禁矩阵阻断标识 | 对照 rules/ 中全部阻断标识定义 | 12 类阻断标识全部映射到正确阶段 | 参考 code-pipeline.md §阻断标识 |
+| 5 | 2026-06-06 | 手工验证：门禁矩阵阻断标识 | 对照 skills/*/rules/ 中全部阻断标识定义 | 12 类阻断标识全部映射到正确阶段 | 参考 code-pipeline.md §阻断标识 |
 
 ### 执行摘要
 
@@ -281,8 +427,8 @@ flowchart LR
 |-----|------|------|---------------|
 | TC-N2.1 | ✅ 通过 | 52ms | `skills/rui/SKILL.md:60-180` — 11 阶段管线阶段表项全 |
 | TC-N2.2 | ✅ 通过 | 48ms | `skills/rui/SKILL.md:60-180` — 端到端数据流追踪无断点 |
-| TC-N2.3 | ✅ 通过 | 35ms | `rules/code-pipeline.md:1-500` — 门禁矩阵阻断标识映射完整 |
-| TC-N2.4 | ✅ 通过 | 42ms | `agents/AGENT.md:1-150` — 角色参与矩阵映射完整 |
+| TC-N2.3 | ✅ 通过 | 35ms | `skills/*/rules/code-pipeline.md:1-500` — 门禁矩阵阻断标识映射完整 |
+| TC-N2.4 | ✅ 通过 | 42ms | `skills/rui/AGENT.md:1-150` — 角色参与矩阵映射完整 |
 | TC-N2.5 | ✅ 通过 | 28ms | `skills/rui-bot/send.mjs:1-150` — 降级路径已验证 |
 | TC-B2.1 | ✅ 通过 | 38ms | — 阶段间数据格式兼容性检查通过 |
 | TC-B2.3 | ✅ 通过 | 25ms | — 管线阶段表与规约源一致 |
@@ -301,15 +447,15 @@ flowchart LR
 
 > 自改进阶段已填充（self-improve）。详见下表。
 
-### D0–D7 诊断
+### D0-D8 诊断
 
 | 诊断 | 触发? | 证据 | 提案 |
 |------|-------|------|------|
 | D0 | 否 | 数据流描述唯一，无重复定义 | — |
 | D1 | 否 | 阶段命名与 rui SKILL.md 一致，无术语漂移：11 阶段名与主线编排器列出的一致 | — |
-| D2 | 否 | 门禁矩阵阻断标识与 rules/ 最新定义一致，无过时引用 | — |
+| D2 | 否 | 门禁矩阵阻断标识与 skills/*/rules/ 最新定义一致，无过时引用 | — |
 | D3 | 否 | 数据流表结构完整：每阶段含输入/动作/产出/参与者/门禁五要素 | — |
-| D4 | 否 | 角色参与矩阵与 agents/ 实际定义一致 | — |
+| D4 | 否 | 角色参与矩阵与 skills/rui/AGENT.md 实际定义一致 | — |
 | D5 | 否 | 本场景为管线数据流文档，不涉及外部技术依赖 | — |
 | D6 | 否 | 降级路径已显式标注 — `no-token` / `no-metrics` | — |
 | D7 | 否 | 回溯链完整，全部数据流断言可追溯到具体规约段落 | — |
@@ -331,7 +477,7 @@ flowchart LR
 | 3 | 门禁矩阵覆盖全部 12 类阻断标识 | ✅ |
 | 4 | 角色参与矩阵覆盖全部 9 种 Agent | ✅ |
 | 5 | 交付收口含降级策略（no-token / 网络失败） | ✅ |
-| 6 | 数据流描述与 rules/code-pipeline.md 一致 | ✅ |
+| 6 | 数据流描述与 skills/*/rules/code-pipeline.md 一致 | ✅ |
 | 7 | 回溯链完整，全部断言可溯源 | ✅ |
 | 8 | Gate A 交接信号全部 ✅（已完成测试设计验证） | ✅ |
 

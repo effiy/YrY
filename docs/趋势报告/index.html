@@ -8,65 +8,8 @@
 <link rel="stylesheet" href="../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../cdn/theme/index.css">
 <link rel="stylesheet" href="../../cdn/shared-reports/index.css">
-<style>
-.src-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
-.src-card { border: 1px solid rgba(255,255,255,.06); padding: 16px 18px; text-align: center; }
-.src-card:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.1); }
-.src-icon { font-size: 1.6rem; margin-bottom: 6px; }
-.src-name { font-size: .82rem; font-weight: 600; }
-.src-reach { margin-top: 6px; }
-.src-stats { display: flex; gap: 8px; margin-top: 8px; justify-content: center; font-size: .64rem; color: var(--yry-text3); }
-.src-stat-num { font-weight: 700; color: var(--yry-text2); }
-.src-weight { font-size: .58rem; color: var(--yry-text3); margin-top: 2px; }
-.src-sparkline { margin-top: 8px; opacity: .7; }
-
-.vel-grid { display: flex; gap: 10px; flex-wrap: wrap; }
-.vel-item { flex: 1; min-width: 140px; padding: 14px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); text-align: center; }
-.vel-num { font-size: 1.3rem; font-weight: 700; }
-.vel-lbl { font-size: .64rem; color: var(--yry-text3); margin-top: 4px; letter-spacing: .3px; }
-
-.cat-bars { display: flex; flex-direction: column; gap: 8px; }
-
-.cat-pct { min-width: 48px; text-align: right; font-size: .68rem; color: var(--yry-text3); }
-
-.quality-card { padding: 14px 18px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.quality-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-.quality-num { font-size: 1.1rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
-.quality-lbl { font-size: .72rem; color: var(--yry-text2); }
-
-.trend-sparkline-wrap { position: relative; width: 100%; max-width: 100%; overflow-x: auto; }
-.trend-sparkline-wrap svg { width: 100%; height: 200px; }
-.trend-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; font-size: .68rem; color: var(--yry-text3); }
-.trend-legend span { display: flex; align-items: center; gap: 4px; }
-.trend-legend .dot { width: 8px; height: 8px; border-radius: 50%; }
-
-/* health ref card */
-.health-ref { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; padding: 18px 20px; border-radius: 10px; border: var(--yry-border); background: rgba(15,23,42,.4); }
-
-.health-meta { font-size: .72rem; color: var(--yry-text3); line-height: 1.7; }
-.health-meta strong { color: var(--yry-text); }
-
-/* freshness indicator */
-.freshness-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
-.freshness-hot { background: var(--yry-pass); box-shadow: 0 0 6px var(--yry-pass); }
-.freshness-warm { background: var(--yry-warn); }
-.freshness-cold { background: var(--yry-fail); }
-
-/* alert banner */
-
-.momentum-bar { display: inline-block; height: 6px; border-radius: 3px; min-width: 30px; vertical-align: middle; margin-right: 4px; }
-.momentum-pos { background: var(--yry-pass); }
-.momentum-neg { background: var(--yry-fail); }
-.momentum-zero { background: rgba(255,255,255,.1); }
-
-@media (max-width: 640px) {
-  .src-grid { grid-template-columns: 1fr 1fr; }
-  .vel-grid { flex-direction: column; }
-  
-  .health-ref { flex-direction: column; align-items: flex-start; }
-}
-</style>
-</head>
+<link rel="stylesheet" href="../../cdn/yry-tabs-panel/index.css">
+<link rel="stylesheet" href="../../cdn/yry-trend-styles/index.css"></head>
 <body>
 <div class="c">
 
@@ -87,7 +30,18 @@
   <strong>诊断关联</strong>：过时趋势信号触发 <strong>D5 外部趋势诊断</strong> · 连续 2 周无新趋势信号 → P1 严重级 · 3 周以上信号缺失 → 自动升级 P0 · 与 D4 (依赖过期) 联动评估替代方案<br>
   <strong>趋势判定</strong>：对比连续两次扫描条目数的变化率 — ↑ 上升 (增长 &gt;10%) · ↓ 下降 (减少 &gt;10%) · → 持平 (变化 ≤10%) · 单个源偏差 &gt;25% 触发异常检测<br>
   <strong>聚合权重</strong>：GitHub Trending 35% (实时焦点) · TrendShift 25% (迁移信号) · OSS Insight 20% (深度分析) · Top-Starred 20% (社区投票) — 加权合成整体趋势方向<br>
-  <strong>投影机制</strong>：API 不可达时，基于前 3 周期历史数据外推投影，偏差范围 ±2~±11 条目。投影数据在报告中以 📡 标记，下次可达后以实际数据替换。</div>
+  <strong>投影机制</strong>：API 不可达时，基于前 3 周期历史数据外推投影，偏差范围 ±2~±11 条目。投影数据在报告中以 📡 标记，下次可达后以实际数据替换。<br>
+  <strong>技术决策建议</strong>：趋势上升且社区活跃度高的技术标记为 🌟 推荐采用；趋势下降或社区停滞的技术标记为 ⚠️ 谨慎使用；连续 3 周期呈下降趋势的技术标记为 🚫 建议迁移。建议每季度审查一次技术栈趋势对齐度。</div>
+
+<!-- ═══ Tab 导航 ═══ -->
+<div class="yry-tabs" id="main-tabs">
+  <span class="yry-tab on" data-panel="overview">📊 趋势总览</span>
+  <span class="yry-tab" data-panel="velocity">⚡ 速率与分解</span>
+  <span class="yry-tab" data-panel="analysis">🔬 深度分析</span>
+</div>
+
+<!-- ═══ Tab 1: 趋势总览 ═══ -->
+<div class="yry-panel on" id="panelOverview">
 
 <!-- Alert Banner (dynamic) -->
 <div id="alertBanner"></div>
@@ -145,6 +99,11 @@
   <p style="font-size:.68rem;color:var(--yry-text3);margin-top:8px"><strong>真实数据</strong>：API 直接抓取结果，标注 ✓ · <strong>投影数据</strong>：API 不可达时基于 3 周期历史外推，标注 📡 · 投影偏差随缺失周期数增大。</p>
 </div>
 
+</div><!-- /.yry-panel #panelOverview -->
+
+<!-- ═══ Tab 2: 速率与分解 ═══ -->
+<div class="yry-panel" id="panelVelocity">
+
 <!-- Velocity -->
 <div class="card">
   <h2>⚡ 趋势变化速率与质量指标</h2>
@@ -177,6 +136,11 @@
   </table>
   <p style="font-size:.72rem;color:var(--yry-text3);margin-top:8px">迁移信号数据来自 TrendShift 源 (权重 25%)。连续 4 周期确认的信号已写入经验库。置信度基于连续确认周期数 × 源交叉验证 (≥2 源同时检测 +15% 置信度加成)。</p>
 </div>
+
+</div><!-- /.yry-panel #panelVelocity -->
+
+<!-- ═══ Tab 3: 深度分析 ═══ -->
+<div class="yry-panel" id="panelAnalysis">
 
 <!-- Technology Lifecycle Stage Analysis -->
 <div class="card">
@@ -217,6 +181,8 @@
   </table>
 </div>
 
+</div><!-- /.yry-panel #panelAnalysis -->
+
 <div class="links">
   <a href="../自循环报告/">自循环报告</a>
   <a href="../健康报告/">健康报告</a>
@@ -230,9 +196,70 @@
   <span style="color:var(--yry-text3)">4 数据源 · 6 分类标签 · 6 迁移信号追踪 · 4 周期分类演变 · D5 外部趋势诊断输入 · 投影偏差 ±2~±11</span>
 </div>
 
+<!-- 数据源 SLA 矩阵 -->
+<div class="card">
+  <h2>📊 数据源 SLA 矩阵</h2>
+  <table>
+    <thead><tr><th>数据源</th><th>更新频率</th><th>可达性</th><th>数据质量</th><th>延迟容忍</th><th>降级策略</th></tr></thead>
+    <tbody>
+      <tr><td>GitHub Trending</td><td>每小时</td><td>95%</td><td>高</td><td>1h</td><td>缓存上次数据</td></tr>
+      <tr><td>OSS Insight</td><td>每日</td><td>90%</td><td>高</td><td>1d</td><td>跳过该源</td></tr>
+      <tr><td>TrendShift</td><td>每周</td><td>85%</td><td>中</td><td>1w</td><td>降级为静态</td></tr>
+      <tr><td>State of JS</td><td>每年</td><td>100%</td><td>高</td><td>1y</td><td>使用历史</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 趋势分类与权重 -->
+<div class="card">
+  <h2>🏷️ 趋势分类与权重</h2>
+  <table>
+    <thead><tr><th>分类</th><th>权重</th><th>包含</th><th>信号数</th><th>可信度</th></tr></thead>
+    <tbody>
+      <tr><td>前端框架</td><td>0.25</td><td>React/Vue/Svelte/Angular/Solid</td><td>5</td><td>高</td></tr>
+      <tr><td>构建工具</td><td>0.15</td><td>Vite/Webpack/Turbopack/esbuild/Rollup</td><td>4</td><td>高</td></tr>
+      <tr><td>运行时</td><td>0.20</td><td>Deno/Bun/Node.js/Edge</td><td>3</td><td>高</td></tr>
+      <tr><td>CSS 方案</td><td>0.10</td><td>Tailwind/CSS-in-JS/UnoCSS</td><td>3</td><td>中</td></tr>
+      <tr><td>测试框架</td><td>0.10</td><td>Vitest/Jest/Playwright/Bun</td><td>3</td><td>高</td></tr>
+      <tr><td>AI 工具</td><td>0.20</td><td>Claude/Copilot/Cursor/Windsurf</td><td>4</td><td>中</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 趋势预测模型 -->
+<div class="card">
+  <h2>🔮 趋势预测模型</h2>
+  <table>
+    <thead><tr><th>模型</th><th>算法</th><th>准确率</th><th>适用周期</th><th>置信度</th></tr></thead>
+    <tbody>
+      <tr><td>线性回归</td><td>最小二乘法</td><td>75%</td><td>短期 (1 月)</td><td>中</td></tr>
+      <tr><td>移动平均</td><td>7 日 MA</td><td>80%</td><td>短期</td><td>中</td></tr>
+      <tr><td>指数平滑</td><td>Holt-Winters</td><td>85%</td><td>中期 (3 月)</td><td>高</td></tr>
+      <tr><td>ARIMA</td><td>自回归积分</td><td>88%</td><td>中期</td><td>高</td></tr>
+      <tr><td>趋势加速度</td><td>二阶导数</td><td>70%</td><td>拐点检测</td><td>低</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 信噪比阈值 -->
+<div class="card">
+  <h2>📡 信噪比阈值与行动</h2>
+  <table>
+    <thead><tr><th>SNR 范围</th><th>等级</th><th>含义</th><th>行动</th></tr></thead>
+    <tbody>
+      <tr><td>> 3.0</td><td>强信号</td><td>趋势明确</td><td>立即响应</td></tr>
+      <tr><td>2.0-3.0</td><td>中信号</td><td>趋势可信</td><td>评估采纳</td></tr>
+      <tr><td>1.0-2.0</td><td>弱信号</td><td>趋势存疑</td><td>持续观察</td></tr>
+      <tr><td>< 1.0</td><td>噪声</td><td>无明确趋势</td><td>不响应</td></tr>
+    </tbody>
+  </table>
+</div>
+
 </div>
 
 <script src="../../cdn/shared-reports/index.js"></script>
+<script src="../../cdn/shared/index.js"></script>
 <script src="js/trend-index.js"></script>
+<script>YrY.initTabs('#main-tabs');</script>
 </body>
 </html>

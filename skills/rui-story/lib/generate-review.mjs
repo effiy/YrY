@@ -193,7 +193,7 @@ function buildRecommendations(data) {
     { name: '增加预期输出验证', desc: '每个命令示例后追加"运行后应看到"，便于自动验证' },
     { name: '完善验收清单（DoD）', desc: `用 Checklist 形式定义「${esc(TITLE)}」完成标准，含可点击的检查项` },
     { name: '建立 file:// 可点击路径', desc: `所有 ${MODS.length} 个涉及模块的引用用 file:// 链接，点击即可跳转 IDE` },
-    { name: '诊断 D0–D7 闭环', desc: '基于自改进诊断结果，将 P1/P2 项纳入下一轮计划清单' }
+    { name: '诊断 D0–D8 闭环', desc: '基于自改进诊断结果，将 P1/P2 项纳入下一轮计划清单' }
   ];
   return items.map((r, i) => `<div class="reco-card">
     <div class="num">${i + 1}</div>
@@ -212,7 +212,7 @@ function buildActionPlan(data) {
     `回归 ${TCS.normal.length} 个正常路径用例的自动化检查`,
     `补充 ${TCS.boundary.length} 个边界/异常路径文档`,
     `推进 ${SRCS.length} 个源文件的命名规范与目录收敛`,
-    `将本场景的 D0–D7 诊断项并入下一轮计划清单`
+    `将本场景的 D0–D8 诊断项并入下一轮计划清单`
   ];
   const efforts = ['1h', '2h', '4h', '1d', '2d', '3d'];
   const owners = ['架构师', 'Coder', 'Reviewer', 'PM', 'QA', 'Agent'];

@@ -4,8 +4,7 @@
  */
 
 import { CONCURRENCY } from "../../../lib/constants.mjs";
-import { readRemoteFile } from "../../../lib/network.mjs";
-import { runConcurrent } from "../../../lib/concurrency.mjs";
+import { readRemoteFile, runConcurrent } from "../../../lib/io.mjs";
 
 export async function inferType(apiUrl, storySessions, projectPrefix, apiToken) {
   const reviewTarget = `${projectPrefix}技术评审.md`;

@@ -1,0 +1,66 @@
+{
+  "rui-bot": {
+    "lastRun": "2026-06-24T01:35:09.660Z",
+    "lastStatus": "fail",
+    "lastExitCode": -1,
+    "lastOutput": "[rui-bot] 队列中有 5 条待发通知，开始重试...\n[rui-bot] 重试 1/1: This operation was aborted\n[rui-bot] 重试 1/1: This operation was aborted\n",
+    "consecutiveFails": 97,
+    "p0Escalated": true
+  },
+  "rui-import": {
+    "lastRun": "2026-06-24T01:26:08.916Z",
+    "lastStatus": "fail",
+    "lastExitCode": -1,
+    "lastOutput": "[rui-import] scan root: /Users/ruiyi/Yi/YrY\n[rui-import] workspace: YrY\n[rui-import] found 1477 files\n[rui-import] querying existing sessions...\n[rui-import] failed to query sessions: This operation was aborted\n[rui-import] uploading 1477 files (concurrency=default)...\n",
+    "consecutiveFails": 30,
+    "p0Escalated": true
+  },
+  "rui-trends": {
+    "lastRun": "2026-06-23T01:49:12.734Z",
+    "lastStatus": "pass",
+    "lastExitCode": 0,
+    "lastOutput": "## rui-trends 数据源探活 — 2026-06-23 01:49\n\n| 数据源 | 可达 | HTTP |\n|--------|------|------|\n| github-trending | ❌ | This operation was aborted |\n| oss-insight | ✅ | 200 |\n| trendshift | ✅ | 200 |\n| top-starred | ❌ | This operation was aborted |\n\n> 2/4 数据源可达\n\n[rui-trends] status — 查询中...\n"
+  },
+  "rui-story": {
+    "lastRun": "2026-06-24T01:35:09.660Z",
+    "lastStatus": "fail",
+    "lastExitCode": 1,
+    "lastOutput": "[rui-story] overview mode — 查询远端 API...\n[rui-story] 远端不可达: This operation was aborted\n",
+    "consecutiveFails": 97,
+    "p0Escalated": true
+  },
+  "rui-npm": {
+    "lastRun": "2026-06-23T01:49:12.734Z",
+    "lastStatus": "pass",
+    "lastExitCode": 0,
+    "lastOutput": "on <ver>                                     指定发布版本号，默认 1.0.0（publish 支持）\n    --description <desc>                                包描述（publish 支持）\n    --access public                                     发布为公开包（publish scope 包时使用）\n    --dry-run                                           模拟发布，不实际上传（publish 支持）\n    --force, -f                                         强制操作，绕过限制（unpublish 支持）\n    --token <token>                                     Access Token，也可通过 NPM_TOKEN 环境变量传入（login 支持）\n    -- args"
+  },
+  "rui-html": {
+    "lastRun": "2026-06-24T01:26:08.916Z",
+    "lastStatus": "pass",
+    "lastExitCode": 0,
+    "lastOutput": "# rui-html — 故事场景 HTML 文档生成器\n读取故事 markdown 文档 → 按参考模板生成 7 类标准 HTML，确保跨文档一致性\n\n\n快速入门\n\n    /rui-html <story>                                   为故事的所有场景生成全部 7 类 HTML\n    /rui-html <story> --scene N                         仅为第 N 个场景生成\n    /rui-html <story> --type <doctype>                  仅为所有场景生成指定文档类型\n    /rui-html --help                                    显示此帮助\n\n\n子命令\n\n\n  生成命令\n\n    /rui-html <story>                                   全量生成：所有场景 × 7 类文档\n      --  --scene N                            ",
+    "consecutiveFails": 0,
+    "p0Escalated": false
+  },
+  "rui-bundle-analyze": {
+    "lastRun": "2026-06-23T01:49:12.734Z",
+    "lastStatus": "pass",
+    "lastExitCode": 0,
+    "lastOutput": "ize)\n   📝 Doc coverage: avg 14% · 42% JSDoc · 3 high-complex+under-documented\n   🏛️  Maturity: Level 3 - Defined (57/100)\n   💡 Insights: 2 synthesized · 1 critical · 0 high\n   🎯 Confidence: 84% (High)\n   📈 Improvements: No historical data for comparison\n\n📋 Standup Summary:\nHealth: A (93.6/100) · 1418 files · 21.5 MB\nRisks: 1 hotspots\nActions: 0 P0 · 9 P1 · 3 P2\nGates: WARN (4P/6F)\n   🎫 Issues: 3 issue-ready markdown blocks generated (use --json to access)\n\n=== Executive Summary: YrY ===\nG"
+  },
+  "rui-health": {
+    "lastRun": "2026-06-24T01:26:08.916Z",
+    "lastStatus": "pass",
+    "lastExitCode": 0,
+    "lastOutput": " 综合健康度: \u001b[33m85 分 / B 级 — 良好\u001b[0m    │\n  │ \u001b[32m███████████████████████████████\u001b[90m░░░░░\u001b[0m │\n  ├──────────────────────────────────────────┤\n  │ ⚙️核心运营:\u001b[33m76\u001b[0m  📏结构健康:\u001b[32m90\u001b[0m  🔧工程成熟度:\u001b[32m100\u001b[0m  🧩组件质量:\u001b[32m84\u001b[0m│\n  └──────────────────────────────────────────┘\n\n  📋 项目健康综合评分为 85 分（B级·良好），整体状态基本健康。核心运营中 2/10 项需关注；结构健康全部达标；工程成熟度全部达标；组件质量全部达标。与上次检查基本持平。架构合规检查全部通过。诊断引擎触发 1/8 项诊断，建议关注。\n\n  📊 维度: 20项  │  均值 87.4  │  中位 100  │  范围 0-100  │  标准差 26.8\n  🏷️  等级: \u001b[32m优秀 14\u001b[0m · \u001b[32m良好 4\u001b[",
+    "consecutiveFails": 0,
+    "p0Escalated": false
+  },
+  "rui-skills": {
+    "lastRun": "2026-06-23T01:49:12.734Z",
+    "lastStatus": "pass",
+    "lastExitCode": 0,
+    "lastOutput": "\u001b[38;5;145mChecking for skill updates...\u001b[0m\n\n\u001b[38;5;102mNo global skills tracked in lock file.\u001b[0m\n\u001b[38;5;102mInstall skills with\u001b[0m \u001b[38;5;145mnpx skills add <package> -g\u001b[0m\n\n\nnpm warn Unknown user config \"home\". This will stop working in the next major version of npm.\n"
+  }
+}

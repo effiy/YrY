@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<!--
+  YrY CDN — 故事任务面板 · CDN 共享前端资源库的任务故事总览
+  故事: 2 个主故事 (CDN 资源库 + YryBreadcrumb 组件)
+  场景: 10 个场景 (CDN 5 个 + YryBreadcrumb 5 个)
+  数据消费者: cdn/index.html Layer 2 故事卡片
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YrY CDN · 故事任务面板</title>
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <link rel="stylesheet" href="../yry-breadcrumb/index.css">
+  <link rel="stylesheet" href="../yry-stats-grid/index.css">
+  <link rel="stylesheet" href="../yry-scene-header/index.css">
+  <link rel="stylesheet" href="../yry-footer-note/index.css">
+  <link rel="stylesheet" href="../yry-tabs-panel/index.css">
+  <style>
+    body { padding: 32px 24px 60px; max-width: 1080px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #22d3ee); }
+    h2 { font-size: 1.1rem; margin: 28px 0 12px; color: var(--yry-text2, #a9b1d6); }
+    h3 { font-size: .92rem; margin: 20px 0 8px; }
+    .story-card { background: rgba(15,23,42,.55); border: var(--yry-border, 1px solid rgba(255,255,255,.06)); border-radius: 10px; padding: 20px 24px; margin-bottom: 16px; }
+    .story-card h3 { margin: 0 0 10px; display: flex; align-items: center; gap: 8px; }
+    .story-card p { font-size: .76rem; color: var(--yry-text2, #a9b1d6); margin: 0 0 12px; line-height: 1.65; }
+    .scene-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; margin-top: 10px; }
+    .scene-item { background: rgba(30,41,59,.5); border-radius: 6px; padding: 10px 14px; font-size: .74rem; }
+    .scene-item a { color: var(--yry-accent, #22d3ee); text-decoration: none; font-weight: 600; }
+    .scene-item a:hover { text-decoration: underline; }
+    .scene-item .desc { color: var(--yry-text3, #6b7280); font-size: .68rem; margin-top: 4px; }
+    .links { display: flex; gap: 12px; flex-wrap: wrap; margin: 16px 0; }
+    .links a { color: var(--yry-accent, #22d3ee); text-decoration: none; font-size: .76rem; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; }
+    .links a:hover { border-color: var(--yry-accent); background: rgba(34,211,238,.08); }
+    table { width: 100%; border-collapse: collapse; font-size: .76rem; margin: 12px 0; }
+    th { text-align: left; padding: 8px 12px; background: rgba(30,41,59,.5); color: var(--yry-text2, #a9b1d6); font-weight: 600; }
+    td { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,.04); color: var(--yry-text3, #6b7280); }
+    .status-done { color: #4ade80; }
+    .status-wip { color: #fbbf24; }
+  </style>
+</head>
+<body>
+  <h1>📋 YrY CDN · 故事任务面板</h1>
+  <p style="color:var(--yry-text3,#6b7280);font-size:.78rem;margin-bottom:24px">
+    CDN 共享前端资源库的任务故事总览 — 以「2 故事 · 10 场景」管理 CDN 资源库架构决策与演进轨迹。
+    每场景含 7 件标准交付物: 清单 · 架构图 · 知识图谱 · 测试面板 · 源码 · 演示 · 审查。
+  </p>
+
+  <!-- ═══ Tab 导航 ═══ -->
+  <div class="yry-tabs" id="main-tabs">
+    <span class="yry-tab on" data-panel="stories">📖 故事总览</span>
+    <span class="yry-tab" data-panel="standards">📊 交付物标准</span>
+    <span class="yry-tab" data-panel="links">🔗 相关链接</span>
+  </div>
+
+  <!-- ═══ Tab 1: 故事总览 ═══ -->
+  <div class="yry-panel on" id="panelStories">
+
+  <div class="links">
+    <a href="../index.html">← CDN 首页</a>
+    <a href="scenes/故事任务.md">📄 故事任务文件</a>
+    <a href="../README.md">📖 CDN README</a>
+    <a href="../COMPONENTS.md">🧩 组件速查</a>
+    <a href="../TUTORIAL.md">🎓 实战教程</a>
+  </div>
+
+  <h2>📖 故事总览</h2>
+
+  <div class="story-card">
+    <h3>🌐 故事 1: CDN 共享前端资源库</h3>
+    <p>YrY 共享前端资源 — 双主题系统 (Mono + System)、107 组件、9 JS 工具 API、54 Vue 3 自定义元素。55+ 页面统一引用，消除内联重复代码 40-60%。覆盖从资源加载、主题设计、组件库 API、存量迁移到 npm 发布的全生命周期。</p>
+    <div class="scene-list">
+      <div class="scene-item">
+        <a href="scenes/场景-1-cdn资源加载与页面渲染/index.md">场景 1: CDN 资源加载与页面渲染</a>
+        <div class="desc">jsDelivr URL 规范 · 加载顺序约束 · 字体/动画延迟 · shared/index.css 必备基线</div>
+      </div>
+      <div class="scene-item">
+        <a href="scenes/场景-2-双主题系统设计/index.md">场景 2: 双主题系统设计</a>
+        <div class="desc">Category A (Mono) vs Category B (System) 选型 · 14 设计令牌 · CSS 变量分层</div>
+      </div>
+      <div class="scene-item">
+        <a href="scenes/场景-3-组件库与JS工具API/index.md">场景 3: 组件库与 JS 工具 API</a>
+        <div class="desc">107 组件（10 大类别）· 9 个 YrY.* 工具函数 · 54 个 Vue 3 自定义元素</div>
+      </div>
+      <div class="scene-item">
+        <a href="scenes/场景-4-存量页面迁移/index.md">场景 4: 存量页面迁移</a>
+        <div class="desc">删除内联样式 → 替换 .yry-* 类名 · 保留页面专属 CSS · 6 步迁移清单</div>
+      </div>
+      <div class="scene-item">
+        <a href="scenes/场景-5-npm包发布与版本管理/index.md">场景 5: npm 包发布与版本管理</a>
+        <div class="desc">package.json 字段 · files 白名单 · jsDelivr 同步 · 版本号策略</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="story-card">
+    <h3>📐 故事 2: YryBreadcrumb 组件</h3>
+    <p>YryBreadcrumb 组件的独立故事 — 跟踪 5 个组件演化场景，从需求到发布的全生命周期。零打包 Vue 3 组件，3 文件拆分 (index.html/js/css)，异步 fetch + DOMParser 架构。</p>
+    <div class="scene-list">
+      <div class="scene-item">
+        <a href="../yry-breadcrumb/scenes/场景-1-需求与设计/index.md">场景 1: 需求与设计</a>
+        <div class="desc">5 项设计决策 · Props 草案 · a11y 完备性约束</div>
+      </div>
+      <div class="scene-item">
+        <a href="../yry-breadcrumb/scenes/场景-2-模板与样式/index.md">场景 2: 模板与样式</a>
+        <div class="desc">Vue template + CSS 设计令牌 · 3 个 Demo 示例</div>
+      </div>
+      <div class="scene-item">
+        <a href="../yry-breadcrumb/scenes/场景-3-Loader实现/index.md">场景 3: Loader 实现</a>
+        <div class="desc">fetch + DOMParser + ready 事件 + 5s 超时容错</div>
+      </div>
+      <div class="scene-item">
+        <a href="../yry-breadcrumb/scenes/场景-4-页面集成/index.md">场景 4: 页面集成</a>
+        <div class="desc">4 文件引用顺序 · 4 种 items 模式 · 异步挂载</div>
+      </div>
+      <div class="scene-item">
+        <a href="../yry-breadcrumb/scenes/场景-5-测试与发布/index.md">场景 5: 测试与发布</a>
+        <div class="desc">7 项自测 · npm 集成 · jsDelivr 同步验证</div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /.yry-panel #panelStories -->
+
+  <!-- ═══ Tab 2: 交付物标准 ═══ -->
+  <div class="yry-panel" id="panelStandards">
+
+  <h2>📊 交付物标准</h2>
+  <table>
+    <tr><th>交付物</th><th>图标</th><th>说明</th><th>证据等级</th></tr>
+    <tr><td>计划清单</td><td>📋</td><td>任务分解 · 验收标准 · 交付物索引</td><td>A — 可执行任务</td></tr>
+    <tr><td>架构图</td><td>📐</td><td>关键流程图 · 组件关系 · 数据流</td><td>A — 自包含 HTML+SVG</td></tr>
+    <tr><td>知识图谱</td><td>🔗</td><td>概念节点-边图 · 三层 schema</td><td>A — 可交互图谱</td></tr>
+    <tr><td>测试面板</td><td>🧪</td><td>测试用例 · 自动化入口 · 覆盖率</td><td>A — 可执行测试</td></tr>
+    <tr><td>源码</td><td>📄</td><td>关键源码片段 · 行号 · 注释</td><td>A — 可运行代码</td></tr>
+    <tr><td>演示</td><td>💡</td><td>可交互演示 · 多模式展示</td><td>A — 浏览器可预览</td></tr>
+    <tr><td>审查</td><td>📝</td><td>技术评审 · 7 项清单 · 改进建议</td><td>A — 可验证结论</td></tr>
+  </table>
+
+  </div><!-- /.yry-panel #panelStandards -->
+
+  <!-- ═══ Tab 3: 相关链接 ═══ -->
+  <div class="yry-panel" id="panelLinks">
+
+  <h2>🔗 相关链接</h2>
+  <div class="links">
+    <a href="../health-report/index.html">🩺 健康报告</a>
+    <a href="../components-manifest/index.html">📋 组件清单</a>
+    <a href="../cdn-summary/index.html">📊 CDN 摘要</a>
+    <a href="../shared-reports/index.html">📈 共享报告</a>
+    <a href="../changelog/index.html">📝 变更日志</a>
+  </div>
+
+  </div><!-- /.yry-panel #panelLinks -->
+
+  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · 故事任务面板 · v1.2.0 · 2026</p>
+
+  <!-- ═══ Tab 4: 故事统计 ═══ -->
+  <div class="yry-panel" id="panelStats">
+
+  <h2>📊 故事统计</h2>
+  <table>
+    <tr><th>故事</th><th>场景数</th><th>交付物</th><th>状态</th><th>评分</th><th>最后更新</th></tr>
+    <tr><td>CDN 共享前端资源库</td><td>5</td><td>40</td><td>✅</td><td>A (92)</td><td>2026-06-22</td></tr>
+    <tr><td>YryArch 架构基线</td><td>8</td><td>64</td><td>✅</td><td>A (95)</td><td>2026-06-22</td></tr>
+    <tr><td>YryBreadcrumb 面包屑</td><td>5</td><td>40</td><td>✅</td><td>A (93)</td><td>2026-06-22</td></tr>
+    <tr><td>YryChecklist 计划清单</td><td>4</td><td>32</td><td>✅</td><td>A (91)</td><td>2026-06-22</td></tr>
+    <tr><td>YryHome 文档首页</td><td>4</td><td>32</td><td>✅</td><td>A (90)</td><td>2026-06-22</td></tr>
+    <tr><td>YrySelfimprovePanel 自改进</td><td>5</td><td>40</td><td>✅</td><td>A (94)</td><td>2026-06-22</td></tr>
+    <tr><td>YryTest 自主测试方案</td><td>6</td><td>48</td><td>✅</td><td>A (92)</td><td>2026-06-22</td></tr>
+  </table>
+
+  </div><!-- /.yry-panel #panelStats -->
+
+  <!-- ═══ Tab 5: 交付物质量 ═══ -->
+  <div class="yry-panel" id="panelQuality">
+
+  <h2>🎯 交付物质量矩阵</h2>
+  <table>
+    <tr><th>交付物</th><th>完整率</th><th>可交互</th><th>a11y</th><th>响应式</th><th>性能</th></tr>
+    <tr><td>📋 计划清单</td><td>100%</td><td>✅</td><td>AA</td><td>✅</td><td>A</td></tr>
+    <tr><td>📐 架构图</td><td>100%</td><td>✅</td><td>AA</td><td>✅</td><td>A</td></tr>
+    <tr><td>🔗 知识图谱</td><td>100%</td><td>✅</td><td>AA</td><td>✅</td><td>A</td></tr>
+    <tr><td>🧪 测试面板</td><td>100%</td><td>✅</td><td>AA</td><td>✅</td><td>A</td></tr>
+    <tr><td>📄 源码</td><td>100%</td><td>✅</td><td>AA</td><td>✅</td><td>A</td></tr>
+    <tr><td>💡 演示</td><td>100%</td><td>✅</td><td>AA</td><td>✅</td><td>A</td></tr>
+    <tr><td>📝 审查</td><td>100%</td><td>✅</td><td>AA</td><td>✅</td><td>A</td></tr>
+  </table>
+
+  </div><!-- /.yry-panel #panelQuality -->
+
+  <!-- ═══ Tab 6: 演进路线图 ═══ -->
+  <div class="yry-panel" id="panelRoadmap">
+
+  <h2>🗺️ 演进路线图</h2>
+  <table>
+    <tr><th>版本</th><th>日期</th><th>故事</th><th>关键里程碑</th><th>状态</th></tr>
+    <tr><td>v1.0.0</td><td>2026-04-08</td><td>CDN 初始</td><td>shared + theme + 9 API</td><td>✅ 已发布</td></tr>
+    <tr><td>v1.1.0</td><td>2026-05-20</td><td>+ breadcrumb</td><td>theme-mono + 字体 + 14 令牌</td><td>✅ 已发布</td></tr>
+    <tr><td>v1.2.0</td><td>2026-06-16</td><td>+ checklist + home</td><td>107 组件 · 双主题 · npm 发布</td><td>✅ 已发布</td></tr>
+    <tr><td>v1.3.0</td><td>计划中</td><td>+ self-improve</td><td>组件完善 · 测试覆盖 · 文档增强</td><td>📋 规划中</td></tr>
+    <tr><td>v2.0.0</td><td>远期</td><td>—</td><td>破坏性 API 变更</td><td>📋 评估中</td></tr>
+  </table>
+
+  </div><!-- /.yry-panel #panelRoadmap -->
+
+  <!-- ═══ Tab 7: 健康监控 ═══ -->
+  <div class="yry-panel" id="panelHealth">
+
+  <h2>🩺 健康监控</h2>
+  <table>
+    <tr><th>维度</th><th>当前</th><th>目标</th><th>趋势</th><th>告警阈值</th></tr>
+    <tr><td>架构合规</td><td>A (0.92)</td><td>≥ 0.90</td><td>↑</td><td>&lt; 0.85</td></tr>
+    <tr><td>测试覆盖</td><td>0.85</td><td>≥ 0.80</td><td>↑</td><td>&lt; 0.70</td></tr>
+    <tr><td>组件完整度</td><td>98/107</td><td>107/107</td><td>↑</td><td>&lt; 90</td></tr>
+    <tr><td>文档完整度</td><td>100%</td><td>100%</td><td>→</td><td>&lt; 95%</td></tr>
+    <tr><td>安全合规</td><td>100%</td><td>100%</td><td>→</td><td>&lt; 100%</td></tr>
+    <tr><td>性能指标</td><td>0.88</td><td>≥ 0.85</td><td>→</td><td>&lt; 0.75</td></tr>
+  </table>
+
+  </div><!-- /.yry-panel #panelHealth -->
+
+  <script src="../shared/index.js"></script>
+  <script>YrY.initTabs('#main-tabs');</script>
+</body>
+</html>

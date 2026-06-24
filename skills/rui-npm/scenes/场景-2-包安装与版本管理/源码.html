@@ -27,7 +27,7 @@
 </nav>
 
 <nav class="cross-nav">
-  <a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="清单.html">📋 清单</a><span class="cross-sep">·</span>
   <a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
   <a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
   <span class="cross-link on">📄 源码</span><span class="cross-sep">·</span>
@@ -847,7 +847,7 @@ function viewSource(relPath){
       body.innerHTML=html;
     })
     .catch(function(e){
-      body.innerHTML='<div style="padding:60px 20px;text-align:center;color:var(--fail)"><div style="font-size:2.5rem;margin-bottom:10px">⚠️</div><h3 style="color:var(--fail);margin-bottom:8px">无法加载文件</h3><p style="color:var(--text3);font-size:.84rem">'+esc(e.message)+'</p><p style="color:var(--text3);font-size:.78rem;margin-top:14px">请检查路径是否正确，或文件是否存在</p><code style="display:inline-block;margin-top:14px;padding:6px 10px;background:var(--bg-flat);border-radius:4px;color:var(--cyan)">'+esc(relPath)+'</code></div>';
+      body.innerHTML='<div style="padding:60px 20px;text-align:center;color:var(--fail)"><div style="font-size:2.5rem;margin-bottom:10px">⚠️</div><h3 style="color:var(--fail);margin-bottom:8px">无法加载文件</h3><p style="color:var(--text3);font-size:.84rem">'+esc(e.message)+'</p><p style="color:var(--text3);font-size:.78rem;margin-top:14px">请检查路径是否正确，或文件是否存在</p><code style="display:inline-block;margin-top:14px;padding:6px 10px;background:var(--yry-bg-flat);border-radius:4px;color:var(--cyan)">'+esc(relPath)+'</code></div>';
     });
 }
 function closeModal(){

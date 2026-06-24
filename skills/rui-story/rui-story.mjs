@@ -10,7 +10,7 @@ import { execSync } from "node:child_process";
 import { dim, yellow } from "../../lib/tty.mjs";
 import { DEFAULT_API_URL } from "../../lib/constants.mjs";
 import { findProjectRoot, readProjectName } from "../../lib/fs.mjs";
-import { querySessionsFull } from "../../lib/network.mjs";
+import { querySessionsFull } from "../../lib/io.mjs";
 import { extractStoryName, groupSessionsByStory, readBlockedState } from "./lib/extract.mjs";
 import { printOverview, printList, printShow, printRecommend, printHealth } from "./lib/format.mjs";
 import { parseArgs, showHelp } from "./lib/cli.mjs";

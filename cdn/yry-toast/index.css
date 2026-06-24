@@ -1,16 +1,36 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   YrY CDN — YryToast · 消息提示 样式
-   适用: 全局页面级消息通知
-   依赖: theme.css (提供 --yry-* design tokens)
+   YrY CDN — YryToast · Vue 3 Toast 通知组件 样式
+
+   适用: 页面级消息通知 · 复制成功反馈 · 操作提示
+
+   模板结构 (来自 index.html 中 <script type="text/x-template" id="yry-toast-tpl">):
+     <div class="yry-toast-container" aria-live="polite">
+       <div class="yry-toast-stack">
+         <div class="yry-toast is-{type}">
+           <span class="yry-toast-icon">…</span>
+           <div class="yry-toast-body">
+             <div class="yry-toast-title">…</div>
+             <div class="yry-toast-text">…</div>
+           </div>
+           <button class="yry-toast-close">×</button>
+         </div>
+       </div>
+     </div>
 
    使用方式:
-     <div id="yry-toast-container"></div>
+     <link rel="stylesheet" href="../../../../cdn/yry-toast/index.css">
+     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
      <script src="../../../../cdn/yry-toast/index.js"></script>
-     <script>YryToast.success('操作成功');</script>
+     <script>YryToast.success('操作成功', '成功');</script>
+
+   依赖 design tokens (来自 cdn/theme/index.css 或页面 :root):
+     --yry-accent / --yry-pass / --yry-fail / --yry-warn / --yry-cyan
+     --yry-text / --yry-text2 / --yry-bg-raised
+   所有颜色都带 fallback,即使页面未加载主题也能正常显示。
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ── Container ──────────────────────────────────────────────────────── */
-#yry-toast-container {
+.yry-toast-container {
   position: fixed;
   bottom: 24px;
   left: 50%;
@@ -24,73 +44,145 @@
   width: calc(100% - 40px);
 }
 
+.yry-toast-stack {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+}
+
 /* ── Toast item ─────────────────────────────────────────────────────── */
 .yry-toast {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 18px;
+  gap: 10px;
+  padding: 10px 16px;
   border-radius: 8px;
   font-size: .82rem;
   line-height: 1.45;
   pointer-events: auto;
-  box-shadow: 0 8px 32px rgba(0,0,0,.5);
-  animation: toast-in .25s ease;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, .5);
   transition: opacity .3s, transform .3s;
   cursor: pointer;
+  background: var(--yry-bg-raised, rgba(42, 42, 56, 1));
+  border: 1px solid var(--yry-border, rgba(255, 255, 255, .06));
+  color: var(--yry-text, #f5f5f5);
 }
 
-.yry-toast.removing {
+.yry-toast.is-default {
+  background: var(--yry-bg-raised, rgba(42, 42, 56, 1));
+  border-color: rgba(var(--yry-accent-rgb, 255, 193, 7), .3);
+  color: var(--yry-text, #f5f5f5);
+}
+
+.yry-toast.is-success {
+  background: rgba(var(--yry-pass-rgb, 34, 197, 94), .12);
+  border-color: rgba(var(--yry-pass-rgb, 34, 197, 94), .3);
+  color: var(--yry-pass, #22c55e);
+}
+
+.yry-toast.is-error {
+  background: rgba(var(--yry-fail-rgb, 239, 68, 68), .12);
+  border-color: rgba(var(--yry-fail-rgb, 239, 68, 68), .3);
+  color: var(--yry-fail, #ef4444);
+}
+
+.yry-toast.is-warn {
+  background: rgba(var(--yry-warn-rgb, 245, 158, 11), .12);
+  border-color: rgba(var(--yry-warn-rgb, 245, 158, 11), .3);
+  color: var(--yry-warn, #f59e0b);
+}
+
+.yry-toast.is-info {
+  background: rgba(var(--yry-cyan-rgb, 34, 211, 238), .12);
+  border-color: rgba(var(--yry-cyan-rgb, 34, 211, 238), .3);
+  color: var(--yry-cyan, #22d3ee);
+}
+
+/* ── Body / Icon / Title / Text / Close ─────────────────────────────── */
+.yry-toast-icon {
+  flex-shrink: 0;
+  font-size: .92rem;
+  line-height: 1;
+  font-weight: 600;
+}
+
+.yry-toast-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.yry-toast-title {
+  font-weight: 600;
+  font-size: .78rem;
+  line-height: 1.3;
+}
+
+.yry-toast-text {
+  font-size: .76rem;
+  line-height: 1.4;
+  opacity: .92;
+  color: inherit;
+  word-break: break-word;
+}
+
+.yry-toast-close {
+  flex-shrink: 0;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font-size: .92rem;
+  line-height: 1;
+  opacity: .55;
+  cursor: pointer;
+  padding: 2px 4px;
+  font-family: inherit;
+  transition: opacity .15s;
+}
+
+.yry-toast-close:hover {
+  opacity: 1;
+}
+
+/* ── Vue <transition-group> animations ──────────────────────────────── */
+.yry-toast-anim-enter-active,
+.yry-toast-anim-leave-active {
+  transition: opacity .3s ease, transform .3s ease;
+}
+
+.yry-toast-anim-enter-from {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.yry-toast-anim-leave-to {
   opacity: 0;
   transform: translateY(8px);
 }
 
-@keyframes toast-in {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
+.yry-toast-anim-move {
+  transition: transform .3s ease;
 }
 
-/* ── Types ──────────────────────────────────────────────────────────── */
-.yry-toast.default {
-  background: var(--yry-bg-raised, rgba(42,42,56,1));
-  border: 1px solid rgba(var(--yry-accent-rgb),.3);
-  color: var(--yry-text, #f5f5f5);
+/* ── a11y: 减少动画偏好 ───────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .yry-toast-anim-enter-active,
+  .yry-toast-anim-leave-active,
+  .yry-toast-anim-move {
+    transition: none;
+  }
 }
 
-.yry-toast.success {
-  background: rgba(var(--yry-pass-rgb),.12);
-  border: 1px solid rgba(var(--yry-pass-rgb),.3);
-  color: var(--yry-pass, #22c55e);
-}
-
-.yry-toast.error {
-  background: rgba(var(--yry-fail-rgb),.12);
-  border: 1px solid rgba(var(--yry-fail-rgb),.3);
-  color: var(--yry-fail, #ef4444);
-}
-
-.yry-toast.warn {
-  background: rgba(var(--yry-warn-rgb),.12);
-  border: 1px solid rgba(var(--yry-warn-rgb),.3);
-  color: var(--yry-warn, #f59e0b);
-}
-
-.yry-toast.info {
-  background: rgba(var(--yry-cyan-rgb),.12);
-  border: 1px solid rgba(var(--yry-cyan-rgb),.3);
-  color: var(--yry-cyan, #22d3ee);
-}
-
-/* ── Dismiss indicator ──────────────────────────────────────────────── */
-.yry-toast .toast-dismiss {
-  flex-shrink: 0;
-  font-size: .9rem;
-  opacity: .5;
-  cursor: pointer;
-  margin-left: 4px;
-  line-height: 1;
-}
-
-.yry-toast .toast-dismiss:hover {
-  opacity: 1;
+/* ── 移动端 ───────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .yry-toast-container {
+    bottom: 16px;
+    width: calc(100% - 24px);
+  }
+  .yry-toast {
+    padding: 8px 12px;
+    font-size: .78rem;
+  }
 }

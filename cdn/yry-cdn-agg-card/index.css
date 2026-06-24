@@ -1,0 +1,379 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryCdnAggCard · CDN 聚合中心单卡样式 (v2 · 重设计)
+   ─────────────────────────────────────────────────────────────────────────
+   设计目标:
+     · 提升阅读节奏:  hero (大 emoji + 主标题) → body (描述 + 内联 stats)
+                      → chips (能力标签) → foot (数据源 · CTA)
+     · 强化视觉锚点:  左侧 2px 强调色细条 + 圆形 emoji 底座 + 顶部微高光
+     · 提升交互反馈:  hover 抬升 3px · 强调色描边 · 软阴影 · 箭头右移
+     · 保留外部脚本约束:  .cdn-agg-card / .cdn-agg-cta / .cdn-freshness /
+                          .cdn-agg-stats* / [data-visited] 名称/语义不变。
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.cdn-agg-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 18px 14px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--yry-text2, #d4d4d4);
+  /* 顶部微高光 + 主底色,营造"卡片"立体感 */
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0) 38%),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.72) 0%, rgba(15, 23, 42, 0.55) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.02) inset, 0 2px 6px rgba(0, 0, 0, 0.18);
+  transition:
+    border-color 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.22s ease,
+    background-color 0.18s ease;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* 左侧 2px 强调色细条 —— 默认隐藏,hover 浮现 */
+.cdn-agg-accent-bar {
+  position: absolute;
+  left: 0; top: 12px; bottom: 12px;
+  width: 2px;
+  border-radius: 0 2px 2px 0;
+  background: linear-gradient(180deg, var(--yry-accent, #22d3ee) 0%, rgba(34, 211, 238, 0.35) 100%);
+  transform: scaleY(0.35);
+  transform-origin: center;
+  opacity: 0;
+  transition: transform 0.22s ease, opacity 0.22s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Hero 头部行 ─────────────────────────────────────────────────── */
+.cdn-agg-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 40px;
+  position: relative;
+  z-index: 1;
+}
+.cdn-agg-emoji-wrap {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(34, 211, 238, 0.22) 0%, rgba(34, 211, 238, 0.06) 70%),
+    rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(34, 211, 238, 0.18);
+  box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.04) inset;
+  transition: transform 0.18s ease, border-color 0.18s ease;
+}
+.cdn-agg-emoji {
+  font-size: 1.3rem;
+  line-height: 1;
+  display: inline-block;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.25));
+}
+.cdn-agg-id {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.cdn-agg-name {
+  color: var(--yry-text, #f5f5f5);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cdn-agg-badge {
+  align-self: flex-start;
+  max-width: 100%;
+  font-size: 0.62rem;
+  color: var(--yry-text3, #8a93b0);
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  padding: 1px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  background: rgba(15, 18, 30, 0.45);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Body 描述 ───────────────────────────────────────────────────── */
+.cdn-agg-body {
+  font-size: 0.78rem;
+  line-height: 1.65;
+  color: var(--yry-text2, #c4cae0);
+  position: relative;
+  z-index: 1;
+}
+.cdn-agg-body code {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.86em;
+  padding: 0 4px;
+  border-radius: 3px;
+  background: rgba(34, 211, 238, 0.08);
+  color: var(--yry-accent, #22d3ee);
+  border: 1px solid rgba(34, 211, 238, 0.14);
+}
+
+/* ── 嵌入的 stats 条 (由 body HTML 注入的 .cdn-agg-stats*) ───────── */
+.cdn-agg-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.cdn-agg-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.66rem;
+  padding: 3px 8px;
+  background: rgba(52, 211, 153, 0.06);
+  color: var(--yry-text2, #c4cae0);
+  border: 1px solid rgba(52, 211, 153, 0.20);
+  border-radius: 999px;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+}
+.cdn-agg-stat b {
+  color: #34d399;
+  font-weight: 700;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+/* ── Chips 能力标签 ─────────────────────────────────────────────── */
+.cdn-agg-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  position: relative;
+  z-index: 1;
+}
+.cdn-agg-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.66rem;
+  line-height: 1.4;
+  padding: 2px 8px;
+  background: rgba(34, 211, 238, 0.08);
+  color: #7dd3fc;
+  border: 1px solid rgba(34, 211, 238, 0.20);
+  border-radius: 999px;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
+}
+
+/* ── 键盘快捷键徽章 (首位 chip,标示数字键 1-7 跳转) ───────────────── */
+.cdn-agg-chip.cdn-agg-key {
+  background: rgba(167, 139, 250, 0.16);
+  color: #c4b5fd;
+  border-color: rgba(167, 139, 250, 0.35);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.cdn-agg-card:hover .cdn-agg-chip.cdn-agg-key,
+.cdn-agg-card:focus-visible .cdn-agg-chip.cdn-agg-key {
+  background: rgba(167, 139, 250, 0.28);
+  border-color: rgba(167, 139, 250, 0.55);
+  color: #ddd6fe;
+}
+
+/* ── 更新频率行 (chips 与 foot 之间) ─────────────────────────────── */
+.cdn-agg-refresh {
+  margin-top: 2px;
+  font-size: 0.6rem;
+  color: var(--yry-text3, #8a93b0);
+  letter-spacing: 0.01em;
+  line-height: 1.55;
+  position: relative;
+  z-index: 1;
+}
+.cdn-agg-refresh b {
+  color: #a78bfa;
+  font-weight: 600;
+  margin: 0 2px;
+}
+.cdn-agg-refresh code {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.94em;
+  padding: 0 4px;
+  border-radius: 3px;
+  background: rgba(167, 139, 250, 0.1);
+  color: #c4b5fd;
+  border: 1px solid rgba(167, 139, 250, 0.18);
+}
+
+/* ── Foot (数据源 + CTA) ────────────────────────────────────────── */
+.cdn-agg-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.07);
+  position: relative;
+  z-index: 1;
+}
+.cdn-agg-datasource {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-size: 0.66rem;
+  color: var(--yry-text3, #8a93b0);
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cdn-agg-datasource-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.18);
+  flex: 0 0 auto;
+}
+.cdn-agg-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--yry-accent, #22d3ee);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.cdn-agg-cta-arrow {
+  display: inline-block;
+  transition: transform 0.18s ease;
+  will-change: transform;
+}
+
+/* ── Freshness 徽标 (外部脚本追加的 .cdn-freshness) ─────────────── */
+.cdn-agg-card .cdn-freshness {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  font-size: 0.66rem;
+  color: var(--yry-text3, #8a93b0);
+  position: relative;
+  z-index: 1;
+}
+.cdn-agg-card .cdn-freshness > span:first-child {
+  color: #34d399;
+}
+
+/* ── 已浏览标记 — 右上角小勾 ───────────────────────────────────── */
+.cdn-agg-card[data-visited="1"] {
+  border-color: rgba(52, 211, 153, 0.32);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0) 38%),
+    linear-gradient(180deg, rgba(52, 211, 153, 0.06) 0%, rgba(15, 23, 42, 0.55) 100%);
+}
+.cdn-agg-card[data-visited="1"]::after {
+  content: '✓ 已浏览';
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 0.58rem;
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 2;
+}
+/* 已浏览时给 badge 留出空间 */
+.cdn-agg-card[data-visited="1"] .cdn-agg-badge {
+  max-width: calc(100% - 56px);
+}
+
+/* ═══ Hover / Focus / Active ═══════════════════════════════════════ */
+.cdn-agg-card:hover,
+.cdn-agg-card:focus-visible {
+  border-color: rgba(34, 211, 238, 0.55);
+  transform: translateY(-3px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 8px 22px -8px rgba(34, 211, 238, 0.35),
+    0 2px 6px rgba(0, 0, 0, 0.2);
+  outline: none;
+}
+.cdn-agg-card:hover .cdn-agg-accent-bar,
+.cdn-agg-card:focus-visible .cdn-agg-accent-bar {
+  opacity: 1;
+  transform: scaleY(1);
+}
+.cdn-agg-card:hover .cdn-agg-emoji-wrap,
+.cdn-agg-card:focus-visible .cdn-agg-emoji-wrap {
+  transform: rotate(-4deg) scale(1.06);
+  border-color: rgba(34, 211, 238, 0.45);
+}
+.cdn-agg-card:hover .cdn-agg-name,
+.cdn-agg-card:focus-visible .cdn-agg-name {
+  color: var(--yry-accent, #22d3ee);
+}
+.cdn-agg-card:hover .cdn-agg-chip,
+.cdn-agg-card:focus-visible .cdn-agg-chip {
+  background: rgba(34, 211, 238, 0.18);
+  border-color: rgba(34, 211, 238, 0.40);
+  color: #bae6fd;
+  transform: translateY(-1px);
+}
+.cdn-agg-card:hover .cdn-agg-cta-arrow,
+.cdn-agg-card:focus-visible .cdn-agg-cta-arrow {
+  transform: translateX(4px);
+}
+
+/* ── 减少动效偏好 ───────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .cdn-agg-card,
+  .cdn-agg-accent-bar,
+  .cdn-agg-emoji-wrap,
+  .cdn-agg-chip,
+  .cdn-agg-cta-arrow {
+    transition: none;
+  }
+  .cdn-agg-card:hover {
+    transform: none;
+  }
+}
+
+/* ── 紧凑栅格模式 (与 .yry-card-grid.is-compact 协作) ───────────── */
+.yry-card-grid.is-compact .cdn-agg-card {
+  padding: 12px 14px 10px;
+  gap: 10px;
+}
+.yry-card-grid.is-compact .cdn-agg-emoji-wrap {
+  width: 32px; height: 32px;
+}
+.yry-card-grid.is-compact .cdn-agg-emoji {
+  font-size: 1.1rem;
+}
+.yry-card-grid.is-compact .cdn-agg-name {
+  font-size: 0.86rem;
+}
+.yry-card-grid.is-compact .cdn-agg-body {
+  font-size: 0.72rem;
+  line-height: 1.55;
+}

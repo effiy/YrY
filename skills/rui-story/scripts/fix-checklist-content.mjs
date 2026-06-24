@@ -17,7 +17,7 @@
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join, dirname, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { NODE_ARGV_OFFSET, STORY_PANEL_DIR } from '../../lib/constants.mjs';
+import { NODE_ARGV_OFFSET, STORY_PANEL_DIR } from '../../../lib/constants.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = join(__dirname, '../../..');

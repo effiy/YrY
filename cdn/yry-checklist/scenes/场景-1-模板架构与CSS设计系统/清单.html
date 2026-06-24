@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>模板架构与CSS设计系统 · 清单</title>
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../../cdn/shared-reports/index.css">
+<style>
+.scene-nav { display:flex; flex-wrap:wrap; gap:4px 8px; padding:8px 0; font-size:.72rem; border-bottom:var(--yry-border); margin-bottom:12px; }
+.scene-nav-link { color:var(--yry-text3); text-decoration:none; }
+.scene-nav-link:hover { color:var(--yry-accent); }
+.scene-nav-link.active { color:var(--yry-accent); font-weight:700; }
+.scene-nav-sep { color:var(--yry-text3); }
+.cross-nav { display:flex; gap:8px; padding:6px 0; font-size:.72rem; margin-bottom:12px; }
+.cross-link { color:var(--yry-text3); text-decoration:none; }
+.cross-link:hover { color:var(--yry-accent); }
+.cross-link.on { color:var(--yry-accent); font-weight:700; }
+.cross-sep { color:var(--yry-text3); }
+.header { margin-bottom:12px; }
+.header h1 { font-size:1.1rem; margin:0; }
+.accent { color:var(--yry-accent); }
+.meta { font-size:.68rem; color:var(--yry-text3); margin-top:4px; }
+.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:8px; }
+.stat-card { padding:10px; text-align:center; border-radius:6px; border:var(--yry-border); background:rgba(15,23,42,.4); }
+.stat-card .val { font-size:1.2rem; font-weight:700; }
+.stat-card .val.health { color:var(--yry-pass); }
+.stat-card .lbl { font-size:.62rem; color:var(--yry-text3); margin-top:2px; }
+.bar-wrap { margin-bottom:12px; }
+.bar-outer { height:6px; border-radius:3px; background:rgba(255,255,255,.06); overflow:hidden; display:flex; }
+.seg.strength { background:var(--yry-pass); }
+.seg.gap { background:rgba(255,255,255,.06); }
+.card { padding:16px 20px; border-radius:8px; border:var(--yry-border); background:rgba(15,23,42,.4); }
+.card h2 { font-size:.88rem; margin:0 0 12px 0; }
+.cl-item { display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.04); }
+.cl-num { min-width:24px; height:24px; border-radius:50%; background:rgba(34,197,94,.12); color:var(--yry-pass); display:flex; align-items:center; justify-content:center; font-size:.68rem; font-weight:700; }
+.cl-text { flex:1; font-size:.76rem; line-height:1.5; color:var(--yry-text2); }
+.ft { text-align:center; font-size:.64rem; color:var(--yry-text3); padding:20px 0; }
+@media (max-width:640px) { .stats-grid { grid-template-columns:repeat(2,1fr); }}
+</style>
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb"><a href="../../../index.html">文档中心</a><span class="bc-sep">/</span><span class="bc-current">YryChecklist</span><span class="bc-sep">/</span><span class="bc-current">场景 1 · 模板架构与CSS设计系统</span><span class="bc-sep">/</span><span class="bc-current">清单</span></nav>
+
+<nav class="scene-nav">
+  <span class="scene-nav-link active">场景1 · 模板架构与CSS设计系统</span>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-2-清单交互组件实现/清单.html">场景2 · 清单交互组件实现</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-3-验证报告与健康面板集成/清单.html">场景3 · 验证报告与健康面板集成</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-4-批量生成与自循环机制/清单.html">场景4 · 批量生成与自循环机制</a>
+</nav>
+
+<nav class="cross-nav">
+<span class="cross-link on">清单</span><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">架构</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">源码</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">测试</a><span class="cross-sep">·</span>
+<a class="cross-link" href="演示.html">演示</a><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">审计</a>
+</nav>
+
+<div class="header">
+  <h1>场景-1<span class="accent"> · 模板架构与CSS设计系统</span></h1>
+  <div class="meta">v1.2.0 · 2026-06-22 · yry-checklist</div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="val health">7</div><div class="lbl">HTML 区域</div></div>
+  <div class="stat-card"><div class="val health">14</div><div class="lbl">CSS 令牌</div></div>
+  <div class="stat-card"><div class="val health">5</div><div class="lbl">CSS 层级</div></div>
+  <div class="stat-card"><div class="val">100%</div><div class="lbl">覆盖度</div></div>
+</div>
+<div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:100%"></div><div class="seg gap" style="width:0%"></div></div></div>
+
+<div class="card">
+  <h2>① HTML 7 区域骨架</h2>
+  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong>头部</strong> <code>&lt;header&gt;</code> — 场景标题 + 版本信息 · Token: <code>{{SCENE_TITLE}}</code> · <code>{{VERSION}}</code></span></div>
+  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong>导航</strong> <code>&lt;nav&gt;</code> — 面包屑 + 交叉导航 · Token: <code>{{BREADCRUMB}}</code> · <code>{{CROSS_NAV}}</code></span></div>
+  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong>摘要</strong> <code>&lt;section class="summary"&gt;</code> — KPI 卡片 + 进度概览 · 数据驱动</span></div>
+  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong>清单</strong> <code>&lt;section class="checklist"&gt;</code> — 可勾选任务清单 · Token: <code>{{CONTENT}}</code></span></div>
+  <div class="cl-item"><span class="cl-num">5</span><span class="cl-text"><strong>可视化</strong> <code>&lt;section class="viz"&gt;</code> — 热力图 + 趋势图 · 数据驱动</span></div>
+  <div class="cl-item"><span class="cl-num">6</span><span class="cl-text"><strong>门禁</strong> <code>&lt;section class="gate"&gt;</code> — Gate A/B 判定状态 · 数据驱动</span></div>
+  <div class="cl-item"><span class="cl-num">7</span><span class="cl-text"><strong>页脚</strong> <code>&lt;footer&gt;</code> — 生成时间 + 版本号 · Token: <code>{{DATE}}</code> · <code>{{VERSION}}</code></span></div>
+</div>
+
+<div class="card" style="margin-top:12px">
+  <h2>② CSS 14 设计令牌</h2>
+  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><code>--yry-accent</code> = <span style="color:#FFC107">#FFC107</span> — 品牌主色调 (链接 · 按钮 · 强调)</span></div>
+  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><code>--yry-cyan</code> = <span style="color:#22d3ee">#22d3ee</span> — 科技蓝 (KPI 正常 · 趋势线)</span></div>
+  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><code>--yry-pass</code> = <span style="color:#22c55e">#22c55e</span> — 成功色 (通过 · 完成)</span></div>
+  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><code>--yry-fail</code> = <span style="color:#ef4444">#ef4444</span> — 危险色 (阻断 · 失败)</span></div>
+  <div class="cl-item"><span class="cl-num">5</span><span class="cl-text"><code>--yry-warn</code> = <span style="color:#f59e0b">#f59e0b</span> — 警告色 (需关注)</span></div>
+  <div class="cl-item"><span class="cl-num">6</span><span class="cl-text"><code>--yry-info</code> / <code>--yry-skip</code> = <span style="color:#6b7280">#6b7280</span> — 信息色 / 跳过态</span></div>
+  <div class="cl-item"><span class="cl-num">7</span><span class="cl-text"><code>--yry-text</code> = <code>rgba(250,250,252,1)</code> — 主文本色</span></div>
+  <div class="cl-item"><span class="cl-num">8</span><span class="cl-text"><code>--yry-text2</code> = <code>rgba(160,160,164,1)</code> — 次要文本色</span></div>
+  <div class="cl-item"><span class="cl-num">9</span><span class="cl-text"><code>--yry-text3</code> = <code>rgba(110,110,114,1)</code> — 三级文本色 (辅助说明)</span></div>
+  <div class="cl-item"><span class="cl-num">10</span><span class="cl-text"><code>--yry-bg</code> = <code>rgba(22,22,32,1)</code> — 主背景色</span></div>
+  <div class="cl-item"><span class="cl-num">11</span><span class="cl-text"><code>--yry-bg-card</code> = <code>linear-gradient(159deg, ...)</code> — 卡片 / 面板渐变背景</span></div>
+  <div class="cl-item"><span class="cl-num">12</span><span class="cl-text"><code>--yry-bg-flat</code> = <code>rgba(34,34,46,1)</code> — 扁平背景色</span></div>
+  <div class="cl-item"><span class="cl-num">13</span><span class="cl-text"><code>--yry-bg-raised</code> = <code>rgba(42,42,56,1)</code> — 抬升背景色</span></div>
+  <div class="cl-item"><span class="cl-num">14</span><span class="cl-text"><code>--yry-border</code> / <code>--yry-shadow</code> / <code>--yry-radius</code> — 边框 · 阴影 · 圆角 (表面属性)</span></div>
+</div>
+
+<div class="card" style="margin-top:12px">
+  <h2>③ CSS 5 层架构</h2>
+  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong style="color:var(--yry-accent)">L1 基础层</strong> — <code>shared/index.css</code> · reset + 动画 + 基础变量 · 覆盖度 100%</span></div>
+  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong style="color:var(--yry-accent)">L2 主题层</strong> — <code>theme/index.css</code> · 14 设计令牌定义 · 覆盖度 100%</span></div>
+  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong style="color:var(--yry-accent)">L3 布局层</strong> — <code>yry-checklist.css §layout</code> · 7 区域栅格 · 覆盖度 100%</span></div>
+  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong style="color:var(--yry-accent)">L4 组件层</strong> — <code>yry-checklist.css §components</code> · 11 组件样式 · 覆盖度 95%</span></div>
+  <div class="cl-item"><span class="cl-num">5</span><span class="cl-text"><strong style="color:var(--yry-accent)">L5 工具层</strong> — <code>yry-checklist.css §utils</code> · 间距 / 对齐 / 可见性 · 覆盖度 80%</span></div>
+</div>
+
+<div class="card" style="margin-top:12px">
+  <h2>④ BEM 命名规范</h2>
+  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong>Block</strong> — <code>.checklist</code> — 清单容器</span></div>
+  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong>Element</strong> — <code>.checklist__item</code> — 清单项</span></div>
+  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong>Modifier</strong> — <code>.checklist__item--done</code> — 已完成状态</span></div>
+  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong>State</strong> — <code>.is-expanded</code> / <code>.is-loading</code> — 交互态</span></div>
+  <div class="cl-item"><span class="cl-num">5</span><span class="cl-text"><strong>Utility</strong> — <code>.u-text-ellipsis</code> — 工具类</span></div>
+  <div class="cl-item" style="background:rgba(239,68,68,.06);border-radius:6px;padding:10px 12px;margin-top:6px"><span class="cl-num" style="background:rgba(239,68,68,.12);color:var(--yry-fail)">!</span><span class="cl-text"><strong style="color:var(--yry-fail)">反模式</strong> — 禁止 <code>.checklist .item</code> 后代选择器 (特异性膨胀)，必须使用 BEM <code>.checklist__item</code></span></div>
+</div>
+
+<div class="card" style="margin-top:12px">
+  <h2>⑤ 响应式断点</h2>
+  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong>Desktop</strong> ≥ 1024px — 双列布局 (清单 + 可视化)</span></div>
+  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong>Tablet</strong> 768-1023px — 单列布局 · 卡片 2 列</span></div>
+  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong>Mobile</strong> &lt; 768px — 单列布局 · 卡片 1 列 · 清单全宽</span></div>
+</div>
+
+<div class="card" style="margin-top:12px">
+  <h2>⑥ Token 替换验证</h2>
+  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text">Token 占位符用 <code>{{UPPER_SNAKE}}</code> 格式 · 示例: <code>{{STORY}}</code> · <code>{{SCENE}}</code> · <code>{{VERSION}}</code> · <code>{{DATE}}</code></span></div>
+  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text">替换器增加 <code>fail-fast</code> 模式 — 未匹配 <code>{{...}}</code> 抛 <code>ConfigurationError</code></span></div>
+  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><code>--dry-run</code> 模式 — 仅打印替换统计 · 不入库</span></div>
+  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text">grep 检查占位符残留 — <code>grep -r '{{' cdn/yry-checklist/scenes/</code> 应命中 0 次</span></div>
+</div>
+
+<div class="card" style="margin-top:12px">
+  <p style="font-size:.72rem;color:var(--yry-text3);text-align:center">
+    查看完整详细清单: <a href="计划清单.html">计划清单</a> · <a href="架构图.html">架构图</a> · <a href="index.md">源码 Markdown</a>
+  </p>
+</div>
+
+<footer class="ft">
+  场景 1 · 模板架构与CSS设计系统 · YryChecklist · v1.2.0<br>
+  <span style="color:var(--yry-text3)">清单 · 架构 · 图谱 · 源码 · 测试 · 演示 · 审计</span>
+</footer>
+
+</div>
+</body>
+</html>

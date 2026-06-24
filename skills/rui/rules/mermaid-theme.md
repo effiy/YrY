@@ -263,7 +263,7 @@ beautiful-mermaid 通过 ELK.js 的 FakeWorker 绕过实现同步布局，确保
 | 实线箭头 | `-->` | 正常数据流/控制流 |
 | 粗线箭头 | `==>` | 重要/强制路径 |
 | 虚线箭头 | `-.->` | 可选/降级路径 |
-| 带标签箭头 | `-->|text|` | 协议/方法标注 |
+| 带标签箭头 | `-->\|text\|` | 协议/方法标注 |
 | 双向箭头 | `<-->` | 同步通信 |
 
 ## 设计溯源
@@ -279,3 +279,113 @@ beautiful-mermaid 通过 ELK.js 的 FakeWorker 绕过实现同步布局，确保
 | `color-mix(in srgb, var(--fg) X%, var(--bg))` | 预计算静态 hex（本表 10 级梯度） |
 
 Mermaid 原生 `themeVariables` 不支持 CSS `color-mix()`，因此采用预计算 hex 值固化到 `%%{init}%%` 和 `classDef` 中。
+
+## 快速启动模板
+
+### 模板 1：流程图（最常用）
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    A["入口"]:::src --> B["处理"]:::op
+    B --> C{"决策?"}
+    C -->|"是"| D["结果 A"]:::out
+    C -->|"否"| E["结果 B"]:::warn
+
+    classDef src fill:#3d59a1,color:#fff
+    classDef op fill:#2b2d3b,stroke:#3d59a1,color:#a9b1d6
+    classDef out fill:#34d399,color:#000
+    classDef warn fill:#fbbf24,color:#000
+```
+
+### 模板 2：分层架构
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
+flowchart TB
+    subgraph L1["表达层"]
+        A["CLI"]:::ux
+    end
+    subgraph L2["核心层"]
+        B["编排器"]:::core
+    end
+    subgraph L3["基础层"]
+        C["共享库"]:::infra
+    end
+    L1 --> L2 --> L3
+
+    classDef ux fill:#7c3aed,color:#fff
+    classDef core fill:#3d59a1,color:#fff
+    classDef infra fill:#3a1a1a,stroke:#f87171,color:#a9b1d6
+```
+
+### 模板 3：Agent 协作
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    PM["pm"]:::core --> CODER["coder"]:::exec
+    CODER --> TESTER["tester"]:::exec
+    SECURITY["security"]:::cross -.->|约束| CODER
+    REVIEWER["reviewer"]:::review -.->|审查| CODER
+
+    classDef core fill:#1b1e2e,stroke:#7aa2f7,color:#7aa2f7
+    classDef exec fill:#1e1f2b,stroke:#565f89,color:#a9b1d6
+    classDef cross fill:#21232f,stroke:#565f89,color:#a9b1d6
+    classDef review fill:#1e1f2b,stroke:#7aa2f7,color:#a9b1d6
+```
+
+### 模板 4：状态机
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
+stateDiagram-v2
+    [*] --> 任务
+    任务 --> 设计: 创建故事任务.md
+    设计 --> 实施: 文档基线齐全
+    实施 --> 测试: §2 实施报告完成
+    测试 --> 报告: §3 测试报告完成
+    报告 --> 改进: §4 自改进完成
+    改进 --> [*]
+```
+
+### 常用 classDef 色板速查
+
+| classDef | fill | stroke | color | 用途 |
+|----------|------|--------|-------|------|
+| `src` | `#3d59a1` | — | `#fff` | 入口/来源 |
+| `op` | `#2b2d3b` | `#3d59a1` | `#a9b1d6` | 操作/步骤 |
+| `out` | `#34d399` | — | `#000` | 输出/完成 |
+| `warn` | `#fbbf24` | — | `#000` | 警告/降级 |
+| `block` | `#ef4444` | — | `#fff` | 阻断/错误 |
+| `core` | `#1b1e2e` | `#7aa2f7` | `#7aa2f7` | 核心角色 |
+| `exec` | `#1e1f2b` | `#565f89` | `#a9b1d6` | 执行角色 |
+| `sig` | `#34d399` | — | `#000` | 生效标志 |

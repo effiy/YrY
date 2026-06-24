@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>源码 · 双主题系统设计 · CDN 共享前端资源库</title>
+<link rel="stylesheet" href="../../../shared/index.css">
+<link rel="stylesheet" href="../../../theme/index.css">
+<link rel="stylesheet" href="../../../yry-inline-helpers/index.css">
+<link rel="stylesheet" href="../../../yry-scene/index.css">
+<link rel="stylesheet" href="../../../yry-scene-header/index.css">
+<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
+<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
+<link rel="stylesheet" href="../../../yry-back-top/index.css">
+<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
+<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
+<link rel="stylesheet" href="../../../yry-a11y/index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
+  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
+  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
+  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
+  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
+  .delivery-story { font-size: .72rem; color: #4b5563; }
+  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
+  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
+  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
+  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
+  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
+  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
+  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
+</style>
+</head>
+<body>
+<yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
+<yry-scene-header id="header-app"
+  icon="📄"
+  title-prefix="源码"
+  accent="双主题系统设计"
+  meta="📖 CDN 共享前端资源库 · 🎬 双主题系统设计"
+  desc="CDN 共享前端资源库 — 双主题系统设计 场景的 源码 交付物。查看场景详情与任务分解。">
+</yry-scene-header>
+
+<div class="scene-wrap">
+  <div class="delivery-header">
+    <div class="delivery-icon">📄</div>
+    <div class="delivery-label">源码</div>
+    <div class="delivery-scene">双主题系统设计</div>
+    <div class="delivery-story">CDN 共享前端资源库</div>
+  </div>
+
+  <div class="content-card">
+    <h2>📄 Cat B 默认场景页引用</h2>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.74rem;color:#22d3ee;line-height:1.7;margin:0">&lt;link rel="stylesheet" href="shared/index.css"&gt;
+&lt;link rel="stylesheet" href="theme/index.css"&gt;</pre>
+    <p style="margin-top:12px;font-size:.74rem;color:#a9b1d6">用于：文档 · 场景页 · 面板 · 清单 · 首页 · 默认场景页面。</p>
+  </div>
+
+  <div class="content-card">
+    <h2>📄 Cat A 架构图/源码页引用</h2>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.74rem;color:#22d3ee;line-height:1.7;margin:0">&lt;link rel="stylesheet" href="shared/index.css"&gt;
+&lt;link rel="stylesheet" href="theme-mono/index.css"&gt;
+&lt;link rel="stylesheet" href="fonts/index.css"&gt;</pre>
+    <p style="margin-top:12px;font-size:.74rem;color:#a9b1d6">用于：架构图页面 · 源码页面 · 知识图谱页面 (JetBrains Mono 等宽字体)。</p>
+  </div>
+
+  <div class="content-card">
+    <h2>📄 组件中使用设计令牌 (带 fallback)</h2>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">.yry-card {
+  background: var(--yry-surface, rgba(15,23,42,.55));
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  border-radius: var(--yry-radius, 10px);
+  color: var(--yry-text1, #a9b1d6);
+  box-shadow: var(--yry-shadow, 0 4px 12px rgba(0,0,0,.3));
+}
+
+.yry-card__title {
+  color: var(--yry-accent, #22d3ee);
+  font-size: 0.92rem;
+}
+
+.yry-card__status--success {
+  color: var(--yry-success, #4ade80);
+}
+
+.yry-card__status--error {
+  color: var(--yry-error, #f87171);
+}</pre>
+    <p style="margin-top:12px;font-size:.74rem;color:#a9b1d6">每个 <code>var()</code> 调用都带 fallback 值，确保在未加载主题 CSS 时组件仍可渲染。</p>
+  </div>
+
+  <div class="content-card">
+    <h2>📄 主题运行时切换源码</h2>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">&lt;html data-theme="system"&gt;
+  &lt;!-- 切换：替换为 data-theme="mono" --&gt;
+  &lt;script&gt;
+    document.documentElement.setAttribute(
+      'data-theme',
+      localStorage.yryTheme || 'system'
+    );
+  &lt;/script&gt;
+&lt;/html&gt;</pre>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:12px 0 0">/* theme/index.css */
+:root, [data-theme="system"] {
+  --yry-bg: #0f172a;
+  --yry-accent: #22d3ee;
+  /* … */
+}
+
+/* theme-mono/index.css */
+[data-theme="mono"] {
+  --yry-bg: #1a1b26;
+  --yry-accent: #7aa2f7;
+  /* … */
+}</pre>
+    <p style="margin-top:12px;font-size:.74rem;color:#a9b1d6">推荐采用「单文件 + <code>[data-theme]</code>」策略 — 零额外请求 · 切换瞬间生效 · 无 FOUC。</p>
+  </div>
+
+  <div class="content-card">
+    <h2>📐 令牌分层原则</h2>
+    <ol style="margin:0;padding-left:20px;font-size:.76rem;line-height:1.9;color:#a9b1d6">
+      <li><strong style="color:#22d3ee">L1 Surfaces</strong> — 背景色优先定义，所有上层令牌依赖</li>
+      <li><strong style="color:#22d3ee">L2 Brand</strong> — 品牌色独立于主题，保持一致品牌识别</li>
+      <li><strong style="color:#22d3ee">L3 Semantic</strong> — 语义色跨主题语义一致 (成功=绿, 错误=红)</li>
+      <li><strong style="color:#22d3ee">L4 Text</strong> — 文字色基于背景对比度计算</li>
+      <li><strong style="color:#22d3ee">L5 Elevation</strong> — 层级效果 (边框/阴影/圆角) 主题可微调</li>
+    </ol>
+  </div>
+
+  <div class="nav-links">
+    <a class="nav-link" href="计划清单.html">📋 计划清单</a>
+    <a class="nav-link" href="架构图.html">📐 架构图</a>
+    <a class="nav-link" href="知识图谱.html">🔗 知识图谱</a>
+    <a class="nav-link" href="测试面板.html">🧪 测试面板</a>
+    <a class="nav-link current" href="源码.html">📄 源码</a>
+    <a class="nav-link" href="演示.html">💡 演示</a>
+    <a class="nav-link" href="审查.html">📝 审查</a>
+  </div>
+</div>
+
+<yry-cross-nav></yry-cross-nav>
+<yry-back-top></yry-back-top>
+<yry-footer-note version="1.2.0"></yry-footer-note>
+
+<script src="../../../shared/index.js" defer></script>
+<script src="../../../shared/vue-ce-loader.js"></script>
+  <script src="../../../yry-breadcrumb/index.js"></script>
+<script src="../../../yry-scene-header/index.js"></script>
+<script src="../../../yry-scene-nav/index.js"></script>
+<script src="../../../yry-cross-nav/index.js"></script>
+<script src="../../../yry-back-top/index.js"></script>
+<script src="../../../yry-footer-note/index.js"></script>
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    var bc = document.getElementById('breadcrumb-app');
+    if (bc) bc.items = [
+      { label: 'CDN 共享库', icon: '🌐', href: '../../../index.html' },
+      { label: '故事任务面板', icon: '📖', href: '../index.html' },
+      { label: 'CDN 共享前端资源库', icon: '📖', href: '../故事任务.md' },
+      { label: '双主题系统设计', icon: '🎬' }
+    ];
+    var sh = document.getElementById('header-app');
+    if (sh) {
+      sh.icon = '📄';
+      sh.titlePrefix = '源码';
+      sh.accent = '双主题系统设计';
+      sh.meta = '📖 CDN 共享前端资源库 · 🎬 双主题系统设计';
+      sh.desc = 'CDN 共享前端资源库 — 双主题系统设计 场景的 源码 交付物。';
+    }
+  });
+</script>
+</body>
+</html>

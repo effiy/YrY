@@ -1,6 +1,6 @@
 /**
  * health-report — Comprehensive health report HTML generator.
- * Generates styled HTML reports in docs/健康报告/ with full D0-D7 diagnostics.
+ * Generates styled HTML reports in docs/健康报告/ with full D0-D8 diagnostics.
  *
  * Usage:
  *   import { generateHealthReport, generateHealthIndex } from './health-report.mjs';
@@ -23,6 +23,7 @@ import {
   listReportFiles, pickLatestReportsByDate, removeReportsForDate,
   buildEnhancedTrendAnalysis, buildTrendSummaryHTML, buildAnomalyAlertHTML,
   buildCorrelationMatrix, buildHistoricalBenchmarks, buildBenchmarkHTML,
+  buildWeeklyDigest,
 } from "./report-trend.mjs";
 
 import {
@@ -37,6 +38,12 @@ import {
   buildInfluenceRankingSection,
   buildExecutiveSummaryHTML,
   buildScoreTraceabilityPanel,
+  buildRiskMatrix,
+  buildImprovementRoadmap,
+  buildKeyMetricsDashboard,
+  buildForecastPanel,
+  buildExecutiveBriefing,
+  buildTechnicalDebtAnalysis,
 } from "./report-sections.mjs";
 
 import { scoreStatus, PASS_THRESHOLD, WARN_THRESHOLD } from "./bot-health-analysis.mjs";
@@ -239,13 +246,13 @@ export function generateHealthReport(hr) {
 
     diagSection = `
     <div class="h-section">
-      <h2>🔬 D0-D7 诊断详情 ${bootBadge}<span class="h-diag-summary">${passedCount}/${totalCount} 通过</span></h2>
+      <h2>🔬 D0-D8 诊断详情 ${bootBadge}<span class="h-diag-summary">${passedCount}/${totalCount} 通过</span></h2>
       <div class="h-diag-list">${diagRows || '<div class="h-diag-empty">暂无诊断数据 — 需积累执行记忆后触发诊断</div>'}</div>
     </div>`;
   } else {
     diagSection = `
     <div class="h-section">
-      <h2>🔬 D0-D7 诊断</h2>
+      <h2>🔬 D0-D8 诊断</h2>
       <div class="h-placeholder">${hr.diagnostics?.summary || "诊断数据不足 — 需积累 ≥1 条执行记忆"}</div>
     </div>`;
   }
@@ -291,7 +298,7 @@ export function generateHealthReport(hr) {
     <div class="h-score-label">综合健康度</div>
   </div>
   <div class="h-hero-stats">
-    <div class="h-hero-stat"><span class="h-hs-icon">🔬</span> D0-D7: <span class="h-hs-val">${hr.diagnostics?.triggered?.length ?? "—"}/8 触发</span></div>
+    <div class="h-hero-stat"><span class="h-hs-icon">🔬</span> D0-D8: <span class="h-hs-val">${hr.diagnostics?.triggered?.length ?? "—"}/8 触发</span></div>
     <div class="h-hero-stat"><span class="h-hs-icon">📊</span> 评分维度: <span class="h-hs-val">${dimCount} 项</span></div>
     <div class="h-hero-stat"><span class="h-hs-icon">📋</span> 执行记忆: <span class="h-hs-val">${hr.diagnostics?.execCount ?? 0} 条</span></div>
     <div class="h-hero-stat"><span class="h-hs-icon">🤖</span> 机器人: <span class="h-hs-val">${hr.robotOkCount ?? 0}/${(hr.robotNames || []).length || 0} 就绪</span></div>
@@ -316,6 +323,7 @@ export function generateHealthReport(hr) {
     archResult: hr.archResult ? { archFailedDims: hr.archResult.archFailedDims } : null,
     diagTriggered: hr.diagnostics?.triggered?.length || 0,
   }), hr.composite, hr.grade)}
+  ${buildExecutiveBriefing(hr, prev, recommendations)}
   ${buildSummaryCard(hr, prev, recommendations)}
   ${scoreReport ? buildScoreReportSummaryHTML(scoreReport) : ""}
   ${buildScoreDiffSection(hr, healthTrend.length >= 2 ? healthTrend[healthTrend.length - 2] : null)}
@@ -333,8 +341,14 @@ export function generateHealthReport(hr) {
   ${buildScoreTrend(healthTrend)}
   ${enhancedTrend ? buildTrendSummaryHTML(enhancedTrend) : ""}
   ${enhancedTrend ? buildAnomalyAlertHTML(enhancedTrend) : ""}
+  ${enhancedTrend ? buildWeeklyDigest(enhancedTrend, healthTrend, hr.composite) : ""}
+  ${buildForecastPanel(enhancedTrend, hr)}
   ${buildCrossReportSection(hr, hr.archResult, compScores)}
   ${buildScoreTraceabilityPanel(hr.scores || {})}
+  ${buildRiskMatrix(hr)}
+  ${buildImprovementRoadmap(hr, recommendations)}
+  ${buildTechnicalDebtAnalysis(hr)}
+  ${buildKeyMetricsDashboard(hr, prev, healthTrend)}
   <div class="h-section">
     <h2>🔗 相关资源</h2>
     <div class="h-links">
@@ -486,7 +500,7 @@ export function generateHealthIndex() {
       const content = readFileSync(join(REPORT_DIR, report.file), "utf-8");
       const sm = content.match(/h-score-num[^>]*>(\d+)</);
       const gm = content.match(/h-score-grade[^>]*>([ABCD]) 级</);
-      const tm = content.match(/D0-D7:\s*<span[^>]*>(\d+)\/8/);
+      const tm = content.match(/D0-D8:\s*<span[^>]*>(\d+)\/8/);
       const dm = content.match(/评分维度:\s*<span[^>]*>(\d+)\s*项/);
       if (sm) score = parseInt(sm[1], 10);
       if (gm) grade = gm[1];
@@ -546,13 +560,13 @@ export function generateHealthIndex() {
 
 <div class="hd">
   <h1>🩺 健康报告</h1>
-  <div class="desc">系统综合健康度量仪表板 — 覆盖 9 核心维度 + 7 工程成熟度评分 + D0-D7 诊断触发。每次运行自动生成 HTML 报告并持久化趋势数据至 <code>.memory/health-trend.jsonl</code>。</div>
+  <div class="desc">系统综合健康度量仪表板 — 覆盖 9 核心维度 + 7 工程成熟度评分 + D0-D8 诊断触发。每次运行自动生成 HTML 报告并持久化趋势数据至 <code>.memory/health-trend.jsonl</code>。</div>
   <div class="meta"><span id="count">${reportCount}</span> 份历史报告</div>
 </div>
 
 <div class="intro">
   <strong>评估体系</strong>：<strong>9 核心维度</strong>（Token 安全、配置健康、机器人就绪、API 可达性、报告质量、格式规范、诊断引擎、Git 纪律、安全基线）+ <strong>7 工程成熟度</strong>（测试、类型、Lint、CI/CD、文档、依赖、Git 实践）<br>
-  <strong>诊断联动</strong>：评分过低自动触发 <strong>D0-D7</strong> 分级诊断 · 趋势数据输入自改进分析面板 · 企微通知推送<br>
+  <strong>诊断联动</strong>：评分过低自动触发 <strong>D0-D8</strong> 分级诊断 · 趋势数据输入自改进分析面板 · 企微通知推送<br>
   <strong>生成命令</strong>：<code>node skills/rui-bot/send.mjs health --html</code>
 </div>
 
@@ -582,7 +596,7 @@ export function generateHealthIndex() {
 
 <div class="ft">
   健康报告索引<br>
-  <span style="color:var(--yry-text3)">由 rui-bot health-report 自动生成 · 9 核心 + 7 工程维度 · D0-D7 诊断</span>
+  <span style="color:var(--yry-text3)">由 rui-bot health-report 自动生成 · 9 核心 + 7 工程维度 · D0-D8 诊断</span>
 </div>
 
 </div>

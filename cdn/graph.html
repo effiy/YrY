@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<!--
+  YrY CDN · 图谱聚合页 (graph.html)
+  全局聚合：组件间依赖关系图 · 类别拓扑 · 中心度排名
+  数据源: deps-graph.json (由 scripts/build-deps-graph.mjs 自动生成)
+  消费者: cdn/index.html 顶部导航
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YrY CDN · 图谱聚合</title>
+  <link rel="prev" href="architecture.html" title="架构聚合">
+  <link rel="next" href="tests.html" title="测试聚合">
+  <meta name="description" content="YrY CDN 图谱聚合 — 组件依赖关系图 · 125 节点 · 82 边 · SVG 环形布局 · 中心度排名 · 出度排名 · 依赖边清单 · 点击节点跳转 demo">
+  <link rel="stylesheet" href="shared/index.css">
+  <link rel="stylesheet" href="theme/index.css">
+  <style>
+    body { padding: 24px 20px 60px; max-width: 1200px; margin: 0 auto; line-height: 1.6; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #22d3ee); margin: 0 0 4px; }
+    .sub { color: var(--yry-text3, #6b7280); font-size: .78rem; margin: 0 0 16px; }
+    h2 { font-size: 1.05rem; color: var(--yry-text2, #a9b1d6); margin: 28px 0 12px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,.06); }
+    .links { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0; }
+    .links a { color: var(--yry-accent, #22d3ee); text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; font-size: .76rem; }
+    .links a:hover { border-color: var(--yry-accent); background: rgba(34,211,238,.08); }
+    .links a.active { background: rgba(34,211,238,.12); border-color: var(--yry-accent); }
+
+    .stats { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0 20px; }
+    .stat { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 8px; padding: 10px 14px; font-size: .76rem; }
+    .stat b { color: var(--yry-accent, #22d3ee); font-size: 1rem; margin-right: 4px; }
+    .summary-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 8px; padding: 10px 14px; font-size: .74rem; }
+    .summary-card b { color: var(--yry-accent, #22d3ee); font-size: .92rem; }
+    .summary-card .lbl { color: var(--yry-text3, #6b7280); margin-top: 2px; }
+    .summary-card a { color: var(--yry-accent, #22d3ee); text-decoration: none; font-weight: 600; }
+    .summary-card a:hover { text-decoration: underline; }
+
+    .layout { display: grid; grid-template-columns: 1fr 360px; gap: 16px; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+
+    .svg-wrap { background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 8px; overflow: auto; max-height: 640px; }
+    svg { display: block; }
+    .node circle { fill: rgba(34,211,238,.15); stroke: #22d3ee; stroke-width: 1.5; cursor: pointer; transition: fill .15s; }
+    .node:hover circle { fill: rgba(34,211,238,.45); }
+    .node text { fill: var(--yry-text2, #a9b1d6); font-size: 9px; text-anchor: middle; pointer-events: none; }
+    .node.hub circle { fill: rgba(167,139,250,.3); stroke: #a78bfa; stroke-width: 2.5; }
+    .node.hub text { fill: #a78bfa; font-weight: 600; }
+    .edge { stroke: rgba(167,139,250,.4); stroke-width: 1; fill: none; transition: stroke .15s, stroke-width .15s, opacity .15s; }
+    .edge.highlight { stroke: #a78bfa; stroke-width: 2.5; }
+    .edge.dim { opacity: .12; }
+    .edge-arrow { fill: rgba(167,139,250,.6); transition: opacity .15s; }
+    .edge-arrow.dim { opacity: .12; }
+    .node { transition: opacity .15s; }
+    .node.dim { opacity: .15; }
+
+    .panel { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 14px 18px; font-size: .76rem; }
+    .panel h3 { margin: 0 0 10px; font-size: .9rem; color: var(--yry-accent, #22d3ee); }
+    .panel ol { margin: 0; padding-left: 20px; }
+    .panel li { padding: 4px 0; color: var(--yry-text3, #6b7280); }
+    .panel li b { color: var(--yry-text2, #a9b1d6); }
+    .panel a { color: var(--yry-accent, #22d3ee); text-decoration: none; }
+    .panel a:hover { text-decoration: underline; }
+
+    table { width: 100%; border-collapse: collapse; font-size: .76rem; margin-top: 8px; }
+    th { text-align: left; padding: 8px 10px; background: rgba(30,41,59,.5); color: var(--yry-text2, #a9b1d6); font-weight: 600; }
+    td { padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,.04); color: var(--yry-text3, #6b7280); }
+    .name-link { color: var(--yry-accent, #22d3ee); text-decoration: none; font-weight: 600; }
+    .name-link:hover { text-decoration: underline; }
+
+    .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: .72rem; color: var(--yry-text3, #6b7280); margin: 8px 0; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .legend i { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+
+    .err { color: #f87171; font-size: .78rem; }
+    .meta-bar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; background: rgba(15,23,42,.55); border: 1px solid rgba(34,211,238,.2); border-radius: 8px; padding: 8px 14px; margin: 10px 0 16px; font-size: .74rem; color: var(--yry-text3, #6b7280); }
+    .meta-bar code { background: rgba(0,0,0,.3); padding: 1px 6px; border-radius: 3px; color: var(--yry-accent, #22d3ee); font-size: .72rem; }
+    .meta-bar .sep { color: rgba(255,255,255,.15); }
+    .meta-bar b { color: var(--yry-accent, #22d3ee); font-weight: 600; }
+    .meta-bar .refresh { margin-left: auto; background: rgba(34,211,238,.1); border: 1px solid rgba(34,211,238,.3); color: var(--yry-accent, #22d3ee); padding: 2px 10px; border-radius: 4px; cursor: pointer; font-size: .7rem; transition: all .15s; }
+    .meta-bar .refresh:hover { background: rgba(34,211,238,.2); }
+  </style>
+</head>
+<body>
+  <h1>🕸 图谱聚合 · 组件依赖关系</h1>
+  <p class="sub">扫描每张卡片的 <code>index.html</code> / <code>index.js</code> 提取真实 <code>&lt;yry-*&gt;</code> 标签用法，绘制组件→组件依赖图谱。中心度排名反映组件复用度。</p>
+
+  <div style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 16px;margin:0 0 14px;font-size:.72rem;color:var(--yry-text3,#6b7280);line-height:1.8">
+    <div style="color:var(--yry-text2,#a9b1d6);font-weight:600;margin-bottom:8px">📐 指标定义</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px 16px">
+      <div><b style="color:var(--yry-accent,#22d3ee)">中心度</b> · 被其他组件依赖的次数。越高代表组件越基础、越被复用。</div>
+      <div><b style="color:var(--yry-accent,#22d3ee)">出度</b> · 该组件依赖的 yry-* 子组件数量。越高代表组件聚合度越高。</div>
+      <div><b style="color:var(--yry-accent,#22d3ee)">边</b> · A 在模板里使用了 &lt;yry-B&gt; 即形成一条有向边 A→B。</div>
+      <div><b style="color:var(--yry-accent,#22d3ee)">孤立节点</b> · 中心度与出度均为 0，未参与任何依赖关系。</div>
+    </div>
+    <div style="margin-top:8px;padding:8px 12px;background:rgba(34,211,238,.06);border-left:3px solid var(--yry-accent,#22d3ee);border-radius:3px;color:var(--yry-text2,#a9b1d6);font-size:.72rem">
+      <b style="color:var(--yry-accent,#22d3ee)">扫描方式</b>：正则匹配 <code>&lt;yry-([a-z0-9-]+)</code> · 忽略自引用 · 不解析字符串拼接 · 不追踪动态注册
+    </div>
+  </div>
+
+  <div class="meta-bar" id="metaBar">
+    <span>📊 数据源 <code>deps-graph.json</code> + <code>components-manifest/index.json</code></span>
+    <span class="sep">·</span>
+    <span id="metaCount">— 节点 / — 边</span>
+    <span class="sep">·</span>
+    <span id="metaTime">最后更新 —</span>
+    <button class="refresh" onclick="location.reload()" title="重新拉取并刷新数据">🔄 刷新</button>
+    <span style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-left:8px"><kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">/</kbd> 搜索 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">t</kbd> 顶部 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">1-7</kbd> 跳转 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">0</kbd> 首页</span>
+  </div>
+
+  <div class="links">
+    <a href="index.html" title="CDN 首页 — 七卡聚合中心入口">← CDN 首页</a>
+    <a href="checklist.html" title="📋 清单聚合 — 125 组件全量清单 · 状态/类型/大小过滤 · 名称搜索">📋 清单</a>
+    <a href="architecture.html" title="🏗 架构聚合 — 五步加载链 · 双主题 · 设计令牌 · 组件分层 · 版本演进">🏗 架构</a>
+    <a href="graph.html" title="🕸 图谱聚合 — 组件依赖关系图 · SVG 环形 · 中心度/出度排名" class="active">🕸 图谱</a>
+    <a href="tests.html" title="🧪 测试聚合 — vitest 结果 · TQI 三维评估 · 套件展开 · 失败定位">🧪 测试</a>
+    <a href="source.html" title="📜 源码聚合 — html/js/css 按需 fetch · 带行号 · Top 10 体积排行">📜 源码</a>
+    <a href="demo.html" title="🎬 演示聚合 — iframe 缩略图 · 网格/列表双视图 · 类型过滤">🎬 演示</a>
+    <a href="review.html" title="⚠️ 审查聚合 — 六维健康评估 · 版本演进趋势 · D0-D8 诊断 · 改进建议">⚠️ 审查</a>
+  </div>
+
+  <div style="background:rgba(15,23,42,.55);border:1px solid rgba(34,211,238,.2);border-radius:8px;padding:8px 14px;margin:0 0 14px;font-size:.72rem;color:var(--yry-text3,#6b7280);line-height:1.7">
+    <b style="color:var(--yry-accent,#22d3ee)">📑 页面大纲</b> ·
+    <a href="#summary" style="color:var(--yry-accent,#22d3ee);text-decoration:none">摘要统计卡</a> ·
+    <a href="#hubs-panel" style="color:var(--yry-accent,#22d3ee);text-decoration:none">中心度 Top 10</a> ·
+    <a href="#edges" style="color:var(--yry-accent,#22d3ee);text-decoration:none">依赖边清单</a> ·
+    <a href="#isolated" style="color:var(--yry-accent,#22d3ee);text-decoration:none">孤立组件</a> ·
+    <a href="#chains" style="color:var(--yry-accent,#22d3ee);text-decoration:none">依赖深度链路</a> ·
+    <a href="#degDist" style="color:var(--yry-accent,#22d3ee);text-decoration:none">依赖度分布</a> ·
+    <a href="#hubs" style="color:var(--yry-accent,#22d3ee);text-decoration:none">🏆 综合枢纽</a>
+  </div>
+
+  <div id="stats" class="stats"></div>
+
+  <div id="summary" class="summary-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:8px 0 16px"></div>
+
+  <div id="distStack" style="display:flex;height:10px;border-radius:5px;overflow:hidden;margin:0 0 6px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06)"></div>
+  <div id="distLegend" style="display:flex;gap:14px;flex-wrap:wrap;font-size:.7rem;color:var(--yry-text3,#6b7280);margin:0 0 14px"></div>
+
+  <div class="toolbar" style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;align-items:center">
+    <input id="nameFilter" type="search" placeholder="🔍 过滤节点名（高亮匹配的组件）…" style="flex:1;min-width:240px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);color:var(--yry-text2,#a9b1d6);border-radius:6px;padding:6px 10px;font-size:.78rem" />
+    <select id="kindFilter" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);color:var(--yry-text2,#a9b1d6);border-radius:6px;padding:6px 10px;font-size:.78rem">
+      <option value="">全部类型</option>
+      <option value="vue">Vue 3</option>
+      <option value="vanilla">Vanilla</option>
+      <option value="unknown">基类 / 其他</option>
+    </select>
+    <span id="filterCount" style="font-size:.74rem;color:var(--yry-text3,#6b7280)"></span>
+  </div>
+
+  <div class="legend">
+    <span><i style="background:rgba(34,211,238,.6)"></i>普通组件</span>
+    <span><i style="background:rgba(167,139,250,.7)"></i>中心组件 (被 ≥2 依赖)</span>
+    <span><i style="background:rgba(167,139,250,.4);border:1px solid #a78bfa"></i>依赖边</span>
+    <span style="margin-left:auto;font-size:.68rem">
+      <label style="cursor:pointer;display:inline-flex;align-items:center;gap:4px"><input type="checkbox" id="toggleVue" checked style="accent-color:#a78bfa"><i style="background:#a78bfa"></i>Vue 边</label>
+      <label style="cursor:pointer;display:inline-flex;align-items:center;gap:4px;margin-left:8px"><input type="checkbox" id="toggleVanilla" checked style="accent-color:#4ade80"><i style="background:#4ade80"></i>Vanilla 边</label>
+      <label style="cursor:pointer;display:inline-flex;align-items:center;gap:4px;margin-left:8px"><input type="checkbox" id="toggleUnknown" checked style="accent-color:#9ca3af"><i style="background:#9ca3af"></i>基类 边</label>
+    </span>
+  </div>
+
+  <div class="layout">
+    <div class="svg-wrap">
+      <svg id="graph" width="780" height="600" viewBox="0 0 780 600"></svg>
+    </div>
+    <div>
+      <div class="panel" id="hubs-panel">
+        <h3>🏆 中心度 Top 10 · 被依赖次数</h3>
+        <ol id="hubs"></ol>
+      </div>
+      <div class="panel" id="outdeg-panel" style="margin-top:12px">
+        <h3>↗️ 出度 Top 10 · 依赖最多</h3>
+        <ol id="outDeg"></ol>
+      </div>
+    </div>
+  </div>
+
+  <h2 id="edges">📋 依赖边清单 (<span id="edgeCount">0</span> 条)</h2>
+  <table>
+    <thead><tr><th>源组件 (from)</th><th>目标组件 (to)</th><th>说明</th></tr></thead>
+    <tbody id="edgeRows"></tbody>
+  </table>
+
+  <h2 id="isolated">🏝 孤立组件 (<span id="isoCount">0</span> 个)</h2>
+  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:8px;line-height:1.7">既不依赖其他 yry-* 组件，也不被任何 yry-* 组件依赖。可能是独立工具组件、纯展示组件，或待接入的未使用资产。点击组件名跳转演示。</div>
+  <div id="isoList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px"></div>
+
+  <h2 id="chains">🔗 依赖深度链路 · 最长调用路径 (<span id="chainCount">0</span> 条)</h2>
+  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">
+    从入度为 0 的根节点（不被任何组件依赖）出发，沿依赖方向深度遍历至叶子节点（不依赖任何组件）的最长路径。反映组件分层层级深度，过深链路意味着改动上游组件会引发连锁影响。
+    <b style="color:var(--yry-accent,#22d3ee)">单条链路长度 ≥ 4 时</b>建议审查是否可扁平化。
+  </div>
+  <div id="chainList" style="display:flex;flex-direction:column;gap:8px"></div>
+
+  <h2 id="degDist" style="margin-top:28px">📊 依赖度分布桶 · 入度 / 出度直方图</h2>
+  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">
+    按入度（被多少组件依赖）与出度（依赖多少组件）分桶统计节点数 · 揭示依赖图的整体结构形态。
+    <b style="color:var(--yry-accent,#22d3ee)">入度 0</b> 多代表叶子组件 · <b style="color:var(--yry-accent,#22d3ee)">出度 0</b> 多代表根组件 · 高入度节点为枢纽（改动影响面大）。
+  </div>
+  <div id="degDistChart" style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 18px;margin:8px 0 16px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px" class="deg-dist-grid">
+      <div>
+        <div style="font-size:.74rem;color:#22d3ee;font-weight:600;margin-bottom:8px">📥 入度分布 · 被依赖次数</div>
+        <div id="inDegBars" style="display:flex;flex-direction:column;gap:6px">加载中…</div>
+      </div>
+      <div>
+        <div style="font-size:.74rem;color:#a78bfa;font-weight:600;margin-bottom:8px">📤 出度分布 · 依赖次数</div>
+        <div id="outDegBars" style="display:flex;flex-direction:column;gap:6px">加载中…</div>
+      </div>
+    </div>
+    <div style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-top:10px;line-height:1.6">入度与出度共用桶界限 · 0 · 1 · 2-3 · 4-5 · 6+ · 桶内节点数归一化至该侧最大桶。</div>
+  </div>
+
+  <h2 id="hubs" style="margin-top:28px">🏆 综合枢纽 Top 10 · 入度 + 出度综合排行</h2>
+  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">按入度（被依赖）与出度（依赖他人）之和排序 · 揭示依赖图中最活跃的枢纽节点。<b style="color:var(--yry-accent,#22d3ee)">高入度</b>代表被广泛复用 · <b style="color:var(--yry-accent,#22d3ee)">高出度</b>代表集成度强 · 改动枢纽节点影响面最大。</div>
+  <div id="hubsList" style="display:flex;flex-direction:column;gap:8px;margin:8px 0 16px">加载中…</div>
+
+  <h2 id="depRank" style="margin-top:28px">📈 依赖力 Top 10 · 综合得分排行</h2>
+  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">综合得分 = <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">入度 × 2 + 出度 × 1</code>（被复用的权重高于主动集成）· 数据源 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">deps-graph.json</code>。</div>
+  <div id="depRankList" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;margin:8px 0 16px">加载中…</div>
+
+  <h2 id="catHub" style="margin-top:28px">🏷 类别枢纽性 · 入度+出度按分类聚合</h2>
+  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">按功能类别聚合入度（被依赖）与出度（依赖他人）总和 · 揭示哪类组件是依赖图中最活跃的枢纽簇 · 数据源 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">deps-graph.json + manifest.json</code>。</div>
+  <div id="catHubList" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;margin:8px 0 16px">加载中…</div>
+
+  <h2 id="degMatrix" style="margin-top:28px">📊 度数分布矩阵 · 入度 × 出度 2D 热力图</h2>
+  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">将 125 个节点按入度（被依赖次数）和出度（依赖他人次数）分桶交叉分布 · 颜色越亮表示该格节点数越多 · 左上角聚集 = 大量基础原子组件 · 右下角聚集 = 高耦合枢纽 · 数据源 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">deps-graph.json</code>。</div>
+  <div id="degMatrixGrid" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;margin:8px 0 16px;overflow-x:auto">加载中…</div>
+
+  <p id="err" class="err" hidden></p>
+  <footer class="agg-footer" style="margin-top:32px;padding:14px 18px;background:rgba(15,23,42,.4);border:1px solid rgba(255,255,255,.06);border-radius:10px;font-size:.72rem;color:var(--yry-text3,#6b7280);line-height:1.8">
+    <div style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-bottom:6px">
+      <b style="color:var(--yry-accent,#22d3ee)">YrY CDN · Graph 聚合</b>
+      <span style="color:rgba(255,255,255,.15)">·</span>
+      <span>v1.2.0 · 2026</span>
+      <span style="color:rgba(255,255,255,.15)">·</span>
+      <span>📊 数据源 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">deps-graph.json</code></span>
+      <span style="color:rgba(255,255,255,.15)">·</span>
+      <span>🛠 生成 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">scripts/build-deps-graph.mjs</code></span>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px 12px;margin-top:6px">
+      <a href="index.html" title="CDN 首页 — 七卡聚合中心入口" style="color:var(--yry-accent,#22d3ee);text-decoration:none">🏠 CDN 首页</a>
+      <a href="../docs/index.html" style="color:var(--yry-accent,#22d3ee);text-decoration:none">🏠 文档中心</a>
+      <a href="../README.md" style="color:var(--yry-accent,#22d3ee);text-decoration:none">📖 README</a>
+      <span style="margin-left:auto;font-size:.66rem">键盘 <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">1-7</kbd> 跳转 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">0</kbd> 首页 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">/</kbd> 搜索 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">t</kbd> 顶部</span>
+    </div>
+  </footer>
+
+  <script type="module">
+    const SVG_NS = 'http://www.w3.org/2000/svg';
+    const HUB_THRESHOLD = 2;
+    const svg = document.getElementById('graph');
+
+    function el(tag, attrs) {
+      const e = document.createElementNS(SVG_NS, tag);
+      for (const [k, v] of Object.entries(attrs || {})) e.setAttribute(k, v);
+      return e;
+    }
+
+    Promise.all([
+      fetch('deps-graph.json').then(r => {
+        const lm = r.headers.get('last-modified');
+        return r.json().then(g => ({ g, lm }));
+      }).then(({ g, lm }) => {
+        const ts = lm || g?._meta?.generatedAt;
+        if (ts) document.getElementById('metaTime').textContent = '最后更新 ' + new Date(ts).toLocaleString('zh-CN');
+        return g;
+      }),
+      fetch('components-manifest/index.json').then(r => r.json())
+    ]).then(([g, m]) => {
+      // 构建 name -> kind 映射
+      const kindMap = {};
+      (m.components || []).forEach(c => { kindMap[c.name] = c.kind; });
+
+      const stats = g.stats;
+      // 预计算入度/出度/孤立/密度
+      const inDeg = {}, outDeg = {};
+      g.edges.forEach(e => { inDeg[e.to] = (inDeg[e.to] || 0) + 1; outDeg[e.from] = (outDeg[e.from] || 0) + 1; });
+      const allCompNames = new Set(g.nodes.map(n => n.name));
+      const withDepsNames = new Set();
+      g.edges.forEach(e => { withDepsNames.add(e.from); withDepsNames.add(e.to); });
+      const isoCount = allCompNames.size - withDepsNames.size;
+      const maxEdges = allCompNames.size * (allCompNames.size - 1);
+      const density = maxEdges > 0 ? (stats.edges / maxEdges * 100).toFixed(2) : 0;
+      const maxInDeg = Math.max(0, ...Object.values(inDeg));
+      const maxOutDeg = Math.max(0, ...Object.values(outDeg));
+      document.getElementById('metaCount').innerHTML = `${stats.nodes} 节点 / ${stats.edges} 边 · <b style="color:var(--yry-accent,#22d3ee)">${isoCount}</b> 孤立 · <b style="color:var(--yry-accent,#22d3ee)">${density}%</b> 密度`;
+      document.getElementById('stats').innerHTML = [
+        ['节点', stats.nodes],
+        ['依赖边', stats.edges],
+        ['有依赖的组件', stats.withDeps],
+        ['孤立组件', isoCount],
+        ['图密度', density + '%'],
+        ['最大入度', maxInDeg],
+        ['最大出度', maxOutDeg],
+        ['非组件引用 (已忽略)', stats.ignoredRefs]
+      ].map(([k, v]) => `<div class="stat"><b>${v}</b>${k}</div>`).join('');
+
+      // 节点参与度分布条 — 有依赖 / 孤立
+      const withDepsN = stats.withDeps || 0;
+      const isoN = isoCount;
+      const distTotal = Math.max(1, withDepsN + isoN);
+      const DIST = [
+        { key: '有依赖', n: withDepsN, color: '#22d3ee' },
+        { key: '孤立', n: isoN, color: '#6b7280' }
+      ];
+      document.getElementById('distStack').innerHTML = DIST.map(d =>
+        `<div title="${d.key} · ${d.n} 个 · ${(d.n / distTotal * 100).toFixed(1)}%" style="flex:${d.n || 0.001};background:${d.color};position:relative">
+          ${d.n / distTotal >= 0.1 ? `<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:rgba(0,0,0,.7)">${d.n}</span>` : ''}
+        </div>`
+      ).join('');
+      document.getElementById('distLegend').innerHTML = DIST.map(d =>
+        `<span><i style="width:10px;height:10px;border-radius:2px;display:inline-block;background:${d.color};margin-right:4px"></i>${d.key} <b style="color:var(--yry-text2,#a9b1d6)">${d.n}</b> · ${(d.n / distTotal * 100).toFixed(0)}%</span>`
+      ).join('');
+
+      // 摘要统计卡：被依赖最多 · 依赖最多 · 孤立组件 · 密度（inDeg/outDeg 已在 stats 上方计算）
+      const hubEntries = Object.entries(inDeg).sort((a, b) => b[1] - a[1]);
+      const outEntries = Object.entries(outDeg).sort((a, b) => b[1] - a[1]);
+      const top = (arr) => arr[0] ? `<a href="${arr[0][0]}/index.html" target="_blank">${arr[0][0]}</a> (${arr[0][1]})` : '—';
+      document.getElementById('summary').innerHTML = [
+        `<div class="summary-card">🏆 <b>被依赖最多</b><div class="lbl">${top(hubEntries)} · 共 ${hubEntries.length} 个被依赖组件</div></div>`,
+        `<div class="summary-card">↗️ <b>依赖最多</b><div class="lbl">${top(outEntries)} · 共 ${outEntries.length} 个有出度组件</div></div>`,
+        `<div class="summary-card">🏝 <b>孤立组件</b><div class="lbl">${isoCount} 个 · 既不依赖也不被依赖</div></div>`,
+        `<div class="summary-card">📊 <b>图谱密度</b><div class="lbl">${density}% · 边数 / 理论最大边数</div></div>`
+      ].join('');
+
+      // Compute in-degree (hub score) — 已在上方摘要统计卡中计算 inDeg/outDeg
+
+      // Only render nodes that participate in edges (sparse graph)
+      const participating = new Set();
+      g.edges.forEach(e => { participating.add(e.from); participating.add(e.to); });
+      const activeNodes = g.nodes.filter(n => participating.has(n.name));
+
+      const svg = document.getElementById('graph');
+      const filterCountEl = document.getElementById('filterCount');
+
+      function render(kindFilter) {
+        // Clear previous SVG content
+        while (svg.firstChild) svg.removeChild(svg.firstChild);
+        const kf = kindFilter;
+        // Filter edges by kind of both endpoints
+        const filteredEdges = g.edges.filter(e => {
+          if (!kf) return true;
+          return kindMap[e.from] === kf && kindMap[e.to] === kf;
+        });
+        const filteredNodes = activeNodes.filter(n => {
+          if (!kf) return true;
+          return kindMap[n.name] === kf && filteredEdges.some(e => e.from === n.name || e.to === n.name);
+        });
+        // Recompute in/out-degree within filtered set
+        const fInDeg = {}, fOutDeg = {};
+        filteredEdges.forEach(e => { fInDeg[e.to] = (fInDeg[e.to] || 0) + 1; fOutDeg[e.from] = (fOutDeg[e.from] || 0) + 1; });
+        // Circle layout
+        const cx = 390, cy = 300, r = 240;
+        const sorted = [...filteredNodes].sort((a, b) => (fInDeg[b.name] || 0) - (fInDeg[a.name] || 0));
+        const pos = {};
+        sorted.forEach((n, i) => {
+          const a = (i / sorted.length) * Math.PI * 2 - Math.PI / 2;
+          pos[n.name] = { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+        });
+        // Draw edges first — 添加 data-from/data-to 便于 hover 高亮 · 按 kind 着色 · 带方向箭头
+        const KIND_COLOR = { vue: '#a78bfa', vanilla: '#4ade80', unknown: '#9ca3af' };
+        // SVG defs: 箭头 marker
+        const defs = el('defs', {});
+        ['vue', 'vanilla', 'unknown'].forEach(k => {
+          const marker = el('marker', {
+            id: `arrow-${k}`,
+            viewBox: '0 0 10 10',
+            refX: '10', refY: '5',
+            markerWidth: '6', markerHeight: '6',
+            orient: 'auto-start-reverse'
+          });
+          const path = el('path', { d: 'M 0 0 L 10 5 L 0 10 z', fill: KIND_COLOR[k] });
+          marker.appendChild(path);
+          defs.appendChild(marker);
+        });
+        svg.appendChild(defs);
+        filteredEdges.forEach(e => {
+          const a = pos[e.from], b = pos[e.to];
+          if (!a || !b) return;
+          const fromKind = kindMap[e.from];
+          const color = KIND_COLOR[fromKind] || 'rgba(167,139,250,.4)';
+          // 缩短线条避免箭头覆盖节点圆
+          const dx = b.x - a.x, dy = b.y - a.y;
+          const len = Math.sqrt(dx*dx + dy*dy) || 1;
+          const ux = dx/len, uy = dy/len;
+          const nodeR = (fInDeg[e.to] || 0) >= HUB_THRESHOLD ? 10 : 7;
+          const x2 = b.x - ux * nodeR, y2 = b.y - uy * nodeR;
+          const line = el('line', {
+            class: 'edge', x1: a.x, y1: a.y, x2, y2,
+            'data-from': e.from, 'data-to': e.to,
+            stroke: color, 'stroke-opacity': '.4',
+            'marker-end': `url(#arrow-${fromKind})`
+          });
+          svg.appendChild(line);
+        });
+        // Draw nodes
+        sorted.forEach(n => {
+          const p = pos[n.name];
+          const hub = (fInDeg[n.name] || 0) >= HUB_THRESHOLD;
+          const g_ = el('g', { class: 'node' + (hub ? ' hub' : ''), transform: `translate(${p.x},${p.y})`, 'data-name': n.name });
+          g_.appendChild(el('circle', { r: hub ? 8 : 5 }));
+          const t = el('text', { y: hub ? -14 : -10 });
+          t.textContent = n.name;
+          g_.appendChild(t);
+          g_.setAttribute('role', 'button');
+          g_.setAttribute('tabindex', '0');
+          let pinned = false;
+          // 单击：切换子树高亮（pinned）；双击：打开演示
+          g_.addEventListener('click', e => {
+            if (e.detail === 1) {
+              // 单击 — 延迟以区分双击
+              setTimeout(() => {
+                if (e.detail === 1) {
+                  pinned = !pinned;
+                  g_.classList.toggle('pinned', pinned);
+                  applyPinHighlight();
+                }
+              }, 200);
+            }
+          });
+          g_.addEventListener('dblclick', () => window.open(`${n.name}/index.html`, '_blank'));
+          function applyPinHighlight() {
+            if (!pinned) {
+              svg.querySelectorAll('.edge').forEach(ed => { ed.classList.remove('highlight'); ed.classList.remove('dim'); });
+              svg.querySelectorAll('.node').forEach(nd => { nd.classList.remove('dim'); });
+              return;
+            }
+            // 找出与该节点相关的所有节点（直接或间接依赖）
+            const related = new Set([n.name]);
+            filteredEdges.forEach(e => {
+              if (e.from === n.name || e.to === n.name) { related.add(e.from); related.add(e.to); }
+            });
+            svg.querySelectorAll('.edge').forEach(ed => {
+              const ef = ed.getAttribute('data-from'), et = ed.getAttribute('data-to');
+              if (ef === n.name || et === n.name) { ed.classList.add('highlight'); ed.classList.remove('dim'); }
+              else { ed.classList.add('dim'); ed.classList.remove('highlight'); }
+            });
+            svg.querySelectorAll('.node').forEach(nd => {
+              if (related.has(nd.getAttribute('data-name'))) nd.classList.remove('dim');
+              else nd.classList.add('dim');
+            });
+          }
+          // hover 高亮关联边和节点
+          g_.addEventListener('mouseenter', () => {
+            svg.querySelectorAll('.edge').forEach(ed => {
+              const ef = ed.getAttribute('data-from'), et = ed.getAttribute('data-to');
+              if (ef === n.name || et === n.name) {
+                ed.classList.add('highlight');
+              } else {
+                ed.classList.add('dim');
+              }
+            });
+            svg.querySelectorAll('.node').forEach(nd => {
+              if (nd.getAttribute('data-name') !== n.name) nd.classList.add('dim');
+            });
+          });
+          g_.addEventListener('mouseleave', () => {
+            svg.querySelectorAll('.edge').forEach(ed => { ed.classList.remove('highlight'); ed.classList.remove('dim'); });
+            svg.querySelectorAll('.node').forEach(nd => { nd.classList.remove('dim'); });
+          });
+          svg.appendChild(g_);
+        });
+        filterCountEl.textContent = `${filteredNodes.length} 节点 / ${filteredEdges.length} 边${kf ? ` (${kf} 过滤)` : ''}`;
+
+        // Hubs panel
+        const hubList = Object.entries(fInDeg).sort((a, b) => b[1] - a[1]).slice(0, 10);
+        document.getElementById('hubs').innerHTML = hubList.length
+          ? hubList.map(([n, c]) => `<li><a href="${n}/index.html" target="_blank"><b>${n}</b></a> — 被 ${c} 个组件依赖</li>`).join('')
+          : '<li>无中心组件</li>';
+        const outList = Object.entries(fOutDeg).sort((a, b) => b[1] - a[1]).slice(0, 10);
+        document.getElementById('outDeg').innerHTML = outList.length
+          ? outList.map(([n, c]) => `<li><a href="${n}/index.html" target="_blank"><b>${n}</b></a> — 依赖 ${c} 个组件</li>`).join('')
+          : '<li>无组件依赖</li>';
+        // Edge table
+        document.getElementById('edgeCount').textContent = filteredEdges.length;
+        document.getElementById('edgeRows').innerHTML = filteredEdges.map(e =>
+          `<tr><td><a class="name-link" href="${e.from}/index.html" target="_blank">${e.from}</a></td><td><a class="name-link" href="${e.to}/index.html" target="_blank">${e.to}</a></td><td>${e.from} 使用 ${e.to} 作为子组件</td></tr>`
+        ).join('');
+        // 孤立组件列表 — 不参与任何边的节点（遵循当前 kind 过滤）
+        const connected = new Set();
+        filteredEdges.forEach(e => { connected.add(e.from); connected.add(e.to); });
+        const isoNodes = g.nodes.filter(n => kindMap[n.name] === (kf || kindMap[n.name]) && !connected.has(n.name));
+        document.getElementById('isoCount').textContent = isoNodes.length;
+        const isoList = document.getElementById('isoList');
+        isoList.innerHTML = isoNodes.length
+          ? isoNodes.map(n => `<a href="${n.name}/index.html" target="_blank" style="display:block;padding:6px 10px;background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:6px;font-size:.72rem;color:var(--yry-accent,#22d3ee);text-decoration:none;transition:all .15s" onmouseover="this.style.borderColor='#22d3ee';this.style.background='rgba(34,211,238,.08)'" onmouseout="this.style.borderColor='rgba(255,255,255,.06)';this.style.background='rgba(15,23,42,.55)'">${n.name}</a>`).join('')
+          : '<div style="grid-column:1/-1;padding:12px;font-size:.74rem;color:var(--yry-text3,#6b7280)">无孤立组件 — 全部节点都参与至少一条依赖边</div>';
+
+        // 依赖深度链路 — 从入度为 0 的根节点 DFS 找最长链路（全量图，不受 kind 过滤影响）
+        const allInDeg = {}, allOutDeg = {};
+        const adjFrom = {};
+        g.edges.forEach(e => {
+          allInDeg[e.to] = (allInDeg[e.to] || 0) + 1;
+          allOutDeg[e.from] = (allOutDeg[e.from] || 0) + 1;
+          if (!adjFrom[e.from]) adjFrom[e.from] = [];
+          adjFrom[e.from].push(e.to);
+        });
+        const roots = g.nodes.filter(n => (allInDeg[n.name] || 0) === 0).map(n => n.name);
+        const leaves = g.nodes.filter(n => (allOutDeg[n.name] || 0) === 0).map(n => n.name);
+        const CHAIN_MAX = 8;
+        const CHAIN_DEPTH_LIMIT = 6;
+        const chains = [];
+        const visited = new Set();
+        function dfs(node, path, depth) {
+          if (depth > CHAIN_DEPTH_LIMIT) return;
+          if (path.length >= 2 && (allOutDeg[node] || 0) === 0) {
+            chains.push([...path]);
+            return;
+          }
+          const next = adjFrom[node] || [];
+          if (next.length === 0) {
+            if (path.length >= 2) chains.push([...path]);
+            return;
+          }
+          for (const nxt of next) {
+            if (path.includes(nxt)) continue;
+            dfs(nxt, [...path, nxt], depth + 1);
+            if (chains.length >= CHAIN_MAX) return;
+          }
+        }
+        roots.forEach(r => dfs(r, [r], 0));
+        const longestChains = chains
+          .sort((a, b) => b.length - a.length)
+          .slice(0, CHAIN_MAX);
+        document.getElementById('chainCount').textContent = longestChains.length;
+        const chainColors = ['#22d3ee', '#a78bfa', '#4ade80', '#fb923c', '#f87171'];
+        document.getElementById('chainList').innerHTML = longestChains.length
+          ? longestChains.map((chain, i) => {
+              const color = chainColors[i % chainColors.length];
+              const depth = chain.length;
+              const risk = depth >= 4 ? ' · ⚠️ 层级过深建议审查' : ' · ✅ 层级合理';
+              const arrow = chain.map((name, j) =>
+                `<a href="${name}/index.html" target="_blank" style="color:${color};text-decoration:none;font-weight:600">${name}</a>` +
+                (j < chain.length - 1 ? `<span style="color:rgba(255,255,255,.25);margin:0 4px">→</span>` : '')
+              ).join('');
+              return `<div style="background:rgba(15,23,42,.55);border:1px solid ${color}33;border-left:3px solid ${color};border-radius:6px;padding:8px 12px;font-size:.74rem">
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">${arrow}</div>
+                <div style="color:var(--yry-text3,#6b7280);font-size:.68rem;margin-top:4px">深度 ${depth} 层 · 从根 ${chain[0]} 到叶 ${chain[chain.length-1]}${risk}</div>
+              </div>`;
+            }).join('')
+          : '<div style="padding:12px;font-size:.74rem;color:var(--yry-text3,#6b7280);background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:6px">无依赖链路 — 全部组件相互独立或仅形成环</div>';
+
+        // 📊 依赖度分布桶 — 入度/出度直方图
+        const BUCKETS = [
+          { label: '0',     test: d => d === 0 },
+          { label: '1',     test: d => d === 1 },
+          { label: '2-3',   test: d => d >= 2 && d <= 3 },
+          { label: '4-5',   test: d => d >= 4 && d <= 5 },
+          { label: '6+',    test: d => d >= 6 }
+        ];
+        const bucketColor = ['#6b7280', '#34d399', '#22d3ee', '#fb923c', '#f87171'];
+        const inDegMap = {}, outDegMap = {};
+        g.edges.forEach(e => {
+          outDegMap[e.from] = (outDegMap[e.from] || 0) + 1;
+          inDegMap[e.to] = (inDegMap[e.to] || 0) + 1;
+        });
+        const computeBuckets = (degMap) => {
+          const counts = BUCKETS.map(() => 0);
+          (g.nodes || []).forEach(n => {
+            const d = degMap[n.name] || 0;
+            for (let i = 0; i < BUCKETS.length; i++) {
+              if (BUCKETS[i].test(d)) { counts[i]++; break; }
+            }
+          });
+          return counts;
+        };
+        const inCounts = computeBuckets(inDegMap);
+        const outCounts = computeBuckets(outDegMap);
+        const renderDegBars = (elId, counts, color, accent) => {
+          const el = document.getElementById(elId);
+          if (!el) return;
+          const maxC = Math.max(1, ...counts);
+          const total = counts.reduce((a, b) => a + b, 0) || 1;
+          el.innerHTML = BUCKETS.map((b, i) => {
+            const n = counts[i];
+            const pct = (n / maxC * 100).toFixed(0);
+            const share = (n / total * 100).toFixed(0);
+            const c = color[i];
+            return `<div style="display:grid;grid-template-columns:48px 1fr auto;gap:8px;align-items:center;font-size:.72rem">
+              <span style="color:${c};font-weight:700;text-align:right">${b.label}</span>
+              <div style="height:14px;background:rgba(0,0,0,.4);border-radius:3px;overflow:hidden;position:relative">
+                <span style="display:block;height:100%;width:${pct}%;background:linear-gradient(90deg,${c},${c}aa)"></span>
+              </div>
+              <span style="color:var(--yry-text2,#a9b1d6);font-weight:600;white-space:nowrap">${n} <span style="font-size:.6rem;color:var(--yry-text3,#6b7280);font-weight:400">·${share}%</span></span>
+            </div>`;
+          }).join('');
+        };
+        renderDegBars('inDegBars', inCounts, bucketColor, '📥');
+        renderDegBars('outDegBars', outCounts, bucketColor, '📤');
+
+        // 🏆 综合枢纽 Top 10 — 入度 + 出度之和排行
+        const hubsEl = document.getElementById('hubsList');
+        if (hubsEl) {
+          const hubNodes = (g.nodes || []).map(n => ({
+            name: n.name,
+            inDeg: inDegMap[n.name] || 0,
+            outDeg: outDegMap[n.name] || 0
+          })).map(n => ({ ...n, total: n.inDeg + n.outDeg }))
+            .filter(n => n.total > 0)
+            .sort((a, b) => b.total - a.total || b.inDeg - a.inDeg)
+            .slice(0, 10);
+          const maxTotal = Math.max(1, ...hubNodes.map(n => n.total));
+          if (hubNodes.length === 0) {
+            hubsEl.innerHTML = '<div style="padding:12px;font-size:.74rem;color:var(--yry-text3,#6b7280);background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:6px">无枢纽节点 — 依赖图为空或全部孤立</div>';
+          } else {
+            hubsEl.innerHTML = hubNodes.map((n, i) => {
+              const pct = (n.total / maxTotal * 100).toFixed(0);
+              const rankColor = ['#22d3ee', '#a78bfa', '#34d399', '#fb923c', '#fbbf24', '#60a5fa', '#f472b6', '#2dd4bf', '#c084fc', '#facc15'][i % 10];
+              const inPct = (n.inDeg / n.total * 100).toFixed(1);
+              const outPct = (n.outDeg / n.total * 100).toFixed(1);
+              const role = n.inDeg > n.outDeg ? '📥 被复用枢纽' : n.outDeg > n.inDeg ? '📤 集成枢纽' : '⚖️ 平衡枢纽';
+              return `<div style="background:rgba(15,23,42,.55);border:1px solid ${rankColor}33;border-left:3px solid ${rankColor};border-radius:6px;padding:8px 12px;font-size:.74rem">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+                  <span style="font-size:.62rem;color:${rankColor};font-weight:700;background:${rankColor}22;padding:1px 6px;border-radius:3px;border:1px solid ${rankColor}55">#${i+1}</span>
+                  <a href="${n.name}/index.html" target="_blank" style="color:${rankColor};text-decoration:none;font-weight:700">${n.name}</a>
+                  <span style="font-size:.64rem;color:var(--yry-text3,#6b7280);margin-left:auto">${role}</span>
+                  <span style="font-size:.66rem;color:var(--yry-accent,#22d3ee);font-weight:600">合计 ${n.total}</span>
+                </div>
+                <div style="height:10px;background:rgba(0,0,0,.4);border-radius:3px;overflow:hidden;display:flex">
+                  <span style="display:block;height:100%;width:${inPct}%;background:linear-gradient(90deg,#22d3ee,#22d3eeaa)" title="入度 ${n.inDeg} · 被依赖"></span>
+                  <span style="display:block;height:100%;width:${outPct}%;background:linear-gradient(90deg,#a78bfa,#a78bfaaa)" title="出度 ${n.outDeg} · 依赖他人"></span>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-top:3px;font-size:.62rem;color:var(--yry-text3,#6b7280)">
+                  <span><span style="color:#22d3ee">📥 ${n.inDeg}</span> 被依赖</span>
+                  <span><span style="color:#a78bfa">📤 ${n.outDeg}</span> 依赖</span>
+                </div>
+              </div>`;
+            }).join('');
+          }
+        }
+
+        // 📈 依赖力 Top 10 · 综合得分排行（入度×2 + 出度×1）
+        const drEl = document.getElementById('depRankList');
+        if (drEl) {
+          const drNodes = (g.nodes || []).map(n => ({
+            name: n.name,
+            inDeg: inDegMap[n.name] || 0,
+            outDeg: outDegMap[n.name] || 0
+          })).map(n => ({ ...n, score: n.inDeg * 2 + n.outDeg }))
+            .filter(n => n.score > 0)
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 10);
+          const maxScore = Math.max(1, ...drNodes.map(n => n.score));
+          if (drNodes.length === 0) {
+            drEl.innerHTML = '<div style="padding:10px;font-size:.72rem;color:var(--yry-text3,#6b7280)">无依赖力数据 — 依赖图全部为孤立节点</div>';
+          } else {
+            drEl.innerHTML = drNodes.map((n, i) => {
+              const pct = (n.score / maxScore * 100).toFixed(0);
+              const inContrib = n.inDeg * 2;
+              const outContrib = n.outDeg * 1;
+              const inPart = (inContrib / n.score * 100).toFixed(1);
+              const outPart = (outContrib / n.score * 100).toFixed(1);
+              const rankColor = ['#34d399', '#22d3ee', '#a78bfa', '#fb923c', '#fbbf24', '#60a5fa', '#f472b6', '#2dd4bf', '#c084fc', '#facc15'][i % 10];
+              return `<div style="display:grid;grid-template-columns:30px 1fr 110px 60px;gap:10px;align-items:center;font-size:.72rem">
+                <div style="font-weight:700;color:${rankColor};text-align:center">#${i+1}</div>
+                <div style="overflow:hidden"><a href="${n.name}/index.html" target="_blank" style="color:${rankColor};text-decoration:none;font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${n.name}</a>
+                  <div style="font-size:.6rem;color:var(--yry-text3,#6b7280);margin-top:1px">📥 入度 ${n.inDeg}（×2 = ${inContrib}）· 📤 出度 ${n.outDeg}（×1 = ${outContrib}）</div>
+                </div>
+                <div style="height:12px;background:rgba(0,0,0,.4);border-radius:3px;overflow:hidden;display:flex" title="综合得分 ${n.score}">
+                  <span style="display:block;height:100%;width:${inPart}%;background:#22d3ee" title="入度贡献 ${inContrib}"></span>
+                  <span style="display:block;height:100%;width:${outPart}%;background:#a78bfa" title="出度贡献 ${outContrib}"></span>
+                </div>
+                <div style="text-align:right;font-weight:700;color:${rankColor}">${n.score}</div>
+              </div>`;
+            }).join('') + `<div style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.06)">公式 · <code style="color:var(--yry-accent,#22d3ee)">入度 × 2 + 出度 × 1</code> · 权重反映"被复用价值高于主动集成" · Top 1 综合得分 <b>${maxScore}</b></div>`;
+        // 🏷 类别枢纽性 · 入度+出度按分类聚合
+        const chEl = document.getElementById('catHubList');
+        if (chEl) {
+          const catOf = name => {
+            if (!name) return '其他';
+            if (/^(yry-(card|scorecard|item|step|faq|risk|kv|notify|summary))/i.test(name)) return '🃏 卡片与展示';
+            if (/^(yry-(layer|grid|sub|nav|breadcrumb|tab))/i.test(name)) return '📐 布局与结构';
+            if (/^(yry-(chart|graph|report|health|scene))/i.test(name)) return '📊 可视化与报告';
+            if (/^(yry-(cdn|docs|home|loading|notify))/i.test(name)) return '🌐 全局与导航';
+            return '🧰 其他';
+          };
+          const catAgg = {};
+          (g.nodes || []).forEach(n => {
+            const cat = catOf(n.name);
+            if (!catAgg[cat]) catAgg[cat] = { inSum: 0, outSum: 0, nodes: 0 };
+            catAgg[cat].inSum += (inDegMap[n.name] || 0);
+            catAgg[cat].outSum += (outDegMap[n.name] || 0);
+            catAgg[cat].nodes++;
+          });
+          const arr = Object.entries(catAgg)
+            .map(([cat, v]) => ({ cat, ...v, total: v.inSum + v.outSum }))
+            .filter(r => r.total > 0)
+            .sort((a, b) => b.total - a.total)
+            .slice(0, 10);
+          const maxTotal = Math.max(1, ...arr.map(r => r.total));
+          if (arr.length === 0) {
+            chEl.innerHTML = '<div style="padding:10px;font-size:.72rem;color:var(--yry-text3,#6b7280)">无类别枢纽数据</div>';
+          } else {
+            chEl.innerHTML = arr.map((r, i) => {
+              const pct = (r.total / maxTotal * 100).toFixed(0);
+              const inPct = (r.inSum / r.total * 100).toFixed(1);
+              const outPct = (r.outSum / r.total * 100).toFixed(1);
+              const color = ['#34d399', '#22d3ee', '#a78bfa', '#fb923c', '#fbbf24', '#60a5fa', '#f472b6', '#2dd4bf', '#c084fc', '#facc15'][i % 10];
+              return `<div style="display:grid;grid-template-columns:1fr 110px 60px;gap:10px;align-items:center;font-size:.72rem;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04)">
+                <div style="overflow:hidden">
+                  <div style="color:${color};font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.cat}</div>
+                  <div style="font-size:.6rem;color:var(--yry-text3,#6b7280);margin-top:1px">${r.nodes} 节点 · 入 ${r.inSum} · 出 ${r.outSum}</div>
+                </div>
+                <div style="height:12px;background:rgba(0,0,0,.4);border-radius:3px;overflow:hidden;display:flex" title="入度+出度 = ${r.total}">
+                  <span style="display:block;height:100%;width:${inPct}%;background:#22d3ee" title="入度 ${r.inSum}"></span>
+                  <span style="display:block;height:100%;width:${outPct}%;background:#a78bfa" title="出度 ${r.outSum}"></span>
+                </div>
+                <div style="text-align:right;font-weight:700;color:${color}">${r.total}</div>
+              </div>`;
+            }).join('') + `<div style="font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.6;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.06)">Top 1 综合枢纽 <b style="color:var(--yry-accent,#22d3ee)">${arr[0].cat} (${arr[0].total})</b> · 高入度类别是被广泛复用的基础设施 · 高出度类别是集成度强的容器组件</div>`;
+          }
+        }
+        // 📊 度数分布矩阵 · 入度 × 出度 2D 热力图
+        const dmEl = document.getElementById('degMatrixGrid');
+        if (dmEl) {
+          const inBuckets = [
+            { label: '0', desc: '零入度' },
+            { label: '1', desc: '被依赖 1 次' },
+            { label: '2-3', desc: '中入度' },
+            { label: '4+', desc: '高入度（枢纽）' }
+          ];
+          const outBuckets = [
+            { label: '0', desc: '零出度' },
+            { label: '1-2', desc: '少出度' },
+            { label: '3-5', desc: '中出度' },
+            { label: '6+', desc: '高出度（集成者）' }
+          ];
+          const inBfn = d => d === 0 ? 0 : d === 1 ? 1 : d <= 3 ? 2 : 3;
+          const outBfn = d => d === 0 ? 0 : d <= 2 ? 1 : d <= 5 ? 2 : 3;
+          const cells = Array.from({ length: 4 }, () => Array(4).fill(0));
+          (g.nodes || []).forEach(n => {
+            const i = inBfn(inDegMap[n.name] || 0);
+            const o = outBfn(outDegMap[n.name] || 0);
+            cells[i][o]++;
+          });
+          const maxCell = Math.max(1, ...cells.flat());
+          const heatColor = (v) => {
+            if (v === 0) return 'rgba(255,255,255,.03)';
+            const t = Math.min(1, v / maxCell);
+            const alpha = (0.15 + t * 0.7).toFixed(2);
+            return `rgba(34,211,238,${alpha})`;
+          };
+          const totalNodes = (g.nodes || []).length || 1;
+          let html = `<div style="display:grid;grid-template-columns:90px repeat(4,1fr);gap:4px;font-size:.66rem;min-width:480px">`;
+          html += `<div style="padding:6px 4px;color:var(--yry-text3,#6b7280);font-weight:600;text-align:center">入度 ＼ 出度</div>`;
+          outBuckets.forEach(ob => {
+            html += `<div style="padding:6px 4px;color:var(--yry-accent,#22d3ee);font-weight:600;text-align:center" title="${ob.desc}">${ob.label}</div>`;
+          });
+          inBuckets.forEach((ib, ri) => {
+            html += `<div style="padding:6px 4px;color:#a78bfa;font-weight:600" title="${ib.desc}">入度 ${ib.label}</div>`;
+            outBuckets.forEach((ob, ci) => {
+              const v = cells[ri][ci];
+              const pct = (v / totalNodes * 100).toFixed(1);
+              const isHot = v === maxCell && v > 0;
+              html += `<div title="${ib.desc} × ${ob.desc}: ${v} 节点 (${pct}%)" style="padding:10px 6px;text-align:center;background:${heatColor(v)};border-radius:6px;border:1px solid ${isHot ? '#22d3ee' : 'rgba(255,255,255,.04)'};color:${v === 0 ? 'rgba(255,255,255,.2)' : isHot ? '#22d3ee' : 'var(--yry-text,#a9b1d6)'};font-weight:${isHot ? 700 : 600};font-size:${v === 0 ? '.66rem' : '.76rem'}">${v === 0 ? '·' : v}</div>`;
+            });
+          });
+          html += `</div>`;
+          const isolated = cells[0][0];
+          const hubSum = cells[2][2] + cells[2][3] + cells[3][2] + cells[3][3] + cells[1][3] + cells[3][1];
+          html += `<div style="font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.7;margin-top:12px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)">`;
+          html += `🧊 左上角 (0入度,0出度): <b style="color:#a9b1d6">${isolated}</b> 孤立节点 (${(isolated/totalNodes*100).toFixed(1)}%) · 多为叶子组件或待集成组件<br>`;
+          html += `🔥 右下角 (高入度+高出度): <b style="color:#22d3ee">${hubSum}</b> 高耦合枢纽 · 同时被广泛复用又主动集成多组件 · 架构关键节点<br>`;
+          html += `📊 主对角线偏左 = 大多数组件处于低耦合状态 · 系统整体耦合度健康<br>`;
+          html += `<span style="color:rgba(255,255,255,.3)">数据基于 82 条边 · 入度来自被指向次数 · 出度来自主动指向次数</span>`;
+          html += `</div>`;
+          dmEl.innerHTML = html;
+        }
+      }
+      document.getElementById('kindFilter').addEventListener('change', e => render(e.target.value));
+      // 边类型可见性切换
+      const edgeToggles = {
+        vue: document.getElementById('toggleVue'),
+        vanilla: document.getElementById('toggleVanilla'),
+        unknown: document.getElementById('toggleUnknown')
+      };
+      Object.entries(edgeToggles).forEach(([kind, el]) => {
+        if (el) el.addEventListener('change', () => {
+          const visible = el.checked;
+          svg.querySelectorAll('.edge').forEach(ed => {
+            const fromName = ed.getAttribute('data-from');
+            if (kindMap[fromName] === kind) {
+              ed.style.display = visible ? '' : 'none';
+            }
+          });
+        });
+      });
+      const nameEl = document.getElementById('nameFilter');
+      nameEl.addEventListener('input', () => {
+        const q = nameEl.value.trim().toLowerCase();
+        // 空查询时交回 render() 处理（保留 kind 过滤的计数）
+        if (!q) { render(document.getElementById('kindFilter').value); return; }
+        svg.querySelectorAll('.node').forEach(n => {
+          const name = n.getAttribute('data-name') || '';
+          n.classList.toggle('dim', !name.toLowerCase().includes(q));
+        });
+        svg.querySelectorAll('.edge').forEach(ed => {
+          const ef = ed.getAttribute('data-from') || '';
+          const et = ed.getAttribute('data-to') || '';
+          ed.classList.toggle('dim', !ef.toLowerCase().includes(q) && !et.toLowerCase().includes(q));
+        });
+        const matched = [...svg.querySelectorAll('.node')].filter(n => !n.classList.contains('dim')).length;
+        filterCountEl.textContent = `高亮 ${matched} / ${activeNodes.length} 节点`;
+      });
+    }).catch(e => {
+      const el = document.getElementById('err');
+      el.hidden = false;
+      el.textContent = '❌ 加载图谱数据失败: ' + e.message;
+    });
+  </script>
+  <button class="yry-back-to-top" id="yryBackToTop" title="回到顶部" aria-label="回到顶部">↑</button>
+  <script>
+    (function(){
+      var btn = document.getElementById('yryBackToTop');
+      if (!btn) return;
+      window.addEventListener('scroll', function(){
+        if (window.scrollY > 300) btn.classList.add('show');
+        else btn.classList.remove('show');
+      }, { passive: true });
+      btn.addEventListener('click', function(){
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      // 键盘快捷键: / = 聚焦搜索 · t = 回顶部
+      document.addEventListener('keydown', function(e){
+        var tag = (e.target.tagName || '').toUpperCase();
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable) return;
+        if (e.metaKey || e.ctrlKey || e.altKey) return;
+        var k = e.key.toLowerCase();
+        if (k === '/') {
+          var s = document.querySelector('input[type="search"], input[id="q"]');
+          if (s) { e.preventDefault(); s.focus(); s.select && s.select(); }
+        } else if (k === 't') {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (k >= '1' && k <= '7') {
+          var navMap = { '1':'checklist.html','2':'architecture.html','3':'graph.html','4':'tests.html','5':'source.html','6':'demo.html','7':'review.html' };
+          if (navMap[k]) window.location.href = navMap[k];
+        } else if (k === '0' || k === 'escape') {
+          window.location.href = 'index.html';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

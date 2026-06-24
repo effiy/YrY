@@ -12,6 +12,8 @@ lifecycle: default-pipeline
 > **--help / -h**：执行 `node skills/rui-story/help.mjs` 输出完整帮助（含命令表 + 场景示例）。用户输入 `/rui-story --help` 或 `/rui-story -h` 或 `/rui-story help` 时，跳过管线逻辑，直接运行脚本。
 >
 > 哲学源自 [CLAUDE.md](../../CLAUDE.md)。本文件定义命令面与操作规约。
+>
+> **单一职责**：故事面板状态查询与同步。不负责文档内容创建（[rui-doc](../rui-doc/)），不负责源码修改（[rui-code](../rui-code/)），不负责版本管理（[rui-version](../rui-version/)）。
 
 [命令族全景](#命令族全景) · [数据源](#数据源) · [操作边界](#操作边界) · [状态判定](#状态判定) · [/rui-story](#rui-story) · [/rui-story list](#rui-story-list) · [/rui-story health](#rui-story-health) · [/rui-story sync](#rui-story-sync) · [/rui-story remove](#rui-story-remove) · [核心规则](#核心规则) · [生效标志](#生效标志) · [与 rui 的关系](#与-rui-的关系)
 
@@ -292,6 +294,43 @@ flowchart LR
 | 9 | 每次 rui/rui-story 写入操作必须更新故事版本号，追加 version_history 记录 | 操作无效 |
 | 10 | 每次 rui 操作（doc/code/update/yry）必须生成或更新对应故事的任务内容 | 操作不完整 |
 
+## 测试
+
+> 故事面板状态查询、API 契约、状态判定逻辑和同步流程的自动化验证。
+
+### 运行测试
+
+```bash
+npx vitest run skills/rui-story/tests/          # 全量运行
+npx vitest skills/rui-story/tests/              # 监听模式
+npx vitest run --coverage skills/rui-story/tests/  # 覆盖率报告
+```
+
+### 测试文件
+
+| 文件 | 测试范围 | 类型 |
+|------|---------|:---:|
+| `tests/rui-story.test.mjs` | 命令路由、状态判定、API 契约、数据解析 | 单元 |
+| `tests/knowledge-graph.test.mjs` | 知识图谱三层 schema、节点/边完整性、所有权验证 | 单元 |
+
+### 测试策略
+
+| 层级 | 范围 | 要求 |
+|------|------|------|
+| **命令路由测试** | 5 个子命令（概览/list/sync/remove/health） | 每个命令有对应测试 |
+| **状态判定测试** | 6 种状态转换逻辑 | 每种状态有判定条件测试 |
+| **API 契约测试** | 请求格式、响应解析、错误处理 | mock API 响应 |
+| **知识图谱测试** | 三层 schema 完整性、FP# 覆盖、悬挂边检测 | schema 合规验证 |
+
+### 覆盖要求
+
+| 维度 | 最低阈值 | 目标 |
+|------|:---:|:---:|
+| 命令覆盖 | 100% | 5 个子命令各有测试 |
+| 状态判定 | 100% | 6 种状态转换路径 |
+| 核心规则 | 100% | 10 条规则各有验证 |
+| 降级路径 | ≥ 80% | 每种降级情况有测试 |
+
 ## 降级策略
 
 | 情况 | 降级行为 |
@@ -303,6 +342,10 @@ flowchart LR
 | merge-to-main 合并冲突 | 提示手动解决冲突后 push |
 | merge-to-main stash 失败 | 终止操作，不丢失未提交变更 |
 
+## 规则
+
+- [knowledge-graph-ownership.md](./rules/knowledge-graph-ownership.md) — 知识图谱三方耦合：pm 创建 · coder 更新 · reporter 验证
+- [knowledge-graph.md](./rules/knowledge-graph.md) — 知识图谱三层 schema：story→scene→source
 ## 生效标志
 
 ```mermaid
@@ -349,3 +392,96 @@ flowchart LR
 | 终止条件 | 所有故事状态为"完成" / `API_X_TOKEN` 失效 |
 | 迭代动作 | `overview` 查询远端 → 对比上次状态 → 有变化时输出变更摘要 |
 | 收敛判定 | 无状态变更或全部故事闭合 |
+
+### 状态机形式化定义
+
+> 故事状态是确定性有限自动机（DFA）。每个状态有明确的进入条件和离开条件。
+
+```
+状态集合 S = {任务, 设计, 实施, 测试, 报告, 改进}
+初始状态 = 任务
+终态 = {改进}
+
+转换函数 δ:
+  δ(任务, 创建故事任务.md)   = 设计
+  δ(设计, 文档基线齐全)       = 实施
+  δ(实施, §2 实施报告完成)    = 测试
+  δ(测试, §3 测试报告完成)    = 报告
+  δ(报告, §4 自改进完成)      = 改进
+```
+
+| 状态 | 进入条件 | 离开条件 | 卡住信号 |
+|------|---------|---------|---------|
+| 任务 | 目录存在但无 故事任务.md | 故事任务.md 存在于远端 | 24h 无进展 |
+| 设计 | 故事任务.md 存在 | 场景文档 + 知识图谱齐全 | 48h 未完成 |
+| 实施 | 文档基线齐全 | 每个场景 §2 实施报告存在 | P0 24h 未清零 |
+| 测试 | 实施报告存在 | 每个场景 §3 测试报告存在 | Gate B 超 2 轮 |
+| 报告 | 测试报告存在 | 每个场景 §4 自改进存在 | 跨故事超过 7 天 |
+| 改进 | 全部 § 完整 | 无新诊断或提案 | 持续改进中 |
+
+### API 错误恢复模式
+
+| 错误类型 | 重试策略 | 退避 | 最大重试 |
+|---------|---------|------|:---:|
+| 网络超时 | 指数退避 | 2^N 秒 | 3 |
+| 限流 (429) | 等间隔 | Retry-After 头 | 2 |
+| 认证失败 (401) | 不重试 | — | 0 |
+| 服务端错误 (5xx) | 线性退避 | N×5 秒 | 3 |
+| 查询无结果 | 不重试，提示用户 | — | 0 |
+
+> 本技能 `checkMode: "cli"`——由 dispatcher 按 `*/5 * * * *` 自动调度。6 字段契约与调度规则详见 [rules/loop-engineering.md](../rui/rules/loop-engineering.md)。
+
+## 典型工作流
+
+### 流 1：查看故事进度
+
+```
+步骤 1: /rui-story           → 状态概览，了解全局
+步骤 2: /rui-story list       → 查看所有故事详情
+步骤 3: /rui-story health     → 检查系统健康状态
+```
+
+### 流 2：从远端同步故事
+
+```
+步骤 1: /rui-story list       → 确定要同步的故事名
+步骤 2: /rui-story sync <name> → 从远端拉取覆盖本地
+步骤 3: /rui-story list       → 确认同步成功
+```
+
+### 流 3：清理本地故事
+
+```
+步骤 1: /rui-story list       → 确定要删除的故事名
+步骤 2: /rui-story remove <name> → 确认后删除本地目录
+步骤 3: /rui-story list       → 确认删除成功（远端数据不受影响）
+```
+
+## 状态转换规则
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    TASK["任务"]:::s -->|"创建故事任务.md"| DESIGN["设计"]:::s
+    DESIGN -->|"文档基线齐全"| IMPL["实施"]:::s
+    IMPL -->|"§2 实施报告完成"| TEST["测试"]:::s
+    TEST -->|"§3 测试报告完成"| REPORT["报告"]:::s
+    REPORT -->|"§4 自改进完成"| IMPROVE["改进"]:::s
+
+    classDef s fill:#2b2d3b,stroke:#3d59a1,color:#a9b1d6
+```
+
+| 转换 | 触发条件 | 执行者 |
+|------|---------|--------|
+| 任务 → 设计 | 远端存在 故事任务.md | pm |
+| 设计 → 实施 | 远端文档基线齐全（场景+KG） | coder |
+| 实施 → 测试 | 远端 §2 实施报告存在 | tester |
+| 测试 → 报告 | 远端 §3 测试报告存在 | reporter |
+| 报告 → 改进 | 远端 §4 自改进存在 | self-improve |

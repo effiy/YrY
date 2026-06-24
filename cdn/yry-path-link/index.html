@@ -35,7 +35,8 @@
   <a :href="href" class="path-link" :target="target || undefined" :title="full || undefined">{{ display }}</a>
 </script>
 
-<script src="index.js"></script>
+<script src="../shared/vue-ce-loader.js"></script>
+  <script src="index.js"></script>
 <script>
 function mountAll() {
   if (!window.YryPathLink) return;

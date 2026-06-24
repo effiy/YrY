@@ -1,0 +1,58 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryHealthIndex · 健康报告索引组件 样式
+   适用: 健康报告列表页 · 历史报告索引展示
+
+   依赖 design tokens (来自 cdn/theme/index.css):
+     --yry-border / --yry-text3 / --yry-accent / --yry-pass / --yry-warn / --yry-fail
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.hi-intro {
+  padding: 16px;
+  border-left: 3px solid var(--yry-accent, #ffc107);
+  background: rgba(255,193,7,.04);
+  border-radius: 0 var(--yry-radius, 12px) var(--yry-radius, 12px) 0;
+  margin-bottom: 20px;
+  color: var(--yry-text2, #d4d4d4);
+  font-size: .84rem;
+  line-height: 1.7;
+}
+
+.hi-intro strong { color: var(--yry-accent, #ffc107); }
+.hi-intro code { background: rgba(59,130,246,.1); padding: 1px 6px; border-radius: 4px; font-size: .82em; color: #22d3ee; }
+
+.hi-loading { text-align: center; color: var(--yry-text3, #888); padding: 40px; }
+.hi-empty { text-align: center; color: var(--yry-text3, #888); padding: 20px; }
+
+.hi-empty-hint {
+  font-size: .7rem;
+  margin-top: 8px;
+  display: block;
+}
+
+.hi-empty-hint code {
+  background: rgba(255,255,255,.06);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: .72rem;
+  color: #e0af68;
+}
+
+.hi-error {
+  text-align: center;
+  color: var(--yry-fail, #f87171);
+  padding: 20px;
+}
+
+/* row score / grade / trigger cells */
+.hi-row-score {
+  font-weight: 700;
+  font-size: .82rem;
+}
+
+.hi-row-score.A, .hi-row-score.B { color: var(--yry-pass, #22c55e); }
+.hi-row-score.C { color: #f59e0b; }
+.hi-row-score.D { color: var(--yry-fail, #ef4444); }
+
+.hi-link { color: #22d3ee; text-decoration: none; }
+.hi-link:hover { color: var(--yry-accent, #ffc107); }

@@ -35,7 +35,7 @@
       <div v-else-if="s.type === 'list'" class="vi-v">
         <ul class="vi-criteria">
           <li v-for="(it, ii) in (s.items || [])" :key="'li'+ii">
-            <template v-if="typeof it === 'object'" v-html="it.html || it.text || ''"></template>
+            <span v-if="typeof it === 'object'" v-html="it.html || it.text || ''"></span>
             <template v-else>{{ it }}</template>
           </li>
         </ul>

@@ -3,638 +3,98 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>模板架构与 CSS 设计系统 — 审查报告 v4.5</title>
+<title>模板架构与CSS设计系统 · 审查</title>
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/theme/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-page-nav/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-review/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-review-base.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-stats/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-health-bar/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-tabs/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-review-cards/index.css">
+<style>
+.yry-container{max-width:1120px}
+</style>
 </head>
 <body>
-<div class="container">
+<div class="yry-container">
+<yry-scene-chrome
+  theme="b"
+  title="📝 {ACCENT} — 审查报告"
+  title-accent="场景 1 · 模板架构与 CSS 设计系统"
+  subtitle="审查日期 2026-06-22 · 版本 vv5.4.0 · 场景 1"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-checklist · 故事任务"},{"label":"场景 1 · 模板架构与CSS设计系统"},{"label":"📝 审查"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","href":"架构图.html"},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","active":true}]'>
+</yry-scene-chrome>
 
-<script type="application/json" id="yry-page-config">
-{
-  "page":    { "type":"审查", "icon":"📝", "file":"审查.html" },
-  "story":   "yry-checklist · 清单与自循环",
-  "scene":   { "num":"1", "name":"模板架构与 CSS 设计系统",
-               "dir":"场景-1-模板架构与CSS设计系统" },
-  "depth":   "../../../",
-  "scenes":  [
-    { "num":"1","name":"模板架构与 CSS 设计系统",
-      "dir":"场景-1-模板架构与CSS设计系统" },
-    { "num":"2","name":"清单交互组件实现",
-      "dir":"场景-2-清单交互组件实现" },
-    { "num":"3","name":"验证报告与健康面板集成",
-      "dir":"场景-3-验证报告与健康面板集成" },
-    { "num":"4","name":"批量生成与自循环机制",
-      "dir":"场景-4-批量生成与自循环机制" }
-  ],
-  "pages": [
-    { "type":"清单","icon":"📋","file":"计划清单.html" },
-    { "type":"架构","icon":"📐","file":"架构图.html" },
-    { "type":"图谱","icon":"🔗","file":"知识图谱.html" },
-    { "type":"源码","icon":"📄","file":"源码.html" },
-    { "type":"测试","icon":"🧪","file":"测试面板.html" },
-    { "type":"演示","icon":"💡","file":"演示.html" },
-    { "type":"审计","icon":"📝","file":"审查.html" }
-  ]
-}
-</script>
-<div id="yry-nav"></div>
-<script src="../../../../cdn/yry-page-nav/index.js"></script>
+<yry-scene-stats items='[{"value":"3/8","label":"诊断通过","color":"health"},{"value":"D0-D8","label":"覆盖范围","color":"t"},{"value":5,"label":"改进建议","color":"warn-h"}]'></yry-scene-stats>
+<yry-scene-health-bar segments='[{"pct":38,"cls":"strength"},{"pct":62,"cls":"gap"}]'></yry-scene-health-bar>
 
-<div class="header">
-  <h1>📝 <span class="accent">模板架构与 CSS 设计系统</span> — 审查报告</h1>
-  <p class="sub">基于 模板架构与 CSS 设计系统 场景规约 v4.5 综合评审</p>
-  <div class="meta-row">
-    <span class="meta-chip">📅 审查日期 <strong>2026-06-13</strong></span>
-    <span class="meta-chip">�️ 版本 <strong>v4.5</strong></span>
-    <span class="meta-chip">🤖 审查人 <strong>arch-reviewer Agent</strong></span>
-    <span class="meta-chip">� 维度 <strong>4 维 × 6 项</strong></span>
-    <span class="meta-chip">📄 范围 <strong>index.md · 5 节 · 5 TC · 3 产物</strong></span>
-  </div>
-</div>
-
-<div class="stats-grid">
-  <div class="stat-card"><div class="val health">82%</div><div class="lbl">🏥 综合健康度</div><div class="delta flat">— 持平基线</div></div>
-  <div class="stat-card"><div class="val health">80%</div><div class="lbl">📋 完整性</div><div class="delta up">↑ 4% vs v4.5</div></div>
-  <div class="stat-card"><div class="val health">85%</div><div class="lbl">� 一致性</div><div class="delta up">↑ 2% vs v4.5</div></div>
-  <div class="stat-card"><div class="val warn-h">72%</div><div class="lbl">🔍 可追溯</div><div class="delta down">↓ 3% vs v4.5</div></div>
-  <div class="stat-card"><div class="val health">90%</div><div class="lbl">💬 表达力</div><div class="delta up">↑ 1% vs v4.5</div></div>
-  <div class="stat-card"><div class="val fail-h">2</div><div class="lbl">🚨 P1 阻断</div><div class="delta down">需立即修复</div></div>
-  <div class="stat-card"><div class="val info-h">3</div><div class="lbl">� 可自动修复</div><div class="delta flat">~ 50% 自动化</div></div>
-  <div class="stat-card"><div class="val warn-h">4.2h</div><div class="lbl">⏱️ 修复成本</div><div class="delta flat">2 人 · 1 迭代</div></div>
-</div>
-
-<div class="bar-wrap">
-  <div class="bar-outer">
-    <div class="seg strength" style="width:33%"></div>
-    <div class="seg gap" style="width:33%"></div>
-    <div class="seg suggestion" style="width:33%"></div>
-  </div>
-  <div class="bar-legend">
-    <span><span class="dot strength"></span>✅ 4 优势（值得推广）</span>
-    <span><span class="dot gap"></span>❌ 4 缺口（需修复）</span>
-    <span><span class="dot suggestion"></span>⚠️ 2 建议（增量改进）</span>
-  </div>
-</div>
-
-<div class="tabs">
-  <span class="tab on" data-panel="overview">📊 总览</span>
-  <span class="tab" data-panel="good">✅ 好案例 <span class="tab-badge pass">4</span></span>
-  <span class="tab" data-panel="bad">❌ 坏案例 <span class="tab-badge">4</span></span>
-  <span class="tab" data-panel="risk">⚠️ 风险矩阵</span>
-  <span class="tab" data-panel="recommendations">� 改进建议</span>
-  <span class="tab" data-panel="actionplan">🎯 行动计划</span>
-  <span class="tab" data-panel="fixdiffs">� 修复示例</span>
-  <span class="tab" data-panel="methodology">📐 方法论</span>
-  <span class="tab" data-panel="evidence">📎 证据链</span>
-</div>
-
-<!-- ═══ Tab 1 · Overview ═══ -->
-<div class="panel on" id="panelOverview">
-  <div class="dim-card">
-    <h3>📋 完整性 Completeness <span class="dim-score" style="color:var(--pass)">85%</span></h3>
-    <div class="dim-bar"><div class="dim-bar-inner" style="width:85%;background:var(--pass)"></div></div>
-    <ul>
-      <li class="pass">覆盖 4 个核心章节：§0 技术评审 · §1 测试设计 · §2 实施报告 · §3 测试报告 · §4 自改进</li>
-      <li class="pass">5 个测试用例覆盖骨架完整性 / CSS 覆盖 / CDN 可达 / Token 残留 / 响应式断点</li>
-      <li class="pass">Mermaid 流程图覆盖 HTML 骨架 → CDN 链 → CSS 变量 → 组件体系 → Token 五阶段</li>
-      <li class="warn">§0 技术评审未显式声明 CDN 4 资源清单（shared/index.css / theme/index.css / yry-checklist.css / shared.js）</li>
-      <li class="warn">未列 7 区域骨架的区域名清单（仅说"7 区域"）</li>
-    </ul>
-  </div>
-
-  <div class="dim-card">
-    <h3>🔗 一致性 Consistency <span class="dim-score" style="color:var(--pass)">88%</span></h3>
-    <div class="dim-bar"><div class="dim-bar-inner" style="width:88%;background:var(--pass)"></div></div>
-    <ul>
-      <li class="pass">术语与「模板架构与 CSS 设计系统」领域语对齐（骨架 / CDN / Token / 变量）</li>
-      <li class="pass">CDN 加载链 shared/index.css→theme/index.css→yry-checklist.css 与计划清单.html 实际引入一致</li>
-      <li class="pass">CSS 变量命名统一 --yry- 前缀（§4 自改进已落地）</li>
-      <li class="warn">Token 变量表（20 Token）未列具体清单（{{STORY}}·{{SCENE}}·{{VERSION}} 仅示例）</li>
-      <li class="warn">yry-checklist.css 大小 ~12 KB 为估算值，未用 wc -c 校验</li>
-    </ul>
-  </div>
-
-  <div class="dim-card">
-    <h3>🔍 可追溯 Traceability <span class="dim-score" style="color:var(--warn)">70%</span></h3>
-    <div class="dim-bar"><div class="dim-bar-inner" style="width:70%;background:var(--warn)"></div></div>
-    <ul>
-      <li class="pass">4 个产物（计划清单.html / yry-checklist.css / Token 表 / 本报告）均有状态标记</li>
-      <li class="warn">TC-1~TC-5 缺 file:// 链接到被测源（计划清单.html / yry-checklist.css）</li>
-      <li class="warn">测试报告 4 套件断言数合计 45，但无断言明细</li>
-      <li class="fail">未建立 TC ↔ 断言 ↔ 产物 三方映射</li>
-    </ul>
-  </div>
-
-  <div class="dim-card">
-    <h3>💬 表达力 Expressiveness <span class="dim-score" style="color:var(--pass)">90%</span></h3>
-    <div class="dim-bar"><div class="dim-bar-inner" style="width:90%;background:var(--pass)"></div></div>
-    <ul>
-      <li class="pass">"模板架构与 CSS 设计系统" 概念在 §0 首段即给出"后续场景的骨架"定位</li>
-      <li class="pass">表格化呈现测试用例 / 产物 / 报告，结构清晰</li>
-      <li class="warn">§4 自改进只有 3 条清单，未区分已完成 / 待办优先级（P2 标注了但 P1/P0 未区分）</li>
-    </ul>
-  </div>
-<div class="dim-card" style="margin-top:14px">
-    <h3>📅 里程碑 <span style="font-size:.7rem;font-weight:400;color:var(--text3);margin-left:auto">Milestones</span></h3>
-    <ul>
-      <li class="pass"><strong>2026-06-15</strong> — P1 修复：补齐 CDN 4 资源清单 + 7 区域名列表</li>
-      <li class="warn"><strong>2026-06-18</strong> — P2 修复：TC ↔ 断言 ↔ 产物三方映射</li>
-      <li class="warn"><strong>2026-06-25</strong> — P3 修复：Token 变量 20 项完整清单 + 测试断言明细</li>
-      <li class="pass"><strong>2026-07-01</strong> — 复审：综合健康度目标 ≥ 90%，可追溯性 ≥ 85%</li>
-    </ul>
-  </div>
-</div>
-
-<!-- ═══ Tab 2 · Good Cases ═══ -->
-<div class="panel" id="panelGood">
-  <div class="case-card good">
-    <h4>① 7 区域骨架 <span class="case-tag good">GOOD</span> <span class="sev suggestion">SUGGEST</span></h4>
-    <div class="case-loc"><strong>index.md#L19</strong> · flowchart TD 节点 <code>SKEL["HTML 骨架<br/>7 区域结构"]</code></div>
-    <div class="case-desc">Mermaid 流程图首节点即明确「7 区域结构」,与 <code>计划清单.html</code> 实际 DOM 区域 <code>breadcrumb / scene-nav / cross-nav / tabs / stats-grid / panels / footer</code> 100% 对齐。</div>
-    <div class="case-why"><strong>为什么好:</strong> 骨架是后续所有场景的母版,前置固定 7 区域边界让场景 2~4 复用时无须重新约定,降低跨场景理解成本。</div>
-    <div class="case-meta"><span class="kv">文件: <strong>index.md#§0</strong></span><span class="kv">产物: <strong>计划清单.html</strong></span><span class="kv">引用: <strong>§1 TC-1</strong></span></div>
-  </div>
-
-  <div class="case-card good">
-    <h4>② CDN 加载链 4 资源 <span class="case-tag good">GOOD</span> <span class="sev suggestion">SUGGEST</span></h4>
-    <div class="case-loc"><strong>index.md#L20</strong> · Mermaid <code>CDN["shared/index.css→theme/index.css→yry-checklist.css"]</code></div>
-    <div class="case-desc">CDN 加载顺序约定为 <code>shared/index.css → theme/index.css → yry-checklist.css</code>,遵循「重置 → 主题 → 业务」三层覆盖原则,后续场景仅需 <code>&lt;link&gt;</code> 同名三件套即可继承。</div>
-    <div class="case-why"><strong>为什么好:</strong> 约定先于实现,降低场景 2~4 接入成本;任意场景文件被复制走都能在 CDN 4 资源下自洽运行。</div>
-    <div class="case-meta"><span class="kv">链路: <strong>3 层</strong></span><span class="kv">资源: <strong>3 + 1 (shared.js)</strong></span><span class="kv">引用: <strong>§1 TC-3</strong></span></div>
-  </div>
-
-  <div class="case-card good">
-    <h4>③ CSS 变量 --yry- 前缀 <span class="case-tag good">GOOD</span> <span class="sev suggestion">SUGGEST</span></h4>
-    <div class="case-loc"><strong>index.md#§4</strong> · 自改进清单 <code>[x] CSS 变量命名规范化</code></div>
-    <div class="case-desc">所有 CSS 变量统一前缀 <code>--yry-</code>(品牌色/文本/表面/字体/间距/圆角/动效/z-index/布局 共 9 大类),形成 3 层 token 体系(primitive → semantic → component),并支持 <code>prefers-color-scheme</code> 自动亮色反转。</div>
-    <div class="case-why"><strong>为什么好:</strong> 命名空间隔离杜绝与宿主项目变量冲突;3 层 token 让"换肤仅改 semantic"成为可能;亮色模式零侵入。</div>
-    <div class="case-meta"><span class="kv">前缀: <strong>--yry-</strong></span><span class="kv">层级: <strong>3 (prim/sem/comp)</strong></span><span class="kv">亮色: <strong>自动</strong></span></div>
-  </div>
-
-  <div class="case-card good">
-    <h4>④ 4 维 × 6 项 度量模型 <span class="case-tag good">GOOD</span> <span class="sev suggestion">SUGGEST</span></h4>
-    <div class="case-loc"><strong>index.md#§1 + §3</strong> · 4 套件 / 45 断言 / 100% 通过</div>
-    <div class="case-desc">度量从 4 个维度展开(完整性·一致性·可追溯·表达力),且 <code>§3</code> 测试报告以「套件 × 断言 × 通过率」三段式呈现,可被审查者一眼读出"哪些套件兜底、哪些维度欠缺"。</div>
-    <div class="case-why"><strong>为什么好:</strong> 4 维度覆盖文档全生命周期;数字(45 断言 / 100% 通过)取代模糊表述,提升可信度。</div>
-    <div class="case-meta"><span class="kv">套件: <strong>4</strong></span><span class="kv">断言: <strong>45</strong></span><span class="kv">通过: <strong>100%</strong></span></div>
-  </div>
-</div>
-
-<!-- ═══ Tab 3 · Bad Cases ═══ -->
-<div class="panel" id="panelBad">
-  <div class="case-card bad">
-    <h4>① §0 未显式列出 CDN 4 资源清单 <span class="case-tag bad">FAIL</span> <span class="sev major">MAJOR</span></h4>
-    <div class="case-loc"><strong>index.md#L19-L24</strong> · Mermaid 节点 <code>CDN</code></div>
-    <div class="case-desc">Mermaid 流程图节点仅写 <code>shared/index.css→theme/index.css→yry-checklist.css</code>(3 个),遗漏了 <code>shared.js</code>,且未在 §0 文字段落中显式枚举 4 资源文件名清单。新人 grep 时只能看到 Mermaid,需自查 HTML 才能发现遗漏的 JS。</div>
-    <div class="case-why"><strong>为什么坏:</strong> "4 资源"是 §1 TC-3 验收的硬指标,但 §0 描述与 §1 断言数对不上(3 vs 4),违反"描述-测试"双向一致性原则。</div>
-    <pre>❌ 修复前:
-CDN 加载链: shared/index.css→theme/index.css→yry-checklist.css
-
-✅ 修复后:
-CDN 加载链(4 资源): shared/index.css → theme/index.css → yry-checklist.css → shared.js
-  · 200 OK 校验: <span class="add">curl -I ../cdn/{shared,theme,yry-checklist}.css ../cdn/shared/index.js</span></pre>
-    <div class="case-meta"><span class="kv">严重度: <strong>MAJOR</strong></span><span class="kv">影响: <strong>TC-3 CDN 可达性</strong></span><span class="kv">工作量: <strong>0.5h</strong></span></div>
-  </div>
-
-  <div class="case-card bad">
-    <h4>② 7 区域骨架名未枚举 <span class="case-tag bad">FAIL</span> <span class="sev major">MAJOR</span></h4>
-    <div class="case-loc"><strong>index.md#L19</strong> · Mermaid 节点 <code>SKEL</code> · <code>grep -n '7 区域' → 1 处</code></div>
-    <div class="case-desc">§0 仅在 Mermaid 节点中提及"7 区域结构",未在正文给出 7 个区域的名字清单(如 breadcrumb / scene-nav / cross-nav / tabs / stats-grid / panels / footer),导致 TC-1「骨架完整性」断言只能黑盒跑,无法逐区域建立 file:// 链接。</div>
-    <div class="case-why"><strong>为什么坏:</strong> 7 区域是后续 4 场景复用母版的契约,缺名清单等于"骨架可读但不可寻址",降低可追溯性 18%。</div>
-    <pre>❌ 修复前:
-HTML 骨架 7 区域结构
-
-✅ 修复后:
-7 区域(自上而下):
-  ① breadcrumb  ② scene-nav  ③ cross-nav  ④ tabs
-  ⑤ stats-grid ⑥ panels     ⑦ footer</pre>
-    <div class="case-meta"><span class="kv">严重度: <strong>MAJOR</strong></span><span class="kv">影响: <strong>TC-1 骨架完整性</strong></span><span class="kv">工作量: <strong>0.5h</strong></span></div>
-  </div>
-
-  <div class="case-card bad">
-    <h4>③ Token 变量 20 项未列 <span class="case-tag bad">FAIL</span> <span class="sev major">MAJOR</span></h4>
-    <div class="case-loc"><strong>index.md#L23</strong> · Mermaid 节点 <code>TOK</code> · <code>grep -c '{{' → 3</code></div>
-    <div class="case-desc">§0 流程图节点仅示例 3 个 Token(<code>{{STORY}}·{{SCENE}}·{{VERSION}}</code>),但 §2 实施报告声称"20 Token"已交付。Token 实际值缺失,后续 4 场景复制模板时只能靠"复制粘贴运气"。</div>
-    <div class="case-why"><strong>为什么坏:</strong> "3 示例"与"20 交付"在数字上不闭合,违反 §2 实施报告与 §0 描述一致;Token 表缺失使批量生成机制(场景 4)无法机器读取。</div>
-    <pre>❌ 修复前:
-Token 变量 {{STORY}}·{{SCENE}}·{{VERSION}}
-
-✅ 修复后(节选,详见 docs/故事任务面板/Token表.md):
-  {{STORY}} / {{SCENE}} / {{SCENE_ID}} / {{VERSION}}
-  {{DATE}} / {{AUTHOR}} / {{REVIEWER}} / {{OWNER}}
-  {{STATUS}} / {{PHASE}} / {{STEP_ID}} / {{PRIORITY}}
-  {{DOD}} / {{RISK}} / {{EFFORT}}
-  {{FILE_REF}} / {{LINK}} / {{DEADLINE}} / {{MILESTONE}}</pre>
-    <div class="case-meta"><span class="kv">严重度: <strong>MAJOR</strong></span><span class="kv">影响: <strong>§2 实施报告 / 场景 4 批量</strong></span><span class="kv">工作量: <strong>1d</strong></span></div>
-  </div>
-
-  <div class="case-card bad">
-    <h4>④ yry-checklist.css ~12 KB 为估算 <span class="case-tag bad">FAIL</span> <span class="sev minor">MINOR</span></h4>
-    <div class="case-loc"><strong>index.md#§2</strong> · 产物行 <code>yry-checklist.css | ~12 KB | ✅ 已交付</code></div>
-    <div class="case-desc">§2 实施报告声称 yry-checklist.css 约 12 KB,但无 <code>wc -c</code> 实测数据,无 git commit hash 锚定。审计时无法确认"已交付"对应的是哪个版本,场景 2~4 引用此文件可能因 CDN 静默更新而失配。</div>
-    <div class="case-why"><strong>为什么坏:</strong> "估算值"违背 §2 实施报告的精确性原则;无 hash 锚定 → 跨场景引用不可复现。</div>
-    <pre>❌ 修复前:
-| yry-checklist.css | CDN CSS | ~12 KB | ✅ 已交付 |
-
-✅ 修复后:
-| yry-checklist.css | CDN CSS | 11.7 KB (wc -c) | ✅ 已交付 @ a1b2c3d |</pre>
-    <div class="case-meta"><span class="kv">严重度: <strong>MINOR</strong></span><span class="kv">影响: <strong>§2 产物审计 / 场景 2~4 复用</strong></span><span class="kv">工作量: <strong>0.5h</strong></span></div>
-  </div>
-</div>
-
-<!-- ═══ Tab 4 · Risk Matrix ═══ -->
-<div class="panel" id="panelRisk">
-  <div class="risk-matrix">
-    <h3 style="font-size:.92rem;font-weight:600;margin-bottom:6px">⚠️ 5×5 风险矩阵 <span style="font-size:.7rem;font-weight:400;color:var(--text3);margin-left:6px">Likelihood × Impact</span></h3>
-    <p style="font-size:.74rem;color:var(--text2);margin-bottom:6px">将 6 项发现映射到风险坐标,确定处理顺序。红=阻断 / 橙=本周 / 黄=迭代内 / 绿=观察。</p>
-    <div class="risk-grid">
-      <div class="rh"></div>
-      <div class="rh">L=1<br/>极低</div>
-      <div class="rh">L=2<br/>低</div>
-      <div class="rh">L=3<br/>中</div>
-      <div class="rh">L=4<br/>高</div>
-      <div class="rh">L=5<br/>极高</div>
-
-      <div class="rl">I=5 严重</div>
-      <div class="risk-cell r-low">D6</div>
-      <div class="risk-cell r-med">D5</div>
-      <div class="risk-cell r-high">D0</div>
-      <div class="risk-cell r-crit"></div>
-      <div class="risk-cell r-crit"></div>
-
-      <div class="rl">I=4 大</div>
-      <div class="risk-cell r-low"></div>
-      <div class="risk-cell r-med">D3</div>
-      <div class="risk-cell r-high">D1·D2</div>
-      <div class="risk-cell r-crit"></div>
-      <div class="risk-cell r-crit"></div>
-
-      <div class="rl">I=3 中</div>
-      <div class="risk-cell r-low"></div>
-      <div class="risk-cell r-low"></div>
-      <div class="risk-cell r-med">D4</div>
-      <div class="risk-cell r-high"></div>
-      <div class="risk-cell r-high"></div>
-
-      <div class="rl">I=2 小</div>
-      <div class="risk-cell r-low empty"></div>
-      <div class="risk-cell r-low empty"></div>
-      <div class="risk-cell r-low empty"></div>
-      <div class="risk-cell r-med empty"></div>
-      <div class="risk-cell r-med empty"></div>
-
-      <div class="rl">I=1 微</div>
-      <div class="risk-cell r-low empty"></div>
-      <div class="risk-cell r-low empty"></div>
-      <div class="risk-cell r-low empty"></div>
-      <div class="risk-cell r-low empty"></div>
-      <div class="risk-cell r-low empty"></div>
-    </div>
-    <p style="font-size:.7rem;color:var(--text3);margin-top:10px">
-      <strong>D0</strong>=CDN 4 资源未列 &nbsp; <strong>D1</strong>=7 区域名未枚举 &nbsp; <strong>D2</strong>=Token 20 未列 &nbsp; <strong>D3</strong>=~12 KB 估算 &nbsp; <strong>D4</strong>=TC 缺 file:// 链接 &nbsp; <strong>D5</strong>=断言 45 缺明细
-    </p>
-  </div>
-</div>
-
-<!-- ═══ Tab 5 · Recommendations ═══ -->
-<div class="panel" id="panelRecommendations">
-  <div class="rec-grid">
-    <div class="rec-card p1">
-      <span class="rec-pri p1">P1 · 阻断</span>
-      <h4>R-1 补全 CDN 4 资源清单</h4>
-      <p>在 §0 显式列出 <code>shared/index.css / theme/index.css / yry-checklist.css / shared.js</code> 4 资源,补足 Mermaid 节点缺失的 <code>shared.js</code>,与 §1 TC-3 断言数对齐。</p>
-      <div class="rec-meta"><span>工作量 <strong>0.5h</strong></span><span>负责人 <strong>架构师</strong></span><span>SLA <strong>S+1</strong></span></div>
-    </div>
-    <div class="rec-card p1">
-      <span class="rec-pri p1">P1 · 阻断</span>
-      <h4>R-2 显式枚举 7 区域骨架名</h4>
-      <p>在 §0 给出 7 区域名字清单(①breadcrumb ②scene-nav ③cross-nav ④tabs ⑤stats-grid ⑥panels ⑦footer),供 TC-1 逐项断言。</p>
-      <div class="rec-meta"><span>工作量 <strong>0.5h</strong></span><span>负责人 <strong>架构师</strong></span><span>SLA <strong>S+1</strong></span></div>
-    </div>
-    <div class="rec-card p2">
-      <span class="rec-pri p2">P2 · 重要</span>
-      <h4>R-3 公开 20 项 Token 完整清单</h4>
-      <p>建立独立小节(或外链 <code>docs/故事任务面板/Token表.md</code>),列出全部 20 个 <code>{{TOKEN}}</code> 变量及语义,支撑场景 4 批量生成机制机器读取。</p>
-      <div class="rec-meta"><span>工作量 <strong>1d</strong></span><span>负责人 <strong>PM</strong></span><span>SLA <strong>S+3</strong></span></div>
-    </div>
-    <div class="rec-card p2">
-      <span class="rec-pri p2">P2 · 重要</span>
-      <h4>R-4 TC 增 file:// 链接矩阵</h4>
-      <p>为 TC-1~TC-5 各断言补充 <code>file://计划清单.html</code> / <code>file://cdn/yry-checklist/index.css</code> 等可点击链接,实现 TC ↔ 产物双向锚定。</p>
-      <div class="rec-meta"><span>工作量 <strong>2h</strong></span><span>负责人 <strong>Coder</strong></span><span>SLA <strong>S+1</strong></span></div>
-    </div>
-    <div class="rec-card p2">
-      <span class="rec-pri p2">P2 · 重要</span>
-      <h4>R-5 45 断言明细逐条落表</h4>
-      <p>将 §3 测试报告"4 套件 / 45 断言 / 100%"展开为 per-assertion 明细表(套件/断言名/期望/实测/状态),回归可读。</p>
-      <div class="rec-meta"><span>工作量 <strong>4h</strong></span><span>负责人 <strong>Reviewer</strong></span><span>SLA <strong>S+1</strong></span></div>
-    </div>
-    <div class="rec-card p3">
-      <span class="rec-pri p3">P3 · 增量</span>
-      <h4>R-6 yry-checklist.css 大小实测</h4>
-      <p>用 <code>wc -c cdn/yry-checklist/index.css</code> 实测并回填 §2,锚定 commit hash,杜绝后续 CDN 静默更新导致场景 2~4 失配。</p>
-      <div class="rec-meta"><span>工作量 <strong>0.5h</strong></span><span>负责人 <strong>QA</strong></span><span>SLA <strong>S+2</strong></span></div>
+<yry-scene-tabs tabs='[{"id":"overview","label":"📊 总览"},{"id":"good","label":"✅ 好案例"},{"id":"bad","label":"❌ 坏案例"},{"id":"recommendations","label":"📝 改进建议"},{"id":"evidence","label":"📎 证据链"}]'>
+  <div data-panel="overview"><h2>§0 技术评审</h2><p>定义计划清单页面的 HTML 骨架和 CSS 设计系统。模板骨架是清单生成的第一层——后续的数据提取、组件交互、验证集成全部建立在骨架之上。</p><h3>效果示意</h3><p><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart TD
+    SKEL[&quot;HTML 骨架&lt;br/&gt;7 区域结构&quot;]:::sk --&gt; CDN[&quot;CDN 加载链&lt;br/&gt;shared/index.css→theme/index.css→yry-checklist.css&quot;]:::cs
+    CDN --&gt; VARS[&quot;CSS 变量系统&lt;br/&gt;--yry-accent · --yry-cyan · --yry-text/2/3&quot;]:::cs
+    VARS --&gt; COMP[&quot;组件体系&lt;br/&gt;step·phase·scorecard·risk-matrix&quot;]:::cs
+    COMP --&gt; TOK[&quot;Token 变量&lt;br/&gt;{{STORY}}·{{SCENE}}·{{VERSION}}&quot;]:::cs
+    classDef sk fill:#3B82F6,color:#fff
+    classDef cs fill:#8B5CF6,color:#fff</pre></p><h3>7 区域 HTML 骨架</h3><table><thead><tr><th>区域</th><th>元素</th><th>用途</th><th>Token 依赖</th></tr></thead><tbody><tr><td>① 头部</td><td><code><header></code></td><td>场景标题 + 版本信息</td><td><code>{{SCENE_TITLE}}</code>, <code>{{VERSION}}</code></td></tr><tr><td>② 导航</td><td><code><nav></code></td><td>面包屑 + 交叉导航</td><td><code>{{BREADCRUMB}}</code>, <code>{{CROSS_NAV}}</code></td></tr><tr><td>③ 摘要</td><td><code><section class="summary"></code></td><td>KPI 卡片 + 进度概览</td><td>数据驱动</td></tr><tr><td>④ 清单</td><td><code><section class="checklist"></code></td><td>可勾选任务清单</td><td><code>{{CONTENT}}</code></td></tr><tr><td>⑤ 可视化</td><td><code><section class="viz"></code></td><td>热力图 + 趋势图</td><td>数据驱动</td></tr><tr><td>⑥ 门禁</td><td><code><section class="gate"></code></td><td>Gate A/B 判定状态</td><td>数据驱动</td></tr><tr><td>⑦ 页脚</td><td><code><footer></code></td><td>生成时间 + 版本号</td><td><code>{{DATE}}</code>, <code>{{VERSION}}</code></td></tr></tbody></table><h3>CSS 设计令牌（与 <code>cdn/tokens/index.css</code> 真相源一致）</h3><table><thead><tr><th>令牌</th><th>默认值</th><th>用途</th></tr></thead><tbody><tr><td><code>--yry-accent</code></td><td><code>#FFC107</code></td><td>品牌主色调（链接、按钮、强调）</td></tr><tr><td><code>--yry-cyan</code></td><td><code>#22d3ee</code></td><td>科技蓝（KPI 正常 · 趋势线）</td></tr><tr><td><code>--yry-pass</code></td><td><code>#22c55e</code></td><td>成功色（通过、完成）</td></tr><tr><td><code>--yry-fail</code></td><td><code>#ef4444</code></td><td>危险色（阻断、失败）</td></tr><tr><td><code>--yry-warn</code></td><td><code>#f59e0b</code></td><td>警告色（需关注）</td></tr><tr><td><code>--yry-info</code> / <code>--yry-skip</code></td><td><code>#6b7280</code></td><td>信息色 / 跳过态</td></tr><tr><td><code>--yry-text</code></td><td><code>rgba(250,250,252,1)</code></td><td>主文本色</td></tr><tr><td><code>--yry-text2</code></td><td><code>rgba(160,160,164,1)</code></td><td>次要文本色</td></tr><tr><td><code>--yry-text3</code></td><td><code>rgba(110,110,114,1)</code></td><td>三级文本色（辅助说明）</td></tr><tr><td><code>--yry-bg</code></td><td><code>rgba(22,22,32,1)</code></td><td>主背景色</td></tr><tr><td><code>--yry-bg-card</code></td><td><code>linear-gradient(159deg, ...)</code></td><td>卡片/面板渐变背景</td></tr><tr><td><code>--yry-bg-flat</code></td><td><code>rgba(34,34,46,1)</code></td><td>扁平背景色</td></tr><tr><td><code>--yry-bg-raised</code></td><td><code>rgba(42,42,56,1)</code></td><td>抬升背景色</td></tr><tr><td><code>--yry-border</code></td><td><code>1px solid rgba(255,255,255,0.06)</code></td><td>统一边框</td></tr><tr><td><code>--yry-shadow</code></td><td><code>0 4px 20px rgba(0,0,0,0.3)</code></td><td>标准阴影</td></tr><tr><td><code>--yry-radius</code></td><td><code>12px</code></td><td>标准圆角</td></tr></tbody></table><h3>响应式断点</h3><table><thead><tr><th>断点</th><th>宽度</th><th>布局变化</th></tr></thead><tbody><tr><td>Desktop</td><td>≥ 1024px</td><td>双列布局（清单 + 可视化）</td></tr><tr><td>Tablet</td><td>768-1023px</td><td>单列布局，卡片 2 列</td></tr><tr><td>Mobile</td><td>< 768px</td><td>单列布局，卡片 1 列，清单全宽</td></tr></tbody></table><h3>CSS 架构分层</h3><p><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart TB
+    L1[&quot;L1 基础层&lt;br/&gt;reset + 变量&quot;] --&gt; L2[&quot;L2 主题层&lt;br/&gt;--yry-* 令牌&quot;]
+    L2 --&gt; L3[&quot;L3 布局层&lt;br/&gt;header/nav/section/footer&quot;]
+    L3 --&gt; L4[&quot;L4 组件层&lt;br/&gt;step/phase/scorecard&quot;]
+    L4 --&gt; L5[&quot;L5 工具层&lt;br/&gt;间距/工具类&quot;]</pre></p><table><thead><tr><th>层</th><th>文件</th><th>职责</th><th>覆盖度</th></tr></thead><tbody><tr><td>L1 基础</td><td><code>shared/index.css</code></td><td>reset + 动画 + 基础变量</td><td>100%</td></tr><tr><td>L2 主题</td><td><code>theme/index.css</code></td><td>14 设计令牌定义</td><td>100%</td></tr><tr><td>L3 布局</td><td><code>yry-checklist.css</code> §layout</td><td>7 区域栅格</td><td>100%</td></tr><tr><td>L4 组件</td><td><code>yry-checklist.css</code> §components</td><td>11 组件样式</td><td>95%</td></tr><tr><td>L5 工具</td><td><code>yry-checklist.css</code> §utils</td><td>间距/对齐/可见性</td><td>80%</td></tr></tbody></table><h3>命名空间与 BEM 规范</h3><table><thead><tr><th>层级</th><th>命名</th><th>示例</th></tr></thead><tbody><tr><td>Block</td><td><code>.checklist</code></td><td>清单容器</td></tr><tr><td>Element</td><td><code>.checklist__item</code></td><td>清单项</td></tr><tr><td>Modifier</td><td><code>.checklist__item--done</code></td><td>已完成状态</td></tr><tr><td>State</td><td><code>.is-expanded</code> / <code>.is-loading</code></td><td>交互态</td></tr><tr><td>Utility</td><td><code>.u-text-ellipsis</code></td><td>工具类</td></tr></tbody></table><p><b>反模式</b>：禁止 <code>.checklist .item</code> 后代选择器（特异性膨胀），必须使用 BEM <code>.checklist__item</code>。</p><h3>a11y 语义锚点</h3><table><thead><tr><th>区域</th><th>语义角色</th><th>ARIA 属性</th><th>键盘交互</th></tr></thead><tbody><tr><td>头部</td><td><code>banner</code></td><td>—</td><td>—</td></tr><tr><td>导航</td><td><code>navigation</code></td><td><code>aria-label="主导航"</code></td><td>Tab 顺序</td></tr><tr><td>摘要</td><td><code>region</code></td><td><code>aria-label="摘要"</code></td><td>—</td></tr><tr><td>清单</td><td><code>region</code></td><td><code>aria-label="任务清单"</code></td><td>Space 切换勾选</td></tr><tr><td>可视化</td><td><code>region</code></td><td><code>aria-label="数据可视化"</code></td><td>—</td></tr><tr><td>门禁</td><td><code>region</code></td><td><code>aria-live="polite"</code></td><td>—</td></tr><tr><td>页脚</td><td><code>contentinfo</code></td><td>—</td><td>—</td></tr></tbody></table></div>
+  <div data-panel="good">
+    <div class="case-card good">
+      <h4>✅ <span class="case-tag good">好案例</span> 文档基线完整</h4>
+      <div class="case-loc">📁 cdn/yry-checklist/场景-1-模板架构与CSS设计系统/index.md</div>
+      <div class="case-desc">场景文档包含完整的 §0-§4 章节结构，技术评审含 mermaid 效果示意图和基线溯源表。</div>
     </div>
   </div>
-</div>
-
-<!-- ═══ Tab 6 · Action Plan ═══ -->
-<div class="panel" id="panelActionplan">
-  <table class="action-table">
-    <thead>
-      <tr>
-        <th style="width:6%">#</th>
-        <th style="width:8%">优先级</th>
-        <th>任务</th>
-        <th style="width:8%">工作量</th>
-        <th style="width:12%">负责人</th>
-        <th style="width:8%">SLA</th>
-        <th style="width:14%">状态</th>
-        <th style="width:18%">验收标准</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><strong>A1</strong></td>
-        <td><span class="priority-bar p1"></span>P1</td>
-        <td>补全 §0 CDN 4 资源清单 + 7 区域骨架名列表</td>
-        <td>1h</td>
-        <td><span class="owner-chip">架构师</span></td>
-        <td>S+1</td>
-        <td><span class="status-pill pending">待开始</span></td>
-        <td>grep -c 'shared\.' ≥ 4 · 7 区域名命中 7/7</td>
-      </tr>
-      <tr>
-        <td><strong>A2</strong></td>
-        <td><span class="priority-bar p1"></span>P1</td>
-        <td>建立 TC-1~TC-5 → 计划清单.html / yry-checklist.css 的 file:// 映射</td>
-        <td>2h</td>
-        <td><span class="owner-chip">Coder</span></td>
-        <td>S+1</td>
-        <td><span class="status-pill pending">待开始</span></td>
-        <td>5/5 TC 含可点击 file:// 链接</td>
-      </tr>
-      <tr>
-        <td><strong>A3</strong></td>
-        <td><span class="priority-bar p2"></span>P2</td>
-        <td>回归 5 套件 / 45 断言明细,逐条落表</td>
-        <td>4h</td>
-        <td><span class="owner-chip">Reviewer</span></td>
-        <td>S+1</td>
-        <td><span class="status-pill pending">待开始</span></td>
-        <td>45 行 per-assertion 表 + 100% 通过</td>
-      </tr>
-      <tr>
-        <td><strong>A4</strong></td>
-        <td><span class="priority-bar p2"></span>P2</td>
-        <td>公开 20 项 Token 变量完整清单(独立小节或外链)</td>
-        <td>1d</td>
-        <td><span class="owner-chip">PM</span></td>
-        <td>S+3</td>
-        <td><span class="status-pill pending">待开始</span></td>
-        <td>grep -c '{{' Token表 ≥ 20</td>
-      </tr>
-      <tr>
-        <td><strong>A5</strong></td>
-        <td><span class="priority-bar p3"></span>P3</td>
-        <td>yry-checklist.css 大小实测(wc -c)+ commit hash 锚定</td>
-        <td>0.5h</td>
-        <td><span class="owner-chip">QA</span></td>
-        <td>S+2</td>
-        <td><span class="status-pill pending">待开始</span></td>
-        <td>§2 含实测数字 + @ hash</td>
-      </tr>
-      <tr>
-        <td><strong>A6</strong></td>
-        <td><span class="priority-bar p3"></span>P3</td>
-        <td>将本场景 D0–D5 诊断项并入下一轮计划清单(场景 2 继承)</td>
-        <td>3d</td>
-        <td><span class="owner-chip">Agent</span></td>
-        <td>S+5</td>
-        <td><span class="status-pill pending">待开始</span></td>
-        <td>场景 2 §0 引用本报告 + 闭环</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- ═══ Tab 7 · Fix Diffs ═══ -->
-<div class="panel" id="panelFixdiffs">
-<div class="fix-diff">
-    <h4>补全 CDN 资源清单</h4>
-    <div class="diff-pair">
-      <div class="diff-before"><span class="diff-label">修复前</span><pre>CDN 加载链</pre></div>
-      <div class="diff-after"><span class="diff-label">修复后</span><pre>CDN 加载链：shared/index.css → theme/index.css → yry-checklist.css → shared.js（4 资源，均 200 OK）</pre></div>
+  <div data-panel="bad">
+    <div class="case-card bad">
+      <h4>❌ <span class="case-tag bad">待审查</span> 需运行 /rui code 生成实施数据</h4>
+      <div class="case-loc">📁 cdn/yry-checklist/场景-1-模板架构与CSS设计系统/index.md §2-§4</div>
+      <div class="case-desc">§2 实施报告、§3 测试报告、§4 自改进章节数据待填充。运行 /rui code 后重新审查。</div>
     </div>
   </div>
-<div class="fix-diff">
-    <h4>明确 7 区域骨架名</h4>
-    <div class="diff-pair">
-      <div class="diff-before"><span class="diff-label">修复前</span><pre>HTML 骨架 7 区域结构</pre></div>
-      <div class="diff-after"><span class="diff-label">修复后</span><pre>7 区域：①breadcrumb ②scene-nav ③cross-nav ④tabs ⑤stats-grid ⑥panels ⑦footer</pre></div>
-    </div>
+  <div data-panel="recommendations">
+    <div class="rec-grid"><h2>§4 自改进</h2>
+<ul><li>[x] CSS 变量命名规范化（统一 <code>--yry-</code> 前缀）</li>
+<li>[x] 响应式断点文档化</li>
+<li>[x] 设计令牌完整性验证（9 个核心令牌全覆盖）</li>
+<li>[ ] 计划支持暗色/亮色双主题（P2，后续版本）</li>
+<li>[ ] CSS 变量运行时校验（检测未定义变量引用）（P2）</li></ul></div>
   </div>
-<div class="fix-diff">
-    <h4>TC 增加 file:// 链接</h4>
-    <div class="diff-pair">
-      <div class="diff-before"><span class="diff-label">修复前</span><pre>| TC-1 | 骨架完整性 | ...</pre></div>
-      <div class="diff-after"><span class="diff-label">修复后</span><pre>| TC-1 | [骨架完整性](file://计划清单.html) | ...</pre></div>
-    </div>
-  </div>
-<div class="fix-diff">
-    <h4>Token 变量完整清单</h4>
-    <div class="diff-pair">
-      <div class="diff-before"><span class="diff-label">修复前</span><pre>Token 变量 {{STORY}}·{{SCENE}}·{{VERSION}}</pre></div>
-      <div class="diff-after"><span class="diff-label">修复后</span><pre>20 Token 清单：{{STORY}} / {{SCENE}} / {{VERSION}} / {{DATE}} / {{SCENE_ID}} / ...（详见 Token 变量表）</pre></div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ Tab 8 · Methodology ═══ -->
-<div class="panel" id="panelMethodology">
-  <div class="method-card">
-    <h3>📐 审查方法论 <span style="font-size:.7rem;font-weight:400;color:var(--text3);margin-left:auto">Review Methodology</span></h3>
-    <p>本次审查围绕「模板架构与 CSS 设计系统」场景，结合内部规约 v4.5 与可观察信号，从 4 个核心维度、6 项关键发现展开系统评估。</p>
-    <div class="method-steps">
-      <div class="method-step">
-        <div class="num">STEP 1</div>
-        <div class="title">范围界定</div>
-        <div class="desc">明确审查对象（index.md · 5 节 · ~58 行），划定边界</div>
-      </div>
-      <div class="method-step">
-        <div class="num">STEP 2</div>
-        <div class="title">维度建模</div>
-        <div class="desc">建立 4 维评估模型：完整性·一致性·可追溯·表达力</div>
-      </div>
-      <div class="method-step">
-        <div class="num">STEP 3</div>
-        <div class="title">证据收集</div>
-        <div class="desc">grep / 人工走查 / 模拟新人路径，收集 12 条原始证据（详见证据链面板）</div>
-      </div>
-      <div class="method-step">
-        <div class="num">STEP 4</div>
-        <div class="title">严重度评级</div>
-        <div class="desc">采用 CRITICAL/MAJOR/MINOR/SUGGEST 四级分类</div>
-      </div>
-      <div class="method-step">
-        <div class="num">STEP 5</div>
-        <div class="title">风险映射</div>
-        <div class="desc">将 6 项发现映射到 5×5 风险矩阵，确定处理顺序</div>
-      </div>
-      <div class="method-step">
-        <div class="num">STEP 6</div>
-        <div class="title">建议与行动</div>
-        <div class="desc">每项发现配建议+工作量+负责人+SLA+验收标准</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="method-card">
-    <h3>🎯 评分标准 <span style="font-size:.7rem;font-weight:400;color:var(--text3);margin-left:auto">Scoring Rubric</span></h3>
-    <p>每个维度采用 0-100 分制，按下表规则打分。最终综合健康度为 4 维加权平均（权重 25% / 25% / 30% / 20%）。</p>
-    <table class="rubric-table">
-      <thead>
-        <tr>
-          <th style="width:18%">维度</th>
-          <th style="width:14%">权重</th>
-          <th style="width:14%">等级</th>
-          <th style="width:14%">分数段</th>
-          <th>判定标准</th>
-        </tr>
-      </thead>
-      <tbody>
-<tr>
-    <td>A1</td>
-    <td>补全 CDN 4 资源清单与 7 区域骨架名列表（§0）</td>
-    <td>1h</td>
-    <td>架构师</td>
-    <td>S+1</td>
-    <td><span class="status-pill pending">待开始</span></td>
-    <td>可点击 + 可执行</td>
-  </tr>
-<tr>
-    <td>A2</td>
-    <td>建立 TC-1~TC-5 到计划清单.html / yry-checklist.css 的 file:// 映射</td>
-    <td>2h</td>
-    <td>Coder</td>
-    <td>S+1</td>
-    <td><span class="status-pill pending">待开始</span></td>
-    <td>可点击 + 可执行</td>
-  </tr>
-<tr>
-    <td>A3</td>
-    <td>回归 TC-1~TC-5 断言明细（45 项）逐条落表</td>
-    <td>4h</td>
-    <td>Reviewer</td>
-    <td>S+1</td>
-    <td><span class="status-pill pending">待开始</span></td>
-    <td>可点击 + 可执行</td>
-  </tr>
-<tr>
-    <td>A4</td>
-    <td>Token 变量 20 项完整清单补充到 §0 或独立小节</td>
-    <td>1d</td>
-    <td>PM</td>
-    <td>S+1</td>
-    <td><span class="status-pill pending">待开始</span></td>
-    <td>可点击 + 可执行</td>
-  </tr>
-<tr>
-    <td>A5</td>
-    <td>yry-checklist.css 大小实测（wc -c）并回填 §2</td>
-    <td>2d</td>
-    <td>QA</td>
-    <td>S+1</td>
-    <td><span class="status-pill pending">待开始</span></td>
-    <td>可点击 + 可执行</td>
-  </tr>
-<tr>
-    <td>A6</td>
-    <td>将本场景的 D0–D7 诊断项并入下一轮计划清单</td>
-    <td>3d</td>
-    <td>Agent</td>
-    <td>S+1</td>
-    <td><span class="status-pill pending">待开始</span></td>
-    <td>可点击 + 可执行</td>
-  </tr>
-</tbody>
-    </table>
-  </div>
-</div>
-
-<!-- ═══ Tab 9 · Evidence ═══ -->
-<div class="panel" id="panelEvidence">
-  <div class="suite open">
-    <div class="suite-head"><span class="s-arrow">▶</span><span class="s-name">📎 审查证据清单</span><span class="s-badge pass">12 项</span></div>
-    <div class="suite-body">
-            <ul class="ev-list">
-        <li><span class="ev-icon">✅</span><span class="ev-text"><strong>Mermaid 流程图：</strong><code>index.md#L11-L24</code> 5 节点（SKEL→CDN→VARS→COMP→TOK）流程正确，classDef 色值合规</span></li>
-        <li><span class="ev-icon">✅</span><span class="ev-text"><strong>测试用例结构：</strong>TC-1~TC-5 覆盖骨架完整性 / CSS 覆盖 / CDN 可达 / Token 残留 / 响应式断点五维度</span></li>
-        <li><span class="ev-icon">✅</span><span class="ev-text"><strong>产物状态表：</strong>4 个交付物（计划清单.html / yry-checklist.css / Token 表 / 本报告）全部标记 ✅ 已交付</span></li>
-        <li><span class="ev-icon">✅</span><span class="ev-text"><strong>自改进闭环：</strong>§4 含 2 项已完成（CSS 变量 --yry- 前缀 / 响应式断点文档化）+ 1 项 P2 待办</span></li>
-        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>CDN 清单缺失：</strong><code>grep -n 'shared\.css\|theme\.css\|yry-checklist\.css\|shared\.js' cdn/yry-checklist/scenes/场景-1-模板架构与CSS设计系统/index.md → 0 显式清单</code>（仅在 Mermaid 图里出现）</span></li>
-        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>7 区域未枚举：</strong><code>grep -n '7 区域' cdn/yry-checklist/scenes/场景-1-模板架构与CSS设计系统/index.md → 1 处</code>（仅标题，未展开）</span></li>
-        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>Token 表未列：</strong><code>grep -n '{{' cdn/yry-checklist/scenes/场景-1-模板架构与CSS设计系统/index.md → 3</code>（仅示例 3 项，非完整 20 项）</span></li>
-        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>测试报告缺明细：</strong>4 套件 / 45 断言 / 100% 通过率，但无 per-assertion 明细表</span></li>
-        <li><span class="ev-icon">📊</span><span class="ev-text"><strong>骨架实测：</strong>计划清单.html 实际 7 区域齐备（breadcrumb/scene-nav/cross-nav/tabs/stats-grid/panels/footer）</span></li>
-        <li><span class="ev-icon">📊</span><span class="ev-text"><strong>CSS 覆盖实测：</strong>yry-checklist.css 引入后，step·phase·scorecard·risk-matrix 组件渲染符合设计稿</span></li>
-        <li><span class="ev-icon">📊</span><span class="ev-text"><strong>Token 残留扫描：</strong><code>grep -rn '{{' cdn/yry-checklist/scenes/场景-1-模板架构与CSS设计系统/*.html → 0 未替换残留</code></span></li>
-        <li><span class="ev-icon">📊</span><span class="ev-text"><strong>CDN 可达性：</strong>../../../../cdn/ 4 资源全部 200 OK（shared/index.css / theme/index.css / yry-checklist.css / shared.js）</span></li>
+  <div data-panel="evidence">
+    <div class="dim-card">
+      <h3>📎 审查证据清单</h3>
+      <ul>
+        <li><strong>场景文档:</strong> index.md 存在，含 §0-§4 章节</li>
+        <li><strong>版本:</strong> vv5.4.0 · 2026-06-22</li>
+        <li><strong>故事:</strong> yry-checklist · 故事任务</li>
       </ul>
     </div>
   </div>
+</yry-scene-tabs>
 
-  <div class="suite">
-    <div class="suite-head"><span class="s-arrow">▶</span><span class="s-name">🛠️ 复现脚本</span><span class="s-badge info">3 步</span></div>
-    <div class="suite-body">
-      <p style="font-size:.76rem;color:var(--text2);margin-bottom:8px">其他审查者可通过以下命令复现本次审查：</p>
-            <pre style="background:rgba(0,0,0,.3);border-radius:6px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text2);line-height:1.6">
-# Step 1: 完整性扫描
-grep -n '7 区域' cdn/yry-checklist/scenes/场景-1-模板架构与CSS设计系统/index.md
-grep -n 'shared\.css\|theme\.css\|yry-checklist\.css' cdn/yry-checklist/scenes/场景-1-模板架构与CSS设计系统/index.md
-grep -c '{{' cdn/yry-checklist/scenes/场景-1-模板架构与CSS设计系统/index.md
-
-# Step 2: CDN 可达性
-for f in shared/index.css theme/index.css yry-checklist.css shared.js; do
-  curl -s -o /dev/null -w "%{http_code}  $f
-" file://$PWD/cdn/$f
-done
-
-# Step 3: Token 残留扫描
-grep -rn '{{' cdn/yry-checklist/scenes/场景-1-模板架构与CSS设计系统/*.html
-</pre>
-    </div>
-  </div>
-
-  <div class="suite">
-    <div class="suite-head"><span class="s-arrow">▶</span><span class="s-name">📈 历次审查趋势</span><span class="s-badge info">4 版本</span></div>
-    <div class="suite-body">
-      <p style="font-size:.76rem;color:var(--text2);margin-bottom:8px">近 4 个版本的健康度变化：</p>
-      <table class="rubric-table" style="margin-top:0">
-        <thead>
-          <tr><th>版本</th><th>综合</th><th>完整</th><th>一致</th><th>可追溯</th><th>表达力</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>v4.5 (2026-04)</td><td class="score-cell score-c">68%</td><td>62%</td><td>78%</td><td>55%</td><td>82%</td></tr>
-          <tr><td>v4.5 (2026-05)</td><td class="score-cell score-c">75%</td><td>72%</td><td>82%</td><td>63%</td><td>85%</td></tr>
-          <tr><td>v4.5 (2026-06-初)</td><td class="score-cell score-b">80%</td><td>76%</td><td>83%</td><td>75%</td><td>89%</td></tr>
-          <tr><td><strong>v4.5 (当前)</strong></td><td class="score-cell score-b"><strong>82%</strong></td><td><strong>80%</strong></td><td><strong>85%</strong></td><td><strong>72%</strong></td><td><strong>90%</strong></td></tr>
-        </tbody>
-      </table>
-      <p style="font-size:.7rem;color:var(--text3);margin-top:8px"><strong>趋势分析：</strong>完整性/一致性/表达力持续提升；可追溯性本版本微降（-3%），因新增 DoD/退出码/FAQ 三个待办后暴露出更多缺口。</p>
-    </div>
-  </div>
+<yry-scene-footer version="v5.4.0" date="2026-06-22" docs-link="../../../../docs/index.html"></yry-scene-footer>
 </div>
-
-<div class="footer">
-  📄 YrY v4.5 · <a href="../../../index.html">文档中心</a>
-  <div class="sig">本报告由 code-reviewer Agent 自动生成 · 模板 v4.5 · 加密指纹 <code style="font-family:'JetBrains Mono',monospace">sha256:7c4a...f3d1</code></div>
-</div>
-</div>
-<script src="../../../../cdn/yry-review/index.js"></script>
 <script src="../../../../cdn/shared/index.js"></script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
+<script src="../../../../cdn/yry-scene-stats/index.js"></script>
+<script src="../../../../cdn/yry-scene-health-bar/index.js"></script>
+<script src="../../../../cdn/yry-scene-tabs/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
+<script src="../../../../cdn/yry-review-cards/index.js"></script>
 </body>
 </html>

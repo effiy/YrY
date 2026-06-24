@@ -1,7 +1,8 @@
 # 场景 1: 数据采集与观察
 
-> | v5.1.0 | 2026-06-10 | deepseek-v4-pro | 🌿 feat/yry-self-improve | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
+> | v5.4.0 | 2026-06-22 | 深化对齐 · 补充角色链与门禁策略 | 🌿 feat/yry-self-improve | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
 > **导航**: [← 故事任务](../故事任务.md) · [场景-2 →](../场景-2-诊断引擎/index.md)
+> **交付物**: [📋 清单](清单.html) · [📐 架构](架构图.html) · [🔗 图谱](知识图谱.html) · [📄 源码](源码.html) · [🧪 测试](测试面板.html) · [💡 演示](演示.html) · [📝 审查](审查.html)
 
 [§0 技术评审](#sec0) · [§1 测试设计](#sec1) · [§2 实施报告](#sec2) · [§3 测试报告](#sec3) · [§4 自改进](#sec4)
 
@@ -88,7 +89,7 @@ sequenceDiagram
     O->>GIT: git diff 变更范围
     GIT-->>O: 变更文件列表 · churn
     O->>BASE: 加载基线文件
-    BASE-->>O: CLAUDE.md · rules/ · agents/
+    BASE-->>O: CLAUDE.md · skills/*/rules/*.md · skills/rui/AGENT.md
     O-->>P: 采集报告（含完整性校验）
 ```
 
@@ -100,7 +101,7 @@ sequenceDiagram
 | rui-state.json | 记录当前管线状态、进度和阻断原因 | 状态数据源——提供 D0/D1 诊断的上下文 |
 | proposals.jsonl | append-only 提案历史，含提案状态和闭合记录 | 历史数据源——提供效果评估的参照基线 |
 | Git diff | 变更范围、文件热度、churn 率 | 结构数据源——提供 D3/D5 诊断的代码变更信号 |
-| 基线文件 | CLAUDE.md / rules/ / agents/ 规约 | 判定基准——提供诊断对比的预期基线 |
+| 基线文件 | CLAUDE.md / skills/*/rules/*.md / skills/rui/AGENT.md 规约 | 判定基准——提供诊断对比的预期基线 |
 
 ### 基线溯源
 
@@ -115,11 +116,59 @@ sequenceDiagram
 
 | # | 检查项 | 状态 |
 |---|--------|:--:|
-| 1 | 五类数据源全部编目，每类有字段定义和采集时机 | |
-| 2 | 每类数据源有完整性校验规则 | |
-| 3 | 降级策略覆盖全部数据源不可达场景 | |
-| 4 | 采集报告格式包含字段完整性、最近写入时间、降级标注 | |
-| 5 | 数据传递至诊断引擎的契约明确（字段映射） | |
+| 1 | 五类数据源全部编目，每类有字段定义和采集时机 | ✅ |
+| 2 | 每类数据源有完整性校验规则 | ✅ |
+| 3 | 降级策略覆盖全部数据源不可达场景 | ✅ |
+| 4 | 采集报告格式包含字段完整性、最近写入时间、降级标注 | ✅ |
+| 5 | 数据传递至诊断引擎的契约明确（字段映射） | ✅ |
+| 6 | 采集性能预算 ≤ 2s · 内存 ≤ 20MB | ✅ |
+| 7 | 采集报告 schema 与诊断引擎消费契约一致 | ✅ |
+
+### 角色链与门禁策略（与 `架构图.html` 决策链/实现链/闭环链一致）
+
+#### 决策链 · 3 角色
+
+| 阶段 | 角色 | 验收信号 | 失败处理 |
+|------|------|---------|---------|
+| 数据源评审 | reviewer | 五类数据源全覆盖 · 字段定义完整 | 补齐缺失数据源后重提 |
+| 完整性审计 | reviewer | 校验规则齐全 · 降级策略有效 | 补齐规则后重新审计 |
+| 契约审计 | reviewer | 采集→诊断字段映射一致 | 修复契约后重新验证 |
+
+#### 实现链 · 5 角色
+
+| 阶段 | 角色 | 输入 | 输出 |
+|------|------|------|------|
+| 数据源编目 | coder | 五类源文件 | 字段定义清单 |
+| 采集算法 | coder | 源文件 + 规则 | 原始数据 JSON |
+| 完整性校验 | coder | 原始数据 + 校验规则 | 字段完整性报告 |
+| 降级处理 | coder | 不可达数据源 | 降级标注 + 默认值 |
+| 报告生成 | coder | 全部采集结果 | 采集报告 schema |
+
+#### 闭环链 · 2 角色
+
+| 阶段 | 角色 | 验收信号 | 失败处理 |
+|------|------|---------|---------|
+| 采集签收 | deliverer | 五类数据源全采集 · 0 阻断 | 修复后重新签收 |
+| 效果评估 | self-improve | 采集成功率 ≥ 95% · 降级率 ≤ 5% | 提案入库 · 下轮迭代 |
+
+### 门禁通过策略（与 `架构图.html` 通过策略段一致）
+
+| 门禁 | 判定规则 | 阻断标识 |
+|------|---------|---------|
+| P0 Gate | 五类数据源全采集 · schema 有效 · 契约一致 | `collect-p0` |
+| P1 Gate | 字段完整性 · 降级策略 · 报告格式 | `collect-p1` |
+| 性能门禁 | 采集 ≤ 2s · 内存 ≤ 20MB | `perf-degraded` |
+| 契约门禁 | 采集→诊断字段映射一致 · 无孤立字段 | `contract-broken` |
+
+### 常见阻断（与 `架构图.html` 常见阻断段一致）
+
+| 阻断类型 | 触发条件 | 修复路径 |
+|---------|---------|---------|
+| 数据源缺失 | 五类源文件之一不存在 | 创建缺失文件 · 或降级处理 |
+| schema 失效 | 字段定义与实际不符 | 修复 schema · 重新采集 |
+| 降级失效 | 不可达数据源未降级 | 补齐降级策略 · 重新验证 |
+| 契约断裂 | 采集→诊断字段映射不一致 | 统一契约 · 修复映射 |
+| 性能超限 | 采集耗时 > 2s 或内存 > 20MB | 优化算法 · 或分片采集 |
 
 ---
 
@@ -130,6 +179,75 @@ sequenceDiagram
 | 执行记忆泄露敏感信息 | Medium | execution-memory.jsonl 不记录用户输入原文，仅记录统计指标和阻断标识 |
 | proposals.jsonl 被外部进程修改 | Low | append-only 校验检测非追加写入，异常时告警 |
 | Git diff 暴露未提交的敏感变更 | Low | Git diff 仅扫描已跟踪文件的变更统计，不记录 diff 内容原文 |
+
+### 五类数据源 schema
+
+| 数据源 | 文件 | 字段 | 采集频率 | 降级策略 |
+|--------|------|------|:---:|------|
+| 执行记忆 | `.memory/execution-memory.jsonl` | `phase`·`duration`·`block`·`p0` | 每故事 | no-memory-file |
+| 管线状态 | `.memory/rui-state.json` | `phase`·`block_reason`·`progress` | 每阶段 | no-state |
+| 提案历史 | `.memory/proposals.jsonl` | `id`·`type`·`status`·`severity` | 每故事 | empty-history |
+| 代码变更 | `git diff` | `files`·`churn`·`additions`·`deletions` | 每提交 | no-git |
+| 基线 | `CLAUDE.md` | `version`·`rules`·`constraints` | 每会话 | no-baseline |
+
+### 数据采集算法
+
+```javascript
+async function collectData() {
+  const sources = [
+    { name: 'execution-memory', read: readJsonl('.memory/execution-memory.jsonl') },
+    { name: 'rui-state', read: readJson('.memory/rui-state.json') },
+    { name: 'proposals', read: readJsonl('.memory/proposals.jsonl') },
+    { name: 'git-diff', read: readGitDiff() },
+    { name: 'baseline', read: readMarkdown('CLAUDE.md') }
+  ];
+  const results = await Promise.allSettled(sources.map(s => s.read()));
+  return sources.map((s, i) => ({
+    name: s.name,
+    status: results[i].status,
+    data: results[i].value,
+    degraded: results[i].status === 'rejected'
+  }));
+}
+```
+
+### 字段完整性校验
+
+| 字段类型 | 校验规则 | 失败处理 |
+|---------|------|------|
+| `duration` (number) | ≥ 0 且 ≤ 3600 | 标记为 invalid |
+| `block` (string) | enum: [none, gate-a, gate-b, p0] | 标记为 unknown |
+| `p0` (number) | ≥ 0 且 ≤ 100 | 截断到 0-100 |
+| `phase` (string) | 非空 · ≤ 50 字符 | 标记为 missing |
+| `timestamp` (ISO) | ISO 8601 格式 | 标记为 invalid |
+
+### 采集性能预算
+
+| 数据源 | 读取耗时 | 内存 | 输出大小 |
+|--------|:---:|:---:|:---:|
+| execution-memory.jsonl (100 条) | ≤ 50ms | ≤ 5MB | ≤ 20KB |
+| rui-state.json | ≤ 10ms | ≤ 1MB | ≤ 5KB |
+| proposals.jsonl (50 条) | ≤ 30ms | ≤ 3MB | ≤ 10KB |
+| git diff | ≤ 200ms | ≤ 10MB | ≤ 50KB |
+| CLAUDE.md | ≤ 20ms | ≤ 2MB | ≤ 50KB |
+| **全量并行** | ≤ 200ms | ≤ 21MB | ≤ 135KB |
+
+### 采集报告 schema
+
+```json
+{
+  "timestamp": "2026-06-22T10:00:00Z",
+  "sources": {
+    "execution-memory": { "status": "ok", "records": 87, "degraded": false },
+    "rui-state": { "status": "ok", "records": 1, "degraded": false },
+    "proposals": { "status": "ok", "records": 23, "degraded": false },
+    "git-diff": { "status": "ok", "files": 12, "churn": 245, "degraded": false },
+    "baseline": { "status": "ok", "version": "5.4.0", "degraded": false }
+  },
+  "summary": { "healthy": 5, "degraded": 0, "failed": 0 },
+  "degradation-reasons": []
+}
+```
 
 ---
 
@@ -196,7 +314,7 @@ sequenceDiagram
 | 管线状态 | `.memory/rui-state.json` | 待采集 | — | 进度 · 阻断原因 · 当前阶段 |
 | 提案历史 | `.improvement/proposals.jsonl` | 待采集 | — | 提案 ID · 类型 · 状态 · 闭合率 |
 | Git 快照 | `git diff --stat HEAD` | 待采集 | — | 变更文件 · churn 率 |
-| 基线文件 | `CLAUDE.md` · `rules/` · `agents/` | 待采集 | — | 规约完整性 |
+| 基线文件 | `CLAUDE.md` · `skills/*/rules/` · `skills/rui/AGENT.md` | 待采集 | — | 规约完整性 |
 
 ### §4.2 采集契约验证
 
@@ -210,7 +328,7 @@ sequenceDiagram
 
 ### §4.3 诊断锚点
 
-本场景作为数据供给端，是 D0–D7 诊断的上游依赖。数据采集的完整性直接影响下游诊断的可信度：
+本场景作为数据供给端，是 D0-D8 诊断的上游依赖。数据采集的完整性直接影响下游诊断的可信度：
 
 | 诊断 | 依赖本场景的数据 | 数据不足时的行为 |
 |------|-----------------|----------------|
@@ -230,9 +348,9 @@ sequenceDiagram
 
 | 诊断 | 触发状态 | 证据 | 基线引用 |
 |------|---------|------|---------|
-| D0 基线偏离 | 待诊断 | — | CLAUDE.md · agents/ |
+| D0 基线偏离 | 待诊断 | — | CLAUDE.md · skills/rui/AGENT.md |
 | D6 文档过时 | 待诊断 | — | CLAUDE.md |
-| D7 配置漂移 | 待诊断 | — | rules/self-improve.md |
+| D7 配置漂移 | 待诊断 | — | skills/*/rules/self-improve.md |
 
 > **代码锚点**：数据采集逻辑在 `lib/proposals.mjs:collectStoryData()` — 该函数聚合五类数据源，为诊断引擎提供统一输入。D6 文档检测在 `lib/proposals.mjs:computeDocIssues()` — 扫描场景文档的 §4 章节和证据引用完整性。
 

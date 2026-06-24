@@ -10,9 +10,15 @@ import { writeFileSync, mkdirSync, existsSync, readdirSync, readFileSync } from 
 import { join } from "node:path";
 import { nowISO, nowDate, isMain, fmtDisplay, writeJson } from "../../../lib/fs.mjs";
 import { NODE_ARGV_OFFSET } from "../../../lib/constants.mjs";
+import { LOOP_SKILLS, getCheckItems, getCrossRef } from "../../../lib/loop/registry.mjs";
 
 const REPORT_DIR = "docs/自循环报告";
 const CDN_DEPTH = "../../";
+
+// Build SKILL_META index from registry for backwards-compat with downstream code.
+const SKILL_META = Object.fromEntries(
+  LOOP_SKILLS.map(s => [s.skill, { icon: s.icon, label: s.label, interval: s.interval, category: s.category, desc: s.desc }])
+);
 
 /**
  * Read latest health score for cross-report context.
@@ -28,31 +34,78 @@ function getLatestHealthContext() {
   } catch { return null; }
 }
 
-const SKILL_META = {
-  "rui-trends":    { icon: "📡", label: "技术趋势监控", interval: "每周一早 9 点" },
-  "rui-analysis":  { icon: "🔍", label: "代码健康看门狗", interval: "周一/周四早 8 点" },
-  "rui-import":    { icon: "📤", label: "持续文档同步", interval: "每 30 分钟" },
-  "rui-story":     { icon: "📋", label: "故事状态轮询", interval: "每 5 分钟" },
-  "rui-claude":    { icon: "⚙️", label: "配置健康检查", interval: "每天早 10 点" },
-  "rui-bot":       { icon: "💬", label: "通知队列轮询", interval: "每 5 分钟" },
-  "rui-npm":       { icon: "📦", label: "依赖安全审计", interval: "每周一早 8 点" },
-  "self-improve":  { icon: "🔄", label: "持续自改进闭环", interval: "每周一早 9 点" },
-  "rui-html":      { icon: "🎨", label: "HTML 过期重生成", interval: "每 30 分钟" },
-  "rui-doc":       { icon: "📝", label: "文档新鲜度检查", interval: "工作日早 8 点" },
-  "rui-version":   { icon: "🏷️", label: "版本漂移检测", interval: "每周一早 9 点" },
-  "rui-plan":      { icon: "📐", label: "计划新鲜度检查", interval: "工作日早 8 点" },
-};
+/**
+ * Build a status summary card showing what was checked and the health context.
+ * For pass reports, shows what passed; for non-pass, shows what needs attention.
+ */
+function buildStatusSummary(skill, status, findings, meta) {
+  var checkItems = getCheckItemsForSkill(skill);
+  var passedCount = checkItems.length - (findings || []).filter(function(f) { return f.level === 'fail' || f.level === 'warn'; }).length;
+  var allPassed = passedCount === checkItems.length;
 
-const CROSS_REFS = {
-  "rui-trends":   { dim: "自循环报告", desc: "趋势数据影响自循环报告新鲜度和 D5 诊断信号，过时趋势可能导致技术选型决策失误" },
-  "rui-analysis":  { dim: "D2 质量退化", desc: "代码分析结果直接输入 D2 质量退化检测，高频修改文件和复杂度热点是质量热点的核心信号" },
-  "rui-import":    { dim: "API 可达性", desc: "文档同步依赖 API 可达性，失败时导致远端与本地文档基线不一致" },
-  "rui-story":     { dim: "Git 仓库状态", desc: "故事状态变更涉及 Git 分支和索引更新，分支隔离违规为 P0 事件" },
-  "rui-claude":    { dim: "配置文件", desc: "配置健康直接影响 .claude/ 完整性评分，多目录配置漂移触发 D6 诊断" },
-  "rui-bot":       { dim: "机器人配置", desc: "通知投递依赖机器人 webhook 配置和 API 可达性，失败队列堆积影响消息时效" },
-  "rui-npm":       { dim: "依赖管理", desc: "依赖安全审计结果输入工程化成熟度-依赖管理维度，已知漏洞触发 P0 安全告警" },
-  "self-improve":  { dim: "D0-D7 诊断", desc: "自改进闭环是 D0-D7 诊断的主要触发源，驱动全维度健康检查" },
-};
+  var checkHtml = checkItems.map(function(item) {
+    var hasIssue = (findings || []).some(function(f) {
+      return (f.title || f.message || "").toLowerCase().indexOf(item.keyword) >= 0;
+    });
+    var icon = hasIssue ? '⚠️' : '✅';
+    var color = hasIssue ? 'var(--yry-warn)' : 'var(--yry-pass)';
+    return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.78rem;border-bottom:1px solid rgba(255,255,255,.03)">' +
+      '<span style="color:' + color + '">' + icon + '</span>' +
+      '<span style="color:var(--yry-text2)">' + item.label + '</span>' +
+      '<span style="color:var(--yry-text3);font-size:.68rem;margin-left:auto">' + item.target + '</span>' +
+      '</div>';
+  }).join("");
+
+  var statusNote = status === 'pass'
+    ? '所有检查项均通过，技能运行正常。下一个巡检周期将自动重新检查。'
+    : status === 'warn'
+    ? passedCount + '/' + checkItems.length + ' 项通过，建议在例行维护窗口处理告警项。'
+    : passedCount + '/' + checkItems.length + ' 项通过，存在阻塞性问题需立即修复。';
+
+  return '<div class="yry-card">' +
+    '<h2>📋 检查清单 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">' + passedCount + '/' + checkItems.length + ' 通过</span></h2>' +
+    '<div style="margin-bottom:8px">' + checkHtml + '</div>' +
+    '<div style="padding:8px 12px;background:' + (status === 'pass' ? 'rgba(34,197,94,.04)' : status === 'warn' ? 'rgba(245,158,11,.04)' : 'rgba(239,68,68,.04)') + ';border-radius:6px;font-size:.74rem;color:var(--yry-text2)">' +
+    '📌 ' + statusNote + ' 执行频率：' + (meta.interval || '—') + '。' +
+    '</div>' +
+    '</div>';
+}
+
+/**
+ * Get the list of check items for each skill type.
+ * Delegates to the central registry (lib/loop-registry.mjs).
+ */
+function getCheckItemsForSkill(skill) {
+  return getCheckItems(skill);
+}
+function buildActionPlan(findings, status) {
+  if (!findings || findings.length === 0) return "";
+  var failItems = findings.filter(function(f) { return f.level === 'fail'; });
+  var warnItems = findings.filter(function(f) { return f.level === 'warn'; });
+  var allActionItems = failItems.concat(warnItems);
+  if (allActionItems.length === 0) return "";
+
+  var steps = allActionItems.slice(0, 5).map(function(f, i) {
+    var priority = f.level === 'fail' ? 'P0' : 'P1';
+    var color = f.level === 'fail' ? '#ef4444' : '#f59e0b';
+    var bg = f.level === 'fail' ? 'rgba(239,68,68,.06)' : 'rgba(245,158,11,.06)';
+    return '<div style="display:flex;gap:12px;align-items:flex-start;padding:10px;margin-bottom:6px;background:' + bg + ';border-radius:8px;border-left:3px solid ' + color + '">' +
+      '<span style="padding:3px 10px;border-radius:4px;font-size:.68rem;font-weight:700;background:' + color.replace(')', ',.15)').replace('rgb', 'rgba') + ';color:' + color + ';flex-shrink:0">' + (i + 1) + '. ' + priority + '</span>' +
+      '<div style="flex:1"><div style="font-size:.82rem;font-weight:600;color:var(--yry-text)">' + (f.title || f.message) + '</div>' +
+      '<div style="font-size:.72rem;color:var(--yry-text3);margin-top:4px">' + (f.detail || '') + '</div></div>' +
+      '</div>';
+  }).join('');
+
+  var urgencyNote = status === 'fail'
+    ? '存在异常项，建议在 2 小时内启动修复，防止管线阻塞或数据丢失。'
+    : '存在告警项，建议在 24 小时内评估并制定修复计划，避免升级为异常。';
+
+  return '<div class="yry-card">' +
+    '<h2>📋 行动计划 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Action Plan</span></h2>' +
+    '<div style="margin-bottom:12px">' + steps + '</div>' +
+    '<div style="padding:8px 12px;background:rgba(59,130,246,.04);border-radius:6px;border:1px solid rgba(59,130,246,.1);font-size:.74rem;color:var(--yry-text2)">⏱️ ' + urgencyNote + '</div>' +
+    '</div>';
+}
 
 /**
  * Generate a self-loop HTML report with enhanced detail.
@@ -128,6 +181,7 @@ export function generateReport({ skill, status, summary, details, findings }) {
   <div class="icon">${meta.icon}</div>
   <h1>自循环报告 · ${meta.label}</h1>
   <div class="meta">${ts} · ${meta.interval} · ${statusBadge}</div>
+  ${meta.desc ? `<div class="desc" style="font-size:.84rem;color:var(--yry-text2);margin-top:12px;line-height:1.7;max-width:700px;margin-left:auto;margin-right:auto">${meta.desc}</div>` : ""}
 </div>
 
 <div class="yry-stats">
@@ -152,6 +206,8 @@ export function generateReport({ skill, status, summary, details, findings }) {
 
 ${summary ? `<div class="yry-summary">${summary}</div>` : ""}
 
+${buildStatusSummary(skill, status, findings || [], meta)}
+
 ${findingsHtml ? `
 <div class="yry-card">
   <h2>📋 检查详情</h2>
@@ -161,7 +217,11 @@ ${findingsHtml ? `
 
 ${buildImpactAssessment(findings || [], status)}
 
+${buildSeverityBreakdown(findings || [])}
+
 ${buildSkillHistoryCard(skill)}
+
+${buildSLATrackingCard(skill, status)}
 
 ${details ? `
 <div class="yry-card">
@@ -171,6 +231,8 @@ ${details ? `
 ` : ""}
 
 ${buildCrossReferenceCard(skill, status)}
+
+${status !== 'pass' ? buildActionPlan(findings || [], status) : ""}
 
 <div class="yry-footer">
   自循环报告 · ${skill} · ${ts}<br>
@@ -197,29 +259,38 @@ ${buildCrossReferenceCard(skill, status)}
 
 function resolutionForFinding(finding) {
   const title = (finding.title || finding.message || "").toLowerCase();
-  if (title.includes("不可达") || title.includes("unreachable") || title.includes("timeout")) {
-    return "检查网络连接和目标服务状态，验证 URL 配置是否正确；如为外部服务故障，等待恢复后重试";
+  const detail = (finding.detail || "").toLowerCase();
+  const combined = title + " " + detail;
+
+  if (combined.includes("不可达") || combined.includes("unreachable") || combined.includes("timeout") || combined.includes("fetch failed")) {
+    return "检查网络连接和目标服务状态，验证 URL 配置是否正确；如为外部服务故障，等待恢复后系统将在下次轮询自动重试。若连续 3 次不可达，检查是否需要更新 API 端点或增加代理配置。";
   }
-  if (title.includes("空数据") || title.includes("empty") || title.includes("返回空")) {
-    return "数据源页面结构可能已变更，需更新 HTML 解析选择器；检查目标页面是否改版，调整提取逻辑";
+  if (combined.includes("空数据") || combined.includes("empty") || combined.includes("返回空") || combined.includes("返回 0")) {
+    return "数据源页面结构可能已变更，需更新 HTML 解析选择器；检查目标页面是否改版，调整提取逻辑。建议对比最近一次成功抓取的原始响应，定位选择器变更点。";
   }
-  if (title.includes("失败") || title.includes("error") || title.includes("异常")) {
-    return "查看详细错误日志定位根因；如为临时性故障，系统将在下次轮询自动重试";
+  if (combined.includes("失败") || combined.includes("error") || combined.includes("异常") || combined.includes("崩溃")) {
+    return "查看详细错误日志定位根因；如为临时性故障，系统将在下次轮询自动重试。若为代码逻辑错误，检查最近一次部署变更，定位引入异常的 commit。";
   }
-  if (title.includes("高") || title.includes("过高") || title.includes("频繁")) {
-    return "审查相关维度的当前配置和阈值，评估是否需要调整参数或增加资源分配";
+  if (combined.includes("高") || combined.includes("过高") || combined.includes("频繁") || combined.includes("激增")) {
+    return "审查相关维度的当前配置和阈值，评估是否需要调整参数或增加资源分配。检查是否为正常业务增长，若是异常增长需排查是否存在配置错误或资源泄漏。";
   }
-  if (title.includes("低") || title.includes("过低") || title.includes("不足")) {
-    return "识别瓶颈资源或缺失配置，制定改进计划并设定目标值；可参考健康报告建议";
+  if (combined.includes("低") || combined.includes("过低") || combined.includes("不足") || combined.includes("下降")) {
+    return "识别瓶颈资源或缺失配置，制定改进计划并设定目标值。可参考健康报告中的改进建议，优先处理影响评分最大的维度。";
   }
-  if (title.includes("过时") || title.includes("stale") || title.includes("过期") || title.includes("未更新")) {
-    return "触发对应的刷新或重生成流程；检查自动化调度是否正常，必要时手动触发更新";
+  if (combined.includes("过时") || combined.includes("stale") || combined.includes("过期") || combined.includes("未更新") || combined.includes("不一致")) {
+    return "触发对应的刷新或重生成流程；检查自动化调度是否正常，必要时手动触发更新。如为版本号不一致，运行 rui-version 检测并自动修复。";
   }
-  if (title.includes("安全") || title.includes("security") || title.includes("漏洞")) {
-    return "立即评估风险等级，优先修复高危漏洞；更新依赖版本或应用安全补丁";
+  if (combined.includes("安全") || combined.includes("security") || combined.includes("漏洞") || combined.includes("cve")) {
+    return "立即评估风险等级（CVSS 评分），优先修复高危漏洞（CVSS≥7.0）；运行 npm audit fix 尝试自动修复，无法自动修复的手动更新依赖版本或应用安全补丁。";
   }
-  if (title.includes("配置") || title.includes("config") || title.includes("缺失")) {
-    return "补齐缺失的配置项，参考项目规约文档确保配置完整性；验证配置格式合规";
+  if (combined.includes("配置") || combined.includes("config") || combined.includes("缺失") || combined.includes("不存在")) {
+    return "补齐缺失的配置项，参考项目规约文档确保配置完整性；运行 rui-init 或手动创建配置文件，验证配置格式合规后重新运行检查。";
+  }
+  if (combined.includes("版本") || combined.includes("version") || combined.includes("plugin.json")) {
+    return "运行 rui-version 自动检测并修复版本号不一致；检查 plugin.json、package.json、CHANGELOG.md、README.md 四个文件的版本号是否同步。";
+  }
+  if (combined.includes("webhook") || combined.includes("通知") || combined.includes("队列") || combined.includes("积压")) {
+    return "检查 webhook URL 配置正确性和网络可达性；验证 API_X_TOKEN 环境变量是否有效；若队列积压超过 10 条，考虑增加重试间隔或排查 webhook 服务端限流策略。";
   }
   return null;
 }
@@ -245,6 +316,90 @@ function buildImpactAssessment(findings, status) {
     </div>
     ${topIssues.length > 0 ? `<div class="yry-impact-detail"><strong>关键问题:</strong><ul style="margin-top:6px;padding-left:20px;color:var(--yry-text2);font-size:.84rem">${topIssues.map(f => `<li>${f.title || f.message}${f.detail ? `<br><span style="color:var(--yry-text3);font-size:.76rem">${f.detail}</span>` : ''}</li>`).join('')}</ul></div>` : ''}
     <div style="margin-top:10px;font-size:.78rem;color:var(--yry-text3)">📌 ${suggestion}</div>
+  </div>`;
+}
+
+/**
+ * Build a severity breakdown showing the distribution of findings by level
+ * and the potential impact of each category.
+ */
+function buildSeverityBreakdown(findings) {
+  if (!findings || findings.length === 0) return "";
+
+  const byLevel = { fail: [], warn: [], info: [] };
+  for (const f of findings) {
+    (byLevel[f.level] || byLevel.info).push(f);
+  }
+
+  const levelConfig = {
+    fail: { icon: "🚫", label: "异常 (Fail)", color: "var(--yry-fail)", bg: "rgba(239,68,68,.06)", desc: "需要立即处理的严重问题，可能导致管线阻塞、数据丢失或安全风险" },
+    warn: { icon: "⚠️", label: "告警 (Warn)", color: "var(--yry-warn)", bg: "rgba(245,158,11,.06)", desc: "需要关注但非紧急的问题，建议在下一维护窗口处理" },
+    info: { icon: "ℹ️", label: "信息 (Info)", color: "var(--yry-cyan)", bg: "rgba(34,211,238,.06)", desc: "正常运行信息，无需处理，用于状态追踪和审计" },
+  };
+
+  let html = '<div class="yry-card"><h2>📊 严重程度分布 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Severity Breakdown</span></h2>';
+
+  for (const [level, config] of Object.entries(levelConfig)) {
+    const items = byLevel[level] || [];
+    if (items.length === 0) continue;
+    const pct = Math.round((items.length / findings.length) * 100);
+    html += `<div style="margin-bottom:12px;padding:12px;background:${config.bg};border-radius:8px;border-left:3px solid ${config.color}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span style="font-weight:600;font-size:.88rem">${config.icon} ${config.label}</span>
+        <span style="font-size:.82rem;font-weight:700;color:${config.color}">${items.length} 项 (${pct}%)</span>
+      </div>
+      <div style="font-size:.74rem;color:var(--yry-text3);margin-bottom:8px">${config.desc}</div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        ${items.slice(0, 3).map(f => `<div style="font-size:.76rem;color:var(--yry-text2);padding:4px 8px;background:var(--yry-bg-card);border-radius:4px">• ${f.title || f.message}</div>`).join("")}
+        ${items.length > 3 ? `<div style="font-size:.7rem;color:var(--yry-text3);padding-left:8px">... 还有 ${items.length - 3} 项</div>` : ""}
+      </div>
+    </div>`;
+  }
+
+  html += '</div>';
+  return html;
+}
+
+/**
+ * Build SLA tracking card showing response time expectations
+ * and historical resolution patterns for the skill.
+ */
+function buildSLATrackingCard(skill, status) {
+  const meta = SKILL_META[skill] || { interval: "—" };
+
+  const slaConfig = {
+    fail: { target: "2 小时", threshold: "4 小时", escalation: "8 小时" },
+    warn: { target: "24 小时", threshold: "3 天", escalation: "7 天" },
+    pass: { target: "N/A", threshold: "N/A", escalation: "N/A" },
+  };
+  const sla = slaConfig[status] || slaConfig.pass;
+
+  if (status === "pass") {
+    return `<div class="yry-card">
+      <h2>⏱️ SLA 追踪 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Service Level Agreement</span></h2>
+      <div style="text-align:center;padding:16px;color:#22c55e;font-size:.84rem">✅ 当前状态正常，无 SLA 计时器启动</div>
+    </div>`;
+  }
+
+  return `<div class="yry-card">
+    <h2>⏱️ SLA 追踪 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Service Level Agreement</span></h2>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px">
+      <div style="text-align:center;padding:12px;background:rgba(239,68,68,.06);border-radius:8px;border:1px solid rgba(239,68,68,.15)">
+        <div style="font-size:.7rem;color:var(--yry-text3)">🎯 目标响应</div>
+        <div style="font-size:1.1rem;font-weight:700;color:#ef4444">${sla.target}</div>
+      </div>
+      <div style="text-align:center;padding:12px;background:rgba(245,158,11,.06);border-radius:8px;border:1px solid rgba(245,158,11,.15)">
+        <div style="font-size:.7rem;color:var(--yry-text3)">⚠️ 升级阈值</div>
+        <div style="font-size:1.1rem;font-weight:700;color:#f59e0b">${sla.threshold}</div>
+      </div>
+      <div style="text-align:center;padding:12px;background:rgba(59,130,246,.06);border-radius:8px;border:1px solid rgba(59,130,246,.15)">
+        <div style="font-size:.7rem;color:var(--yry-text3)">🚨 强制升级</div>
+        <div style="font-size:1.1rem;font-weight:700;color:#3b82f6">${sla.escalation}</div>
+      </div>
+    </div>
+    <div style="font-size:.72rem;color:var(--yry-text3);padding:8px;background:var(--yry-bg-card);border-radius:6px">
+      📌 执行频率: ${meta.interval} · 下次自动检查时将更新状态 · 若状态持续异常，SLA 计时器将继续累计
+    </div>
   </div>`;
 }
 
@@ -284,15 +439,15 @@ function buildSkillHistoryCard(skill) {
 }
 
 function buildCrossReferenceCard(skill, status) {
-  const ref = CROSS_REFS[skill];
+  const ref = getCrossRef(skill);
   if (!ref) return "";
   const statusIcon = status === 'pass' ? '✓' : status === 'warn' ? '⚠' : '✗';
   const statusColor = status === 'pass' ? 'var(--yry-pass)' : status === 'warn' ? 'var(--yry-warn)' : 'var(--yry-fail)';
   return `<div class="yry-card">
     <h2>🔗 关联分析 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">对项目健康的影响</span></h2>
-    <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
+    <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:12px">
       <div class="yry-cross-item">
-        <div class="yry-cross-label">关联维度</div>
+        <div class="yry-cross-label">关联诊断维度</div>
         <div class="yry-cross-desc">${ref.dim}</div>
       </div>
       <div class="yry-cross-item">
@@ -304,6 +459,7 @@ function buildCrossReferenceCard(skill, status) {
         <div style="font-size:1.1rem;font-weight:700;color:${statusColor}">${statusIcon} ${status === 'pass' ? '正常' : status === 'warn' ? '告警' : '异常'}</div>
       </div>
     </div>
+    ${ref.impact ? `<div style="padding:10px;background:rgba(245,158,11,.04);border-radius:8px;border:1px solid rgba(245,158,11,.1);font-size:.78rem;color:var(--yry-text2);line-height:1.6"><strong>📊 升级策略：</strong>${ref.impact}</div>` : ""}
   </div>`;
 }
 
@@ -418,17 +574,17 @@ export function generateIndex() {
 </nav>
 <div class="yry-header">
   <h1>🔄 自循环报告</h1>
-  <div class="desc">12 技能定期巡检，由 Cron 定时触发，报告自动生成并推送企微通知。覆盖趋势监控、代码健康、文档同步、故事轮询、配置检查、依赖审计、自改进闭环等全维度。</div>
+  <div class="desc">20 技能定期巡检，由 Cron 定时触发，报告自动生成并推送企微通知。覆盖趋势监控、代码健康、文档同步、故事轮询、配置检查、依赖审计、自改进闭环等全维度。</div>
   <div class="meta">${files.length} 份报告</div>
 </div>
 <div class="yry-intro">
-  <strong>工作原理</strong>：Cron 定时任务按预设间隔触发技能执行 → 每轮执行生成自循环报告 HTML → <code>rui-bot loop-report</code> 汇总并推送企微通知 → 关联维度数据输入 D0-D7 诊断引擎。<br>
+  <strong>工作原理</strong>：Cron 定时任务按预设间隔触发技能执行 → 每轮执行生成自循环报告 HTML → <code>rui-bot loop-report</code> 汇总并推送企微通知 → 关联维度数据输入 D0-D8 诊断引擎。<br>
   <strong>报告位置</strong>：<code>docs/自循环报告/</code> · <strong>生成工具</strong>：<code>node skills/rui-bot/lib/loop-report.mjs</code> · <strong>通知渠道</strong>：企业微信 Webhook
 </div>
 <div class="yry-card">
   <h2>📋 报告列表</h2>
   <table>
-    <thead><tr><th>技能模块</th><th>日期</th><th>状态</th><th>摘要</th><th>操作</th></tr></thead>
+    <thead><tr><th>技能模块</th><th>日期</th><th>新鲜度</th><th>状态</th><th>摘要</th><th>操作</th></tr></thead>
     <tbody id="tbody"></tbody>
   </table>
 </div>
@@ -440,7 +596,7 @@ export function generateIndex() {
 </div>
 <div class="yry-footer">
   由 rui-bot loop-report 自动生成 · 数据实时读取<br>
-  <span style="color:var(--yry-text3)">12 技能 · 定时巡检 · 企微通知</span>
+  <span style="color:var(--yry-text3)">20 技能 · 定时巡检 · 企微通知</span>
 </div>
 </div>
 <script>
@@ -496,6 +652,16 @@ export function generateIndex() {
     tdDate.textContent = r.date;
     tr.appendChild(tdDate);
 
+    var tdFresh = document.createElement('td');
+    var freshInfo = computeFreshness(r.skill, r.date);
+    var freshBadge = document.createElement('span');
+    freshBadge.className = 'yry-badge ' + freshInfo.level;
+    freshBadge.textContent = freshInfo.label;
+    freshBadge.style.fontSize = '.72rem';
+    freshBadge.style.padding = '2px 8px';
+    tdFresh.appendChild(freshBadge);
+    tr.appendChild(tdFresh);
+
     var tdStatus = document.createElement('td');
     var badge = document.createElement('span');
     badge.className = 'yry-badge ' + status;
@@ -516,6 +682,24 @@ export function generateIndex() {
     tr.appendChild(tdAction);
 
     return tr;
+  }
+
+  // Freshness: compare report age vs skill's expected interval.
+  // Uses a simple lookup (mirrors lib/loop/registry.mjs cron intervals).
+  var SKILL_INTERVAL_DAYS = {
+    'rui-trends': 7, 'rui-analysis': 4, 'rui-import': 0.5, 'rui-story': 0.5,
+    'rui-claude': 1, 'rui-bot': 0.5, 'rui-npm': 7, 'rui-html': 0.5,
+    'rui-doc': 1, 'rui-version': 7, 'rui-plan': 1, 'rui-bundle-analyze': 7,
+    'rui-code': 1, 'rui-health': 0.5, 'rui-init': 30, 'rui-update': 4,
+    'rui-skills': 7, 'rui-reporter': 4, 'self-improve': 7, 'rui-yry': 7,
+    'rui-config': 1
+  };
+  function computeFreshness(skill, dateStr) {
+    var intervalDays = SKILL_INTERVAL_DAYS[skill] || 7;
+    var ageDays = (Date.now() - new Date(dateStr).getTime()) / 86400000;
+    if (ageDays <= intervalDays) return { level: 'pass', label: '新鲜' };
+    if (ageDays <= intervalDays * 2) return { level: 'warn', label: '过期 ' + Math.floor(ageDays) + 'd' };
+    return { level: 'fail', label: '陈旧 ' + Math.floor(ageDays) + 'd' };
   }
 })();
 </script>

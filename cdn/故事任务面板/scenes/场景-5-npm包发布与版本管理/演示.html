@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>演示 · npm 包发布与版本管理 · CDN 共享前端资源库</title>
+<link rel="stylesheet" href="../../../shared/index.css">
+<link rel="stylesheet" href="../../../theme/index.css">
+<link rel="stylesheet" href="../../../yry-inline-helpers/index.css">
+<link rel="stylesheet" href="../../../yry-scene/index.css">
+<link rel="stylesheet" href="../../../yry-scene-header/index.css">
+<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
+<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
+<link rel="stylesheet" href="../../../yry-back-top/index.css">
+<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
+<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
+<link rel="stylesheet" href="../../../yry-a11y/index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
+  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
+  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
+  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
+  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
+  .delivery-story { font-size: .72rem; color: #4b5563; }
+  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
+  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
+  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
+  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
+  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
+  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
+  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
+</style>
+</head>
+<body>
+<yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
+<yry-scene-header id="header-app"
+  icon="💡"
+  title-prefix="演示"
+  accent="npm 包发布与版本管理"
+  meta="📖 CDN 共享前端资源库 · 🎬 npm 包发布与版本管理"
+  desc="CDN 共享前端资源库 — npm 包发布与版本管理 场景的 演示 交付物。查看场景详情与任务分解。">
+</yry-scene-header>
+
+<div class="scene-wrap">
+  <div class="delivery-header">
+    <div class="delivery-icon">💡</div>
+    <div class="delivery-label">演示</div>
+    <div class="delivery-scene">npm 包发布与版本管理</div>
+    <div class="delivery-story">CDN 共享前端资源库</div>
+  </div>
+
+  <div class="content-card">
+    <h2>💡 演示 1 · 完整发布流程</h2>
+    <p style="font-size:.76rem;line-height:1.7;color:#a9b1d6">发布 v1.3.0 的完整流程：</p>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0"># 1. 更新版本号
+sed -i '' 's/"version": "1.2.0"/"version": "1.3.0"/' package.json
+node -e "console.log(require('./package.json').version)"
+# 输出: 1.3.0
+
+# 2. 发布前检查 (6 项)
+./publish-prep.sh
+# 输出:
+# 📦 当前版本: 1.3.0
+# 📋 files 白名单预览: ... (107 组件 + shared + theme + fonts + *.md)
+# 📏 包体积: 3.1MB (目标 &lt; 5MB) ✓
+# 🧪 运行测试... 全部通过
+# ✅ 发布前检查全部通过
+
+# 3. 创建 git tag 并推送
+git tag v1.3.0
+git push origin main --tags
+
+# 4. 发布到 npm
+npm publish
+# 输出: + yry-cdn@1.3.0</pre>
+  </div>
+
+  <div class="content-card">
+    <h2>💡 演示 2 · jsDelivr 同步验证</h2>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0"># 发布后 5 分钟内验证 jsDelivr 同步
+V=1.3.0
+
+# 验证 5 步加载链
+for path in shared/index.css theme/index.css shared/index.js; do
+  code=$(curl -sI "https://cdn.jsdelivr.net/npm/yry-cdn@$V/$path" \
+          | head -1 | grep -oE '[0-9]{3}')
+  echo "$path: HTTP $code"
+done
+
+# 期望输出:
+# shared/index.css: HTTP 200
+# theme/index.css: HTTP 200
+# shared/index.js: HTTP 200
+
+# 浏览器验证
+open "https://cdn.jsdelivr.net/npm/yry-cdn@$V/"</pre>
+  </div>
+
+  <div class="content-card">
+    <h2>💡 演示 3 · SRI 哈希生成与对比</h2>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0"># 生成本地 SRI 哈希
+LOCAL_HASH=$(openssl dgst -sha384 -binary shared/index.js | openssl base64 -A)
+echo "本地: sha384-$LOCAL_HASH"
+
+# 拉取 CDN 上的 SRI 哈希 (通过 Subresource Integrity API)
+CDN_HASH=$(curl -s "https://cdn.jsdelivr.net/npm/yry-cdn@1.3.0/shared/index.js" \
+           | openssl dgst -sha384 -binary | openssl base64 -A)
+echo "CDN:  sha384-$CDN_HASH"
+
+# 对比
+if [ "$LOCAL_HASH" = "$CDN_HASH" ]; then
+  echo "✅ SRI 哈希一致"
+else
+  echo "❌ SRI 哈希不一致 (可能 CDN 尚未同步完成)"
+fi
+
+# 在 HTML 中引用 SRI
+echo '&lt;script src="https://cdn.jsdelivr.net/npm/yry-cdn@1.3.0/shared/index.js"
+        integrity="sha384-'$LOCAL_HASH'"
+        crossorigin="anonymous"&gt;&lt;/script&gt;'</pre>
+  </div>
+
+  <div class="content-card">
+    <h2>💡 演示 4 · 回滚流程</h2>
+    <p style="font-size:.76rem;line-height:1.7;color:#a9b1d6">当 v1.3.0 发现严重 bug 需回滚到 v1.2.0：</p>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0"># 1. 通知用户回滚到 v1.2.0
+npm dist-tag add yry-cdn@1.2.0 latest
+# npm 默认安装会拉到 v1.2.0
+
+# 2. 保留 v1.3.0 tag 便于回溯 (不要 unpublish)
+# npm unpublish 仅在发布 72h 内可用
+
+# 3. 紧急发布修复版本 v1.3.1
+sed -i '' 's/"version": "1.3.0"/"version": "1.3.1"/' package.json
+# 修复 bug ... 提交 ...
+git tag v1.3.1
+git push origin main --tags
+npm publish
+
+# 4. 将 latest 指回 v1.3.1
+npm dist-tag add yry-cdn@1.3.1 latest
+
+# 5. 企微通知
+./notify.sh "回滚完成: v1.3.0 → v1.2.0 → v1.3.1"</pre>
+  </div>
+
+  <div class="content-card">
+    <h2>💡 演示 5 · 下载量监控</h2>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0"># 通过 npm-stat 查看周下载量
+open "https://npm-stat.com/charts.html?package=yry-cdn"
+
+# 通过 npm API 拉取
+curl -s "https://api.npmjs.org/downloads/point/last-week/yry-cdn"
+# 输出: { "downloads": 1234, "start": "...", "end": "...", "package": "yry-cdn" }
+
+# 通过 npm 搜索相关包
+npm search yry-cdn</pre>
+  </div>
+
+  <div class="nav-links">
+    <a class="nav-link" href="计划清单.html">📋 计划清单</a>
+    <a class="nav-link" href="架构图.html">📐 架构图</a>
+    <a class="nav-link" href="知识图谱.html">🔗 知识图谱</a>
+    <a class="nav-link" href="测试面板.html">🧪 测试面板</a>
+    <a class="nav-link" href="源码.html">📄 源码</a>
+    <a class="nav-link current" href="演示.html">💡 演示</a>
+    <a class="nav-link" href="审查.html">📝 审查</a>
+  </div>
+</div>
+
+<yry-cross-nav></yry-cross-nav>
+<yry-back-top></yry-back-top>
+<yry-footer-note version="1.2.0"></yry-footer-note>
+
+<script src="../../../shared/index.js" defer></script>
+<script src="../../../shared/vue-ce-loader.js"></script>
+  <script src="../../../yry-breadcrumb/index.js"></script>
+<script src="../../../yry-scene-header/index.js"></script>
+<script src="../../../yry-scene-nav/index.js"></script>
+<script src="../../../yry-cross-nav/index.js"></script>
+<script src="../../../yry-back-top/index.js"></script>
+<script src="../../../yry-footer-note/index.js"></script>
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    var bc = document.getElementById('breadcrumb-app');
+    if (bc) bc.items = [
+      { label: 'CDN 共享库', icon: '🌐', href: '../../../index.html' },
+      { label: '故事任务面板', icon: '📖', href: '../index.html' },
+      { label: 'CDN 共享前端资源库', icon: '📖', href: '../故事任务.md' },
+      { label: 'npm 包发布与版本管理', icon: '🎬' }
+    ];
+    var sh = document.getElementById('header-app');
+    if (sh) {
+      sh.icon = '💡';
+      sh.titlePrefix = '演示';
+      sh.accent = 'npm 包发布与版本管理';
+      sh.meta = '📖 CDN 共享前端资源库 · 🎬 npm 包发布与版本管理';
+      sh.desc = 'CDN 共享前端资源库 — npm 包发布与版本管理 场景的 演示 交付物。';
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,20 +1,450 @@
 [
-  {"file":"self-improve-2026-06-16.html","skill":"self-improve","skillLabel":"持续自改进闭环","icon":"🔄","date":"2026-06-16","status":"warn","summary":"引导模式 78/B · D3 触发 · 数据稀疏 · 17 维度 13/17 达标 · 架构合规 A 级","findings":{"info":3,"warn":1,"fail":0}},
-  {"file":"rui-trends-2026-06-16.html","skill":"rui-trends","skillLabel":"技术趋势监控","icon":"📡","date":"2026-06-16","status":"warn","summary":"全量趋势快照 2026-06-16 · items=74 · 2/4 源投影 · 趋势上升 · AI/LLM 主导","findings":{"info":3,"warn":2,"fail":0}},
-  {"file":"self-improve-2026-06-12.html","skill":"self-improve","skillLabel":"持续自改进闭环","icon":"🔄","date":"2026-06-12","status":"pass","summary":"摘要已更新 2026-06-12 14:29:57 · latest 97/A · 诊断触发 0/8 · 141 条记录","findings":{"info":3,"warn":0,"fail":0}},
-  {"file":"rui-trends-2026-06-12.html","skill":"rui-trends","skillLabel":"技术趋势监控","icon":"📡","date":"2026-06-12","status":"pass","summary":"全量趋势快照 2026-06-12 · items=62 · 四源可达 · 趋势上升 +29.2%","findings":{"info":1,"warn":0,"fail":0}},
-  {"file":"rui-bot-2026-06-12.html","skill":"rui-bot","skillLabel":"通知队列轮询","icon":"💬","date":"2026-06-12","status":"pass","summary":"通知队列正常无积压 · 企微 Webhook 可达 · Rich/Verbose 格式验证通过","findings":{"info":2,"warn":0,"fail":0}},
-  {"file":"rui-analysis-2026-06-12.html","skill":"rui-analysis","skillLabel":"代码健康看门狗","icon":"🔍","date":"2026-06-12","status":"pass","summary":"架构健康 100/A · failedDims=0 · checks=14/14 · 15 维度全合规","findings":{"info":2,"warn":0,"fail":0}},
-  {"file":"self-improve-2026-06-11.html","skill":"self-improve","skillLabel":"持续自改进闭环","icon":"🔄","date":"2026-06-11","status":"pass","summary":"摘要已更新 2026-06-11 18:22:11 · latest 91/A · 诊断触发 1/8 (D0=52)","findings":{"info":2,"warn":1,"fail":0}},
-  {"file":"rui-trends-2026-06-09.html","skill":"rui-trends","skillLabel":"技术趋势监控","icon":"📡","date":"2026-06-09","status":"pass","summary":"全量趋势快照 2026-06-09 · items=48 · 四源可达 · 趋势持平","findings":{"info":1,"warn":0,"fail":0}},
-  {"file":"rui-bot-2026-06-11.html","skill":"rui-bot","skillLabel":"通知队列轮询","icon":"💬","date":"2026-06-11","status":"pass","summary":"通知队列正常 · Webhook 可达 · 1 条延迟消息已重试成功","findings":{"info":1,"warn":1,"fail":0}},
-  {"file":"rui-analysis-2026-06-11.html","skill":"rui-analysis","skillLabel":"代码健康看门狗","icon":"🔍","date":"2026-06-11","status":"pass","summary":"架构健康 96/A · failedDims=0 · checks=14/14 · 组件质量 82/B","findings":{"info":2,"warn":0,"fail":0}},
-  {"file":"self-improve-2026-06-10.html","skill":"self-improve","skillLabel":"持续自改进闭环","icon":"🔄","date":"2026-06-10","status":"warn","summary":"摘要已更新 2026-06-10 12:15:33 · latest 82/B · 诊断触发 3/8 (D0/D4/D6)","findings":{"info":1,"warn":1,"fail":1}},
-  {"file":"rui-yry-2026-06-12.html","skill":"rui-yry","skillLabel":"自主自改进","icon":"♻️","date":"2026-06-12","status":"pass","summary":"诊断→改进→评估闭环正常 · 经验技能化队列 0 · 记忆压缩 3 条","findings":{"info":2,"warn":0,"fail":0}},
-  {"file":"rui-analysis-2026-06-10.html","skill":"rui-analysis","skillLabel":"代码健康看门狗","icon":"🔍","date":"2026-06-10","status":"warn","summary":"架构健康 88/B · failedDims=1 · checks=13/14 · security=70/C","findings":{"info":1,"warn":1,"fail":1}},
-  {"file":"rui-bot-2026-06-10.html","skill":"rui-bot","skillLabel":"通知队列轮询","icon":"💬","date":"2026-06-10","status":"pass","summary":"通知队列正常 · 累积消息 3 条已全部推送","findings":{"info":2,"warn":0,"fail":0}},
-  {"file":"rui-yry-2026-06-11.html","skill":"rui-yry","skillLabel":"自主自改进","icon":"♻️","date":"2026-06-11","status":"pass","summary":"闭环运转正常 · E3 长期趋势评估完成 · D0 由 C→B 改善中","findings":{"info":1,"warn":0,"fail":0}},
-  {"file":"rui-trends-2026-06-05.html","skill":"rui-trends","skillLabel":"技术趋势监控","icon":"📡","date":"2026-06-05","status":"warn","summary":"全量趋势快照 2026-06-05 · items=45 · TrendShift 不可达 · 趋势上升","findings":{"info":0,"warn":1,"fail":1}},
-  {"file":"self-improve-2026-06-09.html","skill":"self-improve","skillLabel":"持续自改进闭环","icon":"🔄","date":"2026-06-09","status":"warn","summary":"摘要已更新 2026-06-09 08:45:02 · latest 66/C · 诊断触发 6/8 · D0/D3/D4/D6/D7/D8","findings":{"info":0,"warn":1,"fail":2}},
-  {"file":"rui-skills-2026-06-12.html","skill":"rui-skills","skillLabel":"技能市场","icon":"📦","date":"2026-06-12","status":"pass","summary":"外部技能发现 0 新 · 已安装 19 技能兼容性检查全部通过","findings":{"info":1,"warn":0,"fail":0}}
+  {
+    "file": "self-improve-2026-06-16.html",
+    "skill": "self-improve",
+    "skillLabel": "持续自改进闭环",
+    "icon": "🔄",
+    "date": "2026-06-16",
+    "status": "pass",
+    "summary": "",
+    "findings": {
+      "info": 0,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-yry-2026-06-23.html",
+    "skill": "rui-yry",
+    "skillLabel": "自改进编排闭环",
+    "icon": "🌀",
+    "date": "2026-06-23",
+    "status": "pass",
+    "summary": "占位报告（rui-yry 未自动触发，由 bootstrap 手动生成）",
+    "findings": {
+      "info": 0,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-version-2026-06-22.html",
+    "skill": "rui-version",
+    "skillLabel": "版本漂移检测",
+    "icon": "🏷️",
+    "date": "2026-06-22",
+    "status": "warn",
+    "summary": "检测到 2 处版本号不一致，plugin.json 与实际不符",
+    "findings": {
+      "info": 1,
+      "warn": 1,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-update-2026-06-23.html",
+    "skill": "rui-update",
+    "skillLabel": "增量更新检查",
+    "icon": "🔄",
+    "date": "2026-06-23",
+    "status": "pass",
+    "summary": "占位报告（rui-update 未自动触发，由 bootstrap 手动生成）",
+    "findings": {
+      "info": 0,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-trends-2026-06-23.html",
+    "skill": "rui-trends",
+    "skillLabel": "技术趋势监控",
+    "icon": "📡",
+    "date": "2026-06-23",
+    "status": "pass",
+    "summary": "rui-trends 自循环通过 (exit 0)",
+    "findings": {
+      "info": 0,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-trends-2026-06-22.html",
+    "skill": "rui-trends",
+    "skillLabel": "技术趋势监控",
+    "icon": "📡",
+    "date": "2026-06-22",
+    "status": "pass",
+    "summary": "定时巡检通过，所有检查项正常",
+    "findings": {
+      "info": 2,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-story-2026-06-24.html",
+    "skill": "rui-story",
+    "skillLabel": "故事状态轮询",
+    "icon": "📋",
+    "date": "2026-06-24",
+    "status": "fail",
+    "summary": "🚫 P0 升级：rui-story 连续 97 次 fail (exit 1): [rui-story] overview mode — 查询远端 API... [rui-story] 远端不可达: This operation was aborted",
+    "findings": {
+      "info": 0,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-story-2026-06-23.html",
+    "skill": "rui-story",
+    "skillLabel": "故事状态轮询",
+    "icon": "📋",
+    "date": "2026-06-23",
+    "status": "fail",
+    "summary": "🚫 P0 升级：rui-story 连续 87 次 fail (exit 1): [rui-story] overview mode — 查询远端 API... [rui-story] 远端不可达: This operation was aborted",
+    "findings": {
+      "info": 0,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-story-2026-06-22.html",
+    "skill": "rui-story",
+    "skillLabel": "故事状态轮询",
+    "icon": "📋",
+    "date": "2026-06-22",
+    "status": "pass",
+    "summary": "定时巡检通过，所有检查项正常",
+    "findings": {
+      "info": 2,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-skills-2026-06-23.html",
+    "skill": "rui-skills",
+    "skillLabel": "技能生态巡检",
+    "icon": "🧩",
+    "date": "2026-06-23",
+    "status": "pass",
+    "summary": "占位报告（rui-skills 未自动触发，由 bootstrap 手动生成）",
+    "findings": {
+      "info": 0,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-reporter-2026-06-23.html",
+    "skill": "rui-reporter",
+    "skillLabel": "报告新鲜度巡检",
+    "icon": "📈",
+    "date": "2026-06-23",
+    "status": "pass",
+    "summary": "占位报告（rui-reporter 未自动触发，由 bootstrap 手动生成）",
+    "findings": {
+      "info": 0,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-plan-2026-06-22.html",
+    "skill": "rui-plan",
+    "skillLabel": "计划新鲜度检查",
+    "icon": "📐",
+    "date": "2026-06-22",
+    "status": "pass",
+    "summary": "定时巡检通过，所有检查项正常",
+    "findings": {
+      "info": 2,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-npm-2026-06-23.html",
+    "skill": "rui-npm",
+    "skillLabel": "依赖安全审计",
+    "icon": "📦",
+    "date": "2026-06-23",
+    "status": "pass",
+    "summary": "rui-npm 自循环通过 (exit 0)",
+    "findings": {
+      "info": 0,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-npm-2026-06-22.html",
+    "skill": "rui-npm",
+    "skillLabel": "依赖安全审计",
+    "icon": "📦",
+    "date": "2026-06-22",
+    "status": "warn",
+    "summary": "检测到 2 个已知漏洞(CVE)，建议立即更新依赖",
+    "findings": {
+      "info": 1,
+      "warn": 2,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-init-2026-06-23.html",
+    "skill": "rui-init",
+    "skillLabel": "初始化健康检查",
+    "icon": "🚀",
+    "date": "2026-06-23",
+    "status": "pass",
+    "summary": "占位报告（rui-init 未自动触发，由 bootstrap 手动生成）",
+    "findings": {
+      "info": 0,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-import-2026-06-24.html",
+    "skill": "rui-import",
+    "skillLabel": "持续文档同步",
+    "icon": "📤",
+    "date": "2026-06-24",
+    "status": "fail",
+    "summary": "🚫 P0 升级：rui-import 连续 30 次 fail (exit -1): [rui-import] scan root: /Users/ruiyi/Yi/YrY [rui-import] workspace: YrY [rui-import] found 1477 files [rui-import] querying existing sessions... [rui-import] failed to query sessions: This operation w",
+    "findings": {
+      "info": 0,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-import-2026-06-23.html",
+    "skill": "rui-import",
+    "skillLabel": "持续文档同步",
+    "icon": "📤",
+    "date": "2026-06-23",
+    "status": "fail",
+    "summary": "🚫 P0 升级：rui-import 连续 27 次 fail (exit -1): [rui-import] scan root: /Users/ruiyi/Yi/YrY [rui-import] workspace: YrY [rui-import] found 1471 files [rui-import] querying existing sessions... [rui-import] failed to query sessions: This operation w",
+    "findings": {
+      "info": 0,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-import-2026-06-22.html",
+    "skill": "rui-import",
+    "skillLabel": "持续文档同步",
+    "icon": "📤",
+    "date": "2026-06-22",
+    "status": "pass",
+    "summary": "定时巡检通过，所有检查项正常",
+    "findings": {
+      "info": 2,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-html-2026-06-24.html",
+    "skill": "rui-html",
+    "skillLabel": "HTML 过期重生成",
+    "icon": "🎨",
+    "date": "2026-06-24",
+    "status": "pass",
+    "summary": "rui-html 自循环通过 (exit 0)",
+    "findings": {
+      "info": 0,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-html-2026-06-23.html",
+    "skill": "rui-html",
+    "skillLabel": "HTML 过期重生成",
+    "icon": "🎨",
+    "date": "2026-06-23",
+    "status": "pass",
+    "summary": "rui-html 自循环通过 (exit 0)",
+    "findings": {
+      "info": 0,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-html-2026-06-22.html",
+    "skill": "rui-html",
+    "skillLabel": "HTML 过期重生成",
+    "icon": "🎨",
+    "date": "2026-06-22",
+    "status": "pass",
+    "summary": "定时巡检通过，所有检查项正常",
+    "findings": {
+      "info": 2,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-health-2026-06-24.html",
+    "skill": "rui-health",
+    "skillLabel": "健康看门狗",
+    "icon": "🩺",
+    "date": "2026-06-24",
+    "status": "pass",
+    "summary": "rui-health 自循环通过 (exit 0)",
+    "findings": {
+      "info": 0,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-health-2026-06-23.html",
+    "skill": "rui-health",
+    "skillLabel": "健康看门狗",
+    "icon": "🩺",
+    "date": "2026-06-23",
+    "status": "pass",
+    "summary": "rui-health 自循环通过 (exit 0)",
+    "findings": {
+      "info": 0,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-doc-2026-06-22.html",
+    "skill": "rui-doc",
+    "skillLabel": "文档新鲜度检查",
+    "icon": "📝",
+    "date": "2026-06-22",
+    "status": "pass",
+    "summary": "定时巡检通过，所有检查项正常",
+    "findings": {
+      "info": 2,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-config-2026-06-22.html",
+    "skill": "rui-config",
+    "skillLabel": "配置完整性",
+    "icon": "⚙️",
+    "date": "2026-06-22",
+    "status": "fail",
+    "summary": "config.json 缺失，机器人 webhook 未配置",
+    "findings": {
+      "info": 0,
+      "warn": 1,
+      "fail": 2
+    }
+  },
+  {
+    "file": "rui-code-2026-06-23.html",
+    "skill": "rui-code",
+    "skillLabel": "代码质量看门狗",
+    "icon": "🔧",
+    "date": "2026-06-23",
+    "status": "pass",
+    "summary": "checkMode-verify",
+    "findings": {
+      "info": 0,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-claude-2026-06-22.html",
+    "skill": "rui-claude",
+    "skillLabel": "配置健康检查",
+    "icon": "⚙️",
+    "date": "2026-06-22",
+    "status": "pass",
+    "summary": "定时巡检通过，所有检查项正常",
+    "findings": {
+      "info": 2,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-bundle-analyze-2026-06-23.html",
+    "skill": "rui-bundle-analyze",
+    "skillLabel": "体积与依赖看门狗",
+    "icon": "📊",
+    "date": "2026-06-23",
+    "status": "pass",
+    "summary": "rui-bundle-analyze 自循环通过 (exit 0)",
+    "findings": {
+      "info": 0,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-bot-2026-06-24.html",
+    "skill": "rui-bot",
+    "skillLabel": "通知队列轮询",
+    "icon": "💬",
+    "date": "2026-06-24",
+    "status": "fail",
+    "summary": "🚫 P0 升级：rui-bot 连续 97 次 fail (exit -1): [rui-bot] 队列中有 5 条待发通知，开始重试... [rui-bot] 重试 1/1: This operation was aborted [rui-bot] 重试 1/1: This operation was aborted",
+    "findings": {
+      "info": 0,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-bot-2026-06-23.html",
+    "skill": "rui-bot",
+    "skillLabel": "通知队列轮询",
+    "icon": "💬",
+    "date": "2026-06-23",
+    "status": "fail",
+    "summary": "🚫 P0 升级：rui-bot 连续 87 次 fail (exit -1): [rui-bot] 队列中有 5 条待发通知，开始重试... [rui-bot] 重试 1/1: This operation was aborted [rui-bot] 重试 1/1: This operation was aborted",
+    "findings": {
+      "info": 0,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-bot-2026-06-22.html",
+    "skill": "rui-bot",
+    "skillLabel": "通知队列轮询",
+    "icon": "💬",
+    "date": "2026-06-22",
+    "status": "warn",
+    "summary": "通知队列存在 3 条待重试消息，webhook 响应时间波动",
+    "findings": {
+      "info": 2,
+      "warn": 1,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-analysis-2026-06-22.html",
+    "skill": "rui-analysis",
+    "skillLabel": "代码健康看门狗",
+    "icon": "🔍",
+    "date": "2026-06-22",
+    "status": "warn",
+    "summary": "检测到 5 个高频修改文件和 3 个复杂度热点",
+    "findings": {
+      "info": 1,
+      "warn": 2,
+      "fail": 0
+    }
+  }
 ]

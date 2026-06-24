@@ -115,17 +115,114 @@ PR 必须通过以下检查:
 | **D0 组件完整性** | `yry-*/` 同时具备 index.{html,css,js} | `npm run validate:components` |
 | **D1 核心文件** | shared/index.css/theme.css/fonts.css/shared.js | `npm run validate` |
 | **D2 字体资源** | fonts/ 4 个字重 woff2 | `npm run validate` |
-| **D3 发布元数据** | package.json + README + .npmignore + releases.json | `npm run validate` |
+| **D3 发布元数据** | package.json + README + .npmignore + changelog/index.json | `npm run validate` |
 | **D4 主题覆盖** | theme/index.css + theme-mono/index.css | `npm run validate` |
 | **D5 演示覆盖** | 组件含 index.html 演示 | `npm run validate:components` |
 | **D6 加载链** | 5 步加载顺序规范 | 文档 + CI review |
 | **D7 版本同步** | package.json / index.html / README 一致 | `npm run validate:version` |
 
+## 📋 PR 模板
+
+```markdown
+## 变更类型
+- [ ] 新增组件 (feat)
+- [ ] 修复 Bug (fix)
+- [ ] 重构 (refactor)
+- [ ] 文档 (docs)
+- [ ] 性能 (perf)
+- [ ] 测试 (test)
+- [ ] 构建/工具 (chore/build)
+
+## 变更内容
+描述本次变更的具体内容、动机和影响。
+
+## 关联场景
+- 涉及的场景文档: [场景-X](./路径)
+
+## 加载链影响
+- [ ] 不影响加载链
+- [ ] 新增组件需在 `<head>` 引用 CSS
+- [ ] 新增组件需在 `<body>` 引用 JS
+- [ ] 改变核心资源加载顺序
+
+## 健康维度影响 (D0-D8)
+- [ ] D0 组件完整性
+- [ ] D1 核心文件
+- [ ] D2 字体资源
+- [ ] D3 发布元数据
+- [ ] D4 主题覆盖
+- [ ] D5 演示覆盖
+- [ ] D6 加载链
+- [ ] D7 版本同步
+- [ ] D8 架构合规
+- [ ] 不影响健康维度
+
+## 自检清单
+- [ ] 本地 `npm run ci` 全绿
+- [ ] `npm run build:manifest` 已更新
+- [ ] 版本号一致 (package.json / index.html / README)
+- [ ] 新增组件含完整 README
+- [ ] 无硬编码颜色 (全部使用 `--yry-*` 令牌)
+- [ ] 无魔法数字 (提取为常量)
+- [ ] a11y 合规 (ARIA + 键盘)
+- [ ] 无控制台错误
+
+## 测试方式
+- [ ] 浏览器手动测试
+- [ ] vitest 单元测试
+- [ ] 集成测试
+- [ ] 视觉回归测试
+
+## 截图/Demo
+(如涉及 UI 变更,附截图或 Demo 链接)
+```
+
+## 🎯 新增组件完整清单
+
+| # | 任务 | 命令/文件 | 完成信号 |
+|---|------|---------|------|
+| 1 | 创建目录 | `mkdir cdn/yry-<name>` | 目录存在 |
+| 2 | index.html 模板 | `yry-<name>/index.html` | Vue template + Demo |
+| 3 | index.js Loader | `yry-<name>/index.js` | fetch + defineCustomElement |
+| 4 | index.css 样式 | `yry-<name>/index.css` | BEM + 设计令牌 |
+| 5 | README.md 文档 | `yry-<name>/README.md` | Props + 用法 + Demo |
+| 6 | 更新 manifest | `npm run build:manifest` | 自动生成 |
+| 7 | 更新 COMPONENTS.md | 手动追加 | 速查索引含新组件 |
+| 8 | 更新 package.json | `files[]` 追加 | npm 发布白名单 |
+| 9 | 版本号 bump | minor 升级 | 1.x.0 → 1.(x+1).0 |
+| 10 | 更新 CHANGELOG | 追加条目 | 含变更说明 |
+| 11 | 本地测试 | `npm run ci` | 全绿 |
+| 12 | 提交 PR | Conventional Commits | 通过 review |
+
+## 🔄 组件生命周期
+
+| 阶段 | 动作 | 版本 | 时效 |
+|------|------|:---:|:---:|
+| 提案 | 创建 RFC issue | — | 1d |
+| 评审 | community review | — | 3d |
+| 实现 | 新建分支开发 | — | 5d |
+| PR 提交 | 含完整清单 | — | 1d |
+| CI 通过 | 全维度绿 | — | 30min |
+| Code Review | 至少 1 reviewer | — | 2d |
+| 合并 | tag + 发布 | minor | 1h |
+| 发布后验证 | npm + CDN 可达 | — | 30min |
+| 废弃 | 标记 deprecated | major | 3 版本后 |
+| 删除 | major 版本 | — | 6 个月预通知 |
+
+## 🏆 贡献者等级
+
+| 等级 | 贡献 | 权限 | 标识 |
+|:---:|------|------|:---:|
+| L1 新手 | 1-4 PR | 提交 PR | 🌱 |
+| L2 贡献者 | 5-19 PR | + review | 🌿 |
+| L3 核心成员 | 20-99 PR | + 维护组件 | 🌳 |
+| L4 维护者 | 100+ PR | + 版本发布 | 🏔 |
+
 ## 📚 相关文档
 
 - 场景: [yry-breadcrumb/scenes/](./yry-breadcrumb/scenes/) (5 场景)
 - 健康报告: [健康报告/health-cdn-index.html](../docs/健康报告/health-cdn-index.html)
-- 组件清单: [components.manifest.json](components\-manifest\/index\.json)(自动生成)
+- 组件清单: [components-manifest/index.json](./components-manifest/index.json)(自动生成)
 - 架构决策: 见 `docs/`(根目录 CLAUDE.md)
 
 ## 📄 许可证

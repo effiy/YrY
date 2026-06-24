@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>演示 · 组件库与 JS 工具 API · CDN 共享前端资源库</title>
+<link rel="stylesheet" href="../../../shared/index.css">
+<link rel="stylesheet" href="../../../theme/index.css">
+<link rel="stylesheet" href="../../../yry-inline-helpers/index.css">
+<link rel="stylesheet" href="../../../yry-scene/index.css">
+<link rel="stylesheet" href="../../../yry-scene-header/index.css">
+<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
+<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
+<link rel="stylesheet" href="../../../yry-back-top/index.css">
+<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
+<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
+<link rel="stylesheet" href="../../../yry-a11y/index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
+  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
+  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
+  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
+  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
+  .delivery-story { font-size: .72rem; color: #4b5563; }
+  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
+  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
+  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
+  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
+  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
+  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
+  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
+</style>
+</head>
+<body>
+<yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
+<yry-scene-header id="header-app"
+  icon="💡"
+  title-prefix="演示"
+  accent="组件库与 JS 工具 API"
+  meta="📖 CDN 共享前端资源库 · 🎬 组件库与 JS 工具 API"
+  desc="CDN 共享前端资源库 — 组件库与 JS 工具 API 场景的 演示 交付物。查看场景详情与任务分解。">
+</yry-scene-header>
+
+<div class="scene-wrap">
+  <div class="delivery-header">
+    <div class="delivery-icon">💡</div>
+    <div class="delivery-label">演示</div>
+    <div class="delivery-scene">组件库与 JS 工具 API</div>
+    <div class="delivery-story">CDN 共享前端资源库</div>
+  </div>
+
+  <div class="content-card">
+    <h2>💡 演示 1 · 组件注册与就绪事件</h2>
+    <p style="font-size:.76rem;line-height:1.7;color:#a9b1d6">在浏览器 Console 执行：</p>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">// 检查组件是否已注册
+console.log(customElements.get('yry-item-card'));   // 构造器或 undefined
+
+// 监听就绪事件
+document.addEventListener('yry-item-card-ready', function () {
+  console.log('yry-item-card 已注册，API 可调用');
+});
+
+// 检查 9 个 API 可用性
+Object.keys(window.YrY).forEach(function (k) {
+  console.log(k, typeof window.YrY[k]);
+});</pre>
+  </div>
+
+  <div class="content-card">
+    <h2>💡 演示 2 · 双设策略时序</h2>
+    <p style="font-size:.76rem;line-height:1.7;color:#a9b1d6">模拟元素出现早于组件注册的场景：</p>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">// 1. 元素已插入 DOM, 组件尚未注册 (此时 props 不会生效)
+document.body.innerHTML +=
+  '&lt;yry-item-card id="late-card"&gt;&lt;/yry-item-card&gt;';
+var el = document.getElementById('late-card');
+el.name = '晚到的组件';
+el.icon = '📦';
+
+// 2. 组件 JS 加载完成 (模拟 fetch + defineCustomElement)
+setTimeout(function () {
+  // ... 加载组件 JS
+  document.dispatchEvent(new CustomEvent('yry-item-card-ready'));
+  // ready 事件触发后, 组件接收到了之前的 props 赋值
+}, 500);</pre>
+  </div>
+
+  <div class="content-card">
+    <h2>💡 演示 3 · YrY.* API 实战</h2>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">// toast 通知
+YrY.toast('保存成功', 'success', 2000);
+YrY.toast('网络错误', 'error', 3000);
+
+// copyCmd 剪贴板
+YrY.copyCmd('npm install yry-cdn');
+
+// sceneMeta 7 交付物链接
+var links = YrY.sceneMeta('../cdn/yry-arch/scenes/场景-1-新人上手');
+console.log(links);
+// [
+//   { icon: '📋', label: '清单', href: '.../计划清单.html' },
+//   { icon: '📐', label: '架构', href: '.../架构图.html' },
+//   { icon: '🔗', label: '图谱', href: '.../知识图谱.html' },
+//   { icon: '🧪', label: '测试', href: '.../测试面板.html' },
+//   { icon: '📄', label: '源码', href: '.../源码.html' },
+//   { icon: '💡', label: '演示', href: '.../演示.html' },
+//   { icon: '📝', label: '审查', href: '.../审查.html' }
+// ]
+
+// switchPanel 切换浮动面板
+YrY.switchPanel('cron');      // 打开定时任务面板
+YrY.switchPanel('notify');    // 打开通知面板
+
+// fetchData 带超时 + 重试
+YrY.fetchData('/api/health', { timeout: 5000 })
+  .then(function (r) { return r.json(); })
+  .catch(function (err) { console.error('fetch 失败:', err); });
+
+// ready Promise
+YrY.ready(document.getElementById('card'), 'yry-item-card-ready')
+  .then(function (el) { console.log('组件就绪:', el); });</pre>
+  </div>
+
+  <div class="content-card">
+    <h2>💡 演示 4 · 错误降级场景</h2>
+    <ul style="margin:0;padding-left:20px;font-size:.76rem;line-height:1.9;color:#a9b1d6">
+      <li><strong style="color:#22d3ee">断网</strong> — <code>fetchData</code> 3 次重试后 reject，调用方 catch 处理</li>
+      <li><strong style="color:#22d3ee">非 https</strong> — <code>copyCmd</code> 自动退回 <code>document.execCommand('copy')</code></li>
+      <li><strong style="color:#22d3ee">面板不存在</strong> — <code>switchPanel('unknown')</code> 静默降级 + 日志</li>
+      <li><strong style="color:#22d3ee">元素未注册</strong> — <code>ready(el, 'yry-x-ready')</code> 5s 超时 reject</li>
+      <li><strong style="color:#22d3ee">DOM 未就绪</strong> — <code>toast</code> 降级到 <code>console.warn</code></li>
+    </ul>
+  </div>
+
+  <div class="nav-links">
+    <a class="nav-link" href="计划清单.html">📋 计划清单</a>
+    <a class="nav-link" href="架构图.html">📐 架构图</a>
+    <a class="nav-link" href="知识图谱.html">🔗 知识图谱</a>
+    <a class="nav-link" href="测试面板.html">🧪 测试面板</a>
+    <a class="nav-link" href="源码.html">📄 源码</a>
+    <a class="nav-link current" href="演示.html">💡 演示</a>
+    <a class="nav-link" href="审查.html">📝 审查</a>
+  </div>
+</div>
+
+<yry-cross-nav></yry-cross-nav>
+<yry-back-top></yry-back-top>
+<yry-footer-note version="1.2.0"></yry-footer-note>
+
+<script src="../../../shared/index.js" defer></script>
+<script src="../../../shared/vue-ce-loader.js"></script>
+  <script src="../../../yry-breadcrumb/index.js"></script>
+<script src="../../../yry-scene-header/index.js"></script>
+<script src="../../../yry-scene-nav/index.js"></script>
+<script src="../../../yry-cross-nav/index.js"></script>
+<script src="../../../yry-back-top/index.js"></script>
+<script src="../../../yry-footer-note/index.js"></script>
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    var bc = document.getElementById('breadcrumb-app');
+    if (bc) bc.items = [
+      { label: 'CDN 共享库', icon: '🌐', href: '../../../index.html' },
+      { label: '故事任务面板', icon: '📖', href: '../index.html' },
+      { label: 'CDN 共享前端资源库', icon: '📖', href: '../故事任务.md' },
+      { label: '组件库与 JS 工具 API', icon: '🎬' }
+    ];
+    var sh = document.getElementById('header-app');
+    if (sh) {
+      sh.icon = '💡';
+      sh.titlePrefix = '演示';
+      sh.accent = '组件库与 JS 工具 API';
+      sh.meta = '📖 CDN 共享前端资源库 · 🎬 组件库与 JS 工具 API';
+      sh.desc = 'CDN 共享前端资源库 — 组件库与 JS 工具 API 场景的 演示 交付物。';
+    }
+  });
+</script>
+</body>
+</html>

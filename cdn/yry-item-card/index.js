@@ -56,125 +56,59 @@
 (function () {
   'use strict';
 
+  if (!window.YrYVueCE || typeof window.YrYVueCE.define !== 'function') {
+    console.warn('[YryItemCard] shared/vue-ce-loader.js 未加载,组件已跳过注册');
+    return;
+  }
+
   var COMPONENT_NAME = 'YryItemCard';
-  var TAG_NAME       = 'yry-item-card';
-  var TEMPLATE_ID    = 'yry-item-card-tpl';
-  var READY_EVENT    = 'yry-item-card-ready';
-  var DEP_EVENT      = 'yry-tag-chip-ready';
-  var DEP_GLOBAL     = 'YryTagChip';
-  var LOAD_TIMEOUT_MS    = 5000;
-  var DEP_TIMEOUT_MS     = 5000;
 
-  var script = document.currentScript;
-  if (!script || !script.src) {
-    console.warn('[' + COMPONENT_NAME + '] 无法获取当前脚本 URL,组件已跳过注册');
-    return;
-  }
-  var scriptUrl;
-  try {
-    scriptUrl = new URL(script.getAttribute('src'), window.location.href);
-  } catch (e) {
-    console.warn('[' + COMPONENT_NAME + '] 解析脚本 URL 失败:', e);
-    return;
-  }
-  var templateUrl = new URL('index.html', scriptUrl).href;
+  var TAG_NAME = 'yry-item-card';
 
-  function buildComponent(templateHTML) {
-    return {
-      name: COMPONENT_NAME,
-      components: { YryTagChip: window[DEP_GLOBAL] },
-      props: {
-        icon:         { type: String, required: true },
-        iconModifier: { type: String, default: '' },
-        name:         { type: String, required: true },
-        nameHref:     { type: String, default: '' },
-        nameTarget:   { type: String, default: '' },
-        badge:        { type: String, default: '' },
-        desc:         { type: String, default: '' },
-        tags:         { type: Array,  default: function () { return []; } },
-        meta:         { type: String, default: '' },
-        demo:         { type: String, default: '' },
-        links:        { type: Array,  default: function () { return []; } }
-      },
-      template: templateHTML
-    };
-  }
+  var TEMPLATE_ID = 'yry-item-card-tpl';
 
-  function fireReady() {
-    document.dispatchEvent(new CustomEvent(READY_EVENT, { detail: { component: COMPONENT_NAME } }));
-  }
+  var READY_EVENT = 'yry-item-card-ready';
 
-  /* ── 主流程: 加载模板 + 注册组件 ────────────────────────────────── */
-  function loadAndRegister() {
-    if (!window.Vue) {
-      console.warn('[' + COMPONENT_NAME + '] Vue 3 未加载,组件已跳过注册。请先引入 vue.global.prod.js');
-      return;
-    }
-    if (!window[DEP_GLOBAL]) {
-      console.warn('[' + COMPONENT_NAME + '] 依赖 ' + DEP_GLOBAL + ' 未加载,组件已跳过注册。请先引入 yry-tag-chip/index.js');
-      return;
-    }
+  var DEP_EVENT = 'yry-tag-chip-ready';
 
-    var timedOut = false;
-    var timeoutId = setTimeout(function () {
-      timedOut = true;
-      console.error('[' + COMPONENT_NAME + '] 模板加载超时 (' + LOAD_TIMEOUT_MS + 'ms):', templateUrl);
-    }, LOAD_TIMEOUT_MS);
+  var DEP_GLOBAL = 'YryTagChip';
 
-    fetch(templateUrl, { credentials: 'same-origin' })
-      .then(function (r) {
-        if (!r.ok) throw new Error('HTTP ' + r.status + ' ' + r.statusText);
-        return r.text();
-      })
-      .then(function (htmlText) {
-        if (timedOut) return;
-        clearTimeout(timeoutId);
+  var LOAD_TIMEOUT_MS = 5000;
 
-        var doc = new DOMParser().parseFromString(htmlText, 'text/html');
-        var tpl = doc.getElementById(TEMPLATE_ID);
-        if (!tpl) {
-          throw new Error('未找到 <script type="text/x-template" id="' + TEMPLATE_ID + '">');
-        }
+  var DEP_TIMEOUT_MS = 5000;
 
-        var templateHTML = tpl.innerHTML;
-        window[COMPONENT_NAME] = buildComponent(templateHTML);
-
-        /* ── 注册为自定义元素(允许 <yry-item-card> 标签直接使用) ──── */
-        if (typeof window.Vue.defineCustomElement === 'function') {
-          var YryItemCardCE = window.Vue.defineCustomElement(
-            buildComponent(templateHTML),
-            { shadowRoot: false }
-          );
-          if (!customElements.get(TAG_NAME)) {
-            customElements.define(TAG_NAME, YryItemCardCE);
+  window.YrYVueCE.define({
+    componentName: 'YryItemCard',
+    templateId: 'yry-item-card-tpl',
+    buildComponent: function buildComponent(templateHTML) {
+      return {
+        name: COMPONENT_NAME,
+        components: { YryTagChip: window[DEP_GLOBAL] },
+        props: {
+          icon: { type: String, required: true },
+          iconModifier: { type: String, default: '' },
+          name: { type: String, required: true },
+          nameHref: { type: String, default: '' },
+          nameTarget: { type: String, default: '' },
+          badge: { type: String, default: '' },
+          desc: { type: String, default: '' },
+          tags: {
+            type: Array,
+            default: function () {
+              return [];
+            }
+          },
+          meta: { type: String, default: '' },
+          demo: { type: String, default: '' },
+          links: {
+            type: Array,
+            default: function () {
+              return [];
+            }
           }
-        }
-
-        fireReady();
-      })
-      .catch(function (err) {
-        if (timedOut) return;
-        clearTimeout(timeoutId);
-        console.error('[' + COMPONENT_NAME + '] 模板加载失败:', err, '· URL:', templateUrl);
-      });
-  }
-
-  /* ── 启动 ──────────────────────────────────────────────────────── */
-  if (window[DEP_GLOBAL]) {
-    /* 依赖已就绪 · 立即执行 */
-    loadAndRegister();
-  } else {
-    /* 等待依赖 ready 事件(避免与 YryTagChip 的异步 fetch 产生竞态) */
-    var depTimedOut = false;
-    var depTimer = setTimeout(function () {
-      depTimedOut = true;
-      console.error('[' + COMPONENT_NAME + '] 等待依赖 ' + DEP_GLOBAL + ' 超时 (' + DEP_TIMEOUT_MS + 'ms),组件已放弃注册');
-    }, DEP_TIMEOUT_MS);
-
-    document.addEventListener(DEP_EVENT, function once() {
-      if (depTimedOut) return;
-      clearTimeout(depTimer);
-      loadAndRegister();
-    }, { once: true });
-  }
+        },
+        template: templateHTML
+      };
+    }
+  });
 })();

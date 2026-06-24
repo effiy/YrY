@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  YryCdnAggCard · 模板源 + Demo 预览页
+
+  本文件有 2 个用途:
+    1) **模板源** — index.js 通过 fetch 拉取本文件,提取 <script type="text/x-template"
+       id="yry-cdn-agg-card-tpl"> 内容作为 Vue 组件的 template。
+    2) **Demo 预览** — 直接用浏览器打开本文件,即可看到 YryCdnAggCard 的实际渲染效果。
+
+  加载链: ../shared/index.css → ../theme/index.css → index.css → Vue 3 → index.js
+  ═══════════════════════════════════════════════════════════════════════════
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryCdnAggCard · Demo & Template</title>
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="../yry-inline-helpers/index.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 900px;
+      margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #22d3ee); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+    .demo-section {
+      margin: 20px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1><span class="accent">🧭</span> YryCdnAggCard · Vue 3 CDN 聚合卡片</h1>
+  <p class="demo-hint">
+    单张聚合卡片 — 接收 <code>href</code> · <code>emoji</code> · <code>name</code> · <code>badge</code> · <code>dataSource</code> · <code>body</code> · <code>chips[]</code> · <code>refresh</code> · <code>shortcut</code> · <code>cta</code> · <code>target</code> · <code>title</code>。<br>
+    模板源见下方 <code>&lt;script type="text/x-template" id="yry-cdn-agg-card-tpl"&gt;</code> 块。
+  </p>
+
+  <div class="demo-section">
+    <h3>Demo 1 — Vue.createApp 形式 (单卡)</h3>
+    <div id="demo-1"></div>
+  </div>
+
+  <div class="demo-section">
+    <h3>Demo 2 — Custom Element 形式</h3>
+    <div class="demo-grid">
+      <yry-cdn-agg-card id="demo-2a"
+        href="../cdn/checklist.html"
+        title="全卡片文件清单 — 状态 · 类型 · 大小 · 跳转 · 名称模糊搜索 + 类型/状态过滤"
+        emoji="📋" name="清单聚合" badge="checklist.html" data-source="manifest.json"
+        cta="浏览清单 →"></yry-cdn-agg-card>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h3>Demo 3 — 无 dataSource / 无 chips 的最简卡片</h3>
+    <div class="demo-grid">
+      <div id="demo-3"></div>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h3>Demo 4 — refresh + shortcut 完整配置 (与 docs/index.html 实际用法一致)</h3>
+    <div class="demo-grid">
+      <div id="demo-4"></div>
+    </div>
+  </div>
+
+  <hr>
+  <p class="demo-hint">👇 以下 <code>&lt;script type="text/x-template"&gt;</code> 即为组件的 <strong>template 源</strong></p>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       TEMPLATE SOURCE OF TRUTH · YryCdnAggCard 的 template
+       ──────────────────────────────────────────────────────────────────
+       视觉分区 (自上而下):
+         1. hero  —— 大圆形 emoji 底 + 主标题 + 路径徽标
+         2. body  —— 一句话描述 + 嵌入的内联 stats (cdn-agg-stats*)
+         3. chips —— 4~6 个细粒度能力标签
+         4. foot  —— 数据源 (左) · CTA (右,带箭头)
+       外部脚本约束: 根 .cdn-agg-card · .cdn-agg-cta · .cdn-freshness ·
+                    .cdn-agg-stats / .cdn-agg-stat / [data-visited] 保留。
+       ════════════════════════════════════════════════════════════════════ -->
+  <script type="text/x-template" id="yry-cdn-agg-card-tpl">
+    <a class="cdn-agg-card sr-link"
+       :href="href"
+       :title="title"
+       :target="target || null"
+       :rel="target === '_blank' ? 'noopener' : null">
+      <span class="cdn-agg-accent-bar" aria-hidden="true"></span>
+
+      <header class="cdn-agg-top">
+        <div v-if="emoji" class="cdn-agg-emoji-wrap" aria-hidden="true">
+          <span class="cdn-agg-emoji">{{ emoji }}</span>
+        </div>
+        <div class="cdn-agg-id">
+          <div class="cdn-agg-name">{{ name }}</div>
+          <div v-if="badge" class="cdn-agg-badge" :title="'页面文件: ' + badge">{{ badge }}</div>
+        </div>
+      </header>
+
+      <div v-if="body" class="cdn-agg-body" v-html="body"></div>
+
+      <div v-if="chips && chips.length" class="cdn-agg-chips">
+        <span v-if="shortcut" class="cdn-agg-chip cdn-agg-key" :title="'键盘快捷键: 按 ' + shortcut + ' 跳转本页'">⌨ {{ shortcut }}</span>
+        <span v-for="(chip, i) in chips" :key="i" class="cdn-agg-chip">{{ chip }}</span>
+      </div>
+
+      <div v-if="refresh" class="cdn-agg-refresh" v-html="refresh"></div>
+
+      <footer class="cdn-agg-foot">
+        <span v-if="dataSource" class="cdn-agg-datasource" :title="'数据源: ' + dataSource">
+          <span class="cdn-agg-datasource-dot" aria-hidden="true"></span>{{ dataSource }}
+        </span>
+        <span v-if="cta" class="cdn-agg-cta">
+          <span class="cdn-agg-cta-text">{{ cta }}</span>
+          <span class="cdn-agg-cta-arrow" aria-hidden="true">→</span>
+        </span>
+      </footer>
+    </a>
+  </script>
+
+  <script src="../shared/vue-ce-loader.js"></script>
+  <script src="index.js"></script>
+
+  <script>
+    function mountDemos() {
+      /* Demo 1 — Vue.createApp 形式 */
+      Vue.createApp(window.YryCdnAggCard, {
+        href: '../cdn/architecture.html',
+        title: '五步加载链 · 双主题 · 设计令牌 · 组件分层',
+        emoji: '🏗', name: '架构聚合', badge: 'architecture.html',
+        dataSource: 'manifest.json',
+        body: '五步加载链 · 双主题系统 · 设计令牌 · 组件分层 · 版本演进。<code>manifest.json</code> 驱动。',
+        chips: ['加载链', '双主题', '设计令牌', '组件分层'],
+        cta: '查看架构 →'
+      }).mount('#demo-1');
+
+      /* Demo 2 已通过 custom element 自动渲染,只需为其补全 body / chips */
+      var d2a = document.getElementById('demo-2a');
+      if (d2a) {
+        d2a.body = '全卡片文件清单 · 状态 · 类型 · 大小 · 跳转。数据由 <code>scripts/build-manifest.mjs</code> 自动扫描生成 · 名称模糊搜索 + 类型/状态过滤。';
+        d2a.chips = ['状态徽章', '类型过滤', '名称搜索', '大小排序'];
+      }
+
+      /* Demo 3 — 无 dataSource / 无 chips 的最简卡片 */
+      Vue.createApp(window.YryCdnAggCard, {
+        href: '../cdn/graph.html',
+        emoji: '🕸', name: '图谱聚合', badge: 'graph.html',
+        cta: '查看图谱 →'
+      }).mount('#demo-3');
+
+      /* Demo 4 — refresh + shortcut 完整配置 */
+      Vue.createApp(window.YryCdnAggCard, {
+        href: '../cdn/review.html',
+        title: '六维健康评估 — 92/A · D0-D8 诊断 · 改进建议',
+        emoji: '⚠️', name: '审查聚合', badge: 'review.html',
+        dataSource: 'cdn-summary.json', shortcut: '7',
+        body: '六维健康评估 · <b style="color:#22d3ee">综合 92/A · v1.2.0</b> · 3 版本演进趋势 · D0-D8 九级诊断引擎 · 改进建议卡片。',
+        chips: ['六维健康', '版本演进', 'D0-D8 诊断', '改进建议'],
+        refresh: '🔄 更新频率：<b>版本发布时</b>同步 cdn-summary · 自循环巡检触发更新',
+        cta: '查看审查 →'
+      }).mount('#demo-4');
+    }
+    if (window.YryCdnAggCard) mountDemos();
+    else document.addEventListener('yry-cdn-agg-card-ready', mountDemos, { once: true });
+  </script>
+</body>
+</html>

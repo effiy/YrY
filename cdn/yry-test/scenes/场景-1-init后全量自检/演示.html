@@ -6,72 +6,11 @@
 <title>init后全量自检 · 演示</title>
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/theme/index.css">
-<style>
-/* ═══ shared-b.css — Common styles for all Category B documents ═══ */
-/* Inlined by rui-html/lib/templates.mjs buildHeadBlock() during generation */
-/* Uses yry- prefixed CSS variables matching cdn/theme/index.css conventions */
-/* Breadcrumb/Cross-nav/Header styles → now provided by yry-scene-chrome component */
-
-:root {
-  --yry-bg: rgba(22,22,32,1);
-  --yry-bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
-  --yry-bg-flat: rgba(34,34,46,1);
-  --yry-bg-raised: rgba(42,42,56,1);
-  --yry-accent: #FFC107;
-  --yry-cyan: #22d3ee;
-  --yry-pass: #22c55e;
-  --yry-fail: #ef4444;
-  --yry-warn: #f59e0b;
-  --yry-skip: #6b7280;
-  --yry-text: rgba(250,250,252,1);
-  --yry-text2: rgba(160,160,164,1);
-  --yry-text3: rgba(110,110,114,1);
-  --yry-shadow: 0 4px 20px rgba(0,0,0,0.3);
-  --yry-shadow-lg: 0 12px 32px rgba(0,0,0,0.45);
-  --yry-radius: 12px;
-  --yry-border: 1px solid rgba(255,255,255,0.06);
-}
-
-@keyframes yry-fadeInUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes yry-fadeInDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  background: var(--yry-bg);
-  color: var(--yry-text);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif;
-  line-height: 1.6;
-  min-height: 100vh;
-}
-
-.yry-container { max-width: 1120px; margin: 0 auto; padding: 48px 24px 80px; }
-
-.yry-bar-wrap { margin-bottom: 24px; }
-.yry-bar-outer { height: 8px; border-radius: 4px; overflow: hidden; display: flex; background: rgba(255,255,255,.04); }
-.yry-bar-outer .yry-seg { height: 100%; transition: width .5s ease; min-width: 2px; }
-.yry-bar-outer .yry-seg.p { background: var(--yry-pass); }
-.yry-bar-outer .yry-seg.f { background: var(--yry-fail); }
-.yry-bar-outer .yry-seg.s { background: var(--yry-skip); }
-
-.yry-tabs { display: flex; gap: 0; border-bottom: var(--yry-border); margin-bottom: 0; }
-.yry-tab { padding: 10px 20px; cursor: pointer; font-size: .84rem; color: var(--yry-text3); border-bottom: 2px solid transparent; transition: all .15s; user-select: none; }
-.yry-tab:hover { color: var(--yry-text2); }
-.yry-tab.on { color: var(--yry-accent); border-bottom-color: var(--yry-accent); }
-
-.yry-panel { display: none; animation: yry-fadeInUp .4s ease both; padding-top: 28px; }
-.yry-panel.on { display: block; }
-
-.yry-section h2 { font-size: 1.1rem; font-weight: 600; margin: 24px 0 12px; display: flex; align-items: center; gap: 8px; }
-.yry-section h2 .yry-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--yry-accent); box-shadow: 0 0 6px rgba(255,193,7,.4); flex-shrink: 0; }
-.yry-section h3 { font-size: .9rem; font-weight: 600; margin: 16px 0 10px; color: var(--yry-text2); }
-.yry-section-desc { font-size: .8rem; color: var(--yry-text3); margin-bottom: 8px; }
-
-.yry-footer { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 2rem; }
-.yry-footer a { color: var(--yry-text2); }</style>
-
+<link rel="stylesheet" href="../../../../cdn/yry-demo.css">
 <link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
 <link rel="stylesheet" href="../../../../cdn/yry-scene-stats/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-tabs/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
 <style>
 /* Page-specific overrides — shared patterns in shared-b.css */
 </style>
@@ -82,32 +21,22 @@ body {
   theme="b"
   title="💡 {ACCENT} — 演示"
   title-accent="初始化后全量自检"
-  subtitle="场景 1 · 版本 vv1.1.0 · 2026-06-05"
-  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"自测 · 故事任务"},{"label":"场景 1 · init后全量自检"},{"label":"💡 演示"}]'
+  subtitle="场景 1 · 版本 vv5.4.0 · 2026-06-22"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-test · 故事任务"},{"label":"场景 1 · init后全量自检"},{"label":"💡 演示"}]'
   crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","href":"架构图.html"},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","active":true},{"label":"📝 审查","href":"审查.html"}]'>
 </yry-scene-chrome>
 
-<yry-scene-stats items='[{"value":2,"label":"流程图","color":"info"},{"value":96,"label":"数据表","color":"t"},{"value":"vv1.1.0","label":"版本","color":"t"}]'></yry-scene-stats>
+<yry-scene-stats items='[{"value":3,"label":"流程图","color":"info"},{"value":134,"label":"数据表","color":"t"},{"value":"vv5.4.0","label":"版本","color":"t"}]'></yry-scene-stats>
 
-<div class="yry-tabs">
-  <span class="yry-tab on" data-panel="walkthrough">🚶 操作演示</span>
-  <span class="yry-tab" data-panel="commands">💻 命令列表</span>
-  <span class="yry-tab" data-panel="screenshots">📸 效果截图</span>
-</div>
-
-<div class="yry-panel on" id="panelWalkthrough">
-  <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
-</div>
-
-<div class="yry-panel" id="panelCommands">
-  <div class="yry-section">
-    <h2><span class="yry-dot"></span>命令参考</h2>
-    <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
+<yry-scene-tabs tabs='[{"id":"walkthrough","label":"🚶 操作演示"},{"id":"commands","label":"💻 命令列表"},{"id":"screenshots","label":"📸 效果截图"}]'>
+  <div data-panel="walkthrough"><div class="placeholder">数据待填充 — 运行 /rui code 生成</div></div>
+  <div data-panel="commands">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>命令参考</h2>
+      <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
+    </div>
   </div>
-</div>
-
-<div class="yry-panel" id="panelScreenshots">
-  <pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  <div data-panel="screenshots"><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
   'primaryColor': '#1e1f2b',
   'primaryTextColor': '#a9b1d6',
   'primaryBorderColor': '#3d59a1',
@@ -163,13 +92,34 @@ flowchart TD
     FS--&gt;&gt;SC: 文件存在性
     SC-&gt;&gt;RPT: 汇总逐项结果
     RPT--&gt;&gt;U: 输出自检报告（通过/警告/阻断）</pre>
-</div>
+<pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+sequenceDiagram
+    participant U as 维护者
+    participant S as 自检引擎
+    participant FS as 文件系统
+    participant R as 报告
+    U-&gt;&gt;S: /rui init 完成
+    S-&gt;&gt;FS: 检查 1: 指令标记
+    FS--&gt;&gt;S: 存在
+    S-&gt;&gt;FS: 检查 2: README
+    FS--&gt;&gt;S: 存在
+    S-&gt;&gt;FS: 检查 3-7: 逐项
+    FS--&gt;&gt;S: 部分缺失
+    S-&gt;&gt;R: 汇总报告
+    R--&gt;&gt;U: 5/7 通过 · 2 项阻断</pre></div>
+</yry-scene-tabs>
 
-<div class="yry-footer">YrY vv1.1.0 · 2026-06-05 · <a href="../../../../docs/index.html">文档中心</a></div>
+<yry-scene-footer version="v5.4.0" date="2026-06-22" docs-link="../../../../docs/index.html"></yry-scene-footer>
 </div>
 <script src="../../../../cdn/shared/index.js"></script>
 <script src="../../../../cdn/yry-scene-chrome/index.js"></script>
 <script src="../../../../cdn/yry-scene-stats/index.js"></script>
-<script>YrY.initTabs();</script>
+<script src="../../../../cdn/yry-scene-tabs/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
 </body>
 </html>

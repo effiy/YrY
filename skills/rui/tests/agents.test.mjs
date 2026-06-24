@@ -4,7 +4,7 @@
  * (each skill owns its agent roles).
  */
 
-import { describe, it, assert, run } from '../../../lib/test-harness.mjs';
+import { describe, it, assert, run } from '../../../lib/vitest-adapter.mjs';
 import { fileExists, readFile, hasSection, hasMermaidDiagram, listAgents } from '../../../lib/test-helpers.mjs';
 
 // Agent → skill mapping (agents are now within their owning skills)
@@ -56,14 +56,14 @@ describe('agent definitions', () => {
 
   // ── Individual agent definitions ────────────────────────────
   const AGENTS = listAgents();
-  const REQUIRED_AGENTS = ['pm', 'planner', 'coder', 'tester', 'security', 'architect', 'code-reviewer', 'reporter', 'self-improve'];
+  const REQUIRED_AGENTS = ['pm', 'planner', 'coder', 'tester', 'security', 'architect', 'code-reviewer', 'reporter', 'self-improve', 'AGENT'];
 
   describe('agent coverage', () => {
-    it('has all 9 required agents', () => {
+    it('has all 10 required agents', () => {
       for (const name of REQUIRED_AGENTS) {
         assert.ok(AGENTS.includes(name), `missing agent: ${name}`);
       }
-      assert.equal(AGENTS.length, 9, 'should have exactly 9 agent definitions');
+      assert.equal(AGENTS.length, 10, 'should have exactly 10 agent definitions');
     });
   });
 
@@ -113,4 +113,3 @@ describe('agent definitions', () => {
 });
 
 const exitCode = await run();
-process.exit(exitCode);

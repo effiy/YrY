@@ -1,478 +1,167 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>🧩 清单交互组件实现 · 知识图谱</title>
-<link rel="stylesheet" href="../../../../cdn/fonts\/index\.css">
-<link rel="stylesheet" href="../../../../cdn/yry-page-nav/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-export-toolbar/index.css">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>清单交互组件实现 · 知识图谱</title>
+<link rel="stylesheet" href="../../../../cdn/fonts/index.css">
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme-mono/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-graph-base.css">
 <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
-<link rel="stylesheet" href="../../../../cdn/yry-graph/index.css"></head><body><div class="container" id="report-container">
-<script type="application/json" id="yry-page-config">
-{"story": "yry-checklist · 清单与自循环", "scene": {"num": "2", "name": "清单交互组件实现", "dir": "场景-2-清单交互组件实现"}, "depth": "../../../", "scenes": [{"num": "1", "name": "模板架构与 CSS 设计系统", "dir": "场景-1-模板架构与CSS设计系统"}, {"num": "2", "name": "清单交互组件实现", "dir": "场景-2-清单交互组件实现"}, {"num": "3", "name": "验证报告与健康面板集成", "dir": "场景-3-验证报告与健康面板集成"}, {"num": "4", "name": "批量生成与自循环机制", "dir": "场景-4-批量生成与自循环机制"}], "pages": [{"type": "清单", "icon": "📋", "file": "计划清单.html"}, {"type": "架构", "icon": "📐", "file": "架构图.html"}, {"type": "图谱", "icon": "🔗", "file": "知识图谱.html"}, {"type": "源码", "icon": "📄", "file": "源码.html"}, {"type": "测试", "icon": "🧪", "file": "测试面板.html"}, {"type": "演示", "icon": "💡", "file": "演示.html"}, {"type": "审计", "icon": "📝", "file": "审查.html"}], "page": {"type": "图谱", "icon": "🔗", "file": "知识图谱.html"}}
-</script>
-<div id="yry-nav"></div>
-<script src="../../../../cdn/yry-page-nav/index.js"></script>
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-cytoscape-graph/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-export-toolbar/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-info-cards/index.css">
+<style>
+/* Page-specific overrides — shared patterns in shared-a.css */
+.yry-container{max-width:1400px}
+/* Legend is now handled by yry-cytoscape-graph component via JS */
+</style>
+</head>
+<body>
+<div class="yry-container" id="report-container">
+<yry-scene-chrome
+  theme="a"
+  title="🔗 场景 2 · 清单交互组件实现 · 知识图谱"
+  subtitle="yry-checklist · 场景 2 · vv5.4.0"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-checklist · 故事任务"},{"label":"场景 2 · 清单交互组件实现"},{"label":"🔗 知识图谱"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","href":"架构图.html"},{"label":"🔗 图谱","active":true},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","href":"审查.html"}]'
+  toolbar='<div class="yry-export-toolbar yry-toolbar" data-target=".yry-cy-container" data-filename="yry-checklist-scene2-kg" data-bg="#020617"><button data-action="copy-png">📋 Copy</button><button data-action="download-png">🖼 PNG</button><button data-action="download-pdf">📄 PDF</button></div>'>
+</yry-scene-chrome>
 
-<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>🧩 清单交互组件实现 · 知识图谱</h1>
-<div class="yry-export-toolbar" data-target="#report-container" data-filename="场景2" data-bg="#020617">
-<button data-action="copy-png">📋 Copy PNG</button>
-<button data-action="download-png">🖼 PNG</button>
-<button data-action="download-pdf">📄 PDF</button>
-</div>
-</div><p class="subtitle">checklist-interact · 6 组件 · 2 localStorage Key · 7 TC · 8 类型 · 5 视图 · Data/Template/Renderer 三层</p></div>
-
-<div class="tabs" role="tablist">
-  <div class="tab active" data-tab="graph" role="tab">🔗 图谱视图 <span class="badge">22</span></div>
-  <div class="tab" data-tab="matrix" role="tab">📊 关系矩阵</div>
-  <div class="tab" data-tab="path" role="tab">🗺️ 交互流程</div>
-  <div class="tab" data-tab="nodes" role="tab">📋 节点详情 <span class="badge">22</span></div>
-  <div class="tab" data-tab="stats" role="tab">📈 统计概览</div>
-</div>
-
-<!-- TAB: GRAPH -->
-<div class="tab-content active" data-tab="graph">
-  <div class="legend">
-    <span style="color:var(--muted);font-weight:600;">节点:</span>
-    <span class="legend-item"><span class="legend-dot scene"></span>场景</span>
-    <span class="legend-item"><span class="legend-dot component"></span>组件</span>
-    <span class="legend-item"><span class="legend-dot storage"></span>存储</span>
-    <span class="legend-item"><span class="legend-dot test"></span>测试</span>
-    <span class="legend-item"><span class="legend-dot file"></span>文件</span>
-    <span class="legend-item"><span class="legend-dot dom"></span>DOM</span>
-    <span class="legend-item"><span class="legend-dot style"></span>样式</span>
-    <span class="legend-item"><span class="legend-dot event"></span>事件</span>
-    <span style="margin-left:.75rem;color:var(--muted);font-weight:600;">操作:</span>
-    <span style="color:var(--dim);">🖱 拖拽 · 滚轮缩放 · 点击查看详情 · 双击居中</span>
-  </div>
-  <div class="graph-layout">
-    <div class="graph-container">
-      <div class="graph-toolbar" id="filterBar">
-        <span style="color:var(--muted);font-size:.7rem;margin-right:.25rem;">🔍 过滤:</span>
-        <span class="chip active" data-type="all">全部 <span class="count">22</span></span>
-        <span class="chip" data-type="scene">场景 <span class="count">1</span></span>
-        <span class="chip" data-type="component">组件 <span class="count">6</span></span>
-        <span class="chip" data-type="storage">存储 <span class="count">2</span></span>
-        <span class="chip" data-type="test">测试 <span class="count">7</span></span>
-        <span class="chip" data-type="file">文件 <span class="count">1</span></span>
-        <span class="chip" data-type="dom">DOM <span class="count">3</span></span>
-        <span class="chip" data-type="style">样式 <span class="count">1</span></span>
-        <span class="chip" data-type="event">事件 <span class="count">1</span></span>
-        <span class="sep"></span>
-        <select class="layout-pick" id="layoutPick">
-          <option value="cose">力学布局</option>
-          <option value="concentric">同心圆</option>
-          <option value="breadthfirst" selected>层级</option>
-          <option value="circle">圆形</option>
-          <option value="grid">网格</option>
-        </select>
-        <span class="sep"></span>
-        <span class="chip" id="btnReset">↺ 重置</span>
-        <span class="chip" id="btnFit">⤢ 自适应</span>
-      </div>
-      <div id="cy"></div>
-    </div>
-    <aside class="side-panel" id="sidePanel">
-      <div class="side-empty">
-        <div class="ico">👆</div>
-        <div>点击图谱中任意节点<br>查看详细信息、关系、标签</div>
-      </div>
-    </aside>
-  </div>
-  <div class="cy-tooltip" id="cyTooltip"></div>
+<div class="legend">
+  <span style="color:#94a3b8;font-weight:600;">节点:</span>
+  <span class="legend-item"><span class="legend-dot scene"></span>场景</span>
+  <span class="legend-item"><span class="legend-dot check"></span>检查/功能</span>
+  <span class="legend-item"><span class="legend-dot source"></span>源文件</span>
+  <span class="legend-item"><span class="legend-dot domain"></span>概念域</span>
+  <span style="margin-left:1rem;color:#94a3b8;font-weight:600;">操作:</span>
+  <span style="color:#64748b;">🖱 拖拽 · 滚轮缩放 · 点击节点高亮邻域</span>
 </div>
 
-<!-- TAB: MATRIX -->
-<div class="tab-content" data-tab="matrix">
-  <div class="matrix-wrap">
-    <h3>📊 关系矩阵 · 跨类别关联强度</h3>
-    <p class="desc">横轴为目标节点类别，纵轴为源节点类别。单元格颜色越深表示从源类别到目标类别的引用关系越密集。点击单元格高亮对应图谱边。</p>
-    <div class="matrix" id="matrix"></div>
-    <div class="matrix-legend">
-      <span><span class="legend-sq" style="background:rgba(100,116,139,.05)"></span>无关系</span>
-      <span><span class="legend-sq" style="background:rgba(34,211,238,.25)"></span>1 次引用</span>
-      <span><span class="legend-sq" style="background:rgba(34,211,238,.45)"></span>2 次引用</span>
-      <span><span class="legend-sq" style="background:rgba(34,211,238,.7)"></span>3+ 次引用</span>
-      <span><span class="legend-sq" style="background:rgba(251,191,36,.18);border:1px solid var(--c-amber)"></span>自指 (类内)</span>
-      <span style="margin-left:auto;color:var(--dim)">💡 悬停查看关系数</span>
-    </div>
-  </div>
-</div>
+<div class="yry-cytoscape-graph graph-container" id="cy-graph" data-filename="yry-checklist-scene2-kg" data-layout="breadthfirst" data-legend="false" style="height:550px"></div>
 
-<!-- TAB: PATH -->
-<div class="tab-content" data-tab="path">
-  <div class="path-wrap">
-    <h3>🧩 清单交互 · 7 步交互流程</h3>
-    <p class="desc">从「页面加载」到「数据持久化」的完整用户交互路径。每一步对应一个组件触发场景，最终状态写入 localStorage。</p>
-    <div class="timeline">
-      <div class="tl-step done"><div class="tl-dot">1</div><div class="tl-time">~0ms</div><div class="tl-num">STEP · 01 · 页面初始化</div><h4>DOM 扫描 + 状态恢复</h4><p>页面加载时扫描所有 <code>.deliv-link</code> 根据扩展名自动标注 <code>data-type</code>。从 <code>yry-arch-s2-checklist</code> 回读勾选状态，恢复进度条与步骤状态图标。</p><div class="tl-files"><span class="tl-file">📜 checklist-interact.js</span><span class="tl-file">💾 localStorage 回读</span><span class="tl-out">→ 初始化完成</span></div></div>
-      <div class="tl-step done"><div class="tl-dot">2</div><div class="tl-time">&lt;50ms</div><div class="tl-num">STEP · 02 · 勾选进度联动</div><h4>点击 Checkbox → updateProgress() 双向同步</h4><p>勾选/取消步骤 checkbox → 更新进度条 width → 更新 overview 完成统计 → 自动推导步骤状态 (✅完成/🔶就绪/⏳待开始) → 写入 localStorage。</p><div class="tl-files"><span class="tl-file">☑️ input[type=checkbox]</span><span class="tl-file">📊 .progress-bar</span><span class="tl-out">→ 5 断言通过</span></div></div>
-      <div class="tl-step done"><div class="tl-dot">3</div><div class="tl-time">300ms</div><div class="tl-num">STEP · 03 · 折叠面板展开/收起</div><h4>点击交付物头部 → toggle CSS collapsed</h4><p>点击 <code>.deliv-group</code> 头部 → toggle <code>collapsed</code> class → max-height: 0 过渡 300ms ease-out → 交付物列表平滑显隐。</p><div class="tl-files"><span class="tl-file">📂 .deliv-group</span><span class="tl-file">🎨 max-height 0.3s</span><span class="tl-out">→ 3 断言通过</span></div></div>
-      <div class="tl-step done"><div class="tl-dot">4</div><div class="tl-time">~0ms</div><div class="tl-num">STEP · 04 · 标签页切换</div><h4>点击标签 / 键盘 1-9 → 7 面板切换</h4><p>点击标签或按数字键 1-9 → 切换 7 个面板 (overview/清单/命令/验证/指标/交付物/风险/时间线) → 写入 <code>yry-arch-s2-checklist-tab</code>。跳过 input/textarea 聚焦状态避免误触发。</p><div class="tl-files"><span class="tl-file">📑 .tab 7 面板</span><span class="tl-file">⌨️ keydown 1-9</span><span class="tl-out">→ 7 断言通过</span></div></div>
-      <div class="tl-step alt"><div class="tl-dot">5</div><div class="tl-time">~0ms</div><div class="tl-num">STEP · 05 · 风险行展开</div><h4>点击风险行 → toggle open class</h4><p>点击 <code>.risk-row</code> → toggle <code>open</code> class → 缓解步骤详情区展开 → 箭头图标 ↕ 切换方向。</p><div class="tl-files"><span class="tl-file">⚠️ .risk-row.open</span><span class="tl-file">↕ 箭头切换</span><span class="tl-out">→ 切换正常</span></div></div>
-      <div class="tl-step alt"><div class="tl-dot">6</div><div class="tl-time">~0ms</div><div class="tl-num">STEP · 06 · 交付物类型过滤</div><h4>点击过滤按钮 → 6 类过滤 + 展开/折叠</h4><p>点击过滤按钮 (全部/HTML/MD/CSS/Test/其他) → 匹配 <code>data-type</code> 的链接保持可见，其余添加 <code>dim</code> class 变暗。支持哈希定位 <code>#step-N-deliv</code> 自动展开并高亮。</p><div class="tl-files"><span class="tl-file">📦 .deliv-link[data-type]</span><span class="tl-file">🔗 #step-N-deliv</span><span class="tl-out">→ 6 断言通过</span></div></div>
-      <div class="tl-step alt"><div class="tl-dot">7</div><div class="tl-time">1.5s</div><div class="tl-num">STEP · 07 · 路径复制</div><h4>点击复制按钮 → navigator.clipboard → toast</h4><p>点击复制按钮 → <code>navigator.clipboard.writeText()</code> 写入剪贴板 → toast "已复制 N 个路径" 1.5s 后自动消失。支持单步复制 + 全部复制两种模式。</p><div class="tl-files"><span class="tl-file">📋 clipboard API</span><span class="tl-file">💬 .toast 1.5s</span><span class="tl-out">→ 2 断言通过</span></div></div>
-    </div>
+<yry-info-cards>
+  <div class="yry-card">
+    <div class="yry-card-header"><div class="yry-card-dot scene"></div><h3>场景</h3></div>
+    <ul><li><b>场景 2 · 清单交互组件实现</b> — 场景 2</li></ul>
   </div>
-</div>
+  <h2>§0 技术评审</h2><p>交互组件是计划清单从"可读文档"升级为"可操作工具"的核心层。六个组件覆盖清单页面全部交互场景，均以零依赖内联 JS 实现，通过 localStorage 持久化用户状态。架构采用 Data/Template/Renderer 三层分离，2 个 <code><script></code> 块共 ~410 行（~270 + ~140）。</p><h3>交付物清单</h3><table><thead><tr><th>#</th><th>文件</th><th>类型</th><th>规模</th><th>用途</th></tr></thead><tbody><tr><td>1</td><td><code>计划清单.html</code></td><td>HTML+CSS+JS</td><td>~650 行 HTML + ~410 行 JS (2 blocks)</td><td>清单页面本体 — 7 标签页 · 进度条 · 风险行 · 交付物列表 · 6 组件完整实现</td></tr><tr><td>2</td><td><code>架构图.html</code></td><td>SVG 图表</td><td>5 tab</td><td>三层架构图 · 事件时序图 · TC 设计 · 质量门禁 · 里程碑时间线</td></tr><tr><td>3</td><td><code>知识图谱.html</code></td><td>Cytoscape.js</td><td>22 节点 · 42 边 · 8 类型</td><td>场景知识图谱 — 组件→存储→测试→源码 全关系</td></tr><tr><td>4</td><td><code>测试面板.html</code></td><td>HTML+JS</td><td>~1616 行</td><td>测试面板 Pro — 7 套件 26 断言 100% 通过 · SLI 监控 · 性能趋势 · 质量雷达</td></tr><tr><td>5</td><td><code>演示.html</code></td><td>HTML+JS</td><td>~1300 行</td><td>交互演示 — 6 步走查 · 时间线 · 概念雷达 · Day Plan · Mini Quiz</td></tr><tr><td>6</td><td><code>审查.html</code></td><td>HTML+JS</td><td>~550 行</td><td>审查报告 — 4 维 6 项 · 证据链 · fix diffs · 行动项 · 签收状态</td></tr><tr><td>7</td><td><code>源码.html</code></td><td>HTML+JS</td><td>~850 行</td><td>源码走读 — 三层架构拆解 · 调试命令 · 常见问题 · 文件索引 · 关系图</td></tr><tr><td>8</td><td><code>index.md</code></td><td>Markdown</td><td>本文件</td><td>场景总纲 — 技术评审 · 组件清单 · 测试设计 · 实施报告 · 自改进</td></tr></tbody></table><h3>效果示意</h3><p><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart TD
+    CHECK[&quot;☑️ 勾选→进度联动&quot;]:::c --&gt; LS[&quot;localStorage 持久化&quot;]:::s
+    CHECK --&gt; STATUS[&quot;步骤状态推导&lt;br/&gt;完成/就绪/待开始&quot;]:::s
+    FOLD[&quot;📂 折叠面板展开/收起&quot;]:::c --&gt; ANIM[&quot;CSS transition 300ms&quot;]:::s
+    TAB[&quot;📑 标签页切换&quot;]:::c --&gt; HASH[&quot;localStorage tab 记忆&quot;]:::s
+    TAB --&gt; KEY[&quot;键盘 1-9 快捷切换&quot;]:::s
+    RISK[&quot;⚠️ 风险行展开&quot;]:::c --&gt; DET[&quot;缓解步骤详情&quot;]:::s
+    DELIV[&quot;📦 交付物过滤&quot;]:::c --&gt; TYPE[&quot;类型过滤 + 展开/折叠&quot;]:::s
+    DELIV --&gt; COPY[&quot;一键复制路径&quot;]:::s
+    classDef c fill:#06b6d4,color:#000
+    classDef s fill:#8B5CF6,color:#fff</pre></p><h3>三层架构</h3><p><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    subgraph Data[&quot;Data 层&quot;]
+        D1[&quot;localStorage 读写&lt;br/&gt;yry-arch-s2-checklist&lt;br/&gt;yry-arch-s2-checklist-tab&quot;]:::d
+        D2[&quot;步骤状态推导&lt;br/&gt;deriveStatus()&quot;]:::d
+        D3[&quot;交付物自动标注&lt;br/&gt;autoAnnotate()&quot;]:::d
+    end
+    subgraph Template[&quot;Template 层&quot;]
+        T1[&quot;DOM 查询&lt;br/&gt;data-* 钩子&quot;]:::t
+        T2[&quot;事件绑定&lt;br/&gt;click / keydown&quot;]:::t
+        T3[&quot;CSS class 切换&lt;br/&gt;collapsed / open / dim / on&quot;]:::t
+    end
+    subgraph Renderer[&quot;Renderer 层&quot;]
+        R1[&quot;进度条更新&lt;br/&gt;updateProgress()&quot;]:::r
+        R2[&quot;标签页切换&lt;br/&gt;switchTab()&quot;]:::r
+        R3[&quot;Toast 提示&lt;br/&gt;showToast()&quot;]:::r
+    end
+    Data --&gt; Template --&gt; Renderer
+    classDef d fill:#34d399,color:#000
+    classDef t fill:#fbbf24,color:#000
+    classDef r fill:#8B5CF6,color:#fff</pre></p><h3>事件契约（与 <code>架构图.html</code> 事件契约段一致）</h3><table><thead><tr><th>事件源</th><th>事件类型</th><th>处理函数</th><th>副作用</th></tr></thead><tbody><tr><td>checkbox</td><td><code>click</code></td><td><code>onCheck(stepId)</code></td><td>进度条更新 · localStorage 写入 · 步骤状态重推导</td></tr><tr><td>交付物头部</td><td><code>click</code></td><td><code>toggleCollapse(groupId)</code></td><td>CSS class <code>collapsed</code> 切换 · max-height transition</td></tr><tr><td>标签页</td><td><code>click</code> / <code>keydown</code></td><td><code>switchTab(tabName)</code></td><td><code>.tab-panel.active</code> 切换 · tab localStorage 写入</td></tr><tr><td>风险行</td><td><code>click</code></td><td><code>toggleRisk(rowId)</code></td><td>CSS class <code>open</code> 切换 · 详情展开</td></tr><tr><td>过滤按钮</td><td><code>click</code></td><td><code>filterDeliv(type)</code></td><td><code>.deliv-link.dim</code> 切换 · 显隐动画</td></tr><tr><td>复制按钮</td><td><code>click</code></td><td><code>copyPath(path)</code></td><td>剪贴板写入 · <code>showToast()</code> 0.15s fade</td></tr><tr><td>document</td><td><code>keydown</code></td><td><code>onKeyShortcut(e)</code></td><td>数字键 1-9 → 标签页切换（跳过 input 聚焦）</td></tr><tr><td>window</td><td><code>hashchange</code></td><td><code>onHashChange()</code></td><td>跨 tab 跳转 · 自动展开折叠面板 · 高亮目标</td></tr></tbody></table><h3>状态流向（与 <code>架构图.html</code> 状态流向段一致）</h3><p><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    U[&quot;用户操作&quot;] --&gt; E[&quot;事件触发&quot;]:::e
+    E --&gt; S[&quot;状态更新&quot;]:::s
+    S --&gt; D[&quot;DOM 渲染&quot;]:::d
+    D --&gt; LS[&quot;localStorage 持久化&quot;]:::ls
 
-<!-- TAB: NODES (empty - filled by JS) -->
-<div class="tab-content" data-tab="nodes">
-  <div class="nodes-grid" id="nodesGrid"></div>
-</div>
+    LOAD[&quot;页面加载&quot;] --&gt; LS2[&quot;读取 localStorage&quot;]:::ls
+    LS2 --&gt; R[&quot;恢复状态&quot;]:::r
+    R --&gt; D2[&quot;DOM 初始渲染&quot;]:::d
 
-<!-- TAB: STATS -->
-<div class="tab-content" data-tab="stats">
-  <div class="stats-grid">
-    <div class="stat-card" style="--sc:var(--c-cyan)"><div class="stat-label">节点总数</div><div class="stat-value">22</div><div class="stat-sub">覆盖 8 种类型</div><div class="stat-trend">▲ 6 组件 + 7 TC</div></div>
-    <div class="stat-card" style="--sc:var(--c-emerald)"><div class="stat-label">关系总数</div><div class="stat-value">42</div><div class="stat-sub">7 种语义关系</div><div class="stat-trend">▲ contains → implements → verifies</div></div>
-    <div class="stat-card" style="--sc:var(--c-amber)"><div class="stat-label">图密度</div><div class="stat-value">0.091</div><div class="stat-sub">稀疏图 · 层次清晰</div><div class="stat-trend">● 稳定</div></div>
-    <div class="stat-card" style="--sc:var(--c-pink)"><div class="stat-label">平均度</div><div class="stat-value">3.82</div><div class="stat-sub">节点平均连接数</div><div class="stat-trend">● 健康</div></div>
-    <div class="stat-card" style="--sc:var(--c-violet)"><div class="stat-label">直径</div><div class="stat-value">4</div><div class="stat-sub">最长最短路径</div><div class="stat-trend">● 紧凑</div></div>
-    <div class="stat-card" style="--sc:var(--c-blue)"><div class="stat-label">中心节点</div><div class="stat-value">s2</div><div class="stat-sub">场景根 · 度 16</div><div class="stat-trend">● 已识别</div></div>
-  </div>
-  <div class="bar-chart">
-    <h4>📊 节点类型分布</h4>
-    <div class="bar-row"><div class="bar-label">场景</div><div class="bar-track"><div class="bar-fill" style="width:5%;--bc:var(--c-violet)">1</div></div></div>
-    <div class="bar-row"><div class="bar-label">组件</div><div class="bar-track"><div class="bar-fill" style="width:27%;--bc:var(--c-cyan)">6</div></div></div>
-    <div class="bar-row"><div class="bar-label">存储</div><div class="bar-track"><div class="bar-fill" style="width:9%;--bc:var(--c-emerald)">2</div></div></div>
-    <div class="bar-row"><div class="bar-label">测试</div><div class="bar-track"><div class="bar-fill" style="width:32%;--bc:var(--c-blue)">7</div></div></div>
-    <div class="bar-row"><div class="bar-label">文件</div><div class="bar-track"><div class="bar-fill" style="width:5%;--bc:var(--c-slate)">1</div></div></div>
-    <div class="bar-row"><div class="bar-label">DOM</div><div class="bar-track"><div class="bar-fill" style="width:14%;--bc:var(--c-pink)">3</div></div></div>
-    <div class="bar-row"><div class="bar-label">样式</div><div class="bar-track"><div class="bar-fill" style="width:5%;--bc:var(--c-amber)">1</div></div></div>
-    <div class="bar-row"><div class="bar-label">事件</div><div class="bar-track"><div class="bar-fill" style="width:5%;--bc:var(--c-rose)">1</div></div></div>
-  </div>
-  <div class="donut-row">
-    <div class="donut-card">
-      <h4>🎯 关系类型占比</h4>
-      <div class="donut">
-        <svg viewBox="0 0 42 42">
-          <circle cx="21" cy="21" r="15.915" fill="none" stroke="rgba(30,41,59,.6)" stroke-width="6"/>
-          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#8B5CF6" stroke-width="6" stroke-dasharray="38 62" stroke-dashoffset="25" transform="rotate(-90 21 21)"/>
-          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#22d3ee" stroke-width="6" stroke-dasharray="14 86" stroke-dashoffset="-13" transform="rotate(-90 21 21)"/>
-          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#34d399" stroke-width="6" stroke-dasharray="19 81" stroke-dashoffset="-27" transform="rotate(-90 21 21)"/>
-          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#fbbf24" stroke-width="6" stroke-dasharray="10 90" stroke-dashoffset="-46" transform="rotate(-90 21 21)"/>
-          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#EC4899" stroke-width="6" stroke-dasharray="10 90" stroke-dashoffset="-56" transform="rotate(-90 21 21)"/>
-          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#3B82F6" stroke-width="6" stroke-dasharray="7 93" stroke-dashoffset="-66" transform="rotate(-90 21 21)"/>
-          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#fb7185" stroke-width="6" stroke-dasharray="2 98" stroke-dashoffset="-73" transform="rotate(-90 21 21)"/>
-        </svg>
-        <div class="donut-list">
-          <div class="donut-item"><span class="donut-dot" style="background:#8B5CF6"></span><span class="lbl">contains 包含</span><span class="val">16 (38%)</span></div>
-          <div class="donut-item"><span class="donut-dot" style="background:#22d3ee"></span><span class="lbl">implements 实现</span><span class="val">6 (14%)</span></div>
-          <div class="donut-item"><span class="donut-dot" style="background:#34d399"></span><span class="lbl">verifies 验证</span><span class="val">8 (19%)</span></div>
-          <div class="donut-item"><span class="donut-dot" style="background:#fbbf24"></span><span class="lbl">writes 写入</span><span class="val">4 (10%)</span></div>
-          <div class="donut-item"><span class="donut-dot" style="background:#EC4899"></span><span class="lbl">DOM 操作</span><span class="val">4 (10%)</span></div>
-          <div class="donut-item"><span class="donut-dot" style="background:#3B82F6"></span><span class="lbl">styles 样式</span><span class="val">3 (7%)</span></div>
-          <div class="donut-item"><span class="donut-dot" style="background:#fb7185"></span><span class="lbl">triggers 触发</span><span class="val">1 (2%)</span></div>
-        </div>
-      </div>
-    </div>
-    <div class="donut-card">
-      <h4>🏆 Top 5 高连接节点</h4>
-      <div class="donut-list" style="font-size:.78rem">
-        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#8B5CF6"></span><span class="lbl">场景-2 清单交互 (场景)</span><span class="val" style="color:#fbbf24">度 16</span></div>
-        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#94a3b8"></span><span class="lbl">checklist-interact.js (文件)</span><span class="val">度 12</span></div>
-        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#22d3ee"></span><span class="lbl">勾选进度联动 (组件)</span><span class="val">度 5</span></div>
-        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#22d3ee"></span><span class="lbl">标签页切换 (组件)</span><span class="val">度 4</span></div>
-        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#34d399"></span><span class="lbl">yry-arch-s2-checklist (存储)</span><span class="val">度 4</span></div>
-      </div>
-      <div class="density-grid">
-        <div class="density-cell"><div class="dc-val">~270 行</div><div class="dc-lbl">JS 规模</div></div>
-        <div class="density-cell"><div class="dc-val">2</div><div class="dc-lbl">localStorage Key</div></div>
-        <div class="density-cell"><div class="dc-val">7</div><div class="dc-lbl">TC 套件</div></div>
-        <div class="density-cell"><div class="dc-val">100%</div><div class="dc-lbl">通过率</div></div>
-      </div>
-    </div>
-  </div>
-  <div class="bar-chart">
-    <h4>⏱️ 交互响应时间分布（毫秒）</h4>
-    <div class="bar-row"><div class="bar-label">页面初始化</div><div class="bar-track"><div class="bar-fill" style="width:10%;--bc:var(--c-cyan)">~5</div></div></div>
-    <div class="bar-row"><div class="bar-label">勾选进度联动</div><div class="bar-track"><div class="bar-fill" style="width:8%;--bc:var(--c-cyan)">&lt;50</div></div></div>
-    <div class="bar-row"><div class="bar-label">折叠面板过渡</div><div class="bar-track"><div class="bar-fill" style="width:60%;--bc:var(--c-emerald)">300</div></div></div>
-    <div class="bar-row"><div class="bar-label">标签页切换</div><div class="bar-track"><div class="bar-fill" style="width:4%;--bc:var(--c-cyan)">~5</div></div></div>
-    <div class="bar-row"><div class="bar-label">风险行展开</div><div class="bar-track"><div class="bar-fill" style="width:2%;--bc:var(--c-cyan)">~5</div></div></div>
-    <div class="bar-row"><div class="bar-label">交付物过滤</div><div class="bar-track"><div class="bar-fill" style="width:2%;--bc:var(--c-cyan)">~5</div></div></div>
-    <div class="bar-row"><div class="bar-label">路径复制 Toast</div><div class="bar-track"><div class="bar-fill" style="width:30%;--bc:var(--c-amber)">1500</div></div></div>
-    <div style="margin-top:.75rem;padding-top:.75rem;border-top:1px dashed var(--border);font-size:.7rem;color:var(--dim);display:flex;justify-content:space-between"><span>∑ 最长交互耗时</span><span style="color:var(--c-amber);font-weight:700">≈ 1.9s (Toast 自消)</span></div>
-  </div>
-</div>
-
-<p class="footer">YrY v5.4 · checklist-interact · 场景-2: 清单交互组件实现 · 知识图谱 · 5 视图 · 22 节点 · 42 关系 · 8 类型</p>
-</div>
-<script>
-/* ═══ 节点元数据（单一事实源） ═══ */
-const NODES = {
-  s2:          {label:'场景-2\n清单交互',type:'scene',     desc:'6 交互组件 · 2 localStorage Key · 7 TC 套件 · ~270 行零依赖内联 JS · Data/Template/Renderer 三层架构', tags:['P0','yry-arch','场景2'], color:'#8B5CF6', icon:'🧩'},
-  'comp-check':{label:'勾选进度\n联动',  type:'component', desc:'点击 checkbox → updateProgress() → 进度条 width 更新 + overview 统计 + 步骤状态推导 (✅/🔶/⏳) + localStorage 持久化', tags:['checkbox','progress','双向同步'], color:'#22d3ee', icon:'☑️'},
-  'comp-fold': {label:'折叠面板',        type:'component', desc:'点击交付物头部 → toggle CSS class collapsed → max-height: 0 过渡 0.3s ease-out → 交付物列表平滑显隐', tags:['collapsed','max-height','300ms'], color:'#22d3ee', icon:'📂'},
-  'comp-tab':  {label:'标签页\n切换',    type:'component', desc:'点击标签 / 键盘 1-9 → 切换 7 面板 (overview+清单+命令+验证+指标+交付物+风险+时间线) + localStorage tab 记忆', tags:['1-9 映射','7 面板','focus 跳过'], color:'#22d3ee', icon:'📑'},
-  'comp-risk': {label:'风险行\n展开',    type:'component', desc:'点击风险行 → toggle CSS class open → 缓解步骤详情区展开/收起 + 箭头图标 ↕ 方向切换', tags:['toggle','open class','箭头切换'], color:'#22d3ee', icon:'⚠️'},
-  'comp-filter':{label:'交付物\n过滤',   type:'component', desc:'点击过滤按钮 → 6 类过滤 (全部/HTML/MD/CSS/Test/其他) → dim/on CSS class + data-type 自动标注 + 哈希定位 #step-N-deliv', tags:['6 类型','data-type','自动标注'], color:'#22d3ee', icon:'📦'},
-  'comp-copy': {label:'复制路径',        type:'component', desc:'点击复制按钮 → navigator.clipboard.writeText() 写入剪贴板 → toast "已复制 N 个路径" 1.5s 自动消失', tags:['clipboard','toast','1.5s'], color:'#22d3ee', icon:'📋'},
-  'store-chk': {label:'yry-arch-\ns2-checklist',type:'storage', desc:'JSON 键值对 · 步骤勾选状态持久化 · key 含场景标识 s2 避免跨场景冲突 · schema Draft 2020-12', tags:['JSON','localStorage','schema'], color:'#34d399', icon:'💾'},
-  'store-tab': {label:'yry-arch-\ns2-checklist-tab',type:'storage', desc:'字符串 · 记录最后活跃标签页索引 · 刷新后恢复 tab 位置', tags:['string','tab memory'], color:'#34d399', icon:'💾'},
-  'js-main':   {label:'checklist-\ninteract.js',type:'file', desc:'~270 行零依赖内联 JS · 2 个 script 块嵌入 计划清单.html · 6 组件全部 DOM 操作 + localStorage 读写', tags:['~270 行','零依赖','内联'], color:'#94a3b8', icon:'📜'},
-  tc10: {label:'TC-10\n勾选步骤',type:'test', desc:'验证: 进度%更新 + 完成数+1 + 步骤状态推导 (✅/🔶/⏳) · 延迟 < 50ms', tags:['5 断言','100% 通过'], color:'#3B82F6', icon:'🧪'},
-  tc11: {label:'TC-11\n折叠动画',type:'test', desc:'验证: 展开/收起过渡 + 交付物列表显隐 · 300ms 内完成', tags:['3 断言','100% 通过'], color:'#3B82F6', icon:'🧪'},
-  tc12: {label:'TC-12\n标签页切换',type:'test', desc:'验证: 7 面板逐一显示 + 键盘 1-9 映射 + input/textarea 聚焦跳过', tags:['7 断言','100% 通过'], color:'#3B82F6', icon:'🧪'},
-  tc13: {label:'TC-13\n刷新恢复',type:'test', desc:'验证: localStorage 回读勾选状态 + tab 状态 · 全部恢复', tags:['3 断言','100% 通过'], color:'#3B82F6', icon:'🧪'},
-  tc14: {label:'TC-14\n风险行点击',type:'test', desc:'验证: 详情显示/隐藏 + toggle 箭头 ↕ 方向切换', tags:['切换正常','100% 通过'], color:'#3B82F6', icon:'🧪'},
-  tc15: {label:'TC-15\n交付物过滤',type:'test', desc:'验证: 全部/HTML/MD/CSS/Test/其他 六类过滤正确 + 展开/折叠联动', tags:['6 断言','100% 通过'], color:'#3B82F6', icon:'🧪'},
-  tc16: {label:'TC-16\n复制路径',type:'test', desc:'验证: 单步复制 + 全部复制 + navigator.clipboard 写入成功', tags:['2 断言','100% 通过'], color:'#3B82F6', icon:'🧪'},
-  'dom-progress':{label:'进度条\n联动',  type:'dom',  desc:'.progress-bar width transition + .stat-done 完成数文本 + .step-status 状态图标 (✅/🔶/⏳)', tags:['progress-bar','stat-done','step-status'], color:'#EC4899', icon:'📊'},
-  'dom-panel':{label:'折叠面板\n过渡',   type:'dom',  desc:'.deliv-group.collapsed → max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out', tags:['deliv-group','max-height','collapsed'], color:'#EC4899', icon:'📐'},
-  'dom-toast':{label:'Toast\n提示',      type:'dom',  desc:'.toast 绝对定位 fixed · 1.5s 后自动移除 · "已复制 N 个路径" 文本反馈', tags:['toast','1.5s','absolute'], color:'#EC4899', icon:'💬'},
-  'css-anim':{label:'CSS\nTransition',  type:'style', desc:'max-height 0.3s ease-out · opacity 切换 · progress width transition · 所有动画零 JS 仅 CSS', tags:['0.3s','ease-out','纯 CSS'], color:'#fbbf24', icon:'🎨'},
-  'evt-key':{label:'键盘\n快捷键',       type:'event', desc:'keydown 监听 · 数字键 1-9 → 7 面板 + overview 映射 · 跳过 input/textarea/select 聚焦状态', tags:['1-9','keydown','focus check'], color:'#fb7185', icon:'⌨️'},
-};
-const NODE_LIST = Object.entries(NODES).map(([id,d])=>({...d, id}));
-
-const EDGES = [
-  // Scene contains all children
-  {s:'s2', t:'comp-check', rel:'contains'},{s:'s2', t:'comp-fold', rel:'contains'},{s:'s2', t:'comp-tab', rel:'contains'},
-  {s:'s2', t:'comp-risk', rel:'contains'},{s:'s2', t:'comp-filter', rel:'contains'},{s:'s2', t:'comp-copy', rel:'contains'},
-  {s:'s2', t:'store-chk', rel:'contains'},{s:'s2', t:'store-tab', rel:'contains'},{s:'s2', t:'js-main', rel:'contains'},
-  {s:'s2', t:'tc10', rel:'contains'},{s:'s2', t:'tc11', rel:'contains'},{s:'s2', t:'tc12', rel:'contains'},
-  {s:'s2', t:'tc13', rel:'contains'},{s:'s2', t:'tc14', rel:'contains'},{s:'s2', t:'tc15', rel:'contains'},{s:'s2', t:'tc16', rel:'contains'},
-  // JS implements all 6 components
-  {s:'js-main', t:'comp-check', rel:'implements'},{s:'js-main', t:'comp-fold', rel:'implements'},{s:'js-main', t:'comp-tab', rel:'implements'},
-  {s:'js-main', t:'comp-risk', rel:'implements'},{s:'js-main', t:'comp-filter', rel:'implements'},{s:'js-main', t:'comp-copy', rel:'implements'},
-  // Components persist to localStorage
-  {s:'comp-check', t:'store-chk', rel:'writes'},{s:'comp-check', t:'store-tab', rel:'writes'},
-  {s:'comp-tab', t:'store-tab', rel:'writes'},
-  // Components update DOM
-  {s:'comp-check', t:'dom-progress', rel:'updates'},
-  {s:'comp-fold', t:'dom-panel', rel:'toggles'},
-  {s:'comp-copy', t:'dom-toast', rel:'shows'},
-  // CSS styles DOM elements
-  {s:'css-anim', t:'dom-progress', rel:'styles'},{s:'css-anim', t:'dom-panel', rel:'styles'},{s:'css-anim', t:'dom-toast', rel:'styles'},
-  // Events trigger components
-  {s:'evt-key', t:'comp-tab', rel:'triggers'},
-  // Tests verify components/storage
-  {s:'tc10', t:'comp-check', rel:'verifies'},{s:'tc11', t:'comp-fold', rel:'verifies'},{s:'tc12', t:'comp-tab', rel:'verifies'},
-  {s:'tc13', t:'store-chk', rel:'verifies'},{s:'tc13', t:'store-tab', rel:'verifies'},
-  {s:'tc14', t:'comp-risk', rel:'verifies'},{s:'tc15', t:'comp-filter', rel:'verifies'},{s:'tc16', t:'comp-copy', rel:'verifies'},
-  // Cross-component references
-  {s:'comp-check', t:'comp-tab', rel:'references'},
-  {s:'comp-filter', t:'comp-copy', rel:'references'},
-];
-const REL_LABELS = {contains:'包含',implements:'实现',writes:'写入',updates:'更新',toggles:'切换',shows:'显示',styles:'样式',triggers:'触发',verifies:'验证',references:'引用'};
-const TYPES = ['scene','component','storage','test','file','dom','style','event'];
-const TYPE_LABELS = {scene:'场景',component:'组件',storage:'存储',test:'测试',file:'文件',dom:'DOM',style:'样式',event:'事件'};
-
-/* ═══ Cytoscape 初始化 ═══ */
-const cy = cytoscape({
-  container: document.getElementById('cy'),
-  style: [
-    {selector:'node', style:{'label':'data(label)','font-family':'JetBrains Mono,monospace','font-size':'9px','color':'#e2e8f0','text-valign':'center','text-halign':'center','text-wrap':'wrap','text-max-width':'90px','border-width':2,'width':54,'height':54,'background-opacity':0.92,'transition-property':'background-color,border-color,width,height,opacity','transition-duration':'0.2s'}},
-    {selector:'node[type="scene"]',     style:{'background-color':'rgba(139,92,246,.32)','border-color':'#8B5CF6','width':70,'height':70,'font-size':'10px','font-weight':'700','shape':'round-rectangle'}},
-    {selector:'node[type="component"]', style:{'background-color':'rgba(34,211,238,.3)','border-color':'#22d3ee','width':60,'height':60,'font-size':'9px','font-weight':'600','shape':'round-rectangle'}},
-    {selector:'node[type="storage"]',   style:{'background-color':'rgba(52,211,153,.3)','border-color':'#34d399','shape':'round-diamond','width':62,'height':62,'font-size':'8px','font-weight':'600'}},
-    {selector:'node[type="test"]',      style:{'background-color':'rgba(59,130,246,.3)','border-color':'#3B82F6','shape':'ellipse','width':52,'height':52,'font-size':'8px','font-weight':'600'}},
-    {selector:'node[type="file"]',      style:{'background-color':'rgba(148,163,184,.32)','border-color':'#94a3b8','shape':'rectangle'}},
-    {selector:'node[type="dom"]',       style:{'background-color':'rgba(236,72,153,.3)','border-color':'#EC4899','width':58,'height':58,'shape':'round-octagon','font-weight':'600'}},
-    {selector:'node[type="style"]',     style:{'background-color':'rgba(251,191,36,.3)','border-color':'#fbbf24','shape':'round-pentagon','font-weight':'600'}},
-    {selector:'node[type="event"]',     style:{'background-color':'rgba(251,113,133,.3)','border-color':'#fb7185','shape':'round-pentagon','font-weight':'600'}},
-    {selector:'edge', style:{'width':1.3,'line-color':'#334155','target-arrow-color':'#334155','target-arrow-shape':'triangle','arrow-scale':0.85,'curve-style':'bezier','opacity':0.6,'transition-property':'opacity,width,line-color','transition-duration':'0.2s'}},
-    {selector:'edge[rel="contains"]',    style:{'line-color':'#8B5CF6','target-arrow-color':'#8B5CF6','width':1.6,'opacity':0.7}},
-    {selector:'edge[rel="implements"]',  style:{'line-color':'#22d3ee','target-arrow-color':'#22d3ee','width':1.4,'opacity':0.65}},
-    {selector:'edge[rel="verifies"]',    style:{'line-color':'#3B82F6','target-arrow-color':'#3B82F6','width':1.3,'opacity':0.6,'line-style':'dashed'}},
-    {selector:'edge[rel="writes"]',      style:{'line-color':'#34d399','target-arrow-color':'#34d399','width':1.4,'opacity':0.7}},
-    {selector:'edge[rel="styles"]',      style:{'line-color':'#fbbf24','target-arrow-color':'#fbbf24','width':1.2,'opacity':0.6}},
-    {selector:'edge[rel="triggers"]',    style:{'line-color':'#fb7185','target-arrow-color':'#fb7185','width':1.5,'opacity':0.7}},
-    {selector:'edge[rel="updates"]',     style:{'line-color':'#EC4899','target-arrow-color':'#EC4899','width':1.3,'opacity':0.6}},
-    {selector:'edge[rel="toggles"]',     style:{'line-color':'#EC4899','target-arrow-color':'#EC4899','width':1.3,'opacity':0.6}},
-    {selector:'edge[rel="shows"]',       style:{'line-color':'#EC4899','target-arrow-color':'#EC4899','width':1.3,'opacity':0.6}},
-    {selector:'edge[rel="references"]',  style:{'line-color':'#94a3b8','target-arrow-color':'#94a3b8','width':1.1,'opacity':0.5,'line-style':'dashed'}},
-    {selector:'node:selected', style:{'border-width':3,'border-color':'#fff','width':'72px','height':'72px','font-size':'10px','z-index':999,'box-shadow':'0 0 16px rgba(34,211,238,.7)'}},
-    {selector:'edge:selected', style:{'width':3,'line-color':'#fff','target-arrow-color':'#fff','opacity':1,'z-index':999}},
-    {selector:'node.dimmed', style:{opacity:0.12}},
-    {selector:'edge.dimmed', style:{opacity:0.05}}
-  ],
-  elements: {
-    nodes: NODE_LIST.map(n => ({data:{id:n.id,label:n.label,type:n.type,desc:n.desc,tags:n.tags,color:n.color,icon:n.icon}})),
-    edges: EDGES.map((e,i) => ({data:{id:'e'+i,source:e.s,target:e.t,rel:e.rel,relLabel:REL_LABELS[e.rel]}}))
+    classDef e fill:#fbbf24,color:#000
+    classDef s fill:#34d399,color:#000
+    classDef d fill:#8B5CF6,color:#fff
+    classDef ls fill:#06b6d4,color:#000
+    classDef r fill:#3B82F6,color:#fff</pre></p><p><b>两条流向</b>：
+<ul><li><b>操作流向</b>：用户操作 → 事件 → 状态更新 → DOM 渲染 → localStorage</li>
+<li><b>加载流向</b>：页面加载 → localStorage → 恢复状态 → DOM 初始渲染</li>
+</ul>
+<b>架构约束</b>：无全局 store，每个组件独立管理自身状态（6 组件 6 状态机）。</p><h3>组件清单</h3><table><thead><tr><th>组件</th><th>触发方式</th><th>状态存储</th><th>CSS 约定</th><th>动画</th></tr></thead><tbody><tr><td>勾选进度联动</td><td>点击 checkbox</td><td><code>yry-arch-s2-checklist</code> (JSON)</td><td>—</td><td>进度条 width 0.5s ease</td></tr><tr><td>折叠面板</td><td>点击交付物头部</td><td>CSS class <code>collapsed</code></td><td><code>.deliv-group.collapsed</code></td><td>max-height 0.3s ease-out</td></tr><tr><td>标签页切换</td><td>点击标签 / 键盘 1-9</td><td><code>yry-arch-s2-checklist-tab</code></td><td><code>.tab-panel.active</code></td><td>opacity 切换</td></tr><tr><td>风险行展开</td><td>点击风险行</td><td>CSS class <code>open</code></td><td><code>.risk-row.open</code></td><td>详情区 max-height 展开</td></tr><tr><td>交付物类型过滤</td><td>点击过滤按钮</td><td>CSS class <code>dim</code> / <code>on</code></td><td><code>.deliv-link.dim</code></td><td>链接 opacity 变暗</td></tr><tr><td>复制路径</td><td>点击复制按钮</td><td>—</td><td><code>.toast.show</code></td><td>toast 0.15s fade + 1.5s 自动消失</td></tr></tbody></table><h3>localStorage Schema</h3><p>``<code>json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Checklist State",
+  "type": "object",
+  "properties": {
+    "step-1": { "type": "boolean" },
+    "step-2": { "type": "boolean" }
   },
-  layout: {name:'breadthfirst',directed:true,spacingFactor:1.5,padding:30,avoidOverlap:true,nodeDimensionsIncludeLabels:true},
-  wheelSensitivity: 0.3, minZoom: 0.3, maxZoom: 3
-});
-
-/* ═══ 交互：tooltip + 侧栏 ═══ */
-const tooltip = document.getElementById('cyTooltip');
-cy.on('mouseover','node', evt => {
-  const n = evt.target.data();
-  tooltip.innerHTML = '<span class="tt-type">'+n.type+'</span><strong>'+n.label.replace(/\n/g,' ')+'</strong><div class="tt-desc">'+n.desc+'</div>';
-  tooltip.style.display = 'block';
-});
-cy.on('mouseout','node', () => { tooltip.style.display = 'none'; });
-cy.on('mousemove', evt => {
-  tooltip.style.left = (evt.originalEvent.clientX + 14) + 'px';
-  tooltip.style.top  = (evt.originalEvent.clientY + 14) + 'px';
-});
-cy.on('tap','node', evt => {
-  const n = evt.target;
-  cy.elements().addClass('dimmed');
-  n.removeClass('dimmed');
-  n.neighborhood().removeClass('dimmed');
-  n.removeClass('dimmed');
-  showNodeDetail(n.data());
-});
-cy.on('tap', evt => {
-  if (evt.target === cy) {
-    cy.elements().removeClass('dimmed');
-    document.getElementById('sidePanel').innerHTML = '<div class="side-empty"><div class="ico">👆</div><div>点击图谱中任意节点<br>查看详细信息、关系、标签</div></div>';
-  }
-});
-cy.on('dblclick','node', evt => { cy.animate({center:{eles:evt.target},zoom:1.6},{duration:300}); });
-
-function showNodeDetail(d) {
-  const inEdges  = EDGES.filter(e => e.t === d.id);
-  const outEdges = EDGES.filter(e => e.s === d.id);
-  const panel = document.getElementById('sidePanel');
-  panel.innerHTML =
-    '<h3>'+d.label.replace(/\n/g,' ')+' <span class="np-type" style="background:'+d.color+'22;color:'+d.color+'">'+d.type+'</span></h3>'+
-    '<div class="np-id">#'+d.id+' · '+(d.id==='s2'?'根节点':d.id.toUpperCase())+'</div>'+
-    '<p>'+d.desc+'</p>'+
-    (d.tags && d.tags.length ? '<div class="np-section">标签</div><div class="np-tags">'+d.tags.map(t=>'<span class="np-tag">'+t+'</span>').join('')+'</div>' : '')+
-    (outEdges.length ? '<div class="np-section">↗ 出向关系 ('+outEdges.length+')</div><ul class="np-rels">'+outEdges.map(e=>'<li data-tgt="'+e.t+'"><span class="rel-arr">→</span><span style="color:var(--dim);font-size:.7rem">'+REL_LABELS[e.rel]+'</span> <strong>'+NODES[e.t].label.replace(/\n/g,' ')+'</strong></li>').join('')+'</ul>' : '')+
-    (inEdges.length  ? '<div class="np-section">↙ 入向关系 ('+inEdges.length+')</div><ul class="np-rels">'+inEdges.map(e=>'<li data-tgt="'+e.s+'"><span class="rel-arr out">←</span><span style="color:var(--dim);font-size:.7rem">'+REL_LABELS[e.rel]+'</span> <strong>'+NODES[e.s].label.replace(/\n/g,' ')+'</strong></li>').join('')+'</ul>' : '');
-  panel.querySelectorAll('.np-rels li').forEach(li => {
-    li.addEventListener('click', () => {
-      const id = li.dataset.tgt;
-      const node = cy.getElementById(id);
-      if (node.length) {
-        cy.elements().addClass('dimmed');
-        const hood = node.neighborhood();
-        node.removeClass('dimmed');
-        hood.removeClass('dimmed');
-        cy.animate({ fit: { eles: node.union(hood), padding: 70 } }, { duration: 450, easing: 'ease-in-out-cubic' });
-        showNodeDetail(node.data());
-      }
-    });
-  });
+  "additionalProperties": { "type": "boolean" }
 }
-
-/* ═══ 过滤 ═══ */
-document.querySelectorAll('#filterBar .chip[data-type]').forEach(chip => {
-  chip.addEventListener('click', () => {
-    document.querySelectorAll('#filterBar .chip[data-type]').forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
-    const t = chip.dataset.type;
-    cy.elements().removeClass('dimmed');
-    if (t === 'all') return;
-    cy.nodes().forEach(n => { if (n.data('type') !== t) n.addClass('dimmed'); });
-    cy.edges().forEach(e => {
-      const s = e.source().data('type'), tg = e.target().data('type');
-      if (s !== t || tg !== t) e.addClass('dimmed');
-    });
-  });
-});
-
-/* ═══ 布局切换 ═══ */
-document.getElementById('layoutPick').addEventListener('change', e => {
-  const name = e.target.value;
-  const cfg = name === 'concentric' ? {name, concentric:function(n){return n.degree()}, levelWidth:()=>1, padding:30} :
-              name === 'circle' ? {name, padding:30, avoidOverlap:true, nodeDimensionsIncludeLabels:true} :
-              name === 'grid' ? {name, padding:30, avoidOverlap:true} :
-              name === 'cose' ? {name, padding:30, nodeRepulsion:8000, idealEdgeLength:120, animate:true} :
-              {name:'breadthfirst',directed:true,spacingFactor:1.5,padding:30,avoidOverlap:true,nodeDimensionsIncludeLabels:true};
-  cy.layout(cfg).run();
-});
-
-/* ═══ 重置/自适应 ═══ */
-document.getElementById('btnReset').addEventListener('click', () => { cy.elements().removeClass('dimmed'); cy.fit(undefined,30); });
-document.getElementById('btnFit').addEventListener('click', () => { cy.fit(undefined,30); });
-
-/* ═══ Tab 切换 ═══ */
-document.querySelectorAll('.tab').forEach(t => {
-  t.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
-    t.classList.add('active');
-    document.querySelector('.tab-content[data-tab="'+t.dataset.tab+'"]').classList.add('active');
-    if (t.dataset.tab === 'graph') setTimeout(() => cy.resize() && cy.fit(undefined,30), 50);
-    if (t.dataset.tab === 'matrix') setTimeout(buildMatrix, 50);
-  });
-});
-
-/* ═══ 关系矩阵 ═══ */
-function buildMatrix() {
-  const grid = document.getElementById('matrix');
-  if (grid.children.length) return;
-  const cols = TYPES.length + 1;
-  grid.style.gridTemplateColumns = '120px repeat('+TYPES.length+', minmax(48px, 1fr))';
-  grid.appendChild(elt('mr','head',''));
-  TYPES.forEach(t => grid.appendChild(elt('mc','head', TYPE_LABELS[t])));
-  TYPES.forEach(src => {
-    grid.appendChild(elt('mr','head', TYPE_LABELS[src]));
-    TYPES.forEach(tgt => {
-      const count = EDGES.filter(e => NODES[e.s] && NODES[e.s].type === src && NODES[e.t] && NODES[e.t].type === tgt).length;
-      const cell = document.createElement('div');
-      cell.className = 'mc' + (src === tgt ? ' diag' : '') + (count===0 ? ' lvl-0' : count===1 ? ' lvl-1' : count===2 ? ' lvl-2' : ' lvl-3');
-      cell.textContent = count || '·';
-      cell.title = src + ' → ' + tgt + ' : ' + count + ' 条边';
-      cell.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
-        document.querySelector('.tab[data-tab="graph"]').classList.add('active');
-        document.querySelector('.tab-content[data-tab="graph"]').classList.add('active');
-        setTimeout(() => {
-          cy.resize();
-          cy.elements().addClass('dimmed');
-          const matched = cy.edges().filter(e => e.source().data('type')===src && e.target().data('type')===tgt);
-          matched.removeClass('dimmed');
-          const focusSet = matched.union(matched.connectedNodes());
-          focusSet.removeClass('dimmed');
-          if (focusSet.length) {
-            cy.animate({ fit: { eles: focusSet, padding: 80 } }, { duration: 500, easing: 'ease-in-out-cubic' });
-          } else {
-            cy.animate({ fit: { padding: 50 } }, { duration: 500, easing: 'ease-in-out-cubic' });
-          }
-        }, 120);
-      });
-      grid.appendChild(cell);
-    });
-  });
+</code>`<code>
+<ul><li><b>Key</b>: </code>yry-arch-s2-checklist<code> — 步骤勾选状态 JSON，含场景标识 </code>s2<code> 避免跨场景冲突</li>
+<li><b>Key</b>: </code>yry-arch-s2-checklist-tab<code> — 最后活跃标签页名称字符串</li>
+<li><b>容错</b>: try/catch 包裹读写，隐私模式下静默降级</li>
+</ul>
+<h3>步骤状态推导</h3><table><thead><tr><th>状态</th><th>图标</th><th>推导规则</th></tr></thead><tbody><tr><td>已完成</td><td style="text-align:center">✅</td><td>当前步骤已勾选</td></tr><tr><td>就绪</td><td>🔶</td><td>当前步骤未勾选，但所有前置步骤已完成</td></tr><tr><td>待开始</td><td>⏳</td><td>当前步骤未勾选，且存在未完成的前置步骤</td></tr></tbody></table><h3>键盘快捷键</h3><table><thead><tr><th>按键</th><th>目标面板</th><th>说明</th></tr></thead><tbody><tr><td></code>1<code></td><td>overview</td><td>总览面板</td></tr><tr><td></code>2<code>-</code>8<code></td><td>步骤 1-7 面板</td><td>对应步骤详情</td></tr><tr><td></code>9<code></td><td>交付物面板</td><td>交付物列表</td></tr></tbody></table><p>跳过 </code>input<code>/</code>textarea<code> 聚焦状态，避免编辑时误触发。</p><h3>状态机与事件流</h3><p><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+stateDiagram-v2
+    [*] --&gt; Pending
+    Pending --&gt; Ready: 前置全完成
+    Ready --&gt; Done: 用户勾选
+    Done --&gt; Ready: 用户取消
+    Ready --&gt; Pending: 前置被取消
+    Done --&gt; [*]</pre></p><table><thead><tr><th>状态</th><th>触发</th><th>视觉</th><th>持久化</th></tr></thead><tbody><tr><td>Pending</td><td>初始 / 前置未完成</td><td>⏳ 灰色</td><td>✓</td></tr><tr><td>Ready</td><td>前置全完成 + 未勾选</td><td>🔶 黄色</td><td>✓</td></tr><tr><td>Done</td><td>用户勾选</td><td>✅ 绿色</td><td>✓</td></tr></tbody></table><h3>进度计算算法</h3><p></code>`<code>javascript
+function calculateProgress(steps) {
+  const done = steps.filter(s => s.done).length;
+  const total = steps.length;
+  const percent = (done / total) * 100;
+  return { done, total, percent };
+}</p><p>function deriveStepStatus(step, allSteps) {
+  const prerequisites = allSteps.slice(0, step.index);
+  const allPrereqDone = prerequisites.every(p => p.done);
+  if (step.done) return 'done';
+  if (allPrereqDone) return 'ready';
+  return 'pending';
 }
-function elt(cls, head, txt) { const d=document.createElement('div'); d.className=cls+(head?' head':''); d.textContent=txt; return d; }
+</code>`<code></p><table><thead><tr><th>度量</th><th>公式</th><th>阈值</th></tr></thead><tbody><tr><td>进度百分比</td><td></code>done / total × 100<code></td><td>0-100%</td></tr><tr><td>就绪步骤数</td><td></code>∑ (status === 'ready' ? 1 : 0)<code></td><td>整数</td></tr><tr><td>阻塞步骤数</td><td></code>∑ (status === 'pending' && hasUnfinishedPrereq ? 1 : 0)<code></td><td>整数</td></tr><tr><td>完成率</td><td></code>done / (done + ready)<code></td><td>0-100%</td></tr></tbody></table><h3>localStorage 容错矩阵</h3><table><thead><tr><th>场景</th><th>行为</th><th>用户体验</th></tr></thead><tbody><tr><td>正常读写</td><td>JSON 序列化 + 存储</td><td>状态持久</td></tr><tr><td>隐私模式</td><td></code>try/catch` 静默降级</td><td>仅当前会话有效</td></tr><tr><td>存储已满</td><td>catch + 提示 + 旧 key 清理</td><td>保留最新状态</td></tr><tr><td>数据损坏</td><td>JSON.parse 失败 → 重置为默认</td><td>不崩溃</td></tr><tr><td>跨域限制</td><td>catch + console.warn</td><td>仅当前域有效</td></tr><tr><td>Safari ITP</td><td>7 天后清理</td><td>用户需重新勾选</td></tr></tbody></table><h3>动画与降级策略</h3><table><thead><tr><th>动画</th><th>时长</th><th>缓动</th><th>降级（prefers-reduced-motion）</th></tr></thead><tbody><tr><td>进度条 width</td><td>500ms</td><td>ease</td><td>立即更新</td></tr><tr><td>折叠面板 max-height</td><td>300ms</td><td>ease-out</td><td>立即显隐</td></tr><tr><td>标签页 opacity</td><td>200ms</td><td>linear</td><td>立即切换</td></tr><tr><td>Toast fade</td><td>150ms</td><td>ease</td><td>立即显示</td></tr><tr><td>风险行展开</td><td>300ms</td><td>ease-out</td><td>立即展开</td></tr></tbody></table>
+</yry-info-cards>
 
-/* ═══ 节点详情卡片 ═══ */
-function buildNodeCards() {
-  const grid = document.getElementById('nodesGrid');
-  if (grid.children.length) return;
-  NODE_LIST.forEach(n => {
-    const inCnt  = EDGES.filter(e => e.t === n.id).length;
-    const outCnt = EDGES.filter(e => e.s === n.id).length;
-    const card = document.createElement('div');
-    card.className = 'node-card';
-    card.style.setProperty('--nc', n.color);
-    card.innerHTML =
-      '<div class="nc-head"><div class="nc-ico">'+n.icon+'</div><h4>'+n.label.replace(/\n/g,' ')+'</h4><span class="nc-type '+n.type+'">'+n.type+'</span></div>'+
-      '<p>'+n.desc+'</p>'+
-      (n.tags && n.tags.length ? '<div class="nc-edges"><span style="color:var(--dim)">🏷️</span> '+n.tags.map(t=>'<span style="color:var(--fg)">'+t+'</span>').join(' · ')+'</div>' : '')+
-      '<div class="nc-edges"><span class="e-out">↗ '+outCnt+' 出</span><span style="margin:0 .35rem;color:var(--darker)">|</span><span class="e-in">↙ '+inCnt+' 入</span></div>';
-    card.addEventListener('click', () => {
-      const node = cy.getElementById(n.id);
-      if (node.length) {
-        document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
-        document.querySelector('.tab[data-tab="graph"]').classList.add('active');
-        document.querySelector('.tab-content[data-tab="graph"]').classList.add('active');
-        setTimeout(() => {
-          cy.resize();
-          cy.elements().addClass('dimmed');
-          const hood = node.neighborhood();
-          node.removeClass('dimmed');
-          hood.removeClass('dimmed');
-          const focusSet = node.union(hood);
-          cy.animate({ fit: { eles: focusSet, padding: 70 } }, { duration: 500, easing: 'ease-in-out-cubic' });
-          showNodeDetail(n);
-        }, 120);
-      }
-    });
-    grid.appendChild(card);
-  });
-}
-buildNodeCards();
-</script>
+<yry-scene-footer version="v5.4.0" date="2026-06-22"></yry-scene-footer>
+</div>
 <script src="../../../../cdn/shared/index.js"></script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
+<script src="../../../../cdn/yry-cytoscape-graph/index.js"></script>
 <script src="../../../../cdn/yry-export-toolbar/index.js"></script>
-</body></html>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
+<script src="../../../../cdn/yry-info-cards/index.js"></script>
+</body>
+</html>

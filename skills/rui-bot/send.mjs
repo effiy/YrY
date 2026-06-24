@@ -190,7 +190,7 @@ async function main() {
       console.log = origLog; console.error = origError;
       const gradeEmoji = healthResult.grade === "A" ? "✅" : healthResult.grade === "B" ? "✅" : healthResult.grade === "C" ? "⚠️" : "🚫";
       const diagSummary = healthResult.diagnostics?.triggered?.length > 0
-        ? `触发: ${healthResult.diagnostics.triggered.map((d) => d.id).join(",")}` : "D0-D7 通过";
+        ? `触发: ${healthResult.diagnostics.triggered.map((d) => d.id).join(",")}` : "D0-D8 通过";
       const worst = Object.entries(healthResult.scores).filter(([, s]) => s < 80).sort(([, a], [, b]) => a - b).slice(0, 3).map(([d]) => d).join(",");
       console.log(`${gradeEmoji} ${healthResult.composite}/${healthResult.grade} | ${diagSummary} | 弱项: ${worst || "无"}`);
       return;

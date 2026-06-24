@@ -1,7 +1,8 @@
 # 场景 6: 第三方框架与服务自检
 
-> | v1.0.0 | 2026-06-09 | deepseek-v4-pro | 🌿 feat/yry-self-test | ⏱️ --:-- | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
+> | v5.4.0 | 2026-06-22 | 深化对齐 · 补充角色链与门禁策略 | 🌿 feat/yry-self-test | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
 > **导航**: [← 场景-5](../场景-5-跨故事集成回归自检/index.md) · [← 故事任务](../故事任务.md)
+> **交付物**: [📋 清单](清单.html) · [📐 架构](架构图.html) · [🔗 图谱](知识图谱.html) · [📄 源码](源码.html) · [🧪 测试](测试面板.html) · [💡 演示](演示.html) · [📝 审查](审查.html)
 
 [§0 技术评审](#sec0) · [§1 测试设计](#sec1) · [§2 实施报告](#sec2) · [§3 测试报告](#sec3) · [§4 自改进](#sec4)
 
@@ -120,6 +121,52 @@ flowchart LR
 | 双轨独立 | vitest 和遗留运行器互不依赖，各自独立可用 | `vitest run` 和 `node tests/run.mjs` 均可独立成功 |
 | 服务可观测 | 外部服务状态从隐式假设变为显式可查 | 每次自检输出每项服务的 pass/warn/block |
 
+### 角色链与门禁策略（与 `架构图.html` 决策链/实现链/闭环链一致）
+
+#### 决策链 · 3 角色
+
+| 阶段 | 角色 | 验收信号 | 失败处理 |
+|------|------|---------|---------|
+| 框架评审 | reviewer | 19 项框架存在性检查全通过 · 双轨独立 | 补齐缺失框架后重提 |
+| 服务审计 | reviewer | 外部服务可达性矩阵全覆盖 · SLA 达标 | 降级或移除不可达服务 |
+| 安全审计 | security | 第三方依赖无高危漏洞 · 供应链完整 | 立即升级 · 不允许跳过 |
+
+#### 实现链 · 5 角色
+
+| 阶段 | 角色 | 输入 | 输出 |
+|------|------|------|------|
+| 框架存在性 | coder | `package.json` + `node_modules/` | 19 项检查结果 |
+| 双轨独立 | coder | vitest.config.mjs + tests/run.mjs | 双轨独立验证 |
+| 适配层 | coder | tests/adapters/*.mjs | 遗留运行器兼容 |
+| 服务可达性 | coder | 外部服务端点 | pass/warn/block 矩阵 |
+| 供应链安全 | coder | `npm audit` + lockfile | 漏洞清单 |
+
+#### 闭环链 · 2 角色
+
+| 阶段 | 角色 | 验收信号 | 失败处理 |
+|------|------|---------|---------|
+| 框架签收 | deliverer | 19 项全通过 · 0 阻断 · 双轨独立可用 | 修复后重新签收 |
+| 效果评估 | self-improve | 安装耗时 ≤ 60s · 服务可用率 ≥ 95% | 提案入库 · 下轮迭代 |
+
+### 门禁通过策略（与 `架构图.html` 通过策略段一致）
+
+| 门禁 | 判定规则 | 阻断标识 |
+|------|---------|---------|
+| P0 Gate | 19 项框架存在性 · 双轨独立 · 适配层完整 | `framework-p0` |
+| P1 Gate | 外部服务可达性 · SLA 达标 | `service-p1` |
+| 供应链门禁 | `npm audit` 0 高危 · lockfile 一致 | `supply-chain` |
+| 双轨门禁 | `vitest run` 和 `node tests/run.mjs` 均可独立成功 | `dual-track` |
+
+### 常见阻断（与 `架构图.html` 常见阻断段一致）
+
+| 阻断类型 | 触发条件 | 修复路径 |
+|---------|---------|---------|
+| 框架缺失 | `package.json` 未声明或 `node_modules/` 未安装 | `npm install` · 补齐缺失依赖 |
+| 双轨冲突 | vitest 和遗留运行器互相依赖 | 解耦适配层 · 确保独立可用 |
+| 服务不可达 | 外部服务端点超时或 404 | 降级为 warn · 或移除依赖 |
+| 供应链漏洞 | `npm audit` 报告高危 | `npm update` · 评估替代包 |
+| 配置漂移 | `vitest.config.mjs` 与 `tests/run.mjs` 配置不一致 | 统一配置源 · 同步更新 |
+
 ---
 
 <a id="sec1"></a>
@@ -237,13 +284,15 @@ flowchart LR
 | 双轨兼容 | ✅ 通过 | vitest 25 项通过 + 遗留运行器兼容 |
 | 只读验证 | ✅ 通过 | 测试不修改任何被检查文件 |
 | 覆盖完整性 | ✅ 通过 | FP13 19 项 + FP14 6 项，每 FP ≥ 3 类用例 |
+| 双轨门禁 | ✅ 通过 | `vitest run` 和 `node tests/run.mjs` 均可独立成功 |
+| 供应链门禁 | ✅ 通过 | `npm audit` 0 高危 · lockfile 一致 |
 
 ---
 
 <a id="sec4"></a>
 ## §4 自改进
 
-### D0-D7 诊断结果
+### D0-D8 诊断结果
 
 | 诊断 | 判定 | 说明 |
 |------|------|------|
@@ -266,9 +315,42 @@ flowchart LR
 | 4 | 添加 vitest UI（`npm run test:ui`）到开发工作流 | P2 | @vitest/ui 已安装，浏览器端测试管理可提升 DX |
 | 5 | 扩展 third-party-reachability 覆盖更多服务 | P2 | 当前覆盖 npm + 3 CDN，可扩展到 GitHub API、WxWork API 等 |
 
+### 服务可达性 SLA 矩阵
+
+| 服务 | 端点 | 超时 | 重试 | 降级 | 监控 |
+|------|------|:---:|:---:|------|------|
+| npm Registry | `registry.npmjs.org` | 5s | 3 | 警告 | 手动触发 |
+| jsDelivr | `cdn.jsdelivr.net` | 3s | 2 | 警告 | 手动触发 |
+| unpkg | `unpkg.com` | 3s | 2 | 警告 | 手动触发 |
+| GitHub Raw | `raw.githubusercontent.com` | 5s | 2 | 警告 | 手动触发 |
+| 全部不可达 | — | — | — | 阻断 | 立即 |
+
+**可达性探测方式**:
+
+| 方式 | 命令 | 适用 |
+|------|------|------|
+| HTTP HEAD | `curl -sI -m 3 <url>` | 资源存在性 |
+| DNS 解析 | `nslookup <host>` | 基础连通性 |
+| TCP 连接 | `nc -zv <host> 443` | 端口可达 |
+| TLS 握手 | `openssl s_client -connect <host>:443` | 证书有效性 |
+| 完整下载 | `curl -sI -o /dev/null -w "%{http_code}"` | HTTP 状态 |
+
+### 双轨测试工具对比
+
+| 维度 | vitest | 遗留 harness |
+|------|--------|------|
+| 执行速度 | 并行 · 快 | 串行 · 中 |
+| Watch 模式 | ✅ 原生 | ❌ 需 nodemon |
+| Coverage | ✅ v8/istanbul | ❌ 无 |
+| 错误 diff | ✅ 智能快照 | ❌ 字符串对比 |
+| UI 面板 | ✅ @vitest/ui | ❌ 无 |
+| 零配置 | ✅ 开箱即用 | ❌ 自定义 |
+| 维护成本 | 低 | 高 |
+| 迁移成本 | — | 中（渐进式） |
+
 ---
 
-> **回溯链**: 本文档由 `/rui update yry-self-test` 流程触发，作为 YrY 项目自主测试方案 · 第三方框架工程化的基线场景文档。来源决策：[故事任务 v1.4.0](../故事任务.md)（FP13/FP14 定义），[code-pipeline.md §支撑技术](../../../../skills/rui-code/rules/code-pipeline.md#支撑技术)（TDD 实践），[AGENT.md §验证门禁](../../../../skills/rui/AGENT.md#验证门禁)（双 Gate 模型）。交叉引用：[yry-self-test 故事任务](../故事任务.md)（上游故事），[tests/infrastructure/](../../../../tests/infrastructure/)（测试载体）。
+> **回溯链**: 本文档由 `/rui update yry-self-test` 流程触发，作为 YrY 项目自主测试方案 · 第三方框架工程化的基线场景文档。来源决策：[故事任务 v1.4.0](../故事任务.md)（FP13/FP14 定义），[code-pipeline.md §支撑技术](../../../../skills/rui-code/rules/code-pipeline.md#支撑技术)（TDD 实践），[AGENT.md §验证门禁](../../../../skills/rui/AGENT.md#验证门禁)（双 Gate 模型）。交叉引用：[yry-self-test 故事任务](../故事任务.md)（上游故事），[tests/infrastructure/](../../../../skills/rui/tests/infrastructure/)（测试载体）。
 
 ### 变更记录
 

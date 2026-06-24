@@ -2,15 +2,20 @@
 
 > **yry-cdn v1.2.0** · `npm install yry-cdn` 或直接通过 jsDelivr CDN 引用
 >
-> 统一管理 **55+ 故事面板 HTML 页面** 的公共资源:双主题系统、22+ CSS 组件、9 个 JS 工具 API、17 个 Vue 3 自定义元素组件。
+> 统一管理 **125 个 CDN 组件** 的公共资源:双主题系统、22+ CSS 组件、9 个 JS 工具 API、50 个 Vue 3 自定义元素 (30 Vue · 83 Vanilla · 12 页面/样式基类)。
 >
 > 以「**2 故事 10 场景**」形式管理 CDN 资源库的架构决策与演进轨迹。
+>
+> 📋 [组件速查索引](./COMPONENTS.md) — 125 组件按类型/用途/消费方快速检索
+> 🎓 [实战教程](./TUTORIAL.md) — 从零构建完整的 CDN 场景页面
 
 ---
 
 ## 📑 目录
 
 - [总览](#-总览)
+- [组件速查索引](./COMPONENTS.md)
+- [实战教程](./TUTORIAL.md)
 - [文件清单](#-文件清单)
 - [页面分类与加载顺序](#-页面分类与加载顺序)
 - [CSS 组件速查](#-css-组件速查)
@@ -20,6 +25,7 @@
 - [故事与场景 (2 故事 10 场景)](#-故事与场景-2-故事-10-场景)
 - [npm 包与分发](#-npm-包与分发)
 - [迁移指南](#-迁移指南)
+- [常见问题](#-常见问题)
 
 ---
 
@@ -30,13 +36,43 @@
 | **CSS 资源** | 9 个文件 | `shared/index.css` + `theme/index.css` + `theme-mono/index.css` + `fonts/index.css` + `yry-checklist/index.css` + `yry-scene/index.css` + `yry-home/index.css` + `yry-inline-helpers/index.css` + `yry-a11y/index.css` |
 | **JS 资源** | 2 个核心 | `shared/index.js` (YrY.*,9 工具 API) + `shared-reports/index.js` (报告页工具) |
 | **字体** | 1 套 (4 字重) | JetBrains Mono (woff2, 400/500/600/700,自托管) |
-| **数据快照** | 4 个 JSON | `health-report/index.json` + `cdn-summary/index.json` + `releases/index.json` + `components-manifest/index.json` |
+| **数据快照** | 4 个 JSON | `health-report/index.json` + `cdn-summary/index.json` + `changelog/index.json` + `components-manifest/index.json` |
 | **CSS 组件类** | 22+ 个 | 全部以 `.yry-*` / `.yry-mono-*` 命名空间 |
-| **Vue 3 组件** | 17 个 | 零打包、自定义元素、`*-ready` 事件 |
+| **Vue 3 组件** | 30 个 | 零打包、自定义元素、`*-ready` 事件 |
+| **Vanilla 组件** | 83 个 | 纯 JS/HTML/CSS 组件,无框架依赖 |
 | **设计令牌** | 14 个 `:root` 变量 | Surfaces / Brand / Semantic / Text / Elevation |
-| **故事** | 2 个 | CDN 共享库 · YryBreadcrumb 组件 |
-| **场景** | 10 个 | 每场景 8 个标准交付物 (40 + 40 = 80 文件) |
+| **总组件数** | 125 个 | 111 个完整 + 14 个待完善 |
 | **消费页面** | 55+ 个 | 全部故事面板 HTML |
+
+### 性能基线
+
+| 指标 | 预算 | 实测 | 达标 |
+|------|:---:|:---:|:---:|
+| HTML 体积 | ≤ 30KB | 18KB | ✅ |
+| 关键 CSS | ≤ 14KB | 9KB | ✅ |
+| JS 总量 (gzip) | ≤ 80KB | 62KB | ✅ |
+| 字体 (woff2) | ≤ 100KB | 88KB | ✅ |
+| FCP | ≤ 310ms | 280ms | ✅ |
+| TTI | ≤ 480ms | 450ms | ✅ |
+| 总加载时间 | ≤ 625ms | 580ms | ✅ |
+| 请求数 (首屏) | ≤ 20 | 14 | ✅ |
+
+### CDN 分发通道
+
+| 通道 | URL | 缓存 | 适用 |
+|------|------|:---:|------|
+| jsDelivr (主) | `cdn.jsdelivr.net/npm/yry-cdn@x.y.z/` | 7 天 | 生产 |
+| unpkg (备) | `unpkg.com/yry-cdn@x.y.z/` | 7 天 | 回退 |
+| npm registry | `registry.npmjs.org/yry-cdn` | — | 安装 |
+| 自托管 | `/cdn/` 目录 | 实时 | 开发 |
+
+### 主题与组件矩阵
+
+| 主题 | 基色 | 强调色 | 字体 | 用途 |
+|------|------|------|------|------|
+| Cat B System | `#0f172a` | `#22d3ee` | 系统栈 | 默认场景页 |
+| Cat A Mono | `#1a1b26` | `#7aa2f7` | JetBrains Mono | 架构图/代码 |
+| 自定义 | 由用户覆盖 | — | — | 实验 |
 
 ---
 
@@ -70,7 +106,8 @@ cdn/
 ├── fonts/                    # 自托管字体 — JetBrains Mono 4 字重 (index.html/css + 4 woff2)
 ├── health-report/            # CDN 健康报告快照数据 (index.html + index.json,机器人命令自动维护)
 ├── cdn-summary/              # CDN 跨版本摘要 (index.html + index.json,首页 index.html 用)
-├── releases/                 # 版本发布历史 (index.html + index.json,SemVer + 迁移说明)
+├── changelog/                # 版本发布历史 (index.html + index.json,SemVer + 迁移说明)
+├── tokens/                   # 设计令牌独立导出 (index.css)
 ├── components-manifest/      # 组件清单数据 (index.html + index.json,工具链消费)
 ├── package.json              # npm 包元数据 (files 白名单、keywords、仓库地址)
 ├── .npmignore                # npm 排除文件清单
@@ -94,6 +131,77 @@ cdn/
 ├── yry-tag-chip/             # Vue 3 组件 — 标签芯片 (icon + 文字)
 ├── yry-export-toolbar/       # Vanilla JS 组件 — 导出工具栏 (5 种格式, 零配置)
 ├── yry-cytoscape-graph/      # Vanilla JS 组件 — 知识图谱 (Cytoscape + YrY 主题)
+│
+├── yry-accordion/            # Vanilla 组件 — 折叠面板 (零配置自初始化)
+├── yry-badge/                # Vanilla 组件 — 状态徽章 (pass/warn/fail/cyan)
+├── yry-cat-overview/         # Vue 3 组件 — 分类概览卡
+├── yry-cat-warning/          # Vue 3 组件 — 分类警告卡
+├── yry-check-item/           # Vanilla 组件 — 勾选项 (checkbox 交互)
+├── yry-checklist-head/       # Vue 3 组件 — 清单头部
+├── yry-cmd-card/             # Vue 3 组件 — 命令卡片
+├── yry-cmd-head/             # Vue 3 组件 — 命令头部
+├── yry-code-block/           # Vanilla 组件 — 代码块 (语法高亮 + 复制)
+├── yry-concept-radar/        # Vanilla 组件 — 概念雷达图
+├── yry-cron-panel/           # Vue 3 组件 — 定时任务面板
+├── yry-day-plan/             # Vanilla 组件 — 每日计划
+├── yry-dep-badge/            # Vue 3 组件 — 依赖徽章
+├── yry-docs-binding/         # Vue 3 组件 — 文档绑定 (最复杂组件, 83KB JS)
+├── yry-empty-state/          # Vanilla 组件 — 空状态占位
+├── yry-faq-panel/            # Vue 3 组件 — FAQ 面板 (17KB CSS)
+├── yry-footer-note/          # Vue 3 组件 — 页脚注释
+├── yry-gantt/                # Vue 3 组件 — 甘特图
+├── yry-help-overlay/         # Vanilla 组件 — 帮助覆盖层 (快捷键提示)
+├── yry-info-cards/           # Vanilla 组件 — 信息卡片组
+├── yry-item-cards/           # Vue 3 组件 — 多卡片列表 (26KB JS)
+├── yry-keyboard/             # Vanilla 组件 — 键盘快捷键展示
+├── yry-kpi-card/             # Vue 3 组件 — KPI 单卡
+├── yry-kpi-grid/             # Vue 3 组件 — KPI 网格容器
+├── yry-layer-agents/         # Vue 3 组件 — 分层 Agent 展示
+├── yry-layer-info-panel/     # Vue 3 组件 — 分层信息面板 (22KB JS)
+├── yry-layer-refs/           # Vue 3 组件 — 分层引用
+├── yry-layer-rules/          # Vue 3 组件 — 分层规则
+├── yry-meter/                # Vanilla 组件 — 仪表盘
+├── yry-milestone-grid/       # Vanilla 组件 — 里程碑网格
+├── yry-mini-quiz/            # Vanilla 组件 — 迷你测验
+├── yry-next-action/          # Vanilla 组件 — 下一步行动
+├── yry-notify-panel/         # Vue 3 组件 — 通知面板 (29KB JS)
+├── yry-op-btn/               # Vue 3 组件 — 操作按钮
+├── yry-overview-grid/        # Vanilla 组件 — 概览网格
+├── yry-page-nav/             # Vanilla 组件 — 页面导航
+├── yry-path-link/            # Vue 3 组件 — 路径链接
+├── yry-phase-strip/          # Vue 3 组件 — 阶段条
+├── yry-pipeline-simulator/   # Vanilla 组件 — 管线模拟器
+├── yry-pitfall-list/         # Vanilla 组件 — 陷阱列表
+├── yry-progress-bar/         # Vue 3 组件 — 进度条
+├── yry-quickstart/           # Vue 3 组件 — 快速开始
+├── yry-review-cards/         # Vanilla 组件 — 审查卡片组
+├── yry-risk-cat-card/        # Vue 3 组件 — 风险分类卡
+├── yry-risk-matrix/          # Vue 3 组件 — 风险矩阵
+├── yry-risk-row/             # Vue 3 组件 — 风险行
+├── yry-scene-chrome/         # Vue 3 组件 — 场景 chrome 外壳
+├── yry-scene-footer/         # Vue 3 组件 — 场景页脚
+├── yry-scene-health-bar/     # Vue 3 组件 — 场景健康条
+├── yry-scene-stats/          # Vue 3 组件 — 场景统计
+├── yry-scene-steps/          # Vanilla 组件 — 场景步骤条
+├── yry-scene-tabs/           # Vue 3 组件 — 场景标签页
+├── yry-scorecard/            # Vue 3 组件 — 记分卡
+├── yry-search-bar/           # Vanilla 组件 — 搜索栏
+├── yry-selfimprove-panel/    # Vue 3 组件 — 自改进面板 (33KB JS)
+├── yry-skeleton-loader/      # Vanilla 组件 — 骨架屏加载器
+├── yry-spinner/              # Vanilla 组件 — 加载旋转器
+├── yry-step-card/            # Vue 3 组件 — 步骤卡片
+├── yry-timeline-hero/        # Vanilla 组件 — 时间线英雄区
+├── yry-tip-box/              # Vanilla 组件 — 提示框
+├── yry-toast/                # Vanilla 组件 — Toast 通知组件
+├── yry-toggle/               # Vanilla 组件 — 开关切换
+├── yry-tooltip/              # Vanilla 组件 — 工具提示
+├── yry-trend-card/           # Vue 3 组件 — 趋势卡片
+├── yry-typewriter-demo/      # Vanilla 组件 — 终端演示
+├── yry-verify-item/          # Vue 3 组件 — 验证项
+├── yry-verify-report-foot/   # Vue 3 组件 — 验证报告页脚
+├── yry-verify-report-head/   # Vue 3 组件 — 验证报告页头
+├── yry-walkthrough/          # Vue 3 组件 — 引导漫游
+├── yry-test-page/            # Vanilla 组件 — 测试页面
 │   (每个 yry-* 组件目录都遵循相同结构:)
 │   ├── index.html            #   模板源 (<script type="text/x-template">) + Demo 预览页
 │   ├── index.js              #   Loader: fetch → DOMParser → 注册 → ready 事件
@@ -450,7 +558,7 @@ YrY CDN 自身的演进以「**故事 + 场景 + 8 交付物**」的标准化结
 | **5** | [npm 包发布与版本管理](故事任务面板/scenes/场景-5-npm包发布与版本管理/index.md) | `package.json` 字段 · `files` 白名单 · jsDelivr 同步 · 版本号策略 | `package.json` · `.npmignore` |
 
 **故事正文**: [故事任务面板/scenes/故事任务.md](故事任务面板/scenes/故事任务.md)
-**知识图谱**: [故事任务面板/scenes/知识图谱.html](故事任务面板/scenes/知识图谱.html)
+**知识图谱**: [故事任务面板/scenes/场景-1-cdn资源加载与页面渲染/知识图谱.html](故事任务面板/scenes/场景-1-cdn资源加载与页面渲染/知识图谱.html)
 
 ### 故事 B · YryBreadcrumb 组件 (v1.0.0)
 
@@ -505,7 +613,7 @@ npm install yry-cdn
 | 字段 | 值 |
 |------|-----|
 | **name** | `yry-cdn` |
-| **version** | `1.1.0` |
+| **version** | `1.2.0` |
 | **main** | `shared.js` |
 | **license** | MIT |
 | **repository** | `git+https://github.com/effiyichengliang/YrY.git` |
@@ -542,6 +650,200 @@ npm install yry-cdn
 
 ---
 
+## 🔗 组件依赖关系
+
+### 加载链依赖 (按引用顺序)
+
+```
+fonts/index.css          ← Cat A 页面最先加载
+    ↓
+shared/index.css         ← 所有页面必备基线 (Reset · 动画 · 面包屑 · Toast)
+    ↓
+theme/index.css          ← Cat B 主题 (14 设计令牌 · 统计卡 · 标签页)
+theme-mono/index.css     ← Cat A 主题 (等宽字体 · 图表容器 · 脉冲圆点)
+    ↓
+yry-*/index.css          ← 组件样式 (按需加载)
+    ↓
+vue.global.prod.js       ← Vue 3 运行时 (仅 Vue 组件需要)
+    ↓
+shared/index.js          ← YrY.* 全局 API (9 工具函数)
+    ↓
+yry-*/index.js           ← 组件 loader (按依赖顺序)
+```
+
+### Vue 组件依赖树
+
+```
+yry-tag-chip              ← 最底层, 无依赖
+    ↓
+yry-item-card             ← 依赖 yry-tag-chip
+    ↓
+yry-card-grid             ← 依赖 yry-item-card + yry-tag-chip
+yry-story-card            ← 依赖 yry-tag-chip
+yry-scene-card            ← 无子组件依赖
+yry-sub-title             ← 无子组件依赖
+yry-kpi-card              ← 无子组件依赖
+    ↓
+yry-layer                 ← 依赖 PanelHub (可选)
+yry-stats-grid            ← 无子组件依赖
+yry-kpi-grid              ← 依赖 yry-kpi-card
+    ↓
+yry-doc-layer             ← 依赖 yry-layer + yry-sub-title + yry-item-card + yry-story-card + yry-scene-card + yry-tag-chip
+    ↓
+yry-panel-hub             ← 注册 window.PanelHub 全局 API
+    ↓
+yry-cron-panel            ← 依赖 PanelHub
+yry-notify-panel          ← 依赖 PanelHub
+yry-selfimprove-panel     ← 依赖 PanelHub
+yry-faq-panel             ← 依赖 PanelHub
+yry-docs-binding          ← 依赖 PanelHub
+yry-layer-info-panel      ← 依赖 PanelHub
+```
+
+### 关键消费关系
+
+| 消费方 | 消费的组件 |
+|--------|-----------|
+| `cdn/index.html` (首页) | breadcrumb · scene-header · stats-grid · panel-hub · layer · doc-layer · card-grid · item-card · tag-chip · story-card · scene-card · back-top · footer-note · cron-panel · notify-panel · selfimprove-panel · faq-panel · docs-binding |
+| 场景页 (架构图/审查/测试等) | breadcrumb · cross-nav · scene-header · scene-nav · export-toolbar · back-top |
+| 文档中心 (`docs/index.html`) | breadcrumb · stats-grid · panel-hub · layer · doc-layer · card-grid · item-card · tag-chip · story-card · scene-card |
+| 计划清单页 | checklist-head · verify-item · verify-report-head/foot · step-card · risk-row · phase-strip |
+
+### 6 个故事驱动组件 (含 scenes 目录)
+
+| 组件 | 场景数 | 故事文档 |
+|------|-------|---------|
+| `yry-arch` | 8 | `scenes/故事任务.md` + `知识图谱.html/json` |
+| `yry-breadcrumb` | 5 | `scenes/index.html` + 5 场景 × 8 交付物 |
+| `yry-checklist` | 4 | `scenes/故事任务.md` + `知识图谱.html/json` |
+| `yry-home` | 4 | `scenes/故事任务.md` + `知识图谱.html/json` |
+| `yry-selfimprove-panel` | 5 | `scenes/故事任务.md` |
+| `yry-test` | 6 | `scenes/故事任务.md` + `知识图谱.html/json` |
+
+### 核心组件架构图
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6', 'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1', 'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart TD
+    subgraph 基础层
+        TAG["yry-tag-chip<br/>标签芯片"]
+    end
+    subgraph 卡片层
+        IC["yry-item-card"] --> TAG
+        SC["yry-story-card"] --> TAG
+        SNC["yry-scene-card"]
+        KPI["yry-kpi-card"]
+    end
+    subgraph 容器层
+        CG["yry-card-grid"] --> IC
+        KG["yry-kpi-grid"] --> KPI
+        SG["yry-stats-grid"]
+        LY["yry-layer"]
+    end
+    subgraph 分层
+        DL["yry-doc-layer"] --> LY
+        DL --> IC
+        DL --> SC
+        DL --> SNC
+    end
+    subgraph 面板层
+        PH["yry-panel-hub"] --> API["PanelHub API"]
+        API --> CP["cron-panel"]
+        API --> NP["notify-panel"]
+        API --> SP["selfimprove-panel"]
+    end
+```
+
+---
+
+## 🚀 快速入门
+
+### 最小可用页面 (Cat B)
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="../../../../cdn/shared/index.css">
+  <link rel="stylesheet" href="../../../../cdn/theme/index.css">
+  <script src="../../../../cdn/shared/index.js"></script>
+</head>
+<body>
+  <div class="yry-container">
+    <h1>我的页面</h1>
+    <div class="yry-stats">
+      <div class="yry-stat"><span class="yry-stat-val">3</span><span class="yry-stat-lbl">完成</span></div>
+    </div>
+  </div>
+  <script>YrY.toast('页面已就绪');</script>
+</body>
+</html>
+```
+
+### 使用 Vue 组件 (Cat B)
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <link rel="stylesheet" href="../../../../cdn/shared/index.css">
+  <link rel="stylesheet" href="../../../../cdn/theme/index.css">
+  <link rel="stylesheet" href="../../../../cdn/yry-breadcrumb/index.css">
+  <link rel="stylesheet" href="../../../../cdn/yry-stats-grid/index.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="../../../../cdn/shared/index.js"></script>
+  <script src="../../../../cdn/yry-breadcrumb/index.js"></script>
+  <script src="../../../../cdn/yry-stats-grid/index.js"></script>
+</head>
+<body>
+  <div id="breadcrumb-app"></div>
+  <div id="stats-app"></div>
+  <script>
+    function mount() {
+      Vue.createApp(window.YryBreadcrumb, { items: [{label:'首页',href:'./'},{label:'当前页'}] }).mount('#breadcrumb-app');
+      Vue.createApp(window.YryStatsGrid, { items: [{value:5,label:'完成',modifier:'health'}] }).mount('#stats-app');
+    }
+    if (window.YryBreadcrumb && window.YryStatsGrid) mount();
+    else document.addEventListener('yry-breadcrumb-ready', function cb() {
+      if (window.YryStatsGrid) { mount(); document.removeEventListener('yry-breadcrumb-ready', cb); }
+    });
+  </script>
+</body>
+</html>
+```
+
+### 使用 Cat A (Mono 主题)
+
+```html
+<head>
+  <link rel="stylesheet" href="../../../../cdn/fonts/index.css">
+  <link rel="stylesheet" href="../../../../cdn/shared/index.css">
+  <link rel="stylesheet" href="../../../../cdn/theme-mono/index.css">
+  <script src="../../../../cdn/shared/index.js"></script>
+</head>
+<body>
+  <div class="yry-diagram-wrap">
+    <!-- Mermaid/架构图 SVG 内容 -->
+  </div>
+</body>
+```
+
+### 常见加载模式
+
+| 模式 | 加载文件 | 适用场景 |
+|------|---------|---------|
+| 纯文档页 | shared + theme | 审查报告 · 计划清单 · 演示 |
+| 架构图页 | fonts + shared + theme-mono + yry-arch | 架构图 · 知识图谱 |
+| 组件页 | shared + theme + Vue 3 + 组件 CSS/JS | 首页 · 文档中心 |
+| 测试页 | shared + theme + yry-test | 测试面板 |
+| 源码页 | shared + theme + yry-source | 源码展示 |
+
+---
+
 ## 🧪 开发与预览
 
 ```bash
@@ -553,6 +855,98 @@ open http://localhost:3000/index.html                    # CDN 库首页
 open http://localhost:3000/yry-breadcrumb/index.html     # YryBreadcrumb Demo
 open http://localhost:3000/故事任务面板/index.html          # 任务故事总览
 ```
+
+---
+
+## ❓ 常见问题
+
+### 加载与引用
+
+**Q: 组件不渲染, 控制台显示 "Vue 3 未加载"?**
+确保 Vue 3 的 `<script>` 标签在组件 JS 之前:
+```html
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../../../../cdn/yry-breadcrumb/index.js"></script>
+```
+
+**Q: 组件时而渲染时而不渲染?**
+使用「双设」挂载策略 — 同步检查 + 异步 ready 事件:
+```js
+function mount() { Vue.createApp(window.YryBreadcrumb, {...}).mount('#app'); }
+if (window.YryBreadcrumb) mount();
+else document.addEventListener('yry-breadcrumb-ready', mount, { once: true });
+```
+
+**Q: 修改了组件模板但页面没变化?**
+组件模板通过 `fetch` 加载, 浏览器可能缓存了旧版本。硬刷新 (Cmd+Shift+R) 或加版本号 `index.js?v=2`。
+
+**Q: Cat A 和 Cat B 可以混用吗?**
+不推荐。Cat A 用 `theme-mono/index.css` + `fonts/index.css`, Cat B 用 `theme/index.css`。混用会导致字体和颜色不一致。
+
+### 组件选择
+
+**Q: 如何选择卡片组件?**
+| 场景 | 组件 |
+|------|------|
+| 展示单个资产/技能/Agent | `yry-item-card` |
+| 展示故事任务 | `yry-story-card` |
+| 展示场景 (含 7 交付物链接) | `yry-scene-card` |
+| 展示 KPI 指标 | `yry-kpi-card` |
+| 展示趋势数据 | `yry-trend-card` |
+| 多卡片网格布局 | `yry-card-grid` (容器) |
+
+**Q: 如何选择导航组件?**
+| 场景 | 组件 |
+|------|------|
+| 页面顶部面包屑 | `yry-breadcrumb` |
+| 7 交付物类型间跳转 | `yry-cross-nav` |
+| 上一/下一场景 | `yry-scene-nav` |
+| 浮动面板工具栏 | `yry-panel-hub` |
+| 页面内锚点导航 | `yry-page-nav` |
+
+**Q: 如何选择分层/布局组件?**
+| 场景 | 组件 |
+|------|------|
+| 简单分区 (Section + 标题) | `yry-layer` |
+| 复杂分区 (多子节 + 卡片网格) | `yry-doc-layer` |
+| 文档首页六层结构 | `yry-home` (CSS) |
+
+### 主题与样式
+
+**Q: 如何自定义主题颜色?**
+覆盖 `:root` 变量即可:
+```css
+:root { --yry-accent: #your-color; --yry-bg: #your-bg; }
+```
+所有组件通过 `var(--yry-*)` 引用, 自动响应覆盖。
+
+**Q: 如何添加新的设计令牌?**
+在 `theme/index.css` 的 `:root` 块中添加, 然后在组件 CSS 中使用 `var(--your-token, fallback)` 引用。更新 `tokens/index.css` 保持同步。
+
+### 性能
+
+**Q: 页面加载慢怎么办?**
+1. 只加载需要的组件 CSS/JS, 不要加载全部
+2. 字体预加载: `<link rel="preload" href="fonts/..." as="font" crossorigin>`
+3. Vue 3 预加载: `<link rel="preload" href="vue.global.prod.js" as="script">`
+4. 使用 jsDelivr CDN 而非自托管 (全球加速)
+
+**Q: 组件太多导致加载链过长?**
+按页面类型精简:
+- 纯文档页: 仅 shared + theme (2 文件)
+- 架构图页: fonts + shared + theme-mono + yry-arch (4 文件)
+- 组件页: shared + theme + Vue 3 + 必要的组件 (4-10 文件)
+
+### 贡献
+
+**Q: 如何新增组件?**
+参见 [CONTRIBUTING.md](./CONTRIBUTING.md) — 遵循 3 文件拆分 (index.html/css/js), 命名规范 `yry-<kebab-case>`, 提交前运行 `npm run ci`。
+
+**Q: 组件命名有什么规范?**
+- Vue 3 组件: `yry-<kebab-case>` (如 `yry-breadcrumb`)
+- Vanilla 组件: `yry-<kebab-case>` (如 `yry-export-toolbar`)
+- CSS 类名: `.yry-*` (Cat B) / `.yry-mono-*` (Cat A)
+- CSS 令牌: `--yry-*`
 
 ---
 

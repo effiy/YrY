@@ -3,678 +3,76 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>模板架构与 CSS 设计系统 — 架构图</title>
-<link rel="stylesheet" href="../../../../cdn/fonts\/index\.css">
+<title>模板架构与CSS设计系统 · 架构图</title>
+<link rel="stylesheet" href="../../../../cdn/fonts/index.css">
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-page-nav/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-export-toolbar/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme-mono/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-arch-base.css">
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
-<link rel="stylesheet" href="../../../../cdn/yry-arch/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-export-toolbar/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-info-cards/index.css">
+<style>
+/* Page-specific overrides — shared patterns in shared-a.css */
+.diagram-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1.5rem;overflow-x:auto;margin-bottom:1.5rem}
+.diagram-container svg{width:100%;min-width:900px;display:block}
+.yry-container{max-width:1200px}
+</style>
 </head>
 <body>
-<div class="container" id="rc">
-<script type="application/json" id="yry-page-config">
-{"page":{"type":"架构图","icon":"📐","file":"架构图.html"},"story":"yry-checklist · 清单与自循环","scene":{"num":"1","name":"模板架构与 CSS 设计系统","dir":"场景-1-模板架构与CSS设计系统"},"depth":"../../../","scenes":[{"num":"1","name":"模板架构与 CSS 设计系统","dir":"场景-1-模板架构与CSS设计系统"},{"num":"2","name":"清单交互组件实现","dir":"场景-2-清单交互组件实现"},{"num":"3","name":"验证报告与健康面板集成","dir":"场景-3-验证报告与健康面板集成"},{"num":"4","name":"批量生成与自循环机制","dir":"场景-4-批量生成与自循环机制"}],"pages":[{"type":"清单","icon":"📋","file":"计划清单.html"},{"type":"架构","icon":"📐","file":"架构图.html"},{"type":"图谱","icon":"🔗","file":"知识图谱.html"},{"type":"源码","icon":"📄","file":"源码.html"},{"type":"测试","icon":"🧪","file":"测试面板.html"},{"type":"演示","icon":"💡","file":"演示.html"},{"type":"审计","icon":"📝","file":"审查.html"}]}
-</script>
-<div id="yry-nav"></div>
-<script src="../../../../cdn/yry-page-nav/index.js"></script>
-<div class="header">
-<div class="header-row">
-<div class="pulse-dot"></div>
-<h1>模板架构与 CSS 设计系统 — 架构图</h1>
-<div class="yry-export-toolbar" data-target="#rc" data-filename="场景1" data-bg="#020617">
-<button data-action="copy-png">📋 Copy PNG</button>
-<button data-action="download-png">🖼 PNG</button>
-<button data-action="download-pdf">📄 PDF</button>
-</div>
-</div>
-<p class="subtitle">7 区域骨架 · 4 资源 CDN 加载链 · 3 层 Token 体系 · 6 大组件类 · 5 套 AC 验证 · 一次贯通</p>
-</div>
-<div class="stat-strip">
-<div class="ss"><div class="ss-ico" style="background:rgba(34,211,238,.1);color:var(--cyan)">🏗️</div><div class="ss-body"><div class="ss-val">7 区域</div><div class="ss-lbl">HTML 骨架</div></div></div>
-<div class="ss"><div class="ss-ico" style="background:rgba(167,139,250,.1);color:var(--violet)">🎨</div><div class="ss-body"><div class="ss-val">3 层</div><div class="ss-lbl">Token · primitive→semantic→component</div></div></div>
-<div class="ss"><div class="ss-ico" style="background:rgba(251,191,36,.1);color:var(--amber)">�</div><div class="ss-body"><div class="ss-val">4 资源</div><div class="ss-lbl">CDN 加载链</div></div></div>
-<div class="ss"><div class="ss-ico" style="background:rgba(52,211,153,.1);color:var(--emerald)">🧩</div><div class="ss-body"><div class="ss-val">6 类</div><div class="ss-lbl">step·phase·scorecard·risk·gantt·trend</div></div></div>
-</div>
-<div class="banner">
-<div class="banner-icon">�</div>
-<div class="banner-text">
-<b>设计系统心智模型:</b> 骨架承载语义(7 区域 · Token 替换) · CSS 变量传递视觉(:root → 主题切换) · CDN 链保证加载顺序(shared→theme→yry) · 组件类只复用不发明。新场景只换数据,不动结构。
-</div>
-<div class="banner-progress">SC-1 / 场景-1</div>
-</div>
-<nav class="tabs" id="tabs">
-<div class="tab on" data-panel="path">🏗️ 骨架架构<span class="tab-badge">7</span></div>
-<div class="tab" data-panel="seq">⏱️ 加载时序<span class="tab-badge">4</span></div>
-<div class="tab" data-panel="roles">🎨 Token 体系<span class="tab-badge">3</span></div>
-<div class="tab" data-panel="gates">🧩 组件矩阵<span class="tab-badge">6</span></div>
-<div class="tab" data-panel="mile">🎯 验收里程碑<span class="tab-badge">5</span></div>
-</nav>
-<!-- ═══ Tab 1 · 骨架架构 ═══ -->
-<section class="tab-panel on" id="panelPath">
+<div class="yry-container" id="report-container">
+<yry-scene-chrome
+  theme="a"
+  title="yry-checklist — 场景 1: 场景 1 · 模板架构与 CSS 设计系统"
+  subtitle="场景 1 · 模板架构与 CSS 设计系统 · vv5.4.0 · 2026-06-22"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-checklist · 故事任务"},{"label":"场景 1 · 模板架构与CSS设计系统"},{"label":"📐 架构图"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","active":true},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","href":"审查.html"}]'
+  toolbar='<div class="yry-export-toolbar yry-toolbar" data-target=".diagram-container" data-filename="yry-checklist-scene1-architecture" data-bg="#020617"><button data-action="copy-svg">📋 Copy SVG</button><button data-action="download-png">🖼 PNG</button><button data-action="download-svg">📄 SVG</button></div>'>
+</yry-scene-chrome>
+
 <div class="diagram-container">
-<svg viewBox="0 0 1100 380" xmlns="http://www.w3.org/2000/svg">
-<defs>
-<pattern id="g" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width=".5"/></pattern>
-<marker id="arr-cyan" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#22d3ee"/></marker>
-<marker id="arr-emerald" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#34d399"/></marker>
-<marker id="arr-amber" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#fbbf24"/></marker>
-<linearGradient id="step-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#22d3ee" stop-opacity=".15"/><stop offset="100%" stop-color="#22d3ee" stop-opacity=".02"/></linearGradient>
-</defs>
-<rect width="100%" height="100%" fill="url(#g)"/>
-<rect x="30" y="20" width="1040" height="120" rx="10" fill="url(#step-grad)" stroke="#22d3ee" stroke-width="1" stroke-opacity=".4"/>
-<text x="50" y="42" fill="#22d3ee" font-size="10" font-weight="600">🏗️ HTML 骨架 · 7 区域结构 · SC1 通过条件</text>
-<text x="1060" y="42" fill="#475569" font-size="9" text-anchor="end">P0 阻断:任一区域缺失即不通过</text>
-<rect x="40" y="55" width="135" height="75" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
-<circle cx="60" cy="73" r="9" fill="#22d3ee"/><text x="60" y="77" fill="#020617" font-size="10" font-weight="700" text-anchor="middle">1</text>
-<text x="108" y="73" fill="white" font-size="10" font-weight="600" text-anchor="middle">CDN 头</text>
-<text x="108" y="90" fill="#94a3b8" font-size="7" text-anchor="middle">4 link/script</text>
-<text x="108" y="105" fill="#22d3ee" font-size="8" text-anchor="middle" font-weight="600">⏱ 0 ms</text>
-<text x="108" y="120" fill="#64748b" font-size="7" text-anchor="middle">✓ 加载顺序</text>
-<rect x="185" y="55" width="135" height="75" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
-<circle cx="205" cy="73" r="9" fill="#22d3ee"/><text x="205" y="77" fill="#020617" font-size="10" font-weight="700" text-anchor="middle">2</text>
-<text x="253" y="73" fill="white" font-size="10" font-weight="600" text-anchor="middle">面包屑</text>
-<text x="253" y="90" fill="#94a3b8" font-size="7" text-anchor="middle">breadcrumb</text>
-<text x="253" y="105" fill="#22d3ee" font-size="8" text-anchor="middle" font-weight="600">⏱ ≤ 50ms</text>
-<text x="253" y="120" fill="#64748b" font-size="7" text-anchor="middle">✓ 路径可点</text>
-<rect x="330" y="55" width="135" height="75" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
-<circle cx="350" cy="73" r="9" fill="#22d3ee"/><text x="350" y="77" fill="#020617" font-size="10" font-weight="700" text-anchor="middle">3</text>
-<text x="398" y="73" fill="white" font-size="10" font-weight="600" text-anchor="middle">场景导航</text>
-<text x="398" y="90" fill="#94a3b8" font-size="7" text-anchor="middle">scene-nav</text>
-<text x="398" y="105" fill="#22d3ee" font-size="8" text-anchor="middle" font-weight="600">⏱ ≤ 80ms</text>
-<text x="398" y="120" fill="#64748b" font-size="7" text-anchor="middle">✓ 5 场景互链</text>
-<rect x="475" y="55" width="135" height="75" rx="6" fill="rgba(20,83,45,0.3)" stroke="#34d399" stroke-width="1.5"/>
-<circle cx="495" cy="73" r="9" fill="#34d399"/><text x="495" y="77" fill="#020617" font-size="10" font-weight="700" text-anchor="middle">4</text>
-<text x="543" y="73" fill="white" font-size="10" font-weight="600" text-anchor="middle">统计卡片</text>
-<text x="543" y="90" fill="#94a3b8" font-size="7" text-anchor="middle">stat-strip</text>
-<text x="543" y="105" fill="#34d399" font-size="8" text-anchor="middle" font-weight="600">⏱ ≤ 120ms</text>
-<text x="543" y="120" fill="#64748b" font-size="7" text-anchor="middle">✓ 4 卡渲染</text>
-<rect x="620" y="55" width="135" height="75" rx="6" fill="rgba(120,53,15,0.25)" stroke="#fbbf24" stroke-width="1.5"/>
-<circle cx="640" cy="73" r="9" fill="#fbbf24"/><text x="640" y="77" fill="#020617" font-size="10" font-weight="700" text-anchor="middle">5</text>
-<text x="688" y="73" fill="white" font-size="10" font-weight="600" text-anchor="middle">标签页</text>
-<text x="688" y="90" fill="#94a3b8" font-size="7" text-anchor="middle">tabs</text>
-<text x="688" y="105" fill="#fbbf24" font-size="8" text-anchor="middle" font-weight="600">⏱ ≤ 150ms</text>
-<text x="688" y="120" fill="#64748b" font-size="7" text-anchor="middle">✓ 5 标签渲染</text>
-<rect x="765" y="55" width="135" height="75" rx="6" fill="rgba(120,53,15,0.25)" stroke="#fbbf24" stroke-width="1.5"/>
-<circle cx="785" cy="73" r="9" fill="#fbbf24"/><text x="785" y="77" fill="#020617" font-size="10" font-weight="700" text-anchor="middle">6</text>
-<text x="833" y="73" fill="white" font-size="10" font-weight="600" text-anchor="middle">7 面板</text>
-<text x="833" y="90" fill="#94a3b8" font-size="7" text-anchor="middle">panel × 7</text>
-<text x="833" y="105" fill="#fbbf24" font-size="8" text-anchor="middle" font-weight="600">⏱ ≤ 200ms</text>
-<text x="833" y="120" fill="#64748b" font-size="7" text-anchor="middle">✓ panel 7/7</text>
-<rect x="910" y="55" width="160" height="75" rx="6" fill="rgba(131,24,67,0.25)" stroke="#fb7185" stroke-width="1.5"/>
-<circle cx="930" cy="73" r="9" fill="#fb7185"/><text x="930" y="77" fill="#020617" font-size="10" font-weight="700" text-anchor="middle">7</text>
-<text x="990" y="73" fill="white" font-size="10" font-weight="600" text-anchor="middle">脚本与CDN</text>
-<text x="990" y="90" fill="#94a3b8" font-size="7" text-anchor="middle">script + shared.js</text>
-<text x="990" y="105" fill="#fb7185" font-size="8" text-anchor="middle" font-weight="600">⏱ defer</text>
-<text x="990" y="120" fill="#64748b" font-size="7" text-anchor="middle">✓ 交互就绪</text>
-<line x1="175" y1="92" x2="185" y2="92" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arr-cyan)"/>
-<line x1="320" y1="92" x2="330" y2="92" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arr-cyan)"/>
-<line x1="465" y1="92" x2="475" y2="92" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arr-cyan)"/>
-<line x1="610" y1="92" x2="620" y2="92" stroke="#34d399" stroke-width="1.5" marker-end="url(#arr-emerald)"/>
-<line x1="755" y1="92" x2="765" y2="92" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arr-amber)"/>
-<line x1="900" y1="92" x2="910" y2="92" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arr-amber)"/>
-<rect x="40" y="160" width="500" height="200" rx="8" fill="rgba(34,211,238,.04)" stroke="#22d3ee" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="60" y="180" fill="#22d3ee" font-size="10" font-weight="600">🧬 Token 替换位 · 6 类</text>
-<g font-size="9" fill="#cbd5e1">
-<text x="60" y="202">① <tspan fill="#22d3ee" font-weight="600">{{STORY_NAME}}</tspan> — 故事中文名,源自 <tspan fill="#fbbf24">index.md H1</tspan></text>
-<text x="60" y="222">② <tspan fill="#22d3ee" font-weight="600">{{SCENE_TITLE}}</tspan> — 场景标题,源自 <tspan fill="#fbbf24">场景-N-*</tspan> 目录名</text>
-<text x="60" y="242">③ <tspan fill="#22d3ee" font-weight="600">{{VERSION}}</tspan> — 文档版本号,源自 frontmatter</text>
-<text x="60" y="262">④ <tspan fill="#22d3ee" font-weight="600">{{DATE}}</tspan> — ISO 日期,源自 frontmatter</text>
-<text x="60" y="282">⑤ <tspan fill="#22d3ee" font-weight="600">{{CDN_DEPTH}}</tspan> — 相对路径深度,基于目录层级计算</text>
-<text x="60" y="302">⑥ <tspan fill="#22d3ee" font-weight="600">{{SCENE_NUM}}</tspan> — 场景序号,源自目录前缀 <tspan fill="#fbbf24">场景-N-</tspan></text>
-<text x="60" y="322" fill="#64748b" font-size="8">📎 替换后 <tspan fill="#22d3ee">grep '{{' 渲染结果</tspan> 必须为 0 匹配</text>
-</g>
-<rect x="560" y="160" width="500" height="200" rx="8" fill="rgba(167,139,250,.04)" stroke="#a78bfa" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="580" y="180" fill="#a78bfa" font-size="10" font-weight="600">� 响应式断点 · 3 档</text>
-<g font-size="9">
-<text x="580" y="208" fill="#cbd5e1">≤ 900px</text>
-<rect x="700" y="200" width="340" height="6" rx="3" fill="rgba(255,255,255,.05)"/>
-<rect x="700" y="200" width="340" height="6" rx="3" fill="#22d3ee"/>
-<text x="1050" y="208" fill="#22d3ee" text-anchor="end">统计卡 6→3 列</text>
-<text x="580" y="232" fill="#cbd5e1">≤ 700px</text>
-<rect x="700" y="224" width="340" height="6" rx="3" fill="rgba(255,255,255,.05)"/>
-<rect x="700" y="224" width="170" height="6" rx="3" fill="#34d399"/>
-<text x="1050" y="232" fill="#34d399" text-anchor="end">标签页横向滚动</text>
-<text x="580" y="256" fill="#cbd5e1">≤ 500px</text>
-<rect x="700" y="248" width="340" height="6" rx="3" fill="rgba(255,255,255,.05)"/>
-<rect x="700" y="248" width="85" height="6" rx="3" fill="#fbbf24"/>
-<text x="1050" y="256" fill="#fbbf24" text-anchor="end">统计卡 3→2 列</text>
-<text x="580" y="290" fill="#cbd5e1">暗色/亮色</text>
-<rect x="700" y="282" width="340" height="6" rx="3" fill="rgba(255,255,255,.05)"/>
-<rect x="700" y="282" width="340" height="6" rx="3" fill="#a78bfa"/>
-<text x="1050" y="290" fill="#a78bfa" text-anchor="end">prefers-color-scheme 自动</text>
-<text x="580" y="322" fill="#64748b" font-size="8">合计 4 档断点 · 累计 6 个 Token · 1 套 CSS 变量覆盖全部</text>
-</g>
-</svg>
+  <svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+      </marker>
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#grid)"/>
+    <text x="500" y="300" fill="#475569" font-size="14" text-anchor="middle" font-family="JetBrains Mono,monospace">
+      架构图数据待填充 — 运行 /rui code 生成
+    </text>
+  </svg>
 </div>
-<div class="cards">
-<div class="card" style="--accent:var(--cyan)">
-<div class="card-header"><div class="card-dot cyan"></div><h3>骨架定义 · FP1</h3><span class="card-sub">P0</span></div>
-<ul>
-<li>7 区域全部存在: <code>CDN头</code> · <code>面包屑</code> · <code>场景导航</code></li>
-<li>后续区域: <code>统计卡</code> · <code>标签页</code> · <code>7 面板</code> · <code>脚本</code></li>
-<li>Token 占位符用 <code>{{UPPER_SNAKE}}</code> 格式</li>
-<li>页面专属 CSS 限定在 <code>.container</code> 作用域</li>
-</ul>
-<div class="chip-row"><span class="chip info">7 区域</span><span class="chip">6 Token</span><span class="chip">≤ 1 模板文件</span></div>
-</div>
-<div class="card" style="--accent:var(--emerald)">
-<div class="card-header"><div class="card-dot emerald"></div><h3>CSS 类体系 · FP2</h3><span class="card-sub">P0</span></div>
-<ul>
-<li>布局类: <code>container</code> · <code>grid</code> · <code>flex</code></li>
-<li>组件类: <code>step</code> · <code>phase-strip</code> · <code>scorecard</code></li>
-<li>风险/甘特: <code>risk-matrix</code> · <code>gantt</code> · <code>trend</code></li>
-<li>动画类: <code>pulse</code> · <code>fadeIn</code> · <code>slideDown</code></li>
-</ul>
-<div class="chip-row"><span class="chip ok">覆盖度 100%</span><span class="chip warn">BEM 命名</span></div>
-</div>
-<div class="card" style="--accent:var(--violet)">
-<div class="card-header"><div class="card-dot violet"></div><h3>CDN 加载链 · FP3</h3><span class="card-sub">P0</span></div>
-<ul>
-<li>顺序: <code>shared/index.css</code> → <code>theme/index.css</code> → <code>yry-checklist.css</code></li>
-<li>脚本: <code>shared.js</code> defer 加载</li>
-<li>相对路径基于 <code>{{CDN_DEPTH}}</code> 计算</li>
-<li>不允许硬编码 <code>../../../</code> 层级数</li>
-</ul>
-<div class="chip-row"><span class="chip info">4 资源</span><span class="chip fail">0 个 404</span></div>
-</div>
-</div>
-</section>
-<!-- ═══ Tab 2 · 加载时序 ═══ -->
-<section class="tab-panel" id="panelSeq">
-<div class="diagram-container">
-<svg viewBox="0 0 1100 460" xmlns="http://www.w3.org/2000/svg">
-<defs>
-<pattern id="g2" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width=".5"/></pattern>
-<marker id="arr-seq" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#64748b"/></marker>
-<marker id="arr-cyan2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#22d3ee"/></marker>
-</defs>
-<rect width="100%" height="100%" fill="url(#g2)"/>
-<text x="50" y="30" fill="#22d3ee" font-size="11" font-weight="600">⏱️ CDN 加载时序 · 4 资源 5 阶段</text>
-<text x="1050" y="30" fill="#475569" font-size="9" text-anchor="end">顺序错误 → 样式覆盖失效</text>
-<g font-size="10" font-weight="600">
-<rect x="60" y="50" width="140" height="36" rx="4" fill="rgba(34,211,238,.1)" stroke="#22d3ee"/>
-<text x="130" y="68" fill="#22d3ee" text-anchor="middle">🌐 浏览器</text>
-<text x="130" y="80" fill="#94a3b8" font-size="8" text-anchor="middle">HTTP 客户端</text>
-<line x1="130" y1="86" x2="130" y2="430" stroke="#22d3ee" stroke-width="1" stroke-dasharray="3 3" opacity=".5"/>
-<rect x="250" y="50" width="160" height="36" rx="4" fill="rgba(167,139,250,.1)" stroke="#a78bfa"/>
-<text x="330" y="68" fill="#a78bfa" text-anchor="middle">📄 shared/index.css</text>
-<text x="330" y="80" fill="#94a3b8" font-size="8" text-anchor="middle">CDN · reset+base</text>
-<line x1="330" y1="86" x2="330" y2="430" stroke="#a78bfa" stroke-width="1" stroke-dasharray="3 3" opacity=".5"/>
-<rect x="460" y="50" width="160" height="36" rx="4" fill="rgba(52,211,153,.1)" stroke="#34d399"/>
-<text x="540" y="68" fill="#34d399" text-anchor="middle">🎨 theme/index.css</text>
-<text x="540" y="80" fill="#94a3b8" font-size="8" text-anchor="middle">CDN · 主题变量</text>
-<line x1="540" y1="86" x2="540" y2="430" stroke="#34d399" stroke-width="1" stroke-dasharray="3 3" opacity=".5"/>
-<rect x="670" y="50" width="180" height="36" rx="4" fill="rgba(251,191,36,.1)" stroke="#fbbf24"/>
-<text x="760" y="68" fill="#fbbf24" text-anchor="middle">🧩 yry-checklist.css</text>
-<text x="760" y="80" fill="#94a3b8" font-size="8" text-anchor="middle">CDN · 组件类</text>
-<line x1="760" y1="86" x2="760" y2="430" stroke="#fbbf24" stroke-width="1" stroke-dasharray="3 3" opacity=".5"/>
-<rect x="900" y="50" width="140" height="36" rx="4" fill="rgba(251,113,133,.1)" stroke="#fb7185"/>
-<text x="970" y="68" fill="#fb7185" text-anchor="middle">⚙️ shared.js</text>
-<text x="970" y="80" fill="#94a3b8" font-size="8" text-anchor="middle">defer · 交互</text>
-<line x1="970" y1="86" x2="970" y2="430" stroke="#fb7185" stroke-width="1" stroke-dasharray="3 3" opacity=".5"/>
-</g>
-<g font-size="9" fill="#475569" font-weight="500">
-<rect x="30" y="100" width="1040" height="40" fill="rgba(34,211,238,.03)"/>
-<text x="50" y="125">① 阶段 1 · 解析 HTML</text>
-<rect x="30" y="140" width="1040" height="40" fill="rgba(167,139,250,.03)"/>
-<text x="50" y="165">② 阶段 2 · 顺序加载 CSS</text>
-<rect x="30" y="180" width="1040" height="40" fill="rgba(52,211,153,.03)"/>
-<text x="50" y="205">③ 阶段 3 · 主题覆盖</text>
-<rect x="30" y="220" width="1040" height="40" fill="rgba(251,191,36,.03)"/>
-<text x="50" y="245">④ 阶段 4 · 组件类应用</text>
-<rect x="30" y="260" width="1040" height="40" fill="rgba(251,113,133,.03)"/>
-<text x="50" y="285">⑤ 阶段 5 · 脚本就绪</text>
-</g>
-<g font-size="9" fill="#cbd5e1">
-<line x1="130" y1="120" x2="320" y2="120" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arr-cyan2)"/>
-<rect x="180" y="105" width="90" height="14" rx="3" fill="#020617" stroke="#a78bfa" stroke-width=".5"/>
-<text x="225" y="115" fill="#a78bfa" text-anchor="middle" font-family="'JetBrains Mono',monospace">GET CSS1</text>
-<line x1="330" y1="160" x2="530" y2="160" stroke="#34d399" stroke-width="1.5" marker-end="url(#arr-cyan2)"/>
-<rect x="380" y="145" width="90" height="14" rx="3" fill="#020617" stroke="#34d399" stroke-width=".5"/>
-<text x="425" y="155" fill="#34d399" text-anchor="middle" font-family="'JetBrains Mono',monospace">GET CSS2</text>
-<line x1="540" y1="200" x2="750" y2="200" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arr-cyan2)"/>
-<rect x="600" y="185" width="90" height="14" rx="3" fill="#020617" stroke="#fbbf24" stroke-width=".5"/>
-<text x="645" y="195" fill="#fbbf24" text-anchor="middle" font-family="'JetBrains Mono',monospace">GET CSS3</text>
-<line x1="760" y1="240" x2="960" y2="240" stroke="#fb7185" stroke-width="1.5" marker-end="url(#arr-cyan2)"/>
-<rect x="820" y="225" width="90" height="14" rx="3" fill="#020617" stroke="#fb7185" stroke-width=".5"/>
-<text x="865" y="235" fill="#fb7185" text-anchor="middle" font-family="'JetBrains Mono',monospace">GET JS</text>
-</g>
-<g font-size="9" fill="#cbd5e1">
-<line x1="330" y1="295" x2="130" y2="295" stroke="#a78bfa" stroke-width="1" stroke-dasharray="2 2" marker-end="url(#arr-cyan2)" opacity=".7"/>
-<text x="230" y="288" fill="#94a3b8" font-size="8" text-anchor="middle">CSS1 已应用</text>
-<line x1="540" y1="325" x2="130" y2="325" stroke="#34d399" stroke-width="1" stroke-dasharray="2 2" marker-end="url(#arr-cyan2)" opacity=".7"/>
-<text x="335" y="318" fill="#94a3b8" font-size="8" text-anchor="middle">主题变量注入</text>
-<line x1="760" y1="355" x2="130" y2="355" stroke="#fbbf24" stroke-width="1" stroke-dasharray="2 2" marker-end="url(#arr-cyan2)" opacity=".7"/>
-<text x="445" y="348" fill="#94a3b8" font-size="8" text-anchor="middle">组件样式就绪</text>
-<line x1="970" y1="385" x2="130" y2="385" stroke="#fb7185" stroke-width="1" stroke-dasharray="2 2" marker-end="url(#arr-cyan2)" opacity=".7"/>
-<text x="555" y="378" fill="#94a3b8" font-size="8" text-anchor="middle">交互绑定完成</text>
-</g>
-<g font-size="9" fill="#64748b">
-<text x="130" y="425">⏱ 总耗时 ≈ 200-400ms · 4 资源 0 个 404 · 1 套优先级链</text>
-</g>
-</svg>
-</div>
-<div class="cards">
-<div class="card" style="--accent:var(--cyan)">
-<div class="card-header"><div class="card-dot cyan"></div><h3>加载顺序</h3><span class="card-sub">铁律</span></div>
-<ul>
-<li><b>CSS 1</b> shared/index.css — 浏览器 reset + 基础排版</li>
-<li><b>CSS 2</b> theme/index.css — 主题变量(:root 自定义属性)</li>
-<li><b>CSS 3</b> yry-checklist.css — 组件类(可被页面覆盖)</li>
-<li><b>JS</b> shared.js defer — 交互绑定(DOMContentLoaded 后)</li>
-</ul>
-<div class="chip-row"><span class="chip info">顺序敏感</span><span class="chip fail">不可并联</span></div>
-</div>
-<div class="card" style="--accent:var(--emerald)">
-<div class="card-header"><div class="card-dot emerald"></div><h3>路径策略</h3><span class="card-sub">CDN_DEPTH</span></div>
-<ul>
-<li>相对路径基于场景目录深度计算</li>
-<li>深度 4: <code>../../../../cdn/...</code></li>
-<li>深度 5: <code>../../../../../cdn/...</code></li>
-<li>禁止硬编码具体层数</li>
-</ul>
-<div class="chip-row"><span class="chip ok">Token 化</span><span class="chip warn">不硬编码</span></div>
-</div>
-<div class="card" style="--accent:var(--amber)">
-<div class="card-header"><div class="card-dot amber"></div><h3>降级策略</h3><span class="card-sub">失败保护</span></div>
-<ul>
-<li>CDN 不可达时回退到内联 <code>&lt;style&gt;</code></li>
-<li>JS 失败时页面仍可读(渐进增强)</li>
-<li>页面专属样式接管组件默认</li>
-</ul>
-<div class="chip-row"><span class="chip warn">可降级</span><span class="chip">零阻塞</span></div>
-</div>
-</div>
-</section>
-<!-- ═══ Tab 3 · Token 体系 ═══ -->
-<section class="tab-panel" id="panelRoles">
-<div class="diagram-container">
-<svg viewBox="0 0 1100 420" xmlns="http://www.w3.org/2000/svg">
-<defs>
-<pattern id="g3" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width=".5"/></pattern>
-<marker id="arr-r" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#64748b"/></marker>
-</defs>
-<rect width="100%" height="100%" fill="url(#g3)"/>
-<text x="50" y="30" fill="#a78bfa" font-size="11" font-weight="600">🎨 3 层 Token 体系 · primitive → semantic → component</text>
-<text x="1050" y="30" fill="#475569" font-size="9" text-anchor="end">命名空间:--yry-* · 单一来源</text>
-<g font-size="10" fill="#94a3b8" font-weight="600">
-<text x="50" y="70">Layer 1 · Primitive</text>
-<text x="50" y="170">Layer 2 · Semantic</text>
-<text x="50" y="270">Layer 3 · Component</text>
-</g>
-<g>
-<rect x="80" y="50" width="160" height="50" rx="6" fill="rgba(34,211,238,.08)" stroke="#22d3ee" stroke-width="1.5"/>
-<text x="160" y="73" fill="#22d3ee" font-size="11" font-weight="600" text-anchor="middle">🎨 色板</text>
-<text x="160" y="88" fill="#94a3b8" font-size="8" text-anchor="middle">accent·cyan·pass·warn·fail</text>
-<rect x="280" y="50" width="160" height="50" rx="6" fill="rgba(34,211,238,.08)" stroke="#22d3ee" stroke-width="1.5"/>
-<text x="360" y="73" fill="#22d3ee" font-size="11" font-weight="600" text-anchor="middle">📏 间距</text>
-<text x="360" y="88" fill="#94a3b8" font-size="8" text-anchor="middle">1·2·3·4·5·6·8·10</text>
-<rect x="480" y="50" width="160" height="50" rx="6" fill="rgba(34,211,238,.08)" stroke="#22d3ee" stroke-width="1.5"/>
-<text x="560" y="73" fill="#22d3ee" font-size="11" font-weight="600" text-anchor="middle">� 字体</text>
-<text x="560" y="88" fill="#94a3b8" font-size="8" text-anchor="middle">xs·sm·md·lg·xl·2xl</text>
-<rect x="680" y="50" width="160" height="50" rx="6" fill="rgba(34,211,238,.08)" stroke="#22d3ee" stroke-width="1.5"/>
-<text x="760" y="73" fill="#22d3ee" font-size="11" font-weight="600" text-anchor="middle">⭕ 圆角</text>
-<text x="760" y="88" fill="#94a3b8" font-size="8" text-anchor="middle">sm·md·lg·xl·pill</text>
-<rect x="880" y="50" width="160" height="50" rx="6" fill="rgba(34,211,238,.08)" stroke="#22d3ee" stroke-width="1.5"/>
-<text x="960" y="73" fill="#22d3ee" font-size="11" font-weight="600" text-anchor="middle">🌀 动效</text>
-<text x="960" y="88" fill="#94a3b8" font-size="8" text-anchor="middle">fast·base·slow·ease</text>
-</g>
-<line x1="240" y1="75" x2="280" y2="75" stroke="#22d3ee" stroke-width="1" marker-end="url(#arr-r)" opacity=".5"/>
-<line x1="440" y1="75" x2="480" y2="75" stroke="#22d3ee" stroke-width="1" marker-end="url(#arr-r)" opacity=".5"/>
-<line x1="640" y1="75" x2="680" y2="75" stroke="#22d3ee" stroke-width="1" marker-end="url(#arr-r)" opacity=".5"/>
-<line x1="840" y1="75" x2="880" y2="75" stroke="#22d3ee" stroke-width="1" marker-end="url(#arr-r)" opacity=".5"/>
-<g>
-<rect x="80" y="150" width="160" height="50" rx="6" fill="rgba(52,211,153,.08)" stroke="#34d399" stroke-width="1.5"/>
-<text x="160" y="173" fill="#34d399" font-size="11" font-weight="600" text-anchor="middle">� 文本</text>
-<text x="160" y="188" fill="#94a3b8" font-size="8" text-anchor="middle">text-1/2/3/inverse</text>
-<rect x="280" y="150" width="160" height="50" rx="6" fill="rgba(52,211,153,.08)" stroke="#34d399" stroke-width="1.5"/>
-<text x="360" y="173" fill="#34d399" font-size="11" font-weight="600" text-anchor="middle">🖼️ 表面</text>
-<text x="360" y="188" fill="#94a3b8" font-size="8" text-anchor="middle">bg·surface-1/2·border</text>
-<rect x="480" y="150" width="160" height="50" rx="6" fill="rgba(52,211,153,.08)" stroke="#34d399" stroke-width="1.5"/>
-<text x="560" y="173" fill="#34d399" font-size="11" font-weight="600" text-anchor="middle">� 布局</text>
-<text x="560" y="188" fill="#94a3b8" font-size="8" text-anchor="middle">container-max</text>
-<rect x="680" y="150" width="160" height="50" rx="6" fill="rgba(52,211,153,.08)" stroke="#34d399" stroke-width="1.5"/>
-<text x="760" y="173" fill="#34d399" font-size="11" font-weight="600" text-anchor="middle">🏷️ Z-Index</text>
-<text x="760" y="188" fill="#94a3b8" font-size="8" text-anchor="middle">base·sticky·overlay·toast</text>
-<rect x="880" y="150" width="160" height="50" rx="6" fill="rgba(52,211,153,.08)" stroke="#34d399" stroke-width="1.5"/>
-<text x="960" y="173" fill="#34d399" font-size="11" font-weight="600" text-anchor="middle">🌗 主题</text>
-<text x="960" y="188" fill="#94a3b8" font-size="8" text-anchor="middle">prefers-color-scheme</text>
-</g>
-<g>
-<rect x="80" y="250" width="160" height="50" rx="6" fill="rgba(251,191,36,.08)" stroke="#fbbf24" stroke-width="1.5"/>
-<text x="160" y="273" fill="#fbbf24" font-size="11" font-weight="600" text-anchor="middle">📋 step</text>
-<text x="160" y="288" fill="#94a3b8" font-size="8" text-anchor="middle">清单勾选项</text>
-<rect x="280" y="250" width="160" height="50" rx="6" fill="rgba(251,191,36,.08)" stroke="#fbbf24" stroke-width="1.5"/>
-<text x="360" y="273" fill="#fbbf24" font-size="11" font-weight="600" text-anchor="middle">⏱️ phase-strip</text>
-<text x="360" y="288" fill="#94a3b8" font-size="8" text-anchor="middle">阶段进度条</text>
-<rect x="480" y="250" width="160" height="50" rx="6" fill="rgba(251,191,36,.08)" stroke="#fbbf24" stroke-width="1.5"/>
-<text x="560" y="273" fill="#fbbf24" font-size="11" font-weight="600" text-anchor="middle">📊 scorecard</text>
-<text x="560" y="288" fill="#94a3b8" font-size="8" text-anchor="middle">验收分卡</text>
-<rect x="680" y="250" width="160" height="50" rx="6" fill="rgba(251,191,36,.08)" stroke="#fbbf24" stroke-width="1.5"/>
-<text x="760" y="273" fill="#fbbf24" font-size="11" font-weight="600" text-anchor="middle">⚠️ risk-matrix</text>
-<text x="760" y="288" fill="#94a3b8" font-size="8" text-anchor="middle">风险矩阵</text>
-<rect x="880" y="250" width="160" height="50" rx="6" fill="rgba(251,191,36,.08)" stroke="#fbbf24" stroke-width="1.5"/>
-<text x="960" y="273" fill="#fbbf24" font-size="11" font-weight="600" text-anchor="middle">📅 gantt / trend</text>
-<text x="960" y="288" fill="#94a3b8" font-size="8" text-anchor="middle">时间线 / 趋势</text>
-</g>
-<g stroke-dasharray="3 3" opacity=".5">
-<line x1="160" y1="100" x2="160" y2="150" stroke="#22d3ee" stroke-width="1" marker-end="url(#arr-r)"/>
-<line x1="360" y1="100" x2="360" y2="150" stroke="#22d3ee" stroke-width="1" marker-end="url(#arr-r)"/>
-<line x1="560" y1="100" x2="560" y2="150" stroke="#22d3ee" stroke-width="1" marker-end="url(#arr-r)"/>
-<line x1="760" y1="100" x2="760" y2="150" stroke="#22d3ee" stroke-width="1" marker-end="url(#arr-r)"/>
-<line x1="960" y1="100" x2="960" y2="150" stroke="#22d3ee" stroke-width="1" marker-end="url(#arr-r)"/>
-<line x1="160" y1="200" x2="160" y2="250" stroke="#34d399" stroke-width="1" marker-end="url(#arr-r)"/>
-<line x1="360" y1="200" x2="360" y2="250" stroke="#34d399" stroke-width="1" marker-end="url(#arr-r)"/>
-<line x1="560" y1="200" x2="560" y2="250" stroke="#34d399" stroke-width="1" marker-end="url(#arr-r)"/>
-<line x1="760" y1="200" x2="760" y2="250" stroke="#34d399" stroke-width="1" marker-end="url(#arr-r)"/>
-<line x1="960" y1="200" x2="960" y2="250" stroke="#34d399" stroke-width="1" marker-end="url(#arr-r)"/>
-</g>
-<g font-size="8" fill="#64748b" text-anchor="middle">
-<text x="170" y="125">→</text>
-<text x="370" y="125">→</text>
-<text x="570" y="125">→</text>
-<text x="770" y="125">→</text>
-<text x="970" y="125">→</text>
-<text x="170" y="225">→</text>
-<text x="370" y="225">→</text>
-<text x="570" y="225">→</text>
-<text x="770" y="225">→</text>
-<text x="970" y="225">→</text>
-</g>
-<rect x="80" y="320" width="960" height="80" rx="8" fill="rgba(167,139,250,.04)" stroke="#a78bfa" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="100" y="342" fill="#a78bfa" font-size="10" font-weight="600">🔄 Token 流转 · 自上而下消费,自下而上反馈</text>
-<g font-size="9" fill="#cbd5e1">
-<text x="100" y="365">① <tspan fill="#22d3ee" font-weight="600">Primitive</tspan> 定义原子值(色板/间距/字号),由设计师/品牌系统维护,变更低频</text>
-<text x="100" y="385">② <tspan fill="#34d399" font-weight="600">Semantic</tspan> 引用 Primitive,赋予语义(文本/表面/布局),跨场景复用</text>
-<text x="100" y="405" fill="#fbbf24">③ <tspan font-weight="600">Component</tspan> 引用 Semantic,封装组件外观(step/scorecard/risk),禁止直接引用 Primitive</text>
-</g>
-</svg>
-</div>
-<div class="cards">
-<div class="card" style="--accent:var(--cyan)">
-<div class="card-header"><div class="card-dot cyan"></div><h3>Layer 1 · Primitive · 5 类</h3><span class="card-sub">基础原子</span></div>
-<ul>
-<li><b>色板</b> — accent·cyan·pass·warn·fail 等 5 色</li>
-<li><b>间距</b> — 1·2·3·4·5·6·8·10 共 8 档</li>
-<li><b>字体</b> — xs·sm·md·lg·xl·2xl 共 6 档</li>
-<li><b>圆角</b> — sm·md·lg·xl·pill 共 5 档</li>
-<li><b>动效</b> — fast·base·slow·ease 共 4 项</li>
-</ul>
-<div class="chip-row"><span class="chip info">28 原子</span><span class="chip">不可组合</span></div>
-</div>
-<div class="card" style="--accent:var(--emerald)">
-<div class="card-header"><div class="card-dot emerald"></div><h3>Layer 2 · Semantic · 5 类</h3><span class="card-sub">语义映射</span></div>
-<ul>
-<li><b>文本</b> — text-1/2/3/inverse 4 级</li>
-<li><b>表面</b> — bg·surface-1/2·border 5 档</li>
-<li><b>布局</b> — container-max 1 项</li>
-<li><b>Z-Index</b> — base·sticky·overlay·toast 4 档</li>
-<li><b>主题</b> — prefers-color-scheme 自动切换</li>
-</ul>
-<div class="chip-row"><span class="chip ok">15 语义</span><span class="chip">跨场景复用</span></div>
-</div>
-<div class="card" style="--accent:var(--violet)">
-<div class="card-header"><div class="card-dot violet"></div><h3>Layer 3 · Component · 6 类</h3><span class="card-sub">组件外观</span></div>
-<ul>
-<li><b>step</b> — 清单勾选(已勾/未勾/部分)</li>
-<li><b>phase-strip</b> — 阶段进度条(完成/进行/未开始)</li>
-<li><b>scorecard</b> — 验收分卡(分值/状态/趋势)</li>
-<li><b>risk-matrix</b> — 风险矩阵(L/M/H × L/M/H)</li>
-<li><b>gantt</b> — 时间线(起止/里程碑/依赖)</li>
-<li><b>trend</b> — 趋势图(数值/序列/对比)</li>
-</ul>
-<div class="chip-row"><span class="chip warn">6 组件</span><span class="chip">只引用 Semantic</span></div>
-</div>
-</div>
-</section>
-<!-- ═══ Tab 4 · 组件矩阵 ═══ -->
-<section class="tab-panel" id="panelGates">
-<div class="diagram-container">
-<svg viewBox="0 0 1100 280" xmlns="http://www.w3.org/2000/svg">
-<defs>
-<pattern id="g4" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width=".5"/></pattern>
-<linearGradient id="gate-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fbbf24" stop-opacity=".1"/><stop offset="100%" stop-color="#fbbf24" stop-opacity=".02"/></linearGradient>
-</defs>
-<rect width="100%" height="100%" fill="url(#g4)"/>
-<text x="50" y="30" fill="#fbbf24" font-size="11" font-weight="600">🧩 6 大组件类 · 视觉规范与覆盖度</text>
-<text x="1050" y="30" fill="#475569" font-size="9" text-anchor="end">SC2 通过条件:覆盖度 100%</text>
-<rect x="30" y="50" width="1040" height="100" rx="10" fill="url(#gate-grad)" stroke="#fbbf24" stroke-width="1" stroke-opacity=".4"/>
-<g>
-<rect x="50" y="65" width="160" height="70" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
-<text x="130" y="86" fill="#22d3ee" font-size="11" font-weight="600" text-anchor="middle">📋 step</text>
-<text x="130" y="104" fill="#94a3b8" font-size="8" text-anchor="middle">清单勾选 / 状态</text>
-<text x="130" y="120" fill="#22d3ee" font-size="8" text-anchor="middle" font-weight="600">覆盖: 7/7</text>
-<text x="130" y="132" fill="#64748b" font-size="7" text-anchor="middle">所有清单页必含</text>
 
-<rect x="220" y="65" width="160" height="70" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
-<text x="300" y="86" fill="#22d3ee" font-size="11" font-weight="600" text-anchor="middle">⏱ phase-strip</text>
-<text x="300" y="104" fill="#94a3b8" font-size="8" text-anchor="middle">阶段进度条</text>
-<text x="300" y="120" fill="#22d3ee" font-size="8" text-anchor="middle" font-weight="600">覆盖: 4/7</text>
-<text x="300" y="132" fill="#64748b" font-size="7" text-anchor="middle">含 3+ 步骤的场景</text>
+<yry-info-cards>
+  <div class="yry-card">
+    <div class="yry-card-header"><div class="yry-card-dot cyan"></div><h3>场景信息</h3></div>
+    <ul>
+      <li><b>场景:</b> 1 · 场景 1 · 模板架构与 CSS 设计系统</li>
+      <li><b>故事:</b> yry-checklist · 故事任务</li>
+      <li><b>版本:</b> vv5.4.0</li>
+    </ul>
+  </div>
+  <div class="yry-card">
+    <div class="yry-card-header"><div class="yry-card-dot emerald"></div><h3>数据源</h3></div>
+    <ul>
+      <li><b>场景文档:</b> index.md §0 技术评审</li>
+      <li><b>生成日期:</b> 2026-06-22</li>
+    </ul>
+  </div>
+</yry-info-cards>
 
-<rect x="390" y="65" width="160" height="70" rx="6" fill="rgba(20,83,45,0.3)" stroke="#34d399" stroke-width="1.5"/>
-<text x="470" y="86" fill="#34d399" font-size="11" font-weight="600" text-anchor="middle">📊 scorecard</text>
-<text x="470" y="104" fill="#94a3b8" font-size="8" text-anchor="middle">验收分卡</text>
-<text x="470" y="120" fill="#34d399" font-size="8" text-anchor="middle" font-weight="600">覆盖: 5/7</text>
-<text x="470" y="132" fill="#64748b" font-size="7" text-anchor="middle">含 AC 的场景</text>
-
-<rect x="560" y="65" width="160" height="70" rx="6" fill="rgba(120,53,15,0.25)" stroke="#fbbf24" stroke-width="1.5"/>
-<text x="640" y="86" fill="#fbbf24" font-size="11" font-weight="600" text-anchor="middle">⚠ risk-matrix</text>
-<text x="640" y="104" fill="#94a3b8" font-size="8" text-anchor="middle">风险矩阵</text>
-<text x="640" y="120" fill="#fbbf24" font-size="8" text-anchor="middle" font-weight="600">覆盖: 3/7</text>
-<text x="640" y="132" fill="#64748b" font-size="7" text-anchor="middle">含风险项的场景</text>
-
-<rect x="730" y="65" width="160" height="70" rx="6" fill="rgba(120,53,15,0.25)" stroke="#fbbf24" stroke-width="1.5"/>
-<text x="810" y="86" fill="#fbbf24" font-size="11" font-weight="600" text-anchor="middle">📅 gantt</text>
-<text x="810" y="104" fill="#94a3b8" font-size="8" text-anchor="middle">时间线 / 里程碑</text>
-<text x="810" y="120" fill="#fbbf24" font-size="8" text-anchor="middle" font-weight="600">覆盖: 2/7</text>
-<text x="810" y="132" fill="#64748b" font-size="7" text-anchor="middle">含时间规划的场景</text>
-
-<rect x="900" y="65" width="160" height="70" rx="6" fill="rgba(131,24,67,0.25)" stroke="#fb7185" stroke-width="1.5"/>
-<text x="980" y="86" fill="#fb7185" font-size="11" font-weight="600" text-anchor="middle">📈 trend</text>
-<text x="980" y="104" fill="#94a3b8" font-size="8" text-anchor="middle">趋势图 / 对比</text>
-<text x="980" y="120" fill="#fb7185" font-size="8" text-anchor="middle" font-weight="600">覆盖: 1/7</text>
-<text x="980" y="132" fill="#64748b" font-size="7" text-anchor="middle">含历史数据的场景</text>
-</g>
-<g>
-<rect x="50" y="160" width="500" height="100" rx="8" fill="rgba(34,211,238,.04)" stroke="#22d3ee" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="70" y="180" fill="#22d3ee" font-size="10" font-weight="600">✅ 类选择规则</text>
-<g font-size="9" fill="#cbd5e1">
-<text x="70" y="200"><tspan fill="#34d399">✓</tspan> <b>step</b> · 默认必含,所有清单页的最小单元</text>
-<text x="70" y="218"><tspan fill="#34d399">✓</tspan> <b>phase-strip</b> · 步骤 ≥ 3 且分布在 ≥ 2 个阶段时启用</text>
-<text x="70" y="236"><tspan fill="#34d399">✓</tspan> <b>scorecard</b> · 含 AC 表的场景必含,作为验收证据</text>
-<text x="70" y="254"><tspan fill="#34d399">✓</tspan> <b>risk-matrix</b> · 含 M/H 风险项时启用,展示影响面</text>
-</g>
-<rect x="565" y="160" width="490" height="100" rx="8" fill="rgba(251,113,133,.04)" stroke="#fb7185" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="585" y="180" fill="#fb7185" font-size="10" font-weight="600">⚠ 反模式</text>
-<g font-size="9" fill="#cbd5e1">
-<text x="585" y="200"><tspan fill="#fb7185">✗</tspan> 6 类全用 → 信息密度过高,削弱重点</text>
-<text x="585" y="218"><tspan fill="#fb7185">✗</tspan> step 类但状态不更新 → 装饰品,失去意义</text>
-<text x="585" y="236"><tspan fill="#fb7185">✗</tspan> risk-matrix 但无可操作缓解 → 形式主义</text>
-<text x="585" y="254"><tspan fill="#fb7185">✗</tspan> gantt 但无里程碑日期 → 误导承诺</text>
-</g>
-</g>
-</svg>
+<yry-scene-footer version="v5.4.0" date="2026-06-22"></yry-scene-footer>
 </div>
-<table class="gate-table">
-<thead>
-<tr><th style="width:80px">组件类</th><th>渲染位置</th><th>对应 AC</th><th>样式 Token</th><th>状态</th><th>覆盖场景</th></tr>
-</thead>
-<tbody>
-<tr>
-<td><span class="g-id A">step</span></td>
-<td>清单面板</td>
-<td>FP1 / AC1</td>
-<td>text-1/2 · bg · border</td>
-<td><span class="g-ok">已交付</span></td>
-<td>所有 7 区域</td>
-</tr>
-<tr>
-<td><span class="g-id A">phase-strip</span></td>
-<td>统计卡区</td>
-<td>AC2</td>
-<td>accent · cyan · text-3</td>
-<td><span class="g-ok">已交付</span></td>
-<td>4/7 区域</td>
-</tr>
-<tr>
-<td><span class="g-id B">scorecard</span></td>
-<td>AC 面板</td>
-<td>AC3</td>
-<td>pass · warn · fail</td>
-<td><span class="g-ok">已交付</span></td>
-<td>5/7 区域</td>
-</tr>
-<tr>
-<td><span class="g-id C">risk-matrix</span></td>
-<td>风险面板</td>
-<td>AC4</td>
-<td>warn · fail · border-strong</td>
-<td><span class="g-warn">3/7 已用</span></td>
-<td>3/7 区域</td>
-</tr>
-<tr>
-<td><span class="g-id C">gantt</span></td>
-<td>时间线面板</td>
-<td>AC4</td>
-<td>accent · border · text-2</td>
-<td><span class="g-warn">2/7 已用</span></td>
-<td>2/7 区域</td>
-</tr>
-<tr>
-<td><span class="g-id D">trend</span></td>
-<td>指标面板</td>
-<td>AC4</td>
-<td>cyan · accent · text-2</td>
-<td><span class="g-warn">1/7 已用</span></td>
-<td>1/7 区域</td>
-</tr>
-</tbody>
-</table>
-<div class="cards" style="margin-top:1rem">
-<div class="card" style="--accent:var(--emerald)">
-<div class="card-header"><div class="card-dot emerald"></div><h3>复用策略</h3><span class="card-sub">P0</span></div>
-<ul>
-<li>所有组件类从 <code>yry-checklist.css</code> 加载,禁止页面内重复定义</li>
-<li>页面专属样式仅在 <code>.container</code> 作用域内追加</li>
-<li>新增组件类需 PR 至 <code>cdn/</code> 目录,经评审通过</li>
-</ul>
-<div class="chip-row"><span class="chip ok">集中管理</span><span class="chip info">可追溯</span></div>
-</div>
-<div class="card" style="--accent:var(--rose)">
-<div class="card-header"><div class="card-dot rose"></div><h3>类名规范</h3><span class="card-sub">BEM</span></div>
-<ul>
-<li>块: <code>.step</code> · <code>.scorecard</code> · <code>.risk-matrix</code></li>
-<li>元素: <code>.step__icon</code> · <code>.step__label</code></li>
-<li>修饰: <code>.step--done</code> · <code>.scorecard--fail</code></li>
-</ul>
-<div class="chip-row"><span class="chip fail">BEM</span><span class="chip warn">不嵌套</span></div>
-</div>
-</div>
-</section>
-<!-- ═══ Tab 5 · 验收里程碑 ═══ -->
-<section class="tab-panel" id="panelMile">
-<div class="diagram-container">
-<svg viewBox="0 0 1100 200" xmlns="http://www.w3.org/2000/svg">
-<defs>
-<pattern id="g5" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width=".5"/></pattern>
-<linearGradient id="mile-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#a78bfa" stop-opacity=".1"/><stop offset="100%" stop-color="#a78bfa" stop-opacity=".02"/></linearGradient>
-</defs>
-<rect width="100%" height="100%" fill="url(#g5)"/>
-<text x="50" y="30" fill="#a78bfa" font-size="11" font-weight="600">🎯 4 个 AC 验收 · SC1-SC4 全部 pass 才算完成</text>
-<text x="1050" y="30" fill="#475569" font-size="9" text-anchor="end">每个 AC 有可验证的通过条件</text>
-<rect x="30" y="50" width="1040" height="130" rx="10" fill="url(#mile-grad)" stroke="#a78bfa" stroke-width="1" stroke-opacity=".4"/>
-<line x1="100" y1="100" x2="1000" y2="100" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="4 3" opacity=".6"/>
-<g>
-<circle cx="180" cy="100" r="14" fill="#020617" stroke="#34d399" stroke-width="2.5"/>
-<path d="M 174 100 L 179 105 L 187 96" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="180" y="145" fill="#34d399" font-size="10" font-weight="600" text-anchor="middle">SC1 · 骨架</text>
-<text x="180" y="160" fill="#cbd5e1" font-size="8" text-anchor="middle">7/7 区域</text>
-
-<circle cx="420" cy="100" r="14" fill="#020617" stroke="#34d399" stroke-width="2.5"/>
-<path d="M 414 100 L 419 105 L 427 96" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="420" y="145" fill="#34d399" font-size="10" font-weight="600" text-anchor="middle">SC2 · CSS 覆盖</text>
-<text x="420" y="160" fill="#cbd5e1" font-size="8" text-anchor="middle">100% 类匹配</text>
-
-<circle cx="660" cy="100" r="14" fill="#020617" stroke="#34d399" stroke-width="2.5"/>
-<path d="M 654 100 L 659 105 L 667 96" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="660" y="145" fill="#34d399" font-size="10" font-weight="600" text-anchor="middle">SC3 · CDN 可达</text>
-<text x="660" y="160" fill="#cbd5e1" font-size="8" text-anchor="middle">4/4 资源 200</text>
-
-<circle cx="900" cy="100" r="14" fill="#020617" stroke="#a78bfa" stroke-width="2.5"/>
-<text x="900" y="105" fill="#a78bfa" font-size="14" font-weight="700" text-anchor="middle">4</text>
-<text x="900" y="145" fill="#a78bfa" font-size="10" font-weight="600" text-anchor="middle">SC4 · Token 干净</text>
-<text x="900" y="160" fill="#cbd5e1" font-size="8" text-anchor="middle">0 占位符残留</text>
-</g>
-</svg>
-</div>
-<div class="timeline">
-<div class="tl-item done">
-<div class="tl-title">SC1 · 7 区域骨架完整 <span class="tl-when done">FP1 → AC1</span></div>
-<div class="tl-meta">度量:逐区域检查模板 HTML</div>
-<div class="tl-desc">目标:7/7 全部存在(CDN 头 · 面包屑 · 场景导航 · 统计卡 · 标签页 · 7 面板 · 脚本)。任一区域缺失即不通过 P0 阻断。<code>grep -c 'class="panel' 计划清单.html</code> ≥ 7。</div>
-</div>
-<div class="tl-item done">
-<div class="tl-title">SC2 · CSS 类覆盖 100% <span class="tl-when done">FP2 → AC2</span></div>
-<div class="tl-meta">度量:模板用类 vs CDN 选择器交叉比对</div>
-<div class="tl-desc">目标:覆盖度 100%。步骤 <code>grep -oE 'class="[^"]+"' 计划清单.html | sort -u</code> 与 <code>cdn/yry-checklist/index.css</code> 选择器集合做差集,差异 ≤ 0。<b>页面专属类</b> 允许独立定义,但需限定在 <code>.container</code> 作用域内。</div>
-</div>
-<div class="tl-item done">
-<div class="tl-title">SC3 · CDN 资源 200 OK <span class="tl-when done">FP3 → AC3</span></div>
-<div class="tl-meta">度量:浏览器 DevTools Network 面板</div>
-<div class="tl-desc">目标:全部 4 资源 HTTP 200。顺序为 <code>shared/index.css</code> → <code>theme/index.css</code> → <code>yry-checklist.css</code> → <code>shared.js</code>。加载顺序错误会导致组件类覆盖主题变量。自动化测试: <code>curl -I -o /dev/null -w "%{http_code}"</code> 4 资源全 200。</div>
-</div>
-<div class="tl-item done">
-<div class="tl-title">SC4 · Token 替换无残留 <span class="tl-when done">FP4 → AC4</span></div>
-<div class="tl-meta">度量:grep 检查占位符</div>
-<div class="tl-desc">目标:0 残留。命令 <code>grep -c '{{' 渲染结果.html</code> 必须为 0。Token 含 <code>{{STORY_NAME}}</code> · <code>{{SCENE_TITLE}}</code> · <code>{{VERSION}}</code> · <code>{{DATE}}</code> · <code>{{CDN_DEPTH}}</code> · <code>{{SCENE_NUM}}</code> 6 类,任一未替换即失败。</div>
-</div>
-<div class="tl-item future">
-<div class="tl-title">AC3 · 响应式断点 <span class="tl-when">3 档</span></div>
-<div class="tl-meta">度量:调整窗口大小观察栅格重排</div>
-<div class="tl-desc">目标:3 断点自适应。<code>≤ 900px</code> 统计卡 6→3 列 · <code>≤ 700px</code> 标签页横向滚动 · <code>≤ 500px</code> 统计卡 3→2 列 · 暗色/亮色基于 <code>prefers-color-scheme</code> 自动切换。</div>
-</div>
-<div class="tl-item future">
-<div class="tl-title">AC4 · 主题切换无错 <span class="tl-when">持续</span></div>
-<div class="tl-meta">度量:切换主题观察样式</div>
-<div class="tl-desc">目标:暗色/亮色切换无样式跳变。所有 token 必须基于 CSS 自定义属性,不允许硬编码 <code>#xxx</code> 色值于组件类中。新增主题通过追加 <code>@media (prefers-color-scheme: ...)</code> 块实现,不改组件定义。</div>
-</div>
-</div>
-<div class="cards">
-<div class="card" style="--accent:var(--emerald)">
-<div class="card-header"><div class="card-dot emerald"></div><h3>验证命令</h3><span class="card-sub">一键</span></div>
-<ul>
-<li>骨架: <code>grep -c 'class="panel' 计划清单.html</code> ≥ 7</li>
-<li>CSS 覆盖: <code>diff &lt;(grep -oE '\.[a-z][a-z0-9-]+' 模板) &lt;(grep -oE '^\.[a-z][a-z0-9-]+' cdn/*.css)</code></li>
-<li>CDN: <code>curl -sI -o /dev/null -w "%{http_code}\n" 4 资源</code></li>
-<li>Token: <code>grep -c '{{' 渲染结果.html</code> = 0</li>
-</ul>
-</div>
-<div class="card" style="--accent:var(--cyan)">
-<div class="card-header"><div class="card-dot cyan"></div><h3>常见失败</h3><span class="card-sub">避坑</span></div>
-<ul>
-<li>❌ SC1 失败: <code>div</code> 缺 <code>class</code> · 或 7 面板被合并为 1</li>
-<li>❌ SC2 失败: 模板用 <code>badge-warn</code> 而 CDN 是 <code>chip.warn</code></li>
-<li>❌ SC3 失败: 路径错(深度 5 写成了 4),404 报错</li>
-<li>❌ SC4 失败: 漏替换 <code>{{SCENE_NUM}}</code> · 残留 <code>{{SCENE_NUM}}</code></li>
-</ul>
-</div>
-<div class="card" style="--accent:var(--violet)">
-<div class="card-header"><div class="card-dot violet"></div><h3>下游约束</h3><span class="card-sub">传递</span></div>
-<ul>
-<li>本场景的 <code>CDN_DEPTH</code> 计算逻辑会被所有子场景继承</li>
-<li>本场景的 6 类组件样式会被场景 2-4 复用,禁止改签名</li>
-<li>本场景的 Token 列表是后续场景的 <b>最小集</b>,可扩展不可删减</li>
-</ul>
-</div>
-</div>
-</section>
-<p class="footer">YrY v4.5 · 系统架构 · 模板架构与 CSS 设计系统 · SC1-SC4 全部 pass</p>
-</div>
-<script src="../../../../cdn/yry-arch/index.js"></script>
 <script src="../../../../cdn/shared/index.js"></script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
 <script src="../../../../cdn/yry-export-toolbar/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
+<script src="../../../../cdn/yry-info-cards/index.js"></script>
 </body>
 </html>

@@ -2,301 +2,84 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Loader 实现 · 演示 · YryBreadcrumb 任务故事</title>
-<link rel="stylesheet" href="../../../shared\/index\.css">
-<link rel="stylesheet" href="../../../theme\/index\.css">
-<link rel="stylesheet" href="../../../yry\-scene\/index\.css">
-<link rel="stylesheet" href="../../../yry\-checklist\/index\.css">
-<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
-<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
-<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
-<link rel="stylesheet" href="../../../yry-back-top/index.css">
-<link rel="stylesheet" href="../../../yry-scene-header/index.css">
-<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
-<link rel="stylesheet" href="../../../yry\-inline\-helpers\/index\.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<link rel="stylesheet" href="../../../yry\-a11y\/index\.css">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Loader实现 · 演示</title>
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-demo.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-stats/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-tabs/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
 <style>
-
-.container { max-width: 1100px; }
+/* Page-specific overrides — shared patterns in shared-b.css */
 </style>
 </head>
 <body>
-<a href="#main" class="skip-link">⏩ 跳到主要内容</a>
-<div class="container" id="main">
-<div id="breadcrumb-app"></div>
-<div id="scene-header-app"></div>
-<div class="tip-box info">
-  <strong>💡 异步加载与事件驱动:</strong> Loader 使用 fetch + DOMParser 异步加载模板，通过 CustomEvent 'yry-breadcrumb-ready' 实现组件与页面的解耦通信。5s 超时保护 + 错误降级，确保组件加载失败不影响页面正常渲染。
-</div>
-<div id="scene-nav-app"></div>
+<div class="yry-container">
+<yry-scene-chrome
+  theme="b"
+  title="💡 {ACCENT} — 演示"
+  title-accent="Loader 实现"
+  subtitle="场景 3 · 版本 vv5.4.0 · 2026-06-22"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-breadcrumb · yry-breadcrumb"},{"label":"场景 3 · Loader实现"},{"label":"💡 演示"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","href":"架构图.html"},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","active":true},{"label":"📝 审查","href":"审查.html"}]'>
+</yry-scene-chrome>
 
-<div id="cross-nav-app"></div>
+<yry-scene-stats items='[{"value":2,"label":"流程图","color":"info"},{"value":50,"label":"数据表","color":"t"},{"value":"vv5.4.0","label":"版本","color":"t"}]'></yry-scene-stats>
 
-<div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-val info">3</div><div class="kpi-label">加载阶段</div></div>
-  <div class="kpi-card"><div class="kpi-val accent">5</div><div class="kpi-label">错误场景</div></div>
-  <div class="kpi-card"><div class="kpi-val pass">全部</div><div class="kpi-label">浏览器兼容</div></div>
-</div>
-
-<h2>加载时序说明</h2>
-<p>Loader 在页面中的加载时序如下。以下为静态文档说明，非实时模拟。</p>
-<table>
-  <thead><tr><th>时间点</th><th>事件</th><th>控制台输出</th><th>状态</th></tr></thead>
-  <tbody>
-    <tr><td>T0</td><td>浏览器解析到 &lt;script src="index.js"&gt;</td><td>—</td><td>开始加载</td></tr>
-    <tr><td>T0 + ~10ms</td><td>IIFE 自执行，检测 window.Vue</td><td><code>[YryBreadcrumb] Vue 3 未加载</code> (若缺失)</td><td>检测中</td></tr>
-    <tr><td>T0 + ~50ms</td><td>fetch index.html 发出请求</td><td>—</td><td>网络请求中</td></tr>
-    <tr><td>T0 + ~200ms</td><td>index.html 返回，DOMParser 解析</td><td>—</td><td>解析中</td></tr>
-    <tr><td>T0 + ~210ms</td><td>window.YryBreadcrumb 被赋值</td><td>—</td><td>组件就绪</td></tr>
-    <tr><td>T0 + ~211ms</td><td>dispatchEvent('yry-breadcrumb-ready')</td><td>—</td><td>事件派发</td></tr>
-    <tr><td>T0 + ~215ms</td><td>Vue.createApp + mount</td><td>—</td><td>渲染完成</td></tr>
-    <tr><td>T0 + 5000ms</td><td>超时触发 (仅网络失败时)</td><td><code>[YryBreadcrumb] 模板加载超时（5s）</code></td><td>降级</td></tr>
-  </tbody>
-</table>
-
-<h2>事件流说明</h2>
-<p>Loader 使用 <code>CustomEvent</code> 实现页面与组件的解耦通信。</p>
-<div class="code-block">
-<div class="cb-head"><span class="cb-lang">JS</span></div>
-<pre><code>// Loader 侧 — 组件就绪后派发
-document.dispatchEvent(new CustomEvent('yry-breadcrumb-ready'));
-
-// 页面侧 — 使用 {once:true} 确保只挂载一次
-if (window.YryBreadcrumb) {
-  mountBreadcrumb();                      // 路径 A：已就绪，直接挂载
-} else {
-  document.addEventListener(              // 路径 B：等待 ready 事件
-    'yry-breadcrumb-ready',
-    mountBreadcrumb,
-    { once: true }                        // 防止重复触发
-  );
-}</code></pre>
-</div>
-
-<h2>错误模拟说明</h2>
-<p>以下描述各类错误场景的诊断行为（本文档为静态说明，不执行实际代码模拟）。</p>
-<table>
-  <thead><tr><th>模拟场景</th><th>如何触发</th><th>预期控制台</th><th>页面行为</th></tr></thead>
-  <tbody>
-    <tr><td>Vue 未加载</td><td>在页面中移除 vue@3 CDN</td><td><code>[YryBreadcrumb] Vue 3 未加载，跳过注册</code></td><td>无面包屑，页面正常渲染</td></tr>
-    <tr><td>网络断开</td><td>DevTools → 离线模式</td><td><code>[YryBreadcrumb] 模板加载失败: Failed to fetch</code></td><td>无面包屑，页面正常渲染</td></tr>
-    <tr><td>超时</td><td>网络节流 → Slow 3G</td><td><code>[YryBreadcrumb] 模板加载超时（5s）</code></td><td>5s 后放弃，无面包屑</td></tr>
-    <tr><td>模板 id 缺失</td><td>修改 index.html 移除 #yry-breadcrumb-tpl</td><td><code>[YryBreadcrumb] 模板元素 #yry-breadcrumb-tpl 未找到</code></td><td>无面包屑，页面正常渲染</td></tr>
-    <tr><td>HTTP 500</td><td>服务器返回 500 错误</td><td><code>[YryBreadcrumb] 模板加载失败: HTTP 500</code></td><td>无面包屑，页面正常渲染</td></tr>
-  </tbody>
-</table>
-
-<h2>关键步骤</h2>
-<div class="walkthrough">
-  <div class="w-step">
-    <div class="ws-body">
-      <div class="ws-title">确定异步加载策略 <span class="ws-time">~15 min</span></div>
-      <div class="ws-desc">分析 CDN 场景下的加载需求：组件必须异步自举，不阻塞页面渲染。选择 IIFE + fetch 方案，确保在 Vue 3 CDN 加载后自动注册。</div>
-      <div class="ws-result">✅ 产出: 异步加载策略文档，IIFE 自举框架</div>
+<yry-scene-tabs tabs='[{"id":"walkthrough","label":"🚶 操作演示"},{"id":"commands","label":"💻 命令列表"},{"id":"screenshots","label":"📸 效果截图"}]'>
+  <div data-panel="walkthrough"><div class="placeholder">数据待填充 — 运行 /rui code 生成</div></div>
+  <div data-panel="commands">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>命令参考</h2>
+      <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
     </div>
   </div>
-  <div class="w-step">
-    <div class="ws-body">
-      <div class="ws-title">实现 fetch + DOMParser 模板提取 <span class="ws-time">~25 min</span></div>
-      <div class="ws-desc">通过 document.currentScript 解析组件路径，fetch index.html 获取模板，DOMParser 解析并提取 #yry-breadcrumb-tpl 模板内容。</div>
-      <div class="ws-result">✅ 产出: Loader 核心代码，模板提取逻辑</div>
-    </div>
-  </div>
-  <div class="w-step">
-    <div class="ws-body">
-      <div class="ws-title">设计 CustomEvent 事件通信 <span class="ws-time">~20 min</span></div>
-      <div class="ws-desc">定义 yry-breadcrumb-ready 自定义事件，组件就绪后 dispatchEvent 通知页面。页面使用 {once:true} 监听，确保单次挂载，防止并发冲突。</div>
-      <div class="ws-result">✅ 产出: 事件通信协议，解耦的页面挂载模式</div>
-    </div>
-  </div>
-  <div class="w-step">
-    <div class="ws-body">
-      <div class="ws-title">5s 超时保护与错误降级 <span class="ws-time">~15 min</span></div>
-      <div class="ws-desc">实现 setTimeout 5s 超时保护，catch 网络错误后 console.warn/error 诊断输出。所有错误场景下页面正常渲染，不抛未捕获异常。</div>
-      <div class="ws-result">✅ 产出: 超时 + 降级机制，5 种错误场景覆盖</div>
-    </div>
-  </div>
+  <div data-panel="screenshots"><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#a78bfa', 'lineColor': '#a78bfa',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    INIT[&quot;① 初始化&lt;br/&gt;检测 Vue 3 全局变量&quot;]:::s --&gt; FETCH[&quot;② 异步加载&lt;br/&gt;fetch index.html + 5s 超时&quot;]:::s
+    FETCH --&gt; PARSE[&quot;③ 解析模板&lt;br/&gt;DOMParser + getElementById&quot;]:::s
+    PARSE --&gt; REGISTER[&quot;④ 注册组件&lt;br/&gt;window.YryBreadcrumb&quot;]:::s
+    REGISTER --&gt; READY[&quot;⑤ 派发事件&lt;br/&gt;yry-breadcrumb-ready&quot;]:::s
+    INIT --&gt;|&quot;Vue 未加载&quot;| WARN[&quot;⚠️ console.warn 降级&quot;]:::warn
+    FETCH --&gt;|&quot;超时/网络失败&quot;| ERR[&quot;❌ console.error 降级&quot;]:::err
+    PARSE --&gt;|&quot;tpl=null&quot;| ERR
+
+    classDef s fill:#2b2d3b,stroke:#3d59a1,color:#a9b1d6
+    classDef warn fill:#fbbf24,color:#000
+    classDef err fill:#ef4444,color:#fff</pre>
+<pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#a78bfa', 'lineColor': '#a78bfa',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+sequenceDiagram
+    participant P as 页面
+    participant L as Loader
+    participant H as index.html
+    P-&gt;&gt;L: &amp;lt;script src&amp;gt;
+    L-&gt;&gt;L: 检测 Vue 3
+    L-&gt;&gt;L: 启动 5s 超时定时器
+    L-&gt;&gt;H: fetch index.html
+    H--&gt;&gt;L: HTML text
+    L-&gt;&gt;L: clearTimeout + DOMParser + getElementById
+    L-&gt;&gt;P: window.YryBreadcrumb
+    L-&gt;&gt;P: yry-breadcrumb-ready 事件
+    P-&gt;&gt;P: {once:true} 监听 → defineCustomElement + mount
+    Note over L,H: 超时/失败路径：catch → console.error，不派发 ready</pre></div>
+</yry-scene-tabs>
+
+<yry-scene-footer version="v5.4.0" date="2026-06-22" docs-link="../../../../docs/index.html"></yry-scene-footer>
 </div>
-
-<div class="next-action">
-  <span class="na-ico">🚀</span>
-  <div class="na-body">
-    <div class="na-title">下一步: 场景 4 · 页面集成</div>
-    <div class="na-desc">将 YryBreadcrumb 组件集成到计划清单 + 28 个场景页，验证 4 种 items 模式、dogfooding 自举和跨页面隔离。</div>
-  </div>
-</div>
-
-<h2>关键命令</h2>
-<div class="cmd-grid">
-  <div class="cmd-card">
-    <div class="cmd-stage">验证</div>
-    <div class="cmd-name">node --check cdn/yry-breadcrumb/index.js</div>
-    <div class="cmd-desc">语法检查，确保 Loader JS 文件无语法错误。exit code 0 = 通过。</div>
-    <span class="cmd-tag">CLI</span>
-  </div>
-  <div class="cmd-card">
-    <div class="cmd-stage">探索</div>
-    <div class="cmd-name">grep "fetch\|DOMParser" cdn/yry-breadcrumb/index.js</div>
-    <div class="cmd-desc">搜索 fetch 和 DOMParser 使用位置，确认异步加载和模板解析逻辑存在。</div>
-    <span class="cmd-tag">CLI</span>
-  </div>
-  <div class="cmd-card">
-    <div class="cmd-stage">通信</div>
-    <div class="cmd-name">grep "CustomEvent" cdn/yry-breadcrumb/index.js</div>
-    <div class="cmd-desc">搜索 CustomEvent 派发代码，确认 yry-breadcrumb-ready 事件通信协议实现。</div>
-    <span class="cmd-tag">CLI</span>
-  </div>
-</div>
-
-<h2>自测</h2>
-<div class="quiz-list">
-  <div class="quiz-card" data-quiz="1">
-    <div class="quiz-q"><span class="q-num">1</span> Loader 使用 DOMParser 的目的是什么？</div>
-    <div class="quiz-opts">
-      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">A</span><span class="opt-text">验证 HTML 语法正确性</span></div>
-      <div class="quiz-opt correct" data-answer="correct"><span class="opt-letter">B</span><span class="opt-text">从 fetch 获取的 HTML 文本中解析并提取模板元素</span></div>
-      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">C</span><span class="opt-text">将 Vue 组件编译为渲染函数</span></div>
-    </div>
-    <div class="quiz-feedback"><strong>✓ 正确!</strong> Loader 通过 fetch 获取 index.html 全文，然后使用 DOMParser 解析 HTML 字符串，从中提取 #yry-breadcrumb-tpl 模板内容供 Vue 使用。</div>
-  </div>
-  <div class="quiz-card" data-quiz="2">
-    <div class="quiz-q"><span class="q-num">2</span> Loader 与页面解耦通信使用的 CustomEvent 名称是？</div>
-    <div class="quiz-opts">
-      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">A</span><span class="opt-text">breadcrumb-loaded</span></div>
-      <div class="quiz-opt correct" data-answer="correct"><span class="opt-letter">B</span><span class="opt-text">yry-breadcrumb-ready</span></div>
-      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">C</span><span class="opt-text">vue-component-mounted</span></div>
-    </div>
-    <div class="quiz-feedback"><strong>✓ 正确!</strong> 组件就绪后通过 document.dispatchEvent(new CustomEvent('yry-breadcrumb-ready')) 派发事件，页面侧使用 {once:true} 确保单次挂载。</div>
-  </div>
-  <div class="quiz-card" data-quiz="3">
-    <div class="quiz-q"><span class="q-num">3</span> Loader 的超时保护设置是多少？超时后如何降级？</div>
-    <div class="quiz-opts">
-      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">A</span><span class="opt-text">3s 超时后重试 1 次</span></div>
-      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">B</span><span class="opt-text">10s 超时后显示错误提示</span></div>
-      <div class="quiz-opt correct" data-answer="correct"><span class="opt-letter">C</span><span class="opt-text">5s 超时，放弃加载，页面正常渲染（无面包屑）</span></div>
-    </div>
-    <div class="quiz-feedback"><strong>✓ 正确!</strong> setTimeout 设置 5s 超时保护，超时后 console.warn 输出诊断信息，放弃加载但页面不抛异常，其余内容正常渲染。</div>
-  </div>
-</div>
-<div class="quiz-score">
-  <div class="qs-big">0/3</div>
-  <div class="qs-sub">完成自测</div>
-</div>
-
-<h2>场景文件</h2>
-<div class="file-grid">
-  <span class="file-item">📋 计划清单.html</span>
-  <span class="file-item">📐 架构图.html</span>
-  <span class="file-item">🔗 知识图谱.html</span>
-  <span class="file-item">📄 源码.html</span>
-  <span class="file-item">🧪 测试面板.html</span>
-  <span class="file-item">💡 演示.html</span>
-  <span class="file-item">📝 审查.html</span>
-</div>
-
-<div class="links-row">
-  <a href="../README.md">📋 场景 README</a>
-  <a href="./index.md">📄 场景正文</a>
-  <a href="../../../yry-breadcrumb/index.html">🍞 组件 Demo</a>
-</div>
-
-<div class="footer">
-  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-3-Loader实现/演示.html</code><br>
-  🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
-</div>
-</div>
-<script src="../../../yry\-quiz\/index\.js"></script>
-
-<script src="../../../shared\/index\.js"></script>
-<!-- ═══ CDN: YrySceneNav 组件 loader ═══ -->
-<script src="../../../yry-scene-nav/index.js"></script>
-<!-- ═══ CDN: YryCrossNav 组件 loader ═══ -->
-<script src="../../../yry-cross-nav/index.js"></script>
-<!-- ═══ CDN: YryBackTop (零配置自初始化) ═══ -->
-<script src="../../../yry-back-top/index.js"></script>
-<!-- ═══ CDN: YryBreadcrumb 组件 loader ═══ -->
-<script src="../../../yry-breadcrumb/index.js"></script>
-<!-- ═══ CDN: YrySceneHeader 组件 loader ═══ -->
-<script src="../../../yry-scene-header/index.js"></script>
-<!-- ═══ CDN: YryStatsGrid 组件 loader ═══ -->
-<script src="../../../yry-stats-grid/index.js"></script>
-
-  <!-- ════════════════════════════════════════════════════════════
-       页面级挂载 · 场景导航 + 交叉导航 + 面包屑 + 统计网格
-       index.js 异步加载模板后派发 yry-*-ready 事件
-       ════════════════════════════════════════════════════════════ -->
-  <script>
-
-  /* ── YryCrossNav 挂载 ── */
-  function mountCrossNav() {
-    if (!window.Vue || !window.YryCrossNav) return;
-    if (!document.getElementById('cross-nav-app')) return;
-    Vue.createApp(window.YryCrossNav, {
-      basePath: './',
-      active: '演示',
-      pages: [
-        { id: '清单', icon: '📋', href: '计划清单.html' },
-        { id: '架构', icon: '📐', href: '架构图.html' },
-        { id: '图谱', icon: '🔗', href: '知识图谱.html' },
-        { id: '源码', icon: '📄', href: '源码.html' },
-        { id: '测试', icon: '🧪', href: '测试面板.html' },
-        { id: '演示', icon: '💡', href: '演示.html' },
-        { id: '审查', icon: '📝', href: '审查.html' }
-      ]
-    }).mount('#cross-nav-app');
-  }
-  if (window.YryCrossNav) mountCrossNav();
-  else document.addEventListener('yry-cross-nav-ready', mountCrossNav, { once: true });
-
-  /* ── YrySceneNav 挂载 ── */
-  function mountSceneNav() {
-    if (!window.Vue || !window.YrySceneNav) return;
-    if (!document.getElementById('scene-nav-app')) return;
-    Vue.createApp(window.YrySceneNav, {
-      items: [
-        { label: '任务故事', href: '../README.md' },
-        { label: '场景 3 · Loader 实现', href: './index.md' },
-        { label: '演示', active: true }
-      ]
-    }).mount('#scene-nav-app');
-  }
-  if (window.YrySceneNav) mountSceneNav();
-  else document.addEventListener('yry-scene-nav-ready', mountSceneNav, { once: true });
-
-  /* ── YrySceneHeader 挂载 ── */
-  function mountSceneHeader() {
-    if (!window.Vue || !window.YrySceneHeader) return;
-    if (!document.getElementById('scene-header-app')) return;
-    Vue.createApp(window.YrySceneHeader, {
-      icon: '💡',
-      prefix: '场景 3',
-      accent: ' · Loader 实现',
-      meta: 'YryBreadcrumb 任务故事 · 场景 3 · Loader Implementation · Demo',
-      desc: 'fetch + DOMParser + ready 事件 + 5s 超时 · 4 文件引用顺序 · 错误处理与降级 · 错误用例与诊断'
-    }).mount('#scene-header-app');
-  }
-  if (window.YrySceneHeader) mountSceneHeader();
-  else document.addEventListener('yry-scene-header-ready', mountSceneHeader, { once: true });
-
-  /* ── YryBreadcrumb 挂载 ── */
-  function mountBreadcrumb() {
-    if (!window.Vue || !window.YryBreadcrumb) return;
-    if (!document.getElementById('breadcrumb-app')) return;
-    Vue.createApp(window.YryBreadcrumb, {
-      ariaLabel: '面包屑导航',
-      items: [
-        { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
-        { label: '任务故事', href: '../README.md' },
-        { label: '场景 3 · Loader 实现' },
-        { label: '演示', icon: '💡' }
-      ]
-    }).mount('#breadcrumb-app');
-  }
-  if (window.YryBreadcrumb) mountBreadcrumb();
-  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
-  </script>
-
+<script src="../../../../cdn/shared/index.js"></script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
+<script src="../../../../cdn/yry-scene-stats/index.js"></script>
+<script src="../../../../cdn/yry-scene-tabs/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
 </body>
 </html>

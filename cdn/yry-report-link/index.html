@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  YryReportLink · 模板源 + Demo 预览页
+
+  本文件有 2 个用途:
+    1) **模板源** — index.js 通过 fetch 拉取本文件,提取 <script type="text/x-template"
+       id="yry-report-link-tpl"> 内容作为 Vue 组件的 template。
+    2) **Demo 预览** — 直接用浏览器打开本文件,即可看到 YryReportLink 的实际渲染效果。
+
+  加载链: ../shared/index.css → ../theme/index.css → index.css → Vue 3 → index.js
+  注: .sr-link 样式来自 docs/index.html 的页面级 CSS,本页 demo 通过内联 style 模拟之
+  ═══════════════════════════════════════════════════════════════════════════
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryReportLink · Demo & Template</title>
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="../yry-inline-helpers/index.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    /* 模拟 docs/index.html 中的 .sr-link 样式 (页面级,非组件自带) */
+    .sr-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 6px;
+      font-size: .74rem;
+      color: var(--yry-text2, #d4d4d4);
+      text-decoration: none;
+      background: rgba(255,255,255,.02);
+      transition: border-color .15s, background .15s;
+    }
+    .sr-link:hover {
+      border-color: var(--yry-accent, #22d3ee);
+      color: var(--yry-accent, #22d3ee);
+      background: rgba(34, 211, 238, .05);
+      text-decoration: none;
+    }
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 900px;
+      margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #22d3ee); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+    .demo-section {
+      margin: 20px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .demo-row:last-child { margin-bottom: 0; }
+  </style>
+</head>
+<body>
+
+  <h1><span class="accent">🔗</span> YryReportLink · Vue 3 评分报告链接</h1>
+  <p class="demo-hint">
+    最小的链接 chip — 4 个 props: <code>href</code> · <code>title</code> · <code>emoji</code> · <code>text</code>。<br>
+    模板源见下方 <code>&lt;script type="text/x-template" id="yry-report-link-tpl"&gt;</code> 块。
+  </p>
+
+  <div class="demo-section">
+    <h3>Demo 1 — 含 emoji 的标准用法</h3>
+    <div class="demo-row">
+      <yry-report-link id="demo-1"></yry-report-link>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h3>Demo 2 — Custom Element 形式</h3>
+    <div class="demo-row">
+      <yry-report-link href="../skills/rui/SKILL.md" emoji="🛡" text="rui"
+                       title="主线编排器 — Gate A/B · 逐模块 P0 清零"></yry-report-link>
+      <yry-report-link href="../skills/rui-code/SKILL.md" emoji="⌨" text="rui-code"
+                       title="代码源码实现管线"></yry-report-link>
+      <yry-report-link href="../skills/rui-init/SKILL.md" emoji="🌱" text="rui-init"
+                       title="项目初始化"></yry-report-link>
+      <yry-report-link href="../skills/rui-yry/SKILL.md" emoji="🧬" text="rui-yry"
+                       title="自主自改进循环"></yry-report-link>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h3>Demo 3 — 无 emoji / 无 title 的最简形式</h3>
+    <div class="demo-row">
+      <yry-report-link id="demo-3a" href="../cdn/index.html" text="CDN 总览"></yry-report-link>
+      <yry-report-link id="demo-3b" href="../cdn/components-manifest/index.html" text="组件清单"></yry-report-link>
+      <yry-report-link id="demo-3c" href="../cdn/changelog/index.html" text="版本日志"></yry-report-link>
+    </div>
+  </div>
+
+  <hr>
+  <p class="demo-hint">👇 以下 <code>&lt;script type="text/x-template"&gt;</code> 即为组件的 <strong>template 源</strong></p>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       TEMPLATE SOURCE OF TRUTH · YryReportLink 的 template
+       ════════════════════════════════════════════════════════════════════ -->
+  <script type="text/x-template" id="yry-report-link-tpl">
+    <a class="sr-link" :href="href" :title="title">
+      <template v-if="emoji">{{ emoji }}&nbsp;</template>{{ text }}
+    </a>
+  </script>
+
+  <script src="../shared/vue-ce-loader.js"></script>
+  <script src="index.js"></script>
+
+  <script>
+    function mountDemos() {
+      /* Demo 1 — Vue.createApp 形式 */
+      Vue.createApp(window.YryReportLink, {
+        href: '健康报告/health-2026-06-22.html',
+        emoji: '🩺',
+        text: '今日健康',
+        title: '2026-06-22 项目综合健康报告 — 20 维加权评分 · D0-D8 诊断'
+      }).mount('#demo-1');
+    }
+    if (window.YryReportLink) mountDemos();
+    else document.addEventListener('yry-report-link-ready', mountDemos, { once: true });
+  </script>
+</body>
+</html>

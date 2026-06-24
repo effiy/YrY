@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>源码 · 组件库与 JS 工具 API · CDN 共享前端资源库</title>
+<link rel="stylesheet" href="../../../shared/index.css">
+<link rel="stylesheet" href="../../../theme/index.css">
+<link rel="stylesheet" href="../../../yry-inline-helpers/index.css">
+<link rel="stylesheet" href="../../../yry-scene/index.css">
+<link rel="stylesheet" href="../../../yry-scene-header/index.css">
+<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
+<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
+<link rel="stylesheet" href="../../../yry-back-top/index.css">
+<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
+<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
+<link rel="stylesheet" href="../../../yry-a11y/index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
+  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
+  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
+  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
+  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
+  .delivery-story { font-size: .72rem; color: #4b5563; }
+  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
+  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
+  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
+  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
+  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
+  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
+  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
+</style>
+</head>
+<body>
+<yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
+<yry-scene-header id="header-app"
+  icon="📄"
+  title-prefix="源码"
+  accent="组件库与 JS 工具 API"
+  meta="📖 CDN 共享前端资源库 · 🎬 组件库与 JS 工具 API"
+  desc="CDN 共享前端资源库 — 组件库与 JS 工具 API 场景的 源码 交付物。查看场景详情与任务分解。">
+</yry-scene-header>
+
+<div class="scene-wrap">
+  <div class="delivery-header">
+    <div class="delivery-icon">📄</div>
+    <div class="delivery-label">源码</div>
+    <div class="delivery-scene">组件库与 JS 工具 API</div>
+    <div class="delivery-story">CDN 共享前端资源库</div>
+  </div>
+
+  <div class="content-card">
+    <h2>📄 组件文件结构 (三文件拆分)</h2>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.74rem;color:#22d3ee;line-height:1.7;margin:0">yry-{component}/
+├── index.html    # 模板源 (Vue template) + Demo 预览
+├── index.js      # Loader: fetch 模板 → defineCustomElement → 派发 ready 事件
+└── index.css     # 组件样式 (使用 --yry-* 设计令牌 + fallback)</pre>
+    <p style="margin-top:12px;font-size:.74rem;color:#a9b1d6">三文件拆分让模板、逻辑、样式各司其职，便于独立测试与按需加载。</p>
+  </div>
+
+  <div class="content-card">
+    <h2>📄 组件注册模式 (以 yry-item-card 为例)</h2>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">// yry-item-card/index.js
+fetch('yry-item-card/index.html')
+  .then(r =&gt; r.text())
+  .then(html =&gt; {
+    const template = html.match(
+      /&lt;template[^&gt;]*&gt;([\s\S]*?)&lt;\/template&gt;/)[1];
+    const YryItemCard = Vue.defineCustomElement({
+      template,
+      props: {
+        icon: String, name: String, badge: String,
+        desc: String, tags: Array, meta: String,
+        links: Array, nameHref: String, nameTarget: String,
+        iconModifier: { type: String, default: 'skill' }
+      },
+      emits: ['item-card-ready']
+    });
+    customElements.define('yry-item-card', YryItemCard);
+    document.dispatchEvent(
+      new CustomEvent('yry-item-card-ready')
+    );
+  });</pre>
+  </div>
+
+  <div class="content-card">
+    <h2>📄 页面消费组件 (双设策略)</h2>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">&lt;!-- HTML --&gt;
+&lt;yry-item-card id="card-1"&gt;&lt;/yry-item-card&gt;
+
+&lt;script&gt;
+  // 第 1 次: 立即赋值 (元素已在 DOM, 组件可能尚未定义)
+  var el = document.getElementById('card-1');
+  el.icon = '🃏';
+  el.name = '组件名';
+  el.desc = '描述';
+  el.tags = ['tag1', 'tag2'];
+
+  // 第 2 次: 监听 ready 事件 (覆盖组件晚于元素出现的场景)
+  document.addEventListener('yry-item-card-ready', function () {
+    el.icon = '🃏';   // 重新赋值确保 props 已被 Vue 接收
+    el.name = '组件名';
+  });
+&lt;/script&gt;</pre>
+    <p style="margin-top:12px;font-size:.74rem;color:#a9b1d6">双设策略覆盖两种时序：组件先就绪时第一次赋值生效；元素先于组件就绪时第二次赋值兜底。</p>
+  </div>
+
+  <div class="content-card">
+    <h2>📄 组件依赖关系</h2>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.74rem;color:#22d3ee;line-height:1.7;margin:0">tag-chip → item-card → card-grid → doc-layer
+                                → story-card
+                                → scene-card</pre>
+    <p style="margin-top:12px;font-size:.74rem;color:#a9b1d6">基础组件 (tag-chip, item-card) 必须先于复合组件 (card-grid, doc-layer) 注册。</p>
+  </div>
+
+  <div class="content-card">
+    <h2>📄 API 错误契约示例</h2>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">// toast: DOM 未就绪时降级到 console.warn
+function toast(msg, type, duration) {
+  var container = document.getElementById('yry-toast-container');
+  if (!container) {
+    console.warn('[toast]', msg);
+    return;
+  }
+  // ... 正常渲染 toast
+}
+
+// copyCmd: 非 https 时退回 execCommand
+function copyCmd(text, el) {
+  if (navigator.clipboard &amp;&amp; window.isSecureContext) {
+    navigator.clipboard.writeText(text);
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  }
+}
+
+// fetchData: 指数退避重试
+function fetchData(url, options, retries) {
+  retries = retries || 3;
+  return fetch(url, options).catch(function (err) {
+    if (retries &lt;= 0) throw err;
+    return new Promise(function (resolve) {
+      setTimeout(function () {
+        resolve(fetchData(url, options, retries - 1));
+      }, Math.pow(2, 4 - retries) * 1000);
+    });
+  });
+}</pre>
+  </div>
+
+  <div class="nav-links">
+    <a class="nav-link" href="计划清单.html">📋 计划清单</a>
+    <a class="nav-link" href="架构图.html">📐 架构图</a>
+    <a class="nav-link" href="知识图谱.html">🔗 知识图谱</a>
+    <a class="nav-link" href="测试面板.html">🧪 测试面板</a>
+    <a class="nav-link current" href="源码.html">📄 源码</a>
+    <a class="nav-link" href="演示.html">💡 演示</a>
+    <a class="nav-link" href="审查.html">📝 审查</a>
+  </div>
+</div>
+
+<yry-cross-nav></yry-cross-nav>
+<yry-back-top></yry-back-top>
+<yry-footer-note version="1.2.0"></yry-footer-note>
+
+<script src="../../../shared/index.js" defer></script>
+<script src="../../../shared/vue-ce-loader.js"></script>
+  <script src="../../../yry-breadcrumb/index.js"></script>
+<script src="../../../yry-scene-header/index.js"></script>
+<script src="../../../yry-scene-nav/index.js"></script>
+<script src="../../../yry-cross-nav/index.js"></script>
+<script src="../../../yry-back-top/index.js"></script>
+<script src="../../../yry-footer-note/index.js"></script>
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    var bc = document.getElementById('breadcrumb-app');
+    if (bc) bc.items = [
+      { label: 'CDN 共享库', icon: '🌐', href: '../../../index.html' },
+      { label: '故事任务面板', icon: '📖', href: '../index.html' },
+      { label: 'CDN 共享前端资源库', icon: '📖', href: '../故事任务.md' },
+      { label: '组件库与 JS 工具 API', icon: '🎬' }
+    ];
+    var sh = document.getElementById('header-app');
+    if (sh) {
+      sh.icon = '📄';
+      sh.titlePrefix = '源码';
+      sh.accent = '组件库与 JS 工具 API';
+      sh.meta = '📖 CDN 共享前端资源库 · 🎬 组件库与 JS 工具 API';
+      sh.desc = 'CDN 共享前端资源库 — 组件库与 JS 工具 API 场景的 源码 交付物。';
+    }
+  });
+</script>
+</body>
+</html>

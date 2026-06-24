@@ -1,0 +1,76 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN · yry-typewriter · 终端打字机效果样式
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 终端容器 ── */
+.typewriter-terminal {
+  background: rgba(15, 23, 42, .95);
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 10px;
+  padding: 20px 24px;
+  font-family: var(--yry-font-mono, 'JetBrains Mono', monospace);
+  font-size: .82rem;
+  line-height: 1.7;
+  color: var(--yry-text2, #a0a0a4);
+  overflow-x: auto;
+  position: relative;
+}
+
+/* ── 终端头部装饰 ── */
+.typewriter-terminal::before {
+  content: '● ● ●';
+  display: block;
+  font-size: .6rem;
+  letter-spacing: 4px;
+  color: rgba(255, 255, 255, .15);
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, .04);
+}
+
+/* ── 命令行 ── */
+.typewriter-line {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.typewriter-prompt {
+  color: var(--yry-pass, #22c55e);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.typewriter-text {
+  color: var(--yry-text, #fafafc);
+}
+
+.typewriter-output {
+  color: var(--yry-text2, #a0a0a4);
+  margin-bottom: 8px;
+  padding-left: 16px;
+}
+
+/* ── 光标动画 ── */
+.typewriter-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 1.1em;
+  background: var(--yry-accent, #FFC107);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: tw-blink 1s step-end infinite;
+}
+
+@keyframes tw-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+
+/* ── 高亮输出 ── */
+.typewriter-output .hl-accent { color: var(--yry-accent, #FFC107); }
+.typewriter-output .hl-pass   { color: var(--yry-pass, #22c55e); }
+.typewriter-output .hl-fail   { color: var(--yry-fail, #ef4444); }
+.typewriter-output .hl-cyan   { color: var(--yry-cyan, #22d3ee); }

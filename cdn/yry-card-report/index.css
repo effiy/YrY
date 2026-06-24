@@ -1,0 +1,199 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   YryCardReport · 卡片分析报告模态框
+   点击 .ydb-score-badge 时打开,展示对应卡片的内容分析
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.ydb-report-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .55);
+  backdrop-filter: blur(2px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity .16s ease;
+}
+.ydb-report-overlay.is-open { opacity: 1; }
+
+.ydb-report-modal {
+  background: var(--yry-bg2, #181a24);
+  color: var(--yry-text, #f5f5f5);
+  border: 1px solid rgba(255, 193, 7, .25);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .5), 0 0 0 1px rgba(255, 255, 255, .04);
+  max-width: 560px;
+  width: 100%;
+  max-height: 85vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(8px) scale(.98);
+  transition: transform .18s ease;
+}
+.ydb-report-overlay.is-open .ydb-report-modal {
+  transform: translateY(0) scale(1);
+}
+
+.ydb-report-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, .06);
+  background: linear-gradient(180deg, rgba(255, 193, 7, .06), transparent);
+}
+.ydb-report-header .ydb-report-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.ydb-report-header .ydb-report-title {
+  font-size: .95rem;
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ydb-report-header .ydb-report-type {
+  font-size: .68rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(255, 193, 7, .12);
+  color: var(--yry-accent, #ffc107);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.ydb-report-close {
+  background: transparent;
+  border: none;
+  color: var(--yry-text3, #888);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1;
+  transition: background .12s ease, color .12s ease;
+}
+.ydb-report-close:hover {
+  background: rgba(255, 255, 255, .08);
+  color: var(--yry-text, #f5f5f5);
+}
+
+.ydb-report-body {
+  padding: 16px 18px 20px;
+  overflow-y: auto;
+  font-size: .82rem;
+  line-height: 1.6;
+}
+
+.ydb-report-section {
+  margin-bottom: 14px;
+}
+.ydb-report-section:last-child { margin-bottom: 0; }
+.ydb-report-section h4 {
+  font-size: .72rem;
+  font-weight: 600;
+  margin: 0 0 8px;
+  color: var(--yry-text3, #888);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.ydb-report-desc {
+  color: var(--yry-text2, #d4d4d4);
+  font-size: .80rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.ydb-report-scores {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.ydb-report-score {
+  background: rgba(255, 255, 255, .03);
+  border: 1px solid rgba(255, 255, 255, .06);
+  border-radius: 8px;
+  padding: 10px 8px;
+  text-align: center;
+}
+.ydb-report-score .ydb-score-label {
+  font-size: .66rem;
+  color: var(--yry-text3, #888);
+  margin-bottom: 4px;
+}
+.ydb-report-score .ydb-score-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.ydb-report-score .ydb-score-grade {
+  font-size: .66rem;
+  margin-top: 3px;
+  opacity: .8;
+}
+.ydb-report-score.is-good .ydb-score-value { color: #22c55e; }
+.ydb-report-score.is-warn .ydb-score-value { color: #f59e0b; }
+.ydb-report-score.is-fail .ydb-score-value { color: #ef4444; }
+
+.ydb-report-analysis {
+  background: rgba(255, 193, 7, .04);
+  border-left: 2px solid rgba(255, 193, 7, .4);
+  padding: 10px 12px;
+  border-radius: 0 6px 6px 0;
+  color: var(--yry-text2, #d4d4d4);
+  font-size: .78rem;
+  line-height: 1.65;
+}
+.ydb-report-analysis strong {
+  color: var(--yry-text, #f5f5f5);
+  font-weight: 600;
+}
+
+.ydb-report-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+.ydb-report-meta .ydb-meta-chip {
+  font-size: .66rem;
+  padding: 2px 7px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, .05);
+  color: var(--yry-text2, #d4d4d4);
+}
+
+.ydb-report-scenes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+.ydb-report-scenes .ydb-scene-tag {
+  font-size: .68rem;
+  padding: 2px 7px;
+  border-radius: 3px;
+  background: rgba(59, 130, 246, .12);
+  color: #93c5fd;
+}
+
+.ydb-report-footer {
+  padding: 10px 18px;
+  border-top: 1px solid rgba(255, 255, 255, .06);
+  font-size: .68rem;
+  color: var(--yry-text3, #888);
+  text-align: right;
+}
+
+@media (max-width: 480px) {
+  .ydb-report-scores { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .ydb-report-score { padding: 8px 4px; }
+  .ydb-report-score .ydb-score-value { font-size: .95rem; }
+  .ydb-report-body { padding: 12px 14px 16px; font-size: .78rem; }
+}

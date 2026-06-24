@@ -4,7 +4,7 @@
  */
 
 import { NODE_ARGV_OFFSET } from "../../../lib/constants.mjs";
-import { showPluginHelp } from "../../../lib/plugin-utils.mjs";
+import { showPluginHelp } from "../../../lib/io.mjs";
 import { SKILL_NAME } from "./config.mjs";
 
 export function parseArgs() {

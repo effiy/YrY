@@ -5,7 +5,7 @@
 
 import { readFile } from "node:fs/promises";
 import { CONCURRENCY } from "../../../lib/constants.mjs";
-import { runConcurrent } from "../../../lib/concurrency.mjs";
+import { runConcurrent } from "../../../lib/io.mjs";
 import { resolveRemotePath } from "./scan.mjs";
 import { writeRemoteFile, createSession, updateSession } from "./api.mjs";
 

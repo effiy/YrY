@@ -3,337 +3,89 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>验证报告与健康面板集成 — 审查报告 v4.5</title>
+<title>验证报告与健康面板集成 · 审查</title>
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/theme/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-page-nav/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-review/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-review-base.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-stats/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-health-bar/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-tabs/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-review-cards/index.css">
+<style>
+.yry-container{max-width:1120px}
+</style>
 </head>
 <body>
-<div class="container">
+<div class="yry-container">
+<yry-scene-chrome
+  theme="b"
+  title="📝 {ACCENT} — 审查报告"
+  title-accent="场景 3 · 验证报告与健康面板集成"
+  subtitle="审查日期 2026-06-22 · 版本 vv5.4.0 · 场景 3"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-checklist · 故事任务"},{"label":"场景 3 · 验证报告与健康面板集成"},{"label":"📝 审查"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","href":"架构图.html"},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","active":true}]'>
+</yry-scene-chrome>
 
-<script type="application/json" id="yry-page-config">
-{"story": "yry-checklist · 清单与自循环", "scene": {"num": "3", "name": "验证报告与健康面板集成", "dir": "场景-3-验证报告与健康面板集成"}, "depth": "../../../", "scenes": [{"num": "1", "name": "模板架构与 CSS 设计系统", "dir": "场景-1-模板架构与CSS设计系统"}, {"num": "2", "name": "清单交互组件实现", "dir": "场景-2-清单交互组件实现"}, {"num": "3", "name": "验证报告与健康面板集成", "dir": "场景-3-验证报告与健康面板集成"}, {"num": "4", "name": "批量生成与自循环机制", "dir": "场景-4-批量生成与自循环机制"}], "pages": [{"type": "清单", "icon": "📋", "file": "计划清单.html"}, {"type": "架构", "icon": "📐", "file": "架构图.html"}, {"type": "图谱", "icon": "🔗", "file": "知识图谱.html"}, {"type": "源码", "icon": "📄", "file": "源码.html"}, {"type": "测试", "icon": "🧪", "file": "测试面板.html"}, {"type": "演示", "icon": "💡", "file": "演示.html"}, {"type": "审计", "icon": "📝", "file": "审查.html"}], "page": {"type": "审计", "icon": "📝", "file": "审查.html"}}
-</script>
-<div id="yry-nav"></div>
-<script src="../../../../cdn/yry-page-nav/index.js"></script>
+<yry-scene-stats items='[{"value":"14/8","label":"诊断通过","color":"health"},{"value":"D0-D8","label":"覆盖范围","color":"t"},{"value":-6,"label":"改进建议","color":"warn-h"}]'></yry-scene-stats>
+<yry-scene-health-bar segments='[{"pct":175,"cls":"strength"},{"pct":-75,"cls":"gap"}]'></yry-scene-health-bar>
 
-<div class="header">
-  <h1>📝 <span class="accent">验证报告与健康面板集成</span> — 审查报告</h1>
-  <p class="sub">基于 验证报告与健康面板集成 场景规约 v4.5 综合评审</p>
-  <div class="meta-row">
-    <span class="meta-chip">📅 审查日期 <strong>2026-06-13</strong></span>
-    <span class="meta-chip">�️ 版本 <strong>v4.5</strong></span>
-    <span class="meta-chip">🤖 审查人 <strong>arch-reviewer Agent</strong></span>
-    <span class="meta-chip">� 维度 <strong>4 维 × 6 项</strong></span>
-    <span class="meta-chip">📄 范围 <strong>index.md · 0 用例 · 0 源</strong></span>
-  </div>
-</div>
-
-<div class="stats-grid">
-  <div class="stat-card"><div class="val health">82%</div><div class="lbl">🏥 综合健康度</div><div class="delta flat">— 持平基线</div></div>
-  <div class="stat-card"><div class="val health">80%</div><div class="lbl">📋 完整性</div><div class="delta up">↑ 4% vs v4.5</div></div>
-  <div class="stat-card"><div class="val health">85%</div><div class="lbl">� 一致性</div><div class="delta up">↑ 2% vs v4.5</div></div>
-  <div class="stat-card"><div class="val warn-h">72%</div><div class="lbl">🔍 可追溯</div><div class="delta down">↓ 3% vs v4.5</div></div>
-  <div class="stat-card"><div class="val health">90%</div><div class="lbl">💬 表达力</div><div class="delta up">↑ 1% vs v4.5</div></div>
-  <div class="stat-card"><div class="val fail-h">2</div><div class="lbl">🚨 P1 阻断</div><div class="delta down">需立即修复</div></div>
-  <div class="stat-card"><div class="val info-h">3</div><div class="lbl">� 可自动修复</div><div class="delta flat">~ 50% 自动化</div></div>
-  <div class="stat-card"><div class="val warn-h">4.2h</div><div class="lbl">⏱️ 修复成本</div><div class="delta flat">2 人 · 1 迭代</div></div>
-</div>
-
-<div class="bar-wrap">
-  <div class="bar-outer">
-    <div class="seg strength" style="width:33%"></div>
-    <div class="seg gap" style="width:33%"></div>
-    <div class="seg suggestion" style="width:33%"></div>
-  </div>
-  <div class="bar-legend">
-    <span><span class="dot strength"></span>✅ 4 优势（值得推广）</span>
-    <span><span class="dot gap"></span>❌ 4 缺口（需修复）</span>
-    <span><span class="dot suggestion"></span>⚠️ 2 建议（增量改进）</span>
-  </div>
-</div>
-
-<div class="tabs">
-  <span class="tab on" data-panel="overview">📊 总览</span>
-  <span class="tab" data-panel="good">✅ 好案例 <span class="tab-badge pass">4</span></span>
-  <span class="tab" data-panel="bad">❌ 坏案例 <span class="tab-badge">4</span></span>
-  <span class="tab" data-panel="risk">⚠️ 风险矩阵</span>
-  <span class="tab" data-panel="recommendations">� 改进建议</span>
-  <span class="tab" data-panel="actionplan">🎯 行动计划</span>
-  <span class="tab" data-panel="fixdiffs">� 修复示例</span>
-  <span class="tab" data-panel="methodology">📐 方法论</span>
-  <span class="tab" data-panel="evidence">📎 证据链</span>
-</div>
-
-<!-- ═══ Tab 1 · Overview ═══ -->
-<div class="panel on" id="panelOverview">
-  <div class="dim-card">
-    <h3>📋 完整性 Completeness <span class="dim-score" style="color:var(--pass)">80%</span></h3>
-    <div class="dim-bar"><div class="dim-bar-inner" style="width:80%;background:var(--pass)"></div></div>
-    <ul>
-      <li class="pass">覆盖 5 个主要价值点 · 0 个涉及模块</li>
-      <li class="pass">0 个测试用例（正常 0 + 边界 0）</li>
-      <li class="warn">未标注版本/平台/前置依赖</li>
-      <li class="warn">验收标准（DoD）定义模糊</li>
-      <li class="fail">缺少失败模式与故障排查</li>
-    </ul>
-  </div>
-
-  <div class="dim-card">
-    <h3>🔗 一致性 Consistency <span class="dim-score" style="color:var(--pass)">85%</span></h3>
-    <div class="dim-bar"><div class="dim-bar-inner" style="width:85%;background:var(--pass)"></div></div>
-    <ul>
-      <li class="pass">0 个涉及模块均已标注本场景角色</li>
-      <li class="pass">术语与「验证报告与健康面板集成」领域语对齐</li>
-      <li class="warn">部分命令未与 SKILL.md 签名一一校验</li>
-      <li class="warn">跨场景引用偶有版本不一致</li>
-    </ul>
-  </div>
-
-  <div class="dim-card">
-    <h3>🔍 可追溯 Traceability <span class="dim-score" style="color:var(--warn)">72%</span></h3>
-    <div class="dim-bar"><div class="dim-bar-inner" style="width:72%;background:var(--warn)"></div></div>
-    <ul>
-      <li class="warn">关键操作缺少预期输出与可见信号</li>
-      <li class="warn">0 个源文件未全部建立 file:// 链接</li>
-      <li class="fail">错误码与退出码未文档化</li>
-    </ul>
-  </div>
-
-  <div class="dim-card">
-    <h3>💬 表达力 Expressiveness <span class="dim-score" style="color:var(--pass)">90%</span></h3>
-    <div class="dim-bar"><div class="dim-bar-inner" style="width:90%;background:var(--pass)"></div></div>
-    <ul>
-      <li class="pass">"验证报告与健康面板集成" 概念定义清晰 · 0 个价值点结构化</li>
-      <li class="pass">步骤式导航，渐进式学习曲线合理</li>
-      <li class="warn">标题层级偶有跳跃（H2 → H4）</li>
-    </ul>
-  </div>
-<div class="dim-card" style="margin-top:14px">
-    <h3>📅 里程碑 <span style="font-size:.7rem;font-weight:400;color:var(--text3);margin-left:auto">Milestones</span></h3>
-    <ul>
-      <li class="pass"><strong>2026-06-15</strong> — P1 全部修复（FIX-001 / FIX-002），综合健康度 → 90%+</li>
-      <li class="warn"><strong>2026-06-20</strong> — P2 全部修复（FIX-003 / FIX-004），可追溯性 → 85%+</li>
-      <li class="warn"><strong>2026-07-13</strong> — P3 全部完成（FIX-005 / FIX-006），可达性 → 95%</li>
-      <li class="pass"><strong>2026-07-15</strong> — 复审：综合健康度目标 ≥ 92%，可追溯性 ≥ 88%</li>
-    </ul>
-  </div>
-</div>
-<!-- ═══ Tab 7 · Fix Diffs ═══ -->
-<div class="panel" id="panelFixdiffs">
-<div class="fix-diff">
-    <h4>补全预期输出</h4>
-    <div class="diff-pair">
-      <div class="diff-before"><span class="diff-label">修复前</span><pre>npm run dev</pre></div>
-      <div class="diff-after"><span class="diff-label">修复后</span><pre>npm run dev  # 期望：[ready] http://localhost:3000</pre></div>
+<yry-scene-tabs tabs='[{"id":"overview","label":"📊 总览"},{"id":"good","label":"✅ 好案例"},{"id":"bad","label":"❌ 坏案例"},{"id":"recommendations","label":"📝 改进建议"},{"id":"evidence","label":"📎 证据链"}]'>
+  <div data-panel="overview"><h2>§0 技术评审</h2><p>数据可视化组件将结构化验证数据转化为直观的图表——KPI 卡片、风险热力图、趋势迷你图、分数卡和门禁判定块，让计划清单从任务追踪升级为质量总控面板。</p><h3>效果示意</h3><p><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    VRF[&quot;§3 测试报告&quot;]:::d --&gt; KPI[&quot;KPI 卡片&lt;br/&gt;通过/失败/警告&quot;]:::v
+    RISK[&quot;§6 风险表&quot;]:::d --&gt; HEAT[&quot;5×5 热力图&lt;br/&gt;影响×概率&quot;]:::v
+    IMP[&quot;§4 自改进&quot;]:::d --&gt; TREND[&quot;趋势柱状图&lt;br/&gt;评分时序&quot;]:::v
+    KPI --&gt; SCORE[&quot;分数卡&lt;br/&gt;0-100 加权分&quot;]:::v
+    classDef d fill:#1e1f2b,stroke:#3d59a1,color:#a9b1d6
+    classDef v fill:#f59e0b,color:#000</pre></p><h3>数据流架构</h3><table><thead><tr><th>数据源</th><th>提取方式</th><th>目标组件</th><th>刷新频率</th></tr></thead><tbody><tr><td>场景 §3 测试报告</td><td>表格解析 → 通过/失败/跳过计数</td><td>KPI 卡片</td><td>页面加载时</td></tr><tr><td>场景 §6 风险表</td><td>表格解析 → 影响×概率矩阵</td><td>5×5 热力图</td><td>页面加载时</td></tr><tr><td>场景 §4 自改进</td><td>列表解析 → D0-D8 诊断状态</td><td>趋势柱状图</td><td>页面加载时</td></tr><tr><td>健康报告 JSON</td><td>fetch → 评分数据</td><td>分数卡</td><td>每 5 分钟</td></tr></tbody></table><h3>组件渲染策略</h3><table><thead><tr><th>组件</th><th>渲染方式</th><th>降级策略</th></tr></thead><tbody><tr><td>KPI 卡片</td><td>CSS Grid 纯 CSS</td><td>数据缺失显示 <code>—</code> 占位</td></tr><tr><td>风险热力图</td><td>CSS Grid + 颜色编码 (绿→黄→红)</td><td>无数据时显示空网格</td></tr><tr><td>趋势柱状图</td><td>CSS bar-chart (纯 CSS 无 JS 依赖)</td><td>数据 < 3 点时显示散点</td></tr><tr><td>分数卡</td><td>加权算法计算</td><td>无数据时显示 <code>N/A</code></td></tr><tr><td>门禁判定块</td><td>条件渲染 (通过/阻断/警告)</td><td>无判定时显示 <code>待评估</code></td></tr></tbody></table><h3>角色链与门禁策略（与 <code>架构图.html</code> 决策链/实现链/闭环链一致）</h3><h4>决策链 · 3 角色</h4><table><thead><tr><th>阶段</th><th>角色</th><th>验收信号</th><th>失败处理</th></tr></thead><tbody><tr><td>RED 验证</td><td>tester</td><td>失败用例先于实现 · <code>node tests/run.mjs</code> 全绿</td><td>修复 → 重提 · 不允许跳过</td></tr><tr><td>评审收敛</td><td>reviewer</td><td>反馈 ≤ 2 轮 · 无 P0 遗留</td><td>超限 → 升级 architect 介入</td></tr><tr><td>安全审计</td><td>security</td><td>无明文凭据/注入/依赖漏洞</td><td>立即回滚 + P0 修复任务</td></tr></tbody></table><h4>实现链 · 5 角色</h4><table><thead><tr><th>阶段</th><th>角色</th><th>输入</th><th>输出</th></tr></thead><tbody><tr><td>数据采集</td><td>pm</td><td>场景 §3/§4/§6 表格</td><td>结构化数据 JSON</td></tr><tr><td>组件设计</td><td>coder</td><td>数据 JSON + 设计稿</td><td>5 组件 BEM 结构</td></tr><tr><td>渲染实现</td><td>coder</td><td>BEM + CSS Grid</td><td>零依赖纯 CSS 图表</td></tr><tr><td>降级保护</td><td>coder</td><td>边界条件清单</td><td>6 种降级状态</td></tr><tr><td>响应式适配</td><td>coder</td><td>3 断点规格</td><td>移动端堆叠</td></tr></tbody></table><h4>闭环链 · 2 角色</h4><table><thead><tr><th>阶段</th><th>角色</th><th>验收信号</th><th>失败处理</th></tr></thead><tbody><tr><td>交付收口</td><td>deliverer</td><td>日志+同步+通知 三件套齐备</td><td>补齐缺失项后重提</td></tr><tr><td>效果评估</td><td>self-improve</td><td>E1-E4 评估闭环</td><td>提案入库 · 下轮迭代</td></tr></tbody></table><h3>门禁通过策略（与 <code>架构图.html</code> 通过策略段一致）</h3><table><thead><tr><th>门禁</th><th>判定规则</th><th>阻断信号</th></tr></thead><tbody><tr><td>Gate A</td><td>测试设计先于实现 · 每 FP ≥ 3 类用例</td><td>用例数不足 · 缺边界用例</td></tr><tr><td>Gate B</td><td>全部 TC 通过 · 0 P0 失败</td><td>任何 TC 失败 · P0 未清零</td></tr><tr><td>降级门禁</td><td>Hard 阻断必须修复 · Medium/Soft 可降级但必须记录</td><td>Hard 项未修复就进入下一模块</td></tr><tr><td>反馈门禁</td><td>门禁结果加入 self-improve 反馈输入</td><td>失败 TC 无根因分析</td></tr></tbody></table><h3>常见阻断（与 <code>架构图.html</code> 常见阻断段一致）</h3><table><thead><tr><th>阻断类型</th><th>触发条件</th><th>修复路径</th></tr></thead><tbody><tr><td>数据源缺失</td><td>场景 §3/§4/§6 表格未生成</td><td>先完成前置场景 · 再回此场景</td></tr><tr><td>颜色编码错乱</td><td>热力图色板与 KPI 状态色板不一致</td><td>统一引用 <code>cdn/tokens/index.css</code> 真相源</td></tr><tr><td>降级崩溃</td><td>空数据时抛错</td><td>先设计降级 · 再实现正常态</td></tr><tr><td>响应式溢出</td><td>移动端卡片超出视口</td><td><code>grid-template-columns: repeat(auto-fit, minmax(...))</code> 自适应</td></tr></tbody></table></div>
+  <div data-panel="good">
+    <div class="case-card good">
+      <h4>✅ <span class="case-tag good">好案例</span> 文档基线完整</h4>
+      <div class="case-loc">📁 cdn/yry-checklist/场景-3-验证报告与健康面板集成/index.md</div>
+      <div class="case-desc">场景文档包含完整的 §0-§4 章节结构，技术评审含 mermaid 效果示意图和基线溯源表。</div>
     </div>
   </div>
-<div class="fix-diff">
-    <h4>添加 file:// 链接</h4>
-    <div class="diff-pair">
-      <div class="diff-before"><span class="diff-label">修复前</span><pre>见 modules/</pre></div>
-      <div class="diff-after"><span class="diff-label">修复后</span><pre>见 [modules/](../modules/)（可点击）</pre></div>
+  <div data-panel="bad">
+    <div class="case-card bad">
+      <h4>❌ <span class="case-tag bad">待审查</span> 需运行 /rui code 生成实施数据</h4>
+      <div class="case-loc">📁 cdn/yry-checklist/场景-3-验证报告与健康面板集成/index.md §2-§4</div>
+      <div class="case-desc">§2 实施报告、§3 测试报告、§4 自改进章节数据待填充。运行 /rui code 后重新审查。</div>
     </div>
   </div>
-<div class="fix-diff">
-    <h4>标注版本依赖</h4>
-    <div class="diff-pair">
-      <div class="diff-before"><span class="diff-label">修复前</span><pre>需要 Node</pre></div>
-      <div class="diff-after"><span class="diff-label">修复后</span><pre>需要 Node ≥ 18.17.0（见 package.json#engines）</pre></div>
-    </div>
+  <div data-panel="recommendations">
+    <div class="rec-grid"><h2>§4 自改进</h2>
+<ul><li>[x] 趋势图标注行列含义</li>
+<li>[x] 分数卡分项与总分的数学一致性验证</li>
+<li>[x] 空数据降级渲染完善（6 种降级状态覆盖）</li>
+<li>[ ] 暗色主题下热力图颜色适配（P2）</li>
+<li>[ ] 趋势图支持多指标叠加对比（P2）</li></ul></div>
   </div>
-<div class="fix-diff">
-    <h4>失败模式说明</h4>
-    <div class="diff-pair">
-      <div class="diff-before"><span class="diff-label">修复前</span><pre>报错请重试</pre></div>
-      <div class="diff-after"><span class="diff-label">修复后</span><pre>ENOENT → 检查路径；EACCES → sudo 或改写权限；ENV_NOT_SET → 重新 export</pre></div>
-    </div>
-  </div>
-<!-- ═══ Tab 8 · Methodology ═══ -->
-<div class="panel" id="panelMethodology">
-  <div class="method-card">
-    <h3>📐 审查方法论 <span style="font-size:.7rem;font-weight:400;color:var(--text3);margin-left:auto">Review Methodology</span></h3>
-    <p>本次审查围绕「验证报告与健康面板集成」场景，结合内部规约 v4.5 与可观察信号，从 4 个核心维度、6 项关键发现展开系统评估。</p>
-    <div class="method-steps">
-      <div class="method-step">
-        <div class="num">STEP 1</div>
-        <div class="title">范围界定</div>
-        <div class="desc">明确审查对象（index.md · 8 节 · ~620 行），划定边界</div>
-      </div>
-      <div class="method-step">
-        <div class="num">STEP 2</div>
-        <div class="title">维度建模</div>
-        <div class="desc">建立 4 维评估模型：完整性·一致性·可追溯·表达力</div>
-      </div>
-      <div class="method-step">
-        <div class="num">STEP 3</div>
-        <div class="title">证据收集</div>
-        <div class="desc">grep / 人工走查 / 模拟新人路径，收集 32 条原始证据</div>
-      </div>
-      <div class="method-step">
-        <div class="num">STEP 4</div>
-        <div class="title">严重度评级</div>
-        <div class="desc">采用 CRITICAL/MAJOR/MINOR/SUGGEST 四级分类</div>
-      </div>
-      <div class="method-step">
-        <div class="num">STEP 5</div>
-        <div class="title">风险映射</div>
-        <div class="desc">将 6 项发现映射到 5×5 风险矩阵，确定处理顺序</div>
-      </div>
-      <div class="method-step">
-        <div class="num">STEP 6</div>
-        <div class="title">建议与行动</div>
-        <div class="desc">每项发现配建议+工作量+负责人+SLA+验收标准</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="method-card">
-    <h3>🎯 评分标准 <span style="font-size:.7rem;font-weight:400;color:var(--text3);margin-left:auto">Scoring Rubric</span></h3>
-    <p>每个维度采用 0-100 分制，按下表规则打分。最终综合健康度为 4 维加权平均（权重 25% / 25% / 30% / 20%）。</p>
-    <table class="rubric-table">
-      <thead>
-        <tr>
-          <th style="width:18%">维度</th>
-          <th style="width:14%">权重</th>
-          <th style="width:14%">等级</th>
-          <th style="width:14%">分数段</th>
-          <th>判定标准</th>
-        </tr>
-      </thead>
-      <tbody>
-<tr>
-    <td>A1</td>
-    <td>补全 验证报告与健康面板集成 关键步骤的预期输出与失败排查</td>
-    <td>1h</td>
-    <td>架构师</td>
-    <td>S+1</td>
-    <td><span class="status-pill pending">待开始</span></td>
-    <td>可点击 + 可执行</td>
-  </tr>
-<tr>
-    <td>A2</td>
-    <td>建立 验证报告与健康面板集成 涉及 0 模块的 file:// 链接矩阵</td>
-    <td>2h</td>
-    <td>Coder</td>
-    <td>S+1</td>
-    <td><span class="status-pill pending">待开始</span></td>
-    <td>可点击 + 可执行</td>
-  </tr>
-<tr>
-    <td>A3</td>
-    <td>回归 0 个正常路径用例的自动化检查</td>
-    <td>4h</td>
-    <td>Reviewer</td>
-    <td>S+1</td>
-    <td><span class="status-pill pending">待开始</span></td>
-    <td>可点击 + 可执行</td>
-  </tr>
-<tr>
-    <td>A4</td>
-    <td>补充 0 个边界/异常路径文档</td>
-    <td>1d</td>
-    <td>PM</td>
-    <td>S+1</td>
-    <td><span class="status-pill pending">待开始</span></td>
-    <td>可点击 + 可执行</td>
-  </tr>
-<tr>
-    <td>A5</td>
-    <td>推进 0 个源文件的命名规范与目录收敛</td>
-    <td>2d</td>
-    <td>QA</td>
-    <td>S+1</td>
-    <td><span class="status-pill pending">待开始</span></td>
-    <td>可点击 + 可执行</td>
-  </tr>
-<tr>
-    <td>A6</td>
-    <td>将本场景的 D0–D7 诊断项并入下一轮计划清单</td>
-    <td>3d</td>
-    <td>Agent</td>
-    <td>S+1</td>
-    <td><span class="status-pill pending">待开始</span></td>
-    <td>可点击 + 可执行</td>
-  </tr>
-</tbody>
-    </table>
-  </div>
-
-  <div class="method-card">
-    
-</div>
-<!-- ═══ Tab 9 · Evidence ═══ -->
-<div class="panel" id="panelEvidence">
-  <div class="suite open">
-    <div class="suite-head"><span class="s-arrow">▶</span><span class="s-name">📎 审查证据清单</span><span class="s-badge pass">12 项</span></div>
-    <div class="suite-body">
-      <ul class="ev-list">
-        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>预期输出缺失：</strong><code>grep -rn '预期输出\|你应该看到\|expected output' ../../../yry-arch/scenes/index.md → 0 results</code></span></li>
-        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>FAQ 缺失：</strong><code>grep -rn 'FAQ\|常见问题\|故障排查\|troubleshoot' ../../../yry-arch/scenes/index.md → 0 results</code></span></li>
-        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>DoD 缺失：</strong><code>grep -rn '验收清单\|Definition of Done\|DoD' ../../../yry-arch/scenes/index.md → 0 results</code></span></li>
-        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>错误码未文档：</strong><code>grep -rn 'exit code\|退出码\|errno' ../../../yry-arch/scenes/index.md → 0 results</code></span></li>
-        <li><span class="ev-icon">✅</span><span class="ev-text"><strong>命令一致性：</strong>场景中的 13 个命令示例与各 skill SKILL.md 中的命令签名 100% 一致</span></li>
-        <li><span class="ev-icon">✅</span><span class="ev-text"><strong>目录结构：</strong>导览路径与实际仓库目录树匹配（skills/ agents/ rules/ docs/ tests/）</span></li>
-        <li><span class="ev-icon">✅</span><span class="ev-text"><strong>术语对齐：</strong>首验证任务 / 上手流程 / 验收 等 17 个核心术语与 <code>docs/术语表.md</code> 100% 对齐</span></li>
-        <li><span class="ev-icon">✅</span><span class="ev-text"><strong>Mermaid 流程图：</strong><code>index.md#L42-L58</code> 5 节点流程图渲染正确，包含预估耗时</span></li>
-        <li><span class="ev-icon">📊</span><span class="ev-text"><strong>模拟新人路径：</strong>3 名测试者首次走查平均耗时 52 分钟，2/3 人在"安装依赖"和"配置 token"卡住</span></li>
-        <li><span class="ev-icon">📊</span><span class="ev-text"><strong>历史问题统计：</strong>近 3 月 onboarding 相关 issue 23 个，按频率排序 TOP 3：ENV_NOT_SET(7)、git 权限(5)、Node 版本(3)</span></li>
-        <li><span class="ev-icon">📊</span><span class="ev-text"><strong>问卷调查：</strong>7 名入职 ≤ 90 天工程师反馈"故障 FAQ"是最高需求（5/7 选择）</span></li>
-        <li><span class="ev-icon">🔗</span><span class="ev-text"><strong>外部参考：</strong>对比 Google Boost &amp; EngProd、GitHub Docs Style Guide、Stripe Atlas 三家最佳实践</span></li>
+  <div data-panel="evidence">
+    <div class="dim-card">
+      <h3>📎 审查证据清单</h3>
+      <ul>
+        <li><strong>场景文档:</strong> index.md 存在，含 §0-§4 章节</li>
+        <li><strong>版本:</strong> vv5.4.0 · 2026-06-22</li>
+        <li><strong>故事:</strong> yry-checklist · 故事任务</li>
       </ul>
     </div>
   </div>
+</yry-scene-tabs>
 
-  <div class="suite">
-    <div class="suite-head"><span class="s-arrow">▶</span><span class="s-name">🛠️ 复现脚本</span><span class="s-badge info">3 步</span></div>
-    <div class="suite-body">
-      <p style="font-size:.76rem;color:var(--text2);margin-bottom:8px">其他审查者可通过以下命令复现本次审查：</p>
-      <pre style="background:rgba(0,0,0,.3);border-radius:6px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text2);line-height:1.6">
-# Step 1: 完整性扫描
-grep -rn '预期输出\|你应该看到' ../../../yry-arch/scenes/index.md
-grep -rn 'FAQ\|故障排查' ../../../yry-arch/scenes/index.md
-grep -rn 'Definition of Done\|验收清单' ../../../yry-arch/scenes/index.md
-
-# Step 2: 一致性校验
-for cmd in rui-验证报告与健康面板集成 rui-story rui-config npm git; do
-  echo "=== $cmd ==="
-  grep -rn "$cmd" ../../../yry-arch/scenes/index.md | wc -l
-done
-
-# Step 3: 自动生成退出码表
-./tools/extract-exit-codes.sh --output ../../../yry-arch/scenes/index.md
-</pre>
-    </div>
-  </div>
-
-  <div class="suite">
-    <div class="suite-head"><span class="s-arrow">▶</span><span class="s-name">📈 历次审查趋势</span><span class="s-badge info">4 版本</span></div>
-    <div class="suite-body">
-      <p style="font-size:.76rem;color:var(--text2);margin-bottom:8px">近 4 个版本的健康度变化：</p>
-      <table class="rubric-table" style="margin-top:0">
-        <thead>
-          <tr><th>版本</th><th>综合</th><th>完整</th><th>一致</th><th>可追溯</th><th>表达力</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>v4.5 (2026-04)</td><td class="score-cell score-c">68%</td><td>62%</td><td>78%</td><td>55%</td><td>82%</td></tr>
-          <tr><td>v4.5 (2026-05)</td><td class="score-cell score-c">75%</td><td>72%</td><td>82%</td><td>63%</td><td>85%</td></tr>
-          <tr><td>v4.5 (2026-06-初)</td><td class="score-cell score-b">80%</td><td>76%</td><td>83%</td><td>75%</td><td>89%</td></tr>
-          <tr><td><strong>v4.5 (当前)</strong></td><td class="score-cell score-b"><strong>82%</strong></td><td><strong>80%</strong></td><td><strong>85%</strong></td><td><strong>72%</strong></td><td><strong>90%</strong></td></tr>
-        </tbody>
-      </table>
-      <p style="font-size:.7rem;color:var(--text3);margin-top:8px"><strong>趋势分析：</strong>完整性/一致性/表达力持续提升；可追溯性本版本微降（-3%），因新增 DoD/退出码/FAQ 三个待办后暴露出更多缺口。</p>
-    </div>
-  </div>
+<yry-scene-footer version="v5.4.0" date="2026-06-22" docs-link="../../../../docs/index.html"></yry-scene-footer>
 </div>
-
-<div class="footer">
-  📄 YrY v4.5 · <a href="../../../index.html">文档中心</a>
-  <div class="sig">本报告由 code-reviewer Agent 自动生成 · 模板 v4.5 · 加密指纹 <code style="font-family:'JetBrains Mono',monospace">sha256:7c4a...f3d1</code></div>
-</div>
-</div>
-<script src="../../../../cdn/yry-review/index.js"></script>
 <script src="../../../../cdn/shared/index.js"></script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
+<script src="../../../../cdn/yry-scene-stats/index.js"></script>
+<script src="../../../../cdn/yry-scene-health-bar/index.js"></script>
+<script src="../../../../cdn/yry-scene-tabs/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
+<script src="../../../../cdn/yry-review-cards/index.js"></script>
 </body>
 </html>

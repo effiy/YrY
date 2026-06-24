@@ -17,28 +17,55 @@
   <style>
     body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
     h1 { font-size: 1.4rem; color: var(--yry-accent, #FFC107); }
+    h2 { font-size: 1rem; color: var(--yry-text, #fafafc); margin-top: 28px; border-bottom: 1px solid rgba(255,255,255,.06); padding-bottom: 8px; }
     pre { background: rgba(0,0,0,.3); padding: 10px 14px; border-radius: 6px; font-size: .76rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; }
+    .demo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin: 12px 0; }
+    .demo-tag { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: .68rem; margin: 2px; }
+    .demo-tag.pass { background: rgba(34,197,94,.15); color: var(--yry-pass, #22c55e); }
+    .demo-tag.warn { background: rgba(245,158,11,.15); color: var(--yry-warn, #f59e0b); }
+    .demo-tag.fail { background: rgba(239,68,68,.15); color: var(--yry-fail, #ef4444); }
   </style>
 </head>
 <body>
   <h1>📝 yry-review · 审查报告</h1>
-  <p>审查报告页: .dim-card / .case-card / .risk-matrix / .action-table / .rec-grid / .scorecard / .method-card / .rubric-table / .ev-list。JS 提供 tab + suite 自动折叠。</p>
+  <p>审查报告页样式: 维度卡片 · 风险矩阵 · 行动表 · 评分卡 · 方法卡片 · 评估列表。JS 提供 tab + suite 自动折叠。</p>
 
   <h2>载入</h2>
   <pre>&lt;link rel="stylesheet" href="../../../../cdn/yry-review/index.css"&gt;
 &lt;script src="../../../../cdn/yry-review/index.js"&gt;&lt;/script&gt;</pre>
 
-  <h2>演示 suite 折叠</h2>
-  <div class="suite">
-    <div class="s-head">
-      <strong>▸ 维度 A:架构</strong>
-    </div>
-    <div class="s-body" style="padding: 12px 18px; font-size: .84rem;">
-      这是 suite 折叠内容。
-    </div>
+  <h2>CSS 类速查</h2>
+  <div class="demo-grid">
+    <div><span class="demo-tag pass">.dim-card</span> 维度卡片</div>
+    <div><span class="demo-tag pass">.case-card</span> 案例卡片</div>
+    <div><span class="demo-tag warn">.risk-matrix</span> 风险矩阵</div>
+    <div><span class="demo-tag pass">.action-table</span> 行动表</div>
+    <div><span class="demo-tag pass">.rec-grid</span> 推荐网格</div>
+    <div><span class="demo-tag pass">.scorecard</span> 评分卡</div>
+    <div><span class="demo-tag pass">.method-card</span> 方法卡片</div>
+    <div><span class="demo-tag fail">.rubric-table</span> 评分表</div>
+    <div><span class="demo-tag pass">.ev-list</span> 评估列表</div>
+    <div><span class="demo-tag pass">.suite</span> 折叠套件</div>
   </div>
 
-  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · yry-review · 2026</p>
+  <h2>演示: suite 折叠 (点击展开)</h2>
+  <div class="suite">
+    <div class="s-head"><strong>▸ 维度 A: 架构合规</strong></div>
+    <div class="s-body" style="padding:12px 18px;font-size:.84rem">审查内容: 内核体积约束 · 范式合规 · 扩展隔离</div>
+  </div>
+  <div class="suite">
+    <div class="s-head"><strong>▸ 维度 B: 安全面</strong></div>
+    <div class="s-body" style="padding:12px 18px;font-size:.84rem">审查内容: 认证不可绕过 · 密钥不落盘 · 输入必校验</div>
+  </div>
+
+  <h2>状态标签</h2>
+  <div>
+    <span class="demo-tag pass">✓ 通过 (7项)</span>
+    <span class="demo-tag warn">⚠ 警告 (2项)</span>
+    <span class="demo-tag fail">✗ 失败 (0项)</span>
+  </div>
+
+  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · yry-review · 17KB CSS · 2026</p>
 
   <script src="index.js"></script>
 </body>

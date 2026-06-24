@@ -40,7 +40,8 @@
   <a :href="href" :class="'dep-badge type-' + type" :target="target || undefined">{{ label }}</a>
 </script>
 
-<script src="index.js"></script>
+<script src="../shared/vue-ce-loader.js"></script>
+  <script src="index.js"></script>
 <script>
 function mountAll() {
   if (!window.YryDepBadge) return;

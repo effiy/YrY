@@ -71,7 +71,7 @@ function extractTestCases(content) {
 function extractIssuesAndRecs(content) {
   const issues = [];
   const recs = [];
-  const secNames = ['D0–D7 诊断', 'D0-D7 诊断', '诊断摘要', '改进清单', '改进提案'];
+  const secNames = ['D0–D8 诊断', 'D0-D8 诊断', '诊断摘要', '改进清单', '改进提案'];
   for (const secName of secNames) {
     const sec = extractSection(content, secName);
     if (!sec) continue;

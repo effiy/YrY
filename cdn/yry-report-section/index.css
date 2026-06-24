@@ -1,0 +1,10 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryReportSection · 评分报告 Section 容器样式
+
+   本组件渲染 <section class="score-report"> + sr-header + sr-intro-box +
+   sr-links + sr-footer-note,样式由 docs/index.html 页面级 CSS 提供。
+   本文件留空以保持组件目录结构一致;如需独立样式可在此添加。
+
+   页面级 .sr-* 样式位置:
+     docs/index.html (内联 <style> 段 555-728 行附近)
+   ═══════════════════════════════════════════════════════════════════════════ */

@@ -60,7 +60,10 @@ function findStoryDir(projectRoot, storyName) {
 }
 
 function findSceneDirs(storyDir) {
-  const entries = readdirSync(storyDir, { withFileTypes: true });
+  // Check for scenes/ subdirectory first (cdn/yry-*/scenes/ structure)
+  const scenesSubdir = join(storyDir, 'scenes');
+  const searchDir = existsSync(scenesSubdir) ? scenesSubdir : storyDir;
+  const entries = readdirSync(searchDir, { withFileTypes: true });
   return entries
     .filter(d => d.isDirectory() && /^场景-\d+-/.test(d.name))
     .map(d => d.name)
@@ -116,7 +119,8 @@ async function main() {
   let totalSkipped = 0;
 
   for (const sceneDir of targetScenes) {
-    const scenePath = join(storyDir, sceneDir);
+    const scenesSubdir = existsSync(join(storyDir, 'scenes')) ? 'scenes' : '';
+    const scenePath = scenesSubdir ? join(storyDir, scenesSubdir, sceneDir) : join(storyDir, sceneDir);
     console.log(cyan(`  ${sceneDir}/`));
 
     // Extract data from index.md

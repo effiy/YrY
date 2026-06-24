@@ -12,8 +12,10 @@ lifecycle: default-pipeline
 > **--help / -h**：执行 `node skills/rui-npm/help.mjs` 输出完整帮助（含命令族全景 + 场景示例）。用户输入 `/rui-npm --help` 或 `/rui-npm -h` 或 `/rui-npm help` 时，跳过逻辑，直接运行脚本。
 >
 > 哲学源自 [CLAUDE.md](../../CLAUDE.md)。
+>
+> **单一职责**：npm 包生命周期管理。不负责代码质量分析（[rui-analysis](../rui-analysis/)），不负责依赖可视化（[rui-bundle-analyze](../rui-bundle-analyze/)）。
 
-[命令族全景](#命令族全景) · [子命令](#子命令) · [核心规则](#核心规则) · [降级策略](#降级策略) · [生效标志](#生效标志)
+[命令族全景](#命令族全景) · [子命令](#子命令) · [典型工作流](#典型工作流) · [核心规则](#核心规则) · [降级策略](#降级策略) · [生效标志](#生效标志) · [自循环](#自循环)
 
 ## 命令族全景
 
@@ -89,9 +91,60 @@ flowchart TD
 - **[commands/account.md](commands/account.md)** — login, my-packages, deprecate, unpublish
 - **[commands/tools.md](commands/tools.md)** — npx, audit, cdn
 
+## 典型工作流
+
+### 工作流 1：发现并安装包
+
+```
+步骤 1: /rui-npm search <keyword>     → 搜索候选包
+步骤 2: /rui-npm info <pkg>           → 查看包详情（版本/许可证/依赖/维护者）
+步骤 3: /rui-npm install <pkg>        → 安装到当前项目
+步骤 4: /rui-npm list                 → 确认安装成功
+```
+
+### 工作流 2：发布本地包
+
+```
+步骤 1: /rui-npm login --token <tk>   → npm 认证（一次性）
+步骤 2: /rui-npm publish <path>       → 发布到 npm registry
+步骤 3: /rui-npm npx <pkg>            → 验证发布成功（npx 可直接运行）
+```
+
+### 工作流 3：安全审计与维护
+
+```
+步骤 1: /rui-npm audit                → 安全漏洞扫描
+步骤 2: /rui-npm update <pkg>         → 更新有漏洞的包
+步骤 3: /rui-npm audit                → 重新审计确认修复
+```
+
+### 工作流 4：废弃旧包
+
+```
+步骤 1: /rui-npm my-packages          → 查看我的所有包
+步骤 2: /rui-npm deprecate <pkg> "msg" → 标记废弃（推荐，可逆）
+步骤 3: /rui-npm unpublish <pkg>      → 彻底删除（不可逆，需确认）
+```
+
+### 工作流 5：CDN 引用
+
+```
+步骤 1: /rui-npm cdn <pkg>[@version]  → 获取 unpkg/jsDelivr/esm.sh 地址
+步骤 2: 复制地址到 HTML <script> 标签
+步骤 3: 添加 integrity + crossorigin 属性（安全要求）
+```
+
 ## 核心规则
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart LR
     subgraph 写前检查["写操作前置条件"]
         direction TB
@@ -101,47 +154,94 @@ flowchart LR
     end
     subgraph 错误处理["错误处理"]
         direction TB
-        R3["网络失败 → 友好提示"]:::rule
-        R4["包不存在 → 建议搜索"]:::rule
+        R4["网络失败 → 友好提示"]:::rule
+        R5["包不存在 → 建议搜索"]:::rule
     end
     subgraph 输出["输出约束"]
         direction TB
-        R5["表格化优先"]:::rule
-        R6["--json 标志支持"]:::rule
+        R6["表格化优先"]:::rule
+        R7["--json 标志支持"]:::rule
     end
 
     classDef rule fill:#3d59a1,color:#fff
 ```
 
-| # | 规则 | 违反行为 |
-|---|------|---------|
-| 1 | install/uninstall/update/list/audit 前验证 package.json 存在 | 提示用户先执行 `npm init` |
-| 2 | publish/deprecate/unpublish 前验证 `npm whoami` 成功 | 提示用户先执行 `rui-npm login --token <token>` |
-| 3 | deprecate/unpublish 前验证当前用户是包所有者 | 提示用户非所有者无法操作，展示当前维护者列表 |
-| 4 | 网络不可达时输出友好提示和手动 URL | 标注 `网络不可达` |
-| 5 | 包不存在 registry 时建议搜索确认拼写 | 输出 `包不存在，建议 /rui-npm search <kw>` |
-| 6 | 查询结果默认表格化输出，`--json` 标志输出原始 JSON | — |
-| 7 | publish 时检查 registry 同名冲突 | 提示用户改名或使用 `--access` |
-| 8 | unpublish 执行前展示安全警告（不可逆操作） | 提示用户优先使用 deprecate |
+| # | 规则 | 违反行为 | 设计理由 |
+|---|------|---------|---------|
+| 1 | install/uninstall/update/list/audit 前验证 package.json 存在 | 提示用户先执行 `npm init` | 无 package.json 的目录不是 npm 项目 |
+| 2 | publish/deprecate/unpublish 前验证 `npm whoami` 成功 | 提示用户先执行 `rui-npm login --token <token>` | 写操作需要认证 |
+| 3 | deprecate/unpublish 前验证当前用户是包所有者 | 提示用户非所有者无法操作，展示当前维护者列表 | 防止越权操作 |
+| 4 | 网络不可达时输出友好提示和手动 URL | 标注 `网络不可达` | 不阻塞用户，提供替代方案 |
+| 5 | 包不存在 registry 时建议搜索确认拼写 | 输出 `包不存在，建议 /rui-npm search <kw>` | 帮助用户快速纠错 |
+| 6 | 查询结果默认表格化输出，`--json` 标志输出原始 JSON | — | 可读性 + 可管线消费 |
+| 7 | publish 时检查 registry 同名冲突 | 提示用户改名或使用 `--access` | 防止意外覆盖 |
+| 8 | unpublish 执行前展示安全警告（不可逆操作） | 提示用户优先使用 deprecate | 保护用户免受不可逆操作 |
 
 ## 降级策略
 
-| 情况 | 降级行为 |
-|------|---------|
-| npm CLI 不可用 | 输出 `未检测到 npm，请先安装 Node.js` |
-| npm 版本 < 7.0.0 | 警告 `npm 版本过旧，建议升级至 7.x+` |
-| npm registry 不可达 | 输出错误详情 + 手动访问 `https://www.npmjs.com/` 引导 |
-| npm 未认证（写操作） | 提示 `请先执行 rui-npm login --token <token>` |
-| package.json 不存在（写操作） | 提示 `当前目录无 package.json，请先执行 npm init` |
-| 目录无 package.json（publish 目录模式） | 交互式生成 package.json 后继续 |
-| npm audit 无网络 | 跳过审计，标注 `无网络连接，跳过安全审计` |
-| deprecate/unpublish 非包所有者 | 展示当前维护者列表，拒绝操作 |
-| unpublish 超 72 小时无 --force | 提示需 --force 标志，引导使用 deprecate |
-| my-packages registry API 不可达 | 降级使用 `npm access ls-packages` |
+| 情况 | 降级行为 | 恢复方式 |
+|------|---------|---------|
+| npm CLI 不可用 | 输出 `未检测到 npm，请先安装 Node.js` | 安装 Node.js |
+| npm 版本 < 7.0.0 | 警告 `npm 版本过旧，建议升级至 7.x+` | 升级 npm |
+| npm registry 不可达 | 输出错误详情 + 手动访问 `https://www.npmjs.com/` 引导 | 等待恢复或切换 registry |
+| npm 未认证（写操作） | 提示 `请先执行 rui-npm login --token <token>` | 执行 login |
+| package.json 不存在（写操作） | 提示 `当前目录无 package.json，请先执行 npm init` | 执行 npm init |
+| 目录无 package.json（publish 目录模式） | 交互式生成 package.json 后继续 | 生成 package.json |
+| npm audit 无网络 | 跳过审计，标注 `无网络连接，跳过安全审计` | 网络恢复后重试 |
+| deprecate/unpublish 非包所有者 | 展示当前维护者列表，拒绝操作 | 联系包所有者 |
+| unpublish 超 72 小时无 --force | 提示需 --force 标志，引导使用 deprecate | 使用 --force 或 deprecate |
+| my-packages registry API 不可达 | 降级使用 `npm access ls-packages` | 等待 API 恢复 |
 
+## 测试
+
+> npm 包管理的命令路由、前置条件验证、安全审计和错误处理模型的自动化验证。
+
+### 运行测试
+
+```bash
+npx vitest run skills/rui-npm/tests/          # 全量运行
+npx vitest skills/rui-npm/tests/              # 监听模式
+npx vitest run --coverage skills/rui-npm/tests/  # 覆盖率报告
+```
+
+### 测试文件
+
+| 文件 | 测试范围 | 类型 |
+|------|---------|:---:|
+| `tests/rui-npm.test.mjs` | 命令路由、前置条件验证、安全审计、错误处理 | 单元 |
+
+### 测试策略
+
+| 层级 | 范围 | 要求 |
+|------|------|------|
+| **命令路由测试** | 13 个子命令的参数解析和路由 | 每个命令有对应测试 |
+| **前置条件测试** | package.json 存在、npm 认证、包所有权 | 每种前置条件有测试 |
+| **安全测试** | publish 冲突检测、unpublish 确认、token 不入库 | 安全关键路径 |
+| **错误处理测试** | 网络不可达、包不存在、版本过旧 | 每种错误有友好提示验证 |
+
+### 覆盖要求
+
+| 维度 | 最低阈值 | 目标 |
+|------|:---:|:---:|
+| 命令覆盖 | 100% | 13 个子命令各有测试 |
+| 前置条件 | 100% | 3 种前置条件验证 |
+| 核心规则 | 100% | 8 条规则各有验证 |
+| 降级路径 | ≥ 80% | 9 种降级情况各有测试 |
+
+## 规则
+
+- [npm-management.md](./rules/npm-management.md) — 个人 npm packages 管理的规则和约束
 ## 生效标志
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart LR
     S1["命令入口统一<br/>所有操作通过 rui-npm.mjs"]:::sig --> S2["输出结构化<br/>表格优先，JSON 可选"]:::sig
     S2 --> S3["错误友好<br/>每种失败有明确提示和恢复建议"]:::sig
@@ -170,5 +270,57 @@ flowchart LR
 | 推荐间隔 | `0 8 * * 1`（每周一早 8 点） |
 | 触发条件 | 当前目录存在 package.json |
 | 终止条件 | 连续 2 次 audit 无新增漏洞 |
-| 迭代动作 | `npm audit` → 对比上次结果 → 有新增漏洞时告警 |
+| 迭代动作 | ① `npm audit` → ② 对比上次结果 → ③ 有新增漏洞时告警 → ④ 生成修复建议 |
+| 告警条件 | 新增 Critical/High 漏洞 |
 | 收敛判定 | 无 Critical/High 新增漏洞 |
+
+### 自循环工作流
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
+flowchart TD
+    A["⏰ 定时触发"]:::entry --> B{"package.json 存在?"}
+    B -->|"否"| C["跳过"]:::done
+    B -->|"是"| D["npm audit"]:::op
+    D --> E{"有新增漏洞?"}
+    E -->|"是"| F{"含 Critical?"}
+    F -->|"是"| G["推送告警"]:::warn
+    F -->|"否"| H["生成修复建议"]:::op
+    G --> H
+    E -->|"否"| I{"连续正常 ≥2 次?"}
+    I -->|"是"| J["终止循环"]:::done
+    I -->|"否"| A
+
+    classDef entry fill:#3d59a1,color:#fff
+    classDef op fill:#2b2d3b,stroke:#3d59a1,color:#a9b1d6
+    classDef warn fill:#fbbf24,color:#000
+    classDef done fill:#34d399,color:#000
+```
+
+> 本技能 `checkMode: "cli"`——由 dispatcher 按 `0 8 * * 1` 自动调度。6 字段契约与调度规则详见 [rules/loop-engineering.md](../rui/rules/loop-engineering.md)。
+
+## 与 rui 的关系
+
+`/rui-npm` 是独立于 rui 编排管线的工具技能。不属于故事管线（init → doc → plan → code → update → yry），用户按需手动调用。被 rui-health 的依赖健康维度和 rui-analysis 的依赖新鲜度检查引用。
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6', 'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1', 'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    NPM["/rui-npm<br/>包管理 · 发布 · 审计"]:::phase --> INSTALL["install/update/uninstall"]:::op
+    NPM --> PUBLISH["publish 本地发布"]:::op
+    HEALTH["rui-health"]:::sub -.->|"引用依赖数据"| NPM
+
+    classDef phase fill:#2b2d3b,stroke:#3d59a1,color:#a9b1d6
+    classDef op fill:#2b2d3b,stroke:#3d59a1,color:#a9b1d6
+    classDef sub fill:#7c3aed,color:#fff
+```

@@ -246,7 +246,7 @@ flowchart LR
 | DRY | 无重复定义（≥2 处） | 相似度检测脚本 |
 | YAGNI | 每个 lib export ≥ 2 调用方 | `grep -r "export\|from.*lib/" lib/` |
 | 组合 | 无 class/extends | `grep -r "class \|extends " lib/ skills/` |
-| 扩展至上 | 内核文件数在约束内 | `ls lib/*.mjs | wc -l` |
+| 扩展至上 | 内核文件数在约束内 | `ls lib/*.mjs \| wc -l` |
 | 可健康检测 | 新原则有验证命令 | 审查 |
 
 **反例**：

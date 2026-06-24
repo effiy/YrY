@@ -6,19 +6,19 @@
 
 (function() {
   var DIAG_LABELS = {
-    D0: '基线偏离', D1: '缓存退化', D2: '质量退化', D3: '上下文退化',
-    D4: '依赖过期', D5: '外部趋势', D6: '文档过时', D7: '测试缺口', D8: '架构退化'
+    D0: '基线偏离', D1: '效率退化', D2: '质量退化', D3: '复杂度增长',
+    D4: '流程退化', D5: '依赖退化', D6: '文档过时', D7: '配置漂移', D8: '架构退化'
   };
   var DIAG_DESCS = {
-    D0: '配置/规约偏离基线',
-    D1: '记忆/缓存文件退化',
-    D2: '代码质量指标下降',
-    D3: '上下文/文档膨胀',
-    D4: '依赖版本过期风险',
-    D5: '外部技术趋势变化',
-    D6: '文档与代码不一致',
-    D7: '测试覆盖率不足',
-    D8: '架构范式偏离'
+    D0: '执行与基线冲突，哲学偏离',
+    D1: '阻断率偏高，管线执行效率下降',
+    D2: 'P0 密度上升，代码质量指标退化',
+    D3: '文件膨胀，圈复杂度超过阈值',
+    D4: 'Gate B 多轮回溯，交付失败率高',
+    D5: '依赖版本过期，工具调用失败率偏高',
+    D6: '文档与代码不一致，证据等级降级',
+    D7: '配置漂移，提案闭合率偏低',
+    D8: '架构范式违规，内核体积膨胀'
   };
   var DIM_LABELS = {
     token: 'Token 安全', config: '配置健康', robots: '机器人就绪', api: 'API 可达',
@@ -28,9 +28,9 @@
     comp_qual: '组件质量'
   };
 
-  function scoreClr(s) { return s >= 80 ? 'var(--yry-pass)' : s >= 60 ? 'var(--yry-warn)' : 'var(--yry-fail)'; }
-  function scoreGrade(s) { return s >= 85 ? 'A' : s >= 70 ? 'B' : s >= 55 ? 'C' : 'D'; }
-  function scoreCls(s) { return s >= 85 ? 'A' : s >= 70 ? 'B' : s >= 55 ? 'C' : 'D'; }
+  function scoreClr(s) { return s >= 90 ? 'var(--yry-pass)' : s >= 75 ? 'var(--yry-warn)' : 'var(--yry-fail)'; }
+  function scoreGrade(s) { return s >= 90 ? 'A' : s >= 75 ? 'B' : s >= 60 ? 'C' : 'D'; }
+  function scoreCls(s) { return s >= 90 ? 'A' : s >= 75 ? 'B' : s >= 60 ? 'C' : 'D'; }
 
   var currentPeriod = 'daily';
 
@@ -104,7 +104,7 @@
     var latest = ah.latest;
     var scores = latest.scores || {};
     var dimTrends = ah.dimTrends || {};
-    var passClr = latest.composite >= 80 ? 'var(--yry-pass)' : latest.composite >= 60 ? 'var(--yry-warn)' : 'var(--yry-fail)';
+    var passClr = latest.composite >= 90 ? 'var(--yry-pass)' : latest.composite >= 75 ? 'var(--yry-warn)' : 'var(--yry-fail)';
 
     // Summary row
     var html = '<div class="arch-summary">' +
@@ -133,7 +133,7 @@
       var trendVal = dimTrends[k] ? dimTrends[k].trend : undefined;
       var trendHtml = '';
       if (trendVal !== undefined) {
-        trendHtml = '<span class="arch-dim-trend" style="color:' + (trendVal >= 80 ? 'var(--yry-pass)' : trendVal >= 60 ? 'var(--yry-warn)' : 'var(--yry-fail)') + '">均 ' + trendVal + '</span>';
+        trendHtml = '<span class="arch-dim-trend" style="color:' + (trendVal >= 90 ? 'var(--yry-pass)' : trendVal >= 75 ? 'var(--yry-warn)' : 'var(--yry-fail)') + '">均 ' + trendVal + '</span>';
       }
       return '<div class="arch-dim-item">' +
         '<span class="arch-dim-dot" style="background:' + clr + '"></span>' +
@@ -255,10 +255,10 @@
       '</div>';
 
     html += '<div class="trend-legend">' +
-      '<span><span class="dot" style="background:var(--yry-pass)"></span> A 级 (≥85)</span>' +
-      '<span><span class="dot" style="background:#4ade80"></span> B 级 (70-84)</span>' +
-      '<span><span class="dot" style="background:var(--yry-warn)"></span> C 级 (55-69)</span>' +
-      '<span><span class="dot" style="background:var(--yry-fail)"></span> D 级 (&lt;55)</span>' +
+      '<span><span class="dot" style="background:var(--yry-pass)"></span> A 级 (≥90)</span>' +
+      '<span><span class="dot" style="background:#4ade80"></span> B 级 (75-89)</span>' +
+      '<span><span class="dot" style="background:var(--yry-warn)"></span> C 级 (60-74)</span>' +
+      '<span><span class="dot" style="background:var(--yry-fail)"></span> D 级 (&lt;60)</span>' +
       '<span style="margin-left:auto;color:var(--yry-text3)">悬停圆点查看详情</span>' +
       '</div>';
 
@@ -313,7 +313,7 @@
 
         // 2. 平均评分
         var avgScore = weekly.length > 0 ? Math.round(weekly.reduce(function(s, w) { return s + (w.avgScore || 0); }, 0) / weekly.length) : (latest.composite || 0);
-        var avgClr = avgScore >= 80 ? 'pass' : avgScore >= 60 ? 'warn' : 'fail';
+        var avgClr = avgScore >= 90 ? 'pass' : avgScore >= 75 ? 'warn' : 'fail';
 
         // 3. 诊断解决率 = (历史触发 - 当前活跃) / 历史触发
         var totalDiagTriggers = diagSummary.reduce(function(s, d) { return s + (d.count || 0); }, 0);
@@ -362,14 +362,30 @@
         var degRate = totalDims > 0 ? Math.round(degradingDims / totalDims * 100) : 0;
         var degClr = degRate === 0 ? 'pass' : degRate <= 15 ? 'warn' : 'fail';
 
+        // 9. Stabilization status
+        var stab = data.stabilization || {};
+        var stabStatus = stab.status || 'stable';
+        var stabLabel = stabStatus === 'converging' ? '收敛中' : stabStatus === 'stable' ? '稳定' : '发散中';
+        var stabClr = stabStatus === 'converging' ? 'pass' : stabStatus === 'stable' ? 'info' : 'fail';
+        var stabDesc = stab.description || '系统评分波动性分析';
+
+        // 10. Confidence-adjusted score
+        var confAdj = data.confidenceAdjusted || {};
+        var confScore = confAdj.adjustedScore !== undefined ? confAdj.adjustedScore : (latest.composite || 0);
+        var confLevel = confAdj.level || 'medium';
+        var confClr = confLevel === 'high' ? 'pass' : confLevel === 'medium' ? 'warn' : 'fail';
+        var confDiscount = confAdj.discount || 0;
+
         var html = '';
         var kpis = [
           { label: '闭环数', value: loops, suffix: '次观察→评估完整闭环', cls: 'info', valCls: 'info' },
           { label: '平均评分', value: avgScore, suffix: '周聚合均值 / 100', cls: avgClr, valCls: avgClr },
+          { label: '置信调整分', value: confScore, suffix: '可靠性调整后 (' + confLevel + ' 置信度, -' + confDiscount + '%)', cls: confClr, valCls: confClr },
           { label: '诊断解决率', value: resolveRate + '%', suffix: '已清零 / 历史触发', cls: resolveClr, valCls: resolveClr },
           { label: '维度改善率', value: improveRate + '%', suffix: improvingDims + ' / ' + totalDims + ' 维度改善', cls: improveClr, valCls: improveClr },
           { label: '维度复发率', value: recRate + '%', suffix: degradingDims + ' / ' + totalDims + ' 维度退化', cls: recClr, valCls: recClr },
           { label: 'MTTR', value: mttr, suffix: '从触发到恢复的估算', cls: mttrClr, valCls: mttrClr },
+          { label: '系统稳定性', value: stabLabel, suffix: stabDesc.slice(0, 24), cls: stabClr, valCls: stabClr },
           { label: '技能化条目', value: skillCount, suffix: 'E4 候选 + ≥3 次诊断', cls: skillClr, valCls: skillClr },
           { label: '退化维度占比', value: degRate + '%', suffix: degradingDims + ' 维度处于下降趋势', cls: degClr, valCls: degClr }
         ];
@@ -385,7 +401,7 @@
       })();
 
       // Stats
-      var scClr = latest.composite >= 80 ? 'pass' : latest.composite >= 60 ? 'warn' : 'fail';
+      var scClr = latest.composite >= 90 ? 'pass' : latest.composite >= 75 ? 'warn' : 'fail';
       var gradeClr = {A:'pass', B:'pass', C:'warn', D:'fail'}[latest.grade] || 'info';
       var trigCount = (latest.triggeredDiags || []).length;
       var trigClr = trigCount === 0 ? 'pass' : 'warn';
@@ -534,11 +550,11 @@
           var trend = av.trend || 0;
           var avg = av.avgScore || s;
           // Skip perfect scores (no improvement needed)
-          if (s >= 85 && trend >= 0) return;
+          if (s >= 90 && trend >= 0) return;
           // Severity score: 0-100 based on score + trend
           var sev = (100 - s) * 0.7 + (trend < 0 ? Math.abs(trend) * 0.3 : 0);
           // Priority: P0 (score<55) / P1 (score<70) / P2 (score<85)
-          var pri = s < 55 ? 'p0' : s < 70 ? 'p1' : 'p2';
+          var pri = s < 60 ? 'p0' : s < 75 ? 'p1' : 'p2';
           candidates.push({
             dim: k, score: s, avg: avg, trend: trend,
             severity: sev, priority: pri,
@@ -665,7 +681,7 @@
         var maxCount = Math.max.apply(null, branchSummary.map(function(b) { return b.count || 0; }));
         document.getElementById('branchList').textContent = '';
         document.getElementById('branchList').insertAdjacentHTML('beforeend',  branchSummary.map(function(b) {
-          var barClr = b.avgScore >= 80 ? 'var(--yry-pass)' : b.avgScore >= 60 ? 'var(--yry-warn)' : 'var(--yry-fail)';
+          var barClr = b.avgScore >= 90 ? 'var(--yry-pass)' : b.avgScore >= 75 ? 'var(--yry-warn)' : 'var(--yry-fail)';
           var barPct = maxCount > 0 ? Math.max((b.count || 0) / maxCount * 100, 5) : 50;
           return '<div class="branch-item">' +
             '<span class="branch-name">' + (b.name || '—') + '</span>' +
@@ -1110,6 +1126,127 @@
         document.getElementById('timePanel').insertAdjacentHTML('beforeend', renderPeriod(data, period));
       });
 
+      // ── Root cause analysis (Tab 1) ──────────────────────────────────
+      (function() {
+        var el = document.getElementById('rootCausePanel');
+        if (!el) return;
+        var hints = data.rootCauseHints || [];
+        if (hints.length === 0) {
+          el.textContent = '';
+          el.insertAdjacentHTML('beforeend', '<div class="empty">✅ 所有维度评分 ≥80，无需根因分析</div>');
+          return;
+        }
+        var html = hints.map(function(h) {
+          var gradeColor = scoreClr(h.score);
+          var grade = scoreGrade(h.score);
+          var trendIcon = h.trend > 3 ? '↑' : h.trend < -3 ? '↓' : '→';
+          var trendClr = h.trend > 3 ? 'var(--yry-pass)' : h.trend < -3 ? 'var(--yry-fail)' : 'var(--yry-text3)';
+          var diagTags = (h.relatedDiags || []).map(function(d) {
+            return '<span class="badge triggered" style="margin-right:3px">' + d.id + ' ' + d.label + ' (' + d.rate + '%)</span>';
+          }).join('');
+          var corrTags = (h.correlatedDims || []).map(function(c) {
+            var cClr = c.r >= 0.7 ? 'var(--yry-pass)' : c.r >= 0.4 ? 'var(--yry-warn)' : 'var(--yry-text3)';
+            return '<span style="color:' + cClr + ';margin-right:4px;font-size:.68rem">' + c.dim + '(r=' + c.r + ')</span>';
+          }).join('');
+          var causes = (h.possibleCauses || []).map(function(c, i) {
+            return '<li style="font-size:.72rem;color:var(--yry-text2);margin-bottom:2px">' + (i + 1) + '. ' + c + '</li>';
+          }).join('');
+          return '<div class="rec-row">' +
+            '<div class="rec-rank"><span class="badge ' + grade + '">' + grade + '</span></div>' +
+            '<div class="rec-name" style="color:' + gradeColor + '">' + h.label + ' · ' + h.score + ' 分 <span style="font-size:.68rem;color:' + trendClr + '">' + trendIcon + ' ' + Math.abs(h.trend) + '</span></div>' +
+            '<div style="flex:1;min-width:200px">' +
+              (diagTags ? '<div style="margin-bottom:4px">' + diagTags + '</div>' : '') +
+              (corrTags ? '<div style="margin-bottom:4px">关联维度: ' + corrTags + '</div>' : '') +
+              '<ul style="margin:0;padding-left:16px">' + causes + '</ul>' +
+            '</div>' +
+            '</div>';
+        }).join('');
+        el.textContent = '';
+        el.insertAdjacentHTML('beforeend', html);
+      })();
+
+      // ── Cross-dimension correlation heatmap (Tab 2) ─────────────────
+      (function() {
+        var el = document.getElementById('correlationHeatmap');
+        if (!el) return;
+        var cd = data.crossDimension;
+        if (!cd || !cd.pairs || cd.pairs.length === 0) {
+          el.textContent = '';
+          el.insertAdjacentHTML('beforeend', '<div class="empty">数据不足，需要 ≥5 个重叠数据点进行相关性分析</div>');
+          return;
+        }
+        var topPairs = cd.pairs.slice(0, 10);
+        var html = '<div style="display:flex;flex-wrap:wrap;gap:8px">';
+        topPairs.forEach(function(p) {
+          var absR = Math.abs(p.r);
+          var bg = p.r >= 0.7 ? 'rgba(34,197,94,.12)' : p.r >= 0.4 ? 'rgba(245,158,11,.08)' : p.r <= -0.7 ? 'rgba(239,68,68,.12)' : 'rgba(255,255,255,.03)';
+          var borderClr = p.r >= 0.7 ? 'rgba(34,197,94,.3)' : p.r >= 0.4 ? 'rgba(245,158,11,.2)' : p.r <= -0.7 ? 'rgba(239,68,68,.3)' : 'rgba(255,255,255,.06)';
+          var rClr = p.r >= 0.7 ? 'var(--yry-pass)' : p.r >= 0.4 ? 'var(--yry-warn)' : p.r <= -0.7 ? 'var(--yry-fail)' : 'var(--yry-text3)';
+          html += '<div style="padding:8px 12px;border-radius:6px;background:' + bg + ';border:1px solid ' + borderClr + ';font-size:.72rem;text-align:center">' +
+            '<div style="font-weight:600;color:var(--yry-text2)">' + p.dim1 + ' ↔ ' + p.dim2 + '</div>' +
+            '<div style="font-size:1.1rem;font-weight:700;color:' + rClr + ';font-family:JetBrains Mono,monospace">r = ' + p.r + '</div>' +
+            '<div style="font-size:.6rem;color:var(--yry-text3)">' + p.strength + ' · n=' + p.n + '</div>' +
+            '</div>';
+        });
+        html += '</div>';
+        if (cd.clusters && cd.clusters.length > 0) {
+          html += '<div style="margin-top:10px;font-size:.68rem;color:var(--yry-text3)">相关性簇: ' + cd.clusters.map(function(c) { return '[' + c.join(', ') + ']'; }).join(' · ') + '</div>';
+        }
+        el.textContent = '';
+        el.insertAdjacentHTML('beforeend', html);
+      })();
+
+      // ── Improvement potential (Tab 3) ───────────────────────────────
+      (function() {
+        var el = document.getElementById('improvePotential');
+        if (!el) return;
+        var ip = data.improvementPotential;
+        if (!ip || !ip.ranking || ip.ranking.length === 0) {
+          el.textContent = '';
+          el.insertAdjacentHTML('beforeend', '<div class="empty">数据不足，无法计算改进潜力</div>');
+          return;
+        }
+        var topRanking = ip.ranking.slice(0, 8);
+        var html = '<div style="font-size:.72rem;color:var(--yry-text3);margin-bottom:10px">按 <strong>影响度 × 易修复度 × 紧迫度</strong> 综合排序，优先处理 Top 3 可获最大收益</div>';
+        html += '<div class="priority-grid">';
+        topRanking.forEach(function(r, i) {
+          var pri = i < 3 ? 'p0' : i < 5 ? 'p1' : 'p2';
+          var prBadge = pri === 'p0' ? '<span class="badge fail">P0</span>' : pri === 'p1' ? '<span class="badge warn">P1</span>' : '<span class="badge info">P2</span>';
+          var trendIcon = r.trend === 'rising' ? '↑' : r.trend === 'falling' ? '↓' : '→';
+          var trendClr = r.trend === 'rising' ? 'var(--yry-pass)' : r.trend === 'falling' ? 'var(--yry-fail)' : 'var(--yry-text3)';
+          html += '<div class="priority-item ' + pri + '">' +
+            '<div class="priority-rank">#' + (i + 1) + '</div>' +
+            '<div class="priority-body">' +
+              '<div class="priority-title">' + r.dim + ' · <span style="color:' + scoreClr(r.score) + '">' + r.score + ' 分</span> ' + prBadge + '</div>' +
+              '<div class="priority-meta">' +
+                '<span>影响: <strong>' + r.impact + ' 分</strong></span>' +
+                '<span>波动性: ' + r.volatility + '</span>' +
+                '<span style="color:' + trendClr + '">趋势: ' + trendIcon + '</span>' +
+                '<span>ROI: <strong style="color:var(--yry-cyan)">' + r.roi + '</strong></span>' +
+              '</div>' +
+              '<div class="priority-action">' + (r.impact >= 5 ? '⛔ 高优先级 · 预计提升综合评分 ' + r.impact + ' 分' : r.impact >= 2 ? '⚡ 中等优先级 · 建议本周修复' : '📋 低优先级 · 可纳入下轮改进') + '</div>' +
+            '</div>' +
+            '</div>';
+        }).join('');
+        html += '</div>';
+
+        // Quick wins
+        if (ip.quickWins && ip.quickWins.length > 0) {
+          html += '<div style="margin-top:16px"><h2 style="font-size:.88rem;margin-bottom:8px">⚡ 快速改进项 (Quick Wins)</h2>';
+          html += '<div style="font-size:.72rem;color:var(--yry-text3);margin-bottom:8px">高影响 · 低波动 · 趋势稳定 — 修复后可立即提升评分</div>';
+          html += '<div class="ref-grid">';
+          ip.quickWins.forEach(function(qw) {
+            html += '<div class="ref-card" style="border-left:3px solid var(--yry-pass)">' +
+              '<strong style="color:var(--yry-pass)">' + qw.dim + '</strong> · 当前 ' + qw.score + ' 分<br>' +
+              '<span style="color:var(--yry-text2)">预计提升: +' + qw.estimatedGain + ' 分</span>' +
+              '</div>';
+          });
+          html += '</div></div>';
+        }
+        el.textContent = '';
+        el.insertAdjacentHTML('beforeend', html);
+      })();
+
     })
     .catch(function(e) {
       document.getElementById('siCount').textContent = '加载失败: ' + e.message;
@@ -1123,7 +1260,7 @@
       var latest = hr[0];
       var score = latest.score || 0;
       var grade = latest.grade || '—';
-      var clr = score >= 80 ? 'var(--yry-pass)' : score >= 60 ? 'var(--yry-warn)' : 'var(--yry-fail)';
+      var clr = score >= 90 ? 'var(--yry-pass)' : score >= 75 ? 'var(--yry-warn)' : 'var(--yry-fail)';
       var el = document.getElementById('healthRef');
       if (!el) return;
       el.textContent = '';

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>知识图谱 · npm 包发布与版本管理 · CDN 共享前端资源库</title>
+<link rel="stylesheet" href="../../../shared/index.css">
+<link rel="stylesheet" href="../../../theme/index.css">
+<link rel="stylesheet" href="../../../yry-inline-helpers/index.css">
+<link rel="stylesheet" href="../../../yry-scene/index.css">
+<link rel="stylesheet" href="../../../yry-scene-header/index.css">
+<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
+<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
+<link rel="stylesheet" href="../../../yry-back-top/index.css">
+<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
+<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
+<link rel="stylesheet" href="../../../yry-a11y/index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
+  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
+  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
+  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
+  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
+  .delivery-story { font-size: .72rem; color: #4b5563; }
+  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
+  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
+  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
+  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
+  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
+  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
+  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
+</style>
+</head>
+<body>
+<yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
+<yry-scene-header id="header-app"
+  icon="🔗"
+  title-prefix="知识图谱"
+  accent="npm 包发布与版本管理"
+  meta="📖 CDN 共享前端资源库 · 🎬 npm 包发布与版本管理"
+  desc="CDN 共享前端资源库 — npm 包发布与版本管理 场景的 知识图谱 交付物。查看场景详情与任务分解。">
+</yry-scene-header>
+
+<div class="scene-wrap">
+  <div class="delivery-header">
+    <div class="delivery-icon">🔗</div>
+    <div class="delivery-label">知识图谱</div>
+    <div class="delivery-scene">npm 包发布与版本管理</div>
+    <div class="delivery-story">CDN 共享前端资源库</div>
+  </div>
+
+  <div class="content-card">
+    <h2>🔗 files 白名单策略</h2>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">[发布到 npm]                          [排除项 (不发布)]
+
+✓ shared/          必备基线       ✗ .editorconfig / .prettierrc.json
+✓ theme/           Cat B 主题      ✨ .stylelintrc.json
+✓ theme-mono/      Cat A 主题      ✗ eslint.config.js         Lint 配置
+✓ fonts/           4 woff2 字体    ✗ package-lock.json        npm 自动忽略
+✓ yry-*/           107 组件        ✗ scripts/                 构建脚本
+✓ *.md             文档            ✗ cdn-summary/             数据快照
+                                       health-report/
+                                       changelog/
+                                       components-manifest/
+                                       shared-reports/</pre>
+    <p style="margin-top:16px">白名单策略：仅发布消费者所需资源，排除开发工具配置与运行时生成数据 · 包体积控制在 ~3MB。</p>
+  </div>
+
+  <div class="content-card">
+    <h2>🔖 版本策略决策树</h2>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">本次变更包含破坏性 API 变更？
+├── 是 → MAJOR (x+1.0.0)                [发布通道: latest 72h 后]
+└── 否 → 本次变更包含新组件 / 新 API / 新主题？
+        ├── 是 → MINOR (x.y+1.0)         [发布通道: latest]
+        └── 否 → 本次变更是 Bug 修复 / 性能 / 文档？
+                ├── 是 → PATCH (x.y.z+1)  [发布通道: latest]
+                └── 否 → 不需要发布</pre>
+    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6;margin-top:16px">
+      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">变更类型</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">升级段</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">发布通道</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">回滚窗口</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">破坏性</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#f87171">MAJOR</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">latest (72h 后)</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">30 天</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">新功能</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#fbbf24">MINOR</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">latest</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">14 天</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Bug 修复</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">PATCH</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">latest</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">7 天</td></tr>
+        <tr><td style="padding:8px 10px">预发验证</td><td style="padding:8px 10px">任意</td><td style="padding:8px 10px">canary (dist-tag)</td><td style="padding:8px 10px">48h 后转 latest</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="content-card">
+    <h2>🚀 CI/CD 发布流水线</h2>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">🔀 PR 合并到 main
+   │
+   ▼
+🔧 CI 检查 (lint + test + manifest)
+   │  ├─ 通过 ──► 继续
+   │  └─ 失败 ──► ❌ 阻断 PR
+   ▼
+📈 版本推断 (commit message → SemVer)
+   │
+   ▼
+📝 自动 CHANGELOG (conventional-changelog)
+   │
+   ▼
+🏷️ git tag vX.Y.Z
+   │
+   ▼
+📦 npm pack
+   │
+   ▼
+🚀 npm publish (NPM_TOKEN)
+   │
+   ▼
+🐤 dist-tag canary (24h 无报错)
+   │
+   ▼
+🏷️ dist-tag latest
+   │
+   ▼
+📢 企微 Webhook
+   │
+   ▼
+🌐 jsDelivr 自动同步</pre>
+    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6;margin-top:16px">
+      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">阶段</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">工具</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">触发</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">阻断条件</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Lint</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">eslint + stylelint</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">PR + push</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">任何 error</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">单元测试</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">vitest</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">PR + push</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">覆盖率 &lt; 70%</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">架构合规</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>arch-check.mjs</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">PR + push</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">非 A 级</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">包体积</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">size-limit</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">PR</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">超基线 +10%</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">安全扫描</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>npm audit</code> + Socket</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">PR</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">high/critical 漏洞</td></tr>
+        <tr><td style="padding:8px 10px">发布</td><td style="padding:8px 10px"><code>npm publish</code></td><td style="padding:8px 10px">tag push</td><td style="padding:8px 10px">前序阶段全过</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="nav-links">
+    <a class="nav-link" href="计划清单.html">📋 计划清单</a>
+    <a class="nav-link" href="架构图.html">📐 架构图</a>
+    <a class="nav-link current" href="知识图谱.html">🔗 知识图谱</a>
+    <a class="nav-link" href="测试面板.html">🧪 测试面板</a>
+    <a class="nav-link" href="源码.html">📄 源码</a>
+    <a class="nav-link" href="演示.html">💡 演示</a>
+    <a class="nav-link" href="审查.html">📝 审查</a>
+  </div>
+</div>
+
+<yry-cross-nav></yry-cross-nav>
+<yry-back-top></yry-back-top>
+<yry-footer-note version="1.2.0"></yry-footer-note>
+
+<script src="../../../shared/index.js" defer></script>
+<script src="../../../shared/vue-ce-loader.js"></script>
+  <script src="../../../yry-breadcrumb/index.js"></script>
+<script src="../../../yry-scene-header/index.js"></script>
+<script src="../../../yry-scene-nav/index.js"></script>
+<script src="../../../yry-cross-nav/index.js"></script>
+<script src="../../../yry-back-top/index.js"></script>
+<script src="../../../yry-footer-note/index.js"></script>
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    var bc = document.getElementById('breadcrumb-app');
+    if (bc) bc.items = [
+      { label: 'CDN 共享库', icon: '🌐', href: '../../../index.html' },
+      { label: '故事任务面板', icon: '📖', href: '../index.html' },
+      { label: 'CDN 共享前端资源库', icon: '📖', href: '../故事任务.md' },
+      { label: 'npm 包发布与版本管理', icon: '🎬' }
+    ];
+    var sh = document.getElementById('header-app');
+    if (sh) {
+      sh.icon = '🔗';
+      sh.titlePrefix = '知识图谱';
+      sh.accent = 'npm 包发布与版本管理';
+      sh.meta = '📖 CDN 共享前端资源库 · 🎬 npm 包发布与版本管理';
+      sh.desc = 'CDN 共享前端资源库 — npm 包发布与版本管理 场景的 知识图谱 交付物。';
+    }
+  });
+</script>
+</body>
+</html>

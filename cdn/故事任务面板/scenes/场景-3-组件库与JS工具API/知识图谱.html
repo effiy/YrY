@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>知识图谱 · 组件库与 JS 工具 API · CDN 共享前端资源库</title>
+<link rel="stylesheet" href="../../../shared/index.css">
+<link rel="stylesheet" href="../../../theme/index.css">
+<link rel="stylesheet" href="../../../yry-inline-helpers/index.css">
+<link rel="stylesheet" href="../../../yry-scene/index.css">
+<link rel="stylesheet" href="../../../yry-scene-header/index.css">
+<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
+<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
+<link rel="stylesheet" href="../../../yry-back-top/index.css">
+<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
+<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
+<link rel="stylesheet" href="../../../yry-a11y/index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
+  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
+  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
+  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
+  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
+  .delivery-story { font-size: .72rem; color: #4b5563; }
+  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
+  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
+  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
+  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
+  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
+  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
+  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
+</style>
+</head>
+<body>
+<yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
+<yry-scene-header id="header-app"
+  icon="🔗"
+  title-prefix="知识图谱"
+  accent="组件库与 JS 工具 API"
+  meta="📖 CDN 共享前端资源库 · 🎬 组件库与 JS 工具 API"
+  desc="CDN 共享前端资源库 — 组件库与 JS 工具 API 场景的 知识图谱 交付物。查看场景详情与任务分解。">
+</yry-scene-header>
+
+<div class="scene-wrap">
+  <div class="delivery-header">
+    <div class="delivery-icon">🔗</div>
+    <div class="delivery-label">知识图谱</div>
+    <div class="delivery-scene">组件库与 JS 工具 API</div>
+    <div class="delivery-story">CDN 共享前端资源库</div>
+  </div>
+
+  <div class="content-card">
+    <h2>🔗 Vue 3 自定义元素生命周期</h2>
+    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">Page            Loader(index.js)   Vue            customElements   App
+  │                   │                │                  │             │
+  │── fetch ─────────►│                │                  │             │
+  │                   │── define ─────►│                  │             │
+  │                   │◄── ctor ──────│                  │             │
+  │                   │── define ──────────────────────►│             │
+  │                   │── dispatch 'yry-x-ready' ─────────────────────►│
+  │                   │                │                  │             │── el.prop = value (内联)
+  │                   │                │                  │             │
+  │                   │                │                  │             │── 监听 yry-x-ready (晚到重设)</pre>
+    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6;margin-top:16px">
+      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">阶段</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">触发</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">数据就绪保证</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">connectedCallback</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">元素插入 DOM</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">仅 attribute 解析完成</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Vue mount</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">首次 render</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">props 已传入</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">yry-*-ready</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">customElements.define 后</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">API 可调用</td></tr>
+        <tr><td style="padding:8px 10px">二次赋值</td><td style="padding:8px 10px">ready 事件回调</td><td style="padding:8px 10px">覆盖晚到数据</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="content-card">
+    <h2>🛡️ API 错误契约</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6">
+      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">API</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">失败模式</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">降级</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">调用方提示</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>toast</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">DOM 未就绪</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>console.warn(msg)</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">不阻塞调用</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>copyCmd</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">权限拒绝 (非 https)</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">退回 <code>document.execCommand('copy')</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">toast 提示失败</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>switchPanel</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">面板不存在</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">无操作 + 日志</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">静默降级</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>fetchData</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">超时 / 5xx</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">指数退避重试 3 次</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">返回 Promise.reject</td></tr>
+        <tr><td style="padding:8px 10px"><code>ready</code></td><td style="padding:8px 10px">元素未注册</td><td style="padding:8px 10px">5s 超时 reject</td><td style="padding:8px 10px">调用方 catch 处理</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="content-card">
+    <h2>📜 命名空间与版本兼容</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6">
+      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">约定</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">规则</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">向后兼容策略</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">标签名</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">全小写 kebab-case + <code>yry-</code> 前缀</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">不变</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Props 名</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">camelCase (JS) / kebab-case (HTML)</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">双向兼容</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">事件名</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>{component}-{action}</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">仅追加 · 不改名</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Slot 名</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">default + named slots</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">新增 slot 不破坏</td></tr>
+        <tr><td style="padding:8px 10px">CSS 变量</td><td style="padding:8px 10px"><code>--yry-{component}-{token}</code></td><td style="padding:8px 10px">仅新增 · 不删除</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="content-card">
+    <h2>🔖 SemVer 兼容矩阵</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6">
+      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">版本变化</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">含义</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">组件 API</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">CSS 变量</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">事件</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Patch (1.2.x)</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Bug 修复</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">不变</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">不变</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">不变</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Minor (1.x.0)</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">向后兼容新增</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#fbbf24">可新增 prop</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#fbbf24">可新增变量</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#fbbf24">可新增事件</td></tr>
+        <tr><td style="padding:8px 10px">Major (x.0.0)</td><td style="padding:8px 10px">破坏性变更</td><td style="padding:8px 10px;color:#f87171">可删除/改</td><td style="padding:8px 10px;color:#f87171">可改</td><td style="padding:8px 10px;color:#f87171">可改</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="nav-links">
+    <a class="nav-link" href="计划清单.html">📋 计划清单</a>
+    <a class="nav-link" href="架构图.html">📐 架构图</a>
+    <a class="nav-link current" href="知识图谱.html">🔗 知识图谱</a>
+    <a class="nav-link" href="测试面板.html">🧪 测试面板</a>
+    <a class="nav-link" href="源码.html">📄 源码</a>
+    <a class="nav-link" href="演示.html">💡 演示</a>
+    <a class="nav-link" href="审查.html">📝 审查</a>
+  </div>
+</div>
+
+<yry-cross-nav></yry-cross-nav>
+<yry-back-top></yry-back-top>
+<yry-footer-note version="1.2.0"></yry-footer-note>
+
+<script src="../../../shared/index.js" defer></script>
+<script src="../../../shared/vue-ce-loader.js"></script>
+  <script src="../../../yry-breadcrumb/index.js"></script>
+<script src="../../../yry-scene-header/index.js"></script>
+<script src="../../../yry-scene-nav/index.js"></script>
+<script src="../../../yry-cross-nav/index.js"></script>
+<script src="../../../yry-back-top/index.js"></script>
+<script src="../../../yry-footer-note/index.js"></script>
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    var bc = document.getElementById('breadcrumb-app');
+    if (bc) bc.items = [
+      { label: 'CDN 共享库', icon: '🌐', href: '../../../index.html' },
+      { label: '故事任务面板', icon: '📖', href: '../index.html' },
+      { label: 'CDN 共享前端资源库', icon: '📖', href: '../故事任务.md' },
+      { label: '组件库与 JS 工具 API', icon: '🎬' }
+    ];
+    var sh = document.getElementById('header-app');
+    if (sh) {
+      sh.icon = '🔗';
+      sh.titlePrefix = '知识图谱';
+      sh.accent = '组件库与 JS 工具 API';
+      sh.meta = '📖 CDN 共享前端资源库 · 🎬 组件库与 JS 工具 API';
+      sh.desc = 'CDN 共享前端资源库 — 组件库与 JS 工具 API 场景的 知识图谱 交付物。';
+    }
+  });
+</script>
+</body>
+</html>

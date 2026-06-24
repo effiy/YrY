@@ -21,10 +21,10 @@
     {"id": "step-fp9", "type": "step", "label": "FP9 CDN 主题加载"},
     {"id": "step-fp10", "type": "step", "label": "FP10 rui-html 管线集成"},
     {"id": "layer-deps", "type": "skill", "label": "Layer 1: 依赖/框架", "desc": "6 运行时 + 6 开发依赖"},
-    {"id": "layer-skills", "type": "skill", "label": "Layer 2: 技能", "desc": "19 能力模块 · 编排入口 + 管线 + 支撑"},
-    {"id": "layer-story", "type": "skill", "label": "Layer 3: 故事", "desc": "5 故事 · 架构 + 自测 + npm + cdn + 自改进"},
-    {"id": "layer-scene", "type": "skill", "label": "Layer 4: 场景", "desc": "29 场景 · 每场景 7 HTML"},
-    {"id": "layer-agents", "type": "skill", "label": "Layer 5: Agent + 规则", "desc": "9 Agent 角色 + 16 治理规则"},
+    {"id": "layer-skills", "type": "skill", "label": "Layer 2: 技能", "desc": "20 能力模块 · 编排入口 + 管线 + 支撑"},
+    {"id": "layer-story", "type": "skill", "label": "Layer 3: 故事", "desc": "6 故事 · arch + breadcrumb + checklist + home + selfimprove + test"},
+    {"id": "layer-scene", "type": "skill", "label": "Layer 4: 场景", "desc": "32 场景 · 每场景 7 HTML"},
+    {"id": "layer-agents", "type": "skill", "label": "Layer 5: Agent + 规则", "desc": "9 Agent 角色 + 31 治理规则"},
     {"id": "layer-refs", "type": "skill", "label": "Layer 6: 参考入口", "desc": "CLAUDE.md · README.md · lib/ · rules/"}
   ],
   "edges": [

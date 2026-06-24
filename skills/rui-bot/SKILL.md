@@ -17,6 +17,8 @@ lifecycle: default-pipeline
 
 **可执行入口**: `node skills/rui-bot/send.mjs [options]` — 发送通知或健康检查。`--no-send` 仅追加日志不发 HTTP。
 
+**单一职责**：消息推送与通知队列管理。不负责健康诊断（[rui-health](../rui-health/)），不负责自循环报告生成逻辑（委托各技能自行产出报告，rui-bot 仅负责汇总推送）。
+
 **自动触发机制**：
 
 | 触发方式 | 间隔 | 动作 |
@@ -180,7 +182,7 @@ flowchart LR
 | 参数 | 效果 |
 |------|------|
 | `--rich` | 启用富格式：进度条 + 阶段指示器 + P0 计数 + 时间统计 |
-| `--verbose` | 追加诊断块：D0-D7 摘要（一行一个）+ 文件变更统计 + 测试通过/失败概要 |
+| `--verbose` | 追加诊断块：D0-D8 摘要（一行一个）+ 文件变更统计 + 测试通过/失败概要 |
 | `--progress` | 快捷设置 `--status=progress`，自动计算进度百分比 |
 
 ### 格式约束
@@ -226,7 +228,7 @@ flowchart LR
 | 🤖 技能 | `rui` / `rui-story` / `rui-claude` / `rui-bot` / `rui-import` | 触发消息的技能名 |
 | 📋 命令 | `/rui doc <name>` / `/rui-story sync` 等 | 用户执行的具体命令（含参数） |
 | 🎯 结论 | 完成 / 阻断 / 门禁失败 + story + 阶段 | 管线执行结论 |
-| ⏱️ 会话 | `<日期> <时间范围> | <N> agents 参与` | 执行时间与参与角色 |
+| ⏱️ 会话 | `<日期> <时间范围> \| <N> agents 参与` | 执行时间与参与角色 |
 
 ## 消息通知列表
 
@@ -330,6 +332,42 @@ flowchart TD
 
 无参数时不发送消息，仅检测 `API_X_TOKEN` / 内置配置 / 故事面板 `消息通知列表.md` 并输出推荐任务。
 
+## 测试
+
+> 企业微信通知的消息格式合规、字段完整性、安全底线和失败队列管理。
+
+### 运行测试
+
+```bash
+npx vitest run skills/rui-bot/tests/          # 全量运行
+npx vitest skills/rui-bot/tests/              # 监听模式
+npx vitest run --coverage skills/rui-bot/tests/  # 覆盖率报告
+```
+
+### 测试文件
+
+| 文件 | 测试范围 | 类型 |
+|------|---------|:---:|
+| `tests/rui-bot.test.mjs` | 消息格式验证、路由解析、失败队列、安全规则 | 单元 |
+
+### 测试策略
+
+| 层级 | 范围 | 要求 |
+|------|------|------|
+| **格式测试** | 4 场景消息格式（完成/阻断/门禁/进度） | 每场景必含字段齐全 |
+| **安全测试** | Token 不入库、webhook 不落盘、日志脱敏 | P0 阻断级 |
+| **队列测试** | 失败入队、重试递增、dead 标记 | 状态机全覆盖 |
+| **路由测试** | agent/robot 参数解析、故事名解析 | 每种路由路径有测试 |
+
+### 覆盖要求
+
+| 维度 | 最低阈值 | 目标 |
+|------|:---:|:---:|
+| 消息格式覆盖 | 100% | 4 种场景必含字段验证 |
+| 安全规则覆盖 | 100% | 5 条安全规则全部有测试 |
+| 失败队列状态机 | 100% | pending→retry→failed→dead 全路径 |
+| 降级路径 | ≥ 80% | 每种降级情况有测试 |
+
 ## 降级策略
 
 | 情况 | 降级行为 |
@@ -367,6 +405,30 @@ flowchart LR
 | `queuedAt` | 首次入队时间 |
 | `dead` | true 时不再自动重试，需手动 `flush --force` |
 
+### 队列可靠性指标
+
+> 失败队列的运行健康度通过以下指标量化，由 `rui-health` 定期采集。
+
+| 指标 | 公式 | 健康阈值 | 告警阈值 |
+|------|------|:---:|:---:|
+| **投递成功率** | sent / (sent + failed) | ≥ 95% | < 80% |
+| **平均重试次数** | Σ retries / total_sent | ≤ 1.5 | > 2.5 |
+| **dead 比率** | dead / total_queued | ≤ 5% | > 15% |
+| **队列深度** | pending + retry_N | ≤ 10 | > 50 |
+| **平均延迟** | avg(sent_at - queued_at) | ≤ 30s | > 120s |
+
+### 投递保障策略
+
+```
+L1 即时发送: POST → 200 → sent
+L2 指数退避: 失败 → 2^N 分钟后重试 → 最多 3 次
+L3 降级告警: 3 次失败 → dead → 企微通知
+L4 人工介入: dead 条目 → 手动 flush --force
+```
+
+## 规则
+
+- [notification-rules.md](./rules/notification-rules.md) — 企业微信机器人通知的规则和约束
 ## 生效标志
 
 ```mermaid
@@ -421,3 +483,66 @@ flowchart LR
 | ② 生成报告 | `node skills/rui-bot/lib/loop-report.mjs` | HTML 报告 + 更新索引 |
 | ③ 通知用户 | rui-bot 发送企业微信消息 | 含报告链接的验收通知 |
 | ④ 追加日志 | 写入 `消息通知列表.md` | 通知记录 |
+
+> 本技能 `checkMode: "cli"`——由 dispatcher 按 `*/5 * * * *` 自动调度（`send.mjs flush` 重试失败队列）。6 字段契约与调度规则详见 [rules/loop-engineering.md](../rui/rules/loop-engineering.md)。
+
+## 通知场景矩阵
+
+### 3 大通知场景
+
+| 场景 | 触发条件 | 消息格式 | 优先级 | 重试策略 |
+|------|---------|---------|:---:|---------|
+| **完成通知** | 管线全部阶段通过，交付收口完成 | Rich 格式（含变更摘要、版本号、P0 统计） | Normal | 失败重试 3 次 |
+| **阻断通知** | 任一阶段触发阻断标识 | Verbose 格式（含阻断标识、失败阶段、修复建议） | High | 立即发送，失败重试 5 次 |
+| **门禁失败** | Gate A/B 未通过 | Rich 格式（含未通过项、轮次、修复建议） | High | 立即发送，失败重试 5 次 |
+
+### 通知内容模板
+
+**完成通知**：
+```
+✅ 管线完成 — {story_name} v{version}
+━━━━━━━━━━━━━━━━━━
+📋 变更摘要: {summary}
+🔢 P0 统计: {p0_count} 项已清零
+⏱️ 总耗时: {duration}
+📄 报告: {report_url}
+```
+
+**阻断通知**：
+```
+🚫 管线阻断 — {story_name}
+━━━━━━━━━━━━━━━━━━
+⚠️ 阻断标识: {blocker_id}
+📍 失败阶段: {stage}
+🔧 修复建议: {suggestion}
+📄 详情: {report_url}
+```
+
+### 失败队列管理
+
+| 状态 | 含义 | 处置 |
+|------|------|------|
+| `pending` | 待发送 | 下次轮询时发送 |
+| `retry_N` | 第 N 次重试中 | 指数退避：2^N 分钟 |
+| `failed` | 重试耗尽 | 记录到 `send-failed.json` |
+| `dead` | 连续 3 次失败 | 标记为 dead，人工介入 |
+| `sent` | 发送成功 | 从队列移除 |
+
+## 与 rui 的关系
+
+`/rui-bot` 是 rui 编排管线交付阶段的通知收口。由 `/rui` 交付步骤手动触发，也由 cron 定时自动触发（通知轮询、健康报告、失败重试）。不负责健康诊断——只负责消息推送和通知队列管理。
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6', 'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1', 'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    IMPORT["/rui-import"]:::phase --> BOT["/rui-bot<br/>企微通知推送"]:::phase
+    HEALTH["rui-health 报告"]:::sub -.->|"读取"| BOT
+    BOT --> LOG["消息通知列表.md"]:::out
+
+    classDef phase fill:#2b2d3b,stroke:#3d59a1,color:#a9b1d6
+    classDef sub fill:#7c3aed,color:#fff
+    classDef out fill:#34d399,color:#000
+```

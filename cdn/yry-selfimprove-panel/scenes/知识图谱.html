@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自改进面板 · 知识图谱</title>
+<link rel="stylesheet" href="../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../cdn/yry-graph/index.css">
+<style>
+body { padding: 32px 24px 60px; max-width: 1100px; margin: 0 auto; line-height: 1.7; }
+.breadcrumb { font-size:.72rem; padding:8px 0; }
+.breadcrumb a { color:var(--yry-text3); text-decoration:none; }
+.breadcrumb a:hover { color:var(--yry-accent); }
+.cross-nav { display:flex; gap:8px; padding:6px 0; font-size:.72rem; margin-bottom:12px; flex-wrap:wrap; }
+.cross-link { color:var(--yry-text3); text-decoration:none; }
+.cross-link:hover { color:var(--yry-accent); }
+.header h1 { font-size:1.1rem; margin:0; }
+.accent { color:var(--yry-accent); }
+.subtitle { font-size:.72rem; color:var(--yry-text3); margin-top:4px; }
+.card { padding:16px 20px; border-radius:8px; border:var(--yry-border); background:rgba(15,23,42,.4); margin-bottom:12px; }
+.card h2 { font-size:.88rem; margin:0 0 12px 0; }
+.node-list { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:8px; font-size:.72rem; }
+.node-item { padding:8px 10px; border-radius:6px; border:1px solid rgba(255,255,255,.06); background:rgba(30,41,59,.4); }
+.node-item .node-name { color:var(--yry-accent); font-weight:600; }
+.node-item .node-desc { color:var(--yry-text3); font-size:.66rem; margin-top:2px; }
+.legend { font-size:.68rem; color:var(--yry-text3); padding:8px 0; border-top:1px solid rgba(255,255,255,.06); margin-top:12px; }
+.ft { text-align:center; font-size:.64rem; color:var(--yry-text3); padding:20px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb">
+  <a href="../../index.html">📄 文档中心</a>
+  <span class="bc-sep">/</span>
+  <a href="../index.html">自改进面板</a>
+  <span class="bc-sep">/</span>
+  <span>自改进闭环 · 知识图谱</span>
+</nav>
+
+<nav class="cross-nav">
+<a class="cross-link" href="场景-1-数据采集与观察/架构图.html">场景-1 · 数据采集</a>
+<a class="cross-link" href="场景-2-诊断引擎/架构图.html">场景-2 · 诊断引擎</a>
+<a class="cross-link" href="场景-3-提案生成与路由/架构图.html">场景-3 · 提案生成</a>
+<a class="cross-link" href="场景-4-效果评估与闭环/架构图.html">场景-4 · 效果评估</a>
+<a class="cross-link" href="场景-5-经验技能化与记忆注入/架构图.html">场景-5 · 经验技能化</a>
+</nav>
+
+<div class="header">
+  <h1>🧬 <span class="accent">自改进闭环</span> · 知识图谱</h1>
+  <p class="subtitle">Story 6 · 5 场景 · D0-D8 九级诊断 · E1-E4 效果评估 · 记忆压缩注入</p>
+</div>
+
+<div class="card">
+  <h2>📊 故事节点</h2>
+  <div class="node-list">
+    <div class="node-item"><div class="node-name">📡 数据采集</div><div class="node-desc">健康趋势 · 多维度观察 · 基线建立</div></div>
+    <div class="node-item"><div class="node-name">🔬 诊断引擎</div><div class="node-desc">D0-D8 九级触发 · 根因分析 · 严重度评级</div></div>
+    <div class="node-item"><div class="node-name">💡 提案生成</div><div class="node-desc">改进提案 · 优先级排序 · 路由分发</div></div>
+    <div class="node-item"><div class="node-name">📊 效果评估</div><div class="node-desc">E1-E4 四级评估 · 改进闭环 · 反馈修正</div></div>
+    <div class="node-item"><div class="node-name">🧠 经验技能化</div><div class="node-desc">经验沉淀为技能 · 记忆压缩 · 上下文注入</div></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>🔗 闭环关系</h2>
+  <div class="node-list">
+    <div class="node-item"><div class="node-name">观察 → 诊断</div><div class="node-desc">数据采集触发 D0-D8 诊断</div></div>
+    <div class="node-item"><div class="node-name">诊断 → 提案</div><div class="node-desc">根因分析生成改进提案</div></div>
+    <div class="node-item"><div class="node-name">提案 → 执行</div><div class="node-desc">优先级路由分发执行</div></div>
+    <div class="node-item"><div class="node-name">执行 → 评估</div><div class="node-desc">E1-E4 效果评估闭环</div></div>
+    <div class="node-item"><div class="node-name">评估 → 经验</div><div class="node-desc">有效改进沉淀为技能</div></div>
+    <div class="node-item"><div class="node-name">经验 → 观察</div><div class="node-desc">记忆注入反馈下一轮采集</div></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>🩺 D0-D8 诊断维度</h2>
+  <div class="node-list">
+    <div class="node-item"><div class="node-name">D0 基线偏离</div><div class="node-desc">配置/规约偏离基线</div></div>
+    <div class="node-item"><div class="node-name">D1 效率退化</div><div class="node-desc">构建/测试耗时增长</div></div>
+    <div class="node-item"><div class="node-name">D2 质量退化</div><div class="node-desc">评分/覆盖率下降</div></div>
+    <div class="node-item"><div class="node-name">D3 复杂度增长</div><div class="node-desc">圈复杂度超阈值</div></div>
+    <div class="node-item"><div class="node-name">D4 流程退化</div><div class="node-desc">Gate/铁律绕过</div></div>
+    <div class="node-item"><div class="node-name">D5 依赖退化</div><div class="node-desc">依赖过期/漏洞</div></div>
+    <div class="node-item"><div class="node-name">D6 文档过时</div><div class="node-desc">文档与代码不一致</div></div>
+    <div class="node-item"><div class="node-name">D7 配置漂移</div><div class="node-desc">环境配置漂移</div></div>
+    <div class="node-item"><div class="node-name">D8 架构腐化</div><div class="node-desc">架构合规退化</div></div>
+  </div>
+</div>
+
+<div class="legend">
+  <strong>图例:</strong>
+  <span style="color:var(--yry-accent)">●</span> 故事节点 ·
+  <span style="color:var(--yry-text2)">●</span> 场景节点 ·
+  <span style="color:var(--yry-text3)">●</span> 闭环关系 ·
+  点击场景链接查看各场景详细架构图与知识图谱
+</div>
+
+<footer class="ft">
+  Story 6 · 自改进闭环 · v5.4.0 · 5 场景 · D0-D8 九级诊断<br>
+  <span style="color:var(--yry-text3)">知识图谱 · 清单 · 架构 · 图谱 · 源码 · 测试 · 演示 · 审计</span>
+</footer>
+
+</div>
+</body>
+</html>

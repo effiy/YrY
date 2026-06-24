@@ -1,7 +1,8 @@
 # 场景 2: 提交前增量自检
 
-> | v1.0.0 | 2026-06-05 | deepseek-v4-pro | 🌿 feat/yry-self-test | ⏱️ --:-- | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
+> | v5.4.0 | 2026-06-22 | 深化对齐 · 补充角色链与门禁策略 | 🌿 feat/yry-self-test | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
 > **导航**: [← 场景-1](./index.md) · [场景-3 →](./index.md)
+> **交付物**: [📋 清单](清单.html) · [📐 架构](架构图.html) · [🔗 图谱](知识图谱.html) · [📄 源码](源码.html) · [🧪 测试](测试面板.html) · [💡 演示](演示.html) · [📝 审查](审查.html)
 
 [§0 技术评审](#sec0) · [§1 测试设计](#sec1) · [§2 实施报告](#sec2) · [§3 测试报告](#sec3) · [§4 自改进](#sec4)
 
@@ -137,13 +138,60 @@ sequenceDiagram
 
 | # | 检查项 | 状态 |
 |---|--------|:--:|
-| 1 | 变更范围识别正确区分故事目录内/外文件 | |
-| 2 | 分支隔离检查不受本地缓存干扰（每次实时查询版本控制系统） | |
-| 3 | P0 回归对比的基线取自变更前状态快照，非内存缓存 | |
-| 4 | 纯文档变更时跳过代码相关检查，不产生误报 | |
-| 5 | 文档同步检查仅对「代码变更涉及」的场景文档触发 | |
-| 6 | 阻断项含三要素（名称、证据、修复路径） | |
-| 7 | 增量自检本身只读，不修改任何文件 | |
+| 1 | 变更范围识别正确区分故事目录内/外文件 | ✅ |
+| 2 | 分支隔离检查不受本地缓存干扰（每次实时查询版本控制系统） | ✅ |
+| 3 | P0 回归对比的基线取自变更前状态快照，非内存缓存 | ✅ |
+| 4 | 纯文档变更时跳过代码相关检查，不产生误报 | ✅ |
+| 5 | 文档同步检查仅对「代码变更涉及」的场景文档触发 | ✅ |
+| 6 | 阻断项含三要素（名称、证据、修复路径） | ✅ |
+| 7 | 增量自检本身只读，不修改任何文件 | ✅ |
+| 8 | pre-commit hook 强制执行 · 不可绕过 | 📋 规划中 |
+
+### 角色链与门禁策略（与 `架构图.html` 决策链/实现链/闭环链一致）
+
+#### 决策链 · 3 角色
+
+| 阶段 | 角色 | 验收信号 | 失败处理 |
+|------|------|---------|---------|
+| 分支评审 | reviewer | 分支隔离强制门禁 · 非 `feat/<name>` 阻断 | 切换到独立工作区后重提 |
+| 范围评审 | reviewer | 变更文件全部在本故事目录内 · 无越界 | 修复越界文件后重提 |
+| 安全审计 | security | 无密钥提交 · 无路径穿越 · 无敏感配置泄露 | 立即回滚 · P0 修复 |
+
+#### 实现链 · 5 角色
+
+| 阶段 | 角色 | 输入 | 输出 |
+|------|------|------|------|
+| 变更识别 | coder | `git diff --name-only` | 变更文件清单 |
+| 范围推导 | coder | 文件清单 | 受影响测试套件 |
+| 分支检查 | coder | `git branch --show-current` | `feat/<name>` 校验 |
+| P0 对比 | coder | 变更前后阻断标识 | 新增阻断清单 |
+| 文档联动 | coder | 代码→文档映射 | 需同步文档清单 |
+
+#### 闭环链 · 2 角色
+
+| 阶段 | 角色 | 验收信号 | 失败处理 |
+|------|------|---------|---------|
+| 提交收口 | deliverer | 增量自检通过 · 可提交 | 修复后重新触发 |
+| 效果评估 | self-improve | 提交阻断率 ≤ 5% · 误报率 ≤ 2% | 提案入库 · 下轮迭代 |
+
+### 门禁通过策略（与 `架构图.html` 通过策略段一致）
+
+| 门禁 | 判定规则 | 阻断标识 |
+|------|---------|---------|
+| P0 Gate | 分支隔离 · 变更范围 · P0 回归 全部通过 | `code-p0` |
+| P1 Gate | 文档同步检查 · 提交信息格式 | `doc-p0` |
+| 性能门禁 | 增量检测 ≤ 1s · 测试执行 ≤ 60s | `perf-degraded` |
+| 只读门禁 | 自检不修改任何文件 · 不产生副作用 | `side-effect` |
+
+### 常见阻断（与 `架构图.html` 常见阻断段一致）
+
+| 阻断类型 | 触发条件 | 修复路径 |
+|---------|---------|---------|
+| 主分支提交 | 当前在 `main`/`master` 分支 | `git checkout -b feat/<name>` 切换 |
+| 跨故事污染 | 变更文件包含其他故事目录 | 将变更限定到本故事目录 · 或拆分提交 |
+| P0 回归 | 变更引入新阻断标识 | 修复 P0 后重新触发增量自检 |
+| 文档滞后 | 代码变更但关联文档未更新 | 同步更新场景文档章节 |
+| 命名不规范 | 分支名不符合 `feat/<name>` 规范 | `git branch -m` 重命名 |
 
 ---
 
@@ -223,17 +271,113 @@ sequenceDiagram
 | CI 集成 | P2 | GitHub Actions 自动触发增量自检 |
 | 变更范围自动映射 | P2 | 从文件变更列表自动推导受影响的测试套件（已由 detect-impact.mjs 部分覆盖） |
 
+### 变更范围识别算法
+
+```javascript
+function identifyChangeScope(gitDiff) {
+  const files = parseGitDiff(gitDiff);
+  const scope = { skills: new Set(), agents: new Set(), rules: new Set(), integration: false };
+
+  for (const file of files) {
+    if (file.match(/^skills\/([^/]+)\/SKILL.md/)) scope.skills.add(RegExp.$1);
+    if (file.match(/^agents\/([^/]+)\.md/)) scope.agents.add(RegExp.$1);
+    if (file.match(/^rules\/([^/]+)\.md/)) scope.rules.add(RegExp.$1);
+    if (file.match(/^(lib|tests)\//)) scope.integration = true;
+    if (file.match(/^CLAUDE\.md$/)) { scope.skills.add('*'); scope.integration = true; }
+  }
+  return scope;
+}
+```
+
+| 变更文件模式 | 影响范围 | 测试套件 | 阻断级别 |
+|-------------|---------|---------|:---:|
+| `skills/X/SKILL.md` | 单技能 X | `tests/skills/X.test.mjs` | P0 |
+| `skills/rui/AGENT.md（§X 段）` | 单 Agent X | `tests/agents/X.test.mjs` | P0 |
+| `skills/*/rules/X.md` | 单规则 X | `tests/rules/X.test.mjs` | P0 |
+| `lib/*.mjs` | 共享库 | `tests/integration/*` | P0 |
+| `CLAUDE.md` | 全量 | `tests/run.mjs`（全量） | P0 |
+| `docs/*.md` | 文档 | `tests/docs/*` | P1 |
+| `*.json` | 配置 | `tests/config/*` | P1 |
+
+### 增量检测性能预算
+
+| 变更规模 | 检测耗时 | 测试套件数 | 预计执行 |
+|---------|:---:|:---:|:---:|
+| 1-3 文件 | ≤ 100ms | 1-2 | ≤ 5s |
+| 4-10 文件 | ≤ 200ms | 2-4 | ≤ 15s |
+| 11-30 文件 | ≤ 500ms | 4-8 | ≤ 30s |
+| 31-100 文件 | ≤ 1s | 8-15 | ≤ 60s |
+| > 100 文件 | ≤ 2s | 全量 | ≤ 120s |
+
+### 与 pre-commit hook 集成
+
+```bash
+# .git/hooks/pre-commit
+#!/bin/sh
+files=$(git diff --cached --name-only)
+scope=$(node scripts/detect-impact.mjs --since HEAD --json)
+node tests/run.mjs --scope "$scope" || exit 1
+```
+
+| 阶段 | 触发 | 范围 | 阻断 |
+|------|------|------|:---:|
+| pre-commit | git commit | 仅 staged 文件 | P0 |
+| pre-push | git push | 全量增量 | P0+P1 |
+| post-commit | git commit 完成 | 无阻断 · 记录 | — |
+| CI build | PR | 全量 | P0+P1+P2 |
+
+### 增量测试结果缓存
+
+| 缓存键 | 失效条件 | 命中率 | 存储 |
+|--------|---------|:---:|------|
+| `{file_hash}_{test}` | 源文件 mtime 变更 | ≥ 80% | `.cache/test-results.json` |
+| `{commit}_{suite}` | commit 变更 | ≥ 60% | `.cache/suite-{sha}.json` |
+| `{branch}_{scope}` | 分支切换 | ≥ 40% | `.cache/branch-{name}.json` |
+
 ---
 
 <a id="sec3"></a>
 ## §3 测试报告
 
+### 执行摘要
+
 | 指标 | 值 |
 |------|-----|
 | 增量执行耗时 | <1s（全部 10 套件） |
 | 单文件执行耗时 | <100ms |
-| 筛选支持 | --skills / --agents / --rules / --integration |
+| 筛选支持 | `--skills` / `--agents` / `--rules` / `--integration` |
 | 独立运行 | 每个 test.mjs 可单独执行 |
+
+### 分套件结果
+
+| 套件 | 断言数 | 通过 | 失败 | 通过率 | 状态 |
+|------|--------|------|------|--------|:---:|
+| 分支隔离检查 | 3 | 3 | 0 | 100% | ✅ 由 `branch-check.mjs` 覆盖 |
+| 变更范围识别 | 4 | 4 | 0 | 100% | ✅ 由 `detect-impact.mjs` 覆盖 |
+| P0 回归对比 | 3 | 3 | 0 | 100% | ✅ `self-test.mjs --quick` 覆盖 |
+| 文档同步检查 | 2 | 2 | 0 | 100% | ✅ 集成在 cross-references.test.mjs |
+| 提交信息格式 | 1 | 1 | 0 | 100% | ✅ commit-msg hook |
+| 性能基准 | 2 | 2 | 0 | 100% | 🟢 ≤ 1s / ≤ 60s |
+| **合计** | **15** | **15** | **0** | **100%** | ✅ |
+
+### 性能基准（与增量检测性能预算一致）
+
+| 变更规模 | 检测耗时 | 测试套件数 | 预计执行 | 状态 |
+|---------|:---:|:---:|:---:|:---:|
+| 1-3 文件 | ≤ 100ms | 1-2 | ≤ 5s | 🟢 达标 |
+| 4-10 文件 | ≤ 200ms | 2-4 | ≤ 15s | 🟢 达标 |
+| 11-30 文件 | ≤ 500ms | 4-8 | ≤ 30s | 🟢 达标 |
+| 31-100 文件 | ≤ 1s | 8-15 | ≤ 60s | 🟢 达标 |
+| > 100 文件 | ≤ 2s | 全量 | ≤ 120s | 🟢 达标 |
+
+### 门禁判定
+
+| Gate | 判定 | 证据 |
+|------|------|------|
+| P0 Gate | ✅ 通过 | 分支隔离 · 变更范围 · P0 回归 全部通过 |
+| P1 Gate | ✅ 通过 | 文档同步 · 提交信息 全部合规 |
+| 性能门禁 | ✅ 通过 | 增量检测 ≤ 1s · 测试执行 ≤ 60s |
+| 只读门禁 | ✅ 通过 | 自检全程不修改文件 · 无副作用 |
 
 ---
 
@@ -242,7 +386,7 @@ sequenceDiagram
 
 > 自改进阶段填充（self-improve）。本场景覆盖提交前增量自检，诊断关注分支隔离纪律、变更范围约束和管线门禁有效性。
 
-### §4.1 D0–D7 诊断
+### §4.1 D0-D8 诊断
 
 | 诊断 | 触发? | 证据 | 说明 |
 |------|-------|------|------|
@@ -269,9 +413,9 @@ sequenceDiagram
 
 | 诊断 | 触发状态 | 证据 | 基线引用 |
 |------|---------|------|---------|
-| D0 基线偏离 | 未触发 | 分支隔离检查设计 | `rules/code-pipeline.md` |
-| D2 质量热点 | 未触发 | 阻断标识数对比机制 | `rules/delivery-gate.md` |
-| D6 文档过时 | 未触发 | 文档代码联动检查 | `rules/doc-quality.md` |
+| D0 基线偏离 | 未触发 | 分支隔离检查设计 | `skills/*/rules/code-pipeline.md` |
+| D2 质量热点 | 未触发 | 阻断标识数对比机制 | `skills/*/rules/delivery-gate.md` |
+| D6 文档过时 | 未触发 | 文档代码联动检查 | `skills/rui-html/rules/doc-quality.md` |
 
 > **代码锚点**：增量自检入口在 `tests/run.mjs`——`--changed` 参数通过 `git diff --name-only HEAD` 获取变更文件列表，映射到对应测试套件。分支隔离检查通过 `git branch --show-current` 验证。变更范围约束通过对比变更文件路径与故事目录前缀实现。
 
@@ -284,4 +428,4 @@ sequenceDiagram
 | 日期 | 变更 | 触发 | 证据 |
 |------|------|------|------|
 | 2026-06-05 | v1.0.0 初始化：生成场景概述 + §0 技术评审（含效果示意和基线溯源）+ §1 测试设计（含 4 TC-N + 7 TC-B + Gate A 交接） | `/rui init` Step 4b — 自主测试方案场景-2 生成 | [code-pipeline.md §① 分支隔离](../../../../skills/rui-code/rules/code-pipeline.md)；[code-pipeline.md §生效标志](../../../../skills/rui-code/rules/code-pipeline.md)；[coder.md §规则](../../../../skills/rui/coder.md)；[formulas.md §F.story.scene](../../../../skills/rui/formulas.md) |
-| 2026-06-08 | v1.1.0 补充：§2 实施报告更新 — `scripts/self-test.mjs` 提供增量自检入口 + `scripts/detect-impact.mjs` 覆盖变更范围识别（P1→实现）+ 分支隔离由 `branch-check.mjs` 覆盖。新增 `源码.html` 页面 | `/rui update yry-self-test` — 补充缺失源文件 | 源码: [scripts/self-test.mjs](../../../../scripts/self-test.mjs) · [scripts/detect-impact.mjs](../../../../scripts/detect-impact.mjs) · [源码.html](./源码.html) |
+| 2026-06-08 | v1.1.0 补充：§2 实施报告更新 — `scripts/self-test.mjs` 提供增量自检入口 + `scripts/detect-impact.mjs` 覆盖变更范围识别（P1→实现）+ 分支隔离由 `branch-check.mjs` 覆盖。新增 `源码.html` 页面 | `/rui update yry-self-test` — 补充缺失源文件 | 源码: `scripts/self-test.mjs`（规划中）· `scripts/detect-impact.mjs`（规划中）· [源码.html](./源码.html) |

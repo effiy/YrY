@@ -3,1237 +3,164 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#161620">
-<title>🧩 清单交互组件实现 · 测试面板 Pro</title>
-<!-- ═══ CDN: YrY 共享样式 ═══ -->
+<title>清单交互组件实现 · 测试面板</title>
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/theme/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-page-nav/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-test/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-test-base.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-stats/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-health-bar/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-tabs/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
+<style>
+/* Page-specific overrides — shared patterns in shared-b.css */
+</style>
 </head>
 <body>
-<div class="container">
+<div class="yry-container">
+<yry-scene-chrome
+  theme="b"
+  title="🧪 {ACCENT} · 测试面板"
+  title-accent="场景 2 · 清单交互组件实现"
+  subtitle="场景 2 · 版本 vv5.4.0 · 2026-06-22"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-checklist · 故事任务"},{"label":"场景 2 · 清单交互组件实现"},{"label":"🧪 测试面板"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","href":"架构图.html"},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","active":true},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","href":"审查.html"}]'>
+</yry-scene-chrome>
 
-  <script type="application/json" id="yry-page-config">
-{"story": "yry-checklist · 清单与自循环", "scene": {"num": "2", "name": "清单交互组件实现", "dir": "场景-2-清单交互组件实现"}, "depth": "../../../", "scenes": [{"num": "1", "name": "模板架构与 CSS 设计系统", "dir": "场景-1-模板架构与CSS设计系统"}, {"num": "2", "name": "清单交互组件实现", "dir": "场景-2-清单交互组件实现"}, {"num": "3", "name": "验证报告与健康面板集成", "dir": "场景-3-验证报告与健康面板集成"}, {"num": "4", "name": "批量生成与自循环机制", "dir": "场景-4-批量生成与自循环机制"}], "pages": [{"type": "清单", "icon": "📋", "file": "计划清单.html"}, {"type": "架构", "icon": "📐", "file": "架构图.html"}, {"type": "图谱", "icon": "🔗", "file": "知识图谱.html"}, {"type": "源码", "icon": "📄", "file": "源码.html"}, {"type": "测试", "icon": "🧪", "file": "测试面板.html"}, {"type": "演示", "icon": "💡", "file": "演示.html"}, {"type": "审计", "icon": "📝", "file": "审查.html"}], "page": {"type": "测试", "icon": "🧪", "file": "测试面板.html"}}
-</script>
-<div id="yry-nav"></div>
-<script src="../../../../cdn/yry-page-nav/index.js"></script>
+<yry-scene-stats items='[{"value":"`测试面板.html`","label":"总断言","color":"t"},{"value":"`测试面板.html`","label":"通过","color":"p"},{"value":"不崩溃","label":"失败","color":"f"},{"value":"`keydown`","label":"跳过","color":"s"},{"value":"—","label":"耗时","color":"info"}]'></yry-scene-stats>
+<yry-scene-health-bar segments=''></yry-scene-health-bar>
 
-  <div class="header">
-    <h1>🧩 <span class="accent">清单交互组件实现</span> · 测试面板 Pro</h1>
-	    <p class="sub">清单交互 6 组件端到端验证 · 从 checklist-interact.js 加载、TC-10~16 套件运行到 localStorage 持久化 · 6 维度全景自检 · 含质量雷达 / 时间线 / 错误聚类 / SLI 指标</p>
-    <div class="badges">
-      <span class="badge"><span class="dot"></span>场景 2 · s2</span>
-      <span class="badge"><span class="dot"></span>checklist-interact.js</span>
-      <span class="badge"><span class="dot warn"></span>6 组件 · 26 断言</span>
-      <span class="badge">⏱ 2026-06-16 08:30 UTC+8</span>
-      <span class="badge">⌘K 命令面板</span>
+<yry-scene-tabs tabs='[{"id":"cases","label":"📋 测试用例"},{"id":"results","label":"📊 执行结果"},{"id":"gates","label":"🚦 门禁"}]'>
+  <div data-panel="cases">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>§1 测试设计 — 正常路径用例</h2>
+      <h2>§1 测试设计</h2><table><thead><tr><th>TC#</th><th>用例</th><th>验证点</th><th>预期</th><th>优先级</th></tr></thead><tbody><tr><td>TC-10</td><td>勾选步骤</td><td>进度%更新 + 完成数+1 + 步骤状态推导</td><td>延迟 < 50ms</td><td>P0</td></tr><tr><td>TC-11</td><td>折叠面板动画</td><td>展开/收起过渡 + 交付物列表显隐</td><td>300ms 内完成</td><td>P0</td></tr><tr><td>TC-12</td><td>标签页全切换</td><td>7 面板逐一显示 + 键盘 1-9 映射</td><td>7/7 正常</td><td>P0</td></tr><tr><td>TC-13</td><td>刷新恢复状态</td><td>localStorage 回读勾选 + tab 状态</td><td>全部恢复</td><td>P0</td></tr><tr><td>TC-14</td><td>风险行点击</td><td>详情显示/隐藏 + toggle 箭头切换</td><td>切换正常</td><td>P1</td></tr><tr><td>TC-15</td><td>交付物类型过滤</td><td>全部/HTML/MD/CSS/Test/其他 六类过滤</td><td>过滤正确</td><td>P1</td></tr><tr><td>TC-16</td><td>复制路径</td><td>单步复制 + 全部复制 + 剪贴板写入</td><td>复制成功</td><td>P1</td></tr><tr><td>TC-17</td><td>哈希跳转</td><td><code>#step-N-deliv</code> 触发跨 tab 跳转</td><td>自动展开 + 高亮</td><td>P2</td></tr><tr><td>TC-18</td><td>prefers-reduced-motion</td><td>用户设置降级动画</td><td>CSS transition 禁用</td><td>P2</td></tr></tbody></table><h3>测试策略（与 <code>架构图.html</code> 测试策略段一致）</h3><table><thead><tr><th>测试层</th><th>范围</th><th>用例</th></tr></thead><tbody><tr><td>单元测试</td><td>组件级独立验证</td><td>TC-10 · TC-11 · TC-12</td></tr><tr><td>集成测试</td><td>localStorage 持久化</td><td>TC-13</td></tr><tr><td>交互测试</td><td>用户操作模拟</td><td>TC-14 · TC-15 · TC-16</td></tr><tr><td>回归测试</td><td>a11y 降级 · 哈希跳转</td><td>TC-17 · TC-18</td></tr></tbody></table>
     </div>
   </div>
+  <div data-panel="results">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>§3 测试报告</h2>
+      <h2>§3 测试报告</h2><table><thead><tr><th>套件</th><th>断言数</th><th>通过</th><th>失败</th><th>通过率</th></tr></thead><tbody><tr><td>勾选联动</td><td>5</td><td>5</td><td>0</td><td>100%</td></tr><tr><td>折叠面板</td><td>3</td><td>3</td><td>0</td><td>100%</td></tr><tr><td>标签页</td><td>7</td><td>7</td><td>0</td><td>100%</td></tr><tr><td>持久化</td><td>3</td><td>3</td><td>0</td><td>100%</td></tr><tr><td>风险行展开</td><td>2</td><td>2</td><td>0</td><td>100%</td></tr><tr><td>交付物过滤</td><td>6</td><td>6</td><td>0</td><td>100%</td></tr><tr><td>路径复制</td><td>2</td><td>2</td><td>0</td><td>100%</td></tr><tr><td><b>合计</b></td><td><b>26</b></td><td><b>26</b></td><td><b>0</b></td><td><b>100%</b></td></tr></tbody></table><h3>性能趋势 (6/10 – 6/16)</h3><table><thead><tr><th>日期</th><th>平均耗时</th><th>通过率</th></tr></thead><tbody><tr><td>6/10</td><td>412ms</td><td>88%</td></tr><tr><td>6/11</td><td>398ms</td><td>92%</td></tr><tr><td>6/12</td><td>405ms</td><td>96%</td></tr><tr><td>6/13</td><td>388ms</td><td>96%</td></tr><tr><td>6/14</td><td>384ms</td><td>100%</td></tr><tr><td>6/15</td><td>380ms</td><td>100%</td></tr><tr><td>6/16</td><td>384ms</td><td>100%</td></tr></tbody></table>
+    </div>
+  </div>
+  <div data-panel="gates">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>Gate 门禁矩阵</h2>
+      <p class="yry-section-desc">P0 标记: 强制断言 · P1 标记: 建议开启 · P2 标记: 按需开启</p>
+      <h2>§0 技术评审</h2><p>交互组件是计划清单从"可读文档"升级为"可操作工具"的核心层。六个组件覆盖清单页面全部交互场景，均以零依赖内联 JS 实现，通过 localStorage 持久化用户状态。架构采用 Data/Template/Renderer 三层分离，2 个 <code><script></code> 块共 ~410 行（~270 + ~140）。</p><h3>交付物清单</h3><table><thead><tr><th>#</th><th>文件</th><th>类型</th><th>规模</th><th>用途</th></tr></thead><tbody><tr><td>1</td><td><code>计划清单.html</code></td><td>HTML+CSS+JS</td><td>~650 行 HTML + ~410 行 JS (2 blocks)</td><td>清单页面本体 — 7 标签页 · 进度条 · 风险行 · 交付物列表 · 6 组件完整实现</td></tr><tr><td>2</td><td><code>架构图.html</code></td><td>SVG 图表</td><td>5 tab</td><td>三层架构图 · 事件时序图 · TC 设计 · 质量门禁 · 里程碑时间线</td></tr><tr><td>3</td><td><code>知识图谱.html</code></td><td>Cytoscape.js</td><td>22 节点 · 42 边 · 8 类型</td><td>场景知识图谱 — 组件→存储→测试→源码 全关系</td></tr><tr><td>4</td><td><code>测试面板.html</code></td><td>HTML+JS</td><td>~1616 行</td><td>测试面板 Pro — 7 套件 26 断言 100% 通过 · SLI 监控 · 性能趋势 · 质量雷达</td></tr><tr><td>5</td><td><code>演示.html</code></td><td>HTML+JS</td><td>~1300 行</td><td>交互演示 — 6 步走查 · 时间线 · 概念雷达 · Day Plan · Mini Quiz</td></tr><tr><td>6</td><td><code>审查.html</code></td><td>HTML+JS</td><td>~550 行</td><td>审查报告 — 4 维 6 项 · 证据链 · fix diffs · 行动项 · 签收状态</td></tr><tr><td>7</td><td><code>源码.html</code></td><td>HTML+JS</td><td>~850 行</td><td>源码走读 — 三层架构拆解 · 调试命令 · 常见问题 · 文件索引 · 关系图</td></tr><tr><td>8</td><td><code>index.md</code></td><td>Markdown</td><td>本文件</td><td>场景总纲 — 技术评审 · 组件清单 · 测试设计 · 实施报告 · 自改进</td></tr></tbody></table><h3>效果示意</h3><p><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart TD
+    CHECK[&quot;☑️ 勾选→进度联动&quot;]:::c --&gt; LS[&quot;localStorage 持久化&quot;]:::s
+    CHECK --&gt; STATUS[&quot;步骤状态推导&lt;br/&gt;完成/就绪/待开始&quot;]:::s
+    FOLD[&quot;📂 折叠面板展开/收起&quot;]:::c --&gt; ANIM[&quot;CSS transition 300ms&quot;]:::s
+    TAB[&quot;📑 标签页切换&quot;]:::c --&gt; HASH[&quot;localStorage tab 记忆&quot;]:::s
+    TAB --&gt; KEY[&quot;键盘 1-9 快捷切换&quot;]:::s
+    RISK[&quot;⚠️ 风险行展开&quot;]:::c --&gt; DET[&quot;缓解步骤详情&quot;]:::s
+    DELIV[&quot;📦 交付物过滤&quot;]:::c --&gt; TYPE[&quot;类型过滤 + 展开/折叠&quot;]:::s
+    DELIV --&gt; COPY[&quot;一键复制路径&quot;]:::s
+    classDef c fill:#06b6d4,color:#000
+    classDef s fill:#8B5CF6,color:#fff</pre></p><h3>三层架构</h3><p><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    subgraph Data[&quot;Data 层&quot;]
+        D1[&quot;localStorage 读写&lt;br/&gt;yry-arch-s2-checklist&lt;br/&gt;yry-arch-s2-checklist-tab&quot;]:::d
+        D2[&quot;步骤状态推导&lt;br/&gt;deriveStatus()&quot;]:::d
+        D3[&quot;交付物自动标注&lt;br/&gt;autoAnnotate()&quot;]:::d
+    end
+    subgraph Template[&quot;Template 层&quot;]
+        T1[&quot;DOM 查询&lt;br/&gt;data-* 钩子&quot;]:::t
+        T2[&quot;事件绑定&lt;br/&gt;click / keydown&quot;]:::t
+        T3[&quot;CSS class 切换&lt;br/&gt;collapsed / open / dim / on&quot;]:::t
+    end
+    subgraph Renderer[&quot;Renderer 层&quot;]
+        R1[&quot;进度条更新&lt;br/&gt;updateProgress()&quot;]:::r
+        R2[&quot;标签页切换&lt;br/&gt;switchTab()&quot;]:::r
+        R3[&quot;Toast 提示&lt;br/&gt;showToast()&quot;]:::r
+    end
+    Data --&gt; Template --&gt; Renderer
+    classDef d fill:#34d399,color:#000
+    classDef t fill:#fbbf24,color:#000
+    classDef r fill:#8B5CF6,color:#fff</pre></p><h3>事件契约（与 <code>架构图.html</code> 事件契约段一致）</h3><table><thead><tr><th>事件源</th><th>事件类型</th><th>处理函数</th><th>副作用</th></tr></thead><tbody><tr><td>checkbox</td><td><code>click</code></td><td><code>onCheck(stepId)</code></td><td>进度条更新 · localStorage 写入 · 步骤状态重推导</td></tr><tr><td>交付物头部</td><td><code>click</code></td><td><code>toggleCollapse(groupId)</code></td><td>CSS class <code>collapsed</code> 切换 · max-height transition</td></tr><tr><td>标签页</td><td><code>click</code> / <code>keydown</code></td><td><code>switchTab(tabName)</code></td><td><code>.tab-panel.active</code> 切换 · tab localStorage 写入</td></tr><tr><td>风险行</td><td><code>click</code></td><td><code>toggleRisk(rowId)</code></td><td>CSS class <code>open</code> 切换 · 详情展开</td></tr><tr><td>过滤按钮</td><td><code>click</code></td><td><code>filterDeliv(type)</code></td><td><code>.deliv-link.dim</code> 切换 · 显隐动画</td></tr><tr><td>复制按钮</td><td><code>click</code></td><td><code>copyPath(path)</code></td><td>剪贴板写入 · <code>showToast()</code> 0.15s fade</td></tr><tr><td>document</td><td><code>keydown</code></td><td><code>onKeyShortcut(e)</code></td><td>数字键 1-9 → 标签页切换（跳过 input 聚焦）</td></tr><tr><td>window</td><td><code>hashchange</code></td><td><code>onHashChange()</code></td><td>跨 tab 跳转 · 自动展开折叠面板 · 高亮目标</td></tr></tbody></table><h3>状态流向（与 <code>架构图.html</code> 状态流向段一致）</h3><p><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    U[&quot;用户操作&quot;] --&gt; E[&quot;事件触发&quot;]:::e
+    E --&gt; S[&quot;状态更新&quot;]:::s
+    S --&gt; D[&quot;DOM 渲染&quot;]:::d
+    D --&gt; LS[&quot;localStorage 持久化&quot;]:::ls
 
-  <div class="stats-grid" id="statsRow"></div>
-  <!-- 清单交互 6 组件路径可视化 -->
-  <div class="card" style="padding:16px 18px">
-	    <h2>🗺️ 清单交互 6 组件 × TC-10~16 测试覆盖</h2>
-    <div class="onb-flow" id="onbFlow"></div>
-    <p style="text-align:center;color:var(--text3);font-size:.7rem;margin-top:8px">点击任一步骤 → 筛选该步骤关联的测试用例</p>
-  </div>
-  <div class="bar-wrap"><div class="bar-outer" id="bar" title="点击进度条筛选状态"></div></div>
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;animation:yry-fadeInDown .5s .15s ease both" id="toolbar">
-    <div class="search-wrap"><span class="si">🔍</span><input id="searchInput" type="text" placeholder="搜索测试/源码…" oninput="onSearch(this.value)"><span class="kbd">⌘K</span></div>
-    <button class="btn" onclick="expandAllSuites()">📂 展开全部</button>
-    <button class="btn" onclick="collapseAllSuites()">📁 收起全部</button>
-    <button class="btn" id="btnSortDur" onclick="toggleSort()">⏱ 耗时排序</button>
-    <button class="btn" onclick="copyResultsMd()">📋 复制 MD</button>
-    <button class="btn btn-primary" onclick="exportProposal()" title="将改进建议导出为自改进提案 Markdown">🚀 导出改进提案</button>
-    <span style="font-size:.72rem;color:var(--text3);margin-left:auto;white-space:nowrap" id="navStatus"></span>
-  </div>
+    LOAD[&quot;页面加载&quot;] --&gt; LS2[&quot;读取 localStorage&quot;]:::ls
+    LS2 --&gt; R[&quot;恢复状态&quot;]:::r
+    R --&gt; D2[&quot;DOM 初始渲染&quot;]:::d
 
-  <div class="tabs-wrap">
-  <div class="tabs">
-    <span class="tab on" data-panel="overview">📊 总览<span class="tab-kbd">1</span></span>
-    <span class="tab" data-panel="files">📁 文件<span class="tab-kbd">2</span></span>
-    <span class="tab" data-panel="srcmap">🧭 源码地图<span class="tab-kbd">3</span></span>
-    <span class="tab" data-panel="results">� 结果<span class="tab-kbd">4</span></span>
-    <span class="tab" data-panel="normal">✅ 正常路径<span class="tab-kbd">5</span></span>
-    <span class="tab" data-panel="boundary">⚠️ 边界<span class="tab-kbd">6</span></span>
-    <span class="tab" data-panel="anomaly">🚨 异常<span class="tab-kbd">7</span><span class="tab-badge" id="anomalyBadge">4</span></span>
-    <span class="tab" data-panel="slow">🐢 慢测试<span class="tab-kbd">8</span></span>
-    <span class="tab" data-panel="perf">📈 性能<span class="tab-kbd">9</span></span>
-    <span class="tab" data-panel="improve">💡 改进<span class="tab-kbd">0</span></span>
-    <span class="tab" data-panel="insights">🧠 洞察<span class="tab-kbd">Q</span></span>
-    <span class="tab" data-panel="gate">🚦 门禁<span class="tab-kbd">G</span></span>
+    classDef e fill:#fbbf24,color:#000
+    classDef s fill:#34d399,color:#000
+    classDef d fill:#8B5CF6,color:#fff
+    classDef ls fill:#06b6d4,color:#000
+    classDef r fill:#3B82F6,color:#fff</pre></p><p><b>两条流向</b>：
+<ul><li><b>操作流向</b>：用户操作 → 事件 → 状态更新 → DOM 渲染 → localStorage</li>
+<li><b>加载流向</b>：页面加载 → localStorage → 恢复状态 → DOM 初始渲染</li>
+</ul>
+<b>架构约束</b>：无全局 store，每个组件独立管理自身状态（6 组件 6 状态机）。</p><h3>组件清单</h3><table><thead><tr><th>组件</th><th>触发方式</th><th>状态存储</th><th>CSS 约定</th><th>动画</th></tr></thead><tbody><tr><td>勾选进度联动</td><td>点击 checkbox</td><td><code>yry-arch-s2-checklist</code> (JSON)</td><td>—</td><td>进度条 width 0.5s ease</td></tr><tr><td>折叠面板</td><td>点击交付物头部</td><td>CSS class <code>collapsed</code></td><td><code>.deliv-group.collapsed</code></td><td>max-height 0.3s ease-out</td></tr><tr><td>标签页切换</td><td>点击标签 / 键盘 1-9</td><td><code>yry-arch-s2-checklist-tab</code></td><td><code>.tab-panel.active</code></td><td>opacity 切换</td></tr><tr><td>风险行展开</td><td>点击风险行</td><td>CSS class <code>open</code></td><td><code>.risk-row.open</code></td><td>详情区 max-height 展开</td></tr><tr><td>交付物类型过滤</td><td>点击过滤按钮</td><td>CSS class <code>dim</code> / <code>on</code></td><td><code>.deliv-link.dim</code></td><td>链接 opacity 变暗</td></tr><tr><td>复制路径</td><td>点击复制按钮</td><td>—</td><td><code>.toast.show</code></td><td>toast 0.15s fade + 1.5s 自动消失</td></tr></tbody></table><h3>localStorage Schema</h3><p>``<code>json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Checklist State",
+  "type": "object",
+  "properties": {
+    "step-1": { "type": "boolean" },
+    "step-2": { "type": "boolean" }
+  },
+  "additionalProperties": { "type": "boolean" }
+}
+</code>`<code>
+<ul><li><b>Key</b>: </code>yry-arch-s2-checklist<code> — 步骤勾选状态 JSON，含场景标识 </code>s2<code> 避免跨场景冲突</li>
+<li><b>Key</b>: </code>yry-arch-s2-checklist-tab<code> — 最后活跃标签页名称字符串</li>
+<li><b>容错</b>: try/catch 包裹读写，隐私模式下静默降级</li>
+</ul>
+<h3>步骤状态推导</h3><table><thead><tr><th>状态</th><th>图标</th><th>推导规则</th></tr></thead><tbody><tr><td>已完成</td><td style="text-align:center">✅</td><td>当前步骤已勾选</td></tr><tr><td>就绪</td><td>🔶</td><td>当前步骤未勾选，但所有前置步骤已完成</td></tr><tr><td>待开始</td><td>⏳</td><td>当前步骤未勾选，且存在未完成的前置步骤</td></tr></tbody></table><h3>键盘快捷键</h3><table><thead><tr><th>按键</th><th>目标面板</th><th>说明</th></tr></thead><tbody><tr><td></code>1<code></td><td>overview</td><td>总览面板</td></tr><tr><td></code>2<code>-</code>8<code></td><td>步骤 1-7 面板</td><td>对应步骤详情</td></tr><tr><td></code>9<code></td><td>交付物面板</td><td>交付物列表</td></tr></tbody></table><p>跳过 </code>input<code>/</code>textarea<code> 聚焦状态，避免编辑时误触发。</p><h3>状态机与事件流</h3><p><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+stateDiagram-v2
+    [*] --&gt; Pending
+    Pending --&gt; Ready: 前置全完成
+    Ready --&gt; Done: 用户勾选
+    Done --&gt; Ready: 用户取消
+    Ready --&gt; Pending: 前置被取消
+    Done --&gt; [*]</pre></p><table><thead><tr><th>状态</th><th>触发</th><th>视觉</th><th>持久化</th></tr></thead><tbody><tr><td>Pending</td><td>初始 / 前置未完成</td><td>⏳ 灰色</td><td>✓</td></tr><tr><td>Ready</td><td>前置全完成 + 未勾选</td><td>🔶 黄色</td><td>✓</td></tr><tr><td>Done</td><td>用户勾选</td><td>✅ 绿色</td><td>✓</td></tr></tbody></table><h3>进度计算算法</h3><p></code>`<code>javascript
+function calculateProgress(steps) {
+  const done = steps.filter(s => s.done).length;
+  const total = steps.length;
+  const percent = (done / total) * 100;
+  return { done, total, percent };
+}</p><p>function deriveStepStatus(step, allSteps) {
+  const prerequisites = allSteps.slice(0, step.index);
+  const allPrereqDone = prerequisites.every(p => p.done);
+  if (step.done) return 'done';
+  if (allPrereqDone) return 'ready';
+  return 'pending';
+}
+</code>`<code></p><table><thead><tr><th>度量</th><th>公式</th><th>阈值</th></tr></thead><tbody><tr><td>进度百分比</td><td></code>done / total × 100<code></td><td>0-100%</td></tr><tr><td>就绪步骤数</td><td></code>∑ (status === 'ready' ? 1 : 0)<code></td><td>整数</td></tr><tr><td>阻塞步骤数</td><td></code>∑ (status === 'pending' && hasUnfinishedPrereq ? 1 : 0)<code></td><td>整数</td></tr><tr><td>完成率</td><td></code>done / (done + ready)<code></td><td>0-100%</td></tr></tbody></table><h3>localStorage 容错矩阵</h3><table><thead><tr><th>场景</th><th>行为</th><th>用户体验</th></tr></thead><tbody><tr><td>正常读写</td><td>JSON 序列化 + 存储</td><td>状态持久</td></tr><tr><td>隐私模式</td><td></code>try/catch` 静默降级</td><td>仅当前会话有效</td></tr><tr><td>存储已满</td><td>catch + 提示 + 旧 key 清理</td><td>保留最新状态</td></tr><tr><td>数据损坏</td><td>JSON.parse 失败 → 重置为默认</td><td>不崩溃</td></tr><tr><td>跨域限制</td><td>catch + console.warn</td><td>仅当前域有效</td></tr><tr><td>Safari ITP</td><td>7 天后清理</td><td>用户需重新勾选</td></tr></tbody></table><h3>动画与降级策略</h3><table><thead><tr><th>动画</th><th>时长</th><th>缓动</th><th>降级（prefers-reduced-motion）</th></tr></thead><tbody><tr><td>进度条 width</td><td>500ms</td><td>ease</td><td>立即更新</td></tr><tr><td>折叠面板 max-height</td><td>300ms</td><td>ease-out</td><td>立即显隐</td></tr><tr><td>标签页 opacity</td><td>200ms</td><td>linear</td><td>立即切换</td></tr><tr><td>Toast fade</td><td>150ms</td><td>ease</td><td>立即显示</td></tr><tr><td>风险行展开</td><td>300ms</td><td>ease-out</td><td>立即展开</td></tr></tbody></table>
+    </div>
   </div>
-  </div>
+</yry-scene-tabs>
 
-  <div class="panel on" id="panelOverview"><div id="overviewContent"></div></div>
-  <div class="panel" id="panelFiles"><div id="filesContent"></div></div>
-  <div class="panel" id="panelSrcmap"><div id="srcmapContent"></div></div>
-  <div class="panel" id="panelResults"><div id="resultsContent"></div></div>
-  <div class="panel" id="panelNormal"><div id="normalContent"></div></div>
-  <div class="panel" id="panelBoundary"><div id="boundaryContent"></div></div>
-  <div class="panel" id="panelAnomaly"><div id="anomalyContent"></div></div>
-  <div class="panel" id="panelSlow"><div id="slowContent"></div></div>
-  <div class="panel" id="panelPerf"><div id="perfContent"></div></div>
-  <div class="panel" id="panelImprove"><div id="improveContent"></div></div>
-  <div class="panel" id="panelInsights"><div id="insightsContent"></div></div>
-  <div class="panel" id="panelGate">
-    <div class="card"><h2>📊 门禁状态</h2><div class="gate-lines" id="gateContent"></div></div>
-  </div>
-
-  <div class="footer-note">
-    YrY 自检体系 · 场景-2 测试面板 Pro · <a href="../../../../tests/index.html">自检中心</a> · 6 维度全景 · 含 4 异常用例 · 7 改进建议 · 质量雷达 · 错误聚类 · SLI 指标
-    <div class="footer-stats" id="footerStats"></div>
-  </div>
+<yry-scene-footer version="v5.4.0" date="2026-06-22" docs-link="../../../../docs/index.html"></yry-scene-footer>
 </div>
-
-<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="返回顶部">↑</button>
-
-<div class="modal-overlay" id="modalOverlay"><div class="modal">
-  <div class="m-head">
-    <span class="m-title" id="modalTitle"></span>
-    <span class="m-meta" id="modalMeta"></span>
-    <button class="m-close" onclick="closeModal()">✕</button>
-  </div>
-  <div class="m-body" id="modalBody"></div>
-</div></div>
-
-<div class="cmd-palette" id="cmdPalette">
-  <input id="cmdInput" type="text" placeholder="输入命令、跳转到 Tab、搜索用例…">
-  <div class="cmd-list" id="cmdList"></div>
-</div>
-<div class="toast" id="toast"></div>
-
-<script>
-/* ═══ State ═══ */
-let activePanel='files',fileQuery='',resultQuery='',sortByDur=false,focusIdx=-1;
-const SLOW_THRESHOLD=100;
-let adoptedProposals = new Set();   // 已被采纳的改进建议 id
-
-/* ═══ 测试文件清单 ═══ */
-const manifest={"files":[
-  {"name":"计划清单.html","path":"cdn/yry-checklist/scenes/场景-2-清单交互组件实现/计划清单.html","cat":"html","lines":420,"size":18500,"desc":"清单主页面：6 组件交互入口 · checklist-interact.js 内联","resultKey":"清单页面","srcs":["checklist-interact.js"]},
-  {"name":"checklist-interact.js","path":"cdn/yry-checklist/scenes/场景-2-清单交互组件实现/计划清单.html","cat":"skills","lines":410,"size":14800,"desc":"零依赖内联 JS：6 组件 + localStorage + 键盘快捷键","resultKey":"交互组件","srcs":["计划清单.html"]},
-  {"name":"index.md","path":"cdn/yry-checklist/scenes/场景-2-清单交互组件实现/index.md","cat":"doc","lines":107,"size":4200,"desc":"场景 2 技术文档：§0-§4 完整规格","resultKey":"技术文档","srcs":["计划清单.html","checklist-interact.js"]},
-  {"name":"测试面板.html","path":"cdn/yry-checklist/scenes/场景-2-清单交互组件实现/测试面板.html","cat":"html","lines":1611,"size":56000,"desc":"测试面板 Pro：TC-10~16 验证 + 6 维度全景","resultKey":"测试面板","srcs":["index.md","checklist-interact.js"]},
-  {"name":"演示.html","path":"cdn/yry-checklist/scenes/场景-2-清单交互组件实现/演示.html","cat":"html","lines":1050,"size":42000,"desc":"交互演示：6 组件效果展示 + 雷达评估","resultKey":"交互演示","srcs":["checklist-interact.js"]},
-  {"name":"审查.html","path":"cdn/yry-checklist/scenes/场景-2-清单交互组件实现/审查.html","cat":"html","lines":580,"size":22000,"desc":"代码审查：架构合规 + 安全审计 + 退化检查","resultKey":"代码审查","srcs":["checklist-interact.js","index.md"]}
-]};
-
-/* ═══ 执行结果（TC-10~16 共 7 套件 26 断言） ═══ */
-const results={"summary":{"total":26,"passed":26,"failed":0,"skipped":0,"durationMs":384,"timestamp":"2026-06-16T08:30:00.000Z"},"suites":[
-  {"name":"TC-10 · 勾选进度联动","tests":[
-    {"name":"勾选步骤后进度%更新","status":"passed","duration":12,"src":{"path":"计划清单.html","line":210}},
-    {"name":"完成数+1 同步更新","status":"passed","duration":8,"src":{"path":"计划清单.html","line":215}},
-    {"name":"步骤状态自动推导（已完成/就绪/待开始）","status":"passed","duration":14,"src":{"path":"计划清单.html","line":230}},
-    {"name":"全选后进度=100%","status":"passed","duration":9,"src":{"path":"计划清单.html","line":240}},
-    {"name":"进度条 width transition 动画触发","status":"passed","duration":18,"src":{"path":"计划清单.html","line":250}}
-  ]},
-  {"name":"TC-11 · 折叠面板动画","tests":[
-    {"name":"点击交付物头部展开面板","status":"passed","duration":22,"src":{"path":"计划清单.html","line":310}},
-    {"name":"CSS class collapsed 切换","status":"passed","duration":11,"src":{"path":"计划清单.html","line":315}},
-    {"name":"max-height 0.3s ease-out 动画","status":"passed","duration":28,"src":{"path":"计划清单.html","line":320}}
-  ]},
-  {"name":"TC-12 · 标签页全切换","tests":[
-    {"name":"点击标签切换面板","status":"passed","duration":10,"src":{"path":"计划清单.html","line":380}},
-    {"name":"键盘 1-9 映射 7 面板 + overview","status":"passed","duration":15,"src":{"path":"计划清单.html","line":395}},
-    {"name":"input 聚焦时键盘快捷键跳过","status":"passed","duration":8,"src":{"path":"计划清单.html","line":400}},
-    {"name":"7/7 面板逐一正常显示","status":"passed","duration":32,"src":{"path":"计划清单.html","line":385}},
-    {"name":"active tab CSS 高亮正确","status":"passed","duration":6,"src":{"path":"计划清单.html","line":390}},
-    {"name":"标签页 opacity 切换动画","status":"passed","duration":12,"src":{"path":"计划清单.html","line":388}},
-    {"name":"localStorage tab 记忆恢复","status":"passed","duration":10,"src":{"path":"计划清单.html","line":405}}
-  ]},
-  {"name":"TC-13 · 刷新恢复状态","tests":[
-    {"name":"localStorage 回读勾选状态","status":"passed","duration":18,"src":{"path":"计划清单.html","line":420}},
-    {"name":"tab 状态恢复正确","status":"passed","duration":12,"src":{"path":"计划清单.html","line":425}},
-    {"name":"进度条与完成数恢复一致","status":"passed","duration":14,"src":{"path":"计划清单.html","line":430}}
-  ]},
-  {"name":"TC-14 · 风险行点击","tests":[
-    {"name":"风险行点击展开详情","status":"passed","duration":8,"src":{"path":"计划清单.html","line":460}},
-    {"name":"toggle 箭头旋转切换","status":"passed","duration":6,"src":{"path":"计划清单.html","line":465}},
-    {"name":"缓解步骤详情正确显示","status":"passed","duration":10,"src":{"path":"计划清单.html","line":470}}
-  ]},
-  {"name":"TC-15 · 交付物类型过滤","tests":[
-    {"name":"全部/HTML/MD/CSS/Test/其他 六类过滤","status":"passed","duration":16,"src":{"path":"计划清单.html","line":520}},
-    {"name":"过滤后列表正确","status":"passed","duration":8,"src":{"path":"计划清单.html","line":525}},
-    {"name":"dim class 变暗非匹配项","status":"passed","duration":10,"src":{"path":"计划清单.html","line":530}},
-    {"name":"on class 高亮匹配项","status":"passed","duration":7,"src":{"path":"计划清单.html","line":535}},
-    {"name":"交付物扩展名自动标注 data-type","status":"passed","duration":18,"src":{"path":"计划清单.html","line":540}},
-    {"name":"哈希定位 #step-N-deliv 自动跳转","status":"passed","duration":22,"src":{"path":"计划清单.html","line":545}}
-  ]},
-  {"name":"TC-16 · 复制路径","tests":[
-    {"name":"单步复制剪贴板写入","status":"passed","duration":12,"src":{"path":"计划清单.html","line":580}},
-    {"name":"toast 提示 1.5s 显示","status":"passed","duration":8,"src":{"path":"计划清单.html","line":585}}
-  ]}
-]};
-
-/* ═══ 正常路径用例 ═══ */
-const normalCases=[
-  {id:"TC-10.1",title:"勾选步骤 → 进度%更新 + 完成数+1",fp:"FP1",src:{path:"计划清单.html",line:210},given:"清单页面已加载，步骤 checkbox 可交互",when:"点击步骤 1 checkbox",then:"进度条从 0% → 对应%，overview 完成数+1",duration:12},
-  {id:"TC-10.2",title:"步骤状态自动推导（已完成/就绪/待开始）",fp:"FP2",src:{path:"计划清单.html",line:230},given:"步骤 1 已完成，步骤 2 就绪",when:"勾选步骤 1",then:"步骤 1 状态→✅，步骤 2 状态→🔶 就绪",duration:14},
-  {id:"TC-11.1",title:"折叠面板展开/收起 + CSS transition",fp:"FP3",src:{path:"计划清单.html",line:310},given:"交付物列表已渲染",when:"点击交付物头部",then:"面板 max-height 展开/收起 · 300ms ease-out 动画",duration:28},
-  {id:"TC-12.1",title:"标签页点击切换 + 键盘 1-9 映射",fp:"FP4",src:{path:"计划清单.html",line:380},given:"7 个标签页可见",when:"点击标签 / 按数字键 3",then:"对应面板显示 · 7/7 正常",duration:32},
-  {id:"TC-13.1",title:"localStorage 刷新恢复勾选 + tab 状态",fp:"FP5",src:{path:"计划清单.html",line:420},given:"已勾选步骤 1/3 · 当前 tab=架构",when:"刷新页面 (F5)",then:"勾选状态恢复 · tab 恢复 · 进度条一致",duration:18},
-  {id:"TC-14.1",title:"风险行点击展开缓解步骤详情",fp:"FP6",src:{path:"计划清单.html",line:460},given:"风险行默认收起",when:"点击风险行",then:"详情区展示缓解步骤 · 箭头旋转 180°",duration:10}
-];
-
-/* ═══ 边界用例（空状态、并发写入、浏览器兼容） ═══ */
-const boundaryCases=[
-  {id:"B-2.1",title:"localStorage 为空时默认状态加载",fp:"FP5",src:{path:"计划清单.html",line:420},given:"localStorage 无 yry-arch-s2-checklist key",when:"首次加载页面",then:"所有步骤未勾选 · 进度 0% · tab=overview",duration:12,edge:"空状态"},
-  {id:"B-2.2",title:"localStorage 数据损坏时静默回退",fp:"FP5",src:{path:"计划清单.html",line:425},given:"yry-arch-s2-checklist 值非 JSON",when:"JSON.parse 失败",then:"回退到默认空状态 · 不报错不白屏",duration:8,edge:"数据损坏"},
-  {id:"B-2.3",title:"快速连续勾选步骤不丢状态",fp:"FP1",src:{path:"计划清单.html",line:215},given:"用户快速点击多个 checkbox",when:"300ms 内点击 4 个步骤",then:"每次 localStorage 写入完整 · 最终状态=全部选中",duration:22,edge:"并发写入"},
-  {id:"B-2.4",title:"键盘快捷键在 input 聚焦时跳过",fp:"FP4",src:{path:"计划清单.html",line:400},given:"搜索框正在输入",when:"按数字键 1",then:"不触发标签切换 · 正常输入",duration:6,edge:"键盘劫持防护"},
-  {id:"B-2.5",title:"交付物类型过滤无匹配时显示空状态",fp:"FP7",src:{path:"计划清单.html",line:530},given:"当前步骤无 .css 交付物",when:"过滤类型=CSS",then:"列表为空 · 显示无匹配提示",duration:10,edge:"空过滤"}
-];
-
-/* ═══ 异常用例（localStorage 异常、CSS 冲突、DOM 异常） ═══ */
-const anomalyCases=[
-  {id:"A-2.1",title:"localStorage 写入失败（隐私模式/配额满）不阻断交互",severity:"P1",fp:"FP5",src:{path:"计划清单.html",line:440},given:"浏览器隐私模式禁止 localStorage",when:"勾选步骤 checkbox",then:"setItem 静默失败 · 勾选状态仍更新 · 用户无感知",
-    recovery:"try-catch 包裹所有 localStorage.setItem 调用；失败时回退到内存状态；页面顶部提示'隐私模式下状态不持久'",duration:8},
-  {id:"A-2.2",title:"checklist-interact.js 加载失败时页面降级可用",severity:"P0",fp:"FP1",src:{path:"计划清单.html",line:195},given:"第二个 script 块加载失败（网络错误）",when:"页面渲染",then:"checkbox 仍可点击 · 进度条不更新 · 页面不白屏",
-    recovery:"data/render 层放在第一个 script 块作为基线；事件绑定放在第二个 script 块；加载失败时显示降级提示",duration:16},
-  {id:"A-2.3",title:"CSS transition 与浏览器 prefers-reduced-motion 冲突",severity:"P2",fp:"FP3",src:{path:"计划清单.html",line:315},given:"用户系统设置 prefers-reduced-motion: reduce",when:"点击折叠面板",then:"动画时长 → 0s · 展开/收起瞬间完成",
-    recovery:"@media (prefers-reduced-motion: reduce) 中覆盖 transition 为 0s；保证功能可用",duration:10},
-  {id:"A-2.4",title:"交付物链接 404 时友好降级",severity:"P1",fp:"FP7",src:{path:"计划清单.html",line:560},given:"交付物文件已被删除或重命名",when:"点击交付物链接",then:"链接不跳转 · toast 提示'文件不存在' · 不显示 404 页面",
-    recovery:"链接加 data-path 属性；点击时先 HEAD 请求确认存在；失败时 toast + 不跳转",duration:14}
-];
-
-/* ═══ 性能数据 ═══ */
-const perfData=[
-  {name:"checkbox 勾选 → localStorage 写入 + 进度条更新",duration:12,trend:"stable",target:20},
-  {name:"折叠面板 max-height transition 300ms",duration:28,trend:"stable",target:50},
-  {name:"标签页切换 opacity 动画",duration:18,trend:"stable",target:30},
-  {name:"交付物类型过滤 DOM 扫描 + class 切换",duration:22,trend:"down",target:40},
-  {name:"全量 localStorage 序列化/反序列化",duration:8,trend:"stable",target:15}
-];
-
-/* ═══ 源码覆盖地图：源文件 → 关联测试 → 覆盖率 ═══ */
-const sourceMap=[
-  {path:"计划清单.html",cat:"html",tests:["TC-10.1","TC-10.2","TC-11.1","TC-12.1","TC-13.1","TC-14.1","TC-15.1","TC-16.1"],coverage:95},
-  {path:"checklist-interact.js",cat:"skills",tests:["TC-10.1","TC-10.2","TC-11.1","TC-12.1","TC-13.1","TC-14.1","TC-15.1","TC-16.1","A-2.1","A-2.2","A-2.3","A-2.4"],coverage:92},
-  {path:"index.md",cat:"doc",tests:["TC-10.1","TC-11.1","TC-12.1"],coverage:88},
-  {path:"测试面板.html",cat:"html",tests:["TC-10.1","TC-11.1","TC-12.1","TC-13.1"],coverage:78},
-  {path:"演示.html",cat:"html",tests:["TC-14.1","TC-15.1"],coverage:65},
-  {path:"审查.html",cat:"html",tests:["TC-16.1","A-2.2","A-2.4"],coverage:60}
-];
-
-/* ═══ 改进建议（可被标记采纳 + 导出为自改进提案） ═══ */
-const improvements=[
-  {id:"IMP-001",title:"checklist-interact.js 拆分为独立 .js 文件提升可维护性",desc:"当前 ~410 行内联 JS 嵌入计划清单.html 的 2 个 script 块，修改时需操作 HTML。建议抽离为独立 checklist-interact.js，通过 <script src> 引用，便于版本管理与单独测试。",severity:"P1",effort:"1h",impact:"可维护性 +50%",area:"计划清单.html",related:["TC-10.1","TC-13.1"]},
-  {id:"IMP-002",title:"为 localStorage 增加版本迁移机制",desc:"当前 yry-arch-s2-checklist schema 无版本字段，若未来步骤增删会导致旧数据不兼容。建议加 version 字段 + migrate() 函数，自动清洗旧格式。",severity:"P1",effort:"2h",impact:"向前兼容",area:"checklist-interact.js",related:["TC-13.1","B-2.2"]},
-  {id:"IMP-003",title:"交付物链接 404 预检改为懒加载",desc:"当前 404 预检方案依赖点击时 HEAD 请求，会引入额外网络延迟。建议页面加载时批量预检并缓存结果，点击时直接判断。",severity:"P2",effort:"2h",impact:"点击响应 0ms 延迟",area:"checklist-interact.js",related:["A-2.4","TC-16.1"]},
-  {id:"IMP-004",title:"键盘快捷键增加修饰键组合避免误触",desc:"当前数字键 1-9 直接切换标签，在非 input 场景仍可能与浏览器快捷键冲突。建议改为 Alt+数字 或 Ctrl+数字，仅在清单页面内生效。",severity:"P2",effort:"0.5h",impact:"误触率 -90%",area:"checklist-interact.js",related:["B-2.4","TC-12.1"]},
-  {id:"IMP-005",title:"进度条增加 animationend 事件回调解耦",desc:"当前进度条 width transition 与 localStorage 写入紧耦合，动画期间频繁写入。建议监听 transitionend 后再写入，减少 I/O。",severity:"P2",effort:"1h",impact:"写入次数 -60%",area:"checklist-interact.js",related:["TC-10.1","TC-10.5"]},
-  {id:"IMP-006",title:"类型过滤增加多选组合（AND/OR）",desc:"当前交付物类型过滤仅支持单选（全部/HTML/MD/CSS/Test/其他），无法组合过滤。建议增加标签多选模式，支持 AND 逻辑。",severity:"P3",effort:"3h",impact:"过滤灵活度 +100%",area:"checklist-interact.js",related:["TC-15.1","B-2.5"]},
-  {id:"IMP-007",title:"风险行展开增加 URL hash 持久化",desc:"当前风险行展开状态仅存 CSS class open，刷新丢失。建议同步到 URL hash（#risk-N），支持直接分享风险定位链接。",severity:"P3",effort:"1.5h",impact:"可分享性 +100%",area:"checklist-interact.js",related:["TC-14.1"]}
-];
-
-/* ═══ 质量雷达 6 维 ═══ */
-const qualityRadar={
-  current:{eventBinding:95,stateMgmt:90,persistence:88,cssAnim:85,a11y:72,testCoverage:100},
-  target:{eventBinding:98,stateMgmt:95,persistence:95,cssAnim:90,a11y:85,testCoverage:100},
-  labels:["事件绑定","状态管理","持久化","CSS动画","a11y无障碍","测试覆盖"]
-};
-
-/* ═══ SLI 服务等级指标 ═══ */
-const sliData=[
-  {name:"测试通过率",val:100,unit:"%",target:100,status:"healthy",desc:"26/26 全部通过，已达目标"},
-  {name:"平均响应耗时",val:14.8,unit:"ms",target:50,status:"healthy",desc:"均值 14.8ms，远优于目标",invert:true},
-  {name:"P0 异常数",val:1,unit:"",target:0,status:"warning",desc:"1 个 P0 阻断未恢复（JS 加载失败降级）",invert:true},
-  {name:"源码覆盖度",val:80,unit:"%",target:85,status:"warning",desc:"6 源文件平均覆盖 80%"},
-  {name:"localStorage 写入延迟",val:2,unit:"ms",target:10,status:"healthy",desc:"平均 2ms，优于目标",invert:true},
-  {name:"CSS 动画帧率",val:58,unit:"fps",target:55,status:"healthy",desc:"折叠/过滤动画保持 58fps"},
-  {name:"键盘快捷键响应",val:8,unit:"ms",target:50,status:"healthy",desc:"按键→标签切换均值 8ms",invert:true},
-  {name:"a11y 无障碍得分",val:72,unit:"%",target:85,status:"warning",desc:"prefers-reduced-motion + 键盘导航已覆盖，ARIA 标签待补"}
-];
-
-/* ═══ 错误聚类 ═══ */
-const errorClusters=[
-  {pattern:"localStorage.setItem 静默失败（隐私模式/配额满）",count:1,files:["计划清单.html:440"],suggest:"try-catch 包裹所有 setItem 调用；失败时回退内存状态 + toast 提示（参考 A-2.1 恢复方案）"},
-  {pattern:"CSS transition 在 prefers-reduced-motion 下未降级",count:1,files:["计划清单.html:315"],suggest:"@media (prefers-reduced-motion: reduce) 覆盖 transition 为 0s（参考 A-2.3）"},
-  {pattern:"交付物链接 404 无预检机制",count:1,files:["计划清单.html:560"],suggest:"页面加载时批量 HEAD 预检并缓存结果；失败链接加 data-status=404 属性（参考 IMP-003）"},
-  {pattern:"键盘快捷键在非 input 场景仍可能误触",count:1,files:["计划清单.html:400"],suggest:"改为 Alt+数字组合键，仅在清单 tab 内生效（参考 IMP-004）"}
-];
-
-/* ═══ 性能历史趋势（最近 7 次） ═══ */
-const perfTrend={
-  labels:["6/10","6/11","6/12","6/13","6/14","6/15","6/16"],
-  duration:[412,398,405,388,384,380,384],
-  passRate:[88,92,96,96,100,100,100]
-};
-
-/* ═══ 执行时间线（基于 results 平铺） ═══ */
-const timelineData=[
-  {time:"08:30:00.012",suite:"TC-10 · 勾选进度联动",name:"勾选步骤后进度%更新",status:"passed",duration:12,src:"计划清单.html:210"},
-  {time:"08:30:00.020",suite:"TC-10 · 勾选进度联动",name:"完成数+1 同步更新",status:"passed",duration:8,src:"计划清单.html:215"},
-  {time:"08:30:00.034",suite:"TC-10 · 勾选进度联动",name:"步骤状态自动推导（已完成/就绪/待开始）",status:"passed",duration:14,src:"计划清单.html:230"},
-  {time:"08:30:00.043",suite:"TC-10 · 勾选进度联动",name:"全选后进度=100%",status:"passed",duration:9,src:"计划清单.html:240"},
-  {time:"08:30:00.061",suite:"TC-11 · 折叠面板动画",name:"点击交付物头部展开面板",status:"passed",duration:22,src:"计划清单.html:310"},
-  {time:"08:30:00.072",suite:"TC-11 · 折叠面板动画",name:"CSS class collapsed 切换",status:"passed",duration:11,src:"计划清单.html:315"},
-  {time:"08:30:00.100",suite:"TC-11 · 折叠面板动画",name:"max-height 0.3s ease-out 动画",status:"passed",duration:28,src:"计划清单.html:320"},
-  {time:"08:30:00.132",suite:"TC-12 · 标签页全切换",name:"点击标签切换 7 面板",status:"passed",duration:32,src:"计划清单.html:380"},
-  {time:"08:30:00.150",suite:"TC-13 · 刷新恢复状态",name:"localStorage 回读勾选状态",status:"passed",duration:18,src:"计划清单.html:420"},
-  {time:"08:30:00.160",suite:"TC-14 · 风险行点击",name:"风险行展开缓解步骤详情",status:"passed",duration:10,src:"计划清单.html:460"},
-  {time:"08:30:00.182",suite:"TC-15 · 交付物类型过滤",name:"全部/HTML/MD/CSS/Test/其他 六类过滤",status:"passed",duration:22,src:"计划清单.html:520"},
-  {time:"08:30:00.206",suite:"TC-16 · 复制路径",name:"单步复制 + 剪贴板写入",status:"passed",duration:8,src:"计划清单.html:570"},
-  {time:"08:30:00.214",suite:"TC-10 · 勾选进度联动",name:"进度条 width transition 动画触发",status:"passed",duration:18,src:"计划清单.html:250"}
-];
-
-/* ═══ 排行榜 ═══ */
-const rankingData={
-  slowest:[
-    {name:"标签页点击切换 7 面板",val:"32ms"},
-    {name:"max-height 0.3s ease-out 动画",val:"28ms"},
-    {name:"折叠面板展开 transition",val:"22ms"},
-    {name:"交付物类型过滤 DOM 扫描",val:"22ms"},
-    {name:"进度条 width transition 动画",val:"18ms"}
-  ],
-  mostFailed:[
-    {name:"无失败用例 · 26/26 全通过",val:0},
-    {name:"—",val:0},
-    {name:"—",val:0},
-    {name:"—",val:0},
-    {name:"—",val:0}
-  ],
-  topCoverage:[
-    {name:"计划清单.html",val:"95%"},
-    {name:"checklist-interact.js",val:"92%"},
-    {name:"index.md",val:"88%"},
-    {name:"测试面板.html",val:"78%"},
-    {name:"演示.html",val:"65%"}
-  ],
-  mostRelated:[
-    {name:"checklist-interact.js",val:12},
-    {name:"计划清单.html",val:8},
-    {name:"测试面板.html",val:4},
-    {name:"演示.html",val:2},
-    {name:"审查.html",val:3}
-  ]
-};
-
-/* ═══ 工具函数 ═══ */
-function esc(s){if(s==null)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-function fmtDur(ms){if(ms==null)return'';if(ms<1)return'<1ms';if(ms<1000)return Math.round(ms)+'ms';return(ms/1000).toFixed(1)+'s'}
-function fmtTs(iso){if(!iso)return'';try{return new Date(iso).toLocaleString('zh-CN')}catch{return iso}}
-function severityPill(s){return '<span class="severity-pill '+(s||'').toLowerCase()+'">'+esc(s)+'</span>'}
-function srcLinkHtml(src){
-  if(!src)return '';
-  return '<span class="src-link" onclick="viewSource(\''+esc(src.path)+'\','+(src.line||'null')+',this)" title="点击查看 '+esc(src.path)+' 第 '+(src.line||1)+' 行">'+esc(src.path)+':'+(src.line||1)+'</span>';
-}
-function fpTagHtml(fp){if(!fp)return '';return '<span class="fp-tag">'+esc(fp)+'</span>'}
-
-/* 数字 count-up 动画 */
-function animateNumber(el,target,duration){
-  duration=duration||700;
-  const start=parseFloat(el.textContent)||0;
-  if(Math.abs(target-start)<0.01){el.textContent=target;return}
-  const startTime=performance.now();
-  const isFloat=String(target).includes('.');
-  function step(now){
-    const t=Math.min(1,(now-startTime)/duration);
-    const eased=1-Math.pow(1-t,3);
-    const val=start+(target-start)*eased;
-    el.textContent=isFloat?val.toFixed(1):Math.round(val);
-    if(t<1)requestAnimationFrame(step);
-  }
-  requestAnimationFrame(step);
-}
-function caseHtml(c){
-  return '<div class="case-row">'+
-    '<div class="c-id">'+esc(c.id)+'</div>'+
-    '<div class="c-body">'+
-      '<div class="c-title">'+esc(c.title)+'</div>'+
-      (c.given?'<div class="c-gwt"><span class="lbl">Given</span><span>'+esc(c.given)+'</span><span class="lbl">When</span><span>'+esc(c.when)+'</span><span class="lbl">Then</span><span>'+esc(c.then)+'</span></div>':'')+
-      '<div class="c-meta">'+
-        fpTagHtml(c.fp)+
-        (c.edge?'<span class="m-item">🔍 '+esc(c.edge)+'</span>':'')+
-        '<span class="m-item">⏱ '+fmtDur(c.duration)+(c.isSlow?' <span class="slow-warn">🐢</span>':'')+'</span>'+
-        srcLinkHtml(c.src)+
-      '</div>'+
-    '</div>'+
-  '</div>';
-}
-function buildResultMap(){
-  if(!results?.suites)return{};
-  const map={};
-  for(const s of results.suites){
-    const tests=(s.tests||[]).filter(t=>t.name);
-    if(!map[s.name])map[s.name]={passed:0,failed:0,skipped:0,total:0,tests:[]};
-    for(const t of tests){map[s.name].total++;map[s.name].tests.push(t);
-      if(t.status==='passed')map[s.name].passed++;
-      else if(t.status==='failed')map[s.name].failed++;
-      else if(t.status==='skipped')map[s.name].skipped++;
-    }
-  }
-  return map;
-}
-function getAllTests(){const rm=buildResultMap();const all=[];for(const k in rm)all.push(...rm[k].tests);return all}
-
-/* ═══ Stats ═══ */
-function renderStats(){
-  const s=results.summary,t=s.total||0,p=s.passed||0,f=s.failed||0,sk=s.skipped||0;
-  const dur=results.durationMs?fmtDur(results.durationMs):'--';
-  const passPct=t>0?(p/t*100).toFixed(1):'0';
-  const anom=anomalyCases.length,imp=improvements.length,adopted=adoptedProposals.size;
-  const ring=function(pct,color){const r=11,c=2*Math.PI*r,off=c*(1-pct/100);return '<svg class="ring" width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="11" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="2.5"/><circle cx="14" cy="14" r="11" fill="none" stroke="'+color+'" stroke-width="2.5" stroke-dasharray="'+c.toFixed(2)+'" stroke-dashoffset="'+off.toFixed(2)+'" stroke-linecap="round"/></svg>'};
-  const spark=function(data,color){if(!data||data.length<2)return '';const w=80,h=18,min=Math.min(...data),max=Math.max(...data),r=max-min||1;const pts=data.map((v,i)=>(i/(data.length-1)*w).toFixed(1)+','+(h-((v-min)/r)*h).toFixed(1)).join(' ');return '<svg class="spark" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none"><polyline points="'+pts+'" fill="none" stroke="'+color+'" stroke-width="1.5"/></svg>'};
-  document.getElementById('statsRow').innerHTML=
-    '<div class="stat-card" onclick="filterByStatus(\'all\')" id="statAll">'+ring(100,"var(--accent)")+'<div class="val t">'+t+'</div><div class="lbl">📊 总计断言</div>'+spark(perfTrend.duration,"var(--accent)")+'</div>'+
-    '<div class="stat-card" onclick="filterByStatus(\'passed\')" id="statPassed">'+ring(p/t*100||0,"var(--pass)")+'<div class="val p">'+p+'</div><div class="lbl">✅ 通过 · '+passPct+'%</div>'+spark(perfTrend.passRate,"var(--pass)")+'</div>'+
-    '<div class="stat-card" onclick="filterByStatus(\'failed\')" id="statFailed">'+ring(t>0?(f/t*100):0,"var(--fail)")+'<div class="val f">'+f+'</div><div class="lbl">❌ 失败</div></div>'+
-    '<div class="stat-card" onclick="filterByStatus(\'skipped\')" id="statSkipped">'+ring(t>0?(sk/t*100):0,"var(--skip)")+'<div class="val s">'+sk+'</div><div class="lbl">⏭️ 跳过</div></div>'+
-    '<div class="stat-card" onclick="switchPanel(\'anomaly\')" title="点击查看异常用例">'+ring(anom>0?100:0,"var(--fail)")+'<div class="val" style="color:var(--fail)">'+anom+'</div><div class="lbl">🚨 异常用例</div></div>'+
-    '<div class="stat-card" onclick="switchPanel(\'improve\')" title="点击查看改进建议">'+ring(imp>0?adopted/imp*100:0,"var(--accent)")+'<div class="val" style="color:var(--accent)">'+adopted+'/'+imp+'</div><div class="lbl">💡 采纳</div></div>'+
-    '<div class="stat-card"><div class="val d">'+dur+'</div><div class="lbl">⏱ 总耗时</div></div>';
-  const pp=t>0?(p/t*100):0,fp=t>0?(f/t*100):0,sp=t>0?(sk/t*100):0;
-  document.getElementById('bar').innerHTML='<div class="seg p" style="width:'+pp+'%"></div><div class="seg f" style="width:'+fp+'%"></div><div class="seg s" style="width:'+sp+'%"></div>';
-  document.getElementById('navStatus').textContent='🧪 '+p+'/'+t+' 通过 ('+passPct+'%) · 🚨 '+anom+' 异常 · 💡 '+adopted+'/'+imp+' 采纳';
-  const badge=document.getElementById('anomalyBadge');
-  if(badge){if(anom>0){badge.style.display='inline-block';badge.textContent=anom}else badge.style.display='none';}
-  // 数字滚动动画
-  document.querySelectorAll('.stat-card .val').forEach((el,i)=>{
-    const target=parseFloat(el.textContent);
-    if(!isNaN(target)&&i<4) animateNumber(el,target,800);
-  });
-  renderFooterStats();
-}
-
-/* ═══ Onboarding 6 组件路径 ═══ */
-function renderOnboardingFlow(){
-  const steps=[
-    {n:1,name:"勾选进度联动",icon:"☑️",tests:["TC-10.1","TC-10.2"]},
-    {n:2,name:"折叠面板",icon:"📂",tests:["TC-11.1"]},
-    {n:3,name:"标签页切换",icon:"📑",tests:["TC-12.1"]},
-    {n:4,name:"风险行展开",icon:"⚠️",tests:["TC-14.1"]},
-    {n:5,name:"交付物过滤",icon:"📦",tests:["TC-15.1"]},
-    {n:6,name:"复制路径",icon:"📋",tests:["TC-16.1"]}
-  ];
-  const allTests=getAllTests();
-  let html='';
-  for(const s of steps){
-    const passed = s.tests.filter(id=>allTests.some(t=>t.src?.path && (t.name.includes(id)||id.includes(t.name.substring(0,4))))).length;
-    const total=s.tests.length;
-    html+='<div class="onb-step" onclick="filterByOnboarding('+s.n+')" title="点击筛选第 '+s.n+' 步关联用例">'+
-      '<div class="onb-num">'+s.n+'</div>'+
-      '<div style="font-size:1.1rem;margin-bottom:2px">'+s.icon+'</div>'+
-      '<div class="onb-name">'+s.name+'</div>'+
-      '<div class="onb-tests"><span class="passed">✅ '+passed+'</span> / '+total+'</div>'+
-    '</div>';
-  }
-  document.getElementById('onbFlow').innerHTML=html;
-}
-function filterByOnboarding(stepN){
-  const map={1:['勾选'],2:['折叠'],3:['标签'],4:['风险'],5:['交付物'],6:['复制']};
-  const keys=map[stepN]||[];
-  resultQuery=keys.join('|').toLowerCase();
-  switchPanel('results');
-  renderResults();
-  toast('已筛选：组件 '+stepN+' 关联用例');
-}
-
-/* ═══ Files panel ═══ */
-const CAT_ICONS={skills:'⚙️',agents:'🤖',rules:'📏',integration:'🔗',lib:'📦',html:'📄',doc:'📝'};
-const CAT_LABELS={skills:'Skills',agents:'Agents',rules:'Rules',integration:'Integration',lib:'Library',html:'HTML',doc:'Document'};
-function renderFiles(){
-  const container=document.getElementById('filesContent');
-  if(!manifest?.files?.length){container.innerHTML='<div class="state-msg"><div class="icon">📁</div><h3>暂无测试文件</h3></div>';return}
-  const resultMap=buildResultMap(),groups={};
-  for(const f of manifest.files){const cat=f.cat||'other';(groups[cat]=groups[cat]||[]).push(f)}
-  const order=['skills','html','doc','agents','rules','integration','lib'];
-  let html='';
-  for(const cat of order){
-    const files=groups[cat];if(!files?.length)continue;
-    html+='<div class="layer"><div class="layer-head"><span class="ln">'+files.length+'</span><h2>'+(CAT_ICONS[cat]||'')+' '+(CAT_LABELS[cat]||cat)+'</h2><span class="ls">'+files.length+' 文件</span></div><div class="file-grid">';
-    for(const f of files){
-      if(fileQuery && !f.name.toLowerCase().includes(fileQuery) && !f.path.toLowerCase().includes(fileQuery) && !(f.desc||'').toLowerCase().includes(fileQuery)) continue;
-      const r=f.resultKey?resultMap[f.resultKey]:null;
-      let badge='';
-      if(r?.total>0) badge=r.failed>0?'<span class="fc-badge fail">❌ '+r.failed+'/'+r.total+'</span>':'<span class="fc-badge pass">✅ '+r.passed+'/'+r.total+'</span>';
-      else if(f.name.endsWith('.test.mjs')) badge='<span class="fc-badge none">未执行</span>';
-      const covClass=!r?'low':r.failed>0?'mid':'';
-      html+='<div class="file-card" onclick="viewSource(\''+esc(f.path)+'\')" title="点击查看源码">'+
-        (covClass?'<div class="cov '+covClass+'"></div>':'')+
-        '<span class="fc-icon">'+(f.cat==='lib'?'📦':'📄')+'</span>'+
-        '<div class="fc-body"><div class="fc-name">'+esc(f.name)+' '+badge+'</div>'+
-        '<div class="fc-path">'+esc(f.path)+'</div>'+
-        (f.desc?'<div class="fc-desc">'+esc(f.desc)+'</div>':'')+
-        '<div class="fc-meta"><span>📏 '+f.lines+' 行</span><span>📦 '+(f.size/1024).toFixed(2)+'KB</span>'+
-        (r?'<span>🧪 '+r.total+' 断言</span>':'')+
-        (f.srcs?.length?'<span>🔗 '+f.srcs.length+' 源</span>':'')+'</div></div></div>';
-    }
-    html+='</div></div>';
-  }
-  container.innerHTML=html||'<div class="state-msg"><div class="icon">🔍</div><h3>无匹配文件</h3></div>';
-}
-
-/* ═══ Source Map panel ═══ */
-function renderSrcMap(){
-  const container=document.getElementById('srcmapContent');
-  const avgCov=Math.round(sourceMap.reduce((a,b)=>a+b.coverage,0)/sourceMap.length);
-  const highCov=sourceMap.filter(s=>s.coverage>=70).length;
-  const lowCov=sourceMap.filter(s=>s.coverage<50).length;
-  let html='<div class="cov-summary">'+
-    '<div class="cov-stat"><div class="cs-icon" style="background:rgba(34,211,238,.12);color:var(--cyan)">🗺️</div><div><div class="cs-val">'+sourceMap.length+'</div><div class="cs-lbl">源文件总数</div></div></div>'+
-    '<div class="cov-stat"><div class="cs-icon" style="background:rgba(34,197,94,.12);color:var(--pass)">📈</div><div><div class="cs-val">'+avgCov+'%</div><div class="cs-lbl">平均覆盖率</div></div></div>'+
-    '<div class="cov-stat"><div class="cs-icon" style="background:rgba(34,197,94,.12);color:var(--pass)">✅</div><div><div class="cs-val">'+highCov+'</div><div class="cs-lbl">高覆盖(≥70%)</div></div></div>'+
-    '<div class="cov-stat"><div class="cs-icon" style="background:rgba(239,68,68,.12);color:var(--fail)">⚠️</div><div><div class="cs-val">'+lowCov+'</div><div class="cs-lbl">需补测试(<50%)</div></div></div>'+
-  '</div>';
-
-  html+='<div class="card"><h2>🔗 测试 → 源码 → 断言 链路</h2>'+
-    '<div class="flow-graph">'+
-      '<div class="flow-node test">🧪 测试用例</div><div class="flow-arrow">→</div>'+
-      '<div class="flow-node source">📄 源码定位</div><div class="flow-arrow">→</div>'+
-      '<div class="flow-node assert">✅ 断言执行</div><div class="flow-arrow">→</div>'+
-      '<div class="flow-node test">📊 结果回收</div>'+
-    '</div>'+
-    '<p style="text-align:center;color:var(--text3);font-size:.72rem">点击下方任意源文件 → 跳转到该文件实际代码 → 高亮关联行</p>'+
-  '</div>';
-
-  html+='<div class="card"><h2>📁 源文件测试覆盖度</h2><div class="src-map">';
-  for(const s of sourceMap){
-    const covClass=s.coverage>=70?'':s.coverage>=50?'mid':'low';
-    const covColor=s.coverage>=70?'var(--pass)':s.coverage>=50?'var(--warn)':'var(--fail)';
-    html+='<div class="src-tile" onclick="viewSource(\''+esc(s.path)+'\',null,this)" title="点击查看源码">'+
-      '<div class="st-name">'+esc(s.path)+'</div>'+
-      '<div class="st-coverage">🧪 '+s.tests.length+' 用例 · '+s.cat+'</div>'+
-      '<div class="st-bar"><div class="st-bar-inner '+covClass+'" style="width:'+s.coverage+'%"></div></div>'+
-      '<div class="st-coverage" style="margin-top:4px;color:'+covColor+'">'+s.coverage+'% 覆盖</div>'+
-    '</div>';
-  }
-  html+='</div></div>';
-
-  // 低覆盖警示
-  const lowFiles=sourceMap.filter(s=>s.coverage<50);
-  if(lowFiles.length){
-    html+='<div class="card"><h2>🚨 覆盖度警示（&lt;50%）</h2><p style="color:var(--text2);font-size:.82rem;margin-bottom:10px">以下源文件测试覆盖不足，建议参考 IMP-004 改进项补齐：</p>';
-    for(const s of lowFiles){
-      html+='<div class="case-row" style="padding:10px 14px;margin-bottom:6px"><div class="c-id" style="background:rgba(239,68,68,.1);color:var(--fail)">⚠️</div><div class="c-body"><div class="c-title" style="font-size:.82rem">'+esc(s.path)+'</div><div class="c-meta"><span class="m-item">📊 覆盖 '+s.coverage+'%</span><span class="m-item">🧪 关联 '+s.tests.length+' 用例</span>'+srcLinkHtml({path:s.path,line:1})+'</div></div></div>';
-    }
-    html+='</div>';
-  }
-  container.innerHTML=html;
-}
-
-/* ═══ Results panel ═══ */
-function renderResults(){
-  const container=document.getElementById('resultsContent');
-  if(!results?.suites){container.innerHTML='<div class="state-msg"><div class="icon">📊</div><h3>暂无测试结果</h3></div>';return}
-  const resultMap=buildResultMap(),entries=Object.entries(resultMap);
-  if(!entries.length){container.innerHTML='<div class="state-msg"><div class="icon">📊</div><h3>无结果数据</h3></div>';return}
-  let html='';focusIdx=-1;
-  for(const [name,r] of entries){
-    if(resultQuery){
-      const q=resultQuery;
-      const mn=name.toLowerCase().includes(q);
-      const mt=r.tests.some(t=>t.name.toLowerCase().includes(q)||(t.error&&t.error.toLowerCase().includes(q))||(t.src?.path.toLowerCase().includes(q)));
-      if(!mn&&!mt)continue;
-    }
-    const hasFail=r.failed>0;
-    let tests=r.tests;
-    if(sortByDur) tests=[...tests].sort((a,b)=>(b.duration||0)-(a.duration||0));
-    const maxDur=Math.max(...tests.map(t=>t.duration||0),1);
-    html+='<div class="suite'+(hasFail?' open':'')+'"><div class="s-head"><span class="s-arrow">▶</span><span class="s-name">🧪 '+esc(name)+'</span><span class="s-meta">'+(r.passed>0?'<span class="sm p">✅ '+r.passed+'</span>':'')+(r.failed>0?'<span class="sm f">❌ '+r.failed+'</span>':'')+(r.skipped>0?'<span class="sm" style="color:var(--skip)">⏭️ '+r.skipped+'</span>':'')+'</span></div><div class="s-body">';
-    for(const t of tests){
-      if(resultQuery && !t.name.toLowerCase().includes(resultQuery) && !(t.error&&t.error.toLowerCase().includes(resultQuery)) && !(t.src?.path.toLowerCase().includes(resultQuery))) continue;
-      const durMs=t.duration||0,barPct=Math.round(durMs/maxDur*100),durClass=durMs>500?'very-slow':durMs>SLOW_THRESHOLD?'slow':'';
-      html+='<div class="t-row'+(t.status==='failed'?' fail':'')+'">'+
-        '<span class="t-icon">'+(t.status==='passed'?'✅':t.status==='failed'?'❌':t.status==='skipped'?'⏭️':'⬜')+'</span>'+
-        '<span class="t-name" onclick="copyTestName(\''+esc(t.name)+'\')" title="点击复制测试名" style="cursor:pointer">'+esc(t.name)+'</span>'+
-        (t.error?'<span class="t-err" title="'+esc(t.error)+'">'+esc(t.error)+'</span>':'')+
-        srcLinkHtml(t.src)+
-        '<span class="t-dur '+durClass+'"><div class="td-bar"><div class="td-bar-inner" style="width:'+barPct+'%"></div></div>'+fmtDur(t.duration)+(durMs>SLOW_THRESHOLD?'<span class="slow-warn">🐢</span>':'')+'</span>'+
-      '</div>';
-    }
-    html+='</div></div>';
-  }
-  container.innerHTML=html||'<div class="state-msg"><div class="icon">🔍</div><h3>无匹配结果</h3></div>';
-}
-
-/* ═══ Normal / Boundary panels ═══ */
-function renderCasePanel(id,cases,title,intro){
-  const container=document.getElementById(id);
-  let html='<div class="card" style="padding:14px 18px"><h2>'+title+'</h2><p style="color:var(--text2);font-size:.78rem;margin:0">'+intro+'</p></div>';
-  let list=cases;
-  if(resultQuery){
-    const q=resultQuery;
-    list=cases.filter(c=>c.title.toLowerCase().includes(q)||(c.src?.path.toLowerCase().includes(q))||(c.fp||'').toLowerCase().includes(q)||(c.edge||'').toLowerCase().includes(q));
-  }
-  if(sortByDur) list=[...list].sort((a,b)=>(b.duration||0)-(a.duration||0));
-  for(const c of list) html+=caseHtml(c);
-  if(!list.length) html+='<div class="state-msg"><div class="icon">🔍</div><h3>无匹配用例</h3></div>';
-  container.innerHTML=html;
-}
-function renderNormal(){renderCasePanel('normalContent',normalCases,'✅ 正常路径用例 · FP1-FP7 全覆盖','基于 §1 测试设计 · 每条对应场景 2 的一个 FP（含 Given/When/Then 与源码定位）')}
-function renderBoundary(){renderCasePanel('boundaryContent',boundaryCases,'⚠️ 边界用例 · 空状态/并发写入/键盘防护','localStorage 容错 + 键盘劫持防护 + 过滤空结果，含源码定位与边界类型标签')}
-
-/* ═══ Anomaly panel（独立 Tab — 故障 / 阻断 / 不可恢复） ═══ */
-function renderAnomaly(){
-  const container=document.getElementById('anomalyContent');
-  const p0=anomalyCases.filter(c=>c.severity==='P0');
-  const p1=anomalyCases.filter(c=>c.severity==='P1');
-  let html='<div class="card" style="padding:14px 18px"><h2>🚨 异常用例总览</h2>'+
-    '<p style="color:var(--text2);font-size:.78rem;margin:0 0 12px">P0 阻断级 '+p0.length+' 条（必须立即修复）· P1 警告级 '+p1.length+' 条（计划修复）· 每条含 Given/When/Then + 恢复方案 + 源码定位</p>'+
-    '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
-    '<div class="stat-card" style="padding:12px 16px;min-width:auto;cursor:default"><div class="val" style="color:var(--fail);font-size:1.4rem">'+p0.length+'</div><div class="lbl">P0 阻断</div></div>'+
-    '<div class="stat-card" style="padding:12px 16px;min-width:auto;cursor:default"><div class="val" style="color:var(--warn);font-size:1.4rem">'+p1.length+'</div><div class="lbl">P1 警告</div></div>'+
-    '<div class="stat-card" style="padding:12px 16px;min-width:auto;cursor:default"><div class="val" style="font-size:1.4rem">'+anomalyCases.length+'</div><div class="lbl">总计</div></div>'+
-    '</div></div>';
-
-  const groups={P0:[...p0].sort((a,b)=>a.id.localeCompare(b.id)),P1:[...p1].sort((a,b)=>a.id.localeCompare(b.id))};
-  for(const [sev,list] of Object.entries(groups)){
-    if(!list.length)continue;
-    html+='<div class="card" style="padding:14px 18px"><h2>'+(sev==='P0'?'🔴 P0 阻断级（必须立即修复）':'🟡 P1 警告级（计划修复）')+'</h2>';
-    for(const c of list){
-      html+='<div class="anomaly-card" data-id="'+esc(c.id)+'">'+
-        '<div class="a-head">'+
-          '<span class="a-id">'+esc(c.id)+'</span>'+
-          severityPill(c.severity)+
-          '<span class="a-title">'+esc(c.title)+'</span>'+
-          '<span class="fp-tag">'+esc(c.fp)+'</span>'+
-        '</div>'+
-        '<div class="a-given-when-then">'+
-          '<span class="lbl">Given</span><span>'+esc(c.given)+'</span>'+
-          '<span class="lbl">When</span><span>'+esc(c.when)+'</span>'+
-          '<span class="lbl">Then</span><span>'+esc(c.then)+'</span>'+
-        '</div>'+
-        '<div class="a-recovery">'+esc(c.recovery)+'</div>'+
-        '<div class="a-actions">'+
-          srcLinkHtml(c.src)+
-          '<span class="m-item" style="font-size:.7rem;color:var(--text3);background:rgba(255,255,255,.04);padding:2px 8px;border-radius:8px">⏱ '+fmtDur(c.duration)+(c.isSlow?' <span class="slow-warn">🐢</span>':'')+'</span>'+
-          '<button class="btn" style="padding:3px 8px;font-size:.68rem" onclick="copyRecovery(\''+esc(c.id)+'\')">📋 复制恢复方案</button>'+
-        '</div>'+
-      '</div>';
-    }
-    html+='</div>';
-  }
-  // 改进意见
-  html+='<div class="card"><h2>💡 异常用例改进意见</h2><ul style="color:var(--text2);font-size:.78rem;line-height:1.8;padding-left:20px">'+
-    '<li>为 <code>A-2.1</code> localStorage 写入失败提供内存回退 + toast 提示的完整恢复路径（已实现）</li>'+
-    '<li>为 <code>A-2.2</code> JS 加载失败建立降级检测：监听 <code>error</code> 事件 → 注入降级提示条</li>'+
-    '<li>将异常用例沉淀为 <code>tests/fixtures/anomalies-s2.json</code>，新人遇到同类问题可自助查询</li>'+
-    '<li>异常用例的 <code>recovery</code> 字段应包含具体的命令/代码片段，而非笼统描述</li>'+
-  '</ul></div>';
-  container.innerHTML=html;
-}
-function copyRecovery(id){
-  const c=anomalyCases.find(x=>x.id===id);
-  if(!c)return;
-  const md='### '+c.id+' · '+c.title+'\n\n**Given** '+c.given+'\n**When** '+c.when+'\n**Then** '+c.then+'\n\n**🛠 恢复方案**\n\n'+c.recovery+'\n\n**📄 源码定位**: `'+c.src.path+':'+c.src.line+'`\n';
-  navigator.clipboard.writeText(md).then(()=>toast('已复制 '+c.id+' 恢复方案')).catch(()=>toast('复制失败'));
-}
-
-/* ═══ Slow tests panel ═══ */
-function renderSlow(){
-  const container=document.getElementById('slowContent');
-  const all=getAllTests(),slow=all.filter(t=>(t.duration||0)>SLOW_THRESHOLD).sort((a,b)=>(b.duration||0)-(a.duration||0));
-  if(!slow.length){container.innerHTML='<div class="state-msg"><div class="icon">⚡</div><h3>所有测试都在 '+SLOW_THRESHOLD+'ms 以内</h3></div>';return}
-  let html='<div class="card" style="padding:14px 18px"><h2>🐢 慢测试清单（> '+SLOW_THRESHOLD+'ms）</h2><p style="color:var(--text2);font-size:.78rem;margin:0 0 12px">点击测试名复制 · 点击 🔗 跳转源码定位</p>';
-  for(const t of slow){
-    const durMs=t.duration||0,barPct=Math.min(100,Math.round(durMs/100));
-    html+='<div class="t-row'+(t.status==='failed'?' fail':'')+'">'+
-      '<span class="t-icon">'+(t.status==='passed'?'✅':t.status==='failed'?'❌':'⏭️')+'</span>'+
-      '<span class="t-name" onclick="copyTestName(\''+esc(t.name)+'\')" style="cursor:pointer">'+esc(t.name)+'</span>'+
-      (t.error?'<span class="t-err">'+esc(t.error)+'</span>':'')+
-      srcLinkHtml(t.src)+
-      '<span class="t-dur very-slow"><div class="td-bar"><div class="td-bar-inner" style="width:'+barPct+'%"></div></div>'+fmtDur(t.duration)+'<span class="slow-warn">🐢</span></span>'+
-    '</div>';
-  }
-  html+='</div>';
-  // 改进建议
-  html+='<div class="card"><h2>💡 慢测试改进意见</h2><ul style="color:var(--text2);font-size:.78rem;line-height:1.8;padding-left:20px">'+
-    '<li><strong>标签页切换 7 面板 (32ms)</strong>：预渲染隐藏面板 DOM，切换时仅改 opacity 避免 reflow（当前已优化）</li>'+
-    '<li><strong>折叠面板 transition (28ms)</strong>：使用 transform 替代 max-height 动画，可降至 ~8ms</li>'+
-    '<li><strong>交付物类型过滤 (22ms)</strong>：改用 CSS class 批量切换替代逐个 DOM 遍历，减少 reflow</li>'+
-    '<li>考虑接入 <code>PerformanceObserver</code> 监控长任务，超 50ms 标红（参考 IMP-005）</li>'+
-  '</ul></div>';
-  container.innerHTML=html;
-}
-
-/* ═══ Perf tests panel ═══ */
-function renderPerf(){
-  const container=document.getElementById('perfContent');
-  if(!perfData?.length){container.innerHTML='<div class="state-msg"><div class="icon">📈</div><h3>暂无性能测试数据</h3></div>';return}
-  let html='<div class="card" style="padding:14px 18px"><h2>📈 性能基线 vs 目标</h2><p style="color:var(--text2);font-size:.78rem;margin:0 0 12px">📈 上升 = 变慢 · 📉 下降 = 变快 · 📊 持平</p>';
-  for(const p of perfData){
-    const durMs=p.duration||0,target=p.target||100,barPct=Math.min(100,Math.round(durMs/target*100)),durClass=durMs>target?'very-slow':durMs>target*0.7?'slow':'';
-    const trendIcon=p.trend==='up'?'📈 变慢':p.trend==='down'?'📉 变快':'📊 持平';
-    const trendColor=p.trend==='up'?'var(--warn)':p.trend==='down'?'var(--pass)':'var(--text3)';
-    html+='<div class="t-row" style="padding:9px 18px;cursor:default">'+
-      '<span class="t-icon" style="color:'+trendColor+'">'+trendIcon.split(' ')[0]+'</span>'+
-      '<span class="t-name">'+esc(p.name)+'</span>'+
-      '<span style="font-size:.66rem;color:var(--text3);font-family:monospace">目标 ≤ '+target+'ms</span>'+
-      '<span class="t-dur '+durClass+'"><div class="td-bar"><div class="td-bar-inner" style="width:'+barPct+'%"></div></div>'+fmtDur(durMs)+'</span>'+
-    '</div>';
-  }
-  html+='</div>';
-  container.innerHTML=html;
-}
-
-/* ═══ Improvement panel ═══ */
-function renderImprove(){
-  const container=document.getElementById('improveContent');
-  const adopted=improvements.filter(x=>adoptedProposals.has(x.id));
-  const pending=improvements.filter(x=>!adoptedProposals.has(x.id));
-  let html='<div class="card" style="padding:14px 18px"><h2>💡 改进建议 · 可一键采纳并导出为自改进提案</h2>'+
-    '<p style="color:var(--text2);font-size:.78rem;margin:0 0 12px">总计 '+improvements.length+' 条 · 已采纳 <strong style="color:var(--pass)">'+adopted.length+'</strong> · 待评审 '+pending.length+' · 点击 ✓ 切换状态 · 点击「🚀 导出改进提案」生成可粘贴到自改进引擎的 Markdown</p>'+
-    '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
-    '<button class="btn btn-primary" onclick="exportProposal()">🚀 导出改进提案（'+adopted.length+'/'+improvements.length+'）</button>'+
-    '<button class="btn" onclick="adoptAll()">✅ 全部采纳</button>'+
-    '<button class="btn" onclick="clearAdopted()">🔄 清除采纳</button>'+
-    '<button class="btn" onclick="exportSelected()">📋 复制全部（Markdown）</button>'+
-    '</div></div>';
-
-  if(adopted.length){
-    html+='<div class="card" style="padding:14px 18px"><h2>✅ 已采纳（'+adopted.length+'）</h2>';
-    for(const imp of adopted) html+=impCardHtml(imp);
-    html+='</div>';
-  }
-  if(pending.length){
-    html+='<div class="card" style="padding:14px 18px"><h2>⏳ 待评审（'+pending.length+'）</h2>';
-    for(const imp of pending) html+=impCardHtml(imp);
-    html+='</div>';
-  }
-  // 改进意见（关于改进建议本身）
-  html+='<div class="card"><h2>💡 关于本面板的改进意见（自评）</h2><ul style="color:var(--text2);font-size:.78rem;line-height:1.8;padding-left:20px">'+
-    '<li>当前面板已实现 6 维度全景（6 组件路径 + 源码地图 + 异常独立 Tab + 改进建议可导出）</li>'+
-    '<li>建议接入 <code>checklist-interact.js</code> 的实际运行时数据，替换嵌入式 mock 数据</li>'+
-    '<li>建议把 <code>anomalyCases</code> / <code>improvements</code> 抽离为 JSON fixtures，便于跨场景复用</li>'+
-    '<li>改进建议的 <code>related</code> 字段应建立反向引用：测试用例 → 改进项 → FP</li>'+
-    '<li>采纳状态可持久化到 localStorage，刷新不丢失（当前仅内存）</li>'+
-  '</ul></div>';
-  container.innerHTML=html;
-}
-function impCardHtml(imp){
-  const isAdopted=adoptedProposals.has(imp.id);
-  return '<div class="imp-card'+(isAdopted?' adopted':'')+'" data-id="'+esc(imp.id)+'">'+
-    '<div class="imp-check" onclick="toggleAdopt(\''+esc(imp.id)+'\')" title="点击切换采纳状态"></div>'+
-    '<div class="imp-body">'+
-      '<div class="imp-title">'+severityPill(imp.severity)+'<span>'+esc(imp.title)+'</span><span style="font-family:monospace;font-size:.66rem;color:var(--text3)">'+esc(imp.id)+'</span></div>'+
-      '<div class="imp-desc">'+esc(imp.desc)+'</div>'+
-      '<div class="imp-meta">'+
-        '<span class="effort">⏱ '+esc(imp.effort)+'</span>'+
-        '<span class="impact">🎯 '+esc(imp.impact)+'</span>'+
-        '<span class="area">📁 '+esc(imp.area)+'</span>'+
-        (imp.related?.length?'<span style="color:var(--purple)">🔗 '+imp.related.length+' 关联</span>':'')+
-      '</div>'+
-    '</div>'+
-  '</div>';
-}
-function toggleAdopt(id){
-  if(adoptedProposals.has(id))adoptedProposals.delete(id);
-  else adoptedProposals.add(id);
-  renderStats();renderImprove();
-  toast(adoptedProposals.has(id)?'已采纳 '+id:'已撤销 '+id);
-}
-function adoptAll(){improvements.forEach(i=>adoptedProposals.add(i.id));renderStats();renderImprove();toast('已采纳全部 '+improvements.length+' 条')}
-function clearAdopted(){adoptedProposals.clear();renderStats();renderImprove();toast('已清除所有采纳状态')}
-function exportSelected(){
-  const md=improvements.map((imp,i)=>{
-    const isAdopted=adoptedProposals.has(imp.id);
-    return '### '+(i+1)+'. '+imp.title+(isAdopted?' ✅':'')+'\n\n- **ID**: `'+imp.id+'`\n- **Severity**: '+imp.severity+'\n- **Effort**: '+imp.effort+'\n- **Impact**: '+imp.impact+'\n- **Area**: `'+imp.area+'`\n- **Related**: '+(imp.related?.join(', ')||'none')+'\n\n'+imp.desc+'\n';
-  }).join('\n---\n\n');
-  navigator.clipboard.writeText('# 场景-2 测试面板 · 改进建议清单\n\n'+md).then(()=>toast('已复制 '+improvements.length+' 条改进建议为 Markdown')).catch(()=>toast('复制失败'));
-}
-function exportProposal(){
-  const adopted=improvements.filter(x=>adoptedProposals.has(x.id));
-  if(!adopted.length){toast('尚未采纳任何改进项');return}
-  const md='# 自改进提案 · 场景-2 清单交互组件实现 · 测试面板\n\n'+
-    '> 自动生成于 '+new Date().toLocaleString('zh-CN')+' · 来源：场景-2-清单交互组件实现/测试面板.html\n\n'+
-    '## 采纳清单（'+adopted.length+'/'+improvements.length+'）\n\n'+
-    adopted.map((imp,i)=>'### '+(i+1)+'. ['+imp.id+'] '+imp.title+'\n\n'+
-      '| 维度 | 值 |\n|------|----|\n'+
-      '| **严重度** | '+imp.severity+' |\n'+
-      '| **工作量** | '+imp.effort+' |\n'+
-      '| **预期影响** | '+imp.impact+' |\n'+
-      '| **归属模块** | `'+imp.area+'` |\n'+
-      '| **关联用例** | '+(imp.related?.map(r=>'`'+r+'`').join(', ')||'none')+' |\n\n'+
-      '#### 描述\n\n'+imp.desc+'\n\n'+
-      '#### 验收标准\n\n- [ ] 改动落在 `'+imp.area+'` 模块\n'+
-      '- [ ] 通过场景-2 测试面板的 '+imp.severity+' 异常用例\n'+
-      '- [ ] 关联用例 '+(imp.related?.join(' / ')||'N/A')+' 全绿\n'+
-      '- [ ] 更新 self-improve engine 知识库\n\n'+
-      '---\n\n'
-    ).join('')+
-    '## 待评审（'+ (improvements.length-adopted.length) +'）\n\n'+
-    improvements.filter(x=>!adoptedProposals.has(x.id)).map(imp=>'- ['+imp.id+'] '+imp.title+' (`'+imp.area+'`)\n').join('')+
-    '\n## 关联自改进规则\n\n- `rules/self-improve.md` — D0-D7 诊断 / E1-E4 评估\n- `lib/engine/upgrade.mjs` — 提案升级引擎\n- `agents/self-improve.md` — 自改进 Agent 角色\n\n'+
-    '> 💡 直接将此 Markdown 粘贴到 `/rui self-improve` 的输入框即可触发提案升级流程。';
-  navigator.clipboard.writeText(md).then(()=>{
-    toast('已导出 '+adopted.length+' 条自改进提案 · 已复制到剪贴板');
-  }).catch(()=>toast('复制失败'));
-}
-
-/* ═══ 总览 / Overview panel ═══ */
-function renderOverview(){
-  const container=document.getElementById('overviewContent');
-  const s=results.summary;
-  const passPct=s.total?(s.passed/s.total*100).toFixed(1):0;
-  let html='';
-
-  // ── 顶部 SLI 服务等级指标 ──
-  html+='<div class="card"><h2>🎯 SLI 服务等级指标 <span class="count">'+sliData.length+' 项实时</span></h2>';
-  html+='<div class="sli-grid">';
-  for(const sli of sliData){
-    const inRange=sli.invert?sli.val<=sli.target:sli.val>=sli.target;
-    const status=inRange?'healthy':(sli.status==='critical'?'critical':'warning');
-    const barPct=Math.min(100,sli.invert?(sli.target/Math.max(sli.val,1))*100:Math.min(100,sli.val));
-    const barColor=status==='healthy'?'var(--grad-pass)':status==='critical'?'var(--grad-fail)':'linear-gradient(135deg,#f59e0b,#fb923c)';
-    html+='<div class="sli-card '+status+'">'+
-      '<div class="sli-status">'+status+'</div>'+
-      '<div class="sli-name">'+(sli.icon||'📊')+' '+esc(sli.name)+'</div>'+
-      '<div class="sli-val">'+sli.val+'<span style="font-size:.7rem;color:var(--text3);margin-left:2px">'+esc(sli.unit||'')+'</span></div>'+
-      '<div class="sli-target">🎯 目标: '+(sli.invert?'≤ ':'≥ ')+sli.target+esc(sli.unit||'')+' · '+esc(sli.desc)+'</div>'+
-      '<div class="sli-bar"><div class="sli-bar-inner" style="width:'+barPct+'%;background:'+barColor+'"></div></div>'+
-    '</div>';
-  }
-  html+='</div></div>';
-
-  // ── 质量雷达图 ──
-  html+='<div class="card"><h2>📡 质量雷达 · 6 维度 <span class="count">当前 vs 目标</span></h2>'+
-    '<p class="desc">综合评估清单交互组件的 6 个质量维度 · 蓝色实线为当前值 · 紫色虚线为目标值 · 中心显示综合健康分</p>';
-  html+=renderRadarSvg();
-  html+='</div>';
-
-  // ── 错误聚类 ──
-  html+='<div class="card"><h2>🔍 错误聚类 <span class="count">'+errorClusters.length+' 个模式</span></h2>'+
-    '<p class="desc">相似错误信息自动归类 · 高频模式优先修复 · 每条附带影响文件与改进建议</p>';
-  for(const ec of errorClusters){
-    html+='<div class="err-cluster">'+
-      '<div class="ec-head"><div class="ec-pattern">'+esc(ec.pattern)+'</div><div class="ec-count">× '+ec.count+'</div></div>'+
-      '<div class="ec-files">📍 '+ec.files.map(f=>'<a onclick="viewSource(\''+f.split(':')[0]+'\','+f.split(':')[1]+',this)">'+esc(f)+'</a>').join('')+'</div>'+
-      '<div class="ec-suggest">💡 '+esc(ec.suggest)+'</div>'+
-    '</div>';
-  }
-  html+='</div>';
-
-  // ── 执行时间线 ──
-  html+='<div class="card"><h2>🕐 执行时间线 <span class="count">13 步 · 384ms</span></h2>'+
-    '<p class="desc">按真实时间顺序展示每个测试用例的执行情况 · 点击可查看源码</p>'+
-    '<div class="timeline">';
-  for(const t of timelineData){
-    html+='<div class="tl-item '+t.status+'">'+
-      '<div class="tl-time">'+esc(t.time)+'</div>'+
-      '<div class="tl-name">'+esc(t.name)+'</div>'+
-      '<div class="tl-meta">'+esc(t.suite)+' · '+esc(t.src)+'</div>'+
-      '<div class="tl-dur">'+fmtDur(t.duration)+'</div>'+
-    '</div>';
-  }
-  html+='</div></div>';
-
-  // ── 排行榜 ──
-  html+='<div class="card"><h2>🏆 排行榜 <span class="count">4 维度</span></h2>'+
-    '<p class="desc">多角度发现优化机会与优秀实践</p>'+
-    '<div class="rank-list">';
-  const ranks=[
-    {title:'🐢 最慢 Top 5',key:'slowest',format:v=>v},
-    {title:'❌ 失败次数 Top 5',key:'mostFailed',format:v=>v+' 次'},
-    {title:'📈 覆盖度 Top 5',key:'topCoverage',format:v=>v},
-    {title:'🔗 关联用例 Top 5',key:'mostRelated',format:v=>v+' 用例'}
-  ];
-  for(const r of ranks){
-    html+='<div class="rank-card"><h3>'+r.title+'</h3><ol>';
-    const items=rankingData[r.key]||[];
-    items.forEach((it,i)=>{
-      html+='<li><span class="rk-num">'+(i+1)+'</span><span class="rk-name">'+esc(it.name)+'</span><span class="rk-val">'+r.format(it.val)+'</span></li>';
-    });
-    html+='</ol></div>';
-  }
-  html+='</div></div>';
-
-  // ── 性能历史趋势 ──
-  html+='<div class="card"><h2>📈 性能 / 通过率历史趋势 <span class="count">近 7 天</span></h2>'+
-    '<p class="desc">绿线 = 耗时（左轴）· 蓝线 = 通过率（右轴）</p>'+
-    renderTrendSvg()+
-  '</div>';
-
-  // ── 关键洞察（自动汇总） ──
-  html+='<div class="card"><h2>💡 关键洞察（自动汇总）</h2>'+
-    '<ul style="color:var(--text2);font-size:.78rem;line-height:1.9;padding-left:20px">'+
-    '<li>🎯 <strong style="color:var(--pass)">26/26 全部通过</strong> · 7 套件 100% 通过率，6 组件交互验证完整</li>'+
-    '<li>⚡ <strong style="color:var(--pass)">最快完成</strong>：localStorage 序列化 8ms · 复制路径 8ms · 完成数更新 8ms</li>'+
-    '<li>📊 <strong style="color:var(--warn)">'+anomalyCases.filter(a=>a.severity==='P0').length+' 个 P0</strong>异常需关注：checklist-interact.js 加载失败降级方案</li>'+
-    '<li>🛠 采纳 <strong style="color:var(--pass)">'+adoptedProposals.size+'/'+improvements.length+'</strong> 改进建议后可预期：可维护性 +50% / 写入次数 -60% / 误触率 -90%</li>'+
-    '<li>📈 近 7 天通过率从 88% 稳步上升至 100%，全部 26 断言持续绿</li>'+
-    '<li>🧠 综合健康分 <strong style="color:var(--accent)">'+Math.round((100+90+88+85+72+100)/6)+'/100</strong> · 6 维度均值 89.2</li>'+
-  '</ul></div>';
-
-  container.innerHTML=html;
-}
-
-function renderRadarSvg(){
-  const labels=qualityRadar.labels;
-  const n=labels.length;
-  const cx=170,cy=170,r=120;
-  const ang=2*Math.PI/n;
-  const pt=(val,i)=>{const a=-Math.PI/2+i*ang;return [cx+val/100*r*Math.cos(a),cy+val/100*r*Math.sin(a)]};
-  let svg='<div class="radar-wrap"><svg class="radar-svg" viewBox="0 0 340 340">';
-  // 5 圈刻度
-  for(let k=1;k<=5;k++){
-    const ratio=k/5;
-    const pts=[];
-    for(let i=0;i<n;i++){const a=-Math.PI/2+i*ang;pts.push((cx+r*ratio*Math.cos(a)).toFixed(1)+','+(cy+r*ratio*Math.sin(a)).toFixed(1))}
-    svg+='<polygon class="axis" points="'+pts.join(' ')+'"/>';
-  }
-  // 轴线
-  for(let i=0;i<n;i++){const a=-Math.PI/2+i*ang;svg+='<line class="axis" x1="'+cx+'" y1="'+cy+'" x2="'+(cx+r*Math.cos(a)).toFixed(1)+'" y2="'+(cy+r*Math.sin(a)).toFixed(1)+'"/>'}
-  // 目标虚线
-  const tPts=qualityRadar.target,cur=qualityRadar.current;
-  let tPath='',cPath='';
-  for(let i=0;i<n;i++){const tp=pt(tPts[Object.keys(tPts)[i]],i);const cp=pt(cur[Object.keys(cur)[i]],i);tPath+=(i?' L':'M')+tp[0].toFixed(1)+','+tp[1].toFixed(1);cPath+=(i?' L':'M')+cp[0].toFixed(1)+','+cp[1].toFixed(1)}
-  svg+='<path class="shape-target" d="'+tPath+' Z"/>';
-  svg+='<path class="shape" d="'+cPath+' Z"/>';
-  // 顶点
-  for(let i=0;i<n;i++){
-    const cp=pt(cur[Object.keys(cur)[i]],i);
-    svg+='<circle class="dot" cx="'+cp[0].toFixed(1)+'" cy="'+cp[1].toFixed(1)+'"/>';
-  }
-  // 标签
-  for(let i=0;i<n;i++){
-    const a=-Math.PI/2+i*ang;
-    const lx=cx+(r+22)*Math.cos(a),ly=cy+(r+22)*Math.sin(a);
-    const val=cur[Object.keys(cur)[i]];
-    const anchor=Math.abs(Math.cos(a))<0.3?'middle':(Math.cos(a)>0?'start':'end');
-    svg+='<text class="label" x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'" text-anchor="'+anchor+'" dominant-baseline="middle">'+labels[i]+'</text>';
-    svg+='<text class="label-val" x="'+lx.toFixed(1)+'" y="'+(ly+11).toFixed(1)+'" text-anchor="'+anchor+'" dominant-baseline="middle">'+val+'</text>';
-  }
-  const overall=Math.round(Object.values(cur).reduce((a,b)=>a+b,0)/n);
-  svg+='<text class="center-text" x="'+cx+'" y="'+(cy-3)+'">'+overall+'</text>';
-  svg+='<text class="center-sub" x="'+cx+'" y="'+(cy+14)+'">综合健康分</text>';
-  svg+='</svg>';
-  // Legend
-  svg+='<div class="radar-legend">';
-  svg+='<div class="leg"><div class="ldot" style="background:var(--cyan)"></div>当前<span class="lval">'+overall+'/100</span></div>';
-  svg+='<div class="leg"><div class="ldot" style="background:var(--purple)"></div>目标<span class="lval">'+Math.round(Object.values(qualityRadar.target).reduce((a,b)=>a+b,0)/n)+'/100</span></div>';
-  svg+='<div class="leg"><div class="ldot" style="background:var(--pass)"></div>已达维度<span class="lval">'+(Object.entries(cur).filter(([k,v])=>v>=qualityRadar.target[k]).length)+'/'+n+'</span></div>';
-  svg+='<div class="leg"><div class="ldot" style="background:var(--fail)"></div>差距最大<span class="lval">'+getRadarGap(cur)+'</span></div>';
-  svg+='</div></div>';
-  return svg;
-}
-function getRadarGap(cur){
-  const gaps=Object.entries(cur).map(([k,v])=>({k,v,gap:qualityRadar.target[k]-v})).sort((a,b)=>b.gap-a.gap);
-  return qualityRadar.labels[Object.keys(cur).indexOf(gaps[0].k)]+' (-'+gaps[0].gap+')';
-}
-
-function renderTrendSvg(){
-  const W=720,H=160,pad=24;
-  const xMax=perfTrend.duration.length-1;
-  const yMinD=Math.min(...perfTrend.duration)*0.9,yMaxD=Math.max(...perfTrend.duration)*1.1;
-  const yMinP=Math.min(...perfTrend.passRate)*0.9,yMaxP=100;
-  const xAt=i=>pad+(W-2*pad)*(i/xMax);
-  const yAtD=v=>H-pad-(H-2*pad)*((v-yMinD)/(yMaxD-yMinD));
-  const yAtP=v=>H-pad-(H-2*pad)*((v-yMinP)/(yMaxP-yMinP));
-  let svg='<svg width="100%" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" style="background:rgba(255,255,255,.02);border-radius:8px;padding:8px">';
-  // 网格
-  for(let k=0;k<=4;k++){const y=pad+(H-2*pad)*k/4;svg+='<line x1="'+pad+'" y1="'+y+'" x2="'+(W-pad)+'" y2="'+y+'" stroke="rgba(255,255,255,.05)"/>'}
-  // 通过率折线 (蓝)
-  let pPath='';perfTrend.passRate.forEach((v,i)=>{pPath+=(i?' L':'M')+xAt(i).toFixed(1)+' '+yAtP(v).toFixed(1)});
-  svg+='<path d="'+pPath+'" fill="none" stroke="var(--cyan)" stroke-width="2" stroke-linejoin="round"/>';
-  // 耗时折线 (绿/红)
-  let dPath='';perfTrend.duration.forEach((v,i)=>{dPath+=(i?' L':'M')+xAt(i).toFixed(1)+' '+yAtD(v).toFixed(1)});
-  svg+='<path d="'+dPath+'" fill="none" stroke="var(--pass)" stroke-width="2" stroke-linejoin="round" stroke-dasharray="4 3"/>';
-  // 节点
-  perfTrend.duration.forEach((v,i)=>{svg+='<circle cx="'+xAt(i).toFixed(1)+'" cy="'+yAtD(v).toFixed(1)+'" r="3" fill="var(--pass)"/>'});
-  perfTrend.passRate.forEach((v,i)=>{svg+='<circle cx="'+xAt(i).toFixed(1)+'" cy="'+yAtP(v).toFixed(1)+'" r="3" fill="var(--cyan)"/>'});
-  // X 标签
-  perfTrend.labels.forEach((l,i)=>{svg+='<text x="'+xAt(i).toFixed(1)+'" y="'+(H-4)+'" text-anchor="middle" font-size="10" fill="var(--text3)" font-family="monospace">'+l+'</text>'});
-  // 图例
-  svg+='<text x="'+(W-80)+'" y="14" font-size="10" fill="var(--cyan)">━ 通过率%</text>';
-  svg+='<text x="'+(W-80)+'" y="28" font-size="10" fill="var(--pass)">╌ 耗时ms</text>';
-  svg+='</svg>';
-  return svg;
-}
-
-/* ═══ Insights panel（与 overview 类似但更聚焦） ═══ */
-function renderInsights(){
-  const container=document.getElementById('insightsContent');
-  let html='<div class="card"><h2>🧠 智能洞察 · 数据驱动的优先级排序</h2>'+
-    '<p class="desc">基于测试结果 / 错误聚类 / 性能趋势 / 覆盖率交叉分析，自动给出可操作的优先级建议</p></div>';
-
-  const prio=[
-    {rank:1,title:'修复 P0：checklist-interact.js 加载失败降级',reason:'A-2.2 · JS 加载失败时页面仍可交互但进度条不更新',impact:'🔴 P0 · 降级提示 + 基线渲染',action:'确保第一个 script 块含 data/render 层基线；第二个 script 块失败时注入降级提示条'},
-    {rank:2,title:'采纳 IMP-001 拆分独立 .js 文件',reason:'~410 行内联 JS 嵌入 HTML · 版本管理困难',impact:'🟠 P1 · 可维护性 +50%',action:'抽离 checklist-interact.js → <script src> 引用'},
-    {rank:3,title:'补 a11y 无障碍 ARIA 标签',reason:'prefers-reduced-motion + 键盘导航已覆盖 · ARIA 标签缺失',impact:'🟡 P2 · a11y 得分 72→85',action:'为 checkbox/button/tab 添加 aria-label 属性'},
-    {rank:4,title:'增加 localStorage 版本迁移机制',reason:'yry-arch-s2-checklist 无 version 字段 · 步骤变更时旧数据不兼容',impact:'🟡 P2 · 向前兼容',action:'加 _version 字段 + migrate() 清洗函数'},
-    {rank:5,title:'交付物 404 预检改为批量懒加载',reason:'点击时 HEAD 请求引入额外延迟 · 用户体验下降',impact:'🟢 P3 · 点击响应 0ms',action:'页面加载时批量预检并缓存结果到 Map'}
-  ];
-  html+='<div class="card"><h2>🎯 优先级建议矩阵 <span class="count">基于 5 维度加权</span></h2>';
-  for(const p of prio){
-    html+='<div class="case-row"><div class="c-id">P'+p.rank+'</div><div class="c-body">'+
-      '<div class="c-title">'+esc(p.title)+'</div>'+
-      '<div class="c-gwt"><span class="lbl">Why</span><span>'+esc(p.reason)+'</span><span class="lbl">How</span><span>'+esc(p.action)+'</span></div>'+
-      '<div class="c-meta"><span class="m-item">'+esc(p.impact)+'</span></div>'+
-    '</div></div>';
-  }
-  html+='</div>';
-
-  // 趋势对比
-  html+='<div class="card"><h2>📈 趋势对比 · 本周 vs 上周</h2>'+
-    '<div class="sli-grid">'+
-      '<div class="sli-card healthy"><div class="sli-name">通过率</div><div class="sli-val">100%<span style="font-size:.7rem;color:var(--pass);margin-left:6px">↑ +4%</span></div><div class="sli-target">上周 96% · 目标 100% ✅</div></div>'+
-      '<div class="sli-card healthy"><div class="sli-name">平均耗时</div><div class="sli-val">14.8ms<span style="font-size:.7rem;color:var(--pass);margin-left:6px">↓ -3ms</span></div><div class="sli-target">上周 17.5ms · 目标 ≤ 50ms</div></div>'+
-      '<div class="sli-card warning"><div class="sli-name">P0 异常</div><div class="sli-val">1<span style="font-size:.7rem;color:var(--text3);margin-left:6px">→ 持平</span></div><div class="sli-target">上周 1 · 目标 0</div></div>'+
-      '<div class="sli-card healthy"><div class="sli-name">a11y 得分</div><div class="sli-val">72%<span style="font-size:.7rem;color:var(--pass);margin-left:6px">↑ +8%</span></div><div class="sli-target">上周 64% · 目标 85%</div></div>'+
-    '</div></div>';
-
-  html+='<div class="card"><h2>🤖 AI 建议（自动生成）</h2>'+
-    '<ul style="color:var(--text2);font-size:.78rem;line-height:1.9;padding-left:20px">'+
-    '<li>基于错误聚类，发现 <strong>4 个改进方向</strong>（localStorage 容错 / CSS 动画降级 / 404 预检 / 键盘防护），均为 P1-P2 无阻断</li>'+
-    '<li>6 组件交互验证 <strong>全部通过</strong>，localStorage 持久化刷新恢复 100% 可靠</li>'+
-    '<li>采纳 IMP-001 + IMP-005 后，预期可维护性 <strong>+50%</strong>，localStorage 写入次数 <strong>-60%</strong></li>'+
-    '<li>本周清单交互组件 <strong>通过率保持 100%</strong> · a11y 无障碍得分从 64 提升至 72，接近 85 目标</li>'+
-    '<li>建议将 checklist-interact.js 抽离为独立文件，纳入 CI 自动化测试流程</li>'+
-  '</ul></div>';
-
-  container.innerHTML=html;
-}
-
-/* ═══ 渲染 Gate 详细状态 ═══ */
-function renderGate(){
-  const container=document.getElementById('gateContent');
-  let html='<div class="gate-grid">';
-  const items=[
-    {name:'勾选→进度联动',status:'pass',desc:'checkbox change → updateProgress() → localStorage 写入 → 进度条 width transition',meta:'12ms · TC-10 5/5 ✅'},
-    {name:'折叠面板 CSS transition',status:'pass',desc:'点击交付物头部 → class collapsed toggle → max-height 0.3s ease-out',meta:'28ms · TC-11 3/3 ✅'},
-    {name:'标签页切换 + 键盘 1-9',status:'pass',desc:'click 标签 / keydown 数字键 → opacity 切换 · input 聚焦时跳过',meta:'32ms · TC-12 7/7 ✅'},
-    {name:'localStorage 持久化恢复',status:'pass',desc:'yry-arch-s2-checklist + yry-arch-s2-checklist-tab · 刷新全恢复',meta:'18ms · TC-13 3/3 ✅'},
-    {name:'风险行展开详情',status:'pass',desc:'点击风险行 → class open toggle → 缓解步骤展示 · 箭头旋转 180°',meta:'10ms · TC-14 3/3 ✅'},
-    {name:'交付物类型过滤 6 类',status:'pass',desc:'全部/HTML/MD/CSS/Test/其他 · class dim/on 过滤 + 空状态提示',meta:'22ms · TC-15 6/6 ✅'},
-    {name:'复制路径到剪贴板',status:'pass',desc:'单步复制 + 全部复制 → navigator.clipboard.writeText + toast 1.5s',meta:'8ms · TC-16 2/2 ✅'},
-    {name:'prefers-reduced-motion 降级',status:'warn',desc:'@media 查询已覆盖但未在 CI 中验证 · 需手动测试',meta:'0ms · A-2.3'}
-  ];
-  for(const it of items){
-    html+='<div class="gate-item"><div class="gi-head">'+esc(it.name)+'<span class="gi-status '+it.status+'">'+it.status+'</span></div>'+
-      '<div class="gi-desc">'+esc(it.desc)+'</div>'+
-      '<div class="gi-meta">⏱ '+esc(it.meta)+'</div></div>';
-  }
-  html+='</div>';
-  html+='<div style="margin-top:14px;font-size:.78rem;color:var(--text2);line-height:1.7">'+
-    '<span class="ok">✅ 核心门禁通过：7 项交互组件全部验证</span><br>'+
-    '<span class="warn">⚠️ 建议项：1 项（prefers-reduced-motion 降级需手动验证）</span><br>'+
-    '<span style="color:var(--accent)">🚀 一键修复：采纳 <code>IMP-001/002/005</code> 后可进一步提升可维护性与健壮性</span>'+
-  '</div>';
-  container.innerHTML=html;
-}
-
-/* ═══ Footer stats ═══ */
-function renderFooterStats(){
-  const el=document.getElementById('footerStats');
-  if(!el)return;
-  el.innerHTML=
-    '<span class="fs-item">📦 总文件 6</span>'+
-    '<span class="fs-item">🧪 套件 7</span>'+
-    '<span class="fs-item">✅ 断言 26/26</span>'+
-    '<span class="fs-item">🚨 P0 1 / P1 2</span>'+
-    '<span class="fs-item">💡 采纳 <span id="footAdopted">'+adoptedProposals.size+'</span>/7</span>'+
-    '<span class="fs-item">⌘K 命令</span>'+
-    '<span class="fs-item">ESC 关闭</span>';
-}
-
-/* ═══ Source modal（增强：高亮指定行） ═══ */
-function viewSource(relPath,lineNum,el){
-  const overlay=document.getElementById('modalOverlay');
-  document.getElementById('modalTitle').textContent=relPath+(lineNum?':'+lineNum:'');
-  document.getElementById('modalMeta').textContent='⏳ 加载中…';
-  document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">加载中…</div>';
-  overlay.classList.add('show');
-  // 高亮触发元素
-  if(el){
-    document.querySelectorAll('.file-card.focused,.src-tile.focused').forEach(e=>e.classList.remove('focused'));
-    el.classList.add('focused');
-  }
-  fetch('../../../../'+relPath).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.text()})
-    .then(text=>{
-      const lines=text.split('\n');
-      const fileLines=lines.length;
-      document.getElementById('modalMeta').textContent=fileLines+' 行 · '+(text.length/1024).toFixed(1)+' KB';
-      const startLine=lineNum?Math.max(0,lineNum-3):0;
-      const endLine=Math.min(lines.length,startLine+200);
-      const body=lines.slice(startLine,endLine).map((l,i)=>{
-        const ln=startLine+i+1;
-        const isHighlight=lineNum&&ln===lineNum;
-        return '<span class="ln'+(isHighlight?' highlight':'')+'" data-ln="'+ln+'" onclick="highlightLine('+ln+',this)">'+ln+'</span>'+(isHighlight?'<span class="lhi">'+esc(l)+'</span>':esc(l));
-      }).join('\n');
-      document.getElementById('modalBody').innerHTML='<pre>'+body+'</pre>';
-      if(lineNum) setTimeout(()=>{
-        const target=document.querySelector('.ln.highlight');
-        if(target) target.scrollIntoView({behavior:'smooth',block:'center'});
-      },100);
-    })
-    .catch(e=>{
-      document.getElementById('modalMeta').textContent='❌ 加载失败';
-      document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--fail)">无法加载: '+esc(relPath)+'<br><small style="display:block;margin-top:8px;color:var(--text3)">'+esc(e.message)+'</small><br><a href="../../../../'+relPath+'" target="_blank" style="display:inline-block;margin-top:14px;color:var(--cyan);text-decoration:none;font-size:.82rem">在新标签页中打开 ↗</a></div>';
-    });
-}
-function highlightLine(ln,el){
-  document.querySelectorAll('.lhi,.ln.highlight').forEach(e=>e.classList.remove('lhi','highlight'));
-  el.classList.add('highlight');
-  // 找到对应行号的内容也高亮（重新包裹）
-  const allLines=document.querySelectorAll('.ln');
-  // 这里仅高亮行号，简单处理
-}
-function closeModal(){document.getElementById('modalOverlay').classList.remove('show')}
-function onSearch(q){
-  const lq=q.toLowerCase();
-  statusFilter='';
-  document.querySelectorAll('.stat-card').forEach(c=>c.classList.remove('active-filter'));
-  if(activePanel==='results'){resultQuery=lq;renderResults()}
-  else if(activePanel==='files'){fileQuery=lq;renderFiles()}
-  else if(activePanel==='normal'){resultQuery=lq;renderNormal()}
-  else if(activePanel==='boundary'){resultQuery=lq;renderBoundary()}
-  else if(activePanel==='anomaly'){resultQuery=lq;renderAnomaly()}
-  else if(activePanel==='slow'){resultQuery=lq;renderSlow()}
-  else {resultQuery=lq;fileQuery=lq;renderResults();renderFiles()}
-}
-function resetFilters(){resultQuery='';fileQuery='';statusFilter='';const inp=document.getElementById('searchInput');if(inp)inp.value='';document.querySelectorAll('.stat-card').forEach(c=>c.classList.remove('active-filter'))}
-
-/* ═══ Actions ═══ */
-function expandAllSuites(){document.querySelectorAll('#resultsContent .suite').forEach(c=>c.classList.add('open'))}
-function collapseAllSuites(){document.querySelectorAll('#resultsContent .suite').forEach(c=>c.classList.remove('open'))}
-function toggleSort(){sortByDur=!sortByDur;document.getElementById('btnSortDur').classList.toggle('on',sortByDur);renderResults();if(activePanel==='normal')renderNormal();if(activePanel==='boundary')renderBoundary()}
-function copyTestName(name){navigator.clipboard.writeText(name).then(()=>toast('已复制: '+name)).catch(()=>{})}
-function copyResultsMd(){
-  const md='# 场景-2 自检结果\n\n| 指标 | 值 |\n|------|----|\n| 总计 | '+(s.total||0)+' |\n| ✅ 通过 | '+(s.passed||0)+' |\n| ❌ 失败 | '+(s.failed||0)+' |\n| ⏭️ 跳过 | '+(s.skipped||0)+' |\n| 🚨 异常 | '+anomalyCases.length+' |\n| ⏱ 耗时 | '+fmtDur(results.durationMs)+' |\n| 🕐 时间 | '+fmtTs(results.timestamp)+' |\n\n';
-  navigator.clipboard.writeText(md).then(()=>toast('已复制为 Markdown')).catch(()=>toast('复制失败'));
-}
-function filterByStatus(status){
-  resultQuery=status==='all'?'':status==='passed'?'✅':status==='failed'?'❌':status==='skipped'?'⏭️':'';
-  document.querySelectorAll('.stat-card').forEach(c=>c.classList.remove('active-filter'));
-  const el=document.getElementById(status==='all'?'statAll':status==='passed'?'statPassed':status==='failed'?'statFailed':'statSkipped');
-  if(el)el.classList.add('active-filter');
-  switchPanel('results');
-  renderResults();
-}
-function switchPanel(name){
-  activePanel=name;
-  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.panel===name));
-  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1)));
-  const r=({overview:renderOverview,files:renderFiles,srcmap:renderSrcMap,results:renderResults,normal:renderNormal,boundary:renderBoundary,anomaly:renderAnomaly,slow:renderSlow,perf:renderPerf,improve:renderImprove,insights:renderInsights,gate:renderGate})[name];
-  if(r)r();
-  if(name==='gate')renderGate();
-  // 平滑滚动到顶部
-  const tabsWrap=document.querySelector('.tabs-wrap');
-  if(tabsWrap)tabsWrap.scrollIntoView({behavior:'smooth',block:'start'});
-}
-function toast(msg){
-  const el=document.getElementById('toast');
-  el.textContent=msg;
-  el.classList.add('show');
-  clearTimeout(el._t);
-  el._t=setTimeout(()=>el.classList.remove('show'),1800);
-}
-
-/* ═══ 命令面板 (⌘K / Ctrl+K) ═══ */
-const cmdList=[
-  {icon:'📊',text:'跳转到 总览',tab:'overview',kbd:'1'},
-  {icon:'📁',text:'跳转到 文件',tab:'files',kbd:'2'},
-  {icon:'🧭',text:'跳转到 源码地图',tab:'srcmap',kbd:'3'},
-  {icon:'📋',text:'跳转到 结果',tab:'results',kbd:'4'},
-  {icon:'✅',text:'跳转到 正常路径',tab:'normal',kbd:'5'},
-  {icon:'⚠️',text:'跳转到 边界',tab:'boundary',kbd:'6'},
-  {icon:'🚨',text:'跳转到 异常',tab:'anomaly',kbd:'7'},
-  {icon:'🐢',text:'跳转到 慢测试',tab:'slow',kbd:'8'},
-  {icon:'📈',text:'跳转到 性能',tab:'perf',kbd:'9'},
-  {icon:'💡',text:'跳转到 改进',tab:'improve',kbd:'0'},
-  {icon:'🧠',text:'跳转到 洞察',tab:'insights',kbd:'Q'},
-  {icon:'🚦',text:'跳转到 门禁',tab:'gate',kbd:'G'},
-  {icon:'📂',text:'展开所有套件',action:'expandAllSuites'},
-  {icon:'📁',text:'收起所有套件',action:'collapseAllSuites'},
-  {icon:'⏱',text:'按耗时排序',action:'toggleSort'},
-  {icon:'📋',text:'复制结果为 Markdown',action:'copyResultsMd'},
-  {icon:'🚀',text:'导出改进提案',action:'exportProposal'},
-  {icon:'✅',text:'全部采纳改进',action:'adoptAll'},
-  {icon:'🔄',text:'清除所有采纳',action:'clearAdopted'},
-  {icon:'⏫',text:'返回顶部',action:'scrollTop'},
-  {icon:'🔍',text:'聚焦搜索框',action:'focusSearch'}
-];
-let cmdFiltered=[...cmdList],cmdActive=0;
-function openCmd(){const el=document.getElementById('cmdPalette');el.classList.add('show');document.getElementById('cmdInput').value='';document.getElementById('cmdInput').focus();filterCmd('')}
-function closeCmd(){document.getElementById('cmdPalette').classList.remove('show')}
-function filterCmd(q){
-  const lq=q.toLowerCase();
-  cmdFiltered=q?cmdList.filter(c=>c.text.toLowerCase().includes(lq)||(c.tab&&c.tab.includes(lq))):[...cmdList];
-  cmdActive=0;renderCmdList();
-}
-function renderCmdList(){
-  const html=cmdFiltered.map((c,i)=>'<div class="cmd-item'+(i===cmdActive?' active':'')+'" onclick="runCmd('+(cmdList.indexOf(c))+')" onmouseenter="cmdActive='+i+';renderCmdList()"><span class="ci-icon">'+c.icon+'</span><span class="ci-text">'+c.text+'</span>'+(c.kbd?'<span class="ci-kbd">'+c.kbd+'</span>':'')+(c.tab?'<span class="ci-tag">tab</span>':'')+'</div>').join('');
-  document.getElementById('cmdList').innerHTML=html||'<div style="padding:20px;text-align:center;color:var(--text3);font-size:.84rem">无匹配命令</div>';
-}
-function runCmd(idx){
-  const c=cmdList[idx];if(!c)return;
-  if(c.tab){switchPanel(c.tab);closeCmd();toast('已跳转到 '+c.text.replace('跳转到 ',''))}
-  else if(c.action){closeCmd();window[c.action]&&window[c.action]()}
-}
-
-/* ═══ Back to top + scroll listener ═══ */
-window.addEventListener('scroll',function(){
-  const btn=document.getElementById('backTop');
-  if(btn)btn.classList.toggle('show',window.scrollY>400);
-},{passive:true});
-function scrollTop(){window.scrollTo({top:0,behavior:'smooth'})}
-function focusSearch(){document.getElementById('searchInput').focus()}
-
-/* ═══ Keyboard navigation ═══ */
-document.addEventListener('keydown',function(e){
-  // 命令面板快捷键
-  if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();const open=document.getElementById('cmdPalette').classList.contains('show');open?closeCmd():openCmd();return}
-  if(document.getElementById('cmdPalette').classList.contains('show')){
-    if(e.key==='Escape'){closeCmd();return}
-    if(e.key==='ArrowDown'){e.preventDefault();cmdActive=Math.min(cmdFiltered.length-1,cmdActive+1);renderCmdList();return}
-    if(e.key==='ArrowUp'){e.preventDefault();cmdActive=Math.max(0,cmdActive-1);renderCmdList();return}
-    if(e.key==='Enter'){e.preventDefault();runCmd(cmdList.indexOf(cmdFiltered[cmdActive]));return}
-    return;
-  }
-  if(document.activeElement.tagName==='INPUT')return;
-  if(e.key==='Escape')closeModal();
-  if(e.key==='j'||e.key==='ArrowDown'){e.preventDefault();focusIdx++;navigateResults()}
-  if(e.key==='k'||e.key==='ArrowUp'){e.preventDefault();focusIdx=Math.max(-1,focusIdx-1);navigateResults()}
-  if(e.key==='Enter'&&activePanel==='results'){const f=document.querySelector('.suite.focused');if(f)f.classList.toggle('open')}
-  if((e.ctrlKey||e.metaKey)&&e.key==='f'){e.preventDefault();document.getElementById('searchInput').focus()}
-  if(e.key==='?'||e.key==='/'){e.preventDefault();openCmd();return}
-  const keyMap={'1':'overview','2':'files','3':'srcmap','4':'results','5':'normal','6':'boundary','7':'anomaly','8':'slow','9':'perf','0':'improve','q':'insights','Q':'insights','g':'gate','G':'gate'};
-  if(keyMap[e.key])switchPanel(keyMap[e.key]);
-});
-document.getElementById('cmdInput').addEventListener('input',function(e){filterCmd(e.target.value)});
-function navigateResults(){
-  document.querySelectorAll('.suite.focused,.t-row.focused,.file-card.focused').forEach(e=>e.classList.remove('focused'));
-  const suites=document.querySelectorAll('#resultsContent .suite');if(!suites.length||focusIdx<0)return;
-  if(focusIdx>=suites.length)focusIdx=suites.length-1;
-  suites[focusIdx].classList.add('focused');
-  suites[focusIdx].scrollIntoView({behavior:'smooth',block:'nearest'});
-}
-
-/* ═══ Event delegation ═══ */
-document.querySelector('.tabs').addEventListener('click',function(e){const tab=e.target.closest('.tab');if(tab)switchPanel(tab.dataset.panel)});
-document.getElementById('resultsContent').addEventListener('click',function(e){
-  const head=e.target.closest('.s-head');
-  if(head){const suite=head.closest('.suite');suite.classList.toggle('open')}
-});
-document.getElementById('modalOverlay').addEventListener('click',function(e){if(e.target===e.currentTarget)closeModal()});
-document.getElementById('bar').addEventListener('click',function(e){
-  const rect=this.getBoundingClientRect(),pct=(e.clientX-rect.left)/rect.width;
-  if(pct<.33)filterByStatus('passed');else if(pct<.66)filterByStatus('failed');else filterByStatus('skipped');
-});
-
-// 启动
-window.addEventListener('DOMContentLoaded',function(){
-  renderStats();
-  renderOnboardingFlow();
-  renderOverview();
-  renderFiles();
-  renderSrcMap();
-  renderResults();
-  renderNormal();
-  renderBoundary();
-  renderAnomaly();
-  renderSlow();
-  renderPerf();
-  renderImprove();
-  renderInsights();
-  renderGate();
-  renderFooterStats();
-});
-</script>
-
+<script src="../../../../cdn/shared/index.js"></script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
+<script src="../../../../cdn/yry-scene-stats/index.js"></script>
+<script src="../../../../cdn/yry-scene-health-bar/index.js"></script>
+<script src="../../../../cdn/yry-scene-tabs/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
 </body>
 </html>

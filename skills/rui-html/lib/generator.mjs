@@ -162,7 +162,7 @@ function buildStatsGridJSON(ctx, docType) {
       const passCount = countDiagnosticPasses(tables);
       return JSON.stringify([
         { value: `${passCount}/8`, label: '诊断通过', color: 'health' },
-        { value: 'D0-D7', label: '覆盖范围', color: 't' },
+        { value: 'D0-D8', label: '覆盖范围', color: 't' },
         { value: 8 - passCount, label: '改进建议', color: 'warn-h' },
       ]);
     }

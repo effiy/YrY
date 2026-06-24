@@ -2,270 +2,77 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>模板与样式 · 架构图 · YryBreadcrumb 任务故事</title>
-<link rel="stylesheet" href="../../../shared\/index\.css">
-<link rel="stylesheet" href="../../../theme\/index\.css">
-<link rel="stylesheet" href="../../../yry\-scene\/index\.css">
-<link rel="stylesheet" href="../../../yry\-checklist\/index\.css">
-<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
-<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
-<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
-<link rel="stylesheet" href="../../../yry-back-top/index.css">
-<link rel="stylesheet" href="../../../yry-scene-header/index.css">
-<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
-<link rel="stylesheet" href="../../../yry\-inline\-helpers\/index\.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<link rel="stylesheet" href="../../../yry\-a11y\/index\.css">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>模板与样式 · 架构图</title>
+<link rel="stylesheet" href="../../../../cdn/fonts/index.css">
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme-mono/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-arch-base.css">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-export-toolbar/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-info-cards/index.css">
 <style>
-
-.container { max-width: 1100px; }
+/* Page-specific overrides — shared patterns in shared-a.css */
+.diagram-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1.5rem;overflow-x:auto;margin-bottom:1.5rem}
+.diagram-container svg{width:100%;min-width:900px;display:block}
+.yry-container{max-width:1200px}
 </style>
 </head>
 <body>
-<a href="#main" class="skip-link">⏩ 跳到主要内容</a>
-<div class="container" id="main">
+<div class="yry-container" id="report-container">
+<yry-scene-chrome
+  theme="a"
+  title="yry-breadcrumb — 场景 2: 模板与样式"
+  subtitle="模板与样式 · vv5.4.0 · 2026-06-22"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-breadcrumb · yry-breadcrumb"},{"label":"场景 2 · 模板与样式"},{"label":"📐 架构图"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","active":true},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","href":"审查.html"}]'
+  toolbar='<div class="yry-export-toolbar yry-toolbar" data-target=".diagram-container" data-filename="yry-breadcrumb-scene2-architecture" data-bg="#020617"><button data-action="copy-svg">📋 Copy SVG</button><button data-action="download-png">🖼 PNG</button><button data-action="download-svg">📄 SVG</button></div>'>
+</yry-scene-chrome>
 
-<div id="breadcrumb-app"></div>
-
-<div id="scene-header-app"></div>
-
-<div id="scene-nav-app"></div>
-
-<div id="cross-nav-app"></div>
-
-<div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-val info">13</div><div class="kpi-label">关键节点</div></div>
-  <div class="kpi-card"><div class="kpi-val accent">4</div><div class="kpi-label">层间数据流</div></div>
-  <div class="kpi-card"><div class="kpi-val pass">1</div><div class="kpi-label">最终输出</div></div>
+<div class="diagram-container">
+  <svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+      </marker>
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#grid)"/>
+    <text x="500" y="300" fill="#475569" font-size="14" text-anchor="middle" font-family="JetBrains Mono,monospace">
+      架构图数据待填充 — 运行 /rui code 生成
+    </text>
+  </svg>
 </div>
 
-<div class="stage-list">
-  <div class="stage-row done">
-    <div class="st-num">1</div>
-    <div class="st-info"><div class="st-name">模板定义</div><div class="st-detail">Vue 3 声明式模板：v-for / v-if / :class / aria-*</div></div>
-    <span class="st-status ok">&#10003;</span>
-    <div class="st-bar"></div>
+<yry-info-cards>
+  <div class="yry-card">
+    <div class="yry-card-header"><div class="yry-card-dot cyan"></div><h3>场景信息</h3></div>
+    <ul>
+      <li><b>场景:</b> 2 · 模板与样式</li>
+      <li><b>故事:</b> yry-breadcrumb · yry-breadcrumb</li>
+      <li><b>版本:</b> vv5.4.0</li>
+    </ul>
   </div>
-  <div class="stage-row done">
-    <div class="st-num">2</div>
-    <div class="st-info"><div class="st-name">样式注入</div><div class="st-detail">CSS 设计令牌 / BEM 命名 / var() fallback / 双模式</div></div>
-    <span class="st-status ok">&#10003;</span>
-    <div class="st-bar"></div>
+  <div class="yry-card">
+    <div class="yry-card-header"><div class="yry-card-dot emerald"></div><h3>数据源</h3></div>
+    <ul>
+      <li><b>场景文档:</b> index.md §0 技术评审</li>
+      <li><b>生成日期:</b> 2026-06-22</li>
+    </ul>
   </div>
-  <div class="stage-row done">
-    <div class="st-num">3</div>
-    <div class="st-info"><div class="st-name">渲染输出</div><div class="st-detail">Loader 挂载 #breadcrumb-app → 浏览器最终呈现</div></div>
-    <span class="st-status ok">&#10003;</span>
-    <div class="st-bar"></div>
-  </div>
+</yry-info-cards>
+
+<yry-scene-footer version="v5.4.0" date="2026-06-22"></yry-scene-footer>
 </div>
-
-<div class="live-bar">
-  <span class="live-dot"></span> Mermaid 图表已渲染
-  <span class="live-resource"><span class="lr-name">flowchart</span><span class="lr-status">OK</span></span>
-  <span class="live-resource"><span class="lr-name">暗色主题</span><span class="lr-status">OK</span></span>
-</div>
-
-<h2>架构图</h2>
-<p>以下流程图展示模板 (Template) 经 Loader 加载后与样式 (Style) 合并渲染到页面的完整路径。</p>
-
-<div class="diagram-wrap glass-card">
-  <span class="dm-badge">MERMAID</span>
-  <pre class="mermaid">
-%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#1e1f2b','primaryTextColor': '#a9b1d6','primaryBorderColor': '#ffc107','lineColor': '#ffc107','secondaryColor': '#2b2d3b','tertiaryColor': '#21232f'}}}%%
-flowchart TB
-    subgraph Template["Template 模板层"]
-        T1["v-for 迭代 items"]:::tpl
-        T2["v-if 条件渲染"]:::tpl
-        T3[":class 动态绑定"]:::tpl
-        T4["aria-label / aria-current a11y"]:::tpl
-    end
-    subgraph Style["Style 样式层"]
-        S1["--yry-color-* 设计令牌"]:::css
-        S2[".bc-sep / .bc-current BEM"]:::css
-        S3["var() fallback 降级值"]:::css
-        S4["prefers-color-scheme 双模式"]:::css
-    end
-    subgraph Loader["Loader 加载层"]
-        L1["index.js Loader 脚本"]:::js
-        L2["Vue 3 createApp 挂载"]:::js
-        L3["异步 ready 事件派发"]:::js
-    end
-    Template --> Loader
-    Style --> Loader
-    Loader --> Page["#breadcrumb-app 页面渲染"]
-    Page --> Output["浏览器最终输出"]
-
-    classDef tpl fill:#ffc10722,stroke:#ffc107,color:#ffc107
-    classDef css fill:#22d3ee22,stroke:#22d3ee,color:#22d3ee
-    classDef js fill:#10b98122,stroke:#10b981,color:#10b981
-  </pre>
-  <div class="dm-caption">图: Template + Style → Loader → Page → 浏览器输出 — 三层架构数据流</div>
-</div>
-
-<div class="tip-box info">
-  <strong>架构洞察:</strong> 这是一个 <strong>三层管道 (Three-Layer Pipeline)</strong> 模式 — Template (Vue 指令) 和 Style (CSS 令牌) 作为两个并行的上游输入层，在 Loader (index.js) 处汇合，经 Vue 3 createApp 挂载后注入到 Page DOM，最终输出至浏览器。关键设计特征：<strong>CSS 令牌驱动</strong>（所有颜色通过 --yry-color-* 控制，支持 prefers-color-scheme 自动切换）、<strong>BEM 低特异性</strong>（.bc-sep / .bc-current 易覆盖）、<strong>var() fallback</strong>（每个 CSS 变量均附带硬编码降级值）。
-</div>
-
-<h2>概念视图</h2>
-<div class="concept-grid">
-  <div class="concept-card">
-    <div class="cc-icon">🖼️</div>
-    <div class="cc-name">Template 模板层</div>
-    <div class="cc-domain">Vue 指令层</div>
-    <div class="cc-desc">Vue 3 声明式模板：v-for 迭代 items 数组生成面包屑项，v-if 控制分隔符插入时机与链接/当前项切换，:class 动态绑定当前页样式，aria-label/aria-current 保证 a11y。</div>
-    <div class="cc-rels">
-      <span class="cc-rel out">→ Loader</span>
-    </div>
-  </div>
-  <div class="concept-card">
-    <div class="cc-icon">🎨</div>
-    <div class="cc-name">Style 样式层</div>
-    <div class="cc-domain">CSS 令牌层</div>
-    <div class="cc-desc">所有颜色通过 --yry-color-* CSS 自定义属性驱动，支持 prefers-color-scheme: light 自动切换；每个 var() 附带硬编码降级值保证令牌不可用时仍可渲染；BEM 命名 .bc-sep/.bc-current 保持低特异性。</div>
-    <div class="cc-rels">
-      <span class="cc-rel out">→ Loader</span>
-    </div>
-  </div>
-  <div class="concept-card">
-    <div class="cc-icon">⚙️</div>
-    <div class="cc-name">Loader 加载层</div>
-    <div class="cc-domain">组件注册层</div>
-    <div class="cc-desc">index.js 异步加载 Vue 3 并通过 createApp 挂载组件；当组件定义就绪时派发 yry-breadcrumb-ready 自定义事件，页面监听此事件后执行挂载，实现解耦加载。</div>
-    <div class="cc-rels">
-      <span class="cc-rel in">← Template · Style</span>
-      <span class="cc-rel out">→ #breadcrumb-app</span>
-    </div>
-  </div>
-  <div class="concept-card">
-    <div class="cc-icon">🌐</div>
-    <div class="cc-name">浏览器最终输出</div>
-    <div class="cc-domain">出口节点</div>
-    <div class="cc-desc">三层管道的最终输出：nav.breadcrumb 渲染为可交互的 DOM 元素，包含正确的 href 链接、aria 属性、CSS 过渡动画，在全平台浏览器中一致呈现。</div>
-    <div class="cc-rels">
-      <span class="cc-rel in">← 页面渲染</span>
-    </div>
-  </div>
-</div>
-
-<div class="tip-box success">
-  <strong>架构完整性:</strong> 场景 2 的三层管道展现了清晰的 <strong>关注点分离</strong>：Template 管结构 (HTML 语义)，Style 管表现 (CSS 变量体系)，Loader 管行为 (Vue 生命周期 + 事件派发)。三层之间通过标准化接口 (Vue props + CSS 变量 + 自定义事件) 耦合，各层可独立演化而不影响其他层。subgraph 隔离了 Template / Style / Loader 各自的 4+4+3 内部节点，对外仅暴露层间数据流边。
-</div>
-
-<h2>说明</h2>
-<p>上图展示场景 2 · <strong>模板与样式</strong> 的三层架构与数据流向。</p>
-
-<h3>Template 层</h3>
-<p><code>v-for</code> 指令遍历 <code>items</code> 数组生成面包屑项；<code>v-if</code> 控制分隔符 '/' 的插入时机 (i &gt; 0) 及链接/当前项的切换；<code>:class</code> 动态绑定当前页样式；<code>aria-label</code> 与 <code>aria-current</code> 保证可访问性。</p>
-
-<h3>Style 层</h3>
-<p>所有颜色值通过 <code>--yry-color-*</code> CSS 自定义属性驱动，支持 <code>prefers-color-scheme: light</code> 自动切换；每个 <code>var()</code> 均附带硬编码后备值，确保令牌不可用时仍可渲染。BEM 命名 <code>.bc-sep</code> / <code>.bc-current</code> 保持低特异性，易于覆盖。</p>
-
-<h3>Loader 层</h3>
-<p><code>index.js</code> 异步加载 Vue 3 并通过 <code>createApp</code> 挂载组件；当组件定义就绪时派发 <code>yry-breadcrumb-ready</code> 自定义事件，页面监听此事件后执行挂载，实现解耦加载。</p>
-
-<p>颜色 <code class="yry-color-tag yry-color-tag--amber">#ffc107</code> 为本场景主色 (amber/gold)，与场景 tag 一致。</p>
-
-<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-<script>mermaid.initialize({startOnLoad:true, theme:'dark'});</script>
-
-<div class="footer">
-  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-2-模板与样式/架构图.html</code><br>
-  🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
-</div>
-
-</div>
-
-
-<script src="../../../shared\/index\.js"></script>
-<!-- ═══ CDN: YrySceneNav 组件 loader ═══ -->
-<script src="../../../yry-scene-nav/index.js"></script>
-<!-- ═══ CDN: YryCrossNav 组件 loader ═══ -->
-<script src="../../../yry-cross-nav/index.js"></script>
-<!-- ═══ CDN: YryBackTop (零配置自初始化) ═══ -->
-<script src="../../../yry-back-top/index.js"></script>
-<!-- ═══ CDN: YryBreadcrumb 组件 loader ═══ -->
-<script src="../../../yry-breadcrumb/index.js"></script>
-<!-- ═══ CDN: YrySceneHeader 组件 loader ═══ -->
-<script src="../../../yry-scene-header/index.js"></script>
-<!-- ═══ CDN: YryStatsGrid 组件 loader ═══ -->
-<script src="../../../yry-stats-grid/index.js"></script>
-
-  <!-- ════════════════════════════════════════════════════════════
-       页面级挂载 · 场景导航 + 交叉导航 + 面包屑 + 统计网格
-       index.js 异步加载模板后派发 yry-*-ready 事件
-       ════════════════════════════════════════════════════════════ -->
-  <script>
-
-  /* ── YryCrossNav 挂载 ── */
-  function mountCrossNav() {
-    if (!window.Vue || !window.YryCrossNav) return;
-    if (!document.getElementById('cross-nav-app')) return;
-    Vue.createApp(window.YryCrossNav, {
-      basePath: './',
-      active: '架构',
-      pages: [
-        { id: '清单', icon: '📋', href: '计划清单.html' },
-        { id: '架构', icon: '📐', href: '架构图.html' },
-        { id: '图谱', icon: '🔗', href: '知识图谱.html' },
-        { id: '源码', icon: '📄', href: '源码.html' },
-        { id: '测试', icon: '🧪', href: '测试面板.html' },
-        { id: '演示', icon: '💡', href: '演示.html' },
-        { id: '审查', icon: '📝', href: '审查.html' }
-      ]
-    }).mount('#cross-nav-app');
-  }
-  if (window.YryCrossNav) mountCrossNav();
-  else document.addEventListener('yry-cross-nav-ready', mountCrossNav, { once: true });
-
-  /* ── YrySceneNav 挂载 ── */
-  function mountSceneNav() {
-    if (!window.Vue || !window.YrySceneNav) return;
-    if (!document.getElementById('scene-nav-app')) return;
-    Vue.createApp(window.YrySceneNav, {
-      items: [
-        { label: '任务故事', href: '../README.md' },
-        { label: '模板与样式', href: './index.md' },
-        { label: '架构图', active: true }
-      ]
-    }).mount('#scene-nav-app');
-  }
-  if (window.YrySceneNav) mountSceneNav();
-  else document.addEventListener('yry-scene-nav-ready', mountSceneNav, { once: true });
-
-  /* ── YrySceneHeader 挂载 ── */
-  function mountSceneHeader() {
-    if (!window.Vue || !window.YrySceneHeader) return;
-    if (!document.getElementById('scene-header-app')) return;
-    Vue.createApp(window.YrySceneHeader, {
-      icon: '📐',
-      prefix: '场景 2',
-      accent: ' · 模板与样式',
-      meta: 'YryBreadcrumb 任务故事 · 场景 2 · Template & Style · 架构图',
-      desc: 'Vue 3 template 编写 · v-for / v-if / :class 设计 · CSS 设计令牌 + fallback 决策 · 5 视觉模式覆盖'
-    }).mount('#scene-header-app');
-  }
-  if (window.YrySceneHeader) mountSceneHeader();
-  else document.addEventListener('yry-scene-header-ready', mountSceneHeader, { once: true });
-
-  /* ── YryBreadcrumb 挂载 ── */
-  function mountBreadcrumb() {
-    if (!window.Vue || !window.YryBreadcrumb) return;
-    if (!document.getElementById('breadcrumb-app')) return;
-    Vue.createApp(window.YryBreadcrumb, {
-      ariaLabel: '面包屑导航',
-      items: [
-        { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
-        { label: '任务故事', href: '../README.md' },
-        { label: '场景 2 · 模板与样式' },
-        { label: '架构图', icon: '📐' }
-      ]
-    }).mount('#breadcrumb-app');
-  }
-  if (window.YryBreadcrumb) mountBreadcrumb();
-  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
-  </script>
-
+<script src="../../../../cdn/shared/index.js"></script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
+<script src="../../../../cdn/yry-export-toolbar/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
+<script src="../../../../cdn/yry-info-cards/index.js"></script>
 </body>
 </html>

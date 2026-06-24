@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>审查 · npm 包发布与版本管理 · CDN 共享前端资源库</title>
+<link rel="stylesheet" href="../../../shared/index.css">
+<link rel="stylesheet" href="../../../theme/index.css">
+<link rel="stylesheet" href="../../../yry-inline-helpers/index.css">
+<link rel="stylesheet" href="../../../yry-scene/index.css">
+<link rel="stylesheet" href="../../../yry-scene-header/index.css">
+<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
+<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
+<link rel="stylesheet" href="../../../yry-back-top/index.css">
+<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
+<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
+<link rel="stylesheet" href="../../../yry-a11y/index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
+  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
+  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
+  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
+  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
+  .delivery-story { font-size: .72rem; color: #4b5563; }
+  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
+  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
+  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
+  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
+  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
+  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
+  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
+</style>
+</head>
+<body>
+<yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
+<yry-scene-header id="header-app"
+  icon="📝"
+  title-prefix="审查"
+  accent="npm 包发布与版本管理"
+  meta="📖 CDN 共享前端资源库 · 🎬 npm 包发布与版本管理"
+  desc="CDN 共享前端资源库 — npm 包发布与版本管理 场景的 审查 交付物。查看场景详情与任务分解。">
+</yry-scene-header>
+
+<div class="scene-wrap">
+  <div class="delivery-header">
+    <div class="delivery-icon">📝</div>
+    <div class="delivery-label">审查</div>
+    <div class="delivery-scene">npm 包发布与版本管理</div>
+    <div class="delivery-story">CDN 共享前端资源库</div>
+  </div>
+
+  <div class="content-card">
+    <h2>📝 R1 · 发布合规审查</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6">
+      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">审查项</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">结论</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">证据</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">package.json 字段完备</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 通过</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">name/version/main/style/unpkg/jsdelivr/files 全部配置</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">files 白名单精确</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 通过</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">排除 dev 配置 + 运行时数据</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">包体积达标</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#fbbf24">⚠ 待优化</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">~3MB · 目标 &lt; 2MB</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">jsDelivr 自动同步</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 通过</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">5 分钟内 5 步加载链全部 HTTP 200</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">语义化版本策略</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 通过</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">v1.0→v1.1→v1.2 三次 MINOR · 评分 78→86→92 持续上升</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">CHANGELOG 更新</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 通过</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">CHANGELOG.md 含 3 个版本段落</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Git tag 存在</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 通过</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>git tag -l "v*"</code> 含 v1.0.0/v1.1.0/v1.2.0</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">发布自动化</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#f87171">✗ 缺失</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">手动发布 · 无 GitHub Actions 流水线</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">预发布通道 (canary)</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#f87171">✗ 缺失</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">无 dist-tag canary</td></tr>
+        <tr><td style="padding:8px 10px">SRI 哈希</td><td style="padding:8px 10px;color:#fbbf24">⚠ 待补</td><td style="padding:8px 10px">可生成但未在文档中提供</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="content-card">
+    <h2>⚠️ 风险与改进项</h2>
+    <ul style="margin:0;padding-left:20px;font-size:.76rem;line-height:1.9;color:#a9b1d6">
+      <li><strong style="color:#f87171">P0 · 发布自动化缺失</strong> — 手动执行 6 步易遗漏 · 需上 GitHub Actions: tag push → npm publish</li>
+      <li><strong style="color:#f87171">P0 · 无 canary 预发布通道</strong> — 新版本直接 latest · 风险高 · 需 dist-tag canary 48h 验证</li>
+      <li><strong style="color:#fbbf24">P1 · 包体积超目标</strong> — 当前 ~3MB · 目标 &lt; 2MB · 需压缩 CSS · 精简 woff2 子集</li>
+      <li><strong style="color:#fbbf24">P1 · 回滚策略不完善</strong> — 仅手动 npm unpublish · 需保留近 3 版本便于回滚</li>
+      <li><strong style="color:#fbbf24">P2 · 发布频率偏低</strong> — 当前月级 · 目标周级 · 需补丁自动化</li>
+      <li><strong style="color:#fbbf24">P2 · 版本通知手动</strong> — 无企微 Webhook 自动推送</li>
+      <li><strong style="color:#a78bfa">P3 · SRI 哈希未文档化</strong> — 生成脚本存在 · 但未在 README 提供</li>
+      <li><strong style="color:#a78bfa">P3 · 下载量监控未集成</strong> — 需手动查 npm-stat</li>
+    </ul>
+  </div>
+
+  <div class="content-card">
+    <h2>📊 自改进路线</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6">
+      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">维度</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">当前</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">目标</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">行动</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">发布自动化</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">手动</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">CI/CD 自动</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">GitHub Actions: tag push → npm publish</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">版本通知</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">手动</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">自动推送</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">npm notifications + 企微 Webhook</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">包体积</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">~3MB</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">&lt; 2MB</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">压缩 CSS · 精简 woff2 子集 · 移除冗余</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">发布频率</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">月级</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">周级</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">补丁自动化 + 小版本周发布</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">预发布验证</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">无</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">canary</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">npm dist-tag canary 预发布通道</td></tr>
+        <tr><td style="padding:8px 10px">回滚能力</td><td style="padding:8px 10px">手动</td><td style="padding:8px 10px">npm unpublish</td><td style="padding:8px 10px">保留最近 3 个版本便于回滚</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="nav-links">
+    <a class="nav-link" href="计划清单.html">📋 计划清单</a>
+    <a class="nav-link" href="架构图.html">📐 架构图</a>
+    <a class="nav-link" href="知识图谱.html">🔗 知识图谱</a>
+    <a class="nav-link" href="测试面板.html">🧪 测试面板</a>
+    <a class="nav-link" href="源码.html">📄 源码</a>
+    <a class="nav-link" href="演示.html">💡 演示</a>
+    <a class="nav-link current" href="审查.html">📝 审查</a>
+  </div>
+</div>
+
+<yry-cross-nav></yry-cross-nav>
+<yry-back-top></yry-back-top>
+<yry-footer-note version="1.2.0"></yry-footer-note>
+
+<script src="../../../shared/index.js" defer></script>
+<script src="../../../shared/vue-ce-loader.js"></script>
+  <script src="../../../yry-breadcrumb/index.js"></script>
+<script src="../../../yry-scene-header/index.js"></script>
+<script src="../../../yry-scene-nav/index.js"></script>
+<script src="../../../yry-cross-nav/index.js"></script>
+<script src="../../../yry-back-top/index.js"></script>
+<script src="../../../yry-footer-note/index.js"></script>
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    var bc = document.getElementById('breadcrumb-app');
+    if (bc) bc.items = [
+      { label: 'CDN 共享库', icon: '🌐', href: '../../../index.html' },
+      { label: '故事任务面板', icon: '📖', href: '../index.html' },
+      { label: 'CDN 共享前端资源库', icon: '📖', href: '../故事任务.md' },
+      { label: 'npm 包发布与版本管理', icon: '🎬' }
+    ];
+    var sh = document.getElementById('header-app');
+    if (sh) {
+      sh.icon = '📝';
+      sh.titlePrefix = '审查';
+      sh.accent = 'npm 包发布与版本管理';
+      sh.meta = '📖 CDN 共享前端资源库 · 🎬 npm 包发布与版本管理';
+      sh.desc = 'CDN 共享前端资源库 — npm 包发布与版本管理 场景的 审查 交付物。';
+    }
+  });
+</script>
+</body>
+</html>

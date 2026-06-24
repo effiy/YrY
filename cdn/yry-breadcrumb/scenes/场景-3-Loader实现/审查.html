@@ -2,301 +2,74 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Loader 实现 · 审查 · YryBreadcrumb 任务故事</title>
-<link rel="stylesheet" href="../../../shared\/index\.css">
-<link rel="stylesheet" href="../../../theme\/index\.css">
-<link rel="stylesheet" href="../../../yry\-scene\/index\.css">
-<link rel="stylesheet" href="../../../yry\-checklist\/index\.css">
-<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
-<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
-<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
-<link rel="stylesheet" href="../../../yry-back-top/index.css">
-<link rel="stylesheet" href="../../../yry-scene-header/index.css">
-<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
-<link rel="stylesheet" href="../../../yry\-inline\-helpers\/index\.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<link rel="stylesheet" href="../../../yry\-a11y\/index\.css">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Loader实现 · 审查</title>
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-review-base.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-stats/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-health-bar/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-tabs/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-review-cards/index.css">
 <style>
-
-.container { max-width: 1100px; }
+.yry-container{max-width:1120px}
 </style>
 </head>
 <body>
-<a href="#main" class="skip-link">⏩ 跳到主要内容</a>
-<div class="container" id="main">
-<div id="breadcrumb-app"></div>
-<div id="scene-header-app"></div>
-<div id="scene-nav-app"></div>
+<div class="yry-container">
+<yry-scene-chrome
+  theme="b"
+  title="📝 {ACCENT} — 审查报告"
+  title-accent="Loader 实现"
+  subtitle="审查日期 2026-06-22 · 版本 vv5.4.0 · 场景 3"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-breadcrumb · yry-breadcrumb"},{"label":"场景 3 · Loader实现"},{"label":"📝 审查"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","href":"架构图.html"},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","active":true}]'>
+</yry-scene-chrome>
 
-<div id="cross-nav-app"></div>
+<yry-scene-stats items='[{"value":"16/8","label":"诊断通过","color":"health"},{"value":"D0-D8","label":"覆盖范围","color":"t"},{"value":-8,"label":"改进建议","color":"warn-h"}]'></yry-scene-stats>
+<yry-scene-health-bar segments='[{"pct":200,"cls":"strength"},{"pct":-100,"cls":"gap"}]'></yry-scene-health-bar>
 
-<div class="verdict-row">
-  <div class="vr-title">📝 技术评审报告</div>
-  <div class="vr-meta">
-    <span>审查场景: <code>场景 3 · Loader 实现</code></span>
-    <span>审查时间: <code>2026-06</code></span>
-  </div>
-  <div class="vr-metrics">
-    <div class="stat-card"><div class="val pass">7/7</div><div class="lbl">通过项</div></div>
-    <div class="stat-card"><div class="val info">0</div><div class="lbl">警告项</div></div>
-    <div class="stat-card"><div class="val info">0</div><div class="lbl">失败项</div></div>
-  </div>
-  <span class="vr-verdict pass">✅ 评审通过</span>
-</div>
-
-<h2>评审清单</h2>
-<p>本页是 YryBreadcrumb 任务故事 · 场景 3 的技术评审清单，逐项核实 Loader 实现的正确性与健壮性。</p>
-<table class="table-highlight">
-  <thead><tr><th>#</th><th>评审项</th><th>通过标准</th><th>状态</th><th>证据</th></tr></thead>
-  <tbody>
-    <tr class="row-pass"><td>R1</td><td>fetch + DOMParser 流程正确</td><td>fetch 获取 index.html，DOMParser 解析并提取 template</td><td><span class="verdict pass">✅ 通过</span></td><td><a href="./源码.html">源码.html</a></td></tr>
-    <tr class="row-pass"><td>R2</td><td>5s 超时处理</td><td>setTimeout 5s 后触发 console.error，已超时时不注册组件</td><td><span class="verdict pass">✅ 通过</span></td><td><a href="./源码.html">源码.html</a></td></tr>
-    <tr class="row-pass"><td>R3</td><td>CustomEvent ready 事件</td><td>模板解析成功后 dispatchEvent('yry-breadcrumb-ready')</td><td><span class="verdict pass">✅ 通过</span></td><td><a href="./测试面板.html">测试面板.html TC1</a></td></tr>
-    <tr class="row-pass"><td>R4</td><td>document.currentScript 路径解析</td><td>new URL(script.src) 推导 index.html 路径</td><td><span class="verdict pass">✅ 通过</span></td><td><a href="./源码.html">源码.html</a></td></tr>
-    <tr class="row-pass"><td>R5</td><td>错误降级处理</td><td>fetch 失败时 catch → console.error，不注册组件，页面不崩溃</td><td><span class="verdict pass">✅ 通过</span></td><td><a href="./测试面板.html">测试面板.html TC2</a></td></tr>
-    <tr class="row-pass"><td>R6</td><td>console.warn/error 诊断</td><td>Vue 缺失用 warn，加载失败用 error，超时用 error</td><td><span class="verdict pass">✅ 通过</span></td><td><a href="./源码.html">源码.html</a></td></tr>
-    <tr class="row-pass"><td>R7</td><td>Vue 3 缺省时跳过注册</td><td>检测 !window.Vue 时 console.warn 并 return，不抛异常</td><td><span class="verdict pass">✅ 通过</span></td><td><a href="./测试面板.html">测试面板.html TC4</a></td></tr>
-  </tbody>
-</table>
-
-<h2>错误用例</h2>
-<p>以下是 Loader 可能遇到的错误场景及其处理策略。</p>
-<table>
-  <thead><tr><th>错误场景</th><th>触发条件</th><th>表现</th><th>诊断信号</th><th>降级行为</th></tr></thead>
-  <tbody>
-    <tr><td>网络不可达</td><td>index.html 请求超时/网络断开</td><td>fetch 进入 catch</td><td><code>console.error('[YryBreadcrumb] 模板加载失败:', err)</code></td><td>不注册组件，页面继续运行</td></tr>
-    <tr><td>HTTP 错误</td><td>index.html 返回 404/500</td><td>r.text() 得到错误页内容</td><td>模板 id 缺失时静默，页面无面包屑</td><td>不注册组件</td></tr>
-    <tr><td>模板 id 缺失</td><td>index.html 无 #yry-breadcrumb-tpl</td><td>tpl 为 null</td><td>组件注册时 tpl.innerHTML 抛出异常</td><td>console.error 记录，不注册</td></tr>
-    <tr><td>Vue 3 未加载</td><td>页面未引入 vue@3</td><td>window.Vue 为 undefined</td><td><code>console.warn('[YryBreadcrumb] Vue 3 未加载')</code></td><td>提前 return，不注册</td></tr>
-    <tr><td>5s 超时</td><td>网络慢或响应阻塞</td><td>setTimeout 先于 fetch 完成触发</td><td><code>console.error('[YryBreadcrumb] 模板加载超时')</code></td><td>不注册组件，fetch 结果丢弃</td></tr>
-    <tr><td>并发 mount 安全</td><td>多次调用 mountBreadcrumb</td><td>同一元素重复 mount</td><td>Vue 内部警告（可忽略）</td><td>使用 {once:true} 监听 ready 事件</td></tr>
-    <tr><td>CORS 跨域</td><td>非同源引用 index.js</td><td>fetch 被浏览器拦截</td><td><code>console.error('[YryBreadcrumb] 模板加载失败:', TypeError)</code></td><td>不注册组件</td></tr>
-  </tbody>
-</table>
-
-<h2>审查维度评分</h2>
-
-<div class="dim-card">
-  <div class="dim-head">
-    <span class="dim-icon">⚙️</span>
-    <span class="dim-title">Loader 健壮性</span>
-    <span class="dim-score pass">95</span>
-  </div>
-  <div class="dim-bar"><div class="dim-bar-fill pass" style="width:95%"></div></div>
-  <div class="dim-detail">fetch + DOMParser 流程正确，5s 超时处理，CustomEvent ready 事件机制健壮，Vue 缺省时安全降级。</div>
-</div>
-
-<div class="dim-card">
-  <div class="dim-head">
-    <span class="dim-icon">🛡️</span>
-    <span class="dim-title">错误处理</span>
-    <span class="dim-score pass">93</span>
-  </div>
-  <div class="dim-bar"><div class="dim-bar-fill pass" style="width:93%"></div></div>
-  <div class="dim-detail">7 类错误场景全覆盖：网络不可达、HTTP 错误、模板 id 缺失、Vue 未加载、超时、并发、CORS。</div>
-</div>
-
-<div class="dim-card">
-  <div class="dim-head">
-    <span class="dim-icon">🔍</span>
-    <span class="dim-title">可诊断性</span>
-    <span class="dim-score pass">91</span>
-  </div>
-  <div class="dim-bar"><div class="dim-bar-fill pass" style="width:91%"></div></div>
-  <div class="dim-detail">console.warn/error 分级清晰，Vue 缺失用 warn，加载失败用 error，超时用 error，便于排查。</div>
-</div>
-
-<div class="dim-card">
-  <div class="dim-head">
-    <span class="dim-icon">🔗</span>
-    <span class="dim-title">路径解析</span>
-    <span class="dim-score pass">92</span>
-  </div>
-  <div class="dim-bar"><div class="dim-bar-fill pass" style="width:92%"></div></div>
-  <div class="dim-detail">document.currentScript + new URL() 推导 index.html 路径，零配置自动定位，CORS 同源约束正确。</div>
-</div>
-
-<h2>审查管线</h2>
-<div class="stage-list">
-  <div class="stage-row done">
-    <div class="st-num">1</div>
-    <div class="st-info"><div class="st-name">核心流程审查</div><div class="st-detail">验证 fetch + DOMParser 流程正确性、CustomEvent ready 事件、路径解析</div></div>
-    <span class="st-status ok">✓ 通过</span>
-    <div class="st-bar"></div>
-  </div>
-  <div class="stage-row done">
-    <div class="st-num">2</div>
-    <div class="st-info"><div class="st-name">容错与降级审查</div><div class="st-detail">5s 超时、fetch 失败降级、Vue 3 缺省跳过、CORS 约束</div></div>
-    <span class="st-status ok">✓ 通过</span>
-    <div class="st-bar"></div>
-  </div>
-  <div class="stage-row done">
-    <div class="st-num">3</div>
-    <div class="st-info"><div class="st-name">可诊断性审查</div><div class="st-detail">console.warn/error 分级、错误场景覆盖、并发 mount 安全</div></div>
-    <span class="st-status ok">✓ 通过</span>
-    <div class="st-bar"></div>
-  </div>
-</div>
-
-<h2>逐项验证</h2>
-<div class="check-list">
-  <div class="verify-item checked">
-    <div class="vi-box"><span class="vi-check">✓</span></div>
-    <div class="vi-body">
-      <div class="vi-name">R1: fetch + DOMParser 流程正确</div>
-      <div class="vi-desc">fetch 获取 index.html，DOMParser 解析并提取 template。证据: <a href="./源码.html">源码.html</a></div>
+<yry-scene-tabs tabs='[{"id":"overview","label":"📊 总览"},{"id":"good","label":"✅ 好案例"},{"id":"bad","label":"❌ 坏案例"},{"id":"recommendations","label":"📝 改进建议"},{"id":"evidence","label":"📎 证据链"}]'>
+  <div data-panel="overview"><div class="placeholder">数据待填充 — 运行 /rui code 生成</div></div>
+  <div data-panel="good">
+    <div class="case-card good">
+      <h4>✅ <span class="case-tag good">好案例</span> 文档基线完整</h4>
+      <div class="case-loc">📁 cdn/yry-breadcrumb/场景-3-Loader实现/index.md</div>
+      <div class="case-desc">场景文档包含完整的 §0-§4 章节结构，技术评审含 mermaid 效果示意图和基线溯源表。</div>
     </div>
-    <span class="vi-time">✅ PASS</span>
   </div>
-  <div class="verify-item checked">
-    <div class="vi-box"><span class="vi-check">✓</span></div>
-    <div class="vi-body">
-      <div class="vi-name">R2: 5s 超时处理</div>
-      <div class="vi-desc">setTimeout 5s 后触发 console.error，已超时时不注册组件。证据: <a href="./源码.html">源码.html</a></div>
+  <div data-panel="bad">
+    <div class="case-card bad">
+      <h4>❌ <span class="case-tag bad">待审查</span> 需运行 /rui code 生成实施数据</h4>
+      <div class="case-loc">📁 cdn/yry-breadcrumb/场景-3-Loader实现/index.md §2-§4</div>
+      <div class="case-desc">§2 实施报告、§3 测试报告、§4 自改进章节数据待填充。运行 /rui code 后重新审查。</div>
     </div>
-    <span class="vi-time">✅ PASS</span>
   </div>
-  <div class="verify-item checked">
-    <div class="vi-box"><span class="vi-check">✓</span></div>
-    <div class="vi-body">
-      <div class="vi-name">R3: CustomEvent ready 事件</div>
-      <div class="vi-desc">模板解析成功后 dispatchEvent('yry-breadcrumb-ready')。证据: <a href="./测试面板.html">测试面板 TC1</a></div>
+  <div data-panel="recommendations">
+    <div class="rec-grid"><div class="placeholder">数据待填充 — 运行 /rui code 生成</div></div>
+  </div>
+  <div data-panel="evidence">
+    <div class="dim-card">
+      <h3>📎 审查证据清单</h3>
+      <ul>
+        <li><strong>场景文档:</strong> index.md 存在，含 §0-§4 章节</li>
+        <li><strong>版本:</strong> vv5.4.0 · 2026-06-22</li>
+        <li><strong>故事:</strong> yry-breadcrumb · yry-breadcrumb</li>
+      </ul>
     </div>
-    <span class="vi-time">✅ PASS</span>
   </div>
-  <div class="verify-item checked">
-    <div class="vi-box"><span class="vi-check">✓</span></div>
-    <div class="vi-body">
-      <div class="vi-name">R4: document.currentScript 路径解析</div>
-      <div class="vi-desc">new URL(script.src) 推导 index.html 路径，零配置自动定位。证据: <a href="./源码.html">源码.html</a></div>
-    </div>
-    <span class="vi-time">✅ PASS</span>
-  </div>
-  <div class="verify-item checked">
-    <div class="vi-box"><span class="vi-check">✓</span></div>
-    <div class="vi-body">
-      <div class="vi-name">R5: 错误降级处理</div>
-      <div class="vi-desc">fetch 失败时 catch → console.error，不注册组件，页面不崩溃。证据: <a href="./测试面板.html">测试面板 TC2</a></div>
-    </div>
-    <span class="vi-time">✅ PASS</span>
-  </div>
-  <div class="verify-item checked">
-    <div class="vi-box"><span class="vi-check">✓</span></div>
-    <div class="vi-body">
-      <div class="vi-name">R6: console.warn/error 诊断</div>
-      <div class="vi-desc">Vue 缺失用 warn，加载失败用 error，超时用 error，分级清晰。证据: <a href="./源码.html">源码.html</a></div>
-    </div>
-    <span class="vi-time">✅ PASS</span>
-  </div>
-  <div class="verify-item checked">
-    <div class="vi-box"><span class="vi-check">✓</span></div>
-    <div class="vi-body">
-      <div class="vi-name">R7: Vue 3 缺省时跳过注册</div>
-      <div class="vi-desc">检测 !window.Vue 时 console.warn 并 return，不抛异常。证据: <a href="./测试面板.html">测试面板 TC4</a></div>
-    </div>
-    <span class="vi-time">✅ PASS</span>
-  </div>
+</yry-scene-tabs>
+
+<yry-scene-footer version="v5.4.0" date="2026-06-22" docs-link="../../../../docs/index.html"></yry-scene-footer>
 </div>
-
-<div class="tip-box success">
-  <strong>✅ 场景 3 评审结论</strong> — R1-R7 全部通过。Loader 实现健壮，错误用例覆盖 7 类异常路径，降级行为符合设计预期。可进入场景 4。
-</div>
-
-<div class="footer">
-  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-3-Loader实现/审查.html</code><br>
-  🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
-</div>
-</div>
-
-<script src="../../../shared\/index\.js"></script>
-<!-- ═══ CDN: YrySceneNav 组件 loader ═══ -->
-<script src="../../../yry-scene-nav/index.js"></script>
-<!-- ═══ CDN: YryCrossNav 组件 loader ═══ -->
-<script src="../../../yry-cross-nav/index.js"></script>
-<!-- ═══ CDN: YryBackTop (零配置自初始化) ═══ -->
-<script src="../../../yry-back-top/index.js"></script>
-<!-- ═══ CDN: YryBreadcrumb 组件 loader ═══ -->
-<script src="../../../yry-breadcrumb/index.js"></script>
-<!-- ═══ CDN: YrySceneHeader 组件 loader ═══ -->
-<script src="../../../yry-scene-header/index.js"></script>
-<!-- ═══ CDN: YryStatsGrid 组件 loader ═══ -->
-<script src="../../../yry-stats-grid/index.js"></script>
-
-  <!-- ════════════════════════════════════════════════════════════
-       页面级挂载 · 场景导航 + 交叉导航 + 面包屑 + 统计网格
-       index.js 异步加载模板后派发 yry-*-ready 事件
-       ════════════════════════════════════════════════════════════ -->
-  <script>
-
-  /* ── YryCrossNav 挂载 ── */
-  function mountCrossNav() {
-    if (!window.Vue || !window.YryCrossNav) return;
-    if (!document.getElementById('cross-nav-app')) return;
-    Vue.createApp(window.YryCrossNav, {
-      basePath: './',
-      active: '审查',
-      pages: [
-        { id: '清单', icon: '📋', href: '计划清单.html' },
-        { id: '架构', icon: '📐', href: '架构图.html' },
-        { id: '图谱', icon: '🔗', href: '知识图谱.html' },
-        { id: '源码', icon: '📄', href: '源码.html' },
-        { id: '测试', icon: '🧪', href: '测试面板.html' },
-        { id: '演示', icon: '💡', href: '演示.html' },
-        { id: '审查', icon: '📝', href: '审查.html' }
-      ]
-    }).mount('#cross-nav-app');
-  }
-  if (window.YryCrossNav) mountCrossNav();
-  else document.addEventListener('yry-cross-nav-ready', mountCrossNav, { once: true });
-
-  /* ── YrySceneNav 挂载 ── */
-  function mountSceneNav() {
-    if (!window.Vue || !window.YrySceneNav) return;
-    if (!document.getElementById('scene-nav-app')) return;
-    Vue.createApp(window.YrySceneNav, {
-      items: [
-        { label: '任务故事', href: '../README.md' },
-        { label: '场景 3 · Loader 实现', href: './index.md' },
-        { label: '审查', active: true }
-      ]
-    }).mount('#scene-nav-app');
-  }
-  if (window.YrySceneNav) mountSceneNav();
-  else document.addEventListener('yry-scene-nav-ready', mountSceneNav, { once: true });
-
-  /* ── YrySceneHeader 挂载 ── */
-  function mountSceneHeader() {
-    if (!window.Vue || !window.YrySceneHeader) return;
-    if (!document.getElementById('scene-header-app')) return;
-    Vue.createApp(window.YrySceneHeader, {
-      icon: '📝',
-      prefix: '场景 3',
-      accent: ' · Loader 实现',
-      meta: 'YryBreadcrumb 任务故事 · 场景 3 · Loader Implementation · Review',
-      desc: 'fetch + DOMParser + ready 事件 + 5s 超时 · 4 文件引用顺序 · 错误处理与降级 · 错误用例与诊断'
-    }).mount('#scene-header-app');
-  }
-  if (window.YrySceneHeader) mountSceneHeader();
-  else document.addEventListener('yry-scene-header-ready', mountSceneHeader, { once: true });
-
-  /* ── YryBreadcrumb 挂载 ── */
-  function mountBreadcrumb() {
-    if (!window.Vue || !window.YryBreadcrumb) return;
-    if (!document.getElementById('breadcrumb-app')) return;
-    Vue.createApp(window.YryBreadcrumb, {
-      ariaLabel: '面包屑导航',
-      items: [
-        { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
-        { label: '任务故事', href: '../README.md' },
-        { label: '场景 3 · Loader 实现' },
-        { label: '审查', icon: '📝' }
-      ]
-    }).mount('#breadcrumb-app');
-  }
-  if (window.YryBreadcrumb) mountBreadcrumb();
-  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
-  </script>
-
+<script src="../../../../cdn/shared/index.js"></script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
+<script src="../../../../cdn/yry-scene-stats/index.js"></script>
+<script src="../../../../cdn/yry-scene-health-bar/index.js"></script>
+<script src="../../../../cdn/yry-scene-tabs/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
+<script src="../../../../cdn/yry-review-cards/index.js"></script>
 </body>
 </html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryStoryCardList · Demo & Template</title>
+  <meta name="description" content="YryStoryCardList Vue 3 故事卡片列表组件 — 多故事卡 + 场景列表 + 摘要条">
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <link rel="stylesheet" href="index.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 1100px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; }
+  </style>
+</head>
+<body>
+
+  <h1><span class="accent">📋</span> YryStoryCardList · Vue 3 故事卡片列表组件</h1>
+  <p class="demo-hint">
+    展示多故事卡 + 场景列表 + 摘要条 · 模板源见下方 <code>&lt;script type="text/x-template"&gt;</code> 块。
+  </p>
+
+  <div id="demo-1"></div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       TEMPLATE SOURCE OF TRUTH · YryStoryCardList 的 template
+       ════════════════════════════════════════════════════════════════════ -->
+  <script type="text/x-template" id="yry-story-card-list-tpl">
+    <div class="scl-body">
+      <div v-if="summary && summary.length" class="scl-summary-bar">
+        <div v-for="(item, i) in summary" :key="i" class="scl-summary-item">
+          <div class="scl-si-val">{{ item.value }}</div>
+          <div class="scl-si-label">{{ item.label }}</div>
+        </div>
+      </div>
+
+      <div v-for="(story, si) in stories" :key="si" class="scl-story-card">
+        <h3>
+          <span v-if="story.badge" class="scl-badge" :class="'scl-badge-' + story.badgeVariant">{{ story.badge }}</span>
+          {{ story.title }}
+        </h3>
+        <div class="scl-story-desc">{{ story.desc }}</div>
+        <div v-if="story.meta && story.meta.length" class="scl-story-meta">
+          <span v-for="(m, mi) in story.meta" :key="mi">{{ m.text }}</span>
+        </div>
+        <div v-if="story.scenes && story.scenes.length" class="scl-scene-list">
+          <div v-for="(scene, sci) in story.scenes" :key="sci" class="scl-scene-item">
+            <a :href="scene.href">{{ scene.name }}</a>
+            <div v-if="scene.desc" class="scl-desc">{{ scene.desc }}</div>
+            <div v-if="scene.links && scene.links.length" class="scl-scene-links">
+              <a v-for="(link, li) in scene.links" :key="li" :href="link.href">{{ link.label }}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </script>
+
+  <script src="index.js"></script>
+
+  <script>
+    function mountAll() {
+      if (!window.Vue || !window.YryStoryCardList) return;
+      Vue.createApp(window.YryStoryCardList, {
+        summary: [
+          { value: '2', label: '故事' },
+          { value: '7', label: '场景' },
+          { value: '7', label: '交付物/场景' }
+        ],
+        stories: [
+          {
+            badge: 'CDN',
+            badgeVariant: 'cdn',
+            title: 'Story 1: CDN 共享前端资源库',
+            desc: 'YrY 共享前端资源 — 双主题系统、107 组件、9 JS 工具 API、54 Vue 3 自定义元素。',
+            meta: [{ text: '📁 cdn/故事任务面板/' }, { text: '🎬 2 场景' }],
+            scenes: [
+              {
+                name: '场景 1 · CDN 资源加载与页面渲染',
+                href: '#scene-1',
+                desc: 'CDN 架构设计、资源加载策略、性能优化',
+                links: [
+                  { label: '清单', href: '#清单' },
+                  { label: '架构', href: '#架构' },
+                  { label: '图谱', href: '#图谱' }
+                ]
+              },
+              {
+                name: '场景 2 · 双主题系统设计',
+                href: '#scene-2',
+                desc: 'Mono + System 双主题、14 设计令牌、CSS 变量体系'
+              }
+            ]
+          },
+          {
+            badge: 'Home',
+            badgeVariant: 'home',
+            title: 'Story 2: 文档中心首页',
+            desc: 'YrY 文档中心首页 — 八维加权评分仪表板 · 技能架构七层展示。',
+            meta: [{ text: '📁 cdn/yry-home/' }, { text: '🎬 1 场景' }],
+            scenes: [
+              {
+                name: '场景 1 · 数据采集与六层聚合',
+                href: '#home-1',
+                desc: '项目资产扫描、统计数据收集、六层结构建模'
+              }
+            ]
+          }
+        ]
+      }).mount('#demo-1');
+    }
+    if (window.YryStoryCardList) mountAll();
+    else document.addEventListener('yry-story-card-list-ready', mountAll, { once: true });
+  </script>
+
+</body>
+</html>

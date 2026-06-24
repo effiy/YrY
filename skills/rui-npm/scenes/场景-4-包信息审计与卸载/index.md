@@ -1,7 +1,8 @@
 # 场景 4 — 包信息审计与卸载
 
-> | v1.1.0 | 2026-06-06 | 场景 4/4 | 📎 [故事任务](../故事任务.md) |
+> | v5.4.0 | 2026-06-06 | 场景 4/4 | 📎 [故事任务](../故事任务.md) |
 > **导航**: [← 场景-3](../场景-3-本地发布与npx使用/index.md) · [← 故事任务](../故事任务.md)
+> **交付物**: [📋 清单](清单.html) · [📐 架构](架构图.html) · [🔗 图谱](知识图谱.html) · [📄 源码](源码.html) · [🧪 测试](测试面板.html) · [💡 演示](演示.html) · [📝 审查](审查.html)
 
 [§0 技术评审](#sec0) · [§1 测试设计](#sec1) · [§2 实施报告](#sec2) · [§3 测试报告](#sec3) · [§4 自改进](#sec4)
 
@@ -285,11 +286,11 @@ flowchart LR
 <a id="sec4"></a>
 ## §4 自改进
 
-> 自改进阶段填充（self-improve）。由 `/rui code` 完成后自动触发，执行 D0-D7 诊断并写入 `.improvement/proposals.jsonl`。
+> 自改进阶段填充（self-improve）。由 `/rui code` 完成后自动触发，执行 D0-D8 诊断并写入 `.improvement/proposals.jsonl`。
 >
-> 工具：[proposals.mjs](../../../../skills/rui/proposals.mjs) · [record.mjs](../../../../skills/rui/record.mjs) · 规则 [self-improve.md](../../../../skills/rui-yry/rules/self-improve.md)
+> 工具：[proposals.mjs](../../../../lib/proposals.mjs) · [record.mjs](../../../../lib/record.mjs) · 规则 [self-improve.md](../../../../skills/rui-yry/rules/self-improve.md)
 
-### D0–D7 诊断
+### D0-D8 诊断
 
 | 诊断 | 标签 | 触发? | 证据 |
 |------|------|-------|------|
@@ -316,7 +317,7 @@ flowchart LR
 |---|--------|:--:|
 | 1 | 场景文档 §0–§4 全生命周期章节完整 | ✅ |
 | 2 | 执行记忆已写入 `.memory/execution-memory.jsonl` | ✅ |
-| 3 | D0-D7 诊断已运行并写入 `.improvement/proposals.jsonl` | ✅ |
+| 3 | D0-D8 诊断已运行并写入 `.improvement/proposals.jsonl` | ✅ |
 | 4 | 提案闭合率 ≥ 50% | ✅（3/3 新提案已评估） |
 | 5 | 无 snapshot 不出提案 | ✅ |
 | 6 | rui-state.json 状态与管线实际一致 | ✅ |

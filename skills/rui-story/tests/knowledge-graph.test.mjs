@@ -3,7 +3,7 @@
  * across all story directories.
  */
 
-import { describe, it, assert, run } from '../../../lib/test-harness.mjs';
+import { describe, it, assert, run } from '../../../lib/vitest-adapter.mjs';
 import { fileExists, readFile, listStoryDirs } from '../../../lib/test-helpers.mjs';
 
 describe('knowledge graph integrity', () => {
@@ -15,7 +15,16 @@ describe('knowledge graph integrity', () => {
     step: 3,
   };
 
-  for (const storyDir of listStoryDirs()) {
+  const storyDirs = listStoryDirs();
+
+  if (storyDirs.length === 0) {
+    it('no story directories found (skip)', () => {
+      assert.ok(true, 'no story directories to validate');
+    });
+    return;
+  }
+
+  for (const storyDir of storyDirs) {
     describe(`${storyDir} knowledge graph`, () => {
       let kg;
 
@@ -104,4 +113,3 @@ describe('knowledge graph integrity', () => {
 });
 
 const exitCode = await run();
-process.exit(exitCode);

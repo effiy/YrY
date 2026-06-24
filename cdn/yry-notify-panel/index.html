@@ -13,7 +13,8 @@
      <link rel="stylesheet" href="path/to/yry-notify-panel/index.css">
      <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
      <script src="path/to/yry-panel-hub/index.js"></script>
-     <script src="path/to/yry-notify-panel/index.js"></script>
+     <script src="../shared/vue-ce-loader.js"></script>
+  <script src="path/to/yry-notify-panel/index.js"></script>
      <yry-notify-panel></yry-notify-panel>
 
   Differences vs 原 IIFE (500+ 行字符串拼接式 Vue.createApp):
@@ -66,7 +67,7 @@
        ════════════════════════════════════════════════════════════════════ -->
   <script type="text/x-template" id="yry-notify-panel-tpl">
     <div class="yry-notify-overlay notify-overlay" id="notifyOverlay"></div>
-    <div class="yry-notify-panel notify-panel" id="notifyPanel" style="display:none">
+    <div class="yry-notify-panel notify-panel" id="notifyPanel">
       <div class="yry-panel-header panel-header">
         <span class="yry-notify-title notify-title">🔔 通知中心</span>
         <span id="npTotalCount" class="yry-notify-count notify-count">{{ totalCountLabel }}</span>

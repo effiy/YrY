@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<!--
+  YrY CDN · 审查聚合页 (review.html)
+  全局聚合：六维健康评估 · 版本演进趋势 · 诊断引擎 · 改进建议 · 组件质量分布
+  数据源: cdn-summary/index.json (由 cdn-summary 生成器产出)
+  消费者: cdn/index.html 顶部导航
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YrY CDN · 审查聚合</title>
+  <link rel="prev" href="demo.html" title="演示聚合">
+  <meta name="description" content="YrY CDN 审查聚合 — 六维健康评估 92/A · v1.2.0 · 3 版本演进趋势 SVG 折线图 · D0-D8 诊断引擎 · 维度优先级矩阵 · 改进建议卡片 · 综合 Hero">
+  <link rel="stylesheet" href="shared/index.css">
+  <link rel="stylesheet" href="theme/index.css">
+  <style>
+    body { padding: 24px 20px 60px; max-width: 1280px; margin: 0 auto; line-height: 1.6; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #22d3ee); margin: 0 0 4px; }
+    .sub { color: var(--yry-text3, #6b7280); font-size: .78rem; margin: 0 0 16px; }
+    h2 { font-size: 1.05rem; color: var(--yry-text2, #a9b1d6); margin: 28px 0 12px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,.06); }
+    .links { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0; }
+    .links a { color: var(--yry-accent, #22d3ee); text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; font-size: .76rem; }
+    .links a:hover { border-color: var(--yry-accent); background: rgba(34,211,238,.08); }
+    .links a.active { background: rgba(34,211,238,.12); border-color: var(--yry-accent); }
+
+    .hero { background: linear-gradient(135deg, rgba(34,211,238,.1), rgba(167,139,250,.1)); border: 1px solid rgba(34,211,238,.3); border-radius: 12px; padding: 20px 24px; margin: 12px 0 20px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+    .hero .score { font-size: 3rem; font-weight: 700; color: var(--yry-accent, #22d3ee); line-height: 1; }
+    .hero .grade { font-size: 1.6rem; padding: 4px 14px; border-radius: 6px; background: rgba(52,211,153,.2); color: #34d399; font-weight: 700; }
+    .hero .meta { flex: 1; min-width: 240px; }
+    .hero .meta .title { font-size: 1.1rem; color: var(--yry-text2, #a9b1d6); margin-bottom: 4px; }
+    .hero .meta .detail { font-size: .76rem; color: var(--yry-text3, #6b7280); line-height: 1.7; }
+
+    .grid4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 12px 0 20px; }
+    .kpi { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 14px 18px; }
+    .kpi .v { font-size: 1.4rem; color: var(--yry-accent, #22d3ee); font-weight: 700; line-height: 1.1; }
+    .kpi .l { font-size: .72rem; color: var(--yry-text3, #6b7280); margin-top: 2px; }
+    .kpi.A .v { color: #34d399; }
+    .kpi.B .v { color: #22d3ee; }
+    .kpi.C .v { color: #fb923c; }
+    .kpi.D .v { color: #f87171; }
+
+    .dim-table { width: 100%; border-collapse: collapse; font-size: .76rem; margin: 8px 0; }
+    .dim-table th { text-align: left; padding: 8px 12px; background: rgba(30,41,59,.5); color: var(--yry-text2, #a9b1d6); font-weight: 600; }
+    .dim-table td { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,.04); color: var(--yry-text3, #6b7280); }
+    .dim-table td.score { text-align: right; font-weight: 700; color: var(--yry-accent, #22d3ee); }
+    .bar-wrap { display: inline-flex; align-items: center; gap: 8px; }
+    .bar { width: 120px; height: 8px; background: rgba(0,0,0,.3); border-radius: 4px; overflow: hidden; }
+    .bar .fill { height: 100%; background: linear-gradient(90deg, #22d3ee, #a78bfa); }
+    .trend { font-size: .7rem; }
+    .trend.up { color: #34d399; }
+    .trend.down { color: #f87171; }
+    .trend.flat { color: var(--yry-text3, #6b7280); }
+
+    .trend-chart { background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 16px; }
+    .trend-chart svg { display: block; width: 100%; height: 180px; }
+
+    .recs { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; }
+    .rec { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-left: 3px solid var(--yry-accent, #22d3ee); border-radius: 6px; padding: 10px 14px; font-size: .76rem; color: var(--yry-text3, #6b7280); display: flex; gap: 10px; align-items: flex-start; }
+    .rec b { color: var(--yry-text2, #a9b1d6); display: block; margin-bottom: 2px; }
+    .rec-pri { font-size: .64rem; padding: 2px 6px; border-radius: 3px; font-weight: 700; white-space: nowrap; line-height: 1.4; }
+
+    .diag { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
+    .diag-item { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 6px; padding: 8px 12px; text-align: center; }
+    .diag-item .lvl { font-size: .9rem; color: var(--yry-accent, #22d3ee); font-weight: 700; }
+    .diag-item .lbl { font-size: .68rem; color: var(--yry-text3, #6b7280); margin-top: 2px; }
+    .diag-item.cleared { border-color: rgba(52,211,153,.4); }
+    .diag-item.cleared .lvl { color: #34d399; }
+
+    .err { color: #f87171; font-size: .78rem; }
+    .meta-bar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; background: rgba(15,23,42,.55); border: 1px solid rgba(34,211,238,.2); border-radius: 8px; padding: 8px 14px; margin: 10px 0 16px; font-size: .74rem; color: var(--yry-text3, #6b7280); }
+    .meta-bar code { background: rgba(0,0,0,.3); padding: 1px 6px; border-radius: 3px; color: var(--yry-accent, #22d3ee); font-size: .72rem; }
+    .meta-bar .sep { color: rgba(255,255,255,.15); }
+    .meta-bar b { color: var(--yry-accent, #22d3ee); font-weight: 600; }
+    .meta-bar .refresh { margin-left: auto; background: rgba(34,211,238,.1); border: 1px solid rgba(34,211,238,.3); color: var(--yry-accent, #22d3ee); padding: 2px 10px; border-radius: 4px; cursor: pointer; font-size: .7rem; transition: all .15s; }
+    .meta-bar .refresh:hover { background: rgba(34,211,238,.2); }
+  </style>
+</head>
+<body>
+  <h1>⚠️ 审查聚合 · 六维健康评估</h1>
+  <p class="sub">汇总 CQI 组件质量 · CHI 综合健康 · TQI 测试质量 · SII 自改进 · LSI 加载链 · MPI 迁移 六大维度 · D0-D8 诊断引擎 · 版本演进趋势 · 改进建议。</p>
+
+  <div class="meta-bar" id="metaBar">
+    <span>📊 数据源 <code>cdn-summary/index.json</code></span>
+    <span class="sep">·</span>
+    <span id="metaCount">— 版本 / — 维度</span>
+    <span class="sep">·</span>
+    <span id="metaTime">最后更新 —</span>
+    <button id="exportJson" class="refresh" title="导出当前审查数据为 JSON 文件">💾 导出 JSON</button>
+    <button class="refresh" onclick="location.reload()" title="重新拉取并刷新数据">🔄 刷新</button>
+    <span style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-left:8px"><kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">/</kbd> 搜索 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">t</kbd> 顶部 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">1-7</kbd> 跳转 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">0</kbd> 首页</span>
+  </div>
+
+  <div class="links">
+    <a href="index.html" title="CDN 首页 — 七卡聚合中心入口">← CDN 首页</a>
+    <a href="checklist.html" title="📋 清单聚合 — 125 组件全量清单 · 状态/类型/大小过滤 · 名称搜索">📋 清单</a>
+    <a href="architecture.html" title="🏗 架构聚合 — 五步加载链 · 双主题 · 设计令牌 · 组件分层 · 版本演进">🏗 架构</a>
+    <a href="graph.html" title="🕸 图谱聚合 — 组件依赖关系图 · SVG 环形 · 中心度/出度排名">🕸 图谱</a>
+    <a href="tests.html" title="🧪 测试聚合 — vitest 结果 · TQI 三维评估 · 套件展开 · 失败定位">🧪 测试</a>
+    <a href="source.html" title="📜 源码聚合 — html/js/css 按需 fetch · 带行号 · Top 10 体积排行">📜 源码</a>
+    <a href="demo.html" title="🎬 演示聚合 — iframe 缩略图 · 网格/列表双视图 · 类型过滤">🎬 演示</a>
+    <a href="review.html" title="⚠️ 审查聚合 — 六维健康评估 · 版本演进趋势 · D0-D8 诊断 · 改进建议" class="active">⚠️ 审查</a>
+  </div>
+
+  <div id="hero" class="hero">
+    <div>
+      <div class="score" id="heroScore">--</div>
+      <div class="grade" id="heroGrade">--</div>
+    </div>
+    <div class="meta">
+      <div class="title" id="heroTitle">加载中…</div>
+      <div class="detail" id="heroDetail"></div>
+    </div>
+  </div>
+
+  <div id="kpis" class="grid4"></div>
+
+  <div id="distStack" style="display:flex;height:10px;border-radius:5px;overflow:hidden;margin:-8px 0 6px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06)"></div>
+  <div id="distLegend" style="display:flex;gap:14px;flex-wrap:wrap;font-size:.7rem;color:var(--yry-text3,#6b7280);margin:0 0 14px"></div>
+
+  <div style="background:rgba(15,23,42,.55);border:1px solid rgba(34,211,238,.2);border-radius:8px;padding:8px 14px;margin:0 0 14px;font-size:.72rem;color:var(--yry-text3,#6b7280);line-height:1.7">
+    <b style="color:var(--yry-accent,#22d3ee)">📑 页面大纲</b> ·
+    <a href="#dims" style="color:var(--yry-accent,#22d3ee);text-decoration:none">六维评分</a> ·
+    <a href="#trend" style="color:var(--yry-accent,#22d3ee);text-decoration:none">版本演进</a> ·
+    <a href="#reliability" style="color:var(--yry-accent,#22d3ee);text-decoration:none">📊 可靠性统计</a> ·
+    <a href="#dim-sparks" style="color:var(--yry-accent,#22d3ee);text-decoration:none">维度趋势</a> ·
+    <a href="#diag" style="color:var(--yry-accent,#22d3ee);text-decoration:none">D0-D8 诊断</a> ·
+    <a href="#matrix" style="color:var(--yry-accent,#22d3ee);text-decoration:none">优先级矩阵</a> ·
+    <a href="#recs" style="color:var(--yry-accent,#22d3ee);text-decoration:none">改进建议</a> ·
+    <a href="#signals" style="color:var(--yry-accent,#22d3ee);text-decoration:none">📡 信号总览</a>
+  </div>
+
+  <div style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 16px;margin:0 0 16px;font-size:.72rem;color:var(--yry-text3,#6b7280);line-height:1.8">
+    <div style="color:var(--yry-text2,#a9b1d6);font-weight:600;margin-bottom:8px">📐 评级方法论</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px 16px">
+      <div><b style="color:#34d399">A 优秀</b> · ≥ 80 分 · 维度健康，可持续演进</div>
+      <div><b style="color:#22d3ee">B 良好</b> · 60-79 · 基本健康，存在改进空间</div>
+      <div><b style="color:#a78bfa">C 需改进</b> · 40-59 · 存在退化风险，需关注</div>
+      <div><b style="color:#f87171">D 缺陷</b> · &lt; 40 · 显著退化，需立即修复</div>
+    </div>
+    <div style="margin-top:8px;padding:8px 12px;background:rgba(34,211,238,.06);border-left:3px solid var(--yry-accent,#22d3ee);border-radius:3px;color:var(--yry-text2,#a9b1d6);font-size:.72rem">
+      <b style="color:var(--yry-accent,#22d3ee)">综合评分</b> = 六维独立评分的算术均分 · 各维度独立评估不强制归一化 · 趋势持久化至 <code>.memory/health-trend.jsonl</code> · 每 5 分钟自动刷新 · 企微告警阈值 &lt; B 级
+    </div>
+  </div>
+
+  <h2 id="dims">📊 六维加权评分</h2>
+  <div style="display:grid;grid-template-columns:1fr 360px;gap:16px;align-items:start" class="dim-layout">
+    <table class="dim-table">
+      <thead><tr><th>维度</th><th>得分</th><th>进度</th><th>趋势</th></tr></thead>
+      <tbody id="dimRows"></tbody>
+    </table>
+    <div class="radar-wrap" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px">
+      <div style="font-size:.78rem;color:var(--yry-text2,#a9b1d6);margin-bottom:8px;font-weight:600">🎯 六维雷达图</div>
+      <svg id="radar" viewBox="0 0 300 300" style="display:block;width:100%;height:auto"></svg>
+    </div>
+  </div>
+  <style>
+    @media (max-width: 900px) { .dim-layout { grid-template-columns: 1fr !important } }
+  </style>
+
+  <h2 id="trend">📈 版本演进趋势</h2>
+  <div class="trend-chart">
+    <svg id="trend" viewBox="0 0 720 180" preserveAspectRatio="none"></svg>
+  </div>
+  <div id="deltaBar" style="display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 0"></div>
+
+  <h2 id="reliability" style="margin-top:24px">📊 可靠性统计 · 均值 / 标准差 / 95% 置信区间</h2>
+  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">基于版本演进时序的健康分统计 · <b style="color:var(--yry-accent,#22d3ee)">标准差</b>反映版本间波动 · <b style="color:var(--yry-accent,#22d3ee)">置信区间</b>给出下一版本分数预测范围 · 数据源 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">scoreReport.reliability</code>。</div>
+  <div id="reliabilityChart" style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 18px;margin:8px 0 16px">加载中…</div>
+
+  <h2 id="dim-sparks">🔥 维度健康趋势迷你图 · 六维时序快照</h2>
+  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">每个维度的历史评分迷你折线图，与上方综合趋势互补：综合评分可能掩盖单维度突变。点击迷你图跳转维度详情。</div>
+  <div id="dimSparks" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px"></div>
+
+  <h2 id="diag">🔬 D0-D8 诊断引擎</h2>
+  <div id="diag" class="diag"></div>
+
+  <h2 id="matrix">🎯 维度优先级矩阵</h2>
+  <div id="matrix" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:16px;position:relative">
+    <div style="display:grid;grid-template-columns:80px 1fr;gap:8px;align-items:stretch" class="matrix-grid">
+      <div></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;text-align:center;font-size:.68rem;color:var(--yry-text3,#6b7280);padding:4px 0">
+        <div>← 改进空间小 (≥80)</div>
+        <div>改进空间中 (60-79)</div>
+        <div>改进空间大 (&lt;60) →</div>
+      </div>
+      <div style="writing-mode:vertical-lr;transform:rotate(180deg);text-align:center;font-size:.68rem;color:var(--yry-text3,#6b7280);padding:8px 0">趋势↑ 良化</div>
+      <div id="matrixRow1" style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;min-height:80px"></div>
+      <div style="writing-mode:vertical-lr;transform:rotate(180deg);text-align:center;font-size:.68rem;color:var(--yry-text3,#6b7280);padding:8px 0">趋势→ 持平</div>
+      <div id="matrixRow2" style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;min-height:80px"></div>
+      <div style="writing-mode:vertical-lr;transform:rotate(180deg);text-align:center;font-size:.68rem;color:var(--yry-text3,#6b7280);padding:8px 0">趋势↓ 退化</div>
+      <div id="matrixRow3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;min-height:80px"></div>
+    </div>
+    <div style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-top:10px;line-height:1.6">二维定位：<b style="color:var(--yry-accent,#22d3ee)">横轴</b> = 当前得分（改进空间）· <b style="color:var(--yry-accent,#22d3ee)">纵轴</b> = 趋势方向 · 右下角（退化且空间大）为最高优先级 P0</div>
+  </div>
+  <style>
+    @media (max-width: 700px) { .matrix-grid { grid-template-columns: 1fr !important } .matrix-grid > div:first-child { display:none } }
+  </style>
+
+  <h2 id="recs">💡 改进建议</h2>
+  <div style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:8px 14px;margin:0 0 10px;font-size:.7rem;color:var(--yry-text3,#6b7280);line-height:1.7;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+    <b style="color:var(--yry-text2,#a9b1d6)">优先级图例</b>
+    <span><span style="display:inline-block;width:8px;height:8px;background:#f87171;border-radius:2px;margin-right:4px;vertical-align:middle"></span>P0 阻塞 · 必须立即修复</span>
+    <span><span style="display:inline-block;width:8px;height:8px;background:#fb923c;border-radius:2px;margin-right:4px;vertical-align:middle"></span>P1 高 · 本迭代修复</span>
+    <span><span style="display:inline-block;width:8px;height:8px;background:#22d3ee;border-radius:2px;margin-right:4px;vertical-align:middle"></span>P2 中 · 计划内修复</span>
+    <span><span style="display:inline-block;width:8px;height:8px;background:#6b7280;border-radius:2px;margin-right:4px;vertical-align:middle"></span>P3 低 · 可延后</span>
+    <span style="margin-left:auto;display:flex;gap:6px;align-items:center">
+      <span style="color:var(--yry-text2,#a9b1d6)">过滤:</span>
+      <button data-pri-filter="" class="rec-filter active" style="background:rgba(34,211,238,.15);border:1px solid var(--yry-accent,#22d3ee);color:#22d3ee;padding:2px 8px;border-radius:3px;font-size:.66rem;cursor:pointer;font-weight:600">全部</button>
+      <button data-pri-filter="P0" class="rec-filter" style="background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.3);color:#f87171;padding:2px 8px;border-radius:3px;font-size:.66rem;cursor:pointer">P0</button>
+      <button data-pri-filter="P1" class="rec-filter" style="background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.3);color:#fb923c;padding:2px 8px;border-radius:3px;font-size:.66rem;cursor:pointer">P1</button>
+      <button data-pri-filter="P2" class="rec-filter" style="background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.3);color:#22d3ee;padding:2px 8px;border-radius:3px;font-size:.66rem;cursor:pointer">P2</button>
+      <button data-pri-filter="P3" class="rec-filter" style="background:rgba(107,114,128,.08);border:1px solid rgba(107,114,128,.3);color:#6b7280;padding:2px 8px;border-radius:3px;font-size:.66rem;cursor:pointer">P3</button>
+      <span id="recFilterCount" style="font-size:.64rem;color:var(--yry-text3,#6b7280);margin-left:4px"></span>
+    </span>
+  </div>
+  <div id="recs" class="recs"></div>
+
+  <h2 id="signals" style="margin-top:28px">📡 信号总览 · 当前版本观察点</h2>
+  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">由 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">cdn-summary.signals</code> 字段驱动的当前版本观察信号 · 按类型分桶展示 · 帮助快速掌握版本关键变化与风险点。</div>
+  <div id="signalBuckets" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin:8px 0 16px">加载中…</div>
+
+  <h2 id="trendDelta" style="margin-top:28px">⚡ 维度环比变化 · 相邻版本 ΔScore</h2>
+  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">相邻版本（v1.1 → v1.2）各维度得分变化 · <b style="color:#34d399">↑ 正向变化</b> · <b style="color:#f87171">↓ 负向变化</b> · <b style="color:#9ca3af">→ 持平</b> · 揭示本版本主要改进与需要关注的退化点。</div>
+  <div id="trendDeltaList" style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 18px;margin:8px 0 16px;display:flex;flex-direction:column;gap:8px">加载中…</div>
+
+  <h2 id="scoreLadder" style="margin-top:28px">🥇 版本得分阶梯 · 3 版本对比表</h2>
+  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">横向展示 3 个版本（v1.0 → v1.1 → v1.2）的综合得分 · 等级 · ΔScore 变化 · 揭示项目演进轨迹。</div>
+  <div id="scoreLadderTable" style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 18px;margin:8px 0 16px;overflow-x:auto">加载中…</div>
+
+  <h2 id="forecast" style="margin-top:28px">🔮 趋势预测与置信度 · 统计可信度</h2>
+  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">基于历史趋势的统计预测 · 显示斜率 · R² 拟合优度 · 置信度评级 · 波动性 · 揭示趋势数据的可信度。</div>
+  <div id="forecastGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:8px 0 16px">加载中…</div>
+
+  <p id="err" class="err" hidden></p>
+  <footer class="agg-footer" style="margin-top:32px;padding:14px 18px;background:rgba(15,23,42,.4);border:1px solid rgba(255,255,255,.06);border-radius:10px;font-size:.72rem;color:var(--yry-text3,#6b7280);line-height:1.8"><div style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-bottom:6px"><b style="color:var(--yry-accent,#22d3ee)">YrY CDN · Review聚合</b><span style="color:rgba(255,255,255,.15)">·</span><span>v1.2.0 · 2026</span><span style="color:rgba(255,255,255,.15)">·</span><span>📊 数据源 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">cdn-summary/index.json</code></span><span style="color:rgba(255,255,255,.15)">·</span><span>🛠 生成 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">skills/rui-bot/lib/loop-report.mjs</code></span></div><div style="display:flex;flex-wrap:wrap;gap:8px 12px;margin-top:6px"><a href="index.html" title="CDN 首页 — 七卡聚合中心入口" style="color:var(--yry-accent,#22d3ee);text-decoration:none">🏠 CDN 首页</a><a href="../docs/index.html" style="color:var(--yry-accent,#22d3ee);text-decoration:none">🏠 文档中心</a><a href="../README.md" style="color:var(--yry-accent,#22d3ee);text-decoration:none">📖 README</a><span style="margin-left:auto;font-size:.66rem">键盘 <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">1-7</kbd> 跳转 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">0</kbd> 首页 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">/</kbd> 搜索 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">t</kbd> 顶部</span></div></footer>
+
+  <script type="module">
+    const SVG_NS = 'http://www.w3.org/2000/svg';
+    const GRADE_FOR = s => s >= 80 ? 'A' : s >= 60 ? 'B' : s >= 40 ? 'C' : 'D';
+    const TREND_ICON = t => t > 0 ? '↑' : t < 0 ? '↓' : '→';
+    const TREND_CLS = t => t > 0 ? 'up' : t < 0 ? 'down' : 'flat';
+
+    function el(tag, attrs) {
+      const e = document.createElementNS(SVG_NS, tag);
+      for (const [k, v] of Object.entries(attrs || {})) e.setAttribute(k, v);
+      return e;
+    }
+
+    fetch('cdn-summary/index.json').then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json().then(d => ({ d, lm: r.headers.get('last-modified') }));
+    }).then(({ d, lm }) => {
+      const ts = lm || d?.latest?.date;
+      if (ts) document.getElementById('metaTime').textContent = '最后更新 ' + new Date(ts).toLocaleString('zh-CN');
+      // 暴露给导出按钮
+      window.__reviewData = d;
+      const exportBtn = document.getElementById('exportJson');
+      if (exportBtn) {
+        exportBtn.addEventListener('click', () => {
+          const data = window.__reviewData;
+          if (!data) { alert('数据尚未加载完成'); return; }
+          const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `cdn-review-${new Date().toISOString().slice(0, 10)}.json`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        });
+      }
+      const latest = d.latest || {};
+      const score = latest.composite || 0;
+      const grade = latest.grade || GRADE_FOR(score);
+      const diagArr = (d.diagSummary || []).map(e => {
+        const rate = (e && typeof e === 'object') ? (e.rate || 0) : (typeof e === 'number' ? e : 0);
+        return Math.max(0, Math.min(100, 100 - rate));
+      });
+      const clearedDiag = diagArr.filter(v => v >= 80).length;
+      document.getElementById('metaCount').innerHTML = `${d.totalVersions || 0} 版本 · <b style="color:var(--yry-accent,#22d3ee)">${score}/${grade}</b> · D0-D8 <b style="color:#34d399">${clearedDiag}/${diagArr.length}</b> 已清零`;
+      // D0-D8 诊断清零分布条 — 已清零 / 待改进 (40-79) / 风险 (<40)
+      const clearedN = clearedDiag;
+      const warningN = diagArr.filter(v => v >= 40 && v < 80).length;
+      const riskN = diagArr.filter(v => v < 40).length;
+      const distTotal = Math.max(1, diagArr.length);
+      const DIST = [
+        { key: '已清零 (≥80)', n: clearedN, color: '#34d399' },
+        { key: '待改进 (40-79)', n: warningN, color: '#fbbf24' },
+        { key: '风险 (<40)', n: riskN, color: '#f87171' }
+      ];
+      const stackEl = document.getElementById('distStack');
+      const legendEl = document.getElementById('distLegend');
+      if (stackEl) stackEl.innerHTML = DIST.map(d =>
+        `<div title="${d.key} · ${d.n} 维度 · ${(d.n / distTotal * 100).toFixed(1)}%" style="flex:${d.n || 0.001};background:${d.color};position:relative">
+          ${d.n / distTotal >= 0.12 ? `<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:rgba(0,0,0,.7)">${d.n}</span>` : ''}
+        </div>`
+      ).join('');
+      if (legendEl) legendEl.innerHTML = DIST.map(d =>
+        `<span><i style="width:10px;height:10px;border-radius:2px;display:inline-block;background:${d.color};margin-right:4px"></i>${d.key} <b style="color:var(--yry-text2,#a9b1d6)">${d.n}</b> · ${(d.n / distTotal * 100).toFixed(0)}%</span>`
+      ).join('');
+
+      document.getElementById('heroScore').textContent = score;
+      document.getElementById('heroGrade').textContent = grade + ' 级';
+      document.getElementById('heroTitle').textContent = `综合健康指数 ${score}/100 · ${grade} 级 ${grade === 'A' ? '优秀' : grade === 'B' ? '良好' : grade === 'C' ? '需改进' : '缺陷'}`;
+      document.getElementById('heroDetail').innerHTML = `
+        版本 <b>v${latest.version || '1.2.0'}</b> · 评估日期 ${latest.date || '-'} · 历史版本 ${d.totalVersions || 0} 个 · 跨度 ${(d.dateRange || {}).from || '?'} → ${(d.dateRange || {}).to || '?'}<br>
+        六维加权：CSS 规范性 · API 一致性 · 可访问性 · 响应式 · 加载链 · 迁移率 · A ≥ 80 · B ≥ 60 · C ≥ 40 · D &lt; 40
+      `;
+
+      // KPIs from scoreReport
+      const sr = d.scoreReport || {};
+      const comp = d.componentHealth || {};
+      const kpis = [
+        { v: sr.composite || score, l: '综合评分', cls: grade },
+        { v: (sr.reliability || 0) + '%', l: '可靠性', cls: '' },
+        { v: comp.overallAvg || score, l: '组件均分', cls: GRADE_FOR(comp.overallAvg || score) },
+        { v: comp.totalComponents || '?', l: '评估组件数', cls: '' },
+        { v: (sr.dataPoints || 0) + ' 点', l: '数据点', cls: '' },
+        { v: d.totalVersions || 0, l: '历史版本', cls: '' }
+      ];
+      document.getElementById('kpis').innerHTML = kpis.map(k => `<div class="kpi ${k.cls}"><div class="v">${k.v}</div><div class="l">${k.l}</div></div>`).join('');
+
+      // Dimension rows
+      const dims = d.dimSummary || [];
+      // 维度优先级矩阵：横轴 = 得分段（≥80 / 60-79 / <60），纵轴 = 趋势（↑/→/↓）
+      const matrixCell = (dims, scoreMin, scoreMax, trendDir) => {
+        const filtered = dims.filter(s =>
+          s.avgScore >= scoreMin && s.avgScore < scoreMax &&
+          ((trendDir === 'up' && s.trend > 0) ||
+           (trendDir === 'flat' && s.trend === 0) ||
+           (trendDir === 'down' && s.trend < 0))
+        );
+        if (!filtered.length) return '<div style="background:rgba(15,23,42,.3);border:1px dashed rgba(255,255,255,.04);border-radius:4px;padding:6px 4px;text-align:center;font-size:.62rem;color:var(--yry-text3,#4b5563)">—</div>';
+        const priority = trendDir === 'down' && scoreMin < 60 ? 'P0' :
+                         trendDir === 'down' && scoreMin < 80 ? 'P1' :
+                         trendDir === 'flat' && scoreMin < 60 ? 'P1' :
+                         trendDir === 'flat' && scoreMin < 80 ? 'P2' : 'P3';
+        const color = priority === 'P0' ? '#f87171' : priority === 'P1' ? '#fb923c' : priority === 'P2' ? '#22d3ee' : '#34d399';
+        return filtered.map(s => `
+          <div style="background:rgba(15,23,42,.55);border:1px solid ${color}55;border-radius:6px;padding:6px 8px;font-size:.7rem">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span style="color:${color};font-weight:700;font-size:.62rem">${priority}</span>
+              <b style="color:${color}">${s.avgScore}</b>
+            </div>
+            <div style="color:var(--yry-text2,#a9b1d6);font-size:.66rem;margin-top:2px">${s.label}</div>
+          </div>`).join('');
+      };
+      const fillMatrix = (rowId, sMin, sMax, dir) => {
+        const el = document.getElementById(rowId);
+        if (el) el.innerHTML = matrixCell(dims, sMin, sMax, dir);
+      };
+      fillMatrix('matrixRow1', 0, 60, 'up');
+      fillMatrix('matrixRow1', 60, 80, 'up');
+      fillMatrix('matrixRow1', 80, 101, 'up');
+      fillMatrix('matrixRow2', 0, 60, 'flat');
+      fillMatrix('matrixRow2', 60, 80, 'flat');
+      fillMatrix('matrixRow2', 80, 101, 'flat');
+      fillMatrix('matrixRow3', 0, 60, 'down');
+      fillMatrix('matrixRow3', 60, 80, 'down');
+      fillMatrix('matrixRow3', 80, 101, 'down');
+      const maxScore = 100;
+      document.getElementById('dimRows').innerHTML = dims.map(s => `
+        <tr>
+          <td>${s.label}</td>
+          <td class="score">${s.avgScore}/100 <span class="badge" style="background:rgba(34,211,238,.12);color:#22d3ee;padding:1px 5px;border-radius:3px;font-size:.62rem">${GRADE_FOR(s.avgScore)}</span></td>
+          <td><div class="bar-wrap"><span class="bar"><span class="fill" style="width:${s.avgScore}%"></span></span></div></td>
+          <td><span class="trend ${TREND_CLS(s.trend)}">${TREND_ICON(s.trend)} ${s.trend > 0 ? '+' : ''}${s.trend}</span></td>
+        </tr>
+      `).join('');
+
+      // 六维雷达图
+      const radar = document.getElementById('radar');
+      if (radar && dims.length) {
+        const cx = 150, cy = 150, R = 100;
+        const N = dims.length;
+        // 网格圈 (4 层：25/50/75/100)
+        for (const lvl of [0.25, 0.5, 0.75, 1.0]) {
+          const pts = [];
+          for (let i = 0; i < N; i++) {
+            const a = (i / N) * Math.PI * 2 - Math.PI / 2;
+            pts.push(`${cx + R * lvl * Math.cos(a)},${cy + R * lvl * Math.sin(a)}`);
+          }
+          radar.appendChild(el('polygon', {
+            points: pts.join(' '),
+            fill: 'none',
+            stroke: 'rgba(255,255,255,.08)',
+            'stroke-width': 1
+          }));
+        }
+        // 轴线 + 标签
+        dims.forEach((dim, i) => {
+          const a = (i / N) * Math.PI * 2 - Math.PI / 2;
+          const x2 = cx + R * Math.cos(a), y2 = cy + R * Math.sin(a);
+          radar.appendChild(el('line', { x1: cx, y1: cy, x2, y2, stroke: 'rgba(255,255,255,.06)', 'stroke-width': 1 }));
+          const lx = cx + (R + 22) * Math.cos(a), ly = cy + (R + 22) * Math.sin(a) + 4;
+          const t = el('text', { x: lx, y: ly, fill: 'var(--yry-text2,#a9b1d6)', 'font-size': 10, 'text-anchor': 'middle' });
+          t.textContent = (dim.label || '').slice(0, 8);
+          radar.appendChild(t);
+          // 得分数字标签
+          const sx = cx + (R + 22) * Math.cos(a), sy = cy + (R + 22) * Math.sin(a) + 16;
+          const ts = el('text', { x: sx, y: sy, fill: '#22d3ee', 'font-size': 11, 'text-anchor': 'middle', 'font-weight': 700 });
+          ts.textContent = dim.avgScore;
+          radar.appendChild(ts);
+        });
+        // 得分多边形
+        const dataPts = dims.map((dim, i) => {
+          const a = (i / N) * Math.PI * 2 - Math.PI / 2;
+          const r = R * (dim.avgScore / 100);
+          return `${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`;
+        });
+        radar.appendChild(el('polygon', {
+          points: dataPts.join(' '),
+          fill: 'rgba(34,211,238,.18)',
+          stroke: '#22d3ee',
+          'stroke-width': 2
+        }));
+        // 节点圆
+        dims.forEach((dim, i) => {
+          const a = (i / N) * Math.PI * 2 - Math.PI / 2;
+          const r = R * (dim.avgScore / 100);
+          radar.appendChild(el('circle', {
+            cx: cx + r * Math.cos(a),
+            cy: cy + r * Math.sin(a),
+            r: 4,
+            fill: '#a78bfa',
+            stroke: '#1e1f2b',
+            'stroke-width': 2
+          }));
+        });
+      }
+
+      // 版本对比 delta — 当前 vs 上一版本
+      const trend = d.scoreTrend || [];
+      const deltaEl = document.getElementById('deltaBar');
+      if (trend.length >= 2) {
+        const latest = trend[trend.length - 1];
+        const prev = trend[trend.length - 2];
+        const delta = latest.score - prev.score;
+        const deltaCls = delta > 0 ? 'up' : delta < 0 ? 'down' : 'flat';
+        const deltaIcon = delta > 0 ? '↑' : delta < 0 ? '↓' : '→';
+        const sign = delta > 0 ? '+' : '';
+        deltaEl.innerHTML = `
+          <div style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:10px 14px;font-size:.74rem;flex:1;min-width:200px">
+            <div style="color:var(--yry-text3,#6b7280);font-size:.66rem;margin-bottom:4px">📊 版本对比 (v${prev.version} → v${latest.version})</div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <span style="color:var(--yry-text2,#a9b1d6)"><b>${prev.score}</b>/<span style="color:var(--yry-text3,#6b7280)">${prev.grade}</span></span>
+              <span style="color:var(--yry-text3,#6b7280)">→</span>
+              <span style="color:var(--yry-accent,#22d3ee)"><b>${latest.score}</b>/<span style="color:#34d399">${latest.grade}</span></span>
+              <span class="trend ${deltaCls}" style="font-size:.9rem;font-weight:700">${deltaIcon} ${sign}${delta}</span>
+            </div>
+          </div>
+          <div style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:10px 14px;font-size:.74rem;flex:1;min-width:200px">
+            <div style="color:var(--yry-text3,#6b7280);font-size:.66rem;margin-bottom:4px">📈 历史跨度</div>
+            <div style="color:var(--yry-text2,#a9b1d6)"><b>${trend.length}</b> 个版本 · 从 <b style="color:var(--yry-accent,#22d3ee)">${trend[0].score}</b> 演进至 <b style="color:var(--yry-accent,#22d3ee)">${latest.score}</b> · 净增 <b class="trend ${latest.score - trend[0].score >= 0 ? 'up' : 'down'}">${latest.score - trend[0].score >= 0 ? '+' : ''}${latest.score - trend[0].score}</b></div>
+          </div>
+        `;
+      } else {
+        deltaEl.innerHTML = '<div style="font-size:.72rem;color:var(--yry-text3,#6b7280);padding:8px">历史版本不足 2 个，无法计算 delta</div>';
+      }
+
+      // 📊 可靠性统计 — 均值/标准差/置信区间/波动性
+      const relEl = document.getElementById('reliabilityChart');
+      if (relEl) {
+        const rel = sr.reliability || {};
+        if (typeof rel === 'object' && !Array.isArray(rel) && Object.keys(rel).length > 0) {
+          const mean = rel.mean || 0;
+          const stddev = rel.stddev || 0;
+          const current = rel.current || score;
+          const ci95 = rel.ci95 || [0, 0];
+          const volatility = rel.volatility || '—';
+          const relScore = rel.score || 0;
+          const volMeta = {
+            low:       { label: '低波动',   color: '#34d399', desc: '版本间变化稳定' },
+            moderate:  { label: '中波动',   color: '#fbbf24', desc: '存在一定波动' },
+            high:      { label: '高波动',   color: '#f87171', desc: '版本间变化剧烈' }
+          }[volatility] || { label: volatility, color: '#a9b1d6', desc: '' };
+          const ci95Min = ci95[0] || 0;
+          const ci95Max = ci95[1] || 100;
+          const ci95Clamped = Math.max(0, Math.min(100, ci95Max));
+          const meanPct = (mean / 100 * 100).toFixed(1);
+          const curPct = (current / 100 * 100).toFixed(1);
+          const ciMinPct = (ci95Min / 100 * 100).toFixed(1);
+          const ciMaxPct = (ci95Clamped / 100 * 100).toFixed(1);
+          const deltaFromMean = current - mean;
+          const deltaSign = deltaFromMean >= 0 ? '+' : '';
+          const deltaColor = deltaFromMean >= 0 ? '#34d399' : '#f87171';
+          const deviationFromMean = Math.abs(deltaFromMean);
+          const deviationLabel = deviationFromMean > stddev * 1.5 ? '⚠️ 偏离均值超过 1.5σ' : deviationFromMean > stddev ? 'ⓘ 接近 1σ' : '✅ 在正常范围';
+          relEl.innerHTML = `
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:14px">
+              <div style="background:rgba(0,0,0,.3);border:1px solid rgba(34,211,238,.2);border-radius:8px;padding:10px 14px">
+                <div style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-bottom:4px">当前分数</div>
+                <div style="font-size:1.3rem;color:var(--yry-accent,#22d3ee);font-weight:700">${current}</div>
+                <div style="font-size:.62rem;color:${deltaColor};margin-top:2px">${deltaSign}${deltaFromMean.toFixed(1)} vs 均值</div>
+              </div>
+              <div style="background:rgba(0,0,0,.3);border:1px solid rgba(167,139,250,.2);border-radius:8px;padding:10px 14px">
+                <div style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-bottom:4px">历史均值</div>
+                <div style="font-size:1.3rem;color:#a78bfa;font-weight:700">${mean.toFixed(1)}</div>
+                <div style="font-size:.62rem;color:var(--yry-text3,#6b7280);margin-top:2px">基于 ${trend.length} 版本</div>
+              </div>
+              <div style="background:rgba(0,0,0,.3);border:1px solid rgba(251,146,60,.2);border-radius:8px;padding:10px 14px">
+                <div style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-bottom:4px">标准差 σ</div>
+                <div style="font-size:1.3rem;color:#fb923c;font-weight:700">${stddev.toFixed(1)}</div>
+                <div style="font-size:.62rem;color:var(--yry-text3,#6b7280);margin-top:2px">${deviationLabel}</div>
+              </div>
+              <div style="background:rgba(0,0,0,.3);border:1px solid ${volMeta.color}44;border-radius:8px;padding:10px 14px">
+                <div style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-bottom:4px">波动性</div>
+                <div style="font-size:1rem;color:${volMeta.color};font-weight:700">${volMeta.label}</div>
+                <div style="font-size:.62rem;color:var(--yry-text3,#6b7280);margin-top:2px">${volMeta.desc}</div>
+              </div>
+            </div>
+            <div style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:12px 14px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+                <b style="color:var(--yry-text2,#a9b1d6);font-size:.76rem">95% 置信区间 · 下一版本预测范围</b>
+                <span style="font-size:.72rem;color:var(--yry-accent,#22d3ee);font-weight:700">[${ciMinPct}, ${ciMaxPct}]</span>
+              </div>
+              <div style="position:relative;height:24px;background:rgba(0,0,0,.4);border-radius:4px;overflow:hidden">
+                <span style="position:absolute;left:${ciMinPct}%;width:${Math.max(0, ciMaxPct - ciMinPct)}%;height:100%;background:linear-gradient(90deg,rgba(34,211,238,.25),rgba(34,211,238,.4),rgba(34,211,238,.25));border-left:1px solid #22d3ee;border-right:1px solid #22d3ee"></span>
+                <span style="position:absolute;left:${meanPct}%;top:0;bottom:0;width:1px;background:#a78bfa" title="均值 ${mean.toFixed(1)}"></span>
+                <span style="position:absolute;left:${curPct}%;top:-4px;bottom:-4px;width:2px;background:#22d3ee" title="当前 ${current}"></span>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:.6rem;color:var(--yry-text3,#6b7280)">
+                <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
+              </div>
+              <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:.64rem;color:var(--yry-text3,#6b7280)">
+                <span><span style="display:inline-block;width:8px;height:8px;background:#22d3ee;vertical-align:middle;margin-right:4px"></span>当前 ${current}</span>
+                <span><span style="display:inline-block;width:8px;height:8px;background:#a78bfa;vertical-align:middle;margin-right:4px"></span>均值 ${mean.toFixed(1)}</span>
+                <span><span style="display:inline-block;width:14px;height:8px;background:rgba(34,211,238,.3);border:1px solid #22d3ee;vertical-align:middle;margin-right:4px"></span>95% CI 区间</span>
+              </div>
+            </div>
+            <div style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-top:8px;line-height:1.6">可靠性分数 <b style="color:var(--yry-accent,#22d3ee)">${(relScore * 100).toFixed(0)}%</b> · 当前分数 ${deltaSign}${deltaFromMean.toFixed(1)} 相对均值 · ${deviationLabel}</div>
+          `;
+        } else {
+          relEl.innerHTML = '<div style="padding:12px;font-size:.74rem;color:var(--yry-text3,#6b7280)">无可靠性统计数据</div>';
+        }
+      }
+
+
+      const svg = document.getElementById('trend');
+      if (trend.length) {
+        const W = 720, H = 180, P = 30;
+        // 数据驱动 Y 轴范围：基于实际分数 min/max 加 5% padding
+        const scores = trend.map(p => p.score || 0);
+        const dataMin = Math.min(...scores);
+        const dataMax = Math.max(...scores);
+        const range = Math.max(10, dataMax - dataMin);
+        const minS = Math.max(0, Math.floor((dataMin - range * 0.1) / 5) * 5);
+        const maxS = Math.min(100, Math.ceil((dataMax + range * 0.1) / 5) * 5);
+        const xs = i => P + (i * (W - 2 * P) / Math.max(1, trend.length - 1));
+        const ys = s => H - P - ((s - minS) * (H - 2 * P) / Math.max(1, maxS - minS));
+        // 基准线（A=80·B=60·C=40·D<40）— 仅绘制在数据范围内的 · 带评级标签
+        const GRADE_LINES = [
+          { score: 80, label: 'A', color: '#34d399' },
+          { score: 60, label: 'B', color: '#22d3ee' },
+          { score: 40, label: 'C', color: '#fb923c' },
+          { score: 20, label: 'D', color: '#f87171' }
+        ];
+        for (const gl of GRADE_LINES) {
+          if (gl.score < minS || gl.score > maxS) continue;
+          const y = ys(gl.score);
+          svg.appendChild(el('line', { x1: P, y1: y, x2: W - P, y2: y, stroke: gl.color, 'stroke-opacity': '.2', 'stroke-dasharray': '4,3' }));
+          // 左侧分数
+          const tNum = el('text', { x: 4, y: y + 4, fill: gl.color, 'font-size': 10, 'font-weight': 600 });
+          tNum.textContent = gl.score;
+          svg.appendChild(tNum);
+          // 右侧评级标签
+          const tLbl = el('text', { x: W - P + 4, y: y + 4, fill: gl.color, 'font-size': 11, 'font-weight': 700 });
+          tLbl.textContent = gl.label;
+          svg.appendChild(tLbl);
+        }
+        // path
+        const path = trend.map((p, i) => (i === 0 ? 'M' : 'L') + xs(i) + ',' + ys(p.score)).join(' ');
+        svg.appendChild(el('path', { d: path, stroke: '#22d3ee', 'stroke-width': 2, fill: 'none' }));
+        // points + labels
+        trend.forEach((p, i) => {
+          const cx = xs(i), cy = ys(p.score);
+          const circ = el('circle', { cx, cy, r: 5, fill: '#a78bfa', stroke: '#1e1f2b', 'stroke-width': 2 });
+          circ.style.cursor = 'pointer';
+          const tooltip = `v${p.version} · ${p.score}/${p.grade}${p.note ? '\n' + p.note : ''}`;
+          circ.addEventListener('mouseenter', () => {
+            circ.setAttribute('r', '8');
+            const box = el('rect', { x: cx - 60, y: cy - 50, width: 120, height: 32, fill: 'rgba(15,23,42,.95)', stroke: '#22d3ee', 'stroke-width': 1, rx: 4 });
+            box.setAttribute('class', 'trend-tooltip');
+            const tt = el('text', { x: cx, y: cy - 32, fill: '#22d3ee', 'font-size': 10, 'text-anchor': 'middle', 'font-weight': 600 });
+            tt.textContent = tooltip;
+            tt.setAttribute('class', 'trend-tooltip');
+            svg.appendChild(box);
+            svg.appendChild(tt);
+          });
+          circ.addEventListener('mouseleave', () => {
+            circ.setAttribute('r', '5');
+            svg.querySelectorAll('.trend-tooltip').forEach(t => t.remove());
+          });
+          svg.appendChild(circ);
+          const t1 = el('text', { x: cx, y: cy - 12, fill: '#22d3ee', 'font-size': 10, 'text-anchor': 'middle', 'font-weight': 600 });
+          t1.textContent = p.score + '/' + p.grade;
+          svg.appendChild(t1);
+          const t2 = el('text', { x: cx, y: H - 8, fill: 'rgba(255,255,255,.5)', 'font-size': 9, 'text-anchor': 'middle' });
+          t2.textContent = 'v' + p.version;
+          svg.appendChild(t2);
+        });
+      }
+
+      // 维度趋势迷你图 — 优先用 dimHistory（按维度拆分的历史分数），否则用 dimSummary 的 avgScore 与 trend 推导单点
+      const dimSparksEl = document.getElementById('dimSparks');
+      if (dimSparksEl) {
+        const dimHistory = d.dimHistory || d.dimTrend || null;
+        const sparkColors = ['#22d3ee', '#a78bfa', '#4ade80', '#fb923c', '#f87171', '#34d399'];
+        const SW = 200, SH = 56, SP = 6;
+        dimSparksEl.innerHTML = dims.map((dim, i) => {
+          const color = sparkColors[i % sparkColors.length];
+          // 取该维度历史分数序列；若无则用 avgScore 单点
+          const hist = (dimHistory && Array.isArray(dimHistory[dim.label])) ? dimHistory[dim.label] : [dim.avgScore];
+          const safeHist = hist.map(v => (typeof v === 'number' && !isNaN(v)) ? v : 0);
+          const minS = Math.min(...safeHist), maxS = Math.max(...safeHist);
+          const range = Math.max(10, maxS - minS);
+          const lo = Math.max(0, Math.floor((minS - range * 0.15) / 5) * 5);
+          const hi = Math.min(100, Math.ceil((maxS + range * 0.15) / 5) * 5);
+          const xAt = j => SP + (j * (SW - 2 * SP) / Math.max(1, safeHist.length - 1));
+          const yAt = s => SH - SP - ((s - lo) * (SH - 2 * SP) / Math.max(1, hi - lo));
+          const path = safeHist.map((s, j) => (j === 0 ? 'M' : 'L') + xAt(j).toFixed(1) + ',' + yAt(s).toFixed(1)).join(' ');
+          const lastIdx = safeHist.length - 1;
+          const trendIcon = dim.trend > 0 ? '↑' : dim.trend < 0 ? '↓' : '→';
+          const trendColor = dim.trend > 0 ? '#34d399' : dim.trend < 0 ? '#f87171' : '#6b7280';
+          return `<div style="background:rgba(15,23,42,.55);border:1px solid ${color}33;border-left:3px solid ${color};border-radius:8px;padding:8px 10px;cursor:pointer" title="${dim.label} 历史 · ${safeHist.length} 个版本 · ${safeHist.join(' → ')}" onclick="document.getElementById('dims').scrollIntoView({behavior:'smooth'})">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+              <span style="color:var(--yry-text2,#a9b1d6);font-size:.72rem;font-weight:600">${dim.label}</span>
+              <span style="color:${color};font-size:.78rem;font-weight:700">${dim.avgScore}</span>
+            </div>
+            <svg viewBox="0 0 ${SW} ${SH}" style="display:block;width:100%;height:auto">
+              <path d="${path}" stroke="${color}" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
+              <circle cx="${xAt(lastIdx).toFixed(1)}" cy="${yAt(safeHist[lastIdx]).toFixed(1)}" r="3" fill="${color}"/>
+              <line x1="${SP}" y1="${yAt(60)}" x2="${SW - SP}" y2="${yAt(60)}" stroke="rgba(255,255,255,.06)" stroke-width="1" stroke-dasharray="2,2"/>
+            </svg>
+            <div style="display:flex;justify-content:space-between;font-size:.62rem;color:var(--yry-text3,#6b7280);margin-top:3px">
+              <span>${safeHist.length} 版</span>
+              <span style="color:${trendColor};font-weight:600">${trendIcon} ${dim.trend > 0 ? '+' : ''}${dim.trend}</span>
+            </div>
+          </div>`;
+        }).join('');
+      }
+
+      // Diagnostics D0-D8
+      const diag = d.diagSummary || [];
+      const labels = d.diagLabels || {};
+      const D_DESC = [
+        '基线偏离 — 项目画像/版本/铁律与实际不符',
+        '效率退化 — 上下文工程违反·注意力浪费',
+        '质量退化 — 代码范式/架构合规违规',
+        '复杂度增长 — 内核超限·扩展耦合',
+        '流程退化 — P0 未清零·管线绕过',
+        '依赖退化 — 外部不可达·渐进漂移',
+        '文档过时 — 表达优先降级·术语膨胀',
+        '配置漂移 — plugin.json 与 skills 不一致',
+        '架构退化 — 架构宪法违反·范式退化·扩展隔离破坏'
+      ];
+      document.getElementById('diag').innerHTML = diag.map((entry, i) => {
+        const lbl = (entry && (entry.label || labels[i])) || `D${i}`;
+        const rate = (entry && typeof entry === 'object') ? (entry.rate || 0) : (typeof entry === 'number' ? entry : 0);
+        // rate = 发生率(%)，转换为健康分 = 100 - rate
+        const v = Math.max(0, Math.min(100, 100 - rate));
+        const cleared = v >= 80;
+        const desc = D_DESC[i] || '';
+        const title = desc.split(' — ')[0] || '';
+        const barColor = cleared ? '#34d399' : v >= 50 ? '#fbbf24' : '#f87171';
+        return `<div class="diag-item ${cleared ? 'cleared' : ''}" title="D${i} · ${lbl}\n${desc}\n健康分 ${v}/100 · 发生率 ${rate}%">
+          <div class="lvl">D${i}</div>
+          <div class="lbl"><b style="color:var(--yry-text2,#a9b1d6)">${lbl}</b><br><span style="font-size:.6rem;color:var(--yry-text3,#6b7280)">${title}</span><br><span style="font-size:.66rem;color:${barColor};font-weight:700">${v}/100</span></div>
+          <div style="height:3px;background:rgba(0,0,0,.3);border-radius:2px;margin-top:6px;overflow:hidden"><span style="display:block;height:100%;width:${v}%;background:${barColor}"></span></div>
+        </div>`;
+      }).join('');
+      // 在诊断网格下添加图例说明
+      const diagGrid = document.getElementById('diag');
+      const legend = document.createElement('div');
+      legend.style.cssText = 'font-size:.66rem;color:var(--yry-text3,#6b7280);margin-top:10px;line-height:1.7';
+      legend.innerHTML = '悬停查看诊断维度详情 · <span style="color:#34d399">绿框</span>表示已清零 (≥80) · <span style="color:var(--yry-text3,#6b7280)">默认框</span>表示待改进';
+      diagGrid.parentNode.insertBefore(legend, diagGrid.nextSibling);
+
+      // Recommendations — 按优先级（分数升序，最需改进的排前）分组
+      const recArr = [];
+      const signals = d.signals || [];
+      if (Array.isArray(signals)) signals.forEach(s => recArr.push(s));
+      else Object.values(signals).forEach(s => recArr.push(s));
+
+      // 📡 信号总览 — 按 type 分桶展示当前版本观察信号
+      const signalEl = document.getElementById('signalBuckets');
+      if (signalEl) {
+        const TYPE_META = {
+          improvement: { label: '改进信号', icon: '📈', color: '#34d399', bg: 'rgba(52,211,153,.06)', border: 'rgba(52,211,153,.3)' },
+          info:        { label: '信息信号', icon: 'ℹ️', color: '#22d3ee', bg: 'rgba(34,211,238,.06)', border: 'rgba(34,211,238,.3)' },
+          warning:     { label: '警示信号', icon: '⚠️', color: '#fb923c', bg: 'rgba(251,146,60,.06)', border: 'rgba(251,146,60,.3)' },
+          risk:        { label: '风险信号', icon: '🔴', color: '#f87171', bg: 'rgba(248,113,113,.06)', border: 'rgba(248,113,113,.3)' },
+          success:     { label: '成功信号', icon: '✅', color: '#34d399', bg: 'rgba(52,211,153,.06)', border: 'rgba(52,211,153,.3)' }
+        };
+        const sigArr = Array.isArray(signals) ? signals : Object.values(signals);
+        const buckets = {};
+        sigArr.forEach(s => {
+          const t = s.type || 'info';
+          if (!buckets[t]) buckets[t] = [];
+          buckets[t].push(s);
+        });
+        const orderedTypes = ['risk', 'warning', 'improvement', 'info', 'success'].filter(t => buckets[t]);
+        const otherTypes = Object.keys(buckets).filter(t => !orderedTypes.includes(t));
+        const allTypes = [...orderedTypes, ...otherTypes];
+        if (allTypes.length === 0) {
+          signalEl.innerHTML = '<div style="grid-column:1/-1;padding:14px;font-size:.74rem;color:var(--yry-text3,#6b7280);background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:8px">无信号数据</div>';
+        } else {
+          signalEl.innerHTML = allTypes.map(t => {
+            const m = TYPE_META[t] || { label: t, icon: '•', color: '#a9b1d6', bg: 'rgba(167,182,214,.06)', border: 'rgba(167,182,214,.3)' };
+            const items = buckets[t];
+            return `<div style="background:${m.bg};border:1px solid ${m.border};border-radius:8px;padding:12px 14px">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid ${m.border}">
+                <span style="font-size:1rem">${m.icon}</span>
+                <b style="color:${m.color};font-size:.78rem">${m.label}</b>
+                <span style="margin-left:auto;color:var(--yry-text3,#6b7280);font-size:.66rem">${items.length} 条</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                ${items.map(s => `<div style="font-size:.72rem;color:var(--yry-text2,#a9b1d6);line-height:1.6;padding:4px 8px;background:rgba(0,0,0,.2);border-radius:4px;border-left:2px solid ${m.color}">${s.msg || JSON.stringify(s)}</div>`).join('')}
+              </div>
+            </div>`;
+          }).join('');
+        }
+      }
+      (sr.recommendations || []).forEach(r => recArr.push(r));
+      // 补充 scoreReport.breakdown 中每维度的改进建议（按 gap 降序，最需改进的排前）
+      const breakdown = (sr.breakdown || []).slice().sort((a, b) => (b.gap || 0) - (a.gap || 0));
+      breakdown.forEach(b => {
+        if (!b.recommendation) return;
+        recArr.push({
+          title: `${b.label || b.dim} · ${b.score}/${b.grade} · gap ${b.gap}`,
+          description: `${b.recommendation}${b.trend ? ' · 趋势 ' + b.trend : ''}`,
+          _dimScore: b.score
+        });
+      });
+      // 关联维度分数，用于优先级排序
+      const dimMap = {};
+      (d.dimSummary || []).forEach(s => { dimMap[s.label] = s.avgScore; });
+      const priorityFor = (title, text, dimScore) => {
+        // 优先使用维度自带分数，其次启发式匹配
+        const score_ = typeof dimScore === 'number' ? dimScore : (() => {
+          const keys = Object.keys(dimMap);
+          const match = keys.find(k => (title + text).includes(k));
+          return match ? dimMap[match] : (sr.composite || score);
+        })();
+        if (score_ < 60) return { p: 'P0', color: '#f87171', label: '紧急' };
+        if (score_ < 75) return { p: 'P1', color: '#fb923c', label: '高' };
+        if (score_ < 85) return { p: 'P2', color: '#22d3ee', label: '中' };
+        return { p: 'P3', color: '#34d399', label: '低' };
+      };
+      // 预计算每条建议的优先级并附加 data-pri 属性，便于过滤
+      const enriched = recArr.slice(0, 12).map(r => {
+        if (typeof r === 'string') {
+          return { t: '建议', d_: r, p: priorityFor('', r) };
+        }
+        // signals 格式：{ type, icon, msg } — 用 type 作为标题，msg 作为正文
+        if (r.msg) {
+          const typeLabel = r.type ? ({ improvement: '改进信号', info: '信息信号', warning: '警告信号', risk: '风险信号' }[r.type] || r.type) : '信号';
+          const icon = r.icon || (r.type === 'improvement' ? '📈' : r.type === 'info' ? 'ℹ️' : r.type === 'warning' ? '⚠️' : r.type === 'risk' ? '🚨' : '•');
+          return { t: `${icon} ${typeLabel}`, d_: r.msg, p: priorityFor(r.msg, r.msg, r._dimScore) };
+        }
+        const t = r.title || r.label || r.name || '建议';
+        const d_ = r.description || r.detail || r.text || (typeof r.value === 'object' ? JSON.stringify(r.value) : r.value || '');
+        return { t, d_, p: priorityFor(t, d_, r._dimScore) };
+      });
+      const recsEl = document.getElementById('recs');
+      const countEl = document.getElementById('recFilterCount');
+      const PRI_RGB = { P0: '248,113,113', P1: '251,146,60', P2: '34,211,238', P3: '107,114,128' };
+      const renderRecs = (filter) => {
+        const list = filter ? enriched.filter(r => r.p.p === filter) : enriched;
+        recsEl.innerHTML = list.length
+          ? list.map(r => `<div class="rec" data-pri="${r.p.p}"><span class="rec-pri" style="background:${r.p.color}22;color:${r.p.color};border:1px solid ${r.p.color}66;flex-shrink:0">${r.p.p}·${r.p.label}</span><div><b>${r.t}</b>${r.d_}</div></div>`).join('')
+          : (enriched.length
+              ? `<div class="rec"><b>无 ${filter} 级建议</b>当前过滤下无此优先级的建议项。</div>`
+              : '<div class="rec"><b>暂无建议</b>当前版本已达 A 级，持续监控趋势即可。</div>');
+        if (countEl) countEl.textContent = `${list.length} / ${enriched.length} 条`;
+      };
+      renderRecs('');
+      document.querySelectorAll('.rec-filter').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const filter = btn.dataset.priFilter;
+          const rgb = filter ? PRI_RGB[filter] : '34,211,238';
+          document.querySelectorAll('.rec-filter').forEach(b => {
+            b.classList.remove('active');
+            b.style.fontWeight = '400';
+            const bRgb = b.dataset.priFilter ? PRI_RGB[b.dataset.priFilter] : '34,211,238';
+            b.style.background = `rgba(${bRgb},.08)`;
+          });
+          btn.classList.add('active');
+          btn.style.fontWeight = '600';
+          btn.style.background = `rgba(${rgb},.15)`;
+          renderRecs(filter);
+        });
+      });
+
+      // ⚡ 维度环比变化 · 相邻版本 ΔScore
+      const tdEl = document.getElementById('trendDeltaList');
+      if (tdEl) {
+        const breakdown = (summary && summary.scoreReport && summary.scoreReport.breakdown) || [];
+        const trend = (summary && summary.scoreTrend) || [];
+        if (breakdown.length === 0 || trend.length < 2) {
+          tdEl.innerHTML = '<div style="padding:10px;font-size:.72rem;color:var(--yry-text3,#6b7280)">无趋势数据或仅有单版本</div>';
+        } else {
+          const prev = trend[trend.length - 2] || {};
+          const curr = trend[trend.length - 1] || {};
+          const prevDims = (prev.dims || []).reduce((m, d) => { m[d.dim || d.label] = d.score; return m; }, {});
+          const currDims = (curr.dims || []).reduce((m, d) => { m[d.dim || d.label] = d.score; return m; }, {});
+          const fallbackPrev = breakdown.reduce((m, d) => { m[d.label] = d.score - (d.trend || 0); return m; }, {});
+          const fallbackCurr = breakdown.reduce((m, d) => { m[d.label] = d.score; return m; }, {});
+          const rows = breakdown.map(b => {
+            const label = b.label;
+            const p = prevDims[label] ?? fallbackPrev[label];
+            const c = currDims[label] ?? fallbackCurr[label];
+            const delta = (c != null && p != null) ? c - p : 0;
+            return { label, prev: p, curr: c, delta };
+          }).filter(r => r.prev != null && r.curr != null)
+            .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
+          const maxAbs = Math.max(1, ...rows.map(r => Math.abs(r.delta)));
+          if (rows.length === 0) {
+            tdEl.innerHTML = '<div style="padding:10px;font-size:.72rem;color:var(--yry-text3,#6b7280)">无法计算变化值</div>';
+          } else {
+            tdEl.innerHTML = rows.map((r, i) => {
+              const sign = r.delta > 0 ? '+' : r.delta < 0 ? '' : '±';
+              const dir = r.delta > 0 ? '↑' : r.delta < 0 ? '↓' : '→';
+              const color = r.delta > 0 ? '#34d399' : r.delta < 0 ? '#f87171' : '#9ca3af';
+              const width = (Math.abs(r.delta) / maxAbs * 50).toFixed(0);
+              const align = r.delta < 0 ? 'margin-left:auto' : '';
+              return `<div style="display:grid;grid-template-columns:140px 1fr 70px;gap:10px;align-items:center;font-size:.72rem">
+                <div style="color:var(--yry-text2,#a9b1d6);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.label}</div>
+                <div style="display:flex;align-items:center;gap:6px;height:14px;position:relative">
+                  <div style="position:absolute;left:50%;width:1px;background:rgba(255,255,255,.15);height:100%"></div>
+                  <div style="${align};height:8px;background:${color};border-radius:2px;width:${width}%" title="${r.prev} → ${r.curr}"></div>
+                </div>
+                <div style="text-align:right;white-space:nowrap">
+                  <span style="color:${color};font-weight:700">${dir} ${sign}${Math.abs(r.delta)}</span>
+                  <div style="color:var(--yry-text3,#6b7280);font-size:.6rem">${r.prev} → ${r.curr}</div>
+                </div>
+              </div>`;
+            }).join('') + `<div style="font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.6;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.06)">按 |Δ| 降序排列 · ${rows.filter(r => r.delta > 0).length} 维上升 · ${rows.filter(r => r.delta < 0).length} 维下降 · ${rows.filter(r => r.delta === 0).length} 维持平 · 共 ${rows.length} 维度</div>`;
+          }
+        }
+      }
+      // 🥇 版本得分阶梯 · 3 版本对比表
+      const slEl = document.getElementById('scoreLadderTable');
+      if (slEl) {
+        const trend = (summary && summary.scoreTrend) || [];
+        if (trend.length === 0) {
+          slEl.innerHTML = '<div style="padding:10px;font-size:.72rem;color:var(--yry-text3,#6b7280)">无版本趋势数据</div>';
+        } else {
+          const GRADE_FOR = s => s >= 80 ? 'A' : s >= 60 ? 'B' : s >= 40 ? 'C' : 'D';
+          const rows = trend.map((t, i) => {
+            const score = t.score || t.totalScore || 0;
+            const grade = GRADE_FOR(score);
+            const prevScore = i > 0 ? (trend[i - 1].score || trend[i - 1].totalScore || 0) : null;
+            const delta = prevScore != null ? score - prevScore : null;
+            const color = score >= 90 ? '#34d399' : score >= 80 ? '#22d3ee' : score >= 60 ? '#fb923c' : '#f87171';
+            return { version: t.version || `v${i+1}`, score, grade, delta, color, date: t.date };
+          });
+          const maxScore = Math.max(1, ...rows.map(r => r.score));
+          slEl.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:.74rem;min-width:520px">
+            <thead><tr style="background:rgba(30,41,59,.5);color:var(--yry-text2,#a9b1d6)">
+              <th style="text-align:left;padding:8px 12px;font-weight:600">版本</th>
+              <th style="text-align:left;padding:8px 12px;font-weight:600">日期</th>
+              <th style="text-align:left;padding:8px 12px;font-weight:600;width:40%">得分进度</th>
+              <th style="text-align:right;padding:8px 12px;font-weight:600">得分</th>
+              <th style="text-align:center;padding:8px 12px;font-weight:600">等级</th>
+              <th style="text-align:right;padding:8px 12px;font-weight:600">ΔScore</th>
+            </tr></thead>
+            <tbody>
+              ${rows.map(r => `<tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+                <td style="padding:8px 12px;color:${r.color};font-weight:700">${r.version}</td>
+                <td style="padding:8px 12px;color:var(--yry-text3,#6b7280);font-size:.7rem">${r.date ? new Date(r.date).toLocaleDateString('zh-CN') : '—'}</td>
+                <td style="padding:8px 12px"><div style="height:10px;background:rgba(0,0,0,.4);border-radius:3px;overflow:hidden"><div style="width:${(r.score/maxScore*100).toFixed(0)}%;height:100%;background:linear-gradient(90deg,${r.color},${r.color}88)" title="${r.score}"></div></div></td>
+                <td style="padding:8px 12px;text-align:right;color:${r.color};font-weight:700">${r.score}</td>
+                <td style="padding:8px 12px;text-align:center"><span style="display:inline-block;padding:2px 8px;border-radius:3px;background:${r.color}22;border:1px solid ${r.color}55;color:${r.color};font-weight:700;font-size:.7rem">${r.grade}</span></td>
+                <td style="padding:8px 12px;text-align:right;color:${r.delta === null ? 'var(--yry-text3,#6b7280)' : (r.delta > 0 ? '#34d399' : r.delta < 0 ? '#f87171' : '#9ca3af')};font-weight:600">${r.delta === null ? '—' : (r.delta > 0 ? '+' : '') + r.delta}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>` + `<div style="font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.6;margin-top:8px">${rows.length} 版本演进 · 初始 ${rows[0].score}${rows[0].grade} → 当前 ${rows[rows.length-1].score}${rows[rows.length-1].grade} · 累计 +${rows[rows.length-1].score - rows[0].score} 分 · ${rows[rows.length-1].delta != null ? `本版本 ${rows[rows.length-1].delta > 0 ? '+' : ''}${rows[rows.length-1].delta} 分` : '首版本'}</div>`;
+        }
+      }
+      // 🔮 趋势预测与置信度
+      const fcEl = document.getElementById('forecastGrid');
+      if (fcEl) {
+        const tr = (summary && summary.scoreReport && summary.scoreReport.trend) || {};
+        const rel = (summary && summary.scoreReport && summary.scoreReport.reliability) || {};
+        const r2 = tr.r2 || 0;
+        const r2Pct = (r2 * 100).toFixed(0);
+        const slope = tr.slopePerWeek || 0;
+        const conf = tr.confidence || '—';
+        const vol = rel.volatility || '—';
+        const ciLow = rel.ci95 ? rel.ci95[0] : '—';
+        const ciHigh = rel.ci95 ? rel.ci95[1] : '—';
+        const cards = [
+          { label: '📈 趋势方向', value: tr.direction === 'rising' ? '↑ 上升' : tr.direction === 'falling' ? '↓ 下降' : '→ 持平', sub: `斜率 +${slope}/周`, color: tr.direction === 'rising' ? '#34d399' : '#f87171' },
+          { label: '🎯 R² 拟合优度', value: r2Pct + '%', sub: r2 >= 0.95 ? '极高拟合' : r2 >= 0.8 ? '高拟合' : r2 >= 0.5 ? '中等' : '弱', color: r2 >= 0.95 ? '#34d399' : r2 >= 0.8 ? '#22d3ee' : '#fb923c' },
+          { label: '✅ 置信度', value: conf === 'high' ? '高' : conf === 'medium' ? '中' : conf, sub: `基于 ${summary && summary.totalVersions || 0} 版本数据`, color: conf === 'high' ? '#34d399' : '#fbbf24' },
+          { label: '🌊 波动性', value: vol === 'low' ? '低' : vol === 'moderate' ? '中' : vol === 'high' ? '高' : vol, sub: `可靠性 ${(rel.score * 100).toFixed(0)}%`, color: vol === 'low' ? '#34d399' : vol === 'moderate' ? '#fbbf24' : '#f87171' },
+          { label: '📊 95% 置信区间', value: `${ciLow} ~ ${ciHigh}`, sub: `均值 ${rel.mean || '—'} · 标准差 ${rel.stddev || '—'}`, color: '#a78bfa' }
+        ];
+        fcEl.innerHTML = cards.map(c => `<div style="background:rgba(15,23,42,.55);border:1px solid ${c.color}33;border-left:3px solid ${c.color};border-radius:8px;padding:10px 12px">
+          <div style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-bottom:4px">${c.label}</div>
+          <div style="font-size:1.15rem;font-weight:700;color:${c.color};line-height:1.2">${c.value}</div>
+          <div style="font-size:.62rem;color:var(--yry-text3,#6b7280);margin-top:4px">${c.sub}</div>
+        </div>`).join('') + `<div style="grid-column:1/-1;font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.6;margin-top:4px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)">趋势方向揭示项目演进健康度 · R² 越接近 100% 越可线性预测 · 置信度反映样本充足度 · 波动性揭示版本间变化稳定性</div>`;
+      }
+    }).catch(e => {
+      const el = document.getElementById('err');
+      el.hidden = false;
+      el.textContent = '❌ 加载审查数据失败: ' + e.message;
+    });
+  </script>
+  <button class="yry-back-to-top" id="yryBackToTop" title="回到顶部" aria-label="回到顶部">↑</button>
+  <script>
+    (function(){
+      var btn = document.getElementById('yryBackToTop');
+      if (!btn) return;
+      window.addEventListener('scroll', function(){
+        if (window.scrollY > 300) btn.classList.add('show');
+        else btn.classList.remove('show');
+      }, { passive: true });
+      btn.addEventListener('click', function(){
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      // 键盘快捷键: / = 聚焦搜索 · t = 回顶部
+      document.addEventListener('keydown', function(e){
+        var tag = (e.target.tagName || '').toUpperCase();
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable) return;
+        if (e.metaKey || e.ctrlKey || e.altKey) return;
+        var k = e.key.toLowerCase();
+        if (k === '/') {
+          var s = document.querySelector('input[type="search"], input[id="q"]');
+          if (s) { e.preventDefault(); s.focus(); s.select && s.select(); }
+        } else if (k === 't') {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (k >= '1' && k <= '7') {
+          var navMap = { '1':'checklist.html','2':'architecture.html','3':'graph.html','4':'tests.html','5':'source.html','6':'demo.html','7':'review.html' };
+          if (navMap[k]) window.location.href = navMap[k];
+        } else if (k === '0' || k === 'escape') {
+          window.location.href = 'index.html';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

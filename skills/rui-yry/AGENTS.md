@@ -5,7 +5,7 @@
 ## self-improve — 自改进（本 skill 自含）
 
 - **文件**: `skills/rui-yry/self-improve.md`
-- **职责**: 采数据 → D0–D7 诊断 → 提案 → E1–E4 效果评估。不阻断主流程
+- **职责**: 采数据 → D0-D8 诊断 → 提案 → E1-E4 效果评估。不阻断主流程
 - **触发**: `/rui yry` · rui 自改进阶段
 - **产出**: proposals.jsonl · 自改进复盘.md · 升级规则
 - **门禁**: 无 snapshot 不出提案

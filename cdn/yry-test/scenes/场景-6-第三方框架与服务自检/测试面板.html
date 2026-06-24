@@ -3,126 +3,62 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#161620">
-<title>🚀 第三方框架与服务自检 · 测试面板 Pro</title>
-<!-- ═══ CDN: YrY 共享样式 ═══ -->
+<title>第三方框架与服务自检 · 测试面板</title>
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/theme/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-test/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-test-base.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-stats/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-health-bar/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-tabs/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
+<style>
+/* Page-specific overrides — shared patterns in shared-b.css */
+</style>
 </head>
 <body>
-<div class="container">
+<div class="yry-container">
+<yry-scene-chrome
+  theme="b"
+  title="🧪 {ACCENT} · 测试面板"
+  title-accent="第三方框架与服务自检"
+  subtitle="场景 6 · 版本 vv5.4.0 · 2026-06-22"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-test · 故事任务"},{"label":"场景 6 · 第三方框架与服务自检"},{"label":"🧪 测试面板"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","href":"架构图.html"},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","active":true},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","href":"审查.html"}]'>
+</yry-scene-chrome>
 
-  <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-self-test · 自动化自检</span><span class="bc-sep">/</span><span class="bc-current">场景 6 · 第三方框架与服务自检</span><span class="bc-sep">/</span><span class="bc-current">🧪 测试面板</span></nav>
-<nav class="scene-nav">
-  <a class="scene-nav-link" href="../场景-1-init后全量自检/计划清单.html">📋 场景1 · 初始化后全量自检</a>
-  <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link" href="../场景-2-commit前增量自检/计划清单.html">📋 场景2 · 提交前增量自检</a>
-  <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link" href="../场景-3-文档代码一致性校验/计划清单.html">📋 场景3 · 文档与代码一致性校验</a>
-  <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link" href="../场景-4-安全面回归自检/计划清单.html">📋 场景4 · 安全面回归自检</a>
-  <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link" href="../场景-5-跨故事集成回归自检/计划清单.html">📋 场景5 · 跨故事集成回归自检</a>
-  <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link active" href="计划清单.html">📋 场景6 · 第三方框架与服务自检</a>
-  <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link story" href="../故事任务.md">📖 故事任务</a>
-</nav>
-<nav class="cross-nav">
-<a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
-<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
-<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
-<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
-<span class="cross-link on">🧪 测试</span><span class="cross-sep">·</span>
-<a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
-<a class="cross-link" href="审查.html">📝 审计</a>
-</nav>
-  <div class="header">
-    <h1>🚀 <span class="accent">第三方框架与服务自检</span> · 测试面板 Pro</h1>
-    <p class="sub">新人首次参与的端到端流程验证 · 从 CLAUDE.md 阅读、故事领取到测试运行 · 12 维度全景自检 · 含质量雷达 / 时间线 / 错误聚类 / SLI 指标</p>
-    <div class="badges">
-      <span class="badge"><span class="dot"></span>Node v4.5</span>
-      <span class="badge"><span class="dot"></span>commit a3f2d8e</span>
-      <span class="badge"><span class="dot warn"></span>main · CI #4287</span>
-      <span class="badge">⏱ 2026-06-13 08:30 UTC+8</span>
-      <span class="badge">⌘K 命令面板</span>
+<yry-scene-stats items='[{"value":"25","label":"总断言","color":"t"},{"value":"补齐缺失框架后重提","label":"通过","color":"p"},{"value":"`expect().toBe()` 比 `assert.equal()` 提供更好的 diff 输出","label":"失败","color":"f"},{"value":"security","label":"跳过","color":"s"},{"value":"~7s（含网络请求）","label":"耗时","color":"info"}]'></yry-scene-stats>
+<yry-scene-health-bar segments='[{"pct":null,"cls":"p"},{"pct":null,"cls":"f"}]'></yry-scene-health-bar>
+
+<yry-scene-tabs tabs='[{"id":"cases","label":"📋 测试用例"},{"id":"results","label":"📊 执行结果"},{"id":"gates","label":"🚦 门禁"}]'>
+  <div data-panel="cases">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>§1 测试设计 — 正常路径用例</h2>
+      <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
     </div>
   </div>
+  <div data-panel="results">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>§3 测试报告</h2>
+      <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
+    </div>
+  </div>
+  <div data-panel="gates">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>Gate 门禁矩阵</h2>
+      <p class="yry-section-desc">P0 标记: 强制断言 · P1 标记: 建议开启 · P2 标记: 按需开启</p>
+      <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
+    </div>
+  </div>
+</yry-scene-tabs>
 
-  <div class="stats-grid" id="statsRow"></div>
-  <!-- 第三方框架与服务自检 7 步路径可视化 -->
-  <div class="card" style="padding:16px 18px">
-    <h2>🗺️ 第三方框架与服务自检 7 步路径 × 测试覆盖</h2>
-    <div class="onb-flow" id="onbFlow"></div>
-    <p style="text-align:center;color:var(--text3);font-size:.7rem;margin-top:8px">点击任一步骤 → 筛选该步骤关联的测试用例</p>
-  </div>
-  <div class="bar-wrap"><div class="bar-outer" id="bar" title="点击进度条筛选状态"></div></div>
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both" id="toolbar">
-    <div class="search-wrap"><span class="si">🔍</span><input id="searchInput" type="text" placeholder="搜索测试/源码…" oninput="onSearch(this.value)"><span class="kbd">⌘K</span></div>
-    <button class="btn" onclick="expandAllSuites()">📂 展开全部</button>
-    <button class="btn" onclick="collapseAllSuites()">📁 收起全部</button>
-    <button class="btn" id="btnSortDur" onclick="toggleSort()">⏱ 耗时排序</button>
-    <button class="btn" onclick="copyResultsMd()">📋 复制 MD</button>
-    <button class="btn btn-primary" onclick="exportProposal()" title="将改进建议导出为自改进提案 Markdown">🚀 导出改进提案</button>
-    <span style="font-size:.72rem;color:var(--text3);margin-left:auto;white-space:nowrap" id="navStatus"></span>
-  </div>
-
-  <div class="tabs-wrap">
-  <div class="tabs">
-    <span class="tab on" data-panel="overview">📊 总览<span class="tab-kbd">1</span></span>
-    <span class="tab" data-panel="files">📁 文件<span class="tab-kbd">2</span></span>
-    <span class="tab" data-panel="srcmap">🧭 源码地图<span class="tab-kbd">3</span></span>
-    <span class="tab" data-panel="results">� 结果<span class="tab-kbd">4</span></span>
-    <span class="tab" data-panel="normal">✅ 正常路径<span class="tab-kbd">5</span></span>
-    <span class="tab" data-panel="boundary">⚠️ 边界<span class="tab-kbd">6</span></span>
-    <span class="tab" data-panel="anomaly">🚨 异常<span class="tab-kbd">7</span><span class="tab-badge" id="anomalyBadge">5</span></span>
-    <span class="tab" data-panel="slow">🐢 慢测试<span class="tab-kbd">8</span></span>
-    <span class="tab" data-panel="perf">📈 性能<span class="tab-kbd">9</span></span>
-    <span class="tab" data-panel="improve">💡 改进<span class="tab-kbd">0</span></span>
-    <span class="tab" data-panel="insights">🧠 洞察<span class="tab-kbd">Q</span></span>
-    <span class="tab" data-panel="gate">🚦 门禁<span class="tab-kbd">G</span></span>
-  </div>
-  </div>
-
-  <div class="panel on" id="panelOverview"><div id="overviewContent"></div></div>
-  <div class="panel" id="panelFiles"><div id="filesContent"></div></div>
-  <div class="panel" id="panelSrcmap"><div id="srcmapContent"></div></div>
-  <div class="panel" id="panelResults"><div id="resultsContent"></div></div>
-  <div class="panel" id="panelNormal"><div id="normalContent"></div></div>
-  <div class="panel" id="panelBoundary"><div id="boundaryContent"></div></div>
-  <div class="panel" id="panelAnomaly"><div id="anomalyContent"></div></div>
-  <div class="panel" id="panelSlow"><div id="slowContent"></div></div>
-  <div class="panel" id="panelPerf"><div id="perfContent"></div></div>
-  <div class="panel" id="panelImprove"><div id="improveContent"></div></div>
-  <div class="panel" id="panelInsights"><div id="insightsContent"></div></div>
-  <div class="panel" id="panelGate">
-    <div class="card"><h2>📊 门禁状态</h2><div class="gate-lines" id="gateContent"></div></div>
-  </div>
-
-  <div class="footer-note">
-    YrY 自检体系 · 场景测试面板 Pro · <a href="../../../../tests/index.html">自检中心</a> · 12 维度全景 · 含 5 异常用例 · 7 改进建议 · 质量雷达 · 错误聚类 · SLI 指标
-    <div class="footer-stats" id="footerStats"></div>
-  </div>
+<yry-scene-footer version="v5.4.0" date="2026-06-22" docs-link="../../../../docs/index.html"></yry-scene-footer>
 </div>
-
-<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="返回顶部">↑</button>
-
-<div class="modal-overlay" id="modalOverlay"><div class="modal">
-  <div class="m-head">
-    <span class="m-title" id="modalTitle"></span>
-    <span class="m-meta" id="modalMeta"></span>
-    <button class="m-close" onclick="closeModal()">✕</button>
-  </div>
-  <div class="m-body" id="modalBody"></div>
-</div></div>
-
-<div class="cmd-palette" id="cmdPalette">
-  <input id="cmdInput" type="text" placeholder="输入命令、跳转到 Tab、搜索用例…">
-  <div class="cmd-list" id="cmdList"></div>
-</div>
-<div class="toast" id="toast"></div>
-<script src="../../../../cdn/yry-test/index.js"></script>
-
+<script src="../../../../cdn/shared/index.js"></script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
+<script src="../../../../cdn/yry-scene-stats/index.js"></script>
+<script src="../../../../cdn/yry-scene-health-bar/index.js"></script>
+<script src="../../../../cdn/yry-scene-tabs/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
 </body>
 </html>

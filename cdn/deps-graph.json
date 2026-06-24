@@ -1,0 +1,1235 @@
+{
+  "_meta": {
+    "generatedAt": "2026-06-23T10:09:38.750Z",
+    "generator": "scripts/build-deps-graph.mjs",
+    "schema": "yry-cdn/deps-graph@1"
+  },
+  "stats": {
+    "nodes": 125,
+    "edges": 82,
+    "withDeps": 82,
+    "ignoredRefs": 226
+  },
+  "nodes": [
+    {
+      "name": "yry-a11y",
+      "deps": []
+    },
+    {
+      "name": "yry-accordion",
+      "deps": []
+    },
+    {
+      "name": "yry-arch",
+      "deps": []
+    },
+    {
+      "name": "yry-arch-analysis",
+      "deps": [
+        "yry-arch-analysis-error",
+        "yry-arch-analysis-ready"
+      ]
+    },
+    {
+      "name": "yry-back-top",
+      "deps": []
+    },
+    {
+      "name": "yry-badge",
+      "deps": []
+    },
+    {
+      "name": "yry-breadcrumb",
+      "deps": [
+        "yry-breadcrumb-ready",
+        "yry-breadcrumb-tpl"
+      ]
+    },
+    {
+      "name": "yry-card-grid",
+      "deps": [
+        "yry-card-grid-ready",
+        "yry-card-grid-tpl",
+        "yry-item-card",
+        "yry-item-card-ready"
+      ]
+    },
+    {
+      "name": "yry-card-report",
+      "deps": [
+        "yry-card-report-ready"
+      ]
+    },
+    {
+      "name": "yry-cat-overview",
+      "deps": [
+        "yry-cat-overview-ready",
+        "yry-cat-overview-tpl"
+      ]
+    },
+    {
+      "name": "yry-cat-warning",
+      "deps": [
+        "yry-cat-warning-ready",
+        "yry-cat-warning-tpl",
+        "yry-clr-fail"
+      ]
+    },
+    {
+      "name": "yry-cdn-agg-card",
+      "deps": [
+        "yry-cdn-agg-card-ready",
+        "yry-cdn-agg-card-tpl"
+      ]
+    },
+    {
+      "name": "yry-cdn-agg-grid",
+      "deps": [
+        "yry-cdn-agg-card-ready",
+        "yry-cdn-agg-grid-ready",
+        "yry-cdn-agg-grid-tpl"
+      ]
+    },
+    {
+      "name": "yry-cdn-detect",
+      "deps": []
+    },
+    {
+      "name": "yry-cdn-styles",
+      "deps": []
+    },
+    {
+      "name": "yry-check-item",
+      "deps": []
+    },
+    {
+      "name": "yry-checklist",
+      "deps": []
+    },
+    {
+      "name": "yry-checklist-head",
+      "deps": [
+        "yry-checklist-head-ready",
+        "yry-checklist-head-tpl"
+      ]
+    },
+    {
+      "name": "yry-cmd-card",
+      "deps": [
+        "yry-cmd-card-ready",
+        "yry-cmd-card-tpl"
+      ]
+    },
+    {
+      "name": "yry-cmd-head",
+      "deps": [
+        "yry-cmd-head-ready",
+        "yry-cmd-head-tpl"
+      ]
+    },
+    {
+      "name": "yry-code-block",
+      "deps": []
+    },
+    {
+      "name": "yry-component-report",
+      "deps": [
+        "yry-back-top",
+        "yry-breadcrumb",
+        "yry-card-grid",
+        "yry-cat-overview",
+        "yry-cat-warning",
+        "yry-checklist-head",
+        "yry-cmd-card",
+        "yry-cmd-head",
+        "yry-component-report-data",
+        "yry-component-report-ready",
+        "yry-cron-panel",
+        "yry-cross-nav",
+        "yry-cytoscape-graph",
+        "yry-dep-badge",
+        "yry-doc-layer",
+        "yry-export-toolbar",
+        "yry-faq-panel",
+        "yry-footer-note",
+        "yry-gantt",
+        "yry-health-bar",
+        "yry-info-cards",
+        "yry-item-card",
+        "yry-kpi-card",
+        "yry-kpi-grid",
+        "yry-layer",
+        "yry-layer-agents",
+        "yry-layer-info-panel",
+        "yry-layer-refs",
+        "yry-layer-rules",
+        "yry-notify-panel",
+        "yry-op-btn",
+        "yry-page-nav",
+        "yry-panel",
+        "yry-panel-hub",
+        "yry-path-link",
+        "yry-phase-strip",
+        "yry-progress-bar",
+        "yry-quickstart",
+        "yry-review-cards",
+        "yry-risk-cat-card",
+        "yry-risk-matrix",
+        "yry-risk-row",
+        "yry-scene-card",
+        "yry-scene-chrome",
+        "yry-scene-footer",
+        "yry-scene-header",
+        "yry-scene-health-bar",
+        "yry-scene-nav",
+        "yry-scene-stats",
+        "yry-scene-steps",
+        "yry-scene-tabs",
+        "yry-scorecard",
+        "yry-selfimprove-panel",
+        "yry-stats-grid",
+        "yry-step-card",
+        "yry-story-card",
+        "yry-sub-title",
+        "yry-tab",
+        "yry-tabs",
+        "yry-tabs-panel",
+        "yry-tag-chip",
+        "yry-test-page",
+        "yry-trend-card",
+        "yry-verify-item",
+        "yry-verify-report-foot",
+        "yry-verify-report-head",
+        "yry-walkthrough"
+      ]
+    },
+    {
+      "name": "yry-concept-radar",
+      "deps": []
+    },
+    {
+      "name": "yry-cron-panel",
+      "deps": [
+        "yry-cron-panel-ready",
+        "yry-cron-panel-tpl"
+      ]
+    },
+    {
+      "name": "yry-cross-nav",
+      "deps": [
+        "yry-cross-nav-ready",
+        "yry-cross-nav-tpl"
+      ]
+    },
+    {
+      "name": "yry-cytoscape-graph",
+      "deps": [
+        "yry-cy-",
+        "yry-cy-container",
+        "yry-cy-legend",
+        "yry-cy-legend-dot",
+        "yry-cy-legend-item",
+        "yry-export-toolbar"
+      ]
+    },
+    {
+      "name": "yry-dashboard-report",
+      "deps": [
+        "yry-dashboard-state",
+        "yry-high-contrast"
+      ]
+    },
+    {
+      "name": "yry-day-plan",
+      "deps": []
+    },
+    {
+      "name": "yry-demo",
+      "deps": []
+    },
+    {
+      "name": "yry-dep-badge",
+      "deps": [
+        "yry-dep-badge-ready",
+        "yry-dep-badge-tpl"
+      ]
+    },
+    {
+      "name": "yry-doc-layer",
+      "deps": [
+        "yry-cdn-lib",
+        "yry-doc-layer-ready",
+        "yry-doc-layer-tpl",
+        "yry-item-card-ready",
+        "yry-layer",
+        "yry-layer-ready",
+        "yry-scene-card-ready",
+        "yry-story-card-ready",
+        "yry-sub-title",
+        "yry-sub-title-ready",
+        "yry-tag-chip-ready"
+      ]
+    },
+    {
+      "name": "yry-docs-binding",
+      "deps": [
+        "yry-breadcrumb-ready",
+        "yry-cdn-lib",
+        "yry-cross-nav-ready",
+        "yry-doc-layer-ready",
+        "yry-docs-binding-ready",
+        "yry-docs-binding-tpl",
+        "yry-item-card-ready",
+        "yry-layer-agents-ready",
+        "yry-layer-refs-ready",
+        "yry-layer-rules-ready",
+        "yry-panel-hub-ready",
+        "yry-scene-header-ready",
+        "yry-stats-grid-ready",
+        "yry-sub-title-ready"
+      ]
+    },
+    {
+      "name": "yry-empty-state",
+      "deps": []
+    },
+    {
+      "name": "yry-export-toolbar",
+      "deps": [
+        "yry-export-busy",
+        "yry-export-err",
+        "yry-export-ok"
+      ]
+    },
+    {
+      "name": "yry-faq-panel",
+      "deps": [
+        "yry-faq-intro",
+        "yry-faq-panel-ready",
+        "yry-faq-panel-tpl",
+        "yry-mute-7"
+      ]
+    },
+    {
+      "name": "yry-flow-loop",
+      "deps": [
+        "yry-flow-loop-ready",
+        "yry-flow-loop-tpl"
+      ]
+    },
+    {
+      "name": "yry-footer-note",
+      "deps": [
+        "yry-footer-note-ready",
+        "yry-footer-note-tpl"
+      ]
+    },
+    {
+      "name": "yry-gantt",
+      "deps": [
+        "yry-gantt-ready",
+        "yry-gantt-tpl"
+      ]
+    },
+    {
+      "name": "yry-graph",
+      "deps": []
+    },
+    {
+      "name": "yry-health",
+      "deps": []
+    },
+    {
+      "name": "yry-health-bar",
+      "deps": [
+        "yry-bar-legend",
+        "yry-bar-outer",
+        "yry-bar-wrap"
+      ]
+    },
+    {
+      "name": "yry-health-index",
+      "deps": [
+        "yry-health-index-data",
+        "yry-health-index-error",
+        "yry-health-index-ready"
+      ]
+    },
+    {
+      "name": "yry-help-overlay",
+      "deps": []
+    },
+    {
+      "name": "yry-home",
+      "deps": []
+    },
+    {
+      "name": "yry-info-cards",
+      "deps": [
+        "yry-card",
+        "yry-card-header"
+      ]
+    },
+    {
+      "name": "yry-inline-helpers",
+      "deps": [
+        "yry-clr-acc-72",
+        "yry-clr-accent",
+        "yry-clr-cyan",
+        "yry-clr-fail",
+        "yry-clr-fail-7",
+        "yry-clr-pass",
+        "yry-clr-pass-64",
+        "yry-clr-purp-7",
+        "yry-clr-text3",
+        "yry-clr-warn",
+        "yry-fs-1-4",
+        "yry-fs-78",
+        "yry-mute-64",
+        "yry-mute-7",
+        "yry-mute-78-12"
+      ]
+    },
+    {
+      "name": "yry-item-card",
+      "deps": [
+        "yry-cdn-lib",
+        "yry-item-card-ready",
+        "yry-item-card-tpl",
+        "yry-tag-chip",
+        "yry-tag-chip-ready"
+      ]
+    },
+    {
+      "name": "yry-item-cards",
+      "deps": [
+        "yry-card-grid",
+        "yry-item-card-ready",
+        "yry-item-cards-ready",
+        "yry-item-cards-tpl",
+        "yry-layer-agents",
+        "yry-layer-agents-ready",
+        "yry-layer-refs",
+        "yry-layer-refs-ready",
+        "yry-layer-rules",
+        "yry-layer-rules-ready"
+      ]
+    },
+    {
+      "name": "yry-keyboard",
+      "deps": [
+        "yry-kbd"
+      ]
+    },
+    {
+      "name": "yry-kpi-card",
+      "deps": [
+        "yry-kpi-card-ready",
+        "yry-kpi-card-tpl"
+      ]
+    },
+    {
+      "name": "yry-kpi-grid",
+      "deps": [
+        "yry-kpi-grid-ready",
+        "yry-kpi-grid-tpl"
+      ]
+    },
+    {
+      "name": "yry-layer",
+      "deps": [
+        "yry-layer-ready",
+        "yry-layer-tpl"
+      ]
+    },
+    {
+      "name": "yry-layer-agents",
+      "deps": [
+        "yry-card-grid",
+        "yry-layer",
+        "yry-layer-agents-ready",
+        "yry-layer-agents-tpl",
+        "yry-mt-18",
+        "yry-sub-title"
+      ]
+    },
+    {
+      "name": "yry-layer-info-panel",
+      "deps": [
+        "yry-layer-info-panel-ready",
+        "yry-layer-info-panel-tpl"
+      ]
+    },
+    {
+      "name": "yry-layer-refs",
+      "deps": [
+        "yry-card-grid",
+        "yry-layer",
+        "yry-layer-refs-ready",
+        "yry-layer-refs-tpl",
+        "yry-sub-title"
+      ]
+    },
+    {
+      "name": "yry-layer-rules",
+      "deps": [
+        "yry-card-grid",
+        "yry-layer",
+        "yry-layer-rules-ready",
+        "yry-layer-rules-tpl",
+        "yry-sub-title"
+      ]
+    },
+    {
+      "name": "yry-load-chain-report",
+      "deps": [
+        "yry-load-chain-report-data",
+        "yry-load-chain-report-ready",
+        "yry-panel",
+        "yry-tab",
+        "yry-tabs"
+      ]
+    },
+    {
+      "name": "yry-meter",
+      "deps": []
+    },
+    {
+      "name": "yry-milestone-grid",
+      "deps": []
+    },
+    {
+      "name": "yry-mini-quiz",
+      "deps": []
+    },
+    {
+      "name": "yry-next-action",
+      "deps": []
+    },
+    {
+      "name": "yry-notify-panel",
+      "deps": [
+        "yry-notify-panel-ready",
+        "yry-notify-panel-tpl"
+      ]
+    },
+    {
+      "name": "yry-op-btn",
+      "deps": [
+        "yry-op-btn-ready",
+        "yry-op-btn-tpl"
+      ]
+    },
+    {
+      "name": "yry-overview-grid",
+      "deps": []
+    },
+    {
+      "name": "yry-page-nav",
+      "deps": [
+        "yry-nav",
+        "yry-page-config"
+      ]
+    },
+    {
+      "name": "yry-panel-hub",
+      "deps": [
+        "yry-panel-hub-ready",
+        "yry-panel-hub-tpl"
+      ]
+    },
+    {
+      "name": "yry-path-link",
+      "deps": [
+        "yry-path-link-ready",
+        "yry-path-link-tpl"
+      ]
+    },
+    {
+      "name": "yry-phase-strip",
+      "deps": [
+        "yry-phase-strip-ready",
+        "yry-phase-strip-tpl"
+      ]
+    },
+    {
+      "name": "yry-pipeline-simulator",
+      "deps": []
+    },
+    {
+      "name": "yry-pitfall-list",
+      "deps": []
+    },
+    {
+      "name": "yry-plan",
+      "deps": [
+        "yry-arch-s3-checklist"
+      ]
+    },
+    {
+      "name": "yry-progress-bar",
+      "deps": [
+        "yry-progress-bar-ready",
+        "yry-progress-bar-tpl"
+      ]
+    },
+    {
+      "name": "yry-quickstart",
+      "deps": [
+        "yry-quickstart-ready",
+        "yry-quickstart-tpl"
+      ]
+    },
+    {
+      "name": "yry-quiz",
+      "deps": []
+    },
+    {
+      "name": "yry-report-link",
+      "deps": [
+        "yry-report-link-ready",
+        "yry-report-link-tpl"
+      ]
+    },
+    {
+      "name": "yry-report-section",
+      "deps": [
+        "yry-report-link",
+        "yry-report-link-ready",
+        "yry-report-section-ready",
+        "yry-report-section-tpl"
+      ]
+    },
+    {
+      "name": "yry-review",
+      "deps": []
+    },
+    {
+      "name": "yry-review-cards",
+      "deps": []
+    },
+    {
+      "name": "yry-risk-cat-card",
+      "deps": [
+        "yry-clr-green",
+        "yry-clr-warn-2",
+        "yry-risk-cat-card-ready",
+        "yry-risk-cat-card-tpl"
+      ]
+    },
+    {
+      "name": "yry-risk-matrix",
+      "deps": [
+        "yry-risk-matrix-ready",
+        "yry-risk-matrix-tpl"
+      ]
+    },
+    {
+      "name": "yry-risk-row",
+      "deps": [
+        "yry-risk-row-ready",
+        "yry-risk-row-tpl"
+      ]
+    },
+    {
+      "name": "yry-scene",
+      "deps": []
+    },
+    {
+      "name": "yry-scene-card",
+      "deps": [
+        "yry-scene-card-ready",
+        "yry-scene-card-tpl"
+      ]
+    },
+    {
+      "name": "yry-scene-chrome",
+      "deps": [
+        "yry-scene-chrome-ready",
+        "yry-scene-chrome-tpl"
+      ]
+    },
+    {
+      "name": "yry-scene-footer",
+      "deps": [
+        "yry-scene-footer-ready",
+        "yry-scene-footer-tpl"
+      ]
+    },
+    {
+      "name": "yry-scene-header",
+      "deps": [
+        "yry-scene-header-ready",
+        "yry-scene-header-tpl"
+      ]
+    },
+    {
+      "name": "yry-scene-health-bar",
+      "deps": [
+        "yry-scene-health-bar-ready",
+        "yry-scene-health-bar-tpl"
+      ]
+    },
+    {
+      "name": "yry-scene-nav",
+      "deps": [
+        "yry-scene-nav-ready",
+        "yry-scene-nav-tpl"
+      ]
+    },
+    {
+      "name": "yry-scene-stats",
+      "deps": [
+        "yry-scene-stats-ready",
+        "yry-scene-stats-tpl"
+      ]
+    },
+    {
+      "name": "yry-scene-steps",
+      "deps": [
+        "yry-progress-bar"
+      ]
+    },
+    {
+      "name": "yry-scene-tabs",
+      "deps": [
+        "yry-scene-tabs-ready",
+        "yry-scene-tabs-tpl"
+      ]
+    },
+    {
+      "name": "yry-score-report",
+      "deps": [
+        "yry-score-report-error",
+        "yry-score-report-ready"
+      ]
+    },
+    {
+      "name": "yry-scorecard",
+      "deps": [
+        "yry-scorecard-ready",
+        "yry-scorecard-tpl"
+      ]
+    },
+    {
+      "name": "yry-search-bar",
+      "deps": [
+        "yry-search",
+        "yry-search-enter"
+      ]
+    },
+    {
+      "name": "yry-selfimprove-panel",
+      "deps": [
+        "yry-selfimprove-panel-ready",
+        "yry-selfimprove-panel-tpl",
+        "yry-si-overview",
+        "yry-si-period"
+      ]
+    },
+    {
+      "name": "yry-selfimprove-styles",
+      "deps": []
+    },
+    {
+      "name": "yry-simulator",
+      "deps": []
+    },
+    {
+      "name": "yry-skeleton-loader",
+      "deps": []
+    },
+    {
+      "name": "yry-skill-report",
+      "deps": [
+        "yry-panel",
+        "yry-skill-report-error",
+        "yry-skill-report-kpi",
+        "yry-skill-report-ready",
+        "yry-tab",
+        "yry-tabs"
+      ]
+    },
+    {
+      "name": "yry-source",
+      "deps": []
+    },
+    {
+      "name": "yry-spinner",
+      "deps": []
+    },
+    {
+      "name": "yry-stats-grid",
+      "deps": [
+        "yry-stats-grid-ready",
+        "yry-stats-grid-tpl"
+      ]
+    },
+    {
+      "name": "yry-step-card",
+      "deps": [
+        "yry-step-card-ready",
+        "yry-step-card-tpl"
+      ]
+    },
+    {
+      "name": "yry-story-card",
+      "deps": [
+        "yry-story-card-ready",
+        "yry-story-card-tpl"
+      ]
+    },
+    {
+      "name": "yry-story-card-list",
+      "deps": [
+        "yry-story-card-list-ready",
+        "yry-story-card-list-tpl"
+      ]
+    },
+    {
+      "name": "yry-story-panel",
+      "deps": []
+    },
+    {
+      "name": "yry-sub-title",
+      "deps": [
+        "yry-sub-title-ready",
+        "yry-sub-title-tpl"
+      ]
+    },
+    {
+      "name": "yry-tabs-panel",
+      "deps": [
+        "yry-panel",
+        "yry-tab",
+        "yry-tabs"
+      ]
+    },
+    {
+      "name": "yry-tag-chip",
+      "deps": [
+        "yry-tag-chip-ready",
+        "yry-tag-chip-tpl"
+      ]
+    },
+    {
+      "name": "yry-test",
+      "deps": []
+    },
+    {
+      "name": "yry-test-page",
+      "deps": []
+    },
+    {
+      "name": "yry-test-report",
+      "deps": [
+        "yry-panel",
+        "yry-tab",
+        "yry-tabs",
+        "yry-test-report-data",
+        "yry-test-report-ready"
+      ]
+    },
+    {
+      "name": "yry-timeline-hero",
+      "deps": []
+    },
+    {
+      "name": "yry-tip-box",
+      "deps": []
+    },
+    {
+      "name": "yry-toast",
+      "deps": [
+        "yry-toast-container"
+      ]
+    },
+    {
+      "name": "yry-toggle",
+      "deps": [
+        "yry-change"
+      ]
+    },
+    {
+      "name": "yry-tooltip",
+      "deps": []
+    },
+    {
+      "name": "yry-trend-card",
+      "deps": [
+        "yry-trend-card-ready",
+        "yry-trend-card-tpl"
+      ]
+    },
+    {
+      "name": "yry-trend-styles",
+      "deps": []
+    },
+    {
+      "name": "yry-typewriter",
+      "deps": []
+    },
+    {
+      "name": "yry-typewriter-demo",
+      "deps": []
+    },
+    {
+      "name": "yry-verify-item",
+      "deps": [
+        "yry-verify-item-ready",
+        "yry-verify-item-tpl"
+      ]
+    },
+    {
+      "name": "yry-verify-report-foot",
+      "deps": [
+        "yry-verify-report-foot-ready",
+        "yry-verify-report-foot-tpl"
+      ]
+    },
+    {
+      "name": "yry-verify-report-head",
+      "deps": [
+        "yry-verify-report-head-ready",
+        "yry-verify-report-head-tpl"
+      ]
+    },
+    {
+      "name": "yry-walkthrough",
+      "deps": [
+        "yry-walkthrough-ready",
+        "yry-walkthrough-tpl"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "yry-card-grid",
+      "to": "yry-item-card"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-back-top"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-breadcrumb"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-card-grid"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-cat-overview"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-cat-warning"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-checklist-head"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-cmd-card"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-cmd-head"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-cron-panel"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-cross-nav"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-cytoscape-graph"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-dep-badge"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-doc-layer"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-export-toolbar"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-faq-panel"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-footer-note"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-gantt"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-health-bar"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-info-cards"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-item-card"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-kpi-card"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-kpi-grid"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-layer"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-layer-agents"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-layer-info-panel"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-layer-refs"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-layer-rules"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-notify-panel"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-op-btn"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-page-nav"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-panel-hub"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-path-link"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-phase-strip"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-progress-bar"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-quickstart"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-review-cards"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-risk-cat-card"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-risk-matrix"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-risk-row"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-scene-card"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-scene-chrome"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-scene-footer"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-scene-header"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-scene-health-bar"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-scene-nav"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-scene-stats"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-scene-steps"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-scene-tabs"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-scorecard"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-selfimprove-panel"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-stats-grid"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-step-card"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-story-card"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-sub-title"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-tabs-panel"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-tag-chip"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-test-page"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-trend-card"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-verify-item"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-verify-report-foot"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-verify-report-head"
+    },
+    {
+      "from": "yry-component-report",
+      "to": "yry-walkthrough"
+    },
+    {
+      "from": "yry-cytoscape-graph",
+      "to": "yry-export-toolbar"
+    },
+    {
+      "from": "yry-doc-layer",
+      "to": "yry-layer"
+    },
+    {
+      "from": "yry-doc-layer",
+      "to": "yry-sub-title"
+    },
+    {
+      "from": "yry-item-card",
+      "to": "yry-tag-chip"
+    },
+    {
+      "from": "yry-item-cards",
+      "to": "yry-card-grid"
+    },
+    {
+      "from": "yry-item-cards",
+      "to": "yry-layer-agents"
+    },
+    {
+      "from": "yry-item-cards",
+      "to": "yry-layer-refs"
+    },
+    {
+      "from": "yry-item-cards",
+      "to": "yry-layer-rules"
+    },
+    {
+      "from": "yry-layer-agents",
+      "to": "yry-card-grid"
+    },
+    {
+      "from": "yry-layer-agents",
+      "to": "yry-layer"
+    },
+    {
+      "from": "yry-layer-agents",
+      "to": "yry-sub-title"
+    },
+    {
+      "from": "yry-layer-refs",
+      "to": "yry-card-grid"
+    },
+    {
+      "from": "yry-layer-refs",
+      "to": "yry-layer"
+    },
+    {
+      "from": "yry-layer-refs",
+      "to": "yry-sub-title"
+    },
+    {
+      "from": "yry-layer-rules",
+      "to": "yry-card-grid"
+    },
+    {
+      "from": "yry-layer-rules",
+      "to": "yry-layer"
+    },
+    {
+      "from": "yry-layer-rules",
+      "to": "yry-sub-title"
+    },
+    {
+      "from": "yry-report-section",
+      "to": "yry-report-link"
+    },
+    {
+      "from": "yry-scene-steps",
+      "to": "yry-progress-bar"
+    }
+  ]
+}

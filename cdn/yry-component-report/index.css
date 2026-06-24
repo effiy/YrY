@@ -1,0 +1,47 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryComponentReport · 组件评分报告组件 样式
+   适用: CDN 组件质量指数 · 四维加权 · 6 面板 tab
+
+   依赖 design tokens (来自 cdn/theme/index.css):
+     --yry-border / --yry-text2 / --yry-text3 / --yry-pass / --yry-warn / --yry-fail / --yry-cyan
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.cr-cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.cr-cat-card { padding: 16px; border-radius: 8px; border: var(--yry-border, 1px solid rgba(255,255,255,.06)); background: rgba(15,23,42,.4); text-align: center; transition: transform .15s; }
+.cr-cat-card:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.08); }
+.cr-cat-icon { font-size: 1.4rem; margin-bottom: 6px; }
+.cr-cat-name { font-size: .78rem; font-weight: 600; margin-bottom: 4px; }
+.cr-cat-count { font-size: .64rem; color: var(--yry-text3, #888); margin-bottom: 8px; }
+.cr-cat-score { font-size: 1.3rem; font-weight: 700; font-family: 'JetBrains Mono', ui-monospace, monospace; }
+.cr-cat-bar { height: 4px; border-radius: 2px; background: rgba(255,255,255,.06); overflow: hidden; margin-top: 6px; }
+.cr-cat-fill { height: 100%; border-radius: 2px; transition: width .4s; }
+
+.cr-comp-table { width: 100%; border-collapse: collapse; font-size: .74rem; }
+.cr-comp-table th { text-align: left; padding: 8px 12px; background: rgba(15,23,42,.4); color: var(--yry-text2, #d4d4d4); font-weight: 600; position: sticky; top: 0; }
+.cr-comp-table td { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,.04); }
+.cr-comp-table tr:hover { background: rgba(255,255,255,.02); }
+
+.cr-dim-bar-wrap { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+.cr-dim-bar-label { font-size: .7rem; min-width: 80px; color: var(--yry-text2, #d4d4d4); }
+.cr-dim-bar-track { flex: 1; height: 10px; border-radius: 5px; background: rgba(255,255,255,.06); overflow: hidden; }
+.cr-dim-bar-fill { height: 100%; border-radius: 5px; transition: width .4s; }
+.cr-dim-bar-val { font-size: .76rem; font-weight: 700; min-width: 42px; text-align: right; font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+.cr-issue-item { padding: 12px 16px; margin-bottom: 8px; border-radius: 8px; border: var(--yry-border, 1px solid rgba(255,255,255,.06)); background: rgba(15,23,42,.4); display: flex; gap: 12px; align-items: flex-start; }
+.cr-issue-sev { font-size: .68rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; min-width: 48px; text-align: center; }
+.cr-issue-sev.P0 { background: rgba(239,68,68,.15); color: var(--yry-fail, #ef4444); }
+.cr-issue-sev.P1 { background: rgba(245,158,11,.15); color: var(--yry-warn, #f59e0b); }
+.cr-issue-sev.P2 { background: rgba(34,211,238,.1); color: var(--yry-cyan, #22d3ee); }
+.cr-issue-body { flex: 1; }
+.cr-issue-title { font-size: .8rem; font-weight: 600; }
+.cr-issue-meta { font-size: .64rem; color: var(--yry-text3, #888); margin-top: 4px; }
+
+.cr-empty { color: var(--yry-text3, #888); text-align: center; padding: 20px; }
+
+.cr-kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.cr-kpi-card { text-align: center; padding: 16px; background: rgba(15,23,42,.4); border-radius: 8px; border: 1px solid rgba(255,255,255,.06); }
+.cr-kpi-label { font-size: .7rem; color: var(--yry-text3, #888); margin-bottom: 4px; }
+.cr-kpi-value { font-size: 1.4rem; font-weight: 700; }
+.cr-kpi-sub { font-size: .68rem; color: var(--yry-text3, #888); margin-top: 4px; }
+
+@media (max-width: 640px) { .cr-cat-grid { grid-template-columns: 1fr 1fr; } }

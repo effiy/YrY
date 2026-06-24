@@ -28,16 +28,17 @@ function scanCssTokens(css) {
 }
 
 /* ── Prop extractor (Vue defineProps pattern) ────────────────────────────── */
-const PROP_RE = /(['\"](\w+)['\"])\s*:\s*\{[^}]*type\s*:\s*(['\"]?\w+['\"]?)/g;
+/* Matches both quoted ('name': { type: X }) and unquoted (name: { type: X }) */
+const PROP_RE = /(?:^|\s|,)(?:['"]?(\w+)['"]?)\s*:\s*\{\s*type\s*:\s*['"]?(\w+)['"]?(?:[^}]*?default\s*:\s*([^,}\n]+?))?(?:[^}]*?required\s*:\s*(true|false))?\s*[,}]/g;
 function scanJsProps(js) {
   const props = [];
   let m;
   while ((m = PROP_RE.exec(js)) !== null) {
     props.push({
-      name: m[2],
-      type: m[3].replace(/['"]/g, ''),
-      default: null,
-      required: false
+      name: m[1],
+      type: m[2],
+      default: m[3] ? m[3].trim().replace(/['"]/g, '') : null,
+      required: m[4] === 'true'
     });
   }
   return props;
@@ -46,15 +47,30 @@ function scanJsProps(js) {
 /* ── Dependency scanner ──────────────────────────────────────────────────── */
 function scanDeps(js) {
   const deps = new Set();
-  if (js.includes('Vue')) deps.add('Vue');
+  if (js.includes('Vue') || js.includes('createApp') || js.includes('defineComponent')) deps.add('Vue');
   if (js.includes('PanelHub')) deps.add('PanelHub');
-  // Declared deps from YrY.declareDeps or comment markers
-  const ddMatch = js.match(/declaredDeps[:\s]+\[([^\]]*)\]/);
+  /* Inline imports: from 'lib/xxx' or from '../lib/xxx' */
+  const importRe = /from\s+['"]([^'"]+)['"]/g;
+  let im;
+  while ((im = importRe.exec(js)) !== null) {
+    const spec = im[1];
+    if (spec.startsWith('.') || spec.startsWith('/lib/') || spec.startsWith('lib/')) {
+      const base = spec.split('/').pop().replace(/\.(m)?js$/, '');
+      if (base && !base.startsWith('.')) deps.add(base);
+    }
+  }
+  /* Declared deps: YrY.declareDeps([...]) or declaredDeps: [...] */
+  const ddMatch = js.match(/declareDeps\s*\(\s*\[([^\]]*)\]/);
   if (ddMatch) {
     const list = ddMatch[1].replace(/['"]/g, '').split(',').map(s => s.trim()).filter(Boolean);
     list.forEach(d => deps.add(d));
   }
-  return [...deps];
+  const ddLitMatch = js.match(/declaredDeps\s*:\s*\[([^\]]*)\]/);
+  if (ddLitMatch) {
+    const list = ddLitMatch[1].replace(/['"]/g, '').split(',').map(s => s.trim()).filter(Boolean);
+    list.forEach(d => deps.add(d));
+  }
+  return [...deps].sort();
 }
 
 /* ── Export scanner ──────────────────────────────────────────────────────── */
@@ -114,6 +130,7 @@ function main() {
     const tplMatch = html.match(/id\s*=\s*['\"](\S+-tpl)['\"]/);
     const templateId = tplMatch ? tplMatch[1] : null;
 
+    const runtimeDeps = jsExists ? scanDeps(js) : [];
     components.push({
       name,
       kind,
@@ -123,8 +140,8 @@ function main() {
       templateId,
       isCustomElement: isCustomElement(js, html),
       props: jsExists ? scanJsProps(js) : [],
-      runtimeDeps: jsExists ? scanDeps(js) : [],
-      declaredDeps: [],
+      runtimeDeps,
+      declaredDeps: runtimeDeps,
       exports: jsExists ? scanExports(js) : [],
       cssTokens: cssExists ? scanCssTokens(css) : [],
       files: {

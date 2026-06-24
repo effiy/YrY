@@ -2,331 +2,77 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>页面集成 · 关键源码 · YryBreadcrumb 任务故事</title>
-<link rel="stylesheet" href="../../../shared\/index\.css">
-<link rel="stylesheet" href="../../../theme\/index\.css">
-<link rel="stylesheet" href="../../../yry\-scene\/index\.css">
-<link rel="stylesheet" href="../../../yry\-checklist\/index\.css">
-<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
-<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
-<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
-<link rel="stylesheet" href="../../../yry-back-top/index.css">
-<link rel="stylesheet" href="../../../yry-scene-header/index.css">
-<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
-<link rel="stylesheet" href="../../../yry\-inline\-helpers\/index\.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<link rel="stylesheet" href="../../../yry\-a11y\/index\.css">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>页面集成 · 源码</title>
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-source-base.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-stats/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-tabs/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
 <style>
-
-.container { max-width: 1100px; }
+/* Page-specific overrides — shared patterns in shared-b.css */
 </style>
 </head>
 <body>
-<a href="#main" class="skip-link">⏩ 跳到主要内容</a>
-<div class="container" id="main">
-<div id="breadcrumb-app"></div>
+<div class="yry-container">
+<yry-scene-chrome
+  theme="b"
+  title="📄 {ACCENT} · 源码"
+  title-accent="页面集成"
+  subtitle="场景 4 · 版本 vv5.4.0 · 2026-06-22"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-breadcrumb · yry-breadcrumb"},{"label":"场景 4 · 页面集成"},{"label":"📄 源码"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","href":"架构图.html"},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","active":true},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","href":"审查.html"}]'>
+</yry-scene-chrome>
 
-<div id="scene-header-app"></div>
+<yry-scene-stats items='[{"value":"—","label":"产物文件","color":"info"},{"value":4,"label":"场景","color":"t"},{"value":"vv5.4.0","label":"版本","color":"t"}]'></yry-scene-stats>
 
-<div id="scene-nav-app"></div>
-
-<div id="cross-nav-app"></div>
-
-<div class="tip-box info"><strong>关键源文件</strong> — 本场景涉及页面集成模式：<code>index.html</code>（5 步加载标准模板）、<code>index.js</code>（Loader + mount 双保险脚本）、<code>index.css</code>（设计令牌引用）。覆盖 4 种 items 模式（href+icon、纯文本、长路径、图标混用），所有集成页面统一使用此模式。</div>
-
-<!-- § Timeline Hero -->
-<div class="timeline-hero">
-  <h3>📁 文件结构<span class="th-sub">3 核心文件</span></h3>
-  <div class="tl-track-wrap">
-    <div class="tl-track">
-      <div class="tl-line"></div>
-      <div class="tl-progress tl-progress--full"></div>
-      <div class="tl-nodes">
-        <div class="tl-node done">
-          <div class="tl-dot">H</div>
-          <div class="tl-label">index.html</div>
-          <div class="tl-time">模板源</div>
-        </div>
-        <div class="tl-node done">
-          <div class="tl-dot">J</div>
-          <div class="tl-label">index.js</div>
-          <div class="tl-time">加载器</div>
-        </div>
-        <div class="tl-node done">
-          <div class="tl-dot">C</div>
-          <div class="tl-label">index.css</div>
-          <div class="tl-time">样式表</div>
-        </div>
-      </div>
+<yry-scene-tabs tabs='[{"id":"files","label":"📁 文件清单"},{"id":"structure","label":"🗂 目录浏览"},{"id":"topology","label":"🔗 模块拓扑"}]'>
+  <div data-panel="files">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>产物文件</h2>
+      <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
     </div>
   </div>
+  <div data-panel="structure"><div class="placeholder">数据待填充 — 运行 /rui code 生成</div></div>
+  <div data-panel="topology"><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#10b981', 'lineColor': '#10b981',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    S3[&quot;场景 3&lt;br/&gt;Loader 实现&quot;] --&gt; INTEG[&quot;页面集成&lt;br/&gt;4 文件引用顺序&quot;]
+    INTEG --&gt; MOUNT[&quot;mount 脚本&lt;br/&gt;守卫 + ready 监听&quot;]
+    MOUNT --&gt; MODE4[&quot;4 种 items 模式&lt;br/&gt;href+icon · 纯文本 · 长路径 · 图标混用&quot;]
+    MOUNT --&gt; DOG[&quot;dogfooding 自举&lt;br/&gt;29 HTML 页面验证&quot;]
+    MODE4 --&gt; VERIFY[&quot;R1–R7 评审&lt;br/&gt;7/7 通过&quot;]
+    DOG --&gt; VERIFY
+    VERIFY --&gt; NEXT[&quot;进入场景 5&lt;br/&gt;测试与发布&quot;]</pre>
+<pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#10b981', 'lineColor': '#10b981',
+  'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    H[&quot;head: css + vue&quot;]:::s --&gt; B[&quot;body: app div + loader + mount&quot;]:::s
+    B --&gt; M[&quot;mountBreadcrumb()&quot;]:::s
+    M --&gt; R{&quot;YryBreadcrumb ready?&quot;}
+    R --&gt;|&quot;是&quot;| N[&quot;Vue.createApp + mount&quot;]:::out
+    R --&gt;|&quot;否&quot;| W[&quot;监听 ready 事件&lt;br/&gt;{once:true}&quot;]:::warn
+    W --&gt; N
+
+    classDef s fill:#2b2d3b,stroke:#3d59a1,color:#a9b1d6
+    classDef out fill:#34d399,color:#000
+    classDef warn fill:#fbbf24,color:#000</pre></div>
+</yry-scene-tabs>
+
+<yry-scene-footer version="v5.4.0" date="2026-06-22" docs-link="../../../../docs/index.html"></yry-scene-footer>
 </div>
-
-<!-- § KPI Stat Cards -->
-<div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-val info">3</div><div class="kpi-label">源文件</div></div>
-  <div class="kpi-card"><div class="kpi-val accent">~150</div><div class="kpi-label">总行数</div></div>
-  <div class="kpi-card"><div class="kpi-val pass">4</div><div class="kpi-label">Items 模式</div></div>
-</div>
-
-<p>场景 4 · <strong>页面集成</strong> 的关键源码片段。完整文件: <a href="../../../yry-breadcrumb/index.html">index.html</a> · <a href="../../../yry-breadcrumb/index.js">index.js</a> · <a href="../../../yry-breadcrumb/index.css">index.css</a></p>
-<!-- § Entity Cards -->
-<div class="concept-grid">
-  <div class="concept-card">
-    <div class="cc-icon">📄</div>
-    <div class="cc-name">index.html</div>
-    <div class="cc-domain">集成模板</div>
-    <div class="cc-desc">5 步加载标准模板：CSS → Vue 3 CDN → 挂载点 div#breadcrumb-app → Loader 脚本 → mount 执行。适用于任意目标页面。</div>
-    <div class="cc-rels"><span class="cc-rel out">→ 提供挂载点</span><span class="cc-rel in">← 被 JS/CSS 引用</span></div>
-  </div>
-  <div class="concept-card">
-    <div class="cc-icon">⚙️</div>
-    <div class="cc-name">index.js</div>
-    <div class="cc-domain">加载器脚本</div>
-    <div class="cc-desc">异步 fetch HTML 模板 → DOMParser 提取 → Vue.createApp 注册全局组件 → 派发 ready 事件。双保险挂载：同步尝试 + 异步监听。</div>
-    <div class="cc-rels"><span class="cc-rel out">→ 注册全局组件</span><span class="cc-rel out">→ 派发 ready 事件</span></div>
-  </div>
-  <div class="concept-card">
-    <div class="cc-icon">🎨</div>
-    <div class="cc-name">index.css</div>
-    <div class="cc-domain">样式表</div>
-    <div class="cc-desc">设计令牌驱动的 BEM 样式。纯 CSS 方案，无 JS 主题切换。支持 5 种视觉模式通过 :root 变量值切换，降级完整。</div>
-    <div class="cc-rels"><span class="cc-rel in">← 令牌 from shared/index.css</span><span class="cc-rel out">→ 样式化渲染输出</span></div>
-  </div>
-</div>
-
-<h2>1. 页面集成模板 (5 步加载模式)</h2>
-<p>任意目标页面引入 YryBreadcrumb 的标准模板 — 4 文件引用 + mount 脚本。</p>
-<div class="code-block">
-<div class="cb-head"><span class="cb-lang">HTML</span><span class="cb-file">integration-template.html</span></div>
-<pre><code>&lt;!-- ============ 步骤 1: CSS (head 首位) ============ --&gt;
-&lt;link rel="stylesheet" href="path/to/cdn/yry-breadcrumb/index.css"&gt;
-&lt;!-- ============ 步骤 2: Vue 3 运行时 ============ --&gt;
-&lt;script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"&gt;&lt;/script&gt;
-
-&lt;!-- ============ 步骤 3: 挂载点 (body 合适位置) ============ --&gt;
-&lt;div id="breadcrumb-app"&gt;&lt;/div&gt;
-
-&lt;!-- ============ 步骤 4: Loader 脚本 ============ --&gt;
-&lt;script src="path/to/cdn/yry-breadcrumb/index.js"&gt;&lt;/script&gt;
-
-&lt;!-- ============ 步骤 5: mount 执行 ============ --&gt;
-&lt;script&gt;
-  function mountBreadcrumb() {
-    if (!window.Vue || !window.YryBreadcrumb) return;
-    Vue.createApp(window.YryBreadcrumb, {
-      ariaLabel: '面包屑导航',
-      items: [ /* ... */ ]
-    }).mount('#breadcrumb-app');
-  }
-  // 缓存命中直接挂载，否则监听 ready 事件
-  if (window.YryBreadcrumb) mountBreadcrumb();
-  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
-&lt;/script&gt;</code></pre>
-</div>
-
-<h2>2. Mount 脚本示例</h2>
-<p>典型的 mount 调用，包含 ariaLabel 和无障碍属性。</p>
-<div class="code-block">
-<div class="cb-head"><span class="cb-lang">JS</span><span class="cb-file">mount.js</span></div>
-<pre><code>// 本页实际使用的 mount 脚本
-function mountBreadcrumb() {
-  if (!window.Vue || !window.YryBreadcrumb) return;
-  Vue.createApp(window.YryBreadcrumb, {
-    ariaLabel: '面包屑导航',
-    items: [
-      { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
-      { label: '任务故事', href: '../README.md' },
-      { label: '场景 4 · 页面集成' },
-      { label: '关键源码', icon: '📄' }
-    ]
-  }).mount('#breadcrumb-app');
-}
-if (window.YryBreadcrumb) mountBreadcrumb();
-else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });</code></pre>
-</div>
-
-<h2>3. 4 种 items 模式代码示例</h2>
-<p>覆盖 href+icon、纯文本、长路径(5+)、图标混用四种典型场景。</p>
-<div class="code-block">
-<div class="cb-head"><span class="cb-lang">JS</span><span class="cb-file">items-patterns.js</span></div>
-<pre><code>// 模式 1: href + icon (带链接 + emoji 图标)
-items: [
-  { label: '文档中心', href: '../../../index.html', icon: '📄' },
-  { label: '组件库' },
-  { label: '导航类' },
-  { label: '面包屑', icon: '🍞' }
-]
-
-// 模式 2: 纯文本 (全部无 href/icon, span 渲染)
-items: [
-  { label: 'YrY' },
-  { label: '故事面板' },
-  { label: '场景 4' },
-  { label: '页面集成' }
-]
-
-// 模式 3: 长路径 (5+ 层级, 深度回溯)
-items: [
-  { label: '首页', href: '/', icon: '🏠' },
-  { label: '文档中心', href: '/docs' },
-  { label: '故事面板', href: '/docs/stories' },
-  { label: '计划清单' },
-  { label: '场景 1 · 模板架构' },
-  { label: 'CSS 设计系统', icon: '🎨' }
-]
-
-// 模式 4: 图标混用 (多种 emoji 图标组合)
-items: [
-  { label: 'YryBreadcrumb', href: '../index.html', icon: '🍞' },
-  { label: '任务故事', icon: '📋' },
-  { label: '场景 4', icon: '🔌' },
-  { label: '演示', icon: '🎮' }
-]</code></pre>
-</div>
-
-<!-- § Typewriter Demo -->
-<div class="tw-demo">
-  <div class="tw-head">
-    <span class="tw-btn r"></span><span class="tw-btn y"></span><span class="tw-btn g"></span>
-    <span class="tw-title">terminal — yry-breadcrumb · 场景 4</span>
-  </div>
-  <div class="tw-line"><span class="tw-prompt">$ </span><span class="tw-cmd">grep -r 'yry-breadcrumb-ready' ../../../故事任务面板/ --include='*.html' | wc -l</span></div>
-  <div class="tw-line"><span class="tw-out">35</span></div>
-  <div class="tw-line"><span class="tw-info">→ 35 个页面通过 addEventListener 监听 ready 事件</span></div>
-  <div class="tw-line"><span class="tw-prompt">$ </span><span class="tw-cmd">grep -c 'Vue.createApp' index.js</span></div>
-  <div class="tw-line"><span class="tw-out">3</span></div>
-  <div class="tw-line"><span class="tw-info">→ 3 处 createApp 调用：组件注册 + 各页面 mount 示例</span></div>
-  <div class="tw-line"><span class="tw-prompt">$ </span><span class="tw-cmd">node -e "const items=[{label:'首页',href:'/'},{label:'文档'}]; console.log(items.length)"</span></div>
-  <div class="tw-line"><span class="tw-out">2</span></div>
-  <div class="tw-line"><span class="tw-ok">✓ 4 种 items 模式验证：href+icon / 纯文本 / 长路径 / 图标混用</span></div>
-  <div class="tw-line"><span class="tw-prompt">$ </span><span class="tw-cmd"></span><span class="tw-caret"></span></div>
-</div>
-
-<div class="tip-box success">
-  <strong>✅ 源码质量:</strong> 标准 5 步集成模板覆盖 35 个场景页。双保险挂载机制（同步尝试 + 异步监听）确保无竞态。4 种 items 模式覆盖所有导航场景。零打包依赖，ES2020+ 兼容，gzip 后 &lt; 2 KB。
-</div>
-
-</div>
-<div class="footer">
-  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-4-页面集成/源码.html</code><br>
-  🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
-</div>
-
-
-<script>
-  function mountBreadcrumb() {
-    if (!window.Vue || !window.YryBreadcrumb) return;
-    Vue.createApp(window.YryBreadcrumb, {
-      ariaLabel: '面包屑导航',
-      items: [
-        { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
-        { label: '任务故事', href: '../README.md' },
-        { label: '场景 4 · 页面集成' },
-        { label: '关键源码', icon: '📄' }
-      ]
-    }).mount('#breadcrumb-app');
-  }
-  if (window.YryBreadcrumb) mountBreadcrumb();
-  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
-</script>
-
-<script>
-const backTopBtn=document.getElementById('backTop');
-function toggleBackTop(){backTopBtn.classList.toggle('visible',window.scrollY>400);}
-window.addEventListener('scroll',toggleBackTop,{passive:true});
-backTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
-</script>
-
-<script src="../../../shared\/index\.js"></script>
-<!-- ═══ CDN: YrySceneNav 组件 loader ═══ -->
-<script src="../../../yry-scene-nav/index.js"></script>
-<!-- ═══ CDN: YryCrossNav 组件 loader ═══ -->
-<script src="../../../yry-cross-nav/index.js"></script>
-<!-- ═══ CDN: YryBackTop (零配置自初始化) ═══ -->
-<script src="../../../yry-back-top/index.js"></script>
-<!-- ═══ CDN: YryBreadcrumb 组件 loader ═══ -->
-<script src="../../../yry-breadcrumb/index.js"></script>
-<!-- ═══ CDN: YrySceneHeader 组件 loader ═══ -->
-<script src="../../../yry-scene-header/index.js"></script>
-<!-- ═══ CDN: YryStatsGrid 组件 loader ═══ -->
-<script src="../../../yry-stats-grid/index.js"></script>
-
-  <!-- ════════════════════════════════════════════════════════════
-       页面级挂载 · 场景导航 + 交叉导航 + 面包屑 + 统计网格
-       index.js 异步加载模板后派发 yry-*-ready 事件
-       ════════════════════════════════════════════════════════════ -->
-  <script>
-
-  /* ── YryCrossNav 挂载 ── */
-  function mountCrossNav() {
-    if (!window.Vue || !window.YryCrossNav) return;
-    if (!document.getElementById('cross-nav-app')) return;
-    Vue.createApp(window.YryCrossNav, {
-      basePath: './',
-      active: '清单',
-      pages: [
-        { id: '清单', icon: '📋', href: '计划清单.html' },
-        { id: '架构', icon: '📐', href: '架构图.html' },
-        { id: '图谱', icon: '🔗', href: '知识图谱.html' },
-        { id: '源码', icon: '📄', href: '源码.html' },
-        { id: '测试', icon: '🧪', href: '测试面板.html' },
-        { id: '演示', icon: '💡', href: '演示.html' },
-        { id: '审查', icon: '📝', href: '审查.html' }
-      ]
-    }).mount('#cross-nav-app');
-  }
-  if (window.YryCrossNav) mountCrossNav();
-  else document.addEventListener('yry-cross-nav-ready', mountCrossNav, { once: true });
-
-  /* ── YrySceneNav 挂载 ── */
-  function mountSceneNav() {
-    if (!window.Vue || !window.YrySceneNav) return;
-    if (!document.getElementById('scene-nav-app')) return;
-    Vue.createApp(window.YrySceneNav, {
-      items: [
-        { label: '📋 任务故事', href: '../README.md' },
-        { label: '页面集成', href: './index.md' },
-        { label: '关键源码', active: true }
-      ]
-    }).mount('#scene-nav-app');
-  }
-  if (window.YrySceneNav) mountSceneNav();
-  else document.addEventListener('yry-scene-nav-ready', mountSceneNav, { once: true });
-
-  /* ── YrySceneHeader 挂载 ── */
-  function mountSceneHeader() {
-    if (!window.Vue || !window.YrySceneHeader) return;
-    if (!document.getElementById('scene-header-app')) return;
-    Vue.createApp(window.YrySceneHeader, {
-      icon: '📄',
-      prefix: '场景 4',
-      accent: ' · 页面集成',
-      meta: 'YryBreadcrumb 任务故事 · 场景 4 · Page Integration · Source Code',
-      desc: '集成到 计划清单.html + 28 场景页 · 4 文件引用顺序 · 4 种 items 模式 (含 href/纯文本/长路径/图标) — 核心代码片段。'
-    }).mount('#scene-header-app');
-  }
-  if (window.YrySceneHeader) mountSceneHeader();
-  else document.addEventListener('yry-scene-header-ready', mountSceneHeader, { once: true });
-
-  /* ── YryBreadcrumb 挂载 ── */
-  function mountBreadcrumb() {
-    if (!window.Vue || !window.YryBreadcrumb) return;
-    if (!document.getElementById('breadcrumb-app')) return;
-    Vue.createApp(window.YryBreadcrumb, {
-      ariaLabel: '面包屑导航',
-      items: [
-        { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
-        { label: '任务故事', href: '../README.md' },
-        { label: '场景 4 · 页面集成' },
-        { label: '关键源码', icon: '📄' }
-      ]
-    }).mount('#breadcrumb-app');
-  }
-  if (window.YryBreadcrumb) mountBreadcrumb();
-  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
-  </script>
-
+<script src="../../../../cdn/shared/index.js"></script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
+<script src="../../../../cdn/yry-scene-stats/index.js"></script>
+<script src="../../../../cdn/yry-scene-tabs/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
 </body>
 </html>

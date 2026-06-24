@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>项目分析 — YrY 架构合规与代码质量</title>
+<meta name="description" content="YrY 项目架构分析报告 — 10维度架构合规检查 · 文件统计 · 代码范式审计 · 导入依赖分析 · lib/ 内核体积监控">
+<link rel="stylesheet" href="../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../cdn/shared-reports/index.css">
+<link rel="stylesheet" href="../../cdn/yry-arch-analysis/index.css">
+</head>
+<body>
+<div class="container">
+<nav style="display:flex;align-items:center;gap:6px;margin-bottom:20px;font-size:.76rem;">
+  <a href="../index.html" style="color:#22d3ee;text-decoration:none;">📄 文档中心</a>
+  <span style="color:var(--yry-text3);opacity:.4;">/</span>
+  <span style="color:var(--yry-text2);">🏗 项目分析</span>
+</nav>
+<yry-arch-analysis data-src="reports.json"></yry-arch-analysis>
+
+<!-- 10 维度架构合规 -->
+<div class="card">
+  <h2>⚖️ 10 维度架构合规检查</h2>
+  <table>
+    <thead><tr><th>维度</th><th>规则</th><th>阈值</th><th>当前</th><th>状态</th></tr></thead>
+    <tbody>
+      <tr><td>内核体积</td><td>lib ≤ 20 文件</td><td>20</td><td>18</td><td>✅</td></tr>
+      <tr><td>编排器体积</td><td>≤ 500 行</td><td>500</td><td>487</td><td>✅</td></tr>
+      <tr><td>代码范式</td><td>无 class/extends</td><td>0</td><td>0</td><td>✅</td></tr>
+      <tr><td>导出规范</td><td>无 export default</td><td>0</td><td>0</td><td>✅</td></tr>
+      <tr><td>错误处理</td><td>无空 catch</td><td>0</td><td>0</td><td>✅</td></tr>
+      <tr><td>扩展隔离</td><td>Skill 不修改编排器</td><td>0</td><td>0</td><td>✅</td></tr>
+      <tr><td>规约完整</td><td>每 skill 有 SKILL.md</td><td>20/20</td><td>20/20</td><td>✅</td></tr>
+      <tr><td>Agent 交接</td><td>信号可验证</td><td>9/9</td><td>9/9</td><td>✅</td></tr>
+      <tr><td>魔法数字</td><td>禁止裸数字</td><td>0</td><td>0</td><td>✅</td></tr>
+      <tr><td>Mermaid 配色</td><td>统一色板</td><td>100%</td><td>100%</td><td>✅</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 文件统计 -->
+<div class="card">
+  <h2>📊 文件统计</h2>
+  <table>
+    <thead><tr><th>类型</th><th>文件数</th><th>总行数</th><th>平均行数</th><th>最大文件</th></tr></thead>
+    <tbody>
+      <tr><td>skills/*/SKILL.md</td><td>20</td><td>~3000</td><td>150</td><td>rui-code (~900)</td></tr>
+      <tr><td>agents/*.md</td><td>9</td><td>~3000</td><td>333</td><td>AGENT.md (~800)</td></tr>
+      <tr><td>rules/*.md</td><td>16</td><td>~5000</td><td>313</td><td>code-pipeline (~500)</td></tr>
+      <tr><td>lib/*.mjs</td><td>18</td><td>~2500</td><td>139</td><td>arch-check (~300)</td></tr>
+      <tr><td>tests/**/*.mjs</td><td>10+</td><td>~1500</td><td>150</td><td>cross-refs (~180)</td></tr>
+      <tr><td>cdn/yry-*/</td><td>107</td><td>~50K+</td><td>—</td><td>—</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 代码范式审计 -->
+<div class="card">
+  <h2>🔍 代码范式审计</h2>
+  <table>
+    <thead><tr><th>范式</th><th>规则</th><th>正例</th><th>反例</th><th>合规率</th></tr></thead>
+    <tbody>
+      <tr><td>模块范式</td><td>ESM import/export</td><td>import { x } from './y.mjs'</td><td>require()</td><td>100%</td></tr>
+      <tr><td>函数范式</td><td>纯函数优先</td><td>function pure(a, b)</td><td>class Foo</td><td>100%</td></tr>
+      <tr><td>错误处理</td><td>catch 不空</td><td>catch(e) { console.error(e) }</td><td>catch(e) {}</td><td>100%</td></tr>
+      <tr><td>常量定义</td><td>无魔法数字</td><td>const MAX = 100</td><td>if (x > 100)</td><td>100%</td></tr>
+      <tr><td>导入规范</td><td>从 lib/ 导入</td><td>import { x } from '../../lib/'</td><td>copy-paste</td><td>100%</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 导入依赖分析 -->
+<div class="card">
+  <h2>🔗 导入依赖分析</h2>
+  <table>
+    <thead><tr><th>依赖类型</th><th>数量</th><th>示例</th><th>风险</th></tr></thead>
+    <tbody>
+      <tr><td>skill → lib</td><td>18</td><td>rui-init → lib/fs.mjs</td><td>低</td></tr>
+      <tr><td>skill → rule</td><td>20</td><td>rui-code → code-pipeline</td><td>低</td></tr>
+      <tr><td>skill → agent</td><td>15</td><td>rui-yry → agents/pm</td><td>低</td></tr>
+      <tr><td>test → skill</td><td>10</td><td>rui.test → rui</td><td>低</td></tr>
+      <tr><td>循环依赖</td><td>0</td><td>—</td><td>无</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- lib/ 内核体积监控 -->
+<div class="card">
+  <h2>📦 lib/ 内核体积监控</h2>
+  <table>
+    <thead><tr><th>文件</th><th>行数</th><th>职责</th><th>上限</th><th>余量</th></tr></thead>
+    <tbody>
+      <tr><td>fs.mjs</td><td>120</td><td>文件系统工具</td><td>200</td><td>80</td></tr>
+      <tr><td>constants.mjs</td><td>80</td><td>共享常量</td><td>150</td><td>70</td></tr>
+      <tr><td>arch-check.mjs</td><td>300</td><td>架构合规校验</td><td>500</td><td>200</td></tr>
+      <tr><td>help.mjs</td><td>150</td><td>help 布局</td><td>300</td><td>150</td></tr>
+      <tr><td>diagnostic.mjs</td><td>180</td><td>诊断工具</td><td>300</td><td>120</td></tr>
+      <tr><td>mermaid-theme.mjs</td><td>60</td><td>Mermaid 主题</td><td>100</td><td>40</td></tr>
+    </tbody>
+  </table>
+</div>
+
+</div>
+<script src="../../cdn/yry-arch-analysis/index.js"></script>
+</body>
+</html>

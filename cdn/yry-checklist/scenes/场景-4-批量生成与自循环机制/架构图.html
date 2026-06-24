@@ -4,76 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>批量生成与自循环机制 · 架构图</title>
-<link rel="stylesheet" href="../../../../cdn/fonts\/index\.css">
+<link rel="stylesheet" href="../../../../cdn/fonts/index.css">
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/theme-mono/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-page-nav/index.css">
-<style>body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}</style>
+<link rel="stylesheet" href="../../../../cdn/yry-arch-base.css">
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
-
+<link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-export-toolbar/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-info-cards/index.css">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}
-.container{max-width:1200px;margin:0 auto}
-.header{margin-bottom:1.5rem}
-.header-row{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem}
-.pulse-dot{width:12px;height:12px;background:#22d3ee;border-radius:50%;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-h1{font-size:1.5rem;font-weight:700}
-.subtitle{color:#94a3b8;font-size:.875rem;margin-left:1.75rem}
-.toolbar-toggle{background:transparent;border:none;color:#475569;cursor:pointer;font-size:1.25rem;padding:.25rem .5rem;border-radius:.375rem}
-.toolbar-toggle:hover{color:#94a3b8;background:rgba(30,41,59,.5)}
-.toolbar.expanded .diagram-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1.5rem;overflow-x:auto;margin-bottom:1.5rem}
+/* Page-specific overrides — shared patterns in shared-a.css */
+.diagram-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1.5rem;overflow-x:auto;margin-bottom:1.5rem}
 .diagram-container svg{width:100%;min-width:900px;display:block}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-bottom:1.5rem}
-.card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem}
-.card-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem}
-.card-dot{width:8px;height:8px;border-radius:50%}
-.card-dot.cyan{background:#22d3ee}.card-dot.emerald{background:#34d399}
-.card-dot.violet{background:#a78bfa}.card-dot.amber{background:#fbbf24}
-.card-dot.rose{background:#fb7185}.card-dot.blue{background:#3B82F6}
-.card h3{font-size:.875rem;font-weight:600}
-.card ul{list-style:none;color:#94a3b8;font-size:.75rem}
-.card li{margin-bottom:.375rem}
-.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
-.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
-.breadcrumb a:hover{color:#fbbf24}
-.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
-.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
-.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
-.cross-link{color:#7aa2f7;text-decoration:none;font-size:0.76rem;padding:3px 10px;border-radius:4px;transition:color 0.15s,background 0.15s}
-.cross-link:hover{color:#fbbf24;background:rgba(251,191,36,0.06)}
-.cross-link.on{color:#fbbf24;font-weight:600;cursor:default}
-.cross-sep{color:#475569;font-size:0.5rem;opacity:0.35;user-select:none}
-.footer{text-align:center;color:#475569;font-size:.75rem;margin-top:1rem}
-@media print{body{background:#020617;padding:1rem}}
+.yry-container{max-width:1200px}
 </style>
 </head>
 <body>
-<div class="container" id="report-container">
-<script type="application/json" id="yry-page-config">
-{"story": "yry-checklist · 清单与自循环", "scene": {"num": "4", "name": "批量生成与自循环机制", "dir": "场景-4-批量生成与自循环机制"}, "depth": "../../../", "scenes": [{"num": "1", "name": "模板架构与 CSS 设计系统", "dir": "场景-1-模板架构与CSS设计系统"}, {"num": "2", "name": "清单交互组件实现", "dir": "场景-2-清单交互组件实现"}, {"num": "3", "name": "验证报告与健康面板集成", "dir": "场景-3-验证报告与健康面板集成"}, {"num": "4", "name": "批量生成与自循环机制", "dir": "场景-4-批量生成与自循环机制"}], "pages": [{"type": "清单", "icon": "📋", "file": "计划清单.html"}, {"type": "架构", "icon": "📐", "file": "架构图.html"}, {"type": "图谱", "icon": "🔗", "file": "知识图谱.html"}, {"type": "源码", "icon": "📄", "file": "源码.html"}, {"type": "测试", "icon": "🧪", "file": "测试面板.html"}, {"type": "演示", "icon": "💡", "file": "演示.html"}, {"type": "审计", "icon": "📝", "file": "审查.html"}], "page": {"type": "架构", "icon": "📐", "file": "架构图.html"}}
-</script>
-<div id="yry-nav"></div>
-<script src="../../../../cdn/yry-page-nav/index.js"></script>
-
-<div class="header">
-  <div class="header-row">
-    <div class="pulse-dot"></div>
-    <h1>计划清单 — 场景 4: 场景 5 · 批量生成与自循环机制</h1>
-    <div class="toolbar">
-      <div class="toolbar-actions">
-        <button onclick="copySVG(this)">📋 Copy SVG</button>
-        <button onclick="downloadPNG(this)">🖼 PNG</button>
-        <button onclick="downloadSVG(this)">📄 SVG</button>
-      </div>
-      <button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button>
-    </div>
-  </div>
-  <p class="subtitle">场景 5 · 批量生成与自循环机制 · vv1.0.0 · 2026-06-13</p>
-</div>
+<div class="yry-container" id="report-container">
+<yry-scene-chrome
+  theme="a"
+  title="yry-checklist — 场景 4: 场景 4 · 批量生成与自循环机制"
+  subtitle="场景 4 · 批量生成与自循环机制 · vv5.4.0 · 2026-06-22"
+  breadcrumb='[{"label":"📄 文档中心","href":"../../../../docs/index.html"},{"label":"yry-checklist · 故事任务"},{"label":"场景 4 · 批量生成与自循环机制"},{"label":"📐 架构图"}]'
+  crossnav='[{"label":"📋 清单","href":"计划清单.html"},{"label":"📐 架构","active":true},{"label":"🔗 图谱","href":"知识图谱.html"},{"label":"📄 源码","href":"源码.html"},{"label":"🧪 测试","href":"测试面板.html"},{"label":"💡 演示","href":"演示.html"},{"label":"📝 审查","href":"审查.html"}]'
+  toolbar='<div class="yry-export-toolbar yry-toolbar" data-target=".diagram-container" data-filename="yry-checklist-scene4-architecture" data-bg="#020617"><button data-action="copy-svg">📋 Copy SVG</button><button data-action="download-png">🖼 PNG</button><button data-action="download-svg">📄 SVG</button></div>'>
+</yry-scene-chrome>
 
 <div class="diagram-container">
   <svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
@@ -92,31 +49,30 @@ h1{font-size:1.5rem;font-weight:700}
   </svg>
 </div>
 
-<div class="cards">
-  <div class="card">
-    <div class="card-header"><div class="card-dot cyan"></div><h3>场景信息</h3></div>
+<yry-info-cards>
+  <div class="yry-card">
+    <div class="yry-card-header"><div class="yry-card-dot cyan"></div><h3>场景信息</h3></div>
     <ul>
-      <li><b>场景:</b> 4 · 场景 5 · 批量生成与自循环机制</li>
-      <li><b>故事:</b> 计划清单 · 故事任务</li>
-      <li><b>版本:</b> vv1.0.0</li>
+      <li><b>场景:</b> 4 · 场景 4 · 批量生成与自循环机制</li>
+      <li><b>故事:</b> yry-checklist · 故事任务</li>
+      <li><b>版本:</b> vv5.4.0</li>
     </ul>
   </div>
-  <div class="card">
-    <div class="card-header"><div class="card-dot emerald"></div><h3>数据源</h3></div>
+  <div class="yry-card">
+    <div class="yry-card-header"><div class="yry-card-dot emerald"></div><h3>数据源</h3></div>
     <ul>
       <li><b>场景文档:</b> index.md §0 技术评审</li>
-      <li><b>生成日期:</b> 2026-06-13</li>
+      <li><b>生成日期:</b> 2026-06-22</li>
     </ul>
   </div>
-</div>
+</yry-info-cards>
 
-<div class="footer">YrY vv1.0.0 · 2026-06-13</div>
+<yry-scene-footer version="v5.4.0" date="2026-06-22"></yry-scene-footer>
 </div>
 <script src="../../../../cdn/shared/index.js"></script>
-<script>
-function copySVG(btn){const svg=document.querySelector('.diagram-container svg').outerHTML;navigator.clipboard.writeText(svg).then(()=>{btn.textContent='✅ Copied';setTimeout(()=>btn.textContent='📋 Copy SVG',1500)})}
-function downloadSVG(btn){const svg=document.querySelector('.diagram-container svg').outerHTML;const b=new Blob([svg],{type:'image/svg+xml'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='计划清单-scene4-architecture.svg';a.click();btn.textContent='✅ Downloaded';setTimeout(()=>btn.textContent='📄 SVG',1500)}
-function downloadPNG(btn){if(typeof html2canvas==='undefined'){alert('html2canvas not loaded');return}const el=document.querySelector('.diagram-container');html2canvas(el,{backgroundColor:'#020617'}).then(c=>{const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='计划清单-scene4-architecture.png';a.click();btn.textContent='✅ Downloaded';setTimeout(()=>btn.textContent='🖼 PNG',1500)})}
-</script>
+<script src="../../../../cdn/yry-scene-chrome/index.js"></script>
+<script src="../../../../cdn/yry-export-toolbar/index.js"></script>
+<script src="../../../../cdn/yry-scene-footer/index.js"></script>
+<script src="../../../../cdn/yry-info-cards/index.js"></script>
 </body>
 </html>
