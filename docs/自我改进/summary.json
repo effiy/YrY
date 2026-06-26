@@ -1,13 +1,13 @@
 {
-  "updated": "2026-06-26T07:40:49.095Z",
+  "updated": "2026-06-26T17:37:05.059Z",
   "totalEntries": 6,
   "dateRange": {
     "from": "2026-06-19",
     "to": "2026-06-26"
   },
   "latest": {
-    "timestamp": "2026-06-26T07:40:49.085Z",
-    "composite": 97,
+    "timestamp": "2026-06-26T17:37:05.054Z",
+    "composite": 96,
     "grade": "A",
     "scores": {
       "token": 100,
@@ -17,7 +17,7 @@
       "reports": 100,
       "format": 100,
       "diagnostics": 85,
-      "git": 100,
+      "git": 80,
       "security": 100,
       "em_testing": 100,
       "em_types": 100,
@@ -35,8 +35,8 @@
     "triggeredDiags": [
       "D3"
     ],
-    "gitBranch": "master",
-    "gitUncommitted": 0
+    "gitBranch": "main",
+    "gitUncommitted": 18
   },
   "daily": [
     {
@@ -443,9 +443,9 @@
     },
     {
       "entries": 1,
-      "avgScore": 97,
-      "minScore": 97,
-      "maxScore": 97,
+      "avgScore": 96,
+      "minScore": 96,
+      "maxScore": 96,
       "topGrade": "A",
       "gradeDist": {
         "A": 1,
@@ -487,11 +487,11 @@
       ],
       "branches": [
         {
-          "name": "master",
+          "name": "main",
           "count": 1
         }
       ],
-      "avgUncommitted": 0,
+      "avgUncommitted": 18,
       "dimAvgs": {
         "token": 100,
         "config": 100,
@@ -500,7 +500,7 @@
         "reports": 100,
         "format": 100,
         "diagnostics": 85,
-        "git": 100,
+        "git": 80,
         "security": 100,
         "em_testing": 100,
         "em_types": 100,
@@ -515,11 +515,11 @@
         "comp_qual": 86
       },
       "delta": {
-        "score": 5,
+        "score": 4,
         "gradeChange": null
       },
-      "firstTs": "2026-06-26T07:40:49.085Z",
-      "lastTs": "2026-06-26T07:40:49.085Z",
+      "firstTs": "2026-06-26T17:37:05.054Z",
+      "lastTs": "2026-06-26T17:37:05.054Z",
       "date": "2026-06-26"
     }
   ],
@@ -605,9 +605,9 @@
     },
     {
       "entries": 5,
-      "avgScore": 91,
+      "avgScore": 90,
       "minScore": 84,
-      "maxScore": 97,
+      "maxScore": 96,
       "topGrade": "A",
       "gradeDist": {
         "A": 3,
@@ -650,14 +650,14 @@
       "branches": [
         {
           "name": "main",
-          "count": 3
+          "count": 4
         },
         {
           "name": "master",
-          "count": 2
+          "count": 1
         }
       ],
-      "avgUncommitted": 66,
+      "avgUncommitted": 69,
       "dimAvgs": {
         "token": 100,
         "config": 100,
@@ -666,7 +666,7 @@
         "reports": 100,
         "format": 100,
         "diagnostics": 82,
-        "git": 60,
+        "git": 56,
         "security": 94,
         "em_testing": 100,
         "em_types": 100,
@@ -681,11 +681,11 @@
         "comp_qual": 85
       },
       "delta": {
-        "score": 9,
+        "score": 8,
         "gradeChange": "B→A"
       },
       "firstTs": "2026-06-22T10:12:38.544Z",
-      "lastTs": "2026-06-26T07:40:49.085Z",
+      "lastTs": "2026-06-26T17:37:05.054Z",
       "week": "2026-06-21",
       "weekEnd": "2026-06-26"
     }
@@ -695,7 +695,7 @@
       "entries": 6,
       "avgScore": 89,
       "minScore": 82,
-      "maxScore": 97,
+      "maxScore": 96,
       "topGrade": "A",
       "gradeDist": {
         "A": 3,
@@ -738,14 +738,14 @@
       "branches": [
         {
           "name": "main",
-          "count": 4
+          "count": 5
         },
         {
           "name": "master",
-          "count": 2
+          "count": 1
         }
       ],
-      "avgUncommitted": 72,
+      "avgUncommitted": 75,
       "dimAvgs": {
         "token": 100,
         "config": 100,
@@ -754,7 +754,7 @@
         "reports": 100,
         "format": 100,
         "diagnostics": 80,
-        "git": 57,
+        "git": 53,
         "security": 95,
         "em_testing": 93,
         "em_types": 100,
@@ -770,7 +770,7 @@
       },
       "delta": null,
       "firstTs": "2026-06-19T10:35:12.022Z",
-      "lastTs": "2026-06-26T07:40:49.085Z",
+      "lastTs": "2026-06-26T17:37:05.054Z",
       "month": "2026-06"
     }
   ],
@@ -812,8 +812,8 @@
     },
     {
       "date": "2026-06-26",
-      "time": "07:40",
-      "score": 97,
+      "time": "17:37",
+      "score": 96,
       "grade": "A",
       "triggered": 1
     }
@@ -1029,12 +1029,12 @@
     {
       "dim": "git",
       "label": "Git",
-      "avgScore": 57,
-      "recentAvg": 60,
+      "avgScore": 53,
+      "recentAvg": 56,
       "entries": 6,
       "min": 40,
-      "max": 100,
-      "trend": 20
+      "max": 80,
+      "trend": 16
     },
     {
       "dim": "notify",
@@ -1090,15 +1090,15 @@
   "branchSummary": [
     {
       "name": "main",
-      "count": 4,
-      "avgScore": 87,
-      "avgUncommitted": 67
+      "count": 5,
+      "avgScore": 88,
+      "avgUncommitted": 57
     },
     {
       "name": "master",
-      "count": 2,
-      "avgScore": 95,
-      "avgUncommitted": 81
+      "count": 1,
+      "avgScore": 92,
+      "avgUncommitted": 162
     }
   ],
   "signals": [
@@ -1144,7 +1144,7 @@
     },
     {
       "type": "improvement",
-      "msg": "Git 改善 +20",
+      "msg": "Git 改善 +16",
       "icon": "📈"
     }
   ],
@@ -1201,33 +1201,33 @@
   "enhancedTrend": {
     "trend": {
       "direction": "rising",
-      "slope": 1.91,
-      "slopePerWeek": 13.4,
-      "r2": 0.32,
+      "slope": 1.77,
+      "slopePerWeek": 12.4,
+      "r2": 0.3,
       "confidence": "low"
     },
     "forecast": {
-      "forecast": 97,
+      "forecast": 96,
       "range": [
-        87,
-        107
+        86,
+        106
       ],
       "confidence": "low"
     },
     "velocity": {
-      "recent": 5,
-      "weekly": 4.3,
-      "accelerating": true
+      "recent": 4,
+      "weekly": 4,
+      "accelerating": false
     },
     "distribution": {
       "min": 82,
-      "max": 97,
-      "mean": 89.2,
+      "max": 96,
+      "mean": 89,
       "median": 88.5,
-      "stddev": 5.8,
+      "stddev": 5.5,
       "p25": 84,
       "p75": 95,
-      "range": 15
+      "range": 14
     },
     "sma7": [
       89
@@ -1236,18 +1236,18 @@
   },
   "scoreReport": {
     "reliability": {
-      "current": 97,
-      "mean": 89.2,
-      "stddev": 5.8,
+      "current": 96,
+      "mean": 89,
+      "stddev": 5.5,
       "ci95": [
-        85.7,
-        108.3
+        85.1,
+        106.9
       ],
       "volatility": "moderate",
       "score": 0.94
     },
     "comparison": {
-      "compositeDelta": 9,
+      "compositeDelta": 8,
       "biggestGain": {
         "dim": "em_cicd",
         "delta": 100
@@ -1384,13 +1384,13 @@
         "dim": "git",
         "label": "Git",
         "category": "core",
-        "score": 57,
+        "score": 53,
         "grade": "D",
         "weight": 6,
         "status": "warn",
         "trend": "↑ 上升",
         "trendDirection": "rising",
-        "gap": 43,
+        "gap": 47,
         "recommendation": "建议制定改进计划，提升至良好水平"
       },
       {
@@ -1645,7 +1645,7 @@
       {
         "priority": "P1",
         "dim": "Git",
-        "score": 57,
+        "score": 53,
         "action": "建议制定改进计划，提升至良好水平"
       },
       {
@@ -1664,7 +1664,7 @@
   },
   "archHealth": {
     "latest": {
-      "timestamp": "2026-06-26T07:40:49.055Z",
+      "timestamp": "2026-06-26T17:37:05.041Z",
       "composite": 100,
       "grade": "A",
       "scores": {
@@ -1683,7 +1683,7 @@
       "totalChecks": 16,
       "passedChecks": 16
     },
-    "totalEntries": 970,
+    "totalEntries": 976,
     "dimTrends": {
       "arch_kernel": {
         "label": "内核体积",
@@ -1733,10 +1733,10 @@
     }
   },
   "improvementVelocity": {
-    "dailyChangeRate": 13.4,
+    "dailyChangeRate": 12.4,
     "direction": "rising",
     "confidence": "low",
-    "scoreVolatility": 5.8,
+    "scoreVolatility": 5.5,
     "positiveDayRatio": 80,
     "dimVelocity": {
       "api": {
@@ -1853,11 +1853,11 @@
       },
       "git": {
         "label": "Git",
-        "current": 100,
+        "current": 80,
         "trend": "rising",
-        "slopePerWeek": 68,
-        "velocity": 60,
-        "r2": 0.47
+        "slopePerWeek": 48,
+        "velocity": 40,
+        "r2": 0.39
       },
       "notify": {
         "label": "通知投递",
@@ -1904,9 +1904,9 @@
       {
         "dim": "git",
         "label": "Git",
-        "avgScore": 57,
-        "trend": 20,
-        "gap": 43,
+        "avgScore": 53,
+        "trend": 16,
+        "gap": 47,
         "impact": 0
       },
       {
@@ -1918,7 +1918,7 @@
         "impact": 0
       }
     ],
-    "recommendation": "优先修复 Git(57分)，预计可提升综合评分 0 分"
+    "recommendation": "优先修复 Git(53分)，预计可提升综合评分 0 分"
   },
   "skillMaturation": {
     "currentStage": "优化期",
@@ -1930,9 +1930,9 @@
     "qualityTrend": "rising"
   },
   "riskAdjusted": {
-    "baseScore": 97,
+    "baseScore": 96,
     "riskDeduction": 0,
-    "adjustedScore": 97,
+    "adjustedScore": 96,
     "riskFactors": [],
     "riskLevel": "low"
   },
@@ -2135,15 +2135,15 @@
       },
       {
         "dim1": "诊断",
-        "dim2": "通知投递",
-        "r": -0.5,
+        "dim2": "Git",
+        "r": 0.5,
         "strength": "moderate",
         "n": 6
       },
       {
         "dim1": "诊断",
-        "dim2": "Git",
-        "r": 0.486,
+        "dim2": "通知投递",
+        "r": -0.5,
         "strength": "moderate",
         "n": 6
       },
@@ -2254,8 +2254,22 @@
       },
       {
         "dim1": "CI/CD",
+        "dim2": "Git",
+        "r": 0.316,
+        "strength": "weak",
+        "n": 6
+      },
+      {
+        "dim1": "CI/CD",
         "dim2": "通知投递",
         "r": -0.316,
+        "strength": "weak",
+        "n": 6
+      },
+      {
+        "dim1": "Git实践",
+        "dim2": "Git",
+        "r": 0.316,
         "strength": "weak",
         "n": 6
       },
@@ -2268,6 +2282,13 @@
       },
       {
         "dim1": "检查",
+        "dim2": "Git",
+        "r": 0.316,
+        "strength": "weak",
+        "n": 6
+      },
+      {
+        "dim1": "检查",
         "dim2": "通知投递",
         "r": -0.316,
         "strength": "weak",
@@ -2275,7 +2296,21 @@
       },
       {
         "dim1": "测试",
+        "dim2": "Git",
+        "r": 0.316,
+        "strength": "weak",
+        "n": 6
+      },
+      {
+        "dim1": "测试",
         "dim2": "通知投递",
+        "r": -0.316,
+        "strength": "weak",
+        "n": 6
+      },
+      {
+        "dim1": "文件体积",
+        "dim2": "Git",
         "r": -0.316,
         "strength": "weak",
         "n": 6
@@ -2288,6 +2323,13 @@
         "n": 6
       },
       {
+        "dim1": "Git",
+        "dim2": "安全",
+        "r": 0.316,
+        "strength": "weak",
+        "n": 6
+      },
+      {
         "dim1": "通知投递",
         "dim2": "安全",
         "r": -0.316,
@@ -2295,51 +2337,23 @@
         "n": 6
       },
       {
-        "dim1": "CI/CD",
+        "dim1": "依赖分析",
         "dim2": "Git",
-        "r": 0.307,
+        "r": 0.31,
         "strength": "weak",
         "n": 6
       },
       {
-        "dim1": "Git实践",
+        "dim1": "API",
         "dim2": "Git",
-        "r": 0.307,
-        "strength": "weak",
-        "n": 6
-      },
-      {
-        "dim1": "检查",
-        "dim2": "Git",
-        "r": 0.307,
-        "strength": "weak",
-        "n": 6
-      },
-      {
-        "dim1": "测试",
-        "dim2": "Git",
-        "r": 0.307,
-        "strength": "weak",
-        "n": 6
-      },
-      {
-        "dim1": "文件体积",
-        "dim2": "Git",
-        "r": -0.307,
+        "r": -0.25,
         "strength": "weak",
         "n": 6
       },
       {
         "dim1": "Git",
-        "dim2": "安全",
-        "r": 0.307,
-        "strength": "weak",
-        "n": 6
-      },
-      {
-        "dim1": "依赖分析",
-        "dim2": "Git",
-        "r": 0.295,
+        "dim2": "通知投递",
+        "r": -0.25,
         "strength": "weak",
         "n": 6
       },
@@ -2382,27 +2396,6 @@
         "dim1": "依赖分析",
         "dim2": "安全",
         "r": -0.176,
-        "strength": "weak",
-        "n": 6
-      },
-      {
-        "dim1": "组件质量",
-        "dim2": "Git",
-        "r": 0.137,
-        "strength": "weak",
-        "n": 6
-      },
-      {
-        "dim1": "API",
-        "dim2": "Git",
-        "r": -0.097,
-        "strength": "weak",
-        "n": 6
-      },
-      {
-        "dim1": "Git",
-        "dim2": "通知投递",
-        "r": -0.097,
         "strength": "weak",
         "n": 6
       },
@@ -2493,6 +2486,13 @@
       {
         "dim1": "组件质量",
         "dim2": "格式",
+        "r": 0,
+        "strength": "weak",
+        "n": 6
+      },
+      {
+        "dim1": "组件质量",
+        "dim2": "Git",
         "r": 0,
         "strength": "weak",
         "n": 6
@@ -3291,16 +3291,16 @@
     ]
   },
   "confidenceAdjusted": {
-    "adjustedScore": 97,
+    "adjustedScore": 96,
     "discount": 0,
     "level": "high",
     "reliability": {
-      "current": 97,
-      "mean": 89.2,
-      "stddev": 5.8,
+      "current": 96,
+      "mean": 89,
+      "stddev": 5.5,
       "ci95": [
-        85.7,
-        108.3
+        85.1,
+        106.9
       ],
       "volatility": "moderate",
       "reliability": 0.94
@@ -3310,9 +3310,9 @@
     "ranking": [
       {
         "dim": "git",
-        "score": 57,
+        "score": 53,
         "impact": 2,
-        "volatility": 24.3,
+        "volatility": 18.9,
         "trend": "rising",
         "roi": 1.9
       },
@@ -3487,11 +3487,11 @@
     {
       "dim": "git",
       "label": "Git",
-      "score": 57,
-      "trend": 20,
+      "score": 53,
+      "trend": 16,
       "possibleCauses": [
         "诊断 D0 触发，建议先解决相关诊断",
-        "与 诊断(r=0.486) 显著相关，建议联动改进"
+        "与 诊断(r=0.5) 显著相关，建议联动改进"
       ],
       "relatedDiags": [
         {
@@ -3504,7 +3504,7 @@
       "correlatedDims": [
         {
           "dim": "诊断",
-          "r": 0.486,
+          "r": 0.5,
           "strength": "moderate"
         }
       ]

@@ -21,15 +21,15 @@
 
 /* ── Mono 主题令牌覆盖 ──────────────────────────────────────────────────── */
 :root {
-  --yry-bg:              #020617;
-  --yry-bg-card:         rgba(15,23,42,0.5);
-  --yry-bg-flat:         rgba(15,23,42,0.5);
+  --yry-bg:              rgb(var(--yry-mono-bg-rgb));
+  --yry-bg-card:         rgba(var(--yry-mono-slate-rgb), var(--alpha-deep));
+  --yry-bg-flat:         rgba(var(--yry-mono-slate-rgb), var(--alpha-deep));
   --yry-bg-raised:       rgba(20,30,50,0.7);
-  --yry-border:          1px solid var(--yry-mono-border);
-  --yry-shadow:          0 4px 24px rgba(0,0,0,.3);
-  --yry-shadow-lg:       0 12px 32px rgba(0,0,0,.45);
-  --yry-radius:          16px;
-  --yry-text:            #fff;
+  --yry-border:          var(--space-base) solid var(--yry-mono-border);
+  --yry-shadow:          0 calc(var(--space-base) * 4) calc(var(--space-base) * 24) rgba(var(--yry-black-rgb), var(--alpha-visible));
+  --yry-shadow-lg:       0 calc(var(--space-base) * 12) calc(var(--space-base) * 32) rgba(var(--yry-black-rgb), 0.45);
+  --yry-radius:          calc(var(--space-base) * 16);
+  --yry-text:            rgb(var(--yry-white-rgb));
   --yry-text2:           var(--yry-mono-text2);
   --yry-text3:           var(--yry-mono-text3);
 }
@@ -100,10 +100,10 @@ body {
 .yry-mono-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .yry-mono-dot.cyan    { background: var(--yry-cyan); }
 .yry-mono-dot.emerald { background: var(--yry-pass); }
-.yry-mono-dot.violet  { background: #a78bfa; }
+.yry-mono-dot.violet  { background: rgb(var(--yry-violet-rgb)); }
 .yry-mono-dot.amber   { background: var(--yry-warn); }
 .yry-mono-dot.rose    { background: var(--yry-fail); }
-.yry-mono-dot.blue    { background: #3B82F6; }
+.yry-mono-dot.blue    { background: rgb(var(--yry-info-rgb)); }
 
 /* ── Legend ─────────────────────────────────────────────────────────────── */
 .yry-mono-legend {
@@ -128,7 +128,7 @@ body {
   color: var(--yry-link); text-decoration: none; transition: color 0.15s;
 }
 .yry-mono-container .breadcrumb a:hover { color: var(--yry-link-hover); text-decoration: underline; }
-.yry-mono-container .breadcrumb .bc-sep { color: var(--yry-text3); opacity: 0.5; -webkit-user-select: none; user-select: none; }
+.yry-mono-container .breadcrumb .bc-sep { color: var(--yry-text3); opacity: var(--alpha-deep); -webkit-user-select: none; user-select: none; }
 .yry-mono-container .breadcrumb .bc-current { color: var(--yry-text2); font-weight: 500; }
 
 /* ── Cross-nav (mono theme) ──────────────────────────────────────────── */
@@ -137,13 +137,13 @@ body {
   margin-bottom: 1.25rem; flex-wrap: wrap;
 }
 .yry-mono-container .cross-link { color: var(--yry-link); font-size: 0.76rem; text-decoration: none; padding: 3px 10px; border-radius: 4px; transition: color 0.15s, background 0.15s; }
-.yry-mono-container .cross-link:hover { color: var(--yry-link-hover); background: rgba(251,191,36,0.06); }
+.yry-mono-container .cross-link:hover { color: var(--yry-link-hover); background: rgba(var(--yry-amber-bright-rgb), 0.06); }
 .yry-mono-container .cross-link.on { color: var(--yry-link-hover); font-weight: 600; cursor: default; }
 .yry-mono-container .cross-sep { color: var(--yry-text3); font-size: 0.5rem; opacity: 0.35; -webkit-user-select: none; user-select: none; }
 
 /* ── Cross-nav overrides (mono theme uses different link colors) ────────── */
 .yry-mono-container .yry-cross-link { color: var(--yry-link); font-size: 0.76rem; }
-.yry-mono-container .yry-cross-link:hover { color: var(--yry-link-hover); background: rgba(251,191,36,0.06); }
+.yry-mono-container .yry-cross-link:hover { color: var(--yry-link-hover); background: rgba(var(--yry-amber-bright-rgb), 0.06); }
 .yry-mono-container .yry-cross-link.on { color: var(--yry-link-hover); cursor: default; }
 .yry-mono-container .yry-cross-sep { color: var(--yry-text3); }
 
@@ -164,7 +164,7 @@ body {
 }
 .yry-mono-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(148,163,184,.2);
+  border-color: rgba(var(--yry-mono-text2-rgb), 0.2);
   box-shadow: var(--yry-shadow-lg);
 }
 
@@ -172,7 +172,7 @@ body {
   transition: border-color .2s, box-shadow .2s;
 }
 .yry-diagram-wrap:hover {
-  border-color: rgba(148,163,184,.15);
+  border-color: rgba(var(--yry-mono-text2-rgb), var(--alpha-soft));
 }
 
 /* ── Responsive ─────────────────────────────────────────────────────────── */

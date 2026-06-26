@@ -159,7 +159,7 @@ export function buildGradeSparkline(/** @type {any[]} */ history) {
     const color = gradeColors[h.grade] || "#666";
     const last = i === sampled.length - 1;
     const size = last ? "10px" : "6px";
-    return `<span class="h-grade-dot" style="--color:${color};--size:${size}" title="${h.grade} 级 · ${h.composite} 分 · ${h.timestamp?.slice(0,10) || ""}"></span>`;
+    return `<span class="h-grade-dot" style="--color:${color};--size:${size}" title="${h.grade} 级 · ${h.composite} 分"></span>`;
   }).join("");
 
   return `<div class="h-grade-spark">${dots}</div>`;
@@ -415,7 +415,7 @@ export function buildAnomalyAlertHTML(/** @type {any} */ analysis) {
   <div class="h-rt-anomaly">
     <span class="h-rt-anomaly-label">🔍 检测到 ${analysis.anomalies.length} 个异常评分点:</span>
     ${analysis.anomalies.slice(0, 5).map((/** @type {any} */ a) =>
-      `<span class="h-rt-anomaly-item">${a.date || "—"}: <b>${a.value}</b> 分</span>`
+      `<span class="h-rt-anomaly-item"><b>${a.value}</b> 分</span>`
     ).join("")}
     <span class="h-rt-anomaly-hint">(偏离典型值超过 3.5× 中位绝对偏差)</span>
   </div>`;
@@ -594,7 +594,7 @@ export function buildBenchmarkHTML(/** @type {any} */ benchmarks) {
 <div class="h-rt-bench-cell">
 <div class="h-rt-bench-lbl">历史最佳</div>
 <div class="h-rt-bench-val best">${bm.best.score}</div>
-<div class="h-rt-bench-sub">${bm.best.date} · ${bm.best.grade}级</div>
+<div class="h-rt-bench-sub">${bm.best.grade}级</div>
 </div>
 <div class="h-rt-bench-cell">
 <div class="h-rt-bench-lbl">历史平均</div>
@@ -604,7 +604,7 @@ export function buildBenchmarkHTML(/** @type {any} */ benchmarks) {
 <div class="h-rt-bench-cell">
 <div class="h-rt-bench-lbl">历史最差</div>
 <div class="h-rt-bench-val worst">${bm.worst.score}</div>
-<div class="h-rt-bench-sub">${bm.worst.date} · ${bm.worst.grade}级</div>
+<div class="h-rt-bench-sub">${bm.worst.grade}级</div>
 </div>
 <div class="h-rt-bench-cell">
 <div class="h-rt-bench-lbl">百分位</div>

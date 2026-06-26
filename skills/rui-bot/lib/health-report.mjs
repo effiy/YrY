@@ -18,7 +18,7 @@ import { HEALTH_SCORING_DIMENSIONS } from "../../../lib/constants.mjs";
 import { categoryScores, rankDimensionInfluence, generateExecutiveSummary, generateScoreReport } from "../../../lib/scoring.mjs";
 
 import {
-  nowChinese, nowDate, getPreviousScore, getHealthTrend,
+  nowDate, getPreviousScore, getHealthTrend,
   buildGradeSparkline, getDimensionHistory, dimTrendIcon,
   listReportFiles, pickLatestReportsByDate, removeReportsForDate,
   buildEnhancedTrendAnalysis, buildTrendSummaryHTML, buildAnomalyAlertHTML,
@@ -51,7 +51,6 @@ import { scoreStatus, PASS_THRESHOLD, WARN_THRESHOLD } from "./bot-health-analys
 import { writeJson } from "../../../lib/fs.mjs";
 
 export function generateHealthReport(/** @type {any} */ hr) {
-  const ts = nowChinese();
   const reportDate = nowDate();
   const filename = `health-${reportDate}.html`;
 
@@ -63,7 +62,7 @@ export function generateHealthReport(/** @type {any} */ hr) {
     const trendIcon = diff > 3 ? "📈" : diff < -3 ? "📉" : "📊";
     const trendLabel = diff > 3 ? `提升 ${diff} 分` : diff < -3 ? `下降 ${Math.abs(diff)} 分` : "持平";
     const trendTier = diff > 3 ? "pass" : diff < -3 ? "fail" : "neutral";
-    trendHtml = `<div class="h-hero-stat"><span class="h-hs-icon">${trendIcon}</span> 对比上次 (${prev.date}): <span class="h-hs-val ${trendTier}">${trendLabel}</span></div>`;
+    trendHtml = `<div class="h-hero-stat"><span class="h-hs-icon">${trendIcon}</span> 对比上次: <span class="h-hs-val ${trendTier}">${trendLabel}</span></div>`;
   }
 
   const compScores = hr.compScores;
@@ -132,7 +131,6 @@ export function generateHealthReport(/** @type {any} */ hr) {
     prevPeriod,
     archResult,
     diagTriggered: hr.diagnostics?.triggered?.length || 0,
-    reportDate,
     title: "YrY 项目健康评分报告",
   });
 
@@ -269,7 +267,7 @@ export function generateHealthReport(/** @type {any} */ hr) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>健康报告 · ${nowDate()}</title>
+<title>健康报告</title>
 <link rel="stylesheet" href="${CDN_DEPTH}cdn/shared/index.css">
 <link rel="stylesheet" href="${CDN_DEPTH}cdn/theme/index.css">
 	<link rel="stylesheet" href="${CDN_DEPTH}cdn/shared-reports/index.css">
@@ -282,12 +280,12 @@ export function generateHealthReport(/** @type {any} */ hr) {
   <span class="h-bc-sep">/</span>
   <a href="${CDN_DEPTH}docs/健康报告/">🩺 健康报告</a>
   <span class="h-bc-sep">/</span>
-  <span class="h-bc-cur">${nowDate()}</span>
+  <span class="h-bc-cur">最新报告</span>
 </nav>
 
 <div class="h-header">
   <h1>🩺 项目健康报告</h1>
-  <div class="h-date">${ts} · 综合评估</div>
+  <div class="h-date">综合评估</div>
 </div>
 
 <div class="h-hero">
@@ -386,7 +384,7 @@ export function generateHealthReport(/** @type {any} */ hr) {
 </div>
 
 <div class="h-footer">
-  健康报告 · ${ts}<br>
+  健康报告<br>
   <span class="h-meta-tag">由 rui-bot health 自动生成 · </span>
   <a href="${CDN_DEPTH}docs/健康报告/">查看历史</a>
 </div>

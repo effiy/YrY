@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>健康报告索引</title>
+<link rel="stylesheet" href="../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../cdn/theme/index.css">
+	<link rel="stylesheet" href="../../cdn/shared-reports/index.css">
+</head>
+<body>
+<div class="c hri-c">
+
+<nav class="bc">
+  <a href="../../docs/index.html">📄 文档中心</a>
+  <span class="sep">/</span>
+  <span class="cur">🩺 健康报告</span>
+</nav>
+
+<div class="hd">
+  <h1>🩺 健康报告</h1>
+  <div class="desc">系统综合健康度量仪表板 — 覆盖 9 核心维度 + 7 工程成熟度评分 + D0-D8 诊断触发。每次运行自动生成 HTML 报告并持久化趋势数据至 <code>.memory/health-trend.jsonl</code>。</div>
+  <div class="meta"><span id="count">1</span> 份历史报告</div>
+</div>
+
+<div class="intro">
+  <strong>评估体系</strong>：<strong>9 核心维度</strong>（Token 安全、配置健康、机器人就绪、API 可达性、报告质量、格式规范、诊断引擎、Git 纪律、安全基线）+ <strong>7 工程成熟度</strong>（测试、类型、Lint、CI/CD、文档、依赖、Git 实践）<br>
+  <strong>诊断联动</strong>：评分过低自动触发 <strong>D0-D8</strong> 分级诊断 · 趋势数据输入自改进分析面板 · 企微通知推送<br>
+  <strong>生成命令</strong>：<code>node skills/rui-bot/send.mjs health --html</code>
+</div>
+
+<div class="yry-stats" id="stats">
+  <div class="yry-stat"><div class="yry-val info">1</div><div class="yry-lbl">报告总数</div></div>
+  <div class="yry-stat"><div class="yry-val pass">96</div><div class="yry-lbl">最新评分</div></div>
+  <div class="yry-stat"><div class="yry-val pass">A</div><div class="yry-lbl">最新等级</div></div>
+  <div class="yry-stat"><div class="yry-val info">20</div><div class="yry-lbl">评分维度</div></div>
+  <div class="yry-stat"><div class="yry-val warn">1</div><div class="yry-lbl">诊断触发</div></div>
+</div>
+
+<div class="card">
+  <h2>📋 报告历史</h2>
+  <table>
+    <thead><tr><th>日期</th><th>时间</th><th>评分</th><th>等级</th><th>诊断</th><th>操作</th></tr></thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<div class="links">
+  <a href="../../docs/自循环报告/">🔄 自循环报告</a>
+  <a href="../../docs/趋势报告/">📡 趋势报告</a>
+  <a href="../../docs/自我改进/">🧬 自我改进</a>
+  <a href="../../docs/故事任务面板/">📋 故事任务面板</a>
+  <a href="../../docs/index.html">📄 文档中心</a>
+</div>
+
+<div class="ft">
+  健康报告索引<br>
+  <span class="h-meta-tag">由 rui-bot health-report 自动生成 · 9 核心 + 7 工程维度 · D0-D8 诊断</span>
+</div>
+
+</div>
+<script>
+(async function() {
+  try {
+    const res = await fetch('reports.json');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const reports = await res.json();
+    document.getElementById('count').textContent = reports.length;
+
+    const tbody = document.getElementById('tbody');
+	    if (reports.length === 0) {
+	      tbody.appendChild(buildHealthEmptyRow());
+	    } else {
+	      reports.forEach((r) => {
+	        tbody.appendChild(buildHealthRow(r));
+	      });
+	    }
+	  } catch(e) {
+	    const tbodyErr = document.getElementById('tbody');
+	    tbodyErr.textContent = '';
+	    const trErr = document.createElement('tr');
+	    const tdErr = document.createElement('td');
+	    tdErr.colSpan = 6;
+	    const divErr = document.createElement('div');
+	    divErr.className = 'yry-empty';
+	    divErr.textContent = '加载失败: ' + e.message;
+	    tdErr.appendChild(divErr);
+	    trErr.appendChild(tdErr);
+	    tbodyErr.appendChild(trErr);
+	  }
+
+	  function buildHealthEmptyRow() {
+	    const tr = document.createElement('tr');
+	    const td = document.createElement('td');
+	    td.colSpan = 6;
+	    const div = document.createElement('div');
+	    div.className = 'yry-empty';
+	    div.textContent = '暂无报告';
+	    div.appendChild(document.createElement('br'));
+	    const span = document.createElement('span');
+	    span.style.cssText = 'font-size:.7rem;margin-top:8px;display:block';
+	    const code = document.createElement('code');
+	    code.textContent = 'node skills/rui-bot/send.mjs health --html 生成首份报告';
+	    span.appendChild(code);
+	    div.appendChild(span);
+	    td.appendChild(div);
+	    tr.appendChild(td);
+	    return tr;
+	  }
+
+	  function buildHealthRow(r) {
+	    const tr = document.createElement('tr');
+	    const scHtml = r.score ? '<span class="hri-td-s ' + (r.grade || '') + '">' + r.score + ' 分</span>' : '—';
+	    const gradeHtml = r.grade ? '<span class="yry-badge ' + (r.grade) + '">' + r.grade + ' 级</span>' : '—';
+	    const trigHtml = r.triggers !== null ? (r.triggers > 0 ? '<span class="h-trig-warn">' + r.triggers + '/8</span>' : '<span class="h-trig-pass">0/8</span>') : '—';
+	    const timeHtml = r.time && r.time !== '—' ? r.time : '—';
+
+	    const td1 = document.createElement('td');
+	    const a1 = document.createElement('a');
+	    a1.href = r.file;
+	    a1.textContent = '🩺 ' + r.date;
+	    td1.appendChild(a1);
+	    tr.appendChild(td1);
+
+	    const td2 = document.createElement('td');
+	    td2.textContent = timeHtml;
+	    tr.appendChild(td2);
+
+	    const td3 = document.createElement('td');
+	    td3.insertAdjacentHTML('beforeend', scHtml);
+	    tr.appendChild(td3);
+
+	    const td4 = document.createElement('td');
+	    td4.insertAdjacentHTML('beforeend', gradeHtml);
+	    tr.appendChild(td4);
+
+	    const td5 = document.createElement('td');
+	    td5.insertAdjacentHTML('beforeend', trigHtml);
+	    tr.appendChild(td5);
+
+	    const td6 = document.createElement('td');
+	    const a2 = document.createElement('a');
+	    a2.href = r.file;
+	    a2.textContent = '查看';
+	    td6.appendChild(a2);
+	    tr.appendChild(td6);
+
+	    return tr;
+	  }})();
+</script>
+</body>
+</html>
