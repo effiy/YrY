@@ -4,32 +4,7 @@
    ========================================================================== */
 
 (function() {
-  var SOURCE_ICONS = {
-    'github-trending': '🐙', 'oss-insight': '📊', 'trendshift': '📈', 'top-starred': '⭐', 'all': '📡'
-  };
-  var SOURCE_LABELS = {
-    'github-trending': 'GitHub Trending', 'oss-insight': 'OSS Insight', 'trendshift': 'TrendShift', 'top-starred': 'Top-Starred', 'all': '全量聚合'
-  };
-  var SOURCE_WEIGHTS = {
-    'github-trending': '35%', 'oss-insight': '20%', 'trendshift': '25%', 'top-starred': '20%', 'all': '100%'
-  };
-  var SOURCE_DESC = {
-    'github-trending': '每日/每周热门仓库，反映社区即时关注焦点。算法推荐 + 星标增速加权，权重最高',
-    'oss-insight': '开源项目深度分析，星标趋势 + 贡献者活跃度 + PR/Issue 频率。提供结构性视角',
-    'trendshift': '技术栈迁移追踪，监测框架/工具/平台的社区迁徙信号。迁移方向早期预警',
-    'top-starred': '三窗口 (7d/30d/90d) 星标排名，纯粹社区投票热度。与 Trending 互补，滞后 1 周期',
-    'all': '四源聚合加权合成。GitHub Trending 35% + TrendShift 25% + OSS Insight 20% + Top-Starred 20%'
-  };
-
-  var CAT_COLORS = {
-    'AI/LLM': '#a78bfa',
-    'Web/前端': '#60a5fa',
-    '后端/基础设施': '#22c55e',
-    'DevOps': '#f59e0b',
-    '编程语言': '#ec4899',
-    '安全': '#ef4444',
-    '其他': '#6e7072'
-  };
+  var SOURCE_ICONS, SOURCE_LABELS, SOURCE_WEIGHTS, SOURCE_DESC, CAT_COLORS, SOURCE_TECH_MAP;
 
   // Category evolution across 4 periods (based on known distribution + growth trends)
   function getCatEvolution() {
@@ -331,8 +306,7 @@
             '<div>报告日期: ' + (latest.date || '—') + ' · 维度: ' + (latest.dimTotal || '—') + '</div>' +
             '<div>诊断触发: ' + (latest.triggers > 0 ? '<span style="color:var(--yry-warn)">' + latest.triggers + ' 项</span>' : '<span style="color:var(--yry-pass)">无</span>') + '</div>' +
             '<div style="font-size:.64rem">联动: D5 趋势异常 → 影响架构技术选型评分 · D4 依赖过期与迁移信号联动</div>' +
-          '</div>' +
-          '<a href="../健康报告/" style="margin-left:auto;font-size:.72rem;color:#22d3ee;text-decoration:none;flex-shrink:0">查看健康报告 →</a>';
+          '</div>');
       })
       .catch(function() {});
   }
@@ -437,34 +411,6 @@
   function renderLifecycle(reports) {
     // Derive technology lifecycle from reports.json source-level trend signals
     // Maps data source activity to technology categories using keyword-based signal extraction
-    var SOURCE_TECH_MAP = {
-      "github-trending": [
-        { name: "LLM Agent 框架", eco: "AI/LLM", desc: "LangChain/LlamaIndex/CrewAI 等 Agent 编排框架", weight: 0.15 },
-        { name: "AI Coding 助手", eco: "AI/LLM", desc: "Copilot/Cursor/Codeium 类工具爆发增长", weight: 0.12 },
-        { name: "Vite / 构建工具", eco: "Web/前端", desc: "Webpack→Vite 迁移加速", weight: 0.08 },
-        { name: "Bun / 新运行时", eco: "编程语言", desc: "Bun/Deno 逐步侵蚀 Node.js 生态", weight: 0.07 },
-        { name: "Rust 工具链", eco: "编程语言", desc: "Rust 在 CLI/WebAssembly/系统工具持续扩张", weight: 0.09 },
-        { name: "OpenTelemetry", eco: "DevOps", desc: "可观测性标准统一趋势", weight: 0.06 },
-        { name: "WASM 边缘计算", eco: "后端/基础设施", desc: "WasmEdge/Cloudflare Workers 边缘运行时", weight: 0.07 }
-      ],
-      "trendshift": [
-        { name: "RAG 检索增强", eco: "AI/LLM", desc: "向量数据库 + LLM 检索增强方案趋于成熟", weight: 0.10 },
-        { name: "React Server Components", eco: "Web/前端", desc: "RSC 范式 Next.js/Remix 采用率持续上升", weight: 0.08 },
-        { name: "CSS-in-JS 替代", eco: "Web/前端", desc: "Tailwind CSS v4 / Panda CSS / StyleX 零运行时方案", weight: 0.06 },
-        { name: "GraphQL 联邦", eco: "后端/基础设施", desc: "GraphQL 联邦架构成熟", weight: 0.05 }
-      ],
-      "oss-insight": [
-        { name: "SBOM / 供应链安全", eco: "安全", desc: "软件物料清单和供应链安全工具", weight: 0.06 },
-        { name: "单体仓库工具", eco: "DevOps", desc: "Turborepo/Nx/Lerna 新版本推动 Monorepo 复兴", weight: 0.05 },
-        { name: "Zig 语言", eco: "编程语言", desc: "Zig 作为 C 竞争者开始出现", weight: 0.04 }
-      ],
-      "top-starred": [
-        { name: "LLM 工具链", eco: "AI/LLM", desc: "最热赛道持续爆发", weight: 0.12 },
-        { name: "向量数据库", eco: "AI/LLM", desc: "RAG 基础设施 Chroma/Pinecone/Weaviate", weight: 0.07 },
-        { name: "Docker/容器", eco: "DevOps", desc: "容器标准化增长转向编排层", weight: 0.06 }
-      ]
-    };
-
     // Group reports by source and date
     var sourceReports = {};
     var dates = [];
@@ -808,15 +754,24 @@
 
 
   // Main fetch
-  fetch('reports.json')
-    .then(function(r) { return r.ok ? r.json() : []; })
-    .then(function(reports) {
-      document.getElementById('count').textContent = reports.length + ' 份';
+  Promise.all([
+    fetch('reports.json').then(function(r) { return r.ok ? r.json() : []; }).catch(function() { return []; }),
+    fetch('trend-meta.json').then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; })
+  ]).then(function(results) {
+    var reports = results[0];
+    var meta = results[1] || {};
+    SOURCE_ICONS = meta.SOURCE_ICONS || {};
+    SOURCE_LABELS = meta.SOURCE_LABELS || {};
+    SOURCE_WEIGHTS = meta.SOURCE_WEIGHTS || {};
+    SOURCE_DESC = meta.SOURCE_DESC || {};
+    CAT_COLORS = meta.CAT_COLORS || {};
+    SOURCE_TECH_MAP = meta.SOURCE_TECH_MAP || {};
+    document.getElementById('count').textContent = reports.length + ' 份';
 
       if (!reports.length) {
         document.getElementById('tbody').textContent = '';
 
-        document.getElementById('tbody').insertAdjacentHTML('beforeend', '<tr><td colspan="7"><div class="empty">暂无趋势报告<br><span style="font-size:.7rem);margin-top:8px;display:block">运行 <code>node skills/rui-trends/rui-trends.mjs all</code> 生成首份报告</span></div></td></tr>';
+        document.getElementById('tbody').insertAdjacentHTML('beforeend', '<tr><td colspan="7"><div class="empty">暂无趋势报告<br><span style="font-size:.7rem;margin-top:8px;display:block">运行 <code>node skills/rui-trends/rui-trends.mjs all</code> 生成首份报告</span></div></td></tr>');
         renderHealthRef();
         renderCrossRefs();
         return;
@@ -984,8 +939,7 @@
           '<td>' + trendBadge + '</td>' +
           '<td><a href="' + (r.file || '#') + '">查看</a></td>' +
           '</tr>';
-      }).join('');
-
+      }).join(''));
       // Load health reference + cross refs
       renderHealthRef();
       renderCrossRefs();

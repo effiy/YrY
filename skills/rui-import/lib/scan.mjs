@@ -7,11 +7,12 @@ import { readdir } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
 import { DEFAULT_EXCLUDES } from "./config.mjs";
 
-export async function scanFiles(root, userExcludes) {
+export async function scanFiles(/** @type {string} */ root, /** @type {string[]} */ userExcludes) {
+  /** @type {string[]} */
   const result = [];
   const excludes = new Set([...DEFAULT_EXCLUDES, ...userExcludes]);
 
-  async function walk(dir) {
+  async function walk(/** @type {string} */ dir) {
     let entries;
     try { entries = await readdir(dir, { withFileTypes: true }); }
     catch { return; }
@@ -28,7 +29,7 @@ export async function scanFiles(root, userExcludes) {
   return result;
 }
 
-export function resolveRemotePath(localPath, root, projectRootName, prefix) {
+export function resolveRemotePath(/** @type {string} */ localPath, /** @type {string} */ root, /** @type {string} */ projectRootName, /** @type {string[]} */ prefix) {
   let rel = relative(root, localPath).split(sep).join("/").replace(/\s/g, "_");
   rel = projectRootName + "/" + rel;
 
@@ -38,7 +39,7 @@ export function resolveRemotePath(localPath, root, projectRootName, prefix) {
   return segments.join("/");
 }
 
-export function getTags(remotePath, _localPath, _projectRootName) {
+export function getTags(/** @type {string} */ remotePath, /** @type {string} */ _localPath, /** @type {string} */ _projectRootName) {
   const parts = remotePath.split("/");
   parts.pop();
   return parts;

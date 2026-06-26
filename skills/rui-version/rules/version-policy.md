@@ -1,3 +1,10 @@
+---
+paths:
+  - "skills/rui-version/**"
+  - "skills/rui-version/SKILL.md"
+description: "语义化版本管理的规则和策略"
+---
+
 # rui-version 版本策略
 
 > 语义化版本管理的规则和策略，独立于实现细节。

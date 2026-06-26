@@ -126,4 +126,4 @@ describe('rui-html skill', () => {
   });
 });
 
-const exitCode = await run();
+const _exitCode = await run();

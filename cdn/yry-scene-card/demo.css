@@ -1,0 +1,28 @@
+/* yry-scene-card/demo.css — showcase page styles */
+body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 920px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+    .demo-section {
+      margin: 20px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }

@@ -61,7 +61,7 @@ export function makeProgressBar(percent, width = 20) {
  * Compute progress percentage from current/total stage or step counts.
  * @returns {number|null}
  */
-export function computeProgressPercent(opts) {
+export function computeProgressPercent(/** @type {any} */ opts) {
   if (opts.currentStage && opts.totalStages) {
     const cs = parseInt(opts.currentStage, 10);
     const ts = parseInt(opts.totalStages, 10);
@@ -82,7 +82,7 @@ export function computeProgressPercent(opts) {
 /**
  * Truncate message to MAX_MSG_LENGTH, appending ... if truncated.
  */
-export function truncateMsg(msg) {
+export function truncateMsg(/** @type {string} */ msg) {
   return msg.length > MAX_MSG_LENGTH ? msg.slice(0, MAX_MSG_LENGTH - 3) + "..." : msg;
 }
 
@@ -91,7 +91,7 @@ export function truncateMsg(msg) {
  * Scans scene directories and determines completion + last activity.
  * @returns {{ totalScenes: number, completedScenes: number, lastActivity: string }|null}
  */
-export function computeStoryStats(projectRoot, storyName) {
+export function computeStoryStats(/** @type {string} */ projectRoot, /** @type {string} */ storyName) {
   const storyDir = join(projectRoot, STORY_PANEL_DIR, storyName);
   if (!existsSync(storyDir)) return null;
 
@@ -136,7 +136,7 @@ export function computeStoryStats(projectRoot, storyName) {
  * Build a rich visual pipeline block.
  * Returns an array of lines (no trailing newline).
  */
-export function buildRichBlock(opts, emoji) {
+export function buildRichBlock(/** @type {any} */ opts, /** @type {string} */ emoji) {
   const lines = [];
   const pct = computeProgressPercent(opts);
 
@@ -152,7 +152,7 @@ export function buildRichBlock(opts, emoji) {
   } else if (opts.stage) {
     lines.push(`│ ${opts.stage} ${emoji}`);
   } else {
-    lines.push(`│ ${STATUS_LABELS[opts.status] || "运行中"} ${emoji}`);
+    lines.push(`│ ${(/** @type {any} */ (STATUS_LABELS))[opts.status] || "运行中"} ${emoji}`);
   }
 
   if (opts.timing) {
@@ -171,7 +171,7 @@ export function buildRichBlock(opts, emoji) {
 /**
  * Build a verbose diagnostic summary block.
  */
-export function buildVerboseBlock(opts, projectRoot) {
+export function buildVerboseBlock(/** @type {any} */ opts, /** @type {string} */ projectRoot) {
   const lines = [];
   lines.push("┌─ 诊断概要 ──────────────────");
 
@@ -185,10 +185,11 @@ export function buildVerboseBlock(opts, projectRoot) {
     // Auto-compute light diagnostic summary when projectRoot available
     try {
       const diagResult = getDiagnosticResult(projectRoot);
-      if (diagResult.skip || diagResult.triggered.length === 0) {
+      const triggered = diagResult.triggered || [];
+      if (diagResult.skip || triggered.length === 0) {
         lines.push("│ D0-D8: 无异常");
       } else {
-        for (const d of diagResult.triggered) {
+        for (const d of triggered) {
           lines.push(`│ ${d.id}: ${d.label}`);
         }
       }
@@ -216,7 +217,7 @@ export function buildVerboseBlock(opts, projectRoot) {
 /**
  * Build a story statistics block.
  */
-export function buildStoryStatsBlock(stats, storyName, p0Count, p1Count, p2Count) {
+export function buildStoryStatsBlock(/** @type {any} */ stats, /** @type {string} */ storyName, /** @type {number} */ p0Count, /** @type {number} */ p1Count, /** @type {number} */ p2Count) {
   const lines = [];
   lines.push(`┌─ 故事统计: ${storyName} ────────`);
 
@@ -237,7 +238,7 @@ export function buildStoryStatsBlock(stats, storyName, p0Count, p1Count, p2Count
   return lines;
 }
 
-export function buildMessage(opts, projectName, projectRoot) {
+export function buildMessage(/** @type {any} */ opts, /** @type {string} */ projectName, /** @type {string} */ projectRoot) {
   // When raw content is provided, still enforce skill + command prefix
   if (opts.content) {
     // Unescape shell-passed newlines
@@ -252,8 +253,8 @@ export function buildMessage(opts, projectName, projectRoot) {
   }
 
   const lines = [`【${projectName}】`];
-  const emoji = STATUS_EMOJI[opts.status] || STATUS_EMOJI.complete;
-  const label = STATUS_LABELS[opts.status] || STATUS_LABELS.complete;
+  const emoji = (/** @type {any} */ (STATUS_EMOJI))[opts.status] || STATUS_EMOJI.complete;
+  const label = (/** @type {any} */ (STATUS_LABELS))[opts.status] || STATUS_LABELS.complete;
   const storyCtx = opts.story ? `故事 ${opts.story}` : "当前项目";
   const dateStr = nowDate();
 
@@ -355,7 +356,7 @@ export function buildMessage(opts, projectName, projectRoot) {
 /**
  * Build a health-check-specific notification message.
  */
-export function buildHealthNotification(hr, projectName) {
+export function buildHealthNotification(/** @type {any} */ hr, /** @type {string} */ projectName) {
   const lines = [`【${projectName}】`];
   const dateStr = nowDate();
 
@@ -367,7 +368,7 @@ export function buildHealthNotification(hr, projectName) {
 
   // Triggered diagnostics summary
   if (hr.diagnostics?.triggered?.length > 0) {
-    const diagSummary = hr.diagnostics.triggered.map((d) => `${d.id} ${d.label}`).join(", ");
+    const diagSummary = hr.diagnostics.triggered.map((/** @type {any} */ d) => `${d.id} ${d.label}`).join(", ");
     lines.push(`⚠️ 触发诊断: ${diagSummary}`);
   } else {
     lines.push(`✅ D0-D8: 全部通过`);
@@ -396,7 +397,7 @@ export function buildHealthNotification(hr, projectName) {
 /**
  * Build a health ALERT notification — more urgent format for below-threshold scores.
  */
-export function buildHealthAlertNotification(hr, projectName, threshold) {
+export function buildHealthAlertNotification(/** @type {any} */ hr, /** @type {string} */ projectName, /** @type {number} */ threshold) {
   const lines = [`【${projectName}】🚨 健康告警`];
   const dateStr = nowDate();
 
@@ -424,7 +425,7 @@ export function buildHealthAlertNotification(hr, projectName, threshold) {
 
   // Triggered diagnostics
   if (hr.diagnostics?.triggered?.length > 0) {
-    const diagSummary = hr.diagnostics.triggered.map((d) => `${d.id} ${d.label}`).join(", ");
+    const diagSummary = hr.diagnostics.triggered.map((/** @type {any} */ d) => `${d.id} ${d.label}`).join(", ");
     lines.push(`⚠️ 触发诊断: ${diagSummary}`);
   }
 

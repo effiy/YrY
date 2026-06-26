@@ -5,28 +5,9 @@
    ========================================================================== */
 
 (function() {
-  var DIAG_LABELS = {
-    D0: '基线偏离', D1: '效率退化', D2: '质量退化', D3: '复杂度增长',
-    D4: '流程退化', D5: '依赖退化', D6: '文档过时', D7: '配置漂移', D8: '架构退化'
-  };
-  var DIAG_DESCS = {
-    D0: '执行与基线冲突，哲学偏离',
-    D1: '阻断率偏高，管线执行效率下降',
-    D2: 'P0 密度上升，代码质量指标退化',
-    D3: '文件膨胀，圈复杂度超过阈值',
-    D4: 'Gate B 多轮回溯，交付失败率高',
-    D5: '依赖版本过期，工具调用失败率偏高',
-    D6: '文档与代码不一致，证据等级降级',
-    D7: '配置漂移，提案闭合率偏低',
-    D8: '架构范式违规，内核体积膨胀'
-  };
-  var DIM_LABELS = {
-    token: 'Token 安全', config: '配置健康', robots: '机器人就绪', api: 'API 可达',
-    reports: '报告质量', format: '格式规范', diagnostics: '诊断引擎', git: 'Git 纪律',
-    security: '安全基线', em_testing: '测试覆盖', em_types: '类型安全', em_linting: '代码检查',
-    em_cicd: 'CI/CD', em_docs: '文档质量', em_deps: '依赖管理', em_git: 'Git 实践',
-    comp_qual: '组件质量'
-  };
+  var DIAG_LABELS = {};
+  var DIAG_DESCS = {};
+  var DIM_LABELS = {};
 
   function scoreClr(s) { return s >= 90 ? 'var(--yry-pass)' : s >= 75 ? 'var(--yry-warn)' : 'var(--yry-fail)'; }
   function scoreGrade(s) { return s >= 90 ? 'A' : s >= 75 ? 'B' : s >= 60 ? 'C' : 'D'; }
@@ -74,29 +55,163 @@
 
   function renderComponentHealth(ch) {
     if (!ch) return '<div class="empty">暂无组件健康数据</div>';
+
+    // 1) 归一化四类组件数据 + 趋势
     var items = [
-      { key: 'skills', label: 'Skills', icon: '19', count: ch.skills.count, score: ch.skills.avgScore, desc: '技能规约' },
-      { key: 'agents', label: 'Agents', icon: '10', count: ch.agents.count, score: ch.agents.avgScore, desc: 'Agent 定义' },
-      { key: 'rules', label: 'Rules', icon: '16', count: ch.rules.count, score: ch.rules.avgScore, desc: '规则文件' },
-      { key: 'scripts', label: 'Scripts', icon: '51', count: ch.scripts.count, score: ch.scripts.avgScore, desc: '辅助脚本' }
-    ];
-    var html = '<div style="margin-bottom:14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">' +
-      '<span style="font-size:.78rem;color:var(--yry-text2)">总计 <strong style="color:var(--yry-accent)">' + ch.totalComponents + '</strong> 组件 · 综合均分 <strong style="color:' + scoreClr(ch.overallAvg) + '">' + ch.overallAvg + ' / ' + scoreGrade(ch.overallAvg) + ' 级</strong></span>' +
-      '</div>';
-    html += '<div class="comp-grid">';
-    html += items.map(function(item) {
+      { key: 'skills',  label: 'Skills',  icon: '🧩', desc: '技能规约 · SKILL.md', target: 'skills/*.md', diag: 'D6/D8' },
+      { key: 'agents',  label: 'Agents',  icon: '🤖', desc: 'Agent 定义 · AGENT.md', target: 'agents/*.md', diag: 'D0/D4' },
+      { key: 'rules',   label: 'Rules',   icon: '📋', desc: '规则文件 · *.md', target: 'rules/*.md',  diag: 'D7/D4' },
+      { key: 'scripts', label: 'Scripts', icon: '⚡', desc: '辅助脚本 · .mjs/.js', target: 'lib/*.mjs', diag: 'D1/D3' }
+    ].map(function(it) {
+      var d = ch[it.key] || { count: 0, avgScore: 0 };
+      var t = (ch.trends && ch.trends[it.key]) || {};
+      var hasBaseline = (t.olderAvg !== undefined && t.olderAvg !== null && (t.totalEntries || 0) > 0);
+      return { key: it.key, label: it.label, icon: it.icon, desc: it.desc, target: it.target, diag: it.diag,
+               count: d.count || 0, score: d.avgScore || 0, trend: t, hasBaseline: hasBaseline };
+    });
+
+    var totalCount  = ch.totalComponents || items.reduce(function(s, x) { return s + x.count; }, 0);
+    var totalRecent = items.reduce(function(s, x) { return s + (x.trend.recentEntries || 0); }, 0);
+    var totalEntries = items.reduce(function(s, x) { return s + (x.trend.totalEntries || 0); }, 0);
+    var overall = ch.overallAvg || 0;
+    var overallClr = scoreClr(overall);
+    var overallGrade = scoreGrade(overall);
+    var coveredCount = items.filter(function(x) { return x.count > 0; }).length;
+    var coveragePct = Math.round(coveredCount / items.length * 100);
+    var weakItems    = items.filter(function(x) { return x.count > 0 && x.score < 75; });
+    var emptyItems   = items.filter(function(x) { return x.count === 0; });
+    var lowActivity  = items.filter(function(x) {
+      return x.trend.totalEntries > 0 && (x.trend.recentEntries / x.trend.totalEntries) < 0.3;
+    });
+
+    // 2) 顶部 Hero：大分数 + 4 项关键指标
+    var heroHtml = '<div style="display:flex;align-items:stretch;gap:0;flex-wrap:wrap;margin-bottom:14px;border-radius:10px;overflow:hidden;border:var(--yry-border)">' +
+      '<div style="padding:16px 22px;background:linear-gradient(135deg,rgba(15,23,42,.7),rgba(15,23,42,.4));display:flex;align-items:center;gap:14px;min-width:200px">' +
+        '<div style="text-align:center">' +
+          '<div style="font-size:2.4rem;font-weight:800;line-height:1;color:' + overallClr + '">' + overall + '</div>' +
+          '<div style="margin-top:6px"><span class="badge ' + overallGrade + '">' + overallGrade + ' 级</span></div>' +
+        '</div>' +
+        '<div style="height:48px;width:1px;background:rgba(255,255,255,.08)"></div>' +
+        '<div>' +
+          '<div style="font-size:.7rem;color:var(--yry-text3)">综合均分</div>' +
+          '<div style="font-size:.64rem;color:var(--yry-text3);margin-top:2px">跨 4 组件域</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="padding:12px 20px;background:rgba(15,23,42,.3);display:flex;gap:24px;flex-wrap:wrap;flex:1;min-width:280px;align-items:center">' +
+        '<div><div style="font-size:1.3rem;font-weight:700;color:var(--yry-accent)">' + totalCount + '</div><div style="font-size:.6rem;color:var(--yry-text3);margin-top:2px">组件总数</div></div>' +
+        '<div><div style="font-size:1.3rem;font-weight:700;color:var(--yry-cyan)">' + coveredCount + '/4</div><div style="font-size:.6rem;color:var(--yry-text3);margin-top:2px">域覆盖率 · ' + coveragePct + '%</div></div>' +
+        '<div><div style="font-size:1.3rem;font-weight:700;color:var(--yry-pass)">' + totalRecent + '</div><div style="font-size:.6rem;color:var(--yry-text3);margin-top:2px">近期测量 / ' + totalEntries + ' 总</div></div>' +
+        '<div><div style="font-size:1.3rem;font-weight:700;color:' + (weakItems.length ? 'var(--yry-warn)' : 'var(--yry-pass)') + '">' + weakItems.length + '</div><div style="font-size:.6rem;color:var(--yry-text3);margin-top:2px">需关注组件</div></div>' +
+      '</div>' +
+    '</div>';
+
+    // 3) 组件分布条（按数量堆叠）
+    var distBar = totalCount > 0 ? items.map(function(it) {
+      var pct = it.count / totalCount * 100;
+      var clr = it.count > 0 ? 'var(--yry-accent)' : 'rgba(255,255,255,.04)';
+      return '<div title="' + it.label + ': ' + it.count + '" style="width:' + pct.toFixed(2) + '%;background:' + clr + ';height:100%;transition:width .4s"></div>';
+    }).join('') : '<div style="width:100%;background:rgba(255,255,255,.04);height:100%"></div>';
+    var distLegend = items.map(function(it) {
+      var pct = totalCount > 0 ? (it.count / totalCount * 100).toFixed(1) : '0';
+      return '<span style="display:inline-flex;align-items:center;gap:4px;margin-right:14px;font-size:.66rem;color:var(--yry-text3)">' +
+        '<span style="width:8px;height:8px;border-radius:2px;background:' + (it.count > 0 ? 'var(--yry-accent)' : 'rgba(255,255,255,.1)') + '"></span>' +
+        '<span>' + it.icon + ' ' + it.label + ' <strong style="color:var(--yry-text2)">' + it.count + '</strong> (' + pct + '%)</span>' +
+      '</span>';
+    }).join('');
+    var distHtml = '<div style="margin-bottom:14px">' +
+      '<div style="display:flex;justify-content:space-between;font-size:.64rem;color:var(--yry-text3);margin-bottom:4px">' +
+        '<span>组件分布 (按数量)</span>' +
+        '<span>总计 ' + totalCount + '</span>' +
+      '</div>' +
+      '<div style="display:flex;height:8px;border-radius:4px;overflow:hidden;background:rgba(255,255,255,.05)">' + distBar + '</div>' +
+      '<div style="margin-top:6px">' + distLegend + '</div>' +
+    '</div>';
+
+    // 4) 工具：趋势 + 活跃度渲染
+    function renderTrend(item) {
+      if (!item.hasBaseline) return '<span style="color:var(--yry-text3)">— 基线不足</span>';
+      var v = item.trend.trend;
+      if (v > 1) return '<span style="color:var(--yry-pass)">↑ +' + v + ' 分</span>';
+      if (v < -1) return '<span style="color:var(--yry-fail)">↓ ' + v + ' 分</span>';
+      return '<span style="color:var(--yry-text3)">→ 持平</span>';
+    }
+    function renderActivity(item) {
+      if (!item.trend.totalEntries) return '<span style="color:var(--yry-text3)">无测量</span>';
+      var r = item.trend.recentEntries || 0;
+      var tot = item.trend.totalEntries;
+      var pct = Math.round(r / tot * 100);
+      var clr = pct >= 60 ? 'var(--yry-pass)' : pct >= 30 ? 'var(--yry-warn)' : 'var(--yry-fail)';
+      return '<span style="color:var(--yry-text3)">活跃 <strong style="color:' + clr + '">' + r + '/' + tot + '</strong> (' + pct + '%)</span>';
+    }
+
+    // 5) 四类组件详情卡（5 字段：图标 + 评分 + 进度条 + 状态/路径 + 趋势/活跃度 + 关联诊断）
+    var cardsHtml = '<div class="comp-grid">' + items.map(function(item) {
       var g = scoreGrade(item.score);
       var clr = scoreClr(item.score);
-      return '<div class="comp-item">' +
-        '<div class="comp-icon">' + (item.key === 'skills' ? '🧩' : item.key === 'agents' ? '🤖' : item.key === 'rules' ? '📋' : '⚡') + '</div>' +
-        '<div style="font-weight:600;font-size:.84rem">' + item.label + '</div>' +
-        '<div class="comp-count">' + item.count + ' ' + item.desc + '</div>' +
-        '<div class="comp-score" style="color:' + clr + '">' + item.score + '<span style="font-size:.6rem;color:var(--yry-text3);margin-left:4px">/ ' + g + ' 级</span></div>' +
-        '<div class="comp-bar-wrap"><div class="comp-bar-fill" style="width:' + item.score + '%;background:' + clr + '"></div></div>' +
-        '</div>';
-    }).join('');
-    html += '</div>';
-    return html;
+      var empty = item.count === 0;
+      var status, statusClr;
+      if (empty)       { status = '未部署'; statusClr = 'var(--yry-text3)'; }
+      else if (item.score >= 90) { status = '优秀';   statusClr = 'var(--yry-pass)'; }
+      else if (item.score >= 75) { status = '稳定';   statusClr = 'var(--yry-pass)'; }
+      else if (item.score >= 60) { status = '待优化'; statusClr = 'var(--yry-warn)'; }
+      else                       { status = '需关注'; statusClr = 'var(--yry-fail)'; }
+
+      return '<div class="comp-item" style="' + (empty ? 'opacity:.65;' : '') + '">' +
+        '<div style="display:flex;align-items:center;gap:10px">' +
+          '<div class="comp-icon">' + item.icon + '</div>' +
+          '<div style="flex:1;min-width:0">' +
+            '<div style="font-weight:600;font-size:.84rem">' + item.label + '</div>' +
+            '<div class="comp-count">' + item.desc + '</div>' +
+          '</div>' +
+          '<div style="text-align:right">' +
+            '<div class="comp-score" style="color:' + (empty ? 'var(--yry-text3)' : clr) + '">' + (empty ? '—' : item.score) + '</div>' +
+            '<div style="font-size:.58rem;color:var(--yry-text3);margin-top:2px">' + (empty ? '无数据' : g + ' 级') + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="comp-bar-wrap"><div class="comp-bar-fill" style="width:' + (empty ? 0 : item.score) + '%;background:' + (empty ? 'var(--yry-text3)' : clr) + '"></div></div>' +
+        '<div style="display:flex;justify-content:space-between;font-size:.6rem;margin-top:2px">' +
+          '<span style="color:' + statusClr + '">● ' + status + '</span>' +
+          '<span style="color:var(--yry-text3)">' + item.count + ' 个 · 路径 ' + item.target + '</span>' +
+        '</div>' +
+        '<div style="display:flex;justify-content:space-between;font-size:.62rem;padding-top:6px;border-top:1px dashed rgba(255,255,255,.06);gap:8px">' +
+          '<span style="flex-shrink:0">' + renderTrend(item) + '</span>' +
+          '<span style="text-align:right">' + renderActivity(item) + '</span>' +
+        '</div>' +
+        (empty ? '' :
+          '<div style="font-size:.58rem;color:var(--yry-text3);margin-top:2px">关联诊断 <code style="color:var(--yry-text2)">' + item.diag + '</code></div>'
+        ) +
+      '</div>';
+    }).join('') + '</div>';
+
+    // 6) 行动建议（按优先级自动生成）
+    var recs = [];
+    if (weakItems.length) {
+      recs.push('<span style="color:var(--yry-warn)">⚠ 重点改进:</span> ' +
+        weakItems.map(function(x) {
+          return '<strong style="color:var(--yry-text2)">' + x.label + '</strong>(' + x.score + ' → ' + x.diag + ')';
+        }).join(' · '));
+    }
+    if (emptyItems.length) {
+      recs.push('<span style="color:var(--yry-text3)">ℹ️ 待补充:</span> ' +
+        emptyItems.map(function(x) { return x.label; }).join(' · ') +
+        ' 三个域尚无内容，建议先建立基础规约（参考 <code>skills/rui-yry/</code> 模板）');
+    }
+    if (lowActivity.length) {
+      recs.push('<span style="color:var(--yry-warn)">📉 测量偏低:</span> ' +
+        lowActivity.map(function(x) { return x.label; }).join(' · ') +
+        ' — 近期 5 周期测量占比 &lt; 30%，需增加健康检查频率');
+    }
+    if (recs.length === 0 && overall >= 90) {
+      recs.push('<span style="color:var(--yry-pass)">✓ 综合状态优秀</span> — 4 域均 ≥ 90 分，维持当前规约节奏即可');
+    } else if (recs.length === 0) {
+      recs.push('<span style="color:var(--yry-pass)">✓ 综合状态良好</span> — 所有域均 ≥ 75 分，关注评分较低项即可');
+    }
+    var recHtml = '<div style="margin-top:14px;padding:12px 16px;background:rgba(15,23,42,.3);border-radius:6px;border:var(--yry-border);font-size:.72rem;line-height:1.8">' +
+      '<div style="font-weight:600;color:var(--yry-text2);margin-bottom:4px;font-size:.7rem">📋 行动建议 · Action Items</div>' +
+      recs.map(function(r) { return '<div>' + r + '</div>'; }).join('') +
+    '</div>';
+
+    return heroHtml + distHtml + cardsHtml + recHtml;
   }
 
   function renderArchHealth(ah) {
@@ -265,10 +380,16 @@
     return html;
   }
 
-  fetch('summary.json')
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(data) {
-      if (!data) { document.getElementById('siCount').textContent = '数据不可用'; return; }
+  Promise.all([
+    fetch('summary.json').then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
+    fetch('self-improve-meta.json').then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; })
+  ]).then(function(results) {
+    var data = results[0];
+    var meta = results[1] || {};
+    DIAG_LABELS = meta.DIAG_LABELS || {};
+    DIAG_DESCS = meta.DIAG_DESCS || {};
+    DIM_LABELS = meta.DIM_LABELS || {};
+    if (!data) { document.getElementById('siCount').textContent = '数据不可用'; return; }
 
       var latest = data.latest || {};
       var dateRange = data.dateRange || {};
@@ -634,21 +755,115 @@
         el.insertAdjacentHTML('beforeend', html);
       })();
 
-      document.getElementById('dimGrid').textContent = '';
-      document.getElementById('dimGrid').insertAdjacentHTML('beforeend',  dimEntries.map(function(d) {
-        var g = scoreGrade(d.score);
-        var clr = scoreClr(d.score);
-        var avgHtml = d.avg !== undefined ? '<span class="dim-avg">周均 ' + d.avg + '</span>' : '';
-        var trendHtml = '';
-        if (d.trendVal !== undefined && d.trendVal > 10) trendHtml = '<span style="color:var(--yry-pass);font-size:.6rem">↑ +' + d.trendVal + '</span>';
-        else if (d.trendVal !== undefined && d.trendVal < -10) trendHtml = '<span style="color:var(--yry-fail);font-size:.6rem">↓ ' + d.trendVal + '</span>';
-        return '<div class="dim-item">' +
-          '<span class="dim-dot ' + g + '"></span>' +
-          '<span class="dim-name">' + (DIM_LABELS[d.dim] || d.dim) + '</span>' +
-          '<span class="dim-score" style="color:' + clr + '">' + d.score + '</span>' +
-          avgHtml + trendHtml +
-          '</div>';
-      }).join(''));
+      // ── Dimension Scores · Latest vs Weekly Avg ────────────────────────
+      (function() {
+        var grid = document.getElementById('dimGrid');
+        var summaryEl = document.getElementById('dimSummary');
+        if (!grid) return;
+
+        // 1. Pre-compute Δ = 最新 − 周均 + 等级分布 + 极值
+        var total = dimEntries.length;
+        var improved = 0, declined = 0, flat = 0, noAvg = 0;
+        var sumDelta = 0, avgDeltaCount = 0;
+        var gradeCounts = { A: 0, B: 0, C: 0, D: 0 };
+        var topGain = null, topLoss = null;
+        var lowestDim = null;
+
+        dimEntries.forEach(function(d) {
+          var g = scoreGrade(d.score);
+          gradeCounts[g]++;
+          if (!lowestDim || d.score < lowestDim.score) lowestDim = { name: DIM_LABELS[d.dim] || d.dim, score: d.score };
+
+          if (d.avg === undefined || d.avg === null) {
+            d.delta = null;
+            noAvg++;
+            return;
+          }
+          var delta = Math.round((d.score - d.avg) * 10) / 10;
+          d.delta = delta;
+          sumDelta += delta;
+          avgDeltaCount++;
+          if (delta > 0.5) {
+            improved++;
+            if (!topGain || delta > topGain.delta) topGain = { name: DIM_LABELS[d.dim] || d.dim, delta: delta };
+          } else if (delta < -0.5) {
+            declined++;
+            if (!topLoss || delta < topLoss.delta) topLoss = { name: DIM_LABELS[d.dim] || d.dim, delta: delta };
+          } else {
+            flat++;
+          }
+        });
+        var avgDelta = avgDeltaCount > 0 ? Math.round((sumDelta / avgDeltaCount) * 10) / 10 : 0;
+        var avgDeltaClr = avgDelta > 0.3 ? 'var(--yry-pass)' : avgDelta < -0.3 ? 'var(--yry-fail)' : 'var(--yry-text3)';
+        var avgDeltaSign = avgDelta > 0 ? '+' : '';
+
+        // 2. 顶部摘要条 (8 个统计单元)
+        if (summaryEl) {
+          var sHtml = '' +
+            '<div class="dim-summary-item"><span class="dim-summary-val">' + total + '</span><span class="dim-summary-lbl">维度总数</span></div>' +
+            '<div class="dim-summary-item"><span class="dim-summary-val" style="color:' + avgDeltaClr + '">' + avgDeltaSign + avgDelta + '</span><span class="dim-summary-lbl">周均 Δ</span></div>' +
+            '<div class="dim-summary-item"><span class="dim-summary-val" style="color:var(--yry-pass)">' + improved + '</span><span class="dim-summary-lbl">↑ 改善</span></div>' +
+            '<div class="dim-summary-item"><span class="dim-summary-val" style="color:var(--yry-fail)">' + declined + '</span><span class="dim-summary-lbl">↓ 退化</span></div>' +
+            '<div class="dim-summary-item"><span class="dim-summary-val" style="color:var(--yry-text3)">' + flat + '</span><span class="dim-summary-lbl">→ 持平</span></div>' +
+            '<div class="dim-summary-item"><span class="dim-summary-val" style="color:var(--yry-warn)">' + (gradeCounts.D + gradeCounts.C) + '</span><span class="dim-summary-lbl">C/D 级</span></div>' +
+            (topGain ? '<div class="dim-summary-item"><span class="dim-summary-val" style="color:var(--yry-pass);font-size:.94rem">+' + topGain.delta + '</span><span class="dim-summary-lbl">最大涨幅 · ' + topGain.name + '</span></div>' : '') +
+            (topLoss ? '<div class="dim-summary-item"><span class="dim-summary-val" style="color:var(--yry-fail);font-size:.94rem">' + topLoss.delta + '</span><span class="dim-summary-lbl">最大跌幅 · ' + topLoss.name + '</span></div>' : '') +
+            (lowestDim ? '<div class="dim-summary-item"><span class="dim-summary-val" style="color:' + scoreClr(lowestDim.score) + '">' + lowestDim.score + '</span><span class="dim-summary-lbl">最薄弱 · ' + lowestDim.name + '</span></div>' : '');
+          summaryEl.textContent = '';
+          summaryEl.insertAdjacentHTML('beforeend', sHtml);
+        }
+
+        // 3. 维度卡片 (按评分升序，薄弱维度优先展示)
+        grid.classList.add('dim-grid-rich');
+        grid.textContent = '';
+        grid.insertAdjacentHTML('beforeend', dimEntries.map(function(d) {
+          var g = scoreGrade(d.score);
+          var clr = scoreClr(d.score);
+          var label = DIM_LABELS[d.dim] || d.dim;
+
+          // Delta 徽章
+          var deltaBadge = '';
+          if (d.delta !== null) {
+            var dClr = d.delta > 0.5 ? 'var(--yry-pass)' : d.delta < -0.5 ? 'var(--yry-fail)' : 'var(--yry-text3)';
+            var dBg = d.delta > 0.5 ? 'rgba(34,197,94,.10)' : d.delta < -0.5 ? 'rgba(239,68,68,.10)' : 'rgba(255,255,255,.04)';
+            var dArrow = d.delta > 0.5 ? '↑' : d.delta < -0.5 ? '↓' : '→';
+            var dSign = d.delta > 0 ? '+' : '';
+            deltaBadge = '<span class="dim-delta" style="color:' + dClr + ';background:' + dBg + '" title="最新 − 周均">' + dArrow + ' ' + dSign + d.delta + '</span>';
+          } else {
+            deltaBadge = '<span class="dim-delta" style="color:var(--yry-text3);background:rgba(255,255,255,.04)">— 无均值</span>';
+          }
+
+          // 对比柱: 浅色 = 周均, 深色 = 最新 (重叠覆盖, 直观看出偏移方向)
+          var latestPct = Math.max(0, Math.min(100, d.score));
+          var avgPct = d.avg !== undefined ? Math.max(0, Math.min(100, d.avg)) : 0;
+          var barHtml = '<div class="dim-bar-wrap" title="最新 ' + d.score + ' / 周均 ' + (d.avg !== undefined ? d.avg : '—') + '">' +
+            '<div class="dim-bar-bg" style="width:' + avgPct + '%"></div>' +
+            '<div class="dim-bar-fg" style="width:' + latestPct + '%;background:' + clr + '"></div>' +
+            '</div>';
+
+          // 元信息行: 周均数值 + 趋势 (>10 才显示, 避免噪音)
+          var avgLabel = d.avg !== undefined ? '周均 ' + d.avg : '周均 —';
+          var trendLabel = '';
+          if (d.trendVal !== undefined && Math.abs(d.trendVal) > 10) {
+            var tClr = d.trendVal > 0 ? 'var(--yry-pass)' : 'var(--yry-fail)';
+            trendLabel = '<span class="dim-trend" style="color:' + tClr + '">趋势 ' + (d.trendVal > 0 ? '+' : '') + d.trendVal + '</span>';
+          }
+
+          return '<div class="dim-item dim-item-rich" data-dim="' + d.dim + '">' +
+            '<div class="dim-head">' +
+              '<span class="dim-dot ' + g + '"></span>' +
+              '<span class="dim-name">' + label + '</span>' +
+              '<span class="dim-score" style="color:' + clr + '">' + d.score + '</span>' +
+              deltaBadge +
+            '</div>' +
+            barHtml +
+            '<div class="dim-meta-row">' +
+              '<span>' + avgLabel + '</span>' +
+              trendLabel +
+            '</div>' +
+            '</div>';
+        }).join(''));
+      })();
 
       // Grade distribution from weekly summary
       var weekly = data.weekly && data.weekly[0];
@@ -1199,6 +1414,9 @@
       // ── Improvement potential (Tab 3) ───────────────────────────────
       (function() {
         var el = document.getElementById('improvePotential');
+        var legendEl = document.getElementById('ipLegend');
+        var distEl = document.getElementById('ipDist');
+        var qwEl = document.getElementById('ipQuickWins');
         if (!el) return;
         var ip = data.improvementPotential;
         if (!ip || !ip.ranking || ip.ranking.length === 0) {
@@ -1206,45 +1424,164 @@
           el.insertAdjacentHTML('beforeend', '<div class="empty">数据不足，无法计算改进潜力</div>');
           return;
         }
-        var topRanking = ip.ranking.slice(0, 8);
-        var html = '<div style="font-size:.72rem;color:var(--yry-text3);margin-bottom:10px">按 <strong>影响度 × 易修复度 × 紧迫度</strong> 综合排序，优先处理 Top 3 可获最大收益</div>';
-        html += '<div class="priority-grid">';
-        topRanking.forEach(function(r, i) {
+
+        var ranking = ip.ranking;
+        var top = ranking.slice(0, 8);
+        var dimLabel = function(key) { return DIM_LABELS[key] || key; };
+        var actionable = top.filter(function(r) { return r.roi > 0; });
+        var totalImpact = ranking.reduce(function(s, r) { return s + (r.impact || 0); }, 0);
+        var actionableImpact = actionable.reduce(function(s, r) { return s + (r.impact || 0); }, 0);
+        var top3 = top.slice(0, 3);
+        var top3Impact = top3.reduce(function(s, r) { return s + (r.impact || 0); }, 0);
+        var top3Pct = actionableImpact > 0 ? Math.round(top3Impact / actionableImpact * 100) : 0;
+        var maxROI = Math.max.apply(null, top.map(function(r) { return r.roi; }).concat([1]));
+        var maxImpact = Math.max.apply(null, top.map(function(r) { return r.impact; }).concat([1]));
+        var maxVol = Math.max.apply(null, top.map(function(r) { return r.volatility || 0; }).concat([1]));
+        var fallingCount = top.filter(function(r) { return r.trend === 'falling'; }).length;
+        var risingCount = top.filter(function(r) { return r.trend === 'rising'; }).length;
+        var stableCount = top.filter(function(r) { return r.trend === 'stable' || !r.trend; }).length;
+        var p0Count = top.filter(function(r, i) { return i < 3 && r.roi > 0; }).length;
+
+        // 1) 顶部 Hero：可改进维度 + 4 项关键指标
+        var heroHtml = '<div style="display:flex;align-items:stretch;gap:0;flex-wrap:wrap;margin-bottom:12px;border-radius:10px;overflow:hidden;border:var(--yry-border)">' +
+          '<div style="padding:14px 20px;background:linear-gradient(135deg,rgba(15,23,42,.7),rgba(15,23,42,.4));display:flex;align-items:center;gap:14px;min-width:180px">' +
+            '<div style="text-align:center">' +
+              '<div style="font-size:2.2rem;font-weight:800;line-height:1;color:var(--yry-accent)">' + actionable.length + '</div>' +
+              '<div style="margin-top:4px"><span class="badge pass">可改进</span></div>' +
+            '</div>' +
+            '<div style="height:46px;width:1px;background:rgba(255,255,255,.08)"></div>' +
+            '<div>' +
+              '<div style="font-size:.68rem;color:var(--yry-text3)">潜在总分收益</div>' +
+              '<div style="font-size:1rem;font-weight:700;color:var(--yry-cyan)">+' + totalImpact + ' 分</div>' +
+            '</div>' +
+          '</div>' +
+          '<div style="padding:10px 18px;background:rgba(15,23,42,.3);display:flex;gap:22px;flex-wrap:wrap;flex:1;min-width:280px;align-items:center">' +
+            '<div><div style="font-size:1.2rem;font-weight:700;color:var(--yry-pass)">+' + top3Impact + '</div><div style="font-size:.58rem;color:var(--yry-text3);margin-top:2px">Top3 总影响</div></div>' +
+            '<div><div style="font-size:1.2rem;font-weight:700;color:var(--yry-cyan)">' + top3Pct + '%</div><div style="font-size:.58rem;color:var(--yry-text3);margin-top:2px">占可改进收益</div></div>' +
+            '<div><div style="font-size:1.2rem;font-weight:700;color:var(--yry-fail)">' + p0Count + '</div><div style="font-size:.58rem;color:var(--yry-text3);margin-top:2px">P0 高优</div></div>' +
+            '<div><div style="font-size:1.2rem;font-weight:700;color:var(--yry-warn)">' + fallingCount + '↓</div><div style="font-size:.58rem;color:var(--yry-text3);margin-top:2px">趋势下行</div></div>' +
+          '</div>' +
+        '</div>';
+        if (legendEl) { legendEl.textContent = ''; legendEl.insertAdjacentHTML('beforeend', heroHtml); }
+
+        // 2) ROI 分布条：横向条形图按 ROI 比例
+        var distHtml = '<div style="padding:10px 14px;background:rgba(15,23,42,.3);border-radius:8px;border:var(--yry-border)">' +
+          '<div style="display:flex;justify-content:space-between;font-size:.66rem;color:var(--yry-text3);margin-bottom:6px">' +
+            '<span><strong style="color:var(--yry-text2)">ROI 分布</strong> · 按 ROI 比例堆叠</span>' +
+            '<span>Top ' + actionable.length + ' 维度合计 ROI <strong style="color:var(--yry-accent)">' + actionable.reduce(function(s,r){return s+r.roi;},0).toFixed(1) + '</strong></span>' +
+          '</div>' +
+          '<div style="display:flex;height:10px;border-radius:5px;overflow:hidden;background:rgba(255,255,255,.05)">' +
+          top.map(function(r, i) {
+            if (!r.roi) return '';
+            var pct = r.roi / actionable.reduce(function(s, x) { return s + x.roi; }, 0) * 100;
+            var clr = i === 0 ? 'var(--yry-fail)' : i < 3 ? 'var(--yry-warn)' : i < 5 ? 'var(--yry-cyan)' : 'var(--yry-accent)';
+            return '<div title="#' + (i+1) + ' ' + dimLabel(r.dim) + ' · ROI ' + r.roi + '" style="width:' + pct.toFixed(2) + '%;background:' + clr + ';height:100%;transition:width .4s"></div>';
+          }).join('') + '</div>' +
+          '<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:8px;font-size:.6rem;color:var(--yry-text3)">' +
+            '<span><span style="display:inline-block;width:8px;height:8px;background:var(--yry-fail);border-radius:2px;margin-right:3px;vertical-align:middle"></span>#1 (Top ROI)</span>' +
+            '<span><span style="display:inline-block;width:8px;height:8px;background:var(--yry-warn);border-radius:2px;margin-right:3px;vertical-align:middle"></span>#2-#3 (P0)</span>' +
+            '<span><span style="display:inline-block;width:8px;height:8px;background:var(--yry-cyan);border-radius:2px;margin-right:3px;vertical-align:middle"></span>#4-#5 (P1)</span>' +
+            '<span><span style="display:inline-block;width:8px;height:8px;background:var(--yry-accent);border-radius:2px;margin-right:3px;vertical-align:middle"></span>#6+ (P2)</span>' +
+          '</div>' +
+        '</div>';
+        if (distEl) { distEl.innerHTML = distHtml; }
+
+        // 3) Top 8 详细排序卡片（增强：3 维进度条 + 标签）
+        var cardsHtml = '<div style="font-size:.72rem;color:var(--yry-text3);margin:14px 0 8px"><strong style="color:var(--yry-text2)">📋 Top 8 详细列表</strong> · 点击维度名可跳转相关诊断</div>';
+        cardsHtml += '<div class="priority-grid">';
+        top.forEach(function(r, i) {
           var pri = i < 3 ? 'p0' : i < 5 ? 'p1' : 'p2';
           var prBadge = pri === 'p0' ? '<span class="badge fail">P0</span>' : pri === 'p1' ? '<span class="badge warn">P1</span>' : '<span class="badge info">P2</span>';
           var trendIcon = r.trend === 'rising' ? '↑' : r.trend === 'falling' ? '↓' : '→';
           var trendClr = r.trend === 'rising' ? 'var(--yry-pass)' : r.trend === 'falling' ? 'var(--yry-fail)' : 'var(--yry-text3)';
-          html += '<div class="priority-item ' + pri + '">' +
-            '<div class="priority-rank">#' + (i + 1) + '</div>' +
+          var trendLabel = r.trend === 'rising' ? '上行' : r.trend === 'falling' ? '下行' : '平稳';
+          var impactPct = (r.impact / maxImpact * 100).toFixed(0);
+          var volatPct = r.volatility ? Math.min(100, (r.volatility / maxVol * 100)).toFixed(0) : 0;
+          var fixScore = r.volatility ? Math.max(0, 100 - r.volatility).toFixed(0) : 0;
+          var action = r.impact >= 4 ? '⛔ 高优先级 · 预计提升综合评分 +' + r.impact + ' 分' :
+                       r.impact >= 2 ? '⚡ 中等优先级 · 建议本周修复 · 预估 +' + r.impact + ' 分' :
+                       r.impact >= 1 ? '📋 低优先级 · 可纳入下轮改进 · 预估 +' + r.impact + ' 分' :
+                       '✅ 已达标 · 无需改进';
+
+          cardsHtml += '<div class="priority-item ' + pri + '">' +
+            '<div class="priority-rank">' + (i + 1) + '</div>' +
             '<div class="priority-body">' +
-              '<div class="priority-title">' + r.dim + ' · <span style="color:' + scoreClr(r.score) + '">' + r.score + ' 分</span> ' + prBadge + '</div>' +
-              '<div class="priority-meta">' +
-                '<span>影响: <strong>' + r.impact + ' 分</strong></span>' +
-                '<span>波动性: ' + r.volatility + '</span>' +
-                '<span style="color:' + trendClr + '">趋势: ' + trendIcon + '</span>' +
-                '<span>ROI: <strong style="color:var(--yry-cyan)">' + r.roi + '</strong></span>' +
+              '<div class="priority-title">' + dimLabel(r.dim) + ' · <span style="color:' + scoreClr(r.score) + '">' + r.score + '</span> 分 ' + prBadge + '</div>' +
+              // ROI 总条
+              '<div style="margin-top:6px">' +
+                '<div style="display:flex;justify-content:space-between;font-size:.6rem;color:var(--yry-text3);margin-bottom:2px">' +
+                  '<span>ROI 综合</span>' +
+                  '<span><strong style="color:var(--yry-cyan)">' + r.roi + '</strong> / ' + maxROI.toFixed(1) + '</span>' +
+                '</div>' +
+                '<div style="height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden">' +
+                  '<div style="width:' + (r.roi / maxROI * 100).toFixed(0) + '%;height:100%;background:linear-gradient(90deg,var(--yry-cyan),var(--yry-accent));border-radius:3px"></div>' +
+                '</div>' +
               '</div>' +
-              '<div class="priority-action">' + (r.impact >= 5 ? '⛔ 高优先级 · 预计提升综合评分 ' + r.impact + ' 分' : r.impact >= 2 ? '⚡ 中等优先级 · 建议本周修复' : '📋 低优先级 · 可纳入下轮改进') + '</div>' +
+              // 3 维分量条
+              '<div style="margin-top:8px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:.58rem">' +
+                '<div>' +
+                  '<div style="display:flex;justify-content:space-between;color:var(--yry-text3);margin-bottom:2px">' +
+                    '<span>影响度</span><strong style="color:var(--yry-text2)">' + r.impact + '</strong>' +
+                  '</div>' +
+                  '<div style="height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden">' +
+                    '<div style="width:' + impactPct + '%;height:100%;background:var(--yry-pass)"></div>' +
+                  '</div>' +
+                '</div>' +
+                '<div>' +
+                  '<div style="display:flex;justify-content:space-between;color:var(--yry-text3);margin-bottom:2px">' +
+                    '<span>易修复 ' + fixScore + '%</span><strong style="color:var(--yry-text2)">' + r.volatility.toFixed(1) + '</strong>' +
+                  '</div>' +
+                  '<div style="height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden">' +
+                    '<div style="width:' + volatPct + '%;height:100%;background:var(--yry-cyan)"></div>' +
+                  '</div>' +
+                '</div>' +
+                '<div>' +
+                  '<div style="display:flex;justify-content:space-between;color:' + trendClr + ';margin-bottom:2px">' +
+                    '<span>趋势</span><strong>' + trendIcon + ' ' + trendLabel + '</strong>' +
+                  '</div>' +
+                  '<div style="height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden">' +
+                    '<div style="width:' + (r.trend === 'rising' ? 80 : r.trend === 'falling' ? 100 : 40) + '%;height:100%;background:' + trendClr + '"></div>' +
+                  '</div>' +
+                '</div>' +
+              '</div>' +
+              '<div class="priority-action">' + action + '</div>' +
             '</div>' +
             '</div>';
-        }).join('');
-        html += '</div>';
-
-        // Quick wins
-        if (ip.quickWins && ip.quickWins.length > 0) {
-          html += '<div style="margin-top:16px"><h2 style="font-size:.88rem;margin-bottom:8px">⚡ 快速改进项 (Quick Wins)</h2>';
-          html += '<div style="font-size:.72rem;color:var(--yry-text3);margin-bottom:8px">高影响 · 低波动 · 趋势稳定 — 修复后可立即提升评分</div>';
-          html += '<div class="ref-grid">';
-          ip.quickWins.forEach(function(qw) {
-            html += '<div class="ref-card" style="border-left:3px solid var(--yry-pass)">' +
-              '<strong style="color:var(--yry-pass)">' + qw.dim + '</strong> · 当前 ' + qw.score + ' 分<br>' +
-              '<span style="color:var(--yry-text2)">预计提升: +' + qw.estimatedGain + ' 分</span>' +
-              '</div>';
-          });
-          html += '</div></div>';
-        }
+        });
+        cardsHtml += '</div>';
         el.textContent = '';
-        el.insertAdjacentHTML('beforeend', html);
+        el.insertAdjacentHTML('beforeend', cardsHtml);
+
+        // 4) Quick Wins 区
+        if (ip.quickWins && ip.quickWins.length > 0) {
+          var realQW = ip.quickWins.filter(function(q) { return q.estimatedGain > 0; });
+          if (realQW.length > 0) {
+            var qwHtml = '<div style="margin-top:18px;padding:12px 14px;background:rgba(34,197,94,.06);border-radius:8px;border:1px solid rgba(34,197,94,.2)">' +
+              '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">' +
+                '<div style="font-size:.84rem;font-weight:600;color:var(--yry-pass)">⚡ 快速改进项 · Quick Wins</div>' +
+                '<div style="font-size:.62rem;color:var(--yry-text3)">高影响 · 低波动 · 立即可执行</div>' +
+              '</div>' +
+              '<div style="font-size:.68rem;color:var(--yry-text3);margin-bottom:10px">修复后可立即拉升评分 — 建议优先排入本周迭代</div>' +
+              '<div class="ref-grid">' +
+              realQW.map(function(qw) {
+                var g = qw.estimatedGain >= 5 ? 'pass' : qw.estimatedGain >= 2 ? 'warn' : 'info';
+                return '<div class="ref-card" style="border-left:3px solid var(--yry-pass);position:relative">' +
+                  '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">' +
+                    '<strong style="color:var(--yry-pass)">' + dimLabel(qw.dim) + '</strong>' +
+                    '<span class="badge ' + g + '">+' + qw.estimatedGain + '</span>' +
+                  '</div>' +
+                  '<div style="font-size:.64rem;color:var(--yry-text3)">当前 <strong style="color:var(--yry-text2)">' + qw.score + '</strong> 分 · 修复影响 <strong style="color:var(--yry-cyan)">' + qw.impact + '</strong></div>' +
+                '</div>';
+              }).join('') +
+              '</div>' +
+            '</div>';
+            if (qwEl) { qwEl.innerHTML = qwHtml; }
+          } else {
+            if (qwEl) { qwEl.innerHTML = '<div style="margin-top:14px;padding:10px 14px;background:rgba(34,197,94,.06);border-radius:6px;font-size:.72rem;color:var(--yry-text3);border:1px dashed rgba(34,197,94,.2)">✓ 当前无快速改进项 — 所有高 ROI 维度已纳入 Top 8 排序</div>'; }
+          }
+        } else {
+          if (qwEl) { qwEl.innerHTML = ''; }
+        }
       })();
 
     })
@@ -1271,8 +1608,7 @@
           '<div>报告日期: ' + (latest.date || '—') + '</div>' +
           '<div>诊断触发: ' + ((latest.triggers || 0) > 0 ? '<span style="color:var(--yry-warn)">' + latest.triggers + ' 项</span>' : '<span style="color:var(--yry-pass)">无</span>') + '</div>' +
           '<div>健康与自改进联动: 健康趋势异常 → 自改进闭环诊断触发 → 改进 → 评估</div>' +
-        '</div>' +
-        '<a href="../健康报告/" style="margin-left:auto;font-size:.72rem;color:#22d3ee;text-decoration:none;flex-shrink:0">查看健康报告 →</a>');
+        '</div>');
     })
     .catch(function() {});
 })();

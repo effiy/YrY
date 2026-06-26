@@ -10,6 +10,7 @@ import { showPluginHelp } from "../../../lib/io.mjs";
 export const SKILL_NAME = "rui-story";
 export const SHOW_MIN_ARGS = 2;
 
+/** @returns {{ command: string, name?: string|null }} */
 export function parseArgs() {
   const args = process.argv.slice(NODE_ARGV_OFFSET);
   if (args.length === 0) return { command: "overview" };
@@ -38,6 +39,8 @@ export function parseArgs() {
 
   console.error(`rui-story: 未知命令 "${cmd}"，使用 --help 查看帮助`);
   process.exit(1);
+  // Unreachable, but ensures TS sees a definite return type
+  return { command: "unknown" };
 }
 
 export function showHelp() {

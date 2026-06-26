@@ -1,0 +1,7 @@
+/* 计划清单 template — page-specific overrides */
+.yry-container{max-width:960px;padding:40px 24px 80px}
+.st-bar{margin-bottom:24px}
+.st-tab{padding:8px 18px;font-size:0.82rem}
+.st-panel{padding-top:0;animation:none}
+.yry-section h2{font-size:0.95rem}
+.yry-section h2 .yry-dot{width:7px;height:7px}

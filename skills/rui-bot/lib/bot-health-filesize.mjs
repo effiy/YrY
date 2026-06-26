@@ -130,7 +130,7 @@ export function getFileSizeAnalysis(projectRoot) {
   const prev = getPreviousFileSizes();
   let growthPct = null;
   if (prev && prev.totalBytes > 0) {
-    growthPct = ((totalBytes - prev.totalBytes) / prev.totalBytes * 100).toFixed(1);
+    growthPct = Number(((totalBytes - prev.totalBytes) / prev.totalBytes * 100).toFixed(1));
   }
 
   // Scoring

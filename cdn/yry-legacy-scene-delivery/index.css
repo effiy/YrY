@@ -1,0 +1,22 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — yry-legacy-scene-delivery/index.css
+   旧版 rui-html 模板生成的「故事任务面板」场景交付页公共样式
+   字节级一致跨 35 份历史场景页 (cdn/故事任务面板/scenes/场景-N-*/[演示|源码|...].html)
+   现代模板已迁至组件化 CDN,本文件仅服务存量 HTML
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
+.scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+.delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
+.delivery-icon { font-size: 3rem; margin-bottom: 12px; }
+.delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
+.delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
+.delivery-story { font-size: .72rem; color: #4b5563; }
+.content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
+.content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
+.content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
+.nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+.nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
+.nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
+.nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
+.placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }

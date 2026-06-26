@@ -11,45 +11,45 @@ import { buildBreadcrumb, buildSceneNav } from './breadcrumb.mjs';
 */
 const rules = [
   // ── 标题 / breadcrumb / cross-link ──
-  [() => /场景 1[：:·] ?新人上手与开发指南/g,        (ctx) => ctx.title],
-  [() => /场景 1\s[：:·]\s?新人上手/g,              (ctx) => ctx.title],
-  [() => /场景 1[：:·]新人上手/g,                   (ctx) => ctx.title],
-  [() => /场景-1[：:·] ?新人上手与开发指南/g,       (ctx) => `${ctx.scenarioDir}:${ctx.title}`],
-  [() => /场景-1[·\-] ?新人上手与开发指南/g,        (ctx) => `${ctx.scenarioDir} · ${ctx.title}`],
-  [() => /<span class="bc-current">[^<]+<\/span>/g, (ctx) => `<span class="bc-current">${esc(ctx.title)}</span>`],
+  [() => /场景 1[：:·] ?新人上手与开发指南/g,        (/** @type {any} */ ctx) => ctx.title],
+  [() => /场景 1\s[：:·]\s?新人上手/g,              (/** @type {any} */ ctx) => ctx.title],
+  [() => /场景 1[：:·]新人上手/g,                   (/** @type {any} */ ctx) => ctx.title],
+  [() => /场景-1[：:·] ?新人上手与开发指南/g,       (/** @type {any} */ ctx) => `${ctx.scenarioDir}:${ctx.title}`],
+  [() => /场景-1[·-] ?新人上手与开发指南/g,        (/** @type {any} */ ctx) => `${ctx.scenarioDir} · ${ctx.title}`],
+  [() => /<span class="bc-current">[^<]+<\/span>/g, (/** @type {any} */ ctx) => `<span class="bc-current">${esc(ctx.title)}</span>`],
   [() => /<span class="bc-current">📝 审查[^<]*<\/span>/g, () => '<span class="bc-current">📝 审查</span>'],
-  [() => /class="cross-link on">([^<]+) v\d+<\/span>/g, (_c, _m, cap) => `class="cross-link on">${cap[0]}</span>`],
+  [() => /class="cross-link on">([^<]+) v\d+<\/span>/g, (/** @type {any} */ _c, /** @type {any} */ _m, /** @type {any[]} */ cap) => `class="cross-link on">${cap[0]}</span>`],
 
   // ── <title> 与 H1 ──
   [() => /<title>新人上手与开发指南\s*—\s*([^<]+)<\/title>/g,
-    (ctx, _m, cap) => `<title>${esc(ctx.title)} — ${cap[0]}</title>`],
+    (/** @type {any} */ ctx, /** @type {any} */ _m, /** @type {any[]} */ cap) => `<title>${esc(ctx.title)} — ${cap[0]}</title>`],
   [() => /<span class="accent">新人上手与开发指南<\/span>/g,
-    (ctx) => `<span class="accent">${esc(ctx.title)}</span>`],
+    (/** @type {any} */ ctx) => `<span class="accent">${esc(ctx.title)}</span>`],
   [() => /<span class="accent"> · 新人上手与开发指南<\/span>/g,
-    (ctx) => `<span class="accent"> · ${esc(ctx.title)}</span>`],
+    (/** @type {any} */ ctx) => `<span class="accent"> · ${esc(ctx.title)}</span>`],
   [() => /<code>场景-1 · 新人上手与开发指南<\/code>/g,
-    (ctx) => `<code>${esc(ctx.scenarioDir)} · ${esc(ctx.title)}</code>`],
+    (/** @type {any} */ ctx) => `<code>${esc(ctx.scenarioDir)} · ${esc(ctx.title)}</code>`],
   [() => /场景-1 · 新人上手与开发指南/g,
-    (ctx) => `${ctx.scenarioDir} · ${esc(ctx.title)}`],
+    (/** @type {any} */ ctx) => `${ctx.scenarioDir} · ${esc(ctx.title)}`],
   [() => />场景 1 · 新人上手与开发指南</g,
-    (ctx) => `>${esc(ctx.title)}<`],
-  [() => />场景-1\s*[·\-]\s*新人上手与开发指南</g,
-    (ctx) => `>${esc(ctx.scenarioDir)} · ${esc(ctx.title)}<`],
+    (/** @type {any} */ ctx) => `>${esc(ctx.title)}<`],
+  [() => />场景-1\s*[·-]\s*新人上手与开发指南</g,
+    (/** @type {any} */ ctx) => `>${esc(ctx.scenarioDir)} · ${esc(ctx.title)}<`],
   [() => />场景-1新人上手与开发指南</g,
-    (ctx) => `>${esc(ctx.scenarioDir)} · ${esc(ctx.title)}<`],
+    (/** @type {any} */ ctx) => `>${esc(ctx.scenarioDir)} · ${esc(ctx.title)}<`],
   [() => /scene: 新人上手与开发指南/g,
-    (ctx) => `scene: ${esc(ctx.title)}`],
+    (/** @type {any} */ ctx) => `scene: ${esc(ctx.title)}`],
 
   // ── 面包屑 + 场景导航：整块 <nav class="breadcrumb">…</nav> 重生成，
   //    若紧跟其后的 <nav class="scene-nav">…</nav> 也存在则一并替换；
   //    原本没有 scene-nav 的 6 个模板，会被注入一个新的 scene-nav。 ──
   [() => /<nav class="breadcrumb"[\s\S]*?<\/nav>(\s*<nav class="scene-nav">[\s\S]*?<\/nav>)?/,
-    (ctx) => `${buildBreadcrumb(ctx, ctx.artifact)}\n${buildSceneNav(ctx)}`],
+    (/** @type {any} */ ctx) => `${buildBreadcrumb(ctx, ctx.artifact)}\n${buildSceneNav(ctx)}`],
 
   // ── onboarding 特有术语 ──
   [() => /\bTOKEN_MISSING\b/g,                       () => 'ENV_NOT_SET'],
-  [() => /\brui-claude sync\b/g,                     (ctx) => `rui-${ctx.scenarioDir.split('-').pop()} sync`],
-  [() => /\brui-claude\b/g,                          (ctx) => `rui-${ctx.scenarioDir.split('-').pop()}`],
+  [() => /\brui-claude sync\b/g,                     (/** @type {any} */ ctx) => `rui-${ctx.scenarioDir.split('-').pop()} sync`],
+  [() => /\brui-claude\b/g,                          (/** @type {any} */ ctx) => `rui-${ctx.scenarioDir.split('-').pop()}`],
   [() => /首修任务/g,                                () => '首验证任务'],
 
   // ── 角色 / 审查人 ──
@@ -61,9 +61,9 @@ const rules = [
 
   // ── ISO 等评审标准 → 通用 ──
   [() => /基于 ISO\/IEC 25010 · Google Engineering Practices · YrY 知识规约 v4\.5/g,
-    (ctx) => `基于 ${esc(ctx.title)} 场景规约 v4.5`],
+    (/** @type {any} */ ctx) => `基于 ${esc(ctx.title)} 场景规约 v4.5`],
   [() => /本次审查综合采用[\s\S]*?<\/p>/,
-    (ctx) => `本次审查围绕「${esc(ctx.title)}」场景，结合内部规约 v4.5 与可观察信号，从 4 个核心维度、6 项关键发现展开系统评估。</p>`],
+    (/** @type {any} */ ctx) => `本次审查围绕「${esc(ctx.title)}」场景，结合内部规约 v4.5 与可观察信号，从 4 个核心维度、6 项关键发现展开系统评估。</p>`],
   // 删除 1-新人上手 的"引用与参考文献"块（通用标准引用，非场景相关）
   [() => /<h3>🔗 引用与参考文献[\s\S]*?<\/ul>\s*<\/div>/,
     () => ''],
@@ -74,7 +74,7 @@ const rules = [
  */
 function compileRules() {
   return rules.map(([mkPattern, repl], i) => {
-    const pattern = typeof mkPattern === 'function' ? mkPattern() : mkPattern;
+    const pattern = typeof mkPattern === 'function' ? (/** @type {() => RegExp} */ (mkPattern))() : mkPattern;
     return { i, pattern, repl };
   });
 }
@@ -96,7 +96,7 @@ export function scrubOnboarding(html, ctx) {
       const offset = rest[rest.length - 2];
       const full = rest[rest.length - 1];
       const captures = rest.slice(0, -2);
-      return repl(ctx, match, captures, offset, full);
+      return /** @type {(ctx: any, match: string, captures: string[], offset: number, full: string) => string} */ (repl)(ctx, match, captures, offset, full);
     });
   }
   return out;

@@ -16,23 +16,7 @@
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
 <link rel="stylesheet" href="../../../yry-a11y/index.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<style>
-  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
-  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
-  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
-  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
-  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
-  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
-  .delivery-story { font-size: .72rem; color: #4b5563; }
-  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
-  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
-  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
-  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
-  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
-  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
-  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
-</style>
+<link rel="stylesheet" href="../../../yry-legacy-scene-delivery/index.css">
 </head>
 <body>
 <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
@@ -54,7 +38,7 @@
 
   <div class="content-card">
     <h2>📄 最小页面骨架</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">&lt;!DOCTYPE html&gt;
+    <pre class="yry-auto-15271">&lt;!DOCTYPE html&gt;
 &lt;html lang="zh-CN"&gt;
 &lt;head&gt;
   &lt;meta charset="UTF-8"&gt;
@@ -79,18 +63,18 @@
 
   <div class="content-card">
     <h2>📐 加载顺序约束 · 5 条</h2>
-    <ol style="margin:0;padding-left:20px;font-size:.76rem;line-height:1.9;color:#a9b1d6">
-      <li><strong style="color:#22d3ee">CSS 优先</strong> — 所有 <code>&lt;link&gt;</code> 在 <code>&lt;script&gt;</code> 之前，确保样式先于内容渲染</li>
-      <li><strong style="color:#22d3ee">Vue 在组件前</strong> — <code>vue.global.prod.js</code> 必须在任何 Vue 组件 JS 之前加载</li>
-      <li><strong style="color:#22d3ee">shared/index.js 在组件前</strong> — <code>YrY.*</code> 工具 API 必须先于组件 JS 注册</li>
-      <li><strong style="color:#22d3ee">组件按依赖排序</strong> — 基础组件 (tag-chip → item-card → card-grid) 先于复合组件 (doc-layer)</li>
-      <li><strong style="color:#22d3ee">defer 策略</strong> — 非关键 JS 使用 <code>defer</code> 属性，不阻塞 DOM 解析</li>
+    <ol class="yry-auto-20518">
+      <li><strong class="yry-auto-48218">CSS 优先</strong> — 所有 <code>&lt;link&gt;</code> 在 <code>&lt;script&gt;</code> 之前，确保样式先于内容渲染</li>
+      <li><strong class="yry-auto-48218">Vue 在组件前</strong> — <code>vue.global.prod.js</code> 必须在任何 Vue 组件 JS 之前加载</li>
+      <li><strong class="yry-auto-48218">shared/index.js 在组件前</strong> — <code>YrY.*</code> 工具 API 必须先于组件 JS 注册</li>
+      <li><strong class="yry-auto-48218">组件按依赖排序</strong> — 基础组件 (tag-chip → item-card → card-grid) 先于复合组件 (doc-layer)</li>
+      <li><strong class="yry-auto-48218">defer 策略</strong> — 非关键 JS 使用 <code>defer</code> 属性，不阻塞 DOM 解析</li>
     </ol>
   </div>
 
   <div class="content-card">
     <h2>🔐 SRI 与 CDN 回退</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">&lt;script src="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/shared/index.js"
+    <pre class="yry-auto-15271">&lt;script src="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/shared/index.js"
         integrity="sha384-&lt;base64-hash&gt;"
         crossorigin="anonymous"&gt;&lt;/script&gt;
 &lt;script&gt;
@@ -98,20 +82,20 @@
     document.write('&lt;script src="/cdn-fallback/shared/index.js"&gt;&lt;\/script&gt;');
   }
 &lt;/script&gt;</pre>
-    <p style="margin-top:12px;font-size:.74rem;color:#a9b1d6">SRI 哈希生成：<code>openssl dgst -sha384 -binary file.js | openssl base64 -A</code> · CSP：<code>script-src 'self' jsdelivr.net unpkg.com</code></p>
+    <p class="yry-auto-54055">SRI 哈希生成：<code>openssl dgst -sha384 -binary file.js | openssl base64 -A</code> · CSP：<code>script-src 'self' jsdelivr.net unpkg.com</code></p>
   </div>
 
   <div class="content-card">
     <h2>🌐 HTTP/2 与关键路径优化</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.74rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">优化</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">原理</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">实施</th></tr></thead>
+    <table class="yry-auto-1645">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-38488">优化</th><th class="yry-auto-38488">原理</th><th class="yry-auto-38488">实施</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">多路复用</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">HTTP/2 单 TCP 流多请求</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">CDN 自动启用 · 无需改代码</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">103 Early Hints</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>Link</code> 头提前推送资源</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">CDN 配置 preload 头</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">Brotli 压缩</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">比 Gzip 小 15-20%</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>Accept-Encoding: br</code></td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">关键 CSS 内联</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">首屏样式 inline 到 HTML</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">内联 ~14KB critical CSS</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">资源合并</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">减少请求数</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">shared/index.css 合并基线</td></tr>
-        <tr><td style="padding:8px 12px">按需加载</td><td style="padding:8px 12px">非关键组件延迟</td><td style="padding:8px 12px">IntersectionObserver 动态注入</td></tr>
+        <tr><td class="yry-auto-40105">多路复用</td><td class="yry-auto-40105">HTTP/2 单 TCP 流多请求</td><td class="yry-auto-40105">CDN 自动启用 · 无需改代码</td></tr>
+        <tr><td class="yry-auto-40105">103 Early Hints</td><td class="yry-auto-40105"><code>Link</code> 头提前推送资源</td><td class="yry-auto-40105">CDN 配置 preload 头</td></tr>
+        <tr><td class="yry-auto-40105">Brotli 压缩</td><td class="yry-auto-40105">比 Gzip 小 15-20%</td><td class="yry-auto-40105"><code>Accept-Encoding: br</code></td></tr>
+        <tr><td class="yry-auto-40105">关键 CSS 内联</td><td class="yry-auto-40105">首屏样式 inline 到 HTML</td><td class="yry-auto-40105">内联 ~14KB critical CSS</td></tr>
+        <tr><td class="yry-auto-40105">资源合并</td><td class="yry-auto-40105">减少请求数</td><td class="yry-auto-40105">shared/index.css 合并基线</td></tr>
+        <tr><td class="yry-auto-70345">按需加载</td><td class="yry-auto-70345">非关键组件延迟</td><td class="yry-auto-70345">IntersectionObserver 动态注入</td></tr>
       </tbody>
     </table>
   </div>

@@ -16,23 +16,7 @@
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
 <link rel="stylesheet" href="../../../yry-a11y/index.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<style>
-  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
-  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
-  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
-  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
-  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
-  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
-  .delivery-story { font-size: .72rem; color: #4b5563; }
-  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
-  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
-  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
-  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
-  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
-  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
-  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
-</style>
+<link rel="stylesheet" href="../../../yry-legacy-scene-delivery/index.css">
 </head>
 <body>
 <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
@@ -54,31 +38,31 @@
 
   <div class="content-card">
     <h2>💡 演示 1 · 最小页面骨架加载</h2>
-    <p style="font-size:.76rem;line-height:1.7;color:#a9b1d6">在空 HTML 中按规范引入 5 类资源，观察 Network 面板的加载时序：</p>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">&lt;link rel="preconnect" href="https://unpkg.com" crossorigin&gt;
+    <p class="yry-auto-20394">在空 HTML 中按规范引入 5 类资源，观察 Network 面板的加载时序：</p>
+    <pre class="yry-auto-15271">&lt;link rel="preconnect" href="https://unpkg.com" crossorigin&gt;
 &lt;link rel="dns-prefetch" href="https://unpkg.com"&gt;
 &lt;link rel="preload" href="https://unpkg.com/vue@3/dist/vue.global.prod.js"
       as="script" crossorigin fetchpriority="high"&gt;
 &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/shared/index.css"&gt;
 &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/theme/index.css"&gt;</pre>
-    <p style="margin-top:12px;font-size:.74rem;color:#a9b1d6">预期：5 步顺序加载，FCP ≤ 310ms，TTI ≤ 480ms。</p>
+    <p class="yry-auto-54055">预期：5 步顺序加载，FCP ≤ 310ms，TTI ≤ 480ms。</p>
   </div>
 
   <div class="content-card">
     <h2>💡 演示 2 · 字体预加载与 FOUT 消除</h2>
-    <p style="font-size:.76rem;line-height:1.7;color:#a9b1d6">对比有无 <code>preload</code> 时字体的渲染表现：</p>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">/* 有 preload — FOUT 不可见 */
+    <p class="yry-auto-20394">对比有无 <code>preload</code> 时字体的渲染表现：</p>
+    <pre class="yry-auto-15271">/* 有 preload — FOUT 不可见 */
 &lt;link rel="preload" as="font" type="font/woff2" crossorigin
       href="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/fonts/JetBrainsMono-Regular.woff2"&gt;
 
 /* 无 preload — 先系统字体回退，woff2 到达后切换 (FOUT 可见) */</pre>
-    <p style="margin-top:12px;font-size:.74rem;color:#a9b1d6">验证：用 Chrome DevTools → Performance → filmstrip 检查首 5 帧字体渲染。</p>
+    <p class="yry-auto-54055">验证：用 Chrome DevTools → Performance → filmstrip 检查首 5 帧字体渲染。</p>
   </div>
 
   <div class="content-card">
     <h2>💡 演示 3 · CDN 回退与降级</h2>
-    <p style="font-size:.76rem;line-height:1.7;color:#a9b1d6">在 DevTools → Network → Block request URL 中屏蔽 <code>cdn.jsdelivr.net</code>，观察回退：</p>
-    <ol style="margin:8px 0 0;padding-left:20px;font-size:.76rem;line-height:1.9;color:#a9b1d6">
+    <p class="yry-auto-20394">在 DevTools → Network → Block request URL 中屏蔽 <code>cdn.jsdelivr.net</code>，观察回退：</p>
+    <ol class="yry-a2-7">
       <li>主 CDN 不可达 → <code>&lt;script onerror&gt;</code> 触发 → 切换到 unpkg</li>
       <li>unpkg 也不可达 → 自托管 <code>/cdn-fallback/</code> 兜底</li>
       <li>全部失败 → 静态 HTML 渲染 (内容可读，交互不可用)</li>
@@ -87,16 +71,16 @@
 
   <div class="content-card">
     <h2>💡 演示 4 · 性能预算对照</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.74rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">指标</th><th style="padding:8px 12px;text-align:right;color:#22d3ee;font-weight:600">预算</th><th style="padding:8px 12px;text-align:right;color:#22d3ee;font-weight:600">实测</th></tr></thead>
+    <table class="yry-auto-1645">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-38488">指标</th><th class="yry-auto-51957">预算</th><th class="yry-auto-51957">实测</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">FCP</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">≤ 310ms</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">~310ms</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">TTI</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">≤ 480ms</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">~480ms</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">总加载</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">≤ 625ms</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">~625ms</td></tr>
-        <tr><td style="padding:8px 12px">首屏请求</td><td style="padding:8px 12px;text-align:right">≤ 20</td><td style="padding:8px 12px;text-align:right">14</td></tr>
+        <tr><td class="yry-auto-40105">FCP</td><td class="yry-auto-11917">≤ 310ms</td><td class="yry-auto-11917">~310ms</td></tr>
+        <tr><td class="yry-auto-40105">TTI</td><td class="yry-auto-11917">≤ 480ms</td><td class="yry-auto-11917">~480ms</td></tr>
+        <tr><td class="yry-auto-40105">总加载</td><td class="yry-auto-11917">≤ 625ms</td><td class="yry-auto-11917">~625ms</td></tr>
+        <tr><td class="yry-auto-70345">首屏请求</td><td class="yry-auto-71132">≤ 20</td><td class="yry-auto-71132">14</td></tr>
       </tbody>
     </table>
-    <p style="margin-top:12px;font-size:.74rem;color:#a9b1d6">命令：<code>lighthouse https://your-page-url --only-categories=performance --view</code></p>
+    <p class="yry-auto-54055">命令：<code>lighthouse https://your-page-url --only-categories=performance --view</code></p>
   </div>
 
   <div class="nav-links">

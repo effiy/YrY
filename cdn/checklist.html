@@ -14,52 +14,9 @@
   <meta name="description" content="YrY CDN 清单聚合 — 125 组件全量清单 · 状态/类型/大小过滤 · 名称模糊搜索 · 跳转 demo · 数据源 components-manifest/index.json">
   <link rel="stylesheet" href="shared/index.css">
   <link rel="stylesheet" href="theme/index.css">
-  <style>
-    body { padding: 24px 20px 60px; max-width: 1200px; margin: 0 auto; line-height: 1.6; }
-    h1 { font-size: 1.4rem; color: var(--yry-accent, #22d3ee); margin: 0 0 4px; }
-    .sub { color: var(--yry-text3, #6b7280); font-size: .78rem; margin: 0 0 16px; }
-    .stats { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0 20px; }
-    .stat { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 8px; padding: 10px 14px; font-size: .76rem; }
-    .stat b { color: var(--yry-accent, #22d3ee); font-size: 1rem; margin-right: 4px; }
-    .stat.bytes b { color: #a78bfa; }
-    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; align-items: center; }
-    .toolbar input { flex: 1; min-width: 200px; background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.1); color: var(--yry-text2, #a9b1d6); border-radius: 6px; padding: 6px 10px; font-size: .78rem; }
-    .toolbar select { background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.1); color: var(--yry-text2, #a9b1d6); border-radius: 6px; padding: 6px 10px; font-size: .78rem; }
-    table { width: 100%; border-collapse: collapse; font-size: .76rem; }
-    th { text-align: left; padding: 10px 12px; background: rgba(30,41,59,.5); color: var(--yry-text2, #a9b1d6); font-weight: 600; position: sticky; top: 0; }
-    td { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,.04); color: var(--yry-text3, #6b7280); vertical-align: middle; }
-    tr:hover td { background: rgba(34,211,238,.04); }
-    .name { color: var(--yry-accent, #22d3ee); font-weight: 600; text-decoration: none; }
-    .name:hover { text-decoration: underline; }
-    .badge { font-size: .64rem; padding: 1px 6px; border-radius: 3px; font-weight: 600; display: inline-block; min-width: 38px; text-align: center; }
-    .b-vue { background: rgba(167,139,250,.15); color: #a78bfa; }
-    .b-vanilla { background: rgba(74,222,128,.15); color: #4ade80; }
-    .b-unknown { background: rgba(107,114,128,.15); color: #9ca3af; }
-    .b-ok { background: rgba(52,211,153,.15); color: #34d399; }
-    .b-bad { background: rgba(248,113,113,.15); color: #f87171; }
-    .files { display: flex; gap: 6px; flex-wrap: wrap; }
-    .file-link { font-size: .68rem; padding: 2px 8px; border-radius: 4px; text-decoration: none; border: 1px solid rgba(255,255,255,.08); color: var(--yry-text2, #a9b1d6); }
-    .file-link:hover { border-color: var(--yry-accent, #22d3ee); background: rgba(34,211,238,.08); color: var(--yry-accent, #22d3ee); }
-    .file-link.missing { opacity: .3; pointer-events: none; text-decoration: line-through; }
-    .src-link { font-size: .62rem; padding: 1px 5px; border-radius: 3px; text-decoration: none; border: 1px solid rgba(167,139,250,.3); color: #a78bfa; margin-left: 4px; }
-    .src-link:hover { background: rgba(167,139,250,.12); border-color: #a78bfa; }
-    .dep-link { color: #22d3ee; text-decoration: none; font-weight: 600; }
-    .dep-link:hover { text-decoration: underline; }
-    .dep-link.zero { color: var(--yry-text3, #6b7280); font-weight: 400; }
-    .links { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0; }
-    .links a { color: var(--yry-accent, #22d3ee); text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; font-size: .76rem; }
-    .links a:hover { border-color: var(--yry-accent); background: rgba(34,211,238,.08); }
-    .err { color: #f87171; font-size: .78rem; }
-    .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin: 12px 0 20px; }
-    .meta-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 8px; padding: 10px 14px; font-size: .74rem; }
-    .meta-card b { color: var(--yry-accent, #22d3ee); }
-    .meta-bar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; background: rgba(15,23,42,.55); border: 1px solid rgba(34,211,238,.2); border-radius: 8px; padding: 8px 14px; margin: 10px 0 16px; font-size: .74rem; color: var(--yry-text3, #6b7280); }
-    .meta-bar code { background: rgba(0,0,0,.3); padding: 1px 6px; border-radius: 3px; color: var(--yry-accent, #22d3ee); font-size: .72rem; }
-    .meta-bar .sep { color: rgba(255,255,255,.15); }
-    .meta-bar b { color: var(--yry-accent, #22d3ee); font-weight: 600; }
-    .meta-bar .refresh { margin-left: auto; background: rgba(34,211,238,.1); border: 1px solid rgba(34,211,238,.3); color: var(--yry-accent, #22d3ee); padding: 2px 10px; border-radius: 4px; cursor: pointer; font-size: .7rem; transition: all .15s; }
-    .meta-bar .refresh:hover { background: rgba(34,211,238,.2); }
-  </style>
+  <link rel="stylesheet" href="cdn-summary/page-base.css">
+<link rel="stylesheet" href="yry-cdn-demo/index.css">
+<link rel="stylesheet" href="yry-cdn-demo/checklist.css">
 </head>
 <body>
   <h1>📋 清单聚合 · 全卡片文件索引</h1>
@@ -72,22 +29,22 @@
     <span class="sep">·</span>
     <span id="metaTime">最后更新 —</span>
     <button class="refresh" onclick="location.reload()" title="重新拉取并刷新数据">🔄 刷新</button>
-    <span style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-left:8px"><kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">/</kbd> 搜索 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">t</kbd> 顶部 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">1-7</kbd> 跳转 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">0</kbd> 首页</span>
+    <span class="cd-text3-66-ml8"><kbd class="cd-code-chip">/</kbd> 搜索 · <kbd class="cd-code-chip">t</kbd> 顶部 · <kbd class="cd-code-chip">1-7</kbd> 跳转 · <kbd class="cd-code-chip">0</kbd> 首页</span>
   </div>
 
-  <div style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 16px;margin:0 0 16px;font-size:.74rem;color:var(--yry-text3,#6b7280);line-height:1.8">
-    <div style="color:var(--yry-text2,#a9b1d6);font-weight:600;margin-bottom:8px">📖 字段图例</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px 16px">
+  <div class="cd-x1-7">
+    <div class="cd-text2-bold-mb8">📖 字段图例</div>
+    <div class="cd-grid-fit">
       <div><span class="badge b-vue">Vue 3</span> · 基于 Vue 3 Custom Elements 定义，需 Vue 运行时</div>
       <div><span class="badge b-vanilla">Vanilla</span> · 原生 Web Components，无框架依赖</div>
       <div><span class="badge b-unknown">基类</span> · 页面/样式基类，无组件 meta</div>
       <div><span class="badge b-ok">✓ 完整</span> · HTML/JS/CSS 三件齐备</div>
       <div><span class="badge b-bad">✗ 缺失</span> · 文件不全，需补齐</div>
-      <div><span style="color:#22d3ee;font-weight:600">N</span> · 依赖数（声明的 yry-* 子组件数量）</div>
+      <div><span class="cd-x1-270">N</span> · 依赖数（声明的 yry-* 子组件数量）</div>
     </div>
-    <div style="margin-top:8px;padding:8px 12px;background:rgba(34,211,238,.06);border-left:3px solid var(--yry-accent,#22d3ee);border-radius:3px;color:var(--yry-text2,#a9b1d6);font-size:.72rem">
-      <b style="color:var(--yry-accent,#22d3ee)">状态判定</b>：HTML + JS + CSS 三件齐备 = 完整 · 缺任一 = 缺失<br>
-      <b style="color:var(--yry-accent,#22d3ee)">数据源</b>：<code>components-manifest/index.json</code> · 由 <code>scripts/build-manifest.mjs</code> 自动扫描 <code>cdn/yry-*/</code> 目录生成 · CI 每次提交触发更新
+    <div class="cd-accent-notice">
+      <b class="cd-accent">状态判定</b>：HTML + JS + CSS 三件齐备 = 完整 · 缺任一 = 缺失<br>
+      <b class="cd-accent">数据源</b>：<code>components-manifest/index.json</code> · 由 <code>scripts/build-manifest.mjs</code> 自动扫描 <code>cdn/yry-*/</code> 目录生成 · CI 每次提交触发更新
     </div>
   </div>
 
@@ -103,45 +60,45 @@
     <a href="components-manifest/index.html">📦 原始清单</a>
   </div>
 
-  <div style="background:rgba(15,23,42,.55);border:1px solid rgba(34,211,238,.2);border-radius:8px;padding:8px 14px;margin:0 0 14px;font-size:.72rem;color:var(--yry-text3,#6b7280);line-height:1.7">
-    <b style="color:var(--yry-accent,#22d3ee)">📑 页面大纲</b> ·
-    <a href="#stats" style="color:var(--yry-accent,#22d3ee);text-decoration:none">总览统计</a> ·
-    <a href="#quickSummary" style="color:var(--yry-accent,#22d3ee);text-decoration:none">Props/依赖/令牌摘要</a> ·
-    <a href="#crosstab" style="color:var(--yry-accent,#22d3ee);text-decoration:none">类型×状态矩阵</a> ·
-    <a href="#catRank" style="color:var(--yry-accent,#22d3ee);text-decoration:none">🏆 分类排行</a> ·
-    <a href="#meta" style="color:var(--yry-accent,#22d3ee);text-decoration:none">元数据卡片</a> ·
-    <a href="#table" style="color:var(--yry-accent,#22d3ee);text-decoration:none">组件清单表</a>
+  <div class="cd-surface-cyan">
+    <b class="cd-accent">📑 页面大纲</b> ·
+    <a href="#stats" class="cd-accent-link">总览统计</a> ·
+    <a href="#quickSummary" class="cd-accent-link">Props/依赖/令牌摘要</a> ·
+    <a href="#crosstab" class="cd-accent-link">类型×状态矩阵</a> ·
+    <a href="#catRank" class="cd-accent-link">🏆 分类排行</a> ·
+    <a href="#meta" class="cd-accent-link">元数据卡片</a> ·
+    <a href="#table" class="cd-accent-link">组件清单表</a>
   </div>
 
   <div id="stats" class="stats"></div>
-  <div id="distStack" style="display:flex;height:10px;border-radius:5px;overflow:hidden;margin:0 0 6px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06)"></div>
-  <div id="distLegend" style="display:flex;gap:14px;flex-wrap:wrap;font-size:.7rem;color:var(--yry-text3,#6b7280);margin:0 0 14px"></div>
-  <div id="quickSummary" style="display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 16px;font-size:.72rem"></div>
+  <div id="distStack" class="cd-x2-8"></div>
+  <div id="distLegend" class="cd-flex-gap14"></div>
+  <div id="quickSummary" class="cd-x1-165"></div>
   <div id="meta" class="meta-grid"></div>
 
-  <h2 id="crosstab" style="font-size:1rem;color:var(--yry-text2,#a9b1d6);margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.06)">🔀 类型 × 状态交叉分布矩阵</h2>
-  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">按类型（Vue / Vanilla / 基类）× 状态（完整 / 不完整）交叉统计，红色高亮的单元格代表不完整组件集中区，应优先补齐。</div>
-  <div id="crossTabMatrix" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:16px;overflow-x:auto"></div>
+  <h2 id="crosstab" class="cd-h2-section">🔀 类型 × 状态交叉分布矩阵</h2>
+  <div class="cd-meta-72">按类型（Vue / Vanilla / 基类）× 状态（完整 / 不完整）交叉统计，红色高亮的单元格代表不完整组件集中区，应优先补齐。</div>
+  <div id="crossTabMatrix" class="cd-x1-72"></div>
 
-  <h2 id="catRank" style="font-size:1rem;color:var(--yry-text2,#a9b1d6);margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.06)">🏆 分类组件数 Top 10 · 完整率指示</h2>
-  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">按功能类别聚合组件数 · 横向条形长度按组件数归一化 · 绿色填充表示完整率 · 红色缺口表示不完整组件数 · 点击分类名跳转至下方清单并自动套用过滤。</div>
-  <div id="catRankList" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:10px">加载中…</div>
+  <h2 id="catRank" class="cd-h2-section">🏆 分类组件数 Top 10 · 完整率指示</h2>
+  <div class="cd-meta-72">按功能类别聚合组件数 · 横向条形长度按组件数归一化 · 绿色填充表示完整率 · 红色缺口表示不完整组件数 · 点击分类名跳转至下方清单并自动套用过滤。</div>
+  <div id="catRankList" class="cd-surface-flat-flex-3">加载中…</div>
 
-  <h2 id="sizeBucket" style="font-size:1rem;color:var(--yry-text2,#a9b1d6);margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.06)">📦 组件体积分桶分布 · KB 直方图</h2>
-  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">按组件总体积（HTML + JS + CSS）分桶统计 · 颜色按桶深浅渐变 · 数据源 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">components-manifest/index.json</code>。</div>
-  <div id="sizeBucketList" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:10px">加载中…</div>
+  <h2 id="sizeBucket" class="cd-h2-section">📦 组件体积分桶分布 · KB 直方图</h2>
+  <div class="cd-meta-72">按组件总体积（HTML + JS + CSS）分桶统计 · 颜色按桶深浅渐变 · 数据源 <code class="cd-code-chip-68">components-manifest/index.json</code>。</div>
+  <div id="sizeBucketList" class="cd-surface-flat-flex-3">加载中…</div>
 
-  <h2 id="ceTop" style="font-size:1rem;color:var(--yry-text2,#a9b1d6);margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.06)">🔌 自定义元素 Top 10 · Props 维度排行</h2>
-  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">Vue Custom Elements 按 Props 数量降序 · 揭示 API 表面积最大的可复用组件 · 数据源 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">components-manifest/index.json</code>。</div>
-  <div id="ceTopList" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:10px">加载中…</div>
+  <h2 id="ceTop" class="cd-h2-section">🔌 自定义元素 Top 10 · Props 维度排行</h2>
+  <div class="cd-meta-72">Vue Custom Elements 按 Props 数量降序 · 揭示 API 表面积最大的可复用组件 · 数据源 <code class="cd-code-chip-68">components-manifest/index.json</code>。</div>
+  <div id="ceTopList" class="cd-surface-flat-flex-3">加载中…</div>
 
-  <h2 id="catProps" style="font-size:1rem;color:var(--yry-text2,#a9b1d6);margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.06)">📈 分类 Props 总数 Top 5 · API 表面积密度</h2>
-  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">按功能类别聚合 Props 总数与平均 Props/组件 · 揭示哪类组件 API 最丰富 · 帮助评估接口测试与文档负担。</div>
-  <div id="catPropsList" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px">加载中…</div>
+  <h2 id="catProps" class="cd-h2-section">📈 分类 Props 总数 Top 5 · API 表面积密度</h2>
+  <div class="cd-meta-72">按功能类别聚合 Props 总数与平均 Props/组件 · 揭示哪类组件 API 最丰富 · 帮助评估接口测试与文档负担。</div>
+  <div id="catPropsList" class="cd-x2-6">加载中…</div>
 
-  <h2 id="catComplete" style="font-size:1rem;color:var(--yry-text2,#a9b1d6);margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.06)">🎯 完整率按类别 · 哪类组件最成熟</h2>
-  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">按功能类别聚合完整率 · 完整/总数 + 待补数量 · 揭示哪类组件最成熟以及哪类需要补齐 · 数据源 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">components-manifest/index.json</code>。</div>
-  <div id="catCompleteList" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px">加载中…</div>
+  <h2 id="catComplete" class="cd-h2-section">🎯 完整率按类别 · 哪类组件最成熟</h2>
+  <div class="cd-meta-72">按功能类别聚合完整率 · 完整/总数 + 待补数量 · 揭示哪类组件最成熟以及哪类需要补齐 · 数据源 <code class="cd-code-chip-68">components-manifest/index.json</code>。</div>
+  <div id="catCompleteList" class="cd-x2-6">加载中…</div>
 
   <div class="toolbar" id="table">
     <input id="q" type="search" placeholder="🔍 过滤卡片名（支持模糊匹配）…" />
@@ -156,39 +113,33 @@
       <option value="complete">完整</option>
       <option value="incomplete">不完整</option>
     </select>
-    <select id="category" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);color:var(--yry-text2,#a9b1d6);border-radius:6px;padding:6px 10px;font-size:.78rem" title="按功能类别过滤（基于命名前缀启发式归类）">
+    <select id="category" class="cd-code-block" title="按功能类别过滤（基于命名前缀启发式归类）">
       <option value="">全部分类</option>
     </select>
-    <button id="exportCsv" style="background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.4);color:#22d3ee;padding:6px 12px;border-radius:6px;font-size:.76rem;cursor:pointer;transition:all .15s" title="导出当前过滤结果为 CSV">💾 导出 CSV</button>
-    <button id="compactView" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);color:var(--yry-text2,#a9b1d6);padding:6px 12px;border-radius:6px;font-size:.76rem;cursor:pointer;transition:all .15s" title="切换紧凑视图（减小行高与字号）">⊟ 紧凑</button>
-    <span id="count" style="font-size:.74rem;color:var(--yry-text3,#6b7280)"></span>
+    <button id="exportCsv" class="cd-cyan-btn" title="导出当前过滤结果为 CSV">💾 导出 CSV</button>
+    <button id="compactView" class="cd-x1-10" title="切换紧凑视图（减小行高与字号）">⊟ 紧凑</button>
+    <span id="count" class="cd-x2-34"></span>
   </div>
-  <style>
-    body.compact td { padding: 4px 8px !important; font-size: .7rem !important; }
-    body.compact th { padding: 6px 8px !important; font-size: .7rem !important; }
-    body.compact .badge { font-size: .56rem !important; padding: 0 4px !important; }
-    body.compact .file-link { font-size: .6rem !important; padding: 1px 5px !important; }
-  </style>
 
   <table>
     <thead>
       <tr>
-        <th style="width:180px">卡片名</th>
-        <th style="width:80px">类型</th>
-        <th style="width:80px">状态</th>
-        <th style="width:100px">分类</th>
+        <th class="cd-x1-295">卡片名</th>
+        <th class="cd-w80">类型</th>
+        <th class="cd-w80">状态</th>
+        <th class="cd-w100">分类</th>
         <th>文件清单</th>
-        <th style="width:100px">CSS 令牌</th>
-        <th style="width:80px">Props</th>
-        <th style="width:70px">依赖</th>
-        <th style="width:60px">操作</th>
+        <th class="cd-w100">CSS 令牌</th>
+        <th class="cd-w80">Props</th>
+        <th class="cd-x1-296">依赖</th>
+        <th class="cd-x1-297">操作</th>
       </tr>
     </thead>
     <tbody id="rows"></tbody>
   </table>
 
   <p id="err" class="err" hidden></p>
-  <footer class="agg-footer" style="margin-top:32px;padding:14px 18px;background:rgba(15,23,42,.4);border:1px solid rgba(255,255,255,.06);border-radius:10px;font-size:.72rem;color:var(--yry-text3,#6b7280);line-height:1.8"><div style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-bottom:6px"><b style="color:var(--yry-accent,#22d3ee)">YrY CDN · Checklist聚合</b><span style="color:rgba(255,255,255,.15)">·</span><span>v1.2.0 · 2026</span><span style="color:rgba(255,255,255,.15)">·</span><span>📊 数据源 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">components-manifest/index.json</code></span><span style="color:rgba(255,255,255,.15)">·</span><span>🛠 生成 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">scripts/build-manifest.mjs</code></span></div><div style="display:flex;flex-wrap:wrap;gap:8px 12px;margin-top:6px"><a href="index.html" title="CDN 首页 — 七卡聚合中心入口" style="color:var(--yry-accent,#22d3ee);text-decoration:none">🏠 CDN 首页</a><a href="../docs/index.html" style="color:var(--yry-accent,#22d3ee);text-decoration:none">🏠 文档中心</a><a href="../README.md" style="color:var(--yry-accent,#22d3ee);text-decoration:none">📖 README</a><span style="margin-left:auto;font-size:.66rem">键盘 <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">1-7</kbd> 跳转 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">0</kbd> 首页 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">/</kbd> 搜索 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">t</kbd> 顶部</span></div></footer>
+  <footer class="agg-footer" cd-surface-section"><div class="cd-flex-wrap-14"><b class="cd-accent">YrY CDN · Checklist聚合</b><span class="cd-faint">·</span><span>v1.2.0 · 2026</span><span class="cd-faint">·</span><span>📊 数据源 <code class="cd-code-chip-68">components-manifest/index.json</code></span><span class="cd-faint">·</span><span>🛠 生成 <code class="cd-code-chip-68">scripts/build-manifest.mjs</code></span></div><div class="cd-flex-wrap-12-mt6"><a href="index.html" title="CDN 首页 — 七卡聚合中心入口" class="cd-accent-link">🏠 CDN 首页</a><a href="../docs/index.html" class="cd-accent-link">🏠 文档中心</a><a href="../README.md" class="cd-accent-link">📖 README</a><span class="cd-text3-66-mlauto">键盘 <kbd class="cd-code-chip">1-7</kbd> 跳转 · <kbd class="cd-code-chip">0</kbd> 首页 · <kbd class="cd-code-chip">/</kbd> 搜索 · <kbd class="cd-code-chip">t</kbd> 顶部</span></div></footer>
 
   <script type="module">
     const MANIFEST = 'components-manifest/index.json';
@@ -215,7 +166,7 @@
         const f = c.files || {};
         const kindBadge = `<span class="badge b-${c.kind}">${KIND_LABEL[c.kind] || c.kind}</span>`;
         const statusBadge = `<span class="badge ${c.status === 'complete' ? 'b-ok' : 'b-bad'}">${c.status === 'complete' ? '✓ 完整' : '✗ 缺失'}</span>`;
-        const catBadge = `<span style="font-size:.6rem;padding:1px 5px;border-radius:3px;background:rgba(167,139,250,.12);color:#a78bfa;border:1px solid rgba(167,139,250,.2)" title="功能类别（启发式归类）">${catOf(c.name)}</span>`;
+        const catBadge = `<span class="cd-x1-55" title="功能类别（启发式归类）">${catOf(c.name)}</span>`;
         const files = fileLink(c.name, 'html', f.html?.exists, f.html?.size)
           + fileLink(c.name, 'js', f.js?.exists, f.js?.size)
           + fileLink(c.name, 'css', f.css?.exists, f.css?.size);
@@ -351,7 +302,7 @@
       const st = d.stats || {};
       const propTotal = all.reduce((s, c) => s + (c.props || []).length, 0);
       const depTotal = all.reduce((s, c) => s + (c.declaredDeps || []).length, 0);
-      document.getElementById('metaCount').innerHTML = `${total} 组件 · <b style="color:var(--yry-accent,#22d3ee)">${st.vue || 0}</b> Vue · <b style="color:var(--yry-accent,#22d3ee)">${st.vanilla || 0}</b> Vanilla · <b style="color:var(--yry-accent,#22d3ee)">${propTotal}</b> Props · <b style="color:var(--yry-accent,#22d3ee)">${depTotal}</b> 依赖`;
+      document.getElementById('metaCount').innerHTML = `${total} 组件 · <b class="cd-accent">${st.vue || 0}</b> Vue · <b class="cd-accent">${st.vanilla || 0}</b> Vanilla · <b class="cd-accent">${propTotal}</b> Props · <b class="cd-accent">${depTotal}</b> 依赖`;
       statsEl.innerHTML = [
         ['总卡片', st.total || total],
         ['Vue 3', st.vue || 0],
@@ -375,12 +326,12 @@
         { key: '页面/样式基类', n: baseN, color: '#22d3ee' }
       ];
       document.getElementById('distStack').innerHTML = DIST.map(d =>
-        `<div title="${d.key} · ${d.n} 个 · ${(d.n / distTotal * 100).toFixed(1)}%" style="flex:${d.n || 0.001};background:${d.color};position:relative">
-          ${d.n / distTotal >= 0.12 ? `<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:rgba(0,0,0,.7)">${d.n}</span>` : ''}
+        `<div title="${d.key} · ${d.n} 个 · ${(d.n / distTotal * 100).toFixed(1)}%" class="cd-hook-flex-bg" style="--flex:${d.n || 0.001};--color:${d.color}">
+          ${d.n / distTotal >= 0.12 ? `<span class="cd-overlay-badge">${d.n}</span>` : ''}
         </div>`
       ).join('');
       document.getElementById('distLegend').innerHTML = DIST.map(d =>
-        `<span><i style="width:10px;height:10px;border-radius:2px;display:inline-block;background:${d.color};margin-right:4px"></i>${d.key} <b style="color:var(--yry-text2,#a9b1d6)">${d.n}</b> · ${(d.n / distTotal * 100).toFixed(0)}%</span>`
+        `<span><i class="cd-hook-dot-10" style="--color:${d.color}"></i>${d.key} <b class="cd-text2">${d.n}</b> · ${(d.n / distTotal * 100).toFixed(0)}%</span>`
       ).join('');
       // 计算源码总字节
       let htmlBytes = 0, jsBytes = 0, cssBytes = 0;
@@ -413,9 +364,9 @@
         ['📏 平均 Props/组件', (totalProps / all.length).toFixed(1), '#f87171', null],
         ['🎨 平均令牌/组件', (totalTokens / all.length).toFixed(1), '#a78bfa', null]
       ].map(([l, v, c, filter]) =>
-        `<div data-filter="${filter || ''}" style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:8px;${filter ? 'cursor:pointer;transition:border-color .15s' : ''}" ${filter ? `title="点击过滤：${filter === 'with-deps' ? '仅显示有依赖的组件' : '按 ' + filter + ' 降序排序'}"` : ''}>
-           <b style="color:${c};font-size:.92rem">${v}</b>
-           <span style="color:var(--yry-text3,#6b7280);font-size:.7rem">${l}</span>
+        `<div data-filter="${filter || ''}" class="cd-y71" style="--v1:${filter ? 'cursor:pointer;transition:border-color .15s' : ''}" ${filter ? `title="点击过滤：${filter === 'with-deps' ? '仅显示有依赖的组件' : '按 ' + filter + ' 降序排序'}"` : ''}>
+           <b class="cd-y72" style="--v1:${c}">${v}</b>
+           <span class="cd-x1-240">${l}</span>
          </div>`).join('');
       // quickSummary 点击过滤
       document.querySelectorAll('#quickSummary > div[data-filter]').forEach(el => {
@@ -474,9 +425,9 @@
       const matrixEl = document.getElementById('crossTabMatrix');
       if (matrixEl) {
         const headerRow = `<tr>
-          <th style="padding:8px 12px;text-align:left;background:rgba(30,41,59,.5);color:var(--yry-text2,#a9b1d6);font-weight:600;border-bottom:1px solid rgba(255,255,255,.06)">类型 ↓ / 状态 →</th>
-          ${STATUSES.map(s => `<th style="padding:8px 12px;text-align:center;background:rgba(30,41,59,.5);color:${STATUS_META[s].color};font-weight:600;border-bottom:1px solid rgba(255,255,255,.06)">${STATUS_META[s].label}</th>`).join('')}
-          <th style="padding:8px 12px;text-align:center;background:rgba(30,41,59,.5);color:var(--yry-accent,#22d3ee);font-weight:600;border-bottom:1px solid rgba(255,255,255,.06)">合计</th>
+          <th class="cd-x1-35">类型 ↓ / 状态 →</th>
+          ${STATUSES.map(s => `<th class="cd-y73" style="--v1:${STATUS_META[s].color}">${STATUS_META[s].label}</th>`).join('')}
+          <th class="cd-x1-31">合计</th>
         </tr>`;
         const bodyRows = KINDS.map(k => {
           const cells = STATUSES.map(s => {
@@ -487,24 +438,24 @@
               : `rgba(52,211,153,${0.06 + ratio * 0.15})`;
             const border = arr.length > 0 && s === 'incomplete' ? 'border:1px solid rgba(248,113,113,.4)' : 'border:1px solid rgba(255,255,255,.04)';
             const title = arr.length ? `${KIND_META[k].label} × ${STATUS_META[s].label}\n${arr.join('\n')}` : `${KIND_META[k].label} × ${STATUS_META[s].label} · 空`;
-            return `<td style="padding:10px 12px;text-align:center;${border};background:${bg};color:${arr.length > 0 ? STATUS_META[s].color : 'var(--yry-text3,#6b7280)'};font-weight:${arr.length > 0 ? 700 : 400};cursor:pointer" title="${title}" data-kind="${k}" data-status="${s}">
-              <div style="font-size:1.1rem">${arr.length}</div>
-              ${arr.length > 0 ? `<div style="font-size:.6rem;color:var(--yry-text3,#6b7280);margin-top:2px">${(arr.length / all.length * 100).toFixed(1)}%</div>` : ''}
+            return `<td class="cd-y74" style="--v1:${border};--v2:${bg};--v3:${arr.length > 0 ? STATUS_META[s].color : 'var(--yry-text3,#6b7280)'};--v4:${arr.length > 0 ? 700 : 400}" title="${title}" data-kind="${k}" data-status="${s}">
+              <div class="cd-fs-1-1">${arr.length}</div>
+              ${arr.length > 0 ? `<div class="cd-x1-205">${(arr.length / all.length * 100).toFixed(1)}%</div>` : ''}
             </td>`;
           }).join('');
           return `<tr>
-            <td style="padding:8px 12px;color:${KIND_META[k].color};font-weight:600;background:rgba(30,41,59,.3);border-bottom:1px solid rgba(255,255,255,.04)">${KIND_META[k].label}</td>
+            <td class="cd-y75" style="--v1:${KIND_META[k].color}">${KIND_META[k].label}</td>
             ${cells}
-            <td style="padding:8px 12px;text-align:center;color:var(--yry-accent,#22d3ee);font-weight:700;background:rgba(34,211,238,.05);border-bottom:1px solid rgba(255,255,255,.04)">${kindTotals[k]}</td>
+            <td class="cd-x1-27">${kindTotals[k]}</td>
           </tr>`;
         }).join('');
         const totalRow = `<tr>
-          <td style="padding:8px 12px;color:var(--yry-accent,#22d3ee);font-weight:600;background:rgba(34,211,238,.08);border-top:2px solid rgba(34,211,238,.3)">合计</td>
-          ${STATUSES.map(s => `<td style="padding:8px 12px;text-align:center;color:${STATUS_META[s].color};font-weight:700;background:rgba(34,211,238,.05);border-top:2px solid rgba(34,211,238,.3)">${statusTotals[s]}</td>`).join('')}
-          <td style="padding:8px 12px;text-align:center;color:var(--yry-accent,#22d3ee);font-weight:700;background:rgba(34,211,238,.15);border-top:2px solid rgba(34,211,238,.3)">${all.length}</td>
+          <td class="cd-x1-51">合计</td>
+          ${STATUSES.map(s => `<td class="cd-y76" style="--v1:${STATUS_META[s].color}">${statusTotals[s]}</td>`).join('')}
+          <td class="cd-x1-32">${all.length}</td>
         </tr>`;
-        matrixEl.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:.78rem;min-width:500px">${headerRow}${bodyRows}${totalRow}</table>
-          <div style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-top:10px;line-height:1.6">点击任意单元格按该组合过滤组件清单 · <span style="color:#f87171">红色背景</span>代表不完整组件集中区 · 颜色深浅表示该单元相对最大单元的占比</div>`;
+        matrixEl.innerHTML = `<table class="cd-x1-171">${headerRow}${bodyRows}${totalRow}</table>
+          <div class="cd-text3-66-mt10">点击任意单元格按该组合过滤组件清单 · <span class="cd-red">红色背景</span>代表不完整组件集中区 · 颜色深浅表示该单元相对最大单元的占比</div>`;
         matrixEl.querySelectorAll('td[data-kind]').forEach(td => {
           td.addEventListener('click', () => {
             kindEl.value = td.dataset.kind;
@@ -544,20 +495,20 @@
           const incompleteWidth = (c.incomplete / c.total * 100).toFixed(1);
           const healthColor = c.incomplete === 0 ? '#34d399' : c.incomplete / c.total > 0.3 ? '#f87171' : '#fbbf24';
           const compDetail = `${c.vue ? `${c.vue}V` : ''}${c.vue && c.vanilla ? '·' : ''}${c.vanilla ? `${c.vanilla}Va` : ''}`;
-          return `<div style="display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center;font-size:.72rem" data-cat="${c.cat}">
-            <div style="display:flex;align-items:center;gap:6px;overflow:hidden">
-              <span style="font-size:.64rem;color:${color};font-weight:700;background:${color}22;padding:1px 6px;border-radius:3px;border:1px solid ${color}55">#${i+1}</span>
-              <a style="color:var(--yry-text2,#a9b1d6);text-decoration:none;cursor:pointer;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="点击过滤 ${c.cat} 分类" data-cat-link="${c.cat}">${c.cat}</a>
+          return `<div class="cd-x1-117" data-cat="${c.cat}">
+            <div class="cd-x1-219">
+              <span class="cd-y77" style="--v1:${color};--v2:${color};--v3:${color}">#${i+1}</span>
+              <a class="cd-x1-46" title="点击过滤 ${c.cat} 分类" data-cat-link="${c.cat}">${c.cat}</a>
             </div>
-            <div style="text-align:right;white-space:nowrap;font-size:.7rem">
-              <b style="color:${color}">${c.total}</b> <span style="color:var(--yry-text3,#6b7280);font-size:.62rem">组件</span>
-              <span style="margin-left:6px;color:${healthColor};font-size:.62rem" title="完整率 ${completePct}%">✓${completePct}%</span>
-              ${c.incomplete > 0 ? `<span style="margin-left:4px;color:#f87171;font-size:.62rem" title="不完整 ${c.incomplete} 个">✗${c.incomplete}</span>` : ''}
-              ${compDetail ? `<span style="margin-left:6px;color:var(--yry-text3,#6b7280);font-size:.6rem">${compDetail}</span>` : ''}
+            <div class="cd-x1-226">
+              <b class="cd-hook-color" style="--color:${color}">${c.total}</b> <span class="cd-text3-62">组件</span>
+              <span class="cd-y78" style="--v1:${healthColor}" title="完整率 ${completePct}%">✓${completePct}%</span>
+              ${c.incomplete > 0 ? `<span class="cd-x1-241" title="不完整 ${c.incomplete} 个">✗${c.incomplete}</span>` : ''}
+              ${compDetail ? `<span class="cd-x1-201">${compDetail}</span>` : ''}
             </div>
-            <div style="grid-column:1/-1;height:8px;background:rgba(0,0,0,.4);border-radius:4px;overflow:hidden;display:flex">
-              <span style="display:block;height:100%;width:${completeWidth}%;background:linear-gradient(90deg,#34d399,#22d3ee)" title="完整 ${c.complete} 个"></span>
-              <span style="display:block;height:100%;width:${incompleteWidth}%;background:linear-gradient(90deg,#f87171,#fbbf24)" title="不完整 ${c.incomplete} 个"></span>
+            <div class="cd-x1-83">
+              <span class="cd-y79" style="--v1:${completeWidth}" title="完整 ${c.complete} 个"></span>
+              <span class="cd-y80" style="--v1:${incompleteWidth}" title="不完整 ${c.incomplete} 个"></span>
             </div>
           </div>`;
         }).join('');
@@ -601,18 +552,18 @@
           const share = (b.count / totalComp * 100).toFixed(1);
           const kb = (b.bytes / 1024).toFixed(0);
           const c = BUCKETS[i].color;
-          const samplesHtml = b.samples.length ? `<span style="margin-left:6px;color:var(--yry-text3,#6b7280);font-size:.6rem;font-style:italic">${b.samples.join(' · ')}</span>` : '';
-          return `<div style="display:grid;grid-template-columns:130px 1fr 80px;gap:10px;align-items:center;font-size:.72rem">
-            <div style="color:${c};font-weight:600;white-space:nowrap">${BUCKETS[i].label}</div>
-            <div style="height:14px;background:rgba(0,0,0,.4);border-radius:3px;overflow:hidden">
-              <div style="width:${pct}%;height:100%;background:linear-gradient(90deg,${c},${c}88)" title="${b.count} 组件 · ${(kb/1024).toFixed(2)}MB"></div>
+          const samplesHtml = b.samples.length ? `<span class="cd-x1-144">${b.samples.join(' · ')}</span>` : '';
+          return `<div class="cd-x1-110">
+            <div class="cd-hook-color-w600-nowrap" style="--color:${c}">${BUCKETS[i].label}</div>
+            <div class="cd-bar-track-14">
+              <div class="cd-hook-bar-w-grad" style="--w:${pct}%;--color:${c}" title="${b.count} 组件 · ${(kb/1024).toFixed(2)}MB"></div>
             </div>
-            <div style="text-align:right;white-space:nowrap">
-              <b style="color:${c}">${b.count}</b> <span style="color:var(--yry-text3,#6b7280);font-size:.62rem">(${share}%)</span>
-              <div style="color:var(--yry-text3,#6b7280);font-size:.6rem">${kb} KB</div>
+            <div class="cd-right-nowrap">
+              <b class="cd-hook-color" style="--color:${c}">${b.count}</b> <span class="cd-text3-62">(${share}%)</span>
+              <div class="cd-text3-60">${kb} KB</div>
             </div>
           </div>`;
-        }).join('') + `<div style="font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.6;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)">共 <b style="color:var(--yry-accent,#22d3ee)">${totalComp}</b> 组件 · 总体积 <b>${(totalBytes/1024/1024).toFixed(2)} MB</b> · 平均 <b>${(totalBytes/1024/totalComp).toFixed(1)} KB</b>/组件 · 体积分桶反映组件复杂度梯度</div>`;
+        }).join('') + `<div class="cd-x1-52">共 <b class="cd-accent">${totalComp}</b> 组件 · 总体积 <b>${(totalBytes/1024/1024).toFixed(2)} MB</b> · 平均 <b>${(totalBytes/1024/totalComp).toFixed(1)} KB</b>/组件 · 体积分桶反映组件复杂度梯度</div>`;
       }
 
       // 🔌 自定义元素 Top 10 · Props 维度排行
@@ -624,28 +575,28 @@
           .slice(0, 10);
         const maxProps = Math.max(1, ...ces.map(c => c.props));
         if (ces.length === 0) {
-          ceTopEl.innerHTML = '<div style="padding:10px;font-size:.72rem;color:var(--yry-text3,#6b7280)">无 CE 组件数据</div>';
+          ceTopEl.innerHTML = '<div class="cd-meta-72-pad10">无 CE 组件数据</div>';
         } else {
           ceTopEl.innerHTML = ces.map((c, i) => {
             const pct = (c.props / maxProps * 100).toFixed(0);
             const color = ['#34d399', '#22d3ee', '#a78bfa', '#fb923c', '#fbbf24', '#60a5fa', '#f472b6', '#2dd4bf', '#c084fc', '#facc15'][i % 10];
             const statusBadge = c.status === 'complete'
-              ? '<span style="font-size:.6rem;color:#34d399;background:#34d39922;padding:1px 5px;border-radius:3px;border:1px solid #34d39955;margin-left:4px">✓ 完整</span>'
-              : '<span style="font-size:.6rem;color:#fbbf24;background:#fbbf2422;padding:1px 5px;border-radius:3px;border:1px solid #fbbf2455;margin-left:4px">⚠ 待补</span>';
-            return `<div style="display:grid;grid-template-columns:30px 1fr 90px 70px;gap:10px;align-items:center;font-size:.72rem">
-              <div style="font-weight:700;color:${color};text-align:center">#${i+1}</div>
-              <div style="overflow:hidden">
-                <a href="${c.name}/index.html" target="_blank" style="color:${color};text-decoration:none;font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.name}</a>${statusBadge}
+              ? '<span class="cd-x1-57">✓ 完整</span>'
+              : '<span class="cd-x1-58">⚠ 待补</span>';
+            return `<div class="cd-x2-10">
+              <div class="cd-hook-color-w700-tc" style="--color:${color}">#${i+1}</div>
+              <div class="cd-overflow-hidden">
+                <a href="${c.name}/index.html" target="_blank" class="cd-hook-color-tnodec-w600-ellipsis" style="--color:${color}">${c.name}</a>${statusBadge}
               </div>
-              <div style="height:10px;background:rgba(0,0,0,.4);border-radius:3px;overflow:hidden">
-                <div style="width:${pct}%;height:100%;background:linear-gradient(90deg,${color},${color}88)" title="${c.props} Props"></div>
+              <div class="cd-bar-track">
+                <div class="cd-hook-bar-w-grad" style="--w:${pct}%;--color:${color}" title="${c.props} Props"></div>
               </div>
-              <div style="text-align:right;white-space:nowrap">
-                <b style="color:${color}">${c.props}</b><span style="color:var(--yry-text3,#6b7280);font-size:.62rem">P</span>
-                <span style="margin-left:4px;color:var(--yry-text3,#6b7280);font-size:.62rem">${c.deps}D</span>
+              <div class="cd-right-nowrap">
+                <b class="cd-hook-color" style="--color:${color}">${c.props}</b><span class="cd-text3-62">P</span>
+                <span class="cd-x1-193">${c.deps}D</span>
               </div>
             </div>`;
-          }).join('') + `<div style="font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.6;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.06)">Top 1 Props 数 <b style="color:var(--yry-accent,#22d3ee)">${maxProps}</b> · 50 个 CE 总 Props 数 <b>${ces.reduce((s,c)=>s+c.props,0)}</b> · CE 是 Vue 3 Custom Elements，可在任意框架或原生 HTML 中使用</div>`;
+          }).join('') + `<div class="cd-meta-66-top">Top 1 Props 数 <b class="cd-accent">${maxProps}</b> · 50 个 CE 总 Props 数 <b>${ces.reduce((s,c)=>s+c.props,0)}</b> · CE 是 Vue 3 Custom Elements，可在任意框架或原生 HTML 中使用</div>`;
         }
       }
 
@@ -665,25 +616,25 @@
         const maxProps = Math.max(1, ...arr.map(x => x.props));
         const maxAvg = Math.max(1, ...arr.map(x => x.avgProps));
         if (arr.length === 0) {
-          cpEl.innerHTML = '<div style="padding:10px;font-size:.72rem;color:var(--yry-text3,#6b7280)">无分类数据</div>';
+          cpEl.innerHTML = '<div class="cd-meta-72-pad10">无分类数据</div>';
         } else {
           cpEl.innerHTML = arr.map((r, i) => {
             const pct = (r.props / maxProps * 100).toFixed(0);
             const avgPct = (r.avgProps / maxAvg * 100).toFixed(0);
             const c = ['#34d399', '#22d3ee', '#a78bfa', '#fb923c', '#fbbf24'][i % 5];
             const avgLabel = r.avgProps.toFixed(1);
-            return `<div style="display:grid;grid-template-columns:30px 1fr 100px 70px;gap:10px;align-items:center;font-size:.72rem;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04)">
-              <div style="font-weight:700;color:${c};text-align:center">#${i+1}</div>
-              <div style="overflow:hidden">
-                <div style="color:${c};font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.cat}</div>
-                <div style="font-size:.6rem;color:var(--yry-text3,#6b7280);margin-top:1px">${r.comps} 组件 · 依赖 ${r.deps} · 均 ${avgLabel}P/组件</div>
+            return `<div class="cd-x2-2">
+              <div class="cd-hook-color-w700-tc" style="--color:${c}">#${i+1}</div>
+              <div class="cd-overflow-hidden">
+                <div class="cd-hook-color-w600-ellipsis" style="--color:${c}">${r.cat}</div>
+                <div class="cd-text3-60-mt1">${r.comps} 组件 · 依赖 ${r.deps} · 均 ${avgLabel}P/组件</div>
               </div>
-              <div style="height:10px;background:rgba(0,0,0,.4);border-radius:3px;overflow:hidden"><div style="width:${pct}%;height:100%;background:linear-gradient(90deg,${c},${c}88)" title="${r.props} Props"></div></div>
-              <div style="text-align:right;white-space:nowrap">
-                <b style="color:${c}">${r.props}</b><span style="color:var(--yry-text3,#6b7280);font-size:.62rem"> P</span>
+              <div class="cd-bar-track"><div class="cd-hook-bar-w-grad" style="--w:${pct}%;--color:${c}" title="${r.props} Props"></div></div>
+              <div class="cd-right-nowrap">
+                <b class="cd-hook-color" style="--color:${c}">${r.props}</b><span class="cd-text3-62"> P</span>
               </div>
             </div>`;
-          }).join('') + `<div style="font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.6;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.06)">总 Props <b style="color:var(--yry-accent,#22d3ee)">${arr.reduce((s,r)=>s+r.props,0)}</b> · 最高均 <b>${maxAvg.toFixed(1)}</b> P/组件 · 揭示 API 表面积密集区</div>`;
+          }).join('') + `<div class="cd-meta-66-top">总 Props <b class="cd-accent">${arr.reduce((s,r)=>s+r.props,0)}</b> · 最高均 <b>${maxAvg.toFixed(1)}</b> P/组件 · 揭示 API 表面积密集区</div>`;
         }
       }
 
@@ -706,20 +657,20 @@
           const ratePct = (r.rate * 100).toFixed(1);
           const barWidth = (r.rate * 100).toFixed(0);
           const color = r.rate === 1 ? '#34d399' : r.rate >= 0.85 ? '#22d3ee' : r.rate >= 0.75 ? '#fbbf24' : '#f87171';
-          const badge = r.rate === 1 ? '<span style="color:#34d399;font-weight:700">✓ 100%</span>'
-                     : r.incomplete > 0 ? `<span style="color:#fbbf24;font-weight:700">⚠ ${r.incomplete} 待补</span>` : '';
-          return `<div style="display:grid;grid-template-columns:30px 1fr 140px 70px;gap:10px;align-items:center;font-size:.72rem;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04)">
-            <div style="font-weight:700;color:${color};text-align:center">#${i+1}</div>
-            <div style="overflow:hidden">
-              <div style="color:${color};font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.cat}</div>
-              <div style="font-size:.6rem;color:var(--yry-text3,#6b7280);margin-top:1px">${r.complete}/${r.total} 完整 · ${badge}</div>
+          const badge = r.rate === 1 ? '<span class="cd-emerald-bold">✓ 100%</span>'
+                     : r.incomplete > 0 ? `<span class="cd-x1-271">⚠ ${r.incomplete} 待补</span>` : '';
+          return `<div class="cd-x1-28">
+            <div class="cd-hook-color-w700-tc" style="--color:${color}">#${i+1}</div>
+            <div class="cd-overflow-hidden">
+              <div class="cd-hook-color-w600-ellipsis" style="--color:${color}">${r.cat}</div>
+              <div class="cd-text3-60-mt1">${r.complete}/${r.total} 完整 · ${badge}</div>
             </div>
-            <div style="height:10px;background:rgba(0,0,0,.4);border-radius:3px;overflow:hidden"><div style="width:${barWidth}%;height:100%;background:linear-gradient(90deg,${color},${color}88)" title="${ratePct}%"></div></div>
-            <div style="text-align:right;white-space:nowrap">
-              <b style="color:${color}">${ratePct}%</b>
+            <div class="cd-bar-track"><div class="cd-y81" style="--v1:${barWidth};--v2:${color};--v3:${color}" title="${ratePct}%"></div></div>
+            <div class="cd-right-nowrap">
+              <b class="cd-hook-color" style="--color:${color}">${ratePct}%</b>
             </div>
           </div>`;
-        }).join('') + `<div style="font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.6;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.06)">总完整率 <b style="color:#34d399">${(totalComplete/totalAll*100).toFixed(1)}%</b> (${totalComplete}/${totalAll}) · ${arr.filter(r => r.rate === 1).length}/${arr.length} 类 100% · 待补最多: <b style="color:#fbbf24">${arr.slice().sort((a,b) => b.incomplete - a.incomplete)[0].cat} (${arr.slice().sort((a,b) => b.incomplete - a.incomplete)[0].incomplete})</b></div>`;
+        }).join('') + `<div class="cd-meta-66-top">总完整率 <b class="cd-emerald">${(totalComplete/totalAll*100).toFixed(1)}%</b> (${totalComplete}/${totalAll}) · ${arr.filter(r => r.rate === 1).length}/${arr.length} 类 100% · 待补最多: <b class="cd-amber">${arr.slice().sort((a,b) => b.incomplete - a.incomplete)[0].cat} (${arr.slice().sort((a,b) => b.incomplete - a.incomplete)[0].incomplete})</b></div>`;
       }
 
       apply();

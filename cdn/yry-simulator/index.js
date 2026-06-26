@@ -23,7 +23,7 @@
     div.textContent = '';
     div.insertAdjacentHTML('beforeend', '<span class="log-time">' + time + '</span>' +
                     '<span class="log-icon" style="color:' + (color || 'var(--text2)') + '">●</span>' +
-                    '<span style="color:' + (color || 'var(--text2)') + '">' + msg + '</span>';
+                    '<span style="color:' + (color || 'var(--text2)') + '">' + msg + '</span>');
     var ms = document.createElement('span');
     ms.className = 'log-ms';
     ms.textContent = '+0ms';

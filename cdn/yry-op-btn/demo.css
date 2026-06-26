@@ -1,0 +1,10 @@
+/* yry-op-btn/demo.css — showcase page styles */
+body { background: var(--yry-bg, #0a0a0a); color: var(--yry-text, #f5f5f5); font-family: var(--yry-font-sans); padding: 32px 24px 60px; max-width: 900px; margin: 0 auto; line-height: 1.55; }
+  h1 { font-size: 1.25rem; margin: 0 0 4px; }
+  h1 .accent { color: var(--yry-accent, #ffc107); }
+  .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; }
+  .demo-hint code { background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px; font-family: monospace; font-size: .72rem; color: #e0af68; }
+  hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+  .demo-table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+  .demo-table th, .demo-table td { padding: 8px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,.06); font-size: .76rem; }
+  .demo-table th { color: var(--yry-text3, #888); font-size: .68rem; text-transform: uppercase; }

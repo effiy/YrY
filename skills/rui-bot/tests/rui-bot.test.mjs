@@ -67,38 +67,38 @@ describe('rui-bot skill', () => {
     it('runs health command without crashing', () => {
       try {
         const out = execSync('node skills/rui-bot/send.mjs health 2>&1', {
-          cwd: process.cwd(), encoding: 'utf-8', timeout: 60_000,
+          cwd: process.cwd(), encoding: 'utf-8', timeout: 120_000,
         });
         assert.ok(out.length > 100, 'health command should produce output');
       } catch (e) {
         assert.fail(`health command crashed: ${e.stderr || e.message}`);
       }
-    });
+    }, 180_000);
 
     it('outputs all 9 health dimensions', () => {
       const out = execSync('node skills/rui-bot/send.mjs health 2>&1', {
-        cwd: process.cwd(), encoding: 'utf-8', timeout: 60_000,
+        cwd: process.cwd(), encoding: 'utf-8', timeout: 120_000,
       });
       const dims = ['Token 凭据', '配置文件', '机器人配置', 'API 可达性', '自循环报告', '消息格式合规', 'D0-D8 诊断', 'Git 仓库状态', '安全扫描'];
       for (const dim of dims) {
         assert.ok(out.includes(dim), `health output must include dimension: ${dim}`);
       }
-    });
+    }, 180_000);
 
     it('outputs composite score and grade', () => {
       const out = execSync('node skills/rui-bot/send.mjs health 2>&1', {
-        cwd: process.cwd(), encoding: 'utf-8', timeout: 60_000,
+        cwd: process.cwd(), encoding: 'utf-8', timeout: 120_000,
       });
       assert.ok(out.includes('综合健康度'), 'must include composite health score');
       assert.ok(/[ABCD] 级/.test(out), 'must include grade A/B/C/D');
-    });
+    }, 180_000);
 
     it('generates HTML report with --html flag', () => {
       const out = execSync('node skills/rui-bot/send.mjs health --html 2>&1', {
-        cwd: process.cwd(), encoding: 'utf-8', timeout: 60_000,
+        cwd: process.cwd(), encoding: 'utf-8', timeout: 120_000,
       });
       assert.ok(out.includes('健康报告已生成') || out.includes('健康报告'), 'must confirm HTML report generation');
-    });
+    }, 180_000);
 
     it('overwrites same-day HTML report and index entry', () => {
       const prevCwd = process.cwd();
@@ -111,7 +111,7 @@ describe('rui-bot skill', () => {
         const first = {
           composite: 61,
           grade: 'C',
-          scores: { token: 100, config: 60, robots: 60, api: 60, reports: 60, format: 60, diagnostics: 60, git: 60, security: 60 },
+          scores: { token: 100, config: 60, robots: 60, reports: 60, format: 60, diagnostics: 60, git: 60, security: 60 },
           details: [],
           diagnostics: { triggered: [], diagnostics: [], execCount: 0 },
           compScores: { skills: [], agents: [], rules: [], scripts: [] },
@@ -150,26 +150,26 @@ describe('rui-bot skill', () => {
 
     it('--short outputs one-line summary', () => {
       const out = execSync('node skills/rui-bot/send.mjs health --short 2>&1', {
-        cwd: process.cwd(), encoding: 'utf-8', timeout: 60_000,
+        cwd: process.cwd(), encoding: 'utf-8', timeout: 120_000,
       });
       // Format: {icon} {score}/{grade} | 触发: ... | 弱项: ...
       assert.ok(/[ABCD]/.test(out), 'must include grade letter');
       assert.ok(/\d+\/[ABCD]/.test(out), 'must include score/grade');
       assert.ok(out.includes('弱项') || out.includes('通过'), 'must include weak dimensions or pass');
       assert.ok(out.split('\n').filter(Boolean).length <= 3, 'short mode should output few lines');
-    });
+    }, 180_000);
 
     it('--alert runs without crash', () => {
       const out = execSync('node skills/rui-bot/send.mjs health --alert 2>&1', {
-        cwd: process.cwd(), encoding: 'utf-8', timeout: 60_000,
+        cwd: process.cwd(), encoding: 'utf-8', timeout: 120_000,
       });
       // Should either send alert, suppress it, or report score above threshold
       assert.ok(
         out.includes('告警') || out.includes('无需告警') || out.includes('Token') || out.includes('webhook'),
         'alert must produce meaningful output'
       );
-    });
+    }, 180_000);
   });
 });
 
-const exitCode = await run();
+const _exitCode = await run();

@@ -1,0 +1,11 @@
+/* yry-typewriter/demo.css — showcase page styles */
+body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #FFC107); }
+    pre { background: rgba(0,0,0,.3); padding: 10px 14px; border-radius: 6px; font-size: .76rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; }
+    #twContent { background: #0a0a14; color: #d4d4d4; border-radius: 8px; padding: 16px; min-height: 160px; font-family: 'SF Mono', monospace; font-size: .78rem; }
+    .tw-ctrl-btn { background: var(--yry-bg-flat); border: var(--yry-border); color: var(--yry-text2); border-radius: 8px; padding: 6px 14px; cursor: pointer; margin-right: 6px; font-family: inherit; font-size: .78rem; }
+    .tw-ctrl-btn.on { background: rgba(255,193,7,.12); color: var(--yry-accent); border-color: rgba(255,193,7,.4); }
+    .tw-prompt { color: #22d3ee; }
+    .tw-cmd { color: #fafafc; }
+    .tw-ok { color: #22c55e; }
+    .tw-info { color: #6b7280; }

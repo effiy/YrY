@@ -6,19 +6,19 @@ import { CACHE_DIR } from './paths.mjs';
 /* ───────── 工具 ───────── */
 
 /** 截取 ### anchor 到下一个 ###/##/---/<a 之前 */
-function extractSection(content, anchor) {
+function extractSection(/** @type {string} */ content, /** @type {string} */ anchor) {
   const re = new RegExp(`###\\s+${anchor}\\s*\\n([\\s\\S]*?)(?=\\n###|\\n##|\\n---|\\n<a)`, '');
   return content.match(re)?.[1] ?? '';
 }
 
 /** 抽取一个 markdown 表格的所有数据行（去表头） */
-function extractTableRows(section, minCols = 2) {
+function extractTableRows(/** @type {string} */ section, /** @type {number} */ minCols = 2) {
   if (!section) return [];
   const rows = [];
   for (const line of section.split('\n')) {
     const t = line.trim();
     if (!t.startsWith('|') || t.match(/^\|[\s\-:|]+\|$/)) continue;
-    const cells = t.split('|').map(s => s.trim()).filter(Boolean);
+    const cells = t.split('|').map((/** @type {string} */ s) => s.trim()).filter(Boolean);
     if (cells.length >= minCols) rows.push(cells);
   }
   return rows.slice(1);
@@ -26,13 +26,13 @@ function extractTableRows(section, minCols = 2) {
 
 /* ───────── 抽取器 ───────── */
 
-function extractTitle(content) {
+function extractTitle(/** @type {string} */ content) {
   // 兼容多种分隔符：冒号(:：)、中点(·)、破折号(—–-)、直接连写(场景-N-)
-  const m = content.match(/^#\s*场景[\s\-]*\d+[\s]*[：:·—\-]\s*(.+?)$/m);
+  const m = content.match(/^#\s*场景[\s-]*\d+[\s]*[：:·—-]\s*(.+?)$/m);
   return m?.[1]?.trim() ?? '';
 }
 
-function extractRoleGoalPriority(content) {
+function extractRoleGoalPriority(/** @type {string} */ content) {
   const m = content.match(
     /\*\*角色\*\*[:：]\s*(.+?)\s*·\s*\*\*目标\*\*[:：]\s*(.+?)\s*·\s*\*\*优先级\*\*[:：]\s*(\S+)/
   );
@@ -40,7 +40,7 @@ function extractRoleGoalPriority(content) {
   return { role: m[1].trim(), goal: m[2].trim(), priority: m[3].trim() };
 }
 
-function extractValuePoints(content) {
+function extractValuePoints(/** @type {string} */ content) {
   const sec = extractSection(content, '主要价值');
   const out = [];
   for (const line of sec.split('\n')) {
@@ -50,12 +50,13 @@ function extractValuePoints(content) {
   return out;
 }
 
-function extractModules(content) {
+function extractModules(/** @type {string} */ content) {
   return extractTableRows(extractSection(content, '涉及模块'), 2)
-    .map(c => ({ name: c[0], role: c[1] ?? '', path: c[2] ?? '' }));
+    .map((/** @type {string[]} */ c) => ({ name: c[0], role: c[1] ?? '', path: c[2] ?? '' }));
 }
 
-function extractTestCases(content) {
+function extractTestCases(/** @type {string} */ content) {
+  /** @type {Record<string, any[]>} */
   const result = { normal: [], boundary: [] };
   for (const [secName, key] of [['正常路径用例', 'normal'], ['边界/异常用例', 'boundary']]) {
     const sec = extractSection(content, secName);
@@ -68,8 +69,10 @@ function extractTestCases(content) {
   return result;
 }
 
-function extractIssuesAndRecs(content) {
+function extractIssuesAndRecs(/** @type {string} */ content) {
+  /** @type {any[]} */
   const issues = [];
+  /** @type {any[]} */
   const recs = [];
   const secNames = ['D0–D8 诊断', 'D0-D8 诊断', '诊断摘要', '改进清单', '改进提案'];
   for (const secName of secNames) {
@@ -89,7 +92,7 @@ function extractIssuesAndRecs(content) {
   return { issues, recs };
 }
 
-function extractSourcesAndActions(content) {
+function extractSourcesAndActions(/** @type {string} */ content) {
   const sources = [];
   const actions = [];
   const secNames = ['开发源码清单', '源码清单', '操作步骤记录', '实施项'];
@@ -115,7 +118,7 @@ function extractSourcesAndActions(content) {
 
 /**
  * 从场景目录的 index.md 抽取全部结构化数据。
- * @param {{fullPath: string}} ctx
+ * @param {{fullPath: string, scenarioDir: string, subdir: string}} ctx
  * @returns {Promise<object>}
  */
 export async function extractScenarioData(ctx) {
@@ -138,18 +141,18 @@ export async function extractScenarioData(ctx) {
 }
 
 /** 缓存文件路径 — 把数据放到 skills/rui-story/scripts/.cache/ 而不是污染场景目录 */
-export function cachePathFor(ctx) {
+export function cachePathFor(/** @type {{subdir: string, scenarioDir: string}} */ ctx) {
   return path.join(CACHE_DIR, `${ctx.subdir}__${ctx.scenarioDir}.json`);
 }
 
 /** 读取缓存（若存在且 mtime 更新） */
-export async function readCache(ctx) {
+export async function readCache(/** @type {{subdir: string, scenarioDir: string}} */ ctx) {
   try { return JSON.parse(await fs.readFile(cachePathFor(ctx), 'utf8')); }
   catch { return null; }
 }
 
 /** 写入缓存 */
-export async function writeCache(ctx, data) {
+export async function writeCache(/** @type {{subdir: string, scenarioDir: string}} */ ctx, /** @type {any} */ data) {
   await fs.mkdir(CACHE_DIR, { recursive: true });
   await fs.writeFile(cachePathFor(ctx), JSON.stringify(data, null, 2), 'utf8');
 }

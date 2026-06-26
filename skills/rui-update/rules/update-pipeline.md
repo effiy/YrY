@@ -1,3 +1,10 @@
+---
+paths:
+  - "skills/rui-update/**"
+  - "skills/rui-update/SKILL.md"
+description: "增量更新 T1/T2/T3 范围判定规则"
+---
+
 # rui-update 管线规则
 
 > 增量更新的 T1/T2/T3 范围判定和执行规则，独立于实现细节。

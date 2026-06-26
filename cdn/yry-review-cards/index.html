@@ -7,34 +7,8 @@
   <link rel="stylesheet" href="../shared\/index\.css">
   <link rel="stylesheet" href="../theme\/index\.css">
   <link rel="stylesheet" href="index.css">
-  <style>
-    body {
-      background: var(--yry-bg, #0a0a0a);
-      color: var(--yry-text, #f5f5f5);
-      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif);
-      padding: 32px 24px 60px;
-      max-width: 920px; margin: 0 auto;
-      line-height: 1.55;
-    }
-    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
-    h1 .accent { color: var(--yry-accent, #ffc107); }
-    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
-    .demo-hint code {
-      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
-      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
-    }
-    hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
-    .demo-section {
-      margin: 20px 0;
-      background: rgba(255,255,255,.03);
-      border: 1px solid rgba(255,255,255,.06);
-      border-radius: 10px;
-      padding: 20px 22px;
-    }
-    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
-    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
-    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
-  </style>
+<link rel="stylesheet" href="../yry-inline-helpers/index.css">
+<link rel="stylesheet" href="demo.css">
 </head>
 <body>
   <h1><span class="accent">🔍</span> YryReviewCards · 审查卡片组件</h1>
@@ -47,8 +21,8 @@
   <div class="demo-section">
     <h3>📊 维度审查卡片 (dim-card)</h3>
     <div class="dim-card">
-      <h3>🔒 安全性 <span class="dim-score" style="color:var(--yry-pass,#22c55e)">A</span></h3>
-      <div class="dim-bar"><div class="dim-bar-inner" style="width:95%;background:var(--yry-pass,#22c55e)"></div></div>
+      <h3>🔒 安全性 <span class="dim-score" yry-cd-39">A</span></h3>
+      <div class="dim-bar"><div class="dim-bar-inner" yry-cd-23"></div></div>
       <ul>
         <li>认证机制完备，所有入口通过 Gate 验证</li>
         <li>密钥通过环境变量注入，无硬编码</li>
@@ -58,8 +32,8 @@
     </div>
 
     <div class="dim-card">
-      <h3>📐 架构合规 <span class="dim-score" style="color:var(--yry-warn,#f59e0b)">B</span></h3>
-      <div class="dim-bar"><div class="dim-bar-inner" style="width:78%;background:var(--yry-warn,#f59e0b)"></div></div>
+      <h3>📐 架构合规 <span class="dim-score" yry-cd-40">B</span></h3>
+      <div class="dim-bar"><div class="dim-bar-inner" yry-cd-24"></div></div>
       <ul>
         <li>内核体积在约束内（lib ≤ 20 · rule ≤ 8 · 编排器 ≤ 500 行）</li>
         <li>范式合规 — 无 class/extends · 无 export default</li>
@@ -68,8 +42,8 @@
     </div>
 
     <div class="dim-card">
-      <h3>🧪 测试覆盖 <span class="dim-score" style="color:var(--yry-fail,#ef4444)">C</span></h3>
-      <div class="dim-bar"><div class="dim-bar-inner" style="width:45%;background:var(--yry-fail,#ef4444)"></div></div>
+      <h3>🧪 测试覆盖 <span class="dim-score" yry-cd-41">C</span></h3>
+      <div class="dim-bar"><div class="dim-bar-inner" yry-cd-25"></div></div>
       <ul>
         <li>核心管线测试覆盖率不足 50%</li>
         <li>缺少边界条件与错误路径测试</li>

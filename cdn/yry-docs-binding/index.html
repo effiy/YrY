@@ -40,21 +40,8 @@
   <link rel="stylesheet" href="../shared\/index\.css">
   <link rel="stylesheet" href="../theme\/index\.css">
   <link rel="stylesheet" href="index.css">
-  <style>
-    body {
-      background: var(--yry-bg, #0a0a0a);
-      color: var(--yry-text, #f5f5f5);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif;
-      padding: 32px 24px 60px;
-      max-width: 920px; margin: 0 auto;
-      line-height: 1.55;
-    }
-    h1 { font-size: 1.25rem; margin: 0 0 4px; }
-    h1 .accent { color: #22c55e; }
-    .demo-hint { font-size: .78rem; color: #888; margin: 0 0 20px; line-height: 1.6; }
-    .demo-hint code { background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
-                      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68; }
-  </style>
+<link rel="stylesheet" href="../yry-inline-helpers/index.css">
+<link rel="stylesheet" href="demo.css">
 </head>
 <body>
   <h1><span class="accent">🔗</span> YryDocsBinding · 文档中心数据绑定控制器</h1>
@@ -73,7 +60,7 @@
        控制器型组件: 空占位 + 默认 slot (允许父级传入内容,但本组件自身不渲染)
        ════════════════════════════════════════════════════════════════════ -->
   <script type="text/x-template" id="yry-docs-binding-tpl">
-    <div class="yry-docs-binding ydb-root" style="display:none" aria-hidden="true"></div>
+    <div class="yry-docs-binding ydb-root" yry-cd-59" aria-hidden="true"></div>
   </script>
 
   <!-- 加载链 -->

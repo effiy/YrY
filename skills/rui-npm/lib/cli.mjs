@@ -4,6 +4,7 @@
  */
 
 export function parseArgs(argv) {
+  /** @type {{ _: string[], json: boolean, depth: number, dev: boolean, global: boolean, limit: number, name: string|null, version: string|null, description: string|null, access: string|null, dryRun: boolean, token: string|null, npxArgs: string[], raw: string[], force: boolean }} */
   const args = { _: [], json: false, depth: 0, dev: false, global: false, limit: 20,
     name: null, version: null, description: null, access: null, dryRun: false,
     token: null, npxArgs: [], raw: [], force: false };

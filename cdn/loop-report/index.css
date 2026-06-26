@@ -1,0 +1,123 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — loop-report/index.css · 自循环报告页与索引页专属样式
+   从 skills/rui-bot/lib/loop-report.mjs 内嵌 <style> 抽离
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 通用覆盖（页宽 800px）── */
+.lp-container { max-width: 800px; }
+
+/* ── 详情页：影响评估 ── */
+.yry-impact-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.yry-impact-badge { display: inline-block; padding: 4px 14px; border-radius: 6px; color: #fff; font-size: .8rem; font-weight: 600; }
+.yry-impact-badge.severity-high { background: var(--yry-fail); }
+.yry-impact-badge.severity-mid { background: var(--yry-warn); }
+.yry-impact-badge.severity-low { background: var(--yry-pass); }
+.yry-impact-summary { font-size: .84rem; color: var(--yry-text2); }
+.yry-impact-detail { padding: 12px; background: rgba(15,23,42,.4); border-radius: 8px; border: var(--yry-border); margin-top: 8px; }
+.yry-impact-detail ul { margin-top: 6px; padding-left: 20px; color: var(--yry-text2); font-size: .84rem; }
+
+/* ── 详情页：历史趋势 ── */
+.yry-hist-dot { transition: transform .15s; }
+.yry-hist-dot:hover { transform: scale(1.8); }
+.yry-hist-dot { display: inline-block; width: var(--dot-size, 6px); height: var(--dot-size, 6px); border-radius: 50%; background: var(--yry-pass); margin: 0 2px; cursor: default; }
+.yry-hist-dot.latest { --dot-size: 10px; }
+.yry-hist-row { display: flex; align-items: center; gap: 10px; padding: 12px 0; }
+.yry-hist-edge { font-size: .7rem; color: var(--yry-text3); }
+.yry-hist-dots { flex: 1; display: flex; align-items: center; justify-content: center; gap: 4px; }
+.yry-hist-foot { display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: var(--yry-border); }
+.yry-hist-foot-l { font-size: .74rem; color: var(--yry-text3); }
+.yry-hist-foot-r { font-size: .7rem; color: var(--yry-text3); }
+
+/* ── 详情页：关联分析 ── */
+.yry-cross-item { flex: 1; min-width: 200px; }
+.yry-cross-label { font-size: .78rem; color: var(--yry-text3); margin-bottom: 4px; }
+.yry-cross-desc { font-size: .88rem; font-weight: 600; color: var(--yry-accent); line-height: 1.5; }
+.yry-cross-badge { text-align: center; padding: 8px 16px; background: rgba(15,23,42,.4); border-radius: 8px; border: var(--yry-border); flex-shrink: 0; min-width: 80px; }
+.yry-cross-row { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 12px; }
+.yry-cross-cur-label { font-size: .7rem; color: var(--yry-text3); }
+.yry-cross-cur-val { font-size: 1.1rem; font-weight: 700; }
+.yry-cross-cur-val.pass { color: var(--yry-pass); }
+.yry-cross-cur-val.warn { color: var(--yry-warn); }
+.yry-cross-cur-val.fail { color: var(--yry-fail); }
+.yry-cross-impact { padding: 10px; background: rgba(245,158,11,.04); border-radius: 8px; border: 1px solid rgba(245,158,11,.1); font-size: .78rem; color: var(--yry-text2); line-height: 1.6; }
+
+/* ── 详情页：检查清单 ── */
+.lp-check-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: .78rem; border-bottom: 1px solid rgba(255,255,255,.03); }
+.lp-check-icon { color: var(--lp-icon-color, var(--yry-text2)); }
+.lp-check-icon.pass { color: var(--yry-pass); }
+.lp-check-icon.warn { color: var(--yry-warn); }
+.lp-check-label { color: var(--yry-text2); }
+.lp-check-target { color: var(--yry-text3); font-size: .68rem; margin-left: auto; }
+.lp-check-banner { padding: 8px 12px; border-radius: 6px; font-size: .74rem; color: var(--yry-text2); }
+.lp-check-banner.pass { background: rgba(34,197,94,.04); }
+.lp-check-banner.warn { background: rgba(245,158,11,.04); }
+.lp-check-banner.fail { background: rgba(239,68,68,.04); }
+.lp-check-wrap { margin-bottom: 8px; }
+
+/* ── 详情页：行动计划 ── */
+.lp-step-row { display: flex; gap: 12px; align-items: flex-start; padding: 10px; margin-bottom: 6px; background: var(--lp-step-bg, transparent); border-radius: 8px; border-left: 3px solid var(--lp-step-color, var(--yry-border)); }
+.lp-step-row.fail { --lp-step-color: #ef4444; --lp-step-bg: rgba(239,68,68,.06); }
+.lp-step-row.warn { --lp-step-color: #f59e0b; --lp-step-bg: rgba(245,158,11,.06); }
+.lp-step-num { padding: 3px 10px; border-radius: 4px; font-size: .68rem; font-weight: 700; background: var(--lp-step-num-bg, rgba(255,255,255,.06)); color: var(--lp-step-color, var(--yry-text2)); flex-shrink: 0; }
+.lp-step-row.fail .lp-step-num { --lp-step-num-bg: rgba(239,68,68,.15); }
+.lp-step-row.warn .lp-step-num { --lp-step-num-bg: rgba(245,158,11,.15); }
+.lp-step-body { flex: 1; }
+.lp-step-title { font-size: .82rem; font-weight: 600; color: var(--yry-text); }
+.lp-step-detail { font-size: .72rem; color: var(--yry-text3); margin-top: 4px; }
+.lp-step-wrap { margin-bottom: 12px; }
+.lp-step-urgency { padding: 8px 12px; background: rgba(59,130,246,.04); border-radius: 6px; border: 1px solid rgba(59,130,246,.1); font-size: .74rem; color: var(--yry-text2); }
+
+/* ── 详情页：严重程度分布 ── */
+.lp-sev-block { margin-bottom: 12px; padding: 12px; background: var(--lp-sev-bg, transparent); border-radius: 8px; border-left: 3px solid var(--lp-sev-color, var(--yry-border)); }
+.lp-sev-block.fail { --lp-sev-color: var(--yry-fail); --lp-sev-bg: rgba(239,68,68,.06); }
+.lp-sev-block.warn { --lp-sev-color: var(--yry-warn); --lp-sev-bg: rgba(245,158,11,.06); }
+.lp-sev-block.info { --lp-sev-color: var(--yry-cyan); --lp-sev-bg: rgba(34,211,238,.06); }
+.lp-sev-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.lp-sev-label { font-weight: 600; font-size: .88rem; }
+.lp-sev-count { font-size: .82rem; font-weight: 700; color: var(--lp-sev-color, var(--yry-text2)); }
+.lp-sev-desc { font-size: .74rem; color: var(--yry-text3); margin-bottom: 8px; }
+.lp-sev-list { display: flex; flex-direction: column; gap: 4px; }
+.lp-sev-item { font-size: .76rem; color: var(--yry-text2); padding: 4px 8px; background: var(--yry-bg-card); border-radius: 4px; }
+.lp-sev-more { font-size: .7rem; color: var(--yry-text3); padding-left: 8px; }
+
+/* ── 详情页：SLA 追踪 ── */
+.lp-sla-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px; }
+.lp-sla-cell { text-align: center; padding: 12px; background: var(--lp-sla-bg, transparent); border-radius: 8px; border: 1px solid var(--lp-sla-border, transparent); }
+.lp-sla-cell.target { background: rgba(239,68,68,.06); border-color: rgba(239,68,68,.15); }
+.lp-sla-cell.threshold { background: rgba(245,158,11,.06); border-color: rgba(245,158,11,.15); }
+.lp-sla-cell.escalation { background: rgba(59,130,246,.06); border-color: rgba(59,130,246,.15); }
+.lp-sla-cell-label { font-size: .7rem; color: var(--yry-text3); }
+.lp-sla-cell-val { font-size: 1.1rem; font-weight: 700; }
+.lp-sla-cell-val.target { color: #ef4444; }
+.lp-sla-cell-val.threshold { color: #f59e0b; }
+.lp-sla-cell-val.escalation { color: #3b82f6; }
+.lp-sla-foot { font-size: .72rem; color: var(--yry-text3); padding: 8px; background: var(--yry-bg-card); border-radius: 6px; }
+.lp-sla-ok { text-align: center; color: #22c55e; font-size: .84rem; padding: 16px; }
+.lp-sla-empty { text-align: center; color: var(--yry-text3); padding: 20px; font-size: .84rem; }
+
+/* ── 详情页：章节副标题（8 处复用）── */
+.lp-section-sub { font-size: .78rem; color: var(--yry-text3); font-weight: 400; margin-left: 8px; }
+
+/* ── 详情页：其它 utility ── */
+.lp-desc { font-size: .84rem; color: var(--yry-text2); margin-top: 12px; line-height: 1.7; max-width: 700px; margin-left: auto; margin-right: auto; }
+.lp-pre { color: var(--yry-text2); font-size: .82rem; white-space: pre-wrap; overflow-x: auto; }
+.lp-meta { color: var(--yry-text3); }
+.lp-empty-note { font-size: .7rem; color: var(--yry-text3); }
+.lp-top-issues-detail { color: var(--yry-text3); font-size: .76rem; }
+.lp-suggestion { margin-top: 10px; font-size: .78rem; color: var(--yry-text3); }
+.lp-inherit-link { text-decoration: none; color: inherit; }
+
+/* ── 索引页 ── */
+.yry-bc { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; font-size: .76rem; }
+.yry-bc a { color: #22d3ee; text-decoration: none; }
+.yry-bc a:hover { color: var(--yry-accent); }
+.yry-bc .yry-bc-sep { color: var(--yry-text3); opacity: .4; }
+.yry-bc .yry-bc-cur { color: var(--yry-text2); }
+.yry-header h1 { font-size: 1.6rem; }
+.yry-header .desc { color: var(--yry-text2); font-size: .84rem; margin-top: 8px; line-height: 1.6; max-width: 600px; margin-left: auto; margin-right: auto; }
+.yry-link { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.15); color: #22d3ee; text-decoration: none; font-size: .82rem; transition: all .15s; }
+.yry-link:hover { background: rgba(59,130,246,.15); color: var(--yry-accent); }
+.yry-skill-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.yry-skill-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 6px; background: rgba(59,130,246,.06); border: 1px solid rgba(59,130,246,.1); font-size: .74rem; color: var(--yry-text2); }
+.yry-skill-chip .si { font-size: .9rem; }
+#loading { text-align: center; color: var(--yry-text3); padding: 40px; }

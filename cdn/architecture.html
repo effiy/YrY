@@ -15,56 +15,9 @@
   <meta name="description" content="YrY CDN 架构聚合 — 五步加载链 · Cat A/B 双主题 · 40+ CSS 设计令牌 · 10 功能类别 · 组件分层 · 版本演进 v1.0→v1.2 · 六维加权健康 92/A">
   <link rel="stylesheet" href="shared/index.css">
   <link rel="stylesheet" href="theme/index.css">
-  <style>
-    body { padding: 24px 20px 60px; max-width: 1200px; margin: 0 auto; line-height: 1.6; }
-    h1 { font-size: 1.4rem; color: var(--yry-accent, #22d3ee); margin: 0 0 4px; }
-    .sub { color: var(--yry-text3, #6b7280); font-size: .78rem; margin: 0 0 16px; }
-    h2 { font-size: 1.05rem; color: var(--yry-text2, #a9b1d6); margin: 28px 0 12px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,.06); }
-    .links { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0; }
-    .links a { color: var(--yry-accent, #22d3ee); text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; font-size: .76rem; }
-    .links a:hover { border-color: var(--yry-accent); background: rgba(34,211,238,.08); }
-    .links a.active { background: rgba(34,211,238,.12); border-color: var(--yry-accent); }
-
-    /* 加载链 flowchart */
-    .chain { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin: 12px 0; font-size: .76rem; }
-    .chain-step { background: rgba(15,23,42,.7); border: 1px solid rgba(34,211,238,.3); border-radius: 8px; padding: 10px 14px; color: var(--yry-text2, #a9b1d6); }
-    .chain-step b { color: var(--yry-accent, #22d3ee); display: block; font-size: .8rem; margin-bottom: 2px; }
-    .chain-arrow { color: var(--yry-accent, #22d3ee); font-size: 1rem; }
-
-    /* 架构维度表 */
-    table { width: 100%; border-collapse: collapse; font-size: .76rem; margin: 10px 0; }
-    th { text-align: left; padding: 10px 12px; background: rgba(30,41,59,.5); color: var(--yry-text2, #a9b1d6); font-weight: 600; }
-    td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,.04); color: var(--yry-text3, #6b7280); vertical-align: top; }
-    td:first-child { color: var(--yry-accent, #22d3ee); font-weight: 700; white-space: nowrap; }
-    td.metric { text-align: right; color: var(--yry-accent, #22d3ee); font-weight: 700; white-space: nowrap; }
-    code { background: rgba(0,0,0,.3); padding: 1px 5px; border-radius: 3px; font-size: .72rem; color: var(--yry-cyan, #22d3ee); }
-
-    /* 维度卡片网格 */
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin: 12px 0; }
-    .card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 14px 18px; }
-    .card h3 { margin: 0 0 6px; font-size: .88rem; color: var(--yry-accent, #22d3ee); }
-    .card p { margin: 0; font-size: .74rem; color: var(--yry-text3, #6b7280); line-height: 1.7; }
-    .card .metric { display: inline-block; margin-top: 8px; font-size: .68rem; padding: 2px 8px; border-radius: 3px; background: rgba(34,211,238,.12); color: var(--yry-accent, #22d3ee); }
-
-    /* 类别分布条 */
-    .cat-bar { display: flex; align-items: center; gap: 8px; margin: 6px 0; font-size: .74rem; }
-    .cat-bar .label { width: 140px; color: var(--yry-text2, #a9b1d6); }
-    .cat-bar .bar { flex: 1; height: 16px; background: rgba(0,0,0,.3); border-radius: 3px; overflow: hidden; }
-    .cat-bar .fill { height: 100%; background: linear-gradient(90deg, #22d3ee, #a78bfa); }
-    .cat-bar .count { width: 110px; text-align: right; color: var(--yry-text3, #6b7280); }
-
-    .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: .72rem; color: var(--yry-text3, #6b7280); margin: 8px 0; }
-    .legend span { display: inline-flex; align-items: center; gap: 6px; }
-    .legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
-
-    .err { color: #f87171; font-size: .78rem; }
-    .meta-bar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; background: rgba(15,23,42,.55); border: 1px solid rgba(34,211,238,.2); border-radius: 8px; padding: 8px 14px; margin: 10px 0 16px; font-size: .74rem; color: var(--yry-text3, #6b7280); }
-    .meta-bar code { background: rgba(0,0,0,.3); padding: 1px 6px; border-radius: 3px; color: var(--yry-accent, #22d3ee); font-size: .72rem; }
-    .meta-bar .sep { color: rgba(255,255,255,.15); }
-    .meta-bar b { color: var(--yry-accent, #22d3ee); font-weight: 600; }
-    .meta-bar .refresh { margin-left: auto; background: rgba(34,211,238,.1); border: 1px solid rgba(34,211,238,.3); color: var(--yry-accent, #22d3ee); padding: 2px 10px; border-radius: 4px; cursor: pointer; font-size: .7rem; transition: all .15s; }
-    .meta-bar .refresh:hover { background: rgba(34,211,238,.2); }
-  </style>
+  <link rel="stylesheet" href="cdn-summary/page-base.css">
+<link rel="stylesheet" href="yry-cdn-demo/index.css">
+<link rel="stylesheet" href="yry-cdn-demo/architecture.css">
 </head>
 <body>
   <h1>🏗 架构聚合 · CDN 资源库拓扑</h1>
@@ -77,7 +30,7 @@
     <span class="sep">·</span>
     <span id="metaTime">最后更新 —</span>
     <button class="refresh" onclick="location.reload()" title="重新拉取并刷新数据">🔄 刷新</button>
-    <span style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-left:8px"><kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">/</kbd> 搜索 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">t</kbd> 顶部 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">1-7</kbd> 跳转 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">0</kbd> 首页</span>
+    <span class="cd-text3-66-ml8"><kbd class="cd-code-chip">/</kbd> 搜索 · <kbd class="cd-code-chip">t</kbd> 顶部 · <kbd class="cd-code-chip">1-7</kbd> 跳转 · <kbd class="cd-code-chip">0</kbd> 首页</span>
   </div>
 
   <div class="links">
@@ -91,64 +44,64 @@
     <a href="review.html" title="⚠️ 审查聚合 — 六维健康评估 · 版本演进趋势 · D0-D8 诊断 · 改进建议">⚠️ 审查</a>
   </div>
 
-  <div style="background:rgba(15,23,42,.55);border:1px solid rgba(34,211,238,.2);border-radius:8px;padding:8px 14px;margin:0 0 14px;font-size:.72rem;color:var(--yry-text3,#6b7280);line-height:1.7">
-    <b style="color:var(--yry-accent,#22d3ee)">📑 页面大纲</b> ·
-    <a href="#kpis" style="color:var(--yry-accent,#22d3ee);text-decoration:none">📊 KPI 概览</a> ·
-    <a href="#chain" style="color:var(--yry-accent,#22d3ee);text-decoration:none">五步加载链</a> ·
-    <a href="#dims" style="color:var(--yry-accent,#22d3ee);text-decoration:none">架构维度</a> ·
-    <a href="#compliance" style="color:var(--yry-accent,#22d3ee);text-decoration:none">合规清单</a> ·
-    <a href="#layering" style="color:var(--yry-accent,#22d3ee);text-decoration:none">组件分层</a> ·
-    <a href="#timeline" style="color:var(--yry-accent,#22d3ee);text-decoration:none">版本演进</a> ·
-    <a href="#themes" style="color:var(--yry-accent,#22d3ee);text-decoration:none">双主题对比</a> ·
-    <a href="#quadrants" style="color:var(--yry-accent,#22d3ee);text-decoration:none">架构四象限</a> ·
-    <a href="#scoring" style="color:var(--yry-accent,#22d3ee);text-decoration:none">评分体系</a> ·
-    <a href="#formHealth" style="color:var(--yry-accent,#22d3ee);text-decoration:none">🩺 形态健康</a>
+  <div class="cd-surface-cyan">
+    <b class="cd-accent">📑 页面大纲</b> ·
+    <a href="#kpis" class="cd-accent-link">📊 KPI 概览</a> ·
+    <a href="#chain" class="cd-accent-link">五步加载链</a> ·
+    <a href="#dims" class="cd-accent-link">架构维度</a> ·
+    <a href="#compliance" class="cd-accent-link">合规清单</a> ·
+    <a href="#layering" class="cd-accent-link">组件分层</a> ·
+    <a href="#timeline" class="cd-accent-link">版本演进</a> ·
+    <a href="#themes" class="cd-accent-link">双主题对比</a> ·
+    <a href="#quadrants" class="cd-accent-link">架构四象限</a> ·
+    <a href="#scoring" class="cd-accent-link">评分体系</a> ·
+    <a href="#formHealth" class="cd-accent-link">🩺 形态健康</a>
   </div>
 
-  <div id="kpis" class="grid4" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:12px 0 20px"></div>
+  <div id="kpis" class="grid4" cd-x1-98"></div>
 
-  <div id="distStack" style="display:flex;height:10px;border-radius:5px;overflow:hidden;margin:-8px 0 6px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06)"></div>
-  <div id="distLegend" style="display:flex;gap:14px;flex-wrap:wrap;font-size:.7rem;color:var(--yry-text3,#6b7280);margin:0 0 14px"></div>
+  <div id="distStack" class="cd-spark-track"></div>
+  <div id="distLegend" class="cd-flex-gap14"></div>
 
   <h2 id="chain">📦 五步加载链</h2>
   <div class="chain">
-    <div class="chain-step" data-step="1" style="cursor:pointer" title="点击查看详情"><b>1. 基线 CSS</b>shared/index.css<br><span style="font-size:.68rem">设计令牌变量</span></div>
+    <div class="chain-step" data-step="1" class="cd-cursor-pointer" title="点击查看详情"><b>1. 基线 CSS</b>shared/index.css<br><span class="cd-fs-68">设计令牌变量</span></div>
     <span class="chain-arrow">→</span>
-    <div class="chain-step" data-step="2" style="cursor:pointer" title="点击查看详情"><b>2. 主题层</b>theme/index.css<br><span style="font-size:.68rem">双主题切换</span></div>
+    <div class="chain-step" data-step="2" class="cd-cursor-pointer" title="点击查看详情"><b>2. 主题层</b>theme/index.css<br><span class="cd-fs-68">双主题切换</span></div>
     <span class="chain-arrow">→</span>
-    <div class="chain-step" data-step="3" style="cursor:pointer" title="点击查看详情"><b>3. 组件 CSS</b>yry-*/index.css<br><span style="font-size:.68rem">按需加载</span></div>
+    <div class="chain-step" data-step="3" class="cd-cursor-pointer" title="点击查看详情"><b>3. 组件 CSS</b>yry-*/index.css<br><span class="cd-fs-68">按需加载</span></div>
     <span class="chain-arrow">→</span>
-    <div class="chain-step" data-step="4" style="cursor:pointer" title="点击查看详情"><b>4. Vue 运行时</b>Vue 3 global.prod.js<br><span style="font-size:.68rem">unpkg CDN</span></div>
+    <div class="chain-step" data-step="4" class="cd-cursor-pointer" title="点击查看详情"><b>4. Vue 运行时</b>Vue 3 global.prod.js<br><span class="cd-fs-68">unpkg CDN</span></div>
     <span class="chain-arrow">→</span>
-    <div class="chain-step" data-step="5" style="cursor:pointer" title="点击查看详情"><b>5. 组件 JS</b>yry-*/index.js<br><span style="font-size:.68rem">Custom Elements 注册</span></div>
+    <div class="chain-step" data-step="5" class="cd-cursor-pointer" title="点击查看详情"><b>5. 组件 JS</b>yry-*/index.js<br><span class="cd-fs-68">Custom Elements 注册</span></div>
   </div>
-  <div id="chainDetail" style="background:rgba(15,23,42,.55);border:1px solid rgba(34,211,238,.2);border-radius:8px;padding:12px 16px;margin:10px 0;font-size:.74rem;color:var(--yry-text3,#6b7280);line-height:1.7;display:none"></div>
-  <p style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-top:8px">字体 woff2 预加载 · 动画延迟 100ms · 资源 preload 提示 · 总加载 ≤ 800ms · FCP ≤ 500ms</p>
+  <div id="chainDetail" class="cd-x1-4"></div>
+  <p class="cd-x1-197">字体 woff2 预加载 · 动画延迟 100ms · 资源 preload 提示 · 总加载 ≤ 800ms · FCP ≤ 500ms</p>
 
-  <h3 style="font-size:.9rem;color:var(--yry-text2,#a9b1d6);margin:16px 0 8px">⏱ 加载性能时间线（估算）</h3>
-  <div style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:14px 16px;margin-bottom:8px">
-    <div id="loadTimeline" style="display:flex;flex-direction:column;gap:6px"></div>
-    <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:.62rem;color:var(--yry-text3,#6b7280)">
+  <h3 class="cd-x1-175">⏱ 加载性能时间线（估算）</h3>
+  <div class="cd-x1-63">
+    <div id="loadTimeline" class="cd-flex-col-6"></div>
+    <div class="cd-x1-75">
       <span>0ms</span><span>200ms</span><span>400ms</span><span>600ms</span><span>800ms</span>
     </div>
-    <div style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-top:6px;line-height:1.5">估算值基于资源大小与典型网络条件 · 实际加载时间受 CDN 缓存命中率影响 · 字体 woff2 走 preload 并行</div>
+    <div class="cd-x1-149">估算值基于资源大小与典型网络条件 · 实际加载时间受 CDN 缓存命中率影响 · 字体 woff2 走 preload 并行</div>
   </div>
 
-  <div style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 16px;margin:0 0 16px;font-size:.72rem;color:var(--yry-text3,#6b7280);line-height:1.8">
-    <div style="color:var(--yry-text2,#a9b1d6);font-weight:600;margin-bottom:8px">📖 架构术语速查</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px 16px">
-      <div><b style="color:var(--yry-accent,#22d3ee)">五步加载链</b> · shared→theme→组件CSS→Vue→组件JS · 顺序决定样式先于脚本</div>
-      <div><b style="color:var(--yry-accent,#22d3ee)">双主题</b> · Mono Cat A（深色等宽）+ System Cat B（场景文档）· CSS 变量切换</div>
-      <div><b style="color:var(--yry-accent,#22d3ee)">设计令牌</b> · 40+ CSS 变量 · 7 组分类 · <code>tokens/README.md</code> 真相源</div>
-      <div><b style="color:var(--yry-accent,#22d3ee)">组件分层</b> · 10 大功能类别 · 类别分布条形图见下方</div>
-      <div><b style="color:var(--yry-accent,#22d3ee)">A 级合规</b> · <code>arch-check.mjs</code> 自动校验 · 10 维度全通过</div>
-      <div><b style="color:var(--yry-accent,#22d3ee)">版本演进</b> · 语义化版本 · v1.0→v1.1→v1.2 时间线</div>
+  <div class="cd-surface-flat-3">
+    <div class="cd-text2-bold-mb8">📖 架构术语速查</div>
+    <div class="cd-grid-fit">
+      <div><b class="cd-accent">五步加载链</b> · shared→theme→组件CSS→Vue→组件JS · 顺序决定样式先于脚本</div>
+      <div><b class="cd-accent">双主题</b> · Mono Cat A（深色等宽）+ System Cat B（场景文档）· CSS 变量切换</div>
+      <div><b class="cd-accent">设计令牌</b> · 40+ CSS 变量 · 7 组分类 · <code>tokens/README.md</code> 真相源</div>
+      <div><b class="cd-accent">组件分层</b> · 10 大功能类别 · 类别分布条形图见下方</div>
+      <div><b class="cd-accent">A 级合规</b> · <code>arch-check.mjs</code> 自动校验 · 10 维度全通过</div>
+      <div><b class="cd-accent">版本演进</b> · 语义化版本 · v1.0→v1.1→v1.2 时间线</div>
     </div>
   </div>
 
   <h2 id="dims">📐 架构维度</h2>
   <table>
-    <thead><tr><th style="width:160px">维度</th><th>实现细节 · 性能指标 · 关键资产</th><th style="width:100px">指标</th></tr></thead>
+    <thead><tr><th class="cd-x1-294">维度</th><th>实现细节 · 性能指标 · 关键资产</th><th class="cd-w100">指标</th></tr></thead>
     <tbody>
       <tr><td>📦 五步加载链</td><td>shared → theme → 组件 CSS → Vue 3 → 组件 JS · 字体 woff2 预加载 · 动画延迟 100ms</td><td class="metric">≤800ms</td></tr>
       <tr><td>🎨 双主题系统</td><td><strong>Cat A Mono</strong>: 深蓝黑底 + JetBrains Mono 等宽 · 架构图/知识图谱专用 · <code>--bg --card --border --text --cyan --emerald --violet --amber --rose --blue</code> · <strong>Cat B System</strong>: 场景文档/审查页 · 深色主题变量</td><td class="metric">14 令牌</td></tr>
@@ -162,60 +115,57 @@
   </table>
 
   <h2 id="compliance">✅ 架构合规清单 (A 级)</h2>
-  <div class="compliance-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px">
-    <div class="comp-item" style="background:rgba(15,23,42,.55);border:1px solid rgba(52,211,153,.3);border-radius:6px;padding:8px 12px;font-size:.74rem"><span style="color:#34d399;font-weight:700">✓</span> 内核轻量 — lib ≤ 20 模块 · 编排器 ≤ 500 行</div>
-    <div class="comp-item" style="background:rgba(15,23,42,.55);border:1px solid rgba(52,211,153,.3);border-radius:6px;padding:8px 12px;font-size:.74rem"><span style="color:#34d399;font-weight:700">✓</span> 范式合规 — 无 class/extends · 无 export default · 无空 catch</div>
-    <div class="comp-item" style="background:rgba(15,23,42,.55);border:1px solid rgba(52,211,153,.3);border-radius:6px;padding:8px 12px;font-size:.74rem"><span style="color:#34d399;font-weight:700">✓</span> 扩展隔离 — 新增 Skill 不修改编排器</div>
-    <div class="comp-item" style="background:rgba(15,23,42,.55);border:1px solid rgba(52,211,153,.3);border-radius:6px;padding:8px 12px;font-size:.74rem"><span style="color:#34d399;font-weight:700">✓</span> 配置 API — 所有参数走 settings.json</div>
-    <div class="comp-item" style="background:rgba(15,23,42,.55);border:1px solid rgba(52,211,153,.3);border-radius:6px;padding:8px 12px;font-size:.74rem"><span style="color:#34d399;font-weight:700">✓</span> 健康检测 — 4 实时监控面板 + 趋势持久化</div>
-    <div class="comp-item" style="background:rgba(15,23,42,.55);border:1px solid rgba(52,211,153,.3);border-radius:6px;padding:8px 12px;font-size:.74rem"><span style="color:#34d399;font-weight:700">✓</span> 代码范式 — 模块·函数·错误·导入·常量规范</div>
-    <div class="comp-item" style="background:rgba(15,23,42,.55);border:1px solid rgba(52,211,153,.3);border-radius:6px;padding:8px 12px;font-size:.74rem"><span style="color:#34d399;font-weight:700">✓</span> 安全基线 — 认证不绕过 · 密钥不落盘 · 输入必校验</div>
-    <div class="comp-item" style="background:rgba(15,23,42,.55);border:1px solid rgba(52,211,153,.3);border-radius:6px;padding:8px 12px;font-size:.74rem"><span style="color:#34d399;font-weight:700">✓</span> 自托管一致 — plugin.json 版本与 skills 同步</div>
+  <div class="compliance-grid" cd-x1-157">
+    <div class="comp-item" cd-surface-emerald"><span class="cd-emerald-bold">✓</span> 内核轻量 — lib ≤ 20 模块 · 编排器 ≤ 500 行</div>
+    <div class="comp-item" cd-surface-emerald"><span class="cd-emerald-bold">✓</span> 范式合规 — 无 class/extends · 无 export default · 无空 catch</div>
+    <div class="comp-item" cd-surface-emerald"><span class="cd-emerald-bold">✓</span> 扩展隔离 — 新增 Skill 不修改编排器</div>
+    <div class="comp-item" cd-surface-emerald"><span class="cd-emerald-bold">✓</span> 配置 API — 所有参数走 settings.json</div>
+    <div class="comp-item" cd-surface-emerald"><span class="cd-emerald-bold">✓</span> 健康检测 — 4 实时监控面板 + 趋势持久化</div>
+    <div class="comp-item" cd-surface-emerald"><span class="cd-emerald-bold">✓</span> 代码范式 — 模块·函数·错误·导入·常量规范</div>
+    <div class="comp-item" cd-surface-emerald"><span class="cd-emerald-bold">✓</span> 安全基线 — 认证不绕过 · 密钥不落盘 · 输入必校验</div>
+    <div class="comp-item" cd-surface-emerald"><span class="cd-emerald-bold">✓</span> 自托管一致 — plugin.json 版本与 skills 同步</div>
   </div>
-  <div style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-top:8px;line-height:1.6">由 <code>node lib/arch-check.mjs</code> 自动验证 · 10 维度 A 级合规 · 支持 <code>--fix</code> 自动修复 · <code>--append-trend</code> 追加趋势</div>
+  <div class="cd-text3-66-mt8-lh">由 <code>node lib/arch-check.mjs</code> 自动验证 · 10 维度 A 级合规 · 支持 <code>--fix</code> 自动修复 · <code>--append-trend</code> 追加趋势</div>
 
   <h2 id="layering">🧩 组件分层分布</h2>
   <div id="catDist" class="legend">加载中…</div>
   <div id="catBars"></div>
-  <div style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-top:6px;line-height:1.6">类别分布为参考值（基于命名前缀启发式归类）· 真实类别标签待 manifest 生成器扩展 <code>category</code> 字段后可数据驱动</div>
+  <div class="cd-text3-66-mt6">类别分布为参考值（基于命名前缀启发式归类）· 真实类别标签待 manifest 生成器扩展 <code>category</code> 字段后可数据驱动</div>
 
   <h2 id="timeline">🔖 版本演进时间线</h2>
-  <div id="timelineWrap" style="display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;margin:10px 0 16px;font-size:.74rem"></div>
-  <div id="timelineNote" style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-top:6px;line-height:1.6">演进趋势：<b style="color:#34d399">↑</b> 78/C → 86/B → 92/A 持续上升 · 每版本提供完整迁移指南 · 无破坏性变更 · 6 步迁移路径（审计→识别→映射→验证→删除冗余→回归）</div>
+  <div id="timelineWrap" class="cd-x1-107"></div>
+  <div id="timelineNote" class="cd-text3-66-mt6">演进趋势：<b class="cd-emerald">↑</b> 78/C → 86/B → 92/A 持续上升 · 每版本提供完整迁移指南 · 无破坏性变更 · 6 步迁移路径（审计→识别→映射→验证→删除冗余→回归）</div>
 
   <h2 id="themes">🎨 双主题对比预览</h2>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0" class="themes-grid">
-    <div style="background:#0d1117;border:1px solid #1f2937;border-radius:8px;padding:14px 16px;font-family:'JetBrains Mono','SF Mono',Consolas,monospace">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-        <span style="font-size:1.1rem">📐</span>
-        <b style="color:#22d3ee;font-size:.84rem">Cat A Mono</b>
-        <span style="font-size:.62rem;color:#6b7280;margin-left:auto">架构图 · 知识图谱专用</span>
+  <div class="cd-x1-173" class="themes-grid">
+    <div class="cd-x1-48">
+      <div class="cd-flex-accent-mb10">
+        <span class="cd-fs-1-1">📐</span>
+        <b class="cd-cyan-84">Cat A Mono</b>
+        <span class="cd-mono-62-mlauto">架构图 · 知识图谱专用</span>
       </div>
-      <div style="background:#1e1f2b;border:1px solid #3d59a1;border-radius:4px;padding:8px 10px;margin-bottom:6px">
-        <div style="color:#a9b1d6;font-size:.74rem">--card 背景</div>
-        <div style="color:#22d3ee;font-size:.72rem;margin-top:2px">--cyan 强调色</div>
-        <div style="color:#a78bfa;font-size:.72rem">--violet 次强调</div>
+      <div class="cd-x1-100">
+        <div class="cd-x1-263">--card 背景</div>
+        <div class="cd-x1-243">--cyan 强调色</div>
+        <div class="cd-x1-264">--violet 次强调</div>
       </div>
-      <div style="color:#6b7280;font-size:.66rem;line-height:1.6">JetBrains Mono 等宽 · 深蓝黑底 (#0d1117) · 适合代码与拓扑</div>
+      <div class="cd-text3-flat-66">JetBrains Mono 等宽 · 深蓝黑底 (#0d1117) · 适合代码与拓扑</div>
     </div>
-    <div style="background:#1a1625;border:1px solid #3b2d5c;border-radius:8px;padding:14px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-        <span style="font-size:1.1rem">📄</span>
-        <b style="color:#22d3ee;font-size:.84rem">Cat B System</b>
-        <span style="font-size:.62rem;color:#6b7280;margin-left:auto">场景文档 · 审查页专用</span>
+    <div class="cd-x1-42">
+      <div class="cd-flex-accent-mb10">
+        <span class="cd-fs-1-1">📄</span>
+        <b class="cd-cyan-84">Cat B System</b>
+        <span class="cd-mono-62-mlauto">场景文档 · 审查页专用</span>
       </div>
-      <div style="background:#2b2440;border:1px solid #4a3d6c;border-radius:4px;padding:8px 10px;margin-bottom:6px">
-        <div style="color:#c9b8e8;font-size:.74rem">--card 背景</div>
-        <div style="color:#7dd3fc;font-size:.72rem;margin-top:2px">--accent 强调色</div>
-        <div style="color:#fbbf24;font-size:.72rem">--amber 警示色</div>
+      <div class="cd-x1-101">
+        <div class="cd-x1-265">--card 背景</div>
+        <div class="cd-x1-244">--accent 强调色</div>
+        <div class="cd-x1-266">--amber 警示色</div>
       </div>
-      <div style="color:#6b7280;font-size:.66rem;line-height:1.6">系统字体 · 深紫黑底 (#1a1625) · 适合阅读与导航</div>
+      <div class="cd-text3-flat-66">系统字体 · 深紫黑底 (#1a1625) · 适合阅读与导航</div>
     </div>
   </div>
-  <div style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-top:6px;line-height:1.6">两主题共享 14 个设计令牌 · 通过 <code>theme/index.css</code> 切换 · CSS 变量统一 · <a href="theme/index.html" style="color:var(--yry-accent,#22d3ee)">查看 System 主题</a> · <a href="theme-mono/index.html" style="color:var(--yry-accent,#22d3ee)">查看 Mono 主题</a></div>
-  <style>
-    @media (max-width: 700px) { .themes-grid { grid-template-columns: 1fr !important } }
-  </style>
+  <div class="cd-text3-66-mt6">两主题共享 14 个设计令牌 · 通过 <code>theme/index.css</code> 切换 · CSS 变量统一 · <a href="theme/index.html" class="cd-accent">查看 System 主题</a> · <a href="theme-mono/index.html" class="cd-accent">查看 Mono 主题</a></div>
 
   <h2 id="quadrants">🏗 架构四象限</h2>
   <div class="grid">
@@ -242,7 +192,7 @@
   </div>
 
   <h2 id="scoring">📊 评分体系 · 六维加权</h2>
-  <div style="display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start" class="weights-layout">
+  <div class="cd-x1-162" class="weights-layout">
     <table>
       <thead><tr><th>维度</th><th>权重分配</th><th>评估方法</th></tr></thead>
       <tbody>
@@ -254,44 +204,41 @@
         <tr><td>MPI 迁移</td><td class="metric">迁移完整度</td><td>6 步迁移路径 · 破坏性变更标注 · 版本向后兼容</td></tr>
       </tbody>
     </table>
-    <div style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px">
-      <div style="font-size:.78rem;color:var(--yry-text2,#a9b1d6);margin-bottom:10px;font-weight:600">🎯 CQI 权重分布</div>
-      <div id="weightsChart" style="display:flex;flex-direction:column;gap:8px"></div>
-      <div style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-top:10px;line-height:1.5">CSS 规范性权重最高 — 强调代码可维护性 · API 一致性次之 — 保障组件契约稳定</div>
+    <div class="cd-surface-flat-4">
+      <div class="cd-x1-133">🎯 CQI 权重分布</div>
+      <div id="weightsChart" class="cd-flex-col-8"></div>
+      <div class="cd-x1-146">CSS 规范性权重最高 — 强调代码可维护性 · API 一致性次之 — 保障组件契约稳定</div>
     </div>
   </div>
-  <style>
-    @media (max-width: 900px) { .weights-layout { grid-template-columns: 1fr !important } }
-  </style>
 
-  <h2 id="formHealth" style="margin-top:28px">🩺 组件形态健康分布 · Vue / Vanilla / 基类</h2>
-  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">按组件形态聚合平均健康分 · 条长按分数归一化 (满分 100) · 数据源 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">cdn-summary.componentHealth</code>。</div>
-  <div id="formHealthBars" style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 18px;margin:8px 0 16px">
-    <div id="formHealthList" style="display:flex;flex-direction:column;gap:10px">加载中…</div>
-    <div id="formHealthNote" style="font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.6;margin-top:8px"></div>
+  <h2 id="formHealth" class="cd-mt28">🩺 组件形态健康分布 · Vue / Vanilla / 基类</h2>
+  <div class="cd-meta-72">按组件形态聚合平均健康分 · 条长按分数归一化 (满分 100) · 数据源 <code class="cd-code-chip-68">cdn-summary.componentHealth</code>。</div>
+  <div id="formHealthBars" class="cd-surface-flat">
+    <div id="formHealthList" class="cd-flex-col-10">加载中…</div>
+    <div id="formHealthNote" class="cd-text3-66-mt8"></div>
   </div>
 
-  <h2 id="ceMatrix" style="margin-top:28px">🔌 自定义元素 (CE) × 完整度交叉分布</h2>
-  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">展示 Vue Custom Elements 与普通组件的完整度对比 · 行：CE 类型 · 列：状态 · 数据源 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">components-manifest/index.json</code>。</div>
-  <div id="ceMatrixTable" style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 18px;margin:8px 0 16px;overflow-x:auto">
-    <div id="ceMatrixBody" style="display:flex;flex-direction:column;gap:8px">加载中…</div>
-    <div id="ceMatrixNote" style="font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.6;margin-top:8px"></div>
+  <h2 id="ceMatrix" class="cd-mt28">🔌 自定义元素 (CE) × 完整度交叉分布</h2>
+  <div class="cd-meta-72">展示 Vue Custom Elements 与普通组件的完整度对比 · 行：CE 类型 · 列：状态 · 数据源 <code class="cd-code-chip-68">components-manifest/index.json</code>。</div>
+  <div id="ceMatrixTable" class="cd-surface-flat-scroll">
+    <div id="ceMatrixBody" class="cd-flex-col-8">加载中…</div>
+    <div id="ceMatrixNote" class="cd-text3-66-mt8"></div>
   </div>
 
-  <h2 id="engMetrics" style="margin-top:28px">📊 工程度量仪表盘 · Props / 依赖 / 令牌 / Demo</h2>
-  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">关键工程度量大屏幕 · 揭示系统 API 表面积、依赖耦合、设计令牌分散度、Demo 覆盖率 · 数据源 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">components-manifest/index.json</code>。</div>
-  <div id="engMetricsGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:8px 0 16px">加载中…</div>
+  <h2 id="engMetrics" class="cd-mt28">📊 工程度量仪表盘 · Props / 依赖 / 令牌 / Demo</h2>
+  <div class="cd-meta-72">关键工程度量大屏幕 · 揭示系统 API 表面积、依赖耦合、设计令牌分散度、Demo 覆盖率 · 数据源 <code class="cd-code-chip-68">components-manifest/index.json</code>。</div>
+  <div id="engMetricsGrid" class="cd-x1-102">加载中…</div>
 
-  <h2 id="loadBreakdown" style="margin-top:28px">⚡ 加载链阶段耗时 · 625ms 拆解</h2>
-  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">五步加载链各阶段估算耗时拆解 · Vue3 引擎加载耗时最长（~40%）· 揭示性能优化重点 · 数据为估算值。</div>
-  <div id="loadBreakdownList" style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 18px;margin:8px 0 16px;display:flex;flex-direction:column;gap:8px">加载中…</div>
+  <h2 id="loadBreakdown" class="cd-mt28">⚡ 加载链阶段耗时 · 625ms 拆解</h2>
+  <div class="cd-meta-72">五步加载链各阶段估算耗时拆解 · Vue3 引擎加载耗时最长（~40%）· 揭示性能优化重点 · 数据为估算值。</div>
+  <div id="loadBreakdownList" class="cd-surface-flat-flex">加载中…</div>
 
-  <h2 id="catHeat" style="margin-top:28px">🌡 类别 × 类型热力图 · 10 类别 × 3 类型分布</h2>
-  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">将 125 组件按 10 功能类别 × 3 类型 (Vue/Vanilla/未知) 交叉分布 · 颜色越亮表示该格组件数越多 · 揭示类别 × 技术栈的耦合偏好 · 数据源 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">manifest.json</code>。</div>
-  <div id="catHeatGrid" style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 18px;margin:8px 0 16px;overflow-x:auto">加载中…</div>
+  <h2 id="catHeat" class="cd-mt28">🌡 类别 × 类型热力图 · 10 类别 × 3 类型分布</h2>
+  <div class="cd-meta-72">将 125 组件按 10 功能类别 × 3 类型 (Vue/Vanilla/未知) 交叉分布 · 颜色越亮表示该格组件数越多 · 揭示类别 × 技术栈的耦合偏好 · 数据源 <code class="cd-code-chip-68">manifest.json</code>。</div>
+  <div id="catHeatGrid" class="cd-surface-flat-scroll">加载中…</div>
 
   <p id="err" class="err" hidden></p>
-  <footer class="agg-footer" style="margin-top:32px;padding:14px 18px;background:rgba(15,23,42,.4);border:1px solid rgba(255,255,255,.06);border-radius:10px;font-size:.72rem;color:var(--yry-text3,#6b7280);line-height:1.8"><div style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-bottom:6px"><b style="color:var(--yry-accent,#22d3ee)">YrY CDN · Architecture聚合</b><span style="color:rgba(255,255,255,.15)">·</span><span>v1.2.0 · 2026</span><span style="color:rgba(255,255,255,.15)">·</span><span>📊 数据源 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">components-manifest/index.json + 架构元数据</code></span><span style="color:rgba(255,255,255,.15)">·</span><span>🛠 生成 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">手写（与 cdn/index.html 一致）</code></span></div><div style="display:flex;flex-wrap:wrap;gap:8px 12px;margin-top:6px"><a href="index.html" title="CDN 首页 — 七卡聚合中心入口" style="color:var(--yry-accent,#22d3ee);text-decoration:none">🏠 CDN 首页</a><a href="../docs/index.html" style="color:var(--yry-accent,#22d3ee);text-decoration:none">🏠 文档中心</a><a href="../README.md" style="color:var(--yry-accent,#22d3ee);text-decoration:none">📖 README</a><span style="margin-left:auto;font-size:.66rem">键盘 <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">1-7</kbd> 跳转 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">0</kbd> 首页 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">/</kbd> 搜索 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">t</kbd> 顶部</span></div></footer>
+  <footer class="agg-footer" cd-surface-section"><div class="cd-flex-wrap-14"><b class="cd-accent">YrY CDN · Architecture聚合</b><span class="cd-faint">·</span><span>v1.2.0 · 2026</span><span class="cd-faint">·</span><span>📊 数据源 <code class="cd-code-chip-68">components-manifest/index.json + 架构元数据</code></span><span class="cd-faint">·</span><span>🛠 生成 <code class="cd-code-chip-68">手写（与 cdn/index.html 一致）</code></span></div><div class="cd-flex-wrap-12-mt6"><a href="index.html" title="CDN 首页 — 七卡聚合中心入口" class="cd-accent-link">🏠 CDN 首页</a><a href="../docs/index.html" class="cd-accent-link">🏠 文档中心</a><a href="../README.md" class="cd-accent-link">📖 README</a><span class="cd-text3-66-mlauto">键盘 <kbd class="cd-code-chip">1-7</kbd> 跳转 · <kbd class="cd-code-chip">0</kbd> 首页 · <kbd class="cd-code-chip">/</kbd> 搜索 · <kbd class="cd-code-chip">t</kbd> 顶部</span></div></footer>
 
   <script type="module">
     Promise.all([
@@ -307,7 +254,7 @@
       const total = d.stats?.total || (d.components || []).length;
       const vueCount = d.stats?.vue || 0;
       const vanillaCount = d.stats?.vanilla || 0;
-      document.getElementById('metaCount').innerHTML = `${total} 组件 · <b style="color:var(--yry-accent,#22d3ee)">${d.stats?.customElements || 0}</b> CE · <b style="color:var(--yry-accent,#22d3ee)">${d.stats?.totalCssTokens || 0}</b> 变量实例 · Vue ${vueCount} · Vanilla ${vanillaCount}`;
+      document.getElementById('metaCount').innerHTML = `${total} 组件 · <b class="cd-accent">${d.stats?.customElements || 0}</b> CE · <b class="cd-accent">${d.stats?.totalCssTokens || 0}</b> 变量实例 · Vue ${vueCount} · Vanilla ${vanillaCount}`;
       document.getElementById('compTotalMetric').textContent = `${total} 组件`;
       document.getElementById('compMetric').textContent = `${total} 组件`;
       const compArr = d.components || [];
@@ -341,23 +288,23 @@
           const meta = labelMap[r.version] || { tag: `V${r.version}`, desc: '版本更新' };
           const color = colorOf(r.grade);
           const last = i === rows.length - 1;
-          const card = `<div style="flex:1;min-width:180px;background:rgba(15,23,42,.55);border:1px solid ${color}40;border-radius:8px;padding:12px 14px">
-            <div style="font-size:.62rem;color:${color};font-weight:700;letter-spacing:.05em">${meta.tag}</div>
-            <div style="font-size:1.4rem;color:${color};font-weight:700;margin:4px 0">${r.score}<span style="font-size:.8rem;opacity:.7">/${r.grade}</span></div>
-            <div style="color:var(--yry-text3,#6b7280);font-size:.66rem;line-height:1.5">${meta.desc}</div>
-            <div style="color:rgba(255,255,255,.3);font-size:.6rem;margin-top:4px">${r.date}</div>
+          const card = `<div class="cd-hook-surface-color-border" style="--color:${color}">
+            <div class="cd-hook-small-bold-ls" style="--color:${color}">${meta.tag}</div>
+            <div class="cd-hook-big-num" style="--color:${color}">${r.score}<span class="cd-x1-273">/${r.grade}</span></div>
+            <div class="cd-text3-66-lh5">${meta.desc}</div>
+            <div class="cd-x1-213">${r.date}</div>
           </div>`;
-          const arrow = last ? `<div style="flex:1;min-width:140px;background:rgba(15,23,42,.55);border:1px dashed rgba(34,211,238,.3);border-radius:8px;padding:12px 14px;opacity:.7">
-            <div style="font-size:.62rem;color:var(--yry-accent,#22d3ee);font-weight:700;letter-spacing:.05em">NEXT · 规划中</div>
-            <div style="font-size:1.4rem;color:var(--yry-accent,#22d3ee);font-weight:700;margin:4px 0">—</div>
-            <div style="color:var(--yry-text3,#6b7280);font-size:.66rem;line-height:1.5">架构健康度深化 · 性能监控 · 更多场景</div>
-          </div>` : `<div style="align-self:center;color:var(--yry-accent,#22d3ee);font-size:1.2rem">→</div>`;
+          const arrow = last ? `<div class="cd-x1-49">
+            <div class="cd-x1-125">NEXT · 规划中</div>
+            <div class="cd-x1-158">—</div>
+            <div class="cd-text3-66-lh5">架构健康度深化 · 性能监控 · 更多场景</div>
+          </div>` : `<div class="cd-x1-172">→</div>`;
           return card + arrow;
         }).join('');
       }
       if (noteEl && rows.length > 1) {
-        const arrows = rows.map(r => `<b style="color:${colorOf(r.grade)}">${r.score}/${r.grade}</b>`).join(' → ');
-        noteEl.innerHTML = `演进趋势：<b style="color:#34d399">↑</b> ${arrows} 持续上升 · 每版本提供完整迁移指南 · 无破坏性变更 · 6 步迁移路径（审计→识别→映射→验证→删除冗余→回归）${trend.length ? ' · 数据源 scoreTrend (实时)' : ''}`;
+        const arrows = rows.map(r => `<b class="cd-hook-color" style="--color:${colorOf(r.grade)}">${r.score}/${r.grade}</b>`).join(' → ');
+        noteEl.innerHTML = `演进趋势：<b class="cd-emerald">↑</b> ${arrows} 持续上升 · 每版本提供完整迁移指南 · 无破坏性变更 · 6 步迁移路径（审计→识别→映射→验证→删除冗余→回归）${trend.length ? ' · 数据源 scoreTrend (实时)' : ''}`;
       }
 
       const kpis = [
@@ -369,9 +316,9 @@
         { v: healthLabel, l: '综合健康评分' + (summary ? ' (实时)' : ''), color: '#22d3ee', grade: true }
       ];
       document.getElementById('kpis').innerHTML = kpis.map(k =>
-        `<div class="kpi-card" style="background:${k.grade ? 'linear-gradient(135deg,rgba(34,211,238,.12),rgba(167,139,250,.12))' : 'rgba(15,23,42,.55)'};border:1px solid ${k.grade ? 'rgba(34,211,238,.35)' : 'rgba(255,255,255,.06)'};border-radius:10px;padding:14px 18px">
-          <div style="font-size:${k.grade ? '1.3rem' : '1.6rem'};color:${k.color};font-weight:700;line-height:1.1">${k.v}</div>
-          <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-top:2px">${k.l}</div>
+        `<div class="kpi-card" cd-y0" style="--v1:${k.grade ? 'linear-gradient(135deg,rgba(34,211,238,.12),rgba(167,139,250,.12))' : 'rgba(15,23,42,.55)'};--v2:${k.grade ? 'rgba(34,211,238,.35)' : 'rgba(255,255,255,.06)'}">
+          <div class="cd-y1" style="--v1:${k.grade ? '1.3rem' : '1.6rem'};--v2:${k.color}">${k.v}</div>
+          <div class="cd-x1-198">${k.l}</div>
         </div>`
       ).join('');
 
@@ -384,12 +331,12 @@
         { key: '页面/样式基类', n: baseCount, color: '#22d3ee' }
       ];
       document.getElementById('distStack').innerHTML = DIST.map(d =>
-        `<div title="${d.key} · ${d.n} 个 · ${(d.n / distTotal * 100).toFixed(1)}%" style="flex:${d.n || 0.001};background:${d.color};position:relative">
-          ${d.n / distTotal >= 0.12 ? `<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:rgba(0,0,0,.7)">${d.n}</span>` : ''}
+        `<div title="${d.key} · ${d.n} 个 · ${(d.n / distTotal * 100).toFixed(1)}%" class="cd-hook-flex-bg" style="--flex:${d.n || 0.001};--color:${d.color}">
+          ${d.n / distTotal >= 0.12 ? `<span class="cd-overlay-badge">${d.n}</span>` : ''}
         </div>`
       ).join('');
       document.getElementById('distLegend').innerHTML = DIST.map(d =>
-        `<span><i style="width:10px;height:10px;border-radius:2px;display:inline-block;background:${d.color};margin-right:4px"></i>${d.key} <b style="color:var(--yry-text2,#a9b1d6)">${d.n}</b> · ${(d.n / distTotal * 100).toFixed(0)}%</span>`
+        `<span><i class="cd-hook-dot-10" style="--color:${d.color}"></i>${d.key} <b class="cd-text2">${d.n}</b> · ${(d.n / distTotal * 100).toFixed(0)}%</span>`
       ).join('');
 
       // 加载链步骤点击展开详情
@@ -415,7 +362,7 @@
           document.querySelectorAll('.chain-step').forEach(s => s.style.borderColor = '');
           step.style.borderColor = 'var(--yry-accent, #22d3ee)';
           const d = CHAIN_DETAILS[n];
-          detailEl.innerHTML = `<div style="color:var(--yry-accent,#22d3ee);font-weight:600;margin-bottom:6px">${d.title}</div>${d.body}`;
+          detailEl.innerHTML = `<div class="cd-x1-174">${d.title}</div>${d.body}`;
           detailEl.style.display = 'block';
           activeStep = n;
         });
@@ -427,14 +374,14 @@
         ['响应式', 15, '#fb923c']
       ];
       document.getElementById('weightsChart').innerHTML = weights.map(([label, pct, color]) => `
-        <div style="display:flex;align-items:center;gap:8px;font-size:.72rem">
-          <span style="width:84px;color:var(--yry-text2,#a9b1d6)">${label}</span>
-          <span style="flex:1;height:14px;background:rgba(0,0,0,.3);border-radius:3px;overflow:hidden">
-            <span style="display:block;height:100%;width:${pct}%;background:${color}"></span>
+        <div class="cd-x1-216">
+          <span class="cd-x1-248">${label}</span>
+          <span class="cd-x1-150">
+            <span class="cd-hook-block-w-bg" style="--w:${pct}%;--color:${color}"></span>
           </span>
-          <b style="width:36px;text-align:right;color:${color}">${pct}%</b>
+          <b class="cd-hook-w36-right-color" style="--color:${color}">${pct}%</b>
         </div>
-      `).join('') + `<div style="margin-top:6px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06);font-size:.68rem;color:var(--yry-text3,#6b7280)">合计 100% · 4 维独立评估</div>`;
+      `).join('') + `<div class="cd-x1-59">合计 100% · 4 维独立评估</div>`;
 
       // 加载性能时间线 — 基于实际 manifest 文件大小估算
       const fmtBytes = b => b < 1024 ? b + 'B' : (b / 1024).toFixed(1) + 'KB';
@@ -462,18 +409,18 @@
       document.getElementById('loadTimeline').innerHTML = steps.map(([label, file, size, color], i) => {
         const msVal = stepMs[i];
         const pct = (msVal / maxMs * 100).toFixed(0);
-        return `<div style="display:grid;grid-template-columns:120px 1fr 90px;gap:8px;align-items:center;font-size:.7rem">
-          <div style="color:var(--yry-text2,#a9b1d6)">
-            <div style="font-weight:600">${label}</div>
-            <div style="font-size:.6rem;color:var(--yry-text3,#6b7280)">${file}</div>
+        return `<div class="cd-x1-115">
+          <div class="cd-text2">
+            <div class="cd-bold">${label}</div>
+            <div class="cd-x2-35">${file}</div>
           </div>
-          <div style="height:14px;background:rgba(0,0,0,.3);border-radius:3px;overflow:hidden;position:relative">
-            <span style="display:block;height:100%;width:${pct}%;background:${color};transition:width .3s"></span>
-            <span style="position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:.6rem;color:${size > 1024 ? '#fff' : 'var(--yry-text3,#6b7280)'}">${fmtBytes(size)}</span>
+          <div class="cd-x1-119">
+            <span class="cd-hook-bar-trans" style="--w:${pct}%;--color:${color}"></span>
+            <span class="cd-y2" style="--v1:${size > 1024 ? '#fff' : 'var(--yry-text3,#6b7280)'}">${fmtBytes(size)}</span>
           </div>
-          <div style="text-align:right;color:${color};font-weight:600">~${msVal}ms</div>
+          <div class="cd-hook-right-color-w600" style="--color:${color}">~${msVal}ms</div>
         </div>`;
-      }).join('') + `<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;font-size:.66rem;color:var(--yry-text3,#6b7280)"><span>估算总加载（串行）</span><b style="color:var(--yry-accent,#22d3ee)">~${totalMs}ms · 并行实际 ≤ 800ms</b></div>`;
+      }).join('') + `<div class="cd-x1-24"><span>估算总加载（串行）</span><b class="cd-accent">~${totalMs}ms · 并行实际 ≤ 800ms</b></div>`;
 
       // 按 kind 分类统计
       const byKindRaw = d.stats?.byKind || {};
@@ -488,7 +435,7 @@
         ['unknown', '#9ca3af', '页面/样式基类']
       ];
       document.getElementById('catDist').innerHTML = legend
-        .map(([k, c, l]) => `<span><i style="background:${c}"></i>${l}: <b style="color:${c}">${byKind[k] || 0}</b></span>`)
+        .map(([k, c, l]) => `<span><i class="cd-hook-bg-c" style="--color:${c}"></i>${l}: <b class="cd-hook-color" style="--color:${c}">${byKind[k] || 0}</b></span>`)
         .join(' · ');
 
       // 按类别分布（基于命名前缀启发式归类 · 参考值）
@@ -511,7 +458,7 @@
       document.getElementById('catBars').innerHTML = counts.map(([name, n]) => `
         <div class="cat-bar">
           <span class="label">${name}</span>
-          <span class="bar"><span class="fill" style="width:${(n / max * 100).toFixed(0)}%"></span></span>
+          <span class="bar"><span class="fill" cd-hook-w-pct" style="--w:${(n / max * 100).toFixed(0)}%"></span></span>
           <span class="count">${n} 个 · ${(n / totalComp * 100).toFixed(1)}%</span>
         </div>
       `).join('');
@@ -529,7 +476,7 @@
         const rows = FORMS.map(f => ({ ...f, count: ch[f.key]?.count || 0, score: ch[f.key]?.avgScore || 0 }))
           .filter(r => r.count > 0);
         if (rows.length === 0) {
-          fhEl.innerHTML = '<div style="padding:10px;font-size:.74rem;color:var(--yry-text3,#6b7280)">无组件形态健康数据</div>';
+          fhEl.innerHTML = '<div class="cd-text3-74-pad10">无组件形态健康数据</div>';
         } else {
           const maxScore = 100;
           fhEl.innerHTML = rows.map(r => {
@@ -537,21 +484,21 @@
             const grade = r.score >= 90 ? 'A' : r.score >= 80 ? 'B' : r.score >= 60 ? 'C' : 'D';
             const gradeColor = r.score >= 90 ? '#34d399' : r.score >= 80 ? '#22d3ee' : r.score >= 60 ? '#fb923c' : '#f87171';
             const share = ch.totalComponents ? (r.count / ch.totalComponents * 100).toFixed(0) : 0;
-            return `<div style="display:grid;grid-template-columns:160px 1fr auto auto;gap:10px;align-items:center;font-size:.72rem">
-              <div style="color:var(--yry-text2,#a9b1d6);font-weight:600;display:flex;align-items:center;gap:6px">
-                <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${r.color}"></span>${r.label}
+            return `<div class="cd-x1-85">
+              <div class="cd-x1-124">
+                <span class="cd-hook-dot-8" style="--color:${r.color}"></span>${r.label}
               </div>
-              <div style="height:14px;background:rgba(0,0,0,.4);border-radius:3px;overflow:hidden">
-                <span style="display:block;height:100%;width:${pct}%;background:linear-gradient(90deg,${r.color},${r.color}aa)"></span>
+              <div class="cd-bar-track-14">
+                <span class="cd-hook-block-w-grad-r" style="--w:${pct}%;--color:${r.color}"></span>
               </div>
-              <span style="color:${gradeColor};font-weight:700;white-space:nowrap">${r.score} <span style="font-size:.64rem;padding:1px 4px;border-radius:2px;background:${gradeColor}22;border:1px solid ${gradeColor}55;margin-left:4px">${grade}</span></span>
-              <span style="color:var(--yry-text3,#6b7280);font-size:.66rem;white-space:nowrap">${r.count} 组件 · ${share}%</span>
+              <span class="cd-y3" style="--v1:${gradeColor}">${r.score} <span class="cd-y4" style="--v1:${gradeColor};--v2:${gradeColor}">${grade}</span></span>
+              <span class="cd-x2-19">${r.count} 组件 · ${share}%</span>
             </div>`;
           }).join('');
           if (fhNote) {
             const oa = ch.overallAvg || 0;
             const tc = ch.totalComponents || 0;
-            fhNote.innerHTML = `整体平均 <b style="color:var(--yry-accent,#22d3ee)">${oa}/100</b> · 共 <b>${tc}</b> 组件 · 基类健康分最高（多为纯样式与令牌定义，复杂度低）· Vue 自定义元素次之（含运行时逻辑）· Vanilla 居末（含原生 DOM 操作）`;
+            fhNote.innerHTML = `整体平均 <b class="cd-accent">${oa}/100</b> · 共 <b>${tc}</b> 组件 · 基类健康分最高（多为纯样式与令牌定义，复杂度低）· Vue 自定义元素次之（含运行时逻辑）· Vanilla 居末（含原生 DOM 操作）`;
           }
         }
       }
@@ -583,22 +530,22 @@
         const colTotals = STATUSES.map((_, i) => matrix.reduce((s, r) => s + r.cells[i], 0));
         const grandTotal = colTotals.reduce((s, n) => s + n, 0);
         const maxCell = Math.max(1, ...matrix.flatMap(r => r.cells));
-        ceBody.innerHTML = `<div style="display:grid;grid-template-columns:160px repeat(${STATUSES.length}, minmax(80px, 1fr)) 60px;gap:6px;font-size:.66rem;color:var(--yry-text3,#6b7280);padding:4px 0;border-bottom:1px solid rgba(255,255,255,.08)">
-          <div style="font-weight:600">CE 类型 ↘ 状态</div>
-          ${STATUSES.map(s => `<div style="color:${s.color};font-weight:600;text-align:center">${s.label}</div>`).join('')}
-          <div style="text-align:right;font-weight:600">合计</div>
-        </div>` + matrix.map(r => `<div style="display:grid;grid-template-columns:160px repeat(${STATUSES.length}, minmax(80px, 1fr)) 60px;gap:6px;font-size:.72rem;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);align-items:center">
-          <div style="color:${r.color};font-weight:600">${r.label}</div>
+        ceBody.innerHTML = `<div class="cd-y5" style="--v1:${STATUSES.length}">
+          <div class="cd-bold">CE 类型 ↘ 状态</div>
+          ${STATUSES.map(s => `<div class="cd-y6" style="--v1:${s.color}">${s.label}</div>`).join('')}
+          <div class="cd-x1-258">合计</div>
+        </div>` + matrix.map(r => `<div class="cd-y7" style="--v1:${STATUSES.length}">
+          <div class="cd-y8" style="--v1:${r.color}">${r.label}</div>
           ${r.cells.map((n, i) => {
             const pct = (n / maxCell * 100).toFixed(0);
             const sc = STATUSES[i].color;
-            return `<div style="text-align:center"><div style="height:6px;background:rgba(0,0,0,.4);border-radius:3px;overflow:hidden;margin-bottom:3px"><div style="width:${pct}%;height:100%;background:${sc}"></div></div><span style="color:${sc};font-weight:700">${n}</span></div>`;
+            return `<div class="cd-x1-282"><div class="cd-x1-122"><div class="cd-hook-bar-w-solid" style="--w:${pct}%;--color:${sc}"></div></div><span class="cd-y9" style="--v1:${sc}">${n}</span></div>`;
           }).join('')}
-          <div style="text-align:right;color:var(--yry-text2,#a9b1d6);font-weight:700">${r.total}</div>
-        </div>`).join('') + `<div style="display:grid;grid-template-columns:160px repeat(${STATUSES.length}, minmax(80px, 1fr)) 60px;gap:6px;font-size:.7rem;padding:8px 0 0;font-weight:600">
-          <div style="color:var(--yry-text2,#a9b1d6)">列合计</div>
-          ${colTotals.map((n, i) => `<div style="text-align:center;color:${STATUSES[i].color}">${n}</div>`).join('')}
-          <div style="text-align:right;color:var(--yry-accent,#22d3ee)">${grandTotal}</div>
+          <div class="cd-x1-186">${r.total}</div>
+        </div>`).join('') + `<div class="cd-y10" style="--v1:${STATUSES.length}">
+          <div class="cd-text2">列合计</div>
+          ${colTotals.map((n, i) => `<div class="cd-y11" style="--v1:${STATUSES[i].color}">${n}</div>`).join('')}
+          <div class="cd-x1-229">${grandTotal}</div>
         </div>`;
         if (ceNote) {
           const ceTotal = matrix.find(r => r.key === 'ce')?.total || 0;
@@ -607,7 +554,7 @@
           const vanillaComplete = matrix.find(r => r.key === 'vanilla')?.cells[0] || 0;
           const ceRate = ceTotal ? (ceComplete / ceTotal * 100).toFixed(1) : 0;
           const vRate = vanillaTotal ? (vanillaComplete / vanillaTotal * 100).toFixed(1) : 0;
-          ceNote.innerHTML = `🔌 CE 完整率 <b style="color:#34d399">${ceRate}%</b> (${ceComplete}/${ceTotal}) · ⚙️ Vanilla 完整率 <b style="color:#34d399">${vRate}%</b> (${vanillaComplete}/${vanillaTotal}) · 共 <b>${grandTotal}</b> 组件 · CE 集中于核心 UI（卡片·面板·报告）· Vanilla 多为样式/工具`;
+          ceNote.innerHTML = `🔌 CE 完整率 <b class="cd-emerald">${ceRate}%</b> (${ceComplete}/${ceTotal}) · ⚙️ Vanilla 完整率 <b class="cd-emerald">${vRate}%</b> (${vanillaComplete}/${vanillaTotal}) · 共 <b>${grandTotal}</b> 组件 · CE 集中于核心 UI（卡片·面板·报告）· Vanilla 多为样式/工具`;
         }
       }
 
@@ -629,14 +576,14 @@
           { label: '🎬 Demo 覆盖', value: `${demoCount}/${total}`, sub: `${(demoCount/total*100).toFixed(1)}%`, color: '#fb923c', icon: '🟧' },
           { label: '⚙️ Vue vs Vanilla', value: `${vueCount}v ${vanillaCount}Va`, sub: `1 : ${(vanillaCount/vueCount).toFixed(1)}`, color: '#f472b6', icon: '🟫' }
         ];
-        emEl.innerHTML = metrics.map(m => `<div style="background:rgba(15,23,42,.55);border:1px solid ${m.color}33;border-left:3px solid ${m.color};border-radius:8px;padding:10px 12px">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-            <span style="font-size:.66rem;color:var(--yry-text3,#6b7280)">${m.label}</span>
-            <span style="font-size:.7rem">${m.icon}</span>
+        emEl.innerHTML = metrics.map(m => `<div class="cd-y12" style="--v1:${m.color};--v2:${m.color}">
+          <div class="cd-x1-147">
+            <span class="cd-x2-32">${m.label}</span>
+            <span class="cd-x1-286">${m.icon}</span>
           </div>
-          <div style="font-size:1.4rem;font-weight:700;color:${m.color};line-height:1">${m.value}</div>
-          <div style="font-size:.62rem;color:var(--yry-text3,#6b7280);margin-top:4px">${m.sub}</div>
-        </div>`).join('') + `<div style="grid-column:1/-1;font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.6;margin-top:4px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)">Props/组件 = API 表面积密度 · 依赖/组件 = 耦合度指标 · 令牌/组件 = 样式分散度 · Demo 覆盖率反映文档完整度</div>`;
+          <div class="cd-y13" style="--v1:${m.color}">${m.value}</div>
+          <div class="cd-x2-25">${m.sub}</div>
+        </div>`).join('') + `<div class="cd-x2-3">Props/组件 = API 表面积密度 · 依赖/组件 = 耦合度指标 · 令牌/组件 = 样式分散度 · Demo 覆盖率反映文档完整度</div>`;
       }
       // ⚡ 加载链阶段耗时 · 625ms 拆解
       const lbEl = document.getElementById('loadBreakdownList');
@@ -652,19 +599,19 @@
         lbEl.innerHTML = PHASES.map((p, i) => {
           const pct = (p.ms / totalMs * 100).toFixed(1);
           const width = (p.ms / totalMs * 100).toFixed(1);
-          return `<div style="display:grid;grid-template-columns:30px 1fr 100px 70px;gap:10px;align-items:center;font-size:.72rem;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04)">
-            <div style="font-weight:700;color:${p.color};text-align:center">${i+1}</div>
-            <div style="overflow:hidden">
-              <div style="color:${p.color};font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.label}</div>
-              <div style="font-size:.6rem;color:var(--yry-text3,#6b7280);margin-top:1px">${p.desc}</div>
+          return `<div class="cd-x2-2">
+            <div class="cd-y14" style="--v1:${p.color}">${i+1}</div>
+            <div class="cd-overflow-hidden">
+              <div class="cd-y15" style="--v1:${p.color}">${p.label}</div>
+              <div class="cd-text3-60-mt1">${p.desc}</div>
             </div>
-            <div style="height:10px;background:rgba(0,0,0,.4);border-radius:3px;overflow:hidden"><div style="width:${width}%;height:100%;background:linear-gradient(90deg,${p.color},${p.color}88)" title="${p.ms}ms (${pct}%)"></div></div>
-            <div style="text-align:right;white-space:nowrap">
-              <b style="color:${p.color}">${p.ms}</b><span style="color:var(--yry-text3,#6b7280);font-size:.62rem">ms</span>
-              <div style="color:var(--yry-text3,#6b7280);font-size:.6rem">${pct}%</div>
+            <div class="cd-bar-track"><div class="cd-y16" style="--v1:${width};--v2:${p.color};--v3:${p.color}" title="${p.ms}ms (${pct}%)"></div></div>
+            <div class="cd-right-nowrap">
+              <b class="cd-y17" style="--v1:${p.color}">${p.ms}</b><span class="cd-text3-62">ms</span>
+              <div class="cd-text3-60">${pct}%</div>
             </div>
           </div>`;
-        }).join('') + `<div style="font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.6;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.06)">总耗时 <b style="color:var(--yry-accent,#22d3ee)">${totalMs}ms</b> · FCP ≤ 500ms 目标 · Vue3 引擎是最大瓶颈（${(PHASES[3].ms/totalMs*100).toFixed(0)}%）· 建议延迟加载非首屏 CE</div>`;
+        }).join('') + `<div class="cd-meta-66-top">总耗时 <b class="cd-accent">${totalMs}ms</b> · FCP ≤ 500ms 目标 · Vue3 引擎是最大瓶颈（${(PHASES[3].ms/totalMs*100).toFixed(0)}%）· 建议延迟加载非首屏 CE</div>`;
       }
       // 🌡 类别 × 类型热力图
       const chEl = document.getElementById('catHeatGrid');
@@ -702,30 +649,30 @@
           const t = Math.min(1, v / maxCell);
           return `rgba(${t > 0.66 ? '251,146,60' : t > 0.33 ? '34,211,238' : '52,211,153'},${(0.2 + t * 0.6).toFixed(2)})`;
         };
-        let html = `<div style="display:grid;grid-template-columns:140px repeat(3,1fr) 50px;gap:4px;font-size:.66rem;min-width:520px">`;
-        html += `<div style="padding:6px 4px;color:var(--yry-text3,#6b7280);font-weight:600;text-align:center">类别 ＼ 类型</div>`;
-        TYPES.forEach(t => { html += `<div style="padding:6px 4px;color:${TYPE_COLORS[t]};font-weight:600;text-align:center">${TYPE_LABELS[t]}</div>`; });
-        html += `<div style="padding:6px 4px;color:var(--yry-accent,#22d3ee);font-weight:600;text-align:center">合计</div>`;
+        let html = `<div class="cd-x1-81">`;
+        html += `<div class="cd-x2-15">类别 ＼ 类型</div>`;
+        TYPES.forEach(t => { html += `<div class="cd-y18" style="--v1:${TYPE_COLORS[t]}">${TYPE_LABELS[t]}</div>`; });
+        html += `<div class="cd-x2-14">合计</div>`;
         arr.forEach(r => {
-          html += `<div style="padding:6px 4px;color:#a9b1d6;font-weight:600;font-size:.66rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.cat}">${r.cat}</div>`;
+          html += `<div class="cd-x1-61" title="${r.cat}">${r.cat}</div>`;
           TYPES.forEach(t => {
             const v = r[t];
             const pct = (v / r.total * 100).toFixed(0);
             const isHot = v === maxCell && v > 0;
-            html += `<div title="${r.cat} × ${TYPE_LABELS[t]}: ${v} 个 (${pct}%)" style="padding:8px 4px;text-align:center;background:${heatColor(v)};border-radius:6px;border:1px solid ${isHot ? '#fb923c' : 'rgba(255,255,255,.04)'};color:${v === 0 ? 'rgba(255,255,255,.2)' : isHot ? '#fb923c' : 'var(--yry-text,#a9b1d6)'};font-weight:${isHot ? 700 : 600}">${v === 0 ? '·' : v}</div>`;
+            html += `<div title="${r.cat} × ${TYPE_LABELS[t]}: ${v} 个 (${pct}%)" class="cd-y19" style="--v1:${heatColor(v)};--v2:${isHot ? '#fb923c' : 'rgba(255,255,255,.04)'};--v3:${v === 0 ? 'rgba(255,255,255,.2)' : isHot ? '#fb923c' : 'var(--yry-text,#a9b1d6)'};--v4:${isHot ? 700 : 600}">${v === 0 ? '·' : v}</div>`;
           });
-          html += `<div style="padding:8px 4px;text-align:center;color:var(--yry-accent,#22d3ee);font-weight:700">${r.total}</div>`;
+          html += `<div class="cd-x1-135">${r.total}</div>`;
         });
         html += `</div>`;
         const totals = TYPES.map(t => arr.reduce((s, r) => s + r[t], 0));
         const grand = totals.reduce((a, b) => a + b, 0);
-        html += `<div style="font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.7;margin-top:12px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)">`;
-        html += `📊 类别数: <b style="color:var(--yry-accent,#22d3ee)">${arr.length}</b> · 总组件: <b style="color:var(--yry-accent,#22d3ee)">${grand}</b><br>`;
-        html += `🎨 Vue 3 CE <b style="color:#a78bfa">${totals[0]}</b> · Vanilla <b style="color:#4ade80">${totals[1]}</b> · 未知 <b style="color:#9ca3af">${totals[2]}</b><br>`;
+        html += `<div class="cd-x2-7">`;
+        html += `📊 类别数: <b class="cd-accent">${arr.length}</b> · 总组件: <b class="cd-accent">${grand}</b><br>`;
+        html += `🎨 Vue 3 CE <b class="cd-violet">${totals[0]}</b> · Vanilla <b class="cd-x1-290">${totals[1]}</b> · 未知 <b class="cd-x2-38">${totals[2]}</b><br>`;
         const topCat = arr[0];
         const vueDom = arr.find(r => r.vue > r.vanilla);
-        html += `🏆 最大类别: <b style="color:#34d399">${topCat.cat} (${topCat.total})</b><br>`;
-        html += vueDom ? `🎭 Vue 偏好: <b style="color:#a78bfa">${vueDom.cat}</b>（Vue ${vueDom.vue} > Vanilla ${vueDom.vanilla}）· 其余类别以 Vanilla 为主` : `⚙️ 全部类别以 Vanilla 为主导技术栈`;
+        html += `🏆 最大类别: <b class="cd-emerald">${topCat.cat} (${topCat.total})</b><br>`;
+        html += vueDom ? `🎭 Vue 偏好: <b class="cd-violet">${vueDom.cat}</b>（Vue ${vueDom.vue} > Vanilla ${vueDom.vanilla}）· 其余类别以 Vanilla 为主` : `⚙️ 全部类别以 Vanilla 为主导技术栈`;
         html += `</div>`;
         chEl.innerHTML = html;
       }

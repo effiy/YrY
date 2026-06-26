@@ -8,7 +8,7 @@ import { npm, registryArgs, toTable, timestamp, httpGetJson } from "./npm-utils.
 import { checkNpmLogin } from "./auth.mjs";
 import { verifyOwnership } from "./publish.mjs";
 
-export async function cmdMyPackages(args) {
+export async function cmdMyPackages(/** @type {any} */ args) {
   const npmUser = checkNpmLogin();
   console.log(`📦 查询 ${npmUser} 的 npm 包 ...`);
 
@@ -17,7 +17,7 @@ export async function cmdMyPackages(args) {
   try {
     const searchUrl = `/-/v1/search?text=maintainer:${encodeURIComponent(npmUser)}&size=${Math.min(args.limit || 100, 250)}`;
     const result = await httpGetJson(`https://registry.npmjs.org${searchUrl}`);
-    packages = (result.objects || []).map((o) => o.package || o);
+    packages = (result.objects || []).map((/** @type {any} */ o) => o.package || o);
   } catch {
     console.log("   registry search API 不可达，尝试 npm access ls-packages ...");
     const r = npm(["access", "ls-packages", ...registryArgs()]);
@@ -74,7 +74,7 @@ export async function cmdMyPackages(args) {
   }
 }
 
-export function cmdDeprecate(pkg, args) {
+export function cmdDeprecate(/** @type {string} */ pkg, /** @type {any} */ args) {
   if (!pkg) {
     console.error("❌ 请提供包名和废弃消息。用法: rui-npm deprecate <pkg>[@version] \"<message>\"");
     console.error("   示例: rui-npm deprecate my-util@1.0.0 \"Use 2.0.0 instead\"");
@@ -117,7 +117,7 @@ export function cmdDeprecate(pkg, args) {
   }
 }
 
-export function cmdUnpublish(pkg, args) {
+export function cmdUnpublish(/** @type {string} */ pkg, /** @type {any} */ args) {
   if (!pkg) {
     console.error("❌ 请提供包名。用法: rui-npm unpublish <pkg>[@version] [--force]");
     console.error("   示例: rui-npm unpublish my-util@1.0.0");
@@ -135,6 +135,7 @@ export function cmdUnpublish(pkg, args) {
   verifyOwnership(npmUser, pkgName);
 
   const info = npm(["view", pkgName, "--json", ...registryArgs()]);
+  /** @type {any} */
   let pkgData = {};
   try { pkgData = JSON.parse(info.stdout); } catch { /* parse failed, keep {} */ }
   if (Array.isArray(pkgData)) pkgData = pkgData[pkgData.length - 1];

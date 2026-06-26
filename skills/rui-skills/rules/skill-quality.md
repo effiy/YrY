@@ -1,3 +1,10 @@
+---
+paths:
+  - "skills/rui-skills/**"
+  - "skills/rui-skills/SKILL.md"
+description: "Agent 技能生态发现的质量验证规则"
+---
+
 # rui-skills 质量验证模型
 
 > Agent 技能生态发现的质量验证规则，独立于实现细节。

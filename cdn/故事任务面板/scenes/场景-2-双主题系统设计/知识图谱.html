@@ -16,23 +16,7 @@
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
 <link rel="stylesheet" href="../../../yry-a11y/index.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<style>
-  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
-  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
-  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
-  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
-  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
-  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
-  .delivery-story { font-size: .72rem; color: #4b5563; }
-  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
-  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
-  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
-  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
-  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
-  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
-  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
-</style>
+<link rel="stylesheet" href="../../../yry-legacy-scene-delivery/index.css">
 </head>
 <body>
 <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
@@ -54,7 +38,7 @@
 
   <div class="content-card">
     <h2>🔗 令牌依赖图谱</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.74rem;color:#22d3ee;line-height:1.7;margin:0">[主题层]                    [组件层]
+    <pre class="yry-auto-80833">[主题层]                    [组件层]
  theme/index.css            .yry-card
  theme-mono/index.css        .yry-card__title
         │                    .yry-card__status--*
@@ -70,35 +54,35 @@
  [Fallback 层]               [浏览器渲染]
  rgba(15,23,42,.55)          组件样式生效
  #22d3ee 等</pre>
-    <p style="margin-top:16px">令牌依赖图自上而下分三层：主题层定义令牌 → 组件层通过 <code>var(--yry-*, fallback)</code> 消费 → fallback 层在主题未加载时兜底。这种结构保证组件在任意主题环境下都能渲染，且切换主题零 JS 改动。</p>
+    <p class="yry-auto-34737">令牌依赖图自上而下分三层：主题层定义令牌 → 组件层通过 <code>var(--yry-*, fallback)</code> 消费 → fallback 层在主题未加载时兜底。这种结构保证组件在任意主题环境下都能渲染，且切换主题零 JS 改动。</p>
   </div>
 
   <div class="content-card">
     <h2>👁 WCAG 对比度矩阵</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">令牌对</th><th style="padding:8px 10px;text-align:right;color:#22d3ee;font-weight:600">Cat B</th><th style="padding:8px 10px;text-align:right;color:#22d3ee;font-weight:600">Cat A</th><th style="padding:8px 10px;text-align:center;color:#22d3ee;font-weight:600">AA (4.5:1)</th><th style="padding:8px 10px;text-align:center;color:#22d3ee;font-weight:600">AAA (7:1)</th></tr></thead>
+    <table class="yry-auto-93137">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-75234">令牌对</th><th class="yry-auto-56356">Cat B</th><th class="yry-auto-56356">Cat A</th><th class="yry-auto-18009">AA (4.5:1)</th><th class="yry-auto-18009">AAA (7:1)</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">text1 / bg</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">7.8:1</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">8.4:1</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#4ade80">✓</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#4ade80">✓</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">text2 / bg</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">7.8:1</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">7.1:1</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#4ade80">✓</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#4ade80">✓</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">text3 / bg</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">4.6:1</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">4.1:1</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#fbbf24">✓/⚠</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#f87171">✗</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">accent / bg</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">8.9:1</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">6.2:1</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#4ade80">✓</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#fbbf24">✓/✗</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">success / bg</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">7.4:1</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">8.1:1</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#4ade80">✓</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#4ade80">✓</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">warning / bg</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">8.2:1</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">7.9:1</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#4ade80">✓</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#4ade80">✓</td></tr>
-        <tr><td style="padding:8px 10px">error / bg</td><td style="padding:8px 10px;text-align:right">4.9:1</td><td style="padding:8px 10px;text-align:right">4.7:1</td><td style="padding:8px 10px;text-align:center;color:#4ade80">✓</td><td style="padding:8px 10px;text-align:center;color:#f87171">✗</td></tr>
+        <tr><td class="yry-auto-86182">text1 / bg</td><td class="yry-auto-53076">7.8:1</td><td class="yry-auto-53076">8.4:1</td><td class="yry-auto-15620">✓</td><td class="yry-auto-15620">✓</td></tr>
+        <tr><td class="yry-auto-86182">text2 / bg</td><td class="yry-auto-53076">7.8:1</td><td class="yry-auto-53076">7.1:1</td><td class="yry-auto-15620">✓</td><td class="yry-auto-15620">✓</td></tr>
+        <tr><td class="yry-auto-86182">text3 / bg</td><td class="yry-auto-53076">4.6:1</td><td class="yry-auto-53076">4.1:1</td><td class="yry-auto-45806">✓/⚠</td><td class="yry-auto-56476">✗</td></tr>
+        <tr><td class="yry-auto-86182">accent / bg</td><td class="yry-auto-53076">8.9:1</td><td class="yry-auto-53076">6.2:1</td><td class="yry-auto-15620">✓</td><td class="yry-auto-45806">✓/✗</td></tr>
+        <tr><td class="yry-auto-86182">success / bg</td><td class="yry-auto-53076">7.4:1</td><td class="yry-auto-53076">8.1:1</td><td class="yry-auto-15620">✓</td><td class="yry-auto-15620">✓</td></tr>
+        <tr><td class="yry-auto-86182">warning / bg</td><td class="yry-auto-53076">8.2:1</td><td class="yry-auto-53076">7.9:1</td><td class="yry-auto-15620">✓</td><td class="yry-auto-15620">✓</td></tr>
+        <tr><td class="yry-auto-93797">error / bg</td><td class="yry-auto-73847">4.9:1</td><td class="yry-auto-73847">4.7:1</td><td class="yry-a2-16">✓</td><td class="yry-a1-36">✗</td></tr>
       </tbody>
     </table>
-    <p style="margin-top:12px;font-size:.72rem;color:#fbbf24">⚠ <code>text3</code> 作为辅助文字仅用于 ≥ 14px 加粗或非关键信息；Cat A 中 text3 略低于 AAA，用于次要提示时需走 AA 例外。</p>
+    <p class="yry-a2-20">⚠ <code>text3</code> 作为辅助文字仅用于 ≥ 14px 加粗或非关键信息；Cat A 中 text3 略低于 AAA，用于次要提示时需走 AA 例外。</p>
   </div>
 
   <div class="content-card">
     <h2>🎛 主题运行时切换策略</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.74rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">策略</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">实现</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">优劣</th></tr></thead>
+    <table class="yry-auto-1645">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-38488">策略</th><th class="yry-auto-38488">实现</th><th class="yry-auto-38488">优劣</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">多 CSS 文件</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">按需 link 加载</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">无 FOUC 但多请求</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">单文件 + <code>[data-theme]</code></td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">CSS 变量复选器</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">零额外请求 · 推荐</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">prefers-color-scheme</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>@media (prefers-color-scheme: dark)</code></td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">跟随系统</td></tr>
-        <tr><td style="padding:8px 12px">持久化</td><td style="padding:8px 12px"><code>localStorage</code> + Toggler 组件</td><td style="padding:8px 12px">用户偏好记忆</td></tr>
+        <tr><td class="yry-auto-40105">多 CSS 文件</td><td class="yry-auto-40105">按需 link 加载</td><td class="yry-auto-40105">无 FOUC 但多请求</td></tr>
+        <tr><td class="yry-auto-40105">单文件 + <code>[data-theme]</code></td><td class="yry-auto-40105">CSS 变量复选器</td><td class="yry-auto-98362">零额外请求 · 推荐</td></tr>
+        <tr><td class="yry-auto-40105">prefers-color-scheme</td><td class="yry-auto-40105"><code>@media (prefers-color-scheme: dark)</code></td><td class="yry-auto-40105">跟随系统</td></tr>
+        <tr><td class="yry-auto-70345">持久化</td><td class="yry-auto-70345"><code>localStorage</code> + Toggler 组件</td><td class="yry-auto-70345">用户偏好记忆</td></tr>
       </tbody>
     </table>
   </div>

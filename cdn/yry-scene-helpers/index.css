@@ -1,0 +1,125 @@
+/* yry-scene-helpers — shared utility classes for rui-npm scene HTML products */
+/* Replaces repetitive inline styles in skills/rui-npm/scenes/*.html */
+
+/* ── Text colors ── */
+.sc-text-amber { color: #f59e0b; }
+.sc-text-emerald { color: #10b981; }
+.sc-text-red { color: #ef4444; }
+.sc-text-yellow { color: #fbbf24; }
+.sc-text-cyan { color: var(--cyan); }
+.sc-text-pass { color: var(--pass); }
+.sc-text-warn { color: var(--warn); }
+.sc-text-fail { color: var(--fail); }
+.sc-text-accent { color: var(--accent); }
+.sc-text-dim { color: var(--dim); }
+.sc-text-muted { color: var(--muted); }
+.sc-text-fg { color: var(--fg); }
+.sc-text2 { color: var(--text2); }
+.sc-text3 { color: var(--text3); }
+.sc-text3-yry { color: var(--yry-text3); }
+.sc-text3-84 { color: var(--text3); font-size: .84rem; }
+.sc-text3-78 { color: var(--text3); font-size: .78rem; margin-top: 14px; }
+.sc-dim-sm { color: var(--dim); font-size: .7rem; }
+.sc-muted-sm { color: var(--muted); font-size: .7rem; margin-right: .25rem; }
+.sc-muted-bold { color: var(--muted); font-weight: 600; }
+.sc-amber-bold { color: var(--c-amber); font-weight: 700; }
+
+/* ── Dots ── */
+.sc-dot-accent { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.sc-dot-emerald { width: 8px; height: 8px; border-radius: 50%; background: var(--emerald); }
+
+/* ── Layout ── */
+.sc-flex-header { font-size: 1rem; display: flex; align-items: center; gap: 8px; }
+.sc-flex-wrap { display: flex; gap: 8px; flex-wrap: wrap; }
+.sc-flex-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; animation: fadeInDown .5s .15s ease both; }
+.sc-pad-y { padding: .4rem 0; }
+.sc-mt14 { margin-top: 14px; }
+.sc-mb12 { margin-bottom: 12px; }
+.sc-mono { font-family: 'JetBrains Mono', monospace; }
+.sc-bold { font-weight: 600; }
+.sc-fs-1-1 { font-size: 1.1rem; }
+.sc-fs-78 { font-size: .78rem; }
+.sc-fs-2-5 { font-size: 2.5rem; margin-bottom: 10px; }
+.sc-fs-2-glow { font-size: 2rem; margin-bottom: 8px; animation: glow 2s infinite; }
+
+/* ── Section sub-heading auto (margin-left:auto) ── */
+.sc-section-sub-auto { font-size: .7rem; font-weight: 400; color: var(--text3); margin-left: auto; }
+.sc-section-sub-auto-72 { font-size: .72rem; color: var(--text3); margin-left: auto; white-space: nowrap; }
+.sc-section-sub-auto-66 { font-size: .66rem; color: var(--text3); margin-left: auto; }
+.sc-section-sub-400 { font-weight: 400; font-size: .7rem; color: var(--text3); }
+.sc-section-sub-76-t3 { font-size: .76rem; color: var(--text3); margin-bottom: 14px; }
+.sc-section-sub-76-t2 { font-size: .76rem; color: var(--text2); margin-bottom: 8px; }
+.sc-section-sub-70-mt8 { font-size: .7rem; color: var(--text3); margin-top: 8px; }
+.sc-section-sub-72-yry { font-size: .72rem; color: var(--yry-text3); text-align: center; }
+
+/* ── Meta / center / empty state ── */
+.sc-meta-center { text-align: center; color: var(--text3); font-size: .78rem; margin-top: 10px; }
+.sc-empty-state { padding: 60px 20px; text-align: center; color: var(--text3); }
+.sc-tag-sm { font-size: .58rem; padding: 1px 6px; }
+.sc-code-inline { display: inline-block; margin-top: 14px; padding: 6px 10px; background: var(--yry-bg-flat); border-radius: 4px; color: var(--cyan); }
+.sc-code-block { background: rgba(0,0,0,.3); border-radius: 6px; padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: .72rem; color: var(--text2); line-height: 1.6; }
+.sc-fail-mb8 { color: var(--fail); margin-bottom: 8px; }
+
+/* ── Backgrounds (solid) ── */
+.sc-bg-accent { background: var(--accent); }
+.sc-bg-pink { background: #EC4899; }
+.sc-bg-slate { background: #94a3b8; }
+.sc-bg-violet { background: #8B5CF6; }
+.sc-bg-cyan { background: #22d3ee; }
+.sc-bg-yellow { background: #fbbf24; }
+.sc-bg-emerald { background: #34d399; }
+
+/* ── Backgrounds (rgba) ── */
+.sc-bg-cyan-70 { background: rgba(34,211,238,.7); }
+.sc-bg-cyan-45 { background: rgba(34,211,238,.45); }
+.sc-bg-cyan-40-dash { background: rgba(34,211,238,.4); border: 1px dashed rgba(34,211,238,.6); }
+.sc-bg-cyan-25 { background: rgba(34,211,238,.25); }
+.sc-bg-cyan-24 { background: rgba(34,211,238,.24); }
+.sc-bg-cyan-20 { background: rgba(34,211,238,.20); }
+.sc-bg-cyan-16 { background: rgba(34,211,238,.16); }
+.sc-bg-cyan-12 { background: rgba(34,211,238,.12); }
+.sc-bg-cyan-10-cyan { background: rgba(34,211,238,.1); color: var(--cyan); }
+.sc-bg-cyan-08 { background: rgba(34,211,238,.08); }
+.sc-bg-emerald-10 { background: rgba(52,211,153,.1); color: var(--emerald); }
+.sc-bg-amber-18 { background: rgba(251,191,36,.18); border: 1px solid var(--c-amber); }
+.sc-bg-amber-10 { background: rgba(251,191,36,.1); color: var(--amber); }
+.sc-bg-violet-10 { background: rgba(167,139,250,.1); color: var(--violet); }
+.sc-bg-emerald-06 { background: rgba(16,185,129,.06); border-color: rgba(16,185,129,.3); }
+.sc-bg-slate-05 { background: rgba(100,116,139,.05); }
+
+/* ── Gradients ── */
+.sc-grad-amber { background: linear-gradient(135deg,#f59e0b,#d97706); }
+.sc-grad-red { background: linear-gradient(135deg,#ef4444,#dc2626); }
+.sc-grad-pink { background: linear-gradient(135deg,#ec4899,#db2777); }
+.sc-grad-purple { background: linear-gradient(135deg,#a855f7,#7c3aed); }
+.sc-grad-indigo { background: linear-gradient(135deg,#6366f1,#4f46e5); }
+.sc-grad-cyan { background: linear-gradient(135deg,#22d3ee,#0ea5e9); }
+.sc-grad-green { background: linear-gradient(135deg,#22c55e,#16a34a); }
+
+/* ── Margin auto + color combos ── */
+.sc-ml-auto-dim { margin-left: auto; color: var(--dim); }
+.sc-ml-auto-purple { margin-left: auto; font-size: .7rem; color: var(--purple); }
+.sc-ml-auto-pass { margin-left: auto; font-size: .7rem; color: var(--pass); }
+.sc-ml-auto-cyan { margin-left: auto; font-size: .7rem; color: var(--cyan); }
+.sc-ml-auto-accent { margin-left: auto; font-size: .7rem; color: var(--accent); }
+.sc-ml-muted-bold { margin-left: .75rem; color: var(--muted); font-weight: 600; }
+.sc-mx-darker { margin: 0 .35rem; color: var(--darker); }
+
+/* ── Meta center variants ── */
+.sc-meta-center-70 { text-align: center; color: var(--text3); font-size: .7rem; margin-top: 8px; }
+
+/* ── Padding variants ── */
+.sc-pad-3-8 { padding: 3px 8px; }
+.sc-pad-16-18 { padding: 16px 18px; }
+.sc-empty-state-fail { padding: 60px 20px; text-align: center; color: var(--fail); }
+
+/* ── Margin variants ── */
+.sc-mt1r { margin-top: 1rem; }
+.sc-mt12 { margin-top: 12px; }
+.sc-mt12-76-t3 { margin-top: 12px; font-size: .76rem; color: var(--text3); }
+.sc-mt0 { margin-top: 0; }
+.sc-mb14 { margin-bottom: 14px; }
+.sc-mb10 { margin-bottom: 10px; }
+
+/* ── Footer meta ── */
+.sc-footer-meta { margin-top: .75rem; padding-top: .75rem; border-top: 1px dashed var(--border); font-size: .7rem; color: var(--dim); display: flex; justify-content: space-between; }

@@ -7,38 +7,7 @@
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/theme/index.css">
 <link rel="stylesheet" href="../../../../cdn/shared-reports/index.css">
-<style>
-.scene-nav { display:flex; flex-wrap:wrap; gap:4px 8px; padding:8px 0; font-size:.72rem; border-bottom:var(--yry-border); margin-bottom:12px; }
-.scene-nav-link { color:var(--yry-text3); text-decoration:none; }
-.scene-nav-link:hover { color:var(--yry-accent); }
-.scene-nav-link.active { color:var(--yry-accent); font-weight:700; }
-.scene-nav-sep { color:var(--yry-text3); }
-.cross-nav { display:flex; gap:8px; padding:6px 0; font-size:.72rem; margin-bottom:12px; }
-.cross-link { color:var(--yry-text3); text-decoration:none; }
-.cross-link:hover { color:var(--yry-accent); }
-.cross-link.on { color:var(--yry-accent); font-weight:700; }
-.cross-sep { color:var(--yry-text3); }
-.header { margin-bottom:12px; }
-.header h1 { font-size:1.1rem; margin:0; }
-.accent { color:var(--yry-accent); }
-.meta { font-size:.68rem; color:var(--yry-text3); margin-top:4px; }
-.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:8px; }
-.stat-card { padding:10px; text-align:center; border-radius:6px; border:var(--yry-border); background:rgba(15,23,42,.4); }
-.stat-card .val { font-size:1.2rem; font-weight:700; }
-.stat-card .val.health { color:var(--yry-pass); }
-.stat-card .lbl { font-size:.62rem; color:var(--yry-text3); margin-top:2px; }
-.bar-wrap { margin-bottom:12px; }
-.bar-outer { height:6px; border-radius:3px; background:rgba(255,255,255,.06); overflow:hidden; display:flex; }
-.seg.strength { background:var(--yry-pass); }
-.seg.gap { background:rgba(255,255,255,.06); }
-.card { padding:16px 20px; border-radius:8px; border:var(--yry-border); background:rgba(15,23,42,.4); }
-.card h2 { font-size:.88rem; margin:0 0 12px 0; }
-.cl-item { display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.04); }
-.cl-num { min-width:24px; height:24px; border-radius:50%; background:rgba(34,197,94,.12); color:var(--yry-pass); display:flex; align-items:center; justify-content:center; font-size:.68rem; font-weight:700; }
-.cl-text { flex:1; font-size:.76rem; line-height:1.5; color:var(--yry-text2); }
-.ft { text-align:center; font-size:.64rem; color:var(--yry-text3); padding:20px 0; }
-@media (max-width:640px) { .stats-grid { grid-template-columns:repeat(2,1fr); }}
-</style>
+<link rel="stylesheet" href="../../../../cdn/yry-legacy-scene-overview/index.css">
 </head>
 <body>
 <div class="container">
@@ -78,20 +47,20 @@
   <div class="stat-card"><div class="val health">v1.1.0</div><div class="lbl">minor 升级</div></div>
   <div class="stat-card"><div class="val">7/7</div><div class="lbl">R1-R7</div></div>
 </div>
-<div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:100%"></div><div class="seg gap" style="width:0%"></div></div></div>
+<div class="bar-wrap"><div class="bar-outer"><div class="seg strength" yry-auto-60516"></div><div class="seg gap" yry-auto-6776"></div></div></div>
 
 <div class="card">
   <h2>① 7 项自测清单 (逐项执行)</h2>
-  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong>语法检查</strong> — <code>node --check cdn/yry-breadcrumb/index.js</code> · 预期 exit 0 · 无语法错误 · <span style="color:var(--yry-pass)">✅</span></span></div>
-  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong>Demo 渲染</strong> — 浏览器打开 <code>cdn/yry-breadcrumb/index.html</code> · 3 个 <code>#demo-1/2/3</code> div 均显示面包屑 nav · <span style="color:var(--yry-pass)">✅</span></span></div>
-  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong>无控制台错误</strong> — DevTools Console · 无 Vue warning · fetch error · 404 · JS 异常 · <span style="color:var(--yry-pass)">✅</span></span></div>
-  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong>DOM 挂载 (硬刷新)</strong> — <code>Cmd+Shift+R</code> 后检查 <code>#breadcrumb-app</code> · 内含 <code>&lt;nav class="breadcrumb"&gt;</code> · <span style="color:var(--yry-pass)">✅</span></span></div>
-  <div class="cl-item"><span class="cl-num">5</span><span class="cl-text"><strong>页面集成</strong> — 打开计划清单页面 · mount 脚本正确挂载 · 4 个条目全部显示 · <span style="color:var(--yry-pass)">✅</span></span></div>
-  <div class="cl-item"><span class="cl-num">6</span><span class="cl-text"><strong>键盘可访问</strong> — Tab 键逐项聚焦 · 从第 1 链接依次聚焦到当前项前的最后链接 · current 项不可聚焦 · <span style="color:var(--yry-pass)">✅</span></span></div>
-  <div class="cl-item"><span class="cl-num">7</span><span class="cl-text"><strong>屏幕阅读器</strong> — VoiceOver / NVDA 朗读 · 顺序 link → (sep skip) → link → … → current · <span style="color:var(--yry-pass)">✅</span></span></div>
+  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong>语法检查</strong> — <code>node --check cdn/yry-breadcrumb/index.js</code> · 预期 exit 0 · 无语法错误 · <span class="yry-auto-56316">✅</span></span></div>
+  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong>Demo 渲染</strong> — 浏览器打开 <code>cdn/yry-breadcrumb/index.html</code> · 3 个 <code>#demo-1/2/3</code> div 均显示面包屑 nav · <span class="yry-auto-56316">✅</span></span></div>
+  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong>无控制台错误</strong> — DevTools Console · 无 Vue warning · fetch error · 404 · JS 异常 · <span class="yry-auto-56316">✅</span></span></div>
+  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong>DOM 挂载 (硬刷新)</strong> — <code>Cmd+Shift+R</code> 后检查 <code>#breadcrumb-app</code> · 内含 <code>&lt;nav class="breadcrumb"&gt;</code> · <span class="yry-auto-56316">✅</span></span></div>
+  <div class="cl-item"><span class="cl-num">5</span><span class="cl-text"><strong>页面集成</strong> — 打开计划清单页面 · mount 脚本正确挂载 · 4 个条目全部显示 · <span class="yry-auto-56316">✅</span></span></div>
+  <div class="cl-item"><span class="cl-num">6</span><span class="cl-text"><strong>键盘可访问</strong> — Tab 键逐项聚焦 · 从第 1 链接依次聚焦到当前项前的最后链接 · current 项不可聚焦 · <span class="yry-auto-56316">✅</span></span></div>
+  <div class="cl-item"><span class="cl-num">7</span><span class="cl-text"><strong>屏幕阅读器</strong> — VoiceOver / NVDA 朗读 · 顺序 link → (sep skip) → link → … → current · <span class="yry-auto-56316">✅</span></span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
+<div class="card" yry-auto-86349">
   <h2>② npm 集成 · package.json files 白名单</h2>
   <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><code>yry-breadcrumb/index.html</code> — Vue template 源 + Demo 预览</span></div>
   <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><code>yry-breadcrumb/index.js</code> — Loader (fetch + DOMParser + <code>defineCustomElement</code>)</span></div>
@@ -99,7 +68,7 @@
   <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><code>yry-breadcrumb/README.md</code> — 组件文档 (Props API · 3 数据模式 · a11y 说明)</span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
+<div class="card" yry-auto-86349">
   <h2>③ 语义化版本升级流程</h2>
   <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong>版本段</strong> — MINOR (v1.0.0 → v1.1.0) · 向后兼容新增 (新组件 · 新 API)</span></div>
   <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong>CHANGELOG.md</strong> — 新增 <code>## [1.1.0] - 2026-06-22</code> 段 · 列出 4 新文件 + 5 场景文档</span></div>
@@ -107,9 +76,9 @@
   <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong>npm publish</strong> — <code>npm publish</code> · jsDelivr 自动同步 (&lt; 5min)</span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
+<div class="card" yry-auto-86349">
   <h2>④ 发布后验证</h2>
-  <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:var(--yry-cyan);line-height:1.7;margin:0"># 验证 npm 安装
+  <pre class="yry-a2-0"># 验证 npm 安装
 mkdir /tmp/yry-bc-verify &amp;&amp; cd /tmp/yry-bc-verify
 npm install yry-cdn@1.1.0
 ls node_modules/yry-cdn/yry-breadcrumb/
@@ -125,15 +94,15 @@ done
 open "https://cdn.jsdelivr.net/npm/yry-cdn@1.1.0/yry-breadcrumb/index.html"</pre>
 </div>
 
-<div class="card" style="margin-top:12px">
-  <p style="font-size:.72rem;color:var(--yry-text3);text-align:center">
+<div class="card" yry-auto-86349">
+  <p class="yry-auto-58746">
     查看完整详细清单: <a href="计划清单.html">计划清单</a> · <a href="架构图.html">架构图</a> · <a href="index.md">源码 Markdown</a>
   </p>
 </div>
 
 <footer class="ft">
   场景 5 · 测试与发布 · YryBreadcrumb · v1.2.0<br>
-  <span style="color:var(--yry-text3)">清单 · 架构 · 图谱 · 源码 · 测试 · 演示 · 审计</span>
+  <span class="yry-auto-80578">清单 · 架构 · 图谱 · 源码 · 测试 · 演示 · 审计</span>
 </footer>
 
 </div>

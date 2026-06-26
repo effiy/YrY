@@ -4,38 +4,11 @@
    ========================================================================== */
 
 (function() {
-  var DIM_LABELS = {
-    token: 'Token 安全', config: '配置健康', robots: '机器人就绪', api: 'API 可达',
-    reports: '报告质量', format: '格式规范', diagnostics: '诊断引擎', git: 'Git 纪律',
-    security: '安全基线', em_testing: '测试覆盖', em_types: '类型安全', em_linting: '代码检查',
-    em_cicd: 'CI/CD 成熟度', em_docs: '文档质量', em_deps: '依赖管理', em_git: 'Git 实践',
-    comp_qual: '组件质量'
-  };
-  var CAT_LABELS = {
-    token: '核心', config: '核心', robots: '核心', api: '核心', reports: '核心',
-    format: '核心', diagnostics: '核心', git: '核心', security: '核心',
-    em_testing: '工程', em_types: '工程', em_linting: '工程', em_cicd: '工程',
-    em_docs: '工程', em_deps: '工程', em_git: '工程', comp_qual: '综合'
-  };
-  var DIAG_LABELS = {
-    D0:'基线偏离', D1:'缓存退化', D2:'质量退化', D3:'上下文退化',
-    D4:'依赖过期', D5:'外部趋势', D6:'文档过时', D7:'测试缺口', D8:'架构退化'
-  };
-  var DIAG_DESC = {
-    D0:'配置/规约偏离基线,触发架构合规重检',
-    D1:'记忆/缓存文件膨胀或退化,需压缩清理',
-    D2:'代码质量指标连续下降,触发复查管线',
-    D3:'上下文窗口膨胀或文档冗余,需精简',
-    D4:'依赖版本显著落后社区,需升级评估',
-    D5:'外部技术趋势数据不可达或趋势异常',
-    D6:'文档与代码实现不一致,需同步更新',
-    D7:'测试覆盖率低于阈值,需补充测试用例',
-    D8:'架构范式偏离设计原则,需架构复查'
-  };
-  var DIAG_SEVERITY = {
-    D0:'P0', D1:'P1', D2:'P1', D3:'P2',
-    D4:'P1', D5:'P2', D6:'P1', D7:'P1', D8:'P0'
-  };
+  var DIM_LABELS = {};
+  var CAT_LABELS = {};
+  var DIAG_LABELS = {};
+  var DIAG_DESC = {};
+  var DIAG_SEVERITY = {};
 
   function scoreClr(s) { return s >= 85 ? 'var(--yry-pass)' : s >= 70 ? '#4ade80' : s >= 55 ? 'var(--yry-warn)' : 'var(--yry-fail)'; }
   function scoreGrade(s) { return s >= 85 ? 'A' : s >= 70 ? 'B' : s >= 55 ? 'C' : 'D'; }
@@ -94,12 +67,19 @@
     fetch('reports.json').then(function(r) { return r.ok ? r.json() : []; }),
     fetch('../自我改进/summary.json').then(function(r) { return r.ok ? r.json() : null; }),
     fetch('../自循环报告/reports.json').then(function(r) { return r.ok ? r.json() : []; }),
-    fetch('../趋势报告/reports.json').then(function(r) { return r.ok ? r.json() : []; })
+    fetch('../趋势报告/reports.json').then(function(r) { return r.ok ? r.json() : []; }),
+    fetch('health-meta.json').then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; })
   ]).then(function(results) {
     var reports = results[0];
     var summary = results[1];
     var loopReports = results[2];
     var trendReports = results[3];
+    var meta = results[4] || {};
+    DIM_LABELS = meta.DIM_LABELS || {};
+    CAT_LABELS = meta.CAT_LABELS || {};
+    DIAG_LABELS = meta.DIAG_LABELS || {};
+    DIAG_DESC = meta.DIAG_DESC || {};
+    DIAG_SEVERITY = meta.DIAG_SEVERITY || {};
 
     document.getElementById('count').textContent = reports.length + ' 份';
     if (reports.length > 0) {
@@ -552,7 +532,7 @@
         document.getElementById('coreEngGap').textContent = '';
 
 
-        document.getElementById('coreEngGap').insertAdjacentHTML('beforeend', '<div style="display:flex);align-items:center;gap:12px;margin-bottom:10px">' +
+        document.getElementById('coreEngGap').insertAdjacentHTML('beforeend', '<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">' +
             '<div style="flex:1;text-align:center;padding:12px;border-radius:8px;background:rgba(34,211,238,.06);border:1px solid rgba(34,211,238,.12)">' +
               '<div style="font-size:.64rem;color:var(--yry-text3)">核心 (9维)</div>' +
               '<div style="font-size:1.4rem;font-weight:700;color:' + scoreClr(coreAvgCmv) + '">' + coreAvgCmv + ' 分</div>' +
@@ -571,7 +551,7 @@
             ' · 核心离散度 σ=' + coreVar + ' vs 工程 σ=' + engVar +
             (coreVar > engVar + 15 ? ' <span style="color:var(--yry-warn)">⚠ 核心维度内部差异大</span>' : '') +
             (engVar > coreVar + 15 ? ' <span style="color:var(--yry-warn)">⚠ 工程维度内部差异大</span>' : '') +
-          '</div>';
+          '</div>');
 
         // Cluster analysis
         var clusters = {
@@ -666,7 +646,7 @@
     if (reports.length === 0) {
       document.getElementById('tbody').textContent = '';
 
-      document.getElementById('tbody').insertAdjacentHTML('beforeend', '<tr><td colspan="7"><div class="empty">暂无报告<br><span style="font-size:.7rem);margin-top:8px;display:block">运行 <code>node skills/rui-bot/send.mjs health --html</code> 生成首份报告</span></div></td></tr>';
+      document.getElementById('tbody').insertAdjacentHTML('beforeend', '<tr><td colspan="7"><div class="empty">暂无报告<br><span style="font-size:.7rem;margin-top:8px;display:block">运行 <code>node skills/rui-bot/send.mjs health --html</code> 生成首份报告</span></div></td></tr>');
     } else {
       // Compute trend direction icon for each row
       document.getElementById('tbody').textContent = '';

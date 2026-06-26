@@ -16,23 +16,7 @@
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
 <link rel="stylesheet" href="../../../yry-a11y/index.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<style>
-  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
-  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
-  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
-  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
-  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
-  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
-  .delivery-story { font-size: .72rem; color: #4b5563; }
-  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
-  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
-  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
-  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
-  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
-  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
-  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
-</style>
+<link rel="stylesheet" href="../../../yry-legacy-scene-delivery/index.css">
 </head>
 <body>
 <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
@@ -54,7 +38,7 @@
 
   <div class="content-card">
     <h2>🔗 files 白名单策略</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">[发布到 npm]                          [排除项 (不发布)]
+    <pre class="yry-auto-15271">[发布到 npm]                          [排除项 (不发布)]
 
 ✓ shared/          必备基线       ✗ .editorconfig / .prettierrc.json
 ✓ theme/           Cat B 主题      ✨ .stylelintrc.json
@@ -66,32 +50,32 @@
                                        changelog/
                                        components-manifest/
                                        shared-reports/</pre>
-    <p style="margin-top:16px">白名单策略：仅发布消费者所需资源，排除开发工具配置与运行时生成数据 · 包体积控制在 ~3MB。</p>
+    <p class="yry-auto-34737">白名单策略：仅发布消费者所需资源，排除开发工具配置与运行时生成数据 · 包体积控制在 ~3MB。</p>
   </div>
 
   <div class="content-card">
     <h2>🔖 版本策略决策树</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">本次变更包含破坏性 API 变更？
+    <pre class="yry-auto-15271">本次变更包含破坏性 API 变更？
 ├── 是 → MAJOR (x+1.0.0)                [发布通道: latest 72h 后]
 └── 否 → 本次变更包含新组件 / 新 API / 新主题？
         ├── 是 → MINOR (x.y+1.0)         [发布通道: latest]
         └── 否 → 本次变更是 Bug 修复 / 性能 / 文档？
                 ├── 是 → PATCH (x.y.z+1)  [发布通道: latest]
                 └── 否 → 不需要发布</pre>
-    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6;margin-top:16px">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">变更类型</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">升级段</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">发布通道</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">回滚窗口</th></tr></thead>
+    <table class="yry-a2-4">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-75234">变更类型</th><th class="yry-auto-75234">升级段</th><th class="yry-auto-75234">发布通道</th><th class="yry-auto-75234">回滚窗口</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">破坏性</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#f87171">MAJOR</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">latest (72h 后)</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">30 天</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">新功能</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#fbbf24">MINOR</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">latest</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">14 天</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Bug 修复</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">PATCH</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">latest</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">7 天</td></tr>
-        <tr><td style="padding:8px 10px">预发验证</td><td style="padding:8px 10px">任意</td><td style="padding:8px 10px">canary (dist-tag)</td><td style="padding:8px 10px">48h 后转 latest</td></tr>
+        <tr><td class="yry-auto-86182">破坏性</td><td class="yry-auto-89598">MAJOR</td><td class="yry-auto-86182">latest (72h 后)</td><td class="yry-auto-86182">30 天</td></tr>
+        <tr><td class="yry-auto-86182">新功能</td><td class="yry-auto-27978">MINOR</td><td class="yry-auto-86182">latest</td><td class="yry-auto-86182">14 天</td></tr>
+        <tr><td class="yry-auto-86182">Bug 修复</td><td class="yry-auto-36166">PATCH</td><td class="yry-auto-86182">latest</td><td class="yry-auto-86182">7 天</td></tr>
+        <tr><td class="yry-auto-93797">预发验证</td><td class="yry-auto-93797">任意</td><td class="yry-auto-93797">canary (dist-tag)</td><td class="yry-auto-93797">48h 后转 latest</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>🚀 CI/CD 发布流水线</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">🔀 PR 合并到 main
+    <pre class="yry-auto-15271">🔀 PR 合并到 main
    │
    ▼
 🔧 CI 检查 (lint + test + manifest)
@@ -123,15 +107,15 @@
    │
    ▼
 🌐 jsDelivr 自动同步</pre>
-    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6;margin-top:16px">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">阶段</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">工具</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">触发</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">阻断条件</th></tr></thead>
+    <table class="yry-a2-4">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-75234">阶段</th><th class="yry-auto-75234">工具</th><th class="yry-auto-75234">触发</th><th class="yry-auto-75234">阻断条件</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Lint</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">eslint + stylelint</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">PR + push</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">任何 error</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">单元测试</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">vitest</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">PR + push</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">覆盖率 &lt; 70%</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">架构合规</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>arch-check.mjs</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">PR + push</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">非 A 级</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">包体积</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">size-limit</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">PR</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">超基线 +10%</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">安全扫描</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>npm audit</code> + Socket</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">PR</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">high/critical 漏洞</td></tr>
-        <tr><td style="padding:8px 10px">发布</td><td style="padding:8px 10px"><code>npm publish</code></td><td style="padding:8px 10px">tag push</td><td style="padding:8px 10px">前序阶段全过</td></tr>
+        <tr><td class="yry-auto-86182">Lint</td><td class="yry-auto-86182">eslint + stylelint</td><td class="yry-auto-86182">PR + push</td><td class="yry-auto-86182">任何 error</td></tr>
+        <tr><td class="yry-auto-86182">单元测试</td><td class="yry-auto-86182">vitest</td><td class="yry-auto-86182">PR + push</td><td class="yry-auto-86182">覆盖率 &lt; 70%</td></tr>
+        <tr><td class="yry-auto-86182">架构合规</td><td class="yry-auto-86182"><code>arch-check.mjs</code></td><td class="yry-auto-86182">PR + push</td><td class="yry-auto-86182">非 A 级</td></tr>
+        <tr><td class="yry-auto-86182">包体积</td><td class="yry-auto-86182">size-limit</td><td class="yry-auto-86182">PR</td><td class="yry-auto-86182">超基线 +10%</td></tr>
+        <tr><td class="yry-auto-86182">安全扫描</td><td class="yry-auto-86182"><code>npm audit</code> + Socket</td><td class="yry-auto-86182">PR</td><td class="yry-auto-86182">high/critical 漏洞</td></tr>
+        <tr><td class="yry-auto-93797">发布</td><td class="yry-auto-93797"><code>npm publish</code></td><td class="yry-auto-93797">tag push</td><td class="yry-auto-93797">前序阶段全过</td></tr>
       </tbody>
     </table>
   </div>

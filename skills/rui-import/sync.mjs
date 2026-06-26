@@ -51,7 +51,7 @@ async function main() {
       return;
     }
     console.error(`[rui-import] pull mode: dir=${root}`);
-    const result = await pullFromRemote(apiUrl, root, findProjectRoot(process.cwd()), opts.projectPrefix);
+    const result = await pullFromRemote(apiUrl, root, findProjectRoot(process.cwd()), opts.projectPrefix || "");
     console.error(JSON.stringify(result));
     process.exit(result.failed > 0 ? 1 : 0);
   }

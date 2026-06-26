@@ -16,23 +16,7 @@
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
 <link rel="stylesheet" href="../../../yry-a11y/index.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<style>
-  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
-  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
-  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
-  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
-  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
-  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
-  .delivery-story { font-size: .72rem; color: #4b5563; }
-  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
-  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
-  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
-  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
-  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
-  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
-  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
-</style>
+<link rel="stylesheet" href="../../../yry-legacy-scene-delivery/index.css">
 </head>
 <body>
 <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
@@ -54,7 +38,7 @@
 
   <div class="content-card">
     <h2>📐 架构图 · CDN 加载链五步</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.74rem;color:#22d3ee;line-height:1.7;margin:0">
+    <pre class="yry-auto-80833">
 🔍 DNS 预解析 (unpkg.com)
         │
         ▼
@@ -71,74 +55,74 @@
         │
         ▼
 ✅ 页面就绪 (FCP≤310ms · TTI≤480ms · 总加载≤625ms)</pre>
-    <p style="margin-top:16px">加载链由 5 个不可交换顺序的步骤组成，每步对应 jsDelivr URL 下的一个固定资源。CSS 必须先于 JS，Vue 运行时必须先于组件 JS，<code>shared/index.js</code> 必须先于组件 JS 以提供 <code>YrY.*</code> 9 个工具 API。</p>
+    <p class="yry-auto-34737">加载链由 5 个不可交换顺序的步骤组成，每步对应 jsDelivr URL 下的一个固定资源。CSS 必须先于 JS，Vue 运行时必须先于组件 JS，<code>shared/index.js</code> 必须先于组件 JS 以提供 <code>YrY.*</code> 9 个工具 API。</p>
   </div>
 
   <div class="content-card">
     <h2>📊 五步资源 · 角色 · 预算</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.74rem;color:#a9b1d6">
+    <table class="yry-auto-1645">
       <thead>
-        <tr style="background:rgba(30,41,59,.5)">
-          <th style="padding:8px 12px;text-align:left;color:#22d3ee; font-weight:600">#</th>
-          <th style="padding:8px 12px;text-align:left;color:#22d3ee; font-weight:600">资源</th>
-          <th style="padding:8px 12px;text-align:left;color:#22d3ee; font-weight:600">角色</th>
-          <th style="padding:8px 12px;text-align:left;color:#22d3ee; font-weight:600">加载方式</th>
-          <th style="padding:8px 12px;text-align:right;color:#22d3ee; font-weight:600">耗时</th>
+        <tr class="yry-auto-98324">
+          <th class="yry-a2-10">#</th>
+          <th class="yry-a2-10">资源</th>
+          <th class="yry-a2-10">角色</th>
+          <th class="yry-a2-10">加载方式</th>
+          <th class="yry-a1-22">耗时</th>
         </tr>
       </thead>
       <tbody>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">1</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>shared/index.css</code></td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">Reset + 动画 + CSS 变量</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>&lt;link&gt;</code> 同步</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">~15ms</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">2</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>theme/index.css</code></td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">Cat B System 主题</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>&lt;link&gt;</code> 同步</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">~10ms</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">3</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">组件 CSS (107 个)</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">按需组件样式</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>&lt;link&gt;</code> 按类别</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">~80ms</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">4</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">Vue 3 运行时</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>vue.global.prod.js</code></td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>&lt;script&gt;</code> 同步</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">~120ms</td></tr>
-        <tr><td style="padding:8px 12px">5</td><td style="padding:8px 12px">组件 JS</td><td style="padding:8px 12px">Custom Elements 注册</td><td style="padding:8px 12px"><code>&lt;script&gt;</code> 按序</td><td style="padding:8px 12px;text-align:right">~400ms</td></tr>
+        <tr><td class="yry-auto-40105">1</td><td class="yry-auto-40105"><code>shared/index.css</code></td><td class="yry-auto-40105">Reset + 动画 + CSS 变量</td><td class="yry-auto-40105"><code>&lt;link&gt;</code> 同步</td><td class="yry-auto-11917">~15ms</td></tr>
+        <tr><td class="yry-auto-40105">2</td><td class="yry-auto-40105"><code>theme/index.css</code></td><td class="yry-auto-40105">Cat B System 主题</td><td class="yry-auto-40105"><code>&lt;link&gt;</code> 同步</td><td class="yry-auto-11917">~10ms</td></tr>
+        <tr><td class="yry-auto-40105">3</td><td class="yry-auto-40105">组件 CSS (107 个)</td><td class="yry-auto-40105">按需组件样式</td><td class="yry-auto-40105"><code>&lt;link&gt;</code> 按类别</td><td class="yry-auto-11917">~80ms</td></tr>
+        <tr><td class="yry-auto-40105">4</td><td class="yry-auto-40105">Vue 3 运行时</td><td class="yry-auto-40105"><code>vue.global.prod.js</code></td><td class="yry-auto-40105"><code>&lt;script&gt;</code> 同步</td><td class="yry-auto-11917">~120ms</td></tr>
+        <tr><td class="yry-auto-70345">5</td><td class="yry-auto-70345">组件 JS</td><td class="yry-auto-70345">Custom Elements 注册</td><td class="yry-auto-70345"><code>&lt;script&gt;</code> 按序</td><td class="yry-auto-71132">~400ms</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>🚀 性能优化策略</h2>
-    <ul style="margin:0;padding-left:20px;font-size:.76rem;line-height:1.9;color:#a9b1d6">
-      <li><strong style="color:#22d3ee">字体预加载</strong> — <code>&lt;link rel="preload" as="font" type="font/woff2" crossorigin&gt;</code>，FOUT 消除</li>
-      <li><strong style="color:#22d3ee">DNS 预解析</strong> — <code>&lt;link rel="dns-prefetch" href="https://unpkg.com"&gt;</code>，DNS 耗时 -50ms</li>
-      <li><strong style="color:#22d3ee">资源预加载</strong> — <code>&lt;link rel="preload" href="vue.global.prod.js" as="script" crossorigin&gt;</code>，Vue 加载提前</li>
-      <li><strong style="color:#22d3ee">动画延迟</strong> — <code>animation-delay: 100ms</code>，避免首帧卡顿</li>
-      <li><strong style="color:#22d3ee">5s 超时容错</strong> — fetch + AbortController，单点失败不阻塞</li>
-      <li><strong style="color:#22d3ee">组件按序加载</strong> — 基础组件 (tag-chip → item-card → card-grid) 先于复合组件</li>
+    <ul class="yry-auto-20518">
+      <li><strong class="yry-auto-48218">字体预加载</strong> — <code>&lt;link rel="preload" as="font" type="font/woff2" crossorigin&gt;</code>，FOUT 消除</li>
+      <li><strong class="yry-auto-48218">DNS 预解析</strong> — <code>&lt;link rel="dns-prefetch" href="https://unpkg.com"&gt;</code>，DNS 耗时 -50ms</li>
+      <li><strong class="yry-auto-48218">资源预加载</strong> — <code>&lt;link rel="preload" href="vue.global.prod.js" as="script" crossorigin&gt;</code>，Vue 加载提前</li>
+      <li><strong class="yry-auto-48218">动画延迟</strong> — <code>animation-delay: 100ms</code>，避免首帧卡顿</li>
+      <li><strong class="yry-auto-48218">5s 超时容错</strong> — fetch + AbortController，单点失败不阻塞</li>
+      <li><strong class="yry-auto-48218">组件按序加载</strong> — 基础组件 (tag-chip → item-card → card-grid) 先于复合组件</li>
     </ul>
   </div>
 
   <div class="content-card">
     <h2>🛡️ 容错降级</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.74rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">失败场景</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">降级策略</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">用户体验</th></tr></thead>
+    <table class="yry-auto-1645">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-38488">失败场景</th><th class="yry-auto-38488">降级策略</th><th class="yry-auto-38488">用户体验</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">Vue 3 CDN 不可达</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">静态 HTML 渲染</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">内容可读，交互不可用</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">组件 CSS 加载失败</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">浏览器默认样式</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">内容可读，布局降级</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">组件 JS 加载失败</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">槽位显示占位符</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">页面结构完整</td></tr>
-        <tr><td style="padding:8px 12px">字体加载失败</td><td style="padding:8px 12px">系统等宽字体回退</td><td style="padding:8px 12px">功能不受影响</td></tr>
+        <tr><td class="yry-auto-40105">Vue 3 CDN 不可达</td><td class="yry-auto-40105">静态 HTML 渲染</td><td class="yry-auto-40105">内容可读，交互不可用</td></tr>
+        <tr><td class="yry-auto-40105">组件 CSS 加载失败</td><td class="yry-auto-40105">浏览器默认样式</td><td class="yry-auto-40105">内容可读，布局降级</td></tr>
+        <tr><td class="yry-auto-40105">组件 JS 加载失败</td><td class="yry-auto-40105">槽位显示占位符</td><td class="yry-auto-40105">页面结构完整</td></tr>
+        <tr><td class="yry-auto-70345">字体加载失败</td><td class="yry-auto-70345">系统等宽字体回退</td><td class="yry-auto-70345">功能不受影响</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>📊 性能预算</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.74rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">指标</th><th style="padding:8px 12px;text-align:right;color:#22d3ee;font-weight:600">预算</th><th style="padding:8px 12px;text-align:right;color:#22d3ee;font-weight:600">当前</th><th style="padding:8px 12px;text-align:right;color:#22d3ee;font-weight:600">余量</th></tr></thead>
+    <table class="yry-auto-1645">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-38488">指标</th><th class="yry-auto-51957">预算</th><th class="yry-auto-51957">当前</th><th class="yry-auto-51957">余量</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">HTML 体积</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">≤ 30 KB</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">18 KB</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">12 KB</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">关键 CSS</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">≤ 14 KB</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">9 KB</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">5 KB</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">JS 总量 (gzip)</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">≤ 80 KB</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">62 KB</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">18 KB</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">字体 (woff2)</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">≤ 100 KB</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">88 KB</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">12 KB</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">图片 (首屏)</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">≤ 100 KB</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">0 KB</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">100 KB</td></tr>
-        <tr><td style="padding:8px 12px">请求数 (首屏)</td><td style="padding:8px 12px;text-align:right">≤ 20</td><td style="padding:8px 12px;text-align:right">14</td><td style="padding:8px 12px;text-align:right">6</td></tr>
+        <tr><td class="yry-auto-40105">HTML 体积</td><td class="yry-auto-11917">≤ 30 KB</td><td class="yry-auto-11917">18 KB</td><td class="yry-auto-11917">12 KB</td></tr>
+        <tr><td class="yry-auto-40105">关键 CSS</td><td class="yry-auto-11917">≤ 14 KB</td><td class="yry-auto-11917">9 KB</td><td class="yry-auto-11917">5 KB</td></tr>
+        <tr><td class="yry-auto-40105">JS 总量 (gzip)</td><td class="yry-auto-11917">≤ 80 KB</td><td class="yry-auto-11917">62 KB</td><td class="yry-auto-11917">18 KB</td></tr>
+        <tr><td class="yry-auto-40105">字体 (woff2)</td><td class="yry-auto-11917">≤ 100 KB</td><td class="yry-auto-11917">88 KB</td><td class="yry-auto-11917">12 KB</td></tr>
+        <tr><td class="yry-auto-40105">图片 (首屏)</td><td class="yry-auto-11917">≤ 100 KB</td><td class="yry-auto-11917">0 KB</td><td class="yry-auto-11917">100 KB</td></tr>
+        <tr><td class="yry-auto-70345">请求数 (首屏)</td><td class="yry-auto-71132">≤ 20</td><td class="yry-auto-71132">14</td><td class="yry-auto-71132">6</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>🔗 jsDelivr URL 规范</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.74rem;color:#22d3ee;line-height:1.7;margin:0">https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/
+    <pre class="yry-auto-80833">https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/
 ├── shared/index.css          # 必备基线 (Reset + 动画 + CSS 变量)
 ├── shared/index.js           # YrY.* 9 工具 API
 ├── theme/index.css           # Cat B System 主题 (14 设计令牌)
@@ -149,26 +133,26 @@
 
   <div class="content-card">
     <h2>🌐 CDN 分发通道矩阵</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.74rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">通道</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">URL</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">缓存</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">用途</th></tr></thead>
+    <table class="yry-auto-1645">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-38488">通道</th><th class="yry-auto-38488">URL</th><th class="yry-auto-38488">缓存</th><th class="yry-auto-38488">用途</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">jsDelivr (主)</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">cdn.jsdelivr.net/npm/yry-cdn@x.y.z/</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">7 天</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">生产</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">unpkg (备)</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">unpkg.com/yry-cdn@x.y.z/</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">7 天</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">回退</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">npm registry</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">registry.npmjs.org/yry-cdn</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">—</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">安装</td></tr>
-        <tr><td style="padding:8px 12px">自托管</td><td style="padding:8px 12px">/cdn/ 目录</td><td style="padding:8px 12px">实时</td><td style="padding:8px 12px">开发</td></tr>
+        <tr><td class="yry-auto-40105">jsDelivr (主)</td><td class="yry-auto-40105">cdn.jsdelivr.net/npm/yry-cdn@x.y.z/</td><td class="yry-auto-40105">7 天</td><td class="yry-auto-40105">生产</td></tr>
+        <tr><td class="yry-auto-40105">unpkg (备)</td><td class="yry-auto-40105">unpkg.com/yry-cdn@x.y.z/</td><td class="yry-auto-40105">7 天</td><td class="yry-auto-40105">回退</td></tr>
+        <tr><td class="yry-auto-40105">npm registry</td><td class="yry-auto-40105">registry.npmjs.org/yry-cdn</td><td class="yry-auto-40105">—</td><td class="yry-auto-40105">安装</td></tr>
+        <tr><td class="yry-auto-70345">自托管</td><td class="yry-auto-70345">/cdn/ 目录</td><td class="yry-auto-70345">实时</td><td class="yry-auto-70345">开发</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>⚡ 资源提示层级</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.74rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">提示</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">时机</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">优先级</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">支持</th></tr></thead>
+    <table class="yry-auto-1645">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-38488">提示</th><th class="yry-auto-38488">时机</th><th class="yry-auto-38488">优先级</th><th class="yry-auto-38488">支持</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">preconnect</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">关键第三方源</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">最高</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">95%+</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">dns-prefetch</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">非关键第三方源</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">中</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">95%+</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">preload</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">当前页关键资源</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">最高</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">95%+</td></tr>
-        <tr><td style="padding:8px 12px">modulepreload</td><td style="padding:8px 12px">ESM 模块</td><td style="padding:8px 12px">最高</td><td style="padding:8px 12px">90%+</td></tr>
+        <tr><td class="yry-auto-40105">preconnect</td><td class="yry-auto-40105">关键第三方源</td><td class="yry-auto-40105">最高</td><td class="yry-auto-40105">95%+</td></tr>
+        <tr><td class="yry-auto-40105">dns-prefetch</td><td class="yry-auto-40105">非关键第三方源</td><td class="yry-auto-40105">中</td><td class="yry-auto-40105">95%+</td></tr>
+        <tr><td class="yry-auto-40105">preload</td><td class="yry-auto-40105">当前页关键资源</td><td class="yry-auto-40105">最高</td><td class="yry-auto-40105">95%+</td></tr>
+        <tr><td class="yry-auto-70345">modulepreload</td><td class="yry-auto-70345">ESM 模块</td><td class="yry-auto-70345">最高</td><td class="yry-auto-70345">90%+</td></tr>
       </tbody>
     </table>
   </div>

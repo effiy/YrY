@@ -6,7 +6,7 @@
 import { spawnSync } from "node:child_process";
 import { npm, checkPackageJson } from "./npm-utils.mjs";
 
-export function cmdInstall(pkg, args) {
+export function cmdInstall(/** @type {string} */ pkg, /** @type {any} */ args) {
   if (!pkg) {
     console.error("❌ 请提供包名。用法: rui-npm install <pkg>[@version]");
     console.error("   示例: rui-npm install lodash@4.17.21");
@@ -36,7 +36,7 @@ export function cmdInstall(pkg, args) {
   }
 }
 
-export function cmdUpdate(pkg, args) {
+export function cmdUpdate(/** @type {string} */ pkg, /** @type {any} */ _args) {
   if (!pkg) {
     console.error("❌ 请提供包名。用法: rui-npm update <pkg>");
     process.exit(1);
@@ -61,7 +61,7 @@ export function cmdUpdate(pkg, args) {
   }
 }
 
-export function cmdUninstall(pkg, args) {
+export function cmdUninstall(/** @type {string} */ pkg, /** @type {any} */ _args) {
   if (!pkg) {
     console.error("❌ 请提供包名。用法: rui-npm uninstall <pkg>");
     process.exit(1);

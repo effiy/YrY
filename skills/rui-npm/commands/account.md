@@ -2,6 +2,7 @@
 
 > 登录认证、包列表、废弃、删除。对应 `lib/auth.mjs` + `lib/account.mjs`。
 
+<a id="login"></a>
 ## login — npm 认证
 
 > 通过 Access Token 配置 npm registry 认证，无需交互式登录。
@@ -28,6 +29,7 @@
 - token 通过 npm config 存储，由 .npmrc 权限保护
 - 验证失败时自动清除已配置的无效 token
 
+<a id="my-packages"></a>
 ## my-packages — 我的包列表
 
 > 列出当前登录用户拥有的所有 npm 包。
@@ -47,6 +49,7 @@
 
 **前置条件**：`npm whoami` 成功。
 
+<a id="deprecate"></a>
 ## deprecate — 废弃版本
 
 > 标记指定包或版本为 deprecated。
@@ -67,6 +70,7 @@
 
 **前置条件**：`npm whoami` 成功 + 当前用户是包所有者。
 
+<a id="unpublish"></a>
 ## unpublish — 删除包/版本
 
 > 从 npm registry 删除指定包或版本。执行前展示安全警告。

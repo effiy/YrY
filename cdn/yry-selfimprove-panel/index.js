@@ -40,6 +40,9 @@
     healthTrend: '../.memory/health-trend.jsonl'
   };
 
+  var scriptUrl = (document.currentScript && document.currentScript.src) || '';
+  var diagInfoUrl = scriptUrl ? scriptUrl.replace(/index\.js(\?[^]*)?$/, 'diag-info.json') : 'cdn/yry-selfimprove-panel/diag-info.json';
+
   function resolvePaths() {
     var base = (window.PanelHub && window.PanelHub.PATHS) || window.YRY_PATHS || {};
     return {
@@ -48,53 +51,7 @@
     };
   }
 
-  var DIAG_INFO = {
-    D0: {
-      label: '基线偏离',
-      desc: '项目基线(CLAUDE.md/README.md)与实际状态不一致',
-      rec: '运行 /rui init 重生基线并对照差异'
-    },
-    D1: {
-      label: '效率退化',
-      desc: '管线执行效率下降:重复操作、超时增加、轮次膨胀',
-      rec: '检查最近 10 次执行记忆,定位重复模式'
-    },
-    D2: {
-      label: '质量退化',
-      desc: 'P0 清零速度下降或 Gate B 失败率上升',
-      rec: '审查最近 3 个故事的 Gate B 评估数据'
-    },
-    D3: {
-      label: '复杂度增长',
-      desc: '文件膨胀、函数增长、循环复杂度超过阈值',
-      rec: '运行 rui-analysis 定位高复杂度模块'
-    },
-    D4: {
-      label: '流程退化',
-      desc: '管线阶段跳过率上升或阻断标识重复出现',
-      rec: '检查 delivery-tracking.jsonl 中的阻断模式'
-    },
-    D5: {
-      label: '依赖退化',
-      desc: '依赖版本过期、安全漏洞、或外部 API 不可达',
-      rec: '运行 npm audit + rui-trends 检查外部源可达性'
-    },
-    D6: {
-      label: '文档过时',
-      desc: '文档内容与源码实现不一致或链接断裂',
-      rec: '运行 /rui-update 批量刷新过期文档'
-    },
-    D7: {
-      label: '配置漂移',
-      desc: '.claude/ 配置与 plugin.json 声明不一致',
-      rec: '运行 /rui-claude sync 同步配置'
-    },
-    D8: {
-      label: '架构退化',
-      desc: '范式违规、内核体积增长、耦合恶化',
-      rec: '运行 node lib/arch-check.mjs 检查架构合规'
-    }
-  };
+  var DIAG_INFO = {};
 
   function scoreColor(s) {
     return s >= 80 ? '#22c55e' : s >= 60 ? '#f59e0b' : '#ef4444';
@@ -818,10 +775,18 @@
                   })
                   .catch(function () {
                     return '';
+                  }),
+                fetch(diagInfoUrl)
+                  .then(function (r) {
+                    return r.ok ? r.json() : {};
+                  })
+                  .catch(function () {
+                    return {};
                   })
               ]);
               var data = results[0];
               if (!data) throw new Error('summary.json 不可用');
+              DIAG_INFO = results[2] || {};
 
               var jsonlText = results[1] || '';
               this.siRaw = jsonlText

@@ -6,7 +6,8 @@
 import { describe, it, assert, run } from '../../../../lib/vitest-adapter.mjs';
 
 // Dynamic import since engine modules are ESM with relative imports
-let evaluateProposal, computeMetrics;
+/** @type {any} */ let evaluateProposal;
+/** @type {any} */ let computeMetrics;
 
 async function loadModules() {
   if (evaluateProposal) return;

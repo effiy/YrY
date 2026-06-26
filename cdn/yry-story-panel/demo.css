@@ -1,0 +1,4 @@
+/* yry-story-panel/demo.css — showcase page styles */
+body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #FFC107); }
+    pre { background: rgba(0,0,0,.3); padding: 10px 14px; border-radius: 6px; font-size: .76rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; }

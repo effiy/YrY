@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://unpkg.com" crossorigin>
   <link rel="dns-prefetch" href="https://unpkg.com">
-  <link rel="preload" href="https://unpkg.com/vue@3/dist/vue.global.prod.js" as="script" crossorigin fetchpriority="high">
-  <link rel="preload" href="theme/index.css" as="style" crossorigin>
-  <link rel="preload" href="shared/index.css" as="style" crossorigin>
+  <link rel="preload" href="https://unpkg.com/vue@3/dist/vue.global.prod.js" as="script" fetchpriority="high">
+  <link rel="preload" href="theme/index.css" as="style">
+  <link rel="preload" href="shared/index.css" as="style">
   <link rel="stylesheet" href="theme/index.css">
   <link rel="stylesheet" href="shared/index.css">
   <title>YrY CDN — 故事与场景</title>
@@ -40,171 +40,10 @@
   <link rel="stylesheet" href="yry-faq-panel/index.css">
   <!-- Vue 3 (Yry* 自定义元素的运行时依赖) -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<link rel="stylesheet" href="yry-cdn-styles/index.css"></head>
+<link rel="stylesheet" href="yry-cdn-styles/index.css">
+  <link rel="stylesheet" href="index.css">
+</head>
 <body>
-  <style>
-    /* ── 七卡结构化样式 (与 docs/index.html 对齐,令牌统一真相源) ── */
-    .cdn-agg-card,
-    .cdn-agg-card.sr-link {
-      position: relative;
-      display: block;
-      background: var(--yry-mono-surface, rgba(15, 23, 42, 0.55));
-      border: 1px solid var(--yry-mono-border, rgba(255, 255, 255, 0.06));
-      border-radius: 10px;
-      padding: 14px 16px;
-      text-decoration: none;
-      color: inherit;
-      transition: border-color .15s, transform .15s, box-shadow .15s;
-    }
-    .cdn-agg-card:hover {
-      border-color: rgba(var(--yry-cyan-rgb, 34, 211, 238), .5);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 14px rgba(var(--yry-cyan-rgb, 34, 211, 238), .12);
-    }
-    .cdn-agg-card:hover > div:first-child span:nth-child(2) {
-      text-decoration: underline;
-    }
-    /* 已浏览标记 — 右上角小勾 */
-    .cdn-agg-card[data-visited="1"] {
-      border-color: rgba(var(--yry-emerald-rgb, 16, 185, 129), .35);
-    }
-    .cdn-agg-card[data-visited="1"]::before {
-      content: '✓ 已浏览';
-      position: absolute;
-      top: 8px;
-      right: 10px;
-      font-size: .58rem;
-      color: var(--yry-emerald, #34d399);
-      background: rgba(var(--yry-emerald-rgb, 16, 185, 129), .12);
-      border: 1px solid rgba(var(--yry-emerald-rgb, 16, 185, 129), .3);
-      padding: 1px 6px;
-      border-radius: 3px;
-      font-weight: 600;
-      pointer-events: none;
-      z-index: 1;
-    }
-    .cdn-agg-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 12px;
-    }
-    .cdn-agg-kpis {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin: 10px 0 14px;
-      font-size: 0.74rem;
-    }
-    .cdn-agg-head {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 6px;
-    }
-    .cdn-agg-emoji { font-size: 1.2rem; }
-    .cdn-agg-title {
-      color: var(--yry-cyan, #22d3ee);
-      font-weight: 700;
-      font-size: 0.86rem;
-    }
-    .cdn-agg-badge {
-      margin-left: auto;
-      font-size: 0.6rem;
-      color: var(--yry-text3, #6b7280);
-      padding: 1px 6px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 3px;
-    }
-    .cdn-agg-source {
-      font-size: 0.56rem;
-      padding: 1px 5px;
-      border-radius: 3px;
-      background: rgba(var(--yry-cyan-rgb, 34, 211, 238), 0.1);
-      color: var(--yry-cyan, #22d3ee);
-      margin-left: 4px;
-      border: 1px solid rgba(var(--yry-cyan-rgb, 34, 211, 238), 0.18);
-    }
-    .cdn-agg-body {
-      font-size: 0.72rem;
-      color: var(--yry-text3, #6b7280);
-      line-height: 1.6;
-    }
-    .cdn-agg-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      margin-top: 8px;
-    }
-    .cdn-agg-chip {
-      font-size: 0.6rem;
-      padding: 1px 6px;
-      background: rgba(var(--yry-cyan-rgb, 34, 211, 238), 0.08);
-      color: var(--yry-cyan, #22d3ee);
-      border: 1px solid rgba(var(--yry-cyan-rgb, 34, 211, 238), 0.18);
-      border-radius: 3px;
-      transition: background-color .15s, border-color .15s;
-    }
-    .cdn-agg-card:hover .cdn-agg-chip {
-      background: rgba(var(--yry-cyan-rgb, 34, 211, 238), 0.16);
-      border-color: rgba(var(--yry-cyan-rgb, 34, 211, 238), 0.32);
-    }
-    .cdn-agg-chip.cdn-agg-key {
-      background: rgba(244, 114, 182, 0.12);
-      color: #f472b6;
-      border-color: rgba(244, 114, 182, 0.3);
-      font-family: ui-monospace, "JetBrains Mono", monospace;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-    }
-    .cdn-agg-card:hover .cdn-agg-chip.cdn-agg-key {
-      background: rgba(244, 114, 182, 0.22);
-      border-color: rgba(244, 114, 182, 0.5);
-    }
-    .cdn-agg-stats {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      margin-top: 7px;
-    }
-    .cdn-agg-stat {
-      font-size: 0.6rem;
-      padding: 1px 6px;
-      background: rgba(var(--yry-emerald-rgb, 16, 185, 129), 0.06);
-      color: #9ca3af;
-      border: 1px solid rgba(var(--yry-emerald-rgb, 16, 185, 129), 0.18);
-      border-radius: 3px;
-      letter-spacing: 0.01em;
-    }
-    .cdn-agg-stat b {
-      color: var(--yry-emerald, #34d399);
-      font-weight: 700;
-      margin-right: 1px;
-    }
-    .cdn-agg-cta {
-      margin-top: 8px;
-      font-size: 0.66rem;
-      color: var(--yry-cyan, #22d3ee);
-      font-weight: 600;
-      letter-spacing: 0.02em;
-      opacity: 0.85;
-      transition: opacity .15s, transform .15s;
-    }
-    .cdn-agg-card:hover .cdn-agg-cta {
-      opacity: 1;
-      transform: translateX(2px);
-    }
-    .cdn-agg-refresh {
-      margin-top: 6px;
-      font-size: 0.6rem;
-      color: var(--yry-text3, #6b7280);
-      letter-spacing: 0.01em;
-    }
-    .cdn-agg-refresh b {
-      color: var(--yry-violet, #a78bfa);
-      font-weight: 600;
-      margin: 0 2px;
-    }
-  </style>
   <div class="container">
     <!-- ── Breadcrumb (YryBreadcrumb) ── -->
     <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
@@ -752,6 +591,21 @@
   <yry-notify-panel></yry-notify-panel>
   <yry-selfimprove-panel></yry-selfimprove-panel>
   <yry-faq-panel></yry-faq-panel>
+
+  <script>
+    /* 主体淡入 — 与 docs/js/docs-ux-enhance.js 同构:为 .container 加 .is-ready 解除 opacity:0 遮罩 */
+    (function () {
+      var reveal = function () {
+        document.querySelectorAll('.container').forEach(function (c) { c.classList.add('is-ready'); });
+      };
+      if (document.readyState === 'complete') {
+        setTimeout(reveal, 80);
+      } else {
+        window.addEventListener('load', function () { setTimeout(reveal, 80); });
+      }
+      setTimeout(reveal, 1200); /* 兜底:1.2s 后强制可见,避免 load 事件被外部资源阻塞 */
+    })();
+  </script>
 
   <script src="shared/index.js" defer></script>
 
@@ -2633,7 +2487,7 @@
         `<div class="legend-row">
            <span class="fs-9rem">${icon}</span>
            <span class="text-text3-6b7280-fs7rem">${label}</span>
-           <b style="color:${color || 'var(--yry-accent,#22d3ee)'};font-size:.78rem">${value}</b>
+           <b class="yry-a1-26">${value}</b>
          </div>`;
       kpiEl.innerHTML = '<span class="u-a7292c">⏳ 加载实时计数…</span>';
       try {

@@ -7,7 +7,7 @@ paths:
 
 > 每个使用场景对应一个自包含的深色主题 HTML+SVG 架构图。图表优先于文字——表达优先。
 >
-> **两套图表系统的分工**：本文件管理 **HTML+SVG 架构图**（深空主题，7 语义色板，自包含 `.html` 文件）。**Mermaid 内联图**（markdown 中的 ` ```mermaid ` 代码块）的配色与规范见 [mermaid-theme.md](./mermaid-theme.md) 和 [doc-generation.md](./doc-generation.md#diagram-first)。两套系统服务于不同目的，各有独立的完整样式规范。
+> **两套图表系统的分工**：本文件管理 **HTML+SVG 架构图**（深空主题，7 语义色板，自包含 `.html` 文件）。**Mermaid 内联图**（markdown 中的 ` ```mermaid ` 代码块）的配色与规范见 [mermaid-theme.md](../../rui/rules/mermaid-theme.md) 和 [doc-generation.md](./doc-generation.md#diagram-first)。两套系统服务于不同目的，各有独立的完整样式规范。
 >
 > **Iron Law — 违反字母即是违反精神：**
 > - 表达优先：图 → 结构化文本 → 表。无架构图的场景视为未完成。

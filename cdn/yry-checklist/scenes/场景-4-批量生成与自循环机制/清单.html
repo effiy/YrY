@@ -7,38 +7,7 @@
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/theme/index.css">
 <link rel="stylesheet" href="../../../../cdn/shared-reports/index.css">
-<style>
-.scene-nav { display:flex; flex-wrap:wrap; gap:4px 8px; padding:8px 0; font-size:.72rem; border-bottom:var(--yry-border); margin-bottom:12px; }
-.scene-nav-link { color:var(--yry-text3); text-decoration:none; }
-.scene-nav-link:hover { color:var(--yry-accent); }
-.scene-nav-link.active { color:var(--yry-accent); font-weight:700; }
-.scene-nav-sep { color:var(--yry-text3); }
-.cross-nav { display:flex; gap:8px; padding:6px 0; font-size:.72rem; margin-bottom:12px; }
-.cross-link { color:var(--yry-text3); text-decoration:none; }
-.cross-link:hover { color:var(--yry-accent); }
-.cross-link.on { color:var(--yry-accent); font-weight:700; }
-.cross-sep { color:var(--yry-text3); }
-.header { margin-bottom:12px; }
-.header h1 { font-size:1.1rem; margin:0; }
-.accent { color:var(--yry-accent); }
-.meta { font-size:.68rem; color:var(--yry-text3); margin-top:4px; }
-.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:8px; }
-.stat-card { padding:10px; text-align:center; border-radius:6px; border:var(--yry-border); background:rgba(15,23,42,.4); }
-.stat-card .val { font-size:1.2rem; font-weight:700; }
-.stat-card .val.health { color:var(--yry-pass); }
-.stat-card .lbl { font-size:.62rem; color:var(--yry-text3); margin-top:2px; }
-.bar-wrap { margin-bottom:12px; }
-.bar-outer { height:6px; border-radius:3px; background:rgba(255,255,255,.06); overflow:hidden; display:flex; }
-.seg.strength { background:var(--yry-pass); }
-.seg.gap { background:rgba(255,255,255,.06); }
-.card { padding:16px 20px; border-radius:8px; border:var(--yry-border); background:rgba(15,23,42,.4); }
-.card h2 { font-size:.88rem; margin:0 0 12px 0; }
-.cl-item { display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.04); }
-.cl-num { min-width:24px; height:24px; border-radius:50%; background:rgba(34,197,94,.12); color:var(--yry-pass); display:flex; align-items:center; justify-content:center; font-size:.68rem; font-weight:700; }
-.cl-text { flex:1; font-size:.76rem; line-height:1.5; color:var(--yry-text2); }
-.ft { text-align:center; font-size:.64rem; color:var(--yry-text3); padding:20px 0; }
-@media (max-width:640px) { .stats-grid { grid-template-columns:repeat(2,1fr); }}
-</style>
+<link rel="stylesheet" href="../../../../cdn/yry-legacy-scene-overview/index.css">
 </head>
 <body>
 <div class="container">
@@ -76,60 +45,60 @@
   <div class="stat-card"><div class="val health">7</div><div class="lbl">文档/场景</div></div>
   <div class="stat-card"><div class="val">&lt;300ms</div><div class="lbl">场景耗时</div></div>
 </div>
-<div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:100%"></div><div class="seg gap" style="width:0%"></div></div></div>
+<div class="bar-wrap"><div class="bar-outer"><div class="seg strength" yry-auto-60516"></div><div class="seg gap" yry-auto-6776"></div></div></div>
 
 <div class="card">
   <h2>① 5 个管线阶段清单</h2>
-  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong style="color:var(--yry-accent)">扫描</strong> — 输入故事目录路径 · 递归扫描 <code>场景-N-*/</code> 子目录 · 输出场景列表 · &lt; 50ms</span></div>
-  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong style="color:var(--yry-accent)">提取</strong> — 输入每场景 <code>index.md</code> · 解析 §0-§4 章节 + 表格 + mermaid · 输出 Context 对象 · &lt; 100ms/场景</span></div>
-  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong style="color:var(--yry-accent)">渲染</strong> — 输入 Context + 模板 · Token 替换 + 模板渲染 · 输出 HTML 字符串 · &lt; 50ms/文档</span></div>
-  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong style="color:var(--yry-accent)">写入</strong> — 输入 HTML 字符串 · 写入文件系统 + <code>.bak</code> 备份 · 输出 7 个 HTML 文件 · &lt; 100ms/场景</span></div>
-  <div class="cl-item"><span class="cl-num">5</span><span class="cl-text"><strong style="color:var(--yry-accent)">报告</strong> — 输入生成结果 · 统计 <code>created/updated/skipped</code> · 输出摘要报告 · &lt; 10ms</span></div>
+  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong class="yry-auto-24835">扫描</strong> — 输入故事目录路径 · 递归扫描 <code>场景-N-*/</code> 子目录 · 输出场景列表 · &lt; 50ms</span></div>
+  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong class="yry-auto-24835">提取</strong> — 输入每场景 <code>index.md</code> · 解析 §0-§4 章节 + 表格 + mermaid · 输出 Context 对象 · &lt; 100ms/场景</span></div>
+  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong class="yry-auto-24835">渲染</strong> — 输入 Context + 模板 · Token 替换 + 模板渲染 · 输出 HTML 字符串 · &lt; 50ms/文档</span></div>
+  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong class="yry-auto-24835">写入</strong> — 输入 HTML 字符串 · 写入文件系统 + <code>.bak</code> 备份 · 输出 7 个 HTML 文件 · &lt; 100ms/场景</span></div>
+  <div class="cl-item"><span class="cl-num">5</span><span class="cl-text"><strong class="yry-auto-24835">报告</strong> — 输入生成结果 · 统计 <code>created/updated/skipped</code> · 输出摘要报告 · &lt; 10ms</span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
+<div class="card" yry-auto-86349">
   <h2>② 自循环检测逻辑</h2>
-  <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:var(--yry-cyan);line-height:1.7;margin:0">每 30 分钟:
+  <pre class="yry-a2-0">每 30 分钟:
   1. 扫描所有故事目录的场景-N-*/index.md
   2. 对比 .md 与 .html 的 mtime
   3. .md &gt; .html → 重新渲染该场景
   4. 记录 created/updated/skipped 统计
   5. 输出日志 + 企微通知 (可选)</pre>
-  <div class="cl-item" style="margin-top:12px"><span class="cl-num">1</span><span class="cl-text"><strong>mtime 对比</strong> — 仅 <code>.md &gt; .html</code> 时重渲染 · 避免无变更时的空跑</span></div>
+  <div class="cl-item" yry-auto-86349"><span class="cl-num">1</span><span class="cl-text"><strong>mtime 对比</strong> — 仅 <code>.md &gt; .html</code> 时重渲染 · 避免无变更时的空跑</span></div>
   <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong>.bak 备份</strong> — 覆盖前先备份原 HTML · 异常时可回滚</span></div>
   <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong>失败隔离</strong> — 单场景渲染失败不阻塞其他场景</span></div>
   <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong>日志 + 通知</strong> — 每次自循环输出统计 · 可选企微 Webhook</span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
+<div class="card" yry-auto-86349">
   <h2>③ 命令接口</h2>
-  <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:var(--yry-text2)">
-    <thead><tr style="background:rgba(34,197,94,.08)"><th style="padding:6px 10px;text-align:left;color:var(--yry-pass);font-weight:600">命令</th><th style="padding:6px 10px;text-align:left;color:var(--yry-pass);font-weight:600">用途</th><th style="padding:6px 10px;text-align:left;color:var(--yry-pass);font-weight:600">触发</th></tr></thead>
+  <table class="yry-auto-5456">
+    <thead><tr class="yry-auto-87620"><th class="yry-auto-54070">命令</th><th class="yry-auto-54070">用途</th><th class="yry-auto-54070">触发</th></tr></thead>
     <tbody>
-      <tr><td style="padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>/rui-html &lt;story&gt;</code></td><td style="padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04)">批量生成某故事的 7 文档 × N 场景</td><td style="padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04)">手动</td></tr>
-      <tr><td style="padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>node scripts/yry-checklist-loop.mjs</code></td><td style="padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04)">自循环守护进程 (30min)</td><td style="padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04)">cron/systemd</td></tr>
-      <tr><td style="padding:6px 10px"><code>/rui-html --scene 场景-N</code></td><td style="padding:6px 10px">单场景生成</td><td style="padding:6px 10px">手动</td></tr>
+      <tr><td class="yry-auto-13447"><code>/rui-html &lt;story&gt;</code></td><td class="yry-auto-13447">批量生成某故事的 7 文档 × N 场景</td><td class="yry-auto-13447">手动</td></tr>
+      <tr><td class="yry-auto-13447"><code>node scripts/yry-checklist-loop.mjs</code></td><td class="yry-auto-13447">自循环守护进程 (30min)</td><td class="yry-auto-13447">cron/systemd</td></tr>
+      <tr><td class="yry-auto-93300"><code>/rui-html --scene 场景-N</code></td><td class="yry-auto-93300">单场景生成</td><td class="yry-auto-93300">手动</td></tr>
     </tbody>
   </table>
 </div>
 
-<div class="card" style="margin-top:12px">
+<div class="card" yry-auto-86349">
   <h2>④ 角色链与门禁</h2>
-  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong style="color:var(--yry-accent)">决策链</strong> — architect (管线设计) · reviewer (方案评审) · architect (门禁策略)</span></div>
-  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong style="color:var(--yry-accent)">实现链</strong> — coder (5 阶段实现) · tester (TC 覆盖) · coder (自循环守护)</span></div>
-  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong style="color:var(--yry-accent)">闭环链</strong> — deliverer (签收) · self-improve (E1-E4 评估)</span></div>
-  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong style="color:var(--yry-accent)">门禁</strong> — <code>html-gen-gate</code> · 7 文档全部生成 · 0 错误 · <code>.bak</code> 备份齐全</span></div>
+  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong class="yry-auto-24835">决策链</strong> — architect (管线设计) · reviewer (方案评审) · architect (门禁策略)</span></div>
+  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong class="yry-auto-24835">实现链</strong> — coder (5 阶段实现) · tester (TC 覆盖) · coder (自循环守护)</span></div>
+  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong class="yry-auto-24835">闭环链</strong> — deliverer (签收) · self-improve (E1-E4 评估)</span></div>
+  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong class="yry-auto-24835">门禁</strong> — <code>html-gen-gate</code> · 7 文档全部生成 · 0 错误 · <code>.bak</code> 备份齐全</span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
-  <p style="font-size:.72rem;color:var(--yry-text3);text-align:center">
+<div class="card" yry-auto-86349">
+  <p class="yry-auto-58746">
     查看完整详细清单: <a href="计划清单.html">计划清单</a> · <a href="架构图.html">架构图</a> · <a href="index.md">源码 Markdown</a>
   </p>
 </div>
 
 <footer class="ft">
   场景 4 · 批量生成与自循环机制 · YryChecklist · v1.2.0<br>
-  <span style="color:var(--yry-text3)">清单 · 架构 · 图谱 · 源码 · 测试 · 演示 · 审计</span>
+  <span class="yry-auto-80578">清单 · 架构 · 图谱 · 源码 · 测试 · 演示 · 审计</span>
 </footer>
 
 </div>

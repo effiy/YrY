@@ -7,38 +7,7 @@
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/theme/index.css">
 <link rel="stylesheet" href="../../../../cdn/shared-reports/index.css">
-<style>
-.scene-nav { display:flex; flex-wrap:wrap; gap:4px 8px; padding:8px 0; font-size:.72rem; border-bottom:var(--yry-border); margin-bottom:12px; }
-.scene-nav-link { color:var(--yry-text3); text-decoration:none; }
-.scene-nav-link:hover { color:var(--yry-accent); }
-.scene-nav-link.active { color:var(--yry-accent); font-weight:700; }
-.scene-nav-sep { color:var(--yry-text3); }
-.cross-nav { display:flex; gap:8px; padding:6px 0; font-size:.72rem; margin-bottom:12px; }
-.cross-link { color:var(--yry-text3); text-decoration:none; }
-.cross-link:hover { color:var(--yry-accent); }
-.cross-link.on { color:var(--yry-accent); font-weight:700; }
-.cross-sep { color:var(--yry-text3); }
-.header { margin-bottom:12px; }
-.header h1 { font-size:1.1rem; margin:0; }
-.accent { color:var(--yry-accent); }
-.meta { font-size:.68rem; color:var(--yry-text3); margin-top:4px; }
-.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:8px; }
-.stat-card { padding:10px; text-align:center; border-radius:6px; border:var(--yry-border); background:rgba(15,23,42,.4); }
-.stat-card .val { font-size:1.2rem; font-weight:700; }
-.stat-card .val.health { color:var(--yry-pass); }
-.stat-card .lbl { font-size:.62rem; color:var(--yry-text3); margin-top:2px; }
-.bar-wrap { margin-bottom:12px; }
-.bar-outer { height:6px; border-radius:3px; background:rgba(255,255,255,.06); overflow:hidden; display:flex; }
-.seg.strength { background:var(--yry-pass); }
-.seg.gap { background:rgba(255,255,255,.06); }
-.card { padding:16px 20px; border-radius:8px; border:var(--yry-border); background:rgba(15,23,42,.4); }
-.card h2 { font-size:.88rem; margin:0 0 12px 0; }
-.cl-item { display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.04); }
-.cl-num { min-width:24px; height:24px; border-radius:50%; background:rgba(34,197,94,.12); color:var(--yry-pass); display:flex; align-items:center; justify-content:center; font-size:.68rem; font-weight:700; }
-.cl-text { flex:1; font-size:.76rem; line-height:1.5; color:var(--yry-text2); }
-.ft { text-align:center; font-size:.64rem; color:var(--yry-text3); padding:20px 0; }
-@media (max-width:640px) { .stats-grid { grid-template-columns:repeat(2,1fr); }}
-</style>
+<link rel="stylesheet" href="../../../../cdn/yry-legacy-scene-overview/index.css">
 </head>
 <body>
 <div class="container">
@@ -76,18 +45,18 @@
   <div class="stat-card"><div class="val health">5</div><div class="lbl">降级策略</div></div>
   <div class="stat-card"><div class="val">100%</div><div class="lbl">覆盖度</div></div>
 </div>
-<div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:100%"></div><div class="seg gap" style="width:0%"></div></div></div>
+<div class="bar-wrap"><div class="bar-outer"><div class="seg strength" yry-auto-60516"></div><div class="seg gap" yry-auto-6776"></div></div></div>
 
 <div class="card">
   <h2>① 5 个可视化组件清单</h2>
-  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong style="color:var(--yry-accent)">KPI 卡片</strong> — 通过/失败/警告计数 · CSS Grid 纯 CSS · 数据缺失显示 <code>—</code> 占位</span></div>
-  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong style="color:var(--yry-accent)">5×5 风险热力图</strong> — 影响×概率矩阵 · CSS Grid + 颜色编码 (绿→黄→红) · 无数据时显示空网格</span></div>
-  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong style="color:var(--yry-accent)">趋势柱状图</strong> — 评分时序 · CSS bar-chart (纯 CSS 无 JS 依赖) · 数据 &lt; 3 点时显示散点</span></div>
-  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong style="color:var(--yry-accent)">分数卡</strong> — 0-100 加权算法计算 · 无数据时显示 <code>N/A</code></span></div>
-  <div class="cl-item"><span class="cl-num">5</span><span class="cl-text"><strong style="color:var(--yry-accent)">门禁判定块</strong> — 条件渲染 (通过/阻断/警告) · 无判定时显示 <code>待评估</code></span></div>
+  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong class="yry-auto-24835">KPI 卡片</strong> — 通过/失败/警告计数 · CSS Grid 纯 CSS · 数据缺失显示 <code>—</code> 占位</span></div>
+  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong class="yry-auto-24835">5×5 风险热力图</strong> — 影响×概率矩阵 · CSS Grid + 颜色编码 (绿→黄→红) · 无数据时显示空网格</span></div>
+  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong class="yry-auto-24835">趋势柱状图</strong> — 评分时序 · CSS bar-chart (纯 CSS 无 JS 依赖) · 数据 &lt; 3 点时显示散点</span></div>
+  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong class="yry-auto-24835">分数卡</strong> — 0-100 加权算法计算 · 无数据时显示 <code>N/A</code></span></div>
+  <div class="cl-item"><span class="cl-num">5</span><span class="cl-text"><strong class="yry-auto-24835">门禁判定块</strong> — 条件渲染 (通过/阻断/警告) · 无判定时显示 <code>待评估</code></span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
+<div class="card" yry-auto-86349">
   <h2>② 4 个数据源与提取方式</h2>
   <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong>场景 §3 测试报告</strong> — 表格解析 → 通过/失败/跳过计数 → KPI 卡片 · 页面加载时刷新</span></div>
   <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong>场景 §6 风险表</strong> — 表格解析 → 影响×概率矩阵 → 5×5 热力图 · 页面加载时刷新</span></div>
@@ -95,36 +64,36 @@
   <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong>健康报告 JSON</strong> — fetch → 评分数据 → 分数卡 · 每 5 分钟刷新</span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
+<div class="card" yry-auto-86349">
   <h2>③ 渲染策略与降级</h2>
-  <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:var(--yry-text2)">
-    <thead><tr style="background:rgba(34,197,94,.08)"><th style="padding:6px 10px;text-align:left;color:var(--yry-pass);font-weight:600">组件</th><th style="padding:6px 10px;text-align:left;color:var(--yry-pass);font-weight:600">渲染方式</th><th style="padding:6px 10px;text-align:left;color:var(--yry-pass);font-weight:600">降级策略</th></tr></thead>
+  <table class="yry-auto-5456">
+    <thead><tr class="yry-auto-87620"><th class="yry-auto-54070">组件</th><th class="yry-auto-54070">渲染方式</th><th class="yry-auto-54070">降级策略</th></tr></thead>
     <tbody>
-      <tr><td style="padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04)">KPI 卡片</td><td style="padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04)">CSS Grid 纯 CSS</td><td style="padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04)">数据缺失显示 <code>—</code> 占位</td></tr>
-      <tr><td style="padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04)">风险热力图</td><td style="padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04)">CSS Grid + 颜色编码</td><td style="padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04)">无数据时显示空网格</td></tr>
-      <tr><td style="padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04)">趋势柱状图</td><td style="padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04)">CSS bar-chart</td><td style="padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04)">数据 &lt; 3 点时显示散点</td></tr>
-      <tr><td style="padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04)">分数卡</td><td style="padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04)">加权算法</td><td style="padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04)">无数据时显示 <code>N/A</code></td></tr>
-      <tr><td style="padding:6px 10px">门禁判定块</td><td style="padding:6px 10px">条件渲染</td><td style="padding:6px 10px">无判定时显示 <code>待评估</code></td></tr>
+      <tr><td class="yry-auto-13447">KPI 卡片</td><td class="yry-auto-13447">CSS Grid 纯 CSS</td><td class="yry-auto-13447">数据缺失显示 <code>—</code> 占位</td></tr>
+      <tr><td class="yry-auto-13447">风险热力图</td><td class="yry-auto-13447">CSS Grid + 颜色编码</td><td class="yry-auto-13447">无数据时显示空网格</td></tr>
+      <tr><td class="yry-auto-13447">趋势柱状图</td><td class="yry-auto-13447">CSS bar-chart</td><td class="yry-auto-13447">数据 &lt; 3 点时显示散点</td></tr>
+      <tr><td class="yry-auto-13447">分数卡</td><td class="yry-auto-13447">加权算法</td><td class="yry-auto-13447">无数据时显示 <code>N/A</code></td></tr>
+      <tr><td class="yry-auto-93300">门禁判定块</td><td class="yry-auto-93300">条件渲染</td><td class="yry-auto-93300">无判定时显示 <code>待评估</code></td></tr>
     </tbody>
   </table>
 </div>
 
-<div class="card" style="margin-top:12px">
+<div class="card" yry-auto-86349">
   <h2>④ 角色链 · 决策/实现/闭环</h2>
-  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong style="color:var(--yry-accent)">决策链</strong> — reviewer (可视化方案) · architect (架构合规) · reviewer (验收)</span></div>
-  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong style="color:var(--yry-accent)">实现链</strong> — coder (5 组件) · tester (边界用例) · coder (集成联调)</span></div>
-  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong style="color:var(--yry-accent)">闭环链</strong> — deliverer (签收) · self-improve (E1-E4 效果评估)</span></div>
+  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong class="yry-auto-24835">决策链</strong> — reviewer (可视化方案) · architect (架构合规) · reviewer (验收)</span></div>
+  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong class="yry-auto-24835">实现链</strong> — coder (5 组件) · tester (边界用例) · coder (集成联调)</span></div>
+  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong class="yry-auto-24835">闭环链</strong> — deliverer (签收) · self-improve (E1-E4 效果评估)</span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
-  <p style="font-size:.72rem;color:var(--yry-text3);text-align:center">
+<div class="card" yry-auto-86349">
+  <p class="yry-auto-58746">
     查看完整详细清单: <a href="计划清单.html">计划清单</a> · <a href="架构图.html">架构图</a> · <a href="index.md">源码 Markdown</a>
   </p>
 </div>
 
 <footer class="ft">
   场景 3 · 验证报告与健康面板集成 · YryChecklist · v1.2.0<br>
-  <span style="color:var(--yry-text3)">清单 · 架构 · 图谱 · 源码 · 测试 · 演示 · 审计</span>
+  <span class="yry-auto-80578">清单 · 架构 · 图谱 · 源码 · 测试 · 演示 · 审计</span>
 </footer>
 
 </div>

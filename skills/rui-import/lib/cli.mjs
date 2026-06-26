@@ -9,6 +9,7 @@ import { SKILL_NAME } from "./config.mjs";
 
 export function parseArgs() {
   const args = process.argv.slice(NODE_ARGV_OFFSET);
+  /** @type {{ exclude: string[], prefix: string[], mode: string, apiUrl?: string, names?: string[], file?: string, projectPrefix?: string, scanRoot?: string, scanDir?: string }} */
   const opts = { exclude: [], prefix: [], mode: "import" };
   let scanRoot = null;
   let scanDir = null;

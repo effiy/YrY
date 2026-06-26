@@ -1,3 +1,10 @@
+---
+paths:
+  - "skills/rui-npm/**"
+  - "skills/rui-npm/SKILL.md"
+description: "个人 npm packages 管理规则"
+---
+
 # rui-npm 管理规则
 
 > 个人 npm packages 管理的规则和约束，独立于实现细节。

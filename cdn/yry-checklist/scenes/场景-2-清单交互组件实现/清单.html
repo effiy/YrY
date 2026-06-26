@@ -7,38 +7,7 @@
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/theme/index.css">
 <link rel="stylesheet" href="../../../../cdn/shared-reports/index.css">
-<style>
-.scene-nav { display:flex; flex-wrap:wrap; gap:4px 8px; padding:8px 0; font-size:.72rem; border-bottom:var(--yry-border); margin-bottom:12px; }
-.scene-nav-link { color:var(--yry-text3); text-decoration:none; }
-.scene-nav-link:hover { color:var(--yry-accent); }
-.scene-nav-link.active { color:var(--yry-accent); font-weight:700; }
-.scene-nav-sep { color:var(--yry-text3); }
-.cross-nav { display:flex; gap:8px; padding:6px 0; font-size:.72rem; margin-bottom:12px; }
-.cross-link { color:var(--yry-text3); text-decoration:none; }
-.cross-link:hover { color:var(--yry-accent); }
-.cross-link.on { color:var(--yry-accent); font-weight:700; }
-.cross-sep { color:var(--yry-text3); }
-.header { margin-bottom:12px; }
-.header h1 { font-size:1.1rem; margin:0; }
-.accent { color:var(--yry-accent); }
-.meta { font-size:.68rem; color:var(--yry-text3); margin-top:4px; }
-.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:8px; }
-.stat-card { padding:10px; text-align:center; border-radius:6px; border:var(--yry-border); background:rgba(15,23,42,.4); }
-.stat-card .val { font-size:1.2rem; font-weight:700; }
-.stat-card .val.health { color:var(--yry-pass); }
-.stat-card .lbl { font-size:.62rem; color:var(--yry-text3); margin-top:2px; }
-.bar-wrap { margin-bottom:12px; }
-.bar-outer { height:6px; border-radius:3px; background:rgba(255,255,255,.06); overflow:hidden; display:flex; }
-.seg.strength { background:var(--yry-pass); }
-.seg.gap { background:rgba(255,255,255,.06); }
-.card { padding:16px 20px; border-radius:8px; border:var(--yry-border); background:rgba(15,23,42,.4); }
-.card h2 { font-size:.88rem; margin:0 0 12px 0; }
-.cl-item { display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.04); }
-.cl-num { min-width:24px; height:24px; border-radius:50%; background:rgba(34,197,94,.12); color:var(--yry-pass); display:flex; align-items:center; justify-content:center; font-size:.68rem; font-weight:700; }
-.cl-text { flex:1; font-size:.76rem; line-height:1.5; color:var(--yry-text2); }
-.ft { text-align:center; font-size:.64rem; color:var(--yry-text3); padding:20px 0; }
-@media (max-width:640px) { .stats-grid { grid-template-columns:repeat(2,1fr); }}
-</style>
+<link rel="stylesheet" href="../../../../cdn/yry-legacy-scene-overview/index.css">
 </head>
 <body>
 <div class="container">
@@ -76,26 +45,26 @@
   <div class="stat-card"><div class="val health">2</div><div class="lbl">Script 块</div></div>
   <div class="stat-card"><div class="val">100%</div><div class="lbl">用例通过</div></div>
 </div>
-<div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:100%"></div><div class="seg gap" style="width:0%"></div></div></div>
+<div class="bar-wrap"><div class="bar-outer"><div class="seg strength" yry-auto-60516"></div><div class="seg gap" yry-auto-6776"></div></div></div>
 
 <div class="card">
   <h2>① 6 个交互组件清单</h2>
-  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong style="color:var(--yry-accent)">勾选 → 进度联动</strong> — 勾选后自动更新进度条 + 步骤状态推导 (完成/就绪/待开始)</span></div>
-  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong style="color:var(--yry-accent)">localStorage 持久化</strong> — Key: <code>yry-arch-s2-checklist</code> · <code>yry-arch-s2-checklist-tab</code></span></div>
-  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong style="color:var(--yry-accent)">折叠面板</strong> — 展开/收起 · CSS transition 300ms</span></div>
-  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong style="color:var(--yry-accent)">标签页切换</strong> — 7 标签页 · localStorage 记忆 · 键盘 1-9 快捷切换</span></div>
-  <div class="cl-item"><span class="cl-num">5</span><span class="cl-text"><strong style="color:var(--yry-accent)">风险行展开</strong> — 缓解步骤详情 · 展开时显示完整修复路径</span></div>
-  <div class="cl-item"><span class="cl-num">6</span><span class="cl-text"><strong style="color:var(--yry-accent)">交付物过滤</strong> — 类型过滤 + 展开/折叠 · 一键复制路径</span></div>
+  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong class="yry-auto-24835">勾选 → 进度联动</strong> — 勾选后自动更新进度条 + 步骤状态推导 (完成/就绪/待开始)</span></div>
+  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong class="yry-auto-24835">localStorage 持久化</strong> — Key: <code>yry-arch-s2-checklist</code> · <code>yry-arch-s2-checklist-tab</code></span></div>
+  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong class="yry-auto-24835">折叠面板</strong> — 展开/收起 · CSS transition 300ms</span></div>
+  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong class="yry-auto-24835">标签页切换</strong> — 7 标签页 · localStorage 记忆 · 键盘 1-9 快捷切换</span></div>
+  <div class="cl-item"><span class="cl-num">5</span><span class="cl-text"><strong class="yry-auto-24835">风险行展开</strong> — 缓解步骤详情 · 展开时显示完整修复路径</span></div>
+  <div class="cl-item"><span class="cl-num">6</span><span class="cl-text"><strong class="yry-auto-24835">交付物过滤</strong> — 类型过滤 + 展开/折叠 · 一键复制路径</span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
+<div class="card" yry-auto-86349">
   <h2>② 三层架构 (Data / Template / Renderer)</h2>
-  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong style="color:var(--yry-cyan)">Data 层</strong> — localStorage 读写 · <code>deriveStatus()</code> 步骤状态推导 · <code>autoAnnotate()</code> 交付物自动标注</span></div>
-  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong style="color:var(--yry-cyan)">Template 层</strong> — DOM 查询 (<code>data-*</code> 钩子) · 事件绑定 (click / keydown) · CSS class 切换 (<code>collapsed</code>/<code>open</code>/<code>dim</code>/<code>on</code>)</span></div>
-  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong style="color:var(--yry-cyan)">Renderer 层</strong> — 进度条渲染 · 状态颜色映射 · 交付物类型徽章</span></div>
+  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong class="yry-auto-23686">Data 层</strong> — localStorage 读写 · <code>deriveStatus()</code> 步骤状态推导 · <code>autoAnnotate()</code> 交付物自动标注</span></div>
+  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong class="yry-auto-23686">Template 层</strong> — DOM 查询 (<code>data-*</code> 钩子) · 事件绑定 (click / keydown) · CSS class 切换 (<code>collapsed</code>/<code>open</code>/<code>dim</code>/<code>on</code>)</span></div>
+  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong class="yry-auto-23686">Renderer 层</strong> — 进度条渲染 · 状态颜色映射 · 交付物类型徽章</span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
+<div class="card" yry-auto-86349">
   <h2>③ 8 件交付物清单</h2>
   <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><code>计划清单.html</code> — HTML+CSS+JS · ~650 行 HTML + ~410 行 JS (2 blocks) — 7 标签页 · 进度条 · 风险行 · 6 组件完整实现</span></div>
   <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><code>架构图.html</code> — SVG 图表 · 5 tab — 三层架构 · 事件时序 · TC 设计 · 门禁 · 里程碑</span></div>
@@ -107,7 +76,7 @@
   <div class="cl-item"><span class="cl-num">8</span><span class="cl-text"><code>index.md</code> — 场景总纲 · 技术评审 · 组件清单 · 测试设计 · 实施报告 · 自改进</span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
+<div class="card" yry-auto-86349">
   <h2>④ 代码规模 · 零依赖</h2>
   <div class="cl-item"><span class="cl-num">1</span><span class="cl-text">2 个 <code>&lt;script&gt;</code> 块共 ~410 行 (~270 + ~140)</span></div>
   <div class="cl-item"><span class="cl-num">2</span><span class="cl-text">零外部依赖 — 不引入 Vue / jQuery / 任何 npm 包</span></div>
@@ -115,15 +84,15 @@
   <div class="cl-item"><span class="cl-num">4</span><span class="cl-text">状态持久化 — <code>localStorage.getItem/setItem</code> · Key 命名空间 <code>yry-arch-s2-*</code></span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
-  <p style="font-size:.72rem;color:var(--yry-text3);text-align:center">
+<div class="card" yry-auto-86349">
+  <p class="yry-auto-58746">
     查看完整详细清单: <a href="计划清单.html">计划清单</a> · <a href="架构图.html">架构图</a> · <a href="index.md">源码 Markdown</a>
   </p>
 </div>
 
 <footer class="ft">
   场景 2 · 清单交互组件实现 · YryChecklist · v1.2.0<br>
-  <span style="color:var(--yry-text3)">清单 · 架构 · 图谱 · 源码 · 测试 · 演示 · 审计</span>
+  <span class="yry-auto-80578">清单 · 架构 · 图谱 · 源码 · 测试 · 演示 · 审计</span>
 </footer>
 
 </div>

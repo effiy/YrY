@@ -17,7 +17,7 @@ export { escHtml as escapeHtml };
  * Parse scene metadata from index.md.
  * Returns null if index.md doesn't exist.
  */
-export function extractSceneData(scenePath, storyName) {
+export function extractSceneData(/** @type {string} */ scenePath, /** @type {string | undefined} */ storyName) {
   const indexPath = join(scenePath, 'index.md');
   if (!existsSync(indexPath)) return null;
 
@@ -71,7 +71,8 @@ export function extractSceneData(scenePath, storyName) {
 /**
  * Split markdown into §0–§4 sections by anchor markers.
  */
-function splitSections(raw) {
+function splitSections(/** @type {string} */ raw) {
+  /** @type {Record<string, any>} */
   const sections = {};
   const secPatterns = [
     { key: 'sec0', re: /<a\s+id="sec0"><\/a>/ },
@@ -98,7 +99,7 @@ function splitSections(raw) {
 
     if (!startMatch) { sections[key] = null; continue; }
 
-    const startIdx = startMatch.index;
+    const startIdx = startMatch.index ?? 0;
     const nextIdx = findNextSectionStart(raw, startIdx + startMatch[0].length, secPatterns, i + 1);
 
     const content = raw.slice(startIdx, nextIdx > 0 ? nextIdx : undefined).trim();
@@ -108,29 +109,29 @@ function splitSections(raw) {
   return sections;
 }
 
-function findNextSectionStart(raw, fromIdx, secPatterns, fromI) {
+function findNextSectionStart(/** @type {string} */ raw, /** @type {number} */ fromIdx, /** @type {any[]} */ secPatterns, /** @type {number} */ fromI) {
   let earliest = -1;
   for (let i = fromI; i < secPatterns.length; i++) {
     const match = raw.slice(fromIdx).match(secPatterns[i].re);
-    if (match && (earliest === -1 || match.index < earliest)) {
-      earliest = fromIdx + match.index;
+    if (match && (earliest === -1 || (match.index ?? 0) < earliest)) {
+      earliest = fromIdx + (match.index ?? 0);
     }
   }
   // Also check for ## § headers
   const h2Re = /^##\s+§[0-4]\s+/m;
   const remaining = raw.slice(fromIdx);
   const h2Match = remaining.match(h2Re);
-  if (h2Match && (earliest === -1 || fromIdx + h2Match.index < earliest)) {
-    earliest = fromIdx + h2Match.index;
+  if (h2Match && (earliest === -1 || fromIdx + (h2Match.index ?? 0) < earliest)) {
+    earliest = fromIdx + (h2Match.index ?? 0);
   }
   // Check for --- (horizontal rule before next section)
   const hrRe = /\n---\n/;
   const hrMatch = remaining.match(hrRe);
-  if (hrMatch && (earliest === -1 || fromIdx + hrMatch.index < earliest)) {
+  if (hrMatch && (earliest === -1 || fromIdx + (hrMatch.index ?? 0) < earliest)) {
     // Only count --- if it's near a section header
-    const afterHr = remaining.slice(hrMatch.index + 4);
+    const afterHr = remaining.slice((hrMatch.index ?? 0) + 4);
     if (/^<a\s+id="sec/i.test(afterHr) || /^##\s+§/.test(afterHr)) {
-      earliest = fromIdx + hrMatch.index;
+      earliest = fromIdx + (hrMatch.index ?? 0);
     }
   }
   return earliest;
@@ -139,7 +140,7 @@ function findNextSectionStart(raw, fromIdx, secPatterns, fromI) {
 /**
  * Extract all mermaid code blocks.
  */
-function extractMermaidBlocks(raw) {
+function extractMermaidBlocks(/** @type {string} */ raw) {
   const blocks = [];
   const re = /```mermaid\n([\s\S]*?)```/g;
   let match;
@@ -156,7 +157,7 @@ function extractMermaidBlocks(raw) {
 /**
  * Extract all markdown tables into structured arrays.
  */
-function extractAllTables(raw) {
+function extractAllTables(/** @type {string} */ raw) {
   const tables = [];
   const lines = raw.split('\n');
   let i = 0;
@@ -186,28 +187,28 @@ function extractAllTables(raw) {
   return tables;
 }
 
-function parseTableRow(line) {
+function parseTableRow(/** @type {string} */ line) {
   return line
     .replace(/^\|/, '')
     .replace(/\|$/, '')
     .split('|')
-    .map(cell => cell.trim());
+    .map((/** @type {string} */ cell) => cell.trim());
 }
 
 /**
  * Extract overview section (between ## 概述 and first ---).
  */
-function extractOverview(raw) {
+function extractOverview(/** @type {string} */ raw) {
   const overviewMatch = raw.match(/##\s+概述\n([\s\S]*?)\n---/);
   if (overviewMatch) return overviewMatch[1].trim();
 
   // Fallback: take content after first heading until first section
   const firstHeading = raw.match(/^##\s+(.+)$/m);
   if (firstHeading) {
-    const afterHeading = raw.slice(firstHeading.index + firstHeading[0].length);
+    const afterHeading = raw.slice((firstHeading.index ?? 0) + firstHeading[0].length);
     const nextSep = afterHeading.match(/\n---\n/);
     if (nextSep) {
-      return afterHeading.slice(0, nextSep.index).trim();
+      return afterHeading.slice(0, nextSep.index ?? 0).trim();
     }
   }
 
@@ -217,7 +218,7 @@ function extractOverview(raw) {
 /**
  * Check if section content is placeholder (not yet filled).
  */
-export function isPlaceholder(sectionContent) {
+export function isPlaceholder(/** @type {string} */ sectionContent) {
   if (!sectionContent) return true;
   const placeholderMarkers = [
     '文档生成阶段填充',
@@ -237,7 +238,7 @@ export function isPlaceholder(sectionContent) {
  * Render markdown section to simple HTML.
  * Handles: headers, tables, lists, mermaid blocks, bold, inline code, links.
  */
-export function markdownToHtml(md) {
+export function markdownToHtml(/** @type {string} */ md) {
   if (!md) return '';
   if (isPlaceholder(md)) {
     return '<div class="placeholder">数据待填充 — 运行 /rui code 生成</div>';
@@ -246,6 +247,7 @@ export function markdownToHtml(md) {
   let html = md;
 
   // Extract and protect mermaid blocks
+  /** @type {string[]} */
   const mermaidBlocks = [];
   html = html.replace(/```mermaid\n([\s\S]*?)```/g, (_, code) => {
     const id = `__MERMAID_${mermaidBlocks.length}__`;
@@ -254,6 +256,7 @@ export function markdownToHtml(md) {
   });
 
   // Extract and protect HTML anchor tags
+  /** @type {{id: string, html: string}[]} */
   const anchors = [];
   html = html.replace(/<a\s+id="([^"]*)"><\/a>/g, (match, id) => {
     const idx = anchors.length;
@@ -289,7 +292,7 @@ export function markdownToHtml(md) {
 
   // Convert paragraphs (double newlines)
   html = html.replace(/\n\n+/g, '</p><p>');
-  html = '<p>' + html + '</p>';
+  html = `<p>${html}</p>`;
 
   // Clean up empty paragraphs
   html = html.replace(/<p>\s*<\/p>/g, '');
@@ -312,7 +315,7 @@ export function markdownToHtml(md) {
   return html;
 }
 
-function convertTablesToHtml(html) {
+function convertTablesToHtml(/** @type {string} */ html) {
   // Find markdown tables: header row, separator row, body rows
   const lines = html.split('\n');
   const result = [];
@@ -338,8 +341,8 @@ function convertTablesToHtml(html) {
         for (const cell of row) {
           // Handle emoji-only centering
           const isCentered = /^[✅❌⚠️⬜⬛☐☑️▪️▫️]$/u.test(cell.trim());
-          const style = isCentered ? ' style="text-align:center"' : '';
-          tableHtml += `<td${style}>${cell}</td>`;
+          const cls = isCentered ? ' class="td-center"' : '';
+          tableHtml += `<td${cls}>${cell}</td>`;
         }
         tableHtml += '</tr>';
       }

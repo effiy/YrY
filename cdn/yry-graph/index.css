@@ -50,7 +50,7 @@ h1{font-size:1.5rem;font-weight:700;letter-spacing:.5px}
 .side-empty{color:var(--dim);text-align:center;padding:3rem 1rem;font-size:.78rem;line-height:1.6}
 .side-empty .ico{font-size:2rem;margin-bottom:.5rem;opacity:.4}
 .side-panel h3{font-size:.95rem;margin-bottom:.4rem;display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}
-.side-panel .np-type{font-size:.65rem;padding:2px 8px;border-radius:10px;font-weight:600;background:rgba(var(--yry-cyan-rgb),.15);color:var(--c-cyan);text-transform:uppercase;letter-spacing:.5px}
+.side-panel .np-type{font-size:.65rem;padding:2px 8px;border-radius:10px;font-weight:600;background:var(--bg,rgba(var(--yry-cyan-rgb),.15));color:var(--color,var(--c-cyan));text-transform:uppercase;letter-spacing:.5px}
 .side-panel .np-id{color:var(--dim);font-size:.7rem;margin-bottom:.75rem}
 .side-panel .np-section{font-size:.68rem;color:var(--darker);text-transform:uppercase;letter-spacing:1px;margin:1rem 0 .35rem;font-weight:600}
 .side-panel .np-section:first-of-type{margin-top:0}

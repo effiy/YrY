@@ -23,9 +23,13 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ── 容器:胶囊导航条 (吸顶 + 玻璃) ───────────────────────────────── */
+/* top 偏移 = 进度条高度 (--yry-progress-bar-height)。
+   进度条 <yry-progress-bar> 也是 sticky top:0、z-index 100,若不偏移,
+   两个 sticky 元素会在同一位置重叠,快速锚点会被进度条遮住。
+   用 var() 引用,即便将来调整进度条 padding/track 也能自适应。 */
 .sr-quicknav {
   position: sticky;
-  top: 0;
+  top: var(--yry-progress-bar-height, 21px);
   z-index: 20;
   display: flex;
   flex-wrap: wrap;
@@ -74,7 +78,11 @@
 }
 
 /* ── 平滑滚动 + 锚点偏移 (吸顶时不被遮挡) ─────────────────────── */
-html { scroll-behavior: smooth; scroll-padding-top: 56px; }
+/* scroll-padding-top = 进度条 + 快速锚点两个 sticky 元素的合计高度,
+   保证 chip 跳转(#sm-snapshot 等)时,目标 section 完整避开吸顶区。
+   进度条 var(--yry-progress-bar-height)=21px,快速锚点自身约 48px
+   (padding 10+10 + chip ~26 + border 2),合计 ≈ 69px,留 4px 余量。 */
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--yry-progress-bar-height, 21px) + 48px + 4px); }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }

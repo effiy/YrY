@@ -1,0 +1,232 @@
+{
+  "YRY_CY_STYLE": [
+    {
+      "selector": "node",
+      "style": {
+        "background-color": "#3b82f6",
+        "label": "data(label)",
+        "color": "#e2e8f0",
+        "font-size": "11px",
+        "font-family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "text-valign": "bottom",
+        "text-halign": "center",
+        "text-margin-y": 6,
+        "text-background-color": "rgba(15,23,42,0.85)",
+        "text-background-opacity": 1,
+        "text-background-padding": "3px 6px",
+        "text-background-shape": "roundrectangle",
+        "border-width": 2,
+        "border-color": "#1e40af",
+        "width": 36,
+        "height": 36
+      }
+    },
+    {
+      "selector": "node[type=\"story\"]",
+      "style": {
+        "background-color": "#f59e0b",
+        "border-color": "#b45309",
+        "width": 44,
+        "height": 44,
+        "font-size": "12px",
+        "font-weight": "bold"
+      }
+    },
+    {
+      "selector": "node[type=\"scene\"]",
+      "style": {
+        "background-color": "#8b5cf6",
+        "border-color": "#5b21b6",
+        "width": 38,
+        "height": 38
+      }
+    },
+    {
+      "selector": "node[type=\"source\"]",
+      "style": {
+        "background-color": "#3b82f6",
+        "border-color": "#1e40af",
+        "width": 30,
+        "height": 30,
+        "font-size": "10px"
+      }
+    },
+    {
+      "selector": "node[type=\"skill\"]",
+      "style": {
+        "background-color": "#22c55e",
+        "border-color": "#15803d",
+        "shape": "roundrectangle",
+        "width": 40,
+        "height": 28
+      }
+    },
+    {
+      "selector": "node[type=\"agent\"]",
+      "style": {
+        "background-color": "#ec4899",
+        "border-color": "#9d174d",
+        "shape": "diamond",
+        "width": 32,
+        "height": 32
+      }
+    },
+    {
+      "selector": "node[type=\"rule\"]",
+      "style": {
+        "background-color": "#06b6d4",
+        "border-color": "#0e7490",
+        "shape": "rectangle",
+        "width": 36,
+        "height": 24,
+        "font-size": "9px"
+      }
+    },
+    {
+      "selector": "node[type=\"doc\"]",
+      "style": {
+        "background-color": "#a1a1aa",
+        "border-color": "#52525b",
+        "shape": "roundrectangle",
+        "width": 34,
+        "height": 24,
+        "font-size": "9px"
+      }
+    },
+    {
+      "selector": "node[type=\"external\"]",
+      "style": {
+        "background-color": "#ef4444",
+        "border-color": "#991b1b",
+        "shape": "hexagon",
+        "width": 34,
+        "height": 34
+      }
+    },
+    {
+      "selector": "node:selected",
+      "style": {
+        "border-width": 4,
+        "border-color": "#FFC107",
+        "border-opacity": 1
+      }
+    },
+    {
+      "selector": "node.dimmed",
+      "style": {
+        "opacity": 0.2
+      }
+    },
+    {
+      "selector": "node.highlighted",
+      "style": {
+        "border-width": 3,
+        "border-color": "#FFC107",
+        "border-opacity": 1
+      }
+    },
+    {
+      "selector": "edge",
+      "style": {
+        "width": 1.5,
+        "line-color": "rgba(148,163,184,0.3)",
+        "target-arrow-color": "rgba(148,163,184,0.4)",
+        "target-arrow-shape": "triangle",
+        "curve-style": "bezier",
+        "label": "data(label)",
+        "color": "#94a3b8",
+        "font-size": "9px",
+        "text-rotation": "autorotate"
+      }
+    },
+    {
+      "selector": "edge[type=\"depends\"]",
+      "style": {
+        "line-color": "rgba(59,130,246,0.4)",
+        "target-arrow-color": "rgba(59,130,246,0.5)",
+        "line-style": "dashed"
+      }
+    },
+    {
+      "selector": "edge[type=\"generates\"]",
+      "style": {
+        "line-color": "rgba(34,197,94,0.4)",
+        "target-arrow-color": "rgba(34,197,94,0.5)",
+        "width": 2
+      }
+    },
+    {
+      "selector": "edge[type=\"triggers\"]",
+      "style": {
+        "line-color": "rgba(239,68,68,0.4)",
+        "target-arrow-color": "rgba(239,68,68,0.5)",
+        "width": 2,
+        "line-style": "dashed"
+      }
+    },
+    {
+      "selector": "edge[type=\"references\"]",
+      "style": {
+        "line-color": "rgba(139,92,246,0.35)",
+        "target-arrow-color": "rgba(139,92,246,0.45)",
+        "line-style": "dotted"
+      }
+    },
+    {
+      "selector": "edge.dimmed",
+      "style": {
+        "opacity": 0.08
+      }
+    },
+    {
+      "selector": "edge.highlighted",
+      "style": {
+        "width": 2.5,
+        "line-color": "rgba(255,193,7,0.6)",
+        "target-arrow-color": "rgba(255,193,7,0.7)"
+      }
+    }
+  ],
+  "LEGEND_TYPES": [
+    {
+      "type": "story",
+      "label": "Story",
+      "color": "#f59e0b"
+    },
+    {
+      "type": "scene",
+      "label": "Scene",
+      "color": "#8b5cf6"
+    },
+    {
+      "type": "source",
+      "label": "Source",
+      "color": "#3b82f6"
+    },
+    {
+      "type": "skill",
+      "label": "Skill",
+      "color": "#22c55e"
+    },
+    {
+      "type": "agent",
+      "label": "Agent",
+      "color": "#ec4899"
+    },
+    {
+      "type": "rule",
+      "label": "Rule",
+      "color": "#06b6d4"
+    },
+    {
+      "type": "doc",
+      "label": "Doc",
+      "color": "#a1a1aa"
+    },
+    {
+      "type": "external",
+      "label": "External",
+      "color": "#ef4444"
+    }
+  ]
+}

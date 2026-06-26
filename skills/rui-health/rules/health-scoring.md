@@ -1,3 +1,10 @@
+---
+paths:
+  - "skills/rui-health/**"
+  - "skills/rui-health/SKILL.md"
+description: "健康评分算法和诊断规则"
+---
+
 # rui-health 评分规则
 
 > 从 rui-health SKILL.md 提取的评分算法和诊断规则，独立于实现细节。

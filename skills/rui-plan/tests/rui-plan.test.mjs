@@ -131,4 +131,4 @@ describe('rui-plan skill', () => {
   });
 });
 
-const exitCode = await run();
+const _exitCode = await run();

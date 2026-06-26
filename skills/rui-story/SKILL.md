@@ -138,6 +138,7 @@ flowchart TD
 
 项目类型按远端文件推断：场景 §0 含后端章节(API/数据) = 含后端；场景 §0 含前端章节(组件/交互/样式) = 含前端；两者均有 = fullstack；均无或无法判定 = meta。
 
+<a id="rui-story"></a>
 ## `/rui-story` — 状态概览
 
 > 无参数入口。查询远端 API，按状态聚合，输出摘要 + 最近活动。零本地文件系统读取。
@@ -169,6 +170,7 @@ flowchart LR
 最近活动：无
 ```
 
+<a id="rui-story-list"></a>
 ## `/rui-story list` — 进度全景
 
 > 查询远端 API 获取全部故事面板 session，输出详情表格。零本地文件系统读取。
@@ -190,6 +192,7 @@ flowchart LR
 - **Type**：按远端文件推断（backend / frontend / fullstack / meta）
 - **Branch**：`git branch --list "feat/<name>"` — 有则显示分支名，无则为 `—`
 
+<a id="rui-story-health"></a>
 ## `/rui-story health` — 健康检查
 
 > 系统诊断：检查凭据、API 可达性、项目配置、远端数据完整性。
@@ -239,6 +242,7 @@ Summary: 5 pass, 0 warn, 0 error
 - 实现：`node skills/rui-story/rui-story.mjs health`
 - 非阻塞：任何检查失败不影响管线，仅报告状态
 
+<a id="rui-story-sync"></a>
 ## `/rui-story sync [<name>]` — 从远端同步文档
 
 ```mermaid
@@ -255,6 +259,7 @@ flowchart LR
 - 指定故事：`dir=docs/故事任务面板/<name>/ mode=pull` → 远端下载覆盖本地
 - 未指定：展示可同步故事推荐提示，等待用户选择后再同步
 
+<a id="rui-story-remove"></a>
 ## `/rui-story remove <name>` — 删除故事本地目录
 
 > 详细规约见 **[commands/remove.md](commands/remove.md)**。

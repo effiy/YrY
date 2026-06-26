@@ -9,7 +9,7 @@ import { esc } from './escape.mjs';
 
 /* ───────── 9-Tab 内容生成器（审查.html 专用） ───────── */
 
-function buildGoodCards(data) {
+function buildGoodCards(/** @type {any} */ data) {
   const { title: TITLE, valuePoints: VPS } = data;
   const cards = [];
   for (let i = 0; i < 4; i++) {
@@ -35,7 +35,7 @@ function buildGoodCards(data) {
   return cards.join('\n');
 }
 
-function buildBadCards(data) {
+function buildBadCards(/** @type {any} */ data) {
   const { testCases: TCS } = data;
   const generic = [
     { name: '未引用真实路径', desc: '内容使用"该模块""相关技能"等抽象引用，缺少 file:// 可点击定位' },
@@ -75,7 +75,7 @@ function buildBadCards(data) {
  * @param {object} data - { title, valuePoints, modules, testCases, sources, ... }
  * @returns {{ completeness: number, consistency: number, traceability: number, expressiveness: number }}
  */
-function computeReviewScores(data) {
+function computeReviewScores(/** @type {any} */ data) {
   const { valuePoints: VPS = [], modules: MODS = [], testCases: TCS = { normal: [], boundary: [] }, sources: SRCS = [] } = data;
   const tcCount = (TCS.normal?.length || 0) + (TCS.boundary?.length || 0);
 
@@ -104,7 +104,7 @@ function computeReviewScores(data) {
   consistency = Math.min(100, consistency + 5);
 
   // Traceability: expected outputs + file links + error codes + visible signals
-  const srcLinked = SRCS.filter(s => s.link).length;
+  const srcLinked = SRCS.filter((/** @type {any} */ s) => s.link).length;
   let traceability = 40;
   if (SRCS.length > 0 && srcLinked === SRCS.length) traceability += 20;
   else if (srcLinked > 0) traceability += 10;
@@ -125,25 +125,25 @@ function computeReviewScores(data) {
   return { completeness, consistency, traceability, expressiveness };
 }
 
-function scoreColorDynamic(score) {
-  if (score >= 80) return 'var(--pass)';
-  if (score >= 60) return 'var(--warn)';
-  return 'var(--fail)';
+function scoreGrade(/** @type {number} */ score) {
+  if (score >= 80) return 'pass';
+  if (score >= 60) return 'warn';
+  return 'fail';
 }
 
-function liClass(score, threshold) {
+function liClass(/** @type {number} */ score, /** @type {number} */ threshold) {
   return score >= threshold ? 'pass' : score >= threshold - 20 ? 'warn' : 'fail';
 }
 
-function buildDimCards(data) {
+function buildDimCards(/** @type {any} */ data) {
   const { title: TITLE, valuePoints: VPS = [], modules: MODS = [], testCases: TCS = { normal: [], boundary: [] }, sources: SRCS = [] } = data;
   const tcCount = (TCS.normal?.length || 0) + (TCS.boundary?.length || 0);
   const scores = computeReviewScores(data);
   const { completeness, consistency, traceability, expressiveness } = scores;
 
   return `  <div class="dim-card">
-    <h3>📋 完整性 Completeness <span class="dim-score" style="color:${scoreColorDynamic(completeness)}">${completeness}%</span></h3>
-    <div class="dim-bar"><div class="dim-bar-inner" style="width:${completeness}%;background:${scoreColorDynamic(completeness)}"></div></div>
+    <h3>📋 完整性 Completeness <span class="dim-score ${scoreGrade(completeness)}">${completeness}%</span></h3>
+    <div class="dim-bar"><div class="dim-bar-inner ${scoreGrade(completeness)}" style="--w:${completeness}%"></div></div>
     <ul>
       <li class="${liClass(completeness, 80)}">覆盖 ${VPS.length || 0} 个主要价值点 · ${MODS.length} 个涉及模块</li>
       <li class="${liClass(completeness, 70)}">${tcCount} 个测试用例（正常 ${TCS.normal?.length || 0} + 边界 ${TCS.boundary?.length || 0}）</li>
@@ -154,8 +154,8 @@ function buildDimCards(data) {
   </div>
 
   <div class="dim-card">
-    <h3>🔗 一致性 Consistency <span class="dim-score" style="color:${scoreColorDynamic(consistency)}">${consistency}%</span></h3>
-    <div class="dim-bar"><div class="dim-bar-inner" style="width:${consistency}%;background:${scoreColorDynamic(consistency)}"></div></div>
+    <h3>🔗 一致性 Consistency <span class="dim-score ${scoreGrade(consistency)}">${consistency}%</span></h3>
+    <div class="dim-bar"><div class="dim-bar-inner ${scoreGrade(consistency)}" style="--w:${consistency}%"></div></div>
     <ul>
       <li class="${MODS.length >= 2 ? 'pass' : 'warn'}">${MODS.length} 个涉及模块${MODS.length >= 2 ? '均已' : '未完全'}标注本场景角色</li>
       <li class="${data.hasTermAlignment ? 'pass' : 'warn'}">术语与「${esc(TITLE)}」领域语${data.hasTermAlignment ? '对齐' : '部分对齐'}</li>
@@ -165,8 +165,8 @@ function buildDimCards(data) {
   </div>
 
   <div class="dim-card">
-    <h3>🔍 可追溯 Traceability <span class="dim-score" style="color:${scoreColorDynamic(traceability)}">${traceability}%</span></h3>
-    <div class="dim-bar"><div class="dim-bar-inner" style="width:${traceability}%;background:${scoreColorDynamic(traceability)}"></div></div>
+    <h3>🔍 可追溯 Traceability <span class="dim-score ${scoreGrade(traceability)}">${traceability}%</span></h3>
+    <div class="dim-bar"><div class="dim-bar-inner ${scoreGrade(traceability)}" style="--w:${traceability}%"></div></div>
     <ul>
       <li class="${data.hasExpectedOutputs ? 'pass' : 'warn'}">${data.hasExpectedOutputs ? '关键操作已标注预期输出' : '关键操作缺少预期输出与可见信号'}</li>
       <li class="${SRCS.length > 0 ? 'warn' : 'fail'}">${SRCS.length} 个源文件${SRCS.length > 0 ? '未全部建立' : '缺少'} file:// 链接</li>
@@ -175,8 +175,8 @@ function buildDimCards(data) {
   </div>
 
   <div class="dim-card">
-    <h3>💬 表达力 Expressiveness <span class="dim-score" style="color:${scoreColorDynamic(expressiveness)}">${expressiveness}%</span></h3>
-    <div class="dim-bar"><div class="dim-bar-inner" style="width:${expressiveness}%;background:${scoreColorDynamic(expressiveness)}"></div></div>
+    <h3>💬 表达力 Expressiveness <span class="dim-score ${scoreGrade(expressiveness)}">${expressiveness}%</span></h3>
+    <div class="dim-bar"><div class="dim-bar-inner ${scoreGrade(expressiveness)}" style="--w:${expressiveness}%"></div></div>
     <ul>
       <li class="${VPS.length >= 3 ? 'pass' : 'warn'}">"${esc(TITLE)}" 概念定义${VPS.length >= 3 ? '清晰' : '待完善'} · ${VPS.length} 个价值点${VPS.length >= 3 ? '结构化' : ''}</li>
       <li class="${data.hasStepNavigation ? 'pass' : 'warn'}">${data.hasStepNavigation ? '步骤式导航，渐进式学习曲线合理' : '缺少步骤式导航'}</li>
@@ -185,7 +185,7 @@ function buildDimCards(data) {
   </div>`;
 }
 
-function buildRecommendations(data) {
+function buildRecommendations(/** @type {any} */ data) {
   const { title: TITLE, modules: MODS } = data;
   const items = [
     { name: '补全故障排查章节', desc: '为常见错误码（ENOENT / EACCES / ENV_NOT_SET）建立速查表，标注触发条件与恢复步骤' },
@@ -195,7 +195,7 @@ function buildRecommendations(data) {
     { name: '建立 file:// 可点击路径', desc: `所有 ${MODS.length} 个涉及模块的引用用 file:// 链接，点击即可跳转 IDE` },
     { name: '诊断 D0–D8 闭环', desc: '基于自改进诊断结果，将 P1/P2 项纳入下一轮计划清单' }
   ];
-  return items.map((r, i) => `<div class="reco-card">
+  return items.map((/** @type {any} */ r, i) => `<div class="reco-card">
     <div class="num">${i + 1}</div>
     <div class="body">
       <h4>${esc(r.name)}</h4>
@@ -204,7 +204,7 @@ function buildRecommendations(data) {
   </div>`).join('\n');
 }
 
-function buildActionPlan(data) {
+function buildActionPlan(/** @type {any} */ data) {
   const { title: TITLE, modules: MODS, testCases: TCS, sources: SRCS } = data;
   const plans = [
     `补全 ${TITLE} 关键步骤的预期输出与失败排查`,
@@ -216,7 +216,7 @@ function buildActionPlan(data) {
   ];
   const efforts = ['1h', '2h', '4h', '1d', '2d', '3d'];
   const owners = ['架构师', 'Coder', 'Reviewer', 'PM', 'QA', 'Agent'];
-  return plans.map((p, i) => `<tr>
+  return plans.map((/** @type {any} */ p, i) => `<tr>
     <td>A${i + 1}</td>
     <td>${esc(p)}</td>
     <td>${efforts[i]}</td>
@@ -227,7 +227,7 @@ function buildActionPlan(data) {
   </tr>`).join('\n');
 }
 
-function buildEvidence(data) {
+function buildEvidence(/** @type {any} */ data) {
   const { title: TITLE, sources: SRCS, scenarioDir } = data;
   const items = [];
   for (let i = 0; i < SRCS.length && i < 8; i++) {
@@ -241,11 +241,11 @@ function buildEvidence(data) {
   return items.join('\n');
 }
 
-function buildRiskMatrix(data) {
+function buildRiskMatrix(/** @type {any} */ data) {
   const { testCases: TCS } = data;
   const risks = TCS.boundary.slice(0, 4);
   const labels = ['', '极低', '低', '中', '高', '极高'];
-  const header = labels.map(c => `<th>${c}</th>`).join('');
+  const header = labels.map((/** @type {string} */ c) => `<th>${c}</th>`).join('');
   const positions = [[2, 2], [3, 3], [3, 2], [4, 3]];
   const rows = [];
   for (let r = 1; r <= 5; r++) {
@@ -266,7 +266,7 @@ function buildRiskMatrix(data) {
     <tbody>${rows.join('\n')}</tbody>
   </table>
   <div class="risk-legend">
-    <span>概率/影响矩阵 — R1–R${risks.length} 来自边界用例 ${risks.map(r => esc(r.id)).join('·') || '— 待补充'}</span>
+    <span>概率/影响矩阵 — R1–R${risks.length} 来自边界用例 ${risks.map((/** @type {any} */ r) => esc(r.id)).join('·') || '— 待补充'}</span>
   </div>`;
 }
 
@@ -277,7 +277,7 @@ function buildFixDiffs() {
     { title: '标注版本依赖', before: '需要 Node', after: '需要 Node ≥ 18.17.0（见 package.json#engines）' },
     { title: '失败模式说明', before: '报错请重试', after: 'ENOENT → 检查路径；EACCES → sudo 或改写权限；ENV_NOT_SET → 重新 export' }
   ];
-  return fixes.map(f => `<div class="fix-diff">
+  return fixes.map((/** @type {any} */ f) => `<div class="fix-diff">
     <h4>${esc(f.title)}</h4>
     <div class="diff-pair">
       <div class="diff-before"><span class="diff-label">修复前</span><pre>${esc(f.before)}</pre></div>
@@ -287,8 +287,9 @@ function buildFixDiffs() {
 }
 
 /* 审查.html 专属的二次清理 */
-function scrubReviewSpecific(html, data) {
+function scrubReviewSpecific(/** @type {string} */ html, /** @type {any} */ data) {
   const { title: TITLE, role: ROLE, valuePoints: VPS, testCases: TCS, sources: SRCS } = data;
+  /** @type {[RegExp, string][]} */
   const map = [
     [/↑ 4% vs v1\.9/g, '↑ 4% vs 基线'],
     [/↑ 2% vs v1\.9/g, '↑ 2% vs 基线'],
@@ -307,14 +308,14 @@ function scrubReviewSpecific(html, data) {
 
 /* ───────── 入口：生成审查.html ───────── */
 
-export async function generateReviewHtml(ctx, data) {
+export async function generateReviewHtml(/** @type {any} */ ctx, /** @type {any} */ data) {
   const scrubCtx = { title: data.title, scenarioDir: ctx.scenarioDir, subdir: ctx.subdir, artifact: '审查.html' };
   const tpl = await fs.readFile(path.join(TEMPLATE_DIR, '审查.html'), 'utf8');
 
   let out = scrubOnboarding(tpl, scrubCtx);
   out = scrubReviewSpecific(out, data);
 
-  const replace = (re, r) => { out = out.replace(re, r); };
+  const replace = (/** @type {RegExp} */ re, /** @type {string} */ r) => { out = out.replace(re, r); };
   replace(/(<div class="panel on" id="panelOverview">)[\s\S]*?(<div class="dim-card" style="margin-top:14px">)/,
     `$1\n${buildDimCards(data)}\n$2`);
   replace(/(<div class="panel" id="panelGood">)[\s\S]*?(<!-- ═══ Tab 3)/,
@@ -337,7 +338,7 @@ export async function generateReviewHtml(ctx, data) {
 
 /* ───────── 入口：清理 6 个 html ───────── */
 
-export async function scrubScenarioHtmls(ctx, data) {
+export async function scrubScenarioHtmls(/** @type {any} */ ctx, /** @type {any} */ data) {
   const targets = ARTIFACTS.filter(a => a !== '审查.html');
   const results = [];
   for (const file of targets) {

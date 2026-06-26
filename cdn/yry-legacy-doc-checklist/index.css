@@ -1,0 +1,13 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — yry-legacy-doc-checklist/index.css
+   旧版 rui-html 模板生成的「计划清单.html」场景页 doc-type overrides
+   字节级一致跨 32 份历史场景页 (cdn/<component>/scenes/场景-N-*/计划清单.html)
+   现代模板已组件化,本文件仅服务存量 HTML
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.yry-container{max-width:960px;padding:40px 24px 80px}
+.st-bar{margin-bottom:24px}
+.st-tab{padding:8px 18px;font-size:0.82rem}
+.st-panel{padding-top:0;animation:none}
+.yry-section h2{font-size:0.95rem}
+.yry-section h2 .yry-dot{width:7px;height:7px}

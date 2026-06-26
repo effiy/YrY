@@ -7,6 +7,8 @@
 <title>🚀 本地发布与npx使用 · 测试面板 Pro</title>
 <!-- ═══ CDN: YrY 共享样式 ═══ -->
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-helpers/index.css">
+
 <link rel="stylesheet" href="../../../../cdn/theme/index.css">
 <link rel="stylesheet" href="../../../../cdn/yry-test/index.css">
 </head>
@@ -50,20 +52,20 @@
 
   <div class="stats-grid" id="statsRow"></div>
   <!-- 本地发布与npx使用 7 步路径可视化 -->
-  <div class="card" style="padding:16px 18px">
+  <div class="card" class="sc-pad-16-18">
     <h2>🗺️ 本地发布与npx使用 7 步路径 × 测试覆盖</h2>
     <div class="onb-flow" id="onbFlow"></div>
-    <p style="text-align:center;color:var(--text3);font-size:.7rem;margin-top:8px">点击任一步骤 → 筛选该步骤关联的测试用例</p>
+    <p class="sc-meta-center-70">点击任一步骤 → 筛选该步骤关联的测试用例</p>
   </div>
   <div class="bar-wrap"><div class="bar-outer" id="bar" title="点击进度条筛选状态"></div></div>
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both" id="toolbar">
+  <div class="sc-flex-row" id="toolbar">
     <div class="search-wrap"><span class="si">🔍</span><input id="searchInput" type="text" placeholder="搜索测试/源码…" oninput="onSearch(this.value)"><span class="kbd">⌘K</span></div>
     <button class="btn" onclick="expandAllSuites()">📂 展开全部</button>
     <button class="btn" onclick="collapseAllSuites()">📁 收起全部</button>
     <button class="btn" id="btnSortDur" onclick="toggleSort()">⏱ 耗时排序</button>
     <button class="btn" onclick="copyResultsMd()">📋 复制 MD</button>
     <button class="btn btn-primary" onclick="exportProposal()" title="将改进建议导出为自改进提案 Markdown">🚀 导出改进提案</button>
-    <span style="font-size:.72rem;color:var(--text3);margin-left:auto;white-space:nowrap" id="navStatus"></span>
+    <span class="sc-section-sub-auto-72" id="navStatus"></span>
   </div>
 
   <div class="tabs-wrap">

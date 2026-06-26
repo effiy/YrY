@@ -10,7 +10,7 @@ const TS = () => fmtDisplay(nowISO()).slice(0, 16);
 
 // ── trend direction ───────────────────────────────────────────────────
 
-function trendIcon(val) {
+function trendIcon(/** @type {any} */ val) {
   if (!val) return '→';
   const n = Number(val);
   if (n > 0) return '↑';
@@ -18,7 +18,7 @@ function trendIcon(val) {
   return '→';
 }
 
-function fmtStars(n) {
+function fmtStars(/** @type {any} */ n) {
   if (!n) return '—';
   const num = Number(n);
   if (num >= 1000) return `⭐ ${(num / 1000).toFixed(1)}k`;
@@ -27,7 +27,7 @@ function fmtStars(n) {
 
 // ── report generators ─────────────────────────────────────────────────
 
-export function formatGitHubTrending(result) {
+export function formatGitHubTrending(/** @type {any} */ result) {
   if (!result.ok) return `## github-trending ❌\n> 不可达：${result.error || '未知错误'}\n`;
   const header = `## GitHub Trending${result.url ? `\n> ${result.url} | ${TS()}` : ''}\n`;
   if (!result.data.length) return header + '\n_无数据_\n';
@@ -41,28 +41,28 @@ export function formatGitHubTrending(result) {
   return table;
 }
 
-export function formatOSSInsight(result) {
+export function formatOSSInsight(/** @type {any} */ result) {
   if (!result.ok) return `## OSS Insight ❌\n> 不可达：${result.error || '未知错误'}\n`;
   if (result.collections) {
     let out = `## OSS Insight\n> ${TS()}\n`;
     for (const c of result.collections) {
       if (!c.ok) { out += `\n### ${c.url}\n❌ 不可达：${c.error}\n`; continue; }
       out += `\n### ${c.url}\n| # | 仓库 |\n|---|------|\n`;
-      c.data.slice(0, 10).forEach((r, i) => { out += `| ${i + 1} | ${r.repo} |\n`; });
+      c.data.slice(0, 10).forEach((/** @type {any} */ r, /** @type {number} */ i) => { out += `| ${i + 1} | ${r.repo} |\n`; });
     }
     return out;
   }
   let out = `## OSS Insight\n> ${result.url || ''} | ${TS()}\n| # | 仓库 |\n|---|------|\n`;
-  (result.data || []).slice(0, 20).forEach((r, i) => { out += `| ${i + 1} | ${r.repo} |\n`; });
+  (result.data || []).slice(0, 20).forEach((/** @type {any} */ r, /** @type {number} */ i) => { out += `| ${i + 1} | ${r.repo} |\n`; });
   return out;
 }
 
-export function formatTrendShift(result) {
+export function formatTrendShift(/** @type {any} */ result) {
   if (!result.ok) return `## TrendShift ❌\n> 不可达：${result.error || '未知错误'}\n`;
   const header = `## TrendShift${result.url ? `\n> ${result.url} | ${TS()}` : ''}\n`;
   if (!result.data.length) return header + '\n_无数据_\n';
   let table = header + '\n| # | 仓库 | ⭐ | 变化 | 描述 |\n|---|------|-----|------|------|\n';
-  result.data.slice(0, 20).forEach((r, i) => {
+  result.data.slice(0, 20).forEach((/** @type {any} */ r, /** @type {number} */ i) => {
     const chg = r.change ? (Number(r.change) > 0 ? `+${r.change}` : r.change) : '—';
     const dir = trendIcon(r.change);
     table += `| ${i + 1} | ${r.repo} | ${fmtStars(r.stars)} | ${chg} ${dir} | ${(r.description || r.title || '').slice(0, 60)} |\n`;
@@ -70,26 +70,26 @@ export function formatTrendShift(result) {
   return table;
 }
 
-export function formatTopStarred(result) {
+export function formatTopStarred(/** @type {any} */ result) {
   if (!result.ok) return `## Top-Starred ❌\n> 不可达：${result.error || '未知错误'}\n`;
   const header = `## Top-Starred${result.url ? `\n> ${result.url} | ${TS()}` : ''}\n`;
   if (!result.data.length) return header + '\n_无数据_\n';
   let table = header + '\n| # | 仓库 |\n|---|------|\n';
-  result.data.forEach((r, i) => { table += `| ${i + 1} | ${r.repo} |\n`; });
+  result.data.forEach((/** @type {any} */ r, /** @type {number} */ i) => { table += `| ${i + 1} | ${r.repo} |\n`; });
   return table;
 }
 
-export function formatStatus(status) {
+export function formatStatus(/** @type {any} */ status) {
   let out = `## rui-trends 数据源探活 — ${TS()}\n\n| 数据源 | 可达 | HTTP |\n|--------|------|------|\n`;
   for (const s of status.sources) {
     out += `| ${s.source} | ${s.reachable ? '✅' : '❌'} | ${s.status || s.error || '—'} |\n`;
   }
-  const reachable = status.sources.filter((s) => s.reachable).length;
+  const reachable = status.sources.filter((/** @type {any} */ s) => s.reachable).length;
   out += `\n> ${reachable}/${status.sources.length} 数据源可达\n`;
   return out;
 }
 
-export function formatAll(results) {
+export function formatAll(/** @type {any} */ results) {
   let out = `# rui-trends 全量报告 — ${TS()}\n\n`;
   out += formatGitHubTrending(results.sources['github-trending']) + '\n';
   out += formatOSSInsight(results.sources['oss-insight']) + '\n';
@@ -99,7 +99,7 @@ export function formatAll(results) {
 }
 
 /** Build §2.1 diagnostic injection template */
-export function formatSelfImproveInjection(results) {
+export function formatSelfImproveInjection(/** @type {any} */ results) {
   let out = `### §2.1 技术趋势验证\n\n> 数据采集时间：${TS()} | 数据源：github-trending / oss-insight / trendshift / top-starred\n\n`;
   out += '| 数据源 | 可达? | 关键发现 | 诊断触发 |\n|--------|-------|---------|----------|\n';
   const sources = results.sources || {};

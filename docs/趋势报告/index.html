@@ -67,7 +67,7 @@
 <div class="card">
   <h2>📡 数据源可达性 &amp; 聚合权重</h2>
   <div class="src-grid" id="srcGrid">
-    <div class="src-card rp-card-flat"><div style="color:var(--yry-text3);padding:12px;text-align:center">加载中...</div></div>
+    <div class="src-card rp-card-flat"><div class="h-lg-x57">加载中...</div></div>
   </div>
 </div>
 
@@ -75,9 +75,9 @@
 <div class="card">
   <h2>📊 技术分类分布 (最新周期)</h2>
   <div class="cat-bars" id="catBars">
-    <div style="color:var(--yry-text3);text-align:center;padding:12px">加载中...</div>
+    <div class="h-lg-x58">加载中...</div>
   </div>
-  <p style="font-size:.68rem;color:var(--yry-text3);margin-top:10px">分类基于项目主要编程语言和项目描述自动标注。AI/LLM 类持续主导，反映 2026 上半年 AI 工具链生态的爆发式增长。</p>
+  <p class="h-lg-x59">分类基于项目主要编程语言和项目描述自动标注。AI/LLM 类持续主导，反映 2026 上半年 AI 工具链生态的爆发式增长。</p>
 </div>
 
 <!-- Category Trend Evolution (4 periods) -->
@@ -87,16 +87,16 @@
     <thead><tr><th>分类</th><th>06-05</th><th>06-09</th><th>06-12</th><th>06-16</th><th>趋势方向</th><th>动量</th></tr></thead>
     <tbody id="catEvo"></tbody>
   </table>
-  <p style="font-size:.68rem;color:var(--yry-text3);margin-top:8px">百分比基于每周期全量条目分类标注统计。动量 = 最近两周期变化率 (百分点)，正值表示份额扩大。AI/LLM 类近 4 周期持续增长，反映 LLM 工具链生态加速扩张。</p>
+  <p class="h-lg-fs68-t3-mt8">百分比基于每周期全量条目分类标注统计。动量 = 最近两周期变化率 (百分点)，正值表示份额扩大。AI/LLM 类近 4 周期持续增长，反映 LLM 工具链生态加速扩张。</p>
 </div>
 
 <!-- Data Quality -->
 <div class="card">
   <h2>🔬 数据质量拆解</h2>
-  <div id="qualityGrid" style="display:flex;gap:10px;flex-wrap:wrap">
-    <div style="color:var(--yry-text3);text-align:center;padding:12px;flex:1">加载中...</div>
+  <div id="qualityGrid" class="h-lg-x60">
+    <div class="h-lg-t3-center-p12-flex1">加载中...</div>
   </div>
-  <p style="font-size:.68rem;color:var(--yry-text3);margin-top:8px"><strong>真实数据</strong>：API 直接抓取结果，标注 ✓ · <strong>投影数据</strong>：API 不可达时基于 3 周期历史外推，标注 📡 · 投影偏差随缺失周期数增大。</p>
+  <p class="h-lg-fs68-t3-mt8"><strong>真实数据</strong>：API 直接抓取结果，标注 ✓ · <strong>投影数据</strong>：API 不可达时基于 3 周期历史外推，标注 📡 · 投影偏差随缺失周期数增大。</p>
 </div>
 
 </div><!-- /.yry-panel #panelOverview -->
@@ -117,7 +117,7 @@
     <thead><tr><th>数据源</th><th>权重</th><th>报告数</th><th>可达率</th><th>最新条目</th><th>条/报告均值</th><th>条/报告 σ</th><th>最近趋势</th></tr></thead>
     <tbody id="srcVelocity"></tbody>
   </table>
-  <p style="font-size:.68rem;color:var(--yry-text3);margin-top:8px">条/报告 σ 衡量该源条目数的周间波动。GitHub Trending 波动最大 (热门项目涌现/消退快)，Top-Starred 最稳定 (长尾投票惯性)。</p>
+  <p class="h-lg-fs68-t3-mt8">条/报告 σ 衡量该源条目数的周间波动。GitHub Trending 波动最大 (热门项目涌现/消退快)，Top-Starred 最稳定 (长尾投票惯性)。</p>
 </div>
 
 <!-- Migration Signal Monitor -->
@@ -126,15 +126,15 @@
   <table>
     <thead><tr><th>迁移方向</th><th>强度</th><th>连续周期</th><th>置信度</th><th>首次检测</th><th>最近确认</th><th>影响评估</th></tr></thead>
     <tbody>
-      <tr><td>Webpack → Vite</td><td><span class="momentum-bar momentum-pos" style="width:80px"></span>强</td><td>4</td><td><span class="badge ok">高 94%</span></td><td>2026-06-05</td><td>2026-06-16</td><td style="font-size:.72rem;color:var(--yry-text3)">构建工具现代化，影响前端工具链选型</td></tr>
-      <tr><td>REST → tRPC / GraphQL</td><td><span class="momentum-bar momentum-pos" style="width:72px"></span>强</td><td>4</td><td><span class="badge ok">高 91%</span></td><td>2026-06-05</td><td>2026-06-16</td><td style="font-size:.72rem;color:var(--yry-text3)">全栈类型安全，影响 API 设计范式</td></tr>
-      <tr><td>Jenkins → GitHub Actions</td><td><span class="momentum-bar momentum-pos" style="width:52px"></span>中</td><td>3</td><td><span class="badge ok">高 87%</span></td><td>2026-06-09</td><td>2026-06-16</td><td style="font-size:.72rem;color:var(--yry-text3)">CI/CD 云原生化，影响 DevOps 工具链</td></tr>
-      <tr><td>JS/TS → Rust / WASM</td><td><span class="momentum-bar momentum-pos" style="width:68px"></span>强</td><td>4</td><td><span class="badge ok">高 89%</span></td><td>2026-06-05</td><td>2026-06-16</td><td style="font-size:.72rem;color:var(--yry-text3)">性能关键路径迁移，影响系统编程选型</td></tr>
-      <tr><td>Docker Compose → Devbox / Nix</td><td><span class="momentum-bar momentum-pos" style="width:44px"></span>中</td><td>3</td><td><span class="badge warn">中 72%</span></td><td>2026-06-09</td><td>2026-06-16</td><td style="font-size:.72rem;color:var(--yry-text3)">可复现开发环境，影响 DevOps 工具链</td></tr>
-      <tr><td>Nagios → OpenTelemetry + eBPF</td><td><span class="momentum-bar momentum-pos" style="width:76px"></span>强</td><td>4</td><td><span class="badge ok">高 93%</span></td><td>2026-06-05</td><td>2026-06-16</td><td style="font-size:.72rem;color:var(--yry-text3)">可观测性现代化，影响监控架构</td></tr>
+      <tr><td>Webpack → Vite</td><td><span class="momentum-bar momentum-pos h-lg-wpx" style="--w:80px"></span>强</td><td>4</td><td><span class="badge ok">高 94%</span></td><td>2026-06-05</td><td>2026-06-16</td><td class="h-lg-fs72-t3">构建工具现代化，影响前端工具链选型</td></tr>
+      <tr><td>REST → tRPC / GraphQL</td><td><span class="momentum-bar momentum-pos h-lg-wpx" style="--w:72px"></span>强</td><td>4</td><td><span class="badge ok">高 91%</span></td><td>2026-06-05</td><td>2026-06-16</td><td class="h-lg-fs72-t3">全栈类型安全，影响 API 设计范式</td></tr>
+      <tr><td>Jenkins → GitHub Actions</td><td><span class="momentum-bar momentum-pos h-lg-wpx" style="--w:52px"></span>中</td><td>3</td><td><span class="badge ok">高 87%</span></td><td>2026-06-09</td><td>2026-06-16</td><td class="h-lg-fs72-t3">CI/CD 云原生化，影响 DevOps 工具链</td></tr>
+      <tr><td>JS/TS → Rust / WASM</td><td><span class="momentum-bar momentum-pos h-lg-wpx" style="--w:68px"></span>强</td><td>4</td><td><span class="badge ok">高 89%</span></td><td>2026-06-05</td><td>2026-06-16</td><td class="h-lg-fs72-t3">性能关键路径迁移，影响系统编程选型</td></tr>
+      <tr><td>Docker Compose → Devbox / Nix</td><td><span class="momentum-bar momentum-pos h-lg-wpx" style="--w:44px"></span>中</td><td>3</td><td><span class="badge warn">中 72%</span></td><td>2026-06-09</td><td>2026-06-16</td><td class="h-lg-fs72-t3">可复现开发环境，影响 DevOps 工具链</td></tr>
+      <tr><td>Nagios → OpenTelemetry + eBPF</td><td><span class="momentum-bar momentum-pos h-lg-wpx" style="--w:76px"></span>强</td><td>4</td><td><span class="badge ok">高 93%</span></td><td>2026-06-05</td><td>2026-06-16</td><td class="h-lg-fs72-t3">可观测性现代化，影响监控架构</td></tr>
     </tbody>
   </table>
-  <p style="font-size:.72rem;color:var(--yry-text3);margin-top:8px">迁移信号数据来自 TrendShift 源 (权重 25%)。连续 4 周期确认的信号已写入经验库。置信度基于连续确认周期数 × 源交叉验证 (≥2 源同时检测 +15% 置信度加成)。</p>
+  <p class="h-lg-fs72-t3-mt8">迁移信号数据来自 TrendShift 源 (权重 25%)。连续 4 周期确认的信号已写入经验库。置信度基于连续确认周期数 × 源交叉验证 (≥2 源同时检测 +15% 置信度加成)。</p>
 </div>
 
 </div><!-- /.yry-panel #panelVelocity -->
@@ -146,30 +146,30 @@
 <div class="card">
   <h2>🔄 技术生命周期阶段分析</h2>
   <div id="lifecycleGrid"><div class="empty">加载中...</div></div>
-  <p style="font-size:.68rem;color:var(--yry-text3);margin-top:8px">基于 4 周期检出频率变化和趋势加速度判定生命周期阶段。新兴 = 首次检出且增速 >20% · 增长 = 连续 2+ 周期增长 · 成熟 = 稳定检出无显著变化 · 衰退 = 连续 2+ 周期下降。</p>
+  <p class="h-lg-fs68-t3-mt8">基于 4 周期检出频率变化和趋势加速度判定生命周期阶段。新兴 = 首次检出且增速 >20% · 增长 = 连续 2+ 周期增长 · 成熟 = 稳定检出无显著变化 · 衰退 = 连续 2+ 周期下降。</p>
 </div>
 
 <!-- Language Ecosystem Heatmap -->
 <div class="card">
   <h2>🌐 语言/框架生态热力</h2>
   <div id="ecoHeatmap"><div class="empty">加载中...</div></div>
-  <p style="font-size:.68rem;color:var(--yry-text3);margin-top:8px">各生态在当前趋势中的出现强度，基于项目描述和主要语言标注。热力值 = 该类目下条目数 / 总条目数 × 100 (归一化到 0-10 级)。</p>
+  <p class="h-lg-fs68-t3-mt8">各生态在当前趋势中的出现强度，基于项目描述和主要语言标注。热力值 = 该类目下条目数 / 总条目数 × 100 (归一化到 0-10 级)。</p>
 </div>
 
 <!-- Signal-to-Noise Ratio Analysis -->
 <div class="card">
   <h2>📶 信噪比与趋势加速度分析</h2>
   <div id="snrAnalysis"><div class="empty">加载中...</div></div>
-  <p style="font-size:.68rem;color:var(--yry-text3);margin-top:8px">信噪比 = 趋势信号强度 / 数据源间方差，衡量趋势可检测性。趋势加速度 = 周期间增速的二阶导数，正值表示趋势正在加速，零值表示线性增长，负值表示增速放缓。</p>
+  <p class="h-lg-fs68-t3-mt8">信噪比 = 趋势信号强度 / 数据源间方差，衡量趋势可检测性。趋势加速度 = 周期间增速的二阶导数，正值表示趋势正在加速，零值表示线性增长，负值表示增速放缓。</p>
 </div>
 
 <!-- Cross-reference: Health + Self-Improve + 自循环 -->
 <div class="card">
   <h2>🩺 系统联动快照</h2>
   <div class="health-ref rp-card-flat" id="healthRef">
-    <div style="color:var(--yry-text3);text-align:center;padding:12px;flex:1">加载中...</div>
+    <div class="h-lg-t3-center-p12-flex1">加载中...</div>
   </div>
-  <div id="crossRefs" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"></div>
+  <div id="crossRefs" class="h-lg-x61"></div>
 </div>
 
 <!-- Report History -->
@@ -185,7 +185,6 @@
 
 <div class="links">
   <a href="../自循环报告/">自循环报告</a>
-  <a href="../健康报告/">健康报告</a>
   <a href="../自我改进/">自我改进</a>
   <a href="../故事任务面板/">故事任务面板</a>
   <a href="../index.html">文档中心</a>
@@ -193,7 +192,7 @@
 
 <div class="ft">
   技术趋势监控仪表板 · 由 rui-trends 自动生成 · 每周一 09:00 CST<br>
-  <span style="color:var(--yry-text3)">4 数据源 · 6 分类标签 · 6 迁移信号追踪 · 4 周期分类演变 · D5 外部趋势诊断输入 · 投影偏差 ±2~±11</span>
+  <span class="h-t3">4 数据源 · 6 分类标签 · 6 迁移信号追踪 · 4 周期分类演变 · D5 外部趋势诊断输入 · 投影偏差 ±2~±11</span>
 </div>
 
 <!-- 数据源 SLA 矩阵 -->

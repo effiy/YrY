@@ -16,23 +16,7 @@
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
 <link rel="stylesheet" href="../../../yry-a11y/index.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<style>
-  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
-  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
-  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
-  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
-  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
-  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
-  .delivery-story { font-size: .72rem; color: #4b5563; }
-  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
-  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
-  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
-  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
-  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
-  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
-  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
-</style>
+<link rel="stylesheet" href="../../../yry-legacy-scene-delivery/index.css">
 </head>
 <body>
 <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
@@ -54,43 +38,43 @@
 
   <div class="content-card">
     <h2>📝 R1 · 架构合规审查</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">审查项</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">结论</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">证据</th></tr></thead>
+    <table class="yry-auto-93137">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-75234">审查项</th><th class="yry-auto-75234">结论</th><th class="yry-auto-75234">证据</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Cat A/B 主题隔离</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 通过</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>theme/index.css</code> 与 <code>theme-mono/index.css</code> 独立加载</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">14 令牌全部定义</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 通过</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>grep --yry- theme*.css</code> 命中 14 个</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">令牌按用途命名</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 通过</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">无 <code>--yry-blue</code>/<code>--yry-red</code> 等颜色命名</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">组件 CSS 无硬编码颜色</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#fbbf24">⚠ 部分</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">少量组件 CSS 仍有 <code>#xxxxxx</code> 字面量</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">var() 带 fallback</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 通过</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">所有 <code>var(--yry-*, fallback)</code> 双参数调用</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">WCAG AA 对比度</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 通过</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">所有文字令牌 ≥ 4.5:1</td></tr>
-        <tr><td style="padding:8px 10px">主题切换无 FOUC</td><td style="padding:8px 10px;color:#fbbf24">⚠ 待验</td><td style="padding:8px 10px">录屏首帧检查未执行</td></tr>
+        <tr><td class="yry-auto-86182">Cat A/B 主题隔离</td><td class="yry-auto-36166">✓ 通过</td><td class="yry-auto-86182"><code>theme/index.css</code> 与 <code>theme-mono/index.css</code> 独立加载</td></tr>
+        <tr><td class="yry-auto-86182">14 令牌全部定义</td><td class="yry-auto-36166">✓ 通过</td><td class="yry-auto-86182"><code>grep --yry- theme*.css</code> 命中 14 个</td></tr>
+        <tr><td class="yry-auto-86182">令牌按用途命名</td><td class="yry-auto-36166">✓ 通过</td><td class="yry-auto-86182">无 <code>--yry-blue</code>/<code>--yry-red</code> 等颜色命名</td></tr>
+        <tr><td class="yry-auto-86182">组件 CSS 无硬编码颜色</td><td class="yry-auto-27978">⚠ 部分</td><td class="yry-auto-86182">少量组件 CSS 仍有 <code>#xxxxxx</code> 字面量</td></tr>
+        <tr><td class="yry-auto-86182">var() 带 fallback</td><td class="yry-auto-36166">✓ 通过</td><td class="yry-auto-86182">所有 <code>var(--yry-*, fallback)</code> 双参数调用</td></tr>
+        <tr><td class="yry-auto-86182">WCAG AA 对比度</td><td class="yry-auto-36166">✓ 通过</td><td class="yry-auto-86182">所有文字令牌 ≥ 4.5:1</td></tr>
+        <tr><td class="yry-auto-93797">主题切换无 FOUC</td><td class="yry-a2-24">⚠ 待验</td><td class="yry-auto-93797">录屏首帧检查未执行</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>⚠️ 风险与改进项</h2>
-    <ul style="margin:0;padding-left:20px;font-size:.76rem;line-height:1.9;color:#a9b1d6">
-      <li><strong style="color:#fbbf24">P1 · 组件硬编码颜色残留</strong> — 部分组件 CSS 仍有 <code>#xxxxxx</code> 字面量，应替换为 <code>var(--yry-*)</code></li>
-      <li><strong style="color:#fbbf24">P1 · 令牌覆盖率不足</strong> — 当前 14 个，缺 spacing/font-size 两类令牌</li>
-      <li><strong style="color:#fbbf24">P2 · text3 对比度 AAA 不达标</strong> — Cat A 中 4.1:1，仅适用于 ≥14px 加粗或非关键信息</li>
-      <li><strong style="color:#fbbf24">P2 · 主题切换未持久化</strong> — 当前需手动改 <code>data-theme</code>，未上 Toggler 组件 + localStorage</li>
-      <li><strong style="color:#fbbf24">P3 · 无亮色主题</strong> — 仅有 Cat A/B 暗色主题，缺 Cat C Light</li>
-      <li><strong style="color:#fbbf24">P3 · 无高对比度模式</strong> — 未实现 <code>prefers-contrast: more</code></li>
+    <ul class="yry-auto-20518">
+      <li><strong class="yry-auto-79642">P1 · 组件硬编码颜色残留</strong> — 部分组件 CSS 仍有 <code>#xxxxxx</code> 字面量，应替换为 <code>var(--yry-*)</code></li>
+      <li><strong class="yry-auto-79642">P1 · 令牌覆盖率不足</strong> — 当前 14 个，缺 spacing/font-size 两类令牌</li>
+      <li><strong class="yry-auto-79642">P2 · text3 对比度 AAA 不达标</strong> — Cat A 中 4.1:1，仅适用于 ≥14px 加粗或非关键信息</li>
+      <li><strong class="yry-auto-79642">P2 · 主题切换未持久化</strong> — 当前需手动改 <code>data-theme</code>，未上 Toggler 组件 + localStorage</li>
+      <li><strong class="yry-auto-79642">P3 · 无亮色主题</strong> — 仅有 Cat A/B 暗色主题，缺 Cat C Light</li>
+      <li><strong class="yry-auto-79642">P3 · 无高对比度模式</strong> — 未实现 <code>prefers-contrast: more</code></li>
     </ul>
   </div>
 
   <div class="content-card">
     <h2>📊 自改进路线</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">维度</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">当前</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">目标</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">行动</th></tr></thead>
+    <table class="yry-auto-93137">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-75234">维度</th><th class="yry-auto-75234">当前</th><th class="yry-auto-75234">目标</th><th class="yry-auto-75234">行动</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">令牌覆盖率</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">14 个</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">20 个</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">补充 <code>--yry-space-{xs,sm,md,lg,xl}</code></td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">字号令牌</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">无</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">6 个</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">补充 <code>--yry-font-{xs,sm,md,lg,xl,xxl}</code></td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">主题切换</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">手动换 CSS</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">单 class 切换</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>data-theme="mono"</code> 属性驱动</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">亮色主题</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">无</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Cat C Light</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">新增亮色主题 · 14 令牌亮色值</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">令牌文档</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">内联注释</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">独立 tokens/ 页面</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">完善 <code>tokens/index.css</code> · 可视化展示</td></tr>
-        <tr><td style="padding:8px 10px">高对比度</td><td style="padding:8px 10px">无</td><td style="padding:8px 10px">1 个</td><td style="padding:8px 10px">a11y 高对比度主题 (<code>prefers-contrast</code>)</td></tr>
+        <tr><td class="yry-auto-86182">令牌覆盖率</td><td class="yry-auto-86182">14 个</td><td class="yry-auto-86182">20 个</td><td class="yry-auto-86182">补充 <code>--yry-space-{xs,sm,md,lg,xl}</code></td></tr>
+        <tr><td class="yry-auto-86182">字号令牌</td><td class="yry-auto-86182">无</td><td class="yry-auto-86182">6 个</td><td class="yry-auto-86182">补充 <code>--yry-font-{xs,sm,md,lg,xl,xxl}</code></td></tr>
+        <tr><td class="yry-auto-86182">主题切换</td><td class="yry-auto-86182">手动换 CSS</td><td class="yry-auto-86182">单 class 切换</td><td class="yry-auto-86182"><code>data-theme="mono"</code> 属性驱动</td></tr>
+        <tr><td class="yry-auto-86182">亮色主题</td><td class="yry-auto-86182">无</td><td class="yry-auto-86182">Cat C Light</td><td class="yry-auto-86182">新增亮色主题 · 14 令牌亮色值</td></tr>
+        <tr><td class="yry-auto-86182">令牌文档</td><td class="yry-auto-86182">内联注释</td><td class="yry-auto-86182">独立 tokens/ 页面</td><td class="yry-auto-86182">完善 <code>tokens/index.css</code> · 可视化展示</td></tr>
+        <tr><td class="yry-auto-93797">高对比度</td><td class="yry-auto-93797">无</td><td class="yry-auto-93797">1 个</td><td class="yry-auto-93797">a11y 高对比度主题 (<code>prefers-contrast</code>)</td></tr>
       </tbody>
     </table>
   </div>

@@ -148,7 +148,7 @@
       },
       {
         q: 'YrY 的设计原则是什么?',
-        a: 'YrY 遵循<strong>六条自有设计哲学</strong>(涌现 · 简化 · 消失 · 校准 · 释义 · 对等)和<strong>九条工程原则</strong>(单一职责 · 高内聚 · 低耦合 · 依赖倒置 · 开闭原则 · 接口隔离 · DRY · YAGNI · 组合优于继承)。详见 <a href="../rules/design-principles.md" target="_blank">设计原则规约</a>。每项 Agent/Skill/Lib 审查时两套原则并用:六条定方向,九条定结构。'
+        a: 'YrY 遵循<strong>六条自有设计哲学</strong>(涌现 · 简化 · 消失 · 校准 · 释义 · 对等)和<strong>九条工程原则</strong>(单一职责 · 高内聚 · 低耦合 · 依赖倒置 · 开闭原则 · 接口隔离 · DRY · YAGNI · 组合优于继承)。详见 <a href="../../skills/rui/rules/design-principles.md" target="_blank">设计原则规约</a>。每项 Agent/Skill/Lib 审查时两套原则并用:六条定方向,九条定结构。'
       },
       {
         q: '如何进行版本升级?',

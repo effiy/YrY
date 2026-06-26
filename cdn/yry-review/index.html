@@ -14,17 +14,8 @@
   <link rel="stylesheet" href="../yry-scene/index.css">
   <link rel="stylesheet" href="../yry-checklist/index.css">
   <link rel="stylesheet" href="index.css">
-  <style>
-    body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
-    h1 { font-size: 1.4rem; color: var(--yry-accent, #FFC107); }
-    h2 { font-size: 1rem; color: var(--yry-text, #fafafc); margin-top: 28px; border-bottom: 1px solid rgba(255,255,255,.06); padding-bottom: 8px; }
-    pre { background: rgba(0,0,0,.3); padding: 10px 14px; border-radius: 6px; font-size: .76rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; }
-    .demo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin: 12px 0; }
-    .demo-tag { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: .68rem; margin: 2px; }
-    .demo-tag.pass { background: rgba(34,197,94,.15); color: var(--yry-pass, #22c55e); }
-    .demo-tag.warn { background: rgba(245,158,11,.15); color: var(--yry-warn, #f59e0b); }
-    .demo-tag.fail { background: rgba(239,68,68,.15); color: var(--yry-fail, #ef4444); }
-  </style>
+<link rel="stylesheet" href="../yry-inline-helpers/index.css">
+<link rel="stylesheet" href="demo.css">
 </head>
 <body>
   <h1>📝 yry-review · 审查报告</h1>
@@ -51,11 +42,11 @@
   <h2>演示: suite 折叠 (点击展开)</h2>
   <div class="suite">
     <div class="s-head"><strong>▸ 维度 A: 架构合规</strong></div>
-    <div class="s-body" style="padding:12px 18px;font-size:.84rem">审查内容: 内核体积约束 · 范式合规 · 扩展隔离</div>
+    <div class="s-body" yry-cd-34">审查内容: 内核体积约束 · 范式合规 · 扩展隔离</div>
   </div>
   <div class="suite">
     <div class="s-head"><strong>▸ 维度 B: 安全面</strong></div>
-    <div class="s-body" style="padding:12px 18px;font-size:.84rem">审查内容: 认证不可绕过 · 密钥不落盘 · 输入必校验</div>
+    <div class="s-body" yry-cd-34">审查内容: 认证不可绕过 · 密钥不落盘 · 输入必校验</div>
   </div>
 
   <h2>状态标签</h2>
@@ -65,7 +56,7 @@
     <span class="demo-tag fail">✗ 失败 (0项)</span>
   </div>
 
-  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · yry-review · 17KB CSS · 2026</p>
+  <p class="yry-cd-8">YrY CDN · yry-review · 17KB CSS · 2026</p>
 
   <script src="index.js"></script>
 </body>

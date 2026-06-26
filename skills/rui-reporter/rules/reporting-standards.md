@@ -1,3 +1,10 @@
+---
+paths:
+  - "skills/rui-reporter/**"
+  - "skills/rui-reporter/SKILL.md"
+description: "过程报告与知识策展的标准"
+---
+
 # rui-reporter 报告标准
 
 > 过程报告与知识策展的规则和标准，独立于实现细节。

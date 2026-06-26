@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>场景-4-包信息审计与卸载 · 源码</title>
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-helpers/index.css">
+
 <link rel="stylesheet" href="../../../../cdn/theme/index.css">
 <link rel="stylesheet" href="../../../../cdn/yry-source/index.css">
 </head>
@@ -85,22 +87,22 @@
     <h2>📊 源码全景速览 <span class="h2-tag">实时统计 · 4 大类</span></h2>
     <div class="role-grid">
       <div class="role-mini" onclick="filterCat('skill')">
-        <div class="rm-name">⚙️ 技能 Skills <span style="margin-left:auto;font-size:.7rem;color:var(--accent)" id="ov-skill"></span></div>
+        <div class="rm-name">⚙️ 技能 Skills <span class="sc-ml-auto-accent" id="ov-skill"></span></div>
         <div class="rm-desc">用户入口 · 编排管线 · 7 个独立技能模块</div>
         <div class="rm-files">rui · rui-story · rui-包信息审计与卸载 · rui-import · rui-bot · rui-trends · rui-npm</div>
       </div>
       <div class="role-mini" onclick="filterCat('agent')">
-        <div class="rm-name">🤖 Agent 角色 <span style="margin-left:auto;font-size:.7rem;color:var(--purple)" id="ov-agent"></span></div>
+        <div class="rm-name">🤖 Agent 角色 <span class="sc-ml-auto-purple" id="ov-agent"></span></div>
         <div class="rm-desc">协作拓扑 · 行为纪律 · 9 类角色边界</div>
         <div class="rm-files">AGENT · pm · planner · architect · coder · reviewer · tester · reporter · security · self-improve</div>
       </div>
       <div class="role-mini" onclick="filterCat('rule')">
-        <div class="rm-name">📜 治理规则 <span style="margin-left:auto;font-size:.7rem;color:var(--pass)" id="ov-rule"></span></div>
+        <div class="rm-name">📜 治理规则 <span class="sc-ml-auto-pass" id="ov-rule"></span></div>
         <div class="rm-desc">管线纪律 · 安全护栏 · 10 套约束规则</div>
         <div class="rm-files">code-pipeline · delivery-gate · architecture-diagram · plan-execution · doc-generation · knowledge-graph · mermaid-theme · security-guardrails · rui-包信息审计与卸载 · self-improve</div>
       </div>
       <div class="role-mini" onclick="filterCat('lib')">
-        <div class="rm-name">📦 共享库 Lib <span style="margin-left:auto;font-size:.7rem;color:var(--cyan)" id="ov-lib"></span></div>
+        <div class="rm-name">📦 共享库 Lib <span class="sc-ml-auto-cyan" id="ov-lib"></span></div>
         <div class="rm-desc">基础设施 · 工具复用 · 4 个共享模块</div>
         <div class="rm-files">constants · fs · help-layout · tty</div>
       </div>
@@ -109,17 +111,17 @@
 
   <div class="card">
     <h2>🎯 重要度分级 <span class="h2-tag">按优先级阅读</span></h2>
-    <p style="margin-bottom:10px">所有源文件按重要度分为三级，建议按优先级阅读：</p>
+    <p class="sc-mb10">所有源文件按重要度分为三级，建议按优先级阅读：</p>
     <ul class="checklist">
-      <li><span class="chk" style="color:var(--fail)">★</span> <b style="color:var(--fail)">必读 (Must-Read)</b> — 首次上手必读，缺失则无法理解系统全貌：<code>CLAUDE.md</code> · <code>README.md</code> · <code>agents/AGENT.md</code> · <code>rules/code-pipeline.md</code></li>
-      <li><span class="chk partial">◆</span> <b style="color:var(--warn)">推荐 (Recommended)</b> — 进入实操前需了解：<code>skills/rui/SKILL.md</code> · <code>rules/delivery-gate.md</code> · <code>rules/security-guardrails.md</code> · <code>agents/coder.md</code></li>
-      <li><span class="chk" style="color:var(--cyan)">○</span> <b style="color:var(--cyan)">参考 (Reference)</b> — 按需查阅，常作为实现/排错时的工具书：其余 25 份</li>
+      <li><span class="chk" class="sc-text-fail">★</span> <b class="sc-text-fail">必读 (Must-Read)</b> — 首次上手必读，缺失则无法理解系统全貌：<code>CLAUDE.md</code> · <code>README.md</code> · <code>agents/AGENT.md</code> · <code>rules/code-pipeline.md</code></li>
+      <li><span class="chk partial">◆</span> <b class="sc-text-warn">推荐 (Recommended)</b> — 进入实操前需了解：<code>skills/rui/SKILL.md</code> · <code>rules/delivery-gate.md</code> · <code>rules/security-guardrails.md</code> · <code>agents/coder.md</code></li>
+      <li><span class="chk" class="sc-text-cyan">○</span> <b class="sc-text-cyan">参考 (Reference)</b> — 按需查阅，常作为实现/排错时的工具书：其余 25 份</li>
     </ul>
   </div>
 
   <div class="card">
     <h2>⚡ 快速操作台 <span class="h2-tag">点击复制命令</span></h2>
-    <p style="margin-bottom:12px">下列命令覆盖 80% 的新人日常操作，点击卡片即可复制：</p>
+    <p class="sc-mb12">下列命令覆盖 80% 的新人日常操作，点击卡片即可复制：</p>
     <div class="task-grid">
       <div class="task-card" onclick="copyText('git clone &lt;repo&gt; &amp;&amp; cd YrY')">
         <span class="t-diff easy">EASY</span>
@@ -177,7 +179,7 @@
 <div class="panel" id="panelLearn">
   <div class="card">
     <h2>🗺️ 七步上手路径 <span class="h2-tag">建议严格按序</span></h2>
-    <p style="margin-bottom:14px">每步约 4 分钟，全程 ~30 分钟。每步有明确的入口文档和可验证的完成标志，可中断可恢复。</p>
+    <p class="sc-mb14">每步约 4 分钟，全程 ~30 分钟。每步有明确的入口文档和可验证的完成标志，可中断可恢复。</p>
     <div class="timeline">
       <div class="t-step">
         <div class="step-title"><span class="step-num">STEP 1 · 4 min</span> 阅读项目入口</div>
@@ -237,7 +239,7 @@
       <span class="dep-arrow">→</span>
       <span class="dep-node leaf" onclick="viewSource('skills/rui/SKILL.md')">skills/rui/SKILL.md</span>
     </div>
-    <p style="text-align:center;color:var(--text3);font-size:.78rem;margin-top:10px">基础信念 → 系统全景 → 角色拓扑 → 管线纪律 → 核心技能（点击节点可直接查看）</p>
+    <p class="sc-meta-center">基础信念 → 系统全景 → 角色拓扑 → 管线纪律 → 核心技能（点击节点可直接查看）</p>
   </div>
 
   <div class="card">
@@ -272,7 +274,7 @@
 <div class="panel" id="panelTasks">
   <div class="card">
     <h2>🛠️ 常见调试任务 <span class="h2-tag">场景化命令 · 点击复制</span></h2>
-    <p style="margin-bottom:12px">下列任务覆盖新人 80% 的日常操作。每个卡片包含命令、说明、难度标识，点击卡片即可复制命令。</p>
+    <p class="sc-mb12">下列任务覆盖新人 80% 的日常操作。每个卡片包含命令、说明、难度标识，点击卡片即可复制命令。</p>
     <div class="task-grid">
       <div class="task-card" onclick="copyText('find . -name &quot;*.md&quot; -path &quot;*/skills/*&quot;')">
         <span class="t-diff easy">EASY</span>
@@ -431,7 +433,7 @@
       <span class="dep-arrow">→</span>
       <span class="dep-node leaf" onclick="viewSource('skills/rui/SKILL.md')">skills/rui/SKILL.md</span>
     </div>
-    <p style="text-align:center;color:var(--text3);font-size:.78rem;margin-top:10px">基础信念 → 系统全景 → 角色拓扑 → 管线纪律 → 核心技能</p>
+    <p class="sc-meta-center">基础信念 → 系统全景 → 角色拓扑 → 管线纪律 → 核心技能</p>
   </div>
 
   <div class="card">
@@ -446,7 +448,7 @@
 
   <div class="card">
     <h2>🔄 模块依赖矩阵 <span class="h2-tag">谁依赖谁</span></h2>
-    <p style="margin-bottom:12px">以下矩阵揭示模块间的主要引用关系，新人可据此理解"改动一个文件可能影响哪些下游"：</p>
+    <p class="sc-mb12">以下矩阵揭示模块间的主要引用关系，新人可据此理解"改动一个文件可能影响哪些下游"：</p>
     <ul class="checklist">
       <li><span class="chk">→</span> <code>skills/rui/*</code> → 依赖 <code>lib/*.mjs</code>（共享库） · <code>agents/*.md</code>（角色定义）</li>
       <li><span class="chk">→</span> <code>agents/*.md</code> → 引用 <code>rules/*.md</code>（纪律约束）</li>
@@ -466,7 +468,7 @@
       <li><span class="chk">📜</span> <b>rules/</b> — 10 治理规则 · 管线纪律 · 安全护栏</li>
       <li><span class="chk">📦</span> <b>lib/</b> — 4 共享库 · TTY · FS · 常量 · help 布局</li>
     </ul>
-    <p style="margin-top:12px;font-size:.76rem;color:var(--text3)">👉 切换到 <b>文件清单</b> 标签查看完整的 33 份文件详情与描述。</p>
+    <p class="sc-mt12-76-t3">👉 切换到 <b>文件清单</b> 标签查看完整的 33 份文件详情与描述。</p>
   </div>
 
   <div class="card">
@@ -508,14 +510,14 @@
       <span class="m-meta-item">🏷 <b id="mm-cat">—</b></span>
       <span class="m-meta-item">📝 <b id="mm-importance">—</b></span>
       <div class="m-jump">
-        <span style="color:var(--text3)">跳转到行</span>
+        <span class="sc-text3">跳转到行</span>
         <input type="number" id="jumpInput" min="1" placeholder="#" onkeydown="if(event.key==='Enter')jumpToLine()">
-        <button class="m-btn" onclick="jumpToLine()" style="padding:3px 8px">Go</button>
+        <button class="m-btn" onclick="jumpToLine()" class="sc-pad-3-8">Go</button>
       </div>
     </div>
     <div class="m-body" id="modalBody">
-      <div style="padding:60px 20px;text-align:center;color:var(--text3)">
-        <div style="font-size:2rem;margin-bottom:8px;animation:glow 2s infinite">⏳</div>
+      <div class="sc-empty-state">
+        <div class="sc-fs-2-glow">⏳</div>
         <div>加载源码中…</div>
       </div>
     </div>
@@ -598,10 +600,10 @@ function renderStats(){
   var ruleCount=files.filter(function(f){return f.cat==='rule'}).length;
   var libCount=files.filter(function(f){return f.cat==='lib'}).length;
   document.getElementById('bar').innerHTML=
-    '<div class="seg skill" style="width:'+(cl.skill/ts*100)+'%" data-tip="技能 '+cl.skill+' 行 '+skillCount+' 文件" onclick="filterCat(\'skill\')"></div>'+
-    '<div class="seg agent" style="width:'+(cl.agent/ts*100)+'%" data-tip="Agent '+cl.agent+' 行 '+agentCount+' 文件" onclick="filterCat(\'agent\')"></div>'+
-    '<div class="seg rule" style="width:'+(cl.rule/ts*100)+'%" data-tip="规则 '+cl.rule+' 行 '+ruleCount+' 文件" onclick="filterCat(\'rule\')"></div>'+
-    '<div class="seg lib" style="width:'+(cl.lib/ts*100)+'%" data-tip="Lib '+cl.lib+' 行 '+libCount+' 文件" onclick="filterCat(\'lib\')"></div>';
+    '<div class="seg skill" style="--w:'+(cl.skill/ts*100)+'%" data-tip="技能 '+cl.skill+' 行 '+skillCount+' 文件" onclick="filterCat(\'skill\')"></div>'+
+    '<div class="seg agent" style="--w:'+(cl.agent/ts*100)+'%" data-tip="Agent '+cl.agent+' 行 '+agentCount+' 文件" onclick="filterCat(\'agent\')"></div>'+
+    '<div class="seg rule" style="--w:'+(cl.rule/ts*100)+'%" data-tip="规则 '+cl.rule+' 行 '+ruleCount+' 文件" onclick="filterCat(\'rule\')"></div>'+
+    '<div class="seg lib" style="--w:'+(cl.lib/ts*100)+'%" data-tip="Lib '+cl.lib+' 行 '+libCount+' 文件" onclick="filterCat(\'lib\')"></div>';
 
   // 概览页统计
   var ovSkill=document.getElementById('ov-skill');if(ovSkill)ovSkill.textContent=cc.skill+' 文件';
@@ -710,8 +712,8 @@ function renderBrowse(){
     for(var i=0;i<children.length;i++){
       var f=children[i];
       var ib=IMPORTANCE_BADGES[f.importance]||IMPORTANCE_BADGES.reference;
-      var catBadge='<span class="fc-badge '+f.cat+'" style="font-size:.58rem;padding:1px 6px">'+CAT_BADGE[f.cat]+'</span>';
-      var impBadge='<span class="fc-badge '+ib.cls+'" style="font-size:.58rem;padding:1px 6px">'+ib.label+'</span>';
+      var catBadge='<span class="fc-badge '+f.cat+'" class="sc-tag-sm">'+CAT_BADGE[f.cat]+'</span>';
+      var impBadge='<span class="fc-badge '+ib.cls+'" class="sc-tag-sm">'+ib.label+'</span>';
       html+='<div class="t-row" onclick="viewSource(\''+esc(f.path)+'\')">';
       html+='<span class="t-icon">'+f.icon+'</span>';
       html+='<span class="t-name">'+esc(f.name)+catBadge+impBadge+'</span>';
@@ -828,7 +830,7 @@ function viewSource(relPath){
   document.getElementById('mm-importance').textContent=f?(impMap[f.importance]||'—'):'—';
 
   var body=document.getElementById('modalBody');
-  body.innerHTML='<div style="padding:60px 20px;text-align:center;color:var(--text3)"><div style="font-size:2rem;margin-bottom:8px;animation:glow 2s infinite">⏳</div><div>加载源码中…</div></div>';
+  body.innerHTML='<div class="sc-empty-state"><div class="sc-fs-2-glow">⏳</div><div>加载源码中…</div></div>';
   overlay.classList.add('show');
   document.body.style.overflow='hidden';
 
@@ -847,7 +849,7 @@ function viewSource(relPath){
       body.innerHTML=html;
     })
     .catch(function(e){
-      body.innerHTML='<div style="padding:60px 20px;text-align:center;color:var(--fail)"><div style="font-size:2.5rem;margin-bottom:10px">⚠️</div><h3 style="color:var(--fail);margin-bottom:8px">无法加载文件</h3><p style="color:var(--text3);font-size:.84rem">'+esc(e.message)+'</p><p style="color:var(--text3);font-size:.78rem;margin-top:14px">请检查路径是否正确，或文件是否存在</p><code style="display:inline-block;margin-top:14px;padding:6px 10px;background:var(--yry-bg-flat);border-radius:4px;color:var(--cyan)">'+esc(relPath)+'</code></div>';
+      body.innerHTML='<div class="sc-empty-state-fail"><div class="sc-fs-2-5">⚠️</div><h3 class="sc-fail-mb8">无法加载文件</h3><p class="sc-text3-84">'+esc(e.message)+'</p><p class="sc-text3-78">请检查路径是否正确，或文件是否存在</p><code class="sc-code-inline">'+esc(relPath)+'</code></div>';
     });
 }
 function closeModal(){

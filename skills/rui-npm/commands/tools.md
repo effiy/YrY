@@ -2,6 +2,7 @@
 
 > npx 执行、安全审计、CDN 引用。对应 `lib/tools.mjs`。
 
+<a id="npx"></a>
 ## npx — npx 执行
 
 > 通过 npx 直接运行 npm 包，无需安装。
@@ -18,6 +19,7 @@
 | `<pkg>[@version]` | 是 | 要执行的 npm 包名，可选版本 |
 | `-- args...` | 否 | 传递给包的命令行参数（`--` 之后） |
 
+<a id="audit"></a>
 ## audit — 安全审计
 
 > 审计当前项目已安装依赖的已知安全漏洞。
@@ -46,6 +48,7 @@
 - `npm audit fix --force` — 强制修复（可能包含破坏性变更）
 ```
 
+<a id="cdn"></a>
 ## cdn — CDN 引用
 
 > 查看 npm 包在主流 CDN 的引用地址。

@@ -1,3 +1,10 @@
+---
+paths:
+  - "skills/rui-html/**"
+  - "skills/rui-html/SKILL.md"
+description: "文档生成生命周期与阶段规则"
+---
+
 # doc-generation-lifecycle
 
 > 补充文档触发 · 策展 · 例外 · 生效标志。主文档：[doc-generation.md](doc-generation.md)

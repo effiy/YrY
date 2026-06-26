@@ -38,7 +38,7 @@
     if (!reports.length) {
       document.getElementById('tbody').textContent = '';
 
-      document.getElementById('tbody').insertAdjacentHTML('beforeend', '<tr><td colspan="6"><div class="empty">暂无自循环报告<br><span style="font-size:.7rem);margin-top:8px;display:block">运行 <code>node skills/rui-bot/lib/loop-report.mjs --skill=&lt;name&gt; --status=&lt;pass|warn|fail&gt;</code> 生成首份报告</span></div></td></tr>';
+      document.getElementById('tbody').insertAdjacentHTML('beforeend', '<tr><td colspan="6"><div class="empty">暂无自循环报告<br><span style="font-size:.7rem;margin-top:8px;display:block">运行 <code>node skills/rui-bot/lib/loop-report.mjs --skill=&lt;name&gt; --status=&lt;pass|warn|fail&gt;</code> 生成首份报告</span></div></td></tr>');
       document.getElementById('freshList').textContent = '';
 
       document.getElementById('freshList').insertAdjacentHTML('beforeend', '<div class="empty">暂无巡检数据</div>');
@@ -166,7 +166,7 @@
     } else {
       document.getElementById('trendChart').textContent = '';
 
-      document.getElementById('trendChart').insertAdjacentHTML('beforeend', '<div style="text-align:center);color:var(--yry-text3);font-size:.78rem;padding:20px">单日数据 · 趋势需 ≥2 天</div>';
+      document.getElementById('trendChart').insertAdjacentHTML('beforeend', '<div style="text-align:center;color:var(--yry-text3);font-size:.78rem;padding:20px">单日数据 · 趋势需 ≥2 天</div>');
     }
 
     // --- Execution Velocity ---
@@ -303,9 +303,9 @@
     var pctFail = totalFindings > 0 ? Math.round(totalFail / totalFindings * 100) : 0;
     document.getElementById('findGrid').textContent = '';
 
-    document.getElementById('findGrid').insertAdjacentHTML('beforeend', '<div class="find-item info"><div style="color:var(--yry-text3));font-size:.72rem">ℹ️ 信息</div><div class="find-num" style="color:#60a5fa">' + totalInfo + '</div><div class="find-pct">' + pctInfo + '%</div></div>' +
+    document.getElementById('findGrid').insertAdjacentHTML('beforeend', '<div class="find-item info"><div style="color:var(--yry-text3);font-size:.72rem">ℹ️ 信息</div><div class="find-num" style="color:#60a5fa">' + totalInfo + '</div><div class="find-pct">' + pctInfo + '%</div></div>' +
       '<div class="find-item warn"><div style="color:var(--yry-text3);font-size:.72rem">⚠️ 告警</div><div class="find-num" style="color:var(--yry-warn)">' + totalWarn + '</div><div class="find-pct">' + pctWarn + '%</div></div>' +
-      '<div class="find-item fail"><div style="color:var(--yry-text3);font-size:.72rem">🚫 异常</div><div class="find-num" style="color:var(--yry-fail)">' + totalFail + '</div><div class="find-pct">' + pctFail + '%</div></div>';
+      '<div class="find-item fail"><div style="color:var(--yry-text3);font-size:.72rem">🚫 异常</div><div class="find-num" style="color:var(--yry-fail)">' + totalFail + '</div><div class="find-pct">' + pctFail + '%</div></div>');
 
     // Execution cadence
     var coveragePct = Math.round(activeSkills / Object.keys(SKILL_INFO).length * 100);

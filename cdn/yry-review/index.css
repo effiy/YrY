@@ -47,7 +47,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .stat-card .delta.up{color:var(--pass)}.stat-card .delta.down{color:var(--fail)}.stat-card .delta.flat{color:var(--text3)}
 .bar-wrap{margin-bottom:28px;animation:fadeInDown .5s .12s ease both}
 .bar-outer{height:10px;border-radius:5px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}
-.bar-outer .seg{height:100%;transition:width .5s ease;min-width:3px}
+.bar-outer .seg{height:100%;width:var(--w,0%);transition:width .5s ease;min-width:3px}
 .bar-outer .seg.strength{background:var(--pass)}.bar-outer .seg.gap{background:var(--fail)}.bar-outer .seg.suggestion{background:var(--warn)}
 .bar-legend{display:flex;justify-content:center;gap:18px;margin-top:8px;font-size:.7rem;color:var(--text3);flex-wrap:wrap}
 .bar-legend .dot{width:8px;height:8px;border-radius:2px;display:inline-block}
@@ -72,8 +72,14 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .dim-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:10px;box-shadow:var(--shadow)}
 .dim-card h3{font-size:.88rem;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .dim-card .dim-score{font-size:1.4rem;font-weight:700;margin-left:auto}
+.dim-card .dim-score.pass{color:var(--pass)}
+.dim-card .dim-score.warn{color:var(--warn)}
+.dim-card .dim-score.fail{color:var(--fail)}
 .dim-card .dim-bar{height:6px;border-radius:3px;background:rgba(255,255,255,.04);overflow:hidden;margin-bottom:8px}
-.dim-card .dim-bar-inner{height:100%;border-radius:3px;transition:width .6s ease}
+.dim-card .dim-bar-inner{height:100%;width:var(--w,0%);border-radius:3px;transition:width .6s ease}
+.dim-card .dim-bar-inner.pass{background:var(--pass)}
+.dim-card .dim-bar-inner.warn{background:var(--warn)}
+.dim-card .dim-bar-inner.fail{background:var(--fail)}
 .dim-card ul{list-style:none;color:var(--text2);font-size:.78rem;margin-top:6px}
 .dim-card ul li{margin-bottom:4px;padding-left:18px;position:relative;line-height:1.55}
 .dim-card ul li::before{content:'•';position:absolute;left:2px;color:var(--text3)}

@@ -1,3 +1,10 @@
+---
+paths:
+  - "skills/rui-import/**"
+  - "skills/rui-import/SKILL.md"
+description: "文档同步到远端 API 的规则"
+---
+
 # rui-import 同步规则
 
 > 文档同步到远端 API 的规则和约束，独立于实现细节。

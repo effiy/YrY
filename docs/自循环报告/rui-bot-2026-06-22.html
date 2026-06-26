@@ -7,23 +7,7 @@
 <link rel="stylesheet" href="../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../cdn/theme/index.css">
 	<link rel="stylesheet" href="../../cdn/shared-reports/index.css">
-	<style>
-	.yry-container { max-width: 800px; }
-	.yry-header .icon { font-size: 2.5rem; }
-	.yry-header h1 { font-size: 1.6rem; margin: 12px 0 6px; }
-	/* common styles covered by shared-reports.css */
-	/* Enhanced sections — page-specific */
-	.yry-impact-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-	.yry-impact-badge { display: inline-block; padding: 4px 14px; border-radius: 6px; color: #fff; font-size: .8rem; font-weight: 600; }
-	.yry-impact-summary { font-size: .84rem; color: var(--yry-text2); }
-	.yry-impact-detail { padding: 12px; background: rgba(15,23,42,.4); border-radius: 8px; border: var(--yry-border); margin-top: 8px; }
-	.yry-hist-dot { transition: transform .15s; }
-	.yry-hist-dot:hover { transform: scale(1.8); }
-	.yry-cross-item { flex: 1; min-width: 200px; }
-	.yry-cross-label { font-size: .78rem; color: var(--yry-text3); margin-bottom: 4px; }
-	.yry-cross-desc { font-size: .88rem; font-weight: 600; color: var(--yry-accent); line-height: 1.5; }
-	.yry-cross-badge { text-align: center; padding: 8px 16px; background: rgba(15,23,42,.4); border-radius: 8px; border: var(--yry-border); flex-shrink: 0; min-width: 80px; }
-	</style>
+	<link rel="stylesheet" href="../../cdn/loop-report/index.css">
 </head>
 <body>
 <div class="yry-container">
@@ -61,7 +45,7 @@
   </div>
   
   <div class="yry-stat">
-    <a href="../../docs/健康报告/" style="text-decoration:none;color:inherit">
+    <a href="../../docs/健康报告/" class="h-lg-no-underline">
       <div class="yry-val pass">75</div>
       <div class="yry-lbl">🩺 健康度 B 级</div>
     </a>
@@ -92,67 +76,67 @@
 
 
 <div class="yry-card">
-    <h2>🎯 影响评估 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">1 项需关注</span></h2>
+    <h2>🎯 影响评估 <span class="h-lg-fs78-t3-fw4-ml8">1 项需关注</span></h2>
     <div class="yry-impact-header">
-      <span class="yry-impact-badge" style="background:var(--yry-warn)">需关注</span>
+      <span class="yry-impact-badge h-lg-bg-warn">需关注</span>
       <span class="yry-impact-summary">异常 0 · 告警 1 · 信息 2</span>
     </div>
-    <div class="yry-impact-detail"><strong>关键问题:</strong><ul style="margin-top:6px;padding-left:20px;color:var(--yry-text2);font-size:.84rem"><li>通知队列积压<br><span style="color:var(--yry-text3);font-size:.76rem">3 条消息因 webhook 超时进入重试队列，平均重试延迟 45s</span></li></ul></div>
-    <div style="margin-top:10px;font-size:.78rem;color:var(--yry-text3)">📌 计划性修复告警项，避免升级为异常。可在例行维护窗口处理。</div>
+    <div class="yry-impact-detail"><strong>关键问题:</strong><ul class="h-lg-mt6-pl20-t2-fs84"><li>通知队列积压<br><span class="h-lg-t3-fs76">3 条消息因 webhook 超时进入重试队列，平均重试延迟 45s</span></li></ul></div>
+    <div class="h-lg-mt10-fs78-t3">📌 计划性修复告警项，避免升级为异常。可在例行维护窗口处理。</div>
   </div>
 
-<div class="yry-card"><h2>📊 严重程度分布 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Severity Breakdown</span></h2><div style="margin-bottom:12px;padding:12px;background:rgba(245,158,11,.06);border-radius:8px;border-left:3px solid var(--yry-warn)">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-        <span style="font-weight:600;font-size:.88rem">⚠️ 告警 (Warn)</span>
-        <span style="font-size:.82rem;font-weight:700;color:var(--yry-warn)">1 项 (33%)</span>
+<div class="yry-card"><h2>📊 严重程度分布 <span class="h-lg-fs78-t3-fw4-ml8">Severity Breakdown</span></h2><div class="h-lg-mb12-p12-amber06-bl-warn">
+      <div class="h-lg-flex-between-mb6">
+        <span class="h-lg-fw6-fs88">⚠️ 告警 (Warn)</span>
+        <span class="h-lg-fs82-fw7-warn">1 项 (33%)</span>
       </div>
-      <div style="font-size:.74rem;color:var(--yry-text3);margin-bottom:8px">需要关注但非紧急的问题，建议在下一维护窗口处理</div>
-      <div style="display:flex;flex-direction:column;gap:4px">
-        <div style="font-size:.76rem;color:var(--yry-text2);padding:4px 8px;background:var(--yry-bg-card);border-radius:4px">• 通知队列积压</div>
+      <div class="h-lg-fs74-t3-mb8">需要关注但非紧急的问题，建议在下一维护窗口处理</div>
+      <div class="h-lg-flex-col-gap4">
+        <div class="h-lg-fs76-t2-p4-bgcard">• 通知队列积压</div>
         
       </div>
-    </div><div style="margin-bottom:12px;padding:12px;background:rgba(34,211,238,.06);border-radius:8px;border-left:3px solid var(--yry-cyan)">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-        <span style="font-weight:600;font-size:.88rem">ℹ️ 信息 (Info)</span>
-        <span style="font-size:.82rem;font-weight:700;color:var(--yry-cyan)">2 项 (67%)</span>
+    </div><div class="h-lg-mb12-p12-cyan06-bl">
+      <div class="h-lg-flex-between-mb6">
+        <span class="h-lg-fw6-fs88">ℹ️ 信息 (Info)</span>
+        <span class="h-lg-fs82-fw7-cyan">2 项 (67%)</span>
       </div>
-      <div style="font-size:.74rem;color:var(--yry-text3);margin-bottom:8px">正常运行信息，无需处理，用于状态追踪和审计</div>
-      <div style="display:flex;flex-direction:column;gap:4px">
-        <div style="font-size:.76rem;color:var(--yry-text2);padding:4px 8px;background:var(--yry-bg-card);border-radius:4px">• API 可达性正常</div><div style="font-size:.76rem;color:var(--yry-text2);padding:4px 8px;background:var(--yry-bg-card);border-radius:4px">• 消息格式合规</div>
+      <div class="h-lg-fs74-t3-mb8">正常运行信息，无需处理，用于状态追踪和审计</div>
+      <div class="h-lg-flex-col-gap4">
+        <div class="h-lg-fs76-t2-p4-bgcard">• API 可达性正常</div><div class="h-lg-fs76-t2-p4-bgcard">• 消息格式合规</div>
         
       </div>
     </div></div>
 
 <div class="yry-card">
-      <h2>📈 历史趋势 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">最近 2 次执行</span></h2>
-      <div style="display:flex;align-items:center;gap:10px;padding:12px 0">
-        <span style="font-size:.7rem;color:var(--yry-text3)">最早</span>
-        <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--yry-pass);margin:0 2px;transition:transform .15s;cursor:default" title="2026-06-22" onmouseover="this.style.transform='scale(1.8)'" onmouseout="this.style.transform='scale(1)'"></span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--yry-pass);margin:0 2px;transition:transform .15s;cursor:default" title="2026-06-12" onmouseover="this.style.transform='scale(1.8)'" onmouseout="this.style.transform='scale(1)'"></span></div>
-        <span style="font-size:.7rem;color:var(--yry-text3)">最新</span>
+      <h2>📈 历史趋势 <span class="h-lg-fs78-t3-fw4-ml8">最近 2 次执行</span></h2>
+      <div class="h-lg-flex-gap10-p12-0">
+        <span class="h-lg-fs7-t3">最早</span>
+        <div class="h-lg-flex1-center-gap4"><span class="h-lg-dot10-pass" title="2026-06-22" onmouseover="this.style.transform='scale(1.8)'" onmouseout="this.style.transform='scale(1)'"></span><span class="h-lg-dot6-pass" title="2026-06-12" onmouseover="this.style.transform='scale(1.8)'" onmouseout="this.style.transform='scale(1)'"></span></div>
+        <span class="h-lg-fs7-t3">最新</span>
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:var(--yry-border)">
-        <span style="font-size:.74rem;color:var(--yry-text3)">共 2 份历史报告</span>
-        <span style="font-size:.7rem;color:var(--yry-text3)">执行频率: 每 5 分钟</span>
+      <div class="h-lg-flex-between-pt8-bt">
+        <span class="h-lg-fs74-t3">共 2 份历史报告</span>
+        <span class="h-lg-fs7-t3">执行频率: 每 5 分钟</span>
       </div>
     </div>
 
 <div class="yry-card">
-    <h2>⏱️ SLA 追踪 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Service Level Agreement</span></h2>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px">
-      <div style="text-align:center;padding:12px;background:rgba(239,68,68,.06);border-radius:8px;border:1px solid rgba(239,68,68,.15)">
-        <div style="font-size:.7rem;color:var(--yry-text3)">🎯 目标响应</div>
-        <div style="font-size:1.1rem;font-weight:700;color:#ef4444">24 小时</div>
+    <h2>⏱️ SLA 追踪 <span class="h-lg-fs78-t3-fw4-ml8">Service Level Agreement</span></h2>
+    <div class="h-lg-grid-3col-mb12">
+      <div class="h-lg-center-p12-red06">
+        <div class="h-lg-fs7-t3">🎯 目标响应</div>
+        <div class="h-lg-fs11-fw7-red">24 小时</div>
       </div>
-      <div style="text-align:center;padding:12px;background:rgba(245,158,11,.06);border-radius:8px;border:1px solid rgba(245,158,11,.15)">
-        <div style="font-size:.7rem;color:var(--yry-text3)">⚠️ 升级阈值</div>
-        <div style="font-size:1.1rem;font-weight:700;color:#f59e0b">3 天</div>
+      <div class="h-lg-center-p12-amber06">
+        <div class="h-lg-fs7-t3">⚠️ 升级阈值</div>
+        <div class="h-lg-fs11-fw7-amber">3 天</div>
       </div>
-      <div style="text-align:center;padding:12px;background:rgba(59,130,246,.06);border-radius:8px;border:1px solid rgba(59,130,246,.15)">
-        <div style="font-size:.7rem;color:var(--yry-text3)">🚨 强制升级</div>
-        <div style="font-size:1.1rem;font-weight:700;color:#3b82f6">7 天</div>
+      <div class="h-lg-center-p12-blue06">
+        <div class="h-lg-fs7-t3">🚨 强制升级</div>
+        <div class="h-lg-fs11-fw7-blue">7 天</div>
       </div>
     </div>
-    <div style="font-size:.72rem;color:var(--yry-text3);padding:8px;background:var(--yry-bg-card);border-radius:6px">
+    <div class="h-lg-fs72-t3-p8-bgcard">
       📌 执行频率: 每 5 分钟 · 下次自动检查时将更新状态 · 若状态持续异常，SLA 计时器将继续累计
     </div>
   </div>
@@ -160,8 +144,8 @@
 
 
 <div class="yry-card">
-    <h2>🔗 关联分析 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">对项目健康的影响</span></h2>
-    <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
+    <h2>🔗 关联分析 <span class="h-lg-fs78-t3-fw4-ml8">对项目健康的影响</span></h2>
+    <div class="h-lg-flex-gap12-start-wrap">
       <div class="yry-cross-item">
         <div class="yry-cross-label">关联维度</div>
         <div class="yry-cross-desc">机器人配置</div>
@@ -171,15 +155,15 @@
         <div class="yry-cross-desc">通知投递依赖机器人 webhook 配置和 API 可达性，失败队列堆积影响消息时效</div>
       </div>
       <div class="yry-cross-badge">
-        <div style="font-size:.7rem;color:var(--yry-text3)">当前状态</div>
-        <div style="font-size:1.1rem;font-weight:700;color:var(--yry-warn)">⚠ 告警</div>
+        <div class="h-lg-fs7-t3">当前状态</div>
+        <div class="h-lg-fs11-fw7-warn">⚠ 告警</div>
       </div>
     </div>
   </div>
 
 <div class="yry-footer">
   自循环报告 · rui-bot · 2026-06-22 02:12:36<br>
-  <span style="color:var(--yry-text3)">由 rui-bot loop-report 自动生成</span>
+  <span class="h-t3">由 rui-bot loop-report 自动生成</span>
 </div>
 
 </div>

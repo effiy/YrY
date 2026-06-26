@@ -16,23 +16,7 @@
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
 <link rel="stylesheet" href="../../../yry-a11y/index.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<style>
-  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
-  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
-  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
-  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
-  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
-  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
-  .delivery-story { font-size: .72rem; color: #4b5563; }
-  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
-  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
-  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
-  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
-  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
-  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
-  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
-</style>
+<link rel="stylesheet" href="../../../yry-legacy-scene-delivery/index.css">
 </head>
 <body>
 <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
@@ -54,7 +38,7 @@
 
   <div class="content-card">
     <h2>📐 设计令牌五层架构</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.74rem;color:#22d3ee;line-height:1.7;margin:0">L1 Surfaces (背景层)
+    <pre class="yry-auto-80833">L1 Surfaces (背景层)
   --yry-bg · --yry-surface · --yry-surface-raised
         │
         ▼
@@ -74,61 +58,61 @@ L4 Text (文字色)
         ▼
 L5 Elevation (层级效果)
   --yry-border · --yry-shadow · --yry-radius</pre>
-    <p style="margin-top:16px">令牌分层从下到上依次依赖：背景层先于品牌，品牌先于语义，语义先于文字，文字先于层级。每层独立演进，主题切换只改变令牌值，不改变结构。</p>
+    <p class="yry-auto-34737">令牌分层从下到上依次依赖：背景层先于品牌，品牌先于语义，语义先于文字，文字先于层级。每层独立演进，主题切换只改变令牌值，不改变结构。</p>
   </div>
 
   <div class="content-card">
     <h2>🎨 Cat A vs Cat B 主题对比</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.74rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">维度</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">Cat A (Mono)</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">Cat B (System)</th></tr></thead>
+    <table class="yry-auto-1645">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-38488">维度</th><th class="yry-auto-38488">Cat A (Mono)</th><th class="yry-auto-38488">Cat B (System)</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">字体</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">JetBrains Mono</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">系统字体栈 (-apple-system, ...)</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">用途</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">架构图 · 知识图谱 · 代码展示</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">文档 · 场景页 · 面板 · 清单</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">色板基调</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">暗色单色系 (#1a1b26)</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">暗色多色系 (#0f172a)</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">强调色</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#7aa2f7">#7aa2f7 (蓝)</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#22d3ee">#22d3ee (青)</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">文件</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>theme-mono/index.css</code></td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>theme/index.css</code></td></tr>
-        <tr><td style="padding:8px 12px">引用场景</td><td style="padding:8px 12px">架构图页面 · 源码页面</td><td style="padding:8px 12px">默认场景页面 · 首页</td></tr>
+        <tr><td class="yry-auto-40105">字体</td><td class="yry-auto-40105">JetBrains Mono</td><td class="yry-auto-40105">系统字体栈 (-apple-system, ...)</td></tr>
+        <tr><td class="yry-auto-40105">用途</td><td class="yry-auto-40105">架构图 · 知识图谱 · 代码展示</td><td class="yry-auto-40105">文档 · 场景页 · 面板 · 清单</td></tr>
+        <tr><td class="yry-auto-40105">色板基调</td><td class="yry-auto-40105">暗色单色系 (#1a1b26)</td><td class="yry-auto-40105">暗色多色系 (#0f172a)</td></tr>
+        <tr><td class="yry-auto-40105">强调色</td><td class="yry-a1-9">#7aa2f7 (蓝)</td><td class="yry-a1-10">#22d3ee (青)</td></tr>
+        <tr><td class="yry-auto-40105">文件</td><td class="yry-auto-40105"><code>theme-mono/index.css</code></td><td class="yry-auto-40105"><code>theme/index.css</code></td></tr>
+        <tr><td class="yry-auto-70345">引用场景</td><td class="yry-auto-70345">架构图页面 · 源码页面</td><td class="yry-auto-70345">默认场景页面 · 首页</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>🔢 14 设计令牌完整定义</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">类别</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">令牌</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">Cat B</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">Cat A</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">用途</th></tr></thead>
+    <table class="yry-auto-93137">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-75234">类别</th><th class="yry-auto-75234">令牌</th><th class="yry-auto-75234">Cat B</th><th class="yry-auto-75234">Cat A</th><th class="yry-auto-75234">用途</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Surfaces</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>--yry-bg</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">#0f172a</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">#1a1b26</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">页面背景</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Surfaces</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>--yry-surface</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">rgba(15,23,42,.55)</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">rgba(26,27,38,.55)</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">卡片背景</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Surfaces</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>--yry-surface-raised</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">rgba(30,41,59,.5)</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">rgba(40,41,56,.5)</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">浮层背景</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Brand</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>--yry-accent</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#22d3ee">#22d3ee</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#7aa2f7">#7aa2f7</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">主强调色</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Brand</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>--yry-accent2</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#a78bfa">#a78bfa</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#9d7cd8">#9d7cd8</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">副强调色</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Semantic</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>--yry-success</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">#4ade80</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#9ece6a">#9ece6a</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">成功/通过</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Semantic</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>--yry-warning</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#fbbf24">#fbbf24</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#e0af68">#e0af68</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">警告/需关注</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Semantic</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>--yry-error</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#f87171">#f87171</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#f7768e">#f7768e</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">错误/失败</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Text</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>--yry-text1</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">#a9b1d6</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">#c0caf5</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">主文字色</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Text</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>--yry-text2</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">#a9b1d6</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">#a9b1d6</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">次文字色</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Text</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>--yry-text3</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">#6b7280</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">#565f89</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">辅助文字色</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Elevation</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>--yry-border</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">1px solid rgba(255,255,255,.06)</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">1px solid rgba(255,255,255,.04)</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">边框</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Elevation</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>--yry-shadow</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">0 4px 12px rgba(0,0,0,.3)</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">0 4px 12px rgba(0,0,0,.4)</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">阴影</td></tr>
-        <tr><td style="padding:8px 10px">Elevation</td><td style="padding:8px 10px"><code>--yry-radius</code></td><td style="padding:8px 10px">10px</td><td style="padding:8px 10px">8px</td><td style="padding:8px 10px">圆角</td></tr>
+        <tr><td class="yry-auto-86182">Surfaces</td><td class="yry-auto-86182"><code>--yry-bg</code></td><td class="yry-auto-86182">#0f172a</td><td class="yry-auto-86182">#1a1b26</td><td class="yry-auto-86182">页面背景</td></tr>
+        <tr><td class="yry-auto-86182">Surfaces</td><td class="yry-auto-86182"><code>--yry-surface</code></td><td class="yry-auto-86182">rgba(15,23,42,.55)</td><td class="yry-auto-86182">rgba(26,27,38,.55)</td><td class="yry-auto-86182">卡片背景</td></tr>
+        <tr><td class="yry-auto-86182">Surfaces</td><td class="yry-auto-86182"><code>--yry-surface-raised</code></td><td class="yry-auto-86182">rgba(30,41,59,.5)</td><td class="yry-auto-86182">rgba(40,41,56,.5)</td><td class="yry-auto-86182">浮层背景</td></tr>
+        <tr><td class="yry-auto-86182">Brand</td><td class="yry-auto-86182"><code>--yry-accent</code></td><td class="yry-a1-11">#22d3ee</td><td class="yry-a1-12">#7aa2f7</td><td class="yry-auto-86182">主强调色</td></tr>
+        <tr><td class="yry-auto-86182">Brand</td><td class="yry-auto-86182"><code>--yry-accent2</code></td><td class="yry-a1-13">#a78bfa</td><td class="yry-a1-14">#9d7cd8</td><td class="yry-auto-86182">副强调色</td></tr>
+        <tr><td class="yry-auto-86182">Semantic</td><td class="yry-auto-86182"><code>--yry-success</code></td><td class="yry-auto-36166">#4ade80</td><td class="yry-a1-15">#9ece6a</td><td class="yry-auto-86182">成功/通过</td></tr>
+        <tr><td class="yry-auto-86182">Semantic</td><td class="yry-auto-86182"><code>--yry-warning</code></td><td class="yry-auto-27978">#fbbf24</td><td class="yry-a1-16">#e0af68</td><td class="yry-auto-86182">警告/需关注</td></tr>
+        <tr><td class="yry-auto-86182">Semantic</td><td class="yry-auto-86182"><code>--yry-error</code></td><td class="yry-auto-89598">#f87171</td><td class="yry-a1-17">#f7768e</td><td class="yry-auto-86182">错误/失败</td></tr>
+        <tr><td class="yry-auto-86182">Text</td><td class="yry-auto-86182"><code>--yry-text1</code></td><td class="yry-auto-86182">#a9b1d6</td><td class="yry-auto-86182">#c0caf5</td><td class="yry-auto-86182">主文字色</td></tr>
+        <tr><td class="yry-auto-86182">Text</td><td class="yry-auto-86182"><code>--yry-text2</code></td><td class="yry-auto-86182">#a9b1d6</td><td class="yry-auto-86182">#a9b1d6</td><td class="yry-auto-86182">次文字色</td></tr>
+        <tr><td class="yry-auto-86182">Text</td><td class="yry-auto-86182"><code>--yry-text3</code></td><td class="yry-auto-86182">#6b7280</td><td class="yry-auto-86182">#565f89</td><td class="yry-auto-86182">辅助文字色</td></tr>
+        <tr><td class="yry-auto-86182">Elevation</td><td class="yry-auto-86182"><code>--yry-border</code></td><td class="yry-auto-86182">1px solid rgba(255,255,255,.06)</td><td class="yry-auto-86182">1px solid rgba(255,255,255,.04)</td><td class="yry-auto-86182">边框</td></tr>
+        <tr><td class="yry-auto-86182">Elevation</td><td class="yry-auto-86182"><code>--yry-shadow</code></td><td class="yry-auto-86182">0 4px 12px rgba(0,0,0,.3)</td><td class="yry-auto-86182">0 4px 12px rgba(0,0,0,.4)</td><td class="yry-auto-86182">阴影</td></tr>
+        <tr><td class="yry-auto-93797">Elevation</td><td class="yry-auto-93797"><code>--yry-radius</code></td><td class="yry-auto-93797">10px</td><td class="yry-auto-93797">8px</td><td class="yry-auto-93797">圆角</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>📋 令牌命名前缀规范</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.74rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">前缀</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">语义</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">示例</th></tr></thead>
+    <table class="yry-auto-1645">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-38488">前缀</th><th class="yry-auto-38488">语义</th><th class="yry-auto-38488">示例</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>--yry-bg</code></td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">页面级背景</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">主背景色</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>--yry-surface*</code></td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">容器背景</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">卡片 / 面板 / 浮层</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>--yry-accent*</code></td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">品牌色</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">主 / 副强调</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>--yry-{success,warning,error}</code></td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">语义状态色</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">跨主题一致</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>--yry-text{1,2,3}</code></td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">文字层级</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">主 / 次 / 辅助</td></tr>
-        <tr><td style="padding:8px 12px"><code>--yry-{border,shadow,radius}</code></td><td style="padding:8px 12px">表面属性</td><td style="padding:8px 12px">边框 / 阴影 / 圆角</td></tr>
+        <tr><td class="yry-auto-40105"><code>--yry-bg</code></td><td class="yry-auto-40105">页面级背景</td><td class="yry-auto-40105">主背景色</td></tr>
+        <tr><td class="yry-auto-40105"><code>--yry-surface*</code></td><td class="yry-auto-40105">容器背景</td><td class="yry-auto-40105">卡片 / 面板 / 浮层</td></tr>
+        <tr><td class="yry-auto-40105"><code>--yry-accent*</code></td><td class="yry-auto-40105">品牌色</td><td class="yry-auto-40105">主 / 副强调</td></tr>
+        <tr><td class="yry-auto-40105"><code>--yry-{success,warning,error}</code></td><td class="yry-auto-40105">语义状态色</td><td class="yry-auto-40105">跨主题一致</td></tr>
+        <tr><td class="yry-auto-40105"><code>--yry-text{1,2,3}</code></td><td class="yry-auto-40105">文字层级</td><td class="yry-auto-40105">主 / 次 / 辅助</td></tr>
+        <tr><td class="yry-auto-70345"><code>--yry-{border,shadow,radius}</code></td><td class="yry-auto-70345">表面属性</td><td class="yry-auto-70345">边框 / 阴影 / 圆角</td></tr>
       </tbody>
     </table>
-    <p style="margin-top:12px;font-size:.74rem;color:#fbbf24">⚠ 反模式：禁止按颜色命名（<code>--yry-blue</code> / <code>--yry-red</code>）— 颜色语义可变，令牌按用途命名。</p>
+    <p class="yry-a2-21">⚠ 反模式：禁止按颜色命名（<code>--yry-blue</code> / <code>--yry-red</code>）— 颜色语义可变，令牌按用途命名。</p>
   </div>
 
   <div class="nav-links">

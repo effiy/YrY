@@ -1,0 +1,11 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — yry-legacy-doc-arch/index.css
+   旧版 rui-html 模板生成的「架构图.html」场景页 doc-type overrides
+   字节级一致跨 32 份历史场景页 (cdn/<component>/scenes/场景-N-*/架构图.html)
+   现代模板已组件化,本文件仅服务存量 HTML
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Page-specific overrides — shared patterns in shared-a.css */
+.diagram-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1.5rem;overflow-x:auto;margin-bottom:1.5rem}
+.diagram-container svg{width:100%;min-width:900px;display:block}
+.yry-container{max-width:1200px}

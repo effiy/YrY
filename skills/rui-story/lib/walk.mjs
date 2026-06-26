@@ -7,7 +7,7 @@ import { listScenarios } from './paths.mjs';
  *
  * @template T
  * @param {(ctx: {subdir:string, scenarioDir:string, fullPath:string}) => Promise<T>} handler
- * @returns {Promise<{ok: T[], failed: Array<{ctx, err: Error}>>}
+ * @returns {Promise<{ok: T[], failed: Array<{ctx: any, err: Error}>}>}
  */
 export async function forEachScenario(handler) {
   const scenarios = listScenarios();

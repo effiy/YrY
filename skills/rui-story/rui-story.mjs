@@ -23,7 +23,7 @@ const API_X_TOKEN = process.env.API_X_TOKEN || "";
 
 // --- command handlers ------------------------------------------------------
 
-async function cmdOverview(apiUrl, projectRoot, projectPrefix) {
+async function cmdOverview(/** @type {string} */ apiUrl, /** @type {string} */ projectRoot, /** @type {string} */ projectPrefix) {
   console.error(dim("[rui-story] overview mode — 查询远端 API..."));
   let sessions;
   try {
@@ -32,7 +32,7 @@ async function cmdOverview(apiUrl, projectRoot, projectPrefix) {
     console.error(`[rui-story] 远端不可达: ${err.message}`);
     process.exit(1);
   }
-  const storyMap = groupSessionsByStory(sessions);
+  const storyMap = groupSessionsByStory(sessions || []);
   const blockedMap = new Map();
   for (const name of storyMap.keys()) {
     const bs = readBlockedState(projectRoot, name);
@@ -41,7 +41,7 @@ async function cmdOverview(apiUrl, projectRoot, projectPrefix) {
   printOverview(storyMap, projectPrefix, blockedMap);
 }
 
-async function cmdList(apiUrl, projectRoot, projectPrefix) {
+async function cmdList(/** @type {string} */ apiUrl, /** @type {string} */ projectRoot, /** @type {string} */ projectPrefix) {
   console.error(dim("[rui-story] list mode — 查询远端 API..."));
   let sessions;
   try {
@@ -50,7 +50,7 @@ async function cmdList(apiUrl, projectRoot, projectPrefix) {
     console.error(`[rui-story] 远端不可达: ${err.message}`);
     process.exit(1);
   }
-  const storyMap = groupSessionsByStory(sessions);
+  const storyMap = groupSessionsByStory(sessions || []);
   if (storyMap.size === 0) {
     console.log("");
     console.log(dim("  远端无故事任务面板数据"));
@@ -70,7 +70,7 @@ async function cmdList(apiUrl, projectRoot, projectPrefix) {
   printList(storyMap, projectPrefix, blockedMap, typeMap, checkGitBranch);
 }
 
-async function cmdShow(apiUrl, projectRoot, projectPrefix, name) {
+async function cmdShow(/** @type {string} */ apiUrl, /** @type {string} */ projectRoot, /** @type {string} */ projectPrefix, /** @type {string | null | undefined} */ name) {
   console.error(dim(`[rui-story] show mode — 查询远端 story=${name}...`));
   let sessions;
   try {
@@ -79,7 +79,7 @@ async function cmdShow(apiUrl, projectRoot, projectPrefix, name) {
     console.error(`[rui-story] 远端不可达: ${err.message}`);
     process.exit(1);
   }
-  const storyMap = groupSessionsByStory(sessions);
+  const storyMap = groupSessionsByStory(sessions || []);
 
   if (!storyMap.has(name)) {
     console.log("");
@@ -96,13 +96,13 @@ async function cmdShow(apiUrl, projectRoot, projectPrefix, name) {
   }
 
   const storySessions = storyMap.get(name);
-  const blockedState = readBlockedState(projectRoot, name);
+  const blockedState = readBlockedState(projectRoot, /** @type {string} */ (name || ""));
   const type = await inferType(apiUrl, storySessions, projectPrefix, API_X_TOKEN);
 
-  printShow(name, storySessions, projectPrefix, blockedState, type, checkGitBranch);
+  printShow(/** @type {string} */ (name || ""), storySessions, projectPrefix, blockedState, type, checkGitBranch);
 }
 
-async function cmdRecommend(apiUrl) {
+async function cmdRecommend(/** @type {string} */ apiUrl) {
   console.error(dim("[rui-story] recommend mode — 查询远端可同步故事..."));
   let sessions;
   try {
@@ -111,11 +111,12 @@ async function cmdRecommend(apiUrl) {
     console.error(`[rui-story] 远端不可达: ${err.message}`);
     process.exit(1);
   }
-  const storyMap = groupSessionsByStory(sessions);
+  const storyMap = groupSessionsByStory(sessions || []);
   printRecommend(storyMap);
 }
 
-async function cmdHealth(apiUrl, projectRoot) {
+async function cmdHealth(/** @type {string} */ apiUrl, /** @type {string} */ projectRoot) {
+  /** @type {{ projectRoot: string, projectName: string|null, apiToken: boolean, totalSessions: number, panelSessions: number, storyCount: number, apiError: string|null, isGitRepo: boolean, hasStoryPanel: boolean }} */
   const result = {
     projectRoot,
     projectName: null,
@@ -140,7 +141,7 @@ async function cmdHealth(apiUrl, projectRoot) {
         extractStoryName(s.file_path || "")
       );
       result.panelSessions = panelSessions.length;
-      const storyMap = groupSessionsByStory(sessions);
+      const storyMap = groupSessionsByStory(sessions || []);
       result.storyCount = storyMap.size;
     } catch (err) {
       result.apiError = err.message;
@@ -150,7 +151,7 @@ async function cmdHealth(apiUrl, projectRoot) {
   printHealth(result);
 }
 
-async function cmdSync(apiUrl, projectRoot, projectPrefix, name) {
+async function cmdSync(/** @type {string} */ apiUrl, /** @type {string} */ projectRoot, /** @type {string} */ projectPrefix, /** @type {string | null | undefined} */ name) {
   if (!name) {
     console.error(dim("[rui-story] sync 需要 <name> 参数，使用 recommend 查看可同步故事"));
     await cmdRecommend(apiUrl);

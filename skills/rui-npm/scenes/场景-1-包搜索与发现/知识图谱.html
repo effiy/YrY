@@ -1,5 +1,7 @@
 <!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>🚀 包搜索与发现 · 知识图谱</title>
 <link rel="stylesheet" href="../../../../cdn/fonts\/index\.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-helpers/index.css">
+
 <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
@@ -46,20 +48,20 @@
 <!-- TAB: GRAPH -->
 <div class="tab-content active" data-tab="graph">
   <div class="legend">
-    <span style="color:var(--muted);font-weight:600;">节点:</span>
+    <span class="sc-muted-bold">节点:</span>
     <span class="legend-item"><span class="legend-dot scene"></span>场景</span>
     <span class="legend-item"><span class="legend-dot file"></span>入口文件</span>
     <span class="legend-item"><span class="legend-dot domain"></span>领域</span>
     <span class="legend-item"><span class="legend-dot flow"></span>流程</span>
     <span class="legend-item"><span class="legend-dot skill"></span>技能</span>
     <span class="legend-item"><span class="legend-dot agent"></span>Agent</span>
-    <span style="margin-left:.75rem;color:var(--muted);font-weight:600;">操作:</span>
-    <span style="color:var(--dim);">🖱 拖拽 · 滚轮缩放 · 点击查看详情 · 双击居中</span>
+    <span class="sc-ml-muted-bold">操作:</span>
+    <span class="sc-text-dim">🖱 拖拽 · 滚轮缩放 · 点击查看详情 · 双击居中</span>
   </div>
   <div class="graph-layout">
     <div class="graph-container">
       <div class="graph-toolbar" id="filterBar">
-        <span style="color:var(--muted);font-size:.7rem;margin-right:.25rem;">🔍 过滤:</span>
+        <span class="sc-muted-sm">🔍 过滤:</span>
         <span class="chip active" data-type="all">全部 <span class="count">22</span></span>
         <span class="chip" data-type="scene">场景 <span class="count">1</span></span>
         <span class="chip" data-type="file">文件 <span class="count">3</span></span>
@@ -99,12 +101,12 @@
     <p class="desc">横轴为目标节点类别，纵轴为源节点类别。单元格颜色越深表示从源类别到目标类别的引用关系越密集。点击单元格高亮对应图谱边。</p>
     <div class="matrix" id="matrix"></div>
     <div class="matrix-legend">
-      <span><span class="legend-sq" style="background:rgba(100,116,139,.05)"></span>无关系</span>
-      <span><span class="legend-sq" style="background:rgba(34,211,238,.25)"></span>1 次引用</span>
-      <span><span class="legend-sq" style="background:rgba(34,211,238,.45)"></span>2 次引用</span>
-      <span><span class="legend-sq" style="background:rgba(34,211,238,.7)"></span>3+ 次引用</span>
-      <span><span class="legend-sq" style="background:rgba(251,191,36,.18);border:1px solid var(--c-amber)"></span>自指 (类内)</span>
-      <span style="margin-left:auto;color:var(--dim)">💡 悬停查看关系数</span>
+      <span><span class="legend-sq" class="sc-bg-slate-05"></span>无关系</span>
+      <span><span class="legend-sq" class="sc-bg-cyan-25"></span>1 次引用</span>
+      <span><span class="legend-sq" class="sc-bg-cyan-45"></span>2 次引用</span>
+      <span><span class="legend-sq" class="sc-bg-cyan-70"></span>3+ 次引用</span>
+      <span><span class="legend-sq" class="sc-bg-amber-18"></span>自指 (类内)</span>
+      <span class="sc-ml-auto-dim">💡 悬停查看关系数</span>
     </div>
   </div>
 </div>
@@ -143,13 +145,13 @@
   </div>
   <div class="bar-chart">
     <h4>📊 节点类型分布</h4>
-    <div class="bar-row"><div class="bar-label">场景</div><div class="bar-track"><div class="bar-fill" style="width:5%;--bc:var(--c-violet)">1</div></div></div>
-    <div class="bar-row"><div class="bar-label">文件</div><div class="bar-track"><div class="bar-fill" style="width:14%;--bc:var(--c-slate)">3</div></div></div>
-    <div class="bar-row"><div class="bar-label">领域</div><div class="bar-track"><div class="bar-fill" style="width:18%;--bc:var(--c-pink)">4</div></div></div>
-    <div class="bar-row"><div class="bar-label">流程</div><div class="bar-track"><div class="bar-fill" style="width:18%;--bc:var(--c-emerald)">4</div></div></div>
-    <div class="bar-row"><div class="bar-label">技能</div><div class="bar-track"><div class="bar-fill" style="width:14%;--bc:var(--c-cyan)">3</div></div></div>
-    <div class="bar-row"><div class="bar-label">Agent</div><div class="bar-track"><div class="bar-fill" style="width:23%;--bc:var(--c-amber)">5</div></div></div>
-    <div class="bar-row"><div class="bar-label">步骤</div><div class="bar-track"><div class="bar-fill" style="width:9%;--bc:var(--c-blue)">2</div></div></div>
+    <div class="bar-row"><div class="bar-label">场景</div><div class="bar-track"><div class="bar-fill" style="--w:5%;--bc:var(--c-violet)">1</div></div></div>
+    <div class="bar-row"><div class="bar-label">文件</div><div class="bar-track"><div class="bar-fill" style="--w:14%;--bc:var(--c-slate)">3</div></div></div>
+    <div class="bar-row"><div class="bar-label">领域</div><div class="bar-track"><div class="bar-fill" style="--w:18%;--bc:var(--c-pink)">4</div></div></div>
+    <div class="bar-row"><div class="bar-label">流程</div><div class="bar-track"><div class="bar-fill" style="--w:18%;--bc:var(--c-emerald)">4</div></div></div>
+    <div class="bar-row"><div class="bar-label">技能</div><div class="bar-track"><div class="bar-fill" style="--w:14%;--bc:var(--c-cyan)">3</div></div></div>
+    <div class="bar-row"><div class="bar-label">Agent</div><div class="bar-track"><div class="bar-fill" style="--w:23%;--bc:var(--c-amber)">5</div></div></div>
+    <div class="bar-row"><div class="bar-label">步骤</div><div class="bar-track"><div class="bar-fill" style="--w:9%;--bc:var(--c-blue)">2</div></div></div>
   </div>
   <div class="donut-row">
     <div class="donut-card">
@@ -164,22 +166,22 @@
           <circle cx="21" cy="21" r="15.915" fill="none" stroke="#EC4899" stroke-width="6" stroke-dasharray="10 90" stroke-dashoffset="-65" transform="rotate(-90 21 21)"/>
         </svg>
         <div class="donut-list">
-          <div class="donut-item"><span class="donut-dot" style="background:#8B5CF6"></span><span class="lbl">contains 包含</span><span class="val">9 (30%)</span></div>
-          <div class="donut-item"><span class="donut-dot" style="background:#22d3ee"></span><span class="lbl">references 引用</span><span class="val">6 (20%)</span></div>
-          <div class="donut-item"><span class="donut-dot" style="background:#34d399"></span><span class="lbl">triggers 触发</span><span class="val">7 (23%)</span></div>
-          <div class="donut-item"><span class="donut-dot" style="background:#fbbf24"></span><span class="lbl">delegates 委派</span><span class="val">5 (17%)</span></div>
-          <div class="donut-item"><span class="donut-dot" style="background:#EC4899"></span><span class="lbl">produces 产出</span><span class="val">3 (10%)</span></div>
+          <div class="donut-item"><span class="donut-dot" class="sc-bg-violet"></span><span class="lbl">contains 包含</span><span class="val">9 (30%)</span></div>
+          <div class="donut-item"><span class="donut-dot" class="sc-bg-cyan"></span><span class="lbl">references 引用</span><span class="val">6 (20%)</span></div>
+          <div class="donut-item"><span class="donut-dot" class="sc-bg-emerald"></span><span class="lbl">triggers 触发</span><span class="val">7 (23%)</span></div>
+          <div class="donut-item"><span class="donut-dot" class="sc-bg-yellow"></span><span class="lbl">delegates 委派</span><span class="val">5 (17%)</span></div>
+          <div class="donut-item"><span class="donut-dot" class="sc-bg-pink"></span><span class="lbl">produces 产出</span><span class="val">3 (10%)</span></div>
         </div>
       </div>
     </div>
     <div class="donut-card">
       <h4>🏆 Top 5 高连接节点</h4>
-      <div class="donut-list" style="font-size:.78rem">
-        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#94a3b8"></span><span class="lbl">CLAUDE.md (文件)</span><span class="val" style="color:#fbbf24">度 7</span></div>
-        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#22d3ee"></span><span class="lbl">/rui (技能)</span><span class="val">度 6</span></div>
-        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#8B5CF6"></span><span class="lbl">场景-1 (场景)</span><span class="val">度 6</span></div>
-        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#94a3b8"></span><span class="lbl">README.md (文件)</span><span class="val">度 5</span></div>
-        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#EC4899"></span><span class="lbl">pipeline-execution (领域)</span><span class="val">度 4</span></div>
+      <div class="donut-list" class="sc-fs-78">
+        <div class="donut-item" class="sc-pad-y"><span class="donut-dot" class="sc-bg-slate"></span><span class="lbl">CLAUDE.md (文件)</span><span class="val" class="sc-text-yellow">度 7</span></div>
+        <div class="donut-item" class="sc-pad-y"><span class="donut-dot" class="sc-bg-cyan"></span><span class="lbl">/rui (技能)</span><span class="val">度 6</span></div>
+        <div class="donut-item" class="sc-pad-y"><span class="donut-dot" class="sc-bg-violet"></span><span class="lbl">场景-1 (场景)</span><span class="val">度 6</span></div>
+        <div class="donut-item" class="sc-pad-y"><span class="donut-dot" class="sc-bg-slate"></span><span class="lbl">README.md (文件)</span><span class="val">度 5</span></div>
+        <div class="donut-item" class="sc-pad-y"><span class="donut-dot" class="sc-bg-pink"></span><span class="lbl">pipeline-execution (领域)</span><span class="val">度 4</span></div>
       </div>
       <div class="density-grid">
         <div class="density-cell"><div class="dc-val">2.4 KB</div><div class="dc-lbl">图谱体积</div></div>
@@ -191,14 +193,14 @@
   </div>
   <div class="bar-chart">
     <h4>🎓 上手路径时长分布（分钟）</h4>
-    <div class="bar-row"><div class="bar-label">Step 1 · 信念</div><div class="bar-track"><div class="bar-fill" style="width:10%;--bc:var(--c-cyan)">5</div></div></div>
-    <div class="bar-row"><div class="bar-label">Step 2 · 语言</div><div class="bar-track"><div class="bar-fill" style="width:10%;--bc:var(--c-cyan)">5</div></div></div>
-    <div class="bar-row"><div class="bar-label">Step 3 · 环境</div><div class="bar-track"><div class="bar-fill" style="width:6%;--bc:var(--c-cyan)">3</div></div></div>
-    <div class="bar-row"><div class="bar-label">Step 4 · 测试</div><div class="bar-track"><div class="bar-fill" style="width:4%;--bc:var(--c-emerald)">2</div></div></div>
-    <div class="bar-row"><div class="bar-label">Step 5 · 故事</div><div class="bar-track"><div class="bar-fill" style="width:10%;--bc:var(--c-emerald)">5</div></div></div>
-    <div class="bar-row"><div class="bar-label">Step 6 · 架构</div><div class="bar-track"><div class="bar-fill" style="width:20%;--bc:var(--c-amber)">10</div></div></div>
-    <div class="bar-row"><div class="bar-label">Step 7 · 命令</div><div class="bar-track"><div class="bar-fill" style="width:20%;--bc:var(--c-amber)">10</div></div></div>
-    <div style="margin-top:.75rem;padding-top:.75rem;border-top:1px dashed var(--border);font-size:.7rem;color:var(--dim);display:flex;justify-content:space-between"><span>∑ 总时长</span><span style="color:var(--c-amber);font-weight:700">≈ 40 min</span></div>
+    <div class="bar-row"><div class="bar-label">Step 1 · 信念</div><div class="bar-track"><div class="bar-fill" style="--w:10%;--bc:var(--c-cyan)">5</div></div></div>
+    <div class="bar-row"><div class="bar-label">Step 2 · 语言</div><div class="bar-track"><div class="bar-fill" style="--w:10%;--bc:var(--c-cyan)">5</div></div></div>
+    <div class="bar-row"><div class="bar-label">Step 3 · 环境</div><div class="bar-track"><div class="bar-fill" style="--w:6%;--bc:var(--c-cyan)">3</div></div></div>
+    <div class="bar-row"><div class="bar-label">Step 4 · 测试</div><div class="bar-track"><div class="bar-fill" style="--w:4%;--bc:var(--c-emerald)">2</div></div></div>
+    <div class="bar-row"><div class="bar-label">Step 5 · 故事</div><div class="bar-track"><div class="bar-fill" style="--w:10%;--bc:var(--c-emerald)">5</div></div></div>
+    <div class="bar-row"><div class="bar-label">Step 6 · 架构</div><div class="bar-track"><div class="bar-fill" style="--w:20%;--bc:var(--c-amber)">10</div></div></div>
+    <div class="bar-row"><div class="bar-label">Step 7 · 命令</div><div class="bar-track"><div class="bar-fill" style="--w:20%;--bc:var(--c-amber)">10</div></div></div>
+    <div class="sc-footer-meta"><span>∑ 总时长</span><span class="sc-amber-bold">≈ 40 min</span></div>
   </div>
 </div>
 
@@ -315,12 +317,12 @@ function showNodeDetail(d) {
   const outEdges = EDGES.filter(e => e.s === d.id);
   const panel = document.getElementById('sidePanel');
   panel.innerHTML =
-    '<h3>'+d.label.replace(/\n/g,' ')+' <span class="np-type" style="background:'+d.color+'22;color:'+d.color+'">'+d.type+'</span></h3>'+
+    '<h3>'+d.label.replace(/\n/g,' ')+' <span class="np-type" style="--bg:'+d.color+'22;--color:'+d.color+'">'+d.type+'</span></h3>'+
     '<div class="np-id">#'+d.id+' · '+(d.id==='s3'?'根节点':d.id.toUpperCase())+'</div>'+
     '<p>'+d.desc+'</p>'+
     (d.tags && d.tags.length ? '<div class="np-section">标签</div><div class="np-tags">'+d.tags.map(t=>'<span class="np-tag">'+t+'</span>').join('')+'</div>' : '')+
-    (outEdges.length ? '<div class="np-section">↗ 出向关系 ('+outEdges.length+')</div><ul class="np-rels">'+outEdges.map(e=>'<li data-tgt="'+e.t+'"><span class="rel-arr">→</span><span style="color:var(--dim);font-size:.7rem">'+REL_LABELS[e.rel]+'</span> <strong>'+NODES[e.t].label.replace(/\n/g,' ')+'</strong></li>').join('')+'</ul>' : '')+
-    (inEdges.length  ? '<div class="np-section">↙ 入向关系 ('+inEdges.length+')</div><ul class="np-rels">'+inEdges.map(e=>'<li data-tgt="'+e.s+'"><span class="rel-arr out">←</span><span style="color:var(--dim);font-size:.7rem">'+REL_LABELS[e.rel]+'</span> <strong>'+NODES[e.s].label.replace(/\n/g,' ')+'</strong></li>').join('')+'</ul>' : '');
+    (outEdges.length ? '<div class="np-section">↗ 出向关系 ('+outEdges.length+')</div><ul class="np-rels">'+outEdges.map(e=>'<li data-tgt="'+e.t+'"><span class="rel-arr">→</span><span class="sc-dim-sm">'+REL_LABELS[e.rel]+'</span> <strong>'+NODES[e.t].label.replace(/\n/g,' ')+'</strong></li>').join('')+'</ul>' : '')+
+    (inEdges.length  ? '<div class="np-section">↙ 入向关系 ('+inEdges.length+')</div><ul class="np-rels">'+inEdges.map(e=>'<li data-tgt="'+e.s+'"><span class="rel-arr out">←</span><span class="sc-dim-sm">'+REL_LABELS[e.rel]+'</span> <strong>'+NODES[e.s].label.replace(/\n/g,' ')+'</strong></li>').join('')+'</ul>' : '');
   panel.querySelectorAll('.np-rels li').forEach(li => {
     li.addEventListener('click', () => {
       const id = li.dataset.tgt;
@@ -436,8 +438,8 @@ function buildNodeCards() {
     card.innerHTML =
       '<div class="nc-head"><div class="nc-ico">'+n.icon+'</div><h4>'+n.label.replace(/\n/g,' ')+'</h4><span class="nc-type '+n.type+'">'+n.type+'</span></div>'+
       '<p>'+n.desc+'</p>'+
-      (n.tags && n.tags.length ? '<div class="nc-edges"><span style="color:var(--dim)">🏷️</span> '+n.tags.map(t=>'<span style="color:var(--fg)">'+t+'</span>').join(' · ')+'</div>' : '')+
-      '<div class="nc-edges"><span class="e-out">↗ '+outCnt+' 出</span><span style="margin:0 .35rem;color:var(--darker)">|</span><span class="e-in">↙ '+inCnt+' 入</span></div>';
+      (n.tags && n.tags.length ? '<div class="nc-edges"><span class="sc-text-dim">🏷️</span> '+n.tags.map(t=>'<span class="sc-text-fg">'+t+'</span>').join(' · ')+'</div>' : '')+
+      '<div class="nc-edges"><span class="e-out">↗ '+outCnt+' 出</span><span class="sc-mx-darker">|</span><span class="e-in">↙ '+inCnt+' 入</span></div>';
     card.addEventListener('click', () => {
       const node = cy.getElementById(n.id);
       if (node.length) {

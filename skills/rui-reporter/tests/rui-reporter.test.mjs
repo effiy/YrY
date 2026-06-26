@@ -134,4 +134,4 @@ describe('rui-reporter skill', () => {
       assert.ok(content.includes('记') || content.includes('引') || content.includes('串'), 'must document curation workflow');
     });
   });
-const exitCode = await run();
+const _exitCode = await run();

@@ -1,3 +1,10 @@
+---
+paths:
+  - "skills/rui-code/**"
+  - "skills/rui-code/SKILL.md"
+description: "代码实现管线支撑技术与模式"
+---
+
 # code-pipeline-techniques
 
 > 贯穿管线各阶段的实战技术模式。每项对应一条 Iron Law。

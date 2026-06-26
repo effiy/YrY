@@ -2,20 +2,18 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "node10",
+    "ignoreDeprecations": "6.0",
     "checkJs": true,
     "allowJs": true,
     "noEmit": true,
     "strict": false,
+    "strictNullChecks": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "baseUrl": ".",
-    "paths": {
-      "#lib/*": ["lib/*"]
-    }
+    "esModuleInterop": true
   },
-  "include": ["lib/**/*.mjs", "lib/**/*.js", "skills/**/*.mjs", "skills/**/*.js"],
+  "include": ["types/**/*.d.ts", "lib/**/*.mjs", "lib/**/*.js", "skills/**/*.mjs", "skills/**/*.js"],
   "exclude": ["node_modules", ".claude", "dist"]
 }

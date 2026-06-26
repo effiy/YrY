@@ -1,0 +1,37 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — yry-legacy-scene-overview/index.css
+   旧版 rui-html 模板生成的「清单.html」场景概览页公共样式
+   字节级一致跨 37 份历史清单页 (cdn/<component>/scenes/场景-N-*/清单.html)
+   现代模板已迁至 cdn/yry-checklist/index.css,本文件仅服务存量 HTML
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.scene-nav { display:flex; flex-wrap:wrap; gap:4px 8px; padding:8px 0; font-size:.72rem; border-bottom:var(--yry-border); margin-bottom:12px; }
+.scene-nav-link { color:var(--yry-text3); text-decoration:none; }
+.scene-nav-link:hover { color:var(--yry-accent); }
+.scene-nav-link.active { color:var(--yry-accent); font-weight:700; }
+.scene-nav-sep { color:var(--yry-text3); }
+.cross-nav { display:flex; gap:8px; padding:6px 0; font-size:.72rem; margin-bottom:12px; }
+.cross-link { color:var(--yry-text3); text-decoration:none; }
+.cross-link:hover { color:var(--yry-accent); }
+.cross-link.on { color:var(--yry-accent); font-weight:700; }
+.cross-sep { color:var(--yry-text3); }
+.header { margin-bottom:12px; }
+.header h1 { font-size:1.1rem; margin:0; }
+.accent { color:var(--yry-accent); }
+.meta { font-size:.68rem; color:var(--yry-text3); margin-top:4px; }
+.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:8px; }
+.stat-card { padding:10px; text-align:center; border-radius:6px; border:var(--yry-border); background:rgba(15,23,42,.4); }
+.stat-card .val { font-size:1.2rem; font-weight:700; }
+.stat-card .val.health { color:var(--yry-pass); }
+.stat-card .lbl { font-size:.62rem; color:var(--yry-text3); margin-top:2px; }
+.bar-wrap { margin-bottom:12px; }
+.bar-outer { height:6px; border-radius:3px; background:rgba(255,255,255,.06); overflow:hidden; display:flex; }
+.seg.strength { background:var(--yry-pass); }
+.seg.gap { background:rgba(255,255,255,.06); }
+.card { padding:16px 20px; border-radius:8px; border:var(--yry-border); background:rgba(15,23,42,.4); }
+.card h2 { font-size:.88rem; margin:0 0 12px 0; }
+.cl-item { display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.04); }
+.cl-num { min-width:24px; height:24px; border-radius:50%; background:rgba(34,197,94,.12); color:var(--yry-pass); display:flex; align-items:center; justify-content:center; font-size:.68rem; font-weight:700; }
+.cl-text { flex:1; font-size:.76rem; line-height:1.5; color:var(--yry-text2); }
+.ft { text-align:center; font-size:.64rem; color:var(--yry-text3); padding:20px 0; }
+@media (max-width:640px) { .stats-grid { grid-template-columns:repeat(2,1fr); }}

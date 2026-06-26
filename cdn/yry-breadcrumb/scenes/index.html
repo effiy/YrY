@@ -11,6 +11,7 @@
 <!-- ═══ CDN: YrY 共享样式 ═══ -->
 <link rel="stylesheet" href="../../shared/index.css">
 <link rel="stylesheet" href="../../theme/index.css">
+<link rel="stylesheet" href="index.css">
 <link rel="stylesheet" href="../../yry-home/index.css">
 <link rel="stylesheet" href="../../yry-checklist/index.css">
 <link rel="stylesheet" href="../../yry-scene/index.css">
@@ -41,124 +42,7 @@
 </script>
 
 <link rel="stylesheet" href="../../yry-story-panel/index.css">
-<style>
-/* ── Icon variants (extends .icon from yry-home.css) ── */
-.item-card .icon.tpl { background: rgba(255,193,7,.15); color: var(--yry-accent, #ffc107); }
-.item-card .icon.js  { background: rgba(34,211,238,.15); color: var(--yry-cyan, #22d3ee); }
-.item-card .meta .detail { font-size: .7rem; color: var(--yry-text3, #888); }
-.timeline-strip .tl-step .tl-name { display: block; font-size: .7rem; }
-/* ── Page meta (阅读时间 + 更新时间) ── */
-.page-meta {
-  display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
-  font-size: .72rem; color: var(--yry-text3, #888);
-  margin: 8px 0 20px; padding: 0 4px;
-}
-.page-meta .meta-pill {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 2px 10px; background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.06); border-radius: 10px;
-}
-.page-meta .meta-pill .meta-icon { font-size: .85rem; }
-/* ── Pulse dot (live/active indicator) ── */
-.pulse-dot {
-  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
-  background: #10b981; flex-shrink: 0;
-  animation: glowPulse 2s infinite;
-}
-/* ── Tip / callout boxes ── */
-.tip-box {
-  background: rgba(255,193,7,.04); border-left: 3px solid var(--yry-accent, #ffc107);
-  border-radius: 0 6px 6px 0; padding: 10px 14px; margin: 10px 0;
-  font-size: .78rem; color: var(--yry-text2, #d4d4d4); line-height: 1.55;
-}
-.tip-box strong { color: var(--yry-accent, #ffc107); }
-.tip-box code {
-  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  font-size: .82em; background: rgba(255,255,255,.04);
-  padding: 1px 5px; border-radius: 3px; color: var(--yry-cyan, #22d3ee);
-}
-.tip-box.success { background: rgba(16,185,129,.05); border-left-color: #10b981; }
-.tip-box.success strong { color: #10b981; }
-.tip-box.info { background: rgba(34,211,238,.04); border-left-color: var(--yry-cyan, #22d3ee); }
-.tip-box.info strong { color: var(--yry-cyan, #22d3ee); }
-.tip-box.warn { background: rgba(239,68,68,.05); border-left-color: #ef4444; }
-.tip-box.warn strong { color: #ef4444; }
-/* ── Tag chips ── */
-.tag-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
-.tag-chip {
-  display: inline-block; font-size: .6rem; font-weight: 600;
-  padding: 2px 7px; border-radius: 4px; letter-spacing: .3px;
-  text-transform: uppercase; white-space: nowrap;
-  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-}
-.tag-chip.success { background: rgba(16,185,129,.12); color: #10b981; }
-/* ── Overview cards (for highlights section) ── */
-.overview-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 10px; margin: 14px 0;
-}
-.ov-card {
-  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08);
-  border-radius: 10px; padding: 16px 18px;
-  transition: all .2s; animation: fadeInUp .4s ease both;
-  position: relative; overflow: hidden;
-}
-.ov-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255,193,7,.18);
-  box-shadow: 0 6px 24px rgba(0,0,0,.3);
-}
-.ov-card .ov-ico { font-size: 1.5rem; margin-bottom: 6px; }
-.ov-card .ov-title { font-size: .86rem; font-weight: 700; color: var(--yry-text, #f5f5f5); margin-bottom: 4px; }
-.ov-card .ov-desc { font-size: .72rem; color: var(--yry-text3, #888); line-height: 1.5; }
-/* ── KBD style ── */
-.kbd {
-  font-size: .7rem; color: var(--yry-text2, #d4d4d4);
-  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
-  border-bottom-width: 2px; border-radius: 4px;
-  padding: 1px 6px; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  display: inline-block; min-width: 18px; text-align: center;
-}
-/* ── Section header with meta ── */
-.section-head {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 12px; flex-wrap: wrap; gap: 8px;
-}
-.section-head .sh-meta {
-  font-size: .7rem; color: var(--yry-text3, #888);
-  display: flex; gap: 10px; align-items: center;
-}
-/* ── Next-action (walkthrough CTA) ── */
-.next-action {
-  display: flex; align-items: flex-start; gap: 14px;
-  margin: 22px 0 18px; padding: 16px 18px;
-  background: rgba(255,193,7,.04); border: 1px solid rgba(255,193,7,.12);
-  border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,.2);
-  animation: fadeInUp .45s .3s ease both;
-}
-.next-action .na-ico {
-  font-size: 1.6rem; flex-shrink: 0; margin-top: 2px;
-}
-.next-action .na-body { flex: 1; min-width: 0; }
-.next-action .na-title {
-  font-size: .88rem; font-weight: 700; color: var(--yry-accent, #ffc107);
-  margin-bottom: 4px;
-}
-.next-action .na-desc {
-  font-size: .75rem; color: var(--yry-text3, #888); line-height: 1.55;
-}
-.stat .num { font-size: 1.4rem; }
-/* ── Reduced motion (a11y) ── */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-/* ── Print ── */
-@media print {
-  .skip-link, .back-top, .cross-nav, .quick-filter, .progress-summary button { display: none !important; }
-</style>
+<link rel="stylesheet" href="../yry-inline-helpers/index.css">
 </head>
 <body>
 <!-- ═══ Skip Link (a11y) ═══ -->
@@ -260,7 +144,7 @@
   <div class="tl-track-wrap">
     <div class="tl-track">
       <div class="tl-line"></div>
-      <div class="tl-progress" style="width:100%"></div>
+      <div class="tl-progress" yry-cd-65"></div>
       <div class="tl-nodes">
         <div class="tl-node done"><div class="tl-dot">1</div><div class="tl-label">需求与设计</div><div class="tl-time">决策</div></div>
         <div class="tl-node done"><div class="tl-dot">2</div><div class="tl-label">模板与样式</div><div class="tl-time">视觉</div></div>

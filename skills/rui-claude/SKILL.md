@@ -87,6 +87,7 @@ flowchart LR
     classDef block fill:#3a1a1a,stroke:#f87171,color:#a9b1d6
 ```
 
+<a id="sync"></a>
 ## sync — 覆盖式同步
 
 ```mermaid
@@ -119,6 +120,7 @@ flowchart LR
 | 冲突处理 | 远端优先，本地修改将被覆盖。有本地修改时提示用户先备份 |
 | 完成后 | 自动记录 history |
 
+<a id="update"></a>
 ## update — 插件升级 + 缓存清除 + 配置同步
 
 ```mermaid
@@ -153,6 +155,7 @@ flowchart LR
 | 前置条件 | 当前分支为 main，网络可达 origin + api.effiy.cn，`API_X_TOKEN` 已配置 |
 | 降级 | git pull 失败时中止并提示手动重试；sync 失败时遵循 sync 自身的降级策略 |
 
+<a id="retro"></a>
 ## retro — 健康度分析
 
 ```mermaid
@@ -194,6 +197,7 @@ flowchart LR
 | 文件完整性 | 检查必选文件存在性 | 全部存在 = 健康 |
 | 技能有效性 | 检查 SKILL.md frontmatter | 全部有效 = 健康 |
 
+<a id="history"></a>
 ## history — 操作历史
 
 ```mermaid

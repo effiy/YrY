@@ -7,7 +7,7 @@ import { fetchJson, querySessionsFull } from "../../../lib/io.mjs";
 import { API_X_TOKEN } from "./config.mjs";
 import { getTags } from "./scan.mjs";
 
-export async function querySessions(apiUrl) {
+export async function querySessions(/** @type {string} */ apiUrl) {
   const list = await querySessionsFull(apiUrl, API_X_TOKEN);
   const paths = new Map();
   for (const item of list) {
@@ -16,12 +16,12 @@ export async function querySessions(apiUrl) {
   return paths;
 }
 
-export async function writeRemoteFile(apiUrl, remotePath, content, overwrite) {
+export async function writeRemoteFile(/** @type {string} */ apiUrl, /** @type {string} */ remotePath, /** @type {string} */ content, /** @type {boolean} */ overwrite) {
   const body = { target_file: remotePath, content, is_base64: false, overwrite: !!overwrite };
   return fetchJson(apiUrl + "/write-file", API_X_TOKEN, { method: "POST", body: JSON.stringify(body) });
 }
 
-export async function createSession(apiUrl, remotePath, localPath, projectRootName) {
+export async function createSession(/** @type {string} */ apiUrl, /** @type {string} */ remotePath, /** @type {string} */ localPath, /** @type {string} */ projectRootName) {
   const basename = remotePath.split("/").pop();
   const tags = getTags(remotePath, localPath, projectRootName);
   const now = Date.now();
@@ -44,11 +44,11 @@ export async function createSession(apiUrl, remotePath, localPath, projectRootNa
     },
   };
   const resp = await fetchJson(apiUrl + "/", API_X_TOKEN, { method: "POST", body: JSON.stringify(body) });
-  const created = resp?.data || resp;
+  const created = (/** @type {any} */ (resp))?.data || resp;
   return (created && created.file_path) ? created : { file_path: remotePath, _id: "local-" + now };
 }
 
-export async function updateSession(apiUrl, remotePath, existingItem) {
+export async function updateSession(/** @type {string} */ apiUrl, /** @type {string} */ remotePath, /** @type {any} */ existingItem) {
   const docId = existingItem._id || existingItem.id;
   if (!docId) return;
   const now = Date.now();

@@ -8,7 +8,6 @@ import { fileExists, readFile, listStoryDirs } from '../../../lib/test-helpers.m
 
 describe('knowledge graph integrity', () => {
   const VALID_NODE_TYPES = ['domain', 'flow', 'step'];
-  const VALID_EDGE_TYPES = ['contains_flow', 'flow_step', 'cross_domain'];
   const MIN_REQUIREMENTS = {
     domain: 1,
     flow: 1,
@@ -112,4 +111,4 @@ describe('knowledge graph integrity', () => {
   }
 });
 
-const exitCode = await run();
+const _exitCode = await run();

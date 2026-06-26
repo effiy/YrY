@@ -18,8 +18,9 @@ const HELP_HINT = `${dim('使用')} ${cyan('node skills/rui-trends/help.mjs')} $
 
 // ── arg parsing ────────────────────────────────────────────────────────
 
-function parseArgs(argv) {
+function parseArgs(/** @type {string[]} */ argv) {
   const cmd = argv[NODE_ARGV_OFFSET] || 'status';
+  /** @type {Record<string, any>} */
   const options = {};
   const positional = [];
 
@@ -31,7 +32,7 @@ function parseArgs(argv) {
     else if (a === '--range') options.range = parseInt(argv[++i], 10);
     else if (a === '--min-stars') options.minStars = parseInt(argv[++i], 10);
     else if (a === '--limit') options.limit = parseInt(argv[++i], 10);
-    else if (a === '--help' || a === '-h') return { cmd: 'help' };
+    else if (a === '--help' || a === '-h') return { cmd: 'help', options: {} };
     else if (a === '--html') options.html = true;
     else if (!a.startsWith('-')) positional.push(a);
     else options[a.replace(/^-+/, '')] = true;

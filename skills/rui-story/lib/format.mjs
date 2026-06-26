@@ -22,42 +22,44 @@ const FILE_LIST_NAME_PAD = 2;
 const RECOMMEND_NAME_WIDTH = 20;
 const DATE_ZERO_PAD = 2;
 
+/** @type {Record<string, {label: string, colorFn: (s: string) => string}>} */
 const STATUS_CONFIG = {
   任务: { label: "任务", colorFn: dim },
   设计: { label: "设计", colorFn: yellow },
-  实施: { label: "实施", colorFn: (s) => s },
+  实施: { label: "实施", colorFn: (/** @type {string} */ s) => s },
   测试: { label: "测试", colorFn: cyan },
   报告: { label: "报告", colorFn: green },
   改进: { label: "改进", colorFn: green },
 };
 
+/** @type {Record<string, string>} */
 export const TYPE_LABELS = { backend: "后端", frontend: "前端", fullstack: "全栈", meta: "元" };
 
-export function statusDisplay(status) {
-  const cfg = STATUS_CONFIG[status] || { label: status, colorFn: (s) => s };
+export function statusDisplay(/** @type {string} */ status) {
+  const cfg = STATUS_CONFIG[status] || { label: status, colorFn: (/** @type {string} */ s) => s };
   return cfg.colorFn(cfg.label);
 }
 
-export function formatDate(ts) {
+export function formatDate(/** @type {any} */ ts) {
   if (!ts) return "—";
   const d = new Date(ts);
-  const pad = (n) => String(n).padStart(DATE_ZERO_PAD, "0");
+  const pad = (/** @type {number} */ n) => String(n).padStart(DATE_ZERO_PAD, "0");
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-export function latestTimestamp(sessions) {
+export function latestTimestamp(/** @type {any[]} */ sessions) {
   let max = 0;
   for (const s of sessions) { const t = s.updatedAt || s.updated_at || 0; if (t > max) max = t; }
   return max;
 }
 
-export function printOverview(storyMap, projectPrefix, blockedMap) {
-  const counts = { 任务: 0, 设计: 0, 实施: 0, 测试: 0, 报告: 0, 改进: 0 };
+export function printOverview(/** @type {any} */ storyMap, /** @type {string} */ projectPrefix, /** @type {any} */ blockedMap) {
+  /** @type {Record<string, number>} */ const counts = { 任务: 0, 设计: 0, 实施: 0, 测试: 0, 报告: 0, 改进: 0 };
   const storyStatuses = [];
   for (const [name, sessions] of storyMap) {
-    const basenames = new Set(sessions.map(s => (s.file_path || "").split("/").pop()));
+    const basenames = new Set(sessions.map((/** @type {any} */ s) => (s.file_path || "").split("/").pop()));
     const blocked = blockedMap.get(name);
-    const filePaths = sessions.map(s => s.file_path || "");
+    const filePaths = sessions.map((/** @type {any} */ s) => s.file_path || "");
     const status = determineStatus(basenames, projectPrefix, blocked, filePaths);
     counts[status]++;
     storyStatuses.push({ name, status, updatedAt: latestTimestamp(sessions) });
@@ -89,12 +91,12 @@ export function printOverview(storyMap, projectPrefix, blockedMap) {
   console.log("");
 }
 
-export function printList(storyMap, projectPrefix, blockedMap, typeMap, checkGitBranchFn) {
+export function printList(/** @type {any} */ storyMap, /** @type {string} */ projectPrefix, /** @type {any} */ blockedMap, /** @type {any} */ typeMap, /** @type {any} */ checkGitBranchFn) {
   const entries = [];
   for (const [name, sessions] of storyMap) {
-    const basenames = new Set(sessions.map(s => (s.file_path || "").split("/").pop()));
+    const basenames = new Set(sessions.map((/** @type {any} */ s) => (s.file_path || "").split("/").pop()));
     const blocked = blockedMap.get(name);
-    const filePaths = sessions.map(s => s.file_path || "");
+    const filePaths = sessions.map((/** @type {any} */ s) => s.file_path || "");
     const status = determineStatus(basenames, projectPrefix, blocked, filePaths);
     const files = sessions.length;
     const lastMod = latestTimestamp(sessions);
@@ -110,8 +112,8 @@ export function printList(storyMap, projectPrefix, blockedMap, typeMap, checkGit
   console.log("");
   if (entries.length === 0) { console.log(dim("  远端无故事任务面板数据")); console.log(""); return; }
 
-  const nameW = Math.max(MIN_NAME_COL_WIDTH, ...entries.map(e => e.name.length));
-  const pad = (s, w) => { const str = String(s); const visible = str.replace(/\x1b\[[0-9;]*m/g, "").length; return str + " ".repeat(Math.max(MIN_COL_GAP, w - visible)); };
+  const nameW = Math.max(MIN_NAME_COL_WIDTH, ...entries.map((/** @type {any} */ e) => e.name.length));
+  const pad = (/** @type {any} */ s, /** @type {number} */ w) => { const str = String(s); const visible = str.replace(/\x1b\[[0-9;]*m/g, "").length; return str + " ".repeat(Math.max(MIN_COL_GAP, w - visible)); };
 
   console.log(`  ${pad("Story", nameW)} ${pad("Status", STATUS_COL_WIDTH)} ${pad("Files", FILES_COL_WIDTH)} ${pad("Last Modified", DATE_COL_WIDTH)} ${pad("Type", TYPE_COL_WIDTH)} Branch`);
   console.log(`  ${dim("─".repeat(nameW + STATUS_COL_WIDTH + FILES_COL_WIDTH + DATE_COL_WIDTH + TYPE_COL_WIDTH + LIST_COL_GAP_WIDTH))}`);
@@ -122,11 +124,11 @@ export function printList(storyMap, projectPrefix, blockedMap, typeMap, checkGit
   console.log("");
 }
 
-export function printShow(storyName, sessions, projectPrefix, blockedState, type, checkGitBranchFn) {
-  const basenames = new Set(sessions.map(s => (s.file_path || "").split("/").pop()));
+export function printShow(/** @type {string} */ storyName, /** @type {any[]} */ sessions, /** @type {string} */ projectPrefix, /** @type {any} */ blockedState, /** @type {string} */ type, /** @type {any} */ checkGitBranchFn) {
+  const basenames = new Set(sessions.map((/** @type {any} */ s) => (s.file_path || "").split("/").pop()));
   const status = determineStatus(basenames, projectPrefix, blockedState);
   const branch = checkGitBranchFn ? checkGitBranchFn(storyName) : null;
-  const files = sessions.map(s => ({ name: (s.file_path || "").split("/").pop(), updatedAt: s.updatedAt || s.updated_at || 0 })).sort((a, b) => a.name.localeCompare(b.name));
+  const files = sessions.map((/** @type {any} */ s) => ({ name: (s.file_path || "").split("/").pop(), updatedAt: s.updatedAt || s.updated_at || 0 })).sort((a, b) => a.name.localeCompare(b.name));
 
   console.log("");
   console.log(bold(`${storyName} · ${statusDisplay(status)}`));
@@ -149,7 +151,7 @@ export function printShow(storyName, sessions, projectPrefix, blockedState, type
   console.log("");
 }
 
-export function printRecommend(storyMap) {
+export function printRecommend(/** @type {any} */ storyMap) {
   console.log("");
   if (storyMap.size === 0) { console.log(dim("  远端无故事任务面板数据")); console.log(""); return; }
   console.log(bold("远端可同步故事"));
@@ -166,14 +168,14 @@ export function printRecommend(storyMap) {
   console.log("");
 }
 
-export function printHealth(result) {
+export function printHealth(/** @type {any} */ result) {
   console.log("");
   console.log(bold("rui-story 健康检查"));
   console.log("══════════════════");
   console.log("");
 
   let pass = 0, warn = 0, fail = 0;
-  function check(label, ok, detail) {
+  function check(/** @type {string} */ label, /** @type {boolean} */ ok, /** @type {string} */ detail) {
     const mark = ok ? green("  ✅") : (detail.includes("缺失") ? yellow("  ⚠️") : red("  ❌"));
     console.log(`${mark} ${label}: ${detail}`);
     if (ok) pass++; else if (detail.includes("缺失")) warn++; else fail++;

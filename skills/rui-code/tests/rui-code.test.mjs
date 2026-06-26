@@ -135,4 +135,4 @@ describe('rui-code skill', () => {
       assert.ok(content.includes('逐模块') || content.includes('per-module'), 'must document per-module approach');
     });
   });
-const exitCode = await run();
+const _exitCode = await run();

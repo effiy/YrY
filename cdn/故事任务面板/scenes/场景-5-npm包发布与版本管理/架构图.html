@@ -16,23 +16,7 @@
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
 <link rel="stylesheet" href="../../../yry-a11y/index.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<style>
-  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
-  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
-  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
-  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
-  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
-  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
-  .delivery-story { font-size: .72rem; color: #4b5563; }
-  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
-  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
-  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
-  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
-  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
-  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
-  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
-</style>
+<link rel="stylesheet" href="../../../yry-legacy-scene-delivery/index.css">
 </head>
 <body>
 <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
@@ -54,7 +38,7 @@
 
   <div class="content-card">
     <h2>📐 发布流水线 · 7 步路径</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">💻 开发 (git commit)
+    <pre class="yry-auto-15271">💻 开发 (git commit)
     │
     ▼
 📦 构建 (npm pack --dry-run)
@@ -76,54 +60,54 @@
     │
     ▼
 ✅ 验证 (curl + 浏览器)</pre>
-    <p style="margin-top:16px">发布路径不可跳步：未测试不发布 · 无 CHANGELOG 不打 tag · 无 tag 不 publish · 未验证不算完成。</p>
+    <p class="yry-auto-34737">发布路径不可跳步：未测试不发布 · 无 CHANGELOG 不打 tag · 无 tag 不 publish · 未验证不算完成。</p>
   </div>
 
   <div class="content-card">
     <h2>📦 package.json 关键字段</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">字段</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">值</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">说明</th></tr></thead>
+    <table class="yry-auto-93137">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-75234">字段</th><th class="yry-auto-75234">值</th><th class="yry-auto-75234">说明</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>name</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>yry-cdn</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">npm 包名 (scoped-less)</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>version</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>1.2.0</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">语义化版本</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>description</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">YrY 共享前端资源库</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">包描述</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>main</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>shared/index.js</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">CJS 入口</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>style</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>shared/index.css</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">CSS 入口 (npm 约定)</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>unpkg</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>shared/index.js</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">unpkg CDN 入口</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>jsdelivr</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>shared/index.css</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">jsDelivr CDN 入口</td></tr>
-        <tr><td style="padding:8px 10px"><code>files</code></td><td style="padding:8px 10px"><code>["shared/","theme/","theme-mono/","fonts/","yry-*/","*.md"]</code></td><td style="padding:8px 10px">发布白名单</td></tr>
+        <tr><td class="yry-auto-86182"><code>name</code></td><td class="yry-auto-86182"><code>yry-cdn</code></td><td class="yry-auto-86182">npm 包名 (scoped-less)</td></tr>
+        <tr><td class="yry-auto-86182"><code>version</code></td><td class="yry-auto-86182"><code>1.2.0</code></td><td class="yry-auto-86182">语义化版本</td></tr>
+        <tr><td class="yry-auto-86182"><code>description</code></td><td class="yry-auto-86182">YrY 共享前端资源库</td><td class="yry-auto-86182">包描述</td></tr>
+        <tr><td class="yry-auto-86182"><code>main</code></td><td class="yry-auto-86182"><code>shared/index.js</code></td><td class="yry-auto-86182">CJS 入口</td></tr>
+        <tr><td class="yry-auto-86182"><code>style</code></td><td class="yry-auto-86182"><code>shared/index.css</code></td><td class="yry-auto-86182">CSS 入口 (npm 约定)</td></tr>
+        <tr><td class="yry-auto-86182"><code>unpkg</code></td><td class="yry-auto-86182"><code>shared/index.js</code></td><td class="yry-auto-86182">unpkg CDN 入口</td></tr>
+        <tr><td class="yry-auto-86182"><code>jsdelivr</code></td><td class="yry-auto-86182"><code>shared/index.css</code></td><td class="yry-auto-86182">jsDelivr CDN 入口</td></tr>
+        <tr><td class="yry-auto-93797"><code>files</code></td><td class="yry-auto-93797"><code>["shared/","theme/","theme-mono/","fonts/","yry-*/","*.md"]</code></td><td class="yry-auto-93797">发布白名单</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>🔖 语义化版本策略</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">版本段</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">含义</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">触发条件</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">示例</th></tr></thead>
+    <table class="yry-auto-93137">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-75234">版本段</th><th class="yry-auto-75234">含义</th><th class="yry-auto-75234">触发条件</th><th class="yry-auto-75234">示例</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#f87171">MAJOR</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">不兼容的 API 变更</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">移除组件 · 重命名令牌 · 变更 API 签名</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>1.0.0 → 2.0.0</code></td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#fbbf24">MINOR</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">向后兼容的新功能</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">新增组件 · 新增 API · 新增主题</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>1.1.0 → 1.2.0</code></td></tr>
-        <tr><td style="padding:8px 10px;color:#4ade80">PATCH</td><td style="padding:8px 10px">向后兼容的修复</td><td style="padding:8px 10px">样式修复 · 性能优化 · 文档更新</td><td style="padding:8px 10px"><code>1.2.0 → 1.2.1</code></td></tr>
+        <tr><td class="yry-auto-89598">MAJOR</td><td class="yry-auto-86182">不兼容的 API 变更</td><td class="yry-auto-86182">移除组件 · 重命名令牌 · 变更 API 签名</td><td class="yry-auto-86182"><code>1.0.0 → 2.0.0</code></td></tr>
+        <tr><td class="yry-auto-27978">MINOR</td><td class="yry-auto-86182">向后兼容的新功能</td><td class="yry-auto-86182">新增组件 · 新增 API · 新增主题</td><td class="yry-auto-86182"><code>1.1.0 → 1.2.0</code></td></tr>
+        <tr><td class="yry-a2-22">PATCH</td><td class="yry-auto-93797">向后兼容的修复</td><td class="yry-auto-93797">样式修复 · 性能优化 · 文档更新</td><td class="yry-auto-93797"><code>1.2.0 → 1.2.1</code></td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>📈 版本演进历史</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">版本</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">日期</th><th style="padding:8px 10px;text-align:center;color:#22d3ee;font-weight:600">类型</th><th style="padding:8px 10px;text-align:center;color:#22d3ee;font-weight:600">评分</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">关键变更</th></tr></thead>
+    <table class="yry-auto-93137">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-75234">版本</th><th class="yry-auto-75234">日期</th><th class="yry-auto-18009">类型</th><th class="yry-auto-18009">评分</th><th class="yry-auto-75234">关键变更</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>v1.0.0</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">2026-04-08</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#f87171">MAJOR</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#f87171">78/C</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">初始发布: shared + theme + 9 API</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>v1.1.0</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">2026-05-20</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#fbbf24">MINOR</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#fbbf24">86/B</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">theme-mono + 字体 (4 woff2) + 14 令牌</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>v1.2.0</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">2026-06-16</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#fbbf24">MINOR</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#4ade80">92/A</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">107 组件 · 双主题 · 文档完善</td></tr>
-        <tr><td style="padding:8px 10px"><code>v1.3.0</code></td><td style="padding:8px 10px">计划中</td><td style="padding:8px 10px;text-align:center;color:#fbbf24">MINOR</td><td style="padding:8px 10px;text-align:center;color:#4ade80">目标 95/A</td><td style="padding:8px 10px">组件完善 · 测试覆盖 · 文档增强</td></tr>
+        <tr><td class="yry-auto-86182"><code>v1.0.0</code></td><td class="yry-auto-86182">2026-04-08</td><td class="yry-auto-56476">MAJOR</td><td class="yry-auto-56476">78/C</td><td class="yry-auto-86182">初始发布: shared + theme + 9 API</td></tr>
+        <tr><td class="yry-auto-86182"><code>v1.1.0</code></td><td class="yry-auto-86182">2026-05-20</td><td class="yry-auto-45806">MINOR</td><td class="yry-auto-45806">86/B</td><td class="yry-auto-86182">theme-mono + 字体 (4 woff2) + 14 令牌</td></tr>
+        <tr><td class="yry-auto-86182"><code>v1.2.0</code></td><td class="yry-auto-86182">2026-06-16</td><td class="yry-auto-45806">MINOR</td><td class="yry-auto-15620">92/A</td><td class="yry-auto-86182">107 组件 · 双主题 · 文档完善</td></tr>
+        <tr><td class="yry-auto-93797"><code>v1.3.0</code></td><td class="yry-auto-93797">计划中</td><td class="yry-a2-17">MINOR</td><td class="yry-a2-16">目标 95/A</td><td class="yry-auto-93797">组件完善 · 测试覆盖 · 文档增强</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>🌐 jsDelivr 同步机制</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">npm publish
+    <pre class="yry-auto-15271">npm publish
    │
    ▼
 npm registry (registry.npmjs.org)
@@ -133,7 +117,7 @@ npm registry (registry.npmjs.org)
    │
    ▼
 https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/</pre>
-    <p style="margin-top:12px;font-size:.74rem;color:#a9b1d6">同步延迟通常 &lt; 5 分钟 · 全球节点逐个同步 · 首次访问某节点可能稍慢。</p>
+    <p class="yry-auto-54055">同步延迟通常 &lt; 5 分钟 · 全球节点逐个同步 · 首次访问某节点可能稍慢。</p>
   </div>
 
   <div class="nav-links">

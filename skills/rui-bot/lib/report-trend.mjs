@@ -11,7 +11,7 @@ import { join } from "node:path";
 
 import { REPORT_DIR, DIM_LABELS } from "./report-constants.mjs";
 import { nowDate } from "../../../lib/fs.mjs";
-import { PASS_THRESHOLD, WARN_THRESHOLD, scoreColor } from "./bot-health-analysis.mjs";
+import { scoreColor } from "./bot-health-analysis.mjs";
 import {
   movingAverage,
   detectTrend,
@@ -20,10 +20,9 @@ import {
   scoreDistribution,
   scoreVelocity,
   getGrade,
-  classifyScore,
 } from "../../../lib/scoring.mjs";
 
-function exponentialMA(history, alpha = 0.3) {
+function exponentialMA(/** @type {number[]} */ history, /** @type {number} */ alpha = 0.3) {
   if (history.length === 0) return [];
   const result = [history[0]];
   for (let i = 1; i < history.length; i++) {
@@ -32,12 +31,12 @@ function exponentialMA(history, alpha = 0.3) {
   return result;
 }
 
-function pearsonCorrelation(xs, ys) {
+function pearsonCorrelation(/** @type {number[]} */ xs, /** @type {number[]} */ ys) {
   const n = Math.min(xs.length, ys.length);
   if (n < 3) return 0;
 
-  const xMean = xs.slice(0, n).reduce((a, b) => a + b, 0) / n;
-  const yMean = ys.slice(0, n).reduce((a, b) => a + b, 0) / n;
+  const xMean = xs.slice(0, n).reduce((/** @type {number} */ a, /** @type {number} */ b) => a + b, 0) / n;
+  const yMean = ys.slice(0, n).reduce((/** @type {number} */ a, /** @type {number} */ b) => a + b, 0) / n;
 
   let ssXY = 0, ssXX = 0, ssYY = 0;
   for (let i = 0; i < n; i++) {
@@ -56,11 +55,11 @@ export { nowDate };
 
 export function nowChinese() {
   const d = new Date();
-  const p = (n) => String(n).padStart(2, "0");
+  const p = (/** @type {number} */ n) => String(n).padStart(2, "0");
   return `${d.getFullYear()}年${p(d.getMonth() + 1)}月${p(d.getDate())}日 ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
 }
 
-export function extractReportMeta(filename) {
+export function extractReportMeta(/** @type {string} */ filename) {
   const match = filename.match(/^health-(\d{4}-\d{2}-\d{2})(?:-(\d{6}))?\.html$/);
   if (!match) return null;
   const [, date, timeRaw = ""] = match;
@@ -70,7 +69,7 @@ export function extractReportMeta(filename) {
   return { file: filename, date, time, timeRaw };
 }
 
-export function compareReportMeta(a, b) {
+export function compareReportMeta(/** @type {any} */ a, /** @type {any} */ b) {
   if (!a) return -1;
   if (!b) return 1;
   if (!a.timeRaw && b.timeRaw) return 1;
@@ -82,8 +81,8 @@ export function compareReportMeta(a, b) {
 export function listReportFiles() {
   if (!existsSync(REPORT_DIR)) return [];
   return readdirSync(REPORT_DIR)
-    .filter((f) => f.endsWith(".html") && f !== "index.html")
-    .map((file) => {
+    .filter((/** @type {string} */ f) => f.endsWith(".html") && f !== "index.html")
+    .map((/** @type {string} */ file) => {
       const meta = extractReportMeta(file);
       if (!meta) return null;
       let mtimeMs = 0;
@@ -95,7 +94,7 @@ export function listReportFiles() {
     .filter(Boolean);
 }
 
-export function pickLatestReportsByDate(files) {
+export function pickLatestReportsByDate(/** @type {any[]} */ files) {
   const latestByDate = new Map();
   for (const file of files) {
     const existing = latestByDate.get(file.date);
@@ -109,7 +108,7 @@ export function pickLatestReportsByDate(files) {
   });
 }
 
-export function removeReportsForDate(date, keepFile = "") {
+export function removeReportsForDate(/** @type {string} */ date, /** @type {string} */ keepFile = "") {
   for (const report of listReportFiles()) {
     if (report.date === date && report.file !== keepFile) {
       try {
@@ -123,7 +122,7 @@ export function getPreviousScore() {
   const today = nowDate();
   try {
     const files = pickLatestReportsByDate(listReportFiles())
-      .filter((f) => f.date !== today);
+      .filter((/** @type {any} */ f) => f.date !== today);
     if (files.length === 0) return null;
 
     const content = readFileSync(join(REPORT_DIR, files[0].file), "utf-8");
@@ -142,7 +141,7 @@ export function getHealthTrend() {
   const trendPath = ".memory/health-trend.jsonl";
   if (!existsSync(trendPath)) return [];
   try {
-    return readFileSync(trendPath, "utf-8").trim().split("\n").filter(Boolean).map((l) => {
+    return readFileSync(trendPath, "utf-8").trim().split("\n").filter(Boolean).map((/** @type {string} */ l) => {
       try { return JSON.parse(l); } catch { return null; }
     }).filter(Boolean);
   } catch {
@@ -150,22 +149,24 @@ export function getHealthTrend() {
   }
 }
 
-export function buildGradeSparkline(history) {
+export function buildGradeSparkline(/** @type {any[]} */ history) {
   if (history.length < 2) return "";
 
+  /** @type {Record<string, string>} */
   const gradeColors = { A: "#22c55e", B: "#22c55e", C: "#f59e0b", D: "#ef4444" };
-  const sampled = history.length <= 20 ? history : history.filter((_, i) => i % Math.ceil(history.length / 20) === 0 || i === history.length - 1);
-  const dots = sampled.map((h, i) => {
+  const sampled = history.length <= 20 ? history : history.filter((/** @type {any} */ _, /** @type {number} */ i) => i % Math.ceil(history.length / 20) === 0 || i === history.length - 1);
+  const dots = sampled.map((/** @type {any} */ h, /** @type {number} */ i) => {
     const color = gradeColors[h.grade] || "#666";
     const last = i === sampled.length - 1;
     const size = last ? "10px" : "6px";
-    return `<span class="h-grade-dot" style="background:${color};width:${size};height:${size}" title="${h.grade} 级 · ${h.composite} 分 · ${h.timestamp?.slice(0,10) || ""}"></span>`;
+    return `<span class="h-grade-dot" style="--color:${color};--size:${size}" title="${h.grade} 级 · ${h.composite} 分 · ${h.timestamp?.slice(0,10) || ""}"></span>`;
   }).join("");
 
   return `<div class="h-grade-spark">${dots}</div>`;
 }
 
 export function getDimensionHistory() {
+  /** @type {Record<string, any[]>} */
   const history = {};
 
   const trendPath = ".memory/health-trend.jsonl";
@@ -191,7 +192,7 @@ export function getDimensionHistory() {
 
   try {
     const files = readdirSync(REPORT_DIR)
-      .filter((f) => f.endsWith(".html") && f !== "index.html")
+      .filter((/** @type {string} */ f) => f.endsWith(".html") && f !== "index.html")
       .sort();
 
     for (const f of files) {
@@ -216,7 +217,7 @@ export function getDimensionHistory() {
   return history;
 }
 
-export function dimTrendIcon(dimLabel, currentScore, history) {
+export function dimTrendIcon(/** @type {string} */ dimLabel, /** @type {number} */ currentScore, /** @type {Record<string, any[]>} */ history) {
   const dimHistory = history[dimLabel] || [];
   if (dimHistory.length < 2) return "";
 
@@ -229,16 +230,16 @@ export function dimTrendIcon(dimLabel, currentScore, history) {
   return '<span class="h-trend stable" title="持平">→</span>';
 }
 
-export function dimSparkline(dimLabel, history) {
+export function dimSparkline(/** @type {string} */ dimLabel, /** @type {Record<string, any[]>} */ history) {
   const dimHistory = history[dimLabel] || [];
   if (dimHistory.length < 2) return "";
 
-  const scores = dimHistory.map((h) => h.score);
+  const scores = dimHistory.map((/** @type {any} */ h) => h.score);
   const max = Math.max(...scores, 100);
-  const bars = scores.map((s) => {
+  const bars = scores.map((/** @type {number} */ s) => {
     const h = Math.max(2, Math.round((s / max) * 16));
     const color = scoreColor(s);
-    return `<span class="h-spark-bar" style="height:${h}px;background:${color}" title="${s} 分"></span>`;
+    return `<span class="h-spark-bar" style="--h:${h}px;--color:${color}" title="${s} 分"></span>`;
   }).join("");
 
   return `<div class="h-sparkline">${bars}</div>`;
@@ -250,13 +251,13 @@ export function dimSparkline(dimLabel, history) {
  * Build enhanced trend analysis from health history.
  * Returns professional-grade statistics for the report.
  *
- * @param {object[]} history - Health trend entries
- * @returns {object} Enhanced analysis data for HTML rendering
+ * @param {any[]} history - Health trend entries
+ * @returns {any} Enhanced analysis data for HTML rendering
  */
-export function buildEnhancedTrendAnalysis(history) {
+export function buildEnhancedTrendAnalysis(/** @type {any[]} */ history) {
   if (!history || history.length < 2) return null;
 
-  const composites = history.map(h => h.composite).filter(s => typeof s === "number");
+  const composites = history.map((/** @type {any} */ h) => h.composite).filter((/** @type {any} */ s) => typeof s === "number");
   if (composites.length < 2) return null;
 
   // Core statistics
@@ -269,6 +270,7 @@ export function buildEnhancedTrendAnalysis(history) {
   const anomalies = detectAnomalies(composites);
 
   // Grade distribution over time
+  /** @type {Record<string, number>} */
   const gradeCounts = { A: 0, B: 0, C: 0, D: 0 };
   for (const h of history) {
     const g = getGrade(h.composite || 0);
@@ -276,11 +278,12 @@ export function buildEnhancedTrendAnalysis(history) {
   }
 
   // Dimension-level trends
+  /** @type {Record<string, any>} */
   const dimTrends = {};
   const dimHistory = getDimensionHistory();
   for (const [label, points] of Object.entries(dimHistory)) {
     if (points.length >= 3) {
-      const scores = points.map(p => p.score);
+      const scores = points.map((/** @type {any} */ p) => p.score);
       dimTrends[label] = {
         trend: detectTrend(scores),
         current: scores[scores.length - 1],
@@ -291,7 +294,9 @@ export function buildEnhancedTrendAnalysis(history) {
   }
 
   // Identify regressing and improving dimensions
+  /** @type {any[]} */
   const regressing = [];
+  /** @type {any[]} */
   const improving = [];
   for (const [label, data] of Object.entries(dimTrends)) {
     if (data.trend.direction === "falling" && data.trend.confidence !== "low") {
@@ -328,70 +333,70 @@ export function buildEnhancedTrendAnalysis(history) {
 /**
  * Build a trend summary card HTML for the enhanced report.
  *
- * @param {object} analysis - From buildEnhancedTrendAnalysis()
+ * @param {any} analysis - From buildEnhancedTrendAnalysis()
  * @returns {string} HTML
  */
-export function buildTrendSummaryHTML(analysis) {
+export function buildTrendSummaryHTML(/** @type {any} */ analysis) {
   if (!analysis) return "";
 
-  const { trend, distribution, velocity, forecast, gradeDistribution } = analysis;
+  const { trend, velocity, forecast, gradeDistribution } = analysis;
 
   const trendIcon = trend.direction === "rising" ? "📈"
     : trend.direction === "falling" ? "📉" : "📊";
   const trendLabel = trend.direction === "rising" ? "上升趋势"
     : trend.direction === "falling" ? "下降趋势" : "保持稳定";
-  const trendColor = trend.direction === "rising" ? "#22c55e"
-    : trend.direction === "falling" ? "#ef4444" : "#f59e0b";
+  const trendTier = trend.direction === "rising" ? "up"
+    : trend.direction === "falling" ? "down" : "flat";
 
   const velIcon = velocity.recent > 0 ? "↗" : velocity.recent < 0 ? "↘" : "→";
   const accelNote = velocity.accelerating
-    ? `<span style="color:#f59e0b">⚠ 趋势正在加速</span>`
+    ? `<span class="h-rt-warn">⚠ 趋势正在加速</span>`
     : "";
 
   return `
-  <div class="h-trend-summary" style="margin:16px 0;padding:16px;background:var(--bg2);border-radius:8px;border:1px solid var(--border2)">
-    <div style="font-size:16px;font-weight:600;margin-bottom:12px">📊 趋势分析摘要</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
-      <div class="h-trend-card" style="text-align:center;padding:12px;background:var(--bg1);border-radius:6px">
-        <div style="font-size:24px;margin-bottom:4px">${trendIcon}</div>
-        <div style="font-weight:600;color:${trendColor}">${trendLabel}</div>
-        <div style="font-size:12px;color:var(--text3)">斜率: ${trend.slopePerWeek > 0 ? "+" : ""}${trend.slopePerWeek} 分/周</div>
-        <div style="font-size:12px;color:var(--text3)">置信度: ${trend.confidence === "high" ? "高" : trend.confidence === "medium" ? "中" : "低"} (R²=${trend.r2})</div>
+  <div class="h-rt-summary">
+    <div class="h-rt-title">📊 趋势分析摘要</div>
+    <div class="h-rt-grid">
+      <div class="h-rt-card">
+        <div class="h-rt-icon">${trendIcon}</div>
+        <div class="h-rt-card-val ${trendTier}">${trendLabel}</div>
+        <div class="h-rt-meta">斜率: ${trend.slopePerWeek > 0 ? "+" : ""}${trend.slopePerWeek} 分/周</div>
+        <div class="h-rt-meta">置信度: ${trend.confidence === "high" ? "高" : trend.confidence === "medium" ? "中" : "低"} (R²=${trend.r2})</div>
       </div>
-      <div class="h-trend-card" style="text-align:center;padding:12px;background:var(--bg1);border-radius:6px">
-        <div style="font-size:24px;margin-bottom:4px">${velIcon}</div>
-        <div style="font-weight:600">近期变化: ${velocity.recent > 0 ? "+" : ""}${velocity.recent} 分</div>
-        <div style="font-size:12px;color:var(--text3)">周均变化: ${velocity.weekly > 0 ? "+" : ""}${velocity.weekly} 分</div>
+      <div class="h-rt-card">
+        <div class="h-rt-icon">${velIcon}</div>
+        <div class="h-rt-card-val">近期变化: ${velocity.recent > 0 ? "+" : ""}${velocity.recent} 分</div>
+        <div class="h-rt-meta">周均变化: ${velocity.weekly > 0 ? "+" : ""}${velocity.weekly} 分</div>
         ${accelNote}
       </div>
-      <div class="h-trend-card" style="text-align:center;padding:12px;background:var(--bg1);border-radius:6px">
-        <div style="font-size:24px;margin-bottom:4px">🔮</div>
-        <div style="font-weight:600">预测: ${forecast.forecast} 分</div>
-        <div style="font-size:12px;color:var(--text3)">区间: ${forecast.range[0]}–${forecast.range[1]} 分</div>
-        <div style="font-size:12px;color:var(--text3)">7天后预测值</div>
+      <div class="h-rt-card">
+        <div class="h-rt-icon">🔮</div>
+        <div class="h-rt-card-val">预测: ${forecast.forecast} 分</div>
+        <div class="h-rt-meta">区间: ${forecast.range[0]}–${forecast.range[1]} 分</div>
+        <div class="h-rt-meta">7天后预测值</div>
       </div>
-      <div class="h-trend-card" style="text-align:center;padding:12px;background:var(--bg1);border-radius:6px">
-        <div style="font-weight:600;margin-bottom:4px">评级分布</div>
-        <div style="display:flex;justify-content:center;gap:8px">
+      <div class="h-rt-card">
+        <div class="h-rt-card-val as-label">评级分布</div>
+        <div class="h-rt-grade-dist">
           ${Object.entries(gradeDistribution).map(([g, c]) =>
-            `<span style="padding:2px 8px;border-radius:4px;background:${g === "A" ? "rgba(34,197,94,.2)" : g === "B" ? "rgba(34,197,94,.15)" : g === "C" ? "rgba(245,158,11,.15)" : "rgba(239,68,68,.15)"};color:${g === "D" ? "#ef4444" : g === "C" ? "#f59e0b" : "#22c55e"}">${g}: ${c}</span>`
+            `<span class="h-rt-grade-chip ${g}">${g}: ${c}</span>`
           ).join("")}
         </div>
-        <div style="font-size:12px;color:var(--text3);margin-top:4px">历史 ${analysis.totalEntries} 次检查</div>
+        <div class="h-rt-meta with-top">历史 ${analysis.totalEntries} 次检查</div>
       </div>
     </div>
     ${analysis.regressingDimensions.length > 0 ? `
-    <div style="margin-top:12px;padding:10px;background:rgba(239,68,68,.08);border-radius:6px;border:1px solid rgba(239,68,68,.2)">
-      <span style="color:#ef4444;font-weight:600">⚠ 退化维度:</span>
-      ${analysis.regressingDimensions.map(d =>
-        `<span style="margin-left:8px;color:var(--text2)">${d.label} <span style="color:#ef4444">${d.slope > 0 ? "+" : ""}${d.slope}/周</span></span>`
+    <div class="h-rt-regress">
+      <span class="h-rt-regress-label">⚠ 退化维度:</span>
+      ${analysis.regressingDimensions.map((/** @type {any} */ d) =>
+        `<span class="h-rt-dim-slope">${d.label} <span class="h-rt-dim-slope regress">${d.slope > 0 ? "+" : ""}${d.slope}/周</span></span>`
       ).join("")}
     </div>` : ""}
     ${analysis.improvingDimensions.length > 0 ? `
-    <div style="margin-top:8px;padding:10px;background:rgba(34,197,94,.08);border-radius:6px;border:1px solid rgba(34,197,94,.2)">
-      <span style="color:#22c55e;font-weight:600">✅ 改善维度:</span>
-      ${analysis.improvingDimensions.map(d =>
-        `<span style="margin-left:8px;color:var(--text2)">${d.label} <span style="color:#22c55e">+${d.slope}/周</span></span>`
+    <div class="h-rt-improve">
+      <span class="h-rt-improve-label">✅ 改善维度:</span>
+      ${analysis.improvingDimensions.map((/** @type {any} */ d) =>
+        `<span class="h-rt-dim-slope">${d.label} <span class="h-rt-dim-slope improve">+${d.slope}/周</span></span>`
       ).join("")}
     </div>` : ""}
   </div>`;
@@ -400,19 +405,19 @@ export function buildTrendSummaryHTML(analysis) {
 /**
  * Build anomaly alert HTML for the enhanced report.
  *
- * @param {object} analysis - From buildEnhancedTrendAnalysis()
+ * @param {any} analysis - From buildEnhancedTrendAnalysis()
  * @returns {string} HTML
  */
-export function buildAnomalyAlertHTML(analysis) {
+export function buildAnomalyAlertHTML(/** @type {any} */ analysis) {
   if (!analysis || !analysis.anomalies || analysis.anomalies.length === 0) return "";
 
   return `
-  <div style="margin:8px 0;padding:12px;background:rgba(245,158,11,.1);border-radius:6px;border:1px solid rgba(245,158,11,.25)">
-    <span style="color:#f59e0b;font-weight:600">🔍 检测到 ${analysis.anomalies.length} 个异常评分点:</span>
-    ${analysis.anomalies.slice(0, 5).map(a =>
-      `<span style="margin-left:8px;font-size:13px">${a.date || "—"}: <b>${a.value}</b> 分</span>`
+  <div class="h-rt-anomaly">
+    <span class="h-rt-anomaly-label">🔍 检测到 ${analysis.anomalies.length} 个异常评分点:</span>
+    ${analysis.anomalies.slice(0, 5).map((/** @type {any} */ a) =>
+      `<span class="h-rt-anomaly-item">${a.date || "—"}: <b>${a.value}</b> 分</span>`
     ).join("")}
-    <span style="font-size:12px;color:var(--text3);margin-left:8px">(偏离典型值超过 3.5× 中位绝对偏差)</span>
+    <span class="h-rt-anomaly-hint">(偏离典型值超过 3.5× 中位绝对偏差)</span>
   </div>`;
 }
 
@@ -422,67 +427,66 @@ export function buildAnomalyAlertHTML(analysis) {
  * Build a correlation matrix between health dimensions using historical data.
  * Uses Pearson correlation on per-dimension score histories.
  *
- * @param {object} dimHistory - From getDimensionHistory() — { label: [{date, score}] }
+ * @param {Record<string, any[]>} dimHistory - From getDimensionHistory() — { label: [{date, score}] }
  * @param {string[]} [focusDims] - Optional subset of dimension labels to include
- * @returns {{ matrix: number[][], labels: string[], insights: string[] }}
+ * @returns {{ matrix: number[][], labels: string[], insights: string[] } | null}
  */
-export function buildCorrelationMatrix(dimHistory, focusDims) {
+export function buildCorrelationMatrix(/** @type {Record<string, any[]>} */ dimHistory, /** @type {string[]} */ focusDims) {
   // Collect labels that have enough data points
-  var candidates = Object.entries(dimHistory)
-    .filter(function(e) { return e[1].length >= 3; })
-    .map(function(e) { return e[0]; });
+  let candidates = Object.entries(dimHistory)
+    .filter((e) => e[1].length >= 3)
+    .map((e) => e[0]);
 
   if (focusDims && focusDims.length > 0) {
-    candidates = candidates.filter(function(l) { return focusDims.indexOf(l) >= 0; });
+    candidates = candidates.filter((l) => focusDims.indexOf(l) >= 0);
   }
 
   if (candidates.length < 3) return null;
 
   // Align scores by date
-  var dateMap = {};
-  for (var _a = 0; _a < candidates.length; _a++) {
-    var label = candidates[_a];
-    var points = dimHistory[label] || [];
-    for (var _b = 0; _b < points.length; _b++) {
-      var p = points[_b];
+  /** @type {Record<string, Record<string, number>>} */
+  const dateMap = {};
+  for (const label of candidates) {
+    const points = dimHistory[label] || [];
+    for (const p of points) {
       if (!dateMap[p.date]) dateMap[p.date] = {};
       dateMap[p.date][label] = p.score;
     }
   }
 
   // Build aligned score arrays
-  var dates = Object.keys(dateMap).sort();
-  var scoreArrays = {};
-  for (var _c = 0; _c < candidates.length; _c++) {
-    scoreArrays[candidates[_c]] = [];
-  }
+  const dates = Object.keys(dateMap).sort();
+  /** @type {Record<string, (number | null)[]>} */
+  const scoreArrays = {};
+  for (const c of candidates) scoreArrays[c] = [];
 
-  for (var _d = 0; _d < dates.length; _d++) {
-    var row = dateMap[dates[_d]];
-    for (var _e = 0; _e < candidates.length; _e++) {
-      var lbl = candidates[_e];
+  for (const d of dates) {
+    const row = dateMap[d];
+    for (const lbl of candidates) {
       scoreArrays[lbl].push(row[lbl] !== undefined ? row[lbl] : null);
     }
   }
 
   // Compute correlation matrix
-  var n = candidates.length;
-  var matrix = [];
-  for (var i = 0; i < n; i++) {
+  const n = candidates.length;
+  /** @type {number[][]} */
+  const matrix = [];
+  for (let i = 0; i < n; i++) {
     matrix[i] = [];
-    for (var j = 0; j < n; j++) {
+    for (let j = 0; j < n; j++) {
       if (i === j) {
         matrix[i][j] = 1.0;
       } else if (j < i) {
         matrix[i][j] = matrix[j][i]; // symmetric
       } else {
-        var xs = [], ys = [];
-        var arrI = scoreArrays[candidates[i]];
-        var arrJ = scoreArrays[candidates[j]];
-        for (var k = 0; k < arrI.length; k++) {
+        /** @type {number[]} */ const xs = [];
+        /** @type {number[]} */ const ys = [];
+        const arrI = scoreArrays[candidates[i]];
+        const arrJ = scoreArrays[candidates[j]];
+        for (let k = 0; k < arrI.length; k++) {
           if (arrI[k] !== null && arrJ[k] !== null) {
-            xs.push(arrI[k]);
-            ys.push(arrJ[k]);
+            xs.push(arrI[k] ?? 0);
+            ys.push(arrJ[k] ?? 0);
           }
         }
         matrix[i][j] = xs.length >= 3 ? pearsonCorrelation(xs, ys) : 0;
@@ -491,33 +495,29 @@ export function buildCorrelationMatrix(dimHistory, focusDims) {
   }
 
   // Generate insights
-  var insights = [];
-  var strongPairs = [];
-  for (var _f = 0; _f < n; _f++) {
-    for (var _g = _f + 1; _g < n; _g++) {
-      var r = matrix[_f][_g];
+  const strongPairs = [];
+  for (let _f = 0; _f < n; _f++) {
+    for (let _g = _f + 1; _g < n; _g++) {
+      const r = matrix[_f][_g];
       if (Math.abs(r) >= 0.7) {
         strongPairs.push({
-          a: candidates[_f], b: candidates[_g], r: r,
+          a: candidates[_f], b: candidates[_g], r,
           direction: r > 0 ? '正相关' : '负相关',
         });
       }
     }
   }
-  strongPairs.sort(function(a, b) { return Math.abs(b.r) - Math.abs(a.r); });
+  strongPairs.sort((a, b) => Math.abs(b.r) - Math.abs(a.r));
 
-  var _h = 0;
-  for (; _h < strongPairs.length && _h < 5; _h++) {
-    var sp = strongPairs[_h];
-    var strength = Math.abs(sp.r) >= 0.85 ? '强' : '显著';
-    if (sp.r > 0) {
-      insights.push(sp.a + ' ↔ ' + sp.b + ': ' + strength + '正相关 (r=' + sp.r.toFixed(2) + ') — 改善一方可带动另一方');
-    } else {
-      insights.push(sp.a + ' ↔ ' + sp.b + ': ' + strength + '负相关 (r=' + sp.r.toFixed(2) + ') — 存在权衡关系');
-    }
-  }
+  const insights = strongPairs.slice(0, 5).map((sp) => {
+    const strength = Math.abs(sp.r) >= 0.85 ? '强' : '显著';
+    const rel = sp.r > 0
+      ? strength + '正相关 (r=' + sp.r.toFixed(2) + ') — 改善一方可带动另一方'
+      : strength + '负相关 (r=' + sp.r.toFixed(2) + ') — 存在权衡关系';
+    return sp.a + ' ↔ ' + sp.b + ': ' + rel;
+  });
 
-  return { matrix: matrix, labels: candidates, insights: insights };
+  return { matrix, labels: candidates, insights };
 }
 
 // ── Historical benchmarking ──────────────────────────────────────
@@ -526,178 +526,163 @@ export function buildCorrelationMatrix(dimHistory, focusDims) {
  * Compute historical benchmarks from trend data.
  * Compares current score against best, worst, and average periods.
  *
- * @param {object[]} history - Health trend entries
+ * @param {any[]} history - Health trend entries
  * @param {number} currentComposite - Current composite score
- * @returns {{ best: object, worst: object, avg: number, percentile: number, periodLabel: string }}
+ * @returns {{ best: any, worst: any, avg: number, percentile: number, periodLabel: string, bestGap: number, avgGap: number, totalSamples: number } | null}
  */
-export function buildHistoricalBenchmarks(history, currentComposite) {
+export function buildHistoricalBenchmarks(/** @type {any[]} */ history, /** @type {number} */ currentComposite) {
   if (!history || history.length < 2) return null;
 
-  var composites = history.map(function(h) { return h.composite; }).filter(function(s) { return typeof s === "number"; });
+  const composites = history.map((/** @type {any} */ h) => h.composite).filter((/** @type {any} */ s) => typeof s === "number");
   if (composites.length < 2) return null;
 
-  var best = null, worst = null;
-  var sum = 0;
-  for (var i = 0; i < history.length; i++) {
-    var h = history[i];
-    var s = h.composite;
+  /** @type {any} */ let best = null;
+  /** @type {any} */ let worst = null;
+  let sum = 0;
+  for (const h of history) {
+    const s = h.composite;
     if (typeof s !== "number") continue;
     sum += s;
     if (!best || s > best.score) best = { score: s, date: (h.timestamp || "").slice(0, 10), grade: h.grade || "" };
     if (!worst || s < worst.score) worst = { score: s, date: (h.timestamp || "").slice(0, 10), grade: h.grade || "" };
   }
 
-  var avg = Math.round(sum / composites.length);
+  const avg = Math.round(sum / composites.length);
 
   // Percentile rank: what % of historical scores are below current
-  var below = 0;
-  for (var _a = 0; _a < composites.length; _a++) {
-    if (composites[_a] < currentComposite) below++;
-  }
-  var percentile = Math.round((below / composites.length) * 100);
+  const below = composites.filter((s) => s < currentComposite).length;
+  const percentile = Math.round((below / composites.length) * 100);
 
   // Period labels
-  var days = history.length; // approximate data points as daily
-  var periodLabel = days <= 7 ? "近7天" : days <= 30 ? "近30天" : days <= 90 ? "近90天" : "全部历史";
+  const days = history.length; // approximate data points as daily
+  const periodLabel = days <= 7 ? "近7天" : days <= 30 ? "近30天" : days <= 90 ? "近90天" : "全部历史";
 
   // Best/average gap
-  var bestGap = currentComposite - (best ? best.score : currentComposite);
-  var avgGap = currentComposite - avg;
+  const bestGap = currentComposite - (best ? best.score : currentComposite);
+  const avgGap = currentComposite - avg;
 
   return {
-    best: best,
-    worst: worst,
-    avg: avg,
-    percentile: percentile,
-    bestGap: bestGap,
-    avgGap: avgGap,
+    best,
+    worst,
+    avg,
+    percentile,
+    bestGap,
+    avgGap,
     totalSamples: composites.length,
-    periodLabel: periodLabel,
+    periodLabel,
   };
 }
 
 /**
  * Build benchmarking HTML for the report.
  *
- * @param {object} benchmarks - From buildHistoricalBenchmarks()
+ * @param {any} benchmarks - From buildHistoricalBenchmarks()
  * @returns {string} HTML
  */
-export function buildBenchmarkHTML(benchmarks) {
+export function buildBenchmarkHTML(/** @type {any} */ benchmarks) {
   if (!benchmarks || benchmarks.totalSamples < 2) return "";
 
-  var bm = benchmarks;
-  var vsBest = bm.bestGap >= 0 ? '达到历史最佳' : '距最佳差 ' + Math.abs(bm.bestGap) + ' 分';
-  var vsBestColor = bm.bestGap >= 0 ? '#22c55e' : bm.bestGap >= -5 ? '#f59e0b' : '#ef4444';
-  var vsAvgColor = bm.avgGap >= 0 ? '#22c55e' : '#ef4444';
-  var percentileColor = bm.percentile >= 75 ? '#22c55e' : bm.percentile >= 50 ? '#f59e0b' : '#ef4444';
+  const bm = benchmarks;
+  const vsBest = bm.bestGap >= 0 ? '达到历史最佳' : '距最佳差 ' + Math.abs(bm.bestGap) + ' 分';
+  const vsBestTier = bm.bestGap >= 0 ? 'pass' : bm.bestGap >= -5 ? 'warn' : 'fail';
+  const vsAvgTier = bm.avgGap >= 0 ? 'up' : 'down';
+  const percentileTier = bm.percentile >= 75 ? 'pct-pass' : bm.percentile >= 50 ? 'pct-warn' : 'pct-fail';
 
-  return '<div class="h-section">' +
-    '<h2>📊 历史基准对比 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">' + bm.periodLabel + ' · ' + bm.totalSamples + ' 次检查</span></h2>' +
-    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:8px">' +
-    '<div style="text-align:center;padding:12px;background:var(--bg1);border-radius:6px">' +
-    '<div style="font-size:.7rem;color:var(--yry-text3);margin-bottom:4px">历史最佳</div>' +
-    '<div style="font-size:1.4rem;font-weight:700;color:#22c55e">' + bm.best.score + '</div>' +
-    '<div style="font-size:.62rem;color:var(--yry-text3)">' + bm.best.date + ' · ' + bm.best.grade + '级</div>' +
-    '</div>' +
-    '<div style="text-align:center;padding:12px;background:var(--bg1);border-radius:6px">' +
-    '<div style="font-size:.7rem;color:var(--yry-text3);margin-bottom:4px">历史平均</div>' +
-    '<div style="font-size:1.4rem;font-weight:700;color:var(--yry-text2)">' + bm.avg + '</div>' +
-    '<div style="font-size:.62rem;color:var(--yry-text3)">' + bm.totalSamples + ' 次均值</div>' +
-    '</div>' +
-    '<div style="text-align:center;padding:12px;background:var(--bg1);border-radius:6px">' +
-    '<div style="font-size:.7rem;color:var(--yry-text3);margin-bottom:4px">历史最差</div>' +
-    '<div style="font-size:1.4rem;font-weight:700;color:#ef4444">' + bm.worst.score + '</div>' +
-    '<div style="font-size:.62rem;color:var(--yry-text3)">' + bm.worst.date + ' · ' + bm.worst.grade + '级</div>' +
-    '</div>' +
-    '<div style="text-align:center;padding:12px;background:var(--bg1);border-radius:6px">' +
-    '<div style="font-size:.7rem;color:var(--yry-text3);margin-bottom:4px">百分位</div>' +
-    '<div style="font-size:1.4rem;font-weight:700;color:' + percentileColor + '">P' + bm.percentile + '</div>' +
-    '<div style="font-size:.62rem;color:var(--yry-text3)">超越 ' + bm.percentile + '% 历史记录</div>' +
-    '</div>' +
-    '</div>' +
-    '<div style="padding:8px;background:rgba(245,158,11,.06);border-radius:6px;font-size:.7rem;color:var(--yry-text2);text-align:center">' +
-    '📊 对比最佳: <span style="color:' + vsBestColor + ';font-weight:600">' + vsBest + '</span> · ' +
-    '对比均值: <span style="color:' + vsAvgColor + ';font-weight:600">' + (bm.avgGap >= 0 ? '+' : '') + bm.avgGap + ' 分</span>' +
-    '</div>' +
-    '</div>';
+  return `<div class="h-section">
+<h2>📊 历史基准对比 <span class="h-section-sub-inline">${bm.periodLabel} · ${bm.totalSamples} 次检查</span></h2>
+<div class="h-rt-bench-grid">
+<div class="h-rt-bench-cell">
+<div class="h-rt-bench-lbl">历史最佳</div>
+<div class="h-rt-bench-val best">${bm.best.score}</div>
+<div class="h-rt-bench-sub">${bm.best.date} · ${bm.best.grade}级</div>
+</div>
+<div class="h-rt-bench-cell">
+<div class="h-rt-bench-lbl">历史平均</div>
+<div class="h-rt-bench-val avg">${bm.avg}</div>
+<div class="h-rt-bench-sub">${bm.totalSamples} 次均值</div>
+</div>
+<div class="h-rt-bench-cell">
+<div class="h-rt-bench-lbl">历史最差</div>
+<div class="h-rt-bench-val worst">${bm.worst.score}</div>
+<div class="h-rt-bench-sub">${bm.worst.date} · ${bm.worst.grade}级</div>
+</div>
+<div class="h-rt-bench-cell">
+<div class="h-rt-bench-lbl">百分位</div>
+<div class="h-rt-bench-val ${percentileTier}">P${bm.percentile}</div>
+<div class="h-rt-bench-sub">超越 ${bm.percentile}% 历史记录</div>
+</div>
+</div>
+<div class="h-rt-bench-foot">
+📊 对比最佳: <span class="h-rt-bench-delta ${vsBestTier}">${vsBest}</span> · 对比均值: <span class="h-rt-bench-delta ${vsAvgTier}">${bm.avgGap >= 0 ? '+' : ''}${bm.avgGap} 分</span>
+</div>
+</div>`;
 }
 
 /**
  * Build a weekly digest summarizing key changes, regressions, and improvements
  * over the past 7 days. Designed for executive-level consumption.
  *
- * @param {object} enhancedTrend - From buildEnhancedTrendAnalysis()
- * @param {Array} healthTrend - Full health trend history
+ * @param {any} enhancedTrend - From buildEnhancedTrendAnalysis()
+ * @param {any[]} healthTrend - Full health trend history
  * @param {number} currentScore - Current composite score
  * @returns {string} HTML
  */
-export function buildWeeklyDigest(enhancedTrend, healthTrend, currentScore) {
+export function buildWeeklyDigest(/** @type {any} */ enhancedTrend, /** @type {any[]} */ healthTrend, /** @type {number} */ currentScore) {
   if (!enhancedTrend || !healthTrend || healthTrend.length < 2) return "";
 
-  var regressing = enhancedTrend.regressingDimensions || [];
-  var improving = enhancedTrend.improvingDimensions || [];
-  var anomalies = enhancedTrend.anomalies || [];
-  var trend = enhancedTrend.trend || {};
-  var gradeDist = enhancedTrend.gradeDistribution || {};
+  const { regressing = [], improving = [], anomalies = [], trend = {}, gradeDistribution: gradeDist = {}, forecast, totalEntries } = enhancedTrend;
 
   // Calculate week-over-week changes
-  var recentEntries = healthTrend.slice(-7);
-  var weekChange = 0;
+  const recentEntries = healthTrend.slice(-7);
+  let weekChange = 0;
   if (recentEntries.length >= 2) {
     weekChange = currentScore - (recentEntries[0].composite || currentScore);
   }
 
   // Build digest items
-  var digestItems = [];
+  const digestItems = [];
 
   // Overall direction
-  var directionIcon = trend.direction === "rising" ? "📈" : trend.direction === "falling" ? "📉" : "📊";
-  var directionLabel = trend.direction === "rising" ? "持续改善" : trend.direction === "falling" ? "持续退化" : "保持稳定";
-  var directionColor = trend.direction === "rising" ? "#22c55e" : trend.direction === "falling" ? "#ef4444" : "var(--yry-text2)";
+  const directionIcon = trend.direction === "rising" ? "📈" : trend.direction === "falling" ? "📉" : "📊";
+  const directionLabel = trend.direction === "rising" ? "持续改善" : trend.direction === "falling" ? "持续退化" : "保持稳定";
+  const directionTier = trend.direction === "rising" ? "up" : trend.direction === "falling" ? "down" : "flat";
+  const weekChangeTier = weekChange >= 0 ? "up" : "down";
   digestItems.push({
     icon: directionIcon,
-    text: "整体趋势：<b style='color:" + directionColor + "'>" + directionLabel + "</b>，" +
-      "周变化 <b style='color:" + (weekChange >= 0 ? "#22c55e" : "#ef4444") + "'>" + (weekChange >= 0 ? "+" : "") + weekChange + " 分</b>，" +
-      "斜率 " + (trend.slopePerWeek > 0 ? "+" : "") + (trend.slopePerWeek || 0) + "/周",
+    text: `整体趋势：<b class='h-rt-b ${directionTier}'>${directionLabel}</b>，周变化 <b class='h-rt-b ${weekChangeTier}'>${weekChange >= 0 ? "+" : ""}${weekChange} 分</b>，斜率 ${trend.slopePerWeek > 0 ? "+" : ""}${trend.slopePerWeek || 0}/周`,
   });
 
   // Grade distribution
-  var gradeSummary = [];
-  for (var _g = 0, _a = ["A", "B", "C", "D"]; _g < _a.length; _g++) {
-    var g = _a[_g];
-    if (gradeDist[g] > 0) gradeSummary.push(g + "级 " + gradeDist[g] + " 次");
-  }
+  const gradeSummary = ["A", "B", "C", "D"]
+    .filter((g) => gradeDist[g] > 0)
+    .map((g) => g + "级 " + gradeDist[g] + " 次");
   if (gradeSummary.length > 0) {
     digestItems.push({
       icon: "📊",
-      text: "等级分布：" + gradeSummary.join(" · ") + "（共 " + enhancedTrend.totalEntries + " 次检查）",
+      text: "等级分布：" + gradeSummary.join(" · ") + "（共 " + totalEntries + " 次检查）",
     });
   }
 
   // Regressing dimensions
   if (regressing.length > 0) {
-    var regressText = regressing.slice(0, 3).map(function(r) {
-      return r.label + "(" + r.slope + "/周)";
-    }).join("、");
+    const regressText = regressing.slice(0, 3).map((/** @type {any} */ r) => r.label + "(" + r.slope + "/周)").join("、");
     digestItems.push({
       icon: "🔴",
-      text: "退化维度：<b style='color:#ef4444'>" + regressing.length + " 个</b> — " + regressText + (regressing.length > 3 ? " 等" : ""),
+      text: "退化维度：<b class='h-rt-b down'>" + regressing.length + " 个</b> — " + regressText + (regressing.length > 3 ? " 等" : ""),
     });
   } else {
     digestItems.push({
       icon: "🟢",
-      text: "退化维度：<b style='color:#22c55e'>0 个</b>，所有维度保持稳定或改善",
+      text: "退化维度：<b class='h-rt-b up'>0 个</b>，所有维度保持稳定或改善",
     });
   }
 
   // Improving dimensions
   if (improving.length > 0) {
-    var improveText = improving.slice(0, 3).map(function(r) {
-      return r.label + "(+" + r.slope + "/周)";
-    }).join("、");
+    const improveText = improving.slice(0, 3).map((/** @type {any} */ r) => r.label + "(+" + r.slope + "/周)").join("、");
     digestItems.push({
       icon: "🟢",
-      text: "改善维度：<b style='color:#22c55e'>" + improving.length + " 个</b> — " + improveText + (improving.length > 3 ? " 等" : ""),
+      text: "改善维度：<b class='h-rt-b up'>" + improving.length + " 个</b> — " + improveText + (improving.length > 3 ? " 等" : ""),
     });
   }
 
@@ -705,33 +690,32 @@ export function buildWeeklyDigest(enhancedTrend, healthTrend, currentScore) {
   if (anomalies.length > 0) {
     digestItems.push({
       icon: "⚠️",
-      text: "异常检测：<b style='color:#f59e0b'>" + anomalies.length + " 个异常点</b>，建议查看异常告警面板了解详情",
+      text: "异常检测：<b class='h-rt-b warn'>" + anomalies.length + " 个异常点</b>，建议查看异常告警面板了解详情",
     });
   }
 
   // Forecast
-  if (enhancedTrend.forecast) {
-    var fc = enhancedTrend.forecast;
-    var fcDir = fc.forecast > currentScore ? "上升" : fc.forecast < currentScore ? "下降" : "持平";
-    var fcColor = fc.forecast > currentScore ? "#22c55e" : fc.forecast < currentScore ? "#ef4444" : "var(--yry-text2)";
+  if (forecast) {
+    const fcDir = forecast.forecast > currentScore ? "上升" : forecast.forecast < currentScore ? "下降" : "持平";
+    const fcTier = forecast.forecast > currentScore ? "up" : forecast.forecast < currentScore ? "down" : "flat";
     digestItems.push({
       icon: "🔮",
-      text: "7 天预测：<b style='color:" + fcColor + "'>" + fc.forecast + " 分</b>（" + fcDir + " " + Math.abs(fc.forecast - currentScore) + " 分），置信度 " + (trend.confidence || "low"),
+      text: "7 天预测：<b class='h-rt-b " + fcTier + "'>" + forecast.forecast + " 分</b>（" + fcDir + " " + Math.abs(forecast.forecast - currentScore) + " 分），置信度 " + (trend.confidence || "low"),
     });
   }
 
-  var digestHtml = digestItems.map(function(item) {
-    return '<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)">' +
-      '<span style="font-size:1rem;flex-shrink:0">' + item.icon + '</span>' +
-      '<span style="font-size:.82rem;color:var(--yry-text2);line-height:1.6">' + item.text + '</span>' +
-      '</div>';
-  }).join("");
+  const digestHtml = digestItems.map((item) =>
+    `<div class="h-rt-digest-row">
+<span class="h-rt-digest-icon">${item.icon}</span>
+<span class="h-rt-digest-text">${item.text}</span>
+</div>`
+  ).join("");
 
-  return '<div class="h-section">' +
-    '<h2>📋 周度摘要 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Weekly Digest · 近 7 天关键变化</span></h2>' +
-    '<div style="padding:8px 0">' + digestHtml + '</div>' +
-    '<div style="margin-top:8px;font-size:.68rem;color:var(--yry-text3);text-align:center">' +
-    '基于 ' + enhancedTrend.totalEntries + ' 次历史检查数据分析 · 数据来源: .memory/health-trend.jsonl' +
-    '</div>' +
-    '</div>';
+  return `<div class="h-section">
+<h2>📋 周度摘要 <span class="h-section-sub-inline">Weekly Digest · 近 7 天关键变化</span></h2>
+<div class="h-rt-digest-body">${digestHtml}</div>
+<div class="h-rt-digest-foot">
+基于 ${totalEntries} 次历史检查数据分析 · 数据来源: .memory/health-trend.jsonl
+</div>
+</div>`;
 }

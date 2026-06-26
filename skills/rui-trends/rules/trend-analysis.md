@@ -1,3 +1,10 @@
+---
+paths:
+  - "skills/rui-trends/**"
+  - "skills/rui-trends/SKILL.md"
+description: "技术趋势发现和分析的规则"
+---
+
 # rui-trends 趋势分析规则
 
 > 技术趋势发现和分析的规则，独立于实现细节。

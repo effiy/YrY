@@ -16,23 +16,7 @@
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
 <link rel="stylesheet" href="../../../yry-a11y/index.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<style>
-  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
-  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
-  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
-  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
-  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
-  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
-  .delivery-story { font-size: .72rem; color: #4b5563; }
-  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
-  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
-  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
-  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
-  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
-  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
-  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
-</style>
+<link rel="stylesheet" href="../../../yry-legacy-scene-delivery/index.css">
 </head>
 <body>
 <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
@@ -54,7 +38,7 @@
 
   <div class="content-card">
     <h2>📐 10 大功能类别 · 形态分布 · API 矩阵</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">📂 10 大功能类别                🧬 形态分布
+    <pre class="yry-auto-15271">📂 10 大功能类别                🧬 形态分布
 ┌────────────────────────┐      Vue 3 CE    : 54
 │ 布局与结构   9          │      Vanilla JS : 44
 │ 导航         5          │      纯 CSS      : 22
@@ -77,62 +61,62 @@
 
   <div class="content-card">
     <h2>📊 10 大功能类别明细</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:center;color:#22d3ee;font-weight:600">#</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">类别</th><th style="padding:8px 10px;text-align:right;color:#22d3ee;font-weight:600">数量</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">代表组件</th></tr></thead>
+    <table class="yry-auto-93137">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-18009">#</th><th class="yry-auto-75234">类别</th><th class="yry-auto-56356">数量</th><th class="yry-auto-75234">代表组件</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center">1</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">布局与结构</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">9</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">yry-layer · yry-doc-layer · yry-breadcrumb · yry-sub-title · yry-card-grid</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center">2</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">导航</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">5</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">yry-panel-hub · yry-cross-nav · yry-page-nav · yry-scene-nav · yry-back-top</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center">3</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">卡片与展示</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">11</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">yry-item-card · yry-story-card · yry-scene-card · yry-tag-chip · yry-kpi-card</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center">4</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">场景组件</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">7</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">yry-scene-header · yry-scene-footer · yry-scene-chrome · yry-scene-stats</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center">5</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">统计与健康</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">5</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">yry-stats-grid · yry-health-bar · yry-kpi-grid · yry-progress-bar · yry-phase-strip</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center">6</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">检查清单</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">5</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">yry-checklist-head · yry-check-item · yry-verify-item · yry-step-card</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center">7</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">风险与审查</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">4</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">yry-risk-cat-card · yry-risk-matrix · yry-risk-row · yry-review-cards</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center">8</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">浮动面板</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">4</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">yry-cron-panel · yry-notify-panel · yry-selfimprove-panel · yry-faq-panel</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center">9</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">交互与反馈</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">12</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">yry-accordion · yry-code-block · yry-tooltip · yry-toast · yry-typewriter</td></tr>
-        <tr><td style="padding:8px 10px;text-align:center">10</td><td style="padding:8px 10px">展示与可视化</td><td style="padding:8px 10px;text-align:right">10</td><td style="padding:8px 10px">yry-concept-radar · yry-cytoscape-graph · yry-gantt · yry-timeline-hero</td></tr>
+        <tr><td class="yry-auto-18644">1</td><td class="yry-auto-86182">布局与结构</td><td class="yry-auto-53076">9</td><td class="yry-auto-86182">yry-layer · yry-doc-layer · yry-breadcrumb · yry-sub-title · yry-card-grid</td></tr>
+        <tr><td class="yry-auto-18644">2</td><td class="yry-auto-86182">导航</td><td class="yry-auto-53076">5</td><td class="yry-auto-86182">yry-panel-hub · yry-cross-nav · yry-page-nav · yry-scene-nav · yry-back-top</td></tr>
+        <tr><td class="yry-auto-18644">3</td><td class="yry-auto-86182">卡片与展示</td><td class="yry-auto-53076">11</td><td class="yry-auto-86182">yry-item-card · yry-story-card · yry-scene-card · yry-tag-chip · yry-kpi-card</td></tr>
+        <tr><td class="yry-auto-18644">4</td><td class="yry-auto-86182">场景组件</td><td class="yry-auto-53076">7</td><td class="yry-auto-86182">yry-scene-header · yry-scene-footer · yry-scene-chrome · yry-scene-stats</td></tr>
+        <tr><td class="yry-auto-18644">5</td><td class="yry-auto-86182">统计与健康</td><td class="yry-auto-53076">5</td><td class="yry-auto-86182">yry-stats-grid · yry-health-bar · yry-kpi-grid · yry-progress-bar · yry-phase-strip</td></tr>
+        <tr><td class="yry-auto-18644">6</td><td class="yry-auto-86182">检查清单</td><td class="yry-auto-53076">5</td><td class="yry-auto-86182">yry-checklist-head · yry-check-item · yry-verify-item · yry-step-card</td></tr>
+        <tr><td class="yry-auto-18644">7</td><td class="yry-auto-86182">风险与审查</td><td class="yry-auto-53076">4</td><td class="yry-auto-86182">yry-risk-cat-card · yry-risk-matrix · yry-risk-row · yry-review-cards</td></tr>
+        <tr><td class="yry-auto-18644">8</td><td class="yry-auto-86182">浮动面板</td><td class="yry-auto-53076">4</td><td class="yry-auto-86182">yry-cron-panel · yry-notify-panel · yry-selfimprove-panel · yry-faq-panel</td></tr>
+        <tr><td class="yry-auto-18644">9</td><td class="yry-auto-86182">交互与反馈</td><td class="yry-auto-53076">12</td><td class="yry-auto-86182">yry-accordion · yry-code-block · yry-tooltip · yry-toast · yry-typewriter</td></tr>
+        <tr><td class="yry-a1-67">10</td><td class="yry-auto-93797">展示与可视化</td><td class="yry-auto-73847">10</td><td class="yry-auto-93797">yry-concept-radar · yry-cytoscape-graph · yry-gantt · yry-timeline-hero</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>🔧 9 个 YrY.* 工具 API</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">API</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">签名</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">用途</th><th style="padding:8px 10px;text-align:center;color:#22d3ee;font-weight:600">频率</th></tr></thead>
+    <table class="yry-auto-93137">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-75234">API</th><th class="yry-auto-75234">签名</th><th class="yry-auto-75234">用途</th><th class="yry-auto-18009">频率</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>YrY.toast</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>(msg, type?, duration?)</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">弹出 toast 通知</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#4ade80">高</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>YrY.copyCmd</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>(text, el?)</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">复制到剪贴板 + 视觉反馈</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#4ade80">高</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>YrY.switchPanel</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>(panelName)</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">切换浮动面板</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#fbbf24">中</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>YrY.suiteToggle</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>(selector)</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">折叠/展开套件</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#fbbf24">中</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>YrY.sceneMeta</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>(basePath)</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">生成 7 交付物链接数组</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#4ade80">高</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>YrY.fetchData</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>(url, options?)</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">带超时+重试的 fetch</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#fbbf24">中</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>YrY.debounce</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>(fn, delay)</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">防抖函数</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#6b7280">低</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>YrY.throttle</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>(fn, delay)</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">节流函数</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#6b7280">低</td></tr>
-        <tr><td style="padding:8px 10px"><code>YrY.ready</code></td><td style="padding:8px 10px"><code>(el, eventName)</code></td><td style="padding:8px 10px">自定义元素就绪 Promise</td><td style="padding:8px 10px;text-align:center;color:#fbbf24">中</td></tr>
+        <tr><td class="yry-auto-86182"><code>YrY.toast</code></td><td class="yry-auto-86182"><code>(msg, type?, duration?)</code></td><td class="yry-auto-86182">弹出 toast 通知</td><td class="yry-auto-15620">高</td></tr>
+        <tr><td class="yry-auto-86182"><code>YrY.copyCmd</code></td><td class="yry-auto-86182"><code>(text, el?)</code></td><td class="yry-auto-86182">复制到剪贴板 + 视觉反馈</td><td class="yry-auto-15620">高</td></tr>
+        <tr><td class="yry-auto-86182"><code>YrY.switchPanel</code></td><td class="yry-auto-86182"><code>(panelName)</code></td><td class="yry-auto-86182">切换浮动面板</td><td class="yry-auto-45806">中</td></tr>
+        <tr><td class="yry-auto-86182"><code>YrY.suiteToggle</code></td><td class="yry-auto-86182"><code>(selector)</code></td><td class="yry-auto-86182">折叠/展开套件</td><td class="yry-auto-45806">中</td></tr>
+        <tr><td class="yry-auto-86182"><code>YrY.sceneMeta</code></td><td class="yry-auto-86182"><code>(basePath)</code></td><td class="yry-auto-86182">生成 7 交付物链接数组</td><td class="yry-auto-15620">高</td></tr>
+        <tr><td class="yry-auto-86182"><code>YrY.fetchData</code></td><td class="yry-auto-86182"><code>(url, options?)</code></td><td class="yry-auto-86182">带超时+重试的 fetch</td><td class="yry-auto-45806">中</td></tr>
+        <tr><td class="yry-auto-86182"><code>YrY.debounce</code></td><td class="yry-auto-86182"><code>(fn, delay)</code></td><td class="yry-auto-86182">防抖函数</td><td class="yry-a2-1">低</td></tr>
+        <tr><td class="yry-auto-86182"><code>YrY.throttle</code></td><td class="yry-auto-86182"><code>(fn, delay)</code></td><td class="yry-auto-86182">节流函数</td><td class="yry-a2-1">低</td></tr>
+        <tr><td class="yry-auto-93797"><code>YrY.ready</code></td><td class="yry-auto-93797"><code>(el, eventName)</code></td><td class="yry-auto-93797">自定义元素就绪 Promise</td><td class="yry-a2-17">中</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>🧬 Vue 3 自定义元素规范</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.74rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">规范项</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">约定</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">示例</th></tr></thead>
+    <table class="yry-auto-1645">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-38488">规范项</th><th class="yry-auto-38488">约定</th><th class="yry-auto-38488">示例</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">命名空间</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>yry-*</code> (kebab-case)</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>&lt;yry-item-card&gt;</code></td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">注册方式</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>Vue.defineCustomElement()</code></td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>customElements.define('yry-item-card', YryItemCard)</code></td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">就绪事件</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>*-ready</code> 事件</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>yry-item-card-ready</code></td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">属性赋值</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">property 赋值 (非 attribute)</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>el.items = [...]</code></td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">双设策略</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">内联立即赋值 + ready 事件二次赋值</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">覆盖组件晚于元素出现的场景</td></tr>
-        <tr><td style="padding:8px 12px">文件拆分</td><td style="padding:8px 12px">三文件 (index.html/js/css)</td><td style="padding:8px 12px">模板/逻辑/样式各司其职</td></tr>
+        <tr><td class="yry-auto-40105">命名空间</td><td class="yry-auto-40105"><code>yry-*</code> (kebab-case)</td><td class="yry-auto-40105"><code>&lt;yry-item-card&gt;</code></td></tr>
+        <tr><td class="yry-auto-40105">注册方式</td><td class="yry-auto-40105"><code>Vue.defineCustomElement()</code></td><td class="yry-auto-40105"><code>customElements.define('yry-item-card', YryItemCard)</code></td></tr>
+        <tr><td class="yry-auto-40105">就绪事件</td><td class="yry-auto-40105"><code>*-ready</code> 事件</td><td class="yry-auto-40105"><code>yry-item-card-ready</code></td></tr>
+        <tr><td class="yry-auto-40105">属性赋值</td><td class="yry-auto-40105">property 赋值 (非 attribute)</td><td class="yry-auto-40105"><code>el.items = [...]</code></td></tr>
+        <tr><td class="yry-auto-40105">双设策略</td><td class="yry-auto-40105">内联立即赋值 + ready 事件二次赋值</td><td class="yry-auto-40105">覆盖组件晚于元素出现的场景</td></tr>
+        <tr><td class="yry-auto-70345">文件拆分</td><td class="yry-auto-70345">三文件 (index.html/js/css)</td><td class="yry-auto-70345">模板/逻辑/样式各司其职</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>🔗 组件依赖关系链</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.74rem;color:#22d3ee;line-height:1.7;margin:0">tag-chip → item-card → card-grid → doc-layer
+    <pre class="yry-auto-80833">tag-chip → item-card → card-grid → doc-layer
                                 → story-card
                                 → scene-card</pre>
-    <p style="margin-top:12px;font-size:.74rem;color:#a9b1d6">基础组件 (tag-chip, item-card) 必须先于复合组件 (card-grid, doc-layer) 注册。违反此顺序将导致复合组件渲染时基础组件未定义。</p>
+    <p class="yry-auto-54055">基础组件 (tag-chip, item-card) 必须先于复合组件 (card-grid, doc-layer) 注册。违反此顺序将导致复合组件渲染时基础组件未定义。</p>
   </div>
 
   <div class="nav-links">

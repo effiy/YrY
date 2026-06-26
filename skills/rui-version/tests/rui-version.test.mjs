@@ -134,4 +134,4 @@ describe('rui-version skill', () => {
       assert.ok(content.includes('rollback') || content.includes('回退'), 'must document rollback');
     });
   });
-const exitCode = await run();
+const _exitCode = await run();

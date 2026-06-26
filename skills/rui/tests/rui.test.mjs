@@ -4,7 +4,7 @@
  */
 
 import { describe, it, assert, run } from '../../../lib/vitest-adapter.mjs';
-import { fileExists, readFile, readDir, hasSection, hasMermaidDiagram, PROJECT_ROOT } from '../../../lib/test-helpers.mjs';
+import { fileExists, readFile, hasSection, hasMermaidDiagram } from '../../../lib/test-helpers.mjs';
 
 const SKILL_DIR = 'skills/rui';
 
@@ -127,4 +127,4 @@ describe('edge cases', () => {
       assert.ok(content.includes('降级') || content.includes('degrad'), 'must document degradation');
     });
   });
-const exitCode = await run();
+const _exitCode = await run();

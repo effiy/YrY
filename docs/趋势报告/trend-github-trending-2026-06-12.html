@@ -1,69 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+<link rel="stylesheet" href="trend-github-trending-2026-06-12.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>趋势报告 · GitHub Trending 2026-06-12</title>
-<style>
-:root {
-  --yry-bg: rgba(22,22,32,1);
-  --yry-bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
-  --yry-accent: #FFC107; --yry-pass: #22c55e; --yry-fail: #ef4444; --yry-warn: #f59e0b;
-  --yry-text: rgba(250,250,252,1); --yry-text2: rgba(160,160,164,1); --yry-text3: rgba(110,110,114,1);
-  --yry-radius: 12px; --yry-border: 1px solid rgba(255,255,255,0.06);
-  --yry-shadow: 0 4px 20px rgba(0,0,0,0.3);
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif; line-height: 1.6; min-height: 100vh; }
-.c { max-width: 960px; margin: 0 auto; padding: 48px 24px 80px; }
-.bc { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; font-size: .76rem; }
-.bc a { color: #7aa2f7; text-decoration: none; } .bc a:hover { color: var(--yry-accent); }
-.bc .sep { color: #53576c; opacity: .5; } .bc .cur { color: #94a3b8; }
-.hd { text-align: center; margin-bottom: 32px; }
-.hd .icon { font-size: 2.5rem; margin-bottom: 8px; }
-.hd h1 { font-size: 1.6rem; }
-.hd .meta { color: var(--yry-text3); font-size: .82rem; margin-top: 6px; }
-.intro { padding: 18px 20px; border-left: 3px solid var(--yry-accent); background: rgba(255,193,7,.04); border-radius: 0 var(--yry-radius) var(--yry-radius) 0; margin-bottom: 24px; color: var(--yry-text2); font-size: .86rem; line-height: 1.75; }
-.intro strong { color: var(--yry-accent); }
-.intro code { background: rgba(59,130,246,.1); padding: 1px 6px; border-radius: 4px; font-size: .82em; color: #7aa2f7; }
-.card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); margin-bottom: 20px; }
-.card h2 { font-size: 1.1rem; margin-bottom: 16px; color: var(--yry-accent); display: flex; align-items: center; gap: 8px; }
-.card h3 { font-size: .92rem; margin: 18px 0 10px; color: var(--yry-text); }
-.stats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
-.stat { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 14px 18px; text-align: center; box-shadow: var(--yry-shadow); flex: 1; min-width: 100px; transition: transform .15s; }
-.stat:hover { transform: translateY(-2px); }
-.stat .val { font-size: 1.5rem; font-weight: 700; }
-.stat .val.pass { color: var(--yry-pass); } .stat .val.info { color: #22d3ee; } .stat .val.warn { color: var(--yry-warn); }
-.stat .lbl { font-size: .68rem; color: var(--yry-text3); margin-top: 3px; }
-.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: .7rem; font-weight: 600; }
-.badge.ok { background: rgba(34,197,94,.15); color: var(--yry-pass); }
-.badge.rise { background: rgba(34,197,94,.12); color: var(--yry-pass); }
-.badge.flat { background: rgba(255,255,255,.05); color: var(--yry-text3); }
-.badge.fall { background: rgba(239,68,68,.12); color: var(--yry-fail); }
-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-th, td { padding: 10px 16px; text-align: left; border-bottom: var(--yry-border); font-size: .86rem; }
-th { color: var(--yry-text3); font-size: .72rem; text-transform: uppercase; letter-spacing: .4px; }
-td .num { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
-.feature-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
-.feature-item { padding: 14px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); }
-.feature-label { font-size: .7rem; color: var(--yry-text3); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .4px; }
-.feature-val { font-size: .88rem; font-weight: 600; color: var(--yry-text); line-height: 1.5; }
-.cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
-.cat-item { padding: 14px 16px; border-radius: 8px; border: var(--yry-border); text-align: center; background: rgba(15,23,42,.4); transition: transform .15s; }
-.cat-item:hover { transform: translateY(-1px); }
-.cat-name { font-size: .74rem; font-weight: 600; }
-.cat-count { font-size: 1.3rem; font-weight: 700; margin-top: 4px; }
-.cat-pct { font-size: .64rem; color: var(--yry-text3); margin-top: 2px; }
-.cat-bar-wrap { height: 4px; border-radius: 2px; background: rgba(255,255,255,.06); overflow: hidden; margin-top: 6px; }
-.cat-bar-fill { height: 100%; border-radius: 2px; }
-.cross { margin-top: 20px; padding: 14px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); }
-.cross h3 { font-size: .82rem; color: var(--yry-accent); margin: 0 0 10px; }
-.cross a { display: inline-block; margin: 3px 8px; color: #7aa2f7; text-decoration: none; font-size: .78rem; }
-.cross a:hover { color: var(--yry-accent); }
-.ft { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }
-svg text { font-family: 'JetBrains Mono', -apple-system, sans-serif; }
-@media (max-width: 640px) { .feature-grid, .cat-grid { grid-template-columns: 1fr 1fr; } }
-</style>
 </head>
 <body>
 <div class="c">
@@ -98,8 +39,8 @@ svg text { font-family: 'JetBrains Mono', -apple-system, sans-serif; }
 
 <div class="card">
   <h2>三周期条目趋势</h2>
-  <div style="width:100%;overflow-x:auto">
-    <svg viewBox="0 0 840 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:840px">
+  <div class="h-lg-w100-overflowx">
+    <svg viewBox="0 0 840 260" xmlns="http://www.w3.org/2000/svg" class="h-lg-w100-maxw840">
       <defs>
         <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="rgba(34,197,94,0.18)"/>
@@ -139,10 +80,10 @@ svg text { font-family: 'JetBrains Mono', -apple-system, sans-serif; }
       <line x1="70" y1="30" x2="70" y2="210" stroke="rgba(255,255,255,0.08)"/>
     </svg>
   </div>
-  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;font-size:.72rem;color:var(--yry-text3)">
+  <div class="h-lg-flex-gap12-wrap-mt12-fs72-t3">
     <span>06-05: 16 条目 (基线, TrendShift 不可达)</span>
-    <span style="color:var(--yry-pass)">06-09: 18 条目 (+12.5%)</span>
-    <span style="color:var(--yry-pass);font-weight:600">06-12: 25 条目 (+38.9%) 当前</span>
+    <span class="h-tp">06-09: 18 条目 (+12.5%)</span>
+    <span class="h-lg-green-fw6">06-12: 25 条目 (+38.9%) 当前</span>
   </div>
 </div>
 
@@ -151,42 +92,42 @@ svg text { font-family: 'JetBrains Mono', -apple-system, sans-serif; }
   <div class="cat-grid">
     <div class="cat-item">
       <div class="cat-name">🤖 AI/LLM</div>
-      <div class="cat-count" style="color:#a78bfa">8</div>
+      <div class="cat-count" h-lg-purple>8</div>
       <div class="cat-pct">32.0%</div>
-      <div class="cat-bar-wrap"><div class="cat-bar-fill" style="width:100%;background:#a78bfa"></div></div>
+      <div class="cat-bar-wrap"><div class="cat-bar-fill h-lg-w100-purple"></div></div>
     </div>
     <div class="cat-item">
       <div class="cat-name">🌐 Web/前端</div>
-      <div class="cat-count" style="color:#60a5fa">6</div>
+      <div class="cat-count" h-lg-blue60>6</div>
       <div class="cat-pct">24.0%</div>
-      <div class="cat-bar-wrap"><div class="cat-bar-fill" style="width:75%;background:#60a5fa"></div></div>
+      <div class="cat-bar-wrap"><div class="cat-bar-fill h-lg-barfill" style="--w:75%;--color:#60a5fa"></div></div>
     </div>
     <div class="cat-item">
       <div class="cat-name">⚙️ DevOps</div>
-      <div class="cat-count" style="color:#f59e0b">4</div>
+      <div class="cat-count" h-lg-amber>4</div>
       <div class="cat-pct">16.0%</div>
-      <div class="cat-bar-wrap"><div class="cat-bar-fill" style="width:50%;background:#f59e0b"></div></div>
+      <div class="cat-bar-wrap"><div class="cat-bar-fill h-lg-barfill" style="--w:50%;--color:#f59e0b"></div></div>
     </div>
     <div class="cat-item">
       <div class="cat-name">🔧 语言/工具</div>
-      <div class="cat-count" style="color:#34d399">4</div>
+      <div class="cat-count h-lg-green-34d399">4</div>
       <div class="cat-pct">16.0%</div>
-      <div class="cat-bar-wrap"><div class="cat-bar-fill" style="width:50%;background:#34d399"></div></div>
+      <div class="cat-bar-wrap"><div class="cat-bar-fill h-lg-barfill" style="--w:50%;--color:#34d399"></div></div>
     </div>
     <div class="cat-item">
       <div class="cat-name">🛡️ 安全</div>
-      <div class="cat-count" style="color:#f87171">2</div>
+      <div class="cat-count h-lg-red-f87171">2</div>
       <div class="cat-pct">8.0%</div>
-      <div class="cat-bar-wrap"><div class="cat-bar-fill" style="width:25%;background:#f87171"></div></div>
+      <div class="cat-bar-wrap"><div class="cat-bar-fill h-lg-barfill" style="--w:25%;--color:#f87171"></div></div>
     </div>
     <div class="cat-item">
       <div class="cat-name">📦 其他</div>
-      <div class="cat-count" style="color:#94a3b8">1</div>
+      <div class="cat-count h-lg-slate">1</div>
       <div class="cat-pct">4.0%</div>
-      <div class="cat-bar-wrap"><div class="cat-bar-fill" style="width:12.5%;background:#94a3b8"></div></div>
+      <div class="cat-bar-wrap"><div class="cat-bar-fill h-lg-barfill" style="--w:12.5%;--color:#94a3b8"></div></div>
     </div>
   </div>
-  <p style="font-size:.72rem;color:var(--yry-text3);margin-top:10px">AI/LLM 类占比最高 (32.0%)，反映 AI 工具链仍是社区最活跃领域。Web/前端 (24.0%) 次之，Vite/React 生态持续产出新项目。</p>
+  <p class="h-lg-fs72-t3-mt10">AI/LLM 类占比最高 (32.0%)，反映 AI 工具链仍是社区最活跃领域。Web/前端 (24.0%) 次之，Vite/React 生态持续产出新项目。</p>
 </div>
 
 <div class="card">
@@ -194,7 +135,7 @@ svg text { font-family: 'JetBrains Mono', -apple-system, sans-serif; }
   <div class="feature-grid">
     <div class="feature-item">
       <div class="feature-label">数据入口</div>
-      <div class="feature-val"><a href="https://github.com/trending" target="_blank" rel="noopener noreferrer" style="color:#7aa2f7">https://github.com/trending</a></div>
+      <div class="feature-val"><a href="https://github.com/trending" target="_blank" rel="noopener noreferrer" class="h-lg-blue7aa2">https://github.com/trending</a></div>
     </div>
     <div class="feature-item">
       <div class="feature-label">更新频率</div>
@@ -225,7 +166,7 @@ svg text { font-family: 'JetBrains Mono', -apple-system, sans-serif; }
     <thead><tr><th>指标</th><th>2026-06-05</th><th>2026-06-09</th><th>2026-06-12</th><th>变化趋势</th></tr></thead>
     <tbody>
       <tr>
-        <td>捕获条目数</td><td class="num">16</td><td class="num">18</td><td class="num" style="color:var(--yry-pass)">25</td>
+        <td>捕获条目数</td><td class="num">16</td><td class="num">18</td><td class="num h-tp">25</td>
         <td><span class="badge rise">↑ +56.3%</span></td>
       </tr>
       <tr>
@@ -241,7 +182,7 @@ svg text { font-family: 'JetBrains Mono', -apple-system, sans-serif; }
         <td><span class="badge flat">→ 稳定</span></td>
       </tr>
       <tr>
-        <td>AI/LLM 占比</td><td class="num">~31%</td><td class="num">~28%</td><td class="num" style="color:#a78bfa">32.0%</td>
+        <td>AI/LLM 占比</td><td class="num">~31%</td><td class="num">~28%</td><td class="num" h-lg-purple>32.0%</td>
         <td><span class="badge rise">↑ 微增</span></td>
       </tr>
     </tbody>
@@ -264,19 +205,19 @@ svg text { font-family: 'JetBrains Mono', -apple-system, sans-serif; }
 
 <div class="card">
   <h2>典型信号类型</h2>
-  <div style="display:flex;gap:10px;flex-wrap:wrap">
-    <div style="flex:1;min-width:200px;padding:14px 18px;border-radius:8px;border:var(--yry-border);background:rgba(15,23,42,.4)">
-      <div style="font-size:.78rem;font-weight:600;color:var(--yry-pass);margin-bottom:8px">🔺 经常出现</div>
-      <ul style="font-size:.8rem;color:var(--yry-text2);line-height:1.8;padding-left:16px">
+  <div class="h-lg-flex-gap10-wrap">
+    <div class="h-lg-flex1-minw200-p1418-bd-bg4">
+      <div class="h-lg-fs78-fw6-pass-mb8">🔺 经常出现</div>
+      <ul class="h-lg-fs8-t2-lh18-pl16">
         <li>AI/LLM 相关工具链新项目 (32%)</li>
         <li>React/Vue 生态框架更新</li>
         <li>Rust 重写的经典工具</li>
         <li>开发效率工具 (CLI/编辑器插件)</li>
       </ul>
     </div>
-    <div style="flex:1;min-width:200px;padding:14px 18px;border-radius:8px;border:var(--yry-border);background:rgba(15,23,42,.4)">
-      <div style="font-size:.78rem;font-weight:600;color:var(--yry-warn);margin-bottom:8px">⚠️ 关注信号</div>
-      <ul style="font-size:.8rem;color:var(--yry-text2);line-height:1.8;padding-left:16px">
+    <div class="h-lg-flex1-minw200-p1418-bd-bg4">
+      <div class="h-lg-fs78-fw6-warn-mb8">⚠️ 关注信号</div>
+      <ul class="h-lg-fs8-t2-lh18-pl16">
         <li>同质化项目激增 (如 "Yet Another AI Wrapper")</li>
         <li>成熟框架 Trending 回潮 — 可能是重大更新或安全漏洞</li>
         <li>小众语言项目突然上榜 — 外部生态变化信号</li>
@@ -287,11 +228,11 @@ svg text { font-family: 'JetBrains Mono', -apple-system, sans-serif; }
 
 <div class="card">
   <h2>诊断关联</h2>
-  <p style="font-size:.82rem;color:var(--yry-text2);line-height:1.8">
-    <strong style="color:var(--yry-accent)">D5 外部趋势诊断</strong>：GitHub Trending 是 D5 的最高权重数据源 (35%)。趋势方向为"上升"且加速度 +38.9%，D5 评估强烈正面。连续两周无新条目则触发 P1 严重级告警。<br>
-    <strong style="color:var(--yry-accent)">D4 依赖过期</strong>：Trending 中的工具/框架变更可能指示现有依赖的替代方案出现，触发依赖健康复查。当前 AI/LLM 占比持续高位，需关注 AI 工具链依赖的版本迭代速度。<br>
-    <strong style="color:var(--yry-accent)">趋势加速度分析</strong>：06-05→06-09 增长 +12.5%，06-09→06-12 增长 +38.9%，加速度为正。若下周期维持 +20% 以上增速，建议提升趋势监控频率至每周两次。<br>
-    <strong style="color:var(--yry-accent)">下一步</strong>：运行 <code style="background:rgba(59,130,246,.1);padding:1px 6px;border-radius:4px;color:#7aa2f7">node skills/rui-trends/rui-trends.mjs github-trending --html --verbose</code> 生成含完整仓库列表的详细报告。
+  <p class="h-lg-fs82-t2-lh18">
+    <strong class="h-lg-accent">D5 外部趋势诊断</strong>：GitHub Trending 是 D5 的最高权重数据源 (35%)。趋势方向为"上升"且加速度 +38.9%，D5 评估强烈正面。连续两周无新条目则触发 P1 严重级告警。<br>
+    <strong class="h-lg-accent">D4 依赖过期</strong>：Trending 中的工具/框架变更可能指示现有依赖的替代方案出现，触发依赖健康复查。当前 AI/LLM 占比持续高位，需关注 AI 工具链依赖的版本迭代速度。<br>
+    <strong class="h-lg-accent">趋势加速度分析</strong>：06-05→06-09 增长 +12.5%，06-09→06-12 增长 +38.9%，加速度为正。若下周期维持 +20% 以上增速，建议提升趋势监控频率至每周两次。<br>
+    <strong class="h-lg-accent">下一步</strong>：运行 <code class="h-lg-bg-blue10-p1-blue7aa2">node skills/rui-trends/rui-trends.mjs github-trending --html --verbose</code> 生成含完整仓库列表的详细报告。
   </p>
 </div>
 
@@ -308,7 +249,7 @@ svg text { font-family: 'JetBrains Mono', -apple-system, sans-serif; }
 
 <div class="ft">
   GitHub Trending 趋势报告 · 2026-06-12 09:00:00 CST<br>
-  <span style="color:var(--yry-text3)">由 rui-trends 生成 · D5 外部趋势诊断最高权重源 (35%) · 每周一 09:00 自动执行</span>
+  <span class="h-t3">由 rui-trends 生成 · D5 外部趋势诊断最高权重源 (35%) · 每周一 09:00 自动执行</span>
 </div>
 
 </div>

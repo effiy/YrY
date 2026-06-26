@@ -9,8 +9,8 @@
  *   const depInfo = getDependencyAnalysis(projectRoot);
  */
 
-import { join, relative, dirname } from "node:path";
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { join, dirname } from "node:path";
+import { existsSync, readFileSync } from "node:fs";
 import { execSync } from "node:child_process";
 
 import { scoreIcon, clampScore } from "./bot-health-analysis.mjs";
@@ -19,14 +19,14 @@ import { ENTRY_POINT_PATTERNS } from "../../../lib/constants.mjs";
 const SOURCE_EXT = new Set(["mjs", "js", "ts"]);
 const HTML_EXT = new Set(["html", "htm"]);
 
-function isEntryPoint(filePath) {
+function isEntryPoint(/** @type {string} */ filePath) {
   return ENTRY_POINT_PATTERNS.some((re) => re.test(filePath));
 }
 
 /**
  * Resolve a relative import specifier to a canonical project-relative path.
  */
-function resolveImport(importPath, fromFile, projectRoot) {
+function resolveImport(/** @type {string} */ importPath, /** @type {string} */ fromFile, /** @type {string} */ projectRoot) {
   if (importPath.startsWith("node:") || importPath.startsWith("node:")) return null;
   if (!importPath.startsWith(".") && !importPath.startsWith("/")) {
     // External package — skip
@@ -34,7 +34,7 @@ function resolveImport(importPath, fromFile, projectRoot) {
   }
 
   const fromDir = dirname(fromFile);
-  let resolved = join(fromDir, importPath);
+  const resolved = join(fromDir, importPath);
 
   // Try extensions
   for (const ext of ["", ".mjs", ".js", ".ts", "/index.mjs", "/index.js"]) {
@@ -49,7 +49,7 @@ function resolveImport(importPath, fromFile, projectRoot) {
 /**
  * Extract import specifiers from a .mjs/.js file.
  */
-function extractImports(filePath, projectRoot) {
+function extractImports(/** @type {string} */ filePath, /** @type {string} */ projectRoot) {
   const imports = [];
   try {
     const content = readFileSync(join(projectRoot, filePath), "utf-8");
@@ -85,13 +85,13 @@ function extractImports(filePath, projectRoot) {
  * that resolve to tracked source files. Treats the HTML page as a consumer
  * (edge: HTML → asset), so referenced files are no longer orphan.
  */
-function extractHtmlReferences(filePath, projectRoot) {
+function extractHtmlReferences(/** @type {string} */ filePath, /** @type {string} */ projectRoot) {
   const refs = [];
   try {
     const content = readFileSync(join(projectRoot, filePath), "utf-8");
     // Normalize an HTML relative URL to a path resolveImport can handle.
     // In HTML, "js/x.js" is relative (unlike JS imports where it'd be external).
-    const normalizeHtmlSpec = (spec) => {
+    const normalizeHtmlSpec = (/** @type {string} */ spec) => {
       if (/^(?:https?:)?\/\//i.test(spec) || spec.startsWith("data:")) return null;
       if (spec.startsWith("/") || spec.startsWith("./") || spec.startsWith("../")) return spec;
       return "./" + spec;
@@ -122,12 +122,13 @@ function extractHtmlReferences(filePath, projectRoot) {
 /**
  * Detect cycles using DFS in the dependency graph.
  */
-function detectCycles(graph) {
+function detectCycles(/** @type {Map<string, Set<string>>} */ graph) {
+  /** @type {any[]} */
   const cycles = [];
   const visited = new Set();
   const inStack = new Set();
 
-  function dfs(node, path) {
+  function dfs(/** @type {string} */ node, /** @type {string[]} */ path) {
     if (inStack.has(node)) {
       const cycleStart = path.indexOf(node);
       if (cycleStart >= 0) {
@@ -165,11 +166,11 @@ function detectCycles(graph) {
 /**
  * Shorten a file path for display.
  */
-function shortPath(p) {
+function shortPath(/** @type {string} */ p) {
   return p.replace(/^skills\//, "").replace(/^lib\//, "").replace(/^agents\//, "").replace(/^rules\//, "");
 }
 
-export function getDependencyAnalysis(projectRoot) {
+export function getDependencyAnalysis(/** @type {string} */ projectRoot) {
   // ── Collect all source files ──────────────────────────────
   const sourceFiles = [];
   const htmlFiles = [];

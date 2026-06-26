@@ -4,7 +4,7 @@
  */
 
 import { describe, it, assert, run } from '../../../lib/vitest-adapter.mjs';
-import { fileExists, readFile, readDir, hasSection, hasMermaidDiagram, hasTable, listRules } from '../../../lib/test-helpers.mjs';
+import { fileExists, readFile, hasMermaidDiagram, hasTable, listRules } from '../../../lib/test-helpers.mjs';
 
 // Rule → skill mapping (rules are now within their owning skills' rules/ dirs)
 const RULE_TO_SKILL = {
@@ -12,6 +12,7 @@ const RULE_TO_SKILL = {
   'architecture-principles': 'rui',
   'delivery-gate': 'rui',
   'design-principles': 'rui',
+  'loop-engineering': 'rui',
   'mermaid-theme': 'rui',
   'security-guardrails': 'rui',
   'analysis-methodology': 'rui-analysis',
@@ -163,4 +164,4 @@ describe('rule definitions', () => {
   });
 });
 
-const exitCode = await run();
+const _exitCode = await run();

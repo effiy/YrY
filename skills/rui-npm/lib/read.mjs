@@ -5,7 +5,7 @@
 
 import { npm, checkPackageJson, toTable, timestamp } from "./npm-utils.mjs";
 
-export function cmdSearch(keyword, args) {
+export function cmdSearch(/** @type {string} */ keyword, /** @type {any} */ args) {
   if (!keyword) {
     console.error("❌ 请提供搜索关键词。用法: rui-npm search <keyword>");
     console.error("   示例: rui-npm search react");
@@ -50,7 +50,7 @@ export function cmdSearch(keyword, args) {
   console.log(`\n> 共 ${results.length} 条结果，展示前 ${top.length} 条。使用 --json 查看完整数据。`);
 }
 
-export function cmdList(args) {
+export function cmdList(/** @type {any} */ args) {
   checkPackageJson();
   const npmArgs = ["list", "--json"];
   if (args.depth !== undefined) npmArgs.push("--depth", String(args.depth));
@@ -68,8 +68,9 @@ export function cmdList(args) {
     console.log(JSON.stringify(data, null, 2));
     return;
   }
+  /** @type {any[]} */
   const flat = [];
-  function walk(deps, prefix) {
+  function walk(/** @type {any} */ deps, /** @type {string} */ prefix) {
     if (!deps) return;
     for (const [name, info] of Object.entries(deps)) {
       flat.push({ name, version: info.version ?? "?", depth: prefix.split("─").length - 1 });
@@ -83,7 +84,7 @@ export function cmdList(args) {
   console.log(toTable(headers, rows));
 }
 
-export function cmdInfo(pkg, args) {
+export function cmdInfo(/** @type {string} */ pkg, /** @type {any} */ args) {
   if (!pkg) {
     console.error("❌ 请提供包名。用法: rui-npm info <pkg>");
     process.exit(1);
@@ -115,7 +116,7 @@ export function cmdInfo(pkg, args) {
   console.log(`| 主页 | ${p.homepage ?? "—"} |`);
   console.log(`| 仓库 | ${p.repository?.url ?? "—"} |`);
   if (p.maintainers?.length) {
-    console.log(`| 维护者 | ${p.maintainers.map((m) => m.name ?? m.email).join(", ")} |`);
+    console.log(`| 维护者 | ${p.maintainers.map((/** @type {any} */ m) => m.name ?? m.email).join(", ")} |`);
   }
   if (p.keywords?.length) {
     console.log(`| 关键词 | ${p.keywords.slice(0, 10).join(", ")} |`);

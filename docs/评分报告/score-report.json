@@ -1,37 +1,73 @@
 {
   "meta": {
     "title": "YrY 项目健康评分报告",
-    "date": "2026-06-22",
+    "date": "2026-06-25",
     "version": "5.4.0",
-    "generatedAt": "2026-06-22T05:51:16.966Z",
-    "dataPoints": 2,
+    "generatedAt": "2026-06-25T08:15:23.724Z",
+    "dataPoints": 5,
     "dateRange": {
       "from": "2026-06-19",
-      "to": "2026-06-22"
+      "to": "2026-06-25"
     },
     "dataSource": ".memory/health-trend.jsonl"
   },
   "composite": {
-    "score": 94,
+    "score": 95,
     "grade": "A",
     "label": "优秀",
     "color": "#22c55e",
     "tier": "excellent",
     "slo": "ok"
   },
-  "trend": null,
-  "reliability": null,
-  "forecast": null,
-  "velocity": null,
-  "distribution": null,
+  "trend": {
+    "direction": "rising",
+    "slope": 1.6,
+    "slopePerWeek": 11.2,
+    "r2": 0.16,
+    "confidence": "low"
+  },
+  "reliability": {
+    "current": 95,
+    "mean": 88.2,
+    "stddev": 5.6,
+    "ci95": [
+      84,
+      106
+    ],
+    "volatility": "moderate",
+    "score": 0.94
+  },
+  "forecast": {
+    "value": 95,
+    "range": [
+      85,
+      105
+    ],
+    "confidence": "low"
+  },
+  "velocity": {
+    "recent": 10,
+    "weekly": -0.5,
+    "accelerating": false
+  },
+  "distribution": {
+    "min": 82,
+    "max": 95,
+    "mean": 88.2,
+    "median": 85,
+    "stddev": 5.6,
+    "p25": 84,
+    "p75": 95,
+    "range": 13
+  },
   "categories": {
     "core": {
-      "score": 92,
-      "weight": 88,
+      "score": 93,
+      "weight": 85,
       "dimCount": 10
     },
     "structural": {
-      "score": 88,
+      "score": 92,
       "weight": 16,
       "dimCount": 2
     },
@@ -41,7 +77,7 @@
       "dimCount": 7
     },
     "quality": {
-      "score": 84,
+      "score": 85,
       "weight": 8,
       "dimCount": 1
     }
@@ -57,19 +93,19 @@
         "fullScore": 100
       },
       {
-        "key": "api",
-        "label": "API 可达性",
-        "category": "core",
-        "score": 100,
-        "weight": 12,
-        "fullScore": 100
-      },
-      {
         "key": "em_testing",
         "label": "测试体系",
         "category": "engineering",
         "score": 100,
         "weight": 10,
+        "fullScore": 100
+      },
+      {
+        "key": "diagnostics",
+        "label": "D0-D8 诊断",
+        "category": "core",
+        "score": 85,
+        "weight": 9,
         "fullScore": 100
       },
       {
@@ -83,6 +119,14 @@
       {
         "key": "robots",
         "label": "机器人配置",
+        "category": "core",
+        "score": 100,
+        "weight": 8,
+        "fullScore": 100
+      },
+      {
+        "key": "api",
+        "label": "API 可达性",
         "category": "core",
         "score": 100,
         "weight": 8,
@@ -103,21 +147,13 @@
         "score": 100,
         "weight": 8,
         "fullScore": 100
-      },
-      {
-        "key": "diagnostics",
-        "label": "D0-D7 诊断",
-        "category": "core",
-        "score": 70,
-        "weight": 8,
-        "fullScore": 100
       }
     ],
     "categories": [
       {
         "key": "core",
         "label": "core",
-        "score": 96
+        "score": 98
       },
       {
         "key": "engineering",
@@ -126,7 +162,7 @@
       }
     ],
     "maxScore": 100,
-    "overall": 93
+    "overall": 95
   },
   "breakdown": [
     {
@@ -137,61 +173,61 @@
       "grade": "D",
       "weight": 8,
       "status": "warn",
-      "trend": "→ 稳定",
-      "trendDirection": "stable",
+      "trend": "↑ 上升",
+      "trendDirection": "rising",
       "gap": 60,
       "recommendation": "建议制定改进计划，提升至良好水平"
     },
     {
       "dim": "diagnostics",
-      "label": "D0-D7 诊断",
+      "label": "D0-D8 诊断",
       "category": "core",
-      "score": 70,
-      "grade": "C",
-      "weight": 8,
+      "score": 85,
+      "grade": "B",
+      "weight": 9,
       "status": "ok",
-      "trend": "→ 稳定",
-      "trendDirection": "stable",
-      "gap": 30,
-      "recommendation": "仍有提升空间，可纳入优化计划"
+      "trend": "↑ 上升",
+      "trendDirection": "rising",
+      "gap": 15,
+      "recommendation": "保持当前水平，持续监控"
     },
     {
       "dim": "dep_analysis",
       "label": "依赖分析",
       "category": "structural",
-      "score": 79,
+      "score": 85,
       "grade": "B",
       "weight": 8,
       "status": "ok",
-      "trend": "→ 稳定",
-      "trendDirection": "stable",
-      "gap": 21,
-      "recommendation": "仍有提升空间，可纳入优化计划"
+      "trend": "↑ 上升",
+      "trendDirection": "rising",
+      "gap": 15,
+      "recommendation": "保持当前水平，持续监控"
     },
     {
       "dim": "comp_qual",
       "label": "组件质量",
       "category": "quality",
-      "score": 84,
+      "score": 85,
       "grade": "B",
       "weight": 8,
       "status": "ok",
-      "trend": "→ 稳定",
-      "trendDirection": "stable",
-      "gap": 16,
-      "recommendation": "保持当前水平，持续监控"
+      "trend": "↓ 下降",
+      "trendDirection": "falling",
+      "gap": 15,
+      "recommendation": "注意下降趋势，排查根因防止退化"
     },
     {
       "dim": "file_size",
       "label": "文件体积",
       "category": "structural",
-      "score": 96,
+      "score": 98,
       "grade": "A",
       "weight": 8,
       "status": "ok",
       "trend": "→ 稳定",
       "trendDirection": "stable",
-      "gap": 4,
+      "gap": 2,
       "recommendation": "保持当前水平，持续监控"
     },
     {
@@ -239,12 +275,12 @@
       "category": "core",
       "score": 100,
       "grade": "A",
-      "weight": 12,
+      "weight": 8,
       "status": "ok",
-      "trend": "→ 稳定",
-      "trendDirection": "stable",
+      "trend": "↓ 下降",
+      "trendDirection": "falling",
       "gap": 0,
-      "recommendation": "保持当前水平，持续监控"
+      "recommendation": "注意下降趋势，排查根因防止退化"
     },
     {
       "dim": "reports",
@@ -293,10 +329,10 @@
       "grade": "A",
       "weight": 8,
       "status": "ok",
-      "trend": "→ 稳定",
-      "trendDirection": "stable",
+      "trend": "↓ 下降",
+      "trendDirection": "falling",
       "gap": 0,
-      "recommendation": "保持当前水平，持续监控"
+      "recommendation": "注意下降趋势，排查根因防止退化"
     },
     {
       "dim": "em_testing",
@@ -306,8 +342,8 @@
       "grade": "A",
       "weight": 10,
       "status": "ok",
-      "trend": "→ 稳定",
-      "trendDirection": "stable",
+      "trend": "↑ 上升",
+      "trendDirection": "rising",
       "gap": 0,
       "recommendation": "保持当前水平，持续监控"
     },
@@ -332,8 +368,8 @@
       "grade": "A",
       "weight": 8,
       "status": "ok",
-      "trend": "→ 稳定",
-      "trendDirection": "stable",
+      "trend": "↑ 上升",
+      "trendDirection": "rising",
       "gap": 0,
       "recommendation": "保持当前水平，持续监控"
     },
@@ -345,8 +381,8 @@
       "grade": "A",
       "weight": 8,
       "status": "ok",
-      "trend": "→ 稳定",
-      "trendDirection": "stable",
+      "trend": "↑ 上升",
+      "trendDirection": "rising",
       "gap": 0,
       "recommendation": "保持当前水平，持续监控"
     },
@@ -384,8 +420,8 @@
       "grade": "A",
       "weight": 6,
       "status": "ok",
-      "trend": "→ 稳定",
-      "trendDirection": "stable",
+      "trend": "↑ 上升",
+      "trendDirection": "rising",
       "gap": 0,
       "recommendation": "保持当前水平，持续监控"
     }
@@ -396,41 +432,41 @@
         "dim": "git",
         "score": 40,
         "weight": 8,
-        "contribution": 1.927710843373494,
-        "maxContribution": 4.819277108433735,
-        "gap": 2.8915662650602414
+        "contribution": 1.9631901840490797,
+        "maxContribution": 4.9079754601226995,
+        "gap": 2.9447852760736195
       },
       {
         "dim": "diagnostics",
-        "score": 70,
-        "weight": 8,
-        "contribution": 3.3734939759036147,
-        "maxContribution": 4.819277108433735,
-        "gap": 1.4457831325301207
+        "score": 85,
+        "weight": 9,
+        "contribution": 4.693251533742331,
+        "maxContribution": 5.521472392638037,
+        "gap": 0.8282208588957056
       },
       {
         "dim": "dep_analysis",
-        "score": 79,
+        "score": 85,
         "weight": 8,
-        "contribution": 3.8072289156626504,
-        "maxContribution": 4.819277108433735,
-        "gap": 1.012048192771085
+        "contribution": 4.171779141104294,
+        "maxContribution": 4.9079754601226995,
+        "gap": 0.7361963190184051
       },
       {
         "dim": "comp_qual",
-        "score": 84,
+        "score": 85,
         "weight": 8,
-        "contribution": 4.048192771084337,
-        "maxContribution": 4.819277108433735,
-        "gap": 0.7710843373493983
+        "contribution": 4.171779141104294,
+        "maxContribution": 4.9079754601226995,
+        "gap": 0.7361963190184051
       },
       {
         "dim": "file_size",
-        "score": 96,
+        "score": 98,
         "weight": 8,
-        "contribution": 4.626506024096385,
-        "maxContribution": 4.819277108433735,
-        "gap": 0.19277108433735002
+        "contribution": 4.809815950920245,
+        "maxContribution": 4.9079754601226995,
+        "gap": 0.09815950920245431
       }
     ],
     "topBoost": [
@@ -438,103 +474,95 @@
         "dim": "token",
         "score": 100,
         "weight": 12,
-        "contribution": 7.228915662650603,
-        "maxContribution": 7.228915662650603,
-        "gap": 0
-      },
-      {
-        "dim": "api",
-        "score": 100,
-        "weight": 12,
-        "contribution": 7.228915662650603,
-        "maxContribution": 7.228915662650603,
+        "contribution": 7.361963190184049,
+        "maxContribution": 7.361963190184049,
         "gap": 0
       },
       {
         "dim": "em_testing",
         "score": 100,
         "weight": 10,
-        "contribution": 6.024096385542169,
-        "maxContribution": 6.024096385542169,
+        "contribution": 6.134969325153374,
+        "maxContribution": 6.134969325153374,
         "gap": 0
       },
       {
         "dim": "config",
         "score": 100,
         "weight": 8,
-        "contribution": 4.819277108433735,
-        "maxContribution": 4.819277108433735,
+        "contribution": 4.9079754601226995,
+        "maxContribution": 4.9079754601226995,
         "gap": 0
       },
       {
         "dim": "robots",
         "score": 100,
         "weight": 8,
-        "contribution": 4.819277108433735,
-        "maxContribution": 4.819277108433735,
+        "contribution": 4.9079754601226995,
+        "maxContribution": 4.9079754601226995,
+        "gap": 0
+      },
+      {
+        "dim": "api",
+        "score": 100,
+        "weight": 8,
+        "contribution": 4.9079754601226995,
+        "maxContribution": 4.9079754601226995,
         "gap": 0
       }
     ],
-    "dragTotal": 6.3
+    "dragTotal": 5.3
   },
   "comparison": {
-    "compositeDelta": 12,
+    "compositeDelta": 10,
     "dimDeltas": [
       {
-        "dim": "em_cicd",
-        "label": "em_cicd",
+        "dim": "api",
+        "label": "api",
         "current": 100,
         "previous": 0,
         "delta": 100,
         "direction": "improved"
       },
       {
-        "dim": "dep_analysis",
-        "label": "dep_analysis",
-        "current": 79,
-        "previous": 21,
-        "delta": 58,
+        "dim": "notify",
+        "label": "notify",
+        "current": 100,
+        "previous": 20,
+        "delta": 80,
         "direction": "improved"
       },
       {
-        "dim": "em_testing",
-        "label": "em_testing",
-        "current": 100,
-        "previous": 60,
-        "delta": 40,
-        "direction": "improved"
-      },
-      {
-        "dim": "em_linting",
-        "label": "em_linting",
-        "current": 100,
+        "dim": "git",
+        "label": "git",
+        "current": 40,
         "previous": 80,
-        "delta": 20,
-        "direction": "improved"
-      },
-      {
-        "dim": "em_git",
-        "label": "em_git",
-        "current": 100,
-        "previous": 80,
-        "delta": 20,
-        "direction": "improved"
+        "delta": -40,
+        "direction": "declined"
       },
       {
         "dim": "file_size",
         "label": "file_size",
-        "current": 96,
-        "previous": 98,
-        "delta": -2,
-        "direction": "declined"
+        "current": 98,
+        "previous": 96,
+        "delta": 2,
+        "direction": "improved"
+      },
+      {
+        "dim": "dep_analysis",
+        "label": "dep_analysis",
+        "current": 85,
+        "previous": 83,
+        "delta": 2,
+        "direction": "improved"
       },
       {
         "dim": "comp_qual",
         "label": "comp_qual",
-        "current": 84,
-        "previous": 86,
-        "delta": -2,
-        "direction": "declined"
+        "current": 85,
+        "previous": 84,
+        "delta": 1,
+        "direction": "improved"
       },
       {
         "dim": "token",
@@ -561,14 +589,6 @@
         "direction": "stable"
       },
       {
-        "dim": "api",
-        "label": "api",
-        "current": 100,
-        "previous": 100,
-        "delta": 0,
-        "direction": "stable"
-      },
-      {
         "dim": "reports",
         "label": "reports",
         "current": 100,
@@ -587,16 +607,8 @@
       {
         "dim": "diagnostics",
         "label": "diagnostics",
-        "current": 70,
-        "previous": 70,
-        "delta": 0,
-        "direction": "stable"
-      },
-      {
-        "dim": "git",
-        "label": "git",
-        "current": 40,
-        "previous": 40,
+        "current": 85,
+        "previous": 85,
         "delta": 0,
         "direction": "stable"
       },
@@ -609,8 +621,32 @@
         "direction": "stable"
       },
       {
+        "dim": "em_testing",
+        "label": "em_testing",
+        "current": 100,
+        "previous": 100,
+        "delta": 0,
+        "direction": "stable"
+      },
+      {
         "dim": "em_types",
         "label": "em_types",
+        "current": 100,
+        "previous": 100,
+        "delta": 0,
+        "direction": "stable"
+      },
+      {
+        "dim": "em_linting",
+        "label": "em_linting",
+        "current": 100,
+        "previous": 100,
+        "delta": 0,
+        "direction": "stable"
+      },
+      {
+        "dim": "em_cicd",
+        "label": "em_cicd",
         "current": 100,
         "previous": 100,
         "delta": 0,
@@ -633,8 +669,8 @@
         "direction": "stable"
       },
       {
-        "dim": "notify",
-        "label": "notify",
+        "dim": "em_git",
+        "label": "em_git",
         "current": 100,
         "previous": 100,
         "delta": 0,
@@ -642,25 +678,24 @@
       }
     ],
     "improved": [
-      "em_testing",
-      "em_linting",
-      "em_cicd",
-      "em_git",
-      "dep_analysis"
-    ],
-    "declined": [
+      "api",
       "file_size",
+      "dep_analysis",
+      "notify",
       "comp_qual"
     ],
+    "declined": [
+      "git"
+    ],
     "biggestGain": {
-      "dim": "em_cicd",
+      "dim": "api",
       "delta": 100
     },
     "biggestDrop": {
-      "dim": "file_size",
-      "delta": -2
+      "dim": "git",
+      "delta": -40
     },
-    "netChange": 3
+    "netChange": 4
   },
   "architecture": {
     "grade": "A",
@@ -669,20 +704,18 @@
     "dims": []
   },
   "diagnostics": {
-    "triggered": 2,
-    "total": 8,
-    "rate": 25
+    "triggered": 1,
+    "total": 9,
+    "rate": 13
   },
   "summary": {
-    "summary": "项目健康综合评分为 94 分（A级·优秀），整体状态健康。核心运营中 2/10 项需关注；结构健康中 1/2 项需关注；工程成熟度全部达标；组件质量全部达标。较上次检查提升 12 分。架构合规检查全部通过。诊断引擎触发 2/8 项诊断，建议关注。",
+    "summary": "项目健康综合评分为 95 分（A级·优秀），整体状态健康。核心运营中 1/10 项需关注；结构健康全部达标；工程成熟度全部达标；组件质量全部达标。较上次检查提升 10 分。架构合规检查全部通过。诊断引擎触发 1/8 项诊断，建议关注。",
     "highlights": [
-      "需优先改进: Git 仓库状态、D0-D7 诊断、依赖分析",
+      "需优先改进: Git 仓库状态、D0-D8 诊断、依赖分析",
       "表现最佳: 通知投递质量、Git 纪律、依赖管理"
     ],
     "risks": [
-      "Git 仓库状态得分 40，需立即处理",
-      "D0-D7 诊断得分 70，建议改进",
-      "依赖分析得分 79，建议改进"
+      "Git 仓库状态得分 40，需立即处理"
     ]
   },
   "recommendations": [
@@ -690,6 +723,21 @@
       "priority": "P1",
       "dim": "Git 仓库状态",
       "action": "建议制定改进计划，提升至良好水平"
+    },
+    {
+      "priority": "P2",
+      "dim": "组件质量",
+      "action": "注意下降趋势，排查根因防止退化"
+    },
+    {
+      "priority": "P2",
+      "dim": "API 可达性",
+      "action": "注意下降趋势，排查根因防止退化"
+    },
+    {
+      "priority": "P2",
+      "dim": "通知投递质量",
+      "action": "注意下降趋势，排查根因防止退化"
     }
   ],
   "dimensionLabels": {
@@ -713,7 +761,7 @@
     },
     "api": {
       "label": "API 可达性",
-      "weight": 12,
+      "weight": 8,
       "category": "core",
       "icon": "🌐"
     },
@@ -730,8 +778,8 @@
       "icon": "📋"
     },
     "diagnostics": {
-      "label": "D0-D7 诊断",
-      "weight": 8,
+      "label": "D0-D8 诊断",
+      "weight": 9,
       "category": "core",
       "icon": "🔬"
     },

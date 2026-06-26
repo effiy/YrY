@@ -19,7 +19,7 @@
 
 import { describe, it, assert, run as runTests } from "../../../lib/vitest-adapter.mjs";
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, writeFileSync, rmSync, readFileSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { randomBytes } from "node:crypto";
@@ -28,9 +28,8 @@ import { randomBytes } from "node:crypto";
 const RUI_NPM = resolve(process.cwd(), "skills/rui-npm/rui-npm.mjs");
 const NODE = process.execPath;
 const TIMEOUT = 30000; // 30s max per command
-const CDN_SOURCES = ["unpkg", "jsDelivr", "esm.sh"];
 
-function run(args, opts = {}) {
+function run(/** @type {string[]} */ args, /** @type {any} */ opts = {}) {
   return spawnSync(NODE, [RUI_NPM, ...args], {
     encoding: "utf-8",
     timeout: TIMEOUT,
@@ -39,23 +38,18 @@ function run(args, opts = {}) {
   });
 }
 
-function runOk(args, opts = {}) {
-  const r = run(args, opts);
-  return { ...r, ok: r.status === 0 && !r.error };
-}
-
 // Extract JSON from mixed output (progress messages + JSON)
-function extractJson(stdout) {
+function extractJson(/** @type {string} */ stdout) {
   // Try parsing the whole thing first
-  try { return JSON.parse(stdout); } catch {}
+  try { return JSON.parse(stdout); } catch { /* ignore */ }
   // Try finding JSON array or object in the output
   const arrayMatch = stdout.match(/\[\s*\{[\s\S]*\}\s*\]/);
   if (arrayMatch) {
-    try { return JSON.parse(arrayMatch[0]); } catch {}
+    try { return JSON.parse(arrayMatch[0]); } catch { /* ignore */ }
   }
   const objMatch = stdout.match(/\{\s*"[^"]+"[\s\S]*\}/);
   if (objMatch) {
-    try { return JSON.parse(objMatch[0]); } catch {}
+    try { return JSON.parse(objMatch[0]); } catch { /* ignore */ }
   }
   return null;
 }
@@ -67,13 +61,13 @@ function tmpDir() {
   return d;
 }
 
-function withTempDir(fn) {
+function withTempDir(/** @type {(d: string) => any} */ fn) {
   const d = tmpDir();
   try { return fn(d); } finally { rmSync(d, { recursive: true, force: true }); }
 }
 
-function withTempProject(fn) {
-  return withTempDir((d) => {
+function withTempProject(/** @type {(d: string) => any} */ fn) {
+  return withTempDir((/** @type {string} */ d) => {
     writeFileSync(join(d, "package.json"), JSON.stringify({ name: "test-project", version: "1.0.0", private: true }), "utf-8");
     return fn(d);
   });
@@ -216,7 +210,7 @@ describe("§2 场景 2 — 包安装与版本管理 (install/update/list)", () =
   // ── install ───────────────────────────────────────────────────
 
   it("TC2.1 install 无 package.json — 明确拒绝", () => {
-    withTempDir((d) => {
+    withTempDir((/** @type {string} */ d) => {
       const r = run(["install", "lodash"], { cwd: d });
       assert.ok(r.status !== 0, "无 package.json 时 install 应失败");
       const err = r.stderr;
@@ -234,7 +228,7 @@ describe("§2 场景 2 — 包安装与版本管理 (install/update/list)", () =
   });
 
   it("TC2.3 install 含版本号 — 版本号正确解析", () => {
-    withTempProject((d) => {
+    withTempProject((/** @type {string} */ d) => {
       const r = run(["install", "lodash@4.17.21"], { cwd: d });
       // 安装应该成功（忽略网络错误）
       const out = r.stdout + r.stderr;
@@ -245,7 +239,7 @@ describe("§2 场景 2 — 包安装与版本管理 (install/update/list)", () =
   });
 
   it("TC2.4 install --dev — 安装为 devDependency", () => {
-    withTempProject((d) => {
+    withTempProject((/** @type {string} */ d) => {
       const r = run(["install", "prettier", "--dev"], { cwd: d });
       // 不应崩溃，即使因网络失败也算测试通过
       const out = r.stdout + r.stderr;
@@ -257,7 +251,7 @@ describe("§2 场景 2 — 包安装与版本管理 (install/update/list)", () =
   });
 
   it("TC2.5 install --global — 全局安装标志传递", () => {
-    withTempProject((d) => {
+    withTempProject((/** @type {string} */ d) => {
       const r = run(["install", "typescript", "--global"], { cwd: d });
       // --global 模式应跳过 package.json 检查
       const out = r.stdout + r.stderr;
@@ -277,7 +271,7 @@ describe("§2 场景 2 — 包安装与版本管理 (install/update/list)", () =
   });
 
   it("TC2.7 update 无 package.json — 明确拒绝", () => {
-    withTempDir((d) => {
+    withTempDir((/** @type {string} */ d) => {
       const r = run(["update", "lodash"], { cwd: d });
       assert.ok(r.status !== 0, "无 package.json 时 update 应失败");
       const err = r.stderr;
@@ -289,7 +283,7 @@ describe("§2 场景 2 — 包安装与版本管理 (install/update/list)", () =
   // ── list ──────────────────────────────────────────────────────
 
   it("TC2.8 list 无 package.json — 明确拒绝", () => {
-    withTempDir((d) => {
+    withTempDir((/** @type {string} */ d) => {
       const r = run(["list"], { cwd: d });
       assert.ok(r.status !== 0, "无 package.json 时 list 应失败");
       const err = r.stderr;
@@ -299,7 +293,7 @@ describe("§2 场景 2 — 包安装与版本管理 (install/update/list)", () =
   });
 
   it("TC2.9 list 有 package.json — 正常执行", () => {
-    withTempProject((d) => {
+    withTempProject((/** @type {string} */ d) => {
       const r = run(["list"], { cwd: d });
       // 空项目 list 应该正常完成
       const out = r.stdout + r.stderr;
@@ -308,7 +302,7 @@ describe("§2 场景 2 — 包安装与版本管理 (install/update/list)", () =
   });
 
   it("TC2.10 list --json — 输出合法 JSON", () => {
-    withTempProject((d) => {
+    withTempProject((/** @type {string} */ d) => {
       const r = run(["list", "--json"], { cwd: d });
       assert.ok(r.status === 0, `退出码应为 0，实际 ${r.status}`);
       let data;
@@ -320,7 +314,7 @@ describe("§2 场景 2 — 包安装与版本管理 (install/update/list)", () =
   });
 
   it("TC2.11 list --depth 1 — depth 参数传递", () => {
-    withTempProject((d) => {
+    withTempProject((/** @type {string} */ d) => {
       const r = run(["list", "--depth", "1"], { cwd: d });
       assert.ok(r.status === 0, `退出码应为 0，实际 ${r.status}`);
     });
@@ -343,7 +337,7 @@ describe("§3 场景 3 — 本地发布与 npx 使用 (publish/npx)", () => {
   });
 
   it("TC3.2 publish 路径不存在 — 明确错误提示", () => {
-    withTempDir((d) => {
+    withTempDir((/** @type {string} */ d) => {
       const r = run(["publish", join(d, "nonexistent.js")], { cwd: d });
       assert.ok(r.status !== 0, "路径不存在应返回非零退出码");
       const err = r.stderr;
@@ -353,7 +347,7 @@ describe("§3 场景 3 — 本地发布与 npx 使用 (publish/npx)", () => {
   });
 
   it("TC3.3 publish 未登录 — 明确提示 npm login", () => {
-    withTempDir((d) => {
+    withTempDir((/** @type {string} */ d) => {
       const testFile = join(d, "test-script.js");
       writeFileSync(testFile, 'console.log("hello")', "utf-8");
       const r = run(["publish", testFile, "--dry-run"], {
@@ -368,7 +362,7 @@ describe("§3 场景 3 — 本地发布与 npx 使用 (publish/npx)", () => {
   });
 
   it("TC3.4 publish --dry-run — 模拟发布不实际上传", () => {
-    withTempDir((d) => {
+    withTempDir((/** @type {string} */ d) => {
       const testFile = join(d, "test-script.js");
       writeFileSync(testFile, 'console.log("hello")', "utf-8");
       // 即使未登录，dry-run 也不应产生副作用
@@ -384,7 +378,7 @@ describe("§3 场景 3 — 本地发布与 npx 使用 (publish/npx)", () => {
   });
 
   it("TC3.5 publish --name 自定义包名", () => {
-    withTempDir((d) => {
+    withTempDir((/** @type {string} */ d) => {
       const testFile = join(d, "test-script.js");
       writeFileSync(testFile, 'console.log("hello")', "utf-8");
       const r = run(["publish", testFile, "--dry-run", "--name", "my-custom-pkg"], {
@@ -400,7 +394,7 @@ describe("§3 场景 3 — 本地发布与 npx 使用 (publish/npx)", () => {
   });
 
   it("TC3.6 publish --version 自定义版本号", () => {
-    withTempDir((d) => {
+    withTempDir((/** @type {string} */ d) => {
       const testFile = join(d, "test-script.js");
       writeFileSync(testFile, 'console.log("v2")', "utf-8");
       const r = run(["publish", testFile, "--dry-run", "--version", "2.0.0"], {
@@ -414,7 +408,7 @@ describe("§3 场景 3 — 本地发布与 npx 使用 (publish/npx)", () => {
   });
 
   it("TC3.7 publish 目录模式 — 使用已有 package.json", () => {
-    withTempDir((d) => {
+    withTempDir((/** @type {string} */ d) => {
       writeFileSync(join(d, "package.json"), JSON.stringify({
         name: "existing-pkg", version: "1.0.0"
       }), "utf-8");
@@ -432,7 +426,7 @@ describe("§3 场景 3 — 本地发布与 npx 使用 (publish/npx)", () => {
   });
 
   it("TC3.8 publish 文件模式 — 自动生成 package.json", () => {
-    withTempDir((d) => {
+    withTempDir((/** @type {string} */ d) => {
       const testFile = join(d, "my-util.mjs");
       writeFileSync(testFile, 'export const greet = () => "hi"', "utf-8");
       const r = run(["publish", testFile, "--dry-run", "--name", "auto-gen-test"], {
@@ -446,7 +440,7 @@ describe("§3 场景 3 — 本地发布与 npx 使用 (publish/npx)", () => {
   });
 
   it("TC3.9 publish package.json 无效格式 — 明确错误", () => {
-    withTempDir((d) => {
+    withTempDir((/** @type {string} */ d) => {
       writeFileSync(join(d, "package.json"), "{invalid json!!!}", "utf-8");
       writeFileSync(join(d, "index.js"), "// empty", "utf-8");
       const r = run(["publish", d, "--dry-run"], {
@@ -556,7 +550,7 @@ describe("§4 场景 4 — 包信息审计与卸载 (info/audit/uninstall)", () 
     // npm view 输出是 JSON 数组（多版本），从第一行非日志内容开始解析
     const lines = r.stdout.trim().split("\n");
     // 找到第一个以 [ 或 { 开头的行
-    const jsonStart = lines.findIndex(l => l.trim().startsWith("[") || l.trim().startsWith("{"));
+    const jsonStart = lines.findIndex((/** @type {string} */ l) => l.trim().startsWith("[") || l.trim().startsWith("{"));
     const jsonStr = jsonStart >= 0 ? lines.slice(jsonStart).join("\n") : r.stdout;
     let data;
     try { data = JSON.parse(jsonStr); } catch {
@@ -597,7 +591,7 @@ describe("§4 场景 4 — 包信息审计与卸载 (info/audit/uninstall)", () 
   // ── uninstall ────────────────────────────────────────────────
 
   it("TC4.6 uninstall 无 package.json — 明确拒绝", () => {
-    withTempDir((d) => {
+    withTempDir((/** @type {string} */ d) => {
       const r = run(["uninstall", "lodash"], { cwd: d });
       assert.ok(r.status !== 0, "无 package.json 时 uninstall 应失败");
       const err = r.stderr;
@@ -617,7 +611,7 @@ describe("§4 场景 4 — 包信息审计与卸载 (info/audit/uninstall)", () 
   // ── audit ────────────────────────────────────────────────────
 
   it("TC4.8 audit 无 package.json — 明确拒绝", () => {
-    withTempDir((d) => {
+    withTempDir((/** @type {string} */ d) => {
       const r = run(["audit"], { cwd: d });
       assert.ok(r.status !== 0, "无 package.json 时 audit 应失败");
       const err = r.stderr;
@@ -627,7 +621,7 @@ describe("§4 场景 4 — 包信息审计与卸载 (info/audit/uninstall)", () 
   });
 
   it("TC4.9 audit 有 package.json — 正常执行", () => {
-    withTempProject((d) => {
+    withTempProject((/** @type {string} */ d) => {
       const r = run(["audit"], { cwd: d, timeout: 15000 });
       // 空项目 audit 应正常完成或给出合理错误
       const out = r.stdout + r.stderr;
@@ -636,7 +630,7 @@ describe("§4 场景 4 — 包信息审计与卸载 (info/audit/uninstall)", () 
   });
 
   it("TC4.10 audit --json — 输出合法 JSON", () => {
-    withTempProject((d) => {
+    withTempProject((/** @type {string} */ d) => {
       const r = run(["audit", "--json"], { cwd: d, timeout: 15000 });
       // audit --json 可能因无漏洞返回空对象，也可能是 audit JSON
       try {
@@ -674,7 +668,7 @@ describe("§X 跨切面 — 参数解析与边界行为", () => {
   });
 
   it("TCX.3 --depth 参数解析为整数", () => {
-    withTempProject((d) => {
+    withTempProject((/** @type {string} */ d) => {
       const r = run(["list", "--depth", "abc"], { cwd: d });
       assert.ok(!r.error, "非法 --depth 值不应导致崩溃");
     });
@@ -730,8 +724,7 @@ describe("§X 跨切面 — 参数解析与边界行为", () => {
 
   it("TCX.10 publish 文件模式后清理临时目录", () => {
     // 验证：publish 完成后不应遗留临时目录
-    const tmpBefore = join(tmpdir(), `rui-npm-`);
-    withTempDir((d) => {
+    withTempDir((/** @type {string} */ d) => {
       const testFile = join(d, "tmp-cleanup-test.js");
       writeFileSync(testFile, 'console.log("test")', "utf-8");
       // dry-run publish（不应遗留临时文件）
@@ -758,7 +751,7 @@ describe("§R 回归测试 — 命令组合与集成", () => {
     try {
       const data = JSON.parse(r1.stdout);
       if (Array.isArray(data) && data.length > 0) pkgName = data[0].name;
-    } catch {}
+    } catch { /* ignore */ }
     const r2 = run(["info", pkgName]);
     assert.ok(r2.status === 0 || r2.status === undefined, "info 应正常执行");
     const out = r2.stdout;
@@ -766,7 +759,7 @@ describe("§R 回归测试 — 命令组合与集成", () => {
   });
 
   it("TCR.2 install → list 组合流程", () => {
-    withTempProject((d) => {
+    withTempProject((/** @type {string} */ d) => {
       const r1 = run(["install", "is-odd@3.0.1"], { cwd: d, timeout: 15000 });
       const r2 = run(["list", "--json"], { cwd: d });
       try {
@@ -784,7 +777,7 @@ describe("§R 回归测试 — 命令组合与集成", () => {
   });
 
   it("TCR.3 install → update → uninstall 完整生命周期", () => {
-    withTempProject((d) => {
+    withTempProject((/** @type {string} */ d) => {
       // Install
       run(["install", "is-odd@3.0.0"], { cwd: d, timeout: 15000 });
       // Update (即使已是最新也应有合理输出)
@@ -800,7 +793,7 @@ describe("§R 回归测试 — 命令组合与集成", () => {
   });
 
   it("TCR.4 info → audit 审计链", () => {
-    withTempProject((d) => {
+    withTempProject((/** @type {string} */ d) => {
       // info 查看包详情
       const r1 = run(["info", "lodash"]);
       assert.ok(r1.status === 0, "info 应成功");
@@ -812,4 +805,4 @@ describe("§R 回归测试 — 命令组合与集成", () => {
 });
 
 // ── Run ────────────────────────────────────────────────────────────
-const exitCode = await runTests();
+const _exitCode = await runTests();

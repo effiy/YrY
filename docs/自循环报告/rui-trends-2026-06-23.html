@@ -7,23 +7,7 @@
 <link rel="stylesheet" href="../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../cdn/theme/index.css">
 	<link rel="stylesheet" href="../../cdn/shared-reports/index.css">
-	<style>
-	.yry-container { max-width: 800px; }
-	.yry-header .icon { font-size: 2.5rem; }
-	.yry-header h1 { font-size: 1.6rem; margin: 12px 0 6px; }
-	/* common styles covered by shared-reports.css */
-	/* Enhanced sections — page-specific */
-	.yry-impact-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-	.yry-impact-badge { display: inline-block; padding: 4px 14px; border-radius: 6px; color: #fff; font-size: .8rem; font-weight: 600; }
-	.yry-impact-summary { font-size: .84rem; color: var(--yry-text2); }
-	.yry-impact-detail { padding: 12px; background: rgba(15,23,42,.4); border-radius: 8px; border: var(--yry-border); margin-top: 8px; }
-	.yry-hist-dot { transition: transform .15s; }
-	.yry-hist-dot:hover { transform: scale(1.8); }
-	.yry-cross-item { flex: 1; min-width: 200px; }
-	.yry-cross-label { font-size: .78rem; color: var(--yry-text3); margin-bottom: 4px; }
-	.yry-cross-desc { font-size: .88rem; font-weight: 600; color: var(--yry-accent); line-height: 1.5; }
-	.yry-cross-badge { text-align: center; padding: 8px 16px; background: rgba(15,23,42,.4); border-radius: 8px; border: var(--yry-border); flex-shrink: 0; min-width: 80px; }
-	</style>
+	<link rel="stylesheet" href="../../cdn/loop-report/index.css">
 </head>
 <body>
 <div class="yry-container">
@@ -40,7 +24,7 @@
   <div class="icon">📡</div>
   <h1>自循环报告 · 技术趋势监控</h1>
   <div class="meta">2026-06-23 01:49:23 · 每周一早 9 点 · <span class="yry-badge pass">✅ 通过</span></div>
-  <div class="desc" style="font-size:.84rem;color:var(--yry-text2);margin-top:12px;line-height:1.7;max-width:700px;margin-left:auto;margin-right:auto">扫描 GitHub Trending、OSS Insight、TrendShift、Top-Starred 四大数据源，追踪技术趋势变化，分类打标(AI/LLM·Web/前端·后端/基础设施·DevOps·编程语言·安全)，生成独立 HTML 报告和聚合视图</div>
+  <div class="desc" h-lg-fs84-t2-mt12-lh17-max700>扫描 GitHub Trending、OSS Insight、TrendShift、Top-Starred 四大数据源，追踪技术趋势变化，分类打标(AI/LLM·Web/前端·后端/基础设施·DevOps·编程语言·安全)，生成独立 HTML 报告和聚合视图</div>
 </div>
 
 <div class="yry-stats">
@@ -62,7 +46,7 @@
   </div>
   
   <div class="yry-stat">
-    <a href="../../docs/健康报告/" style="text-decoration:none;color:inherit">
+    <a href="../../docs/健康报告/" class="h-lg-no-underline">
       <div class="yry-val pass">95</div>
       <div class="yry-lbl">🩺 健康度 A 级</div>
     </a>
@@ -71,7 +55,7 @@
 
 <div class="yry-summary">rui-trends 自循环通过 (exit 0)</div>
 
-<div class="yry-card"><h2>📋 检查清单 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">5/5 通过</span></h2><div style="margin-bottom:8px"><div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.78rem;border-bottom:1px solid rgba(255,255,255,.03)"><span style="color:var(--yry-pass)">✅</span><span style="color:var(--yry-text2)">数据源 API 可达性</span><span style="color:var(--yry-text3);font-size:.68rem;margin-left:auto">4/4 源可达</span></div><div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.78rem;border-bottom:1px solid rgba(255,255,255,.03)"><span style="color:var(--yry-pass)">✅</span><span style="color:var(--yry-text2)">趋势条目捕获数量</span><span style="color:var(--yry-text3);font-size:.68rem;margin-left:auto">≥10 条目</span></div><div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.78rem;border-bottom:1px solid rgba(255,255,255,.03)"><span style="color:var(--yry-pass)">✅</span><span style="color:var(--yry-text2)">分类打标准确率</span><span style="color:var(--yry-text3);font-size:.68rem;margin-left:auto">≥90% 准确</span></div><div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.78rem;border-bottom:1px solid rgba(255,255,255,.03)"><span style="color:var(--yry-pass)">✅</span><span style="color:var(--yry-text2)">HTML 报告生成</span><span style="color:var(--yry-text3);font-size:.68rem;margin-left:auto">生成成功</span></div><div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.78rem;border-bottom:1px solid rgba(255,255,255,.03)"><span style="color:var(--yry-pass)">✅</span><span style="color:var(--yry-text2)">趋势清单更新</span><span style="color:var(--yry-text3);font-size:.68rem;margin-left:auto">更新成功</span></div></div><div style="padding:8px 12px;background:rgba(34,197,94,.04);border-radius:6px;font-size:.74rem;color:var(--yry-text2)">📌 所有检查项均通过，技能运行正常。下一个巡检周期将自动重新检查。 执行频率：每周一早 9 点。</div></div>
+<div class="yry-card"><h2>📋 检查清单 <span class="h-lg-fs78-t3-fw4-ml8">5/5 通过</span></h2><div class="h-lg-mb8"><div class="h-lg-flex-gap8-p6-fs78-bb03"><span class="h-tp">✅</span><span class="h-t2">数据源 API 可达性</span><span class="h-lg-t3-fs68-mlauto">4/4 源可达</span></div><div class="h-lg-flex-gap8-p6-fs78-bb03"><span class="h-tp">✅</span><span class="h-t2">趋势条目捕获数量</span><span class="h-lg-t3-fs68-mlauto">≥10 条目</span></div><div class="h-lg-flex-gap8-p6-fs78-bb03"><span class="h-tp">✅</span><span class="h-t2">分类打标准确率</span><span class="h-lg-t3-fs68-mlauto">≥90% 准确</span></div><div class="h-lg-flex-gap8-p6-fs78-bb03"><span class="h-tp">✅</span><span class="h-t2">HTML 报告生成</span><span class="h-lg-t3-fs68-mlauto">生成成功</span></div><div class="h-lg-flex-gap8-p6-fs78-bb03"><span class="h-tp">✅</span><span class="h-t2">趋势清单更新</span><span class="h-lg-t3-fs68-mlauto">更新成功</span></div></div><div class="h-lg-p812-bg04-fs74-t2">📌 所有检查项均通过，技能运行正常。下一个巡检周期将自动重新检查。 执行频率：每周一早 9 点。</div></div>
 
 
 
@@ -81,19 +65,19 @@
 
 <div class="yry-card">
         <h2>📈 历史趋势</h2>
-        <div style="text-align:center;color:var(--yry-text3);padding:20px;font-size:.84rem">仅 1 份报告 — 积累更多数据后启用趋势对比</div>
+        <div class="h-lg-center-t3-p20-fs84">仅 1 份报告 — 积累更多数据后启用趋势对比</div>
       </div>
 
 <div class="yry-card">
-      <h2>⏱️ SLA 追踪 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Service Level Agreement</span></h2>
-      <div style="text-align:center;padding:16px;color:#22c55e;font-size:.84rem">✅ 当前状态正常，无 SLA 计时器启动</div>
+      <h2>⏱️ SLA 追踪 <span class="h-lg-fs78-t3-fw4-ml8">Service Level Agreement</span></h2>
+      <div class="h-lg-center-p16-green-fs84">✅ 当前状态正常，无 SLA 计时器启动</div>
     </div>
 
 
 
 <div class="yry-card">
-    <h2>🔗 关联分析 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">对项目健康的影响</span></h2>
-    <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:12px">
+    <h2>🔗 关联分析 <span class="h-lg-fs78-t3-fw4-ml8">对项目健康的影响</span></h2>
+    <div class="h-lg-flex-gap12-start-wrap-mb12">
       <div class="yry-cross-item">
         <div class="yry-cross-label">关联诊断维度</div>
         <div class="yry-cross-desc">D5 外部趋势诊断</div>
@@ -103,18 +87,18 @@
         <div class="yry-cross-desc">趋势数据影响自循环报告新鲜度和 D5 诊断信号，过时趋势可能导致技术选型决策失误</div>
       </div>
       <div class="yry-cross-badge">
-        <div style="font-size:.7rem;color:var(--yry-text3)">当前状态</div>
-        <div style="font-size:1.1rem;font-weight:700;color:var(--yry-pass)">✓ 正常</div>
+        <div class="h-lg-fs7-t3">当前状态</div>
+        <div class="h-lg-fs11-fw7-pass">✓ 正常</div>
       </div>
     </div>
-    <div style="padding:10px;background:rgba(245,158,11,.04);border-radius:8px;border:1px solid rgba(245,158,11,.1);font-size:.78rem;color:var(--yry-text2);line-height:1.6"><strong>📊 升级策略：</strong>连续 2 周无新信号 → P1 · 3 周以上 → P0 · 与 D4 依赖过期联动评估替代方案</div>
+    <div class="h-lg-p10-amber04-bd-fs78-t2-lh16"><strong>📊 升级策略：</strong>连续 2 周无新信号 → P1 · 3 周以上 → P0 · 与 D4 依赖过期联动评估替代方案</div>
   </div>
 
 
 
 <div class="yry-footer">
   自循环报告 · rui-trends · 2026-06-23 01:49:23<br>
-  <span style="color:var(--yry-text3)">由 rui-bot loop-report 自动生成</span>
+  <span class="h-t3">由 rui-bot loop-report 自动生成</span>
 </div>
 
 </div>

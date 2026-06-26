@@ -84,6 +84,20 @@
     }
   },
   {
+    "file": "rui-story-2026-06-25.html",
+    "skill": "rui-story",
+    "skillLabel": "故事状态轮询",
+    "icon": "📋",
+    "date": "2026-06-25",
+    "status": "fail",
+    "summary": "🚫 P0 升级：rui-story 连续 98 次 fail (exit 1): [rui-story] overview mode — 查询远端 API... [rui-story] 远端不可达: This operation was aborted",
+    "findings": {
+      "info": 0,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
     "file": "rui-story-2026-06-24.html",
     "skill": "rui-story",
     "skillLabel": "故事状态轮询",
@@ -210,6 +224,20 @@
     }
   },
   {
+    "file": "rui-import-2026-06-25.html",
+    "skill": "rui-import",
+    "skillLabel": "持续文档同步",
+    "icon": "📤",
+    "date": "2026-06-25",
+    "status": "fail",
+    "summary": "🚫 P0 升级：rui-import 连续 31 次 fail (exit -1): [rui-import] scan root: /Users/ruiyi/Yi/YrY [rui-import] workspace: YrY [rui-import] found 1497 files [rui-import] querying existing sessions... [rui-import] failed to query sessions: This operation w",
+    "findings": {
+      "info": 0,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
     "file": "rui-import-2026-06-24.html",
     "skill": "rui-import",
     "skillLabel": "持续文档同步",
@@ -252,6 +280,20 @@
     }
   },
   {
+    "file": "rui-html-2026-06-25.html",
+    "skill": "rui-html",
+    "skillLabel": "HTML 过期重生成",
+    "icon": "🎨",
+    "date": "2026-06-25",
+    "status": "pass",
+    "summary": "rui-html 自循环通过 (exit 0)",
+    "findings": {
+      "info": 0,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
     "file": "rui-html-2026-06-24.html",
     "skill": "rui-html",
     "skillLabel": "HTML 过期重生成",
@@ -289,6 +331,20 @@
     "summary": "定时巡检通过，所有检查项正常",
     "findings": {
       "info": 2,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-health-2026-06-25.html",
+    "skill": "rui-health",
+    "skillLabel": "健康看门狗",
+    "icon": "🩺",
+    "date": "2026-06-25",
+    "status": "pass",
+    "summary": "rui-health 自循环通过 (exit 0)",
+    "findings": {
+      "info": 0,
       "warn": 0,
       "fail": 0
     }
@@ -385,6 +441,20 @@
     "date": "2026-06-23",
     "status": "pass",
     "summary": "rui-bundle-analyze 自循环通过 (exit 0)",
+    "findings": {
+      "info": 0,
+      "warn": 0,
+      "fail": 0
+    }
+  },
+  {
+    "file": "rui-bot-2026-06-25.html",
+    "skill": "rui-bot",
+    "skillLabel": "通知队列轮询",
+    "icon": "💬",
+    "date": "2026-06-25",
+    "status": "pass",
+    "summary": "rui-bot 自循环通过 (exit 0)",
     "findings": {
       "info": 0,
       "warn": 0,

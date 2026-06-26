@@ -16,23 +16,7 @@
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
 <link rel="stylesheet" href="../../../yry-a11y/index.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<style>
-  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
-  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
-  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
-  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
-  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
-  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
-  .delivery-story { font-size: .72rem; color: #4b5563; }
-  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
-  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
-  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
-  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
-  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
-  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
-  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
-</style>
+<link rel="stylesheet" href="../../../yry-legacy-scene-delivery/index.css">
 </head>
 <body>
 <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
@@ -54,29 +38,29 @@
 
   <div class="content-card">
     <h2>🧪 验证矩阵 · 13 项</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">验证项</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">方法</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">阈值</th></tr></thead>
+    <table class="yry-auto-93137">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-75234">验证项</th><th class="yry-auto-75234">方法</th><th class="yry-auto-75234">阈值</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">npm 安装成功</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>npm install yry-cdn</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">0 错误</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">jsDelivr 可访问</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>curl CDN URL</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">HTTP 200</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">unpkg 可访问</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>curl unpkg URL</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">HTTP 200</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">包体积合理</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>npm pack --dry-run</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">&lt; 5MB</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">版本号递增</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">对比上一版本 package.json</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">正确递增</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">CHANGELOG 更新</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">检查 CHANGELOG.md</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">含当前版本</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Git tag 存在</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>git tag -l "v*"</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">含当前版本 tag</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">5 步加载链可用</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">浏览器 Network 面板</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">全部 200 且 ≤ 625ms</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">SRI 哈希可生成</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>openssl dgst -sha384</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">与 CDN 一致</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">canary 标签存在</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>npm dist-tag ls yry-cdn</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">canary 存在</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">签名验证</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>npm verify</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">valid signature</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">下载量监控</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">npm-stat</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">周下载趋势</td></tr>
-        <tr><td style="padding:8px 10px">供应链审计</td><td style="padding:8px 10px"><code>npm audit signatures</code></td><td style="padding:8px 10px">0 未签名</td></tr>
+        <tr><td class="yry-auto-86182">npm 安装成功</td><td class="yry-auto-86182"><code>npm install yry-cdn</code></td><td class="yry-auto-86182">0 错误</td></tr>
+        <tr><td class="yry-auto-86182">jsDelivr 可访问</td><td class="yry-auto-86182"><code>curl CDN URL</code></td><td class="yry-auto-86182">HTTP 200</td></tr>
+        <tr><td class="yry-auto-86182">unpkg 可访问</td><td class="yry-auto-86182"><code>curl unpkg URL</code></td><td class="yry-auto-86182">HTTP 200</td></tr>
+        <tr><td class="yry-auto-86182">包体积合理</td><td class="yry-auto-86182"><code>npm pack --dry-run</code></td><td class="yry-auto-86182">&lt; 5MB</td></tr>
+        <tr><td class="yry-auto-86182">版本号递增</td><td class="yry-auto-86182">对比上一版本 package.json</td><td class="yry-auto-86182">正确递增</td></tr>
+        <tr><td class="yry-auto-86182">CHANGELOG 更新</td><td class="yry-auto-86182">检查 CHANGELOG.md</td><td class="yry-auto-86182">含当前版本</td></tr>
+        <tr><td class="yry-auto-86182">Git tag 存在</td><td class="yry-auto-86182"><code>git tag -l "v*"</code></td><td class="yry-auto-86182">含当前版本 tag</td></tr>
+        <tr><td class="yry-auto-86182">5 步加载链可用</td><td class="yry-auto-86182">浏览器 Network 面板</td><td class="yry-auto-86182">全部 200 且 ≤ 625ms</td></tr>
+        <tr><td class="yry-auto-86182">SRI 哈希可生成</td><td class="yry-auto-86182"><code>openssl dgst -sha384</code></td><td class="yry-auto-86182">与 CDN 一致</td></tr>
+        <tr><td class="yry-auto-86182">canary 标签存在</td><td class="yry-auto-86182"><code>npm dist-tag ls yry-cdn</code></td><td class="yry-auto-86182">canary 存在</td></tr>
+        <tr><td class="yry-auto-86182">签名验证</td><td class="yry-auto-86182"><code>npm verify</code></td><td class="yry-auto-86182">valid signature</td></tr>
+        <tr><td class="yry-auto-86182">下载量监控</td><td class="yry-auto-86182">npm-stat</td><td class="yry-auto-86182">周下载趋势</td></tr>
+        <tr><td class="yry-auto-93797">供应链审计</td><td class="yry-auto-93797"><code>npm audit signatures</code></td><td class="yry-auto-93797">0 未签名</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>▶️ 回归命令</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0"># 1. 发布前检查 (6 项)
+    <pre class="yry-auto-15271"># 1. 发布前检查 (6 项)
 node -e "console.log(require('./package.json').version)"
 npm pack --dry-run | tail -1
 npm test
@@ -109,14 +93,14 @@ npm audit signatures</pre>
 
   <div class="content-card">
     <h2>📊 发布状态对照</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.74rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">指标</th><th style="padding:8px 12px;text-align:right;color:#22d3ee;font-weight:600">当前</th><th style="padding:8px 12px;text-align:right;color:#22d3ee;font-weight:600">目标</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">状态</th></tr></thead>
+    <table class="yry-auto-1645">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-38488">指标</th><th class="yry-auto-51957">当前</th><th class="yry-auto-51957">目标</th><th class="yry-auto-38488">状态</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">包体积</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">~3MB</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">&lt; 2MB</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#fbbf24">⚠ P1</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">发布频率</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">月级</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">周级</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#fbbf24">⚠ P2</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">发布自动化</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">手动</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">CI/CD 自动</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#f87171">✗ P0</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">预发布验证</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">无</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">canary</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#f87171">✗ P0</td></tr>
-        <tr><td style="padding:8px 12px">回滚能力</td><td style="padding:8px 12px;text-align:right">手动</td><td style="padding:8px 12px;text-align:right"><code>npm unpublish</code></td><td style="padding:8px 12px;color:#fbbf24">⚠ P1</td></tr>
+        <tr><td class="yry-auto-40105">包体积</td><td class="yry-auto-11917">~3MB</td><td class="yry-auto-11917">&lt; 2MB</td><td class="yry-auto-8304">⚠ P1</td></tr>
+        <tr><td class="yry-auto-40105">发布频率</td><td class="yry-auto-11917">月级</td><td class="yry-auto-11917">周级</td><td class="yry-auto-8304">⚠ P2</td></tr>
+        <tr><td class="yry-auto-40105">发布自动化</td><td class="yry-auto-11917">手动</td><td class="yry-auto-11917">CI/CD 自动</td><td class="yry-a2-8">✗ P0</td></tr>
+        <tr><td class="yry-auto-40105">预发布验证</td><td class="yry-auto-11917">无</td><td class="yry-auto-11917">canary</td><td class="yry-a2-8">✗ P0</td></tr>
+        <tr><td class="yry-auto-70345">回滚能力</td><td class="yry-auto-71132">手动</td><td class="yry-auto-71132"><code>npm unpublish</code></td><td class="yry-a2-25">⚠ P1</td></tr>
       </tbody>
     </table>
   </div>

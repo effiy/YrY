@@ -26,12 +26,12 @@ const TEMPLATES_DIR = join(__dirname, '..', 'templates');
 /**
  * Generate a single HTML document for a scene.
  *
- * @param {Object} ctx - Scene context from extractor
+ * @param {any} ctx - Scene context from extractor
  * @param {string} docType - One of the 7 doc type names
  * @param {string} scenePath - Absolute path to the scene directory
  * @returns {{ generated: boolean, skipped: boolean, error?: string }}
  */
-export function generateSceneDocs(ctx, docType, scenePath) {
+export function generateSceneDocs(/** @type {any} */ ctx, /** @type {string} */ docType, /** @type {string} */ scenePath) {
   const outputPath = join(scenePath, `${docType}.html`);
 
   // Safety: skip if exists and not forced
@@ -51,10 +51,10 @@ export function generateSceneDocs(ctx, docType, scenePath) {
   // Read and render template
   const templatePath = getTemplatePath(docType);
   if (!existsSync(templatePath)) {
-    return { generated: false, error: `模板文件不存在: ${templatePath}` };
+    return { generated: false, skipped: true, error: `模板文件不存在: ${templatePath}` };
   }
 
-  let template = readFileSync(templatePath, 'utf-8');
+  const template = readFileSync(templatePath, 'utf-8');
 
   // Replace all tokens
   const html = renderTemplate(template, sharedCtx, docType);
@@ -68,7 +68,7 @@ export function generateSceneDocs(ctx, docType, scenePath) {
 /**
  * Get the template file path for a document type.
  */
-function getTemplatePath(docType) {
+function getTemplatePath(/** @type {string} */ docType) {
   const cat = getCategory(docType);
   const catDir = cat === 'A' ? 'cat-a' : 'cat-b';
   return join(TEMPLATES_DIR, catDir, `${docType}.html`);
@@ -77,7 +77,7 @@ function getTemplatePath(docType) {
 /**
  * Render a template by replacing all {{TOKEN}} placeholders.
  */
-function renderTemplate(template, ctx, docType) {
+function renderTemplate(/** @type {string} */ template, /** @type {any} */ ctx, /** @type {string} */ docType) {
   // Build dynamic fragments
   const breadcrumb = buildBreadcrumb(ctx, docType);
   const crossNav = buildCrossNav(ctx, docType);
@@ -94,7 +94,7 @@ function renderTemplate(template, ctx, docType) {
 
   // Mermaid blocks
   const mermaidHtml = ctx.mermaidBlocks?.length
-    ? ctx.mermaidBlocks.map(b => `<pre class="mermaid">${escapeHtml(b.code)}</pre>`).join('\n')
+    ? ctx.mermaidBlocks.map((/** @type {any} */ b) => `<pre class="mermaid">${escapeHtml(b.code)}</pre>`).join('\n')
     : '';
 
   // Stats data
@@ -136,11 +136,11 @@ function renderTemplate(template, ctx, docType) {
 }
 
 function placeholderHtml() {
-  return '<div class="yry-placeholder" style="padding:2rem;text-align:center;color:var(--yry-text3);background:var(--yry-bg-flat);border-radius:8px;margin:1rem 0">数据待填充 — 运行 /rui code 生成</div>';
+  return '<div class="yry-placeholder">数据待填充 — 运行 /rui code 生成</div>';
 }
 
 /** Build stats data as JSON array (for YrySceneStats component) */
-function buildStatsGridJSON(ctx, docType) {
+function buildStatsGridJSON(/** @type {any} */ ctx, /** @type {string} */ docType) {
   const { tables } = ctx;
 
   switch (docType) {
@@ -197,7 +197,7 @@ function buildStatsGridJSON(ctx, docType) {
   }
 }
 
-function buildHealthBarJSON(ctx, docType) {
+function buildHealthBarJSON(/** @type {any} */ ctx, /** @type {string} */ docType) {
   if (docType === '审查') {
     const passCount = countDiagnosticPasses(ctx.tables);
     const pct = Math.round((passCount / 8) * 100);
@@ -222,12 +222,12 @@ function buildHealthBarJSON(ctx, docType) {
 
 // ═══ Table extraction helpers ═══
 
-function extractTableValue(tables, label) {
+function extractTableValue(/** @type {any[]} */ tables, /** @type {string} */ label) {
   if (!tables) return null;
   for (const table of tables) {
     for (const row of table.rows) {
-      if (row.some(cell => cell.includes(label))) {
-        const idx = row.findIndex(cell => cell.includes(label));
+      if (row.some((/** @type {string} */ cell) => cell.includes(label))) {
+        const idx = row.findIndex((/** @type {string} */ cell) => cell.includes(label));
         if (idx >= 0 && idx + 1 < row.length) return row[idx + 1] || row[idx];
         return row[1] || row[0];
       }
@@ -236,12 +236,12 @@ function extractTableValue(tables, label) {
   return null;
 }
 
-function countTableRows(tables, prefix = '') {
+function countTableRows(/** @type {any[]} */ tables, /** @type {string} */ prefix = '') {
   if (!tables) return 0;
   let count = 0;
   for (const table of tables) {
     for (const row of table.rows) {
-      if (!prefix || row.some(cell => cell.startsWith(prefix))) {
+      if (!prefix || row.some((/** @type {string} */ cell) => cell.startsWith(prefix))) {
         count++;
       }
     }
@@ -249,18 +249,18 @@ function countTableRows(tables, prefix = '') {
   return count;
 }
 
-function countDiagnosticPasses(tables) {
+function countDiagnosticPasses(/** @type {any[]} */ tables) {
   if (!tables) return 0;
   let passes = 0;
   for (const table of tables) {
     for (const row of table.rows) {
-      if (row.some(cell => cell.includes('✅'))) passes++;
+      if (row.some((/** @type {string} */ cell) => cell.includes('✅'))) passes++;
     }
   }
   return passes;
 }
 
-function countArtifactRows(tables) {
+function countArtifactRows(/** @type {any[]} */ tables) {
   if (!tables) return 0;
   for (const table of tables) {
     const headerStr = table.headers.join(' ');

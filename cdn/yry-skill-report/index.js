@@ -31,50 +31,16 @@
 
 (function () {
   'use strict';
+  var _script = document.currentScript;
+  var _dataUrl = _script && _script.src ? _script.src.replace(/index\.js(\?[^]*)?$/, 'data.json') : './data.json';
+  var _dataPromise = fetch(_dataUrl).then(function(r){return r.json();}).then(function(d){SKILL_DEFS=d.SKILL_DEFS;COMP_TYPES=d.COMP_TYPES;COMPLIANCE_CHECKS=d.COMPLIANCE_CHECKS;STAGE_COLORS=d.STAGE_COLORS;}).catch(function(err){console.error('[YrySkillReport] data.json load failed:', err);});
+
 
   /* ── Skill definitions (metadata, scores derived from base avg) ─────── */
-  var SKILL_DEFS = [
-    { key: 'rui', name: 'rui', cat: '编排入口', desc: '故事驱动 SDLC 编排器 — 命令路由 + 推荐引擎' },
-    { key: 'rui-init', name: 'rui-init', cat: '管线子技能', desc: '项目基线建立 — detect→explore→generate→arch→setup→verify→trigger' },
-    { key: 'rui-doc', name: 'rui-doc', cat: '管线子技能', desc: 'Markdown 文档基线生成 — 需求→故事拆分→文档基线' },
-    { key: 'rui-plan', name: 'rui-plan', cat: '管线子技能', desc: '实施计划生成 — 文件映射→任务分解→六项自审查' },
-    { key: 'rui-code', name: 'rui-code', cat: '管线子技能', desc: '源码实现管线 — 分支隔离→Gate A→逐模块P0清零→Gate B' },
-    { key: 'rui-update', name: 'rui-update', cat: '管线子技能', desc: '增量更新 — T1/T2/T3 变更范围自动裁剪管线' },
-    { key: 'rui-yry', name: 'rui-yry', cat: '管线子技能', desc: '自改进闭环 — 全自主扫描→诊断→实现→验证→版本升级' },
-    { key: 'rui-version', name: 'rui-version', cat: '管线子技能', desc: '版本管理 — 自主判定语义版本号→更新四文件→git tag' },
-    { key: 'rui-html', name: 'rui-html', cat: '支撑技能', desc: 'HTML 文档生成 — markdown→7类标准HTML' },
-    { key: 'rui-story', name: 'rui-story', cat: '支撑技能', desc: '故事任务面板管理 — list/sync/remove/health' },
-    { key: 'rui-claude', name: 'rui-claude', cat: '支撑技能', desc: '.claude/ 配置管理 — sync/update/retro/history' },
-    { key: 'rui-import', name: 'rui-import', cat: '支撑技能', desc: '文档同步 — 本地↔远端API双向同步' },
-    { key: 'rui-skills', name: 'rui-skills', cat: '支撑技能', desc: '技能市场 — 发现和安装Claude/Agent技能包' },
-    { key: 'rui-bot', name: 'rui-bot', cat: '支撑技能', desc: '企微消息推送 — Rich/Verbose格式+Dry-Run预览' },
-    { key: 'rui-health', name: 'rui-health', cat: '支撑技能', desc: '系统健康诊断 — 9核心维度+7工程成熟度评分' },
-    { key: 'rui-trends', name: 'rui-trends', cat: '支撑技能', desc: '技术趋势发现 — GitHub Trending/OSS Insight/TrendShift' },
-    { key: 'rui-npm', name: 'rui-npm', cat: '支撑技能', desc: 'npm包管理 — 14子命令:search/install/publish/npx/audit' },
-    { key: 'rui-analysis', name: 'rui-analysis', cat: '新增技能', desc: '代码与架构静态分析 — 复杂度/耦合/文件膨胀' },
-    { key: 'rui-reporter', name: 'rui-reporter', cat: '新增技能', desc: '过程报告与知识策展 — 故事进程/知识图谱一致性' }
-  ];
-
-  var COMP_TYPES = [
-    { key: 'skills', label: '技能' },
-    { key: 'agents', label: 'Agent' },
-    { key: 'rules', label: '规则' },
-    { key: 'scripts', label: '脚本' }
-  ];
-
-  var COMPLIANCE_CHECKS = [
-    { rule: '无 class/extends', desc: '禁止使用 ES6 class 和 extends 继承', pass: true },
-    { rule: '无 export default', desc: '统一使用命名导出', pass: true },
-    { rule: '无空 catch', desc: 'catch 块必须有错误处理逻辑', pass: true },
-    { rule: '禁止魔法数字', desc: '数字字面量赋予语义化常量名', pass: true },
-    { rule: 'SKILL.md 必备章节', desc: '每 skill 必须有完整 SKILL.md', pass: true },
-    { rule: '交接信号可验证', desc: 'Agent 交接信号可被下游验证', pass: true },
-    { rule: '无循环依赖', desc: '模块间无循环依赖', pass: true },
-    { rule: 'lib/ 共享库消除重复', desc: '跨文件共享代码统一放 lib/', pass: true }
-  ];
-
-  var STAGE_COLORS = { '初始期': '#ef4444', '形成期': '#f59e0b', '成熟期': '#22c55e', '优化期': '#3b82f6' };
-
+var SKILL_DEFS = null;
+var COMP_TYPES = null;
+var COMPLIANCE_CHECKS = null;
+var STAGE_COLORS = null;
   /* ── Pure helper: deterministic per-skill variation ────────────────── */
   function skillScore(name, baseAvg) {
     if (typeof baseAvg !== 'number' || baseAvg <= 0) return 70;
@@ -103,12 +69,12 @@
     var self = this;
     this.innerHTML =
       '<div class="yry-tabs" id="main-tabs">' +
-        '<button class="yry-tab on" data-panel="overview">概览</button>' +
-        '<button class="yry-tab" data-panel="skills">技能清单</button>' +
-        '<button class="yry-tab" data-panel="dimensions">维度评分</button>' +
-        '<button class="yry-tab" data-panel="compliance">范式合规</button>' +
-        '<button class="yry-tab" data-panel="trend">趋势</button>' +
-        '<button class="yry-tab" data-panel="maturity">成熟度</button>' +
+        '<span class="yry-tab on" data-panel="overview">📊 概览</span>' +
+        '<span class="yry-tab" data-panel="skills">📋 技能清单</span>' +
+        '<span class="yry-tab" data-panel="dimensions">📐 维度评分</span>' +
+        '<span class="yry-tab" data-panel="compliance">✅ 范式合规</span>' +
+        '<span class="yry-tab" data-panel="trend">📈 趋势</span>' +
+        '<span class="yry-tab" data-panel="maturity">🌱 成熟度</span>' +
       '</div>' +
       this._panelOverview() +
       this._panelSkills() +
@@ -608,7 +574,10 @@
   };
 
   /* ── Register ─────────────────────────────────────────────────────── */
-  if (!customElements.get(TAG_NAME)) {
-    customElements.define(TAG_NAME, YrySkillReport);
-  }
+  _dataPromise.then(function(){
+    if (!customElements.get(TAG_NAME)) {
+      customElements.define(TAG_NAME, YrySkillReport);
+    }
+  
+  });
 })();

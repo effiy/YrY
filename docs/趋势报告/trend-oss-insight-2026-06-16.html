@@ -6,9 +6,7 @@
 <title>趋势报告 · OSS Insight 2026-06-16</title>
 <link rel="stylesheet" href="../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../cdn/theme/index.css">
-<style>
-.cat-bar-fill { transition: width .6s ease; }
-</style>
+<link rel="stylesheet" href="trend-oss-insight-2026-06-16.css">
 </head>
 <body>
 <div class="c">
@@ -35,7 +33,7 @@
 
 <div class="stats">
   <div class="stat"><div class="val pass">13</div><div class="lbl">捕获条目数 (投影)</div></div>
-  <div class="stat"><div class="val " style="color:#f59e0b">→ 持平</div><div class="lbl">趋势方向</div></div>
+  <div class="stat"><div class="val " h-lg-amber>→ 持平</div><div class="lbl">趋势方向</div></div>
   <div class="stat"><div class="val warn">⚠ 投影</div><div class="lbl">数据质量</div></div>
   <div class="stat"><div class="val info">5</div><div class="lbl">覆盖语言</div></div>
   <div class="stat"><div class="val info">20%</div><div class="lbl">聚合权重</div></div>
@@ -44,8 +42,8 @@
 
 <div class="card">
   <h2>四周期条目趋势 (稳定平台微增)</h2>
-  <div style="width:100%;overflow-x:auto">
-    <svg viewBox="0 0 840 240" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:840px">
+  <div class="h-lg-w100-overflowx">
+    <svg viewBox="0 0 840 240" xmlns="http://www.w3.org/2000/svg" class="h-lg-w100-maxw840">
       <defs>
         <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="rgba(59,130,246,0.18)"/>
@@ -90,17 +88,17 @@
       <text x="735" y="232" text-anchor="middle" fill="rgba(59,130,246,0.4)" font-size="8">投影区间</text>
     </svg>
   </div>
-  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;font-size:.72rem;color:var(--yry-text3)">
+  <div class="h-lg-flex-gap12-wrap-mt12-fs72-t3">
     <span>06-05: 11 条目 (基线)</span>
-    <span style="color:var(--yry-pass)">06-09: 12 条目 (+9.1%)</span>
-    <span style="color:#f59e0b">06-12: 12 条目 (持平)</span>
-    <span style="color:#60a5fa;font-weight:600">06-16: 13 条目 (+8.3%) 投影 ▸ 需验证</span>
+    <span class="h-tp">06-09: 12 条目 (+9.1%)</span>
+    <span class="h-lg-amber">06-12: 12 条目 (持平)</span>
+    <span class="h-lg-blue60-fw6">06-16: 13 条目 (+8.3%) 投影 ▸ 需验证</span>
   </div>
 </div>
 
 <div class="card">
   <h2>长周期洞察 (投影 · 基于历史模式)</h2>
-  <div style="display:flex;flex-direction:column;gap:8px">
+  <div class="h-lg-flex-col-gap8">
     <div class="yry-insight-item">
       <span class="yry-insight-icon">📊</span>
       <span class="yry-insight-text"><strong>平台稳定型项目主导</strong>：OSS Insight 长期追踪的优质项目（如 LangChain、Stable Diffusion、Tauri）具有持续高活跃度，不在短期 Trending 中出现但生态质量稳固。</span>
@@ -133,7 +131,7 @@
   <div class="feature-grid">
     <div class="feature-item">
       <div class="feature-label">数据入口</div>
-      <div class="feature-val"><a href="https://ossinsight.io" target="_blank" rel="noopener noreferrer" style="color:#7aa2f7">https://ossinsight.io</a></div>
+      <div class="feature-val"><a href="https://ossinsight.io" target="_blank" rel="noopener noreferrer" class="h-lg-blue7aa2">https://ossinsight.io</a></div>
     </div>
     <div class="feature-item">
       <div class="feature-label">更新频率</div>
@@ -164,7 +162,7 @@
     <thead><tr><th>指标</th><th>2026-06-05</th><th>2026-06-09</th><th>2026-06-12</th><th>2026-06-16</th><th>变化趋势</th></tr></thead>
     <tbody>
       <tr>
-        <td>捕获条目数</td><td class="num">11</td><td class="num">12</td><td class="num">12</td><td class="num" style="color:#60a5fa">13 ★</td>
+        <td>捕获条目数</td><td class="num">11</td><td class="num">12</td><td class="num">12</td><td class="num" h-lg-blue60>13 ★</td>
         <td><span class="badge flat">→ +18.2%</span></td>
       </tr>
       <tr>
@@ -184,7 +182,7 @@
         <td><span class="badge flat">→ 稳定</span></td>
       </tr>
       <tr>
-        <td>波动率 σ</td><td class="num">—</td><td class="num">0.5</td><td class="num">0.5</td><td class="num" style="color:#60a5fa">~0.5</td>
+        <td>波动率 σ</td><td class="num">—</td><td class="num">0.5</td><td class="num">0.5</td><td class="num" h-lg-blue60>~0.5</td>
         <td><span class="badge flat">极低波动</span></td>
       </tr>
     </tbody>
@@ -208,40 +206,40 @@
 
 <div class="card">
   <h2>投影方法论与置信度</h2>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px">
-    <div style="padding:14px 18px;border-radius:8px;border:var(--yry-border);background:rgba(15,23,42,.4)">
-      <div style="font-size:.78rem;font-weight:600;color:var(--yry-accent);margin-bottom:6px">📐 增长模型</div>
-      <div style="font-size:.72rem;color:var(--yry-text2);line-height:1.7">
+  <div class="h-lg-grid-auto-240-gap12">
+    <div class="h-lg-p14-bd-bg4">
+      <div class="h-lg-fs78-fw6-accent-mb6">📐 增长模型</div>
+      <div class="h-lg-fs72-t2-lh17">
         <strong>线性外推 + 波动率 σ 约束</strong><br>
-        数据点：11 → 12 → 12 → <span style="color:#60a5fa">13 ★</span><br>
-        斜率 = 0.5 条/周期 · 极低波动 σ=<strong style="color:var(--yry-pass)">0.5</strong><br>
+        数据点：11 → 12 → 12 → <span class="h-lg-blue60">13 ★</span><br>
+        斜率 = 0.5 条/周期 · 极低波动 σ=<strong class="h-tp">0.5</strong><br>
         平台特征：条目数高度稳定，反映长周期项目缓慢更迭
       </div>
     </div>
-    <div style="padding:14px 18px;border-radius:8px;border:var(--yry-border);background:rgba(15,23,42,.4)">
-      <div style="font-size:.78rem;font-weight:600;color:var(--yry-accent);margin-bottom:6px">🎯 置信区间</div>
-      <div style="font-size:.72rem;color:var(--yry-text2);line-height:1.7">
+    <div class="h-lg-p14-bd-bg4">
+      <div class="h-lg-fs78-fw6-accent-mb6">🎯 置信区间</div>
+      <div class="h-lg-fs72-t2-lh17">
         <strong>95% CI = [11, 15]</strong><br>
         标准误差 SE = 0.5 (全源最小)<br>
         偏差范围 ±2 (最窄区间)<br>
         方向确认：线性回归斜率 > 0<br>
-        t 检验 p = <strong style="color:var(--yry-warn)">0.21</strong> (不显著，符合平台特征)
+        t 检验 p = <strong class="h-tw">0.21</strong> (不显著，符合平台特征)
       </div>
     </div>
-    <div style="padding:14px 18px;border-radius:8px;border:var(--yry-border);background:rgba(15,23,42,.4)">
-      <div style="font-size:.78rem;font-weight:600;color:var(--yry-accent);margin-bottom:6px">⚙️ 投影算法</div>
-      <div style="font-size:.72rem;color:var(--yry-text2);line-height:1.7">
+    <div class="h-lg-p14-bd-bg4">
+      <div class="h-lg-fs78-fw6-accent-mb6">⚙️ 投影算法</div>
+      <div class="h-lg-fs72-t2-lh17">
         1. 普通最小二乘线性回归 (OLS)<br>
         2. 预测值 = 截距 + 斜率 × 周期<br>
         3. 约束：σ × 2 为偏差上限<br>
         4. 平台模式不强制单调递增<br>
-        5. 最终：12 + 0.5 = <strong style="color:#60a5fa">13</strong> (±2)
+        5. 最终：12 + 0.5 = <strong class="h-lg-blue60">13</strong> (±2)
       </div>
     </div>
-    <div style="padding:14px 18px;border-radius:8px;border:var(--yry-border);background:rgba(15,23,42,.4)">
-      <div style="font-size:.78rem;font-weight:600;color:var(--yry-warn);margin-bottom:6px">⚠️ 投影风险</div>
-      <div style="font-size:.72rem;color:var(--yry-text2);line-height:1.7">
-        <strong style="color:var(--yry-pass)">低风险</strong> — 源可达但 HTML 解析返回空<br>
+    <div class="h-lg-p14-bd-bg4">
+      <div class="h-lg-fs78-fw6-warn-mb6">⚠️ 投影风险</div>
+      <div class="h-lg-fs72-t2-lh17">
+        <strong class="h-tp">低风险</strong> — 源可达但 HTML 解析返回空<br>
         · OSS Insight 页面可达 (HTTP 200)<br>
         · 可能 DOM 结构变更导致解析失败<br>
         · 偏差 ±2 为全源最窄，投影精度最高<br>
@@ -253,63 +251,63 @@
 
 <div class="card">
   <h2>跨源趋势确认矩阵</h2>
-  <p style="font-size:.72rem;color:var(--yry-text3);margin-bottom:12px">将本源的投影趋势方向与其他三个趋势源进行交叉验证。OSS Insight 追踪长周期稳定项目，其持平/微增方向是正常特征，不等同于趋势信号弱。</p>
+  <p class="h-lg-fs72-t3-mb12">将本源的投影趋势方向与其他三个趋势源进行交叉验证。OSS Insight 追踪长周期稳定项目，其持平/微增方向是正常特征，不等同于趋势信号弱。</p>
   <table>
     <thead><tr><th>对比源</th><th>本源自方向</th><th>对比源自方向</th><th>方向一致</th><th>加权确认</th><th>判定</th></tr></thead>
     <tbody>
       <tr>
-        <td style="font-weight:600">OSS Insight<br><span style="font-size:.64rem;color:var(--yry-text3)">权重 20%</span></td>
+        <td class="h-lg-fw6">OSS Insight<br><span class="h-lg-fs64-t3">权重 20%</span></td>
         <td><span class="badge flat">→ 持平</span></td>
         <td><span class="badge flat">→ 持平</span></td>
-        <td style="color:var(--yry-pass);font-weight:600">✓ 一致</td>
-        <td style="font-weight:600">—</td>
+        <td class="h-lg-green-fw6">✓ 一致</td>
+        <td class="h-lg-fw6">—</td>
         <td><span class="badge ok">自身</span></td>
       </tr>
       <tr>
-        <td style="font-weight:600">GitHub Trending<br><span style="font-size:.64rem;color:var(--yry-text3)">权重 35%</span></td>
+        <td class="h-lg-fw6">GitHub Trending<br><span class="h-lg-fs64-t3">权重 35%</span></td>
         <td><span class="badge flat">→ 持平</span></td>
         <td><span class="badge rise">↑ 上升</span></td>
-        <td style="color:var(--yry-warn)">△ 互补</td>
-        <td style="color:var(--yry-pass);font-weight:600">+17.5%</td>
+        <td class="h-tw">△ 互补</td>
+        <td class="h-lg-green-fw6">+17.5%</td>
         <td><span class="badge ok">预期差异</span></td>
       </tr>
       <tr>
-        <td style="font-weight:600">TrendShift<br><span style="font-size:.64rem;color:var(--yry-text3)">权重 25%</span></td>
+        <td class="h-lg-fw6">TrendShift<br><span class="h-lg-fs64-t3">权重 25%</span></td>
         <td><span class="badge flat">→ 持平</span></td>
         <td><span class="badge rise">↑ 上升</span></td>
-        <td style="color:var(--yry-warn)">△ 互补</td>
-        <td style="color:var(--yry-pass);font-weight:600">+12.5%</td>
+        <td class="h-tw">△ 互补</td>
+        <td class="h-lg-green-fw6">+12.5%</td>
         <td><span class="badge ok">预期差异</span></td>
       </tr>
       <tr>
-        <td style="font-weight:600">Top-Starred<br><span style="font-size:.64rem;color:var(--yry-text3)">权重 20%</span></td>
+        <td class="h-lg-fw6">Top-Starred<br><span class="h-lg-fs64-t3">权重 20%</span></td>
         <td><span class="badge flat">→ 持平</span></td>
         <td><span class="badge rise">↑ 上升</span></td>
-        <td style="color:var(--yry-warn)">△ 互补</td>
-        <td style="color:var(--yry-pass);font-weight:600">+10%</td>
+        <td class="h-tw">△ 互补</td>
+        <td class="h-lg-green-fw6">+10%</td>
         <td><span class="badge ok">预期差异</span></td>
       </tr>
-      <tr style="border-top:2px solid var(--yry-accent)">
-        <td colspan="3" style="text-align:right;font-weight:700;color:var(--yry-accent)">加权结构互补得分</td>
-        <td colspan="2" style="font-weight:700;font-size:1.1rem;color:var(--yry-pass)">40% / 80% = 50.0%</td>
+      <tr class="h-lg-bt2-accent">
+        <td colspan="3" class="h-lg-right-fw7-accent">加权结构互补得分</td>
+        <td colspan="2" class="h-lg-fw7-fs11-pass">40% / 80% = 50.0%</td>
         <td><span class="badge ok">✓ 互补健康</span></td>
       </tr>
     </tbody>
   </table>
-  <div style="margin-top:10px;padding:10px 14px;border-radius:6px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.15)">
-    <span style="font-size:.72rem;color:#60a5fa;font-weight:600">📊 解读：</span>
-    <span style="font-size:.72rem;color:var(--yry-text2)">OSS Insight 的持平方向与三个短周期源的上升形成<strong style="color:var(--yry-accent)">结构性互补</strong>——这正是多源架构的设计意图。长周期平台过滤短期噪声，确认当前上升由 3-12 个月的持续热度支撑，非瞬时炒作。若 OSS Insight 也开始加速上升，则需警惕泡沫。</span>
+  <div class="h-lg-x72">
+    <span class="h-lg-x73">📊 解读：</span>
+    <span class="h-lg-fs72-t2">OSS Insight 的持平方向与三个短周期源的上升形成<strong class="h-lg-accent">结构性互补</strong>——这正是多源架构的设计意图。长周期平台过滤短期噪声，确认当前上升由 3-12 个月的持续热度支撑，非瞬时炒作。若 OSS Insight 也开始加速上升，则需警惕泡沫。</span>
   </div>
 </div>
 
 <div class="card">
   <h2>诊断关联</h2>
-  <p style="font-size:.82rem;color:var(--yry-text2);line-height:1.8">
-    <strong style="color:var(--yry-accent)">D5 外部趋势</strong>：OSS Insight 的稳定平台特征与 GitHub Trending 的加速上升形成互补 — 短周期捕捉爆发信号，长周期过滤噪声。两者方向一致（均为正向），D5 评估稳健。<br>
-    <strong style="color:var(--yry-accent)">D4 依赖过期</strong>：OSS Insight 追踪的优质长周期项目（LangChain、Tauri、Ruff）是依赖升级决策的可靠参考 — 在 OSS Insight 中稳定表现为"活跃"的项目，引入依赖的风险较低。<br>
-    <strong style="color:var(--yry-accent)">D6 文档陈旧</strong>：若项目文档中引用的第三方工具仅在 GitHub Trending 出现过一次而从未进入 OSS Insight 长周期列表，建议在文档中标注其为"实验性"而非"推荐方案"。<br>
-    <strong style="color:var(--yry-accent)">⚠️ 数据质量备注</strong>：OSS Insight 连续两周期出现解析异常 — 06-12 正常但 06-16 trending-repositories 返回空。可能为页面 DOM 结构渐进变更。建议在下次 init 中更新解析选择器。<br>
-    <strong style="color:var(--yry-accent)">下一步</strong>：1) 检查 OSS Insight 页面 DOM 是否变更；2) 下周期如有 API 恢复，对比投影偏差。
+  <p class="h-lg-fs82-t2-lh18">
+    <strong class="h-lg-accent">D5 外部趋势</strong>：OSS Insight 的稳定平台特征与 GitHub Trending 的加速上升形成互补 — 短周期捕捉爆发信号，长周期过滤噪声。两者方向一致（均为正向），D5 评估稳健。<br>
+    <strong class="h-lg-accent">D4 依赖过期</strong>：OSS Insight 追踪的优质长周期项目（LangChain、Tauri、Ruff）是依赖升级决策的可靠参考 — 在 OSS Insight 中稳定表现为"活跃"的项目，引入依赖的风险较低。<br>
+    <strong class="h-lg-accent">D6 文档陈旧</strong>：若项目文档中引用的第三方工具仅在 GitHub Trending 出现过一次而从未进入 OSS Insight 长周期列表，建议在文档中标注其为"实验性"而非"推荐方案"。<br>
+    <strong class="h-lg-accent">⚠️ 数据质量备注</strong>：OSS Insight 连续两周期出现解析异常 — 06-12 正常但 06-16 trending-repositories 返回空。可能为页面 DOM 结构渐进变更。建议在下次 init 中更新解析选择器。<br>
+    <strong class="h-lg-accent">下一步</strong>：1) 检查 OSS Insight 页面 DOM 是否变更；2) 下周期如有 API 恢复，对比投影偏差。
   </p>
 </div>
 
@@ -326,8 +324,8 @@
 
 <div class="ft">
   OSS Insight 长期趋势报告 · 2026-06-16 09:00:00 CST (投影)<br>
-  <span style="color:#60a5fa">⚠ 投影数据 — 基于 06-05→06-09→06-12 趋势外推 (±2 偏差)。下周期以实际数据替换。</span><br>
-  <span style="color:var(--yry-text3)">由 rui-trends 生成 · D5 外部趋势诊断源 (权重 20%) · 每周一 09:00 自动执行</span>
+  <span class="h-lg-blue60">⚠ 投影数据 — 基于 06-05→06-09→06-12 趋势外推 (±2 偏差)。下周期以实际数据替换。</span><br>
+  <span class="h-t3">由 rui-trends 生成 · D5 外部趋势诊断源 (权重 20%) · 每周一 09:00 自动执行</span>
 </div>
 
 </div>

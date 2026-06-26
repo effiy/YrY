@@ -38,90 +38,88 @@ function getLatestHealthContext() {
  * Build a status summary card showing what was checked and the health context.
  * For pass reports, shows what passed; for non-pass, shows what needs attention.
  */
-function buildStatusSummary(skill, status, findings, meta) {
-  var checkItems = getCheckItemsForSkill(skill);
-  var passedCount = checkItems.length - (findings || []).filter(function(f) { return f.level === 'fail' || f.level === 'warn'; }).length;
-  var allPassed = passedCount === checkItems.length;
+function buildStatusSummary(/** @type {string} */ skill, /** @type {string} */ status, /** @type {any[]} */ findings, /** @type {any} */ meta) {
+  const checkItems = getCheckItemsForSkill(skill);
+  const failedFindings = (findings || []).filter((/** @type {any} */ f) => f.level === 'fail' || f.level === 'warn');
+  const passedCount = checkItems.length - failedFindings.length;
 
-  var checkHtml = checkItems.map(function(item) {
-    var hasIssue = (findings || []).some(function(f) {
-      return (f.title || f.message || "").toLowerCase().indexOf(item.keyword) >= 0;
-    });
-    var icon = hasIssue ? '⚠️' : '✅';
-    var color = hasIssue ? 'var(--yry-warn)' : 'var(--yry-pass)';
-    return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.78rem;border-bottom:1px solid rgba(255,255,255,.03)">' +
-      '<span style="color:' + color + '">' + icon + '</span>' +
-      '<span style="color:var(--yry-text2)">' + item.label + '</span>' +
-      '<span style="color:var(--yry-text3);font-size:.68rem;margin-left:auto">' + item.target + '</span>' +
-      '</div>';
+  const checkHtml = checkItems.map((/** @type {any} */ item) => {
+    const hasIssue = failedFindings.some((f) => (f.title || f.message || "").toLowerCase().indexOf(item.keyword) >= 0);
+    const icon = hasIssue ? '⚠️' : '✅';
+    const tier = hasIssue ? 'warn' : 'pass';
+    return `<div class="lp-check-row">
+<span class="lp-check-icon ${tier}">${icon}</span>
+<span class="lp-check-label">${item.label}</span>
+<span class="lp-check-target">${item.target}</span>
+</div>`;
   }).join("");
 
-  var statusNote = status === 'pass'
+  const statusNote = status === 'pass'
     ? '所有检查项均通过，技能运行正常。下一个巡检周期将自动重新检查。'
     : status === 'warn'
     ? passedCount + '/' + checkItems.length + ' 项通过，建议在例行维护窗口处理告警项。'
     : passedCount + '/' + checkItems.length + ' 项通过，存在阻塞性问题需立即修复。';
 
-  return '<div class="yry-card">' +
-    '<h2>📋 检查清单 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">' + passedCount + '/' + checkItems.length + ' 通过</span></h2>' +
-    '<div style="margin-bottom:8px">' + checkHtml + '</div>' +
-    '<div style="padding:8px 12px;background:' + (status === 'pass' ? 'rgba(34,197,94,.04)' : status === 'warn' ? 'rgba(245,158,11,.04)' : 'rgba(239,68,68,.04)') + ';border-radius:6px;font-size:.74rem;color:var(--yry-text2)">' +
-    '📌 ' + statusNote + ' 执行频率：' + (meta.interval || '—') + '。' +
-    '</div>' +
-    '</div>';
+  return `<div class="yry-card">
+<h2>📋 检查清单 <span class="lp-section-sub">${passedCount}/${checkItems.length} 通过</span></h2>
+<div class="lp-check-wrap">${checkHtml}</div>
+<div class="lp-check-banner ${status}">
+📌 ${statusNote} 执行频率：${meta.interval || '—'}。
+</div>
+</div>`;
 }
 
 /**
  * Get the list of check items for each skill type.
  * Delegates to the central registry (lib/loop-registry.mjs).
  */
-function getCheckItemsForSkill(skill) {
+function getCheckItemsForSkill(/** @type {string} */ skill) {
   return getCheckItems(skill);
 }
-function buildActionPlan(findings, status) {
+function buildActionPlan(/** @type {any[]} */ findings, /** @type {string} */ status) {
   if (!findings || findings.length === 0) return "";
-  var failItems = findings.filter(function(f) { return f.level === 'fail'; });
-  var warnItems = findings.filter(function(f) { return f.level === 'warn'; });
-  var allActionItems = failItems.concat(warnItems);
+  const failItems = findings.filter((/** @type {any} */ f) => f.level === 'fail');
+  const warnItems = findings.filter((/** @type {any} */ f) => f.level === 'warn');
+  const allActionItems = failItems.concat(warnItems);
   if (allActionItems.length === 0) return "";
 
-  var steps = allActionItems.slice(0, 5).map(function(f, i) {
-    var priority = f.level === 'fail' ? 'P0' : 'P1';
-    var color = f.level === 'fail' ? '#ef4444' : '#f59e0b';
-    var bg = f.level === 'fail' ? 'rgba(239,68,68,.06)' : 'rgba(245,158,11,.06)';
-    return '<div style="display:flex;gap:12px;align-items:flex-start;padding:10px;margin-bottom:6px;background:' + bg + ';border-radius:8px;border-left:3px solid ' + color + '">' +
-      '<span style="padding:3px 10px;border-radius:4px;font-size:.68rem;font-weight:700;background:' + color.replace(')', ',.15)').replace('rgb', 'rgba') + ';color:' + color + ';flex-shrink:0">' + (i + 1) + '. ' + priority + '</span>' +
-      '<div style="flex:1"><div style="font-size:.82rem;font-weight:600;color:var(--yry-text)">' + (f.title || f.message) + '</div>' +
-      '<div style="font-size:.72rem;color:var(--yry-text3);margin-top:4px">' + (f.detail || '') + '</div></div>' +
-      '</div>';
+  const steps = allActionItems.slice(0, 5).map((/** @type {any} */ f, /** @type {number} */ i) => {
+    const priority = f.level === 'fail' ? 'P0' : 'P1';
+    const tier = f.level === 'fail' ? 'fail' : 'warn';
+    return `<div class="lp-step-row ${tier}">
+<span class="lp-step-num">${i + 1}. ${priority}</span>
+<div class="lp-step-body"><div class="lp-step-title">${f.title || f.message}</div>
+<div class="lp-step-detail">${f.detail || ''}</div></div>
+</div>`;
   }).join('');
 
-  var urgencyNote = status === 'fail'
+  const urgencyNote = status === 'fail'
     ? '存在异常项，建议在 2 小时内启动修复，防止管线阻塞或数据丢失。'
     : '存在告警项，建议在 24 小时内评估并制定修复计划，避免升级为异常。';
 
-  return '<div class="yry-card">' +
-    '<h2>📋 行动计划 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Action Plan</span></h2>' +
-    '<div style="margin-bottom:12px">' + steps + '</div>' +
-    '<div style="padding:8px 12px;background:rgba(59,130,246,.04);border-radius:6px;border:1px solid rgba(59,130,246,.1);font-size:.74rem;color:var(--yry-text2)">⏱️ ' + urgencyNote + '</div>' +
-    '</div>';
+  return `<div class="yry-card">
+<h2>📋 行动计划 <span class="lp-section-sub">Action Plan</span></h2>
+<div class="lp-step-wrap">${steps}</div>
+<div class="lp-step-urgency">⏱️ ${urgencyNote}</div>
+</div>`;
 }
 
 /**
  * Generate a self-loop HTML report with enhanced detail.
  */
-export function generateReport({ skill, status, summary, details, findings }) {
-  const meta = SKILL_META[skill] || { icon: "🔄", label: skill, interval: "—" };
+export function generateReport({ skill, status, summary, details, findings } = /** @type {any} */ ({})) {
+  const meta = SKILL_META[skill] || { icon: "🔄", label: skill, interval: "—", desc: "" };
   const ts = fmtDisplay(nowISO());
   const filename = `${skill}-${nowDate()}.html`;
 
-  const statusBadge = {
+  /** @type {Record<string, string>} */ const statusBadges = {
     pass: '<span class="yry-badge pass">✅ 通过</span>',
     warn: '<span class="yry-badge warn">⚠️ 告警</span>',
     fail: '<span class="yry-badge fail">🚫 异常</span>',
-  }[status] || '<span class="yry-badge">—</span>';
+  };
+  const statusBadge = statusBadges[status] || '<span class="yry-badge">—</span>';
 
-  const findingsHtml = (findings || []).map((f, i) => {
+  const findingsHtml = (findings || []).map((/** @type {any} */ f, /** @type {number} */ i) => {
     const resolution = resolutionForFinding(f);
     return `<div class="yry-finding ${f.level || 'info'}">
       <div class="yry-finding-head">${i + 1}. ${f.title || f.message}</div>
@@ -133,7 +131,7 @@ export function generateReport({ skill, status, summary, details, findings }) {
   const hc = getLatestHealthContext();
   const healthStatHtml = hc ? `
   <div class="yry-stat">
-    <a href="${CDN_DEPTH}docs/健康报告/" style="text-decoration:none;color:inherit">
+    <a href="${CDN_DEPTH}docs/健康报告/" class="lp-inherit-link">
       <div class="yry-val ${hc.grade === 'A' || hc.grade === 'B' ? 'pass' : hc.grade === 'C' ? 'warn' : 'fail'}">${hc.score}</div>
       <div class="yry-lbl">🩺 健康度 ${hc.grade} 级</div>
     </a>
@@ -148,26 +146,10 @@ export function generateReport({ skill, status, summary, details, findings }) {
 <link rel="stylesheet" href="${CDN_DEPTH}cdn/shared/index.css">
 <link rel="stylesheet" href="${CDN_DEPTH}cdn/theme/index.css">
 	<link rel="stylesheet" href="${CDN_DEPTH}cdn/shared-reports/index.css">
-	<style>
-	.yry-container { max-width: 800px; }
-	.yry-header .icon { font-size: 2.5rem; }
-	.yry-header h1 { font-size: 1.6rem; margin: 12px 0 6px; }
-	/* common styles covered by shared-reports.css */
-	/* Enhanced sections — page-specific */
-	.yry-impact-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-	.yry-impact-badge { display: inline-block; padding: 4px 14px; border-radius: 6px; color: #fff; font-size: .8rem; font-weight: 600; }
-	.yry-impact-summary { font-size: .84rem; color: var(--yry-text2); }
-	.yry-impact-detail { padding: 12px; background: rgba(15,23,42,.4); border-radius: 8px; border: var(--yry-border); margin-top: 8px; }
-	.yry-hist-dot { transition: transform .15s; }
-	.yry-hist-dot:hover { transform: scale(1.8); }
-	.yry-cross-item { flex: 1; min-width: 200px; }
-	.yry-cross-label { font-size: .78rem; color: var(--yry-text3); margin-bottom: 4px; }
-	.yry-cross-desc { font-size: .88rem; font-weight: 600; color: var(--yry-accent); line-height: 1.5; }
-	.yry-cross-badge { text-align: center; padding: 8px 16px; background: rgba(15,23,42,.4); border-radius: 8px; border: var(--yry-border); flex-shrink: 0; min-width: 80px; }
-	</style>
+	<link rel="stylesheet" href="${CDN_DEPTH}cdn/loop-report/index.css">
 </head>
 <body>
-<div class="yry-container">
+<div class="yry-container lp-container">
 
 <nav class="yry-breadcrumb">
   <a href="${CDN_DEPTH}docs/index.html">📄 文档中心</a>
@@ -181,7 +163,7 @@ export function generateReport({ skill, status, summary, details, findings }) {
   <div class="icon">${meta.icon}</div>
   <h1>自循环报告 · ${meta.label}</h1>
   <div class="meta">${ts} · ${meta.interval} · ${statusBadge}</div>
-  ${meta.desc ? `<div class="desc" style="font-size:.84rem;color:var(--yry-text2);margin-top:12px;line-height:1.7;max-width:700px;margin-left:auto;margin-right:auto">${meta.desc}</div>` : ""}
+  ${meta.desc ? `<div class="desc lp-desc">${meta.desc}</div>` : ""}
 </div>
 
 <div class="yry-stats">
@@ -190,15 +172,15 @@ export function generateReport({ skill, status, summary, details, findings }) {
     <div class="yry-lbl">状态</div>
   </div>
   <div class="yry-stat">
-    <div class="yry-val pass">${(findings || []).filter(f => f.level === 'info').length}</div>
+    <div class="yry-val pass">${(findings || []).filter((/** @type {any} */ f) => f.level === 'info').length}</div>
     <div class="yry-lbl">信息</div>
   </div>
   <div class="yry-stat">
-    <div class="yry-val warn">${(findings || []).filter(f => f.level === 'warn').length}</div>
+    <div class="yry-val warn">${(findings || []).filter((/** @type {any} */ f) => f.level === 'warn').length}</div>
     <div class="yry-lbl">告警</div>
   </div>
   <div class="yry-stat">
-    <div class="yry-val fail">${(findings || []).filter(f => f.level === 'fail').length}</div>
+    <div class="yry-val fail">${(findings || []).filter((/** @type {any} */ f) => f.level === 'fail').length}</div>
     <div class="yry-lbl">异常</div>
   </div>
   ${healthStatHtml}
@@ -226,7 +208,7 @@ ${buildSLATrackingCard(skill, status)}
 ${details ? `
 <div class="yry-card">
   <h2>📊 详细数据</h2>
-  <pre style="color:var(--yry-text2);font-size:.82rem;white-space:pre-wrap;overflow-x:auto">${details}</pre>
+  <pre class="lp-pre">${details}</pre>
 </div>
 ` : ""}
 
@@ -236,7 +218,7 @@ ${status !== 'pass' ? buildActionPlan(findings || [], status) : ""}
 
 <div class="yry-footer">
   自循环报告 · ${skill} · ${ts}<br>
-  <span style="color:var(--yry-text3)">由 rui-bot loop-report 自动生成</span>
+  <span class="lp-meta">由 rui-bot loop-report 自动生成</span>
 </div>
 
 </div>
@@ -257,7 +239,7 @@ ${status !== 'pass' ? buildActionPlan(findings || [], status) : ""}
 
 /* ═══ Enhanced section builders ═══ */
 
-function resolutionForFinding(finding) {
+function resolutionForFinding(/** @type {any} */ finding) {
   const title = (finding.title || finding.message || "").toLowerCase();
   const detail = (finding.detail || "").toLowerCase();
   const combined = title + " " + detail;
@@ -295,27 +277,27 @@ function resolutionForFinding(finding) {
   return null;
 }
 
-function buildImpactAssessment(findings, status) {
+function buildImpactAssessment(/** @type {any[]} */ findings, /** @type {string} */ _status) {
   if (!findings || findings.length === 0) return "";
-  const failCount = findings.filter(f => f.level === 'fail').length;
-  const warnCount = findings.filter(f => f.level === 'warn').length;
-  const infoCount = findings.filter(f => f.level === 'info').length;
+  const failCount = findings.filter((/** @type {any} */ f) => f.level === 'fail').length;
+  const warnCount = findings.filter((/** @type {any} */ f) => f.level === 'warn').length;
+  const infoCount = findings.filter((/** @type {any} */ f) => f.level === 'info').length;
   const severityLabel = failCount > 0 ? '需立即关注' : warnCount > 0 ? '需关注' : '正常';
-  const severityColor = failCount > 0 ? 'var(--yry-fail)' : warnCount > 0 ? 'var(--yry-warn)' : 'var(--yry-pass)';
-  const topIssues = findings.filter(f => f.level === 'fail' || f.level === 'warn').slice(0, 5);
+  const severityTier = failCount > 0 ? 'high' : warnCount > 0 ? 'mid' : 'low';
+  const topIssues = findings.filter((/** @type {any} */ f) => f.level === 'fail' || f.level === 'warn').slice(0, 5);
   const suggestion = failCount > 0
     ? '优先处理异常项，防止管线阻塞或数据丢失。建议在下一轮迭代中分配修复任务。'
     : warnCount > 0
     ? '计划性修复告警项，避免升级为异常。可在例行维护窗口处理。'
     : '继续监控，维持当前良好状态。';
   return `<div class="yry-card">
-    <h2>🎯 影响评估 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">${failCount + warnCount} 项需关注</span></h2>
+    <h2>🎯 影响评估 <span class="lp-section-sub">${failCount + warnCount} 项需关注</span></h2>
     <div class="yry-impact-header">
-      <span class="yry-impact-badge" style="background:${severityColor}">${severityLabel}</span>
+      <span class="yry-impact-badge severity-${severityTier}">${severityLabel}</span>
       <span class="yry-impact-summary">异常 ${failCount} · 告警 ${warnCount} · 信息 ${infoCount}</span>
     </div>
-    ${topIssues.length > 0 ? `<div class="yry-impact-detail"><strong>关键问题:</strong><ul style="margin-top:6px;padding-left:20px;color:var(--yry-text2);font-size:.84rem">${topIssues.map(f => `<li>${f.title || f.message}${f.detail ? `<br><span style="color:var(--yry-text3);font-size:.76rem">${f.detail}</span>` : ''}</li>`).join('')}</ul></div>` : ''}
-    <div style="margin-top:10px;font-size:.78rem;color:var(--yry-text3)">📌 ${suggestion}</div>
+    ${topIssues.length > 0 ? `<div class="yry-impact-detail"><strong>关键问题:</strong><ul>${topIssues.map((/** @type {any} */ f) => `<li>${f.title || f.message}${f.detail ? `<br><span class="lp-top-issues-detail">${f.detail}</span>` : ''}</li>`).join('')}</ul></div>` : ''}
+    <div class="lp-suggestion">📌 ${suggestion}</div>
   </div>`;
 }
 
@@ -323,35 +305,35 @@ function buildImpactAssessment(findings, status) {
  * Build a severity breakdown showing the distribution of findings by level
  * and the potential impact of each category.
  */
-function buildSeverityBreakdown(findings) {
+function buildSeverityBreakdown(/** @type {any[]} */ findings) {
   if (!findings || findings.length === 0) return "";
 
-  const byLevel = { fail: [], warn: [], info: [] };
+  /** @type {Record<string, any[]>} */ const byLevel = { fail: [], warn: [], info: [] };
   for (const f of findings) {
     (byLevel[f.level] || byLevel.info).push(f);
   }
 
   const levelConfig = {
-    fail: { icon: "🚫", label: "异常 (Fail)", color: "var(--yry-fail)", bg: "rgba(239,68,68,.06)", desc: "需要立即处理的严重问题，可能导致管线阻塞、数据丢失或安全风险" },
-    warn: { icon: "⚠️", label: "告警 (Warn)", color: "var(--yry-warn)", bg: "rgba(245,158,11,.06)", desc: "需要关注但非紧急的问题，建议在下一维护窗口处理" },
-    info: { icon: "ℹ️", label: "信息 (Info)", color: "var(--yry-cyan)", bg: "rgba(34,211,238,.06)", desc: "正常运行信息，无需处理，用于状态追踪和审计" },
+    fail: { icon: "🚫", label: "异常 (Fail)", desc: "需要立即处理的严重问题，可能导致管线阻塞、数据丢失或安全风险" },
+    warn: { icon: "⚠️", label: "告警 (Warn)", desc: "需要关注但非紧急的问题，建议在下一维护窗口处理" },
+    info: { icon: "ℹ️", label: "信息 (Info)", desc: "正常运行信息，无需处理，用于状态追踪和审计" },
   };
 
-  let html = '<div class="yry-card"><h2>📊 严重程度分布 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Severity Breakdown</span></h2>';
+  let html = '<div class="yry-card"><h2>📊 严重程度分布 <span class="lp-section-sub">Severity Breakdown</span></h2>';
 
   for (const [level, config] of Object.entries(levelConfig)) {
     const items = byLevel[level] || [];
     if (items.length === 0) continue;
     const pct = Math.round((items.length / findings.length) * 100);
-    html += `<div style="margin-bottom:12px;padding:12px;background:${config.bg};border-radius:8px;border-left:3px solid ${config.color}">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-        <span style="font-weight:600;font-size:.88rem">${config.icon} ${config.label}</span>
-        <span style="font-size:.82rem;font-weight:700;color:${config.color}">${items.length} 项 (${pct}%)</span>
+    html += `<div class="lp-sev-block ${level}">
+      <div class="lp-sev-head">
+        <span class="lp-sev-label">${config.icon} ${config.label}</span>
+        <span class="lp-sev-count">${items.length} 项 (${pct}%)</span>
       </div>
-      <div style="font-size:.74rem;color:var(--yry-text3);margin-bottom:8px">${config.desc}</div>
-      <div style="display:flex;flex-direction:column;gap:4px">
-        ${items.slice(0, 3).map(f => `<div style="font-size:.76rem;color:var(--yry-text2);padding:4px 8px;background:var(--yry-bg-card);border-radius:4px">• ${f.title || f.message}</div>`).join("")}
-        ${items.length > 3 ? `<div style="font-size:.7rem;color:var(--yry-text3);padding-left:8px">... 还有 ${items.length - 3} 项</div>` : ""}
+      <div class="lp-sev-desc">${config.desc}</div>
+      <div class="lp-sev-list">
+        ${items.slice(0, 3).map((/** @type {any} */ f) => `<div class="lp-sev-item">• ${f.title || f.message}</div>`).join("")}
+        ${items.length > 3 ? `<div class="lp-sev-more">... 还有 ${items.length - 3} 项</div>` : ""}
       </div>
     </div>`;
   }
@@ -364,10 +346,10 @@ function buildSeverityBreakdown(findings) {
  * Build SLA tracking card showing response time expectations
  * and historical resolution patterns for the skill.
  */
-function buildSLATrackingCard(skill, status) {
+function buildSLATrackingCard(/** @type {string} */ skill, /** @type {string} */ status) {
   const meta = SKILL_META[skill] || { interval: "—" };
 
-  const slaConfig = {
+  /** @type {Record<string, {target: string, threshold: string, escalation: string}>} */ const slaConfig = {
     fail: { target: "2 小时", threshold: "4 小时", escalation: "8 小时" },
     warn: { target: "24 小时", threshold: "3 天", escalation: "7 天" },
     pass: { target: "N/A", threshold: "N/A", escalation: "N/A" },
@@ -376,76 +358,75 @@ function buildSLATrackingCard(skill, status) {
 
   if (status === "pass") {
     return `<div class="yry-card">
-      <h2>⏱️ SLA 追踪 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Service Level Agreement</span></h2>
-      <div style="text-align:center;padding:16px;color:#22c55e;font-size:.84rem">✅ 当前状态正常，无 SLA 计时器启动</div>
+      <h2>⏱️ SLA 追踪 <span class="lp-section-sub">Service Level Agreement</span></h2>
+      <div class="lp-sla-ok">✅ 当前状态正常，无 SLA 计时器启动</div>
     </div>`;
   }
 
   return `<div class="yry-card">
-    <h2>⏱️ SLA 追踪 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Service Level Agreement</span></h2>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px">
-      <div style="text-align:center;padding:12px;background:rgba(239,68,68,.06);border-radius:8px;border:1px solid rgba(239,68,68,.15)">
-        <div style="font-size:.7rem;color:var(--yry-text3)">🎯 目标响应</div>
-        <div style="font-size:1.1rem;font-weight:700;color:#ef4444">${sla.target}</div>
+    <h2>⏱️ SLA 追踪 <span class="lp-section-sub">Service Level Agreement</span></h2>
+    <div class="lp-sla-grid">
+      <div class="lp-sla-cell target">
+        <div class="lp-sla-cell-label">🎯 目标响应</div>
+        <div class="lp-sla-cell-val target">${sla.target}</div>
       </div>
-      <div style="text-align:center;padding:12px;background:rgba(245,158,11,.06);border-radius:8px;border:1px solid rgba(245,158,11,.15)">
-        <div style="font-size:.7rem;color:var(--yry-text3)">⚠️ 升级阈值</div>
-        <div style="font-size:1.1rem;font-weight:700;color:#f59e0b">${sla.threshold}</div>
+      <div class="lp-sla-cell threshold">
+        <div class="lp-sla-cell-label">⚠️ 升级阈值</div>
+        <div class="lp-sla-cell-val threshold">${sla.threshold}</div>
       </div>
-      <div style="text-align:center;padding:12px;background:rgba(59,130,246,.06);border-radius:8px;border:1px solid rgba(59,130,246,.15)">
-        <div style="font-size:.7rem;color:var(--yry-text3)">🚨 强制升级</div>
-        <div style="font-size:1.1rem;font-weight:700;color:#3b82f6">${sla.escalation}</div>
+      <div class="lp-sla-cell escalation">
+        <div class="lp-sla-cell-label">🚨 强制升级</div>
+        <div class="lp-sla-cell-val escalation">${sla.escalation}</div>
       </div>
     </div>
-    <div style="font-size:.72rem;color:var(--yry-text3);padding:8px;background:var(--yry-bg-card);border-radius:6px">
+    <div class="lp-sla-foot">
       📌 执行频率: ${meta.interval} · 下次自动检查时将更新状态 · 若状态持续异常，SLA 计时器将继续累计
     </div>
   </div>`;
 }
 
-function buildSkillHistoryCard(skill) {
+function buildSkillHistoryCard(/** @type {string} */ skill) {
   try {
     if (!existsSync(REPORT_DIR)) return "";
     const files = readdirSync(REPORT_DIR)
-      .filter(f => f.startsWith(skill + '-') && f.endsWith('.html'))
+      .filter((/** @type {any} */ f) => f.startsWith(skill + '-') && f.endsWith('.html'))
       .sort().reverse();
     if (files.length < 2) {
       return `<div class="yry-card">
         <h2>📈 历史趋势</h2>
-        <div style="text-align:center;color:var(--yry-text3);padding:20px;font-size:.84rem">仅 1 份报告 — 积累更多数据后启用趋势对比</div>
+        <div class="lp-sla-empty">仅 1 份报告 — 积累更多数据后启用趋势对比</div>
       </div>`;
     }
     const recent = files.slice(0, 10);
-    const dots = recent.map((f, i) => {
+    const dots = recent.map((/** @type {any} */ f, /** @type {number} */ i) => {
       const dm = f.match(/(\d{4}-\d{2}-\d{2})/);
       const date = dm ? dm[1] : '';
       const isLatest = i === 0;
-      const size = isLatest ? '10px' : '6px';
-      return `<span style="display:inline-block;width:${size};height:${size};border-radius:50%;background:var(--yry-pass);margin:0 2px;transition:transform .15s;cursor:default" title="${date}" onmouseover="this.style.transform='scale(1.8)'" onmouseout="this.style.transform='scale(1)'"></span>`;
+      return `<span class="yry-hist-dot${isLatest ? ' latest' : ''}" title="${date}"></span>`;
     }).join('');
     return `<div class="yry-card">
-      <h2>📈 历史趋势 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">最近 ${Math.min(files.length, 10)} 次执行</span></h2>
-      <div style="display:flex;align-items:center;gap:10px;padding:12px 0">
-        <span style="font-size:.7rem;color:var(--yry-text3)">最早</span>
-        <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px">${dots}</div>
-        <span style="font-size:.7rem;color:var(--yry-text3)">最新</span>
+      <h2>📈 历史趋势 <span class="lp-section-sub">最近 ${Math.min(files.length, 10)} 次执行</span></h2>
+      <div class="yry-hist-row">
+        <span class="yry-hist-edge">最早</span>
+        <div class="yry-hist-dots">${dots}</div>
+        <span class="yry-hist-edge">最新</span>
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:var(--yry-border)">
-        <span style="font-size:.74rem;color:var(--yry-text3)">共 ${files.length} 份历史报告</span>
-        <span style="font-size:.7rem;color:var(--yry-text3)">执行频率: ${SKILL_META[skill]?.interval || '—'}</span>
+      <div class="yry-hist-foot">
+        <span class="yry-hist-foot-l">共 ${files.length} 份历史报告</span>
+        <span class="yry-hist-foot-r">执行频率: ${SKILL_META[skill]?.interval || '—'}</span>
       </div>
     </div>`;
   } catch { return ""; }
 }
 
-function buildCrossReferenceCard(skill, status) {
+function buildCrossReferenceCard(/** @type {string} */ skill, /** @type {string} */ status) {
   const ref = getCrossRef(skill);
   if (!ref) return "";
   const statusIcon = status === 'pass' ? '✓' : status === 'warn' ? '⚠' : '✗';
-  const statusColor = status === 'pass' ? 'var(--yry-pass)' : status === 'warn' ? 'var(--yry-warn)' : 'var(--yry-fail)';
+  const statusTier = status === 'pass' ? 'pass' : status === 'warn' ? 'warn' : 'fail';
   return `<div class="yry-card">
-    <h2>🔗 关联分析 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">对项目健康的影响</span></h2>
-    <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:12px">
+    <h2>🔗 关联分析 <span class="lp-section-sub">对项目健康的影响</span></h2>
+    <div class="yry-cross-row">
       <div class="yry-cross-item">
         <div class="yry-cross-label">关联诊断维度</div>
         <div class="yry-cross-desc">${ref.dim}</div>
@@ -455,11 +436,11 @@ function buildCrossReferenceCard(skill, status) {
         <div class="yry-cross-desc">${ref.desc}</div>
       </div>
       <div class="yry-cross-badge">
-        <div style="font-size:.7rem;color:var(--yry-text3)">当前状态</div>
-        <div style="font-size:1.1rem;font-weight:700;color:${statusColor}">${statusIcon} ${status === 'pass' ? '正常' : status === 'warn' ? '告警' : '异常'}</div>
+        <div class="yry-cross-cur-label">当前状态</div>
+        <div class="yry-cross-cur-val ${statusTier}">${statusIcon} ${status === 'pass' ? '正常' : status === 'warn' ? '告警' : '异常'}</div>
       </div>
     </div>
-    ${ref.impact ? `<div style="padding:10px;background:rgba(245,158,11,.04);border-radius:8px;border:1px solid rgba(245,158,11,.1);font-size:.78rem;color:var(--yry-text2);line-height:1.6"><strong>📊 升级策略：</strong>${ref.impact}</div>` : ""}
+    ${ref.impact ? `<div class="yry-cross-impact"><strong>📊 升级策略：</strong>${ref.impact}</div>` : ""}
   </div>`;
 }
 
@@ -471,11 +452,11 @@ export function generateManifest() {
   if (!existsSync(REPORT_DIR)) return;
 
   const files = readdirSync(REPORT_DIR)
-    .filter(f => f.endsWith(".html") && f !== "index.html")
+    .filter((/** @type {any} */ f) => f.endsWith(".html") && f !== "index.html")
     .sort()
     .reverse();
 
-  function parseLoopFilename(name) {
+  function parseLoopFilename(/** @type {string} */ name) {
     const m1 = name.match(/^(.+)-(\d{4}-\d{2}-\d{2})\.html$/);
     if (m1) return { skill: m1[1], date: m1[2] };
     const m2 = name.match(/^(.+)-(\d{4}-\d{2}-\d{2})-(.+)\.html$/);
@@ -533,7 +514,7 @@ export function generateIndex() {
   if (!existsSync(REPORT_DIR)) return;
 
   const files = readdirSync(REPORT_DIR)
-    .filter(f => f.endsWith(".html") && f !== "index.html")
+    .filter((/** @type {any} */ f) => f.endsWith(".html") && f !== "index.html")
     .sort()
     .reverse();
 
@@ -546,27 +527,10 @@ export function generateIndex() {
 <link rel="stylesheet" href="../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../cdn/theme/index.css">
 	<link rel="stylesheet" href="../../cdn/shared-reports/index.css">
-	<style>
-	.yry-container { max-width: 800px; }
-	/* breadcrumb variant: cyan links (not blue, unlike shared-reports.css) */
-	.yry-bc { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; font-size: .76rem; }
-	.yry-bc a { color: #22d3ee; text-decoration: none; }
-	.yry-bc a:hover { color: var(--yry-accent); }
-	.yry-bc .yry-bc-sep { color: var(--yry-text3); opacity: .4; }
-	.yry-bc .yry-bc-cur { color: var(--yry-text2); }
-	.yry-header h1 { font-size: 1.6rem; }
-	.yry-header .desc { color: var(--yry-text2); font-size: .84rem; margin-top: 8px; line-height: 1.6; max-width: 600px; margin-left: auto; margin-right: auto; }
-	/* link variant (page-specific styling) */
-	.yry-link { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.15); color: #22d3ee; text-decoration: none; font-size: .82rem; transition: all .15s; }
-	.yry-link:hover { background: rgba(59,130,246,.15); color: var(--yry-accent); }
-	.yry-skill-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-	.yry-skill-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 6px; background: rgba(59,130,246,.06); border: 1px solid rgba(59,130,246,.1); font-size: .74rem; color: var(--yry-text2); }
-	.yry-skill-chip .si { font-size: .9rem; }
-	#loading { text-align: center; color: var(--yry-text3); padding: 40px; }
-	</style>
+	<link rel="stylesheet" href="../../cdn/loop-report/index.css">
 </head>
 <body>
-<div class="yry-container">
+<div class="yry-container lp-container">
 <nav class="yry-bc">
   <a href="../../docs/index.html">📄 文档中心</a>
   <span class="yry-bc-sep">/</span>
@@ -590,28 +554,27 @@ export function generateIndex() {
 </div>
 <div class="yry-links">
   <a class="yry-link" href="../../skills/rui-bot/SKILL.md" target="_blank">📋 rui-bot 规约</a>
-  <a class="yry-link" href="../健康报告/index.html">🩺 健康报告</a>
   <a class="yry-link" href="../趋势报告/index.html">📡 趋势报告</a>
   <a class="yry-link" href="../index.html">📄 文档中心</a>
 </div>
 <div class="yry-footer">
   由 rui-bot loop-report 自动生成 · 数据实时读取<br>
-  <span style="color:var(--yry-text3)">20 技能 · 定时巡检 · 企微通知</span>
+  <span class="lp-meta">20 技能 · 定时巡检 · 企微通知</span>
 </div>
 </div>
 <script>
 (async function() {
-  var tbody = document.getElementById('tbody');
+  const tbody = document.getElementById('tbody');
   try {
-    var resp = await fetch('reports.json');
+    const resp = await fetch('reports.json');
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    var reports = await resp.json();
+    const reports = await resp.json();
     if (reports.length === 0) {
       tbody.appendChild(buildEmptyRow());
       return;
     }
-    var badgeMap = { pass: '✅ 通过', warn: '⚠️ 告警', fail: '🚫 异常' };
-    reports.forEach(function(r) {
+    const badgeMap = { pass: '✅ 通过', warn: '⚠️ 告警', fail: '🚫 异常' };
+    reports.forEach((r) => {
       tbody.appendChild(buildReportRow(r, badgeMap));
     });
   } catch(e) {
@@ -619,16 +582,16 @@ export function generateIndex() {
   }
 
   function buildEmptyRow() {
-    var tr = document.createElement('tr');
-    var td = document.createElement('td');
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
     td.colSpan = 5;
-    var div = document.createElement('div');
+    const div = document.createElement('div');
     div.className = 'yry-empty';
     div.textContent = '\u6682\u65e0\u81ea\u5faa\u73af\u62a5\u544a';
     div.appendChild(document.createElement('br'));
-    var span = document.createElement('span');
+    const span = document.createElement('span');
     span.style.cssText = 'font-size:.7rem;margin-top:8px;display:block';
-    var code = document.createElement('code');
+    const code = document.createElement('code');
     code.textContent = 'node skills/rui-bot/lib/loop-report.mjs --skill=<name> --status=<pass|warn|fail> \u751f\u6210\u9996\u4efd\u62a5\u544a';
     span.appendChild(code);
     div.appendChild(span);
@@ -638,23 +601,23 @@ export function generateIndex() {
   }
 
   function buildReportRow(r, badgeMap) {
-    var tr = document.createElement('tr');
-    var status = r.status || 'pass';
+    const tr = document.createElement('tr');
+    const status = r.status || 'pass';
 
-    var tdSkill = document.createElement('td');
-    var aSkill = document.createElement('a');
+    const tdSkill = document.createElement('td');
+    const aSkill = document.createElement('a');
     aSkill.href = r.file || '#';
     aSkill.textContent = (r.icon || '\ud83d\udd04') + ' ' + (r.skillLabel || r.skill);
     tdSkill.appendChild(aSkill);
     tr.appendChild(tdSkill);
 
-    var tdDate = document.createElement('td');
+    const tdDate = document.createElement('td');
     tdDate.textContent = r.date;
     tr.appendChild(tdDate);
 
-    var tdFresh = document.createElement('td');
-    var freshInfo = computeFreshness(r.skill, r.date);
-    var freshBadge = document.createElement('span');
+    const tdFresh = document.createElement('td');
+    const freshInfo = computeFreshness(r.skill, r.date);
+    const freshBadge = document.createElement('span');
     freshBadge.className = 'yry-badge ' + freshInfo.level;
     freshBadge.textContent = freshInfo.label;
     freshBadge.style.fontSize = '.72rem';
@@ -662,20 +625,20 @@ export function generateIndex() {
     tdFresh.appendChild(freshBadge);
     tr.appendChild(tdFresh);
 
-    var tdStatus = document.createElement('td');
-    var badge = document.createElement('span');
+    const tdStatus = document.createElement('td');
+    const badge = document.createElement('span');
     badge.className = 'yry-badge ' + status;
     badge.textContent = badgeMap[status] || status;
     tdStatus.appendChild(badge);
     tr.appendChild(tdStatus);
 
-    var tdSummary = document.createElement('td');
+    const tdSummary = document.createElement('td');
     tdSummary.style.cssText = 'font-size:.82rem;color:var(--yry-text2)';
     tdSummary.textContent = r.summary || '\u2014';
     tr.appendChild(tdSummary);
 
-    var tdAction = document.createElement('td');
-    var aAction = document.createElement('a');
+    const tdAction = document.createElement('td');
+    const aAction = document.createElement('a');
     aAction.href = r.file || '#';
     aAction.textContent = '\u67e5\u770b';
     tdAction.appendChild(aAction);
@@ -686,7 +649,7 @@ export function generateIndex() {
 
   // Freshness: compare report age vs skill's expected interval.
   // Uses a simple lookup (mirrors lib/loop/registry.mjs cron intervals).
-  var SKILL_INTERVAL_DAYS = {
+  const SKILL_INTERVAL_DAYS = {
     'rui-trends': 7, 'rui-analysis': 4, 'rui-import': 0.5, 'rui-story': 0.5,
     'rui-claude': 1, 'rui-bot': 0.5, 'rui-npm': 7, 'rui-html': 0.5,
     'rui-doc': 1, 'rui-version': 7, 'rui-plan': 1, 'rui-bundle-analyze': 7,
@@ -695,8 +658,8 @@ export function generateIndex() {
     'rui-config': 1
   };
   function computeFreshness(skill, dateStr) {
-    var intervalDays = SKILL_INTERVAL_DAYS[skill] || 7;
-    var ageDays = (Date.now() - new Date(dateStr).getTime()) / 86400000;
+    const intervalDays = SKILL_INTERVAL_DAYS[skill] || 7;
+    const ageDays = (Date.now() - new Date(dateStr).getTime()) / 86400000;
     if (ageDays <= intervalDays) return { level: 'pass', label: '新鲜' };
     if (ageDays <= intervalDays * 2) return { level: 'warn', label: '过期 ' + Math.floor(ageDays) + 'd' };
     return { level: 'fail', label: '陈旧 ' + Math.floor(ageDays) + 'd' };
@@ -712,15 +675,17 @@ export function generateIndex() {
 /**
  * Send a loop report notification via rui-bot (direct function call, no shell).
  */
-export async function notifyReport({ skill, status, filename, summary, findings }) {
+export async function notifyReport({ skill, status, filename, summary, findings } = /** @type {any} */ ({})) {
   const meta = SKILL_META[skill] || { icon: "🔄", label: skill };
-  const statusEmoji = { pass: "✅", warn: "⚠️", fail: "🚫" }[status] || "📋";
-  const statusLabel = { pass: "通过", warn: "告警", fail: "异常" }[status] || status;
+  /** @type {Record<string, string>} */ const statusEmojiMap = { pass: "✅", warn: "⚠️", fail: "🚫" };
+  const statusEmoji = statusEmojiMap[status] || "📋";
+  /** @type {Record<string, string>} */ const statusLabelMap = { pass: "通过", warn: "告警", fail: "异常" };
+  const statusLabel = statusLabelMap[status] || status;
 
   // Build findings summary (max 3 items)
   const topFindings = (findings || []).slice(0, 3);
   const findingsText = topFindings.length > 0
-    ? topFindings.map((f, i) => `${i + 1}. ${f.level === "fail" ? "❌" : f.level === "warn" ? "⚠️" : "ℹ️"} ${f.title || f.message}`).join("\n")
+    ? topFindings.map((/** @type {any} */ f, /** @type {number} */ i) => `${i + 1}. ${f.level === "fail" ? "❌" : f.level === "warn" ? "⚠️" : "ℹ️"} ${f.title || f.message}`).join("\n")
     : "";
 
   // Read latest health score for context
@@ -770,7 +735,7 @@ export async function notifyReport({ skill, status, filename, summary, findings 
  */
 async function main() {
   const args = process.argv.slice(NODE_ARGV_OFFSET);
-  const opts = { skill: "", status: "", summary: "", details: "", findings: [] };
+  /** @type {any} */ const opts = { skill: "", status: "", summary: "", details: "", findings: [] };
 
   for (const arg of args) {
     const eq = arg.indexOf("=");

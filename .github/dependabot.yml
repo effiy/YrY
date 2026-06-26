@@ -1,0 +1,31 @@
+# Dependabot — 自动化依赖更新
+# 每周检查 npm devDependencies（vitest / eslint / typescript / @types/node / prettier），
+# 提交 PR 由人工审查合并。见 https://docs.github.com/code-security/dependabot/dependabot-version-updates
+
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Shanghai"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "automated"
+    groups:
+      vitest:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+      lint-toolchain:
+        patterns:
+          - "eslint"
+          - "typescript"
+          - "@types/*"
+          - "prettier"

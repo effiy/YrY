@@ -14,67 +14,9 @@
   <meta name="description" content="YrY CDN 审查聚合 — 六维健康评估 92/A · v1.2.0 · 3 版本演进趋势 SVG 折线图 · D0-D8 诊断引擎 · 维度优先级矩阵 · 改进建议卡片 · 综合 Hero">
   <link rel="stylesheet" href="shared/index.css">
   <link rel="stylesheet" href="theme/index.css">
-  <style>
-    body { padding: 24px 20px 60px; max-width: 1280px; margin: 0 auto; line-height: 1.6; }
-    h1 { font-size: 1.4rem; color: var(--yry-accent, #22d3ee); margin: 0 0 4px; }
-    .sub { color: var(--yry-text3, #6b7280); font-size: .78rem; margin: 0 0 16px; }
-    h2 { font-size: 1.05rem; color: var(--yry-text2, #a9b1d6); margin: 28px 0 12px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,.06); }
-    .links { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0; }
-    .links a { color: var(--yry-accent, #22d3ee); text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; font-size: .76rem; }
-    .links a:hover { border-color: var(--yry-accent); background: rgba(34,211,238,.08); }
-    .links a.active { background: rgba(34,211,238,.12); border-color: var(--yry-accent); }
-
-    .hero { background: linear-gradient(135deg, rgba(34,211,238,.1), rgba(167,139,250,.1)); border: 1px solid rgba(34,211,238,.3); border-radius: 12px; padding: 20px 24px; margin: 12px 0 20px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
-    .hero .score { font-size: 3rem; font-weight: 700; color: var(--yry-accent, #22d3ee); line-height: 1; }
-    .hero .grade { font-size: 1.6rem; padding: 4px 14px; border-radius: 6px; background: rgba(52,211,153,.2); color: #34d399; font-weight: 700; }
-    .hero .meta { flex: 1; min-width: 240px; }
-    .hero .meta .title { font-size: 1.1rem; color: var(--yry-text2, #a9b1d6); margin-bottom: 4px; }
-    .hero .meta .detail { font-size: .76rem; color: var(--yry-text3, #6b7280); line-height: 1.7; }
-
-    .grid4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 12px 0 20px; }
-    .kpi { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 14px 18px; }
-    .kpi .v { font-size: 1.4rem; color: var(--yry-accent, #22d3ee); font-weight: 700; line-height: 1.1; }
-    .kpi .l { font-size: .72rem; color: var(--yry-text3, #6b7280); margin-top: 2px; }
-    .kpi.A .v { color: #34d399; }
-    .kpi.B .v { color: #22d3ee; }
-    .kpi.C .v { color: #fb923c; }
-    .kpi.D .v { color: #f87171; }
-
-    .dim-table { width: 100%; border-collapse: collapse; font-size: .76rem; margin: 8px 0; }
-    .dim-table th { text-align: left; padding: 8px 12px; background: rgba(30,41,59,.5); color: var(--yry-text2, #a9b1d6); font-weight: 600; }
-    .dim-table td { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,.04); color: var(--yry-text3, #6b7280); }
-    .dim-table td.score { text-align: right; font-weight: 700; color: var(--yry-accent, #22d3ee); }
-    .bar-wrap { display: inline-flex; align-items: center; gap: 8px; }
-    .bar { width: 120px; height: 8px; background: rgba(0,0,0,.3); border-radius: 4px; overflow: hidden; }
-    .bar .fill { height: 100%; background: linear-gradient(90deg, #22d3ee, #a78bfa); }
-    .trend { font-size: .7rem; }
-    .trend.up { color: #34d399; }
-    .trend.down { color: #f87171; }
-    .trend.flat { color: var(--yry-text3, #6b7280); }
-
-    .trend-chart { background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 16px; }
-    .trend-chart svg { display: block; width: 100%; height: 180px; }
-
-    .recs { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; }
-    .rec { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-left: 3px solid var(--yry-accent, #22d3ee); border-radius: 6px; padding: 10px 14px; font-size: .76rem; color: var(--yry-text3, #6b7280); display: flex; gap: 10px; align-items: flex-start; }
-    .rec b { color: var(--yry-text2, #a9b1d6); display: block; margin-bottom: 2px; }
-    .rec-pri { font-size: .64rem; padding: 2px 6px; border-radius: 3px; font-weight: 700; white-space: nowrap; line-height: 1.4; }
-
-    .diag { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
-    .diag-item { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 6px; padding: 8px 12px; text-align: center; }
-    .diag-item .lvl { font-size: .9rem; color: var(--yry-accent, #22d3ee); font-weight: 700; }
-    .diag-item .lbl { font-size: .68rem; color: var(--yry-text3, #6b7280); margin-top: 2px; }
-    .diag-item.cleared { border-color: rgba(52,211,153,.4); }
-    .diag-item.cleared .lvl { color: #34d399; }
-
-    .err { color: #f87171; font-size: .78rem; }
-    .meta-bar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; background: rgba(15,23,42,.55); border: 1px solid rgba(34,211,238,.2); border-radius: 8px; padding: 8px 14px; margin: 10px 0 16px; font-size: .74rem; color: var(--yry-text3, #6b7280); }
-    .meta-bar code { background: rgba(0,0,0,.3); padding: 1px 6px; border-radius: 3px; color: var(--yry-accent, #22d3ee); font-size: .72rem; }
-    .meta-bar .sep { color: rgba(255,255,255,.15); }
-    .meta-bar b { color: var(--yry-accent, #22d3ee); font-weight: 600; }
-    .meta-bar .refresh { margin-left: auto; background: rgba(34,211,238,.1); border: 1px solid rgba(34,211,238,.3); color: var(--yry-accent, #22d3ee); padding: 2px 10px; border-radius: 4px; cursor: pointer; font-size: .7rem; transition: all .15s; }
-    .meta-bar .refresh:hover { background: rgba(34,211,238,.2); }
-  </style>
+  <link rel="stylesheet" href="cdn-summary/page-base.css">
+<link rel="stylesheet" href="yry-cdn-demo/index.css">
+<link rel="stylesheet" href="yry-cdn-demo/review.css">
 </head>
 <body>
   <h1>⚠️ 审查聚合 · 六维健康评估</h1>
@@ -88,7 +30,7 @@
     <span id="metaTime">最后更新 —</span>
     <button id="exportJson" class="refresh" title="导出当前审查数据为 JSON 文件">💾 导出 JSON</button>
     <button class="refresh" onclick="location.reload()" title="重新拉取并刷新数据">🔄 刷新</button>
-    <span style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-left:8px"><kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">/</kbd> 搜索 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">t</kbd> 顶部 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">1-7</kbd> 跳转 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">0</kbd> 首页</span>
+    <span class="cd-text3-66-ml8"><kbd class="cd-code-chip">/</kbd> 搜索 · <kbd class="cd-code-chip">t</kbd> 顶部 · <kbd class="cd-code-chip">1-7</kbd> 跳转 · <kbd class="cd-code-chip">0</kbd> 首页</span>
   </div>
 
   <div class="links">
@@ -115,125 +57,119 @@
 
   <div id="kpis" class="grid4"></div>
 
-  <div id="distStack" style="display:flex;height:10px;border-radius:5px;overflow:hidden;margin:-8px 0 6px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06)"></div>
-  <div id="distLegend" style="display:flex;gap:14px;flex-wrap:wrap;font-size:.7rem;color:var(--yry-text3,#6b7280);margin:0 0 14px"></div>
+  <div id="distStack" class="cd-spark-track"></div>
+  <div id="distLegend" class="cd-flex-gap14"></div>
 
-  <div style="background:rgba(15,23,42,.55);border:1px solid rgba(34,211,238,.2);border-radius:8px;padding:8px 14px;margin:0 0 14px;font-size:.72rem;color:var(--yry-text3,#6b7280);line-height:1.7">
-    <b style="color:var(--yry-accent,#22d3ee)">📑 页面大纲</b> ·
-    <a href="#dims" style="color:var(--yry-accent,#22d3ee);text-decoration:none">六维评分</a> ·
-    <a href="#trend" style="color:var(--yry-accent,#22d3ee);text-decoration:none">版本演进</a> ·
-    <a href="#reliability" style="color:var(--yry-accent,#22d3ee);text-decoration:none">📊 可靠性统计</a> ·
-    <a href="#dim-sparks" style="color:var(--yry-accent,#22d3ee);text-decoration:none">维度趋势</a> ·
-    <a href="#diag" style="color:var(--yry-accent,#22d3ee);text-decoration:none">D0-D8 诊断</a> ·
-    <a href="#matrix" style="color:var(--yry-accent,#22d3ee);text-decoration:none">优先级矩阵</a> ·
-    <a href="#recs" style="color:var(--yry-accent,#22d3ee);text-decoration:none">改进建议</a> ·
-    <a href="#signals" style="color:var(--yry-accent,#22d3ee);text-decoration:none">📡 信号总览</a>
+  <div class="cd-surface-cyan">
+    <b class="cd-accent">📑 页面大纲</b> ·
+    <a href="#dims" class="cd-accent-link">六维评分</a> ·
+    <a href="#trend" class="cd-accent-link">版本演进</a> ·
+    <a href="#reliability" class="cd-accent-link">📊 可靠性统计</a> ·
+    <a href="#dim-sparks" class="cd-accent-link">维度趋势</a> ·
+    <a href="#diag" class="cd-accent-link">D0-D8 诊断</a> ·
+    <a href="#matrix" class="cd-accent-link">优先级矩阵</a> ·
+    <a href="#recs" class="cd-accent-link">改进建议</a> ·
+    <a href="#signals" class="cd-accent-link">📡 信号总览</a>
   </div>
 
-  <div style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 16px;margin:0 0 16px;font-size:.72rem;color:var(--yry-text3,#6b7280);line-height:1.8">
-    <div style="color:var(--yry-text2,#a9b1d6);font-weight:600;margin-bottom:8px">📐 评级方法论</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px 16px">
-      <div><b style="color:#34d399">A 优秀</b> · ≥ 80 分 · 维度健康，可持续演进</div>
-      <div><b style="color:#22d3ee">B 良好</b> · 60-79 · 基本健康，存在改进空间</div>
-      <div><b style="color:#a78bfa">C 需改进</b> · 40-59 · 存在退化风险，需关注</div>
-      <div><b style="color:#f87171">D 缺陷</b> · &lt; 40 · 显著退化，需立即修复</div>
+  <div class="cd-surface-flat-3">
+    <div class="cd-text2-bold-mb8">📐 评级方法论</div>
+    <div class="cd-grid-fit">
+      <div><b class="cd-emerald">A 优秀</b> · ≥ 80 分 · 维度健康，可持续演进</div>
+      <div><b class="cd-cyan">B 良好</b> · 60-79 · 基本健康，存在改进空间</div>
+      <div><b class="cd-violet">C 需改进</b> · 40-59 · 存在退化风险，需关注</div>
+      <div><b class="cd-red">D 缺陷</b> · &lt; 40 · 显著退化，需立即修复</div>
     </div>
-    <div style="margin-top:8px;padding:8px 12px;background:rgba(34,211,238,.06);border-left:3px solid var(--yry-accent,#22d3ee);border-radius:3px;color:var(--yry-text2,#a9b1d6);font-size:.72rem">
-      <b style="color:var(--yry-accent,#22d3ee)">综合评分</b> = 六维独立评分的算术均分 · 各维度独立评估不强制归一化 · 趋势持久化至 <code>.memory/health-trend.jsonl</code> · 每 5 分钟自动刷新 · 企微告警阈值 &lt; B 级
+    <div class="cd-accent-notice">
+      <b class="cd-accent">综合评分</b> = 六维独立评分的算术均分 · 各维度独立评估不强制归一化 · 趋势持久化至 <code>.memory/health-trend.jsonl</code> · 每 5 分钟自动刷新 · 企微告警阈值 &lt; B 级
     </div>
   </div>
 
   <h2 id="dims">📊 六维加权评分</h2>
-  <div style="display:grid;grid-template-columns:1fr 360px;gap:16px;align-items:start" class="dim-layout">
+  <div class="cd-x1-163" class="dim-layout">
     <table class="dim-table">
       <thead><tr><th>维度</th><th>得分</th><th>进度</th><th>趋势</th></tr></thead>
       <tbody id="dimRows"></tbody>
     </table>
-    <div class="radar-wrap" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px">
-      <div style="font-size:.78rem;color:var(--yry-text2,#a9b1d6);margin-bottom:8px;font-weight:600">🎯 六维雷达图</div>
-      <svg id="radar" viewBox="0 0 300 300" style="display:block;width:100%;height:auto"></svg>
+    <div class="radar-wrap" cd-surface-flat-4">
+      <div class="cd-x1-136">🎯 六维雷达图</div>
+      <svg id="radar" viewBox="0 0 300 300" class="cd-x2-36"></svg>
     </div>
   </div>
-  <style>
-    @media (max-width: 900px) { .dim-layout { grid-template-columns: 1fr !important } }
-  </style>
 
   <h2 id="trend">📈 版本演进趋势</h2>
   <div class="trend-chart">
     <svg id="trend" viewBox="0 0 720 180" preserveAspectRatio="none"></svg>
   </div>
-  <div id="deltaBar" style="display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 0"></div>
+  <div id="deltaBar" class="cd-x1-221"></div>
 
-  <h2 id="reliability" style="margin-top:24px">📊 可靠性统计 · 均值 / 标准差 / 95% 置信区间</h2>
-  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">基于版本演进时序的健康分统计 · <b style="color:var(--yry-accent,#22d3ee)">标准差</b>反映版本间波动 · <b style="color:var(--yry-accent,#22d3ee)">置信区间</b>给出下一版本分数预测范围 · 数据源 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">scoreReport.reliability</code>。</div>
-  <div id="reliabilityChart" style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 18px;margin:8px 0 16px">加载中…</div>
+  <h2 id="reliability" class="cd-x2-37">📊 可靠性统计 · 均值 / 标准差 / 95% 置信区间</h2>
+  <div class="cd-meta-72">基于版本演进时序的健康分统计 · <b class="cd-accent">标准差</b>反映版本间波动 · <b class="cd-accent">置信区间</b>给出下一版本分数预测范围 · 数据源 <code class="cd-code-chip-68">scoreReport.reliability</code>。</div>
+  <div id="reliabilityChart" class="cd-surface-flat">加载中…</div>
 
   <h2 id="dim-sparks">🔥 维度健康趋势迷你图 · 六维时序快照</h2>
-  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">每个维度的历史评分迷你折线图，与上方综合趋势互补：综合评分可能掩盖单维度突变。点击迷你图跳转维度详情。</div>
-  <div id="dimSparks" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px"></div>
+  <div class="cd-meta-72">每个维度的历史评分迷你折线图，与上方综合趋势互补：综合评分可能掩盖单维度突变。点击迷你图跳转维度详情。</div>
+  <div id="dimSparks" class="cd-x1-151"></div>
 
   <h2 id="diag">🔬 D0-D8 诊断引擎</h2>
   <div id="diag" class="diag"></div>
 
   <h2 id="matrix">🎯 维度优先级矩阵</h2>
-  <div id="matrix" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:16px;position:relative">
-    <div style="display:grid;grid-template-columns:80px 1fr;gap:8px;align-items:stretch" class="matrix-grid">
+  <div id="matrix" class="cd-x1-68">
+    <div class="cd-x1-164" class="matrix-grid">
       <div></div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;text-align:center;font-size:.68rem;color:var(--yry-text3,#6b7280);padding:4px 0">
+      <div class="cd-x1-53">
         <div>← 改进空间小 (≥80)</div>
         <div>改进空间中 (60-79)</div>
         <div>改进空间大 (&lt;60) →</div>
       </div>
-      <div style="writing-mode:vertical-lr;transform:rotate(180deg);text-align:center;font-size:.68rem;color:var(--yry-text3,#6b7280);padding:8px 0">趋势↑ 良化</div>
-      <div id="matrixRow1" style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;min-height:80px"></div>
-      <div style="writing-mode:vertical-lr;transform:rotate(180deg);text-align:center;font-size:.68rem;color:var(--yry-text3,#6b7280);padding:8px 0">趋势→ 持平</div>
-      <div id="matrixRow2" style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;min-height:80px"></div>
-      <div style="writing-mode:vertical-lr;transform:rotate(180deg);text-align:center;font-size:.68rem;color:var(--yry-text3,#6b7280);padding:8px 0">趋势↓ 退化</div>
-      <div id="matrixRow3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;min-height:80px"></div>
+      <div class="cd-vertical-label">趋势↑ 良化</div>
+      <div id="matrixRow1" class="cd-grid-3"></div>
+      <div class="cd-vertical-label">趋势→ 持平</div>
+      <div id="matrixRow2" class="cd-grid-3"></div>
+      <div class="cd-vertical-label">趋势↓ 退化</div>
+      <div id="matrixRow3" class="cd-grid-3"></div>
     </div>
-    <div style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-top:10px;line-height:1.6">二维定位：<b style="color:var(--yry-accent,#22d3ee)">横轴</b> = 当前得分（改进空间）· <b style="color:var(--yry-accent,#22d3ee)">纵轴</b> = 趋势方向 · 右下角（退化且空间大）为最高优先级 P0</div>
+    <div class="cd-text3-66-mt10">二维定位：<b class="cd-accent">横轴</b> = 当前得分（改进空间）· <b class="cd-accent">纵轴</b> = 趋势方向 · 右下角（退化且空间大）为最高优先级 P0</div>
   </div>
-  <style>
-    @media (max-width: 700px) { .matrix-grid { grid-template-columns: 1fr !important } .matrix-grid > div:first-child { display:none } }
-  </style>
 
   <h2 id="recs">💡 改进建议</h2>
-  <div style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:8px 14px;margin:0 0 10px;font-size:.7rem;color:var(--yry-text3,#6b7280);line-height:1.7;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
-    <b style="color:var(--yry-text2,#a9b1d6)">优先级图例</b>
-    <span><span style="display:inline-block;width:8px;height:8px;background:#f87171;border-radius:2px;margin-right:4px;vertical-align:middle"></span>P0 阻塞 · 必须立即修复</span>
-    <span><span style="display:inline-block;width:8px;height:8px;background:#fb923c;border-radius:2px;margin-right:4px;vertical-align:middle"></span>P1 高 · 本迭代修复</span>
-    <span><span style="display:inline-block;width:8px;height:8px;background:#22d3ee;border-radius:2px;margin-right:4px;vertical-align:middle"></span>P2 中 · 计划内修复</span>
-    <span><span style="display:inline-block;width:8px;height:8px;background:#6b7280;border-radius:2px;margin-right:4px;vertical-align:middle"></span>P3 低 · 可延后</span>
-    <span style="margin-left:auto;display:flex;gap:6px;align-items:center">
-      <span style="color:var(--yry-text2,#a9b1d6)">过滤:</span>
-      <button data-pri-filter="" class="rec-filter active" style="background:rgba(34,211,238,.15);border:1px solid var(--yry-accent,#22d3ee);color:#22d3ee;padding:2px 8px;border-radius:3px;font-size:.66rem;cursor:pointer;font-weight:600">全部</button>
-      <button data-pri-filter="P0" class="rec-filter" style="background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.3);color:#f87171;padding:2px 8px;border-radius:3px;font-size:.66rem;cursor:pointer">P0</button>
-      <button data-pri-filter="P1" class="rec-filter" style="background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.3);color:#fb923c;padding:2px 8px;border-radius:3px;font-size:.66rem;cursor:pointer">P1</button>
-      <button data-pri-filter="P2" class="rec-filter" style="background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.3);color:#22d3ee;padding:2px 8px;border-radius:3px;font-size:.66rem;cursor:pointer">P2</button>
-      <button data-pri-filter="P3" class="rec-filter" style="background:rgba(107,114,128,.08);border:1px solid rgba(107,114,128,.3);color:#6b7280;padding:2px 8px;border-radius:3px;font-size:.66rem;cursor:pointer">P3</button>
-      <span id="recFilterCount" style="font-size:.64rem;color:var(--yry-text3,#6b7280);margin-left:4px"></span>
+  <div class="cd-x1-0">
+    <b class="cd-text2">优先级图例</b>
+    <span><span class="cd-x1-64"></span>P0 阻塞 · 必须立即修复</span>
+    <span><span class="cd-x1-65"></span>P1 高 · 本迭代修复</span>
+    <span><span class="cd-x1-66"></span>P2 中 · 计划内修复</span>
+    <span><span class="cd-x1-67"></span>P3 低 · 可延后</span>
+    <span class="cd-x1-217">
+      <span class="cd-text2">过滤:</span>
+      <button data-pri-filter="" class="rec-filter active" cd-x1-20">全部</button>
+      <button data-pri-filter="P0" class="rec-filter" cd-x1-37">P0</button>
+      <button data-pri-filter="P1" class="rec-filter" cd-x1-39">P1</button>
+      <button data-pri-filter="P2" class="rec-filter" cd-x1-40">P2</button>
+      <button data-pri-filter="P3" class="rec-filter" cd-x1-38">P3</button>
+      <span id="recFilterCount" class="cd-x1-187"></span>
     </span>
   </div>
   <div id="recs" class="recs"></div>
 
-  <h2 id="signals" style="margin-top:28px">📡 信号总览 · 当前版本观察点</h2>
-  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">由 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">cdn-summary.signals</code> 字段驱动的当前版本观察信号 · 按类型分桶展示 · 帮助快速掌握版本关键变化与风险点。</div>
-  <div id="signalBuckets" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin:8px 0 16px">加载中…</div>
+  <h2 id="signals" class="cd-mt28">📡 信号总览 · 当前版本观察点</h2>
+  <div class="cd-meta-72">由 <code class="cd-code-chip-68">cdn-summary.signals</code> 字段驱动的当前版本观察信号 · 按类型分桶展示 · 帮助快速掌握版本关键变化与风险点。</div>
+  <div id="signalBuckets" class="cd-x1-103">加载中…</div>
 
-  <h2 id="trendDelta" style="margin-top:28px">⚡ 维度环比变化 · 相邻版本 ΔScore</h2>
-  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">相邻版本（v1.1 → v1.2）各维度得分变化 · <b style="color:#34d399">↑ 正向变化</b> · <b style="color:#f87171">↓ 负向变化</b> · <b style="color:#9ca3af">→ 持平</b> · 揭示本版本主要改进与需要关注的退化点。</div>
-  <div id="trendDeltaList" style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 18px;margin:8px 0 16px;display:flex;flex-direction:column;gap:8px">加载中…</div>
+  <h2 id="trendDelta" class="cd-mt28">⚡ 维度环比变化 · 相邻版本 ΔScore</h2>
+  <div class="cd-meta-72">相邻版本（v1.1 → v1.2）各维度得分变化 · <b class="cd-emerald">↑ 正向变化</b> · <b class="cd-red">↓ 负向变化</b> · <b class="cd-x2-38">→ 持平</b> · 揭示本版本主要改进与需要关注的退化点。</div>
+  <div id="trendDeltaList" class="cd-surface-flat-flex">加载中…</div>
 
-  <h2 id="scoreLadder" style="margin-top:28px">🥇 版本得分阶梯 · 3 版本对比表</h2>
-  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">横向展示 3 个版本（v1.0 → v1.1 → v1.2）的综合得分 · 等级 · ΔScore 变化 · 揭示项目演进轨迹。</div>
-  <div id="scoreLadderTable" style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 18px;margin:8px 0 16px;overflow-x:auto">加载中…</div>
+  <h2 id="scoreLadder" class="cd-mt28">🥇 版本得分阶梯 · 3 版本对比表</h2>
+  <div class="cd-meta-72">横向展示 3 个版本（v1.0 → v1.1 → v1.2）的综合得分 · 等级 · ΔScore 变化 · 揭示项目演进轨迹。</div>
+  <div id="scoreLadderTable" class="cd-surface-flat-scroll">加载中…</div>
 
-  <h2 id="forecast" style="margin-top:28px">🔮 趋势预测与置信度 · 统计可信度</h2>
-  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">基于历史趋势的统计预测 · 显示斜率 · R² 拟合优度 · 置信度评级 · 波动性 · 揭示趋势数据的可信度。</div>
-  <div id="forecastGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:8px 0 16px">加载中…</div>
+  <h2 id="forecast" class="cd-mt28">🔮 趋势预测与置信度 · 统计可信度</h2>
+  <div class="cd-meta-72">基于历史趋势的统计预测 · 显示斜率 · R² 拟合优度 · 置信度评级 · 波动性 · 揭示趋势数据的可信度。</div>
+  <div id="forecastGrid" class="cd-x1-104">加载中…</div>
 
   <p id="err" class="err" hidden></p>
-  <footer class="agg-footer" style="margin-top:32px;padding:14px 18px;background:rgba(15,23,42,.4);border:1px solid rgba(255,255,255,.06);border-radius:10px;font-size:.72rem;color:var(--yry-text3,#6b7280);line-height:1.8"><div style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-bottom:6px"><b style="color:var(--yry-accent,#22d3ee)">YrY CDN · Review聚合</b><span style="color:rgba(255,255,255,.15)">·</span><span>v1.2.0 · 2026</span><span style="color:rgba(255,255,255,.15)">·</span><span>📊 数据源 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">cdn-summary/index.json</code></span><span style="color:rgba(255,255,255,.15)">·</span><span>🛠 生成 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">skills/rui-bot/lib/loop-report.mjs</code></span></div><div style="display:flex;flex-wrap:wrap;gap:8px 12px;margin-top:6px"><a href="index.html" title="CDN 首页 — 七卡聚合中心入口" style="color:var(--yry-accent,#22d3ee);text-decoration:none">🏠 CDN 首页</a><a href="../docs/index.html" style="color:var(--yry-accent,#22d3ee);text-decoration:none">🏠 文档中心</a><a href="../README.md" style="color:var(--yry-accent,#22d3ee);text-decoration:none">📖 README</a><span style="margin-left:auto;font-size:.66rem">键盘 <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">1-7</kbd> 跳转 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">0</kbd> 首页 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">/</kbd> 搜索 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">t</kbd> 顶部</span></div></footer>
+  <footer class="agg-footer" cd-surface-section"><div class="cd-flex-wrap-14"><b class="cd-accent">YrY CDN · Review聚合</b><span class="cd-faint">·</span><span>v1.2.0 · 2026</span><span class="cd-faint">·</span><span>📊 数据源 <code class="cd-code-chip-68">cdn-summary/index.json</code></span><span class="cd-faint">·</span><span>🛠 生成 <code class="cd-code-chip-68">skills/rui-bot/lib/loop-report.mjs</code></span></div><div class="cd-flex-wrap-12-mt6"><a href="index.html" title="CDN 首页 — 七卡聚合中心入口" class="cd-accent-link">🏠 CDN 首页</a><a href="../docs/index.html" class="cd-accent-link">🏠 文档中心</a><a href="../README.md" class="cd-accent-link">📖 README</a><span class="cd-text3-66-mlauto">键盘 <kbd class="cd-code-chip">1-7</kbd> 跳转 · <kbd class="cd-code-chip">0</kbd> 首页 · <kbd class="cd-code-chip">/</kbd> 搜索 · <kbd class="cd-code-chip">t</kbd> 顶部</span></div></footer>
 
   <script type="module">
     const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -279,7 +215,7 @@
         return Math.max(0, Math.min(100, 100 - rate));
       });
       const clearedDiag = diagArr.filter(v => v >= 80).length;
-      document.getElementById('metaCount').innerHTML = `${d.totalVersions || 0} 版本 · <b style="color:var(--yry-accent,#22d3ee)">${score}/${grade}</b> · D0-D8 <b style="color:#34d399">${clearedDiag}/${diagArr.length}</b> 已清零`;
+      document.getElementById('metaCount').innerHTML = `${d.totalVersions || 0} 版本 · <b class="cd-accent">${score}/${grade}</b> · D0-D8 <b class="cd-emerald">${clearedDiag}/${diagArr.length}</b> 已清零`;
       // D0-D8 诊断清零分布条 — 已清零 / 待改进 (40-79) / 风险 (<40)
       const clearedN = clearedDiag;
       const warningN = diagArr.filter(v => v >= 40 && v < 80).length;
@@ -293,12 +229,12 @@
       const stackEl = document.getElementById('distStack');
       const legendEl = document.getElementById('distLegend');
       if (stackEl) stackEl.innerHTML = DIST.map(d =>
-        `<div title="${d.key} · ${d.n} 维度 · ${(d.n / distTotal * 100).toFixed(1)}%" style="flex:${d.n || 0.001};background:${d.color};position:relative">
-          ${d.n / distTotal >= 0.12 ? `<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:rgba(0,0,0,.7)">${d.n}</span>` : ''}
+        `<div title="${d.key} · ${d.n} 维度 · ${(d.n / distTotal * 100).toFixed(1)}%" class="cd-hook-flex-bg" style="--flex:${d.n || 0.001};--color:${d.color}">
+          ${d.n / distTotal >= 0.12 ? `<span class="cd-overlay-badge">${d.n}</span>` : ''}
         </div>`
       ).join('');
       if (legendEl) legendEl.innerHTML = DIST.map(d =>
-        `<span><i style="width:10px;height:10px;border-radius:2px;display:inline-block;background:${d.color};margin-right:4px"></i>${d.key} <b style="color:var(--yry-text2,#a9b1d6)">${d.n}</b> · ${(d.n / distTotal * 100).toFixed(0)}%</span>`
+        `<span><i class="cd-hook-dot-10" style="--color:${d.color}"></i>${d.key} <b class="cd-text2">${d.n}</b> · ${(d.n / distTotal * 100).toFixed(0)}%</span>`
       ).join('');
 
       document.getElementById('heroScore').textContent = score;
@@ -332,19 +268,19 @@
            (trendDir === 'flat' && s.trend === 0) ||
            (trendDir === 'down' && s.trend < 0))
         );
-        if (!filtered.length) return '<div style="background:rgba(15,23,42,.3);border:1px dashed rgba(255,255,255,.04);border-radius:4px;padding:6px 4px;text-align:center;font-size:.62rem;color:var(--yry-text3,#4b5563)">—</div>';
+        if (!filtered.length) return '<div class="cd-x1-23">—</div>';
         const priority = trendDir === 'down' && scoreMin < 60 ? 'P0' :
                          trendDir === 'down' && scoreMin < 80 ? 'P1' :
                          trendDir === 'flat' && scoreMin < 60 ? 'P1' :
                          trendDir === 'flat' && scoreMin < 80 ? 'P2' : 'P3';
         const color = priority === 'P0' ? '#f87171' : priority === 'P1' ? '#fb923c' : priority === 'P2' ? '#22d3ee' : '#34d399';
         return filtered.map(s => `
-          <div style="background:rgba(15,23,42,.55);border:1px solid ${color}55;border-radius:6px;padding:6px 8px;font-size:.7rem">
-            <div style="display:flex;align-items:center;justify-content:space-between">
-              <span style="color:${color};font-weight:700;font-size:.62rem">${priority}</span>
-              <b style="color:${color}">${s.avgScore}</b>
+          <div class="cd-y20" style="--v1:${color}">
+            <div class="cd-x1-203">
+              <span class="cd-y21" style="--v1:${color}">${priority}</span>
+              <b class="cd-hook-color" style="--color:${color}">${s.avgScore}</b>
             </div>
-            <div style="color:var(--yry-text2,#a9b1d6);font-size:.66rem;margin-top:2px">${s.label}</div>
+            <div class="cd-x1-199">${s.label}</div>
           </div>`).join('');
       };
       const fillMatrix = (rowId, sMin, sMax, dir) => {
@@ -364,8 +300,8 @@
       document.getElementById('dimRows').innerHTML = dims.map(s => `
         <tr>
           <td>${s.label}</td>
-          <td class="score">${s.avgScore}/100 <span class="badge" style="background:rgba(34,211,238,.12);color:#22d3ee;padding:1px 5px;border-radius:3px;font-size:.62rem">${GRADE_FOR(s.avgScore)}</span></td>
-          <td><div class="bar-wrap"><span class="bar"><span class="fill" style="width:${s.avgScore}%"></span></span></div></td>
+          <td class="score">${s.avgScore}/100 <span class="badge" cd-x1-105">${GRADE_FOR(s.avgScore)}</span></td>
+          <td><div class="bar-wrap"><span class="bar"><span class="fill" cd-y22" style="--v1:${s.avgScore}"></span></span></div></td>
           <td><span class="trend ${TREND_CLS(s.trend)}">${TREND_ICON(s.trend)} ${s.trend > 0 ? '+' : ''}${s.trend}</span></td>
         </tr>
       `).join('');
@@ -442,22 +378,22 @@
         const deltaIcon = delta > 0 ? '↑' : delta < 0 ? '↓' : '→';
         const sign = delta > 0 ? '+' : '';
         deltaEl.innerHTML = `
-          <div style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:10px 14px;font-size:.74rem;flex:1;min-width:200px">
-            <div style="color:var(--yry-text3,#6b7280);font-size:.66rem;margin-bottom:4px">📊 版本对比 (v${prev.version} → v${latest.version})</div>
-            <div style="display:flex;align-items:center;gap:12px">
-              <span style="color:var(--yry-text2,#a9b1d6)"><b>${prev.score}</b>/<span style="color:var(--yry-text3,#6b7280)">${prev.grade}</span></span>
-              <span style="color:var(--yry-text3,#6b7280)">→</span>
-              <span style="color:var(--yry-accent,#22d3ee)"><b>${latest.score}</b>/<span style="color:#34d399">${latest.grade}</span></span>
-              <span class="trend ${deltaCls}" style="font-size:.9rem;font-weight:700">${deltaIcon} ${sign}${delta}</span>
+          <div class="cd-x2-5">
+            <div class="cd-x2-20">📊 版本对比 (v${prev.version} → v${latest.version})</div>
+            <div class="cd-x1-250">
+              <span class="cd-text2"><b>${prev.score}</b>/<span class="cd-text3">${prev.grade}</span></span>
+              <span class="cd-text3">→</span>
+              <span class="cd-accent"><b>${latest.score}</b>/<span class="cd-emerald">${latest.grade}</span></span>
+              <span class="trend ${deltaCls}" cd-x1-260">${deltaIcon} ${sign}${delta}</span>
             </div>
           </div>
-          <div style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:10px 14px;font-size:.74rem;flex:1;min-width:200px">
-            <div style="color:var(--yry-text3,#6b7280);font-size:.66rem;margin-bottom:4px">📈 历史跨度</div>
-            <div style="color:var(--yry-text2,#a9b1d6)"><b>${trend.length}</b> 个版本 · 从 <b style="color:var(--yry-accent,#22d3ee)">${trend[0].score}</b> 演进至 <b style="color:var(--yry-accent,#22d3ee)">${latest.score}</b> · 净增 <b class="trend ${latest.score - trend[0].score >= 0 ? 'up' : 'down'}">${latest.score - trend[0].score >= 0 ? '+' : ''}${latest.score - trend[0].score}</b></div>
+          <div class="cd-x2-5">
+            <div class="cd-x2-20">📈 历史跨度</div>
+            <div class="cd-text2"><b>${trend.length}</b> 个版本 · 从 <b class="cd-accent">${trend[0].score}</b> 演进至 <b class="cd-accent">${latest.score}</b> · 净增 <b class="trend ${latest.score - trend[0].score >= 0 ? 'up' : 'down'}">${latest.score - trend[0].score >= 0 ? '+' : ''}${latest.score - trend[0].score}</b></div>
           </div>
         `;
       } else {
-        deltaEl.innerHTML = '<div style="font-size:.72rem;color:var(--yry-text3,#6b7280);padding:8px">历史版本不足 2 个，无法计算 delta</div>';
+        deltaEl.innerHTML = '<div class="cd-x1-211">历史版本不足 2 个，无法计算 delta</div>';
       }
 
       // 📊 可靠性统计 — 均值/标准差/置信区间/波动性
@@ -489,51 +425,51 @@
           const deviationFromMean = Math.abs(deltaFromMean);
           const deviationLabel = deviationFromMean > stddev * 1.5 ? '⚠️ 偏离均值超过 1.5σ' : deviationFromMean > stddev ? 'ⓘ 接近 1σ' : '✅ 在正常范围';
           relEl.innerHTML = `
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:14px">
-              <div style="background:rgba(0,0,0,.3);border:1px solid rgba(34,211,238,.2);border-radius:8px;padding:10px 14px">
-                <div style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-bottom:4px">当前分数</div>
-                <div style="font-size:1.3rem;color:var(--yry-accent,#22d3ee);font-weight:700">${current}</div>
-                <div style="font-size:.62rem;color:${deltaColor};margin-top:2px">${deltaSign}${deltaFromMean.toFixed(1)} vs 均值</div>
+            <div class="cd-x1-99">
+              <div class="cd-x1-94">
+                <div class="cd-text3-66-mb4">当前分数</div>
+                <div class="cd-x1-176">${current}</div>
+                <div class="cd-y23" style="--v1:${deltaColor}">${deltaSign}${deltaFromMean.toFixed(1)} vs 均值</div>
               </div>
-              <div style="background:rgba(0,0,0,.3);border:1px solid rgba(167,139,250,.2);border-radius:8px;padding:10px 14px">
-                <div style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-bottom:4px">历史均值</div>
-                <div style="font-size:1.3rem;color:#a78bfa;font-weight:700">${mean.toFixed(1)}</div>
-                <div style="font-size:.62rem;color:var(--yry-text3,#6b7280);margin-top:2px">基于 ${trend.length} 版本</div>
+              <div class="cd-x1-86">
+                <div class="cd-text3-66-mb4">历史均值</div>
+                <div class="cd-x1-235">${mean.toFixed(1)}</div>
+                <div class="cd-text3-62-mt2">基于 ${trend.length} 版本</div>
               </div>
-              <div style="background:rgba(0,0,0,.3);border:1px solid rgba(251,146,60,.2);border-radius:8px;padding:10px 14px">
-                <div style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-bottom:4px">标准差 σ</div>
-                <div style="font-size:1.3rem;color:#fb923c;font-weight:700">${stddev.toFixed(1)}</div>
-                <div style="font-size:.62rem;color:var(--yry-text3,#6b7280);margin-top:2px">${deviationLabel}</div>
+              <div class="cd-x1-95">
+                <div class="cd-text3-66-mb4">标准差 σ</div>
+                <div class="cd-x1-236">${stddev.toFixed(1)}</div>
+                <div class="cd-text3-62-mt2">${deviationLabel}</div>
               </div>
-              <div style="background:rgba(0,0,0,.3);border:1px solid ${volMeta.color}44;border-radius:8px;padding:10px 14px">
-                <div style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-bottom:4px">波动性</div>
-                <div style="font-size:1rem;color:${volMeta.color};font-weight:700">${volMeta.label}</div>
-                <div style="font-size:.62rem;color:var(--yry-text3,#6b7280);margin-top:2px">${volMeta.desc}</div>
+              <div class="cd-y24" style="--v1:${volMeta.color}">
+                <div class="cd-text3-66-mb4">波动性</div>
+                <div class="cd-y25" style="--v1:${volMeta.color}">${volMeta.label}</div>
+                <div class="cd-text3-62-mt2">${volMeta.desc}</div>
               </div>
             </div>
-            <div style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:12px 14px">
-              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
-                <b style="color:var(--yry-text2,#a9b1d6);font-size:.76rem">95% 置信区间 · 下一版本预测范围</b>
-                <span style="font-size:.72rem;color:var(--yry-accent,#22d3ee);font-weight:700">[${ciMinPct}, ${ciMaxPct}]</span>
+            <div class="cd-x1-82">
+              <div class="cd-x1-137">
+                <b class="cd-x1-232">95% 置信区间 · 下一版本预测范围</b>
+                <span class="cd-x1-177">[${ciMinPct}, ${ciMaxPct}]</span>
               </div>
-              <div style="position:relative;height:24px;background:rgba(0,0,0,.4);border-radius:4px;overflow:hidden">
-                <span style="position:absolute;left:${ciMinPct}%;width:${Math.max(0, ciMaxPct - ciMinPct)}%;height:100%;background:linear-gradient(90deg,rgba(34,211,238,.25),rgba(34,211,238,.4),rgba(34,211,238,.25));border-left:1px solid #22d3ee;border-right:1px solid #22d3ee"></span>
-                <span style="position:absolute;left:${meanPct}%;top:0;bottom:0;width:1px;background:#a78bfa" title="均值 ${mean.toFixed(1)}"></span>
-                <span style="position:absolute;left:${curPct}%;top:-4px;bottom:-4px;width:2px;background:#22d3ee" title="当前 ${current}"></span>
+              <div class="cd-x1-120">
+                <span class="cd-y26" style="--v1:${ciMinPct};--v2:${Math.max(0, ciMaxPct - ciMinPct)}"></span>
+                <span class="cd-y27" style="--v1:${meanPct}" title="均值 ${mean.toFixed(1)}"></span>
+                <span class="cd-y28" style="--v1:${curPct}" title="当前 ${current}"></span>
               </div>
-              <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:.6rem;color:var(--yry-text3,#6b7280)">
+              <div class="cd-x1-78">
                 <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
               </div>
-              <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:.64rem;color:var(--yry-text3,#6b7280)">
-                <span><span style="display:inline-block;width:8px;height:8px;background:#22d3ee;vertical-align:middle;margin-right:4px"></span>当前 ${current}</span>
-                <span><span style="display:inline-block;width:8px;height:8px;background:#a78bfa;vertical-align:middle;margin-right:4px"></span>均值 ${mean.toFixed(1)}</span>
-                <span><span style="display:inline-block;width:14px;height:8px;background:rgba(34,211,238,.3);border:1px solid #22d3ee;vertical-align:middle;margin-right:4px"></span>95% CI 区间</span>
+              <div class="cd-x1-87">
+                <span><span class="cd-x1-88"></span>当前 ${current}</span>
+                <span><span class="cd-x1-89"></span>均值 ${mean.toFixed(1)}</span>
+                <span><span class="cd-x1-50"></span>95% CI 区间</span>
               </div>
             </div>
-            <div style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-top:8px;line-height:1.6">可靠性分数 <b style="color:var(--yry-accent,#22d3ee)">${(relScore * 100).toFixed(0)}%</b> · 当前分数 ${deltaSign}${deltaFromMean.toFixed(1)} 相对均值 · ${deviationLabel}</div>
+            <div class="cd-text3-66-mt8-lh">可靠性分数 <b class="cd-accent">${(relScore * 100).toFixed(0)}%</b> · 当前分数 ${deltaSign}${deltaFromMean.toFixed(1)} 相对均值 · ${deviationLabel}</div>
           `;
         } else {
-          relEl.innerHTML = '<div style="padding:12px;font-size:.74rem;color:var(--yry-text3,#6b7280)">无可靠性统计数据</div>';
+          relEl.innerHTML = '<div class="cd-x2-27">无可靠性统计数据</div>';
         }
       }
 
@@ -624,19 +560,19 @@
           const lastIdx = safeHist.length - 1;
           const trendIcon = dim.trend > 0 ? '↑' : dim.trend < 0 ? '↓' : '→';
           const trendColor = dim.trend > 0 ? '#34d399' : dim.trend < 0 ? '#f87171' : '#6b7280';
-          return `<div style="background:rgba(15,23,42,.55);border:1px solid ${color}33;border-left:3px solid ${color};border-radius:8px;padding:8px 10px;cursor:pointer" title="${dim.label} 历史 · ${safeHist.length} 个版本 · ${safeHist.join(' → ')}" onclick="document.getElementById('dims').scrollIntoView({behavior:'smooth'})">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-              <span style="color:var(--yry-text2,#a9b1d6);font-size:.72rem;font-weight:600">${dim.label}</span>
-              <span style="color:${color};font-size:.78rem;font-weight:700">${dim.avgScore}</span>
+          return `<div class="cd-y29" style="--v1:${color};--v2:${color}" title="${dim.label} 历史 · ${safeHist.length} 个版本 · ${safeHist.join(' → ')}" onclick="document.getElementById('dims').scrollIntoView({behavior:'smooth'})">
+            <div class="cd-x1-148">
+              <span class="cd-x1-188">${dim.label}</span>
+              <span class="cd-y30" style="--v1:${color}">${dim.avgScore}</span>
             </div>
-            <svg viewBox="0 0 ${SW} ${SH}" style="display:block;width:100%;height:auto">
+            <svg viewBox="0 0 ${SW} ${SH}" class="cd-x2-36">
               <path d="${path}" stroke="${color}" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
               <circle cx="${xAt(lastIdx).toFixed(1)}" cy="${yAt(safeHist[lastIdx]).toFixed(1)}" r="3" fill="${color}"/>
               <line x1="${SP}" y1="${yAt(60)}" x2="${SW - SP}" y2="${yAt(60)}" stroke="rgba(255,255,255,.06)" stroke-width="1" stroke-dasharray="2,2"/>
             </svg>
-            <div style="display:flex;justify-content:space-between;font-size:.62rem;color:var(--yry-text3,#6b7280);margin-top:3px">
+            <div class="cd-x1-76">
               <span>${safeHist.length} 版</span>
-              <span style="color:${trendColor};font-weight:600">${trendIcon} ${dim.trend > 0 ? '+' : ''}${dim.trend}</span>
+              <span class="cd-y31" style="--v1:${trendColor}">${trendIcon} ${dim.trend > 0 ? '+' : ''}${dim.trend}</span>
             </div>
           </div>`;
         }).join('');
@@ -667,15 +603,15 @@
         const barColor = cleared ? '#34d399' : v >= 50 ? '#fbbf24' : '#f87171';
         return `<div class="diag-item ${cleared ? 'cleared' : ''}" title="D${i} · ${lbl}\n${desc}\n健康分 ${v}/100 · 发生率 ${rate}%">
           <div class="lvl">D${i}</div>
-          <div class="lbl"><b style="color:var(--yry-text2,#a9b1d6)">${lbl}</b><br><span style="font-size:.6rem;color:var(--yry-text3,#6b7280)">${title}</span><br><span style="font-size:.66rem;color:${barColor};font-weight:700">${v}/100</span></div>
-          <div style="height:3px;background:rgba(0,0,0,.3);border-radius:2px;margin-top:6px;overflow:hidden"><span style="display:block;height:100%;width:${v}%;background:${barColor}"></span></div>
+          <div class="lbl"><b class="cd-text2">${lbl}</b><br><span class="cd-x2-35">${title}</span><br><span class="cd-y32" style="--v1:${barColor}">${v}/100</span></div>
+          <div class="cd-x1-126"><span class="cd-y33" style="--v1:${v};--v2:${barColor}"></span></div>
         </div>`;
       }).join('');
       // 在诊断网格下添加图例说明
       const diagGrid = document.getElementById('diag');
       const legend = document.createElement('div');
       legend.style.cssText = 'font-size:.66rem;color:var(--yry-text3,#6b7280);margin-top:10px;line-height:1.7';
-      legend.innerHTML = '悬停查看诊断维度详情 · <span style="color:#34d399">绿框</span>表示已清零 (≥80) · <span style="color:var(--yry-text3,#6b7280)">默认框</span>表示待改进';
+      legend.innerHTML = '悬停查看诊断维度详情 · <span class="cd-emerald">绿框</span>表示已清零 (≥80) · <span class="cd-text3">默认框</span>表示待改进';
       diagGrid.parentNode.insertBefore(legend, diagGrid.nextSibling);
 
       // Recommendations — 按优先级（分数升序，最需改进的排前）分组
@@ -705,19 +641,19 @@
         const otherTypes = Object.keys(buckets).filter(t => !orderedTypes.includes(t));
         const allTypes = [...orderedTypes, ...otherTypes];
         if (allTypes.length === 0) {
-          signalEl.innerHTML = '<div style="grid-column:1/-1;padding:14px;font-size:.74rem;color:var(--yry-text3,#6b7280);background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:8px">无信号数据</div>';
+          signalEl.innerHTML = '<div class="cd-x1-25">无信号数据</div>';
         } else {
           signalEl.innerHTML = allTypes.map(t => {
             const m = TYPE_META[t] || { label: t, icon: '•', color: '#a9b1d6', bg: 'rgba(167,182,214,.06)', border: 'rgba(167,182,214,.3)' };
             const items = buckets[t];
-            return `<div style="background:${m.bg};border:1px solid ${m.border};border-radius:8px;padding:12px 14px">
-              <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid ${m.border}">
-                <span style="font-size:1rem">${m.icon}</span>
-                <b style="color:${m.color};font-size:.78rem">${m.label}</b>
-                <span style="margin-left:auto;color:var(--yry-text3,#6b7280);font-size:.66rem">${items.length} 条</span>
+            return `<div class="cd-y34" style="--v1:${m.bg};--v2:${m.border}">
+              <div class="cd-y35" style="--v1:${m.border}">
+                <span class="cd-x1-289">${m.icon}</span>
+                <b class="cd-y36" style="--v1:${m.color}">${m.label}</b>
+                <span class="cd-x2-22">${items.length} 条</span>
               </div>
-              <div style="display:flex;flex-direction:column;gap:6px">
-                ${items.map(s => `<div style="font-size:.72rem;color:var(--yry-text2,#a9b1d6);line-height:1.6;padding:4px 8px;background:rgba(0,0,0,.2);border-radius:4px;border-left:2px solid ${m.color}">${s.msg || JSON.stringify(s)}</div>`).join('')}
+              <div class="cd-flex-col-6">
+                ${items.map(s => `<div class="cd-y37" style="--v1:${m.color}">${s.msg || JSON.stringify(s)}</div>`).join('')}
               </div>
             </div>`;
           }).join('');
@@ -770,7 +706,7 @@
       const renderRecs = (filter) => {
         const list = filter ? enriched.filter(r => r.p.p === filter) : enriched;
         recsEl.innerHTML = list.length
-          ? list.map(r => `<div class="rec" data-pri="${r.p.p}"><span class="rec-pri" style="background:${r.p.color}22;color:${r.p.color};border:1px solid ${r.p.color}66;flex-shrink:0">${r.p.p}·${r.p.label}</span><div><b>${r.t}</b>${r.d_}</div></div>`).join('')
+          ? list.map(r => `<div class="rec" data-pri="${r.p.p}"><span class="rec-pri" cd-y38" style="--v1:${r.p.color};--v2:${r.p.color};--v3:${r.p.color}">${r.p.p}·${r.p.label}</span><div><b>${r.t}</b>${r.d_}</div></div>`).join('')
           : (enriched.length
               ? `<div class="rec"><b>无 ${filter} 级建议</b>当前过滤下无此优先级的建议项。</div>`
               : '<div class="rec"><b>暂无建议</b>当前版本已达 A 级，持续监控趋势即可。</div>');
@@ -800,7 +736,7 @@
         const breakdown = (summary && summary.scoreReport && summary.scoreReport.breakdown) || [];
         const trend = (summary && summary.scoreTrend) || [];
         if (breakdown.length === 0 || trend.length < 2) {
-          tdEl.innerHTML = '<div style="padding:10px;font-size:.72rem;color:var(--yry-text3,#6b7280)">无趋势数据或仅有单版本</div>';
+          tdEl.innerHTML = '<div class="cd-meta-72-pad10">无趋势数据或仅有单版本</div>';
         } else {
           const prev = trend[trend.length - 2] || {};
           const curr = trend[trend.length - 1] || {};
@@ -818,7 +754,7 @@
             .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
           const maxAbs = Math.max(1, ...rows.map(r => Math.abs(r.delta)));
           if (rows.length === 0) {
-            tdEl.innerHTML = '<div style="padding:10px;font-size:.72rem;color:var(--yry-text3,#6b7280)">无法计算变化值</div>';
+            tdEl.innerHTML = '<div class="cd-meta-72-pad10">无法计算变化值</div>';
           } else {
             tdEl.innerHTML = rows.map((r, i) => {
               const sign = r.delta > 0 ? '+' : r.delta < 0 ? '' : '±';
@@ -826,18 +762,18 @@
               const color = r.delta > 0 ? '#34d399' : r.delta < 0 ? '#f87171' : '#9ca3af';
               const width = (Math.abs(r.delta) / maxAbs * 50).toFixed(0);
               const align = r.delta < 0 ? 'margin-left:auto' : '';
-              return `<div style="display:grid;grid-template-columns:140px 1fr 70px;gap:10px;align-items:center;font-size:.72rem">
-                <div style="color:var(--yry-text2,#a9b1d6);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.label}</div>
-                <div style="display:flex;align-items:center;gap:6px;height:14px;position:relative">
-                  <div style="position:absolute;left:50%;width:1px;background:rgba(255,255,255,.15);height:100%"></div>
-                  <div style="${align};height:8px;background:${color};border-radius:2px;width:${width}%" title="${r.prev} → ${r.curr}"></div>
+              return `<div class="cd-x1-108">
+                <div class="cd-x1-79">${r.label}</div>
+                <div class="cd-x1-168">
+                  <div class="cd-x1-138"></div>
+                  <div class="cd-y39" style="--v1:${align};--v2:${color};--v3:${width}" title="${r.prev} → ${r.curr}"></div>
                 </div>
-                <div style="text-align:right;white-space:nowrap">
-                  <span style="color:${color};font-weight:700">${dir} ${sign}${Math.abs(r.delta)}</span>
-                  <div style="color:var(--yry-text3,#6b7280);font-size:.6rem">${r.prev} → ${r.curr}</div>
+                <div class="cd-right-nowrap">
+                  <span class="cd-hook-color-bold" style="--color:${color}">${dir} ${sign}${Math.abs(r.delta)}</span>
+                  <div class="cd-text3-60">${r.prev} → ${r.curr}</div>
                 </div>
               </div>`;
-            }).join('') + `<div style="font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.6;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.06)">按 |Δ| 降序排列 · ${rows.filter(r => r.delta > 0).length} 维上升 · ${rows.filter(r => r.delta < 0).length} 维下降 · ${rows.filter(r => r.delta === 0).length} 维持平 · 共 ${rows.length} 维度</div>`;
+            }).join('') + `<div class="cd-meta-66-top">按 |Δ| 降序排列 · ${rows.filter(r => r.delta > 0).length} 维上升 · ${rows.filter(r => r.delta < 0).length} 维下降 · ${rows.filter(r => r.delta === 0).length} 维持平 · 共 ${rows.length} 维度</div>`;
           }
         }
       }
@@ -846,7 +782,7 @@
       if (slEl) {
         const trend = (summary && summary.scoreTrend) || [];
         if (trend.length === 0) {
-          slEl.innerHTML = '<div style="padding:10px;font-size:.72rem;color:var(--yry-text3,#6b7280)">无版本趋势数据</div>';
+          slEl.innerHTML = '<div class="cd-meta-72-pad10">无版本趋势数据</div>';
         } else {
           const GRADE_FOR = s => s >= 80 ? 'A' : s >= 60 ? 'B' : s >= 40 ? 'C' : 'D';
           const rows = trend.map((t, i) => {
@@ -858,26 +794,26 @@
             return { version: t.version || `v${i+1}`, score, grade, delta, color, date: t.date };
           });
           const maxScore = Math.max(1, ...rows.map(r => r.score));
-          slEl.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:.74rem;min-width:520px">
-            <thead><tr style="background:rgba(30,41,59,.5);color:var(--yry-text2,#a9b1d6)">
-              <th style="text-align:left;padding:8px 12px;font-weight:600">版本</th>
-              <th style="text-align:left;padding:8px 12px;font-weight:600">日期</th>
-              <th style="text-align:left;padding:8px 12px;font-weight:600;width:40%">得分进度</th>
-              <th style="text-align:right;padding:8px 12px;font-weight:600">得分</th>
-              <th style="text-align:center;padding:8px 12px;font-weight:600">等级</th>
-              <th style="text-align:right;padding:8px 12px;font-weight:600">ΔScore</th>
+          slEl.innerHTML = `<table class="cd-x1-169">
+            <thead><tr class="cd-x2-29">
+              <th class="cd-x2-31">版本</th>
+              <th class="cd-x2-31">日期</th>
+              <th class="cd-x1-212">得分进度</th>
+              <th class="cd-x2-30">得分</th>
+              <th class="cd-x1-228">等级</th>
+              <th class="cd-x2-30">ΔScore</th>
             </tr></thead>
             <tbody>
-              ${rows.map(r => `<tr style="border-bottom:1px solid rgba(255,255,255,.06)">
-                <td style="padding:8px 12px;color:${r.color};font-weight:700">${r.version}</td>
-                <td style="padding:8px 12px;color:var(--yry-text3,#6b7280);font-size:.7rem">${r.date ? new Date(r.date).toLocaleDateString('zh-CN') : '—'}</td>
-                <td style="padding:8px 12px"><div style="height:10px;background:rgba(0,0,0,.4);border-radius:3px;overflow:hidden"><div style="width:${(r.score/maxScore*100).toFixed(0)}%;height:100%;background:linear-gradient(90deg,${r.color},${r.color}88)" title="${r.score}"></div></div></td>
-                <td style="padding:8px 12px;text-align:right;color:${r.color};font-weight:700">${r.score}</td>
-                <td style="padding:8px 12px;text-align:center"><span style="display:inline-block;padding:2px 8px;border-radius:3px;background:${r.color}22;border:1px solid ${r.color}55;color:${r.color};font-weight:700;font-size:.7rem">${r.grade}</span></td>
-                <td style="padding:8px 12px;text-align:right;color:${r.delta === null ? 'var(--yry-text3,#6b7280)' : (r.delta > 0 ? '#34d399' : r.delta < 0 ? '#f87171' : '#9ca3af')};font-weight:600">${r.delta === null ? '—' : (r.delta > 0 ? '+' : '') + r.delta}</td>
+              ${rows.map(r => `<tr class="cd-x1-245">
+                <td class="cd-y40" style="--v1:${r.color}">${r.version}</td>
+                <td class="cd-x1-189">${r.date ? new Date(r.date).toLocaleDateString('zh-CN') : '—'}</td>
+                <td class="cd-x1-284"><div class="cd-bar-track"><div class="cd-y41" style="--v1:${(r.score/maxScore*100).toFixed(0)};--v2:${r.color};--v3:${r.color}" title="${r.score}"></div></div></td>
+                <td class="cd-y42" style="--v1:${r.color}">${r.score}</td>
+                <td class="cd-x1-255"><span class="cd-y43" style="--v1:${r.color};--v2:${r.color};--v3:${r.color}">${r.grade}</span></td>
+                <td class="cd-y44" style="--v1:${r.delta === null ? 'var(--yry-text3,#6b7280)' : (r.delta > 0 ? '#34d399' : r.delta < 0 ? '#f87171' : '#9ca3af')}">${r.delta === null ? '—' : (r.delta > 0 ? '+' : '') + r.delta}</td>
               </tr>`).join('')}
             </tbody>
-          </table>` + `<div style="font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.6;margin-top:8px">${rows.length} 版本演进 · 初始 ${rows[0].score}${rows[0].grade} → 当前 ${rows[rows.length-1].score}${rows[rows.length-1].grade} · 累计 +${rows[rows.length-1].score - rows[0].score} 分 · ${rows[rows.length-1].delta != null ? `本版本 ${rows[rows.length-1].delta > 0 ? '+' : ''}${rows[rows.length-1].delta} 分` : '首版本'}</div>`;
+          </table>` + `<div class="cd-text3-66-mt8">${rows.length} 版本演进 · 初始 ${rows[0].score}${rows[0].grade} → 当前 ${rows[rows.length-1].score}${rows[rows.length-1].grade} · 累计 +${rows[rows.length-1].score - rows[0].score} 分 · ${rows[rows.length-1].delta != null ? `本版本 ${rows[rows.length-1].delta > 0 ? '+' : ''}${rows[rows.length-1].delta} 分` : '首版本'}</div>`;
         }
       }
       // 🔮 趋势预测与置信度
@@ -899,11 +835,11 @@
           { label: '🌊 波动性', value: vol === 'low' ? '低' : vol === 'moderate' ? '中' : vol === 'high' ? '高' : vol, sub: `可靠性 ${(rel.score * 100).toFixed(0)}%`, color: vol === 'low' ? '#34d399' : vol === 'moderate' ? '#fbbf24' : '#f87171' },
           { label: '📊 95% 置信区间', value: `${ciLow} ~ ${ciHigh}`, sub: `均值 ${rel.mean || '—'} · 标准差 ${rel.stddev || '—'}`, color: '#a78bfa' }
         ];
-        fcEl.innerHTML = cards.map(c => `<div style="background:rgba(15,23,42,.55);border:1px solid ${c.color}33;border-left:3px solid ${c.color};border-radius:8px;padding:10px 12px">
-          <div style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-bottom:4px">${c.label}</div>
-          <div style="font-size:1.15rem;font-weight:700;color:${c.color};line-height:1.2">${c.value}</div>
-          <div style="font-size:.62rem;color:var(--yry-text3,#6b7280);margin-top:4px">${c.sub}</div>
-        </div>`).join('') + `<div style="grid-column:1/-1;font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.6;margin-top:4px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)">趋势方向揭示项目演进健康度 · R² 越接近 100% 越可线性预测 · 置信度反映样本充足度 · 波动性揭示版本间变化稳定性</div>`;
+        fcEl.innerHTML = cards.map(c => `<div class="cd-y45" style="--v1:${c.color};--v2:${c.color}">
+          <div class="cd-text3-66-mb4">${c.label}</div>
+          <div class="cd-y46" style="--v1:${c.color}">${c.value}</div>
+          <div class="cd-x2-25">${c.sub}</div>
+        </div>`).join('') + `<div class="cd-x2-3">趋势方向揭示项目演进健康度 · R² 越接近 100% 越可线性预测 · 置信度反映样本充足度 · 波动性揭示版本间变化稳定性</div>`;
       }
     }).catch(e => {
       const el = document.getElementById('err');

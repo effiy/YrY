@@ -22,8 +22,9 @@ describe('rui-update skill', () => {
       const content = readFile(`${SKILL_DIR}/SKILL.md`);
       const fm = parseFrontmatter(content);
       assert.ok(fm, 'SKILL.md must have frontmatter');
-      assert.ok(fm.name === 'rui-update', 'frontmatter name must be rui-update');
-      assert.ok(fm.description, 'frontmatter must have description');
+      const fmAny = /** @type {any} */ (fm);
+      assert.ok(fmAny.name === 'rui-update', 'frontmatter name must be rui-update');
+      assert.ok(fmAny.description, 'frontmatter must have description');
     });
 
     it('has mermaid diagram', () => {
@@ -171,4 +172,4 @@ describe('rui-update skill', () => {
   });
 });
 
-const exitCode = await run();
+const _exitCode = await run();

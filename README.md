@@ -518,6 +518,20 @@ flowchart LR
 - **常量**：魔法数字禁止，共享常量统一定义在 `lib/constants.mjs`
 - **导入**：技能间禁止直接 import，共享代码放 `lib/`
 - **验证**：`node lib/arch-check.mjs` 自动检查 10 维度架构合规
+- **Lint**：`npx eslint lib/ skills/ --max-warnings 0` — 0 errors + 0 warnings（CI 阻断）
+- **测试**：`npm test` — vitest run，含 coverage 阈值强制（lines 8% / funcs 10% 基线）
+
+### 工程化基线
+
+| 工具 | 配置 | 阻断 CI |
+|------|------|---------|
+| ESLint | `eslint.config.mjs`（flat config，含项目范式约束） | 是 |
+| TypeScript checkJs | `tsconfig.json`（`strict: false` + `strictNullChecks: true`，依赖 `types/node-shim.d.ts`） | 是（0 errors） |
+| Vitest | `vitest.config.mjs`（含 coverage 阈值） | 是 |
+| 架构合规 | `lib/arch-check.mjs`（10 维度 A 级 + `--fix`） | 是 |
+| Prettier | `printWidth 120, 2-space, semicolon, double-quote` | 否 |
+
+详见 [CONTRIBUTING.md](./CONTRIBUTING.md) — 开发环境、CI 流程、版本管理、PR 模板。
 
 ### 文档规范
 

@@ -15,7 +15,7 @@ agents:
 >
 > **单一职责**：项目首次初始化与重生。不负责增量更新（[rui-update](../rui-update/)），不负责日常代码实现（[rui-code](../rui-code/)），不负责自改进闭环（[rui-yry](../rui-yry/)）。
 
-[全景](#全景) · [1. detect](#1-detect--探测信号) · [2. explore](#2-explore--深度探索) · [3. generate](#3-generate--生成内容) · [4. arch](#4-arch--补齐技术架构故事) · [5. setup](#5-setup--机械搭建) · [6. verify](#6-verify--就绪检查) · [7. maturity](#7-maturity--工程化评估) · [8. trigger](#8-trigger--自动触发) · [产物](#产物) · [生效标志](#生效标志)
+[全景](#全景) · [1. detect](#1-detect--探测信号) · [2. explore](#2-explore--深度探索) · [3. generate](#3-generate--生成内容) · [4. arch](#4-arch--补齐技术架构故事--自主测试方案) · [5. setup](#5-setup--机械搭建) · [6. verify](#6-verify--11-项就绪检查--工程化门禁) · [7. maturity](#7-maturity--工程化程度评估--报告生成) · [8. trigger](#8-trigger--自动触发) · [产物](#产物) · [生效标志](#生效标志)
 
 ## 全景
 

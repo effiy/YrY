@@ -1,3 +1,10 @@
+---
+paths:
+  - "skills/rui/**"
+  - "skills/rui/SKILL.md"
+description: "loop engineering 间隔分类与 P0 升级规则"
+---
+
 # loop-engineering
 
 > YrY 项目自循环工程规约。定义"什么是合格的自循环"——技能按固定间隔自驱动执行检查 → 产出证据 → 触发告警 → 收敛的闭环机制。本文件是自循环规约唯一真相源，所有技能的 `## 自循环` 段必须遵循此契约。

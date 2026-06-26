@@ -45,10 +45,10 @@
 <div class="yry-panel on" id="panelDiagnostics">
 
 <!-- 四段闭环数据流图 -->
-<div class="card" style="padding:18px 24px">
-  <h2 style="font-size:.92rem;margin-bottom:4px">🔄 四段闭环 · 数据流图</h2>
+<div class="card" yry-d-64">
+  <h2 class="yry-d-46">🔄 四段闭环 · 数据流图</h2>
   <yry-flow-loop id="flow-loop-app"></yry-flow-loop>
-  <div style="font-size:.62rem;color:var(--yry-text3);text-align:center;margin-top:6px">观察 → 诊断 → 改进 → 评估 → (下次循环) · 单闭环 ≤5 分钟，异常信号 30 分钟内可追溯至根因</div>
+  <div class="yry-d-23">观察 → 诊断 → 改进 → 评估 → (下次循环) · 单闭环 ≤5 分钟，异常信号 30 分钟内可追溯至根因</div>
 </div>
 
 <div class="intro">
@@ -68,47 +68,47 @@
   </dl>
 </div>
 
-<div class="card" style="padding:18px 24px">
-  <h2 style="font-size:.92rem;margin-bottom:12px">🔬 D0-D8 九级诊断详解</h2>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;font-size:.76rem">
-    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid #ef4444">
-      <strong style="color:#ef4444">D0 基线偏离</strong>
-      <div style="color:var(--yry-text3);margin-top:4px;line-height:1.6">维度评分连续 2 次低于历史基线 15% 以上触发。检测范围：Git 仓库状态、API 可达性、配置完整性。严重时自动升级 P0。</div>
+<div class="card" yry-d-64">
+  <h2 class="yry-d-44">🔬 D0-D8 九级诊断详解</h2>
+  <div class="yry-d-7">
+    <div class="yry-d-10">
+      <strong class="yry-d-72">D0 基线偏离</strong>
+      <div class="yry-d-37">维度评分连续 2 次低于历史基线 15% 以上触发。检测范围：Git 仓库状态、API 可达性、配置完整性。严重时自动升级 P0。</div>
     </div>
-    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid #f97316">
-      <strong style="color:#f97316">D1 效率退化</strong>
-      <div style="color:var(--yry-text3);margin-top:4px;line-height:1.6">构建时间延长、CI/CD 管线耗时增加、文件体积增长速率异常。检测范围：构建耗时、CI 执行时间、文件增长率。</div>
+    <div class="yry-d-11">
+      <strong class="yry-d-73">D1 效率退化</strong>
+      <div class="yry-d-37">构建时间延长、CI/CD 管线耗时增加、文件体积增长速率异常。检测范围：构建耗时、CI 执行时间、文件增长率。</div>
     </div>
-    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid #f59e0b">
-      <strong style="color:#f59e0b">D2 质量退化</strong>
-      <div style="color:var(--yry-text3);margin-top:4px;line-height:1.6">测试覆盖率下降、Lint 违规增加、代码复杂度增长。检测范围：em_testing、em_linting、组件质量评分。</div>
+    <div class="yry-d-12">
+      <strong class="yry-d-74">D2 质量退化</strong>
+      <div class="yry-d-37">测试覆盖率下降、Lint 违规增加、代码复杂度增长。检测范围：em_testing、em_linting、组件质量评分。</div>
     </div>
-    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid #f59e0b">
-      <strong style="color:#f59e0b">D3 复杂度增长</strong>
-      <div style="color:var(--yry-text3);margin-top:4px;line-height:1.6">大文件数量增加、循环依赖新增、上帝模块膨胀。检测范围：structInfo 大文件、depInfo 依赖关系、文件体积趋势。</div>
+    <div class="yry-d-12">
+      <strong class="yry-d-74">D3 复杂度增长</strong>
+      <div class="yry-d-37">大文件数量增加、循环依赖新增、上帝模块膨胀。检测范围：structInfo 大文件、depInfo 依赖关系、文件体积趋势。</div>
     </div>
-    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid #3b82f6">
-      <strong style="color:#3b82f6">D4 流程退化</strong>
-      <div style="color:var(--yry-text3);margin-top:4px;line-height:1.6">分支隔离违规、PR 审查缺失、Git 纪律下降。检测范围：git 分支状态、未提交文件数、commit 规范合规率。</div>
+    <div class="yry-d-13">
+      <strong class="yry-d-75">D4 流程退化</strong>
+      <div class="yry-d-37">分支隔离违规、PR 审查缺失、Git 纪律下降。检测范围：git 分支状态、未提交文件数、commit 规范合规率。</div>
     </div>
-    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid #3b82f6">
-      <strong style="color:#3b82f6">D5 依赖退化</strong>
-      <div style="color:var(--yry-text3);margin-top:4px;line-height:1.6">依赖版本过期、安全漏洞增长、许可证合规问题。检测范围：npm audit 结果、dep_analysis 维度、依赖更新频率。</div>
+    <div class="yry-d-13">
+      <strong class="yry-d-75">D5 依赖退化</strong>
+      <div class="yry-d-37">依赖版本过期、安全漏洞增长、许可证合规问题。检测范围：npm audit 结果、dep_analysis 维度、依赖更新频率。</div>
     </div>
-    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid #8b5cf6">
-      <strong style="color:#8b5cf6">D6 文档过时</strong>
-      <div style="color:var(--yry-text3);margin-top:4px;line-height:1.6">文档过期超过 7 天、断链引用、SKILL.md 未更新。检测范围：em_docs 维度、文档新鲜度检查、链接有效性。</div>
+    <div class="yry-d-14">
+      <strong class="yry-d-76">D6 文档过时</strong>
+      <div class="yry-d-37">文档过期超过 7 天、断链引用、SKILL.md 未更新。检测范围：em_docs 维度、文档新鲜度检查、链接有效性。</div>
     </div>
-    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid #8b5cf6">
-      <strong style="color:#8b5cf6">D7 配置漂移</strong>
-      <div style="color:var(--yry-text3);margin-top:4px;line-height:1.6">版本号不一致、config.json 缺失、多目录配置不同步。检测范围：plugin.json vs 实际 skills、config 维度、版本漂移检测。</div>
+    <div class="yry-d-14">
+      <strong class="yry-d-76">D7 配置漂移</strong>
+      <div class="yry-d-37">版本号不一致、config.json 缺失、多目录配置不同步。检测范围：plugin.json vs 实际 skills、config 维度、版本漂移检测。</div>
     </div>
-    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid #ec4899">
-      <strong style="color:#ec4899">D8 架构退化</strong>
-      <div style="color:var(--yry-text3);margin-top:4px;line-height:1.6">架构合规维度评分下降、范式违规新增、内核体积超标。检测范围：arch-check 10 维度、lib/ 文件数、编排器行数。</div>
+    <div class="yry-d-15">
+      <strong class="yry-d-77">D8 架构退化</strong>
+      <div class="yry-d-37">架构合规维度评分下降、范式违规新增、内核体积超标。检测范围：arch-check 10 维度、lib/ 文件数、编排器行数。</div>
     </div>
   </div>
-  <div style="margin-top:12px;font-size:.68rem;color:var(--yry-text3);text-align:center">
+  <div class="yry-d-22">
     触发规则：单维度评分 &lt; 55 → 对应诊断自动触发 · 连续 2 次 C 级 → P1 · 连续 3 次 → P0 · 趋势下降 &gt;15 分/周 → 退化告警 · 诊断引擎由 <code>lib/engine/diagnostics.mjs</code> 纯函数实现
   </div>
 </div>
@@ -126,23 +126,8 @@
 <!-- Improvement Capability KPIs (改进能力指标) -->
 <div class="card">
   <h2>📊 改进能力指标 · Capability KPIs</h2>
-  <div class="kpi-grid" id="capabilityKpis"><div class="empty" style="grid-column:1/-1">加载中...</div></div>
-  <p style="font-size:.64rem;color:var(--yry-text3);margin-top:6px">综合评估 <strong>自改进系统的效能</strong>：闭环数 · 平均分 · 解决率 · 改善率 · 复发率 · MTTR · 技能化条目 · 退化率 — 八项指标联动判定系统是否在 <em>持续向好</em>。</p>
-</div>
-
-<!-- Closed Loop Workflow -->
-<div class="card">
-  <h2>闭环工作流与诊断-评估映射</h2>
-  <table>
-    <thead><tr><th>阶段</th><th>触发频率</th><th>输入数据</th><th>输出产物</th><th>评估层</th></tr></thead>
-    <tbody>
-      <tr><td><strong>观察</strong></td><td>每 30 分钟</td><td>health-trend.jsonl · archHealth · componentHealth</td><td>趋势快照 · 异常信号列表</td><td>—</td></tr>
-      <tr><td><strong>诊断</strong></td><td>每次观察触发异常时</td><td>D0-D8 诊断矩阵 · 维度评分 · 分支对比</td><td>根因报告 · 严重等级 P0/P1/P2</td><td>E1 (≤5min 即时)</td></tr>
-      <tr><td><strong>改进</strong></td><td>诊断确认后</td><td>根因分析 · 历史类似案例 · SKILL.md 规约</td><td>修复方案 · 规约更新 · 经验条目</td><td>E2 (小时级观察)</td></tr>
-      <tr><td><strong>评估</strong></td><td>改进部署后 24h</td><td>改进前后评分对比 · 维度趋势 · 同维复发率</td><td>效果报告 · E3/E4 判断</td><td>E3 (天/周级) · E4 (固化)</td></tr>
-    </tbody>
-  </table>
-  <p style="font-size:.72rem;color:var(--yry-text3);margin-top:10px">改进有效标准：同维度 72h 内不复发同等级问题。E4 经验技能化条件：同一改进模式 3 次验证有效 → 写入对应 SKILL.md 规约 → 更新 rules/self-improve.md 经验库。</p>
+  <div class="kpi-grid" id="capabilityKpis"><div class="empty" yry-d-66">加载中...</div></div>
+  <p class="yry-d-34">综合评估 <strong>自改进系统的效能</strong>：闭环数 · 平均分 · 解决率 · 改善率 · 复发率 · MTTR · 技能化条目 · 退化率 — 八项指标联动判定系统是否在 <em>持续向好</em>。</p>
 </div>
 
 <!-- Diagnostic → Proposal → Rule Mapping -->
@@ -162,7 +147,7 @@
       <tr><td class="dpr-id">D8</td><td>架构退化</td><td>范式违规 · 耦合上升 · 内核膨胀</td><td><span class="badge warn">refactor</span></td><td class="dpr-rule">architecture-principles.md</td></tr>
     </tbody>
   </table>
-  <p style="font-size:.64rem;color:var(--yry-text3);margin-top:8px">诊断路由定义来源 <code>lib/constants.mjs</code> · <code>skills/rui-yry/rules/self-improve.md</code> · 提案闭合后写入 <code>.improvement/proposals.jsonl</code>，连续 3 故事触发自动升级为项目级规则。</p>
+  <p class="yry-d-35">诊断路由定义来源 <code>lib/constants.mjs</code> · <code>skills/rui-yry/rules/self-improve.md</code> · 提案闭合后写入 <code>.improvement/proposals.jsonl</code>，连续 3 故事触发自动升级为项目级规则。</p>
 </div>
 
 <!-- E1-E4 Evaluation Effectiveness Matrix -->
@@ -175,7 +160,7 @@
 <div class="card">
   <h2>🔍 根因分析 · Root Cause Hints</h2>
   <div id="rootCausePanel"><div class="empty">加载中...</div></div>
-  <p style="font-size:.64rem;color:var(--yry-text3);margin-top:6px">对评分低于 80 的维度，自动关联触发诊断、相关维度和历史趋势，提供可操作的根因提示。数据来源: <code>DIAGNOSTIC_DIMENSION_MAP</code> + 维度相关性分析。</p>
+  <p class="yry-d-34">对评分低于 80 的维度，自动关联触发诊断、相关维度和历史趋势，提供可操作的根因提示。数据来源: <code>DIAGNOSTIC_DIMENSION_MAP</code> + 维度相关性分析。</p>
 </div>
 
 </div><!-- /.yry-panel #panelDiagnostics -->
@@ -192,15 +177,15 @@
 <!-- Improvement Priority Matrix (改进候选优先级矩阵) -->
 <div class="card">
   <h2>🎯 改进候选优先级矩阵 · Top 8</h2>
-  <div class="priority-grid" id="priorityMatrix"><div class="empty" style="grid-column:1/-1">加载中...</div></div>
-  <p style="font-size:.64rem;color:var(--yry-text3);margin-top:6px">按 <strong>严重等级 × 趋势权重 × 复发率</strong> 综合排序 · P0 阻断管线 · P1 加速修复 · P2 计划修复 — 优先处理 Top 3 可避免 ≥70% 退化风险。</p>
+  <div class="priority-grid" id="priorityMatrix"><div class="empty" yry-d-66">加载中...</div></div>
+  <p class="yry-d-34">按 <strong>严重等级 × 趋势权重 × 复发率</strong> 综合排序 · P0 阻断管线 · P1 加速修复 · P2 计划修复 — 优先处理 Top 3 可避免 ≥70% 退化风险。</p>
 </div>
 
 <!-- Dimension Recurrence Ranking (维度复发排行) -->
 <div class="card">
   <h2>♻️ 维度复发排行 · 最该关注的"老病号"</h2>
   <div id="recurrenceList"><div class="empty">加载中...</div></div>
-  <p style="font-size:.64rem;color:var(--yry-text3);margin-top:6px">按 <strong>当前评分升序 × 趋势权重</strong> 排序 · 评分越低 + 趋势越负 = 越值得优先根治 · 长期垫底维度建议启动专项治理。</p>
+  <p class="yry-d-34">按 <strong>当前评分升序 × 趋势权重</strong> 排序 · 评分越低 + 趋势越负 = 越值得优先根治 · 长期垫底维度建议启动专项治理。</p>
 </div>
 
 <!-- Latest Snapshot -->
@@ -210,7 +195,7 @@
 </div>
 
 <!-- Signal Detection -->
-<div class="card" id="sigCard" style="display:none">
+<div class="card" id="sigCard" class="yry-d-80">
   <h2>异常信号</h2>
   <div id="sigList"></div>
 </div>
@@ -221,17 +206,15 @@
   <div class="diag-grid" id="diagGrid"></div>
 </div>
 
-<!-- Diagnostic Trigger History -->
-<div class="card">
-  <h2>📈 诊断触发历史 · Daily Heatmap</h2>
-  <div class="diag-history" id="diagHistory"><div class="empty">加载中...</div></div>
-  <div class="diag-history-axis" id="diagHistoryAxis" style="padding-left:118px"></div>
-  <p style="font-size:.64rem;color:var(--yry-text3);margin-top:6px">每行表示一个诊断 (D0-D8)，每格表示该日的触发状态 · <span style="color:var(--yry-fail)">■ 触发</span> · <span style="color:var(--yry-warn)">■ 部分触发</span> · <span style="color:var(--yry-text3)">■ 未触发</span> · 右侧为总体触发率。</p>
-</div>
-
-<!-- Dimension Scores with weekly avg comparison -->
+<!-- Dimension Scores · Latest vs Weekly Avg -->
 <div class="card">
   <h2>维度评分 · 最新 vs 周均</h2>
+  <div class="yry-d-20">
+    每个维度展示 <strong>最新评分</strong> 与 <strong>近 7 天均值</strong> 的对比 · Δ = 最新 − 周均
+    · <span class="yry-d-59">↑ 改善</span> · <span class="yry-d-60">↓ 退化</span> · <span class="yry-d-58">→ 持平</span>
+    · 按评分升序排列，优先暴露薄弱维度 · 周均 Δ &gt; 0 视为系统整体向好
+  </div>
+  <div class="dim-summary" id="dimSummary"></div>
   <div class="dim-grid" id="dimGrid"></div>
 </div>
 
@@ -249,8 +232,9 @@
 
 <!-- Component Health -->
 <div class="card">
-  <h2>组件健康</h2>
-  <div class="comp-grid" id="compGrid"></div>
+  <h2>组件健康 · Component Health</h2>
+  <div class="yry-d-32">跨 4 大组件域（Skills / Agents / Rules / Scripts）的均分 · 等级 · 趋势 · 活跃度 · 部署状态 — 自动归类并给出改进建议</div>
+  <div id="compGrid"></div>
 </div>
 
 <!-- Architecture Health -->
@@ -262,22 +246,22 @@
 <!-- Architecture Drift Monitor -->
 <div class="card">
   <h2>🏛️ 架构漂移监测 · Arch Drift</h2>
-  <div class="drift-grid" id="driftMonitor"><div class="empty" style="grid-column:1/-1">加载中...</div></div>
-  <p style="font-size:.64rem;color:var(--yry-text3);margin-top:6px">对比当前评分与近 N 周期均值，判定架构各维度 <strong>↑ 改善</strong> · <strong>→ 持平</strong> · <strong>↓ 漂移</strong> · 阈值告警：单一维度连续 3 周期低于 70 = 立即启动架构修复（对应 D8 诊断）。</p>
+  <div class="drift-grid" id="driftMonitor"><div class="empty" yry-d-66">加载中...</div></div>
+  <p class="yry-d-34">对比当前评分与近 N 周期均值，判定架构各维度 <strong>↑ 改善</strong> · <strong>→ 持平</strong> · <strong>↓ 漂移</strong> · 阈值告警：单一维度连续 3 周期低于 70 = 立即启动架构修复（对应 D8 诊断）。</p>
 </div>
 
 <!-- Cross-Dimension Correlation Heatmap -->
 <div class="card">
   <h2>🔗 维度相关性分析 · Cross-Dimension Correlation</h2>
   <div id="correlationHeatmap"><div class="empty">加载中...</div></div>
-  <p style="font-size:.64rem;color:var(--yry-text3);margin-top:6px">Pearson 相关系数分析维度间联动关系 · <span style="color:var(--yry-pass)">r ≥ 0.7 强相关</span> · <span style="color:var(--yry-warn)">0.4 ≤ r &lt; 0.7 中等相关</span> · <span style="color:var(--yry-text3)">r &lt; 0.4 弱相关</span> · 强相关维度建议联动改进。</p>
+  <p class="yry-d-34">Pearson 相关系数分析维度间联动关系 · <span class="yry-d-59">r ≥ 0.7 强相关</span> · <span class="yry-d-61">0.4 ≤ r &lt; 0.7 中等相关</span> · <span class="yry-d-58">r &lt; 0.4 弱相关</span> · 强相关维度建议联动改进。</p>
 </div>
 
 <!-- Score Trend Sparkline -->
 <div class="card">
   <h2>评分趋势 + 预测带</h2>
   <div id="trendBody"></div>
-  <div id="forecastSummary" style="margin-top:10px"></div>
+  <div id="forecastSummary" class="yry-d-67"></div>
 </div>
 
 <!-- Daily/Weekly/Monthly Trends with tabs -->
@@ -299,22 +283,37 @@
 <!-- Skillification Tracking -->
 <div class="card">
   <h2>📚 技能化追踪 · Skillification</h2>
-  <div class="skill-grid" id="skillificationGrid"><div class="empty" style="grid-column:1/-1">加载中...</div></div>
-  <p style="font-size:.64rem;color:var(--yry-text3);margin-top:6px">诊断模式累计触发次数 · <strong style="color:var(--yry-pass)">已固化</strong> = ≥3 次触发且已写入 SKILL.md 规约 · <strong style="color:var(--yry-cyan)">候选</strong> = 2 次触发待审 · <strong style="color:var(--yry-text3)">观察</strong> = 1 次触发 · 进度条表示距固化阈值还需触发次数。</p>
+  <div class="skill-grid" id="skillificationGrid"><div class="empty" yry-d-66">加载中...</div></div>
+  <p class="yry-d-34">诊断模式累计触发次数 · <strong class="yry-d-59">已固化</strong> = ≥3 次触发且已写入 SKILL.md 规约 · <strong class="yry-d-62">候选</strong> = 2 次触发待审 · <strong class="yry-d-58">观察</strong> = 1 次触发 · 进度条表示距固化阈值还需触发次数。</p>
 </div>
 
 <!-- Improvement Potential Ranking -->
 <div class="card">
   <h2>📈 改进潜力排序 · Improvement Potential</h2>
+  <div class="yry-d-21">
+    按 <strong>ROI = 影响度 (Impact) × 易修复度 (1/Volatility) × 紧迫度 (Trend)</strong> 综合排序 — 优先处理 Top 3 可获最大评分收益
+  </div>
+
+  <!-- ROI 公式图例 + 总量指标 -->
+  <div id="ipLegend"><div class="empty">加载中...</div></div>
+
+  <!-- ROI 分布条 -->
+  <div id="ipDist" class="yry-d-63"></div>
+
+  <!-- Top 8 详细排序卡片 -->
   <div id="improvePotential"><div class="empty">加载中...</div></div>
-  <p style="font-size:.64rem;color:var(--yry-text3);margin-top:6px">按 <strong>影响度 (Impact) × 易修复度 (1/Volatility) × 紧迫度 (Trend)</strong> 计算 ROI 排序 · 优先处理 ROI 最高的维度以获得最大评分提升。</p>
+
+  <!-- 快速改进项 (Quick Wins) -->
+  <div id="ipQuickWins"></div>
+
+  <p class="yry-d-33">影响度 = 修复后对综合评分的预估贡献 · 易修复度 = 1/波动性 (波动越低修复越稳) · 紧迫度 = 趋势权重 (下行维度优先) · 数据源 <code>summary.json → improvementPotential</code></p>
 </div>
 
 <!-- Cross-reference Health Summary -->
 <div class="card">
   <h2>🩺 系统健康快照</h2>
-  <div id="healthRef" style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:6px 0">
-    <div style="color:var(--yry-text3);text-align:center;padding:12px;flex:1">加载中...</div>
+  <div id="healthRef" class="yry-d-25">
+    <div class="yry-d-31">加载中...</div>
   </div>
 </div>
 
@@ -335,7 +334,6 @@
 
 <nav class="links" aria-label="相关报告与引擎">
   <a href="../技能报告/">技能报告</a>
-  <a href="../健康报告/">健康报告</a>
   <a href="../测试报告/">测试报告</a>
   <a href="../组件报告/">组件报告</a>
   <a href="../加载链报告/">加载链报告</a>
@@ -343,7 +341,7 @@
   <a href="../趋势报告/">趋势报告</a>
   <a href="../故事任务面板/">故事任务面板</a>
   <a href="../index.html">文档中心</a>
-  <span style="margin-left:8px;color:var(--yry-text3)">·</span>
+  <span class="yry-d-42">·</span>
   <a href="../../skills/rui-yry/rules/self-improve.md">自改进规则</a>
   <a href="../../lib/engine/diagnostics.mjs">诊断引擎源码</a>
   <a href="../../lib/selfimprove-generator.mjs">汇总生成器</a>
@@ -353,14 +351,14 @@
 
 <footer class="ft">
   持续自改进分析仪表板 · 数据实时读取 · 自举引导模式<br>
-  <span style="color:var(--yry-text3)">数据: .memory/health-trend.jsonl + summary.json + arch-trend.jsonl · D0-D8 诊断 · E1-E4 评估 · 改进能力 KPI · 趋势预测 · 优先级矩阵 · 技能化追踪</span><br>
-  <span style="color:var(--yry-text3);font-size:.66rem">引擎: <code>lib/engine/diagnostics.mjs</code> · <code>lib/arch-check.mjs</code> · <code>lib/scoring.mjs</code> · 规约: <code>skills/rui-yry/rules/self-improve.md</code></span>
+  <span class="yry-d-58">数据: .memory/health-trend.jsonl + summary.json + arch-trend.jsonl · D0-D8 诊断 · E1-E4 评估 · 改进能力 KPI · 趋势预测 · 优先级矩阵 · 技能化追踪</span><br>
+  <span class="yry-d-41">引擎: <code>lib/engine/diagnostics.mjs</code> · <code>lib/arch-check.mjs</code> · <code>lib/scoring.mjs</code> · 规约: <code>skills/rui-yry/rules/self-improve.md</code></span>
 </footer>
 
 </main>
 
 <noscript>
-  <div class="intro" style="border-left-color:var(--yry-fail);background:rgba(239,68,68,.06)">
+  <div class="intro" yry-d-28">
     <strong>⚠ JavaScript 已禁用</strong> — 本仪表板需要 JavaScript 来渲染数据可视化。请启用 JavaScript 后刷新页面。
   </div>
 </noscript>
@@ -388,97 +386,6 @@
 </script>
 <script src="js/self-improve-index.js"></script>
 <script>YrY.initTabs('#main-tabs');</script>
-
-<!-- 四段闭环详情 -->
-<div class="card">
-  <h2>🔄 四段闭环详情</h2>
-  <table>
-    <thead><tr><th>阶段</th><th>输入</th><th>动作</th><th>输出</th><th>耗时</th></tr></thead>
-    <tbody>
-      <tr><td>① 观察</td><td>health-trend.jsonl</td><td>数据采集</td><td>采集报告</td><td>≤ 200ms</td></tr>
-      <tr><td>② 诊断</td><td>采集报告 + 基线</td><td>D0-D8 判定</td><td>诊断决策表</td><td>≤ 500ms</td></tr>
-      <tr><td>③ 改进</td><td>决策表</td><td>提案生成 + 路由</td><td>proposals.jsonl</td><td>≤ 100ms</td></tr>
-      <tr><td>④ 评估</td><td>proposals.jsonl</td><td>E1-E4 评估</td><td>评估报告</td><td>≤ 2s</td></tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- D0-D8 诊断决策表 -->
-<div class="card">
-  <h2>🔍 D0-D8 诊断决策表</h2>
-  <table>
-    <thead><tr><th>诊断</th><th>名称</th><th>信号</th><th>阈值</th><th>触发</th><th>提案类型</th></tr></thead>
-    <tbody>
-      <tr><td>D0</td><td>基线偏离</td><td>规约差异</td><td>&gt; 0</td><td>否</td><td>process</td></tr>
-      <tr><td>D1</td><td>效率退化</td><td>耗时倍数</td><td>&gt; 1.5×</td><td>否</td><td>refactor</td></tr>
-      <tr><td>D2</td><td>质量退化</td><td>P0 密度</td><td>&gt; 2×</td><td>否</td><td>quality</td></tr>
-      <tr><td>D3</td><td>复杂度增长</td><td>模块行数</td><td>&gt; 500</td><td>是</td><td>security</td></tr>
-      <tr><td>D4</td><td>流程退化</td><td>跳过率</td><td>&gt; 10%</td><td>否</td><td>process</td></tr>
-      <tr><td>D5</td><td>依赖退化</td><td>漏洞</td><td>已知</td><td>否</td><td>security</td></tr>
-      <tr><td>D6</td><td>文档过时</td><td>mtime</td><td>&gt; 30d</td><td>否</td><td>process</td></tr>
-      <tr><td>D7</td><td>配置漂移</td><td>hash</td><td>≠ 基线</td><td>否</td><td>process</td></tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- E1-E4 评估指标 -->
-<div class="card">
-  <h2>📊 E1-E4 评估指标</h2>
-  <table>
-    <thead><tr><th>指标</th><th>度量</th><th>通过</th><th>退化</th><th>待评估</th></tr></thead>
-    <tbody>
-      <tr><td>E1 改善幅度</td><td>after - before</td><td>&gt; 0 且 ≥ 80%</td><td>&lt; 0</td><td>数据不足</td></tr>
-      <tr><td>E2 回归率</td><td>new_p0/total</td><td>&lt; 5%</td><td>&gt; 10%</td><td>无 P0 数据</td></tr>
-      <tr><td>E3 副作用</td><td>impacted/total</td><td>&lt; 10%</td><td>&gt; 20%</td><td>无变更数据</td></tr>
-      <tr><td>E4 闭合时效</td><td>closed - created</td><td>≤ 7d</td><td>&gt; 14d</td><td>未闭合</td></tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- 经验升级路径 -->
-<div class="card">
-  <h2>⬆️ 经验升级路径</h2>
-  <table>
-    <thead><tr><th>提案类型</th><th>升级条件</th><th>升级目标</th><th>执行者</th></tr></thead>
-    <tbody>
-      <tr><td>process</td><td>连续 3 故事</td><td>rules/code-pipeline.md</td><td>pm + coder</td></tr>
-      <tr><td>quality</td><td>连续 3 故事</td><td>agents/tester.md</td><td>coder</td></tr>
-      <tr><td>refactor</td><td>连续 3 故事</td><td>rules/code-pipeline.md</td><td>coder</td></tr>
-      <tr><td>security</td><td>当前故事即修</td><td>agents/security.md</td><td>security</td></tr>
-      <tr><td>skill</td><td>连续 2 故事</td><td>skills/ 新条目</td><td>architect</td></tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- 记忆文件治理 -->
-<div class="card">
-  <h2>🧠 记忆文件治理</h2>
-  <table>
-    <thead><tr><th>文件</th><th>类型</th><th>增长率</th><th>保留期</th><th>治理策略</th></tr></thead>
-    <tbody>
-      <tr><td>execution-memory.jsonl</td><td>append</td><td>每故事 +1</td><td>30 天</td><td>滚动 100 条</td></tr>
-      <tr><td>rui-state.json</td><td>覆盖</td><td>每阶段 +1</td><td>当前</td><td>自动覆盖</td></tr>
-      <tr><td>proposals.jsonl</td><td>append</td><td>每提案 +1</td><td>永久</td><td>归档分片</td></tr>
-      <tr><td>health-trend.jsonl</td><td>append</td><td>每日 +1</td><td>1 年</td><td>滚动 365 天</td></tr>
-      <tr><td>summary.md</td><td>覆盖</td><td>每故事 +1</td><td>当前</td><td>自动压缩</td></tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- 自改进成熟度 -->
-<div class="card">
-  <h2>🏆 自改进成熟度模型</h2>
-  <table>
-    <thead><tr><th>级别</th><th>特征</th><th>自动化率</th><th>当前</th><th>目标</th></tr></thead>
-    <tbody>
-      <tr><td>L1 反应式</td><td>人工触发改进</td><td>0%</td><td>—</td><td>—</td></tr>
-      <tr><td>L2 半自动</td><td>诊断自动 + 提案人工</td><td>50%</td><td>✅</td><td>—</td></tr>
-      <tr><td>L3 全自动</td><td>诊断 + 提案 + 评估自动</td><td>80%</td><td>—</td><td>✅</td></tr>
-      <tr><td>L4 自优化</td><td>经验自动升级为规则</td><td>95%</td><td>—</td><td>远期</td></tr>
-      <tr><td>L5 自进化</td><td>跨项目知识迁移</td><td>100%</td><td>—</td><td>愿景</td></tr>
-    </tbody>
-  </table>
-</div>
 
 </body>
 </html>

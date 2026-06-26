@@ -13,6 +13,8 @@
 <!-- How was this tested? What commands were run? -->
 
 ### Automated Checks
+- [ ] `npx eslint lib/ skills/ --max-warnings 0` passes (0 errors + 0 warnings)
+- [ ] `npx tsc --noEmit` passes (0 errors)
 - [ ] `npx vitest run` passes (0 failures)
 - [ ] `node lib/arch-check.mjs` passes (A级)
 - [ ] `node skills/rui-bot/send.mjs health` shows no regression

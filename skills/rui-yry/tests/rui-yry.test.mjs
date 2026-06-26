@@ -140,4 +140,4 @@ describe('rui-yry skill', () => {
   });
 });
 
-const exitCode = await run();
+const _exitCode = await run();

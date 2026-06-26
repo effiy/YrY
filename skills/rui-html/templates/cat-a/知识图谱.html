@@ -7,11 +7,7 @@
 <link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-export-toolbar/index.css">
 <link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-scene-footer/index.css">
 <link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-info-cards/index.css">
-<style>
-/* Page-specific overrides — shared patterns in shared-a.css */
-.yry-container{max-width:1400px}
-/* Legend is now handled by yry-cytoscape-graph component via JS */
-</style>
+<link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-scene-kg/index.css">
 </head>
 <body>
 <div class="yry-container" id="report-container">
@@ -25,16 +21,16 @@
 </yry-scene-chrome>
 
 <div class="legend">
-  <span style="color:#94a3b8;font-weight:600;">节点:</span>
+  <span class="legend-label">节点:</span>
   <span class="legend-item"><span class="legend-dot scene"></span>场景</span>
   <span class="legend-item"><span class="legend-dot check"></span>检查/功能</span>
   <span class="legend-item"><span class="legend-dot source"></span>源文件</span>
   <span class="legend-item"><span class="legend-dot domain"></span>概念域</span>
-  <span style="margin-left:1rem;color:#94a3b8;font-weight:600;">操作:</span>
-  <span style="color:#64748b;">🖱 拖拽 · 滚轮缩放 · 点击节点高亮邻域</span>
+  <span class="legend-label legend-ops">操作:</span>
+  <span class="legend-hint">🖱 拖拽 · 滚轮缩放 · 点击节点高亮邻域</span>
 </div>
 
-<div class="yry-cytoscape-graph graph-container" id="cy-graph" data-filename="{{STORY_NAME}}-scene{{SCENE_NUM}}-kg" data-layout="breadthfirst" data-legend="false" style="height:550px"></div>
+<div class="yry-cytoscape-graph graph-container" id="cy-graph" data-filename="{{STORY_NAME}}-scene{{SCENE_NUM}}-kg" data-layout="breadthfirst" data-legend="false" style="--h:550px"></div>
 
 <yry-info-cards>
   <div class="yry-card">

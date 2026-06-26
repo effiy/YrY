@@ -1,6 +1,6 @@
 # YryTestReport · 测试报告组件
 
-> Vanilla 自定义元素 `<yry-test-report>` · 零依赖 · 自包含数据获取 + 6 面板 tab 渲染
+> Vanilla 自定义元素 `<yry-test-report>` · 零依赖 · 自包含数据获取 + 3 面板 tab 渲染
 
 ## 文件
 
@@ -13,7 +13,7 @@ yry-test-report/
 
 ## 功能
 
-- 读取 `自我改进/summary.json` 渲染 6 个 tab 面板
+- 读取 `自我改进/summary.json` 渲染 3 个 tab 面板（📊 评分仪表板 / 🏗 技能架构 / 🤖 Agent与治理，与 `docs/index.html` 顶部 tab 一致）
 - 三维加权评分 (覆盖率50% · 通过率30% · 充分度20%)
 - 工程成熟度 7 维评估 + SVG 雷达图
 - 6 大测试套件清单 + 成熟度阶段条

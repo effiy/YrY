@@ -17,7 +17,7 @@ import { join } from "node:path";
 import { existsSync, readFileSync } from "node:fs";
 
 import {
-  NODE_ARGV_OFFSET, MAX_RETRIES, MAX_MSG_LENGTH, DEFAULT_API_URL, STORY_PANEL_DIR,
+  NODE_ARGV_OFFSET, MAX_RETRIES,
 } from "../../lib/constants.mjs";
 import { findProjectRoot, readProjectName, isMain } from "../../lib/fs.mjs";
 
@@ -154,9 +154,11 @@ export async function sendNotification(projectRoot, opts) {
     enqueueFailedNotification(projectRoot, message, webhookUrl, apiUrl, token);
   }
 
-  result.msgLength = message.length;
-  logNotificationDelivery(projectRoot, opts, result);
-  return result;
+  /** @type {any} */
+  const resultOut = result;
+  resultOut.msgLength = message.length;
+  logNotificationDelivery(projectRoot, opts, resultOut);
+  return resultOut;
 }
 
 async function cmdSend(opts) {
@@ -189,8 +191,9 @@ async function main() {
       const healthResult = await cmdHealth(projectRoot);
       console.log = origLog; console.error = origError;
       const gradeEmoji = healthResult.grade === "A" ? "✅" : healthResult.grade === "B" ? "✅" : healthResult.grade === "C" ? "⚠️" : "🚫";
-      const diagSummary = healthResult.diagnostics?.triggered?.length > 0
-        ? `触发: ${healthResult.diagnostics.triggered.map((d) => d.id).join(",")}` : "D0-D8 通过";
+      const triggered = healthResult.diagnostics?.triggered || [];
+      const diagSummary = triggered.length > 0
+        ? `触发: ${triggered.map((d) => d.id).join(",")}` : "D0-D8 通过";
       const worst = Object.entries(healthResult.scores).filter(([, s]) => s < 80).sort(([, a], [, b]) => a - b).slice(0, 3).map(([d]) => d).join(",");
       console.log(`${gradeEmoji} ${healthResult.composite}/${healthResult.grade} | ${diagSummary} | 弱项: ${worst || "无"}`);
       return;

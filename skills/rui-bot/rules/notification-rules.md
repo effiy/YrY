@@ -1,3 +1,10 @@
+---
+paths:
+  - "skills/rui-bot/**"
+  - "skills/rui-bot/SKILL.md"
+description: "企业微信机器人通知的规则和约束"
+---
+
 # rui-bot 通知规则
 
 > 企业微信机器人通知的规则和约束，独立于实现细节。

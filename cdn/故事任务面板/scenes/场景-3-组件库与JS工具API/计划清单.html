@@ -16,23 +16,7 @@
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
 <link rel="stylesheet" href="../../../yry-a11y/index.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<style>
-  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
-  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
-  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
-  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
-  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
-  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
-  .delivery-story { font-size: .72rem; color: #4b5563; }
-  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
-  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
-  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
-  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
-  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
-  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
-  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
-</style>
+<link rel="stylesheet" href="../../../yry-legacy-scene-delivery/index.css">
 </head>
 <body>
 <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
@@ -54,33 +38,33 @@
 
   <div class="content-card">
     <h2>📋 需求与优先级</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.74rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">需求</th><th style="padding:8px 12px;text-align:center;color:#22d3ee;font-weight:600">优先级</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">来源</th></tr></thead>
+    <table class="yry-auto-1645">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-38488">需求</th><th class="yry-auto-98085">优先级</th><th class="yry-auto-38488">来源</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">107 组件统一命名空间 <code>yry-*</code></td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#f87171">P0</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">架构规范</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">10 大功能类别清晰划分</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#f87171">P0</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">可发现性</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">9 个 YrY.* API 工具函数</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#f87171">P0</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">跨页面复用</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">54 Vue 3 自定义元素零打包</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#f87171">P0</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">技术约束</td></tr>
-        <tr><td style="padding:8px 12px">组件 API 向后兼容</td><td style="padding:8px 12px;text-align:center;color:#fbbf24">P1</td><td style="padding:8px 12px">稳定性</td></tr>
+        <tr><td class="yry-auto-40105">107 组件统一命名空间 <code>yry-*</code></td><td class="yry-auto-90624">P0</td><td class="yry-auto-40105">架构规范</td></tr>
+        <tr><td class="yry-auto-40105">10 大功能类别清晰划分</td><td class="yry-auto-90624">P0</td><td class="yry-auto-40105">可发现性</td></tr>
+        <tr><td class="yry-auto-40105">9 个 YrY.* API 工具函数</td><td class="yry-auto-90624">P0</td><td class="yry-auto-40105">跨页面复用</td></tr>
+        <tr><td class="yry-auto-40105">54 Vue 3 自定义元素零打包</td><td class="yry-auto-90624">P0</td><td class="yry-auto-40105">技术约束</td></tr>
+        <tr><td class="yry-auto-70345">组件 API 向后兼容</td><td class="yry-a2-18">P1</td><td class="yry-auto-70345">稳定性</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>🎯 实施步骤</h2>
-    <ol style="margin:0;padding-left:20px;font-size:.76rem;line-height:1.9;color:#a9b1d6">
-      <li><strong style="color:#22d3ee">§2.1 组件文件结构</strong> — 三文件拆分 (index.html 模板 + index.js Loader + index.css 样式)</li>
-      <li><strong style="color:#22d3ee">§2.2 组件注册模式</strong> — <code>fetch → defineCustomElement → dispatchEvent(ready)</code></li>
-      <li><strong style="color:#22d3ee">§2.3 组件依赖关系</strong> — tag-chip → item-card → card-grid → doc-layer (基础先于复合)</li>
-      <li><strong style="color:#22d3ee">§2.4 Vue 3 CE 生命周期</strong> — connectedCallback → Vue mount → ready → 二次赋值</li>
-      <li><strong style="color:#22d3ee">§2.5 API 错误契约</strong> — 5 个 API 全部实现降级路径 (toast/copyCmd/switchPanel/fetchData/ready)</li>
-      <li><strong style="color:#22d3ee">§2.6 命名空间与版本兼容</strong> — SemVer 矩阵 (Patch 不变 · Minor 追加 · Major 破坏)</li>
+    <ol class="yry-auto-20518">
+      <li><strong class="yry-auto-48218">§2.1 组件文件结构</strong> — 三文件拆分 (index.html 模板 + index.js Loader + index.css 样式)</li>
+      <li><strong class="yry-auto-48218">§2.2 组件注册模式</strong> — <code>fetch → defineCustomElement → dispatchEvent(ready)</code></li>
+      <li><strong class="yry-auto-48218">§2.3 组件依赖关系</strong> — tag-chip → item-card → card-grid → doc-layer (基础先于复合)</li>
+      <li><strong class="yry-auto-48218">§2.4 Vue 3 CE 生命周期</strong> — connectedCallback → Vue mount → ready → 二次赋值</li>
+      <li><strong class="yry-auto-48218">§2.5 API 错误契约</strong> — 5 个 API 全部实现降级路径 (toast/copyCmd/switchPanel/fetchData/ready)</li>
+      <li><strong class="yry-auto-48218">§2.6 命名空间与版本兼容</strong> — SemVer 矩阵 (Patch 不变 · Minor 追加 · Major 破坏)</li>
     </ol>
   </div>
 
   <div class="content-card">
     <h2>✅ 验收清单</h2>
-    <ul style="margin:0;padding-left:20px;font-size:.76rem;line-height:1.9;color:#a9b1d6">
+    <ul class="yry-auto-20518">
       <li><input type="checkbox" checked> 107 组件注册成功 (<code>customElements.get('yry-*')</code> 全部已注册)</li>
       <li><input type="checkbox" checked> 9 API 可用 (<code>typeof YrY.{api}</code> 全部 !== undefined)</li>
       <li><input type="checkbox" checked> 命名空间唯一 (0 冲突)</li>

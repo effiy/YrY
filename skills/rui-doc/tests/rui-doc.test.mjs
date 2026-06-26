@@ -131,4 +131,4 @@ describe('edge cases', () => {
   });
 });
 
-const exitCode = await run();
+const _exitCode = await run();

@@ -15,68 +15,9 @@
   <meta name="description" content="YrY CDN 源码聚合 — 125 卡片源码浏览器 · html/js/css 按需 fetch · 带行号高亮 · Vue/Vanilla 过滤 · 体积 Top 10 排行 · 类型徽章 · 一键复制路径">
   <link rel="stylesheet" href="shared/index.css">
   <link rel="stylesheet" href="theme/index.css">
-  <style>
-    body { padding: 24px 20px 60px; max-width: 1280px; margin: 0 auto; line-height: 1.6; }
-    h1 { font-size: 1.4rem; color: var(--yry-accent, #22d3ee); margin: 0 0 4px; }
-    .sub { color: var(--yry-text3, #6b7280); font-size: .78rem; margin: 0 0 16px; }
-    h2 { font-size: 1.05rem; color: var(--yry-text2, #a9b1d6); margin: 28px 0 12px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,.06); }
-    .links { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0; }
-    .links a { color: var(--yry-accent, #22d3ee); text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; font-size: .76rem; }
-    .links a:hover { border-color: var(--yry-accent); background: rgba(34,211,238,.08); }
-    .links a.active { background: rgba(34,211,238,.12); border-color: var(--yry-accent); }
-
-    .grid4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 12px 0 20px; }
-    .kpi { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 14px 18px; }
-    .kpi .v { font-size: 1.4rem; color: var(--yry-accent, #22d3ee); font-weight: 700; line-height: 1.1; }
-    .kpi .l { font-size: .72rem; color: var(--yry-text3, #6b7280); margin-top: 2px; }
-
-    .layout { display: grid; grid-template-columns: 320px 1fr; gap: 16px; }
-    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
-
-    .sidebar { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 12px; max-height: 640px; overflow: auto; }
-    .sidebar input { width: 100%; box-sizing: border-box; background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.1); color: var(--yry-text2, #a9b1d6); border-radius: 6px; padding: 6px 10px; font-size: .78rem; margin-bottom: 8px; }
-    .comp-item { padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: .76rem; color: var(--yry-text2, #a9b1d6); display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(255,255,255,.03); }
-    .comp-item:hover { background: rgba(34,211,238,.08); }
-    .comp-item.active { background: rgba(34,211,238,.15); color: var(--yry-accent, #22d3ee); font-weight: 600; }
-    .comp-item .size { color: var(--yry-text3, #6b7280); font-size: .68rem; }
-    .comp-item .meta { margin-left: auto; }
-    .badge { font-size: .62rem; padding: 1px 5px; border-radius: 3px; font-weight: 600; }
-    .b-vue { background: rgba(167,139,250,.15); color: #a78bfa; }
-    .b-vanilla { background: rgba(74,222,128,.15); color: #4ade80; }
-    .b-unknown { background: rgba(107,114,128,.15); color: #9ca3af; }
-
-    .viewer { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 14px; min-height: 640px; }
-    .tabs { display: flex; gap: 6px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,.06); padding-bottom: 8px; flex-wrap: wrap; }
-    .tab { background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.08); color: var(--yry-text3, #6b7280); padding: 4px 12px; border-radius: 4px; font-size: .74rem; cursor: pointer; position: relative; overflow: hidden; }
-    .tab:hover { color: var(--yry-text2, #a9b1d6); }
-    .tab.active { background: rgba(34,211,238,.15); border-color: var(--yry-accent, #22d3ee); color: var(--yry-accent, #22d3ee); }
-    .tab .size { font-size: .62rem; opacity: .6; margin-left: 4px; }
-    .tab .size-bar { position: absolute; left: 0; bottom: 0; height: 2px; background: linear-gradient(90deg, #34d399, #22d3ee, #a78bfa, #f87171); transition: width .3s; }
-    .file-head { font-size: .74rem; color: var(--yry-text3, #6b7280); margin-bottom: 8px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .file-head a { color: var(--yry-accent, #22d3ee); text-decoration: none; }
-    .file-head a:hover { text-decoration: underline; }
-    .copy-btn { margin-left: auto; background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.1); color: var(--yry-text2, #a9b1d6); padding: 3px 10px; border-radius: 4px; font-size: .68rem; cursor: pointer; transition: all .15s; }
-    .copy-btn:hover { border-color: var(--yry-accent, #22d3ee); color: var(--yry-accent, #22d3ee); }
-    .copy-btn.copied { background: rgba(52,211,153,.15); border-color: #34d399; color: #34d399; }
-    pre { background: rgba(0,0,0,.4); padding: 12px; border-radius: 6px; font-size: .72rem; color: var(--yry-text2, #a9b1d6); overflow: auto; max-height: 540px; margin: 0; font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace; line-height: 1.5; white-space: pre; }
-    pre .ln-row { display: block; }
-    pre .ln-row:target { background: rgba(34,211,238,.2); border-left: 2px solid #22d3ee; padding-left: 10px; margin-left: -12px; }
-    pre .ln { color: var(--yry-text3, #4b5563); user-select: none; margin-right: 12px; display: inline-block; width: 32px; text-align: right; text-decoration: none; }
-    pre .ln:hover { color: #22d3ee; text-decoration: underline; }
-    .empty { text-align: center; color: var(--yry-text3, #6b7280); padding: 60px 20px; font-size: .82rem; }
-    .top10 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 8px; margin: 12px 0; }
-    .top-item { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 6px; padding: 8px 12px; font-size: .74rem; display: flex; align-items: center; gap: 8px; }
-    .top-item .name { color: var(--yry-accent, #22d3ee); text-decoration: none; flex: 1; }
-    .top-item .name:hover { text-decoration: underline; }
-    .top-item .size { color: var(--yry-text3, #6b7280); }
-    .err { color: #f87171; font-size: .78rem; }
-    .meta-bar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; background: rgba(15,23,42,.55); border: 1px solid rgba(34,211,238,.2); border-radius: 8px; padding: 8px 14px; margin: 10px 0 16px; font-size: .74rem; color: var(--yry-text3, #6b7280); }
-    .meta-bar code { background: rgba(0,0,0,.3); padding: 1px 6px; border-radius: 3px; color: var(--yry-accent, #22d3ee); font-size: .72rem; }
-    .meta-bar .sep { color: rgba(255,255,255,.15); }
-    .meta-bar b { color: var(--yry-accent, #22d3ee); font-weight: 600; }
-    .meta-bar .refresh { margin-left: auto; background: rgba(34,211,238,.1); border: 1px solid rgba(34,211,238,.3); color: var(--yry-accent, #22d3ee); padding: 2px 10px; border-radius: 4px; cursor: pointer; font-size: .7rem; transition: all .15s; }
-    .meta-bar .refresh:hover { background: rgba(34,211,238,.2); }
-  </style>
+  <link rel="stylesheet" href="cdn-summary/page-base.css">
+<link rel="stylesheet" href="yry-cdn-demo/index.css">
+<link rel="stylesheet" href="yry-cdn-demo/source.css">
 </head>
 <body>
   <h1>📜 源码聚合 · 全卡片源码浏览器</h1>
@@ -89,7 +30,7 @@
     <span class="sep">·</span>
     <span id="metaTime">最后更新 —</span>
     <button class="refresh" onclick="location.reload()" title="重新拉取并刷新数据">🔄 刷新</button>
-    <span style="font-size:.66rem;color:var(--yry-text3,#6b7280);margin-left:8px"><kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">/</kbd> 搜索 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">t</kbd> 顶部 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">h/j/c</kbd> 切文件 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">1-7</kbd> 跳转 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">0</kbd> 首页</span>
+    <span class="cd-text3-66-ml8"><kbd class="cd-code-chip">/</kbd> 搜索 · <kbd class="cd-code-chip">t</kbd> 顶部 · <kbd class="cd-code-chip">h/j/c</kbd> 切文件 · <kbd class="cd-code-chip">1-7</kbd> 跳转 · <kbd class="cd-code-chip">0</kbd> 首页</span>
   </div>
 
   <div class="links">
@@ -103,29 +44,29 @@
     <a href="review.html" title="⚠️ 审查聚合 — 六维健康评估 · 版本演进趋势 · D0-D8 诊断 · 改进建议">⚠️ 审查</a>
   </div>
 
-  <div style="background:rgba(15,23,42,.55);border:1px solid rgba(34,211,238,.2);border-radius:8px;padding:8px 14px;margin:0 0 14px;font-size:.72rem;color:var(--yry-text3,#6b7280);line-height:1.7">
-    <b style="color:var(--yry-accent,#22d3ee)">📑 页面大纲</b> ·
-    <a href="#kpis" style="color:var(--yry-accent,#22d3ee);text-decoration:none">📊 KPI 概览</a> ·
-    <a href="#dist" style="color:var(--yry-accent,#22d3ee);text-decoration:none">📈 体积分布</a> ·
-    <a href="#top10" style="color:var(--yry-accent,#22d3ee);text-decoration:none">体积 Top 10</a> ·
-    <a href="#catVol" style="color:var(--yry-accent,#22d3ee);text-decoration:none">🗂 分类体积</a> ·
-    <a href="#topProps" style="color:var(--yry-accent,#22d3ee);text-decoration:none">Props Top 10</a> ·
-    <a href="#topDeps" style="color:var(--yry-accent,#22d3ee);text-decoration:none">依赖 Top 10</a> ·
-    <a href="#complexity" style="color:var(--yry-accent,#22d3ee);text-decoration:none">📊 复杂度对比</a> ·
-    <a href="#browser" style="color:var(--yry-accent,#22d3ee);text-decoration:none">源码浏览器</a>
+  <div class="cd-surface-cyan">
+    <b class="cd-accent">📑 页面大纲</b> ·
+    <a href="#kpis" class="cd-accent-link">📊 KPI 概览</a> ·
+    <a href="#dist" class="cd-accent-link">📈 体积分布</a> ·
+    <a href="#top10" class="cd-accent-link">体积 Top 10</a> ·
+    <a href="#catVol" class="cd-accent-link">🗂 分类体积</a> ·
+    <a href="#topProps" class="cd-accent-link">Props Top 10</a> ·
+    <a href="#topDeps" class="cd-accent-link">依赖 Top 10</a> ·
+    <a href="#complexity" class="cd-accent-link">📊 复杂度对比</a> ·
+    <a href="#browser" class="cd-accent-link">源码浏览器</a>
   </div>
 
   <div id="kpis" class="grid4"></div>
 
-  <h2 id="dist" style="margin-top:24px">📈 源码体积分布 · HTML / JS / CSS 占比</h2>
-  <div id="distBar" style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 18px;margin:8px 0 16px">
-    <div id="distStack" style="display:flex;height:24px;border-radius:6px;overflow:hidden;background:rgba(0,0,0,.4)"></div>
-    <div id="distLegend" style="display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:.72rem;color:var(--yry-text3,#6b7280)"></div>
-    <div id="distNote" style="margin-top:8px;font-size:.68rem;color:var(--yry-text3,#6b7280);line-height:1.6">加载中…</div>
+  <h2 id="dist" class="cd-x2-37">📈 源码体积分布 · HTML / JS / CSS 占比</h2>
+  <div id="distBar" class="cd-surface-flat">
+    <div id="distStack" class="cd-x1-131"></div>
+    <div id="distLegend" class="cd-x1-84"></div>
+    <div id="distNote" class="cd-x1-156">加载中…</div>
   </div>
 
-  <div style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 16px;margin:0 0 16px;font-size:.72rem;color:var(--yry-text3,#6b7280);line-height:1.7">
-    <b style="color:var(--yry-accent,#22d3ee)">📖 使用说明</b> ·
+  <div class="cd-x1-9">
+    <b class="cd-accent">📖 使用说明</b> ·
     左侧侧栏列表展示所有 yry-* 组件 · 点击组件名在右侧查看源码 · 按需 <code>fetch</code> 加载（不预载全量）·
     带行号显示 · 支持 Vue/Vanilla 类型过滤 · 顶部 Top 10 展示体积最大的源文件 · 鼠标悬停源码行可复制行号锚点。
   </div>
@@ -134,9 +75,9 @@
   <div id="top10" class="top10"></div>
 
   <h2 id="catVol">🗂 按分类体积排行 · Top 10</h2>
-  <div id="catVolBars" style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 18px;margin:8px 0 16px">
-    <div id="catVolList" style="display:flex;flex-direction:column;gap:8px;margin:0 0 10px">加载中…</div>
-    <div style="font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.6">按命名前缀启发式分类聚合每个组件的 HTML+JS+CSS 总体积 · 仅显示体积前 10 的分类 · 柱长归一化至最大值。</div>
+  <div id="catVolBars" class="cd-surface-flat">
+    <div id="catVolList" class="cd-flex-col-8-mb10">加载中…</div>
+    <div class="cd-x2-23">按命名前缀启发式分类聚合每个组件的 HTML+JS+CSS 总体积 · 仅显示体积前 10 的分类 · 柱长归一化至最大值。</div>
   </div>
 
   <h2 id="topProps">🟣 Props 数 Top 10</h2>
@@ -145,36 +86,36 @@
   <h2 id="topDeps">🔗 依赖数 Top 10</h2>
   <div id="topDeps" class="top10"></div>
 
-  <h2 id="complexity" style="margin-top:28px">📊 复杂度对比 · Props / 依赖 / 令牌 三维聚合</h2>
-  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">按功能类别聚合 Props 总数 · 依赖总数 · CSS 令牌总数 · 揭示哪类组件复杂度最高 · 帮助聚焦重构与文档优先级。</div>
-  <div id="complexityChart" style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 18px;margin:8px 0 16px">
-    <div id="complexityList" style="display:flex;flex-direction:column;gap:10px">加载中…</div>
-    <div id="complexityNote" style="font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.6;margin-top:8px">柱长按该维度的最大值归一化 · 仅展示至少有一项非零的分类 · 按三项总和降序排列 · Top 10。</div>
+  <h2 id="complexity" class="cd-mt28">📊 复杂度对比 · Props / 依赖 / 令牌 三维聚合</h2>
+  <div class="cd-meta-72">按功能类别聚合 Props 总数 · 依赖总数 · CSS 令牌总数 · 揭示哪类组件复杂度最高 · 帮助聚焦重构与文档优先级。</div>
+  <div id="complexityChart" class="cd-surface-flat">
+    <div id="complexityList" class="cd-flex-col-10">加载中…</div>
+    <div id="complexityNote" class="cd-text3-66-mt8">柱长按该维度的最大值归一化 · 仅展示至少有一项非零的分类 · 按三项总和降序排列 · Top 10。</div>
   </div>
 
-  <h2 id="sizePerCat" style="margin-top:28px">📏 平均体积/分类 Top 10 · KB 密度排行</h2>
-  <div style="font-size:.72rem;color:var(--yry-text3,#6b7280);margin-bottom:10px;line-height:1.7">按功能类别聚合组件平均体积（HTML + JS + CSS 总和 / 组件数）· 揭示哪类组件单件最大 · 数据源 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">components-manifest/index.json</code>。</div>
-  <div id="sizePerCatList" style="background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 18px;margin:8px 0 16px;display:flex;flex-direction:column;gap:8px">加载中…</div>
+  <h2 id="sizePerCat" class="cd-mt28">📏 平均体积/分类 Top 10 · KB 密度排行</h2>
+  <div class="cd-meta-72">按功能类别聚合组件平均体积（HTML + JS + CSS 总和 / 组件数）· 揭示哪类组件单件最大 · 数据源 <code class="cd-code-chip-68">components-manifest/index.json</code>。</div>
+  <div id="sizePerCatList" class="cd-surface-flat-flex">加载中…</div>
 
   <h2 id="browser">📂 源码浏览器</h2>
   <div class="layout">
     <div class="sidebar">
       <input id="q" type="search" placeholder="🔍 过滤组件名…" />
-      <select id="category" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);color:var(--yry-text2,#a9b1d6);border-radius:6px;padding:6px 10px;font-size:.78rem;margin-bottom:8px" title="按功能类别过滤（基于命名前缀启发式归类）">
+      <select id="category" class="cd-x2-0" title="按功能类别过滤（基于命名前缀启发式归类）">
         <option value="">全部分类</option>
       </select>
-      <select id="kind" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);color:var(--yry-text2,#a9b1d6);border-radius:6px;padding:6px 10px;font-size:.78rem;margin-bottom:8px">
+      <select id="kind" class="cd-x2-0">
         <option value="">全部类型</option>
         <option value="vue">Vue 3</option>
         <option value="vanilla">Vanilla</option>
         <option value="unknown">基类 / 其他</option>
       </select>
-      <div id="recentBox" style="margin-bottom:8px;display:none">
-        <div style="font-size:.64rem;color:var(--yry-text3,#6b7280);margin-bottom:4px;padding:2px 6px;display:flex;justify-content:space-between;align-items:center">
+      <div id="recentBox" class="cd-x1-268">
+        <div class="cd-x1-44">
           <span>🕐 最近浏览</span>
-          <button id="clearRecent" style="background:none;border:none;color:var(--yry-text3,#6b7280);font-size:.6rem;cursor:pointer;padding:0">清空</button>
+          <button id="clearRecent" class="cd-x1-93">清空</button>
         </div>
-        <div id="recentList" style="display:flex;flex-direction:column;gap:2px"></div>
+        <div id="recentList" class="cd-x1-247"></div>
       </div>
       <div id="list"></div>
     </div>
@@ -184,7 +125,7 @@
   </div>
 
   <p id="err" class="err" hidden></p>
-  <footer class="agg-footer" style="margin-top:32px;padding:14px 18px;background:rgba(15,23,42,.4);border:1px solid rgba(255,255,255,.06);border-radius:10px;font-size:.72rem;color:var(--yry-text3,#6b7280);line-height:1.8"><div style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-bottom:6px"><b style="color:var(--yry-accent,#22d3ee)">YrY CDN · Source聚合</b><span style="color:rgba(255,255,255,.15)">·</span><span>v1.2.0 · 2026</span><span style="color:rgba(255,255,255,.15)">·</span><span>📊 数据源 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">components-manifest/index.json</code></span><span style="color:rgba(255,255,255,.15)">·</span><span>🛠 生成 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--yry-accent,#22d3ee);font-size:.68rem">scripts/build-manifest.mjs</code></span></div><div style="display:flex;flex-wrap:wrap;gap:8px 12px;margin-top:6px"><a href="index.html" title="CDN 首页 — 七卡聚合中心入口" style="color:var(--yry-accent,#22d3ee);text-decoration:none">🏠 CDN 首页</a><a href="../docs/index.html" style="color:var(--yry-accent,#22d3ee);text-decoration:none">🏠 文档中心</a><a href="../README.md" style="color:var(--yry-accent,#22d3ee);text-decoration:none">📖 README</a><span style="margin-left:auto;font-size:.66rem">键盘 <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">1-7</kbd> 跳转 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">0</kbd> 首页 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">/</kbd> 搜索 · <kbd style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:.62rem;color:var(--yry-accent,#22d3ee)">t</kbd> 顶部</span></div></footer>
+  <footer class="agg-footer" cd-surface-section"><div class="cd-flex-wrap-14"><b class="cd-accent">YrY CDN · Source聚合</b><span class="cd-faint">·</span><span>v1.2.0 · 2026</span><span class="cd-faint">·</span><span>📊 数据源 <code class="cd-code-chip-68">components-manifest/index.json</code></span><span class="cd-faint">·</span><span>🛠 生成 <code class="cd-code-chip-68">scripts/build-manifest.mjs</code></span></div><div class="cd-flex-wrap-12-mt6"><a href="index.html" title="CDN 首页 — 七卡聚合中心入口" class="cd-accent-link">🏠 CDN 首页</a><a href="../docs/index.html" class="cd-accent-link">🏠 文档中心</a><a href="../README.md" class="cd-accent-link">📖 README</a><span class="cd-text3-66-mlauto">键盘 <kbd class="cd-code-chip">1-7</kbd> 跳转 · <kbd class="cd-code-chip">0</kbd> 首页 · <kbd class="cd-code-chip">/</kbd> 搜索 · <kbd class="cd-code-chip">t</kbd> 顶部</span></div></footer>
 
   <script type="module">
     const KIND_LABEL = { vue: 'Vue 3', vanilla: 'Vanilla', unknown: '基类' };
@@ -219,7 +160,7 @@
       // 应用搜索高亮（在 escapeHtml 之后，避免 XSS）
       if (highlight) {
         const re = new RegExp('(' + highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
-        html = html.replace(re, '<mark style="background:rgba(34,211,238,.35);color:#fff;padding:0 2px;border-radius:2px">$1</mark>');
+        html = html.replace(re, '<mark class="cd-x1-160">$1</mark>');
       }
       const lines = html.split('\n');
       // 行号锚点支持：URL #L42 自动滚动到对应行
@@ -242,15 +183,15 @@
         return;
       }
       viewerBody.innerHTML = `
-        <div class="comp-meta-bar" style="display:flex;gap:8px;flex-wrap:wrap;font-size:.68rem;padding:6px 10px;background:rgba(15,23,42,.6);border:1px solid rgba(255,255,255,.05);border-radius:6px;margin-bottom:8px">
-          <span style="color:var(--yry-text3,#6b7280)">🏷 <b style="color:var(--yry-text2,#a9b1d6)">${comp.tagName || comp.name}</b></span>
-          <span style="color:var(--yry-text3,#6b7280)">📦 <b style="color:var(--yry-text2,#a9b1d6)">${comp.kind || 'unknown'}</b></span>
-          ${comp.isCustomElement ? '<span style="color:#a78bfa">✨ Custom Element</span>' : ''}
-          <span style="color:var(--yry-text3,#6b7280)">🟣 Props <b style="color:var(--yry-text2,#a9b1d6)">${(comp.props||[]).length}</b></span>
-          <span style="color:var(--yry-text3,#6b7280)">🔗 依赖 <b style="color:var(--yry-text2,#a9b1d6)">${(comp.declaredDeps||[]).length}</b></span>
-          <span style="color:var(--yry-text3,#6b7280)">🎨 令牌 <b style="color:var(--yry-text2,#a9b1d6)">${(comp.cssTokens||[]).length}</b></span>
-          ${(comp.props||[]).length ? `<details style="margin-left:auto"><summary style="cursor:pointer;color:var(--yry-accent,#22d3ee);font-size:.66rem">📋 Props 清单</summary><div style="margin-top:6px;font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.6">${(comp.props||[]).map(p=>`<code style="color:#c4b5fd">${p.name}</code>: <span style="color:#34d399">${p.type}</span>${p.required?' <span style="color:#f87171">必填</span>':''}${p.default?` = <span style="color:#fbbf24">${p.default}</span>`:''}`).join(' · ')}</div></details>` : ''}
-          ${(comp.declaredDeps||[]).length ? `<details><summary style="cursor:pointer;color:var(--yry-accent,#22d3ee);font-size:.66rem">🔗 依赖清单</summary><div style="margin-top:6px;font-size:.66rem;color:var(--yry-text3,#6b7280)">${(comp.declaredDeps||[]).map(d=>`<code style="color:#34d399">${d}</code>`).join(' · ')}</div></details>` : ''}
+        <div class="comp-meta-bar" cd-x1-14">
+          <span class="cd-text3">🏷 <b class="cd-text2">${comp.tagName || comp.name}</b></span>
+          <span class="cd-text3">📦 <b class="cd-text2">${comp.kind || 'unknown'}</b></span>
+          ${comp.isCustomElement ? '<span class="cd-violet">✨ Custom Element</span>' : ''}
+          <span class="cd-text3">🟣 Props <b class="cd-text2">${(comp.props||[]).length}</b></span>
+          <span class="cd-text3">🔗 依赖 <b class="cd-text2">${(comp.declaredDeps||[]).length}</b></span>
+          <span class="cd-text3">🎨 令牌 <b class="cd-text2">${(comp.cssTokens||[]).length}</b></span>
+          ${(comp.props||[]).length ? `<details class="cd-x1-285"><summary class="cd-x2-24">📋 Props 清单</summary><div class="cd-x2-16">${(comp.props||[]).map(p=>`<code class="cd-x1-293">${p.name}</code>: <span class="cd-emerald">${p.type}</span>${p.required?' <span class="cd-red">必填</span>':''}${p.default?` = <span class="cd-amber">${p.default}</span>`:''}`).join(' · ')}</div></details>` : ''}
+          ${(comp.declaredDeps||[]).length ? `<details><summary class="cd-x2-24">🔗 依赖清单</summary><div class="cd-x1-202">${(comp.declaredDeps||[]).map(d=>`<code class="cd-emerald">${d}</code>`).join(' · ')}</div></details>` : ''}
         </div>
         <div class="tabs">
           ${['html', 'js', 'css'].map(e => {
@@ -261,10 +202,10 @@
             const allSizes = ['html','js','css'].map(x => comp.files[x]?.size || 0);
             const maxS = Math.max(1, ...allSizes);
             const barW = fe?.exists ? (fe.size / maxS * 100).toFixed(0) : 0;
-            return `<span class="tab${active}" data-ext="${e}">${e.toUpperCase()}${size}<span class="size-bar" style="width:${barW}%"></span></span>`;
+            return `<span class="tab${active}" data-ext="${e}">${e.toUpperCase()}${size}<span class="size-bar" cd-y95" style="--v1:${barW}"></span></span>`;
           }).join('')}
         </div>
-        <div class="file-head">📄 <code>${comp.name}/index.${ext}</code> · ${fmtKB(f.size)} · <span id="lineCount">—</span> 行 · <a href="${comp.name}/index.${ext}" target="_blank">↗ 原文件</a><input id="srcSearch" type="search" placeholder="🔍 高亮源码…" style="margin-left:auto;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);color:var(--yry-text2,#a9b1d6);border-radius:4px;padding:3px 8px;font-size:.7rem;width:140px"><button class="copy-btn" id="copyBtn">📋 复制</button></div>
+        <div class="file-head">📄 <code>${comp.name}/index.${ext}</code> · ${fmtKB(f.size)} · <span id="lineCount">—</span> 行 · <a href="${comp.name}/index.${ext}" target="_blank">↗ 原文件</a><input id="srcSearch" type="search" placeholder="🔍 高亮源码…" class="cd-x1-15"><button class="copy-btn" id="copyBtn">📋 复制</button></div>
         <pre id="src">加载中…</pre>
       `;
       document.querySelectorAll('.tab').forEach(t => {
@@ -321,8 +262,8 @@
       list.innerHTML = arr.map(name => {
         const c = all.find(x => x.name === name);
         if (!c) return '';
-        return `<div class="comp-item" data-name="${name}" style="padding:4px 8px;font-size:.72rem">
-          <span class="badge b-${c.kind}" style="font-size:.56rem;padding:0 4px">${KIND_LABEL[c.kind]}</span>
+        return `<div class="comp-item" data-name="${name}" class="cd-x1-259">
+          <span class="badge b-${c.kind}" cd-x1-269">${KIND_LABEL[c.kind]}</span>
           <span>${name}</span>
         </div>`;
       }).join('');
@@ -354,13 +295,13 @@
       const html = Object.entries(groups).map(([kind, items]) => {
         if (!items.length) return '';
         items.sort((a, b) => a.name.localeCompare(b.name));
-        return `<div class="comp-group" style="margin-bottom:10px">
-          <div style="font-size:.66rem;color:var(--yry-text3,#6b7280);padding:4px 8px;background:rgba(30,41,59,.4);border-radius:4px;margin-bottom:4px;font-weight:600">${GROUP_LABEL[kind]} · ${items.length} 个</div>
+        return `<div class="comp-group" cd-x1-281">
+          <div class="cd-x1-43">${GROUP_LABEL[kind]} · ${items.length} 个</div>
           ${items.map(c => {
             const totalSize = (c.files.html?.size || 0) + (c.files.js?.size || 0) + (c.files.css?.size || 0);
             const pN = (c.props || []).length;
             const dN = (c.declaredDeps || []).length;
-            const meta = (pN || dN) ? `<span class="meta" style="margin-left:auto;font-size:.6rem;color:var(--yry-text3,#6b7280);white-space:nowrap" title="${pN} Props · ${dN} 依赖">${pN?'🟣'+pN:''}${pN&&dN?' · ':''}${dN?'🔗'+dN:''}</span>` : '';
+            const meta = (pN || dN) ? `<span class="meta" cd-x1-134" title="${pN} Props · ${dN} 依赖">${pN?'🟣'+pN:''}${pN&&dN?' · ':''}${dN?'🔗'+dN:''}</span>` : '';
             return `<div class="comp-item" data-name="${c.name}">
               <span class="badge b-${c.kind}">${KIND_LABEL[c.kind]}</span>
               <span>${c.name}</span>
@@ -368,7 +309,7 @@
             </div>`;
           }).join('')}
         </div>`;
-      }).join('') || '<div style="padding:10px;font-size:.74rem;color:var(--yry-text3,#6b7280)">无匹配组件</div>';
+      }).join('') || '<div class="cd-text3-74-pad10">无匹配组件</div>';
       document.getElementById('list').innerHTML = html;
       document.querySelectorAll('.comp-item').forEach(el => {
         el.onclick = () => {
@@ -403,7 +344,7 @@
       const total = html + js + css;
       // 估算总行数（按 80 字节/行近似）
       const estLines = Math.round(total / 80);
-      document.getElementById('metaCount').innerHTML = `${all.length} 组件 · <b style="color:var(--yry-accent,#22d3ee)">${fileCount}</b> 文件 · <b style="color:var(--yry-accent,#22d3ee)">${fmtKB(total)}</b> · <b style="color:var(--yry-accent,#22d3ee)">${propCount}</b> Props · <b style="color:var(--yry-accent,#22d3ee)">${depCount}</b> 依赖`;
+      document.getElementById('metaCount').innerHTML = `${all.length} 组件 · <b class="cd-accent">${fileCount}</b> 文件 · <b class="cd-accent">${fmtKB(total)}</b> · <b class="cd-accent">${propCount}</b> Props · <b class="cd-accent">${depCount}</b> 依赖`;
       document.getElementById('kpis').innerHTML = [
         { v: all.length, l: '组件总数' },
         { v: fileCount, l: '文件总数' },
@@ -431,14 +372,14 @@
         { key: 'CSS',  bytes: css,  pct: cssPct,  color: '#34d399' }
       ];
       document.getElementById('distStack').innerHTML = DIST.map(d =>
-        `<div title="${d.key} · ${fmtKB(d.bytes)} · ${d.pct.toFixed(1)}%" style="flex:${d.bytes || 0.001};background:${d.color};position:relative">
-          ${d.pct >= 8 ? `<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.66rem;font-weight:700;color:rgba(0,0,0,.7)">${d.pct.toFixed(0)}%</span>` : ''}
+        `<div title="${d.key} · ${fmtKB(d.bytes)} · ${d.pct.toFixed(1)}%" class="cd-y96" style="--v1:${d.bytes || 0.001};--v2:${d.color}">
+          ${d.pct >= 8 ? `<span class="cd-x1-56">${d.pct.toFixed(0)}%</span>` : ''}
         </div>`
       ).join('');
       document.getElementById('distLegend').innerHTML = DIST.map(d =>
-        `<span style="display:inline-flex;align-items:center;gap:5px"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${d.color}"></span><b style="color:${d.color};font-weight:600">${d.key}</b> · ${fmtKB(d.bytes)} (${d.pct.toFixed(1)}%)</span>`
+        `<span class="cd-x1-242"><span class="cd-y97" style="--v1:${d.color}"></span><b class="cd-hook-color-w600" style="--color:${d.color}">${d.key}</b> · ${fmtKB(d.bytes)} (${d.pct.toFixed(1)}%)</span>`
       ).join('');
-      document.getElementById('distNote').innerHTML = `源码总体积 <b style="color:var(--yry-accent,#22d3ee)">${fmtKB(total)}</b> · 平均每组件 <b>${fmtKB(total / all.length)}</b> · HTML/JS/CSS 三类归一化展示占比 · 最大类为 <b style="color:${[...DIST].sort((a,b)=>b.bytes-a.bytes)[0].color}">${[...DIST].sort((a,b)=>b.bytes-a.bytes)[0].key}</b>。`;
+      document.getElementById('distNote').innerHTML = `源码总体积 <b class="cd-accent">${fmtKB(total)}</b> · 平均每组件 <b>${fmtKB(total / all.length)}</b> · HTML/JS/CSS 三类归一化展示占比 · 最大类为 <b class="cd-y98" style="--v1:${[...DIST].sort((a,b)=>b.bytes-a.bytes)[0].color}">${[...DIST].sort((a,b)=>b.bytes-a.bytes)[0].key}</b>。`;
 
       // Top 10 by total source size
       const top = all.map(c => ({
@@ -481,13 +422,13 @@
           const color = cvColors[i % cvColors.length];
           const avg = c.bytes / c.comps;
           const compLabel = `${c.comps} 组件${c.vue ? ` · ${c.vue} Vue` : ''}${c.vanilla ? ` · ${c.vanilla} Vanilla` : ''}`;
-          return `<div style="display:grid;grid-template-columns:1fr auto;gap:8px 10px;align-items:center;font-size:.72rem">
-            <div style="color:var(--yry-text2,#a9b1d6);font-weight:600;font-size:.74rem">${c.cat}</div>
-            <div style="color:${color};font-weight:700;text-align:right;white-space:nowrap">${fmtKB(c.bytes)}</div>
-            <div style="grid-column:1/-1;height:6px;background:rgba(0,0,0,.3);border-radius:3px;overflow:hidden">
-              <span style="display:block;height:100%;width:${pct}%;background:linear-gradient(90deg,${color},${color}aa)"></span>
+          return `<div class="cd-x2-11">
+            <div class="cd-x1-195">${c.cat}</div>
+            <div class="cd-y99" style="--v1:${color}">${fmtKB(c.bytes)}</div>
+            <div class="cd-x2-12">
+              <span class="cd-hook-block-w-grad" style="--w:${pct}%;--color:${color}"></span>
             </div>
-            <div style="grid-column:1/-1;font-size:.66rem;color:var(--yry-text3,#6b7280);margin-top:-4px">${compLabel} · 平均 ${fmtKB(avg)}/组件 · 占比 ${(c.bytes / total * 100).toFixed(1)}%</div>
+            <div class="cd-x1-145">${compLabel} · 平均 ${fmtKB(avg)}/组件 · 占比 ${(c.bytes / total * 100).toFixed(1)}%</div>
           </div>`;
         }).join('');
       }
@@ -497,13 +438,13 @@
         .filter(c => c.n > 0).sort((a, b) => b.n - a.n).slice(0, 10);
       document.getElementById('topProps').innerHTML = topProps.length
         ? topProps.map(c => `<div class="top-item"><span class="badge b-${c.kind}">${KIND_LABEL[c.kind]}</span><a class="name" href="#" data-name="${c.name}">${c.name}</a><span class="size">🟣 ${c.n} props</span></div>`).join('')
-        : '<div style="padding:10px;font-size:.74rem;color:var(--yry-text3,#6b7280)">无组件声明 Props</div>';
+        : '<div class="cd-text3-74-pad10">无组件声明 Props</div>';
       // Top 10 by declared deps count
       const topDeps = all.map(c => ({ name: c.name, n: (c.declaredDeps||[]).length, kind: c.kind }))
         .filter(c => c.n > 0).sort((a, b) => b.n - a.n).slice(0, 10);
       document.getElementById('topDeps').innerHTML = topDeps.length
         ? topDeps.map(c => `<div class="top-item"><span class="badge b-${c.kind}">${KIND_LABEL[c.kind]}</span><a class="name" href="#" data-name="${c.name}">${c.name}</a><span class="size">🔗 ${c.n} 依赖</span></div>`).join('')
-        : '<div style="padding:10px;font-size:.74rem;color:var(--yry-text3,#6b7280)">无组件声明依赖</div>';
+        : '<div class="cd-text3-74-pad10">无组件声明依赖</div>';
       document.querySelectorAll('#topProps .name, #topDeps .name').forEach(a => {
         a.onclick = e => {
           e.preventDefault();
@@ -541,23 +482,23 @@
           const bars = DIM_META.map(d => {
             const v = r[d.key];
             const pct = (v / d.max * 100).toFixed(0);
-            return `<div style="display:grid;grid-template-columns:48px 1fr 44px;gap:8px;align-items:center;font-size:.68rem">
-              <span style="color:${d.color};font-weight:600">${d.icon} ${d.label}</span>
-              <div style="height:8px;background:rgba(0,0,0,.4);border-radius:2px;overflow:hidden">
-                <span style="display:block;height:100%;width:${pct}%;background:linear-gradient(90deg,${d.color},${d.color}aa)"></span>
+            return `<div class="cd-x1-118">
+              <span class="cd-hook-color-w600" style="--color:${d.color}">${d.icon} ${d.label}</span>
+              <div class="cd-x1-167">
+                <span class="cd-y100" style="--v1:${pct};--v2:${d.color};--v3:${d.color}"></span>
               </div>
-              <span style="color:var(--yry-text2,#a9b1d6);font-weight:600;text-align:right">${v}</span>
+              <span class="cd-x1-196">${v}</span>
             </div>`;
           }).join('');
-          return `<div style="background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.04);border-left:3px solid ${rankColor};border-radius:6px;padding:8px 12px">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-              <span style="font-size:.62rem;color:${rankColor};font-weight:700;background:${rankColor}22;padding:1px 6px;border-radius:3px;border:1px solid ${rankColor}55">#${i+1}</span>
-              <b style="color:var(--yry-text2,#a9b1d6);font-size:.74rem">${r.cat}</b>
-              <span style="margin-left:auto;font-size:.66rem;color:var(--yry-text3,#6b7280)">${r.comps} 组件 · 合计 <b style="color:${rankColor}">${r.total}</b></span>
+          return `<div class="cd-y101" style="--v1:${rankColor}">
+            <div class="cd-x1-215">
+              <span class="cd-hook-rank-chip-55" style="--color:${rankColor}">#${i+1}</span>
+              <b class="cd-x1-234">${r.cat}</b>
+              <span class="cd-x1-185">${r.comps} 组件 · 合计 <b class="cd-y102" style="--v1:${rankColor}">${r.total}</b></span>
             </div>
             ${bars}
           </div>`;
-        }).join('') || '<div style="padding:12px;font-size:.74rem;color:var(--yry-text3,#6b7280)">无复杂度数据</div>';
+        }).join('') || '<div class="cd-x2-27">无复杂度数据</div>';
       }
 
       // 📏 平均体积/分类 Top 10 · KB 密度排行
@@ -577,23 +518,23 @@
           .slice(0, 10);
         const maxAvg = Math.max(1, ...arr.map(x => x.avg));
         if (arr.length === 0) {
-          spcEl.innerHTML = '<div style="padding:10px;font-size:.72rem;color:var(--yry-text3,#6b7280)">无分类数据</div>';
+          spcEl.innerHTML = '<div class="cd-meta-72-pad10">无分类数据</div>';
         } else {
           spcEl.innerHTML = arr.map((r, i) => {
             const pct = (r.avg / maxAvg * 100).toFixed(0);
             const kb = (r.avg / 1024).toFixed(1);
             const totalKb = (r.bytes / 1024).toFixed(0);
             const c = ['#34d399', '#22d3ee', '#a78bfa', '#fb923c', '#fbbf24', '#60a5fa', '#f472b6', '#2dd4bf', '#c084fc', '#facc15'][i % 10];
-            return `<div style="display:grid;grid-template-columns:30px 1fr 90px 80px;gap:10px;align-items:center;font-size:.72rem">
-              <div style="font-weight:700;color:${c};text-align:center">#${i+1}</div>
-              <div style="overflow:hidden"><span style="color:${c};font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.cat}</span></div>
-              <div style="height:10px;background:rgba(0,0,0,.4);border-radius:3px;overflow:hidden"><div style="width:${pct}%;height:100%;background:linear-gradient(90deg,${c},${c}88)" title="平均 ${kb} KB · 共 ${totalKb} KB / ${r.comps} 组件"></div></div>
-              <div style="text-align:right;white-space:nowrap">
-                <b style="color:${c}">${kb}</b><span style="color:var(--yry-text3,#6b7280);font-size:.62rem"> KB</span>
-                <div style="color:var(--yry-text3,#6b7280);font-size:.6rem">${r.comps} 组件</div>
+            return `<div class="cd-x1-97">
+              <div class="cd-hook-color-w700-tc" style="--color:${c}">#${i+1}</div>
+              <div class="cd-overflow-hidden"><span class="cd-hook-color-w600-ellipsis" style="--color:${c}">${r.cat}</span></div>
+              <div class="cd-bar-track"><div class="cd-hook-bar-w-grad" style="--w:${pct}%;--color:${c}" title="平均 ${kb} KB · 共 ${totalKb} KB / ${r.comps} 组件"></div></div>
+              <div class="cd-right-nowrap">
+                <b class="cd-hook-color" style="--color:${c}">${kb}</b><span class="cd-text3-62"> KB</span>
+                <div class="cd-text3-60">${r.comps} 组件</div>
               </div>
             </div>`;
-          }).join('') + `<div style="font-size:.66rem;color:var(--yry-text3,#6b7280);line-height:1.6;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.06)">Top 1 平均 <b style="color:var(--yry-accent,#22d3ee)">${(arr[0].avg/1024).toFixed(1)} KB</b> · 揭示哪类组件单件最重 · 帮助定位"体积 hotspot"</div>`;
+          }).join('') + `<div class="cd-meta-66-top">Top 1 平均 <b class="cd-accent">${(arr[0].avg/1024).toFixed(1)} KB</b> · 揭示哪类组件单件最重 · 帮助定位"体积 hotspot"</div>`;
         }
       }
 

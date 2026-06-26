@@ -1,0 +1,7 @@
+/* theme-index.css — page-specific styles extracted from index.html */
+body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; color: var(--yry-text); }
+    h1 { font-size: 1.4rem; margin: 0 0 6px; color: var(--yry-accent); }
+    h2 { font-size: 1rem; margin: 24px 0 10px; }
+    .swatch { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+    .sw { padding: 14px 16px; border-radius: 8px; font-size: .78rem; border: var(--yry-border); }
+    .sw code { font-family: 'SF Mono', monospace; opacity: .8; font-size: .72rem; }

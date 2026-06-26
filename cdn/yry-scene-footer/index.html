@@ -10,18 +10,15 @@
 <link rel="stylesheet" href="../shared\/index\.css">
 <link rel="stylesheet" href="index.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<style>
-  body { background: var(--yry-bg, #0e0f1a); color: var(--yry-text, #f5f5f5); padding: 60px 24px; max-width: 600px; margin: 0 auto; text-align: center; font-family: var(--yry-font-sans); }
-  h1 { font-size: 1.1rem; }
-  .demo-hint { font-size: .74rem; color: var(--yry-text3, #888); margin: 0 0 30px; }
-</style>
+<link rel="stylesheet" href="../yry-inline-helpers/index.css">
+<link rel="stylesheet" href="demo.css">
 </head>
 <body>
 <h1>YrySceneFooter</h1>
 <p class="demo-hint">Vue 3 组件: <code>version</code> · <code>date</code> · <code>docsLink</code></p>
 
 <div id="demo-1"></div>
-<div style="margin-top:20px" id="demo-2"></div>
+<div class="yry-cd-55" id="demo-2"></div>
 
 <script type="text/x-template" id="yry-scene-footer-tpl">
   <div class="sf-inner">YrY v{{ version }} · {{ date }}<span v-if="docsLink"> · <a :href="docsLink">文档中心</a></span></div>

@@ -11,9 +11,6 @@
 <link rel="stylesheet" href="../../../../cdn/yry-scene-stats/index.css">
 <link rel="stylesheet" href="../../../../cdn/yry-scene-tabs/index.css">
 <link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
-<style>
-/* Page-specific overrides — shared patterns in shared-b.css */
-</style>
 </head>
 <body>
 <div class="yry-container">
@@ -32,7 +29,7 @@
   <div data-panel="files">
     <div class="yry-section">
       <h2><span class="yry-dot"></span>产物文件</h2>
-      <h2>§2 实施报告</h2><h3>产物清单（5 组件 · 与 <code>架构图.html</code> 实现链一致）</h3><table><thead><tr><th>产物</th><th>类型</th><th>状态</th><th>关键实现</th></tr></thead><tbody><tr><td>KPI 卡片网格</td><td>CSS Grid 纯 CSS</td><td>✅ 已交付</td><td><code>grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))</code></td></tr><tr><td>风险热力图</td><td>CSS Grid + 颜色编码</td><td>✅ 已交付</td><td>5×5 矩阵，颜色映射 <code>hsl(120→0, 70%, 50%)</code></td></tr><tr><td>趋势柱状图</td><td>CSS bar-chart</td><td>✅ 已交付</td><td><code>height</code> 百分比映射评分 0-100</td></tr><tr><td>分数卡</td><td>加权算法</td><td>✅ 已交付</td><td><code>Σ(维度分 × 权重) / Σ权重</code></td></tr><tr><td>门禁判定块</td><td>条件渲染</td><td>✅ 已交付</td><td>三态：绿色通过/红色阻断/黄色警告</td></tr></tbody></table><h3>任务管线（5 步）</h3><table><thead><tr><th>#</th><th>任务</th><th>验收信号</th><th>状态</th></tr></thead><tbody><tr><td>1</td><td>数据采集 · 解析 §3/§4/§6 表格</td><td>3 数据源 · 结构化 JSON 输出</td><td style="text-align:center">✅</td></tr><tr><td>2</td><td>5 组件 BEM 设计</td><td>KPI · 热力图 · 趋势 · 分数 · 门禁</td><td style="text-align:center">✅</td></tr><tr><td>3</td><td>纯 CSS 渲染实现</td><td>零 JS 依赖 · CSS Grid + bar-chart</td><td style="text-align:center">✅</td></tr><tr><td>4</td><td>6 种降级状态</td><td>空数据 · 加载中 · 错误 · 部分缺失等</td><td style="text-align:center">✅</td></tr><tr><td>5</td><td>响应式适配</td><td>3 断点 · 移动端堆叠不溢出</td><td style="text-align:center">✅</td></tr></tbody></table><h3>架构决策</h3>
+      <h2>§2 实施报告</h2><h3>产物清单（5 组件 · 与 <code>架构图.html</code> 实现链一致）</h3><table><thead><tr><th>产物</th><th>类型</th><th>状态</th><th>关键实现</th></tr></thead><tbody><tr><td>KPI 卡片网格</td><td>CSS Grid 纯 CSS</td><td>✅ 已交付</td><td><code>grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))</code></td></tr><tr><td>风险热力图</td><td>CSS Grid + 颜色编码</td><td>✅ 已交付</td><td>5×5 矩阵，颜色映射 <code>hsl(120→0, 70%, 50%)</code></td></tr><tr><td>趋势柱状图</td><td>CSS bar-chart</td><td>✅ 已交付</td><td><code>height</code> 百分比映射评分 0-100</td></tr><tr><td>分数卡</td><td>加权算法</td><td>✅ 已交付</td><td><code>Σ(维度分 × 权重) / Σ权重</code></td></tr><tr><td>门禁判定块</td><td>条件渲染</td><td>✅ 已交付</td><td>三态：绿色通过/红色阻断/黄色警告</td></tr></tbody></table><h3>任务管线（5 步）</h3><table><thead><tr><th>#</th><th>任务</th><th>验收信号</th><th>状态</th></tr></thead><tbody><tr><td>1</td><td>数据采集 · 解析 §3/§4/§6 表格</td><td>3 数据源 · 结构化 JSON 输出</td><td class="yry-auto-51239">✅</td></tr><tr><td>2</td><td>5 组件 BEM 设计</td><td>KPI · 热力图 · 趋势 · 分数 · 门禁</td><td class="yry-auto-51239">✅</td></tr><tr><td>3</td><td>纯 CSS 渲染实现</td><td>零 JS 依赖 · CSS Grid + bar-chart</td><td class="yry-auto-51239">✅</td></tr><tr><td>4</td><td>6 种降级状态</td><td>空数据 · 加载中 · 错误 · 部分缺失等</td><td class="yry-auto-51239">✅</td></tr><tr><td>5</td><td>响应式适配</td><td>3 断点 · 移动端堆叠不溢出</td><td class="yry-auto-51239">✅</td></tr></tbody></table><h3>架构决策</h3>
 <ul><li><b>纯 CSS 图表</b>：趋势柱状图使用 CSS <code>height</code> 百分比而非 JS 图表库，零依赖、零运行时开销</li>
 <li><b>颜色编码一致性</b>：热力图颜色与 KPI 卡片状态颜色使用同一色板（<code>--yry-pass/warn/fail</code>），确保视觉一致性</li>
 <li><b>降级优先</b>：所有组件先设计降级状态（空数据/加载中/错误），再设计正常状态</li>

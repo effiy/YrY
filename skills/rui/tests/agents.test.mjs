@@ -8,6 +8,7 @@ import { describe, it, assert, run } from '../../../lib/vitest-adapter.mjs';
 import { fileExists, readFile, hasSection, hasMermaidDiagram, listAgents } from '../../../lib/test-helpers.mjs';
 
 // Agent → skill mapping (agents are now within their owning skills)
+/** @type {Record<string, string>} */
 const AGENT_TO_SKILL = {
   'AGENT': 'rui',
   'pm': 'rui',
@@ -21,7 +22,7 @@ const AGENT_TO_SKILL = {
   'self-improve': 'rui-yry',
 };
 
-function getAgentPath(agentName) {
+function getAgentPath(/** @type {string} */ agentName) {
   const skill = AGENT_TO_SKILL[agentName];
   if (!skill) return null;
   return `skills/${skill}/${agentName}.md`;
@@ -112,4 +113,4 @@ describe('agent definitions', () => {
   }
 });
 
-const exitCode = await run();
+const _exitCode = await run();

@@ -16,23 +16,7 @@
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
 <link rel="stylesheet" href="../../../yry-a11y/index.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<style>
-  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
-  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
-  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
-  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
-  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
-  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
-  .delivery-story { font-size: .72rem; color: #4b5563; }
-  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
-  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
-  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
-  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
-  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
-  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
-  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
-</style>
+<link rel="stylesheet" href="../../../yry-legacy-scene-delivery/index.css">
 </head>
 <body>
 <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
@@ -54,51 +38,51 @@
 
   <div class="content-card">
     <h2>📝 R1 · 架构合规审查</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">审查项</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">结论</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">证据</th></tr></thead>
+    <table class="yry-auto-93137">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-75234">审查项</th><th class="yry-auto-75234">结论</th><th class="yry-auto-75234">证据</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">107 组件统一 <code>yry-</code> 命名空间</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 通过</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>customElements</code> 遍历 0 冲突</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">10 大类别清晰划分</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 通过</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>COMPONENTS.md</code> 13 类别清单</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">9 个 YrY.* API 可用</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 通过</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">控制台 <code>typeof YrY.{api}</code> 全部 !== undefined</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">54 Vue 3 CE 零打包</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 通过</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>vue.global.prod.js</code> CDN 引入 · 无打包步骤</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">双设策略生效</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 通过</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">晚到组件场景数据正确渲染</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">三文件完整度</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#fbbf24">⚠ 部分</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">94/107 · 13 个待完善</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Props 向后兼容</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 通过</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">v1.0→v1.2 无 breaking change</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">API 错误降级</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 通过</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">5 个 API 全部实现降级路径</td></tr>
-        <tr><td style="padding:8px 10px">内存泄漏</td><td style="padding:8px 10px;color:#fbbf24">⚠ 待验</td><td style="padding:8px 10px">chrome://memory 三次切换面板 detached DOM 检查未执行</td></tr>
+        <tr><td class="yry-auto-86182">107 组件统一 <code>yry-</code> 命名空间</td><td class="yry-auto-36166">✓ 通过</td><td class="yry-auto-86182"><code>customElements</code> 遍历 0 冲突</td></tr>
+        <tr><td class="yry-auto-86182">10 大类别清晰划分</td><td class="yry-auto-36166">✓ 通过</td><td class="yry-auto-86182"><code>COMPONENTS.md</code> 13 类别清单</td></tr>
+        <tr><td class="yry-auto-86182">9 个 YrY.* API 可用</td><td class="yry-auto-36166">✓ 通过</td><td class="yry-auto-86182">控制台 <code>typeof YrY.{api}</code> 全部 !== undefined</td></tr>
+        <tr><td class="yry-auto-86182">54 Vue 3 CE 零打包</td><td class="yry-auto-36166">✓ 通过</td><td class="yry-auto-86182"><code>vue.global.prod.js</code> CDN 引入 · 无打包步骤</td></tr>
+        <tr><td class="yry-auto-86182">双设策略生效</td><td class="yry-auto-36166">✓ 通过</td><td class="yry-auto-86182">晚到组件场景数据正确渲染</td></tr>
+        <tr><td class="yry-auto-86182">三文件完整度</td><td class="yry-auto-27978">⚠ 部分</td><td class="yry-auto-86182">94/107 · 13 个待完善</td></tr>
+        <tr><td class="yry-auto-86182">Props 向后兼容</td><td class="yry-auto-36166">✓ 通过</td><td class="yry-auto-86182">v1.0→v1.2 无 breaking change</td></tr>
+        <tr><td class="yry-auto-86182">API 错误降级</td><td class="yry-auto-36166">✓ 通过</td><td class="yry-auto-86182">5 个 API 全部实现降级路径</td></tr>
+        <tr><td class="yry-auto-93797">内存泄漏</td><td class="yry-a2-24">⚠ 待验</td><td class="yry-auto-93797">chrome://memory 三次切换面板 detached DOM 检查未执行</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>⚠️ 风险与改进项</h2>
-    <ul style="margin:0;padding-left:20px;font-size:.76rem;line-height:1.9;color:#a9b1d6">
-      <li><strong style="color:#f87171">P0 · 13 个组件未完善</strong> — 当前 94/107 · 需补 CSS/JS 使其可渲染</li>
-      <li><strong style="color:#fbbf24">P1 · API 文档分散</strong> — 内联注释为主，缺独立 <code>docs/api/</code> 参考页</li>
-      <li><strong style="color:#fbbf24">P1 · 组件测试覆盖不足</strong> — vitest 单元测试仅部分组件，缺全覆盖</li>
-      <li><strong style="color:#fbbf24">P2 · Props 类型运行时校验</strong> — 无编译时类型声明，易出现 prop 类型错误</li>
-      <li><strong style="color:#fbbf24">P2 · 组件无版本号</strong> — 无组件级 CHANGELOG，难追溯变更</li>
-      <li><strong style="color:#fbbf24">P2 · 无 a11y 自动审计</strong> — axe-core 未集成 CI</li>
-      <li><strong style="color:#a78bfa">P3 · 组件全量注册</strong> — 未按需注册，无 IntersectionObserver 懒加载</li>
-      <li><strong style="color:#a78bfa">P3 · 无 Shadow DOM 封装</strong> — 全局命名空间，样式可能被外部污染</li>
+    <ul class="yry-auto-20518">
+      <li><strong class="yry-a2-29">P0 · 13 个组件未完善</strong> — 当前 94/107 · 需补 CSS/JS 使其可渲染</li>
+      <li><strong class="yry-auto-79642">P1 · API 文档分散</strong> — 内联注释为主，缺独立 <code>docs/api/</code> 参考页</li>
+      <li><strong class="yry-auto-79642">P1 · 组件测试覆盖不足</strong> — vitest 单元测试仅部分组件，缺全覆盖</li>
+      <li><strong class="yry-auto-79642">P2 · Props 类型运行时校验</strong> — 无编译时类型声明，易出现 prop 类型错误</li>
+      <li><strong class="yry-auto-79642">P2 · 组件无版本号</strong> — 无组件级 CHANGELOG，难追溯变更</li>
+      <li><strong class="yry-auto-79642">P2 · 无 a11y 自动审计</strong> — axe-core 未集成 CI</li>
+      <li><strong class="yry-auto-18184">P3 · 组件全量注册</strong> — 未按需注册，无 IntersectionObserver 懒加载</li>
+      <li><strong class="yry-auto-18184">P3 · 无 Shadow DOM 封装</strong> — 全局命名空间，样式可能被外部污染</li>
     </ul>
   </div>
 
   <div class="content-card">
     <h2>📊 自改进路线</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">维度</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">当前</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">目标</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">行动</th></tr></thead>
+    <table class="yry-auto-93137">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-75234">维度</th><th class="yry-auto-75234">当前</th><th class="yry-auto-75234">目标</th><th class="yry-auto-75234">行动</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">组件完整度</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">94/107</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">107/107</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">完善 13 个待完善组件</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">API 文档</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">内联注释</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">独立 API 参考页</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">生成 <code>docs/api/</code></td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">组件测试</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">部分</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">全覆盖</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">vitest 补充单元测试</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">组件发现</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">手动分类</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">搜索+筛选</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">search-bar 组件集成</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Props 类型</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">运行时</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">编译时</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">JSDoc/TypeScript 类型声明</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">组件版本</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">无版本号</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">语义化版本</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">组件级 CHANGELOG</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">清单校验</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">手动维护</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">CI 强制</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">build-manifest 阻断 PR</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">组件 a11y</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">部分覆盖</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">WCAG AA</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">axe-core 自动审计</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">组件懒加载</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">全量注册</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">按需注册</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">IntersectionObserver 触发</td></tr>
-        <tr><td style="padding:8px 10px">组件沙箱</td><td style="padding:8px 10px">全局命名空间</td><td style="padding:8px 10px">Shadow DOM 封装</td><td style="padding:8px 10px">关键组件开启 ShadowRoot</td></tr>
+        <tr><td class="yry-auto-86182">组件完整度</td><td class="yry-auto-86182">94/107</td><td class="yry-auto-86182">107/107</td><td class="yry-auto-86182">完善 13 个待完善组件</td></tr>
+        <tr><td class="yry-auto-86182">API 文档</td><td class="yry-auto-86182">内联注释</td><td class="yry-auto-86182">独立 API 参考页</td><td class="yry-auto-86182">生成 <code>docs/api/</code></td></tr>
+        <tr><td class="yry-auto-86182">组件测试</td><td class="yry-auto-86182">部分</td><td class="yry-auto-86182">全覆盖</td><td class="yry-auto-86182">vitest 补充单元测试</td></tr>
+        <tr><td class="yry-auto-86182">组件发现</td><td class="yry-auto-86182">手动分类</td><td class="yry-auto-86182">搜索+筛选</td><td class="yry-auto-86182">search-bar 组件集成</td></tr>
+        <tr><td class="yry-auto-86182">Props 类型</td><td class="yry-auto-86182">运行时</td><td class="yry-auto-86182">编译时</td><td class="yry-auto-86182">JSDoc/TypeScript 类型声明</td></tr>
+        <tr><td class="yry-auto-86182">组件版本</td><td class="yry-auto-86182">无版本号</td><td class="yry-auto-86182">语义化版本</td><td class="yry-auto-86182">组件级 CHANGELOG</td></tr>
+        <tr><td class="yry-auto-86182">清单校验</td><td class="yry-auto-86182">手动维护</td><td class="yry-auto-86182">CI 强制</td><td class="yry-auto-86182">build-manifest 阻断 PR</td></tr>
+        <tr><td class="yry-auto-86182">组件 a11y</td><td class="yry-auto-86182">部分覆盖</td><td class="yry-auto-86182">WCAG AA</td><td class="yry-auto-86182">axe-core 自动审计</td></tr>
+        <tr><td class="yry-auto-86182">组件懒加载</td><td class="yry-auto-86182">全量注册</td><td class="yry-auto-86182">按需注册</td><td class="yry-auto-86182">IntersectionObserver 触发</td></tr>
+        <tr><td class="yry-auto-93797">组件沙箱</td><td class="yry-auto-93797">全局命名空间</td><td class="yry-auto-93797">Shadow DOM 封装</td><td class="yry-auto-93797">关键组件开启 ShadowRoot</td></tr>
       </tbody>
     </table>
   </div>

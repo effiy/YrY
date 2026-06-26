@@ -7,38 +7,7 @@
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/theme/index.css">
 <link rel="stylesheet" href="../../../../cdn/shared-reports/index.css">
-<style>
-.scene-nav { display:flex; flex-wrap:wrap; gap:4px 8px; padding:8px 0; font-size:.72rem; border-bottom:var(--yry-border); margin-bottom:12px; }
-.scene-nav-link { color:var(--yry-text3); text-decoration:none; }
-.scene-nav-link:hover { color:var(--yry-accent); }
-.scene-nav-link.active { color:var(--yry-accent); font-weight:700; }
-.scene-nav-sep { color:var(--yry-text3); }
-.cross-nav { display:flex; gap:8px; padding:6px 0; font-size:.72rem; margin-bottom:12px; }
-.cross-link { color:var(--yry-text3); text-decoration:none; }
-.cross-link:hover { color:var(--yry-accent); }
-.cross-link.on { color:var(--yry-accent); font-weight:700; }
-.cross-sep { color:var(--yry-text3); }
-.header { margin-bottom:12px; }
-.header h1 { font-size:1.1rem; margin:0; }
-.accent { color:var(--yry-accent); }
-.meta { font-size:.68rem; color:var(--yry-text3); margin-top:4px; }
-.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:8px; }
-.stat-card { padding:10px; text-align:center; border-radius:6px; border:var(--yry-border); background:rgba(15,23,42,.4); }
-.stat-card .val { font-size:1.2rem; font-weight:700; }
-.stat-card .val.health { color:var(--yry-pass); }
-.stat-card .lbl { font-size:.62rem; color:var(--yry-text3); margin-top:2px; }
-.bar-wrap { margin-bottom:12px; }
-.bar-outer { height:6px; border-radius:3px; background:rgba(255,255,255,.06); overflow:hidden; display:flex; }
-.seg.strength { background:var(--yry-pass); }
-.seg.gap { background:rgba(255,255,255,.06); }
-.card { padding:16px 20px; border-radius:8px; border:var(--yry-border); background:rgba(15,23,42,.4); }
-.card h2 { font-size:.88rem; margin:0 0 12px 0; }
-.cl-item { display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.04); }
-.cl-num { min-width:24px; height:24px; border-radius:50%; background:rgba(34,197,94,.12); color:var(--yry-pass); display:flex; align-items:center; justify-content:center; font-size:.68rem; font-weight:700; }
-.cl-text { flex:1; font-size:.76rem; line-height:1.5; color:var(--yry-text2); }
-.ft { text-align:center; font-size:.64rem; color:var(--yry-text3); padding:20px 0; }
-@media (max-width:640px) { .stats-grid { grid-template-columns:repeat(2,1fr); }}
-</style>
+<link rel="stylesheet" href="../../../../cdn/yry-legacy-scene-overview/index.css">
 </head>
 <body>
 <div class="container">
@@ -76,7 +45,7 @@
   <div class="stat-card"><div class="val health">5</div><div class="lbl">CSS 层级</div></div>
   <div class="stat-card"><div class="val">100%</div><div class="lbl">覆盖度</div></div>
 </div>
-<div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:100%"></div><div class="seg gap" style="width:0%"></div></div></div>
+<div class="bar-wrap"><div class="bar-outer"><div class="seg strength" yry-auto-60516"></div><div class="seg gap" yry-auto-6776"></div></div></div>
 
 <div class="card">
   <h2>① HTML 7 区域骨架</h2>
@@ -89,14 +58,14 @@
   <div class="cl-item"><span class="cl-num">7</span><span class="cl-text"><strong>页脚</strong> <code>&lt;footer&gt;</code> — 生成时间 + 版本号 · Token: <code>{{DATE}}</code> · <code>{{VERSION}}</code></span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
+<div class="card" yry-auto-86349">
   <h2>② CSS 14 设计令牌</h2>
-  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><code>--yry-accent</code> = <span style="color:#FFC107">#FFC107</span> — 品牌主色调 (链接 · 按钮 · 强调)</span></div>
-  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><code>--yry-cyan</code> = <span style="color:#22d3ee">#22d3ee</span> — 科技蓝 (KPI 正常 · 趋势线)</span></div>
-  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><code>--yry-pass</code> = <span style="color:#22c55e">#22c55e</span> — 成功色 (通过 · 完成)</span></div>
-  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><code>--yry-fail</code> = <span style="color:#ef4444">#ef4444</span> — 危险色 (阻断 · 失败)</span></div>
-  <div class="cl-item"><span class="cl-num">5</span><span class="cl-text"><code>--yry-warn</code> = <span style="color:#f59e0b">#f59e0b</span> — 警告色 (需关注)</span></div>
-  <div class="cl-item"><span class="cl-num">6</span><span class="cl-text"><code>--yry-info</code> / <code>--yry-skip</code> = <span style="color:#6b7280">#6b7280</span> — 信息色 / 跳过态</span></div>
+  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><code>--yry-accent</code> = <span class="yry-a1-99">#FFC107</span> — 品牌主色调 (链接 · 按钮 · 强调)</span></div>
+  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><code>--yry-cyan</code> = <span class="yry-auto-48218">#22d3ee</span> — 科技蓝 (KPI 正常 · 趋势线)</span></div>
+  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><code>--yry-pass</code> = <span class="yry-a1-100">#22c55e</span> — 成功色 (通过 · 完成)</span></div>
+  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><code>--yry-fail</code> = <span class="yry-a2-28">#ef4444</span> — 危险色 (阻断 · 失败)</span></div>
+  <div class="cl-item"><span class="cl-num">5</span><span class="cl-text"><code>--yry-warn</code> = <span class="yry-auto-51686">#f59e0b</span> — 警告色 (需关注)</span></div>
+  <div class="cl-item"><span class="cl-num">6</span><span class="cl-text"><code>--yry-info</code> / <code>--yry-skip</code> = <span class="yry-a1-101">#6b7280</span> — 信息色 / 跳过态</span></div>
   <div class="cl-item"><span class="cl-num">7</span><span class="cl-text"><code>--yry-text</code> = <code>rgba(250,250,252,1)</code> — 主文本色</span></div>
   <div class="cl-item"><span class="cl-num">8</span><span class="cl-text"><code>--yry-text2</code> = <code>rgba(160,160,164,1)</code> — 次要文本色</span></div>
   <div class="cl-item"><span class="cl-num">9</span><span class="cl-text"><code>--yry-text3</code> = <code>rgba(110,110,114,1)</code> — 三级文本色 (辅助说明)</span></div>
@@ -107,33 +76,33 @@
   <div class="cl-item"><span class="cl-num">14</span><span class="cl-text"><code>--yry-border</code> / <code>--yry-shadow</code> / <code>--yry-radius</code> — 边框 · 阴影 · 圆角 (表面属性)</span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
+<div class="card" yry-auto-86349">
   <h2>③ CSS 5 层架构</h2>
-  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong style="color:var(--yry-accent)">L1 基础层</strong> — <code>shared/index.css</code> · reset + 动画 + 基础变量 · 覆盖度 100%</span></div>
-  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong style="color:var(--yry-accent)">L2 主题层</strong> — <code>theme/index.css</code> · 14 设计令牌定义 · 覆盖度 100%</span></div>
-  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong style="color:var(--yry-accent)">L3 布局层</strong> — <code>yry-checklist.css §layout</code> · 7 区域栅格 · 覆盖度 100%</span></div>
-  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong style="color:var(--yry-accent)">L4 组件层</strong> — <code>yry-checklist.css §components</code> · 11 组件样式 · 覆盖度 95%</span></div>
-  <div class="cl-item"><span class="cl-num">5</span><span class="cl-text"><strong style="color:var(--yry-accent)">L5 工具层</strong> — <code>yry-checklist.css §utils</code> · 间距 / 对齐 / 可见性 · 覆盖度 80%</span></div>
+  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong class="yry-auto-24835">L1 基础层</strong> — <code>shared/index.css</code> · reset + 动画 + 基础变量 · 覆盖度 100%</span></div>
+  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong class="yry-auto-24835">L2 主题层</strong> — <code>theme/index.css</code> · 14 设计令牌定义 · 覆盖度 100%</span></div>
+  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong class="yry-auto-24835">L3 布局层</strong> — <code>yry-checklist.css §layout</code> · 7 区域栅格 · 覆盖度 100%</span></div>
+  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong class="yry-auto-24835">L4 组件层</strong> — <code>yry-checklist.css §components</code> · 11 组件样式 · 覆盖度 95%</span></div>
+  <div class="cl-item"><span class="cl-num">5</span><span class="cl-text"><strong class="yry-auto-24835">L5 工具层</strong> — <code>yry-checklist.css §utils</code> · 间距 / 对齐 / 可见性 · 覆盖度 80%</span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
+<div class="card" yry-auto-86349">
   <h2>④ BEM 命名规范</h2>
   <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong>Block</strong> — <code>.checklist</code> — 清单容器</span></div>
   <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong>Element</strong> — <code>.checklist__item</code> — 清单项</span></div>
   <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong>Modifier</strong> — <code>.checklist__item--done</code> — 已完成状态</span></div>
   <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong>State</strong> — <code>.is-expanded</code> / <code>.is-loading</code> — 交互态</span></div>
   <div class="cl-item"><span class="cl-num">5</span><span class="cl-text"><strong>Utility</strong> — <code>.u-text-ellipsis</code> — 工具类</span></div>
-  <div class="cl-item" style="background:rgba(239,68,68,.06);border-radius:6px;padding:10px 12px;margin-top:6px"><span class="cl-num" style="background:rgba(239,68,68,.12);color:var(--yry-fail)">!</span><span class="cl-text"><strong style="color:var(--yry-fail)">反模式</strong> — 禁止 <code>.checklist .item</code> 后代选择器 (特异性膨胀)，必须使用 BEM <code>.checklist__item</code></span></div>
+  <div class="cl-item" yry-a2-5"><span class="cl-num" yry-a2-13">!</span><span class="cl-text"><strong class="yry-auto-77213">反模式</strong> — 禁止 <code>.checklist .item</code> 后代选择器 (特异性膨胀)，必须使用 BEM <code>.checklist__item</code></span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
+<div class="card" yry-auto-86349">
   <h2>⑤ 响应式断点</h2>
   <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong>Desktop</strong> ≥ 1024px — 双列布局 (清单 + 可视化)</span></div>
   <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong>Tablet</strong> 768-1023px — 单列布局 · 卡片 2 列</span></div>
   <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong>Mobile</strong> &lt; 768px — 单列布局 · 卡片 1 列 · 清单全宽</span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
+<div class="card" yry-auto-86349">
   <h2>⑥ Token 替换验证</h2>
   <div class="cl-item"><span class="cl-num">1</span><span class="cl-text">Token 占位符用 <code>{{UPPER_SNAKE}}</code> 格式 · 示例: <code>{{STORY}}</code> · <code>{{SCENE}}</code> · <code>{{VERSION}}</code> · <code>{{DATE}}</code></span></div>
   <div class="cl-item"><span class="cl-num">2</span><span class="cl-text">替换器增加 <code>fail-fast</code> 模式 — 未匹配 <code>{{...}}</code> 抛 <code>ConfigurationError</code></span></div>
@@ -141,15 +110,15 @@
   <div class="cl-item"><span class="cl-num">4</span><span class="cl-text">grep 检查占位符残留 — <code>grep -r '{{' cdn/yry-checklist/scenes/</code> 应命中 0 次</span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
-  <p style="font-size:.72rem;color:var(--yry-text3);text-align:center">
+<div class="card" yry-auto-86349">
+  <p class="yry-auto-58746">
     查看完整详细清单: <a href="计划清单.html">计划清单</a> · <a href="架构图.html">架构图</a> · <a href="index.md">源码 Markdown</a>
   </p>
 </div>
 
 <footer class="ft">
   场景 1 · 模板架构与CSS设计系统 · YryChecklist · v1.2.0<br>
-  <span style="color:var(--yry-text3)">清单 · 架构 · 图谱 · 源码 · 测试 · 演示 · 审计</span>
+  <span class="yry-auto-80578">清单 · 架构 · 图谱 · 源码 · 测试 · 演示 · 审计</span>
 </footer>
 
 </div>

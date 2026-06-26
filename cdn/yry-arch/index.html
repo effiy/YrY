@@ -11,12 +11,8 @@
   <title>YrY yry-arch · 架构图共享</title>
   <link rel="stylesheet" href="../fonts/index.css">
   <link rel="stylesheet" href="index.css">
-  <style>
-    body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
-    h1 { font-size: 1.4rem; }
-    pre { background: rgba(0,0,0,.3); padding: 10px 14px; border-radius: 6px; font-size: .76rem; color: var(--cyan); overflow-x: auto; }
-    .tab-panel { padding: 12px 0; }
-  </style>
+<link rel="stylesheet" href="../yry-inline-helpers/index.css">
+<link rel="stylesheet" href="demo.css">
 </head>
 <body>
   <h1>📐 yry-arch · 架构图共享</h1>
@@ -32,7 +28,7 @@ copyAsImage(btn)                 // 复制为 PNG (html2canvas)
 downloadPNG(btn)                 // 下载 PNG
 downloadPDF(btn)                 // 下载 PDF (jsPDF)</pre>
 
-  <div class="toolbar" style="margin-top: 24px;">
+  <div class="toolbar" yry-cd-49">
     <button class="toolbar-toggle" onclick="document.getElementById('toolbar').classList.toggle('expanded')">⚙</button>
     <div class="toolbar-actions" id="toolbar">
       <button onclick="copyAsImage(this)">📋 Copy SVG</button>
@@ -41,6 +37,6 @@ downloadPDF(btn)                 // 下载 PDF (jsPDF)</pre>
   </div>
 
   <script src="index.js"></script>
-  <p style="margin-top: 32px; color: var(--text3); font-size: .72rem;">YrY CDN · yry-arch · 2026</p>
+  <p class="yry-cd-15">YrY CDN · yry-arch · 2026</p>
 </body>
 </html>

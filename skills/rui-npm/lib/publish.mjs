@@ -14,7 +14,7 @@ import { randomBytes } from "node:crypto";
 import { npm, registryArgs } from './npm-utils.mjs';
 import { checkNpmLogin } from './auth.mjs';
 
-export function verifyOwnership(username, pkgName) {
+export function verifyOwnership(/** @type {string} */ username, /** @type {string} */ pkgName) {
   const r = npm(["view", pkgName, "maintainers", "--json", ...registryArgs()]);
   if (r.status !== 0) {
     console.error(`❌ 包 "${pkgName}" 在 npm registry 中不存在。`);
@@ -24,7 +24,7 @@ export function verifyOwnership(username, pkgName) {
   try {
     const maintainers = JSON.parse(r.stdout);
     const isOwner = Array.isArray(maintainers) && maintainers.some(
-      (m) => {
+      (/** @type {any} */ m) => {
         const name = typeof m === "string" ? m.split(" ")[0] : m.name;
         return name === username;
       }
@@ -41,7 +41,7 @@ export function verifyOwnership(username, pkgName) {
   }
 }
 
-export function cmdPublish(path, args) {
+export function cmdPublish(/** @type {string} */ path, /** @type {any} */ args) {
   if (!path) {
     console.error("❌ 请提供文件或目录路径。用法: rui-npm publish <path>");
     console.error("   示例: rui-npm publish ./my-script.js --name my-util");
@@ -75,6 +75,7 @@ export function cmdPublish(path, args) {
 
   if (!existsSync(pkgJsonPath)) {
     console.log(`📝 自动生成 package.json (name: ${pkgName}) ...`);
+    /** @type {Record<string, any>} */
     const pkgJson = {
       name: pkgName,
       version: pkgVersion || "1.0.0",

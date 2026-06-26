@@ -10,9 +10,9 @@ import { nowISO, fmtDisplay } from '../../../lib/fs.mjs';
 
 // ── helpers ───────────────────────────────────────────────────────────
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const sleep = (/** @type {number} */ ms) => new Promise((r) => setTimeout(r, ms));
 
-async function fetchWithTimeout(url, opts = {}) {
+async function fetchWithTimeout(/** @type {string} */ url, /** @type {any} */ opts = {}) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), opts.timeout || HTTP_TIMEOUT_MS);
   try {
@@ -26,8 +26,9 @@ async function fetchWithTimeout(url, opts = {}) {
   }
 }
 
-async function fetchWithRetry(url, opts = {}) {
-  let last;
+async function fetchWithRetry(/** @type {string} */ url, /** @type {any} */ opts = {}) {
+  /** @type {{ ok: boolean, status: number, text: string, error?: string }} */
+  let last = { ok: false, status: 0, text: '' };
   for (let i = 0; i < MAX_RETRIES; i++) {
     if (i > 0) await sleep(RETRY_DELAY_MS * i);
     last = await fetchWithTimeout(url, opts);
@@ -42,7 +43,7 @@ function ts() {
 
 // ── HTML extraction helpers ───────────────────────────────────────────
 
-function extractRepoLines(html) {
+function extractRepoLines(/** @type {string} */ html) {
   const lines = [];
   // GitHub trending article rows: <article class="Box-row">...</article>
   const articles = html.match(/<article[^>]*class="Box-row"[^>]*>[\s\S]*?<\/article>/gi) || [];
@@ -82,7 +83,9 @@ export async function checkStatus() {
   return { ok: results.some((r) => r.reachable), sources: results, ts: ts() };
 }
 
-/** GitHub Trending */
+/** GitHub Trending
+ * @param {{ lang?: string, since?: string }} opts
+ */
 export async function fetchGitHubTrending({ lang, since } = {}) {
   const params = new URLSearchParams();
   if (since === 'weekly') params.set('since', 'weekly');
@@ -95,9 +98,10 @@ export async function fetchGitHubTrending({ lang, since } = {}) {
   return { ok: true, source: 'github-trending', url, data, ts: ts() };
 }
 
-/** OSS Insight — collection pages */
-export async function fetchOSSInsight({ metric } = {}) {
-  const m = metric || 'stars';
+/** OSS Insight — collection pages
+ * @param {{ metric?: string }} opts
+ */
+export async function fetchOSSInsight({ metric: _metric } = {}) {
   const urls = [
     `https://ossinsight.io/collections/trending-repositories/`,
     `https://ossinsight.io/collections/static-site-generator/`,
@@ -122,7 +126,9 @@ export async function fetchOSSInsight({ metric } = {}) {
     : { ok: results.some((r) => r.ok), source: 'oss-insight', collections: results, ts: ts() };
 }
 
-/** TrendShift — trending repositories with date range filter */
+/** TrendShift — trending repositories with date range filter
+ * @param {{ range?: number }} opts
+ */
 export async function fetchTrendShift({ range } = {}) {
   const rng = range || 30;
   const url = rng === 7
@@ -141,13 +147,15 @@ export async function fetchTrendShift({ range } = {}) {
     const desc = (card.match(/<p[^>]*class="[^"]*text-muted[^"]*"[^>]*>([\s\S]*?)<\/p>/i) || ['', ''])[1]
       .replace(/<[^>]+>/g, '').replace(/^\s+|\s+$/g, '');
     const stars = (card.match(/>\s*([\d,]+)\s*<[^>]*>\s*(?:total\s*)?stars/i) || ['', ''])[1].replace(/,/g, '');
-    const change = (card.match(/>\s*([+\-]?\d[\d,]*)\s*stars?\s*(?:this|in)/i) || ['', ''])[1].replace(/,/g, '');
+    const change = (card.match(/>\s*([+-]?\d[\d,]*)\s*stars?\s*(?:this|in)/i) || ['', ''])[1].replace(/,/g, '');
     if (repoPath) repos.push({ repo: repoPath, title, description: desc, stars, change });
   }
   return { ok: true, source: 'trendshift', url, data: repos, ts: ts() };
 }
 
-/** GitHub top-starred search */
+/** GitHub top-starred search
+ * @param {{ minStars?: number }} opts
+ */
 export async function fetchTopStarred({ minStars } = {}) {
   const min = minStars || 1000;
   const url = `https://github.com/search?q=stars:>${min}&type=repositories&s=stars&o=desc`;
@@ -176,13 +184,13 @@ export async function fetchAll(opts = {}) {
 }
 
 /** Check if a GitHub repo is related to agent/skill discovery */
-export function isAgentSkillRepo(repo) {
+export function isAgentSkillRepo(/** @type {any} */ repo) {
   const keywords = /\b(agent|skill|plugin|tool|cli|sdk|framework|ai|llm|claude|assistant)\b/i;
   return keywords.test(repo.repo) || keywords.test(repo.description || '') || keywords.test(repo.name || '');
 }
 
 /** Filter trending repos for agent/skill discoveries */
-export function findAgentSkillRepos(data) {
+export function findAgentSkillRepos(/** @type {any} */ data) {
   if (!data?.data) return [];
   return data.data.filter(isAgentSkillRepo);
 }

@@ -16,23 +16,7 @@
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
 <link rel="stylesheet" href="../../../yry-a11y/index.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<style>
-  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
-  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
-  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
-  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
-  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
-  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
-  .delivery-story { font-size: .72rem; color: #4b5563; }
-  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
-  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
-  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
-  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
-  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
-  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
-  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
-</style>
+<link rel="stylesheet" href="../../../yry-legacy-scene-delivery/index.css">
 </head>
 <body>
 <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
@@ -54,7 +38,7 @@
 
   <div class="content-card">
     <h2>📄 迁移前 · 内联样式</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">&lt;style&gt;
+    <pre class="yry-auto-15271">&lt;style&gt;
   .card {
     background: rgba(15,23,42,.55);
     border: 1px solid rgba(255,255,255,.06);
@@ -76,12 +60,12 @@
   &lt;p&gt;内容描述&lt;/p&gt;
   &lt;div class="tags"&gt;&lt;span class="tag"&gt;标签&lt;/span&gt;&lt;/div&gt;
 &lt;/div&gt;</pre>
-    <p style="margin-top:12px;font-size:.74rem;color:#a9b1d6">问题：硬编码颜色 · 不可复用 · 每页重复定义 · 修改需逐页同步。</p>
+    <p class="yry-auto-54055">问题：硬编码颜色 · 不可复用 · 每页重复定义 · 修改需逐页同步。</p>
   </div>
 
   <div class="content-card">
     <h2>📄 迁移后 · CDN 组件</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">&lt;link rel="stylesheet" href="../../cdn/yry-item-card/index.css"&gt;
+    <pre class="yry-auto-15271">&lt;link rel="stylesheet" href="../../cdn/yry-item-card/index.css"&gt;
 &lt;link rel="stylesheet" href="../../cdn/yry-tag-chip/index.css"&gt;
 &lt;script src="../../cdn/yry-item-card/index.js"&gt;&lt;/script&gt;
 &lt;script src="../../cdn/yry-tag-chip/index.js"&gt;&lt;/script&gt;
@@ -92,12 +76,12 @@
   tags='[{"text":"标签","modifier":"accent"}]'
   meta="元信息"&gt;
 &lt;/yry-item-card&gt;</pre>
-    <p style="margin-top:12px;font-size:.74rem;color:#a9b1d6">优势：样式集中管理 · 设计令牌统一 · 修改一处即生效全站 · 文件体积减少 27-36%。</p>
+    <p class="yry-auto-54055">优势：样式集中管理 · 设计令牌统一 · 修改一处即生效全站 · 文件体积减少 27-36%。</p>
   </div>
 
   <div class="content-card">
     <h2>📄 迁移检查清单</h2>
-    <ul style="margin:0;padding-left:20px;font-size:.76rem;line-height:1.9;color:#a9b1d6">
+    <ul class="yry-auto-20518">
       <li><input type="checkbox"> 确认目标 CDN 组件存在且版本兼容</li>
       <li><input type="checkbox"> 在 <code>&lt;head&gt;</code> 中添加组件 CSS 引用</li>
       <li><input type="checkbox"> 在 <code>&lt;body&gt;</code> 底部添加组件 JS 引用</li>
@@ -112,7 +96,7 @@
 
   <div class="content-card">
     <h2>📄 内联消除度量脚本</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">#!/usr/bin/env bash
+    <pre class="yry-auto-15271">#!/usr/bin/env bash
 # migrate-metrics.sh — 度量页面内联消除率
 set -euo pipefail
 
@@ -137,7 +121,7 @@ echo "  yry-* 自定义元素:    $YRY_TAGS  (目标 ≥ 5)"
 
   <div class="content-card">
     <h2>📄 保留页面专属 CSS 判断</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">// 判断某段 CSS 是否应保留为页面专属
+    <pre class="yry-auto-15271">// 判断某段 CSS 是否应保留为页面专属
 function shouldKeepAsPageCSS(rule) {
   // 1. 页面特有布局 (如 5 列相册网格)
   if (/grid-template-columns:\s*repeat\(5/.test(rule)) return true;

@@ -7,23 +7,7 @@
 <link rel="stylesheet" href="../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../cdn/theme/index.css">
 	<link rel="stylesheet" href="../../cdn/shared-reports/index.css">
-	<style>
-	.yry-container { max-width: 800px; }
-	.yry-header .icon { font-size: 2.5rem; }
-	.yry-header h1 { font-size: 1.6rem; margin: 12px 0 6px; }
-	/* common styles covered by shared-reports.css */
-	/* Enhanced sections — page-specific */
-	.yry-impact-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-	.yry-impact-badge { display: inline-block; padding: 4px 14px; border-radius: 6px; color: #fff; font-size: .8rem; font-weight: 600; }
-	.yry-impact-summary { font-size: .84rem; color: var(--yry-text2); }
-	.yry-impact-detail { padding: 12px; background: rgba(15,23,42,.4); border-radius: 8px; border: var(--yry-border); margin-top: 8px; }
-	.yry-hist-dot { transition: transform .15s; }
-	.yry-hist-dot:hover { transform: scale(1.8); }
-	.yry-cross-item { flex: 1; min-width: 200px; }
-	.yry-cross-label { font-size: .78rem; color: var(--yry-text3); margin-bottom: 4px; }
-	.yry-cross-desc { font-size: .88rem; font-weight: 600; color: var(--yry-accent); line-height: 1.5; }
-	.yry-cross-badge { text-align: center; padding: 8px 16px; background: rgba(15,23,42,.4); border-radius: 8px; border: var(--yry-border); flex-shrink: 0; min-width: 80px; }
-	</style>
+	<link rel="stylesheet" href="../../cdn/loop-report/index.css">
 </head>
 <body>
 <div class="yry-container">
@@ -40,7 +24,7 @@
   <div class="icon">🎨</div>
   <h1>自循环报告 · HTML 过期重生成</h1>
   <div class="meta">2026-06-23 23:37:05 · 每 30 分钟 · <span class="yry-badge pass">✅ 通过</span></div>
-  <div class="desc" style="font-size:.84rem;color:var(--yry-text2);margin-top:12px;line-height:1.7;max-width:700px;margin-left:auto;margin-right:auto">检测 Markdown 文档变更，自动重生成 7 类标准 HTML 文档(架构图·知识图谱·测试面板·演示·审查·计划清单·源码)</div>
+  <div class="desc" h-lg-fs84-t2-mt12-lh17-max700>检测 Markdown 文档变更，自动重生成 7 类标准 HTML 文档(架构图·知识图谱·测试面板·演示·审查·计划清单·源码)</div>
 </div>
 
 <div class="yry-stats">
@@ -62,7 +46,7 @@
   </div>
   
   <div class="yry-stat">
-    <a href="../../docs/健康报告/" style="text-decoration:none;color:inherit">
+    <a href="../../docs/健康报告/" class="h-lg-no-underline">
       <div class="yry-val pass">84</div>
       <div class="yry-lbl">🩺 健康度 B 级</div>
     </a>
@@ -71,7 +55,7 @@
 
 <div class="yry-summary">rui-html 自循环通过 (exit 0)</div>
 
-<div class="yry-card"><h2>📋 检查清单 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">4/4 通过</span></h2><div style="margin-bottom:8px"><div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.78rem;border-bottom:1px solid rgba(255,255,255,.03)"><span style="color:var(--yry-pass)">✅</span><span style="color:var(--yry-text2)">Markdown 变更检测</span><span style="color:var(--yry-text3);font-size:.68rem;margin-left:auto">检测正常</span></div><div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.78rem;border-bottom:1px solid rgba(255,255,255,.03)"><span style="color:var(--yry-pass)">✅</span><span style="color:var(--yry-text2)">HTML 重生成成功率</span><span style="color:var(--yry-text3);font-size:.68rem;margin-left:auto">100%</span></div><div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.78rem;border-bottom:1px solid rgba(255,255,255,.03)"><span style="color:var(--yry-pass)">✅</span><span style="color:var(--yry-text2)">7 类文档覆盖</span><span style="color:var(--yry-text3);font-size:.68rem;margin-left:auto">全部覆盖</span></div><div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.78rem;border-bottom:1px solid rgba(255,255,255,.03)"><span style="color:var(--yry-pass)">✅</span><span style="color:var(--yry-text2)">CDN 组件引用更新</span><span style="color:var(--yry-text3);font-size:.68rem;margin-left:auto">引用正确</span></div></div><div style="padding:8px 12px;background:rgba(34,197,94,.04);border-radius:6px;font-size:.74rem;color:var(--yry-text2)">📌 所有检查项均通过，技能运行正常。下一个巡检周期将自动重新检查。 执行频率：每 30 分钟。</div></div>
+<div class="yry-card"><h2>📋 检查清单 <span class="h-lg-fs78-t3-fw4-ml8">4/4 通过</span></h2><div class="h-lg-mb8"><div class="h-lg-flex-gap8-p6-fs78-bb03"><span class="h-tp">✅</span><span class="h-t2">Markdown 变更检测</span><span class="h-lg-t3-fs68-mlauto">检测正常</span></div><div class="h-lg-flex-gap8-p6-fs78-bb03"><span class="h-tp">✅</span><span class="h-t2">HTML 重生成成功率</span><span class="h-lg-t3-fs68-mlauto">100%</span></div><div class="h-lg-flex-gap8-p6-fs78-bb03"><span class="h-tp">✅</span><span class="h-t2">7 类文档覆盖</span><span class="h-lg-t3-fs68-mlauto">全部覆盖</span></div><div class="h-lg-flex-gap8-p6-fs78-bb03"><span class="h-tp">✅</span><span class="h-t2">CDN 组件引用更新</span><span class="h-lg-t3-fs68-mlauto">引用正确</span></div></div><div class="h-lg-p812-bg04-fs74-t2">📌 所有检查项均通过，技能运行正常。下一个巡检周期将自动重新检查。 执行频率：每 30 分钟。</div></div>
 
 
 
@@ -80,28 +64,28 @@
 
 
 <div class="yry-card">
-      <h2>📈 历史趋势 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">最近 2 次执行</span></h2>
-      <div style="display:flex;align-items:center;gap:10px;padding:12px 0">
-        <span style="font-size:.7rem;color:var(--yry-text3)">最早</span>
-        <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--yry-pass);margin:0 2px;transition:transform .15s;cursor:default" title="2026-06-23" onmouseover="this.style.transform='scale(1.8)'" onmouseout="this.style.transform='scale(1)'"></span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--yry-pass);margin:0 2px;transition:transform .15s;cursor:default" title="2026-06-22" onmouseover="this.style.transform='scale(1.8)'" onmouseout="this.style.transform='scale(1)'"></span></div>
-        <span style="font-size:.7rem;color:var(--yry-text3)">最新</span>
+      <h2>📈 历史趋势 <span class="h-lg-fs78-t3-fw4-ml8">最近 2 次执行</span></h2>
+      <div class="h-lg-flex-gap10-p12-0">
+        <span class="h-lg-fs7-t3">最早</span>
+        <div class="h-lg-flex1-center-gap4"><span class="h-lg-dot10-pass" title="2026-06-23" onmouseover="this.style.transform='scale(1.8)'" onmouseout="this.style.transform='scale(1)'"></span><span class="h-lg-dot6-pass" title="2026-06-22" onmouseover="this.style.transform='scale(1.8)'" onmouseout="this.style.transform='scale(1)'"></span></div>
+        <span class="h-lg-fs7-t3">最新</span>
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:var(--yry-border)">
-        <span style="font-size:.74rem;color:var(--yry-text3)">共 2 份历史报告</span>
-        <span style="font-size:.7rem;color:var(--yry-text3)">执行频率: 每 30 分钟</span>
+      <div class="h-lg-flex-between-pt8-bt">
+        <span class="h-lg-fs74-t3">共 2 份历史报告</span>
+        <span class="h-lg-fs7-t3">执行频率: 每 30 分钟</span>
       </div>
     </div>
 
 <div class="yry-card">
-      <h2>⏱️ SLA 追踪 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Service Level Agreement</span></h2>
-      <div style="text-align:center;padding:16px;color:#22c55e;font-size:.84rem">✅ 当前状态正常，无 SLA 计时器启动</div>
+      <h2>⏱️ SLA 追踪 <span class="h-lg-fs78-t3-fw4-ml8">Service Level Agreement</span></h2>
+      <div class="h-lg-center-p16-green-fs84">✅ 当前状态正常，无 SLA 计时器启动</div>
     </div>
 
 
 
 <div class="yry-card">
-    <h2>🔗 关联分析 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">对项目健康的影响</span></h2>
-    <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:12px">
+    <h2>🔗 关联分析 <span class="h-lg-fs78-t3-fw4-ml8">对项目健康的影响</span></h2>
+    <div class="h-lg-flex-gap12-start-wrap-mb12">
       <div class="yry-cross-item">
         <div class="yry-cross-label">关联诊断维度</div>
         <div class="yry-cross-desc">文档新鲜度</div>
@@ -111,18 +95,18 @@
         <div class="yry-cross-desc">HTML 过期重生成确保 Markdown→HTML 文档同步，过期文档影响信息准确性</div>
       </div>
       <div class="yry-cross-badge">
-        <div style="font-size:.7rem;color:var(--yry-text3)">当前状态</div>
-        <div style="font-size:1.1rem;font-weight:700;color:var(--yry-pass)">✓ 正常</div>
+        <div class="h-lg-fs7-t3">当前状态</div>
+        <div class="h-lg-fs11-fw7-pass">✓ 正常</div>
       </div>
     </div>
-    <div style="padding:10px;background:rgba(245,158,11,.04);border-radius:8px;border:1px solid rgba(245,158,11,.1);font-size:.78rem;color:var(--yry-text2);line-height:1.6"><strong>📊 升级策略：</strong>重生成失败 → P1 · 文档过期 >7 天 → P2 · 与 D6 文档过时诊断联动</div>
+    <div class="h-lg-p10-amber04-bd-fs78-t2-lh16"><strong>📊 升级策略：</strong>重生成失败 → P1 · 文档过期 >7 天 → P2 · 与 D6 文档过时诊断联动</div>
   </div>
 
 
 
 <div class="yry-footer">
   自循环报告 · rui-html · 2026-06-23 23:37:05<br>
-  <span style="color:var(--yry-text3)">由 rui-bot loop-report 自动生成</span>
+  <span class="h-t3">由 rui-bot loop-report 自动生成</span>
 </div>
 
 </div>

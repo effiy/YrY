@@ -7,38 +7,7 @@
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/theme/index.css">
 <link rel="stylesheet" href="../../../../cdn/shared-reports/index.css">
-<style>
-.scene-nav { display:flex; flex-wrap:wrap; gap:4px 8px; padding:8px 0; font-size:.72rem; border-bottom:var(--yry-border); margin-bottom:12px; }
-.scene-nav-link { color:var(--yry-text3); text-decoration:none; }
-.scene-nav-link:hover { color:var(--yry-accent); }
-.scene-nav-link.active { color:var(--yry-accent); font-weight:700; }
-.scene-nav-sep { color:var(--yry-text3); }
-.cross-nav { display:flex; gap:8px; padding:6px 0; font-size:.72rem; margin-bottom:12px; }
-.cross-link { color:var(--yry-text3); text-decoration:none; }
-.cross-link:hover { color:var(--yry-accent); }
-.cross-link.on { color:var(--yry-accent); font-weight:700; }
-.cross-sep { color:var(--yry-text3); }
-.header { margin-bottom:12px; }
-.header h1 { font-size:1.1rem; margin:0; }
-.accent { color:var(--yry-accent); }
-.meta { font-size:.68rem; color:var(--yry-text3); margin-top:4px; }
-.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:8px; }
-.stat-card { padding:10px; text-align:center; border-radius:6px; border:var(--yry-border); background:rgba(15,23,42,.4); }
-.stat-card .val { font-size:1.2rem; font-weight:700; }
-.stat-card .val.health { color:var(--yry-pass); }
-.stat-card .lbl { font-size:.62rem; color:var(--yry-text3); margin-top:2px; }
-.bar-wrap { margin-bottom:12px; }
-.bar-outer { height:6px; border-radius:3px; background:rgba(255,255,255,.06); overflow:hidden; display:flex; }
-.seg.strength { background:var(--yry-pass); }
-.seg.gap { background:rgba(255,255,255,.06); }
-.card { padding:16px 20px; border-radius:8px; border:var(--yry-border); background:rgba(15,23,42,.4); }
-.card h2 { font-size:.88rem; margin:0 0 12px 0; }
-.cl-item { display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.04); }
-.cl-num { min-width:24px; height:24px; border-radius:50%; background:rgba(34,197,94,.12); color:var(--yry-pass); display:flex; align-items:center; justify-content:center; font-size:.68rem; font-weight:700; }
-.cl-text { flex:1; font-size:.76rem; line-height:1.5; color:var(--yry-text2); }
-.ft { text-align:center; font-size:.64rem; color:var(--yry-text3); padding:20px 0; }
-@media (max-width:640px) { .stats-grid { grid-template-columns:repeat(2,1fr); }}
-</style>
+<link rel="stylesheet" href="../../../../cdn/yry-legacy-scene-overview/index.css">
 </head>
 <body>
 <div class="container">
@@ -78,24 +47,24 @@
   <div class="stat-card"><div class="val health">2</div><div class="lbl">主题 (A/B)</div></div>
   <div class="stat-card"><div class="val">AA</div><div class="lbl">对比度</div></div>
 </div>
-<div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:100%"></div><div class="seg gap" style="width:0%"></div></div></div>
+<div class="bar-wrap"><div class="bar-outer"><div class="seg strength" yry-auto-60516"></div><div class="seg gap" yry-auto-6776"></div></div></div>
 
 <div class="card">
   <h2>① 5 层令牌架构清单</h2>
-  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong style="color:var(--yry-accent)">L1 Surfaces</strong> — <code>--yry-bg</code> · <code>--yry-surface</code> · <code>--yry-surface-raised</code> (背景层 · 优先定义)</span></div>
-  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong style="color:var(--yry-accent)">L2 Brand</strong> — <code>--yry-accent</code> · <code>--yry-accent2</code> (品牌色 · 独立于主题)</span></div>
-  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong style="color:var(--yry-accent)">L3 Semantic</strong> — <code>--yry-success</code> · <code>--yry-warning</code> · <code>--yry-error</code> (语义色 · 跨主题一致)</span></div>
-  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong style="color:var(--yry-accent)">L4 Text</strong> — <code>--yry-text1</code> · <code>--yry-text2</code> · <code>--yry-text3</code> (文字层级 · 基于背景对比度)</span></div>
-  <div class="cl-item"><span class="cl-num">5</span><span class="cl-text"><strong style="color:var(--yry-accent)">L5 Elevation</strong> — <code>--yry-border</code> · <code>--yry-shadow</code> · <code>--yry-radius</code> (层级效果 · 主题可微调)</span></div>
+  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong class="yry-auto-24835">L1 Surfaces</strong> — <code>--yry-bg</code> · <code>--yry-surface</code> · <code>--yry-surface-raised</code> (背景层 · 优先定义)</span></div>
+  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong class="yry-auto-24835">L2 Brand</strong> — <code>--yry-accent</code> · <code>--yry-accent2</code> (品牌色 · 独立于主题)</span></div>
+  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong class="yry-auto-24835">L3 Semantic</strong> — <code>--yry-success</code> · <code>--yry-warning</code> · <code>--yry-error</code> (语义色 · 跨主题一致)</span></div>
+  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong class="yry-auto-24835">L4 Text</strong> — <code>--yry-text1</code> · <code>--yry-text2</code> · <code>--yry-text3</code> (文字层级 · 基于背景对比度)</span></div>
+  <div class="cl-item"><span class="cl-num">5</span><span class="cl-text"><strong class="yry-auto-24835">L5 Elevation</strong> — <code>--yry-border</code> · <code>--yry-shadow</code> · <code>--yry-radius</code> (层级效果 · 主题可微调)</span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
+<div class="card" yry-auto-86349">
   <h2>② Cat A vs Cat B 主题选型</h2>
   <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong>Cat A (Mono)</strong> — JetBrains Mono · 架构图/源码/图谱 · #1a1b26 暗色单色系 · <code>#7aa2f7</code> 蓝</span></div>
   <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong>Cat B (System)</strong> — 系统字体栈 · 文档/场景页/首页 · #0f172a 暗色多色系 · <code>#22d3ee</code> 青</span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
+<div class="card" yry-auto-86349">
   <h2>③ 14 设计令牌速查</h2>
   <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong>Surfaces (3)</strong> — <code>--yry-bg</code> / <code>--yry-surface</code> / <code>--yry-surface-raised</code></span></div>
   <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong>Brand (2)</strong> — <code>--yry-accent</code> / <code>--yry-accent2</code></span></div>
@@ -104,23 +73,23 @@
   <div class="cl-item"><span class="cl-num">5</span><span class="cl-text"><strong>Elevation (3)</strong> — <code>--yry-border</code> / <code>--yry-shadow</code> / <code>--yry-radius</code></span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
+<div class="card" yry-auto-86349">
   <h2>④ WCAG 对比度合规</h2>
   <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong>text1 / bg</strong> — Cat B 7.8:1 · Cat A 8.4:1 · AA✓ AAA✓</span></div>
   <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong>text3 / bg</strong> — Cat B 4.6:1 · Cat A 4.1:1 · AA✓/⚠ · 仅用于 ≥14px 加粗</span></div>
   <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong>error / bg</strong> — Cat B 4.9:1 · Cat A 4.7:1 · AA✓ · AAA✗</span></div>
-  <div class="cl-item" style="background:rgba(239,68,68,.06);border-radius:6px;padding:10px 12px;margin-top:6px"><span class="cl-num" style="background:rgba(239,68,68,.12);color:var(--yry-fail)">!</span><span class="cl-text"><strong style="color:var(--yry-fail)">反模式</strong> — 禁止按颜色命名 <code>--yry-blue</code> / <code>--yry-red</code> · 必须按用途命名</span></div>
+  <div class="cl-item" yry-a2-5"><span class="cl-num" yry-a2-13">!</span><span class="cl-text"><strong class="yry-auto-77213">反模式</strong> — 禁止按颜色命名 <code>--yry-blue</code> / <code>--yry-red</code> · 必须按用途命名</span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
-  <p style="font-size:.72rem;color:var(--yry-text3);text-align:center">
+<div class="card" yry-auto-86349">
+  <p class="yry-auto-58746">
     查看完整详细清单: <a href="计划清单.html">计划清单</a> · <a href="架构图.html">架构图</a> · <a href="index.md">源码 Markdown</a>
   </p>
 </div>
 
 <footer class="ft">
   场景 2 · 双主题系统设计 · CDN 故事任务面板 · v1.2.0<br>
-  <span style="color:var(--yry-text3)">清单 · 架构 · 图谱 · 源码 · 测试 · 演示 · 审计</span>
+  <span class="yry-auto-80578">清单 · 架构 · 图谱 · 源码 · 测试 · 演示 · 审计</span>
 </footer>
 
 </div>

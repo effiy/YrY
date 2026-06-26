@@ -20,51 +20,21 @@
 
 (function () {
   'use strict';
+  var _script = document.currentScript;
+  var _dataUrl = _script && _script.src ? _script.src.replace(/index\.js(\?[^]*)?$/, 'data.json') : './data.json';
+  var _dataPromise = fetch(_dataUrl).then(function(r){return r.json();}).then(function(d){STEPS=d.STEPS;STEP_WEIGHTS=d.STEP_WEIGHTS;FALLBACKS=d.FALLBACKS;PERF_ITEMS=d.PERF_ITEMS;LOAD_BREAKDOWN=d.LOAD_BREAKDOWN;TREND_DATA=d.TREND_DATA;}).catch(function(err){console.error('[YryLoadChainReport] data.json load failed:', err);});
+
 
   var TAG_NAME = 'yry-load-chain-report';
   var READY_EVENT = 'yry-load-chain-report-ready';
 
   /* ── 静态数据 ──────────────────────────────────────────────────────── */
-  var STEPS = [
-    { name: 'shared/index.css', icon: '①', desc: 'CSS Reset · 设计令牌 · 基础排版 · 深色主题变量。所有页面的必备基线，最先加载确保后续组件样式有正确的变量上下文。', time: '45ms', size: '4.2KB' },
-    { name: 'theme/index.css', icon: '②', desc: 'YrY 主题系统 — Mono/System 双主题 · 14 设计令牌 · 7 动画关键帧。在 shared 之后加载，覆盖/扩展基础主题。', time: '30ms', size: '3.8KB' },
-    { name: '组件 CSS × N', icon: '③', desc: '按页面需求加载的组件样式表(~20-30 个)。每组件独立 .css 文件，互不依赖，按需并行加载。', time: '120ms', size: '~28KB' },
-    { name: 'Vue 3 运行时', icon: '④', desc: 'Vue 3 prod 运行时 (~33KB gzip) · jsDelivr CDN 加速 · 全局 Vue 对象供所有自定义元素使用。', time: '180ms', size: '33KB gzip' },
-    { name: '组件 JS × N', icon: '⑤', desc: '按页面需求加载的组件脚本(~10-20 个)。每个自定义元素独立的 .js 文件，依赖 Vue 3 运行时。', time: '250ms', size: '~45KB' }
-  ];
-
-  var STEP_WEIGHTS = [0.25, 0.15, 0.25, 0.20, 0.15];
-
-  var FALLBACKS = [
-    { name: 'shared/index.css 回退', level: 'full', desc: '设计令牌内联在每页面 &lt;style&gt; 中作为后备。当 CDN 不可用时，页面仍保留基本视觉结构，不会出现裸 HTML。' },
-    { name: 'Vue 3 CDN 多源', level: 'full', desc: 'unpkg + jsDelivr 双 CDN 源。当 unpkg 不可达时自动切换至 jsDelivr 备用 URL，切换时间 <200ms。' },
-    { name: '组件 CSS 降级', level: 'partial', desc: '组件 CSS 加载失败时，页面仅丢失该组件的增强样式，核心布局由 shared.css 保证，不影响可读性。' },
-    { name: '组件 JS 降级', level: 'partial', desc: '自定义元素未升级时，浏览器将其作为未知 HTML 元素处理(display: inline)，不阻塞页面渲染。yry-doc-layer 使用 Vue app mount 保底。' },
-    { name: '字体回退栈', level: 'full', desc: 'font-family 降级链: system-ui → -apple-system → sans-serif。woff2 加载失败时自动使用系统字体，无 FOIT。' },
-    { name: '离线缓存策略', level: 'partial', desc: '浏览器 HTTP 缓存 + CDN 边缘缓存双层保障。静态资源强缓存 1 年(版本号 URL 更新触发刷新)。当前无 Service Worker 离线支持。' }
-  ];
-
-  var PERF_ITEMS = [
-    { metric: '首次内容绘制 (FCP)', value: '310ms', target: '<500ms', status: 'A' },
-    { metric: '最大内容绘制 (LCP)', value: '510ms', target: '<1s', status: 'A' },
-    { metric: '累计布局偏移 (CLS)', value: '0.02', target: '<0.1', status: 'A' },
-    { metric: '首次输入延迟 (FID)', value: '12ms', target: '<50ms', status: 'A' },
-    { metric: '总阻塞时间 (TBT)', value: '45ms', target: '<200ms', status: 'A' },
-    { metric: 'Speed Index', value: '0.8s', target: '<1.5s', status: 'A' },
-    { metric: 'TTFB (首字节)', value: '85ms', target: '<200ms', status: 'A' }
-  ];
-
-  var LOAD_BREAKDOWN = [
-    { label: 'DNS + TCP + TLS', ms: 55, color: '#64748b' },
-    { label: 'shared/index.css', ms: 45, color: '#22d3ee' },
-    { label: 'theme/index.css', ms: 30, color: '#a78bfa' },
-    { label: '组件 CSS (×25)', ms: 120, color: '#34d399' },
-    { label: 'Vue 3 运行时', ms: 180, color: '#f59e0b' },
-    { label: '组件 JS (×15)', ms: 250, color: '#ef4444' }
-  ];
-
-  var TREND_DATA = [99.1, 99.3, 99.5, 99.6, 99.7, 99.7];
-
+var STEPS = null;
+var STEP_WEIGHTS = null;
+var FALLBACKS = null;
+var PERF_ITEMS = null;
+var LOAD_BREAKDOWN = null;
+var TREND_DATA = null;
   /* ── 辅助函数 ──────────────────────────────────────────────────────── */
   function grade(s) { return s >= 80 ? 'A' : s >= 60 ? 'B' : s >= 40 ? 'C' : 'D'; }
   function cls(s) { return s >= 80 ? 'pass' : s >= 60 ? 'warn' : 'fail'; }
@@ -322,8 +292,11 @@
       });
   };
 
-  if (!customElements.get(TAG_NAME)) {
-    customElements.define(TAG_NAME, YryLoadChainReport);
-  }
-  document.dispatchEvent(new CustomEvent(READY_EVENT, { detail: { component: 'YryLoadChainReport' } }));
+  _dataPromise.then(function(){
+    if (!customElements.get(TAG_NAME)) {
+      customElements.define(TAG_NAME, YryLoadChainReport);
+    }
+    document.dispatchEvent(new CustomEvent(READY_EVENT, { detail: { component: 'YryLoadChainReport' } }));
+  
+  });
 })();

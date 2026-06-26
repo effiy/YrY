@@ -8,6 +8,7 @@ import { existsSync, readFileSync, writeFileSync, appendFileSync } from "node:fs
 
 import {
   HTTP_TIMEOUT_MS, MAX_RETRIES, RETRY_DELAY_MS, DEFAULT_API_URL,
+  MS_PER_DAY, NOTIF_ROLLING_WINDOW_DAYS,
 } from "../../../lib/constants.mjs";
 import { readJson } from "../../../lib/fs.mjs";
 
@@ -16,7 +17,7 @@ export const API_URL_DEFAULT = `${DEFAULT_API_URL}/wework/send-message`;
 const NOTIFICATION_QUEUE_FILE = ".memory/notification-queue.jsonl";
 const NOTIFICATION_LOG_FILE = ".memory/notification-log.jsonl";
 
-export async function sendToWecom(apiUrl, webhookUrl, content, token) {
+export async function sendToWecom(/** @type {string} */ apiUrl, /** @type {string} */ webhookUrl, /** @type {string} */ content, /** @type {string} */ token) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), HTTP_TIMEOUT_MS);
 
@@ -39,14 +40,41 @@ export async function sendToWecom(apiUrl, webhookUrl, content, token) {
 
     let data;
     try { data = JSON.parse(text); } catch { data = text; }
-    return { ok: true, data };
+    return { ok: true, data, path: "api" };
   } finally {
     clearTimeout(timer);
   }
 }
 
-export async function sendWithRetry(apiUrl, webhookUrl, content, token, maxRetries) {
+// Fallback: send directly to WeCom webhook when API proxy is unreachable.
+// WeCom webhook API: POST {msgtype:text, text:{content}} with key in URL.
+export async function sendDirectToWebhook(/** @type {string} */ webhookUrl, /** @type {string} */ content) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), HTTP_TIMEOUT_MS);
+
+  try {
+    const res = await fetch(webhookUrl, {
+      method: "POST",
+      signal: controller.signal,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ msgtype: "text", text: { content } }),
+    });
+    const text = await res.text();
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${text.slice(0, 200)}`);
+    let data;
+    try { data = JSON.parse(text); } catch { data = text; }
+    if (data && typeof data.errcode === "number" && data.errcode !== 0) {
+      throw new Error(`WeCom errcode ${data.errcode}: ${data.errmsg || ""}`);
+    }
+    return { ok: true, data, path: "direct" };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+export async function sendWithRetry(/** @type {string} */ apiUrl, /** @type {string} */ webhookUrl, /** @type {string} */ content, /** @type {string} */ token, /** @type {number} */ maxRetries) {
   let lastError = null;
+  let lastPath = null;
 
   for (let i = 0; i <= maxRetries; i++) {
     try {
@@ -54,6 +82,16 @@ export async function sendWithRetry(apiUrl, webhookUrl, content, token, maxRetri
       return { ...result, retries: i };
     } catch (err) {
       lastError = err.message;
+      lastPath = "api";
+      // Fallback to direct webhook on network/abort errors (API proxy unreachable)
+      if (webhookUrl && (err.name === "AbortError" || /abort|fetch failed|ECONN|ETIMEDOUT|ENETUNREACH/i.test(err.message))) {
+        try {
+          const direct = await sendDirectToWebhook(webhookUrl, content);
+          return { ...direct, retries: i, fallback: true };
+        } catch (directErr) {
+          lastError = `api: ${err.message.slice(0, 80)} | direct: ${directErr.message.slice(0, 80)}`;
+        }
+      }
       if (i < maxRetries) {
         console.error(`[rui-bot] 重试 ${i + 1}/${maxRetries}: ${err.message}`);
         await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
@@ -61,10 +99,10 @@ export async function sendWithRetry(apiUrl, webhookUrl, content, token, maxRetri
     }
   }
 
-  return { ok: false, error: lastError, retries: maxRetries };
+  return { ok: false, error: lastError, retries: maxRetries, path: lastPath };
 }
 
-export function enqueueFailedNotification(projectRoot, message, webhookUrl, apiUrl, token) {
+export function enqueueFailedNotification(/** @type {string} */ projectRoot, /** @type {any} */ message, /** @type {string} */ webhookUrl, /** @type {string} */ apiUrl, /** @type {string} */ token) {
   const queuePath = join(projectRoot, NOTIFICATION_QUEUE_FILE);
   const entry = JSON.stringify({
     timestamp: new Date().toISOString(),
@@ -82,7 +120,7 @@ export function enqueueFailedNotification(projectRoot, message, webhookUrl, apiU
   }
 }
 
-export async function flushNotificationQueue(projectRoot) {
+export async function flushNotificationQueue(/** @type {string} */ projectRoot) {
   const queuePath = join(projectRoot, NOTIFICATION_QUEUE_FILE);
   if (!existsSync(queuePath)) {
     console.log("[rui-bot] 通知队列为空，无需处理");
@@ -97,6 +135,7 @@ export async function flushNotificationQueue(projectRoot) {
   }
 
   if (lines.length === 0) {
+    console.log("[rui-bot] 通知队列为空，无需处理");
     return { flushed: 0, remaining: 0 };
   }
 
@@ -142,7 +181,7 @@ export async function flushNotificationQueue(projectRoot) {
   return { flushed, remaining: remaining.length };
 }
 
-export function logNotificationDelivery(projectRoot, opts, result) {
+export function logNotificationDelivery(/** @type {string} */ projectRoot, /** @type {any} */ opts, /** @type {any} */ result) {
   try {
     const entry = {
       timestamp: new Date().toISOString(),
@@ -154,13 +193,38 @@ export function logNotificationDelivery(projectRoot, opts, result) {
       retries: result.retries || 0,
       msgLength: result.msgLength || 0,
       dryRun: result.dryRun || false,
+      path: result.path || null,
+      fallback: result.fallback || false,
     };
     const logPath = join(projectRoot, NOTIFICATION_LOG_FILE);
     appendFileSync(logPath, JSON.stringify(entry) + "\n", "utf-8");
+    trimNotificationLog(projectRoot);
   } catch { /* best effort */ }
 }
 
-export function loadConfig(projectRoot) {
+// Trim log entries older than the rolling window to keep the file bounded
+// and ensure the notify score reflects current state, not stale failures.
+export function trimNotificationLog(/** @type {string} */ projectRoot) {
+  try {
+    const logPath = join(projectRoot, NOTIFICATION_LOG_FILE);
+    if (!existsSync(logPath)) return;
+    const cutoff = Date.now() - NOTIF_ROLLING_WINDOW_DAYS * MS_PER_DAY;
+    const lines = readFileSync(logPath, "utf-8").trim().split("\n").filter(Boolean);
+    const kept = [];
+    for (const line of lines) {
+      try {
+        const entry = JSON.parse(line);
+        const ts = entry.timestamp ? new Date(entry.timestamp).getTime() : 0;
+        if (ts >= cutoff) kept.push(line);
+      } catch { /* drop malformed */ }
+    }
+    if (kept.length !== lines.length) {
+      writeFileSync(logPath, kept.join("\n") + (kept.length ? "\n" : ""), "utf-8");
+    }
+  } catch { /* best effort */ }
+}
+
+export function loadConfig(/** @type {string} */ projectRoot) {
   const configPath = join(projectRoot, ".claude", "skills", "rui-bot", "config.json");
   const cfg = readJson(configPath);
   return cfg || { api_url: API_URL_DEFAULT, robots: {}, agents: {}, default_robot: "general" };

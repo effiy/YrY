@@ -1,3 +1,10 @@
+---
+paths:
+  - "skills/rui-doc/**"
+  - "skills/rui-doc/SKILL.md"
+description: "需求到文档基线的生成规则"
+---
+
 # rui-doc 文档管线
 
 > 需求到文档基线的生成规则，独立于实现细节。

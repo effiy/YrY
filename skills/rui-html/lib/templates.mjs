@@ -8,7 +8,7 @@
  * - Page metadata (icons, labels) for each doc type
  */
 
-import { join, dirname } from "node:path";
+import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -22,6 +22,7 @@ export const CATEGORY_B = ['计划清单', '源码', '测试面板', '演示', '
 export const DOC_TYPES = ['计划清单', '架构图', '知识图谱', '源码', '测试面板', '演示', '审查'];
 
 /** Page metadata for cross-nav and breadcrumb */
+/** @type {Record<string, {icon: string, label: string, shortLabel: string, css: string}>} */
 export const PAGE_META = {
   '计划清单':  { icon: '📋', label: '计划清单', shortLabel: '清单', css: 'shared/index.css + theme/index.css + yry-checklist.css' },
   '架构图':    { icon: '📐', label: '架构图',   shortLabel: '架构', css: 'fonts/index.css + shared/index.css + theme-mono/index.css' },
@@ -35,7 +36,7 @@ export const PAGE_META = {
 /** Category determines CSS load chain */
 export const CATEGORY_CSS = {
   A: [
-    { href: '{{CDN_DEPTH}}cdn/fonts\/index\.css', rel: 'stylesheet' },
+    { href: '{{CDN_DEPTH}}cdn/fonts/index.css', rel: 'stylesheet' },
     { href: '{{CDN_DEPTH}}cdn/shared/index.css', rel: 'stylesheet' },
     { href: '{{CDN_DEPTH}}cdn/theme-mono/index.css', rel: 'stylesheet' },
   ],
@@ -46,6 +47,7 @@ export const CATEGORY_CSS = {
 };
 
 /** Category A needs external CDN scripts */
+/** @type {Record<string, {src: string}[]>} */
 export const CATEGORY_A_SCRIPTS = {
   '架构图': [
     { src: 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js' },
@@ -60,12 +62,12 @@ export const CATEGORY_A_SCRIPTS = {
 
 
 /** Get category for a doc type */
-export function getCategory(docType) {
+export function getCategory(/** @type {string} */ docType) {
   return CATEGORY_A.includes(docType) ? 'A' : 'B';
 }
 
 /** Get the shared token context that applies to all 7 files in a scene */
-export function buildSharedContext(ctx) {
+export function buildSharedContext(/** @type {any} */ ctx) {
   const cdnDepth = '../../../../'; // docs/故事任务面板/<story>/场景-N-<slug>/ → project root
   return {
     ...ctx,
@@ -74,14 +76,14 @@ export function buildSharedContext(ctx) {
 }
 
 /** Generate breadcrumb HTML for a page (legacy CSS approach) */
-export function buildBreadcrumb(ctx, docType) {
+export function buildBreadcrumb(/** @type {any} */ ctx, /** @type {string} */ docType) {
   const meta = PAGE_META[docType];
   const d = ctx.cdnDepth || '../../../../';
   return `<nav class="yry-breadcrumb"><a href="${d}docs/index.html">📄 文档中心</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">${ctx.storyName} · ${ctx.storyTitle}</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景 ${ctx.sceneNum} · ${ctx.sceneSlug}</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">${meta.icon} ${meta.label}</span></nav>`;
 }
 
 /** Generate breadcrumb data as JSON array (for YrySceneChrome component) */
-export function buildBreadcrumbJSON(ctx, docType) {
+export function buildBreadcrumbJSON(/** @type {any} */ ctx, /** @type {string} */ docType) {
   const meta = PAGE_META[docType];
   const d = ctx.cdnDepth || '../../../../';
   return JSON.stringify([
@@ -93,7 +95,7 @@ export function buildBreadcrumbJSON(ctx, docType) {
 }
 
 /** Generate cross-nav HTML for a page (legacy CSS approach) */
-export function buildCrossNav(ctx, currentDocType) {
+export function buildCrossNav(/** @type {any} */ ctx, /** @type {string} */ currentDocType) {
   const parts = ['<div class="yry-cross-nav">'];
   for (let i = 0; i < DOC_TYPES.length; i++) {
     const dt = DOC_TYPES[i];
@@ -110,8 +112,8 @@ export function buildCrossNav(ctx, currentDocType) {
 }
 
 /** Generate cross-nav data as JSON array (for YrySceneChrome component) */
-export function buildCrossNavJSON(ctx, currentDocType) {
-  const items = DOC_TYPES.map(dt => {
+export function buildCrossNavJSON(/** @type {any} */ ctx, /** @type {string} */ currentDocType) {
+  const items = DOC_TYPES.map((/** @type {string} */ dt) => {
     const meta = PAGE_META[dt];
     return dt === currentDocType
       ? { label: `${meta.icon} ${meta.shortLabel}`, active: true }
@@ -121,7 +123,7 @@ export function buildCrossNavJSON(ctx, currentDocType) {
 }
 
 /** Generate <head> block for a template */
-export function buildHeadBlock(ctx, docType) {
+export function buildHeadBlock(/** @type {any} */ ctx, /** @type {string} */ docType) {
   const cat = getCategory(docType);
   const meta = PAGE_META[docType];
   const d = ctx.cdnDepth || '../../../../';
@@ -137,6 +139,7 @@ export function buildHeadBlock(ctx, docType) {
     head.push(`<link rel="stylesheet" href="${href}">`);
   }
 
+  /** @type {Record<string, string>} */
   const CAT_B_BASE = {
     '计划清单': 'yry-plan-base.css',
     '源码': 'yry-source-base.css',
@@ -152,6 +155,7 @@ export function buildHeadBlock(ctx, docType) {
     head.push(`<link rel="stylesheet" href="${d}cdn/yry-checklist/index.css">`);
   }
 
+  /** @type {Record<string, string>} */
   const CAT_A_BASE = {
     '架构图': 'yry-arch-base.css',
     '知识图谱': 'yry-graph-base.css',

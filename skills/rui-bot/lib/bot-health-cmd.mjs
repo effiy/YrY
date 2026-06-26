@@ -8,15 +8,21 @@ import { findProjectRoot } from "../../../lib/fs.mjs";
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 
 import {
-  HTTP_TIMEOUT_SHORT_MS, MAX_RETRIES, MAX_MSG_LENGTH,
+  MAX_MSG_LENGTH,
   HEALTH_SCORING_DIMENSIONS, HEALTH_DIM_WEIGHTS, HEALTH_DIM_LABELS,
-  getSLOStatus,
+  getSLOStatus, MS_PER_DAY, NOTIF_ROLLING_WINDOW_DAYS,
+  DEFAULT_API_URL, API_PROBE_TIMEOUT_MS,
+  API_HEALTH_L1_CONFIG_MAX, API_HEALTH_L2_PROBE_MAX, API_HEALTH_L3_HISTORY_MAX,
+  API_HEALTH_L1_BOTH, API_HEALTH_L1_ONE, API_HEALTH_L1_NONE,
+  API_HEALTH_L2_OK, API_HEALTH_L2_TIMEOUT, API_HEALTH_L2_ERROR,
+  API_HEALTH_L3_FULL, API_HEALTH_L3_HIGH, API_HEALTH_L3_MID, API_HEALTH_L3_LOW,
+  API_HEALTH_INDIRECT_EVIDENCE_MIN_SUCCESSES,
 } from "../../../lib/constants.mjs";
 
-import { API_URL_DEFAULT, loadConfig } from "./bot-transport.mjs";
+import { loadConfig } from "./bot-transport.mjs";
 import { FIELD_EMOJI } from "./bot-message.mjs";
 import { scoreStatus, scoreIcon, PASS_THRESHOLD, WARN_THRESHOLD } from "./bot-health-analysis.mjs";
-import { HEALTH_DIMENSIONS, HEALTH_GRADE, healthBar, saveHealthTrend } from "./bot-health-trend.mjs";
+import { HEALTH_DIMENSIONS, healthBar, saveHealthTrend } from "./bot-health-trend.mjs";
 import { getHealthTrend } from "./report-trend.mjs";
 import { getGitSnapshot, runSecurityScan, getStructureHealth } from "./bot-health-structure.mjs";
 import { assessEngineeringMaturity, scanComponentScores, avgScore } from "./bot-health-analysis.mjs";
@@ -35,7 +41,7 @@ import {
 import { getFileSizeAnalysis } from "./bot-health-filesize.mjs";
 import { getDependencyAnalysis } from "./bot-health-deps.mjs";
 
-function registerDim(scores, details, dim, label, info, logLabel) {
+function registerDim(/** @type {Record<string, number>} */ scores, /** @type {any[]} */ details, /** @type {string} */ dim, /** @type {string} */ label, /** @type {any} */ info, /** @type {string} */ logLabel) {
   scores[dim] = info.score;
   details.push({ dim, label, status: scoreStatus(info.score), detail: info.summary, score: info.score });
   console.log(`  ${info.icon} ${logLabel} ${info.summary}`);
@@ -65,19 +71,19 @@ function validateMessageFormat() {
   // Check FIELD_EMOJI completeness against SKILL.md
   const requiredFields = ["skill", "command", "conclusion", "description", "scope", "impact", "evidence", "session"];
   for (const f of requiredFields) {
-    if (!FIELD_EMOJI[f]) {
+    if (!(/** @type {any} */ (FIELD_EMOJI))[f]) {
       issues.push(`消息字段缺少 emoji: ${f}`);
     }
   }
 
   return { formatOk: issues.length === 0, issues };
 }
-export async function cmdHealth(projectRoot, opts = {}) {
+export async function cmdHealth(/** @type {string} */ projectRoot, /** @type {any} */ _opts = {}) {
   const config = loadConfig(projectRoot);
   const token = process.env.API_X_TOKEN || "";
+  /** @type {Record<string, number>} */
   const scores = {};
   const details = [];
-  const quiet = opts.short || false;
 
   console.log("");
   console.log("╔════════════════════════════════════════╗");
@@ -119,7 +125,7 @@ export async function cmdHealth(projectRoot, opts = {}) {
   const robots = config.robots || {};
   const robotNames = Object.keys(robots);
   let robotOkCount = 0;
-  for (const [name, cfg] of Object.entries(robots)) {
+  for (const [, cfg] of Object.entries(robots)) {
     const hasWebhook = !!(cfg.webhook_url) || !!(cfg.webhook_url_env && process.env[cfg.webhook_url_env]);
     if (hasWebhook) robotOkCount++;
   }
@@ -142,48 +148,91 @@ export async function cmdHealth(projectRoot, opts = {}) {
     console.log(`    ${hasWebhook ? "✅" : "⚠️"} ${name}: webhook ${hasWebhook ? "已配置" : "缺失"}`);
   }
 
-  // ── 4. API ────────────────────────────────────────────
-  let apiScore = 0;
-  let apiStatus = "fail";
-  let apiDetail = "";
-  if (tokenOk) {
+  // ── 4. API 可达性 (layered: config + probe + history) ───────────────
+  // 三层评分: L1 配置(40) + L2 探测(30) + L3 历史投递(30)
+  // 设计: 本地探测可能因环境 TCP 不可达失败, 但 L3 历史投递成功是 API 真实可达的间接证据
+  //      —— 间接证据将 L2 从"环境超时 15"升级为"间接验证 30", 避免环境性故障拖累评分.
+  const apiCfgUrl = config.api_url || `${DEFAULT_API_URL}/wework/send-message`;
+  const apiTokenOk = !!(process.env.API_X_TOKEN);
+  const apiUrlOk = !!apiCfgUrl;
+  const apiL1 = apiUrlOk && apiTokenOk ? API_HEALTH_L1_BOTH
+             : apiUrlOk || apiTokenOk ? API_HEALTH_L1_ONE
+             : API_HEALTH_L1_NONE;
+
+  // L3 先算: 历史投递成功率作为可达性的间接证据 (近 7 天 notification-log.jsonl)
+  const apiLogPath = join(projectRoot, ".memory", "notification-log.jsonl");
+  const apiCutoff = Date.now() - NOTIF_ROLLING_WINDOW_DAYS * MS_PER_DAY;
+  let apiTotal = 0, apiOk = 0;
+  if (existsSync(apiLogPath)) {
     try {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), HTTP_TIMEOUT_SHORT_MS);
-      const res = await fetch(config.api_url || API_URL_DEFAULT, {
-        method: "POST",
-        signal: controller.signal,
-        headers: { "Content-Type": "application/json", "X-Token": token },
-        body: JSON.stringify({ webhook_url: "", content: "health-check" }),
-      });
-      clearTimeout(timer);
-      // Any HTTP response (even 4xx/5xx) means the API is reachable.
-      // The status code reflects request validity, not reachability.
-      apiScore = 100;
-      apiStatus = "pass";
-      apiDetail = `可达 (HTTP ${res.status})`;
-      console.log(`  ✅ API 可达性:       ${apiDetail}`);
-    } catch (err) {
-      apiScore = 0;
-      apiDetail = `不可达 — ${err.message.slice(0, 60)}`;
-      console.log(`  ❌ API 可达性:       ${apiDetail}`);
-    }
-  } else {
-    apiScore = 0;
-    apiDetail = "跳过 — Token 未配置";
-    console.log(`  ⏭️ API 可达性:       ${apiDetail}`);
+      const lines = readFileSync(apiLogPath, "utf-8").trim().split("\n").filter(Boolean);
+      for (const line of lines) {
+        const entry = JSON.parse(line);
+        const ts = entry.timestamp ? new Date(entry.timestamp).getTime() : 0;
+        if (ts < apiCutoff) continue;
+        apiTotal++;
+        if (entry.result === "ok") apiOk++;
+      }
+    } catch { /* skip unreadable log */ }
   }
-  scores.api = apiScore;
-  details.push({ dim: "api", label: "API 可达性", status: apiStatus, detail: apiDetail, score: apiScore });
+  const apiRate = apiTotal > 0 ? apiOk / apiTotal : null;
+  const apiL3 = apiRate === null ? API_HEALTH_L3_FULL
+             : apiRate >= 0.95 ? API_HEALTH_L3_FULL
+             : apiRate >= 0.80 ? API_HEALTH_L3_HIGH
+             : apiRate >= 0.50 ? API_HEALTH_L3_MID
+             : API_HEALTH_L3_LOW;
+  const apiHasIndirectEvidence = apiOk >= API_HEALTH_INDIRECT_EVIDENCE_MIN_SUCCESSES;
+
+  // L2: 直接探测, 超时时用 L3 间接证据升级
+  let apiL2 = API_HEALTH_L2_ERROR;
+  let apiProbeMsg = "未探测";
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), API_PROBE_TIMEOUT_MS);
+    const res = await fetch(apiCfgUrl, {
+      method: "POST",
+      signal: controller.signal,
+      headers: { "Content-Type": "application/json", "X-Token": process.env.API_X_TOKEN || "" },
+      body: JSON.stringify({}),
+    });
+    clearTimeout(timer);
+    apiL2 = API_HEALTH_L2_OK;
+    apiProbeMsg = `HTTP ${res.status}`;
+  } catch (err) {
+    if (err.name === "AbortError" || /abort|ETIMEDOUT|ENETUNREACH|ECONN|fetch failed/i.test(err.message)) {
+      if (apiHasIndirectEvidence) {
+        apiL2 = API_HEALTH_L2_OK;
+        apiProbeMsg = `本地超时, L3 间接验证可达 (${apiOk}/${apiTotal} 投递成功)`;
+      } else {
+        apiL2 = API_HEALTH_L2_TIMEOUT;
+        apiProbeMsg = "本地环境不可达(超时/网络), 无 L3 证据";
+      }
+    } else {
+      apiL2 = API_HEALTH_L2_ERROR;
+      apiProbeMsg = err.message.slice(0, 80);
+    }
+  }
+
+  scores.api = apiL1 + apiL2 + apiL3;
+  const apiDetail = `L1配置 ${apiL1}/${API_HEALTH_L1_CONFIG_MAX} · L2探测 ${apiL2}/${API_HEALTH_L2_PROBE_MAX} (${apiProbeMsg}) · L3历史投递 ${apiL3}/${API_HEALTH_L3_HISTORY_MAX}${apiRate === null ? " (无记录)" : ` (${apiOk}/${apiTotal})`}`;
+  details.push({
+    dim: "api",
+    label: "API 可达性",
+    status: scores.api >= PASS_THRESHOLD ? "pass" : scores.api >= WARN_THRESHOLD ? "warn" : "fail",
+    detail: apiDetail,
+    score: scores.api,
+  });
+  const apiIcon = scores.api >= PASS_THRESHOLD ? "✅" : scores.api >= WARN_THRESHOLD ? "⚠️" : "❌";
+  console.log(`  ${apiIcon} API 可达性:        ${apiDetail}`);
 
   // ── 5. Self-loop reports ──────────────────────────────
   const reportDir = join(projectRoot, "docs", "自循环报告");
   let reportScore = 0;
   let reportDetail = "";
   if (existsSync(reportDir)) {
-    const reportFiles = readdirSync(reportDir).filter(f => f.endsWith(".html") && f !== "index.html");
+    const reportFiles = readdirSync(reportDir).filter((/** @type {string} */ f) => f.endsWith(".html") && f !== "index.html");
     const indexOk = existsSync(join(reportDir, "index.html"));
-    const recentCount = reportFiles.filter(f => {
+    const recentCount = reportFiles.filter((/** @type {string} */ f) => {
       try {
         // Support both legacy (date as second-to-last segment) and loop-report
         // format: skill-YYYY-MM-DD-timestamp.html — scan for date triple
@@ -220,7 +269,7 @@ export async function cmdHealth(projectRoot, opts = {}) {
   console.log(`  ${reportIcon} 自循环报告:       ${reportDetail}`);
 
   // ── 6. Message format compliance ──────────────────────
-  const { formatOk, formatIssues } = validateMessageFormat();
+  const { formatOk, issues: formatIssues } = validateMessageFormat();
   scores.format = formatOk ? 100 : Math.max(0, 100 - formatIssues.length * 25);
   details.push({
     dim: "format",
@@ -272,7 +321,7 @@ export async function cmdHealth(projectRoot, opts = {}) {
   for (const d of emResult.details) details.push(d);
   for (const [dim, info] of Object.entries(emResult.scores)) {
     const icon = scoreIcon(info);
-    const label = HEALTH_DIMENSIONS[dim]?.label || dim;
+    const label = (/** @type {any} */ (HEALTH_DIMENSIONS))[dim]?.label || dim;
     console.log(`  ${icon} ${label}:${" ".repeat(Math.max(0, 12 - label.length))} ${info} 分 — ${emResult.summaries[dim] || ""}`);
   }
 
@@ -289,24 +338,25 @@ export async function cmdHealth(projectRoot, opts = {}) {
   registerDim(scores, details, "dep_analysis", "依赖分析", depInfo, "依赖分析:        ");
   if (depInfo.cycles.length > 0) {
     for (const cycle of depInfo.cycles.slice(0, 3)) {
-      console.log(`    ⚠️ 循环依赖 (${cycle.length} 层): ${cycle.path.map((p) => p.replace(/^skills\//,"").replace(/^lib\//,"")).join(" → ")}`);
+      console.log(`    ⚠️ 循环依赖 (${cycle.length} 层): ${cycle.path.map((/** @type {string} */ p) => p.replace(/^skills\//,"").replace(/^lib\//,"")).join(" → ")}`);
     }
   }
 
-  // ── Notification delivery quality ──────────────────────
+  // ── Notification delivery quality (rolling window) ────────────
   const notifLogPath = join(projectRoot, ".memory", "notification-log.jsonl");
-  let notifTotal = 0, notifOk = 0, notifRetries = 0, notifDryRun = 0;
-  let notifLastOk = null, notifLastFail = null;
+  const NOTIF_WINDOW_MS = NOTIF_ROLLING_WINDOW_DAYS * MS_PER_DAY;
+  const notifCutoff = Date.now() - NOTIF_WINDOW_MS;
+  let notifTotal = 0, notifOk = 0, notifRetries = 0;
   if (existsSync(notifLogPath)) {
     try {
       const lines = readFileSync(notifLogPath, "utf-8").trim().split("\n").filter(Boolean);
       for (const line of lines) {
         const entry = JSON.parse(line);
+        const ts = entry.timestamp ? new Date(entry.timestamp).getTime() : 0;
+        if (ts < notifCutoff) continue; // skip entries older than 7 days
         notifTotal++;
-        if (entry.result === "ok") { notifOk++; notifLastOk = entry.timestamp; }
-        else { notifLastFail = entry.timestamp; }
+        if (entry.result === "ok") { notifOk++; }
         notifRetries += entry.retries || 0;
-        if (entry.dryRun) notifDryRun++;
       }
     } catch { /* skip unreadable log */ }
   }
@@ -383,9 +433,9 @@ export async function cmdHealth(projectRoot, opts = {}) {
   const catLine = Object.entries(catScores)
     .filter(([,v]) => v.dimCount > 0)
     .map(([cat, v]) => {
-      const icon = catIcons[cat] || "📌";
+      const icon = (/** @type {any} */ (catIcons))[cat] || "📌";
       const color = v.score >= 80 ? "\x1b[32m" : v.score >= 60 ? "\x1b[33m" : "\x1b[31m";
-      return `${icon}${catLabels[cat]||cat}:${color}${v.score}\x1b[0m`;
+      return `${icon}${(/** @type {any} */ (catLabels))[cat]||cat}:${color}${v.score}\x1b[0m`;
     }).join("  ");
   console.log(`  │ ${catLine}${" ".repeat(Math.max(0, 34 - catLine.replace(/\x1b\[[0-9;]*m/g, "").length))}│`);
   console.log("  └──────────────────────────────────────────┘");
@@ -395,15 +445,14 @@ export async function cmdHealth(projectRoot, opts = {}) {
   const execSummary = generateExecutiveSummary({
     composite, grade: grade.grade, scores,
     dimensions: HEALTH_SCORING_DIMENSIONS,
-    prev: prevEntry ? { composite: prevEntry.composite, date: prevEntry.timestamp?.slice(0, 10) } : null,
-    archResult: archResult ? { archFailedDims: archResult.archFailedDims } : null,
+    prev: prevEntry ? { composite: prevEntry.composite, date: prevEntry.timestamp?.slice(0, 10) } : undefined,
+    archResult: archResult ? { archFailedDims: archResult.archFailedDims } : undefined,
     diagTriggered: diagResult?.triggered?.length || 0,
   });
   console.log(`  📋 ${execSummary.summary}`);
   console.log("");
 
   // ── Output: Stats row ──────────────────────────────────
-  const statColor = (s, t) => s >= 80 ? "\x1b[32m" : s >= 60 ? "\x1b[33m" : "\x1b[31m";
   console.log(`  📊 维度: ${scoreValues.length}项  │  均值 ${dist.mean}  │  中位 ${dist.median}  │  范围 ${dist.min}-${dist.max}  │  标准差 ${dist.stddev}`);
   const G = "\x1b[32m", Y = "\x1b[33m", R = "\x1b[31m";
   console.log(`  🏷️  等级: ${G}优秀 ${tierCounts.excellent}\x1b[0m · ${G}良好 ${tierCounts.good}\x1b[0m · ${Y}一般 ${tierCounts.fair}\x1b[0m · ${R}需关注 ${tierCounts.poor}\x1b[0m`);
@@ -415,7 +464,7 @@ export async function cmdHealth(projectRoot, opts = {}) {
   }
 
   // Dimension influence ranking
-  const influence = rankDimensionInfluence(scores, HEALTH_SCORING_DIMENSIONS, null);
+  const influence = rankDimensionInfluence(scores, HEALTH_SCORING_DIMENSIONS, undefined);
   if (influence.length > 0) {
     const topInf = influence.slice(0, 5);
     const infStr = topInf.map(e => `${e.label}:${e.influence.toFixed(0)}`).join(" · ");
@@ -470,6 +519,7 @@ export async function cmdHealth(projectRoot, opts = {}) {
   }
 
   // ── Output: Dimension breakdown by category ─────────────
+  /** @type {Record<string, any[]>} */
   const dimByCat = {};
   for (const [dim, cfg] of Object.entries(HEALTH_SCORING_DIMENSIONS)) {
     const cat = cfg.category || "other";
@@ -480,8 +530,8 @@ export async function cmdHealth(projectRoot, opts = {}) {
   for (const cat of catOrder) {
     const dims = dimByCat[cat];
     if (!dims || dims.length === 0) continue;
-    const catIcon = catIcons[cat] || "📌";
-    const catLabel = catLabels[cat] || cat;
+    const catIcon = (/** @type {any} */ (catIcons))[cat] || "📌";
+    const catLabel = (/** @type {any} */ (catLabels))[cat] || cat;
     console.log(`  ${catIcon} ${catLabel}:`);
     for (const d of dims) {
       const bar = healthBar(d.score, 10);
@@ -511,8 +561,9 @@ export async function cmdHealth(projectRoot, opts = {}) {
  * Auto-update cdn/health\-report\/index\.json with the latest project health data.
  * Preserves existing entries (dedup by date), keeps at most 10 reports.
  */
-function updateCdnHealthReport(result, projectRoot) {
+function updateCdnHealthReport(/** @type {any} */ result, /** @type {string} */ projectRoot) {
   const cdnPath = join(projectRoot, "cdn", "health-report", "index.json");
+  /** @type {{ _meta: { updatedAt?: string }, reports: Array<{date:string,time:string,type:string,score:number,grade:string,triggers:number,dimTotal:number,dims:object}> }} */
   let report = { _meta: {}, reports: [] };
 
   if (existsSync(cdnPath)) {
@@ -522,11 +573,12 @@ function updateCdnHealthReport(result, projectRoot) {
   }
 
   // Map project health dims to CDN-compatible format
+  /** @type {Record<string, any>} */
   const dims = {};
   for (const [dim, score] of Object.entries(result.scores || {})) {
     dims[dim] = {
       score,
-      detail: result.details?.find(d => d.dim === dim)?.detail || `${score} 分`,
+      detail: result.details?.find((/** @type {any} */ d) => d.dim === dim)?.detail || `${score} 分`,
     };
   }
 

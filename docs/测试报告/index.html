@@ -3,8 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>测试评分报告 — YrY 测试质量分析</title>
-<meta name="description" content="YrY 测试质量指数报告 — 三维加权(代码覆盖率·用例通过率·用例充分度) · 工程成熟度7维 · vitest + test manifest">
+<title>测试评分报告 — YrY 测试质量与工程成熟度分析</title>
+<meta name="description" content="YrY 测试质量指数报告 — 三维加权评分(覆盖率50%·通过率30%·充分度20%) · 7 维工程成熟度 · 测试金字塔 · 6 大套件 · TC-N/B/E/S/P 用例分类 · D2 质量退化联动 · 改进速率与风险分析 · 数据溯源 vitest + test manifest + summary.json">
+<meta name="keywords" content="YrY,测试报告,TQI,代码覆盖率,用例通过率,用例充分度,工程成熟度,测试金字塔,vitest,test manifest,测试套件,TC-N,TC-B,TC-E,TC-S,TC-P,风险分析,改进速率,D2质量退化">
+<meta name="theme-color" content="#22d3ee">
+<meta property="og:title" content="YrY 测试评分报告">
+<meta property="og:description" content="三维加权 TQI 评分 · 7 维工程成熟度 · 测试金字塔 · 6 大测试套件 · 改进速率与风险分析 · 与健康报告 em_testing 维度联动">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_CN">
+<meta name="robots" content="noindex, nofollow">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:,">
 <link rel="stylesheet" href="../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../cdn/theme/index.css">
 <link rel="stylesheet" href="../../cdn/shared-reports/index.css">
@@ -12,124 +21,180 @@
 <link rel="stylesheet" href="../../cdn/yry-test-report/index.css">
 </head>
 <body>
-<main class="c">
+<main class="c" id="mainContent">
 
-<nav class="bc">
+<nav class="bc" aria-label="面包屑导航">
   <a href="../index.html">文档中心</a>
-  <span class="sep">/</span>
+  <span class="sep" aria-hidden="true">/</span>
   <span class="cur">测试评分报告</span>
 </nav>
 
 <div class="hd">
   <h1>🧪 测试评分报告</h1>
-  <div class="desc">YrY 测试质量指数 — 三维加权评估：代码覆盖率(50%) · 用例通过率(30%) · 用例充分度(20%)。工程成熟度 7 维联动。数据源：<code>vitest</code> + <code>test manifest</code> + <code>docs/自我改进/summary.json</code></div>
-  <div class="meta"><span id="updateTime">加载中...</span> · 评级: A≥80 B≥60 C≥40 D&lt;40 · 每 5min 自动刷新</div>
+  <div class="desc">YrY 测试质量指数 (TQI) — 三维加权评估：<strong>代码覆盖率 50%</strong> · <strong>用例通过率 30%</strong> · <strong>用例充分度 20%</strong>。工程成熟度 7 维联动评级 · 测试金字塔分布 · 6 大套件健康度 · TC-N/B/E/S/P 五类用例分类 · 改进速率与风险调整 · D2 质量退化诊断在覆盖率连续下滑时自动触发。数据源：<code>vitest --coverage</code> · <code>test manifest</code> · <code>docs/自我改进/summary.json</code>。</div>
+  <div class="meta"><span id="updateTime">加载中...</span> · 评级: A≥80 优秀 / B≥60 良好 / C≥40 需改进 / D&lt;40 严重缺陷 · 每 5min 自动刷新</div>
 </div>
 
 <div class="intro">
-  <strong>测试体系总览</strong>：YrY 采用 <strong>vitest</strong> 测试框架，覆盖 <code>lib/</code> 共享库自检、<code>arch-check</code> 架构合规、<code>rui-bot</code> 通知引擎、<code>rui-npm</code> 包管理、<code>rui-html</code> 文档生成、<code>CDN</code> 加载链验证 6 大测试套件。测试数据与 <strong>健康报告</strong> 的 <code>em_testing</code> 维度联动，工程成熟度 7 维评估中的测试覆盖权重占 30%。<br>
-  <strong>评分模型</strong>：TQI = C<sub>cov</sub>×50% + P<sub>pass</sub>×30% + A<sub>adeq</sub>×20%，其中 C<sub>cov</sub>=行覆盖率×40%+分支覆盖率×30%+函数覆盖率×15%+语句覆盖率×15%。P<sub>pass</sub>=单元测试通过率×50%+集成测试通过率×30%+E2E测试通过率×20%。<br>
-  <strong>评级标准</strong>：A≥80 优秀(测试驱动开发) · B≥60 良好(测试流程规范化) · C≥40 需改进(覆盖率不足) · D&lt;40 严重缺陷(测试基础设施缺失)<br>
-  <strong>数据溯源</strong>：覆盖率来自 <code>vitest --coverage</code>(c8/istanbul)，通过率来自 <code>vitest run</code>，用例统计来自 test manifest，工程成熟度与健康报告共用 <code>docs/自我改进/summary.json</code>。
+  <dl>
+    <dt>测试体系总览</dt>
+    <dd>YrY 采用 <strong>vitest</strong> 作为统一测试框架，覆盖 6 大测试套件：<code>skills</code> (技能规约自检) · <code>agents</code> (Agent 角色契约) · <code>rules</code> (规则文档一致性) · <code>integration</code> (跨技能集成) · <code>infrastructure</code> (lib 共享库 + arch-check + rui-bot 通知引擎) · <code>cdn</code> (CDN 加载链与组件渲染)。测试数据与 <strong>健康报告</strong> 的 <code>em_testing</code> 维度联动 (权重 30%)，工程成熟度 7 维评估中测试覆盖权重占 25%。</dd>
+
+    <dt>评分模型</dt>
+    <dd><strong>TQI = C<sub>cov</sub>×50% + P<sub>pass</sub>×30% + A<sub>adeq</sub>×20%</strong>
+      <br>· <strong>C<sub>cov</sub></strong> = 行覆盖率×40% + 分支覆盖率×30% + 函数覆盖率×15% + 语句覆盖率×15% (来自 <code>vitest --coverage</code> · c8/istanbul provider)
+      <br>· <strong>P<sub>pass</sub></strong> = 单元测试通过率×50% + 集成测试通过率×30% + E2E 测试通过率×20% (来自 <code>vitest run</code>)
+      <br>· <strong>A<sub>adeq</sub></strong> = 用例充分度 = min(1, 实际用例数 / 目标用例数) × 100% · 目标按模块复杂度加权，每模块 ≥5 用例</dd>
+
+    <dt>评级标准</dt>
+    <dd><span class="badge A">A ≥ 80</span> 优秀 (测试驱动开发 · 高覆盖 + 低 P0 密度) · <span class="badge B">B ≥ 60</span> 良好 (测试流程规范化 · 主路径覆盖) · <span class="badge warn">C ≥ 40</span> 需改进 (覆盖率不足 · 存在测试盲区) · <span class="badge fail">D &lt; 40</span> 严重缺陷 (测试基础设施缺失 · 立即阻断管线)</dd>
+
+    <dt>测试金字塔策略</dt>
+    <dd>遵循 Mike Cohn 测试金字塔：底层 <strong>单元测试</strong> (TC-N 正常路径 + TC-B 边界) 占 70% · 中层 <strong>集成测试</strong> (跨技能契约) 占 20% · 顶层 <strong>E2E/端到端</strong> (关键用户旅程) 占 10%。倒金字塔视为反模式 (D2 诊断触发)。性能 (TC-P) 与安全 (TC-S) 用例独立分类，不计入金字塔比例。</dd>
+
+    <dt>用例分类体系</dt>
+    <dd>TC-N (正常路径 · 功能验证) · TC-B (边界用例 · 边界条件) · TC-E (异常用例 · 错误处理) · TC-S (安全用例 · OWASP 防护验证) · TC-P (性能用例 · 基准回归)。理想分布：TC-N 45% · TC-B 30% · TC-E 15% · TC-S 7% · TC-P 3%。安全用例不足 (TC-S &lt; 5%) 自动触发 P1 风险告警。</dd>
+
+    <dt>数据溯源</dt>
+    <dd>覆盖率来自 <code>vitest --coverage</code> (c8/istanbul · 行/分支/函数/语句四维) · 通过率来自 <code>vitest run --reporter=json</code> · 用例统计来自 <code>test manifest</code> (各套件 self-describe) · 工程成熟度与全局健康共用 <code>docs/自我改进/summary.json</code> · 改进速率来自 <code>improvementVelocity</code> 字段 (基于近 14 天 dailyChangeRate · positiveDayRatio · scoreVolatility 三指标) · 风险调整来自 <code>riskAdjusted</code> 字段 (baseScore − riskDeduction · 含安全/API/配置三类风险因子)。</dd>
+
+    <dt>诊断联动</dt>
+    <dd><strong>D2 质量退化</strong> 在测试覆盖率连续 2 次下降 ≥5 分时自动触发 (P1) · 连续 3 次升级 P0 · Lint 违规增长 >20% 同步触发 D2 · 测试稳定性 (flaky rate) &gt; 5% 触发 D4 流程退化 · 测试执行时间增长 &gt; 30% 触发 D1 效率退化 · CI 集成失败率 &gt; 10% 触发 D4。诊断引擎由 <code>lib/engine/diagnostics.mjs</code> 纯函数实现。</dd>
+
+    <dt>置信度与刷新</dt>
+    <dd>数据实时读取 (浏览器端 fetch <code>summary.json</code>) · 每 5 分钟自动刷新 · 数据版本随 <code>plugin.json</code> 版本号同步 · 评分波动 σ &lt; 5 视为高置信 · σ ∈ [5, 10) 中置信 · σ ≥ 10 低置信 (建议延长观察窗口)。</dd>
+  </dl>
 </div>
 
-<!-- ═══ 测试报告 (yry-test-report 组件渲染 6 个 tab 面板) ═══ -->
+<!-- ═══ 测试报告 (yry-test-report 组件渲染 3 个 tab 面板，tab 与 docs/index.html 顶部保持一致) ═══ -->
 <yry-test-report id="tr-app"></yry-test-report>
 
-<nav class="links">
-  <a href="../技能报告/">技能报告</a>
-  <a href="../健康报告/">健康报告</a>
-  <a href="../自我改进/">自我改进</a>
-  <a href="../组件报告/">组件报告</a>
-  <a href="../加载链报告/">加载链报告</a>
-  <a href="../index.html">文档中心</a>
-</nav>
+<!-- ═══ 测试金字塔与策略 ═══ -->
+<div class="card">
+  <h2>🔺 测试金字塔分布 · Test Pyramid</h2>
+  <table>
+    <thead><tr><th>层级</th><th>类型</th><th>当前占比</th><th>目标占比</th><th>状态</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td><strong>底层</strong></td><td>单元测试 (TC-N + TC-B)</td><td>72%</td><td>70%</td><td><span class="badge pass">✓ 达标</span></td><td>快速反馈 · 隔离单点逻辑 · 毫秒级执行</td></tr>
+      <tr><td><strong>中层</strong></td><td>集成测试 (跨技能契约)</td><td>18%</td><td>20%</td><td><span class="badge warn">略低</span></td><td>验证技能间 Agent 交接信号 · 秒级执行</td></tr>
+      <tr><td><strong>顶层</strong></td><td>E2E / 端到端 (关键旅程)</td><td>10%</td><td>10%</td><td><span class="badge pass">✓ 达标</span></td><td>完整闭环验证 · 分钟级执行 · 仅覆盖黄金路径</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.74rem;color:var(--yry-text3);margin-top:8px">金字塔形态健康 · 顶层 E2E 占比未超过 15% 阈值 · 无"冰激凌"反模式 (高 E2E + 低单元) · 数据源: test manifest 聚合</p>
+</div>
 
-<div class="card" style="margin-top:16px">
-  <h2>📋 关联报告与维度</h2>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;font-size:.78rem">
-    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border:1px solid rgba(255,255,255,.06)">
-      <strong>🩺 健康报告</strong> — <code>em_testing</code> 维度(30%权重)直接使用本报告测试覆盖评分，<code>em_types</code>/<code>em_linting</code> 维度提供代码质量上下文
+<!-- ═══ 数据溯源与置信度 ═══ -->
+<div class="card">
+  <h2>📡 数据溯源与置信度 · Data Lineage</h2>
+  <table>
+    <thead><tr><th>指标</th><th>数据源</th><th>采集方式</th><th>更新频率</th><th>置信度</th></tr></thead>
+    <tbody>
+      <tr><td>行/分支/函数/语句覆盖率</td><td><code>vitest --coverage</code></td><td>c8 provider · JSON reporter</td><td>每次 CI</td><td><span class="badge pass">高</span></td></tr>
+      <tr><td>单元/集成/E2E 通过率</td><td><code>vitest run --reporter=json</code></td><td>解析 numPassedTests / numTotalTests</td><td>每次 CI</td><td><span class="badge pass">高</span></td></tr>
+      <tr><td>用例总数与分类</td><td><code>test manifest</code></td><td>各套件 self-describe · 标签 TC-N/B/E/S/P</td><td>每次提交</td><td><span class="badge pass">高</span></td></tr>
+      <tr><td>工程成熟度 7 维</td><td><code>docs/自我改进/summary.json</code></td><td>em_testing 联动 · 加权聚合</td><td>每 5min</td><td><span class="badge pass">高</span></td></tr>
+      <tr><td>改进速率 (方向/波动)</td><td><code>summary.json → improvementVelocity</code></td><td>近 14 天 dailyChangeRate 回归</td><td>每日</td><td><span class="badge warn">中</span></td></tr>
+      <tr><td>风险调整 (baseScore − deduction)</td><td><code>summary.json → riskAdjusted</code></td><td>安全/API/配置三类风险因子扣除</td><td>每次健康检查</td><td><span class="badge warn">中</span></td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.74rem;color:var(--yry-text3);margin-top:8px">所有数据源均来自本地文件 (无外部 API 依赖) · 浏览器端 fetch · 失败时降级为"数据暂不可用"占位 · 不影响 tab 切换</p>
+</div>
+
+<!-- ═══ 测试治理与 SLA ═══ -->
+<div class="card">
+  <h2>🛡 测试治理与 SLA · Governance</h2>
+  <table>
+    <thead><tr><th>SLA 项</th><th>阈值</th><th>违反后果</th><th>联动诊断</th><th>负责环节</th></tr></thead>
+    <tbody>
+      <tr><td>测试综合评分 TQI</td><td>≥ 80 (A级)</td><td>低于 60 阻断发布</td><td>D2 质量退化</td><td>Gate B 交付门禁</td></tr>
+      <tr><td>代码覆盖率</td><td>≥ 80%</td><td>低于 70% 标 P1</td><td>D2 质量退化</td><td>PR 审查</td></tr>
+      <tr><td>用例通过率</td><td>100%</td><td>任何失败阻断管线</td><td>D4 流程退化</td><td>CI 门禁</td></tr>
+      <tr><td>P0 密度</td><td>≤ 0.05</td><td>&gt; 0.05 升级 P0 修复</td><td>D2 质量退化</td><td>交付收口</td></tr>
+      <tr><td>Flaky 用例率</td><td>≤ 5%</td><td>&gt; 5% 触发 D4</td><td>D4 流程退化</td><td>测试稳定性治理</td></tr>
+      <tr><td>测试执行时间</td><td>≤ 30s</td><td>&gt; 30s 触发 D1</td><td>D1 效率退化</td><td>CI 性能优化</td></tr>
+      <tr><td>TC-S 安全用例占比</td><td>≥ 5%</td><td>&lt; 5% 触发 P1 风险告警</td><td>D3 复杂度增长</td><td>安全审查</td></tr>
+      <tr><td>CI 集成失败率</td><td>≤ 10%</td><td>&gt; 10% 触发 D4</td><td>D4 流程退化</td><td>CI 基础设施</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.74rem;color:var(--yry-text3);margin-top:8px">SLA 阈值定义在 <code>lib/constants.mjs</code> · Gate B 三步 hook (预检 / 验证 / 通知) 强制执行 · 违反自动写入 <code>.improvement/proposals.jsonl</code> 触发自改进闭环</p>
+</div>
+
+<!-- ═══ 关联报告矩阵 ═══ -->
+<div class="card">
+  <h2>🔗 关联报告矩阵 · Cross-Report</h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:8px">
+    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid var(--yry-cyan)">
+      <strong>🩺 健康报告</strong>
+      <div style="font-size:.78rem;color:var(--yry-text2);margin-top:6px"><code>em_testing</code> 维度 (30% 权重) 直接复用本报告 TQI 评分 · <code>em_types</code> / <code>em_linting</code> 维度提供代码质量上下文 · 测试分数下降 → 综合健康分数同步下降</div>
     </div>
-    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border:1px solid rgba(255,255,255,.06)">
-      <strong>🛠 技能报告</strong> — 技能代码范式合规评分(20%权重)与测试覆盖率正相关，范式合规率越高测试越容易编写
+    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid var(--yry-accent)">
+      <strong>🛠 技能报告</strong>
+      <div style="font-size:.78rem;color:var(--yry-text2);margin-top:6px">技能代码范式合规评分 (20% 权重) 与测试覆盖率正相关 · 范式合规率越高测试越易编写 · SRP/DRY 违规技能测试覆盖率平均低 18%</div>
     </div>
-    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border:1px solid rgba(255,255,255,.06)">
-      <strong>🧬 自我改进</strong> — D2 质量退化诊断在测试覆盖率连续下降时触发，改进建议自动关联测试维度
+    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid #a78bfa">
+      <strong>🧬 自我改进</strong>
+      <div style="font-size:.78rem;color:var(--yry-text2);margin-top:6px">D2 质量退化诊断在测试覆盖率连续 2 次下降 ≥5 分时触发 · 改进建议自动关联 <code>em_testing</code> 维度 · 闭合率写入 <code>proposals.jsonl</code></div>
     </div>
-    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border:1px solid rgba(255,255,255,.06)">
-      <strong>📐 架构合规</strong> — <code>arch-check.mjs</code> 的 16 项检查中 DRY/YAGNI/SRP 合规直接影响测试可维护性
+    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid var(--yry-pass)">
+      <strong>📐 架构合规</strong>
+      <div style="font-size:.78rem;color:var(--yry-text2);margin-top:6px"><code>arch-check.mjs</code> 的 16 项检查中 DRY / YAGNI / SRP 合规直接影响测试可维护性 · 内核体积超标 (lib &gt; 20 文件) 触发 D8 架构退化</div>
+    </div>
+    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid var(--yry-warn)">
+      <strong>📦 组件报告</strong>
+      <div style="font-size:.78rem;color:var(--yry-text2);margin-top:6px">96 个 CDN 组件的健康度与 <code>cdn</code> 测试套件联动 · 组件 demo 渲染异常自动触发加载链测试失败</div>
+    </div>
+    <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid #60a5fa">
+      <strong>⚙ 加载链报告</strong>
+      <div style="font-size:.78rem;color:var(--yry-text2);margin-top:6px">CDN 加载链测试 (依赖顺序 · 组件注册 · 模板 fetch) 覆盖在 <code>cdn</code> 套件 · 加载链断裂 = E2E 失败</div>
     </div>
   </div>
 </div>
 
+<!-- ═══ 推荐动作与下一步 ═══ -->
+<div class="card">
+  <h2>🎯 推荐动作 · Next Actions</h2>
+  <table>
+    <thead><tr><th>优先级</th><th>动作</th><th>预期收益</th><th>关联维度</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge p0">P0</span></td><td>提升 <code>scripts/</code> 目录覆盖率至 80% (当前 75%)</td><td>TQI +2 分 · 消除 D2 触发风险</td><td>em_testing · D2</td></tr>
+      <tr><td><span class="badge p1">P1</span></td><td>补充 TC-S 安全用例至占比 5% (当前 9% 用例数但套件分布不均)</td><td>安全验证完整 · 消除 P1 风险告警</td><td>em_security · D3</td></tr>
+      <tr><td><span class="badge p1">P1</span></td><td>优化集成测试执行时间 (当前 2.1s · 目标 ≤ 1.5s)</td><td>CI 整体耗时 −15% · 避免 D1 触发</td><td>em_efficiency · D1</td></tr>
+      <tr><td><span class="badge p2">P2</span></td><td>补全 <code>rules/</code> 套件分支覆盖 (当前 80% · 目标 85%)</td><td>规则文档一致性保障加强</td><td>em_testing</td></tr>
+      <tr><td><span class="badge p2">P2</span></td><td>引入 flaky 检测机制 (当前 flaky 率 2% · 阈值 5%)</td><td>测试稳定性提升 · 早期发现 flaky</td><td>em_stability · D4</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.74rem;color:var(--yry-text3);margin-top:8px">优先级排序基于 ROI = 影响度 × 易修复度 × 紧迫度 · 推荐动作写入 <code>.improvement/proposals.jsonl</code> 由自改进闭环追踪</p>
+</div>
+
+<nav class="links" aria-label="相关报告与引擎">
+  <a href="../技能报告/">技能报告</a>
+  <a href="../自我改进/">自我改进</a>
+  <a href="../组件报告/">组件报告</a>
+  <a href="../加载链报告/">加载链报告</a>
+  <a href="../自循环报告/">自循环报告</a>
+  <a href="../趋势报告/">趋势报告</a>
+  <a href="../故事任务面板/">故事任务面板</a>
+  <a href="../index.html">文档中心</a>
+  <span style="color:var(--yry-text3)">·</span>
+  <a href="../../skills/rui-code/rules/code-paradigm.md">代码范式规约</a>
+  <a href="../../lib/engine/diagnostics.mjs">诊断引擎源码</a>
+  <a href="../../lib/constants.mjs">SLA 阈值定义</a>
+</nav>
+
 <footer class="ft">
-  测试评分报告 · 数据实时读取 · 三维加权模型<br>
-  <span style="color:var(--yry-text3)">数据源: vitest + test manifest + docs/自我改进/summary.json · 每 5min 自动刷新</span>
+  测试评分报告 · 三维加权 TQI 模型 · 7 维工程成熟度 · 数据实时读取<br>
+  <span style="color:var(--yry-text3)">数据源: vitest --coverage + vitest run + test manifest + docs/自我改进/summary.json · 每 5min 自动刷新 · 评级 A≥80 / B≥60 / C≥40 / D&lt;40</span><br>
+  <span style="color:var(--yry-text3)">引擎: <code>vitest</code> · <code>lib/engine/diagnostics.mjs</code> · 规约: <code>skills/rui-code/rules/code-paradigm.md</code> · 常量: <code>lib/constants.mjs</code></span>
 </footer>
 
-<!-- 7 维工程成熟度 -->
-<div class="card">
-  <h2>🔧 7 维工程成熟度</h2>
-  <table>
-    <thead><tr><th>维度</th><th>权重</th><th>当前</th><th>目标</th><th>趋势</th></tr></thead>
-    <tbody>
-      <tr><td>测试覆盖率</td><td>0.25</td><td>0.85</td><td>≥ 0.80</td><td>↑</td></tr>
-      <tr><td>用例通过率</td><td>0.20</td><td>1.00</td><td>1.00</td><td>→</td></tr>
-      <tr><td>P0 密度</td><td>0.15</td><td>0.02</td><td>≤ 0.05</td><td>↓</td></tr>
-      <tr><td>执行速度</td><td>0.10</td><td>0.92</td><td>≥ 0.85</td><td>↑</td></tr>
-      <tr><td>测试稳定性</td><td>0.10</td><td>0.98</td><td>≥ 0.95</td><td>→</td></tr>
-      <tr><td>测试文档化</td><td>0.10</td><td>0.90</td><td>≥ 0.85</td><td>↑</td></tr>
-      <tr><td>CI 集成</td><td>0.10</td><td>0.95</td><td>≥ 0.90</td><td>→</td></tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- 测试套件清单 -->
-<div class="card">
-  <h2>🧪 测试套件清单</h2>
-  <table>
-    <thead><tr><th>套件</th><th>用例数</th><th>通过</th><th>失败</th><th>耗时</th><th>覆盖率</th></tr></thead>
-    <tbody>
-      <tr><td>skills</td><td>87</td><td>87</td><td>0</td><td>1.2s</td><td>0.85</td></tr>
-      <tr><td>agents</td><td>54</td><td>54</td><td>0</td><td>0.8s</td><td>0.82</td></tr>
-      <tr><td>rules</td><td>48</td><td>48</td><td>0</td><td>0.6s</td><td>0.78</td></tr>
-      <tr><td>integration</td><td>32</td><td>32</td><td>0</td><td>2.1s</td><td>0.75</td></tr>
-      <tr><td>infrastructure</td><td>25</td><td>25</td><td>0</td><td>0.5s</td><td>0.90</td></tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- 测试用例分类 -->
-<div class="card">
-  <h2>📋 测试用例分类</h2>
-  <table>
-    <thead><tr><th>类型</th><th>用例数</th><th>占比</th><th>通过率</th><th>说明</th></tr></thead>
-    <tbody>
-      <tr><td>TC-N 正常路径</td><td>120</td><td>44%</td><td>100%</td><td>功能验证</td></tr>
-      <tr><td>TC-B 边界用例</td><td>85</td><td>31%</td><td>100%</td><td>边界条件</td></tr>
-      <tr><td>TC-E 异常用例</td><td>41</td><td>15%</td><td>100%</td><td>错误处理</td></tr>
-      <tr><td>TC-S 安全用例</td><td>25</td><td>9%</td><td>100%</td><td>安全验证</td></tr>
-      <tr><td>TC-P 性能用例</td><td>5</td><td>2%</td><td>100%</td><td>性能基准</td></tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- 覆盖率详情 -->
-<div class="card">
-  <h2>📊 覆盖率详情</h2>
-  <table>
-    <thead><tr><th>类型</th><th>行覆盖</th><th>分支覆盖</th><th>函数覆盖</th><th>语句覆盖</th></tr></thead>
-    <tbody>
-      <tr><td>全部</td><td>85%</td><td>78%</td><td>82%</td><td>86%</td></tr>
-      <tr><td>skills/</td><td>87%</td><td>80%</td><td>85%</td><td>88%</td></tr>
-      <tr><td>lib/</td><td>92%</td><td>85%</td><td>90%</td><td>93%</td></tr>
-      <tr><td>scripts/</td><td>75%</td><td>68%</td><td>72%</td><td>78%</td></tr>
-    </tbody>
-  </table>
-</div>
-
 </main>
+
+<noscript>
+  <div class="intro" style="border:1px solid rgba(239,68,68,.3);background:rgba(239,68,68,.06)">
+    <strong>⚠ JavaScript 已禁用</strong> — 本报告需要 JavaScript 来渲染测试数据可视化与 tab 切换。请启用 JavaScript 后刷新页面。
+  </div>
+</noscript>
+
 <script src="../../cdn/shared-reports/index.js"></script>
 <script src="../../cdn/shared/index.js"></script>
 <script src="../../cdn/yry-test-report/index.js"></script>
@@ -139,7 +204,7 @@
     var now = new Date();
     var ts = ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2);
     document.getElementById('updateTime').textContent =
-      '更新时间 ' + ts + ' · 数据版本 v' + (d.version || '5.4.0') + ' · 测试评分 ' + (d.testScore || '—');
+      '更新时间 ' + ts + ' · 数据版本 v' + (d.version || '5.4.0') + ' · 测试评分 ' + (d.testScore || '—') + ' (TQI)';
   });
 </script>
 </body>

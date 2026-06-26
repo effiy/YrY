@@ -16,23 +16,7 @@
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
 <link rel="stylesheet" href="../../../yry-a11y/index.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<style>
-  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
-  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
-  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
-  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
-  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
-  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
-  .delivery-story { font-size: .72rem; color: #4b5563; }
-  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
-  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
-  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
-  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
-  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
-  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
-  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
-</style>
+<link rel="stylesheet" href="../../../yry-legacy-scene-delivery/index.css">
 </head>
 <body>
 <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
@@ -54,7 +38,7 @@
 
   <div class="content-card">
     <h2>🔗 知识图谱 · 资源提示与优先级层级</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.74rem;color:#22d3ee;line-height:1.7;margin:0">
+    <pre class="yry-auto-80833">
 preconnect (建立 TLS 提前) ──┐
                            │ 高优先级
 preload (as=script) ───────┤
@@ -63,39 +47,39 @@ modulepreload (ESM 模块) ──┘
 
 dns-prefetch (仅 DNS) ─────── 低优先级
 prefetch (空闲加载下一页) ──── 低优先级</pre>
-    <p style="margin-top:16px">资源提示节点构成一棵优先级树: 高优先级分支 (<code>preconnect</code>/<code>preload</code>/<code>modulepreload</code>) 覆盖当前页关键资源，低优先级分支 (<code>dns-prefetch</code>/<code>prefetch</code>) 处理下页或非关键源。</p>
+    <p class="yry-auto-34737">资源提示节点构成一棵优先级树: 高优先级分支 (<code>preconnect</code>/<code>preload</code>/<code>modulepreload</code>) 覆盖当前页关键资源，低优先级分支 (<code>dns-prefetch</code>/<code>prefetch</code>) 处理下页或非关键源。</p>
   </div>
 
   <div class="content-card">
     <h2>🌐 资源提示语义表</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.74rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">提示</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">时机</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">优先级</th><th style="padding:8px 12px;text-align:right;color:#22d3ee;font-weight:600">浏览器支持</th></tr></thead>
+    <table class="yry-auto-1645">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-38488">提示</th><th class="yry-auto-38488">时机</th><th class="yry-auto-38488">优先级</th><th class="yry-auto-51957">浏览器支持</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>preconnect</code></td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">关键第三方源</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">最高</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">95%+</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>dns-prefetch</code></td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">非关键第三方源</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">中</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">95%+</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>preload</code></td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">当前页关键资源</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">最高</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">95%+</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>prefetch</code></td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">下一页可能资源</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">低</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">90%+</td></tr>
-        <tr><td style="padding:8px 12px"><code>modulepreload</code></td><td style="padding:8px 12px">ESM 模块</td><td style="padding:8px 12px">最高</td><td style="padding:8px 12px;text-align:right">90%+</td></tr>
+        <tr><td class="yry-auto-40105"><code>preconnect</code></td><td class="yry-auto-40105">关键第三方源</td><td class="yry-auto-40105">最高</td><td class="yry-auto-11917">95%+</td></tr>
+        <tr><td class="yry-auto-40105"><code>dns-prefetch</code></td><td class="yry-auto-40105">非关键第三方源</td><td class="yry-auto-40105">中</td><td class="yry-auto-11917">95%+</td></tr>
+        <tr><td class="yry-auto-40105"><code>preload</code></td><td class="yry-auto-40105">当前页关键资源</td><td class="yry-auto-40105">最高</td><td class="yry-auto-11917">95%+</td></tr>
+        <tr><td class="yry-auto-40105"><code>prefetch</code></td><td class="yry-auto-40105">下一页可能资源</td><td class="yry-auto-40105">低</td><td class="yry-auto-11917">90%+</td></tr>
+        <tr><td class="yry-auto-70345"><code>modulepreload</code></td><td class="yry-auto-70345">ESM 模块</td><td class="yry-auto-70345">最高</td><td class="yry-auto-71132">90%+</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>📦 URL 版本策略节点</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.74rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">形式</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">示例</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">适用场景</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">风险</th></tr></thead>
+    <table class="yry-auto-1645">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-38488">形式</th><th class="yry-auto-38488">示例</th><th class="yry-auto-38488">适用场景</th><th class="yry-auto-38488">风险</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">精确版本</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>yry-cdn@1.2.0</code></td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">生产环境 · 长缓存</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">升级需改 URL</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">Semver 范围</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>yry-cdn@^1.2.0</code></td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">预发 · 演示</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">小版本自动漂移</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">最新标签</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><code>yry-cdn@latest</code></td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">仅本地开发</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">供应链风险 · 禁用生产</td></tr>
-        <tr><td style="padding:8px 12px">Git commit</td><td style="padding:8px 12px"><code>yry-cdn@b2925b2</code></td><td style="padding:8px 12px">回滚 · 归档定位</td><td style="padding:8px 12px">无版本可读性</td></tr>
+        <tr><td class="yry-auto-40105">精确版本</td><td class="yry-auto-40105"><code>yry-cdn@1.2.0</code></td><td class="yry-auto-40105">生产环境 · 长缓存</td><td class="yry-auto-40105">升级需改 URL</td></tr>
+        <tr><td class="yry-auto-40105">Semver 范围</td><td class="yry-auto-40105"><code>yry-cdn@^1.2.0</code></td><td class="yry-auto-40105">预发 · 演示</td><td class="yry-auto-40105">小版本自动漂移</td></tr>
+        <tr><td class="yry-auto-40105">最新标签</td><td class="yry-auto-40105"><code>yry-cdn@latest</code></td><td class="yry-auto-40105">仅本地开发</td><td class="yry-auto-40105">供应链风险 · 禁用生产</td></tr>
+        <tr><td class="yry-auto-70345">Git commit</td><td class="yry-auto-70345"><code>yry-cdn@b2925b2</code></td><td class="yry-auto-70345">回滚 · 归档定位</td><td class="yry-auto-70345">无版本可读性</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>🛡️ SRI 与 CDN 回退链</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">&lt;script src="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/shared/index.js"
+    <pre class="yry-auto-15271">&lt;script src="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/shared/index.js"
         integrity="sha384-&lt;base64-hash&gt;"
         crossorigin="anonymous"&gt;&lt;/script&gt;
 &lt;script&gt;
@@ -103,11 +87,11 @@ prefetch (空闲加载下一页) ──── 低优先级</pre>
     document.write('&lt;script src="/cdn-fallback/shared/index.js"&gt;&lt;\/script&gt;');
   }
 &lt;/script&gt;</pre>
-    <ul style="margin:12px 0 0;padding-left:20px;font-size:.76rem;line-height:1.9;color:#a9b1d6">
-      <li><strong style="color:#22d3ee">SRI 哈希生成</strong> — <code>openssl dgst -sha384 -binary file.js | openssl base64 -A</code></li>
-      <li><strong style="color:#22d3ee">双 CDN 回退</strong> — jsDelivr → unpkg → 自托管 (通过 <code>&lt;script onerror&gt;</code>)</li>
-      <li><strong style="color:#22d3ee">CSP 规则</strong> — <code>script-src 'self' jsdelivr.net unpkg.com</code></li>
-      <li><strong style="color:#22d3ee">供应链监控</strong> — Dependabot · npm audit · Socket (每周自动 PR)</li>
+    <ul class="yry-a1-8">
+      <li><strong class="yry-auto-48218">SRI 哈希生成</strong> — <code>openssl dgst -sha384 -binary file.js | openssl base64 -A</code></li>
+      <li><strong class="yry-auto-48218">双 CDN 回退</strong> — jsDelivr → unpkg → 自托管 (通过 <code>&lt;script onerror&gt;</code>)</li>
+      <li><strong class="yry-auto-48218">CSP 规则</strong> — <code>script-src 'self' jsdelivr.net unpkg.com</code></li>
+      <li><strong class="yry-auto-48218">供应链监控</strong> — Dependabot · npm audit · Socket (每周自动 PR)</li>
     </ul>
   </div>
 

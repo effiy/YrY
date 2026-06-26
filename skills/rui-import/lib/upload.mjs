@@ -9,7 +9,7 @@ import { runConcurrent } from "../../../lib/io.mjs";
 import { resolveRemotePath } from "./scan.mjs";
 import { writeRemoteFile, createSession, updateSession } from "./api.mjs";
 
-export async function uploadSingleFile(filePath, apiUrl, existingPaths, root, workspaceName, prefix) {
+export async function uploadSingleFile(/** @type {string} */ filePath, /** @type {string} */ apiUrl, /** @type {Map<string, any>} */ existingPaths, /** @type {string} */ root, /** @type {string} */ workspaceName, /** @type {string[]} */ prefix) {
   const remotePath = resolveRemotePath(filePath, root, workspaceName, prefix);
   const content = await readFile(filePath, "utf-8");
   const existingItem = existingPaths.get(remotePath);
@@ -23,16 +23,17 @@ export async function uploadSingleFile(filePath, apiUrl, existingPaths, root, wo
   return { status: "created", file: filePath, remotePath };
 }
 
-export async function uploadAll(files, apiUrl, existingPaths, root, workspaceName, prefix) {
+export async function uploadAll(/** @type {string[]} */ files, /** @type {string} */ apiUrl, /** @type {Map<string, any>} */ existingPaths, /** @type {string} */ root, /** @type {string} */ workspaceName, /** @type {string[]} */ prefix) {
   let created = 0, overwritten = 0, failed = 0;
+  /** @type {any[]} */
   const errors = [];
 
-  async function worker(file) {
+  async function worker(/** @type {string} */ file) {
     try {
       const result = await uploadSingleFile(file, apiUrl, existingPaths, root, workspaceName, prefix);
       if (result.status === "created") created++;
       else if (result.status === "overwritten") overwritten++;
-      else { failed++; errors.push({ file: result.file, remotePath: result.remotePath, error: result.error }); }
+      else { failed++; errors.push({ file: result.file, remotePath: result.remotePath, error: /** @type {any} */ (result).error }); }
     } catch (err) {
       failed++;
       const remotePath = resolveRemotePath(file, root, workspaceName, prefix);

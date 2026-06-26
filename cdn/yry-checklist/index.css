@@ -71,7 +71,7 @@ body {
   height: 10px; border-radius: 5px; overflow: hidden; display: flex;
   background: rgba(255,255,255,.04);
 }
-.bar-outer .seg { height: 100%; transition: width .5s ease; min-width: 3px; }
+.bar-outer .seg { height: 100%; width: var(--w,0%); transition: width .5s ease; min-width: 3px; }
 .bar-outer .seg.strength   { background: var(--pass); }
 .bar-outer .seg.gap        { background: var(--fail); }
 .bar-outer .seg.suggestion { background: var(--warn); }

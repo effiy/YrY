@@ -9,7 +9,7 @@ import { existsSync } from "node:fs";
 import { querySessionsFull, readRemoteFile } from "../../../lib/io.mjs";
 import { API_X_TOKEN } from "./config.mjs";
 
-export function resolvePullFilter(localDir, projectRoot, projectPrefix) {
+export function resolvePullFilter(/** @type {string} */ localDir, /** @type {string} */ projectRoot, /** @type {string} */ projectPrefix) {
   const workspaceName = projectRoot.split(sep).pop() || "workspace";
   const relDir = relative(projectRoot, localDir).split(sep).join("/");
 
@@ -20,32 +20,32 @@ export function resolvePullFilter(localDir, projectRoot, projectPrefix) {
     return {
       type: "story",
       storyName,
-      filter: (s) => {
+      filter: (/** @type {any} */ s) => {
         const tags = s.tags || [];
         if (tags[0] !== "故事任务面板" || tags[1] !== storyName) return false;
         const base = (s.file_path || "").split("/").pop();
         return base.startsWith(filePrefix);
       },
-      toLocal: (remotePath) => join(localDir, basename(remotePath)),
+      toLocal: (/** @type {string} */ remotePath) => join(localDir, basename(remotePath)),
     };
   }
 
   if (relDir === ".claude" || relDir.startsWith(".claude/")) {
     return {
       type: "claude",
-      filter: (s) => {
+      filter: (/** @type {any} */ s) => {
         const tags = s.tags || [];
         const fp = s.file_path || "";
         return tags[1] === ".claude" && fp.startsWith(".claude/");
       },
-      toLocal: (remotePath) => join(projectRoot, remotePath),
+      toLocal: (/** @type {string} */ remotePath) => join(projectRoot, remotePath),
     };
   }
 
   return null;
 }
 
-export async function pullFromRemote(apiUrl, localDir, projectRoot, projectPrefix) {
+export async function pullFromRemote(/** @type {string} */ apiUrl, /** @type {string} */ localDir, /** @type {string} */ projectRoot, /** @type {string} */ projectPrefix) {
   const strategy = resolvePullFilter(localDir, projectRoot, projectPrefix);
   if (!strategy) {
     const relDir = relative(projectRoot, localDir).split(sep).join("/");
@@ -82,7 +82,7 @@ export async function pullFromRemote(apiUrl, localDir, projectRoot, projectPrefi
 
     try {
       const data = await readRemoteFile(apiUrl, remotePath, API_X_TOKEN);
-      const content = data?.data?.content ?? data?.content ?? "";
+      const content = (/** @type {any} */ (data))?.data?.content ?? (/** @type {any} */ (data))?.content ?? "";
       const localPath = strategy.toLocal(remotePath);
 
       const parent = dirname(localPath);
@@ -104,7 +104,7 @@ export async function pullFromRemote(apiUrl, localDir, projectRoot, projectPrefi
   return { written, failed, type: strategy.type, errors };
 }
 
-export async function recommendPullMode(apiUrl) {
+export async function recommendPullMode(/** @type {string} */ apiUrl) {
   console.error("# rui-import pull 模式 — 远端可同步故事\n");
 
   if (!API_X_TOKEN) {

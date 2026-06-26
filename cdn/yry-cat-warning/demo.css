@@ -1,0 +1,5 @@
+/* yry-cat-warning/demo.css — showcase page styles */
+body { background: var(--yry-bg, #0e0f1a); color: var(--yry-text, #f5f5f5); padding: 32px 24px; max-width: 800px; margin: 0 auto; font-family: var(--yry-font-sans); }
+  h1 { font-size: 1.1rem; margin: 0 0 4px; }
+  .demo-hint { font-size: .74rem; color: var(--yry-text3, #888); margin: 0 0 20px; }
+  .demo-section { margin: 16px 0; }

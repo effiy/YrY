@@ -13,83 +13,17 @@
 
 (function () {
   'use strict';
+  var _script = document.currentScript;
+  var _dataUrl = _script && _script.src ? _script.src.replace(/index\.js(\?[^]*)?$/, 'data.json') : './data.json';
+  var _dataPromise = fetch(_dataUrl).then(function(r){return r.json();}).then(function(d){COMPS=d.COMPS;CAT_ICONS=d.CAT_ICONS;TREND_COLORS=d.TREND_COLORS;}).catch(function(err){console.error('[YryComponentReport] data.json load failed:', err);});
+
 
   var TAG_NAME = 'yry-component-report';
   var READY_EVENT = 'yry-component-report-ready';
 
-  var COMPS = [
-    { name:'yry-layer', cat:'布局与结构', morph:'CSS' },
-    { name:'yry-doc-layer', cat:'布局与结构', morph:'Vue 3' },
-    { name:'yry-breadcrumb', cat:'布局与结构', morph:'Vue 3' },
-    { name:'yry-sub-title', cat:'布局与结构', morph:'Vue 3' },
-    { name:'yry-card-grid', cat:'布局与结构', morph:'CSS' },
-    { name:'yry-layer-agents', cat:'布局与结构', morph:'CSS' },
-    { name:'yry-layer-rules', cat:'布局与结构', morph:'CSS' },
-    { name:'yry-layer-refs', cat:'布局与结构', morph:'CSS' },
-    { name:'yry-layer-info-panel', cat:'布局与结构', morph:'CSS' },
-    { name:'yry-panel-hub', cat:'导航', morph:'Vue 3' },
-    { name:'yry-cross-nav', cat:'导航', morph:'Vue 3' },
-    { name:'yry-page-nav', cat:'导航', morph:'CSS' },
-    { name:'yry-scene-nav', cat:'导航', morph:'Vue 3' },
-    { name:'yry-back-top', cat:'导航', morph:'JS' },
-    { name:'yry-item-card', cat:'卡片与展示', morph:'Vue 3' },
-    { name:'yry-story-card', cat:'卡片与展示', morph:'Vue 3' },
-    { name:'yry-scene-card', cat:'卡片与展示', morph:'Vue 3' },
-    { name:'yry-tag-chip', cat:'卡片与展示', morph:'Vue 3' },
-    { name:'yry-kpi-card', cat:'卡片与展示', morph:'CSS' },
-    { name:'yry-trend-card', cat:'卡片与展示', morph:'CSS' },
-    { name:'yry-scorecard', cat:'卡片与展示', morph:'CSS' },
-    { name:'yry-info-cards', cat:'卡片与展示', morph:'CSS' },
-    { name:'yry-cmd-card', cat:'卡片与展示', morph:'CSS' },
-    { name:'yry-cat-overview', cat:'卡片与展示', morph:'CSS' },
-    { name:'yry-cat-warning', cat:'卡片与展示', morph:'CSS' },
-    { name:'yry-scene-header', cat:'场景组件', morph:'Vue 3' },
-    { name:'yry-scene-footer', cat:'场景组件', morph:'CSS' },
-    { name:'yry-scene-chrome', cat:'场景组件', morph:'CSS' },
-    { name:'yry-scene-health-bar', cat:'场景组件', morph:'CSS' },
-    { name:'yry-scene-stats', cat:'场景组件', morph:'CSS' },
-    { name:'yry-scene-steps', cat:'场景组件', morph:'CSS' },
-    { name:'yry-scene-tabs', cat:'场景组件', morph:'CSS' },
-    { name:'yry-stats-grid', cat:'统计与健康', morph:'Vue 3' },
-    { name:'yry-health-bar', cat:'统计与健康', morph:'CSS' },
-    { name:'yry-kpi-grid', cat:'统计与健康', morph:'CSS' },
-    { name:'yry-progress-bar', cat:'统计与健康', morph:'CSS' },
-    { name:'yry-phase-strip', cat:'统计与健康', morph:'CSS' },
-    { name:'yry-checklist-head', cat:'检查清单', morph:'CSS' },
-    { name:'yry-verify-item', cat:'检查清单', morph:'CSS' },
-    { name:'yry-verify-report-head', cat:'检查清单', morph:'CSS' },
-    { name:'yry-verify-report-foot', cat:'检查清单', morph:'CSS' },
-    { name:'yry-step-card', cat:'检查清单', morph:'CSS' },
-    { name:'yry-risk-cat-card', cat:'风险与审查', morph:'CSS' },
-    { name:'yry-risk-matrix', cat:'风险与审查', morph:'CSS' },
-    { name:'yry-risk-row', cat:'风险与审查', morph:'CSS' },
-    { name:'yry-review-cards', cat:'风险与审查', morph:'CSS' },
-    { name:'yry-cron-panel', cat:'浮动面板', morph:'CE' },
-    { name:'yry-notify-panel', cat:'浮动面板', morph:'CE' },
-    { name:'yry-selfimprove-panel', cat:'浮动面板', morph:'CE' },
-    { name:'yry-faq-panel', cat:'浮动面板', morph:'CE' },
-    { name:'yry-export-toolbar', cat:'工具', morph:'JS' },
-    { name:'yry-tabs-panel', cat:'工具', morph:'CSS' },
-    { name:'yry-cytoscape-graph', cat:'工具', morph:'JS' },
-    { name:'yry-gantt', cat:'工具', morph:'JS' },
-    { name:'yry-test-page', cat:'工具', morph:'CSS' },
-    { name:'yry-walkthrough', cat:'工具', morph:'JS' },
-    { name:'yry-quickstart', cat:'工具', morph:'CSS' },
-    { name:'yry-dep-badge', cat:'其他', morph:'CSS' },
-    { name:'yry-cmd-head', cat:'其他', morph:'CSS' },
-    { name:'yry-footer-note', cat:'其他', morph:'Vue 3' },
-    { name:'yry-op-btn', cat:'其他', morph:'CSS' },
-    { name:'yry-path-link', cat:'其他', morph:'CSS' }
-  ];
-
-  var CAT_ICONS = {
-    '布局与结构':'📐', '导航':'🧭', '卡片与展示':'🃏', '场景组件':'🎬',
-    '统计与健康':'📊', '检查清单':'✅', '风险与审查':'⚠️', '浮动面板':'🪟',
-    '工具':'🔧', '其他':'📦'
-  };
-
-  var TREND_COLORS = ['#22d3ee', '#a78bfa', '#34d399', '#f59e0b'];
-
+var COMPS = null;
+var CAT_ICONS = null;
+var TREND_COLORS = null;
   function grade(s) { return s >= 80 ? 'A' : s >= 60 ? 'B' : s >= 40 ? 'C' : 'D'; }
   function sc(s) { return s >= 80 ? 'var(--yry-pass)' : s >= 60 ? '#f59e0b' : 'var(--yry-fail)'; }
   function cls(s) { return s >= 80 ? 'pass' : s >= 60 ? 'warn' : 'fail'; }
@@ -388,8 +322,11 @@
       });
   };
 
-  if (!customElements.get(TAG_NAME)) {
-    customElements.define(TAG_NAME, YryComponentReport);
-  }
-  document.dispatchEvent(new CustomEvent(READY_EVENT, { detail: { component: 'YryComponentReport' } }));
+  _dataPromise.then(function(){
+    if (!customElements.get(TAG_NAME)) {
+      customElements.define(TAG_NAME, YryComponentReport);
+    }
+    document.dispatchEvent(new CustomEvent(READY_EVENT, { detail: { component: 'YryComponentReport' } }));
+  
+  });
 })();

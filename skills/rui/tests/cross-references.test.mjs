@@ -8,7 +8,7 @@ import { describe, it, assert, run } from '../../../lib/vitest-adapter.mjs';
 import {
   fileExists, readFile, readDir, isDir,
   listSkills, listAgents, listRules, listStoryDirs,
-  hasSection, PROJECT_ROOT,
+  PROJECT_ROOT,
 } from '../../../lib/test-helpers.mjs';
 
 describe('cross-cutting integration', () => {
@@ -190,7 +190,7 @@ describe('cross-cutting integration', () => {
           );
           assert.equal(realHits.length, 0,
             `found potential hardcoded tokens in: ${realHits.join(', ')}`);
-        } catch (e) {
+        } catch (_e) {
           // grep returns 1 when no matches — that's success
         }
       }
@@ -198,4 +198,4 @@ describe('cross-cutting integration', () => {
   });
 });
 
-const exitCode = await run();
+const _exitCode = await run();

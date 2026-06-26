@@ -16,23 +16,7 @@
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
 <link rel="stylesheet" href="../../../yry-a11y/index.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<style>
-  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
-  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
-  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
-  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
-  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
-  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
-  .delivery-story { font-size: .72rem; color: #4b5563; }
-  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
-  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
-  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
-  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
-  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
-  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
-  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
-</style>
+<link rel="stylesheet" href="../../../yry-legacy-scene-delivery/index.css">
 </head>
 <body>
 <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
@@ -54,8 +38,8 @@
 
   <div class="content-card">
     <h2>💡 演示 1 · 完整发布流程</h2>
-    <p style="font-size:.76rem;line-height:1.7;color:#a9b1d6">发布 v1.3.0 的完整流程：</p>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0"># 1. 更新版本号
+    <p class="yry-auto-20394">发布 v1.3.0 的完整流程：</p>
+    <pre class="yry-auto-15271"># 1. 更新版本号
 sed -i '' 's/"version": "1.2.0"/"version": "1.3.0"/' package.json
 node -e "console.log(require('./package.json').version)"
 # 输出: 1.3.0
@@ -80,7 +64,7 @@ npm publish
 
   <div class="content-card">
     <h2>💡 演示 2 · jsDelivr 同步验证</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0"># 发布后 5 分钟内验证 jsDelivr 同步
+    <pre class="yry-auto-15271"># 发布后 5 分钟内验证 jsDelivr 同步
 V=1.3.0
 
 # 验证 5 步加载链
@@ -101,7 +85,7 @@ open "https://cdn.jsdelivr.net/npm/yry-cdn@$V/"</pre>
 
   <div class="content-card">
     <h2>💡 演示 3 · SRI 哈希生成与对比</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0"># 生成本地 SRI 哈希
+    <pre class="yry-auto-15271"># 生成本地 SRI 哈希
 LOCAL_HASH=$(openssl dgst -sha384 -binary shared/index.js | openssl base64 -A)
 echo "本地: sha384-$LOCAL_HASH"
 
@@ -125,8 +109,8 @@ echo '&lt;script src="https://cdn.jsdelivr.net/npm/yry-cdn@1.3.0/shared/index.js
 
   <div class="content-card">
     <h2>💡 演示 4 · 回滚流程</h2>
-    <p style="font-size:.76rem;line-height:1.7;color:#a9b1d6">当 v1.3.0 发现严重 bug 需回滚到 v1.2.0：</p>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0"># 1. 通知用户回滚到 v1.2.0
+    <p class="yry-auto-20394">当 v1.3.0 发现严重 bug 需回滚到 v1.2.0：</p>
+    <pre class="yry-auto-15271"># 1. 通知用户回滚到 v1.2.0
 npm dist-tag add yry-cdn@1.2.0 latest
 # npm 默认安装会拉到 v1.2.0
 
@@ -149,7 +133,7 @@ npm dist-tag add yry-cdn@1.3.1 latest
 
   <div class="content-card">
     <h2>💡 演示 5 · 下载量监控</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0"># 通过 npm-stat 查看周下载量
+    <pre class="yry-auto-15271"># 通过 npm-stat 查看周下载量
 open "https://npm-stat.com/charts.html?package=yry-cdn"
 
 # 通过 npm API 拉取

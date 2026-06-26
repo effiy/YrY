@@ -1710,3 +1710,509 @@ body.sr-high-contrast button:focus-visible {
   text-align: center;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   以下区块从 docs/index.html 内联 <style> 块迁出 (2026-06-25 重构)
+   命名空间沿用原页面的 .yry- / .sr- 前缀
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Tab 面板切换淡入 ─────────────────────────────────────────── */
+.yry-panel { animation: yry-fade-in .28s ease; }
+.yry-panel:not(.on) { animation: none; }
+@keyframes yry-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .yry-panel { transition: none; animation: none; }
+}
+
+/* ── 链接卡片化 · 统一 hover 抬升与焦点环 ─────────────────── */
+.score-report .sr-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  transform: translateZ(0);
+  transition: transform .18s ease, border-color .2s, background .2s, box-shadow .2s;
+  will-change: transform;
+}
+.score-report .sr-link:hover {
+  transform: translateY(-2px);
+  border-color: var(--yry-accent, #22d3ee) !important;
+  background: rgba(34,211,238,.10) !important;
+  box-shadow: 0 4px 14px -6px rgba(34,211,238,.45);
+}
+.score-report .sr-link:focus-visible {
+  outline: none;
+  border-color: var(--yry-accent, #22d3ee);
+  box-shadow: 0 0 0 3px rgba(34,211,238,.35);
+}
+/* 外链标记 — 指向 .md / 外部目录的链接加一个小角标 */
+.score-report .sr-link[href$=".md"]::after {
+  content: '⤢'; font-size: .6rem; opacity: .55; margin-left: 2px;
+}
+
+/* ── 滚动揭示动画 — IntersectionObserver 触发淡入上滑 ──────── */
+.score-report {
+  opacity: 0; transform: translateY(10px);
+  transition: opacity .4s ease, transform .4s ease;
+}
+.score-report.is-revealed { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) {
+  .score-report { opacity: 1; transform: none; transition: none; }
+}
+
+/* ── 章节锚点复制 — hover 标题显示 # 按钮 ──────────────────── */
+.yry-anchor-copy {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; margin-left: 6px;
+  font-size: .7rem; color: var(--yry-text3,#6b7280);
+  background: rgba(15,18,30,.5); border: 1px solid var(--yry-border,#2d2f45);
+  border-radius: 4px; cursor: pointer; opacity: 0;
+  transition: opacity .15s, color .15s, border-color .15s;
+  vertical-align: middle; text-decoration: none;
+}
+.sr-title:hover .yry-anchor-copy,
+.yry-anchor-copy:focus-visible { opacity: 1; }
+.yry-anchor-copy:hover {
+  color: var(--yry-accent,#22d3ee); border-color: var(--yry-accent,#22d3ee);
+}
+.yry-anchor-copy.is-copied {
+  color: var(--yry-emerald,#4ade80); border-color: var(--yry-emerald,#4ade80); opacity: 1;
+}
+
+/* ── 章节标题强调条 — 左侧 3px 渐变条提升视觉层级 ───────────── */
+.score-report .sr-title {
+  position: relative; padding-left: 12px;
+}
+.score-report .sr-title::before {
+  content: ''; position: absolute; left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 3px; height: 70%;
+  background: linear-gradient(180deg, var(--yry-accent,#22d3ee), var(--yry-violet,#a78bfa));
+  border-radius: 2px; opacity: .85;
+}
+
+/* ── 入口计数徽章 — 自动注入到 section 标题后 ───────────────── */
+.sr-count-badge {
+  display: inline-flex; align-items: center;
+  font-size: .62rem; font-weight: 500;
+  color: var(--yry-text3,#6b7280);
+  background: rgba(15,18,30,.5);
+  border: 1px solid var(--yry-border,#2d2f45);
+  border-radius: 10px; padding: 1px 8px;
+  margin-left: 6px; vertical-align: middle;
+  transition: all .15s;
+}
+.score-report:hover .sr-count-badge {
+  color: var(--yry-accent,#22d3ee);
+  border-color: rgba(34,211,238,.35);
+}
+
+/* ── 报告卡片网格 — 替代密集 chip,展示 icon+标题+描述 ─────── */
+.yry-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px; margin-top: 12px;
+}
+/* 使用 .score-report 前缀提升优先级,覆盖 .sr-link 默认样式 */
+.score-report .yry-report-card {
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 12px 14px;
+  background: var(--yry-bg-card, #1e2035);
+  border: 1px solid var(--yry-border, #2d2f45);
+  border-radius: 8px;
+  color: var(--yry-text2, #a9b1d6);
+  transition: transform .18s ease, border-color .2s, box-shadow .2s, background .2s;
+  position: relative; overflow: hidden;
+}
+.score-report .yry-report-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px; background: linear-gradient(180deg, var(--yry-accent,#22d3ee), var(--yry-violet,#a78bfa));
+  opacity: 0; transition: opacity .2s;
+}
+.score-report .yry-report-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px -8px rgba(34,211,238,.4);
+}
+.score-report .yry-report-card:hover::before { opacity: 1; }
+.score-report .yry-report-card:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(34,211,238,.3);
+}
+.yry-report-card-head {
+  display: flex; align-items: center; gap: 8px;
+  font-size: .82rem; font-weight: 600;
+  color: var(--yry-text, #a9b1d6);
+}
+.yry-report-card-icon {
+  font-size: 1rem; flex-shrink: 0; width: 1.4em; text-align: center;
+}
+.yry-report-card-label {
+  flex: 1; min-width: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.yry-report-card-desc {
+  font-size: .68rem; color: var(--yry-text3,#6b7280);
+  line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.yry-report-card-visit {
+  position: absolute; top: 6px; right: 8px;
+  font-size: .58rem; color: var(--yry-text3,#6b7280);
+  background: rgba(15,18,30,.6); border-radius: 8px;
+  padding: 1px 6px; opacity: 0; transition: opacity .2s;
+}
+.score-report .yry-report-card:hover .yry-report-card-visit { opacity: 1; }
+@media (max-width: 640px) {
+  .yry-card-grid { grid-template-columns: 1fr; }
+}
+
+/* ── 卡片排序下拉 — 置于 section 标题右侧 ───────────────────── */
+.yry-sort-select {
+  font-size: .66rem; font-family: inherit;
+  color: var(--yry-text2, #a9b1d6);
+  background: rgba(15,18,30,.5);
+  border: 1px solid var(--yry-border, #2d2f45);
+  border-radius: 4px; padding: 3px 8px;
+  cursor: pointer; outline: none;
+  transition: border-color .15s, color .15s;
+  margin-left: auto;
+}
+.yry-sort-select:hover, .yry-sort-select:focus-visible {
+  color: var(--yry-accent, #22d3ee);
+  border-color: var(--yry-accent, #22d3ee);
+}
+.yry-sort-select option {
+  background: var(--yry-bg-card, #1e2035);
+  color: var(--yry-text, #a9b1d6);
+}
+
+/* ── 已访问卡片角标 — 右上角小勾标 ──────────────────────────── */
+.score-report .yry-report-card[data-visited="1"]::after {
+  content: '✓'; position: absolute; top: 6px; right: 8px;
+  font-size: .6rem; font-weight: 700;
+  color: var(--yry-emerald, #4ade80);
+  background: rgba(74,222,128,.15);
+  border: 1px solid rgba(74,222,128,.35);
+  border-radius: 50%;
+  width: 14px; height: 14px;
+  display: flex; align-items: center; justify-content: center;
+  opacity: .85; transition: opacity .2s;
+}
+.score-report .yry-report-card[data-visited="1"]:hover::after { opacity: 1; }
+
+/* ── 紧凑视图 — 卡片退化为 chip 风格 (CSS-only,DOM 不变) ──── */
+.yry-card-grid.is-compact {
+  display: flex; flex-wrap: wrap; gap: 8px 10px;
+}
+.yry-card-grid.is-compact .yry-report-card {
+  display: inline-flex; align-items: center; gap: 6px;
+  flex-direction: row; padding: 4px 12px;
+  border-radius: 4px; overflow: visible;
+}
+.yry-card-grid.is-compact .yry-report-card::before { display: none; }
+.yry-card-grid.is-compact .yry-report-card-head {
+  font-size: .78rem; font-weight: 500;
+}
+.yry-card-grid.is-compact .yry-report-card-icon { font-size: .9rem; }
+.yry-card-grid.is-compact .yry-report-card-desc { display: none; }
+.yry-card-grid.is-compact .yry-report-card-visit { display: none; }
+.yry-card-grid.is-compact .yry-report-card[data-visited="1"]::after {
+  top: -4px; right: -4px; width: 12px; height: 12px; font-size: .5rem;
+}
+
+/* ── 帮助面板底部重置按钮 ───────────────────────────────────── */
+.yry-help-reset {
+  margin-top: 14px; padding: 8px 14px; width: 100%;
+  background: rgba(248,113,113,.08); color: var(--yry-fail,#f87171);
+  border: 1px solid rgba(248,113,113,.3); border-radius: 6px;
+  cursor: pointer; font-family: inherit; font-size: .76rem;
+  transition: all .15s;
+}
+.yry-help-reset:hover {
+  background: rgba(248,113,113,.15); border-color: var(--yry-fail,#f87171);
+}
+
+/* ── 卡片入场交错动画 — 加载时渐次淡入 ──────────────────────── */
+@keyframes yry-card-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.yry-card-grid .yry-report-card {
+  animation: yry-card-in .32s ease both;
+  animation-delay: calc(var(--yry-i, 0) * 28ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .yry-card-grid .yry-report-card { animation: none; }
+}
+
+/* ── 访问频率热力着色 — 按访问次数递增暖色 ──────────────────── */
+.score-report .yry-report-card[data-heat="1"] {
+  background: rgba(251,191,36,.05);
+  border-color: rgba(251,191,36,.2);
+}
+.score-report .yry-report-card[data-heat="2"] {
+  background: rgba(251,191,36,.1);
+  border-color: rgba(251,191,36,.3);
+}
+.score-report .yry-report-card[data-heat="3"] {
+  background: rgba(251,191,36,.16);
+  border-color: rgba(251,191,36,.42);
+  box-shadow: 0 0 12px -4px rgba(251,191,36,.3);
+}
+
+/* ── 卡片复制链接 hover 按钮 ────────────────────────────────── */
+.yry-report-card-copy {
+  position: absolute; top: 6px; right: 8px;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px;
+  font-size: .72rem; cursor: pointer;
+  color: var(--yry-text3,#6b7280);
+  background: rgba(15,18,30,.7);
+  border: 1px solid var(--yry-border,#2d2f45);
+  border-radius: 4px; opacity: 0;
+  transition: opacity .15s, color .15s, border-color .15s;
+  z-index: 2;
+}
+.score-report .yry-report-card:hover .yry-report-card-copy { opacity: .85; }
+.yry-report-card-copy:hover {
+  color: var(--yry-accent,#22d3ee); border-color: var(--yry-accent,#22d3ee);
+  opacity: 1 !important;
+}
+.yry-report-card-copy.is-copied {
+  color: var(--yry-emerald,#4ade80); border-color: var(--yry-emerald,#4ade80); opacity: 1 !important;
+}
+.yry-card-grid.is-compact .yry-report-card-copy { display: none; }
+
+/* ── 概览模式 — section 折叠为标题,点击展开单段 ─────────────── */
+#panelDashboard.is-overview .score-report:not(.is-expanded) > *:not(.sr-header) {
+  display: none;
+}
+#panelDashboard.is-overview .score-report:not(.is-expanded) {
+  margin-bottom: 4px;
+  border-left: 2px solid rgba(34,211,238,.25);
+  padding-left: 10px;
+  transition: border-color .15s;
+}
+#panelDashboard.is-overview .score-report:not(.is-expanded):hover {
+  border-left-color: var(--yry-accent,#22d3ee);
+}
+#panelDashboard.is-overview .sr-title,
+#panelDashboard.is-overview .sm-title {
+  cursor: pointer;
+  margin-bottom: 0;
+}
+#panelDashboard.is-overview .sr-title:hover,
+#panelDashboard.is-overview .sm-title:hover {
+  color: var(--yry-accent,#22d3ee);
+}
+#panelDashboard.is-overview .sr-title::after,
+#panelDashboard.is-overview .sm-title::after {
+  content: ' (点击展开)';
+  font-size: .62rem; color: var(--yry-text3,#6b7280);
+  font-weight: 400; margin-left: 6px;
+}
+#panelDashboard.is-overview .score-report.is-expanded .sr-title::after {
+  content: ' (点击收起)';
+}
+
+/* ── 页面背景径向渐变 — 顶部柔光增加深度 ────────────────────── */
+body {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(34,211,238,.06), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(167,139,250,.04), transparent 70%),
+    var(--yry-bg, #0b0d14);
+  background-attachment: fixed;
+}
+
+/* ── sm-cards score bar 兜底(JS 不可用时禁用动画) ──────────── */
+.sm-card-scorebar-fill { animation: none; }
+
+/* ── ? 帮助面板(自定义实现,不依赖 yry-help-overlay) ───────── */
+.yry-help-backdrop {
+  position: fixed; inset: 0; z-index: 1001;
+  background: rgba(5,7,14,.6); backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: none; align-items: center; justify-content: center;
+  padding: 16px;
+}
+.yry-help-backdrop.is-open { display: flex; }
+.yry-help-panel {
+  width: 100%; max-width: 560px;
+  background: var(--yry-bg-card, #1e2035);
+  border: 1px solid var(--yry-border, #2d2f45);
+  border-radius: 10px; padding: 20px 24px;
+  box-shadow: 0 24px 60px -12px rgba(0,0,0,.6), 0 0 0 1px rgba(34,211,238,.08);
+}
+.yry-help-title {
+  font-size: 1rem; font-weight: 700; color: var(--yry-text,#a9b1d6);
+  margin: 0 0 4px;
+}
+.yry-help-sub {
+  font-size: .68rem; color: var(--yry-text3,#6b7280); margin-bottom: 16px;
+}
+.yry-help-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px 18px;
+}
+.yry-help-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 6px 0; border-bottom: 1px dashed rgba(45,47,69,.5);
+  font-size: .74rem; color: var(--yry-text2,#a9b1d6);
+}
+.yry-help-row:last-child { border-bottom: none; }
+.yry-help-keys { display: flex; gap: 4px; flex-shrink: 0; }
+.yry-help-keys kbd {
+  font-family: ui-monospace, "JetBrains Mono", monospace;
+  font-size: .64rem; color: var(--yry-text,#a9b1d6);
+  background: rgba(15,18,30,.6); border: 1px solid var(--yry-border,#2d2f45);
+  border-radius: 3px; padding: 2px 6px; min-width: 18px; text-align: center;
+}
+.yry-help-close {
+  margin-top: 16px; padding: 8px 16px;
+  background: rgba(34,211,238,.12); color: var(--yry-accent,#22d3ee);
+  border: 1px solid rgba(34,211,238,.3); border-radius: 6px;
+  cursor: pointer; font-family: inherit; font-size: .8rem;
+  transition: all .15s;
+}
+.yry-help-close:hover {
+  background: rgba(34,211,238,.2); border-color: var(--yry-accent,#22d3ee);
+}
+@media (max-width: 560px) {
+  .yry-help-grid { grid-template-columns: 1fr; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   评分报告内联样式提取(原 docs/index.html <style> 块 #2)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 通用强调色文本(原 color:var(--yry-accent,#22d3ee)) ── */
+.yry-accent-text { color: var(--yry-accent, #22d3ee); }
+
+/* ── 评分报告 Section 间距(覆盖 CDN 默认 margin-top:24px → 16px) ── */
+.score-report { margin-top: 16px; }
+
+/* ── sr-links 紧凑间距(CDN 默认 gap:12px → 8px 10px) ── */
+.score-report .sr-links.is-tight-gap { gap: 8px 10px; }
+.score-report .sr-links.is-tight-gap.is-extra-top { margin-top: 12px; }
+.score-report .sr-links.is-flex { flex-wrap: wrap; gap: 8px 10px; margin-top: 12px; }
+
+/* ── Section 头部 meta 文本(.68rem text3) ── */
+.sr-meta-info {
+  font-size: 0.68rem;
+  color: var(--yry-text3);
+}
+
+/* ── Section 顶部介绍段落(暗底框) ── */
+.sr-intro-box {
+  font-size: 0.72rem;
+  color: var(--yry-text2, #a9b1d6);
+  line-height: 1.8;
+  margin: 14px 0 0;
+  padding: 10px 14px;
+  background: rgba(30, 41, 59, 0.3);
+  border-radius: 6px;
+}
+
+/* ── Section 底部说明 ── */
+.sr-footer-note {
+  font-size: 0.66rem;
+  color: var(--yry-text3, #6b7280);
+  margin-top: 10px;
+  line-height: 1.7;
+}
+.sr-footer-note.is-tight { margin-top: 8px; }
+
+/* ── 子分区(虚线分隔 + 内缩) ── */
+.sr-subsection {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.06);
+}
+.sr-subsection-title {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--yry-accent, #22d3ee);
+  margin-bottom: 8px;
+}
+.sr-subsection-intro {
+  font-size: 0.72rem;
+  color: var(--yry-text2, #a9b1d6);
+  line-height: 1.8;
+  margin-bottom: 10px;
+}
+
+/* ── 卡片网格(sr-cell 左对齐覆盖) ── */
+.sr-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+.sr-card-grid.is-narrow { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+
+.score-report .sr-cell.is-left {
+  text-align: left;
+  padding: 12px 14px;
+}
+
+/* ── 卡片标题/正文(原内联在 sr-cell 内部 div) ── */
+.sr-card-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--yry-accent, #22d3ee);
+  margin-bottom: 4px;
+}
+.sr-card-body {
+  font-size: 0.66rem;
+  color: var(--yry-text3, #6b7280);
+  line-height: 1.8;
+}
+.sr-card-body.is-tight { line-height: 1.7; }
+
+/* ── 评分报告 sr-grid 变体 ── */
+.score-report .sr-grid.is-4col,
+.score-report .sr-grid.is-cols-4 {
+  grid-template-columns: repeat(4, 1fr);
+  margin-bottom: 8px;
+}
+.score-report .sr-cell-value.is-sm,
+.score-report .sr-cell-value.is-lg { font-size: 1.1rem; }
+
+/* ── 七层架构明细表(原 table 内联) ── */
+.sr-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.72rem;
+  margin-top: 8px;
+}
+.sr-table thead tr,
+.sr-table thead .sr-table-head {
+  background: rgba(30, 41, 59, 0.5);
+  color: var(--yry-text2, #a9b1d6);
+}
+.sr-table th,
+.sr-table td { padding: 10px 12px; }
+.sr-table th { text-align: left; font-weight: 600; }
+.sr-table th.is-num,
+.sr-table th.is-right { text-align: right; }
+.sr-table th.w-60 { width: 60px; }
+.sr-table th.w-80 { width: 80px; }
+.sr-table th.w-140 { width: 140px; }
+.sr-table tbody tr { border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
+.sr-table tbody tr:last-child { border-bottom: none; }
+.sr-table .td-accent { color: var(--yry-accent, #22d3ee); font-weight: 700; }
+.sr-table .td-accent.is-right { text-align: right; }
+.sr-table .td-text2 { color: var(--yry-text2, #a9b1d6); }
+.sr-table .td-muted { color: var(--yry-text3, #6b7280); line-height: 1.7; }
+
+/* ── CDN 聚合 KPI 行容器(由 docs/index.html 末尾的实时检测脚本填充内容) ── */
+.cdn-agg-kpis {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 10px 0 14px;
+  font-size: 0.74rem;
+}
+
+/* ── 单例样式提取 ── */
+.sm-intro { font-size: 0.72rem; line-height: 1.8; }
+

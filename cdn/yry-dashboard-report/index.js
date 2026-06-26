@@ -1152,52 +1152,36 @@
     updateP0Badge(recommendations);
   }
 
-  /* ── 默认数据回退 ── */
+  /* ── 默认数据回退 (从 default-data.json 异步拉取) ── */
   function renderWithDefaultData() {
     setSourceStatus('offline', '离线模式');
-    const defaultData = {
-      composite: 94,
-      scoreTrend: [{ score: 82 }, { score: 94 }],
-      dimSummary: {
-        token_health:  { label: 'Token健康', score: 100, trend: 'stable', category: 'core' },
-        config_health: { label: '配置健康', score: 100, trend: 'stable', category: 'core' },
-        api_health:    { label: 'API健康',   score: 100,  trend: 'stable', category: 'core' },
-        reports_health:{ label: '报告健康', score: 100,  trend: 'stable', category: 'core' },
-        format_health: { label: '格式规范', score: 100,  trend: 'stable', category: 'quality' },
-        diag_health:   { label: '诊断健康', score: 85,  trend: 'rising', category: 'core' },
-        git_health:    { label: 'Git健康',   score: 80,  trend: 'rising', category: 'core' },
-        security:      { label: '安全防护', score: 100,  trend: 'stable', category: 'core' },
-        testing:       { label: '测试覆盖', score: 100,  trend: 'rising', category: 'engineering' },
-        cicd:          { label: 'CI/CD',     score: 100,  trend: 'rising', category: 'engineering' },
-        types:         { label: '类型安全', score: 100,  trend: 'stable', category: 'engineering' },
-        docs:          { label: '文档覆盖', score: 100,  trend: 'stable', category: 'engineering' },
-        deps:          { label: '依赖管理', score: 100,  trend: 'stable', category: 'engineering' },
-        dep_analysis:  { label: '依赖分析', score: 81,  trend: 'rising', category: 'structural' },
-        file_size:     { label: '文件大小', score: 96,  trend: 'stable', category: 'structural' },
-        notify:        { label: '通知健康', score: 100,  trend: 'stable', category: 'quality' },
-        comp_qual:     { label: '组件质量', score: 85,  trend: 'stable',  category: 'quality' },
-        em_cicd:       { label: 'CI/CD',     score: 100,  trend: 'rising', category: 'engineering' },
-        em_testing:    { label: '测试成熟度',score: 100,  trend: 'rising', category: 'engineering' },
-        em_deps:       { label: '依赖管理', score: 100,  trend: 'stable', category: 'engineering' }
-      },
-      archHealth: { grade: 'A' },
-      diagTriggered: 1
-    };
-    renderScoreReport(defaultData);
-    renderMethodologyCards(defaultData);
-    const elUpdated = document.getElementById('sr-updated');
-    if (elUpdated) elUpdated.textContent = '⚠️ 离线模式 · 使用内置默认数据';
-    const summaryEl = document.getElementById('sr-summary');
-    if (summaryEl) {
-      summaryEl.innerHTML = '<strong>⚠️ 数据源不可达 — 当前显示离线默认值</strong><br><br>' +
-        '以下评分基于<strong>内置静态基线数据</strong>，反映项目最后一次健康检查时的近似状态，非实时数据。<br><br>' +
-        '<strong>恢复实时数据的方法：</strong><br>' +
-        '① 运行 <code>node lib/score-report-generator.mjs</code> 生成最新评分报告<br>' +
-        '② 运行 <code>node skills/rui-bot/send.mjs health</code> 执行健康检查并持久化趋势<br>' +
-        '③ 确认 <code>docs/评分报告/score-report.json</code> 文件存在且可被 HTTP 服务访问<br>' +
-        '④ 如使用本地文件预览，启动 HTTP 服务器：<code>npx serve docs</code> 或 <code>python3 -m http.server</code><br><br>' +
-        '数据源尝试顺序：score-report.json → summary.json → cdn-summary/index.json → 内置默认值';
-    }
+    const base = getBasePath();
+    const defaultDataUrl = base + '/cdn/yry-dashboard-report/default-data.json';
+    fetch(defaultDataUrl, { credentials: 'same-origin' })
+      .then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function (defaultData) {
+        renderScoreReport(defaultData);
+        renderMethodologyCards(defaultData);
+        const elUpdated = document.getElementById('sr-updated');
+        if (elUpdated) elUpdated.textContent = '⚠️ 离线模式 · 使用内置默认数据';
+        const summaryEl = document.getElementById('sr-summary');
+        if (summaryEl) {
+          summaryEl.innerHTML = '<strong>⚠️ 数据源不可达 — 当前显示离线默认值</strong><br><br>' +
+            '以下评分基于<strong>内置静态基线数据</strong>，反映项目最后一次健康检查时的近似状态，非实时数据。<br><br>' +
+            '<strong>恢复实时数据的方法：</strong><br>' +
+            '① 运行 <code>node lib/score-report-generator.mjs</code> 生成最新评分报告<br>' +
+            '② 运行 <code>node skills/rui-bot/send.mjs health</code> 执行健康检查并持久化趋势<br>' +
+            '③ 确认 <code>docs/评分报告/score-report.json</code> 文件存在且可被 HTTP 服务访问<br>' +
+            '④ 如使用本地文件预览，启动 HTTP 服务器：<code>npx serve docs</code> 或 <code>python3 -m http.server</code><br><br>' +
+            '数据源尝试顺序：score-report.json → summary.json → cdn-summary/index.json → default-data.json';
+        }
+      })
+      .catch(function (err) {
+        console.error('[ScoreReport] default-data.json 加载失败:', err);
+      });
   }
 
   /* ── 入口: 页面加载后启动 ── */

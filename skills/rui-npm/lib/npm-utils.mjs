@@ -24,14 +24,14 @@ export function registryArgs() {
   return defaultRegistry !== REGISTRY_OFFICIAL ? ["--registry", REGISTRY_OFFICIAL] : [];
 }
 
-export function npm(args, opts = {}) {
+export function npm(/** @type {string[]} */ args, /** @type {any} */ opts = {}) {
   return spawnSync("npm", args, {
     encoding: "utf-8", stdio: ["pipe", "pipe", "pipe"],
     ...opts, env: { ...process.env, ...opts.env },
   });
 }
 
-export function npmStream(args, opts = {}) {
+export function npmStream(/** @type {string[]} */ args, /** @type {any} */ opts = {}) {
   return spawn("npm", args, {
     stdio: "inherit", ...opts, env: { ...process.env, ...opts.env },
   });
@@ -56,7 +56,7 @@ export function checkPackageJson() {
   }
 }
 
-export function maskToken(token) {
+export function maskToken(/** @type {string} */ token) {
   if (!token || token.length <= 8) return "****";
   return token.slice(0, 4) + "****" + token.slice(-4);
 }
@@ -65,26 +65,26 @@ export function timestamp() {
   return fmtDisplay(nowISO());
 }
 
-export function toTable(headers, rows) {
+export function toTable(/** @type {string[]} */ headers, /** @type {any[][]} */ rows) {
   if (!rows.length) return "(无结果)";
-  const cols = headers.map((h, i) => {
-    const cells = [h, ...rows.map((r) => String(r[i] ?? ""))];
-    const maxW = Math.max(...cells.map((c) => String(c).length));
+  const cols = headers.map((/** @type {string} */ h, /** @type {number} */ i) => {
+    const cells = [h, ...rows.map((/** @type {any[]} */ r) => String(r[i] ?? ""))];
+    const maxW = Math.max(...cells.map((/** @type {any} */ c) => String(c).length));
     return { maxW, key: i };
   });
-  const sep = cols.map((c) => "─".repeat(c.maxW)).join("─┼─");
-  const headerLine = cols.map((c, i) => String(headers[i]).padEnd(c.maxW)).join(" │ ");
+  const sep = cols.map((/** @type {{maxW: number, key: number}} */ c) => "─".repeat(c.maxW)).join("─┼─");
+  const headerLine = cols.map((/** @type {{maxW: number, key: number}} */ c, /** @type {number} */ i) => String(headers[i]).padEnd(c.maxW)).join(" │ ");
   const lines = rows.map(
-    (row) => cols.map((c, i) => String(row[i] ?? "").padEnd(c.maxW)).join(" │ ")
+    (/** @type {any[]} */ row) => cols.map((/** @type {{maxW: number, key: number}} */ c, /** @type {number} */ i) => String(row[i] ?? "").padEnd(c.maxW)).join(" │ ")
   );
   return [headerLine, sep, ...lines].join("\n");
 }
 
-export function httpGetJson(url) {
+export function httpGetJson(/** @type {string} */ url) {
   return new Promise((resolve, reject) => {
-    get(url, (res) => {
+    get(url, (/** @type {any} */ res) => {
       let data = "";
-      res.on("data", (chunk) => data += chunk);
+      res.on("data", (/** @type {string} */ chunk) => data += chunk);
       res.on("end", () => {
         try { resolve(JSON.parse(data)); }
         catch (e) { reject(e); }

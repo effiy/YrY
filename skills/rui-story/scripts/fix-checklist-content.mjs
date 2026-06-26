@@ -15,7 +15,7 @@
  */
 
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from 'node:fs';
-import { join, dirname, basename } from 'node:path';
+import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { NODE_ARGV_OFFSET, STORY_PANEL_DIR } from '../../../lib/constants.mjs';
 
@@ -46,7 +46,7 @@ function findAllSceneDirs() {
   return out;
 }
 
-function readFile(p) {
+function readFile(/** @type {string} */ p) {
   return readFileSync(p, 'utf-8');
 }
 
@@ -55,9 +55,9 @@ function readFile(p) {
  * Parse index.md into structured data.
  * Returns: { title, sec0..sec4: { subSections: [{num, title, content, tables[], lists[], mermaid[]}] } }
  */
-function parseIndexMd(raw) {
+function parseIndexMd(/** @type {string} */ raw) {
   // Scene title from first heading
-  const titleMatch = raw.match(/^#\s+(?:场景[\s\-]*\d+[\s\-:：]*)?(.+)$/m);
+  const titleMatch = raw.match(/^#\s+(?:场景[\s-]*\d+[\s:：-]*)?(.+)$/m);
   const title = titleMatch ? titleMatch[1].trim() : '未知场景';
   // Strip leading/trailing separators (·, :, —, -, ：, etc.) and whitespace
   const cleanTitle = title
@@ -68,7 +68,7 @@ function parseIndexMd(raw) {
 
   // Split by sections §0-§4
   const secRegex = /<a\s+id="sec(\d)"><\/a>\s*\n+\s*##\s+§(\d)\s+([^\n]+)/g;
-  const sectionMap = {};
+  /** @type {Record<string, any>} */ const sectionMap = {};
   let m;
   const sectionStarts = [];
   while ((m = secRegex.exec(raw)) !== null) {
@@ -105,7 +105,7 @@ function parseIndexMd(raw) {
   return { title: cleanTitle, sections: sectionMap };
 }
 
-function extractSubsections(sectionContent) {
+function extractSubsections(/** @type {string} */ sectionContent) {
   const subs = [];
   // Strip the main §X heading line
   const bodyStart = sectionContent.search(/^##\s+§\d/m);
@@ -134,7 +134,7 @@ function extractSubsections(sectionContent) {
   return subs;
 }
 
-function extractTables(text) {
+function extractTables(/** @type {string} */ text) {
   const tables = [];
   const lines = text.split('\n');
   let inTable = false;
@@ -153,7 +153,7 @@ function extractTables(text) {
   return tables;
 }
 
-function extractLists(text) {
+function extractLists(/** @type {string} */ text) {
   // Extract bullet lists (- or *)
   const lines = text.split('\n');
   const out = [];
@@ -164,7 +164,7 @@ function extractLists(text) {
   return out;
 }
 
-function extractMermaid(text) {
+function extractMermaid(/** @type {string} */ text) {
   const out = [];
   const re = /```mermaid\n([\s\S]*?)```/g;
   let m;
@@ -177,7 +177,7 @@ function extractMermaid(text) {
  * Extract N step descriptions from index.md sections.
  * Returns: [{ title, body, criteria, code }]
  */
-function extractSteps(parsed, count = 14) {
+function extractSteps(/** @type {any} */ parsed, count = 14) {
   const steps = [];
   // Allocation plan:
   // §0 → 3 steps (评审)
@@ -200,7 +200,7 @@ function extractSteps(parsed, count = 14) {
     const subs = sec.subsections;
 
     // Extract step titles from subsection titles (skip non-actionable ones)
-    const stepSubs = subs.filter(s =>
+    const stepSubs = subs.filter((/** @type {any} */ s) =>
       !/^效果示意$/i.test(s.title) &&
       !/^情感目标$/i.test(s.title) &&
       !/^成功感知$/i.test(s.title) &&
@@ -216,7 +216,7 @@ function extractSteps(parsed, count = 14) {
     // If subsections give us items, use them; else fall back to table rows / list items
     let stepSources = [];
     if (stepSubs.length > 0) {
-      stepSources = stepSubs.map(s => ({
+      stepSources = stepSubs.map((/** @type {any} */ s) => ({
         title: cleanTitleForStep(s.title),
         sub: s,
       }));
@@ -239,7 +239,7 @@ function extractSteps(parsed, count = 14) {
       }
     }
 
-    let titles = stepSources.map(s => s.title).slice(0, want);
+    let titles = stepSources.map((/** @type {any} */ s) => s.title).slice(0, want);
     while (titles.length < want && stepSources.length > 0) {
       titles.push(`补充 ${phaseNames[i]} 工作项 ${titles.length + 1}`);
     }
@@ -307,7 +307,7 @@ function extractSteps(parsed, count = 14) {
   return steps.slice(0, count);
 }
 
-function cleanTitleForStep(t) {
+function cleanTitleForStep(/** @type {string} */ t) {
   // Remove §X.Y prefix and trailing colon
   return t.replace(/^§\d+(\.\d+)*\s*[:：]?\s*/, '').replace(/[:：]\s*$/, '').trim();
 }
@@ -316,19 +316,18 @@ function cleanTitleForStep(t) {
  * Extract actionable items from markdown tables in a section.
  * Returns: [{ title, body, criteria, deliverable, code }]
  */
-function extractTableItems(sectionContent) {
+function extractTableItems(/** @type {string} */ sectionContent) {
   const out = [];
   const lines = sectionContent.split('\n');
   let i = 0;
   while (i < lines.length) {
     if (/^\s*\|.*\|/.test(lines[i]) && i + 1 < lines.length && /^\s*\|[\s\-:|]+\|/.test(lines[i + 1])) {
       // Header row
-      const headerCells = lines[i].split('|').map(c => c.trim()).filter(Boolean);
       // Skip the header row, alignment row
       i += 2;
       // Data rows
       while (i < lines.length && /^\s*\|.*\|/.test(lines[i])) {
-        const cells = lines[i].split('|').map(c => c.trim()).filter(Boolean);
+        const cells = lines[i].split('|').map((/** @type {any} */ c) => c.trim()).filter(Boolean);
         if (cells.length === 0) { i++; continue; }
         // Title: first cell (or 2nd if first is index/ID)
         const titleCell = cells.find(c => !/^TC[-_]?\d|^§|^#/.test(c) && c.length > 1) || cells[1] || cells[0];
@@ -339,7 +338,7 @@ function extractTableItems(sectionContent) {
         out.push({
           title,
           body,
-          criteria: cells.slice(1, 4).map(c => c.replace(/[*`]/g, '').slice(0, 50)),
+          criteria: cells.slice(1, 4).map((/** @type {any} */ c) => c.replace(/[*`]/g, '').slice(0, 50)),
           deliverable: cells[0]?.replace(/[*`]/g, '') || title,
         });
         i++;
@@ -351,7 +350,7 @@ function extractTableItems(sectionContent) {
   return out;
 }
 
-function extractListItems(sectionContent) {
+function extractListItems(/** @type {string} */ sectionContent) {
   // Extract bullet list items (- or *), excluding task list checkboxes
   const lines = sectionContent.split('\n');
   const out = [];
@@ -365,7 +364,7 @@ function extractListItems(sectionContent) {
   return out;
 }
 
-function extractFirstParagraph(sectionContent) {
+function extractFirstParagraph(/** @type {string} */ sectionContent) {
   // Strip headings, code blocks, tables, and return the first real paragraph
   const lines = sectionContent.split('\n');
   for (const line of lines) {
@@ -381,7 +380,7 @@ function extractFirstParagraph(sectionContent) {
   return null;
 }
 
-function extractOwnerFromText(text) {
+function extractOwnerFromText(/** @type {string} */ text) {
   if (!text) return null;
   const roles = ['planner', 'tester', 'coder', 'reviewer', 'devops', 'pm', 'architect', 'frontend', 'backend'];
   for (const r of roles) {
@@ -390,7 +389,7 @@ function extractOwnerFromText(text) {
   return null;
 }
 
-function summarizeContent(sub) {
+function summarizeContent(/** @type {any} */ sub) {
   // First non-empty paragraph or list
   const lines = sub.content.split('\n');
   for (const line of lines) {
@@ -407,12 +406,12 @@ function summarizeContent(sub) {
   }
   // Fallback: use lists
   if (sub.lists.length > 0) {
-    return sub.lists.slice(0, 3).map(l => '· ' + l.replace(/[*`]/g, '')).join(' ');
+    return sub.lists.slice(0, 3).map((/** @type {any} */ l) => '· ' + l.replace(/[*`]/g, '')).join(' ');
   }
   return sub.title;
 }
 
-function extractCriteria(sub) {
+function extractCriteria(/** @type {any} */ sub) {
   // Try to find explicit acceptance criteria
   const lines = sub.content.split('\n');
   for (let i = 0; i < lines.length; i++) {
@@ -428,17 +427,17 @@ function extractCriteria(sub) {
   }
   // Use first few lists
   if (sub.lists.length > 0) {
-    return sub.lists.slice(0, 4).map(l => l.replace(/[*`]/g, ''));
+    return sub.lists.slice(0, 4).map((/** @type {any} */ l) => l.replace(/[*`]/g, ''));
   }
   return ['执行完成相关工作项', '通过对应阶段 Gate 校验'];
 }
 
-function extractCodeSnippet(sub) {
+function extractCodeSnippet(/** @type {any} */ sub) {
   const m = sub.content.match(/```[a-z]*\n([\s\S]*?)```/);
   return m ? m[1].trim().split('\n').slice(0, 8).join('\n') : '';
 }
 
-function extractOwner(sub) {
+function extractOwner(/** @type {any} */ sub) {
   if (!sub) return null;
   // Look for role/owner keywords
   const text = (sub.title || '') + ' ' + ((sub.lists || []).join(' ') || '');
@@ -449,14 +448,14 @@ function extractOwner(sub) {
   return null;
 }
 
-function extractDuration(sub) {
+function extractDuration(/** @type {any} */ sub) {
   if (!sub || !sub.content) return null;
   const m = sub.content.match(/(\d+(?:\.\d+)?)\s*h/i);
   if (m) return m[1] + 'h';
   return null;
 }
 
-function extractPriority(sub) {
+function extractPriority(/** @type {any} */ sub) {
   if (!sub) return null;
   if (/P0/.test(sub.title) || /P0/.test(sub.content)) return 'P0';
   if (/P1/.test(sub.title) || /P1/.test(sub.content)) return 'P1';
@@ -464,12 +463,12 @@ function extractPriority(sub) {
   return null;
 }
 
-function extractDeliverable(sub) {
+function extractDeliverable(/** @type {any} */ sub) {
   if (!sub) return null;
   // First table cell or first list item
   if (sub.tables && sub.tables.length > 0) {
     const t = sub.tables[0];
-    const cells = t.split('\n')[0].split('|').map(c => c.trim()).filter(Boolean);
+    const cells = t.split('\n')[0].split('|').map((/** @type {any} */ c) => c.trim()).filter(Boolean);
     if (cells.length >= 2) return cells[1];
   }
   if (sub.lists && sub.lists.length > 0) {
@@ -479,7 +478,7 @@ function extractDeliverable(sub) {
 }
 
 // ── HTML Builder ──────────────────────────────────────
-function escapeHtml(s) {
+function escapeHtml(/** @type {string} */ s) {
   return s
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -487,9 +486,9 @@ function escapeHtml(s) {
     .replace(/"/g, '&quot;');
 }
 
-function buildStepHtml(step) {
+function buildStepHtml(/** @type {any} */ step) {
   const criteriaHtml = step.criteria
-    .map(c => `<li>${escapeHtml(c).slice(0, 80)}</li>`)
+    .map((/** @type {any} */ c) => `<li>${escapeHtml(c).slice(0, 80)}</li>`)
     .join('\n      ');
   const codeHtml = step.code
     ? `<div class="code-block">${escapeHtml(step.code.slice(0, 300))}</div>`
@@ -522,7 +521,7 @@ function buildStepHtml(step) {
 </div>`;
 }
 
-function buildSectionsHtml(steps) {
+function buildSectionsHtml(/** @type {any[]} */ steps) {
   // Group steps by phase
   const phases = [
     { name: '§0 技术评审', range: [1, 3] },
@@ -534,7 +533,7 @@ function buildSectionsHtml(steps) {
   ];
 
   return phases.map(p => {
-    const phaseSteps = steps.filter(s => s.num >= p.range[0] && s.num <= p.range[1]);
+    const phaseSteps = steps.filter((/** @type {any} */ s) => s.num >= p.range[0] && s.num <= p.range[1]);
     const stepHtml = phaseSteps.map(buildStepHtml).join('\n\n');
     return `<div class="section">
 <h2><span class="dot"></span>${p.name}<span class="s-done">— 已完成</span></h2>
@@ -545,7 +544,7 @@ ${stepHtml}
 }
 
 // ── Main Replacement Logic ────────────────────────────
-function fixFile(htmlPath, sceneDirName, sceneTitle) {
+function fixFile(/** @type {string} */ htmlPath, /** @type {string} */ sceneDirName, /** @type {string} */ sceneTitle) {
   const html = readFile(htmlPath);
 
   // 1) Replace ch-title
@@ -572,11 +571,8 @@ function fixFile(htmlPath, sceneDirName, sceneTitle) {
   }
 
   // 4) Replace all step blocks
-  // Find the region between first <div class="step"> and last </div> of step 14
-  const stepBlockRe = /<div class="step">[\s\S]*?<div class="step">[\s\S]*?<\/div>\s*<\/div>/g;
   // Simpler: find each step block
   const stepStartRe = /<div class="step">/g;
-  const stepEndRe = /<\/div>\s*<\/div>/g;
   // Count step starts
   const stepMatches = [...updated.matchAll(stepStartRe)];
   if (stepMatches.length < 13) {
@@ -664,7 +660,7 @@ function fixFile(htmlPath, sceneDirName, sceneTitle) {
   return { ok: true, updated };
 }
 
-function extractSceneNum(dirName) {
+function extractSceneNum(/** @type {string} */ dirName) {
   const m = dirName.match(/^场景-(\d+)-/);
   return m ? m[1] : '?';
 }
@@ -672,11 +668,11 @@ function extractSceneNum(dirName) {
 // ── Run ───────────────────────────────────────────────
 const scenes = findAllSceneDirs();
 const targets = SINGLE_SCENE
-  ? scenes.filter(s => s.scenePath === SINGLE_SCENE || s.scene === SINGLE_SCENE)
+  ? scenes.filter((/** @type {any} */ s) => s.scenePath === SINGLE_SCENE || s.scene === SINGLE_SCENE)
   : scenes;
 
 let success = 0;
-let failed = [];
+const failed = [];
 
 for (const { story, scene, scenePath } of targets) {
   const htmlPath = join(scenePath, '计划清单.html');

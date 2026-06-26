@@ -16,14 +16,9 @@
 <link rel="stylesheet" href="../../../../cdn/yry-export-toolbar/index.css">
 <link rel="stylesheet" href="../../../../cdn/yry-scene-footer/index.css">
 <link rel="stylesheet" href="../../../../cdn/yry-info-cards/index.css">
-<style>
-/* Page-specific overrides — shared patterns in shared-a.css */
-.yry-container{max-width:1400px}
-/* Legend is now handled by yry-cytoscape-graph component via JS */
-</style>
 </head>
 <body>
-<div class="yry-container" id="report-container">
+<div class="yry-container" yry-container-w1400 id="report-container">
 <yry-scene-chrome
   theme="a"
   title="🔗 场景 2 · 清单交互组件实现 · 知识图谱"
@@ -34,16 +29,16 @@
 </yry-scene-chrome>
 
 <div class="legend">
-  <span style="color:#94a3b8;font-weight:600;">节点:</span>
+  <span class="yry-auto-38275">节点:</span>
   <span class="legend-item"><span class="legend-dot scene"></span>场景</span>
   <span class="legend-item"><span class="legend-dot check"></span>检查/功能</span>
   <span class="legend-item"><span class="legend-dot source"></span>源文件</span>
   <span class="legend-item"><span class="legend-dot domain"></span>概念域</span>
-  <span style="margin-left:1rem;color:#94a3b8;font-weight:600;">操作:</span>
-  <span style="color:#64748b;">🖱 拖拽 · 滚轮缩放 · 点击节点高亮邻域</span>
+  <span class="yry-auto-38237">操作:</span>
+  <span class="yry-auto-54321">🖱 拖拽 · 滚轮缩放 · 点击节点高亮邻域</span>
 </div>
 
-<div class="yry-cytoscape-graph graph-container" id="cy-graph" data-filename="yry-checklist-scene2-kg" data-layout="breadthfirst" data-legend="false" style="height:550px"></div>
+<div class="yry-cytoscape-graph graph-container" id="cy-graph" data-filename="yry-checklist-scene2-kg" data-layout="breadthfirst" data-legend="false" class="yry-auto-72015"></div>
 
 <yry-info-cards>
   <div class="yry-card">
@@ -128,7 +123,7 @@ flowchart LR
 <li><b>Key</b>: </code>yry-arch-s2-checklist-tab<code> — 最后活跃标签页名称字符串</li>
 <li><b>容错</b>: try/catch 包裹读写，隐私模式下静默降级</li>
 </ul>
-<h3>步骤状态推导</h3><table><thead><tr><th>状态</th><th>图标</th><th>推导规则</th></tr></thead><tbody><tr><td>已完成</td><td style="text-align:center">✅</td><td>当前步骤已勾选</td></tr><tr><td>就绪</td><td>🔶</td><td>当前步骤未勾选，但所有前置步骤已完成</td></tr><tr><td>待开始</td><td>⏳</td><td>当前步骤未勾选，且存在未完成的前置步骤</td></tr></tbody></table><h3>键盘快捷键</h3><table><thead><tr><th>按键</th><th>目标面板</th><th>说明</th></tr></thead><tbody><tr><td></code>1<code></td><td>overview</td><td>总览面板</td></tr><tr><td></code>2<code>-</code>8<code></td><td>步骤 1-7 面板</td><td>对应步骤详情</td></tr><tr><td></code>9<code></td><td>交付物面板</td><td>交付物列表</td></tr></tbody></table><p>跳过 </code>input<code>/</code>textarea<code> 聚焦状态，避免编辑时误触发。</p><h3>状态机与事件流</h3><p><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+<h3>步骤状态推导</h3><table><thead><tr><th>状态</th><th>图标</th><th>推导规则</th></tr></thead><tbody><tr><td>已完成</td><td class="yry-auto-51239">✅</td><td>当前步骤已勾选</td></tr><tr><td>就绪</td><td>🔶</td><td>当前步骤未勾选，但所有前置步骤已完成</td></tr><tr><td>待开始</td><td>⏳</td><td>当前步骤未勾选，且存在未完成的前置步骤</td></tr></tbody></table><h3>键盘快捷键</h3><table><thead><tr><th>按键</th><th>目标面板</th><th>说明</th></tr></thead><tbody><tr><td></code>1<code></td><td>overview</td><td>总览面板</td></tr><tr><td></code>2<code>-</code>8<code></td><td>步骤 1-7 面板</td><td>对应步骤详情</td></tr><tr><td></code>9<code></td><td>交付物面板</td><td>交付物列表</td></tr></tbody></table><p>跳过 </code>input<code>/</code>textarea<code> 聚焦状态，避免编辑时误触发。</p><h3>状态机与事件流</h3><p><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
   'primaryColor': '#1e1f2b', 'primaryTextColor': '#a9b1d6',
   'primaryBorderColor': '#3d59a1', 'lineColor': '#3d59a1',
   'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'

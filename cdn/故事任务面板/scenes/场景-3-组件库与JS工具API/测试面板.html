@@ -16,23 +16,7 @@
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
 <link rel="stylesheet" href="../../../yry-a11y/index.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<style>
-  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
-  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
-  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
-  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
-  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
-  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
-  .delivery-story { font-size: .72rem; color: #4b5563; }
-  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
-  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
-  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
-  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
-  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
-  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
-  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
-</style>
+<link rel="stylesheet" href="../../../yry-legacy-scene-delivery/index.css">
 </head>
 <body>
 <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
@@ -54,27 +38,27 @@
 
   <div class="content-card">
     <h2>🧪 验证矩阵 · 11 项</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">验证项</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">方法</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">阈值</th></tr></thead>
+    <table class="yry-auto-93137">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-75234">验证项</th><th class="yry-auto-75234">方法</th><th class="yry-auto-75234">阈值</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">107 组件注册成功</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>customElements.get('yry-*')</code> 遍历</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">全部已注册</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">9 API 可用</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>typeof YrY.{api}</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">全部 !== undefined</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">命名空间唯一</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">检查无重名 <code>customElements.define</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">0 冲突</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">双设策略生效</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">内联赋值 + ready 事件</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">数据正确渲染</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">组件 Demo 可预览</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">打开 <code>yry-*/index.html</code></td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">全部可渲染</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">三文件完整</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>yry-*/</code> 含 index.{html,js,css}</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">94+/107</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Props 向后兼容</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">对比 v1.0→v1.2 组件 API</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">无 breaking change</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">依赖加载顺序</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">DevTools Console 检查 ready 事件序列</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">基础组件先于复合</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">错误降级</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">断网 / 故意构造超时</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">API 返回 reject · 不抛未捕获异常</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Props 类型校验</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)"><code>Vue.warn</code> 控制台</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">0 类型告警</td></tr>
-        <tr><td style="padding:8px 10px">内存泄漏</td><td style="padding:8px 10px">chrome://memory 三次切换面板</td><td style="padding:8px 10px">detached DOM ≤ 0</td></tr>
+        <tr><td class="yry-auto-86182">107 组件注册成功</td><td class="yry-auto-86182"><code>customElements.get('yry-*')</code> 遍历</td><td class="yry-auto-86182">全部已注册</td></tr>
+        <tr><td class="yry-auto-86182">9 API 可用</td><td class="yry-auto-86182"><code>typeof YrY.{api}</code></td><td class="yry-auto-86182">全部 !== undefined</td></tr>
+        <tr><td class="yry-auto-86182">命名空间唯一</td><td class="yry-auto-86182">检查无重名 <code>customElements.define</code></td><td class="yry-auto-86182">0 冲突</td></tr>
+        <tr><td class="yry-auto-86182">双设策略生效</td><td class="yry-auto-86182">内联赋值 + ready 事件</td><td class="yry-auto-86182">数据正确渲染</td></tr>
+        <tr><td class="yry-auto-86182">组件 Demo 可预览</td><td class="yry-auto-86182">打开 <code>yry-*/index.html</code></td><td class="yry-auto-86182">全部可渲染</td></tr>
+        <tr><td class="yry-auto-86182">三文件完整</td><td class="yry-auto-86182"><code>yry-*/</code> 含 index.{html,js,css}</td><td class="yry-auto-86182">94+/107</td></tr>
+        <tr><td class="yry-auto-86182">Props 向后兼容</td><td class="yry-auto-86182">对比 v1.0→v1.2 组件 API</td><td class="yry-auto-86182">无 breaking change</td></tr>
+        <tr><td class="yry-auto-86182">依赖加载顺序</td><td class="yry-auto-86182">DevTools Console 检查 ready 事件序列</td><td class="yry-auto-86182">基础组件先于复合</td></tr>
+        <tr><td class="yry-auto-86182">错误降级</td><td class="yry-auto-86182">断网 / 故意构造超时</td><td class="yry-auto-86182">API 返回 reject · 不抛未捕获异常</td></tr>
+        <tr><td class="yry-auto-86182">Props 类型校验</td><td class="yry-auto-86182"><code>Vue.warn</code> 控制台</td><td class="yry-auto-86182">0 类型告警</td></tr>
+        <tr><td class="yry-auto-93797">内存泄漏</td><td class="yry-auto-93797">chrome://memory 三次切换面板</td><td class="yry-auto-93797">detached DOM ≤ 0</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>▶️ 回归命令</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0"># 1. 组件清单自动校验 (manifest.json)
+    <pre class="yry-auto-15271"># 1. 组件清单自动校验 (manifest.json)
 node cdn/scripts/build-manifest.mjs --check
 
 # 2. 9 个 YrY.* API 可用性检查 (浏览器 Console)
@@ -97,16 +81,16 @@ done</pre>
 
   <div class="content-card">
     <h2>📊 组件完整度</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.74rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">类别</th><th style="padding:8px 12px;text-align:right;color:#22d3ee;font-weight:600">已完整</th><th style="padding:8px 12px;text-align:right;color:#22d3ee;font-weight:600">目标</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">状态</th></tr></thead>
+    <table class="yry-auto-1645">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-38488">类别</th><th class="yry-auto-51957">已完整</th><th class="yry-auto-51957">目标</th><th class="yry-auto-38488">状态</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">Vue 3 CE</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">54</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">54</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 达标</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">Vanilla JS</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">44</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">44</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 达标</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">纯 CSS</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">22</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">22</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">✓ 达标</td></tr>
-        <tr><td style="padding:8px 12px">Custom Element</td><td style="padding:8px 12px;text-align:right">4</td><td style="padding:8px 12px;text-align:right">4</td><td style="padding:8px 12px;color:#4ade80">✓ 达标</td></tr>
+        <tr><td class="yry-auto-40105">Vue 3 CE</td><td class="yry-auto-11917">54</td><td class="yry-auto-11917">54</td><td class="yry-auto-98362">✓ 达标</td></tr>
+        <tr><td class="yry-auto-40105">Vanilla JS</td><td class="yry-auto-11917">44</td><td class="yry-auto-11917">44</td><td class="yry-auto-98362">✓ 达标</td></tr>
+        <tr><td class="yry-auto-40105">纯 CSS</td><td class="yry-auto-11917">22</td><td class="yry-auto-11917">22</td><td class="yry-auto-98362">✓ 达标</td></tr>
+        <tr><td class="yry-auto-70345">Custom Element</td><td class="yry-auto-71132">4</td><td class="yry-auto-71132">4</td><td class="yry-a1-79">✓ 达标</td></tr>
       </tbody>
     </table>
-    <p style="margin-top:12px;font-size:.74rem;color:#fbbf24">⚠ 实际完整度 94/107 — 13 个待完善组件需补 CSS/JS。</p>
+    <p class="yry-a2-21">⚠ 实际完整度 94/107 — 13 个待完善组件需补 CSS/JS。</p>
   </div>
 
   <div class="nav-links">

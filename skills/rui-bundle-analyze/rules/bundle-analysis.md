@@ -1,3 +1,10 @@
+---
+paths:
+  - "skills/rui-bundle-analyze/**"
+  - "skills/rui-bundle-analyze/SKILL.md"
+description: "项目体积与依赖结构分析的规则"
+---
+
 # rui-bundle-analyze 分析规则
 
 > 项目体积与依赖结构分析的方法论和规则，独立于实现细节。

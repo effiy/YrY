@@ -6,7 +6,7 @@
 import { spawnSync } from "node:child_process";
 import { npm, checkPackageJson, toTable, timestamp } from "./npm-utils.mjs";
 
-export function cmdNpx(pkg, args) {
+export function cmdNpx(/** @type {string} */ pkg, /** @type {any} */ args) {
   if (!pkg) {
     console.error("❌ 请提供包名。用法: rui-npm npx <pkg>[@version]");
     console.error("   示例: rui-npm npx create-react-app -- my-app");
@@ -25,7 +25,7 @@ export function cmdNpx(pkg, args) {
   }
 }
 
-export function cmdAudit(args) {
+export function cmdAudit(/** @type {any} */ args) {
   checkPackageJson();
   console.log("🔒 审计依赖安全漏洞 ...");
   const r = npm(["audit", "--json"]);
@@ -41,12 +41,13 @@ export function cmdAudit(args) {
     return;
   }
   const vulns = data.vulnerabilities || {};
+  /** @type {Record<string, number>} */
   const summary = { critical: 0, high: 0, moderate: 0, low: 0, info: 0 };
   const details = [];
   for (const [name, v] of Object.entries(vulns)) {
     summary[v.severity] = (summary[v.severity] || 0) + 1;
     if (v.via?.length) {
-      const viaList = v.via.map((x) => (typeof x === "string" ? x : x.title || x.name || "?")).join(", ");
+      const viaList = v.via.map((/** @type {any} */ x) => (typeof x === "string" ? x : x.title || x.name || "?")).join(", ");
       details.push({ name, severity: v.severity, range: v.range, via: viaList, fixAvailable: v.fix_available });
     }
   }
@@ -63,6 +64,7 @@ export function cmdAudit(args) {
     console.log("✅ 未发现已知漏洞。");
   } else {
     console.log(`⚠️  发现 ${total} 个漏洞：\n`);
+    /** @type {Record<string, number>} */
     const sevOrder = { critical: 0, high: 1, moderate: 2, low: 3 };
     details.sort((a, b) => (sevOrder[a.severity] ?? 9) - (sevOrder[b.severity] ?? 9));
     const headers = ["包名", "严重级别", "影响范围", "漏洞来源", "可修复"];
@@ -76,7 +78,7 @@ export function cmdAudit(args) {
   }
 }
 
-export function cmdCdn(pkg, args) {
+export function cmdCdn(/** @type {string} */ pkg, /** @type {any} */ args) {
   if (!pkg) {
     console.error("❌ 请提供包名。用法: rui-npm cdn <pkg>[@version]");
     console.error("   示例: rui-npm cdn react");

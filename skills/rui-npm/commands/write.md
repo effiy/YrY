@@ -2,6 +2,7 @@
 
 > 包安装、更新、卸载。对应 `lib/write.mjs`。
 
+<a id="install"></a>
 ## install — 包安装
 
 > 安装 npm 包到当前项目的 dependencies。
@@ -21,6 +22,7 @@
 
 **前置条件**：当前目录存在 `package.json`。
 
+<a id="update"></a>
 ## update — 包更新
 
 > 更新指定包到兼容最新版本。
@@ -32,6 +34,7 @@
 步骤 4: 对比更新前后版本，输出变更
 ```
 
+<a id="uninstall"></a>
 ## uninstall — 包卸载
 
 > 从当前项目移除指定包。

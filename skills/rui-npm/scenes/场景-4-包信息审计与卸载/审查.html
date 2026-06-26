@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>包信息审计与卸载 — 审查报告 v4.5</title>
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-helpers/index.css">
+
 <link rel="stylesheet" href="../../../../cdn/theme/index.css">
 <link rel="stylesheet" href="../../../../cdn/yry-review/index.css">
 </head>
@@ -61,9 +63,9 @@
 
 <div class="bar-wrap">
   <div class="bar-outer">
-    <div class="seg strength" style="width:33%"></div>
-    <div class="seg gap" style="width:33%"></div>
-    <div class="seg suggestion" style="width:33%"></div>
+    <div class="seg strength" style="--w:33%"></div>
+    <div class="seg gap" style="--w:33%"></div>
+    <div class="seg suggestion" style="--w:33%"></div>
   </div>
   <div class="bar-legend">
     <span><span class="dot strength"></span>✅ 4 优势（值得推广）</span>
@@ -87,8 +89,8 @@
 <!-- ═══ Tab 1 · Overview ═══ -->
 <div class="panel on" id="panelOverview">
   <div class="dim-card">
-    <h3>📋 完整性 Completeness <span class="dim-score" style="color:var(--pass)">80%</span></h3>
-    <div class="dim-bar"><div class="dim-bar-inner" style="width:80%;background:var(--pass)"></div></div>
+    <h3>📋 完整性 Completeness <span class="dim-score" class="sc-text-pass">80%</span></h3>
+    <div class="dim-bar"><div class="dim-bar-inner" style="--w:80%;--color:var(--pass)"></div></div>
     <ul>
       <li class="pass">覆盖 5 个主要价值点 · 6 个涉及模块</li>
       <li class="pass">11 个测试用例（正常 5 + 边界 6）</li>
@@ -99,8 +101,8 @@
   </div>
 
   <div class="dim-card">
-    <h3>🔗 一致性 Consistency <span class="dim-score" style="color:var(--pass)">85%</span></h3>
-    <div class="dim-bar"><div class="dim-bar-inner" style="width:85%;background:var(--pass)"></div></div>
+    <h3>🔗 一致性 Consistency <span class="dim-score" class="sc-text-pass">85%</span></h3>
+    <div class="dim-bar"><div class="dim-bar-inner" style="--w:85%;--color:var(--pass)"></div></div>
     <ul>
       <li class="pass">6 个涉及模块均已标注本场景角色</li>
       <li class="pass">术语与「包信息审计与卸载」领域语对齐</li>
@@ -110,8 +112,8 @@
   </div>
 
   <div class="dim-card">
-    <h3>🔍 可追溯 Traceability <span class="dim-score" style="color:var(--warn)">72%</span></h3>
-    <div class="dim-bar"><div class="dim-bar-inner" style="width:72%;background:var(--warn)"></div></div>
+    <h3>🔍 可追溯 Traceability <span class="dim-score" class="sc-text-warn">72%</span></h3>
+    <div class="dim-bar"><div class="dim-bar-inner" style="--w:72%;--color:var(--warn)"></div></div>
     <ul>
       <li class="warn">关键操作缺少预期输出与可见信号</li>
       <li class="warn">0 个源文件未全部建立 file:// 链接</li>
@@ -120,16 +122,16 @@
   </div>
 
   <div class="dim-card">
-    <h3>💬 表达力 Expressiveness <span class="dim-score" style="color:var(--pass)">90%</span></h3>
-    <div class="dim-bar"><div class="dim-bar-inner" style="width:90%;background:var(--pass)"></div></div>
+    <h3>💬 表达力 Expressiveness <span class="dim-score" class="sc-text-pass">90%</span></h3>
+    <div class="dim-bar"><div class="dim-bar-inner" style="--w:90%;--color:var(--pass)"></div></div>
     <ul>
       <li class="pass">"包信息审计与卸载" 概念定义清晰 · 5 个价值点结构化</li>
       <li class="pass">步骤式导航，渐进式学习曲线合理</li>
       <li class="warn">标题层级偶有跳跃（H2 → H4）</li>
     </ul>
   </div>
-<div class="dim-card" style="margin-top:14px">
-    <h3>📅 里程碑 <span style="font-size:.7rem;font-weight:400;color:var(--text3);margin-left:auto">Milestones</span></h3>
+<div class="dim-card" class="sc-mt14">
+    <h3>📅 里程碑 <span class="sc-section-sub-auto">Milestones</span></h3>
     <ul>
       <li class="pass"><strong>2026-06-15</strong> — P1 全部修复（FIX-001 / FIX-002），综合健康度 → 90%+</li>
       <li class="warn"><strong>2026-06-20</strong> — P2 全部修复（FIX-003 / FIX-004），可追溯性 → 85%+</li>
@@ -171,7 +173,7 @@
 <!-- ═══ Tab 8 · Methodology ═══ -->
 <div class="panel" id="panelMethodology">
   <div class="method-card">
-    <h3>📐 审查方法论 <span style="font-size:.7rem;font-weight:400;color:var(--text3);margin-left:auto">Review Methodology</span></h3>
+    <h3>📐 审查方法论 <span class="sc-section-sub-auto">Review Methodology</span></h3>
     <p>本次审查围绕「包信息审计与卸载」场景，结合内部规约 v4.5 与可观察信号，从 4 个核心维度、6 项关键发现展开系统评估。</p>
     <div class="method-steps">
       <div class="method-step">
@@ -208,15 +210,15 @@
   </div>
 
   <div class="method-card">
-    <h3>🎯 评分标准 <span style="font-size:.7rem;font-weight:400;color:var(--text3);margin-left:auto">Scoring Rubric</span></h3>
+    <h3>🎯 评分标准 <span class="sc-section-sub-auto">Scoring Rubric</span></h3>
     <p>每个维度采用 0-100 分制，按下表规则打分。最终综合健康度为 4 维加权平均（权重 25% / 25% / 30% / 20%）。</p>
     <table class="rubric-table">
       <thead>
         <tr>
-          <th style="width:18%">维度</th>
-          <th style="width:14%">权重</th>
-          <th style="width:14%">等级</th>
-          <th style="width:14%">分数段</th>
+          <th style="--w:18%">维度</th>
+          <th style="--w:14%">权重</th>
+          <th style="--w:14%">等级</th>
+          <th style="--w:14%">分数段</th>
           <th>判定标准</th>
         </tr>
       </thead>
@@ -307,8 +309,8 @@
   <div class="suite">
     <div class="suite-head"><span class="s-arrow">▶</span><span class="s-name">🛠️ 复现脚本</span><span class="s-badge info">3 步</span></div>
     <div class="suite-body">
-      <p style="font-size:.76rem;color:var(--text2);margin-bottom:8px">其他审查者可通过以下命令复现本次审查：</p>
-      <pre style="background:rgba(0,0,0,.3);border-radius:6px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text2);line-height:1.6">
+      <p class="sc-section-sub-76-t2">其他审查者可通过以下命令复现本次审查：</p>
+      <pre class="sc-code-block">
 # Step 1: 完整性扫描
 grep -rn '预期输出\|你应该看到' ../cdn/yry-arch/scenes/index.md
 grep -rn 'FAQ\|故障排查' ../cdn/yry-arch/scenes/index.md
@@ -329,8 +331,8 @@ done
   <div class="suite">
     <div class="suite-head"><span class="s-arrow">▶</span><span class="s-name">📈 历次审查趋势</span><span class="s-badge info">4 版本</span></div>
     <div class="suite-body">
-      <p style="font-size:.76rem;color:var(--text2);margin-bottom:8px">近 4 个版本的健康度变化：</p>
-      <table class="rubric-table" style="margin-top:0">
+      <p class="sc-section-sub-76-t2">近 4 个版本的健康度变化：</p>
+      <table class="rubric-table" class="sc-mt0">
         <thead>
           <tr><th>版本</th><th>综合</th><th>完整</th><th>一致</th><th>可追溯</th><th>表达力</th></tr>
         </thead>
@@ -341,14 +343,14 @@ done
           <tr><td><strong>v4.5 (当前)</strong></td><td class="score-cell score-b"><strong>82%</strong></td><td><strong>80%</strong></td><td><strong>85%</strong></td><td><strong>72%</strong></td><td><strong>90%</strong></td></tr>
         </tbody>
       </table>
-      <p style="font-size:.7rem;color:var(--text3);margin-top:8px"><strong>趋势分析：</strong>完整性/一致性/表达力持续提升；可追溯性本版本微降（-3%），因新增 DoD/退出码/FAQ 三个待办后暴露出更多缺口。</p>
+      <p class="sc-section-sub-70-mt8"><strong>趋势分析：</strong>完整性/一致性/表达力持续提升；可追溯性本版本微降（-3%），因新增 DoD/退出码/FAQ 三个待办后暴露出更多缺口。</p>
     </div>
   </div>
 </div>
 
 <div class="footer">
   📄 YrY v4.5 · <a href="../../../../docs/index.html">文档中心</a>
-  <div class="sig">本报告由 code-reviewer Agent 自动生成 · 模板 v4.5 · 加密指纹 <code style="font-family:'JetBrains Mono',monospace">sha256:7c4a...f3d1</code></div>
+  <div class="sig">本报告由 code-reviewer Agent 自动生成 · 模板 v4.5 · 加密指纹 <code class="sc-mono">sha256:7c4a...f3d1</code></div>
 </div>
 </div></div></div>
 <script src="../../../../cdn/yry-review/index.js"></script>

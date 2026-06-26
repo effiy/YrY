@@ -8,70 +8,7 @@
 <link rel="stylesheet" href="../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../cdn/theme/index.css">
 <link rel="stylesheet" href="../../cdn/shared-reports/index.css">
-<style>
-  /* common :root/body/bc/hd/intro/card/stats/badge/table/ft covered by shared-reports.css */
-  .card p.note-text { font-size: .78rem; color: var(--yry-text3); margin-bottom: 12px; }
-  td .num { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
-  .dim-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
-  .dim-item { padding: 16px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); position: relative; }
-  .dim-item.warn { border-left: 3px solid var(--yry-warn); }
-  .dim-item.pass { border-left: 3px solid var(--yry-pass); }
-  .dim-item .dim-name { font-size: .72rem; color: var(--yry-text3); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .4px; }
-  .dim-item .dim-score { font-size: 1.5rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
-  .dim-score.a { color: var(--yry-pass); }
-  .dim-score.b { color: var(--yry-warn); }
-  .dim-item .dim-desc { font-size: .72rem; color: var(--yry-text3); margin-top: 6px; line-height: 1.5; }
-  .dim-item .dim-check { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: .65rem; margin-top: 6px; background: rgba(34,197,94,.1); color: var(--yry-pass); }
-  .dim-item .dim-check.warn { background: rgba(245,158,11,.1); color: var(--yry-warn); }
-  .findings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 10px; }
-  .finding { padding: 16px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); }
-  .finding.info { border-left: 3px solid var(--yry-cyan); }
-  .finding.warn { border-left: 3px solid var(--yry-warn); }
-  .finding .f-type { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px; }
-  .finding.info .f-type { color: var(--yry-cyan); }
-  .finding.warn .f-type { color: var(--yry-warn); }
-  .finding .f-msg { font-size: .84rem; color: var(--yry-text2); line-height: 1.6; }
-  .finding .f-detail { font-size: .76rem; color: var(--yry-text3); margin-top: 8px; line-height: 1.6; }
-  .eco-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
-  .eco-item { padding: 14px 16px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); text-align: center; }
-  .eco-item .eco-num { font-size: 1.5rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: var(--yry-cyan); }
-  .eco-item .eco-name { font-size: .72rem; color: var(--yry-text2); margin-top: 4px; }
-  .eco-item .eco-ratio { font-size: .64rem; color: var(--yry-text3); margin-top: 2px; }
-  .file-bars { display: flex; flex-direction: column; gap: 8px; }
-  .file-row { display: flex; align-items: center; gap: 10px; }
-  .file-label { min-width: 80px; font-size: .76rem; font-weight: 600; color: var(--yry-text2); }
-  .file-bar-wrap { flex: 1; height: 22px; border-radius: 4px; background: rgba(255,255,255,.05); overflow: hidden; position: relative; }
-  .file-bar-fill { height: 100%; border-radius: 4px; transition: width .6s ease; display: flex; align-items: center; padding-left: 10px; font-size: .66rem; color: rgba(0,0,0,.7); font-weight: 700; }
-  .file-count { min-width: 90px; text-align: right; font-size: .72rem; color: var(--yry-text3); font-family: 'JetBrains Mono', monospace; }
-  .action-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 10px; }
-  .action-item { padding: 16px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); display: flex; gap: 12px; align-items: flex-start; }
-  .action-item .act-prio { flex: 0 0 auto; }
-  .action-item .act-body { flex: 1; }
-  .action-item .act-title { font-size: .84rem; font-weight: 600; color: var(--yry-text); margin-bottom: 4px; }
-  .action-item .act-desc { font-size: .76rem; color: var(--yry-text2); line-height: 1.6; }
-  .action-item .act-diag { font-size: .68rem; color: var(--yry-text3); margin-top: 4px; }
-  .prio-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: .62rem; font-weight: 700; }
-  .prio-p1 { background: rgba(239,68,68,.15); color: var(--yry-fail); }
-  .prio-p2 { background: rgba(245,158,11,.12); color: var(--yry-warn); }
-  .prio-p3 { background: rgba(34,211,238,.1); color: var(--yry-cyan); }
-  .cmp-row { display: flex; align-items: stretch; gap: 0; margin: 12px 0; }
-  .cmp-col { flex: 1; padding: 14px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); text-align: center; }
-  .cmp-col.before { border-left: 3px solid var(--yry-warn); }
-  .cmp-col.after { border-left: 3px solid var(--yry-cyan); }
-  .cmp-col .cmp-label { font-size: .68rem; color: var(--yry-text3); margin-bottom: 6px; }
-  .cmp-col .cmp-val { font-size: 1.2rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
-  .cmp-col .cmp-sub { font-size: .64rem; color: var(--yry-text3); margin-top: 2px; }
-  .cmp-arrow { display: flex; align-items: center; justify-content: center; flex: 0 0 36px; color: var(--yry-text3); font-size: 1.2rem; }
-  svg text { font-family: -apple-system, "Noto Sans SC", sans-serif; }
-  @media (max-width: 640px) {
-    .dim-grid { grid-template-columns: 1fr; }
-    .findings-grid { grid-template-columns: 1fr; }
-    .action-grid { grid-template-columns: 1fr; }
-    .cmp-row { flex-direction: column; }
-    .cmp-arrow { transform: rotate(90deg); }
-    .eco-grid { grid-template-columns: repeat(2, 1fr); }
-  }
-  </style>
+<link rel="stylesheet" href="proj-analysis-2026-06-16.css">
 </head>
 <body>
 <div class="c">
@@ -97,7 +34,7 @@
 </div>
 
 <div class="stats">
-  <div class="stat"><div class="val pass">94<span style="font-size:.9rem">/100</span></div><div class="lbl">架构健康评分</div></div>
+  <div class="stat"><div class="val pass">94<span class="yry-d-68">/100</span></div><div class="lbl">架构健康评分</div></div>
   <div class="stat"><div class="val pass">A</div><div class="lbl">合规等级</div></div>
   <div class="stat"><div class="val pass">15/16</div><div class="lbl">检查通过</div></div>
   <div class="stat"><div class="val warn">1</div><div class="lbl">告警维度</div></div>
@@ -109,8 +46,8 @@
 <div class="card">
   <h2>📈 架构健康趋势</h2>
   <p class="note-text">3 期数据（06-09 → 06-12 → 06-16）· 综合评分与检查通过率联动 · YAGNI 维度触发新告警</p>
-  <div style="text-align:center">
-    <svg viewBox="0 0 840 320" width="100%" height="auto" style="max-width:840px">
+  <div class="yry-d-65">
+    <svg viewBox="0 0 840 320" width="100%" height="auto" class="yry-d-69">
       <defs>
         <linearGradient id="scoreGrad" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#22c55e" stop-opacity="0.25"/>
@@ -194,21 +131,21 @@
       <text x="705" y="19" fill="#a0a0a4" font-size="9">源文件数 (右轴)</text>
     </svg>
   </div>
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px;font-size:.72rem">
-    <div style="text-align:center;padding:12px;border-radius:6px;background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.1)">
-      <div style="color:var(--yry-pass);font-weight:700;font-family:'JetBrains Mono',monospace">06-09</div>
-      <div style="color:var(--yry-text3);margin-top:4px">架构 100/A · 14/14 通过</div>
-      <div style="color:var(--yry-text3);font-size:.64rem;margin-top:4px">~140 文件 · 9 维度满分</div>
+  <div class="yry-d-9">
+    <div class="yry-d-5">
+      <div class="yry-d-17">06-09</div>
+      <div class="yry-d-43">架构 100/A · 14/14 通过</div>
+      <div class="yry-d-36">~140 文件 · 9 维度满分</div>
     </div>
-    <div style="text-align:center;padding:12px;border-radius:6px;background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.1)">
-      <div style="color:var(--yry-pass);font-weight:700;font-family:'JetBrains Mono',monospace">06-12</div>
-      <div style="color:var(--yry-text3);margin-top:4px">架构 100/A · 14/14 通过</div>
-      <div style="color:var(--yry-text3);font-size:.64rem;margin-top:4px">197 文件 · 9 维度全满分</div>
+    <div class="yry-d-5">
+      <div class="yry-d-17">06-12</div>
+      <div class="yry-d-43">架构 100/A · 14/14 通过</div>
+      <div class="yry-d-36">197 文件 · 9 维度全满分</div>
     </div>
-    <div style="text-align:center;padding:12px;border-radius:6px;background:rgba(245,158,11,.04);border:1px solid rgba(245,158,11,.1)">
-      <div style="color:var(--yry-warn);font-weight:700;font-family:'JetBrains Mono',monospace">06-16</div>
-      <div style="color:var(--yry-text3);margin-top:4px">架构 94/A · 15/16 通过</div>
-      <div style="color:var(--yry-warn);font-size:.64rem;margin-top:4px">638 文件 · YAGNI 首次告警</div>
+    <div class="yry-d-4">
+      <div class="yry-d-18">06-16</div>
+      <div class="yry-d-43">架构 94/A · 15/16 通过</div>
+      <div class="yry-d-38">638 文件 · YAGNI 首次告警</div>
     </div>
   </div>
 </div>
@@ -288,37 +225,37 @@
   <div class="file-bars">
     <div class="file-row">
       <div class="file-label">HTML</div>
-      <div class="file-bar-wrap"><div class="file-bar-fill" style="width:100%;background:#22c55e">342</div></div>
+      <div class="file-bar-wrap"><div class="file-bar-fill" yry-d-52">342</div></div>
       <div class="file-count">53.6%</div>
     </div>
     <div class="file-row">
       <div class="file-label">MJS</div>
-      <div class="file-bar-wrap"><div class="file-bar-fill" style="width:38.6%;background:#22d3ee">132</div></div>
+      <div class="file-bar-wrap"><div class="file-bar-fill" yry-d-48">132</div></div>
       <div class="file-count">20.7%</div>
     </div>
     <div class="file-row">
       <div class="file-label">MD</div>
-      <div class="file-bar-wrap"><div class="file-bar-fill" style="width:33.9%;background:#a855f7">116</div></div>
+      <div class="file-bar-wrap"><div class="file-bar-fill" yry-d-49">116</div></div>
       <div class="file-count">18.2%</div>
     </div>
     <div class="file-row">
       <div class="file-label">JSON</div>
-      <div class="file-bar-wrap"><div class="file-bar-fill" style="width:6.7%;background:#f59e0b">23</div></div>
+      <div class="file-bar-wrap"><div class="file-bar-fill" yry-d-53">23</div></div>
       <div class="file-count">3.6%</div>
     </div>
     <div class="file-row">
       <div class="file-label">CSS</div>
-      <div class="file-bar-wrap"><div class="file-bar-fill" style="width:4.1%;background:#ec4899">14</div></div>
+      <div class="file-bar-wrap"><div class="file-bar-fill" yry-d-54">14</div></div>
       <div class="file-count">2.2%</div>
     </div>
     <div class="file-row">
       <div class="file-label">JS</div>
-      <div class="file-bar-wrap"><div class="file-bar-fill" style="width:3.2%;background:#3b82f6">11</div></div>
+      <div class="file-bar-wrap"><div class="file-bar-fill" yry-d-55">11</div></div>
       <div class="file-count">1.7%</div>
     </div>
   </div>
-  <div style="margin-top:14px;font-size:.76rem;color:var(--yry-text2);line-height:1.7">
-    <strong style="color:var(--yry-accent)">文件结构观察</strong>：HTML 主导（342 个 = 文档中心 9 + 健康报告 5 + 自循环报告 11 + 故事任务面板 200+ + 趋势报告 10 + 自检 30+），
+  <div class="yry-d-24">
+    <strong class="yry-d-56">文件结构观察</strong>：HTML 主导（342 个 = 文档中心 9 + 健康报告 5 + 自循环报告 11 + 故事任务面板 200+ + 趋势报告 10 + 自检 30+），
     表明项目以"文档驱动 + 故事任务面板"为核心交付形态。132 个 MJS 为系统核心逻辑（skills/lib/agents/rules/scripts 五大区域）。
     116 个 MD 提供完整的设计原则、规则说明、故事任务文档。CSS 仅 14 个（共享 CDN 集中化收益），JSON 23 个（配置 + 报告 + 知识图谱），
     JS 11 个（遗留脚本与第三方垫片）。整体结构呈现"轻 CSS、重 MJS、文档丰富"的 YrY 风格特征。
@@ -520,7 +457,7 @@
     <div class="cmp-arrow">→</div>
     <div class="cmp-col rp-card-flat after">
       <div class="cmp-label">06-16 (今)</div>
-      <div class="cmp-val" style="color:var(--yry-cyan)">94/A</div>
+      <div class="cmp-val" yry-d-62">94/A</div>
       <div class="cmp-sub">638 文件 · 380,516 行</div>
       <div class="cmp-sub">15/16 通过 · 9 维度满分</div>
     </div>
@@ -541,7 +478,7 @@
       <tr><td>检查通过率</td><td class="num">14/14</td><td class="num">15/16</td><td><span class="badge fall">-1 项</span></td><td>YAGNI 唯一告警项</td></tr>
     </tbody>
   </table>
-  <div class="intro" style="margin-top:14px">
+  <div class="intro" yry-d-70">
     <strong>深度解读</strong>：综合评分从 100 降至 94 的核心原因是 <code>YAGNI</code> 维度从 100 降至 90（5 个低调用方 export）。
     这一变化并不代表架构质量下降 — 实际上 <strong>SRP / DRY / 范式 / 导入 / 扩展隔离 / ISP / 配置 / 文档</strong> 8 个核心维度仍保持 100 满分。
     YAGNI 告警的根因是 <code>lib/arch-helpers.mjs</code> 在多次迭代中累积了"为未来预留"的工具函数。
@@ -560,7 +497,7 @@
         <td class="num">1</td>
         <td><code>formatViolationPath</code></td>
         <td>lib/arch-helpers.mjs</td>
-        <td class="num" style="color:var(--yry-fail)">0</td>
+        <td class="num" yry-d-60">0</td>
         <td><span class="badge fail">立即移除</span></td>
         <td class="num">~25 行</td>
       </tr>
@@ -568,7 +505,7 @@
         <td class="num">2</td>
         <td><code>buildReportContext</code></td>
         <td>lib/arch-helpers.mjs</td>
-        <td class="num" style="color:var(--yry-fail)">0</td>
+        <td class="num" yry-d-60">0</td>
         <td><span class="badge fail">立即移除</span></td>
         <td class="num">~55 行</td>
       </tr>
@@ -576,7 +513,7 @@
         <td class="num">3</td>
         <td><code>normalizeDimensionName</code></td>
         <td>lib/arch-helpers.mjs</td>
-        <td class="num" style="color:var(--yry-warn)">1</td>
+        <td class="num" yry-d-61">1</td>
         <td><span class="badge warn">观察保留</span></td>
         <td class="num">~18 行</td>
       </tr>
@@ -584,7 +521,7 @@
         <td class="num">4</td>
         <td><code>extractFrontmatter</code></td>
         <td>lib/arch-helpers.mjs</td>
-        <td class="num" style="color:var(--yry-warn)">1</td>
+        <td class="num" yry-d-61">1</td>
         <td><span class="badge warn">观察保留</span></td>
         <td class="num">~30 行</td>
       </tr>
@@ -592,13 +529,13 @@
         <td class="num">5</td>
         <td><code>compareByWeight</code></td>
         <td>lib/arch-helpers.mjs</td>
-        <td class="num" style="color:var(--yry-warn)">1</td>
+        <td class="num" yry-d-61">1</td>
         <td><span class="badge warn">观察保留</span></td>
         <td class="num">~12 行</td>
       </tr>
     </tbody>
   </table>
-  <div class="intro" style="margin-top:14px">
+  <div class="intro" yry-d-70">
     <strong>处理路径</strong>：P1 项（0 调用方）合计可回收约 80 行 + 减少 lib/ 体积压力。
     执行后预期 YAGNI 维度回升至 95+（剩余 3 个 1 调用方 export 仍在合理范围内），
     综合评分回升至 97+。处理流程：(1) Git grep 二次确认无遗漏调用方；
@@ -669,15 +606,15 @@
     <strong>健康报告（06-16）</strong>：查看 <a href="../健康报告/health-2026-06-16.html">健康报告 2026-06-16</a> 获取 17 维度全量评分分解（含 23,157 行 JS 代码分布、组件健康矩阵）。<br><br>
     <strong>自我改进（06-16）</strong>：查看 <a href="../自循环报告/self-improve-2026-06-16.html">自改进闭环 2026-06-16</a> 获取 D0–D8 诊断矩阵、E1–E4 改进循环状态与引导模式基线。<br><br>
     <strong>趋势报告（06-16）</strong>：查看 <a href="../趋势报告/trend-all-2026-06-16.html">全量趋势扫描 2026-06-16</a> 获取 4 源技术趋势聚合（投影数据 +19.4% 上升）。<br><br>
-    <strong>架构宪法</strong>：查看 <a href="../../rules/architecture-principles.md">rules/architecture-principles.md</a> 了解 8 条核心架构原则（含内核体积、范式、扩展隔离）。<br><br>
-    <strong>设计原则</strong>：查看 <a href="../../rules/design-principles.md">rules/design-principles.md</a> 了解 SRP / DRY / YAGNI / ISP 等 11 条设计原则。<br><br>
+    <strong>架构宪法</strong>：查看 <a href="../../skills/rui/rules/architecture-principles.md">rules/architecture-principles.md</a> 了解 8 条核心架构原则（含内核体积、范式、扩展隔离）。<br><br>
+    <strong>设计原则</strong>：查看 <a href="../../skills/rui/rules/design-principles.md">rules/design-principles.md</a> 了解 SRP / DRY / YAGNI / ISP 等 11 条设计原则。<br><br>
     <strong>验证引擎</strong>：查看 <a href="../../lib/arch-check.mjs">lib/arch-check.mjs</a> 了解 16 项检查项的实现细节（1,094 行 ESM 模块）。
   </div>
 </div>
 
 <div class="ft">
   项目架构合规性深度分析 · 2026-06-16 11:42:18 CST<br>
-  <span style="color:var(--yry-text3)">由 rui-analysis 自动生成 · D2 质量退化输入 · D8 架构退化输入 · lib/arch-check.mjs 驱动</span>
+  <span class="yry-d-58">由 rui-analysis 自动生成 · D2 质量退化输入 · D8 架构退化输入 · lib/arch-check.mjs 驱动</span>
 </div>
 
 </div>

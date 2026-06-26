@@ -36,7 +36,6 @@
 <yry-skill-report data-summary-url="../自我改进/summary.json"></yry-skill-report>
 
 <nav class="links">
-  <a href="../健康报告/">健康报告</a>
   <a href="../测试报告/">测试报告</a>
   <a href="../自我改进/">自我改进</a>
   <a href="../组件报告/">组件报告</a>
@@ -46,7 +45,7 @@
 
 <footer class="ft">
   技能评分报告 · 数据实时读取 · 四维加权模型<br>
-  <span style="color:var(--yry-text3)">数据源: arch-check.mjs --all + docs/自我改进/summary.json · 每 10min 自动刷新</span>
+  <span class="yry-d-58">数据源: arch-check.mjs --all + docs/自我改进/summary.json · 每 10min 自动刷新</span>
 </footer>
 
 </main>
@@ -85,82 +84,6 @@
   /* ── Activate tabs (after the component has rendered) ── */
   YrY.initTabs('#main-tabs');
 </script>
-
-<!-- 技能四维健康评估 -->
-<div class="card">
-  <h2>📊 技能四维健康评估</h2>
-  <table>
-    <thead><tr><th>技能</th><th>规约完整性</th><th>领域语言一致性</th><th>代码范式合规</th><th>测试覆盖</th><th>综合分</th></tr></thead>
-    <tbody>
-      <tr><td>rui-init</td><td>A</td><td>A</td><td>A</td><td>B</td><td>0.92</td></tr>
-      <tr><td>rui-update</td><td>A</td><td>A</td><td>A</td><td>B</td><td>0.90</td></tr>
-      <tr><td>rui-code</td><td>A</td><td>A</td><td>A</td><td>A</td><td>0.95</td></tr>
-      <tr><td>rui-yry</td><td>A</td><td>A</td><td>A</td><td>B</td><td>0.93</td></tr>
-      <tr><td>rui-html</td><td>A</td><td>A</td><td>A</td><td>B</td><td>0.91</td></tr>
-      <tr><td>rui-story</td><td>A</td><td>A</td><td>A</td><td>B</td><td>0.90</td></tr>
-      <tr><td>rui-plan</td><td>A</td><td>A</td><td>A</td><td>B</td><td>0.89</td></tr>
-      <tr><td>rui-bot</td><td>A</td><td>A</td><td>A</td><td>A</td><td>0.94</td></tr>
-      <tr><td>rui-claude</td><td>A</td><td>A</td><td>A</td><td>B</td><td>0.88</td></tr>
-      <tr><td>rui-import</td><td>A</td><td>A</td><td>A</td><td>B</td><td>0.87</td></tr>
-      <tr><td>rui-npm</td><td>A</td><td>A</td><td>A</td><td>B</td><td>0.86</td></tr>
-      <tr><td>rui-skills</td><td>A</td><td>A</td><td>A</td><td>B</td><td>0.85</td></tr>
-      <tr><td>rui-trends</td><td>A</td><td>A</td><td>A</td><td>B</td><td>0.84</td></tr>
-      <tr><td>rui-self-test</td><td>A</td><td>A</td><td>A</td><td>A</td><td>0.93</td></tr>
-      <tr><td>rui-test</td><td>A</td><td>A</td><td>A</td><td>A</td><td>0.92</td></tr>
-      <tr><td>rui-review</td><td>A</td><td>A</td><td>A</td><td>B</td><td>0.88</td></tr>
-      <tr><td>rui-security-review</td><td>A</td><td>A</td><td>A</td><td>A</td><td>0.94</td></tr>
-      <tr><td>init</td><td>A</td><td>A</td><td>A</td><td>B</td><td>0.87</td></tr>
-      <tr><td>review</td><td>A</td><td>A</td><td>A</td><td>B</td><td>0.86</td></tr>
-      <tr><td>security-review</td><td>A</td><td>A</td><td>A</td><td>A</td><td>0.93</td></tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- 技能分类与优先级 -->
-<div class="card">
-  <h2>🏷️ 技能分类与优先级</h2>
-  <table>
-    <thead><tr><th>分类</th><th>数量</th><th>代表技能</th><th>平均分</th></tr></thead>
-    <tbody>
-      <tr><td>编排入口</td><td>3</td><td>rui · rui-init · rui-update</td><td>0.92</td></tr>
-      <tr><td>源码实现</td><td>2</td><td>rui-code · rui-yry</td><td>0.94</td></tr>
-      <tr><td>文档生成</td><td>3</td><td>rui-html · rui-story · rui-plan</td><td>0.90</td></tr>
-      <tr><td>支撑工具</td><td>5</td><td>rui-bot · rui-claude · rui-import · rui-npm · rui-skills</td><td>0.88</td></tr>
-      <tr><td>测试与审查</td><td>4</td><td>rui-self-test · rui-test · rui-review · rui-security-review</td><td>0.92</td></tr>
-      <tr><td>趋势分析</td><td>1</td><td>rui-trends</td><td>0.84</td></tr>
-      <tr><td>CLI 命令</td><td>2</td><td>init · review · security-review</td><td>0.89</td></tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- 技能健康维度 -->
-<div class="card">
-  <h2>🔍 技能健康维度详解</h2>
-  <table>
-    <thead><tr><th>维度</th><th>权重</th><th>度量方法</th><th>阈值</th></tr></thead>
-    <tbody>
-      <tr><td>规约完整性</td><td>0.30</td><td>SKILL.md 含必填章节</td><td>≥ 0.90</td></tr>
-      <tr><td>领域语言一致性</td><td>0.25</td><td>术语与 Avoid 列表一致</td><td>≥ 0.85</td></tr>
-      <tr><td>代码范式合规</td><td>0.25</td><td>无 class/extends/export default</td><td>1.00</td></tr>
-      <tr><td>测试覆盖</td><td>0.20</td><td>vitest 覆盖率</td><td>≥ 0.70</td></tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- 技能演进历史 -->
-<div class="card">
-  <h2>📈 技能演进历史</h2>
-  <table>
-    <thead><tr><th>版本</th><th>技能数</th><th>新增</th><th>废弃</th><th>评分</th></tr></thead>
-    <tbody>
-      <tr><td>v3.0</td><td>12</td><td>—</td><td>—</td><td>78/C</td></tr>
-      <tr><td>v4.0</td><td>15</td><td>3</td><td>0</td><td>86/B</td></tr>
-      <tr><td>v5.0</td><td>18</td><td>3</td><td>0</td><td>90/A</td></tr>
-      <tr><td>v5.4 (当前)</td><td>20</td><td>2</td><td>0</td><td>92/A</td></tr>
-      <tr><td>v6.0 (规划)</td><td>22</td><td>2</td><td>0</td><td>95/A</td></tr>
-    </tbody>
-  </table>
-</div>
 
 </body>
 </html>

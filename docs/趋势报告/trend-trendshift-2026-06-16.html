@@ -6,9 +6,7 @@
 <title>趋势报告 · TrendShift 2026-06-16</title>
 <link rel="stylesheet" href="../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../cdn/theme/index.css">
-<style>
-.cat-bar-fill { transition: width .6s ease; }
-</style>
+<link rel="stylesheet" href="trend-trendshift-2026-06-16.css">
 </head>
 <body>
 <div class="c">
@@ -44,8 +42,8 @@
 
 <div class="card">
   <h2>四周期条目趋势 (保守增长投影)</h2>
-  <div style="width:100%;overflow-x:auto">
-    <svg viewBox="0 0 840 280" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:840px">
+  <div class="h-lg-w100-overflowx">
+    <svg viewBox="0 0 840 280" xmlns="http://www.w3.org/2000/svg" class="h-lg-w100-maxw840">
       <defs>
         <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="rgba(168,85,247,0.18)"/>
@@ -97,90 +95,90 @@
       <text x="735" y="268" text-anchor="middle" fill="rgba(168,85,247,0.4)" font-size="8">投影区间</text>
     </svg>
   </div>
-  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;font-size:.72rem;color:var(--yry-text3)">
+  <div class="h-lg-flex-gap12-wrap-mt12-fs72-t3">
     <span>06-05: 9 条目 (基线)</span>
-    <span style="color:var(--yry-pass)">06-09: 10 条目 (+11.1%)</span>
-    <span style="color:var(--yry-pass);font-weight:600">06-12: 16 条目 (+60.0% 含回填)</span>
-    <span style="color:#60a5fa;font-weight:600">06-16: 20 条目 (+25.0%) 保守投影 ▸ 需验证</span>
+    <span class="h-tp">06-09: 10 条目 (+11.1%)</span>
+    <span class="h-lg-green-fw6">06-12: 16 条目 (+60.0% 含回填)</span>
+    <span class="h-lg-blue60-fw6">06-16: 20 条目 (+25.0%) 保守投影 ▸ 需验证</span>
   </div>
 </div>
 
 <div class="card">
   <h2>技术迁移信号 (投影 · 7 信号)</h2>
-  <div style="display:flex;flex-direction:column;gap:8px">
+  <div class="h-lg-flex-col-gap8">
 
-    <div class="sig-card" style="border-left:3px solid #22c55e">
+    <div class="sig-card" h-lg-bl-green>
       <div class="sig-pair">
-        <span style="color:#f59e0b">Webpack</span>
-        <span style="color:var(--yry-text3);margin:0 8px">→</span>
-        <span style="color:#22c55e">Vite / Turbopack</span>
+        <span class="h-lg-amber">Webpack</span>
+        <span class="h-lg-t3-m08">→</span>
+        <span class="h-lg-green">Vite / Turbopack</span>
       </div>
-      <span class="sig-conf" style="background:rgba(34,197,94,.15);color:#22c55e">高置信度</span>
-      <div style="width:100%;font-size:.72rem;color:var(--yry-text3);margin-top:4px">Vite 6+ 生态成熟，Turbopack 并入 Next.js 默认构建器。Webpack 在新增项目占比持续下降，预计本周期仍为最显著迁移信号。</div>
+      <span class="sig-conf" h-lg-bg15-green>高置信度</span>
+      <div class="h-lg-w100-fs72-t3-mt4">Vite 6+ 生态成熟，Turbopack 并入 Next.js 默认构建器。Webpack 在新增项目占比持续下降，预计本周期仍为最显著迁移信号。</div>
     </div>
 
-    <div class="sig-card" style="border-left:3px solid #22c55e">
+    <div class="sig-card" h-lg-bl-green>
       <div class="sig-pair">
-        <span style="color:#f59e0b">REST API</span>
-        <span style="color:var(--yry-text3);margin:0 8px">→</span>
-        <span style="color:#22c55e">tRPC / GraphQL</span>
+        <span class="h-lg-amber">REST API</span>
+        <span class="h-lg-t3-m08">→</span>
+        <span class="h-lg-green">tRPC / GraphQL</span>
       </div>
-      <span class="sig-conf" style="background:rgba(34,197,94,.15);color:#22c55e">高置信度</span>
-      <div style="width:100%;font-size:.72rem;color:var(--yry-text3);margin-top:4px">类型安全 API 层持续取代手写 REST 端点。tRPC v11 的 React Server Components 集成推动全栈类型安全。</div>
+      <span class="sig-conf" h-lg-bg15-green>高置信度</span>
+      <div class="h-lg-w100-fs72-t3-mt4">类型安全 API 层持续取代手写 REST 端点。tRPC v11 的 React Server Components 集成推动全栈类型安全。</div>
     </div>
 
-    <div class="sig-card" style="border-left:3px solid #22c55e">
+    <div class="sig-card" h-lg-bl-green>
       <div class="sig-pair">
-        <span style="color:#f59e0b">Jenkins</span>
-        <span style="color:var(--yry-text3);margin:0 8px">→</span>
-        <span style="color:#22c55e">GitHub Actions</span>
+        <span class="h-lg-amber">Jenkins</span>
+        <span class="h-lg-t3-m08">→</span>
+        <span class="h-lg-green">GitHub Actions</span>
       </div>
-      <span class="sig-conf" style="background:rgba(34,197,94,.15);color:#22c55e">高置信度</span>
-      <div style="width:100%;font-size:.72rem;color:var(--yry-text3);margin-top:4px">CI/CD 持续向 GitHub Actions 收敛，社区 Actions 市场突破 20k。自托管 Runner 成熟度提升加速企业迁移。</div>
+      <span class="sig-conf" h-lg-bg15-green>高置信度</span>
+      <div class="h-lg-w100-fs72-t3-mt4">CI/CD 持续向 GitHub Actions 收敛，社区 Actions 市场突破 20k。自托管 Runner 成熟度提升加速企业迁移。</div>
     </div>
 
-    <div class="sig-card" style="border-left:3px solid #22c55e">
+    <div class="sig-card" h-lg-bl-green>
       <div class="sig-pair">
-        <span style="color:#f59e0b">JavaScript 工具链</span>
-        <span style="color:var(--yry-text3);margin:0 8px">→</span>
-        <span style="color:#22c55e">Rust / Go 重写</span>
+        <span class="h-lg-amber">JavaScript 工具链</span>
+        <span class="h-lg-t3-m08">→</span>
+        <span class="h-lg-green">Rust / Go 重写</span>
       </div>
-      <span class="sig-conf" style="background:rgba(34,197,94,.15);color:#22c55e">高置信度</span>
-      <div style="width:100%;font-size:.72rem;color:var(--yry-text3);margin-top:4px">Ruff (Python)、Oxlint (JS)、 Biome (格式化) 等 Rust 重写工具持续占领开发者工具链。Go 在基础设施层面同步渗透。</div>
+      <span class="sig-conf" h-lg-bg15-green>高置信度</span>
+      <div class="h-lg-w100-fs72-t3-mt4">Ruff (Python)、Oxlint (JS)、 Biome (格式化) 等 Rust 重写工具持续占领开发者工具链。Go 在基础设施层面同步渗透。</div>
     </div>
 
-    <div class="sig-card" style="border-left:3px solid #22c55e">
+    <div class="sig-card" h-lg-bl-green>
       <div class="sig-pair">
-        <span style="color:#f59e0b">Docker Compose</span>
-        <span style="color:var(--yry-text3);margin:0 8px">→</span>
-        <span style="color:#22c55e">Devbox / Nix / Dev Containers</span>
+        <span class="h-lg-amber">Docker Compose</span>
+        <span class="h-lg-t3-m08">→</span>
+        <span class="h-lg-green">Devbox / Nix / Dev Containers</span>
       </div>
-      <span class="sig-conf" style="background:rgba(34,197,94,.15);color:#22c55e">高置信度</span>
-      <div style="width:100%;font-size:.72rem;color:var(--yry-text3);margin-top:4px">可复现开发环境从 Docker 向声明式方案迁移。Dev Containers 规范 v2 被 VS Code 和 Codespaces 原生支持，Nix flake 生态成熟度提升。</div>
+      <span class="sig-conf" h-lg-bg15-green>高置信度</span>
+      <div class="h-lg-w100-fs72-t3-mt4">可复现开发环境从 Docker 向声明式方案迁移。Dev Containers 规范 v2 被 VS Code 和 Codespaces 原生支持，Nix flake 生态成熟度提升。</div>
     </div>
 
-    <div class="sig-card" style="border-left:3px solid #f59e0b">
+    <div class="sig-card h-lg-bl3-amber">
       <div class="sig-pair">
-        <span style="color:#f59e0b">Nagios / Prometheus</span>
-        <span style="color:var(--yry-text3);margin:0 8px">→</span>
-        <span style="color:#22c55e">OpenTelemetry + eBPF</span>
+        <span class="h-lg-amber">Nagios / Prometheus</span>
+        <span class="h-lg-t3-m08">→</span>
+        <span class="h-lg-green">OpenTelemetry + eBPF</span>
       </div>
-      <span class="sig-conf" style="background:rgba(245,158,11,.15);color:#f59e0b">中置信度</span>
-      <div style="width:100%;font-size:.72rem;color:var(--yry-text3);margin-top:4px">可观测性从指标采集向分布式追踪 + 内核级观测演进。OpenTelemetry 成为 CNCF 第二大项目，但传统方案在存量市场仍有惯性。</div>
+      <span class="sig-conf h-lg-bg15-amber">中置信度</span>
+      <div class="h-lg-w100-fs72-t3-mt4">可观测性从指标采集向分布式追踪 + 内核级观测演进。OpenTelemetry 成为 CNCF 第二大项目，但传统方案在存量市场仍有惯性。</div>
     </div>
 
-    <div class="sig-card" style="border-left:3px solid #f59e0b">
+    <div class="sig-card h-lg-bl3-amber">
       <div class="sig-pair">
-        <span style="color:#f59e0b">Monolith Backend</span>
-        <span style="color:var(--yry-text3);margin:0 8px">→</span>
-        <span style="color:#22c55e">微内核插件架构</span>
+        <span class="h-lg-amber">Monolith Backend</span>
+        <span class="h-lg-t3-m08">→</span>
+        <span class="h-lg-green">微内核插件架构</span>
       </div>
-      <span class="sig-conf" style="background:rgba(245,158,11,.15);color:#f59e0b">中置信度</span>
-      <div style="width:100%;font-size:.72rem;color:var(--yry-text3);margin-top:4px">新增信号。AI Coding Assistant 和 IDE 插件生态推动微内核+插件架构在工具类应用中扩散，但企业后端仍以模块化单体为主流。</div>
+      <span class="sig-conf h-lg-bg15-amber">中置信度</span>
+      <div class="h-lg-w100-fs72-t3-mt4">新增信号。AI Coding Assistant 和 IDE 插件生态推动微内核+插件架构在工具类应用中扩散，但企业后端仍以模块化单体为主流。</div>
     </div>
 
   </div>
-  <p style="font-size:.72rem;color:var(--yry-text3);margin-top:10px">5 高置信度信号延续 06-12 已验证迁移路径，2 中置信度含本周期推测新增。下周期 API 恢复后以实际数据校正。</p>
+  <p class="h-lg-fs72-t3-mt10">5 高置信度信号延续 06-12 已验证迁移路径，2 中置信度含本周期推测新增。下周期 API 恢复后以实际数据校正。</p>
 </div>
 
 <div class="card">
@@ -188,7 +186,7 @@
   <div class="feature-grid">
     <div class="feature-item">
       <div class="feature-label">数据入口</div>
-      <div class="feature-val"><a href="https://trendshift.io" target="_blank" rel="noopener noreferrer" style="color:#7aa2f7">https://trendshift.io</a></div>
+      <div class="feature-val"><a href="https://trendshift.io" target="_blank" rel="noopener noreferrer" class="h-lg-blue7aa2">https://trendshift.io</a></div>
     </div>
     <div class="feature-item">
       <div class="feature-label">更新频率</div>
@@ -219,7 +217,7 @@
     <thead><tr><th>指标</th><th>2026-06-05</th><th>2026-06-09</th><th>2026-06-12</th><th>2026-06-16</th><th>变化趋势</th></tr></thead>
     <tbody>
       <tr>
-        <td>捕获条目数</td><td class="num">9</td><td class="num">10</td><td class="num" style="color:#a855f7">16</td><td class="num" style="color:#60a5fa">20 ★</td>
+        <td>捕获条目数</td><td class="num">9</td><td class="num">10</td><td class="num h-lg-purple-a855f7">16</td><td class="num" h-lg-blue60>20 ★</td>
         <td><span class="badge rise">↑ +122.2%</span></td>
       </tr>
       <tr>
@@ -227,11 +225,11 @@
         <td><span class="badge warn">待验证</span></td>
       </tr>
       <tr>
-        <td>迁移信号数</td><td class="num">3</td><td class="num">4</td><td class="num">6</td><td class="num" style="color:#60a5fa">7 ★</td>
+        <td>迁移信号数</td><td class="num">3</td><td class="num">4</td><td class="num">6</td><td class="num" h-lg-blue60>7 ★</td>
         <td><span class="badge rise">信号扩张</span></td>
       </tr>
       <tr>
-        <td>高置信度信号</td><td class="num">2</td><td class="num">3</td><td class="num">4</td><td class="num" style="color:#22c55e">5</td>
+        <td>高置信度信号</td><td class="num">2</td><td class="num">3</td><td class="num">4</td><td class="num" h-lg-green>5</td>
         <td><span class="badge rise">↑ +150%</span></td>
       </tr>
       <tr>
@@ -239,7 +237,7 @@
         <td><span class="badge flat">→ 稳定</span></td>
       </tr>
       <tr>
-        <td>趋势加速度</td><td class="num">—</td><td class="num" style="color:var(--yry-pass)">+11.1%</td><td class="num" style="color:#a855f7">+60.0%</td><td class="num" style="color:#60a5fa">+25.0%</td>
+        <td>趋势加速度</td><td class="num">—</td><td class="num h-tp">+11.1%</td><td class="num h-lg-purple-a855f7">+60.0%</td><td class="num" h-lg-blue60>+25.0%</td>
         <td><span class="badge rise">保守增长</span></td>
       </tr>
     </tbody>
@@ -263,19 +261,19 @@
 
 <div class="card">
   <h2>投影方法论与置信度</h2>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px">
-    <div style="padding:14px 18px;border-radius:8px;border:var(--yry-border);background:rgba(15,23,42,.4)">
-      <div style="font-size:.78rem;font-weight:600;color:var(--yry-accent);margin-bottom:6px">📐 增长模型</div>
-      <div style="font-size:.72rem;color:var(--yry-text2);line-height:1.7">
+  <div class="h-lg-grid-auto-240-gap12">
+    <div class="h-lg-p14-bd-bg4">
+      <div class="h-lg-fs78-fw6-accent-mb6">📐 增长模型</div>
+      <div class="h-lg-fs72-t2-lh17">
         <strong>保守趋势外推 + 回填效应剔除</strong><br>
-        数据点：9 → 10 → 16 → <span style="color:#60a5fa">20 ★</span><br>
+        数据点：9 → 10 → 16 → <span class="h-lg-blue60">20 ★</span><br>
         06-12 跳跃 +60% 含回填效应 (06-05 乱码数据重新解析)<br>
-        剔除回填后真实增速 ≈ <strong style="color:#60a5fa">+25%</strong>
+        剔除回填后真实增速 ≈ <strong class="h-lg-blue60">+25%</strong>
       </div>
     </div>
-    <div style="padding:14px 18px;border-radius:8px;border:var(--yry-border);background:rgba(15,23,42,.4)">
-      <div style="font-size:.78rem;font-weight:600;color:var(--yry-accent);margin-bottom:6px">🎯 置信区间</div>
-      <div style="font-size:.72rem;color:var(--yry-text2);line-height:1.7">
+    <div class="h-lg-p14-bd-bg4">
+      <div class="h-lg-fs78-fw6-accent-mb6">🎯 置信区间</div>
+      <div class="h-lg-fs72-t2-lh17">
         <strong>保守 CI = [17, 23]</strong><br>
         基于剔除回填效应的保守估计<br>
         偏差范围 ±3 (考虑 API 乱码风险)<br>
@@ -283,20 +281,20 @@
         方向确认：连续 3 周期上升趋势
       </div>
     </div>
-    <div style="padding:14px 18px;border-radius:8px;border:var(--yry-border);background:rgba(15,23,42,.4)">
-      <div style="font-size:.78rem;font-weight:600;color:var(--yry-accent);margin-bottom:6px">⚙️ 投影算法</div>
-      <div style="font-size:.72rem;color:var(--yry-text2);line-height:1.7">
+    <div class="h-lg-p14-bd-bg4">
+      <div class="h-lg-fs78-fw6-accent-mb6">⚙️ 投影算法</div>
+      <div class="h-lg-fs72-t2-lh17">
         1. 识别 06-12 回填效应 (chow test p<0.01)<br>
         2. 以 06-09→06-12 修正增速为基线<br>
         3. 应用 0.6 衰减因子 (防过度外推)<br>
         4. 迁移信号连续性作为质量权重<br>
-        5. 最终：16 × 1.25 = <strong style="color:#60a5fa">20</strong>
+        5. 最终：16 × 1.25 = <strong class="h-lg-blue60">20</strong>
       </div>
     </div>
-    <div style="padding:14px 18px;border-radius:8px;border:var(--yry-border);background:rgba(15,23,42,.4)">
-      <div style="font-size:.78rem;font-weight:600;color:var(--yry-warn);margin-bottom:6px">⚠️ 投影风险</div>
-      <div style="font-size:.72rem;color:var(--yry-text2);line-height:1.7">
-        <strong style="color:var(--yry-warn)">中等风险</strong> — API 乱码但可部分解析<br>
+    <div class="h-lg-p14-bd-bg4">
+      <div class="h-lg-fs78-fw6-warn-mb6">⚠️ 投影风险</div>
+      <div class="h-lg-fs72-t2-lh17">
+        <strong class="h-tw">中等风险</strong> — API 乱码但可部分解析<br>
         · 乱码数据混入 1 条 malformed 记录<br>
         · 回填效应可能被低估/高估<br>
         · 新增迁移信号需下周期验证<br>
@@ -308,63 +306,63 @@
 
 <div class="card">
   <h2>跨源趋势确认矩阵</h2>
-  <p style="font-size:.72rem;color:var(--yry-text3);margin-bottom:12px">将本源的投影趋势方向与其他三个趋势源进行交叉验证。TrendShift 捕获中长期迁移信号，需与短周期源互补解读。</p>
+  <p class="h-lg-fs72-t3-mb12">将本源的投影趋势方向与其他三个趋势源进行交叉验证。TrendShift 捕获中长期迁移信号，需与短周期源互补解读。</p>
   <table>
     <thead><tr><th>对比源</th><th>本源自方向</th><th>对比源自方向</th><th>方向一致</th><th>加权确认</th><th>判定</th></tr></thead>
     <tbody>
       <tr>
-        <td style="font-weight:600">TrendShift<br><span style="font-size:.64rem;color:var(--yry-text3)">权重 25%</span></td>
+        <td class="h-lg-fw6">TrendShift<br><span class="h-lg-fs64-t3">权重 25%</span></td>
         <td><span class="badge rise">↑ 上升</span></td>
         <td><span class="badge rise">↑ 上升</span></td>
-        <td style="color:var(--yry-pass);font-weight:600">✓ 一致</td>
-        <td style="font-weight:600">—</td>
+        <td class="h-lg-green-fw6">✓ 一致</td>
+        <td class="h-lg-fw6">—</td>
         <td><span class="badge ok">自身</span></td>
       </tr>
       <tr>
-        <td style="font-weight:600">GitHub Trending<br><span style="font-size:.64rem;color:var(--yry-text3)">权重 35%</span></td>
+        <td class="h-lg-fw6">GitHub Trending<br><span class="h-lg-fs64-t3">权重 35%</span></td>
         <td><span class="badge rise">↑ 上升</span></td>
         <td><span class="badge rise">↑ 上升</span></td>
-        <td style="color:var(--yry-pass);font-weight:600">✓ 一致</td>
-        <td style="color:var(--yry-pass);font-weight:600">+35%</td>
+        <td class="h-lg-green-fw6">✓ 一致</td>
+        <td class="h-lg-green-fw6">+35%</td>
         <td><span class="badge ok">强确认</span></td>
       </tr>
       <tr>
-        <td style="font-weight:600">OSS Insight<br><span style="font-size:.64rem;color:var(--yry-text3)">权重 20%</span></td>
+        <td class="h-lg-fw6">OSS Insight<br><span class="h-lg-fs64-t3">权重 20%</span></td>
         <td><span class="badge rise">↑ 上升</span></td>
         <td><span class="badge flat">→ 持平</span></td>
-        <td style="color:var(--yry-warn)">△ 部分</td>
-        <td style="color:var(--yry-warn);font-weight:600">+10%</td>
+        <td class="h-tw">△ 部分</td>
+        <td class="h-lg-warn-fw6">+10%</td>
         <td><span class="badge warn">互补角色</span></td>
       </tr>
       <tr>
-        <td style="font-weight:600">Top-Starred<br><span style="font-size:.64rem;color:var(--yry-text3)">权重 20%</span></td>
+        <td class="h-lg-fw6">Top-Starred<br><span class="h-lg-fs64-t3">权重 20%</span></td>
         <td><span class="badge rise">↑ 上升</span></td>
         <td><span class="badge rise">↑ 上升</span></td>
-        <td style="color:var(--yry-pass);font-weight:600">✓ 一致</td>
-        <td style="color:var(--yry-pass);font-weight:600">+20%</td>
+        <td class="h-lg-green-fw6">✓ 一致</td>
+        <td class="h-lg-green-fw6">+20%</td>
         <td><span class="badge ok">社区投票确认</span></td>
       </tr>
-      <tr style="border-top:2px solid var(--yry-accent)">
-        <td colspan="3" style="text-align:right;font-weight:700;color:var(--yry-accent)">加权方向确认得分</td>
-        <td colspan="2" style="font-weight:700;font-size:1.1rem;color:var(--yry-pass)">65% / 75% = 86.7%</td>
+      <tr class="h-lg-bt2-accent">
+        <td colspan="3" class="h-lg-right-fw7-accent">加权方向确认得分</td>
+        <td colspan="2" class="h-lg-fw7-fs11-pass">65% / 75% = 86.7%</td>
         <td><span class="badge ok">✓ 确认</span></td>
       </tr>
     </tbody>
   </table>
-  <div style="margin-top:10px;padding:10px 14px;border-radius:6px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.15)">
-    <span style="font-size:.72rem;color:var(--yry-pass);font-weight:600">📊 解读：</span>
-    <span style="font-size:.72rem;color:var(--yry-text2)">迁移信号方向与 GitHub Trending 热点完全一致——短期爆发项目 (AI/LLM 工具链、Rust 重构) 正转化为中长期迁移趋势。Webpack→Vite、REST→tRPC 两条信号同时被短周期和长周期验证，可信度最高。</span>
+  <div class="h-lg-mt10-p1014-green08-bd">
+    <span class="h-lg-fs72-pass-fw6">📊 解读：</span>
+    <span class="h-lg-fs72-t2">迁移信号方向与 GitHub Trending 热点完全一致——短期爆发项目 (AI/LLM 工具链、Rust 重构) 正转化为中长期迁移趋势。Webpack→Vite、REST→tRPC 两条信号同时被短周期和长周期验证，可信度最高。</span>
   </div>
 </div>
 
 <div class="card">
   <h2>诊断关联</h2>
-  <p style="font-size:.82rem;color:var(--yry-text2);line-height:1.8">
-    <strong style="color:var(--yry-accent)">D5 外部趋势</strong>：TrendShift 迁移信号与 GitHub Trending 短周期热点互补。本周期 5 个高置信度信号均与 06-12 保持一致，方向确认。新增 "微内核插件架构" 信号需下周期验证。<br>
-    <strong style="color:var(--yry-accent)">D4 依赖过期</strong>：Webpack→Vite、REST→tRPC、Docker→Devbox 三个迁移信号直接触发依赖复查 — 若项目仍在使用迁移源端技术，需评估升级窗口。<br>
-    <strong style="color:var(--yry-accent)">D6 文档陈旧</strong>：迁移信号涉及的替代技术（Vite, tRPC, OpenTelemetry, Nix）若在项目文档中被引用，需确认文档版本与实践一致。<br>
-    <strong style="color:var(--yry-accent)">⚠️ 数据质量备注</strong>：本周期 TrendShift API 返回乱码数据（1 条 malformed 记录），根因可能是页面结构变更。06-19 重试抓取，以实际数据替换投影。<br>
-    <strong style="color:var(--yry-accent)">下一步</strong>：1) 运行 <code style="background:rgba(168,85,247,.1);padding:1px 6px;border-radius:4px;color:#c084fc">node skills/rui-trends/rui-trends.mjs trendshift --html --verbose</code> 重试；2) 对比下周期实际 vs 投影差值。
+  <p class="h-lg-fs82-t2-lh18">
+    <strong class="h-lg-accent">D5 外部趋势</strong>：TrendShift 迁移信号与 GitHub Trending 短周期热点互补。本周期 5 个高置信度信号均与 06-12 保持一致，方向确认。新增 "微内核插件架构" 信号需下周期验证。<br>
+    <strong class="h-lg-accent">D4 依赖过期</strong>：Webpack→Vite、REST→tRPC、Docker→Devbox 三个迁移信号直接触发依赖复查 — 若项目仍在使用迁移源端技术，需评估升级窗口。<br>
+    <strong class="h-lg-accent">D6 文档陈旧</strong>：迁移信号涉及的替代技术（Vite, tRPC, OpenTelemetry, Nix）若在项目文档中被引用，需确认文档版本与实践一致。<br>
+    <strong class="h-lg-accent">⚠️ 数据质量备注</strong>：本周期 TrendShift API 返回乱码数据（1 条 malformed 记录），根因可能是页面结构变更。06-19 重试抓取，以实际数据替换投影。<br>
+    <strong class="h-lg-accent">下一步</strong>：1) 运行 <code class="h-lg-x75">node skills/rui-trends/rui-trends.mjs trendshift --html --verbose</code> 重试；2) 对比下周期实际 vs 投影差值。
   </p>
 </div>
 
@@ -381,8 +379,8 @@
 
 <div class="ft">
   TrendShift 技术迁移趋势报告 · 2026-06-16 09:00:00 CST (投影)<br>
-  <span style="color:#60a5fa">⚠ 投影数据 — 基于 06-05→06-09→06-12 趋势外推 (±3 偏差)。下周期以实际数据替换。</span><br>
-  <span style="color:var(--yry-text3)">由 rui-trends 生成 · D5 外部趋势诊断源 (权重 25%) · 每周一 09:00 自动执行</span>
+  <span class="h-lg-blue60">⚠ 投影数据 — 基于 06-05→06-09→06-12 趋势外推 (±3 偏差)。下周期以实际数据替换。</span><br>
+  <span class="h-t3">由 rui-trends 生成 · D5 外部趋势诊断源 (权重 25%) · 每周一 09:00 自动执行</span>
 </div>
 
 </div>

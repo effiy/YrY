@@ -41,15 +41,11 @@ const YryCmdCard = defineComponent({
   computed: {
     metaItems() {
       const items = [];
-      if (this.owner) items.push('<span>👤 ' + esc(this.owner) + '</span>');
-      if (this.duration) items.push('<span>⏱ ' + esc(this.duration) + '</span>');
+      if (this.owner) items.push(`<span>👤 ${esc(this.owner)}</span>`);
+      if (this.duration) items.push(`<span>⏱ ${esc(this.duration)}</span>`);
       if (this.priority)
         items.push(
-          '<span>🎯 <span class="c-priority ' +
-            esc(this.priority) +
-            '">' +
-            esc(this.priority.toUpperCase()) +
-            '</span></span>'
+          `<span>🎯 <span class="c-priority ${esc(this.priority)}">${esc(this.priority.toUpperCase())}</span></span>`
         );
       return items;
     }

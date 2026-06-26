@@ -10,8 +10,21 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
+    "test:coverage:check": "vitest run --coverage --coverage.thresholds.lines=8 --coverage.thresholds.statements=8 --coverage.thresholds.functions=10 --coverage.thresholds.branches=10",
     "test:legacy": "node skills/rui/tests/run.mjs",
-    "version": "node -e \"console.log(require('./package.json').version)\""
+    "lint": "eslint lib/",
+    "lint:skills": "eslint skills/",
+    "lint:all": "eslint lib/ skills/ --max-warnings 0",
+    "lint:fix": "eslint lib/ --fix",
+    "typecheck": "tsc --noEmit",
+    "arch-check": "node lib/arch-check.mjs",
+    "health": "node skills/rui-bot/send.mjs health",
+    "format": "prettier --write \"lib/**/*.mjs\" \"skills/**/*.mjs\"",
+    "format:check": "prettier --check \"lib/**/*.mjs\" \"skills/**/*.mjs\"",
+    "version": "node -e \"console.log(require('./package.json').version)\"",
+    "bump:patch": "node scripts/bump-version.mjs patch",
+    "bump:minor": "node scripts/bump-version.mjs minor",
+    "bump:major": "node scripts/bump-version.mjs major"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^3.2.6",

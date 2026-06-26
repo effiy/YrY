@@ -9,7 +9,15 @@
    - 6px 厚轨 + 青紫渐变填充 + 持续光带扫光动画
    - 仅展示进度条本体 (不含文案),保持顶部细薄
    - 进度本体带微弱内/外发光,增加层次
+
+   --yry-progress-bar-height: 主机总高度,供下游 sticky 组件 (如
+   <yry-dashboard-quicknav>) 用来调整自身 top 偏移,避免相互遮挡。
+   计算: padding-top 6 + track 6 + padding-bottom 8 + border-bottom 1 = 21px
    ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --yry-progress-bar-height: 21px;
+}
 
 yry-progress-bar {
   display: block;

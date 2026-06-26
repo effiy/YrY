@@ -16,23 +16,7 @@
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
 <link rel="stylesheet" href="../../../yry-a11y/index.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<style>
-  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
-  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
-  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
-  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
-  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
-  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
-  .delivery-story { font-size: .72rem; color: #4b5563; }
-  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
-  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
-  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
-  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
-  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
-  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
-  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
-</style>
+<link rel="stylesheet" href="../../../yry-legacy-scene-delivery/index.css">
 </head>
 <body>
 <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
@@ -54,32 +38,32 @@
 
   <div class="content-card">
     <h2>📋 需求与优先级</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.74rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">需求</th><th style="padding:8px 12px;text-align:center;color:#22d3ee;font-weight:600">优先级</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">来源</th></tr></thead>
+    <table class="yry-auto-1645">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-38488">需求</th><th class="yry-auto-98085">优先级</th><th class="yry-auto-38488">来源</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">统一的 CDN URL 规范 (jsDelivr)</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#f87171">P0</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">分发架构</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">严格的资源加载顺序 (CSS → Vue → JS)</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#f87171">P0</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">渲染正确性</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">字体预加载优化 (woff2)</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#fbbf24">P1</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">性能</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">动画延迟策略 (100ms)</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#fbbf24">P1</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">用户体验</td></tr>
-        <tr><td style="padding:8px 12px">shared/index.css 作为必备基线</td><td style="padding:8px 12px;text-align:center;color:#f87171">P0</td><td style="padding:8px 12px">组件依赖</td></tr>
+        <tr><td class="yry-auto-40105">统一的 CDN URL 规范 (jsDelivr)</td><td class="yry-auto-90624">P0</td><td class="yry-auto-40105">分发架构</td></tr>
+        <tr><td class="yry-auto-40105">严格的资源加载顺序 (CSS → Vue → JS)</td><td class="yry-auto-90624">P0</td><td class="yry-auto-40105">渲染正确性</td></tr>
+        <tr><td class="yry-auto-40105">字体预加载优化 (woff2)</td><td class="yry-auto-65893">P1</td><td class="yry-auto-40105">性能</td></tr>
+        <tr><td class="yry-auto-40105">动画延迟策略 (100ms)</td><td class="yry-auto-65893">P1</td><td class="yry-auto-40105">用户体验</td></tr>
+        <tr><td class="yry-auto-70345">shared/index.css 作为必备基线</td><td class="yry-a1-40">P0</td><td class="yry-auto-70345">组件依赖</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>🎯 实施步骤</h2>
-    <ol style="margin:0;padding-left:20px;font-size:.76rem;line-height:1.9;color:#a9b1d6">
-      <li><strong style="color:#22d3ee">§2.1 最小页面骨架</strong> — 引入 5 类资源 (shared CSS · theme CSS · Vue · shared JS · 组件 JS)</li>
-      <li><strong style="color:#22d3ee">§2.2 加载顺序约束</strong> — CSS → Vue → shared → 组件 JS · 基础组件先于复合组件 · defer 非关键 JS</li>
-      <li><strong style="color:#22d3ee">§2.3 容错降级</strong> — Vue 不可达→静态 HTML · CSS 失败→默认样式 · JS 失败→占位符 · 字体失败→系统等宽</li>
-      <li><strong style="color:#22d3ee">§2.4 SRI 与 CDN 回退</strong> — sha384 哈希 · jsDelivr → unpkg → 自托管三级回退 · CSP 白名单</li>
-      <li><strong style="color:#22d3ee">§2.5 HTTP/2 与关键路径</strong> — 多路复用 · 103 Early Hints · Brotli · 关键 CSS 内联 · 按需加载</li>
+    <ol class="yry-auto-20518">
+      <li><strong class="yry-auto-48218">§2.1 最小页面骨架</strong> — 引入 5 类资源 (shared CSS · theme CSS · Vue · shared JS · 组件 JS)</li>
+      <li><strong class="yry-auto-48218">§2.2 加载顺序约束</strong> — CSS → Vue → shared → 组件 JS · 基础组件先于复合组件 · defer 非关键 JS</li>
+      <li><strong class="yry-auto-48218">§2.3 容错降级</strong> — Vue 不可达→静态 HTML · CSS 失败→默认样式 · JS 失败→占位符 · 字体失败→系统等宽</li>
+      <li><strong class="yry-auto-48218">§2.4 SRI 与 CDN 回退</strong> — sha384 哈希 · jsDelivr → unpkg → 自托管三级回退 · CSP 白名单</li>
+      <li><strong class="yry-auto-48218">§2.5 HTTP/2 与关键路径</strong> — 多路复用 · 103 Early Hints · Brotli · 关键 CSS 内联 · 按需加载</li>
     </ol>
   </div>
 
   <div class="content-card">
     <h2>✅ 验收清单</h2>
-    <ul style="margin:0;padding-left:20px;font-size:.76rem;line-height:1.9;color:#a9b1d6">
+    <ul class="yry-auto-20518">
       <li><input type="checkbox" checked> 5 步加载链全部 HTTP 200 (DevTools Network)</li>
       <li><input type="checkbox" checked> FCP ≤ 310ms (Lighthouse)</li>
       <li><input type="checkbox" checked> TTI ≤ 480ms (Lighthouse)</li>

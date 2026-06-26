@@ -3,7 +3,7 @@
  */
 import { execSync } from 'node:child_process';
 import { describe, it, assert, run } from '../../../lib/vitest-adapter.mjs';
-import { fileExists, readFile, hasSection, hasMermaidDiagram, parseFrontmatter } from '../../../lib/test-helpers.mjs';
+import { fileExists, readFile, hasMermaidDiagram, parseFrontmatter } from '../../../lib/test-helpers.mjs';
 
 const SKILL_DIR = 'skills/rui-story';
 
@@ -127,4 +127,4 @@ describe('rui-story skill', () => {
   });
 });
 
-const exitCode = await run();
+const _exitCode = await run();

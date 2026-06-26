@@ -7,38 +7,7 @@
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/theme/index.css">
 <link rel="stylesheet" href="../../../../cdn/shared-reports/index.css">
-<style>
-.scene-nav { display:flex; flex-wrap:wrap; gap:4px 8px; padding:8px 0; font-size:.72rem; border-bottom:var(--yry-border); margin-bottom:12px; }
-.scene-nav-link { color:var(--yry-text3); text-decoration:none; }
-.scene-nav-link:hover { color:var(--yry-accent); }
-.scene-nav-link.active { color:var(--yry-accent); font-weight:700; }
-.scene-nav-sep { color:var(--yry-text3); }
-.cross-nav { display:flex; gap:8px; padding:6px 0; font-size:.72rem; margin-bottom:12px; }
-.cross-link { color:var(--yry-text3); text-decoration:none; }
-.cross-link:hover { color:var(--yry-accent); }
-.cross-link.on { color:var(--yry-accent); font-weight:700; }
-.cross-sep { color:var(--yry-text3); }
-.header { margin-bottom:12px; }
-.header h1 { font-size:1.1rem; margin:0; }
-.accent { color:var(--yry-accent); }
-.meta { font-size:.68rem; color:var(--yry-text3); margin-top:4px; }
-.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:8px; }
-.stat-card { padding:10px; text-align:center; border-radius:6px; border:var(--yry-border); background:rgba(15,23,42,.4); }
-.stat-card .val { font-size:1.2rem; font-weight:700; }
-.stat-card .val.health { color:var(--yry-pass); }
-.stat-card .lbl { font-size:.62rem; color:var(--yry-text3); margin-top:2px; }
-.bar-wrap { margin-bottom:12px; }
-.bar-outer { height:6px; border-radius:3px; background:rgba(255,255,255,.06); overflow:hidden; display:flex; }
-.seg.strength { background:var(--yry-pass); }
-.seg.gap { background:rgba(255,255,255,.06); }
-.card { padding:16px 20px; border-radius:8px; border:var(--yry-border); background:rgba(15,23,42,.4); }
-.card h2 { font-size:.88rem; margin:0 0 12px 0; }
-.cl-item { display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.04); }
-.cl-num { min-width:24px; height:24px; border-radius:50%; background:rgba(34,197,94,.12); color:var(--yry-pass); display:flex; align-items:center; justify-content:center; font-size:.68rem; font-weight:700; }
-.cl-text { flex:1; font-size:.76rem; line-height:1.5; color:var(--yry-text2); }
-.ft { text-align:center; font-size:.64rem; color:var(--yry-text3); padding:20px 0; }
-@media (max-width:640px) { .stats-grid { grid-template-columns:repeat(2,1fr); }}
-</style>
+<link rel="stylesheet" href="../../../../cdn/yry-legacy-scene-overview/index.css">
 </head>
 <body>
 <div class="container">
@@ -78,20 +47,20 @@
   <div class="stat-card"><div class="val health">4</div><div class="lbl">版本历史</div></div>
   <div class="stat-card"><div class="val">~3MB</div><div class="lbl">包体积</div></div>
 </div>
-<div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:100%"></div><div class="seg gap" style="width:0%"></div></div></div>
+<div class="bar-wrap"><div class="bar-outer"><div class="seg strength" yry-auto-60516"></div><div class="seg gap" yry-auto-6776"></div></div></div>
 
 <div class="card">
   <h2>① 7 步发布路径清单</h2>
-  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong style="color:var(--yry-accent)">开发</strong> — <code>git commit</code> · 实现新功能或修复</span></div>
-  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong style="color:var(--yry-accent)">构建</strong> — <code>npm pack --dry-run</code> · 验证 files 白名单</span></div>
-  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong style="color:var(--yry-accent)">测试</strong> — vitest + 视觉回归全部通过</span></div>
-  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong style="color:var(--yry-accent)">更新 CHANGELOG</strong> — 新增版本段落 · 列出变更项</span></div>
-  <div class="cl-item"><span class="cl-num">5</span><span class="cl-text"><strong style="color:var(--yry-accent)">Tag</strong> — <code>git tag vX.Y.Z</code> · <code>git push --tags</code></span></div>
-  <div class="cl-item"><span class="cl-num">6</span><span class="cl-text"><strong style="color:var(--yry-accent)">发布</strong> — <code>npm publish</code> · jsDelivr 自动同步 (&lt; 5min)</span></div>
-  <div class="cl-item"><span class="cl-num">7</span><span class="cl-text"><strong style="color:var(--yry-accent)">验证</strong> — npm 安装 · jsDelivr/unpkg HTTP 200 · SRI 哈希</span></div>
+  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong class="yry-auto-24835">开发</strong> — <code>git commit</code> · 实现新功能或修复</span></div>
+  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong class="yry-auto-24835">构建</strong> — <code>npm pack --dry-run</code> · 验证 files 白名单</span></div>
+  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong class="yry-auto-24835">测试</strong> — vitest + 视觉回归全部通过</span></div>
+  <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong class="yry-auto-24835">更新 CHANGELOG</strong> — 新增版本段落 · 列出变更项</span></div>
+  <div class="cl-item"><span class="cl-num">5</span><span class="cl-text"><strong class="yry-auto-24835">Tag</strong> — <code>git tag vX.Y.Z</code> · <code>git push --tags</code></span></div>
+  <div class="cl-item"><span class="cl-num">6</span><span class="cl-text"><strong class="yry-auto-24835">发布</strong> — <code>npm publish</code> · jsDelivr 自动同步 (&lt; 5min)</span></div>
+  <div class="cl-item"><span class="cl-num">7</span><span class="cl-text"><strong class="yry-auto-24835">验证</strong> — npm 安装 · jsDelivr/unpkg HTTP 200 · SRI 哈希</span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
+<div class="card" yry-auto-86349">
   <h2>② package.json 关键字段</h2>
   <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><code>name</code> = <code>yry-cdn</code> · <code>version</code> = <code>1.2.0</code></span></div>
   <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><code>main</code> = <code>shared/index.js</code> · <code>style</code> = <code>shared/index.css</code></span></div>
@@ -99,14 +68,14 @@
   <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><code>files</code> = <code>["shared/","theme/","theme-mono/","fonts/","yry-*/","*.md"]</code></span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
+<div class="card" yry-auto-86349">
   <h2>③ 3 段 SemVer 策略</h2>
-  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong style="color:var(--yry-fail)">MAJOR (x.0.0)</strong> — 破坏性变更 · 移除组件/重命名令牌 · 回滚 30 天</span></div>
-  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong style="color:var(--yry-warn)">MINOR (x.y.0)</strong> — 向后兼容新增 · 新组件/新 API · 回滚 14 天</span></div>
-  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong style="color:var(--yry-pass)">PATCH (x.y.z)</strong> — Bug 修复 · 性能/文档 · 回滚 7 天</span></div>
+  <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong class="yry-auto-77213">MAJOR (x.0.0)</strong> — 破坏性变更 · 移除组件/重命名令牌 · 回滚 30 天</span></div>
+  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong class="yry-auto-66784">MINOR (x.y.0)</strong> — 向后兼容新增 · 新组件/新 API · 回滚 14 天</span></div>
+  <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong class="yry-auto-56316">PATCH (x.y.z)</strong> — Bug 修复 · 性能/文档 · 回滚 7 天</span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
+<div class="card" yry-auto-86349">
   <h2>④ 版本演进历史</h2>
   <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong>v1.0.0</strong> (2026-04-08) · MAJOR · 78/C · 初始发布: shared + theme + 9 API</span></div>
   <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong>v1.1.0</strong> (2026-05-20) · MINOR · 86/B · theme-mono + 字体 (4 woff2) + 14 令牌</span></div>
@@ -114,15 +83,15 @@
   <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong>v1.3.0</strong> (计划中) · MINOR · 目标 95/A · 组件完善 · 测试覆盖 · 文档增强</span></div>
 </div>
 
-<div class="card" style="margin-top:12px">
-  <p style="font-size:.72rem;color:var(--yry-text3);text-align:center">
+<div class="card" yry-auto-86349">
+  <p class="yry-auto-58746">
     查看完整详细清单: <a href="计划清单.html">计划清单</a> · <a href="架构图.html">架构图</a> · <a href="index.md">源码 Markdown</a>
   </p>
 </div>
 
 <footer class="ft">
   场景 5 · npm 包发布与版本管理 · CDN 故事任务面板 · v1.2.0<br>
-  <span style="color:var(--yry-text3)">清单 · 架构 · 图谱 · 源码 · 测试 · 演示 · 审计</span>
+  <span class="yry-auto-80578">清单 · 架构 · 图谱 · 源码 · 测试 · 演示 · 审计</span>
 </footer>
 
 </div>

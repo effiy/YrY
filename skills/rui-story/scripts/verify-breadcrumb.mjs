@@ -1,9 +1,7 @@
 // skills/rui-story/scripts/verify-breadcrumb.mjs — 校验所有 html 的面包屑+场景导航符合目标样式
 import fs from 'node:fs';
 import path from 'node:path';
-import { DOCS_DIR, ARTIFACTS, SUBDIRS, TEMPLATE_SCENARIO } from '../lib/paths.mjs';
-
-const TARGET_BC_RE = /^<nav class="breadcrumb"><a href="\.\.\/\.\.\/\.\.\/index\.html">📄 文档中心<\/a><span class="bc-sep">\/<\/span><span class="bc-current">[^\s<·]+ · [^<]+<\/span><span class="bc-sep">\/<\/span><span class="bc-current">场景 \d+ · [^<]+<\/span><span class="bc-sep">\/<\/span><span class="bc-current">[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}] [^\s<]+<\/span><\/nav>$/u;
+import { DOCS_DIR, SUBDIRS, TEMPLATE_SCENARIO } from '../lib/paths.mjs';
 
 const targetBCPattern = new RegExp(
   '<nav class="breadcrumb">' +

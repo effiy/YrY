@@ -16,23 +16,7 @@
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
 <link rel="stylesheet" href="../../../yry-a11y/index.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<style>
-  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
-  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
-  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
-  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
-  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
-  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
-  .delivery-story { font-size: .72rem; color: #4b5563; }
-  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
-  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
-  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
-  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
-  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
-  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
-  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
-</style>
+<link rel="stylesheet" href="../../../yry-legacy-scene-delivery/index.css">
 </head>
 <body>
 <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
@@ -54,7 +38,7 @@
 
   <div class="content-card">
     <h2>📐 6 步迁移路径</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">① 审计内联                  ② 匹配组件                  ③ 类名映射
+    <pre class="yry-auto-15271">① 审计内联                  ② 匹配组件                  ③ 类名映射
    盘点重复样式      ──►      查找 CDN 组件      ──►      内联样式 → .yry-*
    识别可替换模式                 确定替换方案                    组件属性赋值
        │                             │                             │
@@ -64,53 +48,53 @@
 ④ 视觉对比                  ⑤ 删除冗余                  ⑥ 回归测试
    截图 diff         ──►      移除内联代码         ──►      功能验证
    前后对比                        保留专属 CSS                    性能检查</pre>
-    <p style="margin-top:16px">6 步路径不可跳步：审计未完成不匹配组件 · 匹配未定不类名映射 · 视觉未对比不删冗余 · 冗余未清不回归测试。</p>
+    <p class="yry-auto-34737">6 步路径不可跳步：审计未完成不匹配组件 · 匹配未定不类名映射 · 视觉未对比不删冗余 · 冗余未清不回归测试。</p>
   </div>
 
   <div class="content-card">
     <h2>📊 迁移评估矩阵</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">页面类型</th><th style="padding:8px 10px;text-align:right;color:#22d3ee;font-weight:600">数量</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">难度</th><th style="padding:8px 10px;text-align:right;color:#22d3ee;font-weight:600">消除率</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">关键组件</th><th style="padding:8px 10px;text-align:center;color:#22d3ee;font-weight:600">状态</th></tr></thead>
+    <table class="yry-auto-93137">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-75234">页面类型</th><th class="yry-auto-56356">数量</th><th class="yry-auto-75234">难度</th><th class="yry-auto-56356">消除率</th><th class="yry-auto-75234">关键组件</th><th class="yry-auto-18009">状态</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">场景文档页</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">25+</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#4ade80">低</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">60%</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">scene-header · breadcrumb · cross-nav</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#4ade80">✓</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">架构图/知识图谱</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">10+</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#fbbf24">中</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">40%</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">arch · cytoscape-graph · concept-radar</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#4ade80">✓</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">计划清单/验证报告</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">8+</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#fbbf24">中</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">50%</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">checklist · verify-item · step-card</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#4ade80">✓</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">故事面板/健康报告</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">7+</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#f87171">高</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">30%</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">story-card · scene-card · health-bar</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#fbbf24">🔄</td></tr>
-        <tr><td style="padding:8px 10px">首页/导航页</td><td style="padding:8px 10px;text-align:right">5+</td><td style="padding:8px 10px;color:#4ade80">低</td><td style="padding:8px 10px;text-align:right">50%</td><td style="padding:8px 10px">home · panel-hub · stats-grid</td><td style="padding:8px 10px;text-align:center;color:#4ade80">✓</td></tr>
+        <tr><td class="yry-auto-86182">场景文档页</td><td class="yry-auto-53076">25+</td><td class="yry-auto-36166">低</td><td class="yry-auto-53076">60%</td><td class="yry-auto-86182">scene-header · breadcrumb · cross-nav</td><td class="yry-auto-15620">✓</td></tr>
+        <tr><td class="yry-auto-86182">架构图/知识图谱</td><td class="yry-auto-53076">10+</td><td class="yry-auto-27978">中</td><td class="yry-auto-53076">40%</td><td class="yry-auto-86182">arch · cytoscape-graph · concept-radar</td><td class="yry-auto-15620">✓</td></tr>
+        <tr><td class="yry-auto-86182">计划清单/验证报告</td><td class="yry-auto-53076">8+</td><td class="yry-auto-27978">中</td><td class="yry-auto-53076">50%</td><td class="yry-auto-86182">checklist · verify-item · step-card</td><td class="yry-auto-15620">✓</td></tr>
+        <tr><td class="yry-auto-86182">故事面板/健康报告</td><td class="yry-auto-53076">7+</td><td class="yry-auto-89598">高</td><td class="yry-auto-53076">30%</td><td class="yry-auto-86182">story-card · scene-card · health-bar</td><td class="yry-auto-45806">🔄</td></tr>
+        <tr><td class="yry-auto-93797">首页/导航页</td><td class="yry-auto-73847">5+</td><td class="yry-a2-22">低</td><td class="yry-auto-73847">50%</td><td class="yry-auto-93797">home · panel-hub · stats-grid</td><td class="yry-a2-16">✓</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>📉 迁移前后对比</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">页面</th><th style="padding:8px 10px;text-align:right;color:#22d3ee;font-weight:600">迁移前</th><th style="padding:8px 10px;text-align:right;color:#22d3ee;font-weight:600">迁移后</th><th style="padding:8px 10px;text-align:right;color:#4ade80;font-weight:600">减少</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">组件引用</th></tr></thead>
+    <table class="yry-auto-93137">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-75234">页面</th><th class="yry-auto-56356">迁移前</th><th class="yry-auto-56356">迁移后</th><th class="yry-a1-24">减少</th><th class="yry-auto-75234">组件引用</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">审查.html</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">850 行</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">620 行</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right;color:#4ade80">-27%</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">scene-header · breadcrumb · cross-nav</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">演示.html</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">720 行</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">490 行</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right;color:#4ade80">-32%</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">scene-chrome · item-card · tag-chip</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">测试面板.html</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">650 行</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">480 行</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right;color:#4ade80">-26%</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">verify-item · progress-bar · stats-grid</td></tr>
-        <tr><td style="padding:8px 10px">架构图.html</td><td style="padding:8px 10px;text-align:right">1100 行</td><td style="padding:8px 10px;text-align:right">700 行</td><td style="padding:8px 10px;text-align:right;color:#4ade80">-36%</td><td style="padding:8px 10px">arch · export-toolbar · cytoscape-graph</td></tr>
+        <tr><td class="yry-auto-86182">审查.html</td><td class="yry-auto-53076">850 行</td><td class="yry-auto-53076">620 行</td><td class="yry-a2-2">-27%</td><td class="yry-auto-86182">scene-header · breadcrumb · cross-nav</td></tr>
+        <tr><td class="yry-auto-86182">演示.html</td><td class="yry-auto-53076">720 行</td><td class="yry-auto-53076">490 行</td><td class="yry-a2-2">-32%</td><td class="yry-auto-86182">scene-chrome · item-card · tag-chip</td></tr>
+        <tr><td class="yry-auto-86182">测试面板.html</td><td class="yry-auto-53076">650 行</td><td class="yry-auto-53076">480 行</td><td class="yry-a2-2">-26%</td><td class="yry-auto-86182">verify-item · progress-bar · stats-grid</td></tr>
+        <tr><td class="yry-auto-93797">架构图.html</td><td class="yry-auto-73847">1100 行</td><td class="yry-auto-73847">700 行</td><td class="yry-a1-41">-36%</td><td class="yry-auto-93797">arch · export-toolbar · cytoscape-graph</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>🛡️ 迁移风险矩阵</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">风险</th><th style="padding:8px 10px;text-align:center;color:#22d3ee;font-weight:600">概率</th><th style="padding:8px 10px;text-align:center;color:#22d3ee;font-weight:600">影响</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">缓解</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">应急</th></tr></thead>
+    <table class="yry-auto-93137">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-75234">风险</th><th class="yry-auto-18009">概率</th><th class="yry-auto-18009">影响</th><th class="yry-auto-75234">缓解</th><th class="yry-auto-75234">应急</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">CDN 不可达</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#4ade80">低</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#f87171">高</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">双 CDN 回退</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">立即回滚到内联</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">视觉回归</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#fbbf24">中</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#fbbf24">中</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">截图 diff 评审</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">灰度 10% → 50% → 100%</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">组件 API 不兼容</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#4ade80">低</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#f87171">高</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">SemVer 锁定 + 预发回归</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">降级到兼容版本</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">性能退化</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#4ade80">低</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#fbbf24">中</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">性能预算门禁</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">回滚并重做迁移</td></tr>
-        <tr><td style="padding:8px 10px">a11y 退化</td><td style="padding:8px 10px;text-align:center;color:#fbbf24">中</td><td style="padding:8px 10px;text-align:center;color:#fbbf24">中</td><td style="padding:8px 10px">axe-core 自动审计</td><td style="padding:8px 10px">修复后重新发布</td></tr>
+        <tr><td class="yry-auto-86182">CDN 不可达</td><td class="yry-auto-15620">低</td><td class="yry-auto-56476">高</td><td class="yry-auto-86182">双 CDN 回退</td><td class="yry-auto-86182">立即回滚到内联</td></tr>
+        <tr><td class="yry-auto-86182">视觉回归</td><td class="yry-auto-45806">中</td><td class="yry-auto-45806">中</td><td class="yry-auto-86182">截图 diff 评审</td><td class="yry-auto-86182">灰度 10% → 50% → 100%</td></tr>
+        <tr><td class="yry-auto-86182">组件 API 不兼容</td><td class="yry-auto-15620">低</td><td class="yry-auto-56476">高</td><td class="yry-auto-86182">SemVer 锁定 + 预发回归</td><td class="yry-auto-86182">降级到兼容版本</td></tr>
+        <tr><td class="yry-auto-86182">性能退化</td><td class="yry-auto-15620">低</td><td class="yry-auto-45806">中</td><td class="yry-auto-86182">性能预算门禁</td><td class="yry-auto-86182">回滚并重做迁移</td></tr>
+        <tr><td class="yry-auto-93797">a11y 退化</td><td class="yry-a2-17">中</td><td class="yry-a2-17">中</td><td class="yry-auto-93797">axe-core 自动审计</td><td class="yry-auto-93797">修复后重新发布</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>🚀 灰度发布路径</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.74rem;color:#22d3ee;line-height:1.7;margin:0">dev (本地预览)
+    <pre class="yry-auto-80833">dev (本地预览)
    │
    ▼ 24h 无回归
 staging (10% 内部用户)

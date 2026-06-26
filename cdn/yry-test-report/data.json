@@ -1,0 +1,26 @@
+{
+  "EM_WEIGHTS": {
+    "em_testing": { "w": 0.30, "label": "测试覆盖", "desc": "测试框架完备性 · 覆盖率达标 · 自动化程度" },
+    "em_types": { "w": 0.15, "label": "类型安全", "desc": "TypeScript/JSDoc 类型覆盖率 · 严格模式" },
+    "em_linting": { "w": 0.15, "label": "代码检查", "desc": "ESLint/Prettier 配置 · 规则严格度" },
+    "em_cicd": { "w": 0.10, "label": "CI/CD", "desc": "持续集成流水线 · 自动部署 · 门禁" },
+    "em_docs": { "w": 0.10, "label": "文档", "desc": "API 文档覆盖率 · README 完整性" },
+    "em_deps": { "w": 0.10, "label": "依赖管理", "desc": "依赖版本锁定 · 安全审计 · 更新频率" },
+    "em_git": { "w": 0.10, "label": "Git 实践", "desc": "分支策略 · commit 规范 · PR 流程" }
+  },
+  "TEST_SUITES": [
+    { "name": "lib/ 共享库自检", "files": 28, "cases": 105, "pass": 105, "cov": 95 },
+    { "name": "arch-check 架构合规", "files": 10, "cases": 42, "pass": 42, "cov": 88 },
+    { "name": "rui-bot 通知引擎", "files": 8, "cases": 32, "pass": 31, "cov": 82 },
+    { "name": "rui-npm 包管理", "files": 32, "cases": 77, "pass": 75, "cov": 78 },
+    { "name": "rui-html 文档生成", "files": 12, "cases": 48, "pass": 47, "cov": 85 },
+    { "name": "CDN 加载链验证", "files": 4, "cases": 71, "pass": 71, "cov": 90 }
+  ],
+  "MATURITY_STAGES": [
+    { "min": 0, "max": 30, "label": "初始级", "desc": "测试基础设施待建立，缺少自动化测试框架和用例", "color": "#ef4444" },
+    { "min": 30, "max": 50, "label": "已定义级", "desc": "测试框架已配置，有基本用例但覆盖率不足", "color": "#f97316" },
+    { "min": 50, "max": 70, "label": "已管理级", "desc": "测试流程规范化，覆盖率持续提升，CI 集成中", "color": "#f59e0b" },
+    { "min": 70, "max": 85, "label": "可度量级", "desc": "测试指标可量化追踪，自动化程度高，门禁完善", "color": "#22c55e" },
+    { "min": 85, "max": 101, "label": "优化级", "desc": "测试驱动开发，持续优化，最佳实践模板", "color": "#3b82f6" }
+  ]
+}

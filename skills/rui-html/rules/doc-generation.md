@@ -9,7 +9,7 @@ paths:
 > 文档生成的九条强制约束。表达优先：图 → 结构化文本 → 表。编号即顺序；不可提前创建。
 
 
-[铁律](#iron-law) · [九约束全景](#eight-constraints) · [适用](#scope) · [① 版头齐](#meta-nav) · [② 表达优先](#diagram-first) · [③ 目录清](#dir-clean) · [④ 证据足](#evidence) · [⑤ 产出聚](#output-cohesion) · [⑥ 裁剪准](#precision-cut) · [⑦ 无魔数](#no-magic) · [⑧ 效果证](#proof) · [⑨ 单源生](#single-source) · [补充文档](#supplementary) · [策展](#curation) · [例外](#exceptions) · [生效标志](#effectiveness)
+[铁律](#iron-law) · [九约束全景](#eight-constraints) · [适用](#scope) · [① 版头齐](#meta-nav) · [② 表达优先](#diagram-first) · [③ 目录清](#dir-clean) · [④ 证据足](#evidence) · [⑤ 产出聚](#output-cohesion) · [⑥ 裁剪准](#precision-cut) · [⑦ 无魔数](#no-magic) · [⑧ 效果证](#proof) · [⑨ 单源生](#single-source) · [补充文档](./doc-generation-lifecycle.md#supplementary) · [策展](./doc-generation-lifecycle.md#curation) · [例外](./doc-generation-lifecycle.md#exceptions) · [生效标志](./doc-generation-lifecycle.md#effectiveness)
 
 <a id="iron-law"></a>
 ## 铁律

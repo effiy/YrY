@@ -8,21 +8,21 @@ import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { execSync } from "node:child_process";
 
 import {
-  DIAGNOSTIC_LABELS, DIAGNOSTIC_BASELINES, DIAGNOSTIC_MIN_CONFIDENCE,
+  DIAGNOSTIC_LABELS, DIAGNOSTIC_BASELINES,
   T3_PROPORTION_THRESHOLD,
 } from "../../../lib/constants.mjs";
 import { runDiagnostics } from "../../../lib/engine/diagnostics.mjs";
 
-function collectHealthData(projectRoot) {
+function collectHealthData(/** @type {string} */ projectRoot) {
   const execPath = join(projectRoot, ".memory", "execution-memory.jsonl");
   const auditPath = join(projectRoot, ".memory", "tool-audit.jsonl");
   const deliveryPath = join(projectRoot, ".memory", "delivery-tracking.jsonl");
   const statusPath = join(projectRoot, ".memory", "status-history.jsonl");
   const proposalsPath = join(projectRoot, ".improvement", "proposals.jsonl");
 
-  const readJsonl = (p) => {
+  const readJsonl = (/** @type {string} */ p) => {
     if (!existsSync(p)) return [];
-    return readFileSync(p, "utf-8").trim().split("\n").filter(Boolean).map((l) => {
+    return readFileSync(p, "utf-8").trim().split("\n").filter(Boolean).map((/** @type {string} */ l) => {
       try { return JSON.parse(l); } catch { return null; }
     }).filter(Boolean);
   };
@@ -39,14 +39,14 @@ function collectHealthData(projectRoot) {
 /**
  * Scan scene directories for D6 documentation staleness issues.
  */
-export function computeDocIssuesForHealth(projectRoot) {
+export function computeDocIssuesForHealth(/** @type {string} */ projectRoot) {
   const storyDir = join(projectRoot, "docs", "故事任务面板");
   const issues = [];
   if (!existsSync(storyDir)) return { docIssues: [], retroMissing: false, noProposals: false };
 
   try {
     const stories = readdirSync(storyDir, { withFileTypes: true })
-      .filter((d) => d.isDirectory());
+      .filter((/** @type {any} */ d) => d.isDirectory());
     for (const story of stories) {
       const storyPath = join(storyDir, story.name);
       const entries = readdirSync(storyPath, { withFileTypes: true });
@@ -55,7 +55,7 @@ export function computeDocIssuesForHealth(projectRoot) {
         const sceneDir = join(storyPath, entry.name);
         let mdFiles;
         try { mdFiles = readdirSync(sceneDir); } catch { continue; }
-        for (const mf of mdFiles.filter((f) => f.endsWith(".md") || f.endsWith(".html"))) {
+        for (const mf of mdFiles.filter((/** @type {string} */ f) => f.endsWith(".md") || f.endsWith(".html"))) {
           const docPath = join(sceneDir, mf);
           try {
             const content = readFileSync(docPath, "utf-8");
@@ -81,8 +81,7 @@ export function computeDocIssuesForHealth(projectRoot) {
  * Bootstrap D0-D8 diagnostics from git history and project data when no
  * execution memory exists. Derives approximate signals for each dimension.
  */
-export function getBootstrapDiagnostics(projectRoot) {
-  const diagnostics = [];
+export function getBootstrapDiagnostics(/** @type {string} */ projectRoot) {
   let gitActivity = 0;      // commit count in last 30 days
   let largeCommits = 0;     // commits with >15 files (T3 proxy)
   let revertCommits = 0;    // revert/rollback commits (block/recovery proxy)
@@ -140,13 +139,13 @@ export function getBootstrapDiagnostics(projectRoot) {
   try {
     const storyDir = join(projectRoot, "docs", "故事任务面板");
     if (existsSync(storyDir)) {
-      const stories = readdirSync(storyDir, { withFileTypes: true }).filter((d) => d.isDirectory());
+      const stories = readdirSync(storyDir, { withFileTypes: true }).filter((/** @type {any} */ d) => d.isDirectory());
       for (const story of stories) {
         const scenes = readdirSync(join(storyDir, story.name), { withFileTypes: true })
-          .filter((d) => d.isDirectory() && d.name.startsWith("场景"));
+          .filter((/** @type {any} */ d) => d.isDirectory() && d.name.startsWith("场景"));
         for (const scene of scenes) {
           const htmlFiles = readdirSync(join(storyDir, story.name, scene.name))
-            .filter((f) => f.endsWith(".html"));
+            .filter((/** @type {string} */ f) => f.endsWith(".html"));
           if (htmlFiles.length === 0) {
             staleDocCount++;
           } else {
@@ -185,6 +184,7 @@ export function getBootstrapDiagnostics(projectRoot) {
   }
 
   // ── Build approximate diagnostics ───────────────────
+  /** @type {any[]} */
   const triggered = [];
 
   // D1: Efficiency — use revert rate as block proxy
@@ -291,8 +291,8 @@ export function getBootstrapDiagnostics(projectRoot) {
 
   // Build the full diagnostic list (passed + triggered)
   const allDiags = Object.entries(DIAGNOSTIC_LABELS).map(([id, label]) => {
-    const t = triggered.find((d) => d.id === id);
-    return t || { id, label, triggered: false, confidence: 0, evidence: "无数据", baseline: DIAGNOSTIC_BASELINES[id] || "", suggestion: "" };
+    const t = triggered.find((/** @type {any} */ d) => d.id === id);
+    return t || { id, label, triggered: false, confidence: 0, evidence: "无数据", baseline: (/** @type {any} */ (DIAGNOSTIC_BASELINES))[id] || "", suggestion: "" };
   });
 
   if (triggered.length === 0) {
@@ -303,7 +303,7 @@ export function getBootstrapDiagnostics(projectRoot) {
   }
 
   const score = Math.max(0, 100 - triggered.length * 15);
-  const labels = triggered.map((d) => `${d.id} ${d.label}`).join(", ");
+  const labels = triggered.map((/** @type {any} */ d) => `${d.id} ${d.label}`).join(", ");
   return {
     score,
     summary: `Git 引导: ${gitActivity} 次提交 — 触发: ${labels}`,
@@ -313,8 +313,10 @@ export function getBootstrapDiagnostics(projectRoot) {
 
 /**
  * Run the full D0-D8 diagnostic engine and return a summary for the health check.
+ * @returns {{ skip?: boolean, score: number, summary?: string, triggered: Array<any>, diagnostics?: Array<any>, execCount: number, bootstrapped?: boolean }}
  */
-export function getDiagnosticResult(projectRoot) {
+export function getDiagnosticResult(/** @type {string} */ projectRoot) {
+  /** @type {any} */
   const data = collectHealthData(projectRoot);
   const execCount = data.allExec.length;
 
@@ -345,6 +347,6 @@ export function getDiagnosticResult(projectRoot) {
       skip: false, diagnostics, triggered, execCount,
     };
   } catch (err) {
-    return { score: 50, summary: `诊断引擎异常: ${err.message}`, skip: true, diagnostics: [], execCount };
+    return { score: 50, summary: `诊断引擎异常: ${err.message}`, skip: true, diagnostics: [], triggered: [], execCount };
   }
 }

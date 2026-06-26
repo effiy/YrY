@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>包信息审计与卸载 — 架构图</title>
 <link rel="stylesheet" href="../../../../cdn/fonts\/index\.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-helpers/index.css">
+
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
 <link rel="stylesheet" href="../../../../cdn/yry-arch/index.css">
@@ -50,10 +52,10 @@
 <p class="subtitle">5 步上手路径 · 8 角色协作 · 4 道门禁 · 5 个里程碑 · 一次贯通</p>
 </div>
 <div class="stat-strip">
-<div class="ss"><div class="ss-ico" style="background:rgba(34,211,238,.1);color:var(--cyan)">🧭</div><div class="ss-body"><div class="ss-val">5 步</div><div class="ss-lbl">上手路径</div></div></div>
-<div class="ss"><div class="ss-ico" style="background:rgba(167,139,250,.1);color:var(--violet)">👥</div><div class="ss-body"><div class="ss-val">8 角色</div><div class="ss-lbl">协作矩阵</div></div></div>
-<div class="ss"><div class="ss-ico" style="background:rgba(251,191,36,.1);color:var(--amber)">🚧</div><div class="ss-body"><div class="ss-val">4 道</div><div class="ss-lbl">质量门禁</div></div></div>
-<div class="ss"><div class="ss-ico" style="background:rgba(52,211,153,.1);color:var(--emerald)">🎯</div><div class="ss-body"><div class="ss-val">≤ 30min</div><div class="ss-lbl">首阶段目标</div></div></div>
+<div class="ss"><div class="ss-ico" class="sc-bg-cyan-10-cyan">🧭</div><div class="ss-body"><div class="ss-val">5 步</div><div class="ss-lbl">上手路径</div></div></div>
+<div class="ss"><div class="ss-ico" class="sc-bg-violet-10">👥</div><div class="ss-body"><div class="ss-val">8 角色</div><div class="ss-lbl">协作矩阵</div></div></div>
+<div class="ss"><div class="ss-ico" class="sc-bg-amber-10">🚧</div><div class="ss-body"><div class="ss-val">4 道</div><div class="ss-lbl">质量门禁</div></div></div>
+<div class="ss"><div class="ss-ico" class="sc-bg-emerald-10">🎯</div><div class="ss-body"><div class="ss-val">≤ 30min</div><div class="ss-lbl">首阶段目标</div></div></div>
 </div>
 <div class="banner">
 <div class="banner-icon">🌿</div>
@@ -496,7 +498,7 @@
 </div>
 <table class="gate-table">
 <thead>
-<tr><th style="width:60px">ID</th><th>门禁</th><th>触发者</th><th>通过条件</th><th>等级</th><th>失败升级路径</th></tr>
+<tr><th style="--w:60px">ID</th><th>门禁</th><th>触发者</th><th>通过条件</th><th>等级</th><th>失败升级路径</th></tr>
 </thead>
 <tbody>
 <tr>
@@ -533,7 +535,7 @@
 </tr>
 </tbody>
 </table>
-<div class="cards" style="margin-top:1rem">
+<div class="cards" class="sc-mt1r">
 <div class="card" style="--accent:var(--emerald)">
 <div class="card-header"><div class="card-dot emerald"></div><h3>通过策略</h3><span class="card-sub">P0</span></div>
 <ul>

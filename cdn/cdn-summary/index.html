@@ -9,24 +9,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>YrY cdn-summary · CDN 摘要</title>
   <link rel="stylesheet" href="../shared/index.css">
+<link rel="stylesheet" href="../../../yry-inline-helpers/index.css">
   <link rel="stylesheet" href="../theme/index.css">
-  <style>
-    body { padding: 32px 24px 60px; max-width: 960px; margin: 0 auto; line-height: 1.7; }
-    h1 { font-size: 1.4rem; color: var(--yry-accent, #22d3ee); }
-    h2 { font-size: 1.1rem; margin: 28px 0 12px; color: var(--yry-text2, #a9b1d6); }
-    pre { background: rgba(0,0,0,.3); padding: 12px 14px; border-radius: 6px; font-size: .72rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; max-height: 600px; overflow-y: auto; }
-    .links { display: flex; gap: 12px; flex-wrap: wrap; margin: 16px 0; }
-    .links a { color: var(--yry-accent, #22d3ee); text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; font-size: .76rem; }
-    .links a:hover { border-color: var(--yry-accent); background: rgba(34,211,238,.08); }
-    table { width: 100%; border-collapse: collapse; font-size: .76rem; margin: 12px 0; }
-    th { text-align: left; padding: 8px 12px; background: rgba(30,41,59,.5); color: var(--yry-text2, #a9b1d6); font-weight: 600; }
-    td { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,.04); color: var(--yry-text3, #6b7280); }
-    .card { background: rgba(15,23,42,.55); border: var(--yry-border, 1px solid rgba(255,255,255,.06)); border-radius: 10px; padding: 20px 24px; margin-bottom: 16px; }
-    .grade-a { color: #4ade80; font-weight: 700; }
-    .trend-up { color: #4ade80; }
-    .trend-down { color: #f87171; }
-    .trend-stable { color: #6b7280; }
-  </style>
+<link rel="stylesheet" href="cdn-summary-index.css">
 </head>
 <body>
   <h1>📊 cdn-summary · CDN 摘要</h1>
@@ -43,8 +28,8 @@
   <div class="card">
     <table>
       <tr><th>版本</th><th>日期</th><th>综合分</th><th>等级</th><th>关键里程碑</th></tr>
-      <tr><td>v1.0.0</td><td>2026-04-08</td><td>78</td><td><span class="grade-a" style="color:#fbbf24">C</span></td><td>初始发布 — shared/index.css + theme/index.css + 9 API</td></tr>
-      <tr><td>v1.1.0</td><td>2026-05-20</td><td>86</td><td><span class="grade-a" style="color:#60a5fa">B</span></td><td>theme-mono + 字体 (4 woff2) + 14 设计令牌固化</td></tr>
+      <tr><td>v1.0.0</td><td>2026-04-08</td><td>78</td><td><span class="grade-a" yry-auto-79642">C</span></td><td>初始发布 — shared/index.css + theme/index.css + 9 API</td></tr>
+      <tr><td>v1.1.0</td><td>2026-05-20</td><td>86</td><td><span class="grade-a" yry-a1-98">B</span></td><td>theme-mono + 字体 (4 woff2) + 14 设计令牌固化</td></tr>
       <tr><td>v1.2.0</td><td>2026-06-16</td><td>92</td><td><span class="grade-a">A</span></td><td>107 组件 · 双主题 · 5 故事 13 场景 · npm 发布</td></tr>
     </table>
   </div>
@@ -62,38 +47,38 @@
 
   <h2>📊 组件健康仪表板</h2>
   <div class="card">
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;font-size:.74rem">
-      <div style="text-align:center;padding:14px;background:rgba(15,23,42,.4);border-radius:8px">
-        <div style="font-size:1.6rem;font-weight:700;color:#4ade80">107</div>
-        <div style="color:var(--yry-text3)">组件总数</div>
-        <div style="font-size:.6rem;color:var(--yry-text3);margin-top:2px">CSS 45 + JS 13 + Vue CE 33 + 其他 16</div>
+    <div class="yry-a1-5">
+      <div class="yry-auto-10224">
+        <div class="yry-a2-19">107</div>
+        <div class="yry-auto-80578">组件总数</div>
+        <div class="yry-auto-98961">CSS 45 + JS 13 + Vue CE 33 + 其他 16</div>
       </div>
-      <div style="text-align:center;padding:14px;background:rgba(15,23,42,.4);border-radius:8px">
-        <div style="font-size:1.6rem;font-weight:700;color:#4ade80">A</div>
-        <div style="color:var(--yry-text3)">综合等级</div>
-        <div style="font-size:.6rem;color:var(--yry-text3);margin-top:2px">92 分 · 设计系统级</div>
+      <div class="yry-auto-10224">
+        <div class="yry-a2-19">A</div>
+        <div class="yry-auto-80578">综合等级</div>
+        <div class="yry-auto-98961">92 分 · 设计系统级</div>
       </div>
-      <div style="text-align:center;padding:14px;background:rgba(15,23,42,.4);border-radius:8px">
-        <div style="font-size:1.6rem;font-weight:700;color:#22d3ee">10</div>
-        <div style="color:var(--yry-text3)">功能类别</div>
-        <div style="font-size:.6rem;color:var(--yry-text3);margin-top:2px">布局·导航·卡片·场景·统计·清单·审查·面板·工具·其他</div>
+      <div class="yry-auto-10224">
+        <div class="yry-a1-43">10</div>
+        <div class="yry-auto-80578">功能类别</div>
+        <div class="yry-auto-98961">布局·导航·卡片·场景·统计·清单·审查·面板·工具·其他</div>
       </div>
-      <div style="text-align:center;padding:14px;background:rgba(15,23,42,.4);border-radius:8px">
-        <div style="font-size:1.6rem;font-weight:700;color:#a78bfa">5</div>
-        <div style="color:var(--yry-text3)">组件形态</div>
-        <div style="font-size:.6rem;color:var(--yry-text3);margin-top:2px">CSS·Vue3·JS·CE·其他</div>
+      <div class="yry-auto-10224">
+        <div class="yry-a1-44">5</div>
+        <div class="yry-auto-80578">组件形态</div>
+        <div class="yry-auto-98961">CSS·Vue3·JS·CE·其他</div>
       </div>
-      <div style="text-align:center;padding:14px;background:rgba(15,23,42,.4);border-radius:8px">
-        <div style="font-size:1.6rem;font-weight:700;color:#f59e0b">2</div>
-        <div style="color:var(--yry-text3)">主题系统</div>
-        <div style="font-size:.6rem;color:var(--yry-text3);margin-top:2px">Mono · System · 14 设计令牌</div>
+      <div class="yry-auto-10224">
+        <div class="yry-a1-45">2</div>
+        <div class="yry-auto-80578">主题系统</div>
+        <div class="yry-auto-98961">Mono · System · 14 设计令牌</div>
       </div>
     </div>
   </div>
 
   <h2>🔄 数据刷新机制</h2>
   <div class="card">
-    <p style="font-size:.76rem;color:var(--yry-text2,#a9b1d6);line-height:1.7">
+    <p class="yry-a2-9">
       <strong>刷新频率</strong>: 每 5 分钟自动刷新<br>
       <strong>数据源</strong>: cdn-summary/index.json (由 CDN 健康检查脚本生成)<br>
       <strong>消费者</strong>: cdn/index.html (首页实时评分面板) · health-report (健康报告)<br>
@@ -105,7 +90,7 @@
   <h2>📄 原始数据</h2>
   <pre id="data">加载中...</pre>
 
-  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · cdn-summary · v1.2.0 · 2026</p>
+  <p class="yry-auto-81552">YrY CDN · cdn-summary · v1.2.0 · 2026</p>
 
   <script>
     fetch('index.json').then(r => r.json()).then(d => {

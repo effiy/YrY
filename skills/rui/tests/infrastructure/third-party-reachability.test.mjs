@@ -8,7 +8,7 @@
  * Run: npx vitest run tests/infrastructure/third-party-reachability.test.mjs
  */
 
-import { describe, it, assert, expect } from '../../../../lib/vitest-adapter.mjs';
+import { describe, it, expect } from '../../../../lib/vitest-adapter.mjs';
 
 const REACH_TIMEOUT = 10_000;
 

@@ -16,23 +16,7 @@
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
 <link rel="stylesheet" href="../../../yry-a11y/index.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<style>
-  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
-  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
-  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
-  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
-  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
-  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
-  .delivery-story { font-size: .72rem; color: #4b5563; }
-  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
-  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
-  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
-  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
-  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
-  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
-  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
-</style>
+<link rel="stylesheet" href="../../../yry-legacy-scene-delivery/index.css">
 </head>
 <body>
 <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
@@ -54,27 +38,27 @@
 
   <div class="content-card">
     <h2>🧪 验证矩阵 · 11 项</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.72rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">验证项</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">方法</th><th style="padding:8px 10px;text-align:left;color:#22d3ee;font-weight:600">阈值</th></tr></thead>
+    <table class="yry-auto-93137">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-75234">验证项</th><th class="yry-auto-75234">方法</th><th class="yry-auto-75234">阈值</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">视觉一致性</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">截图对比 (迁移前 vs 迁移后)</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">0 视觉差异</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">内联消除率</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">统计 <code>&lt;style&gt;</code> 块行数变化</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">≥ 40%</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">功能完整性</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">页面交互功能回归</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">全部通过</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">加载性能</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Lighthouse 评分</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">不劣于迁移前</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">组件引用正确</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">检查 <code>&lt;link&gt;</code>/<code>&lt;script&gt;</code> HTTP 状态</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">全部 200</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">组件属性正确</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">检查自定义元素 attribute→property</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">数据正确渲染</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">a11y 不退化</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">axe-core 扫描</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">0 新增违规</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">控制台无报错</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">DevTools Console</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">0 error</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">累计布局偏移</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Lighthouse CLS</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">≤ 0.1</td></tr>
-        <tr><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">首次输入延迟</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">Lighthouse FID</td><td style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)">≤ 100ms</td></tr>
-        <tr><td style="padding:8px 10px">可交互时间</td><td style="padding:8px 10px">Lighthouse TTI</td><td style="padding:8px 10px">≤ 500ms</td></tr>
+        <tr><td class="yry-auto-86182">视觉一致性</td><td class="yry-auto-86182">截图对比 (迁移前 vs 迁移后)</td><td class="yry-auto-86182">0 视觉差异</td></tr>
+        <tr><td class="yry-auto-86182">内联消除率</td><td class="yry-auto-86182">统计 <code>&lt;style&gt;</code> 块行数变化</td><td class="yry-auto-86182">≥ 40%</td></tr>
+        <tr><td class="yry-auto-86182">功能完整性</td><td class="yry-auto-86182">页面交互功能回归</td><td class="yry-auto-86182">全部通过</td></tr>
+        <tr><td class="yry-auto-86182">加载性能</td><td class="yry-auto-86182">Lighthouse 评分</td><td class="yry-auto-86182">不劣于迁移前</td></tr>
+        <tr><td class="yry-auto-86182">组件引用正确</td><td class="yry-auto-86182">检查 <code>&lt;link&gt;</code>/<code>&lt;script&gt;</code> HTTP 状态</td><td class="yry-auto-86182">全部 200</td></tr>
+        <tr><td class="yry-auto-86182">组件属性正确</td><td class="yry-auto-86182">检查自定义元素 attribute→property</td><td class="yry-auto-86182">数据正确渲染</td></tr>
+        <tr><td class="yry-auto-86182">a11y 不退化</td><td class="yry-auto-86182">axe-core 扫描</td><td class="yry-auto-86182">0 新增违规</td></tr>
+        <tr><td class="yry-auto-86182">控制台无报错</td><td class="yry-auto-86182">DevTools Console</td><td class="yry-auto-86182">0 error</td></tr>
+        <tr><td class="yry-auto-86182">累计布局偏移</td><td class="yry-auto-86182">Lighthouse CLS</td><td class="yry-auto-86182">≤ 0.1</td></tr>
+        <tr><td class="yry-auto-86182">首次输入延迟</td><td class="yry-auto-86182">Lighthouse FID</td><td class="yry-auto-86182">≤ 100ms</td></tr>
+        <tr><td class="yry-auto-93797">可交互时间</td><td class="yry-auto-93797">Lighthouse TTI</td><td class="yry-auto-93797">≤ 500ms</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>▶️ 回归命令</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0"># 1. 内联消除率度量
+    <pre class="yry-auto-15271"># 1. 内联消除率度量
 BEFORE=$(awk '/&lt;style&gt;/,/&lt;\/style&gt;/' page-before.html | wc -l)
 AFTER=$(awk  '/&lt;style&gt;/,/&lt;\/style&gt;/' page-after.html  | wc -l)
 echo "消除率: $(echo "scale=1; ($BEFORE - $AFTER) * 100 / $BEFORE" | bc)%"
@@ -97,14 +81,14 @@ npx @axe-core/cli http://localhost:8000/page-after.html --tags wcag2aa</pre>
 
   <div class="content-card">
     <h2>📊 迁移覆盖率</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.74rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">指标</th><th style="padding:8px 12px;text-align:right;color:#22d3ee;font-weight:600">当前</th><th style="padding:8px 12px;text-align:right;color:#22d3ee;font-weight:600">目标</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">状态</th></tr></thead>
+    <table class="yry-auto-1645">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-38488">指标</th><th class="yry-auto-51957">当前</th><th class="yry-auto-51957">目标</th><th class="yry-auto-38488">状态</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">迁移覆盖率</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">85% (47/55+)</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">100% (55/55)</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#fbbf24">⚠ 剩 8 页</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">内联消除率</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">40-60%</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">60-80%</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#fbbf24">⚠ 需优化</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">迁移自动化</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">手动</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">半自动</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#fbbf24">⚠ P1</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">回归测试</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">手动截图</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right">视觉回归自动化</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#fbbf24">⚠ P2</td></tr>
-        <tr><td style="padding:8px 12px">回滚策略</td><td style="padding:8px 12px;text-align:right">无</td><td style="padding:8px 12px;text-align:right">git revert</td><td style="padding:8px 12px;color:#f87171">✗ P1</td></tr>
+        <tr><td class="yry-auto-40105">迁移覆盖率</td><td class="yry-auto-11917">85% (47/55+)</td><td class="yry-auto-11917">100% (55/55)</td><td class="yry-auto-8304">⚠ 剩 8 页</td></tr>
+        <tr><td class="yry-auto-40105">内联消除率</td><td class="yry-auto-11917">40-60%</td><td class="yry-auto-11917">60-80%</td><td class="yry-auto-8304">⚠ 需优化</td></tr>
+        <tr><td class="yry-auto-40105">迁移自动化</td><td class="yry-auto-11917">手动</td><td class="yry-auto-11917">半自动</td><td class="yry-auto-8304">⚠ P1</td></tr>
+        <tr><td class="yry-auto-40105">回归测试</td><td class="yry-auto-11917">手动截图</td><td class="yry-auto-11917">视觉回归自动化</td><td class="yry-auto-8304">⚠ P2</td></tr>
+        <tr><td class="yry-auto-70345">回滚策略</td><td class="yry-auto-71132">无</td><td class="yry-auto-71132">git revert</td><td class="yry-a1-78">✗ P1</td></tr>
       </tbody>
     </table>
   </div>

@@ -15,14 +15,14 @@ export const BASELINE_DOCS = ["使用场景", "技术评审", "测试设计", "�
 // §0-§4 scene-based document model — scenes contain index.md with lifecycle sections
 const SCENE_HTML_FILES = ["计划清单.html","架构图.html","知识图谱.html","源码.html","测试面板.html","演示.html","审查.html"];
 
-export function extractStoryName(filePath) {
+export function extractStoryName(/** @type {string} */ filePath) {
   const parts = filePath.split("/");
   const panelIdx = parts.indexOf("故事任务面板");
   if (panelIdx === -1 || panelIdx + STORY_NAME_OFFSET >= parts.length) return null;
   return parts[panelIdx + STORY_DIR_OFFSET];
 }
 
-export function groupSessionsByStory(sessions) {
+export function groupSessionsByStory(/** @type {any[]} */ sessions) {
   const map = new Map();
   for (const s of sessions) {
     const fp = s.file_path || "";
@@ -34,14 +34,14 @@ export function groupSessionsByStory(sessions) {
   return map;
 }
 
-export function readBlockedState(projectRoot, storyName) {
+export function readBlockedState(/** @type {string} */ projectRoot, /** @type {string} */ storyName) {
   const ruiStatePath = join(projectRoot, "docs", "故事任务面板", storyName, ".memory", "rui-state.json");
   const data = readJson(ruiStatePath);
   if (!data) return null;
   return { blocked: data.blocked === true, block_reason: data.block_reason || null };
 }
 
-export function hasProjectFile(fileBasenames, projectPrefix, docType) {
+export function hasProjectFile(/** @type {Set<string>} */ fileBasenames, /** @type {string} */ projectPrefix, /** @type {string} */ docType) {
   // Try with project prefix first: "YrY-故事任务.md"
   const withPrefix = `${projectPrefix}${docType}.md`;
   if (fileBasenames.has(withPrefix)) return true;
@@ -50,24 +50,18 @@ export function hasProjectFile(fileBasenames, projectPrefix, docType) {
   return fileBasenames.has(bare);
 }
 
-/**
- * Check if file paths contain a pattern (for scene-level checks).
- */
-function hasFilePath(filePaths, pattern) {
-  return filePaths.some(fp => fp.includes(pattern));
-}
 
 /**
  * Count scene directories that have all 7 required HTML files.
  */
-function countCompleteScenes(filePaths) {
+function countCompleteScenes(/** @type {string[]} */ filePaths) {
   const sceneDirs = new Map();
   for (const fp of filePaths) {
     const m = fp.match(/(场景-\d+)/);
     if (m) {
       const scene = m[1];
       if (!sceneDirs.has(scene)) sceneDirs.set(scene, new Set());
-      const basename = fp.split("/").pop();
+      const basename = fp.split("/").pop() || "";
       if (SCENE_HTML_FILES.includes(basename)) sceneDirs.get(scene).add(basename);
     }
   }
@@ -78,13 +72,13 @@ function countCompleteScenes(filePaths) {
   return { complete, total: sceneDirs.size };
 }
 
-export function determineStatus(fileBasenames, projectPrefix, blockedState, filePaths) {
+export function determineStatus(/** @type {Set<string>} */ fileBasenames, /** @type {string} */ projectPrefix, /** @type {any} */ blockedState, /** @type {string[]} */ filePaths = []) {
   if (!hasProjectFile(fileBasenames, projectPrefix, "故事任务")) return "任务";
 
   // Check scene-based document model: scenes with index.md + 7 HTML files
   const paths = filePaths || [];
-  const hasScenes = paths.some(fp => /场景-\d+/.test(fp));
-  const hasSceneIndex = paths.some(fp => /场景-\d+.*\/index\.md$/.test(fp));
+  const hasScenes = paths.some((/** @type {string} */ fp) => /场景-\d+/.test(fp));
+  const hasSceneIndex = paths.some((/** @type {string} */ fp) => /场景-\d+.*\/index\.md$/.test(fp));
 
   if (!hasScenes || !hasSceneIndex) {
     // Fall back to legacy flat-file check
@@ -99,10 +93,10 @@ export function determineStatus(fileBasenames, projectPrefix, blockedState, file
 
   // All scenes have complete HTML → check KG
   if (!hasProjectFile(fileBasenames, projectPrefix, "知识图谱") &&
-      !paths.some(fp => fp.endsWith("知识图谱.json"))) return "测试";
+      !paths.some((/** @type {string} */ fp) => fp.endsWith("知识图谱.json"))) return "测试";
 
   // Check §4 evidence: 审查.html in scenes
-  const hasReview = paths.some(fp => /场景-\d+.*\/审查\.html$/.test(fp));
+  const hasReview = paths.some((/** @type {string} */ fp) => /场景-\d+.*\/审查\.html$/.test(fp));
   if (!hasReview) return "报告";
 
   return "改进";

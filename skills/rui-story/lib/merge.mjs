@@ -18,7 +18,7 @@ export function checkGitBranch(name) {
   }
 }
 
-export async function cmdMergeToMain(projectRoot) {
+export async function cmdMergeToMain(_projectRoot) {
   const mainBranch = "main";
 
   let currentBranch;

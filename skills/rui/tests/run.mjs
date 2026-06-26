@@ -26,6 +26,7 @@ const PROJECT_ROOT = resolve(TESTS_DIR, '..', '..', '..');
 const RESULTS_PATH = resolve(TESTS_DIR, 'results.json');
 
 // ── Discovery sources ──────────────────────────────────────────────────
+/** @type {Record<string, string[] | null>} */
 const TEST_SOURCES = {
   skills:        null,  // special: scan all skills/*/tests/ directories
   agents:        ['skills/rui/tests/agents.test.mjs'],
@@ -36,15 +37,15 @@ const TEST_SOURCES = {
   lib:           ['lib/tests'],
 };
 
-function scanDir(dir) {
+function scanDir(/** @type {string} */ dir) {
   try {
     return readdirSync(dir)
-      .filter(f => (f.endsWith('.mjs') || f.endsWith('.test.js')) && f !== 'run.mjs')
-      .map(f => resolve(dir, f));
+      .filter((/** @type {string} */ f) => (f.endsWith('.mjs') || f.endsWith('.test.js')) && f !== 'run.mjs')
+      .map((/** @type {string} */ f) => resolve(dir, f));
   } catch { return []; }
 }
 
-function discoverTests(category) {
+function discoverTests(/** @type {string} */ category) {
   const files = [];
 
   if (category === 'skills') {
@@ -99,7 +100,7 @@ function parseArgs() {
   return { filters, listOnly, jsonMode };
 }
 
-function runTestFile(filePath, jsonMode) {
+function runTestFile(/** @type {string} */ filePath, /** @type {boolean} */ jsonMode) {
   const args = ['--no-warnings', filePath];
   if (jsonMode) args.push('--json');
   return spawnSync('node', args, {
@@ -143,7 +144,7 @@ function main() {
       try {
         const parsed = JSON.parse(output);
         allResults.push(parsed);
-      } catch (e) {
+      } catch (_e) {
         allResults.push({
           file: file.replace(PROJECT_ROOT + '/', ''),
           error: 'Failed to parse JSON output',
@@ -154,6 +155,7 @@ function main() {
   }
 
   if (jsonMode) {
+    /** @type {{ timestamp: string, files: number, summary: { total: number, passed: number, failed: number, skipped: number }, suites: Array<{ name?: string, error?: string, tests: any[] }> }} */
     const merged = {
       timestamp: new Date().toISOString(),
       files: allResults.length,

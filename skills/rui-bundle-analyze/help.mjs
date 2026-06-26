@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { bold, dim, yellow, cyan, green, red } from '../../lib/tty.mjs';
-import { hdr, subhdr, item, flag, scene } from '../../lib/help-layout.mjs';
+import { hdr, subhdr, item } from '../../lib/help-layout.mjs';
 
 const help = `
 ${bold('# rui-bundle-analyze — 项目体积与依赖结构分析')}

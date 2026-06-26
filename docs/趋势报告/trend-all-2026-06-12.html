@@ -6,93 +6,7 @@
 <title>趋势报告 · 全量趋势扫描 2026-06-12</title>
 <link rel="stylesheet" href="../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../cdn/theme/index.css">
-<style>
-:root {
-  --yry-bg: rgba(22,22,32,1);
-  --yry-bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
-  --yry-accent: #FFC107;
-  --yry-pass: #22c55e; --yry-fail: #ef4444; --yry-warn: #f59e0b;
-  --yry-text: rgba(250,250,252,1); --yry-text2: rgba(160,160,164,1); --yry-text3: rgba(110,110,114,1);
-  --yry-radius: 12px; --yry-border: 1px solid rgba(255,255,255,0.06);
-  --yry-shadow: 0 4px 20px rgba(0,0,0,0.3);
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif; line-height: 1.6; min-height: 100vh; }
-.c { max-width: 960px; margin: 0 auto; padding: 48px 24px 80px; }
-
-.bc { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; font-size: .76rem; }
-.bc a { color: #7aa2f7; text-decoration: none; } .bc a:hover { color: var(--yry-accent); }
-.bc .sep { color: #53576c; opacity: .5; } .bc .cur { color: #94a3b8; }
-
-.hd { text-align: center; margin-bottom: 32px; }
-.hd .icon { font-size: 2.5rem; margin-bottom: 8px; }
-.hd h1 { font-size: 1.6rem; }
-.hd .meta { color: var(--yry-text3); font-size: .82rem; margin-top: 6px; }
-
-.intro { padding: 18px 20px; border-left: 3px solid var(--yry-accent); background: rgba(255,193,7,.04); border-radius: 0 var(--yry-radius) var(--yry-radius) 0; margin-bottom: 24px; color: var(--yry-text2); font-size: .86rem; line-height: 1.75; }
-.intro strong { color: var(--yry-accent); }
-.intro code { background: rgba(59,130,246,.1); padding: 1px 6px; border-radius: 4px; font-size: .82em; color: #7aa2f7; }
-
-.card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); margin-bottom: 20px; }
-.card h2 { font-size: 1.1rem; margin-bottom: 16px; color: var(--yry-accent); display: flex; align-items: center; gap: 8px; }
-.card h3 { font-size: .92rem; margin: 18px 0 10px; color: var(--yry-text); }
-
-.stats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
-.stat { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 14px 18px; text-align: center; box-shadow: var(--yry-shadow); flex: 1; min-width: 100px; transition: transform .15s; }
-.stat:hover { transform: translateY(-2px); }
-.stat .val { font-size: 1.5rem; font-weight: 700; }
-.stat .val.pass { color: var(--yry-pass); } .stat .val.warn { color: var(--yry-warn); } .stat .val.fail { color: var(--yry-fail); } .stat .val.info { color: #22d3ee; }
-.stat .lbl { font-size: .68rem; color: var(--yry-text3); margin-top: 3px; }
-
-.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: .7rem; font-weight: 600; }
-.badge.ok { background: rgba(34,197,94,.15); color: var(--yry-pass); }
-.badge.err { background: rgba(239,68,68,.15); color: var(--yry-fail); }
-.badge.rise { background: rgba(34,197,94,.12); color: var(--yry-pass); }
-.badge.fall { background: rgba(239,68,68,.12); color: var(--yry-fail); }
-.badge.flat { background: rgba(255,255,255,.05); color: var(--yry-text3); }
-
-table { width: 100%; border-collapse: collapse; }
-th, td { padding: 10px 16px; text-align: left; border-bottom: var(--yry-border); font-size: .86rem; }
-th { color: var(--yry-text3); font-size: .72rem; text-transform: uppercase; letter-spacing: .4px; }
-td .num { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
-
-.src-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
-.src-card { background: rgba(15,23,42,.4); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 14px 16px; text-align: center; transition: transform .15s, border-color .15s; }
-.src-card:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.1); }
-.src-card .src-icon { font-size: 1.4rem; margin-bottom: 4px; }
-.src-card .src-name { font-size: .78rem; font-weight: 600; }
-.src-card .src-items { font-size: 1.2rem; font-weight: 700; color: #22d3ee; margin: 6px 0; }
-.src-card .src-trend { font-size: .68rem; }
-.src-card .src-reach { margin-top: 4px; font-size: .64rem; }
-
-.bar-wrap { height: 8px; border-radius: 4px; background: rgba(255,255,255,.05); overflow: hidden; margin-top: 4px; }
-.bar-fill { height: 100%; border-radius: 4px; }
-
-.chart-wrap { position: relative; width: 100%; overflow-x: auto; }
-.chart-wrap svg { display: block; max-width: 100%; height: auto; }
-
-.legend { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 8px; font-size: .72rem; }
-.legend-item { display: flex; align-items: center; gap: 5px; }
-.legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-
-.heat-cell { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin: 0 2px; }
-.heat-ok { background: rgba(34,197,94,.6); }
-.heat-err { background: rgba(239,68,68,.6); }
-
-.signal-card { flex: 1; min-width: 200px; padding: 14px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); }
-.signal-card h4 { font-size: .72rem; color: var(--yry-text3); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .4px; }
-.signal-card .sig-detail { font-size: .82rem; color: var(--yry-text); line-height: 1.7; }
-
-.delta-pos { color: var(--yry-pass); font-weight: 600; }
-.delta-neg { color: var(--yry-fail); font-weight: 600; }
-.delta-flat { color: var(--yry-text3); font-weight: 600; }
-
-.ft { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }
-
-@media (max-width: 640px) {
-  .src-grid { grid-template-columns: 1fr 1fr; }
-}
-</style>
+<link rel="stylesheet" href="trend-all-2026-06-12.css">
 </head>
 <body>
 <div class="c">
@@ -129,11 +43,11 @@ td .num { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
 <div class="card">
   <h2>多周期趋势可视化 (3 次扫描 · 11 天跨度)</h2>
   <div class="legend">
-    <div class="legend-item"><span class="legend-dot" style="background:#FFC107"></span> 全量聚合 (all)</div>
-    <div class="legend-item"><span class="legend-dot" style="background:#22c55e"></span> GitHub Trending</div>
-    <div class="legend-item"><span class="legend-dot" style="background:#60a5fa"></span> OSS Insight</div>
-    <div class="legend-item"><span class="legend-dot" style="background:#a78bfa"></span> TrendShift</div>
-    <div class="legend-item"><span class="legend-dot" style="background:#f472b6"></span> Top-Starred</div>
+    <div class="legend-item"><span class="legend-dot h-lg-bg-ffc107"></span> 全量聚合 (all)</div>
+    <div class="legend-item"><span class="legend-dot h-lg-bg-22c55e"></span> GitHub Trending</div>
+    <div class="legend-item"><span class="legend-dot h-lg-bg-60a5fa"></span> OSS Insight</div>
+    <div class="legend-item"><span class="legend-dot h-lg-bg-a78bfa"></span> TrendShift</div>
+    <div class="legend-item"><span class="legend-dot h-lg-bg-pink"></span> Top-Starred</div>
   </div>
   <div class="chart-wrap">
     <svg viewBox="0 0 800 320" width="800" height="320" xmlns="http://www.w3.org/2000/svg">
@@ -220,7 +134,7 @@ td .num { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
       <text x="500" y="66" fill="#FFC107" font-size="10" opacity=".8">+29.2% 周增长</text>
     </svg>
   </div>
-  <p style="font-size:.72rem;color:var(--yry-text3);margin-top:8px">Y 轴为条目数。虚线标注 TrendShift 在 06-05 不可达 (trendshift.ok=false)，06-09 起恢复。Top-Starred 波动平稳 (±1)，OSS Insight 进入平台期。GitHub Trending 和 TrendShift 为主要增长贡献源。</p>
+  <p class="h-lg-fs72-t3-mt8">Y 轴为条目数。虚线标注 TrendShift 在 06-05 不可达 (trendshift.ok=false)，06-09 起恢复。Top-Starred 波动平稳 (±1)，OSS Insight 进入平台期。GitHub Trending 和 TrendShift 为主要增长贡献源。</p>
 </div>
 
 <!-- Data Source Cards -->
@@ -232,85 +146,85 @@ td .num { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
       <div class="src-name">GitHub Trending</div>
       <div class="src-items">25</div>
       <div class="src-trend"><span class="badge rise">↑ 上升 +38.9%</span></div>
-      <div class="src-reach" style="color:var(--yry-pass)">✓ 可达</div>
+      <div class="src-reach h-tp">✓ 可达</div>
     </div>
     <div class="src-card">
       <div class="src-icon">📊</div>
       <div class="src-name">OSS Insight</div>
       <div class="src-items">12</div>
       <div class="src-trend"><span class="badge flat">→ 持平 +0%</span></div>
-      <div class="src-reach" style="color:var(--yry-pass)">✓ 可达</div>
+      <div class="src-reach h-tp">✓ 可达</div>
     </div>
     <div class="src-card">
       <div class="src-icon">📈</div>
       <div class="src-name">TrendShift</div>
       <div class="src-items">16</div>
       <div class="src-trend"><span class="badge rise">↑ 上升 +60%</span></div>
-      <div class="src-reach" style="color:var(--yry-pass)">✓ 可达</div>
+      <div class="src-reach h-tp">✓ 可达</div>
     </div>
     <div class="src-card">
       <div class="src-icon">⭐</div>
       <div class="src-name">Top-Starred</div>
       <div class="src-items">9</div>
       <div class="src-trend"><span class="badge rise">↑ 上升 +12.5%</span></div>
-      <div class="src-reach" style="color:var(--yry-pass)">✓ 可达</div>
+      <div class="src-reach h-tp">✓ 可达</div>
     </div>
   </div>
-  <div style="margin-top:14px;font-size:.76rem;color:var(--yry-text3);line-height:1.7">
-    源权重: GitHub Trending 35% · TrendShift 25% · OSS Insight 20% · Top-Starred 20%。加权增长率 = 0.35×38.9% + 0.25×60% + 0.20×0% + 0.20×12.5% ≈ <strong style="color:var(--yry-accent)">+31.1%</strong> (含不可达修正)。
+  <div class="h-lg-mt14-fs76-t3-lh17">
+    源权重: GitHub Trending 35% · TrendShift 25% · OSS Insight 20% · Top-Starred 20%。加权增长率 = 0.35×38.9% + 0.25×60% + 0.20×0% + 0.20×12.5% ≈ <strong class="h-lg-accent">+31.1%</strong> (含不可达修正)。
   </div>
 </div>
 
 <!-- Category Distribution with Time-Series -->
 <div class="card">
   <h2>分类分布与时间序列 (三周期对比)</h2>
-  <p style="font-size:.78rem;color:var(--yry-text3);margin-bottom:12px">基于跨源聚合的分类归属估算。趋势变化反映该分类在三周内的条目数演化方向。</p>
+  <p class="h-lg-fs78-t3-mb12">基于跨源聚合的分类归属估算。趋势变化反映该分类在三周内的条目数演化方向。</p>
   <table>
     <thead><tr><th>分类</th><th>06-05</th><th>06-09</th><th>06-12</th><th>占比</th><th>分布</th><th>三周趋势</th></tr></thead>
     <tbody>
       <tr>
         <td>🤖 AI / LLM</td>
-        <td class="num">12</td><td class="num">14</td><td class="num" style="color:#22d3ee">19</td>
+        <td class="num">12</td><td class="num">14</td><td class="num" h-lg-cyan>19</td>
         <td>30.6%</td>
-        <td><div class="bar-wrap"><div class="bar-fill" style="width:30.6%;background:var(--yry-pass)"></div></div></td>
+        <td><div class="bar-wrap"><div class="bar-fill h-lg-barfill" style="--w:30.6%;--color:var(--yry-pass)"></div></div></td>
         <td><span class="badge rise">↑ 持续上升 +58%</span></td>
       </tr>
       <tr>
         <td>🌐 Web / 前端</td>
-        <td class="num">10</td><td class="num">11</td><td class="num" style="color:#22d3ee">14</td>
+        <td class="num">10</td><td class="num">11</td><td class="num" h-lg-cyan>14</td>
         <td>22.6%</td>
-        <td><div class="bar-wrap"><div class="bar-fill" style="width:22.6%;background:#60a5fa"></div></div></td>
+        <td><div class="bar-wrap"><div class="bar-fill h-lg-barfill" style="--w:22.6%;--color:#60a5fa"></div></div></td>
         <td><span class="badge rise">↑ 持续上升 +40%</span></td>
       </tr>
       <tr>
-        <td>⚙️ 后端 / 基础设施</td><td class="num">9</td><td class="num">10</td><td class="num" style="color:#22d3ee">11</td>
+        <td>⚙️ 后端 / 基础设施</td><td class="num">9</td><td class="num">10</td><td class="num" h-lg-cyan>11</td>
         <td>17.7%</td>
-        <td><div class="bar-wrap"><div class="bar-fill" style="width:17.7%;background:#a78bfa"></div></div></td>
+        <td><div class="bar-wrap"><div class="bar-fill h-lg-barfill" style="--w:17.7%;--color:#a78bfa"></div></div></td>
         <td><span class="badge rise">↑ 稳步上升 +22%</span></td>
       </tr>
       <tr>
-        <td>🚀 DevOps / 云原生</td><td class="num">7</td><td class="num">7</td><td class="num" style="color:#22d3ee">9</td>
+        <td>🚀 DevOps / 云原生</td><td class="num">7</td><td class="num">7</td><td class="num" h-lg-cyan>9</td>
         <td>14.5%</td>
-        <td><div class="bar-wrap"><div class="bar-fill" style="width:14.5%;background:var(--yry-warn)"></div></div></td>
+        <td><div class="bar-wrap"><div class="bar-fill h-lg-barfill" style="--w:14.5%;--color:var(--yry-warn)"></div></div></td>
         <td><span class="badge rise">↑ 近期回升 +29%</span></td>
       </tr>
       <tr>
-        <td>📝 语言 / 工具</td><td class="num">5</td><td class="num">4</td><td class="num" style="color:#22d3ee">6</td>
+        <td>📝 语言 / 工具</td><td class="num">5</td><td class="num">4</td><td class="num" h-lg-cyan>6</td>
         <td>9.7%</td>
-        <td><div class="bar-wrap"><div class="bar-fill" style="width:9.7%;background:#f472b6"></div></div></td>
+        <td><div class="bar-wrap"><div class="bar-fill h-lg-barfill" style="--w:9.7%;--color:#f472b6"></div></div></td>
         <td><span class="badge flat">→ V 形恢复</span></td>
       </tr>
       <tr>
-        <td>🛡️ 安全</td><td class="num">2</td><td class="num">2</td><td class="num" style="color:#22d3ee">3</td>
+        <td>🛡️ 安全</td><td class="num">2</td><td class="num">2</td><td class="num" h-lg-cyan>3</td>
         <td>4.8%</td>
-        <td><div class="bar-wrap"><div class="bar-fill" style="width:4.8%;background:var(--yry-fail)"></div></div></td>
+        <td><div class="bar-wrap"><div class="bar-fill h-lg-barfill" style="--w:4.8%;--color:var(--yry-fail)"></div></div></td>
         <td><span class="badge flat">→ 低基数微增</span></td>
       </tr>
     </tbody>
   </table>
-  <div style="margin-top:12px;padding:12px 16px;background:rgba(15,23,42,.4);border-radius:8px;border:var(--yry-border);font-size:.82rem;color:var(--yry-text2);line-height:1.7">
-    <strong style="color:var(--yry-accent)">关键发现</strong>：AI/LLM 类目占总条目 30.6%，三周增长 +58%，为最大增长极。Web 前端与后端基础设施同步增长，DevOps 云原生在持平一周后出现回升 (+29%)。安全类目长期处于低基数 (2-3 项)，建议评估是否需要扩大数据源覆盖。<br>
-    <strong style="color:var(--yry-pass)">正向信号</strong>：六个分类中五个呈现正增长，零分类出现下降趋势。
+  <div class="h-lg-mt12-p1216-bg4-bd-fs82-t2-lh17">
+    <strong class="h-lg-accent">关键发现</strong>：AI/LLM 类目占总条目 30.6%，三周增长 +58%，为最大增长极。Web 前端与后端基础设施同步增长，DevOps 云原生在持平一周后出现回升 (+29%)。安全类目长期处于低基数 (2-3 项)，建议评估是否需要扩大数据源覆盖。<br>
+    <strong class="h-tp">正向信号</strong>：六个分类中五个呈现正增长，零分类出现下降趋势。
   </div>
 </div>
 
@@ -322,7 +236,7 @@ td .num { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
     <tbody>
       <tr>
         <td><strong>总条目</strong></td>
-        <td class="num">45</td><td class="num">48</td><td class="num" style="color:#22d3ee;font-size:1.1rem">62</td>
+        <td class="num">45</td><td class="num">48</td><td class="num h-lg-cyan-fs11">62</td>
         <td class="delta-pos">+17 (+37.8%)</td>
       </tr>
       <tr>
@@ -337,7 +251,7 @@ td .num { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
       </tr>
       <tr>
         <td><strong>TrendShift</strong></td>
-        <td class="num" style="color:var(--yry-fail)">9</td><td class="num">10</td><td class="num" style="color:#22d3ee">16</td>
+        <td class="num h-tf">9</td><td class="num">10</td><td class="num" h-lg-cyan>16</td>
         <td class="delta-pos">+7 (+77.8%)</td>
       </tr>
       <tr>
@@ -361,8 +275,8 @@ td .num { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
       </tr>
     </tbody>
   </table>
-  <div style="margin-top:12px;padding:12px 16px;background:rgba(15,23,42,.4);border-radius:8px;border:var(--yry-border);font-size:.82rem;color:var(--yry-text2);line-height:1.7">
-    <strong style="color:var(--yry-pass)">分析</strong>：06-05 总条目 45，TrendShift 不可达 (ok=false) 导致条目偏低。06-09 恢复至 48 且四源全可达。06-12 因 GitHub Trending (+7) 和 TrendShift (+6) 大幅增长至 62。Top-Starred 保持 8-9 条稳定基线。整体趋势健康，建议关注 OSS Insight 连续两周 12 条的潜在平台信号。
+  <div class="h-lg-mt12-p1216-bg4-bd-fs82-t2-lh17">
+    <strong class="h-tp">分析</strong>：06-05 总条目 45，TrendShift 不可达 (ok=false) 导致条目偏低。06-09 恢复至 48 且四源全可达。06-12 因 GitHub Trending (+7) 和 TrendShift (+6) 大幅增长至 62。Top-Starred 保持 8-9 条稳定基线。整体趋势健康，建议关注 OSS Insight 连续两周 12 条的潜在平台信号。
   </div>
 </div>
 
@@ -394,7 +308,7 @@ td .num { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
         <td><span class="badge ok">✓ 可达</span></td>
         <td><span class="badge ok">✓ 可达</span></td>
         <td>66.7% (2/3)</td>
-        <td><span class="badge" style="background:rgba(245,158,11,.15);color:var(--yry-warn)">已恢复 · 需观察</span></td>
+        <td><span class="badge h-lg-bg15-warn-amber">已恢复 · 需观察</span></td>
       </tr>
       <tr>
         <td>⭐ Top-Starred</td>
@@ -406,9 +320,9 @@ td .num { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
       </tr>
     </tbody>
   </table>
-  <div style="margin-top:12px;font-size:.76rem;color:var(--yry-text3);line-height:1.7">
-    <strong style="color:var(--yry-warn)">注意</strong>：TrendShift 在 06-05 不可达后连续两次恢复，建议再观察 1-2 个周期后标记为稳定。若再次出现不可达，应升级至 D2 质量退化诊断触发。<br>
-    <strong style="color:var(--yry-pass)">良好</strong>：GitHub Trending、OSS Insight、Top-Starred 三源连续 3 周期全部可达，稳定性指标 A 级。
+  <div class="h-lg-mt12-fs76-t3-lh17">
+    <strong class="h-tw">注意</strong>：TrendShift 在 06-05 不可达后连续两次恢复，建议再观察 1-2 个周期后标记为稳定。若再次出现不可达，应升级至 D2 质量退化诊断触发。<br>
+    <strong class="h-tp">良好</strong>：GitHub Trending、OSS Insight、Top-Starred 三源连续 3 周期全部可达，稳定性指标 A 级。
   </div>
 </div>
 
@@ -485,7 +399,7 @@ td .num { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
       <text x="735" y="203" fill="#6e727a" font-size="9">06-12</text>
     </svg>
   </div>
-  <p style="font-size:.72rem;color:var(--yry-text3);margin-top:8px">按色阶深浅区分三个扫描周期。TrendShift 06-05 条形标注不可达状态 (透明度最低)，后续两周期恢复后条目大幅增长。</p>
+  <p class="h-lg-fs72-t3-mt8">按色阶深浅区分三个扫描周期。TrendShift 06-05 条形标注不可达状态 (透明度最低)，后续两周期恢复后条目大幅增长。</p>
 </div>
 
 <!-- Diagnostic Association -->
@@ -518,20 +432,20 @@ td .num { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
       <tr>
         <td><strong>D1 源准确性</strong></td>
         <td>源报告条目数为 0 或条目总数连续三周无变化</td>
-        <td><span class="badge" style="background:rgba(245,158,11,.15);color:var(--yry-warn)">观察中</span></td>
-        <td style="color:var(--yry-warn)">P2</td>
+        <td><span class="badge h-lg-bg15-warn-amber">观察中</span></td>
+        <td class="h-tw">P2</td>
         <td>OSS Insight 连续两周 12 条、Top-Starred 连续两周 9(↑)→8(↓)→9 条波动。若 06-16 再持平，建议检查源 API 是否有变更</td>
       </tr>
     </tbody>
   </table>
-  <div style="margin-top:12px;font-size:.78rem;color:var(--yry-text3)">本次扫描整体健康。无可达性告警，TrendShift 不可达风险已解除。新增 D1 源准确性观察项针对 OSS Insight 和 Top-Starred 的条目停滞信号。下次扫描：<strong>2026-06-16</strong> (下周一) 09:00 CST</div>
+  <div class="h-lg-mt12-fs78-t3">本次扫描整体健康。无可达性告警，TrendShift 不可达风险已解除。新增 D1 源准确性观察项针对 OSS Insight 和 Top-Starred 的条目停滞信号。下次扫描：<strong>2026-06-16</strong> (下周一) 09:00 CST</div>
 </div>
 
 <!-- Signal Summary -->
 <div class="card">
   <h2>技术信号摘要与行动建议</h2>
-  <div style="display:flex;gap:10px;flex-wrap:wrap">
-    <div class="signal-card" style="border-left: 3px solid var(--yry-pass)">
+  <div class="h-lg-flex-gap10-wrap">
+    <div class="signal-card h-lg-bl3-pass">
       <h4>🔺 增长信号 (3 项)</h4>
       <div class="sig-detail">
         <strong>1. AI/LLM 工具链持续扩张</strong> — 三周 +58%，AI Agent 框架、RAG 工具、模型部署工具齐头并进<br>
@@ -539,7 +453,7 @@ td .num { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
         <strong>3. TrendShift 源恢复且爆发</strong> — 06-05 不可达后条目从 9→16，技术栈迁移信号密集
       </div>
     </div>
-    <div class="signal-card" style="border-left: 3px solid var(--yry-warn)">
+    <div class="signal-card h-lg-bl3-warn">
       <h4>🔻 关注信号 (2 项)</h4>
       <div class="sig-detail">
         <strong>1. OSS Insight 平台信号</strong> — 11→12→12 连续两周持平，可能为 API 数据窗口固定或源更新频率有限<br>
@@ -547,8 +461,8 @@ td .num { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
       </div>
     </div>
   </div>
-  <div style="margin-top:16px;padding:14px 18px;border-radius:8px;background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.1);font-size:.82rem;color:var(--yry-text2);line-height:1.7">
-    <strong style="color:var(--yry-pass)">行动建议</strong><br>
+  <div class="h-lg-mt16-p1418-green04-bd-fs82-t2-lh17">
+    <strong class="h-tp">行动建议</strong><br>
     1. <strong>短期 (06-16 前)</strong>：监控 TrendShift 源是否保持可达，观察 OSS Insight 条目数变化<br>
     2. <strong>中期 (2 周)</strong>：若 Top-Starred 持续 &lt;10 条，考虑扩展数据源或降低该源权重<br>
     3. <strong>长期</strong>：将 AI/LLM 和 Web 前端增长信号纳入技术雷达，更新 YrY 项目的技术选型参考
@@ -557,7 +471,7 @@ td .num { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
 
 <div class="ft">
   全量趋势扫描报告 · all 源聚合 · 2026-06-12 09:00:00 CST<br>
-  <span style="color:var(--yry-text3)">由 rui-trends 生成 · D5 外部趋势诊断输入 · 每周一 09:00 自动执行 · 权重 GitHub(35%) TrendShift(25%) OSS(20%) TopStar(20%)</span>
+  <span class="h-t3">由 rui-trends 生成 · D5 外部趋势诊断输入 · 每周一 09:00 自动执行 · 权重 GitHub(35%) TrendShift(25%) OSS(20%) TopStar(20%)</span>
 </div>
 
 </div>

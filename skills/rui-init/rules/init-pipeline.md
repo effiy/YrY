@@ -1,3 +1,10 @@
+---
+paths:
+  - "skills/rui-init/**"
+  - "skills/rui-init/SKILL.md"
+description: "项目初始化管线与重生机制规则"
+---
+
 # rui-init 初始化管线
 
 > 项目初始化的六步管线规则，独立于实现细节。

@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    YrY CDN — YryTestReport · 测试报告自定义元素
-   零依赖 vanilla JS — 自包含数据获取 + 6 面板 tab 渲染
+   零依赖 vanilla JS — 自包含数据获取 + 3 面板 tab 渲染
 
    属性:
      data-health-summary  健康摘要 URL (默认 ../自我改进/summary.json)
@@ -23,34 +23,18 @@
   var TAG_NAME = 'yry-test-report';
   var READY_EVENT = 'yry-test-report-ready';
 
+  var _script = document.currentScript;
+  var _dataUrl = _script && _script.src ? _script.src.replace(/index\.js(\?[^]*)?$/, 'data.json') : './data.json';
+  var _dataCache = null;
+  var _dataPromise = fetch(_dataUrl).then(function (r) { return r.json(); }).then(function (d) { _dataCache = d; }).catch(function (err) { console.error('[YryTestReport] data.json load failed:', err); });
+
   /* ── EM 权重定义 ───────────────────────────────────────────────────── */
-  var EM_WEIGHTS = {
-    em_testing:  { w: 0.30, label: '测试覆盖', desc: '测试框架完备性 · 覆盖率达标 · 自动化程度' },
-    em_types:    { w: 0.15, label: '类型安全', desc: 'TypeScript/JSDoc 类型覆盖率 · 严格模式' },
-    em_linting:  { w: 0.15, label: '代码检查', desc: 'ESLint/Prettier 配置 · 规则严格度' },
-    em_cicd:     { w: 0.10, label: 'CI/CD',   desc: '持续集成流水线 · 自动部署 · 门禁' },
-    em_docs:     { w: 0.10, label: '文档',    desc: 'API 文档覆盖率 · README 完整性' },
-    em_deps:     { w: 0.10, label: '依赖管理', desc: '依赖版本锁定 · 安全审计 · 更新频率' },
-    em_git:      { w: 0.10, label: 'Git 实践', desc: '分支策略 · commit 规范 · PR 流程' }
-  };
+  var EM_WEIGHTS = null;
 
   /* ── 静态测试套件数据 ─────────────────────────────────────────────── */
-  var TEST_SUITES = [
-    { name: 'lib/ 共享库自检', files: 28, cases: 105, pass: 105, cov: 95 },
-    { name: 'arch-check 架构合规', files: 10, cases: 42, pass: 42, cov: 88 },
-    { name: 'rui-bot 通知引擎', files: 8, cases: 32, pass: 31, cov: 82 },
-    { name: 'rui-npm 包管理', files: 32, cases: 77, pass: 75, cov: 78 },
-    { name: 'rui-html 文档生成', files: 12, cases: 48, pass: 47, cov: 85 },
-    { name: 'CDN 加载链验证', files: 4, cases: 71, pass: 71, cov: 90 }
-  ];
+  var TEST_SUITES = null;
 
-  var MATURITY_STAGES = [
-    { min: 0, max: 30, label: '初始级', desc: '测试基础设施待建立，缺少自动化测试框架和用例', color: '#ef4444' },
-    { min: 30, max: 50, label: '已定义级', desc: '测试框架已配置，有基本用例但覆盖率不足', color: '#f97316' },
-    { min: 50, max: 70, label: '已管理级', desc: '测试流程规范化，覆盖率持续提升，CI 集成中', color: '#f59e0b' },
-    { min: 70, max: 85, label: '可度量级', desc: '测试指标可量化追踪，自动化程度高，门禁完善', color: '#22c55e' },
-    { min: 85, max: 101, label: '优化级', desc: '测试驱动开发，持续优化，最佳实践模板', color: '#3b82f6' }
-  ];
+  var MATURITY_STAGES = null;
 
   /* ── 辅助函数 ──────────────────────────────────────────────────────── */
   function grade(s) { return s >= 80 ? 'A' : s >= 60 ? 'B' : s >= 40 ? 'C' : 'D'; }
@@ -279,32 +263,23 @@
   function renderFullTabs(testScore, covScore, passScore, totalCases, scores, vel, risk) {
     var emTestScore = typeof scores.em_testing === 'number' ? scores.em_testing : 0;
     return '<div class="yry-tabs" id="tr-main-tabs">' +
-      '<button class="yry-tab on" data-panel="tr-overview">📊 概览</button>' +
-      '<button class="yry-tab" data-panel="tr-coverage">📐 代码覆盖率</button>' +
-      '<button class="yry-tab" data-panel="tr-passrate">✅ 通过率分析</button>' +
-      '<button class="yry-tab" data-panel="tr-engineering">🔧 工程成熟度</button>' +
-      '<button class="yry-tab" data-panel="tr-suites">📦 测试套件</button>' +
-      '<button class="yry-tab" data-panel="tr-maturity">🔬 成熟度</button>' +
+      '<span class="yry-tab on" data-panel="tr-dashboard">📊 评分仪表板</span>' +
+      '<span class="yry-tab" data-panel="tr-architecture">🏗 技能架构</span>' +
+      '<span class="yry-tab" data-panel="tr-governance">🤖 Agent与治理</span>' +
       '</div>' +
-      '<div class="yry-panel on" id="tr-overview">' +
+      '<div class="yry-panel on" id="tr-dashboard">' +
         '<div class="card"><h2>综合 KPI</h2><div class="stats">' + renderKpiStats(testScore, covScore, passScore, totalCases) + '</div></div>' +
         '<div class="card"><h2>测试体系全景</h2>' + renderOverviewDetail(covScore, passScore, totalCases) + '</div>' +
-      '</div>' +
-      '<div class="yry-panel" id="tr-coverage">' +
         '<div class="card"><h2>代码覆盖率详情</h2>' + renderCoverageBars(covScore) + '</div>' +
         '<div class="card"><h2>覆盖率趋势</h2>' + renderCoverageTrend(covScore) + '</div>' +
-      '</div>' +
-      '<div class="yry-panel" id="tr-passrate">' +
         '<div class="card"><h2>测试通过率分析</h2>' + renderPassRate(passScore) + '</div>' +
       '</div>' +
-      '<div class="yry-panel" id="tr-engineering">' +
+      '<div class="yry-panel" id="tr-architecture">' +
+        '<div class="card"><h2>测试套件清单</h2><div class="tr-suite-grid">' + renderSuites() + '</div></div>' +
         '<div class="card"><h2>工程成熟度 7 维评估</h2><div class="tr-em-grid">' + renderEmGrid(scores) + '</div></div>' +
         '<div class="card"><h2>工程成熟度雷达图</h2><div class="tr-radar-placeholder">' + renderRadar(scores) + '</div></div>' +
       '</div>' +
-      '<div class="yry-panel" id="tr-suites">' +
-        '<div class="card"><h2>测试套件清单</h2><div class="tr-suite-grid">' + renderSuites() + '</div></div>' +
-      '</div>' +
-      '<div class="yry-panel" id="tr-maturity">' +
+      '<div class="yry-panel" id="tr-governance">' +
         '<div class="card"><h2>🔬 测试成熟度模型</h2>' + renderMaturityStages(emTestScore) + '</div>' +
         '<div class="card"><h2>📈 测试改进速率</h2>' + (renderVelocity(vel) || '<div class="tr-empty">数据暂不可用</div>') + '</div>' +
         '<div class="card"><h2>⚠️ 测试风险分析</h2>' + (renderRisk(risk) || '<div class="tr-empty">数据暂不可用</div>') + '</div>' +
@@ -362,8 +337,15 @@
       });
   };
 
-  if (!customElements.get(TAG_NAME)) {
-    customElements.define(TAG_NAME, YryTestReport);
-  }
-  document.dispatchEvent(new CustomEvent(READY_EVENT, { detail: { component: 'YryTestReport' } }));
+  _dataPromise.then(function () {
+    if (_dataCache) {
+      EM_WEIGHTS = _dataCache.EM_WEIGHTS || {};
+      TEST_SUITES = _dataCache.TEST_SUITES || [];
+      MATURITY_STAGES = _dataCache.MATURITY_STAGES || [];
+    }
+    if (!customElements.get(TAG_NAME)) {
+      customElements.define(TAG_NAME, YryTestReport);
+    }
+    document.dispatchEvent(new CustomEvent(READY_EVENT, { detail: { component: 'YryTestReport' } }));
+  });
 })();

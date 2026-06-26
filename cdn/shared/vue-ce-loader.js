@@ -63,7 +63,7 @@
       );
       return;
     }
-    var script = document.currentScript;
+    var script = options.script || document.currentScript;
     if (!script || !script.src) {
       console.warn('[' + componentName + '] 无法获取当前脚本 URL,组件已跳过注册');
       return;

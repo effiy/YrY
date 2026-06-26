@@ -63,7 +63,7 @@ async function main() {
   }
 
   // Create tree-sitter plugin with all configs that have WASM grammars
-  const tsConfigs = builtinLanguageConfigs.filter(c => c.treeSitter);
+  const tsConfigs = builtinLanguageConfigs.filter((/** @type {any} */ c) => c.treeSitter);
   const tsPlugin = new TreeSitterPlugin(tsConfigs);
   await tsPlugin.init();
 
@@ -92,7 +92,7 @@ async function main() {
     // (used by the project scanner for `sizeLines`) so the two counts agree.
     const lines = content.split('\n');
     const totalLines = content.endsWith('\n') ? Math.max(0, lines.length - 1) : lines.length;
-    const nonEmptyLines = lines.filter(l => l.trim().length > 0).length;
+    const nonEmptyLines = lines.filter((/** @type {string} */ l) => l.trim().length > 0).length;
 
     // Structural analysis via registry
     let analysis = null;
@@ -108,7 +108,7 @@ async function main() {
       try {
         const cg = registry.extractCallGraph(file.path, content);
         if (cg && cg.length > 0) {
-          callGraph = cg.map(entry => ({
+          callGraph = cg.map((/** @type {any} */ entry) => ({
             caller: entry.caller,
             callee: entry.callee,
             lineNumber: entry.lineNumber,
@@ -143,7 +143,8 @@ async function main() {
 // Result builder: maps StructuralAnalysis to the expected output schema.
 // Exported for unit tests; pure function, no I/O.
 // ---------------------------------------------------------------------------
-export function buildResult(file, totalLines, nonEmptyLines, analysis, callGraph, batchImportData) {
+export function buildResult(/** @type {any} */ file, /** @type {number} */ totalLines, /** @type {number} */ nonEmptyLines, /** @type {any} */ analysis, /** @type {any[]} */ callGraph, /** @type {any} */ batchImportData) {
+  /** @type {Record<string, any>} */
   const base = {
     path: file.path,
     language: file.language,
@@ -160,7 +161,7 @@ export function buildResult(file, totalLines, nonEmptyLines, analysis, callGraph
 
   // Functions (code files)
   if (analysis.functions && analysis.functions.length > 0) {
-    base.functions = analysis.functions.map(fn => ({
+    base.functions = analysis.functions.map((/** @type {any} */ fn) => ({
       name: fn.name,
       startLine: fn.lineRange[0],
       endLine: fn.lineRange[1],
@@ -170,7 +171,7 @@ export function buildResult(file, totalLines, nonEmptyLines, analysis, callGraph
 
   // Classes (code files)
   if (analysis.classes && analysis.classes.length > 0) {
-    base.classes = analysis.classes.map(cls => ({
+    base.classes = analysis.classes.map((/** @type {any} */ cls) => ({
       name: cls.name,
       startLine: cls.lineRange[0],
       endLine: cls.lineRange[1],
@@ -181,7 +182,7 @@ export function buildResult(file, totalLines, nonEmptyLines, analysis, callGraph
 
   // Exports (code files)
   if (analysis.exports && analysis.exports.length > 0) {
-    base.exports = analysis.exports.map(exp => ({
+    base.exports = analysis.exports.map((/** @type {any} */ exp) => ({
       name: exp.name,
       line: exp.lineNumber,
       isDefault: exp.isDefault === true,
@@ -190,7 +191,7 @@ export function buildResult(file, totalLines, nonEmptyLines, analysis, callGraph
 
   // Non-code structural data: pass through directly
   if (analysis.sections && analysis.sections.length > 0) {
-    base.sections = analysis.sections.map(s => ({
+    base.sections = analysis.sections.map((/** @type {any} */ s) => ({
       heading: s.name,
       level: s.level,
       line: s.lineRange[0],
@@ -198,7 +199,7 @@ export function buildResult(file, totalLines, nonEmptyLines, analysis, callGraph
   }
 
   if (analysis.definitions && analysis.definitions.length > 0) {
-    base.definitions = analysis.definitions.map(d => ({
+    base.definitions = analysis.definitions.map((/** @type {any} */ d) => ({
       name: d.name,
       kind: d.kind,
       fields: d.fields || [],
@@ -208,7 +209,7 @@ export function buildResult(file, totalLines, nonEmptyLines, analysis, callGraph
   }
 
   if (analysis.services && analysis.services.length > 0) {
-    base.services = analysis.services.map(s => ({
+    base.services = analysis.services.map((/** @type {any} */ s) => ({
       name: s.name,
       image: s.image,
       ports: s.ports || [],
@@ -217,7 +218,7 @@ export function buildResult(file, totalLines, nonEmptyLines, analysis, callGraph
   }
 
   if (analysis.endpoints && analysis.endpoints.length > 0) {
-    base.endpoints = analysis.endpoints.map(e => ({
+    base.endpoints = analysis.endpoints.map((/** @type {any} */ e) => ({
       method: e.method,
       path: e.path,
       startLine: e.lineRange[0],
@@ -226,7 +227,7 @@ export function buildResult(file, totalLines, nonEmptyLines, analysis, callGraph
   }
 
   if (analysis.steps && analysis.steps.length > 0) {
-    base.steps = analysis.steps.map(s => ({
+    base.steps = analysis.steps.map((/** @type {any} */ s) => ({
       name: s.name,
       startLine: s.lineRange[0],
       endLine: s.lineRange[1],
@@ -234,7 +235,7 @@ export function buildResult(file, totalLines, nonEmptyLines, analysis, callGraph
   }
 
   if (analysis.resources && analysis.resources.length > 0) {
-    base.resources = analysis.resources.map(r => ({
+    base.resources = analysis.resources.map((/** @type {any} */ r) => ({
       name: r.name,
       kind: r.kind,
       startLine: r.lineRange[0],
@@ -263,7 +264,7 @@ export function buildResult(file, totalLines, nonEmptyLines, analysis, callGraph
   if (importPaths && importPaths.length > 0) {
     metrics.importCount = importPaths.length;
   } else if (analysis.imports) {
-    const internal = analysis.imports.filter(imp => {
+    const internal = analysis.imports.filter((/** @type {any} */ imp) => {
       const src = imp?.source ?? '';
       return src.startsWith('.');
     });

@@ -41,15 +41,15 @@ function parseArgs() {
   return { command: 'generate', storyName, scene, type, force };
 }
 
-function findStoryDir(projectRoot, storyName) {
+function findStoryDir(/** @type {string} */ projectRoot, /** @type {string | undefined} */ storyName) {
   const storyDir = join(projectRoot, STORY_PANEL_DIR, storyName);
   if (!existsSync(storyDir)) {
     console.error(red(`故事 "${storyName}" 不存在于 ${STORY_PANEL_DIR}/`));
     const panelDir = join(projectRoot, STORY_PANEL_DIR);
     if (existsSync(panelDir)) {
       const available = readdirSync(panelDir, { withFileTypes: true })
-        .filter(d => d.isDirectory() && !d.name.startsWith('.'))
-        .map(d => d.name);
+        .filter((/** @type {any} */ d) => d.isDirectory() && !d.name.startsWith('.'))
+        .map((/** @type {any} */ d) => d.name);
       if (available.length > 0) {
         console.error(dim(`可用故事: ${available.join(', ')}`));
       }
@@ -59,14 +59,14 @@ function findStoryDir(projectRoot, storyName) {
   return storyDir;
 }
 
-function findSceneDirs(storyDir) {
+function findSceneDirs(/** @type {string} */ storyDir) {
   // Check for scenes/ subdirectory first (cdn/yry-*/scenes/ structure)
   const scenesSubdir = join(storyDir, 'scenes');
   const searchDir = existsSync(scenesSubdir) ? scenesSubdir : storyDir;
   const entries = readdirSync(searchDir, { withFileTypes: true });
   return entries
-    .filter(d => d.isDirectory() && /^场景-\d+-/.test(d.name))
-    .map(d => d.name)
+    .filter((/** @type {any} */ d) => d.isDirectory() && /^场景-\d+-/.test(d.name))
+    .map((/** @type {any} */ d) => d.name)
     .sort();
 }
 
@@ -100,7 +100,7 @@ async function main() {
   let targetScenes = allScenes;
   if (opts.scene !== null) {
     const prefix = `场景-${opts.scene}-`;
-    targetScenes = allScenes.filter(s => s.startsWith(prefix));
+    targetScenes = allScenes.filter((/** @type {string} */ s) => s.startsWith(prefix));
     if (targetScenes.length === 0) {
       console.error(red(`未找到场景 ${opts.scene}`));
       console.error(dim(`可用场景: ${allScenes.join(', ')}`));
@@ -124,6 +124,7 @@ async function main() {
     console.log(cyan(`  ${sceneDir}/`));
 
     // Extract data from index.md
+    /** @type {any} */
     const ctx = extractSceneData(scenePath, opts.storyName);
 
     if (!ctx) {

@@ -16,23 +16,7 @@
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
 <link rel="stylesheet" href="../../../yry-a11y/index.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<style>
-  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
-  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
-  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
-  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
-  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
-  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
-  .delivery-story { font-size: .72rem; color: #4b5563; }
-  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
-  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
-  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
-  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
-  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
-  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
-  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
-</style>
+<link rel="stylesheet" href="../../../yry-legacy-scene-delivery/index.css">
 </head>
 <body>
 <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
@@ -54,34 +38,34 @@
 
   <div class="content-card">
     <h2>📋 需求与优先级</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.74rem;color:#a9b1d6">
-      <thead><tr style="background:rgba(30,41,59,.5)"><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">需求</th><th style="padding:8px 12px;text-align:center;color:#22d3ee;font-weight:600">优先级</th><th style="padding:8px 12px;text-align:left;color:#22d3ee;font-weight:600">来源</th></tr></thead>
+    <table class="yry-auto-1645">
+      <thead><tr class="yry-auto-98324"><th class="yry-auto-38488">需求</th><th class="yry-auto-98085">优先级</th><th class="yry-auto-38488">来源</th></tr></thead>
       <tbody>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">架构图/知识图谱使用 Cat A Mono 主题</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#f87171">P0</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">设计规范</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">文档/场景页使用 Cat B System 主题</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#f87171">P0</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">设计规范</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">14 设计令牌跨主题可移植</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#f87171">P0</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">架构一致性</td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">CSS 变量分层避免冲突</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:#fbbf24">P1</td><td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)">可维护性</td></tr>
-        <tr><td style="padding:8px 12px">主题切换无需重新加载</td><td style="padding:8px 12px;text-align:center;color:#a78bfa">P2</td><td style="padding:8px 12px">用户体验</td></tr>
+        <tr><td class="yry-auto-40105">架构图/知识图谱使用 Cat A Mono 主题</td><td class="yry-auto-90624">P0</td><td class="yry-auto-40105">设计规范</td></tr>
+        <tr><td class="yry-auto-40105">文档/场景页使用 Cat B System 主题</td><td class="yry-auto-90624">P0</td><td class="yry-auto-40105">设计规范</td></tr>
+        <tr><td class="yry-auto-40105">14 设计令牌跨主题可移植</td><td class="yry-auto-90624">P0</td><td class="yry-auto-40105">架构一致性</td></tr>
+        <tr><td class="yry-auto-40105">CSS 变量分层避免冲突</td><td class="yry-auto-65893">P1</td><td class="yry-auto-40105">可维护性</td></tr>
+        <tr><td class="yry-auto-70345">主题切换无需重新加载</td><td class="yry-a1-39">P2</td><td class="yry-auto-70345">用户体验</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="content-card">
     <h2>🎯 实施步骤</h2>
-    <ol style="margin:0;padding-left:20px;font-size:.76rem;line-height:1.9;color:#a9b1d6">
-      <li><strong style="color:#22d3ee">§2.1 Cat B 默认页面引用</strong> — <code>shared/index.css</code> + <code>theme/index.css</code></li>
-      <li><strong style="color:#22d3ee">§2.2 Cat A 架构图页面引用</strong> — <code>shared</code> + <code>theme-mono</code> + <code>fonts</code> (JetBrains Mono)</li>
-      <li><strong style="color:#22d3ee">§2.3 组件使用设计令牌 (带 fallback)</strong> — <code>var(--yry-*, fallback)</code> 双参数调用</li>
-      <li><strong style="color:#22d3ee">§2.4 令牌分层原则</strong> — L1 Surfaces → L2 Brand → L3 Semantic → L4 Text → L5 Elevation</li>
-      <li><strong style="color:#22d3ee">§2.5 WCAG 对比度矩阵</strong> — 文字令牌 ≥ 4.5:1 (AA) · 大文字 ≥ 3:1</li>
-      <li><strong style="color:#22d3ee">§2.6 主题运行时切换</strong> — <code>data-theme</code> 属性 + localStorage 持久化</li>
-      <li><strong style="color:#22d3ee">§2.7 令牌命名规范</strong> — 按用途命名，禁止按颜色命名 (<code>--yry-blue</code> 为反模式)</li>
+    <ol class="yry-auto-20518">
+      <li><strong class="yry-auto-48218">§2.1 Cat B 默认页面引用</strong> — <code>shared/index.css</code> + <code>theme/index.css</code></li>
+      <li><strong class="yry-auto-48218">§2.2 Cat A 架构图页面引用</strong> — <code>shared</code> + <code>theme-mono</code> + <code>fonts</code> (JetBrains Mono)</li>
+      <li><strong class="yry-auto-48218">§2.3 组件使用设计令牌 (带 fallback)</strong> — <code>var(--yry-*, fallback)</code> 双参数调用</li>
+      <li><strong class="yry-auto-48218">§2.4 令牌分层原则</strong> — L1 Surfaces → L2 Brand → L3 Semantic → L4 Text → L5 Elevation</li>
+      <li><strong class="yry-auto-48218">§2.5 WCAG 对比度矩阵</strong> — 文字令牌 ≥ 4.5:1 (AA) · 大文字 ≥ 3:1</li>
+      <li><strong class="yry-auto-48218">§2.6 主题运行时切换</strong> — <code>data-theme</code> 属性 + localStorage 持久化</li>
+      <li><strong class="yry-auto-48218">§2.7 令牌命名规范</strong> — 按用途命名，禁止按颜色命名 (<code>--yry-blue</code> 为反模式)</li>
     </ol>
   </div>
 
   <div class="content-card">
     <h2>✅ 验收清单</h2>
-    <ul style="margin:0;padding-left:20px;font-size:.76rem;line-height:1.9;color:#a9b1d6">
+    <ul class="yry-auto-20518">
       <li><input type="checkbox" checked> Cat A 页面渲染正确 (架构图/源码/知识图谱)</li>
       <li><input type="checkbox" checked> Cat B 页面渲染正确 (文档/场景页/首页)</li>
       <li><input type="checkbox" checked> 14 令牌全部定义 (Surfaces 3 + Brand 2 + Semantic 3 + Text 3 + Elevation 3)</li>

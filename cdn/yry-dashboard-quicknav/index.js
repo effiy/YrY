@@ -65,8 +65,8 @@
     return;
   }
 
-  var COMPONENT_NAME = 'YryDashboardQuicknav';
-  var TEMPLATE_ID = 'yry-dashboard-quicknav-tpl';
+  const COMPONENT_NAME = 'YryDashboardQuicknav';
+  const TEMPLATE_ID = 'yry-dashboard-quicknav-tpl';
 
   window.YrYVueCE.define({
     componentName: COMPONENT_NAME,
@@ -84,6 +84,13 @@
           scrollSpy: { type: Boolean, default: true },
           spyOffset: { type: String, default: '-20% 0px -70% 0px' }
         },
+        watch: {
+          chips: function (next) {
+            if (this.scrollSpy && !this._spy && next && next.length) {
+              this._initScrollSpy();
+            }
+          }
+        },
         mounted: function () {
           if (this.scrollSpy) this._initScrollSpy();
         },
@@ -95,17 +102,18 @@
         },
         methods: {
           _initScrollSpy: function () {
-            var root = this.$el;
-            if (!root || typeof window.IntersectionObserver !== 'function') return;
+            const root = this.$el;
+            if (!root || typeof root.querySelectorAll !== 'function') return;
+            if (!window.IntersectionObserver) return;
 
-            var chips = Array.prototype.slice.call(root.querySelectorAll('.sr-qn-chip'));
+            const chips = Array.prototype.slice.call(root.querySelectorAll('.sr-qn-chip'));
             if (!chips.length) return;
 
-            var self = this;
-            var spy = new window.IntersectionObserver(function (entries) {
+            const self = this;
+            const spy = new window.IntersectionObserver(function (entries) {
               entries.forEach(function (e) {
                 if (e.isIntersecting) {
-                  var id = e.target.id;
+                  const id = e.target.id;
                   chips.forEach(function (c) {
                     c.classList.toggle('is-active', c.getAttribute('data-target') === id);
                   });
@@ -114,7 +122,7 @@
             }, { rootMargin: self.spyOffset, threshold: 0 });
 
             chips.forEach(function (c) {
-              var target = document.getElementById(c.getAttribute('data-target'));
+              const target = document.getElementById(c.getAttribute('data-target'));
               if (target) spy.observe(target);
             });
 

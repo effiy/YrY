@@ -1,0 +1,5 @@
+/* yry-cdn-detect/demo.css — showcase page styles */
+body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #FFC107); }
+    pre { background: rgba(0,0,0,.3); padding: 10px 14px; border-radius: 6px; font-size: .76rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; }
+    .live-bar { background: var(--yry-bg-flat); padding: 10px 14px; border-radius: 8px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; font-size: .78rem; }

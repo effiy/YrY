@@ -7,27 +7,10 @@
 <link rel="stylesheet" href="../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../cdn/theme/index.css">
 	<link rel="stylesheet" href="../../cdn/shared-reports/index.css">
-	<style>
-	.yry-container { max-width: 800px; }
-	/* breadcrumb variant: cyan links (not blue, unlike shared-reports.css) */
-	.yry-bc { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; font-size: .76rem; }
-	.yry-bc a { color: #22d3ee; text-decoration: none; }
-	.yry-bc a:hover { color: var(--yry-accent); }
-	.yry-bc .yry-bc-sep { color: var(--yry-text3); opacity: .4; }
-	.yry-bc .yry-bc-cur { color: var(--yry-text2); }
-	.yry-header h1 { font-size: 1.6rem; }
-	.yry-header .desc { color: var(--yry-text2); font-size: .84rem; margin-top: 8px; line-height: 1.6; max-width: 600px; margin-left: auto; margin-right: auto; }
-	/* link variant (page-specific styling) */
-	.yry-link { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.15); color: #22d3ee; text-decoration: none; font-size: .82rem; transition: all .15s; }
-	.yry-link:hover { background: rgba(59,130,246,.15); color: var(--yry-accent); }
-	.yry-skill-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-	.yry-skill-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 6px; background: rgba(59,130,246,.06); border: 1px solid rgba(59,130,246,.1); font-size: .74rem; color: var(--yry-text2); }
-	.yry-skill-chip .si { font-size: .9rem; }
-	#loading { text-align: center; color: var(--yry-text3); padding: 40px; }
-	</style>
+	<link rel="stylesheet" href="../../cdn/loop-report/index.css">
 </head>
 <body>
-<div class="yry-container">
+<div class="yry-container lp-container">
 <nav class="yry-bc">
   <a href="../../docs/index.html">📄 文档中心</a>
   <span class="yry-bc-sep">/</span>
@@ -36,7 +19,7 @@
 <div class="yry-header">
   <h1>🔄 自循环报告</h1>
   <div class="desc">20 技能定期巡检，由 Cron 定时触发，报告自动生成并推送企微通知。覆盖趋势监控、代码健康、文档同步、故事轮询、配置检查、依赖审计、自改进闭环等全维度。</div>
-  <div class="meta">32 份报告</div>
+  <div class="meta">37 份报告</div>
 </div>
 <div class="yry-intro">
   <strong>工作原理</strong>：Cron 定时任务按预设间隔触发技能执行 → 每轮执行生成自循环报告 HTML → <code>rui-bot loop-report</code> 汇总并推送企微通知 → 关联维度数据输入 D0-D8 诊断引擎。<br>
@@ -51,28 +34,27 @@
 </div>
 <div class="yry-links">
   <a class="yry-link" href="../../skills/rui-bot/SKILL.md" target="_blank">📋 rui-bot 规约</a>
-  <a class="yry-link" href="../健康报告/index.html">🩺 健康报告</a>
   <a class="yry-link" href="../趋势报告/index.html">📡 趋势报告</a>
   <a class="yry-link" href="../index.html">📄 文档中心</a>
 </div>
 <div class="yry-footer">
   由 rui-bot loop-report 自动生成 · 数据实时读取<br>
-  <span style="color:var(--yry-text3)">20 技能 · 定时巡检 · 企微通知</span>
+  <span class="lp-meta">20 技能 · 定时巡检 · 企微通知</span>
 </div>
 </div>
 <script>
 (async function() {
-  var tbody = document.getElementById('tbody');
+  const tbody = document.getElementById('tbody');
   try {
-    var resp = await fetch('reports.json');
+    const resp = await fetch('reports.json');
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    var reports = await resp.json();
+    const reports = await resp.json();
     if (reports.length === 0) {
       tbody.appendChild(buildEmptyRow());
       return;
     }
-    var badgeMap = { pass: '✅ 通过', warn: '⚠️ 告警', fail: '🚫 异常' };
-    reports.forEach(function(r) {
+    const badgeMap = { pass: '✅ 通过', warn: '⚠️ 告警', fail: '🚫 异常' };
+    reports.forEach((r) => {
       tbody.appendChild(buildReportRow(r, badgeMap));
     });
   } catch(e) {
@@ -80,16 +62,16 @@
   }
 
   function buildEmptyRow() {
-    var tr = document.createElement('tr');
-    var td = document.createElement('td');
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
     td.colSpan = 5;
-    var div = document.createElement('div');
+    const div = document.createElement('div');
     div.className = 'yry-empty';
     div.textContent = '暂无自循环报告';
     div.appendChild(document.createElement('br'));
-    var span = document.createElement('span');
+    const span = document.createElement('span');
     span.style.cssText = 'font-size:.7rem;margin-top:8px;display:block';
-    var code = document.createElement('code');
+    const code = document.createElement('code');
     code.textContent = 'node skills/rui-bot/lib/loop-report.mjs --skill=<name> --status=<pass|warn|fail> 生成首份报告';
     span.appendChild(code);
     div.appendChild(span);
@@ -99,23 +81,23 @@
   }
 
   function buildReportRow(r, badgeMap) {
-    var tr = document.createElement('tr');
-    var status = r.status || 'pass';
+    const tr = document.createElement('tr');
+    const status = r.status || 'pass';
 
-    var tdSkill = document.createElement('td');
-    var aSkill = document.createElement('a');
+    const tdSkill = document.createElement('td');
+    const aSkill = document.createElement('a');
     aSkill.href = r.file || '#';
     aSkill.textContent = (r.icon || '🔄') + ' ' + (r.skillLabel || r.skill);
     tdSkill.appendChild(aSkill);
     tr.appendChild(tdSkill);
 
-    var tdDate = document.createElement('td');
+    const tdDate = document.createElement('td');
     tdDate.textContent = r.date;
     tr.appendChild(tdDate);
 
-    var tdFresh = document.createElement('td');
-    var freshInfo = computeFreshness(r.skill, r.date);
-    var freshBadge = document.createElement('span');
+    const tdFresh = document.createElement('td');
+    const freshInfo = computeFreshness(r.skill, r.date);
+    const freshBadge = document.createElement('span');
     freshBadge.className = 'yry-badge ' + freshInfo.level;
     freshBadge.textContent = freshInfo.label;
     freshBadge.style.fontSize = '.72rem';
@@ -123,20 +105,20 @@
     tdFresh.appendChild(freshBadge);
     tr.appendChild(tdFresh);
 
-    var tdStatus = document.createElement('td');
-    var badge = document.createElement('span');
+    const tdStatus = document.createElement('td');
+    const badge = document.createElement('span');
     badge.className = 'yry-badge ' + status;
     badge.textContent = badgeMap[status] || status;
     tdStatus.appendChild(badge);
     tr.appendChild(tdStatus);
 
-    var tdSummary = document.createElement('td');
+    const tdSummary = document.createElement('td');
     tdSummary.style.cssText = 'font-size:.82rem;color:var(--yry-text2)';
     tdSummary.textContent = r.summary || '—';
     tr.appendChild(tdSummary);
 
-    var tdAction = document.createElement('td');
-    var aAction = document.createElement('a');
+    const tdAction = document.createElement('td');
+    const aAction = document.createElement('a');
     aAction.href = r.file || '#';
     aAction.textContent = '查看';
     tdAction.appendChild(aAction);
@@ -147,7 +129,7 @@
 
   // Freshness: compare report age vs skill's expected interval.
   // Uses a simple lookup (mirrors lib/loop/registry.mjs cron intervals).
-  var SKILL_INTERVAL_DAYS = {
+  const SKILL_INTERVAL_DAYS = {
     'rui-trends': 7, 'rui-analysis': 4, 'rui-import': 0.5, 'rui-story': 0.5,
     'rui-claude': 1, 'rui-bot': 0.5, 'rui-npm': 7, 'rui-html': 0.5,
     'rui-doc': 1, 'rui-version': 7, 'rui-plan': 1, 'rui-bundle-analyze': 7,
@@ -156,8 +138,8 @@
     'rui-config': 1
   };
   function computeFreshness(skill, dateStr) {
-    var intervalDays = SKILL_INTERVAL_DAYS[skill] || 7;
-    var ageDays = (Date.now() - new Date(dateStr).getTime()) / 86400000;
+    const intervalDays = SKILL_INTERVAL_DAYS[skill] || 7;
+    const ageDays = (Date.now() - new Date(dateStr).getTime()) / 86400000;
     if (ageDays <= intervalDays) return { level: 'pass', label: '新鲜' };
     if (ageDays <= intervalDays * 2) return { level: 'warn', label: '过期 ' + Math.floor(ageDays) + 'd' };
     return { level: 'fail', label: '陈旧 ' + Math.floor(ageDays) + 'd' };

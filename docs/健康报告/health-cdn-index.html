@@ -8,14 +8,7 @@
 <link rel="stylesheet" href="../../cdn/theme/index.css">
 <link rel="stylesheet" href="../../cdn/shared-reports/index.css">
 <link rel="stylesheet" href="../../cdn/yry-home/index.css">
-<style>
-.c { max-width: 880px; margin: 0 auto; padding: 48px 24px 80px; }
-.latest { text-align: center; padding: 18px 16px 14px; margin-bottom: 20px; background: rgba(255,193,7,.05); border-radius: 10px; border: var(--yry-border); }
-.latest .score { font-size: 2rem; font-weight: 800; color: var(--yry-accent); }
-.latest .grade { font-size: 1.1rem; font-weight: 700; margin-left: 8px; }
-.latest .date { display: block; font-size: .72rem; color: var(--yry-text3); margin-top: 4px; }
-.latest .meta-row { font-size: .68rem; color: var(--yry-text3); margin-top: 6px; }
-</style>
+<link rel="stylesheet" href="health-cdn-index.css">
 </head>
 <body>
 <div class="c" id="app">
@@ -74,11 +67,11 @@
     <tbody>
       <tr v-if="loading"><td colspan="7">加载中...</td></tr>
       <tr v-else-if="error"><td colspan="7"><div class="yry-empty">加载失败: {{ error }}</div></td></tr>
-      <tr v-else-if="reports.length === 0"><td colspan="7"><div class="yry-empty">暂无报告<br><span style="font-size:.7rem;margin-top:8px;display:block">更新 <code>health-report.json</code> 添加首份记录</span></div></td></tr>
+      <tr v-else-if="reports.length === 0"><td colspan="7"><div class="yry-empty">暂无报告<br><span class="h-lg-x38">更新 <code>health-report.json</code> 添加首份记录</span></div></td></tr>
       <tr v-for="(r, i) in reports" :key="i">
         <td>🩺 {{ r.date || '—' }}</td>
-        <td style="font-size:.72rem;color:var(--yry-text3)">{{ r.time || '—' }}</td>
-        <td><code v-if="r.version" style="font-size:.72rem">v{{ r.version }}</code><span v-else>—</span></td>
+        <td class="h-lg-x39">{{ r.time || '—' }}</td>
+        <td><code v-if="r.version" class="h-lg-x40">v{{ r.version }}</code><span v-else>—</span></td>
         <td><span v-if="r.score" class="s" :class="r.grade || ''">{{ r.score }} 分</span><span v-else>—</span></td>
         <td><span v-if="r.grade" class="yry-badge" :class="r.grade">{{ r.grade }} 级</span><span v-else>—</span></td>
         <td>{{ r.triggers !== undefined && r.triggers !== null ? r.triggers + '/8' : '—' }}</td>
@@ -99,7 +92,7 @@
 
 <div class="ft">
   YrY CDN 健康报告 · CDN 自有资源评估<br>
-  <span style="color:var(--yry-text3)">8 维度评估 · D0-D7 诊断 · 数据源 health-report.json</span>
+  <span class="h-t3">8 维度评估 · D0-D7 诊断 · 数据源 health-report.json</span>
 </div>
 
 </div>

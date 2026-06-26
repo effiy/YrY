@@ -1,3 +1,10 @@
+---
+paths:
+  - "skills/rui-analysis/**"
+  - "skills/rui-analysis/SKILL.md"
+description: "代码与架构静态分析的方法论和规则"
+---
+
 # rui-analysis 分析方法论
 
 > 代码与架构静态分析的规则和方法，独立于实现细节。

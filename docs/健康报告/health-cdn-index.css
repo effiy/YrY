@@ -1,0 +1,7 @@
+/* health-cdn-index.css — page-specific styles extracted from health-cdn-index.html */
+.c { max-width: 880px; margin: 0 auto; padding: 48px 24px 80px; }
+.latest { text-align: center; padding: 18px 16px 14px; margin-bottom: 20px; background: rgba(255,193,7,.05); border-radius: 10px; border: var(--yry-border); }
+.latest .score { font-size: 2rem; font-weight: 800; color: var(--yry-accent); }
+.latest .grade { font-size: 1.1rem; font-weight: 700; margin-left: 8px; }
+.latest .date { display: block; font-size: .72rem; color: var(--yry-text3); margin-top: 4px; }
+.latest .meta-row { font-size: .68rem; color: var(--yry-text3); margin-top: 6px; }

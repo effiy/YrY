@@ -13,8 +13,6 @@
 
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync, mkdirSync } from "node:fs";
 import { join, relative, resolve, basename, extname, dirname } from "node:path";
-import { createReadStream } from "node:fs";
-import { createInterface } from "node:readline";
 import { createHash } from "node:crypto";
 import { execSync } from "node:child_process";
 import { findProjectRoot } from "../../lib/fs.mjs";
@@ -41,16 +39,6 @@ const EXCLUDE_DIRS_SOFT = new Set([
 const DEP_PARSE_EXTS = new Set([
   ".js", ".mjs", ".cjs", ".jsx", ".ts", ".tsx", ".vue", ".svelte",
   ".css", ".scss", ".less", ".sass",
-]);
-
-/** File extensions counted in size analysis (source-ish files, skip binaries) */
-const SOURCE_EXTS = new Set([
-  ".js", ".mjs", ".cjs", ".jsx", ".ts", ".tsx", ".vue", ".svelte",
-  ".css", ".scss", ".less", ".sass", ".html", ".md", ".mdx",
-  ".json", ".yaml", ".yml", ".toml", ".xml", ".svg",
-  ".py", ".rb", ".go", ".rs", ".java", ".kt", ".swift",
-  ".graphql", ".gql", ".proto", ".sql", ".sh", ".bash",
-  ".env", ".gitignore", ".dockerignore", "Dockerfile",
 ]);
 
 /** Binary-ish extensions skipped entirely */
@@ -118,7 +106,9 @@ const ZONE_OF_USELESS_D = 0.7;
 
 // ── CLI ────────────────────────────────────────────────────────────────────
 
+/** @param {string[]} argv */
 function parseArgs(argv) {
+  /** @type {any} */
   const args = {
     dir: null,
     noOpen: false,
@@ -193,6 +183,7 @@ Examples:
 
 /**
  * Check if a path should be excluded based on directory name patterns.
+ * @param {string} name
  */
 function isExcludedDir(name) {
   return EXCLUDE_DIRS.has(name) || EXCLUDE_DIRS_SOFT.has(name);
@@ -200,6 +191,7 @@ function isExcludedDir(name) {
 
 /**
  * Check if a file extension should be skipped entirely.
+ * @param {string} ext
  */
 function isSkipExt(ext) {
   return SKIP_EXTS.has(ext.toLowerCase());
@@ -207,12 +199,14 @@ function isSkipExt(ext) {
 
 /**
  * Recursively walk a directory, collecting file info.
+ * @param {string} root
  * @returns {Array<{path: string, relPath: string, size: number, ext: string, dir: string}>}
  */
-function walkDir(root, opts = {}) {
-  const { scopeGlob } = opts;
+function walkDir(root, _opts = {}) {
+  /** @type {any[]} */
   const files = [];
 
+  /** @param {string} currentPath */
   function walk(currentPath) {
     let entries;
     try {
@@ -263,10 +257,12 @@ function walkDir(root, opts = {}) {
  *   export * from '...' (wildcard re-export)
  *   export { default } from '...'
  *   import type { T } from '...' (TypeScript)
- *   CSS @import url('...')
+ *   CSS import url('...')
  * Returns array of imported module specifiers with type annotations.
  */
+/** @param {string} filePath */
 function parseImports(filePath) {
+  /** @type {any[]} */
   const imports = [];
   let content;
   try {
@@ -330,26 +326,13 @@ function parseImports(filePath) {
 
 // ── Line counting ────────────────────────────────────────────────────────────
 
-/**
- * Count non-empty lines in a file efficiently using a read stream.
- * Falls back to full read for small files.
- */
-function countLines(filePath) {
-  try {
-    const content = readFileSync(filePath, "utf-8");
-    // Count non-empty lines (strip trailing newline, split)
-    const lines = content.trimEnd().split("\n");
-    // Filter to non-blank lines for a more meaningful count
-    return lines.filter((l) => l.trim().length > 0).length;
-  } catch {
-    return 0;
-  }
-}
 
 // ── Baseline management ──────────────────────────────────────────────────────
 
 /**
  * Save analysis baseline to .memory/bundle-baseline.json
+ * @param {string} projectRoot
+ * @param {any} baselineData
  */
 function saveBaseline(projectRoot, baselineData) {
   const baselinePath = join(projectRoot, BASELINE_FILE);
@@ -363,7 +346,8 @@ function saveBaseline(projectRoot, baselineData) {
 
 /**
  * Load previous analysis baseline.
- * @returns {object|null} baseline data or null if none exists
+ * @param {string} projectRoot
+ * @returns {any} baseline data or null if none exists
  */
 function loadBaseline(projectRoot) {
   const baselinePath = join(projectRoot, BASELINE_FILE);
@@ -377,12 +361,15 @@ function loadBaseline(projectRoot) {
 
 /**
  * Compute diff between current analysis and baseline.
+ * @param {any[]} currentFiles
+ * @param {any[]} currentDeps
+ * @param {any} baseline
  */
 function computeDiff(currentFiles, currentDeps, baseline) {
   if (!baseline) return { hasBaseline: false };
 
-  const oldFileMap = new Map(baseline.files.map((f) => [f.path, f]));
-  const newFileMap = new Map(currentFiles.map((f) => [f.relPath, f]));
+  const oldFileMap = new Map(baseline.files.map((/** @type {any} */ f) => [f.path, f]));
+  const newFileMap = new Map(currentFiles.map((/** @type {any} */ f) => [f.relPath, f]));
 
   // New files (in current but not in baseline)
   const newFiles = [];
@@ -421,15 +408,17 @@ function computeDiff(currentFiles, currentDeps, baseline) {
   changedFiles.sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
 
   // Dependency changes
-  const oldEdgeSet = new Set((baseline.dependencies || []).map((e) => `${e.from}→${e.to}`));
-  const newEdgeSet = new Set(currentDeps.map((e) => `${e.from}→${e.to}`));
+  /** @type {Set<string>} */
+  const oldEdgeSet = new Set((baseline.dependencies || []).map((/** @type {any} */ e) => `${e.from}→${e.to}`));
+  /** @type {Set<string>} */
+  const newEdgeSet = new Set(currentDeps.map((/** @type {any} */ e) => `${e.from}→${e.to}`));
 
-  const newDeps = currentDeps.filter((e) => !oldEdgeSet.has(`${e.from}→${e.to}`));
-  const removedDeps = (baseline.dependencies || []).filter((e) => !newEdgeSet.has(`${e.from}→${e.to}`));
+  const newDeps = currentDeps.filter((/** @type {any} */ e) => !oldEdgeSet.has(`${e.from}→${e.to}`));
+  const removedDeps = (baseline.dependencies || []).filter((/** @type {any} */ e) => !newEdgeSet.has(`${e.from}→${e.to}`));
 
   // Size delta
   const oldTotalSize = baseline.meta?.totalSize || 0;
-  const newTotalSize = currentFiles.reduce((sum, f) => sum + f.size, 0);
+  const newTotalSize = currentFiles.reduce((/** @type {number} */ sum, /** @type {any} */ f) => sum + f.size, 0);
   const sizeDelta = newTotalSize - oldTotalSize;
   const sizeDeltaPercent = oldTotalSize > 0 ? Math.round((sizeDelta / oldTotalSize) * 1000) / 10 : 0;
 
@@ -451,27 +440,31 @@ function computeDiff(currentFiles, currentDeps, baseline) {
 /**
  * Detect orphan files: files that neither import anything nor are imported by anything.
  * Excludes well-known entry/root files that are expected to have no dependents.
+ * @param {any[]} files
+ * @param {any} depGraph
  */
 function detectOrphanFiles(files, depGraph) {
-  const importedSet = new Set(depGraph.edges.map((e) => e.to));
-  const importerSet = new Set(depGraph.edges.map((e) => e.from));
+  const importedSet = new Set(depGraph.edges.map((/** @type {any} */ e) => e.to));
+  const importerSet = new Set(depGraph.edges.map((/** @type {any} */ e) => e.from));
 
   // Also check files that have imports in the actual source (not just depGraph edges)
-  const allNodeSet = new Set(depGraph.nodes.map((n) => n.path));
+  /** @type {Set<string>} */
+  const allNodeSet = new Set(depGraph.nodes.map((/** @type {any} */ n) => n.path));
 
   // Known entry patterns that are expected to be "orphan" (not imported by others)
   const entryPatterns = [/^index\.(js|mjs|ts|jsx|tsx)$/, /^main\.(js|mjs|ts)$/, /^app\.(js|mjs|ts|jsx|tsx)$/, /\.config\.(js|mjs|ts)$/, /^cli\.(js|mjs|ts)$/];
 
+  /** @param {string} relPath */
   const isEntry = (relPath) => {
     const name = basename(relPath);
     return entryPatterns.some((p) => p.test(name));
   };
 
   // Only consider source-ish files for orphan detection
-  const sourceFiles = files.filter((f) => DEP_PARSE_EXTS.has(f.ext) || f.ext === ".html" || f.ext === ".md");
+  const sourceFiles = files.filter((/** @type {any} */ f) => DEP_PARSE_EXTS.has(f.ext) || f.ext === ".html" || f.ext === ".md");
 
   return sourceFiles
-    .filter((f) => {
+    .filter((/** @type {any} */ f) => {
       const inGraph = allNodeSet.has(f.relPath);
       const isImported = importedSet.has(f.relPath);
       // An orphan: in the graph but not imported by anyone, AND doesn't import anything
@@ -492,16 +485,19 @@ function detectOrphanFiles(files, depGraph) {
 /**
  * Detect barrel files: files that primarily re-export from other modules.
  * A file is a barrel if >50% of its imports are re-exports and it has few own definitions.
+ * @param {any[]} files
+ * @param {any} _projectRoot
  */
-function detectBarrelFiles(files, projectRoot) {
+function detectBarrelFiles(files, _projectRoot) {
+  /** @type {any[]} */
   const barrels = [];
-  const parsableFiles = files.filter((f) => DEP_PARSE_EXTS.has(f.ext));
+  const parsableFiles = files.filter((/** @type {any} */ f) => DEP_PARSE_EXTS.has(f.ext));
 
   for (const f of parsableFiles) {
     const rawImports = parseImports(f.path);
     if (rawImports.length === 0) continue;
 
-    const reExports = rawImports.filter((imp) => imp.type === "re-export" || imp.type === "re-export-all");
+    const reExports = rawImports.filter((/** @type {any} */ imp) => imp.type === "re-export" || imp.type === "re-export-all");
     const reExportRatio = reExports.length / rawImports.length;
 
     // Barrel: at least 2 re-exports and >50% of imports are re-exports
@@ -515,20 +511,25 @@ function detectBarrelFiles(files, projectRoot) {
 
 /**
  * Compute size histogram (files bucketed by size range).
+ * @param {any[]} files
  */
 function computeHistogram(files) {
+  /** @type {Record<string, number>} */
   const histogram = {};
   for (const [label, min, max] of HISTOGRAM_BUCKETS) {
-    histogram[label] = files.filter((f) => f.size >= min && f.size < max).length;
+    histogram[label] = files.filter((/** @type {any} */ f) => f.size >= min && f.size < max).length;
   }
   return histogram;
 }
 
 /**
  * Compute dependency chain depth for each node using topological longest-path.
+ * @param {any} depGraph
  */
 function computeDepths(depGraph) {
+  /** @type {Record<string, string[]>} */
   const adj = {};
+  /** @type {Record<string, string[]>} */
   const revAdj = {};
   for (const edge of depGraph.edges) {
     if (!adj[edge.from]) adj[edge.from] = [];
@@ -538,12 +539,14 @@ function computeDepths(depGraph) {
   }
 
   // Find nodes with no incoming edges (roots)
+  /** @type {Set<string>} */
   const allNodes = new Set([...Object.keys(adj), ...Object.keys(revAdj)]);
-  const roots = [...allNodes].filter((n) => !revAdj[n] || revAdj[n].length === 0);
+  const roots = [...allNodes].filter((/** @type {string} */ n) => !revAdj[n] || revAdj[n].length === 0);
 
   // BFS to compute max depth from any root
+  /** @type {Record<string, number>} */
   const depth = {};
-  const queue = roots.map((r) => ({ node: r, d: 1 }));
+  const queue = roots.map((/** @type {string} */ r) => ({ node: r, d: 1 }));
   for (const { node, d } of queue) {
     if (!depth[node] || d > depth[node]) {
       depth[node] = d;
@@ -561,6 +564,7 @@ function computeDepths(depGraph) {
 
 /**
  * Compute MD5 hash of file content for duplicate detection.
+ * @param {string} filePath
  */
 function hashContent(filePath) {
   try {
@@ -574,8 +578,11 @@ function hashContent(filePath) {
 /**
  * Detect files with identical content (byte-for-byte duplicates).
  * Groups files by content hash, reports groups with 2+ members.
+ * @param {any[]} files
+ * @param {any} _projectRoot
  */
-function detectDuplicates(files, projectRoot) {
+function detectDuplicates(files, _projectRoot) {
+  /** @type {Map<string, any[]>} */
   const hashMap = new Map(); // hash → [{path, size}]
 
   for (const f of files) {
@@ -583,17 +590,18 @@ function detectDuplicates(files, projectRoot) {
     const hash = hashContent(f.path);
     if (!hash) continue;
     if (!hashMap.has(hash)) hashMap.set(hash, []);
-    hashMap.get(hash).push({ path: f.relPath, size: f.size });
+    const bucket = hashMap.get(hash);
+    if (bucket) bucket.push({ path: f.relPath, size: f.size });
   }
 
   // Filter to groups with 2+ files
   const groups = [...hashMap.values()]
-    .filter((g) => g.length >= 2)
+    .filter((/** @type {any[]} */ g) => g.length >= 2)
     .sort((a, b) => b[0].size * b.length - a[0].size * a.length) // sort by wasted bytes
     .slice(0, MAX_DUPLICATE_GROUPS);
 
-  return groups.map((g) => ({
-    files: g.map((f) => f.path),
+  return groups.map((/** @type {any[]} */ g) => ({
+    files: g.map((/** @type {any} */ f) => f.path),
     size: g[0].size,
     wastedBytes: g[0].size * (g.length - 1),
     count: g.length,
@@ -611,12 +619,16 @@ function detectDuplicates(files, projectRoot) {
  *   D  = Distance from Main Sequence = |A + I - 1|
  *
  * "Package" = top-level directory or second-level directory for large projects.
+ * @param {any[]} files
+ * @param {any} depGraph
  */
 function computePackageMetrics(files, depGraph) {
   // Determine package depth: use 1st level if >5 dirs, else 2nd level
-  const topDirs = new Set(files.map((f) => f.relPath.split("/")[0]));
+  /** @type {Set<string>} */
+  const topDirs = new Set(files.map((/** @type {any} */ f) => f.relPath.split("/")[0]));
   const useSecondLevel = topDirs.size <= 5;
 
+  /** @param {string} relPath */
   function getPackage(relPath) {
     const parts = relPath.split("/");
     // Root-level files go to "." (root package)
@@ -628,6 +640,7 @@ function computePackageMetrics(files, depGraph) {
   }
 
   // Group files by package
+  /** @type {Record<string, string[]>} */
   const pkgFiles = {}; // pkg → [relPath]
   for (const f of files) {
     const pkg = getPackage(f.relPath);
@@ -637,6 +650,7 @@ function computePackageMetrics(files, depGraph) {
   const packages = Object.keys(pkgFiles);
 
   // Build package-level dependency graph
+  /** @type {Set<string>} */
   const pkgEdges = new Set(); // "pkgA→pkgB"
   for (const edge of depGraph.edges) {
     const fromPkg = getPackage(edge.from);
@@ -647,7 +661,9 @@ function computePackageMetrics(files, depGraph) {
   }
 
   // Compute Ce (efferent) and Ca (afferent) per package
+  /** @type {Record<string, number>} */
   const ce = {}; // fan-out per package
+  /** @type {Record<string, number>} */
   const ca = {}; // fan-in per package
   for (const pkg of packages) { ce[pkg] = 0; ca[pkg] = 0; }
   for (const edge of pkgEdges) {
@@ -657,9 +673,12 @@ function computePackageMetrics(files, depGraph) {
   }
 
   // Compute file-level Ce/Ca/I for per-file coupling
+  /** @type {Record<string, number>} */
   const fileCe = {}; // fan-out per file
+  /** @type {Record<string, number>} */
   const fileCa = {}; // fan-in per file
-  const allNodes = new Set(depGraph.nodes.map((n) => n.path));
+  /** @type {Set<string>} */
+  const allNodes = new Set(depGraph.nodes.map((/** @type {any} */ n) => n.path));
   for (const n of allNodes) { fileCe[n] = 0; fileCa[n] = 0; }
   for (const edge of depGraph.edges) {
     fileCe[edge.from] = (fileCe[edge.from] || 0) + 1;
@@ -668,6 +687,7 @@ function computePackageMetrics(files, depGraph) {
 
   // Approximate abstractness: files whose name starts with "I" (interface),
   // or are .d.ts, or are in an "interface"/"types"/"abstract" directory
+  /** @param {string} relPath */
   function isAbstractFile(relPath) {
     const name = basename(relPath);
     const dir = dirname(relPath).toLowerCase();
@@ -739,6 +759,10 @@ function computePackageMetrics(files, depGraph) {
 /**
  * Resolve an import specifier to a relative path within the project.
  * Handles relative imports (./foo, ../bar) and aliases.
+ * @param {string} specifier
+ * @param {string} fromFile
+ * @param {string} projectRoot
+ * @param {any[]} allFiles
  */
 function resolveImport(specifier, fromFile, projectRoot, allFiles) {
   // Only resolve relative imports
@@ -753,7 +777,7 @@ function resolveImport(specifier, fromFile, projectRoot, allFiles) {
   resolved = relative(projectRoot, resolved);
 
   // If it already has an extension and exists, return it
-  const candidates = allFiles.filter((f) => {
+  const candidates = allFiles.filter((/** @type {any} */ f) => {
     const rel = f.relPath;
     return rel === resolved ||
       rel === resolved + ".js" ||
@@ -776,22 +800,26 @@ function resolveImport(specifier, fromFile, projectRoot, allFiles) {
 
 /**
  * Build a directed dependency graph from file imports.
+ * @param {any[]} files
+ * @param {string} projectRoot
  */
 function buildDepGraph(files, projectRoot) {
-  const fileSet = new Set(files.map((f) => f.relPath));
+  /** @type {any[]} */
   const edges = [];
+  /** @type {Set<string>} */
   const nodeSet = new Set();
 
   // Only parse files with known extensions
-  const parsableFiles = files.filter((f) => DEP_PARSE_EXTS.has(f.ext));
+  const parsableFiles = files.filter((/** @type {any} */ f) => DEP_PARSE_EXTS.has(f.ext));
 
   // If too many files, limit to largest ones
   const sortedForGraph = parsableFiles
-    .filter((f) => f.size >= MIN_DEP_FILE_SIZE)
-    .sort((a, b) => b.size - a.size)
+    .filter((/** @type {any} */ f) => f.size >= MIN_DEP_FILE_SIZE)
+    .sort((/** @type {any} */ a, /** @type {any} */ b) => b.size - a.size)
     .slice(0, MAX_GRAPH_NODES);
 
-  const graphFileSet = new Set(sortedForGraph.map((f) => f.relPath));
+  /** @type {Set<string>} */
+  const graphFileSet = new Set(sortedForGraph.map((/** @type {any} */ f) => f.relPath));
 
   for (const file of sortedForGraph) {
     const rawImports = parseImports(file.path);
@@ -807,8 +835,9 @@ function buildDepGraph(files, projectRoot) {
   }
 
   // Build node list with metadata
-  const fileMap = new Map(files.map((f) => [f.relPath, f]));
-  const nodes = [...nodeSet].map((relPath) => {
+  /** @type {Map<string, any>} */
+  const fileMap = new Map(files.map((/** @type {any} */ f) => [f.relPath, f]));
+  const nodes = [...nodeSet].map((/** @type {string} */ relPath) => {
     const f = fileMap.get(relPath);
     return {
       path: relPath,
@@ -829,11 +858,15 @@ function buildDepGraph(files, projectRoot) {
  *   - transitiveFanIn: for each node, the set of nodes that can reach it
  *   - bridgeModules: nodes whose removal disconnects the graph (articulation points, simplified)
  *   - indirectDeps: top nodes with the most indirect (non-direct) dependencies
+ * @param {any} depGraph
  */
 function computeTransitiveDeps(depGraph) {
   // Build adjacency list
+  /** @type {Record<string, string[]>} */
   const adj = {};     // forward edges
+  /** @type {Record<string, string[]>} */
   const revAdj = {};  // reverse edges
+  /** @type {Set<string>} */
   const nodes = new Set();
 
   for (const n of depGraph.nodes) {
@@ -855,17 +888,21 @@ function computeTransitiveDeps(depGraph) {
   const allNodes = [...nodes];
 
   // BFS to compute reachable set (transitive fan-out) for each node
+  /** @type {Record<string, Set<string>>} */
   const reachable = {}; // node → Set of reachable nodes
+  /** @type {Record<string, Set<string>>} */
   const directDeps = {}; // node → Set of direct deps
 
   for (const n of allNodes) {
     directDeps[n] = new Set(adj[n]);
     // BFS
+    /** @type {Set<string>} */
     const visited = new Set();
     const queue = [n];
     visited.add(n);
     while (queue.length > 0) {
       const current = queue.shift();
+      if (!current) continue;
       for (const neighbor of adj[current] || []) {
         if (!visited.has(neighbor)) {
           visited.add(neighbor);
@@ -878,6 +915,7 @@ function computeTransitiveDeps(depGraph) {
   }
 
   // Compute transitive fan-in (reverse reachability)
+  /** @type {Record<string, Set<string>>} */
   const reaching = {}; // node → Set of nodes that can reach it
   for (const n of allNodes) {
     const visited = new Set();
@@ -885,6 +923,7 @@ function computeTransitiveDeps(depGraph) {
     visited.add(n);
     while (queue.length > 0) {
       const current = queue.shift();
+      if (!current) continue;
       for (const neighbor of revAdj[current] || []) {
         if (!visited.has(neighbor)) {
           visited.add(neighbor);
@@ -949,8 +988,11 @@ function computeTransitiveDeps(depGraph) {
 
 /**
  * Find disconnected subgraphs using BFS on undirected version of graph.
+ * @param {string[]} nodes
+ * @param {Record<string, string[]>} adj
  */
 function findDisconnectedSubgraphs(nodes, adj) {
+  /** @type {Record<string, Set<string>>} */
   const undirected = {};
   for (const n of nodes) {
     undirected[n] = new Set(adj[n] || []);
@@ -972,6 +1014,7 @@ function findDisconnectedSubgraphs(nodes, adj) {
     const queue = [n];
     while (queue.length > 0) {
       const current = queue.shift();
+      if (!current) continue;
       if (visited.has(current)) continue;
       visited.add(current);
       component.add(current);
@@ -992,11 +1035,11 @@ function findDisconnectedSubgraphs(nodes, adj) {
  * Cross-references churn with file size to identify change hotspots.
  *
  * @param {string} projectRoot
- * @param {object} opts - { timeWindow: '30 days' | '90 days' | 'all' }
+ * @param {any[]} files
+ * @param {{ timeWindow?: string }} [opts] - { timeWindow: '30 days' | '90 days' | 'all' }
  */
 function computeGitChurn(projectRoot, files, opts = {}) {
   const timeWindow = opts.timeWindow || "90 days";
-  const fileSet = new Set(files.map((f) => f.relPath));
 
   let gitOutput;
   try {
@@ -1010,10 +1053,11 @@ function computeGitChurn(projectRoot, files, opts = {}) {
   // Parse git output: each line is a changed file path
   const changedFiles = gitOutput
     .split("\n")
-    .map((l) => l.trim())
-    .filter((l) => l.length > 0);
+    .map((/** @type {string} */ l) => l.trim())
+    .filter((/** @type {string} */ l) => l.length > 0);
 
   // Count changes per file
+  /** @type {Record<string, number>} */
   const churnCount = {};
   for (const f of changedFiles) {
     churnCount[f] = (churnCount[f] || 0) + 1;
@@ -1081,14 +1125,20 @@ function computeGitChurn(projectRoot, files, opts = {}) {
  * Layer violation: a lower layer (higher layer number) depending on an upper layer
  * (lower layer number). This is the "downward dependency rule" — foundations
  * should not depend on entries.
+ * @param {any[]} files
+ * @param {any} depGraph
  */
 function detectLayers(files, depGraph) {
   if (depGraph.edges.length === 0) return { layers: [], violations: [], layerCount: 0 };
 
   // Compute fan-in and fan-out for each node
+  /** @type {Record<string, number>} */
   const fanIn = {};
+  /** @type {Record<string, number>} */
   const fanOut = {};
+  /** @type {Record<string, string[]>} */
   const adj = {};
+  /** @type {Record<string, string[]>} */
   const revAdj = {};
 
   for (const n of depGraph.nodes) {
@@ -1104,12 +1154,13 @@ function detectLayers(files, depGraph) {
     if (revAdj[edge.to]) revAdj[edge.to].push(edge.from);
   }
 
-  const allNodes = depGraph.nodes.map((n) => n.path);
+  const allNodes = depGraph.nodes.map((/** @type {{path: string}} */ n) => n.path);
 
   // Compute topological layer using BFS from entry nodes (fan-in = 0)
-  const entryNodes = allNodes.filter((n) => fanIn[n] === 0);
+  const entryNodes = allNodes.filter((/** @type {string} */ n) => fanIn[n] === 0);
+  /** @type {Record<string, number>} */
   const layerAssignment = {};
-  const queue = entryNodes.map((n) => ({ node: n, layer: 0 }));
+  const queue = entryNodes.map((/** @type {string} */ n) => ({ node: n, layer: 0 }));
 
   while (queue.length > 0) {
     const { node, layer } = queue.shift();
@@ -1130,6 +1181,7 @@ function detectLayers(files, depGraph) {
   const maxLayer = Math.max(0, ...Object.values(layerAssignment));
 
   // Detect layer violations: lower layer (higher number) → upper layer (lower number)
+  /** @type {any[]} */
   const violations = [];
   for (const edge of depGraph.edges) {
     const fromLayer = layerAssignment[edge.from] ?? 0;
@@ -1148,6 +1200,7 @@ function detectLayers(files, depGraph) {
   }
 
   // Group nodes by layer
+  /** @type {Record<string, string[]>} */
   const layerGroups = {};
   for (const n of allNodes) {
     const l = layerAssignment[n] ?? 0;
@@ -1162,17 +1215,17 @@ function detectLayers(files, depGraph) {
       nodeCount: nodeList.length,
       // Find representative files (largest in this layer)
       representatives: nodeList
-        .map((n) => {
-          const node = depGraph.nodes.find((nd) => nd.path === n);
+        .map((/** @type {string} */ n) => {
+          const node = depGraph.nodes.find((/** @type {{path: string}} */ nd) => nd.path === n);
           return { path: n, size: node ? node.size : 0 };
         })
-        .sort((a, b) => b.size - a.size)
+        .sort((/** @type {any} */ a, /** @type {any} */ b) => b.size - a.size)
         .slice(0, 5)
-        .map((x) => x.path.split("/").pop()),
+        .map((/** @type {any} */ x) => x.path.split("/").pop()),
       // Ratio of intra-layer edges vs cross-layer
-      avgFanOut: nodeList.length > 0 ? +(nodeList.reduce((s, n) => s + (fanOut[n] || 0), 0) / nodeList.length).toFixed(1) : 0,
+      avgFanOut: nodeList.length > 0 ? +(nodeList.reduce((/** @type {number} */ s, /** @type {string} */ n) => s + (fanOut[n] || 0), 0) / nodeList.length).toFixed(1) : 0,
     }))
-    .sort((a, b) => a.layer - b.layer);
+    .sort((/** @type {any} */ a, /** @type {any} */ b) => a.layer - b.layer);
 
   // Violation severity summary
   const severeViolations = violations.filter((v) => v.gap > 1).length;
@@ -1195,6 +1248,9 @@ function detectLayers(files, depGraph) {
  * High co-change frequency suggests implicit coupling not captured by import analysis.
  *
  * Co-change score = Jaccard similarity of commit sets between two files.
+ * @param {string} projectRoot
+ * @param {any[]} files
+ * @param {{ timeWindow?: string, maxPairs?: number }} [opts]
  */
 function computeCoChange(projectRoot, files, opts = {}) {
   const timeWindow = opts.timeWindow || "90 days";
@@ -1215,21 +1271,23 @@ function computeCoChange(projectRoot, files, opts = {}) {
   // Parse: each commit is separated by --COMMIT--
   const commits = gitOutput
     .split("--COMMIT--")
-    .map((block) =>
+    .map((/** @type {string} */ block) =>
       block
         .trim()
         .split("\n")
-        .map((l) => l.trim())
-        .filter((l) => l.length > 0 && fileSet.has(l))
+        .map((/** @type {string} */ l) => l.trim())
+        .filter((/** @type {string} */ l) => l.length > 0 && fileSet.has(l))
     )
-    .filter((files) => files.length >= 2); // only commits with 2+ tracked files
+    .filter((/** @type {string[]} */ files) => files.length >= 2); // only commits with 2+ tracked files
 
   if (commits.length === 0) {
     return { available: true, timeWindow, pairs: [], summary: { totalCommits: 0, coChangedFiles: 0 }, commitCount: 0 };
   }
 
   // Count co-occurrences per file pair
+  /** @type {Record<string, number>} */
   const pairCounts = {}; // "fileA||fileB" → count
+  /** @type {Record<string, Set<number>>} */
   const fileCommitSets = {}; // file → Set of commit indices
 
   for (let ci = 0; ci < commits.length; ci++) {
@@ -1291,11 +1349,13 @@ function computeCoChange(projectRoot, files, opts = {}) {
 
 /**
  * Find clusters of files that change together (connected components in co-change graph).
+ * @param {any[]} pairs
  */
 function findCoChangeClusters(pairs) {
   if (pairs.length === 0) return [];
 
   // Build adjacency for strong co-change (strength > 2)
+  /** @type {Record<string, Set<string>>} */
   const adj = {};
   for (const p of pairs) {
     if (p.strength < 2) continue;
@@ -1315,6 +1375,7 @@ function findCoChangeClusters(pairs) {
     const queue = [node];
     while (queue.length > 0) {
       const current = queue.shift();
+      if (!current) continue;
       if (visited.has(current)) continue;
       visited.add(current);
       component.push(current);
@@ -1326,9 +1387,9 @@ function findCoChangeClusters(pairs) {
   }
 
   return clusters
-    .sort((a, b) => b.length - a.length)
+    .sort((/** @type {any[]} */ a, /** @type {any[]} */ b) => b.length - a.length)
     .slice(0, 10)
-    .map((c) => ({ files: c.slice(0, 10), size: c.length }));
+    .map((/** @type {string[]} */ c) => ({ files: c.slice(0, 10), size: c.length }));
 }
 
 // ── Risk scoring ────────────────────────────────────────────────────────────
@@ -1345,6 +1406,8 @@ function findCoChangeClusters(pairs) {
  *   - zonePainRisk: binary (1 if in zone-of-pain package, 0 otherwise)
  *
  * Composite: weighted average × 100 → 0-100 risk score
+ * @param {any[]} files
+ * @param {any} stats
  */
 function computeRiskScores(files, stats) {
   const { circularDeps, orphanFiles, packageMetrics, gitChurn } = stats;
@@ -1355,9 +1418,8 @@ function computeRiskScores(files, stats) {
     for (const node of cycle) circularSet.add(node);
   }
 
-  const orphanSet = new Set((orphanFiles || []).map((f) => f.path));
+  const orphanSet = new Set((orphanFiles || []).map((/** @type {any} */ f) => f.path));
 
-  const zonePainSet = new Set();
   if (packageMetrics && packageMetrics.packages) {
     for (const pkg of packageMetrics.packages) {
       if (pkg.zone === "zone-of-pain") {
@@ -1380,9 +1442,9 @@ function computeRiskScores(files, stats) {
   // We'll compute from transitiveDeps if available, else use direct
 
   // Compute risk per file (only for source files > 100 bytes)
-  const sourceFiles = files.filter((f) => f.size > 100 && (DEP_PARSE_EXTS.has(f.ext) || f.ext === ".html" || f.ext === ".md" || f.ext === ".json" || f.ext === ".yaml" || f.ext === ".yml"));
+  const sourceFiles = files.filter((/** @type {any} */ f) => f.size > 100 && (DEP_PARSE_EXTS.has(f.ext) || f.ext === ".html" || f.ext === ".md" || f.ext === ".json" || f.ext === ".yaml" || f.ext === ".yml"));
 
-  const riskScores = sourceFiles.map((f) => {
+  const riskScores = sourceFiles.map((/** @type {any} */ f) => {
     // Size risk: log scale, max at LARGE_FILE_THRESHOLD
     const sizeRisk = Math.min(1, Math.log2(f.size / 1024 + 1) / Math.log2(LARGE_FILE_THRESHOLD / 1024 + 1));
 
@@ -1420,9 +1482,10 @@ function computeRiskScores(files, stats) {
   });
 
   // Sort by composite risk descending
-  riskScores.sort((a, b) => b.composite - a.composite);
+  riskScores.sort((/** @type {any} */ a, /** @type {any} */ b) => b.composite - a.composite);
 
   // Risk distribution
+  /** @type {Record<string, number>} */
   const riskBuckets = { "low (0-20)": 0, "medium (20-40)": 0, "high (40-60)": 0, "critical (60-80)": 0, "extreme (80-100)": 0 };
   for (const r of riskScores) {
     const c = r.composite * 100;
@@ -1433,7 +1496,7 @@ function computeRiskScores(files, stats) {
     else riskBuckets["extreme (80-100)"]++;
   }
 
-  const avgRisk = riskScores.length > 0 ? +(riskScores.reduce((s, r) => s + r.composite, 0) / riskScores.length * 100).toFixed(1) : 0;
+  const avgRisk = riskScores.length > 0 ? +(riskScores.reduce((/** @type {number} */ s, /** @type {any} */ r) => s + r.composite, 0) / riskScores.length * 100).toFixed(1) : 0;
 
   return {
     topRisks: riskScores.slice(0, 25),
@@ -1448,6 +1511,8 @@ function computeRiskScores(files, stats) {
 /**
  * Generate actionable refactoring recommendations from analysis data.
  * Each recommendation has: severity (P0/P1/P2), category, description, and affected files.
+ * @param {any[]} files
+ * @param {any} stats
  */
 function generateRecommendations(files, stats) {
   const recs = [];
@@ -1471,7 +1536,7 @@ function generateRecommendations(files, stats) {
       recs.push({
         severity: "P0",
         category: "circular-dep",
-        title: `Break circular dependency: ${cycle.slice(0, 3).map((c) => c.split("/").pop()).join(" → ")}`,
+        title: `Break circular dependency: ${cycle.slice(0, 3).map((/** @type {string} */ c) => c.split("/").pop()).join(" → ")}`,
         description: `Circular dependency chain of ${cycle.length - 1} files. Extract shared interface/types into a separate module that both depend on.`,
         files: cycle.slice(0, -1),
       });
@@ -1480,7 +1545,7 @@ function generateRecommendations(files, stats) {
 
   // P1: Zone-of-pain packages
   if (stats.packageMetrics && stats.packageMetrics.packages) {
-    const painPkgs = stats.packageMetrics.packages.filter((p) => p.zone === "zone-of-pain");
+    const painPkgs = stats.packageMetrics.packages.filter((/** @type {any} */ p) => p.zone === "zone-of-pain");
     for (const p of painPkgs.slice(0, 3)) {
       recs.push({
         severity: "P1",
@@ -1494,7 +1559,7 @@ function generateRecommendations(files, stats) {
 
   // P1: Layer violations (severe)
   if (stats.layerAnalysis && stats.layerAnalysis.violations) {
-    const severe = stats.layerAnalysis.violations.filter((v) => v.gap > 1);
+    const severe = stats.layerAnalysis.violations.filter((/** @type {any} */ v) => v.gap > 1);
     for (const v of severe.slice(0, 3)) {
       recs.push({
         severity: "P1",
@@ -1528,19 +1593,19 @@ function generateRecommendations(files, stats) {
       category: "dead-code",
       title: `Review ${stats.orphanFiles.length} orphan files for dead code`,
       description: "These files are not imported by any other file. Verify they are not entry points or configuration, then remove if unused.",
-      files: stats.orphanFiles.slice(0, 5).map((f) => f.path),
+      files: stats.orphanFiles.slice(0, 5).map((/** @type {any} */ f) => f.path),
     });
   }
 
   // P2: Duplicate files
   if (stats.duplicates && stats.duplicates.length > 0) {
-    const totalWasted = stats.duplicates.reduce((s, d) => s + (d.wastedBytes || 0), 0);
+    const totalWasted = stats.duplicates.reduce((/** @type {number} */ s, /** @type {any} */ d) => s + (d.wastedBytes || 0), 0);
     recs.push({
       severity: "P2",
       category: "duplication",
       title: `Eliminate ${stats.duplicates.length} duplicate file groups`,
       description: `${formatBytes(totalWasted)} wasted by duplicated files. Extract shared content into a single module and import it.`,
-      files: stats.duplicates.slice(0, 3).flatMap((g) => g.files),
+      files: stats.duplicates.slice(0, 3).flatMap((/** @type {any} */ g) => g.files),
     });
   }
 
@@ -1574,8 +1639,10 @@ function generateRecommendations(files, stats) {
  * the simple DFS cycle detection (which finds cycles but not full SCCs).
  *
  * Complexity: O(V + E) — linear in nodes + edges.
+ * @param {any} depGraph
  */
 function computeSCC(depGraph) {
+  /** @type {Record<string, string[]>} */
   const adj = {};
   for (const n of depGraph.nodes) adj[n.path] = [];
   for (const edge of depGraph.edges) {
@@ -1588,13 +1655,17 @@ function computeSCC(depGraph) {
   if (nodes.length === 0) return { components: [], multiNodeComponents: [], largestSCCSize: 0, sccCount: 0 };
 
   let index = 0;
+  /** @type {Record<string, number>} */
   const indices = {};    // node → discovery index
+  /** @type {Record<string, number>} */
   const lowlink = {};    // node → lowest index reachable
   const onStack = new Set();
+  /** @type {string[]} */
   const stack = [];
+  /** @type {string[][]} */
   const components = [];
 
-  function strongConnect(v) {
+  function strongConnect(/** @type {string} */ v) {
     indices[v] = index;
     lowlink[v] = index;
     index++;
@@ -1614,10 +1685,13 @@ function computeSCC(depGraph) {
 
     // If v is a root node, pop the stack to form an SCC
     if (lowlink[v] === indices[v]) {
+      /** @type {string[]} */
       const component = [];
+      /** @type {string | undefined} */
       let w;
       do {
         w = stack.pop();
+        if (w === undefined) break;
         onStack.delete(w);
         component.push(w);
       } while (w !== v);
@@ -1633,12 +1707,13 @@ function computeSCC(depGraph) {
 
   // Filter to multi-node SCCs (actual circular dependency groups)
   const multiNodeComponents = components
-    .filter((c) => c.length >= 2)
-    .sort((a, b) => b.length - a.length);
+    .filter((/** @type {string[]} */ c) => c.length >= 2)
+    .sort((/** @type {string[]} */ a, /** @type {string[]} */ b) => b.length - a.length);
 
   const largestSCCSize = multiNodeComponents.length > 0 ? multiNodeComponents[0].length : 0;
 
   // SCC size distribution
+  /** @type {Record<string, number>} */
   const sizeDist = {};
   for (const c of components) {
     const bucket = c.length === 1 ? "1" : c.length <= 3 ? "2-3" : c.length <= 5 ? "4-5" : c.length <= 10 ? "6-10" : "11+";
@@ -1670,9 +1745,11 @@ function computeSCC(depGraph) {
  *
  * Uses Brandes' algorithm (unweighted): O(V × (V + E)) — quadratic but
  * acceptable for our capped graph (≤500 nodes).
+ * @param {any} depGraph
  */
 function computeBetweenness(depGraph) {
-  const nodes = depGraph.nodes.map((n) => n.path);
+  const nodes = depGraph.nodes.map((/** @type {{path: string}} */ n) => n.path);
+  /** @type {Record<string, string[]>} */
   const adj = {};
   for (const n of nodes) adj[n] = [];
   for (const edge of depGraph.edges) {
@@ -1683,15 +1760,20 @@ function computeBetweenness(depGraph) {
   if (nodes.length === 0) return { topBottlenecks: [], avgBetweenness: 0, maxBetweenness: 0 };
 
   // Betweenness score per node
+  /** @type {Record<string, number>} */
   const betweenness = {};
   for (const n of nodes) betweenness[n] = 0;
 
   // Brandes' algorithm: run BFS from each source node
   for (const s of nodes) {
     // BFS-based shortest path counting (unweighted)
+    /** @type {Record<string, number>} */
     const dist = {};       // node → distance from s
+    /** @type {Record<string, number>} */
     const sigma = {};      // node → number of shortest paths from s
+    /** @type {Record<string, string[]>} */
     const pred = {};       // node → list of predecessors on shortest paths
+    /** @type {string[]} */
     const stack = [];      // nodes in order of non-increasing distance
 
     for (const n of nodes) {
@@ -1705,6 +1787,7 @@ function computeBetweenness(depGraph) {
     const queue = [s];
     while (queue.length > 0) {
       const v = queue.shift();
+      if (v === undefined) break;
       stack.push(v);
       for (const w of adj[v] || []) {
         // w found for the first time?
@@ -1721,12 +1804,14 @@ function computeBetweenness(depGraph) {
     }
 
     // Back-propagation: accumulate dependencies
+    /** @type {Record<string, number>} */
     const delta = {};
     for (const n of nodes) delta[n] = 0;
 
     while (stack.length > 0) {
       const w = stack.pop();
-      for (const v of pred[w]) {
+      if (w === undefined) break;
+      for (const v of pred[w] || []) {
         delta[v] += (sigma[v] / sigma[w]) * (1 + delta[w]);
       }
       if (w !== s) {
@@ -1758,26 +1843,10 @@ function computeBetweenness(depGraph) {
 // ── Temporal trend persistence ──────────────────────────────────────────────
 
 /**
- * Save analysis run to trend file for temporal tracking.
- * Format: JSONL (one JSON object per line), each line is a run snapshot.
- */
-function saveTrend(projectRoot, trendData) {
-  const trendPath = join(projectRoot, ".memory/bundle-trend.jsonl");
-  try {
-    const dir = dirname(trendPath);
-    if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-    const line = JSON.stringify(trendData) + "\n";
-    const existing = existsSync(trendPath) ? readFileSync(trendPath, "utf-8") : "";
-    writeFileSync(trendPath, existing + line, "utf-8");
-    return trendPath;
-  } catch {
-    return null;
-  }
-}
-
-/**
  * Load trend history from JSONL file.
  * Returns array of run snapshots, most recent first.
+ * @param {string} projectRoot
+ * @returns {any[]}
  */
 function loadTrend(projectRoot) {
   const trendPath = join(projectRoot, ".memory/bundle-trend.jsonl");
@@ -1788,8 +1857,8 @@ function loadTrend(projectRoot) {
     return content
       .trim()
       .split("\n")
-      .filter((l) => l.trim())
-      .map((l) => {
+      .filter((/** @type {string} */ l) => l.trim())
+      .map((/** @type {string} */ l) => {
         try { return JSON.parse(l); } catch { return null; }
       })
       .filter(Boolean);
@@ -1800,6 +1869,9 @@ function loadTrend(projectRoot) {
 
 /**
  * Save the current analysis run to the trend file and analyze trends.
+ * @param {string} projectRoot
+ * @param {any} stats
+ * @param {any} meta
  */
 function persistAndAnalyzeTrend(projectRoot, stats, meta) {
   const trendPath = join(projectRoot, ".memory/bundle-trend.jsonl");
@@ -1842,6 +1914,7 @@ function persistAndAnalyzeTrend(projectRoot, stats, meta) {
   const history = loadTrend(projectRoot);
 
   // Compute trend metrics (if 2+ data points)
+  /** @type {{ dataPoints: number, sizeDelta: number, sizeDeltaPercent: number, fileCountDelta: number, riskDelta: number, circularDelta: number, anomalies: string[], smaSize: number, smaRisk: number } | null} */
   let trendAnalysis = null;
   if (history.length >= 2) {
     const prev = history[history.length - 2]; // second-to-last
@@ -1874,8 +1947,8 @@ function persistAndAnalyzeTrend(projectRoot, stats, meta) {
 
     // Compute SMA over last min(5, history.length) points
     const window = history.slice(-Math.min(5, history.length));
-    trendAnalysis.smaSize = +(window.reduce((s, p) => s + p.totalSize, 0) / window.length).toFixed(0);
-    trendAnalysis.smaRisk = +(window.reduce((s, p) => s + p.avgRisk, 0) / window.length).toFixed(1);
+    trendAnalysis.smaSize = +(window.reduce((/** @type {number} */ s, /** @type {any} */ p) => s + p.totalSize, 0) / window.length).toFixed(0);
+    trendAnalysis.smaRisk = +(window.reduce((/** @type {number} */ s, /** @type {any} */ p) => s + p.avgRisk, 0) / window.length).toFixed(1);
   }
 
   return { trendPath, history, trendAnalysis };
@@ -1891,6 +1964,7 @@ function persistAndAnalyzeTrend(projectRoot, stats, meta) {
  *   2. Files with high import coupling (direct deps) should be in the same module
  *   3. Files in the same directory but with ZERO coupling may be mis-placed
  *   4. Packages with very low cohesion (< 0.2) may need splitting
+ * @param {any} stats
  */
 function suggestModuleBoundaries(stats) {
   const suggestions = [];
@@ -1981,9 +2055,11 @@ function suggestModuleBoundaries(stats) {
  * importance of the referring file.
  *
  * Complexity: O(k × E) where k = iterations (fixed at 100 for convergence).
+ * @param {any} depGraph
+ * @param {{ damping?: number, maxIter?: number, tolerance?: number }} [opts]
  */
 function computePageRank(depGraph, opts = {}) {
-  const nodes = depGraph.nodes.map((n) => n.path);
+  const nodes = depGraph.nodes.map((/** @type {{path: string}} */ n) => n.path);
   if (nodes.length === 0) return { topRanked: [], avgPagerank: 0, maxPagerank: 0 };
 
   const damping = opts.damping || 0.85;
@@ -1992,7 +2068,9 @@ function computePageRank(depGraph, opts = {}) {
   const N = nodes.length;
 
   // Build adjacency (outgoing edges) and identify dangling nodes (no outgoing)
+  /** @type {Record<string, string[]>} */
   const adj = {};
+  /** @type {Record<string, number>} */
   const outDegree = {};
   for (const n of nodes) { adj[n] = []; outDegree[n] = 0; }
   for (const edge of depGraph.edges) {
@@ -2001,11 +2079,12 @@ function computePageRank(depGraph, opts = {}) {
   }
 
   // PageRank vector
-  let pr = {};
+  /** @type {Record<string, number>} */
+  const pr = {};
   for (const n of nodes) pr[n] = 1 / N;
 
   // Dangling nodes get uniform distribution
-  const danglingNodes = nodes.filter((n) => outDegree[n] === 0);
+  const danglingNodes = nodes.filter((/** @type {string} */ n) => outDegree[n] === 0);
 
   for (let iter = 0; iter < maxIter; iter++) {
     const prevPR = { ...pr };
@@ -2033,13 +2112,13 @@ function computePageRank(depGraph, opts = {}) {
   // Sort by PageRank descending
   const ranked = Object.entries(pr)
     .map(([path, score]) => ({ path, pagerank: +score.toFixed(6) }))
-    .sort((a, b) => b.pagerank - a.pagerank);
+    .sort((/** @type {any} */ a, /** @type {any} */ b) => b.pagerank - a.pagerank);
 
   const avgPagerank = 1 / N;
   const maxPagerank = ranked[0]?.pagerank || 0;
 
   // Files with significantly high PageRank (> 3× average)
-  const authoritativeFiles = ranked.filter((x) => x.pagerank > avgPagerank * 3);
+  const authoritativeFiles = ranked.filter((/** @type {any} */ x) => x.pagerank > avgPagerank * 3);
 
   return {
     topRanked: ranked.slice(0, 25),
@@ -2060,12 +2139,15 @@ function computePageRank(depGraph, opts = {}) {
  *   - __tests__/file.ext
  *   - tests/file.ext (mirror structure)
  *   - file name contains .test. or .spec.
+ * @param {any[]} files
+ * @param {any} riskScores
+ * @param {string} _projectRoot
  */
-function analyzeTestGaps(files, riskScores, projectRoot) {
-  const fileSet = new Set(files.map((f) => f.relPath));
+function analyzeTestGaps(files, riskScores, _projectRoot) {
+  const fileSet = new Set(files.map((/** @type {any} */ f) => f.relPath));
   const testPatterns = [".test.", ".spec.", "-test.", "-spec.", "_test.", "_spec."];
 
-  function hasTestFile(fileRelPath) {
+  function hasTestFile(/** @type {string} */ fileRelPath) {
     const dir = dirname(fileRelPath);
     const base = basename(fileRelPath);
     const ext = extname(base);
@@ -2104,11 +2186,12 @@ function analyzeTestGaps(files, riskScores, projectRoot) {
   }
 
   // Analyze source files (not test files themselves)
-  const sourceFiles = files.filter((f) => {
+  const sourceFiles = files.filter((/** @type {any} */ f) => {
     const lower = basename(f.relPath).toLowerCase();
     return !testPatterns.some((tp) => lower.includes(tp));
   });
 
+  /** @type {any[]} */
   const untestedFiles = [];
   for (const f of sourceFiles) {
     // Skip non-source files
@@ -2117,7 +2200,7 @@ function analyzeTestGaps(files, riskScores, projectRoot) {
 
     if (!hasTestFile(f.relPath)) {
       // Determine risk based on size and risk score
-      const risk = riskScores?.topRisks?.find((r) => r.path === f.relPath);
+      const risk = riskScores?.topRisks?.find((/** @type {any} */ r) => r.path === f.relPath);
       const compositeRisk = risk?.composite || 0;
       untestedFiles.push({
         path: f.relPath,
@@ -2128,15 +2211,15 @@ function analyzeTestGaps(files, riskScores, projectRoot) {
   }
 
   // Sort by risk score descending (highest-risk untested files first)
-  untestedFiles.sort((a, b) => b.riskScore - a.riskScore);
+  untestedFiles.sort((/** @type {any} */ a, /** @type {any} */ b) => b.riskScore - a.riskScore);
 
   // Summary
-  const totalSourceFiles = sourceFiles.filter((f) => DEP_PARSE_EXTS.has(f.ext) || f.ext === ".vue" || f.ext === ".svelte").length;
+  const totalSourceFiles = sourceFiles.filter((/** @type {any} */ f) => DEP_PARSE_EXTS.has(f.ext) || f.ext === ".vue" || f.ext === ".svelte").length;
   const testedCount = totalSourceFiles - untestedFiles.length;
   const coverageRate = totalSourceFiles > 0 ? +((testedCount / totalSourceFiles) * 100).toFixed(1) : 0;
 
   // High priority: untested files with high risk
-  const highPriority = untestedFiles.filter((f) => f.riskScore > 0.15 || f.size > 50_000);
+  const highPriority = untestedFiles.filter((/** @type {any} */ f) => f.riskScore > 0.15 || f.size > 50_000);
 
   return {
     untestedFiles: untestedFiles.slice(0, 30),
@@ -2157,6 +2240,8 @@ function analyzeTestGaps(files, riskScores, projectRoot) {
  *
  * This answers: "If I modify file X, what's the probability file Y also needs changes?"
  * High propagation probability → files are tightly coupled in practice.
+ * @param {any} coChange
+ * @param {any} gitChurn
  */
 function computeChangePropagation(coChange, gitChurn) {
   if (!coChange || !coChange.available || !coChange.pairs || coChange.pairs.length === 0) {
@@ -2164,6 +2249,7 @@ function computeChangePropagation(coChange, gitChurn) {
   }
 
   // Build change count per file from churn data
+  /** @type {Record<string, number>} */
   const changeCount = {};
   if (gitChurn && gitChurn.available && gitChurn.topHotFiles) {
     for (const f of gitChurn.topHotFiles) {
@@ -2171,7 +2257,7 @@ function computeChangePropagation(coChange, gitChurn) {
     }
   }
 
-  const propagations = coChange.pairs.map((pair) => {
+  const propagations = coChange.pairs.map((/** @type {any} */ pair) => {
     const [a, b] = pair.files;
     const ca = changeCount[a] || pair.coChangeCount;
     const cb = changeCount[b] || pair.coChangeCount;
@@ -2191,10 +2277,10 @@ function computeChangePropagation(coChange, gitChurn) {
   });
 
   // Sort by max propagation probability
-  propagations.sort((a, b) => b.maxPropagation - a.maxPropagation);
+  propagations.sort((/** @type {any} */ a, /** @type {any} */ b) => b.maxPropagation - a.maxPropagation);
 
   // High propagation pairs (>50% probability)
-  const highPropagation = propagations.filter((p) => p.maxPropagation >= 50);
+  const highPropagation = propagations.filter((/** @type {any} */ p) => p.maxPropagation >= 50);
 
   return {
     available: true,
@@ -2215,10 +2301,13 @@ function computeChangePropagation(coChange, gitChurn) {
  *
  * For each file: how many unique contributors? Files with only 1 contributor
  * are bus-factor=1 risks.
+ * @param {string} projectRoot
+ * @param {any[]} files
+ * @param {{ timeWindow?: string }} [opts]
  */
 function computeKnowledgeDistribution(projectRoot, files, opts = {}) {
   const timeWindow = opts.timeWindow || "180 days";
-  const fileSet = new Set(files.map((f) => f.relPath));
+  const fileSet = new Set(files.map((/** @type {any} */ f) => f.relPath));
 
   let gitOutput;
   try {
@@ -2230,7 +2319,7 @@ function computeKnowledgeDistribution(projectRoot, files, opts = {}) {
   }
 
   // Parse shortlog: each line is like "  137\tAuthor Name <email>"
-  const contributorLines = gitOutput.trim().split("\n").filter((l) => l.trim());
+  const contributorLines = gitOutput.trim().split("\n").filter((/** @type {string} */ l) => l.trim());
   const totalContributors = contributorLines.length;
 
   // For per-file contributor info, use git log with a different format
@@ -2245,7 +2334,8 @@ function computeKnowledgeDistribution(projectRoot, files, opts = {}) {
   }
 
   // Parse: blocks separated by --AUTHOR--AuthorName, followed by file list
-  const blocks = fileContribOutput.split("--AUTHOR--").filter((b) => b.trim());
+  const blocks = fileContribOutput.split("--AUTHOR--").filter((/** @type {string} */ b) => b.trim());
+  /** @type {Record<string, Set<string>>} */
   const fileContributors = {}; // file → Set of authors
 
   for (const block of blocks) {
@@ -2268,19 +2358,20 @@ function computeKnowledgeDistribution(projectRoot, files, opts = {}) {
       contributorCount: authors.size,
       contributors: [...authors].slice(0, 5),
     }))
-    .sort((a, b) => a.contributorCount - b.contributorCount);
+    .sort((/** @type {any} */ a, /** @type {any} */ b) => a.contributorCount - b.contributorCount);
 
   // Bus factor 1 risks: files touched by only 1 person
-  const busFactorRisks = fileOwnership.filter((f) => f.contributorCount === 1);
+  const busFactorRisks = fileOwnership.filter((/** @type {any} */ f) => f.contributorCount === 1);
 
   // Files with no recent contributions (abandoned?)
   const abandonedFiles = files
-    .filter((f) => DEP_PARSE_EXTS.has(f.ext) && f.size > 200 && !fileContributors[f.relPath])
-    .map((f) => ({ path: f.relPath, size: f.size }))
-    .sort((a, b) => b.size - a.size)
+    .filter((/** @type {any} */ f) => DEP_PARSE_EXTS.has(f.ext) && f.size > 200 && !fileContributors[f.relPath])
+    .map((/** @type {any} */ f) => ({ path: f.relPath, size: f.size }))
+    .sort((/** @type {any} */ a, /** @type {any} */ b) => b.size - a.size)
     .slice(0, 20);
 
   // Distribution statistics
+  /** @type {Record<string, number>} */
   const contribCountDist = {};
   for (const f of fileOwnership) {
     const bucket = f.contributorCount === 1 ? "1" : f.contributorCount === 2 ? "2" : f.contributorCount <= 3 ? "3" : f.contributorCount <= 5 ? "4-5" : "6+";
@@ -2315,9 +2406,12 @@ function computeKnowledgeDistribution(projectRoot, files, opts = {}) {
  *   - cyclomaticComplexity: M = branchPoints + 1 (McCabe's formula)
  *   - density: loc / size_bytes (code density indicator)
  *   - commentRatio: comment lines / total lines
+ * @param {any[]} files
+ * @param {string} _projectRoot
  */
-function computeComplexity(files, projectRoot) {
+function computeComplexity(files, _projectRoot) {
   const parsableExts = new Set([...DEP_PARSE_EXTS, ".html"]);
+  /** @type {any[]} */
   const results = [];
 
   for (const f of files) {
@@ -2363,7 +2457,7 @@ function computeComplexity(files, projectRoot) {
     const commentRatio = totalLines > 0 ? +(commentLines / totalLines).toFixed(2) : 0;
 
     // Count branch points
-    const codeOnly = lines.filter((l) => {
+    const codeOnly = lines.filter((/** @type {string} */ l) => {
       const t = l.trim();
       return t && !t.startsWith("//") && !t.startsWith("#") && !t.startsWith("/*") && !t.startsWith("*");
     }).join("\n");
@@ -2411,14 +2505,15 @@ function computeComplexity(files, projectRoot) {
   }
 
   // Sort by cyclomatic complexity descending
-  results.sort((a, b) => b.cyclomaticComplexity - a.cyclomaticComplexity);
+  results.sort((/** @type {any} */ a, /** @type {any} */ b) => b.cyclomaticComplexity - a.cyclomaticComplexity);
 
   // Summary statistics
-  const complexities = results.map((r) => r.cyclomaticComplexity);
-  const avgComplexity = complexities.length > 0 ? +(complexities.reduce((a, b) => a + b, 0) / complexities.length).toFixed(1) : 0;
+  const complexities = results.map((/** @type {any} */ r) => r.cyclomaticComplexity);
+  const avgComplexity = complexities.length > 0 ? +(complexities.reduce((/** @type {number} */ a, /** @type {number} */ b) => a + b, 0) / complexities.length).toFixed(1) : 0;
   const maxComplexity = complexities.length > 0 ? Math.max(...complexities) : 0;
 
   // Complexity buckets
+  /** @type {Record<string, number>} */
   const complexityBuckets = { "1-5 (simple)": 0, "6-10 (moderate)": 0, "11-20 (complex)": 0, "21-50 (very complex)": 0, "50+ (extreme)": 0 };
   for (const r of results) {
     if (r.cyclomaticComplexity <= 5) complexityBuckets["1-5 (simple)"]++;
@@ -2445,6 +2540,9 @@ function computeComplexity(files, projectRoot) {
  * with similar but not identical content.
  *
  * Tokenization: split by whitespace + punctuation, lowercase, filter short tokens.
+ * @param {any[]} files
+ * @param {string} projectRoot
+ * @param {{ threshold?: number, maxFiles?: number }} [opts]
  */
 function computeContentSimilarity(files, projectRoot, opts = {}) {
   const threshold = opts.threshold || 0.7;  // Jaccard threshold for "similar"
@@ -2452,13 +2550,14 @@ function computeContentSimilarity(files, projectRoot, opts = {}) {
   const parsableExts = new Set([...DEP_PARSE_EXTS]);
 
   const sourceFiles = files
-    .filter((f) => parsableExts.has(f.ext) && f.size > 200 && f.size < 100_000)
-    .sort((a, b) => b.size - a.size)
+    .filter((/** @type {any} */ f) => parsableExts.has(f.ext) && f.size > 200 && f.size < 100_000)
+    .sort((/** @type {any} */ a, /** @type {any} */ b) => b.size - a.size)
     .slice(0, maxFiles);
 
   if (sourceFiles.length < 2) return { pairs: [], similarGroups: [], avgSimilarity: 0 };
 
   // Tokenize each file
+  /** @type {Record<string, Set<string>>} */
   const fileTokens = {};
   for (const f of sourceFiles) {
     try {
@@ -2467,13 +2566,14 @@ function computeContentSimilarity(files, projectRoot, opts = {}) {
       const tokens = content
         .toLowerCase()
         .split(/[^a-z0-9_$]+/)
-        .filter((t) => t.length >= 4) // meaningful tokens only
+        .filter((/** @type {string} */ t) => t.length >= 4) // meaningful tokens only
         .slice(0, 2000); // cap tokens per file for performance
       fileTokens[f.relPath] = new Set(tokens);
     } catch { /* skip */ }
   }
 
   // Compute Jaccard similarity for all pairs (only compare files in different dirs)
+  /** @type {any[]} */
   const pairs = [];
   const fileList = Object.keys(fileTokens);
 
@@ -2486,7 +2586,7 @@ function computeContentSimilarity(files, projectRoot, opts = {}) {
 
       const tokensA = fileTokens[a];
       const tokensB = fileTokens[b];
-      const intersection = new Set([...tokensA].filter((t) => tokensB.has(t)));
+      const intersection = new Set([...tokensA].filter((/** @type {string} */ t) => tokensB.has(t)));
       const union = new Set([...tokensA, ...tokensB]);
       const jaccard = union.size > 0 ? intersection.size / union.size : 0;
 
@@ -2496,13 +2596,13 @@ function computeContentSimilarity(files, projectRoot, opts = {}) {
     }
   }
 
-  pairs.sort((a, b) => b.jaccard - a.jaccard);
+  pairs.sort((/** @type {any} */ a, /** @type {any} */ b) => b.jaccard - a.jaccard);
 
   // Find similarity groups (connected components in similarity graph)
   const groups = findSimilarityGroups(pairs.slice(0, 100));
 
-  const allJaccards = pairs.map((p) => p.jaccard);
-  const avgSimilarity = allJaccards.length > 0 ? +(allJaccards.reduce((a, b) => a + b, 0) / allJaccards.length).toFixed(3) : 0;
+  const allJaccards = pairs.map((/** @type {any} */ p) => p.jaccard);
+  const avgSimilarity = allJaccards.length > 0 ? +(allJaccards.reduce((/** @type {number} */ a, /** @type {number} */ b) => a + b, 0) / allJaccards.length).toFixed(3) : 0;
 
   return {
     pairs: pairs.slice(0, 30),
@@ -2513,7 +2613,8 @@ function computeContentSimilarity(files, projectRoot, opts = {}) {
   };
 }
 
-function findSimilarityGroups(pairs) {
+function findSimilarityGroups(/** @type {any[]} */ pairs) {
+  /** @type {Record<string, Set<string>>} */
   const adj = {};
   for (const p of pairs) {
     const [a, b] = p.files;
@@ -2524,13 +2625,16 @@ function findSimilarityGroups(pairs) {
   }
 
   const visited = new Set();
+  /** @type {string[][]} */
   const groups = [];
   for (const node of Object.keys(adj)) {
     if (visited.has(node)) continue;
+    /** @type {string[]} */
     const component = [];
     const queue = [node];
     while (queue.length > 0) {
       const current = queue.shift();
+      if (!current) continue;
       if (visited.has(current)) continue;
       visited.add(current);
       component.push(current);
@@ -2540,7 +2644,7 @@ function findSimilarityGroups(pairs) {
     }
     if (component.length >= 2) groups.push(component);
   }
-  return groups.sort((a, b) => b.length - a.length).slice(0, 10);
+  return groups.sort((/** @type {string[]} */ a, /** @type {string[]} */ b) => b.length - a.length).slice(0, 10);
 }
 
 // ── Hotspot severity matrix ─────────────────────────────────────────────────
@@ -2557,6 +2661,8 @@ function findSimilarityGroups(pairs) {
  *   - High Complexity + Low Churn = Stable Complex (yellow — works but hard to change)
  *   - Low Complexity + High Churn = Frequent Simple (yellow — changes often but simple)
  *   - High Complexity + High Churn = HOTSPOT (red — prioritize refactoring)
+ * @param {any} complexity
+ * @param {any} gitChurn
  */
 function computeHotspotMatrix(complexity, gitChurn) {
   if (!complexity || !complexity.topComplex || complexity.topComplex.length === 0) {
@@ -2567,6 +2673,7 @@ function computeHotspotMatrix(complexity, gitChurn) {
   }
 
   // Build complexity and churn maps
+  /** @type {Record<string, number>} */
   const complexMap = {};
   for (const c of complexity.topComplex) {
     complexMap[c.path] = c.cyclomaticComplexity;
@@ -2574,6 +2681,7 @@ function computeHotspotMatrix(complexity, gitChurn) {
   // Also add all analyzed files
   for (const c of complexity.topComplex) complexMap[c.path] = c.cyclomaticComplexity;
 
+  /** @type {Record<string, number>} */
   const churnMap = {};
   for (const f of gitChurn.topHotFiles) {
     churnMap[f.path] = f.churnCount;
@@ -2582,11 +2690,13 @@ function computeHotspotMatrix(complexity, gitChurn) {
   // Median thresholds
   const complexities = Object.values(complexMap);
   const churns = Object.values(churnMap);
-  const medianComplexity = complexities.length > 0 ? complexities.sort((a, b) => a - b)[Math.floor(complexities.length / 2)] : 10;
-  const medianChurn = churns.length > 0 ? churns.sort((a, b) => a - b)[Math.floor(churns.length / 2)] : 3;
+  const medianComplexity = complexities.length > 0 ? complexities.sort((/** @type {number} */ a, /** @type {number} */ b) => a - b)[Math.floor(complexities.length / 2)] : 10;
+  const medianChurn = churns.length > 0 ? churns.sort((/** @type {number} */ a, /** @type {number} */ b) => a - b)[Math.floor(churns.length / 2)] : 3;
 
   // Classify files
+  /** @type {any[]} */
   const hotspots = [];
+  /** @type {Record<string, number>} */
   const quadrants = { healthy: 0, stableComplex: 0, frequentSimple: 0, hotspot: 0 };
 
   // Get files that have both complexity and churn data
@@ -2613,7 +2723,7 @@ function computeHotspotMatrix(complexity, gitChurn) {
     }
   }
 
-  hotspots.sort((a, b) => b.severity - a.severity);
+  hotspots.sort((/** @type {any} */ a, /** @type {any} */ b) => b.severity - a.severity);
 
   return {
     available: true,
@@ -2637,9 +2747,12 @@ function computeHotspotMatrix(complexity, gitChurn) {
  *   5. God module: no file should depend on >15 other files
  *
  * Returns pass/fail for each rule with violation details.
+ * @param {any} stats
  */
 function checkFitnessRules(stats) {
+  /** @type {any[]} */
   const rules = [];
+  /** @type {any[]} */
   const violations = [];
 
   // Rule 1: Layer isolation (already in layerAnalysis.violations)
@@ -2680,7 +2793,7 @@ function checkFitnessRules(stats) {
       violations.push({
         rule: "no-circular-scc",
         severity: "critical",
-        description: `SCC of ${scc.length} files: ${scc.slice(0, 3).map(f => f.split('/').pop()).join(', ')}`,
+        description: `SCC of ${scc.length} files: ${scc.slice(0, 3).map((/** @type {string} */ f) => f.split('/').pop()).join(', ')}`,
         files: scc,
       });
     }
@@ -2742,14 +2855,17 @@ function checkFitnessRules(stats) {
  * This answers: "If I import X, how much code am I really pulling in?"
  *
  * For directories: sum of import costs of all files within.
+ * @param {any[]} files
+ * @param {any} depGraph
  */
 function computeImportCost(files, depGraph) {
   if (depGraph.edges.length === 0) return { topHeavyImports: [], avgImportCost: 0, maxImportCost: 0 };
 
   // Build file size map
-  const sizeMap = new Map(files.map((f) => [f.relPath, f.size]));
+  const sizeMap = new Map(files.map((/** @type {any} */ f) => [f.relPath, f.size]));
 
   // Build transitive closure (reuse from transitiveDeps if available)
+  /** @type {Record<string, string[]>} */
   const adj = {};
   for (const n of depGraph.nodes) adj[n.path] = [];
   for (const edge of depGraph.edges) {
@@ -2758,8 +2874,10 @@ function computeImportCost(files, depGraph) {
   }
 
   // Compute transitive import cost per file: BFS to sum sizes of all reachable files
+  /** @type {any[]} */
   const importCosts = [];
   for (const node of depGraph.nodes) {
+    /** @type {Set<string>} */
     const visited = new Set();
     const queue = [node.path];
     visited.add(node.path);
@@ -2767,6 +2885,7 @@ function computeImportCost(files, depGraph) {
 
     while (queue.length > 0) {
       const current = queue.shift();
+      if (!current) continue;
       for (const neighbor of adj[current] || []) {
         if (!visited.has(neighbor)) {
           visited.add(neighbor);
@@ -2791,9 +2910,10 @@ function computeImportCost(files, depGraph) {
   }
 
   // Sort by total import cost descending
-  importCosts.sort((a, b) => b.totalCost - a.totalCost);
+  importCosts.sort((/** @type {any} */ a, /** @type {any} */ b) => b.totalCost - a.totalCost);
 
   // Also compute directory-level import costs
+  /** @type {Record<string, any>} */
   const dirCosts = {};
   for (const ic of importCosts) {
     const dir = dirname(ic.path) || ".";
@@ -2806,10 +2926,10 @@ function computeImportCost(files, depGraph) {
 
   const topDirCosts = Object.entries(dirCosts)
     .map(([dir, d]) => ({ dir, ...d }))
-    .sort((a, b) => b.totalCost - a.totalCost)
+    .sort((/** @type {any} */ a, /** @type {any} */ b) => b.totalCost - a.totalCost)
     .slice(0, 15);
 
-  const avgImportCost = importCosts.length > 0 ? +(importCosts.reduce((s, ic) => s + ic.totalCost, 0) / importCosts.length).toFixed(0) : 0;
+  const avgImportCost = importCosts.length > 0 ? +(importCosts.reduce((/** @type {number} */ s, /** @type {any} */ ic) => s + ic.totalCost, 0) / importCosts.length).toFixed(0) : 0;
   const maxImportCost = importCosts.length > 0 ? importCosts[0].totalCost : 0;
 
   return {
@@ -2841,6 +2961,7 @@ function computeImportCost(files, depGraph) {
  *   - Decouple: 3 hours per circular dep
  *   - Write tests: 1.5 hours per high-priority untested file
  *   - Fix layer violation: 2 hours per violation
+ * @param {any} stats
  */
 function quantifyTechDebt(stats) {
   const costModel = {
@@ -2914,7 +3035,7 @@ function quantifyTechDebt(stats) {
   }
 
   // 8. Zone-of-pain packages
-  const painPkgCount = stats.packageMetrics?.packages?.filter((p) => p.zone === "zone-of-pain").length || 0;
+  const painPkgCount = stats.packageMetrics?.packages?.filter((/** @type {any} */ p) => p.zone === "zone-of-pain").length || 0;
   if (painPkgCount > 0) {
     const hours = painPkgCount * costModel.extractInterfaceHours;
     totalHours += hours;
@@ -2926,7 +3047,7 @@ function quantifyTechDebt(stats) {
   const totalWeeks = +(totalDays / 5).toFixed(1);
 
   // Debt ratio: hours per 1000 LOC
-  const totalLoc = stats.complexity?.topComplex?.reduce((s, c) => s + c.loc, 0) || 1000;
+  const totalLoc = stats.complexity?.topComplex?.reduce((/** @type {number} */ s, /** @type {any} */ c) => s + c.loc, 0) || 1000;
   const debtDensity = +((totalHours / (totalLoc / 1000))).toFixed(1);
 
   // SIG Rating (1-5 stars)
@@ -2956,11 +3077,13 @@ function quantifyTechDebt(stats) {
  *
  * Impact factors: risk score, blast radius, dependency count, churn frequency
  * Effort factors: file size, complexity, number of dependents
+ * @param {any[]} recommendations
+ * @param {any} stats
  */
 function computeRefactoringROI(recommendations, stats) {
   if (!recommendations || recommendations.length === 0) return [];
 
-  const augmented = recommendations.map((rec) => {
+  const augmented = recommendations.map((/** @type {any} */ rec) => {
     // Estimate impact (1-10)
     let impact = 5; // baseline
     const files = rec.files || [];
@@ -2998,7 +3121,7 @@ function computeRefactoringROI(recommendations, stats) {
 
     // File size increases effort
     for (const f of files) {
-      const fileInfo = stats.oversizedFiles?.find((of) => of.path === f);
+      const fileInfo = stats.oversizedFiles?.find((/** @type {any} */ of) => of.path === f);
       if (fileInfo && fileInfo.size > 500_000) effort += 3;
       else if (fileInfo && fileInfo.size > 100_000) effort += 1;
     }
@@ -3018,7 +3141,7 @@ function computeRefactoringROI(recommendations, stats) {
   });
 
   // Sort by ROI descending
-  augmented.sort((a, b) => b.roi - a.roi);
+  augmented.sort((/** @type {any} */ a, /** @type {any} */ b) => b.roi - a.roi);
 
   return augmented;
 }
@@ -3034,9 +3157,12 @@ function computeRefactoringROI(recommendations, stats) {
  *   - defaultExport: has default export?
  *   - reExports: number of re-exports
  *   - apiSurfaceScore: composite score (larger = more public surface)
+ * @param {any[]} files
+ * @param {string} _projectRoot
  */
-function analyzeApiSurface(files, projectRoot) {
+function analyzeApiSurface(files, _projectRoot) {
   const parsableExts = new Set([...DEP_PARSE_EXTS]);
+  /** @type {any[]} */
   const results = [];
 
   for (const f of files) {
@@ -3049,10 +3175,9 @@ function analyzeApiSurface(files, projectRoot) {
       .replace(/\/\/.*$/gm, " ");
 
     // Count export patterns
-    const exportAll = (stripped.match(/export\s+/g) || []).length;
     const namedExports = (stripped.match(/export\s+(const|let|var|function|class|enum|interface|type)\s+\w+/g) || []).length;
     const defaultExport = /export\s+default\s+/.test(stripped);
-    const namedExportList = (stripped.match(/export\s+\{[^}]+\}/g) || []).reduce((sum, m) => sum + (m.match(/,/g) || []).length + 1, 0);
+    const namedExportList = (stripped.match(/export\s+\{[^}]+\}/g) || []).reduce((/** @type {number} */ sum, /** @type {string} */ m) => sum + (m.match(/,/g) || []).length + 1, 0);
     const reExports = (stripped.match(/export\s+\{[^}]*\}\s*from/g) || []).length + (stripped.match(/export\s+\*\s+from/g) || []).length;
 
     const totalExports = namedExports + namedExportList + (defaultExport ? 1 : 0) + reExports;
@@ -3074,15 +3199,15 @@ function analyzeApiSurface(files, projectRoot) {
   }
 
   // Sort by API surface score descending (largest public API first)
-  results.sort((a, b) => b.apiSurfaceScore - a.apiSurfaceScore);
+  results.sort((/** @type {any} */ a, /** @type {any} */ b) => b.apiSurfaceScore - a.apiSurfaceScore);
 
   // Summary
   const totalModules = results.length;
-  const totalExportsAll = results.reduce((s, r) => s + r.totalExports, 0);
+  const totalExportsAll = results.reduce((/** @type {number} */ s, /** @type {any} */ r) => s + r.totalExports, 0);
   const avgExportsPerModule = totalModules > 0 ? +(totalExportsAll / totalModules).toFixed(1) : 0;
 
   // Modules with largest API surface (these are most "exposed" to breaking changes)
-  const largeApiModules = results.filter((r) => r.apiSurfaceScore > 10);
+  const largeApiModules = results.filter((/** @type {any} */ r) => r.apiSurfaceScore > 10);
 
   return {
     topApiModules: results.slice(0, 25),
@@ -3112,25 +3237,30 @@ function analyzeApiSurface(files, projectRoot) {
  *   - Layer violation (up to -5): involved in layer violation
  *
  * Grading: A (90-100), B (75-89), C (60-74), D (40-59), F (<40)
+ * @param {any[]} files
+ * @param {any} stats
  */
 function computeHealthIndex(files, stats) {
   // Build lookup structures from stats
+  /** @type {Set<string>} */
   const circularSet = new Set();
   for (const cycle of (stats.circularDeps || [])) {
     for (const node of cycle) circularSet.add(node);
   }
 
-  const orphanSet = new Set((stats.orphanFiles || []).map((f) => f.path));
-  const untestedSet = new Set((stats.testGaps?.highPriority || []).map((f) => f.path));
+  const orphanSet = new Set((stats.orphanFiles || []).map((/** @type {any} */ f) => f.path));
+  const untestedSet = new Set((stats.testGaps?.highPriority || []).map((/** @type {any} */ f) => f.path));
 
+  /** @type {Map<string, number>} */
   const churnMap = new Map();
   if (stats.gitChurn?.available && stats.gitChurn?.topHotFiles) {
-    const maxChurn = Math.max(1, ...stats.gitChurn.topHotFiles.map((f) => f.churnCount));
+    const maxChurn = Math.max(1, ...stats.gitChurn.topHotFiles.map((/** @type {any} */ f) => f.churnCount));
     for (const f of stats.gitChurn.topHotFiles) {
       churnMap.set(f.path, f.churnCount / maxChurn); // normalized 0-1
     }
   }
 
+  /** @type {Map<string, number>} */
   const complexityMap = new Map();
   if (stats.complexity?.topComplex) {
     const maxC = Math.max(1, stats.complexity.maxComplexity);
@@ -3139,8 +3269,9 @@ function computeHealthIndex(files, stats) {
     }
   }
 
-  const busFactorSet = new Set((stats.knowledgeDistribution?.busFactorRisks || []).map((f) => f.path));
+  const busFactorSet = new Set((stats.knowledgeDistribution?.busFactorRisks || []).map((/** @type {any} */ f) => f.path));
 
+  /** @type {Set<string>} */
   const layerViolationSet = new Set();
   if (stats.layerAnalysis?.violations) {
     for (const v of stats.layerAnalysis.violations) {
@@ -3149,7 +3280,8 @@ function computeHealthIndex(files, stats) {
     }
   }
 
-  const sourceFiles = files.filter((f) => DEP_PARSE_EXTS.has(f.ext) && f.size > 100);
+  const sourceFiles = files.filter((/** @type {any} */ f) => DEP_PARSE_EXTS.has(f.ext) && f.size > 100);
+  /** @type {any[]} */
   const healthScores = [];
 
   for (const f of sourceFiles) {
@@ -3188,13 +3320,14 @@ function computeHealthIndex(files, stats) {
   }
 
   // Sort by health ascending (worst first)
-  healthScores.sort((a, b) => a.health - b.health);
+  healthScores.sort((/** @type {any} */ a, /** @type {any} */ b) => a.health - b.health);
 
   // Distribution
+  /** @type {Record<string, number>} */
   const gradeDist = { A: 0, B: 0, C: 0, D: 0, F: 0 };
   for (const h of healthScores) gradeDist[h.grade]++;
 
-  const avgHealth = healthScores.length > 0 ? +(healthScores.reduce((s, h) => s + h.health, 0) / healthScores.length).toFixed(1) : 0;
+  const avgHealth = healthScores.length > 0 ? +(healthScores.reduce((/** @type {number} */ s, /** @type {any} */ h) => s + h.health, 0) / healthScores.length).toFixed(1) : 0;
   const healthGrade = avgHealth >= 90 ? "A" : avgHealth >= 75 ? "B" : avgHealth >= 60 ? "C" : avgHealth >= 40 ? "D" : "F";
 
   return {
@@ -3213,6 +3346,8 @@ function computeHealthIndex(files, stats) {
  * that are MORE stable than itself. I(depender) < I(dependee).
  *
  * Violation = depending on a less stable package.
+ * @param {any} packageMetrics
+ * @param {any} depGraph
  */
 function checkSDP(packageMetrics, depGraph) {
   if (!packageMetrics || !packageMetrics.packages || packageMetrics.packages.length < 2) {
@@ -3220,18 +3355,20 @@ function checkSDP(packageMetrics, depGraph) {
   }
 
   // Build package → I (instability) map
+  /** @type {Record<string, number>} */
   const pkgInstability = {};
   for (const p of packageMetrics.packages) {
     pkgInstability[p.package] = p.I;
   }
 
   // Determine package for each file (simplified: top-level dir)
-  function getPackage(relPath) {
+  function getPackage(/** @type {string} */ relPath) {
     const parts = relPath.split("/");
     return parts.length === 1 ? "." : parts[0];
   }
 
   // Build package-level edges
+  /** @type {Record<string, any>} */
   const pkgEdges = {};
   for (const edge of depGraph.edges) {
     const fromPkg = getPackage(edge.from);
@@ -3243,8 +3380,9 @@ function checkSDP(packageMetrics, depGraph) {
   }
 
   // Check SDP for each edge
+  /** @type {any[]} */
   const violations = [];
-  for (const [key, edge] of Object.entries(pkgEdges)) {
+  for (const [, edge] of Object.entries(pkgEdges)) {
     const iFrom = pkgInstability[edge.from];
     const iTo = pkgInstability[edge.to];
     if (iFrom === undefined || iTo === undefined) continue;
@@ -3263,7 +3401,7 @@ function checkSDP(packageMetrics, depGraph) {
     }
   }
 
-  violations.sort((a, b) => b.delta - a.delta);
+  violations.sort((/** @type {any} */ a, /** @type {any} */ b) => b.delta - a.delta);
 
   const totalEdges = Object.keys(pkgEdges).length;
   const sdpScore = totalEdges > 0 ? Math.round((1 - violations.length / totalEdges) * 100) : 100;
@@ -3282,6 +3420,8 @@ function checkSDP(packageMetrics, depGraph) {
 /**
  * Simple linear regression on trend data to forecast future metrics.
  * Predicts: total size, risk score, file count at +30 and +90 days.
+ * @param {any} trendAnalysis
+ * @param {any[]} history
  */
 function forecastTrends(trendAnalysis, history) {
   if (!history || history.length < 3) {
@@ -3289,24 +3429,24 @@ function forecastTrends(trendAnalysis, history) {
   }
 
   // Extract time series: use data point index as x (0, 1, 2, ...)
-  const xs = history.map((_, i) => i);
+  const xs = history.map((/** @type {any} */ _/** @type {any} */, /** @type {number} */ i) => i);
   const n = xs.length;
 
-  function linearRegression(yValues) {
-    const meanX = xs.reduce((a, b) => a + b, 0) / n;
-    const meanY = yValues.reduce((a, b) => a + b, 0) / n;
+  function linearRegression(/** @type {number[]} */ yValues) {
+    const meanX = xs.reduce((/** @type {number} */ a, /** @type {number} */ b) => a + b, 0) / n;
+    const meanY = yValues.reduce((/** @type {number} */ a, /** @type {number} */ b) => a + b, 0) / n;
     let num = 0, den = 0;
     for (let i = 0; i < n; i++) { num += (xs[i] - meanX) * (yValues[i] - meanY); den += (xs[i] - meanX) ** 2; }
     const slope = den !== 0 ? num / den : 0;
     const intercept = meanY - slope * meanX;
-    return { slope, intercept, predict: (x) => intercept + slope * x };
+    return { slope, intercept, predict: (/** @type {number} */ x) => intercept + slope * x };
   }
 
   // Fit models for key metrics
-  const sizeModel = linearRegression(history.map((h) => h.totalSize));
-  const riskModel = linearRegression(history.map((h) => h.avgRisk));
-  const fileCountModel = linearRegression(history.map((h) => h.totalFiles));
-  const circularModel = linearRegression(history.map((h) => h.circularCount || 0));
+  const sizeModel = linearRegression(history.map((/** @type {any} */ h) => h.totalSize));
+  const riskModel = linearRegression(history.map((/** @type {any} */ h) => h.avgRisk));
+  const fileCountModel = linearRegression(history.map((/** @type {any} */ h) => h.totalFiles));
+  const circularModel = linearRegression(history.map((/** @type {any} */ h) => h.circularCount || 0));
 
   const lastIndex = n - 1;
   const day30 = lastIndex + (history.length >= 7 ? 1 : 2); // rough: 1-2 more runs in 30 days
@@ -3340,30 +3480,36 @@ function forecastTrends(trendAnalysis, history) {
  * ReviewRisk = complexityScore × 0.3 + churnScore × 0.25 + riskScore × 0.2 + couplingScore × 0.15 + busFactorScore × 0.1
  *
  * High review risk = files where bugs are most likely AND most impactful.
+ * @param {any[]} files
+ * @param {any} stats
  */
 function computeReviewRisk(files, stats) {
-  const { complexity, gitChurn, riskScores, knowledgeDistribution, healthIndex } = stats;
+  const { complexity, gitChurn, riskScores, knowledgeDistribution } = stats;
 
+  /** @type {Map<string, number>} */
   const complexMap = new Map();
   if (complexity?.topComplex) {
     const maxC = Math.max(1, complexity.maxComplexity);
     for (const c of complexity.topComplex) complexMap.set(c.path, c.cyclomaticComplexity / maxC);
   }
 
+  /** @type {Map<string, number>} */
   const churnMap = new Map();
   if (gitChurn?.available && gitChurn?.topHotFiles) {
-    const maxCh = Math.max(1, ...gitChurn.topHotFiles.map((f) => f.churnCount));
+    const maxCh = Math.max(1, ...gitChurn.topHotFiles.map((/** @type {any} */ f) => f.churnCount));
     for (const f of gitChurn.topHotFiles) churnMap.set(f.path, f.churnCount / maxCh);
   }
 
+  /** @type {Map<string, number>} */
   const riskMap = new Map();
   if (riskScores?.topRisks) {
     for (const r of riskScores.topRisks) riskMap.set(r.path, r.composite);
   }
 
-  const busFactorSet = new Set((knowledgeDistribution?.busFactorRisks || []).map((f) => f.path));
+  const busFactorSet = new Set((knowledgeDistribution?.busFactorRisks || []).map((/** @type {any} */ f) => f.path));
 
-  const sourceFiles = files.filter((f) => DEP_PARSE_EXTS.has(f.ext) && f.size > 200);
+  const sourceFiles = files.filter((/** @type {any} */ f) => DEP_PARSE_EXTS.has(f.ext) && f.size > 200);
+  /** @type {any[]} */
   const reviewRisks = [];
 
   for (const f of sourceFiles) {
@@ -3385,16 +3531,16 @@ function computeReviewRisk(files, stats) {
     }
   }
 
-  reviewRisks.sort((a, b) => b.reviewRisk - a.reviewRisk);
+  reviewRisks.sort((/** @type {any} */ a, /** @type {any} */ b) => b.reviewRisk - a.reviewRisk);
 
-  const avgReviewRisk = reviewRisks.length > 0 ? +(reviewRisks.reduce((s, r) => s + r.reviewRisk, 0) / reviewRisks.length).toFixed(3) : 0;
+  const avgReviewRisk = reviewRisks.length > 0 ? +(reviewRisks.reduce((/** @type {number} */ s, /** @type {any} */ r) => s + r.reviewRisk, 0) / reviewRisks.length).toFixed(3) : 0;
 
   return {
     topReviewRisks: reviewRisks.slice(0, 25),
     avgReviewRisk,
     totalAssessed: reviewRisks.length,
     // High priority: > 2× average
-    highPriorityReviews: reviewRisks.filter((r) => r.reviewRisk > avgReviewRisk * 2 && r.reviewRisk > 0.1),
+    highPriorityReviews: reviewRisks.filter((/** @type {any} */ r) => r.reviewRisk > avgReviewRisk * 2 && r.reviewRisk > 0.1),
   };
 }
 
@@ -3404,6 +3550,8 @@ function computeReviewRisk(files, stats) {
  * Generate an executive summary suitable for management/CTO consumption.
  * Condenses all 30 analysis dimensions into a single-page narrative with
  * key metrics, top risks, and actionable recommendations.
+ * @param {any} stats
+ * @param {any} meta
  */
 function generateExecutiveSummary(stats, meta) {
   const lines = [];
@@ -3512,6 +3660,8 @@ function generateExecutiveSummary(stats, meta) {
  *   - HIGH: 10-20 dependents
  *   - MEDIUM: 3-9 dependents
  *   - LOW: 1-2 dependents
+ * @param {any} apiSurface
+ * @param {any} depGraph
  */
 function predictBreakingChangeImpact(apiSurface, depGraph) {
   if (!apiSurface || !apiSurface.topApiModules || apiSurface.topApiModules.length === 0) {
@@ -3522,6 +3672,7 @@ function predictBreakingChangeImpact(apiSurface, depGraph) {
   }
 
   // Build reverse adjacency (who depends on me?)
+  /** @type {Record<string, string[]>} */
   const revAdj = {};
   for (const n of depGraph.nodes) revAdj[n.path] = [];
   for (const edge of depGraph.edges) {
@@ -3530,6 +3681,7 @@ function predictBreakingChangeImpact(apiSurface, depGraph) {
   }
 
   // Also build forward adjacency for transitive closure
+  /** @type {Record<string, string[]>} */
   const adj = {};
   for (const n of depGraph.nodes) adj[n.path] = [];
   for (const edge of depGraph.edges) {
@@ -3537,6 +3689,7 @@ function predictBreakingChangeImpact(apiSurface, depGraph) {
     if (!adj[edge.to]) adj[edge.to] = [];
   }
 
+  /** @type {any[]} */
   const impacts = [];
 
   for (const mod of apiSurface.topApiModules) {
@@ -3606,6 +3759,8 @@ function predictBreakingChangeImpact(apiSurface, depGraph) {
  *   3. Are in the same or adjacent directories
  *
  * Files in the same release unit should be versioned and released together.
+ * @param {any} coChange
+ * @param {any} depGraph
  */
 function computeReleaseCoupling(coChange, depGraph) {
   if (!coChange || !coChange.available || !coChange.pairs || coChange.pairs.length === 0) {
@@ -3613,6 +3768,7 @@ function computeReleaseCoupling(coChange, depGraph) {
   }
 
   // Build coupling graph: edge exists if co-change Jaccard > 0.4 OR direct dependency
+  /** @type {Record<string, Set<string>>} */
   const adj = {};
   const allFiles = new Set();
 
@@ -3630,7 +3786,7 @@ function computeReleaseCoupling(coChange, depGraph) {
 
   // From dependency graph (strong coupling: direct bidirectional deps)
   if (depGraph && depGraph.edges) {
-    const edgeSet = new Set(depGraph.edges.map((e) => `${e.from}→${e.to}`));
+    const edgeSet = new Set(depGraph.edges.map((/** @type {any} */ e) => `${e.from}→${e.to}`));
     for (const edge of depGraph.edges) {
       const reverse = `${edge.to}→${edge.from}`;
       if (edgeSet.has(reverse)) {
@@ -3647,14 +3803,17 @@ function computeReleaseCoupling(coChange, depGraph) {
 
   // Find connected components (release units)
   const visited = new Set();
+  /** @type {any[]} */
   const releaseUnits = [];
 
   for (const node of Object.keys(adj)) {
     if (visited.has(node)) continue;
+    /** @type {string[]} */
     const component = [];
     const queue = [node];
     while (queue.length > 0) {
       const current = queue.shift();
+      if (!current) continue;
       if (visited.has(current)) continue;
       visited.add(current);
       component.push(current);
@@ -3667,12 +3826,12 @@ function computeReleaseCoupling(coChange, depGraph) {
         files: component,
         size: component.length,
         // Representative: shortest path
-        representative: component.sort((a, b) => a.length - b.length)[0],
+        representative: component.sort((/** @type {string} */ a, /** @type {string} */ b) => (a?.length || 0) - (b?.length || 0))[0],
       });
     }
   }
 
-  releaseUnits.sort((a, b) => b.size - a.size);
+  releaseUnits.sort((/** @type {any} */ a, /** @type {any} */ b) => b.size - a.size);
 
   return {
     releaseUnits: releaseUnits.slice(0, 15),
@@ -3693,6 +3852,8 @@ function computeReleaseCoupling(coChange, depGraph) {
  *   - HHI > 2500: Highly concentrated (knowledge silo risk)
  *
  * Also computes "bus factor" per directory: number of authors who contribute 50%+ of changes.
+ * @param {any} knowledgeDistribution
+ * @param {any[]} files
  */
 function computeKnowledgeConcentration(knowledgeDistribution, files) {
   if (!knowledgeDistribution || !knowledgeDistribution.available || !knowledgeDistribution.fileOwnership || knowledgeDistribution.fileOwnership.length === 0) {
@@ -3700,12 +3861,14 @@ function computeKnowledgeConcentration(knowledgeDistribution, files) {
   }
 
   // Build per-file contributor count
+  /** @type {Map<string, number>} */
   const fileContribMap = new Map();
   for (const fo of knowledgeDistribution.fileOwnership) {
     fileContribMap.set(fo.path, fo.contributorCount);
   }
 
   // Aggregate per directory
+  /** @type {Record<string, any>} */
   const dirStats = {}; // dir → { totalFiles, filesWithContribs, contribCounts: [] }
   for (const f of files) {
     if (!DEP_PARSE_EXTS.has(f.ext) && f.ext !== ".vue" && f.ext !== ".svelte") continue;
@@ -3717,14 +3880,15 @@ function computeKnowledgeConcentration(knowledgeDistribution, files) {
   }
 
   // Compute HHI per directory
+  /** @type {any[]} */
   const directoryHHI = [];
   for (const [dir, stats] of Object.entries(dirStats)) {
     if (stats.contribCounts.length === 0) continue;
     // Build author share distribution from contributor counts
     // Simplified: use contributor count as inverse proxy for concentration
-    const avgContribs = stats.contribCounts.reduce((a, b) => a + b, 0) / stats.contribCounts.length;
+    const avgContribs = stats.contribCounts.reduce((/** @type {number} */ a, /** @type {number} */ b) => a + b, 0) / stats.contribCounts.length;
     // Normalize: fewer avg contributors = higher concentration
-    const singleContribRatio = stats.contribCounts.filter((c) => c <= 1).length / stats.contribCounts.length;
+    const singleContribRatio = stats.contribCounts.filter((/** @type {number} */ c) => c <= 1).length / stats.contribCounts.length;
 
     // Pseudo-HHI: based on single-contributor concentration
     const hhi = Math.round(singleContribRatio * 10000); // scale to HHI-like range
@@ -3746,10 +3910,10 @@ function computeKnowledgeConcentration(knowledgeDistribution, files) {
     }
   }
 
-  directoryHHI.sort((a, b) => b.hhi - a.hhi);
+  directoryHHI.sort((/** @type {any} */ a, /** @type {any} */ b) => b.hhi - a.hhi);
 
-  const avgHHI = directoryHHI.length > 0 ? Math.round(directoryHHI.reduce((s, d) => s + d.hhi, 0) / directoryHHI.length) : 0;
-  const highConcentrationDirs = directoryHHI.filter((d) => d.level === "high");
+  const avgHHI = directoryHHI.length > 0 ? Math.round(directoryHHI.reduce((/** @type {number} */ s, /** @type {any} */ d) => s + d.hhi, 0) / directoryHHI.length) : 0;
+  const highConcentrationDirs = directoryHHI.filter((/** @type {any} */ d) => d.level === "high");
 
   return {
     directoryHHI: directoryHHI.slice(0, 20),
@@ -3768,6 +3932,9 @@ function computeKnowledgeConcentration(knowledgeDistribution, files) {
  * Priority Score = riskScore × (1 - coverage) × log(dependents + 1)
  *
  * Higher score = write tests for this file first.
+ * @param {any} testGaps
+ * @param {any} riskScores
+ * @param {any} depGraph
  */
 function prioritizeTests(testGaps, riskScores, depGraph) {
   if (!testGaps || !testGaps.untestedFiles || testGaps.untestedFiles.length === 0) {
@@ -3775,6 +3942,7 @@ function prioritizeTests(testGaps, riskScores, depGraph) {
   }
 
   // Build dependency count per file
+  /** @type {Record<string, number>} */
   const depCount = {};
   if (depGraph && depGraph.edges) {
     for (const edge of depGraph.edges) {
@@ -3784,12 +3952,13 @@ function prioritizeTests(testGaps, riskScores, depGraph) {
   }
 
   // Build risk map
+  /** @type {Map<string, number>} */
   const riskMap = new Map();
   if (riskScores?.topRisks) {
     for (const r of riskScores.topRisks) riskMap.set(r.path, r.composite);
   }
 
-  const prioritized = testGaps.untestedFiles.map((f) => {
+  const prioritized = testGaps.untestedFiles.map((/** @type {any} */ f) => {
     const risk = riskMap.get(f.path) || 0;
     const deps = depCount[f.path] || 0;
     const usageWeight = Math.log2(deps + 2); // log scale, min 1
@@ -3805,14 +3974,14 @@ function prioritizeTests(testGaps, riskScores, depGraph) {
   });
 
   // Remove zero-priority items and sort
-  const filtered = prioritized.filter((p) => p.priority > 0);
-  filtered.sort((a, b) => b.priority - a.priority);
+  const filtered = prioritized.filter((/** @type {any} */ p) => p.priority > 0);
+  filtered.sort((/** @type {any} */ a, /** @type {any} */ b) => b.priority - a.priority);
 
   // Priority levels
-  const urgent = filtered.filter((p) => p.priority > 5);
-  const high = filtered.filter((p) => p.priority > 2 && p.priority <= 5);
-  const medium = filtered.filter((p) => p.priority > 0.5 && p.priority <= 2);
-  const low = filtered.filter((p) => p.priority <= 0.5);
+  const urgent = filtered.filter((/** @type {any} */ p) => p.priority > 5);
+  const high = filtered.filter((/** @type {any} */ p) => p.priority > 2 && p.priority <= 5);
+  const medium = filtered.filter((/** @type {any} */ p) => p.priority > 0.5 && p.priority <= 2);
+  const low = filtered.filter((/** @type {any} */ p) => p.priority <= 0.5);
 
   return {
     prioritizedTests: filtered.slice(0, 25),
@@ -3837,6 +4006,10 @@ function prioritizeTests(testGaps, riskScores, depGraph) {
  *   2. Core library files (high fan-in) — understand shared utilities
  *   3. Feature entry points (high fan-out) — understand how features work
  *   4. Integration files (bridge modules, high betweenness) — understand connections
+ * @param {any[]} files
+ * @param {any} depGraph
+ * @param {any} pagerank
+ * @param {any} betweenness
  */
 function generateOnboardingPath(files, depGraph, pagerank, betweenness) {
   if (!depGraph || depGraph.nodes.length === 0) {
@@ -3844,17 +4017,20 @@ function generateOnboardingPath(files, depGraph, pagerank, betweenness) {
   }
 
   // Phase 1: Foundation — files with fan-out=0 (no deps), sorted by PageRank
+  /** @type {Record<string, number>} */
   const fanOut = {};
   for (const n of depGraph.nodes) fanOut[n.path] = 0;
   for (const edge of depGraph.edges) {
     fanOut[edge.from] = (fanOut[edge.from] || 0) + 1;
   }
 
+  /** @type {Map<string, number>} */
   const prMap = new Map();
   if (pagerank?.topRanked) {
     for (const pr of pagerank.topRanked) prMap.set(pr.path, pr.pagerank);
   }
 
+  /** @type {Map<string, number>} */
   const bnMap = new Map();
   if (betweenness?.topBottlenecks) {
     for (const b of betweenness.topBottlenecks) bnMap.set(b.path, b.betweenness);
@@ -3862,35 +4038,36 @@ function generateOnboardingPath(files, depGraph, pagerank, betweenness) {
 
   // Phase 1: Foundation (fan-out=0, high PageRank)
   const phase1Candidates = depGraph.nodes
-    .filter((n) => (fanOut[n.path] || 0) === 0 && n.size > 200)
-    .map((n) => ({ path: n.path, size: n.size, pagerank: prMap.get(n.path) || 0 }))
-    .sort((a, b) => b.pagerank - a.pagerank)
+    .filter((/** @type {{path: string, size: number}} */ n) => (fanOut[n.path] || 0) === 0 && n.size > 200)
+    .map((/** @type {{path: string, size: number}} */ n) => ({ path: n.path, size: n.size, pagerank: prMap.get(n.path) || 0 }))
+    .sort((/** @type {any} */ a, /** @type {any} */ b) => b.pagerank - a.pagerank)
     .slice(0, 10);
 
   // Phase 2: Core libraries (highest fan-in — most depended on)
+  /** @type {Record<string, number>} */
   const fanIn = {};
   for (const n of depGraph.nodes) fanIn[n.path] = 0;
   for (const edge of depGraph.edges) {
     fanIn[edge.to] = (fanIn[edge.to] || 0) + 1;
   }
   const phase2Candidates = depGraph.nodes
-    .filter((n) => (fanIn[n.path] || 0) > 0)
-    .map((n) => ({ path: n.path, size: n.size, fanIn: fanIn[n.path] || 0 }))
-    .sort((a, b) => b.fanIn - a.fanIn)
+    .filter((/** @type {{path: string, size: number}} */ n) => (fanIn[n.path] || 0) > 0)
+    .map((/** @type {{path: string, size: number}} */ n) => ({ path: n.path, size: n.size, fanIn: fanIn[n.path] || 0 }))
+    .sort((/** @type {any} */ a, /** @type {any} */ b) => b.fanIn - a.fanIn)
     .slice(0, 10);
 
   // Phase 3: Feature entry points (highest fan-out, large files)
   const phase3Candidates = depGraph.nodes
-    .filter((n) => (fanOut[n.path] || 0) > 3)
-    .map((n) => ({ path: n.path, size: n.size, fanOut: fanOut[n.path] || 0 }))
-    .sort((a, b) => b.fanOut - a.fanOut)
+    .filter((/** @type {{path: string, size: number}} */ n) => (fanOut[n.path] || 0) > 3)
+    .map((/** @type {{path: string, size: number}} */ n) => ({ path: n.path, size: n.size, fanOut: fanOut[n.path] || 0 }))
+    .sort((/** @type {any} */ a, /** @type {any} */ b) => b.fanOut - a.fanOut)
     .slice(0, 10);
 
   // Phase 4: Integration points (highest betweenness)
   const phase4Candidates = depGraph.nodes
-    .filter((n) => (bnMap.get(n.path) || 0) > 0)
-    .map((n) => ({ path: n.path, size: n.size, betweenness: bnMap.get(n.path) || 0 }))
-    .sort((a, b) => b.betweenness - a.betweenness)
+    .filter((/** @type {{path: string, size: number}} */ n) => (bnMap.get(n.path) || 0) > 0)
+    .map((/** @type {{path: string, size: number}} */ n) => ({ path: n.path, size: n.size, betweenness: bnMap.get(n.path) || 0 }))
+    .sort((/** @type {any} */ a, /** @type {any} */ b) => b.betweenness - a.betweenness)
     .slice(0, 10);
 
   return {
@@ -3910,8 +4087,11 @@ function generateOnboardingPath(files, depGraph, pagerank, betweenness) {
  * Generate Architecture Decision Records (ADRs) from analysis findings.
  * Each ADR documents a significant architectural decision with context,
  * consequences, and recommendations.
+ * @param {any} stats
+ * @param {any} _meta
  */
-function generateADRs(stats, meta) {
+function generateADRs(stats, _meta) {
+  /** @type {any[]} */
   const adrs = [];
 
   // ADR 1: Layer architecture
@@ -3930,13 +4110,13 @@ function generateADRs(stats, meta) {
 
   // ADR 2: Package stability
   if (stats.packageMetrics && stats.packageMetrics.packages) {
-    const painPkgs = stats.packageMetrics.packages.filter((p) => p.zone === "zone-of-pain");
+    const painPkgs = stats.packageMetrics.packages.filter((/** @type {any} */ p) => p.zone === "zone-of-pain");
     if (painPkgs.length > 0) {
       adrs.push({
         id: `ADR-${String(adrs.length + 1).padStart(4, "0")}`,
         title: "Package Stability and Abstraction",
         status: "Needs Revision",
-        context: `${painPkgs.length} packages are in the Zone of Pain (stable but concrete): ${painPkgs.map((p) => p.package).join(", ")}.`,
+        context: `${painPkgs.length} packages are in the Zone of Pain (stable but concrete): ${painPkgs.map((/** @type {any} */ p) => p.package).join(", ")}.`,
         decision: "Stable packages should be abstract (Stable Abstractions Principle).",
         consequences: `These packages are heavily depended on but lack abstractions, making changes costly and risky.`,
         recommendations: ["Introduce abstract interfaces/types in zone-of-pain packages", "Gradually migrate dependents to depend on abstractions"],
@@ -3965,7 +4145,7 @@ function generateADRs(stats, meta) {
       status: "Proposed",
       context: `${stats.orphanFiles.length} orphan files detected — files not imported by any other file.`,
       decision: "Orphan files should be verified as non-entry-point and removed if unused, or documented as intentional singletons.",
-      consequences: `Potential ${formatBytes(stats.orphanFiles.reduce((s, f) => s + f.size, 0))} of dead code removable. Cleaner codebase, faster builds.`,
+      consequences: `Potential ${formatBytes(stats.orphanFiles.reduce((/** @type {number} */ s, /** @type {any} */ f) => s + f.size, 0))} of dead code removable. Cleaner codebase, faster builds.`,
       recommendations: ["Audit orphan files for dead code", "Add entry-point markers to intentional orphan files"],
     });
   }
@@ -3981,9 +4161,11 @@ function generateADRs(stats, meta) {
  *   - MAJOR: CRITICAL breaking change impact modules changed
  *   - MINOR: New exports added, HIGH impact modules changed, backwards-compatible
  *   - PATCH: Bug fixes, internal refactoring, no API changes
+ * @param {any} stats
  */
 function recommendSemver(stats) {
   let recommendation = "PATCH";
+  /** @type {string[]} */
   const reasons = [];
 
   if (stats.breakingChangeImpact) {
@@ -3998,7 +4180,7 @@ function recommendSemver(stats) {
 
   // New exports? (approximate from apiSurface)
   if (stats.apiSurface && stats.apiSurface.totalExportsAll > 0 && stats.recommendationsWithROI) {
-    const newFeatureRecs = stats.recommendationsWithROI.filter((r) => r.category === "blast-radius" || r.category === "architecture");
+    const newFeatureRecs = stats.recommendationsWithROI.filter((/** @type {any} */ r) => r.category === "blast-radius" || r.category === "architecture");
     if (newFeatureRecs.length > 0 && recommendation === "PATCH") {
       recommendation = "MINOR";
       reasons.push(`${newFeatureRecs.length} feature-level changes detected`);
@@ -4028,9 +4210,12 @@ function recommendSemver(stats) {
 /**
  * Generate a per-file code review checklist for high-risk files.
  * Each checklist item targets a specific concern based on metrics.
+ * @param {any} stats
  */
 function generateReviewChecklists(stats) {
+  /** @type {any[]} */
   const checklists = [];
+  /** @type {any[]} */
   const highRiskFiles = [];
 
   // Collect high-risk files from multiple sources
@@ -4051,10 +4236,10 @@ function generateReviewChecklists(stats) {
     if (c.coupling > 0.5) items.push("🔗 High coupling — verify all dependency changes are compatible");
 
     // Additional checks from other metrics
-    const isOrphan = stats.orphanFiles?.some((f) => f.path === file.path);
+    const isOrphan = stats.orphanFiles?.some((/** @type {any} */ f) => f.path === file.path);
     if (isOrphan) items.push("👻 Orphan file — verify this file is still needed");
 
-    const isUntested = stats.testGaps?.highPriority?.some((f) => f.path === file.path);
+    const isUntested = stats.testGaps?.highPriority?.some((/** @type {any} */ f) => f.path === file.path);
     if (isUntested) items.push("🧪 No test coverage — write tests before/with this change");
 
     if (items.length > 0) {
@@ -4070,18 +4255,21 @@ function generateReviewChecklists(stats) {
 /**
  * Group recommendations into sprint-sized work packages.
  * Each package has estimated effort (hours) and suggested sprint assignment.
+ * @param {any[]} recommendations
+ * @param {any} _techDebt
  */
-function generateSprintPackages(recommendations, techDebt) {
+function generateSprintPackages(recommendations, _techDebt) {
   if (!recommendations || recommendations.length === 0) return [];
 
+  /** @type {Array<{ name: string, items: Array<{title:string,severity:string,roi:number,effortHours:number,category:string}>, totalEffortHours: number, targetSprint: string }>} */
   const packages = [];
+  /** @type {{ name: string, items: Array<{title:string,severity:string,roi:number,effortHours:number,category:string}>, totalEffortHours: number, targetSprint: string }} */
   let currentPackage = { name: "Sprint Work Package 1", items: [], totalEffortHours: 0, targetSprint: "Next Sprint" };
   const maxHoursPerSprint = 20; // half a week for refactoring
 
   for (const rec of recommendations) {
     // Estimate effort from ROI data
     const effortHours = rec.effort ? rec.effort * 2 : 4; // effort 1-10 → 2-20 hours
-    const priority = rec.severity === "P0" ? 3 : rec.severity === "P1" ? 2 : 1;
 
     if (currentPackage.totalEffortHours + effortHours > maxHoursPerSprint) {
       packages.push({ ...currentPackage });
@@ -4112,9 +4300,9 @@ function generateSprintPackages(recommendations, techDebt) {
     ...p,
     totalEffortHours: Math.round(p.totalEffortHours),
     itemCount: p.items.length,
-    p0Count: p.items.filter((i) => i.severity === "P0").length,
-    p1Count: p.items.filter((i) => i.severity === "P1").length,
-    avgROI: p.items.length > 0 ? +(p.items.reduce((s, i) => s + (i.roi || 0), 0) / p.items.length).toFixed(1) : 0,
+    p0Count: p.items.filter((/** @type {any} */ i) => i.severity === "P0").length,
+    p1Count: p.items.filter((/** @type {any} */ i) => i.severity === "P1").length,
+    avgROI: p.items.length > 0 ? +(p.items.reduce((/** @type {number} */ s, /** @type {any} */ i) => s + (i.roi || 0), 0) / p.items.length).toFixed(1) : 0,
   }));
 }
 
@@ -4125,12 +4313,16 @@ function generateSprintPackages(recommendations, techDebt) {
  * For each bus-factor-1 file, assess the impact of losing its sole contributor.
  *
  * TransferRisk = file_complexity × dependency_impact × size_importance
+ * @param {any} knowledgeDistribution
+ * @param {any} complexity
+ * @param {any} depGraph
  */
 function computeOwnershipTransferRisk(knowledgeDistribution, complexity, depGraph) {
   if (!knowledgeDistribution || !knowledgeDistribution.available || !knowledgeDistribution.busFactorRisks || knowledgeDistribution.busFactorRisks.length === 0) {
     return { highRiskTransfers: [], totalAtRiskFiles: 0 };
   }
 
+  /** @type {Map<string, number>} */
   const complexMap = new Map();
   if (complexity?.topComplex) {
     const maxC = Math.max(1, complexity.maxComplexity);
@@ -4138,6 +4330,7 @@ function computeOwnershipTransferRisk(knowledgeDistribution, complexity, depGrap
   }
 
   // Build dependency impact per file
+  /** @type {Record<string, number>} */
   const depImpact = {};
   if (depGraph?.edges) {
     for (const edge of depGraph.edges) {
@@ -4147,7 +4340,7 @@ function computeOwnershipTransferRisk(knowledgeDistribution, complexity, depGrap
   }
   const maxDep = Math.max(1, ...Object.values(depImpact));
 
-  const transferRisks = knowledgeDistribution.busFactorRisks.map((f) => {
+  const transferRisks = knowledgeDistribution.busFactorRisks.map((/** @type {any} */ f) => {
     const cNorm = complexMap.get(f.path) || 0;
     const dNorm = (depImpact[f.path] || 0) / maxDep;
     const contributor = f.contributors?.[0] || "unknown";
@@ -4162,15 +4355,15 @@ function computeOwnershipTransferRisk(knowledgeDistribution, complexity, depGrap
     };
   });
 
-  transferRisks.sort((a, b) => b.transferRisk - a.transferRisk);
+  transferRisks.sort((/** @type {any} */ a, /** @type {any} */ b) => b.transferRisk - a.transferRisk);
 
-  const highRiskTransfers = transferRisks.filter((t) => t.transferRisk > 40);
+  const highRiskTransfers = transferRisks.filter((/** @type {any} */ t) => t.transferRisk > 40);
 
   return {
     highRiskTransfers: highRiskTransfers.slice(0, 20),
     totalAtRiskFiles: transferRisks.length,
     highRiskCount: highRiskTransfers.length,
-    avgTransferRisk: transferRisks.length > 0 ? +(transferRisks.reduce((s, t) => s + t.transferRisk, 0) / transferRisks.length).toFixed(1) : 0,
+    avgTransferRisk: transferRisks.length > 0 ? +(transferRisks.reduce((/** @type {number} */ s, /** @type {any} */ t) => s + t.transferRisk, 0) / transferRisks.length).toFixed(1) : 0,
   };
 }
 
@@ -4183,9 +4376,12 @@ function computeOwnershipTransferRisk(knowledgeDistribution, complexity, depGrap
  *   - Old + Low Churn = stable core (well-established)
  *   - Young + High Churn = active development (normal)
  *   - Young + Low Churn = new stable code (recently added, already stable)
+ * @param {string} projectRoot
+ * @param {any[]} files
+ * @param {any} gitChurn
  */
 function computeFileAge(projectRoot, files, gitChurn) {
-  const fileSet = new Set(files.filter((f) => DEP_PARSE_EXTS.has(f.ext) && f.size > 200).map((f) => f.relPath));
+  const fileSet = new Set(files.filter((/** @type {any} */ f) => DEP_PARSE_EXTS.has(f.ext) && f.size > 200).map((/** @type {any} */ f) => f.relPath));
   if (fileSet.size === 0) return { available: false, ageBuckets: {}, oldestFiles: [] };
 
   let gitOutput;
@@ -4199,6 +4395,7 @@ function computeFileAge(projectRoot, files, gitChurn) {
 
   // Parse: "filepath YYYY-MM-DD HH:MM:SS +TZ"
   const now = new Date();
+  /** @type {any[]} */
   const fileAges = [];
 
   for (const line of gitOutput.trim().split("\n")) {
@@ -4211,13 +4408,14 @@ function computeFileAge(projectRoot, files, gitChurn) {
     try {
       const createdAt = new Date(dateStr);
       if (isNaN(createdAt.getTime())) continue;
-      const ageDays = Math.floor((now - createdAt) / (1000 * 60 * 60 * 24));
+      const ageDays = Math.floor((now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
       const ageMonths = +(ageDays / 30).toFixed(1);
       fileAges.push({ path: filePath, createdAt: dateStr, ageDays, ageMonths });
     } catch { /* skip */ }
   }
 
   // Age buckets
+  /** @type {Record<string, number>} */
   const ageBuckets = { "0-30d": 0, "1-3mo": 0, "3-6mo": 0, "6-12mo": 0, "1-2yr": 0, "2yr+": 0 };
   for (const fa of fileAges) {
     if (fa.ageDays <= 30) ageBuckets["0-30d"]++;
@@ -4229,12 +4427,14 @@ function computeFileAge(projectRoot, files, gitChurn) {
   }
 
   // Cross-reference with churn
+  /** @type {Map<string, number>} */
   const churnMap = new Map();
   if (gitChurn?.available && gitChurn?.topHotFiles) {
     for (const f of gitChurn.topHotFiles) churnMap.set(f.path, f.churnCount);
   }
 
   // Age × Churn matrix
+  /** @type {{ oldHighChurn: Array<{path:string,churn:number,createdAt:string,ageDays:number,ageMonths:number}>, oldLowChurn: Array<{path:string,churn:number,createdAt:string,ageDays:number,ageMonths:number}>, youngHighChurn: Array<{path:string,churn:number,createdAt:string,ageDays:number,ageMonths:number}>, youngLowChurn: Array<{path:string,churn:number,createdAt:string,ageDays:number,ageMonths:number}> }} */
   const ageChurnMatrix = { oldHighChurn: [], oldLowChurn: [], youngHighChurn: [], youngLowChurn: [] };
   const ageThreshold = 180; // 6 months
 
@@ -4251,21 +4451,21 @@ function computeFileAge(projectRoot, files, gitChurn) {
 
   // Sort each category
   for (const key of Object.keys(ageChurnMatrix)) {
-    ageChurnMatrix[key].sort((a, b) => b.churn - a.churn);
+    /** @type {any} */ (ageChurnMatrix)[key].sort((/** @type {any} */ a, /** @type {any} */ b) => b.churn - a.churn);
   }
 
   return {
     available: true,
     ageBuckets,
-    oldestFiles: fileAges.sort((a, b) => b.ageDays - a.ageDays).slice(0, 20),
-    newestFiles: fileAges.sort((a, b) => a.ageDays - b.ageDays).slice(0, 20),
+    oldestFiles: fileAges.sort((/** @type {any} */ a, /** @type {any} */ b) => b.ageDays - a.ageDays).slice(0, 20),
+    newestFiles: fileAges.sort((/** @type {any} */ a, /** @type {any} */ b) => a.ageDays - b.ageDays).slice(0, 20),
     ageChurnMatrix: {
       oldHighChurn: ageChurnMatrix.oldHighChurn.slice(0, 10),
       oldLowChurn: ageChurnMatrix.oldLowChurn.slice(0, 5),
       youngHighChurn: ageChurnMatrix.youngHighChurn.slice(0, 10),
       youngLowChurn: ageChurnMatrix.youngLowChurn.slice(0, 5),
     },
-    avgAgeDays: fileAges.length > 0 ? Math.round(fileAges.reduce((s, f) => s + f.ageDays, 0) / fileAges.length) : 0,
+    avgAgeDays: fileAges.length > 0 ? Math.round(fileAges.reduce((/** @type {number} */ s, /** @type {any} */ f) => s + f.ageDays, 0) / fileAges.length) : 0,
     totalDated: fileAges.length,
   };
 }
@@ -4275,19 +4475,21 @@ function computeFileAge(projectRoot, files, gitChurn) {
 /**
  * Detect anomalies in trend data using Z-score method.
  * A data point is anomalous if |Z-score| > 2 (outside 95% confidence).
+ * @param {any[]} history
  */
 function detectAnomalies(history) {
   if (!history || history.length < 5) return { anomalies: [], available: false, reason: "Need 5+ data points" };
 
   // Analyze key metrics
   const metrics = ["totalSize", "totalFiles", "avgRisk"];
+  /** @type {any[]} */
   const anomalies = [];
 
   for (const metric of metrics) {
-    const values = history.map((h) => h[metric] || 0);
+    const values = history.map((/** @type {any} */ h) => h[metric] || 0);
     const n = values.length;
-    const mean = values.reduce((a, b) => a + b, 0) / n;
-    const stdDev = Math.sqrt(values.reduce((s, v) => s + (v - mean) ** 2, 0) / n);
+    const mean = values.reduce((/** @type {number} */ a, /** @type {number} */ b) => a + b, 0) / n;
+    const stdDev = Math.sqrt(values.reduce((/** @type {number} */ s, /** @type {number} */ v) => s + (v - mean) ** 2, 0) / n);
 
     if (stdDev === 0) continue; // no variation = no anomalies
 
@@ -4308,12 +4510,13 @@ function detectAnomalies(history) {
   }
 
   // Sort by |Z-score| descending
-  anomalies.sort((a, b) => Math.abs(b.zScore) - Math.abs(a.zScore));
+  anomalies.sort((/** @type {any} */ a, /** @type {any} */ b) => Math.abs(b.zScore) - Math.abs(a.zScore));
 
   // Also detect trend direction changes (consecutive opposite moves)
+  /** @type {any[]} */
   const trendChanges = [];
   for (const metric of metrics) {
-    const values = history.map((h) => h[metric] || 0);
+    const values = history.map((/** @type {any} */ h) => h[metric] || 0);
     for (let i = 2; i < values.length; i++) {
       const prevDiff = values[i - 1] - values[i - 2];
       const currDiff = values[i] - values[i - 1];
@@ -4344,33 +4547,39 @@ function detectAnomalies(history) {
  *   + age(5%) + busFactor(5%) + testGap(5%)
  *
  * This is the "one number to rule them all" for refactoring decisions.
+ * @param {any[]} files
+ * @param {any} stats
  */
 function computeRefactoringPriority(files, stats) {
   const allStats = stats;
 
   // Normalize helpers
+  /** @type {Map<string, number>} */
   const complexMap = new Map();
   if (allStats.complexity?.topComplex) {
     const maxC = Math.max(1, allStats.complexity.maxComplexity);
     for (const c of allStats.complexity.topComplex) complexMap.set(c.path, c.cyclomaticComplexity / maxC);
   }
 
+  /** @type {Map<string, number>} */
   const churnMap = new Map();
   if (allStats.gitChurn?.available && allStats.gitChurn?.topHotFiles) {
-    const maxCh = Math.max(1, ...allStats.gitChurn.topHotFiles.map((f) => f.churnCount));
+    const maxCh = Math.max(1, ...allStats.gitChurn.topHotFiles.map((/** @type {any} */ f) => f.churnCount));
     for (const f of allStats.gitChurn.topHotFiles) churnMap.set(f.path, f.churnCount / maxCh);
   }
 
+  /** @type {Map<string, number>} */
   const riskMap = new Map();
   if (allStats.riskScores?.topRisks) {
     for (const r of allStats.riskScores.topRisks) riskMap.set(r.path, r.composite);
   }
 
-  const orphanSet = new Set((allStats.orphanFiles || []).map((f) => f.path));
-  const untestedSet = new Set((allStats.testGaps?.highPriority || []).map((f) => f.path));
-  const busFactorSet = new Set((allStats.knowledgeDistribution?.busFactorRisks || []).map((f) => f.path));
+  const orphanSet = new Set((allStats.orphanFiles || []).map((/** @type {any} */ f) => f.path));
+  const untestedSet = new Set((allStats.testGaps?.highPriority || []).map((/** @type {any} */ f) => f.path));
+  const busFactorSet = new Set((allStats.knowledgeDistribution?.busFactorRisks || []).map((/** @type {any} */ f) => f.path));
 
-  const sourceFiles = files.filter((f) => DEP_PARSE_EXTS.has(f.ext) && f.size > 200);
+  const sourceFiles = files.filter((/** @type {any} */ f) => DEP_PARSE_EXTS.has(f.ext) && f.size > 200);
+  /** @type {any[]} */
   const priorities = [];
 
   for (const f of sourceFiles) {
@@ -4379,7 +4588,6 @@ function computeRefactoringPriority(files, stats) {
     const rScore = riskMap.get(f.relPath) || 0;
     const sizeScore = Math.min(1, f.size / LARGE_FILE_THRESHOLD);
     const couplingScore = 0; // placeholder — full coupling needs depGraph
-    const ageScore = 0; // placeholder
     const bfScore = busFactorSet.has(f.relPath) ? 1 : 0;
     const testScore = untestedSet.has(f.relPath) ? 1 : 0;
     const orphanScore = orphanSet.has(f.relPath) ? 1 : 0;
@@ -4427,19 +4635,22 @@ function computeRefactoringPriority(files, stats) {
  *
  * Conformance = % of expected rules that are satisfied.
  */
-function checkArchitectureConformance(depGraph, files) {
-  const getTopDir = (p) => p.split("/")[0] || ".";
+function checkArchitectureConformance(/** @type {any} */ depGraph, /** @type {any[]} */ _files) {
+  const getTopDir = (/** @type {string} */ p) => p.split("/")[0] || ".";
 
   // Expected rules — agents/ and rules/ are now integrated into skills/
+  /** @type {{id: string, description: string, check: (e: any) => boolean}[]} */
   const expectedRules = [
     { id: "shared-isolation", description: "lib/ should not import from skills/", check: (e) => !(getTopDir(e.from) === "lib" && getTopDir(e.to) === "skills") },
     { id: "dependency-direction", description: "skills/ should depend on lib/ (not inverse)", check: (e) => !(getTopDir(e.from) === "lib" && getTopDir(e.to) === "skills") },
   ];
 
+  /** @type {any[]} */
   const ruleResults = [];
   for (const rule of expectedRules) {
-    const violations = depGraph.edges.filter((e) => !rule.check(e));
-    const totalRelevant = depGraph.edges.filter((e) => {
+    /** @type {any[]} */
+    const violations = depGraph.edges.filter((/** @type {any} */ e) => !rule.check(e));
+    const totalRelevant = depGraph.edges.filter((/** @type {any} */ e) => {
       const f = getTopDir(e.from);
       const t = getTopDir(e.to);
       return rule.id.includes(f) || rule.id.includes(t);
@@ -4473,20 +4684,22 @@ function checkArchitectureConformance(depGraph, files) {
  * Define quality gates with thresholds. Each gate returns PASS/FAIL/WARN.
  * Designed for CI/CD integration: non-zero FAIL count → build can fail.
  */
-function checkQualityGates(stats) {
+function checkQualityGates(/** @type {any} */ stats) {
+  /** @type {any[]} */
   const gates = [
     { id: "no-oversized-files", metric: "oversizedFiles", threshold: 0, operator: "eq", description: "No files exceeding 500KB", severity: "critical" },
     { id: "no-circular-deps", metric: "circularDeps.length", threshold: 0, operator: "eq", description: "No circular dependencies", severity: "critical" },
-    { id: "no-extreme-complexity", metric: "complexity.complexityBuckets", threshold: 5, operator: "lt", description: "Extreme complexity files (50+) < 5", severity: "high", extract: (s) => s.complexity?.complexityBuckets?.["50+ (extreme)"] || 0 },
-    { id: "health-index-min", metric: "healthIndex.avgHealth", threshold: 70, operator: "gte", description: "Average health index ≥ 70", severity: "high", extract: (s) => s.healthIndex?.avgHealth || 0 },
-    { id: "fitness-min", metric: "fitnessRules.fitnessScore", threshold: 60, operator: "gte", description: "Architecture fitness score ≥ 60", severity: "high", extract: (s) => s.fitnessRules?.fitnessScore || 0 },
-    { id: "coverage-min", metric: "testGaps.coverageRate", threshold: 30, operator: "gte", description: "Test coverage ≥ 30%", severity: "medium", extract: (s) => s.testGaps?.coverageRate || 0 },
-    { id: "bus-factor-max", metric: "knowledgeDistribution.busFactorRiskCount", threshold: 100, operator: "lt", description: "Bus-factor-1 files < 100", severity: "medium", extract: (s) => s.knowledgeDistribution?.busFactorRiskCount || 0 },
-    { id: "layer-violation-max", metric: "layerAnalysis.violationCount", threshold: 10, operator: "lt", description: "Layer violations < 10", severity: "medium", extract: (s) => s.layerAnalysis?.violationCount || 0 },
-    { id: "conformance-min", metric: "conformance.conformanceScore", threshold: 80, operator: "gte", description: "Architecture conformance ≥ 80", severity: "high", extract: (s) => s.conformance?.conformanceScore || 0 },
-    { id: "sdp-min", metric: "sdp.sdpScore", threshold: 60, operator: "gte", description: "SDP score ≥ 60", severity: "medium", extract: (s) => s.sdp?.sdpScore || 0 },
+    { id: "no-extreme-complexity", metric: "complexity.complexityBuckets", threshold: 5, operator: "lt", description: "Extreme complexity files (50+) < 5", severity: "high", extract: (/** @type {any} */ s) => s.complexity?.complexityBuckets?.["50+ (extreme)"] || 0 },
+    { id: "health-index-min", metric: "healthIndex.avgHealth", threshold: 70, operator: "gte", description: "Average health index ≥ 70", severity: "high", extract: (/** @type {any} */ s) => s.healthIndex?.avgHealth || 0 },
+    { id: "fitness-min", metric: "fitnessRules.fitnessScore", threshold: 60, operator: "gte", description: "Architecture fitness score ≥ 60", severity: "high", extract: (/** @type {any} */ s) => s.fitnessRules?.fitnessScore || 0 },
+    { id: "coverage-min", metric: "testGaps.coverageRate", threshold: 30, operator: "gte", description: "Test coverage ≥ 30%", severity: "medium", extract: (/** @type {any} */ s) => s.testGaps?.coverageRate || 0 },
+    { id: "bus-factor-max", metric: "knowledgeDistribution.busFactorRiskCount", threshold: 100, operator: "lt", description: "Bus-factor-1 files < 100", severity: "medium", extract: (/** @type {any} */ s) => s.knowledgeDistribution?.busFactorRiskCount || 0 },
+    { id: "layer-violation-max", metric: "layerAnalysis.violationCount", threshold: 10, operator: "lt", description: "Layer violations < 10", severity: "medium", extract: (/** @type {any} */ s) => s.layerAnalysis?.violationCount || 0 },
+    { id: "conformance-min", metric: "conformance.conformanceScore", threshold: 80, operator: "gte", description: "Architecture conformance ≥ 80", severity: "high", extract: (/** @type {any} */ s) => s.conformance?.conformanceScore || 0 },
+    { id: "sdp-min", metric: "sdp.sdpScore", threshold: 60, operator: "gte", description: "SDP score ≥ 60", severity: "medium", extract: (/** @type {any} */ s) => s.sdp?.sdpScore || 0 },
   ];
 
+  /** @type {any[]} */
   const results = [];
   for (const gate of gates) {
     let value;
@@ -4555,10 +4768,11 @@ function checkQualityGates(stats) {
  *
  * Also computes "dependency diversification ratio" = 1 - normalized HHI.
  */
-function computeDependencyConcentration(depGraph, files) {
+function computeDependencyConcentration(/** @type {any} */ depGraph, /** @type {any[]} */ _files) {
   if (!depGraph || depGraph.edges.length === 0) return { available: false };
 
   // Count imports per target module
+  /** @type {Record<string, number>} */
   const importCounts = {};
   for (const edge of depGraph.edges) {
     importCounts[edge.to] = (importCounts[edge.to] || 0) + 1;
@@ -4569,6 +4783,7 @@ function computeDependencyConcentration(depGraph, files) {
 
   // HHI on import shares
   let hhi = 0;
+  /** @type {any[]} */
   const concentrations = [];
   for (const [path, count] of Object.entries(importCounts)) {
     const share = count / totalImports;
@@ -4620,12 +4835,14 @@ function computeDependencyConcentration(depGraph, files) {
  * Industry reference: Cisco study — reviewers find most bugs in first 60 min;
  * files with estimated review time > 60 min should be split for review.
  */
-function estimateReviewTime(files, complexity, depGraph) {
+function estimateReviewTime(/** @type {any[]} */ files, /** @type {any} */ complexity, /** @type {any} */ depGraph) {
+  /** @type {Map<string, any>} */
   const complexMap = new Map();
   if (complexity?.topComplex) {
     for (const c of complexity.topComplex) complexMap.set(c.path, { cyclomatic: c.cyclomaticComplexity, loc: c.loc });
   }
 
+  /** @type {Record<string, number>} */
   const depCount = {};
   if (depGraph?.edges) {
     for (const edge of depGraph.edges) {
@@ -4633,7 +4850,8 @@ function estimateReviewTime(files, complexity, depGraph) {
     }
   }
 
-  const sourceFiles = files.filter((f) => DEP_PARSE_EXTS.has(f.ext) && f.size > 200);
+  const sourceFiles = files.filter((/** @type {any} */ f) => DEP_PARSE_EXTS.has(f.ext) && f.size > 200);
+  /** @type {any[]} */
   const estimates = [];
 
   for (const f of sourceFiles) {
@@ -4679,24 +4897,26 @@ function estimateReviewTime(files, complexity, depGraph) {
  * Compute percentile rankings for key metrics to provide comparative context.
  * Answers: "How does this file compare to others in the project?"
  */
-function computePercentileRankings(files, stats) {
+function computePercentileRankings(/** @type {any[]} */ files, /** @type {any} */ stats) {
   // Build metric arrays
-  const sizeValues = files.filter((f) => f.size > 100).map((f) => ({ path: f.relPath, size: f.size }));
+  const sizeValues = files.filter((/** @type {any} */ f) => f.size > 100).map((/** @type {any} */ f) => ({ path: f.relPath, size: f.size }));
   sizeValues.sort((a, b) => a.size - b.size);
 
+  /** @type {Map<string, number>} */
   const complexityMap = new Map();
   if (stats.complexity?.topComplex) {
     for (const c of stats.complexity.topComplex) complexityMap.set(c.path, c.cyclomaticComplexity);
   }
   const complexityValues = [...complexityMap.entries()].map(([path, c]) => ({ path, c })).sort((a, b) => a.c - b.c);
 
+  /** @type {Map<string, number>} */
   const churnMap = new Map();
   if (stats.gitChurn?.available && stats.gitChurn?.topHotFiles) {
     for (const f of stats.gitChurn.topHotFiles) churnMap.set(f.path, f.churnCount);
   }
   const churnValues = [...churnMap.entries()].map(([path, ch]) => ({ path, ch })).sort((a, b) => a.ch - b.ch);
 
-  function percentile(sorted, path, getter) {
+  function percentile(/** @type {any[]} */ sorted, /** @type {string} */ path, /** @type {(v: any) => any} */ _getter) {
     const idx = sorted.findIndex((v) => v.path === path);
     if (idx < 0) return null;
     return Math.round((idx / (sorted.length - 1)) * 100);
@@ -4705,6 +4925,7 @@ function computePercentileRankings(files, stats) {
   // Rank each file across multiple dimensions
   const allPaths = new Set([...sizeValues.map((v) => v.path), ...complexityValues.map((v) => v.path), ...churnValues.map((v) => v.path)]);
 
+  /** @type {any[]} */
   const rankings = [];
   for (const path of allPaths) {
     const pSize = percentile(sizeValues, path, (v) => v.size);
@@ -4762,8 +4983,9 @@ function computePercentileRankings(files, stats) {
  * Compute Pearson correlation coefficients between key metrics.
  * Discovers which metrics move together (e.g., complexity ↔ size, churn ↔ risk).
  */
-function computeCorrelationMatrix(stats) {
+function computeCorrelationMatrix(/** @type {any} */ stats) {
   // Extract metric vectors from available data
+  /** @type {Record<string, any>} */
   const vectors = {};
 
   // Complexity vs Size
@@ -4827,7 +5049,7 @@ function computeCorrelationMatrix(stats) {
   }
 
   // Pearson correlation
-  function pearson(xs, ys) {
+  function pearson(/** @type {number[]} */ xs, /** @type {number[]} */ ys) {
     const n = xs.length;
     const meanX = xs.reduce((a, b) => a + b, 0) / n;
     const meanY = ys.reduce((a, b) => a + b, 0) / n;
@@ -4842,6 +5064,7 @@ function computeCorrelationMatrix(stats) {
     return denX > 0 && denY > 0 ? +(num / Math.sqrt(denX * denY)).toFixed(3) : 0;
   }
 
+  /** @type {any[]} */
   const correlations = [];
   for (const [name, vec] of Object.entries(vectors)) {
     const r = pearson(vec.x, vec.y);
@@ -4865,8 +5088,9 @@ function computeCorrelationMatrix(stats) {
  * Analyze documentation coverage: comment ratio, JSDoc/docstring presence,
  * and identify under-documented high-risk files.
  */
-function analyzeDocCoverage(files, complexity) {
+function analyzeDocCoverage(/** @type {any[]} */ files, /** @type {any} */ complexity) {
   const parsableExts = new Set([...DEP_PARSE_EXTS]);
+  /** @type {any[]} */
   const results = [];
 
   for (const f of files) {
@@ -4965,9 +5189,10 @@ function analyzeDocCoverage(files, complexity) {
  * Level 4 - Measured: quantitative quality gates, good coverage
  * Level 5 - Optimizing: continuous improvement, all gates pass
  */
-function assessMaturity(stats) {
+function assessMaturity(/** @type {any} */ stats) {
   let score = 0;
   const maxScore = 100;
+  /** @type {any[]} */
   const findings = [];
 
   // Dimension 1: Structure (25 pts)
@@ -5039,12 +5264,15 @@ function assessMaturity(stats) {
  * Synthesize cross-dimensional insights by connecting patterns across analyses.
  * Discovers "stories" that span multiple dimensions.
  */
-function synthesizeInsights(stats, fileAge) {
+function synthesizeInsights(/** @type {any} */ stats, /** @type {any} */ fileAge) {
+  /** @type {any[]} */
   const insights = [];
 
   // Pattern 1: Old + High Complexity = Legacy Debt Trap
   if (fileAge?.available && stats.complexity?.topComplex) {
+    /** @type {any[]} */
     const oldHighComplex = [];
+    /** @type {Map<string, number>} */
     const complexMap = new Map();
     for (const c of stats.complexity.topComplex) complexMap.set(c.path, c.cyclomaticComplexity);
     for (const old of (fileAge.ageChurnMatrix?.oldHighChurn || [])) {
@@ -5064,8 +5292,9 @@ function synthesizeInsights(stats, fileAge) {
 
   // Pattern 2: High PageRank + Low Health = Critical Fragility
   if (stats.pagerank?.topRanked && stats.healthIndex?.topUnhealthy) {
+    /** @type {any[]} */
     const fragile = [];
-    const unhealthySet = new Set(stats.healthIndex.topUnhealthy.filter((h) => h.health < 75).map((h) => h.path));
+    const unhealthySet = new Set(stats.healthIndex.topUnhealthy.filter((/** @type {any} */ h) => h.health < 75).map((/** @type {any} */ h) => h.path));
     for (const pr of stats.pagerank.topRanked.slice(0, 15)) {
       if (unhealthySet.has(pr.path)) fragile.push(pr);
     }
@@ -5082,13 +5311,13 @@ function synthesizeInsights(stats, fileAge) {
 
   // Pattern 3: High Co-Change + Different Directories = Implicit Coupling
   if (stats.coChange?.pairs && stats.moduleBoundaries) {
-    const implicit = stats.coChange.pairs.filter((p) => p.jaccard > 0.6 && dirname(p.files[0]) !== dirname(p.files[1]));
+    const implicit = stats.coChange.pairs.filter((/** @type {any} */ p) => p.jaccard > 0.6 && dirname(p.files[0]) !== dirname(p.files[1]));
     if (implicit.length > 0) {
       insights.push({
         pattern: "Implicit Module Coupling",
         description: `${implicit.length} file pairs have high co-change frequency (Jaccard>0.6) but live in different directories — hidden coupling not captured by imports.`,
         severity: "medium",
-        affectedFiles: implicit.slice(0, 5).flatMap((p) => p.files),
+        affectedFiles: implicit.slice(0, 5).flatMap((/** @type {any} */ p) => p.files),
         recommendation: "Consider co-locating these files or formalizing their dependency through explicit interfaces.",
       });
     }
@@ -5096,14 +5325,14 @@ function synthesizeInsights(stats, fileAge) {
 
   // Pattern 4: High Blast Radius + High Churn = Volatile Core
   if (stats.transitiveDeps?.topTransitiveFanOut && stats.gitChurn?.topHotFiles) {
-    const volatileChurn = new Set(stats.gitChurn.topHotFiles.filter((f) => f.churnCount > 10).map((f) => f.path));
-    const volatileCore = stats.transitiveDeps.topTransitiveFanOut.filter((f) => volatileChurn.has(f.path) && f.transitiveCount > 10);
+    const volatileChurn = new Set(stats.gitChurn.topHotFiles.filter((/** @type {any} */ f) => f.churnCount > 10).map((/** @type {any} */ f) => f.path));
+    const volatileCore = stats.transitiveDeps.topTransitiveFanOut.filter((/** @type {any} */ f) => volatileChurn.has(f.path) && f.transitiveCount > 10);
     if (volatileCore.length > 0) {
       insights.push({
         pattern: "Volatile Core",
         description: `${volatileCore.length} files have both large blast radius (>10 transitive deps) AND high change frequency (>10) — changes ripple widely and frequently.`,
         severity: "high",
-        affectedFiles: volatileCore.slice(0, 5).map((f) => f.path),
+        affectedFiles: volatileCore.slice(0, 5).map((/** @type {any} */ f) => f.path),
         recommendation: "Stabilize these files' APIs and add comprehensive integration tests to catch regressions.",
       });
     }
@@ -5111,8 +5340,9 @@ function synthesizeInsights(stats, fileAge) {
 
   // Pattern 5: Under-documented + High Risk
   if (stats.healthIndex?.topUnhealthy && stats.complexity?.topComplex) {
+    /** @type {any[]} */
     const unhealthyComplex = [];
-    const unhealthySet = new Set(stats.healthIndex.topUnhealthy.filter((h) => h.health < 60).map((h) => h.path));
+    const unhealthySet = new Set(stats.healthIndex.topUnhealthy.filter((/** @type {any} */ h) => h.health < 60).map((/** @type {any} */ h) => h.path));
     for (const c of stats.complexity.topComplex) {
       if (unhealthySet.has(c.path) && c.cyclomaticComplexity > 50) unhealthyComplex.push(c);
     }
@@ -5140,7 +5370,7 @@ function synthesizeInsights(stats, fileAge) {
 /**
  * Load custom configuration from .bundle-analyze.json (project root or specified path).
  */
-function loadConfig(projectRoot, configPath) {
+function loadConfig(/** @type {string} */ projectRoot, /** @type {string} */ configPath) {
   const paths = configPath ? [configPath] : [join(projectRoot, ".bundle-analyze.json"), join(projectRoot, ".bundle-analyze.yaml")];
   for (const p of paths) {
     if (existsSync(p)) {
@@ -5157,7 +5387,8 @@ function loadConfig(projectRoot, configPath) {
 /**
  * Format analysis results as Markdown report.
  */
-function formatMarkdownExport(stats, meta) {
+function formatMarkdownExport(/** @type {any} */ stats, /** @type {any} */ meta) {
+  /** @type {string[]} */
   const lines = [];
   lines.push(`# Bundle Analysis: ${meta.projectName}`);
   lines.push(`> ${meta.generatedAt} · ${stats.totalFiles} files · ${formatBytes(stats.totalSize)}`);
@@ -5202,7 +5433,8 @@ function formatMarkdownExport(stats, meta) {
 /**
  * Format analysis results as CSV (top issues).
  */
-function formatCSVExport(stats) {
+function formatCSVExport(/** @type {any} */ stats) {
+  /** @type {string[]} */
   const rows = [["Category", "Severity", "Title", "ROI", "Impact", "Effort"].join(",")];
   for (const rec of (stats.recommendationsWithROI || [])) {
     rows.push([rec.category, rec.severity, `"${rec.title}"`, rec.roi, rec.impact, rec.effort].join(","));
@@ -5215,12 +5447,13 @@ function formatCSVExport(stats) {
 /**
  * Generate GitHub/GitLab issue-ready markdown from analysis findings.
  */
-function generateIssues(stats, meta) {
+function generateIssues(/** @type {any} */ stats, /** @type {any} */ meta) {
+  /** @type {any[]} */
   const issues = [];
 
   // Issue 1: Quality gate failures
   if (stats.qualityGates && stats.qualityGates.failCount > 0) {
-    const failedGates = stats.qualityGates.gates.filter((g) => g.status === "FAIL");
+    const failedGates = stats.qualityGates.gates.filter((/** @type {any} */ g) => g.status === "FAIL");
     const body = [];
     body.push("## Quality Gate Failures");
     body.push(`The following quality gates failed in analysis run ${meta.generatedAt}:`);
@@ -5275,7 +5508,7 @@ function generateIssues(stats, meta) {
       body.push(`### [${rec.severity}] ${rec.title} (ROI=${rec.roi})`);
       body.push(`${rec.description}`);
       body.push(`- Impact: ${rec.impact}/10 · Effort: ${rec.effort}/10 · ROI Level: ${rec.roiLevel || "N/A"}`);
-      if (rec.files) body.push(`- Files: ${rec.files.slice(0, 5).map((f) => `\`${f}\``).join(", ")}`);
+      if (rec.files) body.push(`- Files: ${rec.files.slice(0, 5).map((/** @type {string} */ f) => `\`${f}\``).join(", ")}`);
       body.push("");
     }
     body.push("---");
@@ -5296,10 +5529,10 @@ function generateIssues(stats, meta) {
 /**
  * Get list of changed files from git (staged + unstaged) for pre-commit analysis.
  */
-function getChangedFiles(projectRoot) {
+function getChangedFiles(/** @type {string} */ projectRoot) {
   try {
     const output = execSync(`git -C "${projectRoot}" diff --name-only HEAD 2>/dev/null || git -C "${projectRoot}" diff --name-only --cached 2>/dev/null || echo ""`, { encoding: "utf-8", timeout: 5000 });
-    return output.trim().split("\n").filter((l) => l.trim());
+    return output.trim().split("\n").filter((/** @type {string} */ l) => l.trim());
   } catch {
     return [];
   }
@@ -5311,10 +5544,11 @@ function getChangedFiles(projectRoot) {
  * Compute confidence scores for each metric based on data quality indicators.
  * Confidence = f(sampleSize, dataCompleteness, measurementPrecision).
  */
-function computeConfidence(stats) {
+function computeConfidence(/** @type {any} */ stats) {
+  /** @type {any[]} */
   const scores = [];
 
-  function add(metric, confidence, reason) {
+  function add(/** @type {string} */ metric, /** @type {number} */ confidence, /** @type {string} */ reason) {
     scores.push({ metric, confidence, reason });
   }
 
@@ -5359,7 +5593,8 @@ function computeConfidence(stats) {
 /**
  * Generate a 5-line summary optimized for daily engineering standups.
  */
-function generateStandupSummary(stats, trendResult) {
+function generateStandupSummary(/** @type {any} */ stats, /** @type {any} */ trendResult) {
+  /** @type {string[]} */
   const lines = [];
   const prev = trendResult?.trendAnalysis;
 
@@ -5381,8 +5616,8 @@ function generateStandupSummary(stats, trendResult) {
   lines.push(`Risks: ${risks.length > 0 ? risks.join(", ") : "none critical"}`);
 
   // Line 4: Action items
-  const p0Count = (stats.recommendationsWithROI || []).filter((r) => r.severity === "P0").length;
-  const p1Count = (stats.recommendationsWithROI || []).filter((r) => r.severity === "P1").length;
+  const p0Count = (stats.recommendationsWithROI || []).filter((/** @type {any} */ r) => r.severity === "P0").length;
+  const p1Count = (stats.recommendationsWithROI || []).filter((/** @type {any} */ r) => r.severity === "P1").length;
   lines.push(`Actions: ${p0Count} P0 · ${p1Count} P1 · ${(stats.recommendationsWithROI || []).length - p0Count - p1Count} P2`);
 
   // Line 5: Quality gates
@@ -5397,10 +5632,11 @@ function generateStandupSummary(stats, trendResult) {
  * Generate human-readable explanations for each key metric:
  * what it is, why it matters, and what the current value means.
  */
-function explainMetrics(stats) {
+function explainMetrics(/** @type {any} */ stats) {
+  /** @type {any[]} */
   const explanations = [];
 
-  function explain(name, why, current, assessment) {
+  function explain(/** @type {string} */ name, /** @type {string} */ why, /** @type {any} */ current, /** @type {string} */ assessment) {
     explanations.push({ metric: name, why, currentValue: current, assessment });
   }
 
@@ -5443,13 +5679,14 @@ function explainMetrics(stats) {
 /**
  * Track metric improvements/worsening compared to previous run or baseline.
  */
-function trackImprovements(stats, trendResult) {
+function trackImprovements(/** @type {any} */ stats, /** @type {any} */ trendResult) {
+  /** @type {any[]} */
   const changes = [];
   const prev = trendResult?.history?.[trendResult.history.length - 2]; // second-to-last
 
   if (!prev) return { changes: [], improved: 0, worsened: 0, summary: "No historical data for comparison" };
 
-  function track(name, current, previous, unit = "", lowerIsBetter = true) {
+  function track(/** @type {string} */ name, /** @type {number} */ current, /** @type {number} */ previous, /** @type {string} */ unit = "", /** @type {boolean} */ lowerIsBetter = true) {
     if (current === undefined || previous === undefined || previous === 0) return;
     const delta = current - previous;
     const pct = +((Math.abs(delta) / Math.abs(previous)) * 100).toFixed(1);
@@ -5477,7 +5714,7 @@ function trackImprovements(stats, trendResult) {
 
 // ── Statistics ─────────────────────────────────────────────────────────────
 
-function computeStats(files, depGraph, opts = {}) {
+function computeStats(/** @type {any[]} */ files, /** @type {any} */ depGraph, /** @type {{ projectRoot?: string, quick?: boolean }} */ opts = {}) {
   const { projectRoot } = opts;
 
   // Largest files
@@ -5487,6 +5724,7 @@ function computeStats(files, depGraph, opts = {}) {
     .map((f) => ({ path: f.relPath, size: f.size, ext: f.ext }));
 
   // Size by extension
+  /** @type {Record<string, number>} */
   const sizeByExt = {};
   for (const f of files) {
     const ext = f.ext || "(no ext)";
@@ -5494,6 +5732,7 @@ function computeStats(files, depGraph, opts = {}) {
   }
 
   // Size by top-level directory
+  /** @type {Record<string, number>} */
   const sizeByDir = {};
   for (const f of files) {
     const topDir = f.relPath.split("/")[0] || ".";
@@ -5501,6 +5740,7 @@ function computeStats(files, depGraph, opts = {}) {
   }
 
   // Most depended-on (fan-in)
+  /** @type {Record<string, number>} */
   const fanIn = {};
   for (const edge of depGraph.edges) {
     fanIn[edge.to] = (fanIn[edge.to] || 0) + 1;
@@ -5511,6 +5751,7 @@ function computeStats(files, depGraph, opts = {}) {
     .map(([path, count]) => ({ path, count }));
 
   // Most dependencies (fan-out)
+  /** @type {Record<string, number>} */
   const fanOut = {};
   for (const edge of depGraph.edges) {
     fanOut[edge.from] = (fanOut[edge.from] || 0) + 1;
@@ -5524,14 +5765,14 @@ function computeStats(files, depGraph, opts = {}) {
   const circularDeps = detectCircularDeps(depGraph);
 
   // Total
-  const totalSize = files.reduce((sum, f) => sum + f.size, 0);
+  const totalSize = files.reduce((/** @type {number} */ sum, /** @type {any} */ f) => sum + f.size, 0);
   const totalFiles = files.length;
 
   // Large files (above threshold)
   const oversizedFiles = files
-    .filter((f) => f.size > LARGE_FILE_THRESHOLD)
+    .filter((/** @type {any} */ f) => f.size > LARGE_FILE_THRESHOLD)
     .sort((a, b) => b.size - a.size)
-    .map((f) => ({ path: f.relPath, size: f.size }));
+    .map((/** @type {any} */ f) => ({ path: f.relPath, size: f.size }));
 
   // New: orphan file detection
   const orphanFiles = detectOrphanFiles(files, depGraph);
@@ -5546,6 +5787,7 @@ function computeStats(files, depGraph, opts = {}) {
   const { maxDepth } = computeDepths(depGraph);
 
   // New: directory depth distribution
+  /** @type {Record<string, number>} */
   const depthDist = {};
   for (const f of files) {
     const depth = f.relPath.split("/").length;
@@ -5779,19 +6021,22 @@ function computeStats(files, depGraph, opts = {}) {
 /**
  * Detect circular dependencies using DFS.
  */
-function detectCircularDeps(depGraph) {
+function detectCircularDeps(/** @type {any} */ depGraph) {
+  /** @type {Record<string, string[]>} */
   const adj = {};
   for (const edge of depGraph.edges) {
     if (!adj[edge.from]) adj[edge.from] = [];
     adj[edge.from].push(edge.to);
   }
 
+  /** @type {string[][]} */
   const cycles = [];
   const visited = new Set();
   const recStack = new Set();
+  /** @type {string[]} */
   const path = [];
 
-  function dfs(node) {
+  function dfs(/** @type {string} */ node) {
     visited.add(node);
     recStack.add(node);
     path.push(node);
@@ -5822,12 +6067,13 @@ function detectCircularDeps(depGraph) {
 
 // ── HTML generation ────────────────────────────────────────────────────────
 
-function escapeHtml(str) {
+function escapeHtml(/** @type {string} */ str) {
+  /** @type {Record<string, string>} */
   const map = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" };
-  return str.replace(/[&<>"']/g, (c) => map[c]);
+  return str.replace(/[&<>"']/g, (/** @type {string} */ c) => map[c]);
 }
 
-function formatBytes(bytes) {
+function formatBytes(/** @type {number} */ bytes) {
   if (bytes === 0) return "0 B";
   const units = ["B", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
@@ -5839,8 +6085,10 @@ function formatBytes(bytes) {
  * Build a hierarchical data structure for the treemap.
  * { name, children: [{ name, value (size) }] or { name, children } }
  */
-function buildTreemapData(files) {
+function buildTreemapData(/** @type {any[]} */ files) {
+  /** @type {any} */
   const root = { name: "root", children: [] };
+  /** @type {Record<string, any>} */
   const dirMap = { "": root };
 
   // Sort files by path for consistent ordering
@@ -5878,7 +6126,7 @@ function buildTreemapData(files) {
   }
 
   // Remove empty directories
-  function prune(node) {
+  function prune(/** @type {any} */ node) {
     if (!node.children) return false;
     node.children = node.children.filter(prune);
     return node.children.length > 0 || node.value !== undefined;
@@ -5891,7 +6139,7 @@ function buildTreemapData(files) {
 /**
  * Generate a self-contained HTML report.
  */
-function generateHtml(data, meta, diff) {
+function generateHtml(/** @type {any} */ data, /** @type {any} */ meta, /** @type {any} */ diff) {
   const { treemapData, depGraph, stats } = data;
   const treemapJson = JSON.stringify(treemapData);
   const depNodesJson = JSON.stringify(depGraph.nodes);
@@ -5906,256 +6154,7 @@ function generateHtml(data, meta, diff) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bundle Analysis — ${escapeHtml(meta.projectName)}</title>
 <script src="https://d3js.org/d3.v7.min.js"></script>
-<style>
-  :root {
-    --bg: #1e1f2b;
-    --panel-bg: #2b2d3b;
-    --border: #3d59a1;
-    --text: #a9b1d6;
-    --text-dim: #6b7089;
-    --accent: #3d59a1;
-    --warn: #f59e0b;
-    --danger: #ef4444;
-    --ok: #34d399;
-    --info: #22d3ee;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    overflow: hidden;
-    height: 100vh;
-  }
-
-  /* Header */
-  #header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 16px;
-    background: var(--panel-bg);
-    border-bottom: 1px solid var(--border);
-    height: 44px;
-    flex-shrink: 0;
-  }
-  #header h1 { font-size:15px; font-weight:600; }
-  #header .meta { font-size:12px; color: var(--text-dim); }
-
-  /* Toolbar */
-  #toolbar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 16px;
-    background: #21232f;
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-  #toolbar button {
-    padding: 4px 12px;
-    border: 1px solid var(--border);
-    background: var(--panel-bg);
-    color: var(--text);
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 12px;
-    transition: background .15s;
-  }
-  #toolbar button:hover { background: var(--accent); }
-  #toolbar button.active { background: var(--accent); color: #fff; }
-  #toolbar .spacer { flex:1; }
-  #toolbar .stat-badge {
-    font-size: 11px;
-    color: var(--text-dim);
-    padding: 2px 8px;
-    background: var(--panel-bg);
-    border-radius: 3px;
-  }
-
-  /* Main layout */
-  #main { display:flex; flex:1; overflow:hidden; height: calc(100vh - 76px); }
-
-  /* Visualization area */
-  #vis {
-    flex: 1;
-    position: relative;
-    overflow: hidden;
-    cursor: grab;
-  }
-  #vis:active { cursor: grabbing; }
-  #vis svg { width:100%; height:100%; }
-
-  /* Side panel */
-  #sidebar {
-    width: 320px;
-    flex-shrink: 0;
-    overflow-y: auto;
-    background: #21232f;
-    border-left: 1px solid var(--border);
-    padding: 12px;
-  }
-  #sidebar h3 {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: .5px;
-    margin: 12px 0 6px;
-  }
-  #sidebar h3:first-child { margin-top: 0; }
-
-  /* Stat rows */
-  .stat-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 4px 8px;
-    font-size: 12px;
-    border-radius: 3px;
-  }
-  .stat-row:hover { background: rgba(255,255,255,.03); }
-  .stat-row .label {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 200px;
-  }
-  .stat-row .value { color: var(--info); font-variant-numeric: tabular-nums; flex-shrink: 0; margin-left: 8px; }
-  .stat-row .value.warn { color: var(--warn); }
-  .stat-row .value.danger { color: var(--danger); }
-
-  /* Ext bar chart */
-  .ext-bar-wrap { display:flex; align-items:center; gap:6px; margin:2px 0; font-size:11px; }
-  .ext-bar-wrap .ext-label { width:50px; text-align:right; flex-shrink:0; color: var(--text-dim); }
-  .ext-bar-wrap .ext-bar {
-    height: 14px;
-    background: var(--accent);
-    border-radius: 2px;
-    min-width: 2px;
-    transition: width .3s;
-  }
-  .ext-bar-wrap .ext-size { margin-left:4px; color: var(--text-dim); flex-shrink:0; }
-
-  /* Tooltip */
-  #tooltip {
-    position: absolute;
-    pointer-events: none;
-    background: rgba(30,31,43,.95);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 8px 12px;
-    font-size: 12px;
-    line-height: 1.6;
-    opacity: 0;
-    transition: opacity .15s;
-    z-index: 100;
-    max-width: 280px;
-  }
-  #tooltip.visible { opacity: 1; }
-  #tooltip .tt-path { color: var(--text-dim); font-size: 11px; word-break: break-all; }
-  #tooltip .tt-size { color: var(--info); font-weight: 600; }
-
-  /* Graph labels */
-  .node-label { font-size:9px; fill: var(--text); pointer-events:none; }
-  .link { stroke: #3d59a1; stroke-opacity: .4; }
-  .link-require { stroke: #f59e0b; stroke-opacity: .5; stroke-dasharray: 4 2; }
-  .link-dynamic { stroke: #a78bfa; stroke-opacity: .5; stroke-dasharray: 2 2; }
-
-  /* Breadcrumb nav */
-  #breadcrumb {
-    position: absolute;
-    bottom: 8px;
-    left: 8px;
-    right: 8px;
-    display: flex;
-    gap: 4px;
-    flex-wrap: wrap;
-    z-index: 10;
-  }
-  #breadcrumb button {
-    padding: 2px 8px;
-    font-size: 11px;
-    background: rgba(30,31,43,.9);
-    border: 1px solid var(--border);
-    color: var(--text);
-    border-radius: 3px;
-    cursor: pointer;
-  }
-  #breadcrumb button:hover { background: var(--accent); }
-
-  /* Responsive */
-  @media (max-width: 768px) {
-    #sidebar { width: 240px; }
-  }
-
-  /* Scrollbar */
-  #sidebar::-webkit-scrollbar { width: 4px; }
-  #sidebar::-webkit-scrollbar-track { background: transparent; }
-  #sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-  /* Color legend */
-  #legend {
-    position: absolute;
-    bottom: 8px;
-    right: 8px;
-    background: rgba(30,31,43,.92);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 8px 10px;
-    font-size: 10px;
-    z-index: 10;
-    max-height: 200px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-  #legend .legend-item { display:flex; align-items:center; gap:5px; }
-  #legend .legend-swatch { width:10px; height:10px; border-radius:2px; flex-shrink:0; }
-  #legend .legend-label { color: var(--text-dim); white-space:nowrap; }
-
-  /* Histogram bars in sidebar */
-  .histo-bar-wrap { display:flex; align-items:center; gap:6px; margin:2px 0; font-size:11px; }
-  .histo-bar-wrap .histo-label { width:80px; text-align:right; flex-shrink:0; color: var(--text-dim); }
-  .histo-bar-wrap .histo-bar {
-    height: 14px;
-    background: linear-gradient(90deg, var(--accent), var(--info));
-    border-radius: 2px;
-    min-width: 2px;
-    transition: width .3s;
-  }
-  .histo-bar-wrap .histo-count { margin-left:4px; color: var(--text-dim); flex-shrink:0; }
-
-  /* Diff indicators */
-  .diff-up { color: var(--danger); }
-  .diff-down { color: var(--ok); }
-  .diff-neutral { color: var(--text-dim); }
-
-  /* Search input */
-  #file-search {
-    width: 100%;
-    padding: 4px 8px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    color: var(--text);
-    border-radius: 3px;
-    font-size: 11px;
-    margin-bottom: 8px;
-  }
-  #file-search::placeholder { color: var(--text-dim); }
-
-  /* Trend summary card */
-  .trend-card {
-    background: var(--panel-bg);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 8px;
-    margin-bottom: 8px;
-  }
-  .trend-card .trend-title { font-size:12px; font-weight:600; color: var(--info); margin-bottom:4px; }
-  .trend-card .trend-row { font-size:11px; color: var(--text-dim); }
-</style>
+<link rel="stylesheet" href="../../cdn/bundle-analysis/index.css">
 </head>
 <body>
 
@@ -6171,8 +6170,8 @@ function generateHtml(data, meta, diff) {
   <span class="spacer"></span>
   <span class="stat-badge">Nodes: ${depGraph.nodes.length}</span>
   <span class="stat-badge">Edges: ${depGraph.edges.length}</span>
-  ${stats.circularDeps.length > 0 ? `<span class="stat-badge" style="color:var(--warn)">⚠ Cycles: ${stats.circularDeps.length}</span>` : ""}
-  ${stats.oversizedFiles.length > 0 ? `<span class="stat-badge" style="color:var(--danger)">⚠ Oversized: ${stats.oversizedFiles.length}</span>` : ""}
+  ${stats.circularDeps.length > 0 ? `<span class="stat-badge" class="ba-text-warn">⚠ Cycles: ${stats.circularDeps.length}</span>` : ""}
+  ${stats.oversizedFiles.length > 0 ? `<span class="stat-badge" class="ba-text-danger">⚠ Oversized: ${stats.oversizedFiles.length}</span>` : ""}
 </div>
 
 <div id="main">
@@ -6460,7 +6459,7 @@ function showTooltip(event, d) {
     .html(\`
       <div class="tt-path">\${escapeH(p)}</div>
       <div class="tt-size">\${formatB(d.value || d.data.value)}</div>
-      \${d.data.ext ? \`<div style="color:#6b7089">ext: \${escapeH(d.data.ext)}</div>\` : ""}
+      \${d.data.ext ? \`<div class="tt-ext">ext: \${escapeH(d.data.ext)}</div>\` : ""}
     \`);
 }
 
@@ -6575,8 +6574,8 @@ window.addEventListener("resize", () => {
 </html>`;
 }
 
-function renderSidebar(stats, diff) {
-  const { largestFiles, sizeByExt, sizeByDir, mostDependedOn, mostDependencies, circularDeps, oversizedFiles, orphanFiles, barrelFiles, sizeHistogram, maxDependencyDepth, depthDist, duplicates, packageMetrics, transitiveDeps, gitChurn, layerAnalysis, coChange, riskScores, recommendations: rawRecs, scc, betweenness, moduleBoundaries, pagerank, testGaps, changePropagation, knowledgeDistribution, complexity, contentSimilarity, hotspotMatrix, fitnessRules, importCost, techDebt, recommendationsWithROI, apiSurface, healthIndex, sdp, reviewRisk, breakingChangeImpact, releaseCoupling, knowledgeConcentration, testPrioritization, onboardingPath, ownershipTransferRisk, adrs, semverRecommendation, reviewChecklists, sprintPackages, fileAge, refactoringPriority, conformance, qualityGates, dependencyConcentration, reviewTime, percentileRankings, docCoverage, maturity, synthesizedInsights } = stats;
+function renderSidebar(/** @type {any} */ stats, /** @type {any} */ diff) {
+  const { largestFiles, sizeByExt, sizeByDir, mostDependedOn, mostDependencies, circularDeps, oversizedFiles, orphanFiles, barrelFiles, sizeHistogram, maxDependencyDepth, depthDist, duplicates, packageMetrics, transitiveDeps, gitChurn, layerAnalysis, coChange, riskScores, recommendations: rawRecs, scc, betweenness, moduleBoundaries, pagerank, testGaps, changePropagation, knowledgeDistribution, complexity, contentSimilarity, hotspotMatrix, fitnessRules, importCost, techDebt, recommendationsWithROI, apiSurface, healthIndex, sdp, reviewRisk, breakingChangeImpact, releaseCoupling, knowledgeConcentration, testPrioritization, onboardingPath, ownershipTransferRisk, semverRecommendation, sprintPackages, fileAge, refactoringPriority, conformance, qualityGates, dependencyConcentration, reviewTime, percentileRankings, docCoverage, maturity, synthesizedInsights } = stats;
   const recommendations = recommendationsWithROI || rawRecs;
 
   const extEntries = Object.entries(sizeByExt).sort((a, b) => b[1] - a[1]);
@@ -6595,7 +6594,7 @@ function renderSidebar(stats, diff) {
     html += `<div class="trend-row">Total size: <span class="${deltaCls}">${arrow} ${Math.abs(diff.sizeDeltaPercent).toFixed(1)}% (${formatBytes(Math.abs(diff.sizeDelta))})</span></div>`;
     html += `<div class="trend-row">+${diff.newFiles.length} new · −${diff.deletedFiles.length} deleted · ${diff.changedFiles.length} changed</div>`;
     if (diff.changedFiles.length > 0) {
-      html += `<div class="trend-row" style="margin-top:4px; color:var(--text-dim)">Top changes:</div>`;
+      html += `<div class="trend-row" top-changes>Top changes:</div>`;
       for (const f of diff.changedFiles.slice(0, 5)) {
         const fCls = f.deltaPercent > 0 ? "diff-up" : "diff-down";
         const fArrow = f.deltaPercent > 0 ? "↑" : "↓";
@@ -6626,7 +6625,7 @@ function renderSidebar(stats, diff) {
     const maxCount = Math.max(1, ...Object.values(sizeHistogram));
     for (const [bucket, count] of Object.entries(sizeHistogram)) {
       const pct = ((count / maxCount) * 100).toFixed(1);
-      html += `<div class="histo-bar-wrap"><span class="histo-label">${escapeHtml(bucket)}</span><div class="histo-bar" style="width:${Math.max(pct, 1)}%"></div><span class="histo-count">${count} files</span></div>`;
+      html += `<div class="histo-bar-wrap"><span class="histo-label">${escapeHtml(bucket)}</span><div class="histo-bar" style="--w:${Math.max(Number(pct), 1)}%"></div><span class="histo-count">${count} files</span></div>`;
     }
   }
 
@@ -6634,7 +6633,7 @@ function renderSidebar(stats, diff) {
   html += `<h3>📦 By Extension</h3>`;
   for (const [ext, size] of extEntries.slice(0, 12)) {
     const pct = ((size / maxExtSize) * 100).toFixed(1);
-    html += `<div class="ext-bar-wrap"><span class="ext-label">${escapeHtml(ext)}</span><div class="ext-bar" style="width:${Math.max(pct, 1)}%"></div><span class="ext-size">${formatBytes(size)}</span></div>`;
+    html += `<div class="ext-bar-wrap"><span class="ext-label">${escapeHtml(ext)}</span><div class="ext-bar" style="--w:${Math.max(Number(pct), 1)}%"></div><span class="ext-size">${formatBytes(size)}</span></div>`;
   }
 
   // ── By directory ──
@@ -6677,23 +6676,23 @@ function renderSidebar(stats, diff) {
   if (circularDeps.length > 0) {
     html += `<h3>🔄 Circular Dependencies</h3>`;
     for (const cycle of circularDeps.slice(0, 5)) {
-      html += `<div class="stat-row"><span class="label" style="color:var(--warn)">${escapeHtml(cycle.join(" → "))}</span></div>`;
+      html += `<div class="stat-row"><span class="label" class="ba-text-warn">${escapeHtml(cycle.join(" → "))}</span></div>`;
     }
   }
 
   // ── Orphan files ──
   if (orphanFiles && orphanFiles.length > 0) {
     html += `<h3>👻 Orphan Files (not imported)</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Files that aren't imported by any other file (may be dead code)</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">Files that aren't imported by any other file (may be dead code)</span></div>`;
     for (const f of orphanFiles.slice(0, 10)) {
-      html += `<div class="stat-row"><span class="label" title="${escapeHtml(f.path)}">${escapeHtml(f.path.split("/").slice(-2).join("/"))}</span><span class="value" style="color:var(--text-dim)">${formatBytes(f.size)}</span></div>`;
+      html += `<div class="stat-row"><span class="label" title="${escapeHtml(f.path)}">${escapeHtml(f.path.split("/").slice(-2).join("/"))}</span><span class="value" class="ba-text-dim">${formatBytes(f.size)}</span></div>`;
     }
   }
 
   // ── Barrel files ──
   if (barrelFiles && barrelFiles.length > 0) {
     html += `<h3>📦 Barrel Files (re-export hubs)</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Files that primarily re-export from other modules</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">Files that primarily re-export from other modules</span></div>`;
     for (const f of barrelFiles.slice(0, 10)) {
       html += `<div class="stat-row"><span class="label" title="${escapeHtml(f.path)}">${escapeHtml(f.path.split("/").pop())}</span><span class="value">${f.reExportCount}/${f.totalImportCount} re-exports</span></div>`;
     }
@@ -6701,21 +6700,21 @@ function renderSidebar(stats, diff) {
 
   // ── Duplicate files ──
   if (duplicates && duplicates.length > 0) {
-    const totalWasted = duplicates.reduce((s, d) => s + (d.wastedBytes || 0), 0);
+    const totalWasted = duplicates.reduce((/** @type {number} */ s, /** @type {any} */ d) => s + (d.wastedBytes || 0), 0);
     html += `<h3>🟰 Duplicate Files</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--warn);font-size:10px">${duplicates.length} groups · ${formatBytes(totalWasted)} wasted</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-warn-sm">${duplicates.length} groups · ${formatBytes(totalWasted)} wasted</span></div>`;
     for (const g of duplicates.slice(0, 8)) {
-      html += `<div class="stat-row"><span class="label" title="${escapeHtml(g.files.join(', '))}">${escapeHtml(g.files[0].split('/').pop())} ×${g.count}</span><span class="value" style="color:var(--warn)">${formatBytes(g.wastedBytes)} wasted</span></div>`;
+      html += `<div class="stat-row"><span class="label" title="${escapeHtml(g.files.join(', '))}">${escapeHtml(g.files[0].split('/').pop())} ×${g.count}</span><span class="value" class="ba-text-warn">${formatBytes(g.wastedBytes)} wasted</span></div>`;
     }
   }
 
   // ── Package metrics (I/A/D) ──
   if (packageMetrics && packageMetrics.packages && packageMetrics.packages.length > 0) {
     html += `<h3>📐 Package Metrics (I/A/D)</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Robert Martin instability/abstractness — ${packageMetrics.packageCount} packages</span></div>`;
-    const painPkgs = packageMetrics.packages.filter((p) => p.zone === "zone-of-pain");
-    const uselessPkgs = packageMetrics.packages.filter((p) => p.zone === "zone-of-uselessness");
-    const showPkgs = [...painPkgs, ...uselessPkgs, ...packageMetrics.packages.filter((p) => p.zone === "main-sequence")].slice(0, 10);
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">Robert Martin instability/abstractness — ${packageMetrics.packageCount} packages</span></div>`;
+    const painPkgs = packageMetrics.packages.filter((/** @type {any} */ p) => p.zone === "zone-of-pain");
+    const uselessPkgs = packageMetrics.packages.filter((/** @type {any} */ p) => p.zone === "zone-of-uselessness");
+    const showPkgs = [...painPkgs, ...uselessPkgs, ...packageMetrics.packages.filter((/** @type {any} */ p) => p.zone === "main-sequence")].slice(0, 10);
     for (const p of showPkgs) {
       const zoneCls = p.zone === "zone-of-pain" ? "danger" : p.zone === "zone-of-uselessness" ? "warn" : "";
       const zoneLabel = p.zone === "zone-of-pain" ? "⚡Pain" : p.zone === "zone-of-uselessness" ? "💨Useless" : "";
@@ -6726,19 +6725,19 @@ function renderSidebar(stats, diff) {
   // ── Transitive dependency analysis ──
   if (transitiveDeps && transitiveDeps.topTransitiveFanOut && transitiveDeps.topTransitiveFanOut.length > 0) {
     html += `<h3>🔗 Transitive Dependencies</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Avg ${transitiveDeps.avgReachable} reachable · Max ${transitiveDeps.maxReachable} · ${transitiveDeps.disconnectedSubgraphs} subgraphs</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">Avg ${transitiveDeps.avgReachable} reachable · Max ${transitiveDeps.maxReachable} · ${transitiveDeps.disconnectedSubgraphs} subgraphs</span></div>`;
     // Top transitive fan-out (largest blast radius)
     if (transitiveDeps.topTransitiveFanOut.length > 0) {
-      html += `<div style="color:var(--text-dim);font-size:10px;margin:2px 0;padding-left:8px">Largest blast radius:</div>`;
+      html += `<div class="ba-dim-sm ba-indent-2">Largest blast radius:</div>`;
       for (const f of transitiveDeps.topTransitiveFanOut.slice(0, 5)) {
         html += `<div class="stat-row"><span class="label" title="${escapeHtml(f.path)}">${escapeHtml(f.path.split("/").pop())}</span><span class="value">${f.transitiveCount} reachable (${f.directCount} direct)</span></div>`;
       }
     }
     // Bridge modules
     if (transitiveDeps.bridgeModules && transitiveDeps.bridgeModules.length > 0) {
-      html += `<div style="color:var(--text-dim);font-size:10px;margin:2px 0;padding-left:8px">Bridge connectors:</div>`;
+      html += `<div class="ba-dim-sm ba-indent-2">Bridge connectors:</div>`;
       for (const b of transitiveDeps.bridgeModules.slice(0, 5)) {
-        html += `<div class="stat-row"><span class="label" title="${escapeHtml(b.path)}">${escapeHtml(b.path.split("/").pop())}</span><span class="value" style="color:var(--info)">↔${b.bridgeScore}</span></div>`;
+        html += `<div class="stat-row"><span class="label" title="${escapeHtml(b.path)}">${escapeHtml(b.path.split("/").pop())}</span><span class="value" class="ba-text-info">↔${b.bridgeScore}</span></div>`;
       }
     }
   }
@@ -6746,14 +6745,14 @@ function renderSidebar(stats, diff) {
   // ── Git churn hotspots ──
   if (gitChurn && gitChurn.available && gitChurn.topHotFiles && gitChurn.topHotFiles.length > 0) {
     html += `<h3>📜 Change Hotspots (${escapeHtml(gitChurn.timeWindow)})</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${gitChurn.filesChanged} files changed · ${gitChurn.totalChanges} commits · ${gitChurn.churnRate}% churn rate</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">${gitChurn.filesChanged} files changed · ${gitChurn.totalChanges} commits · ${gitChurn.churnRate}% churn rate</span></div>`;
     for (const f of gitChurn.topHotFiles.slice(0, 8)) {
       const cls = f.heatIndex > 100 ? "danger" : f.heatIndex > 50 ? "warn" : "";
       html += `<div class="stat-row"><span class="label" title="${escapeHtml(f.path)}">${escapeHtml(f.path.split("/").slice(-2).join("/"))}</span><span class="value ${cls}">🔥${f.heatIndex} (${f.churnCount}×)</span></div>`;
     }
     // Churn distribution
     if (gitChurn.churnBuckets) {
-      html += `<div style="color:var(--text-dim);font-size:10px;margin:4px 0;padding-left:8px">Churn distribution: `;
+      html += `<div class="ba-dim-sm ba-indent-4">Churn distribution: `;
       const parts = [];
       for (const [bucket, count] of Object.entries(gitChurn.churnBuckets)) {
         if (count > 0) parts.push(`${bucket}: ${count}`);
@@ -6766,15 +6765,15 @@ function renderSidebar(stats, diff) {
   // ── Architecture layer analysis ──
   if (layerAnalysis && layerAnalysis.layers && layerAnalysis.layers.length > 0) {
     html += `<h3>🏗️ Architecture Layers</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${layerAnalysis.layerCount} layers (max depth ${layerAnalysis.maxLayer}) · ${layerAnalysis.violationCount} violations</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">${layerAnalysis.layerCount} layers (max depth ${layerAnalysis.maxLayer}) · ${layerAnalysis.violationCount} violations</span></div>`;
     for (const l of layerAnalysis.layers) {
       const label = l.layer === 0 ? "Entry" : l.layer === layerAnalysis.maxLayer ? "Foundation" : `Layer ${l.layer}`;
       html += `<div class="stat-row"><span class="label">L${l.layer} ${escapeHtml(label)}</span><span class="value">${l.nodeCount} files · fan-out ${l.avgFanOut}</span></div>`;
     }
     if (layerAnalysis.violations.length > 0) {
-      html += `<div style="color:var(--warn);font-size:10px;margin:4px 0;padding-left:8px">⚠ Top violations (upward deps):</div>`;
+      html += `<div class="ba-warn-sm ba-indent-4">⚠ Top violations (upward deps):</div>`;
       for (const v of layerAnalysis.violations.slice(0, 5)) {
-        html += `<div class="stat-row"><span class="label" style="color:var(--warn);font-size:10px" title="${escapeHtml(v.from)} → ${escapeHtml(v.to)}">L${v.fromLayer}→L${v.toLayer}: ${escapeHtml(v.from.split('/').pop())} → ${escapeHtml(v.to.split('/').pop())}</span></div>`;
+        html += `<div class="stat-row"><span class="label" class="ba-warn-sm" title="${escapeHtml(v.from)} → ${escapeHtml(v.to)}">L${v.fromLayer}→L${v.toLayer}: ${escapeHtml(v.from.split('/').pop())} → ${escapeHtml(v.to.split('/').pop())}</span></div>`;
       }
     }
   }
@@ -6782,14 +6781,14 @@ function renderSidebar(stats, diff) {
   // ── Co-change analysis ──
   if (coChange && coChange.available && coChange.pairs && coChange.pairs.length > 0) {
     html += `<h3>🔀 Co-Change Pairs</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Files that change together in ${coChange.timeWindow} · ${coChange.commitCount} commits · ${coChange.pairs.length} strong pairs</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">Files that change together in ${coChange.timeWindow} · ${coChange.commitCount} commits · ${coChange.pairs.length} strong pairs</span></div>`;
     for (const p of coChange.pairs.slice(0, 8)) {
-      html += `<div class="stat-row"><span class="label" title="${escapeHtml(p.files.join(' + '))}">${escapeHtml(p.files.map(f=>f.split('/').pop()).join(' + '))}</span><span class="value">${p.coChangeCount}× (J=${p.jaccard})</span></div>`;
+      html += `<div class="stat-row"><span class="label" title="${escapeHtml(p.files.join(' + '))}">${escapeHtml(p.files.map((/** @type {string} */ f)=>f.split('/').pop()).join(' + '))}</span><span class="value">${p.coChangeCount}× (J=${p.jaccard})</span></div>`;
     }
     if (coChange.clusters && coChange.clusters.length > 0) {
-      html += `<div style="color:var(--info);font-size:10px;margin:4px 0;padding-left:8px">📎 ${coChange.clusters.length} co-change clusters</div>`;
+      html += `<div class="ba-info-sm ba-indent-4">📎 ${coChange.clusters.length} co-change clusters</div>`;
       for (const c of coChange.clusters.slice(0, 3)) {
-        html += `<div class="stat-row"><span class="label" style="font-size:10px" title="${escapeHtml(c.files.join(', '))}">Cluster (${c.size} files): ${escapeHtml(c.files.slice(0,3).map(f=>f.split('/').pop()).join(', '))}</span></div>`;
+        html += `<div class="stat-row"><span class="label" class="ba-sm" title="${escapeHtml(c.files.join(', '))}">Cluster (${c.size} files): ${escapeHtml(c.files.slice(0,3).map((/** @type {string} */ f)=>f.split('/').pop()).join(', '))}</span></div>`;
       }
     }
   }
@@ -6797,10 +6796,10 @@ function renderSidebar(stats, diff) {
   // ── Risk scores ──
   if (riskScores && riskScores.topRisks && riskScores.topRisks.length > 0) {
     html += `<h3>🎯 Risk Scores</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Composite risk (size+churn+coupling+orphan+circular) · Avg ${riskScores.avgRisk}/100</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">Composite risk (size+churn+coupling+orphan+circular) · Avg ${riskScores.avgRisk}/100</span></div>`;
     // Risk distribution
     if (riskScores.riskBuckets) {
-      html += `<div style="color:var(--text-dim);font-size:10px;margin:2px 0;padding-left:8px">`;
+      html += `<div class="ba-dim-sm ba-indent-2">`;
       const rbParts = [];
       for (const [bucket, count] of Object.entries(riskScores.riskBuckets)) {
         if (count > 0) rbParts.push(`${bucket}: ${count}`);
@@ -6818,30 +6817,30 @@ function renderSidebar(stats, diff) {
 
   // ── Recommendations ──
   if (recommendations && recommendations.length > 0) {
-    const p0Count = recommendations.filter(r=>r.severity==='P0').length;
-    const p1Count = recommendations.filter(r=>r.severity==='P1').length;
+    const p0Count = recommendations.filter((/** @type {any} */ r)=>r.severity==='P0').length;
+    const p1Count = recommendations.filter((/** @type {any} */ r)=>r.severity==='P1').length;
     html += `<h3>💡 Recommendations (ROI-ranked)</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${recommendations.length} suggestions (${p0Count} P0 · ${p1Count} P1 · ${recommendations.length-p0Count-p1Count} P2) · ranked by ROI (Impact/Effort)</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">${recommendations.length} suggestions (${p0Count} P0 · ${p1Count} P1 · ${recommendations.length-p0Count-p1Count} P2) · ranked by ROI (Impact/Effort)</span></div>`;
     for (const rec of recommendations.slice(0, 8)) {
       const sevCls = rec.severity === "P0" ? "danger" : rec.severity === "P1" ? "warn" : "";
       const sevIcon = rec.severity === "P0" ? "🔴" : rec.severity === "P1" ? "🟡" : "🟢";
       const roiInfo = rec.roi !== undefined ? ` I=${rec.impact} E=${rec.effort} ROI=${rec.roi}` : "";
-      html += `<div class="stat-row"><span class="label ${sevCls}" title="${escapeHtml(rec.description + roiInfo)}">${sevIcon} ${escapeHtml(rec.title)}</span><span class="value" style="font-size:10px">${rec.roi !== undefined ? 'ROI='+rec.roi : ''}</span></div>`;
+      html += `<div class="stat-row"><span class="label ${sevCls}" title="${escapeHtml(rec.description + roiInfo)}">${sevIcon} ${escapeHtml(rec.title)}</span><span class="value" class="ba-sm">${rec.roi !== undefined ? 'ROI='+rec.roi : ''}</span></div>`;
     }
   }
 
   // ── SCC (Tarjan) ──
   if (scc && scc.multiNodeComponents && scc.multiNodeComponents.length > 0) {
     html += `<h3>🔴 Strongly Connected Components (Tarjan)</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${scc.multiNodeSccCount} multi-node SCCs · ${scc.sccCount} total SCCs · largest=${scc.largestSCCSize} files</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">${scc.multiNodeSccCount} multi-node SCCs · ${scc.sccCount} total SCCs · largest=${scc.largestSCCSize} files</span></div>`;
     for (const component of scc.multiNodeComponents.slice(0, 5)) {
-      const names = component.slice(0, 4).map((c) => c.split("/").pop()).join(", ");
+      const names = component.slice(0, 4).map((/** @type {string} */ c) => c.split("/").pop()).join(", ");
       const more = component.length > 4 ? ` +${component.length - 4}` : "";
-      html += `<div class="stat-row"><span class="label" style="color:var(--warn)" title="${escapeHtml(component.join(' → '))}">${escapeHtml(names)}${more}</span><span class="value" style="color:var(--warn)">${component.length} files</span></div>`;
+      html += `<div class="stat-row"><span class="label" class="ba-text-warn" title="${escapeHtml(component.join(' → '))}">${escapeHtml(names)}${more}</span><span class="value" class="ba-text-warn">${component.length} files</span></div>`;
     }
     // SCC size distribution
     if (scc.sizeDist) {
-      html += `<div style="color:var(--text-dim);font-size:10px;margin:2px 0;padding-left:8px">Distribution: `;
+      html += `<div class="ba-dim-sm ba-indent-2">Distribution: `;
       const distParts = [];
       for (const [bucket, count] of Object.entries(scc.sizeDist)) {
         if (count > 0) distParts.push(`${bucket}: ${count}`);
@@ -6854,7 +6853,7 @@ function renderSidebar(stats, diff) {
   // ── Betweenness centrality ──
   if (betweenness && betweenness.topBottlenecks && betweenness.topBottlenecks.length > 0) {
     html += `<h3>🍾 Bottlenecks (Betweenness)</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Architectural bottlenecks · avg=${betweenness.avgBetweenness.toFixed(4)} · max=${betweenness.maxBetweenness.toFixed(4)}</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">Architectural bottlenecks · avg=${betweenness.avgBetweenness.toFixed(4)} · max=${betweenness.maxBetweenness.toFixed(4)}</span></div>`;
     for (const b of betweenness.topBottlenecks.slice(0, 8)) {
       const cls = b.betweenness > betweenness.avgBetweenness * 5 ? "danger" : b.betweenness > betweenness.avgBetweenness * 2 ? "warn" : "";
       html += `<div class="stat-row"><span class="label" title="${escapeHtml(b.path)}">${escapeHtml(b.path.split("/").pop())}</span><span class="value ${cls}">${b.betweenness.toFixed(4)}</span></div>`;
@@ -6864,18 +6863,18 @@ function renderSidebar(stats, diff) {
   // ── Module boundary suggestions ──
   if (moduleBoundaries && moduleBoundaries.length > 0) {
     html += `<h3>🧩 Module Boundaries</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${moduleBoundaries.length} structural suggestions</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">${moduleBoundaries.length} structural suggestions</span></div>`;
     for (const s of moduleBoundaries.slice(0, 8)) {
       const typeIcon = s.type === "co-locate" ? "📁" : s.type === "split-package" ? "✂️" : s.type === "extract-interface" ? "🔌" : "🔗";
       const priCls = s.priority === "P0" ? "danger" : s.priority === "P1" ? "warn" : "";
-      html += `<div class="stat-row"><span class="label ${priCls}" title="${escapeHtml(s.reason)}">${typeIcon} [${s.priority}] ${escapeHtml(s.type)}</span><span class="value" style="font-size:10px">${escapeHtml((s.files||[]).slice(0,2).map(f=>f.split('/').pop()).join(', '))}</span></div>`;
+      html += `<div class="stat-row"><span class="label ${priCls}" title="${escapeHtml(s.reason)}">${typeIcon} [${s.priority}] ${escapeHtml(s.type)}</span><span class="value" class="ba-sm">${escapeHtml((s.files||[]).slice(0,2).map((/** @type {string} */ f)=>f.split('/').pop()).join(', '))}</span></div>`;
     }
   }
 
   // ── PageRank ──
   if (pagerank && pagerank.topRanked && pagerank.topRanked.length > 0) {
     html += `<h3>📄 PageRank (Code Importance)</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Authoritative files (damping=${pagerank.damping}) · avg=${pagerank.avgPagerank.toFixed(4)} · ${pagerank.authoritativeFiles?.length||0} above 3×avg</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">Authoritative files (damping=${pagerank.damping}) · avg=${pagerank.avgPagerank.toFixed(4)} · ${pagerank.authoritativeFiles?.length||0} above 3×avg</span></div>`;
     for (const pr of pagerank.topRanked.slice(0, 10)) {
       const cls = pr.pagerank > pagerank.avgPagerank * 5 ? "info" : pr.pagerank > pagerank.avgPagerank * 2 ? "" : "";
       html += `<div class="stat-row"><span class="label" title="${escapeHtml(pr.path)}">${escapeHtml(pr.path.split("/").pop())}</span><span class="value ${cls}">${pr.pagerank.toFixed(4)}</span></div>`;
@@ -6885,7 +6884,7 @@ function renderSidebar(stats, diff) {
   // ── Test gaps ──
   if (testGaps && testGaps.untestedCount > 0) {
     html += `<h3>🧪 Test Gaps</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${testGaps.coverageRate}% coverage · ${testGaps.untestedCount}/${testGaps.totalSourceFiles} untested · ${testGaps.highPriority.length} high-priority</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">${testGaps.coverageRate}% coverage · ${testGaps.untestedCount}/${testGaps.totalSourceFiles} untested · ${testGaps.highPriority.length} high-priority</span></div>`;
     for (const f of testGaps.highPriority.slice(0, 8)) {
       const riskPct = Math.round(f.riskScore * 100);
       const cls = riskPct >= 30 ? "danger" : riskPct >= 15 ? "warn" : "";
@@ -6896,28 +6895,28 @@ function renderSidebar(stats, diff) {
   // ── Change propagation ──
   if (changePropagation && changePropagation.available && changePropagation.topPropagations && changePropagation.topPropagations.length > 0) {
     html += `<h3>📡 Change Propagation</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">If X changes, probability Y must also change · ${changePropagation.highPropagationCount} pairs >50%</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">If X changes, probability Y must also change · ${changePropagation.highPropagationCount} pairs >50%</span></div>`;
     for (const p of changePropagation.topPropagations.slice(0, 8)) {
       const maxProb = Math.max(p.probBgivenA, p.probAgivenB);
       const cls = maxProb >= 70 ? "danger" : maxProb >= 50 ? "warn" : "";
-      html += `<div class="stat-row"><span class="label" title="${escapeHtml(p.files[0])} ↔ ${escapeHtml(p.files[1])}">${escapeHtml(p.files.map(f=>f.split('/').pop()).join(' → '))}</span><span class="value ${cls}">${maxProb}%</span></div>`;
+      html += `<div class="stat-row"><span class="label" title="${escapeHtml(p.files[0])} ↔ ${escapeHtml(p.files[1])}">${escapeHtml(p.files.map((/** @type {string} */ f)=>f.split('/').pop()).join(' → '))}</span><span class="value ${cls}">${maxProb}%</span></div>`;
     }
   }
 
   // ── Knowledge distribution ──
   if (knowledgeDistribution && knowledgeDistribution.available) {
     html += `<h3>🧠 Knowledge Distribution</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${knowledgeDistribution.totalContributors} contributors · ${knowledgeDistribution.busFactorRiskCount} bus-factor-1 · ${knowledgeDistribution.abandonedCount} abandoned</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">${knowledgeDistribution.totalContributors} contributors · ${knowledgeDistribution.busFactorRiskCount} bus-factor-1 · ${knowledgeDistribution.abandonedCount} abandoned</span></div>`;
     // Bus factor risks
     if (knowledgeDistribution.busFactorRisks && knowledgeDistribution.busFactorRisks.length > 0) {
-      html += `<div style="color:var(--warn);font-size:10px;margin:2px 0;padding-left:8px">⚠ Single-contributor files:</div>`;
+      html += `<div class="ba-warn-sm ba-indent-2">⚠ Single-contributor files:</div>`;
       for (const f of knowledgeDistribution.busFactorRisks.slice(0, 5)) {
-        html += `<div class="stat-row"><span class="label" style="color:var(--warn);font-size:10px" title="${escapeHtml(f.path)}">${escapeHtml(f.path.split("/").slice(-2).join("/"))}</span><span class="value" style="color:var(--warn)">1 person</span></div>`;
+        html += `<div class="stat-row"><span class="label" class="ba-warn-sm" title="${escapeHtml(f.path)}">${escapeHtml(f.path.split("/").slice(-2).join("/"))}</span><span class="value" class="ba-text-warn">1 person</span></div>`;
       }
     }
     // Contributor distribution
     if (knowledgeDistribution.contribCountDist) {
-      html += `<div style="color:var(--text-dim);font-size:10px;margin:4px 0;padding-left:8px">Distribution: `;
+      html += `<div class="ba-dim-sm ba-indent-4">Distribution: `;
       const kdParts = [];
       for (const [bucket, count] of Object.entries(knowledgeDistribution.contribCountDist)) {
         if (count > 0) kdParts.push(`${bucket}: ${count}`);
@@ -6930,9 +6929,9 @@ function renderSidebar(stats, diff) {
   // ── Complexity ──
   if (complexity && complexity.topComplex && complexity.topComplex.length > 0) {
     html += `<h3>📐 Cyclomatic Complexity</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">McCabe · avg ${complexity.avgComplexity} · max ${complexity.maxComplexity} · ${complexity.totalAnalyzed} files analyzed</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">McCabe · avg ${complexity.avgComplexity} · max ${complexity.maxComplexity} · ${complexity.totalAnalyzed} files analyzed</span></div>`;
     if (complexity.complexityBuckets) {
-      html += `<div style="color:var(--text-dim);font-size:10px;margin:2px 0;padding-left:8px">`;
+      html += `<div class="ba-dim-sm ba-indent-2">`;
       const cbParts = [];
       for (const [bucket, count] of Object.entries(complexity.complexityBuckets)) {
         if (count > 0) cbParts.push(`${bucket}: ${count}`);
@@ -6949,23 +6948,23 @@ function renderSidebar(stats, diff) {
   // ── Content similarity ──
   if (contentSimilarity && contentSimilarity.pairCount > 0) {
     html += `<h3>🔍 Near-Duplicates (Jaccard≥${contentSimilarity.threshold})</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${contentSimilarity.pairCount} similar pairs · ${contentSimilarity.similarGroups?.length||0} groups</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">${contentSimilarity.pairCount} similar pairs · ${contentSimilarity.similarGroups?.length||0} groups</span></div>`;
     for (const p of contentSimilarity.pairs.slice(0, 8)) {
-      html += `<div class="stat-row"><span class="label" title="${escapeHtml(p.files[0])} ↔ ${escapeHtml(p.files[1])}">${escapeHtml(p.files.map(f=>f.split('/').pop()).join(' ≈ '))}</span><span class="value">${(p.jaccard*100).toFixed(0)}%</span></div>`;
+      html += `<div class="stat-row"><span class="label" title="${escapeHtml(p.files[0])} ↔ ${escapeHtml(p.files[1])}">${escapeHtml(p.files.map((/** @type {string} */ f)=>f.split('/').pop()).join(' ≈ '))}</span><span class="value">${(p.jaccard*100).toFixed(0)}%</span></div>`;
     }
   }
 
   // ── Hotspot matrix ──
   if (hotspotMatrix && hotspotMatrix.available && hotspotMatrix.hotspots.length > 0) {
     html += `<h3>🔥 Hotspot Matrix (Complexity × Churn)</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${hotspotMatrix.totalClassified} files · median C=${hotspotMatrix.thresholds?.medianComplexity} Ch=${hotspotMatrix.thresholds?.medianChurn}</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">${hotspotMatrix.totalClassified} files · median C=${hotspotMatrix.thresholds?.medianComplexity} Ch=${hotspotMatrix.thresholds?.medianChurn}</span></div>`;
     // Quadrant summary
     const q = hotspotMatrix.quadrants;
-    html += `<div style="font-size:10px;margin:2px 0;padding-left:8px">`;
-    html += `<span style="color:var(--ok)">🟢 Healthy: ${q.healthy||0}</span> · `;
-    html += `<span style="color:var(--warn)">🟡 Stable-Complex: ${q.stableComplex||0}</span> · `;
-    html += `<span style="color:var(--warn)">🟡 Frequent-Simple: ${q.frequentSimple||0}</span> · `;
-    html += `<span style="color:var(--danger)">🔴 Hotspots: ${q.hotspot||0}</span>`;
+    html += `<div class="ba-sm ba-indent-2">`;
+    html += `<span class="ba-text-ok">🟢 Healthy: ${q.healthy||0}</span> · `;
+    html += `<span class="ba-text-warn">🟡 Stable-Complex: ${q.stableComplex||0}</span> · `;
+    html += `<span class="ba-text-warn">🟡 Frequent-Simple: ${q.frequentSimple||0}</span> · `;
+    html += `<span class="ba-text-danger">🔴 Hotspots: ${q.hotspot||0}</span>`;
     html += `</div>`;
     for (const h of hotspotMatrix.hotspots.slice(0, 8)) {
       html += `<div class="stat-row"><span class="label" title="${escapeHtml(h.path)} C=${h.complexity} Ch=${h.churn}">${escapeHtml(h.path.split("/").pop())}</span><span class="value danger">🔥${h.severity}</span></div>`;
@@ -6976,27 +6975,27 @@ function renderSidebar(stats, diff) {
   if (fitnessRules && fitnessRules.rules && fitnessRules.rules.length > 0) {
     const gradeCls = fitnessRules.grade === "A" || fitnessRules.grade === "B" ? "ok" : fitnessRules.grade === "C" ? "warn" : "danger";
     html += `<h3>🛡️ Architecture Fitness</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Grade <span class="${gradeCls}" style="font-weight:bold">${fitnessRules.grade}</span> · ${fitnessRules.fitnessScore}/100 · ${fitnessRules.rulesPassed}/${fitnessRules.totalRules} passed</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">Grade <span class="${gradeCls}" ba-bold>${fitnessRules.grade}</span> · ${fitnessRules.fitnessScore}/100 · ${fitnessRules.rulesPassed}/${fitnessRules.totalRules} passed</span></div>`;
     for (const r of fitnessRules.rules) {
-      const hasViolation = fitnessRules.violations.some((v) => v.rule === r.id);
+      const hasViolation = fitnessRules.violations.some((/** @type {any} */ v) => v.rule === r.id);
       const icon = hasViolation ? "❌" : "✅";
-      html += `<div class="stat-row"><span class="label" style="font-size:10px">${icon} ${escapeHtml(r.description)}</span></div>`;
+      html += `<div class="stat-row"><span class="label" class="ba-sm">${icon} ${escapeHtml(r.description)}</span></div>`;
     }
   }
 
   // ── Import cost ──
   if (importCost && importCost.topHeavyImports && importCost.topHeavyImports.length > 0) {
     html += `<h3>📦 Import Cost (Transitive)</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Total transitive weight · avg ${formatBytes(importCost.avgImportCost)} · max ${formatBytes(importCost.maxImportCost)}</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">Total transitive weight · avg ${formatBytes(importCost.avgImportCost)} · max ${formatBytes(importCost.maxImportCost)}</span></div>`;
     for (const ic of importCost.topHeavyImports.slice(0, 8)) {
       const cls = ic.multiplier > 10 ? "warn" : "";
       html += `<div class="stat-row"><span class="label" title="${escapeHtml(ic.path)} own=${formatBytes(ic.ownSize)} transitive=${formatBytes(ic.transitiveCost)} reachable=${ic.reachableCount}">${escapeHtml(ic.path.split("/").pop())}</span><span class="value ${cls}">${formatBytes(ic.totalCost)} (×${ic.multiplier})</span></div>`;
     }
     // High-multiplier imports (small file, huge cost)
     if (importCost.highMultiplierImports && importCost.highMultiplierImports.length > 0) {
-      html += `<div style="color:var(--warn);font-size:10px;margin:4px 0;padding-left:8px">⚠ High-multiplier (small file, big transitive cost):</div>`;
+      html += `<div class="ba-warn-sm ba-indent-4">⚠ High-multiplier (small file, big transitive cost):</div>`;
       for (const hm of importCost.highMultiplierImports.slice(0, 5)) {
-        html += `<div class="stat-row"><span class="label" style="font-size:10px" title="${escapeHtml(hm.path)}">${escapeHtml(hm.path.split("/").pop())}</span><span class="value" style="color:var(--warn)">${formatBytes(hm.ownSize)} → ${formatBytes(hm.totalCost)}</span></div>`;
+        html += `<div class="stat-row"><span class="label" class="ba-sm" title="${escapeHtml(hm.path)}">${escapeHtml(hm.path.split("/").pop())}</span><span class="value" class="ba-text-warn">${formatBytes(hm.ownSize)} → ${formatBytes(hm.totalCost)}</span></div>`;
       }
     }
   }
@@ -7005,16 +7004,16 @@ function renderSidebar(stats, diff) {
   if (techDebt && techDebt.breakdown && techDebt.breakdown.length > 0) {
     const gradeCls = techDebt.sigRating.includes("A") || techDebt.sigRating.includes("B") ? "ok" : techDebt.sigRating.includes("C") ? "warn" : "danger";
     html += `<h3>💰 Technical Debt</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">SIG Rating: <span class="${gradeCls}" style="font-weight:bold">${techDebt.sigRating}</span> · ${techDebt.totalHours}h (${techDebt.totalDays}d / ${techDebt.totalWeeks}w) · ${techDebt.debtDensity}h/KLOC</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">SIG Rating: <span class="${gradeCls}" ba-bold>${techDebt.sigRating}</span> · ${techDebt.totalHours}h (${techDebt.totalDays}d / ${techDebt.totalWeeks}w) · ${techDebt.debtDensity}h/KLOC</span></div>`;
     for (const b of techDebt.breakdown) {
-      html += `<div class="stat-row"><span class="label" style="font-size:10px">${escapeHtml(b.category)} (×${b.count})</span><span class="value">${b.totalHours}h</span></div>`;
+      html += `<div class="stat-row"><span class="label" class="ba-sm">${escapeHtml(b.category)} (×${b.count})</span><span class="value">${b.totalHours}h</span></div>`;
     }
   }
 
   // ── API surface ──
   if (apiSurface && apiSurface.topApiModules && apiSurface.topApiModules.length > 0) {
     html += `<h3>🔌 API Surface</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${apiSurface.totalModules} modules · ${apiSurface.totalExportsAll} exports · avg ${apiSurface.avgExportsPerModule}/module</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">${apiSurface.totalModules} modules · ${apiSurface.totalExportsAll} exports · avg ${apiSurface.avgExportsPerModule}/module</span></div>`;
     for (const m of apiSurface.topApiModules.slice(0, 8)) {
       const cls = m.apiSurfaceScore > 20 ? "warn" : "";
       const parts = [];
@@ -7030,16 +7029,16 @@ function renderSidebar(stats, diff) {
   if (healthIndex && healthIndex.topUnhealthy && healthIndex.topUnhealthy.length > 0) {
     const gradeCls = healthIndex.healthGrade === "A" || healthIndex.healthGrade === "B" ? "ok" : healthIndex.healthGrade === "C" ? "warn" : "danger";
     html += `<h3>💚 Dependency Health Index</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Overall Grade: <span class="${gradeCls}" style="font-weight:bold">${healthIndex.healthGrade}</span> · avg ${healthIndex.avgHealth}/100 · ${healthIndex.totalAssessed} files</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">Overall Grade: <span class="${gradeCls}" ba-bold>${healthIndex.healthGrade}</span> · avg ${healthIndex.avgHealth}/100 · ${healthIndex.totalAssessed} files</span></div>`;
     // Grade distribution
     const gd = healthIndex.gradeDist;
     if (gd) {
-      html += `<div style="font-size:10px;margin:2px 0;padding-left:8px">`;
-      html += `<span style="color:var(--ok)">A: ${gd.A||0}</span> · `;
-      html += `<span style="color:var(--info)">B: ${gd.B||0}</span> · `;
-      html += `<span style="color:var(--warn)">C: ${gd.C||0}</span> · `;
-      html += `<span style="color:var(--danger)">D: ${gd.D||0}</span> · `;
-      html += `<span style="color:var(--danger)">F: ${gd.F||0}</span>`;
+      html += `<div class="ba-sm ba-indent-2">`;
+      html += `<span class="ba-text-ok">A: ${gd.A||0}</span> · `;
+      html += `<span class="ba-text-info">B: ${gd.B||0}</span> · `;
+      html += `<span class="ba-text-warn">C: ${gd.C||0}</span> · `;
+      html += `<span class="ba-text-danger">D: ${gd.D||0}</span> · `;
+      html += `<span class="ba-text-danger">F: ${gd.F||0}</span>`;
       html += `</div>`;
     }
     for (const h of healthIndex.topUnhealthy.slice(0, 10)) {
@@ -7052,16 +7051,16 @@ function renderSidebar(stats, diff) {
   if (sdp && sdp.totalPkgEdges > 0) {
     const sdpCls = sdp.sdpGrade === "A" || sdp.sdpGrade === "B" ? "ok" : sdp.sdpGrade === "C" ? "warn" : "danger";
     html += `<h3>⚖️ Stable Dependencies Principle</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">"Depend on more stable packages" · Score: <span class="${sdpCls}" style="font-weight:bold">${sdp.sdpScore}/100 (${sdp.sdpGrade})</span> · ${sdp.violationCount}/${sdp.totalPkgEdges} violations</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">"Depend on more stable packages" · Score: <span class="${sdpCls}" ba-bold>${sdp.sdpScore}/100 (${sdp.sdpGrade})</span> · ${sdp.violationCount}/${sdp.totalPkgEdges} violations</span></div>`;
     for (const v of (sdp.violations || []).slice(0, 6)) {
-      html += `<div class="stat-row"><span class="label" style="color:var(--warn);font-size:10px" title="I(${v.from})=${v.iFrom} → I(${v.to})=${v.iTo} (delta=${v.delta})">${escapeHtml(v.from)} (I=${v.iFrom}) → ${escapeHtml(v.to)} (I=${v.iTo})</span><span class="value" style="color:var(--warn)">Δ${v.delta}</span></div>`;
+      html += `<div class="stat-row"><span class="label" class="ba-warn-sm" title="I(${v.from})=${v.iFrom} → I(${v.to})=${v.iTo} (delta=${v.delta})">${escapeHtml(v.from)} (I=${v.iFrom}) → ${escapeHtml(v.to)} (I=${v.iTo})</span><span class="value" class="ba-text-warn">Δ${v.delta}</span></div>`;
     }
   }
 
   // ── Code review risk ──
   if (reviewRisk && reviewRisk.topReviewRisks && reviewRisk.topReviewRisks.length > 0) {
     html += `<h3>👀 Code Review Priority</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Files ranked by review risk (complexity+churn+coupling+bus factor) · ${reviewRisk.highPriorityReviews?.length||0} high-priority</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">Files ranked by review risk (complexity+churn+coupling+bus factor) · ${reviewRisk.highPriorityReviews?.length||0} high-priority</span></div>`;
     for (const r of reviewRisk.topReviewRisks.slice(0, 10)) {
       const riskPct = Math.round(r.reviewRisk * 100);
       const cls = riskPct >= 30 ? "danger" : riskPct >= 15 ? "warn" : "";
@@ -7072,7 +7071,7 @@ function renderSidebar(stats, diff) {
   // ── Breaking change impact ──
   if (breakingChangeImpact && breakingChangeImpact.impacts && breakingChangeImpact.impacts.length > 0) {
     html += `<h3>💥 Breaking Change Impact</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${breakingChangeImpact.totalModulesWithImpact} modules with downstream impact · ${breakingChangeImpact.criticalCount} CRITICAL</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">${breakingChangeImpact.totalModulesWithImpact} modules with downstream impact · ${breakingChangeImpact.criticalCount} CRITICAL</span></div>`;
     for (const imp of breakingChangeImpact.impacts.slice(0, 8)) {
       const cls = imp.impactLevel === "CRITICAL" ? "danger" : imp.impactLevel === "HIGH" ? "warn" : "";
       html += `<div class="stat-row"><span class="label" title="direct=${imp.directDependents} transitive=${imp.transitiveDependents}">${escapeHtml(imp.path.split("/").pop())}</span><span class="value ${cls}">${imp.impactLevel} (${imp.transitiveDependents})</span></div>`;
@@ -7082,7 +7081,7 @@ function renderSidebar(stats, diff) {
   // ── Release coupling ──
   if (releaseCoupling && releaseCoupling.releaseUnits && releaseCoupling.releaseUnits.length > 0) {
     html += `<h3>📦 Release Coupling</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${releaseCoupling.unitCount} atomic release units · ${releaseCoupling.coupledFileCount} coupled files</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">${releaseCoupling.unitCount} atomic release units · ${releaseCoupling.coupledFileCount} coupled files</span></div>`;
     for (const ru of releaseCoupling.releaseUnits.slice(0, 6)) {
       html += `<div class="stat-row"><span class="label" title="${escapeHtml(ru.files.slice(0,5).join(', '))}">Unit (${ru.size} files): ${escapeHtml(ru.representative.split('/').slice(-2).join('/'))}</span></div>`;
     }
@@ -7091,7 +7090,7 @@ function renderSidebar(stats, diff) {
   // ── Knowledge concentration ──
   if (knowledgeConcentration && knowledgeConcentration.directoryHHI && knowledgeConcentration.directoryHHI.length > 0) {
     html += `<h3>📊 Knowledge Concentration (HHI)</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Herfindahl-Hirschman Index per directory · avg ${knowledgeConcentration.avgHHI} · ${knowledgeConcentration.highCount} high-risk</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">Herfindahl-Hirschman Index per directory · avg ${knowledgeConcentration.avgHHI} · ${knowledgeConcentration.highCount} high-risk</span></div>`;
     for (const d of knowledgeConcentration.directoryHHI.slice(0, 8)) {
       const cls = d.level === "high" ? "danger" : d.level === "moderate" ? "warn" : "";
       html += `<div class="stat-row"><span class="label" title="${d.totalFiles} files, avg ${d.avgContributors} contributors">${escapeHtml(d.dir)}/</span><span class="value ${cls}">HHI ${d.hhi} (${d.singleContribRatio}% solo)</span></div>`;
@@ -7101,7 +7100,7 @@ function renderSidebar(stats, diff) {
   // ── Test prioritization ──
   if (testPrioritization && testPrioritization.prioritizedTests && testPrioritization.prioritizedTests.length > 0) {
     html += `<h3>🧪 Test Prioritization</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${testPrioritization.totalUntested} untested · ${testPrioritization.urgentCount} urgent · ${testPrioritization.highCount} high</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">${testPrioritization.totalUntested} untested · ${testPrioritization.urgentCount} urgent · ${testPrioritization.highCount} high</span></div>`;
     for (const t of testPrioritization.urgent.slice(0, 5)) {
       html += `<div class="stat-row"><span class="label" title="risk=${t.risk} deps=${t.dependents}">${escapeHtml(t.path.split("/").pop())}</span><span class="value danger">⚡${t.priority}</span></div>`;
     }
@@ -7115,11 +7114,11 @@ function renderSidebar(stats, diff) {
     html += `<h3>📖 Onboarding Reading Path</h3>`;
     for (const [phase, files] of Object.entries(onboardingPath.phases)) {
       if (!files || files.length === 0) continue;
-      html += `<div style="color:var(--info);font-size:10px;margin:4px 0;padding-left:4px;font-weight:600">${escapeHtml(phase)}</div>`;
+      html += `<div class="ba-info-sm ba-indent-4-l ba-bold">${escapeHtml(phase)}</div>`;
       for (const f of files.slice(0, 4)) {
-        html += `<div class="stat-row"><span class="label" style="font-size:10px" title="${escapeHtml(f.path)}">📄 ${escapeHtml(f.path.split("/").pop())}</span><span class="value" style="font-size:10px">${formatBytes(f.size)}</span></div>`;
+        html += `<div class="stat-row"><span class="label" class="ba-sm" title="${escapeHtml(f.path)}">📄 ${escapeHtml(f.path.split("/").pop())}</span><span class="value" class="ba-sm">${formatBytes(f.size)}</span></div>`;
       }
-      if (files.length > 4) html += `<div class="stat-row"><span class="label" style="font-size:10px;color:var(--text-dim)">... +${files.length - 4} more</span></div>`;
+      if (files.length > 4) html += `<div class="stat-row"><span class="label" class="ba-sm-dim">... +${files.length - 4} more</span></div>`;
     }
   }
 
@@ -7127,16 +7126,16 @@ function renderSidebar(stats, diff) {
   if (semverRecommendation && semverRecommendation.recommendation) {
     const svCls = semverRecommendation.recommendation === "MAJOR" ? "danger" : semverRecommendation.recommendation === "MINOR" ? "warn" : "";
     html += `<h3>🏷️ Semver Recommendation</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Confidence: ${semverRecommendation.confidence}</span><span class="value ${svCls}" style="font-weight:bold">${semverRecommendation.recommendation}</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">Confidence: ${semverRecommendation.confidence}</span><span class="value ${svCls}" ba-bold>${semverRecommendation.recommendation}</span></div>`;
     for (const r of (semverRecommendation.reasons || []).slice(0, 5)) {
-      html += `<div class="stat-row"><span class="label" style="font-size:10px">${escapeHtml(r)}</span></div>`;
+      html += `<div class="stat-row"><span class="label" class="ba-sm">${escapeHtml(r)}</span></div>`;
     }
   }
 
   // ── Ownership transfer risk ──
   if (ownershipTransferRisk && ownershipTransferRisk.highRiskCount > 0) {
     html += `<h3>🔄 Ownership Transfer Risk</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${ownershipTransferRisk.highRiskCount} high-risk files · avg ${ownershipTransferRisk.avgTransferRisk}/100 · ${ownershipTransferRisk.totalAtRiskFiles} bus-factor-1</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">${ownershipTransferRisk.highRiskCount} high-risk files · avg ${ownershipTransferRisk.avgTransferRisk}/100 · ${ownershipTransferRisk.totalAtRiskFiles} bus-factor-1</span></div>`;
     for (const t of (ownershipTransferRisk.highRiskTransfers || []).slice(0, 8)) {
       const cls = t.transferRisk > 60 ? "danger" : t.transferRisk > 40 ? "warn" : "";
       html += `<div class="stat-row"><span class="label" title="contributor=${t.contributor} complexity=${t.complexityScore} deps=${t.dependencyScore}">${escapeHtml(t.path.split("/").pop())}</span><span class="value ${cls}">${t.transferRisk}</span></div>`;
@@ -7157,9 +7156,9 @@ function renderSidebar(stats, diff) {
   // ── File age ──
   if (fileAge && fileAge.available && fileAge.totalDated > 0) {
     html += `<h3>🕐 File Age Analysis</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Avg ${fileAge.avgAgeDays}d · ${fileAge.totalDated} files</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">Avg ${fileAge.avgAgeDays}d · ${fileAge.totalDated} files</span></div>`;
     if (fileAge.ageBuckets) {
-      html += `<div style="color:var(--text-dim);font-size:10px;margin:2px 0;padding-left:8px">`;
+      html += `<div class="ba-dim-sm ba-indent-2">`;
       const abParts = [];
       for (const [bucket, count] of Object.entries(fileAge.ageBuckets)) {
         if (count > 0) abParts.push(`${bucket}: ${count}`);
@@ -7169,9 +7168,9 @@ function renderSidebar(stats, diff) {
     }
     const oldHigh = fileAge.ageChurnMatrix?.oldHighChurn || [];
     if (oldHigh.length > 0) {
-      html += `<div style="color:var(--warn);font-size:10px;margin:4px 0;padding-left:8px">⚠ Old + High Churn (refactoring candidates):</div>`;
+      html += `<div class="ba-warn-sm ba-indent-4">⚠ Old + High Churn (refactoring candidates):</div>`;
       for (const f of oldHigh.slice(0, 5)) {
-        html += `<div class="stat-row"><span class="label" style="font-size:10px" title="${f.ageDays}d old, churn=${f.churn}">${escapeHtml(f.path.split("/").pop())}</span><span class="value" style="color:var(--warn)">${f.ageDays}d</span></div>`;
+        html += `<div class="stat-row"><span class="label" class="ba-sm" title="${f.ageDays}d old, churn=${f.churn}">${escapeHtml(f.path.split("/").pop())}</span><span class="value" class="ba-text-warn">${f.ageDays}d</span></div>`;
       }
     }
   }
@@ -7179,7 +7178,7 @@ function renderSidebar(stats, diff) {
   // ── Refactoring priority ──
   if (refactoringPriority && refactoringPriority.topPriorities && refactoringPriority.topPriorities.length > 0) {
     html += `<h3>🔧 Refactoring Priority</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">All-metrics composite · ${refactoringPriority.critical?.length||0} critical · ${refactoringPriority.high?.length||0} high · ${refactoringPriority.medium?.length||0} medium</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">All-metrics composite · ${refactoringPriority.critical?.length||0} critical · ${refactoringPriority.high?.length||0} high · ${refactoringPriority.medium?.length||0} medium</span></div>`;
     for (const rp of refactoringPriority.topPriorities.slice(0, 10)) {
       const cls = rp.priority >= 40 ? "danger" : rp.priority >= 25 ? "warn" : "";
       html += `<div class="stat-row"><span class="label" title="C=${rp.components.complexity} Ch=${rp.components.churn} R=${rp.components.risk} Sz=${rp.components.size}">${escapeHtml(rp.path.split("/").pop())}</span><span class="value ${cls}">${rp.priority}</span></div>`;
@@ -7190,10 +7189,10 @@ function renderSidebar(stats, diff) {
   if (conformance && conformance.rules && conformance.rules.length > 0) {
     const confCls = conformance.conformanceGrade === "A" || conformance.conformanceGrade === "B" ? "ok" : conformance.conformanceGrade === "C" ? "warn" : "danger";
     html += `<h3>📏 Architecture Conformance</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Grade: <span class="${confCls}" style="font-weight:bold">${conformance.conformanceGrade}</span> · ${conformance.conformanceScore}/100 · ${conformance.passedCount}/${conformance.totalRules} rules</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">Grade: <span class="${confCls}" ba-bold>${conformance.conformanceGrade}</span> · ${conformance.conformanceScore}/100 · ${conformance.passedCount}/${conformance.totalRules} rules</span></div>`;
     for (const r of conformance.rules) {
       const icon = r.passed ? "✅" : "❌";
-      html += `<div class="stat-row"><span class="label" style="font-size:10px">${icon} ${escapeHtml(r.description)}</span><span class="value" style="font-size:10px">${r.violations} violations</span></div>`;
+      html += `<div class="stat-row"><span class="label" class="ba-sm">${icon} ${escapeHtml(r.description)}</span><span class="value" class="ba-sm">${r.violations} violations</span></div>`;
     }
   }
 
@@ -7201,19 +7200,18 @@ function renderSidebar(stats, diff) {
   if (qualityGates && qualityGates.gates && qualityGates.gates.length > 0) {
     const qgCls = qualityGates.overallStatus === "PASS" ? "ok" : qualityGates.overallStatus === "WARN" ? "warn" : "danger";
     html += `<h3>🚦 Quality Gates</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Overall: <span class="${qgCls}" style="font-weight:bold">${qualityGates.overallStatus}</span> · ${qualityGates.score}/100 · ${qualityGates.passCount}P ${qualityGates.failCount}F</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">Overall: <span class="${qgCls}" ba-bold>${qualityGates.overallStatus}</span> · ${qualityGates.score}/100 · ${qualityGates.passCount}P ${qualityGates.failCount}F</span></div>`;
     for (const g of qualityGates.gates) {
       const icon = g.status === "PASS" ? "✅" : g.status === "FAIL" ? "❌" : "⬜";
       const cls = g.status === "FAIL" && g.severity === "critical" ? "danger" : g.status === "FAIL" ? "warn" : "";
-      html += `<div class="stat-row"><span class="label ${cls}" style="font-size:10px">${icon} ${escapeHtml(g.description)}</span><span class="value ${cls}" style="font-size:10px">${g.value} ${g.operator} ${g.threshold}</span></div>`;
+      html += `<div class="stat-row"><span class="label ${cls}" class="ba-sm">${icon} ${escapeHtml(g.description)}</span><span class="value ${cls}" class="ba-sm">${g.value} ${g.operator} ${g.threshold}</span></div>`;
     }
   }
 
   // ── Dependency concentration ──
   if (dependencyConcentration && dependencyConcentration.available) {
-    const dcCls = dependencyConcentration.concentrationLevel === "well-diversified" ? "ok" : dependencyConcentration.concentrationLevel === "concentrated" ? "warn" : "danger";
     html += `<h3>🎯 Dependency Concentration</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${dependencyConcentration.totalImportEdges} imports → ${dependencyConcentration.uniqueDependencies} unique · Diversification: ${dependencyConcentration.diversificationRatio}</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">${dependencyConcentration.totalImportEdges} imports → ${dependencyConcentration.uniqueDependencies} unique · Diversification: ${dependencyConcentration.diversificationRatio}</span></div>`;
     for (const c of (dependencyConcentration.topConcentrations || []).slice(0, 8)) {
       const cls = c.share > 10 ? "warn" : "";
       html += `<div class="stat-row"><span class="label" title="${escapeHtml(c.path)}">${escapeHtml(c.path.split("/").pop())}</span><span class="value ${cls}">${c.share}% (${c.importCount}×)</span></div>`;
@@ -7223,7 +7221,7 @@ function renderSidebar(stats, diff) {
   // ── Review time ──
   if (reviewTime && reviewTime.topHeavyReviews && reviewTime.topHeavyReviews.length > 0) {
     html += `<h3>⏱️ Review Time Estimation</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">avg ${reviewTime.avgMinutes}min/file · ${reviewTime.totalReviewHours}h total · ${reviewTime.splitCount} need split (>60min)</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">avg ${reviewTime.avgMinutes}min/file · ${reviewTime.totalReviewHours}h total · ${reviewTime.splitCount} need split (>60min)</span></div>`;
     for (const rt of reviewTime.topHeavyReviews.slice(0, 8)) {
       const cls = rt.needsSplitReview ? "warn" : "";
       const split = rt.needsSplitReview ? " ⚠split" : "";
@@ -7234,7 +7232,7 @@ function renderSidebar(stats, diff) {
   // ── Percentile rankings ──
   if (percentileRankings && percentileRankings.topRanked && percentileRankings.topRanked.length > 0) {
     html += `<h3>📊 Percentile Rankings (Composite Pctl)</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${percentileRankings.totalRanked} files · ${percentileRankings.topPercentileCount} in P90+</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">${percentileRankings.totalRanked} files · ${percentileRankings.topPercentileCount} in P90+</span></div>`;
     for (const pr of percentileRankings.topRanked.slice(0, 8)) {
       const cls = pr.compositePct >= 90 ? "danger" : pr.compositePct >= 75 ? "warn" : "";
       html += `<div class="stat-row"><span class="label" title="size=${pr.percentiles.size} complexity=${pr.percentiles.complexity} churn=${pr.percentiles.churn}">${escapeHtml(pr.path.split("/").pop())}</span><span class="value ${cls}">${pr.percentiles.composite}</span></div>`;
@@ -7244,9 +7242,9 @@ function renderSidebar(stats, diff) {
   // ── Documentation coverage ──
   if (docCoverage && docCoverage.totalAnalyzed > 0) {
     html += `<h3>📝 Documentation Coverage</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${docCoverage.jsDocRate}% JSDoc · avg ${(docCoverage.avgDocRatio*100).toFixed(0)}% comment ratio · ${docCoverage.underDocHighComplex?.length||0} high-risk under-documented</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">${docCoverage.jsDocRate}% JSDoc · avg ${(docCoverage.avgDocRatio*100).toFixed(0)}% comment ratio · ${docCoverage.underDocHighComplex?.length||0} high-risk under-documented</span></div>`;
     for (const f of (docCoverage.underDocHighComplex || []).slice(0, 6)) {
-      html += `<div class="stat-row"><span class="label" style="color:var(--warn);font-size:10px" title="docRatio=${(f.docRatio*100).toFixed(0)}%">${escapeHtml(f.path.split("/").pop())}</span><span class="value" style="color:var(--warn)">${(f.docRatio*100).toFixed(0)}%</span></div>`;
+      html += `<div class="stat-row"><span class="label" class="ba-warn-sm" title="docRatio=${(f.docRatio*100).toFixed(0)}%">${escapeHtml(f.path.split("/").pop())}</span><span class="value" class="ba-text-warn">${(f.docRatio*100).toFixed(0)}%</span></div>`;
     }
   }
 
@@ -7254,9 +7252,9 @@ function renderSidebar(stats, diff) {
   if (maturity && maturity.level) {
     const matCls = maturity.level >= 4 ? "ok" : maturity.level >= 3 ? "warn" : "danger";
     html += `<h3>🏛️ Codebase Maturity</h3>`;
-    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Level <span class="${matCls}" style="font-weight:bold">${maturity.level} - ${maturity.levelName}</span> · ${maturity.score}/${maturity.maxScore}</span></div>`;
+    html += `<div class="stat-row"><span class="label" class="ba-dim-sm">Level <span class="${matCls}" ba-bold>${maturity.level} - ${maturity.levelName}</span> · ${maturity.score}/${maturity.maxScore}</span></div>`;
     for (const f of (maturity.findings || []).slice(0, 6)) {
-      html += `<div class="stat-row"><span class="label" style="font-size:10px">${escapeHtml(f)}</span></div>`;
+      html += `<div class="stat-row"><span class="label" class="ba-sm">${escapeHtml(f)}</span></div>`;
     }
   }
 
@@ -7268,7 +7266,7 @@ function renderSidebar(stats, diff) {
       html += `<div class="trend-card">`;
       html += `<div class="trend-title"><span class="${cls}">${si.severity.toUpperCase()}</span>: ${escapeHtml(si.pattern)}</div>`;
       html += `<div class="trend-row">${escapeHtml(si.description)}</div>`;
-      html += `<div class="trend-row" style="color:var(--info);margin-top:2px">→ ${escapeHtml(si.recommendation)}</div>`;
+      html += `<div class="trend-row" class="ba-info-mt2">→ ${escapeHtml(si.recommendation)}</div>`;
       html += `</div>`;
     }
   }
@@ -7345,6 +7343,7 @@ function main() {
   const depGraph = args.scope || args.preCommit ? { nodes: [], edges: [] } : buildDepGraph(files, projectRoot);
 
   // Compute statistics (with projectRoot for barrel detection)
+  /** @type {any} */
   const stats = computeStats(files, depGraph, { projectRoot, quick: args.quick || args.preCommit });
 
   // ── Baseline & Diff ──
@@ -7370,7 +7369,7 @@ function main() {
       files: files.map((f) => ({ path: f.relPath, size: f.size, ext: f.ext })),
       dependencies: depGraph.edges,
     };
-    const baselinePath = saveBaseline(projectRoot, baselineData);
+    saveBaseline(projectRoot, baselineData);
   }
 
   // ── Trend persistence & forecasting (before JSON so fields are included) ──
@@ -7554,12 +7553,12 @@ function main() {
     console.log(`   📦 Barrel files (re-export hubs): ${stats.barrelFiles.length}`);
   }
   if (stats.duplicates && stats.duplicates.length > 0) {
-    const totalWasted = stats.duplicates.reduce((s, d) => s + d.wastedBytes, 0);
+    const totalWasted = stats.duplicates.reduce((/** @type {number} */ s, /** @type {any} */ d) => s + d.wastedBytes, 0);
     console.log(`   🟰 Duplicate files: ${stats.duplicates.length} groups · ${formatBytes(totalWasted)} wasted`);
   }
   if (stats.packageMetrics && stats.packageMetrics.packages.length > 0) {
-    const painCount = stats.packageMetrics.packages.filter((p) => p.zone === "zone-of-pain").length;
-    const uselessCount = stats.packageMetrics.packages.filter((p) => p.zone === "zone-of-uselessness").length;
+    const painCount = stats.packageMetrics.packages.filter((/** @type {any} */ p) => p.zone === "zone-of-pain").length;
+    const uselessCount = stats.packageMetrics.packages.filter((/** @type {any} */ p) => p.zone === "zone-of-uselessness").length;
     if (painCount + uselessCount > 0) {
       console.log(`   📐 Package metrics (I/A/D): ${painCount} in zone-of-pain · ${uselessCount} in zone-of-uselessness`);
     }
@@ -7591,18 +7590,19 @@ function main() {
     console.log(`   🎯 Risk scores: avg ${rs.avgRisk}/100 · ${criticalCount} critical/extreme · ${rs.totalAssessed} files assessed`);
   }
   if (stats.recommendations && stats.recommendations.length > 0) {
-    const p0 = stats.recommendations.filter((r) => r.severity === "P0").length;
-    const p1 = stats.recommendations.filter((r) => r.severity === "P1").length;
-    const p2 = stats.recommendations.filter((r) => r.severity === "P2").length;
+    const p0 = stats.recommendations.filter((/** @type {any} */ r) => r.severity === "P0").length;
+    const p1 = stats.recommendations.filter((/** @type {any} */ r) => r.severity === "P1").length;
+    const p2 = stats.recommendations.filter((/** @type {any} */ r) => r.severity === "P2").length;
     console.log(`   💡 Recommendations: ${stats.recommendations.length} total (${p0} P0 · ${p1} P1 · ${p2} P2)`);
   }
-  if (stats.scc && stats.scc.multiNodeSccCount > 0) {
+  if (stats.scc && Number(stats.scc.multiNodeSccCount) > 0) {
     console.log(`   🔴 SCC (Tarjan): ${stats.scc.multiNodeSccCount} multi-node components · largest SCC=${stats.scc.largestSCCSize} files`);
   }
   if (stats.betweenness && stats.betweenness.significantBottlenecks && stats.betweenness.significantBottlenecks.length > 0) {
     console.log(`   🍾 Bottlenecks: ${stats.betweenness.significantBottlenecks.length} critical (max betweenness=${stats.betweenness.maxBetweenness.toFixed(4)})`);
   }
   if (stats.moduleBoundaries && stats.moduleBoundaries.length > 0) {
+    /** @type {Record<string, number>} */
     const types = {};
     for (const s of stats.moduleBoundaries) { types[s.type] = (types[s.type] || 0) + 1; }
     console.log(`   🧩 Module suggestions: ${stats.moduleBoundaries.length} (${Object.entries(types).map(([k,v])=>`${k}×${v}`).join(', ')})`);
@@ -7628,7 +7628,7 @@ function main() {
     const cx = stats.complexity;
     console.log(`   📐 Complexity: avg ${cx.avgComplexity} cyclomatic · max ${cx.maxComplexity} · ${cx.complexityBuckets?.['50+ (extreme)']||0} extreme`);
   }
-  if (stats.contentSimilarity && stats.contentSimilarity.pairCount > 0) {
+  if (stats.contentSimilarity && Number(stats.contentSimilarity.pairCount) > 0) {
     console.log(`   🔍 Similarity: ${stats.contentSimilarity.pairCount} near-duplicate pairs (threshold=${stats.contentSimilarity.threshold})`);
   }
   if (stats.hotspotMatrix && stats.hotspotMatrix.available && stats.hotspotMatrix.hotspots.length > 0) {
@@ -7667,13 +7667,13 @@ function main() {
     const rr = stats.reviewRisk;
     console.log(`   👀 Review risk: avg ${rr.avgReviewRisk.toFixed(3)} · ${rr.highPriorityReviews?.length||0} high-priority reviews`);
   }
-  if (stats.breakingChangeImpact && stats.breakingChangeImpact.criticalCount > 0) {
+  if (stats.breakingChangeImpact && Number(stats.breakingChangeImpact.criticalCount) > 0) {
     console.log(`   💥 Breaking changes: ${stats.breakingChangeImpact.criticalCount} CRITICAL · ${stats.breakingChangeImpact.highCount} HIGH impact modules`);
   }
-  if (stats.releaseCoupling && stats.releaseCoupling.unitCount > 0) {
+  if (stats.releaseCoupling && Number(stats.releaseCoupling.unitCount) > 0) {
     console.log(`   📦 Release units: ${stats.releaseCoupling.unitCount} atomic release groups (${stats.releaseCoupling.coupledFileCount} files, largest=${stats.releaseCoupling.largestUnitSize})`);
   }
-  if (stats.knowledgeConcentration && stats.knowledgeConcentration.highCount > 0) {
+  if (stats.knowledgeConcentration && Number(stats.knowledgeConcentration.highCount) > 0) {
     console.log(`   📊 Knowledge HHI: avg ${stats.knowledgeConcentration.avgHHI} · ${stats.knowledgeConcentration.highCount} high-concentration dirs`);
   }
   if (stats.testPrioritization && stats.testPrioritization.urgentCount > 0) {
@@ -7693,7 +7693,7 @@ function main() {
     console.log(`   ✅ Review checklists: ${stats.reviewChecklists.length} files with review guidance`);
   }
   if (stats.sprintPackages && stats.sprintPackages.length > 0) {
-    console.log(`   🏃 Sprint packages: ${stats.sprintPackages.length} work packages (${stats.sprintPackages.reduce((s,p)=>s+p.totalEffortHours,0)}h total)`);
+    console.log(`   🏃 Sprint packages: ${stats.sprintPackages.length} work packages (${stats.sprintPackages.reduce((/** @type {number} */ s,/** @type {any} */ p)=>s+p.totalEffortHours,0)}h total)`);
   }
   if (stats.ownershipTransferRisk && stats.ownershipTransferRisk.highRiskCount > 0) {
     console.log(`   🔄 Transfer risk: ${stats.ownershipTransferRisk.highRiskCount} high-risk files · avg ${stats.ownershipTransferRisk.avgTransferRisk}/100`);
@@ -7732,7 +7732,7 @@ function main() {
   }
   if (stats.correlationMatrix && stats.correlationMatrix.strongCorrelations && stats.correlationMatrix.strongCorrelations.length > 0) {
     const strong = stats.correlationMatrix.strongCorrelations;
-    console.log(`   🔗 Correlations: ${stats.correlationMatrix.totalPairs} pairs · ${strong.length} strong (${strong.map(c=>c.metrics).join(', ')})`);
+    console.log(`   🔗 Correlations: ${stats.correlationMatrix.totalPairs} pairs · ${strong.length} strong (${strong.map((/** @type {any} */ c)=>c.metrics).join(', ')})`);
   }
   if (stats.docCoverage && stats.docCoverage.totalAnalyzed > 0) {
     const dc = stats.docCoverage;
@@ -7763,9 +7763,10 @@ function main() {
 
   // Diff summary
   if (diff && diff.hasBaseline) {
-    const deltaArrow = diff.sizeDeltaPercent > 0 ? "↑" : diff.sizeDeltaPercent < 0 ? "↓" : "→";
-    console.log(`   📈 vs baseline (${diff.baselineDate}): ${deltaArrow} ${diff.sizeDeltaPercent > 0 ? "+" : ""}${diff.sizeDeltaPercent.toFixed(1)}% (${formatBytes(Math.abs(diff.sizeDelta))})`);
-    console.log(`      +${diff.newFiles.length} new · −${diff.deletedFiles.length} deleted · ${diff.changedFiles.length} changed`);
+    const sizeDeltaPct = Number(diff.sizeDeltaPercent);
+    const deltaArrow = sizeDeltaPct > 0 ? "↑" : sizeDeltaPct < 0 ? "↓" : "→";
+    console.log(`   📈 vs baseline (${diff.baselineDate}): ${deltaArrow} ${sizeDeltaPct > 0 ? "+" : ""}${sizeDeltaPct.toFixed(1)}% (${formatBytes(Math.abs(Number(diff.sizeDelta)))})`);
+    console.log(`      +${(diff.newFiles || []).length} new · −${(diff.deletedFiles || []).length} deleted · ${(diff.changedFiles || []).length} changed`);
   }
 
   if (args.saveBaseline) {
@@ -7778,7 +7779,9 @@ function main() {
     console.log(`   📈 Trend: ${trendResult.trendAnalysis.dataPoints} data points · SMA risk=${trendResult.trendAnalysis.smaRisk}`);
   }
   if (forecast && forecast.available) {
-    console.log(`   🔮 Forecast (${forecast.confidence}): size ${forecast.forecasts.totalSize.trend} · risk ${forecast.forecasts.avgRisk.trend}`);
+    /** @type {any} */
+    const fc = forecast.forecasts || {};
+    console.log(`   🔮 Forecast (${forecast.confidence}): size ${fc.totalSize?.trend} · risk ${fc.avgRisk?.trend}`);
   }
 
   // ── Export formats ──

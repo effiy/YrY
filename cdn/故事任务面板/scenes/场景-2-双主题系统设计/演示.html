@@ -16,23 +16,7 @@
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
 <link rel="stylesheet" href="../../../yry-a11y/index.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<style>
-  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
-  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
-  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
-  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
-  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
-  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
-  .delivery-story { font-size: .72rem; color: #4b5563; }
-  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
-  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
-  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
-  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
-  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
-  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
-  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
-</style>
+<link rel="stylesheet" href="../../../yry-legacy-scene-delivery/index.css">
 </head>
 <body>
 <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
@@ -54,41 +38,41 @@
 
   <div class="content-card">
     <h2>💡 演示 1 · 主题切换前后对比</h2>
-    <p style="font-size:.76rem;line-height:1.7;color:#a9b1d6">同一组件在 Cat A (Mono) 与 Cat B (System) 主题下的渲染对照：</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
-      <div style="padding:16px;border-radius:8px;background:#0f172a;border:1px solid rgba(255,255,255,.06)">
-        <div style="font-size:.62rem;color:#6b7280;margin-bottom:6px">Cat B (System)</div>
-        <div style="font-size:.92rem;color:#22d3ee;font-weight:600">卡片标题</div>
-        <div style="font-size:.74rem;color:#a9b1d6;margin-top:8px">主文字内容，使用 --yry-text1</div>
-        <div style="font-size:.68rem;color:#6b7280;margin-top:4px">辅助文字，使用 --yry-text3</div>
-        <div style="display:inline-block;margin-top:8px;padding:2px 8px;border-radius:4px;background:rgba(34,211,238,.12);color:#22d3ee;font-size:.68rem">accent 徽章</div>
+    <p class="yry-auto-20394">同一组件在 Cat A (Mono) 与 Cat B (System) 主题下的渲染对照：</p>
+    <div class="yry-a1-19">
+      <div class="yry-a1-6">
+        <div class="yry-a1-37">Cat B (System)</div>
+        <div class="yry-a1-47">卡片标题</div>
+        <div class="yry-a1-49">主文字内容，使用 --yry-text1</div>
+        <div class="yry-a1-50">辅助文字，使用 --yry-text3</div>
+        <div class="yry-a1-2">accent 徽章</div>
       </div>
-      <div style="padding:16px;border-radius:8px;background:#1a1b26;border:1px solid rgba(255,255,255,.04);font-family:'JetBrains Mono',monospace">
-        <div style="font-size:.62rem;color:#565f89;margin-bottom:6px">Cat A (Mono)</div>
-        <div style="font-size:.92rem;color:#7aa2f7;font-weight:600">card.title</div>
-        <div style="font-size:.74rem;color:#c0caf5;margin-top:8px">text1 main content</div>
-        <div style="font-size:.68rem;color:#565f89;margin-top:4px">text3 auxiliary</div>
-        <div style="display:inline-block;margin-top:8px;padding:2px 8px;border-radius:4px;background:rgba(122,162,247,.12);color:#7aa2f7;font-size:.68rem">accent badge</div>
+      <div class="yry-a1-3">
+        <div class="yry-a1-38">Cat A (Mono)</div>
+        <div class="yry-a1-48">card.title</div>
+        <div class="yry-a1-51">text1 main content</div>
+        <div class="yry-a1-52">text3 auxiliary</div>
+        <div class="yry-a1-1">accent badge</div>
       </div>
     </div>
   </div>
 
   <div class="content-card">
     <h2>💡 演示 2 · Fallback 兜底</h2>
-    <p style="font-size:.76rem;line-height:1.7;color:#a9b1d6">在 DevTools 中临时禁用 <code>theme/index.css</code>，观察组件回退到 fallback 值：</p>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">/* 禁用 theme/index.css 后 */
+    <p class="yry-auto-20394">在 DevTools 中临时禁用 <code>theme/index.css</code>，观察组件回退到 fallback 值：</p>
+    <pre class="yry-auto-15271">/* 禁用 theme/index.css 后 */
 .yry-card {
   background: var(--yry-surface, rgba(15,23,42,.55));    /* ← 使用 fallback */
   border: var(--yry-border, 1px solid rgba(255,255,255,.06));
   color: var(--yry-text1, #a9b1d6);
 }</pre>
-    <p style="margin-top:12px;font-size:.74rem;color:#a9b1d6">预期：组件仍可读，视觉与启用 theme 时略有差异但布局不变。</p>
+    <p class="yry-auto-54055">预期：组件仍可读，视觉与启用 theme 时略有差异但布局不变。</p>
   </div>
 
   <div class="content-card">
     <h2>💡 演示 3 · 运行时主题切换</h2>
-    <p style="font-size:.76rem;line-height:1.7;color:#a9b1d6">在浏览器控制台执行：</p>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">// 切换到 Mono 主题
+    <p class="yry-auto-20394">在浏览器控制台执行：</p>
+    <pre class="yry-auto-15271">// 切换到 Mono 主题
 document.documentElement.setAttribute('data-theme', 'mono');
 localStorage.yryTheme = 'mono';
 
@@ -98,16 +82,16 @@ localStorage.yryTheme = 'system';
 
 // 跟随系统偏好
 document.documentElement.removeAttribute('data-theme');</pre>
-    <p style="margin-top:12px;font-size:.74rem;color:#a9b1d6">预期：整页瞬间变色，无 FOUC、无 JS 重新加载、组件状态保留。</p>
+    <p class="yry-auto-54055">预期：整页瞬间变色，无 FOUC、无 JS 重新加载、组件状态保留。</p>
   </div>
 
   <div class="content-card">
     <h2>💡 演示 4 · WCAG 对比度验证</h2>
-    <p style="font-size:.76rem;line-height:1.7;color:#a9b1d6">用 Chrome DevTools → Lighthouse → Accessibility 检查对比度：</p>
-    <ul style="margin:8px 0 0;padding-left:20px;font-size:.76rem;line-height:1.9;color:#a9b1d6">
-      <li><strong style="color:#22d3ee">text1 / bg</strong> — Cat B 7.8:1 · Cat A 8.4:1 (AA✓ AAA✓)</li>
-      <li><strong style="color:#22d3ee">text3 / bg</strong> — Cat B 4.6:1 · Cat A 4.1:1 (AA✓/⚠ · AAA✗) — 仅用于 ≥14px 加粗或非关键信息</li>
-      <li><strong style="color:#22d3ee">error / bg</strong> — Cat B 4.9:1 · Cat A 4.7:1 (AA✓ · AAA✗)</li>
+    <p class="yry-auto-20394">用 Chrome DevTools → Lighthouse → Accessibility 检查对比度：</p>
+    <ul class="yry-a2-7">
+      <li><strong class="yry-auto-48218">text1 / bg</strong> — Cat B 7.8:1 · Cat A 8.4:1 (AA✓ AAA✓)</li>
+      <li><strong class="yry-auto-48218">text3 / bg</strong> — Cat B 4.6:1 · Cat A 4.1:1 (AA✓/⚠ · AAA✗) — 仅用于 ≥14px 加粗或非关键信息</li>
+      <li><strong class="yry-auto-48218">error / bg</strong> — Cat B 4.9:1 · Cat A 4.7:1 (AA✓ · AAA✗)</li>
     </ul>
   </div>
 

@@ -16,23 +16,7 @@
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
 <link rel="stylesheet" href="../../../yry-a11y/index.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<style>
-  body { background: #0b0f1a; color: #a9b1d6; font-family: system-ui,-apple-system,sans-serif; margin: 0; padding: 0; }
-  .scene-wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
-  .delivery-header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 32px; }
-  .delivery-icon { font-size: 3rem; margin-bottom: 12px; }
-  .delivery-label { font-size: 1.4rem; font-weight: 700; color: #22d3ee; }
-  .delivery-scene { font-size: .8rem; color: #6b7280; margin-top: 4px; }
-  .delivery-story { font-size: .72rem; color: #4b5563; }
-  .content-card { background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
-  .content-card h2 { font-size: .9rem; color: #22d3ee; margin: 0 0 12px; }
-  .content-card p { font-size: .76rem; line-height: 1.8; color: #a9b1d6; margin: 0; }
-  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-  .nav-link { font-size: .68rem; color: #22d3ee; text-decoration: none; padding: 4px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: all .2s; }
-  .nav-link:hover { border-color: #22d3ee; background: rgba(34,211,238,.08); }
-  .nav-link.current { border-color: #22d3ee; background: rgba(34,211,238,.12); color: #fff; }
-  .placeholder-note { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; font-size: .7rem; color: #fbbf24; line-height: 1.7; }
-</style>
+<link rel="stylesheet" href="../../../yry-legacy-scene-delivery/index.css">
 </head>
 <body>
 <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
@@ -54,21 +38,21 @@
 
   <div class="content-card">
     <h2>💡 演示 1 · 6 步迁移路径演练</h2>
-    <p style="font-size:.76rem;line-height:1.7;color:#a9b1d6">以 <code>审查.html</code> 页面为例，演示完整 6 步流程：</p>
-    <ol style="margin:8px 0 0;padding-left:20px;font-size:.76rem;line-height:1.9;color:#a9b1d6">
-      <li><strong style="color:#22d3ee">审计内联</strong> — 找到 200 行内联 <code>&lt;style&gt;</code>，识别 <code>.card</code>/<code>.header</code>/<code>.nav</code> 三个重复模式</li>
-      <li><strong style="color:#22d3ee">匹配组件</strong> — <code>.card</code> → <code>yry-item-card</code> · <code>.header</code> → <code>yry-scene-header</code> · <code>.nav</code> → <code>yry-cross-nav</code></li>
-      <li><strong style="color:#22d3ee">类名映射</strong> — 内联 <code>.card h3</code> → property <code>name</code> · <code>.card p</code> → <code>desc</code> · <code>.tag</code> → <code>tags</code></li>
-      <li><strong style="color:#22d3ee">视觉对比</strong> — 截图 diff 0 差异</li>
-      <li><strong style="color:#22d3ee">删除冗余</strong> — 移除 200 行内联 <code>&lt;style&gt;</code> · 保留 20 行页面专属</li>
-      <li><strong style="color:#22d3ee">回归测试</strong> — Lighthouse 性能不劣化 · axe-core 0 新增违规</li>
+    <p class="yry-auto-20394">以 <code>审查.html</code> 页面为例，演示完整 6 步流程：</p>
+    <ol class="yry-a2-7">
+      <li><strong class="yry-auto-48218">审计内联</strong> — 找到 200 行内联 <code>&lt;style&gt;</code>，识别 <code>.card</code>/<code>.header</code>/<code>.nav</code> 三个重复模式</li>
+      <li><strong class="yry-auto-48218">匹配组件</strong> — <code>.card</code> → <code>yry-item-card</code> · <code>.header</code> → <code>yry-scene-header</code> · <code>.nav</code> → <code>yry-cross-nav</code></li>
+      <li><strong class="yry-auto-48218">类名映射</strong> — 内联 <code>.card h3</code> → property <code>name</code> · <code>.card p</code> → <code>desc</code> · <code>.tag</code> → <code>tags</code></li>
+      <li><strong class="yry-auto-48218">视觉对比</strong> — 截图 diff 0 差异</li>
+      <li><strong class="yry-auto-48218">删除冗余</strong> — 移除 200 行内联 <code>&lt;style&gt;</code> · 保留 20 行页面专属</li>
+      <li><strong class="yry-auto-48218">回归测试</strong> — Lighthouse 性能不劣化 · axe-core 0 新增违规</li>
     </ol>
-    <p style="margin-top:12px;font-size:.74rem;color:#4ade80">✓ 结果：850 行 → 620 行 · 减少 27% · 内联消除 90%</p>
+    <p class="yry-a1-46">✓ 结果：850 行 → 620 行 · 减少 27% · 内联消除 90%</p>
   </div>
 
   <div class="content-card">
     <h2>💡 演示 2 · 内联消除度量</h2>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0">$ ./migrate-metrics.sh 审查.html
+    <pre class="yry-auto-15271">$ ./migrate-metrics.sh 审查.html
 📊 迁移度量: 审查.html
   &lt;style&gt; 块数:        1  (目标 ≤ 1)  ✓
   内联 style 行数:     20  (目标 ≤ 50) ✓
@@ -85,8 +69,8 @@ $ ./migrate-metrics.sh 架构图.html
 
   <div class="content-card">
     <h2>💡 演示 3 · 灰度发布流程</h2>
-    <p style="font-size:.76rem;line-height:1.7;color:#a9b1d6">将迁移后的 <code>审查.html</code> 推到生产：</p>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0"># 1. 推到 staging (10% 内部用户)
+    <p class="yry-auto-20394">将迁移后的 <code>审查.html</code> 推到生产：</p>
+    <pre class="yry-auto-15271"># 1. 推到 staging (10% 内部用户)
 git commit -m "feat(审查): 迁移到 CDN 组件"
 git push origin staging
 
@@ -112,8 +96,8 @@ sleep 86400  # 24h 监控
 
   <div class="content-card">
     <h2>💡 演示 4 · 视觉回归对比</h2>
-    <p style="font-size:.76rem;line-height:1.7;color:#a9b1d6">用 Percy 做视觉回归：</p>
-    <pre style="background:rgba(2,6,23,.6);padding:14px 18px;border-radius:8px;overflow-x:auto;font-size:.72rem;color:#22d3ee;line-height:1.7;margin:0"># 截图迁移前
+    <p class="yry-auto-20394">用 Percy 做视觉回归：</p>
+    <pre class="yry-auto-15271"># 截图迁移前
 git checkout before-migration
 npx percy snapshot 审查.html --base
 
@@ -123,7 +107,7 @@ npx percy snapshot 审查.html --review
 
 # Percy 自动 diff 并生成报告
 # 0 视觉差异 ✓ 通过</pre>
-    <p style="margin-top:12px;font-size:.74rem;color:#a9b1d6">若 diff 不为 0，检查：组件 property 赋值是否完整 · 设计令牌是否生效 · 页面专属 CSS 是否丢失。</p>
+    <p class="yry-auto-54055">若 diff 不为 0，检查：组件 property 赋值是否完整 · 设计令牌是否生效 · 页面专属 CSS 是否丢失。</p>
   </div>
 
   <div class="nav-links">

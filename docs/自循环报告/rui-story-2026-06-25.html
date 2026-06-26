@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自循环报告 · 故事状态轮询</title>
+<link rel="stylesheet" href="../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../cdn/theme/index.css">
+	<link rel="stylesheet" href="../../cdn/shared-reports/index.css">
+	<link rel="stylesheet" href="../../cdn/loop-report/index.css">
+</head>
+<body>
+<div class="yry-container lp-container">
+
+<nav class="yry-breadcrumb">
+  <a href="../../docs/index.html">📄 文档中心</a>
+  <span class="yry-bc-sep">/</span>
+  <a href="../../docs/自循环报告/">🔄 自循环报告</a>
+  <span class="yry-bc-sep">/</span>
+  <span class="yry-bc-current">故事状态轮询</span>
+</nav>
+
+<div class="yry-header">
+  <div class="icon">📋</div>
+  <h1>自循环报告 · 故事状态轮询</h1>
+  <div class="meta">2026-06-25 08:34:30 · 每 5 分钟 · <span class="yry-badge fail">🚫 异常</span></div>
+  <div class="desc lp-desc">轮询故事任务面板状态变更，检测分支隔离违规、任务逾期和阻塞项，变更自动同步到知识图谱</div>
+</div>
+
+<div class="yry-stats">
+  <div class="yry-stat">
+    <div class="yry-val fail">✗</div>
+    <div class="yry-lbl">状态</div>
+  </div>
+  <div class="yry-stat">
+    <div class="yry-val pass">0</div>
+    <div class="yry-lbl">信息</div>
+  </div>
+  <div class="yry-stat">
+    <div class="yry-val warn">0</div>
+    <div class="yry-lbl">告警</div>
+  </div>
+  <div class="yry-stat">
+    <div class="yry-val fail">0</div>
+    <div class="yry-lbl">异常</div>
+  </div>
+  
+  <div class="yry-stat">
+    <a href="../../docs/健康报告/" class="lp-inherit-link">
+      <div class="yry-val pass">98</div>
+      <div class="yry-lbl">🩺 健康度 A 级</div>
+    </a>
+  </div>
+</div>
+
+<div class="yry-summary">🚫 P0 升级：rui-story 连续 98 次 fail (exit 1): [rui-story] overview mode — 查询远端 API... [rui-story] 远端不可达: This operation was aborted </div>
+
+<div class="yry-card"><h2>📋 检查清单 <span class="lp-section-sub">4/4 通过</span></h2><div class="lp-check-wrap"><div class="lp-check-row"><span class="lp-check-icon pass">✅</span><span class="lp-check-label">故事面板数据同步</span><span class="lp-check-target">同步成功</span></div><div class="lp-check-row"><span class="lp-check-icon pass">✅</span><span class="lp-check-label">分支隔离合规</span><span class="lp-check-target">无违规</span></div><div class="lp-check-row"><span class="lp-check-icon pass">✅</span><span class="lp-check-label">任务逾期检测</span><span class="lp-check-target">0 逾期</span></div><div class="lp-check-row"><span class="lp-check-icon pass">✅</span><span class="lp-check-label">知识图谱一致性</span><span class="lp-check-target">一致</span></div></div><div class="lp-check-banner fail">📌 4/4 项通过，存在阻塞性问题需立即修复。 执行频率：每 5 分钟。</div></div>
+
+
+
+
+
+
+
+<div class="yry-card">
+      <h2>📈 历史趋势 <span class="lp-section-sub">最近 3 次执行</span></h2>
+      <div class="yry-hist-row">
+        <span class="yry-hist-edge">最早</span>
+        <div class="yry-hist-dots"><span class="yry-hist-dot latest" title="2026-06-24"></span><span class="yry-hist-dot" title="2026-06-23"></span><span class="yry-hist-dot" title="2026-06-22"></span></div>
+        <span class="yry-hist-edge">最新</span>
+      </div>
+      <div class="yry-hist-foot">
+        <span class="yry-hist-foot-l">共 3 份历史报告</span>
+        <span class="yry-hist-foot-r">执行频率: 每 5 分钟</span>
+      </div>
+    </div>
+
+<div class="yry-card">
+    <h2>⏱️ SLA 追踪 <span class="lp-section-sub">Service Level Agreement</span></h2>
+    <div class="lp-sla-grid">
+      <div class="lp-sla-cell target">
+        <div class="lp-sla-cell-label">🎯 目标响应</div>
+        <div class="lp-sla-cell-val target">2 小时</div>
+      </div>
+      <div class="lp-sla-cell threshold">
+        <div class="lp-sla-cell-label">⚠️ 升级阈值</div>
+        <div class="lp-sla-cell-val threshold">4 小时</div>
+      </div>
+      <div class="lp-sla-cell escalation">
+        <div class="lp-sla-cell-label">🚨 强制升级</div>
+        <div class="lp-sla-cell-val escalation">8 小时</div>
+      </div>
+    </div>
+    <div class="lp-sla-foot">
+      📌 执行频率: 每 5 分钟 · 下次自动检查时将更新状态 · 若状态持续异常，SLA 计时器将继续累计
+    </div>
+  </div>
+
+
+
+<div class="yry-card">
+    <h2>🔗 关联分析 <span class="lp-section-sub">对项目健康的影响</span></h2>
+    <div class="yry-cross-row">
+      <div class="yry-cross-item">
+        <div class="yry-cross-label">关联诊断维度</div>
+        <div class="yry-cross-desc">Git 仓库状态</div>
+      </div>
+      <div class="yry-cross-item">
+        <div class="yry-cross-label">影响机制</div>
+        <div class="yry-cross-desc">故事状态变更涉及 Git 分支和索引更新，分支隔离违规为 P0 事件</div>
+      </div>
+      <div class="yry-cross-badge">
+        <div class="yry-cross-cur-label">当前状态</div>
+        <div class="yry-cross-cur-val fail">✗ 异常</div>
+      </div>
+    </div>
+    <div class="yry-cross-impact"><strong>📊 升级策略：</strong>分支隔离违规 → P0 · 任务逾期 >3 天 → P1 · 影响 D0 基线偏离诊断</div>
+  </div>
+
+
+
+<div class="yry-footer">
+  自循环报告 · rui-story · 2026-06-25 08:34:30<br>
+  <span class="lp-meta">由 rui-bot loop-report 自动生成</span>
+</div>
+
+</div>
+<script src="../../cdn/shared/index.js"></script>
+</body>
+</html>

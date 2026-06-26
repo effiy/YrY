@@ -65,7 +65,7 @@ function listSiblingScenarios(subdir) {
     let title = '';
     try {
       const md = fs.readFileSync(mdPath, 'utf8');
-      const m = md.match(/^#\s*场景[\s\-]*\d+[\s]*[：:·—\-]\s*(.+?)$/m);
+      const m = md.match(/^#\s*场景[\s-]*\d+[\s]*[：:·—-]\s*(.+?)$/m);
       if (m) title = m[1].trim();
     } catch { /* ignore */ }
     out.push({ scenarioDir: name, title, num: parseScenarioNumber(name) });

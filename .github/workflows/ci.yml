@@ -2,20 +2,40 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
   pull_request:
-    branches: [main]
+    branches: [main, master]
+
+# 同一分支新 push 时取消正在跑的旧 run，省 CI 分钟
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   lint:
     runs-on: ubuntu-latest
+    # lib/ + skills/ 全量 0 errors + 0 warnings（第十一轮 2026-06-25 清零）
+    # errors + warnings 均阻断 CI
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: npm
       - run: npm ci
-      - run: npx eslint lib/ --ext .mjs 2>/dev/null || true
+      - run: npx eslint lib/ skills/ --max-warnings 0
+
+  typecheck:
+    runs-on: ubuntu-latest
+    # tsc 0 errors（第十七轮 2026-06-25 全量清零），改为阻断
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+      - run: npm ci
+      - run: npx tsc --noEmit
 
   test:
     runs-on: ubuntu-latest
@@ -24,6 +44,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: npm
       - run: npm ci
       - run: npx vitest run
 
@@ -34,4 +55,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: npm
+      - run: npm ci
       - run: node lib/arch-check.mjs
