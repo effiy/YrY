@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryProgressBar · 知识图谱</title>
+<link rel="stylesheet" href="../../shared/index.css">
+<link rel="stylesheet" href="../../yry-scene-kg/index.css">
+<link rel="stylesheet" href="../../theme/index.css">
+<link rel="stylesheet" href="../../yry-graph/index.css">
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb">
+  <a href="../../../docs/index.html">📄 文档中心</a>
+  <span class="bc-sep">/</span>
+  <a href="../README.md">YryProgressBar</a>
+  <span class="bc-sep">/</span>
+  <span>知识图谱</span>
+</nav>
+
+<nav class="cross-nav">
+<a class="cross-link" href="场景-1-需求与设计/架构图.html">场景-1 · 需求与设计</a>
+<a class="cross-link" href="场景-2-模板与样式/架构图.html">场景-2 · 模板与样式</a>
+<a class="cross-link" href="场景-3-组件注册与加载/架构图.html">场景-3 · 组件注册与加载</a>
+<a class="cross-link" href="场景-4-双模式进度追踪/架构图.html">场景-4 · 双模式进度追踪</a>
+<a class="cross-link" href="场景-5-页面集成与发布/架构图.html">场景-5 · 页面集成与发布</a>
+</nav>
+
+<div class="header">
+  <h1>📊 <span class="accent">YryProgressBar</span> · 知识图谱</h1>
+  <p class="subtitle">Vue 3 零打包进度条组件 · 5 场景 · v1.0.0 · sticky 吸顶 · 玻璃质感 · 双模式追踪</p>
+</div>
+
+<div class="card">
+  <h2>📊 故事节点</h2>
+  <div class="node-list">
+    <div class="node-item"><div class="node-name">📋 需求与设计</div><div class="node-desc">Props API (done/total/label) · 双模式设计 · 视觉规格</div></div>
+    <div class="node-item"><div class="node-name">🎨 模板与样式</div><div class="node-desc">Vue CE 模板 · sticky 吸顶 · 玻璃磨砂 · 扫光动画 · CSS 自定义属性</div></div>
+    <div class="node-item"><div class="node-name">⚙️ 组件注册与加载</div><div class="node-desc">vue-ce-loader 集成 · YrYVueCE.define() · ready 事件</div></div>
+    <div class="node-item"><div class="node-name">🔄 双模式进度追踪</div><div class="node-desc">自动滚动追踪 · 显式 done/total · requestAnimationFrame</div></div>
+    <div class="node-item"><div class="node-name">🔗 页面集成与发布</div><div class="node-desc">使用模式 · 健康报告集成 · 兼容性</div></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>🔗 依赖关系</h2>
+  <div class="node-list">
+    <div class="node-item"><div class="node-name">Vue 3 → vue-ce-loader</div><div class="node-desc">Vue.global.prod.js · defineCustomElement</div></div>
+    <div class="node-item"><div class="node-name">vue-ce-loader → YryProgressBar</div><div class="node-desc">fetch index.html → DOMParser → defineCustomElement</div></div>
+    <div class="node-item"><div class="node-name">YryProgressBar → --yry-progress-bar-height</div><div class="node-desc">CSS 自定义属性 → 下游 sticky 组件 (如 yry-dashboard-quicknav)</div></div>
+    <div class="node-item"><div class="node-name">scroll/resize → 自动追踪模式</div><div class="node-desc">passive 监听 · requestAnimationFrame 节流</div></div>
+  </div>
+</div>
+
+<div class="legend">
+  <strong>图例:</strong>
+  <span class="yry-auto-24835">●</span> 故事节点 ·
+  <span class="yry-a2-27">●</span> 场景节点 ·
+  <span class="yry-auto-80578">●</span> 依赖关系 ·
+  点击场景链接查看各场景详细架构图与知识图谱
+</div>
+
+<footer class="ft">
+  YryProgressBar · v1.0.0 · 5 场景 · Vue 3 零打包组件<br>
+  <span class="yry-auto-80578">知识图谱 · 清单 · 架构 · 图谱 · 源码 · 测试 · 演示 · 审计</span>
+</footer>
+
+</div>
+</body>
+</html>

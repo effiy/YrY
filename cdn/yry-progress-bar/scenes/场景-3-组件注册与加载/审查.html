@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryProgressBar · 审查 · 组件注册与加载</title>
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-kg/index.css">
+</head>
+<body>
+<div class="container">
+<nav class="breadcrumb"><a href="../../../../docs/index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../../README.md">YryProgressBar</a><span class="bc-sep">/</span><a href="../知识图谱.html">知识图谱</a><span class="bc-sep">/</span><span>场景-3 · 审查</span></nav>
+<div class="header"><h1>📝 <span class="accent">审查</span> · 组件注册与加载</h1><p class="subtitle">YryProgressBar · 场景 3/5 · 7 项评审清单</p></div>
+<div class="card"><h2>评审清单</h2><table><thead><tr><th>编号</th><th>评审项</th><th>标准</th><th>结果</th></tr></thead><tbody>
+<tr><td>R1</td><td>IIFE 隔离</td><td>'use strict' · 不污染全局</td><td>✅ 通过</td></tr>
+<tr><td>R2</td><td>loader 检测</td><td>window.YrYVueCE 检查 + warn</td><td>✅ 通过</td></tr>
+<tr><td>R3</td><td>define() 契约</td><td>componentName/templateId/buildComponent 三参数</td><td>✅ 通过</td></tr>
+<tr><td>R4</td><td>ready 事件</td><td>CustomEvent · detail 含 componentName + tagName</td><td>✅ 通过</td></tr>
+<tr><td>R5</td><td>window 暴露</td><td>window.YryProgressBar 供 createApp 使用</td><td>✅ 通过</td></tr>
+<tr><td>R6</td><td>降级不崩溃</td><td>loader/Vue/网络失败 → warn/error 不抛异常</td><td>✅ 通过</td></tr>
+<tr><td>R7</td><td>幂等安全</td><td>get(tagName) 检查 · 重复引入不报错</td><td>✅ 通过</td></tr></tbody></table></div>
+<div class="card"><h2>维度评分</h2><table><tr><th>维度</th><th>评分</th><th>说明</th></tr><tr><td>代码隔离</td><td>A</td><td>IIFE · 'use strict' · 零全局变量泄漏</td></tr><tr><td>错误处理</td><td>A</td><td>4 类降级 · 不崩溃 · 诊断清晰</td></tr><tr><td>API 契约</td><td>A</td><td>define() 参数完整 · 语义明确</td></tr><tr><td>幂等性</td><td>A</td><td>loader 层 + CE 层双重保证</td></tr></table></div>
+<div class="nav-links"><a class="nav-link" href="计划清单.html">📋 计划清单</a><a class="nav-link" href="架构图.html">📐 架构图</a><a class="nav-link" href="知识图谱.html">🔗 知识图谱</a><a class="nav-link" href="测试面板.html">🧪 测试面板</a><a class="nav-link" href="源码.html">📄 源码</a><a class="nav-link" href="演示.html">💡 演示</a><a class="nav-link current" href="审查.html">📝 审查</a></div>
+<footer class="ft">YryProgressBar · 场景 3 · 组件注册与加载 · v1.0.0</footer>
+</div></body></html>

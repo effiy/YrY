@@ -1,10 +1,10 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   YrY CDN — YryProgressBar · Vue 3 进度条组件 (loader)
+   YrY CDN — YryProgressBar · Vue 3 进度条组件 (自包含: JS + CSS 内联)
 
    本文件负责:
-     1) 运行时 fetch 同目录的 index.html
-     2) 解析 <script type="text/x-template" id="yry-progress-bar-tpl"> 内容
-     3) 注册组件到 window.YryProgressBar
+     1) 注入样式到 document.head (幂等,单次)
+     2) 运行时 fetch 同目录的 index.html → 解析模板 → 注册 CE
+     3) 自动滚动追踪 (无 done/total 属性时) 或 任务进度条 (显式设置时)
      4) 派发 'yry-progress-bar-ready' 事件
 
    props:
@@ -12,25 +12,18 @@
      total — 总数量 (默认 0)
      label — 左侧标签文字 (默认 "进度")
 
-   页面使用方式:
-     <link rel="stylesheet" href="../../../../cdn/yry-progress-bar/index.css">
+   页面使用方式 (无需单独引入 CSS):
      <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-     <script src="../../../../cdn/yry-progress-bar/index.js"></script>
-     <div id="my-progress"></div>
-     <script>
-       function mount() {
-         Vue.createApp(window.YryProgressBar, {
-           done: 3, total: 8, label: '总体进度'
-         }).mount('#my-progress');
-       }
-       if (window.YryProgressBar) mount();
-       else document.addEventListener('yry-progress-bar-ready', mount, { once: true });
-     </script>
+     <script src="../cdn/shared/vue-ce-loader.js"></script>
+     <script src="../cdn/yry-progress-bar/index.js"></script>
+     <yry-progress-bar></yry-progress-bar>          <!-- 自动滚动追踪 -->
+     <yry-progress-bar done="5" total="10"></yry-progress-bar>  <!-- 任务进度 -->
    ═══════════════════════════════════════════════════════════════════════════ */
 
 (function () {
   'use strict';
 
+  // ── 组件注册 ──────────────────────────────────────────────────────
   if (!window.YrYVueCE || typeof window.YrYVueCE.define !== 'function') {
     console.warn('[YryProgressBar] shared/vue-ce-loader.js 未加载,组件已跳过注册');
     return;
@@ -57,7 +50,6 @@
         },
         computed: {
           pct: function () {
-            // 滚动模式用内部 _val, 任务模式用外部 props
             var d = this._scrollMode ? this._val.done : this.done;
             var t = this._scrollMode ? this._val.total : this.total;
             return t > 0 ? Math.round((d / t) * 100) : 0;

@@ -1,8 +1,0 @@
-/* yry-progress-bar/demo.css — showcase page styles */
-body { background: var(--yry-bg, #0e0f1a); color: var(--yry-text, #f5f5f5); padding: 0 24px; max-width: 720px; margin: 0 auto; font-family: var(--yry-font-sans); }
-  h1 { font-size: 1.1rem; margin: 24px 0 4px; }
-  .demo-hint { font-size: .74rem; color: var(--yry-text3, #888); margin: 0 0 8px; }
-  .demo-section { margin: 16px 0; padding: 16px; background: rgba(255,255,255,.03); border-radius: 8px; }
-  .demo-section h3 { font-size: .78rem; margin: 0 0 10px; color: var(--yry-text-secondary); }
-  .scroll-filler { height: 60vh; padding: 20px 16px; background: rgba(255,255,255,.02); border-radius: 8px; color: var(--yry-text-tertiary); font-size: .78rem; line-height: 1.7; }
-  .scroll-filler h4 { color: var(--yry-text-secondary); font-size: .82rem; margin: 0 0 8px; }

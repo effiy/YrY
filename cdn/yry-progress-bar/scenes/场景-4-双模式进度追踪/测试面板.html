@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryProgressBar · 测试面板 · 双模式进度追踪</title>
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-kg/index.css">
+</head>
+<body>
+<div class="container">
+<nav class="breadcrumb"><a href="../../../../docs/index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../../README.md">YryProgressBar</a><span class="bc-sep">/</span><a href="../知识图谱.html">知识图谱</a><span class="bc-sep">/</span><span>场景-4 · 测试面板</span></nav>
+<div class="header"><h1>🧪 <span class="accent">测试面板</span> · 双模式进度追踪</h1><p class="subtitle">YryProgressBar · 场景 4/5 · 显式模式 · 自动模式 · 节流 · 清理</p></div>
+<div class="card"><h2>测试用例</h2><table><thead><tr><th>编号</th><th>用例</th><th>验证</th><th>状态</th></tr></thead><tbody>
+<tr><td>TC4.1</td><td>显式进度正确</td><td>done=3, total=8 → pct=38</td><td>✅</td></tr>
+<tr><td>TC4.2</td><td>自动模式激活</td><td>空元素 → _scrollMode=true → scroll 进度变化</td><td>✅</td></tr>
+<tr><td>TC4.3</td><td>模式互斥</td><td>加 done → scroll listener 不绑定</td><td>✅</td></tr>
+<tr><td>TC4.4</td><td>RAF 节流</td><td>同一帧多次 scroll → 仅 1 次 _updateScroll</td><td>✅</td></tr>
+<tr><td>TC4.5</td><td>清理无泄漏</td><td>unmount → detached DOM = 0</td><td>✅</td></tr>
+<tr><td>TC4.6</td><td>total=0 边界</td><td>done=5, total=0 → pct=0 · 无 NaN</td><td>✅</td></tr>
+<tr><td>TC4.7</td><td>无滚动边界</td><td>scrollH=innerH → total=1 → pct=0</td><td>✅</td></tr></tbody></table></div>
+<div class="nav-links"><a class="nav-link" href="计划清单.html">📋 计划清单</a><a class="nav-link" href="架构图.html">📐 架构图</a><a class="nav-link" href="知识图谱.html">🔗 知识图谱</a><a class="nav-link current" href="测试面板.html">🧪 测试面板</a><a class="nav-link" href="源码.html">📄 源码</a><a class="nav-link" href="演示.html">💡 演示</a><a class="nav-link" href="审查.html">📝 审查</a></div>
+<footer class="ft">YryProgressBar · 场景 4 · 双模式进度追踪 · v1.0.0</footer>
+</div></body></html>

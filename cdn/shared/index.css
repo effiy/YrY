@@ -1,0 +1,39 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — shared/index.css · CDN 共享基线样式
+
+   本文件是 CDN 五步加载链的第 1 步:
+     ① shared/index.css (基线 CSS 变量定义)
+     ② theme/index.css  (Mono/System 双主题)
+     ③ 125 组件 CSS    (按需加载)
+     ④ Vue 3 运行时    (global.prod.js)
+     ⑤ 组件 JS         (Custom Elements 注册)
+
+   作为基线，本文件定义最基础的 CSS 自定义属性，
+   供 theme/index.css 和各组件 index.css 继承覆盖。
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── 基础色板 (YrY 设计令牌) ────────────────────────────── */
+  --yry-bg:        #0d1117;
+  --yry-card:      rgba(15, 23, 42, 0.55);
+  --yry-border:    rgba(255, 255, 255, 0.06);
+  --yry-text:      #c9d1d9;
+  --yry-text2:     #a9b1d6;
+  --yry-text3:     #6b7280;
+  --yry-cyan:      #22d3ee;
+  --yry-emerald:   #34d399;
+  --yry-violet:    #a78bfa;
+  --yry-amber:     #fbbf24;
+  --yry-rose:      #f87171;
+  --yry-blue:      #60a5fa;
+
+  /* RGB 通道 (用于 rgba() 叠加) */
+  --yry-cyan-rgb:    34, 211, 238;
+  --yry-emerald-rgb: 16, 185, 129;
+  --yry-violet-rgb:  167, 139, 250;
+  --yry-amber-rgb:   251, 191, 36;
+
+  /* ── 排版 ──────────────────────────────────────────────── */
+  --yry-font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --yry-font-system: system-ui, -apple-system, sans-serif;
+}

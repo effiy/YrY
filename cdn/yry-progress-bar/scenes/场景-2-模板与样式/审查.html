@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryProgressBar · 审查 · 模板与样式</title>
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-kg/index.css">
+</head>
+<body>
+<div class="container">
+<nav class="breadcrumb">
+  <a href="../../../../docs/index.html">📄 文档中心</a><span class="bc-sep">/</span>
+  <a href="../../README.md">YryProgressBar</a><span class="bc-sep">/</span>
+  <a href="../知识图谱.html">知识图谱</a><span class="bc-sep">/</span>
+  <span>场景-2 · 审查</span>
+</nav>
+<div class="header">
+  <h1>📝 <span class="accent">审查</span> · 模板与样式</h1>
+  <p class="subtitle">YryProgressBar · 场景 2/5 · 7 项评审清单</p>
+</div>
+<div class="card"><h2>评审清单</h2>
+  <table>
+    <thead><tr><th>编号</th><th>评审项</th><th>标准</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>R1</td><td>模板层级合理</td><td>四层各司其职 · 无冗余嵌套</td><td>✅ 通过</td></tr>
+      <tr><td>R2</td><td>sticky 定位</td><td>top:0 · z-index 不冲突</td><td>✅ 通过</td></tr>
+      <tr><td>R3</td><td>backdrop-filter</td><td>有 -webkit- 前缀 · 降级不透明</td><td>✅ 通过</td></tr>
+      <tr><td>R4</td><td>动画性能</td><td>仅 transform · 无 layout thrashing</td><td>✅ 通过</td></tr>
+      <tr><td>R5</td><td>完成态/空态</td><td>class 切换正确 · 过渡平滑</td><td>✅ 通过</td></tr>
+      <tr><td>R6</td><td>动效降级</td><td>prefers-reduced-motion 完全适配</td><td>✅ 通过</td></tr>
+      <tr><td>R7</td><td>CSS 变量暴露</td><td>:root 定义 · 下游可引用</td><td>✅ 通过</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="card"><h2>维度评分</h2>
+  <table>
+    <tr><th>维度</th><th>评分</th><th>说明</th></tr>
+    <tr><td>模板设计</td><td>A</td><td>四层结构清晰 · 语义正确</td></tr>
+    <tr><td>CSS 架构</td><td>A</td><td>分层明确 · 变量驱动 · BEM 风格</td></tr>
+    <tr><td>动画性能</td><td>A</td><td>仅 transform · GPU 加速 · 60fps</td></tr>
+    <tr><td>a11y</td><td>A</td><td>ARIA + prefers-reduced-motion 完整</td></tr>
+  </table>
+</div>
+<div class="nav-links">
+  <a class="nav-link" href="计划清单.html">📋 计划清单</a>
+  <a class="nav-link" href="架构图.html">📐 架构图</a>
+  <a class="nav-link" href="知识图谱.html">🔗 知识图谱</a>
+  <a class="nav-link" href="测试面板.html">🧪 测试面板</a>
+  <a class="nav-link" href="源码.html">📄 源码</a>
+  <a class="nav-link" href="演示.html">💡 演示</a>
+  <a class="nav-link current" href="审查.html">📝 审查</a>
+</div>
+<footer class="ft">YryProgressBar · 场景 2 · 模板与样式 · v1.0.0</footer>
+</div>
+</body>
+</html>

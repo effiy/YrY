@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryProgressBar · 审查 · 双模式进度追踪</title>
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-kg/index.css">
+</head>
+<body>
+<div class="container">
+<nav class="breadcrumb"><a href="../../../../docs/index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../../README.md">YryProgressBar</a><span class="bc-sep">/</span><a href="../知识图谱.html">知识图谱</a><span class="bc-sep">/</span><span>场景-4 · 审查</span></nav>
+<div class="header"><h1>📝 <span class="accent">审查</span> · 双模式进度追踪</h1><p class="subtitle">YryProgressBar · 场景 4/5 · 7 项评审清单</p></div>
+<div class="card"><h2>评审清单</h2><table><thead><tr><th>编号</th><th>评审项</th><th>标准</th><th>结果</th></tr></thead><tbody>
+<tr><td>R1</td><td>模式判定正确</td><td>hasAttribute 判定 · 两种模式互斥</td><td>✅ 通过</td></tr>
+<tr><td>R2</td><td>除零保护</td><td>total>0 guard · 自动模式 Math.max(1,...)</td><td>✅ 通过</td></tr>
+<tr><td>R3</td><td>RAF 节流有效</td><td>_ticking flag · 同帧合并</td><td>✅ 通过</td></tr>
+<tr><td>R4</td><td>passive listener</td><td>{ passive: true } · 不阻塞滚动</td><td>✅ 通过</td></tr>
+<tr><td>R5</td><td>清理完整</td><td>scroll+resize 均 removeEventListener</td><td>✅ 通过</td></tr>
+<tr><td>R6</td><td>闭包无泄漏</td><td>_onScroll 置 null · self 引用释放</td><td>✅ 通过</td></tr>
+<tr><td>R7</td><td>边界健壮</td><td>total=0 · 无滚动 · NaN 防护</td><td>✅ 通过</td></tr></tbody></table></div>
+<div class="card"><h2>维度评分</h2><table><tr><th>维度</th><th>评分</th><th>说明</th></tr><tr><td>模式设计</td><td>A</td><td>判定清晰 · 互斥明确 · 零歧义</td></tr><tr><td>性能</td><td>A</td><td>RAF 节流 · passive · 60fps</td></tr><tr><td>内存</td><td>A</td><td>清理完整 · 闭包释放 · 0 泄漏</td></tr><tr><td>边界</td><td>A</td><td>除零 · 无滚动 · 全边界覆盖</td></tr></table></div>
+<div class="nav-links"><a class="nav-link" href="计划清单.html">📋 计划清单</a><a class="nav-link" href="架构图.html">📐 架构图</a><a class="nav-link" href="知识图谱.html">🔗 知识图谱</a><a class="nav-link" href="测试面板.html">🧪 测试面板</a><a class="nav-link" href="源码.html">📄 源码</a><a class="nav-link" href="演示.html">💡 演示</a><a class="nav-link current" href="审查.html">📝 审查</a></div>
+<footer class="ft">YryProgressBar · 场景 4 · 双模式进度追踪 · v1.0.0</footer>
+</div></body></html>

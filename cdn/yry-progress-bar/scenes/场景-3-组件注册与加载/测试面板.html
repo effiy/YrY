@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryProgressBar · 测试面板 · 组件注册与加载</title>
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-kg/index.css">
+</head>
+<body>
+<div class="container">
+<nav class="breadcrumb"><a href="../../../../docs/index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../../README.md">YryProgressBar</a><span class="bc-sep">/</span><a href="../知识图谱.html">知识图谱</a><span class="bc-sep">/</span><span>场景-3 · 测试面板</span></nav>
+<div class="header"><h1>🧪 <span class="accent">测试面板</span> · 组件注册与加载</h1><p class="subtitle">YryProgressBar · 场景 3/5 · CE 注册 · 事件 · 降级</p></div>
+<div class="card"><h2>测试用例</h2><table><thead><tr><th>编号</th><th>用例</th><th>验证</th><th>状态</th></tr></thead><tbody>
+<tr><td>TC3.1</td><td>CE 注册成功</td><td>customElements.get('yry-progress-bar') ≠ undefined</td><td>✅</td></tr>
+<tr><td>TC3.2</td><td>window 暴露</td><td>typeof window.YryProgressBar === 'object'</td><td>✅</td></tr>
+<tr><td>TC3.3</td><td>ready 事件派发</td><td>监听 yry-progress-bar-ready 触发</td><td>✅</td></tr>
+<tr><td>TC3.4</td><td>loader 缺失降级</td><td>移除 vue-ce-loader.js → warn 不 crash</td><td>✅</td></tr>
+<tr><td>TC3.5</td><td>幂等注册</td><td>两次引入 index.js → 无重复 define</td><td>✅</td></tr></tbody></table></div>
+<div class="nav-links"><a class="nav-link" href="计划清单.html">📋 计划清单</a><a class="nav-link" href="架构图.html">📐 架构图</a><a class="nav-link" href="知识图谱.html">🔗 知识图谱</a><a class="nav-link current" href="测试面板.html">🧪 测试面板</a><a class="nav-link" href="源码.html">📄 源码</a><a class="nav-link" href="演示.html">💡 演示</a><a class="nav-link" href="审查.html">📝 审查</a></div>
+<footer class="ft">YryProgressBar · 场景 3 · 组件注册与加载 · v1.0.0</footer>
+</div></body></html>

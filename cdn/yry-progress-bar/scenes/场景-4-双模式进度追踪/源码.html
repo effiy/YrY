@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryProgressBar · 源码 · 双模式进度追踪</title>
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-kg/index.css">
+</head>
+<body>
+<div class="container">
+<nav class="breadcrumb"><a href="../../../../docs/index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../../README.md">YryProgressBar</a><span class="bc-sep">/</span><a href="../知识图谱.html">知识图谱</a><span class="bc-sep">/</span><span>场景-4 · 源码</span></nav>
+<div class="header"><h1>📄 <span class="accent">源码</span> · 双模式进度追踪</h1><p class="subtitle">YryProgressBar · 场景 4/5 · computed pct · mounted · _updateScroll · beforeUnmount</p></div>
+<div class="card"><h2>computed pct — 双模式统一计算</h2>
+<pre><code>computed: {
+  pct: function () {
+    var d = this._scrollMode ? this._val.done : this.done;
+    var t = this._scrollMode ? this._val.total : this.total;
+    return t > 0 ? Math.round((d / t) * 100) : 0;
+  }
+}</code></pre></div>
+<div class="card"><h2>mounted — 模式判定 + listener 绑定</h2>
+<pre><code>mounted: function () {
+  var el = this.$el;
+  if (el.hasAttribute('done') || el.hasAttribute('total')) return;
+  this._scrollMode = true;
+  var self = this;
+  this._onScroll = function () {
+    if (!self._ticking) {
+      self._ticking = true;
+      requestAnimationFrame(function () { self._updateScroll(); });
+    }
+  };
+  window.addEventListener('scroll', this._onScroll, { passive: true });
+  window.addEventListener('resize', this._onScroll, { passive: true });
+  this.$nextTick(function () { self._updateScroll(); });
+}</code></pre></div>
+<div class="card"><h2>_updateScroll + beforeUnmount</h2>
+<pre><code>_updateScroll: function () {
+  var docH = document.documentElement.scrollHeight - window.innerHeight;
+  this._val = { done: Math.round(window.scrollY), total: Math.max(1, Math.round(docH)) };
+  this._ticking = false;
+},
+beforeUnmount: function () {
+  if (this._onScroll) {
+    window.removeEventListener('scroll', this._onScroll);
+    window.removeEventListener('resize', this._onScroll);
+    this._onScroll = null;
+  }
+}</code></pre></div>
+<div class="nav-links"><a class="nav-link" href="计划清单.html">📋 计划清单</a><a class="nav-link" href="架构图.html">📐 架构图</a><a class="nav-link" href="知识图谱.html">🔗 知识图谱</a><a class="nav-link" href="测试面板.html">🧪 测试面板</a><a class="nav-link current" href="源码.html">📄 源码</a><a class="nav-link" href="演示.html">💡 演示</a><a class="nav-link" href="审查.html">📝 审查</a></div>
+<footer class="ft">YryProgressBar · 场景 4 · 双模式进度追踪 · v1.0.0</footer>
+</div></body></html>

@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="theme/index.css">
   <link rel="stylesheet" href="shared/index.css">
   <title>YrY CDN — 故事与场景</title>
-  <meta name="description" content="YrY CDN 共享前端资源库 — 125 组件 · 2 故事 · 10 场景">
+  <meta name="description" content="YrY CDN 共享前端资源库 — 125 组件 · 3 故事 · 15 场景">
   <link rel="stylesheet" href="yry-home/index.css">
   <link rel="stylesheet" href="yry-inline-helpers/index.css">
   <!-- ═══ 组件样式 (在 yry-home.css 之后加载,确保组件样式优先) ═══ -->
@@ -53,8 +53,8 @@
       icon="🌐"
       title-prefix="YrY CDN"
       accent="共享前端资源库"
-      meta="📦 v1.2.0 · 📖 2 故事 · 🎬 10 场景 · 🧩 125 组件 · 🩺 健康 92/A 优秀 · 🧪 测试 100/A 优秀 · 🧬 自改进 88/A 优秀 · ⚡ 加载链 96/A 优秀 · 📦 迁移 85/A 优秀 · 📐 架构 A 级 · 趋势 ↑"
-      desc="yry-cdn-lib v1.2.0 — 以「125 组件 · 2 故事 · 10 场景」管理 CDN 资源库架构决策与演进 · 四维加权组件质量评估 · 六维综合健康指数 · D0-D8 九级诊断 · 三维加载链稳定性分析 · v1.0(78/C)→v1.1(86/B)→v1.2(92/A) 持续上升">
+      meta="📦 v1.2.0 · 📖 3 故事 · 🎬 15 场景 · 🧩 125 组件 · 🩺 健康 92/A 优秀 · 🧪 测试 100/A 优秀 · 🧬 自改进 88/A 优秀 · ⚡ 加载链 96/A 优秀 · 📦 迁移 85/A 优秀 · 📐 架构 A 级 · 趋势 ↑"
+      desc="yry-cdn-lib v1.2.0 — 以「125 组件 · 3 故事 · 15 场景」管理 CDN 资源库架构决策与演进 · 四维加权组件质量评估 · 六维综合健康指数 · D0-D8 九级诊断 · 三维加载链稳定性分析 · v1.0(78/C)→v1.1(86/B)→v1.2(92/A) 持续上升">
     </yry-scene-header>
 
     <!-- ── Stats (YryStatsGrid) ── -->
@@ -428,7 +428,7 @@
         <a class="sr-link" href="README.md#-js-工具-api-yry" title="JS 工具 API — YrY.* 命名空间 · 9 大 API · 全局对象">🛠️ JS 工具 API</a>
         <a class="sr-link" href="README.md#-vue-3-自定义元素组件-17-个" title="Vue 3 自定义元素 — 17 个 CE 组件 · 组件清单 · 双设挂载策略">🧩 Vue 3 CE</a>
         <a class="sr-link" href="README.md#-设计令牌-css-变量" title="设计令牌 — CSS 变量 · 14 个 :root 变量 · 字体 · 阴影 · 圆角">🎨 设计令牌</a>
-        <a class="sr-link" href="README.md#-故事与场景-2-故事-10-场景" title="故事与场景 — 故事 A CDN 资源库 · 故事 B YryBreadcrumb · 10 场景">📖 故事与场景</a>
+        <a class="sr-link" href="README.md#-故事与场景-3-故事-15-场景" title="故事与场景 — 故事 A CDN 资源库 · 故事 B YryBreadcrumb · 故事 C YryProgressBar · 15 场景">📖 故事与场景</a>
         <a class="sr-link" href="README.md#-npm-包与分发" title="npm 包与分发 — npm install · jsDelivr CDN · 版本锁定 · 包信息">📦 npm 包与分发</a>
         <a class="sr-link" href="README.md#-迁移指南" title="迁移指南 — v1.0→v1.1→v1.2 六步迁移路径 · 兼容策略">🔄 迁移指南</a>
         <a class="sr-link" href="README.md#-组件依赖关系" title="组件依赖关系 — 加载链依赖 · Vue 组件依赖树 · 关键消费关系 · 核心架构图">🔗 组件依赖关系</a>
@@ -572,7 +572,7 @@
     <yry-doc-layer id="layer-stories-app"></yry-doc-layer>
     </div><!-- /.container -->
 
-    <!-- ═══ Layer 3: 场景 (YryDocLayer · 2 故事共 10 场景) ═══ -->
+    <!-- ═══ Layer 3: 场景 (YryDocLayer · 3 故事共 15 场景) ═══ -->
     <div class="container">
     <yry-doc-layer id="layer-scenes-app"></yry-doc-layer>
     </div><!-- /.container -->
@@ -658,10 +658,10 @@
         { value: '85分', label: '迁移进度', modifier: 'health', sub: '页面迁移率·类名替换·内联消除率', tooltip: '【页面迁移指数 MPI】\n三维评估模型 →\n① 迁移完成率(45%): 已迁移页面/可迁移页面总数 · 55+ 页面目标\n② 类名替换率(30%): 内联样式→.yry-*类名的替换完成度\n③ 内联消除率(25%): 删除内联重复代码的比例 · 目标消除40-60%\n\n覆盖范围: 55+ 页面引用·6步迁移路径 · 每页专属CSS保留\n当前: 85分 / A级 · 优秀\n评级: A≥80 · B≥60 · C≥40 · D<40数据源: score-report.json 页面迁移率维度每 5min 刷新 · 点击跳转加载链报告 →' },
         { value: 125, label: '组件', modifier: 'health',
           tooltip: '【125 个 CDN 组件 · 10 大功能类别 (COMPONENTS.md 13 子节细分)】\n▸ 布局与结构(8): layer·doc-layer·breadcrumb·sub-title·layer-agents·layer-rules·layer-refs·layer-info-panel\n▸ 导航(3): panel-hub·cross-nav·scene-nav\n▸ 卡片与展示(12): item-card·card-grid·item-cards·story-card·scene-card·tag-chip·kpi-card·trend-card·scorecard·cat-overview·cat-warning·dep-badge\n▸ 场景组件(6): scene-header·scene-footer·scene-chrome·scene-health-bar·scene-stats·scene-tabs\n▸ 统计与健康(4): stats-grid·kpi-grid·progress-bar·phase-strip\n▸ 检查清单(5): checklist-head·verify-item·verify-report-head·verify-report-foot·step-card\n▸ 风险与审查(3): risk-cat-card·risk-matrix·risk-row\n▸ 浮动面板(5): cron-panel·notify-panel·selfimprove-panel·faq-panel·docs-binding\n▸ 其他 Vue 组件(8): cmd-card·cmd-head·footer-note·gantt·op-btn·path-link·quickstart·walkthrough\n▸ 交互与反馈(18): accordion·badge·check-item·code-block·empty-state·help-overlay·keyboard·mini-quiz·quiz·search-bar·skeleton-loader·spinner·tip-box·toast·toggle·tooltip·typewriter·typewriter-demo\n▸ 展示与可视化(13): concept-radar·cytoscape-graph·day-plan·info-cards·meter·milestone-grid·next-action·overview-grid·pipeline-simulator·pitfall-list·review-cards·timeline-hero·simulator\n▸ 工具组件(7): export-toolbar·back-top·cdn-detect·tabs-panel·scene-steps·page-nav·test-page\n▸ 页面/样式基类(12): a11y·cdn-styles·checklist·demo·graph·health·home·inline-helpers·scene·selfimprove-styles·story-panel·trend-styles\n\n形态分布: 30 Vue CE 组件 · 83 Vanilla 组件 · 12 页面/样式基类 · 完整 111 · 待补 14 · 全部已文档化\n详见 Layer 1 组件清单 · 点击评分卡跳转详细报告 →' },
-        { value: 2,  label: '故事', modifier: 'health',
-          tooltip: '【2 个主故事 · 全生命周期跟踪】\n\n▸ 🌐 CDN 共享前端资源库 — v1.0→v1.2 三版本演进\n  5场景: 资源加载·双主题系统·组件库与API·存量迁移·npm发布\n▸ 📐 YryBreadcrumb 组件 — Vue3零打包面包屑\n  5场景: 需求设计·模板样式·Loader实现·页面集成·测试发布\n\n每故事含完整 7 件标准交付物\n详见 Layer 2 故事卡片 · 点击评分卡跳转详细报告 →' },
-        { value: 10, label: '场景', modifier: 'health',
-          tooltip: '【10 个场景 · 分布于 2 个故事】\n\n▸ CDN 共享库(5场景): 资源加载·双主题·组件API·存量迁移·npm发布\n▸ YryBreadcrumb(5场景): 需求·模板·Loader·集成·测试\n\n每场景 7 件标准交付物 →\n📋清单 · 📐架构图 · 🔗知识图谱 · 🧪测试面板 · 📄源码 · 💡演示 · 📝审查\n\n场景健康度独立评估 · 交付物完整性自动检测\n详见 Layer 3 场景卡片 · 点击评分卡跳转详细报告 →' }
+        { value: 3,  label: '故事', modifier: 'health',
+          tooltip: '【3 个主故事 · 全生命周期跟踪】\n\n▸ 🌐 CDN 共享前端资源库 — v1.0→v1.2 三版本演进\n  5场景: 资源加载·双主题系统·组件库与API·存量迁移·npm发布\n▸ 📐 YryBreadcrumb 组件 — Vue3零打包面包屑\n  5场景: 需求设计·模板样式·Loader实现·页面集成·测试发布\n▸ 📊 YryProgressBar 组件 — sticky吸顶双模式进度条\n  5场景: 需求设计·模板样式·组件注册·双模式追踪·页面集成\n\n每故事含完整 7 件标准交付物\n详见 Layer 2 故事卡片 · 点击评分卡跳转详细报告 →' },
+        { value: 15, label: '场景', modifier: 'health',
+          tooltip: '【15 个场景 · 分布于 3 个故事】\n\n▸ CDN 共享库(5场景): 资源加载·双主题·组件API·存量迁移·npm发布\n▸ YryBreadcrumb(5场景): 需求·模板·Loader·集成·测试\n▸ YryProgressBar(5场景): 需求·模板·注册·双模式·集成\n\n每场景 7 件标准交付物 →\n📋清单 · 📐架构图 · 🔗知识图谱 · 🧪测试面板 · 📄源码 · 💡演示 · 📝审查\n\n场景健康度独立评估 · 交付物完整性自动检测\n详见 Layer 3 场景卡片 · 点击评分卡跳转详细报告 →' }
       ] },
 
       /* Panel Hub (浮动面板枢纽 · 与 docs/index.html 4 按钮同构:点击打开浮窗面板) */
@@ -938,9 +938,9 @@
                 demo: 'yry-kpi-grid/index.html' },
               { icon: '📊', iconModifier: 'agent', name: 'yry-progress-bar', badge: 'Vue 3',
                 nameHref: 'yry-progress-bar/README.md', nameTarget: '_blank',
-                desc: '进度条，任务完成进度可视化',
+                desc: '进度条，sticky 吸顶双模式进度指示器 — 显式任务 + 自动滚动追踪',
                 tags: [{ text: '统计', modifier: 'accent' }, { text: 'Vue CE', modifier: 'purple' }],
-                meta: '百分比进度 · 彩色分段 · 动画过渡',
+                meta: 'sticky 吸顶 · 玻璃质感 · 扫光动画 · 双模式 · RAF 节流',
                 demo: 'yry-progress-bar/index.html' },
               { icon: '📊', iconModifier: 'agent', name: 'yry-phase-strip', badge: 'Vue 3',
                 nameHref: 'yry-phase-strip/README.md', nameTarget: '_blank',
@@ -1429,17 +1429,17 @@
         titlePrefix: '',
         titleAccent: '故事',
         titleSuffix: '',
-        stats:       ['🩺 故事健康 90/A · 2 主故事 (CDN + Breadcrumb) + 3 组件卡片'],
+        stats:       ['🩺 故事健康 90/A · 3 主故事 (CDN + Breadcrumb + ProgressBar) + 3 组件卡片'],
         panelsTitle:         '',
         panelsContainerTitle:'故事管理快速入口 · 点击打开对应浮窗面板',
         panels:      [
-          { icon: '🧬', panel: 'selfimprove', title: '2 主故事 (CDN + YryBreadcrumb) + 3 组件卡片 (BackTop/CrossNav/SceneNav) 的演进历史' },
+          { icon: '🧬', panel: 'selfimprove', title: '3 主故事 (CDN + YryBreadcrumb + YryProgressBar) + 3 组件卡片的演进历史' },
           { icon: '🔔', panel: 'notify',      title: '故事相关 CDN 版本变更:组件升级、依赖更新、安全修复' },
           { icon: '❓', panel: 'faq',         title: '故事使用、迁移、贡献指南与最佳实践' }
         ],
         sections:    [
           {
-            subTitle: { icon: '📖', text: '故事与组件', count: '5 条目' },
+            subTitle: { icon: '📖', text: '故事与组件', count: '6 条目' },
             grid: 'story',
             items: [
               {
@@ -1483,13 +1483,25 @@
                 nameHref: 'yry-scene-nav/README.md', nameTarget: '_blank',
                 desc: 'Vue 3 场景层级导航组件 — pill 风格面包屑，显示当前页面在场景层级中的位置。与 YryBreadcrumb 互补：一个管全局，一个管场景内。',
                 scenes: ['Pill 风格导航', '层级缩进', 'Loader 架构', '页面集成'],
-          demo: 'yry-scene-nav/README.md' }
+          demo: 'yry-scene-nav/README.md' },
+              {
+                icon: '📊', name: 'YryProgressBar 组件',
+                nameHref: 'yry-progress-bar/README.md', nameTarget: '_blank',
+                desc: 'YryProgressBar 组件的独立故事 — 跟踪 5 个组件演化场景,从需求到发布的全生命周期。Vue 3 自定义元素 · sticky 吸顶 · 玻璃质感 · 扫光动画 · 双模式进度追踪。',
+                scenes: [
+                  '需求与设计',
+                  '模板与样式',
+                  '组件注册与加载',
+                  '双模式进度追踪',
+                  '页面集成与发布'
+                ],
+          demo: 'yry-progress-bar/README.md' }
             ]
           }
         ]
       },
 
-      /* ═══ Layer 3: 场景 (YryDocLayer · 2 故事共 10 场景) ═══ */
+      /* ═══ Layer 3: 场景 (YryDocLayer · 3 故事共 15 场景) ═══ */
       docLayerScenes: {
         layerId:     'layer-scenes',
         num:         '3',
@@ -1497,11 +1509,11 @@
         titlePrefix: '',
         titleAccent: '场景',
         titleSuffix: '',
-        stats:       ['🩺 场景健康 85/B · 10 场景 + 3 组件卡片 = 13 条目'],
+        stats:       ['🩺 场景健康 85/B · 15 场景 + 3 组件卡片 = 18 条目'],
         panelsTitle:         '',
         panelsContainerTitle:'场景交付物快速入口 · 点击打开对应浮窗面板',
         panels:      [
-          { icon: '🧬', panel: 'selfimprove', title: '2 故事共 10 场景 + 3 组件卡片的演进历史、7 交付物完成度与改进路径' },
+          { icon: '🧬', panel: 'selfimprove', title: '3 故事共 15 场景 + 3 组件卡片的演进历史、7 交付物完成度与改进路径' },
           { icon: '⏰', panel: 'cron',        title: '场景文档生成调度:健康报告、自循环、文档中心同步任务' },
           { icon: '🔔', panel: 'notify',      title: '场景相关 CDN 版本变更、新场景上线、breaking change 警告' },
           { icon: '❓', panel: 'faq',         title: '场景查看、交付物打开、问题反馈与贡献指南' }
@@ -1557,6 +1569,32 @@
                 nameHref: 'yry-breadcrumb/scenes/场景-5-测试与发布/index.md', nameTarget: '_blank',
                 desc: '7 项自测清单 · R1-R7 技术审查 · npm 集成 (files[] 更新) · 语义化版本 + git tag',
                 meta: { __sceneBasePath: 'yry-breadcrumb/scenes/场景-5-测试与发布' } }
+            ]
+          },
+          {
+            subTitle: { icon: '📊', text: 'YryProgressBar 组件 — 5 场景', count: '5 个' },
+            grid: 'scene',
+            items: [
+              { num: '场景 1', name: '需求与设计',
+                nameHref: 'yry-progress-bar/scenes/场景-1-需求与设计/index.md', nameTarget: '_blank',
+                desc: 'Props API 契约 · 双模式设计 (显式/滚动) · 视觉规格 (玻璃质感+扫光)',
+                meta: { __sceneBasePath: 'yry-progress-bar/scenes/场景-1-需求与设计' } },
+              { num: '场景 2', name: '模板与样式',
+                nameHref: 'yry-progress-bar/scenes/场景-2-模板与样式/index.md', nameTarget: '_blank',
+                desc: 'Vue 模板结构 · sticky 吸顶 · 玻璃磨砂 · 青紫渐变填充 · 扫光动画',
+                meta: { __sceneBasePath: 'yry-progress-bar/scenes/场景-2-模板与样式' } },
+              { num: '场景 3', name: '组件注册与加载',
+                nameHref: 'yry-progress-bar/scenes/场景-3-组件注册与加载/index.md', nameTarget: '_blank',
+                desc: 'vue-ce-loader 注册契约 · fetch+DOMParser · ready 事件派发',
+                meta: { __sceneBasePath: 'yry-progress-bar/scenes/场景-3-组件注册与加载' } },
+              { num: '场景 4', name: '双模式进度追踪',
+                nameHref: 'yry-progress-bar/scenes/场景-4-双模式进度追踪/index.md', nameTarget: '_blank',
+                desc: '显式任务进度 (done/total) · 自动滚动追踪 (RAF 节流) · 双模式判定',
+                meta: { __sceneBasePath: 'yry-progress-bar/scenes/场景-4-双模式进度追踪' } },
+              { num: '场景 5', name: '页面集成与发布',
+                nameHref: 'yry-progress-bar/scenes/场景-5-页面集成与发布/index.md', nameTarget: '_blank',
+                desc: '使用模式 (CE/Vue.createApp) · 下游 sticky 协作 · 浏览器兼容 · CDN 分发',
+                meta: { __sceneBasePath: 'yry-progress-bar/scenes/场景-5-页面集成与发布' } }
             ]
           },
           {
@@ -2159,7 +2197,7 @@
 
           var sh = document.getElementById('header-app');
           if (sh && healthScore > 0) {
-            sh.meta = '📦 v' + (l.version || '1.2.0') + ' | 📖 2 故事 | 🎬 10 场景 | 🧩 125 组件 | 🩺 健康 ' + healthScore + '/' + healthGrade + ' · ' + gradeWord(healthScore) + ' | 🧪 质量 ' + compScore + '/' + gradeLbl(compScore) + ' | 🧬 自改进 ' + siScore + '/' + gradeLbl(siScore) + ' | 📐 架构 A 级';
+            sh.meta = '📦 v' + (l.version || '1.2.0') + ' | 📖 3 故事 | 🎬 15 场景 | 🧩 125 组件 | 🩺 健康 ' + healthScore + '/' + healthGrade + ' · ' + gradeWord(healthScore) + ' | 🧪 质量 ' + compScore + '/' + gradeLbl(compScore) + ' | 🧬 自改进 ' + siScore + '/' + gradeLbl(siScore) + ' | 📐 架构 A 级';
           }
 
           // Update layer stats with live scores
@@ -2171,7 +2209,7 @@
           var storyLayer = document.getElementById('layer-stories-app');
           if (storyLayer && ds) {
             var storyScore = ds.length > 0 ? Math.round(ds.reduce(function(s,d){return s+d.avgScore;},0) / ds.length) : 0;
-            storyLayer.stats = ['🩺 故事健康 ' + storyScore + '/' + gradeLbl(storyScore) + ' · 2 主故事 (CDN + Breadcrumb) + 3 组件卡片'];
+            storyLayer.stats = ['🩺 故事健康 ' + storyScore + '/' + gradeLbl(storyScore) + ' · 3 主故事 (CDN + Breadcrumb + ProgressBar) + 3 组件卡片'];
           }
 
           /* ── 刷新评分报告面板 (CDN 专项) ── */
@@ -2497,10 +2535,11 @@
             return { data, lm };
           } catch { return { data: null, lm: null }; }
         };
-        const [manifest, deps, tests] = await Promise.allSettled([
+        const [manifest, deps, tests, summary] = await Promise.allSettled([
           grab('components-manifest/index.json'),
           grab('deps-graph.json'),
-          grab('tests-result.json')
+          grab('tests-result.json'),
+          grab('score-report.json')
         ]);
         const kpis = [];
         if (manifest.status === 'fulfilled') {

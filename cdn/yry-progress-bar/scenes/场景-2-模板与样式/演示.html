@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryProgressBar · 演示 · 模板与样式</title>
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-kg/index.css">
+</head>
+<body>
+<div class="container">
+<nav class="breadcrumb">
+  <a href="../../../../docs/index.html">📄 文档中心</a><span class="bc-sep">/</span>
+  <a href="../../README.md">YryProgressBar</a><span class="bc-sep">/</span>
+  <a href="../知识图谱.html">知识图谱</a><span class="bc-sep">/</span>
+  <span>场景-2 · 演示</span>
+</nav>
+<div class="header">
+  <h1>💡 <span class="accent">演示</span> · 模板与样式</h1>
+  <p class="subtitle">YryProgressBar · 场景 2/5 · 视觉状态展示</p>
+</div>
+<div class="card"><h2>视觉状态矩阵</h2>
+  <table>
+    <tr><th>状态</th><th>条件</th><th>视觉效果</th></tr>
+    <tr><td>正常进度</td><td>0 &lt; pct &lt; 100</td><td>青紫渐变 + 发光 + 扫光</td></tr>
+    <tr><td>完成态</td><td>pct ≥ 100</td><td>绿青渐变 + 暖光晕</td></tr>
+    <tr><td>空态</td><td>pct ≤ 0</td><td>青紫渐变 · 无发光</td></tr>
+    <tr><td>动效降级</td><td>prefers-reduced-motion</td><td>无动画 · 无发光</td></tr>
+  </table>
+</div>
+<div class="card"><h2>CSS 变量联动</h2>
+  <table>
+    <tr><th>变量</th><th>来源</th><th>示例值</th></tr>
+    <tr><td>--yry-cyan</td><td>theme/index.css</td><td>#22d3ee</td></tr>
+    <tr><td>--yry-violet</td><td>theme/index.css</td><td>#a78bfa</td></tr>
+    <tr><td>--yry-pass</td><td>theme/index.css</td><td>#22c55e</td></tr>
+    <tr><td>--yry-progress-bar-height</td><td>index.css :root</td><td>21px</td></tr>
+  </table>
+</div>
+<div class="nav-links">
+  <a class="nav-link" href="计划清单.html">📋 计划清单</a>
+  <a class="nav-link" href="架构图.html">📐 架构图</a>
+  <a class="nav-link" href="知识图谱.html">🔗 知识图谱</a>
+  <a class="nav-link" href="测试面板.html">🧪 测试面板</a>
+  <a class="nav-link" href="源码.html">📄 源码</a>
+  <a class="nav-link current" href="演示.html">💡 演示</a>
+  <a class="nav-link" href="审查.html">📝 审查</a>
+</div>
+<footer class="ft">YryProgressBar · 场景 2 · 模板与样式 · v1.0.0</footer>
+</div>
+</body>
+</html>

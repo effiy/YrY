@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryProgressBar · 审查 · 需求与设计</title>
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-kg/index.css">
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb">
+  <a href="../../../../docs/index.html">📄 文档中心</a>
+  <span class="bc-sep">/</span>
+  <a href="../../README.md">YryProgressBar</a>
+  <span class="bc-sep">/</span>
+  <a href="../知识图谱.html">知识图谱</a>
+  <span class="bc-sep">/</span>
+  <span>场景-1 · 审查</span>
+</nav>
+
+<div class="header">
+  <h1>📝 <span class="accent">审查</span> · 需求与设计</h1>
+  <p class="subtitle">YryProgressBar · 场景 1/5 · 7 项评审清单</p>
+</div>
+
+<div class="card">
+  <h2>评审清单</h2>
+  <table>
+    <thead><tr><th>编号</th><th>评审项</th><th>标准</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>R1</td><td>Props API 完整</td><td>done/total/label 三 prop 类型正确</td><td>✅ 通过</td></tr>
+      <tr><td>R2</td><td>双模式互斥</td><td>hasAttribute 判定无歧义</td><td>✅ 通过</td></tr>
+      <tr><td>R3</td><td>默认值合理</td><td>done=0, total=0, label='进度'</td><td>✅ 通过</td></tr>
+      <tr><td>R4</td><td>除零保护</td><td>total=0 → pct=0 不抛错</td><td>✅ 通过</td></tr>
+      <tr><td>R5</td><td>a11y 覆盖</td><td>4 ARIA 属性 + prefers-reduced-motion</td><td>✅ 通过</td></tr>
+      <tr><td>R6</td><td>CSS 变量暴露</td><td>--yry-progress-bar-height 定义在 :root</td><td>✅ 通过</td></tr>
+      <tr><td>R7</td><td>视觉规格明确</td><td>sticky/玻璃/扫光/渐变全部规格化</td><td>✅ 通过</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>维度评分</h2>
+  <table>
+    <tr><th>维度</th><th>评分</th><th>说明</th></tr>
+    <tr><td>API 设计</td><td>A</td><td>简洁三 prop · 语义清晰</td></tr>
+    <tr><td>模式设计</td><td>A</td><td>hasAttribute 判定干净 · 互斥明确</td></tr>
+    <tr><td>可访问性</td><td>A</td><td>ARIA 完整 · 动效偏好适配</td></tr>
+    <tr><td>扩展性</td><td>B</td><td>缺 color/height 定制 prop</td></tr>
+  </table>
+</div>
+
+<div class="nav-links">
+  <a class="nav-link" href="计划清单.html">📋 计划清单</a>
+  <a class="nav-link" href="架构图.html">📐 架构图</a>
+  <a class="nav-link" href="知识图谱.html">🔗 知识图谱</a>
+  <a class="nav-link" href="测试面板.html">🧪 测试面板</a>
+  <a class="nav-link" href="源码.html">📄 源码</a>
+  <a class="nav-link" href="演示.html">💡 演示</a>
+  <a class="nav-link current" href="审查.html">📝 审查</a>
+</div>
+
+<footer class="ft">YryProgressBar · 场景 1 · 需求与设计 · v1.0.0</footer>
+</div>
+</body>
+</html>

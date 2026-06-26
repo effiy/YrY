@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryProgressBar · 源码 · 模板与样式</title>
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-kg/index.css">
+</head>
+<body>
+<div class="container">
+<nav class="breadcrumb">
+  <a href="../../../../docs/index.html">📄 文档中心</a><span class="bc-sep">/</span>
+  <a href="../../README.md">YryProgressBar</a><span class="bc-sep">/</span>
+  <a href="../知识图谱.html">知识图谱</a><span class="bc-sep">/</span>
+  <span>场景-2 · 源码</span>
+</nav>
+<div class="header">
+  <h1>📄 <span class="accent">源码</span> · 模板与样式</h1>
+  <p class="subtitle">YryProgressBar · 场景 2/5 · 模板 HTML · CSS 关键规则 · 动画关键帧</p>
+</div>
+<div class="card"><h2>Vue 模板 (index.html)</h2>
+  <pre><code>&lt;script type="text/x-template" id="yry-progress-bar-tpl"&gt;
+  &lt;div class="pb-wrap"
+       role="progressbar"
+       :aria-label="label || '进度'"
+       :aria-valuenow="pct" aria-valuemin="0" aria-valuemax="100"&gt;
+    &lt;div class="pb-track"&gt;
+      &lt;div class="pb-fill"
+           :class="{ 'is-done': pct &gt;= 100, 'is-empty': pct &lt;= 0 }"
+           :style="{ width: pct + '%' }"&gt;
+        &lt;div class="pb-shine"&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/script&gt;</code></pre>
+</div>
+<div class="card"><h2>主机样式 — sticky + 玻璃 (index.css)</h2>
+  <pre><code>:root {
+  --yry-progress-bar-height: 21px;
+}
+yry-progress-bar {
+  display: block;
+  position: sticky;  top: 0;  z-index: 100;
+  background: linear-gradient(180deg,
+    rgba(22,22,32,.96) 0%, rgba(22,22,32,.78) 100%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  backdrop-filter: blur(14px) saturate(160%);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  padding: 6px 0 8px;
+}</code></pre>
+</div>
+<div class="card"><h2>扫光动画 (index.css)</h2>
+  <pre><code>.pb-shine {
+  position: absolute;
+  width: 45%;
+  background: linear-gradient(90deg,
+    transparent 0%, rgba(255,255,255,.38) 50%, transparent 100%);
+  animation: pb-shine 2.6s ease-in-out infinite;
+}
+@keyframes pb-shine {
+  0%   { transform: translateX(-100%); }
+  55%  { transform: translateX(220%); }
+  100% { transform: translateX(220%); }
+}</code></pre>
+</div>
+<div class="nav-links">
+  <a class="nav-link" href="计划清单.html">📋 计划清单</a>
+  <a class="nav-link" href="架构图.html">📐 架构图</a>
+  <a class="nav-link" href="知识图谱.html">🔗 知识图谱</a>
+  <a class="nav-link" href="测试面板.html">🧪 测试面板</a>
+  <a class="nav-link current" href="源码.html">📄 源码</a>
+  <a class="nav-link" href="演示.html">💡 演示</a>
+  <a class="nav-link" href="审查.html">📝 审查</a>
+</div>
+<footer class="ft">YryProgressBar · 场景 2 · 模板与样式 · v1.0.0</footer>
+</div>
+</body>
+</html>

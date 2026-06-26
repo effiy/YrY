@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryProgressBar · 测试面板 · 页面集成与发布</title>
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-kg/index.css">
+</head>
+<body>
+<div class="container">
+<nav class="breadcrumb"><a href="../../../../docs/index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../../README.md">YryProgressBar</a><span class="bc-sep">/</span><a href="../知识图谱.html">知识图谱</a><span class="bc-sep">/</span><span>场景-5 · 测试面板</span></nav>
+<div class="header"><h1>🧪 <span class="accent">测试面板</span> · 页面集成与发布</h1><p class="subtitle">YryProgressBar · 场景 5/5 · CE 渲染 · createApp · 多实例 · 兼容性</p></div>
+<div class="card"><h2>测试用例</h2><table><thead><tr><th>编号</th><th>用例</th><th>验证</th><th>状态</th></tr></thead><tbody>
+<tr><td>TC5.1</td><td>CE 渲染正确</td><td>&lt;yry-progress-bar&gt; 内部 DOM 完整</td><td>✅</td></tr>
+<tr><td>TC5.2</td><td>createApp 渲染</td><td>Vue.createApp 挂载到指定容器</td><td>✅</td></tr>
+<tr><td>TC5.3</td><td>ready 事件消费</td><td>{once:true} · 5s 内触发</td><td>✅</td></tr>
+<tr><td>TC5.4</td><td>多实例隔离</td><td>3 实例 · 各自独立 _scrollMode</td><td>✅</td></tr>
+<tr><td>TC5.5</td><td>下游 sticky 偏移</td><td>quicknav top = var(--yry-progress-bar-height)</td><td>✅</td></tr>
+<tr><td>TC5.6</td><td>Chrome 90+</td><td>CE V1 · backdrop-filter · passive</td><td>✅</td></tr>
+<tr><td>TC5.7</td><td>Firefox 88+</td><td>CE V1 · backdrop-filter</td><td>✅</td></tr>
+<tr><td>TC5.8</td><td>Safari 14+</td><td>CE V1 · -webkit-backdrop-filter</td><td>✅</td></tr></tbody></table></div>
+<div class="nav-links"><a class="nav-link" href="计划清单.html">📋 计划清单</a><a class="nav-link" href="架构图.html">📐 架构图</a><a class="nav-link" href="知识图谱.html">🔗 知识图谱</a><a class="nav-link current" href="测试面板.html">🧪 测试面板</a><a class="nav-link" href="源码.html">📄 源码</a><a class="nav-link" href="演示.html">💡 演示</a><a class="nav-link" href="审查.html">📝 审查</a></div>
+<footer class="ft">YryProgressBar · 场景 5 · 页面集成与发布 · v1.0.0</footer>
+</div></body></html>
