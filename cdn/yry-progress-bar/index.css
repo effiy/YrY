@@ -37,7 +37,7 @@ yry-progress-bar {
   border-bottom: 1px solid rgba(255,255,255,.08);
   box-shadow: 0 8px 24px -14px rgba(0,0,0,.7);
   font-family: var(--yry-font-sans, system-ui, sans-serif);
-  color: var(--yry-text, #f5f5f5);
+  color: var(--yry-text, var(--yry-gray-pale));
 }
 
 /* ── Track + Fill ───────────────────────────────────────────────────────── */
@@ -57,8 +57,8 @@ yry-progress-bar {
   min-width: 4px;
   border-radius: 999px;
   background: linear-gradient(90deg,
-    var(--yry-cyan, #22d3ee) 0%,
-    var(--yry-violet, #a78bfa) 100%);
+    var(--yry-cyan, var(--yry-cyan-bright)) 0%,
+    var(--yry-violet, var(--yry-violet)) 100%);
   box-shadow:
     0 0 8px rgba(34,211,238,.45),
     0 0 18px rgba(167,139,250,.22);
@@ -89,8 +89,8 @@ yry-progress-bar {
 /* 100% 完成态: 配色切换为 pass/cyan 渐变,光晕更暖 */
 .pb-fill.is-done {
   background: linear-gradient(90deg,
-    var(--yry-pass, #22c55e) 0%,
-    var(--yry-cyan, #22d3ee) 100%);
+    var(--yry-pass, var(--yry-pass)) 0%,
+    var(--yry-cyan, var(--yry-cyan-bright)) 100%);
   box-shadow:
     0 0 10px rgba(34,197,94,.55),
     0 0 22px rgba(34,211,238,.28);

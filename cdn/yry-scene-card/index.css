@@ -34,37 +34,37 @@
 
 .scene-card .scene-num {
   font-size: .68rem; font-weight: 700;
-  color: var(--yry-pass, #22c55e);
+  color: var(--yry-pass, var(--yry-pass));
   text-transform: uppercase; letter-spacing: .05em;
   margin-bottom: 2px;
 }
 .scene-card .scene-name {
   font-size: .88rem; font-weight: 600;
-  color: var(--yry-text, #f5f5f5);
+  color: var(--yry-text, var(--yry-gray-pale));
   margin-bottom: 4px;
 }
 .scene-card .scene-name a {
-  color: var(--yry-cyan, #22d3ee);
+  color: var(--yry-cyan, var(--yry-cyan-bright));
   text-decoration: none;
   transition: color .15s var(--yry-ease-out, ease);
 }
-.scene-card .scene-name a:hover { color: var(--yry-accent, #ffc107); text-decoration: underline; }
+.scene-card .scene-name a:hover { color: var(--yry-accent, var(--yry-amber)); text-decoration: underline; }
 .scene-card .scene-desc {
   font-size: .72rem;
-  color: var(--yry-text2, #d4d4d4);
+  color: var(--yry-text2, var(--yry-gray-soft));
   line-height: 1.5;
   margin-bottom: 6px;
 }
 .scene-card .scene-meta {
   font-size: .68rem;
-  color: var(--yry-text3, #888);
+  color: var(--yry-text3, var(--yry-gray));
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
 }
 .scene-card .scene-meta a {
-  color: var(--yry-cyan, #22d3ee);
+  color: var(--yry-cyan, var(--yry-cyan-bright));
   text-decoration: none;
   transition: color .15s var(--yry-ease-out, ease);
 }
-.scene-card .scene-meta a:hover { color: var(--yry-accent, #ffc107); text-decoration: underline; }
-.scene-card .scene-meta .sep { color: var(--yry-text3, #888); opacity: .5; }
+.scene-card .scene-meta a:hover { color: var(--yry-accent, var(--yry-amber)); text-decoration: underline; }
+.scene-card .scene-meta .sep { color: var(--yry-text3, var(--yry-gray)); opacity: .5; }

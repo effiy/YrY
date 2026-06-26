@@ -65,11 +65,11 @@
   border-radius: 6px; transition: all .2s;
 }
 .selfimprove-panel .panel-header .panel-refresh:hover {
-  color: #c4b5fd; background: rgba(var(--yry-violet-rgb),.1);
+  color: var(--yry-violet-soft); background: rgba(var(--yry-violet-rgb),.1);
 }
 
 .selfimprove-panel .np-filter-chip.active {
-  color: #c4b5fd; border-color: rgba(var(--yry-violet-rgb),.35); background: rgba(var(--yry-violet-rgb),.1);
+  color: var(--yry-violet-soft); border-color: rgba(var(--yry-violet-rgb),.35); background: rgba(var(--yry-violet-rgb),.1);
 }
 .selfimprove-panel .np-filter-chip:hover { border-color: rgba(var(--yry-violet-rgb),.2); }
 
@@ -116,7 +116,7 @@
   flex-shrink: 0;
 }
 .selfimprove-panel .si-hero-grade {
-  font-size: .58rem; font-weight: 700; color: #111;
+  font-size: .58rem; font-weight: 700; color: var(--yry-text-inverse);
   padding: 2px 8px; border-radius: 6px; background: rgba(255,255,255,.85);
 }
 .selfimprove-panel .si-hero-meta {
@@ -283,7 +283,7 @@
   flex-shrink: 0;
 }
 .selfimprove-panel .si-period-grade {
-  font-size: .56rem; font-weight: 700; color: #111;
+  font-size: .56rem; font-weight: 700; color: var(--yry-text-inverse);
   padding: 2px 8px; border-radius: 6px; background: rgba(255,255,255,.85);
 }
 .selfimprove-panel .si-period-meta {
@@ -306,7 +306,7 @@
   font-size: .62rem; font-weight: 600; padding: 2px 8px; border-radius: 8px;
 }
 .selfimprove-panel .si-grade-badge.grade-A { background: rgba(var(--yry-pass-rgb),.14); color: var(--yry-pass); }
-.selfimprove-panel .si-grade-badge.grade-B { background: rgba(74,222,128,.12); color: #4ade80; }
+.selfimprove-panel .si-grade-badge.grade-B { background: rgba(74,222,128,.12); color: var(--yry-pass-bright); }
 .selfimprove-panel .si-grade-badge.grade-C { background: rgba(var(--yry-warn-rgb),.14); color: var(--yry-warn); }
 .selfimprove-panel .si-grade-badge.grade-D { background: rgba(var(--yry-fail-rgb),.14); color: var(--yry-fail); }
 

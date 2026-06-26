@@ -20,7 +20,6 @@
    相关文件:
      - cdn/theme/index.html  — 主题预览页
      - cdn/theme/README.md   — 主题系统文档
-     - cdn/shared/index.css  — 共享组件样式 (消费本文件的变量)
      - cdn/theme-mono/index.css — Category A Mono 主题 (消费本文件的变量)
    ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -42,6 +41,8 @@
   --yry-bg-flat:   var(--bg2);
   --yry-bg-raised: var(--bg3);
 
+  /* 深色表面变体在 Misc 区域统一声明 */
+
   /* ═════════════════════════════════════════════════════════════════════════
      Text — 文本层级
      text1→text3 从主到辅; text-muted 为禁用/占位
@@ -50,6 +51,9 @@
   --text2:       #9da7b3;
   --text3:       #6e7681;
   --text-muted:  #484f58;
+
+  /* 文本反色 (在亮色/高饱和背景上使用的深色文字) */
+  --yry-text-inverse: #111;
 
   /* yry-* text aliases (兼容 tokens / scene-base 命名) */
   --yry-text1: var(--text1);
@@ -106,6 +110,9 @@
 
   --yry-skip:        #6b7280;
 
+  /* Status 暗色变体 (用于评分徽章、深色边框) */
+  --yry-pass-dark:   #16a34a;
+
   /* ═════════════════════════════════════════════════════════════════════════
      RGB channels — 用于 rgba(var(--yry-*-rgb), alpha) 组合
      ═════════════════════════════════════════════════════════════════════════ */
@@ -116,6 +123,12 @@
   --yry-cyan-rgb:    6, 182, 212;
   --yry-emerald-rgb: 16, 185, 129;
   --yry-violet-rgb:  167, 139, 250;
+
+  /* 亮/暗变体 RGB channels — 用于 rgba(var(--yry-*-bright-rgb), alpha) */
+  --yry-pass-bright-rgb:  74, 222, 128;
+  --yry-fail-bright-rgb:  248, 113, 113;
+  --yry-warn-bright-rgb:  252, 211, 77;
+  --yry-cyan-bright-rgb:  34, 211, 238;
 
   /* ═════════════════════════════════════════════════════════════════════════
      Links — 链接色
@@ -187,6 +200,23 @@
   --yry-purple:       var(--yry-violet);  /* 同色别名，向后兼容 */
   --yry-pink:         #f472b6;
   --yry-blue:         #60a5fa;
+  --yry-blue-soft:    #93c5fd;
+  --yry-amber:        #ffc107;
+  --yry-amber-warm:   #e0af68;
+  --yry-teal:         #64DCB4;
+  --yry-cornflower:   #6495ED;
+  --yry-text-pale:    #c0caf5;
+
+  /* 中性灰阶 (结构性分隔 / 占位元素) */
+  --yry-gray:         #888;
+  --yry-gray-mid:     #555;
+  --yry-gray-soft:    #d4d4d4;
+  --yry-gray-pale:    #f5f5f5;
+
+  /* 深色表面变体 (组件徽章背景、深色按钮前景) */
+  --yry-bg-deep:      #1a1a2a;
+  --yry-bg-deeper:    #0a0a12;
+  --yry-bg-deeper-alt: #181a24;
 
   /* ═════════════════════════════════════════════════════════════════════════
      Mono theme tokens — Category A 架构图/知识图谱 专用
