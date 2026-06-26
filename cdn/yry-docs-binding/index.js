@@ -121,6 +121,7 @@
         return {
           _ready: false,
           _liveUpdateTimer: null,
+          _liveFetchWarned: false,
           _readyListeners: [],
           _docListeners: [],
           _layersMounted: false
@@ -491,7 +492,10 @@
                 }
               })
               .catch(function (err) {
-                console.warn('[docs-binding] 无法加载实时评分,使用默认值:', err.message);
+                if (!self._liveFetchWarned) {
+                  self._liveFetchWarned = true;
+                  console.warn('[docs-binding] 无法加载实时评分,使用默认值:', err.message);
+                }
               });
           };
 

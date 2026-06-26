@@ -136,6 +136,9 @@
   <!-- Vue 3 (必须最早加载,为后续所有 Vue 组件提供依赖) -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 
+  <!-- Vue CE 共享加载器 (提供 window.YrYVueCE.define,所有 CDN 组件依赖) -->
+  <script src="../cdn/shared/vue-ce-loader.js"></script>
+
   <!-- 基础展示组件 (供 breadcrumb/header/stats/cross-nav 挂载) -->
   <script src="../cdn/yry-breadcrumb/index.js"></script>
   <script src="../cdn/yry-scene-header/index.js"></script>

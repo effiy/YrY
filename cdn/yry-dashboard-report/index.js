@@ -1027,7 +1027,7 @@
     let idx = 0;
     function tryNext() {
       if (idx >= urls.length) {
-        console.warn('[ScoreReport] 所有数据源均不可达,使用默认数据');
+        if (!window._scoreReportWarned) { window._scoreReportWarned = true; console.warn('[ScoreReport] 所有数据源均不可达,使用默认数据'); }
         renderWithDefaultData();
         return;
       }

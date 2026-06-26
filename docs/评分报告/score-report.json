@@ -1,0 +1,10 @@
+{
+  "composite": { "score": 94, "grade": "A", "label": "优秀", "color": "#4ade80" },
+  "trend": { "direction": "stable", "slopePerWeek": 0.5, "r2": 0.7, "confidence": "medium" },
+  "forecast": { "value": 94, "range": [88, 97] },
+  "reliability": { "reliability": 0.85, "volatility": "low" },
+  "period": { "start": "2026-06-01", "end": "2026-06-27" },
+  "history": [82, 88, 91, 94],
+  "dimSummary": [],
+  "diagTriggered": 0
+}
