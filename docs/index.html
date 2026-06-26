@@ -83,18 +83,6 @@
     <!-- ═══ 仪表板快速锚点 (Vue 3 自定义元素 <yry-dashboard-quicknav>) ═══ -->
     <yry-dashboard-quicknav id="sr-quicknav" aria-label="评分仪表板快速导航"></yry-dashboard-quicknav>
 
-    <!-- ═══ 最新报告快照 (2026-06-22) ═══ -->
-    <yry-report-section id="sm-snapshot"></yry-report-section>
-
-    <!-- ═══ CDN 资源与文档中心 ═══ -->
-    <yry-report-section id="sec-cdn-resources"></yry-report-section>
-
-    <!-- ═══ 20 技能市场 ═══ -->
-    <yry-report-section id="sec-skills-market"></yry-report-section>
-
-    <!-- ═══ 治理规则与共享库 ═══ -->
-    <yry-report-section id="sec-rules-lib"></yry-report-section>
-
     </div>
 
     <!-- ═══ Tab 2: 技能架构 ═══ -->
@@ -144,13 +132,9 @@
   <yry-docs-binding></yry-docs-binding>
 
   <!-- ═══ JS 脚本 (Vue 3 + CDN 组件,均为 custom element) ═══ -->
-  <script src="../cdn/shared/index.js"></script>
 
   <!-- Vue 3 (必须最早加载,为后续所有 Vue 组件提供依赖) -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-
-  <!-- YrYVueCE 共享加载器 (Vue 3 之后,CDN 组件之前;负责 fetch 模板 + defineCustomElement 注册) -->
-  <script src="../cdn/shared/vue-ce-loader.js"></script>
 
   <!-- 基础展示组件 (供 breadcrumb/header/stats/cross-nav 挂载) -->
   <script src="../cdn/yry-breadcrumb/index.js"></script>
@@ -173,11 +157,6 @@
   <!-- 评分报告链接 chip + section 容器 (供 score-report 区块使用) -->
   <script src="../cdn/yry-report-link/index.js"></script>
   <script src="../cdn/yry-report-section/index.js"></script>
-
-  <!-- ═══ sm-snapshot 占位符由 docs-report-data.js 填充(原内联 stub 已删除) ═══ -->
-
-  <!-- ═══ CDN 聚合中心 7 张卡片数据 (从内联迁出) ═══ -->
-  <script src="./js/docs-agg-data.js"></script>
 
   <!-- 布局组件 (供 layer-* 复合组件依赖) -->
   <script src="../cdn/yry-layer/index.js"></script>
@@ -220,15 +199,6 @@
   <script src="../cdn/yry-progress-bar/index.js"></script>
   <!-- ═══ 仪表板快速锚点 (Vue 3 自定义元素,替代内联 <nav class="sr-quicknav">) ═══ -->
   <script src="../cdn/yry-dashboard-quicknav/index.js"></script>
-
-  <!-- ═══ Tab 初始化 ═══ -->
-  <script>YrY.initTabs('#main-tabs');</script>
-
-  <!-- ═══ UX 增强脚本 (滚动进度 · 淡入 · 卡片升级 · 键盘快捷 · 32 特性,从内联迁出) ═══ -->
-  <script src="./js/docs-ux-enhance.js"></script>
-
-  <!-- ═══ yry-report-section 数据注入 (9 个 section · 从内联迁出) ═══ -->
-  <script src="./js/docs-report-data.js"></script>
 
 </body>
 </html>
