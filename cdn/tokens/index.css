@@ -1,90 +1,15 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   YrY Design Tokens — 单一真相源 (Single Source of Truth)
+   YrY Design Tokens — 委托至 theme/index.css
 
-   所有 YrY CSS 组件和主题的统一设计令牌。本文件为整个 CDN 的
-   颜色、间距、阴影、圆角等提供 CSS 自定义属性。
+   本文件仅为向后兼容保留。所有设计令牌的真相源已统一至:
+     cdn/theme/index.css
+
+   新代码请直接引用 cdn/theme/index.css。
+   本文件通过 @import 转发全部令牌，已有消费者无需修改。
 
    使用方式:
      <link rel="stylesheet" href="../../../../cdn/tokens/index.css">
-
-   语义色板遵循项目 Mermaid 配色唯一真相源 (skills/rui/rules/mermaid-theme.md):
-     - Accent (强调):  #FFC107 (amber-yellow)
-     - Cyan (科技蓝):   #22d3ee
-     - Pass (通过):     #22c55e (green)
-     - Fail (失败):     #ef4444 (red)
-     - Warn (警告):     #f59e0b (amber)
-     - Info (信息):     #6b7280 (gray)
-
-   由 theme/index.css、theme-mono/index.css、shared-reports/index.css
-   通过 @import 引用。不直接包含任何组件样式。
+     <!-- 等价于加载 cdn/theme/index.css -->
    ═══════════════════════════════════════════════════════════════════════════ */
 
-:root {
-  /* ── Surfaces (表面/背景) ────────────────────────────────────────────────── */
-  --yry-bg:        rgba(22,22,32,1);
-  --yry-bg-card:   linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
-  --yry-bg-flat:   rgba(34,34,46,1);
-  --yry-bg-raised: rgba(42,42,56,1);
-
-  /* ── Brand (品牌色) ──────────────────────────────────────────────────────── */
-  --yry-accent: #FFC107;
-  --yry-cyan:   #22d3ee;
-
-  /* ── Semantic (语义色) ───────────────────────────────────────────────────── */
-  --yry-pass: #22c55e;
-  --yry-fail: #ef4444;
-  --yry-warn: #f59e0b;
-  --yry-info: #6b7280;
-  --yry-skip: #6b7280;
-
-  /* ── RGB channels (用于 rgba(var(--yry-*-rgb), alpha)) ───────────────────── */
-  --yry-pass-rgb: 34,197,94;
-  --yry-fail-rgb: 239,68,68;
-  --yry-warn-rgb: 245,158,11;
-  --yry-accent-rgb: 255,193,7;
-  --yry-cyan-rgb: 34,211,238;
-  --yry-emerald-rgb: 16,185,129;
-  --yry-violet-rgb: 167,139,250;
-
-  /* ── Text (文本层级) ─────────────────────────────────────────────────────── */
-  --yry-text:  rgba(250,250,252,1);
-  --yry-text2: rgba(160,160,164,1);
-  --yry-text3: rgba(110,110,114,1);
-
-  /* ── Elevation (阴影/圆角/边框) ──────────────────────────────────────────── */
-  --yry-shadow:    0 4px 20px rgba(0,0,0,0.3);
-  --yry-shadow-lg: 0 12px 32px rgba(0,0,0,0.45);
-  --yry-radius: 12px;
-  --yry-border: 1px solid rgba(255,255,255,0.06);
-
-  /* ── Misc (辅助) ─────────────────────────────────────────────────────────── */
-  --yry-link:       #22d3ee;
-  --yry-link-hover: #FFC107;
-  --yry-link-blue:  #7aa2f7;
-  --yry-emerald:    #10b981;
-  --yry-violet:     #a78bfa;
-  --yry-amber-bright: #fbbf24;
-  --yry-blue-mermaid: #3d59a1;
-  --yry-mono-bg:    #020617;
-  --yry-mono-surface: rgba(15,23,42,0.5);
-  --yry-mono-border:  #1e293b;
-  --yry-mono-border2: #334155;
-  --yry-mono-text2:   #94a3b8;
-  --yry-mono-text3:   #475569;
-  --yry-mono-text4:   #53576c;
-
-  /* ── Legacy aliases (向后兼容 --yry-color-* 命名) ────────────────────────── */
-  --yry-color-accent:  var(--yry-accent);
-  --yry-color-cyan:    var(--yry-cyan);
-  --yry-color-pass:    var(--yry-pass);
-  --yry-color-fail:    var(--yry-fail);
-  --yry-color-warn:    var(--yry-warn);
-  --yry-color-info:    var(--yry-info);
-  --yry-color-text-1:  var(--yry-text);
-  --yry-color-text-2:  var(--yry-text2);
-  --yry-color-text-3:  var(--yry-text3);
-  --yry-color-bg:      var(--yry-bg);
-  --yry-color-surface-1: rgba(255,255,255,.03);
-  --yry-color-surface-2: rgba(255,255,255,.05);
-  --yry-color-border:  rgba(255,255,255,.08);
-}
+@import url('../theme/index.css');

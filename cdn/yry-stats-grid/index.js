@@ -37,14 +37,6 @@
     return;
   }
 
-  var TEMPLATE_ID = 'yry-stats-grid-tpl';
-
-  var READY_EVENT = 'yry-stats-grid-ready';
-
-  var TAG_NAME = 'yry-stats-grid';
-
-  var LOAD_TIMEOUT_MS = 5000;
-
   window.YrYVueCE.define({
     componentName: 'YryStatsGrid',
     templateId: 'yry-stats-grid-tpl',

@@ -1,87 +1,203 @@
-/* YrY Theme — 颜色与变量定义 */
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY Theme — 项目唯一主题色真相源 (Single Source of Truth)
+
+   所有 YrY 页面的 CSS 自定义属性统一定义于此。本文件为整个项目的
+   颜色、间距、阴影、圆角、字号等提供完整的 CSS 自定义属性体系。
+
+   加载方式:
+     <link rel="stylesheet" href="../../../../cdn/theme/index.css">
+
+   色板设计:
+     - 深色基底: GitHub-dark 风格 (#0d1117 → #e6edf3)
+     - 强调色:  violet #8b5cf6
+     - 科技色:  cyan #06b6d4
+     - 语义色:  pass #22c55e / fail #ef4444 / warn #f59e0b
+     - 链接色:  blue #58a6ff
+     - 信息色:  blue #3b82f6
+
+   本文件不 @import 任何其他 CSS —— 自身即完整真相源。
+
+   相关文件:
+     - cdn/theme/index.html  — 主题预览页
+     - cdn/theme/README.md   — 主题系统文档
+     - cdn/shared/index.css  — 共享组件样式 (消费本文件的变量)
+     - cdn/theme-mono/index.css — Category A Mono 主题 (消费本文件的变量)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 :root {
-  /* === 背景色 === */
-  --bg1: #0d1117;
-  --bg2: #161b22;
-  --bg3: #1c2128;
-  --bg-hover: #21262d;
-  --bg-soft: rgba(255, 255, 255, 0.04);
+  /* ═════════════════════════════════════════════════════════════════════════
+     Surfaces — 背景表面
+     bg1→bg3 从深到浅; bg-soft/bg-overlay 为半透明叠加层
+     ═════════════════════════════════════════════════════════════════════════ */
+  --bg1:       #0d1117;
+  --bg2:       #161b22;
+  --bg3:       #1c2128;
+  --bg-hover:  #21262d;
+  --bg-soft:   rgba(255, 255, 255, 0.04);
   --bg-overlay: rgba(0, 0, 0, 0.6);
 
-  /* === 文本色 === */
-  --text1: #e6edf3;
-  --yry-text1: #e6edf3;
-  --text2: #9da7b3;
-  --yry-text2: #9da7b3;
-  --text3: #6e7681;
-  --yry-text3: #6e7681;
-  --text-muted: #484f58;
+  /* yry-* surface aliases (兼容 Category B / scene-base 等消费者) */
+  --yry-bg:        var(--bg1);
+  --yry-bg-card:   var(--bg2);
+  --yry-bg-flat:   var(--bg2);
+  --yry-bg-raised: var(--bg3);
 
-  /* === 边框 === */
-  --border1: #30363d;
-  --border2: rgba(255, 255, 255, 0.08);
-  --border-soft: rgba(255, 255, 255, 0.05);
-  --border-strong: rgba(255, 255, 255, 0.16);
+  /* ═════════════════════════════════════════════════════════════════════════
+     Text — 文本层级
+     text1→text3 从主到辅; text-muted 为禁用/占位
+     ═════════════════════════════════════════════════════════════════════════ */
+  --text1:       #e6edf3;
+  --text2:       #9da7b3;
+  --text3:       #6e7681;
+  --text-muted:  #484f58;
 
-  /* === 状态色 === */
-  --yry-pass: #22c55e;
-  --yry-pass-bg: rgba(34, 197, 94, 0.1);
-  --yry-pass-soft: rgba(34, 197, 94, 0.15);
+  /* yry-* text aliases (兼容 tokens / scene-base 命名) */
+  --yry-text1: var(--text1);
+  --yry-text2: var(--text2);
+  --yry-text3: var(--text3);
+  --yry-text:  var(--text1);
+
+  /* ═════════════════════════════════════════════════════════════════════════
+     Border — 边框
+     从实色到半透明，border1 为最实，border-soft 为最淡
+     ═════════════════════════════════════════════════════════════════════════ */
+  --border1:        #30363d;
+  --border2:        rgba(255, 255, 255, 0.08);
+  --border-soft:    rgba(255, 255, 255, 0.05);
+  --border-strong:  rgba(255, 255, 255, 0.16);
+
+  /* yry-* border alias (兼容 tokens / scene-base 命名) */
+  --yry-border: 1px solid var(--border2);
+
+  /* ═════════════════════════════════════════════════════════════════════════
+     Brand — 品牌色
+     accent 为主要强调色 (violet)，cyan 为科技信息色
+     ═════════════════════════════════════════════════════════════════════════ */
+  --yry-accent:        #8b5cf6;
+  --yry-accent-bg:     rgba(139, 92, 246, 0.1);
+  --yry-accent-soft:   rgba(139, 92, 246, 0.15);
+  --yry-accent-border: rgba(139, 92, 246, 0.3);
+  --yry-cyan:          #06b6d4;
+  --yry-cyan-bg:       rgba(6, 182, 212, 0.1);
+  --yry-cyan-soft:     rgba(6, 182, 212, 0.15);
+
+  /* ═════════════════════════════════════════════════════════════════════════
+     Semantic — 语义色
+     pass / fail / warn / info / skip 五种状态色
+     每色含 bg / soft / border 三档透明度变体
+     ═════════════════════════════════════════════════════════════════════════ */
+  --yry-pass:        #22c55e;
+  --yry-pass-bg:     rgba(34, 197, 94, 0.1);
+  --yry-pass-soft:   rgba(34, 197, 94, 0.15);
   --yry-pass-border: rgba(34, 197, 94, 0.3);
 
-  --yry-fail: #ef4444;
-  --yry-fail-bg: rgba(239, 68, 68, 0.1);
-  --yry-fail-soft: rgba(239, 68, 68, 0.15);
+  --yry-fail:        #ef4444;
+  --yry-fail-bg:     rgba(239, 68, 68, 0.1);
+  --yry-fail-soft:   rgba(239, 68, 68, 0.15);
   --yry-fail-border: rgba(239, 68, 68, 0.3);
 
-  --yry-warn: #f59e0b;
-  --yry-warn-bg: rgba(245, 158, 11, 0.1);
-  --yry-warn-soft: rgba(245, 158, 11, 0.15);
+  --yry-warn:        #f59e0b;
+  --yry-warn-bg:     rgba(245, 158, 11, 0.1);
+  --yry-warn-soft:   rgba(245, 158, 11, 0.15);
   --yry-warn-border: rgba(245, 158, 11, 0.3);
 
-  --yry-accent: #8b5cf6;
-  --yry-accent-bg: rgba(139, 92, 246, 0.1);
-  --yry-accent-soft: rgba(139, 92, 246, 0.15);
-  --yry-accent-border: rgba(139, 92, 246, 0.3);
+  --yry-info:        #3b82f6;
+  --yry-info-bg:     rgba(59, 130, 246, 0.1);
 
-  --yry-cyan: #06b6d4;
-  --yry-cyan-bg: rgba(6, 182, 212, 0.1);
-  --yry-cyan-soft: rgba(6, 182, 212, 0.15);
-  --yry-info: #3b82f6;
-  --yry-info-bg: rgba(59, 130, 246, 0.1);
+  --yry-skip:        #6b7280;
 
-  /* === 链接色 === */
-  --link: #58a6ff;
-  --link-hover: #79b8ff;
+  /* ═════════════════════════════════════════════════════════════════════════
+     RGB channels — 用于 rgba(var(--yry-*-rgb), alpha) 组合
+     ═════════════════════════════════════════════════════════════════════════ */
+  --yry-pass-rgb:    34, 197, 94;
+  --yry-fail-rgb:    239, 68, 68;
+  --yry-warn-rgb:    245, 158, 11;
+  --yry-accent-rgb:  139, 92, 246;
+  --yry-cyan-rgb:    6, 182, 212;
+  --yry-emerald-rgb: 16, 185, 129;
+  --yry-violet-rgb:  167, 139, 250;
 
-  /* === 阴影 === */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  /* ═════════════════════════════════════════════════════════════════════════
+     Links — 链接色
+     ═════════════════════════════════════════════════════════════════════════ */
+  --link:            #58a6ff;
+  --link-hover:      #79b8ff;
+  --yry-link:        var(--link);
+  --yry-link-hover:  var(--link-hover);
+  --yry-link-blue:   #7aa2f7;
 
-  /* === 圆角 === */
+  /* ═════════════════════════════════════════════════════════════════════════
+     Shadows — 阴影 (三级深度)
+     ═════════════════════════════════════════════════════════════════════════ */
+  --shadow-sm:  0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow:     0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg:  0 8px 24px rgba(0, 0, 0, 0.5);
+
+  /* yry-* shadow aliases */
+  --yry-shadow:    var(--shadow);
+  --yry-shadow-lg: var(--shadow-lg);
+
+  /* ═════════════════════════════════════════════════════════════════════════
+     Radius — 圆角 (四级)
+     ═════════════════════════════════════════════════════════════════════════ */
   --radius-sm: 4px;
-  --radius: 8px;
+  --radius:    8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
 
-  /* === 间距 === */
-  --gap-2: 2px;
-  --gap-4: 4px;
-  --gap-6: 6px;
-  --gap-8: 8px;
+  /* yry-* radius alias */
+  --yry-radius: var(--radius-lg);
+
+  /* ═════════════════════════════════════════════════════════════════════════
+     Spacing — 间距
+     ═════════════════════════════════════════════════════════════════════════ */
+  --gap-2:  2px;
+  --gap-4:  4px;
+  --gap-6:  6px;
+  --gap-8:  8px;
   --gap-10: 10px;
   --gap-12: 12px;
   --gap-16: 16px;
 
-  /* === 字号 === */
-  --fs-xs: 10px;
-  --fs-sm: 11px;
+  /* ═════════════════════════════════════════════════════════════════════════
+     Font sizes — 字号 (9 级)
+     ═════════════════════════════════════════════════════════════════════════ */
+  --fs-xs:  10px;
+  --fs-sm:  11px;
   --fs-base: 12px;
-  --fs-md: 13px;
-  --fs-lg: 14px;
-  --fs-xl: 16px;
+  --fs-md:  13px;
+  --fs-lg:  14px;
+  --fs-xl:  16px;
   --fs-2xl: 20px;
   --fs-3xl: 24px;
   --fs-4xl: 32px;
+
+  /* ═════════════════════════════════════════════════════════════════════════
+     Typography — 字体族
+     ═════════════════════════════════════════════════════════════════════════ */
+  --font-mono: 'SF Mono', Monaco, Consolas, monospace;
+
+  /* ═════════════════════════════════════════════════════════════════════════
+     Misc — 辅助色
+     ═════════════════════════════════════════════════════════════════════════ */
+  --yry-emerald:      #10b981;
+  --yry-violet:       #a78bfa;
+  --yry-amber-bright: #fbbf24;
+  --yry-blue-mermaid: #3d59a1;
+  --yry-purple:       var(--yry-violet);  /* 同色别名，向后兼容 */
+  --yry-pink:         #f472b6;
+  --yry-blue:         #60a5fa;
+
+  /* ═════════════════════════════════════════════════════════════════════════
+     Mono theme tokens — Category A 架构图/知识图谱 专用
+     由 cdn/theme-mono/index.css 覆盖使用
+     ═════════════════════════════════════════════════════════════════════════ */
+  --yry-mono-bg:      #020617;
+  --yry-mono-surface: rgba(15, 23, 42, 0.5);
+  --yry-mono-border:  #1e293b;
+  --yry-mono-border2: #334155;
+  --yry-mono-text2:   #94a3b8;
+  --yry-mono-text3:   #475569;
+  --yry-mono-text4:   #53576c;
+
 }

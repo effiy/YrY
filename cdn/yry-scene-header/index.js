@@ -39,14 +39,6 @@
     return;
   }
 
-  var TEMPLATE_ID = 'yry-scene-header-tpl';
-
-  var READY_EVENT = 'yry-scene-header-ready';
-
-  var TAG_NAME = 'yry-scene-header';
-
-  var LOAD_TIMEOUT_MS = 5000;
-
   window.YrYVueCE.define({
     componentName: 'YrySceneHeader',
     templateId: 'yry-scene-header-tpl',

@@ -1,39 +1,185 @@
 <!DOCTYPE html>
 <!--
   ═══════════════════════════════════════════════════════════════════════════
-  YrY CDN — theme · 设计令牌 (Category B · 深色暖色)
+  YrY CDN — Theme 主题预览页
+  展示 cdn/theme/index.css 中定义的全部设计令牌
   ═══════════════════════════════════════════════════════════════════════════
-  适用: 审查 · 测试面板 · 演示 · 计划清单 · 源码 等 B 类页面
-  依赖: 无 (基础层)
-  加载: <link rel="stylesheet" href="../../../../cdn/theme/index.css">
 -->
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>YrY theme · B 类深色暖色</title>
+  <title>YrY Theme — 设计令牌预览</title>
   <link rel="stylesheet" href="index.css">
-<link rel="stylesheet" href="theme-index.css">
+  <link rel="stylesheet" href="theme-index.css">
 </head>
 <body>
-  <h1>🎨 theme · Category B (深色暖色)</h1>
-  <p>设计令牌层 · 提供 <code>--yry-bg / --yry-bg-card / --yry-bg-flat / --yry-bg-raised / --yry-accent / --yry-cyan / --yry-pass / --yry-fail / --yry-warn / --yry-info / --yry-text / --yry-text2 / --yry-text3 / --yry-shadow / --yry-shadow-lg / --yry-radius / --yry-border</code> 等核心变量。</p>
 
-  <h2>载入</h2>
-  <pre>&lt;link rel="stylesheet" href="../../../../cdn/theme/index.css"&gt;</pre>
+<h1>🎨 YrY Theme · 设计令牌</h1>
+<p>项目唯一主题色真相源 — <code>cdn/theme/index.css</code> · 深色 GitHub-dark 风格</p>
 
-  <h2>色板预览</h2>
-  <div class="swatch">
-    <div class="sw" yry-a1-29"><b>bg-card</b><br><code>--yry-bg-card</code></div>
-    <div class="sw" yry-a1-30"><b>bg-flat</b><br><code>--yry-bg-flat</code></div>
-    <div class="sw" yry-a1-28"><b>bg-raised</b><br><code>--yry-bg-raised</code></div>
-    <div class="sw" yry-a1-54"><b>accent #FFC107</b><br><code>--yry-accent</code></div>
-    <div class="sw" yry-a1-56"><b>cyan #22d3ee</b><br><code>--yry-cyan</code></div>
-    <div class="sw" yry-a1-57"><b>pass #22c55e</b><br><code>--yry-pass</code></div>
-    <div class="sw" yry-a1-58"><b>fail #ef4444</b><br><code>--yry-fail</code></div>
-    <div class="sw" yry-a1-59"><b>warn #f59e0b</b><br><code>--yry-warn</code></div>
-  </div>
+<h2>📦 加载方式</h2>
+<pre>&lt;link rel="stylesheet" href="../../../../cdn/theme/index.css"&gt;</pre>
 
-  <p class="yry-a1-27">YrY CDN · theme (Category B) · 2026</p>
+<!-- ═══════════════ Surfaces ═══════════════ -->
+<h2>🔲 Surfaces · 背景表面</h2>
+<div class="swatch">
+  <div class="sw" style="background:var(--bg1)"><b>bg1</b><code>#0d1117</code></div>
+  <div class="sw" style="background:var(--bg2)"><b>bg2</b><code>#161b22</code></div>
+  <div class="sw" style="background:var(--bg3)"><b>bg3</b><code>#1c2128</code></div>
+  <div class="sw" style="background:var(--bg-hover)"><b>bg-hover</b><code>#21262d</code></div>
+  <div class="sw" style="background:var(--bg2)"><b>bg-soft</b><code>rgba(255,255,255,.04)</code></div>
+  <div class="sw" style="background:var(--bg1)"><b>bg-overlay</b><code>rgba(0,0,0,.6)</code></div>
+</div>
+<p class="swatch-note">
+  <code>--yry-bg</code> → <code>var(--bg1)</code> &nbsp;|&nbsp;
+  <code>--yry-bg-card</code> / <code>--yry-bg-flat</code> → <code>var(--bg2)</code> &nbsp;|&nbsp;
+  <code>--yry-bg-raised</code> → <code>var(--bg3)</code>
+</p>
+
+<!-- ═══════════════ Text ═══════════════ -->
+<h2>🔤 Text · 文本层级</h2>
+<div class="swatch">
+  <div class="sw" style="color:var(--text1)"><b>text1</b><code>#e6edf3</code></div>
+  <div class="sw" style="color:var(--text2)"><b>text2</b><code>#9da7b3</code></div>
+  <div class="sw" style="color:var(--text3)"><b>text3</b><code>#6e7681</code></div>
+  <div class="sw" style="color:var(--text-muted)"><b>text-muted</b><code>#484f58</code></div>
+</div>
+<p class="swatch-note">
+  <code>--yry-text</code> / <code>--yry-text1</code> → <code>var(--text1)</code> &nbsp;|&nbsp;
+  <code>--yry-text2</code> → <code>var(--text2)</code> &nbsp;|&nbsp;
+  <code>--yry-text3</code> → <code>var(--text3)</code>
+</p>
+
+<!-- ═══════════════ Border ═══════════════ -->
+<h2>🔲 Border · 边框</h2>
+<div class="swatch">
+  <div class="sw" style="border:1px solid var(--border1)"><b>border1</b><code>#30363d</code></div>
+  <div class="sw" style="border:1px solid var(--border2)"><b>border2</b><code>rgba(255,255,255,.08)</code></div>
+  <div class="sw" style="border:1px solid var(--border-soft)"><b>border-soft</b><code>rgba(255,255,255,.05)</code></div>
+  <div class="sw" style="border:1px solid var(--border-strong)"><b>border-strong</b><code>rgba(255,255,255,.16)</code></div>
+</div>
+
+<!-- ═══════════════ Brand ═══════════════ -->
+<h2>🎯 Brand · 品牌色</h2>
+<div class="swatch">
+  <div class="sw sw-light" style="background:var(--yry-accent)"><b>accent</b><code>#8b5cf6</code></div>
+  <div class="sw" style="background:var(--yry-accent-bg)"><b>accent-bg</b><code>rgba(139,92,246,.1)</code></div>
+  <div class="sw" style="background:var(--yry-accent-soft)"><b>accent-soft</b><code>rgba(139,92,246,.15)</code></div>
+  <div class="sw" style="border:1px solid var(--yry-accent-border)"><b>accent-border</b><code>rgba(139,92,246,.3)</code></div>
+  <div class="sw sw-dark" style="background:var(--yry-cyan)"><b>cyan</b><code>#06b6d4</code></div>
+  <div class="sw" style="background:var(--yry-cyan-bg)"><b>cyan-bg</b><code>rgba(6,182,212,.1)</code></div>
+</div>
+
+<!-- ═══════════════ Semantic ═══════════════ -->
+<h2>✅ Semantic · 语义色</h2>
+<div class="swatch">
+  <div class="sw sw-light" style="background:var(--yry-pass)"><b>pass</b><code>#22c55e</code></div>
+  <div class="sw" style="background:var(--yry-pass-bg)"><b>pass-bg</b><code>rgba(34,197,94,.1)</code></div>
+  <div class="sw sw-light" style="background:var(--yry-fail)"><b>fail</b><code>#ef4444</code></div>
+  <div class="sw" style="background:var(--yry-fail-bg)"><b>fail-bg</b><code>rgba(239,68,68,.1)</code></div>
+  <div class="sw sw-dark" style="background:var(--yry-warn)"><b>warn</b><code>#f59e0b</code></div>
+  <div class="sw" style="background:var(--yry-warn-bg)"><b>warn-bg</b><code>rgba(245,158,11,.1)</code></div>
+  <div class="sw sw-light" style="background:var(--yry-info)"><b>info</b><code>#3b82f6</code></div>
+  <div class="sw" style="background:var(--yry-info-bg)"><b>info-bg</b><code>rgba(59,130,246,.1)</code></div>
+</div>
+
+<!-- ═══════════════ Links ═══════════════ -->
+<h2>🔗 Links · 链接色</h2>
+<div class="swatch">
+  <div class="sw sw-light" style="background:var(--link)"><b>link</b><code>#58a6ff</code></div>
+  <div class="sw sw-dark" style="background:var(--link-hover)"><b>link-hover</b><code>#79b8ff</code></div>
+  <div class="sw sw-light" style="background:var(--yry-link-blue)"><b>link-blue</b><code>#7aa2f7</code></div>
+</div>
+
+<!-- ═══════════════ Shadows ═══════════════ -->
+<h2>🌑 Shadows · 阴影</h2>
+<div class="swatch">
+  <div class="sw" style="box-shadow:var(--shadow-sm)"><b>shadow-sm</b></div>
+  <div class="sw" style="box-shadow:var(--shadow)"><b>shadow</b></div>
+  <div class="sw" style="box-shadow:var(--shadow-lg)"><b>shadow-lg</b></div>
+</div>
+
+<!-- ═══════════════ Radius ═══════════════ -->
+<h2>⭕ Radius · 圆角</h2>
+<div class="swatch">
+  <div class="sw sw-light" style="background:var(--yry-accent);border-radius:var(--radius-sm)"><b>radius-sm</b><code>4px</code></div>
+  <div class="sw sw-light" style="background:var(--yry-accent);border-radius:var(--radius)"><b>radius</b><code>8px</code></div>
+  <div class="sw sw-light" style="background:var(--yry-accent);border-radius:var(--radius-lg)"><b>radius-lg</b><code>12px</code></div>
+  <div class="sw sw-light" style="background:var(--yry-accent);border-radius:var(--radius-xl)"><b>radius-xl</b><code>16px</code></div>
+</div>
+
+<!-- ═══════════════ Misc ═══════════════ -->
+<h2>✨ Misc · 辅助色</h2>
+<div class="swatch">
+  <div class="sw sw-light" style="background:var(--yry-emerald)"><b>emerald</b><code>#10b981</code></div>
+  <div class="sw sw-light" style="background:var(--yry-violet)"><b>violet</b><code>#a78bfa</code></div>
+  <div class="sw sw-dark" style="background:var(--yry-amber-bright)"><b>amber-bright</b><code>#fbbf24</code></div>
+  <div class="sw sw-light" style="background:var(--yry-blue-mermaid)"><b>blue-mermaid</b><code>#3d59a1</code></div>
+  <div class="sw sw-light" style="background:var(--yry-purple)"><b>purple</b><code>#a78bfa</code></div>
+  <div class="sw sw-light" style="background:var(--yry-pink)"><b>pink</b><code>#f472b6</code></div>
+</div>
+
+<!-- ═══════════════ Token Reference Tables ═══════════════ -->
+<h2>📋 完整令牌速查</h2>
+
+<h3>Surfaces (6)</h3>
+<table class="token-table">
+  <tr><th>变量</th><th>值</th><th>说明</th></tr>
+  <tr><td>--bg1</td><td>#0d1117</td><td>页面底色</td></tr>
+  <tr><td>--bg2</td><td>#161b22</td><td>卡片/区块底色</td></tr>
+  <tr><td>--bg3</td><td>#1c2128</td><td>浮层/激活底色</td></tr>
+  <tr><td>--bg-hover</td><td>#21262d</td><td>hover 态</td></tr>
+  <tr><td>--bg-soft</td><td>rgba(255,255,255,.04)</td><td>微淡底色叠加</td></tr>
+  <tr><td>--bg-overlay</td><td>rgba(0,0,0,.6)</td><td>模态遮罩</td></tr>
+</table>
+
+<h3>Text (4)</h3>
+<table class="token-table">
+  <tr><th>变量</th><th>值</th><th>说明</th></tr>
+  <tr><td>--text1</td><td>#e6edf3</td><td>主文字</td></tr>
+  <tr><td>--text2</td><td>#9da7b3</td><td>次级文字</td></tr>
+  <tr><td>--text3</td><td>#6e7681</td><td>辅助文字</td></tr>
+  <tr><td>--text-muted</td><td>#484f58</td><td>禁用/占位</td></tr>
+</table>
+
+<h3>Semantic (5 状态)</h3>
+<table class="token-table">
+  <tr><th>变量</th><th>值</th><th>说明</th></tr>
+  <tr><td>--yry-pass</td><td>#22c55e</td><td>通过/健康</td></tr>
+  <tr><td>--yry-fail</td><td>#ef4444</td><td>失败/错误</td></tr>
+  <tr><td>--yry-warn</td><td>#f59e0b</td><td>警告</td></tr>
+  <tr><td>--yry-info</td><td>#3b82f6</td><td>信息</td></tr>
+  <tr><td>--yry-skip</td><td>#6b7280</td><td>跳过/未评估</td></tr>
+</table>
+
+<h3>Font Sizes (9)</h3>
+<table class="token-table">
+  <tr><th>变量</th><th>值</th><th>说明</th></tr>
+  <tr><td>--fs-xs</td><td>10px</td><td>极小 (badge/meta)</td></tr>
+  <tr><td>--fs-sm</td><td>11px</td><td>小 (辅助信息)</td></tr>
+  <tr><td>--fs-base</td><td>12px</td><td>基准正文</td></tr>
+  <tr><td>--fs-md</td><td>13px</td><td>中等</td></tr>
+  <tr><td>--fs-lg</td><td>14px</td><td>较大</td></tr>
+  <tr><td>--fs-xl</td><td>16px</td><td>章节标题</td></tr>
+  <tr><td>--fs-2xl</td><td>20px</td><td>二级标题</td></tr>
+  <tr><td>--fs-3xl</td><td>24px</td><td>一级标题</td></tr>
+  <tr><td>--fs-4xl</td><td>32px</td><td>Hero 标题</td></tr>
+</table>
+
+<h3>Spacing (7)</h3>
+<table class="token-table">
+  <tr><th>变量</th><th>值</th></tr>
+  <tr><td>--gap-2</td><td>2px</td></tr>
+  <tr><td>--gap-4</td><td>4px</td></tr>
+  <tr><td>--gap-6</td><td>6px</td></tr>
+  <tr><td>--gap-8</td><td>8px</td></tr>
+  <tr><td>--gap-10</td><td>10px</td></tr>
+  <tr><td>--gap-12</td><td>12px</td></tr>
+  <tr><td>--gap-16</td><td>16px</td></tr>
+</table>
+
+<p class="footer">YrY CDN · Theme · 2026 — 项目唯一主题色真相源</p>
+
 </body>
 </html>

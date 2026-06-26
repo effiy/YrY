@@ -106,15 +106,6 @@ yry-stats-grid/
 | Tablet | 720-1023px | 2 |
 | Mobile | < 720px | 1 |
 
-## a11y 语义
-
-| 元素 | ARIA | WCAG |
-|------|------|:---:|
-| 网格 | `role="grid"` | 1.3.1 |
-| 统计项 | `role="gridcell"` | 1.3.1 |
-| 值 | `aria-live="polite"` | 4.1.3 |
-| 标签 | `aria-label` | 1.3.1 |
-
 ## 兼容性
 
 | 浏览器 | 最低版本 | 测试 |
