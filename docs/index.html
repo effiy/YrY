@@ -46,7 +46,7 @@
   <link rel="stylesheet" href="../cdn/yry-dashboard-report/index.css">
   <!-- ═══ Toast 通知组件 (Vue 3 懒加载挂载,自动创建 #yry-toast-host) ═══ -->
   <link rel="stylesheet" href="../cdn/yry-toast/index.css">
-  <!-- ═══ 滚动进度条组件 (Vue 3 自定义元素,从内联 .yry-progress-bar 迁出) ═══ -->
+  <!-- ═══ 滚动进度条组件 ═══ -->
   <link rel="stylesheet" href="../cdn/yry-progress-bar/index.css">
   <!-- ═══ 仪表板快速锚点组件 (Vue 3 自定义元素,从内联 <nav class="sr-quicknav"> 迁出) ═══ -->
   <link rel="stylesheet" href="../cdn/yry-dashboard-quicknav/index.css">
@@ -83,7 +83,624 @@
     <!-- ═══ 仪表板快速锚点 (Vue 3 自定义元素 <yry-dashboard-quicknav>) ═══ -->
     <yry-dashboard-quicknav id="sr-quicknav" aria-label="评分仪表板快速导航"></yry-dashboard-quicknav>
 
+    <!-- ══════════════════════════════════════════════════════════════════════
+       一、评分机制 — 八维加权健康评估模型
+       ══════════════════════════════════════════════════════════════════════ -->
+    <section class="score-methodology" id="score-methodology">
+      <div class="sm-title">📊 评分机制 — 八维加权健康评估模型</div>
+      <div class="sm-intro">
+        YrY 采用<strong>八维加权评分体系</strong>，覆盖健康、技能、测试、自改进、架构、诊断、文档与统一指数。
+        评级标准：A ≥ 90 · B ≥ 75 · C ≥ 60 · D ＜ 60 · 每 5 分钟自动刷新。
+      </div>
+
+      <!-- 图例条 -->
+      <div class="sm-legend">
+        <span class="sm-legend-title">评级色标</span>
+        <span class="sm-legend-key is-a"><strong>A</strong> ≥90 优秀</span>
+        <span class="sm-legend-key is-b"><strong>B</strong> ≥75 良好</span>
+        <span class="sm-legend-key is-c"><strong>C</strong> ≥60 一般</span>
+        <span class="sm-legend-key is-d"><strong>D</strong> ＜60 需关注</span>
+        <span class="sm-legend-sep">|</span>
+        <span style="font-size:0.68rem;color:var(--yry-text-muted,#6b708a)">加权公式：UPHI = PHI×0.4 + SHI×0.25 + DHI×0.2 + AQI×0.15</span>
+      </div>
+
+      <!-- 八维评分速览条 -->
+      <div class="sm-scorestrip" id="sm-scorestrip">
+        <a class="sm-strip-chip grade-A" href="#card-phi"><span class="sm-strip-name">PHI</span><span class="sm-strip-score" id="sm-strip-phi">94</span></a>
+        <a class="sm-strip-chip grade-A" href="#card-shi"><span class="sm-strip-name">SHI</span><span class="sm-strip-score" id="sm-strip-shi">86</span></a>
+        <a class="sm-strip-chip grade-A" href="#card-tqi"><span class="sm-strip-name">TQI</span><span class="sm-strip-score" id="sm-strip-tqi">100</span></a>
+        <a class="sm-strip-chip grade-B" href="#card-sii"><span class="sm-strip-name">SII</span><span class="sm-strip-score" id="sm-strip-sii">89</span></a>
+        <a class="sm-strip-chip grade-A" href="#card-aqi"><span class="sm-strip-name">AQI</span><span class="sm-strip-score" id="sm-strip-aqi">95</span></a>
+        <a class="sm-strip-chip grade-A" href="#card-dhi"><span class="sm-strip-name">DHI</span><span class="sm-strip-score" id="sm-strip-dhi">85</span></a>
+        <a class="sm-strip-chip grade-A is-featured-chip" href="#card-uphi"><span class="sm-strip-name">UPHI</span><span class="sm-strip-score" id="sm-strip-uphi">91</span></a>
+        <a class="sm-strip-chip grade-B" href="#card-dqi"><span class="sm-strip-name">DQI</span><span class="sm-strip-score" id="sm-strip-dqi">82</span></a>
+      </div>
+
+      <!-- 八维卡片网格 -->
+      <div class="sm-cards" id="sm-cards">
+
+        <!-- ① PHI · 项目综合健康指数 -->
+        <div class="sm-card" id="card-phi">
+          <div class="sm-card-header">
+            <span class="sm-card-title">🩺 PHI · 项目综合健康指数</span>
+            <span class="sm-card-grade is-loading" id="sm-grade-phi">—</span>
+          </div>
+          <div class="sm-card-desc">核心 9 维 + 工程成熟度 7 维 + 扩展 3 维加权聚合。涵盖 Token、配置、API、报告、格式、诊断、Git、安全、通知等 19+ 维度。</div>
+          <div class="sm-card-scorebar"><div class="sm-card-scorebar-fill grade-A" style="--score:94"></div></div>
+          <div class="sm-meta-grid">
+            <div class="sm-meta-cell"><span class="sm-meta-cell-icon">⚖</span><span class="sm-meta-cell-label">权重</span><span class="sm-meta-cell-value"><code>40%</code> UPHI</span></div>
+            <div class="sm-meta-cell"><span class="sm-meta-cell-icon">📐</span><span class="sm-meta-cell-label">维度</span><span class="sm-meta-cell-value">19+ 子维度</span></div>
+            <div class="sm-meta-cell"><span class="sm-meta-cell-icon">🔄</span><span class="sm-meta-cell-label">刷新</span><span class="sm-meta-cell-value">每 5 分钟</span></div>
+          </div>
+          <a class="sm-card-link" href="../docs/健康报告/health-cdn-index.html">健康报告详情 →</a>
+        </div>
+
+        <!-- ② SHI · 技能/组件健康指数 -->
+        <div class="sm-card" id="card-shi">
+          <div class="sm-card-header">
+            <span class="sm-card-title">🛠 SHI · 组件/模块健康指数</span>
+            <span class="sm-card-grade is-loading" id="sm-grade-shi">—</span>
+          </div>
+          <div class="sm-card-desc">Skills · Agents · Rules · Scripts 四象限质量扫描。评分依据：SKILL.md 完整性、YAML frontmatter、文档行数、Mermaid 图、lib/ 目录、help.mjs 入口。</div>
+          <div class="sm-card-scorebar"><div class="sm-card-scorebar-fill grade-A" style="--score:86"></div></div>
+          <div class="sm-meta-grid">
+            <div class="sm-meta-cell"><span class="sm-meta-cell-icon">⚖</span><span class="sm-meta-cell-label">权重</span><span class="sm-meta-cell-value"><code>25%</code> UPHI</span></div>
+            <div class="sm-meta-cell"><span class="sm-meta-cell-icon">📦</span><span class="sm-meta-cell-label">象限</span><span class="sm-meta-cell-value">Skills · Agents · Rules · Scripts</span></div>
+            <div class="sm-meta-cell"><span class="sm-meta-cell-icon">🎯</span><span class="sm-meta-cell-label">满分</span><span class="sm-meta-cell-value">SKILL.md(40) + frontmatter(10) + 行数(20) + 图(5) + lib/(15) + help(5) + .mjs(5)</span></div>
+          </div>
+          <a class="sm-card-link" href="#component-detail">组件评分明细 ↓</a>
+        </div>
+
+        <!-- ③ TQI · 测试质量指数 -->
+        <div class="sm-card" id="card-tqi">
+          <div class="sm-card-header">
+            <span class="sm-card-title">🧪 TQI · 测试质量指数</span>
+            <span class="sm-card-grade is-loading" id="sm-grade-tqi">—</span>
+          </div>
+          <div class="sm-card-desc">工程成熟度 7 维评估：测试体系、类型安全、代码规范、CI/CD、文档完整度、依赖管理、Git 纪律。含 vitest 框架、ESLint、GitHub Actions 等工具链覆盖。</div>
+          <div class="sm-card-scorebar"><div class="sm-card-scorebar-fill grade-A" style="--score:100"></div></div>
+          <div class="sm-meta-grid">
+            <div class="sm-meta-cell"><span class="sm-meta-cell-icon">🧪</span><span class="sm-meta-cell-label">测试框架</span><span class="sm-meta-cell-value">vitest + @vitest/ui</span></div>
+            <div class="sm-meta-cell"><span class="sm-meta-cell-icon">🛡</span><span class="sm-meta-cell-label">类型安全</span><span class="sm-meta-cell-value">JSDoc 类型注解</span></div>
+            <div class="sm-meta-cell"><span class="sm-meta-cell-icon">📋</span><span class="sm-meta-cell-label">代码规范</span><span class="sm-meta-cell-value">ESLint + 项目规则</span></div>
+          </div>
+          <a class="sm-card-link" href="../tests/index.html">测试中心 →</a>
+        </div>
+
+        <!-- ④ SII · 自改进闭环指数 -->
+        <div class="sm-card" id="card-sii">
+          <div class="sm-card-header">
+            <span class="sm-card-title">🧬 SII · 自改进闭环指数</span>
+            <span class="sm-card-grade is-loading" id="sm-grade-sii">—</span>
+          </div>
+          <div class="sm-card-desc">D0-D8 诊断持续监控 + 趋势持久化 + 经验技能化 + 记忆压缩注入。评估项目自我感知、自我诊断、自我修复能力。评分来自历史趋势、诊断触发率与改进速度。</div>
+          <div class="sm-card-scorebar"><div class="sm-card-scorebar-fill grade-B" style="--score:89"></div></div>
+          <div class="sm-meta-grid">
+            <div class="sm-meta-cell"><span class="sm-meta-cell-icon">🩻</span><span class="sm-meta-cell-label">诊断引擎</span><span class="sm-meta-cell-value">D0-D8 九维诊断</span></div>
+            <div class="sm-meta-cell"><span class="sm-meta-cell-icon">📈</span><span class="sm-meta-cell-label">趋势数据</span><span class="sm-meta-cell-value">.memory/health-trend.jsonl</span></div>
+            <div class="sm-meta-cell"><span class="sm-meta-cell-icon">🔄</span><span class="sm-meta-cell-label">闭环周期</span><span class="sm-meta-cell-value">检测→诊断→改进→验证</span></div>
+          </div>
+          <a class="sm-card-link" href="./自我改进/index.html">自改进报告 →</a>
+        </div>
+
+        <!-- ⑤ AQI · 架构质量指数 -->
+        <div class="sm-card" id="card-aqi">
+          <div class="sm-card-header">
+            <span class="sm-card-title">📐 AQI · 架构质量指数</span>
+            <span class="sm-card-grade is-loading" id="sm-grade-aqi">—</span>
+          </div>
+          <div class="sm-card-desc">10 维度架构合规自动验证：内核体积、范式合规、扩展隔离、文档新鲜度、SRP、DRY、OCP、ISP、DIP、组合优于继承。由 <code>node lib/arch-check.mjs</code> 生成。</div>
+          <div class="sm-card-scorebar"><div class="sm-card-scorebar-fill grade-A" style="--score:95"></div></div>
+          <div class="sm-meta-grid">
+            <div class="sm-meta-cell"><span class="sm-meta-cell-icon">📏</span><span class="sm-meta-cell-label">内核体积</span><span class="sm-meta-cell-value">lib ≤ 20 · 编排器 ≤ 500行</span></div>
+            <div class="sm-meta-cell"><span class="sm-meta-cell-icon">🚫</span><span class="sm-meta-cell-label">范式合规</span><span class="sm-meta-cell-value">无 class/extends · 无 export default · 无空 catch</span></div>
+            <div class="sm-meta-cell"><span class="sm-meta-cell-icon">🔌</span><span class="sm-meta-cell-label">扩展隔离</span><span class="sm-meta-cell-value">新增 Skill 不修改编排器</span></div>
+          </div>
+          <a class="sm-card-link" href="#" onclick="return false" title="运行 node lib/arch-check.mjs 查看完整报告">架构合规报告 (CLI) →</a>
+        </div>
+
+        <!-- ⑥ DHI · 诊断健康指数 -->
+        <div class="sm-card" id="card-dhi">
+          <div class="sm-card-header">
+            <span class="sm-card-title">🩻 DHI · 诊断健康指数</span>
+            <span class="sm-card-grade" id="sm-grade-dhi">85/B</span>
+          </div>
+          <div class="sm-card-desc">D0-D8 诊断引擎触发率反向计分。公式：<code>DHI = max(0, 100 − 触发数 × 15)</code>。当前触发 <strong id="sm-dhi-triggered">1</strong>/8 项，诊断系统整体健康。</div>
+          <div class="sm-card-scorebar"><div class="sm-card-scorebar-fill grade-B" style="--score:85"></div></div>
+          <div class="sm-meta-grid">
+            <div class="sm-meta-cell"><span class="sm-meta-cell-icon">🔍</span><span class="sm-meta-cell-label">诊断维度</span><span class="sm-meta-cell-value">D0 基线 · D1 效率 · D2 质量 · D3 复杂度 · D4 过程 · D5 依赖 · D6 文档 · D7 配置</span></div>
+            <div class="sm-meta-cell"><span class="sm-meta-cell-icon">⚖</span><span class="sm-meta-cell-label">权重</span><span class="sm-meta-cell-value"><code>20%</code> UPHI</span></div>
+            <div class="sm-meta-cell"><span class="sm-meta-cell-icon">📉</span><span class="sm-meta-cell-label">扣分</span><span class="sm-meta-cell-value">每触发 −15 分</span></div>
+          </div>
+          <a class="sm-card-link" href="./自循环报告/index.html">诊断详情 →</a>
+        </div>
+
+        <!-- ⑦ UPHI · 统一项目健康指数 (特色卡,跨列) -->
+        <div class="sm-card is-featured" id="card-uphi">
+          <div class="sm-card-header">
+            <span class="sm-card-title">⭐ UPHI · 统一项目健康指数</span>
+            <span class="sm-card-grade is-loading" id="sm-grade-uphi">—</span>
+          </div>
+          <div class="sm-card-desc">
+            四源加权聚合：<strong>PHI(40%)</strong> + <strong>SHI(25%)</strong> + <strong>DHI(20%)</strong> + <strong>AQI(15%)</strong>。
+            综合反映项目整体健康度，是仪表板的核心元指标。各子指数独立计算、独立趋势追踪，最终汇聚为单一可信分数。
+          </div>
+          <div class="sm-card-scorebar"><div class="sm-card-scorebar-fill grade-A" style="--score:91"></div></div>
+          <div class="sm-aggregates">
+            <span class="sm-aggregates-label">聚合来源</span>
+            <a class="sm-aggregates-chip" href="#card-phi">PHI 40%</a>
+            <span style="color:var(--yry-text-muted,#6b708a)">+</span>
+            <a class="sm-aggregates-chip" href="#card-shi">SHI 25%</a>
+            <span style="color:var(--yry-text-muted,#6b708a)">+</span>
+            <a class="sm-aggregates-chip" href="#card-dhi">DHI 20%</a>
+            <span style="color:var(--yry-text-muted,#6b708a)">+</span>
+            <a class="sm-aggregates-chip" href="#card-aqi">AQI 15%</a>
+          </div>
+        </div>
+
+        <!-- ⑧ DQI · 文档质量指数 -->
+        <div class="sm-card" id="card-dqi">
+          <div class="sm-card-header">
+            <span class="sm-card-title">📝 DQI · 文档质量指数</span>
+            <span class="sm-card-grade is-loading" id="sm-grade-dqi">—</span>
+          </div>
+          <div class="sm-card-desc">文档新鲜度 + 覆盖完整度 + 格式规范度。涵盖 SKILL.md、CLAUDE.md、README、场景文档、架构图等。评分基于 A/B/C/D 证据等级与退化检测。</div>
+          <div class="sm-card-scorebar"><div class="sm-card-scorebar-fill grade-B" style="--score:82"></div></div>
+          <div class="sm-meta-grid">
+            <div class="sm-meta-cell"><span class="sm-meta-cell-icon">📄</span><span class="sm-meta-cell-label">文档覆盖</span><span class="sm-meta-cell-value">README + CLAUDE.md + docs/</span></div>
+            <div class="sm-meta-cell"><span class="sm-meta-cell-icon">🕐</span><span class="sm-meta-cell-label">新鲜度</span><span class="sm-meta-cell-value">场景 HTML 7 日内更新率</span></div>
+            <div class="sm-meta-cell"><span class="sm-meta-cell-icon">📊</span><span class="sm-meta-cell-label">证据等级</span><span class="sm-meta-cell-value">A(可验) · B(可查) · C(可读) · D(退化)</span></div>
+          </div>
+          <a class="sm-card-link" href="#panelArchitecture" onclick="document.querySelector('.yry-tab[data-panel=architecture]').click()">技能架构 →</a>
+        </div>
+
+      </div><!-- /.sm-cards -->
+
+      <!-- 评分机制收口链接 -->
+      <div class="sm-section-footer">
+        <a class="sm-footer-link" href="./健康报告/health-cdn-index.html">
+          完整健康报告
+          <span class="sm-footer-link-arrow">→</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+       二、实时评分报告 — 综合仪表板
+       ══════════════════════════════════════════════════════════════════════ -->
+    <section class="score-report sr-collapsible" id="score-report">
+      <div class="sr-header">
+        <span class="sr-title" id="sr-detail-nav">📋 实时评分报告</span>
+        <span class="sr-badge p0 is-hidden" id="sr-p0-badge">P0 待处理</span>
+        <!-- 数据源状态 -->
+        <span class="sr-source-status is-stale" id="sr-source-status">
+          <span class="sr-source-dot"></span>
+          <span id="sr-source-label">连接中…</span>
+        </span>
+        <span class="sr-updated" id="sr-updated">更新于 —</span>
+        <div class="sr-header-actions">
+          <span class="sr-countdown" id="sr-countdown">5:00</span>
+          <button class="sr-contrast-btn" id="sr-contrast-btn" aria-pressed="false" title="高对比度模式">◐ 对比度</button>
+          <button class="sr-refresh-btn" id="sr-refresh-btn">↻ 刷新</button>
+          <button class="sr-copy-link-btn" id="sr-copy-link-btn" title="复制含筛选状态的分享链接">🔗 复制链接</button>
+          <button class="sr-collapse-btn" data-target="sr-collapse-target" aria-expanded="true">收起 −</button>
+        </div>
+      </div>
+
+      <div class="sr-collapse-target" id="sr-collapse-target">
+
+      <!-- ── 综合评分 Hero 网格 ── -->
+      <div class="sr-grid" id="sr-hero-grid">
+        <!-- 综合评分 + SVG 圆环仪表 -->
+        <div class="sr-cell sr-cell-hero" style="grid-column:span 2">
+          <div class="sr-cell-hero-row">
+            <div class="sr-cell-hero-text">
+              <div class="sr-cell-label">综合健康指数 · PHI</div>
+              <div class="sr-cell-value is-loading" id="sr-composite" style="color:var(--yry-text-primary,#a9b1d6)">—</div>
+              <div class="sr-cell-sub is-loading" id="sr-grade-label">—</div>
+              <div class="sr-cell-hint" id="sr-grade-hint"></div>
+            </div>
+            <svg class="sr-gauge" width="80" height="80" viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="34" fill="none" stroke="var(--yry-surface-alt,#1e2035)" stroke-width="6"/>
+              <circle cx="40" cy="40" r="34" fill="none" stroke-width="6" stroke-linecap="round"
+                      transform="rotate(-90 40 40)"
+                      stroke-dasharray="213.63" stroke-dashoffset="213.63"
+                      class="sr-gauge-fill" id="sr-gauge-fill"/>
+              <text x="40" y="36" text-anchor="middle" dominant-baseline="middle"
+                    font-size="16" font-weight="800" font-family="SF Mono, Cascadia Code, monospace"
+                    class="sr-gauge-text" id="sr-gauge-text" fill="var(--yry-text-primary,#a9b1d6)">—</text>
+              <text x="40" y="52" text-anchor="middle" font-size="7" fill="var(--yry-text-muted,#4a4f6a)">GRADE</text>
+            </svg>
+          </div>
+        </div>
+
+        <!-- 趋势 -->
+        <div class="sr-cell">
+          <div class="sr-cell-label">趋势方向</div>
+          <div class="sr-cell-value is-sm is-loading" id="sr-trend-dir">—</div>
+          <div class="sr-cell-sub is-loading" id="sr-trend-detail">—</div>
+        </div>
+
+        <!-- 预测 -->
+        <div class="sr-cell">
+          <div class="sr-cell-label">7天预测</div>
+          <div class="sr-cell-value is-sm is-loading" id="sr-forecast">—</div>
+          <div class="sr-cell-sub is-loading" id="sr-forecast-range">—</div>
+        </div>
+
+        <!-- 可靠性 -->
+        <div class="sr-cell">
+          <div class="sr-cell-label">评分可靠性</div>
+          <div class="sr-cell-value is-sm is-loading" id="sr-reliability">—</div>
+          <div class="sr-cell-sub is-loading" id="sr-volatility">—</div>
+        </div>
+
+        <!-- 架构 -->
+        <div class="sr-cell" data-href="#" onclick="document.querySelector('.yry-tab[data-panel=architecture]').click()">
+          <div class="sr-cell-label">架构合规</div>
+          <div class="sr-cell-value is-sm" id="sr-arch" style="color:var(--yry-text-primary,#a9b1d6)">—</div>
+          <div class="sr-cell-sub" id="sr-arch-detail">10维合规检查</div>
+        </div>
+
+        <!-- 诊断 -->
+        <div class="sr-cell">
+          <div class="sr-cell-label">诊断触发</div>
+          <div class="sr-cell-value is-sm" id="sr-diag" style="color:var(--yry-text-primary,#a9b1d6)">—</div>
+          <div class="sr-cell-sub">D0-D8 告警状态</div>
+        </div>
+      </div>
+
+      <!-- ── Sparkline 趋势小图 ── -->
+      <div class="sr-spark-wrap">
+        <canvas class="sr-spark" id="sr-spark" width="600" height="48"></canvas>
+        <div class="sr-spark-tooltip" id="sr-spark-tooltip"></div>
+        <div class="sr-spark-cursor" id="sr-spark-cursor"></div>
+      </div>
+
+      <!-- ── 维度分解 ── -->
+      <div class="sr-breakdown">
+        <div class="sr-breakdown-title">
+          维度分解
+          <span class="sr-legend">
+            <span class="sr-legend-item is-excellent">A ≥90</span>
+            <span class="sr-legend-item is-good">B ≥75</span>
+            <span class="sr-legend-item is-fair">C ≥60</span>
+            <span class="sr-legend-item is-poor">D ＜60</span>
+          </span>
+          <span class="sr-sort-group">
+            <button class="sr-sort-btn is-active" data-sort="score-asc">最低分</button>
+            <button class="sr-sort-btn" data-sort="score-desc">最高分</button>
+            <button class="sr-sort-btn" data-sort="name">名称</button>
+          </span>
+        </div>
+
+        <!-- 筛选条 -->
+        <div class="sr-filters">
+          <button class="sr-filter-btn is-active" data-filter="all">全部</button>
+          <button class="sr-filter-btn" data-filter="poor">⚠ 需关注</button>
+          <button class="sr-filter-btn" data-filter="fair">中等</button>
+          <button class="sr-filter-btn" data-filter="excellent">优秀</button>
+          <button class="sr-filter-btn" data-filter="rising">↑ 上升</button>
+          <button class="sr-filter-btn" data-filter="falling">↓ 下降</button>
+          <span class="sr-search-box">
+            <span class="sr-search-icon">🔍</span>
+            <input type="text" id="sr-dim-search" placeholder="搜索维度…" aria-label="搜索维度">
+          </span>
+          <button class="sr-reset-btn" id="sr-reset-btn">重置</button>
+          <span class="sr-filter-count" id="sr-filter-count"></span>
+        </div>
+
+        <!-- 维度列表 -->
+        <div id="sr-dim-list"></div>
+
+        <!-- 维度分布直方图 -->
+        <div class="sr-distribution">
+          <div class="sr-dist-title">
+            维度评分分布
+            <span class="sr-dist-hint">点击柱状条切换筛选</span>
+          </div>
+          <div class="sr-dist-bars">
+            <div class="sr-dist-bar is-excellent" data-filter="excellent" tabindex="0">
+              <span class="sr-dist-count" id="sr-dist-excellent">—</span>
+              <span class="sr-dist-label">优秀 (A ≥90)</span>
+              <div class="sr-dist-bar-fill is-excellent" id="sr-dist-fill-excellent" style="--h:0%"></div>
+            </div>
+            <div class="sr-dist-bar is-good" data-filter="fair" tabindex="0">
+              <span class="sr-dist-count" id="sr-dist-good">—</span>
+              <span class="sr-dist-label">良好 (B ≥75)</span>
+              <div class="sr-dist-bar-fill is-good" id="sr-dist-fill-good" style="--h:0%"></div>
+            </div>
+            <div class="sr-dist-bar is-fair" data-filter="poor" tabindex="0">
+              <span class="sr-dist-count" id="sr-dist-poor">—</span>
+              <span class="sr-dist-label">需关注 (C/D ＜75)</span>
+              <div class="sr-dist-bar-fill is-fair" id="sr-dist-fill-poor" style="--h:0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 期间对比 ── -->
+      <div class="sr-breakdown">
+        <div class="sr-breakdown-title">期间对比 (vs 上次)</div>
+        <div class="sr-grid is-4col">
+          <div class="sr-cell">
+            <div class="sr-cell-label">综合变化</div>
+            <div class="sr-cell-value is-sm" id="sr-comp-delta">—</div>
+          </div>
+          <div class="sr-cell">
+            <div class="sr-cell-label">改善项</div>
+            <div class="sr-cell-value is-sm" id="sr-comp-improved">—</div>
+          </div>
+          <div class="sr-cell">
+            <div class="sr-cell-label">退化项</div>
+            <div class="sr-cell-value is-sm" id="sr-comp-declined">—</div>
+          </div>
+          <div class="sr-cell">
+            <div class="sr-cell-label">净变化</div>
+            <div class="sr-cell-value is-sm" id="sr-comp-net">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── AI 摘要 ── -->
+      <div class="sr-summary-text" id="sr-summary">
+        数据加载中…
+      </div>
+
+      <!-- ── 改进建议面板 ── -->
+      <div class="sr-recommendations is-hidden" id="sr-recommendations">
+        <div class="sr-rec-header">
+          <span class="sr-rec-title">💡 改进建议</span>
+          <span class="sr-rec-meta" id="sr-rec-meta"></span>
+        </div>
+        <div class="sr-rec-list" id="sr-rec-list"></div>
+      </div>
+
+      </div><!-- /#sr-collapse-target -->
+
+      <!-- ── 相关链接 ── -->
+      <div class="sr-links is-tight-gap" style="margin-top:14px">
+        <a class="sr-link" href="./健康报告/health-cdn-index.html">🩺 健康报告</a>
+        <a class="sr-link" href="./自我改进/index.html">🧬 自改进报告</a>
+        <a class="sr-link" href="./自循环报告/index.html">🔄 自循环报告</a>
+        <a class="sr-link" href="./趋势报告/index.html">📡 趋势报告</a>
+        <a class="sr-link" href="../tests/index.html">🧪 测试中心</a>
+        <a class="sr-link" href="../cdn/index.html">🌐 CDN 共享库</a>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+       三、组件/模块评分明细
+       ══════════════════════════════════════════════════════════════════════ -->
+    <section class="score-report" id="component-detail">
+      <div class="sr-header">
+        <span class="sr-title">📦 组件/模块评分明细</span>
+        <span class="sr-meta-info">四象限质量扫描 · Skills · Agents · Rules · Scripts</span>
+      </div>
+
+      <div class="sr-intro-box">
+        SHI（技能健康指数）由四个象限的组件质量加权得出。每个组件按 <strong>SKILL.md 存在性 (40分)</strong>、
+        <strong>YAML frontmatter (10分)</strong>、<strong>文档行数 (20分)</strong>、
+        <strong>Mermaid 图 (5分)</strong>、<strong>lib/ 子目录 (15分)</strong>、
+        <strong>help.mjs 入口 (5分)</strong>、<strong>≥3 个 .mjs 脚本 (5分)</strong> 七项标准评分，满分 100。
+      </div>
+
+      <!-- 四象限概览表 -->
+      <table class="sr-table" style="margin-top:14px">
+        <thead>
+          <tr>
+            <th>象限</th>
+            <th class="is-num w-80">数量</th>
+            <th class="is-num w-80">均分</th>
+            <th class="is-num w-80">评级</th>
+            <th>评分要点</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="td-accent">🎯 Skills</td>
+            <td class="td-accent is-right">20</td>
+            <td class="td-accent is-right">86</td>
+            <td class="td-accent is-right">A</td>
+            <td class="td-muted">SKILL.md 完整性 · frontmatter 规范 · Mermaid 架构图 · lib/ 共享库 · help.mjs 入口</td>
+          </tr>
+          <tr>
+            <td class="td-text2">🤖 Agents</td>
+            <td class="td-text2 is-right" style="text-align:right">9</td>
+            <td class="td-text2 is-right" style="text-align:right">82</td>
+            <td class="td-text2 is-right" style="text-align:right">B</td>
+            <td class="td-muted">AGENT.md 存在性 · Red Flags 纪律 · 结构化章节 · Mermaid 角色拓扑</td>
+          </tr>
+          <tr>
+            <td class="td-text2">📋 Rules</td>
+            <td class="td-text2 is-right" style="text-align:right">18</td>
+            <td class="td-text2 is-right" style="text-align:right">84</td>
+            <td class="td-text2 is-right" style="text-align:right">B</td>
+            <td class="td-muted">规则文件完整性 · frontmatter · 路径/描述 · 正反例 · 结构化章节</td>
+          </tr>
+          <tr>
+            <td class="td-text2">📜 Scripts</td>
+            <td class="td-text2 is-right" style="text-align:right">30+</td>
+            <td class="td-text2 is-right" style="text-align:right">88</td>
+            <td class="td-text2 is-right" style="text-align:right">B</td>
+            <td class="td-muted">JSDoc 注释 · 导出完整性 · 行数适中 · 测试覆盖 · 从 lib/ 导入共享函数</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- 各象限评分标准对照 -->
+      <div class="sr-subsection">
+        <div class="sr-subsection-title">📐 评分标准对照</div>
+        <div class="sr-subsection-intro">
+          不同象限采用差异化评分策略，权重侧重各有不同。以下为各象限满分标准：
+        </div>
+        <table class="sr-table">
+          <thead>
+            <tr>
+              <th>评分项</th>
+              <th class="is-num w-80">Skills</th>
+              <th class="is-num w-80">Agents</th>
+              <th class="is-num w-80">Rules</th>
+              <th class="is-num w-80">Scripts</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="td-text2">文件存在性</td>
+              <td class="td-accent is-right">40</td>
+              <td class="td-accent is-right">40</td>
+              <td class="td-accent is-right">40</td>
+              <td class="td-accent is-right">40</td>
+            </tr>
+            <tr>
+              <td class="td-text2">YAML frontmatter</td>
+              <td class="td-accent is-right">10</td>
+              <td class="td-text2 is-right" style="text-align:right">20 <span style="font-size:0.6rem;color:var(--yry-text-muted,#6b708a)">(含描述)</span></td>
+              <td class="td-accent is-right">15</td>
+              <td class="td-text2 is-right" style="text-align:right">—</td>
+            </tr>
+            <tr>
+              <td class="td-text2">文档行数</td>
+              <td class="td-accent is-right">20</td>
+              <td class="td-accent is-right">20</td>
+              <td class="td-accent is-right">20</td>
+              <td class="td-text2 is-right" style="text-align:right">15 <span style="font-size:0.6rem;color:var(--yry-text-muted,#6b708a)">(代码行数)</span></td>
+            </tr>
+            <tr>
+              <td class="td-text2">Mermaid 图</td>
+              <td class="td-accent is-right">5</td>
+              <td class="td-accent is-right">5</td>
+              <td class="td-accent is-right">5</td>
+              <td class="td-text2 is-right" style="text-align:right">—</td>
+            </tr>
+            <tr>
+              <td class="td-text2">lib/ 子目录</td>
+              <td class="td-accent is-right">15</td>
+              <td class="td-text2 is-right" style="text-align:right">—</td>
+              <td class="td-text2 is-right" style="text-align:right">—</td>
+              <td class="td-text2 is-right" style="text-align:right">—</td>
+            </tr>
+            <tr>
+              <td class="td-text2">help.mjs 入口</td>
+              <td class="td-accent is-right">5</td>
+              <td class="td-text2 is-right" style="text-align:right">—</td>
+              <td class="td-text2 is-right" style="text-align:right">—</td>
+              <td class="td-text2 is-right" style="text-align:right">—</td>
+            </tr>
+            <tr>
+              <td class="td-text2">≥3 个 .mjs</td>
+              <td class="td-accent is-right">5</td>
+              <td class="td-text2 is-right" style="text-align:right">—</td>
+              <td class="td-text2 is-right" style="text-align:right">—</td>
+              <td class="td-text2 is-right" style="text-align:right">—</td>
+            </tr>
+            <tr>
+              <td class="td-text2">JSDoc / 导出 / 测试</td>
+              <td class="td-text2 is-right" style="text-align:right">—</td>
+              <td class="td-text2 is-right" style="text-align:right">—</td>
+              <td class="td-text2 is-right" style="text-align:right">—</td>
+              <td class="td-accent is-right">45 <span style="font-size:0.6rem;color:var(--yry-text-muted,#6b708a)">(JSDoc 20 + 导出 15 + 测试 10)</span></td>
+            </tr>
+            <tr style="background:rgba(34,211,238,.05)">
+              <td class="td-accent"><strong>满分</strong></td>
+              <td class="td-accent is-right"><strong>100</strong></td>
+              <td class="td-accent is-right"><strong>85</strong></td>
+              <td class="td-accent is-right"><strong>80</strong></td>
+              <td class="td-accent is-right"><strong>100</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="sr-footer-note">
+        💡 组件评分由 <code>skills/rui-bot/lib/bot-health-analysis.mjs</code> 的 <code>scanComponentScores()</code> 自动计算。
+        运行 <code>node skills/rui-bot/send.mjs health</code> 更新评分并持久化趋势。
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+       四、架构合规评分
+       ══════════════════════════════════════════════════════════════════════ -->
+    <section class="score-report" id="architecture-score">
+      <div class="sr-header">
+        <span class="sr-title">📐 架构合规评分 · 10 维度</span>
+        <span class="sr-meta-info">由 <code>node lib/arch-check.mjs</code> 自动验证</span>
+      </div>
+
+      <div class="sr-intro-box">
+        架构合规检查覆盖 <strong>10 个维度</strong>，是 AQI（架构质量指数）的数据源。
+        评级标准：A ≥ 90% 合规 · B ≥ 75% · C ≥ 60% · D ＜ 60%。
+        支持 <code>--fix</code> 自动修复与 <code>--append-trend</code> 趋势持久化。
+      </div>
+
+      <div class="sr-grid is-cols-4" style="margin-top:14px">
+        <div class="sr-cell is-left">
+          <div class="sr-card-title">📏 内核体积</div>
+          <div class="sr-card-body is-tight">lib/ 共享库 ≤ 20 文件 · 编排器 ≤ 500 行。保持内核轻量，扩展通过 Skill 注册实现。</div>
+        </div>
+        <div class="sr-cell is-left">
+          <div class="sr-card-title">🚫 范式合规</div>
+          <div class="sr-card-body is-tight">禁止 <code>class</code>/<code>extends</code> · 禁止 <code>export default</code> · 禁止空 <code>catch</code> 块 · 函数式编程范式。</div>
+        </div>
+        <div class="sr-cell is-left">
+          <div class="sr-card-title">🔌 扩展隔离</div>
+          <div class="sr-card-body is-tight">新增 Skill 不修改编排器代码。技能通过 <code>skills/</code> 目录注册，编排器自动发现。</div>
+        </div>
+        <div class="sr-cell is-left">
+          <div class="sr-card-title">📄 文档新鲜度</div>
+          <div class="sr-card-body is-tight">场景 HTML 7 日内更新率。规约文件与实现代码的一致性校验。退化检测自动告警。</div>
+        </div>
+        <div class="sr-cell is-left">
+          <div class="sr-card-title">🎯 SRP 单一职责</div>
+          <div class="sr-card-body is-tight">每个 Skill 单一目的 · 每个 lib/ 文件单一职责。函数不超过 50 行，模块不超过 500 行。</div>
+        </div>
+        <div class="sr-cell is-left">
+          <div class="sr-card-title">🔄 DRY 不重复</div>
+          <div class="sr-card-body is-tight">共享代码统一放 <code>lib/</code>，禁止 copy-paste 跨文件。各脚本从 <code>lib/</code> 导入通用函数/常量。</div>
+        </div>
+        <div class="sr-cell is-left">
+          <div class="sr-card-title">🔓 OCP 开闭原则</div>
+          <div class="sr-card-body is-tight">对扩展开放，对修改关闭。新功能通过新增 Skill 实现，不修改已有编排逻辑。</div>
+        </div>
+        <div class="sr-cell is-left">
+          <div class="sr-card-title">🧩 ISP 接口隔离</div>
+          <div class="sr-card-body is-tight">Skill 之间通过规约契约通信，不依赖对方的内部实现。Agent 交接信号可被下游验证。</div>
+        </div>
+      </div>
+
+      <div class="sr-footer-note">
+        💡 运行 <code>node lib/arch-check.mjs</code> 查看完整 10 维合规报告。
+        运行 <code>node lib/arch-check.mjs --fix</code> 自动修复可修复项。
+        运行 <code>node lib/arch-check.mjs --append-trend</code> 追加趋势记录。
+      </div>
+    </section>
+
+    <!-- ═══ Toast 通知容器 ═══ -->
+    <div class="sr-toast-container" id="sr-toast-container"></div>
+
+    <!-- ═══ 键盘快捷键帮助浮层 ═══ -->
+    <div class="sr-shortcuts-overlay is-hidden" id="sr-shortcuts-overlay">
+      <div class="sr-shortcuts-modal">
+        <div class="sr-shortcuts-header">
+          <span class="sr-shortcuts-title">⌨ 快捷键</span>
+          <button class="sr-shortcuts-close" id="sr-shortcuts-close" aria-label="关闭">✕</button>
+        </div>
+        <table class="sr-shortcuts-table">
+          <tr><td><kbd>R</kbd></td><td>手动刷新评分数据</td></tr>
+          <tr><td><kbd>1</kbd>–<kbd>6</kbd></td><td>切换维度筛选 (全部/需关注/中等/优秀/上升/下降)</td></tr>
+          <tr><td><kbd>/</kbd></td><td>聚焦维度搜索框</td></tr>
+          <tr><td><kbd>H</kbd></td><td>切换高对比度模式</td></tr>
+          <tr><td><kbd>?</kbd></td><td>显示/隐藏此帮助</td></tr>
+          <tr><td><kbd>Esc</kbd></td><td>关闭浮层</td></tr>
+        </table>
+        <div class="sr-shortcuts-footer">评分自动每 5 分钟刷新 · 标签页隐藏时暂停</div>
+      </div>
     </div>
+
+    <!-- ═══ 帮助浮层触发按钮 (右下角) ═══ -->
+    <button class="sr-help-fab" id="sr-help-fab" title="快捷键帮助 (?)" aria-label="快捷键帮助">?</button>
+
+    </div><!-- /#panelDashboard -->
 
     <!-- ═══ Tab 2: 技能架构 ═══ -->
     <div class="yry-panel" id="panelArchitecture">
@@ -198,7 +815,7 @@
   <script src="../cdn/yry-dashboard-report/index.js"></script>
   <!-- ═══ Toast 通知 (Vue 3 懒加载挂载,首次调用时自动创建 #yry-toast-host) ═══ -->
   <script src="../cdn/yry-toast/index.js"></script>
-  <!-- ═══ 滚动进度条 (Vue 3 自定义元素,替代内联 .yry-progress-bar) ═══ -->
+  <!-- ═══ 滚动进度条 (Vue 3 自定义元素,自动追踪页面滚动) ═══ -->
   <script src="../cdn/yry-progress-bar/index.js"></script>
   <!-- ═══ 仪表板快速锚点 (Vue 3 自定义元素,替代内联 <nav class="sr-quicknav">) ═══ -->
   <script src="../cdn/yry-dashboard-quicknav/index.js"></script>

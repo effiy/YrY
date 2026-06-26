@@ -198,9 +198,6 @@
 
         <!-- 报告快捷入口 -->
         <div class="sr-links" id="cdn-sr-links" class="sr-links-wrap">
-          <a class="sr-link" href="health-report/index.html" title="CDN 综合健康仪表板 — D0-D8 九级诊断维度 · 评级规则 · 健康趋势 · 原始数据">🩺 健康报告</a>
-          <a class="sr-link" href="../docs/健康报告/health-cdn-index.html" title="CDN 历史健康报告归档 — 最新 8 维度明细 · 报告历史列表 · 最新评分">🗓 健康归档</a>
-          <a class="sr-link" href="cdn-summary/index.html" title="125 组件四维质量评估 — CSS 规范性 · API 一致性 · 可访问性 · 响应式 · 10 功能类别 (布局·导航·卡片·场景·统计·清单·审查·面板·工具·其他)">🧩 组件评分</a>
           <a class="sr-link" href="components-manifest/index.html" title="组件清单数据 — 自动扫描 yry-* 目录生成 · 分类索引 · Vue/Vanilla 形态分布 · 消费方依赖映射">📦 组件清单</a>
           <a class="sr-link" href="changelog/index.html" title="版本变更日志 — MAJOR/MINOR/PATCH 三级分类 · 破坏性变更标注 · 迁移指南 · v1.0→v1.2 演进时间线">📝 版本日志</a>
           <a class="sr-link" href="shared-reports/index.html" title="报告公共资源 — 健康/趋势/自循环/自我改进/项目分析 共享 CSS+JS · 一致深色主题 · 复用样式入口">📚 公共资源</a>
@@ -208,10 +205,10 @@
           <a class="sr-link" href="../tests/index.html" title="CDN 测试自检中心 — 50 测试文件 · 20 lib + 27 skill + 2 infra + 1 unit · 6 测试场景 · vitest 覆盖率">🧪 测试报告</a>
           <a class="sr-link" href="../docs/自我改进/" title="CDN 持续自改进闭环 — 观察→诊断→改进→评估 四段闭环 · D0-D8 诊断详情 · 改进优先级矩阵">🧬 自改进报告</a>
           <a class="sr-link" href="../docs/加载链报告/" title="CDN 加载链稳定性分析 — 五步链路 · 三维评估 (可靠性·容错性·回退) · 性能埋点 · 总加载≤800ms · FCP≤500ms">⚡ 加载链报告</a>
-          <a class="sr-link" href="../docs/组件报告/" title="62 组件四维质量详评 — CSS 规范性 · API 一致性 · 可访问性 · 响应式 · 10 大类别 · 与 cdn-summary 同源数据">🧩 组件详评</a>
+          <a class="sr-link" href="../docs/组件报告/" title="62 组件四维质量详评 — CSS 规范性 · API 一致性 · 可访问性 · 响应式 · 10 大类别">🧩 组件详评</a>
           <a class="sr-link" href="../docs/index.html" title="YrY 文档中心 — 八维加权评分 · 20 技能 · 7 故事 · 37 场景 · Agent 与治理 · 故障排查">🏠 文档中心</a>
         </div>
-        <div class="yry-mute-68" class="u-9c6726">共 13 个快捷入口 · 6 项 CDN 数据/资源页 (health-report · cdn-summary · components-manifest · changelog · shared-reports · theme-mono) + 5 项 docs 报告 (健康归档 · 技能 · 自改进 · 加载链 · 组件) + 1 项 tests 自检中心 + 1 项文档中心回链</div>
+        <div class="yry-mute-68" class="u-9c6726">共 12 个快捷入口 · 5 项 CDN 数据/资源页 (components-manifest · changelog · shared-reports · theme-mono) + 5 项 docs 报告 (健康归档 · 技能 · 自改进 · 加载链 · 组件) + 1 项 tests 自检中心 + 1 项文档中心回链</div>
       </div>
     </div>
 
@@ -243,7 +240,7 @@
     <div class="score-methodology cdn-agg-hub m-16px" id="sec-cdn-agg">
       <div class="cdn-arch-title">🧭 CDN 聚合中心 — 七张聚合页 · 一站式洞察</div>
       <div class="info-box">
-        下列 <strong>七张聚合页</strong> 是 CDN 资源库的<strong>多维洞察入口</strong>：清单 · 架构 · 图谱 · 测试 · 源码 · 演示 · 审查。每页自动从 <code>components-manifest/index.json</code> · <code>deps-graph.json</code> · <code>tests-result.json</code> · <code>cdn-summary/index.json</code> 拉取数据，支持过滤·搜索·下钻。每页顶部导航互通，可在 7 页之间快速跳转。
+        下列 <strong>七张聚合页</strong> 是 CDN 资源库的<strong>多维洞察入口</strong>：清单 · 架构 · 图谱 · 测试 · 源码 · 演示 · 审查。每页自动从 <code>components-manifest/index.json</code> · <code>deps-graph.json</code> · <code>tests-result.json</code> 拉取数据，支持过滤·搜索·下钻。每页顶部导航互通，可在 7 页之间快速跳转。
         <div class="callout-accent">
           ⌨ <b class="color-accent">快捷键</b>：按数字键 <code>1</code>-<code>7</code> 快速跳转对应聚合页（1=清单 · 2=架构 · 3=图谱 · 4=测试 · 5=源码 · 6=演示 · 7=审查）· 按 <code>0</code> 或 <code>Esc</code> 返回本首页 · 按 <code>?</code> 显示快捷键帮助浮窗
         </div>
@@ -326,16 +323,16 @@
           <div class="cdn-agg-head">
             <span class="cdn-agg-emoji">⚠️</span>
             <span class="cdn-agg-title">审查聚合</span>
-            <span class="cdn-agg-badge">review.html</span><span class="cdn-agg-source" title="数据源">cdn-summary.json</span>
+            <span class="cdn-agg-badge">review.html</span><span class="cdn-agg-source" title="数据源">score-report.json</span>
           </div>
           <div class="cdn-agg-body">六维健康评估 · <b class="color-accent">综合 92/A · v1.2.0 · 3 版本演进趋势</b>（v1.0 78/C → v1.1 86/B → v1.2 92/A）SVG 折线图 · D0-D8 九级诊断引擎 · 改进建议卡片 · 综合评分 Hero 区。<div class="flex-center-8px"><svg viewBox="0 0 160 36" class="u-b43977" title="版本演进趋势 78→86→92"><polyline points="10,24 80,14 150,6" stroke="#22d3ee" stroke-width="2" fill="none" stroke-linejoin="round"/><circle cx="10" cy="24" r="3" fill="#fb923c"/><circle cx="80" cy="14" r="3" fill="#22d3ee"/><circle cx="150" cy="6" r="4" fill="#34d399" stroke="#1e1f2b" stroke-width="1.5"/><text x="10" y="34" fill="#fb923c" font-size="8" text-anchor="middle" font-weight="700">78C</text><text x="80" y="34" fill="#22d3ee" font-size="8" text-anchor="middle" font-weight="700">86B</text><text x="150" y="34" fill="#34d399" font-size="8" text-anchor="middle" font-weight="700">92A</text></svg><span class="text-34d399-600-fs7rem">↑ +14 (3 版本)</span></div><span class="text-text3-6b7280-fs66rem">8 维度 · 迁移率 85/B ↑ · 测试 87/B ↑ · JS API 88/B ↑ · 自改进 89/B ↑ · 双主题 90/A → · 字体 92/A → · CSS 95/A ↑ · 加载链 96/A ↑</span><br><span class="text-text3-6b7280-fs66rem">D0-D8 诊断 · 8/9 清零 · ⚠️ <code class="color-amber">D3 复杂度增长</code> 1 次 (33%) · D0/D1/D2/D4-D8 均 0</span><div class="flex-center-10px"><svg viewBox="0 0 44 44" class="icon-fixed" title="D0-D8 诊断清零率 8/9 = 88.9%"><circle cx="22" cy="22" r="17" fill="none" stroke="rgba(0,0,0,.4)" stroke-width="6"/><circle cx="22" cy="22" r="17" fill="none" stroke="#34d399" stroke-width="6" stroke-dasharray="94.9 106.8" stroke-dashoffset="0" transform="rotate(-90 22 22)" stroke-linecap="round"/><circle cx="22" cy="22" r="17" fill="none" stroke="#fbbf24" stroke-width="6" stroke-dasharray="11.9 106.8" stroke-dashoffset="-94.9" transform="rotate(-90 22 22)"/><text x="22" y="26" text-anchor="middle" fill="#34d399" font-size="10" font-weight="700">8/9</text></svg><div class="flex-fill"><div class="u-9e5c03">🩺 D0-D8 清零率环形图</div><div class="u-66f542">88.9% 清零 · 1 维警戒</div><div class="u-d79065">⚠️ D3 复杂度增长 · 33% 占比</div></div></div><div class="flex-center-10px"><svg viewBox="0 0 44 44" class="icon-fixed" title="维度等级分布 4A · 4B · 0C · 0D"><circle cx="22" cy="22" r="17" fill="none" stroke="rgba(0,0,0,.4)" stroke-width="6"/><circle cx="22" cy="22" r="17" fill="none" stroke="#34d399" stroke-width="6" stroke-dasharray="53.4 106.8" stroke-dashoffset="0" transform="rotate(-90 22 22)"/><circle cx="22" cy="22" r="17" fill="none" stroke="#22d3ee" stroke-width="6" stroke-dasharray="53.4 106.8" stroke-dashoffset="-53.4" transform="rotate(-90 22 22)"/><text x="22" y="26" text-anchor="middle" fill="#34d399" font-size="10" font-weight="700">8</text></svg><div class="flex-fill"><div class="u-9e5c03">📊 维度等级分布环形图</div><div class="u-945436"><span class="color-success">A 4</span>·<span class="color-cyan">B 4</span>·<span class="color-warning">C 0</span>·<span class="color-error">D 0</span></div><div class="u-720f2a">50% A · 50% B · 无 C/D · 8 维度全达标</div></div></div><div class="m-6px0"><div class="u-57bdab">📈 维度得分 Top 3</div><div class="flex-col"><div class="flex-center-6px"><span class="col-96-34d399">加载链稳定</span><div class="bar-fill"><div class="bar-pct-34d399" style="--bar-w:96%" title="96 A"></div></div><span class="u-a09e37">96A</span></div><div class="flex-center-6px"><span class="col-96-varyrycy">CSS 组件覆盖</span><div class="bar-fill"><div class="bar-pct-22d3ee" style="--bar-w:95%" title="95 A"></div></div><span class="u-7e292b">95A</span></div><div class="flex-center-6px"><span class="col-96-varyryvi">字体性能</span><div class="bar-fill"><div class="bar-pct-a78bfa" style="--bar-w:92%" title="92 A"></div></div><span class="u-30e9aa">92A</span></div></div></div></div>
           <div class="cdn-agg-stats"><span class="cdn-agg-stat"><b>92/A</b></span><span class="cdn-agg-stat"><b>v1.2.0</b></span><span class="cdn-agg-stat"><b>3</b>版本</span><span class="cdn-agg-stat"><b>9</b>级诊断</span></div>
           <div class="cdn-agg-chips"><span class="cdn-agg-chip cdn-agg-key">⌨ 7</span><span class="cdn-agg-chip">六维健康</span><span class="cdn-agg-chip">版本演进趋势</span><span class="cdn-agg-chip">D0-D8 九级诊断</span><span class="cdn-agg-chip">清零分布条</span><span class="cdn-agg-chip">综合 Hero</span></div>
-          <div class="cdn-agg-refresh">🔄 更新频率：<b>版本发布时</b>同步 cdn-summary · 自循环巡检触发更新</div>
+          <div class="cdn-agg-refresh">🔄 更新频率：<b>版本发布时</b>同步 score-report · 自循环巡检触发更新</div>
           <div class="cdn-agg-cta">查看审查 →</div>
         </a>
       </div>
-      <div class="u-92f54e">共 7 张聚合页 · 数据源：components-manifest/index.json (清单/架构/源码/演示) · deps-graph.json (图谱) · tests-result.json (测试) · cdn-summary/index.json (审查) · 每页顶部导航互通</div>
+      <div class="u-92f54e">共 7 张聚合页 · 数据源：components-manifest/index.json (清单/架构/源码/演示) · deps-graph.json (图谱) · tests-result.json (测试) · 每页顶部导航互通</div>
     </div>
     </div><!-- /.container -->
     <!-- ── CDN 架构概览 ── -->
@@ -653,12 +650,12 @@
 
       /* Stats Grid */
       stats: { items: [
-        { value: '92分', label: '组件质量', modifier: 'health', sub: '125组件 · CSS规范性·API一致性·可访问性·响应式', tooltip: '【组件质量指数 CQI】\n四维加权评估模型 →\n① CSS 规范性(35%): BEM命名·选择器深度≤3·无!important滥用\n② API 一致性(30%): 属性命名·事件签名·返回值类型统一\n③ 可访问性(20%): ARIA标签·键盘可达·焦点管理·对比度≥4.5:1\n④ 响应式(15%): 断点覆盖·流式布局·触控目标≥44px\n\n覆盖三类共 125 组件:\nVue CE(30)·Vanilla(83)·页面/样式基类(12)·完整 111 · 待补 14\n\n评级: A≥80 优秀 · B≥60 良好 · C≥40 需改进 · D<40 缺陷\n数据源: cdn-summary.json · 每 5min 刷新 · 点击跳转组件报告' },
-        { value: '92/A', label: '健康评分', modifier: 'health', sub: '组件覆盖·测试覆盖·自改进·加载链·迁移率', tooltip: '【CDN 综合健康指数 CHI】\n六维加权聚合模型 →\n① 组件覆盖度×0.30: CSS·主题·API·脚本四类覆盖率\n② 测试覆盖×0.25: 单元测试·集成测试·视觉回归三项均分\n③ 自改进闭环×0.20: D0-D8诊断触发率·建议采纳率·问题收敛率\n④ 加载链稳定×0.15: CSS→主题→组件→Vue3→JS五步可靠性\n⑤ 存量迁移率×0.10: 内联样式→组件类名迁移完成度\n⑥ 字体性能×0.05(附加): woff2预加载·font-display策略\n\n当前: 92分 / A级 · 优秀\n趋势: v1.0(78/C)→v1.1(86/B)→v1.2(92/A) 持续上升\n\n评级: A≥80 优秀 · B≥60 良好 · C≥40 需改进 · D<40 严重缺陷\n数据源: cdn-summary.json · 每 5min 自动刷新\n点击跳转健康报告 →' },
+        { value: '92分', label: '组件质量', modifier: 'health', sub: '125组件 · CSS规范性·API一致性·可访问性·响应式', tooltip: '【组件质量指数 CQI】\n四维加权评估模型 →\n① CSS 规范性(35%): BEM命名·选择器深度≤3·无!important滥用\n② API 一致性(30%): 属性命名·事件签名·返回值类型统一\n③ 可访问性(20%): ARIA标签·键盘可达·焦点管理·对比度≥4.5:1\n④ 响应式(15%): 断点覆盖·流式布局·触控目标≥44px\n\n覆盖三类共 125 组件:\nVue CE(30)·Vanilla(83)·页面/样式基类(12)·完整 111 · 待补 14\n\n评级: A≥80 优秀 · B≥60 良好 · C≥40 需改进 · D<40 缺陷数据源: score-report.json · 每 5min 刷新 · 点击跳转组件报告 →' },
+        { value: '92/A', label: '健康评分', modifier: 'health', sub: '组件覆盖·测试覆盖·自改进·加载链·迁移率', tooltip: '【CDN 综合健康指数 CHI】\n六维加权聚合模型 →\n① 组件覆盖度×0.30: CSS·主题·API·脚本四类覆盖率\n② 测试覆盖×0.25: 单元测试·集成测试·视觉回归三项均分\n③ 自改进闭环×0.20: D0-D8诊断触发率·建议采纳率·问题收敛率\n④ 加载链稳定×0.15: CSS→主题→组件→Vue3→JS五步可靠性\n⑤ 存量迁移率×0.10: 内联样式→组件类名迁移完成度\n⑥ 字体性能×0.05(附加): woff2预加载·font-display策略\n\n当前: 92分 / A级 · 优秀\n趋势: v1.0(78/C)→v1.1(86/B)→v1.2(92/A) 持续上升\n\n评级: A≥80 优秀 · B≥60 良好 · C≥40 需改进 · D<40 严重缺陷数据源: score-report.json · 每 5min 自动刷新点击跳转健康报告 →' },
         { value: '100分', label: '测试评分', modifier: 'health', sub: '代码覆盖率50%·用例通过率30%·充分度20%', tooltip: '【测试质量指数 TQI】\n三维加权评估模型 →\n① 代码覆盖率(50%): 行覆盖率≥80%满分·分支覆盖率≥70%满分·函数覆盖率≥75%\n② 用例通过率(30%): 单元测试通过率·集成测试通过率·E2E测试通过率三项均分\n③ 用例充分度(20%): 组件平均用例数≥5满分·边界条件覆盖·异常路径覆盖\n\n当前: 100分 / A级 · 满分\n评级: A≥80 · B≥60 · C≥40 · D<40\n数据源: vitest runner + tests-result.json\n每 5min 刷新 · 点击跳转测试报告 →' },
         { value: '88分', label: '自改进评分', modifier: 'health', sub: 'D0-D8诊断触发·置信度·建议采纳·问题收敛', tooltip: '【自改进闭环指数 SII】\n四维评估模型 →\n① 诊断触发率(30%): D0-D8 九级诊断覆盖率·误报率控制\n  D0基线偏离 D1效率退化 D2质量退化 D3复杂度增长\n  D4流程退化 D5依赖退化 D6文档过时 D7配置漂移 D8架构退化\n② 诊断置信度(25%): 人工验证准确率·建议可执行率\n③ 建议采纳率(25%): 诊断建议→代码变更的实际转化率\n④ 问题收敛率(20%): 同类问题复发衰减趋势·修复时效\n\n当前: 88分 / A级 · 优秀\n评级: A≥80 · B≥60 · C≥40 · D<40\n数据源: D0-D8 诊断引擎运行时指标\n每 5min 刷新 · 点击跳转自改进报告 →' },
         { value: '96分', label: '加载链', modifier: 'health', sub: '5步链路可靠性·容错降级·fallback完备性', tooltip: '【加载链稳定性指数 LSI】\n五步关键路径: shared.css → theme.css → 125组件CSS → Vue3运行时 → 组件JS\n\n三维评估模型 →\n① 可靠性(40%): 各步加载成功率·CDN可用性·DNS解析耗时\n② 容错性(35%): 单步失败的优雅降级能力·超时重试策略·5s兜底\n③ 回退策略(25%): fallback CSS完备性·静态降级版本·离线缓存\n\n当前: 96分 / A级 · 优秀\n数据源: 客户端加载性能埋点\n每 5min 刷新 · 点击跳转加载链报告 →' },
-        { value: '85分', label: '迁移进度', modifier: 'health', sub: '页面迁移率·类名替换·内联消除率', tooltip: '【页面迁移指数 MPI】\n三维评估模型 →\n① 迁移完成率(45%): 已迁移页面/可迁移页面总数 · 55+ 页面目标\n② 类名替换率(30%): 内联样式→.yry-*类名的替换完成度\n③ 内联消除率(25%): 删除内联重复代码的比例 · 目标消除40-60%\n\n覆盖范围: 55+ 页面引用·6步迁移路径 · 每页专属CSS保留\n当前: 85分 / A级 · 优秀\n评级: A≥80 · B≥60 · C≥40 · D<40\n数据源: cdn-summary.json 页面迁移率维度\n每 5min 刷新 · 点击跳转加载链报告 →' },
+        { value: '85分', label: '迁移进度', modifier: 'health', sub: '页面迁移率·类名替换·内联消除率', tooltip: '【页面迁移指数 MPI】\n三维评估模型 →\n① 迁移完成率(45%): 已迁移页面/可迁移页面总数 · 55+ 页面目标\n② 类名替换率(30%): 内联样式→.yry-*类名的替换完成度\n③ 内联消除率(25%): 删除内联重复代码的比例 · 目标消除40-60%\n\n覆盖范围: 55+ 页面引用·6步迁移路径 · 每页专属CSS保留\n当前: 85分 / A级 · 优秀\n评级: A≥80 · B≥60 · C≥40 · D<40数据源: score-report.json 页面迁移率维度每 5min 刷新 · 点击跳转加载链报告 →' },
         { value: 125, label: '组件', modifier: 'health',
           tooltip: '【125 个 CDN 组件 · 10 大功能类别 (COMPONENTS.md 13 子节细分)】\n▸ 布局与结构(8): layer·doc-layer·breadcrumb·sub-title·layer-agents·layer-rules·layer-refs·layer-info-panel\n▸ 导航(3): panel-hub·cross-nav·scene-nav\n▸ 卡片与展示(12): item-card·card-grid·item-cards·story-card·scene-card·tag-chip·kpi-card·trend-card·scorecard·cat-overview·cat-warning·dep-badge\n▸ 场景组件(6): scene-header·scene-footer·scene-chrome·scene-health-bar·scene-stats·scene-tabs\n▸ 统计与健康(4): stats-grid·kpi-grid·progress-bar·phase-strip\n▸ 检查清单(5): checklist-head·verify-item·verify-report-head·verify-report-foot·step-card\n▸ 风险与审查(3): risk-cat-card·risk-matrix·risk-row\n▸ 浮动面板(5): cron-panel·notify-panel·selfimprove-panel·faq-panel·docs-binding\n▸ 其他 Vue 组件(8): cmd-card·cmd-head·footer-note·gantt·op-btn·path-link·quickstart·walkthrough\n▸ 交互与反馈(18): accordion·badge·check-item·code-block·empty-state·help-overlay·keyboard·mini-quiz·quiz·search-bar·skeleton-loader·spinner·tip-box·toast·toggle·tooltip·typewriter·typewriter-demo\n▸ 展示与可视化(13): concept-radar·cytoscape-graph·day-plan·info-cards·meter·milestone-grid·next-action·overview-grid·pipeline-simulator·pitfall-list·review-cards·timeline-hero·simulator\n▸ 工具组件(7): export-toolbar·back-top·cdn-detect·tabs-panel·scene-steps·page-nav·test-page\n▸ 页面/样式基类(12): a11y·cdn-styles·checklist·demo·graph·health·home·inline-helpers·scene·selfimprove-styles·story-panel·trend-styles\n\n形态分布: 30 Vue CE 组件 · 83 Vanilla 组件 · 12 页面/样式基类 · 完整 111 · 待补 14 · 全部已文档化\n详见 Layer 1 组件清单 · 点击评分卡跳转详细报告 →' },
         { value: 2,  label: '故事', modifier: 'health',
@@ -1654,7 +1651,7 @@
         frag.appendChild(s);
         if (i < items.length - 1) frag.appendChild(document.createTextNode(' '));
       }
-      var suffix = ' \u00a0|\u00a0 \u6570\u636e\u6e90: cdn-summary.json';
+      var suffix = ' \u00a0|\u00a0 \u6570\u636e\u6e90: score-report.json';
       if (ts) suffix += ' \u00a0|\u00a0 \u66f4\u65b0: ' + ts + ' \u00a0|\u00a0 \u8d8b\u52bf: ' + t;
       suffix += ' \u00a0|\u00a0 \u6bcf 5 \u5206\u949f\u81ea\u52a8\u5237\u65b0';
       frag.appendChild(document.createTextNode(suffix));
@@ -1699,7 +1696,7 @@
     }
     applyAll();
 
-    /* ── Live score fetcher: 从 cdn-summary.json 拉取最新评分并更新 Stats Grid ── */
+    /* ── Live score fetcher: 从 score-report.json 拉取最新评分并更新 Stats Grid ── */
     (function fetchCdnLiveScores() {
       var sg = document.getElementById('stats-app');
       var ph = document.getElementById('panel-hub-app');
@@ -2007,7 +2004,7 @@
       retryCount = retryCount || 0;
       var controller = new AbortController();
       var timeoutId = setTimeout(function() { controller.abort(); }, FETCH_TIMEOUT_MS);
-      fetch('cdn-summary/index.json', { signal: controller.signal })
+      fetch('docs/评分报告/score-report.json', { signal: controller.signal })
         .then(function(r) { clearTimeout(timeoutId); if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
         .then(function(data) {
           if (!data || !data.latest) return;
@@ -2118,7 +2115,7 @@
                   '五类组件: CSS布局(' + (cssScore||'?') + '分)·样式(' + (cssScore||'?') + '分)·JS(' + (jsScore||'?') + '分)·Vue组件(' + (vueScore||'?') + '分)·Vanilla组件(' + (ceScore||'?') + '分)\n\n' +
                   '综合: ' + compScore + '分 / ' + gradeLbl(compScore) + '级 · ' + gradeWord(compScore) + '\n' +
                   '评级: A≥80 · B≥60 · C≥40 · D<40\n' +
-                  '数据源: cdn-summary.json · 每 5min 刷新 · 点击跳转组件报告 →' },
+                  '数据源: score-report.json · 每 5min 刷新 · 点击跳转组件报告 →' },
               { value: healthScore + '/' + healthGrade + ' ' + trendDir, modifier: healthScore >= 80 ? 'health' : healthScore >= 60 ? 'warn-h' : 'accent', sub: dimCount + ' 维加权综合指数',
                 tooltip: '【CDN 综合健康指数 CHI】\n' + dimCount + '维加权聚合 →\n' +
                   '组件覆盖度×0.30 + 测试覆盖×0.25 + 自改进闭环×0.20\n+ 加载链稳定×0.15 + 存量迁移率×0.10' + (dimCount >= 6 ? ' + 字体性能×0.05' : '') + '\n' +
@@ -2126,7 +2123,7 @@
                   '最新: ' + healthScore + '分 / ' + healthGrade + '级 · ' + gradeWord(healthScore) + ' ' + trendDir + '\n' +
                   '趋势: v1.0(78/C)→v1.1(86/B)→v1.2(92/A) 持续上升\n\n' +
                   '评级: A≥80 · B≥60 · C≥40 · D<40\n' +
-                  '数据源: cdn-summary.json · 每 5min 自动刷新 · 点击跳转健康报告 →' },
+                  '数据源: score-report.json · 每 5min 自动刷新 · 点击跳转健康报告 →' },
               { value: testScore + '分', modifier: gradeMod(testScore), sub: '覆盖率 · 通过率 · 用例充分度', tooltip: testTooltip },
               { value: siScore + '分', modifier: gradeMod(siScore), sub: 'D0-D8 · 采纳 · 收敛', tooltip: siTooltip },
               { value: loadScore + '分', modifier: gradeMod(loadScore), sub: '可靠性 · 容错 · 回退策略',
@@ -2143,7 +2140,7 @@
                   '② 类名替换率(30%): 内联→.yry-*类名映射完成度\n' +
                   '③ 内联消除率(25%): 删除内联重复代码 · 目标40-60%\n\n' +
                   '当前: ' + migScore + '分 / ' + gradeLbl(migScore) + '级 · ' + gradeWord(migScore) + '\n' +
-                  '数据源: cdn-summary.json 页面迁移率 · 每 5min 刷新 · 点击跳转加载链报告 →' }
+                  '数据源: score-report.json 页面迁移率 · 每 5min 刷新 · 点击跳转加载链报告 →' }
             ];
             for (var ui = 0; ui < updates.length; ui++) {
               if (items[ui]) {
@@ -2215,7 +2212,7 @@
           summaryEl.innerHTML = '<strong>⚠️ 数据源不可达 — 当前显示离线默认值</strong><br><br>' +
             '以下评分基于<strong>CDN 内置静态基线数据</strong>（v1.2.0 最近快照），非实时数据。<br><br>' +
             '<strong>恢复实时数据的方法：</strong><br>' +
-            '① 确认 <code>cdn/cdn-summary/index.json</code> 文件存在且可被 HTTP 服务访问<br>' +
+            '① 确认 <code>docs/评分报告/score-report.json</code> 文件存在且可被 HTTP 服务访问<br>' +
             '② 运行 CDN 健康检查生成最新汇总数据<br>' +
             '③ 如使用本地文件预览，启动 HTTP 服务器：<code>npx serve cdn</code> 或 <code>python3 -m http.server</code><br>' +
             '④ 检查浏览器控制台网络面板确认 JSON 请求未被 CORS/防火墙拦截';
@@ -2251,10 +2248,10 @@
     if (statsEl) {
       /* 评分卡标签 → 报告页面路由映射 */
 	      var STAT_ROUTE_MAP = {
-	        '组件质量':   'cdn-summary/index.html',
-	        '组件评分':   'cdn-summary/index.html',
-	        '健康评分':   'health-report/index.html',
-	        '测试评分':   'cdn-summary/index.html',
+	        '组件质量':   'shared-reports/index.html',
+        '组件评分':   'shared-reports/index.html',
+        '健康评分':   'shared-reports/index.html',
+        '测试评分':   'shared-reports/index.html',
 	        '自改进评分': 'shared-reports/index.html',
 	        '自改进':     'shared-reports/index.html',
 	        '加载链':     'shared-reports/index.html',
@@ -2500,11 +2497,10 @@
             return { data, lm };
           } catch { return { data: null, lm: null }; }
         };
-        const [manifest, deps, tests, summary] = await Promise.allSettled([
+        const [manifest, deps, tests] = await Promise.allSettled([
           grab('components-manifest/index.json'),
           grab('deps-graph.json'),
-          grab('tests-result.json'),
-          grab('cdn-summary/index.json')
+          grab('tests-result.json')
         ]);
         const kpis = [];
         if (manifest.status === 'fulfilled') {

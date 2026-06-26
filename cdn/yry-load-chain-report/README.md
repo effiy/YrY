@@ -13,7 +13,7 @@ yry-load-chain-report/
 
 ## 功能
 
-- 读取 `cdn-summary/index.json` + `自我改进/summary.json`
+- 读取 `自我改进/summary.json`
 - 渲染 6 个 tab 面板: 概览 · 加载链路 · 可靠性 · 容错与回退 · 性能分析 · 诊断
 - 五步加载链流程可视化 (shared.css → theme.css → 组件CSS → Vue3 → 组件JS)
 - 三维加权评分 (可靠性40% · 容错性35% · 回退策略25%)
@@ -32,8 +32,7 @@ yry-load-chain-report/
 
 | 属性 | 默认 | 说明 |
 |------|------|------|
-| `data-cdn-summary` | `../../cdn/cdn-summary/index.json` | CDN 摘要 JSON URL |
-| `data-health-summary` | `../自我改进/summary.json` | 健康摘要 JSON URL |
+| `data-health-summary` | `../自我改进/summary.json` | 健康摘要 URL |
 
 ## 事件
 

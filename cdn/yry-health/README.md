@@ -29,7 +29,7 @@ yry-health/
 
 ## 关联
 
-- 健康数据: `health-report/index.json`
+- 健康数据: `自我改进/summary.json`
 - 健康趋势: `docs/健康报告/health-cdn-*.html`
 - 评分更新: `lib/cdn-score-updater.mjs`
 - 健康检查: `node skills/rui-bot/send.mjs health`

@@ -32,7 +32,6 @@ const GIT_GENERATED_PREFIXES = [
   "docs/自我改进/",
   "docs/自循环报告/",
   "docs/趋势报告/",
-  "cdn/health-report/",
   "docs/bundle-reports/",
 ];
 

@@ -159,7 +159,7 @@ yry-*/           # 107 组件 (通配)
 - `eslint.config.js` — Lint 配置
 - `package-lock.json` — npm 自动忽略
 - `scripts/` — 构建脚本 (仅开发用)
-- `cdn-summary/` / `health-report/` / `changelog/` — 数据快照 (运行时生成)
+- `changelog/` — 数据快照 (运行时生成)
 - `components-manifest/` — 组件清单数据 (运行时生成)
 - `shared-reports/` — 报告工具 (消费者自行引用)
 

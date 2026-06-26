@@ -1,7 +1,7 @@
 /**
  * YrY 文档中心 · 评分报告数据填充脚本
  * 从 docs/index.html 内联 <script> 迁出，保持 IIFE 结构以兼容现有加载顺序
- * 数据源优先级: score-report.json → summary.json → cdn-summary/index.json → 内置默认值
+ * 数据源优先级: score-report.json → summary.json → 内置默认值
  */
 (function() {
   'use strict';
@@ -996,6 +996,87 @@
       }, 720);
       elDqi.className = 'sm-card-grade grade-' + dqiGrade.grade;
     }
+
+    // DHI: 诊断健康指数卡片 (独立 grade 元素)
+    const dhiGrade = getGrade(dhiScore);
+    const elDhi = document.getElementById('sm-grade-dhi');
+    if (elDhi) {
+      elDhi.textContent = dhiScore + '/' + dhiGrade.grade;
+      elDhi.className = 'sm-card-grade grade-' + dhiGrade.grade;
+    }
+    // DHI 触发数
+    const elDhiTrig = document.getElementById('sm-dhi-triggered');
+    if (elDhiTrig) {
+      elDhiTrig.textContent = diagTrig;
+    }
+    // DHI score bar
+    const dhiBar = document.querySelector('#card-dhi .sm-card-scorebar-fill');
+    if (dhiBar) {
+      dhiBar.style.setProperty('--score', dhiScore);
+      dhiBar.className = 'sm-card-scorebar-fill grade-' + dhiGrade.grade;
+    }
+
+    // ── 更新八维评分速览条 ──
+    updateScoreStrip(composite, shiScore, tqiScore, siiScore, aqiScore, aqiGradeLetter, dhiScore, uphiScore, dqiScore);
+
+    // ── 更新各卡片 score bar ──
+    updateMethodologyScoreBars(composite, shiScore, tqiScore, siiScore, aqiScore, dhiScore, uphiScore, dqiScore);
+  }
+
+  /* ── 八维评分速览条更新 ── */
+  function updateScoreStrip(phi, shi, tqi, sii, aqi, aqiLetter, dhi, uphi, dqi) {
+    const stripData = [
+      { id: 'sm-strip-phi', score: phi },
+      { id: 'sm-strip-shi', score: shi },
+      { id: 'sm-strip-tqi', score: tqi },
+      { id: 'sm-strip-sii', score: sii },
+      { id: 'sm-strip-aqi', score: aqi },
+      { id: 'sm-strip-dhi', score: dhi },
+      { id: 'sm-strip-uphi', score: uphi },
+      { id: 'sm-strip-dqi', score: dqi }
+    ];
+    for (var i = 0; i < stripData.length; i++) {
+      var el = document.getElementById(stripData[i].id);
+      if (!el) continue;
+      var s = stripData[i].score;
+      if (s == null || isNaN(s)) continue;
+      el.textContent = s;
+      var chip = el.closest('.sm-strip-chip');
+      if (!chip) continue;
+      var grade = getGrade(s);
+      chip.className = chip.className.replace(/grade-[A-D]/g, '');
+      chip.classList.add('grade-' + grade.grade);
+      // 特色 chip (UPHI) 额外 class 保留
+      if (stripData[i].id === 'sm-strip-uphi') {
+        chip.classList.add('is-featured-chip');
+      }
+    }
+  }
+
+  /* ── 评分卡片 score bar 批量更新 ── */
+  function updateMethodologyScoreBars(phi, shi, tqi, sii, aqi, dhi, uphi, dqi) {
+    var barMap = {
+      'card-phi':  phi,
+      'card-shi':  shi,
+      'card-tqi':  tqi,
+      'card-sii':  sii,
+      'card-aqi':  aqi,
+      'card-dhi':  dhi,
+      'card-uphi': uphi,
+      'card-dqi':  dqi
+    };
+    for (var cardId in barMap) {
+      if (!barMap.hasOwnProperty(cardId)) continue;
+      var card = document.getElementById(cardId);
+      if (!card) continue;
+      var bar = card.querySelector('.sm-card-scorebar-fill');
+      if (!bar) continue;
+      var score = barMap[cardId];
+      if (score == null || isNaN(score)) continue;
+      bar.style.setProperty('--score', score);
+      var grade = getGrade(score);
+      bar.className = 'sm-card-scorebar-fill grade-' + grade.grade;
+    }
   }
 
   /* ── 加载骨架屏 — 数据拉取期间显示 shimmer 占位 ── */
@@ -1019,9 +1100,7 @@
     const base = getBasePath();
     const urls = [
       base + '/docs/评分报告/score-report.json',
-      base + '/docs/自我改进/summary.json',
-      base + '/cdn/cdn-summary/index.json',
-      base + '/cdn/health-report/index.json'
+      base + '/docs/自我改进/summary.json'
     ];
 
     let idx = 0;
@@ -1047,8 +1126,7 @@
           }
           renderMethodologyCards(data);
           const srcLabel = url.indexOf('score-report.json') !== -1 ? '评分报告' :
-                         url.indexOf('summary.json') !== -1 ? '自我改进' :
-                         url.indexOf('cdn-summary') !== -1 ? 'CDN汇总' : '健康报告';
+                         '自我改进';
           setSourceStatus('online', '在线 · ' + srcLabel);
           const elUpdated = document.getElementById('sr-updated');
           if (elUpdated) {
@@ -1176,7 +1254,7 @@
             '② 运行 <code>node skills/rui-bot/send.mjs health</code> 执行健康检查并持久化趋势<br>' +
             '③ 确认 <code>docs/评分报告/score-report.json</code> 文件存在且可被 HTTP 服务访问<br>' +
             '④ 如使用本地文件预览，启动 HTTP 服务器：<code>npx serve docs</code> 或 <code>python3 -m http.server</code><br><br>' +
-            '数据源尝试顺序：score-report.json → summary.json → cdn-summary/index.json → default-data.json';
+            '数据源尝试顺序：score-report.json → summary.json → default-data.json';
         }
       })
       .catch(function (err) {

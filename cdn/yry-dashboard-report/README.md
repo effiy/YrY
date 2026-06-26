@@ -15,7 +15,7 @@ yry-dashboard-report/
 
 - **评分方法 (Score Methodology)** — 八维加权健康评估模型 (PHI/SHI/TQI/SII/AQI/DQI/UPHI/DHI) 8 卡片展示
 - **实时评分报告 (Score Report)** — 综合评分网格 · 维度分解 · 趋势预测 · P0 告警
-- **数据源优先级** — `score-report.json` → `summary.json` → `cdn-summary/index.json` → 内置默认值
+- **数据源优先级** — `score-report.json` → `summary.json` → 内置默认值
 - **工具函数** — 浏览器端复刻 `lib/scoring.mjs` 核心逻辑 (getGrade / classifyScore / detectTrend)
 - **UX 增强样式 (2026-06-25 迁入)**:
   - **报告卡片网格 (`.yry-card-grid`)** — 卡片化入口展示 · hover 抬升 · 数据热度着色 · 访问计数徽章 · 排序下拉 · 紧凑视图 · 复制链接

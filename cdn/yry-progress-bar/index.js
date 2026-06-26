@@ -47,10 +47,49 @@
           total: { type: Number, default: 0 },
           label: { type: String, default: '进度' }
         },
+        data: function () {
+          return {
+            _ticking: false,
+            _onScroll: null,
+            _scrollMode: false,
+            _val: { done: 0, total: 0 }
+          };
+        },
         computed: {
           pct: function () {
-            var total = this.total || 0;
-            return total > 0 ? Math.round((this.done / total) * 100) : 0;
+            // 滚动模式用内部 _val, 任务模式用外部 props
+            var d = this._scrollMode ? this._val.done : this.done;
+            var t = this._scrollMode ? this._val.total : this.total;
+            return t > 0 ? Math.round((d / t) * 100) : 0;
+          }
+        },
+        methods: {
+          _updateScroll: function () {
+            var docH = document.documentElement.scrollHeight - window.innerHeight;
+            this._val = { done: Math.round(window.scrollY), total: Math.max(1, Math.round(docH)) };
+            this._ticking = false;
+          }
+        },
+        mounted: function () {
+          var el = this.$el;
+          if (el.hasAttribute('done') || el.hasAttribute('total')) return;
+          this._scrollMode = true;
+          var self = this;
+          this._onScroll = function () {
+            if (!self._ticking) {
+              self._ticking = true;
+              requestAnimationFrame(function () { self._updateScroll(); });
+            }
+          };
+          window.addEventListener('scroll', this._onScroll, { passive: true });
+          window.addEventListener('resize', this._onScroll, { passive: true });
+          this.$nextTick(function () { self._updateScroll(); });
+        },
+        beforeUnmount: function () {
+          if (this._onScroll) {
+            window.removeEventListener('scroll', this._onScroll);
+            window.removeEventListener('resize', this._onScroll);
+            this._onScroll = null;
           }
         },
         template: templateHTML

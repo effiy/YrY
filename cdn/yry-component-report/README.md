@@ -13,7 +13,7 @@ yry-component-report/
 
 ## 功能
 
-- 读取 `cdn-summary/index.json` + `自我改进/summary.json` 渲染 6 个 tab 面板
+- 读取 `自我改进/summary.json` 渲染 6 个 tab 面板
 - 四维加权评分 (CSS规范性30% · API一致性25% · 可访问性20% · 响应式25%)
 - 62 组件清单 + 10 大类别评分 + 形态分布
 - SVG 趋势对比图 + 问题追踪 + 成熟度/速率/风险面板
@@ -32,7 +32,6 @@ yry-component-report/
 
 | 属性 | 默认 | 说明 |
 |------|------|------|
-| `data-cdn-summary` | `../../cdn/cdn-summary/index.json` | CDN 摘要 URL |
 | `data-health-summary` | `../自我改进/summary.json` | 健康摘要 URL |
 
 ## 事件

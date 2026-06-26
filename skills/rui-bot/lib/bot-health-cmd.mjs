@@ -5,7 +5,7 @@
 
 import { join } from "node:path";
 import { findProjectRoot } from "../../../lib/fs.mjs";
-import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 
 import {
   MAX_MSG_LENGTH,
@@ -549,58 +549,5 @@ export async function cmdHealth(/** @type {string} */ projectRoot, /** @type {an
     generateSummary(projectRoot);
   } catch { /* best effort — summary generation is non-critical */ }
 
-  // Auto-update CDN health report
-  try {
-    updateCdnHealthReport(result, projectRoot);
-  } catch { /* best effort — CDN report is non-critical */ }
-
   return result;
-}
-
-/**
- * Auto-update cdn/health\-report\/index\.json with the latest project health data.
- * Preserves existing entries (dedup by date), keeps at most 10 reports.
- */
-function updateCdnHealthReport(/** @type {any} */ result, /** @type {string} */ projectRoot) {
-  const cdnPath = join(projectRoot, "cdn", "health-report", "index.json");
-  /** @type {{ _meta: { updatedAt?: string }, reports: Array<{date:string,time:string,type:string,score:number,grade:string,triggers:number,dimTotal:number,dims:object}> }} */
-  let report = { _meta: {}, reports: [] };
-
-  if (existsSync(cdnPath)) {
-    try {
-      report = JSON.parse(readFileSync(cdnPath, "utf-8"));
-    } catch { report = { _meta: {}, reports: [] }; }
-  }
-
-  // Map project health dims to CDN-compatible format
-  /** @type {Record<string, any>} */
-  const dims = {};
-  for (const [dim, score] of Object.entries(result.scores || {})) {
-    dims[dim] = {
-      score,
-      detail: result.details?.find((/** @type {any} */ d) => d.dim === dim)?.detail || `${score} 分`,
-    };
-  }
-
-  const today = new Date().toISOString().slice(0, 10);
-  const entry = {
-    date: today,
-    time: new Date().toISOString().slice(0, 19).replace("T", " "),
-    type: "project",
-    score: result.composite,
-    grade: result.grade,
-    triggers: result.diagnostics?.triggered?.length || 0,
-    dimTotal: Object.keys(dims).length,
-    dims,
-  };
-
-  // Dedup: replace same-date project entry
-  const reports = (report.reports || []).filter(
-    r => !(r.date === today && r.type === "project")
-  );
-  reports.unshift(entry);
-  report.reports = reports.slice(0, 10);
-  report._meta.updatedAt = today;
-
-  writeFileSync(cdnPath, JSON.stringify(report, null, 2) + "\n", "utf-8");
 }

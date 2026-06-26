@@ -63,21 +63,20 @@
       el.icon        = '⭐';
       el.titlePrefix = 'YrY ';
       el.accent      = '文档中心';
-      el.meta        = '📌 v5.4.0 · 🩺 健康 94/A · 🧪 测试 100分 · 🧬 自改进 89/A · 📐 架构 —';
+      el.meta        = '📌 v5.4.0 · 🩺 健康 94/A · 🧪 测试 100/A · 🧬 自改进 89/B · 📐 架构 A级 · 🛠 组件 86/A';
     },
     /* 3) Stats Grid */
     statsGrid: function (el) {
       el.items = [
-        { value: '94/A', label: '健康评分', modifier: 'health', sub: '核心9维·工程成熟度7维·扩展3维·D0-D8诊断联动' },
-        { value: '100分', label: '测试评分', modifier: 'health', sub: '测试覆盖·类型安全·代码检查·CI/CD·文档·依赖·Git实践' },
-        { value: '89分', label: '自改进评分', modifier: 'health', sub: 'Skills·Agents·Rules·Scripts四象限·D0-D8诊断持续监控' },
-        { value: '—', label: '架构评分', modifier: 'health', sub: '10维度架构合规·内核轻量·范式合规·SRP·DRY·OCP·ISP·扩展隔离·文档新鲜度' },
-        { value: 12, label: '依赖/框架', modifier: 'info' },
+        { value: '94/A', label: '健康评分', modifier: 'health', sub: 'PHI · 19+维度加权·核心9维+工程7维+扩展3维·D0-D8诊断联动' },
+        { value: '86/A', label: '组件/模块评分', modifier: 'health', sub: 'SHI · 20 Skills·9 Agents·18 Rules·30+ Scripts 四象限质量扫描' },
+        { value: '100/A', label: '测试评分', modifier: 'health', sub: 'TQI · 测试体系·类型安全·代码规范·CI/CD·文档·依赖·Git纪律' },
+        { value: '89/B', label: '自改进评分', modifier: 'health', sub: 'SII · D0-D8诊断持续监控·趋势持久化·经验技能化·闭环验证' },
+        { value: 'A级', label: '架构评分', modifier: 'health', sub: 'AQI · 10维度架构合规·内核轻量·范式合规·扩展隔离·文档新鲜度' },
         { value: 7,  label: '故事', modifier: 'health' },
         { value: 37, label: '场景', modifier: 'health' },
         { value: 9,  label: 'Agent', modifier: 'info' },
-        { value: 18, label: '规则', modifier: 'health' },
-        { value: 9,  label: '参考入口', modifier: 'info' }
+        { value: 18, label: '规则', modifier: 'health' }
       ];
     },
     /* 4) Cross Nav */
