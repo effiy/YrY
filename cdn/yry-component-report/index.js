@@ -157,7 +157,7 @@ var TREND_COLORS = null;
     var legendHtml = dimLines.map(function(dl, di) {
       return '<span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + TREND_COLORS[di] + '"></span> ' + escapeHtml(dl.label) + '</span>';
     }).join(' ');
-    return svg + '<div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:.68rem;color:var(--yry-text3)">' + legendHtml + '</div>';
+    return svg + '<div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:.68rem;color:var(--yry-text-tertiary)">' + legendHtml + '</div>';
   }
 
   function renderIssues(cssScore, vueScore, jsScore, ceScore) {
@@ -207,11 +207,11 @@ var TREND_COLORS = null;
     var posColor = vel.positiveDayRatio >= 60 ? '#22c55e' : vel.positiveDayRatio >= 40 ? '#f59e0b' : '#ef4444';
     var html = '<div class="cr-kpi-grid">' +
       kpiCard('改进方向', dirLabel, 'color:' + dirColor, '') +
-      kpiCard('日改进速率', (vel.dailyChangeRate > 0 ? '+' : '') + (vel.dailyChangeRate || 0).toFixed(1) + '/天', 'color:var(--yry-text2)', '') +
+      kpiCard('日改进速率', (vel.dailyChangeRate > 0 ? '+' : '') + (vel.dailyChangeRate || 0).toFixed(1) + '/天', 'color:var(--yry-text-secondary)', '') +
       kpiCard('正向改进率', (vel.positiveDayRatio || 0) + '%', 'color:' + posColor, '') +
       '</div>';
     if (vel.recommendation) {
-      html += '<div style="padding:12px;background:rgba(245,158,11,.06);border-radius:8px;margin-top:12px;font-size:.78rem;color:var(--yry-text2)">💡 <strong>建议：</strong>' + escapeHtml(vel.recommendation) + '</div>';
+      html += '<div style="padding:12px;background:rgba(245,158,11,.06);border-radius:8px;margin-top:12px;font-size:.78rem;color:var(--yry-text-secondary)">💡 <strong>建议：</strong>' + escapeHtml(vel.recommendation) + '</div>';
     }
     if (risk) {
       var riskColor = risk.riskLevel === 'high' ? '#ef4444' : risk.riskLevel === 'medium' ? '#f59e0b' : '#22c55e';

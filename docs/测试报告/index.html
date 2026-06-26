@@ -80,7 +80,7 @@
       <tr><td><strong>顶层</strong></td><td>E2E / 端到端 (关键旅程)</td><td>10%</td><td>10%</td><td><span class="badge pass">✓ 达标</span></td><td>完整闭环验证 · 分钟级执行 · 仅覆盖黄金路径</td></tr>
     </tbody>
   </table>
-  <p style="font-size:.74rem;color:var(--yry-text3);margin-top:8px">金字塔形态健康 · 顶层 E2E 占比未超过 15% 阈值 · 无"冰激凌"反模式 (高 E2E + 低单元) · 数据源: test manifest 聚合</p>
+  <p style="font-size:.74rem;color:var(--yry-text-tertiary);margin-top:8px">金字塔形态健康 · 顶层 E2E 占比未超过 15% 阈值 · 无"冰激凌"反模式 (高 E2E + 低单元) · 数据源: test manifest 聚合</p>
 </div>
 
 <!-- ═══ 数据溯源与置信度 ═══ -->
@@ -97,7 +97,7 @@
       <tr><td>风险调整 (baseScore − deduction)</td><td><code>summary.json → riskAdjusted</code></td><td>安全/API/配置三类风险因子扣除</td><td>每次健康检查</td><td><span class="badge warn">中</span></td></tr>
     </tbody>
   </table>
-  <p style="font-size:.74rem;color:var(--yry-text3);margin-top:8px">所有数据源均来自本地文件 (无外部 API 依赖) · 浏览器端 fetch · 失败时降级为"数据暂不可用"占位 · 不影响 tab 切换</p>
+  <p style="font-size:.74rem;color:var(--yry-text-tertiary);margin-top:8px">所有数据源均来自本地文件 (无外部 API 依赖) · 浏览器端 fetch · 失败时降级为"数据暂不可用"占位 · 不影响 tab 切换</p>
 </div>
 
 <!-- ═══ 测试治理与 SLA ═══ -->
@@ -116,7 +116,7 @@
       <tr><td>CI 集成失败率</td><td>≤ 10%</td><td>&gt; 10% 触发 D4</td><td>D4 流程退化</td><td>CI 基础设施</td></tr>
     </tbody>
   </table>
-  <p style="font-size:.74rem;color:var(--yry-text3);margin-top:8px">SLA 阈值定义在 <code>lib/constants.mjs</code> · Gate B 三步 hook (预检 / 验证 / 通知) 强制执行 · 违反自动写入 <code>.improvement/proposals.jsonl</code> 触发自改进闭环</p>
+  <p style="font-size:.74rem;color:var(--yry-text-tertiary);margin-top:8px">SLA 阈值定义在 <code>lib/constants.mjs</code> · Gate B 三步 hook (预检 / 验证 / 通知) 强制执行 · 违反自动写入 <code>.improvement/proposals.jsonl</code> 触发自改进闭环</p>
 </div>
 
 <!-- ═══ 关联报告矩阵 ═══ -->
@@ -125,23 +125,23 @@
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:8px">
     <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid var(--yry-cyan)">
       <strong>🩺 健康报告</strong>
-      <div style="font-size:.78rem;color:var(--yry-text2);margin-top:6px"><code>em_testing</code> 维度 (30% 权重) 直接复用本报告 TQI 评分 · <code>em_types</code> / <code>em_linting</code> 维度提供代码质量上下文 · 测试分数下降 → 综合健康分数同步下降</div>
+      <div style="font-size:.78rem;color:var(--yry-text-secondary);margin-top:6px"><code>em_testing</code> 维度 (30% 权重) 直接复用本报告 TQI 评分 · <code>em_types</code> / <code>em_linting</code> 维度提供代码质量上下文 · 测试分数下降 → 综合健康分数同步下降</div>
     </div>
     <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid #a78bfa">
       <strong>🧬 自我改进</strong>
-      <div style="font-size:.78rem;color:var(--yry-text2);margin-top:6px">D2 质量退化诊断在测试覆盖率连续 2 次下降 ≥5 分时触发 · 改进建议自动关联 <code>em_testing</code> 维度 · 闭合率写入 <code>proposals.jsonl</code></div>
+      <div style="font-size:.78rem;color:var(--yry-text-secondary);margin-top:6px">D2 质量退化诊断在测试覆盖率连续 2 次下降 ≥5 分时触发 · 改进建议自动关联 <code>em_testing</code> 维度 · 闭合率写入 <code>proposals.jsonl</code></div>
     </div>
     <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid var(--yry-pass)">
       <strong>📐 架构合规</strong>
-      <div style="font-size:.78rem;color:var(--yry-text2);margin-top:6px"><code>arch-check.mjs</code> 的 16 项检查中 DRY / YAGNI / SRP 合规直接影响测试可维护性 · 内核体积超标 (lib &gt; 20 文件) 触发 D8 架构退化</div>
+      <div style="font-size:.78rem;color:var(--yry-text-secondary);margin-top:6px"><code>arch-check.mjs</code> 的 16 项检查中 DRY / YAGNI / SRP 合规直接影响测试可维护性 · 内核体积超标 (lib &gt; 20 文件) 触发 D8 架构退化</div>
     </div>
     <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid var(--yry-warn)">
       <strong>📦 组件报告</strong>
-      <div style="font-size:.78rem;color:var(--yry-text2);margin-top:6px">96 个 CDN 组件的健康度与 <code>cdn</code> 测试套件联动 · 组件 demo 渲染异常自动触发加载链测试失败</div>
+      <div style="font-size:.78rem;color:var(--yry-text-secondary);margin-top:6px">96 个 CDN 组件的健康度与 <code>cdn</code> 测试套件联动 · 组件 demo 渲染异常自动触发加载链测试失败</div>
     </div>
     <div style="padding:12px;background:rgba(15,23,42,.4);border-radius:8px;border-left:3px solid #60a5fa">
       <strong>⚙ 加载链报告</strong>
-      <div style="font-size:.78rem;color:var(--yry-text2);margin-top:6px">CDN 加载链测试 (依赖顺序 · 组件注册 · 模板 fetch) 覆盖在 <code>cdn</code> 套件 · 加载链断裂 = E2E 失败</div>
+      <div style="font-size:.78rem;color:var(--yry-text-secondary);margin-top:6px">CDN 加载链测试 (依赖顺序 · 组件注册 · 模板 fetch) 覆盖在 <code>cdn</code> 套件 · 加载链断裂 = E2E 失败</div>
     </div>
   </div>
 </div>
@@ -159,7 +159,7 @@
       <tr><td><span class="badge p2">P2</span></td><td>引入 flaky 检测机制 (当前 flaky 率 2% · 阈值 5%)</td><td>测试稳定性提升 · 早期发现 flaky</td><td>em_stability · D4</td></tr>
     </tbody>
   </table>
-  <p style="font-size:.74rem;color:var(--yry-text3);margin-top:8px">优先级排序基于 ROI = 影响度 × 易修复度 × 紧迫度 · 推荐动作写入 <code>.improvement/proposals.jsonl</code> 由自改进闭环追踪</p>
+  <p style="font-size:.74rem;color:var(--yry-text-tertiary);margin-top:8px">优先级排序基于 ROI = 影响度 × 易修复度 × 紧迫度 · 推荐动作写入 <code>.improvement/proposals.jsonl</code> 由自改进闭环追踪</p>
 </div>
 
 <nav class="links" aria-label="相关报告与引擎">
@@ -170,7 +170,7 @@
   <a href="../趋势报告/">趋势报告</a>
   <a href="../故事任务面板/">故事任务面板</a>
   <a href="../index.html">文档中心</a>
-  <span style="color:var(--yry-text3)">·</span>
+  <span style="color:var(--yry-text-tertiary)">·</span>
   <a href="../../skills/rui-code/rules/code-paradigm.md">代码范式规约</a>
   <a href="../../lib/engine/diagnostics.mjs">诊断引擎源码</a>
   <a href="../../lib/constants.mjs">SLA 阈值定义</a>
@@ -178,8 +178,8 @@
 
 <footer class="ft">
   测试评分报告 · 三维加权 TQI 模型 · 7 维工程成熟度 · 数据实时读取<br>
-  <span style="color:var(--yry-text3)">数据源: vitest --coverage + vitest run + test manifest + docs/自我改进/summary.json · 每 5min 自动刷新 · 评级 A≥80 / B≥60 / C≥40 / D&lt;40</span><br>
-  <span style="color:var(--yry-text3)">引擎: <code>vitest</code> · <code>lib/engine/diagnostics.mjs</code> · 规约: <code>skills/rui-code/rules/code-paradigm.md</code> · 常量: <code>lib/constants.mjs</code></span>
+  <span style="color:var(--yry-text-tertiary)">数据源: vitest --coverage + vitest run + test manifest + docs/自我改进/summary.json · 每 5min 自动刷新 · 评级 A≥80 / B≥60 / C≥40 / D&lt;40</span><br>
+  <span style="color:var(--yry-text-tertiary)">引擎: <code>vitest</code> · <code>lib/engine/diagnostics.mjs</code> · 规约: <code>skills/rui-code/rules/code-paradigm.md</code> · 常量: <code>lib/constants.mjs</code></span>
 </footer>
 
 </main>

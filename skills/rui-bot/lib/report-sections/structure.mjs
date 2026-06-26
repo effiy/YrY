@@ -148,7 +148,7 @@ export function buildFileSizeSection(/** @type {any} */ hr) {
       <div class="h-summary-lbl">平均文件大小</div>
     </div>
     <div class="h-summary-item">
-      <div class="h-summary-val" style="--color:${fi.growthPct !== null ? (fi.growthPct > 10 ? 'var(--yry-fail)' : fi.growthPct > 5 ? 'var(--yry-warn)' : 'var(--yry-pass)') : 'var(--yry-text2)'}">${fi.growthPct !== null ? (fi.growthPct > 0 ? '+' : '') + fi.growthPct + '%' : '—'}</div>
+      <div class="h-summary-val" style="--color:${fi.growthPct !== null ? (fi.growthPct > 10 ? 'var(--yry-fail)' : fi.growthPct > 5 ? 'var(--yry-warn)' : 'var(--yry-pass)') : 'var(--yry-text-secondary)'}">${fi.growthPct !== null ? (fi.growthPct > 0 ? '+' : '') + fi.growthPct + '%' : '—'}</div>
       <div class="h-summary-lbl">体积变化</div>
     </div>
   </div>`;
@@ -157,7 +157,7 @@ export function buildFileSizeSection(/** @type {any} */ hr) {
     const barW = Math.max(2, Math.round((b.count / Math.max(1, fi.totalFiles)) * 100));
     return `<div class="h-comp-row">
       <span class="h-comp-label">${escapeHtml(b.label)}</span>
-      <span class="h-comp-score" style="--color:var(--yry-text2)">${b.count} 文件</span>
+      <span class="h-comp-score" style="--color:var(--yry-text-secondary)">${b.count} 文件</span>
       <div class="h-comp-bar-wrap"><div class="h-comp-bar-inner" style="--w:${barW}%;--color:var(--yry-cyan)"></div></div>
       <span class="h-comp-val">${barW}%</span>
     </div>`;

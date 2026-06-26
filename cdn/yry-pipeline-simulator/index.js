@@ -154,8 +154,8 @@
       var ms = startTime ? Date.now() - startTime : 0;
       line.innerHTML =
         '<span class="log-time">' + time + '</span>' +
-        '<span class="log-icon" style="color:' + (color || 'var(--yry-text2)') + '">●</span>' +
-        '<span style="color:' + (color || 'var(--yry-text2)') + '">' + escapeHtml(msg) + '</span>' +
+        '<span class="log-icon" style="color:' + (color || 'var(--yry-text-secondary)') + '">●</span>' +
+        '<span style="color:' + (color || 'var(--yry-text-secondary)') + '">' + escapeHtml(msg) + '</span>' +
         '<span class="log-ms">+' + ms + 'ms</span>';
       logBox.appendChild(line);
       logBox.scrollTop = logBox.scrollHeight;
@@ -213,7 +213,7 @@
         var logDelay = duration / (logLines.length + 2);
         logLines.forEach(function (line, li) {
           setTimeout(function () {
-            var c = 'var(--yry-text2)';
+            var c = 'var(--yry-text-secondary)';
             if (line.indexOf('✓') !== -1 || line.indexOf('✅') !== -1 || line.indexOf('PASS') !== -1) c = 'var(--yry-pass)';
             else if (line.indexOf('⚠') !== -1) c = 'var(--yry-warn)';
             else if (line.indexOf('❌') !== -1 || line.indexOf('FAIL') !== -1) c = 'var(--yry-fail)';

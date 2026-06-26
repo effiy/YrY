@@ -114,10 +114,9 @@ try {
   } else if (htmlMode) {
     console.log(`[rui-health] HTML report generation delegated to health-report.mjs`);
     console.log(`  Run: node skills/rui-bot/send.mjs health --html`);
-    console.log(`  Score: ${composite} (${g}) | ${timestamp}`);
+    console.log(`  Score: ${composite} (${g})`);
   } else {
     console.log(`${projectName} 健康评分: ${composite} 分 (${g} 级)`);
-    console.log(`  时间: ${timestamp}`);
     for (const [key, val] of Object.entries(dims)) {
       const label = HEALTH_DIM_LABELS[key] || key;
       console.log(`  ${label}: ${val.score} 分 — ${val.detail}`);

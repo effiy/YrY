@@ -66,7 +66,7 @@
   function renderHeader(meta) {
     return '<div class="sr-header">' +
       '<div class="sr-title">' + escapeHtml(meta.title || '健康评分报告') +
-      ' <span style="font-size:.72rem;color:var(--yry-text3);">v' + escapeHtml(meta.version || '—') + '</span></div>' +
+      ' <span style="font-size:.72rem;color:var(--yry-text-tertiary);">v' + escapeHtml(meta.version || '—') + '</span></div>' +
       '<div class="sr-date">生成于 ' + escapeHtml(meta.date || '—') + ' · ' + (meta.dataPoints || 0) + ' 数据点</div>' +
       '</div>';
   }
@@ -113,13 +113,13 @@
       var gapColor = dim.gap > 50 ? '#f87171' : dim.gap > 20 ? '#fbbf24' : '#6b708a';
       html += '<tr>';
       html += '<td>' + escapeHtml(dim.label) + '</td>';
-      html += '<td style="color:var(--yry-text3)">' + escapeHtml(dim.category || '—') + '</td>';
+      html += '<td style="color:var(--yry-text-tertiary)">' + escapeHtml(dim.category || '—') + '</td>';
       html += '<td class="' + gradeColor(dim.score) + '" style="font-weight:700;">' + dim.score + '</td>';
       html += '<td class="' + gradeColor(dim.score) + '">' + escapeHtml(dim.grade || gradeLabel(dim.score)) + '</td>';
-      html += '<td style="color:var(--yry-text3)">' + escapeHtml(dim.weight || '—') + '</td>';
+      html += '<td style="color:var(--yry-text-tertiary)">' + escapeHtml(dim.weight || '—') + '</td>';
       html += '<td class="' + statusClass(dim.status) + '">' + escapeHtml(dim.status || 'ok') + '</td>';
       html += '<td style="color:' + gapColor + '">' + (dim.gap || 0) + '</td>';
-      html += '<td style="font-size:.7rem;color:var(--yry-text3)">' + escapeHtml(dim.recommendation || '—') + '</td>';
+      html += '<td style="font-size:.7rem;color:var(--yry-text-tertiary)">' + escapeHtml(dim.recommendation || '—') + '</td>';
       html += '</tr>';
     }
     return html + '</tbody></table>';

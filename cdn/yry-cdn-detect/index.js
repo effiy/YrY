@@ -25,7 +25,7 @@
       el.style.color = 'var(--pass)';
     } else {
       el.textContent = '—';
-      el.style.color = 'var(--text3)';
+      el.style.color = 'var(--text-tertiary)';
     }
   }
   updateBadge('lrCss', found.css);
@@ -40,6 +40,6 @@
     timingEl.style.color = 'var(--cyan)';
   } else {
     timingEl.textContent = '已缓存';
-    timingEl.style.color = 'var(--text3)';
+    timingEl.style.color = 'var(--text-tertiary)';
   }
 })();

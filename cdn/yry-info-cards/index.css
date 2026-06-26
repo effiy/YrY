@@ -73,7 +73,7 @@ yry-info-cards .yry-card h3,
 yry-info-cards .yry-card ul,
 :host .yry-card ul {
   list-style: none;
-  color: var(--yry-mono-text2);
+  color: var(--yry-mono-text-secondary);
   font-size: .75rem;
 }
 

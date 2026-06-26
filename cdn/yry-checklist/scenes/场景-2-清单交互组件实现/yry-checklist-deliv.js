@@ -127,7 +127,7 @@ window.YryChecklistDeliv = (function() {
               if (!list.querySelector('.empty-msg')) {
                 var empty = document.createElement('div');
                 empty.className = 'empty-msg';
-                empty.style.cssText = 'padding:10px;text-align:center;color:var(--text3);font-size:.7rem;';
+                empty.style.cssText = 'padding:10px;text-align:center;color:var(--text-tertiary);font-size:.7rem;';
                 empty.textContent = '— 本步无该类型交付物 —';
                 list.appendChild(empty);
               }

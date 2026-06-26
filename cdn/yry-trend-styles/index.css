@@ -4,35 +4,35 @@
 .src-icon { font-size: 1.6rem; margin-bottom: 6px; }
 .src-name { font-size: .82rem; font-weight: 600; }
 .src-reach { margin-top: 6px; }
-.src-stats { display: flex; gap: 8px; margin-top: 8px; justify-content: center; font-size: .64rem; color: var(--yry-text3); }
-.src-stat-num { font-weight: 700; color: var(--yry-text2); }
-.src-weight { font-size: .58rem; color: var(--yry-text3); margin-top: 2px; }
+.src-stats { display: flex; gap: 8px; margin-top: 8px; justify-content: center; font-size: .64rem; color: var(--yry-text-tertiary); }
+.src-stat-num { font-weight: 700; color: var(--yry-text-secondary); }
+.src-weight { font-size: .58rem; color: var(--yry-text-tertiary); margin-top: 2px; }
 .src-sparkline { margin-top: 8px; opacity: .7; }
 
 .vel-grid { display: flex; gap: 10px; flex-wrap: wrap; }
 .vel-item { flex: 1; min-width: 140px; padding: 14px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); text-align: center; }
 .vel-num { font-size: 1.3rem; font-weight: 700; }
-.vel-lbl { font-size: .64rem; color: var(--yry-text3); margin-top: 4px; letter-spacing: .3px; }
+.vel-lbl { font-size: .64rem; color: var(--yry-text-tertiary); margin-top: 4px; letter-spacing: .3px; }
 
 .cat-bars { display: flex; flex-direction: column; gap: 8px; }
 
-.cat-pct { min-width: 48px; text-align: right; font-size: .68rem; color: var(--yry-text3); }
+.cat-pct { min-width: 48px; text-align: right; font-size: .68rem; color: var(--yry-text-tertiary); }
 
 .quality-card { padding: 14px 18px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .quality-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 .quality-num { font-size: 1.1rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
-.quality-lbl { font-size: .72rem; color: var(--yry-text2); }
+.quality-lbl { font-size: .72rem; color: var(--yry-text-secondary); }
 
 .trend-sparkline-wrap { position: relative; width: 100%; max-width: 100%; overflow-x: auto; }
 .trend-sparkline-wrap svg { width: 100%; height: 200px; }
-.trend-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; font-size: .68rem; color: var(--yry-text3); }
+.trend-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; font-size: .68rem; color: var(--yry-text-tertiary); }
 .trend-legend span { display: flex; align-items: center; gap: 4px; }
 .trend-legend .dot { width: 8px; height: 8px; border-radius: 50%; }
 
 /* health ref card */
 .health-ref { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; padding: 18px 20px; border-radius: 10px; border: var(--yry-border); background: rgba(15,23,42,.4); }
 
-.health-meta { font-size: .72rem; color: var(--yry-text3); line-height: 1.7; }
+.health-meta { font-size: .72rem; color: var(--yry-text-tertiary); line-height: 1.7; }
 .health-meta strong { color: var(--yry-text); }
 
 /* freshness indicator */

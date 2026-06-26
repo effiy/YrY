@@ -507,7 +507,7 @@ export function generateHealthIndex() {
 <div class="card">
   <h2>📋 报告历史</h2>
   <table>
-    <thead><tr><th>日期</th><th>时间</th><th>评分</th><th>等级</th><th>诊断</th><th>操作</th></tr></thead>
+    <thead><tr><th>评分</th><th>等级</th><th>诊断</th><th>操作</th></tr></thead>
     <tbody id="tbody"></tbody>
   </table>
 </div>
@@ -547,7 +547,7 @@ export function generateHealthIndex() {
 	    tbodyErr.textContent = '';
 	    const trErr = document.createElement('tr');
 	    const tdErr = document.createElement('td');
-	    tdErr.colSpan = 6;
+	    tdErr.colSpan = 4;
 	    const divErr = document.createElement('div');
 	    divErr.className = 'yry-empty';
 	    divErr.textContent = '加载失败: ' + e.message;
@@ -559,7 +559,7 @@ export function generateHealthIndex() {
 	  function buildHealthEmptyRow() {
 	    const tr = document.createElement('tr');
 	    const td = document.createElement('td');
-	    td.colSpan = 6;
+	    td.colSpan = 4;
 	    const div = document.createElement('div');
 	    div.className = 'yry-empty';
 	    div.textContent = '暂无报告';
@@ -580,37 +580,25 @@ export function generateHealthIndex() {
 	    const scHtml = r.score ? '<span class="hri-td-s ' + (r.grade || '') + '">' + r.score + ' 分</span>' : '—';
 	    const gradeHtml = r.grade ? '<span class="yry-badge ' + (r.grade) + '">' + r.grade + ' 级</span>' : '—';
 	    const trigHtml = r.triggers !== null ? (r.triggers > 0 ? '<span class="h-trig-warn">' + r.triggers + '/8</span>' : '<span class="h-trig-pass">0/8</span>') : '—';
-	    const timeHtml = r.time && r.time !== '—' ? r.time : '—';
 
 	    const td1 = document.createElement('td');
-	    const a1 = document.createElement('a');
-	    a1.href = r.file;
-	    a1.textContent = '🩺 ' + r.date;
-	    td1.appendChild(a1);
+	    td1.insertAdjacentHTML('beforeend', scHtml);
 	    tr.appendChild(td1);
 
 	    const td2 = document.createElement('td');
-	    td2.textContent = timeHtml;
+	    td2.insertAdjacentHTML('beforeend', gradeHtml);
 	    tr.appendChild(td2);
 
 	    const td3 = document.createElement('td');
-	    td3.insertAdjacentHTML('beforeend', scHtml);
+	    td3.insertAdjacentHTML('beforeend', trigHtml);
 	    tr.appendChild(td3);
 
 	    const td4 = document.createElement('td');
-	    td4.insertAdjacentHTML('beforeend', gradeHtml);
-	    tr.appendChild(td4);
-
-	    const td5 = document.createElement('td');
-	    td5.insertAdjacentHTML('beforeend', trigHtml);
-	    tr.appendChild(td5);
-
-	    const td6 = document.createElement('td');
 	    const a2 = document.createElement('a');
 	    a2.href = r.file;
 	    a2.textContent = '查看';
-	    td6.appendChild(a2);
-	    tr.appendChild(td6);
+	    td4.appendChild(a2);
+	    tr.appendChild(td4);
 
 	    return tr;
 	  }})();

@@ -44,20 +44,20 @@ export function buildScoreTrend(/** @type {any[]} */ trend) {
   const dots = trend.map((t, i) => {
     const fill = GRADE_COLOR[t.grade] || COLOR_PASS;
     const opacity = GRADE_BAR_OPACITY[t.grade] ?? 1;
-    return `<circle cx="${xs[i].toFixed(1)}" cy="${ys[i].toFixed(1)}" r="3.5" fill="${fill}" opacity="${opacity}" stroke="var(--bg1)" stroke-width="1.5"><title>${(t.timestamp || "").slice(0, 10)} · ${t.composite} · ${escapeHtml(t.grade || "")}</title></circle>`;
+    return `<circle cx="${xs[i].toFixed(1)}" cy="${ys[i].toFixed(1)}" r="3.5" fill="${fill}" opacity="${opacity}" stroke="var(--bg-canvas)" stroke-width="1.5"><title>${(t.timestamp || "").slice(0, 10)} · ${t.composite} · ${escapeHtml(t.grade || "")}</title></circle>`;
   }).join("");
 
   const yTicks = [0, 25, 50, 75, 100].map((v) => {
     const y = padT + innerH - ((v - minScore) / scoreRange) * innerH;
     const colorVar = GRADE_CSS_VAR[v >= 90 ? "A" : v >= 75 ? "B" : v >= 60 ? "C" : "D"];
-    return `<line x1="${padL}" y1="${y}" x2="${padL + innerW}" y2="${y}" stroke="var(--border2)" stroke-width="0.3" stroke-dasharray="2,2" />
+    return `<line x1="${padL}" y1="${y}" x2="${padL + innerW}" y2="${y}" stroke="var(--border-faint)" stroke-width="0.3" stroke-dasharray="2,2" />
 <text x="${padL - 5}" y="${y}" fill="${colorVar}" font-size="9" text-anchor="end" dominant-baseline="central">${v}</text>`;
   }).join("");
 
   const xLabels = trend.map((t, i) => {
     const x = xs[i];
     const date = (t.timestamp || "").slice(5, 10);
-    return `<text x="${x}" y="${padT + innerH + 15}" fill="var(--yry-text3)" font-size="9" text-anchor="middle">${escapeHtml(date)}</text>`;
+    return `<text x="${x}" y="${padT + innerH + 15}" fill="var(--yry-text-tertiary)" font-size="9" text-anchor="middle">${escapeHtml(date)}</text>`;
   }).join("");
 
   return `<div class="h-section">
@@ -128,8 +128,8 @@ export function buildForecastPanel(/** @type {any} */ enhancedTrend, /** @type {
     risks.push(`趋势拟合度低(R²=${trend.r2})，评分变化缺乏明确方向性`);
   }
 
-  const changeColor7 = day7Change > 0 ? COLOR_PASS : day7Change < 0 ? COLOR_FAIL : "var(--yry-text2)";
-  const changeColor30 = day30Change > 0 ? COLOR_PASS : day30Change < 0 ? COLOR_FAIL : "var(--yry-text2)";
+  const changeColor7 = day7Change > 0 ? COLOR_PASS : day7Change < 0 ? COLOR_FAIL : "var(--yry-text-secondary)";
+  const changeColor30 = day30Change > 0 ? COLOR_PASS : day30Change < 0 ? COLOR_FAIL : "var(--yry-text-secondary)";
 
   const directionWord = trend.direction === "rising" ? "上升" : trend.direction === "falling" ? "下降" : "稳定";
   const slopeSign = trend.slopePerWeek > 0 ? "+" : "";

@@ -55,9 +55,9 @@
   "reports": [
     {
       "date": "2026-06-26",
-      "time": "2026-06-26 17:37:05",
+      "time": "2026-06-26 21:00:13",
       "type": "project",
-      "score": 96,
+      "score": 97,
       "grade": "A",
       "triggers": 1,
       "dimTotal": 20,
@@ -91,8 +91,8 @@
           "detail": "0 条记录, 1/8 诊断触发"
         },
         "git": {
-          "score": 80,
-          "detail": "main · 18 个未提交源文件 (另 5 生成产物)"
+          "score": 100,
+          "detail": "main · 4 个未提交源文件"
         },
         "security": {
           "score": 100,

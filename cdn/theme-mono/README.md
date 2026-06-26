@@ -46,8 +46,8 @@ theme-mono/
 | | `--yry-shadow-lg` | `0 12px 32px rgba(0,0,0,.45)` |
 | | `--yry-radius` | `16px`（Mono 主题更大圆角） |
 | **Text (3)** | `--yry-text` | `#fff` |
-| | `--yry-text2` | `var(--yry-mono-text2)` |
-| | `--yry-text3` | `var(--yry-mono-text3)` |
+| | `--yry-text2` | `var(--yry-mono-text-secondary)` |
+| | `--yry-text3` | `var(--yry-mono-text-tertiary)` |
 
 ## Mono 专属令牌（7）
 

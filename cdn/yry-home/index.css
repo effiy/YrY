@@ -5,8 +5,8 @@
       --color-accent: var(--yry-accent);
       --color-accent-2: var(--yry-cyan);
       --text-primary: var(--yry-text);
-      --text-secondary: var(--yry-text2);
-      --text-muted: var(--yry-text3);
+      --text-secondary: var(--yry-text-secondary);
+      --text-muted: var(--yry-text-tertiary);
       --shadow-card: var(--yry-shadow);
       --shadow-hover: var(--yry-shadow-lg);
       --radius-card: var(--yry-radius);
@@ -327,7 +327,7 @@
     }
     .item-card .icon.ref   {
       background: rgba(148,163,184,0.15);
-      color: var(--yry-mono-text2);
+      color: var(--yry-mono-text-secondary);
     }
     .item-card .icon.node  {
       background: rgba(100,149,237,0.18);
@@ -775,7 +775,7 @@
     }
     .cron-panel .cron-item .cr-badge.idle {
       background: rgba(148,163,184,0.12);
-      color: var(--yry-mono-text2);
+      color: var(--yry-mono-text-secondary);
     }
     .cron-panel .cron-item .cr-row2 {
       padding-left: 34px; font-size: 0.78rem; color: var(--text-primary); line-height: 1.5;
@@ -1012,10 +1012,10 @@
     }
     .cr-countdown.later {
       background: rgba(148,163,184,0.08);
-      color: var(--yry-mono-text2);
+      color: var(--yry-mono-text-secondary);
     }
     .yry-cr-badge-meta {
-      background: rgba(148,163,184,0.08); color: var(--yry-mono-text2); font-size: 0.63rem;
+      background: rgba(148,163,184,0.08); color: var(--yry-mono-text-secondary); font-size: 0.63rem;
     }
     .yry-cr-badge-durable {
       background: rgba(var(--yry-cyan-rgb),0.1); color: var(--color-accent-2);

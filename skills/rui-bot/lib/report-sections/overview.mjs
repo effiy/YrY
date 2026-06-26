@@ -300,7 +300,7 @@ export function buildKeyMetricsDashboard(/** @type {any} */ hr, /** @type {any} 
     trendIndicators = `<div class="h-rs-kpi-trend">${changes.map(ch => {
       const d = ch.curr - ch.prev;
       const icon = d > 2 ? "↑" : d < -2 ? "↓" : "→";
-      const color = d > 2 ? COLOR_PASS : d < -2 ? COLOR_FAIL : "var(--yry-text3)";
+      const color = d > 2 ? COLOR_PASS : d < -2 ? COLOR_FAIL : "var(--yry-text-tertiary)";
       return `<span class="h-rs-change-cur" style="--change-color:${color}">${escapeHtml(ch.label)} ${icon}${Math.abs(d)}</span>`;
     }).join(' · ')}</div>`;
   }

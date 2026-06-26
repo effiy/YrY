@@ -31,7 +31,7 @@
         })
         .catch(function(err) {
           console.error('YryChecklist: failed to load %s: %s', f.file, err.message);
-          accum[f.id] += '<div style="padding:20px;text-align:center;color:var(--text3)">'
+          accum[f.id] += '<div style="padding:20px;text-align:center;color:var(--text-tertiary)">'
             + '— 面板加载失败: ' + f.file + ' —</div>';
         });
     });

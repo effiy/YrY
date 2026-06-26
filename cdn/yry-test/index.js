@@ -263,7 +263,7 @@ function renderSrcMap(){
       '<div class="flow-node assert">✅ 断言执行</div><div class="flow-arrow">→</div>'+
       '<div class="flow-node test">📊 结果回收</div>'+
     '</div>'+
-    '<p style="text-align:center;color:var(--text3);font-size:.72rem">点击下方任意源文件 → 跳转到该文件实际代码 → 高亮关联行</p>'+
+    '<p style="text-align:center;color:var(--text-tertiary);font-size:.72rem">点击下方任意源文件 → 跳转到该文件实际代码 → 高亮关联行</p>'+
   '</div>';
 
   html+='<div class="card"><h2>📁 源文件测试覆盖度</h2><div class="src-map">';
@@ -282,7 +282,7 @@ function renderSrcMap(){
   // 低覆盖警示
   const lowFiles=sourceMap.filter(s=>s.coverage<50);
   if(lowFiles.length){
-    html+='<div class="card"><h2>🚨 覆盖度警示（&lt;50%）</h2><p style="color:var(--text2);font-size:.82rem;margin-bottom:10px">以下源文件测试覆盖不足，建议参考 IMP-004 改进项补齐：</p>';
+    html+='<div class="card"><h2>🚨 覆盖度警示（&lt;50%）</h2><p style="color:var(--text-secondary);font-size:.82rem;margin-bottom:10px">以下源文件测试覆盖不足，建议参考 IMP-004 改进项补齐：</p>';
     for(const s of lowFiles){
       html+='<div class="case-row" style="padding:10px 14px;margin-bottom:6px"><div class="c-id" style="background:rgba(239,68,68,.1);color:var(--fail)">⚠️</div><div class="c-body"><div class="c-title" style="font-size:.82rem">'+esc(s.path)+'</div><div class="c-meta"><span class="m-item">📊 覆盖 '+s.coverage+'%</span><span class="m-item">🧪 关联 '+s.tests.length+' 用例</span>'+srcLinkHtml({path:s.path,line:1})+'</div></div></div>';
     }
@@ -337,7 +337,7 @@ function renderResults(){
 /* ═══ Normal / Boundary panels ═══ */
 function renderCasePanel(id,cases,title,intro){
   const container=document.getElementById(id);
-  let html='<div class="card" style="padding:14px 18px"><h2>'+title+'</h2><p style="color:var(--text2);font-size:.78rem;margin:0">'+intro+'</p></div>';
+  let html='<div class="card" style="padding:14px 18px"><h2>'+title+'</h2><p style="color:var(--text-secondary);font-size:.78rem;margin:0">'+intro+'</p></div>';
   let list=cases;
   if(resultQuery){
     const q=resultQuery;
@@ -359,7 +359,7 @@ function renderAnomaly(){
   const p0=anomalyCases.filter(c=>c.severity==='P0');
   const p1=anomalyCases.filter(c=>c.severity==='P1');
   let html='<div class="card" style="padding:14px 18px"><h2>🚨 异常用例总览</h2>'+
-    '<p style="color:var(--text2);font-size:.78rem;margin:0 0 12px">P0 阻断级 '+p0.length+' 条（必须立即修复）· P1 警告级 '+p1.length+' 条（计划修复）· 每条含 Given/When/Then + 恢复方案 + 源码定位</p>'+
+    '<p style="color:var(--text-secondary);font-size:.78rem;margin:0 0 12px">P0 阻断级 '+p0.length+' 条（必须立即修复）· P1 警告级 '+p1.length+' 条（计划修复）· 每条含 Given/When/Then + 恢复方案 + 源码定位</p>'+
     '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
     '<div class="stat-card" style="padding:12px 16px;min-width:auto;cursor:default"><div class="val" style="color:var(--fail);font-size:1.4rem">'+p0.length+'</div><div class="lbl">P0 阻断</div></div>'+
     '<div class="stat-card" style="padding:12px 16px;min-width:auto;cursor:default"><div class="val" style="color:var(--warn);font-size:1.4rem">'+p1.length+'</div><div class="lbl">P1 警告</div></div>'+
@@ -386,7 +386,7 @@ function renderAnomaly(){
         '<div class="a-recovery">'+esc(c.recovery)+'</div>'+
         '<div class="a-actions">'+
           srcLinkHtml(c.src)+
-          '<span class="m-item" style="font-size:.7rem;color:var(--text3);background:rgba(255,255,255,.04);padding:2px 8px;border-radius:8px">⏱ '+fmtDur(c.duration)+(c.isSlow?' <span class="slow-warn">🐢</span>':'')+'</span>'+
+          '<span class="m-item" style="font-size:.7rem;color:var(--text-tertiary);background:rgba(255,255,255,.04);padding:2px 8px;border-radius:8px">⏱ '+fmtDur(c.duration)+(c.isSlow?' <span class="slow-warn">🐢</span>':'')+'</span>'+
           '<button class="btn" style="padding:3px 8px;font-size:.68rem" onclick="copyRecovery(\''+esc(c.id)+'\')">📋 复制恢复方案</button>'+
         '</div>'+
       '</div>';
@@ -394,7 +394,7 @@ function renderAnomaly(){
     html+='</div>';
   }
   // 改进意见
-  html+='<div class="card"><h2>💡 异常用例改进意见</h2><ul style="color:var(--text2);font-size:.78rem;line-height:1.8;padding-left:20px">'+
+  html+='<div class="card"><h2>💡 异常用例改进意见</h2><ul style="color:var(--text-secondary);font-size:.78rem;line-height:1.8;padding-left:20px">'+
     '<li>为每个 P0 异常提供自动恢复脚本（参考 IMP-003）</li>'+
     '<li>建立异常知识库 <code>tests/fixtures/anomalies.json</code>，新人遇到同类问题可自助查询</li>'+
     '<li>异常用例的 <code>recovery</code> 字段应包含具体的命令/代码片段，而非笼统描述</li>'+
@@ -416,7 +416,7 @@ function renderSlow(){
   const container=document.getElementById('slowContent');
   const all=getAllTests(),slow=all.filter(t=>(t.duration||0)>SLOW_THRESHOLD).sort((a,b)=>(b.duration||0)-(a.duration||0));
   if(!slow.length){container.textContent = '';container.insertAdjacentHTML('beforeend','<div class="state-msg"><div class="icon">⚡</div><h3>所有测试都在 '+SLOW_THRESHOLD+'ms 以内</h3></div>');return}
-  let html='<div class="card" style="padding:14px 18px"><h2>🐢 慢测试清单（> '+SLOW_THRESHOLD+'ms）</h2><p style="color:var(--text2);font-size:.78rem;margin:0 0 12px">点击测试名复制 · 点击 🔗 跳转源码定位</p>';
+  let html='<div class="card" style="padding:14px 18px"><h2>🐢 慢测试清单（> '+SLOW_THRESHOLD+'ms）</h2><p style="color:var(--text-secondary);font-size:.78rem;margin:0 0 12px">点击测试名复制 · 点击 🔗 跳转源码定位</p>';
   for(const t of slow){
     const durMs=t.duration||0,barPct=Math.min(100,Math.round(durMs/100));
     html+='<div class="t-row'+(t.status==='failed'?' fail':'')+'">'+
@@ -429,7 +429,7 @@ function renderSlow(){
   }
   html+='</div>';
   // 改进建议
-  html+='<div class="card"><h2>💡 慢测试改进意见</h2><ul style="color:var(--text2);font-size:.78rem;line-height:1.8;padding-left:20px">'+
+  html+='<div class="card"><h2>💡 慢测试改进意见</h2><ul style="color:var(--text-secondary);font-size:.78rem;line-height:1.8;padding-left:20px">'+
     '<li><strong>node tests/run.mjs 全量 (486ms)</strong>：拆分为 <code>--skills</code> / <code>--agents</code> / <code>--rules</code> 子集，按需运行（参考 IMP-002）</li>'+
     '<li><strong>help.mjs 启动 (42ms)</strong>：考虑懒加载命令详情，避免冷启动解析全部 help 文本</li>'+
     '<li><strong>趋势报告趋势检测 (12s)</strong>：加入 AbortSignal.timeout(8000) 与本地缓存降级（参考 A-1.4）</li>'+
@@ -446,15 +446,15 @@ function renderPerf(){
   if(!perfData?.length){container.textContent = '';
 
   if(!perfData?.length){container.insertAdjacentHTML('beforeend', '<div class="state-msg"><div class="icon">📈</div><h3>暂无性能测试数据</h3></div>');return}
-  let html='<div class="card" style="padding:14px 18px"><h2>📈 性能基线 vs 目标</h2><p style="color:var(--text2);font-size:.78rem;margin:0 0 12px">📈 上升 = 变慢 · 📉 下降 = 变快 · 📊 持平</p>';
+  let html='<div class="card" style="padding:14px 18px"><h2>📈 性能基线 vs 目标</h2><p style="color:var(--text-secondary);font-size:.78rem;margin:0 0 12px">📈 上升 = 变慢 · 📉 下降 = 变快 · 📊 持平</p>';
   for(const p of perfData){
     const durMs=p.duration||0,target=p.target||100,barPct=Math.min(100,Math.round(durMs/target*100)),durClass=durMs>target?'very-slow':durMs>target*0.7?'slow':'';
     const trendIcon=p.trend==='up'?'📈 变慢':p.trend==='down'?'📉 变快':'📊 持平';
-    const trendColor=p.trend==='up'?'var(--warn)':p.trend==='down'?'var(--pass)':'var(--text3)';
+    const trendColor=p.trend==='up'?'var(--warn)':p.trend==='down'?'var(--pass)':'var(--text-tertiary)';
     html+='<div class="t-row" style="padding:9px 18px;cursor:default">'+
       '<span class="t-icon" style="color:'+trendColor+'">'+trendIcon.split(' ')[0]+'</span>'+
       '<span class="t-name">'+esc(p.name)+'</span>'+
-      '<span style="font-size:.66rem;color:var(--text3);font-family:monospace">目标 ≤ '+target+'ms</span>'+
+      '<span style="font-size:.66rem;color:var(--text-tertiary);font-family:monospace">目标 ≤ '+target+'ms</span>'+
       '<span class="t-dur '+durClass+'"><div class="td-bar"><div class="td-bar-inner" style="width:'+barPct+'%"></div></div>'+fmtDur(durMs)+'</span>'+
     '</div>';
   }
@@ -470,7 +470,7 @@ function renderImprove(){
   const adopted=improvements.filter(x=>adoptedProposals.has(x.id));
   const pending=improvements.filter(x=>!adoptedProposals.has(x.id));
   let html='<div class="card" style="padding:14px 18px"><h2>💡 改进建议 · 可一键采纳并导出为自改进提案</h2>'+
-    '<p style="color:var(--text2);font-size:.78rem;margin:0 0 12px">总计 '+improvements.length+' 条 · 已采纳 <strong style="color:var(--pass)">'+adopted.length+'</strong> · 待评审 '+pending.length+' · 点击 ✓ 切换状态 · 点击「🚀 导出改进提案」生成可粘贴到自改进引擎的 Markdown</p>'+
+    '<p style="color:var(--text-secondary);font-size:.78rem;margin:0 0 12px">总计 '+improvements.length+' 条 · 已采纳 <strong style="color:var(--pass)">'+adopted.length+'</strong> · 待评审 '+pending.length+' · 点击 ✓ 切换状态 · 点击「🚀 导出改进提案」生成可粘贴到自改进引擎的 Markdown</p>'+
     '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
     '<button class="btn btn-primary" onclick="exportProposal()">🚀 导出改进提案（'+adopted.length+'/'+improvements.length+'）</button>'+
     '<button class="btn" onclick="adoptAll()">✅ 全部采纳</button>'+
@@ -489,7 +489,7 @@ function renderImprove(){
     html+='</div>';
   }
   // 改进意见（关于改进建议本身）
-  html+='<div class="card"><h2>💡 关于本面板的改进意见（自评）</h2><ul style="color:var(--text2);font-size:.78rem;line-height:1.8;padding-left:20px">'+
+  html+='<div class="card"><h2>💡 关于本面板的改进意见（自评）</h2><ul style="color:var(--text-secondary);font-size:.78rem;line-height:1.8;padding-left:20px">'+
     '<li>当前面板已实现 9 维度全景（7 步路径 + 源码地图 + 异常独立 Tab + 改进建议可导出）</li>'+
     '<li>建议接入 <code>tests/run.mjs --json</code> 实时结果，替换嵌入式 mock 数据</li>'+
     '<li>建议把 <code>anomalyCases</code> / <code>improvements</code> 抽离为 JSON fixtures，便于维护</li>'+
@@ -505,7 +505,7 @@ function impCardHtml(imp){
   return '<div class="imp-card'+(isAdopted?' adopted':'')+'" data-id="'+esc(imp.id)+'">'+
     '<div class="imp-check" onclick="toggleAdopt(\''+esc(imp.id)+'\')" title="点击切换采纳状态"></div>'+
     '<div class="imp-body">'+
-      '<div class="imp-title">'+severityPill(imp.severity)+'<span>'+esc(imp.title)+'</span><span style="font-family:monospace;font-size:.66rem;color:var(--text3)">'+esc(imp.id)+'</span></div>'+
+      '<div class="imp-title">'+severityPill(imp.severity)+'<span>'+esc(imp.title)+'</span><span style="font-family:monospace;font-size:.66rem;color:var(--text-tertiary)">'+esc(imp.id)+'</span></div>'+
       '<div class="imp-desc">'+esc(imp.desc)+'</div>'+
       '<div class="imp-meta">'+
         '<span class="effort">⏱ '+esc(imp.effort)+'</span>'+
@@ -578,7 +578,7 @@ function renderOverview(){
     html+='<div class="sli-card '+status+'">'+
       '<div class="sli-status">'+status+'</div>'+
       '<div class="sli-name">'+(sli.icon||'📊')+' '+esc(sli.name)+'</div>'+
-      '<div class="sli-val">'+sli.val+'<span style="font-size:.7rem;color:var(--text3);margin-left:2px">'+esc(sli.unit||'')+'</span></div>'+
+      '<div class="sli-val">'+sli.val+'<span style="font-size:.7rem;color:var(--text-tertiary);margin-left:2px">'+esc(sli.unit||'')+'</span></div>'+
       '<div class="sli-target">🎯 目标: '+(sli.invert?'≤ ':'≥ ')+sli.target+esc(sli.unit||'')+' · '+esc(sli.desc)+'</div>'+
       '<div class="sli-bar"><div class="sli-bar-inner" style="width:'+barPct+'%;background:'+barColor+'"></div></div>'+
     '</div>';
@@ -645,7 +645,7 @@ function renderOverview(){
 
   // ── 关键洞察（自动汇总） ──
   html+='<div class="card"><h2>💡 关键洞察（自动汇总）</h2>'+
-    '<ul style="color:var(--text2);font-size:.78rem;line-height:1.9;padding-left:20px">'+
+    '<ul style="color:var(--text-secondary);font-size:.78rem;line-height:1.9;padding-left:20px">'+
     '<li>🎯 <strong style="color:var(--fail)">'+s.failed+' 个失败</strong>集中在 <code>tests/skills/rui.test.mjs:62</code> 和 <code>README.md:118</code>，建议优先修复</li>'+
     '<li>⚡ <strong style="color:var(--warn)">最慢测试</strong>：<code>node tests/run.mjs 全量</code> 486ms，拆分为子集可提速 40%</li>'+
     '<li>📊 <strong style="color:var(--cyan)">'+anomalyCases.filter(a=>a.severity==='P0').length+' 个 P0</strong>异常需立即处理：CLAUDE.md 缺失 / API token 缺失 / main 分支提交</li>'+
@@ -735,7 +735,7 @@ function renderTrendSvg(){
   perfTrend.duration.forEach((v,i)=>{svg+='<circle cx="'+xAt(i).toFixed(1)+'" cy="'+yAtD(v).toFixed(1)+'" r="3" fill="var(--pass)"/>'});
   perfTrend.passRate.forEach((v,i)=>{svg+='<circle cx="'+xAt(i).toFixed(1)+'" cy="'+yAtP(v).toFixed(1)+'" r="3" fill="var(--cyan)"/>'});
   // X 标签
-  perfTrend.labels.forEach((l,i)=>{svg+='<text x="'+xAt(i).toFixed(1)+'" y="'+(H-4)+'" text-anchor="middle" font-size="10" fill="var(--text3)" font-family="monospace">'+l+'</text>'});
+  perfTrend.labels.forEach((l,i)=>{svg+='<text x="'+xAt(i).toFixed(1)+'" y="'+(H-4)+'" text-anchor="middle" font-size="10" fill="var(--text-tertiary)" font-family="monospace">'+l+'</text>'});
   // 图例
   svg+='<text x="'+(W-80)+'" y="14" font-size="10" fill="var(--cyan)">━ 通过率%</text>';
   svg+='<text x="'+(W-80)+'" y="28" font-size="10" fill="var(--pass)">╌ 耗时ms</text>';
@@ -779,7 +779,7 @@ function renderInsights(){
 
   // 智能建议
   html+='<div class="card"><h2>🤖 AI 建议（自动生成）</h2>'+
-    '<ul style="color:var(--text2);font-size:.78rem;line-height:1.9;padding-left:20px">'+
+    '<ul style="color:var(--text-secondary);font-size:.78rem;line-height:1.9;padding-left:20px">'+
     '<li>基于错误聚类，发现 <strong>3 个独立根因</strong>（断言硬编码 / 网络超时 / 环境变量缺失），建议一次性修复可减少 80% 失败</li>'+
     '<li>慢测试 <code>node tests/run.mjs 全量 (486ms)</code> 拆分后预计总耗时 <strong>下降 40%</strong>（参考 IMP-002）</li>'+
     '<li>采纳 IMP-003 + IMP-004 后，预期 MTTR 从 42min 降至 <strong>20min</strong>，覆盖率从 64% 提升至 <strong>80%</strong></li>'+
@@ -813,7 +813,7 @@ function renderGate(){
       '<div class="gi-meta">⏱ '+esc(it.meta)+'</div></div>';
   }
   html+='</div>';
-  html+='<div style="margin-top:14px;font-size:.78rem;color:var(--text2);line-height:1.7">'+
+  html+='<div style="margin-top:14px;font-size:.78rem;color:var(--text-secondary);line-height:1.7">'+
     '<span class="ok">✅ 入门门禁通过：3 项硬性要求满足</span><br>'+
     '<span class="fail">❌ 阻断项：2 项（SKILL.md 路由断言 + README 管线完整）</span><br>'+
     '<span class="warn">⚠️ 建议项：3 项（环境变量 / walkthrough / pre-commit 增强）</span><br>'+
@@ -846,7 +846,7 @@ function viewSource(relPath,lineNum,el){
   document.getElementById('modalMeta').textContent='⏳ 加载中…';
   document.getElementById('modalBody').textContent = '';
 
-  document.getElementById('modalBody').insertAdjacentHTML('beforeend', '<div style="padding:40px;text-align:center;color:var(--text3)">加载中…</div>');
+  document.getElementById('modalBody').insertAdjacentHTML('beforeend', '<div style="padding:40px;text-align:center;color:var(--text-tertiary)">加载中…</div>');
   overlay.classList.add('show');
   // 高亮触发元素
   if(el){
@@ -877,7 +877,7 @@ function viewSource(relPath,lineNum,el){
       document.getElementById('modalMeta').textContent='❌ 加载失败';
       var mb2 = document.getElementById('modalBody');
       mb2.textContent = '';
-      mb2.insertAdjacentHTML('beforeend', '<div style="padding:40px;text-align:center;color:var(--fail)">无法加载: '+esc(relPath)+'<br><small style="display:block;margin-top:8px;color:var(--text3)">'+esc(e.message)+'</small><br><a href="../../../../'+relPath+'" target="_blank" style="display:inline-block;margin-top:14px;color:var(--cyan);text-decoration:none;font-size:.82rem">在新标签页中打开 ↗</a></div>');
+      mb2.insertAdjacentHTML('beforeend', '<div style="padding:40px;text-align:center;color:var(--fail)">无法加载: '+esc(relPath)+'<br><small style="display:block;margin-top:8px;color:var(--text-tertiary)">'+esc(e.message)+'</small><br><a href="../../../../'+relPath+'" target="_blank" style="display:inline-block;margin-top:14px;color:var(--cyan);text-decoration:none;font-size:.82rem">在新标签页中打开 ↗</a></div>');
     });
 }
 function highlightLine(ln,el){
@@ -974,7 +974,7 @@ function renderCmdList(){
   const html=cmdFiltered.map((c,i)=>'<div class="cmd-item'+(i===cmdActive?' active':'')+'" onclick="runCmd('+(cmdList.indexOf(c))+')" onmouseenter="cmdActive='+i+';renderCmdList()"><span class="ci-icon">'+c.icon+'</span><span class="ci-text">'+c.text+'</span>'+(c.kbd?'<span class="ci-kbd">'+c.kbd+'</span>':'')+(c.tab?'<span class="ci-tag">tab</span>':'')+'</div>').join('');
   document.getElementById('cmdList').textContent = '';
 
-  document.getElementById('cmdList').insertAdjacentHTML('beforeend', html || '<div style="padding:20px;text-align:center;color:var(--text3);font-size:.84rem">无匹配命令</div>');
+  document.getElementById('cmdList').insertAdjacentHTML('beforeend', html || '<div style="padding:20px;text-align:center;color:var(--text-tertiary);font-size:.84rem">无匹配命令</div>');
 }
 function runCmd(idx){
   const c=cmdList[idx];if(!c)return;

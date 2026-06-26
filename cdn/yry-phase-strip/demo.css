@@ -6,4 +6,4 @@ body { background: var(--yry-bg, #0a0a0a); color: var(--yry-text, #f5f5f5); font
   .demo-hint code { background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px; font-family: monospace; font-size: .72rem; color: #e0af68; }
   hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
   .demo-section { margin: 20px 0; }
-  .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 10px; color: var(--yry-text2); }
+  .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 10px; color: var(--yry-text-secondary); }

@@ -3,11 +3,11 @@
 @media (max-width:1100px){ .deliv-grid{grid-template-columns:repeat(4,1fr);} }
 @media (max-width:800px){ .deliv-grid{grid-template-columns:repeat(3,1fr);} }
 @media (max-width:500px){ .deliv-grid{grid-template-columns:repeat(2,1fr);} }
-.deliv-card { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:8px; padding:14px 10px; text-decoration:none; color:var(--text1); text-align:center; transition:all .2s; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; }
+.deliv-card { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:8px; padding:14px 10px; text-decoration:none; color:var(--text-primary); text-align:center; transition:all .2s; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; }
 .deliv-card:hover { background:rgba(var(--yry-cyan-rgb),.08); border-color:var(--cyan); transform:translateY(-2px); box-shadow:0 4px 12px rgba(var(--yry-cyan-rgb),.2); }
 .dc-icon { font-size:1.6rem; line-height:1; }
-.dc-name { font-size:.78rem; font-weight:600; color:var(--text1); }
-.dc-type { font-size:.62rem; color:var(--text3); letter-spacing:.04em; text-transform:uppercase; }
+.dc-name { font-size:.78rem; font-weight:600; color:var(--text-primary); }
+.dc-type { font-size:.62rem; color:var(--text-tertiary); letter-spacing:.04em; text-transform:uppercase; }
 
 /* ── Path Link ───────────────────────────────────────────────────────────── */
 .path-link { color:var(--cyan); text-decoration:none; transition:all .15s; display:inline-block; max-width:100%; }
@@ -17,6 +17,6 @@
 
 /* ── Operation Buttons ───────────────────────────────────────────────────── */
 .op-cell { white-space:nowrap; }
-.op-btn { display:inline-block; padding:2px 6px; margin:0 2px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-radius:4px; font-size:.7rem; cursor:pointer; text-decoration:none; color:var(--text2); transition:all .15s; }
+.op-btn { display:inline-block; padding:2px 6px; margin:0 2px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-radius:4px; font-size:.7rem; cursor:pointer; text-decoration:none; color:var(--text-secondary); transition:all .15s; }
 a.op-btn:hover { background:rgba(var(--yry-cyan-rgb),.15); border-color:var(--cyan); color:var(--cyan); }
 span.op-btn:hover { background:rgba(var(--yry-accent-rgb),.15); border-color:var(--accent); color:var(--accent); }

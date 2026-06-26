@@ -4,8 +4,8 @@ body {
   max-width: 920px;
   margin: 0 auto;
   line-height: 1.7;
-  color: var(--text1);
-  background: var(--bg1);
+  color: var(--text-primary);
+  background: var(--bg-canvas);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
 }
 h1 {
@@ -17,35 +17,35 @@ h2 {
   font-size: 1rem;
   margin: 28px 0 10px;
   padding-bottom: 6px;
-  border-bottom: 1px solid var(--border2);
-  color: var(--text1);
+  border-bottom: 1px solid var(--border-faint);
+  color: var(--text-primary);
 }
 h3 {
   font-size: 0.85rem;
   margin: 16px 0 6px;
-  color: var(--text2);
+  color: var(--text-secondary);
 }
 p {
-  color: var(--text2);
+  color: var(--text-secondary);
   font-size: 0.82rem;
   margin: 0 0 8px;
 }
 code {
   font-family: var(--font-mono);
   font-size: 0.72rem;
-  background: var(--bg3);
+  background: var(--bg-raised);
   padding: 1px 5px;
   border-radius: 3px;
   color: var(--yry-cyan);
 }
 pre {
-  background: var(--bg2);
-  border: 1px solid var(--border2);
+  background: var(--bg-card);
+  border: 1px solid var(--border-faint);
   border-radius: var(--radius);
   padding: 12px 16px;
   font-size: 0.74rem;
   overflow-x: auto;
-  color: var(--text2);
+  color: var(--text-secondary);
 }
 /* Swatch grid */
 .swatch {
@@ -57,8 +57,8 @@ pre {
   padding: 14px 16px;
   border-radius: var(--radius);
   font-size: 0.78rem;
-  border: 1px solid var(--border2);
-  color: var(--text1);
+  border: 1px solid var(--border-faint);
+  color: var(--text-primary);
 }
 .sw b {
   display: block;
@@ -71,7 +71,7 @@ pre {
   font-size: 0.68rem;
   background: transparent;
   padding: 0;
-  color: var(--text3);
+  color: var(--text-tertiary);
 }
 /* Token table */
 .token-table {
@@ -83,9 +83,9 @@ pre {
 .token-table th {
   text-align: left;
   padding: 6px 10px;
-  color: var(--text2);
+  color: var(--text-secondary);
   font-weight: 600;
-  border-bottom: 1px solid var(--border2);
+  border-bottom: 1px solid var(--border-faint);
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -93,7 +93,7 @@ pre {
 .token-table td {
   padding: 5px 10px;
   border-bottom: 1px solid var(--border-soft);
-  color: var(--text2);
+  color: var(--text-secondary);
   font-family: var(--font-mono);
   font-size: 0.72rem;
 }
@@ -101,16 +101,16 @@ pre {
   color: var(--yry-cyan);
 }
 .token-table td:last-child {
-  color: var(--text3);
+  color: var(--text-tertiary);
   font-family: inherit;
   font-size: 0.7rem;
 }
 .footer {
   margin-top: 40px;
   padding-top: 16px;
-  border-top: 1px solid var(--border2);
+  border-top: 1px solid var(--border-faint);
   font-size: 0.7rem;
-  color: var(--text3);
+  color: var(--text-tertiary);
   text-align: center;
 }
 /* Utility classes — replace repeated inline styles in index.html */
@@ -118,7 +118,7 @@ pre {
 .swatch-note {
   margin-top: 8px;
   font-size: 0.78rem;
-  color: var(--text3);
+  color: var(--text-tertiary);
 }
 /* 色板前景色 — 在彩色背景上保证文字可读 (取代 style="color:#fff/#000") */
 .sw-light { color: #fff; }

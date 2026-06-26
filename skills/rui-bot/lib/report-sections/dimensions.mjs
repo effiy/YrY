@@ -213,7 +213,7 @@ export function buildScoreDiffSection(/** @type {any} */ hr, /** @type {any} */ 
   const diff = currentComposite - prevComposite;
 
   const diffIcon = diff > 2 ? '📈' : diff < -2 ? '📉' : '➡️';
-  const diffColor = diff > 2 ? COLOR_PASS : diff < -2 ? COLOR_FAIL : 'var(--yry-text2)';
+  const diffColor = diff > 2 ? COLOR_PASS : diff < -2 ? COLOR_FAIL : 'var(--yry-text-secondary)';
   const diffSign = diff > 0 ? '+' : '';
 
   const allDims = new Set([...Object.keys(currentScores), ...Object.keys(prevScores)]);
@@ -243,10 +243,8 @@ export function buildScoreDiffSection(/** @type {any} */ hr, /** @type {any} */ 
 </div>`;
   }).join("");
 
-  const prevDate = (prev.timestamp || '').slice(0, 10) || '?';
-
   return `<div class="h-section">
-<h2>${diffIcon} 评分变化归因 <span class="h-section-sub-inline">对比 ${escapeHtml(prevDate)}</span></h2>
+<h2>${diffIcon} 评分变化归因</h2>
 <div class="h-rs-delta-banner">
 <div class="h-rs-center">
 <div class="h-rs-delta-big" style="--delta-color:${diffColor}">${diffSign}${diff}</div>
@@ -262,7 +260,7 @@ export function buildScoreDiffSection(/** @type {any} */ hr, /** @type {any} */ 
 </div>
 <div class="h-rs-center">
 <div class="h-rs-delta-trans">${prevComposite} → ${currentComposite}</div>
-<div class="h-rs-meta">${escapeHtml(prevDate)} → 本次</div>
+<div class="h-rs-meta">上次 → 本次</div>
 </div>
 ${changeRows ? `<div class="h-rs-pad-8">${changeRows}</div>` : ''}
 ${changes.length > 8 ? `<div class="h-rs-note-center">还有 ${changes.length - 8} 项变化未列出</div>` : ''}

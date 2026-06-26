@@ -37,8 +37,8 @@ yry-check-item/
 |------|------|------|
 | checked | `--yry-accent-rgb` | 青 |
 | indeterminate | `--yry-warn-rgb` | 黄 |
-| disabled | `--yry-text3-rgb` | 灰 |
-| unchecked | `--yry-text2-rgb` | 次文字 |
+| disabled | `--yry-text-tertiary-rgb` | 灰 |
+| unchecked | `--yry-text-secondary-rgb` | 次文字 |
 
 ## 性能基线
 

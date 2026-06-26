@@ -2098,7 +2098,7 @@ body {
 /* ── Section 头部 meta 文本(.68rem text3) ── */
 .sr-meta-info {
   font-size: 0.68rem;
-  color: var(--yry-text3);
+  color: var(--yry-text-tertiary);
 }
 
 /* ── Section 顶部介绍段落(暗底框) ── */

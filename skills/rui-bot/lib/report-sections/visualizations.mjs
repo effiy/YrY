@@ -33,14 +33,14 @@ export function buildRadarChart(/** @type {Record<string, any>} */ catScores, /*
       const a = startAngle + i * angleStep;
       points.push(`${(cx + r * frac * Math.cos(a)).toFixed(1)},${(cy + r * frac * Math.sin(a)).toFixed(1)}`);
     }
-    return `<polygon points="${points.join(' ')}" fill="none" stroke="var(--border2)" stroke-width="0.5" />`;
+    return `<polygon points="${points.join(' ')}" fill="none" stroke="var(--border-faint)" stroke-width="0.5" />`;
   }).join("\n");
 
   const axisLines = cats.map((_, i) => {
     const a = startAngle + i * angleStep;
     const x = (cx + r * Math.cos(a)).toFixed(1);
     const y = (cy + r * Math.sin(a)).toFixed(1);
-    return `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="var(--border2)" stroke-width="0.5" />`;
+    return `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="var(--border-faint)" stroke-width="0.5" />`;
   }).join("\n");
 
   const scorePoints = cats.map((/** @type {any} */ e, /** @type {number} */ i) => {
@@ -59,8 +59,8 @@ export function buildRadarChart(/** @type {Record<string, any>} */ catScores, /*
     const ly = (cy + labelR * Math.sin(a)).toFixed(1);
     const anchor = Math.abs(Math.cos(a)) < 0.3 ? 'middle' : Math.cos(a) > 0 ? 'start' : 'end';
     const label = (catLabels && catLabels[e[0]]) || e[0];
-    return `<text x="${lx}" y="${ly}" text-anchor="${anchor}" dominant-baseline="central" fill="var(--yry-text2)" font-size="11" font-weight="600">${escapeHtml(label)}</text>` +
-      `<text x="${lx}" y="${parseFloat(ly) + 14}" text-anchor="${anchor}" dominant-baseline="central" fill="var(--yry-text3)" font-size="10">${e[1].score}分</text>`;
+    return `<text x="${lx}" y="${ly}" text-anchor="${anchor}" dominant-baseline="central" fill="var(--yry-text-secondary)" font-size="11" font-weight="600">${escapeHtml(label)}</text>` +
+      `<text x="${lx}" y="${parseFloat(ly) + 14}" text-anchor="${anchor}" dominant-baseline="central" fill="var(--yry-text-tertiary)" font-size="10">${e[1].score}分</text>`;
   }).join("\n");
 
   const dots = cats.map((/** @type {any} */ e, /** @type {number} */ i) => {
@@ -68,7 +68,7 @@ export function buildRadarChart(/** @type {Record<string, any>} */ catScores, /*
     const a = startAngle + i * angleStep;
     const dx = (cx + r * frac * Math.cos(a)).toFixed(1);
     const dy = (cy + r * frac * Math.sin(a)).toFixed(1);
-    return `<circle cx="${dx}" cy="${dy}" r="3" fill="${scoreColor}" stroke="var(--bg1)" stroke-width="1" />`;
+    return `<circle cx="${dx}" cy="${dy}" r="3" fill="${scoreColor}" stroke="var(--bg-canvas)" stroke-width="1" />`;
   }).join("\n");
 
   return `<div class="h-section">
@@ -159,7 +159,7 @@ export function buildCorrelationMatrixHTML(/** @type {any} */ corrData) {
     return `rgba(${channel},${(abs * 0.2).toFixed(2)})`;
   };
 
-  const textColor = (/** @type {number} */ r) => Math.abs(r) >= 0.6 ? '#fff' : 'var(--yry-text2)';
+  const textColor = (/** @type {number} */ r) => Math.abs(r) >= 0.6 ? '#fff' : 'var(--yry-text-secondary)';
 
   const headerCells = `<th class="h-rs-corr-th"></th>${labels.map((/** @type {string} */ lab) => `<th class="h-rs-corr-th-sm" title="${escapeHtml(lab)}">${escapeHtml(lab.slice(0, 6))}</th>`).join("")}`;
 
@@ -167,8 +167,8 @@ export function buildCorrelationMatrixHTML(/** @type {any} */ corrData) {
     const cells = `<th class="h-rs-corr-th-right" title="${escapeHtml(labels[i])}">${escapeHtml(labels[i].slice(0, 6))}</th>` +
       labels.map((/** @type {string} */ _, /** @type {number} */ j) => {
         const r = matrix[i][j];
-        const bg = i === j ? 'var(--bg2)' : corrColor(r);
-        const tc = i === j ? 'var(--yry-text3)' : textColor(r);
+        const bg = i === j ? 'var(--bg-card)' : corrColor(r);
+        const tc = i === j ? 'var(--yry-text-tertiary)' : textColor(r);
         const weight = Math.abs(r) >= 0.7 ? '700' : '400';
         const val = i === j ? '1' : r.toFixed(1);
         return `<td class="h-rs-corr-td" style="--corr-weight:${weight};--corr-bg:${bg};--corr-color:${tc}" title="${escapeHtml(labels[i])} × ${escapeHtml(labels[j])}: r=${r.toFixed(2)}">${val}</td>`;

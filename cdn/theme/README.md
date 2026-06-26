@@ -55,7 +55,7 @@ theme/
 | `--bg-soft` | `rgba(255,255,255,0.04)` | 微淡底色叠加 |
 | `--bg-overlay` | `rgba(0,0,0,0.6)` | 模态遮罩 |
 
-`--yry-bg` → `var(--bg1)` · `--yry-bg-card` / `--yry-bg-flat` → `var(--bg2)` · `--yry-bg-raised` → `var(--bg3)`
+`--yry-bg` → `var(--bg-canvas)` · `--yry-bg-card` / `--yry-bg-flat` → `var(--bg-card)` · `--yry-bg-raised` → `var(--bg-raised)`
 
 ### Text（文本层级）
 
@@ -66,7 +66,7 @@ theme/
 | `--text3` | `#6e7681` | 辅助文字 / meta 信息 |
 | `--text-muted` | `#484f58` | 禁用 / 占位 |
 
-`--yry-text` / `--yry-text1` → `var(--text1)` · `--yry-text2` → `var(--text2)` · `--yry-text3` → `var(--text3)`
+`--yry-text` / `--yry-text1` → `var(--text-primary)` · `--yry-text2` → `var(--text-secondary)` · `--yry-text3` → `var(--text-tertiary)`
 
 ### Brand（品牌色）
 

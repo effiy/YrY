@@ -80,7 +80,7 @@ var TREND_DATA = null;
       html += '<div class="lcr-step-detail ' + g + '">' +
         '<div class="lcr-step-head"><span class="lcr-step-name">' + s.icon + ' ' + escapeHtml(s.name) + '</span>' +
         '<span class="lcr-step-score" style="color:' + sc(stepScore) + '">' + stepScore + '/' + g + '</span></div>' +
-        '<div style="font-size:.72rem;color:var(--yry-text2);line-height:1.6">' + escapeHtml(s.desc) + '</div>' +
+        '<div style="font-size:.72rem;color:var(--yry-text-secondary);line-height:1.6">' + escapeHtml(s.desc) + '</div>' +
         '<div class="lcr-step-meta"><span>⏱ ' + escapeHtml(s.time) + '</span><span>📦 ' + escapeHtml(s.size) + '</span>' +
         '<span style="color:' + sc(stepScore) + '">成功率 ' + (99.5 + i * 0.1).toFixed(1) + '%</span></div>' +
         '</div>';
@@ -116,7 +116,7 @@ var TREND_DATA = null;
       '<line x1="' + pad + '" y1="' + (h-pad) + '" x2="' + (w-pad) + '" y2="' + (h-pad) + '" stroke="rgba(255,255,255,.06)" stroke-width="1"/>' +
       '<path d="' + dPath + '" fill="none" stroke="#22d3ee" stroke-width="2"/>' +
       pts.map(function(p) { return '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="3" fill="#22d3ee"><title>' + p.v + '%</title></circle>'; }).join('') +
-      '</svg><div style="font-size:.68rem;color:var(--yry-text3);margin-top:8px">近 6 次检查加载成功率趋势 · 当前 99.7% · 持续改善 ↑</div>';
+      '</svg><div style="font-size:.68rem;color:var(--yry-text-tertiary);margin-top:8px">近 6 次检查加载成功率趋势 · 当前 99.7% · 持续改善 ↑</div>';
   }
 
   function renderFallbacks() {
@@ -157,7 +157,7 @@ var TREND_DATA = null;
       { label: '安全基线', score: scores.security || 0, icon: '🛡', desc: 'CDN 资源完整性校验依赖安全配置', threshold: 80 },
       { label: '机器人就绪', score: scores.robots || 0, icon: '🤖', desc: '加载链监控告警依赖通知通道', threshold: 60 }
     ];
-    var html = '<div style="font-size:.78rem;color:var(--yry-text2);margin-bottom:12px;padding:10px;background:rgba(59,130,246,.04);border-radius:6px">📐 加载链稳定性受多个健康维度影响，以下为关联维度当前评分及影响分析</div>';
+    var html = '<div style="font-size:.78rem;color:var(--yry-text-secondary);margin-bottom:12px;padding:10px;background:rgba(59,130,246,.04);border-radius:6px">📐 加载链稳定性受多个健康维度影响，以下为关联维度当前评分及影响分析</div>';
     diagItems.forEach(function(d) {
       var statusIcon = d.score >= d.threshold ? '✅' : d.score >= d.threshold * 0.6 ? '⚠️' : '❌';
       var statusColor = d.score >= d.threshold ? '#22c55e' : d.score >= d.threshold * 0.6 ? '#f59e0b' : '#ef4444';
@@ -190,7 +190,7 @@ var TREND_DATA = null;
         '<div class="lcr-hl-value" style="color:' + riskColor + '">' + riskLabel + '</div></div>';
     }
     html += '</div>';
-    html += '<div style="font-size:.72rem;color:var(--yry-text3);padding:8px;background:rgba(15,23,42,.4);border-radius:6px">📌 加载链稳定性与项目整体健康评分联动 · API 可达性和配置健康直接影响 CDN 资源加载 · 风险评分下降时建议优先排查网络和配置问题</div>';
+    html += '<div style="font-size:.72rem;color:var(--yry-text-tertiary);padding:8px;background:rgba(15,23,42,.4);border-radius:6px">📌 加载链稳定性与项目整体健康评分联动 · API 可达性和配置健康直接影响 CDN 资源加载 · 风险评分下降时建议优先排查网络和配置问题</div>';
     return html;
   }
 
@@ -205,7 +205,7 @@ var TREND_DATA = null;
       '</div>' +
       '<div class="yry-panel on" id="lcr-overview">' +
         '<div class="card"><h2>加载链流程</h2>' + renderChainFlow() +
-        '<div style="font-size:.64rem;color:var(--yry-text3);text-align:center;margin-top:6px">总加载时间 ~625ms · 字体 preload ~80ms · 动画延迟 100ms · jsDelivr 全球 CDN 加速</div></div>' +
+        '<div style="font-size:.64rem;color:var(--yry-text-tertiary);text-align:center;margin-top:6px">总加载时间 ~625ms · 字体 preload ~80ms · 动画延迟 100ms · jsDelivr 全球 CDN 加速</div></div>' +
         '<div class="card"><h2>综合 KPI</h2><div class="stats">' + renderKpiStats(loadScore, avgLoad, relPct, firstPaint, cdnHit) + '</div></div>' +
       '</div>' +
       '<div class="yry-panel" id="lcr-chain">' +

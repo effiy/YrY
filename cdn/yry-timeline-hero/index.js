@@ -59,7 +59,7 @@
       catch (e) { cfg = null; }
     }
     if (!cfg) {
-      this.innerHTML = '<div class="tl-hero" style="text-align:center;padding:24px;color:var(--yry-text3)">⏱️ 无时间线数据</div>';
+      this.innerHTML = '<div class="tl-hero" style="text-align:center;padding:24px;color:var(--yry-text-tertiary)">⏱️ 无时间线数据</div>';
       return;
     }
 

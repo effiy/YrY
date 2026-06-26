@@ -14,11 +14,11 @@
 .sc-text-dim { color: var(--dim); }
 .sc-text-muted { color: var(--muted); }
 .sc-text-fg { color: var(--fg); }
-.sc-text2 { color: var(--text2); }
-.sc-text3 { color: var(--text3); }
-.sc-text3-yry { color: var(--yry-text3); }
-.sc-text3-84 { color: var(--text3); font-size: .84rem; }
-.sc-text3-78 { color: var(--text3); font-size: .78rem; margin-top: 14px; }
+.sc-text2 { color: var(--text-secondary); }
+.sc-text3 { color: var(--text-tertiary); }
+.sc-text3-yry { color: var(--yry-text-tertiary); }
+.sc-text3-84 { color: var(--text-tertiary); font-size: .84rem; }
+.sc-text3-78 { color: var(--text-tertiary); font-size: .78rem; margin-top: 14px; }
 .sc-dim-sm { color: var(--dim); font-size: .7rem; }
 .sc-muted-sm { color: var(--muted); font-size: .7rem; margin-right: .25rem; }
 .sc-muted-bold { color: var(--muted); font-weight: 600; }
@@ -43,21 +43,21 @@
 .sc-fs-2-glow { font-size: 2rem; margin-bottom: 8px; animation: glow 2s infinite; }
 
 /* ── Section sub-heading auto (margin-left:auto) ── */
-.sc-section-sub-auto { font-size: .7rem; font-weight: 400; color: var(--text3); margin-left: auto; }
-.sc-section-sub-auto-72 { font-size: .72rem; color: var(--text3); margin-left: auto; white-space: nowrap; }
-.sc-section-sub-auto-66 { font-size: .66rem; color: var(--text3); margin-left: auto; }
-.sc-section-sub-400 { font-weight: 400; font-size: .7rem; color: var(--text3); }
-.sc-section-sub-76-t3 { font-size: .76rem; color: var(--text3); margin-bottom: 14px; }
-.sc-section-sub-76-t2 { font-size: .76rem; color: var(--text2); margin-bottom: 8px; }
-.sc-section-sub-70-mt8 { font-size: .7rem; color: var(--text3); margin-top: 8px; }
-.sc-section-sub-72-yry { font-size: .72rem; color: var(--yry-text3); text-align: center; }
+.sc-section-sub-auto { font-size: .7rem; font-weight: 400; color: var(--text-tertiary); margin-left: auto; }
+.sc-section-sub-auto-72 { font-size: .72rem; color: var(--text-tertiary); margin-left: auto; white-space: nowrap; }
+.sc-section-sub-auto-66 { font-size: .66rem; color: var(--text-tertiary); margin-left: auto; }
+.sc-section-sub-400 { font-weight: 400; font-size: .7rem; color: var(--text-tertiary); }
+.sc-section-sub-76-t3 { font-size: .76rem; color: var(--text-tertiary); margin-bottom: 14px; }
+.sc-section-sub-76-t2 { font-size: .76rem; color: var(--text-secondary); margin-bottom: 8px; }
+.sc-section-sub-70-mt8 { font-size: .7rem; color: var(--text-tertiary); margin-top: 8px; }
+.sc-section-sub-72-yry { font-size: .72rem; color: var(--yry-text-tertiary); text-align: center; }
 
 /* ── Meta / center / empty state ── */
-.sc-meta-center { text-align: center; color: var(--text3); font-size: .78rem; margin-top: 10px; }
-.sc-empty-state { padding: 60px 20px; text-align: center; color: var(--text3); }
+.sc-meta-center { text-align: center; color: var(--text-tertiary); font-size: .78rem; margin-top: 10px; }
+.sc-empty-state { padding: 60px 20px; text-align: center; color: var(--text-tertiary); }
 .sc-tag-sm { font-size: .58rem; padding: 1px 6px; }
 .sc-code-inline { display: inline-block; margin-top: 14px; padding: 6px 10px; background: var(--yry-bg-flat); border-radius: 4px; color: var(--cyan); }
-.sc-code-block { background: rgba(0,0,0,.3); border-radius: 6px; padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: .72rem; color: var(--text2); line-height: 1.6; }
+.sc-code-block { background: rgba(0,0,0,.3); border-radius: 6px; padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: .72rem; color: var(--text-secondary); line-height: 1.6; }
 .sc-fail-mb8 { color: var(--fail); margin-bottom: 8px; }
 
 /* ── Backgrounds (solid) ── */
@@ -106,7 +106,7 @@
 .sc-mx-darker { margin: 0 .35rem; color: var(--darker); }
 
 /* ── Meta center variants ── */
-.sc-meta-center-70 { text-align: center; color: var(--text3); font-size: .7rem; margin-top: 8px; }
+.sc-meta-center-70 { text-align: center; color: var(--text-tertiary); font-size: .7rem; margin-top: 8px; }
 
 /* ── Padding variants ── */
 .sc-pad-3-8 { padding: 3px 8px; }
@@ -116,7 +116,7 @@
 /* ── Margin variants ── */
 .sc-mt1r { margin-top: 1rem; }
 .sc-mt12 { margin-top: 12px; }
-.sc-mt12-76-t3 { margin-top: 12px; font-size: .76rem; color: var(--text3); }
+.sc-mt12-76-t3 { margin-top: 12px; font-size: .76rem; color: var(--text-tertiary); }
 .sc-mt0 { margin-top: 0; }
 .sc-mb14 { margin-bottom: 14px; }
 .sc-mb10 { margin-bottom: 10px; }

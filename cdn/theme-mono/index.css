@@ -30,8 +30,8 @@
   --yry-shadow-lg:       0 calc(var(--space-base) * 12) calc(var(--space-base) * 32) rgba(var(--yry-black-rgb), 0.45);
   --yry-radius:          calc(var(--space-base) * 16);
   --yry-text:            rgb(var(--yry-white-rgb));
-  --yry-text2:           var(--yry-mono-text2);
-  --yry-text3:           var(--yry-mono-text3);
+  --yry-text-secondary:  var(--yry-mono-text-secondary);
+  --yry-text-tertiary:   var(--yry-mono-text-tertiary);
 }
 
 /* ── Body ───────────────────────────────────────────────────────────────── */
@@ -55,7 +55,7 @@ body {
   display: flex; align-items: center; gap: 1rem; margin-bottom: .5rem;
 }
 .yry-mono-header h1 { font-size: 1.5rem; font-weight: 700; }
-.yry-mono-subtitle { color: var(--yry-text2); font-size: .875rem; margin-left: 1.75rem; }
+.yry-mono-subtitle { color: var(--yry-text-secondary); font-size: .875rem; margin-left: 1.75rem; }
 
 /* ── Pulse Dot ──────────────────────────────────────────────────────────── */
 .yry-pulse-dot {
@@ -93,7 +93,7 @@ body {
   display: flex; align-items: center; gap: .5rem; margin-bottom: .75rem;
 }
 .yry-mono-card h3 { font-size: .875rem; font-weight: 600; }
-.yry-mono-card ul { list-style: none; color: var(--yry-text2); font-size: .75rem; }
+.yry-mono-card ul { list-style: none; color: var(--yry-text-secondary); font-size: .75rem; }
 .yry-mono-card li { margin-bottom: .375rem; }
 
 /* ── Card Dots (装饰性色标，固定色值以保证视觉区分度) ────────────────────── */
@@ -110,13 +110,13 @@ body {
   display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: .75rem;
   padding: .75rem; background: var(--yry-bg-card);
   border-radius: .5rem; border: var(--yry-border);
-  font-size: .75rem; color: var(--yry-text2);
+  font-size: .75rem; color: var(--yry-text-secondary);
 }
 .yry-mono-legend-item { display: flex; align-items: center; gap: .375rem; }
 
 /* ── Footer (mono) ──────────────────────────────────────────────────────── */
 .yry-mono-footer {
-  text-align: center; color: var(--yry-text3); font-size: .75rem; margin-top: 1rem;
+  text-align: center; color: var(--yry-text-tertiary); font-size: .75rem; margin-top: 1rem;
 }
 
 /* ── Breadcrumb (mono theme) ─────────────────────────────────────────── */
@@ -128,8 +128,8 @@ body {
   color: var(--yry-link); text-decoration: none; transition: color 0.15s;
 }
 .yry-mono-container .breadcrumb a:hover { color: var(--yry-link-hover); text-decoration: underline; }
-.yry-mono-container .breadcrumb .bc-sep { color: var(--yry-text3); opacity: var(--alpha-deep); -webkit-user-select: none; user-select: none; }
-.yry-mono-container .breadcrumb .bc-current { color: var(--yry-text2); font-weight: 500; }
+.yry-mono-container .breadcrumb .bc-sep { color: var(--yry-text-tertiary); opacity: var(--alpha-deep); -webkit-user-select: none; user-select: none; }
+.yry-mono-container .breadcrumb .bc-current { color: var(--yry-text-secondary); font-weight: 500; }
 
 /* ── Cross-nav (mono theme) ──────────────────────────────────────────── */
 .yry-mono-container .cross-nav {
@@ -139,13 +139,13 @@ body {
 .yry-mono-container .cross-link { color: var(--yry-link); font-size: 0.76rem; text-decoration: none; padding: 3px 10px; border-radius: 4px; transition: color 0.15s, background 0.15s; }
 .yry-mono-container .cross-link:hover { color: var(--yry-link-hover); background: rgba(var(--yry-amber-bright-rgb), 0.06); }
 .yry-mono-container .cross-link.on { color: var(--yry-link-hover); font-weight: 600; cursor: default; }
-.yry-mono-container .cross-sep { color: var(--yry-text3); font-size: 0.5rem; opacity: 0.35; -webkit-user-select: none; user-select: none; }
+.yry-mono-container .cross-sep { color: var(--yry-text-tertiary); font-size: 0.5rem; opacity: 0.35; -webkit-user-select: none; user-select: none; }
 
 /* ── Cross-nav overrides (mono theme uses different link colors) ────────── */
 .yry-mono-container .yry-cross-link { color: var(--yry-link); font-size: 0.76rem; }
 .yry-mono-container .yry-cross-link:hover { color: var(--yry-link-hover); background: rgba(var(--yry-amber-bright-rgb), 0.06); }
 .yry-mono-container .yry-cross-link.on { color: var(--yry-link-hover); cursor: default; }
-.yry-mono-container .yry-cross-sep { color: var(--yry-text3); }
+.yry-mono-container .yry-cross-sep { color: var(--yry-text-tertiary); }
 
 /* ── Animations ─────────────────────────────────────────────────────────── */
 @keyframes yry-mono-card-in {
@@ -164,7 +164,7 @@ body {
 }
 .yry-mono-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(var(--yry-mono-text2-rgb), 0.2);
+  border-color: rgba(var(--yry-mono-text-secondary-rgb), 0.2);
   box-shadow: var(--yry-shadow-lg);
 }
 
@@ -172,7 +172,7 @@ body {
   transition: border-color .2s, box-shadow .2s;
 }
 .yry-diagram-wrap:hover {
-  border-color: rgba(var(--yry-mono-text2-rgb), var(--alpha-soft));
+  border-color: rgba(var(--yry-mono-text-secondary-rgb), var(--alpha-soft));
 }
 
 /* ── Responsive ─────────────────────────────────────────────────────────── */

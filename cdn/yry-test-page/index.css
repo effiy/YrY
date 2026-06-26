@@ -19,8 +19,8 @@
   --warn: var(--yry-warn);
   --skip: var(--yry-skip);
   --text: var(--yry-text);
-  --text2: var(--yry-text2);
-  --text3: var(--yry-text3);
+  --text2: var(--yry-text-secondary);
+  --text3: var(--yry-text-tertiary);
   --shadow: var(--yry-shadow);
   --shadow-lg: var(--yry-shadow-lg);
   --radius: var(--yry-radius);
@@ -52,7 +52,7 @@ body {
 .header { text-align: center; margin-bottom: 32px; animation: fadeInDown .5s ease both }
 .header h1 { font-size: 2.1rem; font-weight: 700 }
 .header h1 .accent { color: var(--accent) }
-.header .sub { color: var(--text2); font-size: .9rem }
+.header .sub { color: var(--text-secondary); font-size: .9rem }
 
 /* ── Cross nav ────────────────────────────────────────────────────────── */
 .cross-nav {
@@ -66,7 +66,7 @@ body {
 }
 .cross-link:hover { color: var(--accent); background: rgba(var(--yry-accent-rgb),.06); text-decoration: underline }
 .cross-link.on { color: var(--accent); font-weight: 600 }
-.cross-sep { color: var(--text3); font-size: .5rem; opacity: .35; user-select: none }
+.cross-sep { color: var(--text-tertiary); font-size: .5rem; opacity: .35; user-select: none }
 
 /* ── Stats grid ───────────────────────────────────────────────────────── */
 .stats-grid {
@@ -87,7 +87,7 @@ body {
 .stat-card .val.s { color: var(--skip) }
 .stat-card .val.d { color: var(--cyan); font-size: 1.25rem }
 .stat-card .lbl {
-  font-size: .72rem; color: var(--text3); margin-top: 2px;
+  font-size: .72rem; color: var(--text-tertiary); margin-top: 2px;
   text-transform: uppercase; letter-spacing: .5px;
 }
 .stat-card.active-filter { border-color: rgba(var(--yry-accent-rgb),.4); animation: pulse 2s infinite }
@@ -109,11 +109,11 @@ body {
   animation: fadeInDown .5s .15s ease both;
 }
 .tab {
-  padding: 10px 20px; cursor: pointer; font-size: .84rem; color: var(--text3);
+  padding: 10px 20px; cursor: pointer; font-size: .84rem; color: var(--text-tertiary);
   border-bottom: 2px solid transparent; transition: all .15s;
   user-select: none; position: relative;
 }
-.tab:hover { color: var(--text2) }
+.tab:hover { color: var(--text-secondary) }
 .tab.on { color: var(--accent); border-bottom-color: var(--accent) }
 .tab .tab-badge {
   font-size: .6rem; background: var(--fail); color: #fff;
@@ -129,7 +129,7 @@ body {
 }
 .btn {
   background: var(--bg-flat); border: var(--border); border-radius: 8px;
-  color: var(--text2); padding: 7px 14px; cursor: pointer; font-size: .8rem;
+  color: var(--text-secondary); padding: 7px 14px; cursor: pointer; font-size: .8rem;
   transition: all .15s; display: inline-flex; align-items: center; gap: 5px;
   text-decoration: none; white-space: nowrap; font-family: inherit;
 }
@@ -149,14 +149,14 @@ body {
   font-size: .82rem; outline: none; transition: border-color .15s; font-family: inherit;
 }
 .search-wrap input:focus { border-color: rgba(var(--yry-accent-rgb),.4) }
-.search-wrap input::placeholder { color: var(--text3) }
+.search-wrap input::placeholder { color: var(--text-tertiary) }
 .search-wrap .si {
   position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
-  font-size: .8rem; color: var(--text3); pointer-events: none;
+  font-size: .8rem; color: var(--text-tertiary); pointer-events: none;
 }
 
 .kbd-hint {
-  font-size: .64rem; color: var(--text3); background: rgba(255,255,255,.04);
+  font-size: .64rem; color: var(--text-tertiary); background: rgba(255,255,255,.04);
   border-radius: 3px; padding: 1px 5px; margin-left: 4px;
 }
 
@@ -170,7 +170,7 @@ body {
   display: flex; align-items: center; justify-content: center;
 }
 .layer-head h2 { font-size: 1.15rem; font-weight: 700 }
-.layer-head .ls { font-size: .78rem; color: var(--text3) }
+.layer-head .ls { font-size: .78rem; color: var(--text-tertiary) }
 
 /* ── File cards ───────────────────────────────────────────────────────── */
 .file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 10px }
@@ -185,13 +185,13 @@ body {
 .file-card .fc-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px }
 .file-card .fc-body { flex: 1; min-width: 0 }
 .file-card .fc-name { font-weight: 600; font-size: .88rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
-.file-card .fc-path { font-size: .7rem; color: var(--text3); font-family: monospace; margin-top: 1px }
-.file-card .fc-desc { font-size: .74rem; color: var(--text2); margin-top: 4px; line-height: 1.4 }
-.file-card .fc-meta { display: flex; gap: 12px; margin-top: 6px; font-size: .7rem; color: var(--text3); flex-wrap: wrap }
+.file-card .fc-path { font-size: .7rem; color: var(--text-tertiary); font-family: monospace; margin-top: 1px }
+.file-card .fc-desc { font-size: .74rem; color: var(--text-secondary); margin-top: 4px; line-height: 1.4 }
+.file-card .fc-meta { display: flex; gap: 12px; margin-top: 6px; font-size: .7rem; color: var(--text-tertiary); flex-wrap: wrap }
 .file-card .fc-badge { font-size: .68rem; padding: 2px 8px; border-radius: 10px; font-weight: 600 }
 .file-card .fc-badge.pass { background: rgba(var(--yry-pass-rgb),.12); color: var(--pass) }
 .file-card .fc-badge.fail { background: rgba(var(--yry-fail-rgb),.12); color: var(--fail) }
-.file-card .fc-badge.none { background: rgba(255,255,255,.04); color: var(--text3) }
+.file-card .fc-badge.none { background: rgba(255,255,255,.04); color: var(--text-tertiary) }
 
 /* ── Suite accordion ──────────────────────────────────────────────────── */
 .suite {
@@ -206,7 +206,7 @@ body {
   cursor: pointer; user-select: none; transition: background .12s;
 }
 .s-head:hover { background: rgba(255,255,255,.02) }
-.s-head .s-arrow { font-size: .6rem; color: var(--text3); transition: transform .2s; width: 12px; text-align: center }
+.s-head .s-arrow { font-size: .6rem; color: var(--text-tertiary); transition: transform .2s; width: 12px; text-align: center }
 .suite.open .s-head .s-arrow { transform: rotate(90deg) }
 .s-head .s-name { flex: 1; font-weight: 600; font-size: .88rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
 .s-head .s-meta { display: flex; gap: 8px; font-size: .72rem }
@@ -225,10 +225,10 @@ body {
 .t-row.fail { background: rgba(var(--yry-fail-rgb),.04) }
 .t-row.focused { background: rgba(var(--yry-accent-rgb),.06) }
 .t-row .t-icon { width: 16px; text-align: center; flex-shrink: 0; font-size: .7rem }
-.t-row .t-name { flex: 1; color: var(--text2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.t-row .t-name { flex: 1; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
 .t-row .t-err { font-size: .7rem; color: var(--fail); max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
 .t-row .t-dur {
-  font-size: .68rem; color: var(--text3); min-width: 38px; text-align: right;
+  font-size: .68rem; color: var(--text-tertiary); min-width: 38px; text-align: right;
   font-variant-numeric: tabular-nums; display: flex; align-items: center; gap: 4px;
 }
 .t-row .t-dur .td-bar { width: 30px; height: 3px; border-radius: 2px; background: rgba(255,255,255,.04); overflow: hidden; flex-shrink: 0 }
@@ -254,26 +254,26 @@ body {
 }
 .modal .m-head .m-title { flex: 1; font-weight: 600; font-size: .92rem; font-family: monospace }
 .modal .m-head .m-close {
-  background: none; border: none; color: var(--text3); font-size: 1.3rem;
+  background: none; border: none; color: var(--text-tertiary); font-size: 1.3rem;
   cursor: pointer; padding: 4px 8px; border-radius: 4px;
 }
 .modal .m-head .m-close:hover { color: var(--text) }
 .modal .m-body { flex: 1; overflow: auto; padding: 0 }
 .modal .m-body pre {
   margin: 0; padding: 16px 20px; font-family: 'SF Mono', 'Fira Code', monospace;
-  font-size: .78rem; line-height: 1.55; color: var(--text2);
+  font-size: .78rem; line-height: 1.55; color: var(--text-secondary);
   white-space: pre-wrap; word-break: break-all;
 }
 .modal .m-body pre .ln {
   display: inline-block; width: 36px; text-align: right;
-  margin-right: 12px; color: var(--text3); font-size: .7rem; user-select: none;
+  margin-right: 12px; color: var(--text-tertiary); font-size: .7rem; user-select: none;
 }
 
 /* ── State messages ───────────────────────────────────────────────────── */
 .state-msg { text-align: center; padding: 72px 20px; animation: fadeInUp .5s ease both }
 .state-msg .icon { font-size: 3rem; margin-bottom: 10px }
-.state-msg h3 { font-size: 1.05rem; color: var(--text2) }
-.state-msg p { font-size: .82rem; color: var(--text3); margin: 4px 0 }
+.state-msg h3 { font-size: 1.05rem; color: var(--text-secondary) }
+.state-msg p { font-size: .82rem; color: var(--text-tertiary); margin: 4px 0 }
 .state-msg code {
   background: var(--bg-flat); padding: 5px 10px; border-radius: 6px;
   font-size: .78rem; color: var(--cyan); margin-top: 6px; display: inline-block;

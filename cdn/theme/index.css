@@ -31,7 +31,7 @@
      ═════════════════════════════════════════════════════════════════════════ */
   --alpha-ghost:    0.04;   /* 幽灵层 — 最淡表面叠加 (bg-soft) */
   --alpha-whisper:  0.05;   /* 耳语层 — 最淡边框 (border-soft) */
-  --alpha-faint:    0.08;   /* 微光层 — 淡边框 (border2) */
+  --alpha-faint:    0.08;   /* 微光层 — 淡边框 (border-faint) */
   --alpha-subtle:   0.1;    /* 微妙层 — 语义色 bg 变体 (*-bg) */
   --alpha-soft:     0.15;   /* 柔和层 — 语义色 soft 变体 (*-soft) */
   --alpha-moderate: 0.16;   /* 适度层 — 半透明强边框 (border-strong) */
@@ -43,65 +43,65 @@
   /* ═════════════════════════════════════════════════════════════════════════
      Base palette RGB channels — 用于 rgb(var(--*-rgb)) 消除 hex 魔法数字
      ═════════════════════════════════════════════════════════════════════════ */
-  --bg1-rgb:       13, 17, 23;       /* #0d1117 — 页面底色 */
-  --bg2-rgb:       22, 27, 34;       /* #161b22 — 卡片底色 */
-  --bg3-rgb:       28, 33, 40;       /* #1c2128 — 浮层底色 */
+  --bg-canvas-rgb:  13, 17, 23;       /* #0d1117 — 页面底色 */
+  --bg-card-rgb:    22, 27, 34;       /* #161b22 — 卡片底色 */
+  --bg-raised-rgb:  28, 33, 40;       /* #1c2128 — 浮层底色 */
   --bg-hover-rgb:  33, 38, 45;       /* #21262d — hover 态 */
-  --text1-rgb:     230, 237, 243;    /* #e6edf3 — 主文字 */
-  --text2-rgb:     157, 167, 179;    /* #9da7b3 — 次级文字 */
-  --text3-rgb:     110, 118, 129;    /* #6e7681 — 辅助文字 */
+  --text-primary-rgb:   230, 237, 243;    /* #e6edf3 — 主文字 */
+  --text-secondary-rgb: 157, 167, 179;    /* #9da7b3 — 次级文字 */
+  --text-tertiary-rgb:  110, 118, 129;    /* #6e7681 — 辅助文字 */
   --text-muted-rgb: 72, 79, 88;      /* #484f58 — 禁用/占位 */
-  --border1-rgb:   48, 54, 61;       /* #30363d — 实色边框 */
+  --border-solid-rgb: 48, 54, 61;       /* #30363d — 实色边框 */
 
   /* ═════════════════════════════════════════════════════════════════════════
      Surfaces — 背景表面
-     bg1→bg3 从深到浅; bg-soft/bg-overlay 为半透明叠加层
+     bg-canvas → bg-card → bg-raised 从深到浅; bg-soft/bg-overlay 为半透明叠加层
      ═════════════════════════════════════════════════════════════════════════ */
-  --bg1:       rgb(var(--bg1-rgb));
-  --bg2:       rgb(var(--bg2-rgb));
-  --bg3:       rgb(var(--bg3-rgb));
+  --bg-canvas:   rgb(var(--bg-canvas-rgb));
+  --bg-card:     rgb(var(--bg-card-rgb));
+  --bg-raised:   rgb(var(--bg-raised-rgb));
   --bg-hover:  rgb(var(--bg-hover-rgb));
   --bg-soft:   rgba(var(--yry-white-rgb), var(--alpha-ghost));
   --bg-overlay: rgba(var(--yry-black-rgb), var(--alpha-heavy));
 
   /* yry-* surface aliases (兼容 Category B / scene-base 等消费者) */
-  --yry-bg:        var(--bg1);
-  --yry-bg-card:   var(--bg2);
-  --yry-bg-flat:   var(--bg2);
-  --yry-bg-raised: var(--bg3);
+  --yry-bg:        var(--bg-canvas);
+  --yry-bg-card:   var(--bg-card);
+  --yry-bg-flat:   var(--bg-card);
+  --yry-bg-raised: var(--bg-raised);
 
   /* 深色表面变体在 Misc 区域统一声明 */
 
   /* ═════════════════════════════════════════════════════════════════════════
      Text — 文本层级
-     text1→text3 从主到辅; text-muted 为禁用/占位
+     text-primary → text-tertiary 从主到辅; text-muted 为禁用/占位
      ═════════════════════════════════════════════════════════════════════════ */
-  --text1:       rgb(var(--text1-rgb));
-  --text2:       rgb(var(--text2-rgb));
-  --text3:       rgb(var(--text3-rgb));
+  --text-primary:    rgb(var(--text-primary-rgb));
+  --text-secondary:  rgb(var(--text-secondary-rgb));
+  --text-tertiary:   rgb(var(--text-tertiary-rgb));
   --text-muted:  rgb(var(--text-muted-rgb));
 
   /* 文本反色 (在亮色/高饱和背景上使用的深色文字) */
   --yry-text-inverse-rgb: 17, 17, 17;  /* #111 */
   --yry-text-inverse:     rgb(var(--yry-text-inverse-rgb));
 
-  /* yry-* text aliases (兼容 tokens / scene-base 命名) */
-  --yry-text1: var(--text1);
-  --yry-text2: var(--text2);
-  --yry-text3: var(--text3);
-  --yry-text:  var(--text1);
+  /* yry-* text aliases (保留语义别名，弃用带数字命名) */
+  --yry-text-primary:   var(--text-primary);
+  --yry-text-secondary: var(--text-secondary);
+  --yry-text-tertiary:  var(--text-tertiary);
+  --yry-text:           var(--text-primary);
 
   /* ═════════════════════════════════════════════════════════════════════════
      Border — 边框
-     从实色到半透明，border1 为最实，border-soft 为最淡
+     从实色到半透明，border-solid 为最实，border-soft 为最淡
      ═════════════════════════════════════════════════════════════════════════ */
-  --border1:        rgb(var(--border1-rgb));
-  --border2:        rgba(var(--yry-white-rgb), var(--alpha-faint));
+  --border-solid:      rgb(var(--border-solid-rgb));
+  --border-faint:      rgba(var(--yry-white-rgb), var(--alpha-faint));
   --border-soft:    rgba(var(--yry-white-rgb), var(--alpha-whisper));
   --border-strong:  rgba(var(--yry-white-rgb), var(--alpha-moderate));
 
   /* yry-* border alias (兼容 tokens / scene-base 命名) */
-  --yry-border: var(--space-base) solid var(--border2);
+  --yry-border: var(--space-base) solid var(--border-faint);
 
   /* ═════════════════════════════════════════════════════════════════════════
      Brand — 品牌色
@@ -206,13 +206,13 @@
      Spacing — 间距 (以 --space-base 为原子单位)
      ═════════════════════════════════════════════════════════════════════════ */
   --space-base: 1px;
-  --gap-2:  calc(var(--space-base) * 2);
-  --gap-4:  calc(var(--space-base) * 4);
-  --gap-6:  calc(var(--space-base) * 6);
-  --gap-8:  calc(var(--space-base) * 8);
-  --gap-10: calc(var(--space-base) * 10);
-  --gap-12: calc(var(--space-base) * 12);
-  --gap-16: calc(var(--space-base) * 16);
+  --gap-xxs: calc(var(--space-base) * 2);
+  --gap-xs:  calc(var(--space-base) * 4);
+  --gap-sm:  calc(var(--space-base) * 6);
+  --gap-base: calc(var(--space-base) * 8);
+  --gap-md:  calc(var(--space-base) * 10);
+  --gap-lg:  calc(var(--space-base) * 12);
+  --gap-xl:  calc(var(--space-base) * 16);
 
   /* ═════════════════════════════════════════════════════════════════════════
      Font sizes — 字号 (9 级, 以 --space-base 为原子单位)
@@ -223,9 +223,9 @@
   --fs-md:  calc(var(--space-base) * 13);
   --fs-lg:  calc(var(--space-base) * 14);
   --fs-xl:  calc(var(--space-base) * 16);
-  --fs-2xl: calc(var(--space-base) * 20);
-  --fs-3xl: calc(var(--space-base) * 24);
-  --fs-4xl: calc(var(--space-base) * 32);
+  --fs-xxl:     calc(var(--space-base) * 20);
+  --fs-xxxl:    calc(var(--space-base) * 24);
+  --fs-display: calc(var(--space-base) * 32);
 
   /* ═════════════════════════════════════════════════════════════════════════
      Typography — 字体族
@@ -292,17 +292,17 @@
   --yry-mono-bg-rgb:      2, 6, 23;        /* #020617 */
   --yry-mono-slate-rgb:   15, 23, 42;      /* slate-900: 用于 mono-surface 半透明叠加 */
   --yry-mono-border-rgb:  30, 41, 59;      /* #1e293b */
-  --yry-mono-border2-rgb: 51, 65, 85;      /* #334155 */
-  --yry-mono-text2-rgb:   148, 163, 184;   /* #94a3b8 */
-  --yry-mono-text3-rgb:   71, 85, 105;     /* #475569 */
-  --yry-mono-text4-rgb:   83, 87, 108;     /* #53576c */
+  --yry-mono-border-faint-rgb: 51, 65, 85;      /* #334155 */
+  --yry-mono-text-secondary-rgb: 148, 163, 184;  /* #94a3b8 */
+  --yry-mono-text-tertiary-rgb:  71, 85, 105;    /* #475569 */
+  --yry-mono-text-quaternary-rgb: 83, 87, 108;   /* #53576c */
 
   --yry-mono-bg:      rgb(var(--yry-mono-bg-rgb));
   --yry-mono-surface: rgba(var(--yry-mono-slate-rgb), var(--alpha-deep));
   --yry-mono-border:  rgb(var(--yry-mono-border-rgb));
-  --yry-mono-border2: rgb(var(--yry-mono-border2-rgb));
-  --yry-mono-text2:   rgb(var(--yry-mono-text2-rgb));
-  --yry-mono-text3:   rgb(var(--yry-mono-text3-rgb));
-  --yry-mono-text4:   rgb(var(--yry-mono-text4-rgb));
+  --yry-mono-border-faint:    rgb(var(--yry-mono-border-faint-rgb));
+  --yry-mono-text-secondary:  rgb(var(--yry-mono-text-secondary-rgb));
+  --yry-mono-text-tertiary:   rgb(var(--yry-mono-text-tertiary-rgb));
+  --yry-mono-text-quaternary: rgb(var(--yry-mono-text-quaternary-rgb));
 
 }

@@ -101,7 +101,7 @@
       '<line x1="' + pad + '" y1="' + (h-pad) + '" x2="' + (w-pad) + '" y2="' + (h-pad) + '" stroke="rgba(255,255,255,.06)" stroke-width="1"/>' +
       '<path d="' + dPath + '" fill="none" stroke="#22d3ee" stroke-width="2"/>' +
       pts.map(function(p) { return '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="3" fill="#22d3ee"/>'; }).join('') +
-      '</svg><div style="font-size:.68rem;color:var(--yry-text3);margin-top:8px">近 6 次检查覆盖率趋势 · 当前 ' + covScore + '%</div>';
+      '</svg><div style="font-size:.68rem;color:var(--yry-text-tertiary);margin-top:8px">近 6 次检查覆盖率趋势 · 当前 ' + covScore + '%</div>';
   }
 
   function renderPassRate(passScore) {
@@ -115,7 +115,7 @@
       var rate = Math.round(p.pass / p.total * 100);
       html += '<tr><td><strong>' + escapeHtml(p.label) + '</strong></td><td>' + p.total + '</td>' +
         '<td style="color:var(--yry-pass)">' + p.pass + '</td>' +
-        '<td style="color:' + (p.fail > 0 ? 'var(--yry-fail)' : 'var(--yry-text3)') + '">' + p.fail + '</td>' +
+        '<td style="color:' + (p.fail > 0 ? 'var(--yry-fail)' : 'var(--yry-text-tertiary)') + '">' + p.fail + '</td>' +
         '<td><span class="badge ' + grade(rate) + '">' + rate + '%</span></td></tr>';
     });
     return html + '</tbody></table>';
@@ -161,7 +161,7 @@
     pts.forEach(function(p) {
       svg += '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="4" fill="#22d3ee"/>';
       var la = p.x > cx ? p.x + 12 : p.x - 12;
-      svg += '<text x="' + la + '" y="' + (p.y - 6) + '" fill="var(--yry-text3)" font-size="10" text-anchor="' + (p.x > cx ? 'start' : 'end') + '">' + escapeHtml(p.label) + '</text>';
+      svg += '<text x="' + la + '" y="' + (p.y - 6) + '" fill="var(--yry-text-tertiary)" font-size="10" text-anchor="' + (p.x > cx ? 'start' : 'end') + '">' + escapeHtml(p.label) + '</text>';
     });
     return svg + '</svg>';
   }
@@ -229,7 +229,7 @@
       '<div class="tr-kpi-card"><div class="tr-kpi-label">评分波动</div><div class="tr-kpi-value" style="color:' + volColor + '">σ ' + (vel.scoreVolatility || 0).toFixed(1) + '</div><div class="tr-kpi-sub">标准差</div></div>' +
       '</div>';
     if (vel.recommendation) {
-      html += '<div style="padding:12px;background:rgba(245,158,11,.06);border-radius:8px;border:1px solid rgba(245,158,11,.1);font-size:.78rem;color:var(--yry-text2)">💡 <strong>改进建议：</strong>' + escapeHtml(vel.recommendation) + '</div>';
+      html += '<div style="padding:12px;background:rgba(245,158,11,.06);border-radius:8px;border:1px solid rgba(245,158,11,.1);font-size:.78rem;color:var(--yry-text-secondary)">💡 <strong>改进建议：</strong>' + escapeHtml(vel.recommendation) + '</div>';
     }
     return html;
   }
@@ -248,7 +248,7 @@
       '<div class="tr-kpi-card"><div class="tr-kpi-label">风险等级</div><div class="tr-kpi-value" style="color:' + riskColor + '">' + riskLabel + '</div></div>' +
       '</div>';
     if (testRiskFactors.length > 0) {
-      html += '<h3 style="font-size:.88rem;margin-bottom:8px;color:var(--yry-text2)">⚠️ 测试相关风险因子</h3>';
+      html += '<h3 style="font-size:.88rem;margin-bottom:8px;color:var(--yry-text-secondary)">⚠️ 测试相关风险因子</h3>';
       html += '<table><thead><tr><th>风险因子</th><th>权重</th><th>影响</th></tr></thead><tbody>';
       testRiskFactors.forEach(function(f) {
         html += '<tr><td><strong>' + escapeHtml(f.factor) + '</strong></td><td>' + Math.round(f.weight * 100) + '%</td>' +
@@ -256,7 +256,7 @@
       });
       html += '</tbody></table>';
     }
-    html += '<div style="margin-top:12px;font-size:.72rem;color:var(--yry-text3);padding:8px;background:rgba(15,23,42,.4);border-radius:6px">📌 测试风险分析基于全局健康评分中的安全/API/配置维度风险扣除，反映测试环境稳定性</div>';
+    html += '<div style="margin-top:12px;font-size:.72rem;color:var(--yry-text-tertiary);padding:8px;background:rgba(15,23,42,.4);border-radius:6px">📌 测试风险分析基于全局健康评分中的安全/API/配置维度风险扣除，反映测试环境稳定性</div>';
     return html;
   }
 

@@ -57,11 +57,11 @@
 .stat-card .val.info   { color: var(--info, var(--yry-info, #6b7280)); }
 .stat-card .val.accent { color: var(--accent, var(--yry-accent, #ffc107)); }
 .stat-card .lbl {
-  font-size: .68rem; color: var(--text3, var(--yry-text3, rgba(110,110,114,1)));
+  font-size: .68rem; color: var(--text3, var(--yry-text-tertiary, rgba(110,110,114,1)));
   margin-top: 2px; letter-spacing: .5px;
 }
 .stat-card .sub {
-  font-size: .56rem; color: var(--text3, var(--yry-text3, rgba(110,110,114,1)));
+  font-size: .56rem; color: var(--text3, var(--yry-text-tertiary, rgba(110,110,114,1)));
   margin-top: 1px; opacity: .7; line-height: 1.2;
 }
 

@@ -22,8 +22,8 @@
                ('00' + now.getMilliseconds()).slice(-3);
     div.textContent = '';
     div.insertAdjacentHTML('beforeend', '<span class="log-time">' + time + '</span>' +
-                    '<span class="log-icon" style="color:' + (color || 'var(--text2)') + '">●</span>' +
-                    '<span style="color:' + (color || 'var(--text2)') + '">' + msg + '</span>');
+                    '<span class="log-icon" style="color:' + (color || 'var(--text-secondary)') + '">●</span>' +
+                    '<span style="color:' + (color || 'var(--text-secondary)') + '">' + msg + '</span>');
     var ms = document.createElement('span');
     ms.className = 'log-ms';
     ms.textContent = '+0ms';
@@ -71,7 +71,7 @@ function resetSim() {
   var box = document.getElementById('simLogBox');
   if (box) {
     box.textContent = '';
-  box.insertAdjacentHTML('beforeend', '<div style="color:var(--text3)">等待模拟开始...</div>');
+  box.insertAdjacentHTML('beforeend', '<div style="color:var(--text-tertiary)">等待模拟开始...</div>');
     box.style.display = 'none';
   }
   var btn = document.getElementById('btnSimPlay');
@@ -126,7 +126,7 @@ function startSim() {
     var logDelay = duration / (def.logLines.length + 2);
     def.logLines.forEach(function (line, li) {
       setTimeout(function () {
-        simLog(line, line.indexOf('✓') !== -1 || line.indexOf('✅') !== -1 ? 'var(--pass)' : 'var(--text2)');
+        simLog(line, line.indexOf('✓') !== -1 || line.indexOf('✅') !== -1 ? 'var(--pass)' : 'var(--text-secondary)');
       }, logDelay * (li + 1));
     });
     setTimeout(function () {

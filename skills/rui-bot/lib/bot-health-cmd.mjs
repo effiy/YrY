@@ -496,7 +496,7 @@ export async function cmdHealth(/** @type {string} */ projectRoot, /** @type {an
     const diff = composite - prevComposite;
     const diffIcon = diff > 2 ? "📈" : diff < -2 ? "📉" : "➡️";
     const diffColor = diff > 2 ? "\x1b[32m" : diff < -2 ? "\x1b[31m" : "";
-    console.log(`  ${diffIcon} 对比上次(${prevEntry.timestamp?.slice(0,10) || "?"}): ${diffColor}${diff > 0 ? "+" : ""}${diff}\x1b[0m 分 (${prevComposite} → ${composite})`);
+    console.log(`  ${diffIcon} 对比上次: ${diffColor}${diff > 0 ? "+" : ""}${diff}\x1b[0m 分 (${prevComposite} → ${composite})`);
 
     // Find top 3 dimension changes
     const dimChanges = [];

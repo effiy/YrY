@@ -633,7 +633,7 @@ export function generateIndex() {
     tr.appendChild(tdStatus);
 
     const tdSummary = document.createElement('td');
-    tdSummary.style.cssText = 'font-size:.82rem;color:var(--yry-text2)';
+    tdSummary.style.cssText = 'font-size:.82rem;color:var(--yry-text-secondary)';
     tdSummary.textContent = r.summary || '\u2014';
     tr.appendChild(tdSummary);
 

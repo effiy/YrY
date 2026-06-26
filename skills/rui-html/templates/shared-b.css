@@ -16,8 +16,8 @@
   --yry-warn: #f59e0b;
   --yry-skip: #6b7280;
   --yry-text: #e6edf3;
-  --yry-text2: #9da7b3;
-  --yry-text3: #6e7681;
+  --yry-text-secondary: #9da7b3;
+  --yry-text-tertiary:  #6e7681;
   --yry-shadow: 0 4px 12px rgba(0,0,0,0.4);
   --yry-shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
   --yry-radius: 12px;
@@ -43,5 +43,5 @@ body {
 
 .yry-section h2 { font-size: 1.1rem; font-weight: 600; margin: 24px 0 12px; display: flex; align-items: center; gap: 8px; }
 .yry-section h2 .yry-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--yry-accent); box-shadow: 0 0 6px rgba(var(--yry-accent-rgb), .4); flex-shrink: 0; }
-.yry-section h3 { font-size: .9rem; font-weight: 600; margin: 16px 0 10px; color: var(--yry-text2); }
-.yry-section-desc { font-size: .8rem; color: var(--yry-text3); margin-bottom: 8px; }
+.yry-section h3 { font-size: .9rem; font-weight: 600; margin: 16px 0 10px; color: var(--yry-text-secondary); }
+.yry-section-desc { font-size: .8rem; color: var(--yry-text-tertiary); margin-bottom: 8px; }
