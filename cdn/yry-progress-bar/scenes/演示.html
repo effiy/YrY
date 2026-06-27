@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryProgressBar · 演示</title>
+<link rel="stylesheet" href="../../shared/index.css">
+<link rel="stylesheet" href="../../yry-scene-kg/index.css">
+<link rel="stylesheet" href="../../theme/index.css">
+<link rel="stylesheet" href="../../yry-graph/index.css">
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb">
+  <a href="../../../docs/index.html">📄 文档中心</a>
+  <span class="bc-sep">/</span>
+  <a href="../README.md">YryProgressBar</a>
+  <span class="bc-sep">/</span>
+  <span>演示</span>
+</nav>
+
+<nav class="cross-nav">
+<a class="cross-link" href="场景-1-需求与设计/架构图.html">场景-1 · 需求与设计</a>
+<a class="cross-link" href="场景-2-模板与样式/架构图.html">场景-2 · 模板与样式</a>
+<a class="cross-link" href="场景-3-组件注册与加载/架构图.html">场景-3 · 组件注册与加载</a>
+<a class="cross-link" href="场景-4-双模式进度追踪/架构图.html">场景-4 · 双模式进度追踪</a>
+<a class="cross-link" href="场景-5-页面集成与发布/架构图.html">场景-5 · 页面集成与发布</a>
+</nav>
+
+<div class="header">
+  <h1>💡 <span class="accent">演示</span> · YryProgressBar</h1>
+  <p class="subtitle">Vue 3 零打包进度条组件 · 2 种使用模式 · 5 种边界演示 · 多实例共存</p>
+</div>
+
+<div class="card">
+  <h2>模式 A: 自定义元素 (推荐)</h2>
+  <p>直接使用 <code>&lt;yry-progress-bar&gt;</code> 自定义元素，适合大多数场景：</p>
+  <pre><code>&lt;link rel="stylesheet" href="cdn/yry-progress-bar/index.css"&gt;
+&lt;script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"&gt;&lt;/script&gt;
+&lt;script src="cdn/shared/vue-ce-loader.js"&gt;&lt;/script&gt;
+&lt;script src="cdn/yry-progress-bar/index.js"&gt;&lt;/script&gt;
+
+&lt;!-- 自动滚动追踪 — 页面阅读进度 --&gt;
+&lt;yry-progress-bar&gt;&lt;/yry-progress-bar&gt;
+
+&lt;!-- 显式任务进度 — 5/10 完成 --&gt;
+&lt;yry-progress-bar done="5" total="10" label="构建进度"&gt;&lt;/yry-progress-bar&gt;</code></pre>
+</div>
+
+<div class="card">
+  <h2>模式 B: Vue.createApp 挂载</h2>
+  <p>将组件挂载到指定容器，适合需 JavaScript 控制的场景：</p>
+  <pre><code>&lt;div id="progress-app"&gt;&lt;/div&gt;
+&lt;script&gt;
+function mount() {
+  Vue.createApp(window.YryProgressBar, {
+    done: 5, total: 10, label: '阶段进度'
+  }).mount('#progress-app');
+}
+if (window.YryProgressBar) mount();
+else document.addEventListener('yry-progress-bar-ready', mount, { once: true });
+&lt;/script&gt;</code></pre>
+</div>
+
+<div class="card">
+  <h2>边界演示: 5 种进度状态</h2>
+  <table>
+    <thead><tr><th>场景</th><th>done</th><th>total</th><th>预期 pct</th><th>视觉态</th></tr></thead>
+    <tbody>
+      <tr><td>正常进度</td><td>3</td><td>8</td><td>38%</td><td>青紫渐变 · 扫光 · 发光</td></tr>
+      <tr><td>已完成</td><td>10</td><td>10</td><td>100%</td><td>绿青渐变 (is-done) · 暖光晕</td></tr>
+      <tr><td>未开始</td><td>0</td><td>10</td><td>0%</td><td>无发光 (is-empty)</td></tr>
+      <tr><td>除零保护</td><td>5</td><td>0</td><td>0%</td><td>无发光 · 不抛错</td></tr>
+      <tr><td>超额完成</td><td>12</td><td>10</td><td>120%</td><td>width > 100% · CSS 溢出裁剪</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>多实例共存演示</h2>
+  <p>同一页面可放置多个 <code>&lt;yry-progress-bar&gt;</code>，各自独立状态：</p>
+  <pre><code>&lt;!-- 页面级: 自动滚动追踪 (阅读进度) --&gt;
+&lt;yry-progress-bar&gt;&lt;/yry-progress-bar&gt;
+
+&lt;!-- 阶段 1: 显式进度 3/5 --&gt;
+&lt;yry-progress-bar done="3" total="5" label="阶段一"&gt;&lt;/yry-progress-bar&gt;
+
+&lt;!-- 阶段 2: 显式进度 8/10 --&gt;
+&lt;yry-progress-bar done="8" total="10" label="阶段二"&gt;&lt;/yry-progress-bar&gt;
+
+&lt;!-- 阶段 3: 已完成 10/10 --&gt;
+&lt;yry-progress-bar done="10" total="10" label="阶段三"&gt;&lt;/yry-progress-bar&gt;</code></pre>
+  <p>每个实例独立的 <code>_scrollMode</code> 和 <code>_val</code> 状态，互不干扰。</p>
+</div>
+
+<div class="card">
+  <h2>健康报告仪表板集成演示</h2>
+  <p>在 <code>docs/健康报告/index.html</code> 中，进度条作为页面级吸顶指示器：</p>
+  <pre class="mermaid">
+flowchart LR
+    QUICKNAV["yry-dashboard-quicknav<br/>快速导航栏 (sticky)"] -->|"top 偏移<br/>--yry-progress-bar-height"| PB["yry-progress-bar<br/>进度条 (sticky top=0)"]
+    PB --> CONTENT["健康报告内容<br/>摘要卡 · 趋势图 · 评分"]
+  </pre>
+  <p>下游 sticky 组件通过 CSS 变量避免遮挡：</p>
+  <pre><code>yry-dashboard-quicknav {
+  top: var(--yry-progress-bar-height, 21px);
+}</code></pre>
+</div>
+
+<div class="card">
+  <h2>视觉特性速览</h2>
+  <table>
+    <thead><tr><th>特性</th><th>描述</th><th>可观测</th></tr></thead>
+    <tbody>
+      <tr><td>吸顶</td><td><code>position: sticky; top: 0; z-index: 100</code></td><td>滚动页面时吸附视口顶部</td></tr>
+      <tr><td>玻璃磨砂</td><td><code>backdrop-filter: blur(14px) saturate(160%)</code></td><td>后方内容模糊 · 保留氛围</td></tr>
+      <tr><td>青紫渐变</td><td>cyan → violet 90deg 线性渐变</td><td>品牌渐变填充</td></tr>
+      <tr><td>内外发光</td><td>box-shadow 双层 (cyan + violet)</td><td>进度条有层次感</td></tr>
+      <tr><td>扫光动画</td><td>pb-shine 2.6s ease-in-out infinite</td><td>持续扫光带从左到右</td></tr>
+      <tr><td>完成态</td><td>is-done: 绿青渐变 + 暖光晕</td><td>pct ≥ 100 时切换</td></tr>
+      <tr><td>空态</td><td>is-empty: box-shadow: none</td><td>pct ≤ 0 时无发光</td></tr>
+      <tr><td>动效降级</td><td>prefers-reduced-motion: reduce</td><td>系统设置开启时停止动画</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="nav-links">
+  <a class="nav-link" href="计划清单.html">📋 计划清单</a>
+  <a class="nav-link" href="清单.html">📋 清单</a>
+  <a class="nav-link" href="架构图.html">📐 架构图</a>
+  <a class="nav-link" href="知识图谱.html">🔗 知识图谱</a>
+  <a class="nav-link" href="源码.html">📄 源码</a>
+  <a class="nav-link" href="测试面板.html">🧪 测试面板</a>
+  <a class="nav-link current" href="演示.html">💡 演示</a>
+  <a class="nav-link" href="审查.html">📝 审查</a>
+</div>
+
+<footer class="ft">
+  YryProgressBar · v1.0.0 · 2 使用模式 · 5 边界演示 · 多实例共存<br>
+  <span class="yry-auto-80578">演示 · 清单 · 架构 · 图谱 · 源码 · 测试 · 审计</span>
+</footer>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'dark' });</script>
+</body>
+</html>

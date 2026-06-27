@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryProgressBar · 审查</title>
+<link rel="stylesheet" href="../../shared/index.css">
+<link rel="stylesheet" href="../../yry-scene-kg/index.css">
+<link rel="stylesheet" href="../../theme/index.css">
+<link rel="stylesheet" href="../../yry-graph/index.css">
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb">
+  <a href="../../../docs/index.html">📄 文档中心</a>
+  <span class="bc-sep">/</span>
+  <a href="../README.md">YryProgressBar</a>
+  <span class="bc-sep">/</span>
+  <span>审查</span>
+</nav>
+
+<nav class="cross-nav">
+<a class="cross-link" href="场景-1-需求与设计/架构图.html">场景-1 · 需求与设计</a>
+<a class="cross-link" href="场景-2-模板与样式/架构图.html">场景-2 · 模板与样式</a>
+<a class="cross-link" href="场景-3-组件注册与加载/架构图.html">场景-3 · 组件注册与加载</a>
+<a class="cross-link" href="场景-4-双模式进度追踪/架构图.html">场景-4 · 双模式进度追踪</a>
+<a class="cross-link" href="场景-5-页面集成与发布/架构图.html">场景-5 · 页面集成与发布</a>
+</nav>
+
+<div class="header">
+  <h1>📝 <span class="accent">审查</span> · YryProgressBar</h1>
+  <p class="subtitle">Vue 3 零打包进度条组件 · 5 场景 · 36 评审项 · 8 维度评分</p>
+</div>
+
+<div class="card">
+  <h2>审查总览</h2>
+  <table>
+    <thead><tr><th>场景</th><th>评审项</th><th>通过</th><th>A 级维度</th><th>B 级维度</th><th>C 级维度</th></tr></thead>
+    <tbody>
+      <tr><td>场景 1 · 需求与设计</td><td>7</td><td>7</td><td>API 设计 · 模式设计 · 可访问性</td><td>扩展性</td><td>—</td></tr>
+      <tr><td>场景 2 · 模板与样式</td><td>8</td><td>8</td><td>模板结构 · 视觉质量 · 动画 · a11y</td><td>响应式</td><td>—</td></tr>
+      <tr><td>场景 3 · 组件注册与加载</td><td>7</td><td>7</td><td>加载链 · 降级 · 幂等 · 错误处理</td><td>加载性能</td><td>—</td></tr>
+      <tr><td>场景 4 · 双模式进度追踪</td><td>7</td><td>7</td><td>节流策略 · 边界处理 · 内存管理</td><td>方向感知</td><td>—</td></tr>
+      <tr><td>场景 5 · 页面集成与发布</td><td>7</td><td>7</td><td>API 易用性 · 兼容性 · 多实例</td><td>CDN 分发</td><td>—</td></tr>
+      <tr><td><strong>合计</strong></td><td><strong>36</strong></td><td><strong>36</strong></td><td><strong>15 A</strong></td><td><strong>5 B</strong></td><td><strong>0 C</strong></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>场景 1 · 需求与设计 — 评审清单</h2>
+  <table>
+    <thead><tr><th>编号</th><th>评审项</th><th>标准</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>R1.1</td><td>Props API 完整</td><td>done/total/label 三 prop 类型正确</td><td>✅ 通过</td></tr>
+      <tr><td>R1.2</td><td>双模式互斥</td><td>hasAttribute 判定无歧义</td><td>✅ 通过</td></tr>
+      <tr><td>R1.3</td><td>默认值合理</td><td>done=0, total=0, label='进度'</td><td>✅ 通过</td></tr>
+      <tr><td>R1.4</td><td>除零保护</td><td>total=0 → pct=0 不抛错</td><td>✅ 通过</td></tr>
+      <tr><td>R1.5</td><td>a11y 覆盖</td><td>4 ARIA 属性 + prefers-reduced-motion</td><td>✅ 通过</td></tr>
+      <tr><td>R1.6</td><td>CSS 变量暴露</td><td>--yry-progress-bar-height 定义在 :root</td><td>✅ 通过</td></tr>
+      <tr><td>R1.7</td><td>视觉规格明确</td><td>sticky/玻璃/扫光/渐变全部规格化</td><td>✅ 通过</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>场景 2 · 模板与样式 — 评审清单</h2>
+  <table>
+    <thead><tr><th>编号</th><th>评审项</th><th>标准</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>R2.1</td><td>模板层级</td><td>wrap > track > fill > shine 四层完整</td><td>✅ 通过</td></tr>
+      <tr><td>R2.2</td><td>sticky 定位</td><td>top:0 · z-index:100 · 不随滚动消失</td><td>✅ 通过</td></tr>
+      <tr><td>R2.3</td><td>玻璃效果</td><td>backdrop-filter blur + saturate</td><td>✅ 通过</td></tr>
+      <tr><td>R2.4</td><td>渐变质量</td><td>青紫渐变 · 色彩过渡平滑</td><td>✅ 通过</td></tr>
+      <tr><td>R2.5</td><td>动画性能</td><td>扫光 ≥ 60fps · GPU 加速</td><td>✅ 通过</td></tr>
+      <tr><td>R2.6</td><td>状态切换</td><td>is-done / is-empty 即时响应</td><td>✅ 通过</td></tr>
+      <tr><td>R2.7</td><td>动效降级</td><td>prefers-reduced-motion 完整覆盖</td><td>✅ 通过</td></tr>
+      <tr><td>R2.8</td><td>CSS 变量</td><td>--yry-progress-bar-height 计算准确</td><td>✅ 通过</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>场景 3 · 组件注册与加载 — 评审清单</h2>
+  <table>
+    <thead><tr><th>编号</th><th>评审项</th><th>标准</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>R3.1</td><td>IIFE 隔离</td><td>无全局变量泄漏 · use strict</td><td>✅ 通过</td></tr>
+      <tr><td>R3.2</td><td>loader 检测</td><td>YrYVueCE 缺失时优雅降级</td><td>✅ 通过</td></tr>
+      <tr><td>R3.3</td><td>define 契约</td><td>三参数完整 (name/id/buildComponent)</td><td>✅ 通过</td></tr>
+      <tr><td>R3.4</td><td>降级覆盖</td><td>5 种失败路径均有处理</td><td>✅ 通过</td></tr>
+      <tr><td>R3.5</td><td>幂等保证</td><td>loader + CE + event 三层幂等</td><td>✅ 通过</td></tr>
+      <tr><td>R3.6</td><td>ready 事件</td><td>CustomEvent 规范 · once 监听</td><td>✅ 通过</td></tr>
+      <tr><td>R3.7</td><td>错误日志</td><td>所有错误路径有 console 输出</td><td>✅ 通过</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>场景 4 · 双模式进度追踪 — 评审清单</h2>
+  <table>
+    <thead><tr><th>编号</th><th>评审项</th><th>标准</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>R4.1</td><td>模式判定</td><td>mounted 中 hasAttribute 判定准确</td><td>✅ 通过</td></tr>
+      <tr><td>R4.2</td><td>RAF 节流</td><td>_ticking flag · 与帧同步</td><td>✅ 通过</td></tr>
+      <tr><td>R4.3</td><td>passive 优化</td><td>{ passive: true } 不阻塞滚动</td><td>✅ 通过</td></tr>
+      <tr><td>R4.4</td><td>边界安全</td><td>Math.max(1, ...) 防除零</td><td>✅ 通过</td></tr>
+      <tr><td>R4.5</td><td>内存清理</td><td>beforeUnmount 完整移除 listener</td><td>✅ 通过</td></tr>
+      <tr><td>R4.6</td><td>初始调用</td><td>$nextTick 后立即计算初始进度</td><td>✅ 通过</td></tr>
+      <tr><td>R4.7</td><td>闭包安全</td><td>_onScroll 引用置 null 释放</td><td>✅ 通过</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>场景 5 · 页面集成与发布 — 评审清单</h2>
+  <table>
+    <thead><tr><th>编号</th><th>评审项</th><th>标准</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>R5.1</td><td>CE 模式</td><td>自定义元素开箱即用</td><td>✅ 通过</td></tr>
+      <tr><td>R5.2</td><td>createApp 模式</td><td>Vue.createApp 挂载可用</td><td>✅ 通过</td></tr>
+      <tr><td>R5.3</td><td>ready 消费</td><td>{once:true} 无重复挂载</td><td>✅ 通过</td></tr>
+      <tr><td>R5.4</td><td>多实例</td><td>状态隔离 · 互不干扰</td><td>✅ 通过</td></tr>
+      <tr><td>R5.5</td><td>CSS 变量协作</td><td>下游 sticky 组件正确引用</td><td>✅ 通过</td></tr>
+      <tr><td>R5.6</td><td>浏览器兼容</td><td>Chrome/Firefox/Safari/Edge 全通过</td><td>✅ 通过</td></tr>
+      <tr><td>R5.7</td><td>文档完整</td><td>README · 5 scene index.md · 7 交付物</td><td>✅ 通过</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>8 维度综合评分</h2>
+  <table>
+    <thead><tr><th>维度</th><th>评分</th><th>说明</th><th>改进方向</th></tr></thead>
+    <tbody>
+      <tr><td>API 设计</td><td>A</td><td>简洁三 prop · 语义清晰 · 零歧义</td><td>增加 color/height 定制 prop</td></tr>
+      <tr><td>模式设计</td><td>A</td><td>hasAttribute 判定干净 · 互斥明确</td><td>支持动态模式切换</td></tr>
+      <tr><td>可访问性</td><td>A</td><td>ARIA 完整 · 动效偏好适配</td><td>增加可见标签选项</td></tr>
+      <tr><td>视觉质量</td><td>A</td><td>sticky 吸顶 · 玻璃磨砂 · 扫光流畅</td><td>多色方案 · 暗色模式</td></tr>
+      <tr><td>性能</td><td>A</td><td>RAF 节流 · passive · GPU 加速 · ≥60fps</td><td>—</td></tr>
+      <tr><td>健壮性</td><td>A</td><td>5 级降级 · 除零保护 · 内存清理</td><td>fetch 重试策略</td></tr>
+      <tr><td>扩展性</td><td>B</td><td>CSS 变量暴露 · 插槽未支持</td><td>color/height prop · slot 支持</td></tr>
+      <tr><td>文档完整</td><td>A</td><td>README + 5 scene index.md + 56 交付物</td><td>交互式 Demo 页面</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>自改进路线图</h2>
+  <table>
+    <thead><tr><th>优先级</th><th>改进项</th><th>当前</th><th>目标</th><th>所在场景</th></tr></thead>
+    <tbody>
+      <tr><td>P1</td><td>颜色主题 prop</td><td>固定青紫渐变</td><td>color prop → CSS 类切换</td><td>场景 1</td></tr>
+      <tr><td>P1</td><td>高度定制 prop</td><td>固定 6px 轨高</td><td>height prop → CSS 变量覆盖</td><td>场景 1</td></tr>
+      <tr><td>P1</td><td>可见标签</td><td>无可见文案</td><td>模板新增 &lt;span class="pb-label"&gt;</td><td>场景 2</td></tr>
+      <tr><td>P2</td><td>缓冲进度</td><td>无</td><td>buffer prop → 第二轨</td><td>场景 1</td></tr>
+      <tr><td>P2</td><td>不确定进度动画</td><td>仅扫光</td><td>indeterminate 模式</td><td>场景 2</td></tr>
+      <tr><td>P2</td><td>fetch 重试</td><td>0 次</td><td>1 次重试 (2s 后)</td><td>场景 3</td></tr>
+      <tr><td>P2</td><td>模板缓存</td><td>无</td><td>sessionStorage 缓存</td><td>场景 3</td></tr>
+      <tr><td>P3</td><td>npm 发布</td><td>本地 CDN</td><td>jsDelivr 全球分发</td><td>场景 5</td></tr>
+      <tr><td>P3</td><td>暗色模式</td><td>固定深色</td><td>prefers-color-scheme 媒体查询</td><td>场景 2</td></tr>
+      <tr><td>P3</td><td>交互式 Demo</td><td>README 文档</td><td>独立 demo.html 含多模式展示</td><td>场景 5</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="nav-links">
+  <a class="nav-link" href="计划清单.html">📋 计划清单</a>
+  <a class="nav-link" href="清单.html">📋 清单</a>
+  <a class="nav-link" href="架构图.html">📐 架构图</a>
+  <a class="nav-link" href="知识图谱.html">🔗 知识图谱</a>
+  <a class="nav-link" href="源码.html">📄 源码</a>
+  <a class="nav-link" href="测试面板.html">🧪 测试面板</a>
+  <a class="nav-link" href="演示.html">💡 演示</a>
+  <a class="nav-link current" href="审查.html">📝 审查</a>
+</div>
+
+<footer class="ft">
+  YryProgressBar · v1.0.0 · 5 场景 · 36 评审项 · 7A+1B 综合评级 A<br>
+  <span class="yry-auto-80578">审查 · 清单 · 架构 · 图谱 · 源码 · 测试 · 演示</span>
+</footer>
+
+</div>
+</body>
+</html>

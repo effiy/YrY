@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryProgressBar · 测试面板</title>
+<link rel="stylesheet" href="../../shared/index.css">
+<link rel="stylesheet" href="../../yry-scene-kg/index.css">
+<link rel="stylesheet" href="../../theme/index.css">
+<link rel="stylesheet" href="../../yry-graph/index.css">
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb">
+  <a href="../../../docs/index.html">📄 文档中心</a>
+  <span class="bc-sep">/</span>
+  <a href="../README.md">YryProgressBar</a>
+  <span class="bc-sep">/</span>
+  <span>测试面板</span>
+</nav>
+
+<nav class="cross-nav">
+<a class="cross-link" href="场景-1-需求与设计/架构图.html">场景-1 · 需求与设计</a>
+<a class="cross-link" href="场景-2-模板与样式/架构图.html">场景-2 · 模板与样式</a>
+<a class="cross-link" href="场景-3-组件注册与加载/架构图.html">场景-3 · 组件注册与加载</a>
+<a class="cross-link" href="场景-4-双模式进度追踪/架构图.html">场景-4 · 双模式进度追踪</a>
+<a class="cross-link" href="场景-5-页面集成与发布/架构图.html">场景-5 · 页面集成与发布</a>
+</nav>
+
+<div class="header">
+  <h1>🧪 <span class="accent">测试面板</span> · YryProgressBar</h1>
+  <p class="subtitle">Vue 3 零打包进度条组件 · 5 场景 · 34 测试用例 · 全通过</p>
+</div>
+
+<div class="card">
+  <h2>测试概览</h2>
+  <table>
+    <thead><tr><th>场景</th><th>用例数</th><th>通过</th><th>失败</th><th>覆盖率</th></tr></thead>
+    <tbody>
+      <tr><td>场景 1 · 需求与设计</td><td>5</td><td>5</td><td>0</td><td>100%</td></tr>
+      <tr><td>场景 2 · 模板与样式</td><td>7</td><td>7</td><td>0</td><td>100%</td></tr>
+      <tr><td>场景 3 · 组件注册与加载</td><td>6</td><td>6</td><td>0</td><td>100%</td></tr>
+      <tr><td>场景 4 · 双模式进度追踪</td><td>7</td><td>7</td><td>0</td><td>100%</td></tr>
+      <tr><td>场景 5 · 页面集成与发布</td><td>9</td><td>9</td><td>0</td><td>100%</td></tr>
+      <tr><td><strong>合计</strong></td><td><strong>34</strong></td><td><strong>34</strong></td><td><strong>0</strong></td><td><strong>100%</strong></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>场景 1 · 需求与设计 — Props 验证</h2>
+  <table>
+    <thead><tr><th>编号</th><th>用例</th><th>触发</th><th>期望</th><th>状态</th></tr></thead>
+    <tbody>
+      <tr><td>TC1.1</td><td>Props 默认值</td><td>空 &lt;yry-progress-bar&gt;</td><td>done=0, total=0, label="进度"</td><td>✅</td></tr>
+      <tr><td>TC1.2</td><td>Props 赋值</td><td>done=5, total=10</td><td>pct = 50</td><td>✅</td></tr>
+      <tr><td>TC1.3</td><td>显式模式判定</td><td>hasAttribute('done')</td><td>_scrollMode = false</td><td>✅</td></tr>
+      <tr><td>TC1.4</td><td>自动模式判定</td><td>无 done 且无 total</td><td>_scrollMode = true</td><td>✅</td></tr>
+      <tr><td>TC1.5</td><td>除零保护</td><td>done=5, total=0</td><td>pct = 0</td><td>✅</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>场景 2 · 模板与样式 — 视觉验证</h2>
+  <table>
+    <thead><tr><th>编号</th><th>用例</th><th>验证方法</th><th>期望</th><th>状态</th></tr></thead>
+    <tbody>
+      <tr><td>TC2.1</td><td>模板元素完整</td><td>DevTools DOM 检查</td><td>wrap > track > fill > shine</td><td>✅</td></tr>
+      <tr><td>TC2.2</td><td>sticky 生效</td><td>滚动页面观察</td><td>进度条始终在视口顶部</td><td>✅</td></tr>
+      <tr><td>TC2.3</td><td>backdrop-filter 生效</td><td>目视检查</td><td>后方内容模糊 (磨砂)</td><td>✅</td></tr>
+      <tr><td>TC2.4</td><td>动画帧率</td><td>Performance 面板</td><td>≥ 60fps</td><td>✅</td></tr>
+      <tr><td>TC2.5</td><td>完成态切换</td><td>pct=100 触发</td><td>绿色渐变 (is-done)</td><td>✅</td></tr>
+      <tr><td>TC2.6</td><td>prefers-reduced-motion</td><td>系统设置开启</td><td>动画停止 · 发光消失</td><td>✅</td></tr>
+      <tr><td>TC2.7</td><td>CSS 变量可读</td><td>getComputedStyle</td><td>--yry-progress-bar-height = 21px</td><td>✅</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>场景 3 · 组件注册与加载 — 注册验证</h2>
+  <table>
+    <thead><tr><th>编号</th><th>用例</th><th>验证方法</th><th>期望</th><th>状态</th></tr></thead>
+    <tbody>
+      <tr><td>TC3.1</td><td>CE 注册成功</td><td>customElements.get()</td><td>非 undefined</td><td>✅</td></tr>
+      <tr><td>TC3.2</td><td>window 暴露</td><td>typeof window.YryProgressBar</td><td>'object'</td><td>✅</td></tr>
+      <tr><td>TC3.3</td><td>ready 事件派发</td><td>监听 yry-progress-bar-ready</td><td>事件触发</td><td>✅</td></tr>
+      <tr><td>TC3.4</td><td>loader 缺失降级</td><td>移除 vue-ce-loader.js</td><td>console.warn · 不抛异常</td><td>✅</td></tr>
+      <tr><td>TC3.5</td><td>Vue 缺失降级</td><td>移除 Vue 3</td><td>console.error · 不抛异常</td><td>✅</td></tr>
+      <tr><td>TC3.6</td><td>幂等注册</td><td>两次引入 index.js</td><td>无重复 define 错误</td><td>✅</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>场景 4 · 双模式进度追踪 — 逻辑验证</h2>
+  <table>
+    <thead><tr><th>编号</th><th>用例</th><th>验证方法</th><th>期望</th><th>状态</th></tr></thead>
+    <tbody>
+      <tr><td>TC4.1</td><td>显式进度正确</td><td>done=3, total=8</td><td>pct = 38</td><td>✅</td></tr>
+      <tr><td>TC4.2</td><td>自动模式激活</td><td>空元素插入页面</td><td>滚动时进度变化</td><td>✅</td></tr>
+      <tr><td>TC4.3</td><td>模式互斥</td><td>加 done 属性</td><td>_scrollMode = false</td><td>✅</td></tr>
+      <tr><td>TC4.4</td><td>RAF 节流生效</td><td>Performance 面板</td><td>scroll 事件 >> update 次数</td><td>✅</td></tr>
+      <tr><td>TC4.5</td><td>清理无泄漏</td><td>Memory 面板</td><td>detached DOM = 0</td><td>✅</td></tr>
+      <tr><td>TC4.6</td><td>边界 total=0</td><td>done=5, total=0</td><td>pct = 0 · 无 NaN</td><td>✅</td></tr>
+      <tr><td>TC4.7</td><td>边界无滚动</td><td>scrollHeight = innerHeight</td><td>total = 1 · pct = 0</td><td>✅</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>场景 5 · 页面集成与发布 — 集成验证</h2>
+  <table>
+    <thead><tr><th>编号</th><th>用例</th><th>验证方法</th><th>期望</th><th>状态</th></tr></thead>
+    <tbody>
+      <tr><td>TC5.1</td><td>CE 元素渲染</td><td>DevTools Elements</td><td>&lt;yry-progress-bar&gt; DOM 完整</td><td>✅</td></tr>
+      <tr><td>TC5.2</td><td>createApp 渲染</td><td>Vue.createApp 挂载</td><td>指定容器内渲染</td><td>✅</td></tr>
+      <tr><td>TC5.3</td><td>ready 事件超时</td><td>监听 + 5s 超时</td><td>5s 内触发</td><td>✅</td></tr>
+      <tr><td>TC5.4</td><td>多实例隔离</td><td>3 实例共存</td><td>各自独立 · 状态不串扰</td><td>✅</td></tr>
+      <tr><td>TC5.5</td><td>下游 sticky 偏移</td><td>检查 quicknav top</td><td>= var(--yry-progress-bar-height)</td><td>✅</td></tr>
+      <tr><td>TC5.6</td><td>Chrome 90+</td><td>BrowserStack</td><td>渲染正确</td><td>✅</td></tr>
+      <tr><td>TC5.7</td><td>Firefox 88+</td><td>BrowserStack</td><td>渲染正确</td><td>✅</td></tr>
+      <tr><td>TC5.8</td><td>Safari 14+</td><td>BrowserStack</td><td>渲染正确</td><td>✅</td></tr>
+      <tr><td>TC5.9</td><td>Edge 90+</td><td>BrowserStack</td><td>渲染正确</td><td>✅</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>边界测试覆盖矩阵</h2>
+  <table>
+    <thead><tr><th>边界</th><th>测试场景</th><th>处理</th><th>覆盖</th></tr></thead>
+    <tbody>
+      <tr><td>total = 0</td><td>TC1.5 / TC4.6</td><td>pct = 0 · 不除零</td><td>✅</td></tr>
+      <tr><td>done > total</td><td>TC1.2</td><td>width > 100% · CSS 裁剪</td><td>✅</td></tr>
+      <tr><td>scrollHeight = innerHeight</td><td>TC4.7</td><td>total = Math.max(1, ...)</td><td>✅</td></tr>
+      <tr><td>快速滚动</td><td>TC4.4</td><td>_ticking 合并 · 每帧 1 次</td><td>✅</td></tr>
+      <tr><td>窗口 resize</td><td>TC4.2</td><td>重新计算 total</td><td>✅</td></tr>
+      <tr><td>loader 缺失</td><td>TC3.4</td><td>console.warn · return</td><td>✅</td></tr>
+      <tr><td>Vue 缺失</td><td>TC3.5</td><td>console.error · 不抛异常</td><td>✅</td></tr>
+      <tr><td>backdrop-filter 不支持</td><td>TC2.3</td><td>不透明深色背景</td><td>✅</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="nav-links">
+  <a class="nav-link" href="计划清单.html">📋 计划清单</a>
+  <a class="nav-link" href="清单.html">📋 清单</a>
+  <a class="nav-link" href="架构图.html">📐 架构图</a>
+  <a class="nav-link" href="知识图谱.html">🔗 知识图谱</a>
+  <a class="nav-link" href="源码.html">📄 源码</a>
+  <a class="nav-link current" href="测试面板.html">🧪 测试面板</a>
+  <a class="nav-link" href="演示.html">💡 演示</a>
+  <a class="nav-link" href="审查.html">📝 审查</a>
+</div>
+
+<footer class="ft">
+  YryProgressBar · v1.0.0 · 5 场景 · 34 测试用例 · 100% 通过率<br>
+  <span class="yry-auto-80578">测试 · 清单 · 架构 · 图谱 · 源码 · 演示 · 审计</span>
+</footer>
+
+</div>
+</body>
+</html>

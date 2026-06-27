@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryProgressBar · 源码</title>
+<link rel="stylesheet" href="../../shared/index.css">
+<link rel="stylesheet" href="../../yry-scene-kg/index.css">
+<link rel="stylesheet" href="../../theme/index.css">
+<link rel="stylesheet" href="../../yry-graph/index.css">
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb">
+  <a href="../../../docs/index.html">📄 文档中心</a>
+  <span class="bc-sep">/</span>
+  <a href="../README.md">YryProgressBar</a>
+  <span class="bc-sep">/</span>
+  <span>源码</span>
+</nav>
+
+<nav class="cross-nav">
+<a class="cross-link" href="场景-1-需求与设计/架构图.html">场景-1 · 需求与设计</a>
+<a class="cross-link" href="场景-2-模板与样式/架构图.html">场景-2 · 模板与样式</a>
+<a class="cross-link" href="场景-3-组件注册与加载/架构图.html">场景-3 · 组件注册与加载</a>
+<a class="cross-link" href="场景-4-双模式进度追踪/架构图.html">场景-4 · 双模式进度追踪</a>
+<a class="cross-link" href="场景-5-页面集成与发布/架构图.html">场景-5 · 页面集成与发布</a>
+</nav>
+
+<div class="header">
+  <h1>📄 <span class="accent">源码</span> · YryProgressBar</h1>
+  <p class="subtitle">Vue 3 零打包进度条组件 · 三文件架构 · 源码全景</p>
+</div>
+
+<div class="card">
+  <h2>文件结构</h2>
+  <pre><code>yry-progress-bar/
+├── index.html    # 模板源 (76 行) — &lt;script type="text/x-template"&gt; + Demo 预览
+├── index.js      # 组件逻辑 (92 行) — IIFE · CE 注册 · 双模式追踪
+├── index.css     # 组件样式 (110 行) — sticky 吸顶 · 玻璃磨砂 · 扫光动画
+└── README.md     # API 文档 (96 行) — 使用指南 · Props · 兼容性矩阵</code></pre>
+</div>
+
+<div class="card">
+  <h2>index.js · 核心逻辑 (92 行)</h2>
+  <pre><code>/* ═══ YryProgressBar · Vue 3 进度条组件 ═══ */
+(function () {
+  'use strict';
+
+  // ── 组件注册 ──────────────────────────────────────
+  if (!window.YrYVueCE || typeof window.YrYVueCE.define !== 'function') {
+    console.warn('[YryProgressBar] shared/vue-ce-loader.js 未加载,组件已跳过注册');
+    return;
+  }
+
+  window.YrYVueCE.define({
+    componentName: 'YryProgressBar',           // PascalCase → 'yry-progress-bar'
+    templateId: 'yry-progress-bar-tpl',        // index.html 中模板 id
+    buildComponent: function (templateHTML) {
+      return {
+        name: 'YryProgressBar',
+        props: {
+          done:  { type: Number, default: 0 },
+          total: { type: Number, default: 0 },
+          label: { type: String, default: '进度' }
+        },
+        data: function () {
+          return {
+            _ticking: false,                    // RAF 防重入标记
+            _onScroll: null,                    // scroll handler 引用 (清理用)
+            _scrollMode: false,                 // 自动追踪模式标记
+            _val: { done: 0, total: 0 }         // 滚动模式内部状态
+          };
+        },
+        computed: {
+          pct: function () {
+            var d = this._scrollMode ? this._val.done : this.done;
+            var t = this._scrollMode ? this._val.total : this.total;
+            return t > 0 ? Math.round((d / t) * 100) : 0;
+          }
+        },
+        methods: {
+          _updateScroll: function () {
+            var docH = document.documentElement.scrollHeight - window.innerHeight;
+            this._val = {
+              done: Math.round(window.scrollY),
+              total: Math.max(1, Math.round(docH))
+            };
+            this._ticking = false;
+          }
+        },
+        mounted: function () {
+          var el = this.$el;
+          // 判定: 有 done 或 total 属性 → 显式模式，否则 → 滚动追踪
+          if (el.hasAttribute('done') || el.hasAttribute('total')) return;
+          this._scrollMode = true;
+          var self = this;
+          this._onScroll = function () {
+            if (!self._ticking) {
+              self._ticking = true;
+              requestAnimationFrame(function () { self._updateScroll(); });
+            }
+          };
+          window.addEventListener('scroll', this._onScroll, { passive: true });
+          window.addEventListener('resize', this._onScroll, { passive: true });
+          this.$nextTick(function () { self._updateScroll(); });
+        },
+        beforeUnmount: function () {
+          if (this._onScroll) {
+            window.removeEventListener('scroll', this._onScroll);
+            window.removeEventListener('resize', this._onScroll);
+            this._onScroll = null;
+          }
+        },
+        template: templateHTML
+      };
+    }
+  });
+})();</code></pre>
+</div>
+
+<div class="card">
+  <h2>index.html · 模板结构 (关键片段)</h2>
+  <pre><code>&lt;script type="text/x-template" id="yry-progress-bar-tpl"&gt;
+  &lt;div class="pb-wrap"
+       role="progressbar"
+       :aria-label="label || '进度'"
+       :aria-valuenow="pct" aria-valuemin="0" aria-valuemax="100"&gt;
+    &lt;div class="pb-track"&gt;
+      &lt;div class="pb-fill"
+           :class="{ 'is-done': pct &gt;= 100, 'is-empty': pct &lt;= 0 }"
+           :style="{ width: pct + '%' }"&gt;
+        &lt;div class="pb-shine"&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/script&gt;</code></pre>
+</div>
+
+<div class="card">
+  <h2>index.css · 样式架构 (110 行)</h2>
+  <pre><code>/* ═══ 层叠结构 ═══ */
+:root {
+  --yry-progress-bar-height: 21px;   /* 主机总高度 · 下游引用 */
+}
+
+yry-progress-bar {                   /* 主机: sticky 吸顶 + 玻璃背景 */
+  display: block;
+  position: sticky; top: 0; z-index: 100;
+  padding: 6px 0 8px;
+  background: linear-gradient(180deg,
+    rgba(22,22,32,.96) 0%, rgba(22,22,32,.78) 100%);
+  backdrop-filter: blur(14px) saturate(160%);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.pb-track {                          /* 轨道: 6px 高 · 暗底 */
+  height: 6px; border-radius: 999px;
+  background: rgba(255,255,255,.06);
+  overflow: hidden;
+}
+
+.pb-fill {                           /* 填充: 青紫渐变 · 发光 · 过渡 */
+  height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg,
+    var(--yry-cyan) 0%, var(--yry-violet) 100%);
+  box-shadow: 0 0 8px rgba(34,211,238,.45),
+              0 0 18px rgba(167,139,250,.22);
+  transition: width 0.5s cubic-bezier(.22,.61,.36,1);
+}
+
+.pb-fill.is-done {                   /* 完成态: 绿青渐变 */
+  background: linear-gradient(90deg,
+    var(--yry-pass) 0%, var(--yry-cyan) 100%);
+}
+
+.pb-fill.is-empty { box-shadow: none; }  /* 空态: 无发光 */
+
+.pb-shine {                          /* 扫光带: 2.6s 动画 */
+  width: 45%;
+  background: linear-gradient(90deg,
+    transparent 0%, rgba(255,255,255,.38) 50%, transparent 100%);
+  animation: pb-shine 2.6s ease-in-out infinite;
+}
+
+@keyframes pb-shine {
+  0%   { transform: translateX(-100%); }
+  55%  { transform: translateX(220%); }
+  100% { transform: translateX(220%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pb-fill  { transition: none; }
+  .pb-shine { animation: none; opacity: 0; }
+}</code></pre>
+</div>
+
+<div class="card">
+  <h2>关键设计决策</h2>
+  <table>
+    <thead><tr><th>决策</th><th>选择</th><th>替代方案</th><th>理由</th></tr></thead>
+    <tbody>
+      <tr><td>模板加载</td><td>vue-ce-loader 共享加载器</td><td>组件内 fetch</td><td>统一错误处理 · 减少重复</td></tr>
+      <tr><td>进度计算</td><td>computed pct</td><td>method 手动计算</td><td>Vue 响应式自动追踪依赖</td></tr>
+      <tr><td>滚动节流</td><td>RAF + _ticking flag</td><td>throttle(fn, 16ms)</td><td>与浏览器帧同步 · 零依赖</td></tr>
+      <tr><td>双模式判定</td><td>mounted 中 hasAttribute</td><td>prop default 语义</td><td>显式明确 · 避免歧义</td></tr>
+      <tr><td>样式注入</td><td>独立 index.css (link)</td><td>JS 内联注入</td><td>浏览器缓存 · CSS 独立预览</td></tr>
+      <tr><td>高度暴露</td><td>CSS 自定义属性 :root</td><td>JS 计算 + data-attr</td><td>声明式 · 下游纯 CSS 引用</td></tr>
+      <tr><td>事件命名</td><td>kebab-case ready 事件</td><td>camelCase</td><td>DOM 事件约定 · 可冒泡</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="nav-links">
+  <a class="nav-link" href="计划清单.html">📋 计划清单</a>
+  <a class="nav-link" href="清单.html">📋 清单</a>
+  <a class="nav-link" href="架构图.html">📐 架构图</a>
+  <a class="nav-link" href="知识图谱.html">🔗 知识图谱</a>
+  <a class="nav-link current" href="源码.html">📄 源码</a>
+  <a class="nav-link" href="测试面板.html">🧪 测试面板</a>
+  <a class="nav-link" href="演示.html">💡 演示</a>
+  <a class="nav-link" href="审查.html">📝 审查</a>
+</div>
+
+<footer class="ft">
+  YryProgressBar · v1.0.0 · 3 源文件 · 278 行总代码<br>
+  <span class="yry-auto-80578">源码 · 清单 · 架构 · 图谱 · 测试 · 演示 · 审计</span>
+</footer>
+
+</div>
+</body>
+</html>

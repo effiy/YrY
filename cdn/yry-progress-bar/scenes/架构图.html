@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryProgressBar · 架构图</title>
+<link rel="stylesheet" href="../../shared/index.css">
+<link rel="stylesheet" href="../../yry-scene-kg/index.css">
+<link rel="stylesheet" href="../../theme/index.css">
+<link rel="stylesheet" href="../../yry-graph/index.css">
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb">
+  <a href="../../../docs/index.html">📄 文档中心</a>
+  <span class="bc-sep">/</span>
+  <a href="../README.md">YryProgressBar</a>
+  <span class="bc-sep">/</span>
+  <span>架构图</span>
+</nav>
+
+<nav class="cross-nav">
+<a class="cross-link" href="场景-1-需求与设计/架构图.html">场景-1 · 需求与设计</a>
+<a class="cross-link" href="场景-2-模板与样式/架构图.html">场景-2 · 模板与样式</a>
+<a class="cross-link" href="场景-3-组件注册与加载/架构图.html">场景-3 · 组件注册与加载</a>
+<a class="cross-link" href="场景-4-双模式进度追踪/架构图.html">场景-4 · 双模式进度追踪</a>
+<a class="cross-link" href="场景-5-页面集成与发布/架构图.html">场景-5 · 页面集成与发布</a>
+</nav>
+
+<div class="header">
+  <h1>📐 <span class="accent">架构图</span> · YryProgressBar</h1>
+  <p class="subtitle">Vue 3 零打包进度条组件 · 5 场景架构全景 · 双模式设计 · 加载链 · 样式架构</p>
+</div>
+
+<div class="card">
+  <h2>组件全景架构</h2>
+  <pre class="mermaid">
+flowchart TB
+    subgraph INPUT["输入层"]
+        direction LR
+        CE["&lt;yry-progress-bar<br/>done? total? label?&gt;"]
+        APP["Vue.createApp<br/>(YryProgressBar, props)"]
+    end
+
+    subgraph LOADER["加载层 (vue-ce-loader)"]
+        direction TB
+        FETCH["fetch(index.html)<br/>5s 超时"]
+        PARSE["DOMParser<br/>getElementById"]
+        DEFINE["defineCustomElement<br/>shadowRoot: false"]
+        FETCH --> PARSE --> DEFINE
+    end
+
+    subgraph COMPONENT["组件层 (index.js)"]
+        direction TB
+        PROPS["Props: done · total · label"]
+        DATA["Data: _ticking · _scrollMode · _val"]
+        COMPUTED["Computed: pct"]
+        METHODS["Methods: _updateScroll"]
+        LIFECYCLE["Lifecycle: mounted · beforeUnmount"]
+    end
+
+    subgraph TEMPLATE["模板层 (index.html)"]
+        direction LR
+        WRAP["div.pb-wrap<br/>role=progressbar"]
+        TRACK["div.pb-track"]
+        FILL["div.pb-fill<br/>:style={width}"]
+        SHINE["div.pb-shine"]
+        WRAP --> TRACK --> FILL --> SHINE
+    end
+
+    subgraph STYLE["样式层 (index.css)"]
+        direction TB
+        STICKY["sticky top=0 z=100"]
+        GLASS["backdrop-filter blur(14px)"]
+        GRADIENT["青紫渐变 + box-shadow"]
+        ANIM["pb-shine 2.6s"]
+        A11Y["prefers-reduced-motion"]
+    end
+
+    subgraph OUTPUT["输出"]
+        direction LR
+        READY["yry-progress-bar-ready 事件"]
+        CSS_VAR["--yry-progress-bar-height: 21px"]
+        DOM["渲染 DOM"]
+    end
+
+    INPUT --> LOADER
+    LOADER --> COMPONENT
+    COMPONENT --> TEMPLATE
+    TEMPLATE --> STYLE
+    STYLE --> OUTPUT
+  </pre>
+</div>
+
+<div class="card">
+  <h2>双模式判定架构</h2>
+  <pre class="mermaid">
+flowchart TB
+    MOUNT["mounted()"] --> CHECK{"el.hasAttribute('done')<br/>|| el.hasAttribute('total')"}
+    CHECK -->|"是 → 显式模式"| EXPLICIT["_scrollMode = false<br/>computed pct = done/total*100<br/>无 listener 绑定"]
+    CHECK -->|"否 → 自动模式"| SCROLL["_scrollMode = true<br/>绑定 scroll + resize<br/>passive: true"]
+    SCROLL --> INIT["$nextTick → _updateScroll()"]
+    INIT --> RAF["RAF 节流<br/>_ticking flag 防重入"]
+    RAF --> CALC["计算: scrollY / (scrollH - innerH)"]
+    CALC --> COMPUTED["computed pct 响应式更新"]
+    EXPLICIT --> COMPUTED
+    COMPUTED --> RENDER["width + class(is-done/is-empty) 渲染"]
+  </pre>
+</div>
+
+<div class="card">
+  <h2>加载时序架构</h2>
+  <pre class="mermaid">
+sequenceDiagram
+    participant Page as 页面
+    participant Vue3 as Vue 3 运行时
+    participant Loader as vue-ce-loader.js
+    participant JS as index.js
+    participant Network as 网络
+    participant CE as CustomElements
+
+    Page->>Vue3: &lt;script src="vue.global.prod.js"&gt;
+    Vue3-->>Page: window.Vue 就绪
+    Page->>Loader: &lt;script src="vue-ce-loader.js"&gt;
+    Loader-->>Page: window.YrYVueCE 就绪 (幂等)
+    Page->>JS: &lt;script src="index.js"&gt;
+    JS->>Loader: YrYVueCE.define({componentName, templateId, buildComponent})
+    Loader->>Network: fetch('index.html')
+    Network-->>Loader: HTML 文本
+    Loader->>Loader: DOMParser → getElementById(templateId)
+    Loader->>Loader: buildComponent(templateHTML) → 组件定义
+    Loader->>Vue3: Vue.defineCustomElement(component)
+    Vue3-->>Loader: Custom Element 构造器
+    Loader->>CE: customElements.define('yry-progress-bar', ctor)
+    Loader->>Page: dispatchEvent('yry-progress-bar-ready')
+    Loader->>Page: window.YryProgressBar = component
+  </pre>
+</div>
+
+<div class="card">
+  <h2>CSS 架构层级</h2>
+  <pre class="mermaid">
+flowchart LR
+    subgraph TOKENS["theme/index.css · 设计 Token"]
+        CYAN["--yry-cyan<br/>--yry-cyan-bright"]
+        VIOLET["--yry-violet"]
+        PASS["--yry-pass"]
+        FONT["--yry-font-sans"]
+        TEXT["--yry-text · --yry-gray-pale"]
+    end
+
+    subgraph COMP["index.css · 组件样式"]
+        ROOT[":root<br/>--yry-progress-bar-height"]
+        HOST["yry-progress-bar<br/>sticky · glass · padding"]
+        TRACK_CSS[".pb-track<br/>6px · radius · dark bg"]
+        FILL_CSS[".pb-fill<br/>gradient · glow · transition"]
+        SHINE_CSS[".pb-shine<br/>sweep animation"]
+        STATES[".is-done · .is-empty<br/>state variants"]
+        MQ["@media prefers-reduced-motion"]
+    end
+
+    subgraph DOWNSTREAM["下游消费"]
+        QUICKNAV["yry-dashboard-quicknav<br/>top: var(--yry-progress-bar-height)"]
+    end
+
+    TOKENS --> COMP
+    COMP --> DOWNSTREAM
+  </pre>
+</div>
+
+<div class="card">
+  <h2>降级架构</h2>
+  <table>
+    <thead><tr><th>层级</th><th>失败点</th><th>降级行为</th><th>用户影响</th></tr></thead>
+    <tbody>
+      <tr><td>L1</td><td>vue-ce-loader 未加载</td><td>console.warn + return</td><td>组件不注册 · 无阻塞</td></tr>
+      <tr><td>L2</td><td>Vue 3 未加载</td><td>console.error (loader 层)</td><td>组件不注册</td></tr>
+      <tr><td>L3</td><td>fetch 超时 (5s)</td><td>console.error + 不注册</td><td>组件不渲染</td></tr>
+      <tr><td>L4</td><td>模板 id 缺失</td><td>throw → catch → console.error</td><td>组件不注册</td></tr>
+      <tr><td>L5</td><td>网络失败 (4xx/5xx)</td><td>.catch → console.error</td><td>组件不注册</td></tr>
+      <tr><td>CSS</td><td>backdrop-filter 不支持</td><td>不透明深色背景</td><td>无磨砂效果</td></tr>
+      <tr><td>CSS</td><td>prefers-reduced-motion</td><td>动画/发光停止</td><td>降低视觉负担</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="nav-links">
+  <a class="nav-link" href="计划清单.html">📋 计划清单</a>
+  <a class="nav-link" href="清单.html">📋 清单</a>
+  <a class="nav-link current" href="架构图.html">📐 架构图</a>
+  <a class="nav-link" href="知识图谱.html">🔗 知识图谱</a>
+  <a class="nav-link" href="源码.html">📄 源码</a>
+  <a class="nav-link" href="测试面板.html">🧪 测试面板</a>
+  <a class="nav-link" href="演示.html">💡 演示</a>
+  <a class="nav-link" href="审查.html">📝 审查</a>
+</div>
+
+<footer class="ft">
+  YryProgressBar · v1.0.0 · 5 场景 · Vue 3 零打包组件<br>
+  <span class="yry-auto-80578">架构 · 清单 · 图谱 · 源码 · 测试 · 演示 · 审计</span>
+</footer>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'dark' });</script>
+</body>
+</html>

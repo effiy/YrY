@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryProgressBar · 清单</title>
+<link rel="stylesheet" href="../../shared/index.css">
+<link rel="stylesheet" href="../../yry-scene-kg/index.css">
+<link rel="stylesheet" href="../../theme/index.css">
+<link rel="stylesheet" href="../../yry-graph/index.css">
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb">
+  <a href="../../../docs/index.html">📄 文档中心</a>
+  <span class="bc-sep">/</span>
+  <a href="../README.md">YryProgressBar</a>
+  <span class="bc-sep">/</span>
+  <span>清单</span>
+</nav>
+
+<nav class="cross-nav">
+<a class="cross-link" href="场景-1-需求与设计/架构图.html">场景-1 · 需求与设计</a>
+<a class="cross-link" href="场景-2-模板与样式/架构图.html">场景-2 · 模板与样式</a>
+<a class="cross-link" href="场景-3-组件注册与加载/架构图.html">场景-3 · 组件注册与加载</a>
+<a class="cross-link" href="场景-4-双模式进度追踪/架构图.html">场景-4 · 双模式进度追踪</a>
+<a class="cross-link" href="场景-5-页面集成与发布/架构图.html">场景-5 · 页面集成与发布</a>
+</nav>
+
+<div class="header">
+  <h1>📋 <span class="accent">清单</span> · YryProgressBar</h1>
+  <p class="subtitle">Vue 3 零打包进度条组件 · 5 场景 · 32 项验收清单 · 交付索引</p>
+</div>
+
+<div class="card">
+  <h2>场景 1 · 需求与设计 — 验收清单</h2>
+  <table>
+    <thead><tr><th>#</th><th>验收项</th><th>状态</th></tr></thead>
+    <tbody>
+      <tr><td>✅</td><td>Props API 三 prop 定义完整</td><td>通过</td></tr>
+      <tr><td>✅</td><td>双模式判定逻辑正确</td><td>通过</td></tr>
+      <tr><td>✅</td><td>视觉规格全部落地</td><td>通过</td></tr>
+      <tr><td>✅</td><td>a11y ARIA 4 属性齐备</td><td>通过</td></tr>
+      <tr><td>✅</td><td>CSS 自定义属性暴露</td><td>通过</td></tr>
+      <tr><td>✅</td><td>除零边界处理</td><td>通过</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>场景 2 · 模板与样式 — 验收清单</h2>
+  <table>
+    <thead><tr><th>#</th><th>验收项</th><th>状态</th></tr></thead>
+    <tbody>
+      <tr><td>✅</td><td>模板四层结构 (wrap > track > fill > shine)</td><td>通过</td></tr>
+      <tr><td>✅</td><td>sticky 吸顶生效</td><td>通过</td></tr>
+      <tr><td>✅</td><td>玻璃磨砂背景</td><td>通过</td></tr>
+      <tr><td>✅</td><td>青紫渐变填充 + 发光</td><td>通过</td></tr>
+      <tr><td>✅</td><td>扫光动画 2.6s 周期</td><td>通过</td></tr>
+      <tr><td>✅</td><td>完成态/空态切换</td><td>通过</td></tr>
+      <tr><td>✅</td><td>prefers-reduced-motion 适配</td><td>通过</td></tr>
+      <tr><td>✅</td><td>CSS 自定义属性暴露</td><td>通过</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>场景 3 · 组件注册与加载 — 验收清单</h2>
+  <table>
+    <thead><tr><th>#</th><th>验收项</th><th>状态</th></tr></thead>
+    <tbody>
+      <tr><td>✅</td><td>IIFE 包装 + vue-ce-loader 检测</td><td>通过</td></tr>
+      <tr><td>✅</td><td>YrYVueCE.define() 三参数完整</td><td>通过</td></tr>
+      <tr><td>✅</td><td>Props 定义 (done/total/label)</td><td>通过</td></tr>
+      <tr><td>✅</td><td>ready 事件派发与消费</td><td>通过</td></tr>
+      <tr><td>✅</td><td>5 种降级路径覆盖</td><td>通过</td></tr>
+      <tr><td>✅</td><td>幂等保证 (loader + CE + event)</td><td>通过</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>场景 4 · 双模式进度追踪 — 验收清单</h2>
+  <table>
+    <thead><tr><th>#</th><th>验收项</th><th>状态</th></tr></thead>
+    <tbody>
+      <tr><td>✅</td><td>显式模式进度计算正确</td><td>通过</td></tr>
+      <tr><td>✅</td><td>自动模式判定 + listener 绑定</td><td>通过</td></tr>
+      <tr><td>✅</td><td>RAF 节流防重入</td><td>通过</td></tr>
+      <tr><td>✅</td><td>passive listener 性能优化</td><td>通过</td></tr>
+      <tr><td>✅</td><td>_updateScroll 计算正确</td><td>通过</td></tr>
+      <tr><td>✅</td><td>beforeUnmount 清理无泄漏</td><td>通过</td></tr>
+      <tr><td>✅</td><td>total=0 除零保护</td><td>通过</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>场景 5 · 页面集成与发布 — 验收清单</h2>
+  <table>
+    <thead><tr><th>#</th><th>验收项</th><th>状态</th></tr></thead>
+    <tbody>
+      <tr><td>✅</td><td>三文件完整性 (index.html/js/css)</td><td>通过</td></tr>
+      <tr><td>✅</td><td>CE 自定义元素模式可用</td><td>通过</td></tr>
+      <tr><td>✅</td><td>createApp 挂载模式可用</td><td>通过</td></tr>
+      <tr><td>✅</td><td>ready 事件消费正确</td><td>通过</td></tr>
+      <tr><td>✅</td><td>健康报告仪表板集成</td><td>通过</td></tr>
+      <tr><td>✅</td><td>CSS 变量下游消费</td><td>通过</td></tr>
+      <tr><td>✅</td><td>4 浏览器兼容 (Chrome/Firefox/Safari/Edge)</td><td>通过</td></tr>
+      <tr><td>✅</td><td>多实例共存隔离</td><td>通过</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>源文件清单</h2>
+  <table>
+    <thead><tr><th>文件</th><th>用途</th><th>行数</th></tr></thead>
+    <tbody>
+      <tr><td><code>index.html</code></td><td>模板源 + Demo 预览 + 脚本加载</td><td>76</td></tr>
+      <tr><td><code>index.js</code></td><td>组件定义 · CE 注册 · 双模式追踪</td><td>92</td></tr>
+      <tr><td><code>index.css</code></td><td>sticky 吸顶 · 玻璃磨砂 · 扫光动画</td><td>110</td></tr>
+      <tr><td><code>README.md</code></td><td>API 文档 · 使用指南 · 兼容性矩阵</td><td>96</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="nav-links">
+  <a class="nav-link" href="计划清单.html">📋 计划清单</a>
+  <a class="nav-link current" href="清单.html">📋 清单</a>
+  <a class="nav-link" href="架构图.html">📐 架构图</a>
+  <a class="nav-link" href="知识图谱.html">🔗 知识图谱</a>
+  <a class="nav-link" href="源码.html">📄 源码</a>
+  <a class="nav-link" href="测试面板.html">🧪 测试面板</a>
+  <a class="nav-link" href="演示.html">💡 演示</a>
+  <a class="nav-link" href="审查.html">📝 审查</a>
+</div>
+
+<footer class="ft">
+  YryProgressBar · v1.0.0 · 5 场景 · 35 验收项全部通过<br>
+  <span class="yry-auto-80578">清单 · 架构 · 图谱 · 源码 · 测试 · 演示 · 审计</span>
+</footer>
+
+</div>
+</body>
+</html>
