@@ -24,7 +24,7 @@
 
    页面使用方式 (slot 内容须在 mount 之前就存在):
      <link rel="stylesheet" href="../../../../cdn/yry-layer/index.css">
-     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+     <script src="../shared/vue.global.prod.js"></script>
      <script src="../../../../cdn/yry-layer/index.js"></script>
      <div id="layer-deps-app">
        <!-- 此处插入 body 内容,Vue 渲染时会被包含为默认 slot -->

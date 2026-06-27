@@ -31,7 +31,7 @@ yry-kpi-card/
 
 ```html
 <link rel="stylesheet" href="../../../../cdn/yry-kpi-card/index.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/vue.global.prod.js"></script>
 <script src="../../../../cdn/yry-kpi-card/index.js"></script>
 <div id="my-kpi"></div>
 <script>

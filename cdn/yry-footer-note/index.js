@@ -5,7 +5,7 @@
 
    页面使用方式:
      <link rel="stylesheet" href="../../../../cdn/yry-footer-note/index.css">
-     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+     <script src="../shared/vue.global.prod.js"></script>
      <script src="../../../../cdn/yry-footer-note/index.js"></script>
      <yry-footer-note version="5.4.0"></yry-footer-note>
    ═══════════════════════════════════════════════════════════════════════════ */

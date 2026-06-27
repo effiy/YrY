@@ -22,7 +22,7 @@ yry-story-card-list/
 
 ```html
 <link rel="stylesheet" href="../../cdn/yry-story-card-list/index.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/vue.global.prod.js"></script>
 <script src="../../cdn/yry-story-card-list/index.js"></script>
 <yry-story-card-list id="scl-app"></yry-story-card-list>
 <script>

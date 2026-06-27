@@ -32,7 +32,7 @@ yry-cmd-card/
 
 ```html
 <link rel="stylesheet" href="../../../../cdn/yry-cmd-card/index.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/vue.global.prod.js"></script>
 <script src="../../../../cdn/yry-cmd-card/index.js"></script>
 <div id="my-cmd"></div>
 <script>

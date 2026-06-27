@@ -13,7 +13,7 @@
      label — 左侧标签文字 (默认 "进度")
 
    页面使用方式 (无需单独引入 CSS):
-     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+     <script src="../shared/vue.global.prod.js"></script>
      <script src="../cdn/shared/vue-ce-loader.js"></script>
      <script src="../cdn/yry-progress-bar/index.js"></script>
      <yry-progress-bar></yry-progress-bar>          <!-- 自动滚动追踪 -->
@@ -22,6 +22,19 @@
 
 (function () {
   'use strict';
+
+  // ── CSS 内联注入 (幂等,单次) ─────────────────────────────────────
+  (function injectCSS() {
+    var STYLE_ID = 'yry-progress-bar-css';
+    if (document.getElementById(STYLE_ID)) return;
+    var script = document.currentScript;
+    if (!script || !script.src) return;
+    var link = document.createElement('link');
+    link.id = STYLE_ID;
+    link.rel = 'stylesheet';
+    link.href = new URL('index.css', new URL(script.getAttribute('src'), window.location.href)).href;
+    document.head.appendChild(link);
+  })();
 
   // ── 组件注册 ──────────────────────────────────────────────────────
   if (!window.YrYVueCE || typeof window.YrYVueCE.define !== 'function') {
@@ -63,9 +76,12 @@
           }
         },
         mounted: function () {
-          // Vue 3 CE 中 this.$el 是模板根元素 (.pb-wrap),不是 host (<yry-progress-bar>)
-          // 通过 parentElement 回到 host 判定是否显式设置了 done/total
-          var host = this.$el && this.$el.parentElement;
+          // 可靠找到宿主 <yry-progress-bar>: closest 会向上（含自身）查找，无论
+          // $el 是模板根 (.pb-wrap) 还是宿主本身都能拿到正确的宿主元素
+          var host = this.$el;
+          if (host && typeof host.closest === 'function') {
+            host = host.closest('yry-progress-bar');
+          }
           if (host && (host.hasAttribute('done') || host.hasAttribute('total'))) return;
           this._scrollMode = true;
           var self = this;
@@ -77,7 +93,8 @@
           };
           window.addEventListener('scroll', this._onScroll, { passive: true });
           window.addEventListener('resize', this._onScroll, { passive: true });
-          this.$nextTick(function () { self._updateScroll(); });
+          // 初始读取：用 rAF 确保 DOM 布局完成，不依赖 Vue 内部 $nextTick
+          requestAnimationFrame(function () { self._updateScroll(); });
         },
         beforeUnmount: function () {
           if (this._onScroll) {

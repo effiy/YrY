@@ -23,7 +23,7 @@ yry-toast/
 
 ```html
 <link rel="stylesheet" href="../../../../cdn/yry-toast/index.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/vue.global.prod.js"></script>
 <script src="../../../../cdn/yry-toast/index.js"></script>
 <script>
   YryToast.success('已复制', '链接已复制');

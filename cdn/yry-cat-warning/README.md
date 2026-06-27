@@ -19,7 +19,7 @@ yry-cat-warning/
 
 ```html
 <link rel="stylesheet" href="../../../../cdn/yry-cat-warning/index.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/vue.global.prod.js"></script>
 <script src="../../../../cdn/yry-cat-warning/index.js"></script>
 <div id="my-warn"></div>
 <script>

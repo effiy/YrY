@@ -24,7 +24,7 @@ yry-layer-info-panel/
 
 ```html
 <link rel="stylesheet" href="../../../../cdn/yry-layer-info-panel/index.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/vue.global.prod.js"></script>
 <script src="../../../../cdn/yry-layer-info-panel/index.js"></script>
 <div id="layer-info-panel-app"></div>
 <script>

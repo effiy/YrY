@@ -45,7 +45,7 @@ yry-cross-nav/
 
 ```html
 <link rel="stylesheet" href="../../../../cdn/yry-cross-nav/index.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/vue.global.prod.js"></script>
 <script src="../../../../cdn/yry-cross-nav/index.js"></script>
 <div id="cross-nav-app"></div>
 <script>

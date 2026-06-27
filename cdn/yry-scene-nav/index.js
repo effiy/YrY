@@ -10,7 +10,7 @@
 
    页面使用方式:
      <link rel="stylesheet" href="../../../../cdn/yry-scene-nav/index.css">
-     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+     <script src="../shared/vue.global.prod.js"></script>
      <script src="../../../../cdn/yry-scene-nav/index.js"></script>
      <div id="scene-nav-app"></div>
      <script>

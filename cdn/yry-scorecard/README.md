@@ -19,7 +19,7 @@ yry-scorecard/
 
 ```html
 <link rel="stylesheet" href="../../../../cdn/yry-scorecard/index.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/vue.global.prod.js"></script>
 <script src="../../../../cdn/yry-scorecard/index.js"></script>
 <div id="scorecard-app"></div>
 <script>

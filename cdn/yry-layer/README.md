@@ -36,7 +36,7 @@ yry-layer/
 
 ```html
 <link rel="stylesheet" href="../../../../cdn/yry-layer/index.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/vue.global.prod.js"></script>
 <script src="../../../../cdn/yry-layer/index.js"></script>
 <div id="layer-deps-app">
   <!-- slot 内容 (在 mount 前就存在) -->

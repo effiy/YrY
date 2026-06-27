@@ -19,7 +19,7 @@ yry-path-link/
 
 ```html
 <link rel="stylesheet" href="../../../../cdn/yry-path-link/index.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/vue.global.prod.js"></script>
 <script src="../../../../cdn/yry-path-link/index.js"></script>
 <div id="path-link-app"></div>
 <script>

@@ -19,7 +19,7 @@ yry-checklist-head/
 
 ```html
 <link rel="stylesheet" href="../../../../cdn/yry-checklist-head/index.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/vue.global.prod.js"></script>
 <script src="../../../../cdn/yry-checklist-head/index.js"></script>
 <div id="checklist-head-app"></div>
 <script>

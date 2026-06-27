@@ -3,7 +3,7 @@
 
    页面使用方式:
      <link rel="stylesheet" href="../../../../cdn/yry-cron-panel/index.css">
-     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+     <script src="../shared/vue.global.prod.js"></script>
      <script src="../../../../cdn/yry-cron-panel/index.js"></script>
      <yry-cron-panel></yry-cron-panel>
 

@@ -52,7 +52,7 @@
 <div class="card">
   <h2>① 5 步页面集成加载模式</h2>
   <div class="cl-item"><span class="cl-num">1</span><span class="cl-text"><strong class="yry-auto-24835">CSS 最先</strong> — <code>&lt;link rel="stylesheet" href="yry-breadcrumb/index.css"&gt;</code> · 防 FOUC</span></div>
-  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong class="yry-auto-24835">Vue 3 运行时</strong> — <code>&lt;script src="unpkg.com/vue@3/dist/vue.global.prod.js"&gt;</code> · CDN</span></div>
+  <div class="cl-item"><span class="cl-num">2</span><span class="cl-text"><strong class="yry-auto-24835">Vue 3 运行时</strong> — <code>&lt;script src="../shared/vue.global.prod.js"&gt;</code> · CDN</span></div>
   <div class="cl-item"><span class="cl-num">3</span><span class="cl-text"><strong class="yry-auto-24835">挂载点</strong> — <code>&lt;div id="breadcrumb-app"&gt;&lt;/div&gt;</code> · 空容器</span></div>
   <div class="cl-item"><span class="cl-num">4</span><span class="cl-text"><strong class="yry-auto-24835">Loader</strong> — <code>&lt;script src="yry-breadcrumb/index.js"&gt;</code> · fetch 模板 + 注册组件 + 派发 ready</span></div>
   <div class="cl-item"><span class="cl-num">5</span><span class="cl-text"><strong class="yry-auto-24835">mount 脚本</strong> — 内联 <code>&lt;script&gt;</code> · 守卫 + items 配置 + <code>createApp</code></span></div>

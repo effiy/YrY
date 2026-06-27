@@ -19,7 +19,7 @@ yry-verify-item/
 
 ```html
 <link rel="stylesheet" href="../../../../cdn/yry-verify-item/index.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/vue.global.prod.js"></script>
 <script src="../../../../cdn/yry-verify-item/index.js"></script>
 <div id="verify-item-app"></div>
 <script>

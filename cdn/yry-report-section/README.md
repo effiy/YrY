@@ -42,7 +42,7 @@ yry-report-section/
 ## 使用
 
 ```html
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/vue.global.prod.js"></script>
 <script src="../../../../cdn/shared/vue-ce-loader.js"></script>
 <script src="../../../../cdn/yry-report-link/index.js"></script>
 <script src="../../../../cdn/yry-report-section/index.js"></script>

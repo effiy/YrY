@@ -19,7 +19,7 @@ yry-scene-chrome/
 
 ```html
 <link rel="stylesheet" href="../../../../cdn/yry-scene-chrome/index.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/vue.global.prod.js"></script>
 <script src="../../../../cdn/yry-scene-chrome/index.js"></script>
 <div id="scene-chrome-app"></div>
 <script>

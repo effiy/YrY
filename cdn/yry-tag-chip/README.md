@@ -28,7 +28,7 @@ yry-tag-chip/
 
 ```html
 <link rel="stylesheet" href="../../../../cdn/yry-tag-chip/index.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/vue.global.prod.js"></script>
 <script src="../../../../cdn/yry-tag-chip/index.js"></script>
 <div id="tag-row"></div>
 <script>

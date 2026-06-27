@@ -19,7 +19,7 @@ yry-scene-stats/
 
 ```html
 <link rel="stylesheet" href="../../../../cdn/yry-scene-stats/index.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/vue.global.prod.js"></script>
 <script src="../../../../cdn/yry-scene-stats/index.js"></script>
 <div id="scene-stats-app"></div>
 <script>

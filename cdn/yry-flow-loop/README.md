@@ -23,7 +23,7 @@ yry-flow-loop/
 
 ```html
 <link rel="stylesheet" href="../../cdn/yry-flow-loop/index.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/vue.global.prod.js"></script>
 <script src="../../cdn/yry-flow-loop/index.js"></script>
 <div id="flow-app"></div>
 <script>

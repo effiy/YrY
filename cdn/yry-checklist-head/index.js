@@ -5,7 +5,7 @@
 
    页面使用方式:
      <link rel="stylesheet" href="../../../../cdn/yry-checklist-head/index.css">
-     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+     <script src="../shared/vue.global.prod.js"></script>
      <script src="../../../../cdn/yry-checklist-head/index.js"></script>
      <yry-checklist-head percent="100" title="清单" meta="更新: <code>06-13</code>"></yry-checklist-head>
    ═══════════════════════════════════════════════════════════════════════════ */

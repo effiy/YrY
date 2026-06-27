@@ -7,7 +7,7 @@
  * 以及 ready 事件派发。
  *
  * 加载链:
- *   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+ *   <script src="vue.global.prod.js"></script>
  *   <script src="../cdn/shared/vue-ce-loader.js"></script>
  *   <script src="../cdn/yry-breadcrumb/index.js"></script>
  *   <!-- 组件自动注册为 <yry-breadcrumb> -->

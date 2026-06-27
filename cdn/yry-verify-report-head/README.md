@@ -19,7 +19,7 @@ yry-verify-report-head/
 
 ```html
 <link rel="stylesheet" href="../../../../cdn/yry-verify-report-head/index.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/vue.global.prod.js"></script>
 <script src="../../../../cdn/yry-verify-report-head/index.js"></script>
 <div id="verify-report-head-app"></div>
 <script>

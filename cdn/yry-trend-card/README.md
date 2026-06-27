@@ -19,7 +19,7 @@ yry-trend-card/
 
 ```html
 <link rel="stylesheet" href="../../../../cdn/yry-trend-card/index.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/vue.global.prod.js"></script>
 <script src="../../../../cdn/yry-trend-card/index.js"></script>
 <div id="trend-card-app"></div>
 <script>

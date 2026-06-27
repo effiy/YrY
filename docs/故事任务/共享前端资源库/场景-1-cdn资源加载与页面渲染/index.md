@@ -120,9 +120,7 @@ flowchart LR
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- 性能优化 -->
-  <link rel="preconnect" href="https://unpkg.com" crossorigin>
-  <link rel="dns-prefetch" href="https://unpkg.com">
-  <link rel="preload" href="https://unpkg.com/vue@3/dist/vue.global.prod.js" as="script" crossorigin fetchpriority="high">
+  <link rel="preload" href="../../../../cdn/shared/vue.global.prod.js" as="script" crossorigin fetchpriority="high">
   <!-- CSS 基线 -->
   <link rel="stylesheet" href="shared/index.css">
   <link rel="stylesheet" href="theme/index.css">
@@ -130,7 +128,7 @@ flowchart LR
 <body>
   <div class="yry-container"><!-- 页面内容 --></div>
   <!-- JS 运行时 -->
-  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="../../../../cdn/shared/vue.global.prod.js"></script>
   <script src="shared/index.js"></script>
 </body>
 </html>

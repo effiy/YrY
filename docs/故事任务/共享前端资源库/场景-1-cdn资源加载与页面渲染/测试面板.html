@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
 <link rel="stylesheet" href="../../../yry-a11y/index.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../../../../cdn/shared/vue.global.prod.js"></script>
 <link rel="stylesheet" href="../../../yry-legacy-scene-delivery/index.css">
 </head>
 <body>
@@ -61,7 +61,7 @@
     <pre class="yry-auto-15271"># 1. 加载链可用性 (5 步全部 HTTP 200)
 curl -sI https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/shared/index.css | head -1
 curl -sI https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/theme/index.css   | head -1
-curl -sI https://unpkg.com/vue@3/dist/vue.global.prod.js                | head -1
+ls -la ../../../../cdn/shared/vue.global.prod.js
 
 # 2. SRI 哈希生成 (sha384)
 openssl dgst -sha384 -binary shared/index.js | openssl base64 -A

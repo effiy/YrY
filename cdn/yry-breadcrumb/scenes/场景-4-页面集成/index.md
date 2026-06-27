@@ -50,7 +50,7 @@ flowchart LR
   <!-- ① CSS 最先加载，防 FOUC -->
   <link rel="stylesheet" href="../../../../cdn/yry-breadcrumb/index.css">
   <!-- ② Vue 3 运行时 -->
-  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="../../../shared/vue.global.prod.js"></script>
 </head>
 <body>
   <!-- ③ 挂载点 -->

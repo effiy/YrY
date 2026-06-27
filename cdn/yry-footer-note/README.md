@@ -19,7 +19,7 @@ yry-footer-note/
 
 ```html
 <link rel="stylesheet" href="../../../../cdn/yry-footer-note/index.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/vue.global.prod.js"></script>
 <script src="../../../../cdn/yry-footer-note/index.js"></script>
 <div id="footer-note-app"></div>
 <script>

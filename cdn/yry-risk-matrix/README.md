@@ -19,7 +19,7 @@ yry-risk-matrix/
 
 ```html
 <link rel="stylesheet" href="../../../../cdn/yry-risk-matrix/index.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/vue.global.prod.js"></script>
 <script src="../../../../cdn/yry-risk-matrix/index.js"></script>
 <div id="risk-matrix-app"></div>
 <script>

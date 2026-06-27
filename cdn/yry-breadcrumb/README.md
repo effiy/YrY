@@ -95,7 +95,7 @@ yry-breadcrumb/
   <!-- 1. 组件样式 -->
   <link rel="stylesheet" href="./index.css">
   <!-- 2. Vue 3 (必须先于组件加载) -->
-  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="../shared/vue.global.prod.js"></script>
 </head>
 <body>
   <!-- 3. 挂载点 -->

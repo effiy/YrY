@@ -19,7 +19,7 @@ yry-step-card/
 
 ```html
 <link rel="stylesheet" href="../../../../cdn/yry-step-card/index.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/vue.global.prod.js"></script>
 <script src="../../../../cdn/yry-step-card/index.js"></script>
 <div id="step-card-app"></div>
 <script>

@@ -37,7 +37,7 @@ yry-cdn-agg-card/
 
 ```html
 <link rel="stylesheet" href="../../../../cdn/yry-cdn-agg-card/index.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../shared/vue.global.prod.js"></script>
 <script src="../../../../cdn/shared/vue-ce-loader.js"></script>
 <script src="../../../../cdn/yry-cdn-agg-card/index.js"></script>
 
