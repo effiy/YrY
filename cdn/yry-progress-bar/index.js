@@ -63,8 +63,10 @@
           }
         },
         mounted: function () {
-          var el = this.$el;
-          if (el.hasAttribute('done') || el.hasAttribute('total')) return;
+          // Vue 3 CE 中 this.$el 是模板根元素 (.pb-wrap),不是 host (<yry-progress-bar>)
+          // 通过 parentElement 回到 host 判定是否显式设置了 done/total
+          var host = this.$el && this.$el.parentElement;
+          if (host && (host.hasAttribute('done') || host.hasAttribute('total'))) return;
           this._scrollMode = true;
           var self = this;
           this._onScroll = function () {

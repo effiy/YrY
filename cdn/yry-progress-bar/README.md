@@ -6,9 +6,10 @@
 
 ```
 yry-progress-bar/
-├── index.html    # 模板源 (<script type="text/x-template" id="yry-progress-bar-tpl">) + Demo 预览
+├── index.html    # 模板源 (<script type="text/x-template" id="yry-progress-bar-tpl">)
 ├── index.js      # 组件定义: 通过 vue-ce-loader 注册 CE + 自动滚动追踪
-└── index.css     # 组件样式 (sticky 吸顶 + 玻璃磨砂 + 青紫渐变 + 扫光动画)
+├── index.css     # 组件样式 (sticky 吸顶 + 玻璃磨砂 + 青紫渐变 + 扫光动画)
+└── demo.html     # Demo 预览页 (直接在浏览器打开查看效果)
 ```
 
 ## 依赖

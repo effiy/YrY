@@ -9,7 +9,7 @@
 <a id="sec0"></a>
 ## §0 概述
 
-本场景是 **YryProgressBar** 的第 2 个场景，聚焦于 **模板与样式**：Vue 3 `<script type="text/x-template">` 模板结构、sticky 吸顶 + 玻璃磨砂 + 扫光动画的 CSS 实现、CSS 自定义属性集成。
+本场景是 **YryProgressBar** 的第 2 个场景，聚焦于 **模板与样式**：`index.html` 即模板源（`<script type="text/x-template" id="yry-progress-bar-tpl">`）、sticky 吸顶 + 玻璃磨砂 + 扫光动画的 CSS 实现、CSS 自定义属性集成。
 
 ### 模板结构
 

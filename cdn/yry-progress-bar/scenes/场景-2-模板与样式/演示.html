@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/theme/index.css">
 <link rel="stylesheet" href="../../../../cdn/yry-scene-kg/index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 </head>
 <body>
 <div class="container">
@@ -18,8 +19,12 @@
 </nav>
 <div class="header">
   <h1>💡 <span class="accent">演示</span> · 模板与样式</h1>
-  <p class="subtitle">YryProgressBar · 场景 2/5 · 视觉状态展示</p>
+  <p class="subtitle">YryProgressBar · 场景 2/5 · 视觉状态展示 · 实际吸顶效果</p>
 </div>
+
+<!-- Demo 1 — 实际吸顶进度条:3/8 (38%) 演示吸顶 + 玻璃磨砂 + 青紫渐变 + 扫光 -->
+<yry-progress-bar done="3" total="8"></yry-progress-bar>
+
 <div class="card"><h2>视觉状态矩阵</h2>
   <table>
     <tr><th>状态</th><th>条件</th><th>视觉效果</th></tr>
@@ -29,6 +34,19 @@
     <tr><td>动效降级</td><td>prefers-reduced-motion</td><td>无动画 · 无发光</td></tr>
   </table>
 </div>
+
+<div class="card"><h2>实际渲染演示 (38%)</h2>
+  <p>上方吸顶进度条为 <code>done="3" total="8"</code> → pct = 38%,处于"正常进度"状态:</p>
+  <ul>
+    <li>吸顶: <code>position: sticky; top: 0; z-index: 100</code> · 滚动时始终吸附视口顶部</li>
+    <li>玻璃磨砂: <code>backdrop-filter: blur(14px) saturate(160%)</code> · 透过进度条看后方内容</li>
+    <li>青紫渐变填充: cyan → violet 90deg 线性渐变</li>
+    <li>双层发光: cyan 内辉 + violet 外晕</li>
+    <li>持续扫光: <code>pb-shine</code> 动画 2.6s ease-in-out infinite 从左到右</li>
+  </ul>
+  <p class="card-hint">↓ 向下滚动观察吸顶效果 — 进度条会粘在视口顶部,不影响正文阅读</p>
+</div>
+
 <div class="card"><h2>CSS 变量联动</h2>
   <table>
     <tr><th>变量</th><th>来源</th><th>示例值</th></tr>
@@ -38,6 +56,14 @@
     <tr><td>--yry-progress-bar-height</td><td>index.css :root</td><td>21px</td></tr>
   </table>
 </div>
+
+<div class="card"><h2>下游 sticky 协调</h2>
+  <p>进度条自身高度 <code>--yry-progress-bar-height = 21px</code> (padding 6+8 + track 6 + border 1),下游 sticky 组件 (如 <code>yry-dashboard-quicknav</code>) 需通过该变量偏移自身 top:</p>
+  <pre><code>yry-dashboard-quicknav {
+  top: var(--yry-progress-bar-height, 21px);
+}</code></pre>
+</div>
+
 <div class="nav-links">
   <a class="nav-link" href="计划清单.html">📋 计划清单</a>
   <a class="nav-link" href="架构图.html">📐 架构图</a>
@@ -49,5 +75,8 @@
 </div>
 <footer class="ft">YryProgressBar · 场景 2 · 模板与样式 · v1.0.0</footer>
 </div>
+
+<script src="../../../../cdn/shared/vue-ce-loader.js"></script>
+<script src="../../../index.js"></script>
 </body>
 </html>

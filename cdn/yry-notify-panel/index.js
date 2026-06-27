@@ -675,7 +675,7 @@
           },
           fetchHealthReports: async function () {
             try {
-              var resp = await fetch('../docs/健康报告/reports.json');
+              var resp = await fetch('../../docs/健康报告/reports.json');
               if (!resp.ok) throw new Error('HTTP ' + resp.status);
               var data = await resp.json();
               if (!Array.isArray(data) || data.length === 0) return [];
@@ -696,7 +696,7 @@
           },
           fetchLoopReports: async function () {
             try {
-              var resp = await fetch('./自循环报告/reports.json');
+              var resp = await fetch('../../docs/自循环报告/reports.json');
               if (!resp.ok) throw new Error('HTTP ' + resp.status);
               var data = await resp.json();
               if (!Array.isArray(data)) return [];
@@ -720,7 +720,7 @@
           },
           fetchTrendReports: async function () {
             try {
-              var resp = await fetch('./趋势报告/reports.json');
+              var resp = await fetch('../../docs/趋势报告/reports.json');
               if (!resp.ok) throw new Error('HTTP ' + resp.status);
               var data = await resp.json();
               if (!Array.isArray(data)) return [];
@@ -748,7 +748,7 @@
           },
           fetchAnalysisReports: async function () {
             try {
-              var resp = await fetch('./项目分析/reports.json');
+              var resp = await fetch('../../docs/项目分析/reports.json');
               if (!resp.ok) throw new Error('HTTP ' + resp.status);
               var data = await resp.json();
               if (!Array.isArray(data)) return [];

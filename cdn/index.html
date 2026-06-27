@@ -197,7 +197,7 @@
         <div class="sr-summary-text" id="cdn-sr-summary">正在加载 CDN 评分数据…</div>
 
         <!-- 报告快捷入口 -->
-        <div class="sr-links" id="cdn-sr-links" class="sr-links-wrap">
+        <div id="cdn-sr-links" class="sr-links sr-links-wrap">
           <a class="sr-link" href="components-manifest/index.html" title="组件清单数据 — 自动扫描 yry-* 目录生成 · 分类索引 · Vue/Vanilla 形态分布 · 消费方依赖映射">📦 组件清单</a>
           <a class="sr-link" href="changelog/index.html" title="版本变更日志 — MAJOR/MINOR/PATCH 三级分类 · 破坏性变更标注 · 迁移指南 · v1.0→v1.2 演进时间线">📝 版本日志</a>
           <a class="sr-link" href="shared-reports/index.html" title="报告公共资源 — 健康/趋势/自循环/自我改进/项目分析 共享 CSS+JS · 一致深色主题 · 复用样式入口">📚 公共资源</a>
@@ -208,7 +208,7 @@
           <a class="sr-link" href="../docs/组件报告/" title="62 组件四维质量详评 — CSS 规范性 · API 一致性 · 可访问性 · 响应式 · 10 大类别">🧩 组件详评</a>
           <a class="sr-link" href="../docs/index.html" title="YrY 文档中心 — 八维加权评分 · 20 技能 · 7 故事 · 37 场景 · Agent 与治理 · 故障排查">🏠 文档中心</a>
         </div>
-        <div class="yry-mute-68" class="u-9c6726">共 12 个快捷入口 · 5 项 CDN 数据/资源页 (components-manifest · changelog · shared-reports · theme-mono) + 5 项 docs 报告 (健康归档 · 技能 · 自改进 · 加载链 · 组件) + 1 项 tests 自检中心 + 1 项文档中心回链</div>
+        <div class="yry-mute-68 u-9c6726">共 12 个快捷入口 · 5 项 CDN 数据/资源页 (components-manifest · changelog · shared-reports · theme-mono) + 5 项 docs 报告 (健康归档 · 技能 · 自改进 · 加载链 · 组件) + 1 项 tests 自检中心 + 1 项文档中心回链</div>
       </div>
     </div>
 
@@ -383,7 +383,7 @@
           </tr>
         </tbody>
       </table>
-      <div class="cdn-arch-grid" class="m-14px">
+      <div class="cdn-arch-grid m-14px">
         <div class="sr-cell sr-cell--left">
           <div class="cdn-arch-cell-title">📦 五步加载链</div>
           <div class="cdn-arch-cell-desc">shared.css → theme.css → 组件CSS → Vue 3 运行时 → 组件JS · 总加载≈625ms · FCP≤500ms</div>
@@ -418,7 +418,7 @@
       <div class="info-box">
         <a href="README.md" class="color-accent">cdn/README.md</a>（955 行）是 CDN 资源库的<strong>完整真相源</strong>，覆盖目录 · 总览 · 文件清单 · 页面分类（Cat A Mono / Cat B System）· CSS 组件速查 · JS 工具 API <code>YrY.*</code> · Vue 3 自定义元素 · 设计令牌 · 故事与场景。以下锚点直达各章节，便于快速查阅。
       </div>
-      <div class="sr-links" class="sr-links-wrap">
+      <div class="sr-links sr-links-wrap">
         <a class="sr-link" href="README.md#-目录" title="目录 — 全文导航索引">📑 目录</a>
         <a class="sr-link" href="README.md#-总览" title="总览 — CDN 资源库定位 · 核心特性 · 版本演进">🎯 总览</a>
         <a class="sr-link" href="README.md#-文件清单" title="文件清单 — 完整目录结构 · 125 组件 · 完整 111 · 待补 14">📂 文件清单</a>
@@ -447,7 +447,7 @@
       <div class="info-box">
         <a href="SECURITY.md" class="color-accent">cdn/SECURITY.md</a>（348 行）是 CDN 资源库的<strong>安全真相源</strong>，覆盖威胁模型 · 漏洞报告流程 · CSP 配置 · SRI 完整性 · 供应链安全 · 依赖漏洞扫描 · 安全编码规范 · 事件响应 · 安全测试。遵循<strong>认证不可绕过 · 密钥不落盘 · 输入必校验</strong>三条 P0 底线。
       </div>
-      <div class="sr-links" class="sr-links-wrap">
+      <div class="sr-links sr-links-wrap">
         <a class="sr-link" href="SECURITY.md#威胁模型" title="威胁模型 — STRIDE 分类 · 攻击面 · 缓解措施 · 四层防线">🎯 威胁模型</a>
         <a class="sr-link" href="SECURITY.md#supported-versions" title="支持版本 — 当前支持版本范围 · EOL 策略">📅 支持版本</a>
         <a class="sr-link" href="SECURITY.md#报告漏洞" title="报告漏洞 — 上报渠道 · 信息要求 · 处理时间承诺">📨 报告漏洞</a>
@@ -470,7 +470,7 @@
       <div class="info-box">
         <a href="CONTRIBUTING.md" class="color-accent">CONTRIBUTING.md</a>（D0-D8 九维校验 · Conventional Commits）与 <a href="TUTORIAL.md" class="color-accent">TUTORIAL.md</a>（7 步实战 · 4 种常见模式）共同构成 CDN 贡献者与使用者的<strong>操作手册</strong>。合并门禁：<code>npm run ci</code> 全绿 (lint · validate · build:manifest · validate:manifest) · 新增组件后 <code>npm run build:manifest</code> 重生成清单 · 本地自检 <code>npm run self-check</code>。
       </div>
-      <div class="sr-links" class="sr-links-wrap">
+      <div class="sr-links sr-links-wrap">
         <a class="sr-link" href="CONTRIBUTING.md#-项目定位" title="项目定位 — CDN 资源库目标 · 零打包纯静态 · Vue 3 CE">🎯 项目定位</a>
         <a class="sr-link" href="CONTRIBUTING.md#-开发环境" title="开发环境 — Node 18+ · npm install · 本地预览命令">🛠 开发环境</a>
         <a class="sr-link" href="CONTRIBUTING.md#-新增组件" title="新增组件 — 目录约定 · 命名规范 · 加载链 · loader 模板">📦 新增组件</a>
@@ -507,7 +507,7 @@
       <div class="info-box">
         <a href="CHANGELOG.md" class="color-accent">cdn/CHANGELOG.md</a>（214 行）遵循 <strong>Keep a Changelog</strong> 格式与语义化版本。每个版本含 Added · Changed · Fixed · Migration · 影响评估 五段。演进路径：<strong>v1.0 (78/C) → v1.1 (86/B) → v1.2 (92/A) → Unreleased</strong> 持续上升。每版本提供完整迁移指南，确保无破坏性变更。
       </div>
-      <div class="sr-links" class="sr-links-wrap">
+      <div class="sr-links sr-links-wrap">
         <a class="sr-link" href="CHANGELOG.md#版本迁移速查" title="版本迁移速查 — 一表纵览各版本迁移要点 · 破坏性变更标注">📊 迁移速查</a>
         <a class="sr-link" href="CHANGELOG.md#unreleased---2026-06-22" title="Unreleased — 2026-06-22 进行中 · Added · Changed · Fixed · 迁移指南">🚧 Unreleased</a>
         <a class="sr-link" href="CHANGELOG.md#120---2026-06-16" title="v1.2.0 — 2026-06-16 · 双主题完善 · 92/A 优秀 · 迁移指南">🏷 v1.2.0</a>
@@ -532,7 +532,7 @@
       <div class="info-box">
         <a href="COMPONENTS.md" class="color-accent">cdn/COMPONENTS.md</a>（286 行）是 125 个组件的<strong>速查索引</strong>，支持按类型 · 用途 · 消费方 · 状态四维检索。Vue 3 组件 30 个 · Vanilla 组件 83 个 · 页面/样式基类 12 个 · 完整 111 · 待补 14。每组件附 demo 链接 · README 速查 · 形态标签（Vue CE / CSS / JS）。
       </div>
-      <div class="sr-links" class="sr-links-wrap">
+      <div class="sr-links sr-links-wrap">
         <a class="sr-link" href="COMPONENTS.md#vue-3-组件-54-个" title="Vue 3 组件 — 54 个 Custom Elements · 8 类 + 其他">🟣 Vue 3 组件</a>
         <a class="sr-link" href="COMPONENTS.md#布局与结构" title="布局与结构 — layer · doc-layer · breadcrumb · sub-title · layer-agents/rules/refs · layer-info-panel 8 个">📐 布局与结构</a>
         <a class="sr-link" href="COMPONENTS.md#导航" title="导航 — panel-hub · cross-nav · scene-nav 3 个">🧭 导航</a>
@@ -941,7 +941,7 @@
                 desc: '进度条，sticky 吸顶双模式进度指示器 — 显式任务 + 自动滚动追踪',
                 tags: [{ text: '统计', modifier: 'accent' }, { text: 'Vue CE', modifier: 'purple' }],
                 meta: 'sticky 吸顶 · 玻璃质感 · 扫光动画 · 双模式 · RAF 节流',
-                demo: 'yry-progress-bar/index.html' },
+                demo: 'yry-progress-bar/scenes/演示.html' },
               { icon: '📊', iconModifier: 'agent', name: 'yry-phase-strip', badge: 'Vue 3',
                 nameHref: 'yry-phase-strip/README.md', nameTarget: '_blank',
                 desc: '阶段条，管线阶段状态指示器',
@@ -1495,7 +1495,7 @@
                   '双模式进度追踪',
                   '页面集成与发布'
                 ],
-          demo: 'yry-progress-bar/README.md' }
+          demo: 'yry-progress-bar/scenes/知识图谱.html' }
             ]
           }
         ]
@@ -1509,7 +1509,7 @@
         titlePrefix: '',
         titleAccent: '场景',
         titleSuffix: '',
-        stats:       ['🩺 场景健康 85/B · 15 场景 + 3 组件卡片 = 18 条目'],
+        stats:       ['🩺 场景健康 85/B · 15 场景 + 1 概览 + 3 组件卡片 = 19 条目'],
         panelsTitle:         '',
         panelsContainerTitle:'场景交付物快速入口 · 点击打开对应浮窗面板',
         panels:      [
@@ -1572,9 +1572,13 @@
             ]
           },
           {
-            subTitle: { icon: '📊', text: 'YryProgressBar 组件 — 5 场景', count: '5 个' },
+            subTitle: { icon: '📊', text: 'YryProgressBar 组件 — 5 场景 + 全局概览', count: '6 个' },
             grid: 'scene',
             items: [
+              { num: '概览', name: '全局概览 · 清单 架构 图谱 源码 测试 演示 审查',
+                nameHref: 'yry-progress-bar/scenes/知识图谱.html', nameTarget: '_blank',
+                desc: '5 场景全景概览 — 32 任务 · 34 测试 · 36 审查项 · 8 维度评分 · 3 文件架构 (index.html/js/css)',
+                meta: { __sceneBasePath: 'yry-progress-bar/scenes' } },
               { num: '场景 1', name: '需求与设计',
                 nameHref: 'yry-progress-bar/scenes/场景-1-需求与设计/index.md', nameTarget: '_blank',
                 desc: 'Props API 契约 · 双模式设计 (显式/滚动) · 视觉规格 (玻璃质感+扫光)',
@@ -2040,12 +2044,38 @@
 
       function updateScores(retryCount) {
       retryCount = retryCount || 0;
+      /* file:// 协议不支持 fetch — 直接使用默认值,避免无意义的控制台警告 */
+      if (window.location.protocol === 'file:') { renderCdnDefaultFallback(); return; }
       var controller = new AbortController();
       var timeoutId = setTimeout(function() { controller.abort(); }, FETCH_TIMEOUT_MS);
-      fetch('docs/评分报告/score-report.json', { signal: controller.signal })
+      fetch('../docs/评分报告/score-report.json', { signal: controller.signal })
         .then(function(r) { clearTimeout(timeoutId); if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
         .then(function(data) {
-          if (!data || !data.latest) return;
+          if (!data) return;
+          /* 数据归一化: 将 score-report.json 的实际结构映射为代码期望的格式 */
+          if (!data.latest) {
+            var c = data.composite || {};
+            data.latest = {
+              composite: c.score || 0,
+              grade: c.grade || '',
+              label: c.label || '',
+              version: data.version || ''
+            };
+            data.scoreTrend = (data.history || []).map(function(v, i) { return { date: '', score: v }; });
+            var t = data.trend || {};
+            data.latest.trend = { direction: t.direction || 'stable', slopePerWeek: t.slopePerWeek || 0, r2: t.r2 || 0, confidence: t.confidence || 'low' };
+            var f = data.forecast || {};
+            data.latest.forecast = { value: f.value || 0, range: f.range || [0, 0] };
+            var r = data.reliability || {};
+            data.latest.reliability = { score: r.reliability || 0, volatility: r.volatility || 'low' };
+            data.latest.diagTriggered = data.diagTriggered || 0;
+            data.scoreReport = {
+              trend: { direction: t.direction || 'stable', slopePerWeek: t.slopePerWeek || 0, r2: t.r2 || 0, confidence: t.confidence || 'low' },
+              forecast: { value: f.value || 0, range: f.range || [0, 0] },
+              reliability: { volatility: r.volatility || 'low', score: r.reliability || 0 },
+              diagnostics: { triggered: data.diagTriggered || 0 }
+            };
+          }
           var l = data.latest;
           var healthScore = l.composite || 0;
           var healthGrade = l.grade || '';
@@ -2203,7 +2233,6 @@
           // Update layer stats with live scores
           var compLayer = document.getElementById('layer-components-app');
           if (compLayer && ch) {
-            var cssScore = (ch.css && ch.css.avgScore) || 0;
             compLayer.stats = ['🩺 组件健康 ' + cssScore + '/' + gradeLbl(cssScore) + ' · 125 个组件 · 10 大功能类别 · v' + (l.version || '1.2.0')];
           }
           var storyLayer = document.getElementById('layer-stories-app');
@@ -2232,6 +2261,7 @@
               setTimeout(function() { updateScores(retryCount + 1); }, RETRY_DELAY_MS * (retryCount + 1));
             } else {
               console.warn('[cdn] 加载评分超时,已达最大重试次数,使用默认值');
+              renderCdnDefaultFallback();
             }
           } else if (retryCount < MAX_RETRIES) {
             console.warn('[cdn] 加载评分失败, ' + (RETRY_DELAY_MS * (retryCount + 1)) + 'ms 后重试 (' + (retryCount + 1) + '/' + MAX_RETRIES + '):', err.message);
@@ -2250,7 +2280,7 @@
           summaryEl.innerHTML = '<strong>⚠️ 数据源不可达 — 当前显示离线默认值</strong><br><br>' +
             '以下评分基于<strong>CDN 内置静态基线数据</strong>（v1.2.0 最近快照），非实时数据。<br><br>' +
             '<strong>恢复实时数据的方法：</strong><br>' +
-            '① 确认 <code>docs/评分报告/score-report.json</code> 文件存在且可被 HTTP 服务访问<br>' +
+            '① 确认 <code>../docs/评分报告/score-report.json</code> 文件存在且可被 HTTP 服务访问<br>' +
             '② 运行 CDN 健康检查生成最新汇总数据<br>' +
             '③ 如使用本地文件预览，启动 HTTP 服务器：<code>npx serve cdn</code> 或 <code>python3 -m http.server</code><br>' +
             '④ 检查浏览器控制台网络面板确认 JSON 请求未被 CORS/防火墙拦截';

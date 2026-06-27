@@ -7,14 +7,56 @@
 <link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/theme/index.css">
 <link rel="stylesheet" href="../../../../cdn/yry-scene-kg/index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 </head>
 <body>
 <div class="container">
 <nav class="breadcrumb"><a href="../../../../docs/index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../../README.md">YryProgressBar</a><span class="bc-sep">/</span><a href="../知识图谱.html">知识图谱</a><span class="bc-sep">/</span><span>场景-4 · 演示</span></nav>
-<div class="header"><h1>💡 <span class="accent">演示</span> · 双模式进度追踪</h1><p class="subtitle">YryProgressBar · 场景 4/5 · 模式切换 · 滚动演示 · 边界演示</p></div>
-<div class="card"><h2>模式对比</h2><table><tr><th>维度</th><th>显式模式</th><th>自动模式</th></tr><tr><td>触发</td><td>done 或 total 属性存在</td><td>无 done 且无 total</td></tr><tr><td>进度来源</td><td>外部 props</td><td>scrollY / docH</td></tr><tr><td>listener</td><td>无</td><td>scroll + resize (passive)</td></tr><tr><td>清理</td><td>无</td><td>beforeUnmount</td></tr></table></div>
-<div class="card"><h2>自动追踪演示</h2><p>空 &lt;yry-progress-bar&gt;&lt;/yry-progress-bar&gt; → 激活自动模式</p><p>↓ 滚动此页面，进度条实时变化</p><p><code>scrollY=1200, scrollH=3200, innerH=800 → pct = 1200/(3200-800) = 50%</code></p></div>
-<div class="card"><h2>节流验证</h2><p>快速连续滚动 → Performance 面板 → scroll 事件数 >> _updateScroll 调用数</p></div>
+<div class="header"><h1>💡 <span class="accent">演示</span> · 双模式进度追踪</h1><p class="subtitle">YryProgressBar · 场景 4/5 · 模式切换 · 滚动演示 · 边界演示 · 显式实例</p></div>
+
+<div class="card"><h2>模式对比</h2><table><tr><th>维度</th><th>显式模式</th><th>自动模式</th></tr>
+<tr><td>触发</td><td>done 或 total 属性存在</td><td>无 done 且无 total</td></tr>
+<tr><td>进度来源</td><td>外部 props</td><td>scrollY / docH</td></tr>
+<tr><td>listener</td><td>无</td><td>scroll + resize (passive)</td></tr>
+<tr><td>清理</td><td>无</td><td>beforeUnmount</td></tr></table></div>
+
+<div class="card"><h2>自动追踪演示</h2>
+<p>空 <code>&lt;yry-progress-bar&gt;&lt;/yry-progress-bar&gt;</code> → 激活自动模式</p>
+<p>↓ 滚动此页面,进度条实时变化</p>
+<p><code>scrollY=1200, scrollH=3200, innerH=800 → pct = 1200/(3200-800) = 50%</code></p></div>
+
+<div class="card"><h2>显式模式实例 — 5/10 构建进度 (50%)</h2>
+<p>使用 <code>Vue.createApp(window.YryProgressBar, { done: 5, total: 10, label: '构建进度' }).mount('#demo-explicit')</code> 挂载:</p>
+<div id="demo-explicit"></div>
+<p>该实例接收外部 props,无任何 scroll/resize listener,卸载时无需清理。</p></div>
+
+<div class="card"><h2>节流验证</h2>
+<p>快速连续滚动 → Performance 面板 → scroll 事件数 >> _updateScroll 调用数</p>
+<p><code>requestAnimationFrame</code> 节流保证每帧最多一次 <code>_updateScroll</code> 调用,即使高频 scroll 也不会触发频繁重算。</p></div>
+
+<div class="card"><h2>边界演示</h2><table>
+<tr><th>场景</th><th>done</th><th>total</th><th>预期 pct</th><th>视觉态</th></tr>
+<tr><td>正常进度</td><td>3</td><td>8</td><td>38%</td><td>青紫渐变 · 扫光 · 发光</td></tr>
+<tr><td>已完成</td><td>10</td><td>10</td><td>100%</td><td>绿青渐变 (is-done) · 暖光晕</td></tr>
+<tr><td>未开始</td><td>0</td><td>10</td><td>0%</td><td>无发光 (is-empty)</td></tr>
+<tr><td>除零保护</td><td>5</td><td>0</td><td>0%</td><td>无发光 · 不抛错</td></tr>
+<tr><td>超额完成</td><td>12</td><td>10</td><td>120%</td><td>width &gt; 100% · CSS 溢出裁剪</td></tr>
+</table></div>
+
 <div class="nav-links"><a class="nav-link" href="计划清单.html">📋 计划清单</a><a class="nav-link" href="架构图.html">📐 架构图</a><a class="nav-link" href="知识图谱.html">🔗 知识图谱</a><a class="nav-link" href="测试面板.html">🧪 测试面板</a><a class="nav-link" href="源码.html">📄 源码</a><a class="nav-link current" href="演示.html">💡 演示</a><a class="nav-link" href="审查.html">📝 审查</a></div>
 <footer class="ft">YryProgressBar · 场景 4 · 双模式进度追踪 · v1.0.0</footer>
-</div></body></html>
+</div>
+
+<script src="../../../../cdn/shared/vue-ce-loader.js"></script>
+<script src="../../../index.js"></script>
+<script>
+function mountExplicitDemo() {
+  if (!window.YryProgressBar) return;
+  Vue.createApp(window.YryProgressBar, {
+    done: 5, total: 10, label: '构建进度'
+  }).mount('#demo-explicit');
+}
+if (window.YryProgressBar) mountExplicitDemo();
+else document.addEventListener('yry-progress-bar-ready', mountExplicitDemo, { once: true });
+</script>
+</body></html>

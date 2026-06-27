@@ -36,9 +36,10 @@
 <div class="card">
   <h2>文件结构</h2>
   <pre><code>yry-progress-bar/
-├── index.html    # 模板源 (76 行) — &lt;script type="text/x-template"&gt; + Demo 预览
+├── index.html    # 模板源 — <script type="text/x-template" id="yry-progress-bar-tpl">
 ├── index.js      # 组件逻辑 (92 行) — IIFE · CE 注册 · 双模式追踪
 ├── index.css     # 组件样式 (110 行) — sticky 吸顶 · 玻璃磨砂 · 扫光动画
+├── demo.html     # Demo 预览页 (浏览器直接打开查看效果)
 └── README.md     # API 文档 (96 行) — 使用指南 · Props · 兼容性矩阵</code></pre>
 </div>
 
@@ -121,7 +122,7 @@
 </div>
 
 <div class="card">
-  <h2>index.html · 模板结构 (关键片段)</h2>
+  <h2>index.html · 模板源 (无 Demo 包装)</h2>
   <pre><code>&lt;script type="text/x-template" id="yry-progress-bar-tpl"&gt;
   &lt;div class="pb-wrap"
        role="progressbar"
