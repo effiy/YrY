@@ -325,11 +325,24 @@ window.REPORT_DATA = {
     records: [],
     adjacency: {},
 
-    /* ═══════════════════════════════════════════════════════════════════
+    /* ═══════════════════════════════════════════════════════════════════════
      * Self-Improvement Analysis
      * Chart-first diagnostics: severity mix, risk vectors, ranked levers,
      * remediation roadmap, and decay forecast.
-     * ═════════════════════════════════════════════════════════════════ */
+     *
+     * Contract (all fields required; Vue computed props depend on these keys):
+     *   - severityDonut: { p0, p1, p2, total }
+     *   - riskVectors:   [{ dimension, score, weight, p0, p1, p2 }]
+     *   - levers:        [{ rank, dimension, severity, kind, action, file?, line?, scoreUplift, effort }]
+     *   - benchmarks:    { currentGrade, currentValue, targetGrade, targetValue, gapToNext }
+     *   - remediationPlan: { phases: [{ phase, severity, itemCount, estUplift, projected, deadline }], currentScore, projectedScoreIfAllP0P1Remediated }
+     *   - decayForecast: { currentScore, projectedNext, delta, rationale }
+     *   - narrative:     string[]
+     *   - topP0:         [{ action, file?, line?, severity }]
+     *   - focusArea:     { dimName, score, why, hint }
+     *   - trendInsight:  string
+     *   - weightsHint:   string
+     * ═════════════════════════════════════════════════════════════════════ */
     selfImprovement: {
         /* ── Top P0 actions ─────────────────────────────────────── */
         topP0: [

@@ -9,22 +9,81 @@
     <!-- Unified shared loader (Vue 3 CDN + rui component bootstrap) -->
     <script src="/.claude/shared/loader.js" data-namespace="rui-report-files"></script>
 
+    <!-- Page-level styles (base, header, toc, footer, tables) -->
     <link rel="stylesheet" href="/.claude/skills/rui-reports/files/templates/index.css">
 
-    <!-- rui HTML CDN components:
-         - breadcrumb: back-to-reports navigation
-         - score-bar: unified scoring surface
-         - badge: severity / status indicators (cycles, leverage)
-         - tag-chip: file-type / dimension badges
-         - back-top: long-page scroll-to-top affordance
-         All components are registered on the Vue app before mount (see index.js). -->
+    <!-- rui HTML CDN shared components -->
     <script src="/.claude/shared/components/rui-breadcrumb/index.js"></script>
     <script src="/.claude/shared/components/rui-score-bar/index.js"></script>
     <script src="/.claude/shared/components/rui-badge/index.js"></script>
     <script src="/.claude/shared/components/rui-tag-chip/index.js"></script>
     <script src="/.claude/shared/components/rui-back-top/index.js"></script>
+
+    <!-- rui-report-files section components — templates + styles -->
+    <!--   - summary: score-bar + summary cards -->
+    <!--   - size: treemap / types / histogram tabs -->
+    <!--   - largest: filterable sortable table -->
+    <!--   - coupling: fan-in / fan-out tabs with sortable table -->
+    <!--   - risk: hotspots / orphans / depth tabs with sortable table -->
+    <!--   - health: cycles / freshness tabs -->
+    <!--   - self-improvement: chart-first diagnostics, levers, roadmap, decay -->
+    <link rel="stylesheet" href="components/rui-report-summary/index.css">
+    <link rel="stylesheet" href="components/rui-report-size/index.css">
+    <link rel="stylesheet" href="components/rui-report-largest/index.css">
+    <link rel="stylesheet" href="components/rui-report-coupling/index.css">
+    <link rel="stylesheet" href="components/rui-report-risk/index.css">
+    <link rel="stylesheet" href="components/rui-report-health/index.css">
+    <link rel="stylesheet" href="components/rui-report-self-improvement/index.css">
+
+    <script>
+        window.__reportTemplatesReady = (function () {
+            var componentTemplateFiles = [
+                'components/rui-report-summary/index.html',
+                'components/rui-report-size/index.html',
+                'components/rui-report-largest/index.html',
+                'components/rui-report-coupling/index.html',
+                'components/rui-report-risk/index.html',
+                'components/rui-report-health/index.html',
+                'components/rui-report-self-improvement/index.html'
+            ];
+
+            function appendTemplatesFromHTML(htmlText) {
+                var matches = htmlText.match(/<script\s+type=["']text\/x-template["'][^>]*>[\s\S]*?<\/script>/gi) || [];
+                matches.forEach(function (block) {
+                    var idMatch = block.match(/id=["']([^"']+)["']/i);
+                    if (!idMatch || document.getElementById(idMatch[1])) return;
+                    var wrapper = document.createElement('div');
+                    wrapper.innerHTML = block;
+                    var tpl = wrapper.firstElementChild;
+                    if (tpl) document.head.appendChild(tpl);
+                });
+            }
+
+            return Promise.all(componentTemplateFiles.map(function (file) {
+                return fetch(file)
+                    .then(function (res) {
+                        if (!res.ok) throw new Error('Failed to load template: ' + file);
+                        return res.text();
+                    })
+                    .then(appendTemplatesFromHTML);
+            })).catch(function (err) {
+                console.error('[rui-report-files] template preload failed:', err);
+            });
+        })();
+    </script>
+
+    <script src="components/rui-report-summary/index.js"></script>
+    <script src="components/rui-report-size/index.js"></script>
+    <script src="components/rui-report-largest/index.js"></script>
+    <script src="components/rui-report-coupling/index.js"></script>
+    <script src="components/rui-report-risk/index.js"></script>
+    <script src="components/rui-report-health/index.js"></script>
+    <script src="components/rui-report-self-improvement/index.js"></script>
 </head>
 <body>
+<a href="#toc" class="skip-link">Skip to navigation</a>
+<a href="#summary" class="skip-link" style="left: 180px;">Skip to content</a>
+
 <div id="page-app" v-cloak>
     <div id="app-vue-missing" class="app-vue-missing">
         <h2>Vue 3 failed to load</h2>
@@ -55,799 +114,58 @@
         </p>
     </header>
 
-    <section id="summary">
-        <rui-score-bar :score="data.score" :alerts="alertCounts"></rui-score-bar>
-        <div class="card" v-for="c in summaryCards" :key="c.label">
-            <div class="card-label">{{ c.label }}</div>
-            <div class="value">{{ c.value }}</div>
-        </div>
-    </section>
+    <!-- ── Summary section ── -->
+    <rui-report-summary
+        :score="data.score"
+        :alert-counts="alertCounts"
+        :summary="data.summary"
+        :labels="CONFIG.labels">
+    </rui-report-summary>
 
-    <section id="size">
-        <h2>{{ CONFIG.labels.sectionSize }}</h2>
-        <div class="tabs" role="tablist">
-            <button type="button" role="tab"
-                    :class="{ active: sizeTab === 'treemap' }"
-                    @click="setSizeTab('treemap')">{{ CONFIG.labels.tabTreemap }}</button>
-            <button type="button" role="tab"
-                    :class="{ active: sizeTab === 'types' }"
-                    @click="setSizeTab('types')">{{ CONFIG.labels.tabTypes }}</button>
-            <button type="button" role="tab"
-                    :class="{ active: sizeTab === 'histogram' }"
-                    @click="setSizeTab('histogram')">{{ CONFIG.labels.tabHistogram }}</button>
-        </div>
-        <div v-if="sizeTab === 'treemap'">
-            <div class="treemap" v-if="data.treemap.length">
-                <div v-for="t in data.treemap"
-                     :key="t.name"
-                     class="tile"
-                     :style="{ '--area': t.bytes }"
-                     @click="toggleTile(t.name)">
-                    <span class="tile-name">{{ t.name }}</span>
-                    <span class="tile-size">{{ t.humanBytes }}</span>
-                </div>
-            </div>
-            <p class="empty" v-else>{{ CONFIG.labels.emptyTreemap }}</p>
-        </div>
-        <div v-else-if="sizeTab === 'types'">
-            <table class="type-table" v-if="data.types.length">
-                <thead>
-                    <tr>
-                        <th>{{ CONFIG.labels.colType }}</th>
-                        <th>{{ CONFIG.labels.colFiles }}</th>
-                        <th>{{ CONFIG.labels.colPctFiles }}</th>
-                        <th>{{ CONFIG.labels.colBytes }}</th>
-                        <th>{{ CONFIG.labels.colPctBytes }}</th>
-                        <th>{{ CONFIG.labels.colLines }}</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="row in data.types" :key="row.type">
-                        <td><code>{{ row.type }}</code></td>
-                        <td>{{ row.fileCount }}</td>
-                        <td>{{ row.pctFiles }}%</td>
-                        <td>{{ row.totalBytesHuman }}</td>
-                        <td>{{ row.pctBytes }}%</td>
-                        <td>{{ row.totalLines }}</td>
-                        <td><div class="bar" :style="{ '--w': row.pctBytes }"></div></td>
-                    </tr>
-                </tbody>
-            </table>
-            <p class="empty" v-else>{{ CONFIG.labels.emptyTypes }}</p>
-        </div>
-        <div v-else>
-            <div class="histogram" v-if="data.histogram.length">
-                <div v-for="b in data.histogram"
-                     :key="b.bucket"
-                     class="hbar"
-                     :style="{ '--h': b.pctFiles }">
-                    <span class="hb-label">{{ b.bucket }}</span>
-                    <span class="hb-count">{{ b.count }}</span>
-                </div>
-            </div>
-            <p class="empty" v-else>{{ CONFIG.labels.emptyHistogram }}</p>
-        </div>
-    </section>
+    <!-- ── Size section ── -->
+    <rui-report-size
+        :treemap="data.treemap"
+        :types="data.types"
+        :histogram="data.histogram"
+        :labels="CONFIG.labels">
+    </rui-report-size>
 
-    <section id="largest">
-        <h2>{{ CONFIG.labels.sectionLargest }}</h2>
-        <input type="search"
-               class="filter"
-               :placeholder="CONFIG.labels.filterPlaceholder"
-               v-model="filterText"
-               aria-label="Filter largest files by path" />
-        <table data-sortable v-if="largestFiltered.length">
-            <thead>
-                <tr>
-                    <th @click="setSort('largest', 'path')" :class="sortClass('largest', 'path')">{{ CONFIG.labels.colPath }}</th>
-                    <th @click="setSort('largest', 'bytes')" :class="sortClass('largest', 'bytes')">{{ CONFIG.labels.colBytes }}</th>
-                    <th @click="setSort('largest', 'lines')" :class="sortClass('largest', 'lines')">{{ CONFIG.labels.colLines }}</th>
-                    <th @click="setSort('largest', 'type')" :class="sortClass('largest', 'type')">{{ CONFIG.labels.colType }}</th>
-                    <th @click="setSort('largest', 'depth')" :class="sortClass('largest', 'depth')">{{ CONFIG.labels.colDepth }}</th>
-                    <th @click="setSort('largest', 'fanIn')" :class="sortClass('largest', 'fanIn')">{{ CONFIG.labels.colFanIn }}</th>
-                    <th @click="setSort('largest', 'fanOut')" :class="sortClass('largest', 'fanOut')">{{ CONFIG.labels.colFanOut }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="row in largestFiltered" :key="row.path">
-                    <td><code>{{ row.path }}</code></td>
-                    <td>{{ row.bytesHuman }}</td>
-                    <td>{{ row.lines }}</td>
-                    <td>{{ row.type }}</td>
-                    <td>{{ row.depth }}</td>
-                    <td>{{ row.fanIn }}</td>
-                    <td>{{ row.fanOut }}</td>
-                </tr>
-            </tbody>
-        </table>
-        <p class="empty" v-else>{{ CONFIG.labels.emptyLargest }}</p>
-    </section>
+    <!-- ── Largest files section ── -->
+    <rui-report-largest
+        :largest="data.largest"
+        :labels="CONFIG.labels">
+    </rui-report-largest>
 
-    <section id="coupling">
-        <h2>{{ CONFIG.labels.sectionCoupling }}</h2>
-        <div class="tabs" role="tablist">
-            <button type="button" role="tab"
-                    :class="{ active: couplingTab === 'fanin' }"
-                    @click="setCouplingTab('fanin')">{{ CONFIG.labels.tabFanin }}</button>
-            <button type="button" role="tab"
-                    :class="{ active: couplingTab === 'fanout' }"
-                    @click="setCouplingTab('fanout')">{{ CONFIG.labels.tabFanout }}</button>
-        </div>
-        <table data-sortable v-if="sortedCoupling.length">
-            <thead>
-                <tr>
-                    <th @click="setSort('coupling', 'path')" :class="sortClass('coupling', 'path')">{{ CONFIG.labels.colPath }}</th>
-                    <th @click="setSort('coupling', 'fanIn')" :class="sortClass('coupling', 'fanIn')">{{ CONFIG.labels.colFanIn }}</th>
-                    <th @click="setSort('coupling', 'fanOut')" :class="sortClass('coupling', 'fanOut')">{{ CONFIG.labels.colFanOut }}</th>
-                    <th @click="setSort('coupling', 'extDeps')" :class="sortClass('coupling', 'extDeps')">{{ CONFIG.labels.colExt }}</th>
-                    <th @click="setSort('coupling', 'lines')" :class="sortClass('coupling', 'lines')">{{ CONFIG.labels.colLines }}</th>
-                    <th @click="setSort('coupling', 'type')" :class="sortClass('coupling', 'type')">{{ CONFIG.labels.colType }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="row in sortedCoupling" :key="row.path">
-                    <td><code>{{ row.path }}</code></td>
-                    <td>{{ row.fanIn }}</td>
-                    <td>{{ row.fanOut }}</td>
-                    <td>{{ row.extDeps != null ? row.extDeps : '' }}</td>
-                    <td>{{ row.lines }}</td>
-                    <td>{{ row.type }}</td>
-                </tr>
-            </tbody>
-        </table>
-        <p class="empty" v-else>{{ CONFIG.labels.emptyCoupling }}</p>
-    </section>
+    <!-- ── Coupling section ── -->
+    <rui-report-coupling
+        :fanin="data.fanin"
+        :fanout="data.fanout"
+        :labels="CONFIG.labels">
+    </rui-report-coupling>
 
-    <section id="risk">
-        <h2>{{ CONFIG.labels.sectionRisk }}</h2>
-        <div class="tabs" role="tablist">
-            <button type="button" role="tab"
-                    :class="{ active: riskTab === 'hotspots' }"
-                    @click="setRiskTab('hotspots')">{{ CONFIG.labels.tabHotspots }}</button>
-            <button type="button" role="tab"
-                    :class="{ active: riskTab === 'orphans' }"
-                    @click="setRiskTab('orphans')">{{ CONFIG.labels.tabOrphans }}</button>
-            <button type="button" role="tab"
-                    :class="{ active: riskTab === 'depth' }"
-                    @click="setRiskTab('depth')">{{ CONFIG.labels.tabDepth }}</button>
-        </div>
-        <p class="stat-line" v-if="riskTab === 'depth' && data.depthStats">
-            {{ CONFIG.labels.depthMax }} {{ data.depthStats.max }}
-            · {{ CONFIG.labels.depthMean }} {{ data.depthStats.mean }}
-            · {{ CONFIG.labels.depthMedian }} {{ data.depthStats.median }}
-            · {{ CONFIG.labels.depthP90 }} {{ data.depthStats.p90 }}
-            · {{ CONFIG.labels.depthFilesAtMax }} {{ data.depthStats.filesAtMax }}
-        </p>
-        <table data-sortable v-if="sortedRisk.length">
-            <thead>
-                <tr>
-                    <th @click="setSort('risk', 'path')" :class="sortClass('risk', 'path')">{{ CONFIG.labels.colPath }}</th>
-                    <th @click="setSort('risk', 'bytes')" :class="sortClass('risk', 'bytes')">{{ CONFIG.labels.colBytes }}</th>
-                    <th @click="setSort('risk', 'lines')" :class="sortClass('risk', 'lines')">{{ CONFIG.labels.colLines }}</th>
-                    <th @click="setSort('risk', 'type')" :class="sortClass('risk', 'type')">{{ CONFIG.labels.colType }}</th>
-                    <th @click="setSort('risk', 'fanIn')" :class="sortClass('risk', 'fanIn')">{{ CONFIG.labels.colFanIn }}</th>
-                    <th @click="setSort('risk', 'fanOut')" :class="sortClass('risk', 'fanOut')">{{ CONFIG.labels.colFanOut }}</th>
-                    <th @click="setSort('risk', 'maxDepth')" :class="sortClass('risk', 'maxDepth')">{{ CONFIG.labels.colDepth }}</th>
-                    <th @click="setSort('risk', 'score')" :class="sortClass('risk', 'score')">{{ CONFIG.labels.colScore }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="row in sortedRisk" :key="row.path">
-                    <td><code>{{ row.path }}</code></td>
-                    <td>{{ row.bytesHuman }}</td>
-                    <td>{{ row.lines }}</td>
-                    <td>{{ row.type }}</td>
-                    <td>{{ row.fanIn }}</td>
-                    <td>{{ row.fanOut }}</td>
-                    <td>{{ row.maxDepth }}</td>
-                    <td>{{ row.score }}</td>
-                </tr>
-            </tbody>
-        </table>
-        <p class="empty" v-else>{{ CONFIG.labels.emptyRisk }}</p>
-    </section>
+    <!-- ── Risk section ── -->
+    <rui-report-risk
+        :hotspots="data.hotspots"
+        :orphans="data.orphans"
+        :depth-ranking="data.depthRanking"
+        :depth-stats="data.depthStats"
+        :labels="CONFIG.labels">
+    </rui-report-risk>
 
-    <section id="health">
-        <h2>{{ CONFIG.labels.sectionHealth }}</h2>
-        <div class="tabs" role="tablist">
-            <button type="button" role="tab"
-                    :class="{ active: healthTab === 'cycles' }"
-                    @click="setHealthTab('cycles')">{{ CONFIG.labels.tabCycles }}</button>
-            <button type="button" role="tab"
-                    :class="{ active: healthTab === 'freshness' }"
-                    @click="setHealthTab('freshness')">{{ CONFIG.labels.tabFreshness }}</button>
-        </div>
-        <div v-if="healthTab === 'cycles'">
-            <ul class="cycles-list" v-if="data.cycles.length">
-                <li v-for="(c, i) in data.cycles" :key="i">
-                    <rui-badge :text="c.severity"
-                        :modifier="c.severity === 'critical' ? 'fail' : c.severity === 'warn' ? 'warn' : 'info'"
-                        size="sm" />
-                    <code>{{ c.path }}</code>
-                    (length {{ c.length }})
-                    · {{ CONFIG.labels.suggestedFix }}: <code>{{ c.suggestedFix }}</code>
-                </li>
-            </ul>
-            <p class="empty" v-else>{{ CONFIG.labels.emptyCycles }}</p>
-        </div>
-        <div v-else>
-            <div class="depth-stats">
-                <div class="card"><div class="card-label">{{ CONFIG.labels.freshnessAsOf }}</div><div class="value">{{ data.freshnessStats.asOfHuman }}</div></div>
-                <div class="card"><div class="card-label">{{ CONFIG.labels.freshnessMaxAge }}</div><div class="value">{{ data.freshnessStats.maxAge }}d</div></div>
-                <div class="card"><div class="card-label">{{ CONFIG.labels.freshnessMedian }}</div><div class="value">{{ data.freshnessStats.median }}d</div></div>
-                <div class="card"><div class="card-label">{{ CONFIG.labels.freshnessP90 }}</div><div class="value">{{ data.freshnessStats.p90 }}d</div></div>
-                <div class="card"><div class="card-label">{{ CONFIG.labels.freshnessStale }}</div><div class="value">{{ data.freshnessStats.staleCount }}</div></div>
-            </div>
-            <div class="histogram" v-if="data.freshnessBuckets.length">
-                <div v-for="b in data.freshnessBuckets"
-                     :key="b.bucket"
-                     class="hbar"
-                     :style="{ '--h': b.pctFiles }">
-                    <span class="hb-label">{{ b.bucket }}</span>
-                    <span class="hb-count">{{ b.count }}</span>
-                </div>
-            </div>
-            <table data-sortable v-if="sortedFreshness.length">
-                <thead>
-                    <tr>
-                        <th @click="setSort('freshness', 'path')" :class="sortClass('freshness', 'path')">{{ CONFIG.labels.colPath }}</th>
-                        <th @click="setSort('freshness', 'ageDays')" :class="sortClass('freshness', 'ageDays')">{{ CONFIG.labels.colAge }}</th>
-                        <th @click="setSort('freshness', 'lastModified')" :class="sortClass('freshness', 'lastModified')">{{ CONFIG.labels.colLastModified }}</th>
-                        <th @click="setSort('freshness', 'type')" :class="sortClass('freshness', 'type')">{{ CONFIG.labels.colType }}</th>
-                        <th @click="setSort('freshness', 'lines')" :class="sortClass('freshness', 'lines')">{{ CONFIG.labels.colLines }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="row in sortedFreshness" :key="row.path">
-                        <td><code>{{ row.path }}</code></td>
-                        <td>{{ row.ageDays }}</td>
-                        <td>{{ row.lastModifiedHuman }}</td>
-                        <td>{{ row.type }}</td>
-                        <td>{{ row.lines }}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <p class="empty" v-else>{{ CONFIG.labels.emptyFreshness }}</p>
-        </div>
-    </section>
+    <!-- ── Health section ── -->
+    <rui-report-health
+        :cycles="data.cycles"
+        :freshness="data.freshness"
+        :freshness-buckets="data.freshnessBuckets"
+        :freshness-stats="data.freshnessStats"
+        :labels="CONFIG.labels">
+    </rui-report-health>
 
-    <section id="self-improvement" class="self-improvement" aria-labelledby="si-heading">
-        <h2 id="si-heading">{{ CONFIG.labels.selfImprovementLabel }}</h2>
-        <p class="chart-hint">{{ CONFIG.labels.selfImprovementHint }}</p>
-
-        <!-- Executive summary stat banner -->
-        <div class="si-stat-banner" role="group" aria-label="Executive summary statistics">
-            <div class="si-stat-tile" :class="siBenchmarks.currentValue >= 75 ? 'grade-ok' : siBenchmarks.currentValue >= 40 ? 'grade-warn' : 'grade-critical'" tabindex="0" role="status" :aria-label="'Current score: ' + siBenchmarks.currentValue">
-                <span class="si-stat-value">{{ siBenchmarks.currentValue }}</span>
-                <span class="si-stat-label">score</span>
-                <svg class="si-stat-spark" viewBox="0 0 40 12" preserveAspectRatio="none" v-if="siSparkline.points">
-                    <polyline :points="siSparkline.points" fill="none"
-                        :stroke="siSparkline.trend === 'up' ? 'var(--rui-ok, #22c55e)' : siSparkline.trend === 'down' ? 'var(--rui-critical, #ef4444)' : 'var(--rui-fg-subtle, #4a5062)'"
-                        stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/>
-                    <circle :cx="siSparkline.lastX" :cy="siSparkline.lastY" r="1"
-                        :fill="siSparkline.trend === 'up' ? 'var(--rui-ok, #22c55e)' : siSparkline.trend === 'down' ? 'var(--rui-critical, #ef4444)' : 'var(--rui-fg-subtle, #4a5062)'"/>
-                </svg>
-                <span class="si-stat-momentum" :class="'mom-' + siSparkline.trend">{{ siSparkline.arrow }} {{ siSparkline.delta > 0 ? '+' : '' }}{{ siSparkline.delta }}</span>
-            </div>
-            <div class="si-stat-tile" :class="{ 'stat-critical': p0Count > 0, 'stat-ok': p0Count === 0 }">
-                <span class="si-stat-value">{{ p0Count }}</span>
-                <span class="si-stat-label">P0 alerts</span>
-            </div>
-            <div class="si-stat-tile">
-                <span class="si-stat-value">{{ siBenchmarks.gapToNext }}</span>
-                <span class="si-stat-label">pts to {{ siBenchmarks.targetGrade }}</span>
-            </div>
-            <div class="si-stat-tile stat-accent" v-if="siLevers.length">
-                <span class="si-stat-value">+{{ siLevers[0].scoreUplift }}</span>
-                <span class="si-stat-label">top lever</span>
-            </div>
-            <div class="si-stat-tile" :class="{ 'stat-critical': siDecayForecast.isDecaying, 'stat-ok': !siDecayForecast.isDecaying }">
-                <span class="si-stat-value">{{ siDecayForecast.isDecaying ? '↘' : '→' }} {{ siDecayForecast.delta }}</span>
-                <span class="si-stat-label">decay</span>
-            </div>
-        </div>
-
-        <!-- Narrative summary -->
-        <div class="si-narrative" v-if="siNarrative.length">
-            <p v-for="(p, i) in siNarrative" :key="i" class="si-narrative-para">{{ p }}</p>
-        </div>
-
-        <!-- Chart row: severity donut | risk vectors bar | benchmarks gap -->
-        <div class="si-chart-row">
-            <div class="si-card si-donut">
-                <h3>{{ CONFIG.labels.siSeverityDonutLabel }}</h3>
-                <div class="si-donut-wrap" v-if="!siSeverityDonut.empty">
-                    <svg class="si-donut-svg" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="40" fill="none" stroke="var(--rui-surface-2, #1f2937)" stroke-width="10"/>
-                        <circle v-for="(s, i) in siSeverityDonut.segments" :key="i"
-                            cx="50" cy="50" r="40" fill="none"
-                            :stroke="s.color" stroke-width="10"
-                            :stroke-dasharray="s.dasharray"
-                            :stroke-dashoffset="s.dashoffset"
-                            :transform="'rotate(' + s.rotate + ' 50 50)'"/>
-                    </svg>
-                    <div class="si-donut-center">
-                        <span class="si-donut-total">{{ siSeverityDonut.total }}</span>
-                        <span class="si-donut-label">findings</span>
-                    </div>
-                </div>
-                <div class="si-donut-legend" v-if="!siSeverityDonut.empty">
-                    <span v-for="(s, i) in siSeverityDonut.segments" :key="i" class="si-legend-item">
-                        <span class="si-legend-dot" :style="{ background: s.color }"></span>
-                        <span class="si-legend-sev">{{ s.sev }}</span>
-                        <span class="si-legend-count">{{ s.count }}</span>
-                        <span class="si-legend-frac">{{ siSeverityDonut.total === 0 ? '0%' : (s.frac * 100).toFixed(0) + '%' }}</span>
-                    </span>
-                </div>
-                <p v-else class="empty">{{ CONFIG.labels.siNoP0 }}</p>
-            </div>
-
-            <div class="si-card si-risk-vectors">
-                <h3>{{ CONFIG.labels.siRiskVectorsLabel }}</h3>
-                <div class="si-radar" v-if="siRadar.axes.length >= 3">
-                    <svg class="si-radar-svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
-                        <polygon v-for="(ring, i) in siRadar.rings" :key="'r'+i" :points="ring"
-                            fill="none" stroke="var(--rui-fg-subtle, #4a5062)" stroke-width="0.25" opacity="0.35"/>
-                        <text v-for="(b, i) in siRadar.bands" :key="'b'+i"
-                            x="51" :y="b.y" class="si-radar-band" text-anchor="start" dominant-baseline="middle">{{ b.label }}</text>
-                        <line v-for="(a, i) in siRadar.axes" :key="'a'+i"
-                            x1="50" y1="50" :x2="siRadar.points[i] ? siRadar.points[i].x : 50" :y2="siRadar.points[i] ? siRadar.points[i].y : 50"
-                            stroke="var(--rui-fg-subtle, #4a5062)" stroke-width="0.25" opacity="0.3"/>
-                        <polygon :points="siRadar.polygon"
-                            fill="var(--rui-accent, #22C55E)" fill-opacity="0.18"
-                            stroke="var(--rui-accent, #22C55E)" stroke-width="0.7" stroke-linejoin="round"/>
-                        <circle v-for="(p, i) in siRadar.points" :key="'p'+i"
-                            :cx="p.x" :cy="p.y" r="1.1" :class="p.scoreCls" class="si-radar-pt">
-                            <title>{{ p.label }}: {{ p.score }}/100</title>
-                        </circle>
-                        <text v-for="(a, i) in siRadar.axes" :key="'l'+i"
-                            :x="a.x" :y="a.y" class="si-radar-label" text-anchor="middle" dominant-baseline="middle">{{ a.label }} {{ a.score }}</text>
-                    </svg>
-                </div>
-                <ul class="si-rv-list" v-if="siRiskVectors.length">
-                    <li v-for="(r, i) in siRiskVectors" :key="i" class="si-rv-row">
-                        <span class="si-rv-name">{{ r.dimension }}</span>
-                        <div class="si-rv-bar-track">
-                            <div class="si-rv-bar">
-                                <div class="si-rv-bar-fill" :class="r.scoreCls" :style="{ width: r.scoreWidth + '%' }"></div>
-                            </div>
-                            <div class="si-rv-sev-strip" v-if="r.p0 + r.p1 + r.p2 > 0">
-                                <span class="si-rv-seg si-rv-seg-p0" :style="{ width: (r.p0 / (r.p0 + r.p1 + r.p2) * 100) + '%' }"></span>
-                                <span class="si-rv-seg si-rv-seg-p1" :style="{ width: (r.p1 / (r.p0 + r.p1 + r.p2) * 100) + '%' }"></span>
-                                <span class="si-rv-seg si-rv-seg-p2" :style="{ width: (r.p2 / (r.p0 + r.p1 + r.p2) * 100) + '%' }"></span>
-                            </div>
-                        </div>
-                        <span class="si-rv-score" :class="r.scoreCls">{{ r.score }}</span>
-                    </li>
-                </ul>
-                <p v-else class="empty">No risk vectors.</p>
-                <div class="si-pareto" v-if="siPareto.bars.length >= 2">
-                    <h4 class="si-pareto-title">Risk concentration · Pareto</h4>
-                    <svg class="si-pareto-svg" viewBox="0 0 100 42" preserveAspectRatio="none">
-                        <line :x1="0" :y1="siPareto.pct80y" :x2="100" :y2="siPareto.pct80y"
-                            stroke="var(--rui-warn, #f59e0b)" stroke-width="0.25" stroke-dasharray="1.5,1.5" opacity="0.6"/>
-                        <text x="1" :y="siPareto.pct80y - 0.8" class="si-pareto-80">80%</text>
-                        <rect v-for="(b, i) in siPareto.bars" :key="'pb'+i"
-                            :x="b.x + b.width * 0.09" :y="b.y" :width="b.width" :height="b.height"
-                            class="si-pareto-bar" :class="b.scoreCls">
-                            <title>{{ b.label }}: severity score {{ b.score }}</title>
-                        </rect>
-                        <polyline :points="siPareto.line" fill="none"
-                            stroke="var(--rui-accent, #22C55E)" stroke-width="0.6" stroke-linejoin="round"/>
-                        <circle v-for="(m, i) in siPareto.marks" :key="'pm'+i"
-                            :cx="m.x" :cy="m.y" r="0.7" class="si-pareto-mark"/>
-                    </svg>
-                    <div class="si-pareto-labels">
-                        <span v-for="(b, i) in siPareto.bars" :key="'pl'+i" class="si-pareto-label" :class="b.scoreCls">{{ b.label }}</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="si-card si-benchmarks">
-                <h3>{{ CONFIG.labels.siBenchmarksLabel }}</h3>
-                <div class="si-bench-body" v-if="siBenchmarks.currentValue != null">
-                    <p class="si-bench-head">
-                        <span class="si-bench-current" :class="siBenchmarks.currentValue >= 75 ? 'grade-ok' : siBenchmarks.currentValue >= 40 ? 'grade-warn' : 'grade-critical'">{{ siBenchmarks.currentValue }}/100</span>
-                        <span class="si-bench-arrow">→</span>
-                        <span class="si-bench-target">{{ siBenchmarks.targetGrade }} ({{ siBenchmarks.targetValue }})</span>
-                    </p>
-                    <div class="si-bench-bands">
-                        <div class="si-bench-band si-bench-band-f"><span>F</span></div>
-                        <div class="si-bench-band si-bench-band-d"><span>D</span></div>
-                        <div class="si-bench-band si-bench-band-c"><span>C</span></div>
-                        <div class="si-bench-band si-bench-band-b"><span>B</span></div>
-                        <div class="si-bench-band si-bench-band-a"><span>A</span></div>
-                        <span class="si-bench-marker" :class="siBenchmarks.currentValue >= 75 ? 'grade-ok' : siBenchmarks.currentValue >= 40 ? 'grade-warn' : 'grade-critical'" :style="{ left: siBenchmarks.currentValue + '%' }" :title="'Current: ' + siBenchmarks.currentValue"></span>
-                    </div>
-                    <div class="si-bench-scale"><span>0</span><span>40</span><span>60</span><span>75</span><span>90</span><span>100</span></div>
-                    <p class="si-bench-gap-text">{{ CONFIG.labels.siGapLabel }}: {{ siBenchmarks.gapToNext }} pts → {{ siBenchmarks.targetGrade }}</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Levers row -->
-        <div class="si-card si-levers" v-if="siLevers.length">
-            <h3>{{ CONFIG.labels.siLeversLabel }}</h3>
-            <div class="si-levers-body">
-                <div class="si-quadrant" v-if="siLeversQuadrant.length">
-                    <svg class="si-quadrant-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-                        <line x1="50" y1="0" x2="50" y2="100" stroke="var(--rui-border-color, #4a5062)" stroke-width="0.5" stroke-dasharray="2,2"/>
-                        <line x1="0" y1="50" x2="100" y2="50" stroke="var(--rui-border-color, #4a5062)" stroke-width="0.5" stroke-dasharray="2,2"/>
-                        <circle v-for="(p, i) in siLeversQuadrant" :key="i"
-                            :cx="p.cx" :cy="p.cy" :r="p.r"
-                            :class="'si-quad-pt--' + p.severity.toLowerCase()"
-                            class="si-quad-pt">
-                            <title>#{{ p.rank }}: {{ p.dimName }} — +{{ p.uplift }} pts · {{ p.effort }} effort</title>
-                        </circle>
-                        <text v-for="(p, i) in siLeversQuadrant" :key="'t'+i"
-                            :x="p.cx" :y="p.cy - p.r - 1"
-                            class="si-quad-label" text-anchor="middle">#{{ p.rank }}</text>
-                    </svg>
-                    <div class="si-quad-axis-x"><span>low effort</span><span>high effort</span></div>
-                    <div class="si-quad-quad-labels">
-                        <span class="si-quad-q si-quad-q--tl">Quick wins</span>
-                        <span class="si-quad-q si-quad-q--tr">Strategic bets</span>
-                        <span class="si-quad-q si-quad-q--bl">Fill-ins</span>
-                        <span class="si-quad-q si-quad-q--br">Thankless</span>
-                    </div>
-                </div>
-                <div class="si-heatmap" v-if="siHeatmap.rows.length">
-                    <div class="si-heatmap-row si-heatmap-head">
-                        <span class="si-heatmap-cell si-heatmap-label"></span>
-                        <span class="si-heatmap-cell si-heatmap-col">P0</span>
-                        <span class="si-heatmap-cell si-heatmap-col">P1</span>
-                        <span class="si-heatmap-cell si-heatmap-col">P2</span>
-                    </div>
-                    <div v-for="(row, i) in siHeatmap.rows" :key="'hm'+i" class="si-heatmap-row">
-                        <span class="si-heatmap-cell si-heatmap-label">{{ row.dimName }}</span>
-                        <span v-for="(c, j) in row.cells" :key="j"
-                            class="si-heatmap-cell si-heatmap-heat" :class="c.cls"
-                            :style="{ opacity: c.intensity }">
-                            {{ c.count || '' }}
-                            <title>{{ row.dimName }} · {{ c.k.toUpperCase() }}: {{ c.count }} finding{{ c.count === 1 ? '' : 's' }}</title>
-                        </span>
-                    </div>
-                </div>
-                <div class="si-levers-grid">
-                    <div v-for="(l, i) in siLevers" :key="i" class="si-lever-card">
-                        <div class="si-lever-rank">#{{ l.rank }}</div>
-                        <div class="si-lever-body">
-                            <p class="si-lever-head">
-                                <code>{{ l.dimension }}</code>
-                                <rui-badge
-                                    :text="l.severity"
-                                    :modifier="l.severity.toLowerCase() === 'p0' ? 'fail' : l.severity.toLowerCase() === 'p1' ? 'warn' : 'green'"
-                                    size="sm" />
-                                <span class="si-lever-uplift">+{{ l.scoreUplift }} pts</span>
-                            </p>
-                            <p class="si-lever-action">{{ l.action }}</p>
-                            <p class="si-lever-meta">
-                                <span class="si-lever-effort" :class="'effort-' + l.effort">{{ l.effort }}</span>
-                                <code v-if="l.file" class="si-lever-file">{{ l.file }}<span v-if="l.line != null">:{{ l.line }}</span></code>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Remediation roadmap -->
-        <div class="si-card si-roadmap" v-if="siRemediationPlan.phases.length">
-            <h3>{{ CONFIG.labels.siRoadmapLabel }}</h3>
-            <div class="si-roadmap-body">
-                <div class="si-roadmap-gauge">
-                    <span class="si-roadmap-now">{{ siRemediationPlan.currentScore }}</span>
-                    <span class="si-roadmap-arrow">→</span>
-                    <span class="si-roadmap-projected">{{ siRemediationPlan.projectedIfAllP0P1 }}</span>
-                    <span class="si-roadmap-label">{{ CONFIG.labels.siProjectedLabel }}</span>
-                </div>
-                <div class="si-confidence-ring" :class="siConfidence.cls">
-                    <svg viewBox="0 0 36 36" class="si-confidence-svg">
-                        <circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--rui-fg-subtle, #4a5062)" stroke-width="3" opacity="0.25"/>
-                        <circle cx="18" cy="18" r="15.5" fill="none" stroke="currentColor" stroke-width="3"
-                            :stroke-dasharray="(siConfidence.pct * 0.975) + ' 100'" stroke-linecap="round"
-                            transform="rotate(-90 18 18)"/>
-                        <text x="18" y="20.5" text-anchor="middle" class="si-confidence-pct">{{ siConfidence.pct }}%</text>
-                    </svg>
-                    <span class="si-confidence-label">{{ siConfidence.label }}</span>
-                </div>
-                <div class="si-gap-decomp" v-if="siGapDecomp.gap > 0">
-                    <div class="si-gap-decomp-bar">
-                        <div class="si-gap-decomp-current" :style="{ width: (siGapDecomp.current * 100 / siGapDecomp.target) + '%' }"></div>
-                        <div v-for="(s, i) in siGapDecomp.segments" :key="i"
-                            class="si-gap-decomp-seg" :class="s.cls"
-                            :style="{ left: s.x + '%', width: s.width + '%' }">
-                            <title>{{ s.dimName }}: +{{ s.uplift }} pts ({{ s.pctOfGap }}% of gap)</title>
-                        </div>
-                        <div class="si-gap-decomp-residual" v-if="siGapDecomp.residual > 0"
-                            :style="{ left: siGapDecomp.residualX + '%', width: siGapDecomp.residualWidth + '%' }">
-                            <title>Residual gap: {{ siGapDecomp.residual }} pts</title>
-                        </div>
-                        <div class="si-gap-decomp-target"></div>
-                    </div>
-                    <div class="si-gap-decomp-legend">
-                        <span class="si-gap-decomp-key si-gap-decomp-current-key">current {{ siGapDecomp.current }}</span>
-                        <span v-for="(s, i) in siGapDecomp.segments" :key="i" class="si-gap-decomp-key" :class="s.cls">{{ s.dimName }} +{{ s.uplift }}</span>
-                        <span class="si-gap-decomp-key si-gap-decomp-residual-key" v-if="siGapDecomp.residual > 0">residual {{ siGapDecomp.residual }}</span>
-                        <span class="si-gap-decomp-key si-gap-decomp-target-key">target {{ siGapDecomp.target }}</span>
-                    </div>
-                </div>
-                <div class="si-sensitivity" v-if="siSensitivity.levers.length">
-                    <h4 class="si-sensitivity-title">Sensitivity tornado · uplift uncertainty per top lever</h4>
-                    <div class="si-sensitivity-rows">
-                        <div v-for="(l, i) in siSensitivity.levers" :key="'sens'+i" class="si-sensitivity-row">
-                            <span class="si-sensitivity-label">{{ l.rank }}. {{ l.dimName }}</span>
-                            <svg class="si-sensitivity-bar" viewBox="0 0 100 8" preserveAspectRatio="none">
-                                <rect :x="l.pessX" y="1.5" :width="l.barWidth" height="5"
-                                    :class="'sens-bar ' + l.cls" rx="1"/>
-                                <title>{{ l.dimName }} — pessimistic {{ l.pessimistic }} · expected {{ l.expected }} · optimistic {{ l.optimistic }} pts (range {{ l.rangeWidth }})</title>
-                                <line :x1="l.expX" y1="0.5" :x2="l.expX" y2="7.5" stroke="var(--rui-fg, #e6e8eb)" stroke-width="0.4"/>
-                            </svg>
-                            <span class="si-sensitivity-range">{{ l.pessimistic }}–{{ l.optimistic }}</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="si-roadmap-phases">
-                    <div v-for="(p, i) in siRemediationPlan.phases" :key="i" class="si-phase" :class="'phase-' + p.severity">
-                        <div class="si-phase-head">
-                            <span class="si-phase-name">{{ p.phase }}</span>
-                            <span class="si-phase-count">{{ p.itemCount }} items</span>
-                        </div>
-                        <div class="si-phase-bar">
-                            <div class="si-phase-bar-fill" :style="{ width: p.projectedWidth + '%' }"></div>
-                        </div>
-                        <p class="si-phase-meta">
-                            <span class="si-phase-uplift">+{{ p.estUplift }} pts → {{ p.projected }}</span>
-                            <span class="si-phase-deadline">{{ p.deadline }}</span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="si-timeline" v-if="siTimeline.segments.length">
-                <h4 class="si-timeline-title">Initiative timeline · Gantt</h4>
-                <div class="si-timeline-track">
-                    <div v-for="(s, i) in siTimeline.segments" :key="'tl'+i"
-                        class="si-timeline-seg" :class="s.cls"
-                        :style="{ left: s.x + '%', width: s.width + '%' }">
-                        <span class="si-timeline-seg-label">{{ s.label }}</span>
-                        <span class="si-timeline-seg-count" v-if="s.itemCount">{{ s.itemCount }}</span>
-                    </div>
-                </div>
-                <div class="si-timeline-markers">
-                    <span v-for="(m, i) in siTimeline.markers" :key="'tm'+i"
-                        class="si-timeline-marker" :style="{ left: m.x + '%' }">{{ m.label }}</span>
-                </div>
-            </div>
-            <div class="si-effort-donut" v-if="siEffortDonut.slices.length">
-                <h4 class="si-effort-donut-title">Effort allocation · projected uplift share per phase</h4>
-                <div class="si-effort-donut-body">
-                    <svg class="si-effort-donut-svg" viewBox="0 0 42 42">
-                        <circle cx="21" cy="21" r="15.915" fill="none" stroke="var(--rui-bg-elevated, rgba(255,255,255,0.05))" stroke-width="6"/>
-                        <circle v-for="(s, i) in siEffortDonut.slices" :key="'ed'+i"
-                            cx="21" cy="21" r="15.915" fill="none"
-                            :stroke="'var(--rui-' + (s.cls === 'grade-critical' ? 'critical' : s.cls === 'grade-warn' ? 'warn' : 'ok') + ', #888)'"
-                            stroke-width="6"
-                            :stroke-dasharray="s.dashArray"
-                            :stroke-dashoffset="(100 - s.dashOffset)"
-                            transform="rotate(-90 21 21)">
-                            <title>{{ s.label }} — +{{ s.value }} pts ({{ s.pct }}% of projected uplift)</title>
-                        </circle>
-                        <text x="21" y="20" text-anchor="middle" class="si-effort-donut-total">+{{ siEffortDonut.totalUplift }}</text>
-                        <text x="21" y="25" text-anchor="middle" class="si-effort-donut-unit">pts</text>
-                    </svg>
-                    <div class="si-effort-donut-legend">
-                        <span v-for="(s, i) in siEffortDonut.slices" :key="'edk'+i" class="si-effort-donut-key" :class="s.cls">{{ s.label }} +{{ s.value }} ({{ s.pct }}%)</span>
-                    </div>
-                </div>
-            </div>
-            <div class="si-risk-decay" v-if="siRiskDecay.maxVal > 0">
-                <h4 class="si-risk-decay-title">Risk exposure decay · sevScore across remediation phases</h4>
-                <svg class="si-risk-decay-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <line v-if="siRiskDecay.thresholdVisible" x1="0" :y1="siRiskDecay.thresholdY" x2="100" :y2="siRiskDecay.thresholdY"
-                        stroke="var(--rui-warn, #f59e0b)" stroke-width="0.3" stroke-dasharray="2,2" opacity="0.5"/>
-                    <polyline :points="siRiskDecay.polyline" fill="none" stroke="var(--rui-critical, #ef4444)" stroke-width="0.6" stroke-linejoin="round"/>
-                    <circle v-for="(p, i) in siRiskDecay.points" :key="'rd'+i"
-                        :cx="p.x" :cy="p.yPx" r="1.2" fill="var(--rui-critical, #ef4444)">
-                        <title>{{ p.label }} — {{ p.val }} sevScore</title>
-                    </circle>
-                </svg>
-                <div class="si-risk-decay-labels">
-                    <span v-for="(p, i) in siRiskDecay.points" :key="'rdl'+i">{{ p.label }}: {{ p.val }}</span>
-                </div>
-            </div>
-            <div class="si-roi-ranking" v-if="siROIRanking.levers.length">
-                <h4 class="si-roi-ranking-title">ROI ranking · uplift per unit effort (bang-for-buck)</h4>
-                <div class="si-roi-ranking-rows">
-                    <div v-for="(l, i) in siROIRanking.levers" :key="'roi'+i" class="si-roi-ranking-row">
-                        <span class="si-roi-ranking-label">{{ l.dimName }}</span>
-                        <div class="si-roi-ranking-bar-track">
-                            <div class="si-roi-ranking-bar-fill" :class="l.cls" :style="{ width: l.barWidth + '%' }">
-                                <title>{{ l.dimName }} — ROI {{ l.roi }} (uplift {{ l.uplift }} / effort {{ l.effort }}={{ l.effortWeight }})</title>
-                            </div>
-                        </div>
-                        <span class="si-roi-ranking-val">{{ l.roi }}</span>
-                    </div>
-                </div>
-            </div>
-            <div class="si-scurve" v-if="siSCurve.points.length">
-                <h4 class="si-scurve-title">Cumulative completion · remediation S-curve</h4>
-                <svg class="si-scurve-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <line x1="0" y1="0" x2="100" y2="0" stroke="var(--rui-fg-subtle, #4a5062)" stroke-width="0.2" stroke-dasharray="1,3" opacity="0.4"/>
-                    <polyline :points="siSCurve.polyline" fill="none" stroke="var(--rui-accent, #22C55E)" stroke-width="0.8" stroke-linejoin="round"/>
-                    <circle v-for="(p, i) in siSCurve.points" :key="'sc'+i"
-                        :cx="p.x" :cy="p.y" r="1.5" fill="var(--rui-accent, #22C55E)">
-                        <title>{{ p.phase }} — {{ p.pct }}% cumulative</title>
-                    </circle>
-                </svg>
-                <div class="si-scurve-labels">
-                    <span v-for="(p, i) in siSCurve.points" :key="'scl'+i">{{ p.pct }}%</span>
-                </div>
-            </div>
-            <div class="si-score-histogram" v-if="siScoreHistogram.total > 0">
-                <h4 class="si-score-histogram-title">Score distribution · dims per grade band ({{ siScoreHistogram.total }} dims)</h4>
-                <div class="si-score-histogram-bars">
-                    <div v-for="(b, i) in siScoreHistogram.bands" :key="'sh'+i" class="si-score-histogram-col">
-                        <div class="si-score-histogram-bar" :class="b.cls" :style="{ height: b.heightPct + '%' }">
-                            <title>{{ b.label }} grade ({{ b.min }}+) — {{ b.count }} dim(s)</title>
-                        </div>
-                        <span class="si-score-histogram-count">{{ b.count }}</span>
-                        <span class="si-score-histogram-label">{{ b.label }}</span>
-                    </div>
-                </div>
-            </div>
-            <div class="si-decision-quadrant">
-                <h4 class="si-decision-quadrant-title">Decision quadrant · confidence vs risk exposure → <span :class="siDecisionQuadrant.zone.toLowerCase() + '-zone'">{{ siDecisionQuadrant.zone }}</span></h4>
-                <div class="si-decision-quadrant-grid">
-                    <div class="si-dq-cell dq-block">BLOCK</div>
-                    <div class="si-dq-cell dq-monitor">MONITOR</div>
-                    <div class="si-dq-cell dq-conditional">CONDITIONAL</div>
-                    <div class="si-dq-cell dq-ship">SHIP</div>
-                    <div class="si-dq-marker" :style="{ left: siDecisionQuadrant.x + '%', bottom: siDecisionQuadrant.y + '%' }"
-                        :title="'confidence ' + siDecisionQuadrant.confPct + '%, risk ' + siDecisionQuadrant.riskRaw + ' sevScore → ' + siDecisionQuadrant.zone"></div>
-                </div>
-                <div class="si-decision-quadrant-axes">
-                    <span class="si-dq-x-label">confidence →</span>
-                    <span class="si-dq-y-label">↑ risk</span>
-                </div>
-            </div>
-            <div class="si-time-to-target">
-                <h4 class="si-time-to-target-title">Time-to-target · ETA at current trajectory slope</h4>
-                <div class="si-time-to-target-bar">
-                    <div class="si-time-to-target-current" :style="{ width: siTimeToTarget.currentPct + '%' }"></div>
-                    <div class="si-time-to-target-projected" :style="{ width: siTimeToTarget.projectedPct + '%' }" :title="'projected ' + siTimeToTarget.projected + '/' + siTimeToTarget.target"></div>
-                </div>
-                <p class="si-time-to-target-verdict">
-                    <span class="si-time-to-target-eta" :class="siTimeToTarget.onTrack ? 'grade-ok' : 'grade-warn'">{{ siTimeToTarget.onTrack ? 'ON TRACK' : '+' + siTimeToTarget.extraPhases + ' phase(s)' }}</span>
-                    · avg +{{ siTimeToTarget.avgUplift }}/phase · current {{ siTimeToTarget.current }} → projected {{ siTimeToTarget.projected }}/{{ siTimeToTarget.target }}
-                </p>
-            </div>
-            <div class="si-capacity-vs-risk" v-if="siCapacityVsRisk.rows.length">
-                <h4 class="si-capacity-vs-risk-title">Capacity vs risk · per-phase effort alignment</h4>
-                <div class="si-capacity-vs-risk-rows">
-                    <div v-for="(r, i) in siCapacityVsRisk.rows" :key="'cvr'+i" class="si-capacity-vs-risk-row">
-                        <span class="si-capacity-vs-risk-label">{{ r.label }}</span>
-                        <div class="si-capacity-vs-risk-bars">
-                            <div class="si-cvr-bar si-cvr-capacity" :style="{ width: r.capPct + '%' }" :title="'capacity: ' + r.capacity + ' pts uplift'"></div>
-                            <div class="si-cvr-bar si-cvr-risk" :style="{ width: r.riskPct + '%' }" :title="'risk reduction: ' + r.riskReduction + ' sevScore'"></div>
-                        </div>
-                        <span class="si-capacity-vs-risk-ratio" :class="r.cls">{{ r.ratio }}×</span>
-                    </div>
-                </div>
-                <div class="si-capacity-vs-risk-legend">
-                    <span class="si-cvr-key si-cvr-capacity-key">capacity (estUplift)</span>
-                    <span class="si-cvr-key si-cvr-risk-key">risk reduction (sevScore)</span>
-                </div>
-            </div>
-            <div class="si-dim-gap" v-if="siDimGap.rows.length">
-                <h4 class="si-dim-gap-title">Dimension gap to target · shortfalls ranked</h4>
-                <div class="si-dim-gap-rows">
-                    <div v-for="(r, i) in siDimGap.rows" :key="'dg'+i" class="si-dim-gap-row">
-                        <span class="si-dim-gap-label">{{ r.name }}</span>
-                        <div class="si-dim-gap-track">
-                            <div class="si-dim-gap-bar" :class="r.cls" :style="{ width: r.widthPct + '%' }">
-                                <title>{{ r.name }}: {{ r.value }}/100 (gap −{{ r.gap }})</title>
-                            </div>
-                        </div>
-                        <span class="si-dim-gap-val" :class="r.cls">−{{ r.gap }}</span>
-                    </div>
-                </div>
-            </div>
-            <div class="si-concentration" v-if="siConcentrationGauge">
-                <h4 class="si-concentration-title">Risk concentration · HHI</h4>
-                <div class="si-concentration-wrap">
-                    <svg class="si-concentration-svg" viewBox="0 0 60 60">
-                        <circle cx="30" cy="30" r="25" fill="none" stroke="var(--rui-bg-elevated, rgba(255,255,255,0.05))" stroke-width="6"/>
-                        <circle cx="30" cy="30" r="25" fill="none"
-                            stroke="currentColor"
-                            :class="'si-concentration-arc ' + siConcentrationGauge.cls"
-                            stroke-width="6" stroke-linecap="round"
-                            :stroke-dasharray="156.2"
-                            :stroke-dashoffset="siConcentrationGauge.arc"
-                            transform="rotate(-90 30 30)">
-                            <title>Risk concentration {{ siConcentrationGauge.value }}/100 — {{ siConcentrationGauge.label }}; top dim {{ siConcentrationGauge.topDim }} = {{ siConcentrationGauge.topShare }}%</title>
-                        </circle>
-                        <text x="30" y="29" text-anchor="middle" class="si-concentration-num" :class="siConcentrationGauge.cls">{{ siConcentrationGauge.value }}</text>
-                        <text x="30" y="38" text-anchor="middle" class="si-concentration-sub">{{ siConcentrationGauge.label }}</text>
-                    </svg>
-                    <div class="si-concentration-note">
-                        <span class="si-concentration-top">{{ siConcentrationGauge.topDim }} <em>{{ siConcentrationGauge.topShare }}%</em></span>
-                        <span class="si-concentration-hint">share of risk in top dim</span>
-                    </div>
-                </div>
-            </div>
-            <div class="si-dim-uplift" v-if="siDimUplift.rows.length">
-                <h4 class="si-dim-uplift-title">Per-dim uplift potential · levers summed by dim</h4>
-                <div class="si-dim-uplift-rows">
-                    <div v-for="(r, i) in siDimUplift.rows" :key="'du'+i" class="si-dim-uplift-row">
-                        <span class="si-dim-uplift-label">{{ r.name }}</span>
-                        <div class="si-dim-uplift-track">
-                            <div class="si-dim-uplift-bar" :class="r.cls" :style="{ width: r.widthPct + '%' }">
-                                <title>{{ r.name }}: +{{ r.uplift }} pts from {{ r.count }} lever(s)</title>
-                            </div>
-                        </div>
-                        <span class="si-dim-uplift-val" :class="r.cls">+{{ r.uplift }}</span>
-                    </div>
-                </div>
-            </div>
-            <div class="si-trajectory" v-if="siTrajectory.length >= 2">
-                <svg class="si-trajectory-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <polyline :points="siTrajectory.map(function(p){ return p.x + ',' + p.y; }).join(' ')"
-                        fill="none" stroke="var(--rui-accent, #22C55E)" stroke-width="1.5" stroke-linejoin="round"/>
-                    <polyline v-if="siDecayProjection.active" :points="siDecayProjection.points"
-                        fill="none" stroke="var(--rui-critical, #ef4444)" stroke-width="1" stroke-dasharray="2,2" opacity="0.7">
-                        <title>No-action decay projection: score → {{ siDecayProjection.finalScore }}/100</title>
-                    </polyline>
-                    <line x1="0" y1="0" x2="100" y2="0" stroke="var(--rui-border-color, #4a5062)" stroke-width="0.3" stroke-dasharray="2,2" opacity="0.4"/>
-                    <line x1="0" y1="10" x2="100" y2="10" stroke="var(--rui-ok, #22c55e)" stroke-width="0.2" stroke-dasharray="1,3" opacity="0.35"/>
-                    <line x1="0" y1="25" x2="100" y2="25" stroke="var(--rui-warn, #f59e0b)" stroke-width="0.2" stroke-dasharray="1,3" opacity="0.35"/>
-                    <line x1="0" y1="40" x2="100" y2="40" stroke="var(--rui-warn, #f59e0b)" stroke-width="0.2" stroke-dasharray="1,3" opacity="0.3"/>
-                    <line x1="0" y1="60" x2="100" y2="60" stroke="var(--rui-critical, #ef4444)" stroke-width="0.2" stroke-dasharray="1,3" opacity="0.3"/>
-                    <text x="99" y="9.5" text-anchor="end" class="si-traj-band">A 90</text>
-                    <text x="99" y="24.5" text-anchor="end" class="si-traj-band">B 75</text>
-                    <text x="99" y="39.5" text-anchor="end" class="si-traj-band">C 60</text>
-                    <text x="99" y="59.5" text-anchor="end" class="si-traj-band">D 40</text>
-                    <circle v-for="(p, i) in siTrajectory" :key="i"
-                        :cx="p.x" :cy="p.y" r="1.8"
-                        :class="'si-traj-pt--' + p.kind" class="si-traj-pt">
-                        <title>{{ p.label }}: {{ p.score }}/100{{ p.uplift ? ' (+' + p.uplift + ')' : '' }}</title>
-                    </circle>
-                </svg>
-                <div class="si-trajectory-labels">
-                    <span v-for="(p, i) in siTrajectory" :key="i" class="si-traj-label" :class="'si-traj-label--' + p.kind">
-                        <span class="si-traj-lbl-name">{{ p.label }}</span>
-                        <span class="si-traj-lbl-score">{{ p.score }}</span>
-                    </span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Decay forecast -->
-        <div class="si-card si-decay" v-if="siDecayForecast.rationale">
-            <h3>{{ CONFIG.labels.siDecayLabel }}</h3>
-            <div class="si-decay-body">
-                <div class="si-decay-spark">
-                    <svg class="si-decay-spark-svg" viewBox="0 0 100 40" preserveAspectRatio="none">
-                        <line x1="0" y1="20" x2="100" y2="20" stroke="var(--rui-border-color, #4a5062)" stroke-width="0.5" stroke-dasharray="2,2" opacity="0.3"/>
-                        <polyline :points="'0,' + (40 - Math.max(0, Math.min(40, siDecayForecast.currentScore * 0.4))) + ' 50,' + (40 - Math.max(0, Math.min(40, siDecayForecast.projectedNext * 0.4))) + ' 100,' + (40 - Math.max(0, Math.min(40, (siDecayForecast.projectedNext - Math.abs(siDecayForecast.delta)) * 0.4)))"
-                            fill="none" :stroke="siDecayForecast.isDecaying ? 'var(--rui-critical, #ef4444)' : 'var(--rui-ok, #22c55e)'" stroke-width="1.5" stroke-linejoin="round"/>
-                        <circle cx="0" :cy="40 - Math.max(0, Math.min(40, siDecayForecast.currentScore * 0.4))" r="1.8" fill="var(--rui-text-muted, #848893)"/>
-                        <circle cx="50" :cy="40 - Math.max(0, Math.min(40, siDecayForecast.projectedNext * 0.4))" r="1.8" :fill="siDecayForecast.isDecaying ? 'var(--rui-critical, #ef4444)' : 'var(--rui-ok, #22c55e)'"/>
-                    </svg>
-                    <div class="si-decay-spark-labels"><span>now</span><span>next run</span><span>drift</span></div>
-                </div>
-                <div class="si-decay-meta">
-                    <p class="si-decay-head">
-                        <span class="si-decay-now">{{ siDecayForecast.currentScore }}</span>
-                        <span class="si-decay-arrow" :class="{ 'decaying': siDecayForecast.isDecaying }">{{ siDecayForecast.isDecaying ? '↘' : '→' }}</span>
-                        <span class="si-decay-next">{{ siDecayForecast.projectedNext }}</span>
-                        <span class="si-decay-delta" :class="{ 'decaying': siDecayForecast.isDecaying }">{{ siDecayForecast.delta }} pts</span>
-                    </p>
-                    <p class="si-decay-rationale">{{ siDecayForecast.rationale }}</p>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- ── Self-Improvement section ── -->
+    <rui-report-self-improvement
+        :si="data.selfImprovement"
+        :labels="CONFIG.labels">
+    </rui-report-self-improvement>
 
     <footer>
         <p>Generated by <code>/rui-report-files</code> · scope: <code>{{ data.scope }}</code> · options: <code>{{ optionsJson }}</code></p>
