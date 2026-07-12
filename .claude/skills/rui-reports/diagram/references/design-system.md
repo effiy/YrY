@@ -6,16 +6,28 @@
 
 | Component Type | Fill (rgba) | Stroke | Use for |
 |----------------|-------------|--------|---------|
-| Frontend | `rgba(8, 51, 68, 0.4)` | `#22d3ee` (cyan) | Browser apps, SPAs, mobile clients |
-| Backend | `rgba(6, 78, 59, 0.4)` | `#34d399` (emerald) | API servers, workers, business logic |
-| Database | `rgba(76, 29, 149, 0.4)` | `#a78bfa` (violet) | SQL/NoSQL databases, caches, queues |
-| AWS/Cloud | `rgba(120, 53, 15, 0.3)` | `#fbbf24` (amber) | Cloud-managed services (Lambda, S3, etc.) |
-| Security | `rgba(136, 19, 55, 0.4)` | `#fb7185` (rose) | Auth providers, secret managers, WAFs |
-| Message Bus | `rgba(251, 146, 60, 0.3)` | `#fb923c` (orange) | Kafka, RabbitMQ, pub/sub topics |
-| External/Generic | `rgba(30, 41, 59, 0.5)` | `#94a3b8` (slate) | End users, third-party services |
-| Inactive | `rgba(15, 23, 42, 0.5)` | `#475569` | Disabled components, deprecated paths |
+| Frontend | `rgba(8, 51, 68, 0.4)` | `#22d3ee` (cyan) | Browser apps, SPAs, mobile clients, CDN edge |
+| Backend | `rgba(6, 78, 59, 0.4)` | `#34d399` (emerald) | API servers, workers, business logic, gateways |
+| Database | `rgba(76, 29, 149, 0.4)` | `#a78bfa` (violet) | SQL/NoSQL databases, caches, message queues |
+| AWS/Cloud | `rgba(120, 53, 15, 0.3)` | `#fbbf24` (amber) | Cloud-managed services (ECR, S3, Lambda, ALB, CloudFront) |
+| Security | `rgba(136, 19, 55, 0.4)` | `#fb7185` (rose) | Auth providers, WAFs, secret managers, IAM |
+| Message Bus | `rgba(251, 146, 60, 0.3)` | `#fb923c` (orange) | Kafka, RabbitMQ, SQS, SNS, EventBridge |
+| External/Generic | `rgba(30, 41, 59, 0.5)` | `#94a3b8` (slate) | End users, third-party APIs (Stripe, SendGrid, Twilio) |
+| Inactive | `rgba(15, 23, 42, 0.5)` | `#475569` | Disabled components, deprecated paths, legacy systems |
 
-Region boundary fills use a 0.05-alpha version of the same color; boundary strokes use the full color.
+Region boundary fills use a 0.04–0.05-alpha version of the same color; boundary strokes use the full color.
+
+### Arrow Color Semantics
+
+| Color | Stroke | Dash Pattern | Meaning |
+|-------|--------|-------------|---------|
+| `#22d3ee` (cyan) | 1.5px solid | — | Frontend/CDN flow; user-facing traffic |
+| `#34d399` (emerald) | 1.5px solid | — | Synchronous service-to-service calls (REST/gRPC) |
+| `#a78bfa` (violet) | 1.5px solid | — | Data read/write operations (TLS-encrypted) |
+| `#fbbf24` (amber) | 1.5px | `6,4` | Infrastructure provisioning, CI/CD deploy paths |
+| `#fb7185` (rose) | 1.5px | `5,5` | Authentication/authorization flows (JWT, OAuth) |
+| `#fb923c` (orange) | 1.5px | `4,3` | Async messaging, pub/sub, event streams |
+| `#64748b` (slate) | 1px | `2,2` | Telemetry, monitoring, external API calls |
 
 ## Typography
 
@@ -35,33 +47,61 @@ font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", Consolas
 | Card body | 0.75rem | 400 |
 | Footer | 0.75rem | 400 |
 
+## Component Sizing Guide
+
+| Component Role | Width | Height | rx | Notes |
+|---------------|-------|--------|----|-------|
+| Standard service | 100px | 50px | 6 | 2 lines of text max |
+| Compact service | 80px | 40px | 6 | Dense layouts, leaf nodes |
+| Gateway / Critical service | 100-120px | 80-130px | 8 | Multiple responsibilities, needs list items |
+| Database cluster | 160-200px | 40-50px | 8 | Wide for read-replica labels |
+| Message bus connector | 120-200px | 20-30px | 4 | Thin horizontal strip between layers |
+| External service | 100-120px | 50px | 6 | Third-party APIs |
+| Observability panel | 100px | 140-180px | 8 | Tall for stacked tool list |
+| Cloud resource (S3, ECR) | 100px | 60-80px | 6 | Multi-line for bucket/registry names |
+
 ## Spacing Rules
 
 - Standard component height: 60px for services, 80–120px for larger components
 - Minimum vertical gap between components: 40px
-- Inline connectors (message buses) live in the gap, not overlapping
-- Standard viewBox start: 1000×680, expand if layout demands it
-- Legend placed at least 20px below the lowest boundary
+- Minimum horizontal gap between components: 20px
+- Inline connectors (message buses) live in the gap, never overlapping component boxes
+- Standard viewBox start: 1200×800, expand if layout demands it
+- Legend placed at least 20px below the lowest boundary element
+- Security groups: 12px padding on all sides from enclosed components
+- Region boundaries: 20px padding from outermost enclosed element
 
 ## Visual Elements
 
 **Background:** `#020617` (slate-950) with a subtle 40px grid pattern (`<pattern id="grid">` in `<defs>`).
 
-**Component boxes:** Rounded rectangles (`rx="6"`) with 1.5px stroke, semi-transparent fills, opaque mask underneath.
+**Component boxes:** Rounded rectangles (`rx="6"` for standard, `rx="8"` for large/gateway components) with 1.5px stroke, semi-transparent fills, opaque mask underneath.
 
-**Security groups:** Dashed stroke (`stroke-dasharray="4,4"`), transparent fill, rose color.
+**Security groups:** Dashed stroke (`stroke-dasharray="4,4"`), transparent fill with optional 0.03-alpha background, rose color. Label positioned at top-left inside the boundary.
 
-**Region boundaries:** Larger dashed stroke (`stroke-dasharray="8,4"`), amber color, `rx="12"`.
+**Region boundaries:** Larger dashed stroke (`stroke-dasharray="8,4"`), amber color, `rx="14"`, 0.04-alpha fill. Label at top-left inside the boundary with bold weight.
 
-**Arrows:** Use the SVG `<marker id="arrowhead">` defined in `<defs>`. Drawn before component boxes so they render behind.
+**Arrows:** Use distinct colored SVG `<marker>` elements per connection type defined in `<defs>`. Always drawn before component boxes and opaque masks.
 
-**Masking arrows:** Every component box needs an opaque background rect (`fill="#0f172a"`) at the same position, drawn before the semi-transparent styled rect.
+**Arrow markers:** Define one `<marker>` per color in `<defs>` (e.g., `arrow-cyan`, `arrow-emerald`, `arrow-violet`, `arrow-amber`, `arrow-rose`, `arrow-orange`, `arrow-slate`). Each marker has `refX="7" refY="3"` for standard 8×6 arrowheads.
 
-**Auth/security flows:** Dashed lines in rose color (`#fb7185`), `stroke-dasharray="5,5"`.
+**Gradients:** Use `<linearGradient>` in `<defs>` for large region fills and gateway components. Direction: diagonal (`x1="0" y1="0" x2="1" y2="1"`). Stops: 0% at 0.15 opacity → 100% at 0.05 opacity. Provides subtle depth without overwhelming the dark theme.
 
-**Message buses:** Small connector elements (120×20px) in orange between services.
+**Masking arrows:** Every component box needs an opaque background rect (`fill="#0f172a"`) at the exact same position and dimensions, drawn before the semi-transparent styled rect.
 
-**Pulsing indicator:** 12px circle in cyan, 2s pulse animation, 0.5 opacity at midpoint.
+**Auth/security flows:** Dashed lines in rose color (`#fb7185`), `stroke-dasharray="5,5"`. Always label with the auth protocol (JWT, OAuth2, OIDC, PKCE, mTLS).
+
+**Async/event flows:** Dashed lines in orange (`#fb923c`), `stroke-dasharray="4,3"`. Label with `publish`/`consume` or the topic name.
+
+**Infrastructure flows:** Long-dashed lines in amber (`#fbbf24`), `stroke-dasharray="6,4"`. Label with `deploy`, `push`, `provision`, or `trigger`.
+
+**Telemetry flows:** Thin dotted lines in slate (`#64748b`), `stroke-dasharray="2,2"`, 1px weight. Minimal labels (e.g., `metrics`, `logs`, `traces`).
+
+**Message buses:** Small connector elements (120–200px × 20–30px) in orange between services. Centered in the gap between rows.
+
+**Pulsing indicator:** 12px circle in cyan, 2s pulse animation, opacity 1→0.4, with `box-shadow` glow at peak.
+
+**Multi-line components:** For database clusters, S3 buckets, and observability stacks, use bullet-point style sub-labels (`• item-name`) at 8px font size. Bottom line can carry a tiny status annotation at 7px in the stroke color.
 
 ## SVG Document Order (mandatory)
 
@@ -81,24 +121,44 @@ This order eliminates z-index hacks: each later element paints on top of earlier
 ## Layout Patterns
 
 ### Linear flow (left → right)
-- Components in a single row
+- Components in a single row or staggered rows
 - Arrows flow right with slight vertical jitter
-- Best for: simple request/response chains, pipeline visualizations
+- Best for: simple request/response chains, pipeline visualizations, API → DB flows
+- Max 5-6 components per row to avoid horizontal scroll
 
 ### Layered (top → bottom)
-- Each layer is a horizontal band
-- Components grouped within layers
-- Best for: n-tier architectures, layered systems
+- Each layer is a horizontal band separated by ≥40px
+- Components grouped within layers; intra-layer arrows are horizontal
+- Cross-layer arrows are vertical or diagonal
+- Best for: n-tier architectures, layered systems, OSI-like stacks
+- Tip: Put entry points at top, data stores at bottom
 
 ### Hub-and-spoke
-- One central service with surrounding clients/services
-- Arrows radiate from center
-- Best for: API gateways, message brokers, monoliths
+- One central service (the hub) with surrounding clients/services arranged radially
+- Arrows radiate from the hub center to each spoke
+- Best for: API gateways, message brokers, service meshes, monoliths
+- Tip: The hub should be visually prominent (larger box, more detail)
 
-### Mesh
-- Multiple interconnected services without a clear flow
-- Edges grouped to reduce crossing
-- Best for: microservices, event-driven systems
+### Mesh / Microservices
+- Multiple interconnected services without a single clear flow direction
+- Edges grouped to reduce crossing; use message bus connectors for event streams
+- Best for: microservices architectures, event-driven systems, domain-driven designs
+- Tip: Group by domain boundary; use security groups to delineate bounded contexts
+
+### Hybrid (Cloud-native)
+- Edge/CDN layer at top-left → security perimeter → core services → data layer
+- Infrastructure/CI-CD column on the left side
+- Observability column on the right side
+- External services at the bottom
+- Best for: modern cloud deployments with DevOps practices
+- This is the **recommended default** for most production system diagrams
+
+### Infrastructure-Overlay
+- Main application flow in the center
+- CI/CD pipeline shown as a vertical column on the left
+- Monitoring/observability stack as a vertical column on the right
+- Data stores and external services at the bottom
+- Best for: DevOps-oriented documentation, onboarding diagrams
 
 ## Summary Cards
 
@@ -116,7 +176,50 @@ The export toolbar (three-dot `⋯` button) expands into:
 - 🖼️ PNG — download PNG
 - 📄 PDF — download PDF (via `jsPDF`)
 
-All three operations use a `html2canvas` snapshot of the `report-container` element at `scale: 2` for retina-quality output.
+All three operations use a `html2canvas` snapshot of the `report-container` element at `scale: 2` for retina-quality output. CDN dependencies:
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+```
+
+## Advanced Techniques
+
+### Curved Connection Paths
+For complex flows that need to route around components, use SVG `<path>` with cubic bezier curves:
+```svg
+<path d="M x1 y1 L xCtrl y1 Q xCtrl yCtrl xCtrl yCtrl L x2 y2"
+      fill="none" stroke="color" stroke-width="1.5" stroke-dasharray="X,Y"
+      marker-end="url(#arrow-color)"/>
+```
+Use `Q` (quadratic) for single-bend paths and `C` (cubic) for S-curves.
+
+### Multi-line Component Annotations
+For components with many details (API Gateway, database clusters):
+- Main label: 12px bold at vertical center − 10px
+- Bullet items: 8px, one per line, `•` prefix, 16px line spacing
+- Footer annotation: 7px in the stroke color at the bottom
+
+### Security Group Nesting
+Security groups can nest inside region boundaries but should NOT overlap each other. Draw the outermost boundary first in the SVG document order, then inner boundaries.
+
+### Legend Structure
+A comprehensive legend has TWO sections:
+1. **Component types** — colored swatches with labels, arranged in 2-3 columns
+2. **Line styles** — sample lines with labels, arranged in 2 columns
+
+Both sections use 9px font. Line style samples should be ~50px long strokes at actual diagram weight.
+
+### viewBox Calculation
+Calculate viewBox dimensions dynamically:
+- `width` = max(rightmost element x + width) + 40px padding
+- `height` = max(bottommost element y + height) + legend section height + 60px padding
+- Never hardcode a viewBox that crops content
+
+### Component Position Grid
+For deterministic layout, snap component positions to a virtual grid:
+- X: multiples of 20px from the left edge
+- Y: multiples of 20px from the top
+- This ensures consistent alignment and simplifies arrow routing
 
 ## Accessibility
 
@@ -124,6 +227,7 @@ All three operations use a `html2canvas` snapshot of the `report-container` elem
 - Colors meet WCAG AA contrast against `#020617` background
 - `@media print` rules hide the toolbar
 - Text uses monospace fonts but maintains readable size at default zoom
+- Arrow labels are readable at 8-9px on standard displays
 
 ## Determinism
 

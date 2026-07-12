@@ -48,431 +48,923 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>[PROJECT NAME] Architecture Diagram</title>
+  <title>Microservices Platform Architecture Diagram</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
       background: #020617;
       min-height: 100vh;
       padding: 2rem;
       color: white;
     }
-    
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    
-    .header {
-      margin-bottom: 2rem;
-    }
-    
-    .header-row {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 0.5rem;
-    }
-    
+
+    .container { max-width: 1400px; margin: 0 auto; }
+
+    /* ── Header ── */
+    .header { margin-bottom: 2rem; }
+    .header-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
+
     .pulse-dot {
-      width: 12px;
-      height: 12px;
-      background: #22d3ee;
-      border-radius: 50%;
+      width: 12px; height: 12px;
+      background: #22d3ee; border-radius: 50%;
       animation: pulse 2s infinite;
     }
-    
     @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-    
-    h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      letter-spacing: -0.025em;
-    }
-    
-    .subtitle {
-      color: #94a3b8;
-      font-size: 0.875rem;
-      margin-left: 1.75rem;
-    }
-    
-    .diagram-container {
-      background: rgba(15, 23, 42, 0.5);
-      border-radius: 1rem;
-      border: 1px solid #1e293b;
-      padding: 1.5rem;
-      overflow-x: auto;
-    }
-    
-    svg {
-      width: 100%;
-      min-width: 900px;
-      display: block;
-    }
-    
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1rem;
-      margin-top: 2rem;
-    }
-    
-    .card {
-      background: rgba(15, 23, 42, 0.5);
-      border-radius: 0.75rem;
-      border: 1px solid #1e293b;
-      padding: 1.25rem;
-    }
-    
-    .card-header {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 0.75rem;
-    }
-    
-    .card-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-    }
-    
-    .card-dot.cyan { background: #22d3ee; }
-    .card-dot.emerald { background: #34d399; }
-    .card-dot.violet { background: #a78bfa; }
-    .card-dot.amber { background: #fbbf24; }
-    .card-dot.rose { background: #fb7185; }
-    
-    .card h3 {
-      font-size: 0.875rem;
-      font-weight: 600;
-    }
-    
-    .card ul {
-      list-style: none;
-      color: #94a3b8;
-      font-size: 0.75rem;
-    }
-    
-    .card li {
-      margin-bottom: 0.375rem;
-    }
-    
-    .footer {
-      text-align: center;
-      margin-top: 1.5rem;
-      color: #475569;
-      font-size: 0.75rem;
+      0%, 100% { opacity: 1; box-shadow: 0 0 8px #22d3ee; }
+      50%      { opacity: 0.4; box-shadow: 0 0 2px #22d3ee; }
     }
 
-    .toolbar {
-      display: flex;
-      gap: 0.5rem;
-      margin-left: auto;
-      flex-shrink: 0;
-      align-items: center;
+    h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.025em; }
+    .subtitle { color: #94a3b8; font-size: 0.875rem; margin-left: 1.75rem; }
+
+    /* ── Diagram Container ── */
+    .diagram-container {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 1rem; border: 1px solid #1e293b;
+      padding: 1.5rem; overflow-x: auto;
     }
+
+    svg { width: 100%; min-width: 1100px; display: block; }
+
+    /* ── Summary Cards ── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem; margin-top: 2rem;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 0.75rem; border: 1px solid #1e293b;
+      padding: 1.5rem;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .card:hover { border-color: #334155; background: rgba(15, 23, 42, 0.7); }
+
+    .card-header { display: flex; align-items: center; gap: 0.625rem; margin-bottom: 0.875rem; }
+
+    .card-dot {
+      width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+    }
+    .card-dot.cyan    { background: #22d3ee; box-shadow: 0 0 6px rgba(34,211,238,0.4); }
+    .card-dot.emerald { background: #34d399; box-shadow: 0 0 6px rgba(52,211,153,0.4); }
+    .card-dot.violet  { background: #a78bfa; box-shadow: 0 0 6px rgba(167,139,250,0.4); }
+    .card-dot.amber   { background: #fbbf24; box-shadow: 0 0 6px rgba(251,191,36,0.4); }
+    .card-dot.rose    { background: #fb7185; box-shadow: 0 0 6px rgba(251,113,133,0.4); }
+    .card-dot.orange  { background: #fb923c; box-shadow: 0 0 6px rgba(251,146,60,0.4); }
+
+    .card h3 { font-size: 0.875rem; font-weight: 600; }
+
+    .card ul { list-style: none; color: #94a3b8; font-size: 0.75rem; }
+    .card li { margin-bottom: 0.375rem; padding-left: 0.25rem; }
+    .card li::before { content: '▸ '; color: #475569; }
+
+    /* ── Footer ── */
+    .footer { text-align: center; margin-top: 1.5rem; color: #475569; font-size: 0.75rem; }
+
+    /* ── Export Toolbar ── */
+    .toolbar { display: flex; gap: 0.5rem; margin-left: auto; flex-shrink: 0; align-items: center; }
     .toolbar-toggle {
-      background: transparent;
-      border: none;
-      color: #475569;
-      cursor: pointer;
-      font-size: 1.25rem;
-      line-height: 1;
-      padding: 0.25rem 0.5rem;
-      border-radius: 0.375rem;
+      background: transparent; border: none;
+      color: #475569; cursor: pointer;
+      font-size: 1.25rem; line-height: 1;
+      padding: 0.25rem 0.5rem; border-radius: 0.375rem;
       transition: color 0.2s, background 0.2s;
     }
     .toolbar-toggle:hover { color: #94a3b8; background: rgba(30, 41, 59, 0.5); }
-    .toolbar-actions {
-      display: none;
-      gap: 0.5rem;
-    }
+    .toolbar-actions { display: none; gap: 0.5rem; }
     .toolbar.expanded .toolbar-actions { display: flex; }
     .toolbar-actions button {
-      background: rgba(30, 41, 59, 0.8);
-      border: 1px solid #334155;
-      color: #94a3b8;
-      padding: 0.375rem 0.75rem;
-      border-radius: 0.375rem;
-      font-family: inherit;
-      font-size: 0.75rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      white-space: nowrap;
+      background: rgba(30, 41, 59, 0.8); border: 1px solid #334155;
+      color: #94a3b8; padding: 0.375rem 0.75rem; border-radius: 0.375rem;
+      font-family: inherit; font-size: 0.75rem; cursor: pointer;
+      transition: all 0.2s; white-space: nowrap;
     }
     .toolbar-actions button:hover {
-      background: rgba(51, 65, 85, 0.8);
-      color: white;
-      border-color: #475569;
+      background: rgba(51, 65, 85, 0.8); color: white; border-color: #475569;
     }
 
+    /* ── Print ── */
     @media print {
       body { background: #020617; padding: 1rem; }
       .toolbar { display: none !important; }
+    }
+
+    /* ── SVG Load Animation ── */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .diagram-container svg rect[fill*="rgba"] {
+      animation: fadeInUp 0.5s ease-out both;
+    }
+    .diagram-container svg rect[fill*="rgba"]:nth-child(1) { animation-delay: 0.05s; }
+
+    /* ── SVG Interactive States ── */
+    .diagram-container.dimmed .svg-comp,
+    .diagram-container.dimmed rect[fill*="rgba"] { opacity: 0.3; transition: opacity 0.35s; }
+    .diagram-container.dimmed .svg-comp.highlight,
+    .diagram-container.dimmed rect.highlight { opacity: 1; }
+    .diagram-container.dimmed .svg-arrow { opacity: 0.15; transition: opacity 0.35s; }
+    .diagram-container.dimmed .svg-arrow.highlight { opacity: 1; }
+    .diagram-container.dimmed text { opacity: 0.25; transition: opacity 0.35s; }
+    .diagram-container.dimmed text.highlight { opacity: 1; fill: #fff; }
+    .diagram-container.dimmed .svg-boundary { opacity: 0.25; }
+
+    rect.comp-stroke { cursor: pointer; }
+    rect.comp-stroke:hover { filter: brightness(1.2); }
+
+    /* Focus indicator bar */
+    .focus-indicator {
+      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+      background: rgba(30, 41, 59, 0.95); border: 1px solid #334155;
+      color: #94a3b8; padding: 0.5rem 1rem; border-radius: 0.5rem;
+      font-family: inherit; font-size: 0.75rem;
+      display: none; gap: 0.75rem; align-items: center; z-index: 100;
+      backdrop-filter: blur(8px);
+    }
+    .focus-indicator.visible { display: flex; }
+    .focus-indicator button {
+      background: rgba(51, 65, 85, 0.8); border: 1px solid #475569;
+      color: #e2e8f0; padding: 0.25rem 0.625rem; border-radius: 0.375rem;
+      font-family: inherit; font-size: 0.75rem; cursor: pointer;
+    }
+    .focus-indicator button:hover { background: rgba(71, 85, 105, 0.8); }
+    .focus-indicator kbd {
+      background: rgba(15, 23, 42, 0.8); border: 1px solid #475569;
+      padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.65rem;
+    }
+
+    .focus-indicator {
+      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+      background: rgba(30, 41, 59, 0.95); border: 1px solid #334155;
+      color: #94a3b8; padding: 0.5rem 1rem; border-radius: 0.5rem;
+      font-family: inherit; font-size: 0.75rem;
+      display: none; gap: 0.75rem; align-items: center; z-index: 100;
+    }
+    .focus-indicator.visible { display: flex; }
+    .focus-indicator button {
+      background: rgba(51, 65, 85, 0.8); border: 1px solid #475569;
+      color: #e2e8f0; padding: 0.25rem 0.625rem; border-radius: 0.375rem;
+      font-family: inherit; font-size: 0.75rem; cursor: pointer;
+    }
+    .focus-indicator button:hover { background: rgba(71, 85, 105, 0.8); }
+    .focus-indicator kbd {
+      background: rgba(15, 23, 42, 0.8); border: 1px solid #475569;
+      padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.65rem;
     }
   </style>
 </head>
 <body>
   <div class="container" id="report-container">
-    <!-- Header -->
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         HEADER
+         ═══════════════════════════════════════════════════════════════════ -->
     <div class="header">
       <div class="header-row">
         <div class="pulse-dot"></div>
-        <h1>[DIAGRAM TITLE]</h1>
+        <h1>Microservices Platform — Cloud-Native Architecture</h1>
         <div class="toolbar">
           <div class="toolbar-actions">
             <button onclick="copyAsImage(this)">📋 Copy</button>
             <button onclick="downloadPNG(this)">🖼️ PNG</button>
             <button onclick="downloadPDF(this)">📄 PDF</button>
           </div>
-          <button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export options" aria-label="Export options">⋯</button>
+          <button class="toolbar-toggle"
+                  onclick="this.parentElement.classList.toggle('expanded')"
+                  title="Export options" aria-label="Export options">⋯</button>
         </div>
       </div>
-      <p class="subtitle">[Subtitle description]</p>
+      <p class="subtitle">Multi-service e-commerce platform on AWS with event-driven communication, comprehensive observability, and CI/CD automation</p>
     </div>
 
-    <!-- Main Diagram -->
+    <!-- ═══════════════════════════════════════════════════════════════════
+         MAIN SVG DIAGRAM
+         ═══════════════════════════════════════════════════════════════════ -->
     <div class="diagram-container">
-      <svg viewBox="0 0 1000 800">
-        <!-- 1. Definitions -->
+      <svg viewBox="0 0 1280 850">
+
+        <!-- ── 1. Definitions ── -->
         <defs>
-          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-            <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+          <!-- Arrowheads -->
+          <marker id="arrow-cyan"    markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#22d3ee"/>
           </marker>
+          <marker id="arrow-emerald" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#34d399"/>
+          </marker>
+          <marker id="arrow-violet"  markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#a78bfa"/>
+          </marker>
+          <marker id="arrow-amber"   markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#fbbf24"/>
+          </marker>
+          <marker id="arrow-rose"    markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#fb7185"/>
+          </marker>
+          <marker id="arrow-orange"  markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#fb923c"/>
+          </marker>
+          <marker id="arrow-slate"   markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#64748b"/>
+          </marker>
+
+          <!-- Grid pattern -->
           <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
             <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
           </pattern>
+
+          <!-- Gradients -->
+          <linearGradient id="grad-cyan" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.15"/>
+            <stop offset="100%" stop-color="#22d3ee" stop-opacity="0.05"/>
+          </linearGradient>
+          <linearGradient id="grad-emerald" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#34d399" stop-opacity="0.15"/>
+            <stop offset="100%" stop-color="#34d399" stop-opacity="0.05"/>
+          </linearGradient>
+          <linearGradient id="grad-violet" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#a78bfa" stop-opacity="0.15"/>
+            <stop offset="100%" stop-color="#a78bfa" stop-opacity="0.05"/>
+          </linearGradient>
+
+          <!-- SVG Filters -->
+          <filter id="shadow-sm" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.4"/>
+          </filter>
+          <filter id="shadow-md" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.5"/>
+          </filter>
+          <filter id="glow-cyan" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
         </defs>
 
-        <!-- 2. Background Grid -->
-        <rect width="100%" height="100%" fill="url(#grid)" />
+        <!-- ── 2. Background Grid ── -->
+        <rect width="100%" height="100%" fill="url(#grid)"/>
 
-        <!-- =================================================================
-             3. ARROWS (drawn first, rendered behind boxes)
-             ================================================================= -->
+        <!-- ═══════════════════════════════════════════════════════════════
+             3. ARROWS (drawn first — rendered behind boxes)
+             ═══════════════════════════════════════════════════════════════ -->
 
-        <!-- Standard arrow with label -->
-        <line x1="130" y1="305" x2="198" y2="305" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <text x="164" y="299" fill="#94a3b8" font-size="9" text-anchor="middle">HTTPS</text>
+        <!-- ── External → CloudFront (HTTPS) ── -->
+        <line x1="100" y1="365" x2="178" y2="365" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrow-cyan)"/>
+        <text x="140" y="358" fill="#94a3b8" font-size="9" text-anchor="middle">HTTPS/TLS</text>
+        <text x="140" y="388" fill="#475569" font-size="7" text-anchor="middle">p95 ≤ 120ms</text>
 
-        <!-- Simple arrow (no label) -->
-        <line x1="310" y1="305" x2="358" y2="305" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <!-- ── CloudFront → WAF ── -->
+        <line x1="290" y1="365" x2="338" y2="365" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrow-cyan)"/>
 
-        <!-- Vertical arrow (amber = infra/provisions flow) -->
-        <line x1="255" y1="330" x2="255" y2="378" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <text x="270" y="358" fill="#94a3b8" font-size="9">OAI</text>
+        <!-- ── WAF → ALB ── -->
+        <line x1="450" y1="365" x2="498" y2="365" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrow-cyan)"/>
 
-        <!-- Internal traffic arrow (emerald) -->
-        <line x1="460" y1="305" x2="508" y2="305" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <!-- ── ALB → API Gateway ── -->
+        <line x1="610" y1="315" x2="658" y2="315" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-emerald)"/>
+        <text x="634" y="309" fill="#94a3b8" font-size="8" text-anchor="middle">gRPC</text>
 
-        <!-- Data read/write arrow (violet) -->
-        <line x1="620" y1="305" x2="698" y2="305" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <text x="655" y="299" fill="#94a3b8" font-size="9">TLS</text>
+        <!-- ── ALB → API Gateway (second path for REST) ── -->
+        <line x1="610" y1="365" x2="658" y2="365" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-emerald)"/>
+        <text x="634" y="358" fill="#94a3b8" font-size="8" text-anchor="middle">REST</text>
+        <text x="634" y="388" fill="#475569" font-size="7" text-anchor="middle">p95 ≤ 45ms</text>
 
-        <!-- Message bus arrow (orange) into API -->
-        <line x1="440" y1="430" x2="540" y2="305" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="2,3" marker-end="url(#arrowhead)"/>
-        <text x="470" y="378" fill="#fb923c" font-size="9">events</text>
+        <!-- ── ALB → API Gateway (WebSocket) ── -->
+        <line x1="610" y1="405" x2="658" y2="405" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-orange)"/>
+        <text x="634" y="398" fill="#fb923c" font-size="8" text-anchor="middle">WSS</text>
 
-        <!-- Curved auth flow (rose, dashed) -->
-        <path d="M 80 140 L 80 200 Q 80 220 100 220 L 200 220 Q 220 220 220 240 L 220 278" fill="none" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="5,5"/>
-        <text x="150" y="210" fill="#fb7185" font-size="8">JWT + PKCE</text>
+        <!-- ── API Gateway → Auth Service ── -->
+        <line x1="770" y1="340" x2="770" y2="228" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="5,5" marker-end="url(#arrow-rose)"/>
+        <text x="778" y="288" fill="#fb7185" font-size="8">JWT</text>
 
-        <!-- =================================================================
+        <!-- ── API Gateway → User Service ── -->
+        <line x1="830" y1="365" x2="908" y2="365" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-emerald)"/>
+        <text x="869" y="358" fill="#475569" font-size="7" text-anchor="middle">p95 ≤ 18ms</text>
+
+        <!-- ── API Gateway → Order Service ── -->
+        <line x1="830" y1="415" x2="908" y2="415" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-emerald)"/>
+
+        <!-- ── API Gateway → Payment Service ── -->
+        <line x1="830" y1="455" x2="908" y2="455" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-emerald)"/>
+
+        <!-- ── User Service → Redis Cache ── -->
+        <line x1="960" y1="340" x2="960" y2="228" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrow-violet)"/>
+        <text x="968" y="288" fill="#94a3b8" font-size="8">R/W</text>
+
+        <!-- ── User Service → PostgreSQL ── -->
+        <line x1="1020" y1="390" x2="1020" y2="508" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrow-violet)"/>
+        <text x="1028" y="452" fill="#94a3b8" font-size="8">TLS</text>
+        <text x="1032" y="468" fill="#475569" font-size="7">p95 ≤ 8ms</text>
+
+        <!-- ── Order Service → PostgreSQL ── -->
+        <line x1="1060" y1="415" x2="1060" y2="508" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrow-violet)"/>
+
+        <!-- ── Payment Service → PostgreSQL ── -->
+        <line x1="1100" y1="455" x2="1100" y2="508" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrow-violet)"/>
+
+        <!-- ── Order Service → Kafka ── -->
+        <line x1="960" y1="430" x2="960" y2="558" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-orange)"/>
+        <text x="948" y="498" fill="#fb923c" font-size="8">publish</text>
+
+        <!-- ── Kafka → Notification Worker ── -->
+        <line x1="890" y1="565" x2="828" y2="565" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-orange)"/>
+        <text x="860" y="558" fill="#fb923c" font-size="8">consume</text>
+
+        <!-- ── Notification Worker → SendGrid ── -->
+        <line x1="770" y1="590" x2="770" y2="668" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow-slate)"/>
+        <text x="780" y="632" fill="#94a3b8" font-size="8">SMTP</text>
+
+        <!-- ── Payment Service → Stripe ── -->
+        <line x1="1020" y1="470" x2="1020" y2="668" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow-slate)"/>
+        <text x="1030" y="572" fill="#94a3b8" font-size="8">API</text>
+
+        <!-- ── CI/CD → ECR ── -->
+        <line x1="200" y1="195" x2="200" y2="138" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arrow-amber)"/>
+        <text x="212" y="170" fill="#fbbf24" font-size="8">push</text>
+
+        <!-- ── ECR → ECS (provision) ── -->
+        <path d="M 260 120 L 450 120 Q 470 120 470 140 L 470 228"
+              fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#arrow-amber)"/>
+        <text x="360" y="113" fill="#fbbf24" font-size="8">deploy</text>
+
+        <!-- ── Monitoring scrapes ── -->
+        <line x1="1150" y1="140" x2="1150" y2="508" stroke="#94a3b8" stroke-width="1" stroke-dasharray="2,2"/>
+        <text x="1160" y="325" fill="#475569" font-size="7">metrics</text>
+
+        <!-- ═══════════════════════════════════════════════════════════════
              4. OPAQUE MASKS (solid #0f172a, one per component box)
-             Prevents arrows from bleeding through semi-transparent fills.
-             ================================================================= -->
+             ═══════════════════════════════════════════════════════════════ -->
 
-        <!-- Auth Provider -->
-        <rect x="30" y="80" width="100" height="60" rx="6" fill="#0f172a"/>
-        <!-- Users -->
-        <rect x="30" y="280" width="100" height="50" rx="6" fill="#0f172a"/>
-        <!-- CloudFront -->
-        <rect x="200" y="280" width="110" height="50" rx="6" fill="#0f172a"/>
-        <!-- S3 Buckets -->
-        <rect x="200" y="380" width="110" height="100" rx="6" fill="#0f172a"/>
-        <!-- Load Balancer (inside security group) -->
-        <rect x="360" y="280" width="100" height="50" rx="6" fill="#0f172a"/>
-        <!-- API Server -->
-        <rect x="510" y="280" width="110" height="50" rx="6" fill="#0f172a"/>
-        <!-- Database -->
-        <rect x="700" y="280" width="120" height="50" rx="6" fill="#0f172a"/>
-        <!-- Event Bus (message bus, 120x20) -->
-        <rect x="380" y="420" width="120" height="20" rx="4" fill="#0f172a"/>
-        <!-- Frontend -->
-        <rect x="200" y="520" width="200" height="110" rx="8" fill="#0f172a"/>
-        <!-- Inactive (legacy) component -->
-        <rect x="850" y="280" width="120" height="50" rx="6" fill="#0f172a"/>
+        <!-- Row: Cloud Infrastructure -->
+        <rect x="50"  y="80"  width="100" height="60"  rx="6" fill="#0f172a"/>  <!-- ECR -->
+        <rect x="190" y="180" width="100" height="50"  rx="6" fill="#0f172a"/>  <!-- GH Actions -->
+        <rect x="50"  y="180" width="100" height="70"  rx="6" fill="#0f172a"/>  <!-- S3 -->
 
-        <!-- =================================================================
+        <!-- Row: Entry & Edge -->
+        <rect x="50"  y="340" width="100" height="50"  rx="6" fill="#0f172a"/>  <!-- Users -->
+        <rect x="190" y="340" width="100" height="50"  rx="6" fill="#0f172a"/>  <!-- CloudFront -->
+        <rect x="350" y="340" width="100" height="50"  rx="6" fill="#0f172a"/>  <!-- WAF -->
+        <rect x="510" y="340" width="100" height="50"  rx="6" fill="#0f172a"/>  <!-- ALB -->
+
+        <!-- Row: Core Services -->
+        <rect x="350" y="280" width="100" height="40"  rx="6" fill="#0f172a"/>  <!-- Auth (inside security group) -->
+        <rect x="670" y="280" width="100" height="130" rx="8" fill="#0f172a"/>  <!-- API Gateway -->
+        <rect x="920" y="340" width="100" height="50"  rx="6" fill="#0f172a"/>  <!-- User Svc -->
+        <rect x="920" y="410" width="100" height="40"  rx="6" fill="#0f172a"/>  <!-- Order Svc -->
+        <rect x="920" y="460" width="100" height="40"  rx="6" fill="#0f172a"/>  <!-- Payment Svc -->
+
+        <!-- Row: Data & Messaging -->
+        <rect x="800" y="540" width="80"  height="50"  rx="6" fill="#0f172a"/>  <!-- Redis -->
+        <rect x="920" y="520" width="200" height="40"  rx="8" fill="#0f172a"/>  <!-- PostgreSQL -->
+        <rect x="920" y="570" width="200" height="30"  rx="4" fill="#0f172a"/>  <!-- Kafka -->
+
+        <!-- Row: External & Ops -->
+        <rect x="920" y="640" width="100" height="50"  rx="6" fill="#0f172a"/>  <!-- Stripe -->
+        <rect x="690" y="640" width="120" height="50"  rx="6" fill="#0f172a"/>  <!-- SendGrid -->
+        <rect x="690" y="540" width="100" height="50"  rx="6" fill="#0f172a"/>  <!-- Notification -->
+        <rect x="1120" y="80" width="100" height="160" rx="8" fill="#0f172a"/>  <!-- Monitoring -->
+
+        <!-- ═══════════════════════════════════════════════════════════════
              5. COMPONENTS (semi-transparent styled rects + labels)
-             ================================================================= -->
+             ═══════════════════════════════════════════════════════════════ -->
 
-        <!-- External/Generic Component -->
-        <rect x="30" y="280" width="100" height="50" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>
-        <text x="80" y="300" fill="white" font-size="11" font-weight="600" text-anchor="middle">Users</text>
-        <text x="80" y="316" fill="#94a3b8" font-size="9" text-anchor="middle">Browser/Mobile</text>
+        <!-- ── ECR (Cloud) ── -->
+        <rect x="50" y="80" width="100" height="60" rx="6"
+              fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="100" y="106" fill="white" font-size="11" font-weight="600" text-anchor="middle">ECR</text>
+        <text x="100" y="124" fill="#94a3b8" font-size="9" text-anchor="middle">Container Registry</text>
 
-        <!-- Security Component -->
-        <rect x="30" y="80" width="100" height="60" rx="6" fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1.5"/>
-        <text x="80" y="105" fill="white" font-size="11" font-weight="600" text-anchor="middle">Auth Provider</text>
-        <text x="80" y="121" fill="#94a3b8" font-size="9" text-anchor="middle">OAuth 2.0</text>
+        <!-- ── GitHub Actions (Cloud/CI) ── -->
+        <rect x="190" y="180" width="100" height="50" rx="6"
+              fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="240" y="202" fill="white" font-size="11" font-weight="600" text-anchor="middle">GitHub Actions</text>
+        <text x="240" y="218" fill="#94a3b8" font-size="9" text-anchor="middle">CI/CD Pipeline</text>
 
-        <!-- AWS/Cloud Service -->
-        <rect x="200" y="280" width="110" height="50" rx="6" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
-        <text x="255" y="300" fill="white" font-size="11" font-weight="600" text-anchor="middle">CloudFront</text>
-        <text x="255" y="316" fill="#94a3b8" font-size="9" text-anchor="middle">CDN</text>
+        <!-- ── S3 Buckets (Cloud) ── -->
+        <rect x="50" y="180" width="100" height="70" rx="6"
+              fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="100" y="202" fill="white" font-size="11" font-weight="600" text-anchor="middle">S3</text>
+        <text x="100" y="218" fill="#94a3b8" font-size="8" text-anchor="middle">• assets-cdn</text>
+        <text x="100" y="232" fill="#94a3b8" font-size="8" text-anchor="middle">• logs-archive</text>
+        <text x="100" y="246" fill="#fbbf24" font-size="7" text-anchor="middle">Versioned + Encrypted</text>
 
-        <!-- Multi-line AWS Component (S3 Buckets) -->
-        <rect x="200" y="380" width="110" height="100" rx="6" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
-        <text x="255" y="400" fill="white" font-size="11" font-weight="600" text-anchor="middle">S3 Buckets</text>
-        <text x="255" y="420" fill="#94a3b8" font-size="8" text-anchor="middle">• bucket-one</text>
-        <text x="255" y="434" fill="#94a3b8" font-size="8" text-anchor="middle">• bucket-two</text>
-        <text x="255" y="448" fill="#94a3b8" font-size="8" text-anchor="middle">• bucket-three</text>
-        <text x="255" y="466" fill="#fbbf24" font-size="7" text-anchor="middle">OAI Protected</text>
+        <!-- ── Users (External) ── -->
+        <rect x="50" y="340" width="100" height="50" rx="6"
+              fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="100" y="362" fill="white" font-size="11" font-weight="600" text-anchor="middle">Users</text>
+        <text x="100" y="378" fill="#94a3b8" font-size="9" text-anchor="middle">Web / Mobile / API</text>
 
-        <!-- Component inside security group -->
-        <rect x="360" y="280" width="100" height="50" rx="6" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
-        <text x="410" y="300" fill="white" font-size="11" font-weight="600" text-anchor="middle">Load Balancer</text>
-        <text x="410" y="316" fill="#94a3b8" font-size="9" text-anchor="middle">HTTPS :443</text>
+        <!-- ── CloudFront (Cloud) ── -->
+        <rect x="190" y="340" width="100" height="50" rx="6"
+              fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="240" y="362" fill="white" font-size="11" font-weight="600" text-anchor="middle">CloudFront</text>
+        <text x="240" y="378" fill="#94a3b8" font-size="9" text-anchor="middle">CDN + Edge</text>
 
-        <!-- Backend Component -->
-        <rect x="510" y="280" width="110" height="50" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
-        <text x="565" y="300" fill="white" font-size="11" font-weight="600" text-anchor="middle">API Server</text>
-        <text x="565" y="316" fill="#94a3b8" font-size="9" text-anchor="middle">FastAPI :8000</text>
+        <!-- ── WAF (Security) ── -->
+        <rect x="350" y="340" width="100" height="50" rx="6"
+              fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1.5"/>
+        <text x="400" y="362" fill="white" font-size="11" font-weight="600" text-anchor="middle">WAF</text>
+        <text x="400" y="378" fill="#94a3b8" font-size="9" text-anchor="middle">Rate Limit + DDoS</text>
 
-        <!-- Database Component -->
-        <rect x="700" y="280" width="120" height="50" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
-        <text x="760" y="300" fill="white" font-size="11" font-weight="600" text-anchor="middle">Database</text>
-        <text x="760" y="316" fill="#94a3b8" font-size="9" text-anchor="middle">PostgreSQL</text>
+        <!-- ── ALB (Cloud) ── -->
+        <rect x="510" y="340" width="100" height="50" rx="6"
+              fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="560" y="362" fill="white" font-size="11" font-weight="600" text-anchor="middle">ALB</text>
+        <text x="560" y="378" fill="#94a3b8" font-size="9" text-anchor="middle">HTTPS :443 • 50K qps</text>
 
-        <!-- Message Bus (120x20 connector) -->
-        <rect x="380" y="420" width="120" height="20" rx="4" fill="rgba(251, 146, 60, 0.3)" stroke="#fb923c" stroke-width="1.5"/>
-        <text x="440" y="434" fill="white" font-size="9" font-weight="600" text-anchor="middle">Kafka Topic</text>
+        <!-- ── Auth Service (Backend, inside security group) ── -->
+        <rect x="350" y="280" width="100" height="40" rx="6"
+              fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1.5"/>
+        <text x="400" y="304" fill="white" font-size="11" font-weight="600" text-anchor="middle">Auth Service</text>
+        <text x="400" y="314" fill="#94a3b8" font-size="7" text-anchor="middle">OAuth2 + OIDC</text>
 
-        <!-- Inactive (legacy) component -->
-        <rect x="850" y="280" width="120" height="50" rx="6" fill="rgba(15, 23, 42, 0.5)" stroke="#475569" stroke-width="1.5" stroke-dasharray="3,3"/>
-        <text x="910" y="300" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle">Legacy API</text>
-        <text x="910" y="316" fill="#475569" font-size="9" text-anchor="middle">deprecated</text>
+        <!-- ── API Gateway (Backend, large) ── -->
+        <rect x="670" y="280" width="100" height="130" rx="8"
+              fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5" filter="url(#shadow-sm)"/>
+        <text x="720" y="306" fill="white" font-size="12" font-weight="600" text-anchor="middle">API Gateway</text>
+        <text x="720" y="326" fill="#94a3b8" font-size="8" text-anchor="middle">• Auth middleware</text>
+        <text x="720" y="342" fill="#94a3b8" font-size="8" text-anchor="middle">• Rate limiting</text>
+        <text x="720" y="358" fill="#94a3b8" font-size="8" text-anchor="middle">• Request routing</text>
+        <text x="720" y="374" fill="#94a3b8" font-size="8" text-anchor="middle">• Schema validation</text>
+        <text x="720" y="390" fill="#94a3b8" font-size="8" text-anchor="middle">• Circuit breaker</text>
+        <text x="720" y="406" fill="#34d399" font-size="7" text-anchor="middle">×3 instances • Auto-scale</text>
 
-        <!-- Frontend Component -->
-        <rect x="200" y="520" width="200" height="110" rx="8" fill="rgba(8, 51, 68, 0.4)" stroke="#22d3ee" stroke-width="1.5"/>
-        <text x="300" y="545" fill="white" font-size="12" font-weight="600" text-anchor="middle">Frontend</text>
-        <text x="300" y="565" fill="#94a3b8" font-size="9" text-anchor="middle">React + TypeScript</text>
-        <text x="300" y="580" fill="#94a3b8" font-size="9" text-anchor="middle">Additional detail</text>
-        <text x="300" y="595" fill="#94a3b8" font-size="9" text-anchor="middle">More info</text>
-        <text x="300" y="615" fill="#22d3ee" font-size="8" text-anchor="middle">domain.example.com</text>
+        <!-- ── User Service (Backend) ── -->
+        <rect x="920" y="340" width="100" height="50" rx="6"
+              fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="970" y="362" fill="white" font-size="11" font-weight="600" text-anchor="middle">User Service</text>
+        <text x="970" y="378" fill="#94a3b8" font-size="9" text-anchor="middle">Go :8080 • ×2</text>
 
-        <!-- =================================================================
-             6. BOUNDARIES (security groups + region)
-             Drawn AFTER the components they enclose.
-             ================================================================= -->
+        <!-- ── Order Service (Backend) ── -->
+        <rect x="920" y="410" width="100" height="40" rx="6"
+              fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="970" y="430" fill="white" font-size="11" font-weight="600" text-anchor="middle">Order Service</text>
+        <text x="970" y="444" fill="#94a3b8" font-size="8" text-anchor="middle">Go :8081 • ×2</text>
 
-        <!-- Security Group (dashed rose, transparent fill) -->
-        <rect x="350" y="265" width="120" height="80" rx="8" fill="transparent" stroke="#fb7185" stroke-width="1" stroke-dasharray="4,4"/>
-        <text x="358" y="279" fill="#fb7185" font-size="8">sg-name :port</text>
+        <!-- ── Payment Service (Backend) ── -->
+        <rect x="920" y="460" width="100" height="40" rx="6"
+              fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="970" y="480" fill="white" font-size="11" font-weight="600" text-anchor="middle">Payment Svc</text>
+        <text x="970" y="494" fill="#94a3b8" font-size="8" text-anchor="middle">Go :8082 • ×1</text>
 
-        <!-- Region/Cloud Boundary (dashed amber, 0.05 fill) -->
-        <rect x="160" y="40" width="820" height="620" rx="12" fill="rgba(251, 191, 36, 0.05)" stroke="#fbbf24" stroke-width="1" stroke-dasharray="8,4"/>
-        <text x="172" y="58" fill="#fbbf24" font-size="10" font-weight="600">AWS Region: us-west-2</text>
+        <!-- ── Redis Cache (Database) ── -->
+        <rect x="800" y="540" width="80" height="50" rx="6"
+              fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="840" y="562" fill="white" font-size="11" font-weight="600" text-anchor="middle">Redis</text>
+        <text x="840" y="578" fill="#94a3b8" font-size="9" text-anchor="middle">Cluster • 3 nodes</text>
 
-        <!-- =================================================================
-             7. LEGEND (placed outside all boundaries; expand viewBox if needed)
-             Region ends at y=660; legend starts at y=680 with 2-column layout.
-             ================================================================= -->
-        <text x="720" y="680" fill="white" font-size="10" font-weight="600">Legend</text>
+        <!-- ── PostgreSQL (Database) ── -->
+        <rect x="920" y="520" width="200" height="40" rx="8"
+              fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="1020" y="540" fill="white" font-size="11" font-weight="600" text-anchor="middle">PostgreSQL</text>
+        <text x="1020" y="554" fill="#94a3b8" font-size="8" text-anchor="middle">RDS Multi-AZ • Read Replicas</text>
 
-        <!-- Column 1 (x=720) -->
-        <rect x="720" y="692" width="16" height="10" rx="2" fill="rgba(8, 51, 68, 0.4)" stroke="#22d3ee" stroke-width="1"/>
-        <text x="742" y="700" fill="#94a3b8" font-size="8">Frontend</text>
+        <!-- ── Kafka (Message Bus) ── -->
+        <rect x="920" y="570" width="200" height="30" rx="4"
+              fill="rgba(251, 146, 60, 0.3)" stroke="#fb923c" stroke-width="1.5"/>
+        <text x="1020" y="590" fill="white" font-size="11" font-weight="600" text-anchor="middle">Kafka</text>
 
-        <rect x="720" y="708" width="16" height="10" rx="2" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1"/>
-        <text x="742" y="716" fill="#94a3b8" font-size="8">Backend</text>
+        <!-- ── Notification Worker (Backend) ── -->
+        <rect x="690" y="540" width="100" height="50" rx="6"
+              fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="740" y="562" fill="white" font-size="11" font-weight="600" text-anchor="middle">Notification</text>
+        <text x="740" y="578" fill="#94a3b8" font-size="9" text-anchor="middle">Worker</text>
 
-        <rect x="720" y="724" width="16" height="10" rx="2" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1"/>
-        <text x="742" y="732" fill="#94a3b8" font-size="8">Cloud Service</text>
+        <!-- ── SendGrid (External) ── -->
+        <rect x="690" y="640" width="120" height="50" rx="6"
+              fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="750" y="662" fill="white" font-size="11" font-weight="600" text-anchor="middle">SendGrid</text>
+        <text x="750" y="678" fill="#94a3b8" font-size="9" text-anchor="middle">Email Delivery</text>
 
-        <rect x="720" y="740" width="16" height="10" rx="2" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1"/>
-        <text x="742" y="748" fill="#94a3b8" font-size="8">Database</text>
+        <!-- ── Stripe (External) ── -->
+        <rect x="920" y="640" width="100" height="50" rx="6"
+              fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="970" y="662" fill="white" font-size="11" font-weight="600" text-anchor="middle">Stripe</text>
+        <text x="970" y="678" fill="#94a3b8" font-size="9" text-anchor="middle">Payments API</text>
 
-        <rect x="720" y="756" width="16" height="10" rx="2" fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1"/>
-        <text x="742" y="764" fill="#94a3b8" font-size="8">Security</text>
+        <!-- ── Monitoring Stack (Cloud, large) ── -->
+        <rect x="1120" y="80" width="100" height="160" rx="8"
+              fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="1170" y="106" fill="white" font-size="12" font-weight="600" text-anchor="middle">Observability</text>
+        <text x="1170" y="128" fill="#94a3b8" font-size="8" text-anchor="middle">• Grafana</text>
+        <text x="1170" y="144" fill="#94a3b8" font-size="8" text-anchor="middle">• Prometheus</text>
+        <text x="1170" y="160" fill="#94a3b8" font-size="8" text-anchor="middle">• OpenTelemetry</text>
+        <text x="1170" y="176" fill="#94a3b8" font-size="8" text-anchor="middle">• ELK Stack</text>
+        <text x="1170" y="192" fill="#94a3b8" font-size="8" text-anchor="middle">• PagerDuty</text>
+        <text x="1170" y="212" fill="#94a3b8" font-size="8" text-anchor="middle">• CloudWatch</text>
+        <text x="1170" y="232" fill="#fbbf24" font-size="7" text-anchor="middle">5s scrape interval</text>
 
-        <!-- Column 2 (x=860) -->
-        <rect x="860" y="692" width="16" height="10" rx="2" fill="rgba(251, 146, 60, 0.3)" stroke="#fb923c" stroke-width="1"/>
-        <text x="882" y="700" fill="#94a3b8" font-size="8">Message Bus</text>
+        <!-- ═══════════════════════════════════════════════════════════════
+             6. BOUNDARIES (security groups + regions)
+             ═══════════════════════════════════════════════════════════════ -->
 
-        <rect x="860" y="708" width="16" height="10" rx="2" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1"/>
-        <text x="882" y="716" fill="#94a3b8" font-size="8">External</text>
+        <!-- Security Group: Auth (rose, dashed) -->
+        <rect x="340" y="268" width="120" height="65" rx="8"
+              fill="transparent" stroke="#fb7185" stroke-width="1" stroke-dasharray="4,4"/>
+        <text x="350" y="282" fill="#fb7185" font-size="8">sg-auth :443</text>
 
-        <rect x="860" y="724" width="16" height="10" rx="2" fill="rgba(15, 23, 42, 0.5)" stroke="#475569" stroke-width="1" stroke-dasharray="3,3"/>
-        <text x="882" y="732" fill="#94a3b8" font-size="8">Inactive</text>
+        <!-- Security Group: Services VPC (rose, dashed) -->
+        <rect x="660" y="268" width="390" height="250" rx="10"
+              fill="rgba(251, 113, 133, 0.03)" stroke="#fb7185" stroke-width="1" stroke-dasharray="4,4"/>
+        <text x="672" y="284" fill="#fb7185" font-size="9" font-weight="600">VPC: Services (10.0.0.0/16)</text>
+        <text x="672" y="298" fill="#fb7185" font-size="8">sg-services :3000-8082</text>
 
-        <line x1="860" y1="746" x2="876" y2="746" stroke="#fb7185" stroke-width="1" stroke-dasharray="3,3"/>
-        <text x="882" y="749" fill="#94a3b8" font-size="8">Auth Flow</text>
+        <!-- Security Group: Data Layer (rose, dashed) -->
+        <rect x="790" y="508" width="340" height="105" rx="10"
+              fill="rgba(251, 113, 133, 0.03)" stroke="#fb7185" stroke-width="1" stroke-dasharray="4,4"/>
+        <text x="802" y="524" fill="#fb7185" font-size="9" font-weight="600">VPC: Data (10.0.1.0/24)</text>
+        <text x="802" y="538" fill="#fb7185" font-size="8">sg-data :5432 :6379 :9092</text>
 
-        <rect x="860" y="756" width="16" height="10" rx="2" fill="transparent" stroke="#fb7185" stroke-width="1" stroke-dasharray="3,3"/>
-        <text x="882" y="764" fill="#94a3b8" font-size="8">Security Group</text>
+        <!-- AWS Region Boundary (amber, dashed) -->
+        <rect x="30" y="60" width="1220" height="650" rx="14"
+              fill="rgba(251, 191, 36, 0.04)" stroke="#fbbf24" stroke-width="1" stroke-dasharray="8,4"/>
+        <text x="46" y="82" fill="#fbbf24" font-size="11" font-weight="600">AWS Region: us-east-1</text>
+
+        <!-- ═══════════════════════════════════════════════════════════════
+             7. LEGEND (placed outside all boundaries)
+             ═══════════════════════════════════════════════════════════════ -->
+        <text x="50" y="730" fill="white" font-size="11" font-weight="600">Legend</text>
+
+        <!-- Row 1: left column -->
+        <rect x="50" y="744" width="18" height="12" rx="3"
+              fill="rgba(8, 51, 68, 0.4)" stroke="#22d3ee" stroke-width="1"/>
+        <text x="76" y="754" fill="#94a3b8" font-size="9">Frontend / CDN</text>
+
+        <rect x="200" y="744" width="18" height="12" rx="3"
+              fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1"/>
+        <text x="226" y="754" fill="#94a3b8" font-size="9">Backend Service</text>
+
+        <rect x="380" y="744" width="18" height="12" rx="3"
+              fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1"/>
+        <text x="406" y="754" fill="#94a3b8" font-size="9">Database / Cache</text>
+
+        <rect x="560" y="744" width="18" height="12" rx="3"
+              fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1"/>
+        <text x="586" y="754" fill="#94a3b8" font-size="9">Cloud / AWS</text>
+
+        <rect x="740" y="744" width="18" height="12" rx="3"
+              fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1"/>
+        <text x="766" y="754" fill="#94a3b8" font-size="9">Security / Auth</text>
+
+        <!-- Row 2: second column -->
+        <rect x="50" y="768" width="18" height="12" rx="3"
+              fill="rgba(251, 146, 60, 0.3)" stroke="#fb923c" stroke-width="1"/>
+        <text x="76" y="778" fill="#94a3b8" font-size="9">Message Bus / Events</text>
+
+        <rect x="280" y="768" width="18" height="12" rx="3"
+              fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1"/>
+        <text x="306" y="778" fill="#94a3b8" font-size="9">External / 3rd Party</text>
+
+        <rect x="500" y="768" width="18" height="12" rx="3"
+              fill="transparent" stroke="#fb7185" stroke-width="1" stroke-dasharray="4,4"/>
+        <text x="526" y="778" fill="#94a3b8" font-size="9">Security Group</text>
+
+        <rect x="700" y="768" width="18" height="12" rx="3"
+              fill="rgba(251, 191, 36, 0.05)" stroke="#fbbf24" stroke-width="1" stroke-dasharray="8,4"/>
+        <text x="726" y="778" fill="#94a3b8" font-size="9">Region / Boundary</text>
+
+        <!-- Line styles legend -->
+        <text x="50" y="800" fill="#64748b" font-size="9" font-weight="600">Line Styles</text>
+
+        <line x1="50" y1="812" x2="100" y2="812" stroke="#34d399" stroke-width="1.5"/>
+        <text x="110" y="816" fill="#94a3b8" font-size="9">Sync (REST/gRPC)</text>
+
+        <line x1="280" y1="812" x2="330" y2="812" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="340" y="816" fill="#94a3b8" font-size="9">Async (Pub/Sub)</text>
+
+        <line x1="510" y1="812" x2="560" y2="812" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="5,5"/>
+        <text x="570" y="816" fill="#94a3b8" font-size="9">Auth / Security</text>
+
+        <line x1="740" y1="812" x2="790" y2="812" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="6,4"/>
+        <text x="800" y="816" fill="#94a3b8" font-size="9">Infra / Deploy</text>
+
+        <line x1="950" y1="812" x2="1000" y2="812" stroke="#64748b" stroke-width="1" stroke-dasharray="2,2"/>
+        <text x="1010" y="816" fill="#94a3b8" font-size="9">Telemetry</text>
       </svg>
     </div>
 
-    <!-- Info Cards -->
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SUMMARY CARDS (exactly 3)
+         ═══════════════════════════════════════════════════════════════════ -->
     <div class="cards">
+      <!-- Card 1: Architecture & Scaling -->
       <div class="card">
         <div class="card-header">
-          <div class="card-dot rose"></div>
-          <h3>Card Title 1</h3>
+          <div class="card-dot cyan"></div>
+          <h3>Architecture &amp; Scaling</h3>
         </div>
         <ul>
-          <li>• Item one</li>
-          <li>• Item two</li>
-          <li>• Item three</li>
-          <li>• Item four</li>
+          <li>API Gateway (×3 instances, auto-scaling) serves as the single entry point — routing REST, gRPC, and WebSocket traffic with circuit breaker protection</li>
+          <li>Three Go microservices — User (×2), Order (×2), and Payment (×1) — each isolated in VPC security groups with dedicated ports and health checks</li>
+          <li>CloudFront CDN at 50K qps capacity with integrated WAF for DDoS protection, bot mitigation, and per-IP rate limiting</li>
+          <li>Auth Service enforces OAuth2 + OIDC with JWT validation at the gateway middleware; all inter-service traffic uses mTLS</li>
+          <li>S3 stores static assets and log archives with SSE-KMS encryption, cross-region replication, and lifecycle policies</li>
         </ul>
       </div>
 
+      <!-- Card 2: Data Flow & Performance -->
       <div class="card">
         <div class="card-header">
-          <div class="card-dot amber"></div>
-          <h3>Card Title 2</h3>
+          <div class="card-dot emerald"></div>
+          <h3>Data Flow &amp; Performance</h3>
         </div>
         <ul>
-          <li>• Item one</li>
-          <li>• Item two</li>
-          <li>• Item three</li>
-          <li>• Item four</li>
+          <li>Critical path latency: Edge (p95 ≤ 120ms) → ALB (p95 ≤ 45ms) → API Gateway → User Service (p95 ≤ 18ms) → PostgreSQL (p95 ≤ 8ms)</li>
+          <li>Order events published to Kafka (3-node cluster) and consumed asynchronously by Notification Worker; email delivery via SendGrid SMTP</li>
+          <li>Redis Cluster (3 nodes) caches user sessions with write-through invalidation; hit rate target ≥ 95% at 10K reads/sec</li>
+          <li>Payment Service integrates Stripe API with idempotency keys; transaction records persisted to PostgreSQL with ACID guarantees</li>
+          <li>All database connections use TLS 1.3 within the secured VPC data layer (10.0.1.0/24); connection pooling at 200 conns/pool</li>
         </ul>
       </div>
 
+      <!-- Card 3: Reliability & Observability -->
       <div class="card">
         <div class="card-header">
           <div class="card-dot violet"></div>
-          <h3>Card Title 3</h3>
+          <h3>Reliability &amp; Observability</h3>
         </div>
         <ul>
-          <li>• Item one</li>
-          <li>• Item two</li>
-          <li>• Item three</li>
-          <li>• Item four</li>
+          <li>PostgreSQL RDS Multi-AZ with 2 read replicas; automated failover < 60s; point-in-time recovery with 35-day retention</li>
+          <li>GitHub Actions CI/CD: build → test → ECR push → ECS deploy with canary rollout (10% → 50% → 100%) and automated rollback on alarm</li>
+          <li>Observability stack: Grafana dashboards (20+ panels), Prometheus (5s scrape), OpenTelemetry tracing (100% sampling), ELK log aggregation (7-day retention)</li>
+          <li>SLA targets: 99.95% API availability, p95 response < 200ms, error rate < 0.1%; PagerDuty on-call with 5min escalation</li>
         </ul>
       </div>
     </div>
 
-    <!-- Footer -->
+    <!-- ═══════════════════════════════════════════════════════════════════
+         FOOTER
+         ═══════════════════════════════════════════════════════════════════ -->
     <p class="footer">
-      [Project Name] • [Additional metadata]
+      Microservices Platform • AWS us-east-1 • Go + PostgreSQL + Kafka • Generated 2026-07-13
     </p>
+
+    <!-- Focus indicator (shown when a component is clicked) -->
+    <div class="focus-indicator" id="focus-indicator">
+      <span id="focus-label"></span>
+      <button onclick="resetFocus()">✕ Reset <kbd>Esc</kbd></button>
+    </div>
   </div>
 
+  <!-- ═══════════════════════════════════════════════════════════════════
+       EXPORT SCRIPTS
+       ═══════════════════════════════════════════════════════════════════ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       SVG INTERACTION SCRIPTS
+       ═══════════════════════════════════════════════════════════════════ -->
+  <script>
+  (function() {
+    const svg = document.querySelector('.diagram-container svg');
+    const container = document.querySelector('.diagram-container');
+    const indicator = document.getElementById('focus-indicator');
+    const focusLabel = document.getElementById('focus-label');
+    let focusedComp = null;
+
+    // ── Build component and arrow indices from SVG structure ──
+    // Components are identified by: opaque mask rect → styled rect → labels
+    // We group them by the mask rect's position
+
+    const masks = svg.querySelectorAll('rect[fill="#0f172a"]');
+    const compGroups = [];
+
+    masks.forEach(function(mask) {
+      const bx = parseFloat(mask.getAttribute('x'));
+      const by = parseFloat(mask.getAttribute('y'));
+      const bw = parseFloat(mask.getAttribute('width'));
+      const bh = parseFloat(mask.getAttribute('height'));
+
+      // Find the styled rect at the same position (drawn after all masks)
+      const styledRects = svg.querySelectorAll('rect');
+      let styled = null;
+      for (let i = 0; i < styledRects.length; i++) {
+        const r = styledRects[i];
+        const fill = r.getAttribute('fill') || '';
+        if (!fill.includes('rgba') && !fill.includes('url(#')) continue;
+        if (r === mask) continue;
+        const rx = parseFloat(r.getAttribute('x'));
+        const ry = parseFloat(r.getAttribute('y'));
+        if (Math.abs(rx - bx) < 2 && Math.abs(ry - by) < 2) {
+          styled = r;
+          break;
+        }
+      }
+      if (!styled) return;
+
+      // Collect all text labels inside this component's bounding box
+      const texts = svg.querySelectorAll('text');
+      const labels = [];
+      texts.forEach(function(t) {
+        const tx = parseFloat(t.getAttribute('x'));
+        const ty = parseFloat(t.getAttribute('y'));
+        if (tx >= bx - 2 && tx <= bx + bw + 2 && ty >= by - 2 && ty <= by + bh + 2) {
+          labels.push(t);
+        }
+      });
+
+      // Detect component name (first white, bold-ish text)
+      let name = '';
+      for (let i = 0; i < labels.length; i++) {
+        const fw = labels[i].getAttribute('font-weight');
+        const fill = labels[i].getAttribute('fill');
+        if (fill === 'white' || fill === '#fff' || fill === '#ffffff') {
+          name = labels[i].textContent.trim();
+          break;
+        }
+      }
+      if (!name && labels.length > 0) name = labels[0].textContent.trim();
+      if (!name) return;
+
+      // Determine the component category from the styled rect's stroke color
+      const stroke = styled.getAttribute('stroke') || '';
+      let category = 'other';
+      if (stroke === '#22d3ee') category = 'frontend';
+      else if (stroke === '#34d399') category = 'backend';
+      else if (stroke === '#a78bfa') category = 'database';
+      else if (stroke === '#fbbf24') category = 'cloud';
+      else if (stroke === '#fb7185') category = 'security';
+      else if (stroke === '#fb923c') category = 'messagebus';
+      else if (stroke === '#94a3b8') category = 'external';
+
+      compGroups.push({
+        name: name,
+        category: category,
+        mask: mask,
+        styled: styled,
+        labels: labels,
+        cx: bx + bw / 2,
+        cy: by + bh / 2,
+        bounds: { x: bx, y: by, w: bw, h: bh }
+      });
+    });
+
+    // ── Index arrows ──
+    const arrowGroups = [];
+    const lines = svg.querySelectorAll('line[marker-end]');
+    const paths = svg.querySelectorAll('path[marker-end]');
+
+    function indexArrow(el, isPath) {
+      let x1, y1, x2, y2;
+      if (isPath) {
+        const d = el.getAttribute('d');
+        const m = d.match(/M\s*([\d.]+)\s+([\d.]+)/);
+        const last = d.match(/([\d.]+)\s+([\d.]+)\s*$/);
+        if (m) { x1 = parseFloat(m[1]); y1 = parseFloat(m[2]); }
+        if (last) { x2 = parseFloat(last[1]); y2 = parseFloat(last[2]); }
+      } else {
+        x1 = parseFloat(el.getAttribute('x1'));
+        y1 = parseFloat(el.getAttribute('y1'));
+        x2 = parseFloat(el.getAttribute('x2'));
+        y2 = parseFloat(el.getAttribute('y2'));
+      }
+      if (isNaN(x1)) return;
+
+      // Find the nearest label text
+      let labelEl = null;
+      const texts = svg.querySelectorAll('text');
+      let minDist = 25;
+      texts.forEach(function(t) {
+        const tx = parseFloat(t.getAttribute('x'));
+        const ty = parseFloat(t.getAttribute('y'));
+        const midX = (x1 + x2) / 2, midY = (y1 + y2) / 2;
+        const dist = Math.sqrt((tx - midX) ** 2 + (ty - midY) ** 2);
+        if (dist < minDist) { minDist = dist; labelEl = t; }
+      });
+
+      arrowGroups.push({
+        el: el,
+        x1: x1, y1: y1, x2: x2, y2: y2,
+        label: labelEl,
+        stroke: el.getAttribute('stroke') || ''
+      });
+    }
+
+    lines.forEach(function(l) { indexArrow(l, false); });
+    paths.forEach(function(p) { indexArrow(p, true); });
+
+    // ── Find connected arrows for a component ──
+    function findConnectedArrows(comp) {
+      const connected = [];
+      const threshold = 30; // max distance from component edge to arrow endpoint
+      const b = comp.bounds;
+
+      arrowGroups.forEach(function(a) {
+        // Check if either endpoint is near this component's edges
+        const d1 = pointToRectDist(a.x1, a.y1, b);
+        const d2 = pointToRectDist(a.x2, a.y2, b);
+        if (d1 < threshold || d2 < threshold) {
+          connected.push(a);
+        }
+      });
+      return connected;
+    }
+
+    function pointToRectDist(px, py, rect) {
+      const cx = Math.max(rect.x, Math.min(px, rect.x + rect.w));
+      const cy = Math.max(rect.y, Math.min(py, rect.y + rect.h));
+      return Math.sqrt((px - cx) ** 2 + (py - cy) ** 2);
+    }
+
+    // ── Hover handling ──
+    compGroups.forEach(function(comp) {
+      const els = [comp.mask, comp.styled].concat(comp.labels);
+      els.forEach(function(el) {
+        el.classList.add('comp-stroke');
+        const parent = el.parentNode;
+      });
+
+      // Make the styled rect clickable
+      comp.styled.style.pointerEvents = 'all';
+      comp.styled.classList.add('comp-stroke');
+
+      comp.styled.addEventListener('mouseenter', function() {
+        if (focusedComp) return;
+        highlightComponent(comp);
+      });
+
+      comp.styled.addEventListener('mouseleave', function() {
+        if (focusedComp) return;
+        clearHighlight();
+      });
+
+      comp.styled.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (focusedComp === comp) {
+          resetFocus();
+        } else {
+          focusComponent(comp);
+        }
+      });
+    });
+
+    function highlightComponent(comp) {
+      container.classList.add('dimmed');
+      comp.mask.classList.add('highlight');
+      comp.styled.classList.add('highlight');
+      comp.styled.classList.add('svg-comp');
+      comp.labels.forEach(function(l) { l.classList.add('highlight'); });
+
+      const connected = findConnectedArrows(comp);
+      connected.forEach(function(a) {
+        a.el.classList.add('highlight');
+        if (a.label) a.label.classList.add('highlight');
+      });
+    }
+
+    function clearHighlight() {
+      if (focusedComp) return;
+      container.classList.remove('dimmed');
+      svg.querySelectorAll('.highlight').forEach(function(el) {
+        el.classList.remove('highlight');
+      });
+    }
+
+    function focusComponent(comp) {
+      focusedComp = comp;
+      highlightComponent(comp);
+      focusLabel.textContent = 'Focused: ' + comp.name;
+      indicator.classList.add('visible');
+    }
+
+    window.resetFocus = function() {
+      focusedComp = null;
+      clearHighlight();
+      container.classList.remove('dimmed');
+      indicator.classList.remove('visible');
+      svg.querySelectorAll('.highlight').forEach(function(el) {
+        el.classList.remove('highlight');
+      });
+    };
+
+    // ── Keyboard: Escape to reset ──
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') resetFocus();
+    });
+
+    // ── Click on diagram background to reset ──
+    svg.addEventListener('click', function(e) {
+      if (e.target === svg || e.target.tagName === 'rect' && e.target.getAttribute('fill') === 'url(#grid)') {
+        resetFocus();
+      }
+    });
+
+    // ── Add boundary elements ──
+    svg.querySelectorAll('rect[fill="transparent"], rect[fill="rgba(251, 191, 36, 0.04)"], rect[fill="rgba(251, 113, 133, 0.03)"]').forEach(function(r) {
+      r.classList.add('svg-boundary');
+    });
+
+    // ── Mark all arrow lines and paths ──
+    arrowGroups.forEach(function(a) {
+      a.el.classList.add('svg-arrow');
+    });
+
+    console.log('Diagram interaction ready: ' + compGroups.length + ' components, ' + arrowGroups.length + ' arrows indexed.');
+  })();
+  </script>
   <script>
     async function copyAsImage(btn) {
       const orig = btn.textContent;
@@ -480,9 +972,14 @@
         const el = document.getElementById('report-container');
         const r = el.getBoundingClientRect();
         const pad = 32;
-        const canvas = await html2canvas(document.body, { backgroundColor: '#020617', scale: 2, useCORS: true, ignoreElements: (e) => e.classList && e.classList.contains('toolbar'), x: r.left + window.scrollX - pad, y: r.top + window.scrollY - pad, width: r.width + pad * 2, height: r.height + pad * 2 });
+        const canvas = await html2canvas(document.body, {
+          backgroundColor: '#020617', scale: 2, useCORS: true,
+          ignoreElements: e => e.classList && e.classList.contains('toolbar'),
+          x: r.left + window.scrollX - pad, y: r.top + window.scrollY - pad,
+          width: r.width + pad * 2, height: r.height + pad * 2
+        });
         const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
-        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
         btn.textContent = '✓ Copied!';
       } catch (e) {
         btn.textContent = '✗ Failed';
@@ -497,9 +994,14 @@
         const el = document.getElementById('report-container');
         const r = el.getBoundingClientRect();
         const pad = 32;
-        const canvas = await html2canvas(document.body, { backgroundColor: '#020617', scale: 2, useCORS: true, ignoreElements: (e) => e.classList && e.classList.contains('toolbar'), x: r.left + window.scrollX - pad, y: r.top + window.scrollY - pad, width: r.width + pad * 2, height: r.height + pad * 2 });
+        const canvas = await html2canvas(document.body, {
+          backgroundColor: '#020617', scale: 2, useCORS: true,
+          ignoreElements: e => e.classList && e.classList.contains('toolbar'),
+          x: r.left + window.scrollX - pad, y: r.top + window.scrollY - pad,
+          width: r.width + pad * 2, height: r.height + pad * 2
+        });
         const link = document.createElement('a');
-        link.download = 'diagram.png';
+        link.download = 'architecture-diagram.png';
         link.href = canvas.toDataURL('image/png');
         link.click();
         btn.textContent = '✓ Done!';
@@ -516,13 +1018,22 @@
         const el = document.getElementById('report-container');
         const r = el.getBoundingClientRect();
         const pad = 32;
-        const canvas = await html2canvas(document.body, { backgroundColor: '#020617', scale: 2, useCORS: true, ignoreElements: (e) => e.classList && e.classList.contains('toolbar'), x: r.left + window.scrollX - pad, y: r.top + window.scrollY - pad, width: r.width + pad * 2, height: r.height + pad * 2 });
+        const canvas = await html2canvas(document.body, {
+          backgroundColor: '#020617', scale: 2, useCORS: true,
+          ignoreElements: e => e.classList && e.classList.contains('toolbar'),
+          x: r.left + window.scrollX - pad, y: r.top + window.scrollY - pad,
+          width: r.width + pad * 2, height: r.height + pad * 2
+        });
         const imgData = canvas.toDataURL('image/png');
         const { jsPDF } = window.jspdf;
         const orientation = canvas.width > canvas.height ? 'landscape' : 'portrait';
-        const pdf = new jsPDF({ orientation, unit: 'px', format: [canvas.width, canvas.height], hotfixes: ['px_scaling'] });
+        const pdf = new jsPDF({
+          orientation, unit: 'px',
+          format: [canvas.width, canvas.height],
+          hotfixes: ['px_scaling']
+        });
         pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-        pdf.save('diagram.pdf');
+        pdf.save('architecture-diagram.pdf');
         btn.textContent = '✓ Done!';
       } catch (e) {
         btn.textContent = '✗ Failed';

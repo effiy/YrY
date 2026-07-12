@@ -40,6 +40,44 @@
 | **Idempotency** | Re-running the same command on the same input produces a deterministic output. |
 | **Failure mode** | Always save what's done. A partial artifact beats an exception. |
 
+### Quality Checklist
+
+Before delivering any diagram artifact, verify:
+
+| # | Check | How to verify |
+|---|-------|---------------|
+| 1 | All `[...]` sentinel placeholders replaced | Grep for `[A-Z]` — should only match intentional SVG attribute values |
+| 2 | Exactly 3 summary cards present | Count `.card` elements |
+| 3 | Each card has 3–5 bullet items | Count `<li>` elements per card |
+| 4 | SVG paint order correct (defs→grid→arrows→masks→boxes→boundaries→legend) | Visual inspection of SVG source order |
+| 5 | Every component box has an opaque mask BEFORE it | Check for `<rect fill="#0f172a">` preceding each styled rect |
+| 6 | Legend placed outside all boundaries | Legend y-coordinate > max boundary bottom edge + 20px |
+| 7 | No component overlaps another | Bounding box check: each rect's x+w < next rect's x OR y+h < next rect's y |
+| 8 | All arrows have labels describing protocol/data | Each `<line>` or `<path>` element between components has an adjacent `<text>` |
+| 9 | Color palette used consistently | Same component type = same fill/stroke colors throughout |
+| 10 | Legend entries only for actually-used types | Count legend swatches; should match distinct component types in diagram |
+| 11 | Line style legend matches arrow styles used | Count line samples; should match distinct dash patterns used |
+| 12 | CDN scripts included for export | Verify `<script src="...html2canvas...">` and `<script src="...jspdf...">` present |
+| 13 | viewBox accommodates all content | Max x+w of rightmost element < viewBox width; max y+h of bottommost element + legend < viewBox height |
+| 14 | No placeholder text remains (e.g., Card Title N, Item one) | Text search for common placeholder patterns |
+| 15 | Footer metadata line populated | Footer `<p>` text is not the `[...]` sentinel form |
+| 16 | Interactive features functional | Open in browser: hover highlights components, click locks focus, Esc resets |
+| 17 | SVG filters defined (at minimum `shadow-sm`, `shadow-md`) | Check `<defs>` for `<filter id="shadow-sm">` and `<filter id="shadow-md">` |
+
+### Common Mistakes to Avoid
+
+| Mistake | Why it's wrong | Fix |
+|---------|---------------|-----|
+| Using the same arrow color for all connections | Loses semantic distinction between sync/async/auth flows | Use distinct marker colors per connection type |
+| Placing legend inside a region boundary | Gets cropped or visually tangled with components | Always place legend at the bottom, outside all boundaries |
+| Forgetting opaque masks | Arrows bleed through semi-transparent component fills | Every component rect needs a preceding `fill="#0f172a"` mask rect |
+| Hardcoding viewBox="0 0 1000 800" for a large diagram | Content gets cropped | Calculate viewBox dynamically: max(all x+w) + 40, max(all y+h) + legend_h + 60 |
+| Using generic labels (Service A, Component 1) | Diagram needs external reference to be understood | Use real, specific names (User Service, API Gateway, PostgreSQL RDS) |
+| Skipping arrow labels | Connection purpose is ambiguous | Every arrow gets a label: protocol (REST, gRPC), auth type (JWT), or data direction (R/W) |
+| Mixing color semantics | Confuses readers about component roles | One component type = one color palette, strictly enforced |
+| Omitting line-style legend | Readers can't decode dashed vs solid arrows | Include both component swatches AND line samples in the legend |
+| Too many components (>15) | Diagram becomes unreadable | Merge leaf nodes into composite boxes; use bullet lists for details |
+
 ## Adding a New Template (rare)
 
 If a future requirement needs a second output (e.g., a printable PDF, a slide deck, or a docs page):

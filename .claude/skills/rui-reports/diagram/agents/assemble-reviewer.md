@@ -66,7 +66,48 @@ The merge script combines what each batch produced independently. Batches don't 
 - If an edge is missing between two file nodes that should be connected, add it with `type: "imports"`, `direction: "forward"`, `weight: 0.7`.
 - Do NOT add speculative edges — only add edges that are backed by `$IMPORT_MAP` data.
 
-### Step 4 — Write results
+### Step 4 — Recover implicit edges from naming conventions
+
+Some relationships are not captured by imports or explicit references but are strongly implied by file naming and directory structure. Check for these recoverable patterns:
+
+**Test-to-source pairing:**
+- For every `*.test.ts`, `*.spec.ts`, `*_test.go`, `test_*.py`, `*Test.java`, `*_spec.rb`, `*Test.php`, `*Tests.cs` file, look for a corresponding source file (same name minus the test suffix) in a non-test directory.
+- If found and no `tested_by` edge exists between them, add: `{ source: "<production-file-id>", target: "<test-file-id>", type: "tested_by", direction: "forward", weight: 0.5 }`.
+- Direction: production → test (the merge script canonicalizes this).
+
+**Config-to-code pairing:**
+- `tsconfig.json` / `tsconfig.*.json` → all `*.ts` / `*.tsx` files in `src/` or at root: `configures` edge
+- `package.json` → main entry point (from the `main` or `module` field): `configures` edge
+- `.env` / `.env.*` → files that import `dotenv` or read `process.env`: `configures` edge
+- `Dockerfile` → entry point of the application: `deploys` edge
+- `docker-compose.yml` → referenced Dockerfiles and services: `depends_on` edges
+- `.github/workflows/*.yml` → files referenced in `run:` steps or `working-directory:`: `triggers` edges
+
+**Documentation-to-code pairing:**
+- `README.md` → the main entry point or top-level `src/` index file: `documents` edge
+- `CHANGELOG.md` → the project root or main package: `documents` edge
+- Files in `docs/` referencing specific modules or APIs by name → those modules: `documents` edges
+
+### Step 5 — Quality heuristics
+
+Flag the following quality concerns in your `notes`. These are warnings, not blockers:
+
+**Coverage gaps:**
+- If a directory group has 5+ code files but zero `tested_by` edges → note as `"Low test coverage in <directory>: X files, no test edges"`
+- If the project has 10+ files but zero `document` nodes → note as `"No documentation nodes detected"`
+- If `Dockerfile` exists but has no `deploys` edges → note as `"Dockerfile has no deployment edges"`
+
+**Structural anomalies:**
+- If a single file has fan-in > 20 (imported by 20+ other files) → note as `"High fan-in hub: <file> — potential god module"`
+- If a single file has fan-out > 15 (imports 15+ other files) → note as `"High fan-out: <file> — complex orchestration point"`
+- If any node has `complexity: "complex"` but fewer than 3 edges → note as `"Complex node with few relationships: <node-id> — may be isolated"`
+- If the graph has disconnected components (subgraphs with zero cross-edges) → note as `"Disconnected subgraph detected: <N> nodes with no cross-component edges"`
+
+**Tag quality:**
+- If > 30% of nodes have only generic tags (e.g., `["utility"]`, `["service"]`) → note as `"High rate of generic tags: <N>% — may need richer categorization"`
+- If any node has fewer than 2 tags → note as `"Node <id> has insufficient tags"`
+
+### Step 6 — Write results
 
 1. Apply all fixes directly to `assembled-graph.json`.
 2. Write a summary to the review output path provided in your prompt:
@@ -77,13 +118,26 @@ The merge script combines what each batch produced independently. Batches don't 
   "nodesRecovered": 0,
   "edgesRestored": 0,
   "crossBatchEdgesAdded": 0,
+  "implicitEdgesAdded": 0,
   "typesRemapped": 0,
   "complexityRemapped": 0,
+  "qualityFlags": {
+    "coverageWarnings": [],
+    "structuralAnomalies": [],
+    "tagQualityWarnings": []
+  },
   "notes": ["any observations about data quality"]
 }
 ```
 
-3. Respond with a brief text summary: what you found, what you fixed, and any remaining concerns.
+**New fields (in addition to the existing ones):**
+- `implicitEdgesAdded` (number) — count of edges added in Step 4 (naming convention recovery)
+- `qualityFlags` (object) — structured quality warnings from Step 5:
+  - `coverageWarnings` (string[]) — test coverage, documentation, deployment edge warnings
+  - `structuralAnomalies` (string[]) — fan-in/out hubs, disconnected subgraphs
+  - `tagQualityWarnings` (string[]) — generic or insufficient tags
+
+3. Respond with a brief text summary: what you found, what you fixed, quality flags raised, and any remaining concerns.
 
 ## Writing Results
 
@@ -91,6 +145,6 @@ After completing all steps above:
 
 1. Apply all fixes directly to `assembled-graph.json` (the file path provided in your dispatch prompt).
 2. Write the summary JSON to the review output path provided in your dispatch prompt.
-3. Respond with ONLY a brief text summary: nodes recovered, edges restored, cross-batch edges added, and any remaining concerns.
+3. Respond with ONLY a brief text summary: nodes recovered, edges restored, cross-batch edges added, implicit edges added, quality flags raised, and any remaining concerns.
 
 Do NOT include the full JSON in your text response.

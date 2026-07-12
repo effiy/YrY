@@ -121,6 +121,39 @@ Only warn about missing edges for nodes that have a clear expected relationship.
   - A node with `type: "file"` should have an ID starting with `file:`
 - Log any mismatches as warnings
 
+**Check 10 -- Edge Type Appropriateness (Warning)**
+
+Verify that edge types are being used for semantically appropriate relationships. This catches common LLM mistakes where the wrong edge type is used:
+
+- `imports` edges should ONLY connect file-level nodes (`file`, `config`, `document`, `service`, `pipeline`, `schema`, `resource`), never sub-file nodes (`function`, `class`, `table`, `endpoint`)
+- `contains` edges should ONLY connect a parent to a child within the same file (e.g., `file:foo.ts` → `function:foo.ts:bar`)
+- `calls` edges should ONLY connect `function` nodes or `endpoint` → `function` nodes, never `file` → `file`
+- `inherits` and `implements` edges should ONLY connect `class` nodes
+- `tested_by` edges should ONLY connect a production file → test file (the merge script canonicalizes direction)
+- `deploys` edges should ONLY originate from `service` or `pipeline` nodes targeting `file` or `service` nodes
+- `migrates` edges should ONLY connect `table` nodes to other `table` nodes
+- `documents` edges should ONLY originate from `document` nodes
+
+For edge types not listed above, skip the check (they have broader valid usage patterns). Log any clear violations as warnings.
+
+**Check 11 -- Cross-Layer Edge Consistency (Warning)**
+
+If layers are present, check whether edges between layers follow expected architectural patterns:
+
+- Edges from `layer:api` to `layer:data` (skipping `layer:service`) may indicate a missing service layer or controllers directly accessing the database — warn if ≥ 3 such edges exist
+- Edges from `layer:data` to `layer:api` (data layer importing from API layer) indicate inverted dependencies — warn on each occurrence
+- Edges between `layer:test` and non-test layers should be predominantly `tested_by` or `imports` — warn if other edge types dominate
+- Self-referencing layers (edges where both source and target nodes belong to the same layer) should be predominantly `contains`, `related`, or `similar_to` — warn if `imports`, `calls`, or `depends_on` dominate within a single layer (suggests the layer should be split)
+
+**Check 12 -- Complexity Distribution (Warning)**
+
+Compute the distribution of `complexity` values across file-level nodes:
+
+- If > 60% of nodes have complexity `"simple"`, warn: `"Complexity distribution may be too uniform: <N>% simple — large projects should have varied complexity"`
+- If > 30% of nodes have complexity `"complex"`, warn: `"High rate of complex nodes: <N>% — may indicate overclassification or genuinely intricate codebase"`
+- If a node with complexity `"simple"` has ≥ 15 edges (fan-in + fan-out), warn: `"Simple node <id> has <N> edges — complexity may be underclassified"`
+- If a node with complexity `"complex"` has 0-1 edges, warn: `"Complex node <id> has only <N> edges — may be isolated or overclassified"`
+
 ### Script Output Format
 
 The script must write this exact JSON structure to the output file:
@@ -139,7 +172,8 @@ The script must write this exact JSON structure to the output file:
     "totalLayers": 5,
     "tourSteps": 8,
     "nodeTypes": {"file": 20, "function": 15, "class": 7, "config": 3, "document": 2, "service": 1},
-    "edgeTypes": {"imports": 30, "contains": 40, "calls": 17, "configures": 5, "documents": 3, "deploys": 2}
+    "edgeTypes": {"imports": 30, "contains": 40, "calls": 17, "configures": 5, "documents": 3, "deploys": 2},
+    "complexityDistribution": {"simple": 25, "moderate": 10, "complex": 7}
   }
 }
 ```
@@ -148,6 +182,7 @@ The script must write this exact JSON structure to the output file:
 - `issues` (string[]) -- every critical issue found, with enough detail to locate and fix it
 - `warnings` (string[]) -- every non-critical observation
 - `stats` (object) -- summary statistics computed by counting, not estimating
+- `stats.complexityDistribution` (object) -- count of file-level nodes by complexity value
 
 ### Severity Classification (for the script to apply)
 
@@ -167,6 +202,9 @@ The script must write this exact JSON structure to the output file:
 - Self-referencing edges
 - Non-code nodes missing expected edge types (configures, documents, deploys, etc.)
 - Node type / ID prefix mismatches
+- Edge type appropriateness violations (e.g., `imports` between function nodes)
+- Cross-layer dependency inversions (data→api edges, controller→database skipping service)
+- Complexity distribution anomalies (too uniform, isolated complex nodes, overconnected simple nodes)
 
 ### Executing the Script
 
@@ -209,7 +247,8 @@ Produce the final validation report JSON:
     "totalLayers": 5,
     "tourSteps": 8,
     "nodeTypes": {"file": 20, "function": 15, "class": 7, "config": 3, "document": 2, "service": 1},
-    "edgeTypes": {"imports": 30, "contains": 40, "calls": 17, "configures": 5, "documents": 3, "deploys": 2}
+    "edgeTypes": {"imports": 30, "contains": 40, "calls": 17, "configures": 5, "documents": 3, "deploys": 2},
+    "complexityDistribution": {"simple": 25, "moderate": 10, "complex": 7}
   }
 }
 ```
@@ -218,7 +257,7 @@ Produce the final validation report JSON:
 - `approved` (boolean) -- `true` if no critical issues, `false` if any critical issues exist
 - `issues` (string[]) -- list of critical issues; empty array `[]` if none
 - `warnings` (string[]) -- list of non-critical observations; empty array `[]` if none
-- `stats` (object) -- summary statistics with `totalNodes`, `totalEdges`, `totalLayers`, `tourSteps`, `nodeTypes` (object mapping type to count), `edgeTypes` (object mapping type to count)
+- `stats` (object) -- summary statistics with `totalNodes`, `totalEdges`, `totalLayers`, `tourSteps`, `nodeTypes` (object mapping type to count), `edgeTypes` (object mapping type to count), `complexityDistribution` (object mapping complexity tier to count)
 
 ## Critical Constraints
 
