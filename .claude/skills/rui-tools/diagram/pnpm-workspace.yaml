@@ -1,0 +1,4 @@
+packages:
+  - "./core"
+  - "./dashboard"
+  - "./tree-sitter-dart-wasm"

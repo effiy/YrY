@@ -1,0 +1,25 @@
+<script type="text/x-template" id="rui-panel-hub-tpl">
+    <div class="rui-panel-hub" role="toolbar" :aria-label="ariaLabel">
+      <span v-if="label" class="rui-panel-hub-label"
+            :title="label.title || ''"
+            role="button"
+            tabindex="0"
+            @click="onLabelClick"
+            @keydown.enter="onLabelClick"
+            @keydown.space.prevent="onLabelClick">
+        {{ label.text }}
+      </span>
+      <button v-for="(b, i) in buttons" :key="i"
+              type="button"
+              class="rui-panel-hub-btn"
+              :title="b.title || ''"
+              @click="onSelect(b.panel)">
+        <span class="rui-panel-hub-icon" :style="b.color ? { '--rui-panel-hub-icon-color': b.color } : null">{{ b.icon }}</span>
+        <span class="rui-panel-hub-name">{{ b.name }}</span>
+        <span v-if="b.desc" class="rui-panel-hub-desc">{{ b.desc }}</span>
+      </button>
+      <span v-if="flow" class="rui-panel-hub-flow">{{ flow }}</span>
+    </div>
+</script>
+
+<script src="index.js"></script>

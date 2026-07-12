@@ -1,0 +1,857 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Slide Generator - Generates HTML slides using Vue 3 templates + design tokens.
+
+Architecture:
+  Python prepares slide data as JSON, then emits a standalone HTML file that
+  renders slides via Vue 3 CDN (no HTML string concatenation).
+
+ALL styles MUST use CSS variables from design-tokens.css
+NO hardcoded colors, fonts, or spacing allowed
+"""
+
+import argparse
+import json
+import re
+from pathlib import Path
+from datetime import datetime
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+SCRIPT_DIR = Path(__file__).parent
+DATA_DIR = SCRIPT_DIR.parent / "data"
+OUTPUT_DIR = Path(__file__).resolve().parents[4] / "assets" / "designs" / "slides"
+
+
+def _to_camel(snake_str: str) -> str:
+    """Convert snake_case to camelCase for Vue prop compatibility."""
+    parts = snake_str.split("_")
+    return parts[0] + "".join(p.capitalize() for p in parts[1:])
+
+
+def _convert_keys(obj):
+    """Recursively convert all dict keys from snake_case to camelCase."""
+    if isinstance(obj, dict):
+        return {_to_camel(k): _convert_keys(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_convert_keys(item) for item in obj]
+    return obj
+
+
+# ---------------------------------------------------------------------------
+# CSS (kept as a static block — no runtime HTML concatenation)
+# ---------------------------------------------------------------------------
+
+SLIDE_CSS = r'''
+        /* ============================================
+           STRICT TOKEN USAGE - NO HARDCODED VALUES
+           All styles MUST use var(--token-name)
+           ============================================ */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            font-family: var(--typography-font-body);
+            background: var(--color-background);
+            color: var(--color-foreground);
+            line-height: var(--primitive-lineHeight-relaxed);
+        }
+
+        .slide-deck {
+            width: 100%;
+            max-width: 1920px;
+            margin: 0 auto;
+        }
+
+        .slide {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            padding: var(--slide-padding);
+            background: var(--slide-bg);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide + .slide {
+            margin-top: var(--primitive-spacing-8);
+        }
+
+        .slide--surface {
+            background: var(--slide-bg-surface);
+        }
+
+        .slide--gradient {
+            background: var(--slide-bg-gradient);
+        }
+
+        .slide--glow::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150%;
+            height: 150%;
+            background: var(--primitive-gradient-glow);
+            pointer-events: none;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--typography-font-heading);
+            font-weight: var(--primitive-fontWeight-bold);
+            line-height: var(--primitive-lineHeight-tight);
+        }
+
+        .slide-title {
+            font-size: var(--slide-title-size);
+            background: var(--primitive-gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .slide-heading {
+            font-size: var(--slide-heading-size);
+            color: var(--color-foreground);
+        }
+
+        .slide-subheading {
+            font-size: var(--primitive-fontSize-3xl);
+            color: var(--color-foreground-secondary);
+            font-weight: var(--primitive-fontWeight-medium);
+        }
+
+        .slide-body {
+            font-size: var(--slide-body-size);
+            color: var(--color-foreground-secondary);
+            max-width: 80ch;
+        }
+
+        .text-primary { color: var(--color-primary); }
+        .text-secondary { color: var(--color-secondary); }
+        .text-accent { color: var(--color-accent); }
+        .text-muted { color: var(--color-foreground-muted); }
+
+        .bg-primary { background: var(--color-primary); }
+        .bg-secondary { background: var(--color-secondary); }
+        .bg-accent { background: var(--color-accent); }
+        .bg-surface { background: var(--color-surface); }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--card-radius);
+            padding: var(--card-padding);
+            box-shadow: var(--card-shadow);
+            transition: border-color var(--primitive-duration-base) var(--primitive-easing-out);
+        }
+
+        .card:hover {
+            border-color: var(--card-border-hover);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--button-primary-padding-y) var(--button-primary-padding-x);
+            border-radius: var(--button-primary-radius);
+            font-size: var(--button-primary-font-size);
+            font-weight: var(--button-primary-font-weight);
+            font-family: var(--typography-font-body);
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all var(--primitive-duration-base) var(--primitive-easing-out);
+        }
+
+        .btn-primary {
+            background: var(--button-primary-bg);
+            color: var(--button-primary-fg);
+            box-shadow: var(--button-primary-shadow);
+        }
+
+        .btn-primary:hover {
+            background: var(--button-primary-bg-hover);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--color-primary);
+            border: 2px solid var(--color-primary);
+        }
+
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-4 { gap: var(--primitive-spacing-4); }
+        .gap-6 { gap: var(--primitive-spacing-6); }
+        .gap-8 { gap: var(--primitive-spacing-8); }
+
+        .grid { display: grid; }
+        .grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+        .text-center { text-align: center; }
+        .mt-auto { margin-top: auto; }
+        .mb-4 { margin-bottom: var(--primitive-spacing-4); }
+        .mb-6 { margin-bottom: var(--primitive-spacing-6); }
+        .mb-8 { margin-bottom: var(--primitive-spacing-8); }
+
+        .metric {
+            text-align: center;
+            padding: var(--primitive-spacing-6);
+        }
+
+        .metric-value {
+            font-family: var(--typography-font-heading);
+            font-size: var(--primitive-fontSize-6xl);
+            font-weight: var(--primitive-fontWeight-bold);
+            background: var(--primitive-gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .metric-label {
+            font-size: var(--primitive-fontSize-lg);
+            color: var(--color-foreground-secondary);
+            margin-top: var(--primitive-spacing-2);
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--primitive-spacing-4);
+            padding: var(--primitive-spacing-4) 0;
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--primitive-radius-lg);
+            background: var(--color-surface-elevated);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-primary);
+            font-size: var(--primitive-fontSize-xl);
+            flex-shrink: 0;
+        }
+
+        .feature-content h4 {
+            font-size: var(--primitive-fontSize-xl);
+            color: var(--color-foreground);
+            margin-bottom: var(--primitive-spacing-2);
+        }
+
+        .feature-content p {
+            color: var(--color-foreground-secondary);
+            font-size: var(--primitive-fontSize-base);
+        }
+
+        .testimonial {
+            background: var(--color-surface);
+            border-radius: var(--primitive-radius-xl);
+            padding: var(--primitive-spacing-8);
+            border-left: 4px solid var(--color-primary);
+        }
+
+        .testimonial-quote {
+            font-size: var(--primitive-fontSize-2xl);
+            color: var(--color-foreground);
+            font-style: italic;
+            margin-bottom: var(--primitive-spacing-6);
+        }
+
+        .testimonial-author {
+            font-size: var(--primitive-fontSize-lg);
+            color: var(--color-primary);
+            font-weight: var(--primitive-fontWeight-semibold);
+        }
+
+        .testimonial-role {
+            font-size: var(--primitive-fontSize-base);
+            color: var(--color-foreground-muted);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: var(--primitive-spacing-2) var(--primitive-spacing-4);
+            background: var(--color-surface-elevated);
+            border-radius: var(--primitive-radius-full);
+            font-size: var(--primitive-fontSize-sm);
+            color: var(--color-accent);
+            font-weight: var(--primitive-fontWeight-medium);
+        }
+
+        .chart-container {
+            background: var(--color-surface);
+            border-radius: var(--primitive-radius-xl);
+            padding: var(--primitive-spacing-6);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-title {
+            font-family: var(--typography-font-heading);
+            font-size: var(--primitive-fontSize-xl);
+            color: var(--color-foreground);
+            margin-bottom: var(--primitive-spacing-4);
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: var(--primitive-spacing-4);
+            height: 200px;
+            padding-top: var(--primitive-spacing-4);
+        }
+
+        .bar {
+            flex: 1;
+            background: var(--primitive-gradient-primary);
+            border-radius: var(--primitive-radius-md) var(--primitive-radius-md) 0 0;
+            position: relative;
+            min-width: 40px;
+        }
+
+        .bar-label {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: var(--primitive-fontSize-sm);
+            color: var(--color-foreground-muted);
+            white-space: nowrap;
+        }
+
+        .bar-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: var(--primitive-fontSize-sm);
+            color: var(--color-foreground);
+            font-weight: var(--primitive-fontWeight-semibold);
+        }
+
+        .progress {
+            height: 12px;
+            background: var(--color-surface-elevated);
+            border-radius: var(--primitive-radius-full);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primitive-gradient-primary);
+            border-radius: var(--primitive-radius-full);
+        }
+
+        .slide-footer {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: var(--primitive-spacing-6);
+            border-top: 1px solid var(--color-border);
+            color: var(--color-foreground-muted);
+            font-size: var(--primitive-fontSize-sm);
+        }
+
+        .glow-coral {
+            box-shadow: var(--primitive-shadow-glow-coral);
+        }
+
+        .glow-purple {
+            box-shadow: var(--primitive-shadow-glow-purple);
+        }
+
+        .glow-mint {
+            box-shadow: var(--primitive-shadow-glow-mint);
+        }
+'''
+
+
+# ---------------------------------------------------------------------------
+# Vue 3 slide component templates (as JavaScript template strings)
+# These replace the old Python f-string concatenation
+# ---------------------------------------------------------------------------
+
+VUE_SLIDE_COMPONENTS_JS = r'''
+// =============================================================
+// Slide Components — registered globally in the Vue app
+// =============================================================
+
+app.component('title-slide', {
+  props: {
+    badge:       { type: String, default: 'Pitch Deck' },
+    title:       { type: String, default: 'Your Title Here' },
+    subtitle:    { type: String, default: 'Your compelling subtitle' },
+    cta:         { type: String, default: 'Get Started' },
+    secondaryCta:{ type: String, default: 'Learn More' },
+    company:     { type: String, default: 'Company Name' },
+    date:        { type: String, default: '' },
+  },
+  template: /* html */`
+    <section class="slide slide--glow flex flex-col items-center justify-center text-center">
+      <div class="badge mb-6">{{ badge }}</div>
+      <h1 class="slide-title mb-6">{{ title }}</h1>
+      <p class="slide-subheading mb-8">{{ subtitle }}</p>
+      <div class="flex gap-4">
+        <a href="#" class="btn btn-primary">{{ cta }}</a>
+        <a href="#" class="btn btn-secondary">{{ secondaryCta }}</a>
+      </div>
+      <div class="slide-footer">
+        <span>{{ company }}</span>
+        <span>{{ date }}</span>
+      </div>
+    </section>
+  `,
+})
+
+app.component('problem-slide', {
+  props: {
+    headline:   { type: String, default: 'The problem your audience faces' },
+    pain1Title: { type: String, default: 'Pain Point 1' },
+    pain1Desc:  { type: String, default: 'Description of the first pain point' },
+    pain2Title: { type: String, default: 'Pain Point 2' },
+    pain2Desc:  { type: String, default: 'Description of the second pain point' },
+    pain3Title: { type: String, default: 'Pain Point 3' },
+    pain3Desc:  { type: String, default: 'Description of the third pain point' },
+    company:    { type: String, default: 'Company Name' },
+    page:       { type: String, default: '2' },
+  },
+  template: /* html */`
+    <section class="slide slide--surface">
+      <div class="badge mb-6">The Problem</div>
+      <h2 class="slide-heading mb-8">{{ headline }}</h2>
+      <div class="grid grid-3 gap-8">
+        <div class="card">
+          <div class="text-primary" style="font-size: var(--primitive-fontSize-4xl); margin-bottom: var(--primitive-spacing-4);">01</div>
+          <h4 style="margin-bottom: var(--primitive-spacing-2); font-size: var(--primitive-fontSize-xl);">{{ pain1Title }}</h4>
+          <p class="text-muted">{{ pain1Desc }}</p>
+        </div>
+        <div class="card">
+          <div class="text-secondary" style="font-size: var(--primitive-fontSize-4xl); margin-bottom: var(--primitive-spacing-4);">02</div>
+          <h4 style="margin-bottom: var(--primitive-spacing-2); font-size: var(--primitive-fontSize-xl);">{{ pain2Title }}</h4>
+          <p class="text-muted">{{ pain2Desc }}</p>
+        </div>
+        <div class="card">
+          <div class="text-accent" style="font-size: var(--primitive-fontSize-4xl); margin-bottom: var(--primitive-spacing-4);">03</div>
+          <h4 style="margin-bottom: var(--primitive-spacing-2); font-size: var(--primitive-fontSize-xl);">{{ pain3Title }}</h4>
+          <p class="text-muted">{{ pain3Desc }}</p>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>{{ company }}</span>
+        <span>{{ page }}</span>
+      </div>
+    </section>
+  `,
+})
+
+app.component('solution-slide', {
+  props: {
+    headline:      { type: String, default: 'How we solve this' },
+    feature1Title: { type: String, default: 'Feature 1' },
+    feature1Desc:  { type: String, default: 'Description of feature 1' },
+    feature2Title: { type: String, default: 'Feature 2' },
+    feature2Desc:  { type: String, default: 'Description of feature 2' },
+    feature3Title: { type: String, default: 'Feature 3' },
+    feature3Desc:  { type: String, default: 'Description of feature 3' },
+    company:       { type: String, default: 'Company Name' },
+    page:          { type: String, default: '3' },
+  },
+  template: /* html */`
+    <section class="slide">
+      <div class="badge mb-6">The Solution</div>
+      <h2 class="slide-heading mb-8">{{ headline }}</h2>
+      <div class="flex gap-8" style="flex: 1;">
+        <div style="flex: 1;">
+          <div class="feature-item">
+            <div class="feature-icon">&#10003;</div>
+            <div class="feature-content">
+              <h4>{{ feature1Title }}</h4>
+              <p>{{ feature1Desc }}</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">&#10003;</div>
+            <div class="feature-content">
+              <h4>{{ feature2Title }}</h4>
+              <p>{{ feature2Desc }}</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">&#10003;</div>
+            <div class="feature-content">
+              <h4>{{ feature3Title }}</h4>
+              <p>{{ feature3Desc }}</p>
+            </div>
+          </div>
+        </div>
+        <div style="flex: 1;" class="card flex items-center justify-center">
+          <div class="text-center">
+            <div class="text-accent" style="font-size: 80px; margin-bottom: var(--primitive-spacing-4);">&#9670;</div>
+            <p class="text-muted">Product screenshot or demo</p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>{{ company }}</span>
+        <span>{{ page }}</span>
+      </div>
+    </section>
+  `,
+})
+
+app.component('metrics-slide', {
+  props: {
+    headline: { type: String, default: 'Our Growth' },
+    metrics:  { type: Array, default: () => [] },
+    company:  { type: String, default: 'Company Name' },
+    page:     { type: String, default: '4' },
+  },
+  template: /* html */`
+    <section class="slide slide--surface slide--glow">
+      <div class="badge mb-6">Traction</div>
+      <h2 class="slide-heading mb-8 text-center">{{ headline }}</h2>
+      <div class="grid grid-4 gap-6" style="flex: 1; align-items: center;">
+        <div v-for="(m, i) in metrics.slice(0, 4)" :key="i" class="card metric">
+          <div class="metric-value">{{ m.value }}</div>
+          <div class="metric-label">{{ m.label }}</div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>{{ company }}</span>
+        <span>{{ page }}</span>
+      </div>
+    </section>
+  `,
+})
+
+app.component('chart-slide', {
+  props: {
+    badge:      { type: String, default: 'Growth' },
+    headline:   { type: String, default: 'Revenue Growth' },
+    chartTitle: { type: String, default: 'Quarterly Revenue' },
+    bars:       { type: Array, default: () => [] },
+    company:    { type: String, default: 'Company Name' },
+    page:       { type: String, default: '5' },
+  },
+  template: /* html */`
+    <section class="slide">
+      <div class="badge mb-6">{{ badge }}</div>
+      <h2 class="slide-heading mb-8">{{ headline }}</h2>
+      <div class="chart-container" style="flex: 1;">
+        <div class="chart-title">{{ chartTitle }}</div>
+        <div class="bar-chart" style="flex: 1; padding-bottom: 40px;">
+          <div
+            v-for="(b, i) in bars"
+            :key="i"
+            class="bar"
+            :style="{ height: b.value + '%' }"
+          >
+            <span class="bar-value">{{ b.display || b.value + '%' }}</span>
+            <span class="bar-label">{{ b.label }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>{{ company }}</span>
+        <span>{{ page }}</span>
+      </div>
+    </section>
+  `,
+})
+
+app.component('testimonial-slide', {
+  props: {
+    quote:   { type: String, default: 'This product changed how we work. Incredible results.' },
+    author:  { type: String, default: 'Jane Doe' },
+    role:    { type: String, default: 'CEO, Example Company' },
+    company: { type: String, default: 'Company Name' },
+    page:    { type: String, default: '6' },
+  },
+  template: /* html */`
+    <section class="slide slide--surface flex flex-col justify-center">
+      <div class="badge mb-6">What They Say</div>
+      <div class="testimonial" style="max-width: 900px;">
+        <p class="testimonial-quote">"{{ quote }}"</p>
+        <p class="testimonial-author">{{ author }}</p>
+        <p class="testimonial-role">{{ role }}</p>
+      </div>
+      <div class="slide-footer">
+        <span>{{ company }}</span>
+        <span>{{ page }}</span>
+      </div>
+    </section>
+  `,
+})
+
+app.component('cta-slide', {
+  props: {
+    headline:    { type: String, default: 'Ready to get started?' },
+    subheadline: { type: String, default: 'Join thousands of teams already using our solution.' },
+    cta:         { type: String, default: 'Start Free Trial' },
+    ctaUrl:      { type: String, default: '#' },
+    contact:     { type: String, default: 'contact@example.com' },
+    website:     { type: String, default: 'www.example.com' },
+  },
+  template: /* html */`
+    <section class="slide slide--gradient flex flex-col items-center justify-center text-center">
+      <h2 class="slide-heading mb-6" style="color: var(--color-foreground);">{{ headline }}</h2>
+      <p class="slide-body mb-8" style="color: rgba(255,255,255,0.8);">{{ subheadline }}</p>
+      <div class="flex gap-4">
+        <a :href="ctaUrl" class="btn" style="background: var(--color-foreground); color: var(--color-primary);">{{ cta }}</a>
+      </div>
+      <div class="slide-footer" style="border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.6);">
+        <span>{{ contact }}</span>
+        <span>{{ website }}</span>
+      </div>
+    </section>
+  `,
+})
+'''
+
+
+# ---------------------------------------------------------------------------
+# Map Python slide types → Vue component names
+# ---------------------------------------------------------------------------
+
+SLIDE_TYPE_TO_COMPONENT = {
+    "title":       "title-slide",
+    "problem":     "problem-slide",
+    "solution":    "solution-slide",
+    "metrics":     "metrics-slide",
+    "traction":    "metrics-slide",
+    "chart":       "chart-slide",
+    "testimonial": "testimonial-slide",
+    "cta":         "cta-slide",
+    "closing":     "cta-slide",
+}
+
+
+# ---------------------------------------------------------------------------
+# HTML page template (only structural boilerplate — NO HTML concatenation)
+# ---------------------------------------------------------------------------
+
+HTML_PAGE_TEMPLATE = r"""<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title}</title>
+    <link rel="stylesheet" href="{tokens_css_path}">
+    <style>
+{css}
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="slide-deck">
+            <component
+                v-for="(slide, i) in slides"
+                :key="i"
+                :is="componentMap[slide.type] || 'div'"
+                v-bind="slide.props"
+            />
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"><\/script>
+    <script>
+        const {{ createApp }} = Vue;
+        const app = createApp({{
+            data() {{
+                return {{
+                    slides: SLIDES_DATA,
+                    componentMap: COMPONENT_MAP,
+                }};
+            }},
+        }});
+
+{components}
+        app.mount('#app');
+    </script>
+</body>
+</html>
+"""
+
+
+# ---------------------------------------------------------------------------
+# Core: generate the HTML page (NO HTML string concatenation)
+# ---------------------------------------------------------------------------
+
+def generate_deck(slides_data, title="Pitch Deck", tokens_css_path="../../../assets/design-tokens.css"):
+    """Generate a complete deck HTML using Vue 3 CDN rendering.
+
+    slides_data: list of dicts, each with a 'type' key + slide-specific fields.
+    Returns: complete HTML string.
+    """
+    # Convert snake_case keys to camelCase for Vue props
+    normalized = []
+    for slide in slides_data:
+        slide_type = slide.get("type", "title")
+        props = _convert_keys({k: v for k, v in slide.items() if k != "type"})
+        normalized.append({"type": slide_type, "props": props})
+
+    slides_json = json.dumps(normalized, ensure_ascii=False, indent=2)
+    component_map_json = json.dumps(SLIDE_TYPE_TO_COMPONENT, ensure_ascii=False, indent=2)
+
+    return HTML_PAGE_TEMPLATE.format(
+        title=tokens_css_path.rsplit("/", 1)[-1].replace(".css", "").replace("-", " ").title() + " - " + title,
+        tokens_css_path=tokens_css_path,
+        css=SLIDE_CSS,
+        components=VUE_SLIDE_COMPONENTS_JS,
+    ).replace(
+        "SLIDES_DATA", slides_json
+    ).replace(
+        "COMPONENT_MAP", component_map_json
+    )
+
+
+# ---------------------------------------------------------------------------
+# Demo & CLI
+# ---------------------------------------------------------------------------
+
+def main():
+    parser = argparse.ArgumentParser(description="Generate brand-compliant Vue 3 slides")
+    parser.add_argument("--json", "-j", help="JSON file with slide data")
+    parser.add_argument("--output", "-o", help="Output HTML file path")
+    parser.add_argument("--demo", action="store_true", help="Generate demo deck")
+
+    args = parser.parse_args()
+
+    if args.demo:
+        demo_slides = [
+            {
+                "type": "title",
+                "badge": "Investor Deck 2024",
+                "title": "ClaudeKit Marketing",
+                "subtitle": "Your AI marketing team. Always on.",
+                "cta": "Join Waitlist",
+                "secondary_cta": "See Demo",
+                "company": "ClaudeKit",
+                "date": "December 2024",
+            },
+            {
+                "type": "problem",
+                "headline": "Marketing teams are drowning",
+                "pain_1_title": "Content Overload",
+                "pain_1_desc": "Need to produce 10x content with same headcount",
+                "pain_2_title": "Tool Fatigue",
+                "pain_2_desc": "15+ tools that don't talk to each other",
+                "pain_3_title": "No Time to Think",
+                "pain_3_desc": "Strategy suffers when execution consumes all hours",
+                "company": "ClaudeKit",
+                "page": "2",
+            },
+            {
+                "type": "solution",
+                "headline": "AI agents that actually get marketing",
+                "feature_1_title": "Content Creation",
+                "feature_1_desc": "Blog posts, social, email - all on brand, all on time",
+                "feature_2_title": "Campaign Management",
+                "feature_2_desc": "Multi-channel orchestration with one command",
+                "feature_3_title": "Analytics & Insights",
+                "feature_3_desc": "Real-time optimization without the spreadsheets",
+                "company": "ClaudeKit",
+                "page": "3",
+            },
+            {
+                "type": "metrics",
+                "headline": "Early traction speaks volumes",
+                "metrics": [
+                    {"value": "500+", "label": "Beta Users"},
+                    {"value": "85%", "label": "Weekly Active"},
+                    {"value": "4.9", "label": "NPS Score"},
+                    {"value": "50hrs", "label": "Saved/Week"},
+                ],
+                "company": "ClaudeKit",
+                "page": "4",
+            },
+            {
+                "type": "chart",
+                "badge": "Revenue",
+                "headline": "Growing month over month",
+                "chart_title": "MRR Growth ($K)",
+                "bars": [
+                    {"label": "Sep", "value": 20, "display": "$5K"},
+                    {"label": "Oct", "value": 40, "display": "$12K"},
+                    {"label": "Nov", "value": 70, "display": "$28K"},
+                    {"label": "Dec", "value": 100, "display": "$45K"},
+                ],
+                "company": "ClaudeKit",
+                "page": "5",
+            },
+            {
+                "type": "testimonial",
+                "quote": "ClaudeKit replaced 3 tools and 2 contractors. Our content output tripled while costs dropped 60%.",
+                "author": "Sarah Chen",
+                "role": "Head of Marketing, TechStartup",
+                "company": "ClaudeKit",
+                "page": "6",
+            },
+            {
+                "type": "cta",
+                "headline": "Ship campaigns while you sleep",
+                "subheadline": "Early access available. Limited spots.",
+                "cta": "Join the Waitlist",
+                "cta_url": "#",
+                "contact": "hello@claudekit.ai",
+                "website": "claudekit.ai",
+            },
+        ]
+
+        html = generate_deck(demo_slides, "ClaudeKit Marketing - Pitch Deck")
+
+        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        output_path = OUTPUT_DIR / f"demo-pitch-{datetime.now().strftime('%y%m%d')}.html"
+        output_path.write_text(html, encoding="utf-8")
+        print(f"Demo deck generated: {output_path}")
+
+    elif args.json:
+        with open(args.json, "r") as f:
+            data = json.load(f)
+
+        html = generate_deck(
+            data.get("slides", []), data.get("title", "Presentation")
+        )
+
+        output_path = (
+            Path(args.output)
+            if args.output
+            else OUTPUT_DIR / f"deck-{datetime.now().strftime('%y%m%d-%H%M')}.html"
+        )
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(html, encoding="utf-8")
+        print(f"Deck generated: {output_path}")
+
+    else:
+        parser.print_help()
+
+
+if __name__ == "__main__":
+    main()

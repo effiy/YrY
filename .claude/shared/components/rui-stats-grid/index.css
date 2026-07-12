@@ -1,0 +1,104 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   rui HTML CDN — ruiStatsGrid · Vue 3 stats-card component styles
+
+   Template structure (from index.html, <script type="text/x-template" id="rui-stats-grid-tpl">):
+     <div class="rui-stats-grid [is-row | is-grid]">
+       <div class="rui-stat-card [{modifier}]">
+         <div class="rui-stat-card-val">{value}</div>
+         <div class="rui-stat-card-lbl">{label}</div>
+         <div class="rui-stat-card-sub">{sub?}</div>
+       </div>
+       ...
+     </div>
+
+   This file is auto-injected as a <link> by index.js; host pages do not need
+   to include it manually.
+
+   Supported modifiers (--rui-* tokens, all swappable via theme CSS):
+     - accent : theme yellow (emphasis)
+     - cyan   : cyan (link/version)
+     - pass   : green (pass/healthy)
+     - fail   : red (fail/abnormal)
+     - warn   : orange (warning)
+     - info   : gray (information)
+
+   Design tokens (--rui-bg-card / --rui-border / --rui-radius / --rui-shadow /
+   --rui-text / --rui-text-soft / --rui-text-muted / --rui-accent / --rui-cyan /
+   --rui-pass / --rui-warn / --rui-fail / --rui-info) are provided by the host
+   page; all colors in this file carry fallbacks so the page still renders
+   correctly even without a loaded theme.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.rui-stats-grid {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  min-height: 80px;
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: rui-fade-in .5s .1s var(--rui-ease-out, ease) both;
+}
+.rui-stats-grid.is-row {
+  flex-direction: row;
+}
+.rui-stats-grid.is-grid {
+  /* flex-wrap above produces a wrapped grid on narrow widths */
+}
+
+.rui-stat-card {
+  background: var(--rui-bg-card, linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%));
+  border: 1px solid var(--rui-border, rgba(255,255,255,.06));
+  border-radius: var(--rui-radius, 12px);
+  padding: 16px 20px;
+  text-align: center;
+  box-shadow: var(--rui-shadow, 0 4px 20px rgba(0,0,0,.3));
+  min-width: 80px;
+  transition: transform .15s, box-shadow .15s;
+  cursor: pointer;
+}
+.rui-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--rui-shadow-lg, 0 12px 32px rgba(0,0,0,.45));
+}
+/* Focus-visible: apply .rui-focus-ring on the element */
+
+.rui-stat-card-val {
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  color: var(--rui-text, #f5f5f5);
+}
+.rui-stat-card-val.accent { color: var(--rui-accent, #ffc107); }
+.rui-stat-card-val.cyan   { color: var(--rui-cyan,   #22d3ee); }
+.rui-stat-card-val.pass   { color: var(--rui-pass,   #22c55e); }
+.rui-stat-card-val.fail   { color: var(--rui-fail,   #ef4444); }
+.rui-stat-card-val.warn   { color: var(--rui-warn,   #f59e0b); }
+.rui-stat-card-val.info   { color: var(--rui-info,   #6b7280); }
+.rui-stat-card-val.health { color: var(--rui-pass,   #22c55e); }
+
+.rui-stat-card-lbl {
+  font-size: .68rem;
+  color: var(--rui-text-muted, rgba(110,110,114,1));
+  margin-top: 2px;
+  letter-spacing: .5px;
+}
+.rui-stat-card-sub {
+  font-size: .56rem;
+  color: var(--rui-text-muted, rgba(110,110,114,1));
+  margin-top: 1px;
+  opacity: .7;
+  line-height: 1.2;
+}
+
+@media (max-width: 640px) {
+  .rui-stat-card      { min-width: 72px; padding: 12px 14px; }
+  .rui-stat-card-val  { font-size: 1.35rem; }
+}
+
+/* ── a11y: reduced-motion preference ─────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .rui-stats-grid { animation: none; }
+  .rui-stat-card  { transition: none; }
+}

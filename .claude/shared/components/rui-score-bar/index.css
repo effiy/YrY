@@ -1,0 +1,100 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   rui HTML CDN — ruiScoreBar · Vue 3 score-bar component styles
+
+   Template structure (from index.html):
+     <div class="rui-score-bar">
+       <div class="rui-score-grade [grade-a|b|c|d|f]">{grade}</div>
+       <div class="rui-score-value">{value}</div>
+       <div class="rui-score-meta">...</div>
+       <div class="rui-score-weights">
+         <div class="rui-progress-bar">...</div>
+       </div>
+       <div class="rui-score-alerts">
+         <span class="rui-badge rui-badge--md {modifier}">...</span>
+       </div>
+     </div>
+
+   Alert chips and progress bars use shared rui-badge / rui-progress-bar styles
+   (imported below). This file only contains score-bar-specific layout/grade/value styles.
+
+   Design tokens (--rui-bg-card / --rui-border / --rui-radius / --rui-accent /
+   --rui-pass / --rui-warn / --rui-fail / --rui-text / --rui-text-muted /
+   --rui-font-mono) are provided by the host page's theme.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@import url("../rui-badge/index.css");
+@import url("../rui-progress-bar/index.css");
+
+.rui-score-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+  background: var(--rui-bg-card, rgba(38,38,52,1));
+  border: 1px solid var(--rui-border, rgba(255,255,255,.06));
+  border-radius: var(--rui-radius, 12px);
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: rui-fade-in .5s .1s var(--rui-ease-out, ease) both;
+}
+
+.rui-score-grade {
+  font-family: var(--rui-font-mono, ui-monospace, monospace);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+}
+.rui-score-grade.grade-a { color: var(--rui-pass, #22c55e); }
+.rui-score-grade.grade-b { color: var(--rui-pass, #22c55e); }
+.rui-score-grade.grade-c { color: var(--rui-warn, #f59e0b); }
+.rui-score-grade.grade-d { color: var(--rui-warn, #f59e0b); }
+.rui-score-grade.grade-f { color: var(--rui-fail, #ef4444); }
+
+.rui-score-value {
+  font-family: var(--rui-font-mono, ui-monospace, monospace);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--rui-accent, #ffc107);
+  line-height: 1;
+}
+
+.rui-score-meta { display: flex; flex-direction: column; gap: 2px; }
+.rui-score-label {
+  font-size: 11px;
+  color: var(--rui-text-muted, rgba(110,110,114,1));
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.rui-score-trend {
+  font-size: 11px;
+  color: var(--rui-text-muted, rgba(110,110,114,1));
+}
+
+.rui-score-weights {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 240px;
+}
+
+.rui-score-alerts { display: flex; gap: 8px; }
+
+@media (max-width: 640px) {
+  .rui-score-bar { padding: 12px 14px; gap: 12px; }
+  .rui-score-grade { font-size: 22px; width: 36px; height: 36px; }
+  .rui-score-value { font-size: 26px; }
+  .rui-score-weights { min-width: 100%; }
+}
+
+/* ── a11y: reduced-motion preference ─────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .rui-score-bar { animation: none; }
+}
