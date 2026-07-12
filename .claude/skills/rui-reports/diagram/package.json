@@ -1,0 +1,42 @@
+{
+  "name": "@rui-reports/diagram",
+  "version": "3.0.0",
+  "description": "Architecture diagram generator — produce polished dark-themed HTML+SVG diagrams from requirements or by analyzing a codebase into a knowledge graph.",
+  "type": "module",
+  "private": true,
+  "main": "engine/core/src/index.js",
+  "exports": {
+    ".": "./engine/core/src/index.js",
+    "./core": "./engine/core/src/index.js",
+    "./core/*": "./engine/core/src/*.js",
+    "./schema": "./engine/core/src/schema.js",
+    "./types": "./engine/core/src/types.js",
+    "./search": "./engine/core/src/search.js",
+    "./languages": "./engine/core/src/languages/index.js"
+  },
+  "scripts": {
+    "test:core": "vitest run engine/core/src",
+    "test": "vitest run engine/core/src"
+  },
+  "dependencies": {
+    "@tree-sitter-grammars/tree-sitter-kotlin": "1.1.0",
+    "fuse.js": "^7.1.0",
+    "ignore": "^7.0.5",
+    "tree-sitter-c-sharp": "^0.23.1",
+    "tree-sitter-cpp": "^0.23.4",
+    "tree-sitter-go": "^0.25.0",
+    "tree-sitter-java": "^0.23.5",
+    "tree-sitter-javascript": "^0.25.0",
+    "tree-sitter-php": "^0.23.11",
+    "tree-sitter-python": "^0.25.0",
+    "tree-sitter-ruby": "^0.23.1",
+    "tree-sitter-rust": "^0.24.0",
+    "tree-sitter-typescript": "^0.23.2",
+    "web-tree-sitter": "^0.26.6",
+    "yaml": "^2.8.3",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "vitest": "^3.1.0"
+  }
+}
