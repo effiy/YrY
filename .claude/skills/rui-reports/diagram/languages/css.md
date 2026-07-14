@@ -23,12 +23,19 @@
 - `tailwind.config.js` — Tailwind CSS configuration (though a JS file)
 - `variables.scss` / `_variables.scss` — Design token definitions
 
-## Edge Patterns
+## Edge Detection Heuristics
 
-- CSS files are `related` to the HTML or component files that import them for styling
-- SCSS partial files (`_*.scss`) are `depends_on` by the main stylesheet that `@use`s them
-- CSS variable definition files are `related` to all stylesheets that reference those variables
-- CSS Modules are `related` to the component files that import them
+**SCSS partial dependencies** — `@use 'variables'`, `@forward 'mixins'`, `@import 'theme'` → `imports` edges from the importing file to the partial (`_variables.scss`). `@use` is namespaced (preferred); `@import` is global (deprecated).
+
+**CSS Module component binding** — `import styles from './Button.module.css'` in a React component → `depends_on` edges from the component to the CSS Module. Class name mapping is deterministic (`styles.primary` → `Button_primary_abc123`).
+
+**Tailwind directive layers** — `@tailwind base; @tailwind components; @tailwind utilities;` + `@layer components { ... }` → `configures` edges from the CSS entry point to each Tailwind layer. Custom `@layer` definitions extend the framework.
+
+**Design token/variable propagation** — `:root { --color-primary: #22d3ee; }` defined in `tokens.css` and consumed via `var(--color-primary)` in component stylesheets → `configures` edges from the token definition to each consumer file.
+
+**Critical CSS extraction** — Files marked as critical (inline in `<head>`) vs deferred (loaded async) → critical CSS `depends_on` the HTML layout it styles. Deferred CSS is non-blocking.
+
+**Media query breakpoints** — `@media (min-width: 768px) { ... }` → responsive breakpoints define layout variation points. Each breakpoint range can target different component states.
 
 ## Summary Style
 

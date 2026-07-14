@@ -35,6 +35,26 @@
 - **Micronaut** — Compile-time DI framework for microservices and serverless
 - **Hibernate** — ORM framework implementing JPA specification
 
+## Edge Detection Heuristics
+
+When analyzing Java files, look for these additional signals:
+
+**Spring component scanning** — `@Service`, `@Repository`, `@Controller`, `@Component`, `@RestController` → these classes are Spring beans. Constructor parameters define dependencies → `depends_on` edges from the bean to each injected dependency type.
+
+**JPA entity relationships** — `@OneToMany(mappedBy = "order")`, `@ManyToOne`, `@OneToOne`, `@ManyToMany` → `depends_on` edges between entity classes with the relationship cardinality noted.
+
+**Feign client interfaces** — `@FeignClient(name = "user-service")` → the interface is a declarative HTTP client. Create `depends_on` edges from the Feign client to the remote service.
+
+**Spring Event publishing** — `applicationEventPublisher.publishEvent(new OrderEvent(...))` and `@EventListener` methods → `publishes` from publisher to event class, `subscribes` from listener to event class.
+
+**Aspect weaving** — `@Aspect` + `@Around("execution(* com.example..*.*(..))")` → the aspect intercepts matched join points. Create `middleware` edges from the aspect to the packages it intercepts.
+
+**Bean factory methods** — `@Bean` methods in `@Configuration` classes → create `configures` edges from the configuration class to the produced bean type. These are explicit dependency declarations.
+
+**Reactive chains** — `Mono.just(...).map(...).flatMap(...).subscribe(...)` → operators between `.map()`/`.flatMap()` calls represent transformation stages. Create `transforms` edges between stages for complex pipelines.
+
+**Record types as DTOs** — `public record UserDTO(String name, String email) {}` → records are immutable data carriers. Files importing the record → `depends_on` edges from consumer to record definition.
+
 ## Example Language Notes
 
 > Uses `@Autowired` annotation for constructor injection, following Spring IoC container

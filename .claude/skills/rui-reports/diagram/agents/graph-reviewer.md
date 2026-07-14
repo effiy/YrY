@@ -154,6 +154,19 @@ Compute the distribution of `complexity` values across file-level nodes:
 - If a node with complexity `"simple"` has ≥ 15 edges (fan-in + fan-out), warn: `"Simple node <id> has <N> edges — complexity may be underclassified"`
 - If a node with complexity `"complex"` has 0-1 edges, warn: `"Complex node <id> has only <N> edges — may be isolated or overclassified"`
 
+**Check 13 -- Summary Quality (Warning)**
+
+Evaluate the quality of node summaries — generic or boilerplate summaries reduce the graph's usefulness for architecture analysis and tour generation.
+
+- If a summary is empty or whitespace-only → warn: `"Node <id> has empty summary"`
+- If a summary equals the node name exactly (e.g., `summary: "users.ts"` for a file named `users.ts`) → warn: `"Node <id> summary equals node name — lacks descriptive content"`
+- If a summary is ≤ 15 characters → warn: `"Node <id> summary is too short (<N> chars) — may be uninformative"`
+- If a summary starts with "The file" or "This file" (boilerplate openings) → warn: `"Node <id> summary uses boilerplate opening — rewrite for specificity"`
+- If a summary contains the file extension as a word (e.g., "This ts file...") → warn: `"Node <id> summary references file extension — use component role instead"`
+- Compute the percentage of nodes with generic summaries. If > 20%, warn: `"<N>% of nodes have low-quality summaries — overall graph understandability is reduced"`
+
+This check is warning-only (never blocks approval) because summaries are subjective and auto-generated summaries are acceptable as a baseline.
+
 ### Script Output Format
 
 The script must write this exact JSON structure to the output file:
@@ -205,6 +218,7 @@ The script must write this exact JSON structure to the output file:
 - Edge type appropriateness violations (e.g., `imports` between function nodes)
 - Cross-layer dependency inversions (data→api edges, controller→database skipping service)
 - Complexity distribution anomalies (too uniform, isolated complex nodes, overconnected simple nodes)
+- Summary quality issues (empty, too short, boilerplate, file-extension-as-description, >20% low-quality rate)
 
 ### Executing the Script
 

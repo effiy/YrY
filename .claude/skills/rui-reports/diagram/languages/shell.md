@@ -21,12 +21,23 @@
 - `install.sh` / `setup.sh` — Environment setup scripts
 - `.bashrc` / `.bash_profile` / `.zshrc` — Shell configuration files
 
-## Edge Patterns
+## Edge Detection Heuristics
 
-- Shell scripts `triggers` other scripts or build processes they invoke
-- Entry point scripts `deploys` the application they start
-- Setup scripts `configures` the development environment
-- Build scripts `depends_on` the source files they compile or package
+**Script invocation chain** — `./deploy.sh` or `bash build.sh` → `triggers` edges from the calling script to the invoked script. `source script.sh` creates stronger coupling (shared environment) than `bash script.sh` (subshell).
+
+**Binary/tool dependencies** — `jq '.version' package.json`, `kubectl apply -f`, `docker build -t app .` → the script `depends_on` the external tool. Missing tool → script fails at runtime. Note these as external dependencies.
+
+**File processing pipeline** — `cat data.txt | grep ERROR | awk '{print $2}' | sort | uniq -c` → `transforms` edges between pipeline stages. Shell pipes are a classic data-flow pattern.
+
+**Environment variable coupling** — `export DATABASE_URL=...` set by one script and read by another via `$DATABASE_URL` → implicit `configures` edge from the setter to the consumer. `.env` files formalize this contract.
+
+**Signal trap handlers** — `trap 'cleanup' EXIT` or `trap 'handle_sigterm' SIGTERM` → `subscribes` edges from the signal to the handler function. Trap handlers are the shell equivalent of lifecycle hooks.
+
+**Makefile target graph** — `.PHONY: build test deploy` + `deploy: build test` → `depends_on` edges from each target to its prerequisites. Make's DAG is a deterministic execution plan.
+
+**Cron/timer scheduling** — Crontab entries or systemd timer units → `triggers` edges from the schedule to the script. Scheduled execution is time-triggered, not event-triggered.
+
+**Exit code handling** — `set -e`, `set -o pipefail`, `|| true`, `if ! command; then` → error handling branches. Scripts that explicitly handle errors create conditional dependency paths.
 
 ## Summary Style
 

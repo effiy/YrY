@@ -36,6 +36,24 @@
 - **Slim** — Micro-framework for APIs and small applications
 - **CodeIgniter** — Lightweight MVC framework with minimal configuration
 
+## Edge Detection Heuristics
+
+**Laravel service container binding** — `$this->app->bind(Interface::class, Concrete::class)` or `$this->app->singleton(...)` → `configures` edges from the service provider to the bound implementation. Service providers are the composition root.
+
+**Eloquent relationships** — `$this->hasMany(Order::class)`, `$this->belongsTo(User::class)`, `$this->belongsToMany(Tag::class)` → `depends_on` edges between Eloquent model classes with relationship cardinality.
+
+**Middleware registration** — `$middleware->web([...])` or `$router->middleware('auth')` → `middleware` edges from each middleware to the route groups they protect. Middleware priority is declared in `Kernel.php`.
+
+**Event/listener wiring** — `Event::listen(OrderShipped::class, SendNotification::class)` in `EventServiceProvider` → `subscribes` from listener to event. Queued listeners add async indirection.
+
+**Command/handler pattern** — `Artisan::command('report:generate', fn() => ...)` or console command classes → create `depends_on` edges from the command to the services it invokes.
+
+**Policy/gate authorization** — `Gate::define('update-post', fn($user, $post) => ...)` → `middleware` edges from the policy to the controller actions they authorize. `$this->authorize('update-post', $post)` in controllers creates the dependency.
+
+**Queue job dispatching** — `ProcessPayment::dispatch($order)` or `dispatch(new ProcessPayment($order))` → `triggers` edges from the dispatcher to the job class. Job chaining (`->chain([...])`) creates sequential dependencies.
+
+**Blade component hierarchy** — `<x-layout>` / `<x-card>` components in Blade templates → `contains` edges from parent to child component, mirroring the React component pattern.
+
 ## Example Language Notes
 
 > Uses PHP 8 attributes `#[Route('/api/users')]` for declarative route mapping on

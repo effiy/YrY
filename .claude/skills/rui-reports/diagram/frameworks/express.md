@@ -55,3 +55,8 @@ Assign nodes to these layers when detected:
 - **Router modularity**: `express.Router()` creates modular, mountable route handlers that can be composed into the main app at different path prefixes
 - **MVC pattern**: Express apps commonly separate concerns into Models (data), Views (response formatting), and Controllers (request handling)
 - **Body parsing and validation**: Request body parsing (`express.json()`, `express.urlencoded()`) and validation (Joi, Zod, express-validator) are middleware concerns applied before route handlers
+- **Async error handling with express-async-errors**: `require('express-async-errors')` patches Express to catch rejected promises from async route handlers — without it, unhandled promise rejections crash the process
+- **Router-level middleware scoping**: `router.use(authMiddleware)` applies middleware only to that router's routes → creates finer-grained middleware edges than app-level `app.use()`
+- **Trust proxy for reverse proxy deployments**: `app.set('trust proxy', 1)` when behind Nginx/ALB → Express trusts `X-Forwarded-*` headers for correct IP, protocol, and host resolution
+- **Modular TypeScript patterns**: `export default router` + barrel `index.ts` re-exporting all routers → `imports` edges from the app to each router module; `export { router as userRouter }` → named exports for clarity
+- **Request ID propagation**: `express-request-id` or custom middleware injecting `req.id` → creates a tracing context that flows through all downstream handlers and log statements

@@ -20,12 +20,19 @@
 - `appsettings.json` — .NET application configuration
 - `manifest.json` — Browser extension or PWA manifest
 
-## Edge Patterns
+## Edge Detection Heuristics
 
-- `package.json` `configures` the build toolchain and defines project dependencies
-- `tsconfig.json` `configures` TypeScript compilation for all `.ts` files
-- JSON Schema files `defines_schema` for API request/response validation
-- Config JSON files `configures` the runtime behavior of the application
+**Package manifest dependency graph** — `package.json` `dependencies`, `devDependencies`, `peerDependencies` → `depends_on` edges from the project to each listed package. `devDependencies` are build-time only; `peerDependencies` are host-provided.
+
+**Workspace monorepo links** — `"workspaces": ["packages/*"]` in root `package.json` → `contains` edges from the root to each workspace package. Cross-package `"@scope/foo": "*"` → `depends_on` edges between workspace members.
+
+**tsconfig path aliases** — `"paths": { "@app/*": ["./src/*"] }` in `tsconfig.json` → `configures` edges from tsconfig to each aliased directory. Path aliases create import shortcuts that must be resolved during analysis.
+
+**JSON Schema validation** — `"$schema": "https://json-schema.org/draft/2020-12/schema"` + `"properties": { ... }` → `defines_schema` edges from the schema file to any JSON validated against it. `"$ref"` creates schema composition dependencies.
+
+**ESLint/Prettier configuration** — `.eslintrc.json`, `.prettierrc` → `configures` edges from the config to all files matching its glob patterns. Config inheritance (`"extends": [...]`) creates config chain dependencies.
+
+**Environment-specific configs** — `config.development.json`, `config.production.json` → each `configures` the application for a specific environment. The environment variable `NODE_ENV` determines which config is loaded.
 
 ## Summary Style
 

@@ -29,6 +29,24 @@
 - `Makefile` — Make-based build rules and targets
 - `main.cpp` — program entry point containing `int main()`
 
+## Edge Detection Heuristics
+
+**Template instantiations** — `std::vector<User>`, `std::unique_ptr<Connection>` → template user `depends_on` the template definition AND the type parameter. Template-heavy codebases have dense header dependency chains.
+
+**Virtual function dispatch** — `virtual void process() = 0` in base → `implements` edges from each concrete subclass overriding it. vtable layout follows the inheritance hierarchy.
+
+**RAII ownership** — `std::unique_ptr<T>`, `std::shared_ptr<T>`, custom destructors → owning class `depends_on` the managed resource. Unique = exclusive; shared = shared ownership semantics.
+
+**Include graph** — `#include "user.h"` in `order.cpp` → `imports` edge from `.cpp` to `.h`. Header-only libraries collapse `.h`/`.cpp` into single-file dependencies.
+
+**CMake target dependencies** — `target_link_libraries(myapp PRIVATE user_lib)` → `depends_on` from consumer to library. `PUBLIC` dependencies propagate to downstream consumers; `INTERFACE` are header-only.
+
+**Signal/slot (Qt)** — `QObject::connect(sender, SIGNAL(changed()), receiver, SLOT(update()))` → `publishes` from signal, `subscribes` from slot. Auto-connections via naming convention are implicit.
+
+**Factory pattern** — `static unique_ptr<Base> create(Type t)` → factory `depends_on` all concrete types it creates. Register-based factories add runtime plugin dependencies.
+
+**Template specialization** — `template<> struct Traits<User> { ... }` → explicit specialization `depends_on` the primary template and the specialized type.
+
 ## Common Frameworks
 
 - **Qt** — Cross-platform application framework with signal/slot mechanism

@@ -37,6 +37,20 @@
 - **Chi** — Lightweight, composable HTTP router
 - **GORM** — ORM library with associations, hooks, and migrations
 
+## Edge Detection Heuristics
+
+When analyzing Go files, look for these additional signals:
+
+**Interface satisfaction** — When a struct's methods match an interface defined in another file, create `implements` edges from the struct to the interface. This is implicit in Go — no `implements` keyword — so you must compare method signatures across files.
+
+**Goroutine launches** — `go func()` or `go someFunc()` in a file → the launched function depends on its caller's context. Create `calls` edges marked as concurrent.
+
+**Channel communication** — `ch <- value` (send) and `<-ch` (receive) indicate data flow between goroutines. When channels cross package boundaries, create `publishes`/`subscribes` edges between the producer and consumer packages.
+
+**Constructor pattern** — `NewX(...)` functions that return `*X` or `X` are constructors. Files calling `NewX()` depend on the package defining X. Trace `depends_on` edges from callers to the constructor's package.
+
+**Wire/Fx dependency injection** — `wire.Build()` or `fx.Provide()` declarations explicitly wire dependencies. Each `Provide` call creates `depends_on` edges from the provider to its parameter types.
+
 ## Example Language Notes
 
 > Implements `io.Reader` interface implicitly — no explicit declaration needed, just

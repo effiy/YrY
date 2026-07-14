@@ -103,6 +103,31 @@ Flag the following quality concerns in your `notes`. These are warnings, not blo
 - If any node has `complexity: "complex"` but fewer than 3 edges → note as `"Complex node with few relationships: <node-id> — may be isolated"`
 - If the graph has disconnected components (subgraphs with zero cross-edges) → note as `"Disconnected subgraph detected: <N> nodes with no cross-component edges"`
 
+**Additional recovery heuristics (apply during Steps 2-4):**
+
+**Duplicate node detection by content:**
+- Two nodes with different IDs but identical `filePath` and `type` → likely the same file analyzed by different batches. Merge them: keep the one with richer summary/tags, combine their edges, drop the duplicate.
+- Two function nodes with identical `name` in the same `filePath` but different IDs → check if they represent the same function (e.g., `function:src/foo.ts:bar` vs `func:src/foo.ts:bar`). If so, canonicalize to `function:src/foo.ts:bar` and merge.
+
+**Missing contains edges:**
+- Every `function:` or `class:` node should have a `contains` edge from its parent `file:` node. If the file node exists but the `contains` edge is missing, add it with `weight: 1.0`.
+- Batch analysis sometimes emits function/class nodes without the `contains` edge because the parent file is in a different batch. Fix this deterministically.
+
+**Inverted edge direction recovery:**
+- `tested_by` edges from test→production should be inverted to production→test (the merge script handles this, but flag remaining inverted edges).
+- `imports` edges where B imports A but the edge is A→B → check `$IMPORT_MAP` and flip if needed.
+
+**Orphan function/class recovery:**
+- A `function:` or `class:` node with zero edges → check if its parent `file:` node exists. If not, create the parent file node with `summary: "File containing <function/class name>"`, `tags: ["auto-recovered"]`, `complexity: "moderate"`. Then add a `contains` edge.
+
+**Summary quality recovery:**
+- If a node's summary is empty, equals the node name, or equals just the filename → generate a minimal summary from available context: `"<type> defined in <filePath>"` or `"<type>: <name> — auto-generated summary"`.
+- Flag these in notes as `"Auto-generated summaries for <N> nodes — manual review recommended"`.
+
+**Tag quality recovery:**
+- If a node has zero tags → assign `["untagged"]` as fallback.
+- If a node has only one very generic tag (e.g., `["utility"]`) → attempt to enrich from directory context (e.g., file in `api/` dir → add `["api-handler"]`). Flag enriched tags in notes.
+
 **Tag quality:**
 - If > 30% of nodes have only generic tags (e.g., `["utility"]`, `["service"]`) → note as `"High rate of generic tags: <N>% — may need richer categorization"`
 - If any node has fewer than 2 tags → note as `"Node <id> has insufficient tags"`
@@ -119,6 +144,11 @@ Flag the following quality concerns in your `notes`. These are warnings, not blo
   "edgesRestored": 0,
   "crossBatchEdgesAdded": 0,
   "implicitEdgesAdded": 0,
+  "duplicatesMerged": 0,
+  "containsEdgesAdded": 0,
+  "directionsFixed": 0,
+  "summariesRegenerated": 0,
+  "tagsEnriched": 0,
   "typesRemapped": 0,
   "complexityRemapped": 0,
   "qualityFlags": {
@@ -132,6 +162,11 @@ Flag the following quality concerns in your `notes`. These are warnings, not blo
 
 **New fields (in addition to the existing ones):**
 - `implicitEdgesAdded` (number) — count of edges added in Step 4 (naming convention recovery)
+- `duplicatesMerged` (number) — count of duplicate nodes detected and merged
+- `containsEdgesAdded` (number) — count of missing contains edges restored for function/class→file
+- `directionsFixed` (number) — count of inverted edges corrected
+- `summariesRegenerated` (number) — count of empty/generic summaries auto-generated
+- `tagsEnriched` (number) — count of nodes with tags enriched from directory context
 - `qualityFlags` (object) — structured quality warnings from Step 5:
   - `coverageWarnings` (string[]) — test coverage, documentation, deployment edge warnings
   - `structuralAnomalies` (string[]) — fan-in/out hubs, disconnected subgraphs

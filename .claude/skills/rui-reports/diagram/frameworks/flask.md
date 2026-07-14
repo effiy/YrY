@@ -50,4 +50,8 @@ When analyzing a Flask project, apply these additional conventions on top of the
 
 - **Application factory pattern**: `create_app()` functions allow multiple app instances (e.g., for testing) and delay extension initialization — avoids circular imports
 - **Blueprint modularity**: Blueprints group related routes, templates, and static files; they are registered on the app with a URL prefix, making them independently testable
-- **Flask extension protocol**: Extensions follow `init_app(app)` for lazy initialization — the extension object is created globally but bound to an app instance later
+- **Flask extension protocol**: Extensions follow `init_app(app)` for lazy initialization — the extension object is created globally but bound to an app instance later. Trace `configures` edges from `extensions.py` to each extension factory (SQLAlchemy, Migrate, LoginManager, Mail, CORS)
+- **Error handler registration**: `@app.errorhandler(404)` or `app.register_error_handler(Exception, handler)` → creates `middleware` edges from the error handler to the app. Error handlers are global middleware, not route-specific
+- **Pluggable views**: `app.add_url_rule('/api', view_func=MyView.as_view('api'))` → creates `routes` edges from the URL rule to the view class. Method-based dispatch (`View`, `MethodView`) routes HTTP methods to class methods
+- **Template context processors**: `@app.context_processor` injects global variables into all templates → creates `configures` edges from the processor to the template layer. Context processors are a form of dependency injection for the view layer
+- **CLI commands with Click**: `@app.cli.command()` registers CLI commands on the Flask app → creates `depends_on` edges from the command to the services/models it invokes (e.g., DB seeding, data export)

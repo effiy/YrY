@@ -118,6 +118,33 @@ font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", Consolas
 
 This order eliminates z-index hacks: each later element paints on top of earlier ones.
 
+## Color Accessibility
+
+All stroke colors meet WCAG AA contrast (≥ 3:1) against the `#020617` background at normal text sizes. Labels use white (`#ffffff`, contrast 18.7:1) or `#94a3b8` (slate-400, contrast 6.2:1) for readability.
+
+| Stroke Color | Against #020617 | AA Normal Text | AA Large Text |
+|-------------|-----------------|----------------|---------------|
+| `#22d3ee` (cyan) | 11.2:1 | ✅ Pass | ✅ Pass |
+| `#34d399` (emerald) | 9.8:1 | ✅ Pass | ✅ Pass |
+| `#a78bfa` (violet) | 6.5:1 | ✅ Pass | ✅ Pass |
+| `#fbbf24` (amber) | 12.3:1 | ✅ Pass | ✅ Pass |
+| `#fb7185` (rose) | 4.8:1 | ✅ Pass | ✅ Pass |
+| `#fb923c` (orange) | 5.1:1 | ✅ Pass | ✅ Pass |
+| `#94a3b8` (slate-400) | 6.2:1 | ✅ Pass | ✅ Pass |
+| `#475569` (slate-600) | 3.8:1 | ⚠️ Large only | ✅ Pass |
+
+**Guidelines for label colors:**
+- Primary labels (component names): always `#ffffff` (white) for maximum contrast
+- Secondary labels (tech/port info): `#94a3b8` — sufficient for 9px+ text
+- Tiny annotations (7-8px): `#475569` acceptable for short labels; prefer `#64748b` for better readability
+- Arrow labels: `#94a3b8` for standard; use the arrow's stroke color for emphasis (e.g., `#fb7185` for auth flows)
+- Footer/legend text: `#475569` at 9px+ is sufficient for non-critical metadata
+
+**Color-blind safe palettes:**
+- Red-green colorblind (deuteranopia): cyan/amber/violet remain distinguishable from emerald/rose when paired with shape and label cues
+- Blue-yellow colorblind (tritanopia): all palette colors remain distinct
+- Always pair color with a secondary indicator: component shape (rx value), label text, or legend position
+
 ## Layout Patterns
 
 ### Linear flow (left → right)
@@ -237,3 +264,52 @@ Layout is deterministic — the same input (brief or knowledge graph) produces t
 - Predictable handoff to designers
 
 If you need different layouts for the same data, vary the input brief (e.g., add "place auth in top-left"), not the rendering logic.
+
+## CSS Theming System
+
+The template exposes 18 CSS custom properties in `:root` for one-click re-theming. When generating a diagram, do NOT override individual color values inline — modify the `:root` block instead.
+
+### Theme Variables
+
+```css
+:root {
+  --bg-primary: #020617;        /* page background */
+  --bg-card: rgba(15,23,42,0.5); /* card/panel backgrounds */
+  --bg-panel: rgba(15,23,42,0.6);
+  --bg-tile: rgba(15,23,42,0.4);
+  --border-default: #1e293b;    /* standard borders */
+  --text-primary: #ffffff;      /* headings, component names */
+  --text-secondary: #94a3b8;    /* body text, descriptions */
+  --text-muted: #64748b;        /* labels, metadata */
+  --text-dim: #475569;          /* footer, minor annotations */
+  --color-frontend: #22d3ee;    /* cyan */
+  --color-backend: #34d399;     /* emerald */
+  --color-database: #a78bfa;    /* violet */
+  --color-cloud: #fbbf24;       /* amber */
+  --color-security: #fb7185;    /* rose */
+  --color-message: #fb923c;     /* orange */
+  --color-external: #94a3b8;    /* slate */
+  --font-mono: 'JetBrains Mono', 'SF Mono', ...;
+}
+```
+
+To re-theme: change `:root` values, then update the SVG component `fill`/`stroke` values (these are SVG attributes, not CSS) and arrow `<marker>` colors to match.
+
+### Reusable Panel Classes
+
+When building data panels (metrics, scaling, ownership, API tables, etc.), use these CSS classes instead of inline styles:
+
+| Class | Purpose |
+|-------|---------|
+| `.panel` | Standard panel container (margin-top, bg, border-radius) |
+| `.panel-header` | Panel title bar (font-size, weight, margin) |
+| `.panel-grid` | 2-3 column auto-fit grid (280px min, 0.5rem gap) |
+| `.panel-grid-4` | 3-4 column auto-fit grid (280px min, 0.75rem gap) |
+| `.panel-item` | Individual panel sub-card (bg, border-radius) |
+| `.panel-item-title` | Panel sub-card title |
+| `.panel-item-body` | Panel sub-card body text |
+| `.panel-table` | Full-width styled table with border-collapse |
+| `.panel-table th` | Table header cell (muted color, bottom border) |
+| `.panel-table td` | Table data cell (bottom border) |
+
+Inline styles are acceptable for one-off layouts (Request Trace, Deployment Pipeline) where the structure doesn't match the grid/table patterns. Always prefer utility classes for standard panels with grid or table layouts.

@@ -36,6 +36,26 @@
 - **MAUI** — Cross-platform native UI for mobile and desktop applications
 - **xUnit** — Modern testing framework with theories, facts, and dependency injection
 
+## Edge Detection Heuristics
+
+When analyzing C# files, look for these additional signals:
+
+**ASP.NET Core middleware pipeline** — `app.UseMiddleware<AuthMiddleware>()` or `app.UseAuthentication()` → `middleware` edges from each middleware component to the application builder. The pipeline order in `Program.cs` determines execution sequence.
+
+**Dependency injection registration** — `services.AddScoped<IUserService, UserService>()` or `services.AddSingleton<ICache>()` → `configures` edges from the composition root to each registered service. The lifetime (Scoped/Transient/Singleton) is architectural metadata.
+
+**Controller route attributes** — `[Route("api/[controller]")]` + `[HttpGet("{id}")]` → `routes` edges from the controller to each action method. Combined route templates form the full URL path.
+
+**Entity Framework relationships** — `[ForeignKey("CategoryId")]`, `.HasMany().WithOne()`, Fluent API configurations in `OnModelCreating` → `depends_on` edges between entity classes with cardinality.
+
+**MediatR request/notification patterns** — `IRequest<TResponse>` + `IRequestHandler<TRequest, TResponse>` for commands/queries; `INotification` + `INotificationHandler<T>` for events → `depends_on` from handler to request/notification types.
+
+**AutoMapper profiles** — `CreateMap<Source, Destination>()` → `transforms` edges from source to destination type. Profiles document type mapping contracts.
+
+**Filter/attribute pipelines** — `[Authorize]`, `[ServiceFilter]`, `[TypeFilter]`, `[ExceptionFilter]` → these are middleware-like attributes that wrap controller actions. Create `middleware` edges from each filter to the decorated controller/action.
+
+**Background services** — `BackgroundService` or `IHostedService` implementations with `ExecuteAsync` → long-running background workers. Create `depends_on` edges from the hosted service to the services it consumes.
+
 ## Example Language Notes
 
 > Uses LINQ method syntax `.Where().Select()` to compose a query pipeline over the

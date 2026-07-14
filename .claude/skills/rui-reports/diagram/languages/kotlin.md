@@ -35,6 +35,24 @@
 - **Exposed** — Lightweight SQL framework with type-safe DSL and DAO patterns
 - **Koin** — Pragmatic dependency injection framework using Kotlin DSL
 
+## Edge Detection Heuristics
+
+**Koin module definitions** — `val appModule = module { single { UserService(get()) } }` → `configures` edges from the module to each declared bean. `get()` inside the lambda references other beans → `depends_on` edges.
+
+**Coroutine scope hierarchy** — `viewModelScope.launch { ... }`, `lifecycleScope.launch { ... }`, `GlobalScope.launch { ... }` → the launched coroutine depends on the scope's lifecycle. Create `calls` edges from the launch site to the suspended function.
+
+**Flow operators** — `.map { ... }.filter { ... }.collect { ... }` → `transforms` edges between each operator stage. Flow is cold (doesn't run until collected); `collect` is the terminal operation.
+
+**Sealed class routing** — `when (state) { is Success -> ... is Error -> ... is Loading -> ... }` → exhaustive branches create `depends_on` edges from the handler to each state type.
+
+**Extension function dependencies** — `fun String.toSlug(): String = ...` → the extension function file depends on String. When extension functions cross module boundaries, create `depends_on` edges.
+
+**Compose UI tree** — `@Composable fun HomeScreen() { Column { Header(); Body(); Footer() } }` → `contains` edges from parent composable to child composables. This represents the UI component tree.
+
+**Delegation patterns** — `class LazyService by lazy { ... }` or `by viewModels()` → the delegating class depends on the delegate provider. Create `depends_on` edges from the consumer to the delegate.
+
+**Ktor plugin installation** — `install(ContentNegotiation) { ... }` or `routing { get("/") { ... } }` → `configures` edges from the application to each installed plugin. Route handlers → `routes` edges.
+
 ## Example Language Notes
 
 > Uses sealed class hierarchy with `when` exhaustive matching to handle all possible

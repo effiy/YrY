@@ -62,6 +62,10 @@ Assign nodes to these layers when detected:
 
 - **Fat models vs. thin views**: Django encourages business logic in model methods, keeping views thin HTTP adapters
 - **Django ORM lazy evaluation**: QuerySets are not evaluated until iterated — chain filters without DB hits
-- **Class-based views (CBVs)**: Mixins like `LoginRequiredMixin`, `PermissionRequiredMixin` compose behavior through multiple inheritance
-- **Signal anti-patterns**: Signals create invisible coupling; a signal in `signals.py` may be triggered by a `save()` call anywhere in the codebase
-- **App isolation**: Each Django app (`INSTALLED_APPS`) should be self-contained with its own models, views, urls, and migrations
+- **Class-based views (CBVs)**: Mixins like `LoginRequiredMixin`, `PermissionRequiredMixin` compose behavior through multiple inheritance — trace MRO to understand the full middleware chain applied to each view
+- **Signal anti-patterns**: Signals create invisible coupling; a signal in `signals.py` may be triggered by a `save()` call anywhere in the codebase — always create `subscribes` / `publishes` edges for signal wiring
+- **App isolation**: Each Django app (`INSTALLED_APPS`) should be self-contained with its own models, views, urls, and migrations — cross-app imports indicate inter-app coupling that should be tracked as `depends_on` edges
+- **Django REST Framework (DRF)**: ViewSets, Serializers, and Routers add an API layer on top of Django's model layer. Router registration (`router.register(r'users', UserViewSet)`) creates `configures` edges from router to ViewSet
+- **Async views (Django 4.1+)**: `async def` views and ASGI deployment (`asgi.py`) enable async I/O. `SyncToAsync`/`AsyncToSync` adapters bridge sync and async code — create `depends_on` edges through these adapters
+- **Django Channels**: WebSocket consumers and channel layers add real-time capability. `as_asgi()` wraps the Django app for protocol routing. Route `websocket.urlpatterns` → `depends_on` edges from routing to consumers
+- **Custom management commands**: `management/commands/*.py` extend `manage.py` with CLI operations. Each command's `handle()` method → `depends_on` from the command to the services/models it invokes

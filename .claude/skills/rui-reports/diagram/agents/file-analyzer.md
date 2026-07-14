@@ -450,19 +450,83 @@ Produce a single, valid JSON block. Before writing, verify that all arrays and o
 
 Use these hints for common edge patterns:
 
+### Component & UI Patterns
+
 | Pattern | Edge to create |
 |---|---|
 | React component renders another component in its JSX | `contains` from parent to child |
 | Component/hook calls a custom hook (`useX`) | `depends_on` from consumer to hook file |
 | Context provider wraps components | `exports` from provider to context definition |
 | Component calls `useContext` or custom context hook | `depends_on` from consumer to context definition |
+| Micro-frontend host imports a remote module | `imports` from host to remote entry |
+| Module federation `exposes` in webpack/vite config | `exports` from remote to exposed component |
+| Zustand store consumed by component | `depends_on` from component to store file |
+| TanStack Query hook used in component | `depends_on` from component to query definition |
+| React Server Component imports Client Component | `depends_on` from RSC to Client Component file |
+
+### Backend & Service Patterns
+
+| Pattern | Edge to create |
+|---|---|
 | Python file uses `from x import y` where x is a project file | `imports` edge (same rule as JS/TS) |
 | Go file `import`s an internal package path | `imports` edge to the resolved file |
+| FastAPI router included in main app (`app.include_router`) | `depends_on` from main to router module |
+| Django view references serializer class | `depends_on` from view to serializer |
+| Spring `@Autowired` or constructor injection | `depends_on` from consumer to injected bean |
+| Express/Koa/Hono middleware applied via `app.use()` | `middleware` from middleware to app entry |
+| tRPC router defines procedure calling a service | `calls` from router to service function |
+| gRPC service implementation (proto → code) | `implements` from code to proto-generated stub |
+| Background job processor (Bull/BullMQ/Celery) | `depends_on` from job definition to processor |
+
+### Event-Driven Patterns
+
+| Pattern | Edge to create |
+|---|---|
+| Kafka/RabbitMQ producer publishes to a topic | `publishes` from producer to topic handler file |
+| Kafka/RabbitMQ consumer subscribes to a topic | `subscribes` from consumer to topic |
+| Event handler reacts to a domain event | `subscribes` from handler to event definition |
+| Outbox pattern: service writes to outbox table | `writes_to` from service to outbox table/model |
+| Dead letter queue handler processes failed events | `subscribes` from DLQ handler to original topic |
+| Saga orchestrator coordinates multiple services | `depends_on` from orchestrator to each participant |
+| WebSocket/SSE connection handler | `publishes` from event source to connection manager |
+
+### Data & Schema Patterns
+
+| Pattern | Edge to create |
+|---|---|
+| SQL migration references table name | `migrates` from migration to table definition |
+| GraphQL resolver imports from code | `defines_schema` from schema to resolver |
+| Protobuf definition → generated code | `defines_schema` from proto file to generated stub |
+| ORM model (Prisma/Drizzle/TypeORM) consumed by service | `reads_from` or `writes_to` from service to model |
+| CQRS: command handler → write model | `writes_to` from handler to write model |
+| CQRS: query handler → read model/projection | `reads_from` from handler to read model |
+| Redis cache-aside pattern in service | `reads_from` + `writes_to` from service to cache file |
+| Elasticsearch indexing from primary DB | `transforms` from indexer to source data model |
+
+### Infrastructure & DevOps Patterns
+
+| Pattern | Edge to create |
+|---|---|
 | Dockerfile COPY from code directory | `deploys` from Dockerfile to code entry point |
 | docker-compose references Dockerfile | `depends_on` from compose to Dockerfile |
 | CI config runs test commands | `triggers` from CI config to test files |
-| SQL migration references table name | `migrates` from migration to table definition |
-| GraphQL resolver imports from code | `defines_schema` from schema to resolver |
+| Terraform module references another module | `depends_on` from consumer module to source module |
+| K8s Service routes to Deployment pods | `serves` from Service to Deployment |
+| K8s Ingress routes to Service | `routes` from Ingress to Service |
+| Helm chart values reference config file | `configures` from values file to application config |
+| Terraform output consumed by another stack | `depends_on` from consumer stack to producer output |
+| GitHub Actions workflow triggers on another workflow | `triggers` from downstream workflow to upstream |
+| Dependabot/Renovate config targets package.json | `configures` from bot config to package manifest |
+
+### Testing Patterns
+
+| Pattern | Edge to create |
+|---|---|
+| Unit test imports production module | `tested_by` from production file to test file |
+| E2E test (Playwright/Cypress) tests a route | `tested_by` from route handler to E2E spec |
+| Integration test spans multiple services | `tested_by` from each service to integration test |
+| Test fixture/factory used by multiple test files | `depends_on` from test file to fixture file |
+| Mock/stub definition for external service | `related` from mock to real service interface |
 
 ## Critical Constraints
 

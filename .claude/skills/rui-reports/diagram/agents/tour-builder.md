@@ -304,6 +304,91 @@ If a step involves notable language-specific or format-specific patterns, includ
 - **Makefile:** targets define build steps with dependency tracking. Phony targets for non-file actions. Variables and pattern rules reduce repetition.
 - **Kubernetes:** Deployments manage pod replicas with rolling updates. Services expose pods via stable DNS names. ConfigMaps/Secrets separate config from images.
 
+## Pedagogical Patterns
+
+Choose the appropriate tour pattern based on the project's architecture type. The BFS results and layer structure should guide this choice.
+
+### Pattern A: Entry-Point-First (Default)
+Best for: most projects with a clear entry point and layered structure.
+
+```
+Step 1: Overview (README)     — What problem does this solve?
+Step 2: Entry point           — How does the app start?
+Step 3-4: Core types/config   — What are the foundational building blocks?
+Step 5-7: Feature modules     — What does the app actually do?
+Step 8-10: Infrastructure     — How is it deployed and run?
+Step 11+: Cross-cutting       — Tests, docs, utils
+```
+
+### Pattern B: Data-Flow
+Best for: data pipelines, ETL systems, event-driven architectures.
+
+```
+Step 1: Data sources          — Where does data enter the system?
+Step 2: Schema/Contracts      — What shape does the data take?
+Step 3-4: Transform stages    — How is data processed at each stage?
+Step 5-6: Storage/Sinks       — Where does processed data land?
+Step 7-8: Orchestration       — What triggers and schedules the pipeline?
+Step 9+: Monitoring           — How do we know it's working?
+```
+
+### Pattern C: Layered (Bottom-Up)
+Best for: n-tier architectures, libraries, SDKs, frameworks.
+
+```
+Step 1: Foundation layer      — Types, constants, utilities
+Step 2-3: Domain layer        — Models, entities, business logic
+Step 4-5: Interface layer     — APIs, controllers, route handlers
+Step 6: Integration layer     — External services, adapters
+Step 7-8: Application layer   — Composition root, DI wiring
+```
+
+### Pattern D: Concept-First
+Best for: domain-driven designs, complex business domains, novel architectures.
+
+```
+Step 1: Domain concepts       — What are the key business concepts?
+Step 2-3: Domain boundaries   — How are concerns separated?
+Step 4-5: Within each domain  — How does each bounded context work internally?
+Step 6: Cross-domain flows    — How do domains interact?
+Step 7+: Supporting infra     — Deployment, monitoring, testing
+```
+
+### Domain-Specific Tour Structures
+
+**Microservices project:**
+1. Service map overview → 2. API Gateway routing → 3-5. One step per service (most important first) → 6. Shared libraries/types → 7. Inter-service communication (message bus) → 8. Database per service → 9. Deployment (Docker/Compose/K8s) → 10. Observability
+
+**Monolith / Modular monolith:**
+1. README + entry point → 2. Core domain models → 3. Service/business layer → 4. API/controller layer → 5. Middleware/auth → 6. Data access/persistence → 7. Background jobs/tasks → 8. Configuration → 9. Tests → 10. Deployment
+
+**Data pipeline:**
+1. Input sources/connectors → 2. Schema definitions → 3. Ingestion/validation stage → 4. Transformation logic → 5. Aggregation/enrichment → 6. Output sinks → 7. Orchestration/DAG → 8. Error handling + dead letter → 9. Monitoring + alerting
+
+**Library / SDK:**
+1. README + quick start → 2. Public API surface → 3. Core types/interfaces → 4. Primary feature (most used) → 5-6. Secondary features → 7. Configuration/options → 8. Error handling → 9. Testing utilities → 10. Build/publish
+
+**CLI tool:**
+1. README + install → 2. Entry point (main/bin) → 3. Command structure (subcommands) → 4-6. Key commands (one per step) → 7. Configuration files → 8. Output formatting → 9. Shell completion → 10. CI/release
+
+### Tour Quality Checklist
+
+Before writing the final JSON, verify:
+
+- [ ] First step is always README.md (if available and non-trivial) or the top entry point
+- [ ] Steps follow a coherent narrative arc (not random file listing)
+- [ ] Each step references only real node IDs from the input data
+- [ ] Step 2 builds on Step 1; Step 3 builds on Steps 1-2; etc. — explicit connections in descriptions
+- [ ] Both code and non-code files are represented (not all code or all docs)
+- [ ] At least one infrastructure step (Dockerfile, CI/CD, deployment) if such files exist
+- [ ] At least one data/schema step if the project has database or schema files
+- [ ] Total steps between 5-15 (inclusive); prefer 8-12 for most projects
+- [ ] Descriptions are 2-4 sentences, pedagogical, no jargon unexplained
+- [ ] Every step has at least 1 nodeId (no empty steps)
+- [ ] No single step has > 10 nodeIds (overwhelming — split into sub-steps)
+- [ ] languageLesson only included when genuinely educational (not for every step)
+- [ ] Tour covers all major layers from the architecture analysis (no layer left unexplored)
+
 ## Output Format
 
 Produce a single, valid JSON array.

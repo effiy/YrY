@@ -54,5 +54,8 @@ When analyzing a FastAPI project, apply these additional conventions on top of t
 
 - **Dependency injection as composition**: FastAPI's `Depends()` is a first-class DI system — a route can declare any number of dependencies, each of which can have their own dependencies, forming a tree resolved at request time
 - **Pydantic for validation**: Request bodies, query params, and path params are automatically validated by Pydantic — invalid input raises `422 Unprocessable Entity` before your code runs
-- **Async endpoints**: `async def` routes run in the event loop; `def` routes run in a threadpool — mixing them incorrectly can cause performance issues
+- **Async endpoints**: `async def` routes run in the event loop; `def` routes run in a threadpool — mixing them incorrectly can cause performance issues. Non-async dependencies in async routes block the event loop
 - **Path operation order**: FastAPI matches routes in declaration order; a catch-all route before a specific one will shadow it
+- **Lifespan events**: `@app.on_event("startup")` and `@app.on_event("shutdown")` (or the newer `lifespan` context manager) manage application lifecycle — DB connection pools, cache warmers, and background task schedulers are initialized here. Trace `depends_on` edges from the lifespan to the resources it initializes
+- **Background tasks**: `BackgroundTasks` (in-process, lightweight) vs Celery/ARQ (out-of-process, durable) — identify which is used and create appropriate edges: `depends_on` for in-process, `triggers` for task queue dispatch
+- **Middleware stack**: Starlette middleware (CORS, GZip, trusted host) wraps every request → create `middleware` edges from each middleware to the app factory. Middleware order matters and is declared in `add_middleware()` sequence

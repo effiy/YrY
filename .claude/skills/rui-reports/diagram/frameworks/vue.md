@@ -57,3 +57,9 @@ Assign nodes to these layers when detected:
 - **Single-file components (.vue)**: Each `.vue` file encapsulates template, script, and style in a single file — the `<script setup>` syntax is the recommended concise form
 - **Reactive refs and computed properties**: `ref()` and `reactive()` create reactive state; `computed()` derives values that auto-update — understanding reactivity is key to tracing data flow
 - **Provide/inject for deep dependency passing**: `provide()` and `inject()` pass values down the component tree without prop drilling — creates implicit dependencies that should be captured as edges
+- **Composables as the primary logic layer**: `useCounter()`, `useAuth()`, `useFetch()` encapsulate stateful logic → `depends_on` edges from components to each composable they call. Composables replace mixins as the recommended composition mechanism
+- **Pinia store modularity**: `defineStore('users', () => { ... })` (setup stores) vs options stores → each store is independently testable. Store-to-store imports create `depends_on` edges between state modules
+- **Suspense for async components**: `<Suspense>` wraps async `defineAsyncComponent()` with fallback slots → creates architectural boundaries between loading states and resolved content
+- **Teleport for DOM portal rendering**: `<Teleport to="body">` renders content outside the component hierarchy → creates a visual dependency separate from the component tree dependency
+- **Dynamic components**: `<component :is="currentTab">` switches between components at runtime → creates conditional `contains` edges that depend on application state
+- **Vue Router navigation guards**: `router.beforeEach((to, from) => { ... })` → intercepts every navigation; `beforeEnter` on individual routes → scoped guards. Guards that check auth state create `middleware` edges from the router to the auth module

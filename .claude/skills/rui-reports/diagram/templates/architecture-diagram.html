@@ -48,16 +48,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Production architecture diagram for a cloud-native microservices platform on AWS. Covers CDN, WAF, API Gateway, Go microservices, PostgreSQL RDS, Redis, Kafka, CI/CD pipeline, observability stack, security posture, and scaling policies.">
   <title>Microservices Platform Architecture Diagram</title>
   <style>
+    /* ═══════════════════════════════════════════════════════════════════
+       CSS Custom Properties — override these to re-theme the diagram
+       ═══════════════════════════════════════════════════════════════════ */
+    :root {
+      --bg-primary: #020617;
+      --bg-card: rgba(15, 23, 42, 0.5);
+      --bg-card-hover: rgba(15, 23, 42, 0.7);
+      --bg-panel: rgba(15, 23, 42, 0.6);
+      --bg-tile: rgba(15, 23, 42, 0.4);
+      --border-default: #1e293b;
+      --border-faint: rgba(30, 41, 59, 0.5);
+      --border-hover: #334155;
+      --text-primary: #ffffff;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --text-dim: #475569;
+      --color-frontend: #22d3ee;
+      --color-backend: #34d399;
+      --color-database: #a78bfa;
+      --color-cloud: #fbbf24;
+      --color-security: #fb7185;
+      --color-message: #fb923c;
+      --color-external: #94a3b8;
+      --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
-      background: #020617;
+      font-family: var(--font-mono);
+      background: var(--bg-primary);
       min-height: 100vh;
       padding: 2rem;
-      color: white;
+      color: var(--text-primary);
+      scroll-behavior: smooth;
     }
 
     .container { max-width: 1400px; margin: 0 auto; }
@@ -68,21 +96,125 @@
 
     .pulse-dot {
       width: 12px; height: 12px;
-      background: #22d3ee; border-radius: 50%;
+      background: var(--color-frontend); border-radius: 50%;
       animation: pulse 2s infinite;
     }
     @keyframes pulse {
-      0%, 100% { opacity: 1; box-shadow: 0 0 8px #22d3ee; }
-      50%      { opacity: 0.4; box-shadow: 0 0 2px #22d3ee; }
+      0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--color-frontend); }
+      50%      { opacity: 0.4; box-shadow: 0 0 2px var(--color-frontend); }
     }
 
     h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.025em; }
     .subtitle { color: #94a3b8; font-size: 0.875rem; margin-left: 1.75rem; }
 
+    /* ── Metrics Strip ── */
+    .metrics-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.75rem; margin-bottom: 1.5rem;
+    }
+    .metric-tile {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 0.625rem; border: 1px solid var(--border-default);
+      padding: 0.875rem 1rem;
+      display: flex; flex-direction: column; gap: 0.375rem;
+    }
+    .metric-label {
+      font-size: 0.65rem; color: #64748b;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .metric-value {
+      font-size: 1.25rem; font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .metric-sub {
+      font-size: 0.65rem; color: #475569;
+    }
+    .metric-value.green  { color: var(--color-backend); }
+    .metric-value.cyan   { color: var(--color-frontend); }
+    .metric-value.amber  { color: var(--color-cloud); }
+    .metric-value.violet { color: var(--color-database); }
+    .metric-value.rose   { color: var(--color-security); }
+
+    .status-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 0.25rem; }
+    .status-dot.green  { background: var(--color-backend); box-shadow: 0 0 4px var(--color-backend); }
+    .status-dot.amber  { background: var(--color-cloud); box-shadow: 0 0 4px var(--color-cloud); }
+
+    /* ── Environment Pipeline ── */
+    .pipeline-strip {
+      display: flex; align-items: center; gap: 0; margin-top: 2rem;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 0.75rem; border: 1px solid var(--border-default);
+      padding: 1.25rem 1.5rem; overflow-x: auto;
+    }
+    .pipeline-stage {
+      display: flex; flex-direction: column; align-items: center; gap: 0.375rem;
+      min-width: 90px;
+    }
+    .pipeline-badge {
+      padding: 0.375rem 0.875rem; border-radius: 0.375rem;
+      font-size: 0.75rem; font-weight: 600; white-space: nowrap;
+    }
+    .pipeline-badge.dev  { background: rgba(34,211,238,0.15); color: var(--color-frontend); border: 1px solid rgba(34,211,238,0.3); }
+    .pipeline-badge.stg  { background: rgba(251,191,36,0.15); color: var(--color-cloud); border: 1px solid rgba(251,191,36,0.3); }
+    .pipeline-badge.prod { background: rgba(52,211,153,0.15); color: var(--color-backend); border: 1px solid rgba(52,211,153,0.3); }
+    .pipeline-arrow {
+      color: #475569; font-size: 1rem; margin: 0 0.25rem;
+      min-width: 30px; text-align: center;
+    }
+    .pipeline-info {
+      font-size: 0.6rem; color: #475569; text-align: center;
+      max-width: 90px; line-height: 1.3;
+    }
+
+    /* ── Reusable Panel Utilities ── */
+    .panel {
+      margin-top: 1.5rem;
+      background: var(--bg-card);
+      border-radius: 0.75rem; border: 1px solid var(--border-default);
+      padding: 1.25rem 1.5rem;
+    }
+    .panel-header {
+      font-size: 0.875rem; font-weight: 600; margin-bottom: 0.75rem;
+    }
+    .panel-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 0.5rem; font-size: 0.68rem;
+    }
+    .panel-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 0.75rem; font-size: 0.7rem;
+    }
+    .panel-item {
+      background: var(--bg-tile);
+      border-radius: 0.5rem; border: 1px solid var(--border-default);
+      padding: 0.75rem;
+    }
+    .panel-item-title {
+      font-weight: 600; margin-bottom: 0.375rem;
+    }
+    .panel-item-body {
+      color: var(--text-secondary); line-height: 1.6;
+    }
+    .panel-table {
+      width: 100%; border-collapse: collapse; font-size: 0.7rem; color: var(--text-secondary);
+    }
+    .panel-table th {
+      color: var(--text-muted); text-align: left;
+      border-bottom: 1px solid var(--border-default);
+      padding: 0.375rem 0.5rem;
+    }
+    .panel-table td {
+      padding: 0.375rem 0.5rem;
+      border-bottom: 1px solid var(--border-faint);
+    }
+
     /* ── Diagram Container ── */
     .diagram-container {
-      background: rgba(15, 23, 42, 0.5);
-      border-radius: 1rem; border: 1px solid #1e293b;
+      background: var(--bg-card);
+      border-radius: 1rem; border: 1px solid var(--border-default);
       padding: 1.5rem; overflow-x: auto;
     }
 
@@ -96,24 +228,24 @@
     }
 
     .card {
-      background: rgba(15, 23, 42, 0.5);
-      border-radius: 0.75rem; border: 1px solid #1e293b;
+      background: var(--bg-card);
+      border-radius: 0.75rem; border: 1px solid var(--border-default);
       padding: 1.5rem;
       transition: border-color 0.3s, background 0.3s;
     }
-    .card:hover { border-color: #334155; background: rgba(15, 23, 42, 0.7); }
+    .card:hover { border-color: var(--border-hover); background: var(--bg-card-hover); }
 
     .card-header { display: flex; align-items: center; gap: 0.625rem; margin-bottom: 0.875rem; }
 
     .card-dot {
       width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
     }
-    .card-dot.cyan    { background: #22d3ee; box-shadow: 0 0 6px rgba(34,211,238,0.4); }
-    .card-dot.emerald { background: #34d399; box-shadow: 0 0 6px rgba(52,211,153,0.4); }
-    .card-dot.violet  { background: #a78bfa; box-shadow: 0 0 6px rgba(167,139,250,0.4); }
-    .card-dot.amber   { background: #fbbf24; box-shadow: 0 0 6px rgba(251,191,36,0.4); }
-    .card-dot.rose    { background: #fb7185; box-shadow: 0 0 6px rgba(251,113,133,0.4); }
-    .card-dot.orange  { background: #fb923c; box-shadow: 0 0 6px rgba(251,146,60,0.4); }
+    .card-dot.cyan    { background: var(--color-frontend); box-shadow: 0 0 6px var(--color-frontend); }
+    .card-dot.emerald { background: var(--color-backend); box-shadow: 0 0 6px var(--color-backend); }
+    .card-dot.violet  { background: var(--color-database); box-shadow: 0 0 6px var(--color-database); }
+    .card-dot.amber   { background: var(--color-cloud); box-shadow: 0 0 6px var(--color-cloud); }
+    .card-dot.rose    { background: var(--color-security); box-shadow: 0 0 6px var(--color-security); }
+    .card-dot.orange  { background: var(--color-message); box-shadow: 0 0 6px var(--color-message); }
 
     .card h3 { font-size: 0.875rem; font-weight: 600; }
 
@@ -133,23 +265,62 @@
       padding: 0.25rem 0.5rem; border-radius: 0.375rem;
       transition: color 0.2s, background 0.2s;
     }
-    .toolbar-toggle:hover { color: #94a3b8; background: rgba(30, 41, 59, 0.5); }
+    .toolbar-toggle:hover { color: var(--text-secondary); background: var(--bg-card); }
     .toolbar-actions { display: none; gap: 0.5rem; }
     .toolbar.expanded .toolbar-actions { display: flex; }
     .toolbar-actions button {
-      background: rgba(30, 41, 59, 0.8); border: 1px solid #334155;
-      color: #94a3b8; padding: 0.375rem 0.75rem; border-radius: 0.375rem;
+      background: rgba(30, 41, 59, 0.8); border: 1px solid var(--border-hover);
+      color: var(--text-secondary); padding: 0.375rem 0.75rem; border-radius: 0.375rem;
       font-family: inherit; font-size: 0.75rem; cursor: pointer;
       transition: all 0.2s; white-space: nowrap;
     }
     .toolbar-actions button:hover {
-      background: rgba(51, 65, 85, 0.8); color: white; border-color: #475569;
+      background: rgba(51, 65, 85, 0.8); color: var(--text-primary); border-color: var(--text-dim);
+    }
+
+    /* ── Scroll to Top ── */
+    .scroll-top {
+      position: fixed; bottom: 5rem; right: 1.5rem;
+      background: rgba(30, 41, 59, 0.9); border: 1px solid var(--text-dim);
+      color: #94a3b8; width: 2.5rem; height: 2.5rem; border-radius: 50%;
+      cursor: pointer; font-size: 1rem; display: none;
+      align-items: center; justify-content: center; z-index: 99;
+      transition: all 0.3s; backdrop-filter: blur(4px);
+    }
+    .scroll-top.visible { display: flex; }
+    .scroll-top:hover { background: rgba(51, 65, 85, 0.9); color: #fff; border-color: #64748b; }
+
+    /* ── TOC Navigation ── */
+    nav a { transition: all 0.2s; }
+    nav a:hover { color: var(--text-primary) !important; background: var(--bg-card-hover) !important; border-color: var(--border-hover) !important; }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      body { padding: 1rem; }
+      h1 { font-size: 1.1rem; }
+      .subtitle { font-size: 0.7rem; margin-left: 0; }
+      .metrics-strip { grid-template-columns: repeat(2, 1fr); }
+      .cards { grid-template-columns: 1fr; }
+      .pipeline-strip { flex-wrap: wrap; gap: 0.5rem; }
+      .pipeline-arrow { display: none; }
+      .diagram-container { padding: 0.5rem; }
+      table { font-size: 0.6rem; }
     }
 
     /* ── Print ── */
     @media print {
-      body { background: #020617; padding: 1rem; }
-      .toolbar { display: none !important; }
+      @page {
+        size: A3 landscape; margin: 12mm;
+        @bottom-right { content: "Page " counter(page) " of " counter(pages); font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-dim); }
+        @bottom-left { content: "Microservices Platform — Architecture Diagram v2.3.0"; font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-dim); }
+      }
+      body { background: #020617; padding: 0.5rem; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .toolbar, .focus-indicator, .scroll-top { display: none !important; }
+      .diagram-container { break-inside: avoid; border: none; padding: 0.5rem; }
+      .metrics-strip, .cards, .pipeline-strip, .panel, table, .diagram-container svg { break-inside: avoid; }
+      h1 { font-size: 1.25rem; }
+      .subtitle { font-size: 0.75rem; }
+      svg { min-width: auto; max-width: 100%; }
     }
 
     /* ── SVG Load Animation ── */
@@ -187,13 +358,13 @@
     }
     .focus-indicator.visible { display: flex; }
     .focus-indicator button {
-      background: rgba(51, 65, 85, 0.8); border: 1px solid #475569;
+      background: rgba(51, 65, 85, 0.8); border: 1px solid var(--text-dim);
       color: #e2e8f0; padding: 0.25rem 0.625rem; border-radius: 0.375rem;
       font-family: inherit; font-size: 0.75rem; cursor: pointer;
     }
     .focus-indicator button:hover { background: rgba(71, 85, 105, 0.8); }
     .focus-indicator kbd {
-      background: rgba(15, 23, 42, 0.8); border: 1px solid #475569;
+      background: rgba(15, 23, 42, 0.8); border: 1px solid var(--text-dim);
       padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.65rem;
     }
 
@@ -206,13 +377,13 @@
     }
     .focus-indicator.visible { display: flex; }
     .focus-indicator button {
-      background: rgba(51, 65, 85, 0.8); border: 1px solid #475569;
+      background: rgba(51, 65, 85, 0.8); border: 1px solid var(--text-dim);
       color: #e2e8f0; padding: 0.25rem 0.625rem; border-radius: 0.375rem;
       font-family: inherit; font-size: 0.75rem; cursor: pointer;
     }
     .focus-indicator button:hover { background: rgba(71, 85, 105, 0.8); }
     .focus-indicator kbd {
-      background: rgba(15, 23, 42, 0.8); border: 1px solid #475569;
+      background: rgba(15, 23, 42, 0.8); border: 1px solid var(--text-dim);
       padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.65rem;
     }
   </style>
@@ -242,10 +413,79 @@
     </div>
 
     <!-- ═══════════════════════════════════════════════════════════════════
+         EXECUTIVE SUMMARY
+         ═══════════════════════════════════════════════════════════════════ -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem; font-size: 0.72rem; color: #94a3b8; line-height: 1.6;">
+      <div style="background: var(--bg-card); border-radius: 0.625rem; border: 1px solid var(--border-default); padding: 0.875rem 1rem;">
+        <div style="color: #22d3ee; font-weight: 600; margin-bottom: 0.375rem;">▸ System Scope</div>
+        Cloud-native microservices platform serving 500K+ daily active users across web, mobile, and API channels. Processes 12K requests/sec with p95 latency under 200ms end-to-end.
+      </div>
+      <div style="background: var(--bg-card); border-radius: 0.625rem; border: 1px solid var(--border-default); padding: 0.875rem 1rem;">
+        <div style="color: #34d399; font-weight: 600; margin-bottom: 0.375rem;">▸ Architecture Style</div>
+        Hybrid cloud-native: CDN edge → API Gateway → domain microservices → polyglot persistence. Event-driven communication via Kafka for async workflows. CI/CD with canary deployments.
+      </div>
+      <div style="background: var(--bg-card); border-radius: 0.625rem; border: 1px solid var(--border-default); padding: 0.875rem 1rem;">
+        <div style="color: #a78bfa; font-weight: 600; margin-bottom: 0.375rem;">▸ Key Decisions</div>
+        Go chosen for service performance (sub-ms GC pauses). PostgreSQL over NoSQL for ACID compliance on payment data. Kafka over SQS for ordered event replay and long-term retention.
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         TABLE OF CONTENTS
+         ═══════════════════════════════════════════════════════════════════ -->
+    <nav style="display: flex; flex-wrap: wrap; gap: 0.375rem; margin-bottom: 1.5rem; font-size: 0.65rem;" aria-label="Table of Contents">
+      <a href="#diagram" style="color: var(--text-muted); text-decoration: none; padding: 0.25rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem; border: 1px solid transparent;">📐 Diagram</a>
+      <a href="#metrics" style="color: var(--text-muted); text-decoration: none; padding: 0.25rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem; border: 1px solid transparent;">📊 Metrics</a>
+      <a href="#summary" style="color: var(--text-muted); text-decoration: none; padding: 0.25rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem; border: 1px solid transparent;">📋 Summary</a>
+      <a href="#pipeline" style="color: var(--text-muted); text-decoration: none; padding: 0.25rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem; border: 1px solid transparent;">🚀 Pipeline</a>
+      <a href="#security" style="color: var(--text-muted); text-decoration: none; padding: 0.25rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem; border: 1px solid transparent;">🔒 Security</a>
+      <a href="#trace" style="color: var(--text-muted); text-decoration: none; padding: 0.25rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem; border: 1px solid transparent;">🔍 Trace</a>
+      <a href="#scaling" style="color: var(--text-muted); text-decoration: none; padding: 0.25rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem; border: 1px solid transparent;">⚖️ Scaling</a>
+      <a href="#ownership" style="color: var(--text-muted); text-decoration: none; padding: 0.25rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem; border: 1px solid transparent;">👥 Teams</a>
+      <a href="#api" style="color: var(--text-muted); text-decoration: none; padding: 0.25rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem; border: 1px solid transparent;">📡 API</a>
+      <a href="#stack" style="color: var(--text-muted); text-decoration: none; padding: 0.25rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem; border: 1px solid transparent;">🧰 Stack</a>
+      <a href="#schema" style="color: var(--text-muted); text-decoration: none; padding: 0.25rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem; border: 1px solid transparent;">🗄️ Schema</a>
+      <a href="#roadmap" style="color: var(--text-muted); text-decoration: none; padding: 0.25rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem; border: 1px solid transparent;">🔮 Roadmap</a>
+    </nav>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SYSTEM HEALTH METRICS
+         ═══════════════════════════════════════════════════════════════════ -->
+    <div class="metrics-strip" id="metrics">
+      <div class="metric-tile">
+        <span class="metric-label"><span class="status-dot green"></span> Uptime (30d)</span>
+        <span class="metric-value green">99.97%</span>
+        <span class="metric-sub">SLA target: 99.95%</span>
+      </div>
+      <div class="metric-tile">
+        <span class="metric-label">Requests / sec</span>
+        <span class="metric-value cyan">12.4K</span>
+        <span class="metric-sub">peak: 28K • p95 ≤ 200ms</span>
+      </div>
+      <div class="metric-tile">
+        <span class="metric-label">Error Rate (24h)</span>
+        <span class="metric-value amber">0.07%</span>
+        <span class="metric-sub">threshold: 0.1% • 5xx + 4xx</span>
+      </div>
+      <div class="metric-tile">
+        <span class="metric-label">Deploy Frequency</span>
+        <span class="metric-value violet">8 / week</span>
+        <span class="metric-sub">canary rollout • mean MTTR 12m</span>
+      </div>
+      <div class="metric-tile">
+        <span class="metric-label">Active Alerts</span>
+        <span class="metric-value rose">0</span>
+        <span class="metric-sub">PagerDuty • 5min escalation</span>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
          MAIN SVG DIAGRAM
          ═══════════════════════════════════════════════════════════════════ -->
-    <div class="diagram-container">
-      <svg viewBox="0 0 1280 850">
+    <div class="diagram-container" id="diagram">
+      <svg viewBox="0 0 1280 850" role="img" aria-labelledby="diagram-title diagram-desc">
+        <title id="diagram-title">Microservices Platform Architecture — AWS us-east-1</title>
+        <desc id="diagram-desc">System architecture showing CloudFront CDN, WAF, ALB, API Gateway, three Go microservices (User, Order, Payment), PostgreSQL RDS, Redis cache, Kafka message bus, and supporting infrastructure services</desc>
 
         <!-- ── 1. Definitions ── -->
         <defs>
@@ -458,19 +698,19 @@
 
         <!-- ── CloudFront (Cloud) ── -->
         <rect x="190" y="340" width="100" height="50" rx="6"
-              fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+              fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5" data-component="cloudfront"/>
         <text x="240" y="362" fill="white" font-size="11" font-weight="600" text-anchor="middle">CloudFront</text>
         <text x="240" y="378" fill="#94a3b8" font-size="9" text-anchor="middle">CDN + Edge</text>
 
         <!-- ── WAF (Security) ── -->
         <rect x="350" y="340" width="100" height="50" rx="6"
-              fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1.5"/>
+              fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1.5" data-component="waf"/>
         <text x="400" y="362" fill="white" font-size="11" font-weight="600" text-anchor="middle">WAF</text>
         <text x="400" y="378" fill="#94a3b8" font-size="9" text-anchor="middle">Rate Limit + DDoS</text>
 
         <!-- ── ALB (Cloud) ── -->
         <rect x="510" y="340" width="100" height="50" rx="6"
-              fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+              fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5" data-component="alb"/>
         <text x="560" y="362" fill="white" font-size="11" font-weight="600" text-anchor="middle">ALB</text>
         <text x="560" y="378" fill="#94a3b8" font-size="9" text-anchor="middle">HTTPS :443 • 50K qps</text>
 
@@ -482,7 +722,7 @@
 
         <!-- ── API Gateway (Backend, large) ── -->
         <rect x="670" y="280" width="100" height="130" rx="8"
-              fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5" filter="url(#shadow-sm)"/>
+              fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5" filter="url(#shadow-sm)" data-component="api-gateway"/>
         <text x="720" y="306" fill="white" font-size="12" font-weight="600" text-anchor="middle">API Gateway</text>
         <text x="720" y="326" fill="#94a3b8" font-size="8" text-anchor="middle">• Auth middleware</text>
         <text x="720" y="342" fill="#94a3b8" font-size="8" text-anchor="middle">• Rate limiting</text>
@@ -493,37 +733,41 @@
 
         <!-- ── User Service (Backend) ── -->
         <rect x="920" y="340" width="100" height="50" rx="6"
-              fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+              fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5" data-component="user-service"/>
         <text x="970" y="362" fill="white" font-size="11" font-weight="600" text-anchor="middle">User Service</text>
         <text x="970" y="378" fill="#94a3b8" font-size="9" text-anchor="middle">Go :8080 • ×2</text>
 
         <!-- ── Order Service (Backend) ── -->
         <rect x="920" y="410" width="100" height="40" rx="6"
-              fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+              fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5" data-component="order-service"/>
         <text x="970" y="430" fill="white" font-size="11" font-weight="600" text-anchor="middle">Order Service</text>
         <text x="970" y="444" fill="#94a3b8" font-size="8" text-anchor="middle">Go :8081 • ×2</text>
 
         <!-- ── Payment Service (Backend) ── -->
         <rect x="920" y="460" width="100" height="40" rx="6"
               fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <rect x="920" y="460" width="100" height="40" rx="6"
+              fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5" data-component="payment-service"/>
         <text x="970" y="480" fill="white" font-size="11" font-weight="600" text-anchor="middle">Payment Svc</text>
         <text x="970" y="494" fill="#94a3b8" font-size="8" text-anchor="middle">Go :8082 • ×1</text>
 
         <!-- ── Redis Cache (Database) ── -->
         <rect x="800" y="540" width="80" height="50" rx="6"
-              fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+              fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5" data-component="redis"/>
         <text x="840" y="562" fill="white" font-size="11" font-weight="600" text-anchor="middle">Redis</text>
         <text x="840" y="578" fill="#94a3b8" font-size="9" text-anchor="middle">Cluster • 3 nodes</text>
 
         <!-- ── PostgreSQL (Database) ── -->
         <rect x="920" y="520" width="200" height="40" rx="8"
-              fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+              fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5" data-component="postgresql"/>
         <text x="1020" y="540" fill="white" font-size="11" font-weight="600" text-anchor="middle">PostgreSQL</text>
         <text x="1020" y="554" fill="#94a3b8" font-size="8" text-anchor="middle">RDS Multi-AZ • Read Replicas</text>
 
+        <!-- All major services annotated with data-component for CSS/JS targeting -->
+
         <!-- ── Kafka (Message Bus) ── -->
         <rect x="920" y="570" width="200" height="30" rx="4"
-              fill="rgba(251, 146, 60, 0.3)" stroke="#fb923c" stroke-width="1.5"/>
+              fill="rgba(251, 146, 60, 0.3)" stroke="#fb923c" stroke-width="1.5" data-component="kafka"/>
         <text x="1020" y="590" fill="white" font-size="11" font-weight="600" text-anchor="middle">Kafka</text>
 
         <!-- ── Notification Worker (Backend) ── -->
@@ -648,7 +892,7 @@
     <!-- ═══════════════════════════════════════════════════════════════════
          SUMMARY CARDS (exactly 3)
          ═══════════════════════════════════════════════════════════════════ -->
-    <div class="cards">
+    <div class="cards" id="summary">
       <!-- Card 1: Architecture & Scaling -->
       <div class="card">
         <div class="card-header">
@@ -695,11 +939,474 @@
     </div>
 
     <!-- ═══════════════════════════════════════════════════════════════════
+         DEPLOYMENT PIPELINE
+         ═══════════════════════════════════════════════════════════════════ -->
+    <div class="pipeline-strip" id="pipeline">
+      <div class="pipeline-stage">
+        <span class="pipeline-badge dev">Dev</span>
+        <span class="pipeline-info">Push to feature branch</span>
+      </div>
+      <span class="pipeline-arrow">→</span>
+      <div class="pipeline-stage">
+        <span class="pipeline-badge dev">CI</span>
+        <span class="pipeline-info">Lint • Test • Build image</span>
+      </div>
+      <span class="pipeline-arrow">→</span>
+      <div class="pipeline-stage">
+        <span class="pipeline-badge stg">Staging</span>
+        <span class="pipeline-info">Deploy to ECS staging<br/>Integration + E2E tests</span>
+      </div>
+      <span class="pipeline-arrow">→</span>
+      <div class="pipeline-stage">
+        <span class="pipeline-badge stg">Canary 10%</span>
+        <span class="pipeline-info">Traffic shift • 10min bake</span>
+      </div>
+      <span class="pipeline-arrow">→</span>
+      <div class="pipeline-stage">
+        <span class="pipeline-badge stg">Canary 50%</span>
+        <span class="pipeline-info">Monitor p95 + errors</span>
+      </div>
+      <span class="pipeline-arrow">→</span>
+      <div class="pipeline-stage">
+        <span class="pipeline-badge prod">Production</span>
+        <span class="pipeline-info">100% traffic<br/>Auto-rollback on alarm</span>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SECURITY POSTURE
+         ═══════════════════════════════════════════════════════════════════ -->
+    <div class="cards" style="margin-top: 1.5rem;" id="security">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot rose"></div>
+          <h3>Encryption &amp; Secrets</h3>
+        </div>
+        <ul>
+          <li>In-transit: TLS 1.3 enforced for all external and inter-service communication; mTLS within service mesh</li>
+          <li>At-rest: AES-256-GCM for RDS, S3 (SSE-KMS with customer-managed keys), EBS volumes</li>
+          <li>Secrets managed via AWS Secrets Manager with automatic 30-day rotation; no hardcoded credentials</li>
+          <li>KMS key policy enforces least-privilege; CloudTrail audits all key usage</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot amber"></div>
+          <h3>Network &amp; Access</h3>
+        </div>
+        <ul>
+          <li>VPC isolation: Services (10.0.0.0/16), Data (10.0.1.0/24) — no public subnets for data tier</li>
+          <li>Security groups follow least-privilege: only required ports open between specific CIDR ranges</li>
+          <li>WAF rules: OWASP Top 10 mitigation, IP reputation, geo-blocking (allowlist: US, EU, APAC)</li>
+          <li>IAM: role-based access with temporary credentials (STS); no long-lived IAM user keys</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot orange"></div>
+          <h3>Compliance &amp; Audit</h3>
+        </div>
+        <ul>
+          <li>Framework alignment: SOC 2 Type II, GDPR (EU data residency in eu-west-1), PCI-DSS (payment tier)</li>
+          <li>Audit logging: CloudTrail (API calls), VPC Flow Logs (network), RDS audit logs (DB queries)</li>
+          <li>Vulnerability scanning: ECR image scanning on push + weekly Trivy scans with Slack notifications</li>
+          <li>Incident response: PagerDuty on-call rotation, 5-min ack SLA, automated rollback via CloudWatch alarm</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         TYPICAL REQUEST TRACE
+         ═══════════════════════════════════════════════════════════════════ -->
+    <div class="panel" id="trace">
+      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.875rem;">
+        <span class="panel-header" style="margin-bottom:0;display:inline;">🔍 Typical Request Trace — Checkout Flow</span>
+        <span style="font-size: 0.65rem; color: var(--text-dim);">end-to-end p95 ≤ 380ms</span>
+      </div>
+      <div style="display: flex; align-items: flex-start; gap: 0; overflow-x: auto; font-size: 0.7rem;">
+        <div style="min-width: 85px; text-align: center;">
+          <div style="background: rgba(34,211,238,0.12); color: #22d3ee; border-radius: 0.375rem; padding: 0.375rem 0.5rem; font-weight: 600;">1. DNS/TLS</div>
+          <div style="color: #64748b; margin-top: 0.25rem;">CloudFront</div>
+          <div style="color: #475569; font-size: 0.6rem;">~80ms</div>
+        </div>
+        <div style="color: var(--text-dim); padding: 0.375rem 0.25rem;">→</div>
+        <div style="min-width: 85px; text-align: center;">
+          <div style="background: rgba(34,211,238,0.12); color: var(--color-frontend); border-radius: 0.375rem; padding: 0.375rem 0.5rem; font-weight: 600;">2. WAF</div>
+          <div style="color: var(--text-muted); margin-top: 0.25rem;">Rule check</div>
+          <div style="color: var(--text-dim); font-size: 0.6rem;">~12ms</div>
+        </div>
+        <div style="color: var(--text-dim); padding: 0.375rem 0.25rem;">→</div>
+        <div style="min-width: 85px; text-align: center;">
+          <div style="background: rgba(34,211,238,0.12); color: var(--color-frontend); border-radius: 0.375rem; padding: 0.375rem 0.5rem; font-weight: 600;">3. ALB</div>
+          <div style="color: var(--text-muted); margin-top: 0.25rem;">Route :443</div>
+          <div style="color: var(--text-dim); font-size: 0.6rem;">~8ms</div>
+        </div>
+        <div style="color: var(--text-dim); padding: 0.375rem 0.25rem;">→</div>
+        <div style="min-width: 100px; text-align: center;">
+          <div style="background: rgba(52,211,153,0.12); color: #34d399; border-radius: 0.375rem; padding: 0.375rem 0.5rem; font-weight: 600;">4. Gateway</div>
+          <div style="color: #64748b; margin-top: 0.25rem;">Auth + Validate</div>
+          <div style="color: #475569; font-size: 0.6rem;">~45ms</div>
+        </div>
+        <div style="color: #475569; padding: 0.375rem 0.25rem;">→</div>
+        <div style="min-width: 95px; text-align: center;">
+          <div style="background: rgba(52,211,153,0.12); color: #34d399; border-radius: 0.375rem; padding: 0.375rem 0.5rem; font-weight: 600;">5. Order Svc</div>
+          <div style="color: #64748b; margin-top: 0.25rem;">Business logic</div>
+          <div style="color: #475569; font-size: 0.6rem;">~65ms</div>
+        </div>
+        <div style="color: #475569; padding: 0.375rem 0.25rem;">→</div>
+        <div style="min-width: 95px; text-align: center;">
+          <div style="background: rgba(167,139,250,0.12); color: #a78bfa; border-radius: 0.375rem; padding: 0.375rem 0.5rem; font-weight: 600;">6. DB Write</div>
+          <div style="color: #64748b; margin-top: 0.25rem;">INSERT order</div>
+          <div style="color: #475569; font-size: 0.6rem;">~18ms</div>
+        </div>
+        <div style="color: #475569; padding: 0.375rem 0.25rem;">→</div>
+        <div style="min-width: 90px; text-align: center;">
+          <div style="background: rgba(251,146,60,0.12); color: #fb923c; border-radius: 0.375rem; padding: 0.375rem 0.5rem; font-weight: 600;">7. Event</div>
+          <div style="color: #64748b; margin-top: 0.25rem;">Kafka pub</div>
+          <div style="color: #475569; font-size: 0.6rem;">~35ms</div>
+        </div>
+        <div style="color: #475569; padding: 0.375rem 0.25rem;">→</div>
+        <div style="min-width: 85px; text-align: center;">
+          <div style="background: rgba(52,211,153,0.12); color: #34d399; border-radius: 0.375rem; padding: 0.375rem 0.5rem; font-weight: 600;">8. 200 OK</div>
+          <div style="color: #64748b; margin-top: 0.25rem;">JSON response</div>
+          <div style="color: #475569; font-size: 0.6rem;">~17ms</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SCALING & RESILIENCE
+         ═══════════════════════════════════════════════════════════════════ -->
+    <div class="panel" id="scaling">
+      <div class="panel-header">⚖️ Scaling &amp; Resilience Policies</div>
+      <div class="panel-grid-4">
+        <div class="panel-item">
+          <div style="color: #22d3ee; font-weight: 600; margin-bottom: 0.375rem;">API Gateway Auto-Scaling</div>
+          <div style="color: #94a3b8; line-height: 1.6;">
+            <span style="color: #64748b;">Metric:</span> CPU ≥ 70% OR RequestCount ≥ 5K/min<br/>
+            <span style="color: #64748b;">Policy:</span> +2 instances, 5min cooldown<br/>
+            <span style="color: #64748b;">Range:</span> Min 2 • Desired 3 • Max 8<br/>
+            <span style="color: #64748b;">Scale-in:</span> CPU ≤ 30% for 10min → −1
+          </div>
+        </div>
+        <div style="background: var(--bg-panel); border-radius: 0.5rem; border: 1px solid var(--border-default); padding: 0.75rem;">
+          <div style="color: #34d399; font-weight: 600; margin-bottom: 0.375rem;">Service Tier Scaling</div>
+          <div style="color: #94a3b8; line-height: 1.6;">
+            <span style="color: #64748b;">User/Order:</span> CPU ≥ 60% → +1 (max 4)<br/>
+            <span style="color: #64748b;">Payment:</span> Fixed ×1 (compliance)<br/>
+            <span style="color: #64748b;">Notification:</span> Queue depth ≥ 1K → +1<br/>
+            <span style="color: #64748b;">Warm-up:</span> 30s grace period per instance
+          </div>
+        </div>
+        <div style="background: var(--bg-panel); border-radius: 0.5rem; border: 1px solid var(--border-default); padding: 0.75rem;">
+          <div style="color: #a78bfa; font-weight: 600; margin-bottom: 0.375rem;">Database Resilience</div>
+          <div style="color: #94a3b8; line-height: 1.6;">
+            <span style="color: #64748b;">RDS:</span> Multi-AZ • Auto-failover ≤ 60s<br/>
+            <span style="color: #64748b;">Backup:</span> Daily snapshots • 35-day PITR<br/>
+            <span style="color: #64748b;">Redis:</span> Cluster mode • Auto-failover<br/>
+            <span style="color: #64748b;">Kafka:</span> 3 brokers • RF=3 • min.insync=2
+          </div>
+        </div>
+        <div style="background: var(--bg-panel); border-radius: 0.5rem; border: 1px solid var(--border-default); padding: 0.75rem;">
+          <div style="color: #fb7185; font-weight: 600; margin-bottom: 0.375rem;">Disaster Recovery</div>
+          <div style="color: #94a3b8; line-height: 1.6;">
+            <span style="color: #64748b;">RPO:</span> 5 minutes (cross-region replication)<br/>
+            <span style="color: #64748b;">RTO:</span> 30 minutes (automated failover)<br/>
+            <span style="color: #64748b;">DR Region:</span> us-west-2 (warm standby)<br/>
+            <span style="color: #64748b;">Test:</span> Quarterly failover drill
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SERVICE OWNERSHIP
+         ═══════════════════════════════════════════════════════════════════ -->
+    <div class="panel" style="overflow-x: auto;">
+      <div class="panel-header" id="ownership">👥 Service Ownership &amp; On-Call</div>
+      <table class="panel-table">
+        <thead>
+          <tr>
+            <th style="padding: 0.375rem 0.5rem;">Service</th>
+            <th style="padding: 0.375rem 0.5rem;">Team</th>
+            <th style="padding: 0.375rem 0.5rem;">Tier</th>
+            <th style="padding: 0.375rem 0.5rem;">SLA</th>
+            <th style="padding: 0.375rem 0.5rem;">On-Call</th>
+            <th style="padding: 0.375rem 0.5rem;">Runbook</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid var(--border-faint);">
+            <td style="padding: 0.375rem 0.5rem; color: #22d3ee;">API Gateway</td>
+            <td style="padding: 0.375rem 0.5rem;">Platform</td>
+            <td style="padding: 0.375rem 0.5rem;"><span style="color: #34d399;">Tier 0</span></td>
+            <td style="padding: 0.375rem 0.5rem;">99.95%</td>
+            <td style="padding: 0.375rem 0.5rem;">Primary: Alice • Secondary: Bob</td>
+            <td style="padding: 0.375rem 0.5rem; color: #475569;">/ops/gateway</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border-faint);">
+            <td style="padding: 0.375rem 0.5rem; color: #34d399;">User Service</td>
+            <td style="padding: 0.375rem 0.5rem;">Identity</td>
+            <td style="padding: 0.375rem 0.5rem;"><span style="color: #34d399;">Tier 1</span></td>
+            <td style="padding: 0.375rem 0.5rem;">99.9%</td>
+            <td style="padding: 0.375rem 0.5rem;">Primary: Carol • Secondary: Dave</td>
+            <td style="padding: 0.375rem 0.5rem; color: #475569;">/ops/user-svc</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border-faint);">
+            <td style="padding: 0.375rem 0.5rem; color: #34d399;">Order Service</td>
+            <td style="padding: 0.375rem 0.5rem;">Commerce</td>
+            <td style="padding: 0.375rem 0.5rem;"><span style="color: #34d399;">Tier 1</span></td>
+            <td style="padding: 0.375rem 0.5rem;">99.9%</td>
+            <td style="padding: 0.375rem 0.5rem;">Primary: Eve • Secondary: Frank</td>
+            <td style="padding: 0.375rem 0.5rem; color: #475569;">/ops/order-svc</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border-faint);">
+            <td style="padding: 0.375rem 0.5rem; color: #34d399;">Payment Svc</td>
+            <td style="padding: 0.375rem 0.5rem;">Commerce</td>
+            <td style="padding: 0.375rem 0.5rem;"><span style="color: #fbbf24;">Tier 1</span></td>
+            <td style="padding: 0.375rem 0.5rem;">99.95%</td>
+            <td style="padding: 0.375rem 0.5rem;">Primary: Eve • Escalation: Legal</td>
+            <td style="padding: 0.375rem 0.5rem; color: #475569;">/ops/payment-svc</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border-faint);">
+            <td style="padding: 0.375rem 0.5rem; color: #fb7185;">Auth Service</td>
+            <td style="padding: 0.375rem 0.5rem;">Identity</td>
+            <td style="padding: 0.375rem 0.5rem;"><span style="color: #34d399;">Tier 0</span></td>
+            <td style="padding: 0.375rem 0.5rem;">99.95%</td>
+            <td style="padding: 0.375rem 0.5rem;">Primary: Carol • SecOps backup</td>
+            <td style="padding: 0.375rem 0.5rem; color: #475569;">/ops/auth-svc</td>
+          </tr>
+          <tr>
+            <td style="padding: 0.375rem 0.5rem; color: #a78bfa;">PostgreSQL</td>
+            <td style="padding: 0.375rem 0.5rem;">Platform</td>
+            <td style="padding: 0.375rem 0.5rem;"><span style="color: #34d399;">Tier 0</span></td>
+            <td style="padding: 0.375rem 0.5rem;">99.95%</td>
+            <td style="padding: 0.375rem 0.5rem;">Primary: Bob • AWS Support</td>
+            <td style="padding: 0.375rem 0.5rem; color: #475569;">/ops/rds</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         API CONTRACT SUMMARY
+         ═══════════════════════════════════════════════════════════════════ -->
+    <div class="panel" style="overflow-x: auto;">
+      <div class="panel-header" id="api">📡 API Contract Summary — Public Endpoints</div>
+      <table class="panel-table">
+        <thead>
+          <tr>
+            <th style="padding: 0.375rem 0.5rem;">Method</th>
+            <th style="padding: 0.375rem 0.5rem;">Path</th>
+            <th style="padding: 0.375rem 0.5rem;">Service</th>
+            <th style="padding: 0.375rem 0.5rem;">Auth</th>
+            <th style="padding: 0.375rem 0.5rem;">Rate Limit</th>
+            <th style="padding: 0.375rem 0.5rem;">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid var(--border-faint);">
+            <td style="padding: 0.375rem 0.5rem;"><span style="color: #34d399; font-weight: 600;">GET</span></td>
+            <td style="padding: 0.375rem 0.5rem; color: #e2e8f0; font-family: monospace;">/api/v1/users/:id</td>
+            <td style="padding: 0.375rem 0.5rem;">User Service</td>
+            <td style="padding: 0.375rem 0.5rem;">JWT (read)</td>
+            <td style="padding: 0.375rem 0.5rem;">100/min</td>
+            <td style="padding: 0.375rem 0.5rem; color: #64748b;">Fetch user profile by ID</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border-faint);">
+            <td style="padding: 0.375rem 0.5rem;"><span style="color: #fbbf24; font-weight: 600;">POST</span></td>
+            <td style="padding: 0.375rem 0.5rem; color: #e2e8f0; font-family: monospace;">/api/v1/orders</td>
+            <td style="padding: 0.375rem 0.5rem;">Order Service</td>
+            <td style="padding: 0.375rem 0.5rem;">JWT + scope</td>
+            <td style="padding: 0.375rem 0.5rem;">30/min</td>
+            <td style="padding: 0.375rem 0.5rem; color: #64748b;">Create new order (idempotent)</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border-faint);">
+            <td style="padding: 0.375rem 0.5rem;"><span style="color: #22d3ee; font-weight: 600;">PATCH</span></td>
+            <td style="padding: 0.375rem 0.5rem; color: #e2e8f0; font-family: monospace;">/api/v1/orders/:id</td>
+            <td style="padding: 0.375rem 0.5rem;">Order Service</td>
+            <td style="padding: 0.375rem 0.5rem;">JWT + owner</td>
+            <td style="padding: 0.375rem 0.5rem;">60/min</td>
+            <td style="padding: 0.375rem 0.5rem; color: #64748b;">Update order status or details</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border-faint);">
+            <td style="padding: 0.375rem 0.5rem;"><span style="color: #34d399; font-weight: 600;">POST</span></td>
+            <td style="padding: 0.375rem 0.5rem; color: #e2e8f0; font-family: monospace;">/api/v1/payments/charge</td>
+            <td style="padding: 0.375rem 0.5rem;">Payment Svc</td>
+            <td style="padding: 0.375rem 0.5rem;">JWT + mTLS</td>
+            <td style="padding: 0.375rem 0.5rem;">10/min</td>
+            <td style="padding: 0.375rem 0.5rem; color: #64748b;">Authorize and capture payment</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border-faint);">
+            <td style="padding: 0.375rem 0.5rem;"><span style="color: #34d399; font-weight: 600;">GET</span></td>
+            <td style="padding: 0.375rem 0.5rem; color: #e2e8f0; font-family: monospace;">/api/v1/health</td>
+            <td style="padding: 0.375rem 0.5rem;">Gateway</td>
+            <td style="padding: 0.375rem 0.5rem;">None</td>
+            <td style="padding: 0.375rem 0.5rem;">1000/min</td>
+            <td style="padding: 0.375rem 0.5rem; color: #64748b;">Aggregated health check (all services)</td>
+          </tr>
+          <tr>
+            <td style="padding: 0.375rem 0.5rem;"><span style="color: #fb7185; font-weight: 600;">WS</span></td>
+            <td style="padding: 0.375rem 0.5rem; color: #e2e8f0; font-family: monospace;">/ws/v1/events</td>
+            <td style="padding: 0.375rem 0.5rem;">Gateway</td>
+            <td style="padding: 0.375rem 0.5rem;">JWT + upgrade</td>
+            <td style="padding: 0.375rem 0.5rem;">50 conn/IP</td>
+            <td style="padding: 0.375rem 0.5rem; color: #64748b;">Real-time order status stream</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         TECHNOLOGY STACK
+         ═══════════════════════════════════════════════════════════════════ -->
+    <div class="panel">
+      <div class="panel-header" id="stack">🧰 Technology Stack &amp; Versions</div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem; font-size: 0.68rem;">
+        <div style="display: flex; justify-content: space-between; padding: 0.3rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem;">
+          <span style="color: #94a3b8;">Go</span><span style="color: #22d3ee;">1.22</span></div>
+        <div style="display: flex; justify-content: space-between; padding: 0.3rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem;">
+          <span style="color: #94a3b8;">PostgreSQL</span><span style="color: #a78bfa;">16.2</span></div>
+        <div style="display: flex; justify-content: space-between; padding: 0.3rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem;">
+          <span style="color: #94a3b8;">Redis</span><span style="color: #fb7185;">7.2</span></div>
+        <div style="display: flex; justify-content: space-between; padding: 0.3rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem;">
+          <span style="color: #94a3b8;">Kafka</span><span style="color: #fb923c;">3.7</span></div>
+        <div style="display: flex; justify-content: space-between; padding: 0.3rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem;">
+          <span style="color: #94a3b8;">TypeScript</span><span style="color: #22d3ee;">5.4</span></div>
+        <div style="display: flex; justify-content: space-between; padding: 0.3rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem;">
+          <span style="color: #94a3b8;">React</span><span style="color: #22d3ee;">18.3</span></div>
+        <div style="display: flex; justify-content: space-between; padding: 0.3rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem;">
+          <span style="color: #94a3b8;">Docker</span><span style="color: #fbbf24;">26.x</span></div>
+        <div style="display: flex; justify-content: space-between; padding: 0.3rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem;">
+          <span style="color: #94a3b8;">Terraform</span><span style="color: #fbbf24;">1.8</span></div>
+        <div style="display: flex; justify-content: space-between; padding: 0.3rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem;">
+          <span style="color: #94a3b8;">Prometheus</span><span style="color: #fb923c;">2.52</span></div>
+        <div style="display: flex; justify-content: space-between; padding: 0.3rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem;">
+          <span style="color: #94a3b8;">Grafana</span><span style="color: #fb923c;">11.0</span></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         DATABASE SCHEMA
+         ═══════════════════════════════════════════════════════════════════ -->
+    <div class="panel" style="overflow-x: auto;">
+      <div class="panel-header" id="schema">🗄️ Core Database Schema — PostgreSQL</div>
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.7rem;">
+        <div style="background: var(--bg-panel); border-radius: 0.5rem; border: 1px solid var(--border-default); padding: 0.75rem; min-width: 160px;">
+          <div style="color: #a78bfa; font-weight: 600; margin-bottom: 0.375rem;">users</div>
+          <div style="color: #94a3b8; line-height: 1.6;">
+            <span style="color: #fbbf24;">PK</span> id UUID<br/>
+            email VARCHAR(255) UNIQUE<br/>
+            name VARCHAR(255)<br/>
+            created_at TIMESTAMP<br/>
+            <span style="color: #475569;">→ orders.user_id</span>
+          </div>
+        </div>
+        <div style="background: var(--bg-panel); border-radius: 0.5rem; border: 1px solid var(--border-default); padding: 0.75rem; min-width: 160px;">
+          <div style="color: #a78bfa; font-weight: 600; margin-bottom: 0.375rem;">orders</div>
+          <div style="color: #94a3b8; line-height: 1.6;">
+            <span style="color: #fbbf24;">PK</span> id UUID<br/>
+            <span style="color: #fbbf24;">FK</span> user_id → users<br/>
+            status ENUM('pending','paid','cancelled')<br/>
+            total DECIMAL(10,2)<br/>
+            <span style="color: #475569;">→ payments.order_id</span>
+          </div>
+        </div>
+        <div style="background: var(--bg-panel); border-radius: 0.5rem; border: 1px solid var(--border-default); padding: 0.75rem; min-width: 160px;">
+          <div style="color: #a78bfa; font-weight: 600; margin-bottom: 0.375rem;">payments</div>
+          <div style="color: #94a3b8; line-height: 1.6;">
+            <span style="color: #fbbf24;">PK</span> id UUID<br/>
+            <span style="color: #fbbf24;">FK</span> order_id → orders<br/>
+            stripe_charge_id VARCHAR(255)<br/>
+            amount DECIMAL(10,2)<br/>
+            status ENUM('auth','captured','refunded')
+          </div>
+        </div>
+        <div style="background: var(--bg-panel); border-radius: 0.5rem; border: 1px solid var(--border-default); padding: 0.75rem; min-width: 160px;">
+          <div style="color: #a78bfa; font-weight: 600; margin-bottom: 0.375rem;">sessions</div>
+          <div style="color: #94a3b8; line-height: 1.6;">
+            <span style="color: #fbbf24;">PK</span> token VARCHAR(512)<br/>
+            user_id UUID<br/>
+            expires_at TIMESTAMP<br/>
+            <span style="color: #475569;">Redis-backed cache</span><br/>
+            <span style="color: #475569;">TTL: 24h</span>
+          </div>
+        </div>
+        <div style="background: var(--bg-panel); border-radius: 0.5rem; border: 1px solid var(--border-default); padding: 0.75rem; min-width: 160px;">
+          <div style="color: #a78bfa; font-weight: 600; margin-bottom: 0.375rem;">outbox</div>
+          <div style="color: #94a3b8; line-height: 1.6;">
+            <span style="color: #fbbf24;">PK</span> id BIGSERIAL<br/>
+            aggregate_id UUID<br/>
+            event_type VARCHAR(100)<br/>
+            payload JSONB<br/>
+            <span style="color: #475569;">processed BOOL DEFAULT false</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         FUTURE ROADMAP
+         ═══════════════════════════════════════════════════════════════════ -->
+    <div class="panel">
+      <div class="panel-header" id="roadmap">🔮 Future Roadmap &amp; Technical Debt</div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.5rem; font-size: 0.68rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem;">
+          <span style="color: #22d3ee; font-weight: 600;">Q3'26</span>
+          <span style="color: #94a3b8;">Service mesh migration (Istio → Linkerd)</span></div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem;">
+          <span style="color: #22d3ee; font-weight: 600;">Q3'26</span>
+          <span style="color: #94a3b8;">Payment Service split: Stripe + PayPal adapters</span></div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem;">
+          <span style="color: #fbbf24; font-weight: 600;">Q4'26</span>
+          <span style="color: #94a3b8;">Event sourcing for Order domain (Kafka log compaction)</span></div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem;">
+          <span style="color: #fbbf24; font-weight: 600;">Q4'26</span>
+          <span style="color: #94a3b8;">Multi-region active-active (us-east-1 + eu-west-1)</span></div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem;">
+          <span style="color: #475569; font-weight: 600;">Debt</span>
+          <span style="color: #64748b;">User Service: migrate remaining REST endpoints to gRPC</span></div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.5rem; background: var(--bg-tile); border-radius: 0.25rem;">
+          <span style="color: #475569; font-weight: 600;">Debt</span>
+          <span style="color: #64748b;">Consolidate 3 monitoring dashboards into 1 unified Grafana view</span></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         GLOSSARY
+         ═══════════════════════════════════════════════════════════════════ -->
+    <div class="panel">
+      <div class="panel-header">📖 Glossary</div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.375rem; font-size: 0.68rem; color: #94a3b8; line-height: 1.5;">
+        <div><span style="color: #22d3ee; font-weight: 600;">ALB</span> — Application Load Balancer, L7 routing</div>
+        <div><span style="color: #22d3ee; font-weight: 600;">WAF</span> — Web Application Firewall, OWASP rules</div>
+        <div><span style="color: #34d399; font-weight: 600;">gRPC</span> — High-performance RPC over HTTP/2 + Protobuf</div>
+        <div><span style="color: #34d399; font-weight: 600;">JWT</span> — JSON Web Token, stateless authentication</div>
+        <div><span style="color: #fb923c; font-weight: 600;">Kafka</span> — Distributed event streaming platform</div>
+        <div><span style="color: #fb923c; font-weight: 600;">WSS</span> — WebSocket Secure, real-time bidirectional</div>
+        <div><span style="color: #a78bfa; font-weight: 600;">PITR</span> — Point-In-Time Recovery, DB backup strategy</div>
+        <div><span style="color: #a78bfa; font-weight: 600;">Multi-AZ</span> — Multi Availability Zone, HA deployment</div>
+        <div><span style="color: #fbbf24; font-weight: 600;">ECR</span> — Elastic Container Registry, Docker images</div>
+        <div><span style="color: #fbbf24; font-weight: 600;">ECS</span> — Elastic Container Service, container orchestration</div>
+        <div><span style="color: #fb7185; font-weight: 600;">mTLS</span> — Mutual TLS, bidirectional certificate verification</div>
+        <div><span style="color: #fb7185; font-weight: 600;">OIDC</span> — OpenID Connect, identity layer on OAuth2</div>
+        <div><span style="color: #94a3b8; font-weight: 600;">RPO</span> — Recovery Point Objective, max data loss</div>
+        <div><span style="color: #94a3b8; font-weight: 600;">RTO</span> — Recovery Time Objective, max downtime</div>
+        <div><span style="color: #94a3b8; font-weight: 600;">SLA</span> — Service Level Agreement, availability target</div>
+        <div><span style="color: #94a3b8; font-weight: 600;">MTTR</span> — Mean Time To Recovery, avg incident duration</div>
+        <div><span style="color: #94a3b8; font-weight: 600;">CSS Theme</span> — 18 custom properties in <span style="font-family: monospace; color: #64748b;">:root</span> enable one-click re-theming of the entire diagram</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
          FOOTER
          ═══════════════════════════════════════════════════════════════════ -->
     <p class="footer">
-      Microservices Platform • AWS us-east-1 • Go + PostgreSQL + Kafka • Generated 2026-07-13
+      Microservices Platform • AWS us-east-1 • Go + PostgreSQL + Kafka • v2.3.0 • Updated 2026-07-14
     </p>
+
+    <!-- Scroll to top button -->
+    <button class="scroll-top" id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top" aria-label="Scroll to top">↑</button>
 
     <!-- Focus indicator (shown when a component is clicked) -->
     <div class="focus-indicator" id="focus-indicator">
@@ -960,6 +1667,12 @@
     // ── Mark all arrow lines and paths ──
     arrowGroups.forEach(function(a) {
       a.el.classList.add('svg-arrow');
+    });
+
+    // ── Scroll-to-top visibility ──
+    const scrollBtn = document.getElementById('scroll-top');
+    window.addEventListener('scroll', function() {
+      scrollBtn.classList.toggle('visible', window.scrollY > 600);
     });
 
     console.log('Diagram interaction ready: ' + compGroups.length + ' components, ' + arrowGroups.length + ' arrows indexed.');

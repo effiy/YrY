@@ -48,6 +48,47 @@ From these, synthesize:
 
 If the manifest is missing or malformed, leave the corresponding field empty rather than guessing.
 
+**Extended framework detection (supplement to the core list above):**
+
+Additional JS/TS frameworks to detect: `remix`, `astro`, `solid-js`, `qwik`, `@tanstack/react-query`, `trpc`, `drizzle-orm`, `kysely`, `zod`, `effect`, `hono`, `elysia`, `bun`, `playwright`, `storybook`, `turbo`, `nx`, `changesets`, `eslint`, `prettier`, `biome`.
+
+Additional Python: `litestar`, `starlite`, `beanie`, `odmantic`, `strawberry-graphql`, `ariadne`, `dramatiq`, `arq`, `prefect`, `dagster`, `luigi`, `ray`, `sentry-sdk`, `loguru`, `structlog`.
+
+Additional Go: `entgo.io/ent`, `sqlc`, `pgx`, `go-kit`, `kratos`, `go-zero`, `hertz`, `go-swagger`, `wire`, `fx`.
+
+Additional Rust: `poem`, `salsa`, `tower`, `tonic`, `prost`, `sqlx`, `sea-orm`, `tracing`, `opentelemetry`.
+
+Additional JVM: `helidon`, `javalin`, `spark`, `vertx`, `dropwizard`, `jooq`, `exposed`, `ktorm`.
+
+**Monorepo detection patterns:**
+- `pnpm-workspace.yaml`, `lerna.json`, `nx.json`, `turbo.json`, `rush.json` → mark as `monorepo` with tool name
+- `workspaces` field in `package.json` → `npm/yarn workspaces`
+- Multiple `go.mod` files under different directories → Go workspace
+- `Cargo.toml` with `[workspace]` → Rust workspace
+- `gradle/settings.gradle` with `include` → Gradle multi-project
+
+**Infrastructure & platform detection:**
+- `serverless.yml` / `serverless.ts` → `Serverless Framework`
+- `samconfig.toml` / `template.yaml` → `AWS SAM`
+- `cdk.json` → `AWS CDK`
+- `cdktf.json` → `CDK for Terraform`
+- `pulumi.yaml` → `Pulumi`
+- `fly.toml` → `Fly.io`
+- `render.yaml` → `Render`
+- `vercel.json` → `Vercel`
+- `netlify.toml` → `Netlify`
+- `wrangler.toml` → `Cloudflare Workers`
+- `railway.toml` → `Railway`
+- `Procfile` → `Heroku / Dokku`
+- `app.yaml` → `Google App Engine`
+- `.github/workflows/` count → number of CI workflows
+- `.github/actions/` → custom GitHub Actions
+- `Dockerfile*` count → number of Dockerfiles (multi-stage builds common)
+- `*.tf` count ≥ 3 → substantial Terraform usage
+- `charts/` directory → Helm charts
+
+If the manifest is missing or malformed, leave the corresponding field empty rather than guessing.
+
 ### Step B (bundled `scan-project.mjs`) -- File enumeration + language + category + lines
 
 Invoke the bundled scan script. It walks the project (preferring `git ls-files`, falling back to a recursive walk for non-git directories), applies `.understandignore` filtering (defaults + user patterns), assigns `language` and `fileCategory` per the canonical tables, counts lines, and writes deterministic JSON. You do not see or maintain those tables — they live in the script.

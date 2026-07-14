@@ -36,6 +36,26 @@
 - **Next.js** — React framework for production with hybrid rendering
 - **Svelte** — Compile-time framework that shifts work from runtime to build step
 
+## Edge Detection Heuristics
+
+When analyzing JavaScript files, look for these additional signals:
+
+**Event emitter patterns** — `EventEmitter` / `.on('event', handler)` / `.emit('event', data)` → `publishes` from emitter to event name, `subscribes` from listener to event name. Common in Node.js services and state management.
+
+**Middleware chains** — `app.use(fn)` / `router.use(fn)` in Express/Koa → `middleware` edges from the middleware function to the app/router. Order matters for execution.
+
+**Higher-order functions** — `function wrapper(fn) { return function(...) { ... } }` → the returned function depends on the wrapped function. Create `depends_on` edges from the wrapper's output to the wrapped function.
+
+**Promise chains** — `.then(fn).catch(fn).finally(fn)` → each `.then()` represents a transformation stage. For complex chains, create `transforms` edges between stages.
+
+**Dynamic imports** — `import('./module.js')` or `require('./module')` with variable paths → create `depends_on` edges marked as dynamic (weight: 0.5). These are runtime-resolved, not static.
+
+**CommonJS module.exports** — `module.exports = { fn1, fn2 }` → creates `exports` edges from the module to each exported function/class. Mirror of ESM `export` patterns.
+
+**Prototype chain** — `Child.prototype = Object.create(Parent.prototype)` → `inherits` edge from child to parent. This is the pre-ES6 class inheritance pattern.
+
+**Callback-based async** — `fs.readFile(path, (err, data) => { ... })` → the callback is an async continuation. Create `calls` edges from the caller to the callback, marked as async.
+
 ## Example Language Notes
 
 > Closure captures outer `config` variable, providing encapsulated state without class

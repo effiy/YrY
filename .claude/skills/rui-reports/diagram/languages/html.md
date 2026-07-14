@@ -26,6 +26,12 @@
 - Template HTML files `depends_on` the server-side code that renders them
 - HTML entry points are `deploys` targets for build systems and web servers
 - HTML files `related` to the components or routes they render
+- Web components (`<my-component>`) create `depends_on` edges to their custom element definitions
+- Template engine partials (`{% include %}`, `<%= render %>`) create `contains` edges from parent to partial
+- `<form action="/api/...">` → `routes` edges to the API endpoint; forms are HTML-native API clients
+- `<link rel="preload">` and `<link rel="modulepreload">` → pre-declared resource dependencies
+- SPA anchor tags (`<a href="/route">`) → `routes` edges resolved client-side by the routing library
+- `<picture><source>` responsive assets → `depends_on` multiple asset variants per breakpoint
 
 ## Summary Style
 

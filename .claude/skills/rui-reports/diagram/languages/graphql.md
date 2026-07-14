@@ -21,12 +21,23 @@
 - `*.resolvers.ts` / `*.resolvers.js` — Resolver implementations (TypeScript/JavaScript convention)
 - `codegen.yml` — GraphQL Code Generator configuration
 
-## Edge Patterns
+## Edge Detection Heuristics
 
-- GraphQL schema files `defines_schema` for the resolver code that implements query/mutation handlers
-- Type definitions create `related` edges between types connected by field references
-- Schema files `defines_schema` for client-side query/mutation files that consume the API
-- Codegen config `configures` the schema-to-code generation pipeline
+**Resolver type mapping** — `Query { user(id: ID!): User }` + resolver function `user(parent, args, context)` → the resolver `implements` the schema field. Create `defines_schema` edges from schema to resolver files.
+
+**Object type relationships** — `type Order { user: User! items: [OrderItem!]! }` → `depends_on` edges from Order to User and OrderItem types. Field references create a type dependency graph.
+
+**Interface/Union implementations** — `type User implements Node { ... }` → `implements` edges from the concrete type to the interface. `union SearchResult = User \| Order` creates type union dependencies.
+
+**Input type usage** — `mutation { createUser(input: CreateUserInput!): User }` → the mutation `depends_on` the input type. Input types are write-side contracts; object types are read-side.
+
+**Fragment composition** — `fragment UserFields on User { id name }` + `query { user { ...UserFields } }` → the query `depends_on` the fragment. Fragments are reusable type selections that reduce duplication.
+
+**Codegen configuration** — `schema: "./schema.graphql"` in `codegen.yml` → `configures` edges from the codegen config to the schema file. Codegen produces typed clients/resolvers from schema definitions.
+
+**Subscription channels** — `subscription { orderUpdated(orderId: ID!): Order }` → `publishes` edges from the mutation that triggers the event to the subscription. Subscriptions create real-time data flows.
+
+**Schema stitching/federation** — `extend type User @key(fields: "id")` in a federated subgraph → `cross_domain` edges between subgraph services. Federation enables distributed GraphQL across microservices.
 
 ## Summary Style
 

@@ -38,6 +38,26 @@
 - **Celery** — Distributed task queue for background job processing
 - **Pydantic** — Data validation and settings management using type annotations
 
+## Edge Detection Heuristics
+
+When analyzing Python files, look for these additional signals:
+
+**Decorator-based routing** — `@app.route("/path")` or `@router.get("/path")` → the decorated function is an endpoint handler. Create `routes` edges from the route registration site to the handler function.
+
+**Dependency injection via function arguments** — FastAPI `Depends(get_db)` or Flask `@app.before_request` patterns → trace the dependency chain and create `depends_on` edges from the consumer to each provider function.
+
+**Mixin composition** — Class `class UserView(ListMixin, CreateMixin)` inherits from multiple mixins → create `inherits` edges to each mixin base class.
+
+**Signal/event connections** — Django `@receiver(post_save, sender=Model)` or blinker `signal.connect(handler)` → `subscribes` from handler to sender, `publishes` from sender to handler.
+
+**Context manager yield** — `@contextmanager` or `__enter__`/`__exit__` pair → resources acquired in `__enter__` create `depends_on` edges from the context body to the acquired resource.
+
+**ABC registration** — `class MyClass(ABC)` or `@abstractmethod` → `implements` edges from concrete subclasses to the abstract base.
+
+**Celery task definitions** — `@app.task` or `@shared_task` decorated functions → the task is a background processor. Create `triggers` edges from the caller (`.delay()` or `.apply_async()`) to the task function.
+
+**Pydantic model inheritance** — `class UserCreate(UserBase)` → `inherits` edge from child to parent schema.
+
 ## Example Language Notes
 
 > Uses `@dataclass` decorator to auto-generate `__init__`, `__repr__`, and `__eq__` from

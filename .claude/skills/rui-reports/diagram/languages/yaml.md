@@ -21,12 +21,23 @@
 - `mkdocs.yml` — MkDocs documentation site configuration
 - `serverless.yml` — Serverless Framework configuration
 
-## Edge Patterns
+## Edge Detection Heuristics
 
-- YAML config files `configures` the code modules they control (e.g., database settings affect data layer)
-- CI/CD YAML files `triggers` build and deployment pipelines
-- docker-compose YAML `deploys` services and `depends_on` Dockerfiles
-- Kubernetes YAML `deploys` and `provisions` application services
+**CI/CD workflow triggers** — `on: push` / `on: pull_request` / `on: schedule` in GitHub Actions → the workflow `triggers` on the referenced events. `workflow_run` and `workflow_call` create cross-workflow dependencies.
+
+**CI/CD job dependencies** — `needs: [build, test]` in GitHub Actions or `needs: ["build-job"]` in GitLab CI → `depends_on` edges from the dependent job to each `needs` job. Jobs without `needs` run in parallel.
+
+**CI/CD deployment targets** — `deploy: prod: { environment: production }` → `deploys` edges from the CI config to the deployment target. Environment protection rules and approval gates add governance metadata.
+
+**K8s Service → Pod routing** — `spec.selector: { app: myapp }` in a Service → `serves` edges from the Service to matching Deployments/Pods. The selector defines the routing rule.
+
+**K8s ConfigMap/Secret injection** — `envFrom: - configMapRef: { name: app-config }` → `configures` edges from the ConfigMap/Secret to the consuming Deployment/Pod. Changes to ConfigMaps don't auto-restart Pods (unless using reloader).
+
+**K8s Ingress routing** — `spec.rules: - host: api.example.com http: paths: - backend: service: { name: api-svc, port: 80 }` → `routes` edges from the Ingress to each backend Service.
+
+**Helm value propagation** — `values.yaml` → `{{ .Values.replicaCount }}` in templates → `configures` edges from values to each template that references them. `requirements.yaml`/`Chart.yaml` dependencies create `depends_on` between charts.
+
+**Ansible playbook structure** — `roles: - common - webserver` → `depends_on` edges from the playbook to each role. `include_tasks`/`import_tasks` create sub-playbook dependencies.
 
 ## Summary Style
 

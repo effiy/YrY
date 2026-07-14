@@ -36,6 +36,22 @@
 - **NestJS** — Server-side framework inspired by Angular (decorators, modules, DI)
 - **Express (with TS)** — Minimal HTTP framework with typed request/response handlers
 
+## Edge Detection Heuristics
+
+When analyzing TypeScript files, look for these additional signals:
+
+**Path alias resolution** — `tsconfig.json` `paths` field maps `@/foo` → `src/foo`. When a file imports via alias, resolve to the actual path before creating `imports` edges.
+
+**Decorator-based DI** — `@Injectable()`, `@Inject()`, `@Module()` (NestJS/Angular) indicate dependency injection. Classes decorated with `@Injectable()` are available for injection; constructor parameters with `@Inject()` create `depends_on` edges.
+
+**Barrel re-exports** — `export * from './module'` or `export { X } from './module'` in `index.ts` → create `exports` edges from the barrel to each re-exported symbol's defining file.
+
+**Generic constraints** — `<T extends BaseEntity>` indicates a type dependency. The constrained type parameter depends on the constraint type — trace `related` edges when constraints cross file boundaries.
+
+**Conditional type usage** — `T extends U ? X : Y` patterns indicate type-level branching. When X and Y reference types from other files, note the conditional dependency.
+
+**Zod/schema validation** — `z.object({...})` or `z.infer<typeof schema>` creates a runtime schema. Files importing the inferred type depend on the schema definition — create `depends_on` edges.
+
 ## Example Language Notes
 
 > Uses generic type parameter `T extends BaseEntity` to ensure type safety across

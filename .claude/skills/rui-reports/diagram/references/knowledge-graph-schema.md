@@ -228,3 +228,86 @@ All node IDs must follow a consistent namespace pattern to enable reliable edge 
   ]
 }
 ```
+
+---
+
+## Domain Graph Extension
+
+In addition to structural code graphs, the schema supports **domain graphs** — high-level business-domain models that capture conceptual architecture independent of code structure. Domain graphs power `--full` mode analysis and cross-domain impact analysis.
+
+### Domain Node Types (+3)
+
+| Type | Description | ID Convention |
+|------|-------------|---------------|
+| `domain` | A bounded context or business domain | `domain:<name>` |
+| `flow` | An end-to-end business process or data flow | `flow:<name>` |
+| `step` | A single ordered step within a flow | `step:<flow-name>:<order>` |
+
+### Domain Edge Types (+3)
+
+| Type | Description |
+|------|-------------|
+| `contains_flow` | Domain contains a business flow |
+| `flow_step` | Flow consists of an ordered step |
+| `cross_domain` | Step or domain crosses into another domain |
+
+### Domain Graph Example
+
+```json
+{
+  "nodes": [
+    {"id": "domain:order-management", "type": "domain", "name": "Order Management",
+     "summary": "Full order lifecycle — creation, modification, cancellation, status tracking. Core revenue domain.",
+     "tags": ["core-domain", "transactional", "event-sourced"]},
+    {"id": "domain:payment-processing", "type": "domain", "name": "Payment Processing",
+     "summary": "Payment authorization, capture, refund, reconciliation across Stripe and PayPal.",
+     "tags": ["supporting-domain", "integration", "pci-scope"]},
+    {"id": "domain:notification", "type": "domain", "name": "Notification",
+     "summary": "Generic notification domain — email, SMS, push — triggered by events from other domains.",
+     "tags": ["generic-domain", "event-consumer", "multi-channel"]},
+    {"id": "flow:order-checkout", "type": "flow", "name": "Order Checkout Flow",
+     "summary": "End-to-end checkout: cart validation → payment auth → order creation → inventory reserve → confirmation.",
+     "tags": ["critical-path", "synchronous", "multi-domain"]},
+    {"id": "step:order-checkout:1", "type": "step", "name": "Validate Cart",
+     "summary": "Verify stock, prices, promotions. Return validated cart with totals.",
+     "tags": ["validation", "synchronous"]},
+    {"id": "step:order-checkout:2", "type": "step", "name": "Authorize Payment",
+     "summary": "Call payment provider with idempotency-key gate.",
+     "tags": ["payment", "external-call", "idempotent"]},
+    {"id": "step:order-checkout:3", "type": "step", "name": "Create Order",
+     "summary": "Persist order with PENDING status. Emit OrderCreated event to Kafka.",
+     "tags": ["transactional", "event-publisher"]},
+    {"id": "step:order-checkout:4", "type": "step", "name": "Reserve Inventory",
+     "summary": "Decrement stock. On shortfall, trigger backorder workflow.",
+     "tags": ["inventory", "compensating-transaction"]},
+    {"id": "step:order-checkout:5", "type": "step", "name": "Send Confirmation",
+     "summary": "Dispatch confirmation email via notification domain with order summary and ETA.",
+     "tags": ["notification", "async", "fire-and-forget"]}
+  ],
+  "edges": [
+    {"source": "domain:order-management", "target": "flow:order-checkout", "type": "contains_flow", "direction": "forward", "weight": 1.0},
+    {"source": "flow:order-checkout", "target": "step:order-checkout:1", "type": "flow_step", "direction": "forward", "weight": 1.0},
+    {"source": "flow:order-checkout", "target": "step:order-checkout:2", "type": "flow_step", "direction": "forward", "weight": 1.0},
+    {"source": "flow:order-checkout", "target": "step:order-checkout:3", "type": "flow_step", "direction": "forward", "weight": 1.0},
+    {"source": "flow:order-checkout", "target": "step:order-checkout:4", "type": "flow_step", "direction": "forward", "weight": 1.0},
+    {"source": "flow:order-checkout", "target": "step:order-checkout:5", "type": "flow_step", "direction": "forward", "weight": 1.0},
+    {"source": "step:order-checkout:2", "target": "domain:payment-processing", "type": "cross_domain", "direction": "forward", "weight": 0.9},
+    {"source": "step:order-checkout:5", "target": "domain:notification", "type": "cross_domain", "direction": "forward", "weight": 0.8},
+    {"source": "domain:order-management", "target": "domain:payment-processing", "type": "cross_domain", "direction": "forward", "weight": 0.7},
+    {"source": "domain:order-management", "target": "domain:notification", "type": "cross_domain", "direction": "forward", "weight": 0.5}
+  ]
+}
+```
+
+### Domain Graph Validation Rules
+
+| # | Rule | Severity |
+|---|------|----------|
+| 1 | Every `flow` node must have ≥ 1 `contains_flow` edge from a `domain` node | Critical |
+| 2 | Every `step` node must have ≥ 1 `flow_step` edge from a `flow` node | Critical |
+| 3 | `cross_domain` edges must connect different domains (source ≠ target) | Critical |
+| 4 | `cross_domain` edges should only originate from `step` or `domain` nodes | Warning |
+| 5 | Domain graphs MAY have empty `layers` — layers are optional for domain models | Info |
+| 6 | Domain graphs MAY have empty `tour` — tours generated separately per domain | Info |
+| 7 | Step `order` is encoded in the ID (`step:<flow>:<order>`), not a separate field | Convention |
+| 8 | `flow_step` edges carry implicit ordering — steps sequenced by their ID order numbers | Convention |

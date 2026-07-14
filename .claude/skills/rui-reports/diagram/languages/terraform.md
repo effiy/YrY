@@ -24,12 +24,21 @@
 - `*.tfvars` — Variable value files for different environments
 - `terraform.lock.hcl` — Provider version lock file
 
-## Edge Patterns
+## Edge Detection Heuristics
 
-- Terraform files `provisions` the infrastructure resources they define
-- Module references create `depends_on` edges between terraform files
-- Terraform `deploys` application code by referencing container images or deployment targets
-- Variable files `configures` the terraform modules they parameterize
+**Resource dependency chain** — `aws_db_instance.main depends_on [aws_security_group.db]` or implicit references (`aws_subnet.main.id`) → `depends_on` edges from the dependent resource to the dependency. Terraform builds a DAG from these; explicit `depends_on` overrides automatic inference.
+
+**Module composition** — `module "vpc" { source = "./modules/vpc" }` → `depends_on` edges from the calling configuration to the module. Module outputs consumed via `module.vpc.vpc_id` create implicit data-flow dependencies.
+
+**Provider configuration** — `provider "aws" { region = var.region }` + `required_providers { aws = { source = "hashicorp/aws", version = "~> 5.0" } }` → the configuration `depends_on` each declared provider. Provider aliases enable multi-region/multi-account patterns.
+
+**Data source resolution** — `data "aws_ami" "ubuntu" { ... }` + `ami = data.aws_ami.ubuntu.id` → the resource `depends_on` the data source. Data sources pull in external state without creating new resources.
+
+**Remote state dependency** — `data "terraform_remote_state" "vpc" { backend = "s3" }` → cross-state references. The consuming configuration `depends_on` the remote state's outputs. This enables multi-repo infrastructure decomposition.
+
+**Variable/Output flow** — `variable "instance_type"` → `var.instance_type` in a resource → the resource `depends_on` the variable definition. `output "db_endpoint"` → consumed by another module via `module.db.db_endpoint` creates cross-module data flow.
+
+**Provisioner chain** — `provisioner "local-exec" { command = "kubectl apply -f manifests/" }` → the resource's `provisions` edge extends to the provisioner's target. Provisioners bridge Terraform to external systems (K8s, config management, scripts).
 
 ## Summary Style
 

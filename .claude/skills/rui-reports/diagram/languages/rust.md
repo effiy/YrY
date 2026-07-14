@@ -37,6 +37,26 @@
 - **Diesel** — Safe, composable ORM and query builder
 - **Tokio** — Async runtime providing I/O, timers, and task scheduling
 
+## Edge Detection Heuristics
+
+When analyzing Rust files, look for these additional signals:
+
+**Trait implementation** — `impl TraitName for StructName { ... }` → creates `implements` edge from the struct to the trait. Unlike Go, this is explicit. Both the trait and struct may be in different crates.
+
+**Trait bounds on generics** — `fn process<T: Serialize + Deserialize>(data: T)` → the function depends on types implementing Serialize and Deserialize. Create `depends_on` edges from the function to the trait definitions.
+
+**Async task spawning** — `tokio::spawn(async { ... })` or `actix_web::rt::spawn(...)` → the spawned task is a concurrent unit of work. Create `calls` edges marked as concurrent from the spawn site to the spawned function.
+
+**Channel-based communication** — `tokio::sync::mpsc::channel()`, `flume::bounded()`, `crossbeam::channel()` → sender/receiver pairs. Create `publishes` edges from the sender side and `subscribes` edges from the receiver side when they cross module boundaries.
+
+**Extension traits** — `impl TraitName for ExternalType { ... }` (extension trait pattern) → adds methods to a type from another crate without modifying the original. These create implicit cross-crate dependencies.
+
+**Feature-gated code** — `#[cfg(feature = "serde")]` → code only compiled when the feature flag is enabled. Feature-gated modules create conditional dependencies — note the feature name in edge descriptions.
+
+**Derive macros** — `#[derive(Serialize, Deserialize, Clone)]` → the struct depends on the derive macro crates. Each derive creates a `depends_on` edge from the struct to the macro's crate.
+
+**Workspace member dependencies** — `[workspace.dependencies]` in root `Cargo.toml` + member `Cargo.toml` referencing `workspace = true` → cross-crate dependencies within a workspace. Create `depends_on` edges from the consumer crate to the dependency crate.
+
 ## Example Language Notes
 
 > Takes `&self` borrow to read state without transferring ownership; returns

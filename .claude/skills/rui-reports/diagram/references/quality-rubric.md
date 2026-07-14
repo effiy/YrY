@@ -98,6 +98,8 @@ Each dimension is scored 0–4. A production-ready diagram should score ≥ 3 on
 - [ ] Typography follows the design system (JetBrains Mono, correct sizes)
 - [ ] SVG filters (shadow-sm, shadow-md) applied to key components
 - [ ] CSS load animation (fadeInUp) present
+- [ ] CSS custom properties used for colors (not hardcoded `#` values in inline styles where avoidable)
+- [ ] Panel utility classes (`.panel`, `.panel-grid`, `.panel-item`, `.panel-table`) used for standard sections
 - [ ] Interactive features functional (hover highlight, click focus)
 
 ---

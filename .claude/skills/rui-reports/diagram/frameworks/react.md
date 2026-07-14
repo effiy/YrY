@@ -51,5 +51,8 @@ Assign nodes to these layers when detected:
 - **Component composition over inheritance**: React favors composing components via props and children rather than class inheritance hierarchies
 - **Custom hooks for reusable logic**: Hooks prefixed with `use` extract stateful logic into shareable modules without changing the component tree
 - **React.memo for performance**: Components wrapped in `React.memo` skip re-renders when props are unchanged — indicates performance-sensitive paths
+- **Server Components (RSC)**: In Next.js App Router, components are Server Components by default — they run on the server, can be async, and have zero client-side JS. Client Components must opt in with `"use client"` at the top of the file
+- **Suspense boundaries for streaming**: `<Suspense fallback={...}>` wraps async operations, enabling streaming SSR where the shell renders immediately and content fills in as data resolves. Each Suspense boundary is a natural architecture boundary
+- **Server Actions for mutations**: `"use server"` functions can be called directly from Client Components, bypassing traditional API routes for form submissions and data mutations
 - **Controlled vs. uncontrolled components**: Controlled components derive state from props; uncontrolled components manage internal state via refs
 - **Render props pattern**: Components that accept a function as children or a render prop to delegate rendering decisions to the consumer

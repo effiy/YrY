@@ -22,12 +22,23 @@
 - `init.sql` — Database initialization script for Docker or fresh setup
 - `procedures/*.sql` — Stored procedure definitions
 
-## Edge Patterns
+## Edge Detection Heuristics
 
-- SQL migration files `migrates` the tables they create or alter
-- Schema definition files `defines_schema` for the ORM models or data layer code that reads them
-- Table definitions create implicit `related` edges between tables connected by foreign keys
-- Seed files `depends_on` the migration files that create the tables they populate
+**Migration chain** — Numbered migrations (`001_*.sql`, `002_*.sql`, ...) form an ordered dependency chain. Create `migrates` edges from each migration to the tables it creates or alters. Migration N+1 implicitly `depends_on` migration N.
+
+**Foreign key relationships** — `FOREIGN KEY (user_id) REFERENCES users(id)` → creates a `related` edge from the referencing table to the referenced table. Cascade behavior (`ON DELETE CASCADE`) adds architectural semantics.
+
+**Index dependencies** — `CREATE INDEX idx_orders_user ON orders(user_id)` → the index `depends_on` the column(s) it indexes. Composite indexes create multi-column dependencies.
+
+**View definitions** — `CREATE VIEW active_users AS SELECT ... FROM users WHERE ...` → the view `depends_on` every table in its FROM/JOIN clause. Materialized views add storage dependencies.
+
+**Stored procedure dependencies** — `CREATE FUNCTION calculate_total(order_id INT) RETURNS ...` → the procedure `depends_on` every table it references in SELECT/INSERT/UPDATE/DELETE statements within its body.
+
+**Trigger chains** — `CREATE TRIGGER update_inventory AFTER INSERT ON orders ...` → the trigger `subscribes` to the triggering table's events. Cascading triggers (trigger A fires trigger B) create implicit dependency chains.
+
+**Schema/module boundaries** — Multiple `.sql` files that `CREATE SCHEMA` or use naming conventions (`sales.*`, `inventory.*`) → schema-level organization. Cross-schema references (e.g., `sales.orders` referencing `inventory.products`) → `cross_domain` edges.
+
+**Up/down migration pairs** — `*.up.sql` and matching `*.down.sql` → the down migration reverses the up migration. Create `related` edges between paired files and note the reversible pattern.
 
 ## Summary Style
 

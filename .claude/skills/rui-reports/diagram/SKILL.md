@@ -137,7 +137,7 @@ Key principles:
   - `tour-builder.md` — designs guided learning tour (`--full` only)
   - `graph-reviewer.md` — validates the final knowledge graph
 - [templates/architecture-diagram.html](./templates/architecture-diagram.html) — the only template; the single self-contained HTML artifact.
-- [references/knowledge-graph-schema.md](./references/knowledge-graph-schema.md) — full node/edge schema (13 node types, 26 edge types) for the codebase-mode knowledge graph.
+- [references/knowledge-graph-schema.md](./references/knowledge-graph-schema.md) — full node/edge schema (16 node types, 29 edge types) including domain graph extension for business-domain modeling.
 - [references/design-system.md](./references/design-system.md) — diagram design system: color palette, typography, spacing, layout patterns.
 - [references/templates-index.md](./references/templates-index.md) — catalog of all output templates.
 - [references/quality-rubric.md](./references/quality-rubric.md) — self-assessment rubric for diagram quality: 5 dimensions, scoring guide, pass threshold.

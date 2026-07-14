@@ -57,3 +57,8 @@ Assign nodes to these layers when detected:
 - **Dependency injection via constructors (no framework DI)**: Go has no DI framework — dependencies are passed as constructor parameters (e.g., `NewUserHandler(userService)`) and stored as struct fields
 - **Interface-driven design for testability**: Services and repositories are defined as interfaces — handlers depend on the interface, enabling mock implementations in tests
 - **Error handling with gin.Error**: Gin collects errors via `c.Error(err)` — middleware can inspect `c.Errors` after handler execution to implement centralized error logging and response formatting
+- **Binding and validation with struct tags**: `c.ShouldBindJSON(&input)` + struct tags (`binding:"required,min=1"`) → Gin validates request bodies before the handler runs. Validation failures short-circuit to 400 responses
+- **Recovery middleware**: `gin.Recovery()` catches panics in handlers → prevents process crashes. Custom recovery can log stack traces to observability systems
+- **Context propagation**: `c.Set("user", user)` / `c.Get("user")` stores request-scoped values → creates implicit data flow between middleware and handlers. Trace `depends_on` edges through context key usage
+- **Route group nesting**: `v1 := r.Group("/v1") { v1.GET("/users", ...) }` → nested groups create hierarchical route trees. Each level can have its own middleware stack
+- **Graceful shutdown**: `srv := &http.Server{...}; srv.Shutdown(ctx)` → Gin servers support graceful shutdown with deadline contexts. Background tasks should respect the shutdown signal

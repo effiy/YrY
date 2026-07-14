@@ -26,6 +26,11 @@
 - Links to other `.md` files create `related` edges between documentation nodes
 - Code block references mentioning file paths may imply `documents` edges to those files
 - README files in subdirectories typically `documents` the module at that path
+- `README.md` at project root is always an entry point node → `documents` the main application entry point
+- `CHANGELOG.md` / `CONTRIBUTING.md` → `documents` the project root or main package
+- API docs in `docs/api/` referencing endpoint paths → `documents` edges to the route handler files
+- Architecture decision records (`docs/adr/`) → `documents` the architectural decisions they record
+- Wiki/confluence-style cross-links between doc files → `related` edges with the link context as metadata
 
 ## Summary Style
 

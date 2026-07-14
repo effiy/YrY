@@ -55,5 +55,9 @@ Assign nodes to these layers when detected:
 - **Server Components by default**: Components in the `app/` directory are Server Components — no JavaScript is sent to the client unless `"use client"` is declared
 - **Server Actions for mutations**: Functions marked with `"use server"` can be called directly from client components, replacing traditional API routes for form submissions and mutations
 - **App Router file conventions**: Special files (`page`, `layout`, `loading`, `error`, `not-found`, `route`) define behavior by naming convention within the file-system router
-- **ISR and static generation**: `generateStaticParams` pre-renders pages at build time; revalidation strategies control cache freshness
+- **ISR and static generation**: `generateStaticParams` pre-renders pages at build time; revalidation strategies (`revalidate`, `stale-while-revalidate`) control cache freshness
 - **Parallel and intercepting routes**: `@slot` directories enable parallel rendering; `(.)` prefix directories enable route interception for modal patterns
+- **Middleware at the edge**: `middleware.ts` runs at the Edge runtime before every request — can rewrite, redirect, or add headers. Creates `middleware` edges from middleware.ts to every route it guards
+- **Route handlers replacing API routes**: `route.ts` files with exported HTTP method functions (`GET`, `POST`, etc.) replace the legacy `pages/api/` pattern. Each exported method → `endpoint` node with `serves` edge
+- **Streaming with loading.tsx**: `loading.tsx` wraps the route segment with a Suspense boundary automatically — enables streaming SSR where the page shell renders immediately and content streams in. Each `loading.tsx` is an architecture boundary marker
+- **Partial prerendering (PPR)**: experimental feature combining static and dynamic rendering in a single page — static shell instant, dynamic holes streamed. PPR-enabled pages depend on both build-time data and request-time data sources

@@ -41,6 +41,24 @@
 > Uses `@Published` property wrapper to automatically notify SwiftUI views of state
 > changes. When the wrapped value mutates, the property wrapper triggers `objectWillChange`
 > on the enclosing `ObservableObject`, causing dependent views to re-render.
+
+## Edge Detection Heuristics
+
+**Protocol conformance** — `class MyView: View { var body: some View { ... } }` → `implements` edges from the conforming type to each protocol. Protocol extensions provide default implementations — check for overrides.
+
+**Dependency injection via initializer** — `init(service: UserServiceProtocol)` → `depends_on` edges from the consumer to the protocol type. Swift favors protocol-based DI over concrete class injection.
+
+**Combine publisher chains** — `.map { ... }.flatMap { ... }.sink { ... }` → `transforms` edges between operators. `.sink` is the terminal subscriber; publishers are cold until subscribed.
+
+**SwiftUI view hierarchy** — `NavigationView { List { ForEach(items) { item in RowView(item) } } }` → `contains` edges from parent views to child views. `@ViewBuilder` result builders compose multiple child views.
+
+**Actor isolation** — `actor UserCache { func getUser(id: UUID) async -> User? { ... } }` → callers must `await` actor methods. Actor isolation creates async boundaries — mark `calls` edges as async.
+
+**Property wrapper dependencies** — `@StateObject`, `@ObservedObject`, `@EnvironmentObject` → `depends_on` edges from the view to the observed object. Environment objects are injected through the view hierarchy.
+
+**Vapor routing** — `app.get("users", ":id") { req -> User in ... }` → `routes` edges from the route registration to the handler closure. Route groups (`app.grouped(middleware)`) apply middleware to all nested routes.
+
+**Extension-based modularity** — `extension User { func fullName() -> String { ... } }` in a different file → creates implicit cross-file coupling. The extension file `depends_on` the original type definition.
 >
 > Protocol extensions provide default implementations, allowing types to conform by
 > simply declaring conformance — no method body needed if defaults suffice.

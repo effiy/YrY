@@ -20,12 +20,23 @@
 - `buf.yaml` / `buf.gen.yaml` — Buf tool configuration for linting and code generation
 - `*_pb2.py` / `*.pb.go` / `*_pb.ts` — Generated code (should be excluded from analysis)
 
-## Edge Patterns
+## Edge Detection Heuristics
 
-- Protobuf files `defines_schema` for the gRPC service handlers that implement the declared RPCs
-- Message type references create `related` edges between proto files sharing types
-- Proto `import` statements create `depends_on` edges between proto files
-- Generated code files are `depends_on` the proto source that produces them
+**RPC service contracts** — `service UserService { rpc GetUser(GetUserRequest) returns (User); }` → `defines_schema` edges from the proto service to the gRPC handler that implements it. Each RPC is an explicit API contract.
+
+**Message composition** — `message Order { User user = 1; repeated OrderItem items = 2; }` → `depends_on` edges from Order to User and OrderItem message types. Message nesting reflects domain model structure.
+
+**Field number permanence** — Field numbers (`= 1`, `= 2`) must never be reused or renumbered → this is a strong schema evolution constraint. Note when `reserved` fields appear (evidence of schema evolution).
+
+**Proto import graph** — `import "google/api/annotations.proto"` or `import "common/types.proto"` → `imports` edges from the importing file to the imported file. Well-known types (`google.protobuf.Timestamp`) create external dependencies.
+
+**Oneof semantics** — `oneof result { User user = 1; Error error = 2; }` → the containing message `depends_on` each oneof variant. Oneof is protobuf's discriminated union — only one field is set at a time.
+
+**gRPC streaming patterns** — `rpc Watch(WatchRequest) returns (stream Event)` (server streaming), `rpc Upload(stream Chunk) returns (UploadResult)` (client streaming), `rpc Chat(stream Message) returns (stream Message)` (bidirectional) → streaming RPCs create long-lived connections. Mark edges as streaming.
+
+**Code generation pipeline** — `protoc --go_out=. --go-grpc_out=. service.proto` (in buf.gen.yaml or Makefile) → the generated `.pb.go` and `_grpc.pb.go` files `depends_on` the proto source. Buf's `buf.gen.yaml` centralizes codegen configuration.
+
+**Package/option scoping** — `package com.example.api.v1; option go_package = "github.com/example/api/v1;apiv1";` → the package declaration defines the generated code's namespace. Multi-language `option` blocks create language-specific dependency paths.
 
 ## Summary Style
 
