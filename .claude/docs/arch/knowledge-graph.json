@@ -1,0 +1,422 @@
+{
+  "schemaVersion": 2,
+  "meta": {
+    "project": {
+      "name": ".claude · Claude Skills Catalog",
+      "root": "/Users/ruiyi/YrY/.claude",
+      "description": "8 skill groups · 27 SKILL.md manifests · 12 shared web components · 4 vendored libraries · generates CLAUDE.md + README.md + 5 arch scenes + 6 self-test scenes + 8 rui-report dashboards",
+      "primaryStack": "Markdown-driven Claude skills · Vue 3.4.27 (CDN-injected) · 4-file split (HTML+CSS+data+Vue) · ESM engine (graphology + tree-sitter) for rui-reports/diagram",
+      "platform": "Claude Desktop App (macOS) · /rui-init full pipeline",
+      "gitHead": "manual",
+      "scan": {
+        "totalFiles": 943,
+        "byLanguage": {
+          "markdown": 582,
+          "javascript": 181,
+          "json": 60,
+          "css": 30,
+          "html": 30,
+          "vue": 10,
+          "mmd": 5,
+          "wasm": 1,
+          "python": 1
+        },
+        "byCategory": {
+          "docs": 609,
+          "code": 197,
+          "markup": 60,
+          "config": 60,
+          "data": 16,
+          "infra": 1
+        }
+      }
+    },
+    "mode": "from-codebase",
+    "generator": "rui-report-diagram v2.3.0",
+    "generatedAt": "2026-07-15T16:18:00+08:00",
+    "layers": 5,
+    "components": 21,
+    "edges": 23,
+    "partial": false,
+    "notes": "Hand-derived knowledge graph for the .claude skills catalog — would normally be produced by rui-report-diagram's 7-phase analyzer (scan → analyze → assemble → architecture → tour → review → save)."
+  },
+  "nodes": [
+    {
+      "id": "n:user",
+      "type": "external",
+      "label": "User",
+      "sub": "natural language query",
+      "color": "cyan",
+      "layer": "L0-external"
+    },
+    {
+      "id": "n:claude-desktop",
+      "type": "gateway",
+      "label": "Claude Desktop",
+      "sub": "App · /.claude/shared/...",
+      "color": "cyan",
+      "layer": "L0-external"
+    },
+    {
+      "id": "n:skill-tool",
+      "type": "gateway",
+      "label": "Skill Tool",
+      "sub": "manifest registry · 27 SKILL.md",
+      "color": "emerald",
+      "layer": "L0-external"
+    },
+    {
+      "id": "n:rui-init",
+      "type": "service",
+      "label": "rui-init",
+      "sub": "5-step pipeline · 52 files",
+      "color": "orange",
+      "layer": "L1-catalog"
+    },
+    {
+      "id": "n:rui-reports",
+      "type": "service",
+      "label": "rui-reports",
+      "sub": "diagram · daily · files · 218 files",
+      "color": "violet",
+      "layer": "L1-catalog"
+    },
+    {
+      "id": "n:rui-code",
+      "type": "service",
+      "label": "rui-code",
+      "sub": "9 domains · 339 files",
+      "color": "cyan",
+      "layer": "L1-catalog"
+    },
+    {
+      "id": "n:rui-tools",
+      "type": "service",
+      "label": "rui-tools",
+      "sub": "9 sub-skills · 164 files",
+      "color": "emerald",
+      "layer": "L1-catalog"
+    },
+    {
+      "id": "n:rui-test",
+      "type": "service",
+      "label": "rui-test",
+      "sub": "12 topics · fixture-based",
+      "color": "amber",
+      "layer": "L1-catalog"
+    },
+    {
+      "id": "n:rui-questions",
+      "type": "service",
+      "label": "rui-questions",
+      "sub": "7 GitHub sources · index.json",
+      "color": "violet",
+      "layer": "L1-catalog"
+    },
+    {
+      "id": "n:rui-docs",
+      "type": "service",
+      "label": "rui-docs",
+      "sub": "quickstart · readme · 33 files",
+      "color": "cyan",
+      "layer": "L1-catalog"
+    },
+    {
+      "id": "n:rui-cto",
+      "type": "service",
+      "label": "rui-cto",
+      "sub": "engineering synthesis",
+      "color": "rose",
+      "layer": "L1-catalog"
+    },
+    {
+      "id": "n:shared-components",
+      "type": "platform",
+      "label": "12 Vue components",
+      "sub": "rui-back-top · rui-breadcrumb · rui-stats-grid · rui-tag-chip · rui-scene-card · rui-panel-hub · rui-loader · rui-progress-bar · rui-score-bar · rui-toast · rui-badge · rui-cross-nav",
+      "color": "amber",
+      "layer": "L2-substrate"
+    },
+    {
+      "id": "n:loader",
+      "type": "infra",
+      "label": "loader.js",
+      "sub": "Vue 3 CDN injection",
+      "color": "amber",
+      "layer": "L2-substrate"
+    },
+    {
+      "id": "n:vendor-libs",
+      "type": "infra",
+      "label": "4 vendor libs",
+      "sub": "vue@3.4.27 · html2canvas@1.4.1 · jspdf@2.5.2 · xlsx@0.20.3",
+      "color": "amber",
+      "layer": "L2-substrate"
+    },
+    {
+      "id": "n:claude-md",
+      "type": "store",
+      "label": "CLAUDE.md + README.md",
+      "sub": "project identity · 140 lines",
+      "color": "violet",
+      "layer": "L3-generated"
+    },
+    {
+      "id": "n:arch-scenes",
+      "type": "store",
+      "label": "docs/arch/",
+      "sub": "5 scenes · §0–§4 lifecycle",
+      "color": "violet",
+      "layer": "L3-generated"
+    },
+    {
+      "id": "n:selftest-scenes",
+      "type": "store",
+      "label": "docs/self-test/",
+      "sub": "6 scenes · 7/7 AC pass",
+      "color": "violet",
+      "layer": "L3-generated"
+    },
+    {
+      "id": "n:report-pages",
+      "type": "store",
+      "label": "8 rui-report pages",
+      "sub": "size · risk · health · coupling · ...",
+      "color": "violet",
+      "layer": "L3-generated"
+    },
+    {
+      "id": "n:npm-registry",
+      "type": "external",
+      "label": "npm",
+      "sub": "18 runtime · 1 dev dep",
+      "color": "slate",
+      "layer": "L4-foundation"
+    },
+    {
+      "id": "n:github",
+      "type": "external",
+      "label": "GitHub",
+      "sub": "7 knowledge repos for rui-questions",
+      "color": "slate",
+      "layer": "L4-foundation"
+    },
+    {
+      "id": "n:knowledge-base",
+      "type": "store",
+      "label": "references/",
+      "sub": "third-party READMEs · 7 sources",
+      "color": "rose",
+      "layer": "L4-foundation"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e:0",
+      "type": "user-input",
+      "from": "n:user",
+      "to": "n:claude-desktop",
+      "label": "query",
+      "style": "solid",
+      "color": "cyan"
+    },
+    {
+      "id": "e:1",
+      "type": "manifest",
+      "from": "n:claude-desktop",
+      "to": "n:skill-tool",
+      "label": "load SKILL.md",
+      "style": "solid",
+      "color": "emerald"
+    },
+    {
+      "id": "e:2",
+      "type": "invoke",
+      "from": "n:skill-tool",
+      "to": "n:rui-init",
+      "label": "/rui-init",
+      "style": "solid",
+      "color": "orange"
+    },
+    {
+      "id": "e:3",
+      "type": "invoke",
+      "from": "n:skill-tool",
+      "to": "n:rui-reports",
+      "label": "/rui-report-diagram",
+      "style": "solid",
+      "color": "violet"
+    },
+    {
+      "id": "e:4",
+      "type": "invoke",
+      "from": "n:skill-tool",
+      "to": "n:rui-code",
+      "label": "/rui-code-*",
+      "style": "solid",
+      "color": "cyan"
+    },
+    {
+      "id": "e:5",
+      "type": "invoke",
+      "from": "n:skill-tool",
+      "to": "n:rui-tools",
+      "label": "/rui-tools-*",
+      "style": "solid",
+      "color": "emerald"
+    },
+    {
+      "id": "e:6",
+      "type": "invoke",
+      "from": "n:skill-tool",
+      "to": "n:rui-test",
+      "label": "/rui-test",
+      "style": "solid",
+      "color": "amber"
+    },
+    {
+      "id": "e:7",
+      "type": "invoke",
+      "from": "n:skill-tool",
+      "to": "n:rui-questions",
+      "label": "/rui-questions",
+      "style": "solid",
+      "color": "violet"
+    },
+    {
+      "id": "e:8",
+      "type": "invoke",
+      "from": "n:skill-tool",
+      "to": "n:rui-docs",
+      "label": "/rui-docs",
+      "style": "solid",
+      "color": "cyan"
+    },
+    {
+      "id": "e:9",
+      "type": "invoke",
+      "from": "n:skill-tool",
+      "to": "n:rui-cto",
+      "label": "/rui-cto",
+      "style": "solid",
+      "color": "rose"
+    },
+    {
+      "id": "e:10",
+      "type": "generate",
+      "from": "n:rui-init",
+      "to": "n:claude-md",
+      "label": "writes",
+      "style": "solid",
+      "color": "orange"
+    },
+    {
+      "id": "e:11",
+      "type": "generate",
+      "from": "n:rui-init",
+      "to": "n:arch-scenes",
+      "label": "writes",
+      "style": "solid",
+      "color": "orange"
+    },
+    {
+      "id": "e:12",
+      "type": "generate",
+      "from": "n:rui-init",
+      "to": "n:selftest-scenes",
+      "label": "writes",
+      "style": "solid",
+      "color": "orange"
+    },
+    {
+      "id": "e:13",
+      "type": "generate",
+      "from": "n:rui-init",
+      "to": "n:report-pages",
+      "label": "writes",
+      "style": "solid",
+      "color": "orange"
+    },
+    {
+      "id": "e:14",
+      "type": "publish",
+      "from": "n:rui-reports",
+      "to": "n:report-pages",
+      "label": "build",
+      "style": "dashed",
+      "color": "violet"
+    },
+    {
+      "id": "e:15",
+      "type": "uses",
+      "from": "n:shared-components",
+      "to": "n:rui-init",
+      "label": "renders",
+      "style": "dashed",
+      "color": "amber"
+    },
+    {
+      "id": "e:16",
+      "type": "uses",
+      "from": "n:shared-components",
+      "to": "n:rui-reports",
+      "label": "renders",
+      "style": "dashed",
+      "color": "amber"
+    },
+    {
+      "id": "e:17",
+      "type": "uses",
+      "from": "n:shared-components",
+      "to": "n:report-pages",
+      "label": "mounts",
+      "style": "dashed",
+      "color": "amber"
+    },
+    {
+      "id": "e:18",
+      "type": "loads",
+      "from": "n:loader",
+      "to": "n:shared-components",
+      "label": "Vue CDN",
+      "style": "dotted",
+      "color": "amber"
+    },
+    {
+      "id": "e:19",
+      "type": "supplies",
+      "from": "n:vendor-libs",
+      "to": "n:shared-components",
+      "label": "runtime",
+      "style": "dotted",
+      "color": "amber"
+    },
+    {
+      "id": "e:20",
+      "type": "supply",
+      "from": "n:npm-registry",
+      "to": "n:rui-reports",
+      "label": "18 deps",
+      "style": "longdash",
+      "color": "slate"
+    },
+    {
+      "id": "e:21",
+      "type": "supply",
+      "from": "n:github",
+      "to": "n:rui-questions",
+      "label": "7 repos",
+      "style": "longdash",
+      "color": "slate"
+    },
+    {
+      "id": "e:22",
+      "type": "index",
+      "from": "n:rui-questions",
+      "to": "n:knowledge-base",
+      "label": "writes",
+      "style": "solid",
+      "color": "rose"
+    }
+  ]
+}

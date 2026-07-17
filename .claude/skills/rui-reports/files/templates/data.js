@@ -15,11 +15,13 @@
 
 window.REPORT_CONFIG = {
     /* Runtime options used by the analysis run. Displayed in the header
-       and footer as the verbatim JSON. */
+       and footer as the verbatim JSON. `generatedAt` is an ISO timestamp
+       used to compute the stale-data warning + footer recap. */
     options: {
         topN: 20,
         noCycles: false,
         theme: 'dark',
+        generatedAt: null, /* ISO 8601 UTC — filled in by the analyzer */
     },
 
     /* Fixed constants shared across the report UI. */
@@ -179,17 +181,139 @@ window.REPORT_DATA = {
     /* ── Overall health score (0–100) for the rui-score-bar component ── */
     score: 62,
 
-    /* ── Alerts surfaced to the score-bar P0/P1/P2 badges ──────────── */
+    /* ── Alerts surfaced to the score-bar P0/P1/P2 badges AND the
+       remediation queue. Each alert MUST include a `file` (or path),
+       `category` (bloat | coupling | depth | hotspot | orphan | cycle |
+       freshness | size), `marker` (P0/P1/P2), and a human-readable
+       `message`. `line` is optional but recommended.
+
+       Optional enrichment fields (rendered by the remediation queue):
+         metric          — short measurement chip (e.g., "2840 LOC")
+         impact          — one-line professional impact statement
+         effort          — 'low' | 'medium' | 'high'
+         scoreUplift     — estimated health-score points recoverable
+         recommendations — 2–5 concrete, professional action items
+         cyclePath       — optional "A → B → A" string for cycle alerts */
     alerts: [
-        { severity: 'P0', message: '3 cycles detected in core modules' },
-        { severity: 'P1', message: 'Orphan file: src/legacy/migrate.js' },
-        { severity: 'P1', message: 'Depth 8+ in src/services/pipeline.ts' },
-        { severity: 'P2', message: '4 files exceed 2000 lines' },
+        { severity: 'P0', marker: 'P0', category: 'cycle',      file: 'src/store/reducer.ts',       line: 42,  message: 'Cycle detected: store/reducer.ts ↔ services/apiClient.ts',
+          metric: 'cycle len 2', impact: 'Circular import → init-order bugs, tree-shaking breakage, hot-reload instability, test interference.', effort: 'medium', scoreUplift: 6, cyclePath: 'src/store/reducer.ts → src/services/apiClient.ts → src/store/reducer.ts',
+          recommendations: [
+              'Extract the shared dependency into a lower-level module (types / interface / pure function) that both sides import.',
+              'Invert one edge via dependency injection, an event bus, or a callback registry.',
+              'Break the edge from the hottest member (src/store/reducer.ts) first — it has the highest fan-in+fan-out.',
+              'For TypeScript: use `import type` to split runtime cycles from type-only cycles.',
+          ] },
+        { severity: 'P0', marker: 'P0', category: 'cycle',      file: 'src/components/Editor.tsx',  line: 156, message: 'Cycle detected: components/Editor.tsx ↔ hooks/useDataFetch.ts',
+          metric: 'cycle len 2', impact: 'Circular import → init-order bugs, tree-shaking breakage, hot-reload instability, test interference.', effort: 'medium', scoreUplift: 6, cyclePath: 'src/components/Editor.tsx → src/hooks/useDataFetch.ts → src/components/Editor.tsx',
+          recommendations: [
+              'Lift useDataFetch into shared/hooks/ — breaks the Editor↔useDataFetch cycle without changing call sites.',
+              'Extract the shared dependency into a lower-level module (types / interface / pure function).',
+              'Invert one edge via dependency injection, an event bus, or a callback registry.',
+              'Re-run cycle detection after each edge removal to catch regressions before they compound.',
+          ] },
+        { severity: 'P0', marker: 'P0', category: 'bloat',      file: 'src/services/pipeline.ts',   line: 1,   message: 'File exceeds 1000 LOC (2840 lines) — split candidate',
+          metric: '2840 LOC', impact: 'Large file → high cognitive load, merge conflicts, review fatigue, slower onboarding.', effort: 'high', scoreUplift: 8,
+          recommendations: [
+              'Split by responsibility: extract cohesive regions into src/services/pipeline/{parse,transform,validate}.ts and re-export from a barrel index.',
+              'Move pure helpers into a sibling pipeline-utils.ts and unit-test them in isolation.',
+              'Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.',
+              'After the split, re-run this report and confirm fan-out / depth drop before merge.',
+          ] },
+        { severity: 'P1', marker: 'P1', category: 'orphan',     file: 'src/legacy/migrate.js',      line: null, message: 'Orphan file: 0 inbound references for 340 days',
+          metric: '0 inbound refs', impact: 'No inbound references → dead code or forgotten entry; inflates cognitive surface and bundle size.', effort: 'low', scoreUplift: 3,
+          recommendations: [
+              'Grep for dynamic imports / reflection / string-based resolvers before deletion.',
+              'Check `git log -- src/legacy/migrate.js` for the last touch and contact prior authors.',
+              'Delete in a dedicated PR; if it turns out to be needed, `git revert` is cheap.',
+              'If kept as a script entry, exclude it from the report scope via .ruiignore.',
+          ] },
+        { severity: 'P1', marker: 'P1', category: 'depth',      file: 'src/services/pipeline.ts',   line: 1,   message: 'Max depth 9 — coupling chain exceeds 6 levels',
+          metric: 'depth 9', impact: 'Deep dependency chain → brittle builds, slow cold-start, cascading test failures.', effort: 'medium', scoreUplift: 5,
+          recommendations: [
+              'Flatten by grouping intermediate layers into a single façade module.',
+              'Introduce interfaces at the boundary to decouple runtime chains.',
+              'Hoist shared utilities to a top-level lib/ so leaves do not chain through internals.',
+              'Cap max-depth in CI and fail the build above an agreed threshold.',
+          ] },
+        { severity: 'P1', marker: 'P1', category: 'coupling',   file: 'src/types/models.ts',        line: 1,   message: 'High fan-out (28) — god object candidate',
+          metric: 'fan-out 28', impact: 'God module → changes ripple to 28 dependents, raising review burden and defect propagation.', effort: 'high', scoreUplift: 6,
+          recommendations: [
+              'Cluster dependents by domain and split into domain-scoped façades (e.g., models/{user,billing,workflow}.ts).',
+              'Apply the Interface Segregation Principle: expose only what each caller needs.',
+              'Replace direct imports with a dependency-injection container for cross-cutting services.',
+              'Add a module-boundary lint (e.g., dependency-cruiser) to enforce fan-out limits.',
+          ] },
+        { severity: 'P1', marker: 'P1', category: 'freshness',  file: 'src/legacy/migrate.js',      line: null, message: 'Stale file (340d) — review or remove',
+          metric: '340d stale', impact: 'Long-untouched code → untested against current runtime; silent rot raises incident risk.', effort: 'low', scoreUplift: 4,
+          recommendations: [
+              'Run a coverage + typecheck pass; if green, add a "reviewed" marker and bump mtime.',
+              'If there is no owner, open an ADR proposing deletion vs. revival; decide within one sprint.',
+              'Verify no dynamic references via grep + CI before adding to a purge PR.',
+              'If kept, add an integration test pinning current behavior before future changes.',
+          ] },
+        { severity: 'P2', marker: 'P2', category: 'size',       file: 'src/components/Editor.tsx',  line: 1,   message: 'File exceeds 2000 LOC (2100 lines)',
+          metric: '2100 LOC', impact: 'Large file → high cognitive load, merge conflicts, review fatigue, slower onboarding.', effort: 'high', scoreUplift: 4,
+          recommendations: [
+              'Split into src/components/Editor/{Toolbar,Canvas,Inspector}.tsx and re-export from a barrel index.',
+              'Move pure helpers into a sibling Editor-utils.ts and unit-test them in isolation.',
+              'Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.',
+              'After the split, re-run this report and confirm fan-out / depth drop before merge.',
+          ] },
+        { severity: 'P2', marker: 'P2', category: 'bloat',      file: 'src/store/reducer.ts',       line: 1,   message: 'File exceeds 1000 LOC (1950 lines)',
+          metric: '1950 LOC', impact: 'Large file → high cognitive load, merge conflicts, review fatigue, slower onboarding.', effort: 'medium', scoreUplift: 4,
+          recommendations: [
+              'Split by domain: extract slices into src/store/{userSlice,uiSlice,apiSlice}.ts and re-export from a barrel index.',
+              'Move pure selectors into a sibling selectors.ts and unit-test them in isolation.',
+              'Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.',
+              'After the split, re-run this report and confirm fan-out / depth drop before merge.',
+          ] },
+        { severity: 'P2', marker: 'P2', category: 'hotspot',    file: 'src/pages/Dashboard.tsx',    line: 98,  message: 'High fan-in + fan-out combo (6/11) — split render tree',
+          metric: 'hotspot 4.6', impact: 'High fan-in × fan-out × size → a change ripples widely, raising defect risk and review cost.', effort: 'medium', scoreUplift: 5,
+          recommendations: [
+              'Split into src/pages/Dashboard/{ChartPanel,FilterBar,MetricsGrid}.tsx; re-export from a barrel.',
+              'Introduce a façade; have callers depend on the façade instead of reaching into internals.',
+              'Convert large switch/if-else dispatch into a registry/map to shrink the hot core.',
+              'Add a CODEOWNERS entry and a PR-size guardrail for this file.',
+          ] },
+        { severity: 'P2', marker: 'P2', category: 'bloat',      file: 'src/hooks/useDataFetch.ts',  line: 1,   message: 'File exceeds 1000 LOC (1820 lines)',
+          metric: '1820 LOC', impact: 'Large file → high cognitive load, merge conflicts, review fatigue, slower onboarding.', effort: 'medium', scoreUplift: 4,
+          recommendations: [
+              'Split by concern into src/hooks/{useFetch,useCache,useRetry}.ts and re-export from a barrel index.',
+              'Move pure helpers into a sibling useDataFetch-utils.ts and unit-test them in isolation.',
+              'Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.',
+              'After the split, re-run this report and confirm fan-out / depth drop before merge.',
+          ] },
+        { severity: 'P2', marker: 'P2', category: 'bloat',      file: 'src/utils/formatters.ts',    line: 1,   message: 'File exceeds 1000 LOC (1600 lines)',
+          metric: '1600 LOC', impact: 'Large file → high cognitive load, merge conflicts, review fatigue, slower onboarding.', effort: 'medium', scoreUplift: 4,
+          recommendations: [
+              'Split by type into src/utils/{date,number,string}-format.ts and re-export from a barrel index.',
+              'Move shared primitives into a sibling format-primitives.ts and unit-test them in isolation.',
+              'Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.',
+              'After the split, re-run this report and confirm fan-out / depth drop before merge.',
+          ] },
+        { severity: 'P2', marker: 'P2', category: 'freshness',  file: 'src/utils/deadCode.ts',      line: null, message: 'Stale file (210d) — review or remove',
+          metric: '210d stale', impact: 'Long-untouched code → untested against current runtime; silent rot raises incident risk.', effort: 'low', scoreUplift: 4,
+          recommendations: [
+              'Run a coverage + typecheck pass; if green, add a "reviewed" marker and bump mtime.',
+              'If there is no owner, open an ADR proposing deletion vs. revival; decide within one sprint.',
+              'Verify no dynamic references via grep + CI before adding to a purge PR.',
+              'If kept, add an integration test pinning current behavior before future changes.',
+          ] },
+        { severity: 'P2', marker: 'P2', category: 'orphan',     file: 'src/scripts/seedDb.ts',      line: null, message: 'Orphan script — no inbound references',
+          metric: '0 inbound refs', impact: 'No inbound references → dead code or forgotten entry; inflates cognitive surface and bundle size.', effort: 'low', scoreUplift: 3,
+          recommendations: [
+              'Grep for dynamic imports / reflection / string-based resolvers before deletion.',
+              'Check `git log -- src/scripts/seedDb.ts` for the last touch and contact prior authors.',
+              'Delete in a dedicated PR; if it turns out to be needed, `git revert` is cheap.',
+              'If kept as a script entry, exclude it from the report scope via .ruiignore.',
+          ] },
     ],
 
     summary: {
         totalFiles: 147,
+        totalBytes: 2516582,           /* raw byte count — required by avg-size finding */
         totalBytesHuman: '2.4 MB',
+        totalLines: 35400,
         maxDepth: 9,
         criticalCount: 3,
         hotspotCount: 12,
@@ -321,7 +445,7 @@ window.REPORT_DATA = {
     ],
     freshnessStats: { asOf: 1751596800000, asOfHuman: '2026-07-11', maxAge: 340, median: 42, p90: 195, staleCount: 8, criticalCount: 3 },
 
-    /* ── Full record list (lazy-loaded via data-records.js for export) */
+    /* ── Full record list (kept here for Export JSON / Export CSV) ────── */
     records: [],
     adjacency: {},
 
@@ -414,3 +538,140 @@ window.REPORT_DATA = {
         decayForecast: { currentScore: 62, projectedNext: 60, delta: -2, rationale: 'Without action, coupling debt grows ~1 pt/quarter (new imports) and staleness accumulates ~1 pt/quarter (aging files). Estimated –2 pts next run if no remediation.' },
     },
 };
+
+/* ── Demo-only enrichment fallback ─────────────────────────────────────
+   When a sample alert omits the professional detail fields
+   (risk / blastRadius / estimatedHours / acceptance / firstStep /
+   tooling / preventiveControls / rollbackPlan), fill them from category
+   defaults so the rendered demo page always shows the full professional
+   detail block. The analyzer's own `enrichAlert()` produces these for
+   real runs; this block only affects the shipped demo data. */
+(function () {
+    const byCategory = {
+        bloat: {
+            risk: 'If left unfixed: every PR touching this file scales linearly in review time, and defect density compounds with each new branch.',
+            blastRadius: 'file-local + reviewers',
+            estimatedHours: 8,
+            acceptance: ['Each split child ≤ 500 LOC and single-responsibility.', 'Public API unchanged — existing call sites compile without edits.', 'Unit tests pass on every child; coverage ≥ pre-split baseline.'],
+            firstStep: 'Open the file and list its top-level responsibilities (one sentence each) — that list becomes the split plan.',
+            tooling: [
+                { name: 'eslint-plugin-import', hint: 'enforce per-file LOC budgets via max-lines + boundary rules' },
+                { name: 'knip', hint: 'confirm the split does not strand dead exports' },
+                { name: 'madge', hint: 'visualize post-split dependency tree' },
+            ],
+            preventiveControls: ['CI rule: fail any PR that adds > 100 LOC to a file already over 1000 LOC.', 'Pre-commit hook: warn on files crossing 500 LOC.', 'CODEOWNERS: require module-owner review on the barrel index.'],
+            rollbackPlan: 'Revert the merge commit; the barrel index re-exports the original single file. Keep split children behind a feature flag for one release if call sites were edited.',
+        },
+        size: {
+            risk: 'If left unfixed: every PR touching this file scales linearly in review time, and defect density compounds with each new branch.',
+            blastRadius: 'file-local + reviewers',
+            estimatedHours: 8,
+            acceptance: ['Each split child ≤ 500 LOC and single-responsibility.', 'Public API unchanged — existing call sites compile without edits.', 'Unit tests pass on every child; coverage ≥ pre-split baseline.'],
+            firstStep: 'Open the file and list its top-level responsibilities (one sentence each) — that list becomes the split plan.',
+            tooling: [
+                { name: 'eslint-plugin-import', hint: 'enforce per-file LOC budgets via max-lines + boundary rules' },
+                { name: 'knip', hint: 'confirm the split does not strand dead exports' },
+                { name: 'madge', hint: 'visualize post-split dependency tree' },
+            ],
+            preventiveControls: ['CI rule: fail any PR that adds > 100 LOC to a file already over 1000 LOC.', 'Pre-commit hook: warn on files crossing 500 LOC.', 'CODEOWNERS: require module-owner review on the barrel index.'],
+            rollbackPlan: 'Revert the merge commit; the barrel index re-exports the original single file. Keep split children behind a feature flag for one release if call sites were edited.',
+        },
+        cycle: {
+            risk: 'If left unfixed: bundlers may emit runtime errors in production-only configurations, and any edit to a cycle member can silently break the other.',
+            blastRadius: 'cycle members + their transitive importers',
+            estimatedHours: 6,
+            acceptance: ['Cycle detection returns 0 cycles touching any original member.', 'Bundled output size does not increase beyond noise.', 'Cold-start / first-paint unchanged or improved.'],
+            firstStep: 'Run `madge --circular <entry>` to list every edge in the cycle, then pick the edge whose removal breaks the loop with the smallest diff.',
+            tooling: [
+                { name: 'madge', hint: 'detects + visualizes circular dependencies across JS/TS' },
+                { name: 'dependency-cruiser', hint: 'fails CI on any new cycle, with auto-generated baseline' },
+                { name: 'circular-dependency-plugin', hint: 'webpack build-time warning for runtime cycles' },
+            ],
+            preventiveControls: ['CI: dependency-cruiser rule `no-circular` on the affected subgraph.', 'Pre-commit: madge --circular on staged import graphs.', 'PR template: checkbox "Confirmed no new circular imports introduced".'],
+            rollbackPlan: 'Revert the edge-removal commit; the extracted interface can be inlined back into its origin module in a single patch. Keep the interface file for one release.',
+        },
+        hotspot: {
+            risk: 'If left unfixed: any change here risks cascading defects across multiple call sites and inflates the blast radius of every release.',
+            blastRadius: 'inbound + outbound edges across the graph',
+            estimatedHours: 8,
+            acceptance: ['Hotspot score drops below 5.0 on the next analyzer run.', 'Fan-out decreases or moves behind a façade boundary.', 'CODEOWNERS entry added and enforced.'],
+            firstStep: 'Grep for all importers and group them by domain — the largest cluster becomes the first façade to extract.',
+            tooling: [
+                { name: 'dependency-cruiser', hint: 'enforce fan-in / fan-out limits per module' },
+                { name: 'knip', hint: 'surface unused exports the façade can drop' },
+                { name: 'CodeSee', hint: 'visualize the dependency map around this hotspot' },
+            ],
+            preventiveControls: ['CI: fail if hotspot score on this file regresses beyond 5.0.', 'CODEOWNERS: require 2 reviewers from the owning team.', 'PR-size guard: cap diff size on this file at 200 LOC per PR.'],
+            rollbackPlan: 'Revert the façade PR; callers go back to importing internals directly. Keep the façade module empty but re-exported for one release.',
+        },
+        orphan: {
+            risk: 'If left unfixed: drift between dead code and live APIs accumulates; future readers may revive stale behavior assuming it is current.',
+            blastRadius: '0 dependents (direct) — risk is deletion-safety, not ripple',
+            estimatedHours: 2,
+            acceptance: ['No dynamic references found via grep across the repo.', 'Build + test suite green after deletion.', 'Bundle size does not increase.'],
+            firstStep: 'Run `git log --oneline -5 -- <file>` and grep for require/import of the basename — if both empty, deletion is safe.',
+            tooling: [
+                { name: 'knip', hint: 'automated dead-code detection across the repo' },
+                { name: 'ts-prune', hint: 'finds unused TypeScript exports' },
+                { name: 'depcheck', hint: 'flags unused dependencies and files' },
+            ],
+            preventiveControls: ['CI: knip --exit-code on every PR so dead code never lands.', 'Pre-commit: warn on new files with 0 inbound references after 30 days.', '.ruiignore: explicit allow-list for intentional script entries.'],
+            rollbackPlan: 'Trivial — `git revert <merge>`. No inbound references means no call-site fixup. Keep the deletion in its own PR to make revert surgical.',
+        },
+        depth: {
+            risk: 'If left unfixed: cold-start and CI time grow with each new layer; a leaf change can fail tests in unrelated subtrees.',
+            blastRadius: 'transitive dependents along the chain',
+            estimatedHours: 8,
+            acceptance: ['Max dependency depth drops below the project threshold.', 'Cold-start / first-import time unchanged or improved.', 'CI max-depth guard added and passing.'],
+            firstStep: 'Run `madge --depth <entry>` and trace the single deepest path — the leaf at the bottom is where hoisting starts.',
+            tooling: [
+                { name: 'madge', hint: 'reports max depth per entry; visualize as a tree' },
+                { name: 'dependency-cruiser', hint: 'enforce max-depth rules in CI' },
+                { name: 'bundle-analyzer', hint: 'see which layers contribute to cold-start' },
+            ],
+            preventiveControls: ['CI: dependency-cruiser rule `max-depth` at 6, fail above.', 'PR template: checkbox "No new import chain exceeds 6 levels".', 'ModuleOwnership map: require owner review for any new layer.'],
+            rollbackPlan: 'Revert the façade commit; original intermediate layers reappear. Keep the façade file as a thin re-export for one release.',
+        },
+        coupling: {
+            risk: 'If left unfixed: every interface change cascades into N call sites, and the module becomes an undeclared critical path.',
+            blastRadius: 'direct dependents across the graph',
+            estimatedHours: 16,
+            acceptance: ['Fan-out drops below 20 (or project threshold).', 'Each domain façade exposes only the APIs its cluster needs.', 'Module-boundary lint rule added and green on CI.'],
+            firstStep: 'List all importers and cluster by top-level directory — each cluster maps to one domain façade.',
+            tooling: [
+                { name: 'dependency-cruiser', hint: 'enforce per-module fan-out caps' },
+                { name: 'madge', hint: 'visualize importer clusters' },
+                { name: 'ts-morph', hint: 'script bulk refactors of import paths' },
+            ],
+            preventiveControls: ['CI: dependency-cruiser rule `no-god-modules` at fan-out 20.', 'CODEOWNERS: require owning-team review on any PR adding a new importer.', 'PR template: checkbox "Confirmed fan-out did not increase".'],
+            rollbackPlan: 'Revert the façade-split PR; callers fall back to importing the original god module. Keep façade files as re-exports for one release.',
+        },
+        freshness: {
+            risk: 'If left unfixed: runtime drift goes undetected until the code path is exercised in production, typically during an incident.',
+            blastRadius: 'self + any untested dynamic callers',
+            estimatedHours: 3,
+            acceptance: ['Coverage + typecheck pass recorded in the PR description.', 'Either deleted, added to .ruiignore, or covered by a new integration test.', 'ADR linked if ownership is ambiguous.'],
+            firstStep: 'Run `git log --since="6 months ago" -- <file>`; if empty, ping the last committer and ask: delete or revive?',
+            tooling: [
+                { name: 'knip', hint: 'flags stale, unreferenced files' },
+                { name: 'age-check', hint: 'CI guard that fails on files untouched > N days' },
+                { name: 'coverage diff', hint: 'confirm the stale path is actually exercised' },
+            ],
+            preventiveControls: ['CI: monthly sweep flagging files untouched > 180 days.', 'CODEOWNERS: every directory has a named owner.', 'ADR template: "stale file" decision record linked from PR.'],
+            rollbackPlan: 'If deleted: `git revert <merge>` re-creates the file. If kept: bump mtime via an empty touch commit and add the new integration test in the same PR.',
+        },
+    };
+    const alerts = (window.REPORT_DATA && window.REPORT_DATA.alerts) || [];
+    for (const a of alerts) {
+        const d = byCategory[(a.category || '').toLowerCase()];
+        if (!d) continue;
+        if (!a.risk) a.risk = d.risk;
+        if (!a.blastRadius) a.blastRadius = d.blastRadius;
+        if (!a.estimatedHours) a.estimatedHours = d.estimatedHours;
+        if (!Array.isArray(a.acceptance) || a.acceptance.length === 0) a.acceptance = d.acceptance;
+        if (!a.firstStep) a.firstStep = d.firstStep;
+        if (!Array.isArray(a.tooling) || a.tooling.length === 0) a.tooling = d.tooling;
+        if (!Array.isArray(a.preventiveControls) || a.preventiveControls.length === 0) a.preventiveControls = d.preventiveControls;
+        if (!a.rollbackPlan) a.rollbackPlan = d.rollbackPlan;
+    }
+})();

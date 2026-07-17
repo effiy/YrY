@@ -4,7 +4,7 @@
              role="status" :aria-label="item.label + ': ' + item.value">
             <div class="rui-stat-card-val">{{ item.value }}</div>
             <div class="rui-stat-card-lbl">{{ item.label }}</div>
-            <div v-if="item.sub" class="rui-stat-card-sub">{{ item.sub }}</div>
+            <div v-if="item.sub" class="rui-stat-card-sub" :title="item.sub">{{ item.sub }}</div>
         </div>
     </div>
 </script>

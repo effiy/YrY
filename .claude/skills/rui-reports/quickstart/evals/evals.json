@@ -1,0 +1,145 @@
+{
+  "skill_name": "rui-report-quickstart",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I just joined a new team and was handed a Python repo at ./svc-billing. Generate a newcomer quickstart page so I can ramp up.",
+      "expected_output": "Routes to /rui-report-quickstart create --scope ./svc-billing --out docs/reports/quickstart. Walks the scope, detects Python + (likely Django/Flask), identifies entry points + tests + docs, builds all 7 sections, emits index.html + README.md, reports composite score and per-section verdicts.",
+      "files": [],
+      "expectations": [
+        "The response invokes /rui-report-quickstart create with --scope",
+        "The response identifies the language and framework from the scope",
+        "The response describes the 7-section payload (overview, concepts, directory-map, onboarding-flow, commands, faq, further-reading)",
+        "The response mentions both outputs: index.html AND README.md",
+        "The response reports a composite score and per-section verdicts"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I need a quickstart for our open-source repo at /Users/me/projects/cli-tool. The page should be HTML and a markdown mirror so the community can fork and edit.",
+      "expected_output": "Routes to /rui-report-quickstart create --scope /Users/me/projects/cli-tool. Two outputs: index.html (browser-viewable, Vue 3) and README.md (hand-editable knowledge base). Both contain the same 7 sections in canonical order with identical ## headers.",
+      "files": [],
+      "expectations": [
+        "The response invokes /rui-report-quickstart create with the absolute scope path",
+        "The response mentions both index.html AND README.md as outputs",
+        "The response notes that the markdown mirror uses identical ## headers to the HTML page",
+        "The response explains why the mirror is useful (forkable, editable, static-site-compatible)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I want to onboard new hires onto our internal monorepo at ~/work/monorepo. Generate a quickstart — I want the page to be Chinese since most of my team reads Chinese.",
+      "expected_output": "Routes to /rui-report-quickstart create --scope ~/work/monorepo --language zh. All 7 sections emit Chinese content. Tone and key terms adapted; section structure identical to the canonical English version.",
+      "files": [],
+      "expectations": [
+        "The response uses --language zh",
+        "The response notes that all 7 sections are emitted in Chinese",
+        "The response keeps the canonical section structure (no reordering)",
+        "The response mentions that technical terms (e.g. framework names, command names) remain in their original language"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Run a quickstart on ./legacy-app — it's an old Java app with no README, no CONTRIBUTING, no docs folder. Just a src/ tree and a pom.xml.",
+      "expected_output": "Routes to /rui-report-quickstart create --scope ./legacy-app. All 7 sections render with # TODO markers where evidence is missing (faq, further-reading will be TODO-heavy). Composite score will be low (likely D or F). The page is still generated — better a # TODO page than no page.",
+      "files": [],
+      "expectations": [
+        "The response does NOT abort despite missing README/CONTRIBUTING/docs",
+        "The response renders all 7 sections with # TODO markers for missing facets",
+        "The response notes that faq and further-reading will be TODO-heavy",
+        "The response computes a low composite score (D or F) and surfaces it in the header",
+        "The response emphasizes the no-fabrication rule: missing data renders as TODO, not invented prose"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "I want to skip the markdown mirror — just give me the HTML page this time. Can I do that?",
+      "expected_output": "Yes, use --no-mirror. Routes to /rui-report-quickstart create --scope <path> --no-mirror. Only index.html is written; README.md is skipped. Useful when the markdown mirror would clutter the repo (e.g. embedded widgets, interactive demos).",
+      "files": [],
+      "expectations": [
+        "The response confirms --no-mirror is supported",
+        "The response explains the use case (HTML-only when mirror would clutter)",
+        "The response shows the full command line including --no-mirror"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Generate a quickstart for ./my-app but I want the directory map to go 4 levels deep instead of the default 3.",
+      "expected_output": "Routes to /rui-report-quickstart create --scope ./my-app --depth 4. The directory-map section annotates the top 4 levels (vs default 3). Other 6 sections unchanged.",
+      "files": [],
+      "expectations": [
+        "The response uses --depth 4",
+        "The response notes that only the directory-map section is affected",
+        "The response explains the trade-off (deeper maps are more informative but noisier)"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Why does the report have a composite score and per-section verdicts? What's the grading scale?",
+      "expected_output": "The report is a self-assessment of how well the project teaches a newcomer. Per-section verdict is pass (≥0.90, ✅), partial (0.50–0.89, ⚠️), or fail (<0.50, 🚫). Composite = mean(coverage) × 100. Grade: A≥90, B≥75, C≥60, D≥40, F<40. Low scores surface a call-to-action: 'fill the # TODO markers to improve your onboarding'.",
+      "files": [],
+      "expectations": [
+        "The response explains the per-section verdict thresholds (pass / partial / fail)",
+        "The response explains the composite score formula (mean × 100)",
+        "The response lists the grade scale (A / B / C / D / F)",
+        "The response frames the score as a self-assessment of onboarding quality, not code quality"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "I notice the page has a sidebar with reading-progress, sidebar, topbar, etc. — does this quickstart use the same 9-region layout as docs/quickstart/?",
+      "expected_output": "No. rui-report-quickstart uses the rui-reports 4-file template split (mirrors rui-report-files / rui-report-diagram / rui-report-self-test) and the rui-tools shared component library (<rui-back-top>, <rui-tag-chip>). It does NOT use the docs/quickstart/ 9-region layout. The two skills are complementary, not overlapping: rui-docs-quickstart is the operator's manual for a docs/quickstart/ scaffold; rui-report-quickstart generates a newcomer-facing page for ANY local project.",
+      "files": [],
+      "expectations": [
+        "The response clarifies that rui-report-quickstart uses the rui-reports 4-file split, not the docs/quickstart/ 9-region layout",
+        "The response names the shared components used (rui-back-top, rui-tag-chip)",
+        "The response distinguishes the two skills: rui-docs-quickstart is a maintainer manual; rui-report-quickstart is a newcomer-facing page generator"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "I ran a quickstart yesterday and edited README.md to add a FAQ entry. Today I re-ran. Will my edit survive?",
+      "expected_output": "By default, no — the analyzer regenerates the markdown mirror body each run, so hand-edits to README.md are overwritten. To preserve hand-edits, the analyzer should warn if the existing README.md is 'dirty' (changed since last run) and offer to merge. As a workaround, keep your hand-edits in a separate file (e.g. FAQ-additions.md) and merge manually after the run.",
+      "files": [],
+      "expectations": [
+        "The response acknowledges that re-running overwrites the markdown mirror body",
+        "The response notes that section headers are byte-stable, so a re-run produces a structurally compatible file",
+        "The response suggests a workaround (separate file, manual merge, or analyzer dirty-check)"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "I'm worried the analyzer will hallucinate — what stops it from inventing file paths that aren't in my repo?",
+      "expected_output": "The no-fabrication rule (Rule 9 in SKILL.md) explicitly forbids inventing file paths. Every claim in the 7 sections must cite a real file/line/symbol from the scope or render as # TODO. The page has a 'TODO badge' UI for TODO markers; the mirror has a '# TODO' header. Verdicts drop for any section that has TODO markers. The composite score reflects this — high TODO count = low score = call-to-action to fill them in.",
+      "files": [],
+      "expectations": [
+        "The response cites the no-fabrication rule explicitly",
+        "The response explains the # TODO marker convention in both the HTML page and the markdown mirror",
+        "The response notes that verdicts and the composite score penalize heavy TODO use",
+        "The response frames the score as a self-audit mechanism"
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "What 7 sections does the quickstart cover and in what order?",
+      "expected_output": "Canonical 7 sections in this order: 1) Project Overview (overview), 2) Key Concepts (concepts), 3) Directory Map (directory-map), 4) Onboarding Flow (onboarding-flow), 5) Command Cheatsheet (commands), 6) FAQ (faq), 7) Further Reading (further-reading). The order is fixed; the page does no reordering. Section slugs are the canonical identifiers used in data.js and the markdown mirror's ## headers.",
+      "files": [],
+      "expectations": [
+        "The response lists all 7 sections by name and slug",
+        "The response preserves the canonical order (overview → concepts → directory-map → onboarding-flow → commands → faq → further-reading)",
+        "The response notes that the order is fixed and not subject to reordering"
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "What's the difference between rui-report-quickstart, rui-report-files, rui-report-diagram, and rui-report-self-test?",
+      "expected_output": "All four use the rui-reports 4-file template split and load shared resources from /.claude/shared/. They differ in scope: rui-report-files analyzes a project for file size + dependency nesting; rui-report-diagram produces architecture diagrams (from requirements or codebase); rui-report-self-test produces a 6-scene self-test report; rui-report-quickstart produces a 7-section newcomer quickstart page. The 4 are complementary, not overlapping.",
+      "files": [],
+      "expectations": [
+        "The response notes the common 4-file template split + shared resource convention",
+        "The response distinguishes each skill by its output (size report / diagram / self-test / quickstart)",
+        "The response clarifies that the 4 are complementary"
+      ]
+    }
+  ]
+}

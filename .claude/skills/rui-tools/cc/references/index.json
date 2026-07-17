@@ -1,0 +1,2600 @@
+{
+  "sources": [
+    {
+      "id": "awesome-claude-code-subagents",
+      "label": "Awesome Claude Code Subagents",
+      "readme": "references/README-awesome-claude-code-subagents.md",
+      "upstream_url": "https://raw.githubusercontent.com/VoltAgent/awesome-claude-code-subagents/main/README.md",
+      "homepage": "https://github.com/VoltAgent/awesome-claude-code-subagents",
+      "blob_base": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/",
+      "dialect": "subagent-bullets"
+    },
+    {
+      "id": "claude-code-best-practice",
+      "label": "Claude Code Best Practice",
+      "readme": "references/README-claude-code-best-practice.md",
+      "upstream_url": "https://raw.githubusercontent.com/shanraisshan/claude-code-best-practice/main/README.md",
+      "homepage": "https://github.com/shanraisshan/claude-code-best-practice",
+      "blob_base": "https://github.com/shanraisshan/claude-code-best-practice/blob/main/",
+      "dialect": "claude-bp"
+    }
+  ],
+  "categories": [
+    {
+      "name": "Core Development",
+      "topics": [
+        {
+          "name": "Core Development",
+          "resources": [
+            {
+              "category": "Core Development",
+              "topic": "Core Development",
+              "title": "api-designer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/01-core-development/api-designer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Core Development",
+              "topic": "Core Development",
+              "title": "backend-developer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/01-core-development/backend-developer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Core Development",
+              "topic": "Core Development",
+              "title": "design-bridge",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/01-core-development/design-bridge.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Core Development",
+              "topic": "Core Development",
+              "title": "electron-pro",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/01-core-development/electron-pro.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Core Development",
+              "topic": "Core Development",
+              "title": "frontend-developer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/01-core-development/frontend-developer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Core Development",
+              "topic": "Core Development",
+              "title": "fullstack-developer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/01-core-development/fullstack-developer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Core Development",
+              "topic": "Core Development",
+              "title": "graphql-architect",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/01-core-development/graphql-architect.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Core Development",
+              "topic": "Core Development",
+              "title": "microservices-architect",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/01-core-development/microservices-architect.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Core Development",
+              "topic": "Core Development",
+              "title": "mobile-developer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/01-core-development/mobile-developer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Core Development",
+              "topic": "Core Development",
+              "title": "ui-designer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/01-core-development/ui-designer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Core Development",
+              "topic": "Core Development",
+              "title": "websocket-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/01-core-development/websocket-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Language Specialists",
+      "topics": [
+        {
+          "name": "Language Specialists",
+          "resources": [
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "typescript-pro",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/typescript-pro.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "sql-pro",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/sql-pro.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "swift-expert",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/swift-expert.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "vue-expert",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/vue-expert.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "angular-architect",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/angular-architect.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "cpp-pro",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/cpp-pro.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "csharp-developer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/csharp-developer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "django-developer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/django-developer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "dotnet-core-expert",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/dotnet-core-expert.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "dotnet-framework-4.8-expert",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/dotnet-framework-4.8-expert.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "elixir-expert",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/elixir-expert.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "expo-react-native-expert",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/expo-react-native-expert.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "fastapi-developer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/fastapi-developer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "flutter-expert",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/flutter-expert.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "golang-pro",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/golang-pro.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "java-architect",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/java-architect.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "javascript-pro",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/javascript-pro.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "powershell-5.1-expert",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/powershell-5.1-expert.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "powershell-7-expert",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/powershell-7-expert.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "kotlin-specialist",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/kotlin-specialist.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "laravel-specialist",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/laravel-specialist.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "nextjs-developer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/nextjs-developer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "node-specialist",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/node-specialist.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "php-pro",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/php-pro.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "python-pro",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/python-pro.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "rails-expert",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/rails-expert.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "react-specialist",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/react-specialist.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "rust-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/rust-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "spring-boot-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/spring-boot-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Language Specialists",
+              "topic": "Language Specialists",
+              "title": "symfony-specialist",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/symfony-specialist.md",
+              "source": "awesome-claude-code-subagents"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Infrastructure",
+      "topics": [
+        {
+          "name": "Infrastructure",
+          "resources": [
+            {
+              "category": "Infrastructure",
+              "topic": "Infrastructure",
+              "title": "azure-infra-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/03-infrastructure/azure-infra-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Infrastructure",
+              "topic": "Infrastructure",
+              "title": "cloud-architect",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/03-infrastructure/cloud-architect.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Infrastructure",
+              "topic": "Infrastructure",
+              "title": "database-administrator",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/03-infrastructure/database-administrator.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Infrastructure",
+              "topic": "Infrastructure",
+              "title": "docker-expert",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/03-infrastructure/docker-expert.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Infrastructure",
+              "topic": "Infrastructure",
+              "title": "deployment-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/03-infrastructure/deployment-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Infrastructure",
+              "topic": "Infrastructure",
+              "title": "devops-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/03-infrastructure/devops-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Infrastructure",
+              "topic": "Infrastructure",
+              "title": "devops-incident-responder",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/03-infrastructure/devops-incident-responder.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Infrastructure",
+              "topic": "Infrastructure",
+              "title": "incident-responder",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/03-infrastructure/incident-responder.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Infrastructure",
+              "topic": "Infrastructure",
+              "title": "kubernetes-specialist",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/03-infrastructure/kubernetes-specialist.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Infrastructure",
+              "topic": "Infrastructure",
+              "title": "network-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/03-infrastructure/network-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Infrastructure",
+              "topic": "Infrastructure",
+              "title": "platform-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/03-infrastructure/platform-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Infrastructure",
+              "topic": "Infrastructure",
+              "title": "security-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/03-infrastructure/security-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Infrastructure",
+              "topic": "Infrastructure",
+              "title": "sre-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/03-infrastructure/sre-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Infrastructure",
+              "topic": "Infrastructure",
+              "title": "terraform-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/03-infrastructure/terraform-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Infrastructure",
+              "topic": "Infrastructure",
+              "title": "terragrunt-expert",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/03-infrastructure/terragrunt-expert.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Infrastructure",
+              "topic": "Infrastructure",
+              "title": "windows-infra-admin",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/03-infrastructure/windows-infra-admin.md",
+              "source": "awesome-claude-code-subagents"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Quality & Security",
+      "topics": [
+        {
+          "name": "Quality & Security",
+          "resources": [
+            {
+              "category": "Quality & Security",
+              "topic": "Quality & Security",
+              "title": "accessibility-tester",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/accessibility-tester.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Quality & Security",
+              "topic": "Quality & Security",
+              "title": "ad-security-reviewer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/ad-security-reviewer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Quality & Security",
+              "topic": "Quality & Security",
+              "title": "ai-writing-auditor",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/ai-writing-auditor.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Quality & Security",
+              "topic": "Quality & Security",
+              "title": "architect-reviewer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/architect-reviewer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Quality & Security",
+              "topic": "Quality & Security",
+              "title": "chaos-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/chaos-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Quality & Security",
+              "topic": "Quality & Security",
+              "title": "code-reviewer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/code-reviewer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Quality & Security",
+              "topic": "Quality & Security",
+              "title": "compliance-auditor",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/compliance-auditor.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Quality & Security",
+              "topic": "Quality & Security",
+              "title": "debugger",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/debugger.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Quality & Security",
+              "topic": "Quality & Security",
+              "title": "gdpr-ccpa-compliance",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/gdpr-ccpa-compliance.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Quality & Security",
+              "topic": "Quality & Security",
+              "title": "error-detective",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/error-detective.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Quality & Security",
+              "topic": "Quality & Security",
+              "title": "penetration-tester",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/penetration-tester.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Quality & Security",
+              "topic": "Quality & Security",
+              "title": "performance-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/performance-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Quality & Security",
+              "topic": "Quality & Security",
+              "title": "powershell-security-hardening",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/powershell-security-hardening.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Quality & Security",
+              "topic": "Quality & Security",
+              "title": "qa-expert",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/qa-expert.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Quality & Security",
+              "topic": "Quality & Security",
+              "title": "security-auditor",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/security-auditor.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Quality & Security",
+              "topic": "Quality & Security",
+              "title": "test-automator",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/test-automator.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Quality & Security",
+              "topic": "Quality & Security",
+              "title": "ui-ux-tester",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/ui-ux-tester.md",
+              "source": "awesome-claude-code-subagents"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Data & AI",
+      "topics": [
+        {
+          "name": "Data & AI",
+          "resources": [
+            {
+              "category": "Data & AI",
+              "topic": "Data & AI",
+              "title": "ai-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/ai-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Data & AI",
+              "topic": "Data & AI",
+              "title": "data-analyst",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/data-analyst.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Data & AI",
+              "topic": "Data & AI",
+              "title": "data-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/data-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Data & AI",
+              "topic": "Data & AI",
+              "title": "data-scientist",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/data-scientist.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Data & AI",
+              "topic": "Data & AI",
+              "title": "database-optimizer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/database-optimizer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Data & AI",
+              "topic": "Data & AI",
+              "title": "llm-architect",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/llm-architect.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Data & AI",
+              "topic": "Data & AI",
+              "title": "machine-learning-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/machine-learning-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Data & AI",
+              "topic": "Data & AI",
+              "title": "ml-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/ml-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Data & AI",
+              "topic": "Data & AI",
+              "title": "mlops-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/mlops-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Data & AI",
+              "topic": "Data & AI",
+              "title": "nlp-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/nlp-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Data & AI",
+              "topic": "Data & AI",
+              "title": "postgres-pro",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/postgres-pro.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Data & AI",
+              "topic": "Data & AI",
+              "title": "prompt-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/prompt-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Data & AI",
+              "topic": "Data & AI",
+              "title": "reinforcement-learning-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/reinforcement-learning-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Developer Experience",
+      "topics": [
+        {
+          "name": "Developer Experience",
+          "resources": [
+            {
+              "category": "Developer Experience",
+              "topic": "Developer Experience",
+              "title": "build-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/build-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Developer Experience",
+              "topic": "Developer Experience",
+              "title": "cli-developer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/cli-developer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Developer Experience",
+              "topic": "Developer Experience",
+              "title": "dependency-manager",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/dependency-manager.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Developer Experience",
+              "topic": "Developer Experience",
+              "title": "documentation-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/documentation-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Developer Experience",
+              "topic": "Developer Experience",
+              "title": "dx-optimizer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/dx-optimizer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Developer Experience",
+              "topic": "Developer Experience",
+              "title": "git-workflow-manager",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/git-workflow-manager.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Developer Experience",
+              "topic": "Developer Experience",
+              "title": "legacy-modernizer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/legacy-modernizer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Developer Experience",
+              "topic": "Developer Experience",
+              "title": "mcp-developer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/mcp-developer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Developer Experience",
+              "topic": "Developer Experience",
+              "title": "powershell-ui-architect",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/powershell-ui-architect.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Developer Experience",
+              "topic": "Developer Experience",
+              "title": "powershell-module-architect",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/powershell-module-architect.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Developer Experience",
+              "topic": "Developer Experience",
+              "title": "readme-generator",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/readme-generator.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Developer Experience",
+              "topic": "Developer Experience",
+              "title": "refactoring-specialist",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/refactoring-specialist.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Developer Experience",
+              "topic": "Developer Experience",
+              "title": "slack-expert",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/slack-expert.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Developer Experience",
+              "topic": "Developer Experience",
+              "title": "tooling-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/tooling-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Developer Experience",
+              "topic": "Developer Experience",
+              "title": "visual-asset-generator",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/visual-asset-generator.md",
+              "source": "awesome-claude-code-subagents"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Specialized Domains",
+      "topics": [
+        {
+          "name": "Specialized Domains",
+          "resources": [
+            {
+              "category": "Specialized Domains",
+              "topic": "Specialized Domains",
+              "title": "api-documenter",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/07-specialized-domains/api-documenter.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Specialized Domains",
+              "topic": "Specialized Domains",
+              "title": "blockchain-developer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/07-specialized-domains/blockchain-developer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Specialized Domains",
+              "topic": "Specialized Domains",
+              "title": "embedded-systems",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/07-specialized-domains/embedded-systems.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Specialized Domains",
+              "topic": "Specialized Domains",
+              "title": "fintech-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/07-specialized-domains/fintech-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Specialized Domains",
+              "topic": "Specialized Domains",
+              "title": "game-developer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/07-specialized-domains/game-developer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Specialized Domains",
+              "topic": "Specialized Domains",
+              "title": "healthcare-admin",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/07-specialized-domains/healthcare-admin.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Specialized Domains",
+              "topic": "Specialized Domains",
+              "title": "hipaa-compliance",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/07-specialized-domains/hipaa-compliance.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Specialized Domains",
+              "topic": "Specialized Domains",
+              "title": "iot-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/07-specialized-domains/iot-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Specialized Domains",
+              "topic": "Specialized Domains",
+              "title": "m365-admin",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/07-specialized-domains/m365-admin.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Specialized Domains",
+              "topic": "Specialized Domains",
+              "title": "mobile-app-developer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/07-specialized-domains/mobile-app-developer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Specialized Domains",
+              "topic": "Specialized Domains",
+              "title": "payment-integration",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/07-specialized-domains/payment-integration.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Specialized Domains",
+              "topic": "Specialized Domains",
+              "title": "quant-analyst",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/07-specialized-domains/quant-analyst.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Specialized Domains",
+              "topic": "Specialized Domains",
+              "title": "risk-manager",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/07-specialized-domains/risk-manager.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Specialized Domains",
+              "topic": "Specialized Domains",
+              "title": "seo-specialist",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/07-specialized-domains/seo-specialist.md",
+              "source": "awesome-claude-code-subagents"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Business & Product",
+      "topics": [
+        {
+          "name": "Business & Product",
+          "resources": [
+            {
+              "category": "Business & Product",
+              "topic": "Business & Product",
+              "title": "assumption-mapping",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/08-business-product/assumption-mapping.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Business & Product",
+              "topic": "Business & Product",
+              "title": "backlog-grooming",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/08-business-product/backlog-grooming.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Business & Product",
+              "topic": "Business & Product",
+              "title": "business-analyst",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/08-business-product/business-analyst.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Business & Product",
+              "topic": "Business & Product",
+              "title": "content-marketer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/08-business-product/content-marketer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Business & Product",
+              "topic": "Business & Product",
+              "title": "customer-success-manager",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/08-business-product/customer-success-manager.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Business & Product",
+              "topic": "Business & Product",
+              "title": "growth-loops",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/08-business-product/growth-loops.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Business & Product",
+              "topic": "Business & Product",
+              "title": "legal-advisor",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/08-business-product/legal-advisor.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Business & Product",
+              "topic": "Business & Product",
+              "title": "license-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/08-business-product/license-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Business & Product",
+              "topic": "Business & Product",
+              "title": "product-manager",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/08-business-product/product-manager.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Business & Product",
+              "topic": "Business & Product",
+              "title": "project-manager",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/08-business-product/project-manager.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Business & Product",
+              "topic": "Business & Product",
+              "title": "sales-engineer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/08-business-product/sales-engineer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Business & Product",
+              "topic": "Business & Product",
+              "title": "scrum-master",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/08-business-product/scrum-master.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Business & Product",
+              "topic": "Business & Product",
+              "title": "technical-writer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/08-business-product/technical-writer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Business & Product",
+              "topic": "Business & Product",
+              "title": "ux-researcher",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/08-business-product/ux-researcher.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Business & Product",
+              "topic": "Business & Product",
+              "title": "wordpress-master",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/08-business-product/wordpress-master.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Business & Product",
+              "topic": "Business & Product",
+              "title": "content-quality-editor",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/08-business-product/content-quality-editor.md",
+              "source": "awesome-claude-code-subagents"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Meta & Orchestration",
+      "topics": [
+        {
+          "name": "Meta & Orchestration",
+          "resources": [
+            {
+              "category": "Meta & Orchestration",
+              "topic": "Meta & Orchestration",
+              "title": "airis-mcp-gateway",
+              "url": "https://github.com/agiletec-inc/airis-mcp-gateway",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Meta & Orchestration",
+              "topic": "Meta & Orchestration",
+              "title": "moai-adk",
+              "url": "https://github.com/modu-ai/moai-adk",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Meta & Orchestration",
+              "topic": "Meta & Orchestration",
+              "title": "agent-installer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/09-meta-orchestration/agent-installer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Meta & Orchestration",
+              "topic": "Meta & Orchestration",
+              "title": "agent-organizer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/09-meta-orchestration/agent-organizer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Meta & Orchestration",
+              "topic": "Meta & Orchestration",
+              "title": "codebase-orchestrator",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/09-meta-orchestration/codebase-orchestrator.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Meta & Orchestration",
+              "topic": "Meta & Orchestration",
+              "title": "context-manager",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/09-meta-orchestration/context-manager.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Meta & Orchestration",
+              "topic": "Meta & Orchestration",
+              "title": "error-coordinator",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/09-meta-orchestration/error-coordinator.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Meta & Orchestration",
+              "topic": "Meta & Orchestration",
+              "title": "it-ops-orchestrator",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/09-meta-orchestration/it-ops-orchestrator.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Meta & Orchestration",
+              "topic": "Meta & Orchestration",
+              "title": "knowledge-synthesizer",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/09-meta-orchestration/knowledge-synthesizer.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Meta & Orchestration",
+              "topic": "Meta & Orchestration",
+              "title": "multi-agent-coordinator",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/09-meta-orchestration/multi-agent-coordinator.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Meta & Orchestration",
+              "topic": "Meta & Orchestration",
+              "title": "performance-monitor",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/09-meta-orchestration/performance-monitor.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Meta & Orchestration",
+              "topic": "Meta & Orchestration",
+              "title": "pied-piper",
+              "url": "https://github.com/sathish316/pied-piper/",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Meta & Orchestration",
+              "topic": "Meta & Orchestration",
+              "title": "task-distributor",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/09-meta-orchestration/task-distributor.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Meta & Orchestration",
+              "topic": "Meta & Orchestration",
+              "title": "taskade",
+              "url": "https://github.com/taskade/mcp",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Meta & Orchestration",
+              "topic": "Meta & Orchestration",
+              "title": "workflow-orchestrator",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/09-meta-orchestration/workflow-orchestrator.md",
+              "source": "awesome-claude-code-subagents"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Research & Analysis",
+      "topics": [
+        {
+          "name": "Research & Analysis",
+          "resources": [
+            {
+              "category": "Research & Analysis",
+              "topic": "Research & Analysis",
+              "title": "ab-test-analysis",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/10-research-analysis/ab-test-analysis.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Research & Analysis",
+              "topic": "Research & Analysis",
+              "title": "cohort-analysis",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/10-research-analysis/cohort-analysis.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Research & Analysis",
+              "topic": "Research & Analysis",
+              "title": "first-principles-thinking",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/10-research-analysis/first-principles-thinking.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Research & Analysis",
+              "topic": "Research & Analysis",
+              "title": "research-analyst",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/10-research-analysis/research-analyst.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Research & Analysis",
+              "topic": "Research & Analysis",
+              "title": "search-specialist",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/10-research-analysis/search-specialist.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Research & Analysis",
+              "topic": "Research & Analysis",
+              "title": "trend-analyst",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/10-research-analysis/trend-analyst.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Research & Analysis",
+              "topic": "Research & Analysis",
+              "title": "competitive-analyst",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/10-research-analysis/competitive-analyst.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Research & Analysis",
+              "topic": "Research & Analysis",
+              "title": "market-researcher",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/10-research-analysis/market-researcher.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Research & Analysis",
+              "topic": "Research & Analysis",
+              "title": "project-idea-validator",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/10-research-analysis/project-idea-validator.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Research & Analysis",
+              "topic": "Research & Analysis",
+              "title": "data-researcher",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/10-research-analysis/data-researcher.md",
+              "source": "awesome-claude-code-subagents"
+            },
+            {
+              "category": "Research & Analysis",
+              "topic": "Research & Analysis",
+              "title": "scientific-literature-researcher",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/10-research-analysis/scientific-literature-researcher.md",
+              "source": "awesome-claude-code-subagents"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CONCEPTS",
+      "topics": [
+        {
+          "name": "CONCEPTS",
+          "resources": [
+            {
+              "category": "CONCEPTS",
+              "topic": "CONCEPTS",
+              "title": "Subagents",
+              "url": "https://code.claude.com/docs/en/sub-agents",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "CONCEPTS",
+              "title": "Commands",
+              "url": "https://code.claude.com/docs/en/slash-commands",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "CONCEPTS",
+              "title": "Skills",
+              "url": "https://code.claude.com/docs/en/skills",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "CONCEPTS",
+              "title": "Workflows",
+              "url": "https://code.claude.com/docs/en/common-workflows",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "CONCEPTS",
+              "title": "**Hooks**",
+              "url": "https://github.com/shanraisshan/claude-code-hooks",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "CONCEPTS",
+              "title": "MCP Servers",
+              "url": "https://code.claude.com/docs/en/mcp",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "CONCEPTS",
+              "title": "Plugins",
+              "url": "https://code.claude.com/docs/en/plugins",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "CONCEPTS",
+              "title": "Settings",
+              "url": "https://code.claude.com/docs/en/settings",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "CONCEPTS",
+              "title": "**Status Line**",
+              "url": "https://github.com/shanraisshan/claude-code-status-line",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "CONCEPTS",
+              "title": "Memory",
+              "url": "https://code.claude.com/docs/en/memory",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "CONCEPTS",
+              "title": "Checkpointing",
+              "url": "https://code.claude.com/docs/en/checkpointing",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "CONCEPTS",
+              "title": "CLI Startup Flags",
+              "url": "https://code.claude.com/docs/en/cli-reference",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "CONCEPTS",
+              "title": "**AI Terms**",
+              "url": "https://github.com/shanraisshan/claude-code-codex-cursor-gemini/blob/main/reports/ai-terms.md",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "CONCEPTS",
+              "title": "Best Practices",
+              "url": "https://code.claude.com/docs/en/best-practices",
+              "source": "claude-code-best-practice"
+            }
+          ]
+        },
+        {
+          "name": "Hot",
+          "resources": [
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "Ultrareview",
+              "url": "https://code.claude.com/docs/en/ultrareview",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "Devcontainers",
+              "url": "https://code.claude.com/docs/en/devcontainer",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "Channels",
+              "url": "https://code.claude.com/docs/en/channels",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "Ultraplan",
+              "url": "https://code.claude.com/docs/en/ultraplan",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "**No Flicker Mode** !beta",
+              "url": "https://x.com/bcherny/status/2039421575422980329",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "**Auto Mode** !beta",
+              "url": "https://x.com/claudeai/status/2036503582166393240",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "Fast Mode",
+              "url": "https://code.claude.com/docs/en/fast-mode",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "Advisor",
+              "url": "https://code.claude.com/docs/en/advisor",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "Computer Use",
+              "url": "https://code.claude.com/docs/en/computer-use",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "Agent SDK",
+              "url": "https://code.claude.com/docs/en/agent-sdk/overview",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "**Ralph Wiggum Loop**",
+              "url": "https://github.com/ghuntley/how-to-ralph-wiggum",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "Chrome",
+              "url": "https://code.claude.com/docs/en/chrome",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "Claude Code Web",
+              "url": "https://code.claude.com/docs/en/claude-code-on-the-web",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "Artifacts",
+              "url": "https://code.claude.com/docs/en/artifacts",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "Slack",
+              "url": "https://code.claude.com/docs/en/slack",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "**Code Review** !beta",
+              "url": "https://x.com/claudeai/status/2031088171262554195",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "GitHub Actions",
+              "url": "https://code.claude.com/docs/en/github-actions",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "**Remote Control**",
+              "url": "https://x.com/noahzweben/status/2032533699116355819",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "Deep Links",
+              "url": "https://code.claude.com/docs/en/deep-links",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "Dynamic Workflows",
+              "url": "https://code.claude.com/docs/en/workflows",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "**Agent Teams** !beta",
+              "url": "https://x.com/bcherny/status/2019472394696683904",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "Agent View",
+              "url": "https://code.claude.com/docs/en/agent-view",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "**Scheduled Tasks**",
+              "url": "https://x.com/bcherny/status/2030193932404150413",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "Routines",
+              "url": "https://code.claude.com/docs/en/routines",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "Ultrareview tracking",
+              "url": "https://code.claude.com/docs/en/ultrareview#track-a-running-review",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "Goal",
+              "url": "https://code.claude.com/docs/en/goal",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "**Voice Dictation** !beta",
+              "url": "https://x.com/trq212/status/2028628570692890800",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "**Bundled Skills**",
+              "url": "https://x.com/bcherny/status/2027534984534544489",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CONCEPTS",
+              "topic": "Hot",
+              "title": "**Git Worktrees**",
+              "url": "https://x.com/bcherny/status/2025007393290272904",
+              "source": "claude-code-best-practice"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DEVELOPMENT WORKFLOWS",
+      "topics": [
+        {
+          "name": "DEVELOPMENT WORKFLOWS",
+          "resources": [
+            {
+              "category": "DEVELOPMENT WORKFLOWS",
+              "topic": "DEVELOPMENT WORKFLOWS",
+              "title": "Superpowers",
+              "url": "https://github.com/obra/superpowers",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "DEVELOPMENT WORKFLOWS",
+              "topic": "DEVELOPMENT WORKFLOWS",
+              "title": "Everything Claude Code",
+              "url": "https://github.com/affaan-m/everything-claude-code",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "DEVELOPMENT WORKFLOWS",
+              "topic": "DEVELOPMENT WORKFLOWS",
+              "title": "Matt Pocock Skills",
+              "url": "https://github.com/mattpocock/skills",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "DEVELOPMENT WORKFLOWS",
+              "topic": "DEVELOPMENT WORKFLOWS",
+              "title": "gstack",
+              "url": "https://github.com/garrytan/gstack",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "DEVELOPMENT WORKFLOWS",
+              "topic": "DEVELOPMENT WORKFLOWS",
+              "title": "Spec Kit",
+              "url": "https://github.com/github/spec-kit",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "DEVELOPMENT WORKFLOWS",
+              "topic": "DEVELOPMENT WORKFLOWS",
+              "title": "agent-skills",
+              "url": "https://github.com/addyosmani/agent-skills",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "DEVELOPMENT WORKFLOWS",
+              "topic": "DEVELOPMENT WORKFLOWS",
+              "title": "Get Shit Done",
+              "url": "https://github.com/gsd-build/get-shit-done",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "DEVELOPMENT WORKFLOWS",
+              "topic": "DEVELOPMENT WORKFLOWS",
+              "title": "OpenSpec",
+              "url": "https://github.com/Fission-AI/OpenSpec",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "DEVELOPMENT WORKFLOWS",
+              "topic": "DEVELOPMENT WORKFLOWS",
+              "title": "BMAD-METHOD",
+              "url": "https://github.com/bmad-code-org/BMAD-METHOD",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "DEVELOPMENT WORKFLOWS",
+              "topic": "DEVELOPMENT WORKFLOWS",
+              "title": "oh-my-claudecode",
+              "url": "https://github.com/Yeachan-Heo/oh-my-claudecode",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "DEVELOPMENT WORKFLOWS",
+              "topic": "DEVELOPMENT WORKFLOWS",
+              "title": "Compound Engineering",
+              "url": "https://github.com/EveryInc/compound-engineering-plugin",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "DEVELOPMENT WORKFLOWS",
+              "topic": "DEVELOPMENT WORKFLOWS",
+              "title": "HumanLayer",
+              "url": "https://github.com/humanlayer/humanlayer",
+              "source": "claude-code-best-practice"
+            }
+          ]
+        },
+        {
+          "name": "Others",
+          "resources": [
+            {
+              "category": "DEVELOPMENT WORKFLOWS",
+              "topic": "Others",
+              "title": "Implemented",
+              "url": "https://github.com/shanraisshan/ralph-wiggum-self-evolving-loop",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "DEVELOPMENT WORKFLOWS",
+              "topic": "Others",
+              "title": "Andrej Karpathy (Founding Member, OpenAI) Workflow",
+              "url": "https://x.com/karpathy/status/2015883857489522876",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "DEVELOPMENT WORKFLOWS",
+              "topic": "Others",
+              "title": "Peter Steinberger (Creator of OpenClaw) Workflow",
+              "url": "https://youtu.be/8lF7HmQ_RgY?t=2582",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "DEVELOPMENT WORKFLOWS",
+              "topic": "Others",
+              "title": "Boris",
+              "url": "https://x.com/bcherny",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "DEVELOPMENT WORKFLOWS",
+              "topic": "Others",
+              "title": "Thariq",
+              "url": "https://x.com/trq212",
+              "source": "claude-code-best-practice"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CROSS-MODEL WORKFLOWS",
+      "topics": [
+        {
+          "name": "CROSS-MODEL WORKFLOWS",
+          "resources": [
+            {
+              "category": "CROSS-MODEL WORKFLOWS",
+              "topic": "CROSS-MODEL WORKFLOWS",
+              "title": "musistudio/claude-code-router",
+              "url": "https://github.com/musistudio/claude-code-router",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CROSS-MODEL WORKFLOWS",
+              "topic": "CROSS-MODEL WORKFLOWS",
+              "title": "router-for-me/CLIProxyAPI",
+              "url": "https://github.com/router-for-me/CLIProxyAPI",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CROSS-MODEL WORKFLOWS",
+              "topic": "CROSS-MODEL WORKFLOWS",
+              "title": "openai/codex-plugin-cc",
+              "url": "https://github.com/openai/codex-plugin-cc",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "CROSS-MODEL WORKFLOWS",
+              "topic": "CROSS-MODEL WORKFLOWS",
+              "title": "BeehiveInnovations/pal-mcp-server",
+              "url": "https://github.com/BeehiveInnovations/pal-mcp-server",
+              "source": "claude-code-best-practice"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "SKILL COLLECTIONS",
+      "topics": [
+        {
+          "name": "SKILL COLLECTIONS",
+          "resources": [
+            {
+              "category": "SKILL COLLECTIONS",
+              "topic": "SKILL COLLECTIONS",
+              "title": "mattpocock/skills",
+              "url": "https://github.com/mattpocock/skills",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "SKILL COLLECTIONS",
+              "topic": "SKILL COLLECTIONS",
+              "title": "anthropics/skills",
+              "url": "https://github.com/anthropics/skills",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "SKILL COLLECTIONS",
+              "topic": "SKILL COLLECTIONS",
+              "title": "Egonex-AI/Understand-Anything",
+              "url": "https://github.com/Egonex-AI/Understand-Anything",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "SKILL COLLECTIONS",
+              "topic": "SKILL COLLECTIONS",
+              "title": "wshobson/agents",
+              "url": "https://github.com/wshobson/agents",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "SKILL COLLECTIONS",
+              "topic": "SKILL COLLECTIONS",
+              "title": "scientific-agent-skills",
+              "url": "https://github.com/K-Dense-AI/scientific-agent-skills",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "SKILL COLLECTIONS",
+              "topic": "SKILL COLLECTIONS",
+              "title": "awesome-agent-skills",
+              "url": "https://github.com/VoltAgent/awesome-agent-skills",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "SKILL COLLECTIONS",
+              "topic": "SKILL COLLECTIONS",
+              "title": "impeccable",
+              "url": "https://github.com/pbakaus/impeccable",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "SKILL COLLECTIONS",
+              "topic": "SKILL COLLECTIONS",
+              "title": "claude-skills",
+              "url": "https://github.com/alirezarezvani/claude-skills",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "SKILL COLLECTIONS",
+              "topic": "SKILL COLLECTIONS",
+              "title": "shanraisshan/draw-json-architecture-skill",
+              "url": "https://github.com/shanraisshan/draw-json-architecture-skill",
+              "source": "claude-code-best-practice"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AGENT COLLECTIONS",
+      "topics": [
+        {
+          "name": "AGENT COLLECTIONS",
+          "resources": [
+            {
+              "category": "AGENT COLLECTIONS",
+              "topic": "AGENT COLLECTIONS",
+              "title": "msitarzewski/agency-agents",
+              "url": "https://github.com/msitarzewski/agency-agents",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "AGENT COLLECTIONS",
+              "topic": "AGENT COLLECTIONS",
+              "title": "VoltAgent/awesome-claude-code-subagents",
+              "url": "https://github.com/VoltAgent/awesome-claude-code-subagents",
+              "source": "claude-code-best-practice"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TIPS AND TRICKS",
+      "topics": [
+        {
+          "name": "Prompting",
+          "resources": [
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Prompting",
+              "title": "challenge Claude — \"grill me on these changes and don't make a PR until I pass…",
+              "url": "https://x.com/bcherny/status/2017742752566632544",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Prompting",
+              "title": "after a mediocre fix — \"knowing everything you know now, scrap this and impleme…",
+              "url": "https://x.com/bcherny/status/2017742752566632544",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Prompting",
+              "title": "Claude fixes most bugs by itself — paste the bug, say \"fix\", don't micromanage…",
+              "url": "https://x.com/bcherny/status/2017742750473720121",
+              "source": "claude-code-best-practice"
+            }
+          ]
+        },
+        {
+          "name": "Planning/Specs",
+          "resources": [
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Planning/Specs",
+              "title": "always start with plan mode",
+              "url": "https://x.com/bcherny/status/2007179845336527000",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Planning/Specs",
+              "title": "start with a minimal spec or prompt and ask Claude to interview you using AskUs…",
+              "url": "https://x.com/trq212/status/2005315275026260309",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Planning/Specs",
+              "title": "spin up a second Claude to review your plan as a staff engineer, or use cross-m…",
+              "url": "https://x.com/bcherny/status/2017742745365057733",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Planning/Specs",
+              "title": "write detailed specs and reduce ambiguity before handing work off — the more sp…",
+              "url": "https://x.com/bcherny/status/2017742752566632544",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Planning/Specs",
+              "title": "prototype > PRD — build 20-30 versions instead of writing specs, the cost of bu…",
+              "url": "https://youtu.be/julbw1JuAz0?t=3630",
+              "source": "claude-code-best-practice"
+            }
+          ]
+        },
+        {
+          "name": "Context",
+          "resources": [
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Context",
+              "title": "/compact",
+              "url": "https://code.claude.com/docs/en/interactive-mode",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Context",
+              "title": "/rewind",
+              "url": "https://code.claude.com/docs/en/checkpointing",
+              "source": "claude-code-best-practice"
+            }
+          ]
+        },
+        {
+          "name": "Session Management",
+          "resources": [
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Session Management",
+              "title": "/rename important sessions (e.g. [TODO - refactor task]) and /resume them later…",
+              "url": "https://every.to/podcast/how-to-use-claude-code-like-the-people-who-built-it",
+              "source": "claude-code-best-practice"
+            }
+          ]
+        },
+        {
+          "name": "CLAUDE.md + .claude/rules",
+          "resources": [
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "CLAUDE.md + .claude/rules",
+              "title": "CLAUDE.md should target under 200 lines per file. 60 lines in humanlayer (still…",
+              "url": "https://x.com/bcherny/status/2007179840848597422",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "CLAUDE.md + .claude/rules",
+              "title": ".claude/rules/*.md auto-load into every session like CLAUDE.md — add paths: YAM…",
+              "url": "https://code.claude.com/docs/en/memory#organize-rules-with-clauderules",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "CLAUDE.md + .claude/rules",
+              "title": "wrap domain-specific CLAUDE.md rules in \\ tags to stop Claude from ignoring the…",
+              "url": "https://www.hlyr.dev/blog/stop-claude-from-ignoring-your-claude-md",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "CLAUDE.md + .claude/rules",
+              "title": "use multiple CLAUDE.md for monorepos — ancestor + descendant loading",
+              "url": "https://x.com/bcherny/status/2016339448863355206",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "CLAUDE.md + .claude/rules",
+              "title": "use .claude/rules/ to split large instructions",
+              "url": "https://code.claude.com/docs/en/memory#organize-rules-with-clauderules",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "CLAUDE.md + .claude/rules",
+              "title": "any developer should be able to launch Claude, say \"run the tests\" and it works…",
+              "url": "https://x.com/dexhorthy/status/2034713765401551053",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "CLAUDE.md + .claude/rules",
+              "title": "keep codebases clean and finish migrations — partially migrated frameworks conf…",
+              "url": "https://youtu.be/julbw1JuAz0?t=1112",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "CLAUDE.md + .claude/rules",
+              "title": "use settings.json for harness-enforced behavior (attribution, permissions, mode…",
+              "url": "https://x.com/dani_avila7/status/2036182734310195550",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "CLAUDE.md + .claude/rules",
+              "title": "have feature specific sub-agents (extra context) with skills (progressive discl…",
+              "url": "https://x.com/bcherny/status/2007179850139000872",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "CLAUDE.md + .claude/rules",
+              "title": "say \"use subagents\" to throw more compute at a problem — offload tasks to keep…",
+              "url": "https://x.com/bcherny/status/2017742755737555434",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "CLAUDE.md + .claude/rules",
+              "title": "agent teams with tmux and git worktrees for parallel development",
+              "url": "https://x.com/bcherny/status/2025007393290272904",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "CLAUDE.md + .claude/rules",
+              "title": "use test time compute — separate context windows make results better; one agent…",
+              "url": "https://x.com/bcherny/status/2031151689219321886",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "CLAUDE.md + .claude/rules",
+              "title": "use commands for your workflows instead of sub-agents",
+              "url": "https://x.com/bcherny/status/2007179847949500714",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "CLAUDE.md + .claude/rules",
+              "title": "use slash commands for every \"inner loop\" workflow you do many times a day — sa…",
+              "url": "https://x.com/bcherny/status/2007179847949500714",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "CLAUDE.md + .claude/rules",
+              "title": "if you do something more than once a day, turn it into a skill or command — bui…",
+              "url": "https://x.com/bcherny/status/2017742748984742078",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "CLAUDE.md + .claude/rules",
+              "title": "use context: fork to run a skill in an isolated subagent — main context only se…",
+              "url": "https://x.com/lydiahallie/status/2033603164398883042",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "CLAUDE.md + .claude/rules",
+              "title": "use skills in subfolders for monorepos",
+              "url": "https://code.claude.com/docs/en/skills",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "CLAUDE.md + .claude/rules",
+              "title": "skills are folders, not files — use references/, scripts/, examples/ subdirecto…",
+              "url": "https://x.com/trq212/status/2033949937936085378",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "CLAUDE.md + .claude/rules",
+              "title": "build a Gotchas section in every skill — highest-signal content, add Claude's f…",
+              "url": "https://x.com/trq212/status/2033949937936085378",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "CLAUDE.md + .claude/rules",
+              "title": "skill description field is a trigger, not a summary — write it for the model (\"…",
+              "url": "https://x.com/trq212/status/2033949937936085378",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "CLAUDE.md + .claude/rules",
+              "title": "don't state the obvious in skills — focus on what pushes Claude out of its defa…",
+              "url": "https://x.com/trq212/status/2033949937936085378",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "CLAUDE.md + .claude/rules",
+              "title": "don't railroad Claude in skills — give goals and constraints, not prescriptive…",
+              "url": "https://x.com/trq212/status/2033949937936085378",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "CLAUDE.md + .claude/rules",
+              "title": "include scripts and libraries in skills so Claude composes rather than reconstr…",
+              "url": "https://x.com/trq212/status/2033949937936085378",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "CLAUDE.md + .claude/rules",
+              "title": "embed !command in SKILL.md to inject dynamic shell output into the prompt — Cla…",
+              "url": "https://x.com/lydiahallie/status/2034337963820327017",
+              "source": "claude-code-best-practice"
+            }
+          ]
+        },
+        {
+          "name": "Hooks",
+          "resources": [
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Hooks",
+              "title": "use on-demand hooks in skills — /careful blocks destructive commands, /freeze b…",
+              "url": "https://x.com/trq212/status/2033949937936085378",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Hooks",
+              "title": "measure skill usage with a PreToolUse hook to find popular or undertriggering s…",
+              "url": "https://x.com/trq212/status/2033949937936085378",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Hooks",
+              "title": "use a PostToolUse hook to auto-format code — Claude generates well-formatted co…",
+              "url": "https://x.com/bcherny/status/2007179852047335529",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Hooks",
+              "title": "route permission requests to Opus via a hook — let it scan for attacks and auto…",
+              "url": "https://x.com/bcherny/status/2017742755737555434",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Hooks",
+              "title": "use a Stop hook to nudge Claude to keep going or verify its work at the end of…",
+              "url": "https://x.com/bcherny/status/2021701059253874861",
+              "source": "claude-code-best-practice"
+            }
+          ]
+        },
+        {
+          "name": "Workflows",
+          "resources": [
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Workflows",
+              "title": "use /model to select model and reasoning, /context to see context usage, /usage…",
+              "url": "https://x.com/_catwu/status/1955694117264261609",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Workflows",
+              "title": "always use thinking mode true (to see reasoning) and Output Style Explanatory (…",
+              "url": "https://x.com/bcherny/status/2007179838864666847",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Workflows",
+              "title": "use ultrathink keyword in prompts for high effort reasoning",
+              "url": "https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking#tips-and-best-practices",
+              "source": "claude-code-best-practice"
+            }
+          ]
+        },
+        {
+          "name": "Workflows Advanced",
+          "resources": [
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Workflows Advanced",
+              "title": "use ASCII diagrams a lot to understand your architecture",
+              "url": "https://x.com/bcherny/status/2017742759218794768",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Workflows Advanced",
+              "title": "use /loop for local recurring monitoring (up to 7 days) · use /schedule for clo…",
+              "url": "https://x.com/bcherny/status/2038454341884154269",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Workflows Advanced",
+              "title": "use Ralph Wiggum plugin for long-running autonomous tasks",
+              "url": "https://x.com/bcherny/status/2007179858435281082",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Workflows Advanced",
+              "title": "/permissions with wildcard syntax (Bash(npm run *), Edit(/docs/**)) instead of…",
+              "url": "https://x.com/bcherny/status/2007179854077407667",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Workflows Advanced",
+              "title": "/sandbox to reduce permission prompts with file and network isolation — 84% red…",
+              "url": "https://x.com/bcherny/status/2021700506465579443",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Workflows Advanced",
+              "title": "invest in product verification skills (signup-flow-driver, checkout-verifier) —…",
+              "url": "https://x.com/trq212/status/2033949937936085378",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Workflows Advanced",
+              "title": "auto mode",
+              "url": "https://code.claude.com/docs/en/permission-modes#eliminate-prompts-with-auto-mode",
+              "source": "claude-code-best-practice"
+            }
+          ]
+        },
+        {
+          "name": "Git / PR",
+          "resources": [
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Git / PR",
+              "title": "keep PRs small and focused — p50 of 118 lines (141 PRs, 45K lines changed in a…",
+              "url": "https://x.com/bcherny/status/2038552880018538749",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Git / PR",
+              "title": "always squash merge PRs — clean linear history, one commit per feature, easy gi…",
+              "url": "https://x.com/bcherny/status/2038552880018538749",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Git / PR",
+              "title": "tag @claude on a coworker's PR to auto-generate lint rules for recurring review…",
+              "url": "https://youtu.be/julbw1JuAz0?t=2715",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Git / PR",
+              "title": "use /code-review for multi-agent PR analysis — catches bugs, security vulnerabi…",
+              "url": "https://x.com/bcherny/status/2031089411820228645",
+              "source": "claude-code-best-practice"
+            }
+          ]
+        },
+        {
+          "name": "Debugging",
+          "resources": [
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Debugging",
+              "title": "use mcp (Claude in Chrome, Playwright, Chrome DevTools) to let claude see chrom…",
+              "url": "https://code.claude.com/docs/en/chrome",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Debugging",
+              "title": "/doctor",
+              "url": "https://code.claude.com/docs/en/cli-reference",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Debugging",
+              "title": "Codex",
+              "url": "https://github.com/shanraisshan/codex-cli-best-practice",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Debugging",
+              "title": "agentic search (glob + grep) beats RAG — Claude Code tried and discarded vector…",
+              "url": "https://youtu.be/julbw1JuAz0?t=3095",
+              "source": "claude-code-best-practice"
+            }
+          ]
+        },
+        {
+          "name": "Utilities",
+          "resources": [
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Utilities",
+              "title": "iTerm/Ghostty/tmux terminals instead of IDE (VS Code/Cursor)",
+              "url": "https://x.com/bcherny/status/2017742753971769626",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Utilities",
+              "title": "/voice or Wispr Flow for voice prompting (10x productivity)",
+              "url": "https://x.com/bcherny/status/2038454362226467112",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Utilities",
+              "title": "claude-code-hooks",
+              "url": "https://github.com/shanraisshan/claude-code-hooks",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Utilities",
+              "title": "status line for context awareness and fast compacting",
+              "url": "https://x.com/bcherny/status/2021700784019452195",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Utilities",
+              "title": "explore settings.json features like Plans Directory, Spinner Verbs for a person…",
+              "url": "https://x.com/bcherny/status/2021701145023197516",
+              "source": "claude-code-best-practice"
+            }
+          ]
+        },
+        {
+          "name": "Daily",
+          "resources": [
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Daily",
+              "title": "update",
+              "url": "https://code.claude.com/docs/en/setup",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Daily",
+              "title": "changelog",
+              "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Daily",
+              "title": "Tweet",
+              "url": "https://x.com/bcherny",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Daily",
+              "title": "Tweet",
+              "url": "https://x.com/trq212",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Daily",
+              "title": "Tweet",
+              "url": "https://x.com/bcherny/status/2038454336355999749",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Daily",
+              "title": "Tweet",
+              "url": "https://x.com/bcherny/status/2038552880018538749",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Daily",
+              "title": "Article",
+              "url": "https://x.com/trq212/status/2033949937936085378",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Daily",
+              "title": "Tweet",
+              "url": "https://x.com/bcherny/status/2031089411820228645",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Daily",
+              "title": "Tweet",
+              "url": "https://x.com/bcherny/status/2030193932404150413",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Daily",
+              "title": "Tweet",
+              "url": "https://x.com/trq212/status/2027543858289250472",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Daily",
+              "title": "Article",
+              "url": "https://x.com/trq212/status/2027463795355095314",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Daily",
+              "title": "Tweet",
+              "url": "https://x.com/bcherny/status/2025007393290272904",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Daily",
+              "title": "Article",
+              "url": "https://x.com/trq212/status/2024574133011673516",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Daily",
+              "title": "Tweet",
+              "url": "https://x.com/bcherny/status/2021699851499798911",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Daily",
+              "title": "Tweet",
+              "url": "https://x.com/bcherny/status/2017742741636321619",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Daily",
+              "title": "Tweet",
+              "url": "https://x.com/bcherny/status/2007179832300581177",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Daily",
+              "title": "Tweet",
+              "url": "https://x.com/trq212/status/2005315275026260309",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "TIPS AND TRICKS",
+              "topic": "Daily",
+              "title": "Tweet",
+              "url": "https://x.com/bcherny/status/2004711722926616680",
+              "source": "claude-code-best-practice"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "VIDEOS / PODCASTS",
+      "topics": [
+        {
+          "name": "VIDEOS / PODCASTS",
+          "resources": [
+            {
+              "category": "VIDEOS / PODCASTS",
+              "topic": "VIDEOS / PODCASTS",
+              "title": "From Vibe Coding to Agentic Engineering (Andrej) \\",
+              "url": "https://x.com/karpathy",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "VIDEOS / PODCASTS",
+              "topic": "VIDEOS / PODCASTS",
+              "title": "Full Walkthrough: Workflow for AI Coding (Matt) \\",
+              "url": "https://x.com/mattpocockuk",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "VIDEOS / PODCASTS",
+              "topic": "VIDEOS / PODCASTS",
+              "title": "Everything We Got Wrong About Research-Plan-Implement (Dex) \\",
+              "url": "https://x.com/daborhyde",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "VIDEOS / PODCASTS",
+              "topic": "VIDEOS / PODCASTS",
+              "title": "Building Claude Code with Boris Cherny (Boris) \\",
+              "url": "https://x.com/bcherny",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "VIDEOS / PODCASTS",
+              "topic": "VIDEOS / PODCASTS",
+              "title": "Head of Claude Code: What happens after coding is solved (Boris) \\",
+              "url": "https://x.com/bcherny",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "VIDEOS / PODCASTS",
+              "topic": "VIDEOS / PODCASTS",
+              "title": "Inside Claude Code With Its Creator Boris Cherny (Boris) \\",
+              "url": "https://x.com/bcherny",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "VIDEOS / PODCASTS",
+              "topic": "VIDEOS / PODCASTS",
+              "title": "Boris Cherny (Creator of Claude Code) On What Grew His Career (Boris) \\",
+              "url": "https://x.com/bcherny",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "VIDEOS / PODCASTS",
+              "topic": "VIDEOS / PODCASTS",
+              "title": "The Secrets of Claude Code From the Engineers Who Built It (Cat) \\",
+              "url": "https://x.com/bcherny",
+              "source": "claude-code-best-practice"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "STARTUPS / BUSINESSES",
+      "topics": [
+        {
+          "name": "STARTUPS / BUSINESSES",
+          "resources": [
+            {
+              "category": "STARTUPS / BUSINESSES",
+              "topic": "STARTUPS / BUSINESSES",
+              "title": "Code Review",
+              "url": "https://code.claude.com/docs/en/code-review",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "STARTUPS / BUSINESSES",
+              "topic": "STARTUPS / BUSINESSES",
+              "title": "Voice Dictation",
+              "url": "https://code.claude.com/docs/en/voice-dictation",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "STARTUPS / BUSINESSES",
+              "topic": "STARTUPS / BUSINESSES",
+              "title": "Remote Control",
+              "url": "https://code.claude.com/docs/en/remote-control",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "STARTUPS / BUSINESSES",
+              "topic": "STARTUPS / BUSINESSES",
+              "title": "Claude in Chrome",
+              "url": "https://code.claude.com/docs/en/chrome",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "STARTUPS / BUSINESSES",
+              "topic": "STARTUPS / BUSINESSES",
+              "title": "Computer Use",
+              "url": "https://docs.anthropic.com/en/docs/agents-and-tools/computer-use",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "STARTUPS / BUSINESSES",
+              "topic": "STARTUPS / BUSINESSES",
+              "title": "Cowork",
+              "url": "https://claude.com/blog/cowork-research-preview",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "STARTUPS / BUSINESSES",
+              "topic": "STARTUPS / BUSINESSES",
+              "title": "Tasks",
+              "url": "https://x.com/trq212/status/2014480496013803643",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "STARTUPS / BUSINESSES",
+              "topic": "STARTUPS / BUSINESSES",
+              "title": "Plan Mode",
+              "url": "https://code.claude.com/docs/en/common-workflows",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "STARTUPS / BUSINESSES",
+              "topic": "STARTUPS / BUSINESSES",
+              "title": "Design",
+              "url": "https://claude.com/design",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "STARTUPS / BUSINESSES",
+              "topic": "STARTUPS / BUSINESSES",
+              "title": "Skills / Plugins",
+              "url": "https://code.claude.com/docs/en/plugins",
+              "source": "claude-code-best-practice"
+            },
+            {
+              "category": "STARTUPS / BUSINESSES",
+              "topic": "STARTUPS / BUSINESSES",
+              "title": "reddit",
+              "url": "https://reddit.com/r/ClaudeCode/comments/1qn9pb9/claudemd_says_must_use_agent_claude_ignores_it_80/",
+              "source": "claude-code-best-practice"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

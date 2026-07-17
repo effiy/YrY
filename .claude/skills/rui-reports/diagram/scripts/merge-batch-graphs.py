@@ -17,7 +17,7 @@ Input:
 Output:
     <output-dir>/intermediate/assembled-graph.json
 
-<output-dir> is the directory containing the generated architecture-diagram.html.
+<output-dir> is the directory containing the generated index.html.
 """
 
 import json

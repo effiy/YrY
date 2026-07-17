@@ -4,8 +4,8 @@
    Unified report-score header used by every rui-report-* page.
 
    Page usage (host page):
-     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-     <script src="../../../../rui-html-cdn/rui-score-bar/index.js"></script>
+     <script src="/.claude/shared/vendor/vue@3.4.27/vue.global.prod.js"></script>
+     <script src="/.claude/shared/rui-score-bar/index.js"></script>
      <div id="score-bar"></div>
      <script>
        window.ruiScoreBar.mount({ score: { grade: 'B', value: 72, trend: 'up', weights: [...] }, alerts: { p0: 1, p1: 4, p2: 12 } }, '#score-bar').then(app => { ... });

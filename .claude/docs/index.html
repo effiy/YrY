@@ -1,0 +1,169 @@
+<!--
+    rui-init · Standalone dashboard shell (rebuilt 2026-07-15 15:20)
+    --------------------------------------------------------------------------
+    Refactor over v1: every interactive UI element is delegated to the
+    rui HTML CDN library so this template is a thin Vue 3 + theme layer.
+
+      1. shared/loader.js (unified) provides:
+         - Vue 3 CDN injection (with primary + fallback URL)
+         - window.__vueLoadPromise (resolved once Vue is on `window`)
+         - ruiLoadComponent / createAsyncMountAPI / ruiBootstrapComponent
+      2. <rui-breadcrumb>  ─ top-of-page context bar (data.js: breadcrumb)
+      3. <rui-stats-grid>  ─ high-level KPIs (data.js: stats). The CDN
+                            component owns the card chrome (border / hover /
+                            animation) and the per-modifier color tokens.
+      4. <rui-scene-card>  ─ per-kind rendering inside section groups.
+                            Card chrome (border / hover / animation /
+                            tag-chip row) is owned by rui-scene-card; the
+                            helper sceneCardFor() in index.js only maps
+                            HELP_CONFIG's per-kind fields to rui-scene-card's
+                            prop shape.
+      5. <rui-panel-hub>   ─ cross-report navigation toolbar
+      6. <rui-back-top>    ─ floating button (auto-mounts via shared loader)
+      7. Reading-progress is a 2px fixed top div with width driven by
+         index.js on scroll. The CDN does not include a page-reading
+         progress component, so this stays as a page-level concern.
+      8. The .accent utility inside rui-scene-card's v-html desc slot is
+         the one piece of local CSS that needs to remain (rui-scene-card's
+         CSS does not own it).
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%234f46e5'/><text x='16' y='22' font-size='18' font-family='sans-serif' font-weight='bold' fill='white' text-anchor='middle'>CL</text></svg>" type="image/svg+xml">
+  <title>Claude Skills · Documentation Center</title>
+
+  <!-- Page styles layer on top of the theme -->
+  <link rel="stylesheet" href="index.css">
+
+  <!--
+    Unified shared loader: injects Vue 3 (primary + fallback) and exposes
+    ruiLoadComponent / createAsyncMountAPI / ruiBootstrapComponent on
+    window. data-namespace tags the console logs so it is clear which
+    page is loading. data-vue-path / data-vue-fallback override the
+    auto-derived CDN URLs; both are empty here so the loader auto-derives
+    them from /.claude/shared/vendor/vue@3.4.27/ and /shared/vendor/vue@3/.
+  -->
+  <script src="/.claude/shared/loader.js" data-namespace="claude-docs"></script>
+
+  <!--
+    rui HTML CDN shared components. Load order matters:
+      · rui-tag-chip MUST come before rui-scene-card, because
+        rui-scene-card's onReady transitively waits for rui-tag-chip-ready.
+      · rui-stats-grid / rui-breadcrumb / rui-back-top / rui-panel-hub
+        are leaf components and can be loaded in any order after the
+        shared loader.
+  -->
+  <script src="/.claude/shared/components/rui-breadcrumb/index.js"></script>
+  <script src="/.claude/shared/components/rui-stats-grid/index.js"></script>
+  <script src="/.claude/shared/components/rui-tag-chip/index.js"></script>
+  <script src="/.claude/shared/components/rui-scene-card/index.js"></script>
+  <script src="/.claude/shared/components/rui-panel-hub/index.js"></script>
+  <script src="/.claude/shared/components/rui-back-top/index.js"></script>
+</head>
+<body class="rui-doc dashboard-page">
+  <!-- Reading-progress: 2px fixed top bar, width driven by index.js. -->
+  <div class="dashboard-progress" aria-hidden="true">
+    <div class="dashboard-progress-bar" data-progress-bar></div>
+  </div>
+
+  <main class="dashboard-shell" id="dashboard-app" v-cloak>
+    <header class="dashboard-header">
+      <rui-breadcrumb
+        v-if="breadcrumb && breadcrumb.length"
+        class="dashboard-breadcrumb"
+        :items="breadcrumb"
+      ></rui-breadcrumb>
+      <h1 class="dashboard-title">
+        <span class="dashboard-title-icon" aria-hidden="true">{{ titleIcon }}</span>
+        {{ title }}
+      </h1>
+      <p class="dashboard-tagline">{{ tagline }}</p>
+    </header>
+
+    <!-- High-level KPIs: rendered by rui-stats-grid (CDN) — registered as a
+         child component in index.js. The CDN owns the card chrome. -->
+    <section
+      v-if="stats && stats.length"
+      class="dashboard-stats"
+      aria-label="Documentation Overview"
+    >
+      <rui-stats-grid :items="stats" layout="row"></rui-stats-grid>
+    </section>
+
+    <section
+      v-if="panelHub && panelHub.buttons && panelHub.buttons.length"
+      class="dashboard-panel-hub-wrap"
+      aria-label="Cross-Panel Navigation"
+    >
+      <rui-panel-hub
+        :label="panelHub.label"
+        :buttons="panelHub.buttons"
+        :flow="panelHub.flow"
+        :urls="panelHub.urls"
+        :target-blank="panelHub.targetBlank"
+        @panel-hub-select="onPanelHubSelect"
+      ></rui-panel-hub>
+    </section>
+
+    <section
+      v-for="section in sections"
+      :key="section.id"
+      :id="section.id"
+      class="dashboard-section"
+    >
+      <div class="section-header">
+        <span class="section-badge" :class="section.badgeTone">{{ section.badge }}</span>
+        <h2 class="section-title">{{ section.title }}</h2>
+        <span class="section-meta">{{ section.meta }}</span>
+      </div>
+
+      <div
+        v-for="group in section.groups"
+        :key="group.title"
+        class="section-group"
+        :id="group.id || null"
+      >
+        <h3 class="group-title">
+          <span class="group-title-icon" aria-hidden="true">{{ group.icon }}</span>
+          {{ group.title }}
+        </h3>
+        <div :class="group.kind + '-grid'">
+          <rui-scene-card
+            v-for="card in sceneCardFor(group)"
+            :key="card.key"
+            :name="card.name"
+            :name-href="card.nameHref"
+            :name-target="card.nameTarget"
+            :badge="card.badge"
+            :desc="card.desc"
+            :tags="card.tags"
+            :links="card.links"
+            :meta="card.meta"
+            :style="card.style"
+          />
+        </div>
+      </div>
+    </section>
+
+    <footer class="dashboard-footer">
+      <div class="footer-links">
+        <a
+          v-for="link in footerLinks"
+          :key="link.label"
+          :href="link.href"
+          v-bind="linkAttrs(link.targetBlank)"
+        >{{ link.label }}</a>
+      </div>
+      <p class="footer-note">{{ footerNote }}</p>
+    </footer>
+  </main>
+
+  <!-- Script load order: data.js MUST precede index.js -->
+  <script src="data.js"></script>
+  <script src="index.js"></script>
+</body>
+</html>

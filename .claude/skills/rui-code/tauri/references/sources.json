@@ -1,0 +1,12 @@
+{
+  "sources": [
+    {
+      "id": "awesome-tauri",
+      "label": "Awesome Tauri",
+      "readme": "references/README-awesome-tauri.md",
+      "upstream_url": "https://raw.githubusercontent.com/tauri-apps/awesome-tauri/master/README.md",
+      "homepage": "https://github.com/tauri-apps/awesome-tauri",
+      "dialect": "tauri-h3"
+    }
+  ]
+}

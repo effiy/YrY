@@ -127,6 +127,47 @@ function dirOf(p) {
   return i === -1 ? '' : p.slice(0, i);
 }
 
+/**
+ * Return the final path segment of a project-relative POSIX path
+ * (e.g. `src/foo/tsconfig.json` -> `tsconfig.json`). Used by the config
+ * loaders to pick their target files out of the input list.
+ */
+function baseName(p) {
+  const i = p.lastIndexOf('/');
+  return i === -1 ? p : p.slice(i + 1);
+}
+
+/**
+ * Scan `files[]` for entries whose basename equals `filename` and return
+ * `{ key, absPath }` pairs for each, preserving input order. The three
+ * config loaders (tsconfig.json / go.mod / composer.json) all need the
+ * same walk over the input list, so this hoists the shared loop out.
+ */
+function collectConfigCandidates(projectRoot, files, filename) {
+  const out = [];
+  for (const f of files) {
+    const p = toPosix(f.path);
+    if (baseName(p) !== filename) continue;
+    const absPath = join(projectRoot, p);
+    if (!existsSync(absPath)) continue;
+    out.push({ key: p, absPath });
+  }
+  return out;
+}
+
+/**
+ * Merge resolver output into the per-file dedup Set, dropping anything
+ * that isn't truthy or isn't in the project file set. Resolvers never
+ * read disk, so this guard is the single place where we filter spurious
+ * edges (a resolver may legitimately return a path that falls outside
+ * `files[]` — e.g. a generated file the scanner didn't pick up).
+ */
+function mergeResolved(outs, resolvedSet, fileSet) {
+  for (const out of outs) {
+    if (out && fileSet.has(out)) resolvedSet.add(out);
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Config loading
 //
@@ -208,15 +249,7 @@ async function loadTsConfigs(projectRoot, files) {
   const warnings = [];
   // Collect the candidate paths in the original file order before reading,
   // so warning emit order matches the previous sequential implementation.
-  const candidates = [];
-  for (const f of files) {
-    const p = toPosix(f.path);
-    const base = p.includes('/') ? p.slice(p.lastIndexOf('/') + 1) : p;
-    if (base !== 'tsconfig.json') continue;
-    const absPath = join(projectRoot, p);
-    if (!existsSync(absPath)) continue;
-    candidates.push({ key: p, absPath });
-  }
+  const candidates = collectConfigCandidates(projectRoot, files, 'tsconfig.json');
   const reads = await readFilesParallel(candidates);
   for (const { key: p, raw, err } of reads) {
     if (err) {
@@ -274,15 +307,7 @@ async function loadGoModules(projectRoot, files) {
   // so the concurrent caller in buildResolutionContext can drain them
   // uniformly in canonical order.
   const warnings = [];
-  const candidates = [];
-  for (const f of files) {
-    const p = toPosix(f.path);
-    const base = p.includes('/') ? p.slice(p.lastIndexOf('/') + 1) : p;
-    if (base !== 'go.mod') continue;
-    const absPath = join(projectRoot, p);
-    if (!existsSync(absPath)) continue;
-    candidates.push({ key: p, absPath });
-  }
+  const candidates = collectConfigCandidates(projectRoot, files, 'go.mod');
   const reads = await readFilesParallel(candidates);
   for (const { key: p, raw, err } of reads) {
     if (err) continue;
@@ -1126,15 +1151,7 @@ function parseComposerAutoloadText(raw) {
 async function loadPhpAutoloads(projectRoot, files) {
   const out = new Map();
   const warnings = [];
-  const candidates = [];
-  for (const f of files) {
-    const p = toPosix(f.path);
-    const base = p.includes('/') ? p.slice(p.lastIndexOf('/') + 1) : p;
-    if (base !== 'composer.json') continue;
-    const absPath = join(projectRoot, p);
-    if (!existsSync(absPath)) continue;
-    candidates.push({ key: p, absPath });
-  }
+  const candidates = collectConfigCandidates(projectRoot, files, 'composer.json');
   const reads = await readFilesParallel(candidates);
   for (const { key: p, raw, err } of reads) {
     if (err) {
@@ -1571,30 +1588,22 @@ async function main() {
       // languages get analyzed once and dispatched normally.
       if (file.language === 'ruby') {
         for (const imp of parseRubyImports(content)) {
-          for (const out of resolveRubyImport(imp, file, ctx)) {
-            if (out && ctx.fileSet.has(out)) resolvedSet.add(out);
-          }
+          mergeResolved(resolveRubyImport(imp, file, ctx), resolvedSet, ctx.fileSet);
         }
       } else {
         const analysis = registry.analyzeFile(file.path, content);
         const imports = analysis?.imports ?? [];
         for (const imp of imports) {
-          const outs = resolveImport(imp, file, ctx);
-          for (const out of outs) {
-            if (out && ctx.fileSet.has(out)) {
-              resolvedSet.add(out);
-            }
-          }
+          mergeResolved(resolveImport(imp, file, ctx), resolvedSet, ctx.fileSet);
         }
         // Supplemental pass for sources tree-sitter doesn't capture (e.g.
         // CJS require() calls, Kotlin imports). Dedup via the same set.
         for (const extra of extractExtraImportSources(file, content)) {
-          const outs = resolveImport({ source: extra, specifiers: [] }, file, ctx);
-          for (const out of outs) {
-            if (out && ctx.fileSet.has(out)) {
-              resolvedSet.add(out);
-            }
-          }
+          mergeResolved(
+            resolveImport({ source: extra, specifiers: [] }, file, ctx),
+            resolvedSet,
+            ctx.fileSet,
+          );
         }
       }
       resolved = [...resolvedSet].sort((a, b) => a.localeCompare(b));

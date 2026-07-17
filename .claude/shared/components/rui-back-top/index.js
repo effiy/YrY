@@ -8,8 +8,8 @@
      · All thresholds/offsets/icons/labels are centrally tunable via data.js
 
    Page usage (host page):
-     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-     <script src="../../../../rui-html-cdn/rui-back-top/index.js"></script>
+     <script src="/.claude/shared/vendor/vue@3.4.27/vue.global.prod.js"></script>
+     <script src="/.claude/shared/rui-back-top/index.js"></script>
      No JS or HTML required — the script auto-creates the button and binds events.
    ═══════════════════════════════════════════════════════════════════════════ */
 

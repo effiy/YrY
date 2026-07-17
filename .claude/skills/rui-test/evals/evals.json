@@ -1,0 +1,137 @@
+{
+  "skill_name": "rui-test",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Set up Vitest for my Vue 3 + Vite project — what config do I need?",
+      "expected_output": "Walks through vite.config.js test block, happy-dom/jsdom choice, and @vue/test-utils mounting.",
+      "files": [],
+      "expectations": [
+        "Points at references for vitest-setup topic",
+        "Mentions happy-dom vs jsdom environment choice",
+        "References @vue/test-utils mounting"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "happy-dom or jsdom for my component tests? My tests check computed styles.",
+      "expected_output": "Recommends Vitest Browser Mode for style-dependent tests; explains happy-dom/jsdom tradeoff.",
+      "files": [],
+      "expectations": [
+        "Routes to runner-choice topic",
+        "Mentions computed styles need real CSS rendering",
+        "Surfaces Vitest Browser Mode as the style-dependent option"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "My Vue 3 E2E tests can't connect to the dev server. How do I wire Playwright to my Vite dev server?",
+      "expected_output": "Shows the webServer config in playwright.config.ts pointing at the Vue dev server.",
+      "files": [],
+      "expectations": [
+        "Routes to e2e-playwright topic",
+        "References playwright.config.ts webServer block",
+        "Mentions multi-browser projects (Chromium/WebKit/Firefox)"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "I need a self-contained test page that works on file:// URLs — no localhost. Can I scaffold one?",
+      "expected_output": "Scaffolds a fixture with no external API, no localhost, file:// URLs work.",
+      "files": [],
+      "expectations": [
+        "Routes to fixture topic",
+        "Mentions the 5 assertion types (DOM/text/CSS/event/visual regression)",
+        "References self-contained fixture structure"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "My test is flaky — assertions fire before the async component loads. How do I wait?",
+      "expected_output": "Tells the user to use await flushPromises() after mounting defineAsyncComponent.",
+      "files": [],
+      "expectations": [
+        "Routes to async-component topic",
+        "Mentions await flushPromises()",
+        "Distinguishes loading state assertion (before flushPromises) from loaded state"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "My async setup component won't render in tests. Suspense wrapper?",
+      "expected_output": "Shows wrapping in <Suspense> before mount, awaiting flushPromises, then findComponent.",
+      "files": [],
+      "expectations": [
+        "Routes to suspense topic",
+        "References <Suspense> wrapper",
+        "Mentions findComponent after flushPromises resolves"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "I'm testing a composable that uses onMounted. Direct call doesn't work — what helper?",
+      "expected_output": "Recommends withSetup host-component wrapper for composables using lifecycle hooks.",
+      "files": [],
+      "expectations": [
+        "Routes to composable-wrapper topic",
+        "References withSetup helper",
+        "Mentions app.provide() for mocked injected dependencies"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "createTestingPinia or setActivePinia for my Pinia store unit test?",
+      "expected_output": "Recommends setActivePinia(createPinia()) in beforeEach for store unit tests.",
+      "files": [],
+      "expectations": [
+        "Routes to pinia-setup topic",
+        "Mentions createTestingPinia from @pinia/testing",
+        "References stubActions flag for real action execution"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "wrapper.html() is empty for my modal — it uses Teleport. How do I query it?",
+      "expected_output": "Tells user to query document.body or stub Teleport in unit tests.",
+      "files": [],
+      "expectations": [
+        "Routes to teleport topic",
+        "Mentions document.body queries for integration tests",
+        "Recommends stubbing Teleport in unit tests"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "My tests pass but production breaks — am I testing implementation details?",
+      "expected_output": "Explains black-box testing — test public API (props/events/slots), not internals.",
+      "files": [],
+      "expectations": [
+        "Routes to blackbox topic",
+        "Mentions wrapper.vm is brittle",
+        "Recommends getByRole / getByTestId queries"
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "Should I use snapshot tests for my Vue 3 component? They keep breaking on refactor.",
+      "expected_output": "Explains the snapshot anti-pattern — converges on snapshot not spec; use sparingly.",
+      "files": [],
+      "expectations": [
+        "Routes to no-snapshot topic",
+        "Mentions tests pass on broken code",
+        "Recommends sparing use for regression only"
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "await nextTick() isn't enough — my test still has stale DOM. What's the right await?",
+      "expected_output": "Distinguishes nextTick (programmatic reactive state) from flushPromises (external async).",
+      "files": [],
+      "expectations": [
+        "Routes to async-flush topic",
+        "Mentions await trigger() / await setValue()",
+        "Warns against chained nextTick anti-pattern"
+      ]
+    }
+  ]
+}

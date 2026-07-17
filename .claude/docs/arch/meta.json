@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 2,
+  "project": {
+    "name": ".claude · Claude Skills Catalog",
+    "root": "/Users/ruiyi/YrY/.claude",
+    "description": "8 skill groups · 27 SKILL.md manifests · 12 shared web components · 4 vendored libraries · generates CLAUDE.md + README.md + 5 arch scenes + 6 self-test scenes + 8 rui-report dashboards",
+    "primaryStack": "Markdown-driven Claude skills · Vue 3.4.27 (CDN-injected) · 4-file split (HTML+CSS+data+Vue) · ESM engine (graphology + tree-sitter) for rui-reports/diagram",
+    "platform": "Claude Desktop App (macOS) · /rui-init full pipeline",
+    "gitHead": "manual",
+    "scan": {
+      "totalFiles": 943,
+      "byLanguage": {
+        "markdown": 582,
+        "javascript": 181,
+        "json": 60,
+        "css": 30,
+        "html": 30,
+        "vue": 10,
+        "mmd": 5,
+        "wasm": 1,
+        "python": 1
+      },
+      "byCategory": {
+        "docs": 609,
+        "code": 197,
+        "markup": 60,
+        "config": 60,
+        "data": 16,
+        "infra": 1
+      }
+    }
+  },
+  "layers": [
+    {
+      "id": "L0-external",
+      "name": "External Entry",
+      "color": "cyan",
+      "components": ["user", "claude-desktop", "skill-tool"]
+    },
+    {
+      "id": "L1-catalog",
+      "name": "Skills Catalog (8 groups · 27 manifests)",
+      "color": "emerald",
+      "components": ["rui-init", "rui-reports", "rui-code", "rui-tools", "rui-test", "rui-questions", "rui-docs", "rui-cto"]
+    },
+    {
+      "id": "L2-substrate",
+      "name": "Shared UI Substrate (12 components + 1 loader + 4 vendor)",
+      "color": "amber",
+      "components": ["shared-components", "loader", "vendor-libs"]
+    },
+    {
+      "id": "L3-generated",
+      "name": "Generated Documentation (CLAUDE.md + 5 arch + 6 self-test + 8 dashboards)",
+      "color": "violet",
+      "components": ["claude-md", "arch-scenes", "selftest-scenes", "report-pages"]
+    },
+    {
+      "id": "L4-foundation",
+      "name": "Foundational Stores (deps + env)",
+      "color": "rose",
+      "components": ["npm-registry", "github", "knowledge-base"]
+    }
+  ],
+  "components": {
+    "user":              { "kind": "external",  "color": "cyan",    "label": "User",            "sub": "natural language query" },
+    "claude-desktop":    { "kind": "gateway",   "color": "cyan",    "label": "Claude Desktop",  "sub": "App · /.claude/shared/..." },
+    "skill-tool":        { "kind": "gateway",   "color": "emerald", "label": "Skill Tool",      "sub": "manifest registry · 27 SKILL.md" },
+    "rui-init":          { "kind": "service",   "color": "orange",  "label": "rui-init",        "sub": "5-step pipeline · 52 files" },
+    "rui-reports":       { "kind": "service",   "color": "violet",  "label": "rui-reports",     "sub": "diagram · daily · files · 218 files" },
+    "rui-code":          { "kind": "service",   "color": "cyan",    "label": "rui-code",        "sub": "9 domains · 339 files" },
+    "rui-tools":         { "kind": "service",   "color": "emerald", "label": "rui-tools",       "sub": "9 sub-skills · 164 files" },
+    "rui-test":          { "kind": "service",   "color": "amber",   "label": "rui-test",        "sub": "12 topics · fixture-based" },
+    "rui-questions":     { "kind": "service",   "color": "violet",  "label": "rui-questions",   "sub": "7 GitHub sources · index.json" },
+    "rui-docs":          { "kind": "service",   "color": "cyan",    "label": "rui-docs",        "sub": "quickstart · readme · 33 files" },
+    "rui-cto":           { "kind": "service",   "color": "rose",    "label": "rui-cto",         "sub": "engineering synthesis" },
+    "shared-components": { "kind": "platform",  "color": "amber",   "label": "12 Vue components", "sub": "rui-back-top · rui-breadcrumb · rui-stats-grid · rui-tag-chip · rui-scene-card · rui-panel-hub · rui-loader · rui-progress-bar · rui-score-bar · rui-toast · rui-badge · rui-cross-nav" },
+    "loader":            { "kind": "infra",     "color": "amber",   "label": "loader.js",       "sub": "Vue 3 CDN injection" },
+    "vendor-libs":       { "kind": "infra",     "color": "amber",   "label": "4 vendor libs",   "sub": "vue@3.4.27 · html2canvas@1.4.1 · jspdf@2.5.2 · xlsx@0.20.3" },
+    "claude-md":         { "kind": "store",     "color": "violet",  "label": "CLAUDE.md + README.md", "sub": "project identity · 140 lines" },
+    "arch-scenes":       { "kind": "store",     "color": "violet",  "label": "docs/arch/",      "sub": "5 scenes · §0–§4 lifecycle" },
+    "selftest-scenes":   { "kind": "store",     "color": "violet",  "label": "docs/self-test/", "sub": "6 scenes · 7/7 AC pass" },
+    "report-pages":      { "kind": "store",     "color": "violet",  "label": "8 rui-report pages", "sub": "size · risk · health · coupling · ..." },
+    "npm-registry":      { "kind": "external",  "color": "slate",   "label": "npm",             "sub": "18 runtime · 1 dev dep" },
+    "github":            { "kind": "external",  "color": "slate",   "label": "GitHub",          "sub": "7 knowledge repos for rui-questions" },
+    "knowledge-base":    { "kind": "store",     "color": "rose",    "label": "references/",     "sub": "third-party READMEs · 7 sources" }
+  },
+  "edges": [
+    { "from": "user",            "to": "claude-desktop",  "type": "user-input",   "label": "query",     "style": "solid",   "color": "cyan" },
+    { "from": "claude-desktop",  "to": "skill-tool",      "type": "manifest",     "label": "load SKILL.md", "style": "solid",   "color": "emerald" },
+    { "from": "skill-tool",      "to": "rui-init",        "type": "invoke",       "label": "/rui-init", "style": "solid",   "color": "orange" },
+    { "from": "skill-tool",      "to": "rui-reports",     "type": "invoke",       "label": "/rui-report-diagram", "style": "solid",   "color": "violet" },
+    { "from": "skill-tool",      "to": "rui-code",        "type": "invoke",       "label": "/rui-code-*", "style": "solid",   "color": "cyan" },
+    { "from": "skill-tool",      "to": "rui-tools",       "type": "invoke",       "label": "/rui-tools-*", "style": "solid",   "color": "emerald" },
+    { "from": "skill-tool",      "to": "rui-test",        "type": "invoke",       "label": "/rui-test", "style": "solid",   "color": "amber" },
+    { "from": "skill-tool",      "to": "rui-questions",   "type": "invoke",       "label": "/rui-questions", "style": "solid",   "color": "violet" },
+    { "from": "skill-tool",      "to": "rui-docs",        "type": "invoke",       "label": "/rui-docs", "style": "solid",   "color": "cyan" },
+    { "from": "skill-tool",      "to": "rui-cto",         "type": "invoke",       "label": "/rui-cto", "style": "solid",   "color": "rose" },
+    { "from": "rui-init",        "to": "claude-md",       "type": "generate",     "label": "writes",   "style": "solid",   "color": "orange" },
+    { "from": "rui-init",        "to": "arch-scenes",     "type": "generate",     "label": "writes",   "style": "solid",   "color": "orange" },
+    { "from": "rui-init",        "to": "selftest-scenes", "type": "generate",     "label": "writes",   "style": "solid",   "color": "orange" },
+    { "from": "rui-init",        "to": "report-pages",    "type": "generate",     "label": "writes",   "style": "solid",   "color": "orange" },
+    { "from": "rui-reports",     "to": "report-pages",    "type": "publish",      "label": "build",    "style": "dashed",  "color": "violet" },
+    { "from": "shared-components", "to": "rui-init",      "type": "uses",         "label": "renders",  "style": "dashed",  "color": "amber" },
+    { "from": "shared-components", "to": "rui-reports",   "type": "uses",         "label": "renders",  "style": "dashed",  "color": "amber" },
+    { "from": "shared-components", "to": "report-pages",  "type": "uses",         "label": "mounts",   "style": "dashed",  "color": "amber" },
+    { "from": "loader",          "to": "shared-components", "type": "loads",      "label": "Vue CDN",  "style": "dotted",  "color": "amber" },
+    { "from": "vendor-libs",     "to": "shared-components", "type": "supplies",   "label": "runtime",  "style": "dotted",  "color": "amber" },
+    { "from": "npm-registry",    "to": "rui-reports",     "type": "supply",       "label": "18 deps",  "style": "longdash", "color": "slate" },
+    { "from": "github",          "to": "rui-questions",   "type": "supply",       "label": "7 repos",  "style": "longdash", "color": "slate" },
+    { "from": "rui-questions",   "to": "knowledge-base",  "type": "index",        "label": "writes",   "style": "solid",   "color": "rose" }
+  ],
+  "mode": "from-codebase",
+  "generator": "rui-report-diagram v2.3.0",
+  "generatedAt": "2026-07-15T16:18:00+08:00"
+}

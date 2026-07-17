@@ -1,0 +1,75 @@
+{
+  "skill_name": "rui-report-self-test",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Run /rui-report-self-test on the current directory and open the report.",
+      "expected_output": "An HTML report at docs/reports/self-test/index.html with six self-test scenes (post-init-full-self-check, pre-commit-incremental-self-check, doc-code-consistency, security-surface-regression, cross-story-integration-regression, third-party-framework-service), a composite score gauge, and a per-scene verdict (pass/partial/fail).",
+      "files": [],
+      "expectations": [
+        "scripts/analyze.mjs was run",
+        "docs/reports/self-test/index.html exists",
+        "docs/reports/self-test/data.js contains window.REPORT_DATA.scenes with exactly 6 entries",
+        "Each scene has section0..section4 plus verdict and coverage",
+        "Composite score is computed and rendered in the score gauge"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Run /rui-report-self-test on a Node.js project with vitest and a CLAUDE.md.",
+      "expected_output": "A self-test report where scene 1 (post-init-full-self-check) and scene 2 (pre-commit-incremental-self-check) should pass (vitest detected, CLAUDE.md present, README likely present).",
+      "files": [],
+      "expectations": [
+        "test framework 'vitest' is detected",
+        "CLAUDE.md presence is detected",
+        "scene 2 verdict is 'pass' or 'partial'",
+        "scene 1 verdict reflects hasClaude = true"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Run /rui-report-self-test on an empty directory (no source files after exclusions).",
+      "expected_output": "The report still renders all six scenes, each with a # TODO marker and a 'fail' verdict (or low coverage).",
+      "files": [],
+      "expectations": [
+        "data.js still contains 6 scenes",
+        "All scenes have section0..section4",
+        "Verdicts are computed (likely all 'fail')",
+        "Page renders without throwing"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Run /rui-report-self-test on a project with broken markdown links in docs/.",
+      "expected_output": "Scene 5 (cross-story-integration-regression) reports a non-zero brokenLinks count and the per-scene verdict reflects that.",
+      "files": [],
+      "expectations": [
+        "brokenLinks > 0 is detected",
+        "scene 5 verdict is not 'pass' when brokenLinks > 0",
+        "The §3 Test Report rows map 1:1 to §1 steps"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Run /rui-report-self-test --no-merge and verify that docs/self-test/ is not modified.",
+      "expected_output": "The report is generated at docs/reports/self-test/, but no markdown files are written under docs/self-test/scene-N-<slug>/index.md.",
+      "files": [],
+      "expectations": [
+        "docs/reports/self-test/data.js is written",
+        "docs/self-test/scene-N-*/index.md files are NOT created",
+        "Page renders normally"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Run /rui-report-self-test on a project that uses innerHTML and has a .env file.",
+      "expected_output": "Scene 4 (security-surface-regression) surfaces the dangerous call and the .env file. The verdict is 'partial' or 'fail' depending on count.",
+      "files": [],
+      "expectations": [
+        "envFiles contains the .env file path",
+        "dangerousCalls contains an entry for innerHTML",
+        "scene 4 coverage reflects the count"
+      ]
+    }
+  ]
+}

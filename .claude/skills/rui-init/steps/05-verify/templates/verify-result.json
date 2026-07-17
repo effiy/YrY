@@ -1,0 +1,20 @@
+{
+  "result": "fail",
+  "failures": [
+    {
+      "checkId": 3,
+      "message": "README.md: ## Domain Language section has only 1 term definition (need ≥ 3)",
+      "fix": "Add at least 2 more term definitions under ## Domain Language. Format: **Term** — definition."
+    },
+    {
+      "checkId": 4,
+      "message": "docs/data.js is missing",
+      "fix": "Re-run rui-init-generate to regenerate the docs home entry."
+    }
+  ],
+  "warnings": [
+    "projectType is unknown — checks 1 and 2 may be unreliable"
+  ],
+  "summary": "5/7 checks passed, 2 failed",
+  "duration_ms": 78
+}

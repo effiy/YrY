@@ -11,7 +11,7 @@
  * Input:  <output-dir>/intermediate/scan-result.json
  * Output: <output-dir>/intermediate/batches.json
  *
- * <output-dir> is the directory containing the generated architecture-diagram.html.
+ * <output-dir> is the directory containing the generated index.html.
  * Project root is used only for reading source files.
  */
 

@@ -11,8 +11,8 @@
      modifier  — color variant: accent (default), cyan, pass, fail, warn, info, health
 
    Page usage (host page):
-     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-     <script src="../../../../rui-html-cdn/rui-progress-bar/index.js"></script>
+     <script src="/.claude/shared/vendor/vue@3.4.27/vue.global.prod.js"></script>
+     <script src="/.claude/shared/rui-progress-bar/index.js"></script>
      <div id="bar"></div>
      <script>
        window.ruiProgressBar.mount({ label: 'Coverage', value: 72 }, '#bar');

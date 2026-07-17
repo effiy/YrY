@@ -1,0 +1,819 @@
+{
+  "sources": [
+    {
+      "id": "mobile-web-best-practice",
+      "label": "Mobile Web Best Practice (Mobile H5 Best Practices)",
+      "readme": "references/README-mobile-web-best-practice.md",
+      "upstream_url": "https://raw.githubusercontent.com/mcuking/mobile-web-best-practice/master/README.md",
+      "homepage": "https://github.com/mcuking/mobile-web-best-practice",
+      "dialect": "mixed-h2-h3",
+      "kind": "best-practices",
+      "description": "16 mobile H5 best-practice topics (layered architecture, micro-frontends, JSBridge, style adaptation, error monitoring, offline packages, etc.), each with reference links and implementation code."
+    },
+    {
+      "id": "newbee-mall-vue3-app",
+      "label": "NewBee Mall Vue3 (New Bee Mall Vue3 Edition)",
+      "readme": "references/README-newbee-mall-vue3-app.md",
+      "upstream_url": "https://raw.githubusercontent.com/newbee-ltd/newbee-mall-vue3-app/master/README.md",
+      "homepage": "https://github.com/newbee-ltd/newbee-mall-vue3-app",
+      "dialect": "mixed-h2-h3",
+      "kind": "reference-project",
+      "description": "A complete, runnable H5 mall reference project (Vue 3 + Vant 4 + Pinia + better-scroll) with a companion Juejin booklet tutorial."
+    },
+    {
+      "id": "vue3-h5-template",
+      "label": "Vue3 H5 Template (Vue3 Mobile Starter Template)",
+      "readme": "references/README-vue3-h5-template.md",
+      "upstream_url": "https://raw.githubusercontent.com/yulimchen/vue3-h5-template/master/README.md",
+      "homepage": "https://github.com/yulimchen/vue3-h5-template",
+      "dialect": "mixed-h2-h3",
+      "kind": "starter-template",
+      "description": "Out-of-the-box Vue 3 + Vite 8 + Vant 4 + TS + Pinia + i18n + dark mode mobile base template, with master / i18n / js-version branches."
+    }
+  ],
+  "categories": [
+    {
+      "name": "Architecture / Layered Architecture",
+      "topics": [
+        {
+          "name": "Architecture / Layered Architecture",
+          "resources": [
+            {
+              "category": "Architecture / Layered Architecture",
+              "topic": "Architecture / Layered Architecture",
+              "title": "react-clean-architecture",
+              "url": "https://github.com/eduardomoroni/react-clean-architecture",
+              "source": "mobile-web-best-practice"
+            },
+            {
+              "category": "Architecture / Layered Architecture",
+              "topic": "Architecture / Layered Architecture",
+              "title": "business-rules-package",
+              "url": "https://github.com/fabriciomendonca/business-rules-package",
+              "source": "mobile-web-best-practice"
+            },
+            {
+              "category": "Architecture / Layered Architecture",
+              "topic": "Architecture / Layered Architecture",
+              "title": "ddd-fe-demo",
+              "url": "https://github.com/Vincedream/ddd-fe-demo",
+              "source": "mobile-web-best-practice"
+            }
+          ]
+        },
+        {
+          "name": "Recommended Articles",
+          "resources": [
+            {
+              "category": "Architecture / Layered Architecture",
+              "topic": "Recommended Articles",
+              "title": "Frontend Architecture - Making Refactoring Less Painful (Translation)",
+              "url": "https://juejin.im/post/5d849084e51d456206115acb",
+              "source": "mobile-web-best-practice"
+            },
+            {
+              "category": "Architecture / Layered Architecture",
+              "topic": "Recommended Articles",
+              "title": "Scalable Frontend #1 - Architecture Foundations (Translation)",
+              "url": "https://juejin.im/post/5d897d13f265da03c5035030",
+              "source": "mobile-web-best-practice"
+            },
+            {
+              "category": "Architecture / Layered Architecture",
+              "topic": "Recommended Articles",
+              "title": "Scalable Frontend #2 - Common Patterns (Translation)",
+              "url": "https://juejin.im/post/5d8ac00cf265da5b6a16844a",
+              "source": "mobile-web-best-practice"
+            },
+            {
+              "category": "Architecture / Layered Architecture",
+              "topic": "Recommended Articles",
+              "title": "Domain-Driven Design in Practice in Internet Business Development",
+              "url": "https://tech.meituan.com/2017/12/22/ddd-in-practice.html",
+              "source": "mobile-web-best-practice"
+            },
+            {
+              "category": "Architecture / Layered Architecture",
+              "topic": "Recommended Articles",
+              "title": "Frontend Development - Domain-Driven Design",
+              "url": "https://juejin.im/post/5b1c71ad6fb9a01e5918398d",
+              "source": "mobile-web-best-practice"
+            },
+            {
+              "category": "Architecture / Layered Architecture",
+              "topic": "Recommended Articles",
+              "title": "Applying Domain-Driven Design in Frontend",
+              "url": "https://juejin.im/post/5d3926176fb9a07ef161c719",
+              "source": "mobile-web-best-practice"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Micro-frontend / Micro-frontends",
+      "topics": [
+        {
+          "name": "Micro-frontend / Micro-frontends",
+          "resources": [
+            {
+              "category": "Micro-frontend / Micro-frontends",
+              "topic": "Micro-frontend / Micro-frontends",
+              "title": "preload-routes",
+              "url": "https://github.com/micro-frontends-vue/preload-routes",
+              "source": "mobile-web-best-practice"
+            },
+            {
+              "category": "Micro-frontend / Micro-frontends",
+              "topic": "Micro-frontend / Micro-frontends",
+              "title": "async-routes",
+              "url": "https://github.com/micro-frontends-vue/async-routes",
+              "source": "mobile-web-best-practice"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Offline Package / Offline Packages",
+      "topics": [
+        {
+          "name": "Offline Package / Offline Packages",
+          "resources": [
+            {
+              "category": "Offline Package / Offline Packages",
+              "topic": "Offline Package / Offline Packages",
+              "title": "react-native-largelist",
+              "url": "https://github.com/mcuking/react-native-largelist",
+              "source": "mobile-web-best-practice"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "JSBridge",
+      "topics": [
+        {
+          "name": "JSBridge",
+          "resources": [
+            {
+              "category": "JSBridge",
+              "topic": "JSBridge",
+              "title": "dsbridge",
+              "url": "https://github.com/wendux/DSBridge-Android",
+              "source": "mobile-web-best-practice"
+            },
+            {
+              "category": "JSBridge",
+              "topic": "JSBridge",
+              "title": "JSBridge Principle and Implementation",
+              "url": "https://juejin.im/post/5d1c257a6fb9a07ed4410ad1",
+              "source": "mobile-web-best-practice"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Error Monitoring / Error Monitoring",
+      "topics": [
+        {
+          "name": "Error Monitoring / Error Monitoring",
+          "resources": [
+            {
+              "category": "Error Monitoring / Error Monitoring",
+              "topic": "Error Monitoring / Error Monitoring",
+              "title": "sentry",
+              "url": "https://github.com/getsentry/sentry",
+              "source": "mobile-web-best-practice"
+            },
+            {
+              "category": "Error Monitoring / Error Monitoring",
+              "topic": "Error Monitoring / Error Monitoring",
+              "title": "fundebug",
+              "url": "https://www.fundebug.com/",
+              "source": "mobile-web-best-practice"
+            },
+            {
+              "category": "Error Monitoring / Error Monitoring",
+              "topic": "Error Monitoring / Error Monitoring",
+              "title": "FrontJS",
+              "url": "https://www.frontjs.com/",
+              "source": "mobile-web-best-practice"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Page State / Page State Persistence",
+      "topics": [
+        {
+          "name": "Page State / Page State Persistence",
+          "resources": [
+            {
+              "category": "Page State / Page State Persistence",
+              "topic": "Page State / Page State Persistence",
+              "title": "@navigation-ui",
+              "url": "https://github.com/lz5z/keep-alive-route",
+              "source": "mobile-web-best-practice"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Request Cache / Request Data Caching",
+      "topics": [
+        {
+          "name": "Request Cache / Request Data Caching",
+          "resources": [
+            {
+              "category": "Request Cache / Request Data Caching",
+              "topic": "Request Cache / Request Data Caching",
+              "title": "axios-extensions",
+              "url": "https://github.com/lz5z/axios-extensions",
+              "source": "mobile-web-best-practice"
+            },
+            {
+              "category": "Request Cache / Request Data Caching",
+              "topic": "Request Cache / Request Data Caching",
+              "title": "vue-axios-extensions",
+              "url": "https://www.npmjs.com/package/vue-axios-extensions",
+              "source": "mobile-web-best-practice"
+            },
+            {
+              "category": "Request Cache / Request Data Caching",
+              "topic": "Request Cache / Request Data Caching",
+              "title": "lscache",
+              "url": "https://github.com/pamelafox/lscache",
+              "source": "mobile-web-best-practice"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Form Validation / Form Validation",
+      "topics": [
+        {
+          "name": "Form Validation / Form Validation",
+          "resources": [
+            {
+              "category": "Form Validation / Form Validation",
+              "topic": "Form Validation / Form Validation",
+              "title": "async-validator",
+              "url": "https://github.com/yiminghe/async-validator",
+              "source": "mobile-web-best-practice"
+            },
+            {
+              "category": "Form Validation / Form Validation",
+              "topic": "Form Validation / Form Validation",
+              "title": "Vant Form",
+              "url": "https://vant-ui.github.io/vant/#/zh-CN/form",
+              "source": "mobile-web-best-practice"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Gesture Library / Gesture Libraries",
+      "topics": [
+        {
+          "name": "Gesture Library / Gesture Libraries",
+          "resources": [
+            {
+              "category": "Gesture Library / Gesture Libraries",
+              "topic": "Gesture Library / Gesture Libraries",
+              "title": "hammer.js",
+              "url": "https://github.com/hammerjs/hammer.js",
+              "source": "mobile-web-best-practice"
+            },
+            {
+              "category": "Gesture Library / Gesture Libraries",
+              "topic": "Gesture Library / Gesture Libraries",
+              "title": "alloyfinger",
+              "url": "https://github.com/AlloyTeam/AlloyFinger",
+              "source": "mobile-web-best-practice"
+            },
+            {
+              "category": "Gesture Library / Gesture Libraries",
+              "topic": "Gesture Library / Gesture Libraries",
+              "title": "interact.js",
+              "url": "https://github.com/taye/interact.js",
+              "source": "mobile-web-best-practice"
+            },
+            {
+              "category": "Gesture Library / Gesture Libraries",
+              "topic": "Gesture Library / Gesture Libraries",
+              "title": "vue-touch",
+              "url": "https://github.com/vuejs/vue-touch",
+              "source": "mobile-web-best-practice"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Webpack Strategy / Build Strategy",
+      "topics": [
+        {
+          "name": "Webpack Strategy / Build Strategy",
+          "resources": [
+            {
+              "category": "Webpack Strategy / Build Strategy",
+              "topic": "Webpack Strategy / Build Strategy",
+              "title": "webpack-bundle-analyzer",
+              "url": "https://github.com/webpack-contrib/webpack-bundle-analyzer",
+              "source": "mobile-web-best-practice"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Debug Console / Debug Console",
+      "topics": [
+        {
+          "name": "Debug Console / Debug Console",
+          "resources": [
+            {
+              "category": "Debug Console / Debug Console",
+              "topic": "Debug Console / Debug Console",
+              "title": "eruda",
+              "url": "https://github.com/nicknisi/eruda",
+              "source": "mobile-web-best-practice"
+            },
+            {
+              "category": "Debug Console / Debug Console",
+              "topic": "Debug Console / Debug Console",
+              "title": "vConsole",
+              "url": "https://github.com/Tencent/vConsole",
+              "source": "mobile-web-best-practice"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Packet Capture / Packet Capture Tools",
+      "topics": [
+        {
+          "name": "Packet Capture / Packet Capture Tools",
+          "resources": [
+            {
+              "category": "Packet Capture / Packet Capture Tools",
+              "topic": "Packet Capture / Packet Capture Tools",
+              "title": "Charles",
+              "url": "https://www.charlesproxy.com/",
+              "source": "mobile-web-best-practice"
+            },
+            {
+              "category": "Packet Capture / Packet Capture Tools",
+              "topic": "Packet Capture / Packet Capture Tools",
+              "title": "Whistle",
+              "url": "https://github.com/nicknisi/whistle",
+              "source": "mobile-web-best-practice"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "FAQ / Common Questions",
+      "topics": [
+        {
+          "name": "FAQ / Common Questions",
+          "resources": [
+            {
+              "category": "FAQ / Common Questions",
+              "topic": "FAQ / Common Questions",
+              "title": "H5 Common Questions Summary",
+              "url": "https://juejin.im/user/1714893789630792",
+              "source": "mobile-web-best-practice"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Project Family / Project Series",
+      "topics": [
+        {
+          "name": "Project Family / Project Series",
+          "resources": [
+            {
+              "category": "Project Family / Project Series",
+              "topic": "Project Family / Project Series",
+              "title": "newbee-mall (GitHub)",
+              "url": "https://github.com/newbee-ltd/newbee-mall",
+              "source": "newbee-mall-vue3-app"
+            },
+            {
+              "category": "Project Family / Project Series",
+              "topic": "Project Family / Project Series",
+              "title": "newbee-mall (Gitee)",
+              "url": "https://gitee.com/newbee-ltd/newbee-mall",
+              "source": "newbee-mall-vue3-app"
+            },
+            {
+              "category": "Project Family / Project Series",
+              "topic": "Project Family / Project Series",
+              "title": "newbee-mall-plus (GitHub)",
+              "url": "https://github.com/newbee-ltd/newbee-mall-plus",
+              "source": "newbee-mall-vue3-app"
+            },
+            {
+              "category": "Project Family / Project Series",
+              "topic": "Project Family / Project Series",
+              "title": "newbee-mall-plus (Gitee)",
+              "url": "https://gitee.com/newbee-ltd/newbee-mall-plus",
+              "source": "newbee-mall-vue3-app"
+            },
+            {
+              "category": "Project Family / Project Series",
+              "topic": "Project Family / Project Series",
+              "title": "newbee-mall-cloud (GitHub)",
+              "url": "https://github.com/newbee-ltd/newbee-mall-cloud",
+              "source": "newbee-mall-vue3-app"
+            },
+            {
+              "category": "Project Family / Project Series",
+              "topic": "Project Family / Project Series",
+              "title": "newbee-mall-cloud (Gitee)",
+              "url": "https://gitee.com/newbee-ltd/newbee-mall-cloud",
+              "source": "newbee-mall-vue3-app"
+            },
+            {
+              "category": "Project Family / Project Series",
+              "topic": "Project Family / Project Series",
+              "title": "newbee-mall-api (GitHub)",
+              "url": "https://github.com/newbee-ltd/newbee-mall-api",
+              "source": "newbee-mall-vue3-app"
+            },
+            {
+              "category": "Project Family / Project Series",
+              "topic": "Project Family / Project Series",
+              "title": "newbee-mall-api (Gitee)",
+              "url": "https://gitee.com/newbee-ltd/newbee-mall-api",
+              "source": "newbee-mall-vue3-app"
+            },
+            {
+              "category": "Project Family / Project Series",
+              "topic": "Project Family / Project Series",
+              "title": "newbee-mall-api-go (GitHub)",
+              "url": "https://github.com/newbee-ltd/newbee-mall-api-go",
+              "source": "newbee-mall-vue3-app"
+            },
+            {
+              "category": "Project Family / Project Series",
+              "topic": "Project Family / Project Series",
+              "title": "newbee-mall-api-go (Gitee)",
+              "url": "https://gitee.com/newbee-ltd/newbee-mall-api-go",
+              "source": "newbee-mall-vue3-app"
+            },
+            {
+              "category": "Project Family / Project Series",
+              "topic": "Project Family / Project Series",
+              "title": "newbee-mall-vue-app (GitHub)",
+              "url": "https://github.com/newbee-ltd/newbee-mall-vue-app",
+              "source": "newbee-mall-vue3-app"
+            },
+            {
+              "category": "Project Family / Project Series",
+              "topic": "Project Family / Project Series",
+              "title": "newbee-mall-vue-app (Gitee)",
+              "url": "https://gitee.com/newbee-ltd/newbee-mall-vue-app",
+              "source": "newbee-mall-vue3-app"
+            },
+            {
+              "category": "Project Family / Project Series",
+              "topic": "Project Family / Project Series",
+              "title": "newbee-mall-vue3-app (GitHub)",
+              "url": "https://github.com/newbee-ltd/newbee-mall-vue3-app",
+              "source": "newbee-mall-vue3-app"
+            },
+            {
+              "category": "Project Family / Project Series",
+              "topic": "Project Family / Project Series",
+              "title": "newbee-mall-vue3-app (Gitee)",
+              "url": "https://gitee.com/newbee-ltd/newbee-mall-vue3-app",
+              "source": "newbee-mall-vue3-app"
+            },
+            {
+              "category": "Project Family / Project Series",
+              "topic": "Project Family / Project Series",
+              "title": "vue3-admin (GitHub)",
+              "url": "https://github.com/newbee-ltd/vue3-admin",
+              "source": "newbee-mall-vue3-app"
+            },
+            {
+              "category": "Project Family / Project Series",
+              "topic": "Project Family / Project Series",
+              "title": "vue3-admin (Gitee)",
+              "url": "https://gitee.com/newbee-ltd/vue3-admin",
+              "source": "newbee-mall-vue3-app"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Tech Stack / Technology Stack",
+      "topics": [
+        {
+          "name": "Tech Stack / Technology Stack",
+          "resources": [
+            {
+              "category": "Tech Stack / Technology Stack",
+              "topic": "Tech Stack / Technology Stack",
+              "title": "Vue 3",
+              "url": "https://github.com/vuejs/vue",
+              "source": "newbee-mall-vue3-app"
+            },
+            {
+              "category": "Tech Stack / Technology Stack",
+              "topic": "Tech Stack / Technology Stack",
+              "title": "Vue-Router 4",
+              "url": "https://github.com/vuejs/router",
+              "source": "newbee-mall-vue3-app"
+            },
+            {
+              "category": "Tech Stack / Technology Stack",
+              "topic": "Tech Stack / Technology Stack",
+              "title": "Vuex 4",
+              "url": "https://github.com/vuejs/vuex/tree/4.0",
+              "source": "newbee-mall-vue3-app"
+            },
+            {
+              "category": "Tech Stack / Technology Stack",
+              "topic": "Tech Stack / Technology Stack",
+              "title": "Vant 4",
+              "url": "https://github.com/youzan/vant",
+              "source": "newbee-mall-vue3-app"
+            },
+            {
+              "category": "Tech Stack / Technology Stack",
+              "topic": "Tech Stack / Technology Stack",
+              "title": "better-scroll",
+              "url": "https://github.com/ustbhuangyi/better-scroll",
+              "source": "newbee-mall-vue3-app"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Tutorial Book / Development & Deployment Docs",
+      "topics": [
+        {
+          "name": "Tutorial Book / Development & Deployment Docs",
+          "resources": [
+            {
+              "category": "Tutorial Book / Development & Deployment Docs",
+              "topic": "Tutorial Book / Development & Deployment Docs",
+              "title": "New Bee Mall Vue3 + Spring Boot Booklet",
+              "url": "https://juejin.im/book/6844733826191589390",
+              "source": "newbee-mall-vue3-app"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Acknowledgments / Acknowledgments",
+      "topics": [
+        {
+          "name": "Acknowledgments / Acknowledgments",
+          "resources": [
+            {
+              "category": "Acknowledgments / Acknowledgments",
+              "topic": "Acknowledgments / Acknowledgments",
+              "title": "Vue",
+              "url": "https://github.com/vuejs/vue",
+              "source": "newbee-mall-vue3-app"
+            },
+            {
+              "category": "Acknowledgments / Acknowledgments",
+              "topic": "Acknowledgments / Acknowledgments",
+              "title": "Vue-Router",
+              "url": "https://github.com/vuejs/router",
+              "source": "newbee-mall-vue3-app"
+            },
+            {
+              "category": "Acknowledgments / Acknowledgments",
+              "topic": "Acknowledgments / Acknowledgments",
+              "title": "Vuex",
+              "url": "https://github.com/vuejs/vuex/tree/4.0",
+              "source": "newbee-mall-vue3-app"
+            },
+            {
+              "category": "Acknowledgments / Acknowledgments",
+              "topic": "Acknowledgments / Acknowledgments",
+              "title": "Vant",
+              "url": "https://github.com/youzan/vant",
+              "source": "newbee-mall-vue3-app"
+            },
+            {
+              "category": "Acknowledgments / Acknowledgments",
+              "topic": "Acknowledgments / Acknowledgments",
+              "title": "better-scroll",
+              "url": "https://github.com/ustbhuangyi/better-scroll",
+              "source": "newbee-mall-vue3-app"
+            },
+            {
+              "category": "Acknowledgments / Acknowledgments",
+              "topic": "Acknowledgments / Acknowledgments",
+              "title": "vue-element-admin",
+              "url": "https://github.com/PanJiaChen/vue-element-admin",
+              "source": "vue3-h5-template"
+            },
+            {
+              "category": "Acknowledgments / Acknowledgments",
+              "topic": "Acknowledgments / Acknowledgments",
+              "title": "vant-demo",
+              "url": "https://github.com/youzan/vant-demo",
+              "source": "vue3-h5-template"
+            },
+            {
+              "category": "Acknowledgments / Acknowledgments",
+              "topic": "Acknowledgments / Acknowledgments",
+              "title": "vue-pure-admin",
+              "url": "https://github.com/xiaoxian521/vue-pure-admin",
+              "source": "vue3-h5-template"
+            },
+            {
+              "category": "Acknowledgments / Acknowledgments",
+              "topic": "Acknowledgments / Acknowledgments",
+              "title": "vue-vben-admin",
+              "url": "https://github.com/vbenjs/vue-vben-admin",
+              "source": "vue3-h5-template"
+            },
+            {
+              "category": "Acknowledgments / Acknowledgments",
+              "topic": "Acknowledgments / Acknowledgments",
+              "title": "Dave Gandy",
+              "url": "https://github.com/FortAwesome/Font-Awesome",
+              "source": "vue3-h5-template"
+            },
+            {
+              "category": "Acknowledgments / Acknowledgments",
+              "topic": "Acknowledgments / Acknowledgments",
+              "title": "CC BY 4.0",
+              "url": "https://creativecommons.org/licenses/by/4.0/",
+              "source": "vue3-h5-template"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Branches / Branches",
+      "topics": [
+        {
+          "name": "Branches / Branches",
+          "resources": [
+            {
+              "category": "Branches / Branches",
+              "topic": "Branches / Branches",
+              "title": "master",
+              "url": "https://github.com/yulimchen/vue3-h5-template",
+              "source": "vue3-h5-template"
+            },
+            {
+              "category": "Branches / Branches",
+              "topic": "Branches / Branches",
+              "title": "i18n",
+              "url": "https://github.com/yulimchen/vue3-h5-template/tree/i18n",
+              "source": "vue3-h5-template"
+            },
+            {
+              "category": "Branches / Branches",
+              "topic": "Branches / Branches",
+              "title": "js-version",
+              "url": "https://github.com/yulimchen/vue3-h5-template/tree/js-version",
+              "source": "vue3-h5-template"
+            },
+            {
+              "category": "Branches / Branches",
+              "topic": "Branches / Branches",
+              "title": "releases",
+              "url": "https://github.com/yulimchen/vue3-h5-template/releases",
+              "source": "vue3-h5-template"
+            },
+            {
+              "category": "Branches / Branches",
+              "topic": "Branches / Branches",
+              "title": "LICENSE",
+              "url": "https://github.com/yulimchen/vue3-h5-template/blob/master/LICENSE",
+              "source": "vue3-h5-template"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Getting Started / Run the Project",
+      "topics": [
+        {
+          "name": "Getting Started / Run the Project",
+          "resources": [
+            {
+              "category": "Getting Started / Run the Project",
+              "topic": "Getting Started / Run the Project",
+              "title": "nvm",
+              "url": "https://github.com/nvm-sh/nvm#installing-and-updating",
+              "source": "vue3-h5-template"
+            },
+            {
+              "category": "Getting Started / Run the Project",
+              "topic": "Getting Started / Run the Project",
+              "title": "pnpm",
+              "url": "https://pnpm.io/zh/installation",
+              "source": "vue3-h5-template"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Documentation Guide / Documentation Guide",
+      "topics": [
+        {
+          "name": "On-demand Import of Vant Components",
+          "resources": [
+            {
+              "category": "Documentation Guide / Documentation Guide",
+              "topic": "On-demand Import of Vant Components",
+              "title": "Vant Official Docs - Plugin Configuration",
+              "url": "https://vant-ui.github.io/vant/#/zh-CN/quickstart#2.-pei-zhi-cha-jian",
+              "source": "vue3-h5-template"
+            }
+          ]
+        },
+        {
+          "name": "Icon Usage",
+          "resources": [
+            {
+              "category": "Documentation Guide / Documentation Guide",
+              "topic": "Icon Usage",
+              "title": "Iconify",
+              "url": "https://marketplace.visualstudio.com/items?itemName=antfu.iconify",
+              "source": "vue3-h5-template"
+            },
+            {
+              "category": "Documentation Guide / Documentation Guide",
+              "topic": "Icon Usage",
+              "title": "tools page",
+              "url": "https://github.com/yulimchen/vue3-h5-template/blob/master/src/views/tools/index.vue",
+              "source": "vue3-h5-template"
+            }
+          ]
+        },
+        {
+          "name": "Development Environment Mock",
+          "resources": [
+            {
+              "category": "Documentation Guide / Documentation Guide",
+              "topic": "Development Environment Mock",
+              "title": "vite-plugin-mock-dev-server",
+              "url": "https://github.com/pengzhanbo/vite-plugin-mock-dev-server/blob/main/README.zh-CN.md",
+              "source": "vue3-h5-template"
+            }
+          ]
+        },
+        {
+          "name": "Git Commit Message Convention",
+          "resources": [
+            {
+              "category": "Documentation Guide / Documentation Guide",
+              "topic": "Git Commit Message Convention",
+              "title": "Angular Conventional Commits",
+              "url": "https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular",
+              "source": "vue3-h5-template"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "License / License",
+      "topics": [
+        {
+          "name": "License / License",
+          "resources": [
+            {
+              "category": "License / License",
+              "topic": "License / License",
+              "title": "MIT",
+              "url": "https://github.com/yulimchen/vue3-h5-template/blob/master/LICENSE",
+              "source": "vue3-h5-template"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

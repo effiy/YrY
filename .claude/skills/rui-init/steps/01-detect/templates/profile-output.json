@@ -1,0 +1,27 @@
+{
+  "identity": {
+    "name": "project-name",
+    "branchPrefix": "project-name"
+  },
+  "projectType": "frontend",
+  "inventory": {
+    "dependencies": {
+      "react": "^19.0.0",
+      "vite": "^6.0.0"
+    },
+    "buildCommands": ["vite build"],
+    "testCommands": ["vitest run"],
+    "frameworkVersions": {
+      "react": "19.0.0"
+    }
+  },
+  "securitySurface": {
+    "userInput": true,
+    "apiEndpoints": false,
+    "dataStorage": false,
+    "authentication": true,
+    "thirdParty": true
+  },
+  "testFramework": "vitest",
+  "architecturePattern": "single"
+}

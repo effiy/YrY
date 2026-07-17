@@ -4,8 +4,8 @@
    Template structure (from index.html, <script type="text/x-template" id="rui-cross-nav-tpl">):
      <nav class="rui-cross-nav" :aria-label="ariaLabel">
        <span class="rui-cross-nav-sep">{{ separator }}</span>
-       <a class="rui-cross-nav-link" :href="...">📋 清单</a>
-       <span class="rui-cross-nav-link is-active" aria-current="page">📐 架构</span>
+       <a class="rui-cross-nav-link" :href="...">📋 Checklist</a>
+       <span class="rui-cross-nav-link is-active" aria-current="page">📐 Architecture</span>
      </nav>
 
    This file is auto-injected as a <link> by index.js; host pages do not

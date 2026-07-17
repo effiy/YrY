@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2322C55E'/><text x='16' y='22' font-size='18' font-family='sans-serif' font-weight='bold' fill='white' text-anchor='middle'>RF</text></svg>" type="image/svg+xml">
+    <title>rui-report-files — {{ data.scope }}</title>
+
+    <!-- Unified shared loader (Vue 3 CDN + rui component bootstrap) -->
+    <script src="/.claude/shared/loader.js" data-namespace="rui-report-files"></script>
+
+    <!-- Page-level styles (base, header, toc, footer, tables) -->
+    <link rel="stylesheet" href="index.css">
+
+    <!-- rui HTML CDN shared components -->
+    <script src="/.claude/shared/components/rui-breadcrumb/index.js"></script>
+    <script src="/.claude/shared/components/rui-score-bar/index.js"></script>
+    <script src="/.claude/shared/components/rui-badge/index.js"></script>
+    <script src="/.claude/shared/components/rui-tag-chip/index.js"></script>
+    <script src="/.claude/shared/components/rui-back-top/index.js"></script>
+
+    <!-- rui-report-files section components — templates + styles -->
+    <!--   - summary: score-bar + summary cards -->
+    <!--   - size: treemap / types / histogram tabs -->
+    <!--   - largest: filterable sortable table -->
+    <!--   - coupling: fan-in / fan-out tabs with sortable table -->
+    <!--   - risk: hotspots / orphans / depth tabs with sortable table -->
+    <!--   - health: cycles / freshness tabs -->
+    <!--   - self-improvement: chart-first diagnostics, levers, roadmap, decay -->
+    <link rel="stylesheet" href="components/rui-report-summary/index.css">
+    <link rel="stylesheet" href="components/rui-report-size/index.css">
+    <link rel="stylesheet" href="components/rui-report-largest/index.css">
+    <link rel="stylesheet" href="components/rui-report-coupling/index.css">
+    <link rel="stylesheet" href="components/rui-report-risk/index.css">
+    <link rel="stylesheet" href="components/rui-report-health/index.css">
+    <link rel="stylesheet" href="components/rui-report-self-improvement/index.css">
+
+    <script>
+        window.__reportTemplatesReady = (function () {
+            var componentTemplateFiles = [
+                'components/rui-report-summary/index.html',
+                'components/rui-report-size/index.html',
+                'components/rui-report-largest/index.html',
+                'components/rui-report-coupling/index.html',
+                'components/rui-report-risk/index.html',
+                'components/rui-report-health/index.html',
+                'components/rui-report-self-improvement/index.html'
+            ];
+
+            function appendTemplatesFromHTML(htmlText) {
+                var matches = htmlText.match(/<script\s+type=["']text\/x-template["'][^>]*>[\s\S]*?<\/script>/gi) || [];
+                matches.forEach(function (block) {
+                    var idMatch = block.match(/id=["']([^"']+)["']/i);
+                    if (!idMatch || document.getElementById(idMatch[1])) return;
+                    var wrapper = document.createElement('div');
+                    wrapper.innerHTML = block;
+                    var tpl = wrapper.firstElementChild;
+                    if (tpl) document.head.appendChild(tpl);
+                });
+            }
+
+            return Promise.all(componentTemplateFiles.map(function (file) {
+                return fetch(file)
+                    .then(function (res) {
+                        if (!res.ok) throw new Error('Failed to load template: ' + file);
+                        return res.text();
+                    })
+                    .then(appendTemplatesFromHTML);
+            })).catch(function (err) {
+                console.error('[rui-report-files] template preload failed:', err);
+            });
+        })();
+    </script>
+
+    <!-- Shared utilities (must load before any component using them) -->
+    <script src="lib/rui-bytes.js"></script>
+    <script src="lib/rui-sortable.js"></script>
+
+    <script src="components/rui-report-summary/index.js"></script>
+    <script src="components/rui-report-size/index.js"></script>
+    <script src="components/rui-report-largest/index.js"></script>
+    <script src="components/rui-report-coupling/index.js"></script>
+    <script src="components/rui-report-risk/index.js"></script>
+    <script src="components/rui-report-health/index.js"></script>
+    <script src="components/rui-report-self-improvement/index.js"></script>
+
+</head>
+<body>
+<a href="#toc" class="skip-link">Skip to navigation</a>
+<a href="#summary" class="skip-link skip-link--content">Skip to content</a>
+
+<div id="page-app" v-cloak>
+    <div id="app-vue-missing" class="app-vue-missing">
+        <h2>Vue 3 failed to load</h2>
+        <p>The report depends on Vue 3. The CDN at
+            <code>/.claude/shared/vendor/vue@3.4.27/vue.global.prod.js</code>
+            appears to be unreachable from this environment. Please check your network
+            or vendor <code>vue.global.prod.js</code> next to <code>index.html</code>.</p>
+    </div>
+
+    <nav id="toc" role="navigation" aria-label="Table of contents">
+        <a v-for="s in sections"
+           :key="s.id"
+           :href="'#' + s.id"
+           :class="{ active: activeSection === s.id }"
+           :aria-current="activeSection === s.id ? 'true' : false"><span v-if="sectionFlags[s.id]"
+                  class="toc-flag"
+                  :class="'flag-' + sectionFlags[s.id]"
+                  :title="sectionFlags[s.id] === 'critical' ? 'Contains critical (P0) alerts' : 'Contains warnings'"></span>{{ s.label }}</a>
+        <span class="toc-spacer"></span>
+        <span class="kbd-hint" v-if="sections.length">Press 1–{{ sections.length }} · ? for help</span>
+    </nav>
+
+    <div class="reading-progress" :style="{ width: readingProgress + '%' }"></div>
+
+    <header>
+        <rui-breadcrumb class="report-breadcrumb" :items="breadcrumb"></rui-breadcrumb>
+        <h1>{{ CONFIG.labels.title }}</h1>
+        <p class="meta">
+            scope: <code>{{ data.scope }}</code>
+            · files: {{ data.summary.totalFiles }}
+            · size: {{ data.summary.totalBytesHuman }}
+            · options: <code>{{ optionsJson }}</code>
+        </p>
+        <div class="meta-grid">
+            <div class="meta-item">
+                <span class="meta-label">Health score</span>
+                <span class="meta-value">{{ data.score == null ? '—' : data.score + ' / 100' }}</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Total files</span>
+                <span class="meta-value">{{ data.summary.totalFiles == null ? '—' : data.summary.totalFiles.toLocaleString() }}</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Total size</span>
+                <span class="meta-value">{{ data.summary.totalBytesHuman || '—' }}</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Risk alerts</span>
+                <span class="meta-value">
+                    {{ alertCounts.p0 }} P0 · {{ alertCounts.p1 }} P1 · {{ alertCounts.p2 }} P2
+                </span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Generated</span>
+                <span class="meta-value">{{ generatedAt }}</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ── Stale data warning ── -->
+    <div v-if="isStale" class="stale-banner" role="status" aria-live="polite">
+        <span class="stale-icon">⏰</span>
+        <span class="stale-text">
+            本报告生成于 <strong>{{ dataAgeDays }} 天前</strong>（{{ generatedAt }}）。期间代码可能已变化，建议重新运行
+            <code>/rui-report-files</code> 刷新快照。
+        </span>
+    </div>
+
+    <!-- ── Risk warning banner ── -->
+    <div v-if="riskBanner" class="risk-banner"
+         :class="'risk-level-' + riskBanner.level"
+         :role="riskBanner.level === 'p0' ? 'alert' : 'status'"
+         aria-live="assertive">
+        <div class="risk-title">
+            <span class="risk-icon" v-text="riskBanner.icon"></span>
+            <span v-text="riskBanner.title"></span>
+        </div>
+        <div class="risk-body" v-html="riskBanner.body"></div>
+        <div class="risk-actions" v-if="riskBanner.actions.length">
+            <a v-for="a in riskBanner.actions" :key="a.href"
+               :href="a.href" v-text="a.label"></a>
+        </div>
+    </div>
+
+    <!-- ── Risk distribution bar ── -->
+    <div
+      class="risk-dist"
+      v-if="alertCounts.p0 + alertCounts.p1 + alertCounts.p2 > 0">
+        <span class="risk-dist-label">Risk distribution</span>
+        <div class="risk-dist-bar">
+            <span class="risk-dist-seg risk-dist-p0"
+                  :style="{ width: distPct.p0 + '%' }"
+                  :title="alertCounts.p0 + ' P0 (critical)'">{{ alertCounts.p0 || '' }}</span>
+            <span class="risk-dist-seg risk-dist-p1"
+                  :style="{ width: distPct.p1 + '%' }"
+                  :title="alertCounts.p1 + ' P1 (warning)'">{{ alertCounts.p1 || '' }}</span>
+            <span class="risk-dist-seg risk-dist-p2"
+                  :style="{ width: distPct.p2 + '%' }"
+                  :title="alertCounts.p2 + ' P2 (info)'">{{ alertCounts.p2 || '' }}</span>
+        </div>
+        <span class="risk-dist-total">{{ alertCounts.p0 + alertCounts.p1 + alertCounts.p2 }} total</span>
+    </div>
+
+    <!-- ── Remediation queue — prioritized action list ── -->
+    <section id="remediation" v-if="remediationQueue.length" class="remediation-section">
+        <h2>Remediation queue</h2>
+        <p class="remediation-intro">
+            <strong>{{ remediationQueue.length }}</strong> action item<span v-if="remediationQueue.length > 1">s</span>
+            require attention — sorted by severity.
+            <span v-if="remediationDoneCount > 0" class="remediation-progress">
+                <strong>{{ remediationDoneCount }}</strong> / {{ remediationQueue.length }} resolved
+                <button type="button" class="remediation-reset" @click="clearRemediationDone" :title="'Reset progress'">↺ reset</button>
+            </span>
+            <span class="remediation-hint">Click the checkbox to mark an item resolved — progress is saved locally.</span>
+        </p>
+        <div v-if="remediationGrouped.P0.length" class="remediation-group">
+            <div class="remediation-group-head tone-critical">
+                <span class="remediation-group-icon">!</span>
+                <span class="remediation-group-title">P0 — Critical</span>
+                <span class="remediation-group-count">{{ remediationGrouped.P0.length }} item<span v-if="remediationGrouped.P0.length > 1">s</span></span>
+                <span class="remediation-group-hint">Resolve before merge / release</span>
+            </div>
+            <ul class="remediation-list">
+                <li v-for="item in remediationGrouped.P0" :key="item._key"
+                    class="remediation-item tone-critical"
+                    :class="{ 'is-done': item._done }">
+                    <label class="remediation-check">
+                        <input
+                          type="checkbox"
+                          :checked="item._done"
+                          @change="toggleRemediation(item._key)" />
+                        <span class="remediation-check-box" aria-hidden="true"></span>
+                    </label>
+                    <a :href="item.href" class="remediation-link">
+                        <span class="remediation-marker">{{ item.marker }}</span>
+                        <span class="remediation-body">
+                            <span class="remediation-file"><code>{{ item.file }}</code><span v-if="item.line" class="remediation-line">:{{ item.line }}</span></span>
+                            <span class="remediation-message">{{ item.message }}</span>
+                            <span class="remediation-category" v-if="item.category">{{ item.category }}</span>
+                        </span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div v-if="remediationGrouped.P1.length" class="remediation-group">
+            <div class="remediation-group-head tone-warn">
+                <span class="remediation-group-icon">▲</span>
+                <span class="remediation-group-title">P1 — Warning</span>
+                <span class="remediation-group-count">{{ remediationGrouped.P1.length }} item<span v-if="remediationGrouped.P1.length > 1">s</span></span>
+                <span class="remediation-group-hint">Review within this iteration</span>
+            </div>
+            <ul class="remediation-list">
+                <li v-for="item in remediationGrouped.P1" :key="item._key"
+                    class="remediation-item tone-warn"
+                    :class="{ 'is-done': item._done }">
+                    <label class="remediation-check">
+                        <input type="checkbox" :checked="item._done" @change="toggleRemediation(item._key)"
+                               :aria-label="'Mark resolved: ' + item.file + ' — ' + item.message" />
+                        <span class="remediation-check-box" aria-hidden="true"></span>
+                    </label>
+                    <a :href="item.href" class="remediation-link">
+                        <span class="remediation-marker">{{ item.marker }}</span>
+                        <span class="remediation-body">
+                            <span class="remediation-file"><code>{{ item.file }}</code><span v-if="item.line" class="remediation-line">:{{ item.line }}</span></span>
+                            <span class="remediation-message">{{ item.message }}</span>
+                            <span class="remediation-category" v-if="item.category">{{ item.category }}</span>
+                        </span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div v-if="remediationGrouped.P2.length" class="remediation-group">
+            <div class="remediation-group-head tone-info">
+                <span class="remediation-group-icon">i</span>
+                <span class="remediation-group-title">P2 — Info</span>
+                <span class="remediation-group-count">{{ remediationGrouped.P2.length }} item<span v-if="remediationGrouped.P2.length > 1">s</span></span>
+                <span class="remediation-group-hint">Optional improvements</span>
+            </div>
+            <ul class="remediation-list">
+                <li v-for="item in remediationGrouped.P2" :key="item._key"
+                    class="remediation-item tone-info"
+                    :class="{ 'is-done': item._done }">
+                    <label class="remediation-check">
+                        <input type="checkbox" :checked="item._done" @change="toggleRemediation(item._key)"
+                               :title="'Mark resolved: ' + item.file + ' — ' + item.message"
+                               :aria-label="'Mark resolved: ' + item.file + ' — ' + item.message" />
+                        <span class="remediation-check-box" aria-hidden="true"></span>
+                    </label>
+                    <a :href="item.href" class="remediation-link">
+                        <span class="remediation-marker">{{ item.marker }}</span>
+                        <span class="remediation-body">
+                            <span class="remediation-file"><code>{{ item.file }}</code><span v-if="item.line" class="remediation-line">:{{ item.line }}</span></span>
+                            <span class="remediation-message">{{ item.message }}</span>
+                            <span class="remediation-category" v-if="item.category">{{ item.category }}</span>
+                        </span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ── Key findings (executive TL;DR) ── -->
+    <div class="key-findings" v-if="keyFindings.length" role="region" aria-label="Key findings at a glance">
+        <div class="key-findings-head">
+            <span class="key-findings-title">Key findings</span>
+            <span class="key-findings-sub">Click any card to jump to the detail section</span>
+        </div>
+        <div class="key-findings-grid">
+            <a v-for="f in keyFindings"
+               :key="f.label"
+               :href="f.href"
+               class="finding-card"
+               :class="'tone-' + f.tone">
+                <span class="finding-icon" aria-hidden="true">{{ f.icon }}</span>
+                <span class="finding-body">
+                    <span class="finding-label">{{ f.label }}</span>
+                    <span class="finding-value">{{ f.value }}<span class="finding-sub" v-if="f.sub"> · {{ f.sub }}</span></span>
+                    <span class="finding-hint" v-if="f.hint">{{ f.hint }}</span>
+                </span>
+            </a>
+        </div>
+    </div>
+
+    <!-- ── How to read this report (collapsible) ── -->
+    <details id="read-helper" class="read-helper" open aria-label="How to read this report">
+        <summary>How to read this report <span class="read-helper__toggle-hint" aria-hidden="true">press <kbd>?</kbd> to toggle</span></summary>
+        <dl>
+            <dt>Summary</dt><dd>Health score + alert digest — start here for the big picture.</dd>
+            <dt>Size / Largest</dt><dd>Size distribution and largest files — oversized files are often split candidates.</dd>
+            <dt>Coupling</dt><dd>fan-in / fan-out — identify "hub files" (heavily referenced) and "god objects" (referencing many others).</dd>
+            <dt>Risk Files</dt><dd>Hotspots, orphans, depth anomalies — <strong class="critical-alert">P0/P1 must be resolved before merge</strong>.</dd>
+            <dt>Health</dt><dd>Circular dependencies and code freshness — reflects architecture evolution trends.</dd>
+            <dt>Self-Improvement</dt><dd>Diagnostic conclusions + improvement levers + roadmap — prioritizes next actions.</dd>
+            <dt>Shortcuts</dt>
+            <dd>
+                <ul class="read-helper__kbd-list">
+                    <li><kbd>1</kbd>–<kbd>{{ sections.length }}</kbd> jump to section</li>
+                    <li><kbd>t</kbd> back to top</li>
+                    <li><kbd>?</kbd> show / hide this help</li>
+                </ul>
+            </dd>
+            <dt>Fold sections</dt>
+            <dd>Click any section heading (or focus it with keyboard and press Enter) to collapse / expand its body — the folded state is remembered across reloads.</dd>
+            <dt>Color legend</dt>
+            <dd>
+                <span class="legend-swatch legend-swatch--critical" aria-hidden="true"></span> Critical (P0) ·
+                <span class="legend-swatch legend-swatch--warn" aria-hidden="true"></span> Warning (P1) ·
+                <span class="legend-swatch legend-swatch--ok" aria-hidden="true"></span> Healthy / Passed
+            </dd>
+        </dl>
+        <a href="#toc" class="read-helper__back-top" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">↑ Back to top</a>
+    </details>
+
+    <!-- ── Methodology (collapsible) ── -->
+    <details id="methodology" class="read-helper methodology" aria-label="Methodology and thresholds">
+        <summary>Methodology &amp; thresholds</summary>
+        <dl>
+            <dt>Health score</dt>
+            <dd>0–100 composite from size, coupling, risk, and freshness sub-metrics. <strong>A ≥ 90</strong> · <strong>B ≥ 75</strong> · <strong>C ≥ 60</strong> · <strong>D ≥ 40</strong> · <strong>F &lt; 40</strong>.</dd>
+            <dt>P0 — Critical</dt>
+            <dd>Must resolve before merge / release: file &gt; 1000 LOC, circular dependency, or fan-in / fan-out ≥ 20.</dd>
+            <dt>P1 — Warning</dt>
+            <dd>Review within iteration: file 500–1000 LOC, fan-in / fan-out 10–19, or stale ≥ 180 days.</dd>
+            <dt>P2 — Info</dt>
+            <dd>Optional improvements: file 200–500 LOC, fan-in / fan-out 3–9, or orphan file (no inbound references).</dd>
+            <dt>Fan-in</dt>
+            <dd>Number of other files that import / reference this file. High fan-in = hub file; changes ripple widely.</dd>
+            <dt>Fan-out</dt>
+            <dd>Number of other files this file imports / references. High fan-out = god object; candidate for decomposition.</dd>
+            <dt>Max depth</dt>
+            <dd>Longest dependency chain from this file to a leaf. Deep chains signal layered architecture.</dd>
+            <dt>Freshness</dt>
+            <dd>Days since last <code>mtime</code>, anchored to the newest file in scope. Stale ≥ 180 days, dead ≥ 365 days.</dd>
+            <dt>Data locality</dt>
+            <dd>All metrics computed statically from the source tree — no network calls, no telemetry, nothing uploaded.</dd>
+        </dl>
+        <a href="#toc" class="read-helper__back-top" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">↑ Back to top</a>
+    </details>
+
+    <!-- ── Summary section ── -->
+    <rui-report-summary
+        v-if="visibleSections.summary"
+        :score="data.score"
+        :alert-counts="alertCounts"
+        :summary="data.summary"
+        :labels="CONFIG.labels">
+    </rui-report-summary>
+
+    <!-- ── Size section ── -->
+    <rui-report-size
+        v-if="visibleSections.size"
+        :treemap="data.treemap"
+        :types="data.types"
+        :histogram="data.histogram"
+        :labels="CONFIG.labels">
+    </rui-report-size>
+
+    <!-- ── Largest files section ── -->
+    <rui-report-largest
+        v-if="visibleSections.largest"
+        :largest="data.largest"
+        :labels="CONFIG.labels">
+    </rui-report-largest>
+
+    <!-- ── Coupling section ── -->
+    <rui-report-coupling
+        v-if="visibleSections.coupling"
+        :fanin="data.fanin"
+        :fanout="data.fanout"
+        :labels="CONFIG.labels">
+    </rui-report-coupling>
+
+    <!-- ── Risk section ── -->
+    <rui-report-risk
+        v-if="visibleSections.risk"
+        :hotspots="data.hotspots"
+        :orphans="data.orphans"
+        :depth-ranking="data.depthRanking"
+        :depth-stats="data.depthStats"
+        :labels="CONFIG.labels">
+    </rui-report-risk>
+
+    <!-- ── Health section ── -->
+    <rui-report-health
+        v-if="visibleSections.health"
+        :cycles="data.cycles"
+        :freshness="data.freshness"
+        :freshness-buckets="data.freshnessBuckets"
+        :freshness-stats="data.freshnessStats"
+        :labels="CONFIG.labels">
+    </rui-report-health>
+
+    <!-- ── Self-Improvement section ── -->
+    <rui-report-self-improvement
+        v-if="visibleSections['self-improvement']"
+        :si="data.selfImprovement"
+        :labels="CONFIG.labels">
+    </rui-report-self-improvement>
+
+    <footer>
+        <div class="footer-recap">
+            <div class="footer-recap-item">
+                <span class="footer-recap-label">Health score</span>
+                <span class="footer-recap-value" :class="scoreClass">{{ data.score == null ? '—' : data.score + '/100' }}</span>
+            </div>
+            <div class="footer-recap-item">
+                <span class="footer-recap-label">Files scanned</span>
+                <span class="footer-recap-value">{{ data.summary.totalFiles == null ? '—' : data.summary.totalFiles.toLocaleString() }}</span>
+            </div>
+            <div class="footer-recap-item">
+                <span class="footer-recap-label">Risk alerts</span>
+                <span class="footer-recap-value" :class="alertCounts.p0 ? 'critical' : (alertCounts.p1 ? 'warn' : 'ok')">
+                    {{ alertCounts.p0 + alertCounts.p1 + alertCounts.p2 }} alert(s)
+                </span>
+            </div>
+            <div class="footer-recap-item">
+                <span class="footer-recap-label">Generated at</span>
+                <span class="footer-recap-value">{{ generatedAt }}</span>
+            </div>
+        </div>
+        <p>Generated by <code>/rui-report-files</code> · scope: <code>{{ data.scope }}</code> · options: <code>{{ optionsJson }}</code></p>
+        <p class="dim">{{ CONFIG.labels.footerMethodology }}</p>
+        <p class="dim">This report is a static snapshot reflecting the code state at generation time. To update, re-run <code>/rui-report-files</code>. Data stays local — nothing is uploaded.</p>
+    </footer>
+
+    <rui-back-top />
+
+    <!-- Floating P0 jump-to-risk button — only visible when P0 alerts exist -->
+    <a v-if="alertCounts.p0 > 0"
+       href="#risk"
+       class="p0-jump"
+       :title="alertCounts.p0 + ' critical alert' + (alertCounts.p0 > 1 ? 's' : '')"
+       aria-label="Jump to risk section">
+        <span class="p0-jump-count" v-text="alertCounts.p0"></span>
+        <span class="p0-jump-label">P0 risk</span>
+    </a>
+</div>
+
+<script src="data.js"></script>
+<!-- Page-level app (split into focused modules) -->
+<script src="app/state.js"></script>
+<script src="app/actions.js"></script>
+<script src="app/lifecycle.js"></script>
+<script src="app/mount.js"></script>
+<script src="index.js"></script>
+</body>
+</html>

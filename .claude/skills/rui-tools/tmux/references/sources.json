@@ -1,0 +1,12 @@
+{
+  "sources": [
+    {
+      "id": "awesome-tmux",
+      "label": "Awesome tmux",
+      "readme": "references/README-awesome-tmux.md",
+      "upstream_url": "https://raw.githubusercontent.com/rothgar/awesome-tmux/master/README.md",
+      "homepage": "https://github.com/rothgar/awesome-tmux",
+      "dialect": "tmux-flat-h2"
+    }
+  ]
+}

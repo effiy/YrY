@@ -184,6 +184,49 @@ function constructorName(sig) {
     return `${ids[0].text}.${ids[1].text}`;
 }
 /**
+ * Signature types to probe inside a `method_signature` member, paired with
+ * the name extractor for each. Factory constructors use `constructorName`
+ * (two-identifier `Class.named` shape); the others use `extractFunctionName`.
+ * Order mirrors the original explicit if/else chain — first match wins, and
+ * a match with a null name still short-circuits (does not fall through to
+ * the next type).
+ */
+const METHOD_SIG_EXTRACTORS = [
+    { type: "factory_constructor_signature", nameFn: constructorName },
+    { type: "getter_signature", nameFn: extractFunctionName },
+    { type: "setter_signature", nameFn: extractFunctionName },
+    { type: "function_signature", nameFn: extractFunctionName },
+];
+/**
+ * Signature types to probe inside a `declaration` member. Regular
+ * constructors use `constructorName`; abstract getters/setters/methods use
+ * `extractFunctionName`.
+ */
+const DECL_SIG_EXTRACTORS = [
+    { type: "constructor_signature", nameFn: constructorName },
+    { type: "getter_signature", nameFn: extractFunctionName },
+    { type: "setter_signature", nameFn: extractFunctionName },
+    { type: "function_signature", nameFn: extractFunctionName },
+];
+/**
+ * Try each signature extractor in order against `member`. On the first
+ * signature child found, push a method entry (if the name resolved) and
+ * return true. Returns false when no signature child matched, so the
+ * caller can fall through to field-declaration handling.
+ */
+function tryExtractMethod(member, extractors, methods, functions, exports) {
+    for (const { type, nameFn } of extractors) {
+        const sig = findChild(member, type);
+        if (!sig)
+            continue;
+        const name = nameFn(sig);
+        if (name)
+            pushMethod(member, sig, name, methods, functions, exports);
+        return true;
+    }
+    return false;
+}
+/**
  * Walk a `class_body` (or `extension_body` / `enum_body`) and collect
  * `method_signature` declarations into the class's `methods` array AND the
  * top-level `functions` array, mirroring KotlinExtractor.collectClassBody.
@@ -199,79 +242,12 @@ function collectClassBody(body, methods, properties, functions, exports) {
         if (!member)
             continue;
         if (member.type === "method_signature") {
-            // Factory constructor lives inside method_signature.
-            const factory = findChild(member, "factory_constructor_signature");
-            if (factory) {
-                const name = constructorName(factory);
-                if (name) {
-                    pushMethod(member, factory, name, methods, functions, exports);
-                }
+            if (tryExtractMethod(member, METHOD_SIG_EXTRACTORS, methods, functions, exports))
                 continue;
-            }
-            // Getter (`int get value`) — wrapped in method_signature with a
-            // sibling function_body. The name is the only identifier in getter_signature.
-            const getter = findChild(member, "getter_signature");
-            if (getter) {
-                const name = extractFunctionName(getter);
-                if (name)
-                    pushMethod(member, getter, name, methods, functions, exports);
-                continue;
-            }
-            // Setter (`set value(int x)`) — wrapped in method_signature with a
-            // sibling function_body. The first identifier is the name; the
-            // formal_parameter_list holds the assigned value.
-            const setter = findChild(member, "setter_signature");
-            if (setter) {
-                const name = extractFunctionName(setter);
-                if (name)
-                    pushMethod(member, setter, name, methods, functions, exports);
-                continue;
-            }
-            // Concrete method: `method_signature > function_signature`.
-            const inner = findChild(member, "function_signature");
-            if (!inner)
-                continue;
-            const name = extractFunctionName(inner);
-            if (!name)
-                continue;
-            pushMethod(member, inner, name, methods, functions, exports);
         }
         else if (member.type === "declaration") {
-            // Regular constructor: `declaration > constructor_signature`.
-            const ctor = findChild(member, "constructor_signature");
-            if (ctor) {
-                const name = constructorName(ctor);
-                if (name) {
-                    pushMethod(member, ctor, name, methods, functions, exports);
-                }
+            if (tryExtractMethod(member, DECL_SIG_EXTRACTORS, methods, functions, exports))
                 continue;
-            }
-            // Abstract getter (`int get area;`) — `declaration > getter_signature`.
-            const absGetter = findChild(member, "getter_signature");
-            if (absGetter) {
-                const name = extractFunctionName(absGetter);
-                if (name)
-                    pushMethod(member, absGetter, name, methods, functions, exports);
-                continue;
-            }
-            // Abstract setter (`set width(int w);`) — `declaration > setter_signature`.
-            const absSetter = findChild(member, "setter_signature");
-            if (absSetter) {
-                const name = extractFunctionName(absSetter);
-                if (name)
-                    pushMethod(member, absSetter, name, methods, functions, exports);
-                continue;
-            }
-            // Abstract method declarations (e.g. `double area();`) appear as
-            // `declaration > function_signature` — not wrapped in `method_signature`.
-            const fnSig = findChild(member, "function_signature");
-            if (fnSig) {
-                const name = extractFunctionName(fnSig);
-                if (name) {
-                    pushMethod(member, fnSig, name, methods, functions, exports);
-                }
-                continue;
-            }
             // Field declaration — surface initialized_identifier names as properties.
             // Comma-lists like `int a, b, c;` produce multiple initialized_identifier
             // children inside a single initialized_identifier_list.
@@ -508,18 +484,23 @@ export class DartExtractor {
          * the stack only for the duration of the following `function_body`.
          */
         const walkNode = (node) => {
+            // Record a call edge against the current top-of-stack caller.
+            // Deduplicated here because both the selector branch and the
+            // const/new-expression branch produce identical entry shapes.
+            const recordCall = (callee) => {
+                entries.push({
+                    caller: functionStack[functionStack.length - 1],
+                    callee,
+                    lineNumber: node.startPosition.row + 1,
+                });
+            };
             if (node.type === "selector" &&
                 findChild(node, "argument_part") &&
                 functionStack.length > 0) {
                 // A call site: selector containing argument_part.
                 const callee = this.extractCalleeName(node);
-                if (callee) {
-                    entries.push({
-                        caller: functionStack[functionStack.length - 1],
-                        callee,
-                        lineNumber: node.startPosition.row + 1,
-                    });
-                }
+                if (callee)
+                    recordCall(callee);
             }
             // Constructor-call shapes that bypass the `selector > argument_part`
             // pattern:
@@ -532,13 +513,8 @@ export class DartExtractor {
                 node.type === "new_expression") &&
                 functionStack.length > 0) {
                 const typeNode = findChild(node, "type_identifier");
-                if (typeNode) {
-                    entries.push({
-                        caller: functionStack[functionStack.length - 1],
-                        callee: typeNode.text,
-                        lineNumber: node.startPosition.row + 1,
-                    });
-                }
+                if (typeNode)
+                    recordCall(typeNode.text);
             }
             walkSiblings(node);
         };

@@ -13,8 +13,8 @@
      5) Lazily mount the Vue app (created only on first actual render)
 
    Page usage (host page):
-     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-     <script src="../../../../rui-html-cdn/rui-toast/index.js"></script>
+     <script src="/.claude/shared/vendor/vue@3.4.27/vue.global.prod.js"></script>
+     <script src="/.claude/shared/rui-toast/index.js"></script>
      <script>ruiToast.success('Copied', 'Link copied');</script>
 
    Note: calls to ruiToast.* during the async loader/data.js load are internally
@@ -23,6 +23,12 @@
 
 (function () {
     'use strict';
+
+    // Snapshot the script src BEFORE the async loader runs. Without this,
+    // ruiBootstrapFromCurrentScript sees an empty callerSrc and emits
+    // "[ruiToast] cannot determine component directory — no callerSrc" to
+    // the browser console (bug surfaced by rui-report-diagram iteration-1).
+    var SELF_SRC = (document.currentScript && document.currentScript.src) || '';
 
     /* ── Singleton state (shared within the closure, spans the placeholder and first render) ────── */
     var _app = null;          // Vue app instance (singleton)
@@ -224,7 +230,18 @@
         readyEvent:    'rui-toast-ready',
         errorEvent:    'rui-toast-error',
         componentName: 'ruiToast',
-        defaultConfig: DEFAULT_CONFIG,
+        callerSrc:     SELF_SRC,
+        // IMPORTANT: templateId must live at the top level of defaultConfig.
+        // loader.js reads `dConf.templateId`; placing it under `defaults`
+        // (where rui-toast's per-toast config lives) makes `tplId` resolve
+        // to '' which produces an invalid querySelector
+        // (`script[type="text/x-template"]#`) and throws DOMException in
+        // the browser console (bug surfaced by rui-report-diagram
+        // iteration-1 alongside the missing callerSrc fix above).
+        defaultConfig: Object.assign({}, DEFAULT_CONFIG, {
+            templateId:    DEFAULT_CONFIG.defaults.templateId,
+            loadTimeoutMs: DEFAULT_CONFIG.defaults.loadTimeoutMs
+        }),
         onReady: _onReady
     }, function () {
         /* Fallback when loader.js fails to load (e.g. 404):

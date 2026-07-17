@@ -1,0 +1,584 @@
+{
+  "skill_name": "daily",
+  "modes": ["ask", "api", "report", "plan"],
+  "evals": [
+    {
+      "id": 1,
+      "mode": "ask",
+      "prompt": "Ask daily.dev: is React Server Components worth adopting for a new SPA in 2026?",
+      "expected_output": "A grounded answer synthesized from real daily.dev articles with a sources block linking to each cited post.",
+      "files": [],
+      "expectations": [
+        "Defaults to ask mode and searches the daily.dev article graph",
+        "Weights results by numUpvotes / numComments and dedupes by id",
+        "Returns a sources block with URLs for every cited claim",
+        "Uses $DAILY_DEV_TOKEN via Authorization: Bearer, never the literal token"
+      ]
+    },
+    {
+      "id": 2,
+      "mode": "api",
+      "prompt": "Call the daily.dev API to fetch my personalized for-you feed.",
+      "expected_output": "Calls /feeds/foryou via api.daily.dev with a Bearer token and returns the feed payload.",
+      "files": [],
+      "expectations": [
+        "Runs in api mode against api.daily.dev only",
+        "Resolves DAILY_DEV_TOKEN from env or keychain before the call",
+        "Uses Authorization: Bearer and never prints the raw token"
+      ]
+    },
+    {
+      "id": 3,
+      "mode": "api",
+      "prompt": "Add this post to my daily.dev bookmarks: <post-url>.",
+      "expected_output": "Resolves the post id and calls the bookmark endpoint on api.daily.dev, reporting success.",
+      "files": [],
+      "expectations": [
+        "Detects api mode from the imperative verb",
+        "Reads references/api-reference.md before invoking the endpoint",
+        "Surfaces 401/403/429 with the documented recovery path"
+      ]
+    },
+    {
+      "id": 4,
+      "mode": "api",
+      "prompt": "Build me a custom daily.dev feed filtered to React and TypeScript tags.",
+      "expected_output": "Creates a custom feed via the daily.dev API scoped to the requested tags.",
+      "files": [],
+      "expectations": [
+        "Maps natural-language request to the custom-feed endpoint",
+        "Looks up tag ids before creating the feed",
+        "Reports the resulting feed id and confirms filter"
+      ]
+    },
+    {
+      "id": 5,
+      "mode": "ask",
+      "prompt": "What does the community say about Bun vs Node for production in 2026?",
+      "expected_output": "An ask-mode answer grounded in real articles, citing the most upvoted posts.",
+      "files": [],
+      "expectations": [
+        "Runs keyword + semantic searches in the same turn",
+        "Deduplicates across rounds by id",
+        "Flags explicitly if zero relevant articles are found"
+      ]
+    },
+    {
+      "id": 6,
+      "mode": "api",
+      "prompt": "Pull my weekly trending digest from daily.dev.",
+      "expected_output": "Calls the trending/feed endpoints and summarizes the top posts for the week.",
+      "files": [],
+      "expectations": [
+        "Operates in api mode against the trending endpoint",
+        "Respects the 60 req/min rate limit",
+        "Backs off on 429 using the Retry-After value"
+      ]
+    },
+    {
+      "id": 7,
+      "mode": "api",
+      "prompt": "Follow the 'golang' tag on my daily.dev account.",
+      "expected_output": "Resolves the tag id and calls the follow-tag endpoint.",
+      "files": [],
+      "expectations": [
+        "Detects api mode from the imperative verb",
+        "Resolves the tag id before following",
+        "Confirms the tag is now followed"
+      ]
+    },
+    {
+      "id": 8,
+      "mode": "api",
+      "prompt": "Search daily.dev posts about 'edge functions' and list the top 5 by upvotes.",
+      "expected_output": "Calls /search/posts, sorts by numUpvotes, returns the top 5 titles + URLs.",
+      "files": [],
+      "expectations": [
+        "Uses the /search/posts endpoint",
+        "Sorts or filters by numUpvotes",
+        "Includes post URLs in the output"
+      ]
+    },
+    {
+      "id": 9,
+      "mode": "api",
+      "prompt": "My DAILY_DEV_TOKEN keeps returning 401 — what do I do?",
+      "expected_output": "Tells the user the token is invalid/expired and directs them to the settings/api page.",
+      "files": [],
+      "expectations": [
+        "Surfaces the 401 recovery path from references/security.md",
+        "Directs the user to https://app.daily.dev/settings/api",
+        "Does not print or log the token"
+      ]
+    },
+    {
+      "id": 10,
+      "mode": "api",
+      "prompt": "I'm hitting a 403 on this endpoint — what does Plus unlock?",
+      "expected_output": "Explains the endpoint is Plus-only and directs the user to the Plus upgrade page.",
+      "files": [],
+      "expectations": [
+        "Surfaces the 403 recovery path",
+        "Directs the user to https://app.daily.dev/plus",
+        "Does not bypass the Plus gate"
+      ]
+    },
+    {
+      "id": 11,
+      "mode": "report",
+      "prompt": "/daily report --project /Users/me/code/myapp",
+      "expected_output": "A self-contained HTML file at ~/.claude/reports/myapp/<YYYY-MM-DD>.html with summary / risk / health / people sections.",
+      "files": [],
+      "expectations": [
+        "Routes to report mode from the --project flag",
+        "Refuses if the path is not a git repo (or surfaces the error)",
+        "Reads git log + filesystem only; does not execute the project",
+        "Writes a self-contained HTML page with no external resources",
+        "Includes summary, risk, health, and people sections"
+      ]
+    },
+    {
+      "id": 12,
+      "mode": "report",
+      "prompt": "Generate today's CTO report for ~/code/yr-core with --focus risk",
+      "expected_output": "An HTML report focused on the risk section, written to ~/.claude/reports/yr-core/<YYYY-MM-DD>.html.",
+      "files": [],
+      "expectations": [
+        "Routes to report mode from the focus cue",
+        "Honors --focus risk by emphasizing hot files, long-lived branches, bus-factor signals",
+        "Still renders the summary section (always included)",
+        "Output is a self-contained HTML file"
+      ]
+    },
+    {
+      "id": 13,
+      "mode": "report",
+      "prompt": "/daily report --project /tmp/empty-fresh",
+      "expected_output": "An empty-state HTML report with 'no material activity in the window' and a 'this is normal' note.",
+      "files": [],
+      "expectations": [
+        "Routes to report mode",
+        "Detects empty / no-activity state and renders gracefully",
+        "Does not fabricate a story or commit counts",
+        "Output is a self-contained HTML file with empty-state copy"
+      ]
+    },
+    {
+      "id": 14,
+      "mode": "report",
+      "prompt": "/daily report",
+      "expected_output": "Asks for the --project path before touching the filesystem.",
+      "files": [],
+      "expectations": [
+        "Routes to report mode from the trailing verb",
+        "Asks for the project path before reading any filesystem or git state",
+        "Does not default to a guess or invent a project"
+      ]
+    },
+    {
+      "id": 15,
+      "mode": "report",
+      "prompt": "/daily report --project /tmp/not-a-repo",
+      "expected_output": "Refuses with a one-line error because /tmp/not-a-repo is not a git repository.",
+      "files": [],
+      "expectations": [
+        "Routes to report mode",
+        "Detects the path is not a git repo and refuses",
+        "Does not write an empty HTML file or partially render the report",
+        "Exits with a clear one-line error message"
+      ]
+    },
+    {
+      "id": 16,
+      "mode": "ask",
+      "prompt": "Give me a CTO reading list for a new VP Engineering at a Series A startup.",
+      "expected_output": "States the curated reading-list mode is no longer bundled in this skill, and suggests routing the request to a dedicated CTO / engineering-leadership skill rather than fabricating recommendations.",
+      "files": [],
+      "expectations": [
+        "Does not route to a missing cto / questions mode",
+        "Acknowledges the skill used to bundle curated indexes and no longer does",
+        "Suggests a dedicated skill rather than inventing recommendations",
+        "Does not silently fall through to ask/api/report"
+      ]
+    },
+    {
+      "id": 17,
+      "mode": "ask",
+      "prompt": "Build me a React interview prep study guide.",
+      "expected_output": "States the curated technical-reference mode is no longer bundled in this skill, and suggests routing the request to a dedicated interview / design-pattern skill rather than fabricating recommendations.",
+      "files": [],
+      "expectations": [
+        "Does not route to a missing cto / questions mode",
+        "Acknowledges the skill used to bundle curated indexes and no longer does",
+        "Suggests a dedicated skill rather than inventing recommendations",
+        "Does not silently fall through to ask/api/report"
+      ]
+    },
+    {
+      "id": 18,
+      "mode": "plan",
+      "prompt": "/daily plan --project /Users/me/code/myapp",
+      "expected_output": "A self-contained HTML file at ~/.claude/plans/myapp/<YYYY-MM-DD>-plan.html with three horizon tiers (30d / 90d / long-term), each containing milestones, WBS, risk mitigations, team allocation, and DoD checklist.",
+      "files": [],
+      "expectations": [
+        "Routes to plan mode from the --project flag",
+        "Renders three horizon tiers: 30-day, 90-day, long-term",
+        "Each tier has ≥ 1 milestone with a DoD acceptance criterion",
+        "Uses T+Nd offsets, never calendar dates",
+        "Owner placeholders are <unassigned> or git-blame suggestions labeled as draft",
+        "Header is labeled DRAFT — <YYYY-MM-DD>",
+        "Reads templates/index.html (page shell) + templates/data.js (schema) before writing output"
+      ]
+    },
+    {
+      "id": 19,
+      "mode": "plan",
+      "prompt": "Plan next quarter for ~/code/yr-core with --format md",
+      "expected_output": "A markdown file at ~/.claude/plans/yr-core/<YYYY-MM-DD>-plan.md with three horizon tiers, checkboxes for DoD, and T+Nd offsets throughout.",
+      "files": [],
+      "expectations": [
+        "Routes to plan mode from the plan cue",
+        "Honors --format md by calling window.planToMarkdown(plan) exported from templates/index.js",
+        "Renders 30d / 90d / long-term tiers",
+        "Uses - [ ] checkboxes for DoD (no - [x])",
+        "Output is a single markdown file"
+      ]
+    },
+    {
+      "id": 20,
+      "mode": "plan",
+      "prompt": "/daily plan --project /tmp/empty-fresh",
+      "expected_output": "A plan HTML file with 'no historical signal — greenfield plan' note and three horizon tiers rendered from templates rather than git-derived data.",
+      "files": [],
+      "expectations": [
+        "Routes to plan mode",
+        "Detects empty / no-activity state and renders gracefully",
+        "Falls back to a greenfield plan structure",
+        "Still renders three horizon tiers",
+        "Does not fabricate velocity or contributor data"
+      ]
+    },
+    {
+      "id": 21,
+      "mode": "plan",
+      "prompt": "/daily plan",
+      "expected_output": "Asks for the --project path before touching the filesystem.",
+      "files": [],
+      "expectations": [
+        "Routes to plan mode from the trailing verb",
+        "Asks for the project path before reading any filesystem or git state",
+        "Does not default to a guess or invent a project"
+      ]
+    },
+    {
+      "id": 22,
+      "mode": "plan",
+      "prompt": "/daily plan --project /tmp/not-a-repo",
+      "expected_output": "Refuses with a one-line error because /tmp/not-a-repo is not a git repository.",
+      "files": [],
+      "expectations": [
+        "Routes to plan mode",
+        "Detects the path is not a git repo and refuses",
+        "Does not write a plan file",
+        "Exits with a clear one-line error message"
+      ]
+    },
+    {
+      "id": 23,
+      "mode": "plan",
+      "prompt": "Pick calendar dates for the 30-day milestone of my plan.",
+      "expected_output": "Refuses to pin calendar dates; proposes T+Nd offsets and asks the user to convert them to a calendar.",
+      "files": [],
+      "expectations": [
+        "Does not invent calendar dates",
+        "Explains the skill does not know the user's calendar",
+        "Offers T+Nd offsets as the alternative"
+      ]
+    },
+    {
+      "id": 24,
+      "mode": "plan",
+      "prompt": "/daily plan --project /Users/me/code/myapp — a 30d milestone I rendered has no parent 90d theme.",
+      "expected_output": "Refuses to write the plan file; surfaces a [VALIDATION] R5 failure naming the orphan milestone and asks the user to clarify the parent theme (or mentions --no-validate as the escape hatch).",
+      "files": [],
+      "expectations": [
+        "Runs the plan-validation self-check before writing",
+        "Detects the orphan 30d milestone (roll-up rule R5)",
+        "Does not write the HTML/MD file",
+        "Mentions --no-validate as the escape hatch"
+      ]
+    },
+    {
+      "id": 25,
+      "mode": "plan",
+      "prompt": "/daily plan --project /Users/me/code/myapp — my long-term bet has no kill criteria.",
+      "expected_output": "Refuses to write the plan file; surfaces a [VALIDATION] R3 failure naming the bet and asks the user to add kill criteria (or mentions --no-validate).",
+      "files": [],
+      "expectations": [
+        "Runs the plan-validation self-check before writing",
+        "Detects the missing kill criteria (roll-up rule R3)",
+        "Does not write the HTML/MD file",
+        "Mentions --no-validate as the escape hatch"
+      ]
+    },
+    {
+      "id": 26,
+      "mode": "plan",
+      "prompt": "/daily plan --project /Users/me/code/myapp --no-validate",
+      "expected_output": "Writes the plan file with a 'DRAFT — UNVALIDATED — <YYYY-MM-DD>' header, bypassing the plan-validation self-check.",
+      "files": [],
+      "expectations": [
+        "Skips the plan-validation self-check",
+        "Header is labeled 'DRAFT — UNVALIDATED — <YYYY-MM-DD>'",
+        "Writes the HTML/MD file despite any roll-up gaps",
+        "Still uses the template from templates/"
+      ]
+    },
+    {
+      "id": 27,
+      "mode": "plan",
+      "prompt": "We just had a Sev-1 incident in ~/code/payments — plan the response.",
+      "expected_output": "Routes to plan mode, recognizes the incident-response scenario from references/plan-scenarios.md, and renders a plan with 14-day inner tier, 30d/90d tiers only (no long-term), and a milestones+risk focus.",
+      "files": [],
+      "expectations": [
+        "Routes to plan mode from the plan cue",
+        "Matches the incident-response scenario from plan-scenarios.md",
+        "Uses --horizon 14d for the inner tier",
+        "Uses --tiers 30d,90d (skips long-term while RCA is open)",
+        "Focuses on milestones and risk sections"
+      ]
+    },
+    {
+      "id": 28,
+      "mode": "plan",
+      "prompt": "/daily plan --project /Users/me/code/myapp — show me the traceability matrix.",
+      "expected_output": "Renders the traceability matrix section in the HTML plan, with one row per 30d work item tracing up to its 90d theme and long-term bet, and no — ORPHAN — cells.",
+      "files": [],
+      "expectations": [
+        "Routes to plan mode",
+        "Renders the #traceability section from the Vue template in templates/index.js (data.traceability)",
+        "Produces one row per 30d work item",
+        "Each row traces 30d work item → 30d milestone → 90d theme → long-term bet → north-star metric",
+        "No cell shows — ORPHAN — (roll-up is intact)"
+      ]
+    },
+    {
+      "id": 29,
+      "mode": "plan",
+      "prompt": "/daily plan --project /Users/me/code/myapp — the 30d WBS has 15 L items but the team only has 3 committers.",
+      "expected_output": "Renders the capacity section with a RED verdict, refuses to write the plan file, and suggests specific work items to cut ordered by dependency depth. Mentions --allow-overcommit as the escape hatch.",
+      "files": [],
+      "expectations": [
+        "Routes to plan mode",
+        "Computes available capacity (3 committers × working days × focus factor)",
+        "Computes demand from the 15 L items + overhead + 15% buffer",
+        "Verdict is RED because demand exceeds capacity",
+        "Refuses to write the file (validation rule C2)",
+        "Suggests ≥ 1 specific work item to cut",
+        "Mentions --allow-overcommit as the escape hatch"
+      ]
+    },
+    {
+      "id": 30,
+      "mode": "plan",
+      "prompt": "/daily plan --project /Users/me/code/myapp --allow-overcommit",
+      "expected_output": "Writes the plan file even when capacity verdict is red, with an 'OVERCOMMITTED' tag alongside DRAFT in the header.",
+      "files": [],
+      "expectations": [
+        "Skips the capacity overcommit refusal (rule C2)",
+        "Header includes both DRAFT and OVERCOMMITTED tags",
+        "Still renders the capacity section with a red verdict",
+        "Still uses the template from templates/"
+      ]
+    },
+    {
+      "id": 31,
+      "mode": "plan",
+      "prompt": "/daily plan --project /Users/me/code/myapp — one of my assumptions has consequence 're-evaluate'.",
+      "expected_output": "Refuses to write the plan file; surfaces a [VALIDATION] A3 failure naming the assumption and asks the user to replace 're-evaluate' with a concrete consequence (re-plan / cut / defer / kill / escalate).",
+      "files": [],
+      "expectations": [
+        "Runs the plan-validation self-check before writing",
+        "Detects the vague consequence (assumptions rule A3)",
+        "Does not write the HTML/MD file",
+        "Asks for a concrete consequence from the allowed set",
+        "Mentions --no-validate as the escape hatch"
+      ]
+    },
+    {
+      "id": 32,
+      "mode": "plan",
+      "prompt": "/daily plan --project /Users/me/code/myapp — show me the assumptions register.",
+      "expected_output": "Renders the assumptions register section with one row per load-bearing belief, each with a validation date, signal, consequence, owner, and status. Inferred assumptions are tagged [inferred].",
+      "files": [],
+      "expectations": [
+        "Routes to plan mode",
+        "Renders the #assumptions section from the Vue template in templates/index.js (data.assumptions)",
+        "Each row has ID, Assumption, Tier, Validation (T+Nd), Signal, Consequence, Owner, Status",
+        "Inferred assumptions are tagged [inferred]",
+        "No consequence is 're-evaluate' or 'monitor'"
+      ]
+    },
+    {
+      "id": 33,
+      "mode": "plan",
+      "prompt": "/daily plan --project /Users/me/code/myapp — re-run yesterday's plan.",
+      "expected_output": "Renders the #diff section comparing today's plan against the most recent prior plan in ~/.claude/plans/myapp/, with a drift verdict (stable / minor drift / major drift), counts of stable/changed/added/removed items, and field-level diffs for changed items.",
+      "files": [],
+      "expectations": [
+        "Routes to plan mode",
+        "Finds the most recent prior plan file in ~/.claude/plans/myapp/",
+        "Renders the #diff section from the Vue template in templates/index.js (data.diff)",
+        "Drift verdict is one of: stable, minor drift, major drift",
+        "Shows counts of stable / changed / added / removed items",
+        "Each changed item lists ≥ 1 field-level diff with → notation"
+      ]
+    },
+    {
+      "id": 34,
+      "mode": "plan",
+      "prompt": "/daily plan --project /Users/me/code/myapp — assumption A2 was invalidated since the last plan.",
+      "expected_output": "Renders the #diff section with a RED drift verdict because an assumption moved open → invalidated, regardless of item-count thresholds. Prompts the user to apply the documented consequence.",
+      "files": [],
+      "expectations": [
+        "Routes to plan mode",
+        "Detects the assumption status change open → invalidated in the diff",
+        "Drift verdict is RED (major drift) per rule X6, regardless of item counts",
+        "The assumption status change is listed in the diff's assumption-status-changes block",
+        "Prompts the user to apply the documented invalidation consequence"
+      ]
+    },
+    {
+      "id": 35,
+      "mode": "plan",
+      "prompt": "/daily plan --project /Users/me/code/myapp --no-diff",
+      "expected_output": "Writes the plan without the #diff section. All other sections render normally.",
+      "files": [],
+      "expectations": [
+        "Routes to plan mode",
+        "Skips the diff section entirely",
+        "All other sections (context, assumptions, tiers, traceability, capacity, risks, team, dod) render normally",
+        "Writes the HTML/MD file"
+      ]
+    },
+    {
+      "id": 36,
+      "mode": "plan",
+      "prompt": "/daily plan --project /Users/me/code/myapp — show me the review checklist.",
+      "expected_output": "Renders the #review section at the bottom of the plan with 6 groups (narrative, roll-up, capacity, assumptions, risks, sign-off), all checkboxes unchecked, and a sign-off block with author / peer reviewer / stakeholder placeholders.",
+      "files": [],
+      "expectations": [
+        "Routes to plan mode",
+        "Renders the #review section from the Vue template in templates/index.js (static checklist + data.review)",
+        "Section sits at the bottom, after DoD",
+        "Contains 6 groups: narrative, roll-up, capacity, assumptions, risks, sign-off",
+        "All checkboxes are unchecked (plan is a draft — review hasn't happened)",
+        "Sign-off block has author, peer reviewer, and stakeholder placeholders"
+      ]
+    },
+    {
+      "id": 37,
+      "mode": "plan",
+      "prompt": "/daily plan --project /Users/me/code/myapp — the review checklist has a pre-checked box.",
+      "expected_output": "Refuses to write the plan file; surfaces a [VALIDATION] V3 failure because review checkboxes must be unchecked — a pre-checked review is a lie.",
+      "files": [],
+      "expectations": [
+        "Runs the plan-validation self-check before writing",
+        "Detects the pre-checked review checkbox (rule V3)",
+        "Does not write the HTML/MD file",
+        "Explains that a pre-checked review is dishonest",
+        "Mentions --no-validate as the escape hatch"
+      ]
+    },
+    {
+      "id": 38,
+      "mode": "plan",
+      "prompt": "/daily plan --project /Users/me/code/myapp — show me the decision log.",
+      "expected_output": "Renders the #decisions section in the HTML plan, with one row per explicit choice (cut / override / tier exclusion / scope change), each row showing date, rationale, alternatives considered, reversibility level, tier, owner, and status. Inferred decisions are tagged [inferred].",
+      "files": [],
+      "expectations": [
+        "Routes to plan mode",
+        "Renders the #decisions section from the Vue template in templates/index.js (data.decisions)",
+        "Each row has ID, Date, Decision, Rationale, Alternatives, Reversibility, Tier, Owner, Status",
+        "Reversibility is one of: reversible, hard to reverse, irreversible",
+        "Inferred decisions are tagged [inferred]",
+        "Summary counts made / superseded / reversed are rendered above the table"
+      ]
+    },
+    {
+      "id": 39,
+      "mode": "plan",
+      "prompt": "/daily plan --project /Users/me/code/myapp — one of my decisions has an empty rationale field.",
+      "expected_output": "Refuses to write the plan file; surfaces a [VALIDATION] DL2 failure naming the decision and asking the user to provide a real rationale (not 'because'). Mentions --no-validate as the escape hatch.",
+      "files": [],
+      "expectations": [
+        "Runs the plan-validation self-check before writing",
+        "Detects the empty rationale (decisions rule DL2)",
+        "Does not write the HTML/MD file",
+        "Asks for a real rationale grounded in the choice",
+        "Mentions --no-validate as the escape hatch"
+      ]
+    },
+    {
+      "id": 40,
+      "mode": "plan",
+      "prompt": "/daily plan --project /Users/me/code/myapp — I marked a decision as irreversible but only wrote one sentence of rationale.",
+      "expected_output": "Warns (amber) with a [VALIDATION] DL5 failure because irreversible decisions need >= 3 sentences of rationale, and DL6 prompting to link the decision to an assumption. Renders the file but flags the decision.",
+      "files": [],
+      "expectations": [
+        "Runs the plan-validation self-check before writing",
+        "Detects the thin rationale on an irreversible decision (rule DL5)",
+        "Warns (amber) rather than refusing — DL5 is a warn rule",
+        "Prompts to link the decision to an assumption (rule DL6)",
+        "Still writes the HTML/MD file (warn, not refuse)"
+      ]
+    },
+    {
+      "id": 41,
+      "mode": "plan",
+      "prompt": "/daily plan --project /Users/me/code/myapp — today's plan has no changes vs the prior plan.",
+      "expected_output": "Renders the #diff section with a 'stable' verdict, zero counts for changed/added/removed, and no Changed/Added/Removed/Assumption-status-changes sub-blocks (the {{*_BLOCK}} placeholders expand to empty strings, leaving no orphan <h3> headers).",
+      "files": [],
+      "expectations": [
+        "Routes to plan mode",
+        "Finds the most recent prior plan and computes the diff",
+        "Drift verdict is 'stable' (green)",
+        "Counts show 0 changed / 0 added / 0 removed",
+        "No orphan <h3>Changed items</h3> / <h3>Added items</h3> / <h3>Removed items</h3> headers when the lists are empty",
+        "The diff-note about RED escalation still renders"
+      ]
+    },
+    {
+      "id": 42,
+      "mode": "plan",
+      "prompt": "/daily plan --project /Users/me/code/myapp --format md",
+      "expected_output": "A markdown file at ~/.claude/plans/myapp/<YYYY-MM-DD>-plan.md with all 13 sections rendered as pure markdown — pipe tables, `- [ ]` checkboxes, backtick-wrapped IDs, no HTML tags, no risk matrix grid, no toolbar, no nav.",
+      "files": [],
+      "expectations": [
+        "Routes to plan mode",
+        "Calls window.planToMarkdown(plan) from templates/index.js for the markdown output",
+        "All 13 sections render as markdown (pipe tables, - [ ] checkboxes)",
+        "No HTML tags in the output (no <span>, <div>, <input>, <table>)",
+        "Size tags render as plain letters (S/M/L/XL), not colored spans",
+        "Risk matrix grid is dropped (no 3x3 interactive grid in markdown)",
+        "Checkboxes use `- [ ]` (never `- [x]`)",
+        "The DRAFT tag appears in the header"
+      ]
+    },
+    {
+      "id": 43,
+      "mode": "plan",
+      "prompt": "/daily plan --project /Users/me/code/myapp --format md — the risks section should be markdown but I see HTML <span> tags.",
+      "expected_output": "Fixes the markdown rendering to produce pure markdown — pipe tables instead of HTML tables, plain risk tags instead of <span class='risk-medium'>, no HTML in the output at all.",
+      "files": [],
+      "expectations": [
+        "Detects HTML tags in markdown output and replaces with plain markdown",
+        "Risk tags render as plain 'medium' / 'high', not <span class='risk-medium'>",
+        "Tier badges render as '(30d)' / '(90d)', not <span class='tier-badge'>",
+        "Status tags render as plain 'open' / 'validated', not <span class='status-open'>",
+        "Action blocks use blockquote syntax (> **Action:** …), not <div class='action'>",
+        "Follows the markdown rendering contract implemented in planToMarkdown() inside templates/index.js (data shape in templates/data.js)"
+      ]
+    }
+  ]
+}

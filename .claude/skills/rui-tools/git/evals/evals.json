@@ -1,0 +1,115 @@
+{
+  "skill_name": "rui-tools-git",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Show me the working tree status of /repos/myapp.",
+      "expected_output": "Runs git_status against the repo path and reports staged/unstaged/untracked files.",
+      "files": [],
+      "expectations": [
+        "Requires absolute repo_path",
+        "Returns working tree status",
+        "Surfaces empty-message clarity when there are no changes"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Diff the unstaged changes in /repos/myapp.",
+      "expected_output": "Runs git_diff_unstaged and shows the patch.",
+      "files": [],
+      "expectations": [
+        "Calls the unstaged diff tool",
+        "Surfaces empty result gracefully when diff has no output",
+        "Reads before write in the standard commit workflow"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Stage and commit these changes in /repos/myapp with message 'fix: login redirect'.",
+      "expected_output": "Follows the read-before-write workflow: status → diff → add → diff staged → commit.",
+      "files": [],
+      "expectations": [
+        "Inspects state and diffs before staging",
+        "Runs git_add then git_diff_staged then git_commit",
+        "Uses the provided commit message verbatim"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "List all branches in /repos/myapp.",
+      "expected_output": "Runs git branch listing, optionally filtered.",
+      "files": [],
+      "expectations": [
+        "Calls the branch listing tool",
+        "Returns branch names",
+        "Honors any filter the user supplied"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Show me the commit history for /repos/myapp, last 10 commits.",
+      "expected_output": "Runs git log limited to 10 commits.",
+      "files": [],
+      "expectations": [
+        "Inspects commit history",
+        "Limits output to the requested count",
+        "Reads the local repository only"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Create and switch to a new branch feature/payments in /repos/myapp.",
+      "expected_output": "Creates the branch and checks it out.",
+      "files": [],
+      "expectations": [
+        "Creates the branch via git branch tool",
+        "Checks out the new branch",
+        "Operates on the local repo only"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Reset the staging area in /repos/myapp — but ask me first.",
+      "expected_output": "Requires user confirmation before running the destructive git_reset.",
+      "files": [],
+      "expectations": [
+        "Treats git_reset as destructive",
+        "Requires explicit user confirmation",
+        "Does not run reset without confirmation"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "The repo at /repos/myapp has merge conflicts — can I commit?",
+      "expected_output": "Blocks the commit and surfaces the conflicted files.",
+      "files": [],
+      "expectations": [
+        "Detects merge conflicts",
+        "Blocks the commit",
+        "Surfaces conflicted files to the user"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Run a pre-merge checklist on /repos/myapp.",
+      "expected_output": "Composite workflow: status, diff vs base branch, branch listing, history.",
+      "files": [],
+      "expectations": [
+        "Runs a composite pre-merge workflow",
+        "Surfaces state, diff, and branch info",
+        "Stays read-only (no commit/push)"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "Someone passed a file path starting with -- to git add.",
+      "expected_output": "Rejects the path with a CLI flag injection error.",
+      "files": [],
+      "expectations": [
+        "Detects the -prefixed path",
+        "Rejects with CLI flag injection error",
+        "Does not stage the file"
+      ]
+    }
+  ]
+}

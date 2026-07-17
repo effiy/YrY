@@ -1,0 +1,13 @@
+{
+  "sources": [
+    {
+      "id": "nodebestpractices",
+      "label": "Node.js Best Practices",
+      "readme": "references/README-nodebestpractices.md",
+      "upstream_url": "https://raw.githubusercontent.com/goldbergyoni/nodebestpractices/master/README.md",
+      "homepage": "https://github.com/goldbergyoni/nodebestpractices",
+      "blob_base": "https://github.com/goldbergyoni/nodebestpractices/blob/master",
+      "dialect": "nodejs-bp"
+    }
+  ]
+}

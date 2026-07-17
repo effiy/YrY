@@ -267,7 +267,7 @@ Then assemble the final output JSON:
 
 After producing the final JSON:
 
-1. Create the output directory: `mkdir -p <output-dir>/intermediate` (where `<output-dir>` is the directory of the generated `architecture-diagram.html`)
+1. Create the output directory: `mkdir -p <output-dir>/intermediate` (where `<output-dir>` is the directory of the generated `index.html`)
 2. Write the JSON to: `<output-dir>/intermediate/scan-result.json`
 3. Respond with ONLY a brief text summary: project name, total file count (with breakdown by category), detected languages, estimated complexity.
 

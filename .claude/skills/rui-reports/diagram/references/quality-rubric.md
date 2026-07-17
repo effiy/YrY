@@ -1,6 +1,6 @@
 # Architecture Diagram — Quality Rubric
 
-> Self-assessment criteria for evaluating generated diagrams. Apply this rubric before delivering any `architecture-diagram.html` artifact.
+> Self-assessment criteria for evaluating generated diagrams. Apply this rubric before delivering any `index.html` artifact.
 
 ## Scoring Dimensions
 

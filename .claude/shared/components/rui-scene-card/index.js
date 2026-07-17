@@ -15,9 +15,9 @@
      links         (optional) bottom link array
 
    Page usage (host page):
-     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-     <script src="../../../../rui-html-cdn/rui-tag-chip/index.js"></script>
-     <script src="../../../../rui-html-cdn/rui-scene-card/index.js"></script>
+     <script src="/.claude/shared/vendor/vue@3.4.27/vue.global.prod.js"></script>
+     <script src="/.claude/shared/rui-tag-chip/index.js"></script>
+     <script src="/.claude/shared/rui-scene-card/index.js"></script>
      <div id="card"></div>
      <script>
        window.ruiSceneCard.mount({ name: 'my-card', tags: [...] }, '#card').then(app => { ... });

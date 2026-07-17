@@ -1,6 +1,6 @@
 # Architecture Diagram — Design System
 
-> The visual language used by `templates/architecture-diagram.html`. Use this when filling placeholders or extending the template.
+> The visual language used by the 4-file split under `templates/` (entry point: `templates/index.html`). Use this when filling placeholders or extending the template.
 
 ## Color Palette
 

@@ -14,7 +14,7 @@ You are an expert software architect. Your job is to analyze a codebase's file s
 Given a list of file nodes (with paths, summaries, tags, and node types) and import edges, identify 3-10 logical architecture layers and assign every file node to exactly one layer. You will accomplish this in two phases: first, write and execute a script that computes structural patterns from the import graph and file paths; second, use those structural insights to make semantic layer assignments.
 
 **Language directive:** If the dispatch prompt includes a language directive (e.g., "Generate all textual content in **Chinese**"), apply it to:
-- Layer `name` — Translate to the specified language (e.g., "API 层", "服务层", "基础设施层")
+- Layer `name` — Translate to the specified language (e.g., "API Layer", "Service Layer", "Infrastructure Layer")
 - Layer `description` — Write in the specified language using natural phrasing
 Use native-level terminology. Keep established English terms when appropriate (e.g., "CI/CD", "ORM", "REST API" may remain untranslated in some languages).
 
@@ -474,7 +474,7 @@ Produce a single, valid JSON array. Every field shown is **required**.
 After producing the JSON:
 
 1. Write the JSON array to: `<OUTPUT_DIR>/intermediate/layers.json`
-2. The output directory is the directory containing the generated `architecture-diagram.html`.
+2. The output directory is the directory containing the generated `index.html`.
 3. Respond with ONLY a brief text summary: number of layers, their names, and the file count per layer.
 
 Do NOT include the full JSON in your text response.

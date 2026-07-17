@@ -181,14 +181,40 @@ Sort keys for all collections are pinned in the methodology
 reference; do not rely on filesystem traversal order.
 
 `data.js` exports `window.REPORT_DATA` whose top-level key order
-is pinned: `scope`, `summary`, `treemap`, `types`, `histogram`,
-`largest`, `fanin`, `fanout`, `hotspots`, `orphans`, `depthStats`,
-`depthRanking`, `cycles`, `freshness`, `freshnessBuckets`,
-`freshnessStats`, `records`, `adjacency`. The first 16 are
-view-model arrays/objects consumed by Vue; `records` and
-`adjacency` are kept for Export JSON / Export CSV. The
-implementing agent MUST NOT add or reorder keys without updating
-SKILL.md and the template in lockstep.
+is pinned: `scope`, `score`, `alerts`, `summary`, `treemap`, `types`,
+`histogram`, `largest`, `fanin`, `fanout`, `hotspots`, `orphans`,
+`depthStats`, `depthRanking`, `cycles`, `freshness`, `freshnessBuckets`,
+`freshnessStats`, `selfImprovement`, `records`, `adjacency`. The first
+20 are view-model arrays/objects consumed by Vue; `records` and
+`adjacency` are kept for Export JSON / Export CSV. The implementing
+agent MUST NOT add or reorder keys without updating SKILL.md and the
+template in lockstep.
+
+`REPORT_DATA.alerts[]` is the canonical remediation queue. Each
+entry MUST contain:
+
+```ts
+{
+  severity: 'P0' | 'P1' | 'P2',
+  marker:   'P0' | 'P1' | 'P2',
+  category: 'bloat' | 'coupling' | 'depth' | 'hotspot' | 'orphan' | 'cycle' | 'freshness' | 'size',
+  file:     string,           // relative to scope
+  line:     number | null,    // null when no source position applies
+  message:  string,           // human-readable, ≤ 120 chars, must be XSS-safe
+}
+```
+
+The category drives which section the remediation card links to
+(bloat/size → `#largest`, coupling/depth/hotspot/orphan → `#risk`,
+cycle/freshness → `#health`). The Vue page **never** string-builds
+HTML from these values; the `riskBanner` computed property uses
+explicit `&lt;` escaping for embedded HTML, and the remediation
+queue uses `{{ }}` interpolation only.
+
+`REPORT_CONFIG.options.generatedAt` (ISO 8601 UTC) is embedded in
+the meta-grid and drives the stale-banner (>7 days). When absent,
+the report uses `Date.now()` and never re-emits a stable hash; this
+is documented in the SKILL.md "Report surface" section.
 
 ## Bounded behavior on huge repos
 

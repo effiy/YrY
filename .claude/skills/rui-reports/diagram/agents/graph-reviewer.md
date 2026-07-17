@@ -286,7 +286,7 @@ Produce the final validation report JSON:
 After producing the final JSON:
 
 1. Write the JSON to: `<OUTPUT_DIR>/intermediate/review.json`
-2. The output directory is the directory containing the generated `architecture-diagram.html`.
+2. The output directory is the directory containing the generated `index.html`.
 3. Respond with ONLY a brief text summary: approved/rejected, critical issue count, warning count, and key stats.
 
 Do NOT include the full JSON in your text response.

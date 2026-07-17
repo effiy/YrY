@@ -10,7 +10,7 @@ const DOMAIN_GRAPH_FILE = "domain-graph.json";
 /**
  * Ensure the output directory exists and return its path.
  *
- * `outputDir` is the directory containing the generated `architecture-diagram.html`
+ * `outputDir` is the directory containing the generated `index.html`
  * (e.g., the parent directory of the `--out` path, or CWD by default). All
  * data files (knowledge-graph.json, meta.json, fingerprints.json, config.json,
  * domain-graph.json) are colocated with the HTML output.

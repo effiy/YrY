@@ -11,9 +11,10 @@
  *   - defaults:      default values for flow / ariaLabel
  *
  * Note: the window.PanelHub global API (register / open / close / toggle /
- *     isOpen / panelLink / escHtml / relativeTime / PATHS) is project state
- *     — it lives in index.js, NOT here, since it depends on per-page DOM
- *     elements and is independent of the Vue component's template lifecycle.
+ *     isOpen / panelLink / escHtml / relativeTime) is project state
+ *     — it lives in index.js alongside the component runtime, NOT here,
+ *     since it depends on per-page DOM elements and is independent of the
+ *     template config in this file.
  *
  * Note: readyEvent / errorEvent are managed by shared/loader.js (the
  *     loader dispatches them internally) and are not configured here.

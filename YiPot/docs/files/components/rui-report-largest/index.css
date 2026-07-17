@@ -1,0 +1,18 @@
+.filter {
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 8px 10px;
+    background: var(--rui-bg-elev, #161b22);
+    border: 1px solid var(--rui-border, #30363d);
+    border-radius: var(--rui-radius, 8px);
+    color: var(--rui-fg, #e6e8eb);
+    font-family: var(--rui-font-sans, system-ui, -apple-system, sans-serif);
+    font-size: 13px;
+    transition: border-color var(--rui-duration-fast, .15s), box-shadow var(--rui-duration-fast, .15s);
+}
+.filter:focus {
+    outline: none;
+    border-color: var(--rui-accent, #3b82f6);
+    box-shadow: 0 0 0 2px var(--rui-accent-soft, rgba(59,130,246,0.25));
+}
+.empty { color: var(--rui-fg-subtle, #4a5062); font-style: italic; font-size: 13px; }

@@ -1,4 +1,4 @@
-import { findChild, findChildren } from "./base-extractor.js";
+import { findChild, findChildren, lastComponent } from "./base-extractor.js";
 /**
  * Extract parameter names from a Java `formal_parameters` node.
  *
@@ -50,26 +50,6 @@ function hasModifier(node, modifier) {
             return true;
     }
     return false;
-}
-/**
- * Extract the full dotted path from a scoped_identifier node.
- *
- * Java's scoped_identifier nests recursively:
- * `java.util.List` is scoped_identifier(scope: scoped_identifier(scope: identifier "java",
- * name: identifier "util"), name: identifier "List")
- *
- * This returns the full path as a dotted string.
- */
-function extractScopedIdentifierPath(node) {
-    return node.text;
-}
-/**
- * Get the last component of a dotted import path.
- * e.g. "java.util.List" -> "List"
- */
-function lastComponent(path) {
-    const parts = path.split(".");
-    return parts[parts.length - 1];
 }
 /**
  * Java extractor for tree-sitter structural analysis and call graph extraction.
@@ -187,7 +167,7 @@ export class JavaExtractor {
         const scopedId = findChild(node, "scoped_identifier");
         if (!scopedId)
             return;
-        const fullPath = extractScopedIdentifierPath(scopedId);
+        const fullPath = scopedId.text;
         if (hasAsterisk) {
             // Wildcard import: source is the full scope, specifier is "*"
             imports.push({

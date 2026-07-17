@@ -5,11 +5,11 @@
                   (list / arch / kg / source / test / demo / review)
 
    Page usage (host page):
-     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-     <script src="../../../../rui-html-cdn/rui-cross-nav/index.js"></script>
+     <script src="/.claude/shared/vendor/vue@3.4.27/vue.global.prod.js"></script>
+     <script src="/.claude/shared/rui-cross-nav/index.js"></script>
      <div id="cross-nav-host"></div>
      <script>
-       window.ruiCrossNav.mount({ basePath: './', active: '清单', pages: [{ id: '清单', icon: '📋', href: '计划清单.html' }, ...] }, '#cross-nav-host').then(app => { ... });
+       window.ruiCrossNav.mount({ basePath: './', active: 'Checklist', pages: [{ id: 'Checklist', icon: '📋', href: 'plan-checklist.html' }, ...] }, '#cross-nav-host').then(app => { ... });
      </script>
    ═══════════════════════════════════════════════════════════════════════════ */
 

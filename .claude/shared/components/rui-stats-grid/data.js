@@ -9,9 +9,12 @@
  *   - templateId:    DOM id of <script type="text/x-template" id="...">
  *   - loadTimeoutMs: timeout for fetch(index.html)
  *   - defaults:      default props
- *       · layout: default layout variant
- *         - 'grid' (default) — wrapped multi-row flex grid
- *         - 'row'           — single horizontal row
+ *       · layout: default layout variant, mapped to a CSS class on the
+ *         grid root by index.html (see index.css for the visual diff):
+ *         - 'grid' (default) — spacious CSS-Grid layout; auto-wraps
+ *           with a 220px min column, giving 2–3 cards per row.
+ *         - 'row'           — tight CSS-Grid layout; 150px min column
+ *           so 6 cards fit in a row on a 1200px viewport.
  *
  * Note: readyEvent / errorEvent are managed by shared/loader.js (the
  *     loader dispatches them internally) and are not configured in data.js.

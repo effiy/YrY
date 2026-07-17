@@ -1,0 +1,115 @@
+{
+  "skill_name": "rui-code-h5",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Scaffold a new Vue 3 H5 mobile-web project with Vant 4, Pinia, and i18n.",
+      "expected_output": "Routes to the vue3-h5-template starter-template source, picks the right branch (master / i18n / js-version), and surfaces the feature list.",
+      "files": [],
+      "expectations": [
+        "Reads references/index.md and references/sources.json",
+        "Recommends vue3-h5-template with the matching branch",
+        "Cites with [src:vue3-h5-template] and kind=starter-template"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I want a real-world H5 e-commerce reference to learn from. Any open-source Vue 3 mall?",
+      "expected_output": "Routes to the newbee-mall-vue3-app reference-project source, surfaces the tech stack (Vue 3 + Vant 4 + Pinia + better-scroll) and page modules.",
+      "files": [],
+      "expectations": [
+        "Recommends newbee-mall-vue3-app",
+        "Surfaces the page modules (login / home / cart / order / address)",
+        "Cites with [src:newbee-mall-vue3-app] and kind=reference-project"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "How do I handle vw / rem adaptation for a Vue 3 H5 page so it scales across phone widths?",
+      "expected_output": "Routes to the mobile-web-best-practice source, picks the Style Adaptation topic, and cites with kind=best-practices.",
+      "files": [],
+      "expectations": [
+        "Routes to mobile-web-best-practice Style Adaptation topic",
+        "Cites with [src:mobile-web-best-practice] and kind=best-practices",
+        "Surfaces vw/rem technique details"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "My 1px border looks thick on retina phones. What's the H5 pattern for true 1px?",
+      "expected_output": "Points at the 1px border topic in mobile-web-best-practice, also notes if the starter template demonstrates the pattern.",
+      "files": [],
+      "expectations": [
+        "Routes to mobile-web-best-practice for the 1px border topic",
+        "Cites with [src:mobile-web-best-practice]",
+        "Surfaces the starter template if it demonstrates the pattern"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "How do I safely call native APIs from a WebView via JSBridge?",
+      "expected_output": "Routes to the JSBridge / native API guard topic in mobile-web-best-practice and cites the source.",
+      "files": [],
+      "expectations": [
+        "Routes to mobile-web-best-practice JSBridge topic",
+        "Covers native API guard pattern",
+        "Cites with [src:mobile-web-best-practice] and kind=best-practices"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "I need a layered architecture for my H5 app — what's the recommended structure?",
+      "expected_output": "Routes to the Layered Architecture topic in mobile-web-best-practice and cites the source.",
+      "files": [],
+      "expectations": [
+        "Routes to mobile-web-best-practice Layered Architecture topic",
+        "Cites with [src:mobile-web-best-practice]",
+        "Surfaces layering recommendations"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "How should I monitor JS errors and capture crashes on mobile H5?",
+      "expected_output": "Routes to the Error Monitoring topic in mobile-web-best-practice (mentions Sentry) and cites the source.",
+      "files": [],
+      "expectations": [
+        "Routes to mobile-web-best-practice Error Monitoring topic",
+        "Mentions Sentry / error capture",
+        "Cites with [src:mobile-web-best-practice] and kind=best-practices"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "I want to cache repeated HTTP requests on the H5 to avoid redundant network calls. What's the pattern?",
+      "expected_output": "Routes to the Request Cache topic in mobile-web-best-practice and cites the source.",
+      "files": [],
+      "expectations": [
+        "Routes to mobile-web-best-practice Request Cache topic",
+        "Cites with [src:mobile-web-best-practice]",
+        "Surfaces request cache strategy"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Which H5 debug console should I embed — vConsole or eruda?",
+      "expected_output": "Routes to the Debug Console topic in mobile-web-best-practice and notes the starter template ships eruda.",
+      "files": [],
+      "expectations": [
+        "Routes to mobile-web-best-practice Debug Console topic",
+        "Mentions vConsole / eruda options",
+        "Notes the starter template's eruda integration"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "I want my H5 to support safe-area insets for notched iPhones.",
+      "expected_output": "Routes to the Style Adaptation topic in mobile-web-best-practice for safe-area-inset patterns and cites the source.",
+      "files": [],
+      "expectations": [
+        "Routes to mobile-web-best-practice Style Adaptation topic",
+        "Surfaces safe-area-inset technique",
+        "Cites with [src:mobile-web-best-practice] and kind=best-practices"
+      ]
+    }
+  ]
+}

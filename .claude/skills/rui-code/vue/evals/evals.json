@@ -1,0 +1,115 @@
+{
+  "skill_name": "rui-html-vue",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "When should I use shallowRef vs ref in my Vue 3 component?",
+      "expected_output": "Routes to the reactivity topic and recommends shallowRef when deep reactivity is not needed, citing references/reactivity/reactivity--reactivity.md.",
+      "files": [],
+      "expectations": [
+        "Routes via the topic routing table to references/reactivity/",
+        "Recommends shallowRef over ref when deep reactivity is unnecessary",
+        "Cites the canonical reference doc path"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "How do I define props, emits, and a two-way v-model in a <script setup> SFC?",
+      "expected_output": "Routes to the data-flow topic and recommends defineProps / defineEmits / defineModel, citing references/data-flow/component-data-flow.md.",
+      "files": [],
+      "expectations": [
+        "Routes to references/data-flow/component-data-flow.md",
+        "Recommends defineModel for two-way bindings",
+        "Notes that props are read-only in the child"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "My large list re-renders on every keystroke. Should I use v-once, v-memo, or virtualize?",
+      "expected_output": "Routes to the perf topic and recommends v-memo and/or virtualization (useVirtualList), citing the perf reference docs.",
+      "files": [],
+      "expectations": [
+        "Routes to references/perf/ docs",
+        "Recommends v-memo and/or list virtualization",
+        "Mentions the avoid-component-abstraction-in-lists rule"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "How do I build a reusable composable that cleans up its listeners on unmount?",
+      "expected_output": "Routes to the composables topic and recommends onScopeDispose / tryOnScopeDispose for cleanup, citing references/composables/composables.md.",
+      "files": [],
+      "expectations": [
+        "Routes to references/composables/composables.md",
+        "Recommends onScopeDispose for side-effect cleanup",
+        "Notes readonly state + options-object composable pattern"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "I want a VueUse composable to detect clicks outside an element.",
+      "expected_output": "Routes to the vueuse-sensors category and recommends onClickOutside, picking by category not by name.",
+      "files": [],
+      "expectations": [
+        "Routes to the vueuse-sensors/ topic",
+        "Recommends onClickOutside",
+        "Applies the VueUse 'pick by category, not by name' rule"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "How do I persist reactive state to localStorage with VueUse?",
+      "expected_output": "Routes to the vueuse-state category and recommends useLocalStorage / useStorage.",
+      "files": [],
+      "expectations": [
+        "Routes to the vueuse-state/ topic",
+        "Recommends useLocalStorage / useStorage",
+        "Cites with category-level routing"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "My async-setup component suspends — how do I show a loading state with defineAsyncComponent?",
+      "expected_output": "Routes to the async topic and recommends defineAsyncComponent with loadingComponent (delay ~200ms) and errorComponent, citing references/async/component-async.md.",
+      "files": [],
+      "expectations": [
+        "Routes to references/async/component-async.md",
+        "Recommends loadingComponent with delay near 200ms",
+        "Mentions errorComponent fallback"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "What's the difference between <Transition> and <TransitionGroup>, and when do I use mode='out-in'?",
+      "expected_output": "Routes to the builtin topic and explains Transition (single) vs TransitionGroup (list, FLIP), citing references/builtin/component-transition*.md.",
+      "files": [],
+      "expectations": [
+        "Routes to references/builtin/ docs",
+        "Distinguishes Transition vs TransitionGroup",
+        "Mentions mode='out-in' and move class / FLIP"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "How do I safely scope CSS in a Vue SFC and bridge --rui-* tokens to --rui-doc-*?",
+      "expected_output": "Routes to the css topic and explains scoped CSS + the --rui-* to --rui-doc-* token bridge, citing references/css/css-architecture.md.",
+      "files": [],
+      "expectations": [
+        "Routes to references/css/css-architecture.md",
+        "Explains the CSS @import chain and token bridge",
+        "Mentions scoped CSS"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "I'm hitting SSR state leaks with a singleton composable in Nuxt. Should I use Pinia instead?",
+      "expected_output": "Routes to the state topic and recommends Pinia for SSR-safe shared state over singletons, citing references/state/state-management.md.",
+      "files": [],
+      "expectations": [
+        "Routes to references/state/state-management.md",
+        "Recommends Pinia for SSR-safe shared state",
+        "Notes singletons leak across requests in SSR/Nuxt"
+      ]
+    }
+  ]
+}

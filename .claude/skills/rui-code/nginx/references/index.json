@@ -1,0 +1,1571 @@
+{
+  "sources": [
+    {
+      "id": "nginx-admins-handbook",
+      "label": "Nginx Admin's Handbook",
+      "readme": "references/README-nginx-admins-handbook.md",
+      "upstream_url": "https://raw.githubusercontent.com/trimstray/nginx-admins-handbook/master/README.md",
+      "homepage": "https://github.com/trimstray/nginx-admins-handbook",
+      "dialect": "h5-square-p"
+    }
+  ],
+  "categories": [
+    {
+      "name": "Books",
+      "topics": [
+        {
+          "name": "Books",
+          "resources": [
+            {
+              "category": "Books",
+              "topic": "Books",
+              "title": "Nginx Essentials",
+              "url": "https://www.amazon.com/Nginx-Essentials-Valery-Kholodkov/dp/1785289535",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "Books",
+              "topic": "Books",
+              "title": "Nginx Cookbook",
+              "url": "https://www.oreilly.com/library/view/nginx-cookbook/9781492049098/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "Books",
+              "topic": "Books",
+              "title": "Nginx HTTP Server",
+              "url": "https://www.amazon.com/Nginx-HTTP-Server-Harness-infrastructure/dp/178862355X",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "Books",
+              "topic": "Books",
+              "title": "Nginx High Performance",
+              "url": "https://www.amazon.com/Nginx-High-Performance-Rahul-Sharma/dp/1785281836",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "Books",
+              "topic": "Books",
+              "title": "Mastering Nginx",
+              "url": "https://www.amazon.com/Mastering-Nginx-Dimitri-Aivaliotis/dp/1849517444",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "Books",
+              "topic": "Books",
+              "title": "ModSecurity 3.0 and NGINX: Quick Start Guide",
+              "url": "https://www.nginx.com/resources/library/modsecurity-3-nginx-quick-start-guide/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "Books",
+              "topic": "Books",
+              "title": "Cisco ACE to NGINX: Migration Guide",
+              "url": "https://www.nginx.com/resources/library/cisco-ace-nginx-migration-guide/",
+              "source": "nginx-admins-handbook"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "External Resources",
+      "topics": [
+        {
+          "name": "Nginx official",
+          "resources": [
+            {
+              "category": "External Resources",
+              "topic": "Nginx official",
+              "title": "Nginx Project",
+              "url": "https://www.nginx.com/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Nginx official",
+              "title": "Nginx Documentation",
+              "url": "https://nginx.org/en/docs/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Nginx official",
+              "title": "Nginx Wiki",
+              "url": "https://www.nginx.com/resources/wiki/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Nginx official",
+              "title": "Nginx Admin's Guide",
+              "url": "https://docs.nginx.com/nginx/admin-guide/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Nginx official",
+              "title": "Nginx Pitfalls and Common Mistakes",
+              "url": "https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Nginx official",
+              "title": "Development Guide",
+              "url": "http://nginx.org/en/docs/dev/development_guide.html",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Nginx official",
+              "title": "Nginx Forum",
+              "url": "https://forum.nginx.org/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Nginx official",
+              "title": "Nginx Security Advisories",
+              "url": "http://nginx.org/en/security_advisories.html",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Nginx official",
+              "title": "Nginx Security Controls",
+              "url": "https://docs.nginx.com/nginx/admin-guide/security-controls/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Nginx official",
+              "title": "Nginx Mailing List",
+              "url": "https://mailman.nginx.org/mailman/listinfo/nginx",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Nginx official",
+              "title": "Nginx Read-only Mirror",
+              "url": "https://github.com/nginx/nginx",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Nginx official",
+              "title": "NGINX-Demos",
+              "url": "https://github.com/nginxinc/NGINX-Demos",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Nginx official",
+              "title": "Thread Pools in NGINX Boost Performance 9x!",
+              "url": "https://www.nginx.com/blog/thread-pools-boost-performance-9x/",
+              "source": "nginx-admins-handbook"
+            }
+          ]
+        },
+        {
+          "name": "Nginx distributions",
+          "resources": [
+            {
+              "category": "External Resources",
+              "topic": "Nginx distributions",
+              "title": "OpenResty",
+              "url": "https://openresty.org/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Nginx distributions",
+              "title": "The Tengine Web Server",
+              "url": "https://tengine.taobao.org/",
+              "source": "nginx-admins-handbook"
+            }
+          ]
+        },
+        {
+          "name": "Comparison reviews",
+          "resources": [
+            {
+              "category": "External Resources",
+              "topic": "Comparison reviews",
+              "title": "NGINX vs. Apache (Pro/Con Review, Uses, & Hosting for Each)",
+              "url": "https://www.hostingadvice.com/how-to/nginx-vs-apache/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Comparison reviews",
+              "title": "Web cache server performance benchmark: nuster vs nginx vs varnish vs squid",
+              "url": "https://github.com/jiangwenyuan/nuster/wiki/Web-cache-server-performance-benchmark:-nuster-vs-nginx-vs-varnish-vs-squid",
+              "source": "nginx-admins-handbook"
+            }
+          ]
+        },
+        {
+          "name": "Cheatsheets & References",
+          "resources": [
+            {
+              "category": "External Resources",
+              "topic": "Cheatsheets & References",
+              "title": "agentzh's Nginx Tutorials",
+              "url": "https://openresty.org/download/agentzh-nginx-tutorials-en.html",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Cheatsheets & References",
+              "title": "Introduction to nginx.conf scripting",
+              "url": "http://agentzh.org/misc/slides/nginx-conf-scripting/nginx-conf-scripting.html#1",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Cheatsheets & References",
+              "title": "Nginx discovery journey",
+              "url": "http://www.nginx-discovery.com/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Cheatsheets & References",
+              "title": "Nginx Guts",
+              "url": "http://www.nginxguts.com/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Cheatsheets & References",
+              "title": "Nginx Cheatsheet",
+              "url": "https://gist.github.com/carlessanagustin/9509d0d31414804da03b",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Cheatsheets & References",
+              "title": "Nginx Tutorials, Linux Sysadmin Configuration & Optimizing Tips and Tricks",
+              "url": "http://www.scalescale.com/tips/nginx/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Cheatsheets & References",
+              "title": "Nginx boilerplate configs",
+              "url": "https://github.com/h5bp/server-configs-nginx",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Cheatsheets & References",
+              "title": "Awesome Nginx configuration template",
+              "url": "https://github.com/nginx-boilerplate/nginx-boilerplate",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Cheatsheets & References",
+              "title": "Nginx Quick Reference",
+              "url": "https://github.com/SimulatedGREG/nginx-cheatsheet",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Cheatsheets & References",
+              "title": "A collection of resources covering Nginx and more",
+              "url": "https://github.com/fcambus/nginx-resources",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Cheatsheets & References",
+              "title": "A collection of useful Nginx configuration snippets",
+              "url": "https://github.com/lebinh/nginx-conf",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Cheatsheets & References",
+              "title": "Nginx configurations for most popular CMS/CMF/Frameworks based on PHP",
+              "url": "https://github.com/elasticweb/nginx-configs",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Cheatsheets & References",
+              "title": "Boilerplate configuration for nginx and certbot with docker-compose",
+              "url": "https://github.com/wmnnd/nginx-certbot",
+              "source": "nginx-admins-handbook"
+            }
+          ]
+        },
+        {
+          "name": "Performance & Hardening",
+          "resources": [
+            {
+              "category": "External Resources",
+              "topic": "Performance & Hardening",
+              "title": "Nginx Tuning For Best Performance by Denji",
+              "url": "https://github.com/denji/nginx-tuning",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Performance & Hardening",
+              "title": "Nginx Optimization: understanding sendfile, tcp_nodelay and tcp_nopush",
+              "url": "https://thoughts.t37.net/nginx-optimization-understanding-sendfile-tcp-nodelay-and-tcp-nopush-c55cdd276765",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Performance & Hardening",
+              "title": "How we scaled nginx and saved the world 54 years every day",
+              "url": "https://blog.cloudflare.com/how-we-scaled-nginx-and-saved-the-world-54-years-every-day/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Performance & Hardening",
+              "title": "TLS has exactly one performance problem: it is not used widely enough",
+              "url": "https://istlsfastyet.com/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Performance & Hardening",
+              "title": "SSL/TLS Deployment Best Practices",
+              "url": "https://www.ssllabs.com/projects/best-practices/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Performance & Hardening",
+              "title": "SSL Server Rating Guide",
+              "url": "https://www.ssllabs.com/projects/rating-guide/index.html",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Performance & Hardening",
+              "title": "SSL Pulse",
+              "url": "https://www.ssllabs.com/ssl-pulse/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Performance & Hardening",
+              "title": "How to Build a Tough NGINX Server in 15 Steps",
+              "url": "https://www.upguard.com/blog/how-to-build-a-tough-nginx-server-in-15-steps",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Performance & Hardening",
+              "title": "Top 25 Nginx Web Server Best Security Practices",
+              "url": "https://www.cyberciti.biz/tips/linux-unix-bsd-nginx-webserver-security.html",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Performance & Hardening",
+              "title": "Nginx Secure Web Server",
+              "url": "https://calomel.org/nginx.html",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Performance & Hardening",
+              "title": "Strong SSL Security on Nginx",
+              "url": "https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Performance & Hardening",
+              "title": "Enable cross-origin resource sharing (CORS)",
+              "url": "https://enable-cors.org/index.html",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Performance & Hardening",
+              "title": "NAXSI - WAF for Nginx",
+              "url": "https://github.com/nbs-system/naxsi",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Performance & Hardening",
+              "title": "ModSecurity for Nginx",
+              "url": "https://geekflare.com/install-modsecurity-on-nginx/",
+              "source": "nginx-admins-handbook"
+            }
+          ]
+        },
+        {
+          "name": "Presentations & Videos",
+          "resources": [
+            {
+              "category": "External Resources",
+              "topic": "Presentations & Videos",
+              "title": "NGINX: Basics and Best Practices",
+              "url": "https://www.slideshare.net/Nginx/nginx-basics-and-best-practices",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Presentations & Videos",
+              "title": "NGINX Installation and Tuning",
+              "url": "https://www.slideshare.net/Nginx/nginx-installation-and-tuning",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Presentations & Videos",
+              "title": "Nginx Internals (by Joshua Zhu)",
+              "url": "https://www.slideshare.net/joshzhu/nginx-internals",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Presentations & Videos",
+              "title": "Nginx internals (by Liqiang Xu)",
+              "url": "https://www.slideshare.net/feifengxlq/nginx-internals-10514355",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Presentations & Videos",
+              "title": "How to secure your web applications with NGINX",
+              "url": "https://www.slideshare.net/wallarm/how-to-secure-your-web-applications-with-nginx",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Presentations & Videos",
+              "title": "Tuning TCP and NGINX on EC2",
+              "url": "https://www.slideshare.net/chartbeat/tuning-tcp-and-nginx-on-ec2",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Presentations & Videos",
+              "title": "Extending functionality in nginx, with modules!",
+              "url": "https://www.slideshare.net/trygvevea/extending-functionality-in-nginx-with-modules",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Presentations & Videos",
+              "title": "Nginx - Tips and Tricks.",
+              "url": "https://www.slideshare.net/tuxtoti/nginx-tips-and-tricks-13087831",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Presentations & Videos",
+              "title": "Nginx Scripting - Extending Nginx Functionalities with Lua",
+              "url": "https://www.slideshare.net/TonyFabeen/nginx-scripting-extending-nginx-functionalities-with-lua",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Presentations & Videos",
+              "title": "How to handle over 1,200,000 HTTPS Reqs/Min",
+              "url": "https://www.slideshare.net/kazeburo/advanced-nginx-in-mercari-how-to-handle-over-1200000-https-reqsmin",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Presentations & Videos",
+              "title": "Using ngx_lua / lua-nginx-module in pixiv",
+              "url": "https://www.slideshare.net/harukayon/ngx-lua-public",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Presentations & Videos",
+              "title": "Reading nginx CHANGES together",
+              "url": "https://mdounin.ru/files/mdounin-nginx-whatsnew-nginxconf2018.pdf",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Presentations & Videos",
+              "title": "Dynamic modules:how it works",
+              "url": "https://mdounin.ru/files/mdounin-dynamic-modules-nginxconf2016.pdf",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Presentations & Videos",
+              "title": "NGINX Conf 2014",
+              "url": "https://www.youtube.com/playlist?list=PLGz_X9w9raXewvc6tjIGGFZ6DBKHEld3k",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Presentations & Videos",
+              "title": "NGINX Conf 2015",
+              "url": "https://www.youtube.com/playlist?list=PLGz_X9w9raXdED9BR6GQ61A6d3fBzjpbn",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Presentations & Videos",
+              "title": "NGINX Conf 2016",
+              "url": "https://www.youtube.com/playlist?list=PLGz_X9w9raXcOsB_dT26iu0BvbSxWYG1g",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Presentations & Videos",
+              "title": "NGINX Conf 2017",
+              "url": "https://www.youtube.com/playlist?list=PLGz_X9w9raXeT-z_rcZ9yF0kV5SENZ-yt",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Presentations & Videos",
+              "title": "NGINX Conf 2018 | Deep Dive Track",
+              "url": "https://www.youtube.com/playlist?list=PLGz_X9w9raXeHhKRX6ZS7vmFKN12iYOw9",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Presentations & Videos",
+              "title": "NGINX Conf 2018 | Keynotes and Sessions",
+              "url": "https://www.youtube.com/playlist?list=PLGz_X9w9raXe_Vc708VKvr5KJ4gnf1WxS",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Presentations & Videos",
+              "title": "Making HTTPS Fast(er): Ilya Grigorik @ nginx.conf 2014",
+              "url": "https://www.youtube.com/watch?v=iHxD-G0YjiU",
+              "source": "nginx-admins-handbook"
+            }
+          ]
+        },
+        {
+          "name": "Playgrounds",
+          "resources": [
+            {
+              "category": "External Resources",
+              "topic": "Playgrounds",
+              "title": "NGINX Rate Limit, Burst and nodelay sandbox",
+              "url": "https://github.com/sportebois/nginx-rate-limit-sandbox",
+              "source": "nginx-admins-handbook"
+            }
+          ]
+        },
+        {
+          "name": "Config generators",
+          "resources": [
+            {
+              "category": "External Resources",
+              "topic": "Config generators",
+              "title": "nginxconfig",
+              "url": "https://nginxconfig.io/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Config generators",
+              "title": "ssl-config-generator",
+              "url": "https://github.com/mozilla/ssl-config-generator",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Config generators",
+              "title": "nginx-config-builder",
+              "url": "https://github.com/linkedin/nginx-config-builder",
+              "source": "nginx-admins-handbook"
+            }
+          ]
+        },
+        {
+          "name": "Config parsers",
+          "resources": [
+            {
+              "category": "External Resources",
+              "topic": "Config parsers",
+              "title": "crossplane",
+              "url": "https://github.com/nginxinc/crossplane",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Config parsers",
+              "title": "nginxparser",
+              "url": "https://github.com/fatiherikli/nginxparser",
+              "source": "nginx-admins-handbook"
+            }
+          ]
+        },
+        {
+          "name": "Config managers",
+          "resources": [
+            {
+              "category": "External Resources",
+              "topic": "Config managers",
+              "title": "ansible-role-nginx",
+              "url": "https://github.com/jdauphant/ansible-role-nginx",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Config managers",
+              "title": "ansible-role-nginx",
+              "url": "https://github.com/geerlingguy/ansible-role-nginx",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Config managers",
+              "title": "ansible-role-nginx",
+              "url": "https://github.com/nginxinc/ansible-role-nginx",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Config managers",
+              "title": "puppet-nginx",
+              "url": "https://github.com/voxpupuli/puppet-nginx",
+              "source": "nginx-admins-handbook"
+            }
+          ]
+        },
+        {
+          "name": "Static analyzers",
+          "resources": [
+            {
+              "category": "External Resources",
+              "topic": "Static analyzers",
+              "title": "gixy",
+              "url": "https://github.com/yandex/gixy",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Static analyzers",
+              "title": "nginx-config-formatter",
+              "url": "https://github.com/1connect/nginx-config-formatter",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Static analyzers",
+              "title": "nginxbeautifier",
+              "url": "https://github.com/vasilevich/nginxbeautifier",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Static analyzers",
+              "title": "nginx-minify-conf",
+              "url": "https://github.com/lovette/nginx-tools/tree/master/nginx-minify-conf",
+              "source": "nginx-admins-handbook"
+            }
+          ]
+        },
+        {
+          "name": "Log analyzers",
+          "resources": [
+            {
+              "category": "External Resources",
+              "topic": "Log analyzers",
+              "title": "GoAccess",
+              "url": "https://goaccess.io/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Log analyzers",
+              "title": "Graylog",
+              "url": "https://www.graylog.org/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Log analyzers",
+              "title": "Logstash",
+              "url": "https://www.elastic.co/products/logstash",
+              "source": "nginx-admins-handbook"
+            }
+          ]
+        },
+        {
+          "name": "Performance analyzers",
+          "resources": [
+            {
+              "category": "External Resources",
+              "topic": "Performance analyzers",
+              "title": "ngxtop",
+              "url": "https://github.com/lebinh/ngxtop",
+              "source": "nginx-admins-handbook"
+            }
+          ]
+        },
+        {
+          "name": "Builder tools",
+          "resources": [
+            {
+              "category": "External Resources",
+              "topic": "Builder tools",
+              "title": "Nginx-builder",
+              "url": "https://github.com/TinkoffCreditSystems/Nginx-builder",
+              "source": "nginx-admins-handbook"
+            }
+          ]
+        },
+        {
+          "name": "Benchmarking tools",
+          "resources": [
+            {
+              "category": "External Resources",
+              "topic": "Benchmarking tools",
+              "title": "ab",
+              "url": "https://httpd.apache.org/docs/2.4/programs/ab.html",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Benchmarking tools",
+              "title": "siege",
+              "url": "https://www.joedog.org/siege-home/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Benchmarking tools",
+              "title": "wrk",
+              "url": "https://github.com/wg/wrk",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Benchmarking tools",
+              "title": "wrk2",
+              "url": "https://github.com/giltene/wrk2",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Benchmarking tools",
+              "title": "vegeta",
+              "url": "https://github.com/tsenart/vegeta",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Benchmarking tools",
+              "title": "bombardier",
+              "url": "https://github.com/codesenberg/bombardier",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Benchmarking tools",
+              "title": "gobench",
+              "url": "https://github.com/cmpxchg16/gobench",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Benchmarking tools",
+              "title": "hey",
+              "url": "https://github.com/rakyll/hey",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Benchmarking tools",
+              "title": "boom",
+              "url": "https://github.com/tarekziade/boom",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Benchmarking tools",
+              "title": "httperf",
+              "url": "https://github.com/tarekziade/httperf",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Benchmarking tools",
+              "title": "JMeter™",
+              "url": "https://jmeter.apache.org/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Benchmarking tools",
+              "title": "Gatling",
+              "url": "https://gatling.io/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Benchmarking tools",
+              "title": "locust",
+              "url": "https://github.com/locustio/locust",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Benchmarking tools",
+              "title": "slowloris",
+              "url": "https://github.com/gkbrk/slowloris",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Benchmarking tools",
+              "title": "slowhttptest",
+              "url": "https://github.com/shekyan/slowhttptest",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Benchmarking tools",
+              "title": "GoldenEye",
+              "url": "https://github.com/jseidl/GoldenEye",
+              "source": "nginx-admins-handbook"
+            }
+          ]
+        },
+        {
+          "name": "Debugging tools",
+          "resources": [
+            {
+              "category": "External Resources",
+              "topic": "Debugging tools",
+              "title": "strace",
+              "url": "https://strace.io/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Debugging tools",
+              "title": "GDB",
+              "url": "https://www.gnu.org/software/gdb/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Debugging tools",
+              "title": "SystemTap",
+              "url": "https://sourceware.org/systemtap/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Debugging tools",
+              "title": "stapxx",
+              "url": "https://github.com/openresty/stapxx",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Debugging tools",
+              "title": "htrace.sh",
+              "url": "https://github.com/trimstray/htrace.sh",
+              "source": "nginx-admins-handbook"
+            }
+          ]
+        },
+        {
+          "name": "Security & Web testing tools",
+          "resources": [
+            {
+              "category": "External Resources",
+              "topic": "Security & Web testing tools",
+              "title": "Burp Suite",
+              "url": "https://portswigger.net/burp",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Security & Web testing tools",
+              "title": "w3af",
+              "url": "http://w3af.org/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Security & Web testing tools",
+              "title": "nikto",
+              "url": "https://github.com/sullo/nikto",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Security & Web testing tools",
+              "title": "ssllabs-scan",
+              "url": "https://github.com/ssllabs/ssllabs-scan",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Security & Web testing tools",
+              "title": "http-observatory",
+              "url": "https://github.com/mozilla/http-observatory",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Security & Web testing tools",
+              "title": "testssl.sh",
+              "url": "https://testssl.sh/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Security & Web testing tools",
+              "title": "sslyze",
+              "url": "https://github.com/nabla-c0d3/sslyze",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Security & Web testing tools",
+              "title": "cipherscan",
+              "url": "https://github.com/mozilla/cipherscan",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Security & Web testing tools",
+              "title": "O-Saft",
+              "url": "https://github.com/OWASP/O-Saft",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Security & Web testing tools",
+              "title": "Nghttp2",
+              "url": "https://nghttp2.org/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Security & Web testing tools",
+              "title": "h2spec",
+              "url": "https://github.com/summerwind/h2spec",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Security & Web testing tools",
+              "title": "h2t",
+              "url": "https://github.com/gildasio/h2t",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Security & Web testing tools",
+              "title": "http2fuzz",
+              "url": "https://github.com/c0nrad/http2fuzz",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Security & Web testing tools",
+              "title": "Arjun",
+              "url": "https://github.com/s0md3v/Arjun",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Security & Web testing tools",
+              "title": "Corsy",
+              "url": "https://github.com/s0md3v/Corsy",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Security & Web testing tools",
+              "title": "XSStrike",
+              "url": "https://github.com/s0md3v/XSStrike",
+              "source": "nginx-admins-handbook"
+            }
+          ]
+        },
+        {
+          "name": "Development",
+          "resources": [
+            {
+              "category": "External Resources",
+              "topic": "Development",
+              "title": "Sample ebook generated from NGINX source code.",
+              "url": "http://agentzh.org/misc/code/nginx/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Development",
+              "title": "Programming in Lua (first edition)",
+              "url": "https://www.lua.org/pil/contents.html",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Development",
+              "title": "Scripting Nginx with Lua",
+              "url": "http://www.londonlua.org/scripting_nginx_with_lua/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Development",
+              "title": "Emiller’s Guide To Nginx Module Development",
+              "url": "https://www.evanmiller.org/nginx-modules-guide.html",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Development",
+              "title": "Emiller’s Advanced Topics In Nginx Module Development",
+              "url": "http://www.evanmiller.org/nginx-modules-guide-advanced.html",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Development",
+              "title": "NGINX Tutorial: Developing Modules",
+              "url": "https://www.airpair.com/nginx/extending-nginx-tutorial",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Development",
+              "title": "An Introduction To OpenResty (nginx + lua) - Part 1",
+              "url": "https://www.openmymind.net/An-Introduction-To-OpenResty-Nginx-Lua/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Development",
+              "title": "An Introduction To OpenResty - Part 2 - Concepts",
+              "url": "https://www.openmymind.net/An-Introduction-To-OpenResty-Part-2/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Development",
+              "title": "An Introduction To OpenResty - Part 3",
+              "url": "https://www.openmymind.net/An-Introduction-To-OpenResty-Part-3/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Development",
+              "title": "OpenResty (Nginx) with dynamically generated certificates",
+              "url": "https://blog.dutchcoders.io/openresty-with-dynamic-generated-certificates/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Development",
+              "title": "Programming OpenResty",
+              "url": "https://github.com/openresty/programming-openresty",
+              "source": "nginx-admins-handbook"
+            }
+          ]
+        },
+        {
+          "name": "Online & Web tools",
+          "resources": [
+            {
+              "category": "External Resources",
+              "topic": "Online & Web tools",
+              "title": "SSL Server Test by SSL Labs",
+              "url": "https://www.ssllabs.com/ssltest/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Online & Web tools",
+              "title": "Test SSL/TLS (PCI DSS, HIPAA and NIST)",
+              "url": "https://www.htbridge.com/ssl/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Online & Web tools",
+              "title": "SSL analyzer and certificate checker",
+              "url": "https://sslanalyzer.comodoca.com/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Online & Web tools",
+              "title": "Tools for testing SSL configuration",
+              "url": "https://decoder.link",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Online & Web tools",
+              "title": "Test your TLS server configuration (e.g. ciphers)",
+              "url": "https://tls.imirhil.fr/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Online & Web tools",
+              "title": "Scan your website for non-secure content",
+              "url": "https://www.jitbit.com/sslcheck/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Online & Web tools",
+              "title": "Analyze website security",
+              "url": "http://www.ssltools.com",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Online & Web tools",
+              "title": "TLS Cipher Suite Search",
+              "url": "https://ciphersuite.info/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Online & Web tools",
+              "title": "SSL/TLS Capabilities of Your Browser",
+              "url": "https://www.ssllabs.com/ssltest/viewMyClient.html",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Online & Web tools",
+              "title": "SSL-Client Info's",
+              "url": "https://suche.org/sslClientInfo",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Online & Web tools",
+              "title": "Public Diffie-Hellman Parameter Service/Tool",
+              "url": "https://2ton.com.au/dhtool/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Online & Web tools",
+              "title": "Analyse the HTTP response headers by Security Headers",
+              "url": "https://securityheaders.com/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Online & Web tools",
+              "title": "Analyze your website by Mozilla Observatory",
+              "url": "https://observatory.mozilla.org/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Online & Web tools",
+              "title": "CAA Record Helper",
+              "url": "https://sslmate.com/caa/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Online & Web tools",
+              "title": "Linting tool that will help you with your site's accessibility, speed, security and more",
+              "url": "https://webhint.io/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Online & Web tools",
+              "title": "Service to scan and analyse websites",
+              "url": "https://urlscan.io/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Online & Web tools",
+              "title": "Tool from above to either encode or decode a string of text",
+              "url": "https://www.url-encode-decode.com/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Online & Web tools",
+              "title": "Online translator for search queries on log data",
+              "url": "https://uncoder.io/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Online & Web tools",
+              "title": "Online regex tester and debugger: PHP, PCRE, Python, Golang and JavaScript",
+              "url": "https://regex101.com/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Online & Web tools",
+              "title": "Online tool to learn, build, & test Regular Expressions",
+              "url": "https://regexr.com/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Online & Web tools",
+              "title": "Online Regex Tester & Debugger",
+              "url": "https://www.regextester.com/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Online & Web tools",
+              "title": "Tool for testing regular expressions directly within an NGINX configuration",
+              "url": "https://github.com/nginxinc/NGINX-Demos/tree/master/nginx-regex-tester",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Online & Web tools",
+              "title": "A web app for encryption, encoding, compression and data analysis",
+              "url": "https://gchq.github.io/CyberChef/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Online & Web tools",
+              "title": "Nginx location match tester",
+              "url": "https://nginx.viraptor.info/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Online & Web tools",
+              "title": "Nginx location match visible",
+              "url": "https://detailyang.github.io/nginx-location-match-visible/",
+              "source": "nginx-admins-handbook"
+            }
+          ]
+        },
+        {
+          "name": "Other stuff",
+          "resources": [
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "Web technology for developers",
+              "url": "https://developer.mozilla.org/en-US/docs/Web",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "Mozilla Web Security",
+              "url": "https://infosec.mozilla.org/guidelines/web_security.html",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "Application Security Wiki",
+              "url": "https://appsecwiki.com/#/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "OWASP ASVS 3.0.1",
+              "url": "https://www.owasp.org/index.php/Category:OWASP_Application_Security_Verification_Standard_Project",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "OWASP ASVS 3.0.1 Web App",
+              "url": "https://github.com/Santandersecurityresearch/asvs",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "OWASP ASVS 4.0",
+              "url": "https://github.com/OWASP/ASVS/tree/master/4.0",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "OWASP Top 10 Proactive Controls 2018.",
+              "url": "https://www.owasp.org/index.php/OWASP_Proactive_Controls",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "OWASP Testing Guide v4",
+              "url": "https://www.owasp.org/index.php/OWASP_Testing_Project",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "OWASP Dev Guide",
+              "url": "https://github.com/OWASP/DevGuide",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "Transport Layer Protection Cheat Sheet by OWASP",
+              "url": "https://cheatsheetseries.owasp.org/cheatsheets/Transport_Layer_Protection_Cheat_Sheet.html",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "OWASP WSTG",
+              "url": "https://github.com/OWASP/wstg",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "Security/Server Side TLS by Mozilla",
+              "url": "https://wiki.mozilla.org/Security/Server_Side_TLS",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "Applied Crypto Hardening",
+              "url": "https://bettercrypto.org/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "Browser support tables for modern web technologies",
+              "url": "https://caniuse.com/#home",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "Memorable site for testing clients against bad SSL configs",
+              "url": "https://badssl.com/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "The HTTPS-Only Standard",
+              "url": "https://https.cio.gov/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "The Web Security Academy",
+              "url": "https://portswigger.net/web-security",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "Burp Scanner - Issue Definitions",
+              "url": "https://portswigger.net/kb/issues",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "Web application security: what to do when...",
+              "url": "https://odino.org/wasec-web-application-security-what-to-do-when-dot-dot-dot/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "Transport Layer Security (TLS) Parameters",
+              "url": "https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "TLS Redirection (and Virtual Host Confusion)",
+              "url": "https://github.com/GrrrDog/TLS-Redirection#technical-details",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "TLS Security 6: Examples of TLS Vulnerabilities and Attacks",
+              "url": "https://www.acunetix.com/blog/articles/tls-vulnerabilities-attacks-final-part/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "Guidelines for Setting Security Headers",
+              "url": "https://www.veracode.com/blog/2014/03/guidelines-for-setting-security-headers",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "Mozilla Guidelines - Web Security",
+              "url": "https://infosec.mozilla.org/guidelines/web_security.html",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "Secure your web application with these HTTP headers",
+              "url": "https://medium.freecodecamp.org/secure-your-web-application-with-these-http-headers-fd66e0367628",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "Security HTTP Headers",
+              "url": "https://zinoui.com/blog/security-http-headers",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "Analysis of various reverse proxies, cache proxies, load balancers, etc.",
+              "url": "https://github.com/GrrrDog/weird_proxies/wiki",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "How HTTPS works ...in a comic!",
+              "url": "https://howhttps.works/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "Regular-Expressions",
+              "url": "https://www.regular-expressions.info/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "Regexp Security Cheatsheet",
+              "url": "https://github.com/attackercan/REGEXP-SECURITY-CHEATSHEET",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "HTTPS on Stack Overflow: The End of a Long Road",
+              "url": "https://nickcraver.com/blog/2017/05/22/https-on-stack-overflow/#the-beginning",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "The Architecture of Open Source Applications - Nginx",
+              "url": "https://www.aosabook.org/en/nginx.html",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "BBC Digital Media Distribution: How we improved throughput by 4x",
+              "url": "http://www.bbc.co.uk/blogs/internet/entries/17d22fb8-cea2-49d5-be14-86e7a1dcde04",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "The C10K problem by Dan Kegel",
+              "url": "http://www.kegel.com/c10k.html",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "The Secret To 10 Million Concurrent Connections",
+              "url": "http://highscalability.com/blog/2013/5/13/the-secret-to-10-million-concurrent-connections-the-kernel-i.html",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "High Performance Browser Networking",
+              "url": "https://hpbn.co/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "The System Design Primer",
+              "url": "https://github.com/donnemartin/system-design-primer",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "awesome-scalability",
+              "url": "https://github.com/binhnguyennus/awesome-scalability",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "Web Architecture 101",
+              "url": "https://engineering.videoblocks.com/web-architecture-101-a3224e126947",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "Learn where some of the network sysctl variables fit into the Linux/Kernel network flow",
+              "url": "https://github.com/leandromoreira/linux-network-performance-parameters",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "jemalloc vs tcmalloc vs dlmalloc",
+              "url": "https://suniphrase.wordpress.com/2015/10/27/jemalloc-vs-tcmalloc-vs-dlmalloc/",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "On the Impact of Memory Allocation on High-Performance Query Processing",
+              "url": "https://arxiv.org/pdf/1905.01135.pdf",
+              "source": "nginx-admins-handbook"
+            },
+            {
+              "category": "External Resources",
+              "topic": "Other stuff",
+              "title": "GLB: GitHub’s open source load balancer",
+              "url": "https://github.blog/2018-08-08-glb-director-open-source-load-balancer/",
+              "source": "nginx-admins-handbook"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

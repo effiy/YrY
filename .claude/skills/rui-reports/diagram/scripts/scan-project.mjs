@@ -373,16 +373,17 @@ const INFRA_FILENAMES = new Set([
 export function detectCategory(filePath) {
   const base = basename(filePath);
   const ext = extname(filePath).toLowerCase();
-  const posix = filePath.split(sep).join('/');
+  const posix = toPosix(filePath);
 
   // Rule 1: LICENSE exception (project-scanner.md Step 4 table comment).
   if (base === 'LICENSE') return 'code';
 
   // Rule 2: infra by filename — Dockerfile + variants, Makefile,
   // Jenkinsfile, docker-compose.*, Procfile, Vagrantfile, .gitlab-ci.yml,
-  // .dockerignore.
+  // .dockerignore. INFRA_FILENAMES already covers exact `Dockerfile`;
+  // the startsWith check catches Dockerfile.dev / Dockerfile.prod.
   if (INFRA_FILENAMES.has(base)) return 'infra';
-  if (base === 'Dockerfile' || base.startsWith('Dockerfile.')) return 'infra';
+  if (base.startsWith('Dockerfile.')) return 'infra';
   if (base.startsWith('docker-compose.')) return 'infra';
   if (base === 'compose.yml' || base === 'compose.yaml') return 'infra';
 

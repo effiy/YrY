@@ -4,8 +4,8 @@
    Applicable to: review · test panel · demo · plan list · architecture diagram · knowledge graph
 
    Page usage (host page):
-     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-     <script src="../../../../rui-html-cdn/rui-breadcrumb/index.js"></script>
+     <script src="/.claude/shared/vendor/vue@3.4.27/vue.global.prod.js"></script>
+     <script src="/.claude/shared/rui-breadcrumb/index.js"></script>
      <div id="bc-host"></div>
      <script>
        window.ruiBreadcrumb.mount({ items: [{ label: 'Home', href: '/' }, { label: 'Current' }] }, '#bc-host').then(app => { ... });

@@ -12,8 +12,8 @@
      md (medium — default, for standalone alert chips)
 
    Page usage (host page):
-     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-     <script src="../../../../rui-html-cdn/rui-badge/index.js"></script>
+     <script src="/.claude/shared/vendor/vue@3.4.27/vue.global.prod.js"></script>
+     <script src="/.claude/shared/rui-badge/index.js"></script>
      <div id="badge"></div>
      <script>
        window.ruiBadge.mount({ text: 'NEW', modifier: 'fail', size: 'sm' }, '#badge');

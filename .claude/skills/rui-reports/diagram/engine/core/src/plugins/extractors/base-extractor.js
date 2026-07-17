@@ -45,3 +45,8 @@ export function hasChildOfType(node, type) {
     }
     return false;
 }
+/** Get the last component of a dotted path. e.g. "java.util.List" -> "List" */
+export function lastComponent(path) {
+    const parts = path.split(".");
+    return parts[parts.length - 1];
+}

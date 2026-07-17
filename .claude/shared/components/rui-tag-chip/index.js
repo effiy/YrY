@@ -4,8 +4,8 @@
    Applicable to: tag rows (tags-row) inside cards · status badges · role categories
 
    Page usage (host page):
-     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-     <script src="../../../../rui-html-cdn/rui-tag-chip/index.js"></script>
+     <script src="/.claude/shared/vendor/vue@3.4.27/vue.global.prod.js"></script>
+     <script src="/.claude/shared/rui-tag-chip/index.js"></script>
      <div id="tag-row"></div>
      <script>
        window.ruiTagChip.mount({ text: 'self-built', modifier: 'accent' }, '#tag-row').then(app => { ... });

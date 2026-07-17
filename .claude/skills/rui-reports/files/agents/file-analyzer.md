@@ -29,6 +29,30 @@ type FileInventoryResult = {
   totalFiles: number;
   totalBytes: number;
   skipped: { path: string; reason: string }[];
+  // New in v2: pre-aggregated summary fields so the Vue page can
+  // render the meta-grid + key findings without re-walking records.
+  summary: {
+    totalFiles: number;
+    totalBytes: number;
+    totalBytesHuman: string;     // e.g. '2.4 MB'
+    totalLines: number;
+    maxDepth: number;
+    criticalCount: number;       // files with lines > 1000
+    hotspotCount: number;        // files with hotspotScore >= 2.0
+    cycleCount: number;          // see Stage 5
+    staleCount: number;          // ageDays >= 180, see Stage 5.4
+  };
+  // New in v2: alert list that drives the risk banner + remediation
+  // queue. Categories are pinned; see rules/analysis-contracts.md.
+  alerts: Array<{
+    severity: 'P0' | 'P1' | 'P2';
+    marker:   'P0' | 'P1' | 'P2';
+    category: 'bloat' | 'coupling' | 'depth' | 'hotspot' |
+              'orphan' | 'cycle' | 'freshness' | 'size';
+    file: string;                 // relative to scope
+    line: number | null;
+    message: string;              // human-readable, ≤ 120 chars
+  }>;
 };
 ```
 

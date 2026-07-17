@@ -28,24 +28,38 @@ user_invocable: true
 /rui-report-diagram create --out diagram.html      → Custom output path
 ```
 
-## What This Skill Does
+## What this skill does
 
-- Produces a single self-contained `architecture-diagram.html` file with inline SVG, dark theme, CSS animations, and built-in export (PNG, PDF, clipboard).
+- Produces a self-contained architecture-diagram page composed of **4 files in `templates/`** (the page is rendered as ONE browser-viewable HTML, but its sources are split for clarity):
+  - `templates/index.html` — DOM skeleton + script wiring + inline favicon (no favicon 404)
+  - `templates/index.css`  — layered CSS (reset → tokens → base → layout → components → utilities → responsive → print)
+  - `templates/data.js`    — pure data (meta + SVG markup string + section arrays) exposed as `window.REPORT_DATA`
+  - `templates/index.js`   — Vue 3 app, composables (`useSvgInteractions`, `useExport`), runtime template
 - Works in two modes: **from requirements** (you describe the system) or **from a codebase** (the skill scans, builds a knowledge graph, and derives the diagram).
 - In `--from-codebase` mode, runs a 7-phase analysis (scan → analyze → assemble → architecture → tour → review → save) and uses the resulting layers + key components as the diagram's structure.
 - In `--full` mode, runs every analysis phase including tour generation and LLM graph review.
 - Always saves a partial knowledge graph on interruption — a partial diagram is better than none.
+- **Generated pages render with a clean browser console** (zero `console.error`, zero `pageerror`, zero 4xx requests) — verified by the headless probe at `iteration-N/eval-templates-render-clean/`.
 
-## What This Skill Does NOT Do
+## What this skill does NOT do
 
 - Does NOT create UML, sequence, or class diagrams — this is for high-level system architecture overviews.
-- Does NOT modify the analyzed codebase. Codebase analysis output lives in `<OUTPUT_DIR>/` (the same directory as the generated `architecture-diagram.html`).
+- Does NOT modify the analyzed codebase. Codebase analysis output lives in `<OUTPUT_DIR>/` (the same directory as the generated `index.html`).
 - Does NOT guarantee pixel-perfect accuracy — diagrams reflect the analysis model's interpretation.
 - Does NOT require a particular language or framework — quality varies by stack depth.
 
 ## Output Contract
 
-The single artifact is `templates/architecture-diagram.html`. Read its header block (placeholders, sections, design rules) before customizing. The contract requires:
+The rendered artifact is a single browser-viewable page. Its **sources** live in `templates/` as a 4-file split — read each header block before customizing:
+
+| File | Header to read | Customization focus |
+|------|----------------|---------------------|
+| `templates/index.html` | `@sections`, `@command`, `@style` | DOM section order, script load order, vendor script tags, inline favicon |
+| `templates/index.css`  | `@layer order: reset, tokens, base, layout, components, utilities, responsive, print` | Color tokens (`:root` `--color-*` / `--text-*` / `--bg-*`), spacing tokens, new component classes |
+| `templates/data.js`    | `@shape` JSDoc block listing every `window.REPORT_DATA` field | All textual content + the `svgDiagram` SVG markup string |
+| `templates/index.js`   | `useSvgInteractions` / `useExport` JSDoc | Only edit these if you need new Vue composables or new export targets |
+
+The contract requires:
 
 - **Header** — title, subtitle, pulsing indicator, export toolbar
 - **Main SVG** — drawn in this order: defs → background grid → arrows → opaque masks → component boxes → boundaries → legend
@@ -53,6 +67,18 @@ The single artifact is `templates/architecture-diagram.html`. Read its header bl
 - **Footer** — minimal metadata line
 
 Any section that has no data is omitted entirely. Never write "N/A" or pad with placeholder text.
+
+### Shared resources (no public CDN)
+
+The templates load infrastructure from `/.claude/shared/`, NOT from public CDNs. Every script tag in `templates/index.html` should resolve to a `/.claude/shared/...` path. If a future contributor adds a public CDN `<script src>`, the page will fail offline and the rui-tools probe will fail the `requestFailures: []` assertion.
+
+| Resource | Path |
+|----------|------|
+| Vue 3.4.27 | `/.claude/shared/loader.js` (auto-injects `/.claude/shared/vendor/vue@3.4.27/vue.global.prod.js`) |
+| html2canvas 1.4.1 | `/.claude/shared/vendor/html2canvas@1.4.1/html2canvas.min.js` |
+| jsPDF 2.5.2 | `/.claude/shared/vendor/jspdf@2.5.2/jspdf.umd.min.js` |
+| `<rui-back-top>` | `/.claude/shared/components/rui-back-top/index.js` |
+| `<rui-toast>` | `/.claude/shared/components/rui-toast/index.js` |
 
 ### Quality Standards
 
@@ -68,7 +94,8 @@ When generating diagrams, ensure:
 | **Color semantics** | Strictly follow the palette — don't mix colors for the same component type |
 | **Legend accuracy** | Only include entries for component types AND line styles actually used in the diagram |
 | **Summary depth** | Each card covers a distinct dimension: Architecture overview, Data flow, Infrastructure/Ops |
-| **Export readiness** | Include CDN links for html2canvas and jsPDF; test all three export buttons |
+| **Export readiness** | Wire up the shared vendor html2canvas + jsPDF under `/.claude/shared/vendor/...`; smoke-test all three export buttons |
+| **Clean console** | The page must produce zero `console.error` / `pageerror` / 4xx requests in a headless browser. The rui-tools probe at `<workspace>/iteration-N/eval-templates-render-clean/` is the contract: `consoleMessages: []` and `requestFailures: []`. The two historical offenders — shared `<rui-toast>` losing `callerSrc` and Vue 3 multi-root `$el.querySelector` — are now blocked by Rule 16 |
 
 ## Workflow
 
@@ -96,19 +123,19 @@ Key principles:
 | Boundary | Permission |
 |----------|-----------|
 | `<skill-path>/**` (this skill) | read-only |
-| `<OUTPUT_DIR>/**` (same directory as generated `architecture-diagram.html`) | read + write (codebase mode only) |
+| `<OUTPUT_DIR>/**` (same directory as generated `index.html`) | read + write (codebase mode only) |
 | Source code under analysis | read-only |
 | `engine/**` (core, dashboard, src, WASM) | read + write (install/build) |
 | Output `<output-path>` | read + write |
 
-> `<OUTPUT_DIR>` is the directory containing the generated `architecture-diagram.html` (e.g., when `--out ./diagram.html` is used, `<OUTPUT_DIR>` is `./`). All knowledge-graph, meta, scan-result, intermediate, and tmp files are colocated with the HTML output.
+> `<OUTPUT_DIR>` is the directory containing the generated `index.html` (e.g., when `--out ./diagram.html` is used, `<OUTPUT_DIR>` is `./`). All knowledge-graph, meta, scan-result, intermediate, and tmp files are colocated with the HTML output.
 
 ## Rules
 
 | # | Rule | Rationale |
 |---|------|-----------|
-| 1 | Read the template's header block before producing the artifact | The Section Contract and placeholder list are documented there |
-| 2 | Output is a single self-contained HTML file | No external stylesheets or scripts (CDN for export lib is OK) |
+| 1 | Read the 4 templates/ header blocks before producing the artifact | Each file documents a different part of the contract (sections / data shape / composables) |
+| 2 | The rendered page is one self-contained HTML; its sources are split into 4 files; no public CDNs | Single browser entry keeps delivery simple, but split sources stay maintainable. All shared resources come from `/.claude/shared/...`; public CDNs break offline and the rui-tools probe flags the network error |
 | 3 | SVG document order: defs → grid → arrows → masks → boxes → boundaries → legend | Ensures correct z-stacking without z-index hacks |
 | 4 | Each component box needs an opaque background rect (`fill="#0f172a"`) | Semi-transparent fills otherwise let arrows bleed through |
 | 5 | Place legend outside all boundary boxes; expand viewBox if needed | Avoids visual clutter and overlap; minimum 20px clearance |
@@ -119,15 +146,16 @@ Key principles:
 | 10 | Report progress at every phase transition | Keeps the user informed during long-running operations |
 | 11 | Generate a deterministic layout for repeated runs | Same input → same diagram; aids diff-review |
 | 12 | Use distinct colored arrow markers per connection type | Visually distinguishes sync (solid), async (dashed), auth (dotted), infra (long dash) |
-| 13 | Add gradient definitions in `<defs>` for large boundary/region fills | Smooths the visual transition and avoids harsh solid- color blocks |
+| 13 | Add gradient definitions in `<defs>` for large boundary/region fills | Smooths the visual transition and avoids harsh solid-color blocks |
 | 14 | Label every arrow with protocol/type (REST, gRPC, TLS, JWT, WSS, SMTP) | Makes the diagram self-documenting without needing external reference |
 | 15 | Include line-style entries in the legend | Users need to decode dashed vs dotted vs solid arrow semantics |
+| 16 | Generated page must render with **zero `console.error` / `pageerror` / 4xx requests** | Enforced by the headless probe in `eval-templates-render-clean/`. Known offender bug-classes and their fixes are documented in the Fallback table below |
 
 ## Commands
 
 - [create.md](./commands/create.md) — Create a polished architecture diagram (the single command, supports requirements or codebase modes).
 
-## Supporting Resources
+## Supporting resources
 
 - [agents/](./agents/) — Subagent instructions for codebase analysis phases:
   - `project-scanner.md` — file inventory + language/framework detection
@@ -136,10 +164,13 @@ Key principles:
   - `architecture-analyzer.md` — derives architectural layers from the graph
   - `tour-builder.md` — designs guided learning tour (`--full` only)
   - `graph-reviewer.md` — validates the final knowledge graph
-- [templates/architecture-diagram.html](./templates/architecture-diagram.html) — the only template; the single self-contained HTML artifact.
+- [templates/index.html](./templates/index.html) — DOM skeleton, script wiring, inline favicon
+- [templates/index.css](./templates/index.css) — layered CSS (tokens → components → utilities)
+- [templates/data.js](./templates/data.js) — pure data + SVG markup string (`window.REPORT_DATA`)
+- [templates/index.js](./templates/index.js) — Vue 3 app + `useSvgInteractions` + `useExport` composables
 - [references/knowledge-graph-schema.md](./references/knowledge-graph-schema.md) — full node/edge schema (16 node types, 29 edge types) including domain graph extension for business-domain modeling.
 - [references/design-system.md](./references/design-system.md) — diagram design system: color palette, typography, spacing, layout patterns.
-- [references/templates-index.md](./references/templates-index.md) — catalog of all output templates.
+- [references/templates-index.md](./references/templates-index.md) — catalog of all output templates (4-file split + rendered artifact).
 - [references/quality-rubric.md](./references/quality-rubric.md) — self-assessment rubric for diagram quality: 5 dimensions, scoring guide, pass threshold.
 - [scripts/](./scripts/) — analysis & merge scripts (scanning, extraction, batching, fingerprinting, merging).
 - [engine/](./engine/) — self-contained engine: core (parsing), dashboard (UI), TS helpers, WASM.
@@ -184,6 +215,39 @@ The template includes built-in interactivity (no extra code needed):
 
 These features work dynamically — they scan the SVG DOM at load time, so they apply to ANY diagram generated from the template without requiring special markup.
 
+## Page HTML Generation
+
+This skill can emit a self-contained Vue 3 docs page following the
+4-file split layout used across this catalog.
+
+### Output layout
+
+| File | Stability | Purpose |
+|------|-----------|---------|
+| `index.html` | byte-stable | mounts `#app`, loads Vue 3 + shared components |
+| `index.css` | byte-stable | layout, theme tokens, responsive grid |
+| `index.js` | byte-stable | wires Vue 3 app, registers shared components |
+| `data.js` | regenerated each run | `rui-report-diagram`-specific content model |
+
+### Workflow
+
+1. Resolve output directory (default: `docs/rui-report-diagram/`).
+2. Copy `index.html`, `index.css`, `index.js` verbatim from this
+   skill's `templates/` directory (or from `shared/components/` if
+   this skill has no templates).
+3. Regenerate `data.js` from the skill's domain knowledge —
+   `rui-report-diagram` rules, references, and agent outputs.
+4. Open `docs/rui-report-diagram/index.html` in a browser; no build step.
+
+### Borders
+
+| Boundary | Permission |
+|----------|-----------|
+| `templates/**` (this skill) | read |
+| `shared/components/**` | read |
+| `docs/rui-report-diagram/**` (output) | write |
+| Anywhere else | no write |
+
 ## Fallback
 
 | Situation | Behavior |
@@ -199,4 +263,7 @@ These features work dynamically — they scan the SVG DOM at load time, so they 
 | Generated diagram has >15 components | Merge small leaf nodes into composite boxes; use bullet lists for sub-components |
 | Arrow count exceeds 25 | Group related flows; consider using a message bus connector to reduce point-to-point arrows |
 | Legend overflows viewBox | Move legend to a second row or reduce font size to 8px |
-| Export buttons fail (missing CDN) | Verify html2canvas and jsPDF CDN script tags are present in the HTML |
+| Export buttons fail (missing vendor) | Verify `/.claude/shared/vendor/html2canvas@1.4.1/html2canvas.min.js` and `/.claude/shared/vendor/jspdf@2.5.2/jspdf.umd.min.js` script tags are present in `templates/index.html` and reachable from the local HTTP server |
+| `console.error` from shared `<rui-toast>` | Bug class: missing `callerSrc` in `ruiBootstrapFromCurrentScript({...})`. Fixed in iteration-1 by snapshotting `document.currentScript.src` and passing it through |
+| `console.error` about `$el.querySelector is not a function` | Bug class: Vue 3 multi-root template. Use a template ref (e.g. `containerRef`) in `mounted()` instead of `this.$el.querySelector` |
+| Favicon 404 in console | Add the inline SVG favicon `<link rel="icon" href="data:image/svg+xml,...">` to the head |

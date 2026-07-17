@@ -9,10 +9,20 @@ description: >
 
 # Architecture Diagram — Create
 
-Create a single self-contained `architecture-diagram.html` file with inline SVG, dark theme, and built-in PNG/PDF/clipboard export.
+Create a self-contained architecture-diagram page. The rendered artifact is **one** browser-viewable HTML; its **sources** are the 4 files in `templates/` listed below. **Read the 4 templates/ header blocks before producing any output** — each one documents a different part of the contract:
 
-> **Output contract**: [../../templates/architecture-diagram.html](../../templates/architecture-diagram.html)
-> Read the template's header block (placeholders, sections, design rules) before customizing.
+| File | Header to read | What you customize here |
+|------|----------------|-------------------------|
+| `templates/index.html` | `@sections`, `@command`, `@style` | DOM section order, script load order, vendor script tags, inline favicon |
+| `templates/index.css`  | `@layer order: reset, tokens, base, layout, components, utilities, responsive, print` | Color tokens (`:root` `--color-*` / `--text-*` / `--bg-*`), spacing tokens, new component classes |
+| `templates/data.js`    | `@shape` JSDoc block listing every `window.REPORT_DATA` field | All textual content + the `svgDiagram` SVG markup string |
+| `templates/index.js`   | `useSvgInteractions` / `useExport` JSDoc | Only edit these if you need new Vue composables or new export targets |
+
+> **Shared resources (no public CDN)**: All infrastructure (Vue, html2canvas, jsPDF, `<rui-back-top>`, `<rui-toast>`) loads from `/.claude/shared/...` — see the SKILL.md **Output Contract → Shared resources** table. Do NOT add public CDN `<script src>` tags.
+>
+> **Clean console contract**: After generating, the page must produce zero `console.error` / `pageerror` / 4xx requests (SKILL.md Rule 16). Known offenders are listed in the Fallback table.
+>
+> **Output contract (rendered artifact)**: `<OUTPUT_DIR>/index.html`
 > **Design system reference**: [../../references/design-system.md](../../references/design-system.md)
 > **Knowledge graph schema (codebase mode)**: [../../references/knowledge-graph-schema.md](../../references/knowledge-graph-schema.md)
 
@@ -31,7 +41,7 @@ Create a single self-contained `architecture-diagram.html` file with inline SVG,
 - `$ARGUMENTS` may contain:
   - `--from-codebase [path]` — Analyze a real codebase instead of taking a requirements brief. Defaults path to CWD.
   - `--full` — Run the deeper codebase analysis (full scan, all batches, LLM graph review, tour generation). Requires `--from-codebase`.
-  - `--out <path>` — Output file path. Defaults to `./architecture-diagram.html` in CWD.
+  - `--out <path>` — Output file path. Defaults to `./index.html` in CWD.
   - `--language <lang>` — Generate all textual content in the specified language (e.g. `zh`, `ja`, `ko`, `en`). Defaults to `en`.
   - `--review` — Run the full `graph-reviewer` agent in codebase mode (default: inline deterministic validation only).
   - `--auto-update` / `--no-auto-update` — Toggle the on-save auto-update hook. In `--from-codebase` mode, when enabled, an in-process hook re-runs the analysis after the user edits source files (no extra commands needed). Disabled by default.
@@ -95,7 +105,14 @@ Key layout decisions:
 
 ### Step 3: Build the Diagram
 
-Copy the template from `templates/architecture-diagram.html` and customize. The template header documents all placeholders, sections, and design rules — **read it before writing any code**.
+Read the 4 template files in `templates/` and customize. The headers document the contract — **read them before writing any code**:
+
+- `templates/index.html` — DOM section order, script tags (no public CDNs!), inline favicon
+- `templates/index.css` — color/spacing tokens (`:root` `--color-*` etc.), component classes
+- `templates/data.js` — `@shape` JSDoc lists every `window.REPORT_DATA` field; fill them in
+- `templates/index.js` — leave the Vue app + composables alone unless adding a new export target
+
+Do NOT add public CDN `<script src>` tags. All shared resources come from `/.claude/shared/...` (see the SKILL.md **Output Contract → Shared resources** table).
 
 #### 3.1 — Header & Metadata
 - Replace `<title>`, `h1`, and subtitle with specific, descriptive text
@@ -185,7 +202,7 @@ Before saving, verify these 10 points:
 | 6 | Legend only includes actually-used types | Match legend entries to component types in diagram |
 | 7 | Line style legend matches arrow styles used | Count distinct dash patterns → 1 legend entry each |
 | 8 | viewBox accommodates all content | Rightmost x+w < viewBox width; bottommost y+h + legend < viewBox height |
-| 9 | CDN scripts present for export | html2canvas + jsPDF script tags exist |
+| 9 | Shared vendor scripts present for export | `/.claude/shared/vendor/html2canvas@1.4.1/html2canvas.min.js` and `/.claude/shared/vendor/jspdf@2.5.2/jspdf.umd.min.js` script tags are present in `templates/index.html` (no public CDN) |
 | 10 | No placeholder or generic text | "Card Title", "Item one", "Component N" should not appear |
 
 ### Step 5: Deliver
@@ -207,7 +224,7 @@ Analyze a real codebase, build a knowledge graph, then derive the architecture d
 
 1. **Resolve PROJECT_ROOT** from `$ARGUMENTS` or current working directory. Handle git worktree redirect.
 2. **Ensure the engine is built** — run `pnpm install && pnpm --filter @rui-report-diagram/core build` from the skill directory if needed.
-3. **Resolve OUTPUT_DIR** — the directory containing the generated `architecture-diagram.html` (defaults to CWD; honors `--out <path>` by using its parent directory). All data files (knowledge-graph.json, meta.json, scan-result.json, intermediate/, tmp/) are colocated in this directory.
+3. **Resolve OUTPUT_DIR** — the directory containing the generated `index.html` (defaults to CWD; honors `--out <path>` by using its parent directory). All data files (knowledge-graph.json, meta.json, scan-result.json, intermediate/, tmp/) are colocated in this directory.
 4. Get the current git commit hash: `git rev-parse HEAD`
 5. Create intermediate directories: `<OUTPUT_DIR>/intermediate/` and `<OUTPUT_DIR>/tmp/`
 6. Check for an existing `<OUTPUT_DIR>/knowledge-graph.json` — if present, offer incremental mode; otherwise run full analysis.
@@ -255,7 +272,7 @@ Validate the knowledge graph:
 
 ### Step 8: Derive the Diagram from the Graph
 
-Translate the knowledge graph into a `templates/architecture-diagram.html` instance:
+Translate the knowledge graph into a `templates/index.html` instance (the rendered artifact is `<OUTPUT_DIR>/index.html` — its 4 sources stay in `templates/` of the skill):
 
 - **One region per layer** (architecture-analyzer's output). Use distinct colors per layer; the layer color drives the fill of the region boundary.
 - **One component box per "service-level" node** in the graph (priority: `service` → `endpoint` → `file` → `schema` → `table` → `resource` → `config`). Filter to keep the diagram readable (5–12 components typical; merge small leaf nodes).

@@ -12,10 +12,13 @@
        <span class="rui-panel-hub-flow" />          ← optional · flow description
      </div>
 
-   Click event:
-     - Button / label click → component root dispatches CustomEvent(
-       'panel-hub-select', { detail: { panel: <name> }, bubbles: true })
-     - Host pages addEventListener('panel-hub-select', ...) → window.PanelHub.open()
+  Click event (resolved in onSelect, in this order):
+    1. If `urls[panel]` is set on the component, the component opens that
+       URL in a new tab. The legacy 'panel-hub-select' event is NOT fired
+       in this path.
+     2. Otherwise the component root dispatches CustomEvent(
+        'panel-hub-select', { detail: { panel: <name> }, bubbles: true }).
+        Host pages addEventListener('panel-hub-select', ...) → window.PanelHub.open().
 
    Depends on design tokens (from rui-html-cdn/theme/*.css or the page :root):
      --rui-bg-card / --rui-border / --rui-radius
@@ -106,7 +109,7 @@
 
 /* ── Entrance animation: see @keyframes rui-fade-in above ───────── */
 
-/* ── panelLink generated link (used by panel-hub-api.js) ────────────────── */
+/* ── panelLink generated link (used by window.PanelHub.panelLink) ───────── */
 .rui-panel-hub-link {
   color: inherit;
   text-decoration: underline;

@@ -139,6 +139,15 @@ export const DIRECTION_ALIASES = {
     both: "bidirectional",
     mutual: "bidirectional",
 };
+/**
+ * Drop `key` from `obj` when it's strictly null. Zod optional fields treat
+ * `undefined` and "missing" the same; `null` fails validation. Used by
+ * sanitizeGraph to normalize LLM-emitted nulls before schema parsing.
+ */
+function deleteIfNull(obj, key) {
+    if (obj[key] === null)
+        delete obj[key];
+}
 export function sanitizeGraph(data) {
     const result = { ...data };
     // Null → empty array for top-level collections
@@ -153,12 +162,9 @@ export function sanitizeGraph(data) {
                 return node;
             const n = { ...node };
             // Null → undefined for optional fields
-            if (n.filePath === null)
-                delete n.filePath;
-            if (n.lineRange === null)
-                delete n.lineRange;
-            if (n.languageNotes === null)
-                delete n.languageNotes;
+            deleteIfNull(n, "filePath");
+            deleteIfNull(n, "lineRange");
+            deleteIfNull(n, "languageNotes");
             // Lowercase enum-like strings
             if (typeof n.type === "string")
                 n.type = n.type.toLowerCase();
@@ -173,8 +179,7 @@ export function sanitizeGraph(data) {
             if (typeof edge !== "object" || edge === null)
                 return edge;
             const e = { ...edge };
-            if (e.description === null)
-                delete e.description;
+            deleteIfNull(e, "description");
             if (typeof e.type === "string")
                 e.type = e.type.toLowerCase();
             if (typeof e.direction === "string")
@@ -188,8 +193,7 @@ export function sanitizeGraph(data) {
             if (typeof step !== "object" || step === null)
                 return step;
             const s = { ...step };
-            if (s.languageLesson === null)
-                delete s.languageLesson;
+            deleteIfNull(s, "languageLesson");
             return s;
         });
     }
@@ -419,6 +423,36 @@ function buildInvalidCollectionIssue(name) {
         path: name,
     };
 }
+/**
+ * Validate a collection of items that carry `nodeIds` (layers, tour steps).
+ * Parses each item against `schema`; on success, keeps it with dangling
+ * nodeIds filtered out; on failure, pushes a `dropped` issue. Returns the
+ * array of valid items. The `name`/`category` pair labels the issue
+ * (e.g. ("layers","invalid-layer"), ("tour","invalid-tour-step")).
+ */
+function validateNodeRefCollection(items, schema, name, category, issues, nodeIds) {
+    const valid = [];
+    if (!Array.isArray(items))
+        return valid;
+    for (let i = 0; i < items.length; i++) {
+        const result = schema.safeParse(items[i]);
+        if (result.success) {
+            valid.push({
+                ...result.data,
+                nodeIds: result.data.nodeIds.filter((id) => nodeIds.has(id)),
+            });
+        }
+        else {
+            issues.push({
+                level: "dropped",
+                category,
+                message: `${name}[${i}]: ${result.error.issues[0]?.message ?? "validation failed"} — removed`,
+                path: `${name}[${i}]`,
+            });
+        }
+    }
+    return valid;
+}
 function buildErrors(issues, fatal) {
     const messages = issues.map((issue) => issue.message);
     if (fatal && !messages.includes(fatal))
@@ -558,47 +592,9 @@ export function validateGraph(data) {
         }
     }
     // Validate layers (drop broken, filter dangling nodeIds)
-    const validLayers = [];
-    if (Array.isArray(fixed.layers)) {
-        for (let i = 0; i < fixed.layers.length; i++) {
-            const result = LayerSchema.safeParse(fixed.layers[i]);
-            if (result.success) {
-                validLayers.push({
-                    ...result.data,
-                    nodeIds: result.data.nodeIds.filter((id) => nodeIds.has(id)),
-                });
-            }
-            else {
-                issues.push({
-                    level: "dropped",
-                    category: "invalid-layer",
-                    message: `layers[${i}]: ${result.error.issues[0]?.message ?? "validation failed"} — removed`,
-                    path: `layers[${i}]`,
-                });
-            }
-        }
-    }
+    const validLayers = validateNodeRefCollection(fixed.layers, LayerSchema, "layers", "invalid-layer", issues, nodeIds);
     // Validate tour steps (drop broken, filter dangling nodeIds)
-    const validTour = [];
-    if (Array.isArray(fixed.tour)) {
-        for (let i = 0; i < fixed.tour.length; i++) {
-            const result = TourStepSchema.safeParse(fixed.tour[i]);
-            if (result.success) {
-                validTour.push({
-                    ...result.data,
-                    nodeIds: result.data.nodeIds.filter((id) => nodeIds.has(id)),
-                });
-            }
-            else {
-                issues.push({
-                    level: "dropped",
-                    category: "invalid-tour-step",
-                    message: `tour[${i}]: ${result.error.issues[0]?.message ?? "validation failed"} — removed`,
-                    path: `tour[${i}]`,
-                });
-            }
-        }
-    }
+    const validTour = validateNodeRefCollection(fixed.tour, TourStepSchema, "tour", "invalid-tour-step", issues, nodeIds);
     const graph = {
         version: typeof fixed.version === "string" ? fixed.version : "1.0.0",
         project: projectResult.data,

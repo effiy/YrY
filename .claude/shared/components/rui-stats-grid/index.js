@@ -4,11 +4,11 @@
    Applicable to: progress overview · KPI total · multi-card stat panels
 
    Page usage (host page):
-     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-     <script src="../../../../rui-html-cdn/rui-stats-grid/index.js"></script>
+     <script src="/.claude/shared/vendor/vue@3.4.27/vue.global.prod.js"></script>
+     <script src="/.claude/shared/rui-stats-grid/index.js"></script>
      <div id="stats-grid"></div>
      <script>
-       window.ruiStatsGrid.mount({ items: [{ value: 16, label: '已完成', modifier: 'pass' }, ...] }, '#stats-grid').then(app => { ... });
+       window.ruiStatsGrid.mount({ items: [{ value: 16, label: 'Completed', modifier: 'pass' }, ...] }, '#stats-grid').then(app => { ... });
      </script>
    ═══════════════════════════════════════════════════════════════════════════ */
 

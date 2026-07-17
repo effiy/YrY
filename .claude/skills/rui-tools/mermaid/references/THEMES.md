@@ -1,40 +1,40 @@
-# Beautiful-Mermaid 主题参考
+# Beautiful-Mermaid Theme Reference
 
-Beautiful-Mermaid 提供 15 个精心设计的内置主题，涵盖亮色和暗色方案。每个主题都基于两种核心颜色（背景 `bg` 和前景 `fg`），并可通过可选的丰富色彩进行增强。
+Beautiful-Mermaid provides 15 carefully designed built-in themes, covering both light and dark schemes. Each theme is based on two core colors (background `bg` and foreground `fg`) and can be enhanced with optional rich colors.
 
-## 快速选择指南
+## Quick Selection Guide
 
-### 亮色主题
-| 主题 | 背景 | 前景 | 用途 |
+### Light Themes
+| Theme | Background | Foreground | Use Case |
 |------|------|------|------|
-| `zinc-light` | #FFFFFF | 自动推导 | 通用亮色主题 |
-| `tokyo-night-light` | #d5d6db | #34548a | 柔和亮色 |
-| `catppuccin-latte` | #eff1f5 | #8839ef | 清爽亮色 |
-| `nord-light` | #eceff4 | #5e81ac | 冰蓝亮色 |
-| `github-light` | #ffffff | #0969da | GitHub 亮色风格 |
-| `solarized-light` | #fdf6e3 | #268bd2 | Solarized 亮色 |
+| `zinc-light` | #FFFFFF | auto-derived | General-purpose light theme |
+| `tokyo-night-light` | #d5d6db | #34548a | Soft light |
+| `catppuccin-latte` | #eff1f5 | #8839ef | Clean light |
+| `nord-light` | #eceff4 | #5e81ac | Ice-blue light |
+| `github-light` | #ffffff | #0969da | GitHub light style |
+| `solarized-light` | #fdf6e3 | #268bd2 | Solarized light |
 
-### 暗色主题
-| 主题 | 背景 | 前景 | 用途 |
+### Dark Themes
+| Theme | Background | Foreground | Use Case |
 |------|------|------|------|
-| `zinc-dark` | #18181B | 自动推导 | 通用暗色主题 |
-| `tokyo-night` | #1a1b26 | #a9b1d6 | 现代日本风格 |
-| `tokyo-night-storm` | #24283b | #a9b1d6 | Tokyo Night 变体 |
-| `catppuccin-mocha` | #1e1e2e | #cba6f7 | 温暖暗色 |
-| `nord` | #2e3440 | 自动推导 | 北欧冰蓝风格 |
-| `dracula` | #282a36 | #f8f8f2 | 经典暗色主题 |
-| `github-dark` | #0d1117 | #4493f8 | GitHub 暗色风格 |
-| `solarized-dark` | #002b36 | #268bd2 | Solarized 暗色 |
-| `one-dark` | #282c34 | 自动推导 | Atom One Dark 风格 |
+| `zinc-dark` | #18181B | auto-derived | General-purpose dark theme |
+| `tokyo-night` | #1a1b26 | #a9b1d6 | Modern Japanese style |
+| `tokyo-night-storm` | #24283b | #a9b1d6 | Tokyo Night variant |
+| `catppuccin-mocha` | #1e1e2e | #cba6f7 | Warm dark |
+| `nord` | #2e3440 | auto-derived | Nordic ice-blue style |
+| `dracula` | #282a36 | #f8f8f2 | Classic dark theme |
+| `github-dark` | #0d1117 | #4493f8 | GitHub dark style |
+| `solarized-dark` | #002b36 | #268bd2 | Solarized dark |
+| `one-dark` | #282c34 | auto-derived | Atom One Dark style |
 
 ---
 
-## 主题详细说明
+## Theme Details
 
-### `zinc-light` (亮色)
-**特性：** 清洁、通用的浅色主题，适合打印和高对比度场景。
+### `zinc-light` (Light)
+**Features:** Clean, general-purpose light theme, suitable for print and high-contrast scenarios.
 
-**配置：**
+**Config:**
 ```javascript
 {
   bg: '#FFFFFF',
@@ -42,12 +42,12 @@ Beautiful-Mermaid 提供 15 个精心设计的内置主题，涵盖亮色和暗�
 }
 ```
 
-**最佳用途：**
-- 正式文档和报告
-- 打印输出
-- 演示幻灯片
+**Best for:**
+- Formal documents and reports
+- Print output
+- Presentation slides
 
-**示例：**
+**Example:**
 ```mermaid
 graph TD
   A[Start] --> B{Decision}
@@ -57,28 +57,28 @@ graph TD
 
 ---
 
-### `zinc-dark` (暗色)
-**特性：** 纯暗色主题，前景色由系统推导。极简主义风格。
+### `zinc-dark` (Dark)
+**Features:** Pure dark theme, foreground color derived by the system. Minimalist style.
 
-**配置：**
+**Config:**
 ```javascript
 {
   bg: '#18181B',
-  fg: '自动推导'
+  fg: 'auto-derived'
 }
 ```
 
-**最佳用途：**
-- 终端应用
-- 暗色 UI 集成
-- 代码编辑器
+**Best for:**
+- Terminal apps
+- Dark UI integration
+- Code editors
 
 ---
 
-### `tokyo-night` (暗色) ⭐ 推荐
-**特性：** 现代日本风格，柔和的蓝色调，专为开发者设计。
+### `tokyo-night` (Dark) ⭐ Recommended
+**Features:** Modern Japanese style, soft blue tones, designed for developers.
 
-**配置：**
+**Config:**
 ```javascript
 {
   bg: '#1a1b26',
@@ -87,22 +87,22 @@ graph TD
 }
 ```
 
-**最佳用途：**
-- 现代开发文档
-- AI 辅助编程
-- 代码示例和教程
+**Best for:**
+- Modern developer docs
+- AI-assisted programming
+- Code examples and tutorials
 
-**视觉特性：**
-- 深蓝色背景（#1a1b26）
-- 柔和紫色文字（#a9b1d6）
-- 亮蓝色强调（#7aa2f7）
+**Visual properties:**
+- Deep blue background (#1a1b26)
+- Soft purple text (#a9b1d6)
+- Bright blue accent (#7aa2f7)
 
 ---
 
-### `tokyo-night-storm` (暗色)
-**特性：** Tokyo Night 的深色变体，更深的背景色。
+### `tokyo-night-storm` (Dark)
+**Features:** Darker variant of Tokyo Night, deeper background color.
 
-**配置：**
+**Config:**
 ```javascript
 {
   bg: '#24283b',
@@ -111,17 +111,17 @@ graph TD
 }
 ```
 
-**最佳用途：**
-- 极低光环境
-- OLED 屏幕优化
-- 长时间阅读
+**Best for:**
+- Very low-light environments
+- OLED screen optimization
+- Long reading sessions
 
 ---
 
-### `tokyo-night-light` (亮色)
-**特性：** Tokyo Night 的亮色版本，保持同样的配色哲学。
+### `tokyo-night-light` (Light)
+**Features:** Light version of Tokyo Night, keeping the same color philosophy.
 
-**配置：**
+**Config:**
 ```javascript
 {
   bg: '#d5d6db',
@@ -129,17 +129,17 @@ graph TD
 }
 ```
 
-**最佳用途：**
-- 日间使用
-- 高对比度需求
-- 打印友好
+**Best for:**
+- Daytime use
+- High-contrast needs
+- Print-friendly
 
 ---
 
-### `catppuccin-mocha` (暗色)
-**特性：** 温暖、舒适的暗色主题，带有红紫色强调。
+### `catppuccin-mocha` (Dark)
+**Features:** Warm, comfortable dark theme with red-purple accents.
 
-**配置：**
+**Config:**
 ```javascript
 {
   bg: '#1e1e2e',
@@ -147,17 +147,17 @@ graph TD
 }
 ```
 
-**最佳用途：**
-- 长时间阅读（眼睛友好）
-- 创意项目
-- 设计文档
+**Best for:**
+- Long reading sessions (eye-friendly)
+- Creative projects
+- Design documents
 
 ---
 
-### `catppuccin-latte` (亮色)
-**特性：** Catppuccin 的亮色变体，温暖而柔和。
+### `catppuccin-latte` (Light)
+**Features:** Light variant of Catppuccin, warm and soft.
 
-**配置：**
+**Config:**
 ```javascript
 {
   bg: '#eff1f5',
@@ -165,40 +165,40 @@ graph TD
 }
 ```
 
-**最佳用途：**
-- 日间亮色环境
-- 紫色爱好者
-- 设计导向的文档
+**Best for:**
+- Daytime light environments
+- Purple lovers
+- Design-oriented docs
 
 ---
 
-### `nord` (暗色)
-**特性：** 北欧启发的冰蓝色调，专业且冷静。
+### `nord` (Dark)
+**Features:** Nordic-inspired ice-blue tones, professional and calm.
 
-**配置：**
+**Config:**
 ```javascript
 {
   bg: '#2e3440',
-  fg: '自动推导'
+  fg: 'auto-derived'
 }
 ```
 
-**最佳用途：**
-- 企业文档
-- 技术规范
-- 系统架构图
+**Best for:**
+- Enterprise documentation
+- Technical specs
+- System architecture diagrams
 
-**视觉特性：**
-- 深灰蓝色背景
-- 高对比度文字
-- 冷色调整体
+**Visual properties:**
+- Dark gray-blue background
+- High-contrast text
+- Overall cool tone
 
 ---
 
-### `nord-light` (亮色)
-**特性：** Nord 的亮色版本。
+### `nord-light` (Light)
+**Features:** Light version of Nord.
 
-**配置：**
+**Config:**
 ```javascript
 {
   bg: '#eceff4',
@@ -206,17 +206,17 @@ graph TD
 }
 ```
 
-**最佳用途：**
-- 日间亮色使用
-- 印刷品
-- 北欧风格项目
+**Best for:**
+- Daytime light use
+- Print
+- Nordic-style projects
 
 ---
 
-### `dracula` (暗色) ⭐ 推荐
-**特性：** 经典的深暗色主题，高对比度。
+### `dracula` (Dark) ⭐ Recommended
+**Features:** Classic deep dark theme, high contrast.
 
-**配置：**
+**Config:**
 ```javascript
 {
   bg: '#282a36',
@@ -224,22 +224,22 @@ graph TD
 }
 ```
 
-**最佳用途：**
-- 代码编辑器集成
-- 开发者文档
-- 命令行工具
+**Best for:**
+- Code editor integration
+- Developer documentation
+- Command-line tools
 
-**视觉特性：**
-- 极深的背景色
-- 明亮的文字
-- 紫色和粉色强调
+**Visual properties:**
+- Extremely deep background
+- Bright text
+- Purple and pink accents
 
 ---
 
-### `github-light` (亮色)
-**特性：** GitHub 亮色主题，Web 友好。
+### `github-light` (Light)
+**Features:** GitHub light theme, web-friendly.
 
-**配置：**
+**Config:**
 ```javascript
 {
   bg: '#ffffff',
@@ -247,17 +247,17 @@ graph TD
 }
 ```
 
-**最佳用途：**
+**Best for:**
 - GitHub README
-- Web 文档
-- 在线教程
+- Web docs
+- Online tutorials
 
 ---
 
-### `github-dark` (暗色)
-**特性：** GitHub 暗色主题，GitHub 用户熟悉。
+### `github-dark` (Dark)
+**Features:** GitHub dark theme, familiar to GitHub users.
 
-**配置：**
+**Config:**
 ```javascript
 {
   bg: '#0d1117',
@@ -265,17 +265,17 @@ graph TD
 }
 ```
 
-**最佳用途：**
-- GitHub 文档
-- GitHub Issues 和 Discussions
-- 开源项目
+**Best for:**
+- GitHub documentation
+- GitHub Issues and Discussions
+- Open-source projects
 
 ---
 
-### `solarized-light` (亮色)
-**特性：** Ethan Schoonover 设计的经典亮色主题。
+### `solarized-light` (Light)
+**Features:** Classic light theme designed by Ethan Schoonover.
 
-**配置：**
+**Config:**
 ```javascript
 {
   bg: '#fdf6e3',
@@ -283,17 +283,17 @@ graph TD
 }
 ```
 
-**最佳用途：**
-- 研究论文
-- 学术文档
-- 精确色彩工作
+**Best for:**
+- Research papers
+- Academic documents
+- Precise color work
 
 ---
 
-### `solarized-dark` (暗色)
-**特性：** Solarized 的暗色版本，精心调校的对比度。
+### `solarized-dark` (Dark)
+**Features:** Dark version of Solarized, carefully tuned contrast.
 
-**配置：**
+**Config:**
 ```javascript
 {
   bg: '#002b36',
@@ -301,36 +301,36 @@ graph TD
 }
 ```
 
-**最佳用途：**
-- 长篇文档阅读
-- 科学论文
-- 编程教材
+**Best for:**
+- Long-form document reading
+- Scientific papers
+- Programming textbooks
 
 ---
 
-### `one-dark` (暗色)
-**特性：** Atom 编辑器的经典 One Dark 主题。
+### `one-dark` (Dark)
+**Features:** The classic One Dark theme from the Atom editor.
 
-**配置：**
+**Config:**
 ```javascript
 {
   bg: '#282c34',
-  fg: '自动推导'
+  fg: 'auto-derived'
 }
 ```
 
-**最佳用途：**
-- Atom 用户
-- JavaScript 项目
-- Web 开发文档
+**Best for:**
+- Atom users
+- JavaScript projects
+- Web development docs
 
 ---
 
-## 自定义主题
+## Custom Themes
 
-### 基础自定义（Mono Mode）
+### Basic Customization (Mono Mode)
 
-只需要两种颜色就能创建美观的主题：
+Only two colors are needed to create a beautiful theme:
 
 ```python
 python render_mermaid.py \
@@ -340,11 +340,11 @@ python render_mermaid.py \
   --fg '#e0e0e0'
 ```
 
-系统会自动推导所有其他颜色。
+The system auto-derives all other colors.
 
-### 高级自定义（Enriched Mode）
+### Advanced Customization (Enriched Mode)
 
-对于更丰富的颜色方案，提供可选的强调色：
+For a richer color scheme, provide optional accent colors:
 
 ```python
 python render_mermaid.py \
@@ -359,58 +359,58 @@ python render_mermaid.py \
   --border '#2a2a2a'
 ```
 
-### 颜色选择指南
+### Color Selection Guide
 
-| 参数 | 作用 | 示例 |
+| Parameter | Purpose | Example |
 |------|------|------|
-| `--bg` | 背景色（必需） | `#1a1a1a` |
-| `--fg` | 文字色（必需） | `#e0e0e0` |
-| `--accent` | 箭头头和强调 | `#7aa2f7` |
-| `--muted` | 次级文字和标签 | `#666666` |
-| `--line` | 边/连接线 | `#3d59a1` |
-| `--surface` | 节点填充 | `#292e42` |
-| `--border` | 节点边框 | `#3d59a1` |
+| `--bg` | Background color (required) | `#1a1a1a` |
+| `--fg` | Text color (required) | `#e0e0e0` |
+| `--accent` | Arrowheads and emphasis | `#7aa2f7` |
+| `--muted` | Secondary text and labels | `#666666` |
+| `--line` | Edges / connecting lines | `#3d59a1` |
+| `--surface` | Node fill | `#292e42` |
+| `--border` | Node borders | `#3d59a1` |
 
 ---
 
-## 主题选择决策树
+## Theme Selection Decision Tree
 
 ```
-你想要的主题风格是什么？
-├── 亮色 (Light)
-│   ├── 极简/清洁？ → zinc-light
-│   ├── GitHub 风格？ → github-light
-│   ├── Solarized？ → solarized-light
-│   ├── 冰蓝色？ → nord-light
-│   ├── 紫色？ → catppuccin-latte
-│   └── 柔和日式？ → tokyo-night-light
+What theme style do you want?
+├── Light
+│   ├── Minimalist / clean? → zinc-light
+│   ├── GitHub style? → github-light
+│   ├── Solarized? → solarized-light
+│   ├── Ice-blue? → nord-light
+│   ├── Purple? → catppuccin-latte
+│   └── Soft Japanese? → tokyo-night-light
 │
-└── 暗色 (Dark)
-    ├── 推荐通用？ → tokyo-night ⭐
-    ├── 经典暗色？ → dracula ⭐
-    ├── 极简/纯粹？ → zinc-dark
-    ├── 北欧风格？ → nord
-    ├── 温暖舒适？ → catppuccin-mocha
-    ├── GitHub 风格？ → github-dark
-    ├── 极深背景？ → tokyo-night-storm
-    ├── 学术/精确？ → solarized-dark
-    └── Atom 风格？ → one-dark
+└── Dark
+    ├── Recommended general? → tokyo-night ⭐
+    ├── Classic dark? → dracula ⭐
+    ├── Minimalist / pure? → zinc-dark
+    ├── Nordic style? → nord
+    ├── Warm and comfortable? → catppuccin-mocha
+    ├── GitHub style? → github-dark
+    ├── Very deep background? → tokyo-night-storm
+    ├── Academic / precise? → solarized-dark
+    └── Atom style? → one-dark
 ```
 
 ---
 
-## 实用示例
+## Practical Examples
 
-### 示例 1：在中文文档中使用 Tokyo Night
+### Example 1: Using Tokyo Night in Documentation
 
 ```bash
 python render_mermaid.py \
-  --input 架构图.mmd \
-  --output 架构图.svg \
+  --input architecture-diagram.mmd \
+  --output architecture-diagram.svg \
   --theme tokyo-night
 ```
 
-### 示例 2：创建打印友好的图表
+### Example 2: Creating a Print-Friendly Chart
 
 ```bash
 python render_mermaid.py \
@@ -419,7 +419,7 @@ python render_mermaid.py \
   --theme zinc-light
 ```
 
-### 示例 3：批量应用主题
+### Example 3: Batch Applying a Theme
 
 ```bash
 python batch_render.py \
@@ -429,7 +429,7 @@ python batch_render.py \
   --theme dracula
 ```
 
-### 示例 4：自定义企业主题
+### Example 4: Custom Enterprise Theme
 
 ```bash
 python render_mermaid.py \
@@ -443,35 +443,35 @@ python render_mermaid.py \
 
 ---
 
-## 颜色值速查表
+## Color Value Cheat Sheet
 
-### 常用十六进制颜色
-| 颜色名 | 十六进制 | 用途 |
+### Common Hex Colors
+| Color Name | Hex | Use |
 |--------|---------|------|
-| 纯白 | #FFFFFF | 亮色背景 |
-| 纯黑 | #000000 | 深色背景 |
-| 深灰 | #1a1a1a | 友好暗色 |
-| 浅灰 | #f0f0f0 | 友好亮色 |
-| 蓝色 | #0066cc | 强调色 |
-| 绿色 | #00cc00 | 成功色 |
-| 红色 | #cc0000 | 警告/错误 |
-| 紫色 | #9966cc | 创意项目 |
+| Pure white | #FFFFFF | Light background |
+| Pure black | #000000 | Dark background |
+| Dark gray | #1a1a1a | Friendly dark |
+| Light gray | #f0f0f0 | Friendly light |
+| Blue | #0066cc | Accent color |
+| Green | #00cc00 | Success color |
+| Red | #cc0000 | Warning / error |
+| Purple | #9966cc | Creative projects |
 
 ---
 
-## 常见问题
+## FAQ
 
-**Q: 我应该使用哪个主题？**
-A: 如果不确定，推荐使用 `tokyo-night`（暗色）或 `zinc-light`（亮色）。
+**Q: Which theme should I use?**
+A: If unsure, use `tokyo-night` (dark) or `zinc-light` (light).
 
-**Q: 如何为 GitHub README 选择主题？**
-A: 使用 `github-light` 或 `github-dark`，与 GitHub 的主题相匹配。
+**Q: How do I pick a theme for a GitHub README?**
+A: Use `github-light` or `github-dark` to match GitHub's theme.
 
-**Q: 我能混合多个主题的颜色吗？**
-A: 可以，使用 Enriched Mode 自定义任意颜色组合。
+**Q: Can I mix colors from multiple themes?**
+A: Yes, use Enriched Mode to customize any color combination.
 
-**Q: 主题是否支持透明背景？**
-A: 支持，添加 `--transparent` 标志。
+**Q: Do themes support transparent backgrounds?**
+A: Yes, add the `--transparent` flag.
 
-**Q: 如何在 AI 聊天中推荐主题给用户？**
-A: 根据项目类型：开发项目→Tokyo Night，企业→Nord，打印→Zinc Light。
+**Q: How do I recommend a theme to a user in an AI chat?**
+A: By project type: development project -> Tokyo Night, enterprise -> Nord, print -> Zinc Light.

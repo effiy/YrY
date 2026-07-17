@@ -1,0 +1,115 @@
+{
+  "skill_name": "chrome-extensions",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Recommend a Manifest V3 setup for a sidebar extension that opens a side panel when the user clicks the toolbar icon.",
+      "expected_output": "Routes the user to the side-panel and manifest references, outlining chrome.sidePanel.setOptions, chrome.action.onClicked, and a minimal MV3 manifest with sidePanel permission.",
+      "files": [],
+      "expectations": [
+        "Points at references/side-panel.md and references/manifest.md",
+        "Recommends chrome.sidePanel API over chrome.browserAction",
+        "Covers the smallest permission set (sidePanel + activeTab where possible)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "My MV3 service worker keeps dying after 30 seconds and losing state. How should I persist data and keep alarms firing?",
+      "expected_output": "Explains service-worker lifecycle, recommends chrome.storage.local for state, chrome.alarms for scheduled wake-ups, and points at references/performance.md.",
+      "files": [],
+      "expectations": [
+        "Cites references/performance.md",
+        "Recommends chrome.storage.local over module-level variables",
+        "Explains that service workers are event-driven, not persistent"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I'm porting a Tampermonkey userscript to MV3. How do I register user scripts and run them in the USER_SCRIPT world?",
+      "expected_output": "Routes to references/user-scripts.md and explains chrome.userScripts registration, world configuration, and @match patterns.",
+      "files": [],
+      "expectations": [
+        "Points at references/user-scripts.md",
+        "Covers chrome.userScripts API and USER_SCRIPT world",
+        "Mentions permission requirements for userScripts"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Should I request host_permissions for all sites up front or use optional_host_permissions and prompt later?",
+      "expected_output": "Recommends optional_host_permissions + chrome.permissions.request on demand, citing references/security.md and the principle of least permission.",
+      "files": [],
+      "expectations": [
+        "Cites references/security.md",
+        "Recommends optional_host_permissions over host_permissions",
+        "Mentions activeTab as a lighter alternative where applicable"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "How do I dynamically inject a content script into a tab after a user gesture without broad host permissions?",
+      "expected_output": "Routes to references/scripting.md, recommends chrome.scripting.executeScript with activeTab, and explains target tab spec.",
+      "files": [],
+      "expectations": [
+        "Points at references/scripting.md",
+        "Recommends chrome.scripting.executeScript over static content_scripts",
+        "Notes activeTab grants per-gesture access"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "What's the right CSP for an MV3 popup that loads no remote code, and why can't I use eval or remote scripts?",
+      "expected_output": "Explains MV3's strict default CSP, bans on remote code and eval, and points at references/security.md.",
+      "files": [],
+      "expectations": [
+        "Cites references/security.md",
+        "Explains the default restrictive CSP and no-remote-code rule",
+        "Notes that all logic must be bundled in the extension package"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Build me a Web Store review checklist before I publish my extension.",
+      "expected_output": "Surfaces the engineering reference's review checklist: permissions justification, privacy policy, single-purpose, icons, and testing on the chromium channel.",
+      "files": [],
+      "expectations": [
+        "Points at references/engineering.md",
+        "Surfaces the Chrome Web Store review checklist",
+        "Mentions Playwright on the chromium channel with --load-extension"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "I need to play audio from a background context but the service worker can't touch the DOM. What's the MV3 pattern?",
+      "expected_output": "Recommends an offscreen document via chrome.offscreen API, citing references/performance.md.",
+      "files": [],
+      "expectations": [
+        "Cites references/performance.md",
+        "Recommends chrome.offscreen document for DOM-dependent work",
+        "Explains why service workers cannot use DOM APIs"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "My popup flickers when it loads. How do I make it feel fast?",
+      "expected_output": "Recommends measuring time-to-first-paint, lazy-loading non-critical UI, and caching state in chrome.storage.local, per references/performance.md.",
+      "files": [],
+      "expectations": [
+        "Points at references/performance.md",
+        "Mentions time-to-first-paint measurement",
+        "Recommends lazy loading and chrome.storage.local caching"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "Should I use chrome.action or chrome.browserAction in my new MV3 extension?",
+      "expected_output": "Recommends chrome.action (MV3) and notes chrome.browserAction is deprecated, citing references/manifest.md.",
+      "files": [],
+      "expectations": [
+        "Cites references/manifest.md",
+        "Recommends chrome.action over chrome.browserAction",
+        "Notes MV2 deprecation and migration path"
+      ]
+    }
+  ]
+}

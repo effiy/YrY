@@ -1,4 +1,4 @@
-import { findChild, findChildren } from "./base-extractor.js";
+import { findChild, findChildren, lastComponent } from "./base-extractor.js";
 /**
  * Extract parameter names from a C# `parameter_list` node.
  *
@@ -70,14 +70,6 @@ function extractUsingSource(node) {
         return qualifiedName.text;
     const identifier = findChild(node, "identifier");
     return identifier ? identifier.text : null;
-}
-/**
- * Get the last component of a dotted namespace path.
- * e.g. "System.Collections.Generic" -> "Generic"
- */
-function lastComponent(path) {
-    const parts = path.split(".");
-    return parts[parts.length - 1];
 }
 /**
  * Extract the callee name from an invocation_expression node.

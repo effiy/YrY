@@ -1,0 +1,22 @@
+{
+  "sources": [
+    {
+      "id": "awesome-claude-code-subagents",
+      "label": "Awesome Claude Code Subagents",
+      "readme": "references/README-awesome-claude-code-subagents.md",
+      "upstream_url": "https://raw.githubusercontent.com/VoltAgent/awesome-claude-code-subagents/main/README.md",
+      "homepage": "https://github.com/VoltAgent/awesome-claude-code-subagents",
+      "blob_base": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/",
+      "dialect": "subagent-bullets"
+    },
+    {
+      "id": "claude-code-best-practice",
+      "label": "Claude Code Best Practice",
+      "readme": "references/README-claude-code-best-practice.md",
+      "upstream_url": "https://raw.githubusercontent.com/shanraisshan/claude-code-best-practice/main/README.md",
+      "homepage": "https://github.com/shanraisshan/claude-code-best-practice",
+      "blob_base": "https://github.com/shanraisshan/claude-code-best-practice/blob/main/",
+      "dialect": "claude-bp"
+    }
+  ]
+}

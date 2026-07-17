@@ -1,0 +1,12 @@
+{
+  "sources": [
+    {
+      "id": "awesome-vite",
+      "label": "Awesome Vite.js",
+      "readme": "references/README-awesome-vite.md",
+      "upstream_url": "https://raw.githubusercontent.com/vitejs/awesome-vite/master/README.md",
+      "homepage": "https://github.com/vitejs/awesome-vite",
+      "dialect": "vite-h3"
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "skill_name": "rui-report-files",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Run a file-size report on this project and tell me which files are oversized.",
+      "expected_output": "Emits the 4-file Vue 3 page with size distribution, top-N largest files, and oversize flags.",
+      "files": [],
+      "expectations": [
+        "Walks the scope and collects per-file bytes/lines/type/mtime",
+        "Aggregates directory sums, top-N largest, oversize flags",
+        "Emits index.html + index.js + index.css + data.js"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Give me a project treemap of disk usage by directory.",
+      "expected_output": "The Vue 3 page with a size-distribution section including directory-level sums and a histogram.",
+      "files": [],
+      "expectations": [
+        "Aggregates directory-level size sums",
+        "Computes a type breakdown and histogram",
+        "Byte-stable index.html/index.js/index.css copied verbatim from templates"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Analyze dependency depth across this codebase.",
+      "expected_output": "Runs nesting-depth analysis via DFS with memoization and reports max-depth per file + aggregate stats.",
+      "files": [],
+      "expectations": [
+        "Extracts imports via per-language import regex",
+        "Computes nesting depth via DFS with memoization",
+        "Flags files exceeding the depth>15 critical threshold"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Detect import cycles in this project and suggest fixes.",
+      "expected_output": "Runs 3-color DFS cycle detection and lists cycle paths with suggested fixes.",
+      "files": [],
+      "expectations": [
+        "Detects cycles via 3-color DFS",
+        "Outputs cycle paths with suggested fixes",
+        "Truncates to top-200 by severity if cycle count exceeds 200"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Which files in this repo haven't been touched in over a year?",
+      "expected_output": "Freshness analysis with age buckets and top-N stale files.",
+      "files": [],
+      "expectations": [
+        "Computes asOf = max(lastModified)",
+        "Buckets files by age",
+        "Lists top-N stale files"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Show me the fan-in / fan-out hotspot report for this codebase.",
+      "expected_output": "A dependency-graph section with fan-in/fan-out and hotspot scores per file.",
+      "files": [],
+      "expectations": [
+        "Builds an adjacency list from import extraction",
+        "Computes fan-in / fan-out per file",
+        "Computes hotspot scores and flags hotspot >= 5.0 as critical"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Run the full 6-stage analysis pipeline on this scope.",
+      "expected_output": "Walks scope, computes size, dependency graph, depth, cycles, freshness, and emits the 4-file Vue 3 page.",
+      "files": [],
+      "expectations": [
+        "Runs all six stages in order: inventory, size, graph, depth, cycles, freshness",
+        "Regenerates only data.js on rerun",
+        "Reads source files read-only (no modifications)"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "The scope path /tmp/missing doesn't exist — what happens?",
+      "expected_output": "Aborts with scope-not-found.",
+      "files": [],
+      "expectations": [
+        "Aborts with scope-not-found",
+        "Does not emit partial report files",
+        "Surfaces the invalid path to the user"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Run the report with --theme light.",
+      "expected_output": "Emits the report using the light theme.",
+      "files": [],
+      "expectations": [
+        "Applies the light theme",
+        "Falls back to dark with a stderr warning if theme is unknown",
+        "Still emits all 4 files"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "My project has a 2500-LOC file — what severity is that?",
+      "expected_output": "Classifies the file as Critical (P0) per the >1000 LOC threshold.",
+      "files": [],
+      "expectations": [
+        "Applies the severity-level rubric",
+        "Flags the file as Critical (P0) marker",
+        "Includes the file in the oversized-files section"
+      ]
+    }
+  ]
+}

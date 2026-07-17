@@ -1,85 +1,82 @@
-# 中文输出指南 (Chinese Simplified)
+# English Output Guidelines
 
-本文件提供生成中文架构图内容的语言指导。
+This file provides language-specific guidance for generating architecture diagram content in English.
 
-## 标签约定
+## Tag Conventions
 
-推荐使用中文标签或英文通用技术术语：
+Use lowercase, hyphenated tags in English:
 
-| 模式 | 推荐标签 |
-|------|---------|
-| 入口文件 | `入口点`, `barrel`, `导出` 或 `entry-point` |
-| 工具函数 | `工具函数`, `helpers`, `common` 或 `utility` |
-| API处理器 | `api-handler`, `控制器`, `端点` |
-| 数据模型 | `数据模型`, `entity`, `schema` 或 `data-model` |
-| 测试文件 | `测试`, `单元测试`, `test` |
-| 配置文件 | `配置`, `构建系统`, `settings` 或 `configuration` |
-| 基础设施 | `基础设施`, `部署`, `容器化` 或 `infrastructure` |
-| 文档 | `文档`, `指南`, `参考` 或 `documentation` |
+| Pattern | Recommended Tags |
+|---------|-----------------|
+| Entry point file | `entry-point`, `barrel`, `exports` |
+| Utility functions | `utility`, `helpers`, `common` |
+| API handlers | `api-handler`, `controller`, `endpoint` |
+| Data models | `data-model`, `entity`, `schema` |
+| Test files | `test`, `spec`, `unit-test` |
+| Configuration | `configuration`, `build-system`, `settings` |
+| Infrastructure | `infrastructure`, `deployment`, `containerization` |
+| Documentation | `documentation`, `guide`, `reference` |
 
-**混合策略：** 通用技术术语保留英文（如 `middleware`, `api-handler`），描述性标签可使用中文。
+**Mixed strategy:** Keep universal technical terms in English (e.g., `middleware`, `api-handler`); descriptive tags use English words.
 
-## 摘要风格
+## Summary Style
 
-用中文撰写1-2句摘要：
-- 描述文件的**目的**和**作用**
-- 使用主动语态（"提供...", "处理...", "管理..."）
-- 避免重复文件名
+Write 1-2 sentence summaries that:
+- Describe the file's **purpose** and **role**
+- Use active voice ("Provides...", "Handles...", "Manages...")
+- Avoid restating the filename
 
-**示例：**
-- 好: "提供日期格式化和字符串清洗工具函数，被 API 层广泛使用。"
-- 差: "utils 文件包含工具函数。"
+**Examples:**
+- Good: "Provides date formatting and string sanitization helpers used across the API layer."
+- Bad: "The utils file contains utility functions."
 
-## 技术术语
+## Technical Terms
 
-以下术语建议保留英文（暂无标准翻译）：
+Keep these terms in English (no translation needed):
 - `middleware`, `hook`, `barrel`, `entry-point`
 - `ORM`, `REST API`, `CI/CD`, `CRUD`
 - `singleton`, `factory`, `observer`
-- `interceptor`, `guard`
+- `middleware`, `interceptor`, `guard`
 
-## 层级名称
+## Layer Names
 
-使用中文层级名称：
-- `API 层`, `服务层`, `数据层`, `UI 层`
-- `基础设施`, `配置`, `文档`
-- `工具层`, `中间件层`, `测试层`
+Use standard English layer names:
+- `API Layer`, `Service Layer`, `Data Layer`, `UI Layer`
+- `Infrastructure`, `Configuration`, `Documentation`
+- `Utility Layer`, `Middleware Layer`, `Test Layer`
 
-或保留英文（根据团队习惯）：
-- `API Layer`, `Service Layer`, `Data Layer`
+## Diagram Content Style
 
-## 图表内容风格
+### Header & Titles
+- Use **descriptive, specific titles**: prefer "Microservices Platform — Cloud-Native Architecture" over "System Architecture"
+- Subtitles should be one sentence summarizing the system's scope, stack, and deployment
+- Include platform/cloud provider when relevant (AWS, GCP, Azure)
 
-### 标题
-- 使用**描述性、具体的标题**：推荐 "微服务商城平台 — 云原生架构"，而非 "系统架构"
-- 副标题用一句话概括系统范围、技术栈和部署方式
-- 涉及云平台时标明（AWS、GCP、Azure）
+### Component Labels
+- **Primary label**: concise name (2-4 words), Title Case, 11-12px bold
+- **Secondary label**: technology or port info, 9px, e.g. "Go :8080", "FastAPI :8000"
+- **Bullet details**: 8px, `•` prefix, one capability per line
+- **Footer annotation**: 7px in the stroke color, e.g. "Multi-AZ", "OAI Protected"
 
-### 组件标签
-- **主标签**：简洁名称（2-4 字），11-12px 加粗
-- **副标签**：技术或端口信息，9px，如 "Go :8080"、"FastAPI :8000"
-- **列表项**：8px，`•` 前缀，每行一个功能点
-- **底部注释**：7px，使用边框颜色，如 "多可用区"、"OAI 保护"
+### Arrow Labels
+- **Protocol**: REST, gRPC, GraphQL, WSS, SMTP
+- **Auth**: JWT, OAuth2, OIDC, PKCE, mTLS, TLS
+- **Direction**: R/W (read/write), publish, consume, deploy, push, provision
+- **Format**: short acronyms, 8-9px, placed adjacent to the arrow line
 
-### 箭头标签
-- **协议**：REST、gRPC、GraphQL、WSS、SMTP
-- **认证**：JWT、OAuth2、OIDC、PKCE、mTLS、TLS
-- **方向**：读/写、发布、消费、部署、推送、配置
-- **格式**：短缩写，8-9px，放在箭头线旁边
+### Summary Cards
+- Each card addresses one dimension: Architecture, Data Flow, Infrastructure/Ops
+- Use full sentences with technical precision
+- 3-5 items per card; each item 1-2 lines
+- Include specific technologies, protocols, and configurations
 
-### 摘要卡片
-- 每张卡片对应一个维度：架构概览、数据流向、基础设施/运维
-- 使用完整句子，技术精确
-- 每张卡片 3-5 项；每项 1-2 行
-- 包含具体技术、协议和配置信息
+### Footer
+- Format: `<Project Name> • <Region/Platform> • <Primary Stack> • <Date>`
+- Date format: YYYY-MM-DD (ISO 8601 date only, no time needed)
 
-### 页脚
-- 格式：`<项目名称> • <区域/平台> • <主要技术栈> • <日期>`
-- 日期格式：YYYY-MM-DD
+## Tone
 
-## 语气
-
-- 专业、精确
-- 面向高级工程师的技术语言
-- 避免营销用语或夸张修辞
-- 倾向于使用具体指标和配置，而非模糊描述
+- Professional and precise
+- Technical but accessible to senior engineers
+- Avoid marketing language or superlatives
+- Prefer specific metrics and configurations over vague descriptions

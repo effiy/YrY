@@ -238,9 +238,46 @@ themselves, two runs on the same scope at different wall-clock
 times produce byte-identical `data.js`. This is required by the
 Output determinism clause in `rules/analysis-contracts.md`.
 
+## Stage 5.6 — Alerts (drives risk banner + remediation queue)
+
+After all 6 base stages complete, the implementing agent folds
+findings into a flat `alerts[]` array. The Vue page consumes this
+array directly — no per-section iteration needed. Each entry's
+`category` routes the alert to the correct remediation anchor
+(bloat / size → `#largest`, coupling / depth / hotspot / orphan →
+`#risk`, cycle / freshness → `#health`).
+
+```
+alert := {
+  severity: 'P0' | 'P1' | 'P2',
+  marker:   severity,                 // mirrored for Vue template sugar
+  category: 'bloat' | 'coupling' | 'depth' | 'hotspot'
+          | 'orphan' | 'cycle' | 'freshness' | 'size',
+  file:     <relative path under scope>,
+  line:     number | null,            // null when no source position
+  message:  string,                   // ≤ 120 chars, XSS-safe
+}
+```
+
+**Derivation rules.** A single finding can produce multiple alerts
+only when they map to distinct categories (e.g. a 2400-LOC file
+with high fan-out may emit a `bloat` alert AND a `coupling` alert).
+The implementing agent MUST NOT duplicate identical `{category,
+file, line}` tuples.
+
+**Sort key.** `(severity asc, file asc)` where `severity asc` means
+`P0 < P1 < P2`. The Vue page applies this same order in its
+`remediationQueue` computed property; emitting in this order
+preserves the snapshot in `data.js` for diff-ability.
+
+**Size limits.** When `alerts.length > 200`, the implementing
+agent truncates to the top 200 by `(severity asc, message asc)`
+and emits a `truncated: { alerts: true }` flag on `REPORT_DATA`
+so the report can show a "more alerts suppressed" notice.
+
 ## Stage 6 — Vue page emit
 
-Copy the three stable files from `templates/report/` into
+Copy the three stable files from `templates/` into
 `docs/reports/files/`:
 
 - `index.html` — Vue 3 standalone template with inline CDN loader
@@ -258,35 +295,58 @@ Vue's `{{ }}` interpolation or `v-for` / `:key`, fed by
 `REPORT_DATA` in `data.js`. The generator's only string-building
 job is `JSON.stringify(data)` for `data.js`.
 
-Sections rendered by the Vue template (in order):
+Sections rendered by the Vue template (in render order):
 
-1. `<nav id="toc">` — sticky table of contents, `v-for` over the
-   `sections` computed; collapses to a top-bar on narrow viewports
-2. `<header>` — title, scope, totalFiles, totalBytesHuman, options
-   used (JSON). No `generatedAt` / timestamp field.
-3. `#summary` — 6 stat cards: total files, total size, max
-   nesting depth, critical-files count, hotspot count, cycle
-   count
-4. `#treemap` — CSS-grid of directory tiles, area ∝ bytes
-5. `#types` — file-type breakdown (bars + table)
-6. `#histogram` — size-distribution histogram
-7. `#largest` — top-N table (sortable via `@click` on `<th>`s;
-   filterable via `<input type="search" v-model="filterText">`)
-8. `#fanin` — top-20 most-imported files
-9. `#fanout` — top-20 most-importing files
-10. `#hotspots` — files ranked by hotspot score, with the
-    contributing factors broken out
-11. `#orphans` — files with no incoming or outgoing edges. No
-    `Last Modified` column.
-12. `#depth` — top-20 depth ranking + aggregate depth stats
-13. `#cycles` — list with path + length + severity + suggested
-    fix
-14. `#freshness` — stat cards (anchor mtime, max/median/p90 age,
-    stale count) + age-bucket histogram + sortable top-N table
-    (path, ageDays, lastModified, type, lines)
-15. `<footer>` — generator tag, scope, options, methodology
-    link. No timestamp.
+1. **Stale banner** — shown when `dataAgeDays > 7`; warns the user
+   to re-run. Reads `REPORT_CONFIG.options.generatedAt`.
+2. **Risk banner** — derived from `alerts[]` counts: P0 → red,
+   P1 → orange, none → green ("all clear"). Shows top 3 hotspots
+   inline. Pure Vue — no HTML string-building at the analyzer level.
+3. **Risk distribution** — P0/P1/P2 proportion bar
+   (`distPct` / `alertCounts` computed properties).
+4. **Remediation queue** — alerts sorted by `(severity asc, file asc)`,
+   grouped into P0/P1/P2 lists with checkboxes. Done state is
+   persisted in `localStorage['rui-report-remediation-done']`.
+5. **Meta-grid** — five header KPIs (health score, file count,
+   total size, risk counts, generated-at).
+6. **Key findings** — TL;DR card grid; each card links to the
+   section that hosts its data (P0 → #risk, largest file → #largest,
+   cycles → #health, etc.).
+7. **How to read** + **Methodology** — collapsible help blocks.
+8. `<nav id="toc">` — sticky table of contents, `v-for` over the
+   `sections` computed; collapses to a top-bar on narrow viewports.
+   Includes theme toggle, JSON/CSV/print/share actions, and a
+   `kbd-hint` chip.
+9. `#summary` — score gauge + stat cards
+10. `#size` — CSS-grid of directory tiles, area ∝ bytes
+    (treemap tab) + file-type breakdown (types tab) + vertical
+    histogram (histogram tab)
+11. `#largest` — top-N table (sortable via `@click` on `<th>`s;
+    filterable via `<input type="search" v-model="filterText">`)
+12. `#coupling` — fan-in (top-20 most-imported) and fan-out
+    (top-20 most-importing) tabs
+13. `#risk` — hotspots, orphans, and depth tabs
+14. `#health` — cycles and freshness tabs
+15. `#self-improvement` — chart-first diagnostics (severity donut,
+    risk vectors, ranked levers, remediation roadmap, decay
+    forecast)
+16. **Footer recap** — four recap tiles + generated-at + scope +
+    options. Recap tone follows the highest active severity:
+    `critical` / `warn` / `ok`.
+17. **Floating widgets** — P0 jump button (bottom-left, only
+    visible when P0 > 0) and section navigator (bottom-right,
+    hidden < 768 px). Both honor `prefers-reduced-motion`.
+18. `<footer>` — generator tag, scope, options, methodology link.
 
+Keyboard shortcuts (mounted in `index.js#mounted`): `1`–`7` jump to
+section, `t` top, `l` toggle theme, `s` share, `p` print,
+`e` export JSON, `c` export CSV, `?` toggle help. The keyboard
+listener ignores `INPUT` / `TEXTAREA` / `SELECT` focus and any
+modifier-key presses.
+
+Click a section `<h2>` (or focus it and press `Enter`) to fold the
+section body. Fold state is persisted in
+`localStorage['rui-report-collapsed']` and restored on next load.
 
 Also render a hidden `<script type="application/json"
 id="rui-report-data">` blob carrying the full structured result

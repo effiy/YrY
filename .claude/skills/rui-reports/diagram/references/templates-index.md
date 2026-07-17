@@ -1,16 +1,22 @@
 # Output Templates — Index
 
-> The `rui-report-diagram` skill produces one self-contained artifact: `templates/architecture-diagram.html`. The knowledge graph (`knowledge-graph.json`) is an intermediate data structure used to derive the diagram in `--from-codebase` mode — it is not a user-facing template.
+> The `rui-report-diagram` skill produces a self-contained architecture-diagram page. The rendered artifact is **one** browser-viewable HTML; its **sources** are a 4-file split under `templates/`. The knowledge graph (`knowledge-graph.json`) is an intermediate data structure used to derive the diagram in `--from-codebase` mode — it is not a user-facing template.
 
 ## Templates
 
-| Template | Format | Produced by | Storage |
-|----------|--------|-------------|---------|
-| [templates/architecture-diagram.html](../templates/architecture-diagram.html) | self-contained HTML+SVG | `/rui-report-diagram create` | user-specified path (default `./architecture-diagram.html`) |
+| Template | Format | Purpose | Produced by | Storage |
+|----------|--------|---------|-------------|---------|
+| [templates/index.html](../templates/index.html) | HTML (entry point) | DOM skeleton, script wiring, inline favicon | `/rui-report-diagram create` | Stays in the skill directory |
+| [templates/index.css](../templates/index.css) | CSS (layered) | Reset → tokens → base → layout → components → utilities → responsive → print | `/rui-report-diagram create` | Stays in the skill directory |
+| [templates/data.js](../templates/data.js) | JS (data) | Pure data: `meta`, `svgDiagram` SVG markup string, all section arrays, exposed as `window.REPORT_DATA` | `/rui-report-diagram create` | Stays in the skill directory |
+| [templates/index.js](../templates/index.js) | JS (runtime) | Vue 3 app, `useSvgInteractions` composable, `useExport` composable | `/rui-report-diagram create` | Stays in the skill directory |
+| `<OUTPUT_DIR>/index.html` | self-contained HTML+SVG | **Rendered artifact** (the user-facing deliverable) | `/rui-report-diagram create` | user-specified path (default `./index.html`) |
+
+> The 4 `templates/` files together compose the rendered artifact. To customize the page, edit the appropriate file by responsibility (see SKILL.md **Output Contract** for the header-block map). The rendered HTML is what the user opens in a browser; the 4 sources are checked into the skill.
 
 ## Intermediate Data
 
-> `<OUTPUT_DIR>` is the directory containing the generated `architecture-diagram.html` (i.e., the parent directory of the `--out` path, or `./` by default). All intermediate data is colocated with the HTML output — no separate `analysis/` or hidden state directory is created in the analyzed project.
+> `<OUTPUT_DIR>` is the directory containing the generated `index.html` (i.e., the parent directory of the `--out` path, or `./` by default). All intermediate data is colocated with the HTML output — no separate `analysis/` or hidden state directory is created in the analyzed project.
 
 | File | Format | Produced by | Storage |
 |------|--------|-------------|---------|
@@ -36,7 +42,7 @@
 | **Language** | Follow the `--language` flag (defaults to `en`). Consult `locales/<lang>.md` for tone. |
 | **Citations** | Use `[type:path]` to reference graph nodes; use full file paths with backticks in prose. |
 | **Timestamps** | ISO 8601, UTC, e.g. `2026-07-13T10:00:00Z`. |
-| **Self-containment** | The diagram is an HTML file with inline SVG/CSS/JS — no external dependencies except the CDN for export. |
+| **Self-containment** | The diagram is an HTML file with inline SVG/CSS/JS — the only external resources are `/.claude/shared/...` (Vue, html2canvas, jsPDF, rui-back-top, rui-toast). Public CDNs are forbidden. |
 | **Idempotency** | Re-running the same command on the same input produces a deterministic output. |
 | **Failure mode** | Always save what's done. A partial artifact beats an exception. |
 
@@ -57,12 +63,13 @@ Before delivering any diagram artifact, verify:
 | 9 | Color palette used consistently | Same component type = same fill/stroke colors throughout |
 | 10 | Legend entries only for actually-used types | Count legend swatches; should match distinct component types in diagram |
 | 11 | Line style legend matches arrow styles used | Count line samples; should match distinct dash patterns used |
-| 12 | CDN scripts included for export | Verify `<script src="...html2canvas...">` and `<script src="...jspdf...">` present |
+| 12 | Shared vendor scripts included for export | `/.claude/shared/vendor/html2canvas@1.4.1/html2canvas.min.js` and `/.claude/shared/vendor/jspdf@2.5.2/jspdf.umd.min.js` are present in `templates/index.html`. NO public CDN `<script src>` tags. |
 | 13 | viewBox accommodates all content | Max x+w of rightmost element < viewBox width; max y+h of bottommost element + legend < viewBox height |
 | 14 | No placeholder text remains (e.g., Card Title N, Item one) | Text search for common placeholder patterns |
 | 15 | Footer metadata line populated | Footer `<p>` text is not the `[...]` sentinel form |
 | 16 | Interactive features functional | Open in browser: hover highlights components, click locks focus, Esc resets |
 | 17 | SVG filters defined (at minimum `shadow-sm`, `shadow-md`) | Check `<defs>` for `<filter id="shadow-sm">` and `<filter id="shadow-md">` |
+| 18 | **Clean browser console** | The rui-tools headless probe (in the rui-report-diagram workspace) reports `consoleMessages: []` and `requestFailures: []`. Three historical offenders to watch for: (a) `rui-toast` losing `callerSrc` — fixed in iteration-1 by snapshotting `document.currentScript.src`; (b) `rui-toast` `defaultConfig` missing top-level `templateId` — also iteration-1; (c) Vue 3 multi-root templates make `$el` a DocumentFragment with no `querySelector` — use template refs in `mounted()`. |
 
 ### Common Mistakes to Avoid
 
@@ -83,9 +90,10 @@ Before delivering any diagram artifact, verify:
 If a future requirement needs a second output (e.g., a printable PDF, a slide deck, or a docs page):
 
 1. Add the template file under `templates/` (it is user-facing) **OR** colocate under `commands/<command-name>/<output-name>.md` (if it is an internal contract).
-2. Include the header block: `@template`, `@purpose`, `@command`, `@style`, `@sections`, `@placeholders`.
-3. Document a Section Contract, a Schema/Template section, and Cross-References.
-4. Update the table above.
-5. Update the command file in `commands/<command-name>/` to reference the new template by relative path.
+2. **Follow the 4-file split pattern** if it is an HTML+CSS+JS page: `index.html` (entry + DOM), `index.css` (styles), `data.js` (pure data), `index.js` (runtime). Skip the split only for very small one-off outputs.
+3. Include the header block: `@template`, `@purpose`, `@command`, `@style`, `@sections`, `@placeholders`.
+4. Document a Section Contract, a Schema/Template section, and Cross-References.
+5. Update the table above.
+6. Update the command file in `commands/<command-name>/` to reference the new template by relative path.
 
-> The current scope is intentionally a **single template** (the architecture diagram). Resist the temptation to add a second one until a concrete user need appears.
+> The current scope is intentionally a **single page template** (the architecture diagram, rendered as `<OUTPUT_DIR>/index.html`). Resist the temptation to add a second one until a concrete user need appears.

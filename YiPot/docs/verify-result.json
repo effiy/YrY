@@ -1,0 +1,18 @@
+{
+  "result": "pass",
+  "failures": [],
+  "warnings": [
+    "data.js (6 service items in group section-services-others) is a hand-rolled mapping; the §2 service groups fold 22 translate + 15 recognize + 1 tts + 2 collection into 6 group items for display — actual src/ service count is 40"
+  ],
+  "summary": "7/7 checks passed",
+  "details": [
+    {"checkId": 1, "name": "claude-md-name", "result": "pass", "evidence": "grep -c 'YiPot' CLAUDE.md → 2"},
+    {"checkId": 2, "name": "readme-md-name", "result": "pass", "evidence": "grep -c 'YiPot' README.md → 6"},
+    {"checkId": 3, "name": "domain-language", "result": "pass", "evidence": "grep -c '^- **' README.md → 13 (need ≥3)"},
+    {"checkId": 4, "name": "docs-home-files", "result": "pass", "evidence": "docs/{index.html,index.css,index.js,data.js} all exist"},
+    {"checkId": 5, "name": "arch-scenes", "result": "pass", "evidence": "5/5 arch scenes have index.md"},
+    {"checkId": 6, "name": "self-test-scenes", "result": "pass", "evidence": "6/6 self-test scenes have index.md"},
+    {"checkId": 7, "name": "scene-counts", "result": "pass", "evidence": "arch=5, self-test=6 (both meet minimums)"}
+  ],
+  "duration_ms": 1240
+}
