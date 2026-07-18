@@ -1,0 +1,55 @@
+{
+  "name": "Resources",
+  "slug": "resources",
+  "source_id": "awesome-vite",
+  "file": "categories/resources.json",
+  "topics": [
+    {
+      "name": "Official Resources",
+      "resources": [
+        {
+          "category": "Resources",
+          "topic": "Official Resources",
+          "title": "Documentation",
+          "url": "https://vitejs.dev/",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Resources",
+          "topic": "Official Resources",
+          "title": "GitHub Repo",
+          "url": "https://github.com/vitejs/vite",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Resources",
+          "topic": "Official Resources",
+          "title": "Release Notes",
+          "url": "https://github.com/vitejs/vite/blob/main/packages/vite/CHANGELOG.md",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Resources",
+          "topic": "Official Resources",
+          "title": "Vue 3 Docs",
+          "url": "https://vuejs.org/",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Resources",
+          "topic": "Official Resources",
+          "title": "Awesome Vue",
+          "url": "https://github.com/vuejs/awesome-vue",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Resources",
+          "topic": "Official Resources",
+          "title": "Migration from v4",
+          "url": "https://vitejs.dev/guide/migration.html",
+          "source": "awesome-vite"
+        }
+      ]
+    }
+  ]
+}

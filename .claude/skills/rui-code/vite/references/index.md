@@ -1,8 +1,6 @@
 # Topic Index
 
-Auto-generated from the registered sources in `references/sources.json`.
-Each resource is tagged with its `[src:source-id]` so the reader can
-trace provenance. Run `python3 scripts/parse_readme.py` to rebuild.
+Auto-generated from the registered sources in `references/sources.json`. Each resource is tagged with its `[src:source-id]` so the reader can trace provenance. Run `python3 scripts/parse_readme.py` to rebuild.
 
 **Sources:**
 - `awesome-vite` — [Awesome Vite.js](https://github.com/vitejs/awesome-vite)
@@ -18,7 +16,7 @@ trace provenance. Run `python3 scripts/parse_readme.py` to rebuild.
 | Projects Using Vite.js | 2 | 24 |
 | **Total** | **71** | **506** |
 
-## Resources
+## Resources (6)
 
 ### Official Resources (6)
 
@@ -29,7 +27,7 @@ trace provenance. Run `python3 scripts/parse_readme.py` to rebuild.
 - [Awesome Vue](https://github.com/vuejs/awesome-vue) `[src:awesome-vite]`
 - [Migration from v4](https://vitejs.dev/guide/migration.html) `[src:awesome-vite]`
 
-## Get Started
+## Get Started (148)
 
 ### Get Started (8)
 
@@ -221,7 +219,7 @@ trace provenance. Run `python3 scripts/parse_readme.py` to rebuild.
 - [chrome-ext-template-preact-windi-vite](https://github.com/fell-lucas/chrome-ext-template-preact-windi-vite) `[src:awesome-vite]`
 - [vite-vue3-chrome-extension-v3](https://github.com/mubaidr/vite-vue3-chrome-extension-v3) `[src:awesome-vite]`
 
-## Plugins
+## Plugins (287)
 
 ### Framework-agnostic Plugins / Integrations (60)
 
@@ -615,7 +613,7 @@ trace provenance. Run `python3 scripts/parse_readme.py` to rebuild.
 
 - [Awesome Rollup list](https://github.com/rollup/awesome) `[src:awesome-vite]`
 
-## SSR
+## SSR (13)
 
 ### Libraries (8)
 
@@ -636,7 +634,7 @@ trace provenance. Run `python3 scripts/parse_readme.py` to rebuild.
 - [vite-plugin-vercel](https://github.com/magne4000/vite-plugin-vercel) `[src:awesome-vite]`
 - [vite-vlugin-vercel-skew-protection](https://github.com/bitttttten/vite-vlugin-vercel-skew-protection) `[src:awesome-vite]`
 
-## Integrations with Backends
+## Integrations with Backends (27)
 
 ### Craft CMS (1)
 
@@ -713,13 +711,13 @@ trace provenance. Run `python3 scripts/parse_readme.py` to rebuild.
 - [PHP-Vite Starter Repo](https://github.com/nititech/php-vite-starter) `[src:awesome-vite]`
 - [php-vitelinker](https://github.com/Osteoporosis/php-vitelinker) `[src:awesome-vite]`
 
-## Migrations
+## Migrations (1)
 
 ### React (1)
 
 - [Viject](https://github.com/bhbs/viject) `[src:awesome-vite]`
 
-## Projects Using Vite.js
+## Projects Using Vite.js (24)
 
 ### Open Source (13)
 

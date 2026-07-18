@@ -5,13 +5,10 @@ import { goConfig } from "./go.js";
 import { rustConfig } from "./rust.js";
 import { javaConfig } from "./java.js";
 import { rubyConfig } from "./ruby.js";
-import { phpConfig } from "./php.js";
 import { swiftConfig } from "./swift.js";
 import { kotlinConfig } from "./kotlin.js";
 import { cConfig } from "./c.js";
 import { cppConfig } from "./cpp.js";
-import { dartConfig } from "./dart.js";
-import { csharpConfig } from "./csharp.js";
 import { luaConfig } from "./lua.js";
 // Non-code language configs
 import { markdownConfig } from "./markdown.js";
@@ -49,14 +46,11 @@ export const builtinLanguageConfigs = [
     rustConfig,
     javaConfig,
     rubyConfig,
-    phpConfig,
     swiftConfig,
     kotlinConfig,
     luaConfig,
     cConfig,
     cppConfig,
-    dartConfig,
-    csharpConfig,
     // Non-code languages
     markdownConfig,
     yamlConfig,
@@ -87,6 +81,6 @@ export const builtinLanguageConfigs = [
 ];
 export { 
 // Code languages
-typescriptConfig, javascriptConfig, pythonConfig, goConfig, rustConfig, javaConfig, rubyConfig, phpConfig, swiftConfig, kotlinConfig, luaConfig, cConfig, cppConfig, dartConfig, csharpConfig, 
+typescriptConfig, javascriptConfig, pythonConfig, goConfig, rustConfig, javaConfig, rubyConfig, swiftConfig, kotlinConfig, luaConfig, cConfig, cppConfig, 
 // Non-code languages
 markdownConfig, yamlConfig, jsonConfigConfig, tomlConfig, envConfig, xmlConfig, dockerfileConfig, sqlConfig, graphqlConfig, protobufConfig, terraformConfig, githubActionsConfig, makefileConfig, shellConfig, htmlConfig, cssConfig, openapiConfig, kubernetesConfig, dockerComposeConfig, jsonSchemaConfig, csvConfig, restructuredtextConfig, powershellConfig, batchConfig, jenkinsfileConfig, plaintextConfig, };

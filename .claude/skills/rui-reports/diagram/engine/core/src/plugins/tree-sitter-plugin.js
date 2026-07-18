@@ -10,7 +10,7 @@ const require = createRequire(import.meta.url);
  * and how to load their WASM grammars. Provides deep structural analysis
  * (functions, classes, imports, exports, call graphs) for all languages
  * with registered extractors: TypeScript, JavaScript, Python, Go, Rust,
- * Java, Ruby, PHP, C/C++, and C#.
+ * Java, Ruby, and C/C++.
  *
  * Languages without tree-sitter configs are gracefully skipped (the LLM
  * agent handles analysis for those).

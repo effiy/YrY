@@ -1,20 +1,38 @@
 /**
  * Aggregator: every concrete language extractor must be registered here.
  *
- * Refactor note (2026-07-18): extractors whose implementation file grew
- * beyond ~400 lines are now split into a sibling directory of the same
- * name (e.g. `cpp-extractor.js` → `cpp/index.js`). Small extractors
- * stay as flat single files. The public class names are unchanged so
- * downstream consumers (e.g. `parser.js`) keep working.
+ * Refactor note (2026-07-18): C#, Dart, and PHP extractors were removed from
+ * the built-in tree-sitter set. Keep this list in sync with
+ * `languages/configs/index.js` so default plugin registration only advertises
+ * languages with shipped extraction support.
  */
-export { DartExtractor } from "./dart/index.js";
-export { CppExtractor } from "./cpp/index.js";
-export { CSharpExtractor } from "./csharp/index.js";
-export { RustExtractor } from "./rust/index.js";
-export { GoExtractor } from "./go-extractor.js";
-export { PythonExtractor } from "./python-extractor.js";
-export { JavaExtractor } from "./java-extractor.js";
-export { KotlinExtractor } from "./kotlin-extractor.js";
-export { RubyExtractor } from "./ruby-extractor.js";
-export { PhpExtractor } from "./php/index.js";
-export { TypeScriptExtractor } from "./typescript-extractor.js";
+import { CppExtractor } from "./cpp/index.js";
+import { RustExtractor } from "./rust/index.js";
+import { GoExtractor } from "./go-extractor.js";
+import { PythonExtractor } from "./python-extractor.js";
+import { JavaExtractor } from "./java-extractor.js";
+import { KotlinExtractor } from "./kotlin-extractor.js";
+import { RubyExtractor } from "./ruby-extractor.js";
+import { TypeScriptExtractor } from "./typescript-extractor.js";
+
+export {
+    CppExtractor,
+    RustExtractor,
+    GoExtractor,
+    PythonExtractor,
+    JavaExtractor,
+    KotlinExtractor,
+    RubyExtractor,
+    TypeScriptExtractor,
+};
+
+export const builtinExtractors = [
+    new TypeScriptExtractor(),
+    new CppExtractor(),
+    new RustExtractor(),
+    new GoExtractor(),
+    new PythonExtractor(),
+    new JavaExtractor(),
+    new KotlinExtractor(),
+    new RubyExtractor(),
+];

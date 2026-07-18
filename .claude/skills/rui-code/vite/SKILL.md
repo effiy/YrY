@@ -83,8 +83,15 @@ user_invocable: true
 
 ## Workflow
 
-1. **Read** `references/sources.json` and `references/index.md`.
-2. **Match** the user's intent:
+1. **Read** `references/sources.json` and `references/index.json` (the
+   manifest with `summary` + per-category `file` pointers). For a
+   human-readable view of every resource, also read
+   `references/index.md`.
+2. **Open** the per-category file at `references/categories/<slug>.json`
+   for the routed topic (e.g. `categories/plugins.json` for
+   "Vite plugin for X", `categories/get-started.json` for "starter
+   template for X framework", `categories/ssr.json` for "SSR for X").
+3. **Match** the user's intent:
    - "starter template for X framework" → `Get Started / Templates / <framework>`
    - "scaffolding tool / create-X" → `Get Started / Get Started` (8 official scaffolders)
    - "plugin for X capability" → `Plugins / Framework-agnostic Plugins / <capability>` first; if framework-specific, `Plugins / <framework> / <capability>`
@@ -92,8 +99,8 @@ user_invocable: true
    - "SSR for X" → `SSR / Libraries` or `SSR / Frameworks`
    - "Vite + <backend>" → `Integrations with Backends / <backend name>`
    - "showcase / example project" → `Projects Using Vite.js / Open Source` or `Apps/Websites`
-3. **Filter** to 1-3 high-signal picks.
-4. **Cite** every recommendation with exact title + URL + `[src:…]`.
+4. **Filter** to 1-3 high-signal picks.
+5. **Cite** every recommendation with exact title + URL + `[src:…]`.
 
 ## Borders
 
@@ -105,15 +112,29 @@ user_invocable: true
 
 ## Supporting resources
 
-- [references/index.md](./references/index.md) — unified topic index, start here.
-- [references/sources.json](./references/sources.json) — registered sources.
+- [references/index.json](./references/index.json) — slim manifest of
+  `sources`, a `summary` (category/topic/resource counts), and a
+  `categories` list with `slug` + `file` pointer for each top-level
+  category. Start here to discover what is registered.
+- [references/index.md](./references/index.md) — human-readable topic
+  index (every resource, with `[src:…]` provenance). Regenerate from
+  the category JSON files when the upstream snapshot changes.
+- [references/categories/](./references/categories/) — per-category
+  payloads. One JSON file per top-level category (`resources.json`,
+  `get-started.json`, `plugins.json`, `ssr.json`,
+  `integrations-with-backends.json`, `migrations.json`,
+  `projects-using-vite-js.json`). Open the one matching the routed
+  topic.
+- [references/sources.json](./references/sources.json) — registered
+  sources.
 - [references/README-awesome-vite.md](./references/README-awesome-vite.md) — verbatim upstream README.
 
 ## Fallback
 
 | Situation | Behavior |
 |-----------|----------|
-| `references/index.md` missing | Grep `references/README-awesome-vite.md` directly. |
+| `references/index.md` missing | Grep `references/README-awesome-vite.md` directly, or read `references/categories/<slug>.json` for the routed topic. |
+| `references/categories/<slug>.json` missing | Use `references/index.json` `categories[*].file` as the source of truth, then fall back to grepping `references/README-awesome-vite.md`. |
 | Topic not in the registered source | State the gap, suggest the closest related topic. |
 | User asks about Webpack / Rollup standalone / Parcel / Turbopack | Out of scope; defer to general Claude. |
 | User wants me to actually scaffold a Vite project | Recommend a template or one of the 8 scaffolders, then hand off. |
