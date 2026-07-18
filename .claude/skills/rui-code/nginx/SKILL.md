@@ -1,9 +1,9 @@
 ---
 name: rui-code-nginx
 description: >
-  Curated Nginx operations & ecosystem navigator — pulls the curated
-  book list and external resources from trimstray/nginx-admins-handbook,
-  indexes them locally, and recommends the right book, official doc,
+  Curated Nginx operations & ecosystem navigator — uses curated local
+  indexes derived from trimstray/nginx-admins-handbook and recommends
+  the right book, official doc,
   tooling, generator, parser, static analyzer, log/performance
   analyzer, benchmarking tool, debugger, security scanner, or
   hardening guide for a given Nginx task. Trigger when the user wants
@@ -48,8 +48,8 @@ user_invocable: true
 # rui-code-nginx — Curated Nginx Operations & Ecosystem Navigator
 
 > Pick the right Nginx book, official doc, tool, or hardening guide.
-> Pulls from [trimstray/nginx-admins-handbook](https://github.com/trimstray/nginx-admins-handbook),
-> indexes it locally (~205 resources across 2 categories and 21 topics),
+> Uses local indexes derived from [trimstray/nginx-admins-handbook](https://github.com/trimstray/nginx-admins-handbook),
+> covering ~205 resources across 2 categories and 21 topics,
 > and answers with exact titles, URLs, and source provenance.
 
 ## What this skill does
@@ -73,7 +73,7 @@ user_invocable: true
 
 ## What this skill does NOT do
 
-- Does NOT pull from upstream at answer time — uses a local snapshot in `references/`.
+- Does NOT pull from upstream at answer time — uses local indexes in `references/`.
 - Does NOT teach Nginx from scratch — recommend books instead.
 - Does NOT cover non-Nginx web servers (Apache-only, Caddy, HAProxy,
   Envoy, Traefik, IIS) without an Nginx angle.
@@ -112,16 +112,16 @@ user_invocable: true
 ## Supporting resources
 
 - [references/index.md](./references/index.md) — unified topic index, start here.
+- [references/index.json](./references/index.json) — machine-readable index for filtering by category and topic.
 - [references/sources.json](./references/sources.json) — registered sources.
-- [references/README-nginx-admins-handbook.md](./references/README-nginx-admins-handbook.md) — verbatim upstream README.
 
 ## Fallback
 
 | Situation | Behavior |
 |-----------|----------|
-| `references/index.md` missing | Grep `references/README-nginx-admins-handbook.md` directly. |
-| Topic not in any registered source | State the gap, suggest closest related topic (e.g. "no Nginx Unit entries — check the upstream Nginx Unit repo"). |
-| User asks about Nginx core / API debugging or conceptual narrative (HTTP/SSL/Nginx basics) | Out of scope — point at the upstream handbook `doc/` chapters. |
+| `references/index.md` missing | Read `references/index.json` directly. |
+| Topic not in any registered source | State the gap, suggest the closest indexed topic, then point to the source homepage if needed. |
+| User asks about Nginx core / API debugging or conceptual narrative (HTTP/SSL/Nginx basics) | Out of scope — recommend official docs or one of the indexed books. |
 | User asks about non-Nginx web servers | Out of scope; defer to general Claude. |
 | User wants an Nginx config actually generated | Recommend a generator / boilerplate from the index, then hand off — this skill is a navigator, not a generator. |
 | User asks in a language other than English | Respond in the user's language; keep resource titles in original language. |

@@ -1,12 +1,1 @@
-{
-  "sources": [
-    {
-      "id": "nginx-admins-handbook",
-      "label": "Nginx Admin's Handbook",
-      "readme": "references/README-nginx-admins-handbook.md",
-      "upstream_url": "https://raw.githubusercontent.com/trimstray/nginx-admins-handbook/master/README.md",
-      "homepage": "https://github.com/trimstray/nginx-admins-handbook",
-      "dialect": "h5-square-p"
-    }
-  ]
-}
+{"sources":[{"id":"nginx-admins-handbook","label":"Nginx Admin's Handbook","upstream_url":"https://raw.githubusercontent.com/trimstray/nginx-admins-handbook/master/README.md","homepage":"https://github.com/trimstray/nginx-admins-handbook","dialect":"h5-square-p"}]}

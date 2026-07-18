@@ -3,9 +3,9 @@ name: rui-code-h5
 description: >
   Curated Vue 3 H5 / mobile-web navigator — combines best practices,
   a full reference H5 e-commerce project, and a starter template
-  (all indexed locally) and recommends the right mix for a given
-  task. Pulls from three upstream repositories registered in
-  references/sources.json, indexes them into a single topic tree, and
+  through local indexes and recommends the right mix for a given task.
+  Uses three registered sources from references/sources.json, merged
+  into a single topic tree, and
   answers H5 / mobile-web / Vue3-mobile questions with exact titles,
   URLs, and source provenance. Trigger when the user wants to:
   scaffold a new Vue 3 H5 project, pick a Vue 3 + Vant 4 + Pinia +
@@ -42,7 +42,7 @@ user_invocable: true
 # rui-code-h5 — Curated Vue 3 H5 / Mobile Web Navigator
 
 > Pick the right template, learn the right pattern, copy the right
-> reference. Pulls from three upstream repos, indexes them locally.
+> reference. Uses local indexes derived from three upstream repos.
 
 ## What this skill does
 
@@ -68,7 +68,7 @@ user_invocable: true
 
 ## What this skill does NOT do
 
-- Does NOT auto-fetch new sources at answer time — uses a local snapshot.
+- Does NOT auto-fetch new sources at answer time — uses local indexes.
 - Does NOT scaffold a project for you — recommend a template, then
   point at the upstream README for setup.
 - Does NOT cover React / Angular / mini-programs / native mobile.
@@ -104,16 +104,14 @@ user_invocable: true
 ## Supporting resources
 
 - [references/index.md](./references/index.md) — unified topic index, start here.
+- [references/index.json](./references/index.json) — machine-readable index across kinds and topics.
 - [references/sources.json](./references/sources.json) — registered sources and their kind / dialect.
-- [references/README-mobile-web-best-practice.md](./references/README-mobile-web-best-practice.md) — verbatim best-practices source.
-- [references/README-newbee-mall-vue3-app.md](./references/README-newbee-mall-vue3-app.md) — verbatim newbee-mall source.
-- [references/README-vue3-h5-template.md](./references/README-vue3-h5-template.md) — verbatim vue3-h5-template source.
 
 ## Fallback
 
 | Situation | Behavior |
 |-----------|----------|
-| `references/index.md` missing | Grep `references/README-<source>.md` directly. |
+| `references/index.md` missing | Read `references/index.json` directly. |
 | Topic not in any registered source | State the gap, suggest the closest related topic. |
 | User wants to actually scaffold a project | Recommend `vue3-h5-template` (right branch) and point at its README for `pnpm install` / `pnpm dev`. |
 | User wants a real H5 shop code reference | Recommend `newbee-mall-vue3-app` and the matching `newbee-mall-api` for the backend. |

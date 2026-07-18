@@ -1,9 +1,9 @@
 ---
 name: rui-code-tauri
 description: >
-  Curated Tauri ecosystem navigator — pulls Tauri templates, plugins,
-  integrations, articles, and showcase apps from
-  tauri-apps/awesome-tauri, indexes them locally, and recommends the
+  Curated Tauri ecosystem navigator — uses local indexes derived from
+  tauri-apps/awesome-tauri for templates, plugins, integrations,
+  articles, and showcase apps, and recommends the
   right template, plugin, or example app for a given task. Trigger
   when the user wants to: pick a Tauri starter template (React, Vue,
   Svelte, Solid, Angular, Next.js, Nuxt, Yew, Leptos), find a Tauri
@@ -59,7 +59,7 @@ user_invocable: true
 
 ## What this skill does NOT do
 
-- Does NOT pull from upstream at answer time — uses a local snapshot in
+- Does NOT pull from upstream at answer time — uses local indexes in
   `references/`.
 - Does NOT teach Tauri from scratch — recommend the upstream Tauri docs
   (https://v2.tauri.app/start/) for conceptual questions.
@@ -98,13 +98,14 @@ user_invocable: true
 ## Supporting resources
 
 - [references/index.md](./references/index.md) — unified topic index, start here.
+- [references/index.json](./references/index.json) — machine-readable index for filtering topics and resources.
 - [references/sources.json](./references/sources.json) — registered sources.
 
 ## Fallback
 
 | Situation | Behavior |
 |-----------|----------|
-| `references/index.md` missing | Grep `references/README-awesome-tauri.md` directly. |
+| `references/index.md` missing | Read `references/index.json` directly. |
 | Topic not in any registered source | State the gap, suggest the closest related topic (e.g. "no Tauri mobile templates in the registry — check `tauri-mobile` upstream"). |
 | Stale README (upstream has moved on) | Tell the user the snapshot may be stale; suggest re-fetching from the upstream `tauri-apps/awesome-tauri` repo. |
 | User asks about Tauri 1.x vs 2.x migration | Out of scope; point the user at the official Tauri migration guide. |

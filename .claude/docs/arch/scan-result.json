@@ -800,24 +800,6 @@
       "fileCategory": "docs"
     },
     {
-      "path": "skills/rui-code/h5/references/README-mobile-web-best-practice.md",
-      "language": "markdown",
-      "sizeLines": 192,
-      "fileCategory": "docs"
-    },
-    {
-      "path": "skills/rui-code/h5/references/README-newbee-mall-vue3-app.md",
-      "language": "markdown",
-      "sizeLines": 104,
-      "fileCategory": "docs"
-    },
-    {
-      "path": "skills/rui-code/h5/references/README-vue3-h5-template.md",
-      "language": "markdown",
-      "sizeLines": 166,
-      "fileCategory": "docs"
-    },
-    {
       "path": "skills/rui-code/h5/references/sources.json",
       "language": "json",
       "sizeLines": 34,
@@ -845,12 +827,6 @@
       "path": "skills/rui-code/nginx/references/index.md",
       "language": "markdown",
       "sizeLines": 287,
-      "fileCategory": "docs"
-    },
-    {
-      "path": "skills/rui-code/nginx/references/README-nginx-admins-handbook.md",
-      "language": "markdown",
-      "sizeLines": 1851,
       "fileCategory": "docs"
     },
     {
@@ -884,12 +860,6 @@
       "fileCategory": "docs"
     },
     {
-      "path": "skills/rui-code/nodejs/references/README-nodebestpractices.md",
-      "language": "markdown",
-      "sizeLines": 1976,
-      "fileCategory": "docs"
-    },
-    {
       "path": "skills/rui-code/nodejs/references/sources.json",
       "language": "json",
       "sizeLines": 13,
@@ -917,12 +887,6 @@
       "path": "skills/rui-code/tauri/references/index.md",
       "language": "markdown",
       "sizeLines": 510,
-      "fileCategory": "docs"
-    },
-    {
-      "path": "skills/rui-code/tauri/references/README-awesome-tauri.md",
-      "language": "markdown",
-      "sizeLines": 543,
       "fileCategory": "docs"
     },
     {

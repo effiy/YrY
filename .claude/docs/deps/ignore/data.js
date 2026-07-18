@@ -310,12 +310,6 @@ window.REPORT_DATA = {
         "Reference or long-form documentation mention"
       ],
       [
-        "<code>skills/rui-code/nodejs/references/README-nodebestpractices.md</code>",
-        "docs",
-        "10",
-        "Reference or long-form documentation mention"
-      ],
-      [
         "<code>skills/rui-reports/diagram/agents/project-scanner.md</code>",
         "code",
         "7",

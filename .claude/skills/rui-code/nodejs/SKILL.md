@@ -1,8 +1,9 @@
 ---
 name: rui-code-nodejs
 description: >
-  Curated Node.js best-practices navigator — pulls 100+ vetted
-  practices from goldbergyoni/nodebestpractices, indexes them locally
+  Curated Node.js best-practices navigator — uses local indexes
+  derived from goldbergyoni/nodebestpractices for 100+ vetted
+  practices
   by category and tag, and recommends the right practice (with the
   canonical "Read More" link) for a given architecture, error-handling,
   code-style, testing, production, security, performance, or Docker
@@ -40,7 +41,7 @@ user_invocable: true
 
 # rui-code-nodejs — Curated Node.js Best-Practices Navigator
 
-> Find the right Node.js best practice — fast. Pulls from
+> Find the right Node.js best practice — fast. Uses local indexes derived from
 > [goldbergyoni/nodebestpractices](https://github.com/goldbergyoni/nodebestpractices),
 > 108 practices across 8 categories and 15 topic buckets, and answers
 > with the exact practice number, title, and canonical "Read More" link.
@@ -60,7 +61,7 @@ user_invocable: true
 
 ## What this skill does NOT do
 
-- Does NOT pull from upstream at answer time — uses a local snapshot.
+- Does NOT pull from upstream at answer time — uses local indexes.
 - Does NOT teach Node.js from scratch — point at the official Node.js
   docs for conceptual questions.
 - Does NOT cover non-Node runtimes (Deno, Bun, browsers).
@@ -97,16 +98,16 @@ user_invocable: true
 ## Supporting resources
 
 - [references/index.md](./references/index.md) — unified topic index, start here.
+- [references/index.json](./references/index.json) — machine-readable index for filtering by category, topic, and tags.
 - [references/sources.json](./references/sources.json) — registered sources.
-- [references/README-nodebestpractices.md](./references/README-nodebestpractices.md) — verbatim upstream README.
 
 ## Fallback
 
 | Situation | Behavior |
 |-----------|----------|
-| `references/index.md` missing | Grep `references/README-nodebestpractices.md` directly. |
+| `references/index.md` missing | Read `references/index.json` directly. |
 | Practice not in any registered source | State the gap, suggest the closest related practice (e.g. "no 'event-loop monitoring' practice — see 7.1 'Don't block the event loop'"). |
-| User asks about Node 22 / Node 24 specific features | Out of scope; point the user at the official Node.js release notes. |
+| User asks about Node 22 / Node 24 specific features | Out of scope; point the user at the official Node.js docs or release notes. |
 | User asks about a framework tutorial (Nest, Express, Fastify, Koa) | Out of scope; defer to each framework's docs. |
 | User asks about a non-Node runtime (Deno, Bun, browsers) | Out of scope; defer to general Claude. |
 | User wants me to actually scaffold a Node project | Recommend the relevant Project-Architecture practices (1.1, 1.2, 1.3, 1.4), then hand off. |

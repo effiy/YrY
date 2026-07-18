@@ -1,8 +1,8 @@
 # Topic Index
 
-Auto-generated from the registered sources in `references/sources.json`.
-Each resource is tagged with its `[src:source-id]` so the reader can
-trace provenance. Run `python3 scripts/parse_readme.py` to rebuild.
+Curated local topic index derived from the registered sources in
+`references/sources.json`. Each resource is tagged with its
+`[src:source-id]` so the reader can trace provenance.
 
 **Sources:**
 - `awesome-tauri` — [Awesome Tauri](https://github.com/tauri-apps/awesome-tauri)

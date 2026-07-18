@@ -206,55 +206,6 @@ window.REPORT_DATA = {
       "severity": "P0",
       "marker": "P0",
       "category": "bloat",
-      "file": "rui-code/nginx/references/README-nginx-admins-handbook.md",
-      "line": null,
-      "message": "File exceeds 1000 LOC (1851 lines)",
-      "metric": "1851 LOC",
-      "impact": "Large file → high cognitive load, merge conflicts, review fatigue, slower onboarding.",
-      "risk": "If left unfixed: every PR touching this file scales linearly in review time, and defect density compounds with each new branch.",
-      "blastRadius": "file-local + reviewers",
-      "effort": "medium",
-      "estimatedHours": 8,
-      "scoreUplift": 8,
-      "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-code/nginx/references/README-nginx-admins-handbook.md/{a,b}.ext and re-export from a barrel index.",
-        "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
-        "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
-        "After the split, re-run this report and confirm fan-out / depth drop before merge."
-      ],
-      "acceptance": [
-        "Each split child ≤ 500 LOC (or project threshold) and single-responsibility.",
-        "Public API unchanged — existing call sites compile without edits.",
-        "Unit tests pass on every child; coverage ≥ pre-split baseline.",
-        "Re-run this report: original file no longer triggers the bloat alert."
-      ],
-      "firstStep": "Open rui-code/nginx/references/README-nginx-admins-handbook.md and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
-      "tooling": [
-        {
-          "name": "eslint-plugin-import",
-          "hint": "enforce per-file LOC budgets via max-lines + boundary rules"
-        },
-        {
-          "name": "knip",
-          "hint": "confirm the split does not strand dead exports"
-        },
-        {
-          "name": "madge",
-          "hint": "visualize post-split dependency tree to confirm shallower depth"
-        }
-      ],
-      "preventiveControls": [
-        "CI rule: fail any PR that adds > 100 LOC to a file already over 1000 LOC.",
-        "Pre-commit hook: warn on files crossing 500 LOC.",
-        "CODEOWNERS: require module-owner review on the barrel index file."
-      ],
-      "rollbackPlan": "Revert the merge commit; the barrel index re-exports the original single file, so call sites are unaffected. Keep the split children behind a feature flag for one release if call sites were edited.",
-      "cyclePath": ""
-    },
-    {
-      "severity": "P0",
-      "marker": "P0",
-      "category": "bloat",
       "file": "rui-code/nodejs/references/index.json",
       "line": null,
       "message": "File exceeds 1000 LOC (1237 lines)",
@@ -278,55 +229,6 @@ window.REPORT_DATA = {
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
       "firstStep": "Open rui-code/nodejs/references/index.json and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
-      "tooling": [
-        {
-          "name": "eslint-plugin-import",
-          "hint": "enforce per-file LOC budgets via max-lines + boundary rules"
-        },
-        {
-          "name": "knip",
-          "hint": "confirm the split does not strand dead exports"
-        },
-        {
-          "name": "madge",
-          "hint": "visualize post-split dependency tree to confirm shallower depth"
-        }
-      ],
-      "preventiveControls": [
-        "CI rule: fail any PR that adds > 100 LOC to a file already over 1000 LOC.",
-        "Pre-commit hook: warn on files crossing 500 LOC.",
-        "CODEOWNERS: require module-owner review on the barrel index file."
-      ],
-      "rollbackPlan": "Revert the merge commit; the barrel index re-exports the original single file, so call sites are unaffected. Keep the split children behind a feature flag for one release if call sites were edited.",
-      "cyclePath": ""
-    },
-    {
-      "severity": "P0",
-      "marker": "P0",
-      "category": "bloat",
-      "file": "rui-code/nodejs/references/README-nodebestpractices.md",
-      "line": null,
-      "message": "File exceeds 1000 LOC (1976 lines)",
-      "metric": "1976 LOC",
-      "impact": "Large file → high cognitive load, merge conflicts, review fatigue, slower onboarding.",
-      "risk": "If left unfixed: every PR touching this file scales linearly in review time, and defect density compounds with each new branch.",
-      "blastRadius": "file-local + reviewers",
-      "effort": "medium",
-      "estimatedHours": 8,
-      "scoreUplift": 8,
-      "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-code/nodejs/references/README-nodebestpractices.md/{a,b}.ext and re-export from a barrel index.",
-        "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
-        "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
-        "After the split, re-run this report and confirm fan-out / depth drop before merge."
-      ],
-      "acceptance": [
-        "Each split child ≤ 500 LOC (or project threshold) and single-responsibility.",
-        "Public API unchanged — existing call sites compile without edits.",
-        "Unit tests pass on every child; coverage ≥ pre-split baseline.",
-        "Re-run this report: original file no longer triggers the bloat alert."
-      ],
-      "firstStep": "Open rui-code/nodejs/references/README-nodebestpractices.md and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -1748,55 +1650,6 @@ window.REPORT_DATA = {
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
       "firstStep": "Open rui-code/tauri/references/index.md and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
-      "tooling": [
-        {
-          "name": "eslint-plugin-import",
-          "hint": "enforce per-file LOC budgets via max-lines + boundary rules"
-        },
-        {
-          "name": "knip",
-          "hint": "confirm the split does not strand dead exports"
-        },
-        {
-          "name": "madge",
-          "hint": "visualize post-split dependency tree to confirm shallower depth"
-        }
-      ],
-      "preventiveControls": [
-        "CI rule: fail any PR that adds > 100 LOC to a file already over 1000 LOC.",
-        "Pre-commit hook: warn on files crossing 500 LOC.",
-        "CODEOWNERS: require module-owner review on the barrel index file."
-      ],
-      "rollbackPlan": "Revert the merge commit; the barrel index re-exports the original single file, so call sites are unaffected. Keep the split children behind a feature flag for one release if call sites were edited.",
-      "cyclePath": ""
-    },
-    {
-      "severity": "P1",
-      "marker": "P1",
-      "category": "bloat",
-      "file": "rui-code/tauri/references/README-awesome-tauri.md",
-      "line": null,
-      "message": "File exceeds 500 LOC (543 lines)",
-      "metric": "543 LOC",
-      "impact": "Large file → high cognitive load, merge conflicts, review fatigue, slower onboarding.",
-      "risk": "If left unfixed: every PR touching this file scales linearly in review time, and defect density compounds with each new branch.",
-      "blastRadius": "file-local + reviewers",
-      "effort": "low",
-      "estimatedHours": 4,
-      "scoreUplift": 4,
-      "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-code/tauri/references/README-awesome-tauri.md/{a,b}.ext and re-export from a barrel index.",
-        "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
-        "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
-        "After the split, re-run this report and confirm fan-out / depth drop before merge."
-      ],
-      "acceptance": [
-        "Each split child ≤ 500 LOC (or project threshold) and single-responsibility.",
-        "Public API unchanged — existing call sites compile without edits.",
-        "Unit tests pass on every child; coverage ≥ pre-split baseline.",
-        "Re-run this report: original file no longer triggers the bloat alert."
-      ],
-      "firstStep": "Open rui-code/tauri/references/README-awesome-tauri.md and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -4075,16 +3928,6 @@ window.REPORT_DATA = {
       "fanOut": 0
     },
     {
-      "path": "rui-code/nodejs/references/README-nodebestpractices.md",
-      "bytes": 201062,
-      "bytesHuman": "196.3 KB",
-      "lines": 1976,
-      "type": ".other",
-      "depth": 0,
-      "fanIn": 0,
-      "fanOut": 0
-    },
-    {
       "path": "rui-tools/public-api/references/README-public-api-lists.md",
       "bytes": 192986,
       "bytesHuman": "188.5 KB",
@@ -4683,17 +4526,6 @@ window.REPORT_DATA = {
       "score": 4.58
     },
     {
-      "path": "rui-code/nodejs/references/README-nodebestpractices.md",
-      "bytes": 201062,
-      "bytesHuman": "196.3 KB",
-      "lines": 1976,
-      "type": ".other",
-      "fanIn": 0,
-      "fanOut": 0,
-      "maxDepth": 0,
-      "score": 0.99
-    },
-    {
       "path": "rui-tools/public-api/references/README-public-api-lists.md",
       "bytes": 192986,
       "bytesHuman": "188.5 KB",
@@ -4890,17 +4722,6 @@ window.REPORT_DATA = {
       "fanOut": 0,
       "maxDepth": 0,
       "score": 0.33
-    },
-    {
-      "path": "rui-code/nginx/references/README-nginx-admins-handbook.md",
-      "bytes": 136938,
-      "bytesHuman": "133.7 KB",
-      "lines": 1851,
-      "type": ".other",
-      "fanIn": 0,
-      "fanOut": 0,
-      "maxDepth": 0,
-      "score": 0.93
     },
     {
       "path": "rui-tools/ui-ux/canvas-fonts/IBMPlexMono-Bold.ttf",
@@ -5857,42 +5678,6 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-code/h5/references/README-mobile-web-best-practice.md",
-      "bytes": 13900,
-      "lines": 192,
-      "type": "other",
-      "lastModified": 1784253574,
-      "fanIn": 0,
-      "fanOut": 0,
-      "extDeps": 0,
-      "maxDepth": 0,
-      "ageDays": 0
-    },
-    {
-      "path": "rui-code/h5/references/README-newbee-mall-vue3-app.md",
-      "bytes": 6205,
-      "lines": 104,
-      "type": "other",
-      "lastModified": 1784253574,
-      "fanIn": 0,
-      "fanOut": 0,
-      "extDeps": 0,
-      "maxDepth": 0,
-      "ageDays": 0
-    },
-    {
-      "path": "rui-code/h5/references/README-vue3-h5-template.md",
-      "bytes": 6564,
-      "lines": 166,
-      "type": "other",
-      "lastModified": 1784253574,
-      "fanIn": 0,
-      "fanOut": 0,
-      "extDeps": 0,
-      "maxDepth": 0,
-      "ageDays": 0
-    },
-    {
       "path": "rui-code/h5/references/sources.json",
       "bytes": 1810,
       "lines": 34,
@@ -5944,18 +5729,6 @@ window.REPORT_DATA = {
       "path": "rui-code/nginx/references/index.md",
       "bytes": 24268,
       "lines": 287,
-      "type": "other",
-      "lastModified": 1784253574,
-      "fanIn": 0,
-      "fanOut": 0,
-      "extDeps": 0,
-      "maxDepth": 0,
-      "ageDays": 0
-    },
-    {
-      "path": "rui-code/nginx/references/README-nginx-admins-handbook.md",
-      "bytes": 136938,
-      "lines": 1851,
       "type": "other",
       "lastModified": 1784253574,
       "fanIn": 0,
@@ -6025,18 +5798,6 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-code/nodejs/references/README-nodebestpractices.md",
-      "bytes": 201062,
-      "lines": 1976,
-      "type": "other",
-      "lastModified": 1784253574,
-      "fanIn": 0,
-      "fanOut": 0,
-      "extDeps": 0,
-      "maxDepth": 0,
-      "ageDays": 0
-    },
-    {
       "path": "rui-code/nodejs/references/sources.json",
       "bytes": 458,
       "lines": 13,
@@ -6088,18 +5849,6 @@ window.REPORT_DATA = {
       "path": "rui-code/tauri/references/index.md",
       "bytes": 35237,
       "lines": 510,
-      "type": "other",
-      "lastModified": 1784253574,
-      "fanIn": 0,
-      "fanOut": 0,
-      "extDeps": 0,
-      "maxDepth": 0,
-      "ageDays": 0
-    },
-    {
-      "path": "rui-code/tauri/references/README-awesome-tauri.md",
-      "bytes": 57806,
-      "lines": 543,
       "type": "other",
       "lastModified": 1784253574,
       "fanIn": 0,
@@ -16439,20 +16188,8 @@ window.REPORT_DATA = {
         "severity": "P0"
       },
       {
-        "action": "File exceeds 1000 LOC (1851 lines)",
-        "file": "rui-code/nginx/references/README-nginx-admins-handbook.md",
-        "line": null,
-        "severity": "P0"
-      },
-      {
         "action": "File exceeds 1000 LOC (1237 lines)",
         "file": "rui-code/nodejs/references/index.json",
-        "line": null,
-        "severity": "P0"
-      },
-      {
-        "action": "File exceeds 1000 LOC (1976 lines)",
-        "file": "rui-code/nodejs/references/README-nodebestpractices.md",
         "line": null,
         "severity": "P0"
       },
