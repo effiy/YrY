@@ -30,12 +30,27 @@ if (!fs.existsSync(absScope)) {
 
 /* ── Default exclusion globs (rules/analysis-contracts.md) ────────────
    Single source of truth: derived into both the find(1) CLI args and
-   the in-memory isExcluded() filter. */
-const EXCLUDE_DIRS = [
+   the in-memory isExcluded() filter.
+
+   Override via env vars (comma-separated, REPLACE the default):
+     RUI_EXCLUDE_DIRS   — e.g. RUI_EXCLUDE_DIRS="node_modules,.git,dist"
+                          Useful when the scope itself lives under an
+                          excluded segment (e.g. analyzing .claude/...).
+     RUI_EXCLUDE_FILES  — e.g. RUI_EXCLUDE_FILES=".DS_Store"            */
+const DEFAULT_EXCLUDE_DIRS = [
     'node_modules', '.git', 'dist', 'build', '.next', '.turbo',
     'coverage', '.memory', '.claude', 'target', 'intermediate',
 ];
-const EXCLUDE_FILES = ['.DS_Store'];
+const DEFAULT_EXCLUDE_FILES = ['.DS_Store'];
+
+function parseListEnv(name) {
+    const raw = process.env[name];
+    if (raw === undefined) return null;
+    return raw.split(',').map(s => s.trim()).filter(Boolean);
+}
+
+const EXCLUDE_DIRS = parseListEnv('RUI_EXCLUDE_DIRS') || DEFAULT_EXCLUDE_DIRS;
+const EXCLUDE_FILES = parseListEnv('RUI_EXCLUDE_FILES') || DEFAULT_EXCLUDE_FILES;
 
 const EXCLUDES = [
     ...EXCLUDE_DIRS.map(d => `**/${d}/**`),
@@ -1170,8 +1185,10 @@ const selfImprovement = {
 };
 
 /* ── Final REPORT_DATA ──────────────────────────────────────────────── */
+const scopeDisplay = absScope.endsWith('/') ? absScope : absScope + '/';
 const REPORT_DATA = {
-    scope: 'YrY/',
+    scope: scopeDisplay,
+    scopePath: absScope,
     score: filesScore,
     alerts,
     summary: {
