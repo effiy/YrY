@@ -38,12 +38,12 @@ export const cart = reactive({
 
 **GOOD:**
 ```ts
-// composables/useCartStore.ts
+// composables/useCart.ts — non-Pinia singleton (SPA only; see SSR warning below)
 import { reactive, readonly } from 'vue'
 
-let _store: ReturnType<typeof createCartStore> | null = null
+let _store: ReturnType<typeof createCart> | null = null
 
-function createCartStore() {
+function createCart() {
   const state = reactive({
     items: [] as Array<{ id: string; qty: number }>
   })
@@ -63,8 +63,8 @@ function createCartStore() {
   }
 }
 
-export function useCartStore() {
-  if (!_store) _store = createCartStore()
+export function useCart() {
+  if (!_store) _store = createCart()
   return _store
 }
 ```
@@ -76,35 +76,37 @@ Module singletons live for the runtime lifetime. In SSR this can leak state betw
 **BAD:**
 ```ts
 // shared singleton reused across requests
-const cartStore = useCartStore()
+const cart = useCart()
 
 export function useServerCart() {
-  return cartStore
+  return cart
 }
 ```
 
 **GOOD:**
 
-> `pinia` dependency required.
+> `pinia` dependency required. Use the **Setup Store** form — `state: () =>`
+> Options Store syntax ties you to the Options API style and is forbidden by
+> the parent's Rule 3.
 
 ```ts
 // stores/cart.ts
 import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
-export const useCartStore = defineStore('cart', {
-  state: () => ({
-    items: [] as Array<{ id: string; qty: number }>
-  }),
-  actions: {
-    addItem(id: string, qty = 1) {
-      const existing = this.items.find((item) => item.id === id)
-      if (existing) {
-        existing.qty += qty
-        return
-      }
-      this.items.push({ id, qty })
+export const useCartStore = defineStore('cart', () => {
+  const items = ref<Array<{ id: string; qty: number }>>([])
+
+  function addItem(id: string, qty = 1) {
+    const existing = items.value.find((item) => item.id === id)
+    if (existing) {
+      existing.qty += qty
+      return
     }
+    items.value.push({ id, qty })
   }
+
+  return { items, addItem }
 })
 ```
 
@@ -116,10 +118,12 @@ If the app is non-SSR and already uses VueUse, `createGlobalState` removes singl
 
 ```ts
 import { createGlobalState } from '@vueuse/core'
-import { computed, ref } from 'vue'
+import { computed, shallowRef } from 'vue'
 
 export const useAuthState = createGlobalState(() => {
-  const token = ref<string | null>(null)
+  // Primitive value — `shallowRef` is the team's preferred primitive wrapper
+  // (see references/reactivity/reactivity--reactivity.md).
+  const token = shallowRef<string | null>(null)
   const isAuthenticated = computed(() => token.value !== null)
 
   function setToken(next: string | null) {

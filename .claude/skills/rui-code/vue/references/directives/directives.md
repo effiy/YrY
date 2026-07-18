@@ -55,17 +55,23 @@ const vFocus = (el) => el.focus()
 
 ## Clean Up Side Effects in `unmounted`
 
-Any timers, listeners, or observers must be removed to avoid leaks.
+Any timers, listeners, or observers must be removed to avoid leaks. Stash
+state on a `WeakMap<Element, …>` rather than on the DOM node itself — the
+DOM property pattern (`el._observer`) is a Vue-documented anti-pattern that
+leaks through SSR serialization and breaks under ref reuse.
 
 ```ts
+const resizeObservers = new WeakMap<Element, ResizeObserver>()
+
 const vResize = {
-  mounted(el) {
-    const observer = new ResizeObserver(() => {})
+  mounted(el: Element) {
+    const observer = new ResizeObserver(() => { /* ... */ })
     observer.observe(el)
-    el._observer = observer
+    resizeObservers.set(el, observer)
   },
-  unmounted(el) {
-    el._observer?.disconnect()
+  unmounted(el: Element) {
+    resizeObservers.get(el)?.disconnect()
+    resizeObservers.delete(el)
   }
 }
 ```
@@ -110,15 +116,20 @@ import type { Directive } from 'vue'
 
 type HighlightValue = string
 
+// `satisfies` keeps the literal type narrow and gives the directive
+// proper typing without losing inference.
 export const vHighlight = {
-  mounted(el, binding) {
+  mounted(el: HTMLElement, binding: { value: HighlightValue }) {
     el.style.backgroundColor = binding.value
   }
 } satisfies Directive<HTMLElement, HighlightValue>
 
+// Augment `ComponentCustomOptions['directives']` so the directive is
+// recognized in SFC templates. `ComponentCustomProperties` is for
+// instance-level properties (e.g. `this.$myUtil`), not directives.
 declare module 'vue' {
-  interface ComponentCustomProperties {
-    vHighlight: typeof vHighlight
+  interface ComponentCustomOptions {
+    vHighlight?: typeof vHighlight
   }
 }
 ```

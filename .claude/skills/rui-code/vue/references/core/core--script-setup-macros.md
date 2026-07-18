@@ -37,7 +37,9 @@ const props = defineProps<{
   items: string[]
 }>()
 
-// With defaults (Vue 3.5+)
+// With defaults (Vue 3.5+) — note: Reactive Props Destructure is a Vue 3.5
+// feature. The team's preference (see references/core/core--README.md) is to
+// discourage it; prefer the `withDefaults` form below for shared components.
 const { title, count = 0 } = defineProps<{
   title: string
   count?: number
@@ -81,16 +83,18 @@ model.value = 'hello'  // Emits "update:modelValue"
 // Named model - consumed via v-model:name
 const count = defineModel<number>('count', { default: 0 })
 
-// With modifiers
-const [value, modifiers] = defineModel<string>()
+// With modifiers — parent uses `v-model.trim`, etc.
+const [modelValue, modifiers] = defineModel<string>()
 if (modifiers.trim) {
-  // Handle trim modifier
+  // value is the raw value; here you'd trim it before emitting
 }
 
-// With transformers
-const [value, modifiers] = defineModel({
-  get(val) { return val?.toLowerCase() },
-  set(val) { return modifiers.trim ? val?.trim() : val }
+// With transformers — `set` runs before the value is emitted to the parent.
+// `get` runs when the parent value updates. Modifiers are read in `set` to
+// transform the outgoing value.
+const model = defineModel({
+  set(val) { return modifiers.trim ? val?.trim() : val },
+  get(val) { return val?.toLowerCase() }
 })
 ```
 
@@ -160,8 +164,7 @@ defineProps<{
 
 Multiple generics with constraints:
 ```vue
-<script setup lang="ts" generic="T, U extends Record<string, T>">
-import type { Item } from './types'
+<script setup lang="ts" generic="T extends string | number, U extends Record<string, T>">
 defineProps<{
   data: U
   key: keyof U

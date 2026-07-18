@@ -35,14 +35,20 @@ app.use(notAPlugin)
 
 **GOOD:**
 ```ts
-import type { App } from 'vue'
+import type { App, InjectionKey, Plugin } from 'vue'
 
 interface PluginOptions {
   prefix?: string
   debug?: boolean
 }
 
-const myPlugin = {
+interface MyPluginApi {
+  prefix: string
+}
+
+const myPluginKey: InjectionKey<MyPluginApi> = Symbol('myPlugin')
+
+const myPlugin: Plugin<[PluginOptions]> = {
   install(app: App, options: PluginOptions = {}) {
     const { prefix = 'my', debug = false } = options
 
@@ -50,7 +56,7 @@ const myPlugin = {
       console.log('Installing myPlugin with prefix:', prefix)
     }
 
-    app.provide('myPlugin', { prefix })
+    app.provide(myPluginKey, { prefix })
   }
 }
 
@@ -59,9 +65,13 @@ app.use(myPlugin, { prefix: 'custom', debug: true })
 
 **GOOD:**
 ```ts
-import type { App } from 'vue'
+import type { App, Plugin } from 'vue'
 
-function simplePlugin(app: App, options?: { message: string }) {
+interface SimplePluginOptions {
+  message: string
+}
+
+const simplePlugin: Plugin<[SimplePluginOptions]> = (app: App, options?: SimplePluginOptions) => {
   app.config.globalProperties.$greet = () => options?.message ?? 'Hello!'
 }
 
@@ -87,9 +97,17 @@ const uselessPlugin = {
 
 **GOOD:**
 ```ts
-const usefulPlugin = {
+import type { InjectionKey, Plugin } from 'vue'
+
+interface Service {
+  fetch(): Promise<void>
+}
+
+const serviceKey: InjectionKey<Service> = Symbol('plugin-service')
+
+const usefulPlugin: Plugin<[{ apiKey: string }]> = {
   install(app, options) {
-    const service = createService(options)
+    const service: Service = createService(options)
     app.provide(serviceKey, service)
   }
 }
@@ -100,11 +118,13 @@ const usefulPlugin = {
 Use Vue's `Plugin` type to keep install signatures and options type-safe.
 
 ```ts
-import type { App, Plugin } from 'vue'
+import type { App, InjectionKey, Plugin } from 'vue'
 
 interface MyOptions {
   apiKey: string
 }
+
+const apiKeyKey: InjectionKey<string> = Symbol('plugin-api-key')
 
 const myPlugin: Plugin<[MyOptions]> = {
   install(app: App, options: MyOptions) {
@@ -153,11 +173,18 @@ export default {
 Wrap required injections in composables that throw clear setup errors.
 
 ```ts
-import { inject } from 'vue'
-import { authKey, type AuthService } from '@/injection-keys'
+import { inject, type InjectionKey } from 'vue'
+
+// Co-locate these with the plugin that provides them.
+export interface AuthService {
+  currentUser(): { id: string; name: string } | null
+  signOut(): Promise<void>
+}
+
+export const authKey: InjectionKey<AuthService> = Symbol('auth')
 
 export function useAuth(): AuthService {
-  const auth = inject(authKey)
+  const auth = inject(authKey, undefined as AuthService | undefined)
   if (!auth) {
     throw new Error('Auth plugin not installed. Did you forget app.use(authPlugin)?')
   }

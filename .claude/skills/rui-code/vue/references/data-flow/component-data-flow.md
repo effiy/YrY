@@ -41,7 +41,26 @@ function increment() {
 
 **GOOD:**
 
-If state needs to change, emit an event, use `v-model` or create a local copy.
+```vue
+<script setup lang="ts">
+const props = defineProps<{ count: number }>()
+
+// Pick the right escape hatch for your case:
+// 1. Emit an event and let the parent decide.
+const emit = defineEmits<{ increment: [] }>()
+function increment() { emit('increment') }
+
+// 2. Two-way binding — prefer `defineModel` (Vue 3.4+).
+//    const count = defineModel<number>({ default: 0 })
+//    function increment() { count.value++ }
+
+// 3. Local copy when the child needs to mutate freely.
+import { ref, watch } from 'vue'
+const local = ref(props.count)
+watch(() => props.count, (next) => { local.value = next })
+function increment() { local.value++ }
+</script>
+```
 
 ## Prefer props/emit over component refs
 
@@ -137,26 +156,28 @@ onMounted(() => {
 
 ## Emits: Explicit Events Up
 
-Component events do not bubble. If a parent needs to know about an event, re-emit it explicitly.
+Component events do not bubble. If a parent needs to know about an event from a grandchild, the child in between must re-emit it.
 
 **BAD:**
 ```vue
-<!-- Parent expects "saved" from grandchild, but it won't bubble -->
+<!-- Parent.vue -->
+<!-- Parent listens for `saved`, but Parent only sees Child — events don't bubble up the component tree. -->
 <Child @saved="onSaved" />
 ```
 
 **GOOD:**
 ```vue
-<!-- Child.vue -->
-<script setup>
-const emit = defineEmits(['saved'])
+<!-- Child.vue (sits between Parent and Grandchild) -->
+<script setup lang="ts">
+const emit = defineEmits<{ saved: [payload: { id: string }] }>()
 
-function onGrandchildSaved(payload) {
+function onGrandchildSaved(payload: { id: string }) {
   emit('saved', payload)
 }
 </script>
 
 <template>
+  <!-- Child re-emits the grandchild's event to its own parent. -->
   <Grandchild @saved="onGrandchildSaved" />
 </template>
 ```
@@ -231,23 +252,45 @@ theme.dark = true
 ```
 
 **GOOD:**
+```ts
+import type { InjectionKey } from 'vue'
+import { reactive, readonly, type Ref } from 'vue'
+
+interface Theme {
+  dark: boolean
+}
+
+interface ThemeActions {
+  toggleTheme: () => void
+}
+
+// Type the keys — the parent's `InjectionKey<T>` and the consumer's
+// `inject(key)` agree at compile time, not at runtime.
+export const themeKey: InjectionKey<Ref<Theme>> = Symbol('theme')
+export const themeActionsKey: InjectionKey<ThemeActions> = Symbol('theme-actions')
+```
+
 ```vue
-// Provider.vue
+<!-- Provider.vue -->
+<script setup lang="ts">
+import { provide, reactive, readonly } from 'vue'
+import { themeKey, themeActionsKey } from './keys'
+
 const theme = reactive({ dark: false })
 const toggleTheme = () => { theme.dark = !theme.dark }
 
-provide(themeKey, readonly(theme))
+provide(themeKey, theme) // reactive — consumers see updates
 provide(themeActionsKey, { toggleTheme })
+</script>
 
-// Consumer.vue
+<!-- Consumer.vue -->
+<script setup lang="ts">
+import { inject } from 'vue'
+import { themeKey, themeActionsKey } from './keys'
+
 const theme = inject(themeKey)
-const { toggleTheme } = inject(themeActionsKey)
-```
-
-Use symbols for keys to avoid collisions in large apps:
-```ts
-export const themeKey = Symbol('theme')
-export const themeActionsKey = Symbol('theme-actions')
+const { toggleTheme } = inject(themeActionsKey)!
+</script>
 ```
 
 ## Use TypeScript Contracts for Public Component APIs
@@ -297,7 +340,8 @@ const settingsKey: InjectionKey<Settings> = Symbol('settings')
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-provide(settingsKey, { theme: 'light' })
+// Wrap in `reactive` so consumers can read updates through `inject`.
+provide(settingsKey, reactive<Settings>({ theme: 'light' }))
 
 const settings = inject(settingsKey)
 if (settings) {

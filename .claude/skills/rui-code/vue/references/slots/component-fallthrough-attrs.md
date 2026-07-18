@@ -124,15 +124,27 @@ watch(
 
 ### Check for optional attrs safely
 
+> `useAttrs()` is **not reactive** (per `SKILL.md` rule 12). Wrapping it in
+> `computed` does not make it re-evaluate on attribute changes — it only runs
+> once at setup. Use plain expressions in the template, or `onUpdated` for
+> side effects that need to react to attribute changes.
+
 ```vue
-<script setup>
-import { computed, useAttrs } from 'vue'
+<script setup lang="ts">
+import { useAttrs } from 'vue'
 
 const attrs = useAttrs()
 
-const hasTestId = computed(() => 'data-testid' in attrs)
-const ariaLabel = computed(() => attrs['aria-label'] ?? 'Default label')
+// Plain values — read once at setup, fine for static helpers.
+const hasTestId = 'data-testid' in attrs
+const ariaLabel = attrs['aria-label'] ?? 'Default label'
 </script>
+
+<template>
+  <div :data-has-testid="hasTestId" :aria-label="ariaLabel">
+    <slot />
+  </div>
+</template>
 ```
 
 ### Forward listeners after internal logic

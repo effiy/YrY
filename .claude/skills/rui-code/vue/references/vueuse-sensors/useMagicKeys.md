@@ -9,6 +9,7 @@ Reactive keys pressed state, with magical keys combination support.
 ## Usage
 
 ```ts
+import { watch, watchEffect } from 'vue'
 import { useMagicKeys } from '@vueuse/core'
 
 const { shift, space, a /* keys you want to monitor */ } = useMagicKeys()
@@ -59,6 +60,7 @@ Check out [all the possible keycodes](https://developer.mozilla.org/en-US/docs/W
 You can magically use combinations (shortcuts/hotkeys) by connecting keys with `+` or `_`.
 
 ```ts
+import { watch } from 'vue'
 import { useMagicKeys } from '@vueuse/core'
 
 const keys = useMagicKeys()
@@ -71,6 +73,7 @@ watch(shiftCtrlA, (v) => {
 ```
 
 ```ts
+import { watch } from 'vue'
 import { useMagicKeys } from '@vueuse/core'
 
 const { Ctrl_A_B, space, alt_s /* ... */ } = useMagicKeys()

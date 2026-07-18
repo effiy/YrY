@@ -4,6 +4,11 @@ Auto-generated from the on-disk references tree.
 Each topic folder contains a `README.md` listing its files.
 Run `python3 scripts/consolidate.py` to rebuild.
 
+> The `Files` column below counts **every `.md` in each topic folder,
+> including that topic's `README.md`**. So `core/` is 7 (= 1 README + 6
+> reference docs). Subtract 1 per row to compare against the per-topic
+> README's "reference docs" count.
+
 | Topic | Files |
 | --- | ---: |
 | [Core API (script setup / Composition API)](./core/README.md) | 7 |
@@ -34,4 +39,4 @@ Run `python3 scripts/consolidate.py` to rebuild.
 | [VueUse · Time](./vueuse-time/README.md) | 5 |
 | [VueUse · Utilities](./vueuse-utilities/README.md) | 26 |
 | [VueUse · Watch](./vueuse-watch/README.md) | 14 |
-| **Total** | **277** |
+| **Total (incl. per-topic READMEs)** | **277** |

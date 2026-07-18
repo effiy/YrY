@@ -71,7 +71,7 @@ Keys are required. Without stable keys, Vue cannot track item positions and anim
 
 ## Do Not Use `mode` on TransitionGroup
 
-`mode` is only for `<Transition>` because it swaps a single element. Use `<Transition>` if you need in/out sequencing.
+`mode` is only for `<Transition>` because it swaps a single element. `<TransitionGroup>` ignores `mode` (it has no concept of "out" then "in" because multiple items move simultaneously), so just drop it. If you genuinely need in/out sequencing for a single element, use `<Transition>` instead.
 
 **BAD:**
 ```vue
@@ -85,9 +85,10 @@ Keys are required. Without stable keys, Vue cannot track item positions and anim
 **GOOD:**
 ```vue
 <template>
-  <Transition name="fade" mode="out-in">
-    <component :is="currentView" :key="currentView" />
-  </Transition>
+  <!-- `mode` is silently ignored on TransitionGroup; just remove it. -->
+  <TransitionGroup name="list" tag="div">
+    <div v-for="item in items" :key="item.id">{{ item.name }}</div>
+  </TransitionGroup>
 </template>
 ```
 

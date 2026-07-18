@@ -36,12 +36,12 @@ components/
 **GOOD:**
 ```vue
 <!-- components/UserCard.vue -->
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 
-const props = defineProps({
-  user: { type: Object, required: true }
-})
+const props = defineProps<{
+  user: { firstName: string; lastName: string }
+}>()
 
 const displayName = computed(() =>
   `${props.user.firstName} ${props.user.lastName}`
@@ -80,7 +80,7 @@ import userProfile from './user-profile.vue'
 
 **GOOD:**
 ```vue
-<script setup>
+<script setup lang="ts">
 import UserProfile from './UserProfile.vue'
 </script>
 
@@ -264,7 +264,7 @@ const activeUsers = computed(() => users.value.filter(u => u.active))
 
 **GOOD:**
 ```vue
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 import DOMPurify from 'dompurify'
 

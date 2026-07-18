@@ -193,19 +193,19 @@ Composables are functions that encapsulate stateful logic using Composition API.
 
 ```ts
 // composables/useMouse.ts
-import { ref, onMounted, onUnmounted } from 'vue'
+import { shallowRef, onScopeDispose } from 'vue'
 
 export function useMouse() {
-  const x = ref(0)
-  const y = ref(0)
+  const x = shallowRef(0)
+  const y = shallowRef(0)
 
   const update = (e: MouseEvent) => {
     x.value = e.pageX
     y.value = e.pageY
   }
 
-  onMounted(() => window.addEventListener('mousemove', update))
-  onUnmounted(() => window.removeEventListener('mousemove', update))
+  window.addEventListener('mousemove', update)
+  onScopeDispose(() => window.removeEventListener('mousemove', update))
 
   return { x, y }
 }

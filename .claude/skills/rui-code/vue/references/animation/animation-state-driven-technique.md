@@ -149,6 +149,12 @@ const progress = ref(0)
 
 ### Scroll-based Animation
 
+> Prefer `useEventListener` from `@vueuse/core` over manual
+> `addEventListener` / `removeEventListener` so cleanup is automatic. The
+> scroll handler below is also throttled with `useThrottleFn` to avoid
+> re-renders on every event (per `SKILL.md` rule 7 and the
+> `references/perf/perf-updated-hook-performance.md` guidance).
+
 ```vue
 <template>
   <div
@@ -162,8 +168,9 @@ const progress = ref(0)
   </div>
 </template>
 
-<script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+import { useEventListener, useThrottleFn } from '@vueuse/core'
 
 const scrollY = ref(0)
 
@@ -175,17 +182,12 @@ const scrollOffset = computed(() => {
   return scrollY.value * 0.5  // Parallax effect
 })
 
-function handleScroll() {
+const handleScroll = useThrottleFn(() => {
   scrollY.value = window.scrollY
-}
+}, 16) // ~60fps
 
-onMounted(() => {
-  window.addEventListener('scroll', handleScroll, { passive: true })
-})
-
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
-})
+// `useEventListener` auto-removes the listener on scope dispose.
+useEventListener(window, 'scroll', handleScroll, { passive: true })
 </script>
 
 <style>
@@ -194,7 +196,9 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Note: No transition for scroll-based animations - they should be instant */
+  /* For decorative parallax, a small transition smooths jitter; for
+     pure scroll-locked effects, remove the transition. */
+  transition: transform 0.1s linear;
 }
 </style>
 ```
@@ -239,32 +243,35 @@ function toggleTheme() {
 
 ## Advanced: Numerical Tweening with Watchers
 
-For smooth number animations (counters, stats), use watchers with animation libraries:
+For smooth number animations (counters, stats), prefer `useTransition` from
+`@vueuse/core` — it gives you a `ref<number>` that animates without adding a
+new dependency. Only reach for a library like `gsap` when you need richer
+easing or timelines.
 
 ```vue
 <template>
   <div>
     <input v-model.number="targetNumber" type="number" />
-    <p class="counter">{{ displayNumber.toFixed(0) }}</p>
+    <p class="counter">{{ Math.round(displayNumber) }}</p>
   </div>
 </template>
 
-<script setup>
-import { computed, ref, reactive, watch } from 'vue'
-import gsap from 'gsap'
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useTransition, TransitionPresets } from '@vueuse/core'
 
+const source = ref(0)
 const targetNumber = ref(0)
-const tweened = reactive({ value: 0 })
 
-// Computed for display
-const displayNumber = computed(() => tweened.value)
+const displayNumber = useTransition(source, {
+  duration: 500,
+  transition: TransitionPresets.easeOutCubic
+})
 
-watch(targetNumber, (newValue) => {
-  gsap.to(tweened, {
-    duration: 0.5,
-    value: Number(newValue) || 0,
-    ease: 'power2.out'
-  })
+// Keep `source` in sync with the input — `useTransition` tweens the value.
+import { watch } from 'vue'
+watch(targetNumber, (next) => {
+  source.value = Number(next) || 0
 })
 </script>
 ```

@@ -207,46 +207,56 @@ function triggerAnimation() {
 
 ## Composable for Reusable Animations
 
-```javascript
-// composables/useAnimation.js
-import { ref } from 'vue'
+Prefer `@animationend` over `setTimeout` so cleanup is automatic and the
+composable doesn't leak timers on unmount (per `SKILL.md` rule 7).
 
-export function useAnimation(duration = 500) {
-  const isAnimating = ref(false)
+```ts
+// composables/useClassAnimation.ts
+import { shallowRef, onScopeDispose } from 'vue'
 
-  function trigger() {
+export function useClassAnimation() {
+  const isAnimating = shallowRef(false)
+
+  function trigger(el: HTMLElement | null) {
+    if (!el) return
     isAnimating.value = true
-    setTimeout(() => {
+
+    const onEnd = () => {
       isAnimating.value = false
-    }, duration)
+      el.removeEventListener('animationend', onEnd)
+    }
+    el.addEventListener('animationend', onEnd)
+    onScopeDispose(() => el.removeEventListener('animationend', onEnd))
   }
 
-  return {
-    isAnimating,
-    trigger
-  }
+  return { isAnimating, trigger }
 }
 ```
 
 ```vue
-<script setup>
-import { useAnimation } from '@/composables/useAnimation'
+<script setup lang="ts">
+import { useTemplateRef } from 'vue'
+import { useClassAnimation } from '@/composables/useClassAnimation'
 
-const shake = useAnimation(820)
-const pulse = useAnimation(500)
+const shakeEl = useTemplateRef<HTMLElement>('shakeEl')
+const pulseEl = useTemplateRef<HTMLElement>('pulseEl')
+const shake = useClassAnimation()
+const pulse = useClassAnimation()
 </script>
 
 <template>
   <button
-    :class="{ shake: shake.isAnimating.value }"
-    @click="shake.trigger()"
+    ref="shakeEl"
+    :class="{ shake: shake.isAnimating }"
+    @click="shake.trigger(shakeEl)"
   >
     Shake me
   </button>
 
   <button
-    :class="{ pulse: pulse.isAnimating.value }"
-    @click="pulse.trigger()"
+    ref="pulseEl"
+    :class="{ pulse: pulse.isAnimating }"
+    @click="pulse.trigger(pulseEl)"
   >
     Pulse me
   </button>

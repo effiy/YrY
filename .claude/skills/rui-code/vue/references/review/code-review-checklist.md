@@ -61,12 +61,12 @@ Severity is your judgment, but the anchors below keep it consistent.
 - [ ] `v-if` and `v-for` are never on the same element (rule 10).
 - [ ] `v-html` is not used on user-provided / untrusted content (rule 11).
 - [ ] `v-once` / `v-memo` used on truly static or expensive subtrees
-      (see [perf-v-once-v-memo-directives.md](../../perf/perf--perf-v-once-v-memo-directives.md)).
+      (see [perf-v-once-v-memo-directives.md](../../perf/perf-v-once-v-memo-directives.md)).
 - [ ] Long lists are virtualized — `useVirtualList` or equivalent
-      (see [perf-virtualize-large-lists.md](../../perf/perf--perf-virtualize-large-lists.md)).
+      (see [perf-virtualize-large-lists.md](../../perf/perf-virtualize-large-lists.md)).
 - [ ] Inline arrow handlers in `v-for` are replaced by named handlers
       bound via component abstraction, or at least hoisted
-      (see [perf-avoid-component-abstraction-in-lists.md](../../perf/perf--perf-avoid-component-abstraction-in-lists.md)).
+      (see [perf-avoid-component-abstraction-in-lists.md](../../perf/perf-avoid-component-abstraction-in-lists.md)).
 - [ ] `onUpdated` is used (not `useAttrs()` reads inside templates) for
       attr-driven side effects (rule 12).
 

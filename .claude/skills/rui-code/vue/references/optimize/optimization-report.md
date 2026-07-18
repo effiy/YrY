@@ -131,7 +131,7 @@ report entry when:
 - You are inside a `v-for` over a *hot* list (think ≥ 100 rows) and
   the pattern repeats per row. For large lists, **flatten the row**
   instead of extracting — see
-  [perf-avoid-component-abstraction-in-lists.md](../../perf/perf--perf-avoid-component-abstraction-in-lists.md).
+  [perf-avoid-component-abstraction-in-lists.md](../../perf/perf-avoid-component-abstraction-in-lists.md).
   Extraction is fine when the list itself is small (< ~20) or when
   the list is virtualized so only ~20 instances are alive at once.
 - The "component" would be a pure presentational wrapper with no
@@ -205,7 +205,7 @@ re-renders, smaller bundle, fewer SSR hydration mismatches, etc.).
 **Fix**
 A short code snippet or a one-paragraph description of the change.
 Reference the canonical doc, e.g. "see
-[perf-v-once-v-memo-directives.md](../../perf/perf--perf-v-once-v-memo-directives.md)".
+[perf-v-once-v-memo-directives.md](../../perf/perf-v-once-v-memo-directives.md)".
 
 **Verification**
 How to confirm the fix actually worked — a profile, a Lighthouse run, a
@@ -306,5 +306,5 @@ Profile with Vue DevTools' performance tab before/after; expect ~30 %
 reduction in render time on the 1k-row dataset.
 
 **Reference**
-[perf-avoid-component-abstraction-in-lists.md](../../perf/perf--perf-avoid-component-abstraction-in-lists.md)
+[perf-avoid-component-abstraction-in-lists.md](../../perf/perf-avoid-component-abstraction-in-lists.md)
 ```

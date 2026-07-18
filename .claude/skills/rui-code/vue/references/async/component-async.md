@@ -82,8 +82,8 @@ const AsyncDashboard = defineAsyncComponent({
   loader: () => import('./Dashboard.vue'),
   loadingComponent: LoadingSpinner,
   errorComponent: ErrorDisplay,
-  delay: 200,
-  timeout: 30000
+  delay: 200,   // per SKILL.md rule 8 — never drop below 200ms
+  timeout: 15000 // upper bound; typical apps use 10000-15000
 })
 </script>
 ```
@@ -93,5 +93,5 @@ const AsyncDashboard = defineAsyncComponent({
 | Scene | Recommended Delay |
 |----------|-------------------|
 | Small component, fast network | `200ms` |
-| Known heavy component | `100ms` |
+| Known heavy component | `300ms` (longer than the default — give the heavy chunk more grace, do not lower the floor) |
 | Background or non-critical UI | `300-500ms` |
