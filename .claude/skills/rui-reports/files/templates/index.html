@@ -226,7 +226,7 @@
                         <a :href="item.href" class="remediation-link">
                             <span class="remediation-marker">{{ item.marker }}</span>
                             <span class="remediation-body">
-                                <span class="remediation-file"><code>{{ item.file }}</code><span v-if="item.line" class="remediation-line">:{{ item.line }}</span></span>
+                                <span class="remediation-file"><code>{{ item.file }}</code><span v-if="item.line" class="remediation-line">:{{ item.line }}</span><button type="button" class="remediation-copy" :class="{ 'is-copied': copiedKey === item._key }" @click.stop.prevent="copyFilePath(item)" :title="'Copy path: ' + (item.line ? item.file + ':' + item.line : item.file)" :aria-label="'Copy path' + (item.line ? ' ' + item.file + ':' + item.line : ' ' + item.file)"><span class="remediation-copy-icon" aria-hidden="true">{{ copiedKey === item._key ? '✓' : '⧉' }}</span><span class="remediation-copy-text">{{ copiedKey === item._key ? 'Copied' : 'Copy' }}</span></button></span>
                                 <span class="remediation-message">{{ item.message }}</span>
                                 <span class="remediation-category" v-if="item.category">{{ item.category }}</span>
                             </span>
@@ -299,7 +299,7 @@
                         <a :href="item.href" class="remediation-link">
                             <span class="remediation-marker">{{ item.marker }}</span>
                             <span class="remediation-body">
-                                <span class="remediation-file"><code>{{ item.file }}</code><span v-if="item.line" class="remediation-line">:{{ item.line }}</span></span>
+                                <span class="remediation-file"><code>{{ item.file }}</code><span v-if="item.line" class="remediation-line">:{{ item.line }}</span><button type="button" class="remediation-copy" :class="{ 'is-copied': copiedKey === item._key }" @click.stop.prevent="copyFilePath(item)" :title="'Copy path: ' + (item.line ? item.file + ':' + item.line : item.file)" :aria-label="'Copy path' + (item.line ? ' ' + item.file + ':' + item.line : ' ' + item.file)"><span class="remediation-copy-icon" aria-hidden="true">{{ copiedKey === item._key ? '✓' : '⧉' }}</span><span class="remediation-copy-text">{{ copiedKey === item._key ? 'Copied' : 'Copy' }}</span></button></span>
                                 <span class="remediation-message">{{ item.message }}</span>
                                 <span class="remediation-category" v-if="item.category">{{ item.category }}</span>
                             </span>
@@ -373,7 +373,7 @@
                         <a :href="item.href" class="remediation-link">
                             <span class="remediation-marker">{{ item.marker }}</span>
                             <span class="remediation-body">
-                                <span class="remediation-file"><code>{{ item.file }}</code><span v-if="item.line" class="remediation-line">:{{ item.line }}</span></span>
+                                <span class="remediation-file"><code>{{ item.file }}</code><span v-if="item.line" class="remediation-line">:{{ item.line }}</span><button type="button" class="remediation-copy" :class="{ 'is-copied': copiedKey === item._key }" @click.stop.prevent="copyFilePath(item)" :title="'Copy path: ' + (item.line ? item.file + ':' + item.line : item.file)" :aria-label="'Copy path' + (item.line ? ' ' + item.file + ':' + item.line : ' ' + item.file)"><span class="remediation-copy-icon" aria-hidden="true">{{ copiedKey === item._key ? '✓' : '⧉' }}</span><span class="remediation-copy-text">{{ copiedKey === item._key ? 'Copied' : 'Copy' }}</span></button></span>
                                 <span class="remediation-message">{{ item.message }}</span>
                                 <span class="remediation-category" v-if="item.category">{{ item.category }}</span>
                             </span>

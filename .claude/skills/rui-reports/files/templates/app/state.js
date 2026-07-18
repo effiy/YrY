@@ -46,6 +46,10 @@
             activeSection: 'summary',
             readingProgress: 0,
             remediationDone: {},
+            // Tracks the most recently copied remediation file's _key so the
+            // copy button can show a brief "Copied!" confirmation. Cleared by
+            // copyFilePath() after a short timeout.
+            copiedKey: null,
             // Lazy-mount flags — only above-the-fold sections render in the
             // initial mount; the rest flip to true via IntersectionObserver
             // in lifecycle.js as they approach the viewport. This keeps the
