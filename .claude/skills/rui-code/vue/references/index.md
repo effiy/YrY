@@ -20,6 +20,8 @@ Run `python3 scripts/consolidate.py` to rebuild.
 | [4-file component pattern](./pattern/README.md) | 2 |
 | [CSS architecture](./css/README.md) | 2 |
 | [Infrastructure scripts & workflows](./infra/README.md) | 2 |
+| [Code review checklist (Vue 3 SFC)](./review/README.md) | 1 |
+| [Optimization reports (Vue 3 SFC)](./optimize/README.md) | 1 |
 | [VueUse · Animation](./vueuse-animation/README.md) | 10 |
 | [VueUse · Array](./vueuse-array/README.md) | 14 |
 | [VueUse · Browser](./vueuse-browser/README.md) | 46 |
@@ -32,4 +34,4 @@ Run `python3 scripts/consolidate.py` to rebuild.
 | [VueUse · Time](./vueuse-time/README.md) | 5 |
 | [VueUse · Utilities](./vueuse-utilities/README.md) | 26 |
 | [VueUse · Watch](./vueuse-watch/README.md) | 14 |
-| **Total** | **273** |
+| **Total** | **277** |
