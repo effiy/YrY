@@ -59,20 +59,17 @@
     <!-- ═══════════════════════════════════════════════════════════════
          Loader bootstrap with multi-source fallback. The shared
          loader.js is at <scope>/.claude/shared/loader.js. The page
-         tries four candidate URLs in order until one of them both
+         tries the candidate URLs in order until one of them both
          (a) returns 2xx and (b) sets window.__vueLoadPromise:
 
            1. ../../shared/loader.js
               — the page-relative path, correct under file:// and
                 under an HTTP server rooted at or above the project
                 (e.g. `python -m http.server` from YrY/).
-           2. ./.claude/shared/loader.js
-              — useful when the HTTP server is rooted exactly at
-                the scope directory.
-           3. /.claude/shared/loader.js
+           2. /.claude/shared/loader.js
               — useful when the HTTP server is rooted at the
                 repository root.
-           4. The jsDelivr CDN copy as a last-resort offline fallback.
+           3. The jsDelivr CDN copy as a last-resort offline fallback.
 
          The bootstrap is wrapped in an inline <script> rather than
          multiple <script src> tags because the latter would
@@ -92,8 +89,10 @@
         // The CANDIDATES array is substituted at generation time with a
         // JSON-serialized list of candidate URLs. Each candidate is
         // tried in order; the first one whose onload sets
-        // window.__vueLoadPromise short-circuits the rest.
-        var CANDIDATES = ["./loader.js","../../shared/loader.js","/.claude/shared/loader.js","https://cdn.jsdelivr.net/gh/YrY-oss/cdn@main/.claude/shared/loader.js"];
+        // window.__vueLoadPromise short-circuits the rest. All three
+        // candidates point at the canonical shared loader — there is no
+        // local copy of loader.js colocated with the page.
+        var CANDIDATES = ["../../shared/loader.js","/.claude/shared/loader.js","https://cdn.jsdelivr.net/gh/YrY-oss/cdn@main/.claude/shared/loader.js"];
         // MERMAID_CANDIDATES is paired with CANDIDATES: index 0 is the
         // local copy (used as the primary Mermaid URL), index 1 is the
         // CDN fallback. The loader only reads two values (mermaidPath +
