@@ -70,20 +70,102 @@ window.HELP_CONFIG = {
   ],
 
   // rui-panel-hub · cross-report navigation toolbar.
+  // The "Reports" button (panel: 'reports') has no entry in `urls` —
+  // clicking it dispatches `panel-hub-select`, which the host page
+  // intercepts in index.js · onPanelHubSelect to open the floating
+  // reports panel (daily / weekly / monthly tabs). All other buttons
+  // navigate directly via `urls[panel]`.
   panelHub: {
     label: { text: '📊', panel: 'reports', title: 'Documentation Centers' },
     targetBlank: false,
     buttons: [
-      {icon: '🏛', name: 'Architecture', desc: 'Markdown scenes', color: 'var(--rui-accent)', panel: 'arch'},
-      {icon: '📁', name: 'Files Report', desc: 'Codebase analysis', color: 'var(--rui-accent)', panel: 'files'},
-      {icon: '✅', name: 'Self-test', desc: 'Self-check strategy', color: 'var(--rui-cyan)', panel: 'self-test', targetBlank: false},
+      {icon: '🏛', name: 'Architecture', desc: 'Markdown scenes',     color: 'var(--rui-accent)', panel: 'arch'},
+      {icon: '📁', name: 'Files Report', desc: 'Codebase analysis',   color: 'var(--rui-accent)', panel: 'files'},
+      {icon: '📅', name: 'Reports',      desc: 'Daily / Weekly / Monthly', color: 'var(--rui-accent)', panel: 'reports'},
+      {icon: '✅', name: 'Self-test',    desc: 'Self-check strategy', color: 'var(--rui-cyan)',   panel: 'self-test', targetBlank: false},
     ],
     flow: 'Detect → Explore → Generate → Arch → Verify',
     urls: {
       arch:          'arch/index.html',
       files:         'files/index.html',
+      // reports: intentionally omitted — handled by the floating panel
       'self-test':   'self-test/index.html',
     },
+  },
+
+  // Floating reports panel · opened when the user clicks the "Reports"
+  // button above. Each tab lists the available reports of that cadence
+  // (newest first). Items are static (no backend); the latest run of the
+  // `daily` / `weekly` / `monthly` report command appends to the head.
+  //
+  // Per-item fields:
+  //   date    YYYY-MM-DD stamp (also used as the list key)
+  //   label   displayed date string (kept separately so localisation /
+  //           formatting can diverge from `date` later)
+  //   title   headline shown in the card header
+  //   href    relative path to the generated report
+  //   status  one of shipped | verified | in-review | draft
+  //           → drives the status-pill tone in the card header
+  //   summary 1–2 sentence executive summary
+  //   metrics ordered list of {label, value, tone} for the key/value strip
+  //   tags    ordered list of {label, tone} chip tokens below the body
+  //   meta    single-line trailing context (window · commits · touches)
+  reportsList: {
+    daily: [
+      {
+        date:    '2026-07-18',
+        label:   '2026-07-18',
+        title:   'Daily CTO Report · .claude/skills',
+        href:    'daily/2026-07-18/index.html',
+        status:  'verified',
+        summary: '7-day rolling health check on the rui-init pipeline: 6 commits landed, 1,264 file touches, 0 lint regressions, all 5 arch scenes + 6 self-test scenes green. One sub-skill upgrade (rui-code/vite) cleared impact review with no breaking changes.',
+        metrics: [
+          { label: 'Window',   value: '7d',        tone: 'is-neutral' },
+          { label: 'Commits',  value: '6',         tone: 'is-positive' },
+          { label: 'Touches',  value: '1,264',     tone: 'is-neutral' },
+          { label: 'Lint',     value: '0 / 0',     tone: 'is-positive' },
+          { label: 'Scenes',   value: '11 / 11',   tone: 'is-positive' },
+          { label: 'Risk',     value: 'low',       tone: 'is-positive' },
+        ],
+        tags: [
+          { label: 'rui-init',         tone: 'is-info' },
+          { label: 'self-test',        tone: 'is-pass' },
+          { label: 'sub-skill upgrade', tone: 'is-info' },
+          { label: 'doc-consistent',   tone: 'is-pass' },
+        ],
+        meta: '7d window · 6 commits · 1,264 file touches',
+      },
+      {
+        date:    '2026-07-17',
+        label:   '2026-07-17',
+        title:   'Daily CTO Report · .claude/skills',
+        href:    'daily/2026-07-17/index.html',
+        status:  'shipped',
+        summary: 'Initial seed for the daily cadence. Establishes the per-day snapshot pipeline (git log → scene diff → markdown render) and the per-cadence index that the floating Reports panel reads from.',
+        metrics: [
+          { label: 'Window',   value: '1d',        tone: 'is-neutral' },
+          { label: 'Commits',  value: '1',         tone: 'is-neutral' },
+          { label: 'Touches',  value: '48',        tone: 'is-neutral' },
+          { label: 'Lint',     value: 'n/a',       tone: 'is-neutral' },
+          { label: 'Scenes',   value: '11 / 11',   tone: 'is-positive' },
+          { label: 'Risk',     value: 'low',       tone: 'is-positive' },
+        ],
+        tags: [
+          { label: 'seed',             tone: 'is-info' },
+          { label: 'pipeline',         tone: 'is-info' },
+          { label: 'no-regression',    tone: 'is-pass' },
+        ],
+        meta: 'initial seed',
+      },
+    ],
+    weekly: [
+      // Populated by the rui-reports/weekly command; empty until the
+      // first weekly report lands under `weekly/`.
+    ],
+    monthly: [
+      // Populated by the rui-reports/monthly command; empty until the
+      // first monthly report lands under `monthly/`.
+    ],
   },
 
   // ── § 1 · Third-party dependencies & frameworks ─────────────────────────

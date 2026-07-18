@@ -160,6 +160,116 @@
       </div>
       <p class="footer-note">{{ footerNote }}</p>
     </footer>
+
+    <!--
+      Floating Reports panel · opened when the user clicks the "Reports"
+      button in <rui-panel-hub>. Backed by Vue reactive state (see
+      index.js): `reportPanelOpen` toggles overlay/panel, `activeReportTab`
+      picks the active cadence. The overlay click + Escape key both close
+      the panel. Marked up here inside <main> so it shares the Vue app's
+      reactivity; positioned `fixed` in CSS so it still floats above the
+      page rather than living in the document flow.
+    -->
+    <div
+      v-if="reportsList"
+      class="dashboard-reports-overlay"
+      :class="{ 'is-open': reportPanelOpen }"
+      @click="closeReportPanel"
+      aria-hidden="true"
+    ></div>
+    <section
+      v-if="reportsList"
+      class="dashboard-reports-panel"
+      :class="{ 'is-open': reportPanelOpen }"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="dashboard-reports-title"
+    >
+      <header class="reports-panel-header">
+        <h2 id="dashboard-reports-title" class="reports-panel-title">
+          <span aria-hidden="true">📅</span>
+          Reports
+        </h2>
+        <button
+          type="button"
+          class="reports-panel-close"
+          aria-label="Close reports panel"
+          @click="closeReportPanel"
+        >×</button>
+      </header>
+      <nav class="reports-panel-tabs" role="tablist" aria-label="Report cadence">
+        <button
+          v-for="tab in reportTabs"
+          :key="tab.key"
+          type="button"
+          role="tab"
+          :aria-selected="activeReportTab === tab.key"
+          :class="['reports-panel-tab', { 'is-active': activeReportTab === tab.key }]"
+          @click="selectReportTab(tab.key)"
+        >
+          <span class="reports-panel-tab-icon" aria-hidden="true">{{ tab.icon }}</span>
+          <span class="reports-panel-tab-label">{{ tab.label }}</span>
+          <span class="reports-panel-tab-count">{{ (reportsList[tab.key] || []).length }}</span>
+        </button>
+      </nav>
+      <div class="reports-panel-body" role="tabpanel">
+        <ul v-if="activeReportItems.length" class="reports-panel-list">
+          <li
+            v-for="item in activeReportItems"
+            :key="item.href"
+            class="reports-panel-item"
+          >
+            <a :href="item.href" class="reports-panel-item-link" target="_blank" rel="noopener">
+              <header class="reports-panel-item-head">
+                <span class="reports-panel-item-date">{{ item.label }}</span>
+                <span class="reports-panel-item-title">{{ item.title }}</span>
+                <span
+                  v-if="item.status"
+                  class="reports-panel-item-status"
+                  :class="['is-' + item.status]"
+                >{{ item.status }}</span>
+              </header>
+
+              <p v-if="item.summary" class="reports-panel-item-summary">{{ item.summary }}</p>
+
+              <dl
+                v-if="item.metrics && item.metrics.length"
+                class="reports-panel-item-metrics"
+              >
+                <div
+                  v-for="m in item.metrics"
+                  :key="m.label"
+                  class="reports-panel-item-metric"
+                  :class="m.tone"
+                >
+                  <dt class="reports-panel-item-metric-label">{{ m.label }}</dt>
+                  <dd class="reports-panel-item-metric-value">{{ m.value }}</dd>
+                </div>
+              </dl>
+
+              <footer class="reports-panel-item-foot">
+                <ul
+                  v-if="item.tags && item.tags.length"
+                  class="reports-panel-item-tags"
+                >
+                  <li
+                    v-for="t in item.tags"
+                    :key="t.label"
+                    class="reports-panel-item-tag"
+                    :class="t.tone"
+                  >{{ t.label }}</li>
+                </ul>
+                <span v-if="item.meta" class="reports-panel-item-meta">{{ item.meta }}</span>
+              </footer>
+            </a>
+          </li>
+        </ul>
+        <p v-else class="reports-panel-empty">
+          No <strong>{{ activeReportTab }}</strong> reports yet.
+          Run the <code>/{{ activeReportTab }} report</code> command to generate the first one.
+        </p>
+      </div>
+    </section>
   </main>
 
   <!-- Script load order: data.js MUST precede index.js -->

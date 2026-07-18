@@ -105,19 +105,64 @@ window.HELP_CONFIG = {
     },
   },
 
-  // Three main sections are emitted in this fixed order. Each section
-  // is a `rui-scene-card` group; the section title and meta are
-  // rendered by the dashboard shell, not by the card.
+  // Floating reports panel · opened by the "Reports" button in
+  // <rui-panel-hub>. The panel is owned by index.html + index.js; this
+  // block is the per-cadence list it reads from. The list shape is
+  // mirror-imaged across daily / weekly / monthly, so the same
+  // `<rui-scene-card>`-style four-row item renders for every cadence
+  // (header · summary · metrics · tags + meta).
   //
-  //   § 1  Third-party dependencies & frameworks — runtime + dev
-  //   § 2  Story documents & scenes              — arch + self-test
-  //   § 3  Main source code                      — by directory/category
+  // Per-item fields:
+  //   date    YYYY-MM-DD stamp (also used as the list key)
+  //   label   displayed date string (kept separately so localisation /
+  //           formatting can diverge from `date` later)
+  //   title   headline shown in the card header
+  //   href    relative path to the generated report
+  //   status  one of shipped | verified | in-review | draft
+  //           → drives the status-pill tone in the card header
+  //   summary 1–2 sentence executive summary
+  //   metrics ordered list of {label, value, tone} for the key/value strip
+  //   tags    ordered list of {label, tone} chip tokens below the body
+  //   meta    single-line trailing context (window · commits · touches)
   //
-  // The data-model generator (rui-init-generate) reads profile +
-  // exploration to populate these groups; the template below is a
-  // minimal placeholder showing the canonical three-section shape.
-  sections: [
+  // Replace the placeholder entries below with the project's real
+  // reports once the rui-reports/daily, rui-reports/weekly and
+  // rui-reports/monthly commands start emitting them.
+  reportsList: {
+    daily: [
+      {
+        date:    'YYYY-MM-DD',
+        label:   'YYYY-MM-DD',
+        title:   'Daily Report · <project>',
+        href:    'daily/YYYY-MM-DD/index.html',
+        status:  'shipped',
+        summary: 'Per-day health check: commits landed, file touches, lint / scene regressions, and any sub-skill upgrade that cleared impact review. Replace this stub with the rui-reports/daily output once it lands.',
+        metrics: [
+          { label: 'Window',   value: '1d',        tone: 'is-neutral' },
+          { label: 'Commits',  value: 'n/a',       tone: 'is-neutral' },
+          { label: 'Touches',  value: 'n/a',       tone: 'is-neutral' },
+          { label: 'Lint',     value: 'n/a',       tone: 'is-neutral' },
+          { label: 'Scenes',   value: 'n / n',     tone: 'is-neutral' },
+          { label: 'Risk',     value: 'unknown',   tone: 'is-warn'   },
+        ],
+        tags: [
+          { label: 'stub',      tone: 'is-info' },
+          { label: 'pipeline',  tone: 'is-info' },
+        ],
+        meta: 'placeholder · populate via /daily report',
+      },
+    ],
+    weekly: [
+      // Populated by the rui-reports/weekly command; empty until the
+      // first weekly report lands under `weekly/`.
+    ],
+    monthly: [
+      // Populated by the rui-reports/monthly command; empty until the
+      // first monthly report lands under `monthly/`.
+    ],
+  },
     // ── § 1 · Third-party dependencies & frameworks ────────────────────
+  sections: [
     {
       id:    "section-dependencies",
       badge: "1",

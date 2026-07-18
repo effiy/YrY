@@ -170,21 +170,56 @@
     app = Vue.createApp({
       data: function () {
         return {
-          titleIcon:    config.titleIcon   || '★',
-          title:        config.title       || '',
-          tagline:      config.tagline     || '',
-          breadcrumb:   config.breadcrumb  || [],
-          stats:        _resolveStats(config.stats),
-          panelHub:     config.panelHub    || null,
-          sections:     config.sections    || [],
-          footerLinks:  config.footerLinks || [],
-          footerNote:   config.footerNote  || ''
+          titleIcon:        config.titleIcon   || '★',
+          title:            config.title       || '',
+          tagline:          config.tagline     || '',
+          breadcrumb:       config.breadcrumb  || [],
+          stats:            _resolveStats(config.stats),
+          panelHub:         config.panelHub    || null,
+          sections:         config.sections    || [],
+          footerLinks:      config.footerLinks || [],
+          footerNote:       config.footerNote  || '',
+
+          // Floating Reports panel — opened by the "Reports" button in
+          // <rui-panel-hub>. `reportTabs` is derived once (cadence key +
+          // label + icon); `reportsList` is the per-cadence list from
+          // data.js. `reportPanelOpen` toggles the overlay/panel via the
+          // `is-open` class on the corresponding elements.
+          reportPanelOpen:  false,
+          activeReportTab:  'daily',
+          reportTabs: [
+            { key: 'daily',   label: '日报', icon: '☀️' },
+            { key: 'weekly',  label: '周报', icon: '📅' },
+            { key: 'monthly', label: '月报', icon: '🗓' }
+          ],
+          reportsList:      config.reportsList || null
         };
+      },
+
+      computed: {
+        // Items in the currently active tab. The Vue template re-renders
+        // whenever `activeReportTab` changes, so the panel body swaps
+        // instantly without a re-render of the header / tabs.
+        activeReportItems: function () {
+          if (!this.reportsList) return [];
+          return this.reportsList[this.activeReportTab] || [];
+        }
       },
 
       methods: {
         linkAttrs:     linkAttrs,
         sceneCardFor:  sceneCardFor,
+
+        openReportPanel: function (initialTab) {
+          this.activeReportTab = initialTab || 'daily';
+          this.reportPanelOpen = true;
+        },
+        closeReportPanel: function () {
+          this.reportPanelOpen = false;
+        },
+        selectReportTab: function (key) {
+          this.activeReportTab = key;
+        },
 
         // Cross-report navigation: <rui-panel-hub> dispatches
         // 'panel-hub-select' (detail: { panel }) ONLY when the host
@@ -195,12 +230,24 @@
         // `targetBlank` panelHub-level default — see
         // shared/components/rui-panel-hub/index.js.
         //
-        // This handler is kept as a fallback so that pages without a
-        // `urls` map (e.g. panel-hub driving a floating panel via
-        // window.PanelHub.open) still work.
-        onPanelHubSelect: function (panel) {
+        // The component dispatches a native CustomEvent on its root
+        // element (`this.$el.dispatchEvent(new CustomEvent('panel-hub-select',
+        // { detail: { panel } }))`), so Vue 3 passes the event object
+        // to the @panel-hub-select handler. Unwrap detail.panel here
+        // so the rest of the handler can treat `panel` as a plain
+        // string. The "Reports" button intentionally omits a URL — it
+        // opens the floating reports panel (daily / weekly / monthly
+        // tabs) via Vue state instead of navigating away.
+        onPanelHubSelect: function (evt) {
+          var panel = (evt && evt.detail && typeof evt.detail === 'object')
+            ? evt.detail.panel
+            : evt;
           var ph = this.panelHub;
           if (!ph) return;
+          if (panel === 'reports') {
+            this.openReportPanel('daily');
+            return;
+          }
           var url = (ph.urls || {})[panel];
           if (!url) return;
           var btn = (ph.buttons || []).filter(function (b) { return b && b.panel === panel; })[0];
@@ -237,6 +284,12 @@
           passive: true,
           signal: self._ctrl.signal
         });
+        // Esc closes the floating reports panel when it is open. Bound
+        // to the same AbortController as the scroll listener so
+        // beforeUnmount tears it down without a separate handle.
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && self.reportPanelOpen) self.closeReportPanel();
+        }, { signal: self._ctrl.signal });
         self.$nextTick(function () { self.syncScrollState(); });
       },
 
