@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dependency Reports</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; background: #020617; color: #fff; padding: 32px; }
+    main { max-width: 1100px; margin: 0 auto; }
+    h1 { margin: 0 0 12px; font-size: 28px; }
+    p { color: #94a3b8; line-height: 1.7; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 24px; }
+    a.card { display: block; padding: 16px 18px; border: 1px solid #1e293b; border-radius: 14px; background: rgba(15, 23, 42, 0.72); color: inherit; text-decoration: none; }
+    a.card:hover { border-color: #334155; background: rgba(30, 41, 59, 0.82); }
+    .meta { color: #22d3ee; font-size: 12px; margin-top: 8px; }
+    .sub { color: #94a3b8; font-size: 12px; margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Third-Party Dependency Reports</h1>
+    <p>基于 <code>.claude/skills</code> 的静态扫描结果生成。每个页面都会展示 manifest 声明、命中文件、技能分布和从 docs 首页卡片回链后的钻取视图。</p>
+    <div class="grid">
+      <a class="card" href="graphology/index.html"><strong>graphology</strong><div class="meta">runtime · ^0.26.0</div><div class="sub">3 hit files · 1 skill roots · top rui-reports/diagram</div></a>
+      <a class="card" href="graphology-communities-louvain/index.html"><strong>graphology-communities-louvain</strong><div class="meta">runtime · ^2.0.2</div><div class="sub">3 hit files · 1 skill roots · top rui-reports/diagram</div></a>
+      <a class="card" href="fuse-js/index.html"><strong>fuse.js</strong><div class="meta">runtime · ^7.1.0</div><div class="sub">3 hit files · 1 skill roots · top rui-reports/diagram</div></a>
+      <a class="card" href="web-tree-sitter/index.html"><strong>web-tree-sitter</strong><div class="meta">runtime · ^0.26.6</div><div class="sub">6 hit files · 1 skill roots · top rui-reports/diagram</div></a>
+      <a class="card" href="yaml/index.html"><strong>yaml</strong><div class="meta">runtime · ^2.8.3</div><div class="sub">28 hit files · 6 skill roots · top rui-reports/diagram</div></a>
+      <a class="card" href="zod/index.html"><strong>zod</strong><div class="meta">runtime · ^4.3.6</div><div class="sub">10 hit files · 4 skill roots · top rui-reports/diagram</div></a>
+      <a class="card" href="ignore/index.html"><strong>ignore</strong><div class="meta">runtime · ^7.0.5</div><div class="sub">42 hit files · 11 skill roots · top rui-reports/diagram</div></a>
+      <a class="card" href="beautiful-mermaid/index.html"><strong>beautiful-mermaid</strong><div class="meta">runtime · docs-only</div><div class="sub">2 hit files · 1 skill roots · top rui-tools/mermaid</div></a>
+      <a class="card" href="tree-sitter-typescript/index.html"><strong>tree-sitter-typescript</strong><div class="meta">runtime · ^0.23.2</div><div class="sub">4 hit files · 1 skill roots · top rui-reports/diagram</div></a>
+      <a class="card" href="tree-sitter-javascript/index.html"><strong>tree-sitter-javascript</strong><div class="meta">runtime · ^0.25.0</div><div class="sub">4 hit files · 1 skill roots · top rui-reports/diagram</div></a>
+      <a class="card" href="tree-sitter-python/index.html"><strong>tree-sitter-python</strong><div class="meta">runtime · ^0.25.0</div><div class="sub">3 hit files · 1 skill roots · top rui-reports/diagram</div></a>
+      <a class="card" href="tree-sitter-go/index.html"><strong>tree-sitter-go</strong><div class="meta">runtime · ^0.25.0</div><div class="sub">3 hit files · 1 skill roots · top rui-reports/diagram</div></a>
+      <a class="card" href="tree-sitter-rust/index.html"><strong>tree-sitter-rust</strong><div class="meta">runtime · ^0.24.0</div><div class="sub">4 hit files · 1 skill roots · top rui-reports/diagram</div></a>
+      <a class="card" href="tree-sitter-cpp/index.html"><strong>tree-sitter-cpp</strong><div class="meta">runtime · ^0.23.4</div><div class="sub">4 hit files · 1 skill roots · top rui-reports/diagram</div></a>
+      <a class="card" href="tree-sitter-c-sharp/index.html"><strong>tree-sitter-c-sharp</strong><div class="meta">runtime · ^0.23.1</div><div class="sub">4 hit files · 1 skill roots · top rui-reports/diagram</div></a>
+      <a class="card" href="tree-sitter-java/index.html"><strong>tree-sitter-java</strong><div class="meta">runtime · ^0.23.5</div><div class="sub">6 hit files · 1 skill roots · top rui-reports/diagram</div></a>
+      <a class="card" href="tree-sitter-php/index.html"><strong>tree-sitter-php</strong><div class="meta">runtime · ^0.23.11</div><div class="sub">4 hit files · 1 skill roots · top rui-reports/diagram</div></a>
+      <a class="card" href="tree-sitter-ruby/index.html"><strong>tree-sitter-ruby</strong><div class="meta">runtime · ^0.23.1</div><div class="sub">3 hit files · 1 skill roots · top rui-reports/diagram</div></a>
+      <a class="card" href="tree-sitter-grammars-tree-sitter-kotlin/index.html"><strong>@tree-sitter-grammars/tree-sitter-kotlin</strong><div class="meta">runtime · 1.1.0</div><div class="sub">3 hit files · 1 skill roots · top rui-reports/diagram</div></a>
+      <a class="card" href="vitest/index.html"><strong>vitest</strong><div class="meta">dev · ^3.1.0</div><div class="sub">35 hit files · 7 skill roots · top rui-test</div></a>
+    </div>
+  </main>
+</body>
+</html>

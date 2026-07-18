@@ -53,12 +53,14 @@
           // utility is styled in index.css so it still pops on the dashboard
           // palette.
           desc: [it.description, it.meta].filter(Boolean).join('<br>'),
-          // items: build a custom link entry for the demo button. Passing
-          // links: [] suppresses the data.js defaultLinks (the generic
-          // placeholder entries that don't apply to this dashboard).
-          links: it.demoHref
-            ? [{ label: it.demoLabel || 'Interactive Demo →', href: it.demoHref, target: '_blank' }]
-            : [],
+          // items: allow per-card explicit links from data.js. When absent,
+          // keep the older demoHref bridge so existing generated cards
+          // continue to render a single footer action.
+          links: Array.isArray(it.links)
+            ? it.links
+            : (it.demoHref
+              ? [{ label: it.demoLabel || 'Interactive Demo →', href: it.demoHref, target: '_blank' }]
+              : []),
           // Staggered card entrance delay (rui-scene-card reads --card-delay).
           style: { '--card-delay': (0.01 + (i % 20) * 0.012) + 's' }
         };
