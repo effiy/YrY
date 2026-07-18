@@ -152,6 +152,41 @@ These are not Vue-specific; flag when reviewing Vue code anyway.
 - [ ] `aria-*` attributes are bound reactively, not hard-coded strings.
 - [ ] `v-if` removes focusable content from the tab order correctly.
 
+## 11. Component Extraction Signals
+
+The review should flag inline code that should be a standalone SFC
+— this is a maintainability win that code review catches before an
+optimization report does. Every flag cites one of the five
+detection heuristics (#1–#5) and a target file. Full detection
+logic, signal catalog, transformation recipe, and before/after
+cookbook in
+[component-extraction.md](../extract/component-extraction.md).
+
+- [ ] **#1 — Repeated structural pattern:** the same markup block
+      appears 3+ times in the template (same opening tag + same
+      class, or three siblings line-for-line identical except for
+      bound values).
+- [ ] **#2 — Local reactive state:** a region of the template owns
+      a `ref` / `reactive` whose matching `v-if` / `v-show` is
+      confined to that region — extract and let the region own the
+      lifecycle.
+- [ ] **#3 — Nesting + size:** a single template branch is more
+      than 3 levels deep *and* more than ~30 lines.
+- [ ] **#4 — Mixed concerns:** two visually distinct regions in one
+      SFC share only imports, not behavior; the CSS file has two
+      unconnected class groups; editing one region's tests forces
+      re-running the other's.
+- [ ] **#5 — Reusable UI primitive inlined:** `class="btn"` /
+      `class="card"` / `class="chip"` / `class="modal"` / etc.
+      pasted into ≥ 3 files; a manual `tabindex="0"` +
+      `@keydown.enter` + `@keydown.space` on a `<div>` that should
+      be a real `<button>` (also flag in § 10 Accessibility).
+
+When flagging, also confirm none of the anti-patterns apply
+(single occurrence, 5+ props, hot list, pure presentational
+wrapper) — see
+[component-extraction.md § Anti-patterns](../extract/component-extraction.md#anti-patterns).
+
 ## Severity anchors
 
 | Severity | Example |

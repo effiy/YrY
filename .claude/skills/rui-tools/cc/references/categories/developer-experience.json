@@ -1,0 +1,118 @@
+{
+  "name": "Developer Experience",
+  "slug": "developer-experience",
+  "source_id": "awesome-claude-code-subagents",
+  "file": "categories/developer-experience.json",
+  "topics": [
+    {
+      "name": "Developer Experience",
+      "resources": [
+        {
+          "category": "Developer Experience",
+          "topic": "Developer Experience",
+          "title": "build-engineer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/build-engineer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Developer Experience",
+          "topic": "Developer Experience",
+          "title": "cli-developer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/cli-developer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Developer Experience",
+          "topic": "Developer Experience",
+          "title": "dependency-manager",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/dependency-manager.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Developer Experience",
+          "topic": "Developer Experience",
+          "title": "documentation-engineer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/documentation-engineer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Developer Experience",
+          "topic": "Developer Experience",
+          "title": "dx-optimizer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/dx-optimizer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Developer Experience",
+          "topic": "Developer Experience",
+          "title": "git-workflow-manager",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/git-workflow-manager.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Developer Experience",
+          "topic": "Developer Experience",
+          "title": "legacy-modernizer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/legacy-modernizer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Developer Experience",
+          "topic": "Developer Experience",
+          "title": "mcp-developer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/mcp-developer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Developer Experience",
+          "topic": "Developer Experience",
+          "title": "powershell-ui-architect",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/powershell-ui-architect.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Developer Experience",
+          "topic": "Developer Experience",
+          "title": "powershell-module-architect",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/powershell-module-architect.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Developer Experience",
+          "topic": "Developer Experience",
+          "title": "readme-generator",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/readme-generator.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Developer Experience",
+          "topic": "Developer Experience",
+          "title": "refactoring-specialist",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/refactoring-specialist.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Developer Experience",
+          "topic": "Developer Experience",
+          "title": "slack-expert",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/slack-expert.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Developer Experience",
+          "topic": "Developer Experience",
+          "title": "tooling-engineer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/tooling-engineer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Developer Experience",
+          "topic": "Developer Experience",
+          "title": "visual-asset-generator",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/06-developer-experience/visual-asset-generator.md",
+          "source": "awesome-claude-code-subagents"
+        }
+      ]
+    }
+  ]
+}

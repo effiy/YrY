@@ -1,0 +1,76 @@
+{
+  "name": "SKILL COLLECTIONS",
+  "slug": "skill-collections",
+  "source_id": "awesome-claude-code-subagents",
+  "file": "categories/skill-collections.json",
+  "topics": [
+    {
+      "name": "SKILL COLLECTIONS",
+      "resources": [
+        {
+          "category": "SKILL COLLECTIONS",
+          "topic": "SKILL COLLECTIONS",
+          "title": "mattpocock/skills",
+          "url": "https://github.com/mattpocock/skills",
+          "source": "claude-code-best-practice"
+        },
+        {
+          "category": "SKILL COLLECTIONS",
+          "topic": "SKILL COLLECTIONS",
+          "title": "anthropics/skills",
+          "url": "https://github.com/anthropics/skills",
+          "source": "claude-code-best-practice"
+        },
+        {
+          "category": "SKILL COLLECTIONS",
+          "topic": "SKILL COLLECTIONS",
+          "title": "Egonex-AI/Understand-Anything",
+          "url": "https://github.com/Egonex-AI/Understand-Anything",
+          "source": "claude-code-best-practice"
+        },
+        {
+          "category": "SKILL COLLECTIONS",
+          "topic": "SKILL COLLECTIONS",
+          "title": "wshobson/agents",
+          "url": "https://github.com/wshobson/agents",
+          "source": "claude-code-best-practice"
+        },
+        {
+          "category": "SKILL COLLECTIONS",
+          "topic": "SKILL COLLECTIONS",
+          "title": "scientific-agent-skills",
+          "url": "https://github.com/K-Dense-AI/scientific-agent-skills",
+          "source": "claude-code-best-practice"
+        },
+        {
+          "category": "SKILL COLLECTIONS",
+          "topic": "SKILL COLLECTIONS",
+          "title": "awesome-agent-skills",
+          "url": "https://github.com/VoltAgent/awesome-agent-skills",
+          "source": "claude-code-best-practice"
+        },
+        {
+          "category": "SKILL COLLECTIONS",
+          "topic": "SKILL COLLECTIONS",
+          "title": "impeccable",
+          "url": "https://github.com/pbakaus/impeccable",
+          "source": "claude-code-best-practice"
+        },
+        {
+          "category": "SKILL COLLECTIONS",
+          "topic": "SKILL COLLECTIONS",
+          "title": "claude-skills",
+          "url": "https://github.com/alirezarezvani/claude-skills",
+          "source": "claude-code-best-practice"
+        },
+        {
+          "category": "SKILL COLLECTIONS",
+          "topic": "SKILL COLLECTIONS",
+          "title": "shanraisshan/draw-json-architecture-skill",
+          "url": "https://github.com/shanraisshan/draw-json-architecture-skill",
+          "source": "claude-code-best-practice"
+        }
+      ]
+    }
+  ]
+}

@@ -7,6 +7,12 @@
  * scoring.md). Emits window.REPORT_DATA containing the full records
  * and adjacency map in a single data.js.
  *
+ * Architecture
+ * ------------
+ * This file is the orchestrator. Pure helpers live in `./lib/utils.mjs`
+ * (exclusion globs, type map, formatting, numeric summaries, score
+ * helpers) and `./lib/alerts.mjs` (alert-enrichment templates + push).
+ *
  * Usage:  node scripts/analyze.mjs <scope> <outDir>
  *         scope  — absolute path to walk
  *         outDir — absolute path to write data.js
@@ -15,6 +21,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
+
+import {
+    resolveExcludes, isExcluded, typeOf, humanBytes,
+    pct, mean, median, rate, gradeOf,
+} from './lib/utils.mjs';
+import { pushAlert } from './lib/alerts.mjs';
 
 const [, , SCOPE, OUT_DIR] = process.argv;
 if (!SCOPE || !OUT_DIR) {
@@ -28,75 +40,7 @@ if (!fs.existsSync(absScope)) {
     process.exit(3);
 }
 
-/* ── Default exclusion globs (rules/analysis-contracts.md) ────────────
-   Single source of truth: derived into both the find(1) CLI args and
-   the in-memory isExcluded() filter.
-
-   Override via env vars (comma-separated, REPLACE the default):
-     RUI_EXCLUDE_DIRS   — e.g. RUI_EXCLUDE_DIRS="node_modules,.git,dist"
-                          Useful when the scope itself lives under an
-                          excluded segment (e.g. analyzing .claude/...).
-     RUI_EXCLUDE_FILES  — e.g. RUI_EXCLUDE_FILES=".DS_Store"            */
-const DEFAULT_EXCLUDE_DIRS = [
-    'node_modules', '.git', 'dist', 'build', '.next', '.turbo',
-    'coverage', '.memory', '.claude', 'target', 'intermediate',
-];
-const DEFAULT_EXCLUDE_FILES = ['.DS_Store'];
-
-function parseListEnv(name) {
-    const raw = process.env[name];
-    if (raw === undefined) return null;
-    return raw.split(',').map(s => s.trim()).filter(Boolean);
-}
-
-const EXCLUDE_DIRS = parseListEnv('RUI_EXCLUDE_DIRS') || DEFAULT_EXCLUDE_DIRS;
-const EXCLUDE_FILES = parseListEnv('RUI_EXCLUDE_FILES') || DEFAULT_EXCLUDE_FILES;
-
-const EXCLUDES = [
-    ...EXCLUDE_DIRS.map(d => `**/${d}/**`),
-    ...EXCLUDE_FILES.map(f => `**/${f}`),
-];
-
-function isExcluded(relPath) {
-    const p = relPath.split(path.sep).join('/');
-    for (const g of EXCLUDES) {
-        if (matchGlob(g, p)) return true;
-    }
-    return false;
-}
-
-function matchGlob(glob, str) {
-    // Convert **/x/** to regex
-    let re = glob
-        .replace(/[.+^${}()|[\]\\]/g, '\\$&')
-        .replace(/\*\*/g, '::DOUBLESTAR::')
-        .replace(/\*/g, '[^/]*')
-        .replace(/::DOUBLESTAR::/g, '.*');
-    re = '^' + re + '$';
-    return new RegExp(re).test(str);
-}
-
-/* ── Type mapping (Stage 1) ─────────────────────────────────────────── */
-const EXT_TO_TYPE = {
-    '.js': 'js', '.mjs': 'mjs', '.cjs': 'cjs', '.jsx': 'jsx',
-    '.ts': 'ts', '.tsx': 'tsx',
-    '.vue': 'vue', '.py': 'py', '.go': 'go', '.java': 'java',
-    '.rs': 'rust', '.css': 'css', '.scss': 'scss',
-};
-
-function typeOf(file) {
-    if (file.endsWith('.d.ts')) return 'ts';
-    const ext = path.extname(file).toLowerCase();
-    return EXT_TO_TYPE[ext] || 'other';
-}
-
-/* ── Human bytes ─────────────────────────────────────────────────────── */
-function humanBytes(n) {
-    if (n < 1024) return `${n} B`;
-    if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
-    if (n < 1024 * 1024 * 1024) return `${(n / 1024 / 1024).toFixed(1)} MB`;
-    return `${(n / 1024 / 1024 / 1024).toFixed(2)} GB`;
-}
+const { dirs: EXCLUDE_DIRS, files: EXCLUDE_FILES, globs: EXCLUDES } = resolveExcludes();
 
 /* ── Stage 1: walk + per-file metrics ───────────────────────────────── */
 console.log('[stage1] walking scope…');
@@ -123,7 +67,7 @@ try {
 console.log(`  ${filePaths.length} files in ${Date.now() - t0}ms`);
 
 /* Filter (just in case find missed something) */
-filePaths = filePaths.filter(p => !isExcluded(path.relative(absScope, p)));
+filePaths = filePaths.filter(p => !isExcluded(path.relative(absScope, p), EXCLUDES));
 
 /* Batch stat: bytes + mtime in one call per file via stat -f */
 const statMap = new Map();
@@ -428,22 +372,6 @@ for (const r of records) {
     const tos = adjacency.get(r.absPath);
     if (tos && tos.size > 0) depPop.push(maxDepths.get(r.absPath) || 0);
 }
-function pct(arr, p) {
-    if (arr.length === 0) return 0;
-    const sorted = arr.slice().sort((a, b) => a - b);
-    const rank = Math.max(0, Math.ceil(p / 100 * sorted.length) - 1);
-    return sorted[rank];
-}
-function mean(arr) {
-    if (arr.length === 0) return 0;
-    return +(arr.reduce((s, x) => s + x, 0) / arr.length).toFixed(2);
-}
-function median(arr) {
-    if (arr.length === 0) return 0;
-    const sorted = arr.slice().sort((a, b) => a - b);
-    const mid = Math.floor(sorted.length / 2);
-    return sorted.length % 2 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
-}
 const depthMax = depPop.length ? Math.max(...depPop) : 0;
 const depthStats = {
     max: depthMax,
@@ -699,9 +627,6 @@ const stale90to180 = records.filter(r => {
     return a >= 90 && a < 180;
 }).length;
 
-function rate(count, budget) {
-    return 100 * (1 - Math.min(1, count / budget));
-}
 const sizeScore = rate(critSizeCount, 50) * 0.5 + rate(warnSizeCount, 100) * 0.5;
 const depthScore = rate(depthGt15, 30) * 0.5 + rate(depth8to15, 80) * 0.5;
 const cycleScore = rate(cyclesLenGte3, 20) * 0.5 + rate(cyclesLen2, 50) * 0.5;
@@ -711,333 +636,26 @@ const freshScore = rate(staleGt365, 50) * 0.4 + rate(stale180to365, 100) * 0.3 +
 const filesScore = Math.round(
     sizeScore * 0.30 + depthScore * 0.20 + cycleScore * 0.20 + couplingScore * 0.15 + freshScore * 0.15
 );
-function gradeOf(v) {
-    if (v >= 90) return 'A';
-    if (v >= 75) return 'B';
-    if (v >= 60) return 'C';
-    if (v >= 40) return 'D';
-    return 'F';
-}
 
-/* ── Alerts (P0/P1/P2) ──────────────────────────────────────────────── */
-const alerts = [];
-
-/**
- * Per-alert professional enrichment. Produces a stable, page-facing
- * payload:
- *   - `metric`               short measurement chip (e.g., "2840 LOC")
- *   - `impact`               one-line professional impact statement
- *   - `risk`                 "if left unfixed" risk sentence
- *   - `blastRadius`          estimated # of dependents at risk (string)
- *   - `effort`               'low' | 'medium' | 'high'
- *   - `estimatedHours`       rough time-to-fix (number, 0 = unknown)
- *   - `scoreUplift`          health-score points recoverable (number)
- *   - `recommendations`      2–5 concrete, professional action items
- *   - `acceptance`           2–4 acceptance-criteria checks for the fix
- *   - `firstStep`            the single concrete first action to take
- *   - `tooling`              [{name, hint}] specific tools that help
- *   - `preventiveControls`   CI / lint guards to prevent regression
- *   - `rollbackPlan`         how to revert if the fix misfires
- *
- * Categories not listed fall back to a neutral default so the
- * remediation queue still renders.
+/* ── Alerts (P0/P1/P2) ──────────────────────────────────────────────── *
+ * Enrichment templates and `push()` live in `./lib/alerts.mjs`. The
+ * local helpers in this file only feed raw `ctx` payloads — all
+ * professional copy (impact, risk, recommendations, etc.) is owned by
+ * the lib so the page-facing strings are the single source of truth.
  */
-function enrichAlert(category, ctx) {
-    const c = (category || '').toLowerCase();
-    const base = {
-        metric: '', impact: '', risk: '', blastRadius: '',
-        effort: 'medium', estimatedHours: 0, scoreUplift: 0,
-        recommendations: [], acceptance: [],
-        firstStep: '', tooling: [], preventiveControls: [], rollbackPlan: '',
-    };
-    if (c === 'bloat' || c === 'size') {
-        const lines = ctx?.lines || 0;
-        const fanOut = ctx?.fanOut || 0;
-        const over = lines > 2000 ? 'high' : lines > 1000 ? 'medium' : 'low';
-        const hrs = lines > 2000 ? 16 : lines > 1000 ? 8 : 4;
-        const blast = fanOut > 0 ? `${fanOut} direct importer(s)` : 'file-local + reviewers';
-        return Object.assign(base, {
-            metric: `${lines} LOC`,
-            impact: 'Large file → high cognitive load, merge conflicts, review fatigue, slower onboarding.',
-            risk: 'If left unfixed: every PR touching this file scales linearly in review time, and defect density compounds with each new branch.',
-            blastRadius: blast,
-            effort: over,
-            estimatedHours: hrs,
-            scoreUplift: lines > 1000 ? 8 : 4,
-            recommendations: [
-                `Split by responsibility: extract cohesive regions into ${ctx?.file || 'this file'}/{a,b}.ext and re-export from a barrel index.`,
-                'Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.',
-                'Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.',
-                'After the split, re-run this report and confirm fan-out / depth drop before merge.',
-            ],
-            acceptance: [
-                'Each split child ≤ 500 LOC (or project threshold) and single-responsibility.',
-                'Public API unchanged — existing call sites compile without edits.',
-                'Unit tests pass on every child; coverage ≥ pre-split baseline.',
-                'Re-run this report: original file no longer triggers the bloat alert.',
-            ],
-            firstStep: `Open ${ctx?.file || 'the file'} and list its top-level responsibilities (one sentence each) — that list becomes the split plan.`,
-            tooling: [
-                { name: 'eslint-plugin-import', hint: 'enforce per-file LOC budgets via max-lines + boundary rules' },
-                { name: 'knip', hint: 'confirm the split does not strand dead exports' },
-                { name: 'madge', hint: 'visualize post-split dependency tree to confirm shallower depth' },
-            ],
-            preventiveControls: [
-                'CI rule: fail any PR that adds > 100 LOC to a file already over 1000 LOC.',
-                'Pre-commit hook: warn on files crossing 500 LOC.',
-                'CODEOWNERS: require module-owner review on the barrel index file.',
-            ],
-            rollbackPlan: 'Revert the merge commit; the barrel index re-exports the original single file, so call sites are unaffected. Keep the split children behind a feature flag for one release if call sites were edited.',
-        });
-    }
-    if (c === 'cycle') {
-        const len = ctx?.length || 2;
-        const hrs = len >= 3 ? 12 : 6;
-        return Object.assign(base, {
-            metric: `cycle len ${len}`,
-            impact: 'Circular import → init-order bugs, tree-shaking breakage, hot-reload instability, test interference.',
-            risk: 'If left unfixed: bundlers may emit runtime errors in production-only configurations, and any edit to a cycle member can silently break the other.',
-            blastRadius: `${len} module(s) in the cycle + their transitive importers`,
-            effort: len >= 3 ? 'high' : 'medium',
-            estimatedHours: hrs,
-            scoreUplift: len >= 3 ? 12 : 6,
-            recommendations: [
-                'Extract the shared dependency into a lower-level module (types / interface / pure function) that both sides import.',
-                'Invert one edge via dependency injection, an event bus, or a callback registry.',
-                `Break the edge from the hottest member (${ctx?.hottest || 'see cycle path'}) first — it has the highest fan-in+fan-out.`,
-                'For TypeScript: use `import type` to split runtime cycles from type-only cycles.',
-                'Re-run cycle detection after each edge removal to catch regressions before they compound.',
-            ],
-            acceptance: [
-                'Cycle detection (this analyzer) returns 0 cycles touching any of the original members.',
-                'Bundled output size does not increase beyond noise (tree-shaking preserved).',
-                'Cold-start / first-paint unchanged or improved.',
-                'All existing tests pass without import-order shims.',
-            ],
-            firstStep: `Run \`madge --circular <entry>\` to list every edge in the cycle, then pick the single edge whose removal would break the loop with the smallest diff.`,
-            tooling: [
-                { name: 'madge', hint: 'detects + visualizes circular dependencies across JS/TS' },
-                { name: 'dependency-cruiser', hint: 'fails CI on any new cycle, with auto-generated baseline' },
-                { name: 'circular-dependency-plugin', hint: 'webpack build-time warning for runtime cycles' },
-            ],
-            preventiveControls: [
-                'CI: dependency-cruiser rule `no-circular` on the affected subgraph.',
-                'Pre-commit: madge --circular on staged import graphs.',
-                'PR template: checkbox "Confirmed no new circular imports introduced".',
-            ],
-            rollbackPlan: 'Revert the edge-removal commit; the extracted interface can be inlined back into its origin module in a single patch. Keep the interface file for one release in case callers adopted it.',
-        });
-    }
-    if (c === 'hotspot') {
-        const score = ctx?.score || 0;
-        const fanOut = ctx?.fanOut || 0;
-        const fanIn = ctx?.fanIn || 0;
-        const blast = `${fanIn + fanOut} inbound+outbound edges`;
-        return Object.assign(base, {
-            metric: `hotspot ${score}`,
-            impact: 'High fan-in × fan-out × size → a change ripples widely, raising defect risk and review cost.',
-            risk: 'If left unfixed: any change here risks cascading defects across multiple call sites and inflates the blast radius of every release.',
-            blastRadius: blast,
-            effort: fanOut > 5 ? 'high' : 'medium',
-            estimatedHours: fanOut > 5 ? 16 : 8,
-            scoreUplift: Math.min(15, Math.round(score)),
-            recommendations: [
-                'Extract stable primitives (types, constants, pure helpers) into a leaf module that others depend on.',
-                'Introduce a façade; have callers depend on the façade instead of reaching into internals.',
-                'Convert large switch/if-else dispatch into a registry/map to shrink the hot core.',
-                'Split the test suite by concern so a hotspot change does not trigger the full suite.',
-                'Add a CODEOWNERS entry and a PR-size guardrail for this file.',
-            ],
-            acceptance: [
-                'Hotspot score drops below 5.0 on the next analyzer run.',
-                'Fan-out decreases or moves behind a façade boundary.',
-                'No public API removed without a deprecation shim; call sites still type-check.',
-                'CODEOWNERS entry added and enforced on the next PR touching the file.',
-            ],
-            firstStep: `Grep for all importers of ${ctx?.file || 'this file'} and group them by domain — the largest cluster becomes the first façade to extract.`,
-            tooling: [
-                { name: 'dependency-cruiser', hint: 'enforce fan-in / fan-out limits per module' },
-                { name: 'knip', hint: 'surface unused exports the façade can drop' },
-                { name: 'CodeSee', hint: 'visualize the dependency map around this hotspot' },
-            ],
-            preventiveControls: [
-                'CI: fail if hotspot score on this file regresses beyond 5.0.',
-                'CODEOWNERS: require 2 reviewers from the owning team for any PR touching the file.',
-                'PR-size guard: cap diff size on this file at 200 LOC per PR.',
-            ],
-            rollbackPlan: 'Revert the façade PR; callers go back to importing internals directly. Keep the façade module empty but re-exported for one release to ease re-introduction.',
-        });
-    }
-    if (c === 'orphan') {
-        return Object.assign(base, {
-            metric: '0 inbound refs',
-            impact: 'No inbound references → dead code or forgotten entry; inflates cognitive surface and bundle size.',
-            risk: 'If left unfixed: drift between dead code and live APIs accumulates; future readers may revive stale behavior assuming it is current.',
-            blastRadius: '0 dependents (direct) — risk is deletion-safety, not ripple',
-            effort: 'low',
-            estimatedHours: 2,
-            scoreUplift: 3,
-            recommendations: [
-                'Grep for dynamic imports / reflection / string-based resolvers before deletion.',
-                'Check `git log -- <file>` for the last touch and contact prior authors.',
-                'Delete in a dedicated PR; if it turns out to be needed, `git revert` is cheap.',
-                'If kept as a script entry, exclude it from the report scope via .ruiignore.',
-            ],
-            acceptance: [
-                'No dynamic references found via grep across the repo.',
-                'Build + test suite green after deletion (or file added to .ruiignore with rationale).',
-                'Bundle size does not increase (confirms no accidental removal of a live entry).',
-            ],
-            firstStep: `Run \`git log --oneline -5 -- <file>\` and \`rg "require\\(|import(.*)<basename>"\` — if both come back empty, deletion is safe.`,
-            tooling: [
-                { name: 'knip', hint: 'automated dead-code detection across the repo' },
-                { name: 'ts-prune', hint: 'finds unused TypeScript exports' },
-                { name: 'depcheck', hint: 'flags unused dependencies and files' },
-            ],
-            preventiveControls: [
-                'CI: knip --exit-code on every PR so dead code never lands.',
-                'Pre-commit: warn on new files with 0 inbound references after 30 days.',
-                '.ruiignore: explicit allow-list for intentional script entries.',
-            ],
-            rollbackPlan: 'Trivial — `git revert <merge>`. Because there are no inbound references, no call-site fixup is needed. Keep the deletion in its own PR to make revert surgical.',
-        });
-    }
-    if (c === 'depth') {
-        const md = ctx?.maxDepth || 0;
-        return Object.assign(base, {
-            metric: `depth ${md}`,
-            impact: 'Deep dependency chain → brittle builds, slow cold-start, cascading test failures.',
-            risk: 'If left unfixed: cold-start and CI time grow with each new layer; a leaf change can fail tests in unrelated subtrees.',
-            blastRadius: `${md} layers of transitive dependents`,
-            effort: 'medium',
-            estimatedHours: 8,
-            scoreUplift: 5,
-            recommendations: [
-                'Flatten by grouping intermediate layers into a single façade module.',
-                'Introduce interfaces at the boundary to decouple runtime chains.',
-                'Hoist shared utilities to a top-level lib/ so leaves do not chain through internals.',
-                'Cap max-depth in CI and fail the build above an agreed threshold.',
-            ],
-            acceptance: [
-                'Max dependency depth drops below the project threshold (default 6).',
-                'Cold-start / first-import time unchanged or improved.',
-                'Façade covers the previous public surface — no call-site edits required.',
-                'CI max-depth guard added and passing.',
-            ],
-            firstStep: `Run \`madge --depth <entry>\` and trace the single deepest path — the leaf at the bottom is where hoisting starts.`,
-            tooling: [
-                { name: 'madge', hint: 'reports max depth per entry; visualize as a tree' },
-                { name: 'dependency-cruiser', hint: 'enforce max-depth rules in CI' },
-                { name: 'bundle-analyzer', hint: 'see which layers contribute to cold-start' },
-            ],
-            preventiveControls: [
-                'CI: dependency-cruiser rule `max-depth` at 6, fail above.',
-                'PR template: checkbox "No new import chain exceeds 6 levels".',
-                'ModuleOwnership map: require review from the owning team for any new layer.',
-            ],
-            rollbackPlan: 'Revert the façade commit; original intermediate layers reappear. Keep the façade file as a thin re-export for one release in case any caller adopted it.',
-        });
-    }
-    if (c === 'coupling') {
-        const fanOut = ctx?.fanOut || 0;
-        const blast = `${fanOut} direct dependents`;
-        return Object.assign(base, {
-            metric: `fan-out ${fanOut}`,
-            impact: 'God module → changes ripple to many dependents, raising review burden and defect propagation.',
-            risk: 'If left unfixed: every interface change cascades into N call sites, and the module becomes an undeclared critical path.',
-            blastRadius: blast,
-            effort: 'high',
-            estimatedHours: Math.min(40, 8 + fanOut),
-            scoreUplift: 6,
-            recommendations: [
-                'Cluster dependents by domain and split into domain-scoped façades.',
-                'Apply the Interface Segregation Principle: expose only what each caller needs.',
-                'Replace direct imports with a dependency-injection container for cross-cutting services.',
-                'Add a module-boundary lint (e.g., dependency-cruiser) to enforce fan-out limits.',
-            ],
-            acceptance: [
-                'Fan-out drops below 20 (or project threshold) on the next analyzer run.',
-                'Each domain façade exposes only the APIs its cluster needs (ISP check).',
-                'Module-boundary lint rule added and green on CI.',
-                'No public API removed without a deprecation path for one release cycle.',
-            ],
-            firstStep: `List all ${fanOut} importers and cluster by top-level directory — each cluster maps to one domain façade.`,
-            tooling: [
-                { name: 'dependency-cruiser', hint: 'enforce per-module fan-out caps' },
-                { name: 'madge', hint: 'visualize importer clusters' },
-                { name: 'ts-morph', hint: 'script bulk refactors of import paths' },
-            ],
-            preventiveControls: [
-                'CI: dependency-cruiser rule `no-god-modules` at fan-out 20.',
-                'CODEOWNERS: require owning-team review on any PR that adds a new importer.',
-                'PR template: checkbox "Confirmed fan-out did not increase".',
-            ],
-            rollbackPlan: 'Revert the façade-split PR; callers fall back to importing the original god module. Keep the façade files as re-exports for one release so adopters are not broken.',
-        });
-    }
-    if (c === 'freshness') {
-        const d = ctx?.ageDays || 0;
-        return Object.assign(base, {
-            metric: `${d}d stale`,
-            impact: 'Long-untouched code → untested against current runtime; silent rot raises incident risk.',
-            risk: 'If left unfixed: runtime drift goes undetected until the code path is exercised in production, typically during an incident.',
-            blastRadius: 'self + any untested dynamic callers',
-            effort: 'low',
-            estimatedHours: 3,
-            scoreUplift: 4,
-            recommendations: [
-                'Run a coverage + typecheck pass; if green, add a "reviewed" marker and bump mtime.',
-                'If there is no owner, open an ADR proposing deletion vs. revival; decide within one sprint.',
-                'Verify no dynamic references via grep + CI before adding to a purge PR.',
-                'If kept, add an integration test pinning current behavior before future changes.',
-            ],
-            acceptance: [
-                'Coverage + typecheck pass recorded in the PR description.',
-                'Either deleted, added to .ruiignore with rationale, or covered by a new integration test.',
-                'ADR linked if ownership is ambiguous.',
-            ],
-            firstStep: `Run \`git log --since="6 months ago" -- <file>\`; if empty, ping the last committer and ask: delete or revive?`,
-            tooling: [
-                { name: 'knip', hint: 'flags stale, unreferenced files' },
-                { name: 'age-check', hint: 'CI guard that fails on files untouched > N days' },
-                { name: 'coverage diff', hint: 'confirm the stale path is actually exercised' },
-            ],
-            preventiveControls: [
-                'CI: monthly sweep flagging files untouched > 180 days.',
-                'CODEOWNERS: every directory has a named owner.',
-                'ADR template: "stale file" decision record linked from PR.',
-            ],
-            rollbackPlan: 'If deleted: `git revert <merge>` re-creates the file. If kept after review: bump mtime via an empty touch commit and add the new integration test in the same PR.',
-        });
-    }
-    return base;
-}
-
-function pushAlert(p) {
-    const e = enrichAlert(p.category, p.ctx);
-    alerts.push({
-        severity: p.severity, marker: p.marker, category: p.category,
-        file: p.file, line: p.line ?? null, message: p.message,
-        metric: e.metric, impact: e.impact, risk: e.risk, blastRadius: e.blastRadius,
-        effort: e.effort, estimatedHours: e.estimatedHours, scoreUplift: e.scoreUplift,
-        recommendations: e.recommendations, acceptance: e.acceptance,
-        firstStep: e.firstStep, tooling: e.tooling,
-        preventiveControls: e.preventiveControls, rollbackPlan: e.rollbackPlan,
-        cyclePath: p.cyclePath || '',
-    });
-}
+const alerts = [];
 
 for (const r of records) {
     if (r.lines > 1000) {
         const fo = (adjacency.get(r.absPath) || new Set()).size;
-        pushAlert({
+        pushAlert(alerts, {
             severity: 'P0', marker: 'P0', category: 'bloat',
             file: r.path, message: `File exceeds 1000 LOC (${r.lines} lines)`,
             ctx: { lines: r.lines, file: r.path, fanOut: fo },
         });
     } else if (r.lines > 500) {
         const fo = (adjacency.get(r.absPath) || new Set()).size;
-        pushAlert({
+        pushAlert(alerts, {
             severity: 'P1', marker: 'P1', category: 'bloat',
             file: r.path, message: `File exceeds 500 LOC (${r.lines} lines)`,
             ctx: { lines: r.lines, file: r.path, fanOut: fo },
@@ -1046,7 +664,7 @@ for (const r of records) {
 }
 for (const c of cyclesTop) {
     const sev = c.length >= 3 ? 'P0' : 'P1';
-    pushAlert({
+    pushAlert(alerts, {
         severity: sev, marker: sev, category: 'cycle',
         file: c._hottest,
         message: c.length >= 3 ? `${c.length}-node cycle detected` : `2-node cycle detected`,
@@ -1056,7 +674,7 @@ for (const c of cyclesTop) {
 }
 for (const h of hotspots) {
     if (h.score >= 5.0) {
-        pushAlert({
+        pushAlert(alerts, {
             severity: 'P0', marker: 'P0', category: 'hotspot',
             file: h.path, message: `Hotspot score ${h.score} (>= 5.0)`,
             ctx: { score: h.score, fanOut: h.fanOut, fanIn: h.fanIn },

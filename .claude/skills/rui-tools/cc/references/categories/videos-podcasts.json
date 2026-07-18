@@ -1,0 +1,69 @@
+{
+  "name": "VIDEOS / PODCASTS",
+  "slug": "videos-podcasts",
+  "source_id": "awesome-claude-code-subagents",
+  "file": "categories/videos-podcasts.json",
+  "topics": [
+    {
+      "name": "VIDEOS / PODCASTS",
+      "resources": [
+        {
+          "category": "VIDEOS / PODCASTS",
+          "topic": "VIDEOS / PODCASTS",
+          "title": "From Vibe Coding to Agentic Engineering (Andrej) \\",
+          "url": "https://x.com/karpathy",
+          "source": "claude-code-best-practice"
+        },
+        {
+          "category": "VIDEOS / PODCASTS",
+          "topic": "VIDEOS / PODCASTS",
+          "title": "Full Walkthrough: Workflow for AI Coding (Matt) \\",
+          "url": "https://x.com/mattpocockuk",
+          "source": "claude-code-best-practice"
+        },
+        {
+          "category": "VIDEOS / PODCASTS",
+          "topic": "VIDEOS / PODCASTS",
+          "title": "Everything We Got Wrong About Research-Plan-Implement (Dex) \\",
+          "url": "https://x.com/daborhyde",
+          "source": "claude-code-best-practice"
+        },
+        {
+          "category": "VIDEOS / PODCASTS",
+          "topic": "VIDEOS / PODCASTS",
+          "title": "Building Claude Code with Boris Cherny (Boris) \\",
+          "url": "https://x.com/bcherny",
+          "source": "claude-code-best-practice"
+        },
+        {
+          "category": "VIDEOS / PODCASTS",
+          "topic": "VIDEOS / PODCASTS",
+          "title": "Head of Claude Code: What happens after coding is solved (Boris) \\",
+          "url": "https://x.com/bcherny",
+          "source": "claude-code-best-practice"
+        },
+        {
+          "category": "VIDEOS / PODCASTS",
+          "topic": "VIDEOS / PODCASTS",
+          "title": "Inside Claude Code With Its Creator Boris Cherny (Boris) \\",
+          "url": "https://x.com/bcherny",
+          "source": "claude-code-best-practice"
+        },
+        {
+          "category": "VIDEOS / PODCASTS",
+          "topic": "VIDEOS / PODCASTS",
+          "title": "Boris Cherny (Creator of Claude Code) On What Grew His Career (Boris) \\",
+          "url": "https://x.com/bcherny",
+          "source": "claude-code-best-practice"
+        },
+        {
+          "category": "VIDEOS / PODCASTS",
+          "topic": "VIDEOS / PODCASTS",
+          "title": "The Secrets of Claude Code From the Engineers Who Built It (Cat) \\",
+          "url": "https://x.com/bcherny",
+          "source": "claude-code-best-practice"
+        }
+      ]
+    }
+  ]
+}

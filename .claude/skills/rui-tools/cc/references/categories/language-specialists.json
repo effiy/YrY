@@ -1,0 +1,223 @@
+{
+  "name": "Language Specialists",
+  "slug": "language-specialists",
+  "source_id": "awesome-claude-code-subagents",
+  "file": "categories/language-specialists.json",
+  "topics": [
+    {
+      "name": "Language Specialists",
+      "resources": [
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "typescript-pro",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/typescript-pro.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "sql-pro",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/sql-pro.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "swift-expert",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/swift-expert.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "vue-expert",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/vue-expert.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "angular-architect",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/angular-architect.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "cpp-pro",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/cpp-pro.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "csharp-developer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/csharp-developer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "django-developer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/django-developer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "dotnet-core-expert",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/dotnet-core-expert.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "dotnet-framework-4.8-expert",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/dotnet-framework-4.8-expert.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "elixir-expert",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/elixir-expert.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "expo-react-native-expert",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/expo-react-native-expert.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "fastapi-developer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/fastapi-developer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "flutter-expert",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/flutter-expert.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "golang-pro",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/golang-pro.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "java-architect",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/java-architect.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "javascript-pro",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/javascript-pro.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "powershell-5.1-expert",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/powershell-5.1-expert.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "powershell-7-expert",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/powershell-7-expert.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "kotlin-specialist",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/kotlin-specialist.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "laravel-specialist",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/laravel-specialist.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "nextjs-developer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/nextjs-developer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "node-specialist",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/node-specialist.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "php-pro",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/php-pro.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "python-pro",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/python-pro.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "rails-expert",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/rails-expert.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "react-specialist",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/react-specialist.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "rust-engineer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/rust-engineer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "spring-boot-engineer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/spring-boot-engineer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Language Specialists",
+          "topic": "Language Specialists",
+          "title": "symfony-specialist",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/02-language-specialists/symfony-specialist.md",
+          "source": "awesome-claude-code-subagents"
+        }
+      ]
+    }
+  ]
+}

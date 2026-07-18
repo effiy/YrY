@@ -845,7 +845,7 @@ window.REPORT_DATA = {
       "severity": "P0",
       "marker": "P0",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/ArsenalSC-Regular.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/ArsenalSC-Regular.ttf",
       "line": null,
       "message": "File exceeds 1000 LOC (1487 lines)",
       "metric": "1487 LOC",
@@ -856,7 +856,7 @@ window.REPORT_DATA = {
       "estimatedHours": 8,
       "scoreUplift": 8,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/ArsenalSC-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/ArsenalSC-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -867,7 +867,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/ArsenalSC-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/ArsenalSC-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -894,7 +894,7 @@ window.REPORT_DATA = {
       "severity": "P0",
       "marker": "P0",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/Gloock-Regular.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/Gloock-Regular.ttf",
       "line": null,
       "message": "File exceeds 1000 LOC (1375 lines)",
       "metric": "1375 LOC",
@@ -905,7 +905,7 @@ window.REPORT_DATA = {
       "estimatedHours": 8,
       "scoreUplift": 8,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/Gloock-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/Gloock-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -916,7 +916,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/Gloock-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/Gloock-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -943,7 +943,7 @@ window.REPORT_DATA = {
       "severity": "P0",
       "marker": "P0",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/IBMPlexSerif-Bold.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/IBMPlexSerif-Bold.ttf",
       "line": null,
       "message": "File exceeds 1000 LOC (1416 lines)",
       "metric": "1416 LOC",
@@ -954,7 +954,7 @@ window.REPORT_DATA = {
       "estimatedHours": 8,
       "scoreUplift": 8,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/IBMPlexSerif-Bold.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/IBMPlexSerif-Bold.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -965,7 +965,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/IBMPlexSerif-Bold.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/IBMPlexSerif-Bold.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -992,7 +992,7 @@ window.REPORT_DATA = {
       "severity": "P0",
       "marker": "P0",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/IBMPlexSerif-BoldItalic.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/IBMPlexSerif-BoldItalic.ttf",
       "line": null,
       "message": "File exceeds 1000 LOC (1715 lines)",
       "metric": "1715 LOC",
@@ -1003,7 +1003,7 @@ window.REPORT_DATA = {
       "estimatedHours": 8,
       "scoreUplift": 8,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/IBMPlexSerif-BoldItalic.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/IBMPlexSerif-BoldItalic.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -1014,7 +1014,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/IBMPlexSerif-BoldItalic.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/IBMPlexSerif-BoldItalic.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -1041,7 +1041,7 @@ window.REPORT_DATA = {
       "severity": "P0",
       "marker": "P0",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/IBMPlexSerif-Italic.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/IBMPlexSerif-Italic.ttf",
       "line": null,
       "message": "File exceeds 1000 LOC (1993 lines)",
       "metric": "1993 LOC",
@@ -1052,7 +1052,7 @@ window.REPORT_DATA = {
       "estimatedHours": 8,
       "scoreUplift": 8,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/IBMPlexSerif-Italic.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/IBMPlexSerif-Italic.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -1063,7 +1063,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/IBMPlexSerif-Italic.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/IBMPlexSerif-Italic.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -1090,7 +1090,7 @@ window.REPORT_DATA = {
       "severity": "P0",
       "marker": "P0",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/IBMPlexSerif-Regular.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/IBMPlexSerif-Regular.ttf",
       "line": null,
       "message": "File exceeds 1000 LOC (1346 lines)",
       "metric": "1346 LOC",
@@ -1101,7 +1101,7 @@ window.REPORT_DATA = {
       "estimatedHours": 8,
       "scoreUplift": 8,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/IBMPlexSerif-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/IBMPlexSerif-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -1112,7 +1112,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/IBMPlexSerif-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/IBMPlexSerif-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -1139,7 +1139,7 @@ window.REPORT_DATA = {
       "severity": "P0",
       "marker": "P0",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/LibreBaskerville-Regular.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/LibreBaskerville-Regular.ttf",
       "line": null,
       "message": "File exceeds 1000 LOC (1068 lines)",
       "metric": "1068 LOC",
@@ -1150,7 +1150,7 @@ window.REPORT_DATA = {
       "estimatedHours": 8,
       "scoreUplift": 8,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/LibreBaskerville-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/LibreBaskerville-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -1161,7 +1161,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/LibreBaskerville-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/LibreBaskerville-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -1188,7 +1188,7 @@ window.REPORT_DATA = {
       "severity": "P0",
       "marker": "P0",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/Lora-BoldItalic.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/Lora-BoldItalic.ttf",
       "line": null,
       "message": "File exceeds 1000 LOC (1024 lines)",
       "metric": "1024 LOC",
@@ -1199,7 +1199,7 @@ window.REPORT_DATA = {
       "estimatedHours": 8,
       "scoreUplift": 8,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/Lora-BoldItalic.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/Lora-BoldItalic.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -1210,7 +1210,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/Lora-BoldItalic.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/Lora-BoldItalic.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -1237,7 +1237,7 @@ window.REPORT_DATA = {
       "severity": "P0",
       "marker": "P0",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/YoungSerif-Regular.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/YoungSerif-Regular.ttf",
       "line": null,
       "message": "File exceeds 1000 LOC (1145 lines)",
       "metric": "1145 LOC",
@@ -1248,7 +1248,7 @@ window.REPORT_DATA = {
       "estimatedHours": 8,
       "scoreUplift": 8,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/YoungSerif-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/YoungSerif-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -1259,7 +1259,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/YoungSerif-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/YoungSerif-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -2364,7 +2364,7 @@ window.REPORT_DATA = {
       "severity": "P1",
       "marker": "P1",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/Boldonse-Regular.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/Boldonse-Regular.ttf",
       "line": null,
       "message": "File exceeds 500 LOC (872 lines)",
       "metric": "872 LOC",
@@ -2375,7 +2375,7 @@ window.REPORT_DATA = {
       "estimatedHours": 4,
       "scoreUplift": 4,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/Boldonse-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/Boldonse-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -2386,7 +2386,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/Boldonse-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/Boldonse-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -2413,7 +2413,7 @@ window.REPORT_DATA = {
       "severity": "P1",
       "marker": "P1",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/CrimsonPro-Italic.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/CrimsonPro-Italic.ttf",
       "line": null,
       "message": "File exceeds 500 LOC (763 lines)",
       "metric": "763 LOC",
@@ -2424,7 +2424,7 @@ window.REPORT_DATA = {
       "estimatedHours": 4,
       "scoreUplift": 4,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/CrimsonPro-Italic.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/CrimsonPro-Italic.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -2435,7 +2435,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/CrimsonPro-Italic.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/CrimsonPro-Italic.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -2462,7 +2462,7 @@ window.REPORT_DATA = {
       "severity": "P1",
       "marker": "P1",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/CrimsonPro-Regular.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/CrimsonPro-Regular.ttf",
       "line": null,
       "message": "File exceeds 500 LOC (573 lines)",
       "metric": "573 LOC",
@@ -2473,7 +2473,7 @@ window.REPORT_DATA = {
       "estimatedHours": 4,
       "scoreUplift": 4,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/CrimsonPro-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/CrimsonPro-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -2484,7 +2484,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/CrimsonPro-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/CrimsonPro-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -2511,7 +2511,7 @@ window.REPORT_DATA = {
       "severity": "P1",
       "marker": "P1",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/IBMPlexMono-Bold.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/IBMPlexMono-Bold.ttf",
       "line": null,
       "message": "File exceeds 500 LOC (851 lines)",
       "metric": "851 LOC",
@@ -2522,7 +2522,7 @@ window.REPORT_DATA = {
       "estimatedHours": 4,
       "scoreUplift": 4,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/IBMPlexMono-Bold.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/IBMPlexMono-Bold.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -2533,7 +2533,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/IBMPlexMono-Bold.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/IBMPlexMono-Bold.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -2560,7 +2560,7 @@ window.REPORT_DATA = {
       "severity": "P1",
       "marker": "P1",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/IBMPlexMono-Regular.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/IBMPlexMono-Regular.ttf",
       "line": null,
       "message": "File exceeds 500 LOC (822 lines)",
       "metric": "822 LOC",
@@ -2571,7 +2571,7 @@ window.REPORT_DATA = {
       "estimatedHours": 4,
       "scoreUplift": 4,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/IBMPlexMono-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/IBMPlexMono-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -2582,7 +2582,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/IBMPlexMono-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/IBMPlexMono-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -2609,7 +2609,7 @@ window.REPORT_DATA = {
       "severity": "P1",
       "marker": "P1",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/InstrumentSerif-Italic.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/InstrumentSerif-Italic.ttf",
       "line": null,
       "message": "File exceeds 500 LOC (826 lines)",
       "metric": "826 LOC",
@@ -2620,7 +2620,7 @@ window.REPORT_DATA = {
       "estimatedHours": 4,
       "scoreUplift": 4,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/InstrumentSerif-Italic.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/InstrumentSerif-Italic.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -2631,7 +2631,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/InstrumentSerif-Italic.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/InstrumentSerif-Italic.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -2658,7 +2658,7 @@ window.REPORT_DATA = {
       "severity": "P1",
       "marker": "P1",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/InstrumentSerif-Regular.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/InstrumentSerif-Regular.ttf",
       "line": null,
       "message": "File exceeds 500 LOC (826 lines)",
       "metric": "826 LOC",
@@ -2669,7 +2669,7 @@ window.REPORT_DATA = {
       "estimatedHours": 4,
       "scoreUplift": 4,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/InstrumentSerif-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/InstrumentSerif-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -2680,7 +2680,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/InstrumentSerif-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/InstrumentSerif-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -2707,7 +2707,7 @@ window.REPORT_DATA = {
       "severity": "P1",
       "marker": "P1",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/JetBrainsMono-Bold.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/JetBrainsMono-Bold.ttf",
       "line": null,
       "message": "File exceeds 500 LOC (605 lines)",
       "metric": "605 LOC",
@@ -2718,7 +2718,7 @@ window.REPORT_DATA = {
       "estimatedHours": 4,
       "scoreUplift": 4,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/JetBrainsMono-Bold.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/JetBrainsMono-Bold.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -2729,7 +2729,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/JetBrainsMono-Bold.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/JetBrainsMono-Bold.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -2756,7 +2756,7 @@ window.REPORT_DATA = {
       "severity": "P1",
       "marker": "P1",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/JetBrainsMono-Regular.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/JetBrainsMono-Regular.ttf",
       "line": null,
       "message": "File exceeds 500 LOC (609 lines)",
       "metric": "609 LOC",
@@ -2767,7 +2767,7 @@ window.REPORT_DATA = {
       "estimatedHours": 4,
       "scoreUplift": 4,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/JetBrainsMono-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/JetBrainsMono-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -2778,7 +2778,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/JetBrainsMono-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/JetBrainsMono-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -2805,7 +2805,7 @@ window.REPORT_DATA = {
       "severity": "P1",
       "marker": "P1",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/Lora-Bold.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/Lora-Bold.ttf",
       "line": null,
       "message": "File exceeds 500 LOC (850 lines)",
       "metric": "850 LOC",
@@ -2816,7 +2816,7 @@ window.REPORT_DATA = {
       "estimatedHours": 4,
       "scoreUplift": 4,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/Lora-Bold.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/Lora-Bold.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -2827,7 +2827,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/Lora-Bold.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/Lora-Bold.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -2854,7 +2854,7 @@ window.REPORT_DATA = {
       "severity": "P1",
       "marker": "P1",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/Lora-Italic.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/Lora-Italic.ttf",
       "line": null,
       "message": "File exceeds 500 LOC (667 lines)",
       "metric": "667 LOC",
@@ -2865,7 +2865,7 @@ window.REPORT_DATA = {
       "estimatedHours": 4,
       "scoreUplift": 4,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/Lora-Italic.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/Lora-Italic.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -2876,7 +2876,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/Lora-Italic.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/Lora-Italic.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -2903,7 +2903,7 @@ window.REPORT_DATA = {
       "severity": "P1",
       "marker": "P1",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/Lora-Regular.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/Lora-Regular.ttf",
       "line": null,
       "message": "File exceeds 500 LOC (516 lines)",
       "metric": "516 LOC",
@@ -2914,7 +2914,7 @@ window.REPORT_DATA = {
       "estimatedHours": 4,
       "scoreUplift": 4,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/Lora-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/Lora-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -2925,7 +2925,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/Lora-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/Lora-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -2952,7 +2952,7 @@ window.REPORT_DATA = {
       "severity": "P1",
       "marker": "P1",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/NationalPark-Bold.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/NationalPark-Bold.ttf",
       "line": null,
       "message": "File exceeds 500 LOC (611 lines)",
       "metric": "611 LOC",
@@ -2963,7 +2963,7 @@ window.REPORT_DATA = {
       "estimatedHours": 4,
       "scoreUplift": 4,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/NationalPark-Bold.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/NationalPark-Bold.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -2974,7 +2974,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/NationalPark-Bold.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/NationalPark-Bold.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -3001,7 +3001,7 @@ window.REPORT_DATA = {
       "severity": "P1",
       "marker": "P1",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/NationalPark-Regular.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/NationalPark-Regular.ttf",
       "line": null,
       "message": "File exceeds 500 LOC (601 lines)",
       "metric": "601 LOC",
@@ -3012,7 +3012,7 @@ window.REPORT_DATA = {
       "estimatedHours": 4,
       "scoreUplift": 4,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/NationalPark-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/NationalPark-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -3023,7 +3023,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/NationalPark-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/NationalPark-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -3050,7 +3050,7 @@ window.REPORT_DATA = {
       "severity": "P1",
       "marker": "P1",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/Tektur-Medium.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/Tektur-Medium.ttf",
       "line": null,
       "message": "File exceeds 500 LOC (506 lines)",
       "metric": "506 LOC",
@@ -3061,7 +3061,7 @@ window.REPORT_DATA = {
       "estimatedHours": 4,
       "scoreUplift": 4,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/Tektur-Medium.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/Tektur-Medium.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -3072,7 +3072,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/Tektur-Medium.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/Tektur-Medium.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -3099,7 +3099,7 @@ window.REPORT_DATA = {
       "severity": "P1",
       "marker": "P1",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/WorkSans-Bold.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/WorkSans-Bold.ttf",
       "line": null,
       "message": "File exceeds 500 LOC (884 lines)",
       "metric": "884 LOC",
@@ -3110,7 +3110,7 @@ window.REPORT_DATA = {
       "estimatedHours": 4,
       "scoreUplift": 4,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/WorkSans-Bold.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/WorkSans-Bold.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -3121,7 +3121,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/WorkSans-Bold.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/WorkSans-Bold.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -3148,7 +3148,7 @@ window.REPORT_DATA = {
       "severity": "P1",
       "marker": "P1",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/WorkSans-BoldItalic.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/WorkSans-BoldItalic.ttf",
       "line": null,
       "message": "File exceeds 500 LOC (730 lines)",
       "metric": "730 LOC",
@@ -3159,7 +3159,7 @@ window.REPORT_DATA = {
       "estimatedHours": 4,
       "scoreUplift": 4,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/WorkSans-BoldItalic.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/WorkSans-BoldItalic.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -3170,7 +3170,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/WorkSans-BoldItalic.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/WorkSans-BoldItalic.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -3197,7 +3197,7 @@ window.REPORT_DATA = {
       "severity": "P1",
       "marker": "P1",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/WorkSans-Italic.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/WorkSans-Italic.ttf",
       "line": null,
       "message": "File exceeds 500 LOC (646 lines)",
       "metric": "646 LOC",
@@ -3208,7 +3208,7 @@ window.REPORT_DATA = {
       "estimatedHours": 4,
       "scoreUplift": 4,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/WorkSans-Italic.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/WorkSans-Italic.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -3219,7 +3219,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/WorkSans-Italic.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/WorkSans-Italic.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -3246,7 +3246,7 @@ window.REPORT_DATA = {
       "severity": "P1",
       "marker": "P1",
       "category": "bloat",
-      "file": "rui-tools/ui-ux/canvas-fonts/WorkSans-Regular.ttf",
+      "file": "rui-tools/ui-ux/shared/fonts/WorkSans-Regular.ttf",
       "line": null,
       "message": "File exceeds 500 LOC (892 lines)",
       "metric": "892 LOC",
@@ -3257,7 +3257,7 @@ window.REPORT_DATA = {
       "estimatedHours": 4,
       "scoreUplift": 4,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/canvas-fonts/WorkSans-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-tools/ui-ux/shared/fonts/WorkSans-Regular.ttf/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -3268,7 +3268,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-tools/ui-ux/canvas-fonts/WorkSans-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-tools/ui-ux/shared/fonts/WorkSans-Regular.ttf and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -3315,7 +3315,7 @@ window.REPORT_DATA = {
       "humanBytes": "7.4 MB"
     },
     {
-      "name": "rui-tools/ui-ux/canvas-fonts/",
+      "name": "rui-tools/ui-ux/shared/fonts/",
       "bytes": 7431285,
       "humanBytes": "7.1 MB"
     },
@@ -3665,7 +3665,7 @@ window.REPORT_DATA = {
       "fanOut": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/WorkSans-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/WorkSans-Bold.ttf",
       "bytes": 284127,
       "bytesHuman": "277.5 KB",
       "lines": 884,
@@ -3675,7 +3675,7 @@ window.REPORT_DATA = {
       "fanOut": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/WorkSans-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/WorkSans-Regular.ttf",
       "bytes": 274773,
       "bytesHuman": "268.3 KB",
       "lines": 892,
@@ -3685,7 +3685,7 @@ window.REPORT_DATA = {
       "fanOut": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/WorkSans-BoldItalic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/WorkSans-BoldItalic.ttf",
       "bytes": 267516,
       "bytesHuman": "261.2 KB",
       "lines": 730,
@@ -3695,7 +3695,7 @@ window.REPORT_DATA = {
       "fanOut": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/WorkSans-Italic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/WorkSans-Italic.ttf",
       "bytes": 260172,
       "bytesHuman": "254.1 KB",
       "lines": 646,
@@ -3705,7 +3705,7 @@ window.REPORT_DATA = {
       "fanOut": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/IBMPlexSerif-Italic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/IBMPlexSerif-Italic.ttf",
       "bytes": 230883,
       "bytesHuman": "225.5 KB",
       "lines": 1993,
@@ -3715,7 +3715,7 @@ window.REPORT_DATA = {
       "fanOut": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/IBMPlexSerif-BoldItalic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/IBMPlexSerif-BoldItalic.ttf",
       "bytes": 229993,
       "bytesHuman": "224.6 KB",
       "lines": 1715,
@@ -3725,7 +3725,7 @@ window.REPORT_DATA = {
       "fanOut": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/IBMPlexSerif-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/IBMPlexSerif-Bold.ttf",
       "bytes": 216775,
       "bytesHuman": "211.7 KB",
       "lines": 1416,
@@ -3735,7 +3735,7 @@ window.REPORT_DATA = {
       "fanOut": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/IBMPlexSerif-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/IBMPlexSerif-Regular.ttf",
       "bytes": 215873,
       "bytesHuman": "210.8 KB",
       "lines": 1346,
@@ -3755,7 +3755,7 @@ window.REPORT_DATA = {
       "fanOut": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/ArsenalSC-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/ArsenalSC-Regular.ttf",
       "bytes": 205716,
       "bytesHuman": "200.9 KB",
       "lines": 1487,
@@ -3765,7 +3765,7 @@ window.REPORT_DATA = {
       "fanOut": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Jura-Medium.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Jura-Medium.ttf",
       "bytes": 202127,
       "bytesHuman": "197.4 KB",
       "lines": 317,
@@ -3775,7 +3775,7 @@ window.REPORT_DATA = {
       "fanOut": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Jura-Light.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Jura-Light.ttf",
       "bytes": 202108,
       "bytesHuman": "197.4 KB",
       "lines": 454,
@@ -3785,7 +3785,7 @@ window.REPORT_DATA = {
       "fanOut": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/LibreBaskerville-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/LibreBaskerville-Regular.ttf",
       "bytes": 193014,
       "bytesHuman": "188.5 KB",
       "lines": 1068,
@@ -3795,7 +3795,7 @@ window.REPORT_DATA = {
       "fanOut": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Lora-Italic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Lora-Italic.ttf",
       "bytes": 187950,
       "bytesHuman": "183.5 KB",
       "lines": 667,
@@ -3805,7 +3805,7 @@ window.REPORT_DATA = {
       "fanOut": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Lora-BoldItalic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Lora-BoldItalic.ttf",
       "bytes": 187302,
       "bytesHuman": "182.9 KB",
       "lines": 1024,
@@ -3815,7 +3815,7 @@ window.REPORT_DATA = {
       "fanOut": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Lora-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Lora-Bold.ttf",
       "bytes": 183078,
       "bytesHuman": "178.8 KB",
       "lines": 850,
@@ -3825,7 +3825,7 @@ window.REPORT_DATA = {
       "fanOut": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Lora-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Lora-Regular.ttf",
       "bytes": 180398,
       "bytesHuman": "176.2 KB",
       "lines": 516,
@@ -3835,7 +3835,7 @@ window.REPORT_DATA = {
       "fanOut": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/IBMPlexMono-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/IBMPlexMono-Bold.ttf",
       "bytes": 175075,
       "bytesHuman": "171.0 KB",
       "lines": 851,
@@ -3845,7 +3845,7 @@ window.REPORT_DATA = {
       "fanOut": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/IBMPlexMono-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/IBMPlexMono-Regular.ttf",
       "bytes": 172381,
       "bytesHuman": "168.3 KB",
       "lines": 822,
@@ -4249,7 +4249,7 @@ window.REPORT_DATA = {
       "score": 1.34
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/WorkSans-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/WorkSans-Bold.ttf",
       "bytes": 284127,
       "bytesHuman": "277.5 KB",
       "lines": 884,
@@ -4260,7 +4260,7 @@ window.REPORT_DATA = {
       "score": 0.44
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/WorkSans-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/WorkSans-Regular.ttf",
       "bytes": 274773,
       "bytesHuman": "268.3 KB",
       "lines": 892,
@@ -4271,7 +4271,7 @@ window.REPORT_DATA = {
       "score": 0.45
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/WorkSans-BoldItalic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/WorkSans-BoldItalic.ttf",
       "bytes": 267516,
       "bytesHuman": "261.2 KB",
       "lines": 730,
@@ -4282,7 +4282,7 @@ window.REPORT_DATA = {
       "score": 0.36
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/WorkSans-Italic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/WorkSans-Italic.ttf",
       "bytes": 260172,
       "bytesHuman": "254.1 KB",
       "lines": 646,
@@ -4293,7 +4293,7 @@ window.REPORT_DATA = {
       "score": 0.32
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/IBMPlexSerif-Italic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/IBMPlexSerif-Italic.ttf",
       "bytes": 230883,
       "bytesHuman": "225.5 KB",
       "lines": 1993,
@@ -4304,7 +4304,7 @@ window.REPORT_DATA = {
       "score": 1
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/IBMPlexSerif-BoldItalic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/IBMPlexSerif-BoldItalic.ttf",
       "bytes": 229993,
       "bytesHuman": "224.6 KB",
       "lines": 1715,
@@ -4315,7 +4315,7 @@ window.REPORT_DATA = {
       "score": 0.86
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/IBMPlexSerif-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/IBMPlexSerif-Bold.ttf",
       "bytes": 216775,
       "bytesHuman": "211.7 KB",
       "lines": 1416,
@@ -4326,7 +4326,7 @@ window.REPORT_DATA = {
       "score": 0.71
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/IBMPlexSerif-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/IBMPlexSerif-Regular.ttf",
       "bytes": 215873,
       "bytesHuman": "210.8 KB",
       "lines": 1346,
@@ -4348,7 +4348,7 @@ window.REPORT_DATA = {
       "score": 3.28
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/ArsenalSC-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/ArsenalSC-Regular.ttf",
       "bytes": 205716,
       "bytesHuman": "200.9 KB",
       "lines": 1487,
@@ -4359,7 +4359,7 @@ window.REPORT_DATA = {
       "score": 0.74
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Jura-Medium.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Jura-Medium.ttf",
       "bytes": 202127,
       "bytesHuman": "197.4 KB",
       "lines": 317,
@@ -4370,7 +4370,7 @@ window.REPORT_DATA = {
       "score": 0.16
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Jura-Light.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Jura-Light.ttf",
       "bytes": 202108,
       "bytesHuman": "197.4 KB",
       "lines": 454,
@@ -4381,7 +4381,7 @@ window.REPORT_DATA = {
       "score": 0.23
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/LibreBaskerville-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/LibreBaskerville-Regular.ttf",
       "bytes": 193014,
       "bytesHuman": "188.5 KB",
       "lines": 1068,
@@ -4392,7 +4392,7 @@ window.REPORT_DATA = {
       "score": 0.53
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Lora-Italic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Lora-Italic.ttf",
       "bytes": 187950,
       "bytesHuman": "183.5 KB",
       "lines": 667,
@@ -4403,7 +4403,7 @@ window.REPORT_DATA = {
       "score": 0.33
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Lora-BoldItalic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Lora-BoldItalic.ttf",
       "bytes": 187302,
       "bytesHuman": "182.9 KB",
       "lines": 1024,
@@ -4414,7 +4414,7 @@ window.REPORT_DATA = {
       "score": 0.51
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Lora-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Lora-Bold.ttf",
       "bytes": 183078,
       "bytesHuman": "178.8 KB",
       "lines": 850,
@@ -4425,7 +4425,7 @@ window.REPORT_DATA = {
       "score": 0.42
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Lora-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Lora-Regular.ttf",
       "bytes": 180398,
       "bytesHuman": "176.2 KB",
       "lines": 516,
@@ -4436,7 +4436,7 @@ window.REPORT_DATA = {
       "score": 0.26
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/IBMPlexMono-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/IBMPlexMono-Bold.ttf",
       "bytes": 175075,
       "bytesHuman": "171.0 KB",
       "lines": 851,
@@ -4447,7 +4447,7 @@ window.REPORT_DATA = {
       "score": 0.43
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/IBMPlexMono-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/IBMPlexMono-Regular.ttf",
       "bytes": 172381,
       "bytesHuman": "168.3 KB",
       "lines": 822,
@@ -4469,7 +4469,7 @@ window.REPORT_DATA = {
       "score": 1.97
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/JetBrainsMono-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/JetBrainsMono-Bold.ttf",
       "bytes": 144938,
       "bytesHuman": "141.5 KB",
       "lines": 605,
@@ -4480,7 +4480,7 @@ window.REPORT_DATA = {
       "score": 0.3
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/JetBrainsMono-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/JetBrainsMono-Regular.ttf",
       "bytes": 144762,
       "bytesHuman": "141.4 KB",
       "lines": 609,
@@ -4491,7 +4491,7 @@ window.REPORT_DATA = {
       "score": 0.3
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/CrimsonPro-Italic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/CrimsonPro-Italic.ttf",
       "bytes": 140948,
       "bytesHuman": "137.6 KB",
       "lines": 763,
@@ -4502,7 +4502,7 @@ window.REPORT_DATA = {
       "score": 0.38
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/CrimsonPro-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/CrimsonPro-Bold.ttf",
       "bytes": 138784,
       "bytesHuman": "135.5 KB",
       "lines": 476,
@@ -4513,7 +4513,7 @@ window.REPORT_DATA = {
       "score": 0.24
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/CrimsonPro-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/CrimsonPro-Regular.ttf",
       "bytes": 137513,
       "bytesHuman": "134.3 KB",
       "lines": 573,
@@ -4524,7 +4524,7 @@ window.REPORT_DATA = {
       "score": 0.29
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/BricolageGrotesque-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/BricolageGrotesque-Bold.ttf",
       "bytes": 130621,
       "bytesHuman": "127.6 KB",
       "lines": 331,
@@ -4535,7 +4535,7 @@ window.REPORT_DATA = {
       "score": 0.17
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/BricolageGrotesque-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/BricolageGrotesque-Regular.ttf",
       "bytes": 130260,
       "bytesHuman": "127.2 KB",
       "lines": 276,
@@ -4546,7 +4546,7 @@ window.REPORT_DATA = {
       "score": 0.14
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/BigShoulders-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/BigShoulders-Bold.ttf",
       "bytes": 127635,
       "bytesHuman": "124.6 KB",
       "lines": 489,
@@ -4557,7 +4557,7 @@ window.REPORT_DATA = {
       "score": 0.24
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/YoungSerif-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/YoungSerif-Regular.ttf",
       "bytes": 127614,
       "bytesHuman": "124.6 KB",
       "lines": 1145,
@@ -4568,7 +4568,7 @@ window.REPORT_DATA = {
       "score": 0.57
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/BigShoulders-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/BigShoulders-Regular.ttf",
       "bytes": 126696,
       "bytesHuman": "123.7 KB",
       "lines": 366,
@@ -4590,7 +4590,7 @@ window.REPORT_DATA = {
       "score": 0.59
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Gloock-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Gloock-Regular.ttf",
       "bytes": 120962,
       "bytesHuman": "118.1 KB",
       "lines": 1375,
@@ -4612,7 +4612,7 @@ window.REPORT_DATA = {
       "score": 1.3
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/InstrumentSans-BoldItalic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/InstrumentSans-BoldItalic.ttf",
       "bytes": 111214,
       "bytesHuman": "108.6 KB",
       "lines": 420,
@@ -4623,7 +4623,7 @@ window.REPORT_DATA = {
       "score": 0.21
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/InstrumentSans-Italic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/InstrumentSans-Italic.ttf",
       "bytes": 110463,
       "bytesHuman": "107.9 KB",
       "lines": 398,
@@ -4634,7 +4634,7 @@ window.REPORT_DATA = {
       "score": 0.2
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/InstrumentSans-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/InstrumentSans-Bold.ttf",
       "bytes": 107867,
       "bytesHuman": "105.3 KB",
       "lines": 471,
@@ -4645,7 +4645,7 @@ window.REPORT_DATA = {
       "score": 0.24
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/InstrumentSans-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/InstrumentSans-Regular.ttf",
       "bytes": 107550,
       "bytesHuman": "105.0 KB",
       "lines": 393,
@@ -4656,7 +4656,7 @@ window.REPORT_DATA = {
       "score": 0.2
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Tektur-Medium.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Tektur-Medium.ttf",
       "bytes": 102216,
       "bytesHuman": "99.8 KB",
       "lines": 506,
@@ -4678,7 +4678,7 @@ window.REPORT_DATA = {
       "score": 0.88
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Tektur-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Tektur-Regular.ttf",
       "bytes": 100910,
       "bytesHuman": "98.5 KB",
       "lines": 314,
@@ -4689,7 +4689,7 @@ window.REPORT_DATA = {
       "score": 0.16
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/GeistMono-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/GeistMono-Bold.ttf",
       "bytes": 98610,
       "bytesHuman": "96.3 KB",
       "lines": 262,
@@ -4700,7 +4700,7 @@ window.REPORT_DATA = {
       "score": 0.13
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/GeistMono-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/GeistMono-Regular.ttf",
       "bytes": 98588,
       "bytesHuman": "96.3 KB",
       "lines": 285,
@@ -4711,7 +4711,7 @@ window.REPORT_DATA = {
       "score": 0.14
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/NationalPark-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/NationalPark-Bold.ttf",
       "bytes": 98348,
       "bytesHuman": "96.0 KB",
       "lines": 611,
@@ -4722,7 +4722,7 @@ window.REPORT_DATA = {
       "score": 0.31
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Boldonse-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Boldonse-Regular.ttf",
       "bytes": 96366,
       "bytesHuman": "94.1 KB",
       "lines": 872,
@@ -4733,7 +4733,7 @@ window.REPORT_DATA = {
       "score": 0.44
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/NationalPark-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/NationalPark-Regular.ttf",
       "bytes": 95482,
       "bytesHuman": "93.2 KB",
       "lines": 601,
@@ -4744,7 +4744,7 @@ window.REPORT_DATA = {
       "score": 0.3
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/InstrumentSerif-Italic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/InstrumentSerif-Italic.ttf",
       "bytes": 91256,
       "bytesHuman": "89.1 KB",
       "lines": 826,
@@ -4755,7 +4755,7 @@ window.REPORT_DATA = {
       "score": 0.41
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/InstrumentSerif-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/InstrumentSerif-Regular.ttf",
       "bytes": 91120,
       "bytesHuman": "89.0 KB",
       "lines": 826,
@@ -4766,7 +4766,7 @@ window.REPORT_DATA = {
       "score": 0.41
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Outfit-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Outfit-Bold.ttf",
       "bytes": 83196,
       "bytesHuman": "81.2 KB",
       "lines": 188,
@@ -4777,7 +4777,7 @@ window.REPORT_DATA = {
       "score": 0.09
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Outfit-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Outfit-Regular.ttf",
       "bytes": 82044,
       "bytesHuman": "80.1 KB",
       "lines": 246,
@@ -14001,7 +14001,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/ArsenalSC-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/ArsenalSC-OFL.txt",
       "bytes": 4373,
       "lines": 93,
       "type": "other",
@@ -14013,7 +14013,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/ArsenalSC-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/ArsenalSC-Regular.ttf",
       "bytes": 205716,
       "lines": 1487,
       "type": "other",
@@ -14025,7 +14025,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/BigShoulders-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/BigShoulders-Bold.ttf",
       "bytes": 127635,
       "lines": 489,
       "type": "other",
@@ -14037,7 +14037,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/BigShoulders-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/BigShoulders-OFL.txt",
       "bytes": 4397,
       "lines": 93,
       "type": "other",
@@ -14049,7 +14049,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/BigShoulders-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/BigShoulders-Regular.ttf",
       "bytes": 126696,
       "lines": 366,
       "type": "other",
@@ -14061,7 +14061,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Boldonse-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/Boldonse-OFL.txt",
       "bytes": 4390,
       "lines": 93,
       "type": "other",
@@ -14073,7 +14073,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Boldonse-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Boldonse-Regular.ttf",
       "bytes": 96366,
       "lines": 872,
       "type": "other",
@@ -14085,7 +14085,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/BricolageGrotesque-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/BricolageGrotesque-Bold.ttf",
       "bytes": 130621,
       "lines": 331,
       "type": "other",
@@ -14097,7 +14097,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/BricolageGrotesque-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/BricolageGrotesque-OFL.txt",
       "bytes": 4403,
       "lines": 93,
       "type": "other",
@@ -14109,7 +14109,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/BricolageGrotesque-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/BricolageGrotesque-Regular.ttf",
       "bytes": 130260,
       "lines": 276,
       "type": "other",
@@ -14121,7 +14121,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/CrimsonPro-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/CrimsonPro-Bold.ttf",
       "bytes": 138784,
       "lines": 476,
       "type": "other",
@@ -14133,7 +14133,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/CrimsonPro-Italic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/CrimsonPro-Italic.ttf",
       "bytes": 140948,
       "lines": 763,
       "type": "other",
@@ -14145,7 +14145,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/CrimsonPro-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/CrimsonPro-OFL.txt",
       "bytes": 4394,
       "lines": 93,
       "type": "other",
@@ -14157,7 +14157,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/CrimsonPro-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/CrimsonPro-Regular.ttf",
       "bytes": 137513,
       "lines": 573,
       "type": "other",
@@ -14169,7 +14169,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/DMMono-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/DMMono-OFL.txt",
       "bytes": 4392,
       "lines": 93,
       "type": "other",
@@ -14181,7 +14181,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/DMMono-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/DMMono-Regular.ttf",
       "bytes": 60187,
       "lines": 256,
       "type": "other",
@@ -14193,7 +14193,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/EricaOne-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/EricaOne-OFL.txt",
       "bytes": 4410,
       "lines": 94,
       "type": "other",
@@ -14205,7 +14205,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/EricaOne-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/EricaOne-Regular.ttf",
       "bytes": 32951,
       "lines": 135,
       "type": "other",
@@ -14217,7 +14217,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/GeistMono-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/GeistMono-Bold.ttf",
       "bytes": 98610,
       "lines": 262,
       "type": "other",
@@ -14229,7 +14229,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/GeistMono-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/GeistMono-OFL.txt",
       "bytes": 4388,
       "lines": 93,
       "type": "other",
@@ -14241,7 +14241,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/GeistMono-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/GeistMono-Regular.ttf",
       "bytes": 98588,
       "lines": 285,
       "type": "other",
@@ -14253,7 +14253,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Gloock-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/Gloock-OFL.txt",
       "bytes": 4381,
       "lines": 93,
       "type": "other",
@@ -14265,7 +14265,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Gloock-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Gloock-Regular.ttf",
       "bytes": 120962,
       "lines": 1375,
       "type": "other",
@@ -14277,7 +14277,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/IBMPlexMono-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/IBMPlexMono-Bold.ttf",
       "bytes": 175075,
       "lines": 851,
       "type": "other",
@@ -14289,7 +14289,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/IBMPlexMono-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/IBMPlexMono-OFL.txt",
       "bytes": 4363,
       "lines": 93,
       "type": "other",
@@ -14301,7 +14301,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/IBMPlexMono-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/IBMPlexMono-Regular.ttf",
       "bytes": 172381,
       "lines": 822,
       "type": "other",
@@ -14313,7 +14313,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/IBMPlexSerif-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/IBMPlexSerif-Bold.ttf",
       "bytes": 216775,
       "lines": 1416,
       "type": "other",
@@ -14325,7 +14325,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/IBMPlexSerif-BoldItalic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/IBMPlexSerif-BoldItalic.ttf",
       "bytes": 229993,
       "lines": 1715,
       "type": "other",
@@ -14337,7 +14337,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/IBMPlexSerif-Italic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/IBMPlexSerif-Italic.ttf",
       "bytes": 230883,
       "lines": 1993,
       "type": "other",
@@ -14349,7 +14349,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/IBMPlexSerif-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/IBMPlexSerif-Regular.ttf",
       "bytes": 215873,
       "lines": 1346,
       "type": "other",
@@ -14361,7 +14361,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/InstrumentSans-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/InstrumentSans-Bold.ttf",
       "bytes": 107867,
       "lines": 471,
       "type": "other",
@@ -14373,7 +14373,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/InstrumentSans-BoldItalic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/InstrumentSans-BoldItalic.ttf",
       "bytes": 111214,
       "lines": 420,
       "type": "other",
@@ -14385,7 +14385,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/InstrumentSans-Italic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/InstrumentSans-Italic.ttf",
       "bytes": 110463,
       "lines": 398,
       "type": "other",
@@ -14397,7 +14397,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/InstrumentSans-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/InstrumentSans-OFL.txt",
       "bytes": 4403,
       "lines": 93,
       "type": "other",
@@ -14409,7 +14409,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/InstrumentSans-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/InstrumentSans-Regular.ttf",
       "bytes": 107550,
       "lines": 393,
       "type": "other",
@@ -14421,7 +14421,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/InstrumentSerif-Italic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/InstrumentSerif-Italic.ttf",
       "bytes": 91256,
       "lines": 826,
       "type": "other",
@@ -14433,7 +14433,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/InstrumentSerif-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/InstrumentSerif-Regular.ttf",
       "bytes": 91120,
       "lines": 826,
       "type": "other",
@@ -14445,7 +14445,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Italiana-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/Italiana-OFL.txt",
       "bytes": 4394,
       "lines": 93,
       "type": "other",
@@ -14457,7 +14457,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Italiana-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Italiana-Regular.ttf",
       "bytes": 38223,
       "lines": 188,
       "type": "other",
@@ -14469,7 +14469,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/JetBrainsMono-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/JetBrainsMono-Bold.ttf",
       "bytes": 144938,
       "lines": 605,
       "type": "other",
@@ -14481,7 +14481,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/JetBrainsMono-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/JetBrainsMono-OFL.txt",
       "bytes": 4399,
       "lines": 93,
       "type": "other",
@@ -14493,7 +14493,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/JetBrainsMono-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/JetBrainsMono-Regular.ttf",
       "bytes": 144762,
       "lines": 609,
       "type": "other",
@@ -14505,7 +14505,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Jura-Light.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Jura-Light.ttf",
       "bytes": 202108,
       "lines": 454,
       "type": "other",
@@ -14517,7 +14517,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Jura-Medium.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Jura-Medium.ttf",
       "bytes": 202127,
       "lines": 317,
       "type": "other",
@@ -14529,7 +14529,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Jura-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/Jura-OFL.txt",
       "bytes": 4380,
       "lines": 93,
       "type": "other",
@@ -14541,7 +14541,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/LibreBaskerville-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/LibreBaskerville-OFL.txt",
       "bytes": 4449,
       "lines": 93,
       "type": "other",
@@ -14553,7 +14553,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/LibreBaskerville-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/LibreBaskerville-Regular.ttf",
       "bytes": 193014,
       "lines": 1068,
       "type": "other",
@@ -14565,7 +14565,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Lora-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Lora-Bold.ttf",
       "bytes": 183078,
       "lines": 850,
       "type": "other",
@@ -14577,7 +14577,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Lora-BoldItalic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Lora-BoldItalic.ttf",
       "bytes": 187302,
       "lines": 1024,
       "type": "other",
@@ -14589,7 +14589,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Lora-Italic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Lora-Italic.ttf",
       "bytes": 187950,
       "lines": 667,
       "type": "other",
@@ -14601,7 +14601,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Lora-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/Lora-OFL.txt",
       "bytes": 4423,
       "lines": 93,
       "type": "other",
@@ -14613,7 +14613,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Lora-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Lora-Regular.ttf",
       "bytes": 180398,
       "lines": 516,
       "type": "other",
@@ -14625,7 +14625,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/NationalPark-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/NationalPark-Bold.ttf",
       "bytes": 98348,
       "lines": 611,
       "type": "other",
@@ -14637,7 +14637,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/NationalPark-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/NationalPark-OFL.txt",
       "bytes": 4399,
       "lines": 93,
       "type": "other",
@@ -14649,7 +14649,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/NationalPark-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/NationalPark-Regular.ttf",
       "bytes": 95482,
       "lines": 601,
       "type": "other",
@@ -14661,7 +14661,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/NothingYouCouldDo-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/NothingYouCouldDo-OFL.txt",
       "bytes": 4363,
       "lines": 93,
       "type": "other",
@@ -14673,7 +14673,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/NothingYouCouldDo-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/NothingYouCouldDo-Regular.ttf",
       "bytes": 36179,
       "lines": 420,
       "type": "other",
@@ -14685,7 +14685,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Outfit-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Outfit-Bold.ttf",
       "bytes": 83196,
       "lines": 188,
       "type": "other",
@@ -14697,7 +14697,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Outfit-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/Outfit-OFL.txt",
       "bytes": 4389,
       "lines": 93,
       "type": "other",
@@ -14709,7 +14709,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Outfit-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Outfit-Regular.ttf",
       "bytes": 82044,
       "lines": 246,
       "type": "other",
@@ -14721,7 +14721,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/PixelifySans-Medium.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/PixelifySans-Medium.ttf",
       "bytes": 69792,
       "lines": 106,
       "type": "other",
@@ -14733,7 +14733,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/PixelifySans-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/PixelifySans-OFL.txt",
       "bytes": 4395,
       "lines": 93,
       "type": "other",
@@ -14745,7 +14745,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/PoiretOne-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/PoiretOne-OFL.txt",
       "bytes": 4366,
       "lines": 93,
       "type": "other",
@@ -14757,7 +14757,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/PoiretOne-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/PoiretOne-Regular.ttf",
       "bytes": 63246,
       "lines": 103,
       "type": "other",
@@ -14769,7 +14769,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/RedHatMono-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/RedHatMono-Bold.ttf",
       "bytes": 42585,
       "lines": 133,
       "type": "other",
@@ -14781,7 +14781,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/RedHatMono-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/RedHatMono-OFL.txt",
       "bytes": 4394,
       "lines": 93,
       "type": "other",
@@ -14793,7 +14793,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/RedHatMono-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/RedHatMono-Regular.ttf",
       "bytes": 42441,
       "lines": 123,
       "type": "other",
@@ -14805,7 +14805,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Silkscreen-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/Silkscreen-OFL.txt",
       "bytes": 4394,
       "lines": 93,
       "type": "other",
@@ -14817,7 +14817,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Silkscreen-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Silkscreen-Regular.ttf",
       "bytes": 37969,
       "lines": 270,
       "type": "other",
@@ -14829,7 +14829,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/SmoochSans-Medium.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/SmoochSans-Medium.ttf",
       "bytes": 73873,
       "lines": 250,
       "type": "other",
@@ -14841,7 +14841,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/SmoochSans-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/SmoochSans-OFL.txt",
       "bytes": 4396,
       "lines": 93,
       "type": "other",
@@ -14853,7 +14853,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Tektur-Medium.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Tektur-Medium.ttf",
       "bytes": 102216,
       "lines": 506,
       "type": "other",
@@ -14865,7 +14865,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Tektur-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/Tektur-OFL.txt",
       "bytes": 4385,
       "lines": 93,
       "type": "other",
@@ -14877,7 +14877,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/Tektur-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/Tektur-Regular.ttf",
       "bytes": 100910,
       "lines": 314,
       "type": "other",
@@ -14889,7 +14889,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/WorkSans-Bold.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/WorkSans-Bold.ttf",
       "bytes": 284127,
       "lines": 884,
       "type": "other",
@@ -14901,7 +14901,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/WorkSans-BoldItalic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/WorkSans-BoldItalic.ttf",
       "bytes": 267516,
       "lines": 730,
       "type": "other",
@@ -14913,7 +14913,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/WorkSans-Italic.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/WorkSans-Italic.ttf",
       "bytes": 260172,
       "lines": 646,
       "type": "other",
@@ -14925,7 +14925,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/WorkSans-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/WorkSans-OFL.txt",
       "bytes": 4397,
       "lines": 93,
       "type": "other",
@@ -14937,7 +14937,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/WorkSans-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/WorkSans-Regular.ttf",
       "bytes": 274773,
       "lines": 892,
       "type": "other",
@@ -14949,7 +14949,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/YoungSerif-OFL.txt",
+      "path": "rui-tools/ui-ux/shared/fonts/YoungSerif-OFL.txt",
       "bytes": 4398,
       "lines": 93,
       "type": "other",
@@ -14961,7 +14961,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-tools/ui-ux/canvas-fonts/YoungSerif-Regular.ttf",
+      "path": "rui-tools/ui-ux/shared/fonts/YoungSerif-Regular.ttf",
       "bytes": 127614,
       "lines": 1145,
       "type": "other",

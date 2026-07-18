@@ -1,0 +1,55 @@
+{
+  "name": "Miscellaneous",
+  "slug": "miscellaneous",
+  "source_id": "awesome-tmux",
+  "file": "categories/miscellaneous.json",
+  "topics": [
+    {
+      "name": "Miscellaneous",
+      "resources": [
+        {
+          "category": "Miscellaneous",
+          "topic": "Miscellaneous",
+          "title": "sixel-tmux",
+          "url": "https://github.com/csdvrx/sixel-tmux",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Miscellaneous",
+          "topic": "Miscellaneous",
+          "title": "Statically linked tmux",
+          "url": "https://gist.github.com/rothgar/719ef460efc214c8d222",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Miscellaneous",
+          "topic": "Miscellaneous",
+          "title": "sublime-tmux",
+          "url": "https://github.com/huntie/sublime-tmux",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Miscellaneous",
+          "topic": "Miscellaneous",
+          "title": "tmuxai",
+          "url": "https://github.com/alvinunreal/tmuxai",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Miscellaneous",
+          "topic": "Miscellaneous",
+          "title": "tmux-tail-f",
+          "url": "https://github.com/mapio/tmux-tail-f",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Miscellaneous",
+          "topic": "Miscellaneous",
+          "title": "vim-tmux",
+          "url": "https://github.com/tmux-plugins/vim-tmux",
+          "source": "awesome-tmux"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "name": "Core Development",
+  "slug": "core-development",
+  "source_id": "awesome-claude-code-subagents",
+  "file": "categories/core-development.json",
+  "topics": [
+    {
+      "name": "Core Development",
+      "resources": [
+        {
+          "category": "Core Development",
+          "topic": "Core Development",
+          "title": "api-designer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/01-core-development/api-designer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Core Development",
+          "topic": "Core Development",
+          "title": "backend-developer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/01-core-development/backend-developer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Core Development",
+          "topic": "Core Development",
+          "title": "design-bridge",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/01-core-development/design-bridge.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Core Development",
+          "topic": "Core Development",
+          "title": "electron-pro",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/01-core-development/electron-pro.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Core Development",
+          "topic": "Core Development",
+          "title": "frontend-developer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/01-core-development/frontend-developer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Core Development",
+          "topic": "Core Development",
+          "title": "fullstack-developer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/01-core-development/fullstack-developer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Core Development",
+          "topic": "Core Development",
+          "title": "graphql-architect",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/01-core-development/graphql-architect.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Core Development",
+          "topic": "Core Development",
+          "title": "microservices-architect",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/01-core-development/microservices-architect.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Core Development",
+          "topic": "Core Development",
+          "title": "mobile-developer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/01-core-development/mobile-developer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Core Development",
+          "topic": "Core Development",
+          "title": "ui-designer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/01-core-development/ui-designer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Core Development",
+          "topic": "Core Development",
+          "title": "websocket-engineer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/01-core-development/websocket-engineer.md",
+          "source": "awesome-claude-code-subagents"
+        }
+      ]
+    }
+  ]
+}

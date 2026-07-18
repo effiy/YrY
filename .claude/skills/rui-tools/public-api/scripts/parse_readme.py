@@ -13,20 +13,36 @@ flattens topics, saving ~2.3k lines on the current snapshot.
 
 Schema v2
 ---------
+Top-level `index.json` is a lightweight overview — sources + summary +
+a `categories[]` array of `{name, slug, file, counts}`. Each category's
+full resource list lives in `categories/{slug}.json`. The split
+mirrors `rui-code/vite/references/categories/` and keeps `index.json`
+small even when the upstream has 800+ resources.
+
 {
   "schema": "public-api-index-v2",
   "generated_from": "<upstream url or local path>",
   "generated_at": "<iso timestamp>",
   "sources": [ ... sources.json contents ... ],
+  "summary": {"category_count": N, "topic_count": N, "resource_count": M},
   "categories": [
     {
       "name": "Animals",
-      "resources": [
-        {"title": ..., "url": ..., "description": ...,
-         "auth": ..., "https": ..., "cors": ...}
-      ]
+      "slug": "animals",
+      "file": "categories/animals.json",
+      "topic_count": 1,
+      "resource_count": 18
     }
   ]
+}
+
+`categories/{slug}.json` per-file payload:
+{
+  "name": "Animals",
+  "slug": "animals",
+  "source_id": "public-api-lists",
+  "file": "categories/animals.json",
+  "resources": [{"title": ..., "url": ..., ...}, ...]
 }
 
 Usage
@@ -196,14 +212,98 @@ def build_index(
     sources: list[dict[str, Any]],
     source_label: str,
 ) -> dict[str, Any]:
-    """Assemble the v2 index payload."""
+    """Assemble the v2 index payload: sources + summary + lightweight category overview.
+
+    The full per-category `resources[]` arrays live in
+    `categories/{slug}.json` (written by `write_per_category_files`).
+    `index.json` only carries the `{name, slug, file, counts}` overview
+    so the top-level file stays small even for 800+ resources.
+    """
+    overview: list[dict[str, Any]] = []
+    used: set[str] = set()
+    total_topics = 0
+    total_resources = 0
+    for cat in categories:
+        resources = cat.get("resources", [])
+        if not resources:
+            continue
+        slug = _unique_slug(_slugify(cat["name"]), used)
+        used.add(slug)
+        overview.append({
+            "name": cat["name"],
+            "slug": slug,
+            "file": f"categories/{slug}.json",
+            "topic_count": 1,  # v2: one topic per category
+            "resource_count": len(resources),
+        })
+        total_topics += 1
+        total_resources += len(resources)
+
     return {
         "schema": SCHEMA_VERSION,
         "generated_at": _dt.datetime.now(_dt.timezone.utc).isoformat(timespec="seconds"),
         "generated_from": source_label,
         "sources": sources,
-        "categories": categories,
+        "summary": {
+            "category_count": len(overview),
+            "topic_count": total_topics,
+            "resource_count": total_resources,
+        },
+        "categories": overview,
     }
+
+
+def write_per_category_files(
+    categories: list[dict[str, Any]],
+    source_id: str,
+    cats_dir: Path,
+) -> None:
+    """Write one `categories/{slug}.json` per non-empty category.
+
+    Each file carries the full `resources[]` so renderers / data loaders
+    can lazy-load by category. The slug derivation must match
+    `build_index` exactly — both helpers share the same `used` set
+    policy via `_unique_slug`.
+    """
+    cats_dir.mkdir(parents=True, exist_ok=True)
+    used: set[str] = set()
+    for cat in categories:
+        resources = cat.get("resources", [])
+        if not resources:
+            continue
+        slug = _unique_slug(_slugify(cat["name"]), used)
+        used.add(slug)
+        rel_file = f"categories/{slug}.json"
+        payload = {
+            "name": cat["name"],
+            "slug": slug,
+            "source_id": source_id,
+            "file": rel_file,
+            "resources": resources,
+        }
+        (cats_dir / f"{slug}.json").write_text(
+            json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+
+
+def _slugify(name: str) -> str:
+    """Filesystem-safe slug. Lowercase, ASCII, hyphen-separated, ≤ 64 chars."""
+    s = name.lower()
+    s = re.sub(r"&", "and", s)
+    s = re.sub(r"[^a-z0-9]+", "-", s)
+    s = s.strip("-")
+    return s[:64] or "uncategorized"
+
+
+def _unique_slug(base: str, used: set[str]) -> str:
+    """Append -2, -3, ... if `base` collides with an already-used slug."""
+    if base not in used:
+        return base
+    i = 2
+    while f"{base}-{i}" in used:
+        i += 1
+    return f"{base}-{i}"
 
 
 def render_markdown(
@@ -306,6 +406,13 @@ def main(argv: list[str] | None = None) -> int:
     out_json = Path(args.out_json)
     out_json.parent.mkdir(parents=True, exist_ok=True)
     out_json.write_text(json.dumps(index, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+    # Per-category split: each non-empty category gets its own
+    # `categories/{slug}.json` carrying the full resources array. This
+    # keeps `index.json` lightweight (12 KB for 787 resources) and
+    # mirrors the layout used by `rui-code/vite/references/`.
+    src_id = sources[0]["id"] if sources else "public-api-lists"
+    write_per_category_files(categories, src_id, out_json.parent / "categories")
 
     md_text = render_markdown(categories, sources, source_label)
     out_md = Path(args.out_md)

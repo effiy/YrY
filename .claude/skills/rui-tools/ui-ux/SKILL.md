@@ -65,7 +65,8 @@ reference tokens (enables theme switching and dark mode).
 | Boundary | Permission |
 |----------|-----------|
 | `references/**` | read-only |
-| `data/**`, `components/**`, `canvas-fonts/**` | read-only |
+| `data/**`, `components/**` | read-only |
+| `.claude/shared/fonts/**` (canvas font assets) | read-only |
 | `GEMINI_API_KEY` (env) | required for AI generation |
 | Output assets directory | read + write |
 | External skills (ai-artist, ai-multimodal, chrome-devtools) | read-only (invoke only) |

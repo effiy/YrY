@@ -1,0 +1,27 @@
+{
+  "name": "Books",
+  "slug": "books",
+  "source_id": "awesome-tmux",
+  "file": "categories/books.json",
+  "topics": [
+    {
+      "name": "Books",
+      "resources": [
+        {
+          "category": "Books",
+          "topic": "Books",
+          "title": "tmux 2: Productive Mouse-Free Development",
+          "url": "https://pragprog.com/book/bhtmux2/tmux-2/",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Books",
+          "topic": "Books",
+          "title": "The Tao of tmux",
+          "url": "https://leanpub.com/the-tao-of-tmux",
+          "source": "awesome-tmux"
+        }
+      ]
+    }
+  ]
+}

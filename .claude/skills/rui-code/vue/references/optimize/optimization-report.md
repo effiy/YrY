@@ -52,10 +52,14 @@ Per-opportunity entry, grouped by sub-area:
   - Naming & contracts
 
 ## 4. Component Extraction Opportunities
+
 Inline chunks that should be their own component. Every entry cites
-a detection heuristic (#1–#5) and a target file. See
-[§ Component Extraction Opportunities](#component-extraction-opportunities)
-for the heuristics and worked example.
+a detection heuristic (#1–#5) and a target file. The full
+detection logic, signal catalog, transformation recipe, and
+before/after cookbook live in
+[component-extraction.md](../extract/component-extraction.md) —
+read that doc for *how* to do the refactor; this section covers
+*how to report it*.
 
 ## 5. Accessibility Opportunities
   - Keyboard / focus
@@ -69,76 +73,29 @@ A small table mapping each opportunity to (effort, impact, risk).
 The smallest coherent set of changes that yields a measurable win.
 ```
 
-## Component Extraction Opportunities
+## Component Extraction Opportunities (report entry shape)
 
-A maintainability-flavoured win that is common enough to deserve its
-own section: identify inline code that *should* be a standalone
-component. These are not pure performance or correctness issues —
-they show up when a single SFC has grown to hold two or more concerns,
-or when the same visual pattern is re-implemented inline several
-times. An extraction entry follows the standard opportunity format
-with two extra fields:
+The detection heuristics (#1–#5) and the "when NOT to flag" rules
+live in [component-extraction.md](../extract/component-extraction.md);
+do not duplicate them here. This section covers only the *report
+entry shape* — what an extraction opportunity looks like inside a
+page report.
 
-- **`Detection:`** — which heuristic (1–5 below) flagged the chunk.
+An extraction entry follows the standard opportunity format with
+two extra fields:
+
+- **`Detection:`** — which heuristic (1–5) flagged the chunk.
   This is what makes the entry falsifiable; "this feels too big" is
   not a detection.
 - **`Target:`** — where the new component should live (folder path
   and component name). A reader should be able to start typing
   without re-thinking the file layout.
 
-### Detection heuristics
+A worked report entry for heuristic #1 is below; the remaining four
+heuristics each have a before/after in
+[component-extraction.md § Cookbook](../extract/component-extraction.md#cookbook).
 
-Flag a chunk as "extract to component" when **any** of these hold.
-Cite the matching number in the entry's `**Detection:**` line.
-
-1. **Repeated structural pattern** — the same markup block (card,
-   list row, metric tile, form field group, sidebar item) appears
-   **3+ times** in the same template, either inside a `v-for` or in
-   sibling sections. The threshold is 3 because two repeats can be
-   coincidence; three is a pattern.
-2. **Local reactive state** — the chunk owns its own `ref` /
-   `reactive` state and emits events back to the parent, but is
-   currently expressed as inline `v-if` branches, watchers, or
-   event handlers in the host SFC. If you can name a piece of state
-   that "belongs to" a region of the template, that region is a
-   candidate component.
-3. **Nesting + size threshold** — more than 3 levels of template
-   nesting **and** more than ~30 lines of template in a single
-   branch of an SFC. Either alone is fine; both together signals a
-   missing component boundary.
-4. **Mixed concerns** — a single SFC has two visually distinct
-   regions that have their own state, props contract, and styles,
-   but no real shared logic. The tell: editing one region forces
-   unrelated tests / stories for the other region to be re-run.
-5. **Reusable UI primitive inlined** — a button, card, modal, chip,
-   tooltip, or badge pattern that is re-implemented with raw markup
-   instead of being a shared component. Often shows up as
-   `class="btn btn-primary"` pasted into 6 different files.
-
-### When NOT to flag
-
-Extraction is not free — every new component adds a render boundary,
-a props/emits contract, and a place for bugs to hide. Skip the
-report entry when:
-
-- The pattern appears exactly **once** in the codebase. Don't
-  pre-optimize for hypothetical reuse; the cost of the new component
-  is paid now, the benefit is speculative.
-- The chunk is tightly coupled to parent state. Rule of thumb: if
-  extracting would force you to define **5+ props** or a deep
-  provide/inject chain, the coupling is the smell — keep the code
-  inline and refactor the data first.
-- You are inside a `v-for` over a *hot* list (think ≥ 100 rows) and
-  the pattern repeats per row. For large lists, **flatten the row**
-  instead of extracting — see
-  [perf-avoid-component-abstraction-in-lists.md](../../perf/perf-avoid-component-abstraction-in-lists.md).
-  Extraction is fine when the list itself is small (< ~20) or when
-  the list is virtualized so only ~20 instances are alive at once.
-- The "component" would be a pure presentational wrapper with no
-  state, no events, and no styles of its own. In that case a CSS
-  class on a native element is cheaper.
-
-### Worked example
+### Worked report entry — heuristic #1
 
 ```markdown
 ### Extract `MetricTile` from the dashboard header — Major
@@ -165,9 +122,8 @@ three inline copies with a single `v-for` over a `metrics` array.
 Keep the props contract minimal — `label: string`, `value: string`,
 `icon?: string`, `trend?: 'up' | 'down' | 'flat'`. No emits needed
 unless a click target is required; if it is, prefer `defineModel`
-over a custom event. See
-[component-pattern-spec.md](../../pattern/component-pattern-spec.md)
-if the new component is a doc page rather than a leaf UI primitive.
+over a custom event. Full step-by-step recipe in
+[component-extraction.md § Transformation recipe](../extract/component-extraction.md#transformation-recipe).
 
 **Verification**
 - Visual diff is zero (the three rendered tiles are pixel-identical
@@ -182,7 +138,7 @@ if the new component is a doc page rather than a leaf UI primitive.
   dashboard chunk (it should be — no async boundary needed).
 
 **Reference**
-[component-pattern-spec.md](../../pattern/component-pattern-spec.md)
+[component-extraction.md](../extract/component-extraction.md)
 ```
 
 ## Opportunity entry format

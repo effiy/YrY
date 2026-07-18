@@ -302,7 +302,7 @@
         { name: 'rui-init',    files: 52,   skillMd: 1, evals: 0, references: 12,  notes: '5-step pipeline (detect → explore → generate → arch → verify)' },
         { name: 'rui-reports', files: 2841, skillMd: 5, evals: 5, references: 24,  notes: '5 sub-skills; the diagram sub-skill contains the engine (≈ 2,762 files)' },
         { name: 'rui-test',    files: 21,   skillMd: 1, evals: 1, references: 14,  notes: 'Smallest skill; the fixture topic bundle has the test-contracts rule set' },
-        { name: 'rui-tools',   files: 207,  skillMd: 9, evals: 8, references: 60,  notes: '9 sub-skills; ui-ux/canvas-fonts bundle is 81 of the 207 files' }
+        { name: 'rui-tools',   files: 207,  skillMd: 9, evals: 8, references: 60,  notes: '9 sub-skills; ui-ux/shared/fonts bundle is 81 of the 207 files' }
       ],
       tests: {
         testLoc: 1161,
@@ -339,7 +339,7 @@
       ],
       activityPulse: [
         { date: '2026-07-13', day: 'Mon', commits: 24, hint: 'initial commit wave, all 25 skills seeded',   barWidth: 120 },
-        { date: '2026-07-14', day: 'Tue', commits: 25, hint: 'peak day; diagram + canvas-fonts seeded',     barWidth: 124 },
+        { date: '2026-07-14', day: 'Tue', commits: 25, hint: 'peak day; diagram + shared/fonts seeded',     barWidth: 124 },
         { date: '2026-07-15', day: 'Wed', commits: 13, hint: 'first refactor passes (Cytoscape, fonts)',     barWidth: 64  },
         { date: '2026-07-16', day: 'Thu', commits: 10, hint: 'Page-HTML-Generation removals across rui-tools',barWidth: 48  },
         { date: '2026-07-17', day: 'Fri', commits: 11, hint: 'continuing rui-tools cleanup',                  barWidth: 52  }
@@ -495,7 +495,7 @@
         { name: 'rui-init',    files: 52,   skillMd: 1, evals: 0, references: 12,  notes: '5-step pipeline (detect → explore → generate → arch → verify)' },
         { name: 'rui-reports', files: 2841, skillMd: 5, evals: 5, references: 24,  notes: '5 sub-skills; the diagram sub-skill contains the engine (≈ 2,762 files)' },
         { name: 'rui-test',    files: 21,   skillMd: 1, evals: 1, references: 14,  notes: 'Smallest skill; the fixture topic bundle has the test-contracts rule set' },
-        { name: 'rui-tools',   files: 207,  skillMd: 9, evals: 8, references: 60,  notes: '9 sub-skills; ui-ux/canvas-fonts bundle is 81 of the 207 files' }
+        { name: 'rui-tools',   files: 207,  skillMd: 9, evals: 8, references: 60,  notes: '9 sub-skills; ui-ux/shared/fonts bundle is 81 of the 207 files' }
       ],
       tests: {
         testLoc: 1161, allJsLoc: 400568,
@@ -527,7 +527,7 @@
       ],
       activityPulse: [
         { date: '2026-07-13', day: 'Mon', commits: 24, hint: 'initial commit wave, all 25 skills seeded',    barWidth: 120 },
-        { date: '2026-07-14', day: 'Tue', commits: 25, hint: 'peak day; diagram + canvas-fonts seeded',      barWidth: 124 },
+        { date: '2026-07-14', day: 'Tue', commits: 25, hint: 'peak day; diagram + shared/fonts seeded',      barWidth: 124 },
         { date: '2026-07-15', day: 'Wed', commits: 13, hint: 'first refactor passes (Cytoscape, fonts)',      barWidth: 64  },
         { date: '2026-07-16', day: 'Thu', commits: 10, hint: 'Page-HTML-Generation removals across rui-tools', barWidth: 48  },
         { date: '2026-07-17', day: 'Fri', commits: 11, hint: 'continuing rui-tools cleanup',                   barWidth: 52  }

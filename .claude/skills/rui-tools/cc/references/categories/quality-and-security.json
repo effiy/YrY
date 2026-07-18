@@ -1,0 +1,132 @@
+{
+  "name": "Quality & Security",
+  "slug": "quality-and-security",
+  "source_id": "awesome-claude-code-subagents",
+  "file": "categories/quality-and-security.json",
+  "topics": [
+    {
+      "name": "Quality & Security",
+      "resources": [
+        {
+          "category": "Quality & Security",
+          "topic": "Quality & Security",
+          "title": "accessibility-tester",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/accessibility-tester.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Quality & Security",
+          "topic": "Quality & Security",
+          "title": "ad-security-reviewer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/ad-security-reviewer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Quality & Security",
+          "topic": "Quality & Security",
+          "title": "ai-writing-auditor",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/ai-writing-auditor.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Quality & Security",
+          "topic": "Quality & Security",
+          "title": "architect-reviewer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/architect-reviewer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Quality & Security",
+          "topic": "Quality & Security",
+          "title": "chaos-engineer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/chaos-engineer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Quality & Security",
+          "topic": "Quality & Security",
+          "title": "code-reviewer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/code-reviewer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Quality & Security",
+          "topic": "Quality & Security",
+          "title": "compliance-auditor",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/compliance-auditor.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Quality & Security",
+          "topic": "Quality & Security",
+          "title": "debugger",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/debugger.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Quality & Security",
+          "topic": "Quality & Security",
+          "title": "gdpr-ccpa-compliance",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/gdpr-ccpa-compliance.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Quality & Security",
+          "topic": "Quality & Security",
+          "title": "error-detective",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/error-detective.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Quality & Security",
+          "topic": "Quality & Security",
+          "title": "penetration-tester",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/penetration-tester.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Quality & Security",
+          "topic": "Quality & Security",
+          "title": "performance-engineer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/performance-engineer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Quality & Security",
+          "topic": "Quality & Security",
+          "title": "powershell-security-hardening",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/powershell-security-hardening.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Quality & Security",
+          "topic": "Quality & Security",
+          "title": "qa-expert",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/qa-expert.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Quality & Security",
+          "topic": "Quality & Security",
+          "title": "security-auditor",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/security-auditor.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Quality & Security",
+          "topic": "Quality & Security",
+          "title": "test-automator",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/test-automator.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Quality & Security",
+          "topic": "Quality & Security",
+          "title": "ui-ux-tester",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/04-quality-security/ui-ux-tester.md",
+          "source": "awesome-claude-code-subagents"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "name": "CROSS-MODEL WORKFLOWS",
+  "slug": "cross-model-workflows",
+  "source_id": "awesome-claude-code-subagents",
+  "file": "categories/cross-model-workflows.json",
+  "topics": [
+    {
+      "name": "CROSS-MODEL WORKFLOWS",
+      "resources": [
+        {
+          "category": "CROSS-MODEL WORKFLOWS",
+          "topic": "CROSS-MODEL WORKFLOWS",
+          "title": "musistudio/claude-code-router",
+          "url": "https://github.com/musistudio/claude-code-router",
+          "source": "claude-code-best-practice"
+        },
+        {
+          "category": "CROSS-MODEL WORKFLOWS",
+          "topic": "CROSS-MODEL WORKFLOWS",
+          "title": "router-for-me/CLIProxyAPI",
+          "url": "https://github.com/router-for-me/CLIProxyAPI",
+          "source": "claude-code-best-practice"
+        },
+        {
+          "category": "CROSS-MODEL WORKFLOWS",
+          "topic": "CROSS-MODEL WORKFLOWS",
+          "title": "openai/codex-plugin-cc",
+          "url": "https://github.com/openai/codex-plugin-cc",
+          "source": "claude-code-best-practice"
+        },
+        {
+          "category": "CROSS-MODEL WORKFLOWS",
+          "topic": "CROSS-MODEL WORKFLOWS",
+          "title": "BeehiveInnovations/pal-mcp-server",
+          "url": "https://github.com/BeehiveInnovations/pal-mcp-server",
+          "source": "claude-code-best-practice"
+        }
+      ]
+    }
+  ]
+}

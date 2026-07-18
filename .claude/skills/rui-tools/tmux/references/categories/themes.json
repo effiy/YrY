@@ -1,0 +1,153 @@
+{
+  "name": "Themes",
+  "slug": "themes",
+  "source_id": "awesome-tmux",
+  "file": "categories/themes.json",
+  "topics": [
+    {
+      "name": "Themes",
+      "resources": [
+        {
+          "category": "Themes",
+          "topic": "Themes",
+          "title": "amp",
+          "url": "https://github.com/imdanielpiva/tmux-amp-theme",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Themes",
+          "topic": "Themes",
+          "title": "catppuccin",
+          "url": "https://github.com/catppuccin/tmux",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Themes",
+          "topic": "Themes",
+          "title": "cole-tmux",
+          "url": "https://github.com/thekylehuang/cole-tmux",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Themes",
+          "topic": "Themes",
+          "title": "dracula/tmux",
+          "url": "https://github.com/dracula/tmux",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Themes",
+          "topic": "Themes",
+          "title": "minimal-tmux-status",
+          "url": "https://github.com/niksingh710/minimal-tmux-status/",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Themes",
+          "topic": "Themes",
+          "title": "nord tmux",
+          "url": "https://github.com/arcticicestudio/nord-tmux",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Themes",
+          "topic": "Themes",
+          "title": "rose-pine",
+          "url": "https://github.com/rose-pine/tmux",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Themes",
+          "topic": "Themes",
+          "title": "tmux-base16-statusline",
+          "url": "https://github.com/jatap/tmux-base16-statusline",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Themes",
+          "topic": "Themes",
+          "title": "tmux-colors-solarized",
+          "url": "https://github.com/seebi/tmux-colors-solarized",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Themes",
+          "topic": "Themes",
+          "title": "tmux-dark-notify",
+          "url": "https://github.com/erikw/tmux-dark-notify",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Themes",
+          "topic": "Themes",
+          "title": "tmux-gruvbox",
+          "url": "https://github.com/egel/tmux-gruvbox",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Themes",
+          "topic": "Themes",
+          "title": "tmux-nova",
+          "url": "https://github.com/o0th/tmux-nova",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Themes",
+          "topic": "Themes",
+          "title": "tmux-power",
+          "url": "https://github.com/wfxr/tmux-power",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Themes",
+          "topic": "Themes",
+          "title": "tmux-snazzy",
+          "url": "https://github.com/ivnvxd/tmux-snazzy",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Themes",
+          "topic": "Themes",
+          "title": "tmux-themepack",
+          "url": "https://github.com/jimeh/tmux-themepack",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Themes",
+          "topic": "Themes",
+          "title": "tokyo-night-tmux",
+          "url": "https://github.com/janoamaral/tokyo-night-tmux",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Themes",
+          "topic": "Themes",
+          "title": "tomorrow",
+          "url": "https://github.com/edouard-lopez/tmux-tomorrow/",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Themes",
+          "topic": "Themes",
+          "title": "tmux-kanagawa",
+          "url": "https://github.com/Nybkox/tmux-kanagawa",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Themes",
+          "topic": "Themes",
+          "title": "gruvbox-tmux",
+          "url": "https://gitlab.com/motaz-shokry/gruvbox-tmux",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Themes",
+          "topic": "Themes",
+          "title": "tmux-oasis",
+          "url": "https://github.com/uhs-robert/tmux-oasis",
+          "source": "awesome-tmux"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,314 @@
+{
+  "name": "Status Bar",
+  "slug": "status-bar",
+  "source_id": "awesome-tmux",
+  "file": "categories/status-bar.json",
+  "topics": [
+    {
+      "name": "Status Bar",
+      "resources": [
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "aws-tmux",
+          "url": "https://github.com/darko-mesaros/aws-tmux",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "gitmux",
+          "url": "https://github.com/arl/gitmux",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "muxbar",
+          "url": "https://github.com/dlurak/muxbar",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux2k",
+          "url": "https://github.com/2KAbhishek/tmux2k",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-battery",
+          "url": "https://github.com/tmux-plugins/tmux-battery",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-clima",
+          "url": "https://github.com/vascomfnunes/tmux-clima",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-code-time",
+          "url": "https://github.com/theo64oliver/tmux-code-time",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-colortag",
+          "url": "https://github.com/Determinant/tmux-colortag",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-cpu-info",
+          "url": "https://github.com/jdxcode/tmux-cpu-info",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-cpu",
+          "url": "https://github.com/tmux-plugins/tmux-cpu",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-cpu-rs",
+          "url": "https://github.com/playbahn/tmux-cpu-rs/",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-current-pane-hostname",
+          "url": "https://github.com/tony-sol/tmux-current-pane-hostname",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-df",
+          "url": "https://github.com/tassaron/tmux-df",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-kripto",
+          "url": "https://github.com/vascomfnunes/tmux-kripto",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-kubectx",
+          "url": "https://github.com/tony-sol/tmux-kubectx",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-maildir-counter",
+          "url": "https://github.com/tmux-plugins/tmux-maildir-counter",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-mem-cpu-load",
+          "url": "https://github.com/thewtex/tmux-mem-cpu-load",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-mode-indicator",
+          "url": "https://github.com/MunifTanjim/tmux-mode-indicator",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-mpv-info",
+          "url": "https://github.com/Feqzz/tmux-mpv-info",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-mullvad",
+          "url": "https://github.com/jaclu/tmux-mullvad",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-ludanta",
+          "url": "https://github.com/vascomfnunes/tmux-ludanta",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-nerd-font-window-name",
+          "url": "https://github.com/joshmedeski/tmux-nerd-font-window-name",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-network-bandwidth",
+          "url": "https://github.com/xamut/tmux-network-bandwidth",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-nordvpn",
+          "url": "https://github.com/maxrodrigo/tmux-nordvpn",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-online-status",
+          "url": "https://github.com/tmux-plugins/tmux-online-status",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-packet-loss",
+          "url": "https://github.com/jaclu/tmux-packet-loss",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-piavpn",
+          "url": "https://github.com/Brutuski/tmux-piavpn",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-plugin-playerctl",
+          "url": "https://github.com/richin13/tmux-plugin-playerctl",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-pomodoro-plus",
+          "url": "https://github.com/olimorris/tmux-pomodoro-plus",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-powerline-nostatus",
+          "url": "https://gist.github.com/james1236/73bb8b7279dca0bc821518abada38f1e",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-prefix-highlight",
+          "url": "https://github.com/tmux-plugins/tmux-prefix-highlight",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-session-dots",
+          "url": "https://github.com/jtmcginty/tmux-session-dots",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-split-statusbar",
+          "url": "https://github.com/charlietag/tmux-split-statusbar",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-speedtest",
+          "url": "https://github.com/YousefHadder/tmux-speedtest",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-spotify-info",
+          "url": "https://github.com/jdxcode/tmux-spotify-info",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-spotify-info",
+          "url": "https://github.com/Feqzz/tmux-spotify-info",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-transient-status",
+          "url": "https://github.com/TheSast/tmux-transient-status",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-weather",
+          "url": "https://github.com/jdxcode/tmux-weather",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-weather",
+          "url": "https://github.com/xamut/tmux-weather",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-window-name",
+          "url": "https://github.com/ofirgall/tmux-window-name",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-weather-info-yr",
+          "url": "https://github.com/Feqzz/tmux-weather-info-yr",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-world-clock",
+          "url": "https://github.com/alexanderjeurissen/tmux-world-clock",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Status Bar",
+          "topic": "Status Bar",
+          "title": "tmux-workspace-usage",
+          "url": "https://github.com/sjdonado/tmux-workspace-usage",
+          "source": "awesome-tmux"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "name": "Data & AI",
+  "slug": "data-and-ai",
+  "source_id": "awesome-claude-code-subagents",
+  "file": "categories/data-and-ai.json",
+  "topics": [
+    {
+      "name": "Data & AI",
+      "resources": [
+        {
+          "category": "Data & AI",
+          "topic": "Data & AI",
+          "title": "ai-engineer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/ai-engineer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Data & AI",
+          "topic": "Data & AI",
+          "title": "data-analyst",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/data-analyst.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Data & AI",
+          "topic": "Data & AI",
+          "title": "data-engineer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/data-engineer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Data & AI",
+          "topic": "Data & AI",
+          "title": "data-scientist",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/data-scientist.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Data & AI",
+          "topic": "Data & AI",
+          "title": "database-optimizer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/database-optimizer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Data & AI",
+          "topic": "Data & AI",
+          "title": "llm-architect",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/llm-architect.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Data & AI",
+          "topic": "Data & AI",
+          "title": "machine-learning-engineer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/machine-learning-engineer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Data & AI",
+          "topic": "Data & AI",
+          "title": "ml-engineer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/ml-engineer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Data & AI",
+          "topic": "Data & AI",
+          "title": "mlops-engineer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/mlops-engineer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Data & AI",
+          "topic": "Data & AI",
+          "title": "nlp-engineer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/nlp-engineer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Data & AI",
+          "topic": "Data & AI",
+          "title": "postgres-pro",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/postgres-pro.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Data & AI",
+          "topic": "Data & AI",
+          "title": "prompt-engineer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/prompt-engineer.md",
+          "source": "awesome-claude-code-subagents"
+        },
+        {
+          "category": "Data & AI",
+          "topic": "Data & AI",
+          "title": "reinforcement-learning-engineer",
+          "url": "https://github.com/VoltAgent/awesome-claude-code-subagents/blob/main/categories/05-data-ai/reinforcement-learning-engineer.md",
+          "source": "awesome-claude-code-subagents"
+        }
+      ]
+    }
+  ]
+}

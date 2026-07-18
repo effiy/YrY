@@ -1,0 +1,34 @@
+{
+  "name": "Tutorials",
+  "slug": "tutorials",
+  "source_id": "awesome-tmux",
+  "file": "categories/tutorials.json",
+  "topics": [
+    {
+      "name": "Tutorials",
+      "resources": [
+        {
+          "category": "Tutorials",
+          "topic": "Tutorials",
+          "title": "Automatically start tmux on SSH",
+          "url": "http://marklodato.github.io/2013/10/31/autostart-tmux-on-ssh.html",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Tutorials",
+          "topic": "Tutorials",
+          "title": "Tmux crash course",
+          "url": "https://thoughtbot.com/blog/a-tmux-crash-course",
+          "source": "awesome-tmux"
+        },
+        {
+          "category": "Tutorials",
+          "topic": "Tutorials",
+          "title": "Tmux and Vim together",
+          "url": "https://smartbear.com/blog/tmux-and-vim/",
+          "source": "awesome-tmux"
+        }
+      ]
+    }
+  ]
+}
