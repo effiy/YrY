@@ -1,25 +1,19 @@
 (function() {
     'use strict';
 
-    /* ── Shared helpers (inlined per component; deduplicated at mount) ── */
+    /* ── Severity scoring (component-local) ─────────────────────────────
+     * Note: helpers stay inlined here to preserve the "single entry per
+     * component" property — the parent page includes one <script> per
+     * component and the entry auto-injects its CSS and template. If a
+     * second component ever needs the same severity math, copy these
+     * three declarations rather than introducing a shared util file.
+     * ─────────────────────────────────────────────────────────────────── */
     var SEVERITY_WEIGHTS = { P0: 3, P1: 1, P2: 0.3 };
 
     function calcSeverity(r) {
         return (r.p0 || 0) * SEVERITY_WEIGHTS.P0
              + (r.p1 || 0) * SEVERITY_WEIGHTS.P1
              + (r.p2 || 0) * SEVERITY_WEIGHTS.P2;
-    }
-
-    function safeGet(obj, path, fallback) {
-        try {
-            var keys = path.split('.');
-            var cur = obj;
-            for (var i = 0; i < keys.length; i++) {
-                if (cur == null) return fallback;
-                cur = cur[keys[i]];
-            }
-            return cur != null ? cur : fallback;
-        } catch (_) { return fallback; }
     }
 
     window.ruiReportSelfImprovement = {

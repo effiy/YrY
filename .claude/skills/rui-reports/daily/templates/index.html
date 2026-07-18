@@ -5,8 +5,8 @@
   @purpose: Page shell for the `/daily plan` template.
             Loads shared/loader.js (which auto-injects Vue 3 + the
             primary/fallback URL), then data.js (schema + active data),
-            index.css (all styles), and index.js (Vue 3 app + interactivity
-            + markdown exporter).
+            index.css (all styles), lib/planToMarkdown.js (the pure
+            markdown exporter), and index.js (Vue 3 app + interactivity).
 
             Open this file directly in a browser to preview the template
             with example data; the /daily plan command reads the same
@@ -14,6 +14,7 @@
             self-contained plan file.
 
   @four_file_layout: data.js · index.html · index.css · index.js
+  @lib_files:         lib/planToMarkdown.js (exposed as window.dailyPlanToMarkdown)
   @shared_dependencies: /.claude/shared/loader.js (Vue 3 + components)
 -->
 <head>
@@ -39,13 +40,15 @@
 
   <!--
     Page resources (must be loaded in this order: schema first, then
-    styles, then app).
-      data.js   → defines window.PLAN_DATA_SCHEMA + window.PLAN_DATA
-      index.css → all styles (layered: reset → tokens → base → sections → utilities)
-      index.js  → Vue 3 app, composables, runtime template, markdown export
+    styles, then the markdown exporter lib, then the app).
+      data.js                → defines window.PLAN_DATA_SCHEMA + window.PLAN_DATA
+      index.css              → all styles (layered: reset → tokens → base → sections → utilities)
+      lib/planToMarkdown.js  → pure exporter, exposed as window.dailyPlanToMarkdown
+      index.js               → Vue 3 app, composables, runtime template (uses the lib)
   -->
   <script src="data.js"></script>
   <link rel="stylesheet" href="index.css">
+  <script src="lib/planToMarkdown.js"></script>
   <script src="index.js"></script>
 </head>
 <body>

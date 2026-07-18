@@ -121,15 +121,28 @@ user_invocable: true
 - [references/index.md](./references/index.md) — unified category index, start here.
 - [references/index.json](./references/index.json) — machine-readable index (filterable by `auth` / `https` / `cors`).
 - [references/sources.json](./references/sources.json) — registered sources.
-- [references/README-public-api-lists.md](./references/README-public-api-lists.md) — verbatim upstream README.
+- [scripts/parse_readme.py](./scripts/parse_readme.py) — regenerate `index.md` / `index.json` from the upstream README (use `--from-url` to fetch fresh, or pass `--readme <path>` for an offline snapshot).
+- [scripts/test_parse_readme.py](./scripts/test_parse_readme.py) — unit tests for the parser (13 cases covering schema, blank-line tolerance, sponsor filtering, end-to-end CLI).
+
+To refresh from upstream, run:
+
+```bash
+python3 scripts/parse_readme.py --from-url
+```
+
+To run the parser tests:
+
+```bash
+python3 scripts/test_parse_readme.py
+```
 
 ## Fallback
 
 | Situation | Behavior |
 |-----------|----------|
-| `references/index.md` missing | Grep `references/README-public-api-lists.md` directly. |
+| `references/index.md` missing | Regenerate via `python3 scripts/parse_readme.py --from-url` (pulls the upstream README listed in `sources.json`). |
 | Domain not in any registered source | State the gap, suggest the closest related category (e.g. "no Movies category — try `Video`"). |
-| Stale README (upstream has moved on) | Tell the user the snapshot may be stale; suggest re-fetching from the upstream `public-api-lists/public-api-lists` repo. |
+| Stale index (upstream has moved on) | Re-run `python3 scripts/parse_readme.py --from-url` to refresh. |
 | User asks for a paid / commercial API | Out of scope; point the user at vendor docs or a paid API marketplace. |
 | User asks how to call an API / write HTTP code | Out of scope; link to the API's own docs page (URL column). |
 | User wants the entire 700+ list dumped | Allowed but discouraged — show the category table from `references/index.md` and ask which slice to narrow down. |
