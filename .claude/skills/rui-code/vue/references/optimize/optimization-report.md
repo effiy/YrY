@@ -55,11 +55,14 @@ Per-opportunity entry, grouped by sub-area:
 
 Inline chunks that should be their own component. Every entry cites
 a detection heuristic (#1–#5) and a target file. The full
-detection logic, signal catalog, transformation recipe, and
+detection logic (decision tree, priority rubric, signal catalog,
+triage matrix) lives in
+[component-identification.md](../extract/component-identification.md);
+the transformation recipe, naming, slot-vs-prop, CSS scoping,
+risk, edge cases, testing, multi-extraction order, and
 before/after cookbook live in
-[component-extraction.md](../extract/component-extraction.md) —
-read that doc for *how* to do the refactor; this section covers
-*how to report it*.
+[component-extraction.md](../extract/component-extraction.md).
+This section covers only *how to report it* (the entry shape).
 
 ## 5. Accessibility Opportunities
   - Keyboard / focus
@@ -76,7 +79,7 @@ The smallest coherent set of changes that yields a measurable win.
 ## Component Extraction Opportunities (report entry shape)
 
 The detection heuristics (#1–#5) and the "when NOT to flag" rules
-live in [component-extraction.md](../extract/component-extraction.md);
+live in [component-identification.md](../extract/component-identification.md);
 do not duplicate them here. This section covers only the *report
 entry shape* — what an extraction opportunity looks like inside a
 page report.

@@ -1,14 +1,17 @@
 ---
 name: component-extraction
-description: First-class reference for identifying inline code that should become its own SFC and for the mechanical refactor that produces a clean extraction. Covers the 5 detection heuristics, a concrete signal catalog, the transformation recipe, the single-file SFC vs 4-file pattern decision, a 5-entry before/after cookbook, anti-patterns, and ripgrep scanning patterns.
+description: First-class reference for the mechanical refactor that turns an inline chunk into a clean SFC. Pairs with component-identification.md (which owns the detection). Covers the 5 detection heuristics (cross-link), a naming convention, a slot-vs-prop decision matrix, a CSS scoping pitfalls guide, the 8-step transformation recipe, the single-file SFC vs 4-file pattern decision, a 5-entry before/after cookbook, risk classification, edge cases (SSR / KeepAlive / Teleport / async / provide-inject), testing the extraction, multi-extraction order, anti-patterns, ripgrep scanning patterns, and the post-extraction verification checklist.
 ---
 
-# Component Extraction — Identify & Refactor
+# Component Extraction — Refactor
 
-> One skill for two related jobs: **spot** inline code that should be a
-> component, then **ship** a clean refactor. The optimization report
-> still owns *whether* an extraction is worth flagging; this doc owns
-> *how* the extraction is actually done.
+> One skill for one job: **ship** a clean refactor that turns an
+> inline chunk into its own SFC. The detection side — "is this a
+> candidate?" — lives in
+> [component-identification.md](./component-identification.md).
+> The optimization report still owns *whether* an extraction is
+> worth flagging; this doc owns *how* the extraction is actually
+> done.
 
 ## Read this when
 
@@ -17,133 +20,658 @@ description: First-class reference for identifying inline code that should becom
   "make this reusable", "this is duplicated — pull it out".
 - An optimization report or code review contains a Component
   Extraction entry and you need to actually execute the refactor.
-- You are scanning a Vue codebase for extraction candidates and need
-  a concrete signal catalog (regex/AST patterns, repeated markup
-  counts, etc.) instead of vibes.
+- You have already identified a candidate (via the decision tree
+  in [component-identification.md](./component-identification.md))
+  and need to know the next step.
+- You need a slot-vs-prop decision, a CSS scoping fix, or a risk
+  classification for an extraction that is not in the cookbook.
 
 ## Routing
 
 | Question you have | Section |
 |---|---|
-| "What counts as an extraction candidate?" | [§ Detection heuristics](#detection-heuristics) |
-| "What concrete code should make me look twice?" | [§ Signal catalog](#signal-catalog) |
-| "I've decided to extract — what are the steps?" | [§ Transformation recipe](#transformation-recipe) |
+| "What name should the new component have?" | [§ Naming convention](#naming-convention) |
+| "Should this be a prop or a slot?" | [§ Slot vs prop decision matrix](#slot-vs-prop-decision-matrix) |
+| "What CSS scoping pitfalls are there?" | [§ CSS scoping pitfalls](#css-scoping-pitfalls) |
+| "How risky is this extraction?" | [§ Risk classification](#risk-classification) |
+| "What about SSR / KeepAlive / Teleport / async?" | [§ Edge cases](#edge-cases) |
+| "How do I test the extraction?" | [§ Testing the extraction](#testing-the-extraction) |
+| "I have several extractions to do — in what order?" | [§ Multi-extraction order](#multi-extraction-order) |
+| "What are the steps?" | [§ Transformation recipe](#transformation-recipe) |
 | "Single-file SFC or 4-file pattern?" | [§ Single-file SFC vs 4-file pattern](#single-file-sfc-vs-4-file-pattern) |
 | "Show me a before/after." | [§ Cookbook](#cookbook) |
 | "When should I *not* extract?" | [§ Anti-patterns](#anti-patterns) |
 | "How do I find candidates across a codebase?" | [§ Scanning a codebase](#scanning-a-codebase) |
 | "How do I confirm the refactor is correct?" | [§ Verification](#verification) |
+| "What counts as an extraction candidate?" (detection side) | [component-identification.md](./component-identification.md) |
 
 ---
 
-## Detection heuristics
+## Detection heuristics (summary)
 
 The five heuristics below are the same ones the
-[optimization-report.md](../optimize/optimization-report.md) uses, but
-stated as *falsifiable* rules. Every extraction entry in a report or
-review must cite the matching number(s) in its `**Detection:**`
-field. "This feels too big" is not a detection.
+[optimization-report.md](../optimize/optimization-report.md) and
+[component-identification.md](./component-identification.md) use.
+They are restated here in 1-line form so you can re-classify a
+candidate mid-refactor. For the full falsifiable rules, signal
+catalog, priority rubric, and decision tree, read the
+identification doc.
 
-### #1 — Repeated structural pattern
+| # | Heuristic | 1-line test |
+|---|---|---|
+| 1 | Repeated structural pattern | Same opening tag + same class, 3+ times |
+| 2 | Local reactive state | A `ref` / `computed` / `watch` is read + written only inside one template region |
+| 3 | Nesting + size | > 3 levels deep **and** > ~30 lines |
+| 4 | Mixed concerns | One SFC with two regions, no shared logic, only shared imports |
+| 5 | Reusable UI primitive inlined | A button/card/chip/modal class pasted in 3+ files |
 
-The same markup block (card, list row, metric tile, form field group,
-sidebar item, table cell pattern) appears **3+ times** in the same
-template, either inside a single `v-for` or in sibling sections.
-
-**Why 3, not 2:** two repeats can be coincidence. Three is a pattern
-— and the third copy is where the first drift shows up (a missing
-class, an inconsistent prop, a different `aria-label`).
-
-**Falsifier:** if the 3 copies diverge in *structure* (not just
-content), they are different components that happen to share a name;
-do not extract.
-
-### #2 — Local reactive state
-
-A region of the template owns its own `ref` / `reactive` state — a
-boolean toggle, a counter, a form value, a focus target — but is
-currently expressed as inline `v-if` branches, watchers, or event
-handlers in the host SFC.
-
-**The tell:** you can name a piece of state that "belongs to" a
-specific region of the template, and that region's lifecycle (when
-it appears, when it disappears, what resets it) is decoupled from
-the host. If you can write `useThingState()` and the host never
-mentions `thing` again, extract.
-
-**Falsifier:** if reading the local state from inside a parent
-`computed` / `watch` is required, the state is shared, not local —
-lift it, don't extract it.
-
-### #3 — Nesting + size threshold
-
-A single branch of the template is **more than 3 levels deep** *and*
-holds **more than ~30 lines** of markup. Either alone is fine; both
-together signal a missing component boundary.
-
-**Why both:** a 30-line flat list is readable inline. A 5-level deep
-6-line block is also readable. A 30-line block you have to keep
-*un-folding* in your head is the smell.
-
-**Falsifier:** if the nesting is forced by a CSS class hierarchy
-rather than template structure, fix the CSS first.
-
-### #4 — Mixed concerns
-
-A single SFC has two visually distinct regions that have their own
-state, props contract, and styles, but no real shared logic. The
-tells:
-
-- Editing one region's tests forces re-running the other's tests.
-- The two regions communicate only via shared imports (a common
-  composable, a common store), not via each other's APIs.
-- The CSS file has a section break (`/* ── Section A ── */` /
-  `/* ── Section B ── */`) and the two halves never reference each
-  other's classes.
-
-**Falsifier:** if the two regions share a non-trivial `computed` or
-`watch` that reads from both, they are one region with a long body,
-not two regions.
-
-### #5 — Reusable UI primitive inlined
-
-A button, card, modal, chip, tooltip, badge, list item, or input
-pattern is re-implemented with raw markup — `class="btn btn-primary"`
-pasted into 6 different files — instead of being a shared component.
-
-**Falsifier:** if the markup is in exactly one place and has no
-event handlers, no internal state, and no styles of its own, a CSS
-class on a native element is cheaper than a new component.
+**The full identification decision tree lives in
+[component-identification.md § Identification decision tree](./component-identification.md#identification-decision-tree).**
+Use that doc to *find* candidates; this doc assumes you have
+already found one.
 
 ---
 
-## Signal catalog
+## Signal catalog (cross-link)
 
-Prose heuristics are easy to forget. The catalog below is what to
-*grep for* — concrete code patterns that mean "stop, look at this."
+The full signal catalog — per-heuristic patterns + the
+"looks-like-but-isn't" cross-checks — lives in
+[component-identification.md § Signal catalog](./component-identification.md#signal-catalog).
+Use it during a scan; reach for it here only when you need to
+re-classify a candidate mid-refactor.
 
-| Heuristic | Signal | How to spot it |
+---
+
+## Naming convention
+
+A name is part of the contract. Three rules cover ~95% of cases.
+When in doubt, prefer a *narrower* name over a *broader* one — you
+can always generalize later when a second use shows up.
+
+### Rule 1 — PascalCase, no digits, no separators
+
+Component names use `PascalCase`. Do not put numbers, dashes, or
+underscores in them. The reason is structural: Vue's component
+resolution treats `<foo-bar>` and `<FooBar>` as equivalent in the
+template, but the *file* name and the *import* name must match —
+so pick one spelling and use it everywhere.
+
+| Bad | Good | Why |
 |---|---|---|
-| #1 | Same opening tag + same class repeated | `grep -c '<div class="card"' *.vue` returning ≥ 3, **or** `v-for="x in xs"` followed by 8+ lines of repeated markup |
-| #1 | Three sibling sections with the same `<header>`/`<h3>`/`<span>` structure | Visual scan: three blocks of 10+ lines that are line-for-line identical except for the bound values |
-| #2 | Region-local `ref` + matching `v-if` / `v-show` toggle | `const isOpen = ref(false)` plus `v-if="isOpen"` or `v-show="isOpen"` confined to one template region |
-| #2 | Region-local `ref` reset on a specific event | `xxx.value = false` called only from one event handler in one region |
-| #3 | Single `<template>` branch > 30 lines | Visual: indent past 3 levels for 30+ lines |
-| #3 | `v-if="x"` wrapping a 40-line block | The branch itself is a candidate |
-| #4 | Two visually distinct regions in one SFC | CSS file has two top-level class groups that never cross-reference |
-| #4 | Region A's tests break when region B's CSS changes | The integration test for A mounts the whole SFC |
-| #5 | `class="btn btn-primary"` or `class="chip"` pasted in N files | `grep -rn 'class="btn btn-primary"' src/ \| wc -l` returning ≥ 3 |
-| #5 | `<button @click="...">` + same icon + same 5-line wrapper repeated | Three sibling buttons with identical wrappers |
-| #5 | Manual `tabindex="0"` + `@keydown.enter` + `@keydown.space` on a `<div>` | Should be a real `<button>` — flag as both accessibility *and* primitive-inlined |
+| `metric-tile-1` | `MetricTile` | Digits in names force re-numbering when the list grows. |
+| `btn_primary` | `PrimaryButton` | Underscores in component names look like CSS classes. |
+| `UserCard2` | `UserCard` | The "2" is a smell — it usually means there are two shapes that should be one. |
 
-### Cross-checks (signals that should *not* be conflated)
+### Rule 2 — Feature prefix for feature components, generic name for primitives
 
-| Pattern | Looks like | Actually is |
+This is the single most useful naming decision you will make.
+
+| Kind | Folder | Naming | Example |
+|---|---|---|---|
+| **Feature** — represents a domain concept (`UserCard`, `OrderItem`, `InvoiceHeader`) | `components/<feature>/` or `components/` | `[Noun][Role]` where `Role` is the UI role it plays | `UserCard`, `OrderItem`, `InvoiceHeader` |
+| **Primitive** — represents a UI element (`Button`, `Card`, `Modal`, `Chip`, `Badge`) | `components/ui/` or `components/` | The element's name, optionally with a variant suffix | `Button`, `PrimaryButton`, `Modal`, `StatusChip` |
+| **Layout** — composes other components (`PageHeader`, `Sidebar`, `DashboardGrid`) | `components/layout/` or `components/` | `[Noun]` that names the area, not the contents | `PageHeader`, `Sidebar`, `DashboardGrid` |
+
+**How to decide:**
+
+- If the new component is a *version* of a thing the user already
+  knows (`Card` containing user data → `UserCard`), name it after
+  the thing: `UserCard`.
+- If the new component *replaces* a CSS class pasted across files
+  (`class="btn btn-primary"` → `<PrimaryButton>`), name it after
+  the element + variant: `PrimaryButton`.
+- If the new component *composes* other components into a layout
+  region (`<header>`, `<aside>`, `<section>`), name it after the
+  region: `PageHeader`, `Sidebar`.
+
+**Anti-patterns to avoid:**
+
+- **`Base` / `Common` / `Shared` prefix.** `BaseButton` is a
+  nothing-name — every component is "base" for something. If
+  it is generic, call it `Button`; if it is feature-specific,
+  call it `PrimaryButton` or `UserCard`.
+- **`Wrapper` suffix.** `ModalWrapper` is almost always a sign
+  that you have not found the right boundary yet. The wrapper is
+  either the `Modal` itself (and the host should compose it
+  directly) or it owns its own state and should be named after
+  what it does (`ConfirmDialog`, not `ModalWrapper`).
+- **`Component` / `Vue` suffix.** `UserCardComponent.vue` is
+  redundant. The `.vue` extension already says it.
+- **Re-exporting.** Do not define a `Card.vue` that re-exports
+  `UserCard.vue` so consumers can `import { Card } from`. Pick
+  one name and use it.
+
+### Rule 3 — The name should survive being read out of context
+
+The strongest naming test: open the host file 6 months from now,
+find `<UserCard>` in a list, and decide what it does **without
+opening the file**. If the name alone does not tell you, the
+component is doing too much — split it before merging.
+
+---
+
+## Slot vs prop decision matrix
+
+This is the most-asked question during a refactor: "the new
+component needs to render `<img>` AND a label AND a button — is
+each a prop, or are they slots?" Use the matrix below.
+
+| You need the host to inject… | Use… | Example |
 |---|---|---|
-| Three `<div>` with `class="row"` siblings | #1 repeated pattern | CSS-only — add `.row` to a shared class, do not extract |
-| One `ref` read from two template regions | #2 local state | Shared state — lift, do not extract |
-| A 50-line `<template>` that is a single flat list | #3 nesting + size | Already fine; consider `v-memo` or virtualization instead |
-| Two SFCs that import the same composable | #4 mixed concerns | Correct shared-utility usage; not an extraction signal |
+| A *value* (string, number, boolean) | **Prop** | `:status="item.status"`, `:count="12"` |
+| A *bounded choice* (an enum, a variant) | **Prop** with a typed union | `variant: 'primary' \| 'secondary'` |
+| A *whole element* (an icon, an avatar) at a fixed position | **Named slot** (or a prop accepting a `Component` / VNode) | `#icon`, `#avatar` |
+| *Arbitrary content* at a position the new component chooses | **Default `<slot />`** | `<Card>...arbitrary host markup...</Card>` |
+| *One of several* possible contents (e.g. "header OR empty state") | **Named slot with fallback** | `#header` / `#empty` |
+| A two-way binding to a single value | **`defineModel`** (rule 5) | `v-model="search"` |
+| A two-way binding to one of several values | **Named `defineModel`** | `defineModel('search')` |
+| A *callback* (the host wants to be notified, not render) | **Emitted event** | `@select="onSelect"`, `@dismiss="onDismiss"` |
+| A *reusable wrapper* that just composes other components | **Slots, no props** | `<PageHeader><h1>Title</h1></PageHeader>` |
+
+### Decision rule of thumb
+
+> **If the new component is choosing *what* renders, use slots.**
+> **If the host is choosing *what* renders, use props.**
+
+If you find yourself wanting a `:content` prop that takes a
+`string | VNode | Component | () => h(...)`, you are describing a
+slot. Stop and write a `<slot />`.
+
+### Slot composition: default + named, and what to fallback
+
+Most leaf components want this shape:
+
+```vue
+<template>
+  <div class="card">
+    <header v-if="$slots.header" class="card__header">
+      <slot name="header" />
+    </header>
+    <div class="card__body">
+      <slot />  <!-- default -->
+    </div>
+    <footer v-if="$slots.footer" class="card__footer">
+      <slot name="footer" />
+    </footer>
+  </div>
+</template>
+```
+
+- The `v-if="$slots.xxx"` wrapper means the `<header>`/`<footer>`
+  DOM only exists when the host actually fills the slot. No
+  empty wrapper divs.
+- Define the slot names with `defineSlots<{ header(): unknown;
+  footer(): unknown }>()` so the host's `<template #header>` is
+  type-checked.
+
+### When `defineModel` is the wrong answer
+
+`defineModel` is for **a single value with a single writer** —
+the host owns the value, the child reads + writes it. Do not use
+`defineModel` when:
+
+- The "value" is a *bag* of fields (use props + emits).
+- The child owns the value (use local state + emits).
+- The value comes from a shared store (use the store directly).
+
+---
+
+## CSS scoping pitfalls
+
+`<style scoped>` is the default. It is also the #1 source of
+"the extraction broke the styles" bugs. The pitfalls below are
+the recurring ones.
+
+### Pitfall 1 — Parent selector reach
+
+`<style scoped>` adds a `[data-v-xxx]` attribute to every
+element in the new component. The host's CSS, which targets
+*its own* scoped children, cannot reach the new component's
+DOM.
+
+**Symptom:** after the extraction, the host's `> .row` or
+`.card + .card` rules silently no longer apply.
+
+**Fix:** if the new component must participate in the host's
+layout (e.g. it is a flex child of a host flex container), pass
+the relevant class as a prop, or use `:deep()` from the host to
+the child:
+
+```css
+/* in the host's <style scoped> */
+.parent :deep(.child__inner) { /* … */ }
+```
+
+**Better fix:** rewrite the host's layout to put the new
+component *between* flex/grid items, so the new component owns
+its own internal layout and the host's layout applies to the
+outer wrapper.
+
+### Pitfall 2 — Global selectors inside `<style scoped>`
+
+Bare element selectors (`a`, `button`, `p`) inside a scoped
+style leak globally because Vue's scoping attribute is added
+*after* the selector is parsed. The fix is to *always* prefix
+with a class:
+
+```css
+/* bad — leaks to every <button> on the page */
+button { color: red; }
+
+/* good — scoped to this component */
+.card__button { color: red; }
+```
+
+### Pitfall 3 — `v-html` content
+
+A `v-html`-injected subtree contains the host's scoping
+attribute, *not* the new component's. Styles inside the new
+component will not apply to the `v-html` content.
+
+**Fix:** if the new component renders `v-html`, the related
+styles must be global (in a non-scoped `<style>` block) or
+injected via inline styles.
+
+### Pitfall 4 — Animation / transition classes
+
+`Transition` / `TransitionGroup` add classes like
+`.fade-enter-active` *to the child component's root*. The
+classes are applied at the transition's *parent* scope, so the
+new component's scoped styles will not match.
+
+**Fix:** define the transition's `.enter-active` /
+`.leave-active` classes in the host's style block, or in a
+shared (non-scoped) `transitions.css`. Do not bury them in the
+extracted component's scoped block.
+
+### Pitfall 5 — `:slotted` for parent-injected content
+
+When the host injects markup via `<slot />`, the *child's*
+scoped CSS does not reach that markup (the markup is in the
+host's scope, not the child's). To style slot content, use
+`:slotted()`:
+
+```css
+/* in the new component's <style scoped> */
+.card :slotted(p) { margin: 0; }
+```
+
+### Pitfall 6 — CSS custom properties crossing the boundary
+
+`--my-token` defined on the host cascades *into* the new
+component (this is the right behavior). But a custom property
+defined on the new component's *root* does not leak back up to
+the host. If the host needs to read a value computed by the
+child, use an emitted event or a `defineExpose`-d ref, not a
+CSS variable.
+
+### Pre-flight CSS checklist
+
+Before merging the extraction, walk this list:
+
+- [ ] No bare-element selectors inside `<style scoped>` (Pitfall 2).
+- [ ] No host's flex/grid rules broken by the new boundary (Pitfall 1).
+- [ ] No `v-html` in the new component (Pitfall 3) — if present,
+      document the global styles it depends on.
+- [ ] No `Transition` / `TransitionGroup` classes buried in
+      scoped blocks (Pitfall 4).
+- [ ] Slot content styles use `:slotted()` (Pitfall 5).
+- [ ] No CSS variable assumed to flow upward (Pitfall 6).
+
+---
+
+## Risk classification
+
+Not every extraction is equal. Before starting, classify the
+extraction's risk so the review (and the rollback plan) matches
+the blast radius.
+
+### Low risk
+
+- New SFC, no shared state, isolated styles.
+- The candidate is heuristic #1, the new component is a pure
+  leaf UI, and there are no `watch` / `onMounted` / lifecycle
+  hooks to migrate.
+- No change to the data flow (props are passed straight through,
+  no new `provide` / `inject`).
+
+**Review depth:** 1 reviewer, single-PR.
+
+### Medium risk
+
+- Needs prop / event wiring but no shared state.
+- The candidate is heuristic #2 / #3 with a local `ref` to
+  migrate; or heuristic #5 across multiple files (cross-file
+  ripple).
+- The new component lazy-loads (`defineAsyncComponent`).
+- The new component introduces a new `slot` with `:slotted()`
+  styles.
+
+**Review depth:** 1 reviewer + visual diff in Storybook /
+Playwright.
+
+### High risk
+
+- The extraction forces 5+ props or a deep `provide` / `inject`
+  chain.
+- A `watch` is being moved and its trigger timing changes
+  (e.g. the new component mounts later than the host).
+- The extraction is inside a hot list (≥ 100 rows).
+- The extraction interacts with `<KeepAlive>` (state must
+  survive unmount) or `<Teleport>` (the boundary crosses DOM
+  roots).
+- The host uses SSR / Nuxt, and the new component's lifecycle
+  (especially `onMounted` with DOM access) is order-dependent.
+
+**Review depth:** 2 reviewers (correctness + performance), full
+test suite, staged rollout (feature-flag the import).
+
+### Risk-down checklist
+
+When a candidate looks high-risk, see if any of these bring it
+back to medium:
+
+- **5+ props → 1 group object.** Bundle related props into a
+  single `:config` object; still pass through, but the
+  signature is shorter.
+- **Deep `provide` / `inject` → composable.** A composable
+  (`useThing()`) called by both host and child is often
+  cleaner than `provide` / `inject`.
+- **`watch` moves → `watch` source clarifies.** Once the new
+  component owns the ref, the `watch` source becomes
+  unambiguous; the timing question often goes away.
+- **Hot list → flatten the row.** See
+  [perf-avoid-component-abstraction-in-lists.md](../perf/perf-avoid-component-abstraction-in-lists.md).
+
+---
+
+## Edge cases
+
+The cookbook covers 90%. The 10% below are real cases that
+*will* come up.
+
+### Edge 1 — `defineAsyncComponent` for the new component
+
+If the new component is large or rarely used, lazy-load it:
+
+```ts
+// host
+import { defineAsyncComponent } from 'vue'
+const UserCard = defineAsyncComponent({
+  loader: () => import('./components/UserCard.vue'),
+  delay: 200,  // rule 8
+})
+```
+
+The new component itself stays a normal SFC. Apply rule 8
+(200ms delay) — see
+[component-async.md](../async/component-async.md).
+
+### Edge 2 — `<KeepAlive>` interaction
+
+If the host wraps the new component in `<KeepAlive>` and the
+new component owns local state, the state must survive
+unmount/remount. This is the *correct* use of `<KeepAlive>` —
+no change to the extraction beyond confirming:
+
+- `onActivated` / `onDeactivated` hooks (if any) live inside
+  the new component, paired with `onScopeDispose` if they
+  register listeners.
+- The new component does not store *host-owned* state in its
+  local refs (that would be a state-flow bug, not a KeepAlive
+  bug).
+
+If the new component is wrapped in KeepAlive but its state
+*should not* survive remount, that is a different bug — flag
+it, do not silently fix it in the extraction.
+
+### Edge 3 — `<Teleport>` for modals and overlays
+
+If the new component is a modal, the *rendered* DOM usually
+needs to escape the host (so the host's `overflow: hidden`
+does not clip it). Use `<Teleport to="body">` *inside* the new
+component:
+
+```vue
+<!-- components/Modal.vue -->
+<template>
+  <Teleport to="body">
+    <div v-if="isOpen" class="modal" @click.self="$emit('close')">
+      <slot />
+    </div>
+  </Teleport>
+</template>
+```
+
+This is one of the few cases where the new component owns
+*where* it renders, not just *what* it renders. Confirm with
+the host that the `body` teleport target is OK; some embedded
+contexts (Shadow DOM, iframes) require a different target.
+
+### Edge 4 — `provide` / `inject` boundary
+
+If the candidate region needs a value that the host provides
+(via `provide` + `InjectionKey<T>`), the new component can
+`inject` it directly. **This is fine** — do not pass the value
+through props just to "be safe." Rule 6 says use `InjectionKey`
+for typing; the extraction is consistent with that.
+
+**Risk:** the `provide` site is in the host, but the `inject`
+site is now in the child. If the host stops providing, the
+child fails. Mitigation: define the default at the inject site
+(`inject(myKey, defaultValue)`) when possible; otherwise
+document the contract.
+
+### Edge 5 — SSR / Nuxt context
+
+Server-side rendering has two traps:
+
+1. **`onMounted` does not run on the server.** If the new
+   component has a `useIntersectionObserver` (or any DOM-only
+   composable) inside `onMounted`, it is fine — but a
+   side-effect composable called at the top of `<script setup>`
+   (not inside a lifecycle hook) will run on the server and
+   fail. Move it to `onMounted` if the extraction triggers
+   this. See
+   [reactivity.md](../reactivity/reactivity--reactivity.md) and
+   [state-management.md](../state/state-management.md).
+2. **Singleton state leaks across requests.** If the new
+   component uses a `createGlobalState`-style singleton
+   (counter, in-memory cache), it persists across SSR requests
+   and leaks data between users. Prefer Pinia for SSR-safe
+   shared state (rule 13).
+
+### Edge 6 — Slots whose presence controls class names
+
+When the host injects a slot, the new component sometimes
+wants to render a class only when the slot is filled (e.g. a
+border under `<header>`). Use `useSlots()` (or
+`$slots` in templates) — see
+[component-slots.md](../slots/component-slots.md):
+
+```vue
+<header v-if="$slots.header" class="card__header">
+  <slot name="header" />
+</header>
+```
+
+### Edge 7 — The component is itself a `defineModel` consumer
+
+If the new component *uses* `defineModel` internally (e.g. it
+wraps a third-party input), the host does not need to
+`v-model` the new component — it just renders it. But the
+*inner* `defineModel` is part of the new component's contract,
+not the host's. Document it in the new SFC's `<script setup>`.
+
+### Edge 8 — `defineExpose` for imperative APIs
+
+If the new component owns an imperative action (open / close /
+focus / scroll-to), expose it via `defineExpose`:
+
+```ts
+defineExpose({ open, close, focusFirst })
+```
+
+…and the host uses a `ref` to call it. This is the correct
+shape for a modal; do not invent an `autoOpen` prop as a
+substitute.
+
+---
+
+## Testing the extraction
+
+An extraction is a refactor, not a behavior change. The test
+goal is "the new component, mounted in isolation, behaves
+identically to the inline block did in the host."
+
+### Three layers of test
+
+| Layer | What it covers | Tooling |
+|---|---|---|
+| **Unit** — the new SFC mounted alone | Props, emits, slots, internal state, `defineExpose`d methods | `@vue/test-utils` `mount()` |
+| **Integration** — the host + the new SFC together | The host's calls to props / events / slots, the visual layout, the data flow | `@vue/test-utils` `mount()` of the host, with stubs for the new SFC's siblings |
+| **Visual** — pixel-level identity before/after | Drift in class names, spacing, focus rings, transitions | Storybook + Chromatic / Playwright screenshot diff |
+
+### What to write for the new SFC
+
+A minimum-viable test file (Vitest + `@vue/test-utils`):
+
+```ts
+// components/UserCard.test.ts
+import { mount } from '@vue/test-utils'
+import UserCard from './UserCard.vue'
+
+describe('UserCard', () => {
+  it('renders the label and value', () => {
+    const wrapper = mount(UserCard, { props: { label: 'Users', value: 42 } })
+    expect(wrapper.text()).toContain('Users')
+    expect(wrapper.text()).toContain('42')
+  })
+
+  it('emits select on click', async () => {
+    const wrapper = mount(UserCard, { props: { label: 'Users', value: 42 } })
+    await wrapper.trigger('click')
+    expect(wrapper.emitted('select')).toBeTruthy()
+  })
+
+  it('renders the icon slot when provided', () => {
+    const wrapper = mount(UserCard, {
+      props: { label: 'Users', value: 42 },
+      slots: { icon: '<svg data-testid="icon" />' },
+    })
+    expect(wrapper.find('[data-testid="icon"]').exists()).toBe(true)
+  })
+})
+```
+
+### What to write for the host
+
+A regression test that mounts the host with the new SFC stubbed
+(or real) and asserts that the call sites still receive the
+right props / emit the right events:
+
+```ts
+// Dashboard.test.ts
+import { mount } from '@vue/test-utils'
+import Dashboard from './Dashboard.vue'
+import UserCard from './components/UserCard.vue'
+
+it('passes user count to the first UserCard', () => {
+  const wrapper = mount(Dashboard)
+  const cards = wrapper.findAllComponents(UserCard)
+  expect(cards[0].props('value')).toBe(/* expected */)
+})
+```
+
+### What NOT to test in the extraction PR
+
+- The new component's *styling* — that is a separate visual-diff
+  test in a separate PR.
+- The new component's *perf* — that is a separate benchmark
+  PR.
+- The host's other regions that the extraction did not touch
+  — they should already be covered.
+
+If you find yourself writing more than 1 unit test file for the
+new SFC, the extraction is probably doing too much — split it
+further before merging.
+
+### Mutation-test sanity check
+
+If the repo uses Stryker / mutmut, run a mutation pass on the
+new SFC after merging. A healthy extraction has > 70% mutation
+score; if it is < 50%, the new tests are not exercising the
+contract.
+
+---
+
+## Multi-extraction order
+
+When you have a backlog of 3+ extractions, do them in the
+order below. This minimizes merge conflicts, rollback blast
+radius, and review fatigue.
+
+### Order rule 1 — Leaf first, host last
+
+Extract the **innermost** components first. The host is the
+last thing to change. This way every intermediate state
+compiles and renders.
+
+**Example backlog:**
+
+1. `OrderLineItem` (innermost — has its own state, 3 call sites)
+2. `OrderTotals` (composes `OrderLineItem` indirectly via props)
+3. `OrderHeader` (independent of the other two)
+4. `OrderDetail` (the host — splits the three sections out)
+
+Doing them in this order means after step 1 the host still
+works (just with one inline block replaced by `<OrderLineItem>`).
+After step 4, the host is a thin composer.
+
+### Order rule 2 — Lowest risk first
+
+When extractions are independent, do the lowest-risk ones
+first. This lets you ship value early and builds reviewer
+confidence in the pattern before the hard ones land.
+
+### Order rule 3 — Don't bundle
+
+Resist bundling. If the heuristic was #1, do *not* also rename
+the state, switch from Options API to Composition API, and
+convert CSS to scoped tokens in the same PR. Each is a
+separate review unit. A reasonable PR size is "1 heuristic
+applied to 1 host, with the corresponding tests."
+
+### Order rule 4 — Heuristic #4 (mixed concerns) splits the host
+
+When you have a #4 candidate, the new SFCs come out *first* and
+the host becomes a thin composer *last*. Do not try to "shrink
+the host by 200 lines" in one PR; the host shrinks by the sum
+of the child SFCs you extract, and the host's final shape only
+becomes visible after the children land.
+
+### Order rule 5 — Heuristic #5 (primitives) goes first, even if it's scary
+
+A `Button` extraction touches the most files. Do it *first* in
+the multi-extraction sequence: it is the highest-leverage win
+(every later extraction can use the new `Button`), and its
+diff is large but mechanical, which makes it reviewable.
+
+### Recommended PR sequence (worked example)
+
+Backlog from a Dashboard:
+
+| # | Heuristic | Component | Risk | Why this order |
+|---|---|---|---|---|
+| 1 | #5 | `PrimaryButton` (4 sites) | Med | Highest leverage, touches most files, mechanical |
+| 2 | #5 | `StatusBadge` (3 sites) | Low | Re-uses #1's `Button`-style review pattern |
+| 3 | #1 | `StatCard` (5 sites) | Med | Independent of #1, #2 |
+| 4 | #2 | `HelpModal` (1 site) | Med | One call site, but defines the modal Teleport pattern |
+| 5 | #3 | `OrderDetail` split (3 children) | High | Depends on #3 / #4 components existing |
+| 6 | #4 | `Settings` split (3 sections) | High | Last — host becomes a composer |
+
+Open 6 PRs. Each is reviewable in isolation. None of them
+require a flag-day merge.
 
 ---
 
@@ -649,6 +1177,10 @@ closing the PR.
 
 ## Cross-references
 
+- [component-identification.md](./component-identification.md) —
+  the detection side: 6-question decision tree, priority scoring
+  rubric, signal catalog, scan workflow, identification checklist,
+  triage matrix for overlapping heuristics, falsifiers.
 - [optimization-report.md](../optimize/optimization-report.md) — where
   extraction entries appear in a page report (severity / effort /
   impact, the 5 heuristics at a glance).
@@ -658,7 +1190,19 @@ closing the PR.
   the 4-file pattern, used when the new component is a doc page.
 - [component-data-flow.md](../data-flow/component-data-flow.md) —
   props / emits / `defineModel` / `provide` / `inject` contracts.
+- [component-slots.md](../slots/component-slots.md) — slot
+  composition, fallbacks, and `useSlots()` reactivity.
+- [component-async.md](../async/component-async.md) —
+  `defineAsyncComponent`, delay, hydration strategies.
+- [component-keep-alive.md](../builtin/component-keep-alive.md) —
+  state survival across unmount; `onActivated` / `onDeactivated`.
+- [component-teleport.md](../builtin/component-teleport.md) —
+  escaping the host's DOM for modals and overlays.
+- [state-management.md](../state/state-management.md) — Pinia,
+  plugin `install()`, SSR-safe singletons.
 - [perf-avoid-component-abstraction-in-lists.md](../perf/perf-avoid-component-abstraction-in-lists.md) —
   when extraction is the *wrong* move because the list is hot.
+- [perf-virtualize-large-lists.md](../perf/perf-virtualize-large-lists.md) —
+  the better fix for long lists.
 - [composables.md](../composables/composables.md) — for state
   migration: `onScopeDispose` / `tryOnScopeDispose` hygiene.

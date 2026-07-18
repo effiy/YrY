@@ -16,22 +16,31 @@ description: >
   against the consolidated checklist, producing an optimization
   page report with severity / effort / impact scoring, identifying
   inline code chunks that should be split into a standalone
-  component (the 5 detection heuristics + signal catalog), and
-  executing the refactor itself (props / state / emits
-  transformation recipe, single-file SFC vs 4-file pattern
-  decision, before/after cookbook). Trigger phrases: "vue 3", "composition api", "script
-  setup", "defineProps", "defineEmits", "defineModel", "ref vs
-  shallowRef", "v-memo", "useStorage", "useFetch",
-  "useEventListener", "createGlobalState", "useDark",
+  component (detection side: 5 heuristics + signal catalog +
+  6-question decision tree + priority scoring rubric + scan
+  workflow + triage matrix; refactor side: naming convention,
+  slot-vs-prop decision matrix, CSS scoping pitfalls, risk
+  classification, edge cases, testing, multi-extraction order,
+  8-step transformation recipe, single-file SFC vs 4-file pattern
+  decision, before/after cookbook). Trigger phrases: "vue 3",
+  "composition api", "script setup", "defineProps", "defineEmits",
+  "defineModel", "ref vs shallowRef", "v-memo", "useStorage",
+  "useFetch", "useEventListener", "createGlobalState", "useDark",
   "useIntersectionObserver", "useVirtualList", "useVModel",
   "KeepAlive", "Suspense", "Teleport", "defineAsyncComponent",
   "useTemplateRef", "v-model modifier", "4-file pattern", "Pinia
   plugin install()", "review my vue code", "code review checklist",
   "optimization report", "what can I improve on this page",
-  "page report", "perf audit", "extract component", "refactor into
-  a component", "split out a component", "split into a component",
+  "page report", "perf audit", "is this a candidate",
+  "scan for extraction candidates", "which extraction first",
+  "extraction priority", "extract component", "refactor into a
+  component", "split out a component", "split into a component",
   "this is duplicated — pull it out", "make this reusable",
-  "repeated markup", "inlined button", "inlined card".
+  "repeated markup", "inlined button", "inlined card",
+  "slot vs prop", "name this component", "extraction risk",
+  "extraction broke my styles", "css scoped broke after extract",
+  "test the extraction", "order of extractions", "KeepAlive
+  extraction", "Teleport extraction", "SSR extraction".
 
   Do NOT trigger for: React/Angular/Svelte questions, Vue 2 / Nuxt 2
   specifics, or general CSS layout / accessibility patterns not
@@ -77,7 +86,8 @@ the canonical reference doc inside that folder.
 | `mountDocComponent` / `includeHTML` / `data-include` / scroll spy / W1–W6 / pre-delivery checklist | `infra/` | [infrastructure-and-workflows.md](./references/infra/infrastructure-and-workflows.md) |
 | Code review of an SFC, `v-html` on user input, `v-for` key, `v-if` + `v-for`, missing cleanup, `useAttrs` reactivity, leaky singleton, severity anchors | `review/` | [code-review-checklist.md](./references/review/code-review-checklist.md) |
 | Optimization page report, perf audit, "what can I improve on this page", severity / effort / impact scoring, sprint slice, risk matrix | `optimize/` | [optimization-report.md](./references/optimize/optimization-report.md) |
-| **Extract component**, refactor into a component, split into / out of a component, repeated markup, region-local state, inlined button/card/chip primitive, "this is duplicated — pull it out" — identification heuristics (#1–#5) + signal catalog + 7-step transformation recipe + decision tree (single SFC vs 4-file) + before/after cookbook | `extract/` | [component-extraction.md](./references/extract/component-extraction.md) |
+| **Extract component** (detection side) — is this a candidate? which heuristic? scan a codebase mechanically. 6-question decision tree, priority scoring rubric, signal catalog, triage matrix, falsifiers. Trigger: "is this a candidate", "scan for extractions", "which extraction first", "is this duplicated", "should I extract this" | `extract/` | [component-identification.md](./references/extract/component-identification.md) |
+| **Extract component** (refactor side) — execute the extraction. naming convention, slot-vs-prop decision matrix, CSS scoping pitfalls, risk classification, edge cases (SSR / KeepAlive / Teleport / async / provide-inject), testing, multi-extraction order, 8-step transformation recipe, single-file SFC vs 4-file pattern decision, 5-entry before/after cookbook, anti-patterns, scanning patterns, verification | `extract/` | [component-extraction.md](./references/extract/component-extraction.md) |
 | `useAnimate`, `useInterval`, `useIntervalFn`, `useNow`, `useRafFn`, `useTimeout`, `useTimeoutFn`, `useTimestamp`, `useTransition` | `vueuse-animation/` | (per-function .md) |
 | `useArrayDifference`, `useArrayEvery`, `useArrayFilter`, `useArrayFind`, `useArrayFindIndex`, `useArrayFindLast`, `useArrayIncludes`, `useArrayJoin`, `useArrayMap`, `useArrayReduce`, `useArraySome`, `useArrayUnique`, `useSorted` | `vueuse-array/` | (per-function .md) |
 | `useBluetooth`, `useBreakpoints`, `useBroadcastChannel`, `useBrowserLocation`, `useClipboard`, `useColorMode`, `useDark`, `useEventListener`, `useFullscreen`, `useMediaQuery`, `usePermission`, `usePreferredDark`, `useScriptTag`, `useShare`, `useStyleTag`, `useTitle`, `useUrlSearchParams`, `useWakeLock`, `useWebNotification`, `useWebWorker`, … | `vueuse-browser/` | (per-function .md) |
@@ -117,7 +127,7 @@ the canonical reference doc inside that folder.
 15. **For VueUse: pick by category, not by name.**
 16. **Code review vs optimization report are different deliverables.** Review = correctness against the rules; report = opportunity list with severity / effort / impact. Don't conflate them.
 17. **Every opportunity in a report cites a location, a rule, and a verification step.** A report without verifiable wins is just a checklist.
-18. **Component Extraction entries cite a detection heuristic and a target file.** "This could be a component" is a refactor wish, not a report item — every extraction entry must reference one of the five heuristics (#1 repeated pattern, #2 local state, #3 nesting+size, #4 mixed concerns, #5 inlined primitive) and a concrete `path/to/NewComponent.vue`. If neither can be filled in, drop the entry. The detection heuristics, signal catalog, transformation recipe, decision tree (single SFC vs 4-file pattern), and before/after cookbook live in [component-extraction.md](./references/extract/component-extraction.md); the optimization report only owns the *entry shape*.
+18. **Component Extraction entries cite a detection heuristic and a target file.** "This could be a component" is a refactor wish, not a report item — every extraction entry must reference one of the five heuristics (#1 repeated pattern, #2 local state, #3 nesting+size, #4 mixed concerns, #5 inlined primitive) and a concrete `path/to/NewComponent.vue`. If neither can be filled in, drop the entry. The detection heuristics, signal catalog, decision tree, priority rubric, and triage matrix live in [component-identification.md](./references/extract/component-identification.md); the transformation recipe, naming, slot-vs-prop, CSS scoping, risk, edge cases, testing, multi-extraction order, decision tree (single SFC vs 4-file pattern), and before/after cookbook live in [component-extraction.md](./references/extract/component-extraction.md); the optimization report only owns the *entry shape*.
 
 ## Borders
 

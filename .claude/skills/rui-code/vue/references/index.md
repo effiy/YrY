@@ -27,7 +27,7 @@ Run `python3 scripts/consolidate.py` to rebuild.
 | [Infrastructure scripts & workflows](./infra/README.md) | 2 |
 | [Code review checklist (Vue 3 SFC)](./review/README.md) | 1 |
 | [Optimization reports (Vue 3 SFC)](./optimize/README.md) | 1 |
-| [Component extraction (identify + refactor)](./extract/README.md) | 2 |
+| [Component extraction (identify & refactor)](./extract/README.md) | 3 |
 | [VueUse · Animation](./vueuse-animation/README.md) | 10 |
 | [VueUse · Array](./vueuse-array/README.md) | 14 |
 | [VueUse · Browser](./vueuse-browser/README.md) | 46 |
@@ -40,4 +40,4 @@ Run `python3 scripts/consolidate.py` to rebuild.
 | [VueUse · Time](./vueuse-time/README.md) | 5 |
 | [VueUse · Utilities](./vueuse-utilities/README.md) | 26 |
 | [VueUse · Watch](./vueuse-watch/README.md) | 14 |
-| **Total (incl. per-topic READMEs)** | **279** |
+| **Total (incl. per-topic READMEs)** | **280** |

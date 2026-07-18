@@ -158,7 +158,10 @@ The review should flag inline code that should be a standalone SFC
 — this is a maintainability win that code review catches before an
 optimization report does. Every flag cites one of the five
 detection heuristics (#1–#5) and a target file. Full detection
-logic, signal catalog, transformation recipe, and before/after
+logic, decision tree, priority rubric, and signal catalog in
+[component-identification.md](../extract/component-identification.md);
+transformation recipe, naming, slot-vs-prop, CSS scoping, risk,
+edge cases, testing, multi-extraction order, and before/after
 cookbook in
 [component-extraction.md](../extract/component-extraction.md).
 

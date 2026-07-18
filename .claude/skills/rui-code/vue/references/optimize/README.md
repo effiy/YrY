@@ -14,11 +14,15 @@ Files in this topic: **1**
   effort ratings comparable across reports.
 - **Component Extraction Opportunities** — how an extraction entry
   looks inside a report (two extra fields: `Detection:` and
-  `Target:`). The full detection logic, signal catalog,
-  transformation recipe, decision tree, cookbook, anti-patterns,
-  and scanning patterns live in
-  [component-extraction.md](../extract/component-extraction.md) —
-  the optimization report is the *where* to flag it; the extract
+  `Target:`). The full detection logic, decision tree, priority
+  rubric, and signal catalog live in
+  [component-identification.md](../extract/component-identification.md);
+  the transformation recipe, naming, slot-vs-prop, CSS scoping,
+  risk, edge cases, testing, multi-extraction order, decision
+  tree (single SFC vs 4-file pattern), and before/after cookbook
+  live in
+  [component-extraction.md](../extract/component-extraction.md).
+  The optimization report is the *where* to flag it; the extract
   topic is the *how* to do it. Triggers: 3+ repeated markup
   blocks, local reactive state owned by a region of the template,
   > 3 levels of nesting *and* > 30 lines, mixed concerns, or
