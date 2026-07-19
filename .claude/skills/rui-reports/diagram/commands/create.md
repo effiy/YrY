@@ -170,6 +170,7 @@ Component sizing reference:
 - **Region boundaries**: dashed amber (`stroke-dasharray="8,4"`), 20px padding, 0.04-alpha fill
 - Draw outermost boundaries first, then inner boundaries
 - Labels at top-left inside each boundary
+- **Outermost boundary MUST wrap every component, arrow, and label** with at least 20px padding. After placing all components, re-measure: the boundary's `x + width` must be ≥ rightmost component `x + width + 20`, and `y + height` must be ≥ bottommost component `y + height + 20`. If the diagram has a single dashed outer frame, size it to contain ALL content; if it has nested boundaries, the outermost one must contain every inner boundary plus every leaf component. Grow the SVG `viewBox` (and the outermost rect's `width`/`height`) together so the two stay aligned.
 
 #### 3.7 — Legend (drawn FIFTH, outside all boundaries)
 Two-section legend:
@@ -201,7 +202,7 @@ Before saving, verify these 10 points:
 | 5 | All arrows have protocol/type labels | Each `<line>`/`<path>` has adjacent `<text>` |
 | 6 | Legend only includes actually-used types | Match legend entries to component types in diagram |
 | 7 | Line style legend matches arrow styles used | Count distinct dash patterns → 1 legend entry each |
-| 8 | viewBox accommodates all content | Rightmost x+w < viewBox width; bottommost y+h + legend < viewBox height |
+| 8 | viewBox + outermost boundary accommodate all content | Rightmost x+w + 20 < viewBox width; bottommost y+h + 20 < viewBox height; AND the outermost boundary rect (region / cloud / security group) covers every component, arrow, and label with ≥20px padding |
 | 9 | Shared vendor scripts present for export | `/.claude/shared/vendor/html2canvas@1.4.1/html2canvas.min.js` and `/.claude/shared/vendor/jspdf@2.5.2/jspdf.umd.min.js` script tags are present in `templates/index.html` (no public CDN) |
 | 10 | No placeholder or generic text | "Card Title", "Item one", "Component N" should not appear |
 

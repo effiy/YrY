@@ -150,6 +150,7 @@ Key principles:
 | 14 | Label every arrow with protocol/type (REST, gRPC, TLS, JWT, WSS, SMTP) | Makes the diagram self-documenting without needing external reference |
 | 15 | Include line-style entries in the legend | Users need to decode dashed vs dotted vs solid arrow semantics |
 | 16 | Generated page must render with **zero `console.error` / `pageerror` / 4xx requests** | Enforced by the headless probe in `eval-templates-render-clean/`. Known offender bug-classes and their fixes are documented in the Fallback table below |
+| 17 | The outermost boundary rect (region / cloud group / security group) MUST wrap every component, arrow, and label with ≥20px padding | A single dashed outer frame must be sized to contain ALL content; nested boundaries must fit inside the outermost one. Re-measure after placing components and re-emit the boundary before saving |
 
 ## Commands
 
@@ -258,6 +259,7 @@ This skill can emit a self-contained Vue 3 docs page following the
 | No `knowledge-graph.json` exists in `<OUTPUT_DIR>/` for `--from-codebase` | Run full analysis from scratch; offer `--full` for deeper graph |
 | Bundled `scan-project.mjs` exits non-zero | Read stderr, diagnose, retry up to 2 times; do NOT ad-hoc reimplement scanning |
 | Diagram layout overflows viewBox | Expand viewBox dynamically based on computed layout; never crop content |
+| Outermost boundary does not wrap all content | Re-measure the boundary after every component is placed — its right/bottom edges must be ≥20px past the rightmost/lowermost component, arrow, and label. Adjust the boundary's `width`/`height` (and the SVG `viewBox`) and re-save. Single-frame diagrams MUST contain every element; nested diagrams MUST contain every inner boundary |
 | Output template has no matching section for the data | Omit the section entirely — never write "N/A" or pad with placeholder text |
 | User wants something other than an architecture diagram (UML, sequence, ER) | Politely decline; recommend a dedicated tool |
 | Generated diagram has >15 components | Merge small leaf nodes into composite boxes; use bullet lists for sub-components |

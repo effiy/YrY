@@ -179,13 +179,13 @@ window.HELP_CONFIG = {
       badge: "1",
       badgeTone: "is-secondary",
       title: "Third-Party Dependencies / Frameworks",
-      meta:  "18 runtime · 1 dev dep",
+      meta:  "15 runtime · 1 dev dep",
       groups: [
         {
           id:    "deps-runtime",
           kind:  "items",
           icon:  "📦",
-          title: "Runtime Dependencies (18)",
+          title: "Runtime Dependencies (15)",
           items: [
             { icon: "🕸", iconTone: "is-module", title: "graphology",                 description: "Graph data structure and algorithm library · <strong>knowledge graph core</strong>",                              meta: "<span class=\"accent\">Runtime</span> · ^0.26.0", href: "https://graphology.github.io/", targetBlank: true, links: [{ label: "Dependency Report →", href: "deps/graphology/index.html", target: "_self" }] },
             { icon: "🧮", iconTone: "is-module", title: "graphology-communities-louvain", description: "Louvain community detection algorithm · <strong>module clustering</strong>",                                  meta: "<span class=\"accent\">Runtime</span> · ^2.0.2", href: "https://github.com/graphology/graphology-communities-louvain", targetBlank: true, links: [{ label: "Dependency Report →", href: "deps/graphology-communities-louvain/index.html", target: "_self" }] },
@@ -201,11 +201,8 @@ window.HELP_CONFIG = {
             { icon: "🦫", iconTone: "is-module", title: "tree-sitter-go",             description: "Go grammar · <strong>AST parsing</strong>",                                           meta: "<span class=\"accent\">Runtime</span> · ^0.25.0", href: "https://github.com/tree-sitter/tree-sitter-go", targetBlank: true, links: [{ label: "Dependency Report →", href: "deps/tree-sitter-go/index.html", target: "_self" }] },
             { icon: "🦀", iconTone: "is-module", title: "tree-sitter-rust",           description: "Rust grammar · <strong>AST parsing</strong>",                                         meta: "<span class=\"accent\">Runtime</span> · ^0.24.0", href: "https://github.com/tree-sitter/tree-sitter-rust", targetBlank: true, links: [{ label: "Dependency Report →", href: "deps/tree-sitter-rust/index.html", target: "_self" }] },
             { icon: "➕", iconTone: "is-module", title: "tree-sitter-cpp",            description: "C/C++ grammar · <strong>AST parsing</strong>",                                        meta: "<span class=\"accent\">Runtime</span> · ^0.23.4", href: "https://github.com/tree-sitter/tree-sitter-cpp", targetBlank: true, links: [{ label: "Dependency Report →", href: "deps/tree-sitter-cpp/index.html", target: "_self" }] },
-            { icon: "🟪", iconTone: "is-module", title: "tree-sitter-c-sharp",        description: "C# grammar · <strong>AST parsing</strong>",                                          meta: "<span class=\"accent\">Runtime</span> · ^0.23.1", href: "https://github.com/tree-sitter/tree-sitter-c-sharp", targetBlank: true, links: [{ label: "Dependency Report →", href: "deps/tree-sitter-c-sharp/index.html", target: "_self" }] },
             { icon: "☕", iconTone: "is-module", title: "tree-sitter-java",           description: "Java grammar · <strong>AST parsing</strong>",                                         meta: "<span class=\"accent\">Runtime</span> · ^0.23.5", href: "https://github.com/tree-sitter/tree-sitter-java", targetBlank: true, links: [{ label: "Dependency Report →", href: "deps/tree-sitter-java/index.html", target: "_self" }] },
-            { icon: "🐘", iconTone: "is-module", title: "tree-sitter-php",            description: "PHP grammar · <strong>AST parsing</strong>",                                          meta: "<span class=\"accent\">Runtime</span> · ^0.23.11", href: "https://github.com/tree-sitter/tree-sitter-php", targetBlank: true, links: [{ label: "Dependency Report →", href: "deps/tree-sitter-php/index.html", target: "_self" }] },
-            { icon: "💎", iconTone: "is-module", title: "tree-sitter-ruby",           description: "Ruby grammar · <strong>AST parsing</strong>",                                         meta: "<span class=\"accent\">Runtime</span> · ^0.23.1", href: "https://github.com/tree-sitter/tree-sitter-ruby", targetBlank: true, links: [{ label: "Dependency Report →", href: "deps/tree-sitter-ruby/index.html", target: "_self" }] },
-            { icon: "🟣", iconTone: "is-module", title: "@tree-sitter-grammars/tree-sitter-kotlin", description: "Kotlin grammar (KSP scoped) · <strong>AST parsing</strong>",                meta: "<span class=\"accent\">Runtime</span> · 1.1.0", href: "https://github.com/tree-sitter-grammars/tree-sitter-kotlin", targetBlank: true, links: [{ label: "Dependency Report →", href: "deps/tree-sitter-grammars-tree-sitter-kotlin/index.html", target: "_self" }] }
+            { icon: "💎", iconTone: "is-module", title: "tree-sitter-ruby",           description: "Ruby grammar · <strong>AST parsing</strong>",                                         meta: "<span class=\"accent\">Runtime</span> · ^0.23.1", href: "https://github.com/tree-sitter/tree-sitter-ruby", targetBlank: true, links: [{ label: "Dependency Report →", href: "deps/tree-sitter-ruby/index.html", target: "_self" }] }
           ]
         },
         {
