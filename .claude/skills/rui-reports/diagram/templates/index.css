@@ -251,14 +251,15 @@
   .status-dot.green { background: var(--color-backend); box-shadow: 0 0 4px var(--color-backend); }
   .status-dot.amber { background: var(--color-cloud); box-shadow: 0 0 4px var(--color-cloud); }
 
-  /* Diagram container */
+  /* Diagram container — wider min-width accommodates the new
+     algorithmic layout (9 columns + outermost wireframe). */
   .diagram-container {
     background: var(--bg-card);
     border-radius: var(--radius-2xl);
     border: 1px solid var(--border-default);
     padding: 1.5rem; overflow-x: auto;
   }
-  .diagram-container svg { width: 100%; min-width: 1100px; }
+  .diagram-container svg { width: 100%; min-width: 1300px; height: auto; display: block; }
 
   /* Reusable panel (data sections) */
   .panel {
@@ -454,29 +455,69 @@
   .roadmap-tag.debt { color: var(--text-dim); }
 }
 
-/* ── SVG component states (hover / focus) ───────────────────────── */
-.diagram-container.dimmed .svg-comp,
-.diagram-container.dimmed rect[fill*="rgba"] { opacity: 0.3; transition: opacity var(--dur-slow) var(--ease-out); }
-.diagram-container.dimmed .svg-comp.highlight,
-.diagram-container.dimmed rect.highlight { opacity: 1; }
-.diagram-container.dimmed .svg-arrow { opacity: 0.15; transition: opacity var(--dur-slow) var(--ease-out); }
-.diagram-container.dimmed .svg-arrow.highlight { opacity: 1; }
-.diagram-container.dimmed text { opacity: 0.25; transition: opacity var(--dur-slow) var(--ease-out); }
+/* ── SVG component states (hover / focus) ─────────────────────────
+   The new algorithmic generator emits:
+     · .comp-stroke  — the styled rect (2px stroke)
+     · .svg-arrow    — orthogonal arrows (2px stroke, larger markers)
+     · .svg-label-bg — pill background for arrow labels
+     · .svg-label    — arrow label text
+     . .svg-label-sub— sub label below the main label
+     · .svg-boundary — security/VPC group boundaries (auto-sized)
+     · .svg-outermost— the outermost region that wraps everything
+   Each has its own opacity rule for the dimmed-state.            */
+.diagram-container.dimmed .comp-stroke { opacity: 0.18; transition: opacity var(--dur-slow) var(--ease-out); }
+.diagram-container.dimmed .comp-stroke.highlight { opacity: 1; }
+.diagram-container.dimmed .svg-arrow  { opacity: 0.10; transition: opacity var(--dur-slow) var(--ease-out); }
+.diagram-container.dimmed .svg-arrow.highlight  { opacity: 1; }
+.diagram-container.dimmed .svg-label,
+.diagram-container.dimmed .svg-label-bg,
+.diagram-container.dimmed .svg-label-sub { opacity: 0.10; transition: opacity var(--dur-slow) var(--ease-out); }
+.diagram-container.dimmed .svg-label.highlight,
+.diagram-container.dimmed .svg-label-bg.highlight,
+.diagram-container.dimmed .svg-label-sub.highlight { opacity: 1; }
+.diagram-container.dimmed text { opacity: 0.20; transition: opacity var(--dur-slow) var(--ease-out); }
 .diagram-container.dimmed text.highlight { opacity: 1; fill: #fff; }
-.diagram-container.dimmed .svg-boundary { opacity: 0.25; }
+.diagram-container.dimmed .svg-boundary { opacity: 0.20; transition: opacity var(--dur-slow) var(--ease-out); }
+.diagram-container.dimmed .svg-boundary.highlight { opacity: 0.8; }
+.diagram-container.dimmed .svg-outermost { opacity: 0.5; transition: opacity var(--dur-slow) var(--ease-out); }
+.diagram-container.dimmed .svg-outermost.highlight { opacity: 1; }
 
-/* SVG fade-in on first paint */
+/* SVG fade-in on first paint — staggered so left/right components
+   appear to "build" the diagram (subtle, 350ms total). */
 @keyframes svgFadeIn {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.diagram-container svg rect[fill*="rgba"] {
-  animation: svgFadeIn 0.5s var(--ease-out) both;
+.diagram-container svg .comp-stroke {
+  animation: svgFadeIn 0.45s var(--ease-out) both;
 }
-.diagram-container svg rect[fill*="rgba"]:nth-child(1) { animation-delay: 0.05s; }
+.diagram-container svg .comp-stroke:nth-child(odd)  { animation-delay: 0.02s; }
+.diagram-container svg .comp-stroke:nth-child(even) { animation-delay: 0.05s; }
 
-rect.comp-stroke { cursor: pointer; transition: filter var(--dur-fast) var(--ease-out); }
-rect.comp-stroke:hover { filter: brightness(1.2); }
+.comp-stroke {
+  cursor: pointer;
+  transition: filter var(--dur-fast) var(--ease-out),
+              stroke-width var(--dur-fast) var(--ease-out);
+}
+.comp-stroke:hover { filter: brightness(1.25); }
+
+/* Arrow hover affordance — slightly thicker + glow */
+.svg-arrow {
+  transition: stroke-width var(--dur-fast) var(--ease-out),
+              filter var(--dur-fast) var(--ease-out);
+}
+.svg-arrow:hover { stroke-width: 2.6; filter: drop-shadow(0 0 3px currentColor); }
+
+/* Boundary hover — highlight on hover for clearer reading */
+.svg-boundary, .svg-outermost {
+  transition: filter var(--dur-fast) var(--ease-out);
+}
+.svg-boundary:hover, .svg-outermost:hover { filter: brightness(1.2); }
+
+/* Label pills are non-interactive so they don't steal events from
+   the arrow they're attached to (clicking a label should still
+   highlight the connection). */
+.svg-label-bg, .svg-label, .svg-label-sub { pointer-events: none; }
 
 /* ── responsive (H5 best practice: stack on narrow viewports) ────── */
 @layer responsive {

@@ -1,4 +1,12 @@
+/* =========================================================================
+   docs/deps/shared/index.css
+   -------------------------------------------------------------------------
+   Shared stylesheet for all per-dependency report pages under docs/deps/<dir>/.
+   One file replaces what used to be 42 duplicated copies.
+   ========================================================================= */
+
 @layer reset, tokens, base, layout, components, utilities, responsive;
+
 @layer reset {
   *, *::before, *::after { box-sizing: border-box; }
   html, body, h1, h2, h3, p, ul, ol, table { margin: 0; }
@@ -6,6 +14,7 @@
   table { border-collapse: collapse; }
   a { color: inherit; }
 }
+
 @layer tokens {
   :root {
     --bg: #020617;
@@ -25,6 +34,7 @@
     --radius: 18px;
   }
 }
+
 @layer base {
   html { color-scheme: dark; scroll-behavior: smooth; }
   body {
@@ -41,6 +51,7 @@
   code { color: var(--cyan); }
   :focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
 }
+
 @layer layout {
   .page { max-width: var(--content-max); margin: 0 auto; }
   .header { display: grid; gap: 12px; margin-bottom: 22px; }
@@ -61,6 +72,7 @@
   .split { display: grid; grid-template-columns: 1.2fr 0.9fr; gap: 16px; margin-top: 18px; }
   .section { margin-top: 18px; }
 }
+
 @layer components {
   .panel {
     background: var(--panel);
@@ -104,10 +116,13 @@
   .link-list a:hover { border-color: var(--border-strong); }
   .link-label { color: var(--text); }
   .link-href { color: var(--text-dim); font-size: 11px; }
+  .empty-row { color: var(--text-dim); font-style: italic; }
 }
+
 @layer utilities {
   .muted { color: var(--text-muted); }
 }
+
 @layer responsive {
   @media (max-width: 920px) {
     .split { grid-template-columns: 1fr; }

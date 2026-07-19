@@ -34,23 +34,43 @@
 
   /* ──────────────────────────────────────────────────────────────────
      useSvgInteractions — index the SVG, wire up hover/click/focus.
-     Returns reactive { focusedComp, resetFocus, init } for the parent.
+
+     v2 changes (matching the algorithmic generator in data.js):
+       · Arrows are now <path> elements with d= attribute (orthogonal
+         polylines), not <line> elements. We index by data-from/data-to.
+       · Every arrow has a label pill (.svg-label-bg + .svg-label +
+         .svg-label-sub) at its midpoint — these are also tagged
+         data-from/data-to so they highlight alongside the arrow.
+       · Outermost wireframe has .svg-outermost class so we can
+         dim/highlight it as a single unit.
+       · Components still use .comp-stroke; the algorithm guarantees a
+         1:1 mapping between comp-stroke rects and data-component ids.
      ────────────────────────────────────────────────────────────────── */
   function useSvgInteractions() {
     var focusedComp = Vue.ref(null);
     var compGroups = [];
     var arrowGroups = [];
+    var boundaryGroups = [];
+    var outermostEl = null;
     var svgEl = null;
     var containerEl = null;
 
     function pointToRectDist(px, py, rect) {
       var cx = Math.max(rect.x, Math.min(px, rect.x + rect.w));
       var cy = Math.max(rect.y, Math.min(py, rect.y + rect.h));
-      return Math.sqrt((px - cx) * (px - cx) + (py - cy) * (py - cy));
+      return Math.sqrt((px - cx) * (px - cx) + (py - cy) * (py -cy));
+    }
+
+    /* Build the list of (el, side) for every visible element that
+       belongs to a given connection. Used so the click target on
+       any label/arrow piece highlights the whole group. */
+    function connectionElements(fromId, toId) {
+      var sel = '[data-from="' + fromId + '"][data-to="' + toId + '"]';
+      return Array.prototype.slice.call(svgEl.querySelectorAll(sel));
     }
 
     function findConnectedArrows(comp) {
-      var threshold = 30;
+      var threshold = 40;
       var b = comp.bounds;
       var connected = [];
       for (var i = 0; i < arrowGroups.length; i++) {
@@ -60,6 +80,19 @@
         if (d1 < threshold || d2 < threshold) connected.push(a);
       }
       return connected;
+    }
+
+    function findContainingBoundaries(comp) {
+      var contained = [];
+      boundaryGroups.forEach(function (bg) {
+        if (comp.bounds.x >= bg.bounds.x - 4 &&
+            comp.bounds.y >= bg.bounds.y - 4 &&
+            comp.bounds.x + comp.bounds.w <= bg.bounds.x + bg.bounds.w + 4 &&
+            comp.bounds.y + comp.bounds.h <= bg.bounds.y + bg.bounds.h + 4) {
+          contained.push(bg);
+        }
+      });
+      return contained;
     }
 
     function clearHighlight() {
@@ -75,14 +108,21 @@
     function highlightComponent(comp) {
       if (!containerEl || !svgEl) return;
       containerEl.classList.add('dimmed');
-      comp.mask.classList.add('highlight');
       comp.styled.classList.add('highlight');
       comp.styled.classList.add('svg-comp');
       comp.labels.forEach(function (l) { l.classList.add('highlight'); });
+      /* Highlight connected arrows AND their label pills. */
       findConnectedArrows(comp).forEach(function (a) {
         a.el.classList.add('highlight');
-        if (a.label) a.label.classList.add('highlight');
+        if (a.labelPill) a.labelPill.classList.add('highlight');
+        if (a.labelText) a.labelText.classList.add('highlight');
+        if (a.labelSub)  a.labelSub.classList.add('highlight');
       });
+      /* Highlight any boundary that contains this component. */
+      findContainingBoundaries(comp).forEach(function (bg) {
+        bg.el.classList.add('highlight');
+      });
+      if (outermostEl) outermostEl.classList.add('highlight');
     }
 
     function focusComponent(comp) {
@@ -100,12 +140,13 @@
       }
     }
 
-    function indexArrow(el, isPath) {
+    function indexArrow(el) {
+      /* New arrows are <path> elements; fall back to <line> for safety. */
       var x1 = 0, y1 = 0, x2 = 0, y2 = 0;
-      if (isPath) {
+      if (el.tagName === 'path') {
         var d = el.getAttribute('d') || '';
-        var m  = d.match(/M\s*([\d.]+)\s+([\d.]+)/);
-        var last = d.match(/([\d.]+)\s+([\d.]+)\s*$/);
+        var m = d.match(/M\s*([-\d.]+)\s+([-\d.]+)/);
+        var last = d.match(/([-\d.]+)\s+([-\d.]+)\s*$/);
         if (m)    { x1 = parseFloat(m[1]);    y1 = parseFloat(m[2]); }
         if (last) { x2 = parseFloat(last[1]); y2 = parseFloat(last[2]); }
       } else {
@@ -116,51 +157,47 @@
       }
       if (isNaN(x1)) return;
 
-      // find the nearest label text
-      var texts = svgEl.querySelectorAll('text');
-      var labelEl = null;
-      var minDist = 25;
-      var midX = (x1 + x2) / 2, midY = (y1 + y2) / 2;
-      texts.forEach(function (t) {
-        var tx = parseFloat(t.getAttribute('x'));
-        var ty = parseFloat(t.getAttribute('y'));
-        var dist = Math.sqrt((tx - midX) * (tx - midX) + (ty - midY) * (ty - midY));
-        if (dist < minDist) { minDist = dist; labelEl = t; }
-      });
-
+      var fromId = el.getAttribute('data-from');
+      var toId   = el.getAttribute('data-to');
+      var labelPill = null, labelText = null, labelSub = null;
+      if (fromId && toId) {
+        var pills = svgEl.querySelectorAll(
+          '.svg-label-bg[data-from="' + fromId + '"][data-to="' + toId + '"]'
+        );
+        if (pills.length) labelPill = pills[0];
+        var texts = svgEl.querySelectorAll(
+          '.svg-label[data-from="' + fromId + '"][data-to="' + toId + '"]'
+        );
+        if (texts.length) labelText = texts[0];
+        var subs = svgEl.querySelectorAll(
+          '.svg-label-sub[data-from="' + fromId + '"][data-to="' + toId + '"]'
+        );
+        if (subs.length) labelSub = subs[0];
+      }
       arrowGroups.push({
         el: el,
         x1: x1, y1: y1, x2: x2, y2: y2,
-        label: labelEl,
+        labelPill: labelPill, labelText: labelText, labelSub: labelSub,
         stroke: el.getAttribute('stroke') || ''
       });
     }
 
     function indexComponents() {
-      var masks = svgEl.querySelectorAll('rect[fill="#0f172a"]');
-      var styledRects = svgEl.querySelectorAll('rect');
+      /* In v2 components are emitted with class="comp-stroke" and
+         data-component="<id>". The algorithm guarantees a unique
+         data-component per .comp-stroke. */
+      var styledRects = svgEl.querySelectorAll('rect.comp-stroke');
       var texts = svgEl.querySelectorAll('text');
 
-      masks.forEach(function (mask) {
-        var bx = parseFloat(mask.getAttribute('x'));
-        var by = parseFloat(mask.getAttribute('y'));
-        var bw = parseFloat(mask.getAttribute('width'));
-        var bh = parseFloat(mask.getAttribute('height'));
-
-        // match by position to the styled semi-transparent rect
-        var styled = null;
-        for (var i = 0; i < styledRects.length; i++) {
-          var r = styledRects[i];
-          if (r === mask) continue;
-          var fill = r.getAttribute('fill') || '';
-          if (!fill.includes('rgba') && !fill.includes('url(#')) continue;
-          var rx = parseFloat(r.getAttribute('x'));
-          var ry = parseFloat(r.getAttribute('y'));
-          if (Math.abs(rx - bx) < 2 && Math.abs(ry - by) < 2) { styled = r; break; }
-        }
-        if (!styled) return;
-
-        // collect labels inside the bounding box
+      styledRects.forEach(function (styled) {
+        var id = styled.getAttribute('data-component');
+        if (!id) return;
+        var bx = parseFloat(styled.getAttribute('x'));
+        var by = parseFloat(styled.getAttribute('y'));
+        var bw = parseFloat(styled.getAttribute('width'));
+        var bh = parseFloat(styled.getAttribute('height'));
+        /* pick the first white-bold title inside the box as the
+           human-readable name. */
         var labels = [];
         texts.forEach(function (t) {
           var tx = parseFloat(t.getAttribute('x'));
@@ -169,9 +206,7 @@
             labels.push(t);
           }
         });
-
-        // pick the first white/bold label as the component name
-        var name = '';
+        var name = id;
         for (var j = 0; j < labels.length; j++) {
           var fw = labels[j].getAttribute('font-weight');
           var fill = labels[j].getAttribute('fill');
@@ -180,12 +215,9 @@
             break;
           }
         }
-        if (!name && labels.length > 0) name = labels[0].textContent.trim();
-        if (!name) return;
-
         compGroups.push({
           name: name,
-          mask: mask,
+          id: id,
           styled: styled,
           labels: labels,
           bounds: { x: bx, y: by, w: bw, h: bh }
@@ -193,11 +225,21 @@
       });
     }
 
+    function indexBoundaries() {
+      /* Index every .svg-boundary rect (VPC + security groups). */
+      var bnodes = svgEl.querySelectorAll('rect.svg-boundary');
+      bnodes.forEach(function (el) {
+        var bx = parseFloat(el.getAttribute('x'));
+        var by = parseFloat(el.getAttribute('y'));
+        var bw = parseFloat(el.getAttribute('width'));
+        var bh = parseFloat(el.getAttribute('height'));
+        boundaryGroups.push({ el: el, bounds: { x: bx, y: by, w: bw, h: bh } });
+      });
+    }
+
     function bindInteractions() {
       compGroups.forEach(function (comp) {
         comp.styled.style.pointerEvents = 'all';
-        comp.styled.classList.add('comp-stroke');
-
         comp.styled.addEventListener('mouseenter', function () {
           if (focusedComp.value) return;
           highlightComponent(comp);
@@ -213,27 +255,47 @@
         });
       });
 
-      // background click resets focus
+      /* Click on a label pill to focus on either endpoint. */
+      svgEl.querySelectorAll('.svg-label-bg, .svg-label, .svg-label-sub').forEach(function (l) {
+        l.addEventListener('click', function (e) {
+          e.stopPropagation();
+          var fromId = l.getAttribute('data-from');
+          var toId   = l.getAttribute('data-to');
+          if (!fromId || !toId) return;
+          /* focus on the "destination" by convention */
+          var target = compGroups.find(function (c) { return c.id === toId; });
+          if (target) {
+            if (focusedComp.value === target) resetFocus();
+            else focusComponent(target);
+          }
+        });
+        l.style.cursor = 'pointer';
+      });
+
+      /* Background click resets focus */
       svgEl.addEventListener('click', function (e) {
         if (e.target === svgEl ||
-            (e.target.tagName === 'rect' && e.target.getAttribute('fill') === 'url(#grid)')) {
+            (e.target.tagName === 'rect' && /url\(#grid/.test(e.target.getAttribute('fill') || ''))) {
           resetFocus();
         }
       });
 
-      // mark arrow + boundary elements
+      /* Tag arrows + boundaries for the dim/highlight CSS rules. */
       arrowGroups.forEach(function (a) { a.el.classList.add('svg-arrow'); });
-      svgEl.querySelectorAll(
-        'rect[fill="transparent"], rect[fill="rgba(251, 191, 36, 0.04)"], rect[fill="rgba(251, 113, 133, 0.03)"]'
-      ).forEach(function (r) { r.classList.add('svg-boundary'); });
+      svgEl.querySelectorAll('rect.svg-boundary').forEach(function (r) {
+        r.classList.add('svg-boundary');
+      });
+      outermostEl = svgEl.querySelector('rect.svg-outermost') || null;
     }
 
     function init(svg, container) {
       svgEl = svg;
       containerEl = container;
       indexComponents();
-      svgEl.querySelectorAll('line[marker-end]').forEach(function (l) { indexArrow(l, false); });
-      svgEl.querySelectorAll('path[marker-end]').forEach(function (p) { indexArrow(p, true); });
+      indexBoundaries();
+      /* Index arrows — both <path> (new) and <line> (legacy) are accepted. */
+      svgEl.querySelectorAll('path.svg-arrow, path[marker-end]').forEach(function (p) { indexArrow(p); });
+      svgEl.querySelectorAll('line[marker-end]').forEach(function (l) { indexArrow(l); });
       bindInteractions();
     }
 

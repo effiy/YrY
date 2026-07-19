@@ -88,19 +88,39 @@ Each dimension is scored 0–4. A production-ready diagram should score ≥ 3 on
 
 ### Visual Quality Checklist
 
-- [ ] SVG paint order correct: defs → grid → arrows → masks → boxes → boundaries → legend
+- [ ] SVG paint order correct: defs → grid → layer-rail → arrows → masks → boxes → boundaries → legend → outermost
 - [ ] Every component has an opaque mask rect (`fill="#0f172a"`) drawn BEFORE the styled rect
 - [ ] Color palette strictly followed per component type
 - [ ] Arrow markers use distinct colors per connection type
+- [ ] Arrow stroke-width is 2px (not 1.5px) for clarity on retina + print
+- [ ] Arrow markers are 10×8px with `refX=8` so heads sit past line endpoints
+- [ ] Every component label uses `textLength` + `lengthAdjust="spacingAndGlyphs"` to fit
+- [ ] Every arrow label has a pill background (rect) for readability on any background
+- [ ] Arrow label pills carry `data-from` / `data-to` for highlight sync
+- [ ] Layer-rail labels (rotated, x=18) are present and colored per layer
+- [ ] Outermost region auto-sizes to wrap every element (components, boundaries, legend)
+- [ ] Outermost region has corner brackets (4 L-shaped paths) for frame markers
+- [ ] Outermost region has a name tag (rect + text) at top-left
 - [ ] Legend includes both component swatches AND line style samples
 - [ ] Legend only lists types actually used in the diagram
 - [ ] viewBox accommodates all content without cropping
 - [ ] Typography follows the design system (JetBrains Mono, correct sizes)
 - [ ] SVG filters (shadow-sm, shadow-md) applied to key components
-- [ ] CSS load animation (fadeInUp) present
+- [ ] CSS load animation (svgFadeIn) present
 - [ ] CSS custom properties used for colors (not hardcoded `#` values in inline styles where avoidable)
 - [ ] Panel utility classes (`.panel`, `.panel-grid`, `.panel-item`, `.panel-table`) used for standard sections
-- [ ] Interactive features functional (hover highlight, click focus)
+- [ ] Interactive features functional (hover highlight, click focus, dim/highlight on label pill click)
+
+### Algorithmic Generation Checklist (v2)
+
+- [ ] Components defined via `COMP_DEFS` with `col`/`row`/`layer` grid coordinates
+- [ ] Inner boundaries defined via `BOUNDARY_DEFS` with `members: [componentIds]`
+- [ ] Boundary bounds are auto-computed (not hardcoded)
+- [ ] Outermost region bounds are auto-computed (not hardcoded)
+- [ ] Connections routed via orthogonal Manhattan algorithm (4-point polylines)
+- [ ] Arrow anchor points pushed 6px outside box edge to avoid spear on stroke
+- [ ] Label pills placed at path midpoint (length-weighted), not at fixed coords
+- [ ] All coordinates snapped to 10px grid (`GRID` constant)
 
 ---
 

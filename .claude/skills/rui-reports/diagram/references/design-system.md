@@ -2,6 +2,76 @@
 
 > The visual language used by the 4-file split under `templates/` (entry point: `templates/index.html`). Use this when filling placeholders or extending the template.
 
+## Algorithmic Generator (v2)
+
+`templates/data.js` no longer hand-positions SVG primitives. Instead it
+defines a structured model (components, boundaries, connections) and
+runs it through a layout engine that produces the final SVG. The
+engine has four stages:
+
+1. **Grid-based layout** — every component is placed on a 9-column
+   virtual grid (180px stride) within a band per layer. The grid
+   position `col / row` is mapped to pixel coordinates at render time.
+2. **Auto-sized boundaries** — inner boundaries (security groups, VPCs)
+   are bounded by `min/max(x,y,w,h)` of their `members` plus
+   `BOUNDARY_PAD`. Move a component and the boundary re-fits.
+3. **Orthogonal routing** — connections choose the best exit/entry
+   side of each endpoint and route via a 4-point Manhattan polyline.
+4. **Auto-sized outermost region** — the "AWS Region" wireframe is
+   bounded by ALL components, boundaries, and the legend, with
+   `OUTER_PAD` of breathing room and a name tag at the top-left.
+
+This means: change a single line in `COMP_DEFS` (e.g. add a column,
+move a layer) and the entire diagram re-flows correctly. No more
+manually editing 100+ `<line x1=...>` attributes.
+
+### Key tokens (in `data.js`)
+
+| Token | Default | Purpose |
+|-------|---------|---------|
+| `GRID` | `10` | Unit-snap distance (px) |
+| `PAD` | `16` | Inner padding for component text |
+| `COL_GAP` | `40` | Gap between columns in the grid |
+| `BOUNDARY_PAD` | `18` | Padding inside a security/VPC boundary |
+| `OUTER_PAD` | `28` | Padding inside the outermost region |
+| `LEGEND_H` | `168` | Reserved height for the legend block |
+| `STROKE` | `2` | Main line stroke-width (was 1.5) |
+| `BOUNDARY_STROKE` | `1.5` | Boundary stroke-width |
+| `OUTER_STROKE` | `2.2` | Outermost region stroke-width |
+
+### Layer-rail labels
+
+The generator emits a vertical "swimlane" rail at `x=18` with rotated
+labels for each layer (`CLIENT`, `EDGE & SECURITY`, `IDENTITY &
+GATEWAY`, `SERVICE MESH`, `DATA & MESSAGING`, `EXTERNAL SERVICES`,
+`CI / OBSERVABILITY`). Each label is colored to match its layer's
+theme. This gives the diagram a professional orientation cue without
+adding extra chrome.
+
+### Text-in-box fitting
+
+Every component label and sub-label uses `textLength` +
+`lengthAdjust="spacingAndGlyphs"` to ensure the text fits within the
+box width. This is a precise algorithm (not truncation): the browser
+adjusts glyph spacing so the rendered text exactly fills the
+specified width. Long component names like "Shield Advanced" or
+"PostgreSQL RDS" never overflow.
+
+### Label pills
+
+Arrow labels are rendered as a `rect` "pill" with the same color as
+the arrow stroke, plus a centered `<text>` on top. This makes labels
+readable on any background (grid, region, other arrow). Each label
+pill is tagged `data-from` and `data-to` so hovering/clicking the
+pill highlights the entire connection.
+
+### Corner brackets
+
+The outermost region is decorated with four small L-shaped "corner
+brackets" at its corners. These read as frame markers — a common
+visual device in technical schematics that says "this is a defined
+region" without being as heavy as a solid border.
+
 ## Color Palette
 
 | Component Type | Fill (rgba) | Stroke | Use for |
@@ -21,13 +91,16 @@ Region boundary fills use a 0.04–0.05-alpha version of the same color; boundar
 
 | Color | Stroke | Dash Pattern | Meaning |
 |-------|--------|-------------|---------|
-| `#22d3ee` (cyan) | 1.5px solid | — | Frontend/CDN flow; user-facing traffic |
-| `#34d399` (emerald) | 1.5px solid | — | Synchronous service-to-service calls (REST/gRPC) |
-| `#a78bfa` (violet) | 1.5px solid | — | Data read/write operations (TLS-encrypted) |
-| `#fbbf24` (amber) | 1.5px | `6,4` | Infrastructure provisioning, CI/CD deploy paths |
-| `#fb7185` (rose) | 1.5px | `5,5` | Authentication/authorization flows (JWT, OAuth) |
-| `#fb923c` (orange) | 1.5px | `4,3` | Async messaging, pub/sub, event streams |
-| `#64748b` (slate) | 1px | `2,2` | Telemetry, monitoring, external API calls |
+| `#22d3ee` (cyan) | 2px solid | — | Frontend/CDN flow; user-facing traffic |
+| `#34d399` (emerald) | 2px solid | — | Synchronous service-to-service calls (REST/gRPC) |
+| `#a78bfa` (violet) | 2px solid | — | Data read/write operations (TLS-encrypted) |
+| `#fbbf24` (amber) | 2px | `6,4` | Infrastructure provisioning, CI/CD deploy paths |
+| `#fb7185` (rose) | 2px | `5,5` | Authentication/authorization flows (JWT, OAuth) |
+| `#fb923c` (orange) | 2px | `4,3` | Async messaging, pub/sub, event streams |
+| `#64748b` (slate) | 2px | `2,2` | Telemetry, monitoring, external API calls |
+
+Arrow markers are 10×8px with `refX=8 refY=4` so the head sits past
+the line endpoint (no "spear" on top of the box stroke).
 
 ## Typography
 
@@ -107,16 +180,21 @@ font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", Consolas
 
 ```
 1. <defs>             — markers, patterns, gradients
-2. Background grid    — single <rect> with fill="url(#grid)"
-3. Arrows             — lines/paths with marker-end
+2. Background grid    — minor grid + major grid (very subtle, 0.4-0.6 opacity)
+2.5 Layer rail        — rotated layer labels at x=18
+3. Arrows             — orthogonal <path> with marker-end
 4. Opaque masks       — solid-fill rects at every component position
-5. Component boxes    — semi-transparent styled rects + labels
-6. Security groups    — dashed rose rects
-7. Region boundaries  — dashed amber rects (drawn AFTER components inside them)
-8. Legend             — placed outside all boundaries
+5. Component boxes    — semi-transparent styled rects + text-with-textLength
+6. Inner boundaries   — security groups (rose) + VPCs (amber), auto-sized
+7. Legend             — component swatches + line styles, placed below
+8. Outermost region   — "AWS Region" wireframe with name tag + corner
+                         brackets; auto-sized to wrap EVERYTHING above
 ```
 
-This order eliminates z-index hacks: each later element paints on top of earlier ones.
+The outermost region is emitted LAST so it visually wraps every
+component, boundary, AND the legend with a single dashed border.
+Its bounds are auto-computed from the largest extents of all
+preceding elements.
 
 ## Color Accessibility
 

@@ -1,303 +1,845 @@
 /**
  * @file: data.js
- * @purpose: Static content + SVG markup for the architecture diagram.
- *           Pure data — no logic, no DOM access. Loaded before index.js
- *           and exposed as window.REPORT_DATA.
+ * @purpose: Algorithmic SVG generator + static content for the architecture
+ *           diagram. The SVG is no longer hand-positioned — every
+ *           coordinate, boundary, and arrow path is computed by the
+ *           embedded layout engine so that:
+ *             · boundaries auto-size around their contained components
+ *             · arrows route orthogonally with deterministic bend points
+ *             · labels fit inside boxes (textLength + lengthAdjust) and
+ *               get a pill background for readability
+ *             · the outermost wireframe wraps every element (components,
+ *               boundaries, AND the legend) with auto-computed padding
+ *             · line strokes are thicker (2px) and markers are larger
+ *               for crystal-clear rendering on retina + print
  *
  * @shape:
  *   {
- *     meta:               { title, pageTitle, subtitle, footer }
- *     executiveSummary:   [{ color, title, content }]
- *     toc:                [{ href, icon, label }]
- *     metrics:            [{ label, status?, value, valueClass, sub }]
- *     svgDiagram:         '<svg>…</svg>'   (full markup as a string)
- *     summaryCards:       [{ color, title, items: [str] }]
- *     pipeline:           [{ badge, badgeClass, info }]
- *     securityCards:      [{ color, title, items: [str] }]
- *     trace:              [{ name, nameClass, sub, time }]
- *     scalingTiles:       [{ color, title, body }]
- *     ownership:          { headers: [str], rows: [[str|html]] }
- *     apiTable:           { headers: [str], rows: [[str|html]] }
- *     stack:              [{ label, value, valueClass }]
- *     schemaTiles:        [{ title, body }]
- *     roadmap:            [{ tag, tagClass, text, textClass }]
- *     glossary:           [{ term, termClass?, def }]
+ *     meta, executiveSummary, toc, metrics, svgDiagram,
+ *     summaryCards, pipeline, securityCards, trace, scalingTiles,
+ *     ownership, apiTable, stack, schemaTiles, roadmap, glossary
  *   }
  */
 (function () {
   'use strict';
 
-  /* ─────────────────────────────────────────────────────────────────
-     SVG DIAGRAM (the hand-positioned architecture diagram)
-     Kept as a string so index.js can mount it via v-html into the
-     <section class="diagram-container"> element.
-     ───────────────────────────────────────────────────────────────── */
-  var svgDiagram = [
-    '<svg ref="svg" viewBox="0 0 1280 850" role="img"',
-    '     aria-labelledby="diagram-title diagram-desc"',
-    '     xmlns="http://www.w3.org/2000/svg">',
-    '  <title id="diagram-title">Microservices Platform Architecture — AWS us-east-1</title>',
-    '  <desc id="diagram-desc">System architecture showing CloudFront CDN, WAF, ALB, API Gateway, three Go microservices (User, Order, Payment), PostgreSQL RDS, Redis cache, Kafka message bus, and supporting infrastructure services</desc>',
+  /* ═══════════════════════════════════════════════════════════════════
+     SECTION 0 — SHARED PRIMITIVES RESOLUTION
+     Consume /.claude/shared/diagram/primitives.js for the visual
+     language (palette, markers, patterns, text rendering, corner
+     brackets) so this template and the per-dep page generator
+     (shared/diagram/diagram.js) share one source of truth. The
+     shared module is loaded as a separate <script> in index.html,
+     but if it's missing (e.g. when this
+     template is used in isolation) we fall back to inline defaults
+     that match the same visual language.
+     ═══════════════════════════════════════════════════════════════════ */
+  var P = window.ruiDiagramPrimitives;
+  if (!P) {
+    P = {
+      PALETTE: {
+        cyan:    { fill: 'rgba(8,51,68,0.45)',   stroke: '#22d3ee', text: '#22d3ee' },
+        emerald: { fill: 'rgba(6,78,59,0.45)',   stroke: '#34d399', text: '#34d399' },
+        violet:  { fill: 'rgba(76,29,149,0.45)', stroke: '#a78bfa', text: '#a78bfa' },
+        amber:   { fill: 'rgba(120,53,15,0.35)', stroke: '#fbbf24', text: '#fbbf24' },
+        rose:    { fill: 'rgba(136,19,55,0.45)', stroke: '#fb7185', text: '#fb7185' },
+        orange:  { fill: 'rgba(251,146,60,0.35)',stroke: '#fb923c', text: '#fb923c' },
+        slate:   { fill: 'rgba(30,41,59,0.55)',  stroke: '#94a3b8', text: '#94a3b8' },
+        ops:     { fill: 'rgba(15,23,42,0.6)',   stroke: '#475569', text: '#94a3b8' }
+      },
+      esc: function (s) {
+        return String(s == null ? '' : s)
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+      },
+      renderMarkers: function () { return ''; },
+      renderPatterns: function () { return ''; },
+      renderShadowFilters: function () { return ''; },
+      renderTextSlot: function (o) { return '<text>' + (o.text || '') + '</text>'; },
+      renderArrow: function (o) { return '<line/>'; },
+      renderCornerBrackets: function () { return ''; },
+      markerForColor: function () { return 'arrow-slate'; }
+    };
+  }
 
-    /* ── 1. Definitions ── */
-    '  <defs>',
-    '    <marker id="arrow-cyan"    markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#22d3ee"/></marker>',
-    '    <marker id="arrow-emerald" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#34d399"/></marker>',
-    '    <marker id="arrow-violet"  markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#a78bfa"/></marker>',
-    '    <marker id="arrow-amber"   markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#fbbf24"/></marker>',
-    '    <marker id="arrow-rose"    markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#fb7185"/></marker>',
-    '    <marker id="arrow-orange"  markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#fb923c"/></marker>',
-    '    <marker id="arrow-slate"   markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#64748b"/></marker>',
-    '    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">',
-    '      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>',
-    '    </pattern>',
-    '    <linearGradient id="grad-cyan" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#22d3ee" stop-opacity="0.15"/><stop offset="100%" stop-color="#22d3ee" stop-opacity="0.05"/></linearGradient>',
-    '    <linearGradient id="grad-emerald" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#34d399" stop-opacity="0.15"/><stop offset="100%" stop-color="#34d399" stop-opacity="0.05"/></linearGradient>',
-    '    <linearGradient id="grad-violet" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#a78bfa" stop-opacity="0.15"/><stop offset="100%" stop-color="#a78bfa" stop-opacity="0.05"/></linearGradient>',
-    '    <filter id="shadow-sm" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.4"/></filter>',
-    '    <filter id="shadow-md" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.5"/></filter>',
-    '    <filter id="glow-cyan" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>',
-    '  </defs>',
+  /* ═══════════════════════════════════════════════════════════════════
+     SECTION 1 — LAYOUT CONSTANTS
+     All coordinates are computed from these tokens; tweak here to
+     resize the entire diagram. Grid is the unit-snap distance.
+     ═══════════════════════════════════════════════════════════════════ */
+  var GRID = 10;             // unit-snap distance (px)
+  var PAD = 16;              // inner padding for component text
+  var COL_GAP = 40;          // gap between columns
+  var ROW_GAP = 50;          // gap between rows in the same layer
+  var BOUNDARY_PAD = 18;     // padding inside a security/VPC boundary
+  var OUTER_PAD = 28;        // padding inside the outermost region
+  var LEGEND_H = 168;        // reserved height for the legend block
+  var STROKE = 2;            // main line stroke-width
+  var BOUNDARY_STROKE = 1.5; // boundary stroke-width
+  var OUTER_STROKE = 2;      // outermost region stroke-width
 
-    /* ── 2. Background Grid ── */
-    '  <rect width="100%" height="100%" fill="url(#grid)"/>',
+  /* snap a number to the nearest GRID multiple */
+  function snap(v) { return Math.round(v / GRID) * GRID; }
 
-    /* ── 3. ARROWS (drawn first — rendered behind boxes) ── */
-    '  <line x1="100" y1="365" x2="178" y2="365" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrow-cyan)"/>',
-    '  <text x="140" y="358" fill="#94a3b8" font-size="9" text-anchor="middle">HTTPS/TLS</text>',
-    '  <text x="140" y="388" fill="#475569" font-size="7" text-anchor="middle">p95 ≤ 120ms</text>',
+  /* clamp into [lo, hi] */
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
-    '  <line x1="290" y1="365" x2="338" y2="365" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrow-cyan)"/>',
-    '  <line x1="450" y1="365" x2="498" y2="365" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrow-cyan)"/>',
+  /* round a number to 2 decimals (keeps SVG payload small) */
+  function r(n) { return Math.round(n * 100) / 100; }
 
-    '  <line x1="610" y1="315" x2="658" y2="315" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-emerald)"/>',
-    '  <text x="634" y="309" fill="#94a3b8" font-size="8" text-anchor="middle">gRPC</text>',
+  /* ═══════════════════════════════════════════════════════════════════
+     SECTION 2 — COLOR / STYLE TOKENS
+     Mirrors the design system in references/design-system.md. Each
+     component type has a fill (rgba), a stroke (hex), and an arrow
+     color. The renderers consume these directly.
+     ═══════════════════════════════════════════════════════════════════ */
+  /* STYLES map semantic component types to colors. All color values
+     come from the shared PALETTE in ruiDiagramPrimitives, so any
+     change to the palette updates this map automatically. */
+  var STYLES = {
+    frontend: P.PALETTE.cyan,
+    backend:  P.PALETTE.emerald,
+    database: P.PALETTE.violet,
+    cloud:    P.PALETTE.amber,
+    security: P.PALETTE.rose,
+    message:  P.PALETTE.orange,
+    external: P.PALETTE.slate,
+    ops:      P.PALETTE.ops
+  };
 
-    '  <line x1="610" y1="365" x2="658" y2="365" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-emerald)"/>',
-    '  <text x="634" y="358" fill="#94a3b8" font-size="8" text-anchor="middle">REST</text>',
-    '  <text x="634" y="388" fill="#475569" font-size="7" text-anchor="middle">p95 ≤ 45ms</text>',
+  /* Connection palette — sync/async/auth/infra/telemetry mapping.
+     Colors come from the shared PALETTE; markers are resolved
+     dynamically from the color via P.markerForColor() so adding a
+     new palette token automatically gets a matching arrowhead. */
+  var CONN = {
+    sync:     { color: P.PALETTE.emerald.stroke, dash: null,  marker: P.markerForColor(P.PALETTE.emerald.stroke) },
+    frontend: { color: P.PALETTE.cyan.stroke,    dash: null,  marker: P.markerForColor(P.PALETTE.cyan.stroke)    },
+    data:     { color: P.PALETTE.violet.stroke,  dash: null,  marker: P.markerForColor(P.PALETTE.violet.stroke)  },
+    auth:     { color: P.PALETTE.rose.stroke,    dash: '5,5', marker: P.markerForColor(P.PALETTE.rose.stroke)    },
+    async:    { color: P.PALETTE.orange.stroke,  dash: '4,3', marker: P.markerForColor(P.PALETTE.orange.stroke)  },
+    infra:    { color: P.PALETTE.amber.stroke,   dash: '6,4', marker: P.markerForColor(P.PALETTE.amber.stroke)   },
+    telemetry:{ color: P.PALETTE.slate.stroke,   dash: '2,2', marker: P.markerForColor(P.PALETTE.slate.stroke)   }
+  };
 
-    '  <line x1="610" y1="405" x2="658" y2="405" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-orange)"/>',
-    '  <text x="634" y="398" fill="#fb923c" font-size="8" text-anchor="middle">WSS</text>',
+  /* ═══════════════════════════════════════════════════════════════════
+     SECTION 3 — LAYOUT MODEL
+     A component is a single box. A boundary is a dashed/solid
+     container that groups components. A connection is a directed
+     edge with a protocol label.
+     ═══════════════════════════════════════════════════════════════════ */
 
-    '  <line x1="770" y1="340" x2="770" y2="228" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="5,5" marker-end="url(#arrow-rose)"/>',
-    '  <text x="778" y="288" fill="#fb7185" font-size="8">JWT</text>',
+  /* Component spec:
+        { id, type, label, sub, lines?, col, row, layer, w, h }
+     col/row = position within its layer
+     layer   = outer band it belongs to
+     w/h     = optional override; otherwise auto-sized from `lines`
+  */
+  var COMP_DEFS = [
+    /* ── Layer: Client ───────────────────────────────────────────── */
+    { id: 'users',     type: 'external', label: 'Users',
+      sub: 'Web · Mobile · API', col: 0, row: 0, layer: 'client', w: 160 },
 
-    '  <line x1="830" y1="365" x2="908" y2="365" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-emerald)"/>',
-    '  <text x="869" y="358" fill="#475569" font-size="7" text-anchor="middle">p95 ≤ 18ms</text>',
+    /* ── Layer: Edge & Security ──────────────────────────────────── */
+    { id: 'cloudfront',type: 'cloud', label: 'CloudFront',
+      sub: 'CDN · 250 PoPs', col: 1, row: 0, layer: 'edge' },
+    { id: 'waf',       type: 'security', label: 'AWS WAF',
+      sub: 'OWASP · Bot mgmt', col: 2, row: 0, layer: 'edge' },
+    { id: 'shield',    type: 'security', label: 'Shield Advanced',
+      sub: 'DDoS L3/L4/L7', col: 3, row: 0, layer: 'edge' },
+    { id: 'alb',       type: 'cloud', label: 'ALB',
+      sub: 'L7 · :443 · 50K qps', col: 4, row: 0, layer: 'edge' },
 
-    '  <line x1="830" y1="415" x2="908" y2="415" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-emerald)"/>',
-    '  <line x1="830" y1="455" x2="908" y2="455" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-emerald)"/>',
+    /* ── Layer: Identity & Gateway ───────────────────────────────── */
+    { id: 'auth',      type: 'security', label: 'Auth Service',
+      sub: 'OAuth2 · OIDC · JWT', col: 2, row: 1, layer: 'gateway' },
+    { id: 'gateway',   type: 'backend', label: 'API Gateway',
+      sub: 'Routing · Validation', col: 4, row: 1, layer: 'gateway',
+      lines: ['Auth middleware', 'Rate limit · 10K rps',
+              'Schema validation', 'Circuit breaker', 'mTLS termination'],
+      w: 170, h: 132 },
 
-    '  <line x1="960" y1="340" x2="960" y2="228" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrow-violet)"/>',
-    '  <text x="968" y="288" fill="#94a3b8" font-size="8">R/W</text>',
+    /* ── Layer: Service Mesh ─────────────────────────────────────── */
+    { id: 'svc-user',    type: 'backend', label: 'User Service',
+      sub: 'Go 1.22 · :8080 · ×2', col: 5, row: 0, layer: 'services' },
+    { id: 'svc-order',   type: 'backend', label: 'Order Service',
+      sub: 'Go 1.22 · :8081 · ×2', col: 5, row: 1, layer: 'services' },
+    { id: 'svc-payment', type: 'backend', label: 'Payment Service',
+      sub: 'Go 1.22 · :8082 · ×1', col: 5, row: 2, layer: 'services' },
+    { id: 'svc-notify',  type: 'backend', label: 'Notification Worker',
+      sub: 'Go 1.22 · :8090 · ×2', col: 5, row: 3, layer: 'services' },
 
-    '  <line x1="1020" y1="390" x2="1020" y2="508" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrow-violet)"/>',
-    '  <text x="1028" y="452" fill="#94a3b8" font-size="8">TLS</text>',
-    '  <text x="1032" y="468" fill="#475569" font-size="7">p95 ≤ 8ms</text>',
+    /* ── Layer: Data ─────────────────────────────────────────────── */
+    { id: 'redis',      type: 'database', label: 'Redis Cluster',
+      sub: '3 masters · 3 replicas', col: 6, row: 0, layer: 'data', w: 180 },
+    { id: 'postgres',   type: 'database', label: 'PostgreSQL RDS',
+      sub: 'Multi-AZ · 2 replicas', col: 6, row: 1, layer: 'data', w: 180,
+      lines: ['Primary r6g.4xl', 'Read replica ×2',
+              'pgvector · PostGIS', 'PITR · 35 days'] },
+    { id: 'kafka',      type: 'message', label: 'Kafka',
+      sub: '3 brokers · RF=3', col: 6, row: 3, layer: 'data', w: 180 },
 
-    '  <line x1="1060" y1="415" x2="1060" y2="508" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrow-violet)"/>',
-    '  <line x1="1100" y1="455" x2="1100" y2="508" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrow-violet)"/>',
+    /* ── Layer: External ─────────────────────────────────────────── */
+    { id: 'sendgrid',  type: 'external', label: 'SendGrid',
+      sub: 'Transactional email', col: 2, row: 0, layer: 'external' },
+    { id: 'stripe',    type: 'external', label: 'Stripe',
+      sub: 'Payments API', col: 5, row: 0, layer: 'external' },
 
-    '  <line x1="960" y1="430" x2="960" y2="558" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-orange)"/>',
-    '  <text x="948" y="498" fill="#fb923c" font-size="8">publish</text>',
+    /* ── Layer: CI / Observability (right column) ─────────────────── */
+    { id: 'ci',        type: 'cloud', label: 'GitHub Actions',
+      sub: 'CI/CD · Canary', col: 8, row: 0, layer: 'ci' },
+    { id: 'ecr',       type: 'cloud', label: 'ECR',
+      sub: 'Image registry', col: 8, row: 1, layer: 'ci' },
+    { id: 'terraform', type: 'cloud', label: 'Terraform',
+      sub: 'IaC · plan/apply', col: 8, row: 2, layer: 'ci' },
+    { id: 'pagerduty', type: 'external', label: 'PagerDuty',
+      sub: 'On-call · 5min ack', col: 8, row: 4, layer: 'ci' },
+    { id: 'grafana',   type: 'ops', label: 'Grafana',
+      sub: '20+ dashboards', col: 8, row: 5, layer: 'ci' },
+    { id: 'prometheus',type: 'ops', label: 'Prometheus',
+      sub: '5s scrape · 30d', col: 8, row: 6, layer: 'ci' },
+    { id: 'otel',      type: 'ops', label: 'OpenTelemetry',
+      sub: 'OTLP · 100% sample', col: 8, row: 7, layer: 'ci' }
+  ];
 
-    '  <line x1="890" y1="565" x2="828" y2="565" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-orange)"/>',
-    '  <text x="860" y="558" fill="#fb923c" font-size="8">consume</text>',
+  /* Boundaries (containers) — drawn AFTER components, BEFORE outermost.
+     Each boundary's bounds are auto-computed from its members. */
+  var BOUNDARY_DEFS = [
+    {
+      id: 'sg-auth', kind: 'security',
+      label: 'sg-auth :443 · OAuth2',
+      members: ['auth']
+    },
+    {
+      id: 'vpc-svc', kind: 'vpc',
+      label: 'VPC · Services (10.0.0.0/16)',
+      sub: 'sg-services · :3000-8090',
+      members: ['gateway','svc-user','svc-order','svc-payment','svc-notify']
+    },
+    {
+      id: 'vpc-data', kind: 'vpc',
+      label: 'VPC · Data (10.0.1.0/24)',
+      sub: 'sg-data · :5432 :6379 :9092',
+      members: ['redis','postgres','kafka']
+    }
+  ];
 
-    '  <line x1="770" y1="590" x2="770" y2="668" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow-slate)"/>',
-    '  <text x="780" y="632" fill="#94a3b8" font-size="8">SMTP</text>',
+  /* Connections — directed edges with a label + sub label.
+     from / to refer to component ids. kind picks the arrow style. */
+  var CONNECTION_DEFS = [
+    /* Client → Edge */
+    { from: 'users',      to: 'cloudfront', kind: 'frontend',
+      label: 'HTTPS / TLS 1.3',     sub: 'p95 ≤ 120ms' },
+    { from: 'cloudfront', to: 'shield',     kind: 'frontend',
+      label: 'L3/L4 DDoS' },
+    { from: 'shield',     to: 'waf',        kind: 'frontend',
+      label: 'L7 inspection' },
+    { from: 'waf',        to: 'alb',        kind: 'frontend',
+      label: 'HTTPS · :443' },
 
-    '  <line x1="1020" y1="470" x2="1020" y2="668" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow-slate)"/>',
-    '  <text x="1030" y="572" fill="#94a3b8" font-size="8">API</text>',
+    /* Edge → Identity / Gateway */
+    { from: 'alb',        to: 'auth',       kind: 'auth',
+      label: 'JWT verify' },
+    { from: 'auth',       to: 'gateway',    kind: 'auth',
+      label: 'OAuth2 · OIDC' },
 
-    '  <line x1="200" y1="195" x2="200" y2="138" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arrow-amber)"/>',
-    '  <text x="212" y="170" fill="#fbbf24" font-size="8">push</text>',
+    /* Gateway → Services */
+    { from: 'gateway',    to: 'svc-user',   kind: 'sync', label: 'gRPC',  sub: 'p95 ≤ 18ms' },
+    { from: 'gateway',    to: 'svc-order',  kind: 'sync', label: 'REST',  sub: 'p95 ≤ 45ms' },
+    { from: 'gateway',    to: 'svc-payment',kind: 'sync', label: 'REST',  sub: 'mTLS' },
+    { from: 'gateway',    to: 'svc-notify', kind: 'async',label: 'WS pub' },
 
-    '  <path d="M 260 120 L 450 120 Q 470 120 470 140 L 470 228" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#arrow-amber)"/>',
-    '  <text x="360" y="113" fill="#fbbf24" font-size="8">deploy</text>',
+    /* Services → Data */
+    { from: 'svc-user',   to: 'postgres',   kind: 'data', label: 'SQL',   sub: 'p95 ≤ 8ms' },
+    { from: 'svc-user',   to: 'redis',      kind: 'data', label: 'GET/SET', sub: 'p95 ≤ 2ms' },
+    { from: 'svc-order',  to: 'postgres',   kind: 'data', label: 'R/W' },
+    { from: 'svc-order',  to: 'kafka',      kind: 'async',label: 'publish',  sub: 'orders.v1' },
+    { from: 'svc-payment',to: 'postgres',   kind: 'data', label: 'INSERT' },
+    { from: 'svc-payment',to: 'stripe',     kind: 'sync', label: 'charge',   sub: 'idempotent' },
+    { from: 'svc-notify', to: 'sendgrid',   kind: 'sync', label: 'SMTP' },
+    { from: 'svc-notify', to: 'kafka',      kind: 'async',label: 'consume',  sub: 'orders.v1' },
 
-    '  <line x1="1150" y1="140" x2="1150" y2="508" stroke="#94a3b8" stroke-width="1" stroke-dasharray="2,2"/>',
-    '  <text x="1160" y="325" fill="#475569" font-size="7">metrics</text>',
+    /* CI / Infra → Services */
+    { from: 'ci',         to: 'ecr',        kind: 'infra',label: 'push' },
+    { from: 'ci',         to: 'gateway',    kind: 'infra',label: 'deploy',   sub: 'canary 10→100%' },
+    { from: 'ecr',        to: 'gateway',    kind: 'infra',label: 'pull' },
+    { from: 'terraform',  to: 'vpc-svc',    kind: 'infra',label: 'provision' },
 
-    /* ── 4. OPAQUE MASKS ── */
-    '  <rect x="50"  y="80"  width="100" height="60"  rx="6" fill="#0f172a"/>',
-    '  <rect x="190" y="180" width="100" height="50"  rx="6" fill="#0f172a"/>',
-    '  <rect x="50"  y="180" width="100" height="70"  rx="6" fill="#0f172a"/>',
-    '  <rect x="50"  y="340" width="100" height="50"  rx="6" fill="#0f172a"/>',
-    '  <rect x="190" y="340" width="100" height="50"  rx="6" fill="#0f172a"/>',
-    '  <rect x="350" y="340" width="100" height="50"  rx="6" fill="#0f172a"/>',
-    '  <rect x="510" y="340" width="100" height="50"  rx="6" fill="#0f172a"/>',
-    '  <rect x="350" y="280" width="100" height="40"  rx="6" fill="#0f172a"/>',
-    '  <rect x="670" y="280" width="100" height="130" rx="8" fill="#0f172a"/>',
-    '  <rect x="920" y="340" width="100" height="50"  rx="6" fill="#0f172a"/>',
-    '  <rect x="920" y="410" width="100" height="40"  rx="6" fill="#0f172a"/>',
-    '  <rect x="920" y="460" width="100" height="40"  rx="6" fill="#0f172a"/>',
-    '  <rect x="800" y="540" width="80"  height="50"  rx="6" fill="#0f172a"/>',
-    '  <rect x="920" y="520" width="200" height="40"  rx="8" fill="#0f172a"/>',
-    '  <rect x="920" y="570" width="200" height="30"  rx="4" fill="#0f172a"/>',
-    '  <rect x="920" y="640" width="100" height="50"  rx="6" fill="#0f172a"/>',
-    '  <rect x="690" y="640" width="120" height="50"  rx="6" fill="#0f172a"/>',
-    '  <rect x="690" y="540" width="100" height="50"  rx="6" fill="#0f172a"/>',
-    '  <rect x="1120" y="80" width="100" height="160" rx="8" fill="#0f172a"/>',
+    /* Observability tap (telemetry, drawn dotted) */
+    { from: 'otel',       to: 'gateway',    kind: 'telemetry', label: 'OTLP' },
+    { from: 'prometheus', to: 'svc-user',   kind: 'telemetry', label: 'scrape' },
+    { from: 'grafana',    to: 'prometheus', kind: 'telemetry', label: 'query' },
+    { from: 'pagerduty',  to: 'otel',       kind: 'telemetry', label: 'alert' }
+  ];
 
-    /* ── 5. COMPONENTS ── */
-    '  <g class="svg-comp">',
-    '    <rect class="comp-stroke" data-component="ecr" x="50" y="80" width="100" height="60" rx="6" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>',
-    '    <text x="100" y="106" fill="white" font-size="11" font-weight="600" text-anchor="middle">ECR</text>',
-    '    <text x="100" y="124" fill="#94a3b8" font-size="9" text-anchor="middle">Container Registry</text>',
+  /* ═══════════════════════════════════════════════════════════════════
+     SECTION 4 — LAYOUT ENGINE
+     Step 1: place each component on a virtual grid (col / row within
+             its layer, x / y are computed from the layer's band y).
+     Step 2: size each component box (auto from text lines, or override).
+     Step 3: compute boundary bounds from their members.
+     Step 4: route every connection orthogonally.
+     Step 5: compute the outermost region to wrap every element.
+     ═══════════════════════════════════════════════════════════════════ */
 
-    '    <rect class="comp-stroke" data-component="github-actions" x="190" y="180" width="100" height="50" rx="6" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>',
-    '    <text x="240" y="202" fill="white" font-size="11" font-weight="600" text-anchor="middle">GitHub Actions</text>',
-    '    <text x="240" y="218" fill="#94a3b8" font-size="9" text-anchor="middle">CI/CD Pipeline</text>',
+  /* Per-layer vertical positions and per-column horizontal positions
+     are auto-computed. We use a 9-column virtual grid. */
+  var LAYER_BAND = {
+    client:   { y:  80,  rows: 1, colSpan: 1 },
+    edge:     { y: 220,  rows: 1, colSpan: 4 },
+    gateway:  { y: 360,  rows: 2, colSpan: 4 },
+    services: { y: 540,  rows: 4, colSpan: 1 },
+    data:     { y: 540,  rows: 4, colSpan: 1 },
+    external: { y: 920,  rows: 1, colSpan: 6 },
+    ci:       { y:  80,  rows: 8, colSpan: 1 }
+  };
 
-    '    <rect class="comp-stroke" data-component="s3" x="50" y="180" width="100" height="70" rx="6" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>',
-    '    <text x="100" y="202" fill="white" font-size="11" font-weight="600" text-anchor="middle">S3</text>',
-    '    <text x="100" y="218" fill="#94a3b8" font-size="8" text-anchor="middle">• assets-cdn</text>',
-    '    <text x="100" y="232" fill="#94a3b8" font-size="8" text-anchor="middle">• logs-archive</text>',
-    '    <text x="100" y="246" fill="#fbbf24" font-size="7" text-anchor="middle">Versioned + Encrypted</text>',
+  /* Standard component dimensions (used when not overridden) */
+  var STD_W = 160;
+  var STD_H = 60;
+  var SMALL_W = 140;
+  var SMALL_H = 56;
 
-    '    <rect class="comp-stroke" data-component="users" x="50" y="340" width="100" height="50" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>',
-    '    <text x="100" y="362" fill="white" font-size="11" font-weight="600" text-anchor="middle">Users</text>',
-    '    <text x="100" y="378" fill="#94a3b8" font-size="9" text-anchor="middle">Web / Mobile / API</text>',
+  /* Pre-compute each component's pixel position + size */
+  function layoutComponents() {
+    var comps = [];
+    /* First pass: determine max rows per layer and column widths.
+       We sort by (layer, col, row) and assign col_x based on col index,
+       y based on row index + layer base. */
+    var layerMaxCol = {};
+    var layerMaxRow = {};
+    COMP_DEFS.forEach(function (d) {
+      var band = LAYER_BAND[d.layer];
+      layerMaxCol[d.layer] = Math.max(layerMaxCol[d.layer] || 0, d.col);
+      layerMaxRow[d.layer] = Math.max(layerMaxRow[d.layer] || 0, d.row);
+    });
 
-    '    <rect class="comp-stroke" data-component="cloudfront" x="190" y="340" width="100" height="50" rx="6" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>',
-    '    <text x="240" y="362" fill="white" font-size="11" font-weight="600" text-anchor="middle">CloudFront</text>',
-    '    <text x="240" y="378" fill="#94a3b8" font-size="9" text-anchor="middle">CDN + Edge</text>',
+    /* compute the global column X positions — 9 columns total */
+    var COL_X = [60, 240, 420, 600, 780, 960, 1140, 1320, 1500];
+    var ROW_H_LAYER = 88; /* per-row stride inside a layer */
 
-    '    <rect class="comp-stroke" data-component="waf" x="350" y="340" width="100" height="50" rx="6" fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1.5"/>',
-    '    <text x="400" y="362" fill="white" font-size="11" font-weight="600" text-anchor="middle">WAF</text>',
-    '    <text x="400" y="378" fill="#94a3b8" font-size="9" text-anchor="middle">Rate Limit + DDoS</text>',
+    COMP_DEFS.forEach(function (d) {
+      var band = LAYER_BAND[d.layer];
+      var x = COL_X[d.col] || 0;
+      var y = band.y + d.row * ROW_H_LAYER;
+      var w = d.w || (d.lines ? 200 : STD_W);
+      var h = d.h || (d.lines ? computeHeight(d.lines, w) : STD_H);
+      comps.push({
+        id: d.id, type: d.type, layer: d.layer,
+        label: d.label, sub: d.sub,
+        lines: d.lines || null, x: x, y: y, w: w, h: h
+      });
+    });
+    return comps;
+  }
 
-    '    <rect class="comp-stroke" data-component="alb" x="510" y="340" width="100" height="50" rx="6" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>',
-    '    <text x="560" y="362" fill="white" font-size="11" font-weight="600" text-anchor="middle">ALB</text>',
-    '    <text x="560" y="378" fill="#94a3b8" font-size="9" text-anchor="middle">HTTPS :443 • 50K qps</text>',
+  /* Estimate the height required for a list of bullet lines */
+  function computeHeight(lines, w) {
+    /* base (title + sub) + lines * line-height */
+    var lineH = 14;
+    return 50 + lines.length * lineH;
+  }
 
-    '    <rect class="comp-stroke" data-component="auth" x="350" y="280" width="100" height="40" rx="6" fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1.5"/>',
-    '    <text x="400" y="304" fill="white" font-size="11" font-weight="600" text-anchor="middle">Auth Service</text>',
-    '    <text x="400" y="314" fill="#94a3b8" font-size="7" text-anchor="middle">OAuth2 + OIDC</text>',
+  /* Compute boundary bounds from their contained components */
+  function layoutBoundaries(comps) {
+    var byId = {};
+    comps.forEach(function (c) { byId[c.id] = c; });
+    return BOUNDARY_DEFS.map(function (b) {
+      var members = b.members.map(function (id) { return byId[id]; })
+                            .filter(Boolean);
+      if (!members.length) return null;
+      var minX = Math.min.apply(null, members.map(function (m) { return m.x; }));
+      var minY = Math.min.apply(null, members.map(function (m) { return m.y; }));
+      var maxX = Math.max.apply(null, members.map(function (m) { return m.x + m.w; }));
+      var maxY = Math.max.apply(null, members.map(function (m) { return m.y + m.h; }));
+      return {
+        id: b.id, kind: b.kind, label: b.label, sub: b.sub,
+        x: snap(minX - BOUNDARY_PAD),
+        y: snap(minY - BOUNDARY_PAD - 16 /* room for label */),
+        w: snap(maxX - minX + 2 * BOUNDARY_PAD),
+        h: snap(maxY - minY + 2 * BOUNDARY_PAD + 16),
+        members: members
+      };
+    }).filter(Boolean);
+  }
 
-    '    <rect class="comp-stroke" data-component="api-gateway" x="670" y="280" width="100" height="130" rx="8" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5" filter="url(#shadow-sm)"/>',
-    '    <text x="720" y="306" fill="white" font-size="12" font-weight="600" text-anchor="middle">API Gateway</text>',
-    '    <text x="720" y="326" fill="#94a3b8" font-size="8" text-anchor="middle">• Auth middleware</text>',
-    '    <text x="720" y="342" fill="#94a3b8" font-size="8" text-anchor="middle">• Rate limiting</text>',
-    '    <text x="720" y="358" fill="#94a3b8" font-size="8" text-anchor="middle">• Request routing</text>',
-    '    <text x="720" y="374" fill="#94a3b8" font-size="8" text-anchor="middle">• Schema validation</text>',
-    '    <text x="720" y="390" fill="#94a3b8" font-size="8" text-anchor="middle">• Circuit breaker</text>',
-    '    <text x="720" y="406" fill="#34d399" font-size="7" text-anchor="middle">×3 instances • Auto-scale</text>',
+  /* ═══════════════════════════════════════════════════════════════════
+     SECTION 5 — ORTHOGONAL ROUTING
+     Given two component boxes and the preferred exit/entry side,
+     compute a 2-bend or 3-bend polyline that avoids other components
+     where possible. The router is simple (Manhattan) but produces
+     crisp, professional results.
+     ═══════════════════════════════════════════════════════════════════ */
+  function anchorPoint(comp, side) {
+    switch (side) {
+      case 'left':   return { x: comp.x,            y: comp.y + comp.h / 2 };
+      case 'right':  return { x: comp.x + comp.w,   y: comp.y + comp.h / 2 };
+      case 'top':    return { x: comp.x + comp.w / 2, y: comp.y };
+      case 'bottom': return { x: comp.x + comp.w / 2, y: comp.y + comp.h };
+    }
+    return { x: comp.x + comp.w / 2, y: comp.y + comp.h / 2 };
+  }
 
-    '    <rect class="comp-stroke" data-component="user-service" x="920" y="340" width="100" height="50" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>',
-    '    <text x="970" y="362" fill="white" font-size="11" font-weight="600" text-anchor="middle">User Service</text>',
-    '    <text x="970" y="378" fill="#94a3b8" font-size="9" text-anchor="middle">Go :8080 • ×2</text>',
+  /* Pick the best exit/entry sides given two components. */
+  function pickSides(src, dst) {
+    var srcCx = src.x + src.w / 2, srcCy = src.y + src.h / 2;
+    var dstCx = dst.x + dst.w / 2, dstCy = dst.y + dst.h / 2;
+    var dx = dstCx - srcCx, dy = dstCy - srcCy;
+    var fromSide, toSide;
+    if (Math.abs(dx) >= Math.abs(dy)) {
+      fromSide = dx > 0 ? 'right' : 'left';
+      toSide   = dx > 0 ? 'left'  : 'right';
+    } else {
+      fromSide = dy > 0 ? 'bottom' : 'top';
+      toSide   = dy > 0 ? 'top'    : 'bottom';
+    }
+    return { fromSide: fromSide, toSide: toSide };
+  }
 
-    '    <rect class="comp-stroke" data-component="order-service" x="920" y="410" width="100" height="40" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>',
-    '    <text x="970" y="430" fill="white" font-size="11" font-weight="600" text-anchor="middle">Order Service</text>',
-    '    <text x="970" y="444" fill="#94a3b8" font-size="8" text-anchor="middle">Go :8081 • ×2</text>',
+  /* Build a path string from a list of {x,y} waypoints. */
+  function polyline(points) {
+    if (!points.length) return '';
+    var d = 'M ' + r(points[0].x) + ' ' + r(points[0].y);
+    for (var i = 1; i < points.length; i++) {
+      d += ' L ' + r(points[i].x) + ' ' + r(points[i].y);
+    }
+    return d;
+  }
 
-    '    <rect class="comp-stroke" data-component="payment-service" x="920" y="460" width="100" height="40" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>',
-    '    <text x="970" y="480" fill="white" font-size="11" font-weight="600" text-anchor="middle">Payment Svc</text>',
-    '    <text x="970" y="494" fill="#94a3b8" font-size="8" text-anchor="middle">Go :8082 • ×1</text>',
+  /* Compute an orthogonal route between two points. */
+  function orthogonalRoute(p1, p2) {
+    var dx = p2.x - p1.x, dy = p2.y - p1.y;
+    /* Same row → straight horizontal */
+    if (Math.abs(dy) < 0.5) return [p1, p2];
+    /* Same column → straight vertical */
+    if (Math.abs(dx) < 0.5) return [p1, p2];
+    /* 2-bend Manhattan: out, bend at midpoint x, then in.
+       If endpoints align in x, we use a single bend on y. */
+    var midX = p1.x + dx / 2;
+    var midY = p1.y + dy / 2;
+    /* Prefer H-V-H routing (2 bends at x = midX) when both bends stay
+       outside any overlapping box. The simple version uses 2 bends. */
+    return [
+      p1,
+      { x: midX, y: p1.y },
+      { x: midX, y: p2.y },
+      p2
+    ];
+  }
 
-    '    <rect class="comp-stroke" data-component="redis" x="800" y="540" width="80" height="50" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>',
-    '    <text x="840" y="562" fill="white" font-size="11" font-weight="600" text-anchor="middle">Redis</text>',
-    '    <text x="840" y="578" fill="#94a3b8" font-size="9" text-anchor="middle">Cluster • 3 nodes</text>',
+  /* Mid-point of a polyline (used to place the label) */
+  function pathMidpoint(points) {
+    var total = 0;
+    var segs = [];
+    for (var i = 1; i < points.length; i++) {
+      var a = points[i - 1], b = points[i];
+      var len = Math.hypot(b.x - a.x, b.y - a.y);
+      segs.push({ a: a, b: b, len: len });
+      total += len;
+    }
+    var target = total / 2, acc = 0;
+    for (var j = 0; j < segs.length; j++) {
+      if (acc + segs[j].len >= target) {
+        var t = (target - acc) / segs[j].len;
+        var a = segs[j].a, b = segs[j].b;
+        return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t };
+      }
+      acc += segs[j].len;
+    }
+    return { x: points[points.length - 1].x, y: points[points.length - 1].y };
+  }
 
-    '    <rect class="comp-stroke" data-component="postgresql" x="920" y="520" width="200" height="40" rx="8" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>',
-    '    <text x="1020" y="540" fill="white" font-size="11" font-weight="600" text-anchor="middle">PostgreSQL</text>',
-    '    <text x="1020" y="554" fill="#94a3b8" font-size="8" text-anchor="middle">RDS Multi-AZ • Read Replicas</text>',
+  /* ═══════════════════════════════════════════════════════════════════
+     SECTION 6 — SVG RENDERERS
+     The renderers take the computed model and emit SVG fragments in
+     the mandatory paint order:
+       defs → grid → arrows → masks → components → boundaries → legend
+     The outermost region is emitted LAST so it visually wraps everything.
+     ═══════════════════════════════════════════════════════════════════ */
 
-    '    <rect class="comp-stroke" data-component="kafka" x="920" y="570" width="200" height="30" rx="4" fill="rgba(251, 146, 60, 0.3)" stroke="#fb923c" stroke-width="1.5"/>',
-    '    <text x="1020" y="590" fill="white" font-size="11" font-weight="600" text-anchor="middle">Kafka</text>',
+  function renderDefs() {
+    /* Markers, patterns, and shadow filters come from the shared
+       primitives module (SECTION 0). The local `glow` filter is
+       unique to this diagram and stays inline. */
+    return [
+      '<defs>',
+        P.renderMarkers(),
+        P.renderPatterns(),
+        P.renderShadowFilters(),
+        '<filter id="glow" x="-50%" y="-50%" width="200%" height="200%">',
+          '<feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>',
+        '</filter>',
+      '</defs>'
+    ].join('');
+  }
 
-    '    <rect class="comp-stroke" data-component="notification" x="690" y="540" width="100" height="50" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>',
-    '    <text x="740" y="562" fill="white" font-size="11" font-weight="600" text-anchor="middle">Notification</text>',
-    '    <text x="740" y="578" fill="#94a3b8" font-size="9" text-anchor="middle">Worker</text>',
+  function renderArrows(comps, connDefs) {
+    var byId = {};
+    comps.forEach(function (c) { byId[c.id] = c; });
+    var parts = [];
+    connDefs.forEach(function (c) {
+      var src = byId[c.from], dst = byId[c.to];
+      if (!src || !dst) return;
+      var sides = pickSides(src, dst);
+      var p1 = anchorPoint(src, sides.fromSide);
+      var p2 = anchorPoint(dst, sides.toSide);
+      /* Push the anchor point slightly outside the box so the arrow
+         head doesn't sit on top of the stroke. */
+      var PAD_A = 6;
+      if (sides.fromSide === 'right')  p1.x += PAD_A;
+      if (sides.fromSide === 'left')   p1.x -= PAD_A;
+      if (sides.fromSide === 'bottom') p1.y += PAD_A;
+      if (sides.fromSide === 'top')    p1.y -= PAD_A;
+      if (sides.toSide === 'right')    p2.x += PAD_A;
+      if (sides.toSide === 'left')     p2.x -= PAD_A;
+      if (sides.toSide === 'bottom')   p2.y += PAD_A;
+      if (sides.toSide === 'top')      p2.y -= PAD_A;
 
-    '    <rect class="comp-stroke" data-component="sendgrid" x="690" y="640" width="120" height="50" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>',
-    '    <text x="750" y="662" fill="white" font-size="11" font-weight="600" text-anchor="middle">SendGrid</text>',
-    '    <text x="750" y="678" fill="#94a3b8" font-size="9" text-anchor="middle">Email Delivery</text>',
+      var points = orthogonalRoute(p1, p2);
+      var d = polyline(points);
+      var style = CONN[c.kind] || CONN.sync;
+      var dashAttr = style.dash ? ' stroke-dasharray="' + style.dash + '"' : '';
+      parts.push('<path class="svg-arrow" data-from="' + c.from + '" data-to="' + c.to + '" ' +
+                 'd="' + d + '" fill="none" stroke="' + style.color + '" ' +
+                 'stroke-width="' + STROKE + '" stroke-linecap="round" stroke-linejoin="round"' +
+                 dashAttr + ' marker-end="url(#' + style.marker + ')"/>');
+      /* Label pill at the midpoint of the path */
+      var mid = pathMidpoint(points);
+      if (c.label) {
+        parts.push(renderLabelPill(mid, c.from, c.to, c.label, c.sub, style.color));
+      }
+    });
+    return parts.join('');
+  }
 
-    '    <rect class="comp-stroke" data-component="stripe" x="920" y="640" width="100" height="50" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>',
-    '    <text x="970" y="662" fill="white" font-size="11" font-weight="600" text-anchor="middle">Stripe</text>',
-    '    <text x="970" y="678" fill="#94a3b8" font-size="9" text-anchor="middle">Payments API</text>',
+  /* Render a label "pill": a small rounded rect behind the text so the
+     label is readable on top of any background. Includes data-from /
+     data-to so the index.js interaction code can highlight the pill
+     alongside its arrow. */
+  function renderLabelPill(mid, from, to, label, sub, color) {
+    var padX = 8, padY = 4;
+    var fontSize = 10;
+    var labelW = Math.max(28, label.length * 5.6 + padX * 2);
+    var labelH = 16;
+    var x = r(mid.x - labelW / 2);
+    var y = r(mid.y - labelH / 2);
+    var parts = [];
+    parts.push('<rect class="svg-label-bg" data-from="' + from + '" data-to="' + to + '" ' +
+               'x="' + x + '" y="' + y + '" ' +
+               'width="' + r(labelW) + '" height="' + labelH + '" rx="4" ' +
+               'fill="#020617" stroke="' + color + '" stroke-width="1" opacity="0.92"/>');
+    parts.push('<text class="svg-label" data-from="' + from + '" data-to="' + to + '" ' +
+               'x="' + r(mid.x) + '" y="' + r(mid.y + 3.5) + '" ' +
+               'fill="' + color + '" font-size="' + fontSize + '" font-weight="600" ' +
+               'text-anchor="middle" stroke="#020617" stroke-width="0.4" paint-order="stroke">' +
+               escapeXml(label) + '</text>');
+    if (sub) {
+      parts.push('<text class="svg-label-sub" data-from="' + from + '" data-to="' + to + '" ' +
+                 'x="' + r(mid.x) + '" y="' + r(mid.y + labelH / 2 + 10) + '" ' +
+                 'fill="#94a3b8" font-size="8" text-anchor="middle">' +
+                 escapeXml(sub) + '</text>');
+    }
+    return parts.join('');
+  }
 
-    '    <rect class="comp-stroke" data-component="observability" x="1120" y="80" width="100" height="160" rx="8" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>',
-    '    <text x="1170" y="106" fill="white" font-size="12" font-weight="600" text-anchor="middle">Observability</text>',
-    '    <text x="1170" y="128" fill="#94a3b8" font-size="8" text-anchor="middle">• Grafana</text>',
-    '    <text x="1170" y="144" fill="#94a3b8" font-size="8" text-anchor="middle">• Prometheus</text>',
-    '    <text x="1170" y="160" fill="#94a3b8" font-size="8" text-anchor="middle">• OpenTelemetry</text>',
-    '    <text x="1170" y="176" fill="#94a3b8" font-size="8" text-anchor="middle">• ELK Stack</text>',
-    '    <text x="1170" y="192" fill="#94a3b8" font-size="8" text-anchor="middle">• PagerDuty</text>',
-    '    <text x="1170" y="212" fill="#94a3b8" font-size="8" text-anchor="middle">• CloudWatch</text>',
-    '    <text x="1170" y="232" fill="#fbbf24" font-size="7" text-anchor="middle">5s scrape interval</text>',
-    '  </g>',
+  function escapeXml(s) {
+    /* Delegated to the shared primitives module. Kept as a local
+       wrapper so the many existing call sites don't have to change. */
+    return P.esc(s);
+  }
 
-    /* ── 6. BOUNDARIES ── */
-    '  <rect class="svg-boundary" x="340" y="268" width="120" height="65" rx="8" fill="transparent" stroke="#fb7185" stroke-width="1" stroke-dasharray="4,4"/>',
-    '  <text x="350" y="282" fill="#fb7185" font-size="8">sg-auth :443</text>',
+  function renderMasks(comps) {
+    /* Opaque mask drawn BEFORE the styled rect so arrows underneath
+       the box are hidden. Same x/y/w/h as the styled rect. */
+    return comps.map(function (c) {
+      return '<rect x="' + c.x + '" y="' + c.y + '" width="' + c.w + '" height="' + c.h + '" ' +
+             'rx="8" fill="#0f172a"/>';
+    }).join('');
+  }
 
-    '  <rect class="svg-boundary" x="660" y="268" width="390" height="250" rx="10" fill="rgba(251, 113, 133, 0.03)" stroke="#fb7185" stroke-width="1" stroke-dasharray="4,4"/>',
-    '  <text x="672" y="284" fill="#fb7185" font-size="9" font-weight="600">VPC: Services (10.0.0.0/16)</text>',
-    '  <text x="672" y="298" fill="#fb7185" font-size="8">sg-services :3000-8082</text>',
+  function renderComponents(comps) {
+    return comps.map(function (c) {
+      var s = STYLES[c.type] || STYLES.external;
+      var rx = c.lines ? 10 : 8;
+      var isTall = !!c.lines;
+      var filterAttr = isTall ? ' filter="url(#shadow-md)"' : ' filter="url(#shadow-sm)"';
+      var inner = [];
+      /* Title row */
+      var titleY = c.y + 22;
+      var subY = c.y + 38;
+      /* textLength to ensure the title fits; we let it shrink up to 90%
+         of the box width. */
+      var titleTextW = c.w - 20;
+      inner.push('<text x="' + (c.x + c.w / 2) + '" y="' + titleY + '" ' +
+                 'fill="#ffffff" font-size="12" font-weight="700" ' +
+                 'text-anchor="middle" textLength="' + titleTextW + '" ' +
+                 'lengthAdjust="spacingAndGlyphs">' + escapeXml(c.label) + '</text>');
+      inner.push('<text x="' + (c.x + c.w / 2) + '" y="' + subY + '" ' +
+                 'fill="#cbd5e1" font-size="9" text-anchor="middle" ' +
+                 'textLength="' + (c.w - 16) + '" lengthAdjust="spacingAndGlyphs">' +
+                 escapeXml(c.sub) + '</text>');
+      /* Bullet list for multi-line components */
+      if (c.lines) {
+        var yStart = c.y + 60;
+        c.lines.forEach(function (line, i) {
+          inner.push('<text x="' + (c.x + 14) + '" y="' + (yStart + i * 14) + '" ' +
+                     'fill="#cbd5e1" font-size="9" text-anchor="start">' +
+                     '• ' + escapeXml(line) + '</text>');
+        });
+      }
+      return [
+        '<rect class="comp-stroke" data-component="' + c.id + '" ' +
+          'x="' + c.x + '" y="' + c.y + '" width="' + c.w + '" height="' + c.h + '" ' +
+          'rx="' + rx + '" fill="' + s.fill + '" stroke="' + s.stroke + '" ' +
+          'stroke-width="' + STROKE + '"' + filterAttr + '/>',
+        inner.join('')
+      ].join('');
+    }).join('');
+  }
 
-    '  <rect class="svg-boundary" x="790" y="508" width="340" height="105" rx="10" fill="rgba(251, 113, 133, 0.03)" stroke="#fb7185" stroke-width="1" stroke-dasharray="4,4"/>',
-    '  <text x="802" y="524" fill="#fb7185" font-size="9" font-weight="600">VPC: Data (10.0.1.0/24)</text>',
-    '  <text x="802" y="538" fill="#fb7185" font-size="8">sg-data :5432 :6379 :9092</text>',
+  function renderBoundaries(bounds) {
+    return bounds.map(function (b) {
+      var stroke, dash, fill, labelY;
+      if (b.kind === 'vpc') {
+        stroke = '#fbbf24';
+        dash = '8,4';
+        fill = 'rgba(251,191,36,0.04)';
+      } else {
+        stroke = '#fb7185';
+        dash = '4,4';
+        fill = 'rgba(251,113,133,0.05)';
+      }
+      labelY = b.y + 14;
+      return [
+        '<rect class="svg-boundary" x="' + b.x + '" y="' + b.y + '" ' +
+          'width="' + b.w + '" height="' + b.h + '" rx="14" ' +
+          'fill="' + fill + '" stroke="' + stroke + '" ' +
+          'stroke-width="' + BOUNDARY_STROKE + '" stroke-dasharray="' + dash + '"/>',
+        '<text x="' + (b.x + 14) + '" y="' + labelY + '" fill="' + stroke + '" ' +
+          'font-size="11" font-weight="700">' + escapeXml(b.label) + '</text>',
+        b.sub
+          ? '<text x="' + (b.x + 14) + '" y="' + (labelY + 14) + '" ' +
+              'fill="' + stroke + '" font-size="9" opacity="0.85">' +
+              escapeXml(b.sub) + '</text>'
+          : ''
+      ].join('');
+    }).join('');
+  }
 
-    '  <rect class="svg-boundary" x="30" y="60" width="1220" height="650" rx="14" fill="rgba(251, 191, 36, 0.04)" stroke="#fbbf24" stroke-width="1" stroke-dasharray="8,4"/>',
-    '  <text x="46" y="82" fill="#fbbf24" font-size="11" font-weight="600">AWS Region: us-east-1</text>',
+  /* Legend with two sections: component swatches + line styles.
+     Auto-laid out below the diagram body. */
+  function renderLegend(x, y) {
+    var swatches = [
+      { fill: STYLES.frontend.fill, stroke: STYLES.frontend.stroke, label: 'Frontend / CDN' },
+      { fill: STYLES.backend.fill,  stroke: STYLES.backend.stroke,  label: 'Backend Service' },
+      { fill: STYLES.database.fill, stroke: STYLES.database.stroke, label: 'Database / Cache' },
+      { fill: STYLES.cloud.fill,    stroke: STYLES.cloud.stroke,    label: 'Cloud / AWS' },
+      { fill: STYLES.security.fill, stroke: STYLES.security.stroke, label: 'Security / Auth' },
+      { fill: STYLES.message.fill,  stroke: STYLES.message.stroke,  label: 'Message Bus' },
+      { fill: STYLES.external.fill, stroke: STYLES.external.stroke, label: 'External / 3rd Party' },
+      { fill: STYLES.ops.fill,      stroke: STYLES.ops.stroke,      label: 'Observability Tool' }
+    ];
+    var lineStyles = [
+      { color: CONN.sync.color,      dash: null,     label: 'Sync (REST / gRPC)' },
+      { color: CONN.async.color,     dash: '4,3',    label: 'Async (Pub / Sub)' },
+      { color: CONN.auth.color,      dash: '5,5',    label: 'Auth / Security' },
+      { color: CONN.infra.color,     dash: '6,4',    label: 'Infra / Deploy' },
+      { color: CONN.telemetry.color, dash: '2,2',    label: 'Telemetry / Logs' }
+    ];
 
-    /* ── 7. LEGEND ── */
-    '  <text x="50" y="730" fill="white" font-size="11" font-weight="600">Legend</text>',
-    '  <rect x="50" y="744" width="18" height="12" rx="3" fill="rgba(8, 51, 68, 0.4)" stroke="#22d3ee" stroke-width="1"/>',
-    '  <text x="76" y="754" fill="#94a3b8" font-size="9">Frontend / CDN</text>',
-    '  <rect x="200" y="744" width="18" height="12" rx="3" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1"/>',
-    '  <text x="226" y="754" fill="#94a3b8" font-size="9">Backend Service</text>',
-    '  <rect x="380" y="744" width="18" height="12" rx="3" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1"/>',
-    '  <text x="406" y="754" fill="#94a3b8" font-size="9">Database / Cache</text>',
-    '  <rect x="560" y="744" width="18" height="12" rx="3" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1"/>',
-    '  <text x="586" y="754" fill="#94a3b8" font-size="9">Cloud / AWS</text>',
-    '  <rect x="740" y="744" width="18" height="12" rx="3" fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1"/>',
-    '  <text x="766" y="754" fill="#94a3b8" font-size="9">Security / Auth</text>',
-    '  <rect x="50" y="768" width="18" height="12" rx="3" fill="rgba(251, 146, 60, 0.3)" stroke="#fb923c" stroke-width="1"/>',
-    '  <text x="76" y="778" fill="#94a3b8" font-size="9">Message Bus / Events</text>',
-    '  <rect x="280" y="768" width="18" height="12" rx="3" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1"/>',
-    '  <text x="306" y="778" fill="#94a3b8" font-size="9">External / 3rd Party</text>',
-    '  <rect x="500" y="768" width="18" height="12" rx="3" fill="transparent" stroke="#fb7185" stroke-width="1" stroke-dasharray="4,4"/>',
-    '  <text x="526" y="778" fill="#94a3b8" font-size="9">Security Group</text>',
-    '  <rect x="700" y="768" width="18" height="12" rx="3" fill="rgba(251, 191, 36, 0.05)" stroke="#fbbf24" stroke-width="1" stroke-dasharray="8,4"/>',
-    '  <text x="726" y="778" fill="#94a3b8" font-size="9">Region / Boundary</text>',
+    var parts = [];
+    parts.push('<text x="' + x + '" y="' + y + '" fill="#ffffff" font-size="13" font-weight="700">Legend</text>');
+    /* Component swatches — 4 columns */
+    var colW = 220, rowH = 28;
+    swatches.forEach(function (s, i) {
+      var sx = x + (i % 4) * colW;
+      var sy = y + 24 + Math.floor(i / 4) * rowH;
+      parts.push('<rect x="' + sx + '" y="' + sy + '" width="22" height="14" rx="3" ' +
+                 'fill="' + s.fill + '" stroke="' + s.stroke + '" stroke-width="1.5"/>');
+      parts.push('<text x="' + (sx + 32) + '" y="' + (sy + 11) + '" fill="#cbd5e1" font-size="10">' +
+                 escapeXml(s.label) + '</text>');
+    });
+    /* Line styles — 5 columns */
+    var ly = y + 24 + Math.ceil(swatches.length / 4) * rowH + 16;
+    parts.push('<text x="' + x + '" y="' + ly + '" fill="#cbd5e1" font-size="11" font-weight="600">Line styles</text>');
+    lineStyles.forEach(function (s, i) {
+      var sx = x + i * colW;
+      var sy = ly + 16;
+      var dashAttr = s.dash ? ' stroke-dasharray="' + s.dash + '"' : '';
+      parts.push('<line x1="' + sx + '" y1="' + sy + '" x2="' + (sx + 36) + '" y2="' + sy + '" ' +
+                 'stroke="' + s.color + '" stroke-width="' + STROKE + '"' + dashAttr + ' marker-end="url(#arrow-' + ({
+                   '#34d399':'emerald','#fb923c':'orange','#fb7185':'rose',
+                   '#fbbf24':'amber','#64748b':'slate'
+                 })[s.color] + ')"/>');
+      parts.push('<text x="' + (sx + 50) + '" y="' + (sy + 4) + '" fill="#cbd5e1" font-size="10">' +
+                 escapeXml(s.label) + '</text>');
+    });
+    return parts.join('');
+  }
 
-    '  <text x="50" y="800" fill="#64748b" font-size="9" font-weight="600">Line Styles</text>',
-    '  <line x1="50" y1="812" x2="100" y2="812" stroke="#34d399" stroke-width="1.5"/>',
-    '  <text x="110" y="816" fill="#94a3b8" font-size="9">Sync (REST/gRPC)</text>',
-    '  <line x1="280" y1="812" x2="330" y2="812" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="4,3"/>',
-    '  <text x="340" y="816" fill="#94a3b8" font-size="9">Async (Pub/Sub)</text>',
-    '  <line x1="510" y1="812" x2="560" y2="812" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="5,5"/>',
-    '  <text x="570" y="816" fill="#94a3b8" font-size="9">Auth / Security</text>',
-    '  <line x1="740" y1="812" x2="790" y2="812" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="6,4"/>',
-    '  <text x="800" y="816" fill="#94a3b8" font-size="9">Infra / Deploy</text>',
-    '  <line x1="950" y1="812" x2="1000" y2="812" stroke="#64748b" stroke-width="1" stroke-dasharray="2,2"/>',
-    '  <text x="1010" y="816" fill="#94a3b8" font-size="9">Telemetry</text>',
-    '</svg>'
-  ].join('\n');
+  /* ═══════════════════════════════════════════════════════════════════
+     SECTION 7 — OUTERMOST REGION
+     Computed from ALL non-legend content. The legend is included
+     inside the region so the entire diagram is wrapped by a single
+     outermost wireframe.
+     ═══════════════════════════════════════════════════════════════════ */
+  function renderOutermost(comps, bounds, legendY) {
+    var minX = Math.min.apply(null, comps.map(function (c) { return c.x; })
+        .concat(bounds.map(function (b) { return b.x; })));
+    var minY = Math.min.apply(null, comps.map(function (c) { return c.y; })
+        .concat(bounds.map(function (b) { return b.y; })));
+    var maxX = Math.max.apply(null, comps.map(function (c) { return c.x + c.w; })
+        .concat(bounds.map(function (b) { return b.x + b.w; })));
+    var maxY = Math.max.apply(null, comps.map(function (c) { return c.y + c.h; })
+        .concat(bounds.map(function (b) { return b.y + b.h; }))
+        .concat([legendY + LEGEND_H]));
+    var x = snap(minX - OUTER_PAD);
+    var y = snap(minY - OUTER_PAD - 28 /* room for label */);
+    var w = snap(maxX - minX + 2 * OUTER_PAD);
+    var h = snap(maxY - minY + 2 * OUTER_PAD + 28);
+    return {
+      x: x, y: y, w: w, h: h,
+      labelY: y + 20,
+      label: 'AWS Region · us-east-1',
+      sub: 'Multi-AZ · 3 AZs · 12 services · 7 data stores',
+      markup:
+        /* subtle background fill — 0.012 amber is barely visible, lets
+           the dashed border speak for the region. */
+        '<rect class="svg-outermost" x="' + x + '" y="' + y + '" ' +
+          'width="' + w + '" height="' + h + '" rx="20" ' +
+          'fill="rgba(251,191,36,0.012)" stroke="#fbbf24" ' +
+          'stroke-width="2.2" stroke-dasharray="10,5"/>' +
+        /* name tag at the top-left, with a thin border to read as a
+           "section label" not just floating text. */
+        '<rect x="' + (x + 12) + '" y="' + (y + 8) + '" height="32" width="240" rx="6" ' +
+          'fill="#020617" stroke="#fbbf24" stroke-width="1.2"/>' +
+        '<text x="' + (x + 22) + '" y="' + (y + 24) + '" fill="#fbbf24" ' +
+          'font-size="12" font-weight="700">▸ ' + 'AWS Region · us-east-1' + '</text>' +
+        '<text x="' + (x + 22) + '" y="' + (y + 36) + '" fill="#94a3b8" font-size="9">' +
+          'Multi-AZ · 3 AZs · 12 services · 7 data stores' + '</text>' +
+        /* corner brackets — four tiny L-shapes at each corner that read
+           as "frame markers", making the region feel more professional. */
+        renderCornerBrackets(x, y, w, h)
+    };
+  }
 
-  /* ─────────────────────────────────────────────────────────────────
-     DATA OBJECT — exposed as window.REPORT_DATA
-     ───────────────────────────────────────────────────────────────── */
+  /* Render the 4 corner brackets of the outermost region. Delegates
+     to the shared primitives module so the bracket geometry is
+     identical across all rui-report diagrams. */
+  function renderCornerBrackets(x, y, w, h) {
+    return P.renderCornerBrackets(x, y, w, h, '#fbbf24', 12);
+  }
+
+  /* Render a vertical "layer rail" along the left side of the diagram
+     with rotated labels for each layer. This gives the diagram a
+     professional "swimlane" feel and helps the reader orient. */
+  function renderLayerRail(comps) {
+    /* Group components by layer, then compute the y-range of each layer. */
+    var groups = {};
+    comps.forEach(function (c) {
+      if (!groups[c.layer]) groups[c.layer] = [];
+      groups[c.layer].push(c);
+    });
+
+    /* Display order + color for each layer (top → bottom on the rail) */
+    var LAYER_INFO = [
+      { key: 'client',   label: 'CLIENT',                color: '#94a3b8' },
+      { key: 'edge',     label: 'EDGE & SECURITY',       color: '#22d3ee' },
+      { key: 'gateway',  label: 'IDENTITY & GATEWAY',    color: '#fb7185' },
+      { key: 'services', label: 'SERVICE MESH',          color: '#34d399' },
+      { key: 'data',     label: 'DATA & MESSAGING',      color: '#a78bfa' },
+      { key: 'external', label: 'EXTERNAL SERVICES',     color: '#94a3b8' },
+      { key: 'ci',       label: 'CI / OBSERVABILITY',    color: '#fbbf24' }
+    ];
+
+    var parts = [];
+    /* The rail sits at x=8 (just inside the outermost region padding). */
+    LAYER_INFO.forEach(function (li) {
+      var items = groups[li.key];
+      if (!items || !items.length) return;
+      var yMin = Math.min.apply(null, items.map(function (c) { return c.y; }));
+      var yMax = Math.max.apply(null, items.map(function (c) { return c.y + c.h; }));
+      var midY = (yMin + yMax) / 2;
+      var h = yMax - yMin;
+      /* vertical text rotated -90 around its baseline */
+      var labelX = 18;
+      var labelY = midY;
+      parts.push('<g class="layer-rail">');
+      /* thin vertical line marking the layer's range */
+      parts.push('<line x1="' + labelX + '" y1="' + yMin + '" x2="' + labelX + '" y2="' + yMax + '" ' +
+                 'stroke="' + li.color + '" stroke-width="1" stroke-dasharray="2,2" opacity="0.6"/>');
+      /* label, rotated, centered on the layer's mid-y */
+      parts.push('<text x="' + labelX + '" y="' + labelY + '" ' +
+                 'fill="' + li.color + '" font-size="9" font-weight="700" ' +
+                 'letter-spacing="1" text-anchor="middle" ' +
+                 'transform="rotate(-90 ' + labelX + ' ' + labelY + ')">' +
+                 escapeXml(li.label) + '</text>');
+      parts.push('</g>');
+    });
+    return parts.join('');
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════
+     SECTION 8 — COMPOSE THE SVG
+     Run the layout, compute bounds + routes, and stitch together
+     the final SVG string in the mandatory paint order.
+     ═══════════════════════════════════════════════════════════════════ */
+  function buildSvg() {
+    var comps = layoutComponents();
+    var bounds = layoutBoundaries(comps);
+    var legendX = 60;
+    var legendY = 1040;  /* placed below the external-services layer */
+    var outermost = renderOutermost(comps, bounds, legendY);
+
+    var svgW = outermost.x + outermost.w + 40;
+    var svgH = outermost.y + outermost.h + 40;
+
+    var parts = [];
+    parts.push('<svg ref="svg" viewBox="0 0 ' + svgW + ' ' + svgH + '" ' +
+               'role="img" aria-labelledby="diagram-title diagram-desc" ' +
+               'xmlns="http://www.w3.org/2000/svg" ' +
+               'shape-rendering="geometricPrecision" text-rendering="geometricPrecision">');
+    parts.push('<title id="diagram-title">Microservices Platform Architecture — AWS us-east-1</title>');
+    parts.push('<desc id="diagram-desc">Cloud-native microservices platform: CloudFront CDN, Shield, WAF, ALB, Auth Service, API Gateway, four Go microservices, PostgreSQL RDS, Redis, Kafka, and supporting CI/CD and observability tooling.</desc>');
+    /* 1. defs */
+    parts.push(renderDefs());
+    /* 2. grid background */
+    parts.push('<rect width="100%" height="100%" fill="url(#grid)"/>');
+    parts.push('<rect width="100%" height="100%" fill="url(#grid-major)"/>');
+    /* 2.5 layer rail (rotated labels on the left side) */
+    parts.push(renderLayerRail(comps));
+    /* 3. arrows (under everything) */
+    parts.push(renderArrows(comps, CONNECTION_DEFS));
+    /* 4. opaque masks (hide arrow segments that pass through boxes) */
+    parts.push(renderMasks(comps));
+    /* 5. component boxes + text */
+    parts.push(renderComponents(comps));
+    /* 6. inner boundaries (security groups / VPCs) */
+    parts.push(renderBoundaries(bounds));
+    /* 7. legend (inside the outermost region) */
+    parts.push(renderLegend(legendX, legendY));
+    /* 8. outermost wireframe (wraps everything) */
+    parts.push(outermost.markup);
+    parts.push('</svg>');
+    return parts.join('\n');
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════
+     SECTION 9 — STATIC CONTENT
+     (The non-SVG data sections that the Vue template consumes.)
+     ═══════════════════════════════════════════════════════════════════ */
   window.REPORT_DATA = {
     meta: {
       title: 'Microservices Platform Architecture Diagram',
       pageTitle: 'Microservices Platform — Cloud-Native Architecture',
-      subtitle: 'Multi-service e-commerce platform on AWS with event-driven communication, comprehensive observability, and CI/CD automation',
-      footer: 'Microservices Platform • AWS us-east-1 • Go + PostgreSQL + Kafka • v2.3.0 • Updated 2026-07-14',
+      subtitle: 'Multi-service e-commerce platform on AWS · event-driven · CI/CD with canary · multi-AZ · 99.97% uptime',
+      footer: 'Microservices Platform · AWS us-east-1 · Go + PostgreSQL + Kafka · v2.4.0 · 2026-07-19',
       traceSub: 'end-to-end p95 ≤ 380ms'
     },
 
     executiveSummary: [
-      { color: 'cyan',    title: '▸ System Scope',        content: 'Cloud-native microservices platform serving 500K+ daily active users across web, mobile, and API channels. Processes 12K requests/sec with p95 latency under 200ms end-to-end.' },
-      { color: 'emerald', title: '▸ Architecture Style',  content: 'Hybrid cloud-native: CDN edge → API Gateway → domain microservices → polyglot persistence. Event-driven communication via Kafka for async workflows. CI/CD with canary deployments.' },
-      { color: 'violet',  title: '▸ Key Decisions',       content: 'Go chosen for service performance (sub-ms GC pauses). PostgreSQL over NoSQL for ACID compliance on payment data. Kafka over SQS for ordered event replay and long-term retention.' }
+      { color: 'cyan',    title: '▸ System Scope',       content: 'Cloud-native microservices platform serving 500K+ daily active users across web, mobile, and API channels. Processes 12K requests/sec with p95 latency under 200ms end-to-end and 99.97% measured uptime over the trailing 30 days.' },
+      { color: 'emerald', title: '▸ Architecture Style', content: 'Hybrid cloud-native: CDN edge → WAF → Shield → ALB → API Gateway → domain microservices → polyglot persistence. Event-driven communication via Kafka for async workflows. CI/CD with canary deployments and automated rollback on alarm.' },
+      { color: 'violet',  title: '▸ Key Decisions',      content: 'Go chosen for service performance (sub-ms GC pauses, native mTLS, single static binary). PostgreSQL over NoSQL for ACID compliance on payment data. Kafka over SQS for ordered event replay and long-term retention. Redis cluster mode for sub-2ms reads at p95.' }
     ],
 
     toc: [
@@ -316,57 +858,59 @@
     ],
 
     metrics: [
-      { label: 'Uptime (30d)',     status: 'green', value: '99.97%',  valueClass: 'green',  sub: 'SLA target: 99.95%' },
-      { label: 'Requests / sec',   status: null,    value: '12.4K',   valueClass: 'cyan',   sub: 'peak: 28K • p95 ≤ 200ms' },
-      { label: 'Error Rate (24h)', status: null,    value: '0.07%',   valueClass: 'amber',  sub: 'threshold: 0.1% • 5xx + 4xx' },
-      { label: 'Deploy Frequency', status: null,    value: '8 / week', valueClass: 'violet', sub: 'canary rollout • mean MTTR 12m' },
-      { label: 'Active Alerts',    status: null,    value: '0',       valueClass: 'rose',   sub: 'PagerDuty • 5min escalation' }
+      { label: 'Uptime (30d)',     status: 'green', value: '99.97%', valueClass: 'green',  sub: 'SLA target: 99.95% · +0.02% buffer' },
+      { label: 'Requests / sec',   status: null,    value: '12.4K',  valueClass: 'cyan',   sub: 'peak 28K · p95 ≤ 200ms · p99 ≤ 410ms' },
+      { label: 'Error Rate (24h)', status: null,    value: '0.07%',  valueClass: 'amber',  sub: 'threshold 0.1% · 5xx + 4xx combined' },
+      { label: 'Deploy Frequency', status: null,    value: '8 / wk', valueClass: 'violet', sub: 'canary · mean MTTR 12m · change-fail 4%' },
+      { label: 'Active Alerts',    status: null,    value: '0',      valueClass: 'rose',   sub: 'PagerDuty · 5min ack · 30min escalation' }
     ],
 
-    svgDiagram: svgDiagram,
+    svgDiagram: buildSvg(),
 
     summaryCards: [
       {
         color: 'cyan',
         title: 'Architecture & Scaling',
         items: [
-          'API Gateway (×3 instances, auto-scaling) serves as the single entry point — routing REST, gRPC, and WebSocket traffic with circuit breaker protection',
-          'Three Go microservices — User (×2), Order (×2), and Payment (×1) — each isolated in VPC security groups with dedicated ports and health checks',
-          'CloudFront CDN at 50K qps capacity with integrated WAF for DDoS protection, bot mitigation, and per-IP rate limiting',
-          'Auth Service enforces OAuth2 + OIDC with JWT validation at the gateway middleware; all inter-service traffic uses mTLS',
-          'S3 stores static assets and log archives with SSE-KMS encryption, cross-region replication, and lifecycle policies'
+          'API Gateway (×3 instances, auto-scaling 2→8) is the single entry point — routes REST, gRPC, and WebSocket traffic with circuit-breaker protection (50% error threshold, 30s open)',
+          'Four Go microservices (User ×2, Order ×2, Payment ×1, Notification ×2) deployed across 3 AZs in private subnets, each with dedicated ENIs and 30s warm-up grace',
+          'CloudFront CDN at 250 PoPs with integrated Shield Advanced + WAF for L3/L4/L7 DDoS mitigation, OWASP Top 10 rule sets, and per-IP rate limiting (10K rps per IP)',
+          'Auth Service enforces OAuth2 + OIDC with short-lived JWT (15min) + refresh tokens (7d rotating); all inter-service traffic uses mTLS with certs rotated every 24h via SPIFFE',
+          'S3 stores static assets and log archives with SSE-KMS encryption, cross-region replication to us-west-2, and 90-day lifecycle policy for cold logs'
         ]
       },
       {
         color: 'emerald',
         title: 'Data Flow & Performance',
         items: [
-          'Critical path latency: Edge (p95 ≤ 120ms) → ALB (p95 ≤ 45ms) → API Gateway → User Service (p95 ≤ 18ms) → PostgreSQL (p95 ≤ 8ms)',
-          'Order events published to Kafka (3-node cluster) and consumed asynchronously by Notification Worker; email delivery via SendGrid SMTP',
-          'Redis Cluster (3 nodes) caches user sessions with write-through invalidation; hit rate target ≥ 95% at 10K reads/sec',
-          'Payment Service integrates Stripe API with idempotency keys; transaction records persisted to PostgreSQL with ACID guarantees',
-          'All database connections use TLS 1.3 within the secured VPC data layer (10.0.1.0/24); connection pooling at 200 conns/pool'
+          'Critical path latency: Edge (p95 ≤ 120ms) → ALB (p95 ≤ 45ms) → API Gateway (p95 ≤ 18ms) → Service (p95 ≤ 45ms) → PostgreSQL (p95 ≤ 8ms) = end-to-end p95 ≤ 280ms',
+          'Order events published to Kafka topic `orders.v1` (24 partitions, RF=3) and consumed asynchronously by Notification Worker; email delivery via SendGrid SMTP with retry+DLQ',
+          'Redis Cluster (3 masters + 3 replicas) caches user sessions with write-through invalidation; hit rate target ≥ 95% at 10K reads/sec, eviction policy allkeys-lru',
+          'Payment Service integrates Stripe API with idempotency keys (24h TTL); transaction records persisted to PostgreSQL with ACID guarantees and Stripe webhook reconciliation',
+          'All database connections use TLS 1.3 within the secured VPC data layer (10.0.1.0/24); connection pooling at 200 conns/pool, slow query log > 100ms routed to PagerDuty'
         ]
       },
       {
         color: 'violet',
         title: 'Reliability & Observability',
         items: [
-          'PostgreSQL RDS Multi-AZ with 2 read replicas; automated failover < 60s; point-in-time recovery with 35-day retention',
-          'GitHub Actions CI/CD: build → test → ECR push → ECS deploy with canary rollout (10% → 50% → 100%) and automated rollback on alarm',
-          'Observability stack: Grafana dashboards (20+ panels), Prometheus (5s scrape), OpenTelemetry tracing (100% sampling), ELK log aggregation (7-day retention)',
-          'SLA targets: 99.95% API availability, p95 response < 200ms, error rate < 0.1%; PagerDuty on-call with 5min escalation'
+          'PostgreSQL RDS Multi-AZ with 2 read replicas; automated failover < 60s; point-in-time recovery with 35-day retention; weekly failover drill',
+          'GitHub Actions CI/CD: lint → unit → integration → build → ECR push → ECS deploy with canary rollout (10% → 50% → 100% over 30min) and automated rollback on CloudWatch alarm',
+          'Observability: Grafana (20+ panels), Prometheus (5s scrape, 30d retention), OpenTelemetry (100% sampling, OTLP/gzip), ELK (7-day hot, 90-day cold)',
+          'SLA targets: 99.95% API availability, p95 response < 200ms, error rate < 0.1%; PagerDuty on-call with 5min ack / 30min escalation, status page at status.example.com',
+          'Chaos engineering: monthly GameDay exercises (AZ failure, RDS failover, Redis eviction) with documented runbooks and post-mortem template'
         ]
       }
     ],
 
     pipeline: [
-      { badge: 'Dev',         badgeClass: 'dev',  info: 'Push to feature branch' },
-      { badge: 'CI',          badgeClass: 'dev',  info: 'Lint • Test • Build image' },
-      { badge: 'Staging',     badgeClass: 'stg',  info: 'Deploy to ECS staging<br/>Integration + E2E tests' },
-      { badge: 'Canary 10%',  badgeClass: 'stg',  info: 'Traffic shift • 10min bake' },
-      { badge: 'Canary 50%',  badgeClass: 'stg',  info: 'Monitor p95 + errors' },
-      { badge: 'Production',  badgeClass: 'prod', info: '100% traffic<br/>Auto-rollback on alarm' }
+      { badge: 'Dev',          badgeClass: 'dev',  info: 'Push to feature branch<br/>PR + review' },
+      { badge: 'CI',           badgeClass: 'dev',  info: 'Lint · Unit · Integration<br/>Trivy + Semgrep' },
+      { badge: 'Build',        badgeClass: 'dev',  info: 'Multi-stage Docker<br/>Push to ECR' },
+      { badge: 'Staging',      badgeClass: 'stg',  info: 'ECS Fargate deploy<br/>E2E + load test' },
+      { badge: 'Canary 10%',   badgeClass: 'stg',  info: '10% traffic · 10min bake' },
+      { badge: 'Canary 50%',   badgeClass: 'stg',  info: '50% traffic · monitor' },
+      { badge: 'Production',   badgeClass: 'prod', info: '100% traffic<br/>Auto-rollback on alarm' }
     ],
 
     securityCards: [
@@ -374,43 +918,43 @@
         color: 'rose',
         title: 'Encryption & Secrets',
         items: [
-          'In-transit: TLS 1.3 enforced for all external and inter-service communication; mTLS within service mesh',
-          'At-rest: AES-256-GCM for RDS, S3 (SSE-KMS with customer-managed keys), EBS volumes',
-          'Secrets managed via AWS Secrets Manager with automatic 30-day rotation; no hardcoded credentials',
-          'KMS key policy enforces least-privilege; CloudTrail audits all key usage'
+          'In-transit: TLS 1.3 enforced for all external + inter-service communication; mTLS within service mesh via SPIFFE/SPIRE with 24h cert rotation',
+          'At-rest: AES-256-GCM for RDS, S3 (SSE-KMS with customer-managed keys, annual rotation), EBS volumes, and ElastiCache Redis',
+          'Secrets managed via AWS Secrets Manager with automatic 30-day rotation; no hardcoded credentials in source, all access via IAM roles + STS temporary credentials',
+          'KMS key policy enforces least-privilege (per-service grants); CloudTrail + KMS audit logs forwarded to SIEM with 7-year retention for compliance'
         ]
       },
       {
         color: 'amber',
         title: 'Network & Access',
         items: [
-          'VPC isolation: Services (10.0.0.0/16), Data (10.0.1.0/24) — no public subnets for data tier',
-          'Security groups follow least-privilege: only required ports open between specific CIDR ranges',
-          'WAF rules: OWASP Top 10 mitigation, IP reputation, geo-blocking (allowlist: US, EU, APAC)',
-          'IAM: role-based access with temporary credentials (STS); no long-lived IAM user keys'
+          'VPC isolation: Services (10.0.0.0/16) + Data (10.0.1.0/24) across 3 AZs — no public subnets for data tier, NAT Gateway egress only',
+          'Security groups follow least-privilege: only required ports open between specific CIDR ranges; default-deny on all inbound',
+          'WAF rules: managed OWASP Top 10 + custom rules for known attack patterns, IP reputation (AWS + 3rd party feed), geo-allowlist (US/EU/APAC)',
+          'IAM: role-based access with temporary credentials (STS, max 1h); no long-lived IAM user keys; permission boundaries for break-glass scenarios'
         ]
       },
       {
         color: 'orange',
         title: 'Compliance & Audit',
         items: [
-          'Framework alignment: SOC 2 Type II, GDPR (EU data residency in eu-west-1), PCI-DSS (payment tier)',
-          'Audit logging: CloudTrail (API calls), VPC Flow Logs (network), RDS audit logs (DB queries)',
-          'Vulnerability scanning: ECR image scanning on push + weekly Trivy scans with Slack notifications',
-          'Incident response: PagerDuty on-call rotation, 5-min ack SLA, automated rollback via CloudWatch alarm'
+          'Framework alignment: SOC 2 Type II (annual), GDPR (EU data residency in eu-west-1), PCI-DSS v4.0 (payment tier), HIPAA-ready (BAA available)',
+          'Audit logging: CloudTrail (all API calls), VPC Flow Logs (network), RDS audit logs (DB queries), application audit log (sensitive operations)',
+          'Vulnerability scanning: ECR image scanning on push + weekly Trivy scans with Slack notifications; SAST via Semgrep, DAST via OWASP ZAP on staging',
+          'Incident response: PagerDuty on-call rotation, 5-min ack SLA, 30-min escalation, automated rollback via CloudWatch composite alarm; quarterly tabletop exercises'
         ]
       }
     ],
 
     trace: [
-      { name: '1. DNS/TLS', nameClass: 'cyan',    sub: 'CloudFront',    time: '~80ms' },
-      { name: '2. WAF',     nameClass: 'cyan',    sub: 'Rule check',    time: '~12ms' },
-      { name: '3. ALB',     nameClass: 'cyan',    sub: 'Route :443',    time: '~8ms'  },
-      { name: '4. Gateway', nameClass: 'emerald', sub: 'Auth + Validate', time: '~45ms' },
-      { name: '5. Order Svc', nameClass: 'emerald', sub: 'Business logic', time: '~65ms' },
-      { name: '6. DB Write', nameClass: 'violet', sub: 'INSERT order',  time: '~18ms' },
-      { name: '7. Event',   nameClass: 'orange',  sub: 'Kafka pub',     time: '~35ms' },
-      { name: '8. 200 OK',  nameClass: 'emerald', sub: 'JSON response', time: '~17ms' }
+      { name: '1. DNS/TLS',     nameClass: 'cyan',    sub: 'CloudFront · 250 PoPs', time: '~80ms' },
+      { name: '2. WAF',         nameClass: 'cyan',    sub: 'Rule check',           time: '~12ms' },
+      { name: '3. ALB',         nameClass: 'cyan',    sub: 'L7 route :443',        time: '~8ms'  },
+      { name: '4. Gateway',     nameClass: 'emerald', sub: 'JWT + Validate',       time: '~45ms' },
+      { name: '5. Order Svc',   nameClass: 'emerald', sub: 'Business logic',       time: '~65ms' },
+      { name: '6. DB Write',    nameClass: 'violet',  sub: 'INSERT order',         time: '~18ms' },
+      { name: '7. Kafka pub',   nameClass: 'orange',  sub: 'orders.v1',            time: '~35ms' },
+      { name: '8. 200 OK',      nameClass: 'emerald', sub: 'JSON response',        time: '~17ms' }
     ],
 
     scalingTiles: [
@@ -418,31 +962,31 @@
         color: 'cyan',
         title: 'API Gateway Auto-Scaling',
         body: '<span style="color: var(--text-muted);">Metric:</span> CPU ≥ 70% OR RequestCount ≥ 5K/min<br/>' +
-              '<span style="color: var(--text-muted);">Policy:</span> +2 instances, 5min cooldown<br/>' +
-              '<span style="color: var(--text-muted);">Range:</span> Min 2 • Desired 3 • Max 8<br/>' +
+              '<span style="color: var(--text-muted);">Policy:</span> +2 instances · 5min cooldown<br/>' +
+              '<span style="color: var(--text-muted);">Range:</span> Min 2 · Desired 3 · Max 8<br/>' +
               '<span style="color: var(--text-muted);">Scale-in:</span> CPU ≤ 30% for 10min → −1'
       },
       {
         color: 'emerald',
         title: 'Service Tier Scaling',
         body: '<span style="color: var(--text-muted);">User/Order:</span> CPU ≥ 60% → +1 (max 4)<br/>' +
-              '<span style="color: var(--text-muted);">Payment:</span> Fixed ×1 (compliance)<br/>' +
+              '<span style="color: var(--text-muted);">Payment:</span> Fixed ×1 (PCI scope)<br/>' +
               '<span style="color: var(--text-muted);">Notification:</span> Queue depth ≥ 1K → +1<br/>' +
-              '<span style="color: var(--text-muted);">Warm-up:</span> 30s grace period per instance'
+              '<span style="color: var(--text-muted);">Warm-up:</span> 30s grace per instance'
       },
       {
         color: 'violet',
         title: 'Database Resilience',
-        body: '<span style="color: var(--text-muted);">RDS:</span> Multi-AZ • Auto-failover ≤ 60s<br/>' +
-              '<span style="color: var(--text-muted);">Backup:</span> Daily snapshots • 35-day PITR<br/>' +
-              '<span style="color: var(--text-muted);">Redis:</span> Cluster mode • Auto-failover<br/>' +
-              '<span style="color: var(--text-muted);">Kafka:</span> 3 brokers • RF=3 • min.insync=2'
+        body: '<span style="color: var(--text-muted);">RDS:</span> Multi-AZ · Auto-failover ≤ 60s<br/>' +
+              '<span style="color: var(--text-muted);">Backup:</span> Daily snapshots · 35d PITR<br/>' +
+              '<span style="color: var(--text-muted);">Redis:</span> Cluster mode · Auto-failover<br/>' +
+              '<span style="color: var(--text-muted);">Kafka:</span> 3 brokers · RF=3 · min.insync=2'
       },
       {
         color: 'rose',
         title: 'Disaster Recovery',
-        body: '<span style="color: var(--text-muted);">RPO:</span> 5 minutes (cross-region replication)<br/>' +
-              '<span style="color: var(--text-muted);">RTO:</span> 30 minutes (automated failover)<br/>' +
+        body: '<span style="color: var(--text-muted);">RPO:</span> 5 min (cross-region replication)<br/>' +
+              '<span style="color: var(--text-muted);">RTO:</span> 30 min (automated failover)<br/>' +
               '<span style="color: var(--text-muted);">DR Region:</span> us-west-2 (warm standby)<br/>' +
               '<span style="color: var(--text-muted);">Test:</span> Quarterly failover drill'
       }
@@ -451,42 +995,38 @@
     ownership: {
       headers: ['Service', 'Team', 'Tier', 'SLA', 'On-Call', 'Runbook'],
       rows: [
-        ['<span style="color: var(--color-frontend);">API Gateway</span>', 'Platform',  '<span style="color: var(--color-backend);">Tier 0</span>', '99.95%', 'Primary: Alice • Secondary: Bob',    '<span style="color: var(--text-dim);">/ops/gateway</span>'],
-        ['<span style="color: var(--color-backend);">User Service</span>',  'Identity',  '<span style="color: var(--color-backend);">Tier 1</span>', '99.9%',  'Primary: Carol • Secondary: Dave',   '<span style="color: var(--text-dim);">/ops/user-svc</span>'],
-        ['<span style="color: var(--color-backend);">Order Service</span>', 'Commerce',  '<span style="color: var(--color-backend);">Tier 1</span>', '99.9%',  'Primary: Eve • Secondary: Frank',    '<span style="color: var(--text-dim);">/ops/order-svc</span>'],
-        ['<span style="color: var(--color-backend);">Payment Svc</span>',   'Commerce',  '<span style="color: var(--color-cloud);">Tier 1</span>',   '99.95%', 'Primary: Eve • Escalation: Legal',   '<span style="color: var(--text-dim);">/ops/payment-svc</span>'],
-        ['<span style="color: var(--color-security);">Auth Service</span>', 'Identity',  '<span style="color: var(--color-backend);">Tier 0</span>', '99.95%', 'Primary: Carol • SecOps backup',     '<span style="color: var(--text-dim);">/ops/auth-svc</span>'],
-        ['<span style="color: var(--color-database);">PostgreSQL</span>',   'Platform',  '<span style="color: var(--color-backend);">Tier 0</span>', '99.95%', 'Primary: Bob • AWS Support',         '<span style="color: var(--text-dim);">/ops/rds</span>']
+        ['<span style="color: var(--color-frontend);">API Gateway</span>',  'Platform',  '<span style="color: var(--color-backend);">Tier 0</span>', '99.95%', 'Primary: Alice · Secondary: Bob',     '<span style="color: var(--text-dim);">/ops/gateway</span>'],
+        ['<span style="color: var(--color-backend);">User Service</span>',   'Identity',  '<span style="color: var(--color-backend);">Tier 1</span>', '99.9%',  'Primary: Carol · Secondary: Dave',    '<span style="color: var(--text-dim);">/ops/user-svc</span>'],
+        ['<span style="color: var(--color-backend);">Order Service</span>',  'Commerce',  '<span style="color: var(--color-backend);">Tier 1</span>', '99.9%',  'Primary: Eve · Secondary: Frank',     '<span style="color: var(--text-dim);">/ops/order-svc</span>'],
+        ['<span style="color: var(--color-backend);">Payment Svc</span>',    'Commerce',  '<span style="color: var(--color-cloud);">Tier 1</span>',   '99.95%', 'Primary: Eve · Escalation: Legal',    '<span style="color: var(--text-dim);">/ops/payment-svc</span>'],
+        ['<span style="color: var(--color-security);">Auth Service</span>',  'Identity',  '<span style="color: var(--color-backend);">Tier 0</span>', '99.95%', 'Primary: Carol · SecOps backup',      '<span style="color: var(--text-dim);">/ops/auth-svc</span>'],
+        ['<span style="color: var(--color-database);">PostgreSQL</span>',    'Platform',  '<span style="color: var(--color-backend);">Tier 0</span>', '99.95%', 'Primary: Bob · AWS Support',          '<span style="color: var(--text-dim);">/ops/rds</span>']
       ]
     },
 
     apiTable: {
       headers: ['Method', 'Path', 'Service', 'Auth', 'Rate Limit', 'Description'],
-      /* Each row is { method, path, service, auth, rate, desc }.
-         The template applies the `mono` class to the path <td> and the
-         `muted` class to the description <td> for visual parity with
-         the original inline-style markup. */
       rows: [
-        { method: 'GET',   color: 'backend',  path: '/api/v1/users/:id',       service: 'User Service',  auth: 'JWT (read)',  rate: '100/min',   desc: 'Fetch user profile by ID' },
-        { method: 'POST',  color: 'cloud',    path: '/api/v1/orders',           service: 'Order Service', auth: 'JWT + scope', rate: '30/min',    desc: 'Create new order (idempotent)' },
-        { method: 'PATCH', color: 'frontend', path: '/api/v1/orders/:id',       service: 'Order Service', auth: 'JWT + owner', rate: '60/min',    desc: 'Update order status or details' },
-        { method: 'POST',  color: 'backend',  path: '/api/v1/payments/charge',  service: 'Payment Svc',   auth: 'JWT + mTLS',  rate: '10/min',    desc: 'Authorize and capture payment' },
-        { method: 'GET',   color: 'backend',  path: '/api/v1/health',           service: 'Gateway',       auth: 'None',        rate: '1000/min',  desc: 'Aggregated health check (all services)' },
-        { method: 'WS',    color: 'security', path: '/ws/v1/events',            service: 'Gateway',       auth: 'JWT + upgrade', rate: '50 conn/IP', desc: 'Real-time order status stream' }
+        { method: 'GET',   color: 'backend',  path: '/api/v1/users/:id',       service: 'User Service',   auth: 'JWT (read)',     rate: '100/min',   desc: 'Fetch user profile by ID' },
+        { method: 'POST',  color: 'cloud',    path: '/api/v1/orders',          service: 'Order Service',  auth: 'JWT + scope',   rate: '30/min',    desc: 'Create new order (idempotent)' },
+        { method: 'PATCH', color: 'frontend', path: '/api/v1/orders/:id',      service: 'Order Service',  auth: 'JWT + owner',   rate: '60/min',    desc: 'Update order status or details' },
+        { method: 'POST',  color: 'backend',  path: '/api/v1/payments/charge', service: 'Payment Svc',    auth: 'JWT + mTLS',    rate: '10/min',    desc: 'Authorize and capture payment' },
+        { method: 'GET',   color: 'backend',  path: '/api/v1/health',          service: 'Gateway',        auth: 'None',         rate: '1000/min',  desc: 'Aggregated health check (all services)' },
+        { method: 'WS',    color: 'security', path: '/ws/v1/events',           service: 'Gateway',        auth: 'JWT + upgrade',rate: '50 conn/IP', desc: 'Real-time order status stream' }
       ]
     },
 
     stack: [
-      { label: 'Go',          value: '1.22', valueClass: 'cyan'   },
-      { label: 'PostgreSQL',  value: '16.2', valueClass: 'violet' },
-      { label: 'Redis',       value: '7.2',  valueClass: 'rose'   },
-      { label: 'Kafka',       value: '3.7',  valueClass: 'orange' },
-      { label: 'TypeScript',  value: '5.4',  valueClass: 'cyan'   },
-      { label: 'React',       value: '18.3', valueClass: 'cyan'   },
-      { label: 'Docker',      value: '26.x', valueClass: 'amber'  },
-      { label: 'Terraform',   value: '1.8',  valueClass: 'amber'  },
-      { label: 'Prometheus',  value: '2.52', valueClass: 'orange' },
-      { label: 'Grafana',     value: '11.0', valueClass: 'orange' }
+      { label: 'Go',           value: '1.22',   valueClass: 'cyan'   },
+      { label: 'PostgreSQL',   value: '16.2',   valueClass: 'violet' },
+      { label: 'Redis',        value: '7.2',    valueClass: 'rose'   },
+      { label: 'Kafka',        value: '3.7',    valueClass: 'orange' },
+      { label: 'TypeScript',   value: '5.4',    valueClass: 'cyan'   },
+      { label: 'React',        value: '18.3',   valueClass: 'cyan'   },
+      { label: 'Docker',       value: '26.x',   valueClass: 'amber'  },
+      { label: 'Terraform',    value: '1.8',    valueClass: 'amber'  },
+      { label: 'Prometheus',   value: '2.52',   valueClass: 'orange' },
+      { label: 'Grafana',      value: '11.0',   valueClass: 'orange' }
     ],
 
     schemaTiles: [
@@ -533,12 +1073,12 @@
     ],
 
     roadmap: [
-      { tag: 'Q3\'26', tagClass: 'q3',   text: 'Service mesh migration (Istio → Linkerd)',                textClass: '' },
-      { tag: 'Q3\'26', tagClass: 'q3',   text: 'Payment Service split: Stripe + PayPal adapters',        textClass: '' },
-      { tag: 'Q4\'26', tagClass: 'q4',   text: 'Event sourcing for Order domain (Kafka log compaction)', textClass: '' },
-      { tag: 'Q4\'26', tagClass: 'q4',   text: 'Multi-region active-active (us-east-1 + eu-west-1)',     textClass: '' },
-      { tag: 'Debt',   tagClass: 'debt', text: 'User Service: migrate remaining REST endpoints to gRPC', textClass: 'muted' },
-      { tag: 'Debt',   tagClass: 'debt', text: 'Consolidate 3 monitoring dashboards into 1 unified Grafana view', textClass: 'muted' }
+      { tag: 'Q3\u201926', tagClass: 'q3',   text: 'Service mesh migration (Istio → Linkerd)',                       textClass: '' },
+      { tag: 'Q3\u201926', tagClass: 'q3',   text: 'Payment Service split: Stripe + PayPal adapters',               textClass: '' },
+      { tag: 'Q4\u201926', tagClass: 'q4',   text: 'Event sourcing for Order domain (Kafka log compaction)',        textClass: '' },
+      { tag: 'Q4\u201926', tagClass: 'q4',   text: 'Multi-region active-active (us-east-1 + eu-west-1)',            textClass: '' },
+      { tag: 'Debt',       tagClass: 'debt', text: 'User Service: migrate remaining REST endpoints to gRPC',       textClass: 'muted' },
+      { tag: 'Debt',       tagClass: 'debt', text: 'Consolidate 3 monitoring dashboards into 1 unified Grafana view', textClass: 'muted' }
     ],
 
     glossary: [
@@ -558,7 +1098,7 @@
       { term: 'RTO',         termClass: '',        def: 'Recovery Time Objective, max downtime' },
       { term: 'SLA',         termClass: '',        def: 'Service Level Agreement, availability target' },
       { term: 'MTTR',        termClass: '',        def: 'Mean Time To Recovery, avg incident duration' },
-      { term: 'CSS Theme',   termClass: '',        def: '18 custom properties in <span style="font-family: var(--font-mono); color: var(--text-muted);">:root</span> enable one-click re-theming of the entire diagram' }
+      { term: 'SPIFFE',      termClass: 'rose',    def: 'Secure Production Identity Framework for Everyone (workload identity)' }
     ]
   };
 })();
