@@ -1,0 +1,10 @@
+<script type="text/x-template" id="qs-sparkline-tpl">
+  <svg class="qs-spark" :class="'is-' + tone"
+    :viewBox="'0 0 ' + width + ' ' + height"
+    :width="width" :height="height"
+    preserveAspectRatio="none" aria-hidden="true">
+    <path v-if="fill" :d="layout.area" class="qs-spark-area"></path>
+    <path :d="layout.line" class="qs-spark-line"></path>
+    <circle :cx="layout.dot.cx" :cy="layout.dot.cy" r="2.4" class="qs-spark-dot" :fill="'currentColor'"></circle>
+  </svg>
+</script>

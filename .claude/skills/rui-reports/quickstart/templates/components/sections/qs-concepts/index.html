@@ -1,0 +1,32 @@
+<script type="text/x-template" id="qs-concepts-tpl">
+  <div class="qs-fade-up">
+    <div class="qs-role-chips" v-if="roleCounts.length">
+      <button
+        v-for="r in roleCounts" :key="r.role"
+        :class="['qs-role-chip', { 'is-active': activeRoles.indexOf(r.role) >= 0 }]"
+        @click="toggleRole(r.role)">
+        <span>{{ r.role }}</span>
+        <span class="qs-role-chip-count">{{ r.count }}</span>
+      </button>
+      <button
+        v-if="activeRoles.length"
+        class="qs-role-chip"
+        style="border-style: dashed;"
+        @click="clearRoles">clear</button>
+    </div>
+    <div class="qs-concept-list qs-stagger">
+      <article class="qs-concept"
+        v-for="c in visibleItems" :key="c.name + c.file"
+        @click="onConceptClick(c)">
+        <header class="qs-concept-head">
+          <span class="qs-concept-name">{{ c.name }}</span>
+          <span class="qs-concept-role" v-if="c.role">{{ c.role }}</span>
+        </header>
+        <p class="qs-concept-desc" v-if="c.description">{{ c.description }}</p>
+        <div class="qs-concept-loc" v-if="c.file">
+          <code>{{ c.file }}{{ c.line ? ':' + c.line : '' }}</code>
+        </div>
+      </article>
+    </div>
+  </div>
+</script>

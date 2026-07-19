@@ -1,0 +1,31 @@
+/* qsMiniBars — compact stacked bar list (skill-group breakdown) */
+.qs-mini-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.qs-mini-bar {
+  display: grid;
+  grid-template-columns: 60px 1fr 36px;
+  align-items: center;
+  gap: var(--qs-space-sm);
+  font-size: var(--qs-text-xs);
+}
+.qs-mini-bar-name { color: var(--qs-text-muted); font-weight: 600; }
+.qs-mini-bar-track {
+  height: 6px;
+  background: var(--qs-surface-sunken);
+  border-radius: var(--qs-radius-pill);
+  overflow: hidden;
+}
+.qs-mini-bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  transition: width var(--qs-dur-slow) var(--qs-ease-out);
+}
+.qs-mini-bar-value {
+  text-align: right;
+  color: var(--qs-text-soft);
+  font-family: var(--qs-font-mono, "SF Mono", "JetBrains Mono", "Geist Mono", monospace);
+  font-weight: 600;
+}

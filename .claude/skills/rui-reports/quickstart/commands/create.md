@@ -35,23 +35,25 @@ Generate the canonical seven-section newcomer quickstart for a local project sco
 
 ## Template-based output
 
-The skill ships a 4-file template at `templates/`:
+The skill ships a 4-file page template at `templates/` plus a self-contained `components/` subtree with 17 reusable `qs-*` Vue components:
 
-| File | Role at run time |
-|------|------------------|
+| File / Dir | Role at run time |
+|------------|------------------|
 | `templates/index.html` | Page shell, copied verbatim. `<title>` placeholder is replaced at write time. |
-| `templates/index.css`  | All styles, copied verbatim. |
-| `templates/index.js`   | Vue 3 app + section renderers + `quickstartToMarkdown(data)` exporter, copied verbatim. |
+| `templates/index.css`  | Page-level styles (tokens, layout, chrome, TOC, utilities). Component-specific styles live in each `components/<category>/<name>/index.css`. |
+| `templates/index.js`   | Vue 3 orchestrator (page chrome, palette, modal, `quickstartToMarkdown(data)` exporter). Copied verbatim. |
 | `templates/data.js`    | Schema reference; `QUICKSTART_DATA_SCHEMA.merge(input)` deep-merges defaults with the run's data; `QUICKSTART_DATA_SCHEMA.computeScore(sections)` derives the composite + grade. |
+| `templates/components/`| 17 self-contained `qs-*` components (charts, hero panel, section renderers, overlays). Copied verbatim. Each component is a directory holding `data.js` + `index.html` + `index.css` + `index.js` and follows the rui bootstrap convention. |
 
 The create command must:
 
 1. Copy `templates/index.html`, `templates/index.css`, `templates/index.js` to `<out>/` verbatim (substitute `{{QUICKSTART_TITLE}}` in `index.html` with `meta.title`).
-2. Read `templates/data.js` to learn the `@data_shape` JSDoc and the `merge` / `computeScore` helpers.
-3. Build the section data (one entry per canonical slug) from scope evidence.
-4. Compute the score via `QUICKSTART_DATA_SCHEMA.computeScore(sections)` (or by hand, matching the formula in SKILL.md).
-5. Write the merged `data.js` to `<out>/data.js` with `window.QUICKSTART_DATA = { meta, labels, score, sections }`. When `--language zh` is passed, swap the `labels` block for the Chinese set.
-6. If `--no-mirror` is not set, call `window.quickstartToMarkdown(window.QUICKSTART_DATA)` and write the result to `<out>/README.md`. The `##` headers must match the section titles in `data.js`.
+2. Copy the entire `templates/components/` subtree to `<out>/components/` (17 `qs-*` component directories). The page shell already wires the load order via `<script src="components/.../index.js">` tags.
+3. Read `templates/data.js` to learn the `@data_shape` JSDoc and the `merge` / `computeScore` helpers.
+4. Build the section data (one entry per canonical slug) from scope evidence.
+5. Compute the score via `QUICKSTART_DATA_SCHEMA.computeScore(sections)` (or by hand, matching the formula in SKILL.md).
+6. Write the merged `data.js` to `<out>/data.js` with `window.QUICKSTART_DATA = { meta, labels, score, sections }`. When `--language zh` is passed, swap the `labels` block for the Chinese set.
+7. If `--no-mirror` is not set, call `window.quickstartToMarkdown(window.QUICKSTART_DATA)` and write the result to `<out>/README.md`. The `##` headers must match the section titles in `data.js`.
 
 ## Execution flow
 
@@ -145,6 +147,7 @@ Required outputs:
 - `<OUT_DIR>/index.css`  (copied verbatim from `templates/index.css`)
 - `<OUT_DIR>/index.js`   (copied verbatim from `templates/index.js`)
 - `<OUT_DIR>/data.js`    (regenerated; merges `meta`, `labels`, `score`, `sections`)
+- `<OUT_DIR>/components/` (copied verbatim from `templates/components/`; 17 `qs-*` component directories, the page shell already wires the load order)
 
 Optional output:
 
@@ -179,13 +182,14 @@ Before finishing, verify:
 | # | Check |
 |---|-------|
 | 1 | `index.html`, `index.css`, `index.js`, `data.js` exist and are non-empty |
-| 2 | `README.md` exists unless `--no-mirror` was used |
-| 3 | All seven sections appear in canonical order in both HTML and (when present) README |
-| 4 | TODO markers exist where evidence is missing instead of guessed prose |
-| 5 | No placeholder text such as `[TODO]`, `TBD`, or `Lorem ipsum` remains |
-| 6 | Composite score, grade, and per-section verdicts are surfaced in the score banner |
-| 7 | `data.js` `meta.language` matches the resolved `--language` (defaults to `en`) |
-| 8 | Final response reports output path plus the main gaps |
+| 2 | `components/` subtree exists with 17 `qs-*` directories, each holding `data.js` + `index.html` + `index.css` + `index.js` |
+| 3 | `README.md` exists unless `--no-mirror` was used |
+| 4 | All seven sections appear in canonical order in both HTML and (when present) README |
+| 5 | TODO markers exist where evidence is missing instead of guessed prose |
+| 6 | No placeholder text such as `[TODO]`, `TBD`, or `Lorem ipsum` remains |
+| 7 | Composite score, grade, and per-section verdicts are surfaced in the score banner |
+| 8 | `data.js` `meta.language` matches the resolved `--language` (defaults to `en`) |
+| 9 | Final response reports output path plus the main gaps |
 
 ## Fallbacks
 

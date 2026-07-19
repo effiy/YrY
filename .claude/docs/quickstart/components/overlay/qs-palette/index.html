@@ -1,0 +1,37 @@
+<script type="text/x-template" id="qs-palette-tpl">
+  <div class="qs-palette-backdrop" @click.self="close" @keydown="onKey">
+    <div class="qs-palette" role="dialog" aria-modal="true" aria-label="Command palette">
+      <input
+        class="qs-palette-input"
+        type="search"
+        v-model="q"
+        placeholder="Search sections, concepts, commands, FAQ…"
+        ref="input"
+        @keydown="onKey"
+        autofocus />
+      <div class="qs-palette-list" v-if="groups.length">
+        <template v-for="g in groups" :key="g.kind">
+          <div class="qs-palette-group-label">{{ g.label }} · {{ g.items.length }}</div>
+          <div
+            v-for="(item, i) in g.items" :key="i"
+            :class="['qs-palette-item', { 'is-active': isActive(g.kind, i) }]"
+            @click="pick(item)"
+            @mouseenter="setActive(g.kind, i)">
+            <span class="qs-palette-item-kind">{{ g.kind }}</span>
+            <span class="qs-palette-item-title">{{ item.title }}</span>
+            <span class="qs-palette-item-section">{{ item.section }}</span>
+          </div>
+        </template>
+      </div>
+      <div class="qs-palette-empty" v-else>
+        <p>No matches for <code>{{ q }}</code></p>
+        <p class="qs-muted" style="margin-top: 8px;">Try a different keyword, or press <span class="qs-kbd">Esc</span> to close.</p>
+      </div>
+      <div class="qs-palette-footer">
+        <span><span class="qs-kbd">\u2191</span> <span class="qs-kbd">\u2193</span> navigate</span>
+        <span><span class="qs-kbd">\u21B5</span> open</span>
+        <span><span class="qs-kbd">Esc</span> close</span>
+      </div>
+    </div>
+  </div>
+</script>

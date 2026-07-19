@@ -3,12 +3,13 @@ name: rui-report-quickstart
 description: >
   Generate a newcomer quickstart report for a local project scope.
   Produces a browser-viewable HTML guide and, by default, a markdown
-  mirror. Uses the 4-file template at templates/ (data.js + index.html
-  + index.css + index.js) so every report renders consistently with
-  the rest of the rui-reports catalog. The output language is English
-  by default; pass --language zh to switch to Chinese. Uses static
-  evidence only, renders all seven canonical sections, and fills gaps
-  with TODO markers instead of invented content.
+  mirror. Built from a 4-file page template (data.js + index.html
+  + index.css + index.js) plus a self-contained components/ subtree
+  of 17 qs-* Vue components, so every report renders consistently
+  with the rest of the rui-reports catalog. The output language is
+  English by default; pass --language zh to switch to Chinese. Uses
+  static evidence only, renders all seven canonical sections, and
+  fills gaps with TODO markers instead of invented content.
 lifecycle: default-pipeline
 user_invocable: true
 arguments:
@@ -70,9 +71,10 @@ Generate a newcomer-facing onboarding guide for any local repo or subdirectory. 
 
 1. Always render the seven canonical sections in this order:
    `overview` -> `concepts` -> `directory-map` -> `onboarding-flow` -> `commands` -> `faq` -> `further-reading`.
-2. Always build the page from the bundled 4-file template at
-   `templates/{data.js, index.html, index.css, index.js}`. The
-   template is the single source of truth for the page layout,
+2. Always build the page from the bundled 4-file page template at
+   `templates/{data.js, index.html, index.css, index.js}` plus the
+   17 self-contained Vue components under `templates/components/`.
+   The template is the single source of truth for the page layout,
    section order, verdict/composite scoring, and the markdown
    mirror exporter (`window.quickstartToMarkdown(data)`).
 3. The output language is **English by default**. Pass `--language zh`
@@ -87,14 +89,16 @@ Generate a newcomer-facing onboarding guide for any local repo or subdirectory. 
 
 | Path | Required | Source | Purpose |
 |------|----------|--------|---------|
-| `<out>/index.html` | yes | `templates/index.html` | Browser-viewable newcomer quickstart |
-| `<out>/index.css`  | yes | `templates/index.css`  | All page styles, layered |
-| `<out>/index.js`   | yes | `templates/index.js`   | Vue 3 app + section renderers |
-| `<out>/data.js`    | yes | regenerated each run   | `window.QUICKSTART_DATA` (the actual report content) |
-| `<out>/README.md`  | no  | `quickstartToMarkdown(data)` | Markdown mirror, skipped when `--no-mirror` is used |
+| `<out>/index.html`    | yes | `templates/index.html`    | Browser-viewable newcomer quickstart |
+| `<out>/index.css`     | yes | `templates/index.css`     | Page-level styles (tokens, layout, chrome, TOC, utilities) |
+| `<out>/index.js`      | yes | `templates/index.js`      | Vue 3 orchestrator (chrome, palette, modal, `quickstartToMarkdown()`) |
+| `<out>/data.js`       | yes | regenerated each run      | `window.QUICKSTART_DATA` (the actual report content) |
+| `<out>/components/`   | yes | `templates/components/`   | 17 self-contained `qs-*` Vue components (charts, hero, sections, overlay) |
+| `<out>/README.md`     | no  | `quickstartToMarkdown(data)` | Markdown mirror, skipped when `--no-mirror` is used |
 
 Notes:
-- The 4 files `index.html` / `index.css` / `index.js` / `data.js` are copied verbatim from `templates/` every run. The only regenerated file is `data.js`, which carries the scope-derived content.
+- The 4 page files `index.html` / `index.css` / `index.js` / `data.js` and the entire `components/` subtree are copied verbatim from `templates/` every run. The only regenerated file is `data.js`, which carries the scope-derived content.
+- `components/` ships 17 directories: 4 chart components (`qs-donut`, `qs-coverage-cell`, `qs-mini-bars`, `qs-sparkline`), 4 hero components (`qs-hero-path`, `qs-coverage-gaps`, `qs-skill-landscape`, `qs-stack-diagram`), 7 section renderers (`qs-overview`, `qs-concepts`, `qs-directory-map`, `qs-onboarding-flow`, `qs-commands`, `qs-faq`, `qs-further-reading`), and 2 overlays (`qs-palette`, `qs-modal`). Each follows the rui bootstrap convention with `data.js` + `index.html` + `index.css` + `index.js`.
 - The markdown mirror (`README.md`) is produced by calling `window.quickstartToMarkdown(data)` from `templates/index.js`. Identical `##` headers to the HTML page are the contract.
 - All shared infrastructure (Vue 3, `<rui-back-top>`) loads from `/.claude/shared/` — no public CDN.
 
@@ -159,22 +163,36 @@ The score measures onboarding completeness, not code quality. The data schema in
 ## Supporting files
 
 - [commands/create.md](./commands/create.md) — execution playbook for `/rui-report-quickstart create`
-- [templates/data.js](./templates/data.js) — data schema (defaults, three example datasets `python` / `ts` / `go`, `mergeWithDefaults`, `computeScore`)
-- [templates/index.html](./templates/index.html) — page shell
-- [templates/index.css](./templates/index.css) — layered styles (reset → tokens → base → layout → toolbar → toc → components → sections → utilities → responsive → print)
-- [templates/index.js](./templates/index.js) — reactive Vue 3 app, per-section renderers, `quickstartToMarkdown()` (full) + `quickstartToMarkdownSection(slug, data)` (per section)
+- [templates/data.js](./templates/data.js) — data schema (defaults, scope-derived dataset, `computeScore`); supports optional `overview.hero / .landscape / .stack / .byTheNumbers / .whatYoullShip` blocks
+- [templates/index.html](./templates/index.html) — page shell with `<script>` tags for all 17 `qs-*` components
+- [templates/index.css](./templates/index.css) — page-level styles (reset → tokens → base → chrome → layout → toc → page-level components → utilities → animations → responsive → print). Component-specific styles live in `templates/components/<category>/<name>/index.css`.
+- [templates/index.js](./templates/index.js) — Vue 3 orchestrator: page chrome (header, TOC, score banner, sections, footer), keyboard shortcuts, search filter, command palette + detail modal mounting, `quickstartToMarkdown()` (full) + `quickstartToMarkdownSection(slug, data)` (per section). Loads and registers all 17 `qs-*` components from `templates/components/` via the rui bootstrap convention.
+- [templates/components/](./templates/components/) — 17 self-contained `qs-*` Vue components, each in its own `data.js + index.html + index.css + index.js` directory:
+  - **charts**: `qs-donut`, `qs-coverage-cell`, `qs-mini-bars`, `qs-sparkline`
+  - **hero**: `qs-hero-path`, `qs-coverage-gaps`, `qs-skill-landscape`, `qs-stack-diagram`
+  - **sections**: `qs-overview`, `qs-concepts`, `qs-directory-map`, `qs-onboarding-flow`, `qs-commands`, `qs-faq`, `qs-further-reading`
+  - **overlay**: `qs-palette`, `qs-modal`
 - [evals/evals.json](./evals/evals.json) — prompt coverage for the main interaction patterns
 
 ## In-page interactions
 
-The template ships a reactive Vue 3 app so the generated page is useful as both a final artifact and a live demo:
+The template ships a reactive Vue 3 app so the generated page is useful as both a final artifact and a live demo. The page maximises visual coverage and uses charts-instead-of-text wherever evidence is quantitative.
 
-- **Dataset switcher** (toolbar): cycle through three reference datasets — `python` (small CLI, score ≈ B), `ts` (TypeScript monorepo, score ≈ C), `go` (Go HTTP service, score ≈ A) — to see how the template renders different project shapes and score levels.
-- **Coverage filter** (toolbar): `All sections` / `Pass + partial` / `Pass only`. Driven by a `data-filter` attribute on `<main>`; the CSS hides sections whose `data-verdict` does not match.
-- **Theme switcher** (toolbar): `Auto` / `Light` / `Dark`. Sets `data-theme` on `<html>`; choice persists in `localStorage` under `rui-report-quickstart:theme`.
-- **Score ring** (banner): an SVG arc gauge whose `stroke-dasharray` / `stroke-dashoffset` are computed from `data.score.composite`. Color follows the grade (A green, B blue, C amber, D orange, F red).
-- **Sticky section TOC** (left rail on desktop, top bar on mobile): a 7-item navigation list with active-section highlight driven by `IntersectionObserver` (`rootMargin: '-20% 0px -65% 0px'`). Each item shows a verdict dot.
-- **Coverage bar** (section header): a per-section visual progress bar next to the verdict pill, so coverage gaps are visible at a glance.
-- **Copy markdown** (toolbar): copies the full report as markdown via `window.quickstartToMarkdown(data)`. The button label flips to `Copied!` for 1.5s, matching the project's copy-feedback convention.
-- **Per-section copy** (section header): each section has its own copy button that calls `window.quickstartToMarkdownSection(slug, data)` to copy just that section's markdown. The button label flips to `Section copied` for 1.5s.
-- **Print friendly**: the toolbar, TOC, and copy buttons are hidden via `@media print`; sections use `break-inside: avoid`.
+- **Hero onboarding path** (top of page): big "Ship your first skill in ≈ 18 min" panel with a 5-step node graph (Detect → Explore → Generate → Arch → Verify). Each step shows a coloured dot, time estimate, type badge (`read` / `view` / `run`), and a file or command reference. Below the path is a `Coverage gaps` callout that lists the sections dragging the score below 90%.
+- **By the numbers** (overview): three big-number stat cards (manifests · pipeline steps · onboarding score) with coloured top accents.
+- **Tech stack diagram** (overview): layered boxes for Source → Manifest → Runtime → Output, each item colour-coded via `color-mix` design tokens.
+- **KPI tiles with sparklines** (overview): 4 stat tiles with embedded SVG area charts showing growth over 10 release checkpoints.
+- **What you'll ship** (overview): 3 deliverable cards (docs dashboard · arch scenes · verified counts) with coloured left borders.
+- **Skill landscape** (overview): treemap of 5 skill groups sized by manifest count, plus a growth sparkline and distribution list aside.
+- **Score banner** with composite score bars + verdict-segmented donut ring. The score ring uses pure SVG (no chart library).
+- **Coverage grid** (banner): 7 radial cells, one per section, color-coded by verdict (green / amber / red).
+- **Sticky section TOC** (left rail on desktop, top bar on mobile): a 7-item navigation list with active-section highlight driven by `IntersectionObserver`. Each item shows a verdict dot.
+- **Command palette** (`⌘K` / `Ctrl+K`): search and navigate any section, command, FAQ, or further-reading entry. Keyboard-first, fuzzy search over the indexed entries.
+- **Detail modal** (palette result): clicking a palette entry opens a focused modal showing the source markdown for that section.
+- **Per-section copy** (section header): each section has its own copy button that calls `window.quickstartToMarkdownSection(slug, data)`. The button label flips to `Section copied` for 1.5s.
+- **Onboarding step tracker** (top of page): a horizontal progress bar that the user can mark complete; state persists in `localStorage` under `rui-report-quickstart:steps`.
+- **FAQ collapse**: each FAQ item is a click-to-expand card; collapse state persists in `localStorage` under `rui-report-quickstart:faq`.
+- **Role filter chips** (concepts section): multi-select chips that filter the concept list by role (manifest / directory / frontmatter / sub-skill).
+- **Keyboard shortcuts**: `j` / `k` move between sections, `t` jumps to the top, `c` copies the current section, `?` opens a shortcut help overlay, `⌘K` opens the palette. Shortcuts are ignored when typing in inputs.
+- **Animated count-up** (score banner): the composite score counts up from 0 → N over 600ms with ease-out cubic on first render.
+- **Print friendly**: the palette, modal, CTA buttons, stepper, role chips, and animated overlays are hidden via `@media print`; landscape cells switch to a print-friendly palette.

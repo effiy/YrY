@@ -1,0 +1,107 @@
+/* qsOnboardingFlow — ordered steps with progress tracker */
+.qs-stepper {
+  display: flex;
+  align-items: center;
+  gap: var(--qs-space-sm);
+  flex-wrap: wrap;
+  padding: var(--qs-space-md) var(--qs-space-lg);
+  background: var(--qs-accent-soft);
+  border: 1px solid color-mix(in srgb, var(--qs-accent) 24%, transparent);
+  border-radius: var(--qs-radius-md);
+  margin-bottom: var(--qs-space-lg);
+}
+.qs-stepper-label {
+  color: var(--qs-text-muted);
+  font-size: var(--qs-text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+.qs-stepper-progress {
+  flex: 1;
+  min-width: 120px;
+  height: 8px;
+  background: var(--qs-surface);
+  border-radius: var(--qs-radius-pill);
+  overflow: hidden;
+  position: relative;
+}
+.qs-stepper-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--qs-accent), var(--qs-pass));
+  border-radius: inherit;
+  transition: width var(--qs-dur-slow) var(--qs-ease-out);
+}
+.qs-stepper-count {
+  color: var(--qs-text);
+  font-family: var(--qs-font-mono, "SF Mono", "JetBrains Mono", "Geist Mono", monospace);
+  font-weight: 700;
+  font-size: var(--qs-text-sm);
+}
+.qs-stepper-reset {
+  background: transparent;
+  border: 1px solid var(--qs-border-soft);
+  color: var(--qs-text-muted);
+  border-radius: var(--qs-radius-pill);
+  padding: 4px 10px;
+  font-size: var(--qs-text-xs);
+  cursor: pointer;
+  transition: border-color var(--qs-dur-fast) var(--qs-ease-base),
+              color var(--qs-dur-fast) var(--qs-ease-base);
+}
+.qs-stepper-reset:hover { color: var(--qs-fail); border-color: var(--qs-fail); }
+
+.qs-step {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: var(--qs-space-lg);
+  padding: var(--qs-space-lg);
+  border: 1px solid var(--qs-border-soft);
+  border-radius: var(--qs-radius-md);
+  background: var(--qs-surface);
+  cursor: pointer;
+  transition: border-color var(--qs-dur-fast) var(--qs-ease-base);
+}
+.qs-step.is-done {
+  border-color: var(--qs-pass);
+  background: var(--qs-pass-soft);
+}
+.qs-step-marker {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--qs-accent);
+  color: var(--qs-text-inverse);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--qs-text-sm);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.qs-step.is-done .qs-step-marker {
+  background: var(--qs-pass);
+}
+.qs-step-body { display: flex; flex-direction: column; gap: var(--qs-space-xs); }
+.qs-step-action {
+  color: var(--qs-text);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: var(--qs-space-sm);
+}
+.qs-step-outcome {
+  color: var(--qs-text-soft);
+  font-size: var(--qs-text-sm);
+}
+.qs-step-command {
+  color: var(--qs-text);
+  font-family: var(--qs-font-mono, "SF Mono", "JetBrains Mono", "Geist Mono", monospace);
+  font-size: var(--qs-text-sm);
+  background: var(--qs-code-bg);
+  padding: var(--qs-space-xs) var(--qs-space-sm);
+  border-radius: var(--qs-radius-sm);
+  border: 1px solid var(--qs-border-soft);
+  overflow-x: auto;
+  margin: 0;
+}

@@ -1,0 +1,17 @@
+<script type="text/x-template" id="qs-hero-path-tpl">
+  <div class="qs-hero-path">
+    <div v-for="s in steps" :key="s.id"
+      :class="['qs-hero-step', 'is-' + s.color, { 'is-done': doneSet && doneSet.has(s.id) }]">
+      <div class="qs-hero-step-head">
+        <span class="qs-hero-step-dot">{{ s.n }}</span>
+        <span class="qs-hero-step-name">{{ s.name }}</span>
+        <span class="qs-hero-step-time">{{ s.minutes }} min</span>
+      </div>
+      <p class="qs-hero-step-outcome">{{ s.outcome }}</p>
+      <div class="qs-hero-step-foot">
+        <span :class="['qs-hero-step-type', 'is-' + s.type]">{{ s.type }}</span>
+        <span class="qs-hero-step-ref" v-if="s.ref">{{ s.ref }}</span>
+      </div>
+    </div>
+  </div>
+</script>

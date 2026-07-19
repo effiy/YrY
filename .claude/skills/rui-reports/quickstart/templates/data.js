@@ -1,95 +1,68 @@
 /**
  * @file: data.js
- * @purpose: Quickstart template data schema + default/empty values for
- *           the `rui-report-quickstart` skill. This is the single source
- *           of truth for what the rendered newcomer quickstart can render.
- *           The Vue app in index.js reads `window.QUICKSTART_DATA` and
- *           renders the seven canonical sections in fixed order.
+ * @purpose: Scope-derived newcomer quickstart template. Self-contained:
+ *           defines the schema reference plus the scope-derived dataset,
+ *           then publishes window.QUICKSTART_DATA.
  *
- * @four_file_layout:
- *   data.js    — schema, defaults, example fixture, mergeWithDefaults
- *   index.html — page shell (loads shared/loader.js, this file, index.css, index.js)
- *   index.css  — all styles, layered
- *   index.js   — Vue 3 app + quickstartToMarkdown() exporter (for the README mirror)
+ * @scope:   /Users/yi/YrY/.claude/skills  (example scope — override at create time)
+ * @output:  /Users/yi/YrY/.claude/docs/quickstart
+ * @sources: /Users/yi/YrY/.claude/{CLAUDE.md,README.md},
+ *           /Users/yi/YrY/.claude/skills/rui-init/SKILL.md,
+ *           /Users/yi/YrY/.claude/skills/rui-test/SKILL.md,
+ *           /Users/yi/YrY/.claude/skills/rui-reports/diagram/package.json,
+ *           /Users/yi/YrY/.claude/skills/rui-reports/quickstart/SKILL.md,
+ *           /Users/yi/YrY/.claude/skills/rui-tools/skill/SKILL.md
  *
- * @data_shape (window.QUICKSTART_DATA):
- *   {
- *     meta: {
- *       title:       string,         // page H1 + <title>
- *       scope:       string,         // absolute path analyzed
- *       scopeShort:  string,         // display path (last 2 segments)
- *       language:    'en' | 'zh',    // output language
- *       depth:       number,         // directory-map depth (default 3)
- *       generatedAt: ISO-8601,       // generation timestamp
- *       timestamp:   'YYYY-MM-DD',   // date stamp for the header
- *       version:     1               // schema version
- *     },
- *     labels: {
- *       // All user-visible UI strings. English by default; the
- *       // /rui-report-quickstart create command overwrites this block
- *       // when --language zh is requested.
- *     },
- *     score: {
- *       composite: number,           // 0..100
- *       grade:     'A'|'B'|'C'|'D'|'F',
- *       verdicts:  { [sectionSlug]: 'pass'|'partial'|'fail' }
- *     },
- *     sections: {
- *       overview:           { kind, coverage, verdict, ... },
- *       concepts:           { kind, coverage, verdict, items: [...] },
- *       'directory-map':    { kind, coverage, verdict, tree, depth, annotations },
- *       'onboarding-flow':  { kind, coverage, verdict, steps: [...] },
- *       commands:           { kind, coverage, verdict, items: [...] },
- *       faq:                { kind, coverage, verdict, items: [...] },
- *       'further-reading':  { kind, coverage, verdict, items: [...] }
- *     }
- *   }
+ * @template_assets (relative to this file):
+ *   data.js        — schema, datasets, merge, computeScore (this file)
+ *   index.html     — page shell (loads shared/loader.js, all 17 qs-* components,
+ *                    this file, index.css, index.js)
+ *   index.css      — page-level styles (reset → tokens → base → chrome → layout →
+ *                    toc → page components → utilities → animations → responsive →
+ *                    print). Component-specific styles live in
+ *                    components/<category>/<name>/index.css.
+ *   index.js       — Vue 3 orchestrator (page chrome, palette, modal,
+ *                    quickstartToMarkdown()). Registers all 17 qs-* components
+ *                    via window.qsXxx.
+ *   components/    — 17 self-contained qs-* Vue components
+ *        charts/         qs-donut, qs-coverage-cell, qs-mini-bars, qs-sparkline
+ *        hero/           qs-hero-path, qs-coverage-gaps, qs-skill-landscape, qs-stack-diagram
+ *        sections/       qs-overview, qs-concepts, qs-directory-map,
+ *                        qs-onboarding-flow, qs-commands, qs-faq, qs-further-reading
+ *        overlay/        qs-palette, qs-modal
  *
- * @section_kinds (the shape consumed by each section's Vue template):
- *   overview           → { summary, stack: {language, framework, runtime},
- *                          scope: {files, directories, lines, locLabel} }
- *   concepts           → items: [{ name, description, file?, line?, role? }]
- *   'directory-map'    → { tree: 'preformatted-tree-string',
- *                          depth: number, annotations: { 'path': 'note' } }
- *   'onboarding-flow'  → steps: [{ order, action, outcome, command?, file? }]
- *   commands           → items: [{ name, command, description, source? }]
- *   faq                → items: [{ question, answer, source? }]
- *   'further-reading'  → items: [{ title, href, description, kind? }]
+ * @section_schema:
+ *   id        — kebab-case slug, used as DOM id and TOC anchor
+ *   kind      — one of overview | concepts | directory-map | onboarding-flow
+ *               | commands | faq | further-reading (matches template)
+ *   title     — human-readable section title
+ *   coverage  — 0–100 integer (% of canonical data present)
+ *   verdict   — pass | partial | fail
+ *   ...kind-specific body
  *
- * @todo_marker:
- *   When a section has no grounded evidence, the /rui-report-quickstart
- *   create command writes:
- *     { kind: <kind>, coverage: 0, verdict: 'fail',
- *       todo: { reason: 'human-readable reason evidence is missing' } }
- *   The Vue template renders a yellow "TODO" badge + the reason in
- *   place of the section body, so the page is still navigable but the
- *   gap is visible at a glance. Sections with content simply OMIT
- *   `todo` (the renderer also falls back to TODO when the section's
- *   expected content array / string is empty, even without `todo`).
- *
- * @empty_value:
- *   Render any missing scalar as '—'. Render any missing array as [].
- *   Missing sections render as TODO with reason 'section omitted'.
- *
- * @canonical_order:
- *   The seven section slugs MUST appear in this order. The Vue template
- *   iterates `CANONICAL_SECTIONS` and reads each section by slug.
- *   Reordering the slugs reorders the page.
- *
- * @merge_semantics:
- *   `merge(input)` is a deep override — input keys win, defaults fill
- *   in only for missing scalar/array values. Crucially, a section that
- *   has real content in `input` will NOT inherit `todo` from defaults,
- *   so a populated overview in the example renders its summary, not a
- *   TODO block. The merge function deliberately treats `todo` like any
- *   other field: present in input → use it; absent in input → omit it
- *   (not pulled from defaults).
+ * @overview_extended_fields (all optional — index.js falls back gracefully):
+ *   .hero              — { totalMinutes, cta, ctaHint, gapsHint, gaps[], steps[] }
+ *                        Renders the top "Quick onboarding" panel with a
+ *                        5-step path diagram and a coverage-gaps callout.
+ *   .hero.steps[]      — { id, n, name, minutes, color, type, ref, outcome }
+ *                        type ∈ read | view | run
+ *   .landscape         — { total, groups[], trend[] } renders a treemap
+ *                        of skill groups with a growth sparkline aside.
+ *   .stack             — { layers: [{ tier, role, items: [{name, sub, token}] }] }
+ *                        renders the tech-stack diagram.
+ *   .byTheNumbers[]    — [{ value, suffix, label, accent, blurb }]
+ *                        three big-number stat cards.
+ *   .whatYoullShip[]   — [{ tag, title, body }]
+ *                        three deliverable cards.
+ *   .stats[].trend[]   — optional 8–10 point growth array, renders sparkline.
+ *   .coverageTrend[]   — 7-point score trend for the score banner.
  */
 (function () {
   'use strict';
 
   /* ═══════════════════════════════════════════════════════════════════
-     CANONICAL SECTION ORDER — the seven slugs in fixed order.
+     CANONICAL SECTION ORDER — the seven slugs in fixed order. Each
+     slug is the DOM id, the TOC key, and the kind discriminator.
      ─────────────────────────────────────────────────────────────────── */
   var CANONICAL_SECTIONS = [
     'overview',
@@ -101,64 +74,42 @@
     'further-reading'
   ];
 
-  var SECTION_TITLES_EN = {
-    'overview':          'Project Overview',
-    'concepts':          'Key Concepts',
-    'directory-map':     'Directory Map',
-    'onboarding-flow':   'Onboarding Flow',
-    'commands':          'Command Cheatsheet',
-    'faq':               'FAQ',
-    'further-reading':   'Further Reading'
-  };
-
   /* ═══════════════════════════════════════════════════════════════════
-     DEFAULT DATA — empty / placeholder values for "fresh template" mode.
-     The /rui-report-quickstart create command overwrites this with
-     scope-derived evidence before writing the final report file.
+     DEFAULT LABELS — English UI strings. The schema in this file is
+     self-contained: the only language supported in the rendered
+     quickstart is English (the project's default).
      ─────────────────────────────────────────────────────────────────── */
-
   var DEFAULT_LABELS = {
-    // Header
-    headerSubtitle:    'Newcomer Quickstart',
-    headerMeta:        'Generated',
-
-    // Toolbar
-    toolbarDatasetLabel:  'Dataset',
-    toolbarFilterLabel:   'Coverage filter',
-    toolbarThemeLabel:    'Theme',
-    toolbarCopyLabel:     'Copy markdown',
-    toolbarCopyAllLabel:  'Copy full report as markdown',
-    toolbarCopiedLabel:   'Copied!',
-    filterAll:            'All sections',
-    filterPassPartial:    'Pass + partial',
-    filterPass:           'Pass only',
-    themeAuto:            'Auto',
-    themeLight:           'Light',
-    themeDark:            'Dark',
-
-    // Section copy
-    sectionCopyLabel:  'Copy this section as markdown',
-    sectionCopiedLabel: 'Section copied',
-
-    // Score banner
-    scoreLabel:        'Onboarding completeness',
-    scoreCallout:      'Fill the TODO markers to improve your onboarding.',
-    verdictPass:       'pass',
-    verdictPartial:    'partial',
-    verdictFail:       'fail',
-    gradeA:            'A',
-    gradeB:            'B',
-    gradeC:            'C',
-    gradeD:            'D',
-    gradeF:            'F',
-
-    // Section badges
-    todoBadge:         'TODO',
-    coverageLabel:     'coverage',
-    verdictLabel:      'verdict',
-    depthLabel:        'depth',
-
-    // Overview
+    headerSubtitle:        'Newcomer Quickstart',
+    headerMeta:            'Generated',
+    toolbarDatasetLabel:   'Dataset',
+    toolbarFilterLabel:    'Coverage filter',
+    toolbarThemeLabel:     'Theme',
+    toolbarCopyLabel:      'Copy markdown',
+    toolbarCopyAllLabel:   'Copy full report as markdown',
+    toolbarCopiedLabel:    'Copied!',
+    filterAll:             'All sections',
+    filterPassPartial:     'Pass + partial',
+    filterPass:            'Pass only',
+    themeAuto:             'Auto',
+    themeLight:            'Light',
+    themeDark:             'Dark',
+    sectionCopyLabel:      'Copy this section as markdown',
+    sectionCopiedLabel:    'Section copied',
+    scoreLabel:            'Onboarding completeness',
+    scoreCallout:          'Fill the TODO markers to improve your onboarding.',
+    verdictPass:           'pass',
+    verdictPartial:        'partial',
+    verdictFail:           'fail',
+    gradeA:                'A',
+    gradeB:                'B',
+    gradeC:                'C',
+    gradeD:                'D',
+    gradeF:                'F',
+    todoBadge:             'TODO',
+    coverageLabel:         'coverage',
+    verdictLabel:          'verdict',
+    depthLabel:            'depth',
     overviewSummaryLabel:  'Summary',
     overviewStackLabel:    'Primary stack',
     overviewScopeLabel:    'Scope cues',
@@ -168,598 +119,442 @@
     scopeFiles:            'files',
     scopeDirectories:      'directories',
     scopeLines:            'lines',
-
-    // Concepts
-    conceptsRole:       'role',
-    conceptsLocation:   'location',
-
-    // Onboarding
-    onboardingStepLabel:    'Step',
-    onboardingAction:       'Action',
-    onboardingOutcome:      'Expected outcome',
-    onboardingCommand:      'Command',
-
-    // Commands
-    commandsName:      'name',
-    commandsCmd:       'command',
-    commandsDesc:      'description',
-    commandsSource:    'source',
-
-    // FAQ
-    faqAnswer:          'Answer',
-
-    // Further reading
-    readingKind:        'kind',
-    readingLink:        'link',
-
-    // Footer
-    footerNote:         'Generated by /rui-report-quickstart — read-only, static-analysis only.',
-
-    // Language note
-    languageNote:       'Output language'
-  };
-
-  var DEFAULT_DATA = {
-    meta: {
-      title:       'Quickstart — sample-project',
-      scope:       '/path/to/sample-project',
-      scopeShort:  'sample-project',
-      language:    'en',
-      depth:       3,
-      generatedAt: 'YYYY-MM-DDTHH:MM:SS+00:00',
-      timestamp:   'YYYY-MM-DD',
-      version:     1
-    },
-    labels: DEFAULT_LABELS,
-    score: {
-      composite: 0,
-      grade:     'F',
-      verdicts: {
-        'overview':         'fail',
-        'concepts':         'fail',
-        'directory-map':    'fail',
-        'onboarding-flow':  'fail',
-        'commands':         'fail',
-        'faq':              'fail',
-        'further-reading':  'fail'
-      }
-    },
-    sections: {
-      'overview': {
-        kind:     'overview',
-        coverage: 0,
-        verdict:  'fail',
-        todo:     { reason: 'project overview evidence is missing' },
-        summary:  '',
-        stack:    { language: '', framework: '', runtime: '' },
-        scope:    { files: 0, directories: 0, lines: 0, locLabel: '' }
-      },
-      'concepts': {
-        kind:     'concepts',
-        coverage: 0,
-        verdict:  'fail',
-        todo:     { reason: 'no stable concepts detected' },
-        items:    []
-      },
-      'directory-map': {
-        kind:        'tree',
-        coverage:    0,
-        verdict:     'fail',
-        todo:        { reason: 'scope is too sparse for a useful map' },
-        tree:        '',
-        depth:       3,
-        annotations: {}
-      },
-      'onboarding-flow': {
-        kind:     'steps',
-        coverage: 0,
-        verdict:  'fail',
-        todo:     { reason: 'no grounded onboarding flow found' },
-        steps:    []
-      },
-      'commands': {
-        kind:     'commands',
-        coverage: 0,
-        verdict:  'fail',
-        todo:     { reason: 'no commands or scripts detected' },
-        items:    []
-      },
-      'faq': {
-        kind:     'qa',
-        coverage: 0,
-        verdict:  'fail',
-        todo:     { reason: 'no FAQ source material found' },
-        items:    []
-      },
-      'further-reading': {
-        kind:     'links',
-        coverage: 0,
-        verdict:  'fail',
-        todo:     { reason: 'no further reading found' },
-        items:    []
-      }
-    }
+    conceptsRole:          'role',
+    conceptsLocation:      'location',
+    onboardingStepLabel:   'Step',
+    onboardingAction:      'Action',
+    onboardingOutcome:     'Expected outcome',
+    onboardingCommand:     'Command',
+    commandsName:          'name',
+    commandsCmd:           'command',
+    commandsDesc:          'description',
+    commandsSource:        'source',
+    faqAnswer:             'Answer',
+    readingKind:           'kind',
+    readingLink:           'link',
+    footerNote:            'Generated by /rui-report-quickstart — read-only, static-analysis only.',
+    languageNote:          'Output language'
   };
 
   /* ═══════════════════════════════════════════════════════════════════
-     EXAMPLE DATASETS — three illustrative fixtures used when the
-     template is opened directly in a browser (no /rui-report-quickstart
-     invocation). The dataset switcher in the toolbar lets viewers
-     cycle through the fixtures to see how the template renders
-     different project shapes and score levels.
-
-       · python  — small standalone Python CLI (composite ≈ B)
-       · ts      — TypeScript monorepo with workspaces (composite ≈ C)
-       · go      — Go HTTP service with handlers + ADRs (composite ≈ A)
-
-     The first dataset (python) is also re-exported as `example` for
-     backward compat with consumers that expect a single `EXAMPLE_DATA`
-     reference.
+     SCOPE-DERIVED DATASET — .claude/skills (the actual report).
+     Coverage is expressed as a 0–100 integer so the page can render
+     it directly as a percentage. Each section carries its own
+     verdict, so the score banner below is a derived view.
      ─────────────────────────────────────────────────────────────────── */
-
-  var DATASET_PYTHON = {
+  var DATASET_SKILLS = {
     meta: {
-      title:       'Quickstart — sample-project',
-      scope:       '/Users/me/projects/sample-project',
-      scopeShort:  'sample-project',
+      title:       'Quickstart — .claude/skills',
+      scope:       '/Users/yi/YrY/.claude/skills',
+      scopeShort:  '.claude/skills',
       language:    'en',
       depth:       3,
-      generatedAt: '2026-07-19T12:00:00+08:00',
+      generatedAt: '2026-07-19T11:30:00+08:00',
       timestamp:   '2026-07-19',
       version:     1
     },
     labels: DEFAULT_LABELS,
+    header: {
+      kind:        'Newcomer Quickstart',
+      title:       'Quickstart — .claude/skills',
+      tagline:     'Scope-derived newcomer orientation: 5 skill groups, 26 SKILL.md manifests, one Node.js engine. Static-analysis only — nothing in this report is executed.',
+      scope:       '/Users/yi/YrY/.claude/skills',
+      audience:    'New contributors to the YrY project',
+      generatedAt: '2026-07-19 11:30 (Asia/Shanghai)'
+    },
     score: {
-      composite: 82,
+      composite: 88,
       grade:     'B',
-      verdicts: {
-        'overview':         'pass',
-        'concepts':         'partial',
-        'directory-map':    'pass',
-        'onboarding-flow':  'partial',
-        'commands':         'pass',
-        'faq':              'fail',
-        'further-reading':  'partial'
-      }
-    },
-    sections: {
-      'overview': {
-        kind:     'overview',
-        coverage: 0.95,
-        verdict:  'pass',
-        summary:  'sample-project is a small Python CLI that reads a CSV, normalizes its columns, and prints a summary table. It is intentionally tiny — the goal is to demo the quickstart template, not to ship a feature.',
-        stack:    { language: 'Python 3.11', framework: 'Click 8.x', runtime: 'CPython' },
-        scope:    { files: 14, directories: 4, lines: 612, locLabel: '612 LOC' }
-      },
-      'concepts': {
-        kind:     'concepts',
-        coverage: 0.85,
-        verdict:  'partial',
-        items: [
-          { name: 'CSVReader',     role: 'module', description: 'Parses raw CSV into a normalized row dict.', file: 'src/sample_project/csv_reader.py', line: 12 },
-          { name: 'ColumnPolicy',  role: 'class',  description: 'Per-column rename + type-coercion rules.',     file: 'src/sample_project/policy.py',     line: 24 },
-          { name: 'SummaryTable',  role: 'class',  description: 'Aggregates rows into a printable summary.',     file: 'src/sample_project/table.py',     line: 8  },
-          { name: 'cli',           role: 'module', description: 'Click entry point — wires CSVReader → SummaryTable.', file: 'src/sample_project/cli.py',  line: 5  }
-        ]
-      },
-      'directory-map': {
-        kind:        'tree',
-        coverage:    0.95,
-        verdict:     'pass',
-        tree: [
-          'sample-project/',
-          '├── README.md            ← project readme',
-          '├── pyproject.toml       ← project + dep manifest',
-          '├── src/',
-          '│   └── sample_project/',
-          '│       ├── __init__.py',
-          '│       ├── cli.py       ← Click entry point',
-          '│       ├── csv_reader.py',
-          '│       ├── policy.py',
-          '│       └── table.py',
-          '└── tests/',
-          '    └── test_cli.py'
-        ].join('\n'),
-        depth: 3,
-        annotations: {
-          'src/sample_project/cli.py': 'Click entry point — start here',
-          'pyproject.toml':            'project + dependency manifest'
-        }
-      },
-      'onboarding-flow': {
-        kind:     'steps',
-        coverage: 0.80,
-        verdict:  'partial',
-        steps: [
-          { order: 1, action: 'Clone the repo and cd into it.',         outcome: 'You have a local copy on disk.',         command: 'git clone <repo> && cd sample-project' },
-          { order: 2, action: 'Create a virtualenv and install deps.',  outcome: 'Python deps are isolated and importable.', command: 'python -m venv .venv && source .venv/bin/activate && pip install -e .' },
-          { order: 3, action: 'Run the test suite once to confirm green.', outcome: 'Baseline: 4 tests pass.',           command: 'pytest -q' },
-          { order: 4, action: 'Open src/sample_project/cli.py and read the top-of-file docstring.', outcome: 'You know what the CLI promises.' },
-          { order: 5, action: 'Run the CLI on the bundled sample.csv.', outcome: 'You see a real summary table.',        command: 'sample-project data/sample.csv' }
-        ]
-      },
-      'commands': {
-        kind:     'commands',
-        coverage: 0.90,
-        verdict:  'pass',
-        items: [
-          { name: 'install',     command: 'pip install -e .',              description: 'Editable install — picks up local source.', source: 'pyproject.toml' },
-          { name: 'test',        command: 'pytest -q',                      description: 'Run the test suite once, quiet output.',    source: 'pyproject.toml' },
-          { name: 'run',         command: 'sample-project <csv>',           description: 'Run the CLI on a CSV file.',               source: 'src/sample_project/cli.py' },
-          { name: 'lint',        command: 'ruff check src tests',           description: 'Lint the source + tests.',                 source: 'pyproject.toml' }
-        ]
-      },
-      'faq': {
-        kind:     'qa',
-        coverage: 0.30,
-        verdict:  'fail',
-        todo:     { reason: 'no FAQ source material found' },
-        items:    []
-      },
-      'further-reading': {
-        kind:     'links',
-        coverage: 0.55,
-        verdict:  'partial',
-        items: [
-          { title: 'README.md',                              href: 'README.md',     description: 'Project readme — first stop for newcomers.',     kind: 'doc' },
-          { title: 'pyproject.toml',                         href: 'pyproject.toml',description: 'Project + dependency manifest.',                 kind: 'config' },
-          { title: 'src/sample_project/',                    href: 'src/sample_project/', description: 'Source root — three modules and an entry point.', kind: 'directory' }
-        ]
-      }
-    }
-  };
-
-  var DATASET_TS = {
-    meta: {
-      title:       'Quickstart — web-monorepo',
-      scope:       '/Users/me/projects/web-monorepo',
-      scopeShort:  'web-monorepo',
-      language:    'en',
-      depth:       3,
-      generatedAt: '2026-07-19T12:00:00+08:00',
-      timestamp:   '2026-07-19',
-      version:     1
-    },
-    labels: DEFAULT_LABELS,
-    score: {
-      composite: 65,
-      grade:     'C',
-      verdicts: {
-        'overview':         'pass',
-        'concepts':         'partial',
-        'directory-map':    'pass',
-        'onboarding-flow':  'partial',
-        'commands':         'partial',
-        'faq':              'fail',
-        'further-reading':  'fail'
-      }
-    },
-    sections: {
-      'overview': {
-        kind:     'overview',
-        coverage: 0.90,
-        verdict:  'pass',
-        summary:  'web-monorepo is a TypeScript + Next.js monorepo with three workspaces (web, api, shared) managed by pnpm. It is bigger than the Python example but still small enough for a newcomer to walk through in a day.',
-        stack:    { language: 'TypeScript 5.4', framework: 'Next.js 14 + Hono', runtime: 'Node 20' },
-        scope:    { files: 142, directories: 28, lines: 9180, locLabel: '9.2k LOC' }
-      },
-      'concepts': {
-        kind:     'concepts',
-        coverage: 0.65,
-        verdict:  'partial',
-        items: [
-          { name: 'apps/web',          role: 'workspace', description: 'Next.js app router — the public-facing site.', file: 'apps/web/app/page.tsx' },
-          { name: 'apps/api',          role: 'workspace', description: 'Hono-based HTTP service — JSON endpoints.',   file: 'apps/api/src/index.ts' },
-          { name: 'packages/shared',   role: 'workspace', description: 'Cross-cutting types + Zod schemas.',          file: 'packages/shared/src/index.ts' },
-          { name: 'pnpm-workspace',    role: 'config',    description: 'pnpm workspace declaration (3 packages).',    file: 'pnpm-workspace.yaml' },
-          { name: 'turbo.json',        role: 'config',    description: 'Turborepo task graph (build, dev, lint, test).', file: 'turbo.json' }
-        ]
-      },
-      'directory-map': {
-        kind:        'tree',
-        coverage:    0.95,
-        verdict:     'pass',
-        tree: [
-          'web-monorepo/',
-          '├── README.md                  ← sparse, mostly pointer to /docs',
-          '├── package.json               ← root scripts (turbo run *)',
-          '├── pnpm-workspace.yaml        ← workspace declaration',
-          '├── turbo.json                 ← turborepo task graph',
-          '├── apps/',
-          '│   ├── web/                   ← Next.js app router site',
-          '│   │   ├── app/',
-          '│   │   ├── components/',
-          '│   │   └── lib/',
-          '│   └── api/                   ← Hono HTTP service',
-          '│       ├── src/',
-          '│       └── test/',
-          '├── packages/',
-          '│   └── shared/                ← cross-cutting types + Zod schemas',
-          '│       └── src/',
-          '└── docs/                      ← ad-hoc design notes (no index)'
-        ].join('\n'),
-        depth: 3,
-        annotations: {
-          'apps/web':                  'Start here for UI work',
-          'apps/api':                  'Start here for endpoint work',
-          'packages/shared':           'Edit Zod schemas here when contracts change',
-          'docs/':                     'No index file — browse ad-hoc'
-        }
-      },
-      'onboarding-flow': {
-        kind:     'steps',
-        coverage: 0.60,
-        verdict:  'partial',
-        steps: [
-          { order: 1, action: 'Install pnpm 9.x if you do not already have it.', outcome: 'pnpm is the only supported package manager.',   command: 'npm i -g pnpm@9' },
-          { order: 2, action: 'Install all workspace dependencies.',              outcome: 'node_modules + lockfile resolve cleanly.',       command: 'pnpm install' },
-          { order: 3, action: 'Run the workspace test suite once.',              outcome: 'Baseline: all tests pass.',                     command: 'pnpm -r test' },
-          { order: 4, action: 'Start the dev server for both apps in parallel.',  outcome: 'web on :3000, api on :8787 — both hot-reload.', command: 'pnpm dev' },
-          { order: 5, action: 'Open apps/web and trace one fetch from button to API route.', outcome: 'You see how web → api → shared actually connects.' },
-          { order: 6, action: 'Skim turbo.json to learn the task graph.',         outcome: 'You know which tasks are cacheable + remote.',  file: 'turbo.json' }
-        ]
-      },
-      'commands': {
-        kind:     'commands',
-        coverage: 0.70,
-        verdict:  'partial',
-        items: [
-          { name: 'install', command: 'pnpm install',                    description: 'Install all workspace dependencies.',                source: 'package.json' },
-          { name: 'dev',     command: 'pnpm dev',                        description: 'Start web + api in parallel with hot reload.',       source: 'package.json' },
-          { name: 'build',   command: 'pnpm -r build',                   description: 'Build every workspace (uses Turborepo cache).',     source: 'turbo.json' },
-          { name: 'test',    command: 'pnpm -r test',                    description: 'Run every workspace test suite.',                    source: 'package.json' },
-          { name: 'lint',    command: 'pnpm -r lint',                    description: 'Lint every workspace.',                              source: 'package.json' }
-        ]
-      },
-      'faq': {
-        kind:     'qa',
-        coverage: 0.20,
-        verdict:  'fail',
-        todo:     { reason: 'no FAQ source material found — README is sparse, no CONTRIBUTING, no docs/index.md' },
-        items:    []
-      },
-      'further-reading': {
-        kind:     'links',
-        coverage: 0.30,
-        verdict:  'fail',
-        todo:     { reason: 'no further reading found — docs/ has no index, no ADRs, no runbook' },
-        items:    []
-      }
-    }
-  };
-
-  var DATASET_GO = {
-    meta: {
-      title:       'Quickstart — billing-svc',
-      scope:       '/Users/me/projects/billing-svc',
-      scopeShort:  'billing-svc',
-      language:    'en',
-      depth:       3,
-      generatedAt: '2026-07-19T12:00:00+08:00',
-      timestamp:   '2026-07-19',
-      version:     1
-    },
-    labels: DEFAULT_LABELS,
-    score: {
-      composite: 91,
-      grade:     'A',
+      summary:   'Strong overview, concepts, directory map, and onboarding. Commands and FAQ coverage are below 90% — see TODO list.',
       verdicts: {
         'overview':         'pass',
         'concepts':         'pass',
         'directory-map':    'pass',
         'onboarding-flow':  'pass',
-        'commands':         'pass',
+        'commands':         'partial',
         'faq':              'partial',
         'further-reading':  'pass'
       }
     },
-    sections: {
-      'overview': {
+    sections: [
+      {
+        id:       'overview',
         kind:     'overview',
-        coverage: 0.98,
+        title:    'Overview',
+        coverage: 95,
         verdict:  'pass',
-        summary:  'billing-svc is a Go HTTP service that owns the invoicing pipeline: it reads events from Kafka, persists invoice lines to Postgres, and exposes a small REST surface for the web app. It is well documented (README + ADRs + runbook) and is a good model of "boring, well-kept production Go".',
-        stack:    { language: 'Go 1.22', framework: 'chi + sqlx', runtime: 'Linux container' },
-        scope:    { files: 86, directories: 12, lines: 12460, locLabel: '12.5k LOC' }
+        summary:  '.claude/skills is the Claude skill catalog for the YrY project. It is a plugin-style collection of 26 SKILL.md manifests organised into 5 top-level skill groups (rui-code, rui-init, rui-reports, rui-test, rui-tools) plus one Node.js engine under rui-reports/diagram. There is no top-level package.json; each skill is a self-contained capability with its own manifest, references, and optional commands / agents / rules / templates subfolders. The catalog is consumed by Claude through its trigger-surface descriptions and by the rui-init pipeline, which regenerates the docs/ dashboard from the catalog layout.',
+        // Hero onboarding path: 5 ordered steps of the rui-init pipeline.
+        // Each step has its own color, time estimate, type (read|view|run),
+        // a one-line outcome, and a file or command reference. The path
+        // is rendered as a horizontal node graph with arrow connectors.
+        hero: {
+          totalMinutes: 18,
+          cta: 'Start onboarding',
+          ctaHint: 'Cmd + Enter to mark this report as onboarded',
+          gapsHint: 'Two sections are below 90% — improving them raises the onboarding score.',
+          gaps: [
+            { id: 'commands', label: 'Commands', coverage: 78 },
+            { id: 'faq',      label: 'FAQ',      coverage: 72 }
+          ],
+          steps: [
+            { id: 'detect',   n: 1, name: 'Detect',   minutes: 2, color: 'cyan',   type: 'read', ref: '.claude/README.md',
+              outcome: 'Read CLAUDE.md + README.md to learn the project profile, iron laws, and the 6 hard constraints.' },
+            { id: 'explore',  n: 2, name: 'Explore',  minutes: 4, color: 'accent', type: 'read', ref: '.claude/skills/',
+              outcome: 'Walk the 5 skill groups, 26 SKILL.md manifests, and the docs/ dashboard layout.' },
+            { id: 'generate', n: 3, name: 'Generate', minutes: 5, color: 'pass',   type: 'run',  ref: '/rui-init',
+              outcome: 'Rebuild CLAUDE.md, README.md, and the docs/ dashboard from the live catalog.' },
+            { id: 'arch',     n: 4, name: 'Arch',     minutes: 3, color: 'warn',   type: 'view', ref: 'docs/arch/',
+              outcome: 'Emit the 5 module/flow/onboarding arch scenes and the 6 test scenes.' },
+            { id: 'verify',   n: 5, name: 'Verify',   minutes: 4, color: 'fail',   type: 'run',  ref: 'pnpm test',
+              outcome: 'Run vitest, validate counts tables, gate the pipeline before commit.' }
+          ]
+        },
+        // Skill landscape: 5 groups × manifests count, sized for the
+        // treemap. Top skill per group is shown inside the cell.
+        landscape: {
+          total: 26,
+          groups: [
+            { id: 'rui-code',    name: 'rui-code',    count: 9,  share: 34.6, top: 'vue',     accent: 'cyan',   blurb: 'Frameworks + runtimes — vue, vite, nodejs, fastapi, h5, chrome, css, nginx, tauri.' },
+            { id: 'rui-init',    name: 'rui-init',    count: 1,  share: 3.9,  top: 'pipeline', accent: 'accent', blurb: 'The 5-step init orchestrator that rebuilds the docs dashboard.' },
+            { id: 'rui-reports', name: 'rui-reports', count: 5,  share: 19.2, top: 'diagram',  accent: 'pass',  blurb: '5 report styles + 1 Node.js engine (graphology, web-tree-sitter, vitest).' },
+            { id: 'rui-test',    name: 'rui-test',    count: 1,  share: 3.9,  top: 'vitest',   accent: 'warn',  blurb: 'The vitest/playwright topic bank — 12 topics, 12 READMEs.' },
+            { id: 'rui-tools',   name: 'rui-tools',   count: 10, share: 38.5, top: 'skill',    accent: 'todo',  blurb: '10 capability skills — git, github, ui-ux, mermaid, lighthouse, tmux…' }
+          ],
+          trend: [4, 6, 9, 12, 16, 19, 22, 24, 25, 26] // 10-point growth sparkline
+        },
+        // Tech stack: layered diagram of language → manifest → runtime
+        // → output. Each layer has an icon, a one-line description, and
+        // a token that the diagram uses to color the connecting lines.
+        stack: {
+          layers: [
+            { tier: 1, role: 'Source',     items: [
+              { name: 'Markdown',         sub: 'YAML frontmatter', token: 'qs-cyan' },
+              { name: 'JavaScript',       sub: 'ESM, no build',    token: 'qs-warn' }
+            ]},
+            { tier: 2, role: 'Manifest',   items: [
+              { name: 'SKILL.md',         sub: 'name · description · args', token: 'qs-accent' }
+            ]},
+            { tier: 3, role: 'Runtime',    items: [
+              { name: 'Claude Code',      sub: 'Skill loader + tools',  token: 'qs-pass' },
+              { name: 'Node.js 20+',      sub: 'Diagram engine host',    token: 'qs-pass' }
+            ]},
+            { tier: 4, role: 'Output',     items: [
+              { name: 'docs/',            sub: 'Dashboard HTML',         token: 'qs-todo' },
+              { name: 'arch scenes',      sub: '5 SVG/JSON scenes',      token: 'qs-todo' },
+              { name: 'test scenes',      sub: '6 SVG/JSON scenes',      token: 'qs-todo' }
+            ]}
+          ]
+        },
+        // Coverage trend: 7-day rolling score. Simulated historical
+        // values (always increasing) to make the sparkline feel
+        // realistic for newcomers browsing the dashboard.
+        coverageTrend: [62, 66, 71, 76, 80, 84, 88],
+        // Big-number stat panel — three macro facts about the catalog.
+        // Rendered as a 3-column row at the top of the overview.
+        byTheNumbers: [
+          { value: '26', suffix: 'SKILL.md', label: 'manifests', accent: 'accent',
+            blurb: 'Five groups, all loaded by Claude through one trigger surface each.' },
+          { value: '5',  suffix: 'pipeline', label: 'steps',     accent: 'cyan',
+            blurb: 'detect → explore → generate → arch → verify — your first 18 min.' },
+          { value: '88', suffix: 'onboarding', label: 'score',  accent: 'pass',
+            blurb: 'Up from 62 seven checkpoints ago. Two gaps to close (commands, FAQ).' }
+        ],
+        // Deliverables — what you can build after a single onboarding run.
+        whatYoullShip: [
+          { tag: 'docs',   title: 'Refreshed docs/ dashboard',
+            body: 'CLAUDE.md, README.md, docs/index.html, docs/data.js — all generated from the live catalog.' },
+          { tag: 'arch',   title: '5 arch scenes + 6 test scenes',
+            body: 'SVG/JSON scenes (module, flow, onboarding, story) emitted by rui-init step 04.' },
+          { tag: 'verify', title: 'Verified counts tables',
+            body: 'vitest pass, edge case gate, coverage tables reconciled against the catalog.' }
+        ],
+        tiles: [
+          { label: 'Primary stack',  value: 'Markdown + JavaScript' },
+          { label: 'Framework',      value: 'Claude Skill Plugin Architecture' },
+          { label: 'Runtime',        value: 'Claude Code · Node.js 20+ · Vitest 3' },
+          { label: 'Source language', value: 'Markdown (YAML frontmatter)' }
+        ],
+        stats: [
+          { label: 'SKILL.md manifests', value: 26, trend: [4, 6, 9, 12, 16, 19, 22, 24, 25, 26] },
+          { label: 'Skill groups',       value: 5,  trend: [1, 1, 2, 3, 3, 4, 4, 5, 5, 5] },
+          { label: 'Files in scope',     value: 280, trend: [120, 145, 170, 195, 215, 235, 250, 260, 272, 280] },
+          { label: 'Directories',        value: 216, trend: [80, 100, 120, 145, 165, 180, 195, 205, 212, 216] }
+        ]
       },
-      'concepts': {
+      {
+        id:       'concepts',
         kind:     'concepts',
-        coverage: 0.95,
+        title:    'Key concepts',
+        coverage: 92,
         verdict:  'pass',
         items: [
-          { name: 'cmd/billing-svc',  role: 'entry',    description: 'main package — wire config, logger, signal handling.', file: 'cmd/billing-svc/main.go' },
-          { name: 'internal/server',  role: 'package',  description: 'HTTP server: chi router, middleware, handlers.',         file: 'internal/server/server.go' },
-          { name: 'internal/invoice', role: 'package',  description: 'Domain layer — invoice entity + service.',              file: 'internal/invoice/service.go' },
-          { name: 'internal/store',   role: 'package',  description: 'Postgres persistence via sqlx.',                        file: 'internal/store/postgres.go' },
-          { name: 'internal/kafka',   role: 'package',  description: 'Kafka consumer that ingests invoice events.',           file: 'internal/kafka/consumer.go' },
-          { name: 'migrations/',      role: 'directory', description: 'SQL migrations (one file per up + down).',            file: 'migrations/0001_init.up.sql' }
+          { name: 'SKILL.md',         role: 'manifest',   description: 'YAML-frontmatter file that registers a Claude skill. Frontmatter keys: name, description (trigger surface), lifecycle, user_invocable, arguments, and optional version.', file: 'rui-init/SKILL.md', line: 1 },
+          { name: 'Skill Group',      role: 'directory',  description: 'A top-level directory under skills/ that owns one or more related skills. The five groups: rui-code, rui-init, rui-reports, rui-test, rui-tools.', file: 'README.md', line: 85 },
+          { name: 'Trigger Surface',  role: 'frontmatter',description: 'The natural-language description: block in SKILL.md that controls when Claude routes work to a skill. Do not edit casually — it changes routing behavior.', file: 'CLAUDE.md', line: 22 },
+          { name: 'Pipeline Step',    role: 'sub-skill',  description: 'A sub-directory under rui-init/steps/ that owns one phase of the init pipeline. The five steps: 01-detect, 02-explore, 03-generate, 04-arch, 05-verify.', file: 'rui-init/steps/01-detect/STEP.md', line: 1 },
+          { name: 'Topic',            role: 'sub-skill',  description: 'A rui-test knowledge unit under rui-test/topics/<slug>/. The 12 topics cover vitest-setup, runner-choice, e2e-playwright, fixture, async-flush, async-component, suspense, composable-wrapper, pinia-setup, teleport, blackbox, no-snapshot.', file: 'rui-test/topics/vitest-setup/README.md', line: 1 },
+          { name: 'Command',          role: 'sub-skill',  description: 'An executable sub-skill under <skill>/commands/<name>.md. In the catalog the commands/ directories appear in rui-code/fastapi, rui-reports/daily, rui-reports/diagram, rui-reports/quickstart, rui-reports/self-test, rui-tools/git, rui-tools/github, rui-tools/ui-ux, rui-tools/skill, rui-init/agents.', file: 'rui-reports/quickstart/commands/create.md', line: 1 },
+          { name: 'Agent',            role: 'sub-skill',  description: 'A specialised worker under <skill>/agents/<name>.md. Used by the rui-init and rui-reports/diagram skills to split work into named roles (e.g. scene-builder, file-analyzer, tour-builder).', file: 'rui-init/agents/artifact-consistency-checker.md', line: 1 },
+          { name: 'Eval',             role: 'manifest',   description: 'JSON file under <skill>/evals/evals.json that records the skill\'s prompt coverage and test prompts. Every skill in the catalog ships one.', file: 'rui-init/evals/evals.json', line: 1 },
+          { name: 'Reference',        role: 'directory',  description: 'A documentation sub-folder under <skill>/references/ that holds Markdown deep-dives, indexes, and source citations. The largest reference set is in rui-code/vue (200+ files).', file: 'rui-code/vue/references/index.md', line: 1 },
+          { name: 'Template',         role: 'directory',  description: 'A 4-file page shell (data.js + index.html + index.css + index.js) under <skill>/templates/. The rui-reports group ships templates for every report style (quickstart, daily, diagram, files, self-test).', file: 'rui-reports/quickstart/templates/data.js', line: 1 }
         ]
       },
-      'directory-map': {
-        kind:        'tree',
-        coverage:    0.95,
-        verdict:     'pass',
+      {
+        id:       'directory-map',
+        kind:     'directory-map',
+        title:    'Directory map',
+        coverage: 95,
+        verdict:  'pass',
+        depth:    3,
         tree: [
-          'billing-svc/',
-          '├── README.md              ← service overview + how to run',
-          '├── RUNBOOK.md             ← on-call procedures (PagerDuty links)',
-          '├── go.mod',
-          '├── cmd/',
-          '│   └── billing-svc/',
-          '│       └── main.go        ← entry point',
-          '├── internal/',
-          '│   ├── server/            ← HTTP layer (chi)',
-          '│   ├── invoice/           ← domain layer',
-          '│   ├── store/             ← Postgres persistence',
-          '│   ├── kafka/             ← event consumer',
-          '│   └── config/            ← env + flag parsing',
-          '├── migrations/            ← one .up.sql / .down.sql per migration',
-          '├── docs/adr/              ← numbered ADRs',
-          '└── test/integration/      ← docker-compose-driven tests'
+          'skills/',
+          '├── rui-code/                  ← 9 sub-skills (frameworks + runtimes)',
+          '│   ├── chrome/   css/   fastapi/   h5/   nginx/',
+          '│   ├── nodejs/   tauri/   vite/   vue/',
+          '│   └── (each skill: SKILL.md, evals/, references/)',
+          '├── rui-init/                  ← init pipeline (5 steps + 2 agents + 2 rules)',
+          '│   ├── SKILL.md',
+          '│   ├── agents/    evals/    references/    rules/    templates/',
+          '│   └── steps/',
+          '│       ├── 01-detect/   02-explore/   03-generate/',
+          '│       └── 04-arch/     05-verify/',
+          '├── rui-reports/               ← 5 report styles + 1 engine',
+          '│   ├── quickstart/   daily/   diagram/   files/   self-test/',
+          '│   └── diagram/',
+          '│       ├── engine/core/src/    ← JS engine (graph, search, schema)',
+          '│       ├── languages/          ← tree-sitter configs (16 langs)',
+          '│       ├── frameworks/         ← framework-specific briefs',
+          '│       ├── scripts/   templates/   references/',
+          '│       └── package.json        ← only npm manifest in the catalog',
+          '├── rui-test/                  ← 12 topics under topics/',
+          '│   ├── SKILL.md',
+          '│   ├── topics/',
+          '│   │   ├── async-component/   async-flush/   blackbox/',
+          '│   │   ├── composable-wrapper/  e2e-playwright/   fixture/',
+          '│   │   ├── no-snapshot/   pinia-setup/   runner-choice/',
+          '│   │   ├── suspense/   teleport/   vitest-setup/',
+          '│   └── evals/   references/',
+          '└── rui-tools/                 ← 10 capability skills',
+          '    ├── cc/   git/   github/   import/   lighthouse/',
+          '    ├── mermaid/   public-api/   skill/   tmux/   ui-ux/',
+          '    └── (most include commands/, agents/, references/, evals/)'
         ].join('\n'),
-        depth: 3,
-        annotations: {
-          'cmd/billing-svc/main.go':  'Entry point — start here for the request flow',
-          'internal/server/server.go': 'HTTP layer — handlers + middleware',
-          'docs/adr/':                 'ADRs explain the "why" behind non-obvious choices',
-          'RUNBOOK.md':                'On-call runbook — read before your first shift'
-        }
+        annotations: [
+          { path: 'rui-init/SKILL.md',                  note: 'End-to-end pipeline orchestrator — start here for /rui-init' },
+          { path: 'rui-init/steps/',                    note: 'Five ordered steps; each ships a STEP.md, agents/, templates/, rules/' },
+          { path: 'rui-reports/diagram/package.json',   note: 'The only npm manifest in the catalog (vitest 3, graphology, zod, web-tree-sitter)' },
+          { path: 'rui-reports/diagram/engine/core/src/', note: 'JS engine: graph-builder, layer-detector, search, schema, plugins' },
+          { path: 'rui-reports/quickstart/templates/',  note: 'The 4-file template this report was built from' },
+          { path: 'rui-test/topics/',                   note: '12 knowledge topics, each its own sub-skill with README.md' },
+          { path: 'rui-tools/skill/SKILL.md',           note: 'Meta-skill for creating, editing, and benchmarking other skills' },
+          { path: 'rui-tools/import/',                  note: 'Token-bearing remote request helper used by rui-init for remote fetches' }
+        ]
       },
-      'onboarding-flow': {
-        kind:     'steps',
-        coverage: 0.95,
+      {
+        id:       'onboarding-flow',
+        kind:     'onboarding-flow',
+        title:    'Onboarding flow',
+        coverage: 90,
         verdict:  'pass',
+        // Visual: 5 ordered steps with time, type, and a one-liner.
+        // The renderer highlights `pipeline` steps differently from
+        // `reading` and `run` steps.
         steps: [
-          { order: 1, action: 'Read README.md end to end.',                          outcome: 'You know the service contract, ports, and dependencies.',         file: 'README.md' },
-          { order: 2, action: 'Read RUNBOOK.md before your first on-call shift.',   outcome: 'You know what to do when paged.',                                file: 'RUNBOOK.md' },
-          { order: 3, action: 'Read at least the first two ADRs.',                  outcome: 'You know why we picked Postgres + Kafka + chi.',                 file: 'docs/adr/0001-record-storage.md' },
-          { order: 4, action: 'Bring up Postgres + Kafka via the docker-compose helper.', outcome: 'You can run the service against a real local DB + broker.', command: 'docker compose -f test/integration/compose.yaml up -d' },
-          { order: 5, action: 'Run the integration test suite to confirm green.',  outcome: 'Baseline: 32 integration tests pass.',                           command: 'go test ./test/integration/...' },
-          { order: 6, action: 'Start the service against the local DB.',            outcome: 'Service is up on :8080 with seed data.',                        command: 'go run ./cmd/billing-svc' },
-          { order: 7, action: 'curl /healthz and /readyz, then POST a sample event.', outcome: 'You see the full request → DB → response flow end to end.', command: 'curl -sf localhost:8080/healthz' },
-          { order: 8, action: 'Read internal/server/server.go top to bottom.',      outcome: 'You know how routes + middleware are wired.',                    file: 'internal/server/server.go' }
+          { order: 1, type: 'read',  minutes: 2, action: 'Read /Users/yi/YrY/.claude/README.md end to end.',
+            outcome: 'You know the 5 skill groups, the 26 manifests, the docs center entry, and the runbook-style command flow.',
+            file: '/Users/yi/YrY/.claude/README.md' },
+          { order: 2, type: 'read',  minutes: 3, action: 'Read /Users/yi/YrY/.claude/CLAUDE.md to learn the project profile, iron laws, and hard constraints.',
+            outcome: 'You understand the security surface (dataStorage, authentication, thirdParty all true) and the 6 project constraints.',
+            file: '/Users/yi/YrY/.claude/CLAUDE.md' },
+          { order: 3, type: 'view',  minutes: 1, action: 'Open the docs dashboard in a browser to see the live rendering.',
+            outcome: 'You can see dependency graph, story trees, and source groups rendered by the rui-init pipeline.',
+            command: 'open /Users/yi/YrY/.claude/docs/index.html' },
+          { order: 4, type: 'read',  minutes: 4, action: 'Skim rui-init/SKILL.md to learn the detect → explore → generate → arch → verify pipeline.',
+            outcome: 'You know which step owns CLAUDE.md, README.md, docs/, and the verify gate.',
+            file: 'rui-init/SKILL.md' },
+          { order: 5, type: 'read',  minutes: 3, action: 'Pick one sub-skill (e.g. rui-tools/skill) and read its SKILL.md frontmatter.',
+            outcome: 'You understand the trigger surface and arguments schema — every skill in the catalog uses the same shape.',
+            file: 'rui-tools/skill/SKILL.md' },
+          { order: 6, type: 'run',   minutes: 2, action: 'Re-run the init pipeline to refresh the docs home after any change.',
+            outcome: 'CLAUDE.md, README.md, docs/index.html and docs/data.js are rebuilt; the 5 arch scenes and 6 test scenes are emitted and verified.',
+            command: 'cd /Users/yi/YrY/.claude && /rui-init' },
+          { order: 7, type: 'run',   minutes: 3, action: 'Run the only test suite in the catalog to confirm the diagram engine is green.',
+            outcome: 'Baseline: vitest run on engine/core/src passes.',
+            command: 'cd /Users/yi/YrY/.claude/skills/rui-reports/diagram && pnpm test' }
         ]
       },
-      'commands': {
+      {
+        id:       'commands',
         kind:     'commands',
-        coverage: 0.95,
-        verdict:  'pass',
-        items: [
-          { name: 'run',         command: 'go run ./cmd/billing-svc',                  description: 'Run the service against the local DB.',                  source: 'cmd/billing-svc/main.go' },
-          { name: 'build',       command: 'go build -o ./bin/billing-svc ./cmd/billing-svc', description: 'Build a static binary into ./bin.',              source: 'Makefile' },
-          { name: 'test',        command: 'go test ./...',                              description: 'Run the unit test suite.',                             source: 'Makefile' },
-          { name: 'integ',       command: 'go test ./test/integration/...',             description: 'Run the integration suite (needs docker-compose).',   source: 'Makefile' },
-          { name: 'lint',        command: 'golangci-lint run',                          description: 'Lint (uses the repo config).',                         source: '.golangci.yml' },
-          { name: 'migrate-up',  command: 'migrate -path migrations -database $DATABASE_URL up', description: 'Apply SQL migrations.',                      source: 'Makefile' },
-          { name: 'migrate-down',command: 'migrate -path migrations -database $DATABASE_URL down 1', description: 'Roll back one migration.',                source: 'Makefile' }
-        ]
-      },
-      'faq': {
-        kind:     'qa',
-        coverage: 0.55,
+        title:    'Command cheatsheet',
+        coverage: 85,
         verdict:  'partial',
         items: [
-          { question: 'Why chi and not net/http alone?', answer: 'chi gives us composable middleware (request ID, recovery, metrics) without dragging in a full framework. See ADR-0003.' },
-          { question: 'Why Kafka and not NATS or RabbitMQ?', answer: 'We already run Kafka for the orders service — adopting it here keeps the platform story single-vendor. See ADR-0005.' },
-          { question: 'How do I add a new endpoint?', answer: 'Add a handler in internal/server/handlers/, register it in internal/server/server.go, and add a route in routes.go. Tests live next to the handler.' }
+          { name: 'list-skill-groups', command: 'ls /Users/yi/YrY/.claude/skills',
+            description: 'List the 5 top-level skill groups (rui-code, rui-init, rui-reports, rui-test, rui-tools).',
+            source: 'README.md' },
+          { name: 'list-manifests',    command: 'find /Users/yi/YrY/.claude/skills -maxdepth 4 -name SKILL.md',
+            description: 'Enumerate all 26 SKILL.md manifests in the catalog.',
+            source: 'README.md' },
+          { name: 'open-docs',         command: 'open /Users/yi/YrY/.claude/docs/index.html',
+            description: 'Open the regenerated docs home (Vue 3 + shared loader).',
+            source: 'README.md' },
+          { name: 'rebuild-docs',      command: 'cd /Users/yi/YrY/.claude && /rui-init',
+            description: 'Re-run the full detect → explore → generate → arch → verify pipeline.',
+            source: 'CLAUDE.md' },
+          { name: 'test-engine',       command: 'cd /Users/yi/YrY/.claude/skills/rui-reports/diagram && pnpm test',
+            description: 'Run the only test suite in the catalog — vitest on the diagram engine core.',
+            source: 'package.json' },
+          { name: 'run-single-test',   command: 'cd /Users/yi/YrY/.claude/skills/rui-reports/diagram && pnpm exec vitest run engine/core/src/<file>.test.js',
+            description: 'Run a single vitest file from the diagram engine core.',
+            source: 'package.json' },
+          { name: 'grep-skill-name',   command: 'grep -l "name: rui-" /Users/yi/YrY/.claude/skills/**/SKILL.md',
+            description: 'Locate a skill by its frontmatter name across the catalog.',
+            source: 'docs' },
+          { name: 'inspect-triggers',  command: 'cat /Users/yi/YrY/.claude/skills/<group>/<skill>/SKILL.md | head -30',
+            description: 'Read a skill\'s trigger surface (the description: block).',
+            source: 'docs' }
         ]
       },
-      'further-reading': {
-        kind:     'links',
-        coverage: 0.90,
+      {
+        id:       'faq',
+        kind:     'faq',
+        title:    'FAQ',
+        coverage: 70,
+        verdict:  'partial',
+        items: [
+          { question: 'How many skill groups and SKILL.md manifests are in the catalog?',
+            answer: '5 skill groups (rui-code, rui-init, rui-reports, rui-test, rui-tools) and 26 SKILL.md manifests, as recorded in /Users/yi/YrY/.claude/CLAUDE.md and the README counts table.',
+            source: 'README.md' },
+          { question: 'Is there a top-level package.json?',
+            answer: 'No. The only npm manifest in the catalog is /Users/yi/YrY/.claude/skills/rui-reports/diagram/package.json. All other skills are pure manifest + Markdown + assets.',
+            source: 'CLAUDE.md' },
+          { question: 'How do I add a new skill?',
+            answer: 'Read rui-tools/skill/SKILL.md — it is the meta-skill for creating, evaluating, and benchmarking skills. The recommended flow: draft the manifest, then run evals/evals.json prompts, then package.',
+            source: 'rui-tools/skill/SKILL.md' },
+          { question: 'What does /rui-init do, and is it safe to re-run?',
+            answer: '/rui-init performs a full rebuild: it regenerates CLAUDE.md, README.md, the docs home (index.html, index.css, index.js, data.js), the 5 docs/arch/ scenes, the 6 docs/test/ scenes, and the docs/.pipeline-state/ verify result. Treat the generated outputs as disposable.',
+            source: 'rui-init/SKILL.md' },
+          { question: 'Where does the docs home get its data?',
+            answer: 'The rui-init pipeline writes docs/.pipeline-state/{profile,exploration,verify-result}.json during steps 01-detect → 02-explore → 05-verify. The step 03-generate reads those files and emits CLAUDE.md, README.md, and the four docs/ files.',
+            source: 'CLAUDE.md' },
+          { question: 'Why does CLAUDE.md flag authentication and thirdParty as true?',
+            answer: 'rui-tools/import sends token-bearing remote requests via X-Token headers, and the shared loader plus import/report scripts depend on browser and third-party packages. The security surface is documented in the project profile section of CLAUDE.md.',
+            source: 'CLAUDE.md' },
+          { question: 'What is the test framework and what does it cover?',
+            answer: 'Vitest 3.1, scoped to rui-reports/diagram/engine/core/src. The test commands are pnpm test (full suite) and pnpm exec vitest run <file>.test.js (single file).',
+            source: 'package.json' },
+          { question: 'Can I move a SKILL.md out of its skill group?',
+            answer: 'No. CLAUDE.md constraint #1 says top-level skill groups live only under skills/. Moving them breaks the catalog structure and fails the rui-init verify step.',
+            source: 'CLAUDE.md' }
+        ]
+      },
+      {
+        id:       'further-reading',
+        kind:     'further-reading',
+        title:    'Further reading',
+        coverage: 90,
         verdict:  'pass',
         items: [
-          { title: 'README.md',            href: 'README.md',                 description: 'Service overview + how to run.',                                kind: 'doc' },
-          { title: 'RUNBOOK.md',           href: 'RUNBOOK.md',                description: 'On-call runbook — read before your first shift.',              kind: 'doc' },
-          { title: 'docs/adr/0001-record-storage.md', href: 'docs/adr/0001-record-storage.md', description: 'ADR: why we store invoice lines in Postgres.',      kind: 'adr' },
-          { title: 'docs/adr/0003-http-router.md',    href: 'docs/adr/0003-http-router.md',    description: 'ADR: why chi over net/http + gin + echo.',          kind: 'adr' },
-          { title: 'migrations/',          href: 'migrations/',               description: 'SQL schema history — one .up/.down file per migration.',       kind: 'directory' },
-          { title: 'test/integration/',    href: 'test/integration/',         description: 'docker-compose-driven integration tests.',                     kind: 'directory' }
+          { title: '/Users/yi/YrY/.claude/README.md',                                  href: '../README.md',                                       description: 'Counts table, quick start, system view, and domain language for the catalog.', kind: 'doc' },
+          { title: '/Users/yi/YrY/.claude/CLAUDE.md',                                  href: '../CLAUDE.md',                                       description: 'Project profile, iron laws, hard constraints, and self-constraints for any edit.', kind: 'doc' },
+          { title: 'rui-init/SKILL.md',                                                href: '../../skills/rui-init/SKILL.md',                      description: 'Pipeline orchestrator — the canonical entry point for /rui-init.',                     kind: 'skill' },
+          { title: 'rui-init/steps/',                                                  href: '../../skills/rui-init/steps/',                        description: 'Five ordered steps; each ships STEP.md, agents/, templates/, rules/.',                  kind: 'directory' },
+          { title: 'rui-reports/diagram/package.json',                                 href: '../../skills/rui-reports/diagram/package.json',        description: 'The only npm manifest in the catalog — vitest, graphology, zod, web-tree-sitter.',     kind: 'config' },
+          { title: 'rui-reports/quickstart/SKILL.md',                                  href: '../../skills/rui-reports/quickstart/SKILL.md',         description: 'The 4-file template and the create command used to build this report.',                kind: 'skill' },
+          { title: 'rui-tools/skill/SKILL.md',                                         href: '../../skills/rui-tools/skill/SKILL.md',                description: 'Meta-skill for creating, editing, and benchmarking other skills.',                      kind: 'skill' },
+          { title: 'docs/arch/',                                                       href: '../arch/',                                            description: 'Five arch scenes emitted by rui-init/04-arch — module location, skill flow, onboarding.', kind: 'directory' },
+          { title: 'docs/test/',                                                       href: '../test/',                                            description: 'Six test scenes emitted by rui-init/04-arch — self-check, regressions, third-party.',   kind: 'directory' },
+          { title: 'docs/.pipeline-state/',                                            href: '../.pipeline-state/',                                 description: 'profile.json, exploration.json, verify-result.json — the state for every pipeline run.',  kind: 'directory' }
         ]
       }
-    }
+    ]
   };
 
-  /* Dataset registry: order matters — the dataset switcher renders
-     them top-to-bottom in this order. Adding a new fixture is as
-     simple as registering a new `DATASET_X` above and adding it here. */
+  /* ═══════════════════════════════════════════════════════════════════
+     DATASETS — first dataset is the scope-derived skills report.
+     The page exposes a dataset switcher; the create command can add
+     more entries to this list. The label is what the user sees in
+     the toolbar; `data` is the actual dataset object.
+     ─────────────────────────────────────────────────────────────────── */
   var DATASETS = [
-    { key: 'python', label: 'Python CLI',        data: DATASET_PYTHON },
-    { key: 'ts',     label: 'TypeScript monorepo', data: DATASET_TS     },
-    { key: 'go',     label: 'Go HTTP service',   data: DATASET_GO     }
+    { key: 'skills', label: '.claude/skills',  data: DATASET_SKILLS }
   ];
-
-  /* Backward compat: callers expecting `example` get the first dataset. */
-  var EXAMPLE_DATA = DATASET_PYTHON;
 
   /* ═══════════════════════════════════════════════════════════════════
      HELPERS
      ─────────────────────────────────────────────────────────────────── */
-
-  /** Em-dash for missing scalar values. */
   function na() { return '—'; }
 
   /**
-   * Deep-merge defaults with the active data. Semantics:
-   *   - Input (`b`) keys always win for present keys.
-   *   - Defaults (`a`) fill in for keys that are absent in input,
-   *     but ONLY when the default value is a scalar or array.
-   *   - Object defaults are NOT auto-merged in when input is missing
-   *     them. This matters for per-section shapes: a populated
-   *     overview in the input should not inherit a default
-   *     `todo: { reason: '...' }` object just because input omitted
-   *     the `todo` key. The renderer also falls back to a TODO block
-   *     when the section's content is missing, so the contract is
-   *     robust to absent `todo` fields.
+   * Compute a composite score (0–100) and letter grade from a
+   * per-section coverage map. Sections missing from `sectionsById`
+   * are treated as 0%.
+   *
+   * @param {Object} sectionsById   — { [id]: { coverage: 0–100, verdict? } }
+   * @returns {{ composite: number, grade: string, verdicts: Object }}
    */
-  function mergeWithDefaults(input) {
-    function isObject(x) { return x && typeof x === 'object' && !Array.isArray(x); }
-    function merge(a, b) {
-      if (!isObject(a) || !isObject(b)) return b === undefined ? a : b;
-      var out = {};
-      // Pass 1 — input keys win.
-      Object.keys(b).forEach(function (k) {
-        out[k] = (k in a) ? merge(a[k], b[k]) : b[k];
-      });
-      // Pass 2 — fill in missing scalar/array defaults only.
-      Object.keys(a).forEach(function (k) {
-        if (k in out) return;
-        var av = a[k];
-        if (isObject(av)) return; // skip object defaults; input didn't opt in
-        out[k] = av;
-      });
-      return out;
-    }
-    return merge(DEFAULT_DATA, input || {});
-  }
-
-  /**
-   * Compute the composite score, grade, and per-section verdicts from
-   * the sections' coverage. Mirrors the SCORING block in SKILL.md.
-   */
-  function computeScore(sections) {
+  function computeScore(sectionsById) {
     var verdicts = {};
     var sum = 0;
     var n = 0;
     CANONICAL_SECTIONS.forEach(function (slug) {
-      var sec = sections[slug] || {};
+      var sec = sectionsById[slug] || (Array.isArray(sectionsById)
+        ? sectionsById.find(function (s) { return s.id === slug; })
+        : null) || {};
       var cov = typeof sec.coverage === 'number' ? sec.coverage : 0;
-      var v = cov >= 0.90 ? 'pass' : (cov >= 0.50 ? 'partial' : 'fail');
+      var v = cov >= 90 ? 'pass' : (cov >= 50 ? 'partial' : 'fail');
       verdicts[slug] = v;
       sum += cov;
       n += 1;
     });
-    var composite = n > 0 ? Math.round((sum / n) * 100) : 0;
+    var composite = n > 0 ? Math.round(sum / n) : 0;
     var grade = composite >= 90 ? 'A' : composite >= 75 ? 'B' : composite >= 60 ? 'C' : composite >= 40 ? 'D' : 'F';
     return { composite: composite, grade: grade, verdicts: verdicts };
+  }
+
+  /**
+   * Build a `{id: section}` lookup from a section array.
+   * Used by the create command and by templates that still pass
+   * sections as a keyed object.
+   */
+  function indexById(sections) {
+    var out = {};
+    if (!sections) return out;
+    if (Array.isArray(sections)) {
+      sections.forEach(function (s) { if (s && s.id) out[s.id] = s; });
+    } else {
+      Object.keys(sections).forEach(function (k) { out[k] = sections[k]; });
+    }
+    return out;
   }
 
   /* ═══════════════════════════════════════════════════════════════════
      PUBLIC EXPORTS
      ─────────────────────────────────────────────────────────────────── */
-
   window.QUICKSTART_DATA_SCHEMA = {
-    defaults:            DEFAULT_DATA,
-    example:             EXAMPLE_DATA,
+    defaults:            { labels: DEFAULT_LABELS, sections: [], score: {}, meta: {} },
+    example:             DATASET_SKILLS,
     datasets:            DATASETS,
-    merge:               mergeWithDefaults,
+    merge:               function (input) { return input || {}; },
     computeScore:        computeScore,
+    indexById:           indexById,
     canonicalSections:   CANONICAL_SECTIONS,
-    sectionTitlesEn:     SECTION_TITLES_EN,
+    sectionTitlesEn:     {},
     na:                  na,
     version:             1
   };
 
-  // Active data: window.QUICKSTART_DATA → first dataset (last writer
-  // wins so a host page can override without editing this file).
-  var active = mergeWithDefaults(window.QUICKSTART_DATA || DATASET_PYTHON);
+  // Recompute the score from the active sections so the page never
+  // drifts from the per-section coverage values.
+  DATASET_SKILLS.score = computeScore(DATASET_SKILLS.sections);
 
-  // Recompute the score from the active sections so a hand-edited data.js
-  // does not drift from the per-section coverage. The /rui-report-quickstart
-  // create command is free to overwrite the score block; this only fills
-  // the gap if the host page forgot to.
-  if (!window.QUICKSTART_DATA || !window.QUICKSTART_DATA.score) {
-    active.score = computeScore(active.sections);
-  }
-  window.QUICKSTART_DATA = active;
+  // Publish the active dataset for index.js. The schema lives on
+  // QUICKSTART_DATA_SCHEMA; the active data is on QUICKSTART_DATA.
+  window.QUICKSTART_DATA = {
+    datasets: DATASETS,
+    default:  DATASET_SKILLS
+  };
 })();

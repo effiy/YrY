@@ -1,0 +1,12 @@
+<script type="text/x-template" id="qs-mini-bars-tpl">
+  <div class="qs-mini-bars">
+    <div v-for="r in rows" :key="r.name" class="qs-mini-bar">
+      <span class="qs-mini-bar-name">{{ r.name }}</span>
+      <div class="qs-mini-bar-track">
+        <div class="qs-mini-bar-fill" :class="r.cls || ''"
+          :style="{ width: pct(r) + '%', background: r.color }"></div>
+      </div>
+      <span class="qs-mini-bar-value">{{ r.value }}</span>
+    </div>
+  </div>
+</script>

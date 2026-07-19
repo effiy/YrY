@@ -1,0 +1,29 @@
+/* qsFurtherReading — list of links */
+.qs-reading {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--qs-space-md);
+}
+.qs-reading-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--qs-space-xs);
+  padding: var(--qs-space-lg);
+  border: 1px solid var(--qs-border-soft);
+  border-radius: var(--qs-radius-md);
+  background: var(--qs-surface);
+  transition: transform var(--qs-dur-fast) var(--qs-ease-out),
+              border-color var(--qs-dur-fast) var(--qs-ease-base);
+}
+.qs-reading-item:hover {
+  transform: translateY(-1px);
+  border-color: var(--qs-accent);
+}
+.qs-reading-title { color: var(--qs-text); font-weight: 600; }
+.qs-reading-desc  { color: var(--qs-text-soft); font-size: var(--qs-text-sm); }
+.qs-reading-kind {
+  color: var(--qs-text-muted);
+  font-size: var(--qs-text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}

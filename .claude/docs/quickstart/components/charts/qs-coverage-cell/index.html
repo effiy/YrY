@@ -1,0 +1,17 @@
+<script type="text/x-template" id="qs-coverage-cell-tpl">
+  <div class="qs-coverage-cell">
+    <svg :width="size" :height="size" viewBox="0 0 36 36" aria-hidden="true">
+      <circle class="qs-radial-track" cx="18" cy="18" r="15" fill="none" stroke-width="4"/>
+      <circle class="qs-radial-fill" :class="'is-' + verdict"
+        cx="18" cy="18" r="15" fill="none" stroke-width="4"
+        stroke-linecap="round"
+        :stroke-dasharray="circ"
+        :stroke-dashoffset="offset"
+        transform="rotate(-90 18 18)"/>
+    </svg>
+    <div class="qs-coverage-cell-body">
+      <span class="qs-coverage-cell-label">{{ label }}</span>
+      <span class="qs-coverage-cell-value">{{ value }}%</span>
+    </div>
+  </div>
+</script>

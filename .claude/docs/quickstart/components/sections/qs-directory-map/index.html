@@ -1,0 +1,13 @@
+<script type="text/x-template" id="qs-directory-map-tpl">
+  <div class="qs-fade-up">
+    <div class="qs-tree-wrap">
+      <pre class="qs-tree" v-if="section.tree">{{ section.tree }}</pre>
+      <div class="qs-annotations" v-if="section.annotations && section.annotations.length">
+        <div class="qs-annotation" v-for="a in section.annotations" :key="a.path">
+          <div class="qs-annotation-path"><code>{{ a.path }}</code></div>
+          <p class="qs-annotation-note">{{ a.note }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>

@@ -1,0 +1,60 @@
+<script type="text/x-template" id="qs-overview-tpl">
+  <div class="qs-fade-up">
+    <p class="qs-overview-summary" v-if="section.summary">{{ section.summary }}</p>
+
+    <div class="qs-numbers qs-stagger" v-if="section.byTheNumbers && section.byTheNumbers.length">
+      <div v-for="n in section.byTheNumbers" :key="n.label"
+        :class="['qs-number', 'is-' + n.accent]">
+        <div class="qs-number-value">
+          <span class="qs-number-value-num">{{ n.value }}</span>
+          <span class="qs-number-value-suffix">{{ n.suffix }}</span>
+        </div>
+        <span class="qs-number-label">{{ n.label }}</span>
+        <p class="qs-number-blurb">{{ n.blurb }}</p>
+      </div>
+    </div>
+
+    <h3 v-if="section.stack && section.stack.layers && section.stack.layers.length"
+      class="qs-section-h3">
+      Tech stack
+    </h3>
+    <qs-stack-diagram v-if="section.stack && section.stack.layers" :data="section.stack" />
+
+    <div class="qs-overview-grid qs-stagger" v-if="(section.tiles && section.tiles.length) || (section.stats && section.stats.length)">
+      <div class="qs-overview-tile" v-for="t in section.tiles" :key="t.label">
+        <span class="qs-overview-tile-label">{{ t.label }}</span>
+        <span class="qs-overview-tile-value">{{ t.value }}</span>
+      </div>
+      <div class="qs-overview-tile qs-overview-stat-tile" v-for="(s, idx) in section.stats" :key="s.label">
+        <div class="qs-overview-stat">
+          <span class="qs-overview-stat-value"
+                :data-counter="s.value">{{ s.value }}</span>
+          <span class="qs-overview-stat-label">{{ s.label }}</span>
+        </div>
+        <qs-sparkline v-if="s.trend && s.trend.length > 1"
+          :points="s.trend"
+          :tone="kpiTone(idx)"
+          :width="160" :height="28" />
+      </div>
+    </div>
+
+    <h3 v-if="section.whatYoullShip && section.whatYoullShip.length"
+      class="qs-section-h3">
+      What you'll ship
+    </h3>
+    <div class="qs-ship qs-stagger" v-if="section.whatYoullShip && section.whatYoullShip.length">
+      <div v-for="d in section.whatYoullShip" :key="d.title"
+        :class="['qs-ship-card', 'is-' + d.tag]">
+        <span class="qs-ship-tag">{{ d.tag }}</span>
+        <span class="qs-ship-title">{{ d.title }}</span>
+        <p class="qs-ship-body">{{ d.body }}</p>
+      </div>
+    </div>
+
+    <h3 v-if="section.landscape && section.landscape.groups && section.landscape.groups.length"
+      class="qs-section-h3">
+      Skill landscape
+    </h3>
+    <qs-skill-landscape v-if="section.landscape && section.landscape.groups" :data="section.landscape" />
+  </div>
+</script>

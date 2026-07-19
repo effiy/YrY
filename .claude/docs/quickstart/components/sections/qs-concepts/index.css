@@ -1,0 +1,88 @@
+/* qsConcepts — list of { name, description, file, line, role } */
+.qs-concept-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--qs-space-lg);
+}
+.qs-concept {
+  display: flex;
+  flex-direction: column;
+  gap: var(--qs-space-xs);
+  padding: var(--qs-space-lg);
+  border: 1px solid var(--qs-border-soft);
+  border-radius: var(--qs-radius-md);
+  background: var(--qs-surface);
+  cursor: default;
+  transition: border-color var(--qs-dur-fast) var(--qs-ease-base),
+              transform var(--qs-dur-fast) var(--qs-ease-out);
+}
+.qs-concept:hover {
+  border-color: var(--qs-accent);
+  transform: translateY(-1px);
+}
+.qs-concept-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--qs-space-sm);
+  flex-wrap: wrap;
+}
+.qs-concept-name {
+  font-size: var(--qs-text-lg);
+  font-weight: 700;
+  color: var(--qs-text);
+}
+.qs-concept-role {
+  font-size: var(--qs-text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--qs-accent);
+  padding: 1px 6px;
+  border-radius: var(--qs-radius-pill);
+  background: var(--qs-accent-soft);
+}
+.qs-concept-desc {
+  color: var(--qs-text-soft);
+  font-size: var(--qs-text-sm);
+  line-height: var(--qs-leading-base);
+}
+.qs-concept-loc {
+  color: var(--qs-text-muted);
+  font-size: var(--qs-text-xs);
+  font-family: var(--qs-font-mono, "SF Mono", "JetBrains Mono", "Geist Mono", monospace);
+}
+
+/* Role filter chips */
+.qs-role-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--qs-space-sm);
+  margin-bottom: var(--qs-space-lg);
+}
+.qs-role-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--qs-space-xs);
+  padding: 4px 12px;
+  border-radius: var(--qs-radius-pill);
+  background: var(--qs-surface);
+  border: 1px solid var(--qs-border-soft);
+  color: var(--qs-text-soft);
+  font-size: var(--qs-text-xs);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--qs-dur-fast) var(--qs-ease-base);
+}
+.qs-role-chip:hover { border-color: var(--qs-accent); }
+.qs-role-chip.is-active {
+  background: var(--qs-accent);
+  color: var(--qs-text-inverse);
+  border-color: var(--qs-accent);
+}
+.qs-role-chip-count {
+  background: color-mix(in srgb, currentColor 24%, transparent);
+  border-radius: var(--qs-radius-pill);
+  padding: 0 6px;
+  font-size: 10px;
+  line-height: 16px;
+  height: 16px;
+}

@@ -1,0 +1,17 @@
+<script type="text/x-template" id="qs-faq-tpl">
+  <div class="qs-faq qs-stagger">
+    <article class="qs-faq-item"
+      v-for="(q, i) in section.items" :key="q.question"
+      :class="{ 'is-collapsed': !isOpen(i) }">
+      <h3 class="qs-faq-q" @click="toggle(i)">
+        <span>Q{{ i + 1 }}.</span>
+        <span style="flex: 1;">{{ q.question }}</span>
+        <span class="qs-faq-toggle" aria-hidden="true">\u25BE</span>
+      </h3>
+      <div class="qs-faq-a">
+        <p>{{ q.answer }}</p>
+        <p class="qs-faq-source" v-if="q.source">Source: <code>{{ q.source }}</code></p>
+      </div>
+    </article>
+  </div>
+</script>

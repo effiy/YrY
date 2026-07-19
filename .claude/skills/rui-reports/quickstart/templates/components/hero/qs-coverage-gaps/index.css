@@ -1,0 +1,50 @@
+/* qsCoverageGaps — callout panel below the hero path */
+.qs-hero-gaps {
+  display: flex;
+  align-items: center;
+  gap: var(--qs-space-md);
+  padding: var(--qs-space-md) var(--qs-space-lg);
+  background: var(--qs-warn-soft);
+  border: 1px solid color-mix(in srgb, var(--qs-warn) 25%, transparent);
+  border-radius: var(--qs-radius-md);
+}
+.qs-hero-gaps-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--qs-warn);
+  color: var(--qs-text-inverse);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.qs-hero-gaps-text {
+  flex: 1;
+  font-size: var(--qs-text-sm);
+  color: var(--qs-text);
+  line-height: var(--qs-leading-base);
+}
+.qs-hero-gaps-text strong { color: var(--qs-warn-anchor); }
+.qs-hero-gaps-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--qs-space-sm);
+}
+.qs-hero-gaps-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--qs-space-xs);
+  padding: 2px 8px;
+  background: var(--qs-surface);
+  border: 1px solid color-mix(in srgb, var(--qs-warn) 20%, transparent);
+  border-radius: var(--qs-radius-pill);
+  font-size: var(--qs-text-xs);
+  font-weight: 600;
+  color: var(--qs-text);
+}
+.qs-hero-gaps-item-num {
+  font-variant-numeric: tabular-nums;
+  color: var(--qs-warn-anchor);
+}

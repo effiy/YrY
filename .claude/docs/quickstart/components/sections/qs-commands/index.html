@@ -1,0 +1,15 @@
+<script type="text/x-template" id="qs-commands-tpl">
+  <div class="qs-fade-up">
+    <div class="qs-commands qs-stagger">
+      <div class="qs-command" v-for="c in section.items" :key="c.name"
+        @click="open(c)">
+        <span class="qs-command-name">{{ c.name }}</span>
+        <div class="qs-command-body">
+          <pre class="qs-command-cmd" v-if="c.command"><code>{{ c.command }}</code></pre>
+          <p class="qs-command-desc" v-if="c.description">{{ c.description }}</p>
+          <span class="qs-command-source" v-if="c.source">{{ c.source }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>

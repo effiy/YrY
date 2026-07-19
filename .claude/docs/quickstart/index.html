@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  @file: index.html
+  @purpose: Page shell for the `rui-report-quickstart` template. The
+            /rui-report-quickstart create command reads this file, the
+            matching index.css / index.js, and the data.js schema, then
+            writes a final self-contained report file into
+            <OUT_DIR>/{index.html, index.css, index.js, data.js,
+            README.md} (README.md is omitted when --no-mirror is set).
+
+            Open this file directly in a browser to preview the template
+            with example data.
+
+  @four_file_layout:
+    index.html — DOM skeleton + Vue mount + script wiring
+    data.js    — schema + default/empty + example data
+    index.css  — all styles, layered (reset → tokens → base → layout →
+                 components → sections → utilities → responsive → print)
+    index.js   — Vue 3 app + per-section renderers + quickstartToMarkdown()
+                exporter (used to produce the README.md mirror)
+
+  @shared_dependencies:
+    /.claude/shared/loader.js                       (Vue 3 + rui component bootstrap)
+    /.claude/shared/components/rui-back-top/        (floating back-to-top button)
+    /.claude/shared/components/rui-toast/           (toast notifications for copy feedback)
+    /.claude/shared/components/rui-badge/           (verdict pills, role tags)
+    /.claude/shared/components/rui-tag-chip/        (role / kind chips)
+    /.claude/shared/components/rui-progress-bar/    (per-section coverage bars)
+    /.claude/shared/components/rui-stats-grid/      (overview KPI cards)
+
+  @output: <out>/{index.html, index.css, index.js, data.js, README.md}
+  @language: English by default. The {{LANGUAGE}} placeholder is
+             replaced at write time by the create command.
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quickstart — .claude/skills</title>
+  <meta name="description" content="Newcomer quickstart — overview, concepts, directory map, onboarding flow, command cheatsheet, FAQ, and further reading. Static-analysis only; no project execution.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%231e40af'/><text x='16' y='22' font-size='18' font-family='sans-serif' font-weight='bold' fill='white' text-anchor='middle'>Q</text></svg>" type="image/svg+xml">
+
+  <!--
+    ═══════════════════════════════════════════════════════════════════
+    INFRASTRUCTURE — shared CDN loader auto-injects Vue 3 (primary +
+    fallback URL) and exposes ruiLoadComponent / ruiBootstrapComponent
+    on window. The `data-namespace` value is exposed as the IIFE
+    variable used by console logging.
+    ═══════════════════════════════════════════════════════════════════
+  -->
+  <script src="/.claude/shared/loader.js" data-namespace="rui-report-quickstart"></script>
+
+  <!--
+    Shared rui HTML CDN components. Load order is intentional:
+      · rui-back-top  — floating scroll-to-top button (auto-mounts)
+      · rui-toast     — toast notifications for copy feedback
+      · rui-badge     — verdict pills and role tags
+      · rui-tag-chip  — concept role / kind chips
+      · rui-progress-bar — per-section coverage bars
+      · rui-stats-grid   — overview KPI cards
+
+    Each component is independent and self-mounts via the shared
+    loader. Host pages must defensively check `window.ruiXxx.name`
+    before registering (see index.js).
+  -->
+  <script src="/.claude/shared/components/rui-back-top/index.js"></script>
+  <script src="/.claude/shared/components/rui-toast/index.js"></script>
+  <script src="/.claude/shared/components/rui-badge/index.js"></script>
+  <script src="/.claude/shared/components/rui-tag-chip/index.js"></script>
+  <script src="/.claude/shared/components/rui-progress-bar/index.js"></script>
+  <script src="/.claude/shared/components/rui-stats-grid/index.js"></script>
+
+  <!--
+  Page-specific qs-* components. Each lives in components/<category>/<name>/
+  and follows the rui bootstrap convention. The order below is
+  intentional: foundations (charts) first, then hero, then section
+  renderers, then overlays. The host (index.js) consumes each one
+  via the global `window.qsXxx` after the corresponding
+  *-ready event has fired.
+    charts/qs-donut            — pure SVG donut + center label
+    charts/qs-coverage-cell    — radial progress cell
+    charts/qs-mini-bars        — compact group bar list
+    charts/qs-sparkline        — inline SVG line + area chart
+    hero/qs-hero-path          — 5-step onboarding node graph
+    hero/qs-coverage-gaps      — coverage-gap callout panel
+    hero/qs-skill-landscape    — skill-group treemap
+    hero/qs-stack-diagram      — layered tech-stack diagram
+    sections/qs-overview       — overview section body
+    sections/qs-concepts       — concept list with role filter
+    sections/qs-directory-map  — preformatted tree + annotations
+    sections/qs-onboarding-flow — step tracker + ordered list
+    sections/qs-commands       — command table (click → modal)
+    sections/qs-faq            — Q&A pairs with collapse
+    sections/qs-further-reading — outbound link grid
+    overlay/qs-palette         — Cmd/Ctrl+K search overlay
+    overlay/qs-modal           — command detail modal
+-->
+<script src="components/charts/qs-donut/index.js"></script>
+<script src="components/charts/qs-coverage-cell/index.js"></script>
+<script src="components/charts/qs-mini-bars/index.js"></script>
+<script src="components/charts/qs-sparkline/index.js"></script>
+<script src="components/hero/qs-hero-path/index.js"></script>
+<script src="components/hero/qs-coverage-gaps/index.js"></script>
+<script src="components/hero/qs-skill-landscape/index.js"></script>
+<script src="components/hero/qs-stack-diagram/index.js"></script>
+<script src="components/sections/qs-overview/index.js"></script>
+<script src="components/sections/qs-concepts/index.js"></script>
+<script src="components/sections/qs-directory-map/index.js"></script>
+<script src="components/sections/qs-onboarding-flow/index.js"></script>
+<script src="components/sections/qs-commands/index.js"></script>
+<script src="components/sections/qs-faq/index.js"></script>
+<script src="components/sections/qs-further-reading/index.js"></script>
+<script src="components/overlay/qs-palette/index.js"></script>
+<script src="components/overlay/qs-modal/index.js"></script>
+
+<!--
+  Page resources (must be loaded in this order: schema first, then
+  styles, then app).
+    data.js   → defines window.QUICKSTART_DATA_SCHEMA + window.QUICKSTART_DATA
+    index.css → all styles (layered: reset → tokens → base → layout → components → sections → utilities → responsive → print)
+    index.js  → Vue 3 app, per-section renderers, quickstartToMarkdown()
+-->
+<script src="data.js"></script>
+<link rel="stylesheet" href="index.css">
+<script src="index.js"></script>
+</head>
+<body class="qs-page">
+  <!--
+    Reading progress: 2px fixed top bar, width driven by index.js
+    on scroll. Hidden in print styles.
+  -->
+  <div class="qs-progress" aria-hidden="true">
+    <div class="qs-progress-bar" data-progress-bar></div>
+  </div>
+
+  <!--
+    Accessibility — skip links. Hidden until focused (CSS).
+    The first link jumps to the section TOC; the second jumps
+    past the toolbar to the main content.
+  -->
+  <a class="qs-skip-link" href="#qs-toc">Skip to navigation</a>
+  <a class="qs-skip-link" href="#qs-main">Skip to main content</a>
+
+  <!--
+    Vue app mount point. The template lives in index.js (built once
+    via String.raw and passed to Vue.createApp). v-cloak hides the
+    body until Vue has rendered — the small CSS rule lives in
+    index.css.
+  -->
+  <div id="quickstart-app" v-cloak></div>
+
+  <!--
+    Command palette (Cmd/Ctrl+K). Mounted imperatively by index.js
+    on first open, then reused. Hidden by default; data-palette-open
+    is toggled by the keyboard handler.
+  -->
+  <div id="qs-palette-root" aria-hidden="true"></div>
+
+  <!--
+    Command detail modal. Same pattern as the palette — mounted
+    imperatively so the markup does not bloat the initial Vue tree.
+  -->
+  <div id="qs-modal-root" aria-hidden="true"></div>
+</body>
+</html>
