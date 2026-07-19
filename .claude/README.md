@@ -21,9 +21,9 @@
 
 | To do this | Run this |
 |------------|----------|
-| 运行唯一的测试套件 | `cd /Users/yi/YrY/.claude/skills/rui-reports/diagram && pnpm test` |
-| 运行单个 vitest 文件 | `cd /Users/yi/YrY/.claude/skills/rui-reports/diagram && pnpm exec vitest run engine/core/src/<file>.test.js` |
-| 重新生成根级文档中心 | `cd /Users/yi/YrY/.claude && /rui-init` |
+| 运行唯一的测试套件 | `cd /.claude/skills/rui-reports/diagram && pnpm test` |
+| 运行单个 vitest 文件 | `cd /.claude/skills/rui-reports/diagram && pnpm exec vitest run engine/core/src/<file>.test.js` |
+| 重新生成根级文档中心 | `cd /.claude && /rui-init` |
 | 打开文档中心 | 在浏览器中打开 `docs/index.html` |
 
 ## Quick start
@@ -31,12 +31,12 @@
 1. 查看目录骨架
 
 ```bash
-ls -la /Users/yi/YrY/.claude
+ls -la /.claude
 ```
 
 2. 打开主页
 
-打开 `/Users/yi/YrY/.claude/docs/index.html`，它会通过 `shared/loader.js`
+打开 `/.claude/docs/index.html`，它会通过 `shared/loader.js`
 挂载 Vue 页面并展示依赖、故事树和主要技能分组。
 
 3. 查看项目基线

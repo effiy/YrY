@@ -72,7 +72,7 @@
   var ACTIVE_DATA = {
     meta: {
       project:    'skills',
-      scope:      '/Users/yi/YrY/.claude/skills',
+      scope:      '/.claude/skills',
       scopeShort: '.claude/skills',
       date:       '2026-07-18',
       timestamp:  '2026-07-18T09:42:00+08:00',

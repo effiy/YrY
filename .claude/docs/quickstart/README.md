@@ -1,6 +1,6 @@
 # Quickstart — .claude/skills
 
-_Scope: /Users/yi/YrY/.claude/skills_
+_Scope: /.claude/skills_
 
 _Audience: New contributors to the YrY project_
 
@@ -140,21 +140,21 @@ skills/
 
 ## 4. Onboarding flow
 
-1. **Read /Users/yi/YrY/.claude/README.md end to end.** — You know the 5 skill groups, the 26 manifests, the docs center entry, and the runbook-style command flow.
-2. **Read /Users/yi/YrY/.claude/CLAUDE.md to learn the project profile, iron laws, and hard constraints.** — You understand the security surface (dataStorage, authentication, thirdParty all true) and the 6 project constraints.
+1. **Read /.claude/README.md end to end.** — You know the 5 skill groups, the 26 manifests, the docs center entry, and the runbook-style command flow.
+2. **Read /.claude/CLAUDE.md to learn the project profile, iron laws, and hard constraints.** — You understand the security surface (dataStorage, authentication, thirdParty all true) and the 6 project constraints.
 3. **Open the docs dashboard in a browser to see the live rendering.** — You can see dependency graph, story trees, and source groups rendered by the rui-init pipeline.
    ```
-   open /Users/yi/YrY/.claude/docs/index.html
+   open /.claude/docs/index.html
    ```
 4. **Skim rui-init/SKILL.md to learn the detect → explore → generate → arch → verify pipeline.** — You know which step owns CLAUDE.md, README.md, docs/, and the verify gate.
 5. **Pick one sub-skill (e.g. rui-tools/skill) and read its SKILL.md frontmatter.** — You understand the trigger surface and arguments schema — every skill in the catalog uses the same shape.
 6. **Re-run the init pipeline to refresh the docs home after any change.** — CLAUDE.md, README.md, docs/index.html and docs/data.js are rebuilt; the 5 arch scenes and 6 test scenes are emitted and verified.
    ```
-   cd /Users/yi/YrY/.claude && /rui-init
+   cd /.claude && /rui-init
    ```
 7. **Run the only test suite in the catalog to confirm the diagram engine is green.** — Baseline: vitest run on engine/core/src passes.
    ```
-   cd /Users/yi/YrY/.claude/skills/rui-reports/diagram && pnpm test
+   cd /.claude/skills/rui-reports/diagram && pnpm test
    ```
 
 ## 5. Command cheatsheet
@@ -174,13 +174,13 @@ skills/
 
 **Q: How many skill groups and SKILL.md manifests are in the catalog?**
 
-5 skill groups (rui-code, rui-init, rui-reports, rui-test, rui-tools) and 26 SKILL.md manifests, as recorded in /Users/yi/YrY/.claude/CLAUDE.md and the README counts table.
+5 skill groups (rui-code, rui-init, rui-reports, rui-test, rui-tools) and 26 SKILL.md manifests, as recorded in /.claude/CLAUDE.md and the README counts table.
 
 _Source: README.md_
 
 **Q: Is there a top-level package.json?**
 
-No. The only npm manifest in the catalog is /Users/yi/YrY/.claude/skills/rui-reports/diagram/package.json. All other skills are pure manifest + Markdown + assets.
+No. The only npm manifest in the catalog is /.claude/skills/rui-reports/diagram/package.json. All other skills are pure manifest + Markdown + assets.
 
 _Source: CLAUDE.md_
 
@@ -222,8 +222,8 @@ _Source: CLAUDE.md_
 
 ## 7. Further reading
 
-- [/Users/yi/YrY/.claude/README.md](../README.md) — Counts table, quick start, system view, and domain language for the catalog. _(doc)_
-- [/Users/yi/YrY/.claude/CLAUDE.md](../CLAUDE.md) — Project profile, iron laws, hard constraints, and self-constraints for any edit. _(doc)_
+- [/.claude/README.md](../README.md) — Counts table, quick start, system view, and domain language for the catalog. _(doc)_
+- [/.claude/CLAUDE.md](../CLAUDE.md) — Project profile, iron laws, hard constraints, and self-constraints for any edit. _(doc)_
 - [rui-init/SKILL.md](../../skills/rui-init/SKILL.md) — Pipeline orchestrator — the canonical entry point for /rui-init. _(skill)_
 - [rui-init/steps/](../../skills/rui-init/steps/) — Five ordered steps; each ships STEP.md, agents/, templates/, rules/. _(directory)_
 - [rui-reports/diagram/package.json](../../skills/rui-reports/diagram/package.json) — The only npm manifest in the catalog — vitest, graphology, zod, web-tree-sitter. _(config)_

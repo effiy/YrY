@@ -150,8 +150,8 @@ window.REPORT_CONFIG = {
 };
 
 window.REPORT_DATA = {
-  "scope": "/Users/yi/YrY/.claude/skills/",
-  "scopePath": "/Users/yi/YrY/.claude/skills",
+  "scope": "/.claude/skills/",
+  "scopePath": "/.claude/skills",
   "score": 87,
   "alerts": [
     {

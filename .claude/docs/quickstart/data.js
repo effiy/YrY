@@ -1,18 +1,18 @@
 /**
  * @file: data.js
  * @purpose: Scope-derived newcomer quickstart for
- *           /Users/yi/YrY/.claude/skills — the Claude skill catalog.
+ *           /.claude/skills — the Claude skill catalog.
  *           Self-contained: defines the schema reference plus the
  *           scope-derived dataset, then publishes window.QUICKSTART_DATA.
  *
- * @scope:   /Users/yi/YrY/.claude/skills
- * @output:  /Users/yi/YrY/.claude/docs/quickstart
- * @sources: /Users/yi/YrY/.claude/{CLAUDE.md,README.md},
- *           /Users/yi/YrY/.claude/skills/rui-init/SKILL.md,
- *           /Users/yi/YrY/.claude/skills/rui-test/SKILL.md,
- *           /Users/yi/YrY/.claude/skills/rui-reports/diagram/package.json,
- *           /Users/yi/YrY/.claude/skills/rui-reports/quickstart/SKILL.md,
- *           /Users/yi/YrY/.claude/skills/rui-tools/skill/SKILL.md
+ * @scope:   /.claude/skills
+ * @output:  /.claude/docs/quickstart
+ * @sources: /.claude/{CLAUDE.md,README.md},
+ *           /.claude/skills/rui-init/SKILL.md,
+ *           /.claude/skills/rui-test/SKILL.md,
+ *           /.claude/skills/rui-reports/diagram/package.json,
+ *           /.claude/skills/rui-reports/quickstart/SKILL.md,
+ *           /.claude/skills/rui-tools/skill/SKILL.md
  *
  * @four_file_layout:
  *   data.js    — schema, datasets, merge, computeScore (this file)
@@ -117,7 +117,7 @@
   var DATASET_SKILLS = {
     meta: {
       title:       'Quickstart — .claude/skills',
-      scope:       '/Users/yi/YrY/.claude/skills',
+      scope:       '/.claude/skills',
       scopeShort:  '.claude/skills',
       language:    'en',
       depth:       3,
@@ -130,7 +130,7 @@
       kind:        'Newcomer Quickstart',
       title:       'Quickstart — .claude/skills',
       tagline:     'Scope-derived newcomer orientation: 5 skill groups, 26 SKILL.md manifests, one Node.js engine. Static-analysis only — nothing in this report is executed.',
-      scope:       '/Users/yi/YrY/.claude/skills',
+      scope:       '/.claude/skills',
       audience:    'New contributors to the YrY project',
       generatedAt: '2026-07-19 11:30 (Asia/Shanghai)'
     },
@@ -334,15 +334,15 @@
         // The renderer highlights `pipeline` steps differently from
         // `reading` and `run` steps.
         steps: [
-          { order: 1, type: 'read',  minutes: 2, action: 'Read /Users/yi/YrY/.claude/README.md end to end.',
+          { order: 1, type: 'read',  minutes: 2, action: 'Read /.claude/README.md end to end.',
             outcome: 'You know the 5 skill groups, the 26 manifests, the docs center entry, and the runbook-style command flow.',
-            file: '/Users/yi/YrY/.claude/README.md' },
-          { order: 2, type: 'read',  minutes: 3, action: 'Read /Users/yi/YrY/.claude/CLAUDE.md to learn the project profile, iron laws, and hard constraints.',
+            file: '/.claude/README.md' },
+          { order: 2, type: 'read',  minutes: 3, action: 'Read /.claude/CLAUDE.md to learn the project profile, iron laws, and hard constraints.',
             outcome: 'You understand the security surface (dataStorage, authentication, thirdParty all true) and the 6 project constraints.',
-            file: '/Users/yi/YrY/.claude/CLAUDE.md' },
+            file: '/.claude/CLAUDE.md' },
           { order: 3, type: 'view',  minutes: 1, action: 'Open the docs dashboard in a browser to see the live rendering.',
             outcome: 'You can see dependency graph, story trees, and source groups rendered by the rui-init pipeline.',
-            command: 'open /Users/yi/YrY/.claude/docs/index.html' },
+            command: 'open /.claude/docs/index.html' },
           { order: 4, type: 'read',  minutes: 4, action: 'Skim rui-init/SKILL.md to learn the detect → explore → generate → arch → verify pipeline.',
             outcome: 'You know which step owns CLAUDE.md, README.md, docs/, and the verify gate.',
             file: 'rui-init/SKILL.md' },
@@ -351,10 +351,10 @@
             file: 'rui-tools/skill/SKILL.md' },
           { order: 6, type: 'run',   minutes: 2, action: 'Re-run the init pipeline to refresh the docs home after any change.',
             outcome: 'CLAUDE.md, README.md, docs/index.html and docs/data.js are rebuilt; the 5 arch scenes and 6 test scenes are emitted and verified.',
-            command: 'cd /Users/yi/YrY/.claude && /rui-init' },
+            command: 'cd /.claude && /rui-init' },
           { order: 7, type: 'run',   minutes: 3, action: 'Run the only test suite in the catalog to confirm the diagram engine is green.',
             outcome: 'Baseline: vitest run on engine/core/src passes.',
-            command: 'cd /Users/yi/YrY/.claude/skills/rui-reports/diagram && pnpm test' }
+            command: 'cd /.claude/skills/rui-reports/diagram && pnpm test' }
         ]
       },
       {
@@ -364,28 +364,28 @@
         coverage: 85,
         verdict:  'partial',
         items: [
-          { name: 'list-skill-groups', command: 'ls /Users/yi/YrY/.claude/skills',
+          { name: 'list-skill-groups', command: 'ls /.claude/skills',
             description: 'List the 5 top-level skill groups (rui-code, rui-init, rui-reports, rui-test, rui-tools).',
             source: 'README.md' },
-          { name: 'list-manifests',    command: 'find /Users/yi/YrY/.claude/skills -maxdepth 4 -name SKILL.md',
+          { name: 'list-manifests',    command: 'find /.claude/skills -maxdepth 4 -name SKILL.md',
             description: 'Enumerate all 26 SKILL.md manifests in the catalog.',
             source: 'README.md' },
-          { name: 'open-docs',         command: 'open /Users/yi/YrY/.claude/docs/index.html',
+          { name: 'open-docs',         command: 'open /.claude/docs/index.html',
             description: 'Open the regenerated docs home (Vue 3 + shared loader).',
             source: 'README.md' },
-          { name: 'rebuild-docs',      command: 'cd /Users/yi/YrY/.claude && /rui-init',
+          { name: 'rebuild-docs',      command: 'cd /.claude && /rui-init',
             description: 'Re-run the full detect → explore → generate → arch → verify pipeline.',
             source: 'CLAUDE.md' },
-          { name: 'test-engine',       command: 'cd /Users/yi/YrY/.claude/skills/rui-reports/diagram && pnpm test',
+          { name: 'test-engine',       command: 'cd /.claude/skills/rui-reports/diagram && pnpm test',
             description: 'Run the only test suite in the catalog — vitest on the diagram engine core.',
             source: 'package.json' },
-          { name: 'run-single-test',   command: 'cd /Users/yi/YrY/.claude/skills/rui-reports/diagram && pnpm exec vitest run engine/core/src/<file>.test.js',
+          { name: 'run-single-test',   command: 'cd /.claude/skills/rui-reports/diagram && pnpm exec vitest run engine/core/src/<file>.test.js',
             description: 'Run a single vitest file from the diagram engine core.',
             source: 'package.json' },
-          { name: 'grep-skill-name',   command: 'grep -l "name: rui-" /Users/yi/YrY/.claude/skills/**/SKILL.md',
+          { name: 'grep-skill-name',   command: 'grep -l "name: rui-" /.claude/skills/**/SKILL.md',
             description: 'Locate a skill by its frontmatter name across the catalog.',
             source: 'docs' },
-          { name: 'inspect-triggers',  command: 'cat /Users/yi/YrY/.claude/skills/<group>/<skill>/SKILL.md | head -30',
+          { name: 'inspect-triggers',  command: 'cat /.claude/skills/<group>/<skill>/SKILL.md | head -30',
             description: 'Read a skill\'s trigger surface (the description: block).',
             source: 'docs' }
         ]
@@ -398,10 +398,10 @@
         verdict:  'partial',
         items: [
           { question: 'How many skill groups and SKILL.md manifests are in the catalog?',
-            answer: '5 skill groups (rui-code, rui-init, rui-reports, rui-test, rui-tools) and 26 SKILL.md manifests, as recorded in /Users/yi/YrY/.claude/CLAUDE.md and the README counts table.',
+            answer: '5 skill groups (rui-code, rui-init, rui-reports, rui-test, rui-tools) and 26 SKILL.md manifests, as recorded in /.claude/CLAUDE.md and the README counts table.',
             source: 'README.md' },
           { question: 'Is there a top-level package.json?',
-            answer: 'No. The only npm manifest in the catalog is /Users/yi/YrY/.claude/skills/rui-reports/diagram/package.json. All other skills are pure manifest + Markdown + assets.',
+            answer: 'No. The only npm manifest in the catalog is /.claude/skills/rui-reports/diagram/package.json. All other skills are pure manifest + Markdown + assets.',
             source: 'CLAUDE.md' },
           { question: 'How do I add a new skill?',
             answer: 'Read rui-tools/skill/SKILL.md — it is the meta-skill for creating, evaluating, and benchmarking skills. The recommended flow: draft the manifest, then run evals/evals.json prompts, then package.',
@@ -430,8 +430,8 @@
         coverage: 90,
         verdict:  'pass',
         items: [
-          { title: '/Users/yi/YrY/.claude/README.md',                                  href: '../README.md',                                       description: 'Counts table, quick start, system view, and domain language for the catalog.', kind: 'doc' },
-          { title: '/Users/yi/YrY/.claude/CLAUDE.md',                                  href: '../CLAUDE.md',                                       description: 'Project profile, iron laws, hard constraints, and self-constraints for any edit.', kind: 'doc' },
+          { title: '/.claude/README.md',                                  href: '../README.md',                                       description: 'Counts table, quick start, system view, and domain language for the catalog.', kind: 'doc' },
+          { title: '/.claude/CLAUDE.md',                                  href: '../CLAUDE.md',                                       description: 'Project profile, iron laws, hard constraints, and self-constraints for any edit.', kind: 'doc' },
           { title: 'rui-init/SKILL.md',                                                href: '../../skills/rui-init/SKILL.md',                      description: 'Pipeline orchestrator — the canonical entry point for /rui-init.',                     kind: 'skill' },
           { title: 'rui-init/steps/',                                                  href: '../../skills/rui-init/steps/',                        description: 'Five ordered steps; each ships STEP.md, agents/, templates/, rules/.',                  kind: 'directory' },
           { title: 'rui-reports/diagram/package.json',                                 href: '../../skills/rui-reports/diagram/package.json',        description: 'The only npm manifest in the catalog — vitest, graphology, zod, web-tree-sitter.',     kind: 'config' },
