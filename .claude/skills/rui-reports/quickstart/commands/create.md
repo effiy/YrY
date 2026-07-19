@@ -2,10 +2,11 @@
 name: quickstart-create
 description: >
   Generate a newcomer quickstart report for a local project scope.
-  Emits a browser-viewable HTML guide and, unless disabled, a markdown
-  mirror in the same canonical section order.
+  Builds the page from the 4-file template at templates/, regenerates
+  data.js with scope-derived evidence, and emits an optional markdown
+  mirror via quickstartToMarkdown(). Output language is English by
+  default; pass --language zh to switch.
 ---
-
 # rui-report-quickstart - Create
 
 Generate the canonical seven-section newcomer quickstart for a local project scope. Keep the output grounded, concise, and practical for a first-day engineer.
@@ -16,7 +17,7 @@ Generate the canonical seven-section newcomer quickstart for a local project sco
 
 - `--scope <path>` - local project path to analyze. Defaults to the current working directory.
 - `--out <path>` - output directory. Defaults to `docs/reports/quickstart/`.
-- `--language <lang>` - output language such as `en`, `zh`, `ja`, or `ko`.
+- `--language <lang>` - output language: `en` (default) or `zh`. No auto-detect.
 - `--depth <n>` - positive integer for directory-map depth. Default `3`.
 - `--no-mirror` - skip `README.md` and emit HTML only.
 - `--title <text>` - override the report title.
@@ -30,8 +31,27 @@ Generate the canonical seven-section newcomer quickstart for a local project sco
 | `SearchCodebase` | Find entry points, framework markers, and concept-heavy modules |
 | `RunCommand` | Optional lightweight inspection such as `git rev-parse` when helpful |
 | `Task` | Optional for large scopes that benefit from parallel facet discovery |
+| `Read` on `templates/data.js` | Read `@data_shape` JSDoc to understand the schema contract before writing `data.js` |
 
-Write files using whatever file-editing mechanism the runtime provides. Do not claim a bundled `templates/` or `scripts/` directory unless it actually exists in the current skill folder.
+## Template-based output
+
+The skill ships a 4-file template at `templates/`:
+
+| File | Role at run time |
+|------|------------------|
+| `templates/index.html` | Page shell, copied verbatim. `<title>` placeholder is replaced at write time. |
+| `templates/index.css`  | All styles, copied verbatim. |
+| `templates/index.js`   | Vue 3 app + section renderers + `quickstartToMarkdown(data)` exporter, copied verbatim. |
+| `templates/data.js`    | Schema reference; `QUICKSTART_DATA_SCHEMA.merge(input)` deep-merges defaults with the run's data; `QUICKSTART_DATA_SCHEMA.computeScore(sections)` derives the composite + grade. |
+
+The create command must:
+
+1. Copy `templates/index.html`, `templates/index.css`, `templates/index.js` to `<out>/` verbatim (substitute `{{QUICKSTART_TITLE}}` in `index.html` with `meta.title`).
+2. Read `templates/data.js` to learn the `@data_shape` JSDoc and the `merge` / `computeScore` helpers.
+3. Build the section data (one entry per canonical slug) from scope evidence.
+4. Compute the score via `QUICKSTART_DATA_SCHEMA.computeScore(sections)` (or by hand, matching the formula in SKILL.md).
+5. Write the merged `data.js` to `<out>/data.js` with `window.QUICKSTART_DATA = { meta, labels, score, sections }`. When `--language zh` is passed, swap the `labels` block for the Chinese set.
+6. If `--no-mirror` is not set, call `window.quickstartToMarkdown(window.QUICKSTART_DATA)` and write the result to `<out>/README.md`. The `##` headers must match the section titles in `data.js`.
 
 ## Execution flow
 
@@ -39,7 +59,7 @@ Write files using whatever file-editing mechanism the runtime provides. Do not c
 
 1. Resolve `SCOPE` from `--scope` or the current working directory.
 2. Resolve `OUT_DIR` from `--out` or `docs/reports/quickstart/`.
-3. Resolve the output language from `--language` or the user's language when obvious.
+3. Resolve the output language from `--language`. **Default is `en`** — do not auto-detect from the user's prompt.
 4. Resolve directory depth from `--depth`; default to `3` if absent.
 5. If the scope does not exist or is unreadable, stop with a clear usage error.
 
@@ -87,17 +107,19 @@ Always emit the seven sections in canonical order:
 6. `faq`
 7. `further-reading`
 
-Section guidance:
+Section guidance (each maps to a key in `data.sections`):
 
-| Section | Build guidance | Fallback |
-|---------|----------------|----------|
-| `overview` | one-paragraph summary, primary stack, scope cues | `# TODO: project overview evidence is missing` |
-| `concepts` | 5-10 modules, domain terms, or symbols with grounded glossaries | `# TODO: no stable concepts detected` |
-| `directory-map` | annotated tree up to `--depth` | `# TODO: scope is too sparse for a useful map` |
-| `onboarding-flow` | 5-10 ordered first-day steps using real files and commands | `# TODO: no grounded onboarding flow found` |
-| `commands` | most-used run/test/lint/build commands with short explanations | `# TODO: no commands or scripts detected` |
-| `faq` | likely newcomer questions answered from docs and code evidence | `# TODO: no FAQ source material found` |
-| `further-reading` | README, docs, policies, deep dives, key subdirectories | `# TODO: no further reading found` |
+| Slug | Build guidance | Fallback |
+|------|----------------|----------|
+| `overview` | one-paragraph summary, primary stack, scope cues | `{ isTodo: true, reason: 'project overview evidence is missing' }` |
+| `concepts` | 5-10 modules, domain terms, or symbols with grounded glossaries | `{ isTodo: true, reason: 'no stable concepts detected' }` |
+| `directory-map` | annotated tree up to `--depth` | `{ isTodo: true, reason: 'scope is too sparse for a useful map' }` |
+| `onboarding-flow` | 5-10 ordered first-day steps using real files and commands | `{ isTodo: true, reason: 'no grounded onboarding flow found' }` |
+| `commands` | most-used run/test/lint/build commands with short explanations | `{ isTodo: true, reason: 'no commands or scripts detected' }` |
+| `faq` | likely newcomer questions answered from docs and code evidence | `{ isTodo: true, reason: 'no FAQ source material found' }` |
+| `further-reading` | README, docs, policies, deep dives, key subdirectories | `{ isTodo: true, reason: 'no further reading found' }` |
+
+Per-section shapes are documented in `templates/data.js` (`@section_kinds`).
 
 Rules:
 
@@ -107,40 +129,37 @@ Rules:
 
 ### Phase 5 - Score the report
 
-For each section:
+Use `QUICKSTART_DATA_SCHEMA.computeScore(sections)` to derive:
 
-- `pass` when coverage is `>= 0.90`
-- `partial` when coverage is `0.50 .. 0.89`
-- `fail` when coverage is `< 0.50`
-
-Composite score = `mean(section.coverage) * 100`, rounded.
-
-Grade scale:
-
-- `A` for `>= 90`
-- `B` for `>= 75`
-- `C` for `>= 60`
-- `D` for `>= 40`
-- `F` for `< 40`
+- `score.composite` — `mean(section.coverage) * 100`, rounded
+- `score.grade`     — `A >= 90`, `B >= 75`, `C >= 60`, `D >= 40`, `F < 40`
+- `score.verdicts`  — per-slug `pass` (`>= 0.90`) / `partial` (`0.50..0.89`) / `fail` (`< 0.50`)
 
 This score reflects onboarding completeness, not runtime quality.
 
 ### Phase 6 - Emit outputs
 
-Required output:
+Required outputs:
 
-- `<OUT_DIR>/index.html`
+- `<OUT_DIR>/index.html` (copied from `templates/index.html` with `{{QUICKSTART_TITLE}}` replaced)
+- `<OUT_DIR>/index.css`  (copied verbatim from `templates/index.css`)
+- `<OUT_DIR>/index.js`   (copied verbatim from `templates/index.js`)
+- `<OUT_DIR>/data.js`    (regenerated; merges `meta`, `labels`, `score`, `sections`)
 
 Optional output:
 
-- `<OUT_DIR>/README.md` unless `--no-mirror` is set
+- `<OUT_DIR>/README.md` unless `--no-mirror` is set. Generate via
+  `window.quickstartToMarkdown(window.QUICKSTART_DATA)` (loaded by
+  including `templates/index.js` once, in memory only — do not rely
+  on a browser to produce the markdown mirror). The exporter keeps
+  the same `##` headers in the same order as the HTML page.
 
 Emission rules:
 
 1. The HTML report must contain all seven sections in canonical order.
 2. If the markdown mirror is emitted, keep the same section titles and order.
-3. If reusable templates exist, use them. If not, generate the deliverables directly.
-4. Overwrite prior generated outputs on re-run. When obvious manual edits are detected, warn before replacement if the runtime allows.
+3. Overwrite prior generated outputs on re-run. When obvious manual edits are detected, warn before replacement if the runtime allows.
+4. When `--language zh` is passed, swap the `data.js` `labels` block for the Chinese set; the page UI will switch accordingly. The English defaults in `templates/data.js` are the canonical baseline.
 
 ## Progress reporting
 
@@ -159,13 +178,14 @@ Before finishing, verify:
 
 | # | Check |
 |---|-------|
-| 1 | `index.html` exists and is non-empty |
+| 1 | `index.html`, `index.css`, `index.js`, `data.js` exist and are non-empty |
 | 2 | `README.md` exists unless `--no-mirror` was used |
-| 3 | All seven sections appear in canonical order |
+| 3 | All seven sections appear in canonical order in both HTML and (when present) README |
 | 4 | TODO markers exist where evidence is missing instead of guessed prose |
 | 5 | No placeholder text such as `[TODO]`, `TBD`, or `Lorem ipsum` remains |
-| 6 | Composite score, grade, and per-section verdicts are surfaced |
-| 7 | Final response reports output path plus the main gaps |
+| 6 | Composite score, grade, and per-section verdicts are surfaced in the score banner |
+| 7 | `data.js` `meta.language` matches the resolved `--language` (defaults to `en`) |
+| 8 | Final response reports output path plus the main gaps |
 
 ## Fallbacks
 
@@ -175,4 +195,7 @@ Before finishing, verify:
 | Missing README and docs | Still generate all sections, with TODO-heavy `faq` and `further-reading` |
 | No obvious entry points | Keep the report, but let `concepts` and `onboarding-flow` degrade with TODOs |
 | Empty scope after exclusions | Emit a full TODO report instead of failing |
-| `--no-mirror` | Skip `README.md` cleanly |
+| `--no-mirror` | Skip `README.md` cleanly; still emit the 4 HTML/JS/CSS/data files |
+| User passes `--language zh` | Replace `data.js` `labels` block with the Chinese set; leave section content language as documented in `@section_kinds` (typically English technical terms, Chinese prose when applicable) |
+| User passes neither `--language` nor an explicit hint | Default to **English** (`en`) |
+| `data.js` already exists in `<out>/` | Overwrite; if obvious manual edits are detected, warn before replacement |

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  @file: index.html
+  @purpose: Page shell for the `rui-report-quickstart` template. The
+            /rui-report-quickstart create command reads this file, the
+            matching index.css / index.js, and the data.js schema, then
+            writes a final self-contained report file into
+            <OUT_DIR>/{index.html, index.css, index.js, data.js,
+            README.md} (README.md is omitted when --no-mirror is set).
+
+            Open this file directly in a browser to preview the template
+            with example data.
+
+  @four_file_layout:
+    index.html — DOM skeleton + Vue mount + script wiring
+    data.js    — schema + default/empty + example data
+    index.css  — all styles, layered (reset → tokens → base → layout →
+                 components → sections → utilities → responsive → print)
+    index.js   — Vue 3 app + per-section renderers + quickstartToMarkdown()
+                exporter (used to produce the README.md mirror)
+
+  @shared_dependencies:
+    /.claude/shared/loader.js (Vue 3 + rui-back-top)
+    /.claude/shared/components/rui-back-top/index.js
+
+  @output: <out>/{index.html, index.css, index.js, data.js, README.md}
+  @language: English by default. The {{LANGUAGE}} placeholder is
+             replaced at write time by the create command.
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{QUICKSTART_TITLE}}</title>
+  <meta name="description" content="Newcomer quickstart — overview, concepts, directory map, onboarding flow, command cheatsheet, FAQ, and further reading. Static-analysis only; no project execution.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%231e40af'/><text x='16' y='22' font-size='18' font-family='sans-serif' font-weight='bold' fill='white' text-anchor='middle'>Q</text></svg>" type="image/svg+xml">
+
+  <!--
+    ═══════════════════════════════════════════════════════════════════
+    INFRASTRUCTURE — shared CDN loader auto-injects Vue 3 (primary +
+    fallback URL) and dispatches rui-component-* events. The
+    `data-namespace` value is exposed as the IIFE variable used by
+    console logging.
+    ═══════════════════════════════════════════════════════════════════
+  -->
+  <script src="/.claude/shared/loader.js" data-namespace="rui-report-quickstart"></script>
+
+  <!-- Shared rui-back-top scroll-to-top button (auto-mounts via shared loader) -->
+  <script src="/.claude/shared/components/rui-back-top/index.js"></script>
+
+  <!--
+    Page resources (must be loaded in this order: schema first, then
+    styles, then app).
+      data.js   → defines window.QUICKSTART_DATA_SCHEMA + window.QUICKSTART_DATA
+      index.css → all styles (layered: reset → tokens → base → layout → components → sections → utilities → responsive → print)
+      index.js  → Vue 3 app, per-section renderers, quickstartToMarkdown()
+  -->
+  <script src="data.js"></script>
+  <link rel="stylesheet" href="index.css">
+  <script src="index.js"></script>
+</head>
+<body>
+  <!--
+    Vue app mount point. The template lives in index.js (built once via
+    String.raw and passed to Vue.createApp). v-cloak hides the body
+    until Vue has rendered — the small CSS rule lives in index.css.
+  -->
+  <div id="quickstart-app" v-cloak></div>
+</body>
+</html>

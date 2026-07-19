@@ -3,9 +3,12 @@ name: rui-report-quickstart
 description: >
   Generate a newcomer quickstart report for a local project scope.
   Produces a browser-viewable HTML guide and, by default, a markdown
-  mirror. Uses static evidence only, renders all seven canonical
-  sections, and fills gaps with TODO markers instead of invented
-  content.
+  mirror. Uses the 4-file template at templates/ (data.js + index.html
+  + index.css + index.js) so every report renders consistently with
+  the rest of the rui-reports catalog. The output language is English
+  by default; pass --language zh to switch to Chinese. Uses static
+  evidence only, renders all seven canonical sections, and fills gaps
+  with TODO markers instead of invented content.
 lifecycle: default-pipeline
 user_invocable: true
 arguments:
@@ -16,7 +19,7 @@ arguments:
     description: Output directory for the report. Defaults to `docs/reports/quickstart/`.
     required: false
   - name: language
-    description: Output language (`en`, `zh`). Defaults to the user's language when obvious, otherwise `en`.
+    description: Output language. Defaults to `en`. Use `zh` to switch to Chinese.
     required: false
   - name: depth
     description: Directory-map depth. Positive integer, default `3`.
@@ -50,13 +53,13 @@ Generate a newcomer-facing onboarding guide for any local repo or subdirectory. 
 ## Usage
 
 ```bash
-# Default scope = current directory
+# Default scope = current directory, language = English
 /rui-report-quickstart create
 
 # Typical usage
 /rui-report-quickstart create --scope <project-path> --out docs/reports/quickstart
 
-# Chinese output
+# Chinese output (overrides the English default)
 /rui-report-quickstart create --scope <project-path> --language zh
 
 # HTML only
@@ -67,21 +70,33 @@ Generate a newcomer-facing onboarding guide for any local repo or subdirectory. 
 
 1. Always render the seven canonical sections in this order:
    `overview` -> `concepts` -> `directory-map` -> `onboarding-flow` -> `commands` -> `faq` -> `further-reading`.
-2. Every claim must be backed by a real file, line, symbol, command, or manifest entry from the analyzed scope.
-3. When evidence is missing, render `# TODO: <reason>` instead of guessing.
-4. The report is static-analysis only. Do not run project tests, installs, builds, or deploys unless the user explicitly asks for that.
-5. Read from `<scope>` and write only to `<out>`.
+2. Always build the page from the bundled 4-file template at
+   `templates/{data.js, index.html, index.css, index.js}`. The
+   template is the single source of truth for the page layout,
+   section order, verdict/composite scoring, and the markdown
+   mirror exporter (`window.quickstartToMarkdown(data)`).
+3. The output language is **English by default**. Pass `--language zh`
+   to switch to Chinese. Auto-detect from the user's prompt is no
+   longer used; the choice is always explicit.
+4. Every claim must be backed by a real file, line, symbol, command, or manifest entry from the analyzed scope.
+5. When evidence is missing, render `# TODO: <reason>` instead of guessing.
+6. The report is static-analysis only. Do not run project tests, installs, builds, or deploys unless the user explicitly asks for that.
+7. Read from `<scope>` and write only to `<out>`.
 
 ## Deliverables
 
-| Path | Required | Purpose |
-|------|----------|---------|
-| `<out>/index.html` | yes | Browser-viewable newcomer quickstart |
-| `<out>/README.md` | no | Markdown mirror, skipped when `--no-mirror` is used |
+| Path | Required | Source | Purpose |
+|------|----------|--------|---------|
+| `<out>/index.html` | yes | `templates/index.html` | Browser-viewable newcomer quickstart |
+| `<out>/index.css`  | yes | `templates/index.css`  | All page styles, layered |
+| `<out>/index.js`   | yes | `templates/index.js`   | Vue 3 app + section renderers |
+| `<out>/data.js`    | yes | regenerated each run   | `window.QUICKSTART_DATA` (the actual report content) |
+| `<out>/README.md`  | no  | `quickstartToMarkdown(data)` | Markdown mirror, skipped when `--no-mirror` is used |
 
 Notes:
-- Supporting files such as `index.css`, `index.js`, or `data.js` are allowed when they help implementation, but they are not the primary contract.
-- This skill does not assume a bundled `templates/` or `scripts/` directory exists locally. If reusable scaffolds exist, read them first; otherwise generate the deliverables directly while preserving this contract.
+- The 4 files `index.html` / `index.css` / `index.js` / `data.js` are copied verbatim from `templates/` every run. The only regenerated file is `data.js`, which carries the scope-derived content.
+- The markdown mirror (`README.md`) is produced by calling `window.quickstartToMarkdown(data)` from `templates/index.js`. Identical `##` headers to the HTML page are the contract.
+- All shared infrastructure (Vue 3, `<rui-back-top>`) loads from `/.claude/shared/` — no public CDN.
 
 ## Section contract
 
@@ -114,15 +129,17 @@ Grade scale:
 - `D`: `>= 40`
 - `F`: `< 40`
 
-The score measures onboarding completeness, not code quality.
+The score measures onboarding completeness, not code quality. The data schema in `templates/data.js` exposes a `computeScore(sections)` helper that derives the composite, grade, and per-section verdicts from the coverage values. The create command should call it (or compute the same thing) before writing `data.js`.
 
 ## Boundaries
 
 | Boundary | Permission |
-|----------|------------|
+|----------|-----------|
+| `templates/**` (this skill) | read |
+| `commands/**`, `evals/**`, `references/**` in this skill | read |
 | `<scope>/**` | read-only |
 | `<out>/**` | write |
-| `commands/**`, `evals/**`, `references/**` in this skill | read-only |
+| `/.claude/shared/**` (loader, components) | read |
 | Outside the scope and chosen output directory | avoid unless required for the user's explicit request |
 
 ## Fallbacks
@@ -134,10 +151,30 @@ The score measures onboarding completeness, not code quality.
 | No manifest found | Infer commands from README or docs; otherwise use TODO markers |
 | No README or docs | Keep all sections, but let `faq` / `further-reading` become TODO-heavy |
 | No detected entry points | Keep `overview`, mark `concepts` / `onboarding-flow` with TODOs where needed |
-| `--no-mirror` used | Emit only `index.html` |
+| `--no-mirror` used | Emit only `index.html` (+ `index.css`, `index.js`, `data.js`); skip `README.md` |
 | Re-run into existing outputs | Overwrite generated files; warn before replacing obvious manual edits when feasible |
+| User passes `--language zh` | Overwrite `data.js` `labels` block with the Chinese label set; page UI switches accordingly |
+| User passes neither `--language` nor an explicit hint | Default to **English** (`en`) |
 
 ## Supporting files
 
-- [create.md](./commands/create.md) — execution playbook for `/rui-report-quickstart create`
-- [evals.json](./evals/evals.json) — prompt coverage for the main interaction patterns
+- [commands/create.md](./commands/create.md) — execution playbook for `/rui-report-quickstart create`
+- [templates/data.js](./templates/data.js) — data schema (defaults, three example datasets `python` / `ts` / `go`, `mergeWithDefaults`, `computeScore`)
+- [templates/index.html](./templates/index.html) — page shell
+- [templates/index.css](./templates/index.css) — layered styles (reset → tokens → base → layout → toolbar → toc → components → sections → utilities → responsive → print)
+- [templates/index.js](./templates/index.js) — reactive Vue 3 app, per-section renderers, `quickstartToMarkdown()` (full) + `quickstartToMarkdownSection(slug, data)` (per section)
+- [evals/evals.json](./evals/evals.json) — prompt coverage for the main interaction patterns
+
+## In-page interactions
+
+The template ships a reactive Vue 3 app so the generated page is useful as both a final artifact and a live demo:
+
+- **Dataset switcher** (toolbar): cycle through three reference datasets — `python` (small CLI, score ≈ B), `ts` (TypeScript monorepo, score ≈ C), `go` (Go HTTP service, score ≈ A) — to see how the template renders different project shapes and score levels.
+- **Coverage filter** (toolbar): `All sections` / `Pass + partial` / `Pass only`. Driven by a `data-filter` attribute on `<main>`; the CSS hides sections whose `data-verdict` does not match.
+- **Theme switcher** (toolbar): `Auto` / `Light` / `Dark`. Sets `data-theme` on `<html>`; choice persists in `localStorage` under `rui-report-quickstart:theme`.
+- **Score ring** (banner): an SVG arc gauge whose `stroke-dasharray` / `stroke-dashoffset` are computed from `data.score.composite`. Color follows the grade (A green, B blue, C amber, D orange, F red).
+- **Sticky section TOC** (left rail on desktop, top bar on mobile): a 7-item navigation list with active-section highlight driven by `IntersectionObserver` (`rootMargin: '-20% 0px -65% 0px'`). Each item shows a verdict dot.
+- **Coverage bar** (section header): a per-section visual progress bar next to the verdict pill, so coverage gaps are visible at a glance.
+- **Copy markdown** (toolbar): copies the full report as markdown via `window.quickstartToMarkdown(data)`. The button label flips to `Copied!` for 1.5s, matching the project's copy-feedback convention.
+- **Per-section copy** (section header): each section has its own copy button that calls `window.quickstartToMarkdownSection(slug, data)` to copy just that section's markdown. The button label flips to `Section copied` for 1.5s.
+- **Print friendly**: the toolbar, TOC, and copy buttons are hidden via `@media print`; sections use `break-inside: avoid`.
