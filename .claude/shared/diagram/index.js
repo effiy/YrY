@@ -32,6 +32,7 @@
   'use strict';
 
   var data = window.REPORT_DATA || {};
+  var meta = data.meta || {};
   var app = document.getElementById('app');
   if (!app) return;
 
@@ -216,13 +217,13 @@
       '<div class="header-top">' +
         '<span class="pulse" aria-hidden="true"></span>' +
         '<div class="title-wrap">' +
-          '<h1 class="title">' + esc(data.meta.pageTitle) + '</h1>' +
-          '<p class="subtitle">' + esc(data.meta.subtitle) + '</p>' +
+          '<h1 class="title">' + esc(meta.pageTitle || 'Dependency report') + '</h1>' +
+          '<p class="subtitle">' + esc(meta.subtitle || 'Shared dependency insight view.') + '</p>' +
         '</div>' +
         '<nav class="header-links">' +
           '<a href="../index.html">Back to deps</a>' +
-          (data.meta.upstream
-            ? '<a href="' + esc(data.meta.upstream) + '" target="_blank" rel="noreferrer noopener">' + upstreamLabel + '</a>'
+          (meta.upstream
+            ? '<a href="' + esc(meta.upstream) + '" target="_blank" rel="noreferrer noopener">' + upstreamLabel + '</a>'
             : '') +
           '<a href="' + lastHeaderHref + '">' + lastHeaderLabel + '</a>' +
         '</nav>' +
@@ -265,8 +266,8 @@
 
   /* Update the document title to the pageTitle from data (so the
      browser tab reflects the actual page). */
-  if (data.meta && data.meta.pageTitle) {
-    document.title = data.meta.pageTitle;
+  if (meta.pageTitle) {
+    document.title = meta.pageTitle;
   }
 
   app.innerHTML = '<div class="page">' +
@@ -285,6 +286,6 @@
     (layout.bottomSection.isList
       ? listSection(layout.bottomSection)
       : tableSection(layout.bottomSection)) +
-    '<p class="footer">' + esc(data.meta.footer || '') + '</p>' +
+    '<p class="footer">' + esc(meta.footer || '') + '</p>' +
   '</div>';
 })();
