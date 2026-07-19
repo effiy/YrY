@@ -207,7 +207,7 @@
         { rank: 6,  path: '.claude/skills/rui-tools/public-api/SKILL.md',                             touches:  8 },
         { rank: 7,  path: '.claude/skills/rui-tools/cc/SKILL.md',                                      touches:  8 },
         { rank: 8,  path: '.claude/skills/rui-reports/files/templates/index.html',                    touches:  8 },
-        { rank: 9,  path: '.claude/skills/rui-reports/files/scripts/analyze.mjs',                      touches:  8 },
+        { rank: 9,  path: '.claude/skills/rui-reports/self-test/SKILL.md',                            touches:  8 },
         { rank: 10, path: '.claude/skills/rui-reports/diagram/commands/create.md',                     touches:  8 }
       ],
       narrative: {

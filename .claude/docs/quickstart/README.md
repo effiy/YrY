@@ -65,7 +65,7 @@ _Location: `rui-test/topics/vitest-setup/README.md:1`_
 
 ### Command  \n`sub-skill`
 
-An executable sub-skill under <skill>/commands/<name>.md. In the catalog the commands/ directories appear in rui-code/fastapi, rui-reports/daily, rui-reports/diagram, rui-reports/quickstart, rui-reports/self-test, rui-tools/git, rui-tools/github, rui-tools/ui-ux, rui-tools/skill, rui-init/agents.
+An executable sub-skill under <skill>/commands/<name>.md. In the catalog the commands/ directories appear in rui-code/fastapi, rui-reports/daily, rui-reports/diagram, rui-reports/quickstart, rui-reports/test, rui-tools/git, rui-tools/github, rui-tools/ui-ux, rui-tools/skill, rui-init/agents.
 
 _Location: `rui-reports/quickstart/commands/create.md:1`_
 
@@ -89,7 +89,7 @@ _Location: `rui-code/vue/references/index.md:1`_
 
 ### Template  \n`directory`
 
-A 4-file page shell (data.js + index.html + index.css + index.js) under <skill>/templates/. The rui-reports group ships templates for every report style (quickstart, daily, diagram, files, self-test).
+A 4-file page shell (data.js + index.html + index.css + index.js) under <skill>/templates/. The rui-reports group ships templates for every report style (quickstart, daily, diagram, files, test).
 
 _Location: `rui-reports/quickstart/templates/data.js:1`_
 
@@ -108,7 +108,7 @@ skills/
 │       ├── 01-detect/   02-explore/   03-generate/
 │       └── 04-arch/     05-verify/
 ├── rui-reports/               ← 5 report styles + 1 engine
-│   ├── quickstart/   daily/   diagram/   files/   self-test/
+│   ├── quickstart/   daily/   diagram/   files/   test/
 │   └── diagram/
 │       ├── engine/core/src/    ← JS engine (graph, search, schema)
 │       ├── languages/          ← tree-sitter configs (16 langs)

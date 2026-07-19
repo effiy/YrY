@@ -1,6 +1,6 @@
 # Output Templates — Index
 
-> The `rui-report-diagram` skill produces a self-contained architecture-diagram page. The rendered artifact is **one** browser-viewable HTML; its **sources** are a 4-file split under `templates/`. The knowledge graph (`knowledge-graph.json`) is an intermediate data structure used to derive the diagram in `--from-codebase` mode — it is not a user-facing template.
+> The `rui-report-diagram` skill produces a self-contained architecture-diagram page. The rendered artifact is **one** browser-viewable HTML; its **sources** are a 4-file split under `templates/`.
 
 ## Templates
 
@@ -16,31 +16,23 @@
 
 ## Intermediate Data
 
-> `<OUTPUT_DIR>` is the directory containing the generated `index.html` (i.e., the parent directory of the `--out` path, or `./` by default). All intermediate data is colocated with the HTML output — no separate `analysis/` or hidden state directory is created in the analyzed project.
-
-| File | Format | Produced by | Storage |
-|------|--------|-------------|---------|
-| `knowledge-graph.json` | JSON | `create --from-codebase` analysis pipeline | `<OUTPUT_DIR>/knowledge-graph.json` |
-| `meta.json` | JSON | `create --from-codebase` analysis pipeline | `<OUTPUT_DIR>/meta.json` |
-| `scan-result.json` | JSON | `create --from-codebase` Phase 1 (SCAN) | `<OUTPUT_DIR>/intermediate/scan-result.json` |
-| `batches.json` | JSON | `create --from-codebase` Phase 2 (ANALYZE pre-batch) | `<OUTPUT_DIR>/intermediate/batches.json` |
-| `assembled-graph.json` | JSON | `merge-batch-graphs.py` | `<OUTPUT_DIR>/intermediate/assembled-graph.json` |
-| `ua-*` tmp files | JSON | per-phase scratch data | `<OUTPUT_DIR>/tmp/ua-*` |
+The previous codebase-analysis intermediate artifacts were removed with the
+bundled analysis scripts. The current skill only documents the retained
+template sources and the final rendered HTML output.
 
 ## How to Use
 
 1. **Read the template header before producing the artifact.** Each template has a `@template`, `@purpose`, `@command`, `@style`, `@sections`, `@placeholders` block at the top — that's the contract.
 2. **Follow the Section Contract.** If a section is listed, include it in that order. If a section doesn't apply, **omit it entirely** — don't write "N/A".
 3. **Respect the placeholders** in square brackets: `[PROJECT NAME]`, `[DIAGRAM TITLE]`, `[SUBTITLE]`, `[VIEWBOX_W]`, `[VIEWBOX_H]`, etc. These are the only allowed sentinel tokens.
-4. **Cite graph nodes** with the `[type:path]` format when working from a knowledge graph.
-5. **Save partial results** rather than failing silently. Mark `meta.partial = true` in JSON, or add a `> ⚠️ Partial` banner at the top of the diagram.
+4. **Save partial results** rather than failing silently. Prefer a clearly marked partial diagram over a broken artifact.
 
 ## Conventions Shared Across All Templates
 
 | Convention | Rule |
 |------------|------|
 | **Language** | Follow the `--language` flag (defaults to `en`). Consult `locales/<lang>.md` for tone. |
-| **Citations** | Use `[type:path]` to reference graph nodes; use full file paths with backticks in prose. |
+| **Citations** | Use full file paths with backticks in prose when source references are needed. |
 | **Timestamps** | ISO 8601, UTC, e.g. `2026-07-13T10:00:00Z`. |
 | **Self-containment** | The diagram is an HTML file with inline SVG/CSS/JS — the only external resources are `/.claude/shared/...` (Vue, html2canvas, jsPDF, rui-back-top, rui-toast). Public CDNs are forbidden. |
 | **Idempotency** | Re-running the same command on the same input produces a deterministic output. |

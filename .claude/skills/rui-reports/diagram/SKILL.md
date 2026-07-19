@@ -1,271 +1,64 @@
 ---
 name: rui-report-diagram
 description: >
-  Create polished dark-themed architecture diagrams as self-contained HTML+SVG files,
-  with optional codebase-driven analysis. Use this skill when the user wants to
-  create an architecture diagram, system design diagram, or technical overview
-  — either from a written description of the system OR from an existing codebase
-  (the skill will analyze the code, build a knowledge graph, and render the
-  architecture). Also triggers for "draw my system", "show me the architecture",
-  "generate diagram from this code", "visualize this codebase", "tech stack diagram".
-  Trigger words: architecture diagram, system architecture, technical diagram,
-  system design, component diagram, tech diagram, codebase overview, code structure
-  diagram, knowledge graph, understand codebase, dark-themed diagram, SVG architecture.
+  Create polished dark-themed architecture diagrams as self-contained HTML+SVG
+  files from a written brief. The former codebase-analysis scripts have been removed.
 lifecycle: default-pipeline
 user_invocable: true
 ---
 
 # rui-report-diagram
 
-> Architecture diagrams — produce professional dark-themed system diagrams from a written brief or directly from a codebase.
+Architecture diagrams from requirements only.
+
+## Status
+
+- The requirements-driven authoring flow remains.
+- The former bundled codebase-analysis scripts have been removed.
+- Do not instruct users to run codebase scan, extraction, batching, or merge scripts from this skill.
 
 ## Quick Start
 
-```
-/rui-report-diagram create                          → Diagram from your requirements (default)
-/rui-report-diagram create --from-codebase [path]   → Diagram derived from a real codebase
-/rui-report-diagram create --full                   → Full codebase analysis (deeper knowledge graph + tour + layers)
-/rui-report-diagram create --out diagram.html      → Custom output path
+```text
+/rui-report-diagram create
+/rui-report-diagram create --out diagram.html
 ```
 
 ## What this skill does
 
-- Produces a self-contained architecture-diagram page composed of **4 files in `templates/`** (the page is rendered as ONE browser-viewable HTML, but its sources are split for clarity):
-  - `templates/index.html` — DOM skeleton + script wiring + inline favicon (no favicon 404)
-  - `templates/index.css`  — layered CSS (reset → tokens → base → layout → components → utilities → responsive → print)
-  - `templates/data.js`    — pure data (meta + SVG markup string + section arrays) exposed as `window.REPORT_DATA`
-  - `templates/index.js`   — Vue 3 app, composables (`useSvgInteractions`, `useExport`), runtime template
-- Works in two modes: **from requirements** (you describe the system) or **from a codebase** (the skill scans, builds a knowledge graph, and derives the diagram).
-- In `--from-codebase` mode, runs a 7-phase analysis (scan → analyze → assemble → architecture → tour → review → save) and uses the resulting layers + key components as the diagram's structure.
-- In `--full` mode, runs every analysis phase including tour generation and LLM graph review.
-- Always saves a partial knowledge graph on interruption — a partial diagram is better than none.
-- **Generated pages render with a clean browser console** (zero `console.error`, zero `pageerror`, zero 4xx requests) — verified by the headless probe at `iteration-N/eval-templates-render-clean/`.
+- Produces a self-contained architecture-diagram page from a written system brief.
+- Uses the 4-file `templates/` split as the source of truth for structure and styling.
+- Preserves the references, templates, agents, and engine sources needed for manual authoring and future replacement work.
 
-## What this skill does NOT do
+## What this skill no longer does
 
-- Does NOT create UML, sequence, or class diagrams — this is for high-level system architecture overviews.
-- Does NOT modify the analyzed codebase. Codebase analysis output lives in `<OUTPUT_DIR>/` (the same directory as the generated `index.html`).
-- Does NOT guarantee pixel-perfect accuracy — diagrams reflect the analysis model's interpretation.
-- Does NOT require a particular language or framework — quality varies by stack depth.
+- It no longer performs bundled codebase scanning or knowledge-graph generation.
+- It no longer supports the previous script-driven `--from-codebase` workflow.
 
 ## Output Contract
 
-The rendered artifact is a single browser-viewable page. Its **sources** live in `templates/` as a 4-file split — read each header block before customizing:
-
-| File | Header to read | Customization focus |
-|------|----------------|---------------------|
-| `templates/index.html` | `@sections`, `@command`, `@style` | DOM section order, script load order, vendor script tags, inline favicon |
-| `templates/index.css`  | `@layer order: reset, tokens, base, layout, components, utilities, responsive, print` | Color tokens (`:root` `--color-*` / `--text-*` / `--bg-*`), spacing tokens, new component classes |
-| `templates/data.js`    | `@shape` JSDoc block listing every `window.REPORT_DATA` field | All textual content + the `svgDiagram` SVG markup string |
-| `templates/index.js`   | `useSvgInteractions` / `useExport` JSDoc | Only edit these if you need new Vue composables or new export targets |
-
-The contract requires:
-
-- **Header** — title, subtitle, pulsing indicator, export toolbar
-- **Main SVG** — drawn in this order: defs → background grid → arrows → opaque masks → component boxes → boundaries → legend
-- **Summary cards** — exactly 3 cards, each with a colored dot, title, and 3–5 bullet items
-- **Footer** — minimal metadata line
-
-Any section that has no data is omitted entirely. Never write "N/A" or pad with placeholder text.
-
-### Shared resources (no public CDN)
-
-The templates load infrastructure from `/.claude/shared/`, NOT from public CDNs. Every script tag in `templates/index.html` should resolve to a `/.claude/shared/...` path. If a future contributor adds a public CDN `<script src>`, the page will fail offline and the rui-tools probe will fail the `requestFailures: []` assertion.
-
-| Resource | Path |
-|----------|------|
-| Vue 3.4.27 | `/.claude/shared/loader.js` (auto-injects `/.claude/shared/vendor/vue@3.4.27/vue.global.prod.js`) |
-| html2canvas 1.4.1 | `/.claude/shared/vendor/html2canvas@1.4.1/html2canvas.min.js` |
-| jsPDF 2.5.2 | `/.claude/shared/vendor/jspdf@2.5.2/jspdf.umd.min.js` |
-| `<rui-back-top>` | `/.claude/shared/components/rui-back-top/index.js` |
-| `<rui-toast>` | `/.claude/shared/components/rui-toast/index.js` |
-
-### Quality Standards
-
-When generating diagrams, ensure:
-
-| Dimension | Standard |
-|-----------|----------|
-| **Professionalism** | Use clear, descriptive labels; avoid generic names like "Component 1" or "Service A" |
-| **Completeness** | Include all major system components, data stores, external services, and infrastructure |
-| **Visual hierarchy** | Larger boxes for critical/gateway services (80-130px height); standard boxes for leaf services (50-60px) |
-| **Flow clarity** | Every arrow has a label describing the protocol or data type (REST, gRPC, TLS, JWT, WSS) |
-| **Boundary usage** | Group related components with security groups (rose dashed) and cloud regions (amber dashed) |
-| **Color semantics** | Strictly follow the palette — don't mix colors for the same component type |
-| **Legend accuracy** | Only include entries for component types AND line styles actually used in the diagram |
-| **Summary depth** | Each card covers a distinct dimension: Architecture overview, Data flow, Infrastructure/Ops |
-| **Export readiness** | Wire up the shared vendor html2canvas + jsPDF under `/.claude/shared/vendor/...`; smoke-test all three export buttons |
-| **Clean console** | The page must produce zero `console.error` / `pageerror` / 4xx requests in a headless browser. The rui-tools probe at `<workspace>/iteration-N/eval-templates-render-clean/` is the contract: `consoleMessages: []` and `requestFailures: []`. The two historical offenders — shared `<rui-toast>` losing `callerSrc` and Vue 3 multi-root `$el.querySelector` — are now blocked by Rule 16 |
-
-## Workflow
-
-```
-Requirements mode:  Gather brief → Plan layout → Build SVG → Embed cards → Save
-Codebase mode:      Phase 0 Pre-flight → Phase 1 SCAN → Phase 2 ANALYZE
-                    → Phase 3 ASSEMBLE → Phase 4 ARCHITECTURE → Phase 5 TOUR (--full only)
-                    → Phase 6 REVIEW (inline) → Phase 7 SAVE → Build SVG
-```
-
-Key principles:
-
-1. **Read the template header before writing the artifact.** The Section Contract is enforced; don't improvise structure.
-2. **Draw arrows first in the SVG document order.** SVGs paint in document order; arrows must render behind boxes.
-3. **Use opaque background rects behind semi-transparent boxes.** Prevents arrows from bleeding through transparent fills.
-4. **Place legends outside all boundary boxes.** Expand the viewBox if needed; never crop content.
-5. **Maintain ≥40px vertical gap between components.** Prevents crowding.
-6. **Always save partial knowledge-graph.json on interruption.** Mark `meta.partial = true`.
-7. **Report progress at every phase transition** during codebase analysis. Keeps the user informed during long-running operations.
-8. **Trust bundled scripts for deterministic work** (file scanning, import extraction, batch merging). Don't reimplement them.
-9. **Retry failed subagent dispatches once** before continuing. Balances reliability with execution time.
-
-## Borders
-
-| Boundary | Permission |
-|----------|-----------|
-| `<skill-path>/**` (this skill) | read-only |
-| `<OUTPUT_DIR>/**` (same directory as generated `index.html`) | read + write (codebase mode only) |
-| Source code under analysis | read-only |
-| `engine/**` (core, dashboard, src, WASM) | read + write (install/build) |
-| Output `<output-path>` | read + write |
-
-> `<OUTPUT_DIR>` is the directory containing the generated `index.html` (e.g., when `--out ./diagram.html` is used, `<OUTPUT_DIR>` is `./`). All knowledge-graph, meta, scan-result, intermediate, and tmp files are colocated with the HTML output.
+- `templates/index.html` defines DOM order and shared resource wiring.
+- `templates/index.css` defines layered styling tokens and component classes.
+- `templates/data.js` defines the diagram content shape exposed on `window.REPORT_DATA`.
+- `templates/index.js` defines the Vue app and built-in interactions/export helpers.
 
 ## Rules
 
-| # | Rule | Rationale |
-|---|------|-----------|
-| 1 | Read the 4 templates/ header blocks before producing the artifact | Each file documents a different part of the contract (sections / data shape / composables) |
-| 2 | The rendered page is one self-contained HTML; its sources are split into 4 files; no public CDNs | Single browser entry keeps delivery simple, but split sources stay maintainable. All shared resources come from `/.claude/shared/...`; public CDNs break offline and the rui-tools probe flags the network error |
-| 3 | SVG document order: defs → grid → arrows → masks → boxes → boundaries → legend | Ensures correct z-stacking without z-index hacks |
-| 4 | Each component box needs an opaque background rect (`fill="#0f172a"`) | Semi-transparent fills otherwise let arrows bleed through |
-| 5 | Place legend outside all boundary boxes; expand viewBox if needed | Avoids visual clutter and overlap; minimum 20px clearance |
-| 6 | Maintain ≥40px vertical gap between components | Prevents crowding in dense diagrams |
-| 7 | Save partial knowledge graph on interruption with `meta.partial = true` | A partial graph is better than no graph |
-| 8 | Trust bundled scripts for scanning, import extraction, batch merging | Determinism, language coverage, and concurrency safety |
-| 9 | Use consistent node/edge ID conventions across all phases | Enables correct merging and incremental updates |
-| 10 | Report progress at every phase transition | Keeps the user informed during long-running operations |
-| 11 | Generate a deterministic layout for repeated runs | Same input → same diagram; aids diff-review |
-| 12 | Use distinct colored arrow markers per connection type | Visually distinguishes sync (solid), async (dashed), auth (dotted), infra (long dash) |
-| 13 | Add gradient definitions in `<defs>` for large boundary/region fills | Smooths the visual transition and avoids harsh solid-color blocks |
-| 14 | Label every arrow with protocol/type (REST, gRPC, TLS, JWT, WSS, SMTP) | Makes the diagram self-documenting without needing external reference |
-| 15 | Include line-style entries in the legend | Users need to decode dashed vs dotted vs solid arrow semantics |
-| 16 | Generated page must render with **zero `console.error` / `pageerror` / 4xx requests** | Enforced by the headless probe in `eval-templates-render-clean/`. Known offender bug-classes and their fixes are documented in the Fallback table below |
-| 17 | The outermost boundary rect (region / cloud group / security group) MUST wrap every component, arrow, and label with ≥20px padding | A single dashed outer frame must be sized to contain ALL content; nested boundaries must fit inside the outermost one. Re-measure after placing components and re-emit the boundary before saving |
-
-## Commands
-
-- [create.md](./commands/create.md) — Create a polished architecture diagram (the single command, supports requirements or codebase modes).
+1. Read the 4 template headers before producing output.
+2. Keep the rendered page self-contained and free of public CDN dependencies.
+3. Draw SVG content in document order: defs, grid, arrows, masks, boxes, boundaries, legend.
+4. Give every connection a clear protocol or flow label.
+5. Omit empty sections instead of rendering placeholders.
 
 ## Supporting resources
 
-- [agents/](./agents/) — Subagent instructions for codebase analysis phases:
-  - `project-scanner.md` — file inventory + language/framework detection
-  - `file-analyzer.md` — batch file analysis → nodes + edges
-  - `assemble-reviewer.md` — semantic review of merged batches
-  - `architecture-analyzer.md` — derives architectural layers from the graph
-  - `tour-builder.md` — designs guided learning tour (`--full` only)
-  - `graph-reviewer.md` — validates the final knowledge graph
-- [templates/index.html](./templates/index.html) — DOM skeleton, script wiring, inline favicon
-- [templates/index.css](./templates/index.css) — layered CSS (tokens → components → utilities)
-- [templates/data.js](./templates/data.js) — pure data + SVG markup string (`window.REPORT_DATA`)
-- [templates/index.js](./templates/index.js) — Vue 3 app + `useSvgInteractions` + `useExport` composables
-- [references/knowledge-graph-schema.md](./references/knowledge-graph-schema.md) — full node/edge schema (16 node types, 29 edge types) including domain graph extension for business-domain modeling.
-- [references/design-system.md](./references/design-system.md) — diagram design system: color palette, typography, spacing, layout patterns.
-- [references/templates-index.md](./references/templates-index.md) — catalog of all output templates (4-file split + rendered artifact).
-- [references/quality-rubric.md](./references/quality-rubric.md) — self-assessment rubric for diagram quality: 5 dimensions, scoring guide, pass threshold.
-- [scripts/](./scripts/) — analysis & merge scripts (scanning, extraction, batching, fingerprinting, merging).
-- [engine/](./engine/) — self-contained engine: core (parsing), dashboard (UI), TS helpers, WASM.
-
-## Advanced Diagram Techniques
-
-When generating diagrams, apply these techniques for professional-quality output:
-
-### 1. Curved Connection Routing
-For complex flows that must route around other components, use SVG `<path>` with bezier curves:
-```svg
-<path d="M x1 y1 L xCtrl y1 Q xCtrl yCtrl xCtrl yCtrl L x2 y2" fill="none" .../>
-```
-Use `Q` (quadratic bezier) for single bends; `C` (cubic) for S-curves.
-
-### 2. Multi-Section Legends
-A legend should have two sections: component types (colored swatches) and line styles (sample strokes). Arrange each section in 2-3 columns for compactness.
-
-### 3. Component Nesting
-- Security groups can nest inside region boundaries
-- Components can nest inside security groups
-- Never overlap two security groups or two region boundaries
-- Draw outer elements first in SVG document order
-
-### 4. Gradient Fills
-Add `<linearGradient>` definitions in `<defs>` for large boundaries and gateway components. Diagonal gradient (`x1="0" y1="0" x2="1" y2="1"`) with opacity stops provides subtle depth.
-
-### 5. Dynamic viewBox
-Calculate viewBox from actual content bounds:
-- width = max(rightmost-x + rightmost-width) + 40px
-- height = max(bottommost-y + bottommost-height) + legend-height + 60px
-
-### 6. Grid Alignment
-Snap component positions to 20px grid increments for clean alignment and simpler arrow routing.
-
-### 7. Interactive Diagram Features
-The template includes built-in interactivity (no extra code needed):
-- **Hover**: hovering over any component highlights it and its connected arrows, dimming everything else
-- **Click to focus**: clicking a component locks the focus — the floating bar shows the component name with a Reset button
-- **Escape / background click**: resets focus and clears all highlights
-- **Arrow indexing**: arrows are automatically associated with their source/target components by endpoint proximity
-
-These features work dynamically — they scan the SVG DOM at load time, so they apply to ANY diagram generated from the template without requiring special markup.
-
-## Page HTML Generation
-
-This skill can emit a self-contained Vue 3 docs page following the
-4-file split layout used across this catalog.
-
-### Output layout
-
-| File | Stability | Purpose |
-|------|-----------|---------|
-| `index.html` | byte-stable | mounts `#app`, loads Vue 3 + shared components |
-| `index.css` | byte-stable | layout, theme tokens, responsive grid |
-| `index.js` | byte-stable | wires Vue 3 app, registers shared components |
-| `data.js` | regenerated each run | `rui-report-diagram`-specific content model |
-
-### Workflow
-
-1. Resolve output directory (default: `docs/rui-report-diagram/`).
-2. Copy `index.html`, `index.css`, `index.js` verbatim from this
-   skill's `templates/` directory (or from `shared/components/` if
-   this skill has no templates).
-3. Regenerate `data.js` from the skill's domain knowledge —
-   `rui-report-diagram` rules, references, and agent outputs.
-4. Open `docs/rui-report-diagram/index.html` in a browser; no build step.
-
-### Borders
-
-| Boundary | Permission |
-|----------|-----------|
-| `templates/**` (this skill) | read |
-| `shared/components/**` | read |
-| `docs/rui-report-diagram/**` (output) | write |
-| Anywhere else | no write |
-
-## Fallback
-
-| Situation | Behavior |
-|-----------|----------|
-| User has not provided a brief | Ask 3–5 clarifying questions: components, flows, boundaries, detail level |
-| User asks for codebase mode but no path given | Default to current working directory; respect git worktree redirect |
-| Subagent dispatch fails during codebase analysis | Retry once; if it fails again, skip and continue with remaining batches |
-| No `knowledge-graph.json` exists in `<OUTPUT_DIR>/` for `--from-codebase` | Run full analysis from scratch; offer `--full` for deeper graph |
-| Bundled `scan-project.mjs` exits non-zero | Read stderr, diagnose, retry up to 2 times; do NOT ad-hoc reimplement scanning |
-| Diagram layout overflows viewBox | Expand viewBox dynamically based on computed layout; never crop content |
-| Outermost boundary does not wrap all content | Re-measure the boundary after every component is placed — its right/bottom edges must be ≥20px past the rightmost/lowermost component, arrow, and label. Adjust the boundary's `width`/`height` (and the SVG `viewBox`) and re-save. Single-frame diagrams MUST contain every element; nested diagrams MUST contain every inner boundary |
-| Output template has no matching section for the data | Omit the section entirely — never write "N/A" or pad with placeholder text |
-| User wants something other than an architecture diagram (UML, sequence, ER) | Politely decline; recommend a dedicated tool |
-| Generated diagram has >15 components | Merge small leaf nodes into composite boxes; use bullet lists for sub-components |
-| Arrow count exceeds 25 | Group related flows; consider using a message bus connector to reduce point-to-point arrows |
-| Legend overflows viewBox | Move legend to a second row or reduce font size to 8px |
-| Export buttons fail (missing vendor) | Verify `/.claude/shared/vendor/html2canvas@1.4.1/html2canvas.min.js` and `/.claude/shared/vendor/jspdf@2.5.2/jspdf.umd.min.js` script tags are present in `templates/index.html` and reachable from the local HTTP server |
-| `console.error` from shared `<rui-toast>` | Bug class: missing `callerSrc` in `ruiBootstrapFromCurrentScript({...})`. Fixed in iteration-1 by snapshotting `document.currentScript.src` and passing it through |
-| `console.error` about `$el.querySelector is not a function` | Bug class: Vue 3 multi-root template. Use a template ref (e.g. `containerRef`) in `mounted()` instead of `this.$el.querySelector` |
-| Favicon 404 in console | Add the inline SVG favicon `<link rel="icon" href="data:image/svg+xml,...">` to the head |
+- [commands/create.md](./commands/create.md) — requirements-driven creation guide.
+- [templates/index.html](./templates/index.html) — DOM skeleton and script wiring.
+- [templates/index.css](./templates/index.css) — layered CSS design system entry.
+- [templates/data.js](./templates/data.js) — diagram data shape.
+- [templates/index.js](./templates/index.js) — Vue app and interactions.
+- [references/design-system.md](./references/design-system.md) — diagram styling guidance.
+- [references/knowledge-graph-schema.md](./references/knowledge-graph-schema.md) — retained historical schema notes.
+- [references/templates-index.md](./references/templates-index.md) — template catalog.
+- [references/quality-rubric.md](./references/quality-rubric.md) — diagram quality rubric.
+- [engine/](./engine/) — retained implementation sources.

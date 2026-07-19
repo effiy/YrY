@@ -14,7 +14,7 @@
  *
  * IMPORTANT: This file is a documentation-only artifact. The actual
  * `data.js` written into the report's OUT_DIR is generated entirely
- * by `scripts/analyze.mjs` Stage 5 (`REPORT_CONFIG` + `REPORT_DATA`
+ * by the historical generation pipeline (`REPORT_CONFIG` + `REPORT_DATA`
  * serialized via JSON.stringify). The byte-stable copy in Stage 5
  * loops over [index.html, index.css, index.js] only — data.js is
  * never copied from this template. Keep this file in sync with the

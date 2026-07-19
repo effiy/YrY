@@ -294,11 +294,11 @@
           { name: 'Trigger Surface',  role: 'frontmatter',description: 'The natural-language description: block in SKILL.md that controls when Claude routes work to a skill. Do not edit casually — it changes routing behavior.', file: 'CLAUDE.md', line: 22 },
           { name: 'Pipeline Step',    role: 'sub-skill',  description: 'A sub-directory under rui-init/steps/ that owns one phase of the init pipeline. The five steps: 01-detect, 02-explore, 03-generate, 04-arch, 05-verify.', file: 'rui-init/steps/01-detect/STEP.md', line: 1 },
           { name: 'Topic',            role: 'sub-skill',  description: 'A rui-test knowledge unit under rui-test/topics/<slug>/. The 12 topics cover vitest-setup, runner-choice, e2e-playwright, fixture, async-flush, async-component, suspense, composable-wrapper, pinia-setup, teleport, blackbox, no-snapshot.', file: 'rui-test/topics/vitest-setup/README.md', line: 1 },
-          { name: 'Command',          role: 'sub-skill',  description: 'An executable sub-skill under <skill>/commands/<name>.md. In the catalog the commands/ directories appear in rui-code/fastapi, rui-reports/daily, rui-reports/diagram, rui-reports/quickstart, rui-reports/self-test, rui-tools/git, rui-tools/github, rui-tools/ui-ux, rui-tools/skill, rui-init/agents.', file: 'rui-reports/quickstart/commands/create.md', line: 1 },
+          { name: 'Command',          role: 'sub-skill',  description: 'An executable sub-skill under <skill>/commands/<name>.md. In the catalog the commands/ directories appear in rui-code/fastapi, rui-reports/daily, rui-reports/diagram, rui-reports/quickstart, rui-reports/test, rui-tools/git, rui-tools/github, rui-tools/ui-ux, rui-tools/skill, rui-init/agents.', file: 'rui-reports/quickstart/commands/create.md', line: 1 },
           { name: 'Agent',            role: 'sub-skill',  description: 'A specialised worker under <skill>/agents/<name>.md. Used by the rui-init and rui-reports/diagram skills to split work into named roles (e.g. scene-builder, file-analyzer, tour-builder).', file: 'rui-init/agents/artifact-consistency-checker.md', line: 1 },
           { name: 'Eval',             role: 'manifest',   description: 'JSON file under <skill>/evals/evals.json that records the skill\'s prompt coverage and test prompts. Every skill in the catalog ships one.', file: 'rui-init/evals/evals.json', line: 1 },
           { name: 'Reference',        role: 'directory',  description: 'A documentation sub-folder under <skill>/references/ that holds Markdown deep-dives, indexes, and source citations. The largest reference set is in rui-code/vue (200+ files).', file: 'rui-code/vue/references/index.md', line: 1 },
-          { name: 'Template',         role: 'directory',  description: 'A 4-file page shell (data.js + index.html + index.css + index.js) under <skill>/templates/. The rui-reports group ships templates for every report style (quickstart, daily, diagram, files, self-test).', file: 'rui-reports/quickstart/templates/data.js', line: 1 }
+          { name: 'Template',         role: 'directory',  description: 'A 4-file page shell (data.js + index.html + index.css + index.js) under <skill>/templates/. The rui-reports group ships templates for every report style (quickstart, daily, diagram, files, test).', file: 'rui-reports/quickstart/templates/data.js', line: 1 }
         ]
       },
       {
@@ -321,7 +321,7 @@
           '│       ├── 01-detect/   02-explore/   03-generate/',
           '│       └── 04-arch/     05-verify/',
           '├── rui-reports/               ← 5 report styles + 1 engine',
-          '│   ├── quickstart/   daily/   diagram/   files/   self-test/',
+          '│   ├── quickstart/   daily/   diagram/   files/   test/',
           '│   └── diagram/',
           '│       ├── engine/core/src/    ← JS engine (graph, search, schema)',
           '│       ├── languages/          ← tree-sitter configs (16 langs)',

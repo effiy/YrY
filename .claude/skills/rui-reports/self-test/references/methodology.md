@@ -1,7 +1,7 @@
 # methodology.md
 
 > Per-facet measurement methodology for rui-report-test. The
-> analyzer (`scripts/analyze.mjs`) and the per-scene agents read
+> historical analyzer pipeline and the per-scene agents read
 > this document before executing, then follow the rules step by
 > step.
 
@@ -113,7 +113,7 @@ DANGEROUS = [
 ```
 
 The scan reads at most the first 64 KB of each file (per
-`scripts/analyze.mjs` Stage 1 cap), and skips files > 256 KB
+the historical Stage 1 cap), and skips files > 256 KB
 entirely. A file with `innerHTML =` is a finding even if the
 value is constant — surface it for human review.
 
@@ -180,7 +180,7 @@ A dep is "pinned" if it matches `Pinned` or `GitRef` or `FileRef`.
 ## Stage 3 — Scene Assembly
 
 Each scene is built by combining the facet record with a static
-template (in `scripts/analyze.mjs`, the `buildScene*` functions).
+template from the historical generation pipeline.
 The scene's `section0.mermaid` is hard-coded for each scene —
 the analyzer does not generate Mermaid dynamically.
 
@@ -199,8 +199,8 @@ grade = compositeScore >= 90 ? 'A'
       : 'F'
 ```
 
-The page NEVER recomputes verdicts. Re-run the analyzer to
-refresh.
+The page NEVER recomputes verdicts. Refresh the generated data
+through the replacement workflow when the source changes.
 
 ## Stage 5 — Page Emit
 
