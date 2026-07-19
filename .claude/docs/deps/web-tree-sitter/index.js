@@ -30,24 +30,19 @@
     '</article>';
   }
 
-  function ownershipRow(row) {
+  function anchorRow(row) {
     return '<tr>' +
-      '<td><code>' + esc(row.skillRoot) + '</code></td>' +
-      '<td>' + esc(row.fileCount) + '</td>' +
-      '<td>' + esc(row.occurrences) + '</td>' +
-      '<td><code>' + esc(row.primaryFile) + '</code></td>' +
-      '<td>' + esc(row.usageType) + '</td>' +
+      '<td><code>' + esc(row.match) + '</code></td>' +
+      '<td>' + esc(row.mode) + '</td>' +
+      '<td>' + esc(row.reason || '') + '</td>' +
     '</tr>';
   }
 
-  function hitRow(row) {
-    return '<tr>' +
-      '<td><code>' + esc(row.path) + '</code></td>' +
-      '<td>' + esc(row.fileKind) + '</td>' +
-      '<td>' + esc(row.usageType) + '</td>' +
-      '<td>' + esc(row.occurrences) + '</td>' +
-      '<td><code>' + esc(row.skillRoot) + '</code></td>' +
-    '</tr>';
+  function linkItem(link) {
+    return '<a href="' + esc(link.href) + '"' + (link.external ? ' target="_blank" rel="noreferrer noopener"' : '') + '>' +
+      '<span class="link-label">' + esc(link.label) + '</span>' +
+      '<span class="link-href">' + esc(link.href) + '</span>' +
+    '</a>';
   }
 
   app.innerHTML = '' +
@@ -61,50 +56,49 @@
           '</div>' +
           '<nav class="header-links">' +
             '<a href="../index.html">Back to deps</a>' +
-            (data.meta.upstream ? '<a href="' + esc(data.meta.upstream) + '" target="_blank" rel="noreferrer">Upstream</a>' : '') +
-            '<a href="#hits">Hit files</a>' +
+            (data.meta.upstream ? '<a href="' + esc(data.meta.upstream) + '" target="_blank" rel="noreferrer noopener">Primary link</a>' : '') +
+            '<a href="#anchors">Path anchors</a>' +
           '</nav>' +
         '</div>' +
         '<div class="toc">' +
           '<a href="#overview">Overview</a>' +
           '<a href="#diagram">Diagram</a>' +
-          '<a href="#ownership">Ownership</a>' +
-          '<a href="#hits">Trace</a>' +
+          '<a href="#anchors">Anchors</a>' +
+          '<a href="#links">Links</a>' +
         '</div>' +
       '</header>' +
       '<section id="overview" class="grid metrics">' +
         (data.metrics || []).map(metricCard).join('') +
       '</section>' +
       '<section id="diagram" class="panel svg-shell">' +
-        '<div class="panel-title">Diagram-style footprint</div>' +
-        '<div class="panel-sub">Rebuilt from the current <code>.claude/skills</code> inventory using the visual language of <code>rui-reports/diagram</code>.</div>' +
+        '<div class="panel-title">Diagram-style report</div>' +
+        '<div class="panel-sub">Generated from the docs card inventory using the visual language of <code>rui-reports/diagram</code>.</div>' +
         (data.svgDiagram || '') +
       '</section>' +
       '<section class="grid cards section">' +
         (data.summaryCards || []).map(summaryCard).join('') +
       '</section>' +
       '<section class="split section">' +
-        '<article id="ownership" class="panel">' +
-          '<div class="panel-title">Ownership spread</div>' +
-          '<div class="panel-sub">Nearest <code>SKILL.md</code> boundary for each matching file.</div>' +
-          '<div class="table-wrap"><table class="table"><thead><tr><th>Skill root</th><th>Files</th><th>Occurrences</th><th>Primary file</th><th>Usage</th></tr></thead><tbody>' +
-            (data.ownership || []).map(ownershipRow).join('') +
+        '<article id="anchors" class="panel">' +
+          '<div class="panel-title">Path anchors</div>' +
+          '<div class="panel-sub">Used by <code>docs/files/index.html</code> to jump from file-level findings back to this card report.</div>' +
+          '<div class="table-wrap"><table class="table"><thead><tr><th>Match</th><th>Mode</th><th>Reason</th></tr></thead><tbody>' +
+            ((data.anchors || []).length ? data.anchors.map(anchorRow).join('') : '<tr><td colspan="3">No direct file-path anchor was derived for this card.</td></tr>') +
           '</tbody></table></div>' +
         '</article>' +
-        '<article class="panel">' +
-          '<div class="panel-title">Review notes</div>' +
-          '<div class="panel-sub">Why this package matters right now.</div>' +
-          '<ul class="summary-list">' +
-            (data.reviewNotes || []).map(function (item) { return '<li>' + esc(item) + '</li>'; }).join('') +
-          '</ul>' +
+        '<article id="links" class="panel">' +
+          '<div class="panel-title">Related links</div>' +
+          '<div class="panel-sub">Original destinations referenced by the home-page card.</div>' +
+          '<div class="link-list">' +
+            ((data.links || []).length ? data.links.map(linkItem).join('') : '<p class="muted">No extra links were attached to this card.</p>') +
+          '</div>' +
         '</article>' +
       '</section>' +
-      '<section id="hits" class="panel section">' +
-        '<div class="panel-title">Hit files</div>' +
-        '<div class="panel-sub">Sorted by literal match count inside the skills catalog.</div>' +
-        '<div class="table-wrap"><table class="table"><thead><tr><th>File</th><th>Kind</th><th>Usage</th><th>Matches</th><th>Skill root</th></tr></thead><tbody>' +
-          (data.hitFiles || []).map(hitRow).join('') +
-        '</tbody></table></div>' +
+      '<section class="panel section">' +
+        '<div class="panel-title">Notes</div>' +
+        '<ul class="summary-list">' +
+          (data.notes || []).map(function (item) { return '<li>' + esc(item) + '</li>'; }).join('') +
+        '</ul>' +
       '</section>' +
       '<p class="footer">' + esc(data.meta.footer || '') + '</p>' +
     '</div>';

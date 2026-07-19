@@ -25,12 +25,40 @@
   'use strict';
 
   var config = window.HELP_CONFIG || {};
+  var reports = window.RUI_DOC_REPORTS || { cardLinks: {} };
   var animationFrameId = 0;
 
   // Build { target, rel } object for v-bind based on whether the link
   // should open in a new tab. Returning `{}` adds no attributes.
   function linkAttrs(openInNew) {
     return openInNew ? { target: '_blank', rel: 'noopener' } : {};
+  }
+
+  function groupLookupKey(group) {
+    if (!group) return '';
+    return group.id || group.title || '';
+  }
+
+  function reportHrefForCard(group, title) {
+    var key = groupLookupKey(group) + '::' + String(title || '');
+    var slug = reports && reports.cardLinks ? reports.cardLinks[key] : '';
+    return slug ? 'deps/' + slug + '/index.html' : '';
+  }
+
+  function appendReportLink(links, group, title, label) {
+    var list = Array.isArray(links) ? links.slice() : [];
+    var reportHref = reportHrefForCard(group, title);
+    var exists = list.some(function (link) {
+      return link && link.href === reportHref;
+    });
+    if (reportHref && !exists) {
+      list.unshift({
+        label: label || 'deps',
+        href: reportHref,
+        target: '_blank'
+      });
+    }
+    return list;
   }
 
   // sceneCardFor(group) · per-kind mapping from HELP_CONFIG items to
@@ -42,6 +70,11 @@
     if (!group || !group.items) return [];
     if (group.kind === 'items') {
       return group.items.map(function (it, i) {
+        var cardLinks = Array.isArray(it.links)
+          ? it.links
+          : (it.demoHref
+            ? [{ label: it.demoLabel || 'deps', href: it.demoHref, target: '_blank' }]
+            : []);
         return {
           key: 'items:' + it.title + ':' + i,
           name: it.title,
@@ -56,11 +89,7 @@
           // items: allow per-card explicit links from data.js. When absent,
           // keep the older demoHref bridge so existing generated cards
           // continue to render a single footer action.
-          links: Array.isArray(it.links)
-            ? it.links
-            : (it.demoHref
-              ? [{ label: it.demoLabel || 'Interactive Demo →', href: it.demoHref, target: '_blank' }]
-              : []),
+          links: appendReportLink(cardLinks, group, it.title, 'deps'),
           // Staggered card entrance delay (rui-scene-card reads --card-delay).
           style: { '--card-delay': (0.01 + (i % 20) * 0.012) + 's' }
         };
@@ -81,7 +110,7 @@
           tags: (st.sceneLinks || []).map(function (sl) {
             return { text: sl.label, href: sl.href, modifier: 'info' };
           }),
-          links: st.links,
+          links: appendReportLink(st.links || [], group, st.title, 'Story Report →'),
           meta: st.meta
         };
       });
@@ -97,9 +126,14 @@
           desc: sc.description,
           // scenes: build a custom link entry for the preview button
           // (renders as the footer link row in rui-scene-card).
-          links: sc.previewHref
-            ? [{ label: sc.previewLabel || 'Architecture Diagram →', href: sc.previewHref, target: '_blank' }]
-            : []
+          links: appendReportLink(
+            sc.previewHref
+              ? [{ label: sc.previewLabel || 'Architecture Diagram →', href: sc.previewHref, target: '_blank' }]
+              : [],
+            group,
+            sc.title,
+            'Scene Report →'
+          )
         };
       });
     }

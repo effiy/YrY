@@ -6,22 +6,8 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const root = path.resolve(__dirname, '../../..');
-const skillsDir = path.join(root, '.claude/skills');
 const docsDataPath = path.join(root, '.claude/docs/data.js');
-const manifestPath = path.join(root, '.claude/skills/rui-reports/diagram/package.json');
 const generatedAt = '2026-07-19';
-
-const textExts = new Set([
-  '.js', '.mjs', '.cjs', '.ts', '.tsx', '.jsx', '.json', '.md', '.txt', '.yaml', '.yml',
-  '.css', '.html', '.xml', '.toml', '.sh', '.sql', '.py', '.rb', '.java', '.go', '.rs',
-  '.php', '.swift', '.kt', '.kts', '.graphql', '.proto', '.env'
-]);
-
-const directExts = new Set([
-  '.js', '.mjs', '.cjs', '.ts', '.tsx', '.jsx', '.json', '.yaml', '.yml', '.toml', '.sh',
-  '.sql', '.py', '.rb', '.java', '.go', '.rs', '.php', '.swift', '.kt', '.kts', '.graphql',
-  '.proto', '.env'
-]);
 
 const pageHtml = `<!DOCTYPE html>
 <html lang="en">
@@ -29,7 +15,7 @@ const pageHtml = `<!DOCTYPE html>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="dark">
-  <title>Dependency Footprint</title>
+  <title>Catalog Report</title>
   <link rel="stylesheet" href="index.css">
   <script src="data.js"></script>
   <script defer src="index.js"></script>
@@ -100,7 +86,7 @@ const pageCss = `@layer reset, tokens, base, layout, components, utilities, resp
   .grid { display: grid; gap: 16px; }
   .metrics { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom: 18px; }
   .cards { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
-  .split { display: grid; grid-template-columns: 1.25fr 0.95fr; gap: 16px; margin-top: 18px; }
+  .split { display: grid; grid-template-columns: 1.2fr 0.9fr; gap: 16px; margin-top: 18px; }
   .section { margin-top: 18px; }
 }
 @layer components {
@@ -137,6 +123,15 @@ const pageCss = `@layer reset, tokens, base, layout, components, utilities, resp
     background: rgba(15, 23, 42, 0.55); border-radius: 999px; padding: 6px 10px; font-size: 12px;
   }
   .toc a:hover { color: var(--text); border-color: var(--border-strong); }
+  .link-list { display: grid; gap: 10px; }
+  .link-list a {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 10px 12px; border: 1px solid var(--border); border-radius: 12px;
+    text-decoration: none; background: rgba(15, 23, 42, 0.48);
+  }
+  .link-list a:hover { border-color: var(--border-strong); }
+  .link-label { color: var(--text); }
+  .link-href { color: var(--text-dim); font-size: 11px; }
 }
 @layer utilities {
   .muted { color: var(--text-muted); }
@@ -188,24 +183,19 @@ const pageJs = `(function () {
     '</article>';
   }
 
-  function ownershipRow(row) {
+  function anchorRow(row) {
     return '<tr>' +
-      '<td><code>' + esc(row.skillRoot) + '</code></td>' +
-      '<td>' + esc(row.fileCount) + '</td>' +
-      '<td>' + esc(row.occurrences) + '</td>' +
-      '<td><code>' + esc(row.primaryFile) + '</code></td>' +
-      '<td>' + esc(row.usageType) + '</td>' +
+      '<td><code>' + esc(row.match) + '</code></td>' +
+      '<td>' + esc(row.mode) + '</td>' +
+      '<td>' + esc(row.reason || '') + '</td>' +
     '</tr>';
   }
 
-  function hitRow(row) {
-    return '<tr>' +
-      '<td><code>' + esc(row.path) + '</code></td>' +
-      '<td>' + esc(row.fileKind) + '</td>' +
-      '<td>' + esc(row.usageType) + '</td>' +
-      '<td>' + esc(row.occurrences) + '</td>' +
-      '<td><code>' + esc(row.skillRoot) + '</code></td>' +
-    '</tr>';
+  function linkItem(link) {
+    return '<a href="' + esc(link.href) + '"' + (link.external ? ' target="_blank" rel="noreferrer noopener"' : '') + '>' +
+      '<span class="link-label">' + esc(link.label) + '</span>' +
+      '<span class="link-href">' + esc(link.href) + '</span>' +
+    '</a>';
   }
 
   app.innerHTML = '' +
@@ -219,50 +209,49 @@ const pageJs = `(function () {
           '</div>' +
           '<nav class="header-links">' +
             '<a href="../index.html">Back to deps</a>' +
-            (data.meta.upstream ? '<a href="' + esc(data.meta.upstream) + '" target="_blank" rel="noreferrer">Upstream</a>' : '') +
-            '<a href="#hits">Hit files</a>' +
+            (data.meta.upstream ? '<a href="' + esc(data.meta.upstream) + '" target="_blank" rel="noreferrer noopener">Primary link</a>' : '') +
+            '<a href="#anchors">Path anchors</a>' +
           '</nav>' +
         '</div>' +
         '<div class="toc">' +
           '<a href="#overview">Overview</a>' +
           '<a href="#diagram">Diagram</a>' +
-          '<a href="#ownership">Ownership</a>' +
-          '<a href="#hits">Trace</a>' +
+          '<a href="#anchors">Anchors</a>' +
+          '<a href="#links">Links</a>' +
         '</div>' +
       '</header>' +
       '<section id="overview" class="grid metrics">' +
         (data.metrics || []).map(metricCard).join('') +
       '</section>' +
       '<section id="diagram" class="panel svg-shell">' +
-        '<div class="panel-title">Diagram-style footprint</div>' +
-        '<div class="panel-sub">Rebuilt from the current <code>.claude/skills</code> inventory using the visual language of <code>rui-reports/diagram</code>.</div>' +
+        '<div class="panel-title">Diagram-style report</div>' +
+        '<div class="panel-sub">Generated from the docs card inventory using the visual language of <code>rui-reports/diagram</code>.</div>' +
         (data.svgDiagram || '') +
       '</section>' +
       '<section class="grid cards section">' +
         (data.summaryCards || []).map(summaryCard).join('') +
       '</section>' +
       '<section class="split section">' +
-        '<article id="ownership" class="panel">' +
-          '<div class="panel-title">Ownership spread</div>' +
-          '<div class="panel-sub">Nearest <code>SKILL.md</code> boundary for each matching file.</div>' +
-          '<div class="table-wrap"><table class="table"><thead><tr><th>Skill root</th><th>Files</th><th>Occurrences</th><th>Primary file</th><th>Usage</th></tr></thead><tbody>' +
-            (data.ownership || []).map(ownershipRow).join('') +
+        '<article id="anchors" class="panel">' +
+          '<div class="panel-title">Path anchors</div>' +
+          '<div class="panel-sub">Used by <code>docs/files/index.html</code> to jump from file-level findings back to this card report.</div>' +
+          '<div class="table-wrap"><table class="table"><thead><tr><th>Match</th><th>Mode</th><th>Reason</th></tr></thead><tbody>' +
+            ((data.anchors || []).length ? data.anchors.map(anchorRow).join('') : '<tr><td colspan="3">No direct file-path anchor was derived for this card.</td></tr>') +
           '</tbody></table></div>' +
         '</article>' +
-        '<article class="panel">' +
-          '<div class="panel-title">Review notes</div>' +
-          '<div class="panel-sub">Why this package matters right now.</div>' +
-          '<ul class="summary-list">' +
-            (data.reviewNotes || []).map(function (item) { return '<li>' + esc(item) + '</li>'; }).join('') +
-          '</ul>' +
+        '<article id="links" class="panel">' +
+          '<div class="panel-title">Related links</div>' +
+          '<div class="panel-sub">Original destinations referenced by the home-page card.</div>' +
+          '<div class="link-list">' +
+            ((data.links || []).length ? data.links.map(linkItem).join('') : '<p class="muted">No extra links were attached to this card.</p>') +
+          '</div>' +
         '</article>' +
       '</section>' +
-      '<section id="hits" class="panel section">' +
-        '<div class="panel-title">Hit files</div>' +
-        '<div class="panel-sub">Sorted by literal match count inside the skills catalog.</div>' +
-        '<div class="table-wrap"><table class="table"><thead><tr><th>File</th><th>Kind</th><th>Usage</th><th>Matches</th><th>Skill root</th></tr></thead><tbody>' +
-          (data.hitFiles || []).map(hitRow).join('') +
-        '</tbody></table></div>' +
+      '<section class="panel section">' +
+        '<div class="panel-title">Notes</div>' +
+        '<ul class="summary-list">' +
+          (data.notes || []).map(function (item) { return '<li>' + esc(item) + '</li>'; }).join('') +
+        '</ul>' +
       '</section>' +
       '<p class="footer">' + esc(data.meta.footer || '') + '</p>' +
     '</div>';
@@ -274,7 +263,7 @@ function ensureDir(dir) {
 }
 
 function escapeHtml(value) {
-  return String(value)
+  return String(value == null ? '' : value)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
@@ -282,95 +271,122 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
+function stripHtml(value) {
+  return String(value == null ? '' : value)
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function slugify(value) {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  return String(value == null ? '' : value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
 
-function countOccurrences(content, needle) {
-  let count = 0;
-  let index = 0;
-  while (true) {
-    index = content.indexOf(needle, index);
-    if (index === -1) return count;
-    count += 1;
-    index += needle.length;
-  }
+function loadHelpConfig() {
+  const sandbox = { window: {} };
+  vm.runInNewContext(fs.readFileSync(docsDataPath, 'utf8'), sandbox, { filename: docsDataPath });
+  return sandbox.window.HELP_CONFIG || {};
 }
 
-function walk(dir, bucket = []) {
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      walk(full, bucket);
-      continue;
+function normalizeHint(value) {
+  let normalized = String(value == null ? '' : value).trim();
+  normalized = normalized.replace(/^\.?\//, '');
+  normalized = normalized.replace(/^\.claude\//, '');
+  normalized = normalized.replace(/^skills\//, '');
+  return normalized;
+}
+
+function pathModeFor(hint) {
+  return /\/$/.test(hint) ? 'prefix' : 'exact';
+}
+
+function extractPathLikeTokens(text) {
+  const source = String(text == null ? '' : text);
+  const matches = source.match(/(?:\.claude\/)?(?:skills\/|shared\/|arch\/|test\/|quickstart\/|daily\/|weekly\/|monthly\/|\.pipeline-state\/)[A-Za-z0-9@._/-]+/g);
+  return matches || [];
+}
+
+function pushHint(target, value) {
+  const normalized = normalizeHint(value);
+  if (!normalized) return;
+  target.add(normalized);
+}
+
+function deriveHints(section, group, item, metaText) {
+  const hints = new Set();
+  extractPathLikeTokens(metaText).forEach((token) => pushHint(hints, token));
+  [item.href].concat(
+    Array.isArray(item.links) ? item.links.map((link) => link.href) : [],
+    Array.isArray(item.sceneLinks) ? item.sceneLinks.map((link) => link.href) : []
+  ).forEach((href) => {
+    if (href && !/^https?:\/\//i.test(href)) {
+      pushHint(hints, href);
     }
-    const ext = path.extname(entry.name).toLowerCase();
-    if (textExts.has(ext) || entry.name === 'pnpm-lock.yaml' || entry.name === 'package-lock.json' || entry.name === 'SKILL.md') {
-      bucket.push(full);
+  });
+
+  const groupTitle = String(group.title || '');
+  const skillMatch = groupTitle.match(/skills\/(rui-[a-z-]+)/i);
+  const skillRoot = skillMatch ? skillMatch[1] : '';
+
+  if (group.id === 'src-shared') {
+    if (item.title === 'loader.js') pushHint(hints, 'shared/loader.js');
+    if (item.title === 'rui-scene-card') pushHint(hints, 'shared/components/rui-scene-card/');
+    if (item.title === 'rui-stats-grid') pushHint(hints, 'shared/components/rui-stats-grid/');
+    if (item.title === 'vendor/') pushHint(hints, 'shared/vendor/');
+  }
+
+  if (skillRoot) {
+    if (item.title === 'SKILL.md') {
+      pushHint(hints, `${skillRoot}/SKILL.md`);
+    } else if (/^\d\d-/.test(item.title)) {
+      pushHint(hints, `${skillRoot}/steps/${item.title}/`);
+    } else if (item.title === 'topics/') {
+      pushHint(hints, `${skillRoot}/topics/`);
+    } else if (/^[a-z0-9-]+$/i.test(item.title)) {
+      pushHint(hints, `${skillRoot}/${item.title}/`);
     }
   }
-  return bucket;
-}
 
-function findSkillRoot(filePath) {
-  let dir = path.dirname(filePath);
-  while (dir.startsWith(skillsDir)) {
-    if (fs.existsSync(path.join(dir, 'SKILL.md'))) {
-      return path.relative(skillsDir, dir).replaceAll(path.sep, '/');
-    }
-    const parent = path.dirname(dir);
-    if (parent === dir) break;
-    dir = parent;
+  if (section.id === 'section-stories') {
+    if (/Architecture Story/i.test(item.title)) pushHint(hints, 'arch/');
+    if (/test Story/i.test(item.title)) pushHint(hints, 'test/');
   }
-  return 'unscoped';
+
+  return [...hints];
 }
 
-function detectFileKind(relPath) {
-  const base = path.basename(relPath);
-  const ext = path.extname(relPath).toLowerCase();
-  if (base === 'package.json') return 'manifest';
-  if (base === 'pnpm-lock.yaml' || base === 'package-lock.json') return 'lockfile';
-  if (ext === '.md') return 'docs';
-  if (ext === '.json' || ext === '.yaml' || ext === '.yml' || ext === '.toml' || ext === '.env') return 'config';
-  if (ext === '.js' || ext === '.mjs' || ext === '.cjs' || ext === '.ts' || ext === '.tsx' || ext === '.jsx') return 'source';
-  return 'text';
+function buildRelatedLinks(item, reportHref) {
+  const seen = new Set();
+  const links = [];
+
+  function addLink(label, href, external) {
+    const safeHref = String(href || '').trim();
+    if (!safeHref || seen.has(safeHref) || safeHref === reportHref) return;
+    seen.add(safeHref);
+    links.push({ label, href: safeHref, external: Boolean(external || /^https?:\/\//i.test(safeHref)) });
+  }
+
+  if (item.href) addLink('Primary destination', item.href, item.targetBlank);
+  if (Array.isArray(item.links)) {
+    item.links.forEach((link, index) => addLink(link.label || `Related link ${index + 1}`, link.href, link.target === '_blank'));
+  }
+  if (Array.isArray(item.sceneLinks)) {
+    item.sceneLinks.forEach((link, index) => addLink(link.label || `Scene ${index + 1}`, link.href, false));
+  }
+  return links;
 }
 
-function detectUsageType(filePath) {
-  const ext = path.extname(filePath).toLowerCase();
-  const base = path.basename(filePath);
-  if (base === 'package.json') return 'manifest';
-  if (base === 'pnpm-lock.yaml' || base === 'package-lock.json') return 'lockfile';
-  if (directExts.has(ext)) return 'direct';
-  return 'reference';
-}
-
-function labelForKind(kind) {
-  if (kind === 'runtime') return 'Runtime dependency';
-  if (kind === 'dev') return 'Dev dependency';
-  return 'Docs-only dependency';
-}
-
-function toneForKind(kind) {
-  if (kind === 'runtime') return 'green';
-  if (kind === 'dev') return 'amber';
-  return 'cyan';
-}
-
-function buildSvg(report) {
-  const topFile = report.hits[0] ? report.hits[0].path.replace('.claude/', '') : 'n/a';
-  const manifestSource = report.manifestHits[0]
-    ? report.manifestHits[0].path.replace('.claude/', '')
-    : (report.kind === 'docs' ? 'docs-only references' : 'no manifest');
-  const topSkill = report.topConsumer ? report.topConsumer.skillRoot : 'unscoped';
-  const host = report.href ? new URL(report.href).host : 'n/a';
-  const tone = report.kind === 'runtime' ? '#34d399' : report.kind === 'dev' ? '#fbbf24' : '#22d3ee';
-  const manifestParts = manifestSource.split('/');
-  const manifestLineA = manifestParts.slice(0, 2).join('/');
-  const manifestLineB = manifestParts.slice(2).join('/').slice(0, 30);
+function buildSvg(card) {
+  const anchor = card.pathHints[0] || card.groupKey;
+  const secondary = card.pathHints[1] || card.sectionId;
+  const descA = card.description.slice(0, 58);
+  const descB = card.description.slice(58, 116);
 
   return [
-    `<svg viewBox="0 0 1120 560" role="img" aria-label="${escapeHtml(report.name)} dependency footprint" xmlns="http://www.w3.org/2000/svg">`,
+    `<svg viewBox="0 0 1120 560" role="img" aria-label="${escapeHtml(card.title)} catalog report" xmlns="http://www.w3.org/2000/svg">`,
     '  <defs>',
     '    <marker id="arrow-cyan" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#22d3ee"/></marker>',
     '    <marker id="arrow-green" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#34d399"/></marker>',
@@ -380,241 +396,216 @@ function buildSvg(report) {
     '  </defs>',
     '  <rect width="100%" height="100%" fill="url(#grid)"/>',
     '  <rect x="36" y="36" width="1048" height="488" rx="20" fill="rgba(251,191,36,0.04)" stroke="#334155" stroke-dasharray="8,4"/>',
-    '  <text x="56" y="60" fill="#94a3b8" font-size="11">diagram-style dependency footprint</text>',
+    '  <text x="56" y="60" fill="#94a3b8" font-size="11">diagram-style catalog drill-down</text>',
     '  <line x1="210" y1="150" x2="350" y2="220" stroke="#22d3ee" stroke-width="1.4" marker-end="url(#arrow-cyan)"/>',
-    '  <text x="280" y="170" fill="#94a3b8" font-size="9" text-anchor="middle">catalog context</text>',
+    '  <text x="280" y="170" fill="#94a3b8" font-size="9" text-anchor="middle">dashboard card</text>',
     '  <line x1="210" y1="310" x2="350" y2="290" stroke="#fbbf24" stroke-width="1.4" marker-end="url(#arrow-amber)"/>',
-    '  <text x="280" y="302" fill="#fbbf24" font-size="9" text-anchor="middle">source of truth</text>',
+    '  <text x="280" y="302" fill="#fbbf24" font-size="9" text-anchor="middle">path anchor</text>',
     '  <line x1="520" y1="326" x2="520" y2="430" stroke="#a78bfa" stroke-width="1.4" marker-end="url(#arrow-violet)"/>',
-    '  <text x="535" y="383" fill="#a78bfa" font-size="9">hottest file</text>',
+    '  <text x="535" y="383" fill="#a78bfa" font-size="9">evidence</text>',
     '  <line x1="760" y1="240" x2="900" y2="150" stroke="#34d399" stroke-width="1.4" marker-end="url(#arrow-green)"/>',
-    '  <text x="838" y="180" fill="#34d399" font-size="9" text-anchor="middle">top consumer</text>',
+    '  <text x="838" y="180" fill="#34d399" font-size="9" text-anchor="middle">section context</text>',
     '  <line x1="875" y1="320" x2="875" y2="432" stroke="#22d3ee" stroke-width="1.4" marker-end="url(#arrow-cyan)"/>',
     '  <text x="888" y="382" fill="#22d3ee" font-size="9">report output</text>',
     '  <rect x="70" y="108" width="140" height="76" rx="10" fill="#0f172a"/>',
     '  <rect x="70" y="108" width="140" height="76" rx="10" fill="rgba(30,41,59,0.55)" stroke="#22d3ee" stroke-width="1.4"/>',
-    '  <text x="140" y="136" fill="white" font-size="12" font-weight="600" text-anchor="middle">Docs Dashboard</text>',
-    '  <text x="140" y="154" fill="#94a3b8" font-size="9" text-anchor="middle">dependency entry</text>',
-    `  <text x="140" y="169" fill="#22d3ee" font-size="8" text-anchor="middle">${escapeHtml(labelForKind(report.kind))}</text>`,
+    '  <text x="140" y="136" fill="white" font-size="12" font-weight="600" text-anchor="middle">Docs Home</text>',
+    '  <text x="140" y="154" fill="#94a3b8" font-size="9" text-anchor="middle">card source</text>',
+    `  <text x="140" y="169" fill="#22d3ee" font-size="8" text-anchor="middle">${escapeHtml(card.groupKindLabel)}</text>`,
     '  <rect x="70" y="272" width="140" height="84" rx="10" fill="#0f172a"/>',
     '  <rect x="70" y="272" width="140" height="84" rx="10" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1.4"/>',
-    '  <text x="140" y="298" fill="white" font-size="12" font-weight="600" text-anchor="middle">Source</text>',
-    `  <text x="140" y="318" fill="#94a3b8" font-size="8" text-anchor="middle">${escapeHtml(manifestLineA)}</text>`,
-    `  <text x="140" y="332" fill="#94a3b8" font-size="8" text-anchor="middle">${escapeHtml(manifestLineB)}</text>`,
-    `  <text x="140" y="348" fill="#fbbf24" font-size="8" text-anchor="middle">${escapeHtml(report.version)}</text>`,
+    '  <text x="140" y="298" fill="white" font-size="12" font-weight="600" text-anchor="middle">Anchor</text>',
+    `  <text x="140" y="318" fill="#94a3b8" font-size="8" text-anchor="middle">${escapeHtml(anchor.slice(0, 26))}</text>`,
+    `  <text x="140" y="332" fill="#94a3b8" font-size="8" text-anchor="middle">${escapeHtml(secondary.slice(0, 26))}</text>`,
+    `  <text x="140" y="348" fill="#fbbf24" font-size="8" text-anchor="middle">${escapeHtml(card.pathHints.length + ' mapped hints')}</text>`,
     '  <rect x="350" y="186" width="340" height="132" rx="16" fill="#0f172a"/>',
-    `  <rect x="350" y="186" width="340" height="132" rx="16" fill="rgba(6,78,59,0.24)" stroke="${tone}" stroke-width="1.8"/>`,
-    `  <text x="520" y="220" fill="white" font-size="20" font-weight="700" text-anchor="middle">${escapeHtml(report.name)}</text>`,
-    `  <text x="520" y="246" fill="#94a3b8" font-size="10" text-anchor="middle">${escapeHtml((report.description || 'Current package footprint').slice(0, 58))}</text>`,
-    `  <text x="520" y="262" fill="#94a3b8" font-size="10" text-anchor="middle">${escapeHtml((report.description || '').slice(58, 116))}</text>`,
-    `  <text x="520" y="284" fill="${tone}" font-size="9" text-anchor="middle">${escapeHtml(`${report.hits.length} hit files`)} · ${escapeHtml(`${report.directHits.length} direct touchpoints`)} · ${escapeHtml(`${report.ownership.length} skill roots`)}</text>`,
-    `  <text x="520" y="300" fill="#a78bfa" font-size="8" text-anchor="middle">upstream ${escapeHtml(host)}</text>`,
+    '  <rect x="350" y="186" width="340" height="132" rx="16" fill="rgba(6,78,59,0.24)" stroke="#34d399" stroke-width="1.8"/>',
+    `  <text x="520" y="220" fill="white" font-size="20" font-weight="700" text-anchor="middle">${escapeHtml(card.title)}</text>`,
+    `  <text x="520" y="246" fill="#94a3b8" font-size="10" text-anchor="middle">${escapeHtml(descA)}</text>`,
+    `  <text x="520" y="262" fill="#94a3b8" font-size="10" text-anchor="middle">${escapeHtml(descB)}</text>`,
+    `  <text x="520" y="284" fill="#34d399" font-size="9" text-anchor="middle">${escapeHtml(card.sectionTitle)} · ${escapeHtml(card.groupTitle)}</text>`,
+    `  <text x="520" y="300" fill="#a78bfa" font-size="8" text-anchor="middle">${escapeHtml(card.relatedLinks.length + ' related links')} · ${escapeHtml(card.pathHints.length + ' path anchors')}</text>`,
     '  <rect x="780" y="106" width="190" height="72" rx="10" fill="#0f172a"/>',
     '  <rect x="780" y="106" width="190" height="72" rx="10" fill="rgba(6,78,59,0.28)" stroke="#34d399" stroke-width="1.4"/>',
-    `  <text x="875" y="132" fill="white" font-size="12" font-weight="600" text-anchor="middle">${escapeHtml(topSkill)}</text>`,
-    `  <text x="875" y="150" fill="#94a3b8" font-size="9" text-anchor="middle">${escapeHtml(topSkill === 'unscoped' ? 'no skill boundary' : `${report.topConsumer.fileCount} hit files`)}</text>`,
+    `  <text x="875" y="132" fill="white" font-size="12" font-weight="600" text-anchor="middle">${escapeHtml(card.sectionTitle.slice(0, 24))}</text>`,
+    `  <text x="875" y="150" fill="#94a3b8" font-size="9" text-anchor="middle">${escapeHtml(card.groupTitle.slice(0, 28))}</text>`,
     '  <rect x="340" y="430" width="360" height="76" rx="10" fill="#0f172a"/>',
     '  <rect x="340" y="430" width="360" height="76" rx="10" fill="rgba(76,29,149,0.28)" stroke="#a78bfa" stroke-width="1.4"/>',
-    '  <text x="520" y="456" fill="white" font-size="12" font-weight="600" text-anchor="middle">Primary file hotspot</text>',
-    `  <text x="520" y="478" fill="#94a3b8" font-size="9" text-anchor="middle">${escapeHtml(topFile.slice(0, 58))}</text>`,
-    `  <text x="520" y="494" fill="#a78bfa" font-size="8" text-anchor="middle">${escapeHtml(`${report.hits[0]?.occurrences || 0} literal matches`)}</text>`,
+    '  <text x="520" y="456" fill="white" font-size="12" font-weight="600" text-anchor="middle">Primary evidence</text>',
+    `  <text x="520" y="478" fill="#94a3b8" font-size="9" text-anchor="middle">${escapeHtml((card.metaText || card.description || card.groupTitle).slice(0, 58))}</text>`,
+    `  <text x="520" y="494" fill="#a78bfa" font-size="8" text-anchor="middle">${escapeHtml(card.metaText ? 'card metadata retained' : 'description-only evidence')}</text>`,
     '  <rect x="780" y="430" width="190" height="76" rx="10" fill="#0f172a"/>',
     '  <rect x="780" y="430" width="190" height="76" rx="10" fill="rgba(30,41,59,0.45)" stroke="#22d3ee" stroke-width="1.4"/>',
     '  <text x="875" y="456" fill="white" font-size="12" font-weight="600" text-anchor="middle">Report page</text>',
-    `  <text x="875" y="478" fill="#94a3b8" font-size="9" text-anchor="middle">docs/deps/${escapeHtml(report.slug)}/index.html</text>`,
-    `  <text x="875" y="494" fill="#22d3ee" font-size="8" text-anchor="middle">static report rebuilt on ${generatedAt}</text>`,
+    `  <text x="875" y="478" fill="#94a3b8" font-size="9" text-anchor="middle">docs/deps/${escapeHtml(card.slug)}/index.html</text>`,
+    `  <text x="875" y="494" fill="#22d3ee" font-size="8" text-anchor="middle">rebuilt ${generatedAt}</text>`,
     '</svg>'
   ].join('');
 }
 
-function loadDocsMeta() {
-  const sandbox = { window: {} };
-  vm.runInNewContext(fs.readFileSync(docsDataPath, 'utf8'), sandbox, { filename: docsDataPath });
-  const helpConfig = sandbox.window.HELP_CONFIG || {};
-  const groups = (((helpConfig.sections || [])[0] || {}).groups || []);
-  const depItems = groups.flatMap((group) => group.items || []);
-  const map = new Map();
-  for (const item of depItems) {
-    map.set(item.title, {
-      description: item.description || '',
-      href: item.href || '',
-      icon: item.icon || 'pkg',
-      meta: item.meta || ''
-    });
+function uniqueSlug(baseSlug, used) {
+  let slug = baseSlug || 'card-report';
+  let index = 2;
+  while (used.has(slug)) {
+    slug = `${baseSlug}-${index}`;
+    index += 1;
   }
-  if (!map.has('beautiful-mermaid')) {
-    map.set('beautiful-mermaid', {
-      description: 'Mermaid rendering helper referenced by the rui-tools/mermaid skill docs and eval guidance.',
-      href: 'https://www.npmjs.com/package/beautiful-mermaid',
-      icon: 'mermaid',
-      meta: 'Docs-only'
-    });
-  }
-  return map;
+  used.add(slug);
+  return slug;
 }
 
-function buildPackageList() {
-  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-  const map = new Map();
-  for (const [name, version] of Object.entries(manifest.dependencies || {})) {
-    map.set(name, { name, slug: slugify(name), version, kind: 'runtime' });
-  }
-  for (const [name, version] of Object.entries(manifest.devDependencies || {})) {
-    map.set(name, { name, slug: slugify(name), version, kind: 'dev' });
-  }
-  map.set('beautiful-mermaid', {
-    name: 'beautiful-mermaid',
-    slug: 'beautiful-mermaid',
-    version: 'docs-only',
-    kind: 'docs'
+function buildCardReports(helpConfig) {
+  const reports = [];
+  const usedSlugs = new Set();
+
+  (helpConfig.sections || []).forEach((section) => {
+    (section.groups || []).forEach((group) => {
+      (group.items || []).forEach((item) => {
+        const groupKey = group.id || group.title || 'group';
+        const isDependencyCard = section.id === 'section-dependencies';
+        const baseSlug = isDependencyCard
+          ? slugify(item.title)
+          : slugify(`${groupKey}-${item.title}`);
+        const slug = uniqueSlug(baseSlug, usedSlugs);
+        const reportHref = `deps/${slug}/index.html`;
+        const metaText = stripHtml(item.meta || '');
+        const pathHints = deriveHints(section, group, item, metaText);
+        const relatedLinks = buildRelatedLinks(item, reportHref);
+        const description = String(item.description || '').trim();
+        const badge = String(item.badge || '').trim();
+        const groupKindLabel = group.kind === 'stories' ? 'story card' : group.kind === 'scenes' ? 'scene card' : 'catalog card';
+        const notes = [
+          `Belongs to "${section.title}" under "${group.title}".`,
+          metaText ? `Card metadata: ${metaText}.` : 'No extra metadata string was attached to the original card.',
+          pathHints.length
+            ? `Files-report deep links can target this card via ${pathHints.length} derived path anchor(s).`
+            : 'No direct file-path anchor could be derived, so this report is discoverable from the docs home and deps index only.'
+        ];
+        if (badge) notes.push(`Badge context retained from the original card: ${badge}.`);
+        if (relatedLinks.length) notes.push(`Original card exposed ${relatedLinks.length} related navigation link(s).`);
+
+        reports.push({
+          slug,
+          href: reportHref,
+          cardKey: `${groupKey}::${item.title}`,
+          title: String(item.title || ''),
+          description,
+          badge,
+          sectionId: String(section.id || ''),
+          sectionTitle: String(section.title || ''),
+          groupKey,
+          groupTitle: String(group.title || ''),
+          groupKind: String(group.kind || ''),
+          groupKindLabel,
+          metaText,
+          upstream: item.href && /^https?:\/\//i.test(item.href) ? item.href : '',
+          pathHints,
+          relatedLinks,
+          notes
+        });
+      });
+    });
   });
-  return [...map.values()];
+
+  return reports;
 }
 
-function buildReport(pkg, docsMetaMap, skillFiles) {
-  const hits = [];
-  for (const filePath of skillFiles) {
-    const raw = fs.readFileSync(filePath, 'utf8');
-    const occurrences = countOccurrences(raw, pkg.name);
-    if (!occurrences) continue;
-    const relPath = path.relative(root, filePath).replaceAll(path.sep, '/');
-    hits.push({
-      path: relPath,
-      occurrences,
-      skillRoot: findSkillRoot(filePath),
-      fileKind: detectFileKind(relPath),
-      usageType: detectUsageType(filePath)
-    });
-  }
-  if (!hits.length) return null;
-
-  hits.sort((a, b) => b.occurrences - a.occurrences || a.path.localeCompare(b.path));
-
-  const directHits = hits.filter((item) => item.usageType !== 'reference');
-  const referenceHits = hits.filter((item) => item.usageType === 'reference');
-  const manifestHits = hits.filter((item) => item.usageType === 'manifest');
-  const ownershipMap = new Map();
-
-  for (const hit of hits) {
-    const prev = ownershipMap.get(hit.skillRoot) || {
-      skillRoot: hit.skillRoot,
-      fileCount: 0,
-      occurrences: 0,
-      primaryFile: hit.path,
-      usageType: hit.usageType,
-      maxOccurrences: -1
-    };
-    prev.fileCount += 1;
-    prev.occurrences += hit.occurrences;
-    if (hit.occurrences > prev.maxOccurrences) {
-      prev.primaryFile = hit.path;
-      prev.usageType = hit.usageType;
-      prev.maxOccurrences = hit.occurrences;
-    }
-    ownershipMap.set(hit.skillRoot, prev);
-  }
-
-  const ownership = [...ownershipMap.values()]
-    .map(({ maxOccurrences, ...rest }) => rest)
-    .sort((a, b) => b.fileCount - a.fileCount || b.occurrences - a.occurrences || a.skillRoot.localeCompare(b.skillRoot));
-
-  const topConsumer = ownership[0];
-  const docsMeta = docsMetaMap.get(pkg.name) || { description: '', href: '', icon: 'pkg', meta: '' };
-
-  return {
-    ...pkg,
-    description: docsMeta.description,
-    href: docsMeta.href,
-    icon: docsMeta.icon,
-    metaLabel: docsMeta.meta,
-    hits,
-    directHits,
-    referenceHits,
-    manifestHits,
-    ownership,
-    topConsumer,
-    totalOccurrences: hits.reduce((sum, item) => sum + item.occurrences, 0)
-  };
-}
-
-function writeReport(report, scannedCount) {
-  const dir = path.join(__dirname, report.slug);
-  ensureDir(dir);
-
+function buildReportData(card) {
   const summaryCards = [
     {
       tone: 'cyan',
-      title: 'Adoption footprint',
+      title: 'Snapshot',
       items: [
-        `${labelForKind(report.kind)} at version ${report.version}.`,
-        `${report.ownership.length} skill roots mention it; top consumer is ${report.topConsumer ? report.topConsumer.skillRoot : 'unscoped'}.`,
-        `${report.directHits.length} direct files and ${report.referenceHits.length} reference-only files currently match the package string.`
+        card.description || 'The home-page card did not include a standalone description.',
+        card.badge ? `Badge: ${card.badge}.` : `Card type: ${card.groupKindLabel}.`,
+        `${card.relatedLinks.length} related links and ${card.pathHints.length} path anchors retained for drill-down.`
       ]
     },
     {
       tone: 'violet',
-      title: 'Where to review first',
-      items: report.hits.slice(0, 3).map((item) => `${item.path} (${item.occurrences} matches, ${item.usageType})`)
+      title: 'Evidence',
+      items: [
+        card.metaText || 'No metadata string was attached to the card.',
+        card.pathHints[0] ? `Primary anchor: ${card.pathHints[0]}` : 'No primary file anchor available.',
+        card.pathHints[1] ? `Secondary anchor: ${card.pathHints[1]}` : `Fallback group key: ${card.groupKey}`
+      ]
     },
     {
-      tone: toneForKind(report.kind),
-      title: 'Change risk',
+      tone: 'green',
+      title: 'Navigation',
       items: [
-        report.manifestHits.length
-          ? 'Manifest-backed package; sync docs after version changes.'
-          : 'No active manifest declaration; treat this as a docs-only or reference footprint.',
-        report.directHits.some((item) => item.usageType === 'lockfile')
-          ? 'Lockfile still references this package, so drift can show up without docs changes.'
-          : 'No lockfile hotspot detected for this package in the current catalog.',
-        report.href ? `Upstream reference is ${new URL(report.href).host}.` : 'No upstream URL was found in docs/data.js.'
+        `Home-page report link: ${card.href}`,
+        card.relatedLinks[0] ? `Primary related link: ${card.relatedLinks[0].href}` : 'No extra destination was attached to this card.',
+        `Section context: ${card.sectionTitle} -> ${card.groupTitle}`
       ]
     }
   ];
 
-  const reviewNotes = [
-    `Scanned ${scannedCount} text files under .claude/skills for literal matches.`,
-    'Literal matching is intentionally conservative: it catches manifest declarations, lockfile entries, source imports, and documentation mentions.',
-    report.kind === 'docs'
-      ? 'This package is not in the active diagram package.json; it stays in the report set because the skills catalog still references it.'
-      : 'This package remains declared in .claude/skills/rui-reports/diagram/package.json.'
-  ];
+  const anchors = card.pathHints.map((hint) => ({
+    match: hint,
+    mode: pathModeFor(hint),
+    reason: hint === card.pathHints[0] ? 'primary derived hint' : 'secondary derived hint'
+  }));
 
-  const data = {
+  return {
     meta: {
-      pageTitle: `${report.name} footprint`,
-      subtitle: `${labelForKind(report.kind)} · ${report.version} · ${report.hits.length} hit files across .claude/skills`,
-      upstream: report.href,
-      footer: `Generated for .claude/docs/deps/${report.slug}/index.html · package ${report.name} · ${report.hits.length} hit files · ${report.ownership.length} skill roots · rebuilt ${generatedAt}`
+      pageTitle: `${card.title} report`,
+      subtitle: `${card.sectionTitle} · ${card.groupTitle}`,
+      upstream: card.upstream,
+      footer: `Generated for .claude/docs/deps/${card.slug}/index.html from docs/index card "${card.title}" · rebuilt ${generatedAt}`
     },
     metrics: [
-      { label: 'Version', value: report.version, sub: labelForKind(report.kind), tone: toneForKind(report.kind) },
-      { label: 'Skill roots', value: String(report.ownership.length), sub: `top ${report.topConsumer ? report.topConsumer.skillRoot : 'unscoped'}`, tone: 'cyan' },
-      { label: 'Direct files', value: String(report.directHits.length), sub: 'manifest + lockfile + source', tone: 'violet' },
-      { label: 'Hit files', value: String(report.hits.length), sub: 'literal matches in catalog', tone: 'amber' },
-      { label: 'Occurrences', value: String(report.totalOccurrences), sub: 'all matches combined', tone: 'rose' }
+      { label: 'Section', value: card.sectionId || 'n/a', sub: card.sectionTitle, tone: 'cyan' },
+      { label: 'Group', value: card.groupKind || 'items', sub: card.groupTitle, tone: 'green' },
+      { label: 'Links', value: String(card.relatedLinks.length), sub: 'related destinations', tone: 'amber' },
+      { label: 'Anchors', value: String(card.pathHints.length), sub: 'files-report deep links', tone: 'violet' },
+      { label: 'Badge', value: card.badge || 'n/a', sub: 'card badge / count', tone: 'rose' }
     ],
-    svgDiagram: buildSvg(report),
+    svgDiagram: buildSvg(card),
     summaryCards,
-    ownership: report.ownership,
-    reviewNotes,
-    hitFiles: report.hits
+    anchors,
+    links: card.relatedLinks,
+    notes: card.notes
   };
+}
 
+function writeReport(card) {
+  const dir = path.join(__dirname, card.slug);
+  ensureDir(dir);
   fs.writeFileSync(path.join(dir, 'index.html'), pageHtml);
   fs.writeFileSync(path.join(dir, 'index.css'), pageCss);
   fs.writeFileSync(path.join(dir, 'index.js'), pageJs);
-  fs.writeFileSync(path.join(dir, 'data.js'), `window.REPORT_DATA = ${JSON.stringify(data, null, 2)};\n`);
+  fs.writeFileSync(path.join(dir, 'data.js'), `window.REPORT_DATA = ${JSON.stringify(buildReportData(card), null, 2)};\n`);
 }
 
-function writeRootIndex(reports, scannedCount) {
-  const rootCards = reports.map((report) => {
-    const toneClass = report.kind === 'runtime' ? 'runtime' : report.kind === 'dev' ? 'dev' : 'docs';
-    return `<a class="card ${toneClass}" href="${escapeHtml(report.slug)}/index.html">
-      <div class="card-top"><strong>${escapeHtml(report.name)}</strong><span>${escapeHtml(labelForKind(report.kind))}</span></div>
-      <div class="card-meta">${escapeHtml(report.version)} · ${escapeHtml(`${report.hits.length} hit files`)} · ${escapeHtml(`${report.ownership.length} skill roots`)}</div>
-      <p>${escapeHtml((report.description || 'Current package footprint inside the skills catalog.').slice(0, 110))}</p>
-      <div class="card-sub">top consumer: ${escapeHtml(report.topConsumer ? report.topConsumer.skillRoot : 'unscoped')}</div>
-    </a>`;
+function writeRootIndex(reports) {
+  const bySection = new Map();
+  reports.forEach((report) => {
+    const bucket = bySection.get(report.sectionTitle) || [];
+    bucket.push(report);
+    bySection.set(report.sectionTitle, bucket);
+  });
+
+  const sectionsHtml = [...bySection.entries()].map(([sectionTitle, cards]) => {
+    const cardsHtml = cards.map((card) => {
+      return `<a class="card" href="${escapeHtml(card.slug)}/index.html">
+        <div class="card-top">
+          <strong>${escapeHtml(card.title)}</strong>
+          <span>${escapeHtml(card.groupKindLabel)}</span>
+        </div>
+        <div class="card-meta">${escapeHtml(card.groupTitle)} · ${escapeHtml(card.pathHints.length + ' anchors')}</div>
+        <p>${escapeHtml((card.description || card.metaText || 'Catalog drill-down report').slice(0, 120))}</p>
+        <div class="card-sub">${escapeHtml(card.relatedLinks.length + ' related links')} · ${escapeHtml(card.slug)}</div>
+      </a>`;
+    }).join('\n');
+
+    return `<section class="section-block">
+      <div class="section-head">
+        <h2>${escapeHtml(sectionTitle)}</h2>
+        <span>${cards.length} cards</span>
+      </div>
+      <div class="grid">${cardsHtml}</div>
+    </section>`;
   }).join('\n');
 
   const html = `<!DOCTYPE html>
@@ -623,7 +614,7 @@ function writeRootIndex(reports, scannedCount) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="dark">
-  <title>Dependency Reports</title>
+  <title>Catalog Reports</title>
   <style>
     :root {
       color-scheme: dark;
@@ -633,9 +624,8 @@ function writeRootIndex(reports, scannedCount) {
       --border-strong: #334155;
       --text: #e2e8f0;
       --muted: #94a3b8;
+      --dim: #64748b;
       --cyan: #22d3ee;
-      --green: #34d399;
-      --amber: #fbbf24;
       --font: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     }
     * { box-sizing: border-box; }
@@ -658,7 +648,11 @@ function writeRootIndex(reports, scannedCount) {
       padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border);
       background: rgba(15, 23, 42, 0.55); color: var(--muted); font-size: 12px;
     }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 24px; }
+    .section-block { margin-top: 28px; }
+    .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    .section-head h2 { margin: 0; font-size: 18px; }
+    .section-head span { color: var(--dim); font-size: 12px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
     .card {
       display: grid; gap: 10px; padding: 18px; border-radius: 18px; text-decoration: none; color: inherit;
       background: var(--panel); border: 1px solid var(--border); box-shadow: 0 18px 48px rgba(2, 6, 23, 0.24);
@@ -668,25 +662,22 @@ function writeRootIndex(reports, scannedCount) {
     .card-top strong { font-size: 16px; }
     .card-top span { font-size: 11px; color: var(--muted); }
     .card-meta { font-size: 12px; color: var(--cyan); }
-    .card-sub { font-size: 12px; color: var(--muted); }
-    .runtime .card-meta { color: var(--green); }
-    .dev .card-meta { color: var(--amber); }
-    .docs .card-meta { color: var(--cyan); }
-    .footer { margin-top: 24px; font-size: 12px; color: #64748b; }
+    .card-sub { font-size: 12px; color: var(--dim); }
+    .footer { margin-top: 24px; font-size: 12px; color: var(--dim); }
   </style>
 </head>
 <body>
   <main>
-    <h1>Third-Party Dependency Reports</h1>
-    <p>Rebuilt from the current <code>.claude/skills</code> inventory. The original <code>rui-reports/diagram</code> scan workflow no longer exists, so this page regenerates the dependency catalog using the current manifest, lockfile, source, and documentation footprints while keeping the same diagram-style drill-down pages.</p>
+    <h1>Catalog Drill-Down Reports</h1>
+    <p>Generated from <code>.claude/docs/index.html</code> card content. Each report keeps the home-page description, metadata, related links, and any derived path anchors, then renders them as a diagram-style drill-down page inspired by <code>rui-reports/diagram</code>.</p>
     <div class="meta">
-      <span class="pill">${reports.length} packages tracked</span>
-      <span class="pill">${scannedCount} skill files scanned</span>
-      <span class="pill">source of truth: <code>skills/rui-reports/diagram/package.json</code></span>
+      <span class="pill">${reports.length} reports</span>
+      <span class="pill">${new Set(reports.map((report) => report.sectionTitle)).size} sections</span>
+      <span class="pill">source: <code>docs/data.js</code></span>
       <span class="pill">rebuilt ${generatedAt}</span>
     </div>
-    <section class="grid">${rootCards}</section>
-    <p class="footer">Generated under <code>.claude/docs/deps</code> from the current repository state.</p>
+    ${sectionsHtml}
+    <p class="footer">Generated under <code>.claude/docs/deps</code> from the current documentation catalog.</p>
   </main>
 </body>
 </html>
@@ -695,28 +686,49 @@ function writeRootIndex(reports, scannedCount) {
   fs.writeFileSync(path.join(__dirname, 'index.html'), html);
 }
 
+function writeReportLinks(reports) {
+  const cardLinks = {};
+  const ruleMap = new Map();
+
+  reports.forEach((report) => {
+    cardLinks[report.cardKey] = report.slug;
+    report.pathHints.forEach((hint) => {
+      const normalized = normalizeHint(hint);
+      const key = `${pathModeFor(normalized)}::${normalized}`;
+      if (!ruleMap.has(key)) {
+        ruleMap.set(key, {
+          match: normalized,
+          mode: pathModeFor(normalized),
+          slug: report.slug,
+          title: report.title
+        });
+      }
+    });
+  });
+
+  const pathRules = [...ruleMap.values()].sort((a, b) => b.match.length - a.match.length || a.match.localeCompare(b.match));
+  const payload = {
+    generatedAt,
+    cardLinks,
+    pathRules
+  };
+
+  fs.writeFileSync(path.join(__dirname, 'report-links.js'), `window.RUI_DOC_REPORTS = ${JSON.stringify(payload, null, 2)};\n`);
+}
+
 function main() {
   ensureDir(__dirname);
-  const skillFiles = walk(skillsDir);
-  const scannedCount = skillFiles.length;
-  const docsMetaMap = loadDocsMeta();
-  const reports = buildPackageList()
-    .map((pkg) => buildReport(pkg, docsMetaMap, skillFiles))
-    .filter(Boolean)
-    .sort((a, b) => {
-      const order = { runtime: 0, dev: 1, docs: 2 };
-      return (order[a.kind] - order[b.kind]) || a.name.localeCompare(b.name);
-    });
+  const helpConfig = loadHelpConfig();
+  const reports = buildCardReports(helpConfig);
 
-  for (const report of reports) {
-    writeReport(report, scannedCount);
-  }
-  writeRootIndex(reports, scannedCount);
+  reports.forEach(writeReport);
+  writeRootIndex(reports);
+  writeReportLinks(reports);
 
-  console.log(`Regenerated ${reports.length} dependency reports.`);
-  for (const report of reports) {
-    console.log(`- ${report.slug}: ${report.hits.length} hit files, ${report.ownership.length} skill roots`);
-  }
+  console.log(`Regenerated ${reports.length} catalog reports.`);
+  reports.forEach((report) => {
+    console.log(`- ${report.slug}: ${report.title} (${report.pathHints.length} anchors, ${report.relatedLinks.length} links)`);
+  });
 }
 
 main();

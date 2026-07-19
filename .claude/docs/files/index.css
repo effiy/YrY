@@ -837,6 +837,31 @@ footer .dim { color: var(--rui-fg-subtle, #4a5062); margin-top: 4px; }
 .remediation-file:hover .remediation-copy,
 .remediation-copy:focus-visible,
 .remediation-copy.is-copied { opacity: 1; }
+.report-jump,
+.report-jump-block {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border: 1px solid color-mix(in srgb, var(--rui-accent, #3b82f6) 35%, transparent);
+    border-radius: 999px;
+    color: var(--rui-accent, #3b82f6);
+    background: color-mix(in srgb, var(--rui-accent, #3b82f6) 10%, transparent);
+    text-decoration: none;
+    font-size: 11px;
+    line-height: 1.6;
+    white-space: nowrap;
+}
+.report-jump:hover,
+.report-jump-block:hover {
+    border-color: color-mix(in srgb, var(--rui-accent, #3b82f6) 55%, transparent);
+    color: var(--rui-fg, #e6e8eb);
+}
+.report-jump-row {
+    display: flex;
+    justify-content: flex-end;
+    padding: 8px 12px 0;
+}
 .remediation-copy:hover {
     color: var(--rui-fg-default, #e6edf3);
     background: var(--rui-bg-sunken, #0c111b);

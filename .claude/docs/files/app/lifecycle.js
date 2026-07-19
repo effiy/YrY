@@ -13,6 +13,92 @@
     const RuiReportApp = window.RuiReportApp = window.RuiReportApp || {};
 
     RuiReportApp.mounted = function () {
+        const reportMap = window.RUI_DOC_REPORTS || {pathRules: []};
+
+        function normalizeReportPath(value) {
+            return String(value || '')
+                .trim()
+                .replace(/^\.?\//, '')
+                .replace(/^\.claude\//, '')
+                .replace(/^skills\//, '');
+        }
+
+        function resolveReport(pathText) {
+            const normalized = normalizeReportPath(pathText);
+            if (!normalized) {
+                return null;
+            }
+            const rules = Array.isArray(reportMap.pathRules) ? reportMap.pathRules : [];
+            for (let i = 0; i < rules.length; i++) {
+                const rule = rules[i];
+                if (!rule || !rule.match || !rule.slug) {
+                    continue;
+                }
+                if (rule.mode === 'exact' && normalized === rule.match) {
+                    return rule;
+                }
+                if (rule.mode === 'prefix' && normalized.startsWith(rule.match)) {
+                    return rule;
+                }
+            }
+            return null;
+        }
+
+        function buildReportHref(rule) {
+            return `../deps/${ rule.slug }/index.html`;
+        }
+
+        function buildJumpLink(rule, label, block) {
+            const link = document.createElement('a');
+            link.className = block ? 'report-jump report-jump-block' : 'report-jump';
+            link.href = buildReportHref(rule);
+            link.target = '_blank';
+            link.rel = 'noopener';
+            link.textContent = label || 'Report ↗';
+            link.title = `Open related report: ${ rule.title || rule.slug }`;
+            return link;
+        }
+
+        function enhancePathCodes() {
+            document.querySelectorAll('#page-app td code, #page-app .cycles-list code').forEach((codeEl) => {
+                if (codeEl.dataset.reportEnhanced === 'true') {
+                    return;
+                }
+                const rule = resolveReport(codeEl.textContent);
+                codeEl.dataset.reportEnhanced = 'true';
+                if (!rule) {
+                    return;
+                }
+                const jump = buildJumpLink(rule, 'Report ↗', false);
+                codeEl.insertAdjacentText('afterend', ' ');
+                codeEl.insertAdjacentElement('afterend', jump);
+            });
+        }
+
+        function enhanceRemediationLinks() {
+            document.querySelectorAll('#page-app .remediation-cell').forEach((cell) => {
+                if (cell.dataset.reportEnhanced === 'true') {
+                    return;
+                }
+                const codeEl = cell.querySelector('.remediation-file code');
+                const rule = resolveReport(codeEl && codeEl.textContent);
+                cell.dataset.reportEnhanced = 'true';
+                if (!rule) {
+                    return;
+                }
+                const wrap = document.createElement('div');
+                wrap.className = 'report-jump-row';
+                wrap.appendChild(buildJumpLink(rule, 'Related report ↗', true));
+                const detail = cell.querySelector('.remediation-detail');
+                cell.insertBefore(wrap, detail || null);
+            });
+        }
+
+        function decorateReportLinks() {
+            enhancePathCodes();
+            enhanceRemediationLinks();
+        }
+
         // Collapsible sections — click h2 to toggle, state persisted per section id.
         const COLLAPSE_KEY = 'rui-report-collapsed';
         function readCollapsed() {
@@ -170,6 +256,15 @@
             }
         };
         document.addEventListener('keydown', this._onKey);
+
+        this._reportLinkObserver = new MutationObserver(() => {
+            requestAnimationFrame(decorateReportLinks);
+        });
+        this._reportLinkObserver.observe(document.getElementById('page-app'), {
+            childList: true,
+            subtree: true
+        });
+        requestAnimationFrame(decorateReportLinks);
     };
 
     RuiReportApp.beforeUnmount = function () {
@@ -188,6 +283,10 @@
         if (this._onKey) {
             document.removeEventListener('keydown', this._onKey);
             this._onKey = null;
+        }
+        if (this._reportLinkObserver) {
+            this._reportLinkObserver.disconnect();
+            this._reportLinkObserver = null;
         }
     };
 })();
