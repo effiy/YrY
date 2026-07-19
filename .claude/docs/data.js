@@ -160,7 +160,8 @@ window.HELP_CONFIG = {
                 { label: "5. Trust Boundary Security Surface", href: "arch/scene-5-trust-boundary-security-surface/index.md" }
               ],
               links: [
-                { label: "Architecture Dashboard →", href: "arch/index.html" }
+                { label: "Architecture Dashboard →", href: "arch/index.html" },
+                { label: "Quickstart →", href: "quickstart/index.html" }
               ],
               meta: "5 scenes · 2 project-specific slugs kept from the existing tree"
             },
