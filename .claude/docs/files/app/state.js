@@ -46,10 +46,6 @@
             activeSection: 'summary',
             readingProgress: 0,
             remediationDone: {},
-            // Tracks the most recently copied remediation file's _key so the
-            // copy button can show a brief "Copied!" confirmation. Cleared by
-            // copyFilePath() after a short timeout.
-            copiedKey: null,
             // Lazy-mount flags — only above-the-fold sections render in the
             // initial mount; the rest flip to true via IntersectionObserver
             // in lifecycle.js as they approach the viewport. This keeps the
@@ -125,23 +121,28 @@
             const c = this.alertCounts;
             const score = this.data && this.data.score;
             const total = c.p0 + c.p1 + c.p2;
-            const hottest = ((this.data && this.data.hotspots) || []).slice(0, 3);
-            const hotspotList = hottest.length
-                ? `<ul>${ hottest.map(function (h) {
-                    const path = String(h.path || h.file || '').replace(/</g, '&lt;');
-                    const reason = String(h.reason || h.flag || '').replace(/</g, '&lt;');
-                    return `<li><code>${ path }</code> — ${ reason }</li>`;
-                }).join('') }</ul>`
-                : '';
+            // Structured hotspot list — the previous implementation built
+            // an HTML string here with template literals + manual `&lt;`
+            // escaping and re-injected it via `v-html`, which is both
+            // awkward to maintain and an XSS surface if a future
+            // reporter ever ships an unescaped field. The new
+            // `<rui-risk-banner>` component interpolates the same data
+            // with native Vue text-mustache binding instead.
+            const hotspots = ((this.data && this.data.hotspots) || []).slice(0, 3).map(function (h) {
+                return {
+                    path: String(h.path || h.file || ''),
+                    reason: String(h.reason || h.flag || '')
+                };
+            });
 
             if (c.p0 > 0) {
                 return {
                     level: 'p0',
                     icon: '!',
                     title: `${c.p0 } critical risk alert${ c.p0 > 1 ? 's' : '' } — action required before merge`,
-                    body: `<strong>P0-level risk detected — resolve before merge/release.</strong> ${
-                        total } alert(s) total (P0: ${ c.p0 } · P1: ${ c.p1 } · P2: ${ c.p2 }).${
-                        hotspotList ? ` Top hotspots: ${ hotspotList}` : ''}`,
+                    introLead: 'P0-level risk detected — resolve before merge/release.',
+                    intro: `${ total } alert(s) total (P0: ${ c.p0 } · P1: ${ c.p1 } · P2: ${ c.p2 }).`,
+                    hotspots: hotspots,
                     actions: [
                         {href: '#risk', label: 'View risk details →'},
                         {href: '#self-improvement', label: 'Improvement roadmap →'},
@@ -153,8 +154,9 @@
                     level: 'p1',
                     icon: '▲',
                     title: `${c.p1 } warning${ c.p1 > 1 ? 's' : '' } — review recommended`,
-                    body: `${c.p1 } P1 warning(s) detected. Review within this iteration to prevent systemic accumulation.${
-                        hotspotList ? ` Top hotspots: ${ hotspotList}` : ''}`,
+                    introLead: '',
+                    intro: `${c.p1 } P1 warning(s) detected. Review within this iteration to prevent systemic accumulation.`,
+                    hotspots: hotspots,
                     actions: [
                         {href: '#risk', label: 'View risk details →'},
                     ],
@@ -165,7 +167,9 @@
                     level: 'ok',
                     icon: '✓',
                     title: `No active risk alerts — health score ${ score }/100`,
-                    body: 'No risk alerts triggered this scan. Still recommended to review the Coupling / Health sections for potential architecture drift.',
+                    introLead: '',
+                    intro: 'No risk alerts triggered this scan. Still recommended to review the Coupling / Health sections for potential architecture drift.',
+                    hotspots: [],
                     actions: [],
                 };
             }
@@ -232,16 +236,6 @@
 
         isStale: function () {
             return this.dataAgeDays > 7;
-        },
-
-        distPct: function () {
-            const c = this.alertCounts;
-            const total = c.p0 + c.p1 + c.p2 || 1;
-            return {
-                p0: (c.p0 / total) * 100,
-                p1: (c.p1 / total) * 100,
-                p2: (c.p2 / total) * 100,
-            };
         },
 
         keyFindings: function () {

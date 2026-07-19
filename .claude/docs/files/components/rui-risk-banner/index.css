@@ -1,0 +1,7 @@
+/* rui-risk-banner
+ * ----------------------------------------------------------------------
+ * Visual styles are inherited from the page-level `.risk-banner`
+ * declarations in files/index.css — the component is markup-only and
+ * reuses the existing classes (.risk-banner / .risk-title /
+ * .risk-icon / .risk-body / .risk-actions + tone modifiers).
+ */

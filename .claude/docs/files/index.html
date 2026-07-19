@@ -35,6 +35,20 @@
     <link rel="stylesheet" href="components/rui-report-health/index.css">
     <link rel="stylesheet" href="components/rui-report-self-improvement/index.css">
 
+    <!-- Page-level chrome widgets extracted from inline duplication -->
+    <link rel="stylesheet" href="components/rui-risk-banner/index.css">
+    <link rel="stylesheet" href="components/rui-meta-item/index.css">
+    <link rel="stylesheet" href="components/rui-footer-recap-item/index.css">
+    <link rel="stylesheet" href="components/rui-finding-card/index.css">
+    <link rel="stylesheet" href="components/rui-remediation-group/index.css">
+    <link rel="stylesheet" href="components/rui-remediation-item/index.css">
+    <link rel="stylesheet" href="components/rui-copy-button/index.css">
+    <link rel="stylesheet" href="components/rui-remediation-check/index.css">
+    <link rel="stylesheet" href="components/rui-stale-banner/index.css">
+    <link rel="stylesheet" href="components/rui-risk-distribution/index.css">
+    <link rel="stylesheet" href="components/rui-p0-jump/index.css">
+    <link rel="stylesheet" href="components/rui-back-to-top-link/index.css">
+
     <script>
         window.__reportTemplatesReady = (function () {
             var componentTemplateFiles = [
@@ -44,7 +58,19 @@
                 'components/rui-report-coupling/index.html',
                 'components/rui-report-risk/index.html',
                 'components/rui-report-health/index.html',
-                'components/rui-report-self-improvement/index.html'
+                'components/rui-report-self-improvement/index.html',
+                'components/rui-risk-banner/index.html',
+                'components/rui-meta-item/index.html',
+                'components/rui-footer-recap-item/index.html',
+                'components/rui-finding-card/index.html',
+                'components/rui-remediation-group/index.html',
+                'components/rui-remediation-item/index.html',
+                'components/rui-copy-button/index.html',
+                'components/rui-remediation-check/index.html',
+                'components/rui-stale-banner/index.html',
+                'components/rui-risk-distribution/index.html',
+                'components/rui-p0-jump/index.html',
+                'components/rui-back-to-top-link/index.html'
             ];
 
             function appendTemplatesFromHTML(htmlText) {
@@ -83,6 +109,20 @@
     <script src="components/rui-report-risk/index.js"></script>
     <script src="components/rui-report-health/index.js"></script>
     <script src="components/rui-report-self-improvement/index.js"></script>
+
+    <!-- Page-level chrome widgets -->
+    <script src="components/rui-risk-banner/index.js"></script>
+    <script src="components/rui-meta-item/index.js"></script>
+    <script src="components/rui-footer-recap-item/index.js"></script>
+    <script src="components/rui-finding-card/index.js"></script>
+    <script src="components/rui-remediation-group/index.js"></script>
+    <script src="components/rui-remediation-item/index.js"></script>
+    <script src="components/rui-copy-button/index.js"></script>
+    <script src="components/rui-remediation-check/index.js"></script>
+    <script src="components/rui-stale-banner/index.js"></script>
+    <script src="components/rui-risk-distribution/index.js"></script>
+    <script src="components/rui-p0-jump/index.js"></script>
+    <script src="components/rui-back-to-top-link/index.js"></script>
 
 </head>
 <body>
@@ -123,74 +163,29 @@
             · options: <code>{{ optionsJson }}</code>
         </p>
         <div class="meta-grid">
-            <div class="meta-item">
-                <span class="meta-label">Health score</span>
-                <span class="meta-value">{{ data.score == null ? '—' : data.score + ' / 100' }}</span>
-            </div>
-            <div class="meta-item">
-                <span class="meta-label">Total files</span>
-                <span class="meta-value">{{ data.summary.totalFiles == null ? '—' : data.summary.totalFiles.toLocaleString() }}</span>
-            </div>
-            <div class="meta-item">
-                <span class="meta-label">Total size</span>
-                <span class="meta-value">{{ data.summary.totalBytesHuman || '—' }}</span>
-            </div>
-            <div class="meta-item">
-                <span class="meta-label">Risk alerts</span>
-                <span class="meta-value">
-                    {{ alertCounts.p0 }} P0 · {{ alertCounts.p1 }} P1 · {{ alertCounts.p2 }} P2
-                </span>
-            </div>
-            <div class="meta-item">
-                <span class="meta-label">Generated</span>
-                <span class="meta-value">{{ generatedAt }}</span>
-            </div>
+            <rui-meta-item label="Health score"
+                           :value="data.score == null ? '—' : data.score + ' / 100'"></rui-meta-item>
+            <rui-meta-item label="Total files"
+                           :value="data.summary.totalFiles == null ? '—' : data.summary.totalFiles.toLocaleString()"></rui-meta-item>
+            <rui-meta-item label="Total size"
+                           :value="data.summary.totalBytesHuman || '—'"></rui-meta-item>
+            <rui-meta-item label="Risk alerts">
+                {{ alertCounts.p0 }} P0 · {{ alertCounts.p1 }} P1 · {{ alertCounts.p2 }} P2
+            </rui-meta-item>
+            <rui-meta-item label="Generated" :value="generatedAt"></rui-meta-item>
         </div>
     </header>
 
     <!-- ── Stale data warning ── -->
-    <div v-if="isStale" class="stale-banner" role="status" aria-live="polite">
-        <span class="stale-icon">⏰</span>
-        <span class="stale-text">
-            本报告生成于 <strong>{{ dataAgeDays }} 天前</strong>（{{ generatedAt }}）。期间代码可能已变化，建议重新运行
-            <code>/rui-report-files</code> 刷新快照。
-        </span>
-    </div>
+    <rui-stale-banner :visible="isStale"
+                      :age-days="dataAgeDays"
+                      :generated-at="generatedAt"></rui-stale-banner>
 
     <!-- ── Risk warning banner ── -->
-    <div v-if="riskBanner" class="risk-banner"
-         :class="'risk-level-' + riskBanner.level"
-         :role="riskBanner.level === 'p0' ? 'alert' : 'status'"
-         aria-live="assertive">
-        <div class="risk-title">
-            <span class="risk-icon" v-text="riskBanner.icon"></span>
-            <span v-text="riskBanner.title"></span>
-        </div>
-        <div class="risk-body" v-html="riskBanner.body"></div>
-        <div class="risk-actions" v-if="riskBanner.actions.length">
-            <a v-for="a in riskBanner.actions" :key="a.href"
-               :href="a.href" v-text="a.label"></a>
-        </div>
-    </div>
+    <rui-risk-banner :banner="riskBanner"></rui-risk-banner>
 
     <!-- ── Risk distribution bar ── -->
-    <div
-      class="risk-dist"
-      v-if="alertCounts.p0 + alertCounts.p1 + alertCounts.p2 > 0">
-        <span class="risk-dist-label">Risk distribution</span>
-        <div class="risk-dist-bar">
-            <span class="risk-dist-seg risk-dist-p0"
-                  :style="{ width: distPct.p0 + '%' }"
-                  :title="alertCounts.p0 + ' P0 (critical)'">{{ alertCounts.p0 || '' }}</span>
-            <span class="risk-dist-seg risk-dist-p1"
-                  :style="{ width: distPct.p1 + '%' }"
-                  :title="alertCounts.p1 + ' P1 (warning)'">{{ alertCounts.p1 || '' }}</span>
-            <span class="risk-dist-seg risk-dist-p2"
-                  :style="{ width: distPct.p2 + '%' }"
-                  :title="alertCounts.p2 + ' P2 (info)'">{{ alertCounts.p2 || '' }}</span>
-        </div>
-        <span class="risk-dist-total">{{ alertCounts.p0 + alertCounts.p1 + alertCounts.p2 }} total</span>
-    </div>
+    <rui-risk-distribution :counts="alertCounts"></rui-risk-distribution>
 
     <!-- ── Remediation queue — prioritized action list ── -->
     <section id="remediation" v-if="remediationQueue.length" class="remediation-section">
@@ -204,228 +199,36 @@
             </span>
             <span class="remediation-hint">Click the checkbox to mark an item resolved — progress is saved locally.</span>
         </p>
-        <div v-if="remediationGrouped.P0.length" class="remediation-group">
-            <div class="remediation-group-head tone-critical">
-                <span class="remediation-group-icon">!</span>
-                <span class="remediation-group-title">P0 — Critical</span>
-                <span class="remediation-group-count">{{ remediationGrouped.P0.length }} item<span v-if="remediationGrouped.P0.length > 1">s</span></span>
-                <span class="remediation-group-hint">Resolve before merge / release</span>
-            </div>
-            <ul class="remediation-list">
-                <li v-for="item in remediationGrouped.P0" :key="item._key"
-                    class="remediation-item tone-critical"
-                    :class="{ 'is-done': item._done }">
-                    <label class="remediation-check">
-                        <input
-                          type="checkbox"
-                          :checked="item._done"
-                          @change="toggleRemediation(item._key)" />
-                        <span class="remediation-check-box" aria-hidden="true"></span>
-                    </label>
-                    <div class="remediation-cell">
-                        <a :href="item.href" class="remediation-link">
-                            <span class="remediation-marker">{{ item.marker }}</span>
-                            <span class="remediation-body">
-                                <span class="remediation-file"><code>{{ item.file }}</code><span v-if="item.line" class="remediation-line">:{{ item.line }}</span><button type="button" class="remediation-copy" :class="{ 'is-copied': copiedKey === item._key }" @click.stop.prevent="copyFilePath(item)" :title="'Copy path: ' + (item.line ? item.file + ':' + item.line : item.file)" :aria-label="'Copy path' + (item.line ? ' ' + item.file + ':' + item.line : ' ' + item.file)"><span class="remediation-copy-icon" aria-hidden="true">{{ copiedKey === item._key ? '✓' : '⧉' }}</span><span class="remediation-copy-text">{{ copiedKey === item._key ? 'Copied' : 'Copy' }}</span></button></span>
-                                <span class="remediation-message">{{ item.message }}</span>
-                                <span class="remediation-category" v-if="item.category">{{ item.category }}</span>
-                            </span>
-                        </a>
-                        <div class="remediation-detail" v-if="item.metric || item.impact || (item.recommendations && item.recommendations.length)">
-                            <div class="remediation-meta">
-                                <span v-if="item.metric" class="remediation-chip remediation-chip-metric">{{ item.metric }}</span>
-                                <span v-if="item.effort" class="remediation-chip remediation-chip-effort" :class="'effort-' + item.effort">effort · {{ item.effort }}</span>
-                                <span v-if="item.scoreUplift" class="remediation-chip remediation-chip-uplift">+{{ item.scoreUplift }} pts</span>
-                                <span v-if="item.estimatedHours" class="remediation-chip remediation-chip-eta">ETA ~{{ item.estimatedHours }}h</span>
-                                <span v-if="item.blastRadius" class="remediation-chip remediation-chip-blast">blast · {{ item.blastRadius }}</span>
-                            </div>
-                            <p v-if="item.impact" class="remediation-impact">{{ item.impact }}</p>
-                            <p v-if="item.risk" class="remediation-risk"><span class="remediation-risk-icon" aria-hidden="true">⚠</span> <strong>If unfixed:</strong> {{ item.risk }}</p>
-                            <div v-if="item.firstStep" class="remediation-first-step">
-                                <span class="remediation-first-step-icon" aria-hidden="true">▶</span>
-                                <span class="remediation-first-step-body"><strong>Start here:</strong> {{ item.firstStep }}</span>
-                            </div>
-                            <div class="remediation-recs-accept" v-if="(item.recommendations && item.recommendations.length) || (item.acceptance && item.acceptance.length)">
-                                <ol v-if="item.recommendations && item.recommendations.length" class="remediation-recommendations">
-                                    <li v-for="(rec, i) in item.recommendations" :key="i">{{ rec }}</li>
-                                </ol>
-                                <div v-if="item.acceptance && item.acceptance.length" class="remediation-acceptance">
-                                    <div class="remediation-acceptance-head">Acceptance criteria</div>
-                                    <ul>
-                                        <li v-for="(crit, i) in item.acceptance" :key="i">{{ crit }}</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="remediation-tooling" v-if="item.tooling && item.tooling.length">
-                                <span class="remediation-tooling-head">Suggested tooling</span>
-                                <ul class="remediation-tooling-list">
-                                    <li v-for="(t, i) in item.tooling" :key="i">
-                                        <code>{{ t.name }}</code><span v-if="t.hint" class="remediation-tooling-hint"> — {{ t.hint }}</span>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="remediation-prevent" v-if="item.preventiveControls && item.preventiveControls.length">
-                                <span class="remediation-prevent-head">Prevent regression</span>
-                                <ul>
-                                    <li v-for="(ctrl, i) in item.preventiveControls" :key="i">{{ ctrl }}</li>
-                                </ul>
-                            </div>
-                            <div class="remediation-rollback" v-if="item.rollbackPlan">
-                                <span class="remediation-rollback-head">Rollback plan</span>
-                                <p>{{ item.rollbackPlan }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-        </div>
-        <div v-if="remediationGrouped.P1.length" class="remediation-group">
-            <div class="remediation-group-head tone-warn">
-                <span class="remediation-group-icon">▲</span>
-                <span class="remediation-group-title">P1 — Warning</span>
-                <span class="remediation-group-count">{{ remediationGrouped.P1.length }} item<span v-if="remediationGrouped.P1.length > 1">s</span></span>
-                <span class="remediation-group-hint">Review within this iteration</span>
-            </div>
-            <ul class="remediation-list">
-                <li v-for="item in remediationGrouped.P1" :key="item._key"
-                    class="remediation-item tone-warn"
-                    :class="{ 'is-done': item._done }">
-                    <label class="remediation-check">
-                        <input type="checkbox" :checked="item._done" @change="toggleRemediation(item._key)"
-                               :aria-label="'Mark resolved: ' + item.file + ' — ' + item.message" />
-                        <span class="remediation-check-box" aria-hidden="true"></span>
-                    </label>
-                    <div class="remediation-cell">
-                        <a :href="item.href" class="remediation-link">
-                            <span class="remediation-marker">{{ item.marker }}</span>
-                            <span class="remediation-body">
-                                <span class="remediation-file"><code>{{ item.file }}</code><span v-if="item.line" class="remediation-line">:{{ item.line }}</span><button type="button" class="remediation-copy" :class="{ 'is-copied': copiedKey === item._key }" @click.stop.prevent="copyFilePath(item)" :title="'Copy path: ' + (item.line ? item.file + ':' + item.line : item.file)" :aria-label="'Copy path' + (item.line ? ' ' + item.file + ':' + item.line : ' ' + item.file)"><span class="remediation-copy-icon" aria-hidden="true">{{ copiedKey === item._key ? '✓' : '⧉' }}</span><span class="remediation-copy-text">{{ copiedKey === item._key ? 'Copied' : 'Copy' }}</span></button></span>
-                                <span class="remediation-message">{{ item.message }}</span>
-                                <span class="remediation-category" v-if="item.category">{{ item.category }}</span>
-                            </span>
-                        </a>
-                        <div class="remediation-detail" v-if="item.metric || item.impact || (item.recommendations && item.recommendations.length)">
-                            <div class="remediation-meta">
-                                <span v-if="item.metric" class="remediation-chip remediation-chip-metric">{{ item.metric }}</span>
-                                <span v-if="item.effort" class="remediation-chip remediation-chip-effort" :class="'effort-' + item.effort">effort · {{ item.effort }}</span>
-                                <span v-if="item.scoreUplift" class="remediation-chip remediation-chip-uplift">+{{ item.scoreUplift }} pts</span>
-                                <span v-if="item.estimatedHours" class="remediation-chip remediation-chip-eta">ETA ~{{ item.estimatedHours }}h</span>
-                                <span v-if="item.blastRadius" class="remediation-chip remediation-chip-blast">blast · {{ item.blastRadius }}</span>
-                            </div>
-                            <p v-if="item.impact" class="remediation-impact">{{ item.impact }}</p>
-                            <p v-if="item.risk" class="remediation-risk"><span class="remediation-risk-icon" aria-hidden="true">⚠</span> <strong>If unfixed:</strong> {{ item.risk }}</p>
-                            <div v-if="item.firstStep" class="remediation-first-step">
-                                <span class="remediation-first-step-icon" aria-hidden="true">▶</span>
-                                <span class="remediation-first-step-body"><strong>Start here:</strong> {{ item.firstStep }}</span>
-                            </div>
-                            <div class="remediation-recs-accept" v-if="(item.recommendations && item.recommendations.length) || (item.acceptance && item.acceptance.length)">
-                                <ol v-if="item.recommendations && item.recommendations.length" class="remediation-recommendations">
-                                    <li v-for="(rec, i) in item.recommendations" :key="i">{{ rec }}</li>
-                                </ol>
-                                <div v-if="item.acceptance && item.acceptance.length" class="remediation-acceptance">
-                                    <div class="remediation-acceptance-head">Acceptance criteria</div>
-                                    <ul>
-                                        <li v-for="(crit, i) in item.acceptance" :key="i">{{ crit }}</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="remediation-tooling" v-if="item.tooling && item.tooling.length">
-                                <span class="remediation-tooling-head">Suggested tooling</span>
-                                <ul class="remediation-tooling-list">
-                                    <li v-for="(t, i) in item.tooling" :key="i">
-                                        <code>{{ t.name }}</code><span v-if="t.hint" class="remediation-tooling-hint"> — {{ t.hint }}</span>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="remediation-prevent" v-if="item.preventiveControls && item.preventiveControls.length">
-                                <span class="remediation-prevent-head">Prevent regression</span>
-                                <ul>
-                                    <li v-for="(ctrl, i) in item.preventiveControls" :key="i">{{ ctrl }}</li>
-                                </ul>
-                            </div>
-                            <div class="remediation-rollback" v-if="item.rollbackPlan">
-                                <span class="remediation-rollback-head">Rollback plan</span>
-                                <p>{{ item.rollbackPlan }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-        </div>
-        <div v-if="remediationGrouped.P2.length" class="remediation-group">
-            <div class="remediation-group-head tone-info">
-                <span class="remediation-group-icon">i</span>
-                <span class="remediation-group-title">P2 — Info</span>
-                <span class="remediation-group-count">{{ remediationGrouped.P2.length }} item<span v-if="remediationGrouped.P2.length > 1">s</span></span>
-                <span class="remediation-group-hint">Optional improvements</span>
-            </div>
-            <ul class="remediation-list">
-                <li v-for="item in remediationGrouped.P2" :key="item._key"
-                    class="remediation-item tone-info"
-                    :class="{ 'is-done': item._done }">
-                    <label class="remediation-check">
-                        <input type="checkbox" :checked="item._done" @change="toggleRemediation(item._key)"
-                               :title="'Mark resolved: ' + item.file + ' — ' + item.message"
-                               :aria-label="'Mark resolved: ' + item.file + ' — ' + item.message" />
-                        <span class="remediation-check-box" aria-hidden="true"></span>
-                    </label>
-                    <div class="remediation-cell">
-                        <a :href="item.href" class="remediation-link">
-                            <span class="remediation-marker">{{ item.marker }}</span>
-                            <span class="remediation-body">
-                                <span class="remediation-file"><code>{{ item.file }}</code><span v-if="item.line" class="remediation-line">:{{ item.line }}</span><button type="button" class="remediation-copy" :class="{ 'is-copied': copiedKey === item._key }" @click.stop.prevent="copyFilePath(item)" :title="'Copy path: ' + (item.line ? item.file + ':' + item.line : item.file)" :aria-label="'Copy path' + (item.line ? ' ' + item.file + ':' + item.line : ' ' + item.file)"><span class="remediation-copy-icon" aria-hidden="true">{{ copiedKey === item._key ? '✓' : '⧉' }}</span><span class="remediation-copy-text">{{ copiedKey === item._key ? 'Copied' : 'Copy' }}</span></button></span>
-                                <span class="remediation-message">{{ item.message }}</span>
-                                <span class="remediation-category" v-if="item.category">{{ item.category }}</span>
-                            </span>
-                        </a>
-                        <div class="remediation-detail" v-if="item.metric || item.impact || (item.recommendations && item.recommendations.length)">
-                            <div class="remediation-meta">
-                                <span v-if="item.metric" class="remediation-chip remediation-chip-metric">{{ item.metric }}</span>
-                                <span v-if="item.effort" class="remediation-chip remediation-chip-effort" :class="'effort-' + item.effort">effort · {{ item.effort }}</span>
-                                <span v-if="item.scoreUplift" class="remediation-chip remediation-chip-uplift">+{{ item.scoreUplift }} pts</span>
-                                <span v-if="item.estimatedHours" class="remediation-chip remediation-chip-eta">ETA ~{{ item.estimatedHours }}h</span>
-                                <span v-if="item.blastRadius" class="remediation-chip remediation-chip-blast">blast · {{ item.blastRadius }}</span>
-                            </div>
-                            <p v-if="item.impact" class="remediation-impact">{{ item.impact }}</p>
-                            <p v-if="item.risk" class="remediation-risk"><span class="remediation-risk-icon" aria-hidden="true">⚠</span> <strong>If unfixed:</strong> {{ item.risk }}</p>
-                            <div v-if="item.firstStep" class="remediation-first-step">
-                                <span class="remediation-first-step-icon" aria-hidden="true">▶</span>
-                                <span class="remediation-first-step-body"><strong>Start here:</strong> {{ item.firstStep }}</span>
-                            </div>
-                            <div class="remediation-recs-accept" v-if="(item.recommendations && item.recommendations.length) || (item.acceptance && item.acceptance.length)">
-                                <ol v-if="item.recommendations && item.recommendations.length" class="remediation-recommendations">
-                                    <li v-for="(rec, i) in item.recommendations" :key="i">{{ rec }}</li>
-                                </ol>
-                                <div v-if="item.acceptance && item.acceptance.length" class="remediation-acceptance">
-                                    <div class="remediation-acceptance-head">Acceptance criteria</div>
-                                    <ul>
-                                        <li v-for="(crit, i) in item.acceptance" :key="i">{{ crit }}</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="remediation-tooling" v-if="item.tooling && item.tooling.length">
-                                <span class="remediation-tooling-head">Suggested tooling</span>
-                                <ul class="remediation-tooling-list">
-                                    <li v-for="(t, i) in item.tooling" :key="i">
-                                        <code>{{ t.name }}</code><span v-if="t.hint" class="remediation-tooling-hint"> — {{ t.hint }}</span>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="remediation-prevent" v-if="item.preventiveControls && item.preventiveControls.length">
-                                <span class="remediation-prevent-head">Prevent regression</span>
-                                <ul>
-                                    <li v-for="(ctrl, i) in item.preventiveControls" :key="i">{{ ctrl }}</li>
-                                </ul>
-                            </div>
-                            <div class="remediation-rollback" v-if="item.rollbackPlan">
-                                <span class="remediation-rollback-head">Rollback plan</span>
-                                <p>{{ item.rollbackPlan }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-        </div>
+        <rui-remediation-group
+            v-if="remediationGrouped.P0.length"
+            severity="P0" icon="!" title="P0 — Critical"
+            hint="Resolve before merge / release"
+            :count="remediationGrouped.P0.length" tone="critical">
+            <rui-remediation-item
+                v-for="item in remediationGrouped.P0" :key="item._key"
+                :item="item"
+                @toggle="() => toggleRemediation(item._key)"></rui-remediation-item>
+        </rui-remediation-group>
+        <rui-remediation-group
+            v-if="remediationGrouped.P1.length"
+            severity="P1" icon="▲" title="P1 — Warning"
+            hint="Review within this iteration"
+            :count="remediationGrouped.P1.length" tone="warn">
+            <rui-remediation-item
+                v-for="item in remediationGrouped.P1" :key="item._key"
+                :item="item"
+                @toggle="() => toggleRemediation(item._key)"></rui-remediation-item>
+        </rui-remediation-group>
+        <rui-remediation-group
+            v-if="remediationGrouped.P2.length"
+            severity="P2" icon="i" title="P2 — Info"
+            hint="Optional improvements"
+            :count="remediationGrouped.P2.length" tone="info">
+            <rui-remediation-item
+                v-for="item in remediationGrouped.P2" :key="item._key"
+                :item="item"
+                @toggle="() => toggleRemediation(item._key)"></rui-remediation-item>
+        </rui-remediation-group>
     </section>
 
     <!-- ── Key findings (executive TL;DR) ── -->
@@ -435,18 +238,11 @@
             <span class="key-findings-sub">Click any card to jump to the detail section</span>
         </div>
         <div class="key-findings-grid">
-            <a v-for="f in keyFindings"
-               :key="f.label"
-               :href="f.href"
-               class="finding-card"
-               :class="'tone-' + f.tone">
-                <span class="finding-icon" aria-hidden="true">{{ f.icon }}</span>
-                <span class="finding-body">
-                    <span class="finding-label">{{ f.label }}</span>
-                    <span class="finding-value">{{ f.value }}<span class="finding-sub" v-if="f.sub"> · {{ f.sub }}</span></span>
-                    <span class="finding-hint" v-if="f.hint">{{ f.hint }}</span>
-                </span>
-            </a>
+            <rui-finding-card
+                v-for="f in keyFindings" :key="f.label"
+                :icon="f.icon" :label="f.label" :value="f.value"
+                :sub="f.sub" :hint="f.hint" :href="f.href" :tone="f.tone">
+            </rui-finding-card>
         </div>
     </div>
 
@@ -477,7 +273,7 @@
                 <span class="legend-swatch legend-swatch--ok" aria-hidden="true"></span> Healthy / Passed
             </dd>
         </dl>
-        <a href="#toc" class="read-helper__back-top" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">↑ Back to top</a>
+        <rui-back-to-top-link></rui-back-to-top-link>
     </details>
 
     <!-- ── Methodology (collapsible) ── -->
@@ -503,7 +299,7 @@
             <dt>Data locality</dt>
             <dd>All metrics computed statically from the source tree — no network calls, no telemetry, nothing uploaded.</dd>
         </dl>
-        <a href="#toc" class="read-helper__back-top" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">↑ Back to top</a>
+        <rui-back-to-top-link></rui-back-to-top-link>
     </details>
 
     <!-- ── Summary section ── -->
@@ -568,24 +364,17 @@
 
     <footer>
         <div class="footer-recap">
-            <div class="footer-recap-item">
-                <span class="footer-recap-label">Health score</span>
-                <span class="footer-recap-value" :class="scoreClass">{{ data.score == null ? '—' : data.score + '/100' }}</span>
-            </div>
-            <div class="footer-recap-item">
-                <span class="footer-recap-label">Files scanned</span>
-                <span class="footer-recap-value">{{ data.summary.totalFiles == null ? '—' : data.summary.totalFiles.toLocaleString() }}</span>
-            </div>
-            <div class="footer-recap-item">
-                <span class="footer-recap-label">Risk alerts</span>
-                <span class="footer-recap-value" :class="alertCounts.p0 ? 'critical' : (alertCounts.p1 ? 'warn' : 'ok')">
-                    {{ alertCounts.p0 + alertCounts.p1 + alertCounts.p2 }} alert(s)
-                </span>
-            </div>
-            <div class="footer-recap-item">
-                <span class="footer-recap-label">Generated at</span>
-                <span class="footer-recap-value">{{ generatedAt }}</span>
-            </div>
+            <rui-footer-recap-item label="Health score"
+                                   :value="data.score == null ? '—' : data.score + '/100'"
+                                   :tone="scoreClass"></rui-footer-recap-item>
+            <rui-footer-recap-item label="Files scanned"
+                                   :value="data.summary.totalFiles == null ? '—' : data.summary.totalFiles.toLocaleString()"></rui-footer-recap-item>
+            <rui-footer-recap-item label="Risk alerts"
+                                   :tone="alertCounts.p0 ? 'critical' : (alertCounts.p1 ? 'warn' : 'ok')">
+                {{ alertCounts.p0 + alertCounts.p1 + alertCounts.p2 }} alert(s)
+            </rui-footer-recap-item>
+            <rui-footer-recap-item label="Generated at"
+                                   :value="generatedAt"></rui-footer-recap-item>
         </div>
         <p>Generated by <code>/rui-report-files</code> · scope: <code>{{ data.scope }}</code> · options: <code>{{ optionsJson }}</code></p>
         <p class="dim">{{ CONFIG.labels.footerMethodology }}</p>
@@ -595,14 +384,7 @@
     <rui-back-top />
 
     <!-- Floating P0 jump-to-risk button — only visible when P0 alerts exist -->
-    <a v-if="alertCounts.p0 > 0"
-       href="#risk"
-       class="p0-jump"
-       :title="alertCounts.p0 + ' critical alert' + (alertCounts.p0 > 1 ? 's' : '')"
-       aria-label="Jump to risk section">
-        <span class="p0-jump-count" v-text="alertCounts.p0"></span>
-        <span class="p0-jump-label">P0 risk</span>
-    </a>
+    <rui-p0-jump :count="alertCounts.p0" href="#risk" label="P0 risk"></rui-p0-jump>
 </div>
 
 <script src="data.js"></script>

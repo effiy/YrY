@@ -1,0 +1,17 @@
+<script type="text/x-template" id="rui-risk-distribution-tpl">
+    <div class="risk-dist" v-if="visible">
+        <span class="risk-dist-label">{{ label }}</span>
+        <div class="risk-dist-bar">
+            <span class="risk-dist-seg risk-dist-p0"
+                  :style="{ width: pct.p0 + '%' }"
+                  :title="counts.p0 + ' P0 (critical)'">{{ counts.p0 || '' }}</span>
+            <span class="risk-dist-seg risk-dist-p1"
+                  :style="{ width: pct.p1 + '%' }"
+                  :title="counts.p1 + ' P1 (warning)'">{{ counts.p1 || '' }}</span>
+            <span class="risk-dist-seg risk-dist-p2"
+                  :style="{ width: pct.p2 + '%' }"
+                  :title="counts.p2 + ' P2 (info)'">{{ counts.p2 || '' }}</span>
+        </div>
+        <span class="risk-dist-total">{{ total }} total</span>
+    </div>
+</script>

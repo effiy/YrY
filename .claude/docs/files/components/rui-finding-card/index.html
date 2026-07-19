@@ -1,0 +1,10 @@
+<script type="text/x-template" id="rui-finding-card-tpl">
+    <a :href="href" class="finding-card" :class="'tone-' + tone">
+        <span class="finding-icon" aria-hidden="true">{{ icon }}</span>
+        <span class="finding-body">
+            <span class="finding-label">{{ label }}</span>
+            <span class="finding-value">{{ value }}<span class="finding-sub" v-if="sub"> · {{ sub }}</span></span>
+            <span class="finding-hint" v-if="hint">{{ hint }}</span>
+        </span>
+    </a>
+</script>

@@ -121,6 +121,43 @@
         if (window.ruiReportSelfImprovement && window.ruiReportSelfImprovement.name === 'ruiReportSelfImprovement') {
             app.component('rui-report-self-improvement', window.ruiReportSelfImprovement);
         }
+        // Page-level chrome widgets (extracted from inline duplication).
+        if (window.ruiRiskBanner && window.ruiRiskBanner.name === 'ruiRiskBanner') {
+            app.component('rui-risk-banner', window.ruiRiskBanner);
+        }
+        if (window.ruiMetaItem && window.ruiMetaItem.name === 'ruiMetaItem') {
+            app.component('rui-meta-item', window.ruiMetaItem);
+        }
+        if (window.ruiFooterRecapItem && window.ruiFooterRecapItem.name === 'ruiFooterRecapItem') {
+            app.component('rui-footer-recap-item', window.ruiFooterRecapItem);
+        }
+        if (window.ruiFindingCard && window.ruiFindingCard.name === 'ruiFindingCard') {
+            app.component('rui-finding-card', window.ruiFindingCard);
+        }
+        if (window.ruiRemediationGroup && window.ruiRemediationGroup.name === 'ruiRemediationGroup') {
+            app.component('rui-remediation-group', window.ruiRemediationGroup);
+        }
+        if (window.ruiRemediationItem && window.ruiRemediationItem.name === 'ruiRemediationItem') {
+            app.component('rui-remediation-item', window.ruiRemediationItem);
+        }
+        if (window.ruiCopyButton && window.ruiCopyButton.name === 'ruiCopyButton') {
+            app.component('rui-copy-button', window.ruiCopyButton);
+        }
+        if (window.ruiRemediationCheck && window.ruiRemediationCheck.name === 'ruiRemediationCheck') {
+            app.component('rui-remediation-check', window.ruiRemediationCheck);
+        }
+        if (window.ruiStaleBanner && window.ruiStaleBanner.name === 'ruiStaleBanner') {
+            app.component('rui-stale-banner', window.ruiStaleBanner);
+        }
+        if (window.ruiRiskDistribution && window.ruiRiskDistribution.name === 'ruiRiskDistribution') {
+            app.component('rui-risk-distribution', window.ruiRiskDistribution);
+        }
+        if (window.ruiP0Jump && window.ruiP0Jump.name === 'ruiP0Jump') {
+            app.component('rui-p0-jump', window.ruiP0Jump);
+        }
+        if (window.ruiBackToTopLink && window.ruiBackToTopLink.name === 'ruiBackToTopLink') {
+            app.component('rui-back-to-top-link', window.ruiBackToTopLink);
+        }
     }
 
     /**
@@ -147,6 +184,18 @@
                     whenReportComponentReady('ruiReportRisk', 'rui-report-risk-tpl'),
                     whenReportComponentReady('ruiReportHealth', 'rui-report-health-tpl'),
                     whenReportComponentReady('ruiReportSelfImprovement', 'rui-report-self-improvement-tpl'),
+                    whenReportComponentReady('ruiRiskBanner', 'rui-risk-banner-tpl'),
+                    whenReportComponentReady('ruiMetaItem', 'rui-meta-item-tpl'),
+                    whenReportComponentReady('ruiFooterRecapItem', 'rui-footer-recap-item-tpl'),
+                    whenReportComponentReady('ruiFindingCard', 'rui-finding-card-tpl'),
+                    whenReportComponentReady('ruiRemediationGroup', 'rui-remediation-group-tpl'),
+                    whenReportComponentReady('ruiRemediationItem', 'rui-remediation-item-tpl'),
+                    whenReportComponentReady('ruiCopyButton', 'rui-copy-button-tpl'),
+                    whenReportComponentReady('ruiRemediationCheck', 'rui-remediation-check-tpl'),
+                    whenReportComponentReady('ruiStaleBanner', 'rui-stale-banner-tpl'),
+                    whenReportComponentReady('ruiRiskDistribution', 'rui-risk-distribution-tpl'),
+                    whenReportComponentReady('ruiP0Jump', 'rui-p0-jump-tpl'),
+                    whenReportComponentReady('ruiBackToTopLink', 'rui-back-to-top-link-tpl'),
                 ]);
             })
             .then(function () {

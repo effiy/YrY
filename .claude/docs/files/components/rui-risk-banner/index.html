@@ -1,0 +1,25 @@
+<script type="text/x-template" id="rui-risk-banner-tpl">
+    <div v-if="banner" class="risk-banner"
+         :class="'risk-level-' + banner.level"
+         :role="banner.level === 'p0' ? 'alert' : 'status'"
+         aria-live="assertive">
+        <div class="risk-title">
+            <span class="risk-icon" aria-hidden="true">{{ banner.icon }}</span>
+            <span>{{ banner.title }}</span>
+        </div>
+        <div class="risk-body">
+            <p v-if="banner.intro">
+                <strong v-if="banner.level === 'p0'">{{ banner.introLead }}</strong>
+                <span>{{ banner.intro }}</span>
+            </p>
+            <ul v-if="banner.hotspots && banner.hotspots.length">
+                <li v-for="(h, i) in banner.hotspots" :key="i">
+                    <code>{{ h.path }}</code> — {{ h.reason }}
+                </li>
+            </ul>
+        </div>
+        <div class="risk-actions" v-if="banner.actions && banner.actions.length">
+            <a v-for="(a, i) in banner.actions" :key="i" :href="a.href">{{ a.label }}</a>
+        </div>
+    </div>
+</script>

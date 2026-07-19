@@ -1,0 +1,11 @@
+<script type="text/x-template" id="rui-copy-button-tpl">
+    <button type="button" class="remediation-copy"
+            :class="{ 'is-copied': copied }"
+            :disabled="disabled"
+            @click.stop.prevent="onClick"
+            :title="title"
+            :aria-label="ariaLabel">
+        <span class="remediation-copy-icon" aria-hidden="true">{{ copied ? '✓' : '⧉' }}</span>
+        <span class="remediation-copy-text">{{ copied ? 'Copied' : 'Copy' }}</span>
+    </button>
+</script>

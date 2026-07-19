@@ -333,6 +333,60 @@
   }
 
   /* ──────────────────────────────────────────────────────────────────
+     Reusable section sub-components
+     ──────────────────────────────────────────────────────────────────
+     These three components are registered locally on the page-level
+     Vue app (see the bottom of this file) and exist for two reasons:
+
+       1) Eliminating duplication. The summary-cards block (L398) and
+          the security-cards block (L422) were byte-identical except
+          for the data source. Same for the scaling-tiles (L455) and
+          schema-tiles (L516) blocks. Extracting them keeps the page
+          template declarative and shrinks ~40 lines into 8.
+
+       2) Isolating v-html. The four `v-html` injection points that
+          used to live inline in TEMPLATE (card.title × 2, tile.body
+          × 2, svgDiagram × 1) are now pushed into named components
+          with documented props. The main template is a tree of
+          Vue's interpolations only — no raw HTML strings.
+
+     They are defined inline (not split into separate files) so the
+     create command still produces a single self-contained output
+     file, matching the SKILL.md output contract.
+     ────────────────────────────────────────────────────────────────── */
+  var RuiArcCard = {
+    name: 'rui-arc-card',
+    template:
+      '<article class="card">' +
+        '<header class="card-header">' +
+          '<span class="card-dot" :class="card.color" aria-hidden="true"></span>' +
+          '<h3 v-html="card.title"></h3>' +
+        '</header>' +
+        '<ul>' +
+          '<li v-for="(line, i) in card.items" :key="i">{{ line }}</li>' +
+        '</ul>' +
+      '</article>',
+    props: { card: { type: Object, required: true } }
+  };
+
+  var RuiArcColorTile = {
+    name: 'rui-arc-color-tile',
+    template:
+      '<div class="tile">' +
+        '<div class="tile-title" :class="tile.color">{{ tile.title }}</div>' +
+        '<div class="tile-body" v-html="tile.body"></div>' +
+      '</div>',
+    props: { tile: { type: Object, required: true } }
+  };
+
+  var RuiArcSvgDiagram = {
+    name: 'rui-arc-svg-diagram',
+    template:
+      '<div v-html="svg"></div>',
+    props: { svg: { type: String, required: true } }
+  };
+
+  /* ──────────────────────────────────────────────────────────────────
      Vue template — built once at top level so it can be passed to
      Vue.createApp. References DATA fields directly via the root
      component's `data()`.
@@ -390,20 +444,12 @@
 
       <!-- MAIN SVG DIAGRAM -->
       <section class="diagram-container" id="diagram" aria-label="System architecture diagram" ref="diagramContainerRef">
-        <div v-html="svgDiagram"></div>
+        <rui-arc-svg-diagram :svg="svgDiagram"></rui-arc-svg-diagram>
       </section>
 
-      <!-- SUMMARY CARDS (exactly 3) -->
+      <!-- Summary cards (was inline article+v-for x2, now rui-arc-card) -->
       <section class="cards" id="summary" aria-label="Architecture summary">
-        <article v-for="card in summaryCards" :key="card.title" class="card">
-          <header class="card-header">
-            <span class="card-dot" :class="card.color" aria-hidden="true"></span>
-            <h3 v-html="card.title"></h3>
-          </header>
-          <ul>
-            <li v-for="(line, i) in card.items" :key="i">{{ line }}</li>
-          </ul>
-        </article>
+        <rui-arc-card v-for="card in summaryCards" :key="card.title" :card="card"></rui-arc-card>
       </section>
 
       <!-- DEPLOYMENT PIPELINE -->
@@ -417,17 +463,9 @@
         </template>
       </section>
 
-      <!-- SECURITY POSTURE -->
+      <!-- Security cards (same pattern as summary, rui-arc-card) -->
       <section class="cards" id="security" style="margin-top: 1.5rem;" aria-label="Security posture">
-        <article v-for="card in securityCards" :key="card.title" class="card">
-          <header class="card-header">
-            <span class="card-dot" :class="card.color" aria-hidden="true"></span>
-            <h3 v-html="card.title"></h3>
-          </header>
-          <ul>
-            <li v-for="(line, i) in card.items" :key="i">{{ line }}</li>
-          </ul>
-        </article>
+        <rui-arc-card v-for="card in securityCards" :key="card.title" :card="card"></rui-arc-card>
       </section>
 
       <!-- TYPICAL REQUEST TRACE -->
@@ -451,12 +489,10 @@
       <!-- SCALING & RESILIENCE -->
       <section class="panel" id="scaling" aria-labelledby="scaling-title">
         <h3 id="scaling-title" class="panel-header">⚖️ Scaling &amp; Resilience Policies</h3>
-        <div class="panel-grid-4">
-          <div v-for="tile in scalingTiles" :key="tile.title" class="tile">
-            <div class="tile-title" :class="tile.color">{{ tile.title }}</div>
-            <div class="tile-body" v-html="tile.body"></div>
-          </div>
-        </div>
+        <!-- Scaling tiles (was inline tile+v-for, now rui-arc-color-tile) -->
+      <div class="panel-grid-4">
+        <rui-arc-color-tile v-for="tile in scalingTiles" :key="tile.title" :tile="tile"></rui-arc-color-tile>
+      </div>
       </section>
 
       <!-- SERVICE OWNERSHIP -->
@@ -645,6 +681,14 @@
     if (window.ruiToast && window.ruiToast.name === 'ruiToast') {
       app.component('rui-toast', window.ruiToast);
     }
+
+    // Register the three page-local sub-components. They are defined
+    // above (RuiArcCard, RuiArcColorTile, RuiArcSvgDiagram) so the
+    // create command still produces a single self-contained file
+    // (see header comment near RuiArcCard for the design rationale).
+    app.component('rui-arc-card', RuiArcCard);
+    app.component('rui-arc-color-tile', RuiArcColorTile);
+    app.component('rui-arc-svg-diagram', RuiArcSvgDiagram);
 
     app.mount('#app');
   });

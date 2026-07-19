@@ -1,0 +1,11 @@
+/* rui-remediation-item — uses page-level .remediation-item /
+ * .tone-critical / .tone-warn / .tone-info / .is-done /
+ * .remediation-cell / .remediation-link / .remediation-marker /
+ * .remediation-body / .remediation-file / .remediation-line /
+ * .remediation-message / .remediation-category / .remediation-detail
+ * / .remediation-meta / .remediation-chip* / .remediation-impact /
+ * .remediation-risk* / .remediation-first-step* /
+ * .remediation-recs-accept / .remediation-recommendations /
+ * .remediation-acceptance* / .remediation-tooling* /
+ * .remediation-prevent* / .remediation-rollback* styles defined in
+ * files/index.css. No additional rules required. */

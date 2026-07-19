@@ -1,0 +1,11 @@
+<script type="text/x-template" id="rui-remediation-check-tpl">
+    <label class="remediation-check">
+        <input type="checkbox"
+               :checked="checked"
+               :disabled="disabled"
+               :aria-label="ariaLabel"
+               :title="ariaLabel"
+               @change="onChange" />
+        <span class="remediation-check-box" aria-hidden="true"></span>
+    </label>
+</script>
