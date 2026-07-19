@@ -1,39 +1,30 @@
 # §0 Effect Sketch — Data Flow Tracing
 
-**What this scene demonstrates**: Trace a single user action — toggling
-dark mode on a tab — from the popup UI entry through the messenger
-bridge into the background, out to the content script, and into the
-theme engine that writes the overlay CSS.
-
-**Why it matters**: The end-to-end trace is the fastest way to
-understand YiPet's runtime. Every feature eventually touches this
-flow.
-
 ```mermaid
 sequenceDiagram
-  participant U as User
-  participant P as Popup (src/ui/popup)
-  participant C as Connector (src/ui/connect)
-  participant B as Background (src/background)
-  participant M as Messenger (src/background/messenger)
-  participant I as Inject (src/inject)
-  participant G as Generators (src/generators)
-  participant DOM as Page DOM
-
-  U->>P: click toggle
-  P->>C: saveSettings(partial)
-  C->>M: MessageUItoBG
-  M->>B: Extension.updateSettings()
-  B->>B: user-storage.ts persist
-  B->>M: MessageBGtoCS (per tab)
-  M->>I: runtime.sendMessage
-  I->>G: createOrUpdateDynamicTheme()
-  G->>DOM: inject <style> overlay
-  DOM->>U: page turns dark
+    autonumber
+    participant U as User
+    participant P as Popup UI
+    participant C as Connector
+    participant B as Background
+    participant I as Inject
+    participant G as Generators
+    participant Page as Page DOM
+    U->>P: Toggle dark mode
+    P->>C: send intent
+    C->>B: runtime message
+    B->>I: apply theme message
+    I->>G: request CSS strategy
+    G-->>I: generated CSS / SVG filter
+    I-->>Page: patch styles
+    Page-->>U: visible theme update
+    Note over B,I: storage sync and tab targeting happen here
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns Data Flow Tracing into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Follow the toggle request from popup UI to the messenger chain, then confirm where background, inject, and generators each take over.
 # §1 Test Design — Verification Steps
 
 ## Step 1: Popup → Connector wiring

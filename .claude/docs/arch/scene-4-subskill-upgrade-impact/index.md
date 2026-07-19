@@ -8,51 +8,37 @@
 ## §0 — Effect sketch
 
 ```mermaid
-%%{init: {'theme':'dark','flowchart':{'htmlLabels':true}}}%%
 flowchart LR
-  bump([Bump dependency Y]):::start
-  check{{Is Y in shared/vendor/?}}:::decision
-  case1[Case 1: shared vendor]:::c1
-  case2[Case 2: rui-reports/diagram]:::c2
-  case3[Case 3: rui-tools/mermaid]:::c3
-  case4[Case 4: pure doc skill]:::c4
+  bump([Sub-skill upgraded]):::entry --> type{Change surface}:::decision
+  type --> trigger[frontmatter / triggers]:::impact
+  type --> refs[references / templates]:::impact
+  type --> evals[evals / examples]:::impact
+  type --> deps[downstream coreDeps]:::impact
 
-  bump --> check
-  check -- "yes" --> case1
-  check -- "rui-reports/diagram" --> case2
-  check -- "rui-tools/mermaid" --> case3
-  check -- "otherwise" --> case4
-  case1 --> re1[/Re-pin version · update loader.js primary/fallback · regression sweep all dashboard pages/]:::remediation
-  case2 --> re2[/pnpm-lock regeneration · vitest run engine/core/src · re-run /rui-report-diagram create on a fixture/]:::remediation
-  case3 --> re3[/pnpm install · re-render a sample mermaid diagram · verify beautiful-mermaid output is byte-identical/]:::remediation
-  case4 --> re4[/No runtime impact; only the SKILL.md description may need to mention Y's new version/]:::remediation
+  trigger --> verify[re-run dispatch trace]:::check
+  refs --> verifyDocs[refresh docs & examples]:::check
+  evals --> verifyEvals[re-run eval pack]:::check
+  deps --> verifyDeps[re-validate dependent skills]:::check
 
-  classDef start fill:#4f46e5,stroke:#818cf8,color:#fff
-  classDef decision fill:#b45309,stroke:#f59e0b,color:#fff
-  classDef c1 fill:#0f766e,stroke:#14b8a6,color:#fff
-  classDef c2 fill:#1e40af,stroke:#3b82f6,color:#fff
-  classDef c3 fill:#7c3aed,stroke:#a78bfa,color:#fff
-  classDef c4 fill:#1e293b,stroke:#22d3ee,color:#e2e8f0
-  classDef remediation fill:#374151,stroke:#9ca3af,color:#f3f4f6
+  verify --> gate{all checks green?}:::decision
+  verifyDocs --> gate
+  verifyEvals --> gate
+  verifyDeps --> gate
+  gate -->|yes| ship([safe to ship]):::done
+  gate -->|no| block([hold release]):::risk
+
+  classDef entry fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+  classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e
+  classDef impact fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+  classDef check fill:#e0f2fe,stroke:#0891b2,color:#164e63
+  classDef done fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef risk fill:#fee2e2,stroke:#dc2626,color:#991b1b
 ```
 
-**Scene overview**
-
-This scene answers **"What breaks if I upgrade dependency Y?"** The
-catalog has 4 distinct upgrade impact classes depending on **where
-Y lives**:
-
-1. `shared/vendor/<name>@<version>/` — affects every dashboard
-   page that loads it via the unified loader.
-2. `skills/rui-reports/diagram/package.json` — affects the
-   tree-sitter knowledge graph pipeline; vitest + the diagram
-   generator are the regression suite.
-3. `skills/rui-tools/mermaid/package.json` — affects the
-   pretty-mermaid CLI; sample renders are the regression suite.
-4. Pure doc skills (no `package.json`) — no runtime impact.
-
-The current catalog has Y entries in classes 1, 2, and 3.
-
+### Chart-first summary
+- **Focus**: This chart turns the scene into a diagram-led overview before the detailed design and report sections.
+- **Why**: It highlights blast radius early so upgrades stop being a grep exercise.
+- **How to read**: Start from the changed sub-skill, then check which artifacts, dependents, and validation steps must be revisited before release.
 ## §1 — Test design
 
 | Acceptance Criterion (AC) | Success Condition (SC) |

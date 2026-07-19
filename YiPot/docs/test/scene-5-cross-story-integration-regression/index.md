@@ -1,30 +1,29 @@
 # §0 Effect Sketch — Cross-Story Integration Regression
 
-**What this scene demonstrates**: a check that a change in one story
-(arch or test) does not silently invalidate another story, and that
-the dashboard wiring (`docs/index.html` + `docs/data.js` + `docs/arch/` +
-`docs/test/`) still resolves end-to-end.
-
-**Why it matters**: the docs are interlinked — `data.js` references scene
-files, scene files reference source files, and the dashboard hub links
-back to both. A broken link in one place is invisible from the diff of
-another.
-
 ```mermaid
 flowchart LR
-    A[arch/scene-1/ index.md] -- "Module location" --> B[data.js §3 source groups]
-    A -- "src/services/* count" --> C[verify: AC-1]
-    B -- "Service count card" --> D[docs/index.html dashboard]
-    E[arch/scene-5/ index.md] -- "5-dim baseline" --> F[test/scene-4/ index.md]
-    F -- "regression rules" --> G[git diff keyword scan]
-    H[test/scene-3/ index.md] -- "doc-code parity" --> I[README + CLAUDE + arch + test]
-    I --> J{drift?}
-    J -- yes --> K1[Re-run rui-init]
-    J -- no  --> K2[Done]
+  hub[data.js]:::source --> arch[arch scenes]:::doc
+  hub --> test[test scenes]:::doc
+  hub --> panels[arch/test panels]:::doc
+  arch --> links[cross-doc links]:::check
+  test --> links
+  panels --> links
+  links --> gate{network intact?}:::decision
+  gate -->|yes| pass([story graph healthy]):::done
+  gate -->|no| fail([broken integration edge]):::risk
+
+  classDef source fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef doc fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+  classDef check fill:#e0f2fe,stroke:#0891b2,color:#164e63
+  classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e
+  classDef done fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef risk fill:#fee2e2,stroke:#dc2626,color:#991b1b
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns Cross-Story Integration Regression into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Use `data.js` as the root, then inspect how arch scenes, test scenes, and panel surfaces reference each other across the docs system.
 # §1 Test Design — AC / SC Mapping
 
 ## AC-1: Every scene file referenced by `data.js` exists

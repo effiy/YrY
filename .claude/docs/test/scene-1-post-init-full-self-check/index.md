@@ -7,51 +7,32 @@
 
 ## §0 · Effect Sketch
 
-### What this scene demonstrates
-
-Verifies that a fresh `/rui-init` run on YrY produces the five canonical bootstrapping artifacts — CLAUDE.md, README.md, docs/, a configured test framework, and a project manifest — and that each is non-empty and structurally well-formed. This scene is the contract gate between "scaffolded" and "shippable": it re-runs the init verifier against the post-init filesystem snapshot (823 files, 21.27 MiB) and asserts that no artifact is a stub, a placeholder, or missing.
-
-### Why it matters
-
-A green post-init self-check is the project's shippability contract. Any missing artifact propagates: a missing CLAUDE.md costs every future contributor ~15 minutes of orientation; a missing README breaks the GitHub landing page; a missing test framework means CI is a no-op on day one. The cost of fixing a regression here grows quadratically with the number of contributors who have already cloned.
-
-### Flow
-
 ```mermaid
-%%{init: {'theme':'dark','flowchart':{'htmlLabels':true}}}%%
 flowchart LR
-  A([fresh clone]):::start
-  B[CLAUDE.md]:::artifact
-  C[README.md]:::artifact
-  D[docs/]:::artifact
-  E[tests run]:::artifact
-  M[manifest]:::artifact
-  F{{all green?}}:::decision
-  G[shippable]:::pass
-  H[regression — block merge]:::fail
+  clone([Fresh clone]):::entry --> claude[CLAUDE.md]:::artifact
+  clone --> readme[README.md]:::artifact
+  clone --> docs[docs/]:::artifact
+  clone --> tests[test framework]:::artifact
+  clone --> manifest[project manifest]:::artifact
+  claude --> gate{all present and non-empty?}:::decision
+  readme --> gate
+  docs --> gate
+  tests --> gate
+  manifest --> gate
+  gate -->|yes| pass([shippable]):::done
+  gate -->|no| fail([block merge rerun init]):::risk
 
-  A --> B
-  A --> C
-  A --> D
-  A --> E
-  A --> M
-  B --> F
-  C --> F
-  D --> F
-  E --> F
-  M --> F
-  F -- yes --> G
-  F -- no --> H
-
-  classDef start fill:#4f46e5,stroke:#818cf8,color:#fff
-  classDef artifact fill:#1e293b,stroke:#22d3ee,color:#e2e8f0
-  classDef decision fill:#b45309,stroke:#f59e0b,color:#fff
-  classDef pass fill:#16a34a,stroke:#22c55e,color:#fff
-  classDef fail fill:#b91c1c,stroke:#ef4444,color:#fff
+  classDef entry fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+  classDef artifact fill:#e0f2fe,stroke:#0891b2,color:#164e63
+  classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e
+  classDef done fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef risk fill:#fee2e2,stroke:#dc2626,color:#991b1b
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns the scene into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Scan the five canonical artifacts first, then use the verdict gate to see whether the init output is actually shippable.
 ## §1 · Test Design — Verification Steps
 
 ### Step 1 · CLAUDE.md present

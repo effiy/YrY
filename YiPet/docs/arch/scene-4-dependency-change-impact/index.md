@@ -1,42 +1,32 @@
 # §0 Effect Sketch — Dependency Change Impact
 
-**What this scene demonstrates**: When a dependency in `package.json`
-changes (upgrade, removal, addition), what breaks downstream? This
-scene maps each runtime + build-time dependency to the files and
-build targets that depend on it.
-
-**Why it matters**: YiPet ships a browser extension; a broken
-dependency upgrade means a broken release across 4 manifest variants
-and 5 browsers.
-
 ```mermaid
-graph TD
-  subgraph runtime
-    malevic[malevic 0.20.2<br/>UI lib]
-  end
-  subgraph build
-    rollup[rollup 4.60.4]
-    ts[typescript 6.0.3]
-    eslint[eslint 8.60.0]
-    less[less 4.6.4]
-  end
-  subgraph test
-    jest[jest 30.4.2]
-    karma[karma 6.4.4]
-    puppeteer[puppeteer-core 25.1.0]
-  end
-  malevic -->|breaks| ui[src/ui/**]
-  rollup -->|breaks| tasks/tasks/cli.js
-  ts -->|breaks| all-src[src/**\*.ts]
-  eslint -->|breaks| lint[npm run lint]
-  less -->|breaks| ui-style[src/ui/**/*.less]
-  jest -->|breaks| unit[tests/unit/**]
-  karma -->|breaks| inject[tests/inject/**]
-  puppeteer -->|breaks| e2e[tests/browser/**]
+flowchart LR
+  dep([dependency changes]):::entry --> family{family}:::decision
+  family --> runtime[malevic / runtime libs]:::tier
+  family --> build[rollup / tooling]:::tier
+  family --> test[jest / karma / puppeteer]:::tier
+  runtime --> surface[popup · inject · api · generators]:::impact
+  build --> surface
+  test --> surface
+  surface --> verify[build + test + smoke]:::check
+  verify --> gate{stable?}:::decision
+  gate -->|yes| pass([mergeable]):::done
+  gate -->|no| fail([hold upgrade]):::risk
+
+  classDef entry fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+  classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e
+  classDef tier fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+  classDef impact fill:#e0f2fe,stroke:#0891b2,color:#164e63
+  classDef check fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef done fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef risk fill:#fee2e2,stroke:#dc2626,color:#991b1b
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns Dependency Change Impact into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Choose the dependency family first, then inspect which runtime surfaces, build layers, and tests feel the impact.
 # §1 Test Design — Verification Steps
 
 ## Step 1: Upgrade `malevic` minor

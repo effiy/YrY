@@ -1,32 +1,25 @@
 # §0 Effect Sketch — Doc-Code Consistency
 
-**What this scene demonstrates**: a check that `README.md`, `CLAUDE.md`,
-`docs/arch/`, `docs/test/`, and `docs/data.js` still match the
-code on disk after a refactor.
-
-**Why it matters**: docs are a snapshot of the code; when the code moves,
-the snapshot must be regenerated. rui-init's 7-point gate runs only on
-init; this scene is the per-PR companion.
-
 ```mermaid
 flowchart LR
-    A[git diff] --> B{Files touched?}
-    B -- "src/services/*" --> C1[docs/data.js services/translate|recognize|tts|collection/* still match]
-    B -- "src/window/*" --> C2[docs/data.js window sections + docs/arch scene 1 + 3 still match]
-    B -- "src-tauri/*" --> C3[docs/data.js src-tauri block + docs/arch scene 1 + 5 still match]
-    B -- "src-tauri/Cargo.toml" --> C4[README.md prerequisites + CLAUDE.md framework versions]
-    B -- "package.json" --> C5[CLAUDE.md framework versions + build commands]
-    C1 --> D{Any drift?}
-    C2 --> D
-    C3 --> D
-    C4 --> D
-    C5 --> D
-    D -- yes --> E1[Re-run rui-init or hand-edit the doc]
-    D -- no  --> E2[Done]
+  docs[README · CLAUDE · data.js]:::source --> snapshot[documented counts commands and windows]:::doc
+  snapshot --> code[src/services · App routes · cmd.rs]:::check
+  code --> drift{snapshot still true?}:::decision
+  drift -->|yes| pass([docs in sync]):::done
+  drift -->|no| fail([refresh docs snapshot]):::risk
+
+  classDef source fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef doc fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+  classDef check fill:#e0f2fe,stroke:#0891b2,color:#164e63
+  classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e
+  classDef done fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef risk fill:#fee2e2,stroke:#dc2626,color:#991b1b
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns Doc-Code Consistency into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Read the documented snapshot on the left, the code truth in the middle, and the drift gate on the right to see how stale docs are caught.
 # §1 Test Design — AC / SC Mapping
 
 ## AC-1: `data.js` service count matches the source

@@ -1,24 +1,22 @@
 # §0 Effect Sketch — Newcomer Onboarding
 
-**What this scene demonstrates**: A reading order for a new contributor
-landing in YiPet for the first time. Five stops, each ~10 minutes,
-that take a reader from "what is this?" to "I can make a small change."
-
-**Why it matters**: YiPet inherits a large upstream Dark Reader
-codebase. Without a reading order, newcomers wander; with one, the
-first PR lands in an afternoon.
-
 ```mermaid
-graph LR
-  A[1. README.md<br/>System view + Domain Language] --> B[2. CLAUDE.md<br/>beliefs + laws + profile]
-  B --> C[3. src/manifest.json<br/>entry points + permissions]
-  C --> D[4. src/background/index.ts<br/>Extension class]
-  D --> E[5. src/inject/index.ts<br/>content script entry]
-  E --> F[6. docs/arch/scene-2-data-flow-tracing<br/>end-to-end trace]
+flowchart LR
+  start([0 min read README + CLAUDE]):::entry --> charter[10 min project charter and domain language]:::step
+  charter --> entrypoints[20 min identify popup / background / inject entry points]:::step
+  entrypoints --> extension[35 min read Extension class]:::step
+  extension --> flow[50 min trace one end-to-end message flow]:::step
+  flow --> ready([60 min ready for first change]):::done
+
+  classDef entry fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+  classDef step fill:#e0f2fe,stroke:#0891b2,color:#164e63
+  classDef done fill:#dcfce7,stroke:#16a34a,color:#166534
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns Newcomer Onboarding into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Move from docs to runtime entry points, then to the end-to-end extension flow; each stop is a milestone rather than a raw file list.
 # §1 Test Design — Verification Steps
 
 ## Step 1: Read system view + domain language

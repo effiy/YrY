@@ -1,41 +1,41 @@
 # §0 Effect Sketch — Module Location
 
-**What this scene demonstrates**: Where each top-level module in YiPet
-lives in the `src/` tree, and how to map a logical concern (e.g.
-"where is the dark theme applied?") to a physical directory.
-
-**Why it matters**: YiPet is a single-tree browser extension with 11
-top-level modules under `src/`. New contributors routinely ask
-"where does X live?" — this scene is the canonical answer key.
-
 ```mermaid
-graph TD
-  subgraph src
-    background[background/<br/>service worker]
-    inject[inject/<br/>content scripts]
-    ui[ui/<br/>popup + options + devtools]
-    api[api/<br/>public DarkReader API]
-    generators[generators/<br/>theme engines]
-    config[config/<br/>per-site fixes]
-    utils[utils/<br/>shared utilities]
-    locales[_locales/<br/>i18n]
-    icons[icons/<br/>PNG assets]
-    stubs[stubs/<br/>build-time stubs]
-    defaults[defaults.ts<br/>default theme + settings]
+flowchart LR
+  subgraph runtime[Extension runtime]
+    bg[background/ service worker]:::core
+    inject[inject/ content scripts]:::core
+    ui[ui/ popup · options · devtools]:::core
   end
-  background -->|messenger| inject
-  background -->|connector| ui
-  background --> utils
+  subgraph engines[Theme & config]
+    api[api/]:::support
+    generators[generators/]:::support
+    config[config/]:::support
+    utils[utils/]:::support
+  end
+  subgraph assets[Assets & packaging]
+    locales[_locales/]:::asset
+    icons[icons/]:::asset
+    stubs[stubs/]:::asset
+    defaults[defaults.ts]:::asset
+  end
+  bg --> inject
+  bg --> ui
   inject --> generators
   inject --> config
   ui --> utils
   api --> inject
-  api --> generators
   generators --> utils
+
+  classDef core fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+  classDef support fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+  classDef asset fill:#dcfce7,stroke:#16a34a,color:#166534
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns Module Location into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Read the top-level extension map first, then follow runtime arrows to see which folders interact most often.
 # §1 Test Design — Verification Steps
 
 ## Step 1: Confirm `background/` entry exists

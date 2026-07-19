@@ -1,29 +1,22 @@
 # §0 Effect Sketch — Newcomer Onboarding
 
-**What this scene demonstrates**: a 30-minute reading path for a developer
-who has just cloned YiPot and wants to be productive — without reading
-every file.
-
-**Why it matters**: YiPot is a plugin-style desktop app with 40 service
-backends spread across React + Rust. Newcomers drown in surface area;
-this scene gives a staged, role-based reading order.
-
 ```mermaid
 flowchart LR
-    A[0. README + CLAUDE.md] --> B[1. Run pnpm tauri dev]
-    B --> C{Your role?}
-    C -- "Service author" --> D[2a. read services/translate/openai/<br/>mirror to services/translate/<new>/]
-    C -- "Window author" --> E[2b. read window/Translate/<br/>mirror to window/<New>/]
-    C -- "Tauri shell hacker" --> F[2c. read src-tauri/src/main.rs + cmd.rs + server.rs]
-    C -- "Plugin (.potext) author" --> G[2d. read utils/invoke_plugin.js + service_instance.ts]
-    D --> H[3. Run a service in pnpm tauri dev]
-    E --> H
-    F --> H
-    G --> H
+  start([0 min README + CLAUDE]):::entry --> launch[10 min build and launch]:::step
+  launch --> service[25 min read one translate service]:::step
+  service --> window[40 min read one window flow]:::step
+  window --> rust[55 min read one Rust module]:::step
+  rust --> ready([70 min ready for scoped change]):::done
+
+  classDef entry fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+  classDef step fill:#e0f2fe,stroke:#0891b2,color:#164e63
+  classDef done fill:#dcfce7,stroke:#16a34a,color:#166534
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns Newcomer Onboarding into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Progress from general project context to one service, one window, and one Rust module so the architecture becomes learnable in layers.
 # §1 Test Design — Verification Steps
 
 ## Step 1: Skim README + CLAUDE.md

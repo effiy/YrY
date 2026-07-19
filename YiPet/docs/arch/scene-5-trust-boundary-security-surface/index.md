@@ -1,35 +1,35 @@
 # §0 Effect Sketch — Trust Boundary Security Surface
 
-**What this scene demonstrates**: Where YiPet's trust boundaries are,
-what crosses each boundary, and what is exposed at each. Five
-boundaries: page DOM ↔ inject script; inject ↔ background;
-background ↔ chrome.storage; background ↔ remote config sources;
-public API ↔ third-party pages.
-
-**Why it matters**: YiPet runs `document_start` content scripts on
-`<all_urls>` in `all_frames` — the attack surface is wide. Knowing
-where each boundary lies is the prerequisite to any security review.
-
 ```mermaid
-graph TD
-  Page[Page DOM<br/>untrusted] -->|CSS + DOM read| IS
-  subgraph Ext[Extension origin]
-    IS[Inject Script<br/>content context]
-    BG[Background<br/>service worker]
-    ST[chrome.storage]
-    API[Public API<br/>window.DarkReader]
+flowchart LR
+  subgraph untrusted[Untrusted]
+    dom[Page DOM]:::external
+    third[Third-party page JS]:::external
   end
-  Remote[Remote config sources<br/>dark-sites, fixes]
-  IS -->|MessageCStoBG| BG
-  BG -->|MessageBGtoCS| IS
-  BG <-->|chrome.storage API| ST
-  BG -->|fetch| Remote
-  ThirdParty[Third-party page] -->|window.DarkReader.setFetch| API
-  API --> IS
+  subgraph extension[Extension-controlled]
+    inject[inject/]:::trusted
+    bg[background/]:::trusted
+    api[api/]:::trusted
+  end
+  subgraph persisted[Persisted]
+    storage[chrome.storage]:::data
+    config[config sources]:::data
+  end
+  dom --> inject
+  third --> api
+  inject --> bg
+  bg --> storage
+  bg -. fetch .-> config
+
+  classDef external fill:#fee2e2,stroke:#dc2626,color:#991b1b
+  classDef trusted fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+  classDef data fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns Trust Boundary Security Surface into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Read the trust zones from left to right: untrusted page DOM, extension-controlled runtime, persisted state, and remote fetch surfaces.
 # §1 Test Design — Verification Steps
 
 ## Step 1: Page DOM ↔ inject boundary

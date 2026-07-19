@@ -1,33 +1,31 @@
 # §0 Effect Sketch — Security Surface Regression
 
-**What this scene demonstrates**: a per-PR check that the 5-dimension
-security surface (userInput, apiEndpoints, dataStorage, authentication,
-thirdParty) hasn't grown any new attack vectors compared to the
-`docs/arch/scene-5-trust-boundary-security-surface/index.md` baseline.
-
-**Why it matters**: YiPot pulls in 40 service backends; a contributor
-adding a new `http://...` call (e.g. to a debugging service) can
-inadvertently open a cleartext channel. This scene catches that.
-
 ```mermaid
 flowchart LR
-    A[git diff] --> B{Scan for keywords}
-    B -- "req.body|req.query" --> C1[userInput+]
-    B -- "app.post|app.get|fetch" --> C2[apiEndpoints+ / thirdParty+]
-    B -- "fs.write|localStorage|IndexedDB" --> C3[dataStorage+]
-    B -- "password|secret|token" --> C4[authentication+]
-    B -- "http://" --> C5[cleartext warning]
-    C1 --> D{Compared to baseline?}
-    C2 --> D
-    C3 --> D
-    C4 --> D
-    C5 --> D
-    D -- "new vector" --> E1[FAIL: review + update scene-5 baseline]
-    D -- "no change" --> E2[Done]
+  diff([git diff]):::entry --> dims{security dimension}:::decision
+  dims --> http[cleartext HTTP]:::risk
+  dims --> secrets[hardcoded secret]:::risk
+  dims --> fs[file write path]:::risk
+  dims --> code[eval / innerHTML]:::risk
+  dims --> daemon[daemon bind / plugin loader]:::risk
+  http --> gate{new vector?}:::decision
+  secrets --> gate
+  fs --> gate
+  code --> gate
+  daemon --> gate
+  gate -->|no| pass([surface unchanged]):::done
+  gate -->|yes| fail([block and explain]):::risk
+
+  classDef entry fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+  classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e
+  classDef risk fill:#fee2e2,stroke:#dc2626,color:#991b1b
+  classDef done fill:#dcfce7,stroke:#16a34a,color:#166534
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns Security Surface Regression into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Begin with the diff scan, then branch by security dimension and rule severity before deciding whether the PR can proceed.
 # §1 Test Design — AC / SC Mapping
 
 ## AC-1: No new cleartext HTTP outbound

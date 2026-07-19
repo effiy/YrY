@@ -1,38 +1,32 @@
 # §0 Effect Sketch — Data Flow Tracing
 
-**What this scene demonstrates**: trace a selection-translate request from
-the OS hotkey press through the React frontend and out to a translation
-backend's API, ending at the rendered result panel.
-
-**Why it matters**: the path spans three boundaries — Tauri native (Rust) →
-React event bus → external HTTP (translation provider). Misunderstanding
-any boundary produces bugs that look like "the panel is empty" with no
-obvious failure point.
-
 ```mermaid
 sequenceDiagram
+    autonumber
     participant U as User
-    participant HK as hotkey.rs (Rust)
+    participant HK as hotkey.rs
     participant W as Tauri window
     participant App as App.jsx
-    participant TWin as window/Translate/
-    participant Svc as services/translate/<name>/
+    participant T as Translate window
+    participant S as translate service
     participant API as External API
     U->>HK: Press selection-translate hotkey
-    HK->>W: appWindow.create('translate')
-    W->>App: appWindow.label = 'translate'
-    App->>TWin: render <Translate/>
-    TWin->>HK: invoke('read_clipboard_selection')
-    HK-->>TWin: selected text
-    TWin->>Svc: translate(text, config)
-    Svc->>API: fetch / HTTPS
-    API-->>Svc: translation result
-    Svc-->>TWin: result object
-    TWin-->>U: render result panel
+    HK->>W: create / focus translate window
+    W->>App: label = "translate"
+    App->>T: render Translate view
+    T->>HK: invoke read clipboard
+    HK-->>T: selected text
+    T->>S: translate(text, config)
+    S->>API: HTTPS request
+    API-->>S: translation result
+    S-->>T: normalized result
+    T-->>U: render translated panel
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns Data Flow Tracing into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Follow the hotkey path across Rust, window routing, service dispatch, and external API response; the chart now emphasizes boundary changes.
 # §1 Test Design — Verification Steps
 
 ## Step 1: Hotkey registration

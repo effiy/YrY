@@ -1,28 +1,26 @@
 # §0 Effect Sketch — Doc-code Consistency
 
-**What this scene demonstrates**: Verify the docs (CLAUDE.md,
-README.md, docs/**) still match the code they describe. Docs rot
-when refactor passes silently.
-
-**Why it matters**: A new contributor who reads stale docs writes
-stale code. This check catches drift before it ships.
-
 ```mermaid
-graph TD
-  A[CLAUDE.md entry points] --> B{src/background/index.ts exists?}
-  A --> C{src/inject/index.ts exists?}
-  A --> D{src/ui/popup/index.tsx exists?}
-  A --> E{src/api/index.ts exists?}
-  B --> F[✅]
-  C --> F
-  D --> F
-  E --> F
-  G[README structure] --> H{src/ subdirs match?}
-  H --> F
+flowchart LR
+  docs[CLAUDE.md / README.md / docs/data.js]:::source --> claims[documented entry points and terms]:::doc
+  claims --> code[src/* and docs/arch/* targets]:::check
+  code --> dashboard[dashboard cards and scene hrefs]:::check
+  dashboard --> gate{all claims resolve?}:::decision
+  gate -->|yes| pass([docs match code]):::done
+  gate -->|no| fail([refresh stale references]):::risk
+
+  classDef source fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef doc fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+  classDef check fill:#e0f2fe,stroke:#0891b2,color:#164e63
+  classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e
+  classDef done fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef risk fill:#fee2e2,stroke:#dc2626,color:#991b1b
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns Doc-code Consistency into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Start from the documentation sources, follow the assertions into real code locations, and stop at the drift gate if any mapping breaks.
 # §1 Test Design — Verification Steps
 
 ## Step 1: CLAUDE.md entry points exist

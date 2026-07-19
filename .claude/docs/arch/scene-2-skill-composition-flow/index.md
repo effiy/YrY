@@ -7,50 +7,52 @@
 ## §0 — Effect sketch
 
 ```mermaid
-%%{init: {'theme':'dark','flowchart':{'htmlLabels':true}}}%%
 flowchart LR
-  subgraph shared[shared/ — UI substrate]
-    loader[loader.js]
-    cmp[12 rui-* components]
-    vendor[4 vendored libs]
-  end
-  subgraph groups[8 skill groups]
-    rui_init[rui-init]
-    rui_test[rui-test]
-    rui_q[rui-questions]
-    rui_cto[rui-cto]
-    rui_code[rui-code]
-    rui_docs[rui-docs]
-    rui_reports[rui-reports]
-    rui_tools[rui-tools]
-  end
-  shared ==> rui_init
-  shared ==> rui_code
-  shared ==> rui_reports
-  rui_tools --> rui_init
-  rui_tools --> rui_reports
-  rui_code --> rui_test
+  query([User intent]):::entry --> dispatch[[description match dispatcher]]:::process
 
-  classDef substrate fill:#0f766e,stroke:#14b8a6,color:#fff
-  classDef foundation fill:#7c3aed,stroke:#a78bfa,color:#fff
-  classDef consumer fill:#1e293b,stroke:#22d3ee,color:#e2e8f0
-  class shared,loader,cmp,vendor substrate
-  class rui_tools foundation
-  class rui_init,rui_code,rui_reports,rui_test,rui_q,rui_cto,rui_docs consumer
+  subgraph shared[Hard substrate]
+    loader[shared/loader.js]:::substrate
+    comps[12 rui-* components]:::substrate
+    vendor[4 vendored libs]:::substrate
+  end
+
+  subgraph foundation[Soft foundation]
+    tools[rui-tools/*]:::foundation
+  end
+
+  subgraph groups[Skill groups]
+    init[rui-init]:::skill
+    code[rui-code]:::skill
+    reports[rui-reports]:::skill
+    test[rui-test]:::skill
+    docs[rui-docs]:::skill
+    q[rui-questions]:::skill
+    cto[rui-cto]:::skill
+  end
+
+  dispatch --> init
+  dispatch --> code
+  dispatch --> reports
+  dispatch --> test
+  dispatch --> docs
+  dispatch --> q
+  dispatch --> cto
+  loader --> dispatch
+  tools -. enrich .-> init
+  tools -. enrich .-> reports
+  code -. compose .-> test
+
+  classDef entry fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+  classDef process fill:#e0f2fe,stroke:#0891b2,color:#164e63
+  classDef substrate fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef foundation fill:#fef3c7,stroke:#d97706,color:#92400e
+  classDef skill fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
 ```
 
-**Scene overview**
-
-This scene traces a request from a user query to the skill that
-handles it. The dispatcher reads the `description:` block of every
-`SKILL.md` and routes the query to the most-relevant skill; the
-shared substrate (`shared/loader.js` + `shared/components/*` +
-`shared/vendor/*`) is mounted for any page that needs the dashboard
-chrome. Cross-group dependencies (e.g. `rui-code` consumes
-`rui-html-vue`; `rui-reports/diagram` consumes
-`rui-tools/lighthouse` + `rui-tools/mermaid` + `rui-tools/github`)
-are pulled from `moduleMap[].coreDeps` and rendered here as a graph.
-
+### Chart-first summary
+- **Focus**: This chart turns the scene into a diagram-led overview before the detailed design and report sections.
+- **Why**: It explains how user intent is routed and where hard versus soft dependencies sit in the skill catalog.
+- **How to read**: Read left to right: the shared substrate supports routing, `rui-tools` stabilizes the foundation, and cross-group edges show composition.
 ## §1 — Test design
 
 | Acceptance Criterion (AC) | Success Condition (SC) |

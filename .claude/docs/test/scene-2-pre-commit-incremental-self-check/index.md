@@ -7,46 +7,33 @@
 
 ## §0 · Effect Sketch
 
-### What this scene demonstrates
-
-Asserts that YrY has a wired pre-commit gate: a detected test framework (currently `none`), at least one test file (found: 0), and a way to scope the test run to the staged file set. The scene does NOT execute tests — it verifies the *wiring* exists so that a developer running `git commit` would hit the gate. The recommended invocation is `echo "no test framework"`, which restricts the run to the diff and keeps the feedback loop under 5 seconds for small changesets.
-
-### Why it matters
-
-A working pre-commit gate is the difference between a 5-second local feedback loop and a 15-minute CI round-trip. Without it, broken tests land on main, the next rebase fails for someone else, and trust in the green-CI badge erodes. Industry data (Google Engineering Productivity Research) shows that teams without pre-commit gates spend ~3× more time on CI debugging than teams with them.
-
-### Flow
-
 ```mermaid
-%%{init: {'theme':'dark','flowchart':{'htmlLabels':true}}}%%
-flowchart TD
-  A([git diff --staged]):::start
-  B[changed files]:::step
-  C[map to test files]:::step
-  D[run scoped tests]:::step
-  E{{all green?}}:::decision
-  F[commit allowed]:::pass
-  G[block + surface failures]:::fail
-  H[developer fixes locally]:::step
+flowchart LR
+  diff([staged files]):::entry --> classify{what changed?}:::decision
+  classify --> docs[docs only]:::scope
+  classify --> skill[skill / prompt logic]:::scope
+  classify --> shared[shared UI substrate]:::scope
+  docs --> quick[link + markdown checks]:::check
+  skill --> scoped[dispatch + scene checks]:::check
+  shared --> wide[dashboard + shared load checks]:::check
+  quick --> gate{all scoped checks pass?}:::decision
+  scoped --> gate
+  wide --> gate
+  gate -->|yes| commit([allow commit]):::done
+  gate -->|no| stop([fix before commit]):::risk
 
-  A --> B
-  B --> C
-  C --> D
-  D --> E
-  E -- yes --> F
-  E -- no --> G
-  G --> H
-  H -.-> A
-
-  classDef start fill:#4f46e5,stroke:#818cf8,color:#fff
-  classDef step fill:#1e293b,stroke:#22d3ee,color:#e2e8f0
-  classDef decision fill:#b45309,stroke:#f59e0b,color:#fff
-  classDef pass fill:#16a34a,stroke:#22c55e,color:#fff
-  classDef fail fill:#b91c1c,stroke:#ef4444,color:#fff
+  classDef entry fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+  classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e
+  classDef scope fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+  classDef check fill:#e0f2fe,stroke:#0891b2,color:#164e63
+  classDef done fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef risk fill:#fee2e2,stroke:#dc2626,color:#991b1b
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns the scene into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Begin with the staged diff, map the touched files to the smallest safe check set, then decide whether the commit may proceed.
 ## §1 · Test Design — Verification Steps
 
 ### Step 1 · Detect test framework

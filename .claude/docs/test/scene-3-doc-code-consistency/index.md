@@ -7,45 +7,47 @@
 
 ## §0 · Effect Sketch
 
-### What this scene demonstrates
-
-Cross-references every file path mentioned in the documentation set (10 files: CLAUDE.md, README, docs/**, .github/**) against the actual filesystem snapshot (556 code files). Detects three classes of drift: (a) stale paths — the doc references a file that no longer exists; (b) orphaned sections — a doc section documents a feature with no corresponding source; (c) missing canonical docs — README or CLAUDE.md absent at the root. The doc-to-code ratio (0.018) is a leading indicator of under-documentation: below 0.05 typically means new features are landing without docs.
-
-### Why it matters
-
-Stale documentation is worse than missing documentation — it lies with confidence. A new contributor following a broken path in CLAUDE.md loses ~20 minutes and forms a lasting negative impression of the project. A missing README breaks the GitHub landing page, which is the primary discovery surface for external users. Doc-code drift is the #1 cause of "why doesn't this work?" support load on maintainers.
-
-### Flow
-
 ```mermaid
-%%{init: {'theme':'dark','flowchart':{'htmlLabels':true}}}%%
-flowchart TD
-  A([md files]):::input
-  B[extract links]:::step
-  C[resolve paths]:::step
-  D{{file exists?}}:::decision
-  E[valid]:::pass
-  F[broken — surface to user]:::fail
-  G[CI gate fails]:::fail
-  H[doc-code in sync]:::pass
+flowchart LR
+  subgraph truth[Source of truth]
+    claude[CLAUDE.md]:::source
+    readme[README.md]:::source
+    pipeline[.pipeline-state]:::source
+  end
+  subgraph docs[Generated docs]
+    arch[arch scenes]:::doc
+    test[test scenes]:::doc
+    home[data.js + index.html]:::doc
+  end
+  subgraph checks[Consistency checks]
+    links[link integrity]:::check
+    counts[file / scene counts]:::check
+    drift[doc-to-code drift]:::check
+  end
+  claude --> arch
+  readme --> test
+  pipeline --> home
+  arch --> links
+  test --> counts
+  home --> drift
+  links --> gate{aligned?}:::decision
+  counts --> gate
+  drift --> gate
+  gate -->|yes| ok([docs match code]):::done
+  gate -->|no| fix([refresh docs snapshot]):::risk
 
-  A --> B
-  B --> C
-  C --> D
-  D -- yes --> E
-  D -- no --> F
-  F --> G
-  E --> H
-
-  classDef input fill:#4f46e5,stroke:#818cf8,color:#fff
-  classDef step fill:#1e293b,stroke:#22d3ee,color:#e2e8f0
-  classDef decision fill:#b45309,stroke:#f59e0b,color:#fff
-  classDef pass fill:#16a34a,stroke:#22c55e,color:#fff
-  classDef fail fill:#b91c1c,stroke:#ef4444,color:#fff
+  classDef source fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef doc fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+  classDef check fill:#e0f2fe,stroke:#0891b2,color:#164e63
+  classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e
+  classDef done fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef risk fill:#fee2e2,stroke:#dc2626,color:#991b1b
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns the scene into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Read left to right: source-of-truth documents feed scene files and dashboard links, and any broken mapping becomes visible at the drift gate.
 ## §1 · Test Design — Verification Steps
 
 ### Step 1 · Inventory documentation files

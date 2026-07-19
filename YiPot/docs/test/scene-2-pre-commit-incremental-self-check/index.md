@@ -1,30 +1,32 @@
 # §0 Effect Sketch — Pre-Commit Incremental Self-Check
 
-**What this scene demonstrates**: a 90-second checklist a contributor
-runs before opening a PR, focused on the files they actually touched.
-
-**Why it matters**: full self-check (`scene-1-post-init-full-self-check`)
-takes minutes; most PRs touch 1-3 files. Running the full check for every
-commit is wasteful. This scene scopes the check to the diff.
-
 ```mermaid
 flowchart LR
-    A[git diff --stat] --> B{Which files?}
-    B -- "src/services/*" --> C1[pnpm tauri dev + round-trip 1 service]
-    B -- "src/window/*" --> C2[pnpm tauri dev + open the changed window]
-    B -- "src-tauri/*" --> C3[cargo check + pnpm tauri dev]
-    B -- "src/utils/*" --> C4[pnpm tauri dev + restart config round-trip]
-    B -- "src/i18n/*" --> C5[pnpm tauri dev + flip language]
-    C1 --> D[Prettier + tsc --noEmit]
-    C2 --> D
-    C3 --> D
-    C4 --> D
-    C5 --> D
-    D --> E[git add && git commit]
+  diff([changed files]):::entry --> kind{file kind}:::decision
+  kind --> js[JS / TS / JSX]:::tier
+  kind --> rust[src-tauri/*]:::tier
+  kind --> i18n[src/i18n/*]:::tier
+  js --> checks[prettier + tsc + smoke]:::check
+  rust --> checks2[cargo check + smoke]:::check
+  i18n --> checks3[i18n parity check]:::check
+  checks --> gate{ready to commit?}:::decision
+  checks2 --> gate
+  checks3 --> gate
+  gate -->|yes| pass([commit]):::done
+  gate -->|no| fail([fix touched surface]):::risk
+
+  classDef entry fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+  classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e
+  classDef tier fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+  classDef check fill:#e0f2fe,stroke:#0891b2,color:#164e63
+  classDef done fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef risk fill:#fee2e2,stroke:#dc2626,color:#991b1b
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns Pre-Commit Incremental Self-Check into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Start from the touched file kind, then run only the checks that match that surface; the diagram is now optimized for quick commit decisions.
 # §1 Test Design — File-aware AC / SC Mapping
 
 ## AC-1: Diff is small and reviewable

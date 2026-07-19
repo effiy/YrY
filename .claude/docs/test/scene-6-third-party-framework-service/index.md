@@ -7,49 +7,32 @@
 
 ## §0 · Effect Sketch
 
-### What this scene demonstrates
-
-Catalogues every direct dependency declared in package.json — 0 runtime + 0 dev (0 total). Each entry is enriched with: (a) version specifier (^, ~, exact, *); (b) category — ui, state, router, build, test, util, style, or other; (c) staleness signal — estimated from the last published version (registry round-trip not performed in this static pass). The pinning ratio (0%) is the share of dependencies pinned to an exact version or a git/file specifier; below 50% indicates the lockfile is the only reproducibility guarantee, which is fragile.
-
-### Why it matters
-
-A single stale dependency is how a CVE lands in production. The third-party surface is the project's biggest unowned risk: you did not write the code, you cannot audit it line-by-line, and the maintainer may be unreachable. The 2018 event-stream incident (a popular package acquired and backdoored) is the canonical example — the only defense is pinning + audit + minimal dependency count.
-
-### Flow
-
 ```mermaid
-%%{init: {'theme':'dark','flowchart':{'htmlLabels':true}}}%%
 flowchart LR
-  A([manifest files]):::input
-  B[parse deps]:::step
-  C{{version pinned?}}:::decision
-  D[stable]:::pass
-  E[pin in CI]:::warn
-  F[stale check]:::step
-  G[3y+ → critical]:::fail
-  H[category map]:::step
-  I[risk surface]:::output
+  pkg[package.json]:::source --> tiers{dependency tier}:::decision
+  lock[lockfile]:::source --> tiers
+  tiers --> runtime[runtime frameworks]:::tier
+  tiers --> tooling[test / build tooling]:::tier
+  tiers --> services[service integrations]:::tier
+  runtime --> health[pinning + staleness checks]:::check
+  tooling --> health
+  services --> health
+  health --> gate{healthy?}:::decision
+  gate -->|yes| pass([dependency surface stable]):::done
+  gate -->|no| fail([upgrade or pin before release]):::risk
 
-  A --> B
-  B --> C
-  C -- yes --> D
-  C -- no --> E
-  B --> F
-  F --> G
-  B --> H
-  H --> I
-
-  classDef input fill:#4f46e5,stroke:#818cf8,color:#fff
-  classDef step fill:#1e293b,stroke:#22d3ee,color:#e2e8f0
-  classDef decision fill:#b45309,stroke:#f59e0b,color:#fff
-  classDef pass fill:#16a34a,stroke:#22c55e,color:#fff
-  classDef warn fill:#b45309,stroke:#f59e0b,color:#fff
-  classDef fail fill:#b91c1c,stroke:#ef4444,color:#fff
-  classDef output fill:#7c3aed,stroke:#a78bfa,color:#fff
+  classDef source fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e
+  classDef tier fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+  classDef check fill:#e0f2fe,stroke:#0891b2,color:#164e63
+  classDef done fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef risk fill:#fee2e2,stroke:#dc2626,color:#991b1b
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns the scene into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Check dependency sources first, then pinning, then staleness, and only pass when the lockfile and dependency tiers stay coherent.
 ## §1 · Test Design — Verification Steps
 
 ### Step 1 · Parse package.json

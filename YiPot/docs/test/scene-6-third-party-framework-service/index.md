@@ -1,32 +1,30 @@
 # §0 Effect Sketch — Third-Party Framework Service Health
 
-**What this scene demonstrates**: a per-PR and per-release check that the
-upstream 3rd-party service health (Tauri 1.8 release notes, NextUI 2
-release notes, Vite 5 release notes, React 18 release notes, `lingua`
-1.6 release notes, plus 22 + 15 + 1 + 2 + 2 = 42 service-provider health
-endpoints) is still tracked and that none of them have introduced a
-breaking change YiPot hasn't yet accounted for.
-
-**Why it matters**: YiPot sits on a deep dependency tree (Tauri 1.8 +
-React 18 + Vite 5 + NextUI 2 + 5 GitHub-pinned Tauri plugins + 42 service
-backends). A silent API change in any one of them can brick a release
-without breaking the local build. This scene is the watch list.
-
 ```mermaid
 flowchart LR
-    A[YiPot dep tree] --> B{Tier}
-    B -- "framework" --> C1[Tauri 1.8 · React 18 · Vite 5 · NextUI 2 · i18next 23 · tesseract.js 5 · jotai 2 · crypto-js 4 · jose 5 · framer-motion 11 · ollama 0.5]
-    B -- "language dep" --> C2[lingua 1.6 · arboard 3 · screenshots 0.7 · tiny_http 0.12 · reqwest 0.12 · zip 2.2]
-    B -- "service backend" --> C3[openai · google · deepl · baidu · tencent · iflytek · volcengine · yandex · aliyun · webdav · github releases]
-    C1 --> D{Released new major?}
-    C2 --> D
-    C3 --> D
-    D -- yes --> E1[open issue + bump roadmap]
-    D -- no  --> E2[Done]
+  subgraph tiers[Dependency health tiers]
+    framework[Tauri / React / plugins]:::tier
+    lang[language deps lingua / tesseract / arboard]:::tier
+    backends[42 service backends]:::tier
+  end
+  framework --> checks[pinning / syntax / reachability]:::check
+  lang --> checks
+  backends --> checks
+  checks --> gate{healthy enough for release?}:::decision
+  gate -->|yes| pass([dependency health accepted]):::done
+  gate -->|no| fail([pin, replace, or repair]):::risk
+
+  classDef tier fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+  classDef check fill:#e0f2fe,stroke:#0891b2,color:#164e63
+  classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e
+  classDef done fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef risk fill:#fee2e2,stroke:#dc2626,color:#991b1b
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns Third-Party Framework Service Health into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Read the health board from framework tier to language tier to service backends; each tier rolls up into a single release decision.
 # §1 Test Design — AC / SC Mapping
 
 ## AC-1: Tauri 1.8 LTS is still the engine

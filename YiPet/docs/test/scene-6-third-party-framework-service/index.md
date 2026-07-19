@@ -1,31 +1,38 @@
 # §0 Effect Sketch — Third-party Framework Service
 
-**What this scene demonstrates**: Verify the third-party frameworks
-and external services YiPet depends on are still healthy: `malevic`
-(UI), `rollup` (build), `jest` / `karma` (test), `puppeteer-core`
-(e2e), and the Chrome/Firefox runtimes themselves.
-
-**Why it matters**: A deprecated runtime dep or a stale CDN URL
-breaks the build silently; this scene catches that before release.
-
 ```mermaid
-graph TD
-  A[malevic 0.20.2<br/>UI lib] --> A1[npm registry]
-  B[rollup 4.60.4<br/>bundler] --> B1[npm registry]
-  C[jest 30.4.2<br/>unit test] --> C1[npm registry]
-  D[karma 6.4.4<br/>inject test] --> D1[npm registry]
-  E[puppeteer-core 25.1.0<br/>e2e] --> E1[npm registry + local Chrome]
-  F[../../.claude/shared/<br/>dashboard CDN] --> F1[local install]
-  A1 --> G{healthy?}
-  B1 --> G
-  C1 --> G
-  D1 --> G
-  E1 --> G
-  F1 --> G
+flowchart LR
+  subgraph foundation[Foundation]
+    malevic[malevic]:::tier
+    rollup[rollup + plugins]:::tier
+    types[typescript + eslint]:::tier
+  end
+  subgraph checks[Verification]
+    test[jest + karma]:::check
+    browser[puppeteer-core]:::check
+    cdn[dashboard CDN scripts]:::check
+  end
+  malevic --> test
+  rollup --> test
+  rollup --> browser
+  types --> cdn
+  browser --> gate
+  cdn --> gate
+  test --> gate{healthy?}:::decision
+  gate -->|yes| pass([framework surface stable]):::done
+  gate -->|no| fail([upgrade / pin / replace]):::risk
+
+  classDef tier fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+  classDef check fill:#e0f2fe,stroke:#0891b2,color:#164e63
+  classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e
+  classDef done fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef risk fill:#fee2e2,stroke:#dc2626,color:#991b1b
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns Third-party Framework Service into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Read the service health board from foundation libraries up to browser automation and CDN scripts; failure in any tier blocks trust in the stack.
 # §1 Test Design — Verification Steps
 
 ## Step 1: `malevic` resolves

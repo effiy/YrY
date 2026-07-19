@@ -1,58 +1,37 @@
 # §0 Effect Sketch — Trust Boundary & Security Surface
 
-**What this scene demonstrates**: every place YiPot accepts input, stores
-state, makes network calls, or hands off to the OS, plus the trust boundary
-each one sits on.
-
-**Why it matters**: a Tauri desktop app has many attack surfaces — the
-`localhost:60828` HTTP daemon, the `tauri-plugin-store` JSON file, the
-`tauri-plugin-sql` SQLite, the outbound translation API calls, and the
-inbound `clipboard` reads. Knowing the boundaries prevents the classic
-"this is a local app, security doesn't matter" mistake.
-
 ```mermaid
-flowchart TB
-    subgraph EX[External]
-        U[User]
-        TA[Translation API]
-        OA[OCR API]
-        AOS[Aliyun OSS]
-        WDV[WebDAV]
-    end
-    subgraph Host[OS / Tauri Shell]
-        T1[OS Clipboard]
-        T2[Global Hotkey]
-        T3[System Tray]
-        T4[Tauri Window]
-        TS[tauri-plugin-store]
-        SQ[tauri-plugin-sql]
-    end
-    subgraph App[YiPot process]
-        J[JS frontend]
-        R[Rust backend]
-        P[.potext plugin]
-    end
-    U -- select text --> T1
-    U -- press hotkey --> T2
-    U -- click tray --> T3
-    T1 <--> R
-    T2 --> R
-    T3 --> R
-    T4 <--> J
-    R -- invoke('cmd') --> J
-    J -- invoke('cmd') --> R
-    TS <--> R
-    SQ <--> R
-    R -- HTTP :60828 --> U
-    J -- HTTPS --> TA
-    J -- HTTPS --> OA
-    R -- HTTPS --> AOS
-    R -- HTTPS --> WDV
-    P -- loaded at runtime --> J
+flowchart LR
+  subgraph external[External / user-controlled]
+    user[User text / screenshot / plugin input]:::external
+    providers[40 service providers]:::external
+  end
+  subgraph app[App runtime]
+    window[React windows]:::trusted
+    services[src/services/*]:::trusted
+    utils[src/utils/*]:::trusted
+  end
+  subgraph native[Native host]
+    cmd[tauri commands]:::native
+    store[store / sql / files]:::data
+    daemon[tiny_http daemon]:::native
+  end
+  user --> window --> services
+  services -. invoke .-> cmd
+  services -. HTTPS .-> providers
+  cmd --> store
+  cmd --> daemon
+
+  classDef external fill:#fee2e2,stroke:#dc2626,color:#991b1b
+  classDef trusted fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+  classDef native fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+  classDef data fill:#dcfce7,stroke:#16a34a,color:#166534
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns Trust Boundary & Security Surface into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Traverse the trust zones from user input to native commands, persisted state, and remote providers; each crossing marks an attack surface.
 # §1 Test Design — Verification Steps
 
 ## Step 1: Inbound input boundaries

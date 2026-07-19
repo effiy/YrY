@@ -1,25 +1,26 @@
 # §0 Effect Sketch — Pre-commit Incremental Self-check
 
-**What this scene demonstrates**: The minimum viable check a
-contributor runs before `git commit`. Two commands, under 60 seconds,
-that catch 80% of regressions.
-
-**Why it matters**: A slow pre-commit check gets skipped. This scene
-defines the floor that fits in muscle memory.
-
 ```mermaid
-graph LR
-  A[git add] --> B[npm run lint]
-  B --> C{lint clean?}
-  C -->|yes| D[npm test]
-  C -->|no| E[fix + retry]
-  D --> F{tests green?}
-  F -->|yes| G[git commit]
-  F -->|no| E
+flowchart LR
+  diff([pending commit]):::entry --> lint[lint]:::check
+  lint --> unit[unit tests]:::check
+  unit --> build[debug build]:::check
+  build --> secrets[secret scan]:::check
+  secrets --> gate{all green?}:::decision
+  gate -->|yes| pass([commit]):::done
+  gate -->|no| fail([fix and retry]):::risk
+
+  classDef entry fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+  classDef check fill:#e0f2fe,stroke:#0891b2,color:#164e63
+  classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e
+  classDef done fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef risk fill:#fee2e2,stroke:#dc2626,color:#991b1b
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns Pre-commit Incremental Self-check into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Read the quick gate from left to right: lint, unit tests, build, and secret scan are the minimum mergeable path.
 # §1 Test Design — Verification Steps
 
 ## Step 1: Lint passes

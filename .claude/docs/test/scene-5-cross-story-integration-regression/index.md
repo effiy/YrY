@@ -7,45 +7,30 @@
 
 ## §0 · Effect Sketch
 
-### What this scene demonstrates
-
-Walks every markdown file (35 files), extracts each `[text](path)` link, and resolves the path relative to the file's directory. Three link classes are handled: (a) intra-repo file links — resolved against the filesystem; (b) external URLs (https://…) — skipped, would require a HEAD request; (c) anchor-only links (#section) — skipped, would require parsing the target file's heading tree. The audit produces a per-file broken-count and a global broken ratio (0.0%). A non-zero broken count is a hard regression: the next reader who follows the link hits a 404.
-
-### Why it matters
-
-Cross-story integrity is the trust contract between skills. When docs/arch/scene-1 references docs/test/scene-3, and that target has been renamed, the entire narrative collapses for the reader. The broken ratio (0.0%) is the single most predictive metric of "is the docs tree maintained" — above 5% correlates with abandoned documentation.
-
-### Flow
-
 ```mermaid
-%%{init: {'theme':'dark','flowchart':{'htmlLabels':true}}}%%
 flowchart LR
-  A([md files]):::input
-  B[extract links]:::step
-  C[resolve paths]:::step
-  D{{broken?}}:::decision
-  E[broken-link alert]:::fail
-  F[ok]:::pass
-  G[CI gate fails]:::fail
-  H[trust contract intact]:::pass
+  hub[data.js]:::source --> arch[arch scenes]:::doc
+  hub --> test[test scenes]:::doc
+  hub --> footer[footer links]:::doc
+  arch --> home[arch index / panel]:::check
+  test --> home
+  footer --> home
+  home --> gate{all links resolve?}:::decision
+  gate -->|yes| pass([story network healthy]):::done
+  gate -->|no| fail([broken cross-story path]):::risk
 
-  A --> B
-  B --> C
-  C --> D
-  D -- yes --> E
-  D -- no --> F
-  E --> G
-  F --> H
-
-  classDef input fill:#4f46e5,stroke:#818cf8,color:#fff
-  classDef step fill:#1e293b,stroke:#22d3ee,color:#e2e8f0
-  classDef decision fill:#b45309,stroke:#f59e0b,color:#fff
-  classDef pass fill:#16a34a,stroke:#22c55e,color:#fff
-  classDef fail fill:#b91c1c,stroke:#ef4444,color:#fff
+  classDef source fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef doc fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+  classDef check fill:#e0f2fe,stroke:#0891b2,color:#164e63
+  classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e
+  classDef done fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef risk fill:#fee2e2,stroke:#dc2626,color:#991b1b
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns the scene into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Follow references outward from `data.js` into story scenes, panel indexes, and footer links; any missing edge becomes an integration failure.
 ## §1 · Test Design — Verification Steps
 
 ### Step 1 · Inventory story directories

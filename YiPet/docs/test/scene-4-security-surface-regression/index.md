@@ -1,32 +1,31 @@
 # §0 Effect Sketch — Security Surface Regression
 
-**What this scene demonstrates**: Compare the current security
-surface (per `rui-init-detect` + `rui-init-explore`) against the
-baseline recorded in CLAUDE.md. Any drift is a regression that
-must be explained.
-
-**Why it matters**: YiPet runs content scripts on `<all_urls>`; an
-unnoticed growth in the security surface is a CVE waiting to happen.
-
 ```mermaid
-graph TD
-  A[Re-run detect phase<br/>grep src/ for keywords] --> B{userInput?}
-  A --> C{apiEndpoints?}
-  A --> D{dataStorage?}
-  A --> E{authentication?}
-  A --> F{thirdParty?}
-  B --> G[Compare vs CLAUDE.md baseline]
-  C --> G
-  D --> G
-  E --> G
-  F --> G
-  G --> H{drift?}
-  H -->|no| I[✅ baseline holds]
-  H -->|yes| J[Surface to user<br/>explain or fix]
+flowchart LR
+  scan([current source scan]):::entry --> input[userInput]:::dim
+  scan --> api[apiEndpoints]:::dim
+  scan --> storage[dataStorage]:::dim
+  scan --> auth[authentication]:::dim
+  scan --> third[thirdParty]:::dim
+  input --> gate{matches baseline?}:::decision
+  api --> gate
+  storage --> gate
+  auth --> gate
+  third --> gate
+  gate -->|yes| pass([surface unchanged]):::done
+  gate -->|no| fail([explain drift or block]):::risk
+
+  classDef entry fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+  classDef dim fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+  classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e
+  classDef done fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef risk fill:#fee2e2,stroke:#dc2626,color:#991b1b
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns Security Surface Regression into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Read the five dimensions into the baseline compare step; the diagram is optimized to show regression gates rather than isolated grep commands.
 # §1 Test Design — Verification Steps
 
 ## Step 1: userInput dimension

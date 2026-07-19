@@ -7,55 +7,30 @@
 
 ## §0 · Effect Sketch
 
-### What this scene demonstrates
-
-Maps the project's security surface across three dimensions: (1) environment files — 0 .env* files, each of which must be in .gitignore; (2) dangerous API calls — 28 occurrence(s) of eval(), new Function(), innerHTML assignment, document.write, dangerouslySetInnerHTML, or child_process.exec/spawn; (3) HTML entry points — 22 .html file(s) that may need CSP review. Each finding is a static signal: it does not prove a vulnerability, but it flags a location for human review. The scene fails when the dangerous-call count crosses the baseline threshold (5) — a regression that should block the commit.
-
-### Why it matters
-
-Security surface changes are the highest-signal diff you can review. A new innerHTML assignment is a potential XSS vector; a new child_process.exec is a potential command-injection vector; a new .env file not in .gitignore is a potential secret leak. These are the changes that land CVEs in production. A 200-line refactor is rarely a security incident; a 1-line innerHTML= often is.
-
-### Flow
-
 ```mermaid
-%%{init: {'theme':'dark','flowchart':{'htmlLabels':true}}}%%
 flowchart LR
-  A([scope]):::start
-  B[.env files]:::facet
-  C[dangerous calls]:::facet
-  D[HTML entry points]:::facet
-  E[gitignore check]:::step
-  F[baseline diff]:::step
-  G[CSP review]:::step
-  H[[surface map]]:::output
-  I{{regression?}}:::decision
-  J[block commit]:::fail
-  K[stable]:::pass
+  scan([re-run detect / explore]):::entry --> env[.env files]:::signal
+  scan --> calls[dangerous calls eval / fetch / exec]:::signal
+  scan --> html[HTML entry points]:::signal
+  scan --> ignore[.gitignore coverage]:::signal
+  env --> compare{baseline changed?}:::decision
+  calls --> compare
+  html --> compare
+  ignore --> compare
+  compare -->|no| pass([surface unchanged]):::done
+  compare -->|yes| fail([explain drift or block merge]):::risk
 
-  A --> B
-  A --> C
-  A --> D
-  B --> E
-  C --> F
-  D --> G
-  E --> H
-  F --> H
-  G --> H
-  H --> I
-  I -- yes --> J
-  I -- no --> K
-
-  classDef start fill:#4f46e5,stroke:#818cf8,color:#fff
-  classDef facet fill:#1e293b,stroke:#22d3ee,color:#e2e8f0
-  classDef step fill:#374151,stroke:#9ca3af,color:#f3f4f6
-  classDef output fill:#7c3aed,stroke:#a78bfa,color:#fff
-  classDef decision fill:#b45309,stroke:#f59e0b,color:#fff
-  classDef pass fill:#16a34a,stroke:#22c55e,color:#fff
-  classDef fail fill:#b91c1c,stroke:#ef4444,color:#fff
+  classDef entry fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+  classDef signal fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+  classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e
+  classDef done fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef risk fill:#fee2e2,stroke:#dc2626,color:#991b1b
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns the scene into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Start with the repository scan, inspect the three high-signal surfaces, then compare the result against the baseline gate.
 ## §1 · Test Design — Verification Steps
 
 ### Step 1 · Inventory .env files

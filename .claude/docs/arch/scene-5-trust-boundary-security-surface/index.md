@@ -9,56 +9,39 @@
 ## §0 — Effect sketch
 
 ```mermaid
-%%{init: {'theme':'dark','flowchart':{'htmlLabels':true}}}%%
 flowchart TB
-  user([User opens dashboard]):::input
-  page[index.html on local filesystem]:::page
-  loader[shared/loader.js — Vue 3 CDN]:::loader
-  cdn1[Vue 3.4.27 from local vendor/]:::vendor
-  cdn2[html2canvas 1.4.1 from local vendor/]:::vendor
-  cdn3[jsPDF 2.5.2 from local vendor/]:::vendor
-  cdn4[xlsx 0.20.3 from local vendor/]:::vendor
-  cmp[12 rui-* components from local shared/components/]:::component
-  data[window.HELP_CONFIG — pure data]:::data
-  net((External network — only in dev mode)):::boundary
+  subgraph trusted[Trusted catalog]
+    docs[docs/*]:::trusted
+    shared[shared/*]:::trusted
+    skills[skills/*]:::trusted
+  end
 
-  user --> page
-  page --> loader
-  loader -- "self" --> cdn1
-  cmp -- "self" --> data
-  cmp -. "fetch() for cross-component signaling" .- net
+  subgraph local[Local execution]
+    loader[loader.js + dashboard UI]:::process
+    state[.pipeline-state/*.json]:::data
+  end
 
-  classDef input fill:#4f46e5,stroke:#818cf8,color:#fff
-  classDef page fill:#1e293b,stroke:#22d3ee,color:#e2e8f0
-  classDef loader fill:#7c3aed,stroke:#a78bfa,color:#fff
-  classDef vendor fill:#0f766e,stroke:#14b8a6,color:#fff
-  classDef component fill:#1e40af,stroke:#3b82f6,color:#fff
-  classDef data fill:#374151,stroke:#9ca3af,color:#f3f4f6
-  classDef boundary fill:#b91c1c,stroke:#ef4444,color:#fff
-  linkStyle 4 stroke:#ef4444,stroke-dasharray:5 5
+  subgraph external[External boundary]
+    cdn[CDN scripts]:::external
+    user[User query / prompt]:::external
+  end
+
+  skills --> loader
+  docs --> loader
+  state --> loader
+  user --> loader
+  loader -. fetch .-> cdn
+
+  classDef trusted fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef process fill:#e0f2fe,stroke:#0891b2,color:#164e63
+  classDef data fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+  classDef external fill:#fee2e2,stroke:#dc2626,color:#991b1b
 ```
 
-**Scene overview**
-
-This scene answers **"Where are the trust boundaries, and what is
-exposed at each?"** The catalog is a **local-first** skill collection
-with two trust boundaries:
-
-1. **Filesystem boundary** — the dashboard page reads from
-   `shared/vendor/` and `shared/components/` over `file://` (or
-   `http://localhost` in dev). No remote calls in production.
-2. **Optional dev-mode fetch** — several `shared/components/*/data.js`
-   files contain `fetch()` calls for cross-component signaling
-   (e.g. `<rui-panel-hub>` asking `<rui-stats-grid>` for its
-   current stat set). These are gated by the dev-only
-   `?dev=1` URL parameter.
-
-The profile's `securitySurface` reads `{ userInput: false,
-apiEndpoints: false, dataStorage: false, authentication: false,
-thirdParty: true }`. The `thirdParty: true` flag is set because
-`shared/vendor/*` ships 4 third-party libraries, all served from
-the local filesystem.
-
+### Chart-first summary
+- **Focus**: This chart turns the scene into a diagram-led overview before the detailed design and report sections.
+- **Why**: It makes trust boundaries visible so new integrations do not silently widen the security surface.
+- **How to read**: Read from the inner trusted catalog out to external surfaces; each boundary crossing marks where validation or isolation is required.
 ## §1 — Test design
 
 | Acceptance Criterion (AC) | Success Condition (SC) |

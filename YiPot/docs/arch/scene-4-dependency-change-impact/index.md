@@ -1,45 +1,34 @@
 # §0 Effect Sketch — Dependency Change Impact
 
-**What this scene demonstrates**: which files, windows, and services break
-when a specific dependency is upgraded, downgraded, replaced, or removed.
-
-**Why it matters**: YiPot has 41 npm deps + 35+ Cargo deps + 5 GitHub-pinned
-Tauri plugins. Without a change-impact map, every `pnpm update` becomes a
-guessing game of "did anything break?". This scene enumerates the blast
-radius per dependency family.
-
 ```mermaid
 flowchart LR
-    subgraph JS[JS deps]
-        R[react 18]
-        N[nextui 2]
-        J[jotai 2]
-        I[i18next 23]
-        TT[tesseract.js 5]
-        C[crypto-js 4]
-    end
-    subgraph Rust[Rust deps]
-        T[tauri 1.8]
-        TS[tauri-plugin-* v1]
-        A[arboard 3]
-        SC[screenshots 0.7]
-        L[lingua 1.6]
-    end
-    R --> A1[window/* · 5 files]
-    N --> A1
-    J --> A2[utils/store + hooks/]
-    I --> A3[i18n/ + window/Translate]
-    TT --> A4[services/recognize/tesseract/]
-    C --> A5[utils/store.js encryption]
-    T --> A6[src-tauri/Cargo.toml + tauri.conf.json]
-    TS --> A7[main.rs plugin chain]
-    A --> A8[clipboard.rs]
-    SC --> A9[screenshot.rs]
-    L --> A10[lang_detect.rs]
+  bump([dependency change]):::entry --> family{family}:::decision
+  family --> tauri[Tauri / plugins]:::tier
+  family --> react[React / i18n]:::tier
+  family --> lang[Tesseract / lingua]:::tier
+  family --> rust[arboard / native crates]:::tier
+  tauri --> impact[windows · commands · updater]:::impact
+  react --> impact
+  lang --> impact
+  rust --> impact
+  impact --> verify[build + smoke + service checks]:::check
+  verify --> gate{stable?}:::decision
+  gate -->|yes| pass([upgrade survives]):::done
+  gate -->|no| fail([rollback or isolate]):::risk
+
+  classDef entry fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+  classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e
+  classDef tier fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+  classDef impact fill:#e0f2fe,stroke:#0891b2,color:#164e63
+  classDef check fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef done fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef risk fill:#fee2e2,stroke:#dc2626,color:#991b1b
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns Dependency Change Impact into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Choose the dependency family first, then inspect blast radius across windows, services, Rust crates, and verification layers.
 # §1 Test Design — Verification Steps
 
 ## Step 1: Tauri 1.x → 2.x upgrade

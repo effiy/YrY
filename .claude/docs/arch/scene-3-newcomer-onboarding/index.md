@@ -7,35 +7,22 @@
 ## §0 — Effect sketch
 
 ```mermaid
-%%{init: {'theme':'dark','flowchart':{'htmlLabels':true}}}%%
-flowchart TB
-  newcomer([New Claude at YrY]):::start
-  read1[1. Read CLAUDE.md]:::read
-  read2[2. Open docs/index.html]:::visual
-  read3[3. Read README.md Domain Language]:::read
-  scan[4. Run ls -la on .claude/]:::action
-  read4[5. Pick 1 skill · read its SKILL.md]:::read
-  eval[6. Run its evals/]:::action
-  ready([Operational in ≤ 1 hour]):::goal
+flowchart LR
+  start([0 min newcomer arrives]):::entry --> map[10 min read story indexes]:::step
+  map --> locate[20 min find module map and skill groups]:::step
+  locate --> trace[35 min trace one request through composition flow]:::step
+  trace --> trust[50 min review trust boundary and failure modes]:::step
+  trust --> ship([60 min can navigate & contribute]):::done
 
-  newcomer --> read1 --> read2 --> read3 --> scan --> read4 --> eval --> ready
-
-  classDef start fill:#4f46e5,stroke:#818cf8,color:#fff
-  classDef read fill:#1e293b,stroke:#22d3ee,color:#e2e8f0
-  classDef visual fill:#0f766e,stroke:#14b8a6,color:#fff
-  classDef action fill:#7c3aed,stroke:#a78bfa,color:#fff
-  classDef goal fill:#16a34a,stroke:#22c55e,color:#fff
+  classDef entry fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+  classDef step fill:#e0f2fe,stroke:#0891b2,color:#164e63
+  classDef done fill:#dcfce7,stroke:#16a34a,color:#166534
 ```
 
-**Scene overview**
-
-This scene answers **"I'm new here; what should I read first?"** The
-onboarding path is intentionally short: `CLAUDE.md` → dashboard →
-`README.md` domain language → `ls` → one skill → its evals. The
-goal is for a new contributor to be **operational in ≤ 1 hour**,
-i.e. able to run the verify checks, add a new skill, and ship a
-documentation fix.
-
+### Chart-first summary
+- **Focus**: This chart turns the scene into a diagram-led overview before the detailed design and report sections.
+- **Why**: It compresses the first hour of onboarding into a guided path instead of a scattered reading list.
+- **How to read**: Follow the timeline from zero context to productive contribution; each checkpoint names the document, purpose, and expected output.
 ## §1 — Test design
 
 | Acceptance Criterion (AC) | Success Condition (SC) |

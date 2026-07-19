@@ -1,27 +1,29 @@
 # §0 Effect Sketch — Cross-story Integration Regression
 
-**What this scene demonstrates**: Verify the two story directories
-(`docs/arch/` and `docs/test/`) and the docs home (`docs/data.js`)
-still cross-reference each other consistently. A broken cross-link
-means a reader lands on a 404.
-
-**Why it matters**: The dashboard is the entry point; if its scene
-links rot, the whole docs home becomes a wall of dead anchors.
-
 ```mermaid
-graph LR
-  A[docs/data.js] -->|href| B[docs/arch/scene-1]
-  A -->|href| C[docs/test/scene-1]
-  B -->|previewHref| D[index.md exists?]
-  C -->|previewHref| E[index.md exists?]
-  D --> F{✅}
-  E --> F
-  G[arch scene §2] -->|cites| H[test scene]
-  H -->|cites| G
+flowchart LR
+  hub[data.js]:::source --> arch[arch hrefs]:::doc
+  hub --> test[test hrefs]:::doc
+  hub --> footer[footerLinks]:::doc
+  arch --> page[docs home + scene pages]:::check
+  test --> page
+  footer --> page
+  page --> gate{all routes resolve?}:::decision
+  gate -->|yes| pass([story graph connected]):::done
+  gate -->|no| fail([cross-link regression]):::risk
+
+  classDef source fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef doc fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+  classDef check fill:#e0f2fe,stroke:#0891b2,color:#164e63
+  classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e
+  classDef done fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef risk fill:#fee2e2,stroke:#dc2626,color:#991b1b
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns Cross-story Integration Regression into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Use `data.js` as the hub, then inspect how arch scenes, test scenes, and footer links converge on the dashboard entry points.
 # §1 Test Design — Verification Steps
 
 ## Step 1: data.js arch scene hrefs resolve

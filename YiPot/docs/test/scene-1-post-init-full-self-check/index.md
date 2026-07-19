@@ -1,27 +1,33 @@
 # §0 Effect Sketch — Post-Init Full Self-Check
 
-**What this scene demonstrates**: a one-shot end-to-end verification that
-the freshly-initialized project boots, builds, and round-trips a real
-selection-translate without manual babysitting.
-
-**Why it matters**: rui-init's 7-point verify gate checks files-on-disk, not
-runtime behavior. A "pass" from rui-init does not mean the app actually
-launches. This scene closes that gap.
-
 ```mermaid
 flowchart LR
-    A[pnpm install] --> B[pnpm tauri dev]
-    B --> C{Translate window opens?}
-    C -- no --> F1[FAIL: Tauri build / window config]
-    C -- yes --> D[Configure 1 translate service]
-    D --> E[Trigger selection-translate hotkey]
-    E --> F{Result rendered?}
-    F -- no --> F2[FAIL: service config / network]
-    F -- yes --> G[PASS · log result]
+  init([post-init snapshot]):::entry --> docs[docs present]:::artifact
+  init --> build[build & launch]:::artifact
+  init --> windows[window routes]:::artifact
+  init --> services[service registry]:::artifact
+  init --> daemon[daemon / commands]:::artifact
+  init --> state[persistence paths]:::artifact
+  docs --> gate{all core surfaces ready?}:::decision
+  build --> gate
+  windows --> gate
+  services --> gate
+  daemon --> gate
+  state --> gate
+  gate -->|yes| pass([project baseline usable]):::done
+  gate -->|no| fail([repair bootstrap]):::risk
+
+  classDef entry fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+  classDef artifact fill:#e0f2fe,stroke:#0891b2,color:#164e63
+  classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e
+  classDef done fill:#dcfce7,stroke:#16a34a,color:#166534
+  classDef risk fill:#fee2e2,stroke:#dc2626,color:#991b1b
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns Post-Init Full Self-Check into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Read the release-critical surfaces first: docs, build, windows, services, daemon, and persistence all have to survive the init baseline.
 # §1 Test Design — AC / SC Mapping
 
 ## AC-1: Build chain reproducible

@@ -1,27 +1,26 @@
 # §0 Effect Sketch — Module Location
 
-**What this scene demonstrates**: how to locate any module in the YiPot
-source tree — whether it lives in the React frontend (`src/`) or the Rust
-backend (`src-tauri/src/`).
-
-**Why it matters**: YiPot is a Tauri app with two parallel module hierarchies
-(JS services vs Rust commands). Newcomers routinely look for "where is the
-OpenAI integration?" in the wrong half. This scene fixes that with a single
-decision diagram.
-
 ```mermaid
-flowchart TD
-    A[Wanted module] --> B{Is it native capability?<br/>clipboard, hotkey, OCR,<br/>screenshot, tray, updater, server, backup}
-    B -- yes --> C[Look in src-tauri/src/]
-    B -- no  --> D{Is it a service backend?<br/>translate / recognize / tts / collection}
-    D -- yes --> E[src/services/&lt;kind&gt;/&lt;name&gt;/]
-    D -- no  --> F{Is it a window root view?<br/>label = translate/recognize/screenshot/config/updater}
-    F -- yes --> G[src/window/&lt;Name&gt;/]
-    F -- no  --> H[utils/ · hooks/ · i18n/ · components/]
+flowchart LR
+  wanted([Wanted capability]):::entry --> native{native / host feature?}:::decision
+  native -->|yes| rust[src-tauri/src/*]:::rust
+  native -->|no| service{service backend?}:::decision
+  service -->|yes| services[src/services/<kind>/<name>/]:::js
+  service -->|no| window{window root view?}:::decision
+  window -->|yes| ui[src/window/<Name>/]:::js
+  window -->|no| shared[utils/ · hooks/ · i18n/ · components/]:::support
+
+  classDef entry fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+  classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e
+  classDef rust fill:#fee2e2,stroke:#dc2626,color:#991b1b
+  classDef js fill:#e0f2fe,stroke:#0891b2,color:#164e63
+  classDef support fill:#dcfce7,stroke:#16a34a,color:#166534
 ```
 
----
-
+### Chart-first summary
+- **Focus**: This chart turns Module Location into a diagram-led overview before the detailed design and report sections.
+- **Why**: It lets the reader understand the critical path before reading the detailed verification steps.
+- **How to read**: Start with the native-versus-frontend split, then follow the decision branches into services, windows, or shared utilities.
 # §1 Test Design — Verification Steps
 
 ## Step 1: Locate a translation backend
