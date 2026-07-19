@@ -414,14 +414,13 @@
       <!-- HERO PANEL -->
       <section class="qs-hero qs-fade-up" aria-label="Onboarding path">
         <div class="qs-hero-lead">
-          <span class="qs-hero-eyebrow">Quick onboarding</span>
-          <h2 class="qs-hero-title">Ship your first skill in ≈ 18 min</h2>
+          <span class="qs-hero-eyebrow">{{ overviewHero.eyebrow || 'Quick onboarding' }}</span>
+          <h2 class="qs-hero-title">{{ overviewHero.title || 'Ship your first skill in ≈ 18 min' }}</h2>
           <p class="qs-hero-sub">
-            Five ordered steps. Each one owns a specific surface of
-            the project — README, CLAUDE.md, docs/, arch scenes,
-            and the verify gate. Hover a step to read its outcome;
-            the sparkline shows the coverage trend over the last 7
-            release checkpoints.
+            {{
+              overviewHero.subtitle ||
+              'Five ordered steps. Each one owns a specific surface of the project — README, CLAUDE.md, docs/, arch scenes, and the verify gate. Hover a step to read its outcome; the sparkline shows the coverage trend over the last 7 release checkpoints.'
+            }}
           </p>
           <div class="qs-hero-stats">
             <div class="qs-hero-stat">
@@ -434,26 +433,26 @@
               <span class="qs-hero-stat-value">
                 {{ totalMinutes }}<span class="qs-hero-stat-suffix">min</span>
               </span>
-              <span class="qs-hero-stat-label">Time to first ship</span>
+              <span class="qs-hero-stat-label">{{ overviewHero.timeStatLabel || 'Time to first ship' }}</span>
             </div>
             <div class="qs-hero-stat">
               <span class="qs-hero-stat-value">
-                {{ doneCount }}<span class="qs-hero-stat-suffix">/ 5</span>
+                {{ doneCount }}<span class="qs-hero-stat-suffix">/ {{ totalSteps }}</span>
               </span>
               <span class="qs-hero-stat-label">Steps cleared</span>
             </div>
             <div class="qs-hero-stat">
               <span class="qs-hero-stat-value">
-                {{ totalManifests }}<span class="qs-hero-stat-suffix">skills</span>
+                {{ totalManifests }}<span class="qs-hero-stat-suffix">{{ overviewHero.scopeStatSuffix || 'items' }}</span>
               </span>
-              <span class="qs-hero-stat-label">Catalog size</span>
+              <span class="qs-hero-stat-label">{{ overviewHero.scopeStatLabel || 'Catalog size' }}</span>
             </div>
           </div>
         </div>
         <div class="qs-hero-cta">
           <div class="qs-hero-cta-time">
             <strong>≈ {{ totalMinutes }}</strong>
-            <span>minutes to first skill</span>
+            <span>{{ overviewHero.timeCaption || 'minutes to first ship' }}</span>
           </div>
           <button
             type="button"
@@ -464,7 +463,7 @@
             {{ allStepsDone ? 'Onboarded — replay' : (overviewHero.cta || 'Start onboarding') }}
           </button>
           <p class="qs-hero-cta-hint" v-if="overviewHero.ctaHint">
-            <kbd>⌘</kbd> + <kbd>Enter</kbd> marks this report as onboarded
+            {{ overviewHero.ctaHint }}
           </p>
         </div>
         <qs-hero-path

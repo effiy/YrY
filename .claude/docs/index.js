@@ -34,31 +34,106 @@
     return openInNew ? { target: '_blank', rel: 'noopener' } : {};
   }
 
+  function isExternalHref(href) {
+    return /^https?:\/\//i.test(String(href || ''));
+  }
+
   function groupLookupKey(group) {
     if (!group) return '';
     return group.id || group.title || '';
   }
 
-  function reportHrefForCard(group, title) {
+  function cardSlugFor(group, title) {
     var key = groupLookupKey(group) + '::' + String(title || '');
-    var slug = reports && reports.cardLinks ? reports.cardLinks[key] : '';
+    return reports && reports.cardLinks ? reports.cardLinks[key] : '';
+  }
+
+  function reportHrefForCard(group, title) {
+    var slug = cardSlugFor(group, title);
     return slug ? 'deps/' + slug + '/index.html' : '';
   }
 
-  function appendReportLink(links, group, title, label) {
+  function quickstartHrefForCard(group, title) {
+    var slug = cardSlugFor(group, title);
+    return slug ? 'quickstart/' + slug + '/index.html' : '';
+  }
+
+  function normalizeCardHref(href) {
+    var value = String(href || '');
+    if (!value) return '';
+    if (isExternalHref(value) || /^(?:\.{1,2}\/|#|\/)/.test(value)) return value;
+    if (/^(?:arch|test|deps|quickstart|daily|weekly|monthly|files)\//.test(value)) return value;
+    return '../' + value.replace(/^\/+/, '');
+  }
+
+  function primaryPathFromMeta(meta) {
+    var match = String(meta || '').match(/[A-Za-z0-9._-]+(?:\/[A-Za-z0-9._-]+)+\/?/);
+    return match ? normalizeCardHref(match[0]) : '';
+  }
+
+  function primaryHrefForItem(item) {
+    if (!item) return '';
+    return normalizeCardHref(item.href || '') ||
+      primaryPathFromMeta(item.meta) ||
+      normalizeCardHref(item.demoHref || '');
+  }
+
+  function primaryLabelForItem(item) {
+    var href = primaryHrefForItem(item);
+    if (!href) return '';
+    if (isExternalHref(href)) return '';
+    if (/\/index\.(?:html|md)$/i.test(href)) return 'Open Page →';
+    return '';
+  }
+
+  function upsertCardLink(links, href, label, target, matcher) {
     var list = Array.isArray(links) ? links.slice() : [];
-    var reportHref = reportHrefForCard(group, title);
+    if (!href) return list;
+    var entry = { label: label, href: href };
+    if (target) entry.target = target;
+    var existingIndex = list.findIndex(function (link) {
+      return matcher(link || {});
+    });
+    if (existingIndex >= 0) {
+      list[existingIndex] = Object.assign({}, list[existingIndex], entry);
+      return list;
+    }
     var exists = list.some(function (link) {
+      return link && link.href === href;
+    });
+    if (!exists) list.unshift(entry);
+    return list;
+  }
+
+  function appendReportLink(links, group, title, label) {
+    var reportHref = reportHrefForCard(group, title);
+    return upsertCardLink(links, reportHref, label || 'deps', '_blank', function (link) {
       return link && link.href === reportHref;
     });
-    if (reportHref && !exists) {
-      list.unshift({
-        label: label || 'deps',
-        href: reportHref,
-        target: '_blank'
-      });
-    }
-    return list;
+  }
+
+  function appendQuickstartLink(links, group, title, label) {
+    var quickstartHref = quickstartHrefForCard(group, title);
+    return upsertCardLink(links, quickstartHref, label || 'start', null, function (link) {
+      return !!(link && (
+        link.href === quickstartHref ||
+        /^quickstart\//.test(link.href || '') ||
+        /^Quickstart\b/i.test(link.label || '') ||
+        /^start$/i.test(link.label || '')
+      ));
+    });
+  }
+
+  function appendPrimaryItemLink(links, item) {
+    var href = primaryHrefForItem(item);
+    var label = primaryLabelForItem(item);
+    if (!href || !label) return Array.isArray(links) ? links.slice() : [];
+    return upsertCardLink(links, href, label, isExternalHref(href) ? '_blank' : null, function (link) {
+      return !!(link && (
+        link.href === href ||
+        /^Open Page\b/i.test(link.label || '')
+      ));
+    });
   }
 
   // sceneCardFor(group) · per-kind mapping from HELP_CONFIG items to
@@ -70,6 +145,7 @@
     if (!group || !group.items) return [];
     if (group.kind === 'items') {
       return group.items.map(function (it, i) {
+        var quickstartHref = quickstartHrefForCard(group, it.title);
         var cardLinks = Array.isArray(it.links)
           ? it.links
           : (it.demoHref
@@ -78,8 +154,8 @@
         return {
           key: 'items:' + it.title + ':' + i,
           name: it.title,
-          nameHref: it.href || null,
-          nameTarget: it.targetBlank ? '_blank' : null,
+          nameHref: quickstartHref || primaryHrefForItem(it) || null,
+          nameTarget: quickstartHref ? null : (it.targetBlank ? '_blank' : null),
           // items: HELP_CONFIG keeps description (plain) and meta (HTML with
           // <span class="accent">) on separate fields. rui-scene-card exposes
           // only one v-html desc slot, so join them on a <br>. The accent
@@ -89,7 +165,15 @@
           // items: allow per-card explicit links from data.js. When absent,
           // keep the older demoHref bridge so existing generated cards
           // continue to render a single footer action.
-          links: appendReportLink(cardLinks, group, it.title, 'deps'),
+          links: appendPrimaryItemLink(
+            appendQuickstartLink(
+              appendReportLink(cardLinks, group, it.title, 'deps'),
+              group,
+              it.title,
+              'start'
+            ),
+            it
+          ),
           // Staggered card entrance delay (rui-scene-card reads --card-delay).
           style: { '--card-delay': (0.01 + (i % 20) * 0.012) + 's' }
         };
@@ -97,11 +181,13 @@
     }
     if (group.kind === 'stories') {
       return group.items.map(function (st) {
+        var quickstartHref = quickstartHrefForCard(group, st.title);
         return {
           key: 'stories:' + st.title,
           // stories: prepend the emoji icon to the name (rui-scene-card has
           // no separate icon slot; the emoji gives a quick visual cue).
           name: (st.icon ? st.icon + ' ' : '') + st.title,
+          nameHref: quickstartHref || null,
           badge: st.badge,
           desc: st.description,
           // stories: sceneLinks use {label, href}, but rui-tag-chip wants
@@ -110,29 +196,40 @@
           tags: (st.sceneLinks || []).map(function (sl) {
             return { text: sl.label, href: sl.href, modifier: 'info' };
           }),
-          links: appendReportLink(st.links || [], group, st.title, 'Story Report →'),
+          links: appendQuickstartLink(
+            appendReportLink(st.links || [], group, st.title, 'Story Report →'),
+            group,
+            st.title,
+            'start'
+          ),
           meta: st.meta
         };
       });
     }
     if (group.kind === 'scenes') {
       return group.items.map(function (sc) {
+        var quickstartHref = quickstartHrefForCard(group, sc.title);
         return {
           key: 'scenes:' + sc.title,
           // scenes: prepend the index (e.g. "Scene 1") to the name so the
           // ordering is visible without a separate slot.
           name: (sc.index ? sc.index + ' · ' : '') + sc.title,
-          nameHref: sc.href || null,
+          nameHref: quickstartHref || sc.href || null,
           desc: sc.description,
           // scenes: build a custom link entry for the preview button
           // (renders as the footer link row in rui-scene-card).
-          links: appendReportLink(
-            sc.previewHref
-              ? [{ label: sc.previewLabel || 'Architecture Diagram →', href: sc.previewHref, target: '_blank' }]
-              : [],
+          links: appendQuickstartLink(
+            appendReportLink(
+              sc.previewHref
+                ? [{ label: sc.previewLabel || 'Architecture Diagram →', href: sc.previewHref, target: '_blank' }]
+                : [],
+              group,
+              sc.title,
+              'Scene Report →'
+            ),
             group,
             sc.title,
-            'Scene Report →'
+            'start'
           )
         };
       });
