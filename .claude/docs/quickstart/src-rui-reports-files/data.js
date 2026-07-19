@@ -3,7 +3,7 @@
 
   var dataset = {
   "meta": {
-    "title": "Quickstart — files",
+    "title": "Quickstart — files · static codebase analysis (6 sections)",
     "scope": "files",
     "scopeShort": "files",
     "language": "en",
@@ -14,10 +14,10 @@
   },
   "header": {
     "kind": "Card Quickstart",
-    "title": "Quickstart — files",
-    "tagline": "Grounded newcomer orientation for the \"files\" docs card. Built from homepage metadata, linked artifacts, and local report paths.",
+    "title": "Quickstart — files · 6 sections · 18 components",
+    "tagline": "Static codebase file analysis across 6 sections — Summary, Size, Largest, Coupling, Risk, Health — with hotspot scoring (0.5·lines + 0.2·fanIn + 0.1·fanOut + 0.2·depth), cycle detection, fan-in/out ranking, and a self-improvement remediation tree. Bundled analyzer archived; templates retained.",
     "scope": "files",
-    "audience": "Contributors navigating the files card",
+    "audience": "Contributors working with the 6-section file report (archived analyzer + retained templates)",
     "generatedAt": "2026-07-19 21:00 (Asia/Shanghai)"
   },
   "score": {
@@ -41,56 +41,61 @@
       "title": "Overview",
       "coverage": 94,
       "verdict": "pass",
-      "summary": "files is a docs-home card under \"skills/rui-reports — Report Generators\" in the \"Main Source Code\" section. Static file analysis report generator mirrored under docs/files/. Metadata: Sub-skill · scripts + templates.",
+      "summary": "files is a docs-home card under \"skills/rui-reports — Report Generators\" in the \"Main Source Code\" section. It is an archived static reference bundle for static codebase file analysis across 6 sections — Summary, Size, Largest, Coupling, Risk, Health — with hotspot scoring (`0.5·lines/1000 + 0.2·fanIn + 0.1·fanOut + 0.2·depth`), 3-color DFS cycle detection, fan-in/out ranking, and a self-improvement remediation tree. The one-off analyzer and CLI command have been removed; `templates/` (18 Vue components), `references/` (methodology, scoring), and `rules/` (analysis-contracts) are retained for manual assembly or a future replacement. Metadata: Sub-skill · 18 components + 6 contracts + 5-stage methodology.",
       "hero": {
-        "eyebrow": "skills/rui-reports — Report Generators",
-        "title": "Understand files in about 6 min",
-        "subtitle": "This walkthrough stays grounded in the docs-home card metadata, linked artifacts, and the closest local report or source path.",
+        "eyebrow": "skills/rui-reports — files (6 sections, archived)",
+        "title": "Map a codebase across 6 report sections in about 6 min",
+        "subtitle": "Walk Inventory → Size → Graph → Depth → Cycle → Freshness, then read the 6 sections in fixed order: Summary · Size · Largest · Coupling · Risk · Health.",
         "totalMinutes": 6,
         "cta": "Start walkthrough",
         "ctaHint": "Cmd + Enter marks this card walkthrough as reviewed.",
-        "timeStatLabel": "Time to first context",
-        "timeCaption": "minutes to first context",
-        "scopeStatLabel": "Grounded refs",
-        "scopeStatSuffix": "refs",
-        "gapsHint": "Open the linked local artifacts before editing this surface.",
+        "timeStatLabel": "Time to first report",
+        "timeCaption": "minutes to first report",
+        "scopeStatLabel": "Components",
+        "scopeStatSuffix": "components",
+        "gapsHint": "Read the byte-stable analysis-contracts.md and the 5-stage methodology.md before changing any threshold.",
         "gaps": [
           {
-            "id": "artifact",
-            "label": "Primary artifact",
-            "coverage": 68
+            "id": "analyzer-archived",
+            "label": "analyzer archived",
+            "coverage": 70
+          },
+          {
+            "id": "schema-contracts",
+            "label": "byte-stable contracts",
+            "coverage": 72
           }
         ],
         "steps": [
           {
-            "id": "home",
+            "id": "methodology",
             "n": 1,
-            "name": "Locate",
-            "minutes": 2,
+            "name": "Methodology",
+            "minutes": 1,
             "color": "cyan",
-            "type": "view",
-            "ref": "docs/index.html",
-            "outcome": "Open the docs home and review the original card context, grouping, and neighboring cards."
+            "type": "read",
+            "ref": "skills/rui-reports/files/references/methodology.md",
+            "outcome": "Read the 5-stage playbook: Inventory → Size → Graph → Depth → Cycle → Freshness."
           },
           {
-            "id": "quickstart",
+            "id": "schema",
             "n": 2,
-            "name": "Read",
+            "name": "Schema",
             "minutes": 2,
             "color": "accent",
             "type": "read",
-            "ref": "docs/quickstart/src-rui-reports-files/index.html",
-            "outcome": "Use this quickstart page to collect the grounded paths, links, and first actions for files."
+            "ref": "skills/rui-reports/files/rules/analysis-contracts.md",
+            "outcome": "Lock in the column names, severity thresholds (lines > 1000 Critical, maxDepth > 15 Critical, hotspotScore ≥ 5.0 Critical), and the CSV header."
           },
           {
-            "id": "verify",
+            "id": "components",
             "n": 3,
-            "name": "Verify",
+            "name": "Components",
             "minutes": 2,
-            "color": "fail",
-            "type": "run",
-            "ref": "open '/Users/yi/YrY/.claude/docs/index.html'",
-            "outcome": "Re-open the docs home and verify the card links still point to the expected report and quickstart surfaces."
+            "color": "pass",
+            "type": "read",
+            "ref": "skills/rui-reports/files/templates/components/",
+            "outcome": "Confirm the 18 Vue components map to the 6 sections (summary + size + largest + coupling + risk + health + self-improvement + shared primitives)."
           }
         ]
       },
@@ -196,42 +201,42 @@
       ],
       "byTheNumbers": [
         {
-          "value": "1",
-          "suffix": "refs",
-          "label": "grounded",
+          "value": "6",
+          "suffix": "sections",
+          "label": "fixed order",
           "accent": "accent",
-          "blurb": "Local and external references linked from this card."
+          "blurb": "Summary → Size → Largest → Coupling → Risk → Health, emitted in fixed order; each backed by a Vue component."
         },
         {
-          "value": "1",
-          "suffix": "local",
-          "label": "artifacts",
+          "value": "18",
+          "suffix": "components",
+          "label": "Vue toolkit",
           "accent": "cyan",
-          "blurb": "Docs or source paths you can open from this workspace."
+          "blurb": "summary + size + largest + coupling + risk + health + self-improvement + 11 shared primitives (finding-card, copy-button, …)."
         },
         {
-          "value": "1",
-          "suffix": "next",
-          "label": "jumps",
+          "value": "0.5 / 0.2 / 0.1 / 0.2",
+          "suffix": "weights",
+          "label": "hotspot formula",
           "accent": "pass",
-          "blurb": "Scene, report, or supporting links carried by the card."
+          "blurb": "hotspotScore = 0.5·lines/1000 + 0.2·fanIn + 0.1·fanOut + 0.2·depth; ≥ 5.0 Critical, 2.0–5.0 Warning."
         }
       ],
       "whatYoullShip": [
         {
-          "tag": "context",
-          "title": "A grounded reading path",
-          "body": "You can move from the homepage card to the nearest doc, report, or source artifact without guesswork."
+          "tag": "report",
+          "title": "6-section HTML report",
+          "body": "A page under `docs/files/` rendering Summary, Size, Largest, Coupling, Risk, and Health as tabbed sub-views."
         },
         {
-          "tag": "links",
-          "title": "A stable quickstart entry",
-          "body": "This card now owns its own quickstart directory under docs/quickstart/."
+          "tag": "graph",
+          "title": "Import-graph + cycles",
+          "body": "An import/dependency graph with fan-in / fan-out ranking, depth, and a 3-color DFS cycle list with a suggested fix per cycle."
         },
         {
-          "tag": "verify",
-          "title": "A repeatable check",
-          "body": "You can reopen the homepage and confirm the card-level quickstart link stays wired."
+          "tag": "self-improvement",
+          "title": "Remediation tree",
+          "body": "P0 jumps + grouped remediation items; `is-done` items disable the copy button (`@click.stop` + `disabled` required)."
         }
       ],
       "tiles": [
@@ -313,29 +318,29 @@
         {
           "name": "files",
           "role": "card",
-          "description": "Static file analysis report generator mirrored under docs/files/.",
-          "file": "docs/index.html",
+          "description": "Static codebase file analysis across 6 sections (Summary · Size · Largest · Coupling · Risk · Health) with hotspot scoring + 3-color DFS cycles + self-improvement tree; analyzer archived, templates retained.",
+          "file": "skills/rui-reports/files/SKILL.md",
           "line": 1
         },
         {
-          "name": "skills/rui-reports — Report Generators",
-          "role": "group",
-          "description": "The immediate group that renders this card on the docs home.",
-          "file": "docs/data.js",
+          "name": "templates/ (4 files + 18 components)",
+          "role": "template",
+          "description": "Page template + 18 Vue components: 6 section components + self-improvement + 11 shared primitives (finding-card, remediation-*, risk-*, copy-button, …).",
+          "file": "skills/rui-reports/files/templates/data.js",
           "line": 1
         },
         {
           "name": "Main Source Code",
           "role": "section",
-          "description": "The top-level documentation section that owns the card group.",
+          "description": "Top-level documentation section that owns this card group.",
           "file": "docs/data.js",
           "line": 1
         },
         {
-          "name": "Metadata cue",
-          "role": "meta",
-          "description": "Sub-skill · scripts + templates",
-          "file": "docs/data.js",
+          "name": "methodology.md",
+          "role": "playbook",
+          "description": "5-stage execution playbook: Inventory → Size → Graph → Depth → Cycle → Freshness — the single source of truth for any re-implementation.",
+          "file": "skills/rui-reports/files/references/methodology.md",
           "line": 1
         }
       ]
@@ -368,27 +373,27 @@
       "steps": [
         {
           "order": 1,
-          "type": "view",
+          "type": "read",
           "minutes": 1,
-          "action": "Open the docs home and jump back to the original card.",
-          "outcome": "You see how files is grouped and what related cards sit nearby.",
-          "command": "open '/Users/yi/YrY/.claude/docs/index.html'"
+          "action": "Read the archived SKILL.md and confirm the analyzer status before editing.",
+          "outcome": "You know templates/, references/, and rules/ are retained; the one-off analyzer and CLI command have been removed.",
+          "command": "open '/Users/yi/YrY/.claude/skills/rui-reports/files/SKILL.md'"
         },
         {
           "order": 2,
           "type": "read",
           "minutes": 2,
-          "action": "Read this per-card quickstart page from top to bottom.",
-          "outcome": "You collect the grounded artifacts, commands, and follow-up reading for this card.",
-          "command": "open '/Users/yi/YrY/.claude/docs/quickstart/src-rui-reports-files/index.html'"
+          "action": "Open methodology.md and lock the 5-stage playbook: Inventory → Size → Graph → Depth → Cycle → Freshness.",
+          "outcome": "You can name the byte-stable columns, severity thresholds, and the hotspot formula before re-implementing.",
+          "command": "open '/Users/yi/YrY/.claude/skills/rui-reports/files/references/methodology.md'"
         },
         {
           "order": 3,
           "type": "run",
           "minutes": 2,
-          "action": "Re-open the homepage and verify the quickstart link for this card.",
-          "outcome": "The card now exposes both its report/demo surface and its own quickstart directory.",
-          "command": "open '/Users/yi/YrY/.claude/docs/index.html'"
+          "action": "Map the 6 sections (Summary · Size · Largest · Coupling · Risk · Health) to the 18 Vue components.",
+          "outcome": "You can regenerate docs/files/ by editing only data.js — components re-render unchanged because the schema is byte-stable.",
+          "command": "open '/Users/yi/YrY/.claude/skills/rui-reports/files/templates/components/'"
         }
       ]
     },
@@ -400,16 +405,28 @@
       "verdict": "partial",
       "items": [
         {
-          "name": "open-home",
-          "command": "open '/Users/yi/YrY/.claude/docs/index.html'",
-          "description": "Open the docs homepage where the original card is rendered.",
-          "source": "docs/index.html"
+          "name": "open-skill",
+          "command": "open '/Users/yi/YrY/.claude/skills/rui-reports/files/SKILL.md'",
+          "description": "Read the archived SKILL.md to confirm analyzer status and what is retained.",
+          "source": "skills/rui-reports/files/SKILL.md"
         },
         {
-          "name": "open-quickstart",
-          "command": "open '/Users/yi/YrY/.claude/docs/quickstart/src-rui-reports-files/index.html'",
-          "description": "Open this per-card quickstart page directly.",
-          "source": "docs/quickstart/src-rui-reports-files/index.html"
+          "name": "open-methodology",
+          "command": "open '/Users/yi/YrY/.claude/skills/rui-reports/files/references/methodology.md'",
+          "description": "Open the 5-stage playbook: Inventory → Size → Graph → Depth → Cycle → Freshness.",
+          "source": "skills/rui-reports/files/references/methodology.md"
+        },
+        {
+          "name": "open-contracts",
+          "command": "open '/Users/yi/YrY/.claude/skills/rui-reports/files/rules/analysis-contracts.md'",
+          "description": "Byte-stable payload: columns, severity thresholds, CSV header — the contract for any re-implementation.",
+          "source": "skills/rui-reports/files/rules/analysis-contracts.md"
+        },
+        {
+          "name": "open-scoring",
+          "command": "open '/Users/yi/YrY/.claude/skills/rui-reports/files/references/scoring.md'",
+          "description": "Hotspot / orphan / depth / freshness formulas and the thresholds that promote a finding from Warning to Critical.",
+          "source": "skills/rui-reports/files/references/scoring.md"
         }
       ]
     },
@@ -421,24 +438,24 @@
       "verdict": "partial",
       "items": [
         {
-          "question": "What does this card summarize?",
-          "answer": "Static file analysis report generator mirrored under docs/files/.",
-          "source": "docs/data.js"
+          "question": "Why is the analyzer archived but the templates retained?",
+          "answer": "The one-off analyzer script and the CLI command entry were removed because the report is now regenerated from external workflow scripts. The 4-file template, 18 Vue components, 5-stage methodology, and byte-stable analysis-contracts are kept so the report page can be re-emitted with new data without rewriting the renderer.",
+          "source": "skills/rui-reports/files/SKILL.md"
         },
         {
-          "question": "Where is the closest local artifact for this card?",
-          "answer": "This card does not expose a stronger local artifact than its homepage entry, so start from docs/index.html and the card metadata.",
-          "source": "docs/index.html"
+          "question": "How is the hotspot score computed?",
+          "answer": "`hotspotScore = 0.5·lines/1000 + 0.2·fanIn + 0.1·fanOut + 0.2·depth`. Thresholds: ≥ 5.0 Critical, 2.0–5.0 Warning, < 2.0 hidden from the Hotspots tab. The 4 weights sum to 1.0 by design so the score stays on a comparable 0–10 scale.",
+          "source": "skills/rui-reports/files/references/scoring.md"
         },
         {
-          "question": "Which group owns this card on the homepage?",
-          "answer": "The card is rendered in the group \"skills/rui-reports — Report Generators\" inside the section \"Main Source Code\".",
-          "source": "docs/data.js"
+          "question": "What is the difference between the Coupling and Risk tabs?",
+          "answer": "Coupling surfaces Fan-in (most-depended-on, change ripples widely) and Fan-out (most-coupled, hardest to isolate). Risk surfaces Hotspots (high score), Orphans (fanIn=0 AND fanOut=0), and Depth (deepest import chain). Both sections share the same import graph but rank files by different signals.",
+          "source": "skills/rui-reports/files/references/methodology.md"
         },
         {
-          "question": "What should I open next after reading this page?",
-          "answer": "Return to docs/index.html and inspect the surrounding group plus any external references carried by the card.",
-          "source": "docs/index.html"
+          "question": "What does the Self-Improvement section do?",
+          "answer": "It groups remediation items, displays P0 jumps, and renders the copy button. Items marked `is-done` disable the copy button (`@click.stop` + `disabled`) per the design-system rule, so a single click never copies stale remediation text.",
+          "source": "skills/rui-reports/files/references/methodology.md"
         }
       ]
     },
@@ -450,15 +467,33 @@
       "verdict": "pass",
       "items": [
         {
-          "title": "docs/index.html",
-          "href": "../../index.html",
-          "description": "Homepage entry where this card is rendered in context.",
+          "title": "skills/rui-reports/files/SKILL.md",
+          "href": "../../../../skills/rui-reports/files/SKILL.md",
+          "description": "Archived status note and what remains (templates + references + rules).",
           "kind": "doc"
         },
         {
-          "title": "docs/quickstart/index.html",
-          "href": "../index.html",
-          "description": "The root quickstart page used as the shared template baseline.",
+          "title": "references/methodology.md",
+          "href": "../../../../skills/rui-reports/files/references/methodology.md",
+          "description": "5-stage execution playbook — Inventory → Size → Graph → Depth → Cycle → Freshness.",
+          "kind": "doc"
+        },
+        {
+          "title": "references/scoring.md",
+          "href": "../../../../skills/rui-reports/files/references/scoring.md",
+          "description": "Hotspot / orphan / depth / freshness formulas and the Warning/Critical thresholds.",
+          "kind": "doc"
+        },
+        {
+          "title": "rules/analysis-contracts.md",
+          "href": "../../../../skills/rui-reports/files/rules/analysis-contracts.md",
+          "description": "Byte-stable payload: column names, severity thresholds, CSV header.",
+          "kind": "doc"
+        },
+        {
+          "title": "docs/index.html",
+          "href": "../../index.html",
+          "description": "Homepage entry where this card is rendered in context.",
           "kind": "doc"
         }
       ]

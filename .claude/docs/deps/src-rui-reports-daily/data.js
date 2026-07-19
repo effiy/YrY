@@ -1,95 +1,128 @@
 window.REPORT_DATA = {
   "meta": {
-    "pageTitle": "daily report",
-    "subtitle": "Main Source Code · skills/rui-reports — Report Generators",
-    "upstream": "",
-    "footer": "Generated for .claude/docs/deps/src-rui-reports-daily/index.html from docs/index card \"daily\" · rebuilt 2026-07-19"
+    "pageTitle": "daily · four-mode developer assistant",
+    "subtitle": "ask grounded answers · call daily.dev API · generate offline CTO report · build 30d/90d/long-term plan",
+    "upstream": "rui-reports/daily",
+    "footer": "rui-reports/daily — ask / api / report / plan · daily.dev article search + REST proxy + offline git-only CTO daily + three-horizon planning checklist · rebuilt 2026-07-19"
   },
   "metrics": [
     {
-      "label": "Section",
-      "value": "section-source",
-      "sub": "Main Source Code",
+      "label": "Mode",
+      "value": "4",
+      "sub": "ask · api · report · plan",
       "tone": "cyan"
     },
     {
-      "label": "Group",
-      "value": "items",
-      "sub": "skills/rui-reports — Report Generators",
+      "label": "Network",
+      "value": "hybrid",
+      "sub": "ask/api online · report/plan offline",
       "tone": "green"
     },
     {
-      "label": "Links",
-      "value": "0",
-      "sub": "related destinations",
+      "label": "Auth",
+      "value": "$DAILY_DEV_TOKEN",
+      "sub": "dda_ prefix · keychain",
       "tone": "amber"
     },
     {
-      "label": "Anchors",
-      "value": "1",
-      "sub": "files-report deep links",
+      "label": "Templates",
+      "value": "4 files",
+      "sub": "data.js + index.html + index.css + index.js",
       "tone": "violet"
     },
     {
-      "label": "Badge",
-      "value": "n/a",
-      "sub": "card badge / count",
+      "label": "Horizons",
+      "value": "3 tiers",
+      "sub": "30d sprint · 90d quarter · long-term bet",
       "tone": "rose"
     }
   ],
   "summaryCards": [
     {
       "tone": "cyan",
-      "title": "Snapshot",
+      "title": "What it actually does",
       "items": [
-        "Daily planning/report templates and rendering helpers.",
-        "Card type: catalog card.",
-        "0 related links and 1 path anchors retained for drill-down."
+        "Picks one of four modes from the first argument: `ask` / `api` / `report` / `plan`.",
+        "`ask` grounds a developer question in real daily.dev articles (keyword + semantic + dedupe + upvote/comment weighting).",
+        "`api` proxies daily.dev REST calls (feeds, posts, tags, sources, bookmarks, custom feeds, search) with bearer-token auth.",
+        "`report` reads a local git repo offline and emits a 4-file CTO daily HTML page under `~/.claude/reports/<project>/<date>/`.",
+        "`plan` builds a 30d/90d/long-term planning checklist (milestones, WBS, risks, capacity, assumptions, decisions) for a local project."
       ]
     },
     {
       "tone": "violet",
-      "title": "Evidence",
+      "title": "Grounded evidence",
       "items": [
-        "Sub-skill · templates + references + evals",
-        "Primary anchor: rui-reports/daily/",
-        "Fallback group key: src-rui-reports"
+        "SKILL.md declares `default-pipeline` lifecycle + `user_invocable: true`; first arg is the mode selector.",
+        "`templates/` ships 4 files: `index.html` (page shell), `index.js` (Vue 3 + `planToMarkdown` exporter), `index.css` (9-layer styles), `data.js` (PLAN_DATA schema).",
+        "`templates/report/` ships a second 4-file layout dedicated to `report` mode, mirroring the deps catalog.",
+        "23 references cover `ask-workflow`, `api-reference`, `security`, `token-storage`, `project-report-workflow`, `plan-workflow`, examples, validation, scenarios, metrics, capacity, assumptions, diff, review, decisions, render.",
+        "Rule #11 enforces the 4-file output layout for `report`; rules #13–23 enforce schema + horizon + roll-up + draft-label invariants for `plan`."
       ]
     },
     {
       "tone": "green",
-      "title": "Navigation",
+      "title": "How to invoke",
       "items": [
-        "Home-page report link: deps/src-rui-reports-daily/index.html",
-        "No extra destination was attached to this card.",
-        "Section context: Main Source Code -> skills/rui-reports — Report Generators"
+        "`/daily ask <question>` — search daily.dev articles and return cited answer.",
+        "`/daily api <operation>` — call api.daily.dev with bearer token (60 req/min shared).",
+        "`/daily report --project <path>` — emit 4-file CTO daily HTML (offline, git-only).",
+        "`/daily plan --project <path> [--format md] [--tiers 30d,90d] [--horizon 30d]` — emit 4-file planning HTML or markdown via `window.planToMarkdown()`.",
+        "Output paths default to `~/.claude/reports/<project>/<date>/` and `~/.claude/plans/<project>/<date>-plan.{html,md}`."
       ]
     }
   ],
   "anchors": [
     {
-      "match": "rui-reports/daily/",
+      "match": "rui-reports/daily/SKILL.md",
+      "mode": "exact",
+      "reason": "manifest + mode-selection table"
+    },
+    {
+      "match": "rui-reports/daily/templates/",
       "mode": "prefix",
-      "reason": "primary derived hint"
+      "reason": "plan mode 4-file template (PLAN_DATA + Vue 3 app + planToMarkdown)"
+    },
+    {
+      "match": "rui-reports/daily/templates/report/",
+      "mode": "prefix",
+      "reason": "report mode 4-file template (REPORT_DATA + 4 sections)"
+    },
+    {
+      "match": "rui-reports/daily/references/api-reference.md",
+      "mode": "exact",
+      "reason": "daily.dev REST endpoint catalog (ask + api modes)"
+    },
+    {
+      "match": "rui-reports/daily/references/plan-workflow.md",
+      "mode": "exact",
+      "reason": "30d / 90d / long-term planning workflow"
     }
   ],
-  "links": [],
+  "links": [
+    { "label": "daily report (2026-07-18)", "href": "../daily/2026-07-18/index.html" },
+    { "label": "daily report (2026-07-17)", "href": "../daily/2026-07-17/index.html" }
+  ],
   "notes": [
-    "Belongs to \"Main Source Code\" under \"skills/rui-reports — Report Generators\".",
-    "Card metadata: Sub-skill · templates + references + evals.",
-    "Files-report deep links can target this card via 1 derived path anchor(s)."
+    "Mode selection is explicit, not guessed — when the prompt is a question with no verb, default to `ask`; when it mentions an endpoint or imperative, default to `api`; mention of `--project` or status cues routes to `report`; `plan` / `roadmap` / `WBS` / `DoD` keywords route to `plan`.",
+    "`ask` and `api` modes require `DAILY_DEV_TOKEN` (dda_ prefix); token is resolved from keychain, never embedded in commands, never logged.",
+    "`report` and `plan` modes are entirely offline + git-only — no network calls, never run the project under report.",
+    "`plan` mode proposes, never commits — milestone dates use T+Nd relative offsets; the plan is labelled `DRAFT — <YYYY-MM-DD>` until the user confirms.",
+    "Three-horizon model: 30d (S/M/L work items with file guesses) → 90d (XL epics with themes) → long-term (bets with kill criteria). 30d milestones roll up into 90d themes, which roll up into long-term bets. No orphan work.",
+    "Composite capacity is computed as `committers × workingDays × focus` minus work + meetings + oncall + 15% buffer; verdict green/amber/red; red refuses to write unless `--allow-overcommit`.",
+    "Cross-mode `Sources:` block: every claim in `ask` mode cites the source article URL; `report` and `plan` cite nothing because they are offline + git-only."
   ],
   "diagram": {
     "mode": "catalog",
     "package": {
       "title": "daily",
       "desc": [
-        "Daily planning/report templates and rendering helpers.",
-        ""
+        "ask / api / report / plan",
+        "four-mode developer assistant"
       ],
       "stats": [
-        "Main Source Code · skills/rui-reports — Report Generators",
-        "0 related links · 1 path anchors"
+        "4 templates · 23 references · 4 evals",
+        "ask + api online · report + plan offline"
       ]
     },
     "dashboard": {
@@ -98,21 +131,24 @@ window.REPORT_DATA = {
       "hint": "catalog card"
     },
     "anchor": {
-      "title": "Anchor",
+      "title": "Anchors",
       "lines": [
-        "rui-reports/daily/",
-        "section-source"
+        "SKILL.md · mode selection",
+        "templates/ · 4-file plan layout",
+        "templates/report/ · 4-file report layout",
+        "api-reference.md · REST catalog",
+        "plan-workflow.md · 3 horizons"
       ],
-      "hint": "1 mapped hints"
+      "hint": "5 grounded hints"
     },
     "context": {
       "title": "Main Source Code",
-      "sub": "skills/rui-reports — Report "
+      "sub": "skills/rui-reports"
     },
     "evidence": {
       "title": "Primary evidence",
-      "sub": "Sub-skill · templates + references + evals",
-      "hint": "card metadata retained"
+      "sub": "4 templates + 23 references + 4 evals",
+      "hint": "manifest + schema + workflow"
     },
     "report": {
       "title": "Report page",

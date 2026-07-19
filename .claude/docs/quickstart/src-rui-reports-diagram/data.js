@@ -3,7 +3,7 @@
 
   var dataset = {
   "meta": {
-    "title": "Quickstart — diagram",
+    "title": "Quickstart — diagram · algorithmic SVG architecture generator",
     "scope": "diagram",
     "scopeShort": "diagram",
     "language": "en",
@@ -14,10 +14,10 @@
   },
   "header": {
     "kind": "Card Quickstart",
-    "title": "Quickstart — diagram",
-    "tagline": "Grounded newcomer orientation for the \"diagram\" docs card. Built from homepage metadata, linked artifacts, and local report paths.",
+    "title": "Quickstart — diagram · 9×7 grid + Manhattan routing",
+    "tagline": "Algorithmic SVG architecture diagram generator — turns a written system brief into a self-contained HTML+SVG page. 9×7 grid, orthogonal Manhattan routing, 23 components, 7 swim lanes, 2px strokes, textLength auto-fit. The only package-managed code module in rui-reports.",
     "scope": "diagram",
-    "audience": "Contributors navigating the diagram card",
+    "audience": "Contributors authoring dark-themed architecture diagrams from a system brief",
     "generatedAt": "2026-07-19 21:00 (Asia/Shanghai)"
   },
   "score": {
@@ -41,56 +41,61 @@
       "title": "Overview",
       "coverage": 94,
       "verdict": "pass",
-      "summary": "diagram is a docs-home card under \"skills/rui-reports — Report Generators\" in the \"Main Source Code\" section. The only package-managed code module; generates architecture diagrams and graph artifacts. Metadata: ESM package · package.json + vitest.",
+      "summary": "diagram is a docs-home card under \"skills/rui-reports — Report Generators\" in the \"Main Source Code\" section. It is the only package-managed code module in the rui-reports catalog (package.json + vitest) and turns a written system brief into a self-contained HTML+SVG architecture diagram. The 4-file template (`data.js` + `index.html` + `index.css` + `index.js`) reads `window.REPORT_DATA` and renders with a 9×7 grid, orthogonal Manhattan routing, 23 components, 7 swim lanes, 2px strokes, and textLength auto-fit. Metadata: ESM package · 9 languages + 10 framework configs.",
       "hero": {
-        "eyebrow": "skills/rui-reports — Report Generators",
-        "title": "Understand diagram in about 6 min",
-        "subtitle": "This walkthrough stays grounded in the docs-home card metadata, linked artifacts, and the closest local report or source path.",
+        "eyebrow": "skills/rui-reports — diagram (algorithmic SVG)",
+        "title": "Author a dark-themed architecture diagram in about 6 min",
+        "subtitle": "Walk the requirements-driven flow: brief → window.REPORT_DATA → 4-file template → 9×7 grid + Manhattan routing → auto-fitting SVG.",
         "totalMinutes": 6,
         "cta": "Start walkthrough",
         "ctaHint": "Cmd + Enter marks this card walkthrough as reviewed.",
-        "timeStatLabel": "Time to first context",
-        "timeCaption": "minutes to first context",
-        "scopeStatLabel": "Grounded refs",
+        "timeStatLabel": "Time to first diagram",
+        "timeCaption": "minutes to first diagram",
+        "scopeStatLabel": "Engine refs",
         "scopeStatSuffix": "refs",
-        "gapsHint": "Open the linked local artifacts before editing this surface.",
+        "gapsHint": "Read the 4 template headers and the design-system rubric before authoring.",
         "gaps": [
           {
-            "id": "artifact",
-            "label": "Primary artifact",
-            "coverage": 68
+            "id": "svg-order",
+            "label": "SVG document order",
+            "coverage": 70
+          },
+          {
+            "id": "label-fit",
+            "label": "textLength label fit",
+            "coverage": 72
           }
         ],
         "steps": [
           {
-            "id": "home",
+            "id": "read-brief",
             "n": 1,
-            "name": "Locate",
-            "minutes": 2,
+            "name": "Brief",
+            "minutes": 1,
             "color": "cyan",
-            "type": "view",
-            "ref": "docs/index.html",
-            "outcome": "Open the docs home and review the original card context, grouping, and neighboring cards."
+            "type": "read",
+            "ref": "skills/rui-reports/diagram/commands/create.md",
+            "outcome": "Outline the components, swim lanes, and connections in your system brief."
           },
           {
-            "id": "quickstart",
+            "id": "data-shape",
             "n": 2,
-            "name": "Read",
+            "name": "REPORT_DATA",
             "minutes": 2,
             "color": "accent",
             "type": "read",
-            "ref": "docs/quickstart/src-rui-reports-diagram/index.html",
-            "outcome": "Use this quickstart page to collect the grounded paths, links, and first actions for diagram."
+            "ref": "skills/rui-reports/diagram/templates/data.js",
+            "outcome": "Fill in `meta`, `executiveSummary`, `toc`, `metrics`, `svgDiagram`, `summaryCards`, `pipeline`, `securityCards`, `trace`, `scalingTiles`, `ownership`, `apiTable`, `stack`, `schemaTiles`, `roadmap`, `glossary`."
           },
           {
-            "id": "verify",
+            "id": "render",
             "n": 3,
-            "name": "Verify",
+            "name": "Render",
             "minutes": 2,
-            "color": "fail",
+            "color": "pass",
             "type": "run",
-            "ref": "open '/Users/yi/YrY/.claude/docs/index.html'",
-            "outcome": "Re-open the docs home and verify the card links still point to the expected report and quickstart surfaces."
+            "ref": "open '<out>/index.html'",
+            "outcome": "Mount the Vue app and verify the 2px strokes, textLength labels, and the auto-computed outermost wireframe wrap every element."
           }
         ]
       },
@@ -196,42 +201,42 @@
       ],
       "byTheNumbers": [
         {
-          "value": "1",
-          "suffix": "refs",
-          "label": "grounded",
+          "value": "9×7",
+          "suffix": "grid",
+          "label": "layout engine",
           "accent": "accent",
-          "blurb": "Local and external references linked from this card."
+          "blurb": "Orthogonal Manhattan routing snaps to 10px intersections; boundaries pad to 18px around contents."
         },
         {
-          "value": "1",
-          "suffix": "local",
-          "label": "artifacts",
+          "value": "23 / 7",
+          "suffix": "components / lanes",
+          "label": "taxonomy",
           "accent": "cyan",
-          "blurb": "Docs or source paths you can open from this workspace."
+          "blurb": "23 components across 7 swim lanes: Client · Edge · App · API · Data · Async · Ops."
         },
         {
-          "value": "1",
-          "suffix": "next",
-          "label": "jumps",
+          "value": "2px + textLength",
+          "suffix": "render rules",
+          "label": "visual contract",
           "accent": "pass",
-          "blurb": "Scene, report, or supporting links carried by the card."
+          "blurb": "Main strokes are 2px; every label uses textLength + lengthAdjust to fit its slot — never wrap a label."
         }
       ],
       "whatYoullShip": [
         {
-          "tag": "context",
-          "title": "A grounded reading path",
-          "body": "You can move from the homepage card to the nearest doc, report, or source artifact without guesswork."
+          "tag": "engine",
+          "title": "Self-contained HTML+SVG page",
+          "body": "A 4-file page (data.js + index.html + index.css + index.js) with no public CDN dependencies, all styles and fonts inlined."
         },
         {
-          "tag": "links",
-          "title": "A stable quickstart entry",
-          "body": "This card now owns its own quickstart directory under docs/quickstart/."
+          "tag": "render",
+          "title": "Algorithmic layout (no hand-placement)",
+          "body": "Every coordinate, boundary, arrow path, and label is computed by the embedded engine from `window.REPORT_DATA`."
         },
         {
-          "tag": "verify",
-          "title": "A repeatable check",
-          "body": "You can reopen the homepage and confirm the card-level quickstart link stays wired."
+          "tag": "rubric",
+          "title": "Quality gate via quality-rubric.md",
+          "body": "Publish only after line weight, label fit, wireframe completeness, and swim-lane contrast all pass the rubric."
         }
       ],
       "tiles": [
@@ -313,29 +318,29 @@
         {
           "name": "diagram",
           "role": "card",
-          "description": "The only package-managed code module; generates architecture diagrams and graph artifacts.",
-          "file": "docs/index.html",
+          "description": "Algorithmic SVG architecture diagram generator — sole ESM package; 9×7 grid + Manhattan routing; 23 components · 7 swim lanes; 2px strokes + textLength auto-fit.",
+          "file": "skills/rui-reports/diagram/SKILL.md",
           "line": 1
         },
         {
-          "name": "skills/rui-reports — Report Generators",
-          "role": "group",
-          "description": "The immediate group that renders this card on the docs home.",
-          "file": "docs/data.js",
+          "name": "templates/ (4 files)",
+          "role": "template",
+          "description": "Page template: index.html (DOM), index.css (layered tokens), data.js (REPORT_DATA), index.js (Vue 3 + interactions).",
+          "file": "skills/rui-reports/diagram/templates/data.js",
           "line": 1
         },
         {
           "name": "Main Source Code",
           "role": "section",
-          "description": "The top-level documentation section that owns the card group.",
+          "description": "Top-level documentation section that owns this card group.",
           "file": "docs/data.js",
           "line": 1
         },
         {
-          "name": "Metadata cue",
-          "role": "meta",
-          "description": "ESM package · package.json + vitest",
-          "file": "docs/data.js",
+          "name": "window.REPORT_DATA",
+          "role": "data-shape",
+          "description": "meta · executiveSummary · toc · metrics · svgDiagram · summaryCards · pipeline · securityCards · trace · scalingTiles · ownership · apiTable · stack · schemaTiles · roadmap · glossary.",
+          "file": "skills/rui-reports/diagram/templates/data.js",
           "line": 1
         }
       ]
@@ -368,27 +373,27 @@
       "steps": [
         {
           "order": 1,
-          "type": "view",
+          "type": "read",
           "minutes": 1,
-          "action": "Open the docs home and jump back to the original card.",
-          "outcome": "You see how diagram is grouped and what related cards sit nearby.",
-          "command": "open '/Users/yi/YrY/.claude/docs/index.html'"
+          "action": "Read the diagram SKILL.md and lock in the 4-file output contract.",
+          "outcome": "You know the algorithm: 9×7 grid, orthogonal Manhattan routing, 2px strokes, textLength labels, auto-computed outermost wireframe.",
+          "command": "open '/Users/yi/YrY/.claude/skills/rui-reports/diagram/SKILL.md'"
         },
         {
           "order": 2,
           "type": "read",
           "minutes": 2,
-          "action": "Read this per-card quickstart page from top to bottom.",
-          "outcome": "You collect the grounded artifacts, commands, and follow-up reading for this card.",
-          "command": "open '/Users/yi/YrY/.claude/docs/quickstart/src-rui-reports-diagram/index.html'"
+          "action": "Skim design-system.md and quality-rubric.md to lock the visual contract.",
+          "outcome": "You can name the line weight, label-fit, wireframe-completeness, and swim-lane-contrast gates every page must pass.",
+          "command": "open '/Users/yi/YrY/.claude/skills/rui-reports/diagram/references/design-system.md'"
         },
         {
           "order": 3,
           "type": "run",
           "minutes": 2,
-          "action": "Re-open the homepage and verify the quickstart link for this card.",
-          "outcome": "The card now exposes both its report/demo surface and its own quickstart directory.",
-          "command": "open '/Users/yi/YrY/.claude/docs/index.html'"
+          "action": "Author a system brief, copy the 4 template files, and fill in window.REPORT_DATA.",
+          "outcome": "A self-contained, dark-themed HTML+SVG page renders correctly with no public CDN dependencies.",
+          "command": "open '/Users/yi/YrY/.claude/skills/rui-reports/diagram/commands/create.md'"
         }
       ]
     },
@@ -400,16 +405,28 @@
       "verdict": "partial",
       "items": [
         {
-          "name": "open-home",
-          "command": "open '/Users/yi/YrY/.claude/docs/index.html'",
-          "description": "Open the docs homepage where the original card is rendered.",
-          "source": "docs/index.html"
+          "name": "create",
+          "command": "/rui-report-diagram create --out diagram.html",
+          "description": "Requirements-driven generation; copies the 4 template files and fills `window.REPORT_DATA` from your system brief.",
+          "source": "skills/rui-reports/diagram/commands/create.md"
         },
         {
-          "name": "open-quickstart",
-          "command": "open '/Users/yi/YrY/.claude/docs/quickstart/src-rui-reports-diagram/index.html'",
-          "description": "Open this per-card quickstart page directly.",
-          "source": "docs/quickstart/src-rui-reports-diagram/index.html"
+          "name": "open-template",
+          "command": "open '/Users/yi/YrY/.claude/skills/rui-reports/diagram/templates/data.js'",
+          "description": "Open the data.js shape (REPORT_DATA) to author your own diagram from a system brief.",
+          "source": "skills/rui-reports/diagram/templates/data.js"
+        },
+        {
+          "name": "open-design-system",
+          "command": "open '/Users/yi/YrY/.claude/skills/rui-reports/diagram/references/design-system.md'",
+          "description": "Lock in the visual contract: 2px strokes, textLength labels, 9×7 grid, 7 swim lanes, auto-fit boundaries.",
+          "source": "skills/rui-reports/diagram/references/design-system.md"
+        },
+        {
+          "name": "open-quality-rubric",
+          "command": "open '/Users/yi/YrY/.claude/skills/rui-reports/diagram/references/quality-rubric.md'",
+          "description": "Publish gate — line weight, label fit, wireframe completeness, swim-lane contrast.",
+          "source": "skills/rui-reports/diagram/references/quality-rubric.md"
         }
       ]
     },
@@ -421,24 +438,24 @@
       "verdict": "partial",
       "items": [
         {
-          "question": "What does this card summarize?",
-          "answer": "The only package-managed code module; generates architecture diagrams and graph artifacts.",
-          "source": "docs/data.js"
+          "question": "Why is diagram the only package-managed code module in rui-reports?",
+          "answer": "Because the other 4 sub-skills are static reference bundles (templates / references / rules), while diagram is a real algorithmic generator with non-trivial code paths. It ships its own `package.json` and `vitest` test suite, and is the only entry that has a `package-lock.json` in the catalog.",
+          "source": "skills/rui-reports/diagram/SKILL.md"
         },
         {
-          "question": "Where is the closest local artifact for this card?",
-          "answer": "This card does not expose a stronger local artifact than its homepage entry, so start from docs/index.html and the card metadata.",
-          "source": "docs/index.html"
+          "question": "What does the 9×7 grid + Manhattan routing give me?",
+          "answer": "It gives you deterministic, retina-clean layout without any hand-tuning. Every coordinate snaps to a 10px intersection; connections bend on grid points; boundaries pad to 18px around their contents; the outermost wireframe wraps every element (components, boundaries, AND legend) with auto-computed padding.",
+          "source": "skills/rui-reports/diagram/references/design-system.md"
         },
         {
-          "question": "Which group owns this card on the homepage?",
-          "answer": "The card is rendered in the group \"skills/rui-reports — Report Generators\" inside the section \"Main Source Code\".",
-          "source": "docs/data.js"
+          "question": "What must I do before I call a diagram publishable?",
+          "answer": "Walk the quality rubric: 2px main strokes (never 1px); every label uses `textLength` + `lengthAdjust`; the document order is `defs → grid → arrows → masks → boxes → boundaries → legend`; no empty placeholder sections; every connection has a protocol label; the outermost wireframe wraps the legend.",
+          "source": "skills/rui-reports/diagram/references/quality-rubric.md"
         },
         {
-          "question": "What should I open next after reading this page?",
-          "answer": "Return to docs/index.html and inspect the surrounding group plus any external references carried by the card.",
-          "source": "docs/index.html"
+          "question": "Can I still scan a codebase to author a diagram?",
+          "answer": "The old `--from-codebase` flow and the bundled scan / extract / batch / merge scripts were intentionally removed. The supported path is requirements-driven: write the system brief, then author the diagram from it. Retained source lives under `engine/core/src/` for future replacement work, not for direct use.",
+          "source": "skills/rui-reports/diagram/SKILL.md"
         }
       ]
     },
@@ -450,15 +467,33 @@
       "verdict": "pass",
       "items": [
         {
-          "title": "docs/index.html",
-          "href": "../../index.html",
-          "description": "Homepage entry where this card is rendered in context.",
+          "title": "skills/rui-reports/diagram/SKILL.md",
+          "href": "../../../../skills/rui-reports/diagram/SKILL.md",
+          "description": "Manifest + output contract + 4-file rule and the rationale for the 2px + textLength visual contract.",
           "kind": "doc"
         },
         {
-          "title": "docs/quickstart/index.html",
-          "href": "../index.html",
-          "description": "The root quickstart page used as the shared template baseline.",
+          "title": "references/design-system.md",
+          "href": "../../../../skills/rui-reports/diagram/references/design-system.md",
+          "description": "Palette, line weight, label fit, swim-lane rules and the visual language shared with deps/shared/diagram.",
+          "kind": "doc"
+        },
+        {
+          "title": "references/quality-rubric.md",
+          "href": "../../../../skills/rui-reports/diagram/references/quality-rubric.md",
+          "description": "Publish gate: line weight, label fit, wireframe completeness, swim-lane contrast.",
+          "kind": "doc"
+        },
+        {
+          "title": "engine/core/src/languages/ + frameworks/",
+          "href": "../../../../skills/rui-reports/diagram/engine/core/src/languages/index.js",
+          "description": "9 language packs + 10 framework configs that fed the analysis engine (retained source).",
+          "kind": "doc"
+        },
+        {
+          "title": "docs/index.html",
+          "href": "../../index.html",
+          "description": "Homepage entry where this card is rendered in context.",
           "kind": "doc"
         }
       ]

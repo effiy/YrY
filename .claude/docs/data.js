@@ -236,10 +236,10 @@ window.HELP_CONFIG = {
           icon: "📑",
           title: "skills/rui-reports — Report Generators",
           items: [
-            { icon: "🏛", iconTone: "is-module", title: "diagram", description: "The only package-managed code module; generates architecture diagrams and graph artifacts.", meta: "<span class=\"accent\">ESM package</span> · package.json + vitest" },
-            { icon: "📅", iconTone: "is-module", title: "daily", description: "Daily planning/report templates and rendering helpers.", meta: "<span class=\"accent\">Sub-skill</span> · templates + references + evals" },
-            { icon: "📁", iconTone: "is-module", title: "files", description: "Static file analysis report generator mirrored under docs/files/.", meta: "<span class=\"accent\">Sub-skill</span> · scripts + templates" },
-            { icon: "✅", iconTone: "is-module", title: "test", description: "Scene-oriented test analyzer and HTML emitter.", meta: "<span class=\"accent\">Sub-skill</span> · scripts + scene library" }
+            { icon: "🏛", iconTone: "is-module", title: "diagram", description: "Algorithmic SVG architecture diagram generator — turns a written system brief into a self-contained HTML+SVG page with 9×7 grid layout, orthogonal Manhattan routing, 23 components, 7 swim lanes, and auto-fitting text.", meta: "<span class=\"accent\">ESM package</span> · package.json + vitest" },
+            { icon: "📅", iconTone: "is-module", title: "daily", description: "Four-mode developer assistant skill: `ask` (grounded answers via daily.dev articles), `api` (REST proxy), `report` (offline git-only CTO daily report), and `plan` (30d/90d/long-term planning checklist with DoD, capacity, and assumptions).", meta: "<span class=\"accent\">Sub-skill</span> · 4 templates + 23 references + 4 evals" },
+            { icon: "📁", iconTone: "is-module", title: "files", description: "Static codebase file-analysis report across 6 sections — Summary, Size, Largest, Coupling, Risk, Health — with fan-in/out hotspots, cycles, orphans, freshness, and a self-improvement remediation tree.", meta: "<span class=\"accent\">Sub-skill</span> · 18 Vue components + 6 contracts" },
+            { icon: "✅", iconTone: "is-module", title: "test", description: "Six-scene self-check strategy for any project — post-init, pre-commit, doc-code consistency, security surface, cross-story integration, third-party framework — graded A–F with OWASP/NIST/CIS/SLSA compliance and a risk register.", meta: "<span class=\"accent\">Sub-skill</span> · 6 scenes + 6 facets + compliance map" }
           ]
         },
         {
