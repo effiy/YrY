@@ -417,28 +417,28 @@
       "id": "faq",
       "kind": "faq",
       "title": "FAQ",
-      "coverage": 82,
-      "verdict": "partial",
+      "coverage": 90,
+      "verdict": "pass",
       "items": [
         {
-          "question": "What does this card summarize?",
-          "answer": "Largest reference corpus in the catalog, covering Vue 3 and VueUse topics.",
-          "source": "docs/data.js"
+          "question": "Which eval file should I read before changing this surface?",
+          "answer": "This page is a child surface under `vue`, but the canonical benchmark still lives in `skills/rui-code/vue/evals/evals.json`. It currently contains 14 prompt cases for `rui-html-vue`, so it is the fastest way to see what behavior the skill must preserve.",
+          "source": "skills/rui-code/vue/evals/evals.json"
         },
         {
-          "question": "Where is the closest local artifact for this card?",
-          "answer": "This card does not expose a stronger local artifact than its homepage entry, so start from docs/index.html and the card metadata.",
-          "source": "docs/index.html"
+          "question": "What kinds of prompts does this eval file cover?",
+          "answer": "Representative prompts include \"When should I use shallowRef vs ref in my Vue 3 component?\"; \"How do I define props, emits, and a two-way v-model in a <script setup> SFC?\"; \"My large list re-renders on every keystroke. Should I use v-once, v-memo, or virtualize?\". Read them as the supported question shapes and the routing surface the skill is expected to handle.",
+          "source": "skills/rui-code/vue/evals/evals.json"
         },
         {
-          "question": "Which group owns this card on the homepage?",
-          "answer": "The card is rendered in the group \"skills/rui-code — Technology Guidance\" inside the section \"Main Source Code\".",
-          "source": "docs/data.js"
+          "question": "How should I use `evals/evals.json` while editing this page or the skill?",
+          "answer": "Read each case top to bottom: `prompt` defines the user ask, `expected_output` defines the target response shape, and `expectations` define the non-negotiable details. Update docs, prompts, or references only after checking that the edited behavior still matches those three layers.",
+          "source": "skills/rui-code/vue/evals/evals.json"
         },
         {
-          "question": "What should I open next after reading this page?",
-          "answer": "Return to docs/index.html and inspect the surrounding group plus any external references carried by the card.",
-          "source": "docs/index.html"
+          "question": "What does a passing answer usually need to include?",
+          "answer": "Common checks in this file include \"Routes via the topic routing table to references/reactivity/\"; \"Recommends shallowRef over ref when deep reactivity is unnecessary\"; \"Cites the canonical reference doc path\"; \"Routes to references/data-flow/component-data-flow.md\". If your change weakens or removes those signals, it is probably regressing the skill contract.",
+          "source": "skills/rui-code/vue/evals/evals.json"
         }
       ]
     },

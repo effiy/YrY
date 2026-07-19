@@ -459,28 +459,28 @@
       "id": "faq",
       "kind": "faq",
       "title": "FAQ",
-      "coverage": 82,
-      "verdict": "partial",
+      "coverage": 90,
+      "verdict": "pass",
       "items": [
         {
-          "question": "What does this card summarize?",
-          "answer": "12 topic directories such as fixture, async-flush, suspense, and no-snapshot.",
-          "source": "docs/data.js"
+          "question": "Which eval file should I read before changing this surface?",
+          "answer": "This page is a child surface under `skills/rui-test/topics/`, but the canonical benchmark still lives in `skills/rui-test/evals/evals.json`. It currently contains 12 prompt cases for `rui-test`, so it is the fastest way to see what behavior the skill must preserve.",
+          "source": "skills/rui-test/evals/evals.json"
         },
         {
-          "question": "Where is the closest local artifact for this card?",
-          "answer": "The nearest local artifact is `skills/rui-test/topics/`.",
-          "source": "skills/rui-test/topics/"
+          "question": "What kinds of prompts does this eval file cover?",
+          "answer": "Representative prompts include \"Set up Vitest for my Vue 3 + Vite project — what config do I need?\"; \"happy-dom or jsdom for my component tests? My tests check computed styles.\"; \"My Vue 3 E2E tests can't connect to the dev server. How do I wire Playwright to my Vite...\". Read them as the supported question shapes and the routing surface the skill is expected to handle.",
+          "source": "skills/rui-test/evals/evals.json"
         },
         {
-          "question": "Which group owns this card on the homepage?",
-          "answer": "The card is rendered in the group \"skills/rui-test — Topic-Based Testing Knowledge\" inside the section \"Main Source Code\".",
-          "source": "docs/data.js"
+          "question": "How should I use `evals/evals.json` while editing this page or the skill?",
+          "answer": "Read each case top to bottom: `prompt` defines the user ask, `expected_output` defines the target response shape, and `expectations` define the non-negotiable details. Update docs, prompts, or references only after checking that the edited behavior still matches those three layers.",
+          "source": "skills/rui-test/evals/evals.json"
         },
         {
-          "question": "What should I open next after reading this page?",
-          "answer": "Open `skills/rui-test/topics/` first, then return to docs/index.html to verify the homepage link path.",
-          "source": "skills/rui-test/topics/"
+          "question": "What does a passing answer usually need to include?",
+          "answer": "Common checks in this file include \"Points at references for vitest-setup topic\"; \"Mentions happy-dom vs jsdom environment choice\"; \"References @vue/test-utils mounting\"; \"Routes to runner-choice topic\". If your change weakens or removes those signals, it is probably regressing the skill contract.",
+          "source": "skills/rui-test/evals/evals.json"
         }
       ]
     },

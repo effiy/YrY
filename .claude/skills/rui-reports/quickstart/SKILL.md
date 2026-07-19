@@ -111,7 +111,7 @@ Notes:
 | 3 | Directory Map | `directory-map` | Annotated tree up to the requested depth |
 | 4 | Onboarding Flow | `onboarding-flow` | 5-10 ordered first-day steps with expected outcomes |
 | 5 | Command Cheatsheet | `commands` | Common dev/test/lint/build/run commands, or TODO markers when absent |
-| 6 | FAQ | `faq` | 5-10 grounded Q&A pairs, usually derived from README, docs, or CONTRIBUTING |
+| 6 | FAQ | `faq` | 5-10 grounded Q&A pairs; for skill scopes, prioritize the corresponding `evals/evals.json`, then fill gaps from README, docs, or CONTRIBUTING |
 | 7 | Further Reading | `further-reading` | Important docs, policies, deep dives, and related links inside the scope |
 
 If the markdown mirror is emitted, it must keep the same section titles and order as the HTML report.

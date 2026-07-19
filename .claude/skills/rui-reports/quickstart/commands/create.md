@@ -118,7 +118,7 @@ Section guidance (each maps to a key in `data.sections`):
 | `directory-map` | annotated tree up to `--depth` | `{ isTodo: true, reason: 'scope is too sparse for a useful map' }` |
 | `onboarding-flow` | 5-10 ordered first-day steps using real files and commands | `{ isTodo: true, reason: 'no grounded onboarding flow found' }` |
 | `commands` | most-used run/test/lint/build commands with short explanations | `{ isTodo: true, reason: 'no commands or scripts detected' }` |
-| `faq` | likely newcomer questions answered from docs and code evidence | `{ isTodo: true, reason: 'no FAQ source material found' }` |
+| `faq` | likely newcomer questions answered from grounded evidence; for skill scopes, prioritize the matching `evals/evals.json`, then use docs and code evidence | `{ isTodo: true, reason: 'no FAQ source material found' }` |
 | `further-reading` | README, docs, policies, deep dives, key subdirectories | `{ isTodo: true, reason: 'no further reading found' }` |
 
 Per-section shapes are documented in `templates/data.js` (`@section_kinds`).

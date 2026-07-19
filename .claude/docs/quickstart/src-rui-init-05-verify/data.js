@@ -459,28 +459,28 @@
       "id": "faq",
       "kind": "faq",
       "title": "FAQ",
-      "coverage": 82,
-      "verdict": "partial",
+      "coverage": 90,
+      "verdict": "pass",
       "items": [
         {
-          "question": "What does this card summarize?",
-          "answer": "Readiness gate that checks the generated baseline and scene counts.",
-          "source": "docs/data.js"
+          "question": "Which eval file should I read before changing this surface?",
+          "answer": "This page is a child surface under `skills/rui-init/steps/05-verify/`, but the canonical benchmark still lives in `skills/rui-init/evals/evals.json`. It currently contains 10 prompt cases for `rui-init`, so it is the fastest way to see what behavior the skill must preserve.",
+          "source": "skills/rui-init/evals/evals.json"
         },
         {
-          "question": "Where is the closest local artifact for this card?",
-          "answer": "The nearest local artifact is `skills/rui-init/steps/05-verify/`.",
-          "source": "skills/rui-init/steps/05-verify/"
+          "question": "What kinds of prompts does this eval file cover?",
+          "answer": "Representative prompts include \"Initialize this project with /rui-init.\"; \"Re-run /rui-init — I want a full rebuild of CLAUDE.md.\"; \"Run the detect step only against cwd.\". Read them as the supported question shapes and the routing surface the skill is expected to handle.",
+          "source": "skills/rui-init/evals/evals.json"
         },
         {
-          "question": "Which group owns this card on the homepage?",
-          "answer": "The card is rendered in the group \"skills/rui-init — Initialization Pipeline\" inside the section \"Main Source Code\".",
-          "source": "docs/data.js"
+          "question": "How should I use `evals/evals.json` while editing this page or the skill?",
+          "answer": "Read each case top to bottom: `prompt` defines the user ask, `expected_output` defines the target response shape, and `expectations` define the non-negotiable details. Update docs, prompts, or references only after checking that the edited behavior still matches those three layers.",
+          "source": "skills/rui-init/evals/evals.json"
         },
         {
-          "question": "What should I open next after reading this page?",
-          "answer": "Open `skills/rui-init/steps/05-verify/` first, then return to docs/index.html to verify the homepage link path.",
-          "source": "skills/rui-init/steps/05-verify/"
+          "question": "What does a passing answer usually need to include?",
+          "answer": "Common checks in this file include \"Runs all five steps in pipeline order\"; \"Shares a single pipelineState object across steps\"; \"Halts on any step failure (no silent retries)\"; \"Rewrites CLAUDE.md in full\". If your change weakens or removes those signals, it is probably regressing the skill contract.",
+          "source": "skills/rui-init/evals/evals.json"
         }
       ]
     },

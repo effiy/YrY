@@ -417,28 +417,28 @@
       "id": "faq",
       "kind": "faq",
       "title": "FAQ",
-      "coverage": 82,
-      "verdict": "partial",
+      "coverage": 90,
+      "verdict": "pass",
       "items": [
         {
-          "question": "What does this card summarize?",
-          "answer": "Daily planning/report templates and rendering helpers.",
-          "source": "docs/data.js"
+          "question": "Which eval file should I read before changing this surface?",
+          "answer": "This page is a child surface under `daily`, but the canonical benchmark still lives in `skills/rui-reports/daily/evals/evals.json`. It currently contains 43 prompt cases for `daily`, so it is the fastest way to see what behavior the skill must preserve.",
+          "source": "skills/rui-reports/daily/evals/evals.json"
         },
         {
-          "question": "Where is the closest local artifact for this card?",
-          "answer": "This card does not expose a stronger local artifact than its homepage entry, so start from docs/index.html and the card metadata.",
-          "source": "docs/index.html"
+          "question": "What kinds of prompts does this eval file cover?",
+          "answer": "Representative prompts include \"Ask daily.dev: is React Server Components worth adopting for a new SPA in 2026?\"; \"Call the daily.dev API to fetch my personalized for-you feed.\"; \"Add this post to my daily.dev bookmarks: <post-url>.\". Read them as the supported question shapes and the routing surface the skill is expected to handle.",
+          "source": "skills/rui-reports/daily/evals/evals.json"
         },
         {
-          "question": "Which group owns this card on the homepage?",
-          "answer": "The card is rendered in the group \"skills/rui-reports — Report Generators\" inside the section \"Main Source Code\".",
-          "source": "docs/data.js"
+          "question": "How should I use `evals/evals.json` while editing this page or the skill?",
+          "answer": "Read each case top to bottom: `prompt` defines the user ask, `expected_output` defines the target response shape, and `expectations` define the non-negotiable details. Update docs, prompts, or references only after checking that the edited behavior still matches those three layers.",
+          "source": "skills/rui-reports/daily/evals/evals.json"
         },
         {
-          "question": "What should I open next after reading this page?",
-          "answer": "Return to docs/index.html and inspect the surrounding group plus any external references carried by the card.",
-          "source": "docs/index.html"
+          "question": "What does a passing answer usually need to include?",
+          "answer": "Common checks in this file include \"Defaults to ask mode and searches the daily.dev article graph\"; \"Weights results by numUpvotes / numComments and dedupes by id\"; \"Returns a sources block with URLs for every cited claim\"; \"Uses $DAILY_DEV_TOKEN via Authorization: Bearer, never the literal token\". If your change weakens or removes those signals, it is probably regressing the skill contract.",
+          "source": "skills/rui-reports/daily/evals/evals.json"
         }
       ]
     },

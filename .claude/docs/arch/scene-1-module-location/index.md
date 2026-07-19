@@ -12,7 +12,7 @@ flowchart LR
 
   subgraph docs[Documentation surfaces]
     arch[docs/arch architecture scenes]:::surface
-    test[docs/test self-test scenes]:::surface
+    test[docs/test test scenes]:::surface
     quick[docs/quickstart orientation guide]:::surface
     report[docs/files · docs/deps · docs/daily]:::surface
   end

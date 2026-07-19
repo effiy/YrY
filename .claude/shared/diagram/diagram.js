@@ -24,7 +24,7 @@
    visual language across the entire system.
 
    The script gracefully falls back to local defaults if the shared
-   primitives module isn't available (so the file remains self-testable
+   primitives module isn't available (so the file remains testable
    in isolation).
 
    Model shape

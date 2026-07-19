@@ -417,28 +417,28 @@
       "id": "faq",
       "kind": "faq",
       "title": "FAQ",
-      "coverage": 82,
-      "verdict": "partial",
+      "coverage": 90,
+      "verdict": "pass",
       "items": [
         {
-          "question": "What does this card summarize?",
-          "answer": "Mermaid-focused tooling and references.",
-          "source": "docs/data.js"
+          "question": "Which eval file should I read before changing this surface?",
+          "answer": "This page is a child surface under `mermaid`, but the canonical benchmark still lives in `skills/rui-tools/mermaid/evals/evals.json`. It currently contains 10 prompt cases for `rui-tools-mermaid`, so it is the fastest way to see what behavior the skill must preserve.",
+          "source": "skills/rui-tools/mermaid/evals/evals.json"
         },
         {
-          "question": "Where is the closest local artifact for this card?",
-          "answer": "This card does not expose a stronger local artifact than its homepage entry, so start from docs/index.html and the card metadata.",
-          "source": "docs/index.html"
+          "question": "What kinds of prompts does this eval file cover?",
+          "answer": "Representative prompts include \"Render this .mmd flowchart to SVG with the tokyo-night theme.\"; \"Create a sequence diagram for this API call flow and render it as ASCII.\"; \"Batch render every .mmd file in ./diagrams/ to SVG.\". Read them as the supported question shapes and the routing surface the skill is expected to handle.",
+          "source": "skills/rui-tools/mermaid/evals/evals.json"
         },
         {
-          "question": "Which group owns this card on the homepage?",
-          "answer": "The card is rendered in the group \"skills/rui-tools — Meta Tooling\" inside the section \"Main Source Code\".",
-          "source": "docs/data.js"
+          "question": "How should I use `evals/evals.json` while editing this page or the skill?",
+          "answer": "Read each case top to bottom: `prompt` defines the user ask, `expected_output` defines the target response shape, and `expectations` define the non-negotiable details. Update docs, prompts, or references only after checking that the edited behavior still matches those three layers.",
+          "source": "skills/rui-tools/mermaid/evals/evals.json"
         },
         {
-          "question": "What should I open next after reading this page?",
-          "answer": "Return to docs/index.html and inspect the surrounding group plus any external references carried by the card.",
-          "source": "docs/index.html"
+          "question": "What does a passing answer usually need to include?",
+          "answer": "Common checks in this file include \"Picks SVG output format\"; \"Applies the tokyo-night theme\"; \"Verifies the output file opens\"; \"Picks sequence diagram type\". If your change weakens or removes those signals, it is probably regressing the skill contract.",
+          "source": "skills/rui-tools/mermaid/evals/evals.json"
         }
       ]
     },
