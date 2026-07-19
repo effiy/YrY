@@ -93,7 +93,7 @@
 | Project structure | `README.md` → Project structure |
 | Domain language | `README.md` → Domain Language |
 | Architecture scenes | `docs/arch/scene-N-<slug>/index.md` |
-| Self-check scenes | `docs/self-test/scene-N-<slug>/index.md` |
+| Self-check scenes | `docs/test/scene-N-<slug>/index.md` |
 | Docs home | `docs/index.html` |
 | Contributing | `CONTRIBUTING.md` |
 | Code of conduct | `CODE_OF_CONDUCT.md` |

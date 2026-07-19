@@ -68,7 +68,7 @@ flowchart LR
 
 - **Action**: Scan every source file (< 256 KiB) for: eval(, new Function(, innerHTML=, document.write(, dangerouslySetInnerHTML, child_process.exec/spawn(. Record file + kind for each match.
 - **Expected**: Zero new occurrences since last baseline; current total: 28.
-- **File**: `docs/self-test/data.js`
+- **File**: `docs/test/data.js`
 
 ### Step 3 · Count HTML entry points
 
@@ -88,11 +88,11 @@ flowchart LR
 
 | # | File / Directory | Type | Description |
 |---|------------------|------|-------------|
-| 1 | `docs/self-test/data.js` | file | Dangerous call: eval() — review for sanitization / input validation. |
-| 2 | `docs/self-test/data.js` | file | Dangerous call: new Function() — review for sanitization / input validation. |
-| 3 | `docs/self-test/data.js` | file | Dangerous call: innerHTML assignment — review for sanitization / input validation. |
-| 4 | `docs/self-test/data.js` | file | Dangerous call: document.write — review for sanitization / input validation. |
-| 5 | `docs/self-test/data.js` | file | Dangerous call: dangerouslySetInnerHTML — review for sanitization / input validation. |
+| 1 | `docs/test/data.js` | file | Dangerous call: eval() — review for sanitization / input validation. |
+| 2 | `docs/test/data.js` | file | Dangerous call: new Function() — review for sanitization / input validation. |
+| 3 | `docs/test/data.js` | file | Dangerous call: innerHTML assignment — review for sanitization / input validation. |
+| 4 | `docs/test/data.js` | file | Dangerous call: document.write — review for sanitization / input validation. |
+| 5 | `docs/test/data.js` | file | Dangerous call: dangerouslySetInnerHTML — review for sanitization / input validation. |
 
 ---
 
@@ -103,7 +103,7 @@ flowchart LR
 | .env files | `0` |
 | Dangerous-call findings | `28` |
 | HTML entry points | `22` |
-| Sample findings | `docs/self-test/data.js (eval()); docs/self-test/data.js (new Function()); docs/self-test/data.js (innerHTML assignment)` |
+| Sample findings | `docs/test/data.js (eval()); docs/test/data.js (new Function()); docs/test/data.js (innerHTML assignment)` |
 
 ---
 
@@ -112,7 +112,7 @@ flowchart LR
 | # | Step | Result | Notes |
 |---|------|:---:|-------|
 | 1 | 0 .env file(s) — gitignore reviewed | ✅ | No .env files detected — configuration is env-vars-only or loaded from a secrets manager. |
-| 2 | No hard-coded secrets in source | ⚠️ | 28 dangerous call(s) detected. First finding: docs/self-test/data.js (eval()). |
+| 2 | No hard-coded secrets in source | ⚠️ | 28 dangerous call(s) detected. First finding: docs/test/data.js (eval()). |
 | 3 | Dangerous-call count within baseline (found 28, threshold < 5) | ⚠️ | Dangerous-call count 28 ≥ 5 — security surface is expanding. Each new finding needs a security review. |
 
 **Overall**: Significant surface change — block the commit and run a dedicated security review.

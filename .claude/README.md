@@ -45,7 +45,7 @@ ls -la /Users/yi/YrY/.claude
 
 4. 复查故事树
 
-查看 `docs/arch/` 和 `docs/self-test/`，当前分别有 5 个和 6 个场景目录。
+查看 `docs/arch/` 和 `docs/test/`，当前分别有 5 个和 6 个场景目录。
 
 ## Project structure
 
@@ -68,7 +68,7 @@ ls -la /Users/yi/YrY/.claude
 │   │   ├── scene-3-newcomer-onboarding/
 │   │   ├── scene-4-subskill-upgrade-impact/
 │   │   └── scene-5-trust-boundary-security-surface/
-│   ├── self-test/
+│   ├── test/
 │   │   ├── scene-1-post-init-full-self-check/
 │   │   ├── scene-2-pre-commit-incremental-self-check/
 │   │   ├── scene-3-doc-code-consistency/
@@ -105,10 +105,10 @@ ls -la /Users/yi/YrY/.claude
 | `commands/` directories | 10 |
 | `agents/` directories | 11 |
 | `references/` directories | 39 |
-| Runtime npm dependencies | 16 |
+| Runtime npm dependencies | 15 |
 | Dev npm dependencies | 1 |
 | `docs/arch/` scenes | 5 |
-| `docs/self-test/` scenes | 6 |
+| `docs/test/` scenes | 6 |
 
 ## Domain Language
 
@@ -118,7 +118,7 @@ ls -la /Users/yi/YrY/.claude
 **Skill Group** — A top-level directory under `skills/` that owns one or more related skills or topics.
 **Trigger Surface** — The natural-language `description:` block that controls when Claude routes work to a skill.
 **Shared Component** — A reusable UI unit under `shared/components/` that generated docs pages consume through the loader.
-**Story** — A generated documentation tree under `docs/arch/` or `docs/self-test/` that groups scene documents.
+**Story** — A generated documentation tree under `docs/arch/` or `docs/test/` that groups scene documents.
 **Scene** — A single `scene-N-<slug>/index.md` document that captures one focused architecture or verification narrative.
 
 ### Relationships
@@ -136,7 +136,7 @@ ls -la /Users/yi/YrY/.claude
 >
 > User: 我想确认文档中心里这些故事页有没有缺失。
 >
-> System: 打开 `docs/self-test/scene-1-post-init-full-self-check/index.md`，再结合 `docs/.pipeline-state/verify-result.json` 查看基线结果。
+> System: 打开 `docs/test/scene-1-post-init-full-self-check/index.md`，再结合 `docs/.pipeline-state/verify-result.json` 查看基线结果。
 
 ### Disambiguation markers
 

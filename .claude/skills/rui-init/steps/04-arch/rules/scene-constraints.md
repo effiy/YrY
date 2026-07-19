@@ -9,7 +9,7 @@ description: "Scene generation constraints — directory naming, §0–§4 conte
 
 - kebab-case, semantic (not numeric)
 - arch scenes: `module-location`, `data-flow-tracing`, etc.
-- self-test scenes: `post-init-full-self-check`, etc.
+- test scenes: `post-init-full-self-check`, etc.
 
 ## §0–§4 Content Minimums
 

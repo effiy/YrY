@@ -1,24 +1,24 @@
 ---
-name: rui-report-self-test
+name: rui-report-test
 description: >
-  Self-test report generator that combines the rui-tools skill-creation
+  test report generator that combines the rui-tools skill-creation
   structure with the rui-reports/files analysis pipeline to render
-  rui-init's six self-test scenes (post-init-full-self-check,
+  rui-init's six test scenes (post-init-full-self-check,
   pre-commit-incremental-self-check, doc-code-consistency,
   security-surface-regression, cross-story-integration-regression,
   third-party-framework-service) as a single Vue 3 page at
-  docs/reports/self-test/. Each scene follows the §0–§4 lifecycle
-  defined by rui-init-arch. Use /rui-report-self-test or call
+  docs/reports/test/. Each scene follows the §0–§4 lifecycle
+  defined by rui-init-arch. Use /rui-report-test or call
   scripts/analyze.mjs directly.
 lifecycle: default-pipeline
 user_invocable: true
 ---
 
-# rui-report-self-test
+# rui-report-test
 
-> A self-test report generator that fuses the skill-creation shape of
+> A test report generator that fuses the skill-creation shape of
 > `rui-tools/skill`, the 6-stage analyzer pipeline of `rui-reports/files`,
-> and the 6 self-test scenes defined by `rui-init` (step 04-arch) into a
+> and the 6 test scenes defined by `rui-init` (step 04-arch) into a
 > single Vue 3 page report.
 
 ## What this skill does
@@ -26,18 +26,18 @@ user_invocable: true
 - Walks a project scope and detects its language, test framework,
   documentation set, security surface, cross-reference graph, and
   third-party dependencies.
-- Emits the six canonical rui-init self-test scenes as structured
+- Emits the six canonical rui-init test scenes as structured
   data (`post-init-full-self-check`, `pre-commit-incremental-self-check`,
   `doc-code-consistency`, `security-surface-regression`,
   `cross-story-integration-regression`, `third-party-framework-service`).
 - Renders each scene under the §0–§4 lifecycle (Effect Sketch → Test
   Design → Output Inventory → Test Report → Self-Improvement) inside
-  one self-contained Vue 3 page at `docs/reports/self-test/`.
+  one self-contained Vue 3 page at `docs/reports/test/`.
 - Persists each scene as a markdown file under
-  `docs/self-test/scene-N-<slug>/index.md` so the report doubles as a
+  `docs/test/scene-N-<slug>/index.md` so the report doubles as a
   hand-editable knowledge base.
 - Computes a per-scene verdict (`pass` / `partial` / `fail`) and a
-  composite self-test score with grade (A–F), driving the page's
+  composite test score with grade (A–F), driving the page's
   score gauge and risk banner.
 
 ## What this skill does NOT do
@@ -46,22 +46,22 @@ user_invocable: true
   suite — the verdict is derived from static analysis, not from
   executing project tests.
 - Does NOT modify the project source — it only reads and writes
-  under `docs/reports/self-test/` and `docs/self-test/`.
+  under `docs/reports/test/` and `docs/test/`.
 - Does NOT replace `rui-init` — `rui-init` builds the canonical
-  arch/self-test directories; this skill renders them as a report.
-  When both run, the markdown scenes in `docs/self-test/` and the
-  report at `docs/reports/self-test/` are kept in sync by the
+  arch/test directories; this skill renders them as a report.
+  When both run, the markdown scenes in `docs/test/` and the
+  report at `docs/reports/test/` are kept in sync by the
   `MERGE_SCENES` option (default `true`).
 
 ## Quickstart
 
 ```bash
-# 1) Run the self-test analyzer
-node scripts/analyze.mjs "$(pwd)" docs/reports/self-test
+# 1) Run the test analyzer
+node scripts/analyze.mjs "$(pwd)" docs/reports/test
 
 # 2) Open the report
-open docs/reports/self-test/index.html        # macOS
-xdg-open docs/reports/self-test/index.html    # Linux
+open docs/reports/test/index.html        # macOS
+xdg-open docs/reports/test/index.html    # Linux
 ```
 
 The output is self-contained — no build step, no external CDN. Vue 3
@@ -111,7 +111,7 @@ Key principles:
    substitute `{{SCOPE_TITLE}}` / `{{GENERATED_AT}}`; write
    `data.js` containing the full scene payload.
 6. **Markdown Sync (optional)** — When `MERGE_SCENES=true` (default),
-   write each scene to `docs/self-test/scene-N-<slug>/index.md` so
+   write each scene to `docs/test/scene-N-<slug>/index.md` so
    the report and the rui-init scene tree stay aligned.
 
 ## Scene contract (per scene)
@@ -142,12 +142,12 @@ see what is incomplete.
 ## Output (modular — see `templates/`)
 
 ```
-docs/reports/self-test/
+docs/reports/test/
 ├── index.html      — Vue 3 markup, scene cards + score gauge
 ├── index.css       — page-level styles (--rui-* tokens, scene-card chrome)
 ├── index.js        — thin entry: waits for Vue, mounts RuiSelfTestApp
 ├── data.js         — REPORT_CONFIG + REPORT_DATA (regenerated each run)
-└── (optional) docs/self-test/scene-N-<slug>/index.md
+└── (optional) docs/test/scene-N-<slug>/index.md
                    — markdown mirror of each scene (rui-init compatible)
 ```
 
@@ -183,8 +183,8 @@ D ≥ 40, F < 40).
 | Boundary | Permission |
 |----------|-----------|
 | `<scope>/**` (project under analysis) | read-only |
-| `docs/reports/self-test/**` (report output) | write |
-| `docs/self-test/**` (markdown mirror, when `MERGE_SCENES=true`) | write |
+| `docs/reports/test/**` (report output) | write |
+| `docs/test/**` (markdown mirror, when `MERGE_SCENES=true`) | write |
 | `templates/**` (this skill) | read |
 | `references/**`, `rules/**`, `agents/**` (this skill) | read |
 | Outside `<scope>` and this skill | no access |
@@ -229,7 +229,7 @@ D ≥ 40, F < 40).
 
 - [references/methodology.md](./references/methodology.md) — per-scene measurement methodology + facet detection rules.
 - [references/scene-catalog.md](./references/scene-catalog.md) — the six scenes with their detection rules and §0–§4 shape.
-- [rules/self-test-contracts.md](./rules/self-test-contracts.md) — analyzer ↔ page data contract, scene payload schema.
+- [rules/test-contracts.md](./rules/test-contracts.md) — analyzer ↔ page data contract, scene payload schema.
 - [agents/scene-analyzer.md](./agents/scene-analyzer.md) — per-scene facet probe prompts (run as subagents when scope is large).
 - [agents/doc-tracer.md](./agents/doc-tracer.md) — doc-code consistency probe.
 - [agents/security-surface-tracer.md](./agents/security-surface-tracer.md) — security surface detection.
@@ -243,6 +243,6 @@ D ≥ 40, F < 40).
 | No source files after exclusions | Render all six scenes with `# TODO: empty scope` |
 | Test framework not detected | Render `pre-commit-incremental-self-check` with `partial` verdict and TODO note |
 | Docs directory missing | Render `doc-code-consistency` with `fail` verdict — no docs is a regression |
-| `MERGE_SCENES=true` but `docs/self-test/` is read-only | Skip markdown emit, log warning, continue with report |
+| `MERGE_SCENES=true` but `docs/test/` is read-only | Skip markdown emit, log warning, continue with report |
 | `rui-init` not installed | Page still renders; the markdown mirror step is skipped |
-| User invokes `/rui-report-self-test` outside a git repo | Proceed — git is not required for any facet |
+| User invokes `/rui-report-test` outside a git repo | Proceed — git is not required for any facet |

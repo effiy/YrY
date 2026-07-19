@@ -3,7 +3,7 @@
   "project": {
     "name": ".claude · Claude Skills Catalog",
     "root": "/Users/ruiyi/YrY/.claude",
-    "description": "8 skill groups · 27 SKILL.md manifests · 12 shared web components · 4 vendored libraries · generates CLAUDE.md + README.md + 5 arch scenes + 6 self-test scenes + 8 rui-report dashboards",
+    "description": "8 skill groups · 27 SKILL.md manifests · 12 shared web components · 4 vendored libraries · generates CLAUDE.md + README.md + 5 arch scenes + 6 test scenes + 8 rui-report dashboards",
     "primaryStack": "Markdown-driven Claude skills · Vue 3.4.27 (CDN-injected) · 4-file split (HTML+CSS+data+Vue) · ESM engine (graphology + tree-sitter) for rui-reports/diagram",
     "platform": "Claude Desktop App (macOS) · /rui-init full pipeline",
     "gitHead": "manual",
@@ -51,7 +51,7 @@
     },
     {
       "id": "L3-generated",
-      "name": "Generated Documentation (CLAUDE.md + 5 arch + 6 self-test + 8 dashboards)",
+      "name": "Generated Documentation (CLAUDE.md + 5 arch + 6 test + 8 dashboards)",
       "color": "violet",
       "components": ["claude-md", "arch-scenes", "selftest-scenes", "report-pages"]
     },
@@ -79,7 +79,7 @@
     "vendor-libs":       { "kind": "infra",     "color": "amber",   "label": "4 vendor libs",   "sub": "vue@3.4.27 · html2canvas@1.4.1 · jspdf@2.5.2 · xlsx@0.20.3" },
     "claude-md":         { "kind": "store",     "color": "violet",  "label": "CLAUDE.md + README.md", "sub": "project identity · 140 lines" },
     "arch-scenes":       { "kind": "store",     "color": "violet",  "label": "docs/arch/",      "sub": "5 scenes · §0–§4 lifecycle" },
-    "selftest-scenes":   { "kind": "store",     "color": "violet",  "label": "docs/self-test/", "sub": "6 scenes · 7/7 AC pass" },
+    "selftest-scenes":   { "kind": "store",     "color": "violet",  "label": "docs/test/", "sub": "6 scenes · 7/7 AC pass" },
     "report-pages":      { "kind": "store",     "color": "violet",  "label": "8 rui-report pages", "sub": "size · risk · health · coupling · ..." },
     "npm-registry":      { "kind": "external",  "color": "slate",   "label": "npm",             "sub": "18 runtime · 1 dev dep" },
     "github":            { "kind": "external",  "color": "slate",   "label": "GitHub",          "sub": "7 knowledge repos for rui-questions" },

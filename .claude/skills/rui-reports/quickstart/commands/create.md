@@ -1,184 +1,178 @@
 ---
 name: quickstart-create
 description: >
-  Generate a "newcomer quickstart" onboarding report for a specified
-  local project scope — emits a self-contained HTML page (Vue 3) and
-  a hand-editable markdown mirror in one run.
+  Generate a newcomer quickstart report for a local project scope.
+  Emits a browser-viewable HTML guide and, unless disabled, a markdown
+  mirror in the same canonical section order.
 ---
 
-# rui-report-quickstart — Create
+# rui-report-quickstart - Create
 
-Generate the canonical 7-section newcomer quickstart report for a
-local project scope. The rendered artifact is **one** browser-viewable
-HTML page; the markdown mirror is its hand-editable twin.
+Generate the canonical seven-section newcomer quickstart for a local project scope. Keep the output grounded, concise, and practical for a first-day engineer.
 
-> **Output contract (rendered artifacts)**:
-> - HTML page: `<OUT_DIR>/index.html`
-> - Markdown mirror: `<OUT_DIR>/README.md`
-> - Page sources (byte-stable templates): the 4 files in `templates/` (see SKILL.md **Output contract**)
->
-> **Shared resources (no public CDN)**: All infrastructure (Vue, html2canvas, jsPDF, `<rui-back-top>`, `<rui-tag-chip>`) loads from `/.claude/shared/...` — see the SKILL.md **Output contract → Shared resources** table. Do NOT add public CDN `<script src>` tags.
->
-> **Clean console contract**: After generating, the page must produce zero `console.error` / `pageerror` / 4xx requests.
-
-## Available Tools
-
-| Tool | Purpose |
-|------|---------|
-| `Read` | Read the scope, the template, the project's README / CONTRIBUTING / LICENSE |
-| `Write` | Produce `index.html` (HTML page) and `README.md` (markdown mirror) |
-| `Grep` / `Glob` | Inventory the scope: detect language, manifest, entry points, test framework, docs |
-| `Task` (subagent) | Optional parallel dispatch for large scopes (per-folder facet probes) |
-
-## Options
+## Inputs
 
 `$ARGUMENTS` may contain:
 
-- `--scope <path>` (required) — local project path to analyze. Defaults to CWD if omitted.
-- `--out <path>` — output directory. Defaults to `docs/reports/quickstart/`.
-- `--language <lang>` — emit all textual content in the specified language (`en` / `zh` / `ja` / `ko`). Defaults to `en`.
-- `--depth <1|2|3>` — directory-map depth. Defaults to 3.
-- `--no-mirror` — skip writing the `README.md` mirror (HTML only).
-- `--title <text>` — override the page title; defaults to `<scope-dir-name> — Newcomer Quickstart`.
+- `--scope <path>` - local project path to analyze. Defaults to the current working directory.
+- `--out <path>` - output directory. Defaults to `docs/reports/quickstart/`.
+- `--language <lang>` - output language such as `en`, `zh`, `ja`, or `ko`.
+- `--depth <n>` - positive integer for directory-map depth. Default `3`.
+- `--no-mirror` - skip `README.md` and emit HTML only.
+- `--title <text>` - override the report title.
 
----
+## Preferred tools
 
-## Step 1: Resolve scope & output paths
+| Tool | Use |
+|------|-----|
+| `Read` | Inspect README, CONTRIBUTING, manifests, entry points, and docs |
+| `Grep` / `Glob` | Inventory files, manifests, scripts, and common commands |
+| `SearchCodebase` | Find entry points, framework markers, and concept-heavy modules |
+| `RunCommand` | Optional lightweight inspection such as `git rev-parse` when helpful |
+| `Task` | Optional for large scopes that benefit from parallel facet discovery |
 
-1. Resolve `SCOPE` from `--scope` or CWD. Handle git worktree redirect.
-2. Resolve `OUT_DIR` from `--out` or default `docs/reports/quickstart/`.
-3. Create `OUT_DIR/` if missing.
-4. Get the current git commit hash (if scope is a git repo) for the page footer.
+Write files using whatever file-editing mechanism the runtime provides. Do not claim a bundled `templates/` or `scripts/` directory unless it actually exists in the current skill folder.
 
-## Step 2: Walk scope (Stage 1 — file inventory)
+## Execution flow
 
-Walk `SCOPE/` with the standard exclusions
-(`node_modules` `.git` `dist` `build` `.memory` `.next` `.turbo`
-`coverage` `.claude` `target` `intermediate` `.DS_Store`). For
-each file, record: relative path, bytes, lines, type, mtime.
+### Phase 1 - Resolve scope and output
 
-Compute aggregate stats: total files, total LOC, language breakdown
-(by extension), top-level directory tree.
+1. Resolve `SCOPE` from `--scope` or the current working directory.
+2. Resolve `OUT_DIR` from `--out` or `docs/reports/quickstart/`.
+3. Resolve the output language from `--language` or the user's language when obvious.
+4. Resolve directory depth from `--depth`; default to `3` if absent.
+5. If the scope does not exist or is unreadable, stop with a clear usage error.
 
-## Step 3: Detect facets (Stage 2)
+### Phase 2 - Walk the scope
 
-For each of the canonical facets, probe the scope:
+Walk the scope with standard exclusions:
 
-| Facet | Detection rule | Drives which section |
-|-------|-----------------|----------------------|
-| `language` | Most common extension in the inventory; or explicit `package.json#main` / `pyproject.toml#project.name` / `Cargo.toml#package.name` / `go.mod#module` | overview, commands |
-| `framework` | `package.json#dependencies` / `pyproject.toml#dependencies` / `Gemfile` — look for known framework names (React, Vue, Next.js, Django, Flask, Rails, Gin, Spring, etc.) | overview, concepts |
-| `entry-points` | `package.json#main` / `bin`, `pyproject.toml#scripts`, `Cargo.toml#[[bin]]`, `go.mod` binaries, top-level `src/main.*` | overview, onboarding-flow |
-| `test-framework` | `package.json#devDependencies` (jest, vitest, mocha, pytest) / `pyproject.toml#optional-dependencies.test` / `Gemfile` (rspec, minitest) / `Cargo.toml#dev-dependencies` | commands, onboarding-flow |
-| `docs` | presence of `docs/` / `README.md` / `CONTRIBUTING.md` / `LICENSE` / `CHANGELOG.md` | faq, further-reading |
-| `dependencies` | count of direct dependencies (excluding devDeps); surface the top 5 | overview, commands |
-| `contributors` | `git log --format='%an' \| sort -u` (top 5 by commit count) — only if scope is a git repo | further-reading |
+`node_modules` `.git` `dist` `build` `.next` `.turbo` `coverage` `target` `.claude` `.DS_Store`
 
-Each facet produces a record: `{ found: boolean, evidence: string, confidence: 0..1 }`.
+Collect enough evidence to answer:
 
-## Step 4: Assemble the 7-section payload (Stage 3)
+- What language dominates the scope?
+- What framework or runtime is present?
+- Where are likely entry points?
+- What commands or scripts are documented or declared?
+- What docs exist for onboarding?
+- Which directories matter to a newcomer?
 
-For each of the 7 sections in canonical order, build the payload
-from the facet records. The contract is in the SKILL.md **Output
-contract → 7-section payload contract** table.
+Prefer light static probes over exhaustive scanning. This skill is an onboarding report, not a full repo census.
 
-**Critical: every claim cites a real artifact.** If a section
-cannot be grounded in facet evidence, render its body as
-`# TODO: <reason>` (the page shows a TODO badge; the mirror shows
-a TODO header).
+### Phase 3 - Detect facets
 
-| Section | Build from | Fallback if missing |
-|---------|-----------|---------------------|
-| `overview` | `language` + `framework` + `dependencies` + `contributors` + README first paragraph | `# TODO: no README.md` |
-| `concepts` | top 5–10 most-imported modules / top 5 exported symbols from `entry-points` | `# TODO: no entry points detected` |
-| `directory-map` | top 3 levels of the inventory tree, annotated with per-dir purpose (read from nearest README / docs/) | `# TODO: sparse scope` |
-| `onboarding-flow` | derived from `entry-points` + `commands` + README "Getting Started" section | `# TODO: no Getting Started` |
-| `commands` | extracted from `package.json#scripts` / `pyproject.toml#scripts` / `Makefile` / `Cargo.toml#[[bin]]` | `# TODO: no manifest detected` |
-| `faq` | 5–10 Q&A derived from README / CONTRIBUTING / docs (use LLM to extract from real text) | `# TODO: no docs` |
-| `further-reading` | links to `CONTRIBUTING.md`, `LICENSE`, `docs/`, related projects (from package.json#homepage / repository) | `# TODO: no docs/CONTRIBUTING` |
+Build a small facet record from grounded evidence:
 
-## Step 5: Compute verdicts (Stage 4)
+| Facet | Evidence examples | Used by |
+|------|-------------------|---------|
+| `language` | dominant extension, manifest metadata, lock files | overview, commands |
+| `framework` | dependencies, config files, known conventions | overview, concepts |
+| `entryPoints` | `main`, `bin`, `src/main.*`, server bootstrap files | overview, onboarding-flow |
+| `commands` | `package.json#scripts`, Makefile, README code fences, task runners | commands, onboarding-flow |
+| `tests` | test directories, test frameworks, CI snippets | commands, onboarding-flow |
+| `docs` | README, CONTRIBUTING, docs/, ADRs, architecture notes | faq, further-reading |
 
-For each of the 7 sections, compute `coverage` (0..1) based on
-how much of the section's required content was grounded:
+Each section should be explainable from this evidence. If not, fall back to TODO markers.
 
-- All required content present, all evidence cited → `coverage = 1.0`, verdict `pass`.
-- ≥ 50% grounded, ≤ 50% TODO → `coverage = 0.5..0.89`, verdict `partial`.
-- < 50% grounded → `coverage < 0.5`, verdict `fail`.
+### Phase 4 - Build the seven sections
 
-Composite score = `mean(section.coverage) × 100`, rounded.
-Grade: A ≥ 90, B ≥ 75, C ≥ 60, D ≥ 40, F < 40.
+Always emit the seven sections in canonical order:
 
-## Step 6: Emit (Stage 5)
+1. `overview`
+2. `concepts`
+3. `directory-map`
+4. `onboarding-flow`
+5. `commands`
+6. `faq`
+7. `further-reading`
 
-1. **Emit the HTML page:**
-   - Read the 4 `templates/` files.
-   - Substitute `{{SCOPE_TITLE}}`, `{{GENERATED_AT}}`, `{{COMPOSITE_SCORE}}`, `{{GRADE}}`, `{{SECTIONS_PAYLOAD}}`.
-   - Write to `OUT_DIR/index.html`.
-   - The Vue 3 page renders all 7 sections in canonical order, with the verdict badge per section and the composite score in the header.
+Section guidance:
 
-2. **Emit the markdown mirror** (unless `--no-mirror`):
-   - Build the same 7 sections as markdown, using `# / ##` headers identical to the HTML page.
-   - Use GFM tables for the directory map; fenced code blocks for commands.
-   - Write to `OUT_DIR/README.md`.
+| Section | Build guidance | Fallback |
+|---------|----------------|----------|
+| `overview` | one-paragraph summary, primary stack, scope cues | `# TODO: project overview evidence is missing` |
+| `concepts` | 5-10 modules, domain terms, or symbols with grounded glossaries | `# TODO: no stable concepts detected` |
+| `directory-map` | annotated tree up to `--depth` | `# TODO: scope is too sparse for a useful map` |
+| `onboarding-flow` | 5-10 ordered first-day steps using real files and commands | `# TODO: no grounded onboarding flow found` |
+| `commands` | most-used run/test/lint/build commands with short explanations | `# TODO: no commands or scripts detected` |
+| `faq` | likely newcomer questions answered from docs and code evidence | `# TODO: no FAQ source material found` |
+| `further-reading` | README, docs, policies, deep dives, key subdirectories | `# TODO: no further reading found` |
 
-3. **Write data.js** (regenerated each run) with the full 7-section payload + per-section verdict + composite score.
+Rules:
 
-4. **Report to the user:** output paths, composite score, grade, per-section verdicts, list of `# TODO` markers (so the user can fill them in manually).
+- Never invent files, commands, symbols, or workflows.
+- Technical names stay in their original language.
+- Missing evidence lowers coverage; it does not block report generation.
 
-## Pre-Delivery Checklist
+### Phase 5 - Score the report
 
-Before reporting done, verify:
+For each section:
 
-| # | Check | How to verify |
-|---|-------|---------------|
-| 1 | Both `index.html` and `README.md` exist and are non-empty | `ls -la OUT_DIR/` |
-| 2 | Page has exactly 7 sections in canonical order | grep for section slugs in `data.js` |
-| 3 | All 7 sections appear in `README.md` with identical `## ` headers | grep for `## ` in `README.md` |
-| 4 | Every section's content is grounded or marked `# TODO` | spot-check 3 random sections; no fabricated file paths |
-| 5 | No `[...]` / `[A-Z]` sentinel placeholders remain | grep for bracket sentinels in `data.js` and `README.md` |
-| 6 | No public CDN `<script src>` tags in `index.html` | grep for `cdn.jsdelivr` / `unpkg` / `cdnjs` |
-| 7 | Vue 3 vendor script tag is present (from `/.claude/shared/...`) | grep for `/.claude/shared/loader.js` |
-| 8 | Composite score and grade are computed and surfaced | grep for `composite` / `grade` in `data.js` |
-| 9 | Markdown mirror uses canonical `## ` headers (not `###`) | grep for section slugs in `README.md` |
-| 10 | `<out>` path is reported to the user | final response line |
+- `pass` when coverage is `>= 0.90`
+- `partial` when coverage is `0.50 .. 0.89`
+- `fail` when coverage is `< 0.50`
 
-## Output
+Composite score = `mean(section.coverage) * 100`, rounded.
 
-```
-docs/reports/quickstart/
-├── index.html                 — Vue 3 page, 7 sections, self-contained
-├── README.md                  — hand-editable mirror
-└── data.js                    — REPORT_CONFIG + REPORT_DATA (regenerated)
-```
+Grade scale:
 
-## Progress Reporting
+- `A` for `>= 90`
+- `B` for `>= 75`
+- `C` for `>= 60`
+- `D` for `>= 40`
+- `F` for `< 40`
 
-Report at each phase:
+This score reflects onboarding completeness, not runtime quality.
 
-- `[Phase 1/6] Walking scope <SCOPE>...`
-- `[Phase 2/6] Detecting facets... <language=… framework=… tests=…>`
-- `[Phase 3/6] Assembling 7 sections... <N grounded / M TODO>`
-- `[Phase 4/6] Computing verdicts... composite=<X> grade=<G>`
-- `[Phase 5/6] Emitting HTML + markdown mirror...`
-- `[Phase 6/6] Done. Score: <X>/100 (<G>). <K> TODO markers.`
+### Phase 6 - Emit outputs
 
-## Error Handling
+Required output:
 
-- If facet detection finds nothing (`language=unknown`, `framework=unknown`, no manifest), render all sections with `# TODO` and a final composite score of 0 — do NOT fail. A `# TODO` page is more useful than no page.
-- If the scope is unreadable (permissions), abort with `scope-unreadable` and a clear error.
-- If `OUT_DIR` cannot be created, stage in `/tmp/rui-report-quickstart-<scope>/` and surface the temp path in the report footer.
-- Always save what you have — a partial report with `# TODO` markers is better than no report.
+- `<OUT_DIR>/index.html`
 
-## Fallback
+Optional output:
+
+- `<OUT_DIR>/README.md` unless `--no-mirror` is set
+
+Emission rules:
+
+1. The HTML report must contain all seven sections in canonical order.
+2. If the markdown mirror is emitted, keep the same section titles and order.
+3. If reusable templates exist, use them. If not, generate the deliverables directly.
+4. Overwrite prior generated outputs on re-run. When obvious manual edits are detected, warn before replacement if the runtime allows.
+
+## Progress reporting
+
+Report concise progress in these stages:
+
+- `[1/6] Resolving scope and output...`
+- `[2/6] Walking scope...`
+- `[3/6] Detecting facets...`
+- `[4/6] Building seven sections...`
+- `[5/6] Computing score and verdicts...`
+- `[6/6] Writing outputs...`
+
+## Pre-delivery checklist
+
+Before finishing, verify:
+
+| # | Check |
+|---|-------|
+| 1 | `index.html` exists and is non-empty |
+| 2 | `README.md` exists unless `--no-mirror` was used |
+| 3 | All seven sections appear in canonical order |
+| 4 | TODO markers exist where evidence is missing instead of guessed prose |
+| 5 | No placeholder text such as `[TODO]`, `TBD`, or `Lorem ipsum` remains |
+| 6 | Composite score, grade, and per-section verdicts are surfaced |
+| 7 | Final response reports output path plus the main gaps |
+
+## Fallbacks
 
 | Situation | Behavior |
 |-----------|----------|
-| User has not provided `--scope` | Default to CWD; respect git worktree redirect |
-| `--out` not provided | Default to `docs/reports/quickstart/` (relative to CWD) |
-| Facet detection fails (no manifest, no README) | Render all sections with `# TODO`; do NOT fail |
-| Scope is empty after exclusions | Render all sections with `# TODO: empty scope` |
-| `OUT_DIR` is read-only | Stage in `/tmp/`, copy to target; surface the temp path |
-| User invokes `--no-mirror` | Skip `README.md`; HTML page only |
-| Subagent dispatch fails (large scope) | Skip parallel dispatch; do facet detection serially |
-| Bundled script not yet implemented | Fall back to inline facet detection (no `scripts/` dependency) |
+| Missing manifest | Infer commands from docs, or emit TODO markers |
+| Missing README and docs | Still generate all sections, with TODO-heavy `faq` and `further-reading` |
+| No obvious entry points | Keep the report, but let `concepts` and `onboarding-flow` degrade with TODOs |
+| Empty scope after exclusions | Emit a full TODO report instead of failing |
+| `--no-mirror` | Skip `README.md` cleanly |

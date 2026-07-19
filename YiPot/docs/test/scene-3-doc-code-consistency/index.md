@@ -1,7 +1,7 @@
 # §0 Effect Sketch — Doc-Code Consistency
 
 **What this scene demonstrates**: a check that `README.md`, `CLAUDE.md`,
-`docs/arch/`, `docs/self-test/`, and `docs/data.js` still match the
+`docs/arch/`, `docs/test/`, and `docs/data.js` still match the
 code on disk after a refactor.
 
 **Why it matters**: docs are a snapshot of the code; when the code moves,
@@ -49,9 +49,9 @@ flowchart LR
 **Steps**: every path in CLAUDE.md's "Documentation Navigation" section actually exists.
 **Verify**: `for f in $(grep -oE 'docs/[a-z0-9/-]+' CLAUDE.md); do test -e $f/index.md; done` exits 0.
 
-## AC-6: `arch/` and `self-test/` scene count per spec
-**Steps**: 5 `arch/scene-*` directories, 6 `self-test/scene-*` directories.
-**Verify**: `ls docs/arch \| grep -c scene-` is 5; same for self-test is 6.
+## AC-6: `arch/` and `test/` scene count per spec
+**Steps**: 5 `arch/scene-*` directories, 6 `test/scene-*` directories.
+**Verify**: `ls docs/arch \| grep -c scene-` is 5; same for test is 6.
 
 ---
 
@@ -70,12 +70,12 @@ flowchart LR
 | `docs/arch/scene-2-data-flow-tracing/` | `src-tauri/src/{hotkey,clipboard,server}.rs` + `src/App.jsx` | flow change |
 | `docs/arch/scene-4-dependency-change-impact/` | `package.json` + `Cargo.toml` | dep change |
 | `docs/arch/scene-5-trust-boundary-security-surface/` | `src/utils/store.js` + `src-tauri/src/server.rs` | auth / network change |
-| `docs/self-test/scene-1-post-init-full-self-check/` | `package.json` + `tauri.conf.json` | build script / window label change |
-| `docs/self-test/scene-2-pre-commit-incremental-self-check/` | per-file-kind checklist | file-kind change |
-| `docs/self-test/scene-3-doc-code-consistency/` | this file (recursive) | any doc change |
-| `docs/self-test/scene-4-security-surface-regression/` | `src/utils/store.js` + `src-tauri/src/server.rs` | auth / network change |
-| `docs/self-test/scene-5-cross-story-integration-regression/` | all docs + `data.js` | cross-doc change |
-| `docs/self-test/scene-6-third-party-framework-service/` | `src/services/*/index.jsx` | provider change |
+| `docs/test/scene-1-post-init-full-self-check/` | `package.json` + `tauri.conf.json` | build script / window label change |
+| `docs/test/scene-2-pre-commit-incremental-self-check/` | per-file-kind checklist | file-kind change |
+| `docs/test/scene-3-doc-code-consistency/` | this file (recursive) | any doc change |
+| `docs/test/scene-4-security-surface-regression/` | `src/utils/store.js` + `src-tauri/src/server.rs` | auth / network change |
+| `docs/test/scene-5-cross-story-integration-regression/` | all docs + `data.js` | cross-doc change |
+| `docs/test/scene-6-third-party-framework-service/` | `src/services/*/index.jsx` | provider change |
 
 ## Drift detection rules
 
@@ -94,7 +94,7 @@ flowchart LR
 | `jq` keys parity | `jq -r '.. \| keys? // empty' src/i18n/locales/en_US.json` |
 | `grep` doc refs | `grep -oE 'docs/[a-z0-9/-]+' CLAUDE.md` |
 | `test -e` existence | `for f in $(grep -oE 'docs/[a-z0-9/-]+' CLAUDE.md); do test -e $f/index.md; done` |
-| scene count | `ls docs/arch \| grep -c '^scene-'`; same for `docs/self-test` |
+| scene count | `ls docs/arch \| grep -c '^scene-'`; same for `docs/test` |
 
 ---
 
@@ -107,7 +107,7 @@ flowchart LR
 | AC-3 | ✅ | 13 `#[tauri::command]` in `cmd.rs`; `data.js` stat says 13 |
 | AC-4 | ✅ | 6 domain term bullets in `README.md` |
 | AC-5 | ✅ | all 11 doc paths in `CLAUDE.md` exist |
-| AC-6 | ✅ | 5 arch scenes, 6 self-test scenes |
+| AC-6 | ✅ | 5 arch scenes, 6 test scenes |
 
 **Overall**: pass — 6/6 ACs passed
 

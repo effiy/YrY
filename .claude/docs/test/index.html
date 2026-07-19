@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Self-Test Report — YrY</title>
-    <meta name="description" content="Self-test report for YrY — 6 scenes with §0–§4 lifecycle, composite score and per-scene verdicts.">
+    <title>test Report — YrY</title>
+    <meta name="description" content="test report for YrY — 6 scenes with §0–§4 lifecycle, composite score and per-scene verdicts.">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2310b981'/><text x='16' y='22' font-size='18' font-family='sans-serif' font-weight='bold' fill='white' text-anchor='middle'>ST</text></svg>" type="image/svg+xml">
     <link rel="stylesheet" href="index.css">
 </head>
@@ -103,14 +103,14 @@
         var tried = 0;
         function tryNext() {
             if (tried >= CANDIDATES.length) {
-                console.error('[rui-report-self-test] All loader candidates failed:', CANDIDATES);
+                console.error('[rui-report-test] All loader candidates failed:', CANDIDATES);
                 return;
             }
             var url = CANDIDATES[tried++];
             var s = document.createElement('script');
             s.src = url;
             s.async = false;
-            s.dataset.namespace = 'rui-report-self-test';
+            s.dataset.namespace = 'rui-report-test';
             // First candidate carries the Mermaid hints so a successful
             // load from any tier still triggers Mermaid injection. The
             // loader itself walks the (primary, fallback) pair — we
@@ -170,7 +170,7 @@
                     <span class="score-gauge-grade">{{ grade }}</span>
                 </div>
                 <div class="score-card-meta">
-                    <h2 class="score-card-title">Composite Self-Test Score</h2>
+                    <h2 class="score-card-title">Composite test Score</h2>
                     <div class="score-card-stats">
                         <div class="score-card-stat tone-pass">
                             <span class="stat-value">{{ summary.passCount }}</span>

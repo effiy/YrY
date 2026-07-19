@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * rui-report-self-test · analyzer
+ * rui-report-test · analyzer
  * ----------------------------------------------------------------------
  * Thin pipeline entrypoint. Responsibility-specific logic lives under
  * scripts/lib/ so inventory, facets, scenes, report assembly, and emit
@@ -11,7 +11,7 @@
  *         outDir — absolute path to write data.js + page assets
  *
  * Env (optional):
- *   MERGE_SCENES=true  — also emit markdown under <outDir>/../self-test/
+ *   MERGE_SCENES=true  — also emit markdown under <outDir>/../test/
  *                        (relative to outDir's parent).
  *   THEME=dark|light   — page theme (default dark).
  *   NO_PDF=true        — skip the PDF/print stylesheet (default false).

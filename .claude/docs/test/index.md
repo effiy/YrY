@@ -1,4 +1,4 @@
-# Self-test Story · Index
+# test Story · Index
 
 > Six self-check scenes for the `.claude` skills catalog. Generated
 > by `rui-init` step 04-arch on 2026-07-15 15:20. Each scene follows

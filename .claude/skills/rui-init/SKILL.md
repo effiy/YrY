@@ -10,7 +10,7 @@ description: >
   in full, README.md is rebuilt with the domain-language section
   preserved, the docs home (index.html / index.css / index.js /
   data.js) is regenerated, and the two story trees
-  (docs/arch/, docs/self-test/) are emitted and then verified.
+  (docs/arch/, docs/test/) are emitted and then verified.
 lifecycle: default-pipeline
 user_invocable: true
 ---
@@ -41,9 +41,9 @@ type PipelineState = {
   // step 03-generate writes CLAUDE.md + README.md + docs/{theme,index.html,index.css,index.js,data.js}
   //   docs/data.js exposes three fixed sections in this order:
   //     §1 section-dependencies (third-party deps & frameworks)
-  //     §2 section-stories      (arch + self-test story trees)
+  //     §2 section-stories      (arch + test story trees)
   //     §3 section-source       (main source code, grouped by src/<dir>/)
-  // step 04-arch writes docs/arch/ + docs/self-test/
+  // step 04-arch writes docs/arch/ + docs/test/
   // reports phase delegates to rui-report orchestrator (skipped if absent)
   verify: { result: 'pass' | 'fail'; failures: Failure[] };
 };
@@ -56,7 +56,7 @@ type PipelineState = {
 | ① | [01-detect](./steps/01-detect/STEP.md) | `steps/01-detect/` | Probe filesystem → emit `profile` fact baseline | input: `cwd` · output: `Profile` |
 | ② | [02-explore](./steps/02-explore/STEP.md) | `steps/02-explore/` | Read source → emit `exploration` (module map + conventions + corrected security surface) | input: `profile` · output: `Exploration` |
 | ③ | [03-generate](./steps/03-generate/STEP.md) | `steps/03-generate/` | Emit `CLAUDE.md` + `README.md` + `docs/{theme,index.html,index.css,index.js,data.js}` from `profile` + `exploration` | input: `profile`, `exploration` · output: files on disk |
-| ④ | [04-arch](./steps/04-arch/STEP.md) | `steps/04-arch/` | Build `docs/arch/` and `docs/self-test/` story directories | input: `profile`, `exploration` · output: files on disk |
+| ④ | [04-arch](./steps/04-arch/STEP.md) | `steps/04-arch/` | Build `docs/arch/` and `docs/test/` story directories | input: `profile`, `exploration` · output: files on disk |
 | ⑤ | [05-verify](./steps/05-verify/STEP.md) | `steps/05-verify/` | 7-point readiness check + engineering gate | input: `profile`, `exploration` · output: `{ result, failures }` |
 
 ### Step → Pipeline State

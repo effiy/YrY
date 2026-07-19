@@ -137,4 +137,4 @@ elevated entry point and it's explicit
 ## Limitations
 - This scene is a static review. Dynamic penetration testing (e.g.
   with a malicious test page) is out of scope for the init baseline
-  and should be its own scene in `docs/self-test/`.
+  and should be its own scene in `docs/test/`.

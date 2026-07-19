@@ -93,7 +93,7 @@ Return:
 - No execution. Reading is the only action.
 - Do not modify the secrets scan — keep it coarse. A precision
   scanner would require a real SAST tool, which is out of scope
-  for a self-test report.
+  for a test report.
 
 ## Failure modes
 

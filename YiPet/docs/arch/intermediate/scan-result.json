@@ -311,37 +311,37 @@
       "fileCategory": "code"
     },
     {
-      "path": "docs/self-test/scene-1-post-init-full-self-check/index.md",
+      "path": "docs/test/scene-1-post-init-full-self-check/index.md",
       "language": "markdown",
       "sizeLines": 114,
       "fileCategory": "docs"
     },
     {
-      "path": "docs/self-test/scene-2-pre-commit-incremental-self-check/index.md",
+      "path": "docs/test/scene-2-pre-commit-incremental-self-check/index.md",
       "language": "markdown",
       "sizeLines": 92,
       "fileCategory": "docs"
     },
     {
-      "path": "docs/self-test/scene-3-doc-code-consistency/index.md",
+      "path": "docs/test/scene-3-doc-code-consistency/index.md",
       "language": "markdown",
       "sizeLines": 99,
       "fileCategory": "docs"
     },
     {
-      "path": "docs/self-test/scene-4-security-surface-regression/index.md",
+      "path": "docs/test/scene-4-security-surface-regression/index.md",
       "language": "markdown",
       "sizeLines": 118,
       "fileCategory": "docs"
     },
     {
-      "path": "docs/self-test/scene-5-cross-story-integration-regression/index.md",
+      "path": "docs/test/scene-5-cross-story-integration-regression/index.md",
       "language": "markdown",
       "sizeLines": 98,
       "fileCategory": "docs"
     },
     {
-      "path": "docs/self-test/scene-6-third-party-framework-service/index.md",
+      "path": "docs/test/scene-6-third-party-framework-service/index.md",
       "language": "markdown",
       "sizeLines": 115,
       "fileCategory": "docs"
@@ -2547,12 +2547,12 @@
     "docs/index.css": [],
     "docs/index.html": [],
     "docs/index.js": [],
-    "docs/self-test/scene-1-post-init-full-self-check/index.md": [],
-    "docs/self-test/scene-2-pre-commit-incremental-self-check/index.md": [],
-    "docs/self-test/scene-3-doc-code-consistency/index.md": [],
-    "docs/self-test/scene-4-security-surface-regression/index.md": [],
-    "docs/self-test/scene-5-cross-story-integration-regression/index.md": [],
-    "docs/self-test/scene-6-third-party-framework-service/index.md": [],
+    "docs/test/scene-1-post-init-full-self-check/index.md": [],
+    "docs/test/scene-2-pre-commit-incremental-self-check/index.md": [],
+    "docs/test/scene-3-doc-code-consistency/index.md": [],
+    "docs/test/scene-4-security-surface-regression/index.md": [],
+    "docs/test/scene-5-cross-story-integration-regression/index.md": [],
+    "docs/test/scene-6-third-party-framework-service/index.md": [],
     "eslint-plugin-local.js": [],
     "eslint.config.js": [
       "eslint-plugin-local.js"

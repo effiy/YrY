@@ -1,11 +1,11 @@
 ---
-description: "Analyzer ↔ page data contract for rui-report-self-test. Invariants the analyzer MUST respect."
+description: "Analyzer ↔ page data contract for rui-report-test. Invariants the analyzer MUST respect."
 ---
 
-# Self-Test Contracts
+# test Contracts
 
 > Invariants the implementing agent MUST respect while running
-> `rui-report-self-test`. Violations are bugs in the execution, not
+> `rui-report-test`. Violations are bugs in the execution, not
 > the spec.
 
 ## Scene count
@@ -140,7 +140,7 @@ offline mode.
 ## Markdown mirror
 
 When `MERGE_SCENES=true` (default), the analyzer writes each
-scene to `<outDir>/../self-test/scene-N-<slug>/index.md` so the
+scene to `<outDir>/../test/scene-N-<slug>/index.md` so the
 report and the rui-init scene tree stay aligned. The
 `scene-N-<slug>/index.md` filename and the `# §0..§4` headers
 are byte-stable; the body is regenerated.
@@ -178,5 +178,5 @@ When `records.length > 100 000`:
 | `outDir` not writable | Abort with `outDir-not-writable`, exit code 4 |
 | `find` fails (sandboxed env) | Abort with `find-failed`, exit code 5 |
 | `data.js` exists but is unreadable | Overwrite — the analyzer owns this file |
-| `MERGE_SCENES=true` and `docs/self-test/` is read-only | Skip markdown emit, log warning, continue with report |
+| `MERGE_SCENES=true` and `docs/test/` is read-only | Skip markdown emit, log warning, continue with report |
 | `rui-init` not installed | Page still renders; markdown mirror step is skipped |

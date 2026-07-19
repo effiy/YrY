@@ -47,7 +47,7 @@ Pass if ≥ 3 term definitions found under `## Domain Language`.
 test -f docs/index.html && test -f docs/index.css && test -f docs/index.js && test -f docs/data.js
 ```
 
-### Check 5/6: `arch-scenes` / `self-test-scenes`
+### Check 5/6: `arch-scenes` / `test-scenes`
 ```bash
 for dir in docs/arch/*/; do test -f "${dir}index.md" || echo "MISSING: $dir"; done
 ```
@@ -55,7 +55,7 @@ for dir in docs/arch/*/; do test -f "${dir}index.md" || echo "MISSING: $dir"; do
 ### Check 7: `scene-counts`
 ```bash
 ls -d docs/arch/*/ 2>/dev/null | wc -l  # must be ≥ 5
-ls -d docs/self-test/*/ 2>/dev/null | wc -l  # must be ≥ 6
+ls -d docs/test/*/ 2>/dev/null | wc -l  # must be ≥ 6
 ```
 
 ## Output Format

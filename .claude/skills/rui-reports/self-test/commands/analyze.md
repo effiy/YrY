@@ -1,9 +1,9 @@
 ---
-name: rui-report-self-test
+name: rui-report-test
 description: >
-  Generate a self-test report (six rui-init self-test scenes with
-  §0–§4 lifecycle) as a Vue 3 page at docs/reports/self-test/.
-  Use /rui-report-self-test or call scripts/analyze.mjs directly.
+  Generate a test report (six rui-init test scenes with
+  §0–§4 lifecycle) as a Vue 3 page at docs/reports/test/.
+  Use /rui-report-test or call scripts/analyze.mjs directly.
 arguments:
   - name: path
     description: Limit analysis scope to a subdirectory
@@ -15,30 +15,30 @@ arguments:
     description: Report theme (dark | light, default: dark)
     required: false
   - name: no-merge
-    description: Skip the markdown mirror to docs/self-test/
+    description: Skip the markdown mirror to docs/test/
     required: false
   - name: generated-at
     description: ISO 8601 timestamp embedded in the report (default: now UTC)
     required: false
 ---
 
-# Rui Report — Self-Test
+# Rui Report — test
 
-Run a project-wide self-test analysis, rendering the six rui-init
-self-test scenes as a single Vue 3 page at
-`docs/reports/self-test/`. Each scene follows the §0–§4 lifecycle
+Run a project-wide test analysis, rendering the six rui-init
+test scenes as a single Vue 3 page at
+`docs/reports/test/`. Each scene follows the §0–§4 lifecycle
 defined by `rui-init` step 04-arch.
 
 ## Usage
 
 | Command | Description |
 |---------|-------------|
-| `/rui-report-self-test` | Full self-test on cwd |
-| `/rui-report-self-test <path>` | Limit scope to `<path>` |
-| `/rui-report-self-test --out <dir>` | Custom output directory |
-| `/rui-report-self-test --theme light` | Light theme report |
-| `/rui-report-self-test --no-merge` | Skip markdown mirror to `docs/self-test/` |
-| `/rui-report-self-test --generated-at 2026-07-17T00:00:00Z` | Pin the "generated at" timestamp |
+| `/rui-report-test` | Full test on cwd |
+| `/rui-report-test <path>` | Limit scope to `<path>` |
+| `/rui-report-test --out <dir>` | Custom output directory |
+| `/rui-report-test --theme light` | Light theme report |
+| `/rui-report-test --no-merge` | Skip markdown mirror to `docs/test/` |
+| `/rui-report-test --generated-at 2026-07-17T00:00:00Z` | Pin the "generated at" timestamp |
 
 ## Pipeline (6 stages)
 
@@ -47,7 +47,7 @@ defined by `rui-init` step 04-arch.
 3. **Scene Assembly** — Map facet records to the six rui-init scenes; build §0–§4 payloads
 4. **Verdict Computation** — Per-scene coverage → `pass` / `partial` / `fail`; composite score
 5. **Page Emit** — Copy byte-stable templates; write `data.js`
-6. **Markdown Mirror (optional)** — Write `docs/self-test/scene-N-<slug>/index.md` for rui-init compat
+6. **Markdown Mirror (optional)** — Write `docs/test/scene-N-<slug>/index.md` for rui-init compat
 
 ## The Six Scenes
 
@@ -63,12 +63,12 @@ defined by `rui-init` step 04-arch.
 ## Output
 
 ```
-docs/reports/self-test/
+docs/reports/test/
 ├── index.html      — Vue 3 markup, scene cards + score gauge
 ├── index.css       — page-level styles (--rui-* tokens)
 ├── index.js        — thin entry: waits for Vue, mounts RuiSelfTestApp
 ├── data.js         — REPORT_CONFIG + REPORT_DATA (regenerated each run)
-└── (when MERGE_SCENES=true) ../self-test/scene-N-<slug>/index.md
+└── (when MERGE_SCENES=true) ../test/scene-N-<slug>/index.md
 ```
 
 ## Verdicts and Composite Score
@@ -110,4 +110,4 @@ follows the shared scale (A ≥ 90, B ≥ 75, C ≥ 60, D ≥ 40, F < 40).
 - [SKILL.md](./SKILL.md) — full skill contract
 - [references/methodology.md](./references/methodology.md) — per-facet measurement methodology
 - [references/scene-catalog.md](./references/scene-catalog.md) — the six scenes with detection rules
-- [rules/self-test-contracts.md](./rules/self-test-contracts.md) — analyzer ↔ page data contract
+- [rules/test-contracts.md](./rules/test-contracts.md) — analyzer ↔ page data contract

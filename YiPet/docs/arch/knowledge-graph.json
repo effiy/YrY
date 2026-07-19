@@ -49,7 +49,7 @@
       "id": "module:L-docs",
       "type": "module",
       "name": "Documentation",
-      "summary": "Project documentation: arch scenes, self-test scenes, generated component reports.",
+      "summary": "Project documentation: arch scenes, test scenes, generated component reports.",
       "tags": [
         "architectural-layer"
       ]
@@ -784,10 +784,10 @@
       "complexity": 0.253
     },
     {
-      "id": "file:docs/self-test/scene-1-post-init-full-self-check/index.md",
+      "id": "file:docs/test/scene-1-post-init-full-self-check/index.md",
       "type": "file",
       "name": "index.md",
-      "filePath": "docs/self-test/scene-1-post-init-full-self-check/index.md",
+      "filePath": "docs/test/scene-1-post-init-full-self-check/index.md",
       "summary": "markdown docs • 114 lines",
       "tags": [
         "docs",
@@ -796,10 +796,10 @@
       "complexity": 0.11400000000000002
     },
     {
-      "id": "file:docs/self-test/scene-2-pre-commit-incremental-self-check/index.md",
+      "id": "file:docs/test/scene-2-pre-commit-incremental-self-check/index.md",
       "type": "file",
       "name": "index.md",
-      "filePath": "docs/self-test/scene-2-pre-commit-incremental-self-check/index.md",
+      "filePath": "docs/test/scene-2-pre-commit-incremental-self-check/index.md",
       "summary": "markdown docs • 92 lines",
       "tags": [
         "docs",
@@ -808,10 +808,10 @@
       "complexity": 0.092
     },
     {
-      "id": "file:docs/self-test/scene-3-doc-code-consistency/index.md",
+      "id": "file:docs/test/scene-3-doc-code-consistency/index.md",
       "type": "file",
       "name": "index.md",
-      "filePath": "docs/self-test/scene-3-doc-code-consistency/index.md",
+      "filePath": "docs/test/scene-3-doc-code-consistency/index.md",
       "summary": "markdown docs • 99 lines",
       "tags": [
         "docs",
@@ -820,10 +820,10 @@
       "complexity": 0.099
     },
     {
-      "id": "file:docs/self-test/scene-4-security-surface-regression/index.md",
+      "id": "file:docs/test/scene-4-security-surface-regression/index.md",
       "type": "file",
       "name": "index.md",
-      "filePath": "docs/self-test/scene-4-security-surface-regression/index.md",
+      "filePath": "docs/test/scene-4-security-surface-regression/index.md",
       "summary": "markdown docs • 118 lines",
       "tags": [
         "docs",
@@ -832,10 +832,10 @@
       "complexity": 0.118
     },
     {
-      "id": "file:docs/self-test/scene-5-cross-story-integration-regression/index.md",
+      "id": "file:docs/test/scene-5-cross-story-integration-regression/index.md",
       "type": "file",
       "name": "index.md",
-      "filePath": "docs/self-test/scene-5-cross-story-integration-regression/index.md",
+      "filePath": "docs/test/scene-5-cross-story-integration-regression/index.md",
       "summary": "markdown docs • 98 lines",
       "tags": [
         "docs",
@@ -844,10 +844,10 @@
       "complexity": 0.098
     },
     {
-      "id": "file:docs/self-test/scene-6-third-party-framework-service/index.md",
+      "id": "file:docs/test/scene-6-third-party-framework-service/index.md",
       "type": "file",
       "name": "index.md",
-      "filePath": "docs/self-test/scene-6-third-party-framework-service/index.md",
+      "filePath": "docs/test/scene-6-third-party-framework-service/index.md",
       "summary": "markdown docs • 115 lines",
       "tags": [
         "docs",
@@ -14070,42 +14070,42 @@
       "weight": 0.9
     },
     {
-      "source": "file:docs/self-test/scene-1-post-init-full-self-check/index.md",
+      "source": "file:docs/test/scene-1-post-init-full-self-check/index.md",
       "target": "module:L-docs",
       "type": "contains",
       "direction": "forward",
       "weight": 0.9
     },
     {
-      "source": "file:docs/self-test/scene-2-pre-commit-incremental-self-check/index.md",
+      "source": "file:docs/test/scene-2-pre-commit-incremental-self-check/index.md",
       "target": "module:L-docs",
       "type": "contains",
       "direction": "forward",
       "weight": 0.9
     },
     {
-      "source": "file:docs/self-test/scene-3-doc-code-consistency/index.md",
+      "source": "file:docs/test/scene-3-doc-code-consistency/index.md",
       "target": "module:L-docs",
       "type": "contains",
       "direction": "forward",
       "weight": 0.9
     },
     {
-      "source": "file:docs/self-test/scene-4-security-surface-regression/index.md",
+      "source": "file:docs/test/scene-4-security-surface-regression/index.md",
       "target": "module:L-docs",
       "type": "contains",
       "direction": "forward",
       "weight": 0.9
     },
     {
-      "source": "file:docs/self-test/scene-5-cross-story-integration-regression/index.md",
+      "source": "file:docs/test/scene-5-cross-story-integration-regression/index.md",
       "target": "module:L-docs",
       "type": "contains",
       "direction": "forward",
       "weight": 0.9
     },
     {
-      "source": "file:docs/self-test/scene-6-third-party-framework-service/index.md",
+      "source": "file:docs/test/scene-6-third-party-framework-service/index.md",
       "target": "module:L-docs",
       "type": "contains",
       "direction": "forward",
@@ -27441,7 +27441,7 @@
     {
       "id": "module:L-docs",
       "name": "Documentation",
-      "description": "Project documentation: arch scenes, self-test scenes, generated component reports.",
+      "description": "Project documentation: arch scenes, test scenes, generated component reports.",
       "nodeIds": [
         "file:docs/arch/scene-1-module-location/index.md",
         "file:docs/arch/scene-2-data-flow-tracing/index.md",
@@ -27485,12 +27485,12 @@
         "file:docs/index.css",
         "file:docs/index.html",
         "file:docs/index.js",
-        "file:docs/self-test/scene-1-post-init-full-self-check/index.md",
-        "file:docs/self-test/scene-2-pre-commit-incremental-self-check/index.md",
-        "file:docs/self-test/scene-3-doc-code-consistency/index.md",
-        "file:docs/self-test/scene-4-security-surface-regression/index.md",
-        "file:docs/self-test/scene-5-cross-story-integration-regression/index.md",
-        "file:docs/self-test/scene-6-third-party-framework-service/index.md"
+        "file:docs/test/scene-1-post-init-full-self-check/index.md",
+        "file:docs/test/scene-2-pre-commit-incremental-self-check/index.md",
+        "file:docs/test/scene-3-doc-code-consistency/index.md",
+        "file:docs/test/scene-4-security-surface-regression/index.md",
+        "file:docs/test/scene-5-cross-story-integration-regression/index.md",
+        "file:docs/test/scene-6-third-party-framework-service/index.md"
       ]
     },
     {

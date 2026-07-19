@@ -1,5 +1,5 @@
 ---
-description: "Architecture and self-test scene catalog — all 5 arch + 6 self-test scenes with directory names and focus areas."
+description: "Architecture and test scene catalog — all 5 arch + 6 test scenes with directory names and focus areas."
 ---
 
 # Scene Catalog
@@ -14,7 +14,7 @@ description: "Architecture and self-test scene catalog — all 5 arch + 6 self-t
 | 4 | `dependency-change-impact` | Change analysis | Impact chain for dependency updates |
 | 5 | `trust-boundary-security-surface` | Security audit | Trust boundary map + vulnerability surface |
 
-## Self-Test Scenes (6)
+## test Scenes (6)
 
 | # | Directory | Focus | Key output |
 |---|-----------|-------|------------|

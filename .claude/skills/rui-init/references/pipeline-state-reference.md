@@ -41,7 +41,7 @@ Detailed type definitions and field descriptions for the `pipelineState` object 
 | 3 | `docs-home-exists` | `docs/index.html` + CSS + JS + data.js present |
 | 4 | `cross-refs-valid` | All markdown links in CLAUDE.md resolve |
 | 5 | `arch-complete` | `docs/arch/` has 5 scene directories with `index.md` |
-| 6 | `self-test-complete` | `docs/self-test/` has 6 scene directories with `index.md` |
+| 6 | `test-complete` | `docs/test/` has 6 scene directories with `index.md` |
 | 7 | `domain-language-preserved` | README.md Domain Language section preserved if pre-existing |
 
 ## Filesystem Output Layout
@@ -61,7 +61,7 @@ Detailed type definitions and field descriptions for the `pipelineState` object 
     │   ├── newcomer-onboarding/
     │   ├── dependency-change-impact/
     │   └── trust-boundary-security-surface/
-    └── self-test/                     # 6 scene dirs
+    └── test/                     # 6 scene dirs
         ├── post-init-full-self-check/
         ├── pre-commit-incremental-self-check/
         ├── doc-code-consistency/

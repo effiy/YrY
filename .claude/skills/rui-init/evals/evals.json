@@ -48,11 +48,11 @@
     {
       "id": 5,
       "prompt": "Generate the docs home and the two story directories.",
-      "expected_output": "03-generate emits CLAUDE.md, README.md, docs home; 04-arch emits docs/arch/ and docs/self-test/.",
+      "expected_output": "03-generate emits CLAUDE.md, README.md, docs home; 04-arch emits docs/arch/ and docs/test/.",
       "files": [],
       "expectations": [
         "03-generate writes CLAUDE.md + README.md + docs home",
-        "04-arch writes docs/arch/ and docs/self-test/",
+        "04-arch writes docs/arch/ and docs/test/",
         "All generated artifacts live under docs/"
       ]
     },

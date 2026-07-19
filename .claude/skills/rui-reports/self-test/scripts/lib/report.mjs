@@ -56,7 +56,7 @@ export function buildReportConfig({
             exclusionDirs: EXCLUDE_DIRS,
         },
         labels: {
-            compositeScoreLabel: 'Composite Self-Test Score',
+            compositeScoreLabel: 'Composite test Score',
             gradeLabel: 'Grade',
             verdictLabel: 'Verdict',
             coverageLabel: 'Coverage',
@@ -145,7 +145,7 @@ function buildCompliance() {
                 { id: 'PS.3', text: 'Reuse proven security solutions — vetted third-party frameworks, pinned.', sceneSlug: 'third-party-framework-service', sceneIndex: 6 },
                 { id: 'PW.4.1', text: 'Acquire well-secured components — pinning ratio ≥ 0.5.', sceneSlug: 'third-party-framework-service', sceneIndex: 6 },
                 { id: 'PW.7.1', text: 'Design code to protect against expected threats — security facet regression gate.', sceneSlug: 'security-surface-regression', sceneIndex: 4 },
-                { id: 'RV.1', text: 'Identify and confirm vulnerabilities — self-test across all six scenes.', sceneSlug: 'post-init-full-self-check', sceneIndex: 1 },
+                { id: 'RV.1', text: 'Identify and confirm vulnerabilities — test across all six scenes.', sceneSlug: 'post-init-full-self-check', sceneIndex: 1 },
             ],
         },
         {
@@ -163,7 +163,7 @@ function buildCompliance() {
             framework: 'ISO/IEC 27002:2022',
             area: 'Information Security Controls',
             controls: [
-                { id: 'A.8.25', text: 'Secure development lifecycle — baseline self-test contract.', sceneSlug: 'post-init-full-self-check', sceneIndex: 1 },
+                { id: 'A.8.25', text: 'Secure development lifecycle — baseline test contract.', sceneSlug: 'post-init-full-self-check', sceneIndex: 1 },
                 { id: 'A.8.26', text: 'Application security requirements — security surface regression.', sceneSlug: 'security-surface-regression', sceneIndex: 4 },
                 { id: 'A.8.27', text: 'Secure system architecture — inventory + manifest presence.', sceneSlug: 'post-init-full-self-check', sceneIndex: 1 },
                 { id: 'A.8.28', text: 'Secure coding — dangerous call surface must stay at zero.', sceneSlug: 'security-surface-regression', sceneIndex: 4 },
@@ -245,7 +245,7 @@ function buildRiskRegister({
     }
 
     if (risks.length === 0) {
-        push(1, 'No risks detected', 'All six scenes passed their checks. Maintain the baseline by re-running /rui-init after major changes.', 'low', 'rare', 'S', 'Continue current practice. Schedule a quarterly re-run of the self-test analyzer.');
+        push(1, 'No risks detected', 'All six scenes passed their checks. Maintain the baseline by re-running /rui-init after major changes.', 'low', 'rare', 'S', 'Continue current practice. Schedule a quarterly re-run of the test analyzer.');
     }
 
     return risks;

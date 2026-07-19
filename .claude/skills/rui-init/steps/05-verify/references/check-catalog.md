@@ -11,8 +11,8 @@ description: "Verification check catalog — all 7 checks with methods, failure 
 | 3 | `domain-language` | `grep -c "**term** — " README.md` ≥ 3 | Add domain-language section with ≥ 3 term definitions |
 | 4 | `docs-home-files` | Check `docs/index.html`, `index.css`, `index.js`, `data.js` exist | Re-run rui-init-generate |
 | 5 | `arch-scenes` | Each `docs/arch/*/` has `index.md` | Re-run rui-init-arch |
-| 6 | `self-test-scenes` | Each `docs/self-test/*/` has `index.md` | Re-run rui-init-arch |
-| 7 | `scene-counts` | arch ≥ 5 dirs, self-test ≥ 6 dirs | Add missing scene directories |
+| 6 | `test-scenes` | Each `docs/test/*/` has `index.md` | Re-run rui-init-arch |
+| 7 | `scene-counts` | arch ≥ 5 dirs, test ≥ 6 dirs | Add missing scene directories |
 
 ## Failure Response Format
 

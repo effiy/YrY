@@ -1,5 +1,5 @@
 /**
- * rui-report-self-test · scene markdown renderer
+ * rui-report-test · scene markdown renderer
  * ----------------------------------------------------------------------
  * Renders a single scene (the output of one `buildSceneN()`) into a
  * self-contained Markdown document with the section layout the report

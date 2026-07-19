@@ -602,7 +602,7 @@ window.REPORT_DATA = {
       "humanBytes": "26.5 KB"
     },
     {
-      "name": "docs/self-test/",
+      "name": "docs/test/",
       "bytes": 22911,
       "humanBytes": "22.4 KB"
     },
@@ -2389,7 +2389,7 @@ window.REPORT_DATA = {
       "score": 0.06
     },
     {
-      "path": "docs/self-test/scene-4-security-surface-regression/index.md",
+      "path": "docs/test/scene-4-security-surface-regression/index.md",
       "bytes": 4419,
       "bytesHuman": "4.3 KB",
       "lines": 118,
@@ -2433,7 +2433,7 @@ window.REPORT_DATA = {
       "score": 0.05
     },
     {
-      "path": "docs/self-test/scene-6-third-party-framework-service/index.md",
+      "path": "docs/test/scene-6-third-party-framework-service/index.md",
       "bytes": 4300,
       "bytesHuman": "4.2 KB",
       "lines": 115,
@@ -3509,7 +3509,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "docs/self-test/scene-1-post-init-full-self-check/index.md",
+      "path": "docs/test/scene-1-post-init-full-self-check/index.md",
       "bytes": 4155,
       "lines": 114,
       "type": "other",
@@ -3521,7 +3521,7 @@ window.REPORT_DATA = {
       "ageDays": 1
     },
     {
-      "path": "docs/self-test/scene-2-pre-commit-incremental-self-check/index.md",
+      "path": "docs/test/scene-2-pre-commit-incremental-self-check/index.md",
       "bytes": 2904,
       "lines": 92,
       "type": "other",
@@ -3533,7 +3533,7 @@ window.REPORT_DATA = {
       "ageDays": 1
     },
     {
-      "path": "docs/self-test/scene-3-doc-code-consistency/index.md",
+      "path": "docs/test/scene-3-doc-code-consistency/index.md",
       "bytes": 3481,
       "lines": 99,
       "type": "other",
@@ -3545,7 +3545,7 @@ window.REPORT_DATA = {
       "ageDays": 1
     },
     {
-      "path": "docs/self-test/scene-4-security-surface-regression/index.md",
+      "path": "docs/test/scene-4-security-surface-regression/index.md",
       "bytes": 4419,
       "lines": 118,
       "type": "other",
@@ -3557,7 +3557,7 @@ window.REPORT_DATA = {
       "ageDays": 1
     },
     {
-      "path": "docs/self-test/scene-5-cross-story-integration-regression/index.md",
+      "path": "docs/test/scene-5-cross-story-integration-regression/index.md",
       "bytes": 3652,
       "lines": 98,
       "type": "other",
@@ -3569,7 +3569,7 @@ window.REPORT_DATA = {
       "ageDays": 1
     },
     {
-      "path": "docs/self-test/scene-6-third-party-framework-service/index.md",
+      "path": "docs/test/scene-6-third-party-framework-service/index.md",
       "bytes": 4300,
       "lines": 115,
       "type": "other",

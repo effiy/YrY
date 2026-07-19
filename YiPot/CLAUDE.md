@@ -118,7 +118,7 @@ Rely on `pnpm tauri dev` plus a real selection-translate round-trip.
 | README.md | `./README.md` |
 | Docs home | `./docs/index.html` |
 | Architecture stories | `./docs/arch/` |
-| Self-check stories | `./docs/self-test/` |
+| Self-check stories | `./docs/test/` |
 
 ### Documentation Navigation
 
@@ -127,9 +127,9 @@ Rely on `pnpm tauri dev` plus a real selection-translate round-trip.
 - **Data flow** → `docs/arch/scene-2-data-flow-tracing/index.md`
 - **Dependency change** → `docs/arch/scene-4-dependency-change-impact/index.md`
 - **Trust boundary** → `docs/arch/scene-5-trust-boundary-security-surface/index.md`
-- **Post-init self-check** → `docs/self-test/scene-1-post-init-full-self-check/index.md`
-- **Pre-commit check** → `docs/self-test/scene-2-pre-commit-incremental-self-check/index.md`
-- **Doc-code consistency** → `docs/self-test/scene-3-doc-code-consistency/index.md`
-- **Security regression** → `docs/self-test/scene-4-security-surface-regression/index.md`
-- **Cross-story regression** → `docs/self-test/scene-5-cross-story-integration-regression/index.md`
-- **Third-party service health** → `docs/self-test/scene-6-third-party-framework-service/index.md`
+- **Post-init self-check** → `docs/test/scene-1-post-init-full-self-check/index.md`
+- **Pre-commit check** → `docs/test/scene-2-pre-commit-incremental-self-check/index.md`
+- **Doc-code consistency** → `docs/test/scene-3-doc-code-consistency/index.md`
+- **Security regression** → `docs/test/scene-4-security-surface-regression/index.md`
+- **Cross-story regression** → `docs/test/scene-5-cross-story-integration-regression/index.md`
+- **Third-party service health** → `docs/test/scene-6-third-party-framework-service/index.md`

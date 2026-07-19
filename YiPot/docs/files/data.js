@@ -2661,7 +2661,7 @@ window.REPORT_DATA = {
       "humanBytes": "48.7 KB"
     },
     {
-      "name": "docs/self-test/",
+      "name": "docs/test/",
       "bytes": 44639,
       "humanBytes": "43.6 KB"
     },
@@ -5130,7 +5130,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "docs/self-test/scene-1-post-init-full-self-check/index.md",
+      "path": "docs/test/scene-1-post-init-full-self-check/index.md",
       "bytes": 5991,
       "lines": 128,
       "type": "other",
@@ -5142,7 +5142,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "docs/self-test/scene-2-pre-commit-incremental-self-check/index.md",
+      "path": "docs/test/scene-2-pre-commit-incremental-self-check/index.md",
       "bytes": 6294,
       "lines": 132,
       "type": "other",
@@ -5154,7 +5154,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "docs/self-test/scene-3-doc-code-consistency/index.md",
+      "path": "docs/test/scene-3-doc-code-consistency/index.md",
       "bytes": 7750,
       "lines": 133,
       "type": "other",
@@ -5166,7 +5166,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "docs/self-test/scene-4-security-surface-regression/index.md",
+      "path": "docs/test/scene-4-security-surface-regression/index.md",
       "bytes": 7608,
       "lines": 139,
       "type": "other",
@@ -5178,7 +5178,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "docs/self-test/scene-5-cross-story-integration-regression/index.md",
+      "path": "docs/test/scene-5-cross-story-integration-regression/index.md",
       "bytes": 7930,
       "lines": 140,
       "type": "other",
@@ -5190,7 +5190,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "docs/self-test/scene-6-third-party-framework-service/index.md",
+      "path": "docs/test/scene-6-third-party-framework-service/index.md",
       "bytes": 9066,
       "lines": 176,
       "type": "other",

@@ -4,7 +4,7 @@
     "project": {
       "name": ".claude · Claude Skills Catalog",
       "root": "/Users/ruiyi/YrY/.claude",
-      "description": "8 skill groups · 27 SKILL.md manifests · 12 shared web components · 4 vendored libraries · generates CLAUDE.md + README.md + 5 arch scenes + 6 self-test scenes + 8 rui-report dashboards",
+      "description": "8 skill groups · 27 SKILL.md manifests · 12 shared web components · 4 vendored libraries · generates CLAUDE.md + README.md + 5 arch scenes + 6 test scenes + 8 rui-report dashboards",
       "primaryStack": "Markdown-driven Claude skills · Vue 3.4.27 (CDN-injected) · 4-file split (HTML+CSS+data+Vue) · ESM engine (graphology + tree-sitter) for rui-reports/diagram",
       "platform": "Claude Desktop App (macOS) · /rui-init full pipeline",
       "gitHead": "manual",
@@ -172,7 +172,7 @@
     {
       "id": "n:selftest-scenes",
       "type": "store",
-      "label": "docs/self-test/",
+      "label": "docs/test/",
       "sub": "6 scenes · 7/7 AC pass",
       "color": "violet",
       "layer": "L3-generated"

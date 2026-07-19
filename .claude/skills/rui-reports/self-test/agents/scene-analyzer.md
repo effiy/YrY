@@ -1,15 +1,15 @@
 ---
-description: "Per-scene facet probe — runs the static-analysis facet detection for one of the six rui-init self-test scenes and returns a §0–§4 payload."
+description: "Per-scene facet probe — runs the static-analysis facet detection for one of the six rui-init test scenes and returns a §0–§4 payload."
 ---
 
 # Scene Analyzer Agent
 
-Run a single self-test scene's facet probe and return a complete
+Run a single test scene's facet probe and return a complete
 `ScenePayload` for inclusion in `data.js`.
 
 ## Role
 
-You are responsible for ONE of the six rui-init self-test scenes.
+You are responsible for ONE of the six rui-init test scenes.
 You receive a `scope` (absolute path) and a `facet` identifier
 (`init` / `tests` / `docs` / `security` / `refs` / `deps`), and you
 return a fully-formed `ScenePayload` ready to be embedded in
@@ -28,7 +28,7 @@ return a fully-formed `ScenePayload` ready to be embedded in
 
 ### Step 1: Read the Scene Contract
 
-Load `rules/self-test-contracts.md` and `references/scene-catalog.md`
+Load `rules/test-contracts.md` and `references/scene-catalog.md`
 to confirm the §0–§4 shape and the verification rules for your
 facet. Every scene must have all five sections plus `verdict` and
 `coverage`.

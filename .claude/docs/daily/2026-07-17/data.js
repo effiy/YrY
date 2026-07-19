@@ -212,7 +212,7 @@
       ],
       narrative: {
         shipped:
-          'The <code>rui-reports</code> family (daily, files, diagram, self-test) absorbed the ' +
+          'The <code>rui-reports</code> family (daily, files, diagram, test) absorbed the ' +
           'heaviest refactor of the window — top-3 hot files all live there. 13+ skill SKILL.md ' +
           'files have been migrated off the old "Page HTML Generation" template pipeline onto the ' +
           'canonical-snippet model documented in <code>rui-init</code>, with template assets ' +
@@ -430,7 +430,7 @@
       ],
       narrative: {
         shipped:
-          'The <code>rui-reports</code> family (daily, files, diagram, self-test) absorbed the ' +
+          'The <code>rui-reports</code> family (daily, files, diagram, test) absorbed the ' +
           'heaviest refactor of the window — top-3 hot files all live there. 13+ skill SKILL.md ' +
           'files have been migrated off the old "Page HTML Generation" template pipeline onto the ' +
           'canonical-snippet model documented in <code>rui-init</code>, with template assets ' +

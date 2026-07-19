@@ -14,7 +14,7 @@ graph LR
   B --> C[3. Domain Language]
   C --> D[4. docs home 4 files]
   D --> E[5. arch/ ≥5 scenes]
-  E --> F[6. self-test/ ≥6 scenes]
+  E --> F[6. test/ ≥6 scenes]
   F --> G{All pass?}
   G -->|yes| H[Pipeline complete]
   G -->|no| I[Abort + surface failures]
@@ -49,10 +49,10 @@ graph LR
 **Expected**: ≥ 5
 **File**: `docs/arch/`
 
-## Step 6: docs/self-test/ scenes present
-**Action**: `ls docs/self-test/scene-*/index.md | wc -l`
+## Step 6: docs/test/ scenes present
+**Action**: `ls docs/test/scene-*/index.md | wc -l`
 **Expected**: ≥ 6
-**File**: `docs/self-test/`
+**File**: `docs/test/`
 
 ## Step 7: docs/index.html references the project
 **Action**: `grep "YiPet" docs/index.html`
@@ -72,7 +72,7 @@ graph LR
 | `docs/index.js` | file | Vue 3 mount + sceneCardFor dispatch, copied verbatim |
 | `docs/data.js` | file | Dashboard data model, derived from CLAUDE.md + README.md |
 | `docs/arch/scene-*/index.md` | files | 5 architecture scenes with §0–§4 lifecycle |
-| `docs/self-test/scene-*/index.md` | files | 6 self-test scenes with §0–§4 lifecycle |
+| `docs/test/scene-*/index.md` | files | 6 test scenes with §0–§4 lifecycle |
 
 ---
 
@@ -85,7 +85,7 @@ graph LR
 | 3 | ✅ | Domain Language section has 8 term definitions (>3) |
 | 4 | ✅ | All 4 docs home files exist |
 | 5 | ✅ | docs/arch/ has 5 scenes, each with index.md |
-| 6 | ✅ | docs/self-test/ has 6 scenes, each with index.md |
+| 6 | ✅ | docs/test/ has 6 scenes, each with index.md |
 | 7 | ✅ | docs/index.html title is "YiPet · Documentation Center" |
 
 **Overall**: pass — 7/7 steps passed

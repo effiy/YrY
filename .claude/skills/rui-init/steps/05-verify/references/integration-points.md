@@ -33,5 +33,5 @@ Exit codes: 0 = pass, 1 = fail, 2 = error (could not run).
 | 3: domain-language | generate + user | User adds terms |
 | 4: docs-home-files | generate | Re-run generate |
 | 5: arch-scenes | arch | Re-run arch |
-| 6: self-test-scenes | arch | Re-run arch |
+| 6: test-scenes | arch | Re-run arch |
 | 7: scene-counts | arch | Add scenes |

@@ -389,7 +389,7 @@
   /* ═══════════════════════════════════════════════════════════════════════════
      6b. Optional Mermaid injector
      ─────────────────────────────────────────────────────────────────────────
-     Pages that need Mermaid (e.g. rui-report-self-test) opt in by setting
+     Pages that need Mermaid (e.g. rui-report-test) opt in by setting
      `data-mermaid-path` (and optionally `data-mermaid-fallback`) on the
      <script src="loader.js"> tag. If `data-mermaid-path` is absent the
      loader does nothing — pages that don't need Mermaid are unaffected.

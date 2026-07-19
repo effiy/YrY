@@ -34,7 +34,7 @@
         banner.id = 'vue-missing';
         banner.style.cssText = 'position:fixed;top:0;left:0;right:0;padding:16px;background:#ef4444;color:white;font-family:monospace;z-index:9999;white-space:pre-wrap;line-height:1.5;';
         var message = (err && err.message) || String(err);
-        banner.textContent = '[rui-report-self-test] Vue failed to load: ' + message +
+        banner.textContent = '[rui-report-test] Vue failed to load: ' + message +
             '\nExpected loader at: ' + LOADER_PATH_HINT +
             '\nHint: open DevTools → Network and check the loader.js + Vue CDN requests.';
         document.body.appendChild(banner);
@@ -106,7 +106,7 @@
             if (attempt >= 1) {
                 throw err;
             }
-            console.warn('[rui-report-self-test] first mount failed, retrying:', err);
+            console.warn('[rui-report-test] first mount failed, retrying:', err);
             return mountOnce(attempt + 1);
         }
 
@@ -138,7 +138,7 @@
                 return mountReport();
             })
             .catch(function (err) {
-                console.error('[rui-report-self-test] boot failed:', err);
+                console.error('[rui-report-test] boot failed:', err);
                 showVueMissing(err);
             });
     }

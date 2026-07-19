@@ -49470,7 +49470,7 @@
       }
     },
     {
-      "path": "docs/self-test/scene-1-post-init-full-self-check/index.md",
+      "path": "docs/test/scene-1-post-init-full-self-check/index.md",
       "language": "markdown",
       "fileCategory": "docs",
       "totalLines": 114,
@@ -49512,7 +49512,7 @@
           "line": 47
         },
         {
-          "heading": "Step 6: docs/self-test/ scenes present",
+          "heading": "Step 6: docs/test/ scenes present",
           "level": 2,
           "line": 52
         },
@@ -49561,7 +49561,7 @@
       }
     },
     {
-      "path": "docs/self-test/scene-2-pre-commit-incremental-self-check/index.md",
+      "path": "docs/test/scene-2-pre-commit-incremental-self-check/index.md",
       "language": "markdown",
       "fileCategory": "docs",
       "totalLines": 92,
@@ -49637,7 +49637,7 @@
       }
     },
     {
-      "path": "docs/self-test/scene-3-doc-code-consistency/index.md",
+      "path": "docs/test/scene-3-doc-code-consistency/index.md",
       "language": "markdown",
       "fileCategory": "docs",
       "totalLines": 99,
@@ -49718,7 +49718,7 @@
       }
     },
     {
-      "path": "docs/self-test/scene-4-security-surface-regression/index.md",
+      "path": "docs/test/scene-4-security-surface-regression/index.md",
       "language": "markdown",
       "fileCategory": "docs",
       "totalLines": 118,
@@ -49804,7 +49804,7 @@
       }
     },
     {
-      "path": "docs/self-test/scene-5-cross-story-integration-regression/index.md",
+      "path": "docs/test/scene-5-cross-story-integration-regression/index.md",
       "language": "markdown",
       "fileCategory": "docs",
       "totalLines": 98,
@@ -49826,7 +49826,7 @@
           "line": 27
         },
         {
-          "heading": "Step 2: data.js self-test scene hrefs resolve",
+          "heading": "Step 2: data.js test scene hrefs resolve",
           "level": 2,
           "line": 32
         },
@@ -49836,7 +49836,7 @@
           "line": 37
         },
         {
-          "heading": "Step 4: arch scenes cross-link to self-test where claimed",
+          "heading": "Step 4: arch scenes cross-link to test where claimed",
           "level": 2,
           "line": 42
         },
@@ -49885,7 +49885,7 @@
       }
     },
     {
-      "path": "docs/self-test/scene-6-third-party-framework-service/index.md",
+      "path": "docs/test/scene-6-third-party-framework-service/index.md",
       "language": "markdown",
       "fileCategory": "docs",
       "totalLines": 115,

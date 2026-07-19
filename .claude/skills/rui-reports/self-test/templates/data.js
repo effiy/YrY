@@ -1,9 +1,9 @@
 /**
- * rui-report-self-test · data.js shape reference
+ * rui-report-test · data.js shape reference
  * ----------------------------------------------------------------------
  * This file is the **shape template** for the report's runtime data.
  * analyze.mjs reads the project's source tree, builds the six
- * self-test scenes (per the §0–§4 lifecycle), and writes a
+ * test scenes (per the §0–§4 lifecycle), and writes a
  * project-specific data.js whose body matches the fields below.
  *
  * The data is consumed by:
@@ -73,7 +73,7 @@ window.REPORT_CONFIG = {
         ],
     },
     labels: {
-        compositeScoreLabel: 'Composite Self-Test Score',
+        compositeScoreLabel: 'Composite test Score',
         gradeLabel: 'Grade',
         verdictLabel: 'Verdict',
         coverageLabel: 'Coverage',

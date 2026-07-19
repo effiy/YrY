@@ -1,12 +1,12 @@
 ---
-description: "The six rui-init self-test scenes with their detection rules, §0–§4 shape, and verdict criteria."
+description: "The six rui-init test scenes with their detection rules, §0–§4 shape, and verdict criteria."
 ---
 
 # Scene Catalog
 
 > The six scenes are pinned by `rui-init` step 04-arch (see
-> `/Users/ruiyi/YrY/.claude/skills/rui-init/steps/04-arch/references/self-test-scenes.md`).
-> `rui-report-self-test` MUST emit all six in `index` order with
+> `/Users/ruiyi/YrY/.claude/skills/rui-init/steps/04-arch/references/test-scenes.md`).
+> `rui-report-test` MUST emit all six in `index` order with
 > the same slugs.
 
 | # | Directory (slug) | Title | Icon | Facet | Verdict drivers |
@@ -91,7 +91,7 @@ and `verdict = 'fail'` regardless of other checks.
 
 **Purpose**: Verify cross-story links are intact.
 **Checks**:
-- `storyDirCount ≥ 2` — at least docs/arch and docs/self-test exist
+- `storyDirCount ≥ 2` — at least docs/arch and docs/test exist
 - `totalLinks > 0` — some cross-references present
 - `brokenLinks === 0` — no broken links
 - `mdFileCount ≥ 5` — non-trivial docs surface
@@ -125,7 +125,7 @@ Every scene's `index.md` (or `data.js` scene payload) follows:
 
 `rui-init` step 04-arch checks §0–§4 presence but not body content.
 The report enforces §0–§4 presence too — see
-`rules/self-test-contracts.md`.
+`rules/test-contracts.md`.
 
 ## Verdict thresholds (composite)
 

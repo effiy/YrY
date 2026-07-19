@@ -92,7 +92,7 @@ flowchart LR
 |---|------------------|------|-------------|
 | 1 | `CLAUDE.md` | file | Claude project context — encodes profile, iron laws, and navigation table for AI assistants. |
 | 2 | `README.md` | file | Human-readable project overview — first file a new contributor reads on GitHub. |
-| 3 | `docs/` | dir | Generated documentation tree — arch/ and self-test/ story scenes plus the dashboard home. |
+| 3 | `docs/` | dir | Generated documentation tree — arch/ and test/ story scenes plus the dashboard home. |
 | 4 | `package.json` | file | Project manifest — declares the test script and the dependency surface for Node ecosystems. |
 | 5 | `docs/.pipeline-state/profile.json` | file | Pipeline state snapshot — the deterministic input for the next /rui-init rebuild. |
 

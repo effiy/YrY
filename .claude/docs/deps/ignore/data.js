@@ -298,7 +298,7 @@ window.REPORT_DATA = {
         "Executable implementation surface"
       ],
       [
-        "<code>skills/rui-reports/self-test/scripts/analyze.mjs</code>",
+        "<code>skills/rui-reports/test/scripts/analyze.mjs</code>",
         "script",
         "19",
         "Automation or analysis script touchpoint"

@@ -6,7 +6,7 @@ description: "Architecture story contracts: §0–§4 lifecycle, scene directory
 
 # Story Generation Contracts
 
-`rui-init-arch` builds `docs/arch/` (5 scenes) and `docs/self-test/` (6 scenes) story directories. Each scene follows a strict §0–§4 lifecycle.
+`rui-init-arch` builds `docs/arch/` (5 scenes) and `docs/test/` (6 scenes) story directories. Each scene follows a strict §0–§4 lifecycle.
 
 ## §0–§4 Lifecycle (Per Scene)
 
@@ -28,7 +28,7 @@ description: "Architecture story contracts: §0–§4 lifecycle, scene directory
 | 4 | `dependency-change-impact` | What happens when a dependency changes |
 | 5 | `trust-boundary-security-surface` | Security boundaries and trust zones |
 
-## Self-Test Scenes (6 Required)
+## test Scenes (6 Required)
 
 | # | Directory | Focus |
 |---|-----------|-------|
@@ -43,5 +43,5 @@ description: "Architecture story contracts: §0–§4 lifecycle, scene directory
 
 1. Every scene directory must contain `index.md`.
 2. `index.md` must follow the §0–§4 structure. Missing sections are a verify failure.
-3. Scene count is checked by verify: arch ≥ 5, self-test ≥ 6.
+3. Scene count is checked by verify: arch ≥ 5, test ≥ 6.
 4. Scene names are semantic kebab-case, not numeric.

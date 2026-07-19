@@ -1,5 +1,5 @@
 /**
- * app/helpers.js — shared browser helpers for the self-test report.
+ * app/helpers.js — shared browser helpers for the test report.
  */
 (function () {
     'use strict';

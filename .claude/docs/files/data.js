@@ -551,7 +551,7 @@ window.REPORT_DATA = {
       "severity": "P0",
       "marker": "P0",
       "category": "bloat",
-      "file": "rui-reports/self-test/scripts/analyze.mjs",
+      "file": "rui-reports/test/scripts/analyze.mjs",
       "line": null,
       "message": "File exceeds 1000 LOC (1759 lines)",
       "metric": "1759 LOC",
@@ -562,7 +562,7 @@ window.REPORT_DATA = {
       "estimatedHours": 8,
       "scoreUplift": 8,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-reports/self-test/scripts/analyze.mjs/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-reports/test/scripts/analyze.mjs/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -573,7 +573,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-reports/self-test/scripts/analyze.mjs and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-reports/test/scripts/analyze.mjs and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -600,7 +600,7 @@ window.REPORT_DATA = {
       "severity": "P0",
       "marker": "P0",
       "category": "bloat",
-      "file": "rui-reports/self-test/templates/index.css",
+      "file": "rui-reports/test/templates/index.css",
       "line": null,
       "message": "File exceeds 1000 LOC (1745 lines)",
       "metric": "1745 LOC",
@@ -611,7 +611,7 @@ window.REPORT_DATA = {
       "estimatedHours": 8,
       "scoreUplift": 8,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-reports/self-test/templates/index.css/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-reports/test/templates/index.css/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -622,7 +622,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-reports/self-test/templates/index.css and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-reports/test/templates/index.css and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -2217,7 +2217,7 @@ window.REPORT_DATA = {
       "severity": "P1",
       "marker": "P1",
       "category": "bloat",
-      "file": "rui-reports/self-test/templates/index.html",
+      "file": "rui-reports/test/templates/index.html",
       "line": null,
       "message": "File exceeds 500 LOC (828 lines)",
       "metric": "828 LOC",
@@ -2228,7 +2228,7 @@ window.REPORT_DATA = {
       "estimatedHours": 4,
       "scoreUplift": 4,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-reports/self-test/templates/index.html/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-reports/test/templates/index.html/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -2239,7 +2239,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-reports/self-test/templates/index.html and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-reports/test/templates/index.html and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -2266,7 +2266,7 @@ window.REPORT_DATA = {
       "severity": "P1",
       "marker": "P1",
       "category": "bloat",
-      "file": "rui-reports/self-test/templates/index.js",
+      "file": "rui-reports/test/templates/index.js",
       "line": null,
       "message": "File exceeds 500 LOC (655 lines)",
       "metric": "655 LOC",
@@ -2277,7 +2277,7 @@ window.REPORT_DATA = {
       "estimatedHours": 4,
       "scoreUplift": 4,
       "recommendations": [
-        "Split by responsibility: extract cohesive regions into rui-reports/self-test/templates/index.js/{a,b}.ext and re-export from a barrel index.",
+        "Split by responsibility: extract cohesive regions into rui-reports/test/templates/index.js/{a,b}.ext and re-export from a barrel index.",
         "Move pure helpers into a sibling <name>-utils.ext and unit-test them in isolation.",
         "Add a LOC budget (e.g., 500/1000) to lint or CI so the file cannot silently regress.",
         "After the split, re-run this report and confirm fan-out / depth drop before merge."
@@ -2288,7 +2288,7 @@ window.REPORT_DATA = {
         "Unit tests pass on every child; coverage ≥ pre-split baseline.",
         "Re-run this report: original file no longer triggers the bloat alert."
       ],
-      "firstStep": "Open rui-reports/self-test/templates/index.js and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
+      "firstStep": "Open rui-reports/test/templates/index.js and list its top-level responsibilities (one sentence each) — that list becomes the split plan.",
       "tooling": [
         {
           "name": "eslint-plugin-import",
@@ -3390,7 +3390,7 @@ window.REPORT_DATA = {
       "humanBytes": "315.4 KB"
     },
     {
-      "name": "rui-reports/self-test/",
+      "name": "rui-reports/test/",
       "bytes": 289429,
       "humanBytes": "282.6 KB"
     },
@@ -3450,7 +3450,7 @@ window.REPORT_DATA = {
       "humanBytes": "149.0 KB"
     },
     {
-      "name": "rui-reports/self-test/templates/",
+      "name": "rui-reports/test/templates/",
       "bytes": 137572,
       "humanBytes": "134.3 KB"
     },
@@ -3500,7 +3500,7 @@ window.REPORT_DATA = {
       "humanBytes": "99.6 KB"
     },
     {
-      "name": "rui-reports/self-test/scripts/",
+      "name": "rui-reports/test/scripts/",
       "bytes": 101901,
       "humanBytes": "99.5 KB"
     },
@@ -4667,7 +4667,7 @@ window.REPORT_DATA = {
       "score": 0.25
     },
     {
-      "path": "rui-reports/self-test/scripts/analyze.mjs",
+      "path": "rui-reports/test/scripts/analyze.mjs",
       "bytes": 101901,
       "bytesHuman": "99.5 KB",
       "lines": 1759,
@@ -9441,7 +9441,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-init/steps/04-arch/references/self-test-scenes.md",
+      "path": "rui-init/steps/04-arch/references/test-scenes.md",
       "bytes": 1522,
       "lines": 35,
       "type": "other",
@@ -12825,7 +12825,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-reports/self-test/agents/doc-tracer.md",
+      "path": "rui-reports/test/agents/doc-tracer.md",
       "bytes": 2903,
       "lines": 101,
       "type": "other",
@@ -12837,7 +12837,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-reports/self-test/agents/scene-analyzer.md",
+      "path": "rui-reports/test/agents/scene-analyzer.md",
       "bytes": 4100,
       "lines": 110,
       "type": "other",
@@ -12849,7 +12849,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-reports/self-test/agents/security-surface-tracer.md",
+      "path": "rui-reports/test/agents/security-surface-tracer.md",
       "bytes": 3183,
       "lines": 105,
       "type": "other",
@@ -12861,7 +12861,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-reports/self-test/commands/analyze.md",
+      "path": "rui-reports/test/commands/analyze.md",
       "bytes": 4282,
       "lines": 113,
       "type": "other",
@@ -12873,7 +12873,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-reports/self-test/evals/evals.json",
+      "path": "rui-reports/test/evals/evals.json",
       "bytes": 3470,
       "lines": 75,
       "type": "other",
@@ -12885,7 +12885,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-reports/self-test/references/methodology.md",
+      "path": "rui-reports/test/references/methodology.md",
       "bytes": 7555,
       "lines": 238,
       "type": "other",
@@ -12897,7 +12897,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-reports/self-test/references/scene-catalog.md",
+      "path": "rui-reports/test/references/scene-catalog.md",
       "bytes": 6555,
       "lines": 143,
       "type": "other",
@@ -12909,7 +12909,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-reports/self-test/rules/self-test-contracts.md",
+      "path": "rui-reports/test/rules/test-contracts.md",
       "bytes": 6128,
       "lines": 182,
       "type": "other",
@@ -12921,7 +12921,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-reports/self-test/scripts/analyze.mjs",
+      "path": "rui-reports/test/scripts/analyze.mjs",
       "bytes": 101901,
       "lines": 1759,
       "type": "mjs",
@@ -12933,7 +12933,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-reports/self-test/SKILL.md",
+      "path": "rui-reports/test/SKILL.md",
       "bytes": 11780,
       "lines": 248,
       "type": "other",
@@ -12945,7 +12945,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-reports/self-test/templates/data.js",
+      "path": "rui-reports/test/templates/data.js",
       "bytes": 7598,
       "lines": 183,
       "type": "js",
@@ -12957,7 +12957,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-reports/self-test/templates/index.css",
+      "path": "rui-reports/test/templates/index.css",
       "bytes": 46565,
       "lines": 1745,
       "type": "css",
@@ -12969,7 +12969,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-reports/self-test/templates/index.html",
+      "path": "rui-reports/test/templates/index.html",
       "bytes": 48746,
       "lines": 828,
       "type": "other",
@@ -12981,7 +12981,7 @@ window.REPORT_DATA = {
       "ageDays": 0
     },
     {
-      "path": "rui-reports/self-test/templates/index.js",
+      "path": "rui-reports/test/templates/index.js",
       "bytes": 34663,
       "lines": 655,
       "type": "js",
@@ -16305,10 +16305,10 @@ window.REPORT_DATA = {
     "rui-reports/files/templates/index.js": [],
     "rui-reports/files/templates/lib/rui-bytes.js": [],
     "rui-reports/files/templates/lib/rui-sortable.js": [],
-    "rui-reports/self-test/scripts/analyze.mjs": [],
-    "rui-reports/self-test/templates/data.js": [],
-    "rui-reports/self-test/templates/index.css": [],
-    "rui-reports/self-test/templates/index.js": [],
+    "rui-reports/test/scripts/analyze.mjs": [],
+    "rui-reports/test/templates/data.js": [],
+    "rui-reports/test/templates/index.css": [],
+    "rui-reports/test/templates/index.js": [],
     "rui-tools/import/lib/api.mjs": [
       "rui-tools/import/lib/io.mjs",
       "rui-tools/import/lib/config.mjs",

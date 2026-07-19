@@ -1,5 +1,5 @@
 /**
- * app/actions.js — page methods for the self-test report.
+ * app/actions.js — page methods for the test report.
  */
 (function () {
     'use strict';
@@ -115,7 +115,7 @@
             this.theme = this.theme === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-rui-theme', this.theme);
             try {
-                localStorage.setItem('rui-report-self-test-theme', this.theme);
+                localStorage.setItem('rui-report-test-theme', this.theme);
             } catch (e) {}
             if (typeof RuiSelfTestApp.renderMermaidDiagrams === 'function') {
                 RuiSelfTestApp.renderMermaidDiagrams();

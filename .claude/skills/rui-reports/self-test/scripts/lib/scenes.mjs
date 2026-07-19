@@ -1,5 +1,5 @@
 /**
- * rui-report-self-test · scene registry
+ * rui-report-test · scene registry
  * ----------------------------------------------------------------------
  * Barrel over the per-facet builders. Each scene lives in its own file
  * under `scenes/` (1-init, 2-test, 3-doc, 4-security, 5-refs, 6-deps);

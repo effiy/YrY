@@ -4,16 +4,16 @@ description: "Validate generated architecture scenes — check §0–§4 complet
 
 # Scene Validator Agent
 
-Validates generated architecture and self-test scenes for completeness and cross-reference integrity.
+Validates generated architecture and test scenes for completeness and cross-reference integrity.
 
 ## Role
 
-Read all scene `index.md` files under `docs/arch/` and `docs/self-test/`, verify §0–§4 completeness, check cross-scene links, and report structural issues. Read-only.
+Read all scene `index.md` files under `docs/arch/` and `docs/test/`, verify §0–§4 completeness, check cross-scene links, and report structural issues. Read-only.
 
 ## Inputs
 
 - **docs_root**: Path to `docs/` directory
-- **scope**: `arch` | `self-test` | `both`
+- **scope**: `arch` | `test` | `both`
 
 ## Checks
 
@@ -22,7 +22,7 @@ Read all scene `index.md` files under `docs/arch/` and `docs/self-test/`, verify
 | §0–§4 presence | Every scene has all 5 sections |
 | Non-empty sections | Each § section has ≥1 paragraph |
 | Cross-references | Links between scenes resolve |
-| Scene count | arch ≥ 5, self-test ≥ 6 |
+| Scene count | arch ≥ 5, test ≥ 6 |
 | index.md exists | Every scene directory has index.md |
 
 ## Output Format

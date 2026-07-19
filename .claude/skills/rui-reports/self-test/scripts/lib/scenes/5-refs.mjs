@@ -16,7 +16,7 @@ export function buildScene5(facet) {
         facet: 'refs',
         section0: {
             effect: `Walks every markdown file (${facet.mdFileCount} files), extracts each \`[text](path)\` link, and resolves the path relative to the file\'s directory. Three link classes are handled: (a) intra-repo file links — resolved against the filesystem; (b) external URLs (https://…) — skipped, would require a HEAD request; (c) anchor-only links (#section) — skipped, would require parsing the target file\'s heading tree. The audit produces a per-file broken-count and a global broken ratio (${brokenRatioPct}%). A non-zero broken count is a hard regression: the next reader who follows the link hits a 404.`,
-            matters: `Cross-story integrity is the trust contract between skills. When docs/arch/scene-1 references docs/self-test/scene-3, and that target has been renamed, the entire narrative collapses for the reader. The broken ratio (${brokenRatioPct}%) is the single most predictive metric of "is the docs tree maintained" — above 5% correlates with abandoned documentation.`,
+            matters: `Cross-story integrity is the trust contract between skills. When docs/arch/scene-1 references docs/test/scene-3, and that target has been renamed, the entire narrative collapses for the reader. The broken ratio (${brokenRatioPct}%) is the single most predictive metric of "is the docs tree maintained" — above 5% correlates with abandoned documentation.`,
             mermaid: `%%{init: {'theme':'dark','flowchart':{'htmlLabels':true}}}%%
 flowchart LR
   A([md files]):::input
@@ -44,7 +44,7 @@ flowchart LR
         },
         section1: {
             steps: [
-                { title: 'Inventory story directories', action: 'Check for docs/arch, docs/self-test, docs/reports — the three canonical story trees in the rui-init layout.', expected: `≥ 2 directories present; current: ${facet.storyDirCount} (${facet.storyDirs.join(', ') || 'none'}).`, file: facet.storyDirs[0] || '<none>' },
+                { title: 'Inventory story directories', action: 'Check for docs/arch, docs/test, docs/reports — the three canonical story trees in the rui-init layout.', expected: `≥ 2 directories present; current: ${facet.storyDirCount} (${facet.storyDirs.join(', ') || 'none'}).`, file: facet.storyDirs[0] || '<none>' },
                 { title: 'Audit markdown links', action: 'For each .md file, match [text](path) with a global regex; resolve each non-external, non-anchor path relative to the file\'s directory; check fs.existsSync.', expected: `All file-path links resolve; current broken: ${facet.brokenLinks} of ${facet.totalLinks}.`, file: 'docs/' },
                 { title: 'Count markdown files', action: 'Match \\.md$ across the scope (excluding node_modules, .git, dist, build).', expected: `≥ 5 files; current: ${facet.mdFileCount}.`, file: 'docs/' },
                 { title: 'Compute broken ratio', action: 'brokenLinks / totalLinks — a normalized drift metric.', expected: `≤ 0.01 (1%); current: ${brokenRatioPct}%.`, file: 'docs/' },
@@ -63,7 +63,7 @@ flowchart LR
                 if (c.key === 'storyDirs') {
                     notes = c.pass
                         ? `${facet.storyDirCount} story directories present: ${facet.storyDirs.join(', ')}. Narrative is laid out.`
-                        : `Only ${facet.storyDirCount} story director(ies) found: ${facet.storyDirs.join(', ') || '(none)'}. Expected ≥ 2 (docs/arch, docs/self-test).`;
+                        : `Only ${facet.storyDirCount} story director(ies) found: ${facet.storyDirs.join(', ') || '(none)'}. Expected ≥ 2 (docs/arch, docs/test).`;
                 } else if (c.key === 'links') {
                     notes = c.pass
                         ? `${facet.totalLinks} cross-reference links audited across the docs tree.`

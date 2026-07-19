@@ -40,10 +40,10 @@ window.HELP_CONFIG = {
   },
   crossLinks: [
     { href: "arch/index.html",      label: "Architecture (5 scenes)" },
-    { href: "self-test/index.html", label: "Self-Test (6 scenes)" }
+    { href: "test/index.html", label: "test (6 scenes)" }
   ],
   // § 1  Third-party dependencies & frameworks — runtime + dev
-  // § 2  Story documents & scenes              — arch + self-test
+  // § 2  Story documents & scenes              — arch + test
   // § 3  Main source code                      — vue / runtime / scss / entry
   sections: [
     {
@@ -80,7 +80,7 @@ window.HELP_CONFIG = {
 | Section id | Allowed group kinds | Source |
 |------------|---------------------|--------|
 | `section-dependencies` | `items` (≥ 1, ≤ 2: `deps-runtime` + `deps-dev`) | `profile.inventory.dependencies` / `devDependencies` |
-| `section-stories`      | `stories` (exactly 1)                                | `docs/arch/` + `docs/self-test/` (rui-init-arch) |
+| `section-stories`      | `stories` (exactly 1)                                | `docs/arch/` + `docs/test/` (rui-init-arch) |
 | `section-source`       | `items` (≥ 1; one per top-level source directory)    | `exploration.moduleMap` grouped by `src/<dir>/` |
 
 The `rui-init-generate` step is responsible for emitting the data

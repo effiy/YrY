@@ -17,8 +17,8 @@ description: "Verification contracts: 7-check invariants, failure handling proto
 | 3 | `domain-language` | `README.md` has `## Domain Language` + ≥3 terms | Add domain language section |
 | 4 | `docs-home-files` | All 4 docs home files exist (`index.html`, `index.css`, `index.js`, `data.js`) | Re-run generate |
 | 5 | `arch-scenes` | `docs/arch/` exists + each scene has `index.md` | Re-run arch |
-| 6 | `self-test-scenes` | `docs/self-test/` exists + each scene has `index.md` | Re-run arch |
-| 7 | `scene-counts` | arch ≥ 5 scenes, self-test ≥ 6 scenes | Add missing scenes |
+| 6 | `test-scenes` | `docs/test/` exists + each scene has `index.md` | Re-run arch |
+| 7 | `scene-counts` | arch ≥ 5 scenes, test ≥ 6 scenes | Add missing scenes |
 
 ## Failure Handling Protocol
 

@@ -1,5 +1,5 @@
 /**
- * app/lifecycle.js — mount-time side effects for the self-test report.
+ * app/lifecycle.js — mount-time side effects for the test report.
  */
 (function () {
     'use strict';
@@ -8,7 +8,7 @@
 
     RuiSelfTestApp.mounted = function () {
         try {
-            var stored = localStorage.getItem('rui-report-self-test-theme');
+            var stored = localStorage.getItem('rui-report-test-theme');
             if (stored === 'light' || stored === 'dark') {
                 this.theme = stored;
                 document.documentElement.setAttribute('data-rui-theme', this.theme);

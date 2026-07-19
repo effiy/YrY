@@ -129,7 +129,7 @@ failure (see `05-verify`).
 | # | `id` (required) | Title | Groups | Source in rebuilt docs |
 |---|-----------------|-------|--------|------------------------|
 | 1 | `section-dependencies` | Third-Party Dependencies / Frameworks | `deps-runtime` (kind: `items`) + `deps-dev` (kind: `items`) | `profile.inventory.dependencies` + `profile.inventory.devDependencies` (manifest-parser output) |
-| 2 | `section-stories`      | Story Documents & Scenes     | single `kind: 'stories'` group with arch + self-test stories | `docs/arch/` + `docs/self-test/` (rui-init-arch output) |
+| 2 | `section-stories`      | Story Documents & Scenes     | single `kind: 'stories'` group with arch + test stories | `docs/arch/` + `docs/test/` (rui-init-arch output) |
 | 3 | `section-source`       | Main Source Code         | one `kind: 'items'` group per source-code category (vue / runtime / scss / entry) | `exploration.moduleMap` grouped by directory |
 
 | Field | Source in rebuilt docs |
@@ -139,7 +139,7 @@ failure (see `05-verify`).
 | `crossLinks` | Highest-priority sub-skills (e.g. `rui-html-cdn`, `rui-html-vue`, `rui-skill-help`) |
 | `sections[0].groups[deps-runtime].items` | One card per package in `profile.inventory.dependencies` (name + version + one-line role) |
 | `sections[0].groups[deps-dev].items`     | One card per package in `profile.inventory.devDependencies` |
-| `sections[1].groups[*].items`            | One story per `docs/arch/index.md` and `docs/self-test/index.md` (kind: `stories`, with `sceneLinks`) |
+| `sections[1].groups[*].items`            | One story per `docs/arch/index.md` and `docs/test/index.md` (kind: `stories`, with `sceneLinks`) |
 | `sections[2].groups[*].items`            | One file card per node in `exploration.moduleMap`, grouped by top-level directory under `src/` |
 | `footerLinks` | Top sub-skill reference links + `CLAUDE.md` + `README.md` |
 
@@ -161,7 +161,7 @@ Required rules:
   `CLAUDE.md` and `README.md`; only the data model is emitted by
   this skill.
 - The generated docs home must link to the story outputs emitted
-  by `rui-init-arch` under `docs/arch/` and `docs/self-test/`.
+  by `rui-init-arch` under `docs/arch/` and `docs/test/`.
 - The skill is the single source of truth for the docs data
   model; the template is the single source of truth for the
   layout. They never drift.

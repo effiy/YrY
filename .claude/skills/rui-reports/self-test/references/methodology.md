@@ -1,6 +1,6 @@
 # methodology.md
 
-> Per-facet measurement methodology for rui-report-self-test. The
+> Per-facet measurement methodology for rui-report-test. The
 > analyzer (`scripts/analyze.mjs`) and the per-scene agents read
 > this document before executing, then follow the rules step by
 > step.
@@ -8,7 +8,7 @@
 ## Stage 1 — File Inventory
 
 Mirrors `rui-reports/files` Stage 1 exactly. The walk is shared
-so a self-test report and a files report on the same scope
+so a test report and a files report on the same scope
 produce consistent `totalFiles`, `totalBytes`, and `records[]`.
 
 | Field | Source | Cap |
@@ -219,7 +219,7 @@ are substituted at copy time:
 ## Stage 6 — Markdown Mirror (optional)
 
 When `MERGE_SCENES=true`, the analyzer writes each scene to
-`<outDir>/../self-test/scene-N-<slug>/index.md` so the report
+`<outDir>/../test/scene-N-<slug>/index.md` so the report
 and the rui-init scene tree stay aligned. The markdown body is
 regenerated; the §0–§4 headers are byte-stable.
 

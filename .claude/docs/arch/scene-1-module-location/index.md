@@ -82,7 +82,7 @@ and the entry's `path` is the on-disk answer.
 | D-2 · No fuzzy matcher (e.g. "where's the badge component?") | Add a `fuse.js` index (already in `dependencies` of rui-reports/diagram) and expose it via `window.__ruiModuleIndex` |
 | D-3 · The 23 sub-skill paths are inferred, not asserted | On next `rui-init` run, emit per-sub-skill `path` and `coreDeps` so the map is fully precise |
 | D-4 · New skills added without re-running `rui-init` will be invisible | Add a `marker:` rule — every new `SKILL.md` must add itself to `exploration.json` |
-| D-5 · 0 acceptance criteria are automatable today | Add `node scripts/check-module-map.mjs` to the verify step (see self-test scene 1) |
+| D-5 · 0 acceptance criteria are automatable today | Add `node scripts/check-module-map.mjs` to the verify step (see test scene 1) |
 | D-6 · The lookup has no offline CLI | Add a `bin/locate.mjs` next to `shared/loader.js` for grep-free lookups |
 | D-7 · No deprecation marker for retired skills | Add an `archive/` directory convention; the module map should note `archived: true` |
 | D-8 · No `last_verified_at` timestamp on the module map | Add it; warn if the file is older than 30 days |

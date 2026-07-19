@@ -60,7 +60,7 @@ graph TD
 | `README.md` | file | Project structure tree + domain language |
 | `docs/data.js` | file | Dashboard sections derived from CLAUDE.md headings |
 | `docs/arch/scene-*/index.md` | files | Each scene cites real source paths in §2 |
-| `docs/self-test/scene-*/index.md` | files | Each scene cites real source paths in §2 |
+| `docs/test/scene-*/index.md` | files | Each scene cites real source paths in §2 |
 | `src/` | dir | The actual code the docs describe |
 
 ---

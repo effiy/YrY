@@ -183,7 +183,7 @@ Key principles:
     <YYYY-MM-DD>/`; override with `--out`). The schema lives in
     `templates/report/data.js`; do not write a one-off HTML file
     — match the catalog pattern of `files` / `diagram` / `arch` /
-    `self-test` so all reports render consistently. Read
+    `test` so all reports render consistently. Read
     `@data_shape` in `data.js` before populating; `mergeWithDefaults()`
     fills missing fields so the page still renders with sensible
     `—` placeholders.
@@ -225,7 +225,7 @@ Key principles:
 | 8 | Back off on 429 with the `Retry-After` value | 60 req/min is shared; one runaway subagent can starve the rest |
 | 9 | Never print the `DAILY_DEV_TOKEN`, even redacted — refer to it as `$DAILY_DEV_TOKEN` | Token leaks in shared transcripts are the #1 risk |
 | 10 | In `report` mode, never execute the project; only read files | The report is offline + git-only; running the project is a different skill |
-| 11 | In `report` mode, the output is the 4-file layout under `<out>/<YYYY-MM-DD>/`: `index.html` + `index.js` + `index.css` + `data.js`, loaded from `templates/report/` | The 4-file layout matches the other rui-reports (files, diagram, arch, self-test) so the catalog renders consistently; do not collapse to a single self-contained `.html` |
+| 11 | In `report` mode, the output is the 4-file layout under `<out>/<YYYY-MM-DD>/`: `index.html` + `index.js` + `index.css` + `data.js`, loaded from `templates/report/` | The 4-file layout matches the other rui-reports (files, diagram, arch, test) so the catalog renders consistently; do not collapse to a single self-contained `.html` |
 | 12 | If the user asks for a curated reading list (CTO, interview, design patterns), do NOT route to a missing mode — say "out of scope for this skill" and suggest a dedicated skill | The skill used to bundle curated indexes; those have been removed, so do not pretend to have them |
 | 13 | In `plan` mode, load the template from `templates/index.html` (with `data.js` as the schema) before writing output | The 4-file layout (`data.js · index.html · index.css · index.js`) is the source of truth; reinventing the structure inline drifts from the contract and breaks evals |
 | 14 | In `plan` mode, when `--format md` is requested, call `planToMarkdown(plan)` from `templates/index.js` (the markdown exporter is a function, not a separate template file) | The old `plan-checklist.md` template has been folded into the Vue app's `planToMarkdown()` so the schema only lives in one place |

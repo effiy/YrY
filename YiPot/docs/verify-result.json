@@ -11,8 +11,8 @@
     {"checkId": 3, "name": "domain-language", "result": "pass", "evidence": "grep -c '^- **' README.md → 13 (need ≥3)"},
     {"checkId": 4, "name": "docs-home-files", "result": "pass", "evidence": "docs/{index.html,index.css,index.js,data.js} all exist"},
     {"checkId": 5, "name": "arch-scenes", "result": "pass", "evidence": "5/5 arch scenes have index.md"},
-    {"checkId": 6, "name": "self-test-scenes", "result": "pass", "evidence": "6/6 self-test scenes have index.md"},
-    {"checkId": 7, "name": "scene-counts", "result": "pass", "evidence": "arch=5, self-test=6 (both meet minimums)"}
+    {"checkId": 6, "name": "test-scenes", "result": "pass", "evidence": "6/6 test scenes have index.md"},
+    {"checkId": 7, "name": "scene-counts", "result": "pass", "evidence": "arch=5, test=6 (both meet minimums)"}
   ],
   "duration_ms": 1240
 }

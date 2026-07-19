@@ -22,8 +22,8 @@ window.HELP_CONFIG = {
     { value: "26", label: "SKILL.md", modifier: "cyan", sub: "all manifests currently present under skills/" },
     { value: "12", label: "Shared Components", modifier: "accent", sub: "loader-backed UI primitives under shared/components/" },
     { value: "5", label: "Vendored Assets", modifier: "cyan", sub: "vue · html2canvas · jspdf · xlsx · mermaid" },
-    { value: "16+1", label: "NPM Deps", modifier: "accent", sub: "16 runtime packages + 1 dev dependency in rui-reports/diagram" },
-    { value: "11", label: "Story Scenes", modifier: "cyan", sub: "5 arch scenes + 6 self-test scenes" }
+    { value: "15+1", label: "NPM Deps", modifier: "accent", sub: "15 runtime packages + 1 dev dependency in rui-reports/diagram" },
+    { value: "11", label: "Story Scenes", modifier: "cyan", sub: "5 arch scenes + 6 test scenes" }
   ],
 
   panelHub: {
@@ -33,13 +33,13 @@ window.HELP_CONFIG = {
       { icon: "🏛", name: "Architecture", desc: "Markdown scenes", color: "var(--rui-accent)", panel: "arch" },
       { icon: "📁", name: "Files Report", desc: "Codebase analysis", color: "var(--rui-accent)", panel: "files" },
       { icon: "📅", name: "Reports", desc: "Daily / Weekly / Monthly", color: "var(--rui-accent)", panel: "reports" },
-      { icon: "✅", name: "Self-test", desc: "Self-check strategy", color: "var(--rui-cyan)", panel: "self-test", targetBlank: false }
+      { icon: "✅", name: "test", desc: "Self-check strategy", color: "var(--rui-cyan)", panel: "test", targetBlank: false }
     ],
     flow: "Detect → Explore → Generate → Arch → Verify",
     urls: {
       arch: "arch/index.html",
       files: "files/index.html",
-      "self-test": "self-test/index.html"
+      "test": "test/index.html"
     }
   },
 
@@ -62,7 +62,7 @@ window.HELP_CONFIG = {
         ],
         tags: [
           { label: "rui-init", tone: "is-info" },
-          { label: "self-test", tone: "is-pass" },
+          { label: "test", tone: "is-pass" },
           { label: "doc-consistent", tone: "is-pass" }
         ],
         meta: "7d window · 6 commits · 1,264 file touches"
@@ -100,15 +100,14 @@ window.HELP_CONFIG = {
       badge: "1",
       badgeTone: "is-secondary",
       title: "Third-Party Dependencies / Frameworks",
-      meta: "16 runtime · 1 dev dependency · 1 package manifest",
+      meta: "15 runtime · 1 dev dependency · 1 package manifest",
       groups: [
         {
           id: "deps-runtime",
           kind: "items",
           icon: "📦",
-          title: "Runtime Dependencies (16)",
+          title: "Runtime Dependencies (15)",
           items: [
-            { icon: "🧠", iconTone: "is-module", title: "@tree-sitter-grammars/tree-sitter-kotlin", description: "Kotlin grammar for the diagram engine's language inventory.", meta: "<span class=\"accent\">Runtime</span> · 1.1.0", href: "https://www.npmjs.com/package/@tree-sitter-grammars/tree-sitter-kotlin", targetBlank: true },
             { icon: "🔍", iconTone: "is-module", title: "fuse.js", description: "Fuzzy search support for codebase analysis and report generation.", meta: "<span class=\"accent\">Runtime</span> · ^7.1.0", href: "https://fusejs.io/", targetBlank: true, demoHref: "deps/fuse-js/index.html", demoLabel: "Dependency Report →" },
             { icon: "🕸", iconTone: "is-module", title: "graphology", description: "Graph data structure library for diagram and dependency analysis.", meta: "<span class=\"accent\">Runtime</span> · ^0.26.0", href: "https://graphology.github.io/", targetBlank: true, demoHref: "deps/graphology/index.html", demoLabel: "Dependency Report →" },
             { icon: "🧮", iconTone: "is-module", title: "graphology-communities-louvain", description: "Community detection for clustered code graphs.", meta: "<span class=\"accent\">Runtime</span> · ^2.0.2", href: "https://github.com/graphology/graphology-communities-louvain", targetBlank: true, demoHref: "deps/graphology-communities-louvain/index.html", demoLabel: "Dependency Report →" },
@@ -146,7 +145,7 @@ window.HELP_CONFIG = {
         {
           kind: "stories",
           icon: "📚",
-          title: "Story Catalog (arch + self-test)",
+          title: "Story Catalog (arch + test)",
           items: [
             {
               icon: "🏛",
@@ -167,19 +166,19 @@ window.HELP_CONFIG = {
             },
             {
               icon: "✅",
-              title: "Self-test Story",
+              title: "test Story",
               badge: "6 scenes",
               description: "Verification tree for post-init checks, incremental checks, doc drift, security regression, cross-story integration, and third-party service health.",
               sceneLinks: [
-                { label: "1. Post-Init Full Self-Check", href: "self-test/scene-1-post-init-full-self-check/index.md" },
-                { label: "2. Pre-Commit Incremental Self-Check", href: "self-test/scene-2-pre-commit-incremental-self-check/index.md" },
-                { label: "3. Doc-Code Consistency", href: "self-test/scene-3-doc-code-consistency/index.md" },
-                { label: "4. Security Surface Regression", href: "self-test/scene-4-security-surface-regression/index.md" },
-                { label: "5. Cross-Story Integration Regression", href: "self-test/scene-5-cross-story-integration-regression/index.md" },
-                { label: "6. Third-Party Framework Service", href: "self-test/scene-6-third-party-framework-service/index.md" }
+                { label: "1. Post-Init Full Self-Check", href: "test/scene-1-post-init-full-self-check/index.md" },
+                { label: "2. Pre-Commit Incremental Self-Check", href: "test/scene-2-pre-commit-incremental-self-check/index.md" },
+                { label: "3. Doc-Code Consistency", href: "test/scene-3-doc-code-consistency/index.md" },
+                { label: "4. Security Surface Regression", href: "test/scene-4-security-surface-regression/index.md" },
+                { label: "5. Cross-Story Integration Regression", href: "test/scene-5-cross-story-integration-regression/index.md" },
+                { label: "6. Third-Party Framework Service", href: "test/scene-6-third-party-framework-service/index.md" }
               ],
               links: [
-                { label: "Self-test Dashboard →", href: "self-test/index.html" }
+                { label: "test Dashboard →", href: "test/index.html" }
               ],
               meta: "6 scenes · canonical slug set complete"
             }
@@ -215,7 +214,7 @@ window.HELP_CONFIG = {
             { icon: "🔍", iconTone: "is-module", title: "01-detect", description: "Fact baseline extraction: project type, inventory, security surface, test framework.", meta: "<span class=\"accent\">Step</span> · skills/rui-init/steps/01-detect/" },
             { icon: "🗺", iconTone: "is-module", title: "02-explore", description: "Module map and conventions for the current repository layout.", meta: "<span class=\"accent\">Step</span> · skills/rui-init/steps/02-explore/" },
             { icon: "📝", iconTone: "is-module", title: "03-generate", description: "Root docs and docs home generator backed by the standalone template.", meta: "<span class=\"accent\">Step</span> · skills/rui-init/steps/03-generate/" },
-            { icon: "🏛", iconTone: "is-module", title: "04-arch", description: "Story-tree generation for architecture and self-test documentation.", meta: "<span class=\"accent\">Step</span> · skills/rui-init/steps/04-arch/" },
+            { icon: "🏛", iconTone: "is-module", title: "04-arch", description: "Story-tree generation for architecture and test documentation.", meta: "<span class=\"accent\">Step</span> · skills/rui-init/steps/04-arch/" },
             { icon: "✅", iconTone: "is-module", title: "05-verify", description: "Readiness gate that checks the generated baseline and scene counts.", meta: "<span class=\"accent\">Step</span> · skills/rui-init/steps/05-verify/" }
           ]
         },
@@ -239,7 +238,7 @@ window.HELP_CONFIG = {
             { icon: "🏛", iconTone: "is-module", title: "diagram", description: "The only package-managed code module; generates architecture diagrams and graph artifacts.", meta: "<span class=\"accent\">ESM package</span> · package.json + vitest" },
             { icon: "📅", iconTone: "is-module", title: "daily", description: "Daily planning/report templates and rendering helpers.", meta: "<span class=\"accent\">Sub-skill</span> · templates + references + evals" },
             { icon: "📁", iconTone: "is-module", title: "files", description: "Static file analysis report generator mirrored under docs/files/.", meta: "<span class=\"accent\">Sub-skill</span> · scripts + templates" },
-            { icon: "✅", iconTone: "is-module", title: "self-test", description: "Scene-oriented self-test analyzer and HTML emitter.", meta: "<span class=\"accent\">Sub-skill</span> · scripts + scene library" }
+            { icon: "✅", iconTone: "is-module", title: "test", description: "Scene-oriented test analyzer and HTML emitter.", meta: "<span class=\"accent\">Sub-skill</span> · scripts + scene library" }
           ]
         },
         {
@@ -270,7 +269,7 @@ window.HELP_CONFIG = {
 
   footerLinks: [
     { label: "Architecture", href: "arch/index.html", targetBlank: false },
-    { label: "Self-test", href: "self-test/index.html", targetBlank: false },
+    { label: "test", href: "test/index.html", targetBlank: false },
     { label: "CLAUDE.md", href: "../CLAUDE.md", targetBlank: true },
     { label: "README.md", href: "../README.md", targetBlank: true },
     { label: "Profile", href: ".pipeline-state/profile.json", targetBlank: true },

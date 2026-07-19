@@ -270,9 +270,9 @@ window.REPORT_DATA = {
         "doc / metadata mention"
       ],
       [
-        "<code>rui-reports/self-test</code>",
+        "<code>rui-reports/test</code>",
         "1",
-        "<code>skills/rui-reports/self-test/scripts/analyze.mjs</code>",
+        "<code>skills/rui-reports/test/scripts/analyze.mjs</code>",
         "direct import"
       ]
     ]

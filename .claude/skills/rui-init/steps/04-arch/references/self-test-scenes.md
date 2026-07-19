@@ -1,8 +1,8 @@
 ---
-description: "Self-test scene reference — all 6 self-test scenes with detailed descriptions and expected verification outputs."
+description: "test scene reference — all 6 test scenes with detailed descriptions and expected verification outputs."
 ---
 
-# Self-Test Scenes Reference
+# test Scenes Reference
 
 ## Scene 1: post-init-full-self-check
 **Purpose**: Verify all artifacts from a fresh `/rui-init` run.

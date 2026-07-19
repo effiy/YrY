@@ -32,7 +32,7 @@ Every scene's `index.md` follows the same 5-section lifecycle:
 - **§3 — Test report** — pass / fail breakdown of every AC
 - **§4 — Self-improvement** — D-0..D-8 diagnoses + follow-up actions
 
-The lifecycle is shared with `docs/self-test/` so the two story
+The lifecycle is shared with `docs/test/` so the two story
 trees are structurally consistent.
 
 ## Source of truth

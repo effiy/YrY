@@ -31,7 +31,7 @@ on output files.
 3. If existing README has `## Domain Language`, extract and append to new README
 4. Render `docs/data.js` in the fixed three-section order:
    - `section-dependencies` (deps-runtime + deps-dev groups) from `profile.inventory.{dependencies,devDependencies}`
-   - `section-stories` from `docs/arch/` + `docs/self-test/` (rui-init-arch output)
+   - `section-stories` from `docs/arch/` + `docs/test/` (rui-init-arch output)
    - `section-source` from `exploration.moduleMap` grouped by top-level `src/<dir>/`
 5. Substitute all `{{placeholders}}` with real data
 6. Write files
@@ -46,4 +46,4 @@ on output files.
 | `{{architecturePattern}}` | `exploration.architecture.pattern` |
 | `{{conventions}}` | `exploration.conventions` |
 | `{{sourceGroups}}` | `exploration.moduleMap` grouped by top-level `src/<dir>/` (drives `section-source`) |
-| `{{stories}}` | `docs/arch/` + `docs/self-test/` index files (drives `section-stories`) |
+| `{{stories}}` | `docs/arch/` + `docs/test/` index files (drives `section-stories`) |

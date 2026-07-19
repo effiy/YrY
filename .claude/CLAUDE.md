@@ -53,8 +53,8 @@ When working in `.claude/`:
 
 ### Inventory
 
-- **Runtime dependencies**: `@tree-sitter-grammars/tree-sitter-kotlin`,
-  `fuse.js`, `graphology`, `graphology-communities-louvain`, `ignore`,
+- **Runtime dependencies**: `fuse.js`, `graphology`,
+  `graphology-communities-louvain`, `ignore`,
   `tree-sitter-cpp`, `tree-sitter-go`, `tree-sitter-java`,
   `tree-sitter-javascript`, `tree-sitter-python`, `tree-sitter-ruby`,
   `tree-sitter-rust`, `tree-sitter-typescript`, `web-tree-sitter`,
@@ -85,7 +85,7 @@ These are the non-negotiable baselines for `.claude`.
 | 2 | Shared UI assets stay under `shared/` | Duplicating components creates drift across generated pages |
 | 3 | The docs home keeps the 4-file split: `index.html`, `index.css`, `index.js`, `data.js` | Template drift becomes a `rui-init` verify failure |
 | 4 | `rui-init` remains the only entry point for the init pipeline | Renaming or splitting it breaks the documented workflow |
-| 5 | `docs/arch/` keeps at least 5 scenes and `docs/self-test/` keeps at least 6 scenes | Falling below the baseline fails verification |
+| 5 | `docs/arch/` keeps at least 5 scenes and `docs/test/` keeps at least 6 scenes | Falling below the baseline fails verification |
 | 6 | The current catalog has 5 skill groups and 26 manifests | Update the generated counts when adding or removing skills |
 
 ## Self-constraints
@@ -108,7 +108,7 @@ These are the non-negotiable baselines for `.claude`.
 | Generate or inspect reports | `skills/rui-reports/*/SKILL.md` |
 | Open the generated dashboard | `docs/index.html` |
 | Trace module placement | `docs/arch/scene-1-module-location/index.md` |
-| Review self-check expectations | `docs/self-test/scene-1-post-init-full-self-check/index.md` |
+| Review self-check expectations | `docs/test/scene-1-post-init-full-self-check/index.md` |
 | Inspect pipeline state | `docs/.pipeline-state/{profile,exploration,verify-result}.json` |
 
 ---
@@ -121,5 +121,5 @@ These are the non-negotiable baselines for `.claude`.
 | 02-explore | `docs/.pipeline-state/exploration.json` |
 | 03-generate | `CLAUDE.md` + `README.md` + `docs/{index.html,index.css,index.js,data.js}` |
 | 04-arch | `docs/arch/scene-N-*/index.md` |
-| 04-arch | `docs/self-test/scene-N-*/index.md` |
+| 04-arch | `docs/test/scene-N-*/index.md` |
 | 05-verify | `docs/.pipeline-state/verify-result.json` |

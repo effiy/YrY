@@ -88,7 +88,7 @@
         element.removeAttribute('data-processed');
         element.innerHTML = '';
 
-        var renderId = 'rui-self-test-mermaid-' + idx + '-' + Date.now();
+        var renderId = 'rui-test-mermaid-' + idx + '-' + Date.now();
         return Promise.resolve(
             typeof mermaidApi.parse === 'function' ? mermaidApi.parse(source) : true
         ).then(function () {
@@ -104,7 +104,7 @@
             }
             element.setAttribute('data-processed', 'true');
         }).catch(function (err) {
-            console.warn('[rui-report-self-test] mermaid render failed:', err);
+            console.warn('[rui-report-test] mermaid render failed:', err);
             showError(element, err, source);
         });
     }
@@ -144,7 +144,7 @@
         waitForMermaid()
             .then(renderAll)
             .catch(function (err) {
-                console.warn('[rui-report-self-test] Mermaid unavailable:', err);
+                console.warn('[rui-report-test] Mermaid unavailable:', err);
                 populateSources();
                 for (var i = 0; i < nodes.length; i++) {
                     showError(nodes[i], err, normalizeSource(nodes[i].getAttribute('data-mermaid-src')));

@@ -23,13 +23,13 @@
         "The response invokes /rui-report-quickstart create with the absolute scope path",
         "The response mentions both index.html AND README.md as outputs",
         "The response notes that the markdown mirror uses identical ## headers to the HTML page",
-        "The response explains why the mirror is useful (forkable, editable, static-site-compatible)"
+        "The response explains why the mirror is useful (easy to copy, edit, and publish in static sites)"
       ]
     },
     {
       "id": 3,
       "prompt": "I want to onboard new hires onto our internal monorepo at ~/work/monorepo. Generate a quickstart — I want the page to be Chinese since most of my team reads Chinese.",
-      "expected_output": "Routes to /rui-report-quickstart create --scope ~/work/monorepo --language zh. All 7 sections emit Chinese content. Tone and key terms adapted; section structure identical to the canonical English version.",
+      "expected_output": "Routes to /rui-report-quickstart create --scope ~/work/monorepo --language zh. All 7 sections emit Chinese content. Tone is localized, but framework names, file paths, and command names remain in their original language. Section structure stays canonical.",
       "files": [],
       "expectations": [
         "The response uses --language zh",
@@ -88,18 +88,18 @@
     {
       "id": 8,
       "prompt": "I notice the page has a sidebar with reading-progress, sidebar, topbar, etc. — does this quickstart use the same 9-region layout as docs/quickstart/?",
-      "expected_output": "No. rui-report-quickstart uses the rui-reports 4-file template split (mirrors rui-report-files / rui-report-diagram / rui-report-self-test) and the rui-tools shared component library (<rui-back-top>, <rui-tag-chip>). It does NOT use the docs/quickstart/ 9-region layout. The two skills are complementary, not overlapping: rui-docs-quickstart is the operator's manual for a docs/quickstart/ scaffold; rui-report-quickstart generates a newcomer-facing page for ANY local project.",
+      "expected_output": "No. rui-report-quickstart does NOT use the docs/quickstart/ 9-region layout. Its primary contract is the newcomer-facing 7-section onboarding report; implementation may be direct HTML or a reusable multi-file scaffold when available. The two skills are complementary, not overlapping: rui-docs-quickstart is a maintainer manual, while rui-report-quickstart generates a newcomer-facing guide for any local project.",
       "files": [],
       "expectations": [
-        "The response clarifies that rui-report-quickstart uses the rui-reports 4-file split, not the docs/quickstart/ 9-region layout",
-        "The response names the shared components used (rui-back-top, rui-tag-chip)",
+        "The response clarifies that rui-report-quickstart does not use the docs/quickstart/ 9-region layout",
+        "The response explains that the primary contract is the 7-section onboarding report rather than a specific internal file split",
         "The response distinguishes the two skills: rui-docs-quickstart is a maintainer manual; rui-report-quickstart is a newcomer-facing page generator"
       ]
     },
     {
       "id": 9,
       "prompt": "I ran a quickstart yesterday and edited README.md to add a FAQ entry. Today I re-ran. Will my edit survive?",
-      "expected_output": "By default, no — the analyzer regenerates the markdown mirror body each run, so hand-edits to README.md are overwritten. To preserve hand-edits, the analyzer should warn if the existing README.md is 'dirty' (changed since last run) and offer to merge. As a workaround, keep your hand-edits in a separate file (e.g. FAQ-additions.md) and merge manually after the run.",
+      "expected_output": "By default, no — regenerated outputs overwrite the previous README.md body. If the runtime can detect obvious manual edits, it should warn before replacement, but merge behavior is not guaranteed. As a workaround, keep custom additions in a separate file and merge them back after the run.",
       "files": [],
       "expectations": [
         "The response acknowledges that re-running overwrites the markdown mirror body",
@@ -132,12 +132,12 @@
     },
     {
       "id": 12,
-      "prompt": "What's the difference between rui-report-quickstart, rui-report-files, rui-report-diagram, and rui-report-self-test?",
-      "expected_output": "All four use the rui-reports 4-file template split and load shared resources from /.claude/shared/. They differ in scope: rui-report-files analyzes a project for file size + dependency nesting; rui-report-diagram produces architecture diagrams (from requirements or codebase); rui-report-self-test produces a 6-scene self-test report; rui-report-quickstart produces a 7-section newcomer quickstart page. The 4 are complementary, not overlapping.",
+      "prompt": "What's the difference between rui-report-quickstart, rui-report-files, rui-report-diagram, and rui-report-test?",
+      "expected_output": "They are complementary report skills with different outputs: rui-report-files analyzes file size and coupling, rui-report-diagram produces architecture diagrams, rui-report-test generates a six-scene repo health report, and rui-report-quickstart creates a seven-section newcomer quickstart. The first three often ship with reusable modular report scaffolds; quickstart's primary contract is the onboarding output itself, whether emitted directly or via reusable scaffolds.",
       "files": [],
       "expectations": [
-        "The response notes the common 4-file template split + shared resource convention",
-        "The response distinguishes each skill by its output (size report / diagram / self-test / quickstart)",
+        "The response notes that quickstart is defined primarily by its 7-section onboarding contract, not by a required internal file split",
+        "The response distinguishes each skill by its output (size report / diagram / test / quickstart)",
         "The response clarifies that the 4 are complementary"
       ]
     }

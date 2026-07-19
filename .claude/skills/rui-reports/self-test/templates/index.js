@@ -1,5 +1,5 @@
 /**
- * rui-report-self-test · page entry
+ * rui-report-test · page entry
  * ----------------------------------------------------------------------
  * Keeps a single entrypoint while the actual app logic lives in
  * app/*.js modules grouped by responsibility.
@@ -12,7 +12,7 @@
             window.RuiSelfTestApp.boot();
             return;
         }
-        console.error('[rui-report-self-test] boot module is missing.');
+        console.error('[rui-report-test] boot module is missing.');
     }
 
     if (document.readyState === 'loading') {

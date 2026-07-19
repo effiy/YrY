@@ -1,5 +1,5 @@
 /**
- * rui-report-self-test · page entry
+ * rui-report-test · page entry
  * ----------------------------------------------------------------------
  * Thin entry: waits for window.__vueLoadPromise (provided by the
  * shared loader), verifies REPORT_DATA + REPORT_CONFIG, then mounts
@@ -12,7 +12,7 @@
     // Resolve the loader path at runtime from the actual <script> tag
     // so the diagnostic banner names the real URL the browser tried
     // (and failed) to fetch — independent of the report's OUT_DIR.
-    // Falls back to the conventional 'docs/reports/self-test' relative
+    // Falls back to the conventional 'docs/reports/test' relative
     // path if the script tag is not reachable (e.g. when this file is
     // loaded outside the page context during unit tests).
     var LOADER_PATH_HINT = (function () {
@@ -37,7 +37,7 @@
         banner.id = 'vue-missing';
         banner.style.cssText = 'position:fixed;top:0;left:0;right:0;padding:16px;background:#ef4444;color:white;font-family:monospace;z-index:9999;white-space:pre-wrap;line-height:1.5;';
         var msg = (err && err.message) || String(err);
-        banner.textContent = '[rui-report-self-test] Vue failed to load: ' + msg +
+        banner.textContent = '[rui-report-test] Vue failed to load: ' + msg +
             '\nExpected loader at: ' + LOADER_PATH_HINT +
             '\nHint: open DevTools → Network and check the loader.js + Vue CDN requests.';
         document.body.appendChild(banner);
@@ -65,7 +65,7 @@
                 return mountApp();
             })
             .catch(function (err) {
-                console.error('[rui-report-self-test] boot failed:', err);
+                console.error('[rui-report-test] boot failed:', err);
                 showVueMissing(err);
             });
     }
@@ -115,11 +115,11 @@
                     grade: d.grade,
                     scope: c.options.scope,
                     generatedAtHuman: formatHuman(c.options.generatedAt),
-                    title: 'Self-Test Report — ' + c.options.scopeTitle,
-                    tagline: '6 self-test scenes · §0–§4 lifecycle · composite score ' + d.score + ' (' + d.grade + ')',
+                    title: 'test Report — ' + c.options.scopeTitle,
+                    tagline: '6 test scenes · §0–§4 lifecycle · composite score ' + d.score + ' (' + d.grade + ')',
                     breadcrumb: [
                         { label: 'Docs', href: '../index.html' },
-                        { label: 'Self-Test Report' }
+                        { label: 'test Report' }
                     ],
                     theme: c.options.theme || 'dark',
                     readingProgress: 0,
@@ -159,7 +159,7 @@
                     var sizeMB = ((s.totalBytes || 0) / (1024 * 1024)).toFixed(2);
                     var scope = d.scope || 'the project';
                     var headline = 'This report walks ' + fileCount + ' files (' + sizeMB + ' MiB) under ' + scope +
-                        ' and evaluates six canonical self-test scenes across the §0–§4 lifecycle. ';
+                        ' and evaluates six canonical test scenes across the §0–§4 lifecycle. ';
                     var breakdown = 'Composite score is ' + d.score + '/100 (grade ' + d.grade + '), driven by ' +
                         s.passCount + ' pass' + (s.passCount === 1 ? '' : 'es') + ', ' +
                         s.partialCount + ' partial, and ' + s.failCount + ' fail' + (s.failCount === 1 ? '' : 's') + '.';
@@ -368,7 +368,7 @@
                 toggleTheme: function () {
                     this.theme = this.theme === 'dark' ? 'light' : 'dark';
                     document.documentElement.setAttribute('data-rui-theme', this.theme);
-                    try { localStorage.setItem('rui-report-self-test-theme', this.theme); } catch (e) {}
+                    try { localStorage.setItem('rui-report-test-theme', this.theme); } catch (e) {}
                     renderMermaidDiagrams();
                 },
                 toggleMermaidSource: function (slug) {
@@ -406,7 +406,7 @@
             mounted: function () {
                 // Restore persisted theme
                 try {
-                    var stored = localStorage.getItem('rui-report-self-test-theme');
+                    var stored = localStorage.getItem('rui-report-test-theme');
                     if (stored === 'light' || stored === 'dark') {
                         this.theme = stored;
                         document.documentElement.setAttribute('data-rui-theme', this.theme);
@@ -461,7 +461,7 @@
                 app.mount(mountEl);
             } catch (err) {
                 // Retry once with a fresh mount target
-                console.warn('[rui-report-self-test] first mount failed, retrying:', err);
+                console.warn('[rui-report-test] first mount failed, retrying:', err);
                 var fresh = mountEl.cloneNode(false);
                 mountEl.parentNode.replaceChild(fresh, mountEl);
                 var app2 = window.Vue.createApp(RuiSelfTestApp);
@@ -580,7 +580,7 @@
             // ID must be unique per call site; Date.now() + the index
             // gives Mermaid a fresh DOM id so two re-renders don't
             // collide on the same #mermaid-xxx target.
-            var renderId = 'rui-self-test-mermaid-' + idx + '-' + Date.now();
+            var renderId = 'rui-test-mermaid-' + idx + '-' + Date.now();
             return Promise.resolve(
                 typeof mermaidApi.parse === 'function' ? mermaidApi.parse(src) : true
             ).then(function () {
@@ -596,7 +596,7 @@
                 }
                 el.setAttribute('data-processed', 'true');
             }).catch(function (err) {
-                console.warn('[rui-report-self-test] mermaid render failed:', err);
+                console.warn('[rui-report-test] mermaid render failed:', err);
                 showError(el, err, src);
             });
         }
@@ -619,7 +619,7 @@
         waitForMermaid()
             .then(renderAll)
             .catch(function (err) {
-                console.warn('[rui-report-self-test] Mermaid unavailable:', err);
+                console.warn('[rui-report-test] Mermaid unavailable:', err);
                 populateSources();
                 for (var i = 0; i < nodes.length; i++) {
                     showError(nodes[i], err, normalizeSource(nodes[i].getAttribute('data-mermaid-src')));

@@ -94,7 +94,7 @@ interface Failure {
 | `docs/index.html`, `index.css`, `index.js` | rui-init/templates/ (source of truth) | Copied by rui-init-generate |
 | `docs/data.js` | rui-init-generate (regenerated) | Read by docs dashboard |
 | `docs/arch/` | rui-init-arch | Read (all) |
-| `docs/self-test/` | rui-init-arch | Read (all) |
+| `docs/test/` | rui-init-arch | Read (all) |
 
 ## Degradation Countermeasures
 

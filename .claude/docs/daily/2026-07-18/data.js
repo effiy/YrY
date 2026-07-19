@@ -161,7 +161,7 @@
         {
           severity: 'red', category: 'test-coverage',
           name: 'Test / code ratio 4.4% (threshold 10%)',
-          hint: '1,161 test LOC vs 26,464 JS/MJS LOC, all 5 <code>*.test.js</code> files live inside <code>rui-reports/diagram/engine/</code>. The remaining 4 skill families (<code>rui-code</code>, <code>rui-init</code>, <code>rui-tools</code>, <code>rui-test</code>) and the <code>self-test</code> / <code>files</code> / <code>daily</code> / <code>quickstart</code> rui-reports sub-skills have zero test coverage.',
+          hint: '1,161 test LOC vs 26,464 JS/MJS LOC, all 5 <code>*.test.js</code> files live inside <code>rui-reports/diagram/engine/</code>. The remaining 4 skill families (<code>rui-code</code>, <code>rui-init</code>, <code>rui-tools</code>, <code>rui-test</code>) and the <code>test</code> / <code>files</code> / <code>daily</code> / <code>quickstart</code> rui-reports sub-skills have zero test coverage.',
           action: 'Move the test floor to at least the engine + one <code>rui-code</code> sub-skill in the next window; treat 0-test as a launch blocker for any new skill going forward.'
         },
         {
@@ -212,7 +212,7 @@
       skills: [
         { name: 'rui-code',    files: 338, skillMd: 9, evals: 9, references: 311, notes: '9 sub-skills (chrome, css, fastapi, h5, nginx, nodejs, tauri, vite, vue); 337 of 338 files added in the bulk 2026-07-17 commit' },
         { name: 'rui-init',    files: 52,  skillMd: 1, evals: 1, references: 12,  notes: '5-step pipeline (detect → explore → generate → arch → verify)' },
-        { name: 'rui-reports', files: 256, skillMd: 5, evals: 4, references: 27,  notes: '5 sub-skills: daily, diagram, files, quickstart, self-test; diagram engine (113 files, 10.1K LOC) is the dominant sub-product' },
+        { name: 'rui-reports', files: 256, skillMd: 5, evals: 4, references: 27,  notes: '5 sub-skills: daily, diagram, files, quickstart, test; diagram engine (113 files, 10.1K LOC) is the dominant sub-product' },
         { name: 'rui-test',    files: 21,  skillMd: 1, evals: 1, references: 14,  notes: 'Smallest skill; 0 TODO/FIXME markers' },
         { name: 'rui-tools',   files: 220, skillMd: 10, evals: 8, references: 36, notes: '10 sub-skills (cc, git, github, import, lighthouse, mermaid, public-api, skill, tmux, ui-ux); ui-ux bundle is the font-asset anchor' }
       ],

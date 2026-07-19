@@ -3,7 +3,7 @@ name: rui-init-arch
 description: >
   Build the project's two story directories from the detect + explore
   outputs: arch (system architecture knowledge) and
-  self-test (self-check strategy). All generated story directories and
+  test (self-check strategy). All generated story directories and
   files live under `docs/`. Each scene directory ships an `index.md`
   following the §0–§4 lifecycle. Run this skill after
   rui-init-generate, before rui-init-verify.
@@ -13,18 +13,18 @@ description: >
 
 > Single responsibility: emit the two story directories
 > `docs/arch` (system architecture knowledge) and
-> `docs/self-test` (self-check strategy) under the docs root.
+> `docs/test` (self-check strategy) under the docs root.
 > This skill does not run tests, does not generate maturity reports,
 > and does not verify the artifacts — those are separate skills.
 >
 > Triggered by the parent pipeline (rui-init), right after
 > rui-init-generate.
 >
-> **Story naming**: `arch` and `self-test`
+> **Story naming**: `arch` and `test`
 > (kebab-case, lowercase). For example, a project named `rui`
-> produces `rui-arch` and `rui-self-test`.
+> produces `rui-arch` and `rui-test`.
 
-[Inputs](#inputs) · [Outputs](#outputs) · [1. arch Layout](#1-arch-layout) · [2. self-test Layout](#2-self-test-layout) · [3. Scene §0–§4 Lifecycle](#3-scene-04-lifecycle) · [Fallback](#fallback) · [Active Markers](#active-markers)
+[Inputs](#inputs) · [Outputs](#outputs) · [1. arch Layout](#1-arch-layout) · [2. test Layout](#2-test-layout) · [3. Scene §0–§4 Lifecycle](#3-scene-04-lifecycle) · [Fallback](#fallback) · [Active Markers](#active-markers)
 
 ## Inputs
 
@@ -41,7 +41,7 @@ description: >
 | `docs/arch/` | System architecture story |
 | `docs/arch/scene-N-<slug>/` | ≥ 5 architecture reference scenes |
 | `docs/arch/scene-N-<slug>/index.md` | Per-scene full lifecycle (§0–§4) |
-| `docs/self-test/` | Self-check story (same internal layout) |
+| `docs/test/` | Self-check story (same internal layout) |
 
 ## 1. arch Layout
 
@@ -69,7 +69,7 @@ Additional scenes are allowed.
 All `arch` outputs live under `docs/arch/`; nothing is written to the
 project root.
 
-## 2. self-test Layout
+## 2. test Layout
 
 Built from the baseline docs, docs home entry, and the project type /
 inventory.
@@ -89,7 +89,7 @@ inventory.
 
 Additional scenes are allowed.
 
-All `self-test` outputs live under `docs/self-test/`; nothing is
+All `test` outputs live under `docs/test/`; nothing is
 written to the project root.
 
 ## 3. Scene §0–§4 Lifecycle
@@ -111,10 +111,10 @@ structured graph file.
 | Situation | Behavior |
 |-----------|----------|
 | `cwd` does not exist | Abort with `cwd-not-found` |
-| Module map is empty | Emit a single "stub" scene in `docs/arch` with a `# TODO: module map empty` note; `docs/self-test` is still fully populated |
+| Module map is empty | Emit a single "stub" scene in `docs/arch` with a `# TODO: module map empty` note; `docs/test` is still fully populated |
 | A scene cannot be emitted | Abort the entire arch emit; let the parent pipeline surface the failure to rui-init-verify |
 | `docs/arch/` already exists | **Full rebuild** — overwrite the directory contents |
-| `docs/self-test/` already exists | **Full rebuild** — overwrite the directory contents |
+| `docs/test/` already exists | **Full rebuild** — overwrite the directory contents |
 
 ## Active Markers
 
@@ -123,9 +123,9 @@ structured graph file.
 | `docs/arch/` exists | `test -d` | Pipeline may proceed |
 | `docs/arch/` has ≥ 5 scenes | count | Pipeline may proceed |
 | Every scene has `index.md` | per-scene check | Pipeline may proceed |
-| `docs/self-test/` exists | `test -d` | Pipeline may proceed |
-| `docs/self-test/` has ≥ 6 scenes | count | Pipeline may proceed |
-| Every self-test scene has `index.md` | per-scene check | Pipeline may proceed |
+| `docs/test/` exists | `test -d` | Pipeline may proceed |
+| `docs/test/` has ≥ 6 scenes | count | Pipeline may proceed |
+| Every test scene has `index.md` | per-scene check | Pipeline may proceed |
 
 
 ## Rules
@@ -141,7 +141,7 @@ structured graph file.
 ## References
 
 - [scene-catalog.md](./references/scene-catalog.md) — ---
-- [self-test-scenes.md](./references/self-test-scenes.md) — ---
+- [test-scenes.md](./references/test-scenes.md) — ---
 
 ## Rules
 
@@ -156,7 +156,7 @@ structured graph file.
 ## References
 
 - [scene-catalog.md](./references/scene-catalog.md) — ---
-- [self-test-scenes.md](./references/self-test-scenes.md) — ---
+- [test-scenes.md](./references/test-scenes.md) — ---
 
 ## Templates
 

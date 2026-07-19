@@ -149,7 +149,7 @@ When a check fails:
 4. Suggest the fix (from the "Failure behavior" column) and
    mention `--no-validate` as the escape hatch.
 
-## Self-test
+## test
 
 Run the validation against `references/plan-examples.md` (the
 worked `billing-service` example). The example should pass every

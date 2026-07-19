@@ -1,5 +1,5 @@
 ---
-description: "Architecture scene index.md template — §0–§4 lifecycle structure for both arch and self-test scenes."
+description: "Architecture scene index.md template — §0–§4 lifecycle structure for both arch and test scenes."
 ---
 
 # Scene index.md Template

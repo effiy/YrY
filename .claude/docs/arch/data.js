@@ -36,7 +36,7 @@
          │ rui-docs  · rui-cto              │  │                    │
          └──────────────────────────────────┘  └────────────────────┘
          ┌──── Generated Documentation (docs/) ────┐
-         │ CLAUDE.md · README.md · arch/ (5) · self-test/ (6) · 8 dashboards │
+         │ CLAUDE.md · README.md · arch/ (5) · test/ (6) · 8 dashboards │
          └──────────────────────────────────────────────────────────────┘
          ┌──── External Stores ────┐
          │ npm registry · GitHub · knowledge-base (references/)          │
@@ -48,7 +48,7 @@
     '     aria-labelledby="diagram-title diagram-desc"',
     '     xmlns="http://www.w3.org/2000/svg">',
     '  <title id="diagram-title">.claude Skills Catalog — Architecture Diagram</title>',
-    '  <desc id="diagram-desc">Claude Desktop app loads 27 SKILL.md manifests from 8 skill groups (rui-init, rui-reports, rui-code, rui-tools, rui-test, rui-questions, rui-docs, rui-cto). rui-init writes CLAUDE.md, 5 architecture scenes, 6 self-test scenes, and 8 rui-report dashboard pages. All dashboards render via a shared substrate of 12 Vue 3 components, 1 loader, and 4 vendored libraries (vue, html2canvas, jspdf, xlsx). External supplies: npm registry (18 runtime + 1 dev dependency) and GitHub (7 knowledge repositories for rui-questions).</desc>',
+    '  <desc id="diagram-desc">Claude Desktop app loads 27 SKILL.md manifests from 8 skill groups (rui-init, rui-reports, rui-code, rui-tools, rui-test, rui-questions, rui-docs, rui-cto). rui-init writes CLAUDE.md, 5 architecture scenes, 6 test scenes, and 8 rui-report dashboard pages. All dashboards render via a shared substrate of 12 Vue 3 components, 1 loader, and 4 vendored libraries (vue, html2canvas, jspdf, xlsx). External supplies: npm registry (18 runtime + 1 dev dependency) and GitHub (7 knowledge repositories for rui-questions).</desc>',
 
     /* ── 1. Definitions ── */
     '  <defs>',
@@ -124,7 +124,7 @@
     '  <line x1="225" y1="350" x2="415" y2="720" stroke="#fb923c" stroke-width="1.5" marker-end="url(#arrow-orange)"/>',
     '  <text x="320" y="540" fill="#fb923c" font-size="8">write</text>',
 
-    /* rui-init → self-test (orange) */
+    /* rui-init → test (orange) */
     '  <line x1="245" y1="350" x2="675" y2="720" stroke="#fb923c" stroke-width="1.5" marker-end="url(#arrow-orange)"/>',
     '  <text x="460" y="540" fill="#fb923c" font-size="8">write</text>',
 
@@ -333,10 +333,10 @@
     '  <text x="320" y="752" fill="#94a3b8" font-size="8">• module-location</text>',
     '  <text x="320" y="766" fill="#94a3b8" font-size="8">• skill-composition-flow</text>',
 
-    /* Generated docs: self-test/ (6 scenes) */
+    /* Generated docs: test/ (6 scenes) */
     '  <rect x="570" y="685" width="220" height="90" fill="rgba(167, 139, 250, 0.10)" stroke="#a78bfa" stroke-width="1.5" rx="6"/>',
-    '  <text x="680" y="712" fill="white" font-size="12" font-weight="700" text-anchor="middle">docs/self-test/</text>',
-    '  <text x="680" y="730" fill="#a78bfa" font-size="9" text-anchor="middle">6 self-test scenes · 7/7 pass</text>',
+    '  <text x="680" y="712" fill="white" font-size="12" font-weight="700" text-anchor="middle">docs/test/</text>',
+    '  <text x="680" y="730" fill="#a78bfa" font-size="9" text-anchor="middle">6 test scenes · 7/7 pass</text>',
     '  <text x="580" y="752" fill="#94a3b8" font-size="8">• post-init · pre-commit</text>',
     '  <text x="580" y="766" fill="#94a3b8" font-size="8">• doc-code · security · ...</text>',
 
@@ -461,7 +461,7 @@
   var executiveSummary = [
     { color: 'cyan',    title: '8 Skill Groups', content: 'rui-init · rui-reports · rui-code · rui-tools · rui-test · rui-questions · rui-docs · rui-cto — 27 SKILL.md manifests totaling 844 files under skills/.' },
     { color: 'emerald', title: 'Shared Substrate', content: '12 Vue 3 components + 1 loader + 4 vendored libs (vue@3.4.27, html2canvas@1.4.1, jspdf@2.5.2, xlsx@0.20.3) reused across every generated page in docs/.' },
-    { color: 'violet',  title: 'Generated Docs',  content: 'rui-init\'s 5-step pipeline produces CLAUDE.md, README.md, 5 architecture scenes, 6 self-test scenes, and 8 rui-report dashboard pages — all rendered through the shared substrate.' }
+    { color: 'violet',  title: 'Generated Docs',  content: 'rui-init\'s 5-step pipeline produces CLAUDE.md, README.md, 5 architecture scenes, 6 test scenes, and 8 rui-report dashboard pages — all rendered through the shared substrate.' }
   ];
 
   var toc = [
@@ -478,7 +478,7 @@
     { label: 'Vue components',     value: '12',  valueClass: 'amber',  sub: 'shared/components/' },
     { label: 'Vendored libs',      value: '4',   valueClass: 'amber',  sub: 'vue · html2canvas · jspdf · xlsx' },
     { label: 'Arch scenes',        value: '5',   valueClass: 'violet', sub: 'docs/arch/ · §0–§4 lifecycle' },
-    { label: 'Self-test scenes',   value: '6',   valueClass: 'violet', sub: 'docs/self-test/ · 7/7 AC pass' },
+    { label: 'test scenes',   value: '6',   valueClass: 'violet', sub: 'docs/test/ · 7/7 AC pass' },
     { label: 'rui-report pages',   value: '8',   valueClass: 'violet', sub: 'size · risk · health · ...' },
     { label: 'Total files',        value: '943', valueClass: 'cyan',   sub: '582 markdown · 181 js · 60 json' }
   ];
@@ -490,7 +490,7 @@
       items: [
         '<strong>Skill-discovery entry</strong>: Claude Desktop\'s Skill Tool loads 27 SKILL.md manifests across 8 skill groups, each with its own invocation command (/rui-init, /rui-report-diagram, /rui-code-vue, etc.).',
         '<strong>Catalog is the artifact</strong>: skills/ contains the manifests + steps + references — there is no application runtime. The .claude catalog is a knowledge graph encoded as Markdown + Vue 3 dashboards.',
-        '<strong>Shared substrate is the constant</strong>: every generated page (CLAUDE.md home, 5 arch scenes, 6 self-test scenes, 8 rui-report pages) renders through the same 12 Vue components + 4 vendored libraries.',
+        '<strong>Shared substrate is the constant</strong>: every generated page (CLAUDE.md home, 5 arch scenes, 6 test scenes, 8 rui-report pages) renders through the same 12 Vue components + 4 vendored libraries.',
         '<strong>rui-init is the bootstrap</strong>: 5-step detect → explore → generate → arch → verify pipeline regenerates the docs/ tree from the skills/ tree, with evals/ providing regression coverage.'
       ]
     },
@@ -511,7 +511,7 @@
         '<strong>Runtime: zero</strong>: the catalog has no Node server, no database, no message bus. It is served by Claude Desktop itself under the /.claude/shared/ URL prefix with vue@3.4.27 as the only global.',
         '<strong>Dependencies: scoped</strong>: 18 runtime + 1 dev dep are confined to the 3 ESM packages — rui-reports/diagram (graphology + tree-sitter × 9), tree-sitter-dart-wasm, and rui-tools/mermaid.',
         '<strong>Security surface: local</strong>: no public CDN, no /favicon.ico 404, all scripts resolve to /.claude/shared/vendor/...; rui-toast uses callerSrc snapshot, Vue 3 multi-root avoided via template refs.',
-        '<strong>Observability: built-in</strong>: rui-test (12 fixture-based topics) + rui-init 05-verify (7-point readiness check) + docs/self-test/ (6 scene regression) form a 3-layer testing spine; evals/ holds with/without-skill comparison.'
+        '<strong>Observability: built-in</strong>: rui-test (12 fixture-based topics) + rui-init 05-verify (7-point readiness check) + docs/test/ (6 scene regression) form a 3-layer testing spine; evals/ holds with/without-skill comparison.'
       ]
     }
   ];
@@ -520,7 +520,7 @@
     { badge: 'detect',   badgeClass: 'dev',  info: 'manifest-parser<br/>project-classifier' },
     { badge: 'explore',  badgeClass: 'dev',  info: 'module-graph-builder<br/>convention-detector' },
     { badge: 'generate', badgeClass: 'stg',  info: 'CLAUDE.md · README.md<br/>8 rui-report pages' },
-    { badge: 'arch',     badgeClass: 'stg',  info: '5 arch scenes<br/>6 self-test scenes' },
+    { badge: 'arch',     badgeClass: 'stg',  info: '5 arch scenes<br/>6 test scenes' },
     { badge: 'verify',   badgeClass: 'prod', info: '7-point readiness<br/>3-layer testing' }
   ];
 
@@ -543,7 +543,7 @@
     { term: 'SKILL.md',        termClass: 'cyan',    def: 'Claude skill manifest (YAML front-matter + Markdown body). 27 instances under skills/, one per invocable sub-skill.' },
     { term: 'rui-init',        termClass: 'orange',  def: '5-step initialization pipeline (detect → explore → generate → arch → verify) that regenerates docs/ from source files.' },
     { term: 'shared/',         termClass: 'amber',   def: 'Cross-skill UI substrate: 12 Vue 3 components + 1 loader + 4 vendored libraries, served at /.claude/shared/... by Claude Desktop.' },
-    { term: 'docs/',           termClass: 'violet',  def: 'Generated documentation output (CLAUDE.md, README.md, arch/, self-test/, files/) — regenerated by rui-init on every full rebuild.' },
+    { term: 'docs/',           termClass: 'violet',  def: 'Generated documentation output (CLAUDE.md, README.md, arch/, test/, files/) — regenerated by rui-init on every full rebuild.' },
     { term: 'scene',           termClass: 'violet',  def: 'A 5-section lifecycle document (§0 effect sketch · §1 test design · §2 output inventory · §3 test report · §4 self-improvement).' },
     { term: 'Knowledge graph', termClass: 'rose',    def: 'A typed graph (nodes + edges) built by rui-reports/diagram\'s engine using graphology + tree-sitter — source of truth for diagram layout.' },
     { term: '4-file split',    termClass: 'emerald', def: 'Conventions for splitting a Vue 3 dashboard into index.html (DOM + script wiring) + index.css (layered CSS) + data.js (pure data) + index.js (Vue app + composables).' },

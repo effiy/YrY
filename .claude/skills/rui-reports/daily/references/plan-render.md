@@ -313,7 +313,7 @@ It uses standard markdown:
 Tier exclusion produces the same single line
 (`— excluded via --tiers —`) as the HTML.
 
-## Self-test
+## test
 
 Run the renderer against `references/plan-examples.md` (the
 worked `billing-service` example). The example should:

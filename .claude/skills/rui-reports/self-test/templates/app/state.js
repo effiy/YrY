@@ -1,5 +1,5 @@
 /**
- * app/state.js — page state and derived data for the self-test report.
+ * app/state.js — page state and derived data for the test report.
  */
 (function () {
     'use strict';
@@ -24,7 +24,7 @@
         var sizeMB = ((summary.totalBytes || 0) / (1024 * 1024)).toFixed(2);
         var scope = vm.scope || 'the project';
         var headline = 'This report walks ' + fileCount + ' files (' + sizeMB + ' MiB) under ' + scope +
-            ' and evaluates six canonical self-test scenes across the §0–§4 lifecycle. ';
+            ' and evaluates six canonical test scenes across the §0–§4 lifecycle. ';
         var breakdown = 'Composite score is ' + vm.score + '/100 (grade ' + vm.grade + '), driven by ' +
             summary.passCount + ' pass' + (summary.passCount === 1 ? '' : 'es') + ', ' +
             summary.partialCount + ' partial, and ' + summary.failCount + ' fail' + (summary.failCount === 1 ? '' : 's') + '.';
@@ -198,11 +198,11 @@
             scope: options.scope || data.scope || '',
             facets: data.facets || {},
             generatedAtHuman: RuiSelfTestApp.formatHuman(options.generatedAt),
-            title: 'Self-Test Report — ' + (options.scopeTitle || options.scope || ''),
-            tagline: '6 self-test scenes · §0–§4 lifecycle · composite score ' + (data.score || 0) + ' (' + (data.grade || 'F') + ')',
+            title: 'test Report — ' + (options.scopeTitle || options.scope || ''),
+            tagline: '6 test scenes · §0–§4 lifecycle · composite score ' + (data.score || 0) + ' (' + (data.grade || 'F') + ')',
             breadcrumb: [
                 { label: 'Docs', href: '../index.html' },
-                { label: 'Self-Test Report' },
+                { label: 'test Report' },
             ],
             theme: options.theme || 'dark',
             readingProgress: 0,

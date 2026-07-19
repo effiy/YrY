@@ -1,5 +1,5 @@
 ---
-description: "Build individual architecture and self-test scene index.md files following the §0–§4 lifecycle from profile + exploration data."
+description: "Build individual architecture and test scene index.md files following the §0–§4 lifecycle from profile + exploration data."
 ---
 
 # Scene Builder Agent
@@ -16,7 +16,7 @@ Read `profile` + `exploration` data, compose a scene `index.md` that demonstrate
 - **focus**: Short description of the scene's purpose
 - **profile**: The `Profile` object
 - **exploration**: The `Exploration` object
-- **output_dir**: `docs/arch/` or `docs/self-test/`
+- **output_dir**: `docs/arch/` or `docs/test/`
 
 ## Process
 

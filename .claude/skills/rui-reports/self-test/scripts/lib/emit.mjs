@@ -91,7 +91,7 @@ export function mirrorScenesAsMarkdown({
     scenes,
     scopeTitle,
 }) {
-    const mirrorRoot = path.resolve(outDir, '..', 'self-test');
+    const mirrorRoot = path.resolve(outDir, '..', 'test');
     fs.mkdirSync(mirrorRoot, { recursive: true });
 
     for (const scene of scenes) {

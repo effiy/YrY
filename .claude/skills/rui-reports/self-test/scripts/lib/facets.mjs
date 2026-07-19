@@ -32,7 +32,7 @@ const DANGEROUS_PATTERNS = [
     { re: /child_process\.(exec|spawn)\s*\(/g, name: 'child_process.exec/spawn' },
 ];
 
-const STORY_DIRS = ['docs/arch', 'docs/self-test', 'docs/reports'];
+const STORY_DIRS = ['docs/arch', 'docs/test', 'docs/reports'];
 const FILE_LINK_RE = /\[([^\]]+)\]\(([^)]+\.[a-z]{1,5})\)/gi;
 
 export function buildTestFacet(records) {

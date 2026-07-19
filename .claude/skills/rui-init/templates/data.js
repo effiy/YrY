@@ -95,13 +95,13 @@ window.HELP_CONFIG = {
         {icon: '📁', name: 'Files Report', desc: 'Codebase analysis', color: 'var(--rui-accent)', panel: 'files'},
         // Per-button override: this one reverts to same-tab even though
         // panelHub.targetBlank is true.
-        {icon: '✅', name: 'Self-test', desc: 'Self-check strategy', color: 'var(--rui-cyan)', panel: 'self-test', targetBlank: false},
+        {icon: '✅', name: 'test', desc: 'Self-check strategy', color: 'var(--rui-cyan)', panel: 'test', targetBlank: false},
     ],
     flow: 'File Analysis → Code Review → Health Audit → Tech Trends',
     urls: {
         arch:          'arch/index.html',
         files:         'files/index.html',
-        'self-test':   'self-test/index.html',
+        'test':   'test/index.html',
     },
   },
 
@@ -282,7 +282,7 @@ window.HELP_CONFIG = {
         {
           kind:  "stories",
           icon:  "📚",
-          title: "Story Catalog (arch + self-test)",
+          title: "Story Catalog (arch + test)",
           items: [
             {
               icon:        "🏛",
@@ -307,15 +307,15 @@ window.HELP_CONFIG = {
               badge:       "6 scenes",
               description: "Vue + Vitest unit-test coverage · <strong>6 test scenes</strong> · full green suite · cross-story integration",
               sceneLinks: [
-                { label: "1. Post-Init Self-Check",    href: "self-test/scene-1-post-init-full-self-check/index.md" },
-                { label: "2. Pre-Commit Self-Check",  href: "self-test/scene-2-pre-commit-incremental-self-check/index.md" },
-                { label: "3. Doc Consistency",         href: "self-test/scene-3-doc-code-consistency/index.md" },
-                { label: "4. Security Regression",     href: "self-test/scene-4-security-surface-regression/index.md" },
-                { label: "5. Integration Regression",  href: "self-test/scene-5-cross-story-integration-regression/index.md" },
-                { label: "6. Third-Party Services",   href: "self-test/scene-6-third-party-framework-service/index.md" }
+                { label: "1. Post-Init Self-Check",    href: "test/scene-1-post-init-full-self-check/index.md" },
+                { label: "2. Pre-Commit Self-Check",  href: "test/scene-2-pre-commit-incremental-self-check/index.md" },
+                { label: "3. Doc Consistency",         href: "test/scene-3-doc-code-consistency/index.md" },
+                { label: "4. Security Regression",     href: "test/scene-4-security-surface-regression/index.md" },
+                { label: "5. Integration Regression",  href: "test/scene-5-cross-story-integration-regression/index.md" },
+                { label: "6. Third-Party Services",   href: "test/scene-6-third-party-framework-service/index.md" }
               ],
               links: [
-                { label: "Self-test Dashboard →", href: "self-test/index.html" }
+                { label: "test Dashboard →", href: "test/index.html" }
               ],
               meta: "6 scenes · risk: low · 80% line coverage"
             }

@@ -61,8 +61,8 @@ proceed.
 | 3 | `README.md` contains `## Domain Language` + ≥ 3 terms | `grep` + count of term definitions | Add domain-language section |
 | 4 | `docs/index.html`, `docs/index.css`, `docs/index.js`, `docs/data.js` all exist | file check | Re-run rui-init-generate and restore the docs home entry |
 | 5 | `docs/arch/` directory exists and each scene has `index.md` | directory + per-scene check | Re-run rui-init-arch or add missing `index.md` |
-| 6 | `docs/self-test/` directory exists and each scene has `index.md` | directory + per-scene check | Re-run rui-init-arch or add missing `index.md` |
-| 7 | `docs/arch/` scene count ≥ 5, `docs/self-test/` scene count ≥ 6 | Count | Add scenes |
+| 6 | `docs/test/` directory exists and each scene has `index.md` | directory + per-scene check | Re-run rui-init-arch or add missing `index.md` |
+| 7 | `docs/arch/` scene count ≥ 5, `docs/test/` scene count ≥ 6 | Count | Add scenes |
 
 ### Check 3 — Domain Language Term Count
 

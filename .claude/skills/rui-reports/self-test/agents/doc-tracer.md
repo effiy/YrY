@@ -74,10 +74,10 @@ Return the link audit:
   "brokenRatio": 0.021,
   "byFile": {
     "docs/arch/scene-1-module-location/index.md": { "total": 8, "broken": 0 },
-    "docs/self-test/scene-3-doc-code-consistency/index.md": { "total": 12, "broken": 1 }
+    "docs/test/scene-3-doc-code-consistency/index.md": { "total": 12, "broken": 1 }
   },
   "brokenExamples": [
-    { "file": "docs/self-test/scene-3-doc-code-consistency/index.md", "target": "missing/path.md" }
+    { "file": "docs/test/scene-3-doc-code-consistency/index.md", "target": "missing/path.md" }
   ]
 }
 ```

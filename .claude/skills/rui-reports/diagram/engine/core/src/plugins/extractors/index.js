@@ -1,7 +1,7 @@
 /**
  * Aggregator: every concrete language extractor must be registered here.
  *
- * Refactor note (2026-07-18): C#, Dart, and PHP extractors were removed from
+ * Refactor note (2026-07-19): C#, Dart, Kotlin, and PHP extractors were removed from
  * the built-in tree-sitter set. Keep this list in sync with
  * `languages/configs/index.js` so default plugin registration only advertises
  * languages with shipped extraction support.
@@ -11,7 +11,6 @@ import { RustExtractor } from "./rust/index.js";
 import { GoExtractor } from "./go-extractor.js";
 import { PythonExtractor } from "./python-extractor.js";
 import { JavaExtractor } from "./java-extractor.js";
-import { KotlinExtractor } from "./kotlin-extractor.js";
 import { RubyExtractor } from "./ruby-extractor.js";
 import { TypeScriptExtractor } from "./typescript-extractor.js";
 
@@ -21,7 +20,6 @@ export {
     GoExtractor,
     PythonExtractor,
     JavaExtractor,
-    KotlinExtractor,
     RubyExtractor,
     TypeScriptExtractor,
 };
@@ -33,6 +31,5 @@ export const builtinExtractors = [
     new GoExtractor(),
     new PythonExtractor(),
     new JavaExtractor(),
-    new KotlinExtractor(),
     new RubyExtractor(),
 ];

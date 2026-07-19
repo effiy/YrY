@@ -82,7 +82,7 @@ log while triggering hotkey.
 | AC-5 | restart with `app_theme=dark` | dark theme on relaunch |
 | AC-6 | `appConfigDir()/log/*.log` | new lines within 100 ms |
 
-## Self-test artefacts to capture
+## test artefacts to capture
 
 | Artefact | Where |
 |----------|------|

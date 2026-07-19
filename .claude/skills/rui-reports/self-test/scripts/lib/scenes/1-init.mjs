@@ -66,7 +66,7 @@ flowchart LR
             outputs: [
                 { path: 'CLAUDE.md', type: 'file', description: 'Claude project context — encodes profile, iron laws, and navigation table for AI assistants.' },
                 { path: 'README.md', type: 'file', description: 'Human-readable project overview — first file a new contributor reads on GitHub.' },
-                { path: 'docs/', type: 'dir', description: 'Generated documentation tree — arch/ and self-test/ story scenes plus the dashboard home.' },
+                { path: 'docs/', type: 'dir', description: 'Generated documentation tree — arch/ and test/ story scenes plus the dashboard home.' },
                 { path: 'package.json', type: 'file', description: 'Project manifest — declares the test script and the dependency surface for Node ecosystems.' },
                 { path: 'docs/.pipeline-state/profile.json', type: 'file', description: 'Pipeline state snapshot — the deterministic input for the next /rui-init rebuild.' },
             ],

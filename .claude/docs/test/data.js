@@ -26,7 +26,7 @@ window.REPORT_CONFIG = {
     ]
   },
   "labels": {
-    "compositeScoreLabel": "Composite Self-Test Score",
+    "compositeScoreLabel": "Composite test Score",
     "gradeLabel": "Grade",
     "verdictLabel": "Verdict",
     "coverageLabel": "Coverage",
@@ -73,16 +73,16 @@ window.REPORT_DATA = {
       "codeCount": 556,
       "docRatio": 0.018,
       "files": [
-        "docs/self-test/data.js",
-        "docs/self-test/index.css",
-        "docs/self-test/index.html",
-        "docs/self-test/index.js",
-        "docs/self-test/scene-1-post-init-full-self-check/index.md",
-        "docs/self-test/scene-2-pre-commit-incremental-self-check/index.md",
-        "docs/self-test/scene-3-doc-code-consistency/index.md",
-        "docs/self-test/scene-4-security-surface-regression/index.md",
-        "docs/self-test/scene-5-cross-story-integration-regression/index.md",
-        "docs/self-test/scene-6-third-party-framework-service/index.md"
+        "docs/test/data.js",
+        "docs/test/index.css",
+        "docs/test/index.html",
+        "docs/test/index.js",
+        "docs/test/scene-1-post-init-full-self-check/index.md",
+        "docs/test/scene-2-pre-commit-incremental-self-check/index.md",
+        "docs/test/scene-3-doc-code-consistency/index.md",
+        "docs/test/scene-4-security-surface-regression/index.md",
+        "docs/test/scene-5-cross-story-integration-regression/index.md",
+        "docs/test/scene-6-third-party-framework-service/index.md"
       ],
       "missingReadme": true,
       "missingClaude": true,
@@ -94,43 +94,43 @@ window.REPORT_DATA = {
       "dangerousCallCount": 28,
       "dangerousCalls": [
         {
-          "file": "docs/self-test/data.js",
+          "file": "docs/test/data.js",
           "kind": "eval()"
         },
         {
-          "file": "docs/self-test/data.js",
+          "file": "docs/test/data.js",
           "kind": "new Function()"
         },
         {
-          "file": "docs/self-test/data.js",
+          "file": "docs/test/data.js",
           "kind": "innerHTML assignment"
         },
         {
-          "file": "docs/self-test/data.js",
+          "file": "docs/test/data.js",
           "kind": "document.write"
         },
         {
-          "file": "docs/self-test/data.js",
+          "file": "docs/test/data.js",
           "kind": "dangerouslySetInnerHTML"
         },
         {
-          "file": "docs/self-test/scene-4-security-surface-regression/index.md",
+          "file": "docs/test/scene-4-security-surface-regression/index.md",
           "kind": "eval()"
         },
         {
-          "file": "docs/self-test/scene-4-security-surface-regression/index.md",
+          "file": "docs/test/scene-4-security-surface-regression/index.md",
           "kind": "new Function()"
         },
         {
-          "file": "docs/self-test/scene-4-security-surface-regression/index.md",
+          "file": "docs/test/scene-4-security-surface-regression/index.md",
           "kind": "innerHTML assignment"
         },
         {
-          "file": "docs/self-test/scene-4-security-surface-regression/index.md",
+          "file": "docs/test/scene-4-security-surface-regression/index.md",
           "kind": "document.write"
         },
         {
-          "file": "docs/self-test/scene-4-security-surface-regression/index.md",
+          "file": "docs/test/scene-4-security-surface-regression/index.md",
           "kind": "dangerouslySetInnerHTML"
         },
         {
@@ -180,7 +180,7 @@ window.REPORT_DATA = {
     "refs": {
       "storyDirCount": 1,
       "storyDirs": [
-        "docs/self-test"
+        "docs/test"
       ],
       "mdFileCount": 35,
       "totalLinks": 0,
@@ -380,7 +380,7 @@ window.REPORT_DATA = {
           {
             "path": "docs/",
             "type": "dir",
-            "description": "Generated documentation tree — arch/ and self-test/ story scenes plus the dashboard home."
+            "description": "Generated documentation tree — arch/ and test/ story scenes plus the dashboard home."
           },
           {
             "path": "package.json",
@@ -648,42 +648,42 @@ window.REPORT_DATA = {
       "section2": {
         "outputs": [
           {
-            "path": "docs/self-test/data.js",
+            "path": "docs/test/data.js",
             "type": "file",
             "description": "Documentation file — content is not validated, only existence."
           },
           {
-            "path": "docs/self-test/index.css",
+            "path": "docs/test/index.css",
             "type": "file",
             "description": "Documentation file — content is not validated, only existence."
           },
           {
-            "path": "docs/self-test/index.html",
+            "path": "docs/test/index.html",
             "type": "file",
             "description": "Documentation file — content is not validated, only existence."
           },
           {
-            "path": "docs/self-test/index.js",
+            "path": "docs/test/index.js",
             "type": "file",
             "description": "Documentation file — content is not validated, only existence."
           },
           {
-            "path": "docs/self-test/scene-1-post-init-full-self-check/index.md",
+            "path": "docs/test/scene-1-post-init-full-self-check/index.md",
             "type": "file",
             "description": "Documentation file — content is not validated, only existence."
           },
           {
-            "path": "docs/self-test/scene-2-pre-commit-incremental-self-check/index.md",
+            "path": "docs/test/scene-2-pre-commit-incremental-self-check/index.md",
             "type": "file",
             "description": "Documentation file — content is not validated, only existence."
           },
           {
-            "path": "docs/self-test/scene-3-doc-code-consistency/index.md",
+            "path": "docs/test/scene-3-doc-code-consistency/index.md",
             "type": "file",
             "description": "Documentation file — content is not validated, only existence."
           },
           {
-            "path": "docs/self-test/scene-4-security-surface-regression/index.md",
+            "path": "docs/test/scene-4-security-surface-regression/index.md",
             "type": "file",
             "description": "Documentation file — content is not validated, only existence."
           }
@@ -694,7 +694,7 @@ window.REPORT_DATA = {
           {
             "step": "10 documentation file(s) present",
             "result": "✅",
-            "notes": "10 documentation file(s) detected. Sample: docs/self-test/data.js, docs/self-test/index.css, docs/self-test/index.html."
+            "notes": "10 documentation file(s) detected. Sample: docs/test/data.js, docs/test/index.css, docs/test/index.html."
           },
           {
             "step": "README present at root",
@@ -790,7 +790,7 @@ window.REPORT_DATA = {
             "title": "Detect dangerous API calls",
             "action": "Scan every source file (< 256 KiB) for: eval(, new Function(, innerHTML=, document.write(, dangerouslySetInnerHTML, child_process.exec/spawn(. Record file + kind for each match.",
             "expected": "Zero new occurrences since last baseline; current total: 28.",
-            "file": "docs/self-test/data.js"
+            "file": "docs/test/data.js"
           },
           {
             "title": "Count HTML entry points",
@@ -809,27 +809,27 @@ window.REPORT_DATA = {
       "section2": {
         "outputs": [
           {
-            "path": "docs/self-test/data.js",
+            "path": "docs/test/data.js",
             "type": "file",
             "description": "Dangerous call: eval() — review for sanitization / input validation."
           },
           {
-            "path": "docs/self-test/data.js",
+            "path": "docs/test/data.js",
             "type": "file",
             "description": "Dangerous call: new Function() — review for sanitization / input validation."
           },
           {
-            "path": "docs/self-test/data.js",
+            "path": "docs/test/data.js",
             "type": "file",
             "description": "Dangerous call: innerHTML assignment — review for sanitization / input validation."
           },
           {
-            "path": "docs/self-test/data.js",
+            "path": "docs/test/data.js",
             "type": "file",
             "description": "Dangerous call: document.write — review for sanitization / input validation."
           },
           {
-            "path": "docs/self-test/data.js",
+            "path": "docs/test/data.js",
             "type": "file",
             "description": "Dangerous call: dangerouslySetInnerHTML — review for sanitization / input validation."
           }
@@ -845,7 +845,7 @@ window.REPORT_DATA = {
           {
             "step": "No hard-coded secrets in source",
             "result": "⚠️",
-            "notes": "28 dangerous call(s) detected. First finding: docs/self-test/data.js (eval())."
+            "notes": "28 dangerous call(s) detected. First finding: docs/test/data.js (eval())."
           },
           {
             "step": "Dangerous-call count within baseline (found 28, threshold < 5)",
@@ -890,7 +890,7 @@ window.REPORT_DATA = {
         },
         {
           "label": "Sample findings",
-          "value": "docs/self-test/data.js (eval()); docs/self-test/data.js (new Function()); docs/self-test/data.js (innerHTML assignment)"
+          "value": "docs/test/data.js (eval()); docs/test/data.js (new Function()); docs/test/data.js (innerHTML assignment)"
         }
       ],
       "verdict": "fail"
@@ -903,16 +903,16 @@ window.REPORT_DATA = {
       "facet": "refs",
       "section0": {
         "effect": "Walks every markdown file (35 files), extracts each `[text](path)` link, and resolves the path relative to the file's directory. Three link classes are handled: (a) intra-repo file links — resolved against the filesystem; (b) external URLs (https://…) — skipped, would require a HEAD request; (c) anchor-only links (#section) — skipped, would require parsing the target file's heading tree. The audit produces a per-file broken-count and a global broken ratio (0.0%). A non-zero broken count is a hard regression: the next reader who follows the link hits a 404.",
-        "matters": "Cross-story integrity is the trust contract between skills. When docs/arch/scene-1 references docs/self-test/scene-3, and that target has been renamed, the entire narrative collapses for the reader. The broken ratio (0.0%) is the single most predictive metric of \"is the docs tree maintained\" — above 5% correlates with abandoned documentation.",
+        "matters": "Cross-story integrity is the trust contract between skills. When docs/arch/scene-1 references docs/test/scene-3, and that target has been renamed, the entire narrative collapses for the reader. The broken ratio (0.0%) is the single most predictive metric of \"is the docs tree maintained\" — above 5% correlates with abandoned documentation.",
         "mermaid": "%%{init: {'theme':'dark','flowchart':{'htmlLabels':true}}}%%\nflowchart LR\n  A([md files]):::input\n  B[extract links]:::step\n  C[resolve paths]:::step\n  D{{broken?}}:::decision\n  E[broken-link alert]:::fail\n  F[ok]:::pass\n  G[CI gate fails]:::fail\n  H[trust contract intact]:::pass\n\n  A --> B\n  B --> C\n  C --> D\n  D -- yes --> E\n  D -- no --> F\n  E --> G\n  F --> H\n\n  classDef input fill:#4f46e5,stroke:#818cf8,color:#fff\n  classDef step fill:#1e293b,stroke:#22d3ee,color:#e2e8f0\n  classDef decision fill:#b45309,stroke:#f59e0b,color:#fff\n  classDef pass fill:#16a34a,stroke:#22c55e,color:#fff\n  classDef fail fill:#b91c1c,stroke:#ef4444,color:#fff"
       },
       "section1": {
         "steps": [
           {
             "title": "Inventory story directories",
-            "action": "Check for docs/arch, docs/self-test, docs/reports — the three canonical story trees in the rui-init layout.",
-            "expected": "≥ 2 directories present; current: 1 (docs/self-test).",
-            "file": "docs/self-test"
+            "action": "Check for docs/arch, docs/test, docs/reports — the three canonical story trees in the rui-init layout.",
+            "expected": "≥ 2 directories present; current: 1 (docs/test).",
+            "file": "docs/test"
           },
           {
             "title": "Audit markdown links",
@@ -937,7 +937,7 @@ window.REPORT_DATA = {
       "section2": {
         "outputs": [
           {
-            "path": "docs/self-test",
+            "path": "docs/test",
             "type": "dir",
             "description": "Story directory — contains scene-N-* subdirectories with index.md files."
           },
@@ -958,7 +958,7 @@ window.REPORT_DATA = {
           {
             "step": "1 story director(ies) present",
             "result": "❌",
-            "notes": "Only 1 story director(ies) found: docs/self-test. Expected ≥ 2 (docs/arch, docs/self-test)."
+            "notes": "Only 1 story director(ies) found: docs/test. Expected ≥ 2 (docs/arch, docs/test)."
           },
           {
             "step": "0 doc link(s) audited",
@@ -1001,7 +1001,7 @@ window.REPORT_DATA = {
       "evidence": [
         {
           "label": "Story directories",
-          "value": "docs/self-test"
+          "value": "docs/test"
         },
         {
           "label": "Markdown files",
@@ -1235,7 +1235,7 @@ window.REPORT_DATA = {
         },
         {
           "id": "RV.1",
-          "text": "Identify and confirm vulnerabilities — self-test across all six scenes.",
+          "text": "Identify and confirm vulnerabilities — test across all six scenes.",
           "sceneSlug": "post-init-full-self-check",
           "sceneIndex": 1
         }
@@ -1283,7 +1283,7 @@ window.REPORT_DATA = {
       "controls": [
         {
           "id": "A.8.25",
-          "text": "Secure development lifecycle — baseline self-test contract.",
+          "text": "Secure development lifecycle — baseline test contract.",
           "sceneSlug": "post-init-full-self-check",
           "sceneIndex": 1
         },
@@ -1800,42 +1800,42 @@ window.REPORT_DATA = {
     "recentByteRatio": 1,
     "freshest": [
       {
-        "path": "docs/self-test/data.js",
+        "path": "docs/test/data.js",
         "bytes": 75984,
         "ageDays": 0
       },
       {
-        "path": "docs/self-test/index.css",
+        "path": "docs/test/index.css",
         "bytes": 46082,
         "ageDays": 0
       },
       {
-        "path": "docs/self-test/index.html",
+        "path": "docs/test/index.html",
         "bytes": 42963,
         "ageDays": 0
       },
       {
-        "path": "docs/self-test/index.js",
+        "path": "docs/test/index.js",
         "bytes": 28929,
         "ageDays": 0
       },
       {
-        "path": "docs/self-test/scene-1-post-init-full-self-check/index.md",
+        "path": "docs/test/scene-1-post-init-full-self-check/index.md",
         "bytes": 7415,
         "ageDays": 0
       },
       {
-        "path": "docs/self-test/scene-2-pre-commit-incremental-self-check/index.md",
+        "path": "docs/test/scene-2-pre-commit-incremental-self-check/index.md",
         "bytes": 6088,
         "ageDays": 0
       },
       {
-        "path": "docs/self-test/scene-3-doc-code-consistency/index.md",
+        "path": "docs/test/scene-3-doc-code-consistency/index.md",
         "bytes": 6670,
         "ageDays": 0
       },
       {
-        "path": "docs/self-test/scene-4-security-surface-regression/index.md",
+        "path": "docs/test/scene-4-security-surface-regression/index.md",
         "bytes": 6733,
         "ageDays": 0
       }

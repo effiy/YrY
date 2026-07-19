@@ -264,9 +264,9 @@ window.REPORT_DATA = {
         "direct import"
       ],
       [
-        "<code>rui-reports/self-test</code>",
+        "<code>rui-reports/test</code>",
         "4",
-        "<code>skills/rui-reports/self-test/evals/evals.json</code>",
+        "<code>skills/rui-reports/test/evals/evals.json</code>",
         "direct import"
       ],
       [

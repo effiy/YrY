@@ -78,14 +78,14 @@ flowchart TD
 
 | # | File / Directory | Type | Description |
 |---|------------------|------|-------------|
-| 1 | `docs/self-test/data.js` | file | Documentation file — content is not validated, only existence. |
-| 2 | `docs/self-test/index.css` | file | Documentation file — content is not validated, only existence. |
-| 3 | `docs/self-test/index.html` | file | Documentation file — content is not validated, only existence. |
-| 4 | `docs/self-test/index.js` | file | Documentation file — content is not validated, only existence. |
-| 5 | `docs/self-test/scene-1-post-init-full-self-check/index.md` | file | Documentation file — content is not validated, only existence. |
-| 6 | `docs/self-test/scene-2-pre-commit-incremental-self-check/index.md` | file | Documentation file — content is not validated, only existence. |
-| 7 | `docs/self-test/scene-3-doc-code-consistency/index.md` | file | Documentation file — content is not validated, only existence. |
-| 8 | `docs/self-test/scene-4-security-surface-regression/index.md` | file | Documentation file — content is not validated, only existence. |
+| 1 | `docs/test/data.js` | file | Documentation file — content is not validated, only existence. |
+| 2 | `docs/test/index.css` | file | Documentation file — content is not validated, only existence. |
+| 3 | `docs/test/index.html` | file | Documentation file — content is not validated, only existence. |
+| 4 | `docs/test/index.js` | file | Documentation file — content is not validated, only existence. |
+| 5 | `docs/test/scene-1-post-init-full-self-check/index.md` | file | Documentation file — content is not validated, only existence. |
+| 6 | `docs/test/scene-2-pre-commit-incremental-self-check/index.md` | file | Documentation file — content is not validated, only existence. |
+| 7 | `docs/test/scene-3-doc-code-consistency/index.md` | file | Documentation file — content is not validated, only existence. |
+| 8 | `docs/test/scene-4-security-surface-regression/index.md` | file | Documentation file — content is not validated, only existence. |
 
 ---
 
@@ -106,7 +106,7 @@ flowchart TD
 
 | # | Step | Result | Notes |
 |---|------|:---:|-------|
-| 1 | 10 documentation file(s) present | ✅ | 10 documentation file(s) detected. Sample: docs/self-test/data.js, docs/self-test/index.css, docs/self-test/index.html. |
+| 1 | 10 documentation file(s) present | ✅ | 10 documentation file(s) detected. Sample: docs/test/data.js, docs/test/index.css, docs/test/index.html. |
 | 2 | README present at root | ❌ | README missing — the most-visited project page is empty. |
 | 3 | CLAUDE.md present at root | ❌ | CLAUDE.md missing — every AI session starts cold. |
 | 4 | docs/ directory exists | ✅ | docs/ directory exists with content — long-form documentation has a home. |

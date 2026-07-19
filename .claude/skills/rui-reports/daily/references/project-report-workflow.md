@@ -108,7 +108,7 @@ single-line error and exit code 2.
 ## Output structure
 
 A **4-file** static report, matching the rest of the rui-reports catalog
-(`files`, `diagram`, `arch`, `self-test`). Output is written under
+(`files`, `diagram`, `arch`, `test`). Output is written under
 `<out>/<YYYY-MM-DD>/`:
 
 ```

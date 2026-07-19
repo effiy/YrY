@@ -14,7 +14,7 @@ T+10s   → explore emits exploration (varies with codebase size)
 T+10s   → generate starts (document rendering)
 T+12s   → generate writes CLAUDE.md + README.md + docs/
 T+12s   → arch starts (scene generation)
-T+20s   → arch writes docs/arch/ + docs/self-test/
+T+20s   → arch writes docs/arch/ + docs/test/
 T+20s   → verify starts (7 checks)
 T+21s   → verify emits pass/fail
 ```
@@ -34,7 +34,7 @@ T+21s   → verify emits pass/fail
 3. `docs/data.js` (third — reads both CLAUDE.md and README.md)
 4. `docs/index.html` + CSS + JS + theme.css (copied from templates)
 5. `docs/arch/` scenes (5, parallel)
-6. `docs/self-test/` scenes (6, parallel)
+6. `docs/test/` scenes (6, parallel)
 
 ## Post-Pipeline
 
