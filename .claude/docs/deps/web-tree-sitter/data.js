@@ -1,394 +1,114 @@
 window.REPORT_DATA = {
   "meta": {
-    "title": "web-tree-sitter dependency footprint",
-    "pageTitle": "web-tree-sitter · Skills Dependency Report",
-    "subtitle": "Runtime dependency · ^0.26.6 · 6 hit files across /Users/yi/YrY/.claude/skills",
-    "footer": "Generated for .claude/docs/deps/web-tree-sitter/index.html · package web-tree-sitter · 6 hit files · 1 skill roots",
-    "traceSub": "Static inventory of manifest declarations, code imports, documentation mentions, and downstream dashboard links."
+    "pageTitle": "web-tree-sitter footprint",
+    "subtitle": "Runtime dependency · ^0.26.6 · 3 hit files across .claude/skills",
+    "upstream": "https://github.com/tree-sitter/tree-sitter/tree/master/lib/binding_web",
+    "footer": "Generated for .claude/docs/deps/web-tree-sitter/index.html · package web-tree-sitter · 3 hit files · 2 skill roots · rebuilt 2026-07-19"
   },
-  "executiveSummary": [
-    {
-      "color": "cyan",
-      "title": "What This Package Does",
-      "content": "tree-sitter WASM runtime · multi-language parsing"
-    },
-    {
-      "color": "green",
-      "title": "Where It Lands",
-      "content": "Top consumer skill: rui-reports/diagram. Consumer count: 1."
-    },
-    {
-      "color": "amber",
-      "title": "Why Review It",
-      "content": "Manifest + lockfile control runtime drift; review import sites before upgrading."
-    }
-  ],
-  "toc": [
-    {
-      "href": "#metrics",
-      "icon": "📊",
-      "label": "Metrics"
-    },
-    {
-      "href": "#diagram",
-      "icon": "🗺️",
-      "label": "Footprint Map"
-    },
-    {
-      "href": "#summary",
-      "icon": "🧾",
-      "label": "Summary"
-    },
-    {
-      "href": "#pipeline",
-      "icon": "🔄",
-      "label": "Lifecycle"
-    },
-    {
-      "href": "#trace",
-      "icon": "🔍",
-      "label": "Trace"
-    },
-    {
-      "href": "#ownership",
-      "icon": "👥",
-      "label": "Ownership"
-    },
-    {
-      "href": "#stack",
-      "icon": "🧰",
-      "label": "Stack"
-    },
-    {
-      "href": "#roadmap",
-      "icon": "🔮",
-      "label": "Roadmap"
-    }
-  ],
   "metrics": [
     {
       "label": "Version",
-      "status": "green",
       "value": "^0.26.6",
-      "valueClass": "green",
-      "sub": "Runtime dependency"
+      "sub": "Runtime dependency",
+      "tone": "green"
     },
     {
-      "label": "Skill Roots",
-      "status": "cyan",
-      "value": "1",
-      "valueClass": "cyan",
-      "sub": "top rui-reports/diagram"
-    },
-    {
-      "label": "Direct Imports",
-      "status": "violet",
+      "label": "Skill roots",
       "value": "2",
-      "valueClass": "violet",
-      "sub": "quoted package references"
+      "sub": "top rui-reports/diagram",
+      "tone": "cyan"
     },
     {
-      "label": "Total Hits",
-      "status": "amber",
+      "label": "Direct files",
+      "value": "3",
+      "sub": "manifest + lockfile + source",
+      "tone": "violet"
+    },
+    {
+      "label": "Hit files",
+      "value": "3",
+      "sub": "literal matches in catalog",
+      "tone": "amber"
+    },
+    {
+      "label": "Occurrences",
       "value": "6",
-      "valueClass": "amber",
-      "sub": "code + docs + metadata files"
-    },
-    {
-      "label": "Manifest Files",
-      "status": "green",
-      "value": "1",
-      "valueClass": "green",
-      "sub": "declared locally"
+      "sub": "all matches combined",
+      "tone": "rose"
     }
   ],
-  "svgDiagram": "<svg viewBox=\"0 0 1120 680\" role=\"img\" aria-labelledby=\"diagram-title diagram-desc\" xmlns=\"http://www.w3.org/2000/svg\"><title id=\"diagram-title\">web-tree-sitter dependency footprint</title><desc id=\"diagram-desc\">Dependency footprint report for web-tree-sitter across the .claude skills catalog.</desc><defs><marker id=\"arrow-cyan\" markerWidth=\"8\" markerHeight=\"6\" refX=\"7\" refY=\"3\" orient=\"auto\"><polygon points=\"0 0, 8 3, 0 6\" fill=\"#22d3ee\"/></marker><marker id=\"arrow-green\" markerWidth=\"8\" markerHeight=\"6\" refX=\"7\" refY=\"3\" orient=\"auto\"><polygon points=\"0 0, 8 3, 0 6\" fill=\"#34d399\"/></marker><marker id=\"arrow-violet\" markerWidth=\"8\" markerHeight=\"6\" refX=\"7\" refY=\"3\" orient=\"auto\"><polygon points=\"0 0, 8 3, 0 6\" fill=\"#a78bfa\"/></marker><marker id=\"arrow-amber\" markerWidth=\"8\" markerHeight=\"6\" refX=\"7\" refY=\"3\" orient=\"auto\"><polygon points=\"0 0, 8 3, 0 6\" fill=\"#fbbf24\"/></marker><pattern id=\"grid\" width=\"32\" height=\"32\" patternUnits=\"userSpaceOnUse\"><path d=\"M 32 0 L 0 0 0 32\" fill=\"none\" stroke=\"#1e293b\" stroke-width=\"0.5\"/></pattern></defs><rect width=\"100%\" height=\"100%\" fill=\"url(#grid)\"/><rect x=\"40\" y=\"40\" width=\"1040\" height=\"520\" rx=\"20\" fill=\"rgba(251, 191, 36, 0.04)\" stroke=\"#fbbf24\" stroke-dasharray=\"8,4\"/><text x=\"60\" y=\"68\" fill=\"#fbbf24\" font-size=\"11\">.claude/skills dependency footprint</text><line x1=\"240\" y1=\"155\" x2=\"360\" y2=\"210\" stroke=\"#22d3ee\" stroke-width=\"1.4\" marker-end=\"url(#arrow-cyan)\"/><text x=\"298\" y=\"172\" fill=\"#94a3b8\" font-size=\"9\" text-anchor=\"middle\">catalog entry</text><line x1=\"240\" y1=\"310\" x2=\"360\" y2=\"290\" stroke=\"#fbbf24\" stroke-width=\"1.4\" marker-end=\"url(#arrow-amber)\"/><text x=\"298\" y=\"302\" fill=\"#fbbf24\" font-size=\"9\" text-anchor=\"middle\">manifest</text><line x1=\"490\" y1=\"340\" x2=\"490\" y2=\"448\" stroke=\"#a78bfa\" stroke-width=\"1.4\" marker-end=\"url(#arrow-violet)\"/><text x=\"504\" y=\"398\" fill=\"#a78bfa\" font-size=\"9\">top files</text><line x1=\"870\" y1=\"400\" x2=\"870\" y2=\"468\" stroke=\"#22d3ee\" stroke-width=\"1.4\" marker-end=\"url(#arrow-cyan)\"/><text x=\"884\" y=\"440\" fill=\"#22d3ee\" font-size=\"9\">report page</text><rect x=\"70\" y=\"110\" width=\"170\" height=\"70\" rx=\"8\" fill=\"rgba(30, 41, 59, 0.45)\" stroke=\"#22d3ee\" stroke-width=\"1.5\"/><text x=\"155\" y=\"138\" fill=\"white\" font-size=\"12\" font-weight=\"600\" text-anchor=\"middle\">Docs Dashboard</text><text x=\"155\" y=\"156\" fill=\"#94a3b8\" font-size=\"9\" text-anchor=\"middle\">Third-Party card</text><text x=\"155\" y=\"170\" fill=\"#22d3ee\" font-size=\"8\" text-anchor=\"middle\">Runtime dependency</text><rect x=\"70\" y=\"270\" width=\"170\" height=\"94\" rx=\"8\" fill=\"rgba(120, 53, 15, 0.3)\" stroke=\"#fbbf24\" stroke-width=\"1.5\"/><text x=\"155\" y=\"296\" fill=\"white\" font-size=\"12\" font-weight=\"600\" text-anchor=\"middle\">Manifest Source</text><text x=\"155\" y=\"316\" fill=\"#94a3b8\" font-size=\"8\" text-anchor=\"middle\">.claude/skills/</text><text x=\"155\" y=\"328\" fill=\"#94a3b8\" font-size=\"8\" text-anchor=\"middle\">rui-reports/diagram/</text><text x=\"155\" y=\"340\" fill=\"#94a3b8\" font-size=\"8\" text-anchor=\"middle\">package.json</text><text x=\"155\" y=\"356\" fill=\"#fbbf24\" font-size=\"8\" text-anchor=\"middle\">^0.26.6</text><rect x=\"360\" y=\"180\" width=\"260\" height=\"316\" rx=\"12\" fill=\"rgba(6, 78, 59, 0.28)\" stroke=\"#34d399\" stroke-width=\"1.7\"/><text x=\"490\" y=\"214\" fill=\"white\" font-size=\"16\" font-weight=\"700\" text-anchor=\"middle\">web-tree-sitter</text><text x=\"490\" y=\"230\" fill=\"#94a3b8\" font-size=\"10\" text-anchor=\"middle\">tree-sitter WASM runtime</text><text x=\"490\" y=\"250\" fill=\"#94a3b8\" font-size=\"10\" text-anchor=\"middle\">· multi-language parsing</text><text x=\"490\" y=\"268\" fill=\"#34d399\" font-size=\"9\" text-anchor=\"middle\">2 direct import files</text><text x=\"490\" y=\"286\" fill=\"#34d399\" font-size=\"9\" text-anchor=\"middle\">· 6 total hit files · 1 skill roots</text><text x=\"490\" y=\"302\" fill=\"#a78bfa\" font-size=\"8\" text-anchor=\"middle\">Runtime dependency declared in manifest</text><rect x=\"760\" y=\"88\" width=\"220\" height=\"62\" rx=\"8\" fill=\"rgba(6, 78, 59, 0.32)\" stroke=\"#34d399\" stroke-width=\"1.5\"/><text x=\"870\" y=\"112\" fill=\"white\" font-size=\"12\" font-weight=\"600\" text-anchor=\"middle\">rui-reports/diagram</text><text x=\"870\" y=\"130\" fill=\"#94a3b8\" font-size=\"9\" text-anchor=\"middle\">6 hits</text><line x1=\"620\" y1=\"260\" x2=\"760\" y2=\"119\" stroke=\"#34d399\" stroke-width=\"1.4\" marker-end=\"url(#arrow-green)\"/><rect x=\"330\" y=\"468\" width=\"320\" height=\"112\" rx=\"8\" fill=\"rgba(76, 29, 149, 0.28)\" stroke=\"#a78bfa\" stroke-width=\"1.5\"/><text x=\"490\" y=\"490\" fill=\"white\" font-size=\"12\" font-weight=\"600\" text-anchor=\"middle\">Top File Touchpoints</text><text x=\"490\" y=\"510\" fill=\"#94a3b8\" font-size=\"9\" text-anchor=\"middle\">skills/rui-reports/diagram/pnpm-lock.yaml (3 hits)</text><text x=\"490\" y=\"524\" fill=\"#94a3b8\" font-size=\"9\" text-anchor=\"middle\">skills/rui-reports/diagram/engine/core/src/plugins</text><text x=\"490\" y=\"538\" fill=\"#94a3b8\" font-size=\"9\" text-anchor=\"middle\">/extractors/dart-extractor.js (1 hits)</text><rect x=\"760\" y=\"500\" width=\"220\" height=\"72\" rx=\"8\" fill=\"rgba(30, 41, 59, 0.45)\" stroke=\"#22d3ee\" stroke-width=\"1.5\"/><text x=\"870\" y=\"528\" fill=\"white\" font-size=\"12\" font-weight=\"600\" text-anchor=\"middle\">Generated Report</text><text x=\"870\" y=\"546\" fill=\"#94a3b8\" font-size=\"9\" text-anchor=\"middle\">docs/deps/{slug}/index.html</text><text x=\"870\" y=\"562\" fill=\"#22d3ee\" font-size=\"8\" text-anchor=\"middle\">linked from docs cards</text></svg>",
+  "svgDiagram": "<svg viewBox=\"0 0 1120 560\" role=\"img\" aria-label=\"web-tree-sitter dependency footprint\" xmlns=\"http://www.w3.org/2000/svg\">  <defs>    <marker id=\"arrow-cyan\" markerWidth=\"8\" markerHeight=\"6\" refX=\"7\" refY=\"3\" orient=\"auto\"><polygon points=\"0 0, 8 3, 0 6\" fill=\"#22d3ee\"/></marker>    <marker id=\"arrow-green\" markerWidth=\"8\" markerHeight=\"6\" refX=\"7\" refY=\"3\" orient=\"auto\"><polygon points=\"0 0, 8 3, 0 6\" fill=\"#34d399\"/></marker>    <marker id=\"arrow-amber\" markerWidth=\"8\" markerHeight=\"6\" refX=\"7\" refY=\"3\" orient=\"auto\"><polygon points=\"0 0, 8 3, 0 6\" fill=\"#fbbf24\"/></marker>    <marker id=\"arrow-violet\" markerWidth=\"8\" markerHeight=\"6\" refX=\"7\" refY=\"3\" orient=\"auto\"><polygon points=\"0 0, 8 3, 0 6\" fill=\"#a78bfa\"/></marker>    <pattern id=\"grid\" width=\"32\" height=\"32\" patternUnits=\"userSpaceOnUse\"><path d=\"M 32 0 L 0 0 0 32\" fill=\"none\" stroke=\"#1e293b\" stroke-width=\"0.5\"/></pattern>  </defs>  <rect width=\"100%\" height=\"100%\" fill=\"url(#grid)\"/>  <rect x=\"36\" y=\"36\" width=\"1048\" height=\"488\" rx=\"20\" fill=\"rgba(251,191,36,0.04)\" stroke=\"#334155\" stroke-dasharray=\"8,4\"/>  <text x=\"56\" y=\"60\" fill=\"#94a3b8\" font-size=\"11\">diagram-style dependency footprint</text>  <line x1=\"210\" y1=\"150\" x2=\"350\" y2=\"220\" stroke=\"#22d3ee\" stroke-width=\"1.4\" marker-end=\"url(#arrow-cyan)\"/>  <text x=\"280\" y=\"170\" fill=\"#94a3b8\" font-size=\"9\" text-anchor=\"middle\">catalog context</text>  <line x1=\"210\" y1=\"310\" x2=\"350\" y2=\"290\" stroke=\"#fbbf24\" stroke-width=\"1.4\" marker-end=\"url(#arrow-amber)\"/>  <text x=\"280\" y=\"302\" fill=\"#fbbf24\" font-size=\"9\" text-anchor=\"middle\">source of truth</text>  <line x1=\"520\" y1=\"326\" x2=\"520\" y2=\"430\" stroke=\"#a78bfa\" stroke-width=\"1.4\" marker-end=\"url(#arrow-violet)\"/>  <text x=\"535\" y=\"383\" fill=\"#a78bfa\" font-size=\"9\">hottest file</text>  <line x1=\"760\" y1=\"240\" x2=\"900\" y2=\"150\" stroke=\"#34d399\" stroke-width=\"1.4\" marker-end=\"url(#arrow-green)\"/>  <text x=\"838\" y=\"180\" fill=\"#34d399\" font-size=\"9\" text-anchor=\"middle\">top consumer</text>  <line x1=\"875\" y1=\"320\" x2=\"875\" y2=\"432\" stroke=\"#22d3ee\" stroke-width=\"1.4\" marker-end=\"url(#arrow-cyan)\"/>  <text x=\"888\" y=\"382\" fill=\"#22d3ee\" font-size=\"9\">report output</text>  <rect x=\"70\" y=\"108\" width=\"140\" height=\"76\" rx=\"10\" fill=\"#0f172a\"/>  <rect x=\"70\" y=\"108\" width=\"140\" height=\"76\" rx=\"10\" fill=\"rgba(30,41,59,0.55)\" stroke=\"#22d3ee\" stroke-width=\"1.4\"/>  <text x=\"140\" y=\"136\" fill=\"white\" font-size=\"12\" font-weight=\"600\" text-anchor=\"middle\">Docs Dashboard</text>  <text x=\"140\" y=\"154\" fill=\"#94a3b8\" font-size=\"9\" text-anchor=\"middle\">dependency entry</text>  <text x=\"140\" y=\"169\" fill=\"#22d3ee\" font-size=\"8\" text-anchor=\"middle\">Runtime dependency</text>  <rect x=\"70\" y=\"272\" width=\"140\" height=\"84\" rx=\"10\" fill=\"#0f172a\"/>  <rect x=\"70\" y=\"272\" width=\"140\" height=\"84\" rx=\"10\" fill=\"rgba(120,53,15,0.3)\" stroke=\"#fbbf24\" stroke-width=\"1.4\"/>  <text x=\"140\" y=\"298\" fill=\"white\" font-size=\"12\" font-weight=\"600\" text-anchor=\"middle\">Source</text>  <text x=\"140\" y=\"318\" fill=\"#94a3b8\" font-size=\"8\" text-anchor=\"middle\">skills/rui-reports</text>  <text x=\"140\" y=\"332\" fill=\"#94a3b8\" font-size=\"8\" text-anchor=\"middle\">diagram/package.json</text>  <text x=\"140\" y=\"348\" fill=\"#fbbf24\" font-size=\"8\" text-anchor=\"middle\">^0.26.6</text>  <rect x=\"350\" y=\"186\" width=\"340\" height=\"132\" rx=\"16\" fill=\"#0f172a\"/>  <rect x=\"350\" y=\"186\" width=\"340\" height=\"132\" rx=\"16\" fill=\"rgba(6,78,59,0.24)\" stroke=\"#34d399\" stroke-width=\"1.8\"/>  <text x=\"520\" y=\"220\" fill=\"white\" font-size=\"20\" font-weight=\"700\" text-anchor=\"middle\">web-tree-sitter</text>  <text x=\"520\" y=\"246\" fill=\"#94a3b8\" font-size=\"10\" text-anchor=\"middle\">WASM runtime for the tree-sitter-based diagram engine.</text>  <text x=\"520\" y=\"262\" fill=\"#94a3b8\" font-size=\"10\" text-anchor=\"middle\"></text>  <text x=\"520\" y=\"284\" fill=\"#34d399\" font-size=\"9\" text-anchor=\"middle\">3 hit files · 3 direct touchpoints · 2 skill roots</text>  <text x=\"520\" y=\"300\" fill=\"#a78bfa\" font-size=\"8\" text-anchor=\"middle\">upstream github.com</text>  <rect x=\"780\" y=\"106\" width=\"190\" height=\"72\" rx=\"10\" fill=\"#0f172a\"/>  <rect x=\"780\" y=\"106\" width=\"190\" height=\"72\" rx=\"10\" fill=\"rgba(6,78,59,0.28)\" stroke=\"#34d399\" stroke-width=\"1.4\"/>  <text x=\"875\" y=\"132\" fill=\"white\" font-size=\"12\" font-weight=\"600\" text-anchor=\"middle\">rui-reports/diagram</text>  <text x=\"875\" y=\"150\" fill=\"#94a3b8\" font-size=\"9\" text-anchor=\"middle\">2 hit files</text>  <rect x=\"340\" y=\"430\" width=\"360\" height=\"76\" rx=\"10\" fill=\"#0f172a\"/>  <rect x=\"340\" y=\"430\" width=\"360\" height=\"76\" rx=\"10\" fill=\"rgba(76,29,149,0.28)\" stroke=\"#a78bfa\" stroke-width=\"1.4\"/>  <text x=\"520\" y=\"456\" fill=\"white\" font-size=\"12\" font-weight=\"600\" text-anchor=\"middle\">Primary file hotspot</text>  <text x=\"520\" y=\"478\" fill=\"#94a3b8\" font-size=\"9\" text-anchor=\"middle\">skills/rui-reports/quickstart/templates/data.js</text>  <text x=\"520\" y=\"494\" fill=\"#a78bfa\" font-size=\"8\" text-anchor=\"middle\">3 literal matches</text>  <rect x=\"780\" y=\"430\" width=\"190\" height=\"76\" rx=\"10\" fill=\"#0f172a\"/>  <rect x=\"780\" y=\"430\" width=\"190\" height=\"76\" rx=\"10\" fill=\"rgba(30,41,59,0.45)\" stroke=\"#22d3ee\" stroke-width=\"1.4\"/>  <text x=\"875\" y=\"456\" fill=\"white\" font-size=\"12\" font-weight=\"600\" text-anchor=\"middle\">Report page</text>  <text x=\"875\" y=\"478\" fill=\"#94a3b8\" font-size=\"9\" text-anchor=\"middle\">docs/deps/web-tree-sitter/index.html</text>  <text x=\"875\" y=\"494\" fill=\"#22d3ee\" font-size=\"8\" text-anchor=\"middle\">static report rebuilt on 2026-07-19</text></svg>",
   "summaryCards": [
     {
-      "color": "cyan",
-      "title": "Adoption <span class=\"tile-inline-note\">footprint</span>",
+      "tone": "cyan",
+      "title": "Adoption footprint",
       "items": [
-        "Runtime dependency in the dashboard catalog with version ^0.26.6.",
-        "1 skill roots mention or import this package; top consumer is rui-reports/diagram.",
-        "2 files use the package string directly; 4 more files mention it in docs or metadata."
+        "Runtime dependency at version ^0.26.6.",
+        "2 skill roots mention it; top consumer is rui-reports/diagram.",
+        "3 direct files and 0 reference-only files currently match the package string."
       ]
     },
     {
-      "color": "green",
-      "title": "Code <span class=\"tile-inline-note\">touchpoints</span>",
+      "tone": "violet",
+      "title": "Where to review first",
       "items": [
-        "skills/rui-reports/diagram/pnpm-lock.yaml is the hottest touchpoint with 3 textual matches.",
-        "skills/rui-reports/diagram/engine/core/src/plugins/extractors/dart-extractor.js is a secondary touchpoint and should be reviewed when upgrading.",
-        ".claude/skills/rui-reports/diagram/package.json remains the source of truth for version drift."
+        ".claude/skills/rui-reports/quickstart/templates/data.js (3 matches, direct)",
+        ".claude/skills/rui-reports/diagram/engine/core/src/plugins/tree-sitter-plugin.js (2 matches, direct)",
+        ".claude/skills/rui-reports/diagram/package.json (1 matches, manifest)"
       ]
     },
     {
-      "color": "amber",
-      "title": "Risk <span class=\"tile-inline-note\">and maintenance</span>",
+      "tone": "green",
+      "title": "Change risk",
       "items": [
-        "Upgrades should start from the diagram skill manifest and its lockfile to preserve deterministic installs.",
-        "Documentation mentions exceed executable imports; validate that the dependency is still materially used.",
-        "Official reference host is github.com; keep the page link aligned with upstream package naming and release history."
+        "Manifest-backed package; sync docs after version changes.",
+        "No lockfile hotspot detected for this package in the current catalog.",
+        "Upstream reference is github.com."
       ]
     }
   ],
-  "pipeline": [
+  "ownership": [
     {
-      "badge": "CATALOG",
-      "badgeClass": "cyan",
-      "info": "The docs dashboard card defines title, role, version, and upstream reference."
+      "skillRoot": "rui-reports/diagram",
+      "fileCount": 2,
+      "occurrences": 3,
+      "primaryFile": ".claude/skills/rui-reports/diagram/engine/core/src/plugins/tree-sitter-plugin.js",
+      "usageType": "direct"
     },
     {
-      "badge": "MANIFEST",
-      "badgeClass": "amber",
-      "info": "1 manifest file(s) declare the package."
-    },
-    {
-      "badge": "USAGE",
-      "badgeClass": "green",
-      "info": "2 direct import file(s) and 4 reference-only file(s) were found."
-    },
-    {
-      "badge": "REPORT",
-      "badgeClass": "violet",
-      "info": "The generated dependency page is linked back into the docs dashboard through per-card footer links."
+      "skillRoot": "rui-reports/quickstart",
+      "fileCount": 1,
+      "occurrences": 3,
+      "primaryFile": ".claude/skills/rui-reports/quickstart/templates/data.js",
+      "usageType": "direct"
     }
   ],
-  "securityCards": [
-    {
-      "color": "rose",
-      "title": "Upgrade Guardrails",
-      "items": [
-        "Review the package declaration and lockfile together; avoid version drift between package.json and generated docs.",
-        "Audit top consumer files before changing major versions; they encode the package contract more reliably than prose.",
-        "Prefer small targeted tests around the direct import sites during upgrades."
-      ]
-    },
-    {
-      "color": "amber",
-      "title": "Supply-Chain Notes",
-      "items": [
-        "Official reference resolves to github.com.",
-        "Pinned or ranged version information comes from the diagram skill package manifest.",
-        "Treat docs-only packages as drift candidates during regular dependency review."
-      ]
-    },
-    {
-      "color": "cyan",
-      "title": "Operational Review",
-      "items": [
-        "rui-reports/diagram should be reviewed first because it has the widest footprint for this package.",
-        "Primary file hotspot: skills/rui-reports/diagram/pnpm-lock.yaml.",
-        "Inventory scan covered 778 text files under .claude/skills."
-      ]
-    }
+  "reviewNotes": [
+    "Scanned 874 text files under .claude/skills for literal matches.",
+    "Literal matching is intentionally conservative: it catches manifest declarations, lockfile entries, source imports, and documentation mentions.",
+    "This package remains declared in .claude/skills/rui-reports/diagram/package.json."
   ],
-  "trace": [
+  "hitFiles": [
     {
-      "name": "Dashboard",
-      "nameClass": "cyan",
-      "sub": "docs/data.js card",
-      "time": "t0"
+      "path": ".claude/skills/rui-reports/quickstart/templates/data.js",
+      "occurrences": 3,
+      "skillRoot": "rui-reports/quickstart",
+      "fileKind": "source",
+      "usageType": "direct"
     },
     {
-      "name": "Manifest",
-      "nameClass": "amber",
-      "sub": "package.json source",
-      "time": "t1"
+      "path": ".claude/skills/rui-reports/diagram/engine/core/src/plugins/tree-sitter-plugin.js",
+      "occurrences": 2,
+      "skillRoot": "rui-reports/diagram",
+      "fileKind": "source",
+      "usageType": "direct"
     },
     {
-      "name": "Dependency",
-      "nameClass": "green",
-      "sub": "web-tree-sitter",
-      "time": "t2"
-    },
-    {
-      "name": "rui-reports/diagram",
-      "nameClass": "violet",
-      "sub": "pnpm-lock.yaml",
-      "time": "t3"
-    },
-    {
-      "name": "Report",
-      "nameClass": "cyan",
-      "sub": "deps/web-tree-sitter/index.html",
-      "time": "t4"
-    }
-  ],
-  "scalingTiles": [
-    {
-      "color": "cyan",
-      "title": "Inventory Scope",
-      "body": "Scanned <strong>778</strong> text files under <code>.claude/skills</code> for this dependency."
-    },
-    {
-      "color": "green",
-      "title": "Consumer Spread",
-      "body": "Top spread: <code>rui-reports/diagram</code> with 6 hit(s)."
-    },
-    {
-      "color": "amber",
-      "title": "Drift Signal",
-      "body": "Manifest-backed dependency; keep docs and code aligned during upgrades."
-    },
-    {
-      "color": "violet",
-      "title": "Review Focus",
-      "body": "Start review at <code>skills/rui-reports/diagram/pnpm-lock.yaml</code>."
-    }
-  ],
-  "ownership": {
-    "headers": [
-      "Skill Root",
-      "Hit Files",
-      "Primary File",
-      "Usage Type"
-    ],
-    "rows": [
-      [
-        "<code>rui-reports/diagram</code>",
-        "6",
-        "<code>skills/rui-reports/diagram/engine/core/src/plugins/extractors/dart-extractor.js</code>",
-        "direct import"
-      ]
-    ]
-  },
-  "apiTable": {
-    "headers": [
-      "File",
-      "Kind",
-      "Hits",
-      "Note"
-    ],
-    "rows": [
-      [
-        "<code>skills/rui-reports/diagram/pnpm-lock.yaml</code>",
-        "code",
-        "3",
-        "Executable implementation surface"
-      ],
-      [
-        "<code>skills/rui-reports/diagram/engine/core/src/plugins/extractors/dart-extractor.js</code>",
-        "code",
-        "1",
-        "Executable implementation surface"
-      ],
-      [
-        "<code>skills/rui-reports/diagram/engine/core/src/plugins/tree-sitter-plugin.js</code>",
-        "code",
-        "1",
-        "Executable implementation surface"
-      ],
-      [
-        "<code>skills/rui-reports/diagram/engine/tree-sitter-dart-wasm/BUILD.md</code>",
-        "code",
-        "1",
-        "Executable implementation surface"
-      ],
-      [
-        "<code>skills/rui-reports/diagram/package.json</code>",
-        "manifest",
-        "1",
-        "Version declaration or manifest source"
-      ],
-      [
-        "<code>skills/rui-reports/diagram/scripts/compute-batches.mjs</code>",
-        "script",
-        "1",
-        "Automation or analysis script touchpoint"
-      ]
-    ]
-  },
-  "stack": [
-    {
-      "label": "Package",
-      "value": "web-tree-sitter",
-      "valueClass": "green"
-    },
-    {
-      "label": "Version",
-      "value": "^0.26.6",
-      "valueClass": "cyan"
-    },
-    {
-      "label": "Catalog Class",
-      "value": "Runtime dependency",
-      "valueClass": "amber"
-    },
-    {
-      "label": "Official Host",
-      "value": "github.com",
-      "valueClass": "violet"
-    },
-    {
-      "label": "Skill Roots",
-      "value": "1",
-      "valueClass": "green"
-    },
-    {
-      "label": "Direct Imports",
-      "value": "2",
-      "valueClass": "cyan"
-    }
-  ],
-  "schemaTiles": [
-    {
-      "title": "Manifest Source",
-      "body": ".claude/skills/rui-reports/diagram/package.json"
-    },
-    {
-      "title": "Primary Hotspot",
-      "body": "skills/rui-reports/diagram/pnpm-lock.yaml"
-    },
-    {
-      "title": "Consumer Archetype",
-      "body": "rui-reports/diagram"
-    },
-    {
-      "title": "Dashboard Link",
-      "body": "docs/deps/web-tree-sitter/index.html"
-    }
-  ],
-  "roadmap": [
-    {
-      "tag": "1",
-      "tagClass": "cyan",
-      "text": "Re-scan after dependency or manifest changes so the dashboard link surface stays current.",
-      "textClass": "cyan"
-    },
-    {
-      "tag": "2",
-      "tagClass": "amber",
-      "text": "Review the top import sites before any version bump.",
-      "textClass": "amber"
-    },
-    {
-      "tag": "3",
-      "tagClass": "violet",
-      "text": "Use the generated page as the canonical drill-down target from the docs dependency card.",
-      "textClass": "violet"
-    }
-  ],
-  "glossary": [
-    {
-      "term": "direct import",
-      "termClass": "green",
-      "def": "A file that references the package string in executable code or manifest declarations."
-    },
-    {
-      "term": "reference-only",
-      "termClass": "amber",
-      "def": "A file that mentions the package in documentation, comments, or generated metadata without importing it."
-    },
-    {
-      "term": "skill root",
-      "termClass": "cyan",
-      "def": "The directory containing a <code>SKILL.md</code> file; used here as the ownership boundary."
-    },
-    {
-      "term": "catalog-only",
-      "termClass": "violet",
-      "def": "The dependency appears in the docs dashboard but is not declared in the active local package manifest."
+      "path": ".claude/skills/rui-reports/diagram/package.json",
+      "occurrences": 1,
+      "skillRoot": "rui-reports/diagram",
+      "fileKind": "manifest",
+      "usageType": "manifest"
     }
   ]
 };
