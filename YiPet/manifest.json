@@ -87,6 +87,7 @@
         "core/bootstrap/index.js"
       ],
       "css": [
+        "cdn/styles/base/animations.css",
         "cdn/styles/tailwind.css",
         "cdn/styles/content.css",
         "cdn/styles/components/pet.css",

@@ -825,13 +825,6 @@
     animation: exportToastFadeInOut 3s ease-in-out !important;
 }
 
-@keyframes exportToastFadeInOut {
-    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
-    10% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-    90% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
-}
-
 /* ============================================
    标签管理器样式 - 从 petManager.tags.js 提取
    ============================================ */
@@ -1188,21 +1181,6 @@
 #pet-context-editor[data-flash] #pet-context-editor-textarea,
 #pet-context-editor[data-flash] #pet-context-preview {
     animation: pet-context-flash 0.42s ease-out !important;
-}
-
-@keyframes pet-context-spin {
-    to { transform: rotate(360deg); }
-}
-
-@keyframes pet-context-pulse {
-    0%, 100% { transform: translateY(0) scale(1); }
-    50% { transform: translateY(-1px) scale(1.03); }
-}
-
-@keyframes pet-context-flash {
-    0% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0); }
-    40% { box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.22); }
-    100% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0); }
 }
 
 #pet-context-editor #pet-context-translate-zh-btn {

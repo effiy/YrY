@@ -21,7 +21,7 @@
     width: 90% !important;
     box-shadow: 0 20px 40px rgba(0,0,0,0.3) !important;
     position: relative !important;
-    animation: scaleIn 0.3s ease-out !important;
+    animation: modalScaleIn 0.3s ease-out !important;
 }
 
 
@@ -245,51 +245,8 @@
 }
 
 .pet-notification.is-closing {
-    animation: slideInRight 0.3s ease-out reverse !important;
+  animation: slideInRight 0.3s ease-out reverse !important;
 }
-
-@keyframes fadeOut {
-    from {
-        opacity: 1;
-    }
-    to {
-        opacity: 0;
-    }
-}
-
-@keyframes scaleIn {
-    from {
-        opacity: 0;
-        transform: scale(0.8);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-@keyframes scaleOut {
-    from {
-        opacity: 1;
-        transform: scale(1);
-    }
-    to {
-        opacity: 0;
-        transform: scale(0.96);
-    }
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 
 /* ============================================
    图片预览模态框样式 - 从 petManager.media.js 提取
@@ -328,7 +285,7 @@
     border: 3px solid rgba(255, 255, 255, 0.3) !important;
     border-top-color: #fff !important;
     border-radius: 50% !important;
-    animation: spin 1s linear infinite !important;
+    animation: modalSpin 1s linear infinite !important;
 }
 
 .image-preview-modal .image-preview-loading.js-hidden {
@@ -412,16 +369,6 @@
     background: rgba(255, 255, 255, 0.25) !important;
     transform: scale(1.1) !important;
 }
-
-@keyframes spin {
-    from {
-        transform: translate(-50%, -50%) rotate(0deg);
-    }
-    to {
-        transform: translate(-50%, -50%) rotate(360deg);
-    }
-}
-
 
 /* ============================================
    AI 设置模态框样式 (从 petManager.ai.js 提取)

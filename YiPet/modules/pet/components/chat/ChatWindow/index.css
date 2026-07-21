@@ -611,15 +611,6 @@
   z-index: 1;
 }
 
-@keyframes loading-spin {
-  0% {
-    transform: translateY(-50%) rotate(0deg);
-  }
-  100% {
-    transform: translateY(-50%) rotate(360deg);
-  }
-}
-
 #pet-chat-window .yi-pet-chat-textarea.loading-input::after,
 #pet-chat-window .chat-message-input.loading-input::after {
   content: '';
@@ -630,19 +621,10 @@
   bottom: 0;
   background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
   background-size: 200% 100%;
-  animation: shimmer 2s ease-in-out infinite;
+  animation: chatShimmer 2s ease-in-out infinite;
   pointer-events: none;
   border-radius: inherit;
   z-index: 0;
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
 }
 
 /* 加载状态下的输入框聚焦效果 */
@@ -995,18 +977,6 @@
   padding: 6px 2px;
 }
 
-@keyframes aicr-chat-caret-blink {
-  0% {
-    opacity: 0.25;
-  }
-  50% {
-    opacity: 0.55;
-  }
-  to {
-    opacity: 0.35;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   #pet-chat-window .pet-chat-message.is-streaming .pet-chat-content::after {
     animation: none;
@@ -1092,12 +1062,6 @@
   border-top-color: rgba(148, 163, 184, 0.8);
   border-radius: 50%;
   animation: draft-image-spin 0.6s linear infinite;
-}
-
-@keyframes draft-image-spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 /* 图片错误状态 - 限定在 YiPet 作用域内 */
@@ -1846,12 +1810,6 @@
     font-size: 10px !important;
   }
 }
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 /* User Message Image */
 #pet-chat-window .user-message-image-container {
   margin-bottom: 8px !important;
@@ -2273,44 +2231,6 @@
 }
 
 /* 标签管理器动画 */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes tagSlideIn {
-  from {
-    opacity: 0;
-    transform: scale(0.8) translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-@keyframes tagSlideOut {
-  to {
-    opacity: 0;
-    transform: scale(0.8) translateY(-10px);
-  }
-}
-
 #pet-chat-window .tag-manager-input {
   width: 100% !important;
   padding: 10px 12px !important;
@@ -2713,17 +2633,6 @@
   display: flex;
 }
 
-@keyframes messageSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* Typing Indicator */
 #pet-chat-window .chat-message-typing-avatar {
   width: 32px !important;
@@ -2735,7 +2644,7 @@
   font-size: 16px !important;
   margin-right: 10px !important;
   flex-shrink: 0 !important;
-  animation: petTyping 1.2s ease-in-out infinite !important;
+  animation: chatPetTyping 1.2s ease-in-out infinite !important;
 }
 
 #pet-chat-window .chat-message-typing-bubble {
@@ -2753,70 +2662,6 @@
   color: #999 !important;
   margin-top: 4px !important;
   text-align: left !important;
-}
-
-@keyframes petTyping {
-  0% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  50% {
-    transform: translateY(-3px);
-    opacity: 0.8;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes petThinking {
-  0%,
-  100% {
-    transform: scale(1) rotate(0deg);
-  }
-  25% {
-    transform: scale(1.1) rotate(-5deg);
-  }
-  50% {
-    transform: scale(1.05) rotate(5deg);
-  }
-  75% {
-    transform: scale(1.1) rotate(-3deg);
-  }
-}
-
-@keyframes petThinkingBounce {
-  0%,
-  100% {
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    transform: translateY(-8px) scale(1.08);
-  }
-}
-
-@keyframes petThinkingPulse {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.15);
-    opacity: 0.9;
-  }
-}
-
-@keyframes bubbleAppear {
-  0% {
-    opacity: 0;
-    transform: translateX(-50%) translateY(10px) scale(0.8);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0) scale(1);
-  }
 }
 
 /* Empty, Loading, Error States - 与 YiWeb 完全一致，但限定在 YiPet 作用域内 */
@@ -2865,15 +2710,6 @@
   font-weight: 500;
   margin: 0;
   text-align: center;
-}
-
-@keyframes pet-chat-spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

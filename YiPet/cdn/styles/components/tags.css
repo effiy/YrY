@@ -26,16 +26,6 @@
     animation: pulse-bottom 0.3s ease !important;
 }
 
-@keyframes pulse-top {
-    0%, 100% { border-top-width: 3px; margin-top: 4px; }
-    50% { border-top-width: 4px; margin-top: 6px; }
-}
-
-@keyframes pulse-bottom {
-    0%, 100% { border-bottom-width: 3px; margin-bottom: 4px; }
-    50% { border-bottom-width: 4px; margin-bottom: 6px; }
-}
-
 .tag-filter-item.drag-hover {
     background: rgba(99, 102, 241, 0.15) !important;
     border-color: var(--primary, #667eea) !important;

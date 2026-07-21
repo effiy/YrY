@@ -106,7 +106,7 @@
     padding: 8px 16px !important;
     border-radius: 20px !important;
     font-size: 12px !important;
-    animation: slideDown 0.3s ease-out !important;
+    animation: contentSlideDown 0.3s ease-out !important;
 }
 
 /* 通知位置 - 右上角 */
@@ -135,31 +135,10 @@
 }
 
 /* 通知动画 */
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateX(-50%) translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-    }
-}
-
-@keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(100%);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
 
 /* 通知消失动画 */
 .pet-notification.notification-top.notification-exiting {
-    animation: slideDown 0.3s ease-out reverse !important;
+    animation: contentSlideDown 0.3s ease-out reverse !important;
 }
 
 .pet-notification.notification-right.notification-exiting {
@@ -1063,91 +1042,6 @@
     padding: 8px !important;
     box-sizing: border-box !important;
 }
-
-@keyframes chromePetBlink {
-    0%, 90%, 100% { 
-        transform: scaleY(1) !important; 
-    }
-    95% { 
-        transform: scaleY(0.1) !important; 
-    }
-}
-
-@keyframes chromePetWag {
-    0%, 100% { 
-        transform: rotate(0deg) !important; 
-    }
-    25% { 
-        transform: rotate(15deg) !important; 
-    }
-    75% { 
-        transform: rotate(-15deg) !important; 
-    }
-}
-
-@keyframes chromePetBounce {
-    0%, 20%, 50%, 80%, 100% { 
-        transform: translateY(0) !important; 
-    }
-    40% { 
-        transform: translateY(-20px) !important; 
-    }
-    60% { 
-        transform: translateY(-10px) !important; 
-    }
-}
-
-@keyframes chromePetHeartFloat {
-    0% {
-        opacity: 1 !important;
-        transform: translateY(0) scale(1) !important;
-    }
-    100% {
-        opacity: 0 !important;
-        transform: translateY(-50px) scale(1.5) !important;
-    }
-}
-
-@keyframes petTyping {
-    0%, 100% {
-        transform: scale(1) !important;
-        opacity: 1 !important;
-    }
-    25% {
-        transform: scale(1.1) !important;
-        opacity: 0.8 !important;
-    }
-    50% {
-        transform: scale(0.95) !important;
-        opacity: 0.9 !important;
-    }
-    75% {
-        transform: scale(1.05) !important;
-        opacity: 0.85 !important;
-    }
-}
-
-@keyframes messageSlideIn {
-    from {
-        opacity: 0 !important;
-        transform: translateY(10px) !important;
-    }
-    to {
-        opacity: 1 !important;
-        transform: translateY(0) !important;
-    }
-}
-
-@keyframes petThinkingBounce {
-    0%, 100% { transform: translateY(0) scale(1) !important; }
-    50% { transform: translateY(-8px) scale(1.08) !important; }
-}
-
-@keyframes petThinkingPulse {
-    0%, 100% { transform: scale(1) !important; opacity: 1 !important; }
-    50% { transform: scale(1.15) !important; opacity: 0.9 !important; }
-}
-
 
 /* ============================================
    角色管理样式 (从 petManager.roles.js 提取)

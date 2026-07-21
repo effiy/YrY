@@ -185,11 +185,6 @@
   opacity: 0.7;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
 /* Button group */
 .btn-group {
   display: inline-flex;

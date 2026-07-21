@@ -1,17 +1,18 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    YrY Checklist CSS — 计划清单页面专用组件样式
    适用: 所有场景的计划清单.html
-   依赖: theme.css (需先加载，提供 --yry-* 变量)
+   依赖: tokens.css + theme.css (需先加载，提供 --yry-* 变量与基础样式)
 
    使用方式:
-     <link rel="stylesheet" href="../../../../cdn/theme.css">
+     <link rel="stylesheet" href="../../../../cdn/styles/base/tokens.css">
+     <link rel="stylesheet" href="../../../../cdn/styles/base/theme.css">
      <link rel="stylesheet" href="../../../../cdn/yry-checklist.css">
 
    对应场景文档:
      - docs/故事任务面板/yry-arch/
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ── CSS Variables alias (bridge: old --var names → --yry-* from theme.css) ─ */
+/* ── CSS Variables alias (bridge: old --var names → --yry-* from tokens.css) ─ */
 :root {
   --bg: var(--yry-bg, rgba(22,22,32,1));
   --bg-card: var(--yry-bg-card, linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%));
@@ -33,7 +34,7 @@
   --border: var(--yry-border, 1px solid rgba(255,255,255,0.06));
 }
 
-/* ── Body & Container (delegates to theme.css classes when used) ────────── */
+/* ── Body & Container (delegates to tokens.css + theme.css classes when used) ─ */
 body {
   background: var(--bg); color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif;

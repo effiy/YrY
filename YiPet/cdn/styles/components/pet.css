@@ -64,17 +64,6 @@
     transform-origin: left center !important;
 }
 
-/* 动画定义 */
-@keyframes chromePetFloat {
-    0%, 100% { 
-        transform: translateY(0px) !important; 
-    }
-    50% { 
-        transform: translateY(-10px) !important; 
-    }
-}
-
-
 /* 拖拽状态 */
 #chrome-pet-container.dragging {
     cursor: grabbing !important;

@@ -514,11 +514,6 @@
     word-wrap: break-word !important;
 }
 
-@keyframes mermaidFadeInOut {
-    0%, 100% { opacity: 0; transform: translate(-50%, -50%) translateY(-10px); }
-    10%, 90% { opacity: 1; transform: translate(-50%, -50%) translateY(0); }
-}
-
 /* 全屏容器样式 */
 #mermaid-fullscreen-container {
     position: fixed !important;

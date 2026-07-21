@@ -792,20 +792,6 @@
   }
 }
 
-/* 快捷键模块特定动画 */
-@keyframes smoothRotate {
-  0%,
-  100% {
-    transform: rotate(0deg) translate3d(0, 0, 0);
-  }
-  25% {
-    transform: rotate(5deg);
-  }
-  75% {
-    transform: rotate(-5deg);
-  }
-}
-
 /* 新闻模块特定动画 */
 @keyframes tagStatisticsFadeIn {
   from {
@@ -854,4 +840,206 @@
     animation-iteration-count: 1;
     transition-duration: 0.01ms;
   }
+}
+
+/* ========== Consolidated: Unique keyframes from other source files ========== */
+
+/* ── From popup.css ────────────────────────────────────────────────────── */
+@keyframes popupSlideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes popupBounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40%                     { transform: translateY(-5px); }
+  60%                     { transform: translateY(-3px); }
+}
+@keyframes popupPulse {
+  0%   { box-shadow: 0 0 0 0 var(--status-dot-color); }
+  70%  { box-shadow: 0 0 0 10px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* ── From modal.css ────────────────────────────────────────────────────── */
+@keyframes modalScaleIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes modalScaleOut {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(0.96); }
+}
+@keyframes modalSpin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ── From content.css (Pet animations) ─────────────────────────────────── */
+@keyframes chromePetBlink {
+  0%, 90%, 100% { transform: scaleY(1) !important; }
+  95%           { transform: scaleY(0.1) !important; }
+}
+@keyframes chromePetWag {
+  0%, 100% { transform: rotate(0deg) !important; }
+  25%      { transform: rotate(15deg) !important; }
+  75%      { transform: rotate(-15deg) !important; }
+}
+@keyframes chromePetBounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0) !important; }
+  40%                     { transform: translateY(-20px) !important; }
+  60%                     { transform: translateY(-10px) !important; }
+}
+@keyframes chromePetHeartFloat {
+  0%   { opacity: 1 !important; transform: translateY(0) scale(1) !important; }
+  100% { opacity: 0 !important; transform: translateY(-50px) scale(1.5) !important; }
+}
+@keyframes petTyping {
+  0%, 100% { transform: scale(1) !important; opacity: 1 !important; }
+  25%      { transform: scale(1.1) !important; opacity: 0.8 !important; }
+  50%      { transform: scale(0.95) !important; opacity: 0.9 !important; }
+  75%      { transform: scale(1.05) !important; opacity: 0.85 !important; }
+}
+@keyframes messageSlideIn {
+  from { opacity: 0 !important; transform: translateY(10px) !important; }
+  to   { opacity: 1 !important; transform: translateY(0) !important; }
+}
+@keyframes petThinkingBounce {
+  0%, 100% { transform: translateY(0) scale(1) !important; }
+  50%      { transform: translateY(-8px) scale(1.08) !important; }
+}
+@keyframes petThinkingPulse {
+  0%, 100% { transform: scale(1) !important; opacity: 1 !important; }
+  50%      { transform: scale(1.15) !important; opacity: 0.9 !important; }
+}
+
+/* ── From pet.css ──────────────────────────────────────────────────────── */
+@keyframes chromePetFloat {
+  0%, 100% { transform: translateY(0px) !important; }
+  50%      { transform: translateY(-10px) !important; }
+}
+
+/* ── From tags.css ─────────────────────────────────────────────────────── */
+@keyframes pulse-top {
+  0%, 100% { border-top-width: 3px; margin-top: 4px; }
+  50%      { border-top-width: 4px; margin-top: 6px; }
+}
+@keyframes pulse-bottom {
+  0%, 100% { border-bottom-width: 3px; margin-bottom: 4px; }
+  50%      { border-bottom-width: 4px; margin-bottom: 6px; }
+}
+
+/* ── From faq.css ──────────────────────────────────────────────────────── */
+@keyframes exportToastFadeInOut {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+  10%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  90%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+}
+@keyframes pet-context-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes pet-context-pulse {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%      { transform: translateY(-1px) scale(1.03); }
+}
+@keyframes pet-context-flash {
+  0%   { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0); }
+  40%  { box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.22); }
+  100% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0); }
+}
+
+/* ── From chat.css ─────────────────────────────────────────────────────── */
+@keyframes mermaidFadeInOut {
+  0%, 100% { opacity: 0; transform: translate(-50%, -50%) translateY(-10px); }
+  10%, 90% { opacity: 1; transform: translate(-50%, -50%) translateY(0); }
+}
+
+/* ── From ChatWindow/index.css ─────────────────────────────────────────── */
+@keyframes loading-spin {
+  0%   { transform: translateY(-50%) rotate(0deg); }
+  100% { transform: translateY(-50%) rotate(360deg); }
+}
+@keyframes chatShimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes aicr-chat-caret-blink {
+  0%  { opacity: 0.25; }
+  50% { opacity: 0.55; }
+  to  { opacity: 0.35; }
+}
+@keyframes draft-image-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes chatSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes tagSlideIn {
+  from { opacity: 0; transform: scale(0.8) translateY(-10px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes tagSlideOut {
+  to { opacity: 0; transform: scale(0.8) translateY(-10px); }
+}
+@keyframes pet-chat-spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ── From YiLoading/index.css ──────────────────────────────────────────── */
+@keyframes dot-bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30%           { transform: translateY(-8px); }
+}
+@keyframes skeleton {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── From YiModal/index.css ────────────────────────────────────────────── */
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes modal-out {
+  from { opacity: 1; transform: scale(1) translateY(0); }
+  to   { opacity: 0; transform: scale(0.96) translateY(8px); }
+}
+
+/* ── From yry-stats-grid/index.css ─────────────────────────────────────── */
+@keyframes yry-stats-grid-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Additional ChatWindow keyframes ───────────────────────────────────── */
+@keyframes chatPetTyping {
+  0%   { transform: translateY(0); opacity: 1; }
+  50%  { transform: translateY(-3px); opacity: 0.8; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes petThinking {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25%      { transform: scale(1.1) rotate(-5deg); }
+  50%      { transform: scale(1.05) rotate(5deg); }
+  75%      { transform: scale(1.1) rotate(-3deg); }
+}
+@keyframes bubbleAppear {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(10px) scale(0.8); }
+  100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+/* ── Remaining component keyframes ─────────────────────────────────────── */
+@keyframes yry-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes contentSlideDown {
+  from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+@keyframes select-dropdown-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
