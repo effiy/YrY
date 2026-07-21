@@ -1,0 +1,3 @@
+/* ── Pattern-specific styles are minimal — uses shared table styles ── */
+#patterns ul { margin-top: 4px; }
+#patterns li { line-height: 1.5; }

@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>rui-report-apis · Yi Ecosystem</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2322C55E'/><text x='16' y='22' font-size='18' font-family='sans-serif' font-weight='bold' fill='white' text-anchor='middle'>YD</text></svg>" type="image/svg+xml">
+    <link rel="stylesheet" href="index.css" />
+    <!-- Component stylesheets -->
+    <link rel="stylesheet" href="components/rui-report-api-summary/index.css" />
+    <link rel="stylesheet" href="components/rui-report-api-endpoints/index.css" />
+    <link rel="stylesheet" href="components/rui-report-api-semantics/index.css" />
+    <link rel="stylesheet" href="components/rui-report-api-patterns/index.css" />
+    <link rel="stylesheet" href="components/rui-report-api-security/index.css" />
+    <link rel="stylesheet" href="components/rui-report-api-health/index.css" />
+    <!-- Vue 3 CDN with fallback -->
+    <script>
+        (function () {
+            const timestamp = new Date().getTime();
+            function loadVue(src) {
+                return new Promise(function (resolve, reject) {
+                    const s = document.createElement('script');
+                    s.src = src;
+                    s.onload = resolve;
+                    s.onerror = reject;
+                    document.head.appendChild(s);
+                });
+            }
+            window.__vueLoadPromise = loadVue('https://unpkg.com/vue@3/dist/vue.global.prod.js')
+                .catch(function () {
+                    return loadVue('https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js');
+                });
+        })();
+    </script>
+</head>
+<body>
+    <a class="skip-link" href="#page-app">Skip to content</a>
+
+    <div id="app-vue-missing" class="app-vue-missing" style="display:none;">
+        <p>Vue 3 failed to load. Check your network or disable <code>vue@3</code> CDN blocking.</p>
+    </div>
+
+    <div v-cloak id="page-app">
+        <div class="reading-progress" :style="{ width: readingProgress + '%' }" aria-hidden="true"></div>
+
+        <div v-if="isStale" class="stale-banner">
+            <span class="stale-icon">&#x26a0;</span>
+            <span class="stale-text">This report is <strong>{{ dataAgeDays }} days old</strong>. API usage may have changed. Regenerate for current data by re-running <code>rui-report-apis</code>.</span>
+        </div>
+
+        <header>
+            <h1>{{ CONFIG.labels.title || 'rui-report-apis' }}</h1>
+            <div class="meta">{{ generatedAt }} · scope: <code>{{ data.scope }}</code></div>
+            <div v-if="optionsJson" class="meta dim">options: {{ optionsJson }}</div>
+            <div class="meta dim">{{ CONFIG.labels.footerMethodology || 'Methodology: references/methodology.md' }}</div>
+        </header>
+
+        <nav id="toc" aria-label="Table of contents">
+            <template v-for="(s, idx) in sections" :key="s.id">
+                <a :href="'#' + s.id"
+                   :class="{ active: activeSection === s.id }"
+                   @click.prevent="document.getElementById(s.id).scrollIntoView({behavior:'smooth',block:'start'})">
+                    <span v-if="sectionFlags[s.id]" class="toc-flag" :class="'flag-' + sectionFlags[s.id]"></span>
+                    {{ s.label }}
+                </a>
+            </template>
+            <span class="toc-spacer"></span>
+            <span class="kbd-hint" aria-hidden="true">1–{{ sections.length }} · t top · ? help</span>
+        </nav>
+
+        <div class="risk-dist" v-if="remediationQueue.length">
+            <span class="risk-dist-label">Alerts</span>
+            <div class="risk-dist-bar">
+                <span class="risk-dist-seg risk-dist-p0" :style="{ flex: distPct.p0 || 0 }" v-if="distPct.p0 > 5">{{ alertCounts.p0 }}</span>
+                <span class="risk-dist-seg risk-dist-p1" :style="{ flex: distPct.p1 || 0 }" v-if="distPct.p1 > 5">{{ alertCounts.p1 }}</span>
+                <span class="risk-dist-seg risk-dist-p2" :style="{ flex: distPct.p2 || 0 }" v-if="distPct.p2 > 5">{{ alertCounts.p2 }}</span>
+            </div>
+            <span class="risk-dist-total">{{ remediationQueue.length }} total</span>
+        </div>
+
+        <div class="key-findings" v-if="keyFindings.length">
+            <div class="key-findings-head">
+                <span class="key-findings-title">Key Findings</span>
+                <span class="key-findings-sub">executive summary</span>
+            </div>
+            <div class="key-findings-grid">
+                <a v-for="kf in keyFindings" :key="kf.label" :href="kf.href"
+                   class="finding-card" :class="'tone-' + kf.tone">
+                    <span class="finding-icon">{{ kf.icon }}</span>
+                    <div class="finding-body">
+                        <span class="finding-label">{{ kf.label }}</span>
+                        <span class="finding-value">{{ kf.value }}</span>
+                        <span v-if="kf.sub" class="finding-sub">{{ kf.sub }}</span>
+                        <span v-if="kf.hint" class="finding-hint">{{ kf.hint }}</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div v-if="riskBanner" class="risk-banner" :class="'risk-level-' + riskBanner.level">
+            <div class="risk-title">
+                <span class="risk-icon">{{ riskBanner.icon }}</span>
+                {{ riskBanner.title }}
+            </div>
+            <div class="risk-body" v-html="riskBanner.body"></div>
+            <div class="risk-actions" v-if="riskBanner.actions && riskBanner.actions.length">
+                <a v-for="act in riskBanner.actions" :key="act.label" :href="act.href" @click.prevent="document.getElementById(act.href.slice(1)).scrollIntoView({behavior:'smooth',block:'start'})">{{ act.label }}</a>
+            </div>
+        </div>
+
+        <details class="read-helper">
+            <summary>How to read this report <span class="read-helper__toggle-hint">toggle <kbd>?</kbd></span></summary>
+            <dl>
+                <dt>Health Score</dt><dd>Composite score (0–100) blending security, error handling, RESTfulness, handler complexity, and pattern consistency.</dd>
+                <dt>P0</dt><dd><span class="legend-swatch legend-swatch--critical"></span> Critical — must resolve before the next merge/release.</dd>
+                <dt>P1</dt><dd><span class="legend-swatch legend-swatch--warn"></span> Important — resolve within this iteration.</dd>
+                <dt>P2</dt><dd><span class="legend-swatch legend-swatch--ok"></span> Nice-to-have — backlog for this quarter.</dd>
+            </dl>
+            <ul class="read-helper__kbd-list">
+                <li><kbd>1</kbd>–<kbd>{{ sections.length }}</kbd> jump to section</li>
+                <li><kbd>t</kbd> back to top</li>
+                <li><kbd>?</kbd> toggle this panel</li>
+                <li>click section title to collapse</li>
+            </ul>
+            <a class="read-helper__back-top" href="#page-app" @click.prevent="window.scrollTo({top:0,behavior:'smooth'})">↑ back to top <kbd>t</kbd></a>
+        </details>
+
+        <!-- SECTION: Summary -->
+        <template v-if="visibleSections.summary">
+            <rui-report-api-summary :data="data" :labels="CONFIG.labels"></rui-report-api-summary>
+        </template>
+
+        <!-- SECTION: Endpoints -->
+        <template v-if="visibleSections.endpoints">
+            <rui-report-api-endpoints :endpoints="data.endpoints" :labels="CONFIG.labels"></rui-report-api-endpoints>
+        </template>
+
+        <!-- SECTION: HTTP Semantics -->
+        <template v-if="visibleSections.semantics">
+            <rui-report-api-semantics :semantics="data.semantics" :methods="data.methods" :labels="CONFIG.labels"></rui-report-api-semantics>
+        </template>
+
+        <!-- SECTION: Patterns -->
+        <template v-if="visibleSections.patterns">
+            <rui-report-api-patterns :patterns="data.patterns" :labels="CONFIG.labels"></rui-report-api-patterns>
+        </template>
+
+        <!-- SECTION: Security -->
+        <template v-if="visibleSections.security">
+            <rui-report-api-security :security="data.security" :labels="CONFIG.labels"></rui-report-api-security>
+        </template>
+
+        <!-- SECTION: Health -->
+        <template v-if="visibleSections.health">
+            <rui-report-api-health :health="data.health" :labels="CONFIG.labels"></rui-report-api-health>
+        </template>
+
+        <!-- SECTION: Third-Party Integrations -->
+        <section id="integrations" v-if="data.thirdPartyIntegrations">
+            <h2>Third-Party API Integrations</h2>
+            <div class="integration-section" v-for="(info, project) in data.thirdPartyIntegrations" :key="project">
+                <h3>{{ project }} — {{ info.description }}</h3>
+                <p class="integration-meta">{{ info.serviceCount }} service integrations across
+                    <template v-if="info.categories">
+                        <span v-for="(count, cat) in info.categories" :key="cat" class="integration-cat-chip">{{ cat }}: {{ count }}</span>
+                    </template>
+                    <span v-else class="integration-cat-chip">—</span>
+                </p>
+                <div class="integration-providers" v-if="info.providers">
+                    <span class="integration-provider-chip" v-for="p in info.providers" :key="p">{{ p }}</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: Remediation Queue -->
+        <section id="remediation">
+            <h2>{{ CONFIG.labels.sectionRemediation || 'Remediation' }}</h2>
+            <div class="remediation-intro" v-if="remediationQueue.length">
+                <span>{{ remediationQueue.length }} action items · {{ remediationDoneCount }} completed</span>
+                <span v-if="remediationDoneCount" class="remediation-progress">
+                    &#x2713; {{ remediationDoneCount }}/{{ remediationQueue.length }} done
+                </span>
+                <button v-if="remediationDoneCount" class="remediation-reset" @click="clearRemediationDone">reset</button>
+            </div>
+            <template v-for="(items, sev) in remediationGrouped" :key="sev">
+            <div class="remediation-group" v-if="items.length">
+                <div class="remediation-group-head" :class="sev === 'P0' ? 'tone-critical' : sev === 'P1' ? 'tone-warn' : 'tone-info'">
+                    <span class="remediation-group-icon">{{ sev }}</span>
+                    <span class="remediation-group-title">{{ sev === 'P0' ? 'Critical' : sev === 'P1' ? 'Important' : 'Nice-to-have' }}</span>
+                    <span class="remediation-group-count">{{ items.length }}</span>
+                    <span class="remediation-group-hint">{{ sev === 'P0' ? 'resolve before merge' : sev === 'P1' ? 'this iteration' : 'this quarter' }}</span>
+                </div>
+                <div class="remediation-list">
+                    <div class="remediation-item" v-for="item in items" :key="item._key"
+                         :class="[item._done ? 'is-done' : '', 'tone-' + (item.severity === 'P0' ? 'critical' : item.severity === 'P1' ? 'warn' : 'info')]">
+                        <label class="remediation-check" :aria-label="item._done ? 'Mark as incomplete' : 'Mark as done'">
+                            <input type="checkbox" :checked="item._done" @click.stop="toggleRemediation(item._key)" />
+                            <span class="remediation-check-box"></span>
+                        </label>
+                        <div class="remediation-cell">
+                            <a :href="item.href" class="remediation-link" @click.stop="document.getElementById(item.href.slice(1)).scrollIntoView({behavior:'smooth',block:'start'})">
+                                <span class="remediation-marker">
+                                    <span v-if="item.marker === 'P0'" style="color:var(--rui-critical,#dc2626);font-weight:700;">{{ item.marker }}</span>
+                                    <span v-else-if="item.marker === 'P1'" style="color:var(--rui-warn,#d97706);font-weight:700;">{{ item.marker }}</span>
+                                    <span v-else style="color:var(--rui-ok,#16a34a);font-weight:700;">{{ item.marker }}</span>
+                                </span>
+                                <div class="remediation-body">
+                                    <div class="remediation-file">
+                                        <code>{{ item.file }}</code>
+                                        <template v-if="item.line != null">:<span class="remediation-line">{{ item.line }}</span></template>
+                                        <button class="remediation-copy" :class="{ 'is-copied': copiedKey === item._key }"
+                                                @click.stop="copyFilePath(item)" :disabled="item._done"
+                                                :aria-label="copiedKey === item._key ? 'Copied' : 'Copy file path'">
+                                            <span class="remediation-copy-icon">{{ copiedKey === item._key ? '&#x2713;' : '&#x2398;' }}</span>
+                                            <span class="remediation-copy-text">{{ copiedKey === item._key ? 'Copied!' : CONFIG.labels.copyPath || 'Copy' }}</span>
+                                        </button>
+                                    </div>
+                                    <div class="remediation-message">{{ item.message }}</div>
+                                    <span class="remediation-category">{{ item.category }}</span>
+                                </div>
+                            </a>
+                            <div class="remediation-detail" v-if="item.impact || item.recommendations.length || item.firstStep">
+                                <div class="remediation-meta">
+                                    <span v-if="item.metric" class="remediation-chip remediation-chip-metric">{{ item.metric }}</span>
+                                    <span v-if="item.effort" class="remediation-chip remediation-chip-effort" :class="'effort-' + item.effort">{{ item.effort }} effort</span>
+                                    <span v-if="item.estimatedHours" class="remediation-chip remediation-chip-eta">~{{ item.estimatedHours }}h</span>
+                                    <span v-if="item.scoreUplift != null" class="remediation-chip remediation-chip-uplift">+{{ item.scoreUplift }} pts</span>
+                                    <span v-if="item.blastRadius" class="remediation-chip remediation-chip-blast" :title="item.blastRadius">&#x25c9; {{ item.blastRadius }}</span>
+                                </div>
+                                <p v-if="item.impact" class="remediation-impact">{{ item.impact }}</p>
+                                <div v-if="item.firstStep" class="remediation-first-step">
+                                    <span class="remediation-first-step-icon">&#x25b6;</span>
+                                    <span class="remediation-first-step-body"><strong>First step:</strong> {{ item.firstStep }}</span>
+                                </div>
+                                <div class="remediation-recs-accept" v-if="item.recommendations.length">
+                                    <ul class="remediation-recommendations">
+                                        <li v-for="rec in item.recommendations" :key="rec">{{ rec }}</li>
+                                    </ul>
+                                    <div v-if="item.acceptance.length" class="remediation-acceptance">
+                                        <div class="remediation-acceptance-head">Acceptance Criteria</div>
+                                        <ul>
+                                            <li v-for="ac in item.acceptance" :key="ac">{{ ac }}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div v-if="item.tooling && item.tooling.length" class="remediation-tooling">
+                                    <span class="remediation-tooling-head">Suggested Tooling</span>
+                                    <ul class="remediation-tooling-list">
+                                        <li v-for="t in item.tooling" :key="t.name"><code>{{ t.name }}</code> <span v-if="t.hint" class="remediation-tooling-hint">— {{ t.hint }}</span></li>
+                                    </ul>
+                                </div>
+                                <div v-if="item.preventiveControls && item.preventiveControls.length" class="remediation-prevent">
+                                    <span class="remediation-prevent-head">Preventive Controls</span>
+                                    <ul>
+                                        <li v-for="pc in item.preventiveControls" :key="pc">{{ pc }}</li>
+                                    </ul>
+                                </div>
+                                <div v-if="item.rollbackPlan" class="remediation-rollback">
+                                    <span class="remediation-rollback-head">Rollback Plan</span>
+                                    <p>{{ item.rollbackPlan }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </template>
+            <p v-if="!remediationQueue.length" style="color: var(--rui-ok, #16a34a); font-size: 13px; font-weight: 600; padding: 16px 0;">
+                &#x2713; {{ CONFIG.labels.emptyRemediation || 'No remediation items — all clear.' }}
+            </p>
+        </section>
+
+        <a v-if="alertCounts.p0 > 0" href="#remediation" class="p0-jump"
+           @click.prevent="document.getElementById('remediation').scrollIntoView({behavior:'smooth',block:'start'})">
+            <span class="p0-jump-count">{{ alertCounts.p0 }}</span>
+            <span class="p0-jump-label">P0 alerts</span>
+        </a>
+
+        <footer>
+            <div class="footer-recap" v-if="remediationQueue.length">
+                <div class="footer-recap-item">
+                    <span class="footer-recap-label">Score</span>
+                    <span class="footer-recap-value" :class="scoreClass">{{ data.score || 0 }}/100</span>
+                </div>
+                <div class="footer-recap-item">
+                    <span class="footer-recap-label">Endpoints</span>
+                    <span class="footer-recap-value">{{ (data.summary || {}).totalRequests || 0 }}</span>
+                </div>
+                <div class="footer-recap-item">
+                    <span class="footer-recap-label">P0 / P1 / P2</span>
+                    <span class="footer-recap-value">{{ alertCounts.p0 }} / {{ alertCounts.p1 }} / {{ alertCounts.p2 }}</span>
+                </div>
+                <div class="footer-recap-item">
+                    <span class="footer-recap-label">Auth Coverage</span>
+                    <span class="footer-recap-value"
+                          :class="((data.summary || {}).authCoverage || 0) < 0.5 ? 'critical' : ((data.summary || {}).authCoverage || 0) < 0.8 ? 'warn' : 'ok'"
+                          >{{ Math.round(((data.summary || {}).authCoverage || 0) * 100) }}%</span>
+                </div>
+            </div>
+            <div>{{ generatedAt }} · {{ CONFIG.labels.title || 'rui-report-apis' }}</div>
+            <div class="dim">{{ CONFIG.labels.footerMethodology || 'Methodology: references/methodology.md' }}</div>
+        </footer>
+    </div>
+
+    <!-- Inlined Component Templates -->
+    <script type="text/x-template" id="rui-report-api-summary-tpl">
+        <section id="summary" class="api-summary">
+            <div class="score-card">
+                <div class="score-gauge" :class="scoreClass">
+                    <div class="score-value">{{ data.score }}</div>
+                    <div class="score-label">Health Score / 100</div>
+                    <div class="score-grade">{{ scoreGrade }}</div>
+                </div>
+                <div class="score-bar-bg">
+                    <div class="score-bar-fill" :class="scoreClass" :style="{ width: (data.score || 0) + '%' }"></div>
+                </div>
+            </div>
+            <div class="stat-cards">
+                <div class="stat-card" v-for="c in statCards" :key="c.label">
+                    <div class="stat-card-label">{{ c.label }}</div>
+                    <div class="stat-card-value" :class="c.tone">{{ c.value }}</div>
+                    <div class="stat-card-sub" v-if="c.sub">{{ c.sub }}</div>
+                </div>
+            </div>
+            <div class="method-dist" v-if="methods.length">
+                <div class="method-dist-label">HTTP Method Distribution</div>
+                <div class="method-bars">
+                    <div class="method-bar" v-for="m in methods" :key="m.method">
+                        <span class="method-bar-tag" :class="'method-' + m.method.toLowerCase()">{{ m.method }}</span>
+                        <span class="method-bar-track">
+                            <span class="method-bar-fill" :class="'method-' + m.method.toLowerCase()" :style="{ width: m.pct + '%' }"></span>
+                        </span>
+                        <span class="method-bar-val">{{ m.count }} ({{ Math.round(m.pct) }}%)</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </script>
+    <script type="text/x-template" id="rui-report-api-endpoints-tpl">
+        <section id="endpoints">
+            <div class="api-endpoints-filter">
+                <input type="text" v-model="filter" :placeholder="col.filterPlaceholder || 'filter by path, method, or handler\u2026'" />
+                <span class="api-endpoints-count">{{ filtered.length }} / {{ endpoints.length }}</span>
+            </div>
+            <div class="api-endpoints-table" v-if="filtered.length">
+                <table>
+                    <thead>
+                        <tr>
+                            <th @click="setSort('method')" :class="sortClass('method')" :aria-sort="sortAria('method')">{{ col.colMethod || 'Method' }}</th>
+                            <th @click="setSort('path')" :class="sortClass('path')" :aria-sort="sortAria('path')">{{ col.colPath || 'Path' }}</th>
+                            <th @click="setSort('handler')" :class="sortClass('handler')" :aria-sort="sortAria('handler')">{{ col.colHandler || 'Handler' }}</th>
+                            <th @click="setSort('middleware')" :class="sortClass('middleware')" :aria-sort="sortAria('middleware')">{{ col.colMiddleware || 'Middleware' }}</th>
+                            <th @click="setSort('auth')" :class="sortClass('auth')" :aria-sort="sortAria('auth')">{{ col.colAuth || 'Auth' }}</th>
+                            <th @click="setSort('validation')" :class="sortClass('validation')" :aria-sort="sortAria('validation')">{{ col.colValidation || 'Validation' }}</th>
+                            <th @click="setSort('errorHandling')" :class="sortClass('errorHandling')" :aria-sort="sortAria('errorHandling')">{{ col.colErrorHandling || 'Error Handling' }}</th>
+                            <th>{{ col.colStatusCodes || 'Status Codes' }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="ep in filtered" :key="ep.path + ':' + ep.method">
+                            <td><span class="method-chip" :class="ep.method">{{ ep.method }}</span></td>
+                            <td><code>{{ ep.path }}</code></td>
+                            <td>
+                                <code>{{ ep.handlerFile }}</code>
+                                <template v-if="ep.line">:{{ ep.line }}</template>
+                            </td>
+                            <td>
+                                <span class="mw-list" v-if="ep.middleware && ep.middleware.length">
+                                    <span class="mw-chip" v-for="mw in ep.middleware" :key="mw">{{ mw }}</span>
+                                </span>
+                                <span v-else style="color: var(--rui-fg-subtle, #4a5062)">—</span>
+                            </td>
+                            <td><span class="bool-chip" :class="ep.auth">&#x2713;</span><span v-if="!ep.auth" class="bool-chip false">&#x2717;</span></td>
+                            <td><span class="bool-chip" :class="ep.validation">&#x2713;</span><span v-if="!ep.validation" class="bool-chip false">&#x2717;</span></td>
+                            <td><span class="bool-chip" :class="ep.errorHandling">&#x2713;</span><span v-if="!ep.errorHandling" class="bool-chip false">&#x2717;</span></td>
+                            <td>
+                                <template v-if="ep.statusCodes && ep.statusCodes.length">
+                                    <span class="status-code-chip" v-for="sc in ep.statusCodes" :key="sc">{{ sc }}</span>
+                                </template>
+                                <span v-else style="color: var(--rui-fg-subtle, #4a5062)">—</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p v-else style="color: var(--rui-fg-muted, #848893); font-size: 12px;">{{ col.emptyEndpoints || 'No API endpoints detected in scope.' }}</p>
+        </section>
+    </script>
+    <script type="text/x-template" id="rui-report-api-semantics-tpl">
+        <section id="semantics">
+            <div class="semantics-grid">
+                <div class="semantics-card">
+                    <div class="semantics-card-label">{{ labels.semanticsScore || 'Semantics Score' }}</div>
+                    <div class="semantics-card-value" :class="scoreTone">{{ Math.round(score) }}/100</div>
+                    <div class="semantics-card-meta">RFC 7231 compliance</div>
+                </div>
+                <div class="semantics-card">
+                    <div class="semantics-card-label">{{ labels.semanticsSafeCount || 'Safe Requests' }}</div>
+                    <div class="semantics-card-value tone-ok">{{ safeCount }}</div>
+                    <div class="semantics-card-meta">GET, HEAD, OPTIONS</div>
+                </div>
+                <div class="semantics-card">
+                    <div class="semantics-card-label">{{ labels.semanticsUnsafeCount || 'Unsafe Requests' }}</div>
+                    <div class="semantics-card-value" :class="unsafeTone">{{ unsafeCount }}</div>
+                    <div class="semantics-card-meta">POST, PUT, PATCH, DELETE</div>
+                </div>
+                <div class="semantics-card">
+                    <div class="semantics-card-label">{{ labels.semanticsIdempotentCount || 'Idempotent' }}</div>
+                    <div class="semantics-card-value tone-ok">{{ idempotentCount }}</div>
+                    <div class="semantics-card-meta">GET, PUT, DELETE, HEAD</div>
+                </div>
+                <div class="semantics-card">
+                    <div class="semantics-card-label">{{ labels.semanticsMisuseCount || 'Method Misuse' }}</div>
+                    <div class="semantics-card-value" :class="misuseTone">{{ misuseCount }}</div>
+                    <div class="semantics-card-meta">RFC violations</div>
+                </div>
+            </div>
+            <div class="api-method-list" v-if="methods.length">
+                <div class="api-method-item" v-for="m in sortBy(methods)" :key="m.method">
+                    <span class="api-method-icon" :class="'m-' + m.method.toLowerCase()">{{ m.method }}</span>
+                    <span class="api-method-track">
+                        <span class="api-method-fill" :class="'m-' + m.method.toLowerCase()" :style="{ width: m.pct + '%' }"></span>
+                    </span>
+                    <span class="api-method-stats">{{ m.count }} <span class="api-method-pct">{{ Math.round(m.pct) }}%</span></span>
+                    <span class="api-method-semantics">
+                        <span v-if="m.safe" class="semantics-tag tag-safe">safe</span>
+                        <span v-else class="semantics-tag tag-unsafe">unsafe</span>
+                        <span v-if="m.idempotent" class="semantics-tag tag-idem">idempotent</span>
+                        <span v-else class="semantics-tag tag-nonidem">non-idem</span>
+                    </span>
+                </div>
+            </div>
+            <table class="misuse-table" v-if="methodMisuse.length">
+                <caption style="text-align:left;color:var(--rui-fg-muted,#848893);font-size:12px;margin-bottom:8px;">{{ labels.semanticsMisuseTable || 'Method Misuse Detected' }} — {{ methodMisuse.length }} violations</caption>
+                <thead>
+                    <tr>
+                        <th>{{ labels.colMethod || 'Method' }}</th>
+                        <th>{{ labels.colPath || 'Path' }}</th>
+                        <th>{{ labels.colMessage || 'Issue' }}</th>
+                        <th>{{ labels.colCategory || 'Severity' }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(m, idx) in methodMisuse" :key="idx">
+                        <td><span class="semantics-method-chip" :class="'m-' + m.method.toLowerCase()">{{ m.method }}</span></td>
+                        <td><code>{{ m.path }}</code></td>
+                        <td style="font-size:12px;">{{ m.issue }}</td>
+                        <td><span class="semantics-severity" :class="m.severity.toLowerCase()">{{ m.severity }}</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <p v-if="!methodMisuse.length" style="color: var(--rui-ok, #16a34a); font-size: 12px; font-weight: 600;">
+                &#x2713; All HTTP methods used correctly per RFC 7231.
+            </p>
+        </section>
+    </script>
+    <script type="text/x-template" id="rui-report-api-patterns-tpl">
+        <section id="patterns">
+            <table v-if="patterns.length">
+                <thead>
+                    <tr>
+                        <th @click="setSort('pattern')" :class="sortClass('pattern')" :aria-sort="sortAria('pattern')">{{ labels.colPath || 'Pattern' }}</th>
+                        <th @click="setSort('version')" :class="sortClass('version')" :aria-sort="sortAria('version')">{{ labels.colVersion || 'Version' }}</th>
+                        <th @click="setSort('resource')" :class="sortClass('resource')" :aria-sort="sortAria('resource')">{{ labels.colResource || 'Resource' }}</th>
+                        <th @click="setSort('restScore')" :class="sortClass('restScore')" :aria-sort="sortAria('restScore')">{{ labels.colRestScore || 'REST Score' }}</th>
+                        <th @click="setSort('methodCount')" :class="sortClass('methodCount')" :aria-sort="sortAria('methodCount')">{{ labels.colMethodCount || 'Methods' }}</th>
+                        <th>{{ labels.colIssues || 'Issues' }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="p in sortBy(patterns)" :key="p.pattern">
+                        <td><code>{{ p.pattern }}</code></td>
+                        <td>{{ p.version || '—' }}</td>
+                        <td>{{ p.resource }}</td>
+                        <td>
+                            <span :style="{ color: p.restScore >= 80 ? 'var(--rui-ok, #16a34a)' : p.restScore >= 50 ? 'var(--rui-warn, #d97706)' : 'var(--rui-critical, #dc2626)' }" style="font-weight: 700; font-family: var(--rui-font-mono, ui-monospace, monospace);">{{ p.restScore }}</span>
+                        </td>
+                        <td>{{ p.methodCount }}</td>
+                        <td>
+                            <ul v-if="p.issues && p.issues.length" style="margin:0;padding-left:16px;">
+                                <li v-for="iss in p.issues" :key="iss" style="font-size:11px;color:var(--rui-fg-muted,#848893);">{{ iss }}</li>
+                            </ul>
+                            <span v-else style="font-size:11px;color:var(--rui-ok,#16a34a);">&#x2713; Clean</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <p v-else style="color: var(--rui-fg-muted, #848893); font-size: 12px;">{{ labels.emptyPatterns || 'No route patterns identified.' }}</p>
+        </section>
+    </script>
+    <script type="text/x-template" id="rui-report-api-security-tpl">
+        <section id="security">
+            <div class="security-grid">
+                <div class="security-card" v-for="card in cards" :key="card.label">
+                    <div class="security-card-label">{{ card.label }}</div>
+                    <div class="security-card-value" :class="card.tone">{{ card.value }}</div>
+                    <div class="security-card-sub" v-if="card.sub">{{ card.sub }}</div>
+                </div>
+            </div>
+            <div v-if="endpointsMissingAuth.length" class="security-detail">
+                <h3>Endpoints Missing Authentication</h3>
+                <table>
+                    <thead><tr><th>Path</th><th>Method</th><th>Handler File</th><th>Line</th></tr></thead>
+                    <tbody>
+                        <tr v-for="ep in endpointsMissingAuth" :key="ep.path + ':' + ep.method">
+                            <td><code>{{ ep.path }}</code></td>
+                            <td><span class="method-chip" :class="ep.method">{{ ep.method }}</span></td>
+                            <td><code>{{ ep.handlerFile }}</code></td>
+                            <td>{{ ep.line }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div v-if="endpointsMissingValidation.length" class="security-detail">
+                <h3>Endpoints Missing Input Validation</h3>
+                <table>
+                    <thead><tr><th>Path</th><th>Method</th><th>Handler File</th><th>Line</th></tr></thead>
+                    <tbody>
+                        <tr v-for="ep in endpointsMissingValidation" :key="ep.path + ':' + ep.method">
+                            <td><code>{{ ep.path }}</code></td>
+                            <td><span class="method-chip" :class="ep.method">{{ ep.method }}</span></td>
+                            <td><code>{{ ep.handlerFile }}</code></td>
+                            <td>{{ ep.line }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div v-if="endpointsMissingRateLimit.length" class="security-detail">
+                <h3>Endpoints Missing Rate Limiting</h3>
+                <table>
+                    <thead><tr><th>Path</th><th>Method</th><th>Handler File</th><th>Line</th></tr></thead>
+                    <tbody>
+                        <tr v-for="ep in endpointsMissingRateLimit" :key="ep.path + ':' + ep.method">
+                            <td><code>{{ ep.path }}</code></td>
+                            <td><span class="method-chip" :class="ep.method">{{ ep.method }}</span></td>
+                            <td><code>{{ ep.handlerFile }}</code></td>
+                            <td>{{ ep.line }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p v-if="!endpointsMissingAuth.length && !endpointsMissingValidation.length && !endpointsMissingRateLimit.length"
+               style="color: var(--rui-ok, #16a34a); font-size: 12px; font-weight: 600;">
+               &#x2713; {{ labels.emptySecurity || 'No security issues detected.' }}
+            </p>
+        </section>
+    </script>
+    <script type="text/x-template" id="rui-report-api-health-tpl">
+        <section id="health">
+            <div class="health-grid">
+                <div class="health-card" v-for="card in cards" :key="card.label">
+                    <div class="health-card-label">{{ card.label }}</div>
+                    <div class="health-card-value" :class="card.tone">{{ card.value }}</div>
+                </div>
+            </div>
+            <div v-if="endpointsWithoutErrorHandling.length" class="health-detail">
+                <h3>Endpoints Without Error Handling</h3>
+                <table>
+                    <thead><tr><th>Path</th><th>Method</th><th>Handler File</th><th>Line</th></tr></thead>
+                    <tbody>
+                        <tr v-for="ep in endpointsWithoutErrorHandling" :key="ep.path + ':' + ep.method">
+                            <td><code>{{ ep.path }}</code></td>
+                            <td><span class="method-chip" :class="ep.method">{{ ep.method }}</span></td>
+                            <td><code>{{ ep.handlerFile }}</code></td>
+                            <td>{{ ep.line }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div v-if="handlerComplexity.length" class="health-detail">
+                <h3>Handler Complexity</h3>
+                <table>
+                    <thead><tr><th>Path</th><th>Method</th><th>Handler</th><th>LOC</th><th>Complexity</th><th>Handler File</th></tr></thead>
+                    <tbody>
+                        <tr v-for="h in handlerComplexity" :key="h.path + ':' + h.method">
+                            <td><code>{{ h.path }}</code></td>
+                            <td><span class="method-chip" :class="h.method">{{ h.method }}</span></td>
+                            <td>{{ h.handler }}</td>
+                            <td style="font-family: var(--rui-font-mono, ui-monospace, monospace); font-weight: 700;">{{ h.lines }}</td>
+                            <td><span class="complexity-badge" :class="h.complexity">{{ h.complexity }}</span></td>
+                            <td><code>{{ h.handlerFile }}</code><template v-if="h.line">:{{ h.line }}</template></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p v-if="!endpointsWithoutErrorHandling.length && !handlerComplexity.length"
+               style="color: var(--rui-ok, #16a34a); font-size: 12px; font-weight: 600;">
+               &#x2713; {{ labels.emptyHealth || 'No health issues detected.' }}
+            </p>
+        </section>
+    </script>
+
+    <!-- Shared library (sortable) -->
+    <script src="lib/rui-sortable.js"></script>
+
+    <!-- Component scripts -->
+    <script src="components/rui-report-api-summary/index.js"></script>
+    <script src="components/rui-report-api-endpoints/index.js"></script>
+    <script src="components/rui-report-api-semantics/index.js"></script>
+    <script src="components/rui-report-api-patterns/index.js"></script>
+    <script src="components/rui-report-api-security/index.js"></script>
+    <script src="components/rui-report-api-health/index.js"></script>
+
+    <!-- Data -->
+    <script src="data.js"></script>
+    <!-- App modules -->
+    <script src="app/state.js"></script>
+    <script src="app/actions.js"></script>
+    <script src="app/lifecycle.js"></script>
+    <script src="app/mount.js"></script>
+
+    <!-- Entry point -->
+    <script src="index.js"></script>
+</body>
+</html>

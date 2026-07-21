@@ -1,0 +1,54 @@
+/* ── Full-width method bars (similar to summary but standalone) ─────── */
+.api-method-list { display: flex; flex-direction: column; gap: 10px; }
+.api-method-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: var(--rui-bg-elev, #161b22);
+    border: 1px solid var(--rui-border, #30363d);
+    border-radius: var(--rui-radius, 8px);
+}
+.api-method-icon {
+    font-family: var(--rui-font-mono, ui-monospace, monospace);
+    font-size: 13px;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 4px;
+    min-width: 70px;
+    text-align: center;
+}
+.api-method-icon.m-get    { background: color-mix(in srgb, var(--rui-ok, #16a34a) 20%, transparent); color: var(--rui-ok, #16a34a); }
+.api-method-icon.m-post   { background: color-mix(in srgb, var(--rui-accent, #3b82f6) 20%, transparent); color: var(--rui-accent, #3b82f6); }
+.api-method-icon.m-put    { background: color-mix(in srgb, var(--rui-warn, #d97706) 20%, transparent); color: var(--rui-warn, #d97706); }
+.api-method-icon.m-delete { background: color-mix(in srgb, var(--rui-critical, #dc2626) 20%, transparent); color: var(--rui-critical, #dc2626); }
+.api-method-icon.m-patch  { background: color-mix(in srgb, #8b5cf6 20%, transparent); color: #8b5cf6; }
+.api-method-track {
+    flex: 1;
+    height: 20px;
+    border-radius: 4px;
+    background: var(--rui-bg-sunken, #0c111b);
+    overflow: hidden;
+}
+.api-method-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width var(--rui-duration-slow, .3s) var(--rui-ease-out, ease-out);
+}
+.api-method-fill.m-get    { background: var(--rui-ok, #16a34a); }
+.api-method-fill.m-post   { background: var(--rui-accent, #3b82f6); }
+.api-method-fill.m-put    { background: var(--rui-warn, #d97706); }
+.api-method-fill.m-delete { background: var(--rui-critical, #dc2626); }
+.api-method-fill.m-patch  { background: #8b5cf6; }
+.api-method-stats {
+    font-family: var(--rui-font-mono, ui-monospace, monospace);
+    font-size: 13px;
+    color: var(--rui-fg, #e6e8eb);
+    min-width: 100px;
+    text-align: right;
+}
+.api-method-pct {
+    font-size: 11px;
+    color: var(--rui-fg-muted, #848893);
+    margin-left: 8px;
+}

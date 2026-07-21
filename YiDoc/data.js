@@ -36,6 +36,7 @@ window.HELP_CONFIG = {
     targetBlank: true,
     buttons: [
       { icon: '🏛', name: 'Architecture',   desc: 'Architecture scenes',  color: 'var(--rui-accent)', panel: 'arch' },
+      { icon: '🪢', name: 'Apis Report',   desc: 'Api health analysis',  color: 'var(--rui-violet)', panel: 'apis' },
       { icon: '📊', name: 'Files Report',   desc: 'Code health analysis',  color: 'var(--rui-violet)', panel: 'files' },
       { icon: '✅', name: 'Test Scenes',    desc: 'Self-check strategy',  color: 'var(--rui-cyan)',   panel: 'test', targetBlank: false },
       { icon: '📁', name: 'Projects',       desc: 'All project reports',  color: 'var(--rui-accent)', panel: 'projects' },
@@ -43,6 +44,7 @@ window.HELP_CONFIG = {
     flow: 'File Analysis → Project Reports → Arch Scenes → Test Verification',
     urls: {
       arch:       'arch/index.html',
+      apis:      'apis/index.html',
       files:      'files/index.html',
       test:       'test/index.html',
       projects:   'projects/',

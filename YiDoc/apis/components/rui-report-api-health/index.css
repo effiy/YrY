@@ -1,0 +1,40 @@
+/* ── Health grid ────────────────────────────────────────────────────────── */
+.health-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.health-card {
+    background: var(--rui-bg-elev, #161b22);
+    border: 1px solid var(--rui-border, #30363d);
+    border-radius: var(--rui-radius, 8px);
+    padding: 16px;
+}
+.health-card-label { font-size: 11px; color: var(--rui-fg-muted, #848893); text-transform: uppercase; letter-spacing: 0.04em; }
+.health-card-value {
+    font-family: var(--rui-font-mono, ui-monospace, monospace);
+    font-size: 22px;
+    font-weight: 700;
+    margin-top: 4px;
+}
+.health-card-value.ok { color: var(--rui-ok, #16a34a); }
+.health-card-value.warn { color: var(--rui-warn, #d97706); }
+.health-card-value.critical { color: var(--rui-critical, #dc2626); }
+.health-card-sub { font-size: 11px; color: var(--rui-fg-muted, #848893); margin-top: 2px; }
+
+/* ── Health detail tables ──────────────────────────────────────────────── */
+.health-detail { margin-top: 20px; }
+.health-detail h3 { margin: 0 0 8px; font-size: 14px; color: var(--rui-fg, #e6e8eb); }
+
+/* ── Complexity badge ──────────────────────────────────────────────────── */
+.complexity-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+}
+.complexity-badge.high   { background: color-mix(in srgb, var(--rui-critical, #dc2626) 20%, transparent); color: var(--rui-critical, #dc2626); }
+.complexity-badge.medium { background: color-mix(in srgb, var(--rui-warn, #d97706) 20%, transparent); color: var(--rui-warn, #d97706); }
+.complexity-badge.low    { background: color-mix(in srgb, var(--rui-ok, #16a34a) 20%, transparent); color: var(--rui-ok, #16a34a); }
