@@ -1,0 +1,21 @@
+.tabs { display: flex; gap: 4px; margin-bottom: 12px; }
+.tabs button {
+    padding: 6px 14px;
+    background: var(--rui-bg-elev, #161b22);
+    border: 1px solid var(--rui-border, #30363d);
+    border-radius: var(--rui-radius, 8px);
+    color: var(--rui-fg-muted, #848893);
+    font-family: var(--rui-font-sans, system-ui, -apple-system, sans-serif);
+    font-size: 12px;
+    cursor: pointer;
+    transition: color var(--rui-duration-fast, .15s), border-color var(--rui-duration-fast, .15s), background var(--rui-duration-fast, .15s);
+}
+.tabs button[aria-selected="true"],
+.tabs button.active {
+    color: var(--rui-fg, #e6e8eb);
+    border-color: var(--rui-accent, #3b82f6);
+    background: var(--rui-accent-soft, rgba(59,130,246,0.12));
+}
+.tabs button:hover { color: var(--rui-fg, #e6e8eb); }
+.empty { color: var(--rui-fg-subtle, #4a5062); font-style: italic; font-size: 13px; }
+.stat-line { color: var(--rui-fg-muted, #848893); margin: 0 0 12px; font-size: 12px; font-family: var(--rui-font-mono, ui-monospace, SFMono-Regular, monospace); }

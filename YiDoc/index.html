@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2322C55E'/><text x='16' y='22' font-size='18' font-family='sans-serif' font-weight='bold' fill='white' text-anchor='middle'>YD</text></svg>" type="image/svg+xml">
+  <title>YiDoc · Documentation Center</title>
+
+  <link rel="stylesheet" href="index.css">
+
+  <!-- Vue 3 from CDN -->
+  <script src="https://unpkg.com/vue@3.4.27/dist/vue.global.prod.js"></script>
+</head>
+<body class="rui-doc dashboard-page">
+
+  <!-- Reading-progress bar -->
+  <div class="dashboard-progress" aria-hidden="true">
+    <div class="dashboard-progress-bar" data-progress-bar></div>
+  </div>
+
+  <main class="dashboard-shell" id="dashboard-app" v-cloak>
+    <header class="dashboard-header">
+      <!-- Breadcrumb -->
+      <div class="dashboard-breadcrumb" v-if="breadcrumb && breadcrumb.length">
+        <template v-for="(item, idx) in breadcrumb" :key="idx">
+          <a v-if="item.href" :href="item.href">{{ item.label }}</a>
+          <span v-else>{{ item.label }}</span>
+          <span class="sep" v-if="idx < breadcrumb.length - 1">/</span>
+        </template>
+      </div>
+
+      <h1 class="dashboard-title">
+        <span class="dashboard-title-icon" aria-hidden="true">{{ titleIcon }}</span>
+        {{ title }}
+      </h1>
+      <p class="dashboard-tagline">{{ tagline }}</p>
+    </header>
+
+    <!-- KPI Stats -->
+    <section v-if="stats && stats.length" class="dashboard-stats" aria-label="Documentation Overview">
+      <div class="rui-stats-grid">
+        <div v-for="s in stats" :key="s.label" class="rui-stat-card" :class="s.modifier">
+          <div class="rui-stat-card-val">{{ s.value }}</div>
+          <div class="rui-stat-card-lbl">{{ s.label }}</div>
+          <div v-if="s.sub" class="rui-stat-card-sub">{{ s.sub }}</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Panel Hub -->
+    <section v-if="panelHub && panelHub.buttons && panelHub.buttons.length" class="dashboard-panel-hub-wrap" aria-label="Cross-Panel Navigation">
+      <rui-panel-hub-inline
+        :buttons="panelHub.buttons"
+        :flow="panelHub.flow"
+        @select="onPanelHubSelect"
+      ></rui-panel-hub-inline>
+    </section>
+
+    <!-- Sections -->
+    <section v-for="section in sections" :key="section.id" :id="section.id" class="dashboard-section">
+      <div class="section-header">
+        <span class="section-badge" :class="section.badgeTone">{{ section.badge }}</span>
+        <h2 class="section-title">{{ section.title }}</h2>
+        <span class="section-meta">{{ section.meta }}</span>
+      </div>
+
+      <div v-for="group in section.groups" :key="group.title" class="section-group" :id="group.id || null">
+        <h3 class="group-title">
+          <span class="group-title-icon" aria-hidden="true">{{ group.icon }}</span>
+          {{ group.title }}
+        </h3>
+        <div :class="group.kind + '-grid'">
+          <div v-for="card in sceneCardFor(group)" :key="card.key" class="rui-scene-card" :style="card.style">
+
+            <!-- Card header -->
+            <div class="rui-scene-card-head">
+              <span v-if="card.icon" class="rui-scene-card-icon" :class="card.iconTone">{{ card.icon }}</span>
+              <a v-if="card.nameHref" :href="card.nameHref" :target="card.nameTarget || '_self'" class="rui-scene-card-name">{{ card.name }}</a>
+              <span v-else class="rui-scene-card-name">{{ card.name }}</span>
+              <span v-if="card.badge" class="rui-scene-card-badge">{{ card.badge }}</span>
+            </div>
+
+            <!-- Description -->
+            <div v-if="card.desc" class="rui-scene-card-desc" v-html="card.desc"></div>
+
+            <!-- Meta (items kind) -->
+            <div v-if="card.meta && group.kind === 'items'" class="rui-scene-card-meta" v-html="card.meta"></div>
+
+            <!-- Tags (stories kind) -->
+            <div v-if="card.tags && card.tags.length" class="rui-scene-card-tags">
+              <a v-for="tag in card.tags" :key="tag.text" :href="tag.href || '#'" class="rui-tag-chip">{{ tag.text }}</a>
+            </div>
+
+            <!-- Links -->
+            <div v-if="card.links && card.links.length" class="rui-scene-card-links">
+              <a v-for="link in card.links" :key="link.label" :href="link.href" :target="link.target || '_self'" :rel="link.target === '_blank' ? 'noopener' : null">{{ link.label }}</a>
+            </div>
+
+            <!-- Meta (stories kind) -->
+            <div v-if="card.meta && group.kind === 'stories'" class="rui-scene-card-meta">{{ card.meta }}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="dashboard-footer">
+      <div class="footer-links">
+        <a v-for="link in footerLinks" :key="link.label" :href="link.href" v-bind="linkAttrs(link.targetBlank)">{{ link.label }}</a>
+      </div>
+      <p class="footer-note">{{ footerNote }}</p>
+    </footer>
+
+    <!-- Floating Reports Panel -->
+    <div v-if="reportsList" class="dashboard-reports-overlay" :class="{ 'is-open': reportPanelOpen }" @click="closeReportPanel" aria-hidden="true"></div>
+    <section v-if="reportsList" class="dashboard-reports-panel" :class="{ 'is-open': reportPanelOpen }" role="dialog" aria-modal="true" aria-labelledby="dashboard-reports-title">
+      <header class="reports-panel-header">
+        <h2 id="dashboard-reports-title" class="reports-panel-title">📅 Reports</h2>
+        <button type="button" class="reports-panel-close" aria-label="Close" @click="closeReportPanel">×</button>
+      </header>
+      <nav class="reports-panel-tabs" role="tablist">
+        <button v-for="tab in reportTabs" :key="tab.key" type="button" role="tab"
+          :aria-selected="activeReportTab === tab.key"
+          :class="['reports-panel-tab', { 'is-active': activeReportTab === tab.key }]"
+          @click="selectReportTab(tab.key)">
+          <span aria-hidden="true">{{ tab.icon }}</span>
+          <span>{{ tab.label }}</span>
+          <span class="reports-panel-tab-count">{{ (reportsList[tab.key] || []).length }}</span>
+        </button>
+      </nav>
+      <div class="reports-panel-body" role="tabpanel">
+        <ul v-if="activeReportItems.length" class="reports-panel-list">
+          <li v-for="item in activeReportItems" :key="item.href" class="reports-panel-item">
+            <a :href="item.href" class="reports-panel-item-link" target="_blank" rel="noopener">
+              <header class="reports-panel-item-head">
+                <span class="reports-panel-item-date">{{ item.label }}</span>
+                <span class="reports-panel-item-title">{{ item.title }}</span>
+                <span v-if="item.status" class="reports-panel-item-status" :class="['is-' + item.status]">{{ item.status }}</span>
+              </header>
+              <p v-if="item.summary" class="reports-panel-item-summary">{{ item.summary }}</p>
+              <dl v-if="item.metrics && item.metrics.length" class="reports-panel-item-metrics">
+                <div v-for="m in item.metrics" :key="m.label" class="reports-panel-item-metric" :class="m.tone">
+                  <dt class="reports-panel-item-metric-label">{{ m.label }}</dt>
+                  <dd class="reports-panel-item-metric-value">{{ m.value }}</dd>
+                </div>
+              </dl>
+              <footer class="reports-panel-item-foot">
+                <ul v-if="item.tags && item.tags.length" class="reports-panel-item-tags">
+                  <li v-for="t in item.tags" :key="t.label" class="reports-panel-item-tag" :class="t.tone">{{ t.label }}</li>
+                </ul>
+                <span v-if="item.meta" class="reports-panel-item-meta">{{ item.meta }}</span>
+              </footer>
+            </a>
+          </li>
+        </ul>
+        <p v-else class="reports-panel-empty">
+          No <strong>{{ activeReportTab }}</strong> reports yet.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- rui-panel-hub inline component -->
+  <script>
+  // Minimal inline panel-hub component (no CDN dependency)
+  var ruiPanelHubTemplate = '<div style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;padding:14px 16px;border-radius:12px;background:color-mix(in srgb, var(--rui-text,#F8FAFC) 3%, transparent);border:1px solid color-mix(in srgb, var(--rui-text,#F8FAFC) 8%, transparent)">' +
+    '<button v-for="(btn, i) in buttons" :key="i" :style="{color: btn.color}" @click="$emit(\'select\', {detail:{panel:btn.panel}})">' +
+    '<span>{{ btn.icon }}</span><span>{{ btn.name }}</span>' +
+    '</button>' +
+    '<div v-if="flow" class="panel-flow" style="width:100%;text-align:center;font-size:.7rem;color:var(--rui-text-muted,#64748b);margin-top:4px">{{ flow }}</div>' +
+    '</div>';
+  </script>
+
+  <script src="data.js"></script>
+  <script src="index.js"></script>
+</body>
+</html>
