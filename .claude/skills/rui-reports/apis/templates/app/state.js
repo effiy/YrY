@@ -191,10 +191,10 @@
                 });
             }
             const s = d.summary || {};
-            if (s.totalEndpoints) {
+            if (s.totalRequests) {
                 findings.push({
                     tone: 'info', icon: '\u25a0',
-                    label: 'Total endpoints', value: s.totalEndpoints,
+                    label: 'Total requests', value: s.totalRequests,
                     sub: s.totalHandlers + ' handlers',
                     href: '#endpoints',
                 });

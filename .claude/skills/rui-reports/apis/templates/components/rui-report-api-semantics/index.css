@@ -1,27 +1,39 @@
+/* ============================================================================
+ * rui-report-api-semantics · Component styles
+ * ========================================================================== */
+
+@layer components {
+
 /* ── Semantics grid cards ──────────────────────────────────────────── */
 .semantics-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 12px;
-    margin-bottom: 24px;
+    gap: var(--rui-space-sm, 12px);
+    margin-bottom: var(--rui-space-lg, 24px);
 }
 .semantics-card {
-    padding: 16px;
+    padding: var(--rui-space-md, 16px);
     background: var(--rui-bg-elev, #161b22);
     border: 1px solid var(--rui-border, #30363d);
     border-radius: var(--rui-radius, 8px);
+    transition: border-color var(--rui-duration, .2s) var(--rui-ease-out, ease-out),
+                transform var(--rui-duration, .2s) var(--rui-ease-out, ease-out);
+}
+.semantics-card:hover {
+    border-color: color-mix(in srgb, var(--rui-border, #30363d) 70%, var(--rui-accent, #3b82f6));
+    transform: translateY(-1px);
 }
 .semantics-card-label {
-    font-size: 11px;
+    font-size: var(--rui-font-size-sm, 11px);
     font-weight: 600;
     color: var(--rui-fg-muted, #848893);
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    margin-bottom: 6px;
+    margin-bottom: var(--rui-space-xs, 6px);
 }
 .semantics-card-value {
     font-family: var(--rui-font-mono, ui-monospace, monospace);
-    font-size: 24px;
+    font-size: var(--rui-font-size-xl, 24px);
     font-weight: 700;
     color: var(--rui-fg, #e6e8eb);
 }
@@ -29,52 +41,49 @@
 .semantics-card-value.tone-warn { color: var(--rui-warn, #d97706); }
 .semantics-card-value.tone-critical { color: var(--rui-critical, #dc2626); }
 .semantics-card-meta {
-    font-size: 11px;
+    font-size: var(--rui-font-size-sm, 11px);
     color: var(--rui-fg-subtle, #4a5062);
-    margin-top: 4px;
+    margin-top: var(--rui-space-xs, 4px);
 }
 
 /* ── Method semantics tags ─────────────────────────────────────────── */
-.api-method-semantics {
-    display: flex;
-    gap: 4px;
-    margin-left: 8px;
-    flex-shrink: 0;
-}
+.api-method-semantics { display: flex; gap: var(--rui-space-xs, 4px); margin-left: var(--rui-space-sm, 8px); flex-shrink: 0; }
 .semantics-tag {
-    font-size: 9px;
+    font-size: var(--rui-font-size-xs, 9px);
     font-weight: 700;
-    padding: 1px 5px;
-    border-radius: 3px;
+    padding: 1px var(--rui-space-xs, 5px);
+    border-radius: var(--rui-radius-sm, 3px);
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
-.tag-safe { background: color-mix(in srgb, var(--rui-ok, #16a34a) 20%, transparent); color: var(--rui-ok, #16a34a); }
-.tag-unsafe { background: color-mix(in srgb, var(--rui-warn, #d97706) 20%, transparent); color: var(--rui-warn, #d97706); }
-.tag-idem { background: color-mix(in srgb, var(--rui-accent, #3b82f6) 20%, transparent); color: var(--rui-accent, #3b82f6); }
+.tag-safe    { background: color-mix(in srgb, var(--rui-ok, #16a34a) 20%, transparent);      color: var(--rui-ok, #16a34a); }
+.tag-unsafe  { background: color-mix(in srgb, var(--rui-warn, #d97706) 20%, transparent);    color: var(--rui-warn, #d97706); }
+.tag-idem    { background: color-mix(in srgb, var(--rui-accent, #3b82f6) 20%, transparent);  color: var(--rui-accent, #3b82f6); }
 .tag-nonidem { background: color-mix(in srgb, var(--rui-critical, #dc2626) 20%, transparent); color: var(--rui-critical, #dc2626); }
 
 /* ── Misuse table ──────────────────────────────────────────────────── */
-.misuse-table { margin-top: 24px; }
+.misuse-table { margin-top: var(--rui-space-lg, 24px); }
 .semantics-method-chip {
     font-family: var(--rui-font-mono, ui-monospace, monospace);
-    font-size: 11px;
+    font-size: var(--rui-font-size-sm, 11px);
     font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 3px;
+    padding: 2px var(--rui-space-sm, 8px);
+    border-radius: var(--rui-radius-sm, 3px);
 }
-.semantics-method-chip.m-get    { background: color-mix(in srgb, var(--rui-ok, #16a34a) 20%, transparent); color: var(--rui-ok, #16a34a); }
-.semantics-method-chip.m-post   { background: color-mix(in srgb, var(--rui-accent, #3b82f6) 20%, transparent); color: var(--rui-accent, #3b82f6); }
-.semantics-method-chip.m-put    { background: color-mix(in srgb, var(--rui-warn, #d97706) 20%, transparent); color: var(--rui-warn, #d97706); }
+.semantics-method-chip.m-get    { background: color-mix(in srgb, var(--rui-ok, #16a34a) 20%, transparent);      color: var(--rui-ok, #16a34a); }
+.semantics-method-chip.m-post   { background: color-mix(in srgb, var(--rui-accent, #3b82f6) 20%, transparent);  color: var(--rui-accent, #3b82f6); }
+.semantics-method-chip.m-put    { background: color-mix(in srgb, var(--rui-warn, #d97706) 20%, transparent);    color: var(--rui-warn, #d97706); }
 .semantics-method-chip.m-delete { background: color-mix(in srgb, var(--rui-critical, #dc2626) 20%, transparent); color: var(--rui-critical, #dc2626); }
-.semantics-method-chip.m-patch  { background: color-mix(in srgb, #8b5cf6 20%, transparent); color: #8b5cf6; }
+.semantics-method-chip.m-patch  { background: color-mix(in srgb, var(--rui-accent-dim, #8b5cf6) 20%, transparent); color: var(--rui-accent-dim, #8b5cf6); }
 .semantics-severity {
     font-family: var(--rui-font-mono, ui-monospace, monospace);
-    font-size: 11px;
+    font-size: var(--rui-font-size-sm, 11px);
     font-weight: 700;
-    padding: 2px 6px;
-    border-radius: 3px;
+    padding: 2px var(--rui-space-xs, 6px);
+    border-radius: var(--rui-radius-sm, 3px);
 }
 .semantics-severity.p0 { background: color-mix(in srgb, var(--rui-critical, #dc2626) 20%, transparent); color: var(--rui-critical, #dc2626); }
-.semantics-severity.p1 { background: color-mix(in srgb, var(--rui-warn, #d97706) 20%, transparent); color: var(--rui-warn, #d97706); }
-.semantics-severity.p2 { background: color-mix(in srgb, #8b5cf6 20%, transparent); color: #8b5cf6; }
+.semantics-severity.p1 { background: color-mix(in srgb, var(--rui-warn, #d97706) 20%, transparent);     color: var(--rui-warn, #d97706); }
+.semantics-severity.p2 { background: color-mix(in srgb, var(--rui-accent-dim, #8b5cf6) 20%, transparent); color: var(--rui-accent-dim, #8b5cf6); }
+
+}

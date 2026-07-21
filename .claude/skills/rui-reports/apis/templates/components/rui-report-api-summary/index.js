@@ -28,7 +28,7 @@
                 const s = this.data && this.data.summary || {};
                 const L = this.labels || {};
                 return [
-                    { label: L.summaryTotalEndpoints || 'Total Endpoints', value: s.totalEndpoints || 0, tone: 'info' },
+                    { label: L.summaryTotalEndpoints || 'Total Requests', value: s.totalRequests || 0, tone: 'info' },
                     { label: L.summaryTotalHandlers || 'Total Handlers', value: s.totalHandlers || 0, tone: 'info' },
                     {
                         label: L.summaryAuthCoverage || 'Auth Coverage',
@@ -37,8 +37,8 @@
                     },
                     {
                         label: L.summaryValidationCoverage || 'Validation',
-                        value: s.validationCoverage != null ? Math.round(s.validationCoverage * 100) + '%' : 'N/A',
-                        tone: s.validationCoverage != null && s.validationCoverage < 0.5 ? 'critical' : s.validationCoverage != null && s.validationCoverage < 0.8 ? 'warn' : 'ok',
+                        value: s.validationDepthCoverage != null ? Math.round(s.validationDepthCoverage * 100) + '%' : 'N/A',
+                        tone: s.validationDepthCoverage != null && s.validationDepthCoverage < 0.5 ? 'critical' : s.validationDepthCoverage != null && s.validationDepthCoverage < 0.8 ? 'warn' : 'ok',
                     },
                 ];
             },

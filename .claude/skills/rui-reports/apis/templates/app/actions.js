@@ -63,6 +63,11 @@
                     self.copiedKey = null;
                     copyFeedbackTimer = null;
                 }, 1500);
+                // Announce to screen readers
+                try {
+                    var announcer = document.getElementById('sr-announcer');
+                    if (announcer) announcer.textContent = 'Copied: ' + ref;
+                } catch (e) { /* ignore */ }
             };
             try {
                 const result = writeToClipboard(ref);

@@ -3,7 +3,8 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>rui-report-apis</title>
+    <title>rui-report-apis · Yi Ecosystem</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2322C55E'/><text x='16' y='22' font-size='18' font-family='sans-serif' font-weight='bold' fill='white' text-anchor='middle'>YD</text></svg>" type="image/svg+xml">
     <link rel="stylesheet" href="index.css" />
     <!-- Component stylesheets -->
     <link rel="stylesheet" href="components/rui-report-api-summary/index.css" />
@@ -44,6 +45,9 @@
     <div v-cloak id="page-app">
         <!-- Reading progress bar -->
         <div class="reading-progress" :style="{ width: readingProgress + '%' }" aria-hidden="true"></div>
+
+        <!-- Screen reader live region for dynamic feedback -->
+        <div aria-live="polite" aria-atomic="true" class="sr-only" id="sr-announcer"></div>
 
         <!-- Stale data banner -->
         <div v-if="isStale" class="stale-banner">
@@ -126,6 +130,7 @@
                 <dt>P2</dt><dd><span class="legend-swatch legend-swatch--ok"></span> Nice-to-have — backlog for this quarter.</dd>
             </dl>
             <ul class="read-helper__kbd-list">
+                <li><kbd>j</kbd> / <kbd>k</kbd> next / previous section</li>
                 <li><kbd>1</kbd>–<kbd>{{ sections.length }}</kbd> jump to section</li>
                 <li><kbd>t</kbd> back to top</li>
                 <li><kbd>?</kbd> toggle this panel</li>
@@ -196,11 +201,30 @@
         </template>
 
         <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!-- SECTION: Third-Party Integrations (conditionally rendered)      -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <section id="integrations" v-if="data.thirdPartyIntegrations">
+            <h2>Third-Party API Integrations</h2>
+            <div class="integration-section" v-for="(info, project) in data.thirdPartyIntegrations" :key="project">
+                <h3>{{ project }} — {{ info.description }}</h3>
+                <p class="integration-meta">{{ info.serviceCount }} service integrations across
+                    <template v-if="info.categories">
+                        <span v-for="(count, cat) in info.categories" :key="cat" class="integration-cat-chip">{{ cat }}: {{ count }}</span>
+                    </template>
+                    <span v-else class="integration-cat-chip">—</span>
+                </p>
+                <div class="integration-providers" v-if="info.providers">
+                    <span class="integration-provider-chip" v-for="p in info.providers" :key="p">{{ p }}</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
         <!-- SECTION: Remediation Queue (inline, not a component)            -->
         <!-- ═══════════════════════════════════════════════════════════════ -->
         <section id="remediation">
             <h2>{{ CONFIG.labels.sectionRemediation || 'Remediation' }}</h2>
-            <div class="remediation-intro" v-if="remediationQueue.length">
+            <div class="remediation-intro" v-if="remediationQueue.length" role="status" aria-live="polite">
                 <span>{{ remediationQueue.length }} action items · {{ remediationDoneCount }} completed</span>
                 <span v-if="remediationDoneCount" class="remediation-progress">
                     &#x2713; {{ remediationDoneCount }}/{{ remediationQueue.length }} done
@@ -313,7 +337,7 @@
                 </div>
                 <div class="footer-recap-item">
                     <span class="footer-recap-label">Endpoints</span>
-                    <span class="footer-recap-value">{{ (data.summary || {}).totalEndpoints || 0 }}</span>
+                    <span class="footer-recap-value">{{ (data.summary || {}).totalRequests || 0 }}</span>
                 </div>
                 <div class="footer-recap-item">
                     <span class="footer-recap-label">P0 / P1 / P2</span>
@@ -331,14 +355,275 @@
         </footer>
     </div>
 
-    <!-- Component templates are inlined here during report generation.
-         See components/rui-report-api-*/index.html for the source blocks. -->
-    <!-- ▼ INLINE_START: components/rui-report-api-summary/index.html -->
-    <!-- ▼ INLINE_START: components/rui-report-api-endpoints/index.html -->
-    <!-- ▼ INLINE_START: components/rui-report-api-semantics/index.html -->
-    <!-- ▼ INLINE_START: components/rui-report-api-patterns/index.html -->
-    <!-- ▼ INLINE_START: components/rui-report-api-security/index.html -->
-    <!-- ▼ INLINE_START: components/rui-report-api-health/index.html -->
+    <!-- Inlined Component Templates -->
+    <script type="text/x-template" id="rui-report-api-summary-tpl">
+        <section id="summary" class="api-summary">
+            <div class="score-card">
+                <div class="score-gauge" :class="scoreClass">
+                    <div class="score-value">{{ data.score }}</div>
+                    <div class="score-label">Health Score / 100</div>
+                    <div class="score-grade">{{ scoreGrade }}</div>
+                </div>
+                <div class="score-bar-bg">
+                    <div class="score-bar-fill" :class="scoreClass" :style="{ width: (data.score || 0) + '%' }"></div>
+                </div>
+            </div>
+            <div class="stat-cards">
+                <div class="stat-card" v-for="c in statCards" :key="c.label">
+                    <div class="stat-card-label">{{ c.label }}</div>
+                    <div class="stat-card-value" :class="c.tone">{{ c.value }}</div>
+                    <div class="stat-card-sub" v-if="c.sub">{{ c.sub }}</div>
+                </div>
+            </div>
+            <div class="method-dist" v-if="methods.length">
+                <div class="method-dist-label">HTTP Method Distribution</div>
+                <div class="method-bars">
+                    <div class="method-bar" v-for="m in methods" :key="m.method">
+                        <span class="method-bar-tag" :class="'method-' + m.method.toLowerCase()">{{ m.method }}</span>
+                        <span class="method-bar-track">
+                            <span class="method-bar-fill" :class="'method-' + m.method.toLowerCase()" :style="{ width: m.pct + '%' }"></span>
+                        </span>
+                        <span class="method-bar-val">{{ m.count }} ({{ Math.round(m.pct) }}%)</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </script>
+    <script type="text/x-template" id="rui-report-api-endpoints-tpl">
+        <section id="endpoints">
+            <div class="api-endpoints-filter">
+                <input type="text" v-model="filter" :placeholder="col.filterPlaceholder || 'filter by path, method, or handler\u2026'" />
+                <span class="api-endpoints-count">{{ filtered.length }} / {{ endpoints.length }}</span>
+            </div>
+            <div class="api-endpoints-table" v-if="filtered.length">
+                <table>
+                    <thead>
+                        <tr>
+                            <th @click="setSort('method')" :class="sortClass('method')" :aria-sort="sortAria('method')">{{ col.colMethod || 'Method' }}</th>
+                            <th @click="setSort('path')" :class="sortClass('path')" :aria-sort="sortAria('path')">{{ col.colPath || 'Path' }}</th>
+                            <th @click="setSort('handler')" :class="sortClass('handler')" :aria-sort="sortAria('handler')">{{ col.colHandler || 'Handler' }}</th>
+                            <th @click="setSort('middleware')" :class="sortClass('middleware')" :aria-sort="sortAria('middleware')">{{ col.colMiddleware || 'Middleware' }}</th>
+                            <th @click="setSort('auth')" :class="sortClass('auth')" :aria-sort="sortAria('auth')">{{ col.colAuth || 'Auth' }}</th>
+                            <th @click="setSort('validation')" :class="sortClass('validation')" :aria-sort="sortAria('validation')">{{ col.colValidation || 'Validation' }}</th>
+                            <th @click="setSort('errorHandling')" :class="sortClass('errorHandling')" :aria-sort="sortAria('errorHandling')">{{ col.colErrorHandling || 'Error Handling' }}</th>
+                            <th>{{ col.colStatusCodes || 'Status Codes' }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="ep in filtered" :key="ep.path + ':' + ep.method">
+                            <td><span class="method-chip" :class="ep.method">{{ ep.method }}</span></td>
+                            <td><code>{{ ep.path }}</code></td>
+                            <td><code>{{ ep.handlerFile }}</code><template v-if="ep.line">:{{ ep.line }}</template></td>
+                            <td>
+                                <span class="mw-list" v-if="ep.middleware && ep.middleware.length">
+                                    <span class="mw-chip" v-for="mw in ep.middleware" :key="mw">{{ mw }}</span>
+                                </span>
+                                <span v-else style="color: var(--rui-fg-subtle, #4a5062)">—</span>
+                            </td>
+                            <td><span class="bool-chip" :class="ep.auth">&#x2713;</span><span v-if="!ep.auth" class="bool-chip false">&#x2717;</span></td>
+                            <td><span class="bool-chip" :class="ep.validation">&#x2713;</span><span v-if="!ep.validation" class="bool-chip false">&#x2717;</span></td>
+                            <td><span class="bool-chip" :class="ep.errorHandling">&#x2713;</span><span v-if="!ep.errorHandling" class="bool-chip false">&#x2717;</span></td>
+                            <td>
+                                <template v-if="ep.statusCodes && ep.statusCodes.length">
+                                    <span class="status-code-chip" v-for="sc in ep.statusCodes" :key="sc">{{ sc }}</span>
+                                </template>
+                                <span v-else style="color: var(--rui-fg-subtle, #4a5062)">—</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p v-else style="color: var(--rui-fg-muted, #848893); font-size: 12px;">{{ col.emptyEndpoints || 'No API endpoints detected in scope.' }}</p>
+        </section>
+    </script>
+    <script type="text/x-template" id="rui-report-api-semantics-tpl">
+        <section id="semantics">
+            <div class="semantics-grid">
+                <div class="semantics-card">
+                    <div class="semantics-card-label">{{ labels.semanticsScore || 'Semantics Score' }}</div>
+                    <div class="semantics-card-value" :class="scoreTone">{{ Math.round(score) }}/100</div>
+                    <div class="semantics-card-meta">RFC 7231 compliance</div>
+                </div>
+                <div class="semantics-card">
+                    <div class="semantics-card-label">{{ labels.semanticsSafeCount || 'Safe Requests' }}</div>
+                    <div class="semantics-card-value tone-ok">{{ safeCount }}</div>
+                    <div class="semantics-card-meta">GET, HEAD, OPTIONS</div>
+                </div>
+                <div class="semantics-card">
+                    <div class="semantics-card-label">{{ labels.semanticsUnsafeCount || 'Unsafe Requests' }}</div>
+                    <div class="semantics-card-value" :class="unsafeTone">{{ unsafeCount }}</div>
+                    <div class="semantics-card-meta">POST, PUT, PATCH, DELETE</div>
+                </div>
+                <div class="semantics-card">
+                    <div class="semantics-card-label">{{ labels.semanticsIdempotentCount || 'Idempotent' }}</div>
+                    <div class="semantics-card-value tone-ok">{{ idempotentCount }}</div>
+                    <div class="semantics-card-meta">GET, PUT, DELETE, HEAD</div>
+                </div>
+                <div class="semantics-card">
+                    <div class="semantics-card-label">{{ labels.semanticsMisuseCount || 'Method Misuse' }}</div>
+                    <div class="semantics-card-value" :class="misuseTone">{{ misuseCount }}</div>
+                    <div class="semantics-card-meta">RFC violations</div>
+                </div>
+            </div>
+            <div class="api-method-list" v-if="methods.length">
+                <div class="api-method-item" v-for="m in sortBy(methods)" :key="m.method">
+                    <span class="api-method-icon" :class="'m-' + m.method.toLowerCase()">{{ m.method }}</span>
+                    <span class="api-method-track">
+                        <span class="api-method-fill" :class="'m-' + m.method.toLowerCase()" :style="{ width: m.pct + '%' }"></span>
+                    </span>
+                    <span class="api-method-stats">{{ m.count }} <span class="api-method-pct">{{ Math.round(m.pct) }}%</span></span>
+                    <span class="api-method-semantics">
+                        <span v-if="m.safe" class="semantics-tag tag-safe">safe</span>
+                        <span v-else class="semantics-tag tag-unsafe">unsafe</span>
+                        <span v-if="m.idempotent" class="semantics-tag tag-idem">idempotent</span>
+                        <span v-else class="semantics-tag tag-nonidem">non-idem</span>
+                    </span>
+                </div>
+            </div>
+            <table class="misuse-table" v-if="methodMisuse.length">
+                <caption style="text-align:left;color:var(--rui-fg-muted,#848893);font-size:12px;margin-bottom:8px;">{{ labels.semanticsMisuseTable || 'Method Misuse Detected' }} — {{ methodMisuse.length }} violations</caption>
+                <thead>
+                    <tr><th>{{ labels.colMethod || 'Method' }}</th><th>{{ labels.colPath || 'Path' }}</th><th>{{ labels.colMessage || 'Issue' }}</th><th>{{ labels.colCategory || 'Severity' }}</th></tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(m, idx) in methodMisuse" :key="idx">
+                        <td><span class="semantics-method-chip" :class="'m-' + m.method.toLowerCase()">{{ m.method }}</span></td>
+                        <td><code>{{ m.path }}</code></td>
+                        <td style="font-size:12px;">{{ m.issue }}</td>
+                        <td><span class="semantics-severity" :class="m.severity.toLowerCase()">{{ m.severity }}</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <p v-if="!methodMisuse.length" style="color: var(--rui-ok, #16a34a); font-size: 12px; font-weight: 600;">&#x2713; All HTTP methods used correctly per RFC 7231.</p>
+        </section>
+    </script>
+    <script type="text/x-template" id="rui-report-api-patterns-tpl">
+        <section id="patterns">
+            <table v-if="patterns.length">
+                <thead>
+                    <tr>
+                        <th @click="setSort('pattern')" :class="sortClass('pattern')" :aria-sort="sortAria('pattern')">{{ labels.colPath || 'Pattern' }}</th>
+                        <th @click="setSort('version')" :class="sortClass('version')" :aria-sort="sortAria('version')">{{ labels.colVersion || 'Version' }}</th>
+                        <th @click="setSort('resource')" :class="sortClass('resource')" :aria-sort="sortAria('resource')">{{ labels.colResource || 'Resource' }}</th>
+                        <th @click="setSort('restScore')" :class="sortClass('restScore')" :aria-sort="sortAria('restScore')">{{ labels.colRestScore || 'REST Score' }}</th>
+                        <th @click="setSort('methodCount')" :class="sortClass('methodCount')" :aria-sort="sortAria('methodCount')">{{ labels.colMethodCount || 'Methods' }}</th>
+                        <th>{{ labels.colIssues || 'Issues' }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="p in sortBy(patterns)" :key="p.pattern">
+                        <td><code>{{ p.pattern }}</code></td>
+                        <td>{{ p.version || '—' }}</td>
+                        <td>{{ p.resource }}</td>
+                        <td><span :style="{ color: p.restScore >= 80 ? 'var(--rui-ok, #16a34a)' : p.restScore >= 50 ? 'var(--rui-warn, #d97706)' : 'var(--rui-critical, #dc2626)' }" style="font-weight: 700; font-family: var(--rui-font-mono, ui-monospace, monospace);">{{ p.restScore }}</span></td>
+                        <td>{{ p.methodCount }}</td>
+                        <td>
+                            <ul v-if="p.issues && p.issues.length" style="margin:0;padding-left:16px;">
+                                <li v-for="iss in p.issues" :key="iss" style="font-size:11px;color:var(--rui-fg-muted,#848893);">{{ iss }}</li>
+                            </ul>
+                            <span v-else style="font-size:11px;color:var(--rui-ok,#16a34a);">&#x2713; Clean</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <p v-else style="color: var(--rui-fg-muted, #848893); font-size: 12px;">{{ labels.emptyPatterns || 'No route patterns identified.' }}</p>
+        </section>
+    </script>
+    <script type="text/x-template" id="rui-report-api-security-tpl">
+        <section id="security">
+            <div class="security-grid">
+                <div class="security-card" v-for="card in cards" :key="card.label">
+                    <div class="security-card-label">{{ card.label }}</div>
+                    <div class="security-card-value" :class="card.tone">{{ card.value }}</div>
+                    <div class="security-card-sub" v-if="card.sub">{{ card.sub }}</div>
+                </div>
+            </div>
+            <div v-if="endpointsMissingAuth.length" class="security-detail">
+                <h3>Endpoints Missing Authentication</h3>
+                <table>
+                    <thead><tr><th>Path</th><th>Method</th><th>Handler File</th><th>Line</th></tr></thead>
+                    <tbody>
+                        <tr v-for="ep in endpointsMissingAuth" :key="ep.path + ':' + ep.method">
+                            <td><code>{{ ep.path }}</code></td>
+                            <td><span class="method-chip" :class="ep.method">{{ ep.method }}</span></td>
+                            <td><code>{{ ep.handlerFile }}</code></td>
+                            <td>{{ ep.line }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div v-if="endpointsMissingValidation.length" class="security-detail">
+                <h3>Endpoints Missing Input Validation</h3>
+                <table>
+                    <thead><tr><th>Path</th><th>Method</th><th>Handler File</th><th>Line</th></tr></thead>
+                    <tbody>
+                        <tr v-for="ep in endpointsMissingValidation" :key="ep.path + ':' + ep.method">
+                            <td><code>{{ ep.path }}</code></td>
+                            <td><span class="method-chip" :class="ep.method">{{ ep.method }}</span></td>
+                            <td><code>{{ ep.handlerFile }}</code></td>
+                            <td>{{ ep.line }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div v-if="endpointsMissingRateLimit.length" class="security-detail">
+                <h3>Endpoints Missing Rate Limiting</h3>
+                <table>
+                    <thead><tr><th>Path</th><th>Method</th><th>Handler File</th><th>Line</th></tr></thead>
+                    <tbody>
+                        <tr v-for="ep in endpointsMissingRateLimit" :key="ep.path + ':' + ep.method">
+                            <td><code>{{ ep.path }}</code></td>
+                            <td><span class="method-chip" :class="ep.method">{{ ep.method }}</span></td>
+                            <td><code>{{ ep.handlerFile }}</code></td>
+                            <td>{{ ep.line }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p v-if="!endpointsMissingAuth.length && !endpointsMissingValidation.length && !endpointsMissingRateLimit.length" style="color: var(--rui-ok, #16a34a); font-size: 12px; font-weight: 600;">&#x2713; {{ labels.emptySecurity || 'No security issues detected.' }}</p>
+        </section>
+    </script>
+    <script type="text/x-template" id="rui-report-api-health-tpl">
+        <section id="health">
+            <div class="health-grid">
+                <div class="health-card" v-for="card in cards" :key="card.label">
+                    <div class="health-card-label">{{ card.label }}</div>
+                    <div class="health-card-value" :class="card.tone">{{ card.value }}</div>
+                </div>
+            </div>
+            <div v-if="endpointsWithoutErrorHandling.length" class="health-detail">
+                <h3>Endpoints Without Error Handling</h3>
+                <table>
+                    <thead><tr><th>Path</th><th>Method</th><th>Handler File</th><th>Line</th></tr></thead>
+                    <tbody>
+                        <tr v-for="ep in endpointsWithoutErrorHandling" :key="ep.path + ':' + ep.method">
+                            <td><code>{{ ep.path }}</code></td>
+                            <td><span class="method-chip" :class="ep.method">{{ ep.method }}</span></td>
+                            <td><code>{{ ep.handlerFile }}</code></td>
+                            <td>{{ ep.line }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div v-if="handlerComplexity.length" class="health-detail">
+                <h3>Handler Complexity</h3>
+                <table>
+                    <thead><tr><th>Path</th><th>Method</th><th>Handler</th><th>LOC</th><th>Complexity</th><th>Handler File</th></tr></thead>
+                    <tbody>
+                        <tr v-for="h in handlerComplexity" :key="h.path + ':' + h.method">
+                            <td><code>{{ h.path }}</code></td>
+                            <td><span class="method-chip" :class="h.method">{{ h.method }}</span></td>
+                            <td>{{ h.handler }}</td>
+                            <td style="font-family: var(--rui-font-mono, ui-monospace, monospace); font-weight: 700;">{{ h.lines }}</td>
+                            <td><span class="complexity-badge" :class="h.complexity">{{ h.complexity }}</span></td>
+                            <td><code>{{ h.handlerFile }}</code><template v-if="h.line">:{{ h.line }}</template></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p v-if="!endpointsWithoutErrorHandling.length && !handlerComplexity.length" style="color: var(--rui-ok, #16a34a); font-size: 12px; font-weight: 600;">&#x2713; {{ labels.emptyHealth || 'No health issues detected.' }}</p>
+        </section>
+    </script>
 
     <!-- Shared library (sortable) -->
     <script src="lib/rui-sortable.js"></script>

@@ -43,6 +43,9 @@
     <div v-cloak id="page-app">
         <div class="reading-progress" :style="{ width: readingProgress + '%' }" aria-hidden="true"></div>
 
+        <!-- Screen reader live region for dynamic feedback -->
+        <div aria-live="polite" aria-atomic="true" class="sr-only" id="sr-announcer"></div>
+
         <div v-if="isStale" class="stale-banner">
             <span class="stale-icon">&#x26a0;</span>
             <span class="stale-text">This report is <strong>{{ dataAgeDays }} days old</strong>. API usage may have changed. Regenerate for current data by re-running <code>rui-report-apis</code>.</span>
@@ -117,6 +120,7 @@
                 <dt>P2</dt><dd><span class="legend-swatch legend-swatch--ok"></span> Nice-to-have — backlog for this quarter.</dd>
             </dl>
             <ul class="read-helper__kbd-list">
+                <li><kbd>j</kbd> / <kbd>k</kbd> next / previous section</li>
                 <li><kbd>1</kbd>–<kbd>{{ sections.length }}</kbd> jump to section</li>
                 <li><kbd>t</kbd> back to top</li>
                 <li><kbd>?</kbd> toggle this panel</li>
@@ -175,7 +179,7 @@
         <!-- SECTION: Remediation Queue -->
         <section id="remediation">
             <h2>{{ CONFIG.labels.sectionRemediation || 'Remediation' }}</h2>
-            <div class="remediation-intro" v-if="remediationQueue.length">
+            <div class="remediation-intro" v-if="remediationQueue.length" role="status" aria-live="polite">
                 <span>{{ remediationQueue.length }} action items · {{ remediationDoneCount }} completed</span>
                 <span v-if="remediationDoneCount" class="remediation-progress">
                     &#x2713; {{ remediationDoneCount }}/{{ remediationQueue.length }} done

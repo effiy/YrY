@@ -24,7 +24,7 @@ window.REPORT_CONFIG = {
     },
     labels: {
         /* ── Header / chrome ─────────────────────────────────────── */
-        title: 'rui-report-apis',
+        title: 'rui-report-apis · Yi Ecosystem',
         footerMethodology: 'Methodology: references/methodology.md · schemas: references/schemas.md',
 
         /* ── Section titles ──────────────────────────────────────── */

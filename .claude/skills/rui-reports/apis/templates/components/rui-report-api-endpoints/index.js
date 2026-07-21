@@ -1,12 +1,13 @@
 (function () {
     'use strict';
-    window.ruiReportApiEndpoints = Object.assign({
+    window.ruiReportApiEndpoints = {
         name: 'ruiReportApiEndpoints',
         template: '#rui-report-api-endpoints-tpl',
         props: {
             endpoints: { type: Array, default: function() { return []; } },
             labels: { type: Object, default: function() { return {}; } },
         },
+        mixins: [window.RuiSortable.setSortMixin({ sortKey: 'path', sortDir: 1 })],
         data: function () {
             return { filter: '' };
         },
@@ -24,5 +25,5 @@
             },
             col: function () { return this.labels || {}; },
         },
-    }, window.RuiSortable.setSortMixin({ sortKey: 'path', sortDir: 1 }));
+    };
 })();
