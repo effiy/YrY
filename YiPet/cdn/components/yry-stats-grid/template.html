@@ -1,0 +1,8 @@
+<div class="yry-stats-grid" :class="layout === 'row' ? 'is-row' : 'is-grid'" role="group" aria-label="Stats grid">
+    <div v-for="(item, i) in items" :key="i" class="yry-stat-card" :class="item.modifier"
+         role="status" :aria-label="item.label + ': ' + item.value">
+        <div class="yry-stat-card-val">{{ item.value }}</div>
+        <div class="yry-stat-card-lbl">{{ item.label }}</div>
+        <div v-if="item.sub" class="yry-stat-card-sub" :title="item.sub">{{ item.sub }}</div>
+    </div>
+</div>

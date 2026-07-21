@@ -170,7 +170,7 @@ config.backup.yaml
 
 # runtime
 runtime/
-.claude/rui-bot/config.json
+.claude/yry-bot/config.json
 .claude/scheduled_tasks.lock
 dev/
 installer_files/

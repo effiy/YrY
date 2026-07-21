@@ -55,7 +55,7 @@ Cross-story integration validates that the two story directories (arch and test)
 
 ### Architecture Decisions
 
-- **AD-1**: Cross-story integration is a "meta-check" — it validates the documentation system itself, not the code. Failures here mean the rui-init pipeline needs re-execution.
+- **AD-1**: Cross-story integration is a "meta-check" — it validates the documentation system itself, not the code. Failures here mean the yry-init pipeline needs re-execution.
 - **AD-2**: The sceneLinks array in data.js is the canonical index of all scenes. It must always be in sync with the filesystem.
 - **AD-3**: Terminology consistency is validated by comparing the module names used in arch scene descriptions against the names in data.js section-source items.
 

@@ -1,0 +1,10 @@
+/* ============================================================================
+ * yry-report-api-patterns · Component styles
+ * ========================================================================== */
+
+@layer components {
+
+#patterns ul { margin-top: var(--yry-space-xs, 4px); }
+#patterns li { line-height: 1.5; }
+
+}

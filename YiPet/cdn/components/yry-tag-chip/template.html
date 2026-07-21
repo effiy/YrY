@@ -1,0 +1,6 @@
+<a v-if="href"
+   :href="href"
+   :class="['yry-tag-chip', modifier]"
+   rel="noopener noreferrer"
+   role="link">{{ text }}</a>
+<span v-else :class="['yry-tag-chip', modifier]">{{ text }}</span>

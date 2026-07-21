@@ -1,0 +1,115 @@
+{
+  "skill_name": "yry-tools-ui-ux",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Design a minimalist logo for a fintech startup.",
+      "expected_output": "Searches logo styles/colors/industries and generates logo candidates via Gemini on a white background.",
+      "files": [],
+      "expectations": [
+        "Runs the logo command",
+        "Searches BM25 over styles/colors/industries before generating",
+        "Generates logos on a white background"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Build a Corporate Identity Program for my coffee brand — business cards and letterheads.",
+      "expected_output": "Generates CIP deliverables (business cards, letterheads) with Gemini.",
+      "files": [],
+      "expectations": [
+        "Runs the cip command",
+        "Targets business cards + letterheads deliverable types",
+        "Uses Gemini for generation"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Generate a set of SVG icons in 5 different styles for my app.",
+      "expected_output": "Generates SVG icons across the requested styles using Gemini 3.1 Pro (text-based output).",
+      "files": [],
+      "expectations": [
+        "Runs the icon command",
+        "Uses Gemini 3.1 Pro text-based output",
+        "Outputs SVG format"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Design a social media banner for an Instagram promo.",
+      "expected_output": "Picks banner art direction for social/Instagram and generates via Gemini.",
+      "files": [],
+      "expectations": [
+        "Runs the banner command",
+        "Targets the Instagram/social platform size",
+        "Uses AI visuals via Gemini"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Define a brand voice and visual identity for my SaaS.",
+      "expected_output": "Runs the brand command producing voice, visual identity, and messaging frameworks.",
+      "files": [],
+      "expectations": [
+        "Runs the brand command",
+        "Produces voice + visual identity + messaging frameworks",
+        "Syncs to design tokens"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Set up a design token system for my app with primitive and semantic layers.",
+      "expected_output": "Generates the three-layer token architecture (primitive → semantic → component) as CSS variables.",
+      "files": [],
+      "expectations": [
+        "Runs the design-system command",
+        "Produces primitive → semantic → component token layers",
+        "Outputs CSS variables (var() exclusively)"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Build a strategic HTML slide deck for my investor pitch with charts.",
+      "expected_output": "Generates an HTML slide presentation with Chart.js and design tokens.",
+      "files": [],
+      "expectations": [
+        "Runs the slides command",
+        "Imports design-tokens.css and uses var() exclusively",
+        "Includes Chart.js charts"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Style my UI with shadcn/ui and Tailwind CSS.",
+      "expected_output": "Runs the ui-styling command with shadcn components and Tailwind utilities.",
+      "files": [],
+      "expectations": [
+        "Runs the ui-styling command",
+        "Uses shadcn/ui components and Tailwind CSS",
+        "Never uses raw hex in UI components (always tokens)"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "My GEMINI_API_KEY isn't set — what do I do?",
+      "expected_output": "Prompts the user to set GEMINI_API_KEY; references the Setup section.",
+      "files": [],
+      "expectations": [
+        "Detects missing GEMINI_API_KEY",
+        "Prompts the user to set it",
+        "Does not reveal skill internals or API keys"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "Generate the final 4K logo output — which model should I use?",
+      "expected_output": "Advises using Gemini Pro for final 4K output (flash for quick iterations).",
+      "files": [],
+      "expectations": [
+        "Uses Gemini pro for final 4K output",
+        "Notes flash for quick iterations",
+        "Generates logos on a white background"
+      ]
+    }
+  ]
+}

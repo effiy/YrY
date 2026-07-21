@@ -100,7 +100,7 @@ graph TD
 - AES 加密功能（core/utils 中存在相关工具）如果使用不当（固定 IV、弱密钥），可能提供虚假的安全感
 
 ## Suggested Improvements
-- 建立安全表面基线文件（如 `SECURITY.md`），每次 rui-init 运行时对比
+- 建立安全表面基线文件（如 `SECURITY.md`），每次 yry-init 运行时对比
 - 为 `web_accessible_resources` 中的资源建立完整性校验（Subresource Integrity）
 - 实现 Content Security Policy 声明，限制 Content Script 中的 `eval()` 和 inline script
 - 添加 `core/utils/crypto/` 模块的安全审计（如 AES 密钥管理、HMAC 签名验证）

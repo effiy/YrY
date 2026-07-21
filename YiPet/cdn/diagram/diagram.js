@@ -17,9 +17,9 @@
    Shared primitives
    -----------------
    This file consumes /YiPet/cdn/diagram/primitives.js, which is the
-   single source of truth for the rui-report visual language (palette,
+   single source of truth for the yry-report visual language (palette,
    markers, patterns, text rendering, corner brackets). Both this file
-   and the architecture generator (skills/rui-reports/diagram/templates/
+   and the architecture generator (skills/yry-reports/diagram/templates/
    data.js) use the same primitives, so a tweak in one place updates the
    visual language across the entire system.
 

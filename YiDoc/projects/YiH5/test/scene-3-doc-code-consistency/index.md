@@ -127,7 +127,7 @@ Walk through arch/scene-3's reading order:
 
 ### Architecture Decision: Single Source of Truth
 
-**Decision**: The source code is the single source of truth. All docs/ artifacts are derived from the source code via the `rui-init` pipeline. When in doubt, the code wins.
+**Decision**: The source code is the single source of truth. All docs/ artifacts are derived from the source code via the `yry-init` pipeline. When in doubt, the code wins.
 
 **Rationale**: This prevents docs from diverging from implementation. Any doc-code mismatch is a bug in the docs, not the code.
 

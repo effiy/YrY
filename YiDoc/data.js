@@ -1,20 +1,20 @@
 /**
  * YiDoc · 项目仪表盘数据模型
  * --------------------------------------------------------------------------
- * rui-init pipeline step ③ 生成，由 profile + exploration 驱动。
+ * yry-init pipeline step ③ 生成，由 profile + exploration 驱动。
  * 暴露为 window.HELP_CONFIG，供 index.js (Vue 3) 消费。
  *
  * 项目概述：
  *   YiDoc 是 YrY 生态的文档中枢，整合 6 个子项目（YiAi / YiH5 / YiPet /
- *   YiPot / YiWeb / Websites）的 rui-init 流水线报告。每个子项目包含
+ *   YiPot / YiWeb / Websites）的 yry-init 流水线报告。每个子项目包含
  *   完整的 detect → explore → generate → arch → verify 产出。
  */
 window.HELP_CONFIG = {
   titleIcon:     "📚",
   title:         "YiDoc · YrY 项目文档中枢",
-  tagline:       "6 个项目的 rui-init 流水线报告 · 68+ 架构 & 自检场景 · detect → explore → generate → arch → verify · 统一仪表盘 · 代码已重构消除冗余",
+  tagline:       "6 个项目的 yry-init 流水线报告 · 68+ 架构 & 自检场景 · detect → explore → generate → arch → verify · 统一仪表盘 · 代码已重构消除冗余",
   backTopLabel:  "Back to Top",
-  footerNote:    "由 rui-init 流水线自动生成 · detect → explore → generate → arch → verify · YiPet API 已修复对齐 YiAi 后端",
+  footerNote:    "由 yry-init 流水线自动生成 · detect → explore → generate → arch → verify · YiPet API 已修复对齐 YiAi 后端",
 
   // 面包屑导航栏
   breadcrumb: [
@@ -24,7 +24,7 @@ window.HELP_CONFIG = {
 
   // 顶层 KPI 统计卡片
   stats: [
-    { value: "6",   label: "Projects",          modifier: "accent", sub: "rui-init 报告" },
+    { value: "6",   label: "Projects",          modifier: "accent", sub: "yry-init 报告" },
     { value: "68+", label: "Scenes",             modifier: "cyan",   sub: "arch + test" },
     { value: "500+",label: "Source Files",       modifier: "info",   sub: "全项目合计" },
     { value: "11",  label: "Tech Stacks",        modifier: "health", sub: "Python · JS · Rust · Vue" }
@@ -35,11 +35,11 @@ window.HELP_CONFIG = {
     label: { text: '📊', panel: 'reports', title: 'Report Dashboards' },
     targetBlank: true,
     buttons: [
-      { icon: '🏛', name: 'Architecture',   desc: 'Architecture scenes',  color: 'var(--rui-accent)', panel: 'arch' },
-      { icon: '🪢', name: 'Apis Report',   desc: 'Api health analysis',  color: 'var(--rui-violet)', panel: 'apis' },
-      { icon: '📊', name: 'Files Report',   desc: 'Code health analysis',  color: 'var(--rui-violet)', panel: 'files' },
-      { icon: '✅', name: 'Test Scenes',    desc: 'Self-check strategy',  color: 'var(--rui-cyan)',   panel: 'test', targetBlank: false },
-      { icon: '📁', name: 'Projects',       desc: 'All project reports',  color: 'var(--rui-accent)', panel: 'projects' },
+      { icon: '🏛', name: 'Architecture',   desc: 'Architecture scenes',  color: 'var(--yry-accent)', panel: 'arch' },
+      { icon: '🪢', name: 'Apis Report',   desc: 'Api health analysis',  color: 'var(--yry-violet)', panel: 'apis' },
+      { icon: '📊', name: 'Files Report',   desc: 'Code health analysis',  color: 'var(--yry-violet)', panel: 'files' },
+      { icon: '✅', name: 'Test Scenes',    desc: 'Self-check strategy',  color: 'var(--yry-cyan)',   panel: 'test', targetBlank: false },
+      { icon: '📁', name: 'Projects',       desc: 'All project reports',  color: 'var(--yry-accent)', panel: 'projects' },
     ],
     flow: 'File Analysis → Project Reports → Arch Scenes → Test Verification',
     urls: {
@@ -60,7 +60,7 @@ window.HELP_CONFIG = {
         title:   'Daily Report · YiDoc',
         href:    '#',
         status:  'verified',
-        summary: 'All 6 project rui-init pipelines completed. 66+ architecture and test scenes generated. YiAi (Python/FastAPI), YiH5 (Vanilla JS SPA), YiPet (Chrome Extension), YiPot (Tauri Desktop), YiWeb (Vue 3 SPA), Websites (14 static templates).',
+        summary: 'All 6 project yry-init pipelines completed. 66+ architecture and test scenes generated. YiAi (Python/FastAPI), YiH5 (Vanilla JS SPA), YiPet (Chrome Extension), YiPot (Tauri Desktop), YiWeb (Vue 3 SPA), Websites (14 static templates).',
         metrics: [
           { label: 'Window',    value: '1d',       tone: 'is-neutral' },
           { label: 'Projects',  value: '6',         tone: 'is-pass'   },
@@ -71,7 +71,7 @@ window.HELP_CONFIG = {
         ],
         tags: [
           { label: 'all-pass',  tone: 'is-pass' },
-          { label: 'rui-init',  tone: 'is-info' },
+          { label: 'yry-init',  tone: 'is-info' },
         ],
         meta: '6 projects · 66+ scenes · all pipelines verified',
       },
@@ -238,12 +238,12 @@ window.HELP_CONFIG = {
       ]
     },
 
-    // ── §3 · 项目 rui-init 报告总览 ─────────────────────
+    // ── §3 · 项目 yry-init 报告总览 ─────────────────────
     {
       id:    "section-projects",
       badge: "3",
       badgeTone: null,
-      title: "Project rui-init Reports",
+      title: "Project yry-init Reports",
       meta:  "6 projects · 68+ scenes · 500+ source files · 4 languages",
       groups: [
         {

@@ -8,7 +8,7 @@
 
 ```mermaid
 graph TD
-    A[Security Baseline from rui-init-detect] --> B[Current Source Scan]
+    A[Security Baseline from yry-init-detect] --> B[Current Source Scan]
     B --> C[Dimension 1: User Input]
     B --> D[Dimension 2: API Endpoints]
     B --> E[Dimension 3: Data Storage]
@@ -25,7 +25,7 @@ graph TD
     H -->|New API endpoint| L[🔴 High alert · new attack surface]
 ```
 
-The security surface regression check compares the current source against the baseline established during rui-init-detect. Any change in the five boolean dimensions, or any new API endpoint discovered, triggers a review gate.
+The security surface regression check compares the current source against the baseline established during yry-init-detect. Any change in the five boolean dimensions, or any new API endpoint discovered, triggers a review gate.
 
 ---
 

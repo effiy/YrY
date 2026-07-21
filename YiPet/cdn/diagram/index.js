@@ -245,8 +245,8 @@
     var isFootprint = detectLayout().mode === 'footprint';
     var title = isFootprint ? 'Diagram-style footprint' : 'Diagram-style report';
     var sub = isFootprint
-      ? 'Rebuilt from the current <code>.claude/skills</code> inventory using the visual language of <code>rui-reports/diagram</code>.'
-      : 'Generated from the docs card inventory using the visual language of <code>rui-reports/diagram</code>.';
+      ? 'Rebuilt from the current <code>.claude/skills</code> inventory using the visual language of <code>yry-reports/diagram</code>.'
+      : 'Generated from the docs card inventory using the visual language of <code>yry-reports/diagram</code>.';
     var svg = '';
     if (data.diagram && window.ruiDepsDiagram && window.ruiDepsDiagram.render) {
       try { svg = window.ruiDepsDiagram.render(data.diagram); }

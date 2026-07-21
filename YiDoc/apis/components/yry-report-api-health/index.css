@@ -1,0 +1,63 @@
+/* ============================================================================
+ * yry-report-api-health · Component styles
+ * ========================================================================== */
+
+@layer components {
+
+/* ── Health grid ────────────────────────────────────────────────────────── */
+.health-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: var(--yry-space-sm, 12px);
+    margin-bottom: var(--yry-space-md, 20px);
+}
+.health-card {
+    background: var(--yry-bg-elev, #161b22);
+    border: 1px solid var(--yry-border, #30363d);
+    border-radius: var(--yry-radius, 8px);
+    padding: var(--yry-space-md, 16px);
+    transition: border-color var(--yry-duration, .2s) var(--yry-ease-out, ease-out),
+                transform var(--yry-duration, .2s) var(--yry-ease-out, ease-out);
+}
+.health-card:hover {
+    border-color: color-mix(in srgb, var(--yry-border, #30363d) 70%, var(--yry-accent, #3b82f6));
+    transform: translateY(-1px);
+}
+.health-card-label {
+    font-size: var(--yry-font-size-sm, 11px);
+    color: var(--yry-fg-muted, #848893);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.health-card-value {
+    font-family: var(--yry-font-mono, ui-monospace, monospace);
+    font-size: var(--yry-font-size-lg, 22px);
+    font-weight: 700;
+    margin-top: var(--yry-space-xs, 4px);
+}
+.health-card-value.ok { color: var(--yry-ok, #16a34a); }
+.health-card-value.warn { color: var(--yry-warn, #d97706); }
+.health-card-value.critical { color: var(--yry-critical, #dc2626); }
+.health-card-sub { font-size: var(--yry-font-size-sm, 11px); color: var(--yry-fg-muted, #848893); margin-top: 2px; }
+
+/* ── Health detail tables ──────────────────────────────────────────────── */
+.health-detail { margin-top: var(--yry-space-md, 20px); }
+.health-detail h3 {
+    margin: 0 0 var(--yry-space-sm, 8px);
+    font-size: var(--yry-font-size, 14px);
+    color: var(--yry-fg, #e6e8eb);
+}
+
+/* ── Complexity badge ──────────────────────────────────────────────────── */
+.complexity-badge {
+    display: inline-block;
+    font-size: var(--yry-font-size-sm, 11px);
+    font-weight: 700;
+    padding: 2px var(--yry-space-sm, 8px);
+    border-radius: var(--yry-radius-full, 999px);
+}
+.complexity-badge.high   { background: color-mix(in srgb, var(--yry-critical, #dc2626) 20%, transparent); color: var(--yry-critical, #dc2626); }
+.complexity-badge.medium { background: color-mix(in srgb, var(--yry-warn, #d97706) 20%, transparent);     color: var(--yry-warn, #d97706); }
+.complexity-badge.low    { background: color-mix(in srgb, var(--yry-ok, #16a34a) 20%, transparent);       color: var(--yry-ok, #16a34a); }
+
+}

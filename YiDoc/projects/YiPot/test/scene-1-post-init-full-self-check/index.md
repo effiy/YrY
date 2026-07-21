@@ -1,8 +1,8 @@
 # §0 Effect Sketch — Post-Init Full Self-Check
 
-**What this scene demonstrates**: A comprehensive self-check that runs after a fresh `rui-init` pipeline execution against the YiPot project. It verifies that all generated artifacts (CLAUDE.md, README.md, docs/data.js, docs/index.html/css/js, arch/x5 scenes, test/x6 scenes) exist, are well-formed, and contain project-specific content rather than generic placeholders.
+**What this scene demonstrates**: A comprehensive self-check that runs after a fresh `yry-init` pipeline execution against the YiPot project. It verifies that all generated artifacts (CLAUDE.md, README.md, docs/data.js, docs/index.html/css/js, arch/x5 scenes, test/x6 scenes) exist, are well-formed, and contain project-specific content rather than generic placeholders.
 
-**Why it matters**: The rui-init pipeline is a generative process — it reads source code and emits documentation. Without a post-init self-check, silently partial or placeholder output can be accepted as valid. This scene defines the minimum pass criteria for YiPot's generated documentation baseline.
+**Why it matters**: The yry-init pipeline is a generative process — it reads source code and emits documentation. Without a post-init self-check, silently partial or placeholder output can be accepted as valid. This scene defines the minimum pass criteria for YiPot's generated documentation baseline.
 
 ---
 
@@ -67,15 +67,15 @@
 # §4 Self-Improvement
 
 ## Edge Cases Found
-- The rui-init pipeline output directory (`YiDoc/projects/YiPot/`) is separate from the project root (`YiPot/`) — the pipeline must correctly resolve both paths.
+- The yry-init pipeline output directory (`YiDoc/projects/YiPot/`) is separate from the project root (`YiPot/`) — the pipeline must correctly resolve both paths.
 - `data.js` uses `window.HELP_CONFIG` which requires the dashboard template's `index.js` to execute — if `index.js` is missing or the CDN components fail to load, the stats/sections will not render.
-- The `index.html` CDN paths were rewritten from template defaults to `../rui-html-cdn/` — if the CDN directory is at a different relative path, component loading will fail silently.
+- The `index.html` CDN paths were rewritten from template defaults to `../yry-html-cdn/` — if the CDN directory is at a different relative path, component loading will fail silently.
 
 ## Suggested Improvements
 - Add a `verify.sh` script in the project root that automates these 5 checks and outputs a pass/fail report.
 - Add a CI step that runs `grep "YiPot" CLAUDE.md && grep "Domain Language" README.md` on every push to ensure documentation stays in sync.
-- Store the expected scene count (5 arch, 6 test) in a `.rui-init-state.json` so the verify step doesn't hardcode numbers.
+- Store the expected scene count (5 arch, 6 test) in a `.yry-init-state.json` so the verify step doesn't hardcode numbers.
 
 ## Limitations
 - The self-check verifies file existence and structural correctness but cannot assess documentation quality (accuracy, completeness, freshness).
-- If the rui-init templates change (e.g., different CDN paths), the self-check must be updated to match.
+- If the yry-init templates change (e.g., different CDN paths), the self-check must be updated to match.

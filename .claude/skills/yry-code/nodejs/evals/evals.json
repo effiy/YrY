@@ -1,0 +1,115 @@
+{
+  "skill_name": "yry-code-nodejs",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "What's the recommended Node.js project structure — components, layering, packaging?",
+      "expected_output": "Routes to Project Architecture practices in nodebestpractices, recommends the matching numbered practice(s) with the canonical Read More link.",
+      "files": [],
+      "expectations": [
+        "Reads references/index.md and references/sources.json",
+        "Routes to the Project Architecture category",
+        "Cites with practice number, title, URL, and [src:nodebestpractices]"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "How should I handle async errors in Node — custom Error class, central handler, operational vs programmer errors?",
+      "expected_output": "Routes to Error Handling practices and surfaces the matching numbered practice(s) with canonical link.",
+      "files": [],
+      "expectations": [
+        "Routes to the Error Handling category",
+        "Covers custom Error class + operational vs programmer errors + central handler",
+        "Cites with [src:nodebestpractices]"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Enforce Node.js code style in my repo — ESLint, naming, const vs let, ===, async/await.",
+      "expected_output": "Routes to Code Style practices and surfaces the matching numbered practice(s) with canonical link.",
+      "files": [],
+      "expectations": [
+        "Routes to the Code Style category",
+        "Mentions eslint-plugin-node and the const/let/=== conventions",
+        "Cites with [src:nodebestpractices]"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Design a Node.js testing strategy — component testing, AAA pattern, mock external HTTP, port randomisation.",
+      "expected_output": "Routes to Testing & Quality practices and surfaces the matching numbered practice(s) with canonical link.",
+      "files": [],
+      "expectations": [
+        "Routes to the Testing & Quality category",
+        "Covers AAA pattern + component testing + port randomisation",
+        "Cites with [src:nodebestpractices]"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "What's the production-readiness checklist for a Node.js service — monitoring, npm ci, NODE_ENV, log to stdout?",
+      "expected_output": "Routes to Going To Production practices and surfaces the matching numbered practice(s) with canonical link.",
+      "files": [],
+      "expectations": [
+        "Routes to the Going To Production category",
+        "Mentions NODE_ENV=production, npm ci, log to stdout, zero-downtime deploys",
+        "Cites with [src:nodebestpractices]"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Secure my Node.js app — helmet, bcrypt, JWT blocklist, rate limiting, no eval.",
+      "expected_output": "Routes to Security practices and surfaces the matching numbered practice(s) with canonical link.",
+      "files": [],
+      "expectations": [
+        "Routes to the Security category",
+        "Mentions helmet / bcrypt / JWT blocklist / rate limiting / no eval",
+        "Cites with [src:nodebestpractices]"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "How do I avoid blocking the Node.js event loop and should I prefer native JS over Lodash?",
+      "expected_output": "Routes to Draft: Performance Best Practices and surfaces the matching numbered practice(s) with canonical link.",
+      "files": [],
+      "expectations": [
+        "Routes to the Draft: Performance Best Practices category",
+        "Covers event-loop blocking and native-JS-over-Lodash",
+        "Cites with [src:nodebestpractices]"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Containerize my Node.js service — multi-stage Docker, slim base image, .dockerignore, graceful shutdown.",
+      "expected_output": "Routes to Docker practices and surfaces the matching numbered practice(s) with canonical link.",
+      "files": [],
+      "expectations": [
+        "Routes to the Docker category",
+        "Mentions multi-stage builds, slim base image, .dockerignore, graceful shutdown",
+        "Cites with [src:nodebestpractices]"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "What's new in the 2026 Node.js best-practices list?",
+      "expected_output": "Surfaces the New & Updated bucket (practices tagged #new or #updated) with citations.",
+      "files": [],
+      "expectations": [
+        "Surfaces the New & Updated bucket",
+        "Filters to practices tagged #new or #updated",
+        "Cites with [src:nodebestpractices]"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "How do I handle graceful shutdown and unhandled promise rejections in Node?",
+      "expected_output": "Routes to Error Handling practices and surfaces the graceful-shutdown + unhandled-rejection practice(s) with canonical link.",
+      "files": [],
+      "expectations": [
+        "Routes to the Error Handling category",
+        "Covers graceful shutdown + unhandled rejections + event-emitter errors",
+        "Cites with [src:nodebestpractices]"
+      ]
+    }
+  ]
+}

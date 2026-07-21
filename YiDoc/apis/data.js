@@ -1,5 +1,5 @@
 /**
- * rui-report-apis — Static configuration & runtime analysis
+ * yry-report-apis — Static configuration & runtime analysis
  * ----------------------------------------------------------------------
  * Scope: /Users/yi/YrY/{YiAi,YiPet,YiWeb,YiH5,YiPot,YiviY,Websites}
  * Generated: 2026-07-21
@@ -19,7 +19,7 @@ window.REPORT_CONFIG = {
         csvHeader: 'path,method,handler,handlerFile,line,auth,authMechanism,validationDepth,contentTypes,rateLimited,errorHandling,middleware,statusCodes,responseFormat,errorFormat,paginationStyle,safe,idempotent,handlerLines,deprecated,version',
     },
     labels: {
-        title: 'rui-report-apis · Yi Ecosystem',
+        title: 'yry-report-apis · Yi Ecosystem',
         footerMethodology: 'Methodology: references/methodology.md · schemas: references/schemas.md',
         sectionSummary:    'Summary',
         sectionEndpoints:  'Endpoints',

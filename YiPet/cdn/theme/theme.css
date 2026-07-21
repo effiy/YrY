@@ -2,9 +2,7 @@
    YrY Theme CSS — Category B 页面的设计令牌与组件样式
    适用: 审查 · 测试面板 · 演示 · 计划清单 · plan · index
 
-   依赖: shared.css (需先加载)
    使用方式:
-     <link rel="stylesheet" href="../../../../cdn/shared.css">
      <link rel="stylesheet" href="../../../../cdn/theme.css">
 
    对应场景文档:

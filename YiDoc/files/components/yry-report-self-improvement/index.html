@@ -1,0 +1,535 @@
+<script type="text/x-template" id="yry-report-self-improvement-tpl">
+    <section id="self-improvement" class="self-improvement" aria-labelledby="si-heading">
+        <h2 id="si-heading">{{ labels.selfImprovementLabel || 'Self-Improvement Analysis' }}</h2>
+        <p class="chart-hint">{{ labels.selfImprovementHint || 'Chart-first diagnostics: severity mix, risk vectors, ranked levers, remediation roadmap, and decay forecast.' }}</p>
+
+        <!-- Executive summary stat banner -->
+        <div class="si-stat-banner" role="group" aria-label="Executive summary statistics">
+            <div class="si-stat-tile" :class="benchmarks.currentValue >= 75 ? 'grade-ok' : benchmarks.currentValue >= 40 ? 'grade-warn' : 'grade-critical'" tabindex="0" role="status" :aria-label="'Current score: ' + benchmarks.currentValue">
+                <span class="si-stat-value">{{ benchmarks.currentValue }}</span>
+                <span class="si-stat-label">{{ labels.siStatScore || 'score' }}</span>
+                <svg class="si-stat-spark" viewBox="0 0 40 12" preserveAspectRatio="none" v-if="sparkline.points">
+                    <polyline :points="sparkline.points" fill="none"
+                        :stroke="sparkline.trend === 'up' ? 'var(--yry-ok, #22c55e)' : sparkline.trend === 'down' ? 'var(--yry-critical, #ef4444)' : 'var(--yry-fg-subtle, #4a5062)'"
+                        stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/>
+                    <circle :cx="sparkline.lastX" :cy="sparkline.lastY" r="1"
+                        :fill="sparkline.trend === 'up' ? 'var(--yry-ok, #22c55e)' : sparkline.trend === 'down' ? 'var(--yry-critical, #ef4444)' : 'var(--yry-fg-subtle, #4a5062)'"/>
+                </svg>
+                <span class="si-stat-momentum" :class="'mom-' + sparkline.trend">{{ sparkline.arrow }} {{ sparkline.delta > 0 ? '+' : '' }}{{ sparkline.delta }}</span>
+            </div>
+            <div class="si-stat-tile" :class="{ 'grade-critical': p0Count > 0, 'grade-ok': p0Count === 0 }">
+                <span class="si-stat-value">{{ p0Count }}</span>
+                <span class="si-stat-label">{{ labels.siStatP0Alerts || 'P0 alerts' }}</span>
+            </div>
+            <div class="si-stat-tile">
+                <span class="si-stat-value">{{ benchmarks.gapToNext }}</span>
+                <span class="si-stat-label">{{ labels.siStatGapToNext || 'pts to' }} {{ benchmarks.targetGrade }}</span>
+            </div>
+            <div class="si-stat-tile tone-accent" v-if="levers.length">
+                <span class="si-stat-value">+{{ levers[0].scoreUplift }}</span>
+                <span class="si-stat-label">{{ labels.siStatTopLever || 'top lever' }}</span>
+            </div>
+            <div class="si-stat-tile" :class="{ 'grade-critical': decayForecast.isDecaying, 'grade-ok': !decayForecast.isDecaying }">
+                <span class="si-stat-value">{{ decayForecast.isDecaying ? '↘' : '→' }} {{ decayForecast.delta }}</span>
+                <span class="si-stat-label">{{ labels.siStatDecay || 'decay' }}</span>
+            </div>
+        </div>
+
+        <!-- Narrative summary -->
+        <div class="si-narrative" v-if="narrative.length" aria-live="polite">
+            <p v-for="(p, i) in narrative" :key="i" class="si-narrative-para">{{ p }}</p>
+        </div>
+
+        <!-- Chart row: severity donut | risk vectors bar | benchmarks gap -->
+        <div class="si-chart-row">
+            <div class="si-card si-donut">
+                <h3>{{ labels.siSeverityDonutLabel || 'Severity Mix' }}</h3>
+                <div class="si-donut-wrap" v-if="!donut.empty">
+                    <svg class="si-donut-svg" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="40" fill="none" stroke="var(--yry-surface-2, #1f2937)" stroke-width="10"/>
+                        <circle v-for="(s, i) in donut.segments" :key="i"
+                            cx="50" cy="50" r="40" fill="none"
+                            :stroke="s.color" stroke-width="10"
+                            :stroke-dasharray="s.dasharray"
+                            :stroke-dashoffset="s.dashoffset"
+                            :transform="'rotate(' + s.rotate + ' 50 50)'"/>
+                    </svg>
+                    <div class="si-donut-center">
+                        <span class="si-donut-total">{{ donut.total }}</span>
+                        <span class="si-donut-label">findings</span>
+                    </div>
+                </div>
+                <div class="si-donut-legend" v-if="!donut.empty">
+                    <span v-for="(s, i) in donut.segments" :key="i" class="si-legend-item">
+                        <span class="si-legend-dot" :style="{ background: s.color }"></span>
+                        <span class="si-legend-sev">{{ s.sev }}</span>
+                        <span class="si-legend-count">{{ s.count }}</span>
+                        <span class="si-legend-frac">{{ donut.total === 0 ? '0%' : (s.frac * 100).toFixed(0) + '%' }}</span>
+                    </span>
+                </div>
+                <p v-else class="empty">{{ labels.siNoP0 || 'No P0 alerts — nothing critical to remediate.' }}</p>
+            </div>
+
+            <div class="si-card si-risk-vectors">
+                <h3>{{ labels.siRiskVectorsLabel || 'Risk Vectors' }}</h3>
+                <div class="si-radar" v-if="radar.axes.length >= 3">
+                    <svg class="si-radar-svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+                        <polygon v-for="(ring, i) in radar.rings" :key="'r'+i" :points="ring"
+                            fill="none" stroke="var(--yry-fg-subtle, #4a5062)" stroke-width="0.25" opacity="0.35"/>
+                        <text v-for="(b, i) in radar.bands" :key="'b'+i"
+                            x="51" :y="b.y" class="si-radar-band" text-anchor="start" dominant-baseline="middle">{{ b.label }}</text>
+                        <line v-for="(a, i) in radar.axes" :key="'a'+i"
+                            x1="50" y1="50" :x2="radar.points[i] ? radar.points[i].x : 50" :y2="radar.points[i] ? radar.points[i].y : 50"
+                            stroke="var(--yry-fg-subtle, #4a5062)" stroke-width="0.25" opacity="0.3"/>
+                        <polygon :points="radar.polygon"
+                            fill="var(--yry-accent, #22C55E)" fill-opacity="0.18"
+                            stroke="var(--yry-accent, #22C55E)" stroke-width="0.7" stroke-linejoin="round"/>
+                        <circle v-for="(p, i) in radar.points" :key="'p'+i"
+                            :cx="p.x" :cy="p.y" r="1.1" :class="p.scoreCls" class="si-radar-pt">
+                            <title>{{ p.label }}: {{ p.score }}/100</title>
+                        </circle>
+                        <text v-for="(a, i) in radar.axes" :key="'l'+i"
+                            :x="a.x" :y="a.y" class="si-radar-label" text-anchor="middle" dominant-baseline="middle">{{ a.label }} {{ a.score }}</text>
+                    </svg>
+                </div>
+                <ul class="si-rv-list" v-if="riskVectors.length">
+                    <li v-for="(r, i) in riskVectors" :key="i" class="si-rv-row">
+                        <span class="si-rv-name">{{ r.dimension }}</span>
+                        <div class="si-rv-bar-track">
+                            <div class="si-rv-bar">
+                                <div class="si-rv-bar-fill" :class="r.scoreCls" :style="{ width: r.scoreWidth + '%' }"></div>
+                            </div>
+                            <div class="si-rv-sev-strip" v-if="r.p0 + r.p1 + r.p2 > 0">
+                                <span class="si-rv-seg si-rv-seg-p0" :style="{ width: (r.p0 / (r.p0 + r.p1 + r.p2) * 100) + '%' }"></span>
+                                <span class="si-rv-seg si-rv-seg-p1" :style="{ width: (r.p1 / (r.p0 + r.p1 + r.p2) * 100) + '%' }"></span>
+                                <span class="si-rv-seg si-rv-seg-p2" :style="{ width: (r.p2 / (r.p0 + r.p1 + r.p2) * 100) + '%' }"></span>
+                            </div>
+                        </div>
+                        <span class="si-rv-score" :class="r.scoreCls">{{ r.score }}</span>
+                    </li>
+                </ul>
+                <p v-else class="empty">No risk vectors.</p>
+                <div class="si-pareto" v-if="pareto.bars.length >= 2">
+                    <h4 class="si-pareto-title">{{ labels.siParetoTitle || 'Risk concentration · Pareto' }}</h4>
+                    <svg class="si-pareto-svg" viewBox="0 0 100 42" preserveAspectRatio="none">
+                        <line :x1="0" :y1="pareto.pct80y" :x2="100" :y2="pareto.pct80y"
+                            stroke="var(--yry-warn, #f59e0b)" stroke-width="0.25" stroke-dasharray="1.5,1.5" opacity="0.6"/>
+                        <text x="1" :y="pareto.pct80y - 0.8" class="si-pareto-80">80%</text>
+                        <rect v-for="(b, i) in pareto.bars" :key="'pb'+i"
+                            :x="b.x + b.width * 0.09" :y="b.y" :width="b.width" :height="b.height"
+                            class="si-pareto-bar" :class="b.scoreCls">
+                            <title>{{ b.label }}: severity score {{ b.score }}</title>
+                        </rect>
+                        <polyline :points="pareto.line" fill="none"
+                            stroke="var(--yry-accent, #22C55E)" stroke-width="0.6" stroke-linejoin="round"/>
+                        <circle v-for="(m, i) in pareto.marks" :key="'pm'+i"
+                            :cx="m.x" :cy="m.y" r="0.7" class="si-pareto-mark"/>
+                    </svg>
+                    <div class="si-pareto-labels">
+                        <span v-for="(b, i) in pareto.bars" :key="'pl'+i" class="si-pareto-label" :class="b.scoreCls">{{ b.label }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="si-card si-benchmarks">
+                <h3>{{ labels.siBenchmarksLabel || 'Target Band' }}</h3>
+                <div class="si-bench-body" v-if="benchmarks.currentValue != null">
+                    <p class="si-bench-head">
+                        <span class="si-bench-current" :class="benchmarks.currentValue >= 75 ? 'grade-ok' : benchmarks.currentValue >= 40 ? 'grade-warn' : 'grade-critical'">{{ benchmarks.currentValue }}/100</span>
+                        <span class="si-bench-arrow">→</span>
+                        <span class="si-bench-target">{{ benchmarks.targetGrade }} ({{ benchmarks.targetValue }})</span>
+                    </p>
+                    <div class="si-bench-bands">
+                        <div class="si-bench-band si-bench-band-f"><span>F</span></div>
+                        <div class="si-bench-band si-bench-band-d"><span>D</span></div>
+                        <div class="si-bench-band si-bench-band-c"><span>C</span></div>
+                        <div class="si-bench-band si-bench-band-b"><span>B</span></div>
+                        <div class="si-bench-band si-bench-band-a"><span>A</span></div>
+                        <span class="si-bench-marker" :class="benchmarks.currentValue >= 75 ? 'grade-ok' : benchmarks.currentValue >= 40 ? 'grade-warn' : 'grade-critical'" :style="{ left: benchmarks.currentValue + '%' }" :title="'Current: ' + benchmarks.currentValue"></span>
+                    </div>
+                    <div class="si-bench-scale"><span>0</span><span>40</span><span>60</span><span>75</span><span>90</span><span>100</span></div>
+                    <p class="si-bench-gap-text">{{ labels.siGapLabel || 'Gap to next band' }}: {{ benchmarks.gapToNext }} pts → {{ benchmarks.targetGrade }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Levers row -->
+        <div class="si-card si-levers" v-if="levers.length">
+            <h3>{{ labels.siLeversLabel || 'Top Remediation Levers' }}</h3>
+            <div class="si-levers-body">
+                <div class="si-quadrant" v-if="leversQuadrant.length">
+                    <svg class="si-quadrant-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <line x1="50" y1="0" x2="50" y2="100" stroke="var(--yry-border-color, #4a5062)" stroke-width="0.5" stroke-dasharray="2,2"/>
+                        <line x1="0" y1="50" x2="100" y2="50" stroke="var(--yry-border-color, #4a5062)" stroke-width="0.5" stroke-dasharray="2,2"/>
+                        <circle v-for="(p, i) in leversQuadrant" :key="i"
+                            :cx="p.cx" :cy="p.cy" :r="p.r"
+                            :class="'si-quad-pt--' + (p.severity || 'p2').toLowerCase()"
+                            class="si-quad-pt">
+                            <title>#{{ p.rank }}: +{{ p.uplift }} pts · {{ p.effort }} effort</title>
+                        </circle>
+                        <text v-for="(p, i) in leversQuadrant" :key="'t'+i"
+                            :x="p.cx" :y="p.cy - p.r - 1"
+                            class="si-quad-label" text-anchor="middle">#{{ p.rank }}</text>
+                    </svg>
+                    <div class="si-quad-axis-x"><span>{{ labels.siLowEffortLabel || 'low effort' }}</span><span>{{ labels.siHighEffortLabel || 'high effort' }}</span></div>
+                    <div class="si-quad-quad-labels">
+                        <span class="si-quad-q si-quad-q--tl">{{ labels.siQuickWinsLabel || 'Quick wins' }}</span>
+                        <span class="si-quad-q si-quad-q--tr">{{ labels.siStrategicBetsLabel || 'Strategic bets' }}</span>
+                        <span class="si-quad-q si-quad-q--bl">{{ labels.siFillInsLabel || 'Fill-ins' }}</span>
+                        <span class="si-quad-q si-quad-q--br">{{ labels.siThanklessLabel || 'Thankless' }}</span>
+                    </div>
+                </div>
+                <div class="si-heatmap" v-if="heatmap.rows.length">
+                    <div class="si-heatmap-row si-heatmap-head">
+                        <span class="si-heatmap-cell si-heatmap-label"></span>
+                        <span class="si-heatmap-cell si-heatmap-col">P0</span>
+                        <span class="si-heatmap-cell si-heatmap-col">P1</span>
+                        <span class="si-heatmap-cell si-heatmap-col">P2</span>
+                    </div>
+                    <div v-for="(row, i) in heatmap.rows" :key="'hm'+i" class="si-heatmap-row">
+                        <span class="si-heatmap-cell si-heatmap-label">{{ row.dimName }}</span>
+                        <span v-for="(c, j) in row.cells" :key="j"
+                            class="si-heatmap-cell si-heatmap-heat" :class="c.cls"
+                            :style="{ opacity: c.intensity }">
+                            {{ c.count || '' }}
+                            <title>{{ row.dimName }} · {{ c.k.toUpperCase() }}: {{ c.count }} finding{{ c.count === 1 ? '' : 's' }}</title>
+                        </span>
+                    </div>
+                </div>
+                <div class="si-levers-grid">
+                    <div v-for="(l, i) in levers" :key="i" class="si-lever-card">
+                        <div class="si-lever-rank">#{{ l.rank }}</div>
+                        <div class="si-lever-body">
+                            <p class="si-lever-head">
+                                <code>{{ l.dimension }}</code>
+                                <span class="sev-tag" :class="'sev-' + (l.severity || 'p2').toLowerCase()">{{ l.severity }}</span>
+                                <span class="si-lever-uplift">+{{ l.scoreUplift }} pts</span>
+                            </p>
+                            <p class="si-lever-action">{{ l.action }}</p>
+                            <p class="si-lever-meta">
+                                <span class="si-lever-effort" :class="'effort-' + l.effort">{{ l.effort }}</span>
+                                <code v-if="l.file" class="si-lever-file">{{ l.file }}<span v-if="l.line != null">:{{ l.line }}</span></code>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Remediation roadmap -->
+        <div class="si-card si-roadmap" v-if="remediationPlan.phases.length">
+            <h3>{{ labels.siRoadmapLabel || 'Remediation Roadmap' }}</h3>
+            <div class="si-roadmap-body">
+                <div class="si-roadmap-gauge">
+                    <span class="si-roadmap-now">{{ remediationPlan.currentScore }}</span>
+                    <span class="si-roadmap-arrow">→</span>
+                    <span class="si-roadmap-projected">{{ remediationPlan.projectedIfAllP0P1 }}</span>
+                    <span class="si-roadmap-label">{{ labels.siProjectedLabel || 'projected if P0+P1 remediated' }}</span>
+                </div>
+                <div class="si-confidence-ring" :class="confidence.cls">
+                    <svg viewBox="0 0 36 36" class="si-confidence-svg">
+                        <circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--yry-fg-subtle, #4a5062)" stroke-width="3" opacity="0.25"/>
+                        <circle cx="18" cy="18" r="15.5" fill="none" stroke="currentColor" stroke-width="3"
+                            :stroke-dasharray="(confidence.pct * 0.975) + ' 100'" stroke-linecap="round"
+                            transform="rotate(-90 18 18)"/>
+                        <text x="18" y="20.5" text-anchor="middle" class="si-confidence-pct">{{ confidence.pct }}%</text>
+                    </svg>
+                    <span class="si-confidence-label">{{ confidence.label }}</span>
+                </div>
+                <div class="si-gap-decomp" v-if="gapDecomp.gap > 0">
+                    <div class="si-gap-decomp-bar">
+                        <div class="si-gap-decomp-current" :style="{ width: (gapDecomp.current * 100 / gapDecomp.target) + '%' }"></div>
+                        <div v-for="(s, i) in gapDecomp.segments" :key="i"
+                            class="si-gap-decomp-seg" :class="s.cls"
+                            :style="{ left: s.x + '%', width: s.width + '%' }">
+                            <title>{{ s.dimName }}: +{{ s.uplift }} pts ({{ s.pctOfGap }}% of gap)</title>
+                        </div>
+                        <div class="si-gap-decomp-residual" v-if="gapDecomp.residual > 0"
+                            :style="{ left: gapDecomp.residualX + '%', width: gapDecomp.residualWidth + '%' }">
+                            <title>Residual gap: {{ gapDecomp.residual }} pts</title>
+                        </div>
+                        <div class="si-gap-decomp-target"></div>
+                    </div>
+                    <div class="si-gap-decomp-legend">
+                        <span class="si-gap-decomp-key si-gap-decomp-current-key">current {{ gapDecomp.current }}</span>
+                        <span v-for="(s, i) in gapDecomp.segments" :key="i" class="si-gap-decomp-key" :class="s.cls">{{ s.dimName }} +{{ s.uplift }}</span>
+                        <span class="si-gap-decomp-key si-gap-decomp-residual-key" v-if="gapDecomp.residual > 0">residual {{ gapDecomp.residual }}</span>
+                        <span class="si-gap-decomp-key si-gap-decomp-target-key">target {{ gapDecomp.target }}</span>
+                    </div>
+                </div>
+                <div class="si-sensitivity" v-if="sensitivity.levers.length">
+                    <h4 class="si-sensitivity-title">{{ labels.siSensitivityTitle || 'Sensitivity tornado · uplift uncertainty per top lever' }}</h4>
+                    <div class="si-sensitivity-rows">
+                        <div v-for="(l, i) in sensitivity.levers" :key="'sens'+i" class="si-sensitivity-row">
+                            <span class="si-sensitivity-label">{{ l.rank }}. {{ l.dimName }}</span>
+                            <svg class="si-sensitivity-bar" viewBox="0 0 100 8" preserveAspectRatio="none">
+                                <rect :x="l.pessX" y="1.5" :width="l.barWidth" height="5"
+                                    :class="'sens-bar ' + l.cls" rx="1"/>
+                                <title>{{ l.dimName }} — pessimistic {{ l.pessimistic }} · expected {{ l.expected }} · optimistic {{ l.optimistic }} pts (range {{ l.rangeWidth }})</title>
+                                <line :x1="l.expX" y1="0.5" :x2="l.expX" y2="7.5" stroke="var(--yry-fg, #e6e8eb)" stroke-width="0.4"/>
+                            </svg>
+                            <span class="si-sensitivity-range">{{ l.pessimistic }}–{{ l.optimistic }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="si-roadmap-phases">
+                    <div v-for="(p, i) in remediationPlan.phases" :key="i" class="si-phase" :class="'phase-' + p.severity">
+                        <div class="si-phase-head">
+                            <span class="si-phase-name">{{ p.phase }}</span>
+                            <span class="si-phase-count">{{ p.itemCount }} items</span>
+                        </div>
+                        <div class="si-phase-bar">
+                            <div class="si-phase-bar-fill" :style="{ width: p.projectedWidth + '%' }"></div>
+                        </div>
+                        <p class="si-phase-meta">
+                            <span class="si-phase-uplift">+{{ p.estUplift }} pts → {{ p.projected }}</span>
+                            <span class="si-phase-deadline">{{ p.deadline }}</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="si-timeline" v-if="timeline.segments.length">
+                <h4 class="si-timeline-title">{{ labels.siTimelineTitle || 'Initiative timeline · Gantt' }}</h4>
+                <div class="si-timeline-track">
+                    <div v-for="(s, i) in timeline.segments" :key="'tl'+i"
+                        class="si-timeline-seg" :class="s.cls"
+                        :style="{ left: s.x + '%', width: s.width + '%' }">
+                        <span class="si-timeline-seg-label">{{ s.label }}</span>
+                        <span class="si-timeline-seg-count" v-if="s.itemCount">{{ s.itemCount }}</span>
+                    </div>
+                </div>
+                <div class="si-timeline-markers">
+                    <span v-for="(m, i) in timeline.markers" :key="'tm'+i"
+                        class="si-timeline-marker" :style="{ left: m.x + '%' }">{{ m.label }}</span>
+                </div>
+            </div>
+            <div class="si-effort-donut" v-if="effortDonut.slices.length">
+                <h4 class="si-effort-donut-title">{{ labels.siEffortDonutTitle || 'Effort allocation · projected uplift share per phase' }}</h4>
+                <div class="si-effort-donut-body">
+                    <svg class="si-effort-donut-svg" viewBox="0 0 42 42">
+                        <circle cx="21" cy="21" r="15.915" fill="none" stroke="var(--yry-bg-elevated, rgba(255,255,255,0.05))" stroke-width="6"/>
+                        <circle v-for="(s, i) in effortDonut.slices" :key="'ed'+i"
+                            cx="21" cy="21" r="15.915" fill="none"
+                            :stroke="'var(--yry-' + (s.cls === 'grade-critical' ? 'critical' : s.cls === 'grade-warn' ? 'warn' : 'ok') + ', #888)'"
+                            stroke-width="6"
+                            :stroke-dasharray="s.dashArray"
+                            :stroke-dashoffset="(100 - s.dashOffset)"
+                            transform="rotate(-90 21 21)">
+                            <title>{{ s.label }} — +{{ s.value }} pts ({{ s.pct }}% of projected uplift)</title>
+                        </circle>
+                        <text x="21" y="20" text-anchor="middle" class="si-effort-donut-total">+{{ effortDonut.totalUplift }}</text>
+                        <text x="21" y="25" text-anchor="middle" class="si-effort-donut-unit">pts</text>
+                    </svg>
+                    <div class="si-effort-donut-legend">
+                        <span v-for="(s, i) in effortDonut.slices" :key="'edk'+i" class="si-effort-donut-key" :class="s.cls">{{ s.label }} +{{ s.value }} ({{ s.pct }}%)</span>
+                    </div>
+                </div>
+            </div>
+            <div class="si-risk-decay" v-if="riskDecay.maxVal > 0">
+                <h4 class="si-risk-decay-title">{{ labels.siRiskDecayTitle || 'Risk exposure decay · sevScore across remediation phases' }}</h4>
+                <svg class="si-risk-decay-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <line v-if="riskDecay.thresholdVisible" x1="0" :y1="riskDecay.thresholdY" x2="100" :y2="riskDecay.thresholdY"
+                        stroke="var(--yry-warn, #f59e0b)" stroke-width="0.3" stroke-dasharray="2,2" opacity="0.5"/>
+                    <polyline :points="riskDecay.polyline" fill="none" stroke="var(--yry-critical, #ef4444)" stroke-width="0.6" stroke-linejoin="round"/>
+                    <circle v-for="(p, i) in riskDecay.points" :key="'rd'+i"
+                        :cx="p.x" :cy="p.yPx" r="1.2" fill="var(--yry-critical, #ef4444)">
+                        <title>{{ p.label }} — {{ p.val }} sevScore</title>
+                    </circle>
+                </svg>
+                <div class="si-risk-decay-labels">
+                    <span v-for="(p, i) in riskDecay.points" :key="'rdl'+i">{{ p.label }}: {{ p.val }}</span>
+                </div>
+            </div>
+            <div class="si-roi-ranking" v-if="roiRanking.levers.length">
+                <h4 class="si-roi-ranking-title">{{ labels.siROIRankingTitle || 'ROI ranking · uplift per unit effort (bang-for-buck)' }}</h4>
+                <div class="si-roi-ranking-rows">
+                    <div v-for="(l, i) in roiRanking.levers" :key="'roi'+i" class="si-roi-ranking-row">
+                        <span class="si-roi-ranking-label">{{ l.dimName }}</span>
+                        <div class="si-roi-ranking-bar-track">
+                            <div class="si-roi-ranking-bar-fill" :class="l.cls" :style="{ width: l.barWidth + '%' }">
+                                <title>{{ l.dimName }} — ROI {{ l.roi }} (uplift {{ l.uplift }} / effort {{ l.effort }}={{ l.effortWeight }})</title>
+                            </div>
+                        </div>
+                        <span class="si-roi-ranking-val">{{ l.roi }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="si-scurve" v-if="sCurve.points.length">
+                <h4 class="si-scurve-title">{{ labels.siSCurveTitle || 'Cumulative completion · remediation S-curve' }}</h4>
+                <svg class="si-scurve-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <line x1="0" y1="0" x2="100" y2="0" stroke="var(--yry-fg-subtle, #4a5062)" stroke-width="0.2" stroke-dasharray="1,3" opacity="0.4"/>
+                    <polyline :points="sCurve.polyline" fill="none" stroke="var(--yry-accent, #22C55E)" stroke-width="0.8" stroke-linejoin="round"/>
+                    <circle v-for="(p, i) in sCurve.points" :key="'sc'+i"
+                        :cx="p.x" :cy="p.y" r="1.5" fill="var(--yry-accent, #22C55E)">
+                        <title>{{ p.phase }} — {{ p.pct }}% cumulative</title>
+                    </circle>
+                </svg>
+                <div class="si-scurve-labels">
+                    <span v-for="(p, i) in sCurve.points" :key="'scl'+i">{{ p.pct }}%</span>
+                </div>
+            </div>
+            <div class="si-score-histogram" v-if="scoreHistogram.total > 0">
+                <h4 class="si-score-histogram-title">{{ labels.siScoreHistogramTitle || 'Score distribution · dims per grade band' }} ({{ scoreHistogram.total }} dims)</h4>
+                <div class="si-score-histogram-bars">
+                    <div v-for="(b, i) in scoreHistogram.bands" :key="'sh'+i" class="si-score-histogram-col">
+                        <div class="si-score-histogram-bar" :class="b.cls" :style="{ height: b.heightPct + '%' }">
+                            <title>{{ b.label }} grade ({{ b.min }}+) — {{ b.count }} dim(s)</title>
+                        </div>
+                        <span class="si-score-histogram-count">{{ b.count }}</span>
+                        <span class="si-score-histogram-label">{{ b.label }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="si-decision-quadrant">
+                <h4 class="si-decision-quadrant-title">{{ labels.siDecisionQuadrantTitle || 'Decision quadrant · confidence vs risk exposure' }} → <span :class="decisionQuadrant.zone.toLowerCase() + '-zone'">{{ decisionQuadrant.zone }}</span></h4>
+                <div class="si-decision-quadrant-grid">
+                    <div class="si-dq-cell dq-block">BLOCK</div>
+                    <div class="si-dq-cell dq-monitor">MONITOR</div>
+                    <div class="si-dq-cell dq-conditional">CONDITIONAL</div>
+                    <div class="si-dq-cell dq-ship">SHIP</div>
+                    <div class="si-dq-marker" :style="{ left: decisionQuadrant.x + '%', bottom: decisionQuadrant.y + '%' }"
+                        :title="'confidence ' + decisionQuadrant.confPct + '%, risk ' + decisionQuadrant.riskRaw + ' sevScore → ' + decisionQuadrant.zone"></div>
+                </div>
+                <div class="si-decision-quadrant-axes">
+                    <span class="si-dq-x-label">confidence →</span>
+                    <span class="si-dq-y-label">↑ risk</span>
+                </div>
+            </div>
+            <div class="si-time-to-target">
+                <h4 class="si-time-to-target-title">{{ labels.siTimeToTargetTitle || 'Time-to-target · ETA at current trajectory slope' }}</h4>
+                <div class="si-time-to-target-bar">
+                    <div class="si-time-to-target-current" :style="{ width: timeToTarget.currentPct + '%' }"></div>
+                    <div class="si-time-to-target-projected" :style="{ width: timeToTarget.projectedPct + '%' }" :title="'projected ' + timeToTarget.projected + '/' + timeToTarget.target"></div>
+                </div>
+                <p class="si-time-to-target-verdict">
+                    <span class="si-time-to-target-eta" :class="timeToTarget.onTrack ? 'grade-ok' : 'grade-warn'">{{ timeToTarget.onTrack ? (labels.siOnTrackLabel || 'ON TRACK') : '+' + timeToTarget.extraPhases + ' phase(s)' }}</span>
+                    · avg +{{ timeToTarget.avgUplift }}/phase · current {{ timeToTarget.current }} → projected {{ timeToTarget.projected }}/{{ timeToTarget.target }}
+                </p>
+            </div>
+            <div class="si-capacity-vs-risk" v-if="capacityVsRisk.rows.length">
+                <h4 class="si-capacity-vs-risk-title">{{ labels.siCapacityVsRiskTitle || 'Capacity vs risk · per-phase effort alignment' }}</h4>
+                <div class="si-capacity-vs-risk-rows">
+                    <div v-for="(r, i) in capacityVsRisk.rows" :key="'cvr'+i" class="si-capacity-vs-risk-row">
+                        <span class="si-capacity-vs-risk-label">{{ r.label }}</span>
+                        <div class="si-capacity-vs-risk-bars">
+                            <div class="si-cvr-bar si-cvr-capacity" :style="{ width: r.capPct + '%' }" :title="'capacity: ' + r.capacity + ' pts uplift'"></div>
+                            <div class="si-cvr-bar si-cvr-risk" :style="{ width: r.riskPct + '%' }" :title="'risk reduction: ' + r.riskReduction + ' sevScore'"></div>
+                        </div>
+                        <span class="si-capacity-vs-risk-ratio" :class="r.cls">{{ r.ratio }}×</span>
+                    </div>
+                </div>
+                <div class="si-capacity-vs-risk-legend">
+                    <span class="si-cvr-key si-cvr-capacity-key">capacity (estUplift)</span>
+                    <span class="si-cvr-key si-cvr-risk-key">risk reduction (sevScore)</span>
+                </div>
+            </div>
+            <div class="si-dim-gap" v-if="dimGap.rows.length">
+                <h4 class="si-dim-gap-title">{{ labels.siDimGapTitle || 'Dimension gap to target · shortfalls ranked' }}</h4>
+                <div class="si-dim-gap-rows">
+                    <div v-for="(r, i) in dimGap.rows" :key="'dg'+i" class="si-dim-gap-row">
+                        <span class="si-dim-gap-label">{{ r.name }}</span>
+                        <div class="si-dim-gap-track">
+                            <div class="si-dim-gap-bar" :class="r.cls" :style="{ width: r.widthPct + '%' }">
+                                <title>{{ r.name }}: {{ r.value }}/100 (gap −{{ r.gap }})</title>
+                            </div>
+                        </div>
+                        <span class="si-dim-gap-val" :class="r.cls">−{{ r.gap }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="si-concentration" v-if="concentrationGauge">
+                <h4 class="si-concentration-title">{{ labels.siConcentrationTitle || 'Risk concentration · HHI' }}</h4>
+                <div class="si-concentration-wrap">
+                    <svg class="si-concentration-svg" viewBox="0 0 60 60">
+                        <circle cx="30" cy="30" r="25" fill="none" stroke="var(--yry-bg-elevated, rgba(255,255,255,0.05))" stroke-width="6"/>
+                        <circle cx="30" cy="30" r="25" fill="none"
+                            stroke="currentColor"
+                            :class="'si-concentration-arc ' + concentrationGauge.cls"
+                            stroke-width="6" stroke-linecap="round"
+                            :stroke-dasharray="156.2"
+                            :stroke-dashoffset="concentrationGauge.arc"
+                            transform="rotate(-90 30 30)">
+                            <title>Risk concentration {{ concentrationGauge.value }}/100 — {{ concentrationGauge.label }}; top dim {{ concentrationGauge.topDim }} = {{ concentrationGauge.topShare }}%</title>
+                        </circle>
+                        <text x="30" y="29" text-anchor="middle" class="si-concentration-num" :class="concentrationGauge.cls">{{ concentrationGauge.value }}</text>
+                        <text x="30" y="38" text-anchor="middle" class="si-concentration-sub">{{ concentrationGauge.label }}</text>
+                    </svg>
+                    <div class="si-concentration-note">
+                        <span class="si-concentration-top">{{ concentrationGauge.topDim }} <em>{{ concentrationGauge.topShare }}%</em></span>
+                        <span class="si-concentration-hint">{{ labels.siConcentrationHint || 'share of risk in top dim' }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="si-dim-uplift" v-if="dimUplift.rows.length">
+                <h4 class="si-dim-uplift-title">{{ labels.siDimUpliftTitle || 'Per-dim uplift potential · levers summed by dim' }}</h4>
+                <div class="si-dim-uplift-rows">
+                    <div v-for="(r, i) in dimUplift.rows" :key="'du'+i" class="si-dim-uplift-row">
+                        <span class="si-dim-uplift-label">{{ r.name }}</span>
+                        <div class="si-dim-uplift-track">
+                            <div class="si-dim-uplift-bar" :class="r.cls" :style="{ width: r.widthPct + '%' }">
+                                <title>{{ r.name }}: +{{ r.uplift }} pts from {{ r.count }} lever(s)</title>
+                            </div>
+                        </div>
+                        <span class="si-dim-uplift-val" :class="r.cls">+{{ r.uplift }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="si-trajectory" v-if="trajectory.length >= 2">
+                <svg class="si-trajectory-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <polyline :points="trajectory.map(function(p){ return p.x + ',' + p.y; }).join(' ')"
+                        fill="none" stroke="var(--yry-accent, #22C55E)" stroke-width="1.5" stroke-linejoin="round"/>
+                    <polyline v-if="decayProjection.active" :points="decayProjection.points"
+                        fill="none" stroke="var(--yry-critical, #ef4444)" stroke-width="1" stroke-dasharray="2,2" opacity="0.7">
+                        <title>No-action decay projection: score → {{ decayProjection.finalScore }}/100</title>
+                    </polyline>
+                    <line x1="0" y1="0" x2="100" y2="0" stroke="var(--yry-border-color, #4a5062)" stroke-width="0.3" stroke-dasharray="2,2" opacity="0.4"/>
+                    <line x1="0" y1="10" x2="100" y2="10" stroke="var(--yry-ok, #22c55e)" stroke-width="0.2" stroke-dasharray="1,3" opacity="0.35"/>
+                    <line x1="0" y1="25" x2="100" y2="25" stroke="var(--yry-warn, #f59e0b)" stroke-width="0.2" stroke-dasharray="1,3" opacity="0.35"/>
+                    <line x1="0" y1="40" x2="100" y2="40" stroke="var(--yry-warn, #f59e0b)" stroke-width="0.2" stroke-dasharray="1,3" opacity="0.3"/>
+                    <line x1="0" y1="60" x2="100" y2="60" stroke="var(--yry-critical, #ef4444)" stroke-width="0.2" stroke-dasharray="1,3" opacity="0.3"/>
+                    <text x="99" y="9.5" text-anchor="end" class="si-traj-band">A 90</text>
+                    <text x="99" y="24.5" text-anchor="end" class="si-traj-band">B 75</text>
+                    <text x="99" y="39.5" text-anchor="end" class="si-traj-band">C 60</text>
+                    <text x="99" y="59.5" text-anchor="end" class="si-traj-band">D 40</text>
+                    <circle v-for="(p, i) in trajectory" :key="i"
+                        :cx="p.x" :cy="p.y" r="1.8"
+                        :class="'si-traj-pt--' + p.kind" class="si-traj-pt">
+                        <title>{{ p.label }}: {{ p.score }}/100{{ p.uplift ? ' (+' + p.uplift + ')' : '' }}</title>
+                    </circle>
+                </svg>
+                <div class="si-trajectory-labels">
+                    <span v-for="(p, i) in trajectory" :key="i" class="si-traj-label" :class="'si-traj-label--' + p.kind">
+                        <span class="si-traj-lbl-name">{{ p.label }}</span>
+                        <span class="si-traj-lbl-score">{{ p.score }}</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decay forecast -->
+        <div class="si-card si-decay" v-if="decayForecast.rationale">
+            <h3>{{ labels.siDecayLabel || 'Decay Forecast' }}</h3>
+            <div class="si-decay-body">
+                <div class="si-decay-spark">
+                    <svg class="si-decay-spark-svg" viewBox="0 0 100 40" preserveAspectRatio="none">
+                        <line x1="0" y1="20" x2="100" y2="20" stroke="var(--yry-border-color, #4a5062)" stroke-width="0.5" stroke-dasharray="2,2" opacity="0.3"/>
+                        <polyline :points="'0,' + (40 - Math.max(0, Math.min(40, decayForecast.currentScore * 0.4))) + ' 50,' + (40 - Math.max(0, Math.min(40, decayForecast.projectedNext * 0.4))) + ' 100,' + (40 - Math.max(0, Math.min(40, (decayForecast.projectedNext - Math.abs(decayForecast.delta)) * 0.4)))"
+                            fill="none" :stroke="decayForecast.isDecaying ? 'var(--yry-critical, #ef4444)' : 'var(--yry-ok, #22c55e)'" stroke-width="1.5" stroke-linejoin="round"/>
+                        <circle cx="0" :cy="40 - Math.max(0, Math.min(40, decayForecast.currentScore * 0.4))" r="1.8" fill="var(--yry-text-muted, #848893)"/>
+                        <circle cx="50" :cy="40 - Math.max(0, Math.min(40, decayForecast.projectedNext * 0.4))" r="1.8" :fill="decayForecast.isDecaying ? 'var(--yry-critical, #ef4444)' : 'var(--yry-ok, #22c55e)'"/>
+                    </svg>
+                    <div class="si-decay-spark-labels"><span>now</span><span>next run</span><span>drift</span></div>
+                </div>
+                <div class="si-decay-meta">
+                    <p class="si-decay-head">
+                        <span class="si-decay-now">{{ decayForecast.currentScore }}</span>
+                        <span class="si-decay-arrow" :class="{ 'decaying': decayForecast.isDecaying }">{{ decayForecast.isDecaying ? '↘' : '→' }}</span>
+                        <span class="si-decay-next">{{ decayForecast.projectedNext }}</span>
+                        <span class="si-decay-delta" :class="{ 'decaying': decayForecast.isDecaying }">{{ decayForecast.delta }} pts</span>
+                    </p>
+                    <p class="si-decay-rationale">{{ decayForecast.rationale }}</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</script>

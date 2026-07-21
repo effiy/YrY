@@ -1,10 +1,9 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    YrY Checklist CSS — 计划清单页面专用组件样式
    适用: 所有场景的计划清单.html
-   依赖: shared.css · theme.css (需先加载，提供 --yry-* 变量)
+   依赖: theme.css (需先加载，提供 --yry-* 变量)
 
    使用方式:
-     <link rel="stylesheet" href="../../../../cdn/shared.css">
      <link rel="stylesheet" href="../../../../cdn/theme.css">
      <link rel="stylesheet" href="../../../../cdn/yry-checklist.css">
 
@@ -303,7 +302,7 @@ pre:hover .cb { opacity: 1; }
   color: var(--text3); font-size: .72rem; text-align: center;
 }
 
-/* ── Cross-Nav (uses shared.css animations) ─────────────────────────────── */
+/* ── Cross-Nav ──────────────────────────────────────────────────────────── */
 .cross-nav {
   display: flex; gap: 4px; justify-content: center; align-items: center;
   margin-bottom: 32px; flex-wrap: wrap;

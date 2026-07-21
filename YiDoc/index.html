@@ -12,7 +12,7 @@
   <!-- Vue 3 from CDN -->
   <script src="https://unpkg.com/vue@3.4.27/dist/vue.global.prod.js"></script>
 </head>
-<body class="rui-doc dashboard-page">
+<body class="yry-doc dashboard-page">
 
   <!-- Reading-progress bar -->
   <div class="dashboard-progress" aria-hidden="true">
@@ -39,22 +39,22 @@
 
     <!-- KPI Stats -->
     <section v-if="stats && stats.length" class="dashboard-stats" aria-label="Documentation Overview">
-      <div class="rui-stats-grid">
-        <div v-for="s in stats" :key="s.label" class="rui-stat-card" :class="s.modifier">
-          <div class="rui-stat-card-val">{{ s.value }}</div>
-          <div class="rui-stat-card-lbl">{{ s.label }}</div>
-          <div v-if="s.sub" class="rui-stat-card-sub">{{ s.sub }}</div>
+      <div class="yry-stats-grid">
+        <div v-for="s in stats" :key="s.label" class="yry-stat-card" :class="s.modifier">
+          <div class="yry-stat-card-val">{{ s.value }}</div>
+          <div class="yry-stat-card-lbl">{{ s.label }}</div>
+          <div v-if="s.sub" class="yry-stat-card-sub">{{ s.sub }}</div>
         </div>
       </div>
     </section>
 
     <!-- Panel Hub -->
     <section v-if="panelHub && panelHub.buttons && panelHub.buttons.length" class="dashboard-panel-hub-wrap" aria-label="Cross-Panel Navigation">
-      <rui-panel-hub-inline
+      <yry-panel-hub-inline
         :buttons="panelHub.buttons"
         :flow="panelHub.flow"
         @select="onPanelHubSelect"
-      ></rui-panel-hub-inline>
+      ></yry-panel-hub-inline>
     </section>
 
     <!-- Sections -->
@@ -71,34 +71,34 @@
           {{ group.title }}
         </h3>
         <div :class="group.kind + '-grid'">
-          <div v-for="card in sceneCardFor(group)" :key="card.key" class="rui-scene-card" :style="card.style">
+          <div v-for="card in sceneCardFor(group)" :key="card.key" class="yry-scene-card" :style="card.style">
 
             <!-- Card header -->
-            <div class="rui-scene-card-head">
-              <span v-if="card.icon" class="rui-scene-card-icon" :class="card.iconTone">{{ card.icon }}</span>
-              <a v-if="card.nameHref" :href="card.nameHref" :target="card.nameTarget || '_self'" class="rui-scene-card-name">{{ card.name }}</a>
-              <span v-else class="rui-scene-card-name">{{ card.name }}</span>
-              <span v-if="card.badge" class="rui-scene-card-badge">{{ card.badge }}</span>
+            <div class="yry-scene-card-head">
+              <span v-if="card.icon" class="yry-scene-card-icon" :class="card.iconTone">{{ card.icon }}</span>
+              <a v-if="card.nameHref" :href="card.nameHref" :target="card.nameTarget || '_self'" class="yry-scene-card-name">{{ card.name }}</a>
+              <span v-else class="yry-scene-card-name">{{ card.name }}</span>
+              <span v-if="card.badge" class="yry-scene-card-badge">{{ card.badge }}</span>
             </div>
 
             <!-- Description -->
-            <div v-if="card.desc" class="rui-scene-card-desc" v-html="card.desc"></div>
+            <div v-if="card.desc" class="yry-scene-card-desc" v-html="card.desc"></div>
 
             <!-- Meta (items kind) -->
-            <div v-if="card.meta && group.kind === 'items'" class="rui-scene-card-meta" v-html="card.meta"></div>
+            <div v-if="card.meta && group.kind === 'items'" class="yry-scene-card-meta" v-html="card.meta"></div>
 
             <!-- Tags (stories kind) -->
-            <div v-if="card.tags && card.tags.length" class="rui-scene-card-tags">
-              <a v-for="tag in card.tags" :key="tag.text" :href="tag.href || '#'" class="rui-tag-chip">{{ tag.text }}</a>
+            <div v-if="card.tags && card.tags.length" class="yry-scene-card-tags">
+              <a v-for="tag in card.tags" :key="tag.text" :href="tag.href || '#'" class="yry-tag-chip">{{ tag.text }}</a>
             </div>
 
             <!-- Links -->
-            <div v-if="card.links && card.links.length" class="rui-scene-card-links">
+            <div v-if="card.links && card.links.length" class="yry-scene-card-links">
               <a v-for="link in card.links" :key="link.label" :href="link.href" :target="link.target || '_self'" :rel="link.target === '_blank' ? 'noopener' : null">{{ link.label }}</a>
             </div>
 
             <!-- Meta (stories kind) -->
-            <div v-if="card.meta && group.kind === 'stories'" class="rui-scene-card-meta">{{ card.meta }}</div>
+            <div v-if="card.meta && group.kind === 'stories'" class="yry-scene-card-meta">{{ card.meta }}</div>
           </div>
         </div>
       </div>
@@ -161,14 +161,14 @@
     </section>
   </main>
 
-  <!-- rui-panel-hub inline component -->
+  <!-- yry-panel-hub inline component -->
   <script>
   // Minimal inline panel-hub component (no CDN dependency)
-  var ruiPanelHubTemplate = '<div style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;padding:14px 16px;border-radius:12px;background:color-mix(in srgb, var(--rui-text,#F8FAFC) 3%, transparent);border:1px solid color-mix(in srgb, var(--rui-text,#F8FAFC) 8%, transparent)">' +
+  var ruiPanelHubTemplate = '<div style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;padding:14px 16px;border-radius:12px;background:color-mix(in srgb, var(--yry-text,#F8FAFC) 3%, transparent);border:1px solid color-mix(in srgb, var(--yry-text,#F8FAFC) 8%, transparent)">' +
     '<button v-for="(btn, i) in buttons" :key="i" :style="{color: btn.color}" @click="$emit(\'select\', {detail:{panel:btn.panel}})">' +
     '<span>{{ btn.icon }}</span><span>{{ btn.name }}</span>' +
     '</button>' +
-    '<div v-if="flow" class="panel-flow" style="width:100%;text-align:center;font-size:.7rem;color:var(--rui-text-muted,#64748b);margin-top:4px">{{ flow }}</div>' +
+    '<div v-if="flow" class="panel-flow" style="width:100%;text-align:center;font-size:.7rem;color:var(--yry-text-muted,#64748b);margin-top:4px">{{ flow }}</div>' +
     '</div>';
   </script>
 

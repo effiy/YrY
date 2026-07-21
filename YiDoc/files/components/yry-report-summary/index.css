@@ -1,0 +1,19 @@
+#summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+}
+#summary > .yry-score-bar { grid-column: 1 / -1; }
+.card {
+    background: var(--yry-bg-elev, #161b22);
+    border: 1px solid var(--yry-border, #30363d);
+    border-radius: var(--yry-radius, 8px);
+    padding: 16px;
+}
+.card-label { font-size: 11px; color: var(--yry-fg-muted, #848893); text-transform: uppercase; letter-spacing: 0.04em; }
+.card .value {
+    font-family: var(--yry-font-mono, ui-monospace, SFMono-Regular, monospace);
+    font-size: 24px;
+    color: var(--yry-accent, #3b82f6);
+    margin-top: 4px;
+}

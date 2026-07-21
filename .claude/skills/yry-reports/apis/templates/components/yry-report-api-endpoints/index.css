@@ -1,0 +1,106 @@
+/* ============================================================================
+ * yry-report-api-endpoints · Component styles
+ * ========================================================================== */
+
+@layer components {
+
+/* ── Filter input ──────────────────────────────────────────────────────── */
+.api-endpoints-filter {
+    display: flex;
+    gap: var(--yry-space-sm, 10px);
+    align-items: center;
+    margin-bottom: var(--yry-space-sm, 12px);
+}
+.api-endpoints-filter input {
+    flex: 1;
+    padding: var(--yry-space-xs, 6px) var(--yry-space-sm, 12px);
+    border: 1px solid var(--yry-border, #30363d);
+    border-radius: var(--yry-radius, 8px);
+    background: var(--yry-bg-elev, #161b22);
+    color: var(--yry-fg, #e6e8eb);
+    font-family: var(--yry-font-mono, ui-monospace, monospace);
+    font-size: var(--yry-font-size-sm, 12px);
+    outline: none;
+    transition: border-color var(--yry-duration, .2s) var(--yry-ease-out, ease-out),
+                box-shadow var(--yry-duration, .2s) var(--yry-ease-out, ease-out);
+}
+.api-endpoints-filter input::placeholder { color: var(--yry-fg-subtle, #4a5062); }
+.api-endpoints-filter input:focus {
+    border-color: var(--yry-accent, #3b82f6);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--yry-accent, #3b82f6) 15%, transparent);
+}
+.api-endpoints-count {
+    font-size: var(--yry-font-size-sm, 12px);
+    color: var(--yry-fg-muted, #848893);
+    white-space: nowrap;
+}
+
+/* ── Endpoint table ────────────────────────────────────────────────────── */
+.api-endpoints-table {
+    max-height: 600px;
+    overflow-y: auto;
+    border: 1px solid var(--yry-border, #30363d);
+    border-radius: var(--yry-radius, 8px);
+    /* Scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: var(--yry-border, #30363d) transparent;
+}
+.api-endpoints-table::-webkit-scrollbar { width: 6px; }
+.api-endpoints-table::-webkit-scrollbar-track { background: transparent; }
+.api-endpoints-table::-webkit-scrollbar-thumb {
+    background: var(--yry-border, #30363d);
+    border-radius: 3px;
+}
+.api-endpoints-table::-webkit-scrollbar-thumb:hover { background: var(--yry-fg-muted, #848893); }
+
+.api-endpoints-table thead { position: sticky; top: 0; z-index: 1; }
+.api-endpoints-table thead th { background: var(--yry-bg-sunken, #0c111b); }
+
+.method-chip {
+    display: inline-block;
+    font-family: var(--yry-font-mono, ui-monospace, monospace);
+    font-size: var(--yry-font-size-xs, 10px);
+    font-weight: 700;
+    padding: 2px var(--yry-space-xs, 6px);
+    border-radius: var(--yry-radius-sm, 3px);
+}
+.method-chip.GET    { background: color-mix(in srgb, var(--yry-ok, #16a34a) 20%, transparent); color: var(--yry-ok, #16a34a); }
+.method-chip.POST   { background: color-mix(in srgb, var(--yry-accent, #3b82f6) 20%, transparent); color: var(--yry-accent, #3b82f6); }
+.method-chip.PUT    { background: color-mix(in srgb, var(--yry-warn, #d97706) 20%, transparent); color: var(--yry-warn, #d97706); }
+.method-chip.DELETE { background: color-mix(in srgb, var(--yry-critical, #dc2626) 20%, transparent); color: var(--yry-critical, #dc2626); }
+.method-chip.PATCH  { background: color-mix(in srgb, var(--yry-accent-dim, #8b5cf6) 20%, transparent); color: var(--yry-accent-dim, #8b5cf6); }
+
+.bool-chip { font-size: var(--yry-font-size-sm, 11px); }
+.bool-chip.true  { color: var(--yry-ok, #16a34a); }
+.bool-chip.false { color: var(--yry-critical, #dc2626); }
+
+.status-code-chip {
+    display: inline-block;
+    font-family: var(--yry-font-mono, ui-monospace, monospace);
+    font-size: var(--yry-font-size-xs, 10px);
+    padding: 1px 5px;
+    margin-right: 3px;
+    border-radius: var(--yry-radius-sm, 2px);
+    background: var(--yry-bg-sunken, #0c111b);
+    color: var(--yry-fg-muted, #848893);
+    border: 1px solid var(--yry-border-light, #21262d);
+}
+
+.mw-list { display: flex; flex-wrap: wrap; gap: 3px; }
+.mw-chip {
+    font-family: var(--yry-font-mono, ui-monospace, monospace);
+    font-size: var(--yry-font-size-xs, 10px);
+    padding: 2px var(--yry-space-xs, 6px);
+    border-radius: var(--yry-radius-sm, 3px);
+    background: var(--yry-bg-sunken, #0c111b);
+    color: var(--yry-fg-muted, #848893);
+    border: 1px solid var(--yry-border, #30363d);
+}
+
+.deprecated-flag {
+    color: var(--yry-warn, #d97706);
+    font-size: var(--yry-font-size-sm, 11px);
+    font-weight: 600;
+}
+
+}

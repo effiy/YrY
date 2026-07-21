@@ -1,0 +1,757 @@
+/**
+ * @file: index.js
+ * @purpose: Vue 3 application for the architecture diagram page.
+ *           Splits responsibilities into three composables so the main
+ *           app stays declarative:
+ *             · useSvgInteractions — focus / hover / keyboard (Esc) / click-to-reset
+ *             · useExport          — Copy / PNG / PDF via html2canvas + jsPDF,
+ *                                    with yry-toast for success/failure feedback
+ *
+ * @data_source: window.REPORT_DATA  (set by data.js, loaded before this file)
+ * @dom_mount:   #app                (defined in index.html)
+ */
+(function () {
+  'use strict';
+
+  var DATA = window.REPORT_DATA || { meta: {}, svgDiagram: '' };
+
+  /* ──────────────────────────────────────────────────────────────────
+     Wait for shared/loader.js IIFE to finish (it auto-injects
+     shared/vendor/vue@3.4.27/vue.global.prod.js). Falls back to a
+     poll on window.Vue if the promise is missing.
+     ────────────────────────────────────────────────────────────────── */
+  function whenVueReady() {
+    if (window.Vue) return Promise.resolve();
+    if (window.__vueLoadPromise) return window.__vueLoadPromise;
+    return new Promise(function (resolve) {
+      var tries = 0;
+      var t = setInterval(function () {
+        if (window.Vue) { clearInterval(t); resolve(); }
+        else if (++tries > 50) { clearInterval(t); resolve(); }
+      }, 100);
+    });
+  }
+
+  /* ──────────────────────────────────────────────────────────────────
+     useSvgInteractions — index the SVG, wire up hover/click/focus.
+
+     v2 changes (matching the algorithmic generator in data.js):
+       · Arrows are now <path> elements with d= attribute (orthogonal
+         polylines), not <line> elements. We index by data-from/data-to.
+       · Every arrow has a label pill (.svg-label-bg + .svg-label +
+         .svg-label-sub) at its midpoint — these are also tagged
+         data-from/data-to so they highlight alongside the arrow.
+       · Outermost wireframe has .svg-outermost class so we can
+         dim/highlight it as a single unit.
+       · Components still use .comp-stroke; the algorithm guarantees a
+         1:1 mapping between comp-stroke rects and data-component ids.
+     ────────────────────────────────────────────────────────────────── */
+  function useSvgInteractions() {
+    var focusedComp = Vue.ref(null);
+    var compGroups = [];
+    var arrowGroups = [];
+    var boundaryGroups = [];
+    var outermostEl = null;
+    var svgEl = null;
+    var containerEl = null;
+
+    function pointToRectDist(px, py, rect) {
+      var cx = Math.max(rect.x, Math.min(px, rect.x + rect.w));
+      var cy = Math.max(rect.y, Math.min(py, rect.y + rect.h));
+      return Math.sqrt((px - cx) * (px - cx) + (py - cy) * (py -cy));
+    }
+
+    /* Build the list of (el, side) for every visible element that
+       belongs to a given connection. Used so the click target on
+       any label/arrow piece highlights the whole group. */
+    function connectionElements(fromId, toId) {
+      var sel = '[data-from="' + fromId + '"][data-to="' + toId + '"]';
+      return Array.prototype.slice.call(svgEl.querySelectorAll(sel));
+    }
+
+    function findConnectedArrows(comp) {
+      var threshold = 40;
+      var b = comp.bounds;
+      var connected = [];
+      for (var i = 0; i < arrowGroups.length; i++) {
+        var a = arrowGroups[i];
+        var d1 = pointToRectDist(a.x1, a.y1, b);
+        var d2 = pointToRectDist(a.x2, a.y2, b);
+        if (d1 < threshold || d2 < threshold) connected.push(a);
+      }
+      return connected;
+    }
+
+    function findContainingBoundaries(comp) {
+      var contained = [];
+      boundaryGroups.forEach(function (bg) {
+        if (comp.bounds.x >= bg.bounds.x - 4 &&
+            comp.bounds.y >= bg.bounds.y - 4 &&
+            comp.bounds.x + comp.bounds.w <= bg.bounds.x + bg.bounds.w + 4 &&
+            comp.bounds.y + comp.bounds.h <= bg.bounds.y + bg.bounds.h + 4) {
+          contained.push(bg);
+        }
+      });
+      return contained;
+    }
+
+    function clearHighlight() {
+      if (focusedComp.value) return;
+      if (containerEl) containerEl.classList.remove('dimmed');
+      if (svgEl) {
+        svgEl.querySelectorAll('.highlight').forEach(function (el) {
+          el.classList.remove('highlight');
+        });
+      }
+    }
+
+    function highlightComponent(comp) {
+      if (!containerEl || !svgEl) return;
+      containerEl.classList.add('dimmed');
+      comp.styled.classList.add('highlight');
+      comp.styled.classList.add('svg-comp');
+      comp.labels.forEach(function (l) { l.classList.add('highlight'); });
+      /* Highlight connected arrows AND their label pills. */
+      findConnectedArrows(comp).forEach(function (a) {
+        a.el.classList.add('highlight');
+        if (a.labelPill) a.labelPill.classList.add('highlight');
+        if (a.labelText) a.labelText.classList.add('highlight');
+        if (a.labelSub)  a.labelSub.classList.add('highlight');
+      });
+      /* Highlight any boundary that contains this component. */
+      findContainingBoundaries(comp).forEach(function (bg) {
+        bg.el.classList.add('highlight');
+      });
+      if (outermostEl) outermostEl.classList.add('highlight');
+    }
+
+    function focusComponent(comp) {
+      focusedComp.value = comp;
+      highlightComponent(comp);
+    }
+
+    function resetFocus() {
+      focusedComp.value = null;
+      clearHighlight();
+      if (svgEl) {
+        svgEl.querySelectorAll('.highlight').forEach(function (el) {
+          el.classList.remove('highlight');
+        });
+      }
+    }
+
+    function indexArrow(el) {
+      /* New arrows are <path> elements; fall back to <line> for safety. */
+      var x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+      if (el.tagName === 'path') {
+        var d = el.getAttribute('d') || '';
+        var m = d.match(/M\s*([-\d.]+)\s+([-\d.]+)/);
+        var last = d.match(/([-\d.]+)\s+([-\d.]+)\s*$/);
+        if (m)    { x1 = parseFloat(m[1]);    y1 = parseFloat(m[2]); }
+        if (last) { x2 = parseFloat(last[1]); y2 = parseFloat(last[2]); }
+      } else {
+        x1 = parseFloat(el.getAttribute('x1'));
+        y1 = parseFloat(el.getAttribute('y1'));
+        x2 = parseFloat(el.getAttribute('x2'));
+        y2 = parseFloat(el.getAttribute('y2'));
+      }
+      if (isNaN(x1)) return;
+
+      var fromId = el.getAttribute('data-from');
+      var toId   = el.getAttribute('data-to');
+      var labelPill = null, labelText = null, labelSub = null;
+      if (fromId && toId) {
+        var pills = svgEl.querySelectorAll(
+          '.svg-label-bg[data-from="' + fromId + '"][data-to="' + toId + '"]'
+        );
+        if (pills.length) labelPill = pills[0];
+        var texts = svgEl.querySelectorAll(
+          '.svg-label[data-from="' + fromId + '"][data-to="' + toId + '"]'
+        );
+        if (texts.length) labelText = texts[0];
+        var subs = svgEl.querySelectorAll(
+          '.svg-label-sub[data-from="' + fromId + '"][data-to="' + toId + '"]'
+        );
+        if (subs.length) labelSub = subs[0];
+      }
+      arrowGroups.push({
+        el: el,
+        x1: x1, y1: y1, x2: x2, y2: y2,
+        labelPill: labelPill, labelText: labelText, labelSub: labelSub,
+        stroke: el.getAttribute('stroke') || ''
+      });
+    }
+
+    function indexComponents() {
+      /* In v2 components are emitted with class="comp-stroke" and
+         data-component="<id>". The algorithm guarantees a unique
+         data-component per .comp-stroke. */
+      var styledRects = svgEl.querySelectorAll('rect.comp-stroke');
+      var texts = svgEl.querySelectorAll('text');
+
+      styledRects.forEach(function (styled) {
+        var id = styled.getAttribute('data-component');
+        if (!id) return;
+        var bx = parseFloat(styled.getAttribute('x'));
+        var by = parseFloat(styled.getAttribute('y'));
+        var bw = parseFloat(styled.getAttribute('width'));
+        var bh = parseFloat(styled.getAttribute('height'));
+        /* pick the first white-bold title inside the box as the
+           human-readable name. */
+        var labels = [];
+        texts.forEach(function (t) {
+          var tx = parseFloat(t.getAttribute('x'));
+          var ty = parseFloat(t.getAttribute('y'));
+          if (tx >= bx - 2 && tx <= bx + bw + 2 && ty >= by - 2 && ty <= by + bh + 2) {
+            labels.push(t);
+          }
+        });
+        var name = id;
+        for (var j = 0; j < labels.length; j++) {
+          var fw = labels[j].getAttribute('font-weight');
+          var fill = labels[j].getAttribute('fill');
+          if (fill === 'white' || fill === '#fff' || fill === '#ffffff') {
+            name = labels[j].textContent.trim();
+            break;
+          }
+        }
+        compGroups.push({
+          name: name,
+          id: id,
+          styled: styled,
+          labels: labels,
+          bounds: { x: bx, y: by, w: bw, h: bh }
+        });
+      });
+    }
+
+    function indexBoundaries() {
+      /* Index every .svg-boundary rect (VPC + security groups). */
+      var bnodes = svgEl.querySelectorAll('rect.svg-boundary');
+      bnodes.forEach(function (el) {
+        var bx = parseFloat(el.getAttribute('x'));
+        var by = parseFloat(el.getAttribute('y'));
+        var bw = parseFloat(el.getAttribute('width'));
+        var bh = parseFloat(el.getAttribute('height'));
+        boundaryGroups.push({ el: el, bounds: { x: bx, y: by, w: bw, h: bh } });
+      });
+    }
+
+    function bindInteractions() {
+      compGroups.forEach(function (comp) {
+        comp.styled.style.pointerEvents = 'all';
+        comp.styled.addEventListener('mouseenter', function () {
+          if (focusedComp.value) return;
+          highlightComponent(comp);
+        });
+        comp.styled.addEventListener('mouseleave', function () {
+          if (focusedComp.value) return;
+          clearHighlight();
+        });
+        comp.styled.addEventListener('click', function (e) {
+          e.stopPropagation();
+          if (focusedComp.value === comp) resetFocus();
+          else focusComponent(comp);
+        });
+      });
+
+      /* Click on a label pill to focus on either endpoint. */
+      svgEl.querySelectorAll('.svg-label-bg, .svg-label, .svg-label-sub').forEach(function (l) {
+        l.addEventListener('click', function (e) {
+          e.stopPropagation();
+          var fromId = l.getAttribute('data-from');
+          var toId   = l.getAttribute('data-to');
+          if (!fromId || !toId) return;
+          /* focus on the "destination" by convention */
+          var target = compGroups.find(function (c) { return c.id === toId; });
+          if (target) {
+            if (focusedComp.value === target) resetFocus();
+            else focusComponent(target);
+          }
+        });
+        l.style.cursor = 'pointer';
+      });
+
+      /* Background click resets focus */
+      svgEl.addEventListener('click', function (e) {
+        if (e.target === svgEl ||
+            (e.target.tagName === 'rect' && /url\(#grid/.test(e.target.getAttribute('fill') || ''))) {
+          resetFocus();
+        }
+      });
+
+      /* Tag arrows + boundaries for the dim/highlight CSS rules. */
+      arrowGroups.forEach(function (a) { a.el.classList.add('svg-arrow'); });
+      svgEl.querySelectorAll('rect.svg-boundary').forEach(function (r) {
+        r.classList.add('svg-boundary');
+      });
+      outermostEl = svgEl.querySelector('rect.svg-outermost') || null;
+    }
+
+    function init(svg, container) {
+      svgEl = svg;
+      containerEl = container;
+      indexComponents();
+      indexBoundaries();
+      /* Index arrows — both <path> (new) and <line> (legacy) are accepted. */
+      svgEl.querySelectorAll('path.svg-arrow, path[marker-end]').forEach(function (p) { indexArrow(p); });
+      svgEl.querySelectorAll('line[marker-end]').forEach(function (l) { indexArrow(l); });
+      bindInteractions();
+    }
+
+    return {
+      focusedComp: focusedComp,
+      resetFocus: resetFocus,
+      init: init,
+      compCount: function () { return compGroups.length; },
+      arrowCount: function () { return arrowGroups.length; }
+    };
+  }
+
+  /* ──────────────────────────────────────────────────────────────────
+     useExport — Copy / PNG / PDF with yry-toast feedback.
+     ────────────────────────────────────────────────────────────────── */
+  function useExport(containerRef) {
+    var exporting = Vue.ref(false);
+
+    function snapshot() {
+      var el = containerRef.value;
+      if (!el) return Promise.reject(new Error('container not mounted'));
+      var r = el.getBoundingClientRect();
+      var pad = 32;
+      return window.html2canvas(document.body, {
+        backgroundColor: '#020617',
+        scale: 2,
+        useCORS: true,
+        ignoreElements: function (e) {
+          return e.classList && (
+            e.classList.contains('toolbar') ||
+            e.classList.contains('focus-indicator') ||
+            e.classList.contains('yry-toast-container') ||
+            e.classList.contains('yry-back-top-btn') ||
+            e.id === 'yry-toast-host'
+          );
+        },
+        x: r.left + window.scrollX - pad,
+        y: r.top  + window.scrollY - pad,
+        width:  r.width  + pad * 2,
+        height: r.height + pad * 2
+      });
+    }
+
+    function copyAsImage() {
+      if (exporting.value) return;
+      exporting.value = true;
+      snapshot().then(function (canvas) {
+        return new Promise(function (resolve, reject) {
+          canvas.toBlob(function (blob) {
+            if (!blob) { reject(new Error('canvas.toBlob returned null')); return; }
+            navigator.clipboard.write([
+              new ClipboardItem({ 'image/png': blob })
+            ]).then(resolve, reject);
+          }, 'image/png');
+        });
+      }).then(function () {
+        if (window.ruiToast) window.ruiToast.success('Copied to clipboard', 'Diagram snapshot ready to paste');
+      }).catch(function (err) {
+        if (window.ruiToast) window.ruiToast.error('Copy failed', err && err.message || 'Browser blocked clipboard access');
+      }).finally(function () { exporting.value = false; });
+    }
+
+    function downloadPNG() {
+      if (exporting.value) return;
+      exporting.value = true;
+      snapshot().then(function (canvas) {
+        var link = document.createElement('a');
+        link.download = 'index.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        if (window.ruiToast) window.ruiToast.success('PNG downloaded', 'index.png');
+      }).catch(function (err) {
+        if (window.ruiToast) window.ruiToast.error('PNG download failed', err && err.message || 'Unknown error');
+      }).finally(function () { exporting.value = false; });
+    }
+
+    function downloadPDF() {
+      if (exporting.value) return;
+      exporting.value = true;
+      snapshot().then(function (canvas) {
+        var orientation = canvas.width > canvas.height ? 'landscape' : 'portrait';
+        var pdf = new window.jspdf.jsPDF({
+          orientation: orientation,
+          unit: 'px',
+          format: [canvas.width, canvas.height],
+          hotfixes: ['px_scaling']
+        });
+        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, canvas.width, canvas.height);
+        pdf.save('index.pdf');
+        if (window.ruiToast) window.ruiToast.success('PDF downloaded', 'index.pdf');
+      }).catch(function (err) {
+        if (window.ruiToast) window.ruiToast.error('PDF download failed', err && err.message || 'Unknown error');
+      }).finally(function () { exporting.value = false; });
+    }
+
+    return { exporting: exporting, copyAsImage: copyAsImage, downloadPNG: downloadPNG, downloadPDF: downloadPDF };
+  }
+
+  /* ──────────────────────────────────────────────────────────────────
+     Reusable section sub-components
+     ──────────────────────────────────────────────────────────────────
+     These three components are registered locally on the page-level
+     Vue app (see the bottom of this file) and exist for two reasons:
+
+       1) Eliminating duplication. The summary-cards block (L398) and
+          the security-cards block (L422) were byte-identical except
+          for the data source. Same for the scaling-tiles (L455) and
+          schema-tiles (L516) blocks. Extracting them keeps the page
+          template declarative and shrinks ~40 lines into 8.
+
+       2) Isolating v-html. The four `v-html` injection points that
+          used to live inline in TEMPLATE (card.title × 2, tile.body
+          × 2, svgDiagram × 1) are now pushed into named components
+          with documented props. The main template is a tree of
+          Vue's interpolations only — no raw HTML strings.
+
+     They are defined inline (not split into separate files) so the
+     create command still produces a single self-contained output
+     file, matching the SKILL.md output contract.
+     ────────────────────────────────────────────────────────────────── */
+  var RuiArcCard = {
+    name: 'yry-arc-card',
+    template:
+      '<article class="card">' +
+        '<header class="card-header">' +
+          '<span class="card-dot" :class="card.color" aria-hidden="true"></span>' +
+          '<h3 v-html="card.title"></h3>' +
+        '</header>' +
+        '<ul>' +
+          '<li v-for="(line, i) in card.items" :key="i">{{ line }}</li>' +
+        '</ul>' +
+      '</article>',
+    props: { card: { type: Object, required: true } }
+  };
+
+  var RuiArcColorTile = {
+    name: 'yry-arc-color-tile',
+    template:
+      '<div class="tile">' +
+        '<div class="tile-title" :class="tile.color">{{ tile.title }}</div>' +
+        '<div class="tile-body" v-html="tile.body"></div>' +
+      '</div>',
+    props: { tile: { type: Object, required: true } }
+  };
+
+  var RuiArcSvgDiagram = {
+    name: 'yry-arc-svg-diagram',
+    template:
+      '<div v-html="svg"></div>',
+    props: { svg: { type: String, required: true } }
+  };
+
+  /* ──────────────────────────────────────────────────────────────────
+     Vue template — built once at top level so it can be passed to
+     Vue.createApp. References DATA fields directly via the root
+     component's `data()`.
+     ────────────────────────────────────────────────────────────────── */
+  var TEMPLATE = String.raw`
+    <div class="container" id="report-container" ref="containerRef">
+
+      <!-- HEADER -->
+      <header class="header">
+        <div class="header-row">
+          <div class="pulse-dot" aria-hidden="true"></div>
+          <h1>{{ meta.pageTitle }}</h1>
+          <div class="toolbar" :class="{ expanded: toolbarOpen }">
+            <div id="diagram-toolbar-actions" class="toolbar-actions" role="group" aria-label="Export options">
+              <button type="button" @click="copyAsImage" :disabled="exporting" title="Copy as PNG to clipboard">📋 Copy</button>
+              <button type="button" @click="downloadPNG"  :disabled="exporting" title="Download PNG">🖼️ PNG</button>
+              <button type="button" @click="downloadPDF"  :disabled="exporting" title="Download PDF">📄 PDF</button>
+            </div>
+            <button type="button"
+                    class="toolbar-toggle"
+                    @click="toolbarOpen = !toolbarOpen"
+                    :aria-expanded="toolbarOpen"
+                    aria-controls="diagram-toolbar-actions"
+                    title="Export options"
+                    aria-label="Toggle export options">⋯</button>
+          </div>
+        </div>
+        <p class="subtitle">{{ meta.subtitle }}</p>
+      </header>
+
+      <!-- EXECUTIVE SUMMARY -->
+      <section class="exec-strip" aria-label="Executive summary">
+        <div v-for="item in executiveSummary" :key="item.title" class="tile">
+          <div class="tile-title" :class="item.color">{{ item.title }}</div>
+          {{ item.content }}
+        </div>
+      </section>
+
+      <!-- TABLE OF CONTENTS -->
+      <nav class="toc" aria-label="Table of contents">
+        <a v-for="link in toc" :key="link.href" :href="link.href">{{ link.icon }} {{ link.label }}</a>
+      </nav>
+
+      <!-- SYSTEM HEALTH METRICS -->
+      <section class="metrics-strip" id="metrics" aria-label="System health metrics">
+        <article v-for="m in metrics" :key="m.label" class="metric-tile">
+          <span class="metric-label">
+            <span v-if="m.status" class="status-dot" :class="m.status" aria-hidden="true"></span>
+            {{ m.label }}
+          </span>
+          <span class="metric-value" :class="m.valueClass">{{ m.value }}</span>
+          <span class="metric-sub">{{ m.sub }}</span>
+        </article>
+      </section>
+
+      <!-- MAIN SVG DIAGRAM -->
+      <section class="diagram-container" id="diagram" aria-label="System architecture diagram" ref="diagramContainerRef">
+        <yry-arc-svg-diagram :svg="svgDiagram"></yry-arc-svg-diagram>
+      </section>
+
+      <!-- Summary cards (was inline article+v-for x2, now yry-arc-card) -->
+      <section class="cards" id="summary" aria-label="Architecture summary">
+        <yry-arc-card v-for="card in summaryCards" :key="card.title" :card="card"></yry-arc-card>
+      </section>
+
+      <!-- DEPLOYMENT PIPELINE -->
+      <section class="pipeline-strip" id="pipeline" aria-label="Deployment pipeline">
+        <template v-for="(stage, i) in pipeline" :key="stage.badge">
+          <div class="pipeline-stage">
+            <span class="pipeline-badge" :class="stage.badgeClass">{{ stage.badge }}</span>
+            <span class="pipeline-info" v-html="stage.info"></span>
+          </div>
+          <span v-if="i < pipeline.length - 1" class="pipeline-arrow" aria-hidden="true">→</span>
+        </template>
+      </section>
+
+      <!-- Security cards (same pattern as summary, yry-arc-card) -->
+      <section class="cards" id="security" style="margin-top: 1.5rem;" aria-label="Security posture">
+        <yry-arc-card v-for="card in securityCards" :key="card.title" :card="card"></yry-arc-card>
+      </section>
+
+      <!-- TYPICAL REQUEST TRACE -->
+      <section class="panel" id="trace" aria-labelledby="trace-title">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.875rem;">
+          <span id="trace-title" class="panel-header" style="margin: 0;">🔍 Typical Request Trace — Checkout Flow</span>
+          <span style="font-size: 0.65rem; color: var(--text-dim);">{{ meta.traceSub }}</span>
+        </div>
+        <div class="trace-row">
+          <template v-for="(step, i) in trace" :key="step.name">
+            <div class="trace-step">
+              <div class="trace-step-name" :class="step.nameClass">{{ step.name }}</div>
+              <div class="trace-step-sub">{{ step.sub }}</div>
+              <div class="trace-step-time">{{ step.time }}</div>
+            </div>
+            <span v-if="i < trace.length - 1" class="trace-arrow" aria-hidden="true">→</span>
+          </template>
+        </div>
+      </section>
+
+      <!-- SCALING & RESILIENCE -->
+      <section class="panel" id="scaling" aria-labelledby="scaling-title">
+        <h3 id="scaling-title" class="panel-header">⚖️ Scaling &amp; Resilience Policies</h3>
+        <!-- Scaling tiles (was inline tile+v-for, now yry-arc-color-tile) -->
+      <div class="panel-grid-4">
+        <yry-arc-color-tile v-for="tile in scalingTiles" :key="tile.title" :tile="tile"></yry-arc-color-tile>
+      </div>
+      </section>
+
+      <!-- SERVICE OWNERSHIP -->
+      <section class="panel" id="ownership" style="overflow-x: auto;" aria-labelledby="ownership-title">
+        <h3 id="ownership-title" class="panel-header">👥 Service Ownership &amp; On-Call</h3>
+        <table class="panel-table">
+          <thead>
+            <tr>
+              <th v-for="h in ownership.headers" :key="h">{{ h }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(row, i) in ownership.rows" :key="i">
+              <td v-for="(cell, j) in row" :key="j" v-html="cell"></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- API CONTRACT -->
+      <section class="panel" id="api" style="overflow-x: auto;" aria-labelledby="api-title">
+        <h3 id="api-title" class="panel-header">📡 API Contract Summary — Public Endpoints</h3>
+        <table class="panel-table">
+          <thead>
+            <tr>
+              <th v-for="h in apiTable.headers" :key="h">{{ h }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(row, i) in apiTable.rows" :key="i">
+              <td><span :style="'color: var(--color-' + row.color + '); font-weight: 600;'" v-html="row.method"></span></td>
+              <td class="mono">{{ row.path }}</td>
+              <td>{{ row.service }}</td>
+              <td>{{ row.auth }}</td>
+              <td>{{ row.rate }}</td>
+              <td style="color: var(--text-muted);">{{ row.desc }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- TECHNOLOGY STACK -->
+      <section class="panel" id="stack" aria-labelledby="stack-title">
+        <h3 id="stack-title" class="panel-header">🧰 Technology Stack &amp; Versions</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem; font-size: 0.68rem;">
+          <div v-for="kv in stack" :key="kv.label" class="kv">
+            <span class="kv-label">{{ kv.label }}</span>
+            <span class="kv-value" :class="kv.valueClass">{{ kv.value }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- DATABASE SCHEMA -->
+      <section class="panel" id="schema" style="overflow-x: auto;" aria-labelledby="schema-title">
+        <h3 id="schema-title" class="panel-header">🗄️ Core Database Schema — PostgreSQL</h3>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.7rem;">
+          <div v-for="t in schemaTiles" :key="t.title" class="tile" style="min-width: 160px;">
+            <div class="tile-title violet">{{ t.title }}</div>
+            <div class="tile-body" v-html="t.body"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FUTURE ROADMAP -->
+      <section class="panel" id="roadmap" aria-labelledby="roadmap-title">
+        <h3 id="roadmap-title" class="panel-header">🔮 Future Roadmap &amp; Technical Debt</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.5rem; font-size: 0.68rem;">
+          <div v-for="item in roadmap" :key="item.tag + item.text" class="roadmap-item">
+            <span class="roadmap-tag" :class="item.tagClass">{{ item.tag }}</span>
+            <span :style="item.textClass === 'muted' ? 'color: var(--text-muted);' : 'color: var(--text-secondary);'">{{ item.text }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- GLOSSARY -->
+      <section class="panel" aria-labelledby="glossary-title">
+        <h3 id="glossary-title" class="panel-header">📖 Glossary</h3>
+        <div class="glossary-grid">
+          <div v-for="g in glossary" :key="g.term">
+            <span class="glossary-term" :class="g.termClass">{{ g.term }}</span> — <span v-html="g.def"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- FOOTER -->
+      <p class="footer">{{ meta.footer }}</p>
+
+      <!-- Focus indicator -->
+      <div class="focus-indicator" :class="{ visible: focusedComp }" role="status" aria-live="polite">
+        <span>{{ focusedComp ? 'Focused: ' + focusedComp.name : '' }}</span>
+        <button type="button" @click="resetFocus">✕ Reset <kbd>Esc</kbd></button>
+      </div>
+    </div>
+
+    <!-- Shared yry-back-top scroll-to-top button -->
+    <yry-back-top></yry-back-top>
+  `;
+
+  /* ──────────────────────────────────────────────────────────────────
+     Mount: assemble the page-level Vue app, register shared components,
+     then install the SVG interaction composable.
+     ────────────────────────────────────────────────────────────────── */
+  whenVueReady().then(function () {
+    if (!window.Vue) {
+      console.error('[arch-diagram] Vue 3 failed to load — page will not mount.');
+      return;
+    }
+
+    var svgInteractions = useSvgInteractions();
+    var containerRef = Vue.ref(null);
+    var diagramContainerRef = Vue.ref(null);
+    var exporter = useExport(containerRef);
+
+    var app = Vue.createApp({
+      template: TEMPLATE,
+      data: function () {
+        return {
+          meta:              DATA.meta,
+          executiveSummary:  DATA.executiveSummary,
+          toc:               DATA.toc,
+          metrics:           DATA.metrics,
+          svgDiagram:        DATA.svgDiagram,
+          summaryCards:      DATA.summaryCards,
+          pipeline:          DATA.pipeline,
+          securityCards:     DATA.securityCards,
+          trace:             DATA.trace,
+          scalingTiles:      DATA.scalingTiles,
+          ownership:         DATA.ownership,
+          apiTable:          DATA.apiTable,
+          stack:             DATA.stack,
+          schemaTiles:       DATA.schemaTiles,
+          roadmap:           DATA.roadmap,
+          glossary:          DATA.glossary,
+          toolbarOpen:       false
+          // focusedComp is provided by setup() (ref from useSvgInteractions)
+        };
+      },
+      setup: function () {
+        return {
+          containerRef:        containerRef,
+          diagramContainerRef: diagramContainerRef,
+          focusedComp:         svgInteractions.focusedComp,
+          exporting:           exporter.exporting,
+          copyAsImage:         exporter.copyAsImage,
+          downloadPNG:         exporter.downloadPNG,
+          downloadPDF:         exporter.downloadPDF,
+          resetFocus:          svgInteractions.resetFocus
+        };
+      },
+      mounted: function () {
+        // Initialise the SVG interaction composable on the rendered <svg>.
+        //
+        // Why not `this.$el.querySelector(...)`? The template has TWO root
+        // nodes (the main <div class="container"> plus <yry-back-top>), so
+        // Vue 3 makes $el a DocumentFragment, which has no querySelector
+        // method — calling it throws `this.$el.querySelector is not a
+        // function` and surfaces as a console error on first paint.
+        // We use the template refs (containerRef / diagramContainerRef)
+        // declared in setup() instead — they always point at real Elements.
+        var root = this.containerRef;
+        if (root) {
+          var svgEl = root.querySelector('svg');
+          var containerEl = root.querySelector('.diagram-container');
+          if (svgEl) svgInteractions.init(svgEl, containerEl);
+        }
+
+        // Escape resets focus + closes toolbar
+        this._onKey = function (e) {
+          if (e.key === 'Escape') {
+            svgInteractions.resetFocus();
+            this.toolbarOpen = false;
+          }
+        }.bind(this);
+        document.addEventListener('keydown', this._onKey);
+      },
+      beforeUnmount: function () {
+        if (this._onKey) document.removeEventListener('keydown', this._onKey);
+      }
+    });
+
+    // Register shared components defensively — if the shared script failed
+    // to load the app still mounts.
+    if (window.ruiBackTop && window.ruiBackTop.name === 'ruiBackTop') {
+      app.component('yry-back-top', window.ruiBackTop);
+    }
+    if (window.ruiToast && window.ruiToast.name === 'ruiToast') {
+      app.component('yry-toast', window.ruiToast);
+    }
+
+    // Register the three page-local sub-components. They are defined
+    // above (RuiArcCard, RuiArcColorTile, RuiArcSvgDiagram) so the
+    // create command still produces a single self-contained file
+    // (see header comment near RuiArcCard for the design rationale).
+    app.component('yry-arc-card', RuiArcCard);
+    app.component('yry-arc-color-tile', RuiArcColorTile);
+    app.component('yry-arc-svg-diagram', RuiArcSvgDiagram);
+
+    app.mount('#app');
+  });
+})();

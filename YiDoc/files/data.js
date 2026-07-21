@@ -1,5 +1,5 @@
 /**
- * rui-report-files — Runtime data
+ * yry-report-files — Runtime data
  * ----------------------------------------------------------------------
  * Generated: 2026-07-21
  * Scope: Websites/ YiAi/ YiH5/ YiPet/ YiPot/ YiWeb/
@@ -20,7 +20,7 @@ window.REPORT_CONFIG = {
         csvHeader: 'path,bytes,lines,type,fanIn,fanOut,extDeps,maxDepth,lastModified,ageDays',
     },
     labels: {
-        title:            'rui-report-files',
+        title:            'yry-report-files',
         footerMethodology:'Methodology: references/methodology.md · contracts: rules/analysis-contracts.md · template: templates/report/',
         sectionSummary:    'Summary',
         sectionSize:       'Size',

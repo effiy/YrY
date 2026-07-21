@@ -1,0 +1,15 @@
+<nav class="yry-cross-nav" :aria-label="ariaLabel">
+  <template v-for="(page, i) in pages" :key="i">
+    <span v-if="i > 0" class="yry-cross-nav-sep" aria-hidden="true">{{ separator }}</span>
+    <a v-if="page.id !== active"
+       :href="basePath + page.href"
+       class="yry-cross-nav-link">
+      {{ page.icon }} {{ page.id }}
+    </a>
+    <span v-else class="yry-cross-nav-link is-active"
+          aria-current="page"
+          :aria-label="activeAriaLabel">
+      {{ page.icon }} {{ page.id }}
+    </span>
+  </template>
+</nav>

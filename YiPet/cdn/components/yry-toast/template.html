@@ -1,0 +1,23 @@
+<div class="yry-toast-container" role="region" aria-live="polite" aria-atomic="false">
+  <transition-group name="yry-toast-anim" tag="div" class="yry-toast-stack">
+    <div
+      v-for="item in items"
+      :key="item.id"
+      :class="['yry-toast', 'is-' + item.type]"
+      :role="item.type === 'error' ? 'alert' : 'status'"
+      @click="dismiss(item.id)"
+    >
+      <span class="yry-toast-icon" aria-hidden="true">{{ icons[item.type] || icons.default }}</span>
+      <div class="yry-toast-body">
+        <div v-if="item.title" class="yry-toast-title">{{ item.title }}</div>
+        <div v-if="item.text" class="yry-toast-text">{{ item.text }}</div>
+      </div>
+      <button
+        class="yry-toast-close"
+        aria-label="Close notification"
+        type="button"
+        @click.stop="dismiss(item.id)"
+      >×</button>
+    </div>
+  </transition-group>
+</div>

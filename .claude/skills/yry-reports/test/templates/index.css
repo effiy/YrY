@@ -1,0 +1,14 @@
+/* yry-report-test · page styles
+ * ------------------------------------------------------------
+ * Split by responsibility:
+ *   - styles/tokens.css   → variables, resets, shared primitives
+ *   - styles/chrome.css   → page chrome, header, summary, toc
+ *   - styles/analytics.css → inventory, metrics, roadmap, risk, glossary
+ *   - styles/scenes.css   → scene cards, tables, mermaid, evidence
+ *   - styles/footer.css   → footer plus responsive/print rules
+ */
+@import url('./styles/tokens.css');
+@import url('./styles/chrome.css');
+@import url('./styles/analytics.css');
+@import url('./styles/scenes.css');
+@import url('./styles/footer.css');

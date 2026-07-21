@@ -1,0 +1,115 @@
+{
+  "skill_name": "yry-tools-mermaid",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Render this .mmd flowchart to SVG with the tokyo-night theme.",
+      "expected_output": "Renders the .mmd file to an SVG using the tokyo-night theme.",
+      "files": [],
+      "expectations": [
+        "Picks SVG output format",
+        "Applies the tokyo-night theme",
+        "Verifies the output file opens"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Create a sequence diagram for this API call flow and render it as ASCII.",
+      "expected_output": "Picks sequence as the diagram type and renders ASCII output for the terminal.",
+      "files": [],
+      "expectations": [
+        "Picks sequence diagram type",
+        "Picks ASCII output format",
+        "Renders via the beautiful-mermaid library"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Batch render every .mmd file in ./diagrams/ to SVG.",
+      "expected_output": "Renders the directory of .mmd files in parallel (default 4 workers) to SVG.",
+      "files": [],
+      "expectations": [
+        "Runs batch render with 4 parallel workers",
+        "Outputs SVG for each .mmd file",
+        "Reports any per-file failures"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Beautify this flowchart with the dracula theme.",
+      "expected_output": "Re-renders the flowchart applying the dracula vibrant theme.",
+      "files": [],
+      "expectations": [
+        "Applies the dracula theme",
+        "Keeps the flowchart diagram type",
+        "Outputs the beautified SVG"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Render a state diagram for this order lifecycle as SVG for the docs.",
+      "expected_output": "Picks state diagram type and renders SVG with a light/docs-friendly theme.",
+      "files": [],
+      "expectations": [
+        "Picks state diagram type",
+        "Picks SVG output for docs",
+        "Picks an appropriate light theme (e.g. github-light)"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Render an ER diagram for this database schema.",
+      "expected_output": "Picks ER as the diagram type and renders the schema.",
+      "files": [],
+      "expectations": [
+        "Picks ER diagram type",
+        "Renders via the beautiful-mermaid library",
+        "Verifies the output opens"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "I want a terminal-friendly diagram of this workflow.",
+      "expected_output": "Renders the workflow as an ASCII diagram.",
+      "files": [],
+      "expectations": [
+        "Picks ASCII output format",
+        "Picks flowchart diagram type for the workflow",
+        "Outputs terminal-friendly art"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Apply the catppuccin-mocha theme to my .mmd file.",
+      "expected_output": "Re-renders the .mmd file with the catppuccin-mocha theme.",
+      "files": [],
+      "expectations": [
+        "Applies the catppuccin-mocha theme",
+        "Preserves the original diagram type",
+        "Outputs SVG"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "beautiful-mermaid isn't installed — what do I do?",
+      "expected_output": "Tells the user to run npm install in the skill directory, then retry.",
+      "files": [],
+      "expectations": [
+        "Detects the missing module error",
+        "Instructs user to run npm install in the skill directory",
+        "Offers to retry after install"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "Render this .mmd file but the syntax seems invalid.",
+      "expected_output": "Suggests testing on mermaid.live first and cites the DIAGRAM_TYPES reference for common errors.",
+      "files": [],
+      "expectations": [
+        "Suggests testing on https://mermaid.live/",
+        "Cites references/DIAGRAM_TYPES.md for common syntax errors",
+        "Does not invent diagram content"
+      ]
+    }
+  ]
+}

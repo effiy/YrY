@@ -1,0 +1,67 @@
+<!--
+  @template: architecture-diagram (entry point)
+  @purpose: Self-contained dark-themed HTML+SVG architecture diagram.
+            Splits the page into 4 files for clarity:
+              data.js  — static content (meta + SVG + section arrays)
+              index.js — Vue 3 app, composables, runtime template
+              index.css — layered CSS (reset → tokens → components → ...)
+              index.html — THIS FILE (DOM skeleton + script wiring)
+
+  @command: /yry-report-diagram create
+  @style:   Dark, monospaced, inline SVG, built-in PNG/PDF/clipboard export
+  @sections:
+    - Header: title + pulsing dot + subtitle + export toolbar
+    - Main SVG diagram (rounded card, painted in document order below)
+    - Summary cards (exactly 3, 3-column grid)
+    - Footer (metadata)
+  @design_system: ./../references/design-system.md
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Production architecture diagram for a cloud-native microservices platform on AWS. Covers CDN, WAF, API Gateway, Go microservices, PostgreSQL RDS, Redis, Kafka, CI/CD pipeline, observability stack, security posture, and scaling policies.">
+  <meta name="color-scheme" content="dark">
+  <!-- Inline empty favicon — keeps the browser from issuing a /favicon.ico
+       request that would otherwise show up as a 404 in the console. -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23020617'/%3E%3Cpath d='M3 8h2M6 6h1M6 10h1M9 5h2M9 8h2M9 11h2' stroke='%2322d3ee' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+  <title>Microservices Platform Architecture Diagram</title>
+
+  <!--
+    ═══════════════════════════════════════════════════════════════════
+    INFRASTRUCTURE (shared CDN loader + Vue 3 + offline-safe vendor libs)
+    ═══════════════════════════════════════════════════════════════════
+    shared/loader.js auto-resolves Vue 3 from the local shared/vendor
+    folder, so the diagram renders offline (no CDN dependency).
+  -->
+  <script src="/.claude/shared/loader.js" data-namespace="arch-diagram"></script>
+
+  <!-- Offline-safe vendor copies of html2canvas + jsPDF (shared/vendor) -->
+  <script src="/.claude/shared/vendor/html2canvas@1.4.1/html2canvas.min.js"></script>
+  <script src="/.claude/shared/vendor/jspdf@2.5.2/jspdf.umd.min.js"></script>
+
+  <!--
+    Shared Vue 3 components from the rui HTML CDN:
+      yry-back-top  — floating scroll-to-top button
+      yry-toast     — toast notification for copy/PNG/PDF feedback
+  -->
+  <script src="/.claude/shared/components/yry-back-top/index.js"></script>
+  <script src="/.claude/shared/components/yry-toast/index.js"></script>
+
+  <!--
+    Page resources (must be loaded in this order: data first, then app).
+    data.js   → defines window.REPORT_DATA
+    index.css → all styles
+    index.js  → Vue app + composables + template
+  -->
+  <link rel="stylesheet" href="index.css">
+  <script src="/.claude/shared/diagram/primitives.js"></script>
+  <script src="data.js"></script>
+  <script src="index.js"></script>
+</head>
+<body>
+  <!-- Vue app mount point. Template lives in index.js. -->
+  <div id="app" v-cloak></div>
+</body>
+</html>

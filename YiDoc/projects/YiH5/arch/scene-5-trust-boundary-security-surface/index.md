@@ -149,7 +149,7 @@ export const config = Object.freeze(deepMerge(DEFAULT_CONFIG, runtimeConfig));
 
 **Risk**: `window.YI_CONFIG` can override any config value including `apiBase`. An attacker who controls `window.YI_CONFIG` (e.g., via a browser extension or a compromised parent frame) could redirect API calls. **Severity: Medium** — requires browser-level compromise.
 
-### Security Surface Summary (from rui-init-detect)
+### Security Surface Summary (from yry-init-detect)
 
 | Dimension | Value | Evidence |
 |-----------|-------|----------|

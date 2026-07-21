@@ -14,7 +14,7 @@ graph TD
     C --> E{Used in views?}
     C --> F{Used in core/services?}
     D --> G[shared/loader.js · Vue 3]
-    D --> H[shared/components/ · rui-* CDN]
+    D --> H[shared/components/ · yry-* CDN]
     E --> I[views/aicr/index.js · baseView]
     E --> J[views/aicr/hooks/useMethods.js · markdown]
     F --> K[requestHelper.js · fetch API]
@@ -55,7 +55,7 @@ YiWeb has zero npm dependencies — it's a CDN-loaded SPA. This means dependency
 | markdown/index.js | `/cdn/markdown/index.js` | aicr/useMethods.js | **Medium**: Chat rendering degrades to plain text |
 | storage.js | `/cdn/utils/core/storage.js` | core/utils/index.js | **Medium**: Storage wrappers unavailable |
 | tooltipPortal.js | `/cdn/utils/ui/tooltipPortal.js` | All 3 views | **Low**: Tooltips disappear |
-| rui-* components | `/.claude/shared/components/rui-*/` | docs/index.html only | **Dashboard only**: Docs dashboard breaks |
+| yry-* components | `/.claude/shared/components/yry-*/` | docs/index.html only | **Dashboard only**: Docs dashboard breaks |
 
 ### API Contract Dependencies
 
@@ -73,7 +73,7 @@ YiWeb has zero npm dependencies — it's a CDN-loaded SPA. This means dependency
 | AC | Status | Notes |
 |-----|--------|-------|
 | AC-1 | ✅ PASS | All /cdn/ imports use well-known paths under /cdn/utils/core/, /cdn/utils/view/, /cdn/markdown/, /cdn/icons/, /cdn/components/ |
-| AC-2 | ✅ PASS | /.claude/shared/loader.js and /.claude/shared/components/rui-*/ paths verified |
+| AC-2 | ✅ PASS | /.claude/shared/loader.js and /.claude/shared/components/yry-*/ paths verified |
 | AC-3 | ✅ PASS | API_URL used in requestHelper.js buildServiceUrl(); config.js provides buildApiUrl/buildDataUrl helpers |
 | AC-4 | ✅ PASS | localStorage keys are namespaced: YiWeb.apiToken.v1, YiWeb.apiModel.v1, aicr_file_tag_order |
 | AC-5 | ⚠️ WARN | createBaseView has no explicit CDN component load failure handler; components become empty custom elements |

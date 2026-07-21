@@ -27,7 +27,7 @@
  *
  *   Resource layout (YiPet):
  *     cdn/loader.js          — this file
- *     cdn/components/rui-back-top/  — shared Vue components (data.js, index.css, index.html, index.js)
+ *     cdn/components/yry-back-top/  — shared Vue components (data.js, index.css, index.html, index.js)
  *     cdn/diagram/           — SVG diagram engine
  *     cdn/fonts/             — self-hosted font files
  *     libs/                  — vendor libraries (vue.global.js, mermaid.min.js, etc.)
@@ -137,9 +137,9 @@
     const marker = (opts && opts.cssMarker)  || '';
     const tplId  = (opts && opts.templateId) || '';
     const defs   = (opts && opts.defaults)   || {};
-    const ready  = (opts && opts.readyEvent)  || 'rui-component-ready';
-    const error  = (opts && opts.errorEvent)  || 'rui-component-error';
-    const ns     = (opts && opts.componentDir) ? opts.componentDir.replace(/^.*\//, '') : 'rui-component';
+    const ready  = (opts && opts.readyEvent)  || 'yry-component-ready';
+    const error  = (opts && opts.errorEvent)  || 'yry-component-error';
+    const ns     = (opts && opts.componentDir) ? opts.componentDir.replace(/^.*\//, '') : 'yry-component';
     const loadTimeout = (opts && opts.loadTimeoutMs) || 7000;
 
     if (!dir) {
@@ -296,10 +296,10 @@
     const src    = (opts && opts.callerSrc) || '';
     const cKey   = (opts && opts.configKey)  || '';
     const marker = (opts && opts.cssMarker)  || '';
-    const ready  = (opts && opts.readyEvent)  || 'rui-component-ready';
-    const error  = (opts && opts.errorEvent)  || 'rui-component-error';
+    const ready  = (opts && opts.readyEvent)  || 'yry-component-ready';
+    const error  = (opts && opts.errorEvent)  || 'yry-component-error';
     const dConf  = (opts && opts.defaultConfig) || {};
-    const name   = (opts && opts.componentName) || 'rui-component';
+    const name   = (opts && opts.componentName) || 'yry-component';
 
     if (!src) {
       if (typeof fallbackFn === 'function') {

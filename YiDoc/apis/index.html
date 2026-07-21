@@ -3,16 +3,16 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>rui-report-apis · Yi Ecosystem</title>
+    <title>yry-report-apis · Yi Ecosystem</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2322C55E'/><text x='16' y='22' font-size='18' font-family='sans-serif' font-weight='bold' fill='white' text-anchor='middle'>YD</text></svg>" type="image/svg+xml">
     <link rel="stylesheet" href="index.css" />
     <!-- Component stylesheets -->
-    <link rel="stylesheet" href="components/rui-report-api-summary/index.css" />
-    <link rel="stylesheet" href="components/rui-report-api-endpoints/index.css" />
-    <link rel="stylesheet" href="components/rui-report-api-semantics/index.css" />
-    <link rel="stylesheet" href="components/rui-report-api-patterns/index.css" />
-    <link rel="stylesheet" href="components/rui-report-api-security/index.css" />
-    <link rel="stylesheet" href="components/rui-report-api-health/index.css" />
+    <link rel="stylesheet" href="components/yry-report-api-summary/index.css" />
+    <link rel="stylesheet" href="components/yry-report-api-endpoints/index.css" />
+    <link rel="stylesheet" href="components/yry-report-api-semantics/index.css" />
+    <link rel="stylesheet" href="components/yry-report-api-patterns/index.css" />
+    <link rel="stylesheet" href="components/yry-report-api-security/index.css" />
+    <link rel="stylesheet" href="components/yry-report-api-health/index.css" />
     <!-- Vue 3 CDN with fallback -->
     <script>
         (function () {
@@ -48,11 +48,11 @@
 
         <div v-if="isStale" class="stale-banner">
             <span class="stale-icon">&#x26a0;</span>
-            <span class="stale-text">This report is <strong>{{ dataAgeDays }} days old</strong>. API usage may have changed. Regenerate for current data by re-running <code>rui-report-apis</code>.</span>
+            <span class="stale-text">This report is <strong>{{ dataAgeDays }} days old</strong>. API usage may have changed. Regenerate for current data by re-running <code>yry-report-apis</code>.</span>
         </div>
 
         <header>
-            <h1>{{ CONFIG.labels.title || 'rui-report-apis' }}</h1>
+            <h1>{{ CONFIG.labels.title || 'yry-report-apis' }}</h1>
             <div class="meta">{{ generatedAt }} · scope: <code>{{ data.scope }}</code></div>
             <div v-if="optionsJson" class="meta dim">options: {{ optionsJson }}</div>
             <div class="meta dim">{{ CONFIG.labels.footerMethodology || 'Methodology: references/methodology.md' }}</div>
@@ -131,32 +131,32 @@
 
         <!-- SECTION: Summary -->
         <template v-if="visibleSections.summary">
-            <rui-report-api-summary :data="data" :labels="CONFIG.labels"></rui-report-api-summary>
+            <yry-report-api-summary :data="data" :labels="CONFIG.labels"></yry-report-api-summary>
         </template>
 
         <!-- SECTION: Endpoints -->
         <template v-if="visibleSections.endpoints">
-            <rui-report-api-endpoints :endpoints="data.endpoints" :labels="CONFIG.labels"></rui-report-api-endpoints>
+            <yry-report-api-endpoints :endpoints="data.endpoints" :labels="CONFIG.labels"></yry-report-api-endpoints>
         </template>
 
         <!-- SECTION: HTTP Semantics -->
         <template v-if="visibleSections.semantics">
-            <rui-report-api-semantics :semantics="data.semantics" :methods="data.methods" :labels="CONFIG.labels"></rui-report-api-semantics>
+            <yry-report-api-semantics :semantics="data.semantics" :methods="data.methods" :labels="CONFIG.labels"></yry-report-api-semantics>
         </template>
 
         <!-- SECTION: Patterns -->
         <template v-if="visibleSections.patterns">
-            <rui-report-api-patterns :patterns="data.patterns" :labels="CONFIG.labels"></rui-report-api-patterns>
+            <yry-report-api-patterns :patterns="data.patterns" :labels="CONFIG.labels"></yry-report-api-patterns>
         </template>
 
         <!-- SECTION: Security -->
         <template v-if="visibleSections.security">
-            <rui-report-api-security :security="data.security" :labels="CONFIG.labels"></rui-report-api-security>
+            <yry-report-api-security :security="data.security" :labels="CONFIG.labels"></yry-report-api-security>
         </template>
 
         <!-- SECTION: Health -->
         <template v-if="visibleSections.health">
-            <rui-report-api-health :health="data.health" :labels="CONFIG.labels"></rui-report-api-health>
+            <yry-report-api-health :health="data.health" :labels="CONFIG.labels"></yry-report-api-health>
         </template>
 
         <!-- SECTION: Third-Party Integrations -->
@@ -204,9 +204,9 @@
                         <div class="remediation-cell">
                             <a :href="item.href" class="remediation-link" @click.stop="document.getElementById(item.href.slice(1)).scrollIntoView({behavior:'smooth',block:'start'})">
                                 <span class="remediation-marker">
-                                    <span v-if="item.marker === 'P0'" style="color:var(--rui-critical,#dc2626);font-weight:700;">{{ item.marker }}</span>
-                                    <span v-else-if="item.marker === 'P1'" style="color:var(--rui-warn,#d97706);font-weight:700;">{{ item.marker }}</span>
-                                    <span v-else style="color:var(--rui-ok,#16a34a);font-weight:700;">{{ item.marker }}</span>
+                                    <span v-if="item.marker === 'P0'" style="color:var(--yry-critical,#dc2626);font-weight:700;">{{ item.marker }}</span>
+                                    <span v-else-if="item.marker === 'P1'" style="color:var(--yry-warn,#d97706);font-weight:700;">{{ item.marker }}</span>
+                                    <span v-else style="color:var(--yry-ok,#16a34a);font-weight:700;">{{ item.marker }}</span>
                                 </span>
                                 <div class="remediation-body">
                                     <div class="remediation-file">
@@ -269,7 +269,7 @@
                 </div>
             </div>
             </template>
-            <p v-if="!remediationQueue.length" style="color: var(--rui-ok, #16a34a); font-size: 13px; font-weight: 600; padding: 16px 0;">
+            <p v-if="!remediationQueue.length" style="color: var(--yry-ok, #16a34a); font-size: 13px; font-weight: 600; padding: 16px 0;">
                 &#x2713; {{ CONFIG.labels.emptyRemediation || 'No remediation items — all clear.' }}
             </p>
         </section>
@@ -301,13 +301,13 @@
                           >{{ Math.round(((data.summary || {}).authCoverage || 0) * 100) }}%</span>
                 </div>
             </div>
-            <div>{{ generatedAt }} · {{ CONFIG.labels.title || 'rui-report-apis' }}</div>
+            <div>{{ generatedAt }} · {{ CONFIG.labels.title || 'yry-report-apis' }}</div>
             <div class="dim">{{ CONFIG.labels.footerMethodology || 'Methodology: references/methodology.md' }}</div>
         </footer>
     </div>
 
     <!-- Inlined Component Templates -->
-    <script type="text/x-template" id="rui-report-api-summary-tpl">
+    <script type="text/x-template" id="yry-report-api-summary-tpl">
         <section id="summary" class="api-summary">
             <div class="score-card">
                 <div class="score-gauge" :class="scoreClass">
@@ -340,7 +340,7 @@
             </div>
         </section>
     </script>
-    <script type="text/x-template" id="rui-report-api-endpoints-tpl">
+    <script type="text/x-template" id="yry-report-api-endpoints-tpl">
         <section id="endpoints">
             <div class="api-endpoints-filter">
                 <input type="text" v-model="filter" :placeholder="col.filterPlaceholder || 'filter by path, method, or handler\u2026'" />
@@ -372,7 +372,7 @@
                                 <span class="mw-list" v-if="ep.middleware && ep.middleware.length">
                                     <span class="mw-chip" v-for="mw in ep.middleware" :key="mw">{{ mw }}</span>
                                 </span>
-                                <span v-else style="color: var(--rui-fg-subtle, #4a5062)">—</span>
+                                <span v-else style="color: var(--yry-fg-subtle, #4a5062)">—</span>
                             </td>
                             <td><span class="bool-chip" :class="ep.auth">&#x2713;</span><span v-if="!ep.auth" class="bool-chip false">&#x2717;</span></td>
                             <td><span class="bool-chip" :class="ep.validation">&#x2713;</span><span v-if="!ep.validation" class="bool-chip false">&#x2717;</span></td>
@@ -381,16 +381,16 @@
                                 <template v-if="ep.statusCodes && ep.statusCodes.length">
                                     <span class="status-code-chip" v-for="sc in ep.statusCodes" :key="sc">{{ sc }}</span>
                                 </template>
-                                <span v-else style="color: var(--rui-fg-subtle, #4a5062)">—</span>
+                                <span v-else style="color: var(--yry-fg-subtle, #4a5062)">—</span>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <p v-else style="color: var(--rui-fg-muted, #848893); font-size: 12px;">{{ col.emptyEndpoints || 'No API endpoints detected in scope.' }}</p>
+            <p v-else style="color: var(--yry-fg-muted, #848893); font-size: 12px;">{{ col.emptyEndpoints || 'No API endpoints detected in scope.' }}</p>
         </section>
     </script>
-    <script type="text/x-template" id="rui-report-api-semantics-tpl">
+    <script type="text/x-template" id="yry-report-api-semantics-tpl">
         <section id="semantics">
             <div class="semantics-grid">
                 <div class="semantics-card">
@@ -435,7 +435,7 @@
                 </div>
             </div>
             <table class="misuse-table" v-if="methodMisuse.length">
-                <caption style="text-align:left;color:var(--rui-fg-muted,#848893);font-size:12px;margin-bottom:8px;">{{ labels.semanticsMisuseTable || 'Method Misuse Detected' }} — {{ methodMisuse.length }} violations</caption>
+                <caption style="text-align:left;color:var(--yry-fg-muted,#848893);font-size:12px;margin-bottom:8px;">{{ labels.semanticsMisuseTable || 'Method Misuse Detected' }} — {{ methodMisuse.length }} violations</caption>
                 <thead>
                     <tr>
                         <th>{{ labels.colMethod || 'Method' }}</th>
@@ -453,12 +453,12 @@
                     </tr>
                 </tbody>
             </table>
-            <p v-if="!methodMisuse.length" style="color: var(--rui-ok, #16a34a); font-size: 12px; font-weight: 600;">
+            <p v-if="!methodMisuse.length" style="color: var(--yry-ok, #16a34a); font-size: 12px; font-weight: 600;">
                 &#x2713; All HTTP methods used correctly per RFC 7231.
             </p>
         </section>
     </script>
-    <script type="text/x-template" id="rui-report-api-patterns-tpl">
+    <script type="text/x-template" id="yry-report-api-patterns-tpl">
         <section id="patterns">
             <table v-if="patterns.length">
                 <thead>
@@ -477,22 +477,22 @@
                         <td>{{ p.version || '—' }}</td>
                         <td>{{ p.resource }}</td>
                         <td>
-                            <span :style="{ color: p.restScore >= 80 ? 'var(--rui-ok, #16a34a)' : p.restScore >= 50 ? 'var(--rui-warn, #d97706)' : 'var(--rui-critical, #dc2626)' }" style="font-weight: 700; font-family: var(--rui-font-mono, ui-monospace, monospace);">{{ p.restScore }}</span>
+                            <span :style="{ color: p.restScore >= 80 ? 'var(--yry-ok, #16a34a)' : p.restScore >= 50 ? 'var(--yry-warn, #d97706)' : 'var(--yry-critical, #dc2626)' }" style="font-weight: 700; font-family: var(--yry-font-mono, ui-monospace, monospace);">{{ p.restScore }}</span>
                         </td>
                         <td>{{ p.methodCount }}</td>
                         <td>
                             <ul v-if="p.issues && p.issues.length" style="margin:0;padding-left:16px;">
-                                <li v-for="iss in p.issues" :key="iss" style="font-size:11px;color:var(--rui-fg-muted,#848893);">{{ iss }}</li>
+                                <li v-for="iss in p.issues" :key="iss" style="font-size:11px;color:var(--yry-fg-muted,#848893);">{{ iss }}</li>
                             </ul>
-                            <span v-else style="font-size:11px;color:var(--rui-ok,#16a34a);">&#x2713; Clean</span>
+                            <span v-else style="font-size:11px;color:var(--yry-ok,#16a34a);">&#x2713; Clean</span>
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <p v-else style="color: var(--rui-fg-muted, #848893); font-size: 12px;">{{ labels.emptyPatterns || 'No route patterns identified.' }}</p>
+            <p v-else style="color: var(--yry-fg-muted, #848893); font-size: 12px;">{{ labels.emptyPatterns || 'No route patterns identified.' }}</p>
         </section>
     </script>
-    <script type="text/x-template" id="rui-report-api-security-tpl">
+    <script type="text/x-template" id="yry-report-api-security-tpl">
         <section id="security">
             <div class="security-grid">
                 <div class="security-card" v-for="card in cards" :key="card.label">
@@ -544,12 +544,12 @@
                 </table>
             </div>
             <p v-if="!endpointsMissingAuth.length && !endpointsMissingValidation.length && !endpointsMissingRateLimit.length"
-               style="color: var(--rui-ok, #16a34a); font-size: 12px; font-weight: 600;">
+               style="color: var(--yry-ok, #16a34a); font-size: 12px; font-weight: 600;">
                &#x2713; {{ labels.emptySecurity || 'No security issues detected.' }}
             </p>
         </section>
     </script>
-    <script type="text/x-template" id="rui-report-api-health-tpl">
+    <script type="text/x-template" id="yry-report-api-health-tpl">
         <section id="health">
             <div class="health-grid">
                 <div class="health-card" v-for="card in cards" :key="card.label">
@@ -580,7 +580,7 @@
                             <td><code>{{ h.path }}</code></td>
                             <td><span class="method-chip" :class="h.method">{{ h.method }}</span></td>
                             <td>{{ h.handler }}</td>
-                            <td style="font-family: var(--rui-font-mono, ui-monospace, monospace); font-weight: 700;">{{ h.lines }}</td>
+                            <td style="font-family: var(--yry-font-mono, ui-monospace, monospace); font-weight: 700;">{{ h.lines }}</td>
                             <td><span class="complexity-badge" :class="h.complexity">{{ h.complexity }}</span></td>
                             <td><code>{{ h.handlerFile }}</code><template v-if="h.line">:{{ h.line }}</template></td>
                         </tr>
@@ -588,22 +588,22 @@
                 </table>
             </div>
             <p v-if="!endpointsWithoutErrorHandling.length && !handlerComplexity.length"
-               style="color: var(--rui-ok, #16a34a); font-size: 12px; font-weight: 600;">
+               style="color: var(--yry-ok, #16a34a); font-size: 12px; font-weight: 600;">
                &#x2713; {{ labels.emptyHealth || 'No health issues detected.' }}
             </p>
         </section>
     </script>
 
     <!-- Shared library (sortable) -->
-    <script src="lib/rui-sortable.js"></script>
+    <script src="lib/yry-sortable.js"></script>
 
     <!-- Component scripts -->
-    <script src="components/rui-report-api-summary/index.js"></script>
-    <script src="components/rui-report-api-endpoints/index.js"></script>
-    <script src="components/rui-report-api-semantics/index.js"></script>
-    <script src="components/rui-report-api-patterns/index.js"></script>
-    <script src="components/rui-report-api-security/index.js"></script>
-    <script src="components/rui-report-api-health/index.js"></script>
+    <script src="components/yry-report-api-summary/index.js"></script>
+    <script src="components/yry-report-api-endpoints/index.js"></script>
+    <script src="components/yry-report-api-semantics/index.js"></script>
+    <script src="components/yry-report-api-patterns/index.js"></script>
+    <script src="components/yry-report-api-security/index.js"></script>
+    <script src="components/yry-report-api-health/index.js"></script>
 
     <!-- Data -->
     <script src="data.js"></script>

@@ -1,8 +1,8 @@
 # §0 Effect Sketch — Post-Init Full Self-Check
 
-**What this scene demonstrates**: 完成 rui-init 流水线后，对 YiPet 项目执行一次完整的 7 项自检——确认所有生成的文档工件（CLAUDE.md、README.md、data.js、arch/*/index.md、test/*/index.md）都存在、格式正确，且内容与代码库保持同步。
+**What this scene demonstrates**: 完成 yry-init 流水线后，对 YiPet 项目执行一次完整的 7 项自检——确认所有生成的文档工件（CLAUDE.md、README.md、data.js、arch/*/index.md、test/*/index.md）都存在、格式正确，且内容与代码库保持同步。
 
-**Why it matters**: rui-init 流水线的输出是后续所有开发活动的基础文档。如果 CLAUDE.md 中的项目类型标注错误，或 README.md 缺少 Domain Language 章节，或某个 arch 场景的 index.md 为空，都将导致 AI 辅助开发产生偏差。post-init 检查是工程门禁。
+**Why it matters**: yry-init 流水线的输出是后续所有开发活动的基础文档。如果 CLAUDE.md 中的项目类型标注错误，或 README.md 缺少 Domain Language 章节，或某个 arch 场景的 index.md 为空，都将导致 AI 辅助开发产生偏差。post-init 检查是工程门禁。
 
 ```mermaid
 graph LR

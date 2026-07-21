@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2322C55E'/><text x='16' y='22' font-size='18' font-family='sans-serif' font-weight='bold' fill='white' text-anchor='middle'>RF</text></svg>" type="image/svg+xml">
-    <title>rui-report-files — {{ data.scope }}</title>
+    <title>yry-report-files — {{ data.scope }}</title>
 
     <!-- Vue 3 CDN -->
     <script src="https://unpkg.com/vue@3.4.27/dist/vue.global.prod.js"></script>
@@ -14,10 +14,10 @@
     <link rel="stylesheet" href="index.css">
 
     <!-- Inline stubs for shared components used by this page -->
-    <script src="lib/rui-breadcrumb.js"></script>
-    <script src="lib/rui-back-top.js"></script>
+    <script src="lib/yry-breadcrumb.js"></script>
+    <script src="lib/yry-back-top.js"></script>
 
-    <!-- rui-report-files section components — templates + styles -->
+    <!-- yry-report-files section components — templates + styles -->
     <!--   - summary: score-bar + summary cards -->
     <!--   - size: treemap / types / histogram tabs -->
     <!--   - largest: filterable sortable table -->
@@ -25,24 +25,24 @@
     <!--   - risk: hotspots / orphans / depth tabs with sortable table -->
     <!--   - health: cycles / freshness tabs -->
     <!--   - self-improvement: chart-first diagnostics, levers, roadmap, decay -->
-    <link rel="stylesheet" href="components/rui-report-summary/index.css">
-    <link rel="stylesheet" href="components/rui-report-size/index.css">
-    <link rel="stylesheet" href="components/rui-report-largest/index.css">
-    <link rel="stylesheet" href="components/rui-report-coupling/index.css">
-    <link rel="stylesheet" href="components/rui-report-risk/index.css">
-    <link rel="stylesheet" href="components/rui-report-health/index.css">
-    <link rel="stylesheet" href="components/rui-report-self-improvement/index.css">
+    <link rel="stylesheet" href="components/yry-report-summary/index.css">
+    <link rel="stylesheet" href="components/yry-report-size/index.css">
+    <link rel="stylesheet" href="components/yry-report-largest/index.css">
+    <link rel="stylesheet" href="components/yry-report-coupling/index.css">
+    <link rel="stylesheet" href="components/yry-report-risk/index.css">
+    <link rel="stylesheet" href="components/yry-report-health/index.css">
+    <link rel="stylesheet" href="components/yry-report-self-improvement/index.css">
 
     <script>
         window.__reportTemplatesReady = (function () {
             var componentTemplateFiles = [
-                'components/rui-report-summary/index.html',
-                'components/rui-report-size/index.html',
-                'components/rui-report-largest/index.html',
-                'components/rui-report-coupling/index.html',
-                'components/rui-report-risk/index.html',
-                'components/rui-report-health/index.html',
-                'components/rui-report-self-improvement/index.html'
+                'components/yry-report-summary/index.html',
+                'components/yry-report-size/index.html',
+                'components/yry-report-largest/index.html',
+                'components/yry-report-coupling/index.html',
+                'components/yry-report-risk/index.html',
+                'components/yry-report-health/index.html',
+                'components/yry-report-self-improvement/index.html'
             ];
 
             function appendTemplatesFromHTML(htmlText) {
@@ -65,22 +65,22 @@
                     })
                     .then(appendTemplatesFromHTML);
             })).catch(function (err) {
-                console.error('[rui-report-files] template preload failed:', err);
+                console.error('[yry-report-files] template preload failed:', err);
             });
         })();
     </script>
 
     <!-- Shared utilities (must load before any component using them) -->
-    <script src="lib/rui-bytes.js"></script>
-    <script src="lib/rui-sortable.js"></script>
+    <script src="lib/yry-bytes.js"></script>
+    <script src="lib/yry-sortable.js"></script>
 
-    <script src="components/rui-report-summary/index.js"></script>
-    <script src="components/rui-report-size/index.js"></script>
-    <script src="components/rui-report-largest/index.js"></script>
-    <script src="components/rui-report-coupling/index.js"></script>
-    <script src="components/rui-report-risk/index.js"></script>
-    <script src="components/rui-report-health/index.js"></script>
-    <script src="components/rui-report-self-improvement/index.js"></script>
+    <script src="components/yry-report-summary/index.js"></script>
+    <script src="components/yry-report-size/index.js"></script>
+    <script src="components/yry-report-largest/index.js"></script>
+    <script src="components/yry-report-coupling/index.js"></script>
+    <script src="components/yry-report-risk/index.js"></script>
+    <script src="components/yry-report-health/index.js"></script>
+    <script src="components/yry-report-self-improvement/index.js"></script>
 
 </head>
 <body>
@@ -112,7 +112,7 @@
     <div class="reading-progress" :style="{ width: readingProgress + '%' }"></div>
 
     <header>
-        <rui-breadcrumb class="report-breadcrumb" :items="breadcrumb"></rui-breadcrumb>
+        <yry-breadcrumb class="report-breadcrumb" :items="breadcrumb"></yry-breadcrumb>
         <h1>{{ CONFIG.labels.title }}</h1>
         <p class="meta">
             scope: <code>{{ data.scope }}</code>
@@ -151,7 +151,7 @@
         <span class="stale-icon">⏰</span>
         <span class="stale-text">
             本报告生成于 <strong>{{ dataAgeDays }} 天前</strong>（{{ generatedAt }}）。期间代码可能已变化，建议重新运行
-            <code>/rui-report-files</code> 刷新快照。
+            <code>/yry-report-files</code> 刷新快照。
         </span>
     </div>
 
@@ -505,64 +505,64 @@
     </details>
 
     <!-- ── Summary section ── -->
-    <rui-report-summary
+    <yry-report-summary
         v-if="visibleSections.summary"
         :score="data.score"
         :alert-counts="alertCounts"
         :summary="data.summary"
         :labels="CONFIG.labels">
-    </rui-report-summary>
+    </yry-report-summary>
 
     <!-- ── Size section ── -->
-    <rui-report-size
+    <yry-report-size
         v-if="visibleSections.size"
         :treemap="data.treemap"
         :types="data.types"
         :histogram="data.histogram"
         :labels="CONFIG.labels">
-    </rui-report-size>
+    </yry-report-size>
 
     <!-- ── Largest files section ── -->
-    <rui-report-largest
+    <yry-report-largest
         v-if="visibleSections.largest"
         :largest="data.largest"
         :labels="CONFIG.labels">
-    </rui-report-largest>
+    </yry-report-largest>
 
     <!-- ── Coupling section ── -->
-    <rui-report-coupling
+    <yry-report-coupling
         v-if="visibleSections.coupling"
         :fanin="data.fanin"
         :fanout="data.fanout"
         :labels="CONFIG.labels">
-    </rui-report-coupling>
+    </yry-report-coupling>
 
     <!-- ── Risk section ── -->
-    <rui-report-risk
+    <yry-report-risk
         v-if="visibleSections.risk"
         :hotspots="data.hotspots"
         :orphans="data.orphans"
         :depth-ranking="data.depthRanking"
         :depth-stats="data.depthStats"
         :labels="CONFIG.labels">
-    </rui-report-risk>
+    </yry-report-risk>
 
     <!-- ── Health section ── -->
-    <rui-report-health
+    <yry-report-health
         v-if="visibleSections.health"
         :cycles="data.cycles"
         :freshness="data.freshness"
         :freshness-buckets="data.freshnessBuckets"
         :freshness-stats="data.freshnessStats"
         :labels="CONFIG.labels">
-    </rui-report-health>
+    </yry-report-health>
 
     <!-- ── Self-Improvement section ── -->
-    <rui-report-self-improvement
+    <yry-report-self-improvement
         v-if="visibleSections['self-improvement']"
         :si="data.selfImprovement"
         :labels="CONFIG.labels">
-    </rui-report-self-improvement>
+    </yry-report-self-improvement>
 
     <footer>
         <div class="footer-recap">
@@ -585,12 +585,12 @@
                 <span class="footer-recap-value">{{ generatedAt }}</span>
             </div>
         </div>
-        <p>Generated by <code>/rui-report-files</code> · scope: <code>{{ data.scope }}</code> · options: <code>{{ optionsJson }}</code></p>
+        <p>Generated by <code>/yry-report-files</code> · scope: <code>{{ data.scope }}</code> · options: <code>{{ optionsJson }}</code></p>
         <p class="dim">{{ CONFIG.labels.footerMethodology }}</p>
-        <p class="dim">This report is a static snapshot reflecting the code state at generation time. To update, re-run <code>/rui-report-files</code>. Data stays local — nothing is uploaded.</p>
+        <p class="dim">This report is a static snapshot reflecting the code state at generation time. To update, re-run <code>/yry-report-files</code>. Data stays local — nothing is uploaded.</p>
     </footer>
 
-    <rui-back-top />
+    <yry-back-top />
 
     <!-- Floating P0 jump-to-risk button — only visible when P0 alerts exist -->
     <a v-if="alertCounts.p0 > 0"

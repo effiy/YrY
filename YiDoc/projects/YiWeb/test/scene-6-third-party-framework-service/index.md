@@ -53,7 +53,7 @@ YiWeb depends on three external services (API backend, data backend, Ollama LLM)
 | Vue 3 CDN | /.claude/shared/loader.js | 🔴 Critical | Page is white screen | No recovery |
 | baseView.js | /cdn/utils/view/baseView.js | 🔴 Critical | No views bootstrap | Alert user |
 | markdown renderer | /cdn/markdown/index.js | 🟡 Medium | Chat shows raw text | Graceful degradation |
-| rui-* components | /.claude/shared/components/rui-*/ | 🟢 Low | Docs dashboard unstyled | Non-critical |
+| yry-* components | /.claude/shared/components/yry-*/ | 🟢 Low | Docs dashboard unstyled | Non-critical |
 
 ### Architecture Decisions
 

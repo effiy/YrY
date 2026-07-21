@@ -24,7 +24,7 @@ graph TD
     I --> K
     J --> K
     K -->|Yes| L[✅ Docs consistent]
-    K -->|No| M[❌ Docs stale · re-run rui-init]
+    K -->|No| M[❌ Docs stale · re-run yry-init]
 ```
 
 Documentation-code consistency is the most fragile aspect of any documentation system. As the codebase evolves, the generated docs drift from reality. This scene detects drift and triggers a re-generation.
@@ -59,7 +59,7 @@ Documentation-code consistency is the most fragile aspect of any documentation s
 ### Architecture Decisions
 
 - **AD-1**: Doc-code consistency check uses file counting rather than AST analysis. This is fast and deterministic but doesn't detect semantic drift.
-- **AD-2**: The check is designed to run on every rui-init verify invocation. It should complete in under 2 seconds.
+- **AD-2**: The check is designed to run on every yry-init verify invocation. It should complete in under 2 seconds.
 - **AD-3**: CDN paths (`/cdn/...`) are not validated during this check because the CDN files live outside the project.
 
 ---
@@ -84,4 +84,4 @@ Documentation-code consistency is the most fragile aspect of any documentation s
 | D0 | File counting is manual and error-prone | Add a `scripts/count-modules.sh` that outputs JSON counts compatible with data.js |
 | D1 | Semantic drift (file renamed, same count) is invisible | Consider hashing file paths into a fingerprint that changes when any path changes |
 | D2 | CDN path validity is not checked | Add an optional network check that HEAD-requests each CDN path and flags 404s |
-| D4 | No automated re-generation trigger when drift is detected | Wire the consistency check to auto-invoke rui-init-generate when drift exceeds tolerance |
+| D4 | No automated re-generation trigger when drift is detected | Wire the consistency check to auto-invoke yry-init-generate when drift exceeds tolerance |

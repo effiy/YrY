@@ -1,12 +1,12 @@
 /* =========================================================================
    /YiPet/cdn/diagram/primitives.js
    -------------------------------------------------------------------------
-   Shared SVG primitives for the rui-reports diagram engines:
-     - .claude/skills/rui-reports/diagram/templates/data.js  (architecture)
+   Shared SVG primitives for the yry-reports diagram engines:
+     - .claude/skills/yry-reports/diagram/templates/data.js  (architecture)
      - .claude/shared/diagram/diagram.js                     (per-dep page)
 
    This module is the single source of truth for the visual language
-   shared by every rui-report diagram. Both generators load it first
+   shared by every yry-report diagram. Both generators load it first
    (see their index.html) and consume its exports.
 
    Exports a single global: window.ruiDiagramPrimitives

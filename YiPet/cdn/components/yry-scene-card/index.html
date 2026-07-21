@@ -1,0 +1,37 @@
+<script type="text/x-template" id="yry-scene-card-tpl">
+    <div class="yry-scene-card" role="article" aria-label="Scene card">
+      <div class="yry-scene-card-body">
+        <div class="yry-scene-card-name">
+          <a v-if="nameHref" :href="nameHref" :target="nameTarget || null" :rel="nameTarget ? 'noopener noreferrer' : null">{{ name }}</a>
+          <span v-else>{{ name }}</span>
+          <span v-if="badge" class="yry-badge yry-badge--sm fail" role="status">{{ badge }}</span>
+        </div>
+        <div v-if="desc" class="yry-scene-card-desc" v-html="desc"></div>
+        <div v-if="tags && tags.length" class="yry-scene-card-tags">
+          <yry-tag-chip
+            v-for="t in tags" :key="t.text"
+            :text="t.text"
+            :modifier="t.modifier || 'info'"
+            :href="t.href || ''" />
+        </div>
+        <div v-if="meta" class="yry-scene-card-meta">{{ meta }}</div>
+        <!--
+          Bottom link area: fully driven by resolvedLinks (computed property).
+          · When props.links is non-null, props.links takes precedence and overrides;
+          · Otherwise falls back to defaultLinks configured in data.js
+            (list/architecture/graph/source/test/demo/review etc., all clickable);
+          · When props.demo is non-empty, it is appended as a "Demo" entry (deduplicated).
+        -->
+        <div v-if="resolvedLinks && resolvedLinks.length" class="yry-scene-card-links">
+            <template v-for="(l, idx) in resolvedLinks" :key="(l.label || l.href || 'link') + '-' + idx">
+                <a v-if="l.href" :href="l.href" target="_blank" rel="noopener noreferrer">{{ l.label }}</a>
+                <span v-else>{{ l.label }}</span>
+            </template>
+        </div>
+      </div>
+    </div>
+</script>
+
+<script src="index.js"></script>
+
+<script src="../yry-tag-chip/index.js"></script>

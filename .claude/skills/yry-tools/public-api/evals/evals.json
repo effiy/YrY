@@ -1,0 +1,115 @@
+{
+  "skill_name": "yry-tools-public-api",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Recommend a free weather API for a side project.",
+      "expected_output": "Recommends 1-3 Weather-category APIs with description, auth, HTTPS, and CORS metadata.",
+      "files": [],
+      "expectations": [
+        "Maps the request to the Weather category",
+        "Surfaces auth/https/cors columns verbatim",
+        "Cites [src:public-api-lists] for each pick"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Find a free API that needs no auth and is CORS-friendly so I can call it from the browser.",
+      "expected_output": "Filters to auth==No AND cors==Yes and returns a few browser-safe picks.",
+      "files": [],
+      "expectations": [
+        "Filters by auth==No AND cors==Yes",
+        "Returns browser-safe picks",
+        "Quotes auth/https/cors verbatim, does not paraphrase"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Suggest a free geocoding API that converts an address to lat/lng.",
+      "expected_output": "Recommends a Geocoding-category API for address-to-coordinate lookups.",
+      "files": [],
+      "expectations": [
+        "Maps to the Geocoding category",
+        "Surfaces the API description + URL",
+        "Cites [src:public-api-lists]"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "I need a free cryptocurrency price API with an API key.",
+      "expected_output": "Recommends a Cryptocurrency-category API where auth contains apiKey.",
+      "files": [],
+      "expectations": [
+        "Maps to the Cryptocurrency category",
+        "Filters to auth containing apiKey",
+        "Surfaces HTTPS and CORS status"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Is there a free API for anime/manga data?",
+      "expected_output": "Recommends an Anime-category API.",
+      "files": [],
+      "expectations": [
+        "Maps to the Anime category",
+        "Returns 1-3 picks",
+        "Cites exact title + URL"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Find a free music API for a playlist side project.",
+      "expected_output": "Recommends a Music-category API.",
+      "files": [],
+      "expectations": [
+        "Maps to the Music category",
+        "Surfaces auth/https/cors metadata",
+        "Cites [src:public-api-lists]"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "I need a free movie recommendations API.",
+      "expected_output": "Flags that Movies isn't a top-level category and points to Video or adjacent categories.",
+      "files": [],
+      "expectations": [
+        "Flags the Movies gap explicitly",
+        "Points to the Video category",
+        "Suggests the closest match"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Recommend a free finance API for stock prices.",
+      "expected_output": "Recommends a Finance-category API for stock data.",
+      "files": [],
+      "expectations": [
+        "Maps to the Finance category",
+        "Surfaces auth/https/cors",
+        "Cites exact title + URL"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Show me free APIs that support HTTPS and require no key.",
+      "expected_output": "Filters to https==Yes AND auth==No and returns a curated slice.",
+      "files": [],
+      "expectations": [
+        "Filters by https==Yes AND auth==No",
+        "Returns a curated slice (not all 700+)",
+        "Quotes columns verbatim"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "The CORS column says Unknown for this API — is CORS supported?",
+      "expected_output": "Explains Unknown means upstream didn't verify; does not claim CORS supported or unsupported.",
+      "files": [],
+      "expectations": [
+        "Treats Unknown as unverified",
+        "Does NOT claim CORS supported/unsupported",
+        "Points the user to the API's own docs page"
+      ]
+    }
+  ]
+}

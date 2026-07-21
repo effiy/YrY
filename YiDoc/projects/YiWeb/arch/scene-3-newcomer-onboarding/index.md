@@ -71,7 +71,7 @@ YiWeb uses a consistent self-contained-hook pattern across all three views. Unde
 
 | D# | Diagnosis | Follow-up |
 |----|-----------|-----------|
-| D0 | No README.md exists in the project root | Generate one via rui-init-generate with domain language section |
+| D0 | No README.md exists in the project root | Generate one via yry-init-generate with domain language section |
 | D1 | No inline code comments on the hook pattern architecture | Add a 5-line pattern docblock at the top of each view's index.js |
 | D2 | The aicr view's useMethods.js is a mega-aggregator (~50+ method factories) | Consider splitting into a method registry pattern while keeping the flat return object for template access |
 | D3 | `Vue.inject('viewContext')` is a hidden dependency — components fail silently if viewContext is missing | Add a defensive check in each component's setup() that logs a clear error message |

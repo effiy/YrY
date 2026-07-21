@@ -1,0 +1,32 @@
+---
+description: "Exploration output template — the JSON schema for the Exploration object emitted by yry-init-explore."
+---
+
+# Exploration Output Schema
+
+```json
+{
+  "moduleMap": {
+    "src/index.ts": ["src/App.tsx", "react"],
+    "src/App.tsx": ["src/components/Header.tsx"]
+  },
+  "architecture": {
+    "pattern": "single",
+    "notes": "Single-entry SPA with component tree under src/components/. No circular dependencies detected."
+  },
+  "securitySurface": {
+    "userInput": true,
+    "apiEndpoints": false,
+    "dataStorage": false,
+    "authentication": true,
+    "thirdParty": true
+  },
+  "conventions": {
+    "fileNaming": "PascalCase for components, camelCase for utils",
+    "importStyle": "named imports preferred (85%)",
+    "exportStyle": "named exports preferred (90%)",
+    "indentation": "2 spaces",
+    "linting": "eslint + prettier"
+  }
+}
+```

@@ -1,0 +1,25 @@
+<script type="text/x-template" id="yry-panel-hub-tpl">
+    <div class="yry-panel-hub" role="toolbar" :aria-label="ariaLabel">
+      <span v-if="label" class="yry-panel-hub-label"
+            :title="label.title || ''"
+            role="button"
+            tabindex="0"
+            @click="onLabelClick"
+            @keydown.enter="onLabelClick"
+            @keydown.space.prevent="onLabelClick">
+        {{ label.text }}
+      </span>
+      <button v-for="(b, i) in buttons" :key="i"
+              type="button"
+              class="yry-panel-hub-btn"
+              :title="b.title || ''"
+              @click="onSelect(b.panel)">
+        <span class="yry-panel-hub-icon" :style="b.color ? { '--yry-panel-hub-icon-color': b.color } : null">{{ b.icon }}</span>
+        <span class="yry-panel-hub-name">{{ b.name }}</span>
+        <span v-if="b.desc" class="yry-panel-hub-desc">{{ b.desc }}</span>
+      </button>
+      <span v-if="flow" class="yry-panel-hub-flow">{{ flow }}</span>
+    </div>
+</script>
+
+<script src="index.js"></script>

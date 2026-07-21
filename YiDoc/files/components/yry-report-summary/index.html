@@ -1,0 +1,9 @@
+<script type="text/x-template" id="yry-report-summary-tpl">
+    <section id="summary">
+        <yry-score-bar :score="scoreObj" :alerts="alertCounts"></yry-score-bar>
+        <div class="card" v-for="c in cards" :key="c.label">
+            <div class="card-label">{{ c.label }}</div>
+            <div class="value">{{ c.value }}</div>
+        </div>
+    </section>
+</script>

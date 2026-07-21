@@ -2,8 +2,8 @@
  * YiDoc · Dashboard Vue 3 mount
  * --------------------------------------------------------------------------
  * Self-contained: no CDN shared component dependencies.
- * All custom elements (rui-breadcrumb, rui-stats-grid, rui-scene-card,
- * rui-tag-chip, rui-panel-hub, rui-back-top) are defined as inline
+ * All custom elements (yry-breadcrumb, yry-stats-grid, yry-scene-card,
+ * yry-tag-chip, yry-panel-hub, yry-back-top) are defined as inline
  * Vue 3 components. Vue 3 is loaded via CDN in index.html.
  */
 (function () {
@@ -191,14 +191,14 @@
     });
 
     // ── Inline panel-hub component ──────────────────────────────────────
-    app.component('rui-panel-hub-inline', {
+    app.component('yry-panel-hub-inline', {
       props: { buttons: Array, flow: String, label: Object },
       emits: ['select'],
-      template: '<div style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;padding:14px 16px;border-radius:12px;background:color-mix(in srgb, var(--rui-text,#F8FAFC) 3%, transparent);border:1px solid color-mix(in srgb, var(--rui-text,#F8FAFC) 8%, transparent)">'
-        + '<button v-for="(btn, i) in buttons" :key="i" :style="{color: btn.color || \'var(--rui-accent,#22C55E)\'}" @click="$emit(\'select\', {detail:{panel:btn.panel}})">'
+      template: '<div style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;padding:14px 16px;border-radius:12px;background:color-mix(in srgb, var(--yry-text,#F8FAFC) 3%, transparent);border:1px solid color-mix(in srgb, var(--yry-text,#F8FAFC) 8%, transparent)">'
+        + '<button v-for="(btn, i) in buttons" :key="i" :style="{color: btn.color || \'var(--yry-accent,#22C55E)\'}" @click="$emit(\'select\', {detail:{panel:btn.panel}})">'
         + '<span v-html="btn.icon" style="margin-right:4px"></span><span>{{ btn.name }}</span>'
         + '</button>'
-        + '<div v-if="flow" style="width:100%;text-align:center;font-size:.7rem;color:var(--rui-text-muted,#64748b);margin-top:4px">{{ flow }}</div>'
+        + '<div v-if="flow" style="width:100%;text-align:center;font-size:.7rem;color:var(--yry-text-muted,#64748b);margin-top:4px">{{ flow }}</div>'
         + '</div>'
     });
 
