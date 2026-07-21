@@ -9,9 +9,9 @@
 window.HELP_CONFIG = {
   titleIcon:     "🐾",
   title:         "YiPet · AI Chrome Extension",
-  tagline:       "温柔陪伴助手 · Manifest V3 Content Script · IIFE 模块化 · 26 CDN 组件 · 49 第三方库 · 275 源文件 · 全量自托管",
+  tagline:       "温柔陪伴助手 · Manifest V3 Content Script · IIFE 模块化 · 共享原型工具方法 · 26 CDN 组件 · 49 第三方库 · 275 源文件 · 全量自托管",
   backTopLabel:  "返回顶部",
-  footerNote:    "由 rui-init 流水线生成 (detect → explore → generate → arch → verify) · 项目根: /Users/yi/YrY/YiPet/",
+  footerNote:    "由 rui-init 流水线生成 (detect → explore → generate → arch → verify) · 项目根: /Users/yi/YrY/YiPet/ · 代码已消除重复冗余",
 
   breadcrumb: [
     { label: "YiDoc", href: "../../index.html" },
@@ -381,6 +381,7 @@ window.HELP_CONFIG = {
     }
   ],
 
+  // ── § 4 · Refactoring & Code Quality ─────────────────────────────────
   footerLinks: [
     { label: "CLAUDE.md",  href: "CLAUDE.md",  targetBlank: true },
     { label: "README.md",  href: "README.md",  targetBlank: true },

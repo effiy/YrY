@@ -10,22 +10,6 @@
   const TEMPLATE_RESOURCE_PATH = 'modules/pet/components/editor/SessionInfoEditor/index.html'
   let sessionInfoEditorTemplateCache = ''
 
-  const ensureMdSuffix = (str) => {
-    if (!str || !String(str).trim()) return ''
-    const s = String(str).trim()
-    return s.endsWith('.md') ? s : `${s}.md`
-  }
-
-  const stripMdSuffix = (str) => {
-    const s = String(str || '').trim()
-    return s.toLowerCase().endsWith('.md') ? s.slice(0, -3) : s
-  }
-
-  const normalizeNameSpaces = (value) =>
-    String(value ?? '')
-      .trim()
-      .replace(/\s+/g, '_')
-
   const extractChatReplyText = (result) => {
     if (!result || typeof result !== 'object') return ''
     if (result.code !== 0) return ''
@@ -298,7 +282,7 @@
     store.sessionId = resolvedSessionId
 
     const session = resolvedSessionId && this.sessions ? this.sessions[resolvedSessionId] : null
-    store.title = normalizeNameSpaces(String(originalTitle || session?.title || '').trim())
+    store.title = this._normalizeNameSpaces(String(originalTitle || session?.title || '').trim())
     store.url = String(session?.url || '').trim()
     store.description = String(originalDescription || session?.pageDescription || '').trim()
     store.visible = true
@@ -315,7 +299,7 @@
     }
 
     const store = getSessionEditorStore(this)
-    const rawNewTitle = normalizeNameSpaces(String(store?.title || '').trim())
+    const rawNewTitle = this._normalizeNameSpaces(String(store?.title || '').trim())
     const newUrl = String(store?.url || '').trim()
     const newDescription = String(store?.description || '').trim()
 
@@ -330,8 +314,8 @@
     const originalTitle = session.title || '未命名会话'
     const originalUrl = session.url || ''
     const originalDescription = session.pageDescription || ''
-    const normalizedNewTitle = ensureMdSuffix(rawNewTitle)
-    const normalizedOriginalTitle = ensureMdSuffix(originalTitle)
+    const normalizedNewTitle = this._addMdSuffix(rawNewTitle)
+    const normalizedOriginalTitle = this._addMdSuffix(originalTitle)
     const titleChanged = normalizedNewTitle !== normalizedOriginalTitle
 
     if (!titleChanged && newUrl === originalUrl && newDescription === originalDescription) {
@@ -346,7 +330,7 @@
           const tags = Array.isArray(session.tags) ? session.tags : []
           let currentPath = ''
           tags.forEach((folderName) => {
-            const folder = normalizeFolders ? normalizeNameSpaces(folderName) : String(folderName ?? '').trim()
+            const folder = normalizeFolders ? this._normalizeNameSpaces(folderName) : String(folderName ?? '').trim()
             if (!folder || folder.toLowerCase() === 'default') return
             currentPath = currentPath ? `${currentPath}/${folder}` : folder
           })
@@ -508,7 +492,7 @@
 
     try {
       const session = this.sessions[sessionId]
-      const title = stripMdSuffix(session?.title || '')
+      const title = this._stripMdSuffix(session?.title || '')
       const url = session?.url || ''
       const pageContent = session?.pageContent ? String(session.pageContent || '').trim() : ''
       const messages = Array.isArray(session?.messages) ? session.messages : []

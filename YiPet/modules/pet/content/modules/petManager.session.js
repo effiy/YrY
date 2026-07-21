@@ -15,11 +15,6 @@
   }
 
   const proto = window.PetManager.prototype
-  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, Math.max(0, Number(ms) || 0)))
-  const normalizeNameSpaces = (value) =>
-    String(value ?? '')
-      .trim()
-      .replace(/\s+/g, '_')
 
   console.log('[PetManager] Session compatibility layer loaded')
 
@@ -260,7 +255,7 @@
       })
       pageInfo = {
         url: session.url || window.location.href,
-        title: normalizeNameSpaces(session.title || document.title || '未命名页面'),
+        title: this._normalizeNameSpaces(session.title || document.title || '未命名页面'),
         description: session.pageDescription || '',
         content: session.pageContent || '',
       }
@@ -315,13 +310,13 @@
 
     if (isPageLoaded) {
       console.log('页面已加载完成，等待1秒后初始化会话')
-      await sleep(1000)
+      await this._sleep(1000)
       await this.initSession()
     } else {
       console.log('等待页面加载完成，然后延迟1秒后初始化会话')
       const handleLoad = async () => {
         window.removeEventListener('load', handleLoad)
-        await sleep(1000)
+        await this._sleep(1000)
         await this.initSession()
       }
       window.addEventListener('load', handleLoad)
@@ -526,12 +521,12 @@
     const tags = Array.isArray(session.tags) ? session.tags : []
     let currentPath = ''
     tags.forEach((folderName) => {
-      const folder = normalizeNameSpaces(folderName)
+      const folder = this._normalizeNameSpaces(folderName)
       if (!folder || folder.toLowerCase() === 'default') return
       currentPath = currentPath ? `${currentPath}/${folder}` : folder
     })
 
-    let fileName = normalizeNameSpaces(session.title || 'Untitled')
+    let fileName = this._normalizeNameSpaces(session.title || 'Untitled')
     fileName = String(fileName).replace(/\//g, '-')
     let cleanPath = currentPath ? `${currentPath}/${fileName}` : fileName
     cleanPath = cleanPath.replace(/\\/g, '/').replace(/^\/+/, '')
@@ -611,12 +606,12 @@
     const tags = Array.isArray(session.tags) ? session.tags : []
     let currentPath = ''
     tags.forEach((folderName) => {
-      const folder = normalizeNameSpaces(folderName)
+      const folder = this._normalizeNameSpaces(folderName)
       if (!folder || folder.toLowerCase() === 'default') return
       currentPath = currentPath ? `${currentPath}/${folder}` : folder
     })
 
-    let fileName = normalizeNameSpaces(session.title || 'Untitled')
+    let fileName = this._normalizeNameSpaces(session.title || 'Untitled')
     fileName = String(fileName).replace(/\//g, '-')
     let cleanPath = currentPath ? `${currentPath}/${fileName}` : fileName
     cleanPath = cleanPath.replace(/\\/g, '/').replace(/^\/+/, '')
@@ -698,12 +693,12 @@
     const tags = Array.isArray(session.tags) ? session.tags : []
     let currentPath = ''
     tags.forEach((folderName) => {
-      const folder = normalizeNameSpaces(folderName)
+      const folder = this._normalizeNameSpaces(folderName)
       if (!folder || folder.toLowerCase() === 'default') return
       currentPath = currentPath ? `${currentPath}/${folder}` : folder
     })
 
-    let fileName = normalizeNameSpaces(session.title || 'Untitled')
+    let fileName = this._normalizeNameSpaces(session.title || 'Untitled')
     fileName = String(fileName).replace(/\//g, '-')
     let cleanPath = currentPath ? `${currentPath}/${fileName}` : fileName
     cleanPath = cleanPath.replace(/\\/g, '/').replace(/^\/+/, '')

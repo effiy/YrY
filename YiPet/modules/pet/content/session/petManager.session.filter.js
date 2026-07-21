@@ -9,11 +9,6 @@
   }
 
   const proto = window.PetManager.prototype
-  // eslint-disable-next-line no-unused-vars -- normalizeNameSpaces available for other session modules via IIFE scope
-  const normalizeNameSpaces = (value) =>
-    String(value ?? '')
-      .trim()
-      .replace(/\s+/g, '_')
 
   proto._getSessionsFromLocal = function () {
     if (!this.sessions) {

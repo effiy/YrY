@@ -1005,6 +1005,31 @@
 
       // 媒体处理功能已迁移至 petManager.media.js
 
+      // ── 共享工具方法（消除代码重复） ──
+
+      /** 确保文件名以 .md 结尾 */
+      _addMdSuffix (str) {
+        if (!str || !String(str).trim()) return str
+        const s = String(str).trim()
+        return s.endsWith('.md') ? s : `${s}.md`
+      }
+
+      /** 去除 .md 后缀 */
+      _stripMdSuffix (str) {
+        const s = String(str || '').trim()
+        return s.toLowerCase().endsWith('.md') ? s.slice(0, -3) : s
+      }
+
+      /** 异步延迟 */
+      _sleep (ms) {
+        return new Promise((resolve) => setTimeout(resolve, Math.max(0, Number(ms) || 0)))
+      }
+
+      /** 规范化空格：将连续空白替换为下划线 */
+      _normalizeNameSpaces (value) {
+        return String(value ?? '').trim().replace(/\s+/g, '_')
+      }
+
       // 获取当前时间
       // 获取页面图标URL（辅助方法）
       getPageIconUrl () {

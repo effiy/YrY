@@ -1316,13 +1316,7 @@
 
           // 构建要发送到后端的会话数据（不包含 key）
           // 优先使用当前页面 URL，如果没有则使用会话数据中的 URL
-          const addMdSuffix = (str) => {
-            if (!str || !String(str).trim()) return str
-            const s = String(str).trim()
-            return s.endsWith('.md') ? s : `${s}.md`
-          }
-
-          const title = addMdSuffix(sessionData.title || '新会话')
+          const title = this._addMdSuffix(sessionData.title || '新会话')
 
           const sessionDataToSave = {
             // 不包含 key 字段，让后端生成
@@ -1339,76 +1333,49 @@
 
           // 如果启用了后端同步，调用后端 API 创建会话
           if (this.sessionApi && this.sessionApi.isEnabled()) {
-            // 调用后端 create_document API（不提供 key，让后端生成）
-            const payload = {
-              module_name: 'services.database.data_service',
-              method_name: 'create_document',
-              parameters: {
-                cname: 'sessions',
-                data: sessionDataToSave
+            const createResult = await this.sessionApi.createSession(sessionDataToSave)
+
+            if (createResult?.success && createResult?.key) {
+              const sessionKey = createResult.key
+              sessionDataToSave.key = sessionKey
+
+              const newSession = {
+                ...sessionDataToSave,
+                key: sessionKey
               }
-            }
 
-            const url = `${this.sessionApi.baseUrl}/`
-            const response = await this.sessionApi._request(url, {
-              method: 'POST',
-              body: JSON.stringify(payload)
-            })
+              const sessionId = sessionKey
+              this.sessions[sessionId] = newSession
 
-            if (response) {
-              const sessionKey = response.key
-
-              if (sessionKey) {
-                // 使用后端生成的 key 更新会话数据
-                sessionDataToSave.key = sessionKey
-
-                // 创建完整的会话对象
-                const newSession = {
-                  ...sessionDataToSave,
-                  key: sessionKey
-                }
-
-                // 使用 key 作为 sessionId 存储到本地
-                const sessionId = sessionKey
-                this.sessions[sessionId] = newSession
-
-                // 调用 write-file 接口写入页面上下文（参考 YiWeb 的 handleSessionCreate）
-                // 即使页面内容为空，也需要创建文件
-                if (typeof this.writeSessionPageContent === 'function') {
-                  await this.writeSessionPageContent(sessionId)
-                }
-
-                // 保存到本地存储
-                if (typeof this.saveSession === 'function') {
-                  await this.saveSession(sessionId)
-                }
-
-                // 自动选中新创建的会话
-                if (typeof this.activateSession === 'function') {
-                  await this.activateSession(sessionId, {
-                    saveCurrent: false,
-                    updateConsistency: true,
-                    updateUI: true
-                  })
-                }
-
-                // 注意：滚动到会话项位置应该在侧边栏更新完成后进行
-                // 这里不立即滚动，由 openChatWindow 在 updateSessionSidebar 后统一处理
-                // 但如果侧边栏已经存在，也可以立即滚动
-                if (this.sessionSidebar && typeof this.scrollToSessionItem === 'function') {
-                  // 等待侧边栏更新完成
-                  await new Promise(resolve => setTimeout(resolve, 100))
-                  await this.scrollToSessionItem(sessionId)
-                }
-
-                console.log('[handleUrlBasedSession] 已通过后端创建新会话，Key:', sessionKey, 'URL:', currentUrl)
-                return sessionId
-              } else {
-                console.error('[handleUrlBasedSession] 无法从后端响应中提取 key:', response)
-                throw new Error('后端创建会话成功，但未返回 key')
+              // 调用 write-file 接口写入页面上下文
+              if (typeof this.writeSessionPageContent === 'function') {
+                await this.writeSessionPageContent(sessionId)
               }
+
+              // 保存到本地存储
+              if (typeof this.saveSession === 'function') {
+                await this.saveSession(sessionId)
+              }
+
+              // 自动选中新创建的会话
+              if (typeof this.activateSession === 'function') {
+                await this.activateSession(sessionId, {
+                  saveCurrent: false,
+                  updateConsistency: true,
+                  updateUI: true
+                })
+              }
+
+              if (this.sessionSidebar && typeof this.scrollToSessionItem === 'function') {
+                await new Promise(resolve => setTimeout(resolve, 100))
+                await this.scrollToSessionItem(sessionId)
+              }
+
+              console.log('[handleUrlBasedSession] 已通过后端创建新会话，Key:', sessionKey, 'URL:', currentUrl)
+              return sessionId
             } else {
-              throw new Error('后端创建会话失败')
+              console.error('[handleUrlBasedSession] 创建会话失败，结果:', createResult)
+              throw new Error('后端创建会话失败：未返回 key')
             }
           } else {
             // 如果未启用后端同步，使用本地方式创建（生成临时 key）

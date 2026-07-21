@@ -9,14 +9,6 @@
 
   // eslint-disable-next-line no-unused-vars -- EDITOR_PREVIEW_DEBOUNCE may be used by other modules via proto
   const EDITOR_PREVIEW_DEBOUNCE = 150
-  const MERMAID_RENDER_DEBOUNCE = 150
-  const MIN_CONTEXT_LENGTH = 50
-  const AD_LINE_MIN_LENGTH = 180
-
-  const normalizeNameSpaces = (value) =>
-    String(value ?? '')
-      .trim()
-      .replace(/\s+/g, '_')
   // eslint-disable-next-line no-unused-vars -- sanitizePathSegment defined as utility, may be exported via proto
   const sanitizePathSegment = (value) => {
     const s = String(value ?? '')
@@ -910,13 +902,8 @@
       if (this.currentSessionId && this.sessions[this.currentSessionId]) {
         const session = this.sessions[this.currentSessionId]
         session.pageContent = pageContent
-        const documentTitle = normalizeNameSpaces(document.title || '当前页面')
+        const documentTitle = this._normalizeNameSpaces(document.title || '当前页面')
         const currentTitle = session.title || ''
-        const ensureMdSuffix = (str) => {
-          if (!str || !String(str).trim()) return ''
-          const s = String(str).trim()
-          return s.endsWith('.md') ? s : `${s}.md`
-        }
         const isDefaultTitle =
           !currentTitle ||
           currentTitle.trim() === '' ||
@@ -925,7 +912,7 @@
           currentTitle === '未命名页面' ||
           currentTitle === '当前页面'
         if (isDefaultTitle) {
-          session.title = ensureMdSuffix(documentTitle)
+          session.title = this._addMdSuffix(documentTitle)
         }
         session.updatedAt = Date.now()
         session.lastAccessTime = Date.now()
@@ -965,13 +952,9 @@
       session.lastAccessTime = Date.now()
 
       if (!session.title || session.title === '当前页面') {
-        const documentTitle = normalizeNameSpaces(document.title || '当前页面')
-        const ensureMdSuffix = (str) => {
-          if (!str || !String(str).trim()) return ''
-          const s = String(str).trim()
-          return s.endsWith('.md') ? s : `${s}.md`
-        }
-        session.title = ensureMdSuffix(documentTitle)
+        const documentTitle = this._normalizeNameSpaces(document.title || '当前页面')
+        session.title = this._addMdSuffix(documentTitle) ||
+          this._addMdSuffix(this._normalizeNameSpaces(document.title || '当前页面')) || '未命名页面.md'
       }
 
       await this.saveAllSessions(true, true)
@@ -1029,7 +1012,7 @@
       session.pageContent = pageContent || ''
 
       const pageInfo = this.getPageInfo()
-      const currentPageTitle = normalizeNameSpaces(pageInfo.title || document.title || '当前页面')
+      const currentPageTitle = this._normalizeNameSpaces(pageInfo.title || document.title || '当前页面')
       const sessionTitle = session.title || ''
       const isDefaultTitle =
         !sessionTitle ||
@@ -1039,12 +1022,7 @@
         sessionTitle === '未命名页面' ||
         sessionTitle === '当前页面'
 
-      const ensureMdSuffix = (str) => {
-        if (!str || !String(str).trim()) return ''
-        const s = String(str).trim()
-        return s.endsWith('.md') ? s : `${s}.md`
-      }
-      session.title = isDefaultTitle ? ensureMdSuffix(currentPageTitle) : sessionTitle
+      session.title = isDefaultTitle ? this._addMdSuffix(currentPageTitle) : sessionTitle
       session.pageDescription = pageInfo.description || session.pageDescription || ''
       session.url = pageInfo.url || session.url || window.location.href
 

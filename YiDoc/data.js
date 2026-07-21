@@ -12,9 +12,9 @@
 window.HELP_CONFIG = {
   titleIcon:     "📚",
   title:         "YiDoc · YrY 项目文档中枢",
-  tagline:       "6 个项目的 rui-init 流水线报告 · 68+ 架构 & 自检场景 · detect → explore → generate → arch → verify · 统一仪表盘",
+  tagline:       "6 个项目的 rui-init 流水线报告 · 68+ 架构 & 自检场景 · detect → explore → generate → arch → verify · 统一仪表盘 · 代码已重构消除冗余",
   backTopLabel:  "Back to Top",
-  footerNote:    "由 rui-init 流水线自动生成 · detect → explore → generate → arch → verify",
+  footerNote:    "由 rui-init 流水线自动生成 · detect → explore → generate → arch → verify · YiPet API 已修复对齐 YiAi 后端",
 
   // 面包屑导航栏
   breadcrumb: [
@@ -287,7 +287,7 @@ window.HELP_CONFIG = {
               icon:        "🐾",
               title:       "YiPet · AI Chrome Extension",
               badge:       "12 scenes",
-              description: "温柔陪伴助手 · <strong>Manifest V3</strong> · IIFE 模块化 · 26 CDN 组件 · 49 第三方库 · 275 源文件 · Markdown + Mermaid 渲染",
+              description: "温柔陪伴助手 · <strong>Manifest V3</strong> · IIFE 模块化 · 26 CDN 组件 · 49 第三方库 · 275 源文件 · Markdown + Mermaid 渲染 · API 已修复 · 共享原型工具方法",
               sceneLinks: [
                 { label: "1. Module Location",         href: "projects/YiPet/arch/scene-1-module-location/index.md" },
                 { label: "2. Data Flow Tracing",        href: "projects/YiPet/arch/scene-2-data-flow-tracing/index.md" },

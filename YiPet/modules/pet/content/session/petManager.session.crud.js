@@ -9,12 +9,6 @@
   }
 
   const proto = window.PetManager.prototype
-  // eslint-disable-next-line no-unused-vars -- sleep utility may be used by other session modules
-  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, Math.max(0, Number(ms) || 0)))
-  const normalizeNameSpaces = (value) =>
-    String(value ?? '')
-      .trim()
-      .replace(/\s+/g, '_')
 
   // ========== 会话初始化与核心流程 ==========
 
@@ -165,14 +159,14 @@
                 existingSession.pageContent = fullSession.pageContent
               }
               const title = fullSession.title || existingSession.title
-              existingSession.title = normalizeNameSpaces(title)
+              existingSession.title = this._normalizeNameSpaces(title)
               if (!preserveOrder) {
                 existingSession.updatedAt = fullSession.updatedAt || existingSession.updatedAt
                 existingSession.createdAt = fullSession.createdAt || existingSession.createdAt
                 existingSession.lastAccessTime = fullSession.lastAccessTime || existingSession.lastAccessTime
               }
             } else {
-              const title = normalizeNameSpaces(fullSession.title || '')
+              const title = this._normalizeNameSpaces(fullSession.title || '')
               if (!fullSession.key) {
                 fullSession.key = this._generateUUID()
               }
@@ -236,18 +230,13 @@
     const messages = existingSession?.messages || []
     const createdAt = existingSession?.createdAt || now
     const lastAccessTime = now
-    const rawTitle = normalizeNameSpaces(pageInfo.title || '')
+    const rawTitle = this._normalizeNameSpaces(pageInfo.title || '')
     let title = rawTitle || '新会话'
     const tags = existingSession?.tags ? [...existingSession.tags] : []
 
     if (!existingSession) {
-      const addMdSuffix = (str) => {
-        if (!str || !str.trim()) return str
-        return str.trim().endsWith('.md') ? str.trim() : `${str.trim()}.md`
-      }
-
       if (rawTitle) {
-        title = addMdSuffix(rawTitle)
+        title = this._addMdSuffix(rawTitle)
       } else {
         title = '新会话.md'
       }
@@ -276,7 +265,7 @@
 
     return {
       url: pageInfo.url,
-      title: normalizeNameSpaces(title),
+      title: this._normalizeNameSpaces(title),
       pageDescription: pageInfo.description || '',
       pageContent: pageInfo.content || '',
       messages,
@@ -327,9 +316,9 @@
       updated = true
     }
 
-    const currentPageTitle = normalizeNameSpaces(pageInfo.title || '')
+    const currentPageTitle = this._normalizeNameSpaces(pageInfo.title || '')
     let sessionTitle = session.title || ''
-    const normalizedSessionTitle = sessionTitle ? normalizeNameSpaces(sessionTitle) : ''
+    const normalizedSessionTitle = sessionTitle ? this._normalizeNameSpaces(sessionTitle) : ''
     if (sessionTitle && normalizedSessionTitle && normalizedSessionTitle !== sessionTitle) {
       session.title = normalizedSessionTitle
       sessionTitle = normalizedSessionTitle
@@ -344,15 +333,10 @@
       sessionTitle === '当前页面' ||
       sessionTitle === '新会话.md'
 
-    const addMdSuffix = (str) => {
-      if (!str || !str.trim()) return str
-      return str.trim().endsWith('.md') ? str.trim() : `${str.trim()}.md`
-    }
-
-    const nextTitle = currentPageTitle ? addMdSuffix(currentPageTitle) : ''
+    const nextTitle = currentPageTitle ? this._addMdSuffix(currentPageTitle) : ''
 
     if (isDefaultTitle && nextTitle && nextTitle !== sessionTitle) {
-      session.title = normalizeNameSpaces(nextTitle)
+      session.title = this._normalizeNameSpaces(nextTitle)
       updated = true
     }
 
@@ -576,34 +560,10 @@
       if (this.sessionApi) {
         if (immediate) {
           const result = await this.sessionApi.saveSession(sessionData)
-          if (result?.data?.session) {
-            const updatedSession = result.data.session
-            if (this.sessions[sessionId]) {
-              const localSession = this.sessions[sessionId]
-              this.sessions[sessionId] = {
-                ...updatedSession,
-                messages:
-                  localSession.messages?.length > updatedSession.messages?.length
-                    ? localSession.messages
-                    : updatedSession.messages,
-                pageContent:
-                  localSession.pageContent && localSession.pageContent.trim() !== ''
-                    ? localSession.pageContent
-                    : updatedSession.pageContent || localSession.pageContent || '',
-                isFavorite:
-                  localSession.isFavorite !== undefined
-                    ? !!localSession.isFavorite
-                    : updatedSession.isFavorite !== undefined
-                      ? !!updatedSession.isFavorite
-                      : false,
-              }
-              if (!this.sessions[sessionId].title) {
-                this.sessions[sessionId].title = updatedSession.title || localSession.title || '新会话'
-              }
-            }
+          if (result?.success) {
+            this.lastSessionListLoadTime = 0
+            console.log(`会话 ${sessionId} 已立即同步到后端 (key: ${result.key})`)
           }
-          this.lastSessionListLoadTime = 0
-          console.log(`会话 ${sessionId} 已立即同步到后端`)
         } else {
           this.sessionApi.queueSave(sessionData)
           console.log(`会话 ${sessionId} 已加入保存队列`)
@@ -751,12 +711,7 @@
 
     let sessionTitle = title.trim()
 
-    const addMdSuffix = (str) => {
-      if (!str || !str.trim()) return str
-      return str.trim().endsWith('.md') ? str.trim() : `${str.trim()}.md`
-    }
-
-    sessionTitle = addMdSuffix(sessionTitle)
+    sessionTitle = this._addMdSuffix(sessionTitle)
     await this.loadAllSessions()
 
     const timestamp = Date.now()
@@ -786,19 +741,7 @@
               ? await this.sessionApi.createSession(sessionDataForCreate)
               : null
           createdSessionKey =
-            result?.data?.key ||
-            result?.data?._id ||
-            result?.data?.id ||
-            result?.data?.session?.key ||
-            result?.data?.session?._id ||
-            result?.data?.session?.id ||
-            result?.data?.document?.key ||
-            result?.data?.document?._id ||
-            result?.data?.document?.id ||
-            result?.key ||
-            result?._id ||
-            result?.id ||
-            null
+            result?.key || null
           if (!createdSessionKey) {
             throw new Error('后端未返回会话 key')
           }

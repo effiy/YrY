@@ -78,6 +78,7 @@
 
     /**
      * 创建会话
+     * @returns {{ success: boolean, key: string | null }}
      */
     async createSession(sessionData) {
       if (!sessionData || typeof sessionData !== 'object') {
@@ -99,12 +100,13 @@
 
       return {
         success: true,
-        data: result,
+        key: result?.key || null,
       }
     }
 
     /**
      * 保存会话（立即保存）
+     * @returns {{ success: boolean, key: string | null }}
      */
     async saveSession(sessionData) {
       if (!sessionData || !sessionData.key) {
@@ -119,9 +121,7 @@
         // 检查会话是否存在
         const existingSession = await this.getSession(sessionKey)
 
-        let result
         if (existingSession) {
-          // 更新会话
           const payload = {
             module_name: 'services.database.data_service',
             method_name: 'update_document',
@@ -132,11 +132,10 @@
             },
           }
 
-          result = await this.post('/', payload)
+          await this.post('/', payload)
           this.logger.info(`更新会话 (Key: ${sessionKey})`)
         } else {
-          // 创建新会话
-          result = await this.createSession(normalized)
+          await this.createSession(normalized)
           this.logger.info(`创建会话 (Key: ${sessionKey})`)
         }
 
@@ -144,7 +143,7 @@
 
         return {
           success: true,
-          data: result,
+          key: sessionKey,
         }
       } catch (error) {
         this.logger.error('保存会话失败:', error.message)
@@ -239,6 +238,7 @@
 
     /**
      * 删除会话
+     * @returns {{ success: boolean, key: string | null }}
      */
     async deleteSession(sessionKey) {
       if (!sessionKey) {
@@ -255,11 +255,11 @@
           },
         }
 
-        const result = await this.post('/', payload)
+        await this.post('/', payload)
 
         return {
           success: true,
-          data: result,
+          key: sessionKey,
         }
       } catch (error) {
         this.logger.error('删除会话失败:', error.message)

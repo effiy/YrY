@@ -65,12 +65,6 @@
 
   // 解析markdown内容，提取页面信息和聊天记录
   proto._parseMarkdownContent = function (markdownContent) {
-    const ensureMdSuffix = (str) => {
-      if (!str || !String(str).trim()) return ''
-      const s = String(str).trim()
-      return s.endsWith('.md') ? s : `${s}.md`
-    }
-
     const result = {
       title: '',
       url: '',
@@ -96,7 +90,7 @@
     // 提取标题（第一行的 # 标题）
     const titleMatch = pageInfoContent.match(/^#\s+(.+?)$/m)
     if (titleMatch) {
-      result.title = ensureMdSuffix(titleMatch[1].trim().replace(/\s+/g, '_'))
+      result.title = this._addMdSuffix(titleMatch[1].trim().replace(/\s+/g, '_'))
     }
 
     // 提取创建时间

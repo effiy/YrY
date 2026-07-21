@@ -14,14 +14,6 @@
     : console
 
   const DEFAULT_SYSTEM_PROMPT = '你是一个俏皮活泼、古灵精怪的小女友，聪明有趣，时而调侃时而贴心。语气活泼可爱，会开小玩笑，但也会关心用户。'
-
-  // 工具函数
-  const normalizeNameSpaces = (value) => String(value ?? '').trim().replace(/\s+/g, '_')
-  const ensureMdSuffix = (str) => {
-    if (!str || !String(str).trim()) return ''
-    const s = String(str).trim()
-    return s.endsWith('.md') ? s : `${s}.md`
-  }
   const isDefaultSessionTitle = (title) => {
     const currentTitle = String(title ?? '')
     return !currentTitle ||
@@ -265,7 +257,7 @@
       }
 
       let fullPageMarkdown = ''
-      let contextTitle = normalizeNameSpaces(document.title || '当前页面')
+      let contextTitle = this._normalizeNameSpaces(document.title || '当前页面')
 
       if (this.currentSessionId && this.sessions && this.sessions[this.currentSessionId]) {
         const session = this.sessions[this.currentSessionId]
@@ -280,12 +272,12 @@
         } else if (!isBlankSession) {
           if (this.getPageContentAsMarkdown) {
             fullPageMarkdown = this.getPageContentAsMarkdown()
-            contextTitle = normalizeNameSpaces(document.title || '当前页面')
+            contextTitle = this._normalizeNameSpaces(document.title || '当前页面')
             session.pageContent = fullPageMarkdown
           }
           const currentTitle = session.title || ''
           if (isDefaultSessionTitle(currentTitle)) {
-            session.title = ensureMdSuffix(normalizeNameSpaces(contextTitle))
+            session.title = this._addMdSuffix(this._normalizeNameSpaces(contextTitle))
           }
         } else {
           fullPageMarkdown = ''
@@ -463,7 +455,7 @@
       }
 
       let fullPageMarkdown = ''
-      let contextTitle = normalizeNameSpaces(document.title || '当前页面')
+      let contextTitle = this._normalizeNameSpaces(document.title || '当前页面')
 
       if (this.currentSessionId && this.sessions && this.sessions[this.currentSessionId]) {
         const session = this.sessions[this.currentSessionId]
@@ -478,12 +470,12 @@
         } else if (!isBlankSession) {
           if (this.getPageContentAsMarkdown) {
             fullPageMarkdown = this.getPageContentAsMarkdown()
-            contextTitle = normalizeNameSpaces(document.title || '当前页面')
+            contextTitle = this._normalizeNameSpaces(document.title || '当前页面')
             session.pageContent = fullPageMarkdown
           }
           const currentTitle = session.title || ''
           if (isDefaultSessionTitle(currentTitle)) {
-            session.title = ensureMdSuffix(normalizeNameSpaces(contextTitle))
+            session.title = this._addMdSuffix(this._normalizeNameSpaces(contextTitle))
           }
         } else {
           fullPageMarkdown = ''
