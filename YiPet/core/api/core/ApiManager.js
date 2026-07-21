@@ -17,7 +17,7 @@
       })
 
       // 错误处理器
-      this.errorHandler = new ErrorHandler(options.errorHandler)
+      this.errorHandler = new ApiErrorHandler(options.errorHandler)
 
       // 日志器
       this.logger = new Logger(options.logger || {})

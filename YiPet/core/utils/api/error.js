@@ -55,7 +55,7 @@
   /**
  * 错误处理器
  */
-  class ErrorHandler {
+  class ApiErrorHandler {
     constructor (options = {}) {
       this.options = {
         maxRetries: options.maxRetries || 3,
@@ -345,7 +345,7 @@
   root.AuthError = AuthError
   root.ValidationError = ValidationError
   root.RateLimitError = RateLimitError
-  root.ErrorHandler = ErrorHandler
+  root.ApiErrorHandler = ApiErrorHandler
 
   function createError (message, code = 'UNKNOWN_ERROR', details = null) {
     return new APIError(message, code, details)
