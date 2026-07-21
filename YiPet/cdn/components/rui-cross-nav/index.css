@@ -1,0 +1,62 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   rui HTML CDN — ruiCrossNav · Vue 3 cross-navigation component styles
+
+   Template structure (from index.html, <script type="text/x-template" id="rui-cross-nav-tpl">):
+     <nav class="rui-cross-nav" :aria-label="ariaLabel">
+       <span class="rui-cross-nav-sep">{{ separator }}</span>
+       <a class="rui-cross-nav-link" :href="...">📋 Checklist</a>
+       <span class="rui-cross-nav-link is-active" aria-current="page">📐 Architecture</span>
+     </nav>
+
+   This file is auto-injected as a <link> by index.js; host pages do not
+   need to include it manually.
+
+   Depends on design tokens (from rui-html-cdn/theme/*.css or the page :root):
+     --rui-cyan / --rui-accent / --rui-text-muted / --rui-ease-out
+
+   All colors carry fallbacks so the page still renders correctly even
+   without a loaded theme.
+   Opacity is implemented via color-mix(in srgb, ..., transparent N%),
+   so no paired --rui-*-rgb variables are required.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.rui-cross-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 24px;
+}
+
+.rui-cross-nav-link {
+  color: var(--rui-cyan, #22d3ee);
+  text-decoration: none;
+  font-size: .74rem;
+  padding: 3px 10px;
+  border-radius: 4px;
+  transition: color .15s var(--rui-ease-out, ease),
+              background .15s var(--rui-ease-out, ease);
+}
+
+.rui-cross-nav-link:hover {
+  color: var(--rui-accent, #ffc107);
+  background: color-mix(in srgb, var(--rui-accent, #ffc107) 6%, transparent);
+  text-decoration: underline;
+}
+
+/* Focus-visible: apply .rui-focus-ring on the element */
+
+.rui-cross-nav-link.is-active {
+  color: var(--rui-accent, #ffc107);
+  font-weight: 600;
+  cursor: default;
+}
+
+.rui-cross-nav-sep {
+  color: var(--rui-text-muted, #888);
+  font-size: .5rem;
+  opacity: .35;
+  -webkit-user-select: none;
+  user-select: none;
+}

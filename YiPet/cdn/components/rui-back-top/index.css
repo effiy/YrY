@@ -1,0 +1,96 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   rui HTML CDN — ruiBackTop · Vue 3 back-to-top button styles
+
+   Template structure (from index.html, <script type="text/x-template" id="rui-back-top-tpl">):
+     <button class="rui-back-top-btn" :class="{ 'is-visible': visible }">
+       {{ icon }}
+     </button>
+
+   Naming convention: all class names use the `rui-back-top-` prefix, consistent
+             with the scene-card `rui-scene-card-*` / breadcrumb `breadcrumb` /
+             toast `rui-toast-*` series.
+
+   Depends on design tokens (from rui-html-cdn/theme/*.css or the page :root):
+     --rui-bg-card / --rui-bg-raised
+     --rui-text / --rui-text-soft / --rui-accent
+     --rui-border / --rui-shadow / --rui-ease-out
+     --rui-radius-full
+
+   All colors carry fallbacks so the page still renders correctly even without
+   a loaded theme.
+   Opacity is uniformly implemented via color-mix(in srgb, ..., transparent N%),
+   so there is no need to maintain paired --rui-*-rgb variables.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.rui-back-top-btn {
+  position: fixed;
+  right:   var(--rui-back-top-right,  28px);
+  bottom:  var(--rui-back-top-bottom, 28px);
+  z-index: var(--rui-back-top-z,      100);
+  width:   var(--rui-back-top-size,   42px);
+  height:  var(--rui-back-top-size,   42px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border:  1px solid var(--rui-border, rgba(255, 255, 255, .08));
+  border-radius: var(--rui-radius-full, 9999px);
+  background: var(--rui-bg-raised, rgba(42, 42, 56, 1));
+  color: var(--rui-text-soft, #d4d4d4);
+  font-size: 1.05rem;
+  line-height: 1;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: var(--rui-shadow, 0 4px 20px rgba(0, 0, 0, .30));
+
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(6px);
+  transition:
+    opacity .2s var(--rui-ease-out, ease),
+    transform .2s var(--rui-ease-out, ease),
+    border-color .15s var(--rui-ease-out, ease),
+    color .15s var(--rui-ease-out, ease),
+    background .15s var(--rui-ease-out, ease);
+}
+
+/* ── visible state: smooth lift + show ───────────────────────────────────── */
+.rui-back-top-btn.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* ── hover / focus: border and icon turn into the accent color ────────────────────────────── */
+.rui-back-top-btn:hover {
+  border-color: var(--rui-accent, #ffc107);
+  color: var(--rui-accent, #ffc107);
+  background: color-mix(in srgb, var(--rui-accent, #ffc107) 8%, var(--rui-bg-raised, rgba(42, 42, 56, 1)));
+}
+
+/* Focus-visible: apply .rui-focus-ring on the element */
+
+.rui-back-top-btn:active {
+  transform: translateY(0) scale(.94);
+}
+
+
+/* ── User preference: reduced motion ────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .rui-back-top-btn {
+    transition: opacity .1s linear, border-color .1s linear, color .1s linear;
+    transform: none;
+  }
+  .rui-back-top-btn.is-visible { transform: none; }
+}
+
+/* ── Mobile: slightly more compact ─────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .rui-back-top-btn {
+    right:  16px;
+    bottom: 16px;
+    width:  38px;
+    height: 38px;
+    font-size: .96rem;
+  }
+}

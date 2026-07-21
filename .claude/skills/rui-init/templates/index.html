@@ -45,9 +45,9 @@
     window. data-namespace tags the console logs so it is clear which
     page is loading. data-vue-path / data-vue-fallback override the
     auto-derived CDN URLs; both are empty here so the loader auto-derives
-    them from /.claude/shared/vendor/vue@3.4.27/ and /shared/vendor/vue@3/.
+    them from /YiPet/cdn/ and /YiPet/libs/.
   -->
-  <script src="/.claude/shared/loader.js" data-namespace="rui-init"></script>
+  <script src="/YiPet/cdn/loader.js" data-namespace="rui-init"></script>
 
   <!--
     rui HTML CDN shared components. Load order matters:
@@ -57,12 +57,12 @@
         are leaf components and can be loaded in any order after the
         shared loader.
   -->
-  <script src="/.claude/shared/components/rui-breadcrumb/index.js"></script>
-  <script src="/.claude/shared/components/rui-stats-grid/index.js"></script>
-  <script src="/.claude/shared/components/rui-tag-chip/index.js"></script>
-  <script src="/.claude/shared/components/rui-scene-card/index.js"></script>
-  <script src="/.claude/shared/components/rui-panel-hub/index.js"></script>
-  <script src="/.claude/shared/components/rui-back-top/index.js"></script>
+  <script src="/YiPet/cdn/components/rui-breadcrumb/index.js"></script>
+  <script src="/YiPet/cdn/components/rui-stats-grid/index.js"></script>
+  <script src="/YiPet/cdn/components/rui-tag-chip/index.js"></script>
+  <script src="/YiPet/cdn/components/rui-scene-card/index.js"></script>
+  <script src="/YiPet/cdn/components/rui-panel-hub/index.js"></script>
+  <script src="/YiPet/cdn/components/rui-back-top/index.js"></script>
 </head>
 <body class="rui-doc dashboard-page">
   <!-- Reading-progress: 2px fixed top bar, width driven by index.js. -->

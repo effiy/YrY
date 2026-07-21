@@ -1,0 +1,63 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   rui HTML CDN — ruiTagChip · Vue 3 tag-chip component styles
+
+   Aligns with the static structure of <span class="tag-chip {modifier}"> in docs/index.html:
+     <span class="tag-chip accent">self-built</span>
+     <span class="tag-chip info">jsDelivr CDN</span>
+     <span class="tag-chip cyan v3.2.x">v3.2.x</span>
+     ...
+
+   Supported modifiers (consistent with the .rui-tag-chip.* selectors in
+   cdn/rui-home/index.css / rui-scene.css):
+     - accent : theme yellow (emphasis)
+     - info   : gray (information)
+     - cyan   : cyan (link/version)
+     - green  : green (pass/healthy)
+     - purple : purple (role/notification)
+     - red    : red (abnormal)
+     - warn   : orange (warning)
+     - blue   : blue
+
+   Depends on design tokens (from rui-html-cdn/theme/index.css or the page :root):
+     --rui-accent / --rui-cyan / --rui-pass / --rui-warn / --rui-info / --rui-purple
+     --rui-bg-flat / --rui-text / --rui-text-soft
+
+   All colors carry fallbacks so the page still renders correctly even without
+   a loaded theme.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.rui-tag-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: .68rem;
+  font-weight: 600;
+  letter-spacing: .02em;
+  line-height: 1.4;
+  background: rgba(255,255,255,.06);
+  color: var(--rui-text, var(--rui-gray-pale));
+  border: 1px solid rgba(255,255,255,.08);
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background .15s, color .15s, border-color .15s;
+}
+
+.rui-tag-chip[href] {
+  cursor: pointer;
+  min-height: 24px;
+  line-height: 1.6;
+}
+.rui-tag-chip[href]:hover {
+  background: rgba(255,255,255,.12);
+  text-decoration: none;
+}
+/* Focus-visible: apply .rui-focus-ring on the element */
+
+.rui-tag-chip.accent { background: rgba(var(--rui-accent-rgb),.12); color: var(--rui-accent, var(--rui-amber)); border-color: rgba(var(--rui-accent-rgb),.25); }
+.rui-tag-chip.info   { background: rgba(160,160,164,.10); color: var(--rui-text-soft, var(--rui-gray-soft)); border-color: rgba(160,160,164,.18); }
+.rui-tag-chip.cyan   { background: rgba(var(--rui-cyan-rgb),.10); color: var(--rui-cyan, #22D3EE); border-color: rgba(var(--rui-cyan-rgb),.22); }
+.rui-tag-chip.green  { background: rgba(var(--rui-pass-rgb),.12);   color: var(--rui-pass, #22c55e);   border-color: rgba(var(--rui-pass-rgb),.25); }
+.rui-tag-chip.purple { background: rgba(var(--rui-violet-rgb),.12); color: var(--rui-violet, #8b5cf6); border-color: rgba(var(--rui-violet-rgb),.25); }
+.rui-tag-chip.red    { background: rgba(var(--rui-fail-rgb),.12);   color: var(--rui-fail, #ef4444);   border-color: rgba(var(--rui-fail-rgb),.25); }
+.rui-tag-chip.warn   { background: rgba(var(--rui-warn-rgb),.12);   color: var(--rui-warn, #f59e0b);   border-color: rgba(var(--rui-warn-rgb),.25); }
+.rui-tag-chip.blue   { background: rgba(59,130,246,.12);            color: var(--rui-blue, #3b82f6);   border-color: rgba(59,130,246,.25); }
