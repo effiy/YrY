@@ -1,5 +1,7 @@
 import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
+const STORAGE_KEY = 'yiweb-bg-animation-enabled';
+
 function detectEnvironment() {
   const hostname = window.location.hostname;
   if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.includes('local')) {
@@ -19,7 +21,23 @@ function detectEnvironment() {
   return 'prod';
 }
 
-registerGlobalComponent({
+function readStored() {
+  try {
+    return localStorage.getItem(STORAGE_KEY) === 'true';
+  } catch (_) {
+    return false;
+  }
+}
+
+function applyBodyClass(enabled) {
+  if (enabled) {
+    document.body.classList.add('bg-animation-enabled');
+  } else {
+    document.body.classList.remove('bg-animation-enabled');
+  }
+}
+
+const compDef = {
   name: 'HeaderActions',
   html: '/cdn/components/business/HeaderActions/template.html',
   css: '/cdn/components/business/HeaderActions/index.css',
@@ -30,53 +48,35 @@ registerGlobalComponent({
     showBgAnimationToggle: { type: Boolean, default: true },
   },
   emits: ['clear-cache', 'open-auth'],
-  setup(props, { emit }) {
-    const Vue = window.Vue;
-    if (!Vue) {
-      console.error('[HeaderActions] Vue not available on window');
-      return {};
-    }
-
-    const STORAGE_KEY = 'yiweb-bg-animation-enabled';
-
-    function readStored() {
-      try {
-        const val = localStorage.getItem(STORAGE_KEY);
-        return val === 'true';
-      } catch (_) {
-        return false;
-      }
-    }
-
-    function applyBodyClass(enabled) {
-      if (enabled) {
-        document.body.classList.add('bg-animation-enabled');
-      } else {
-        document.body.classList.remove('bg-animation-enabled');
-      }
-    }
-
-    const bgAnimationEnabled = Vue.ref(readStored());
-    applyBodyClass(bgAnimationEnabled.value);
-
-    const toggleBgAnimation = () => {
-      bgAnimationEnabled.value = !bgAnimationEnabled.value;
-      try {
-        localStorage.setItem(STORAGE_KEY, String(bgAnimationEnabled.value));
-      } catch (_) {}
-      applyBodyClass(bgAnimationEnabled.value);
+  data() {
+    return {
+      bgAnimationEnabled: readStored(),
+      envType: detectEnvironment()
     };
-
-    const envType = Vue.ref(detectEnvironment());
-    const envLabel = Vue.computed(() => envType.value === 'local' ? 'LOCAL' : 'PROD');
-
-    const openAuth = (event) => {
-      emit('open-auth', event);
+  },
+  computed: {
+    envLabel() {
+      return this.envType === 'local' ? 'LOCAL' : 'PROD';
+    }
+  },
+  methods: {
+    toggleBgAnimation() {
+      this.bgAnimationEnabled = !this.bgAnimationEnabled;
+      try {
+        localStorage.setItem(STORAGE_KEY, String(this.bgAnimationEnabled));
+      } catch (_) {}
+      applyBodyClass(this.bgAnimationEnabled);
+    },
+    openAuth(event) {
+      this.$emit('open-auth', event);
       if (typeof window.openAuth === 'function') {
         window.openAuth(event);
       }
-    };
-
-    return { envType, envLabel, bgAnimationEnabled, toggleBgAnimation, openAuth };
+    }
+  },
+  mounted() {
+    applyBodyClass(this.bgAnimationEnabled);
   }
-});
+};
+registerGlobalComponent(compDef);
+export default compDef;

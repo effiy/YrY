@@ -4,7 +4,7 @@
  */
 import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
-registerGlobalComponent({
+const compDef = {
     name: 'YiTag',
     html: '/cdn/components/common/tags/YiTag/template.html',
     css: '/cdn/components/common/tags/YiTag/index.css',
@@ -121,4 +121,6 @@ registerGlobalComponent({
             this.$emit('close', event);
         }
     }
-});
+};
+registerGlobalComponent(compDef);
+export default compDef;

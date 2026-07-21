@@ -1,7 +1,7 @@
 import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 import { getIconClass } from '/cdn/icons/iconMap.js';
 
-registerGlobalComponent({
+const compDef = {
     name: 'YiButton',
     html: '/cdn/components/common/buttons/YiButton/template.html',
     css: '/cdn/components/common/buttons/YiButton/index.css',
@@ -139,4 +139,6 @@ registerGlobalComponent({
             this.$emit('click', event);
         }
     }
-});
+};
+registerGlobalComponent(compDef);
+export default compDef;

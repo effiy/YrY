@@ -1,6 +1,6 @@
 import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
-registerGlobalComponent({
+const compDef = {
     name: 'YiModal',
     html: '/cdn/components/common/modals/YiModal/template.html',
     css: '/cdn/components/common/modals/YiModal/index.css',
@@ -124,4 +124,6 @@ registerGlobalComponent({
             document.body.style.overflow = '';
         }
     }
-});
+};
+registerGlobalComponent(compDef);
+export default compDef;

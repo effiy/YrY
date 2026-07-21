@@ -4,7 +4,7 @@
  */
 import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
-registerGlobalComponent({
+const compDef = {
     name: 'YiLoading',
     html: '/cdn/components/common/loaders/YiLoading/template.html',
     css: '/cdn/components/common/loaders/YiLoading/index.css',
@@ -80,4 +80,6 @@ registerGlobalComponent({
             return classes.join(' ');
         }
     }
-});
+};
+registerGlobalComponent(compDef);
+export default compDef;

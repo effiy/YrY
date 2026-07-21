@@ -1,7 +1,7 @@
 import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 import { getIconClass } from '/cdn/icons/iconMap.js';
 
-registerGlobalComponent({
+const compDef = {
     name: 'YiErrorState',
     html: '/cdn/components/common/feedback/YiErrorState/template.html',
     css: '/cdn/components/common/feedback/YiErrorState/index.css',
@@ -51,4 +51,6 @@ registerGlobalComponent({
         }
     },
     emits: ['retry']
-});
+};
+registerGlobalComponent(compDef);
+export default compDef;

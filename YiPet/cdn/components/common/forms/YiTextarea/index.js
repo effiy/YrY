@@ -1,6 +1,6 @@
 import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
-registerGlobalComponent({
+const compDef = {
     name: 'YiTextarea',
     html: '/cdn/components/common/forms/YiTextarea/template.html',
     css: '/cdn/components/common/forms/YiTextarea/index.css',
@@ -91,4 +91,6 @@ registerGlobalComponent({
             this.$emit('blur', event);
         }
     }
-});
+};
+registerGlobalComponent(compDef);
+export default compDef;

@@ -1411,7 +1411,7 @@ export function post(url, data = {}, options = {}) {
 /**
  * PUT 请求
  */
-export function put(url, data = , options = {}) {
+export function put(url, data = {}, options = {}) {
   return request(url, { method: 'PUT', body: data, ...options });
 }
 

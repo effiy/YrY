@@ -1,6 +1,6 @@
 import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
-registerGlobalComponent({
+const compDef = {
     name: 'YiIconButton',
     html: '/cdn/components/common/buttons/YiIconButton/template.html',
     css: '/cdn/components/common/buttons/YiIconButton/index.css',
@@ -63,4 +63,6 @@ registerGlobalComponent({
             return classes;
         }
     }
-});
+};
+registerGlobalComponent(compDef);
+export default compDef;

@@ -1,0 +1,8 @@
+<div class="rui-stats-grid" :class="layout === 'row' ? 'is-row' : 'is-grid'" role="group" aria-label="Stats grid">
+    <div v-for="(item, i) in items" :key="i" class="rui-stat-card" :class="item.modifier"
+         role="status" :aria-label="item.label + ': ' + item.value">
+        <div class="rui-stat-card-val">{{ item.value }}</div>
+        <div class="rui-stat-card-lbl">{{ item.label }}</div>
+        <div v-if="item.sub" class="rui-stat-card-sub" :title="item.sub">{{ item.sub }}</div>
+    </div>
+</div>

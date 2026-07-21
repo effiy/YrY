@@ -13,6 +13,84 @@
   } catch (e) {}
 })()
 
+// ---------------------------------------------------------------------------
+// 将 CDN vendor 库注入到页面主世界，使其可在浏览器控制台中直接使用
+// MV3 content script 运行于隔离世界，仅注入到页面 DOM 的脚本对控制台可见
+// ---------------------------------------------------------------------------
+;(function () {
+  'use strict'
+  const head = document.head || document.documentElement
+  if (!head) return
+
+  function getUrl(path) {
+    try { return chrome.runtime.getURL(path) } catch (_) { return null }
+  }
+
+  /**
+   * 注入单个脚本到主世界
+   * @param {string} path - 相对于扩展根目录的路径
+   * @returns {Promise<void>}
+   */
+  function injectScript(path) {
+    return new Promise(function (resolve) {
+      var url = getUrl(path)
+      if (!url) { resolve(); return }
+      var el = document.createElement('script')
+      el.src = url
+      el.async = false
+      el.onload = function () { resolve() }
+      el.onerror = function () { resolve() }
+      head.appendChild(el)
+    })
+  }
+
+  // 按依赖顺序注入：先注入基础库，后注入依赖它们的库
+  var scripts = [
+    // 工具库
+    'cdn/vendor/md5.js',
+    // 日期库
+    'cdn/vendor/dayjs@1.11.21/dayjs.min.js',
+    'cdn/vendor/dayjs@1.11.21/locale/zh-cn.js',
+    'cdn/vendor/dayjs@1.11.21/plugin/relativeTime.js',
+    'cdn/vendor/dayjs@1.11.21/plugin/advancedFormat.js',
+    'cdn/vendor/dayjs@1.11.21/plugin/utc.js',
+    'cdn/vendor/dayjs@1.11.21/plugin/duration.js',
+    'cdn/vendor/dayjs@1.11.21/plugin/customParseFormat.js',
+    // DOM / jQuery 生态
+    'cdn/vendor/jquery@3.7.1/jquery.min.js',
+    // UI 框架
+    'cdn/vendor/vue.global.js',
+    // Markdown / 富文本
+    'cdn/vendor/marked.min.js',
+    'cdn/vendor/turndown.js',
+    // 图表 / 可视化
+    'cdn/vendor/mermaid.min.js',
+    'cdn/vendor/apexcharts@3.46.0/apexcharts.min.js',
+    // 工具库
+    'cdn/vendor/html2canvas@1.4.1/html2canvas.min.js',
+    'cdn/vendor/jspdf@2.5.2/jspdf.umd.min.js',
+    'cdn/vendor/xlsx@0.20.3/xlsx.full.min.js',
+    // GSAP 动画
+    'cdn/vendor/gsap/TweenMax.min.js',
+    // Bootstrap
+    'cdn/vendor/bootstrap@5.2.3/js/bootstrap.bundle.min.js',
+    // Swiper 轮播
+    'cdn/vendor/swiper@7.0.3/js/swiper-bundle.min.js',
+    // anime.js
+    'cdn/vendor/anime@3.0.0/anime.min.js',
+  ]
+
+  // 顺序注入，每个加载完后注入下一个
+  function injectAll(i) {
+    i = i || 0
+    if (i >= scripts.length) return
+    injectScript(scripts[i]).then(function () {
+      injectAll(i + 1)
+    })
+  }
+  injectAll()
+})()
+
 // 检查PET_CONFIG是否可用
 if (typeof PET_CONFIG === 'undefined') {
   // PET_CONFIG未定义

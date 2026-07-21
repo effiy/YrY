@@ -1,6 +1,6 @@
 import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
-registerGlobalComponent({
+const compDef = {
     name: 'YiInput',
     html: '/cdn/components/common/forms/YiInput/template.html',
     css: '/cdn/components/common/forms/YiInput/index.css',
@@ -87,4 +87,6 @@ registerGlobalComponent({
             this.$emit('blur', event);
         }
     }
-});
+};
+registerGlobalComponent(compDef);
+export default compDef;

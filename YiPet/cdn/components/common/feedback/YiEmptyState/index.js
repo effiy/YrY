@@ -1,7 +1,7 @@
 import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 import { getIconClass } from '/cdn/icons/iconMap.js';
 
-registerGlobalComponent({
+const compDef = {
     name: 'YiEmptyState',
     html: '/cdn/components/common/feedback/YiEmptyState/template.html',
     css: '/cdn/components/common/feedback/YiEmptyState/index.css',
@@ -62,4 +62,6 @@ registerGlobalComponent({
             return getIconClass(this.iconClass);
         }
     }
-});
+};
+registerGlobalComponent(compDef);
+export default compDef;

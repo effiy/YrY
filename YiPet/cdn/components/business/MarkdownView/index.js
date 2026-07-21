@@ -55,3 +55,4 @@ const componentOptions = {
 };
 
 registerGlobalComponent(componentOptions);
+export default componentOptions;

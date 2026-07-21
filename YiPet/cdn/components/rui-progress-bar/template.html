@@ -1,0 +1,7 @@
+<div class="rui-progress-bar" :class="modifier ? 'rui-progress-bar--' + modifier : ''" role="progressbar" :aria-valuenow="value" :aria-valuemin="0" :aria-valuemax="100" :aria-label="label || 'Progress bar'" :style="{ '--rui-progress': value + '%' }">
+    <span v-if="label" class="rui-progress-bar-label">{{ label }}</span>
+    <span class="rui-progress-bar-track">
+        <span class="rui-progress-bar-fill"></span>
+    </span>
+    <span v-if="showValue !== false" class="rui-progress-bar-value">{{ value }}</span>
+</div>

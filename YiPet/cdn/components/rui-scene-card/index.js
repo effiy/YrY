@@ -1,119 +1,57 @@
-/* ═══════════════════════════════════════════════════════════════════════════
-   rui HTML CDN — ruiSceneCard · Vue 3 asset card component (single-file entry)
+import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
-   Applicable to: unified card display for assets/skills/agents/rules/references
+const _defaultLinks = [
+    { label: 'List', href: 'https://github.com/example/{name}#readme', target: '_blank' },
+    { label: 'Architecture', href: 'docs/components/workflow/index.html', target: '_blank' },
+    { label: 'Graph', href: 'https://github.com/example/{name}/network/dependents', target: '_blank' },
+    { label: 'Tests', href: 'https://github.com/example/{name}/actions', target: '_blank' },
+    { label: 'Source', href: 'https://github.com/example/{name}', target: '_blank' },
+    { label: 'Demo', href: 'https://{name}.example.com', target: '_blank' },
+    { label: 'Review', href: 'https://github.com/example/{name}/pulls', target: '_blank' }
+];
 
-   Brief props reference:
-     name          (required) card main title
-     nameHref      (optional) main title link
-     nameTarget    (optional) link target, defaults to '_blank'
-     badge         (optional) small badge after the main title (e.g. "New")
-     desc          (optional) description text (supports HTML, rendered via v-html)
-     tags          (optional) tag array · rendered with <rui-tag-chip>
-     meta          (optional) bottom meta info
-     demo          (optional) demo link URL
-     links         (optional) bottom link array
-
-   Page usage (host page):
-     <script src="/YiPet/libs/vue.global.js"></script>
-     <script src="/YiPet/cdn/components/rui-tag-chip/index.js"></script>
-     <script src="/YiPet/cdn/components/rui-scene-card/index.js"></script>
-     <div id="card"></div>
-     <script>
-       window.ruiSceneCard.mount({ name: 'my-card', tags: [...] }, '#card').then(app => { ... });
-     </script>
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-(function () {
-    'use strict';
-
-    var SELF_SRC = (document.currentScript && document.currentScript.src) || '';
-
-    /* ── Build Vue component options + dispatch ready + drain the queue ─────────── */
-    function buildOptions(cfg, tpl) {
-        return {
-            name: 'ruiSceneCard',
-            components: { ruiTagChip: window.ruiTagChip },
-            props: {
-                name:         { type: String, required: true },
-                nameHref:     { type: String, default: '' },
-                nameTarget:   { type: String, default: function () { return cfg.defaults.nameTarget; } },
-                badge:        { type: String, default: '' },
-                desc:         { type: String, default: '' },
-                tags:         { type: Array,  default: function () { return []; } },
-                meta:         { type: String, default: '' },
-                demo:         { type: String, default: '' },
-                links:        { type: Array,  default: null }
-            },
-            computed: {
-                resolvedLinks: function () {
-                    var raw = Array.isArray(this.links)
-                        ? this.links
-                        : ((this.$options && this.$options._defaultLinks) || []);
-                    var encodedName = encodeURIComponent(this.name || '');
-                    var arr = raw.map(function (l) {
-                        return {
-                            icon:   l.icon   || '',
-                            label:  l.label  || '',
-                            href:   (l.href  || '').replace('{name}', encodedName),
-                            target: l.target || '_blank'
-                        };
-                    });
-                    var demo = this.demo;
-                    if (demo && !arr.some(function (l) { return l.label === 'Demo'; })) {
-                        arr.push({ label: 'Demo', href: demo, target: '_blank' });
-                    }
-                    return arr;
-                }
-            },
-            _defaultLinks: (cfg.defaults && cfg.defaults.defaultLinks) || [],
-            template: tpl
-        };
-    }
-
-    /* ── Custom onReady: waits for ruiTagChip dependency before fetching template ── */
-    function onReady(cfg, ctx, mountAPI) {
-        function proceed() {
-            ctx.fetchTemplate(cfg.templateId, cfg.loadTimeoutMs)
-                .then(function (tpl) {
-                    mountAPI.setComponentOptions(buildOptions(cfg, tpl));
-                    ctx.dispatchReady();
-                    mountAPI.flushMountQueue();
-                })
-                .catch(function (err) {
-                    console.error('[ruiSceneCard]', err);
-                    ctx.dispatchError(err);
-                });
+const compDef = {
+    name: 'ruiSceneCard',
+    html: '/cdn/components/rui-scene-card/template.html',
+    css: '/cdn/components/rui-scene-card/index.css',
+    components: {
+        ruiTagChip: {
+            get() { return window.ruiTagChip; }
         }
-
-        /* ruiTagChip ready: proceed immediately. Otherwise wait for ready event. */
-        if (window.ruiTagChip && window.ruiTagChip.name) {
-            proceed();
-        } else {
-            var depTimer = setTimeout(function () {
-                document.removeEventListener('rui-tag-chip-ready', onTCReady);
-                ctx.dispatchError(new Error('ruiTagChip dependency load timed out'));
-            }, cfg.loadTimeoutMs || ruiComponentHelpers.DEFAULT_LOAD_TIMEOUT_MS);
-            function onTCReady() {
-                clearTimeout(depTimer);
-                proceed();
+    },
+    props: {
+        name:       { type: String, required: true },
+        nameHref:   { type: String, default: '' },
+        nameTarget: { type: String, default: '_blank' },
+        badge:      { type: String, default: '' },
+        desc:       { type: String, default: '' },
+        tags:       { type: Array,  default: () => [] },
+        meta:       { type: String, default: '' },
+        demo:       { type: String, default: '' },
+        links:      { type: Array,  default: null }
+    },
+    _defaultLinks,
+    computed: {
+        resolvedLinks() {
+            const raw = Array.isArray(this.links)
+                ? this.links
+                : (this.$options._defaultLinks || []);
+            const encodedName = encodeURIComponent(this.name || '');
+            const arr = raw.map(function (l) {
+                return {
+                    icon:   l.icon   || '',
+                    label:  l.label  || '',
+                    href:   (l.href  || '').replace('{name}', encodedName),
+                    target: l.target || '_blank'
+                };
+            });
+            const demo = this.demo;
+            if (demo && !arr.some(function (l) { return l.label === 'Demo'; })) {
+                arr.push({ label: 'Demo', href: demo, target: '_blank' });
             }
-            document.addEventListener('rui-tag-chip-ready', onTCReady, { once: true });
+            return arr;
         }
     }
-
-    /* ── Bootstrap ── */
-    ruiBootstrapComponent({
-        componentName: 'ruiSceneCard',
-        configKey:     'rui_SCENE_CARD_CONFIG',
-        cssMarker:     'rui-scene-card-css',
-        readyEvent:    'rui-scene-card-ready',
-        errorEvent:    'rui-scene-card-error',
-        callerSrc:     SELF_SRC,
-        defaultConfig: {
-            templateId:    'rui-scene-card-tpl',
-            loadTimeoutMs: ruiComponentHelpers.DEFAULT_LOAD_TIMEOUT_MS
-        },
-        onReady: onReady
-    });
-})();
+};
+registerGlobalComponent(compDef);
+export default compDef;

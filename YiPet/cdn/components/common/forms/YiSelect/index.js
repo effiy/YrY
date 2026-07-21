@@ -2,7 +2,7 @@ import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
 let selectIdCounter = 0;
 
-registerGlobalComponent({
+const compDef = {
     name: 'YiSelect',
     html: '/cdn/components/common/forms/YiSelect/template.html',
     css: '/cdn/components/common/forms/YiSelect/index.css',
@@ -215,4 +215,6 @@ registerGlobalComponent({
             }
         }
     }
-});
+};
+registerGlobalComponent(compDef);
+export default compDef;
