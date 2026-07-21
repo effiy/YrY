@@ -1,20 +1,25 @@
 /**
  * YiDoc · 项目仪表盘数据模型
  * --------------------------------------------------------------------------
- * yry-init pipeline step ③ 生成，由 profile + exploration 驱动。
+ * yry-init pipeline step ③ 生成，由 CLAUDE.md + README.md 驱动。
  * 暴露为 window.HELP_CONFIG，供 index.js (Vue 3) 消费。
  *
  * 项目概述：
  *   YiDoc 是 YrY 生态的文档中枢，整合 6 个子项目（YiAi / YiH5 / YiPet /
  *   YiPot / YiWeb / Websites）的 yry-init 流水线报告。每个子项目包含
  *   完整的 detect → explore → generate → arch → verify 产出。
+ *   共享 CDN 资源已迁移至 ../YiPet/cdn/ —— Vue 组件、样式、工具函数。
+ *
+ * 当前生成来源：
+ *   - CLAUDE.md (2026-07-21) — 项目 profile、约束、架构模式
+ *   - README.md (2026-07-21) — 系统概览、命令流、领域语言
  */
 window.HELP_CONFIG = {
   titleIcon:     "📚",
   title:         "YiDoc · YrY 项目文档中枢",
   tagline:       "6 个项目的 yry-init 流水线报告 · 68+ 架构 & 自检场景 · detect → explore → generate → arch → verify · 统一仪表盘 · 代码已重构消除冗余",
   backTopLabel:  "Back to Top",
-  footerNote:    "由 yry-init 流水线自动生成 · detect → explore → generate → arch → verify · YiPet API 已修复对齐 YiAi 后端",
+  footerNote:    "由 yry-init 流水线自动生成 · detect → explore → generate → arch → verify · 共享 CDN → ../YiPet/cdn/ · CLAUDE.md + README.md 已刷新",
 
   // 面包屑导航栏
   breadcrumb: [
@@ -289,7 +294,7 @@ window.HELP_CONFIG = {
               icon:        "🐾",
               title:       "YiPet · AI Chrome Extension",
               badge:       "12 scenes",
-              description: "温柔陪伴助手 · <strong>Manifest V3</strong> · IIFE 模块化 · 26 CDN 组件 · 49 第三方库 · 275 源文件 · Markdown + Mermaid 渲染 · API 已修复 · 共享原型工具方法",
+              description: "温柔陪伴助手 · <strong>Manifest V3</strong> · IIFE 模块化 · YiPet/cdn/ 共享组件体系 · 49 CDN 资源库 · 275 源文件 · Markdown + Mermaid 渲染 · 共享原型工具方法 · CDN 已迁移至 cdn/ 顶层",
               sceneLinks: [
                 { label: "1. Module Location",         href: "projects/YiPet/arch/scene-1-module-location/index.md" },
                 { label: "2. Data Flow Tracing",        href: "projects/YiPet/arch/scene-2-data-flow-tracing/index.md" },
@@ -434,6 +439,8 @@ window.HELP_CONFIG = {
   ],
 
   footerLinks: [
+    { label: "CLAUDE.md",       href: "CLAUDE.md",                    targetBlank: true },
+    { label: "README.md",       href: "README.md",                    targetBlank: true },
     { label: "YiAi Report",     href: "projects/YiAi/data.js",        targetBlank: true },
     { label: "YiH5 Report",     href: "projects/YiH5/data.js",        targetBlank: true },
     { label: "YiPet Report",    href: "projects/YiPet/data.js",       targetBlank: true },

@@ -43,7 +43,7 @@ graph TD
 
 | 模板 | CSS 加载 | JS 加载 | 关键第三方库 | 特殊初始化 |
 |------|---------|---------|-------------|-----------|
-| **Dashboard** | 本地 `index.css` | Vue 3 CDN (defer) + 内联组件 + `index.js` | Vue 3 (unpkg CDN) | Panel Hub, Reports Panel |
+| **Dashboard** | 本地 `index.css` | Vue 3 CDN (defer) + 内联组件 + `index.js` | Vue 3 (YiPet/cdn/vendor/) | Panel Hub, Reports Panel |
 | **Adminto** | `bootstrap.min.css` → `app.min.css` → `icons.min.css` | `vendor.min.js` (含 jQuery+Bootstrap) → `app.min.js` | jQuery, Bootstrap 5, Popper, SimpleBar, Remix Icons | SimpleBar 滚动条, Feather Icons |
 | **DpMarket** | `bootstrap.css` → `style.css` → `scrollbar.css` → `font-awesome.css` | `jquery.js` → `bootstrap.min.js` → `jquery.nav.js` → `jquery.scrollTo.js` → `scrollbar.js` → `script.js` | jQuery, Bootstrap 3, Font Awesome 4 | 自定义滚动条, 单页导航滚动 |
 | **Kasy** | `bootstrap.min.css` → `prettify.css` → `styles.css` | `jquery.js` → `bootstrap.js` → `jquery.easing.min.js` → `prettify.js` | jQuery, Bootstrap 3, Google Fonts | 代码美化 (prettify.js) |
@@ -64,8 +64,9 @@ graph TD
   - 无代码产物
 - **关键架构决策**:
   - **决策 1**: 所有 5 个模板均为纯静态 HTML——无 SSR、无构建工具、无打包器。资源通过 `<link>` 和 `<script>` 标签直接引用本地文件或 CDN。
-  - **决策 2**: Dashboard 使用 Vue 3 CDN（unpkg），是唯一引入运行时框架的页面。所有模板页使用 jQuery + Bootstrap 原生方案，无框架。
+  - **决策 2**: Dashboard 使用 Vue 3 CDN（YiPet/cdn/vendor/vue.global.prod.js），是唯一引入运行时框架的页面。所有模板页使用 jQuery + Bootstrap 原生方案，无框架。
   - **决策 3**: Adminto 和 Prompt 使用 vendor bundle（`vendor.min.css`/`vendor.min.js`）合并第三方库，而 DpMarket/Kasy/News 逐个引用独立文件。bundle 策略减少 HTTP 请求但增加单文件体积。
+  - **决策 4**: YiDoc 的全局基准文档（`CLAUDE.md` + `README.md`）位于根目录，提供项目 profile、领域语言和架构模式，是新人理解项目上下文的第一入口。
 
 ## §3 — 测试报告
 | 检查项 | 状态 | 备注 |
@@ -81,6 +82,7 @@ graph TD
 ## §4 — 自我改进
 | 诊断 | 问题 | 行动项 |
 |------|------|--------|
+| D0 | CLAUDE.md 和 README.md 已生成于根目录，作为场景数据的权威来源 | 无需行动——基线已更新 |
 | D0 | 所有 HTML 文件的 `<head>` 和 `<body>` 底部 `<script>` 已通过 Read 交叉验证 | 无需行动 |
 | D2 | DpMarket 中 `respond.js` 仅用于 IE8- 兼容——现代浏览器已无用 | 记录为历史遗留，可安全移除（低优先级） |
 | D3 | Kasy 同时引入 `bootstrap.css` 和 `bootstrap.min.css`——重复加载 | 建议移除 `bootstrap.css`，仅保留 `.min.css`（属于上游模板 bug） |

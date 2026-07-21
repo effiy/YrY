@@ -58,6 +58,9 @@ graph TD
   - **版本范围语义**：data.js 中 "v4.3.1 ~ v5.1.3" 表示版本范围，检查时确认实际版本落在此范围内
   - **文件计数去重**：避免同一文件被多次计数（如 News 的 SyntaxHighlighter 脚本不重复计入 JS 总数时需确认）
   - **data.js 本身不作为被检对象**：本场景检查 data.js 描述是否准确，而非检查 data.js 语法是否正确
+  - **CLAUDE.md / README.md 一致性**：CLAUDE.md 和 README.md 也须与 data.js 保持一致 — 项目 profile、约束、命令流、领域语言等描述若与 data.js 中的实际数据不符，视为文档不一致
+
+- **基线更新 (2026-07-21)**: yry-init 流水线已刷新根目录 CLAUDE.md（项目 profile + 约束 + 架构模式）和 README.md（系统概览 + 命令流 + 领域语言）。共享 CDN 已迁移至 ../YiPet/cdn/。
 
 ## §3 — 测试报告
 
@@ -77,12 +80,13 @@ graph TD
 
 | 诊断 | 行动项 |
 |------|--------|
-| D0 — 关键词匹配可能产生假阳性 | 定义每个网站的预期 title 正则模式，提高匹配精度 |
-| D1 — 版本号解析依赖固定格式 | 使用语义化版本（SemVer）解析器，支持 `5.1.3`、`^5.0` 等格式 |
-| D2 — 未检查 data.js 中 sceneLinks 有效性 | 扩展检查范围到 sceneLinks 和 links 字段中的所有 href |
-| D3 — 静态描述与动态内容不一致风险 | 建立 data.js 字段与实际 HTML 内容的映射关系表，自动化比对新字段 |
-| D4 — 缺少多语言 title 支持 | 若未来引入多语言，需支持 `<title>` 的语言属性检查 |
-| D5 — 图标 class 名未纳入一致性检查 | data.js 中引用的图标库（Font Awesome/RemixIcon）与实际 HTML 使用的 icon class 比对 |
-| D6 — 报告可读性不足 | 在 diff-report.json 中提供人类可读的差异描述（如 "预期 5 pages，实际 6 pages"） |
-| D7 — 无自动同步能力 | 考虑在检查到不一致时，自动生成 data.js 修正补丁 |
-| D8 — 版本范围边界条件未覆盖 | 明确 "v4.3.1 ~ v5.1.3" 的左右边界包含性（是否包含 v5.1.3？），防止边界判断分歧 |
+| D0 | CLAUDE.md + README.md 已由 yry-init 刷新，CDN 迁移至 YiPet/cdn | 基线已更新，重新验证通过 |
+| D1 — 关键词匹配可能产生假阳性 | 定义每个网站的预期 title 正则模式，提高匹配精度 |
+| D2 — 版本号解析依赖固定格式 | 使用语义化版本（SemVer）解析器，支持 `5.1.3`、`^5.0` 等格式 |
+| D3 — 未检查 data.js 中 sceneLinks 有效性 | 扩展检查范围到 sceneLinks 和 links 字段中的所有 href |
+| D4 — 静态描述与动态内容不一致风险 | 建立 data.js 字段与实际 HTML 内容的映射关系表，自动化比对新字段 |
+| D5 — 缺少多语言 title 支持 | 若未来引入多语言，需支持 `<title>` 的语言属性检查 |
+| D6 — 图标 class 名未纳入一致性检查 | data.js 中引用的图标库（Font Awesome/RemixIcon）与实际 HTML 使用的 icon class 比对 |
+| D7 — 报告可读性不足 | 在 diff-report.json 中提供人类可读的差异描述（如 "预期 5 pages，实际 6 pages"） |
+| D8 — 无自动同步能力 | 考虑在检查到不一致时，自动生成 data.js 修正补丁 |
+| D9 — 版本范围边界条件未覆盖 | 明确 "v4.3.1 ~ v5.1.3" 的左右边界包含性（是否包含 v5.1.3？），防止边界判断分歧 |

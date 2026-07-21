@@ -83,7 +83,7 @@
     }
 
     function registerComponents(app) {
-        // Shared components (loaded from /.claude/shared/components/*).
+        // Shared components (loaded from YiPet/cdn).
         if (window.ruiBreadcrumb && window.ruiBreadcrumb.name === 'ruiBreadcrumb') {
             app.component('yry-breadcrumb', window.ruiBreadcrumb);
         }
@@ -100,26 +100,26 @@
             app.component('yry-back-top', window.ruiBackTop);
         }
         // Report section components.
-        if (window.ruiReportSummary && window.ruiReportSummary.name === 'ruiReportSummary') {
-            app.component('yry-report-summary', window.ruiReportSummary);
+        if (window.yryReportSummary && window.yryReportSummary.name === 'yryReportSummary') {
+            app.component('yry-report-summary', window.yryReportSummary);
         }
-        if (window.ruiReportSize && window.ruiReportSize.name === 'ruiReportSize') {
-            app.component('yry-report-size', window.ruiReportSize);
+        if (window.yryReportSize && window.yryReportSize.name === 'yryReportSize') {
+            app.component('yry-report-size', window.yryReportSize);
         }
-        if (window.ruiReportLargest && window.ruiReportLargest.name === 'ruiReportLargest') {
-            app.component('yry-report-largest', window.ruiReportLargest);
+        if (window.yryReportLargest && window.yryReportLargest.name === 'yryReportLargest') {
+            app.component('yry-report-largest', window.yryReportLargest);
         }
-        if (window.ruiReportCoupling && window.ruiReportCoupling.name === 'ruiReportCoupling') {
-            app.component('yry-report-coupling', window.ruiReportCoupling);
+        if (window.yryReportCoupling && window.yryReportCoupling.name === 'yryReportCoupling') {
+            app.component('yry-report-coupling', window.yryReportCoupling);
         }
-        if (window.ruiReportRisk && window.ruiReportRisk.name === 'ruiReportRisk') {
-            app.component('yry-report-risk', window.ruiReportRisk);
+        if (window.yryReportRisk && window.yryReportRisk.name === 'yryReportRisk') {
+            app.component('yry-report-risk', window.yryReportRisk);
         }
-        if (window.ruiReportHealth && window.ruiReportHealth.name === 'ruiReportHealth') {
-            app.component('yry-report-health', window.ruiReportHealth);
+        if (window.yryReportHealth && window.yryReportHealth.name === 'yryReportHealth') {
+            app.component('yry-report-health', window.yryReportHealth);
         }
-        if (window.ruiReportSelfImprovement && window.ruiReportSelfImprovement.name === 'ruiReportSelfImprovement') {
-            app.component('yry-report-self-improvement', window.ruiReportSelfImprovement);
+        if (window.yryReportSelfImprovement && window.yryReportSelfImprovement.name === 'yryReportSelfImprovement') {
+            app.component('yry-report-self-improvement', window.yryReportSelfImprovement);
         }
     }
 

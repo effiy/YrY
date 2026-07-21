@@ -59,6 +59,8 @@ graph TD
   - **与 data.js 的解耦**：本场景不依赖 data.js 作为唯一引用来源；也扫描各场景 index.md 中的 Markdown 链接
   - **增量适用**：当新增或删除 story 目录时，自动更新 data.js 中的引用数组
 
+- **基线更新 (2026-07-21)**: yry-init 流水线已刷新根目录 CLAUDE.md（项目 profile + 约束 + 架构模式）和 README.md（系统概览 + 命令流 + 领域语言）。共享 CDN 已迁移至 ../YiPet/cdn/。
+
 ## §3 — 测试报告
 
 | 检查项 | 状态 | 备注 |
@@ -82,12 +84,13 @@ graph TD
 
 | 诊断 | 行动项 |
 |------|--------|
-| D0 — 引用检测仅覆盖 data.js 中声明的链接 | 扩展扫描到每个 index.md 中的 Markdown 链接 `[text](path)` 和 HTML `<a href>` |
-| D1 — 缺少引用方向性分析 | 区分「arch → test」和「test → arch」引用方向，检测单向依赖缺口 |
-| D2 — 引用深度仅一层 | 递归解析被引用文档中的子链接，构建完整依赖图 |
-| D3 — 未检测孤立场景 | 新增「孤立场景检测」：未被任何其他场景引用的场景可能已过时 |
-| D4 — 引用锚点未验证 | 对 `index.md#fragment` 形式的锚点链接验证目标章节是否存在 |
-| D5 — 无自动修复 data.js 不一致 | 当检测到缺失链接时，自动生成 data.js 的 sceneLinks 修正建议 |
-| D6 — 缺少跨 story 版本同步机制 | 当 arch 场景名称变更时，自动更新 test 场景中的对应引用 |
-| D7 — 报告结构不便于 CI 集成 | 输出 JUnit XML 格式报告，支持 GitLab CI / GitHub Actions 直接消费 |
-| D8 — 未处理符号链接场景 | 若场景目录使用符号链接，需解析真实路径后再验证存在性 |
+| D0 | CLAUDE.md + README.md 已由 yry-init 刷新，CDN 迁移至 YiPet/cdn | 基线已更新，重新验证通过 |
+| D1 — 引用检测仅覆盖 data.js 中声明的链接 | 扩展扫描到每个 index.md 中的 Markdown 链接 `[text](path)` 和 HTML `<a href>` |
+| D2 — 缺少引用方向性分析 | 区分「arch → test」和「test → arch」引用方向，检测单向依赖缺口 |
+| D3 — 引用深度仅一层 | 递归解析被引用文档中的子链接，构建完整依赖图 |
+| D4 — 未检测孤立场景 | 新增「孤立场景检测」：未被任何其他场景引用的场景可能已过时 |
+| D5 — 引用锚点未验证 | 对 `index.md#fragment` 形式的锚点链接验证目标章节是否存在 |
+| D6 — 无自动修复 data.js 不一致 | 当检测到缺失链接时，自动生成 data.js 的 sceneLinks 修正建议 |
+| D7 — 缺少跨 story 版本同步机制 | 当 arch 场景名称变更时，自动更新 test 场景中的对应引用 |
+| D8 — 报告结构不便于 CI 集成 | 输出 JUnit XML 格式报告，支持 GitLab CI / GitHub Actions 直接消费 |
+| D9 — 未处理符号链接场景 | 若场景目录使用符号链接，需解析真实路径后再验证存在性 |

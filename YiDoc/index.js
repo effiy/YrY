@@ -204,10 +204,12 @@
 
     app.mount('#dashboard-app');
 
-    window.__ruiInitTeardown = function () {
-      if (animationFrameId) { window.cancelAnimationFrame(animationFrameId); animationFrameId = 0; }
-      if (app) app.unmount();
-    };
+    window.__ruiInitTeardown = (function (mountedApp) {
+      return function () {
+        if (animationFrameId) { window.cancelAnimationFrame(animationFrameId); animationFrameId = 0; }
+        if (mountedApp) mountedApp.unmount();
+      };
+    })(app);
   }
 
   mountApp();

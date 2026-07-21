@@ -62,6 +62,9 @@ graph TD
   - **独立副本 vs 共享副本**：当前项目设计为每个网站独立携带自己的库副本（非 monorepo 共享依赖），此为预期行为
   - **字体文件归属**：Font Awesome 和 RemixIcon 的字体文件（.woff/.woff2/.ttf/.eot）作为库的组成部分纳入检查
   - **SyntaxHighlighter 特殊处理**：该库包含 28 个 JS 脚本 + 17 个 CSS 主题文件，检查核心脚本 shCore.js 存在性即可，所有刷子文件标记为可选
+  - **CDN vendor 自托管**：主要 CDN vendor 路径已迁移至 YiPet/cdn/vendor/（自托管），减少第三方 CDN 依赖风险
+
+- **基线更新 (2026-07-21)**: yry-init 流水线已刷新根目录 CLAUDE.md（项目 profile + 约束 + 架构模式）和 README.md（系统概览 + 命令流 + 领域语言）。共享 CDN 已迁移至 ../YiPet/cdn/。
 
 ## §3 — 测试报告
 
@@ -83,12 +86,13 @@ graph TD
 
 | 诊断 | 行动项 |
 |------|--------|
-| D0 — 版本提取依赖文件内注释格式 | 建立各库的标准版本提取规则（如 Bootstrap 从 `Bootstrap v5.1.3` 正则提取） |
-| D1 — 未检测库的已知漏洞（CVE） | 集成 CVE 数据库查询，检查使用的库版本是否存在已知安全漏洞 |
-| D2 — 冗余副本检测策略过于宽松 | 定义「可接受冗余」标准：同一库的不同主版本（如 Bootstrap 3 vs 5）可共存；完全相同版本的副本应标记 WARN |
-| D3 — SyntaxHighlighter 刷子按需加载未覆盖 | 检查 HTML 中 SyntaxHighlighter 的 `shBrush*.js` 动态加载逻辑是否与实际使用匹配 |
-| D4 — 未检测库的最小化版本与源映射 | 检查 .min.js/.min.css 是否缺少对应的 .map 文件，影响调试体验 |
-| D5 — 缺少库升级影响分析 | 建立库版本升级的影响范围分析：升级 Bootstrap 后需重新验证哪些网站页面 |
-| D6 — 许可证合规性未检查 | 扫描各库的 LICENSE 文件，确认所有库的许可证与项目兼容 |
-| D7 — 未覆盖 UI 插件（AOS/Swiper 等） | 将 data.js 中声明的 4 个 UI Plugin（AOS/Swiper/Jarallax/CountUp）纳入健康检查 |
-| D8 — 报告未提供升级建议 | 对过时版本（如 Bootstrap 3.x）自动生成升级路径建议和破坏性变更提示 |
+| D0 | CLAUDE.md + README.md 已由 yry-init 刷新，CDN 迁移至 YiPet/cdn | 基线已更新，重新验证通过 |
+| D1 — 版本提取依赖文件内注释格式 | 建立各库的标准版本提取规则（如 Bootstrap 从 `Bootstrap v5.1.3` 正则提取） |
+| D2 — 未检测库的已知漏洞（CVE） | 集成 CVE 数据库查询，检查使用的库版本是否存在已知安全漏洞 |
+| D3 — 冗余副本检测策略过于宽松 | 定义「可接受冗余」标准：同一库的不同主版本（如 Bootstrap 3 vs 5）可共存；完全相同版本的副本应标记 WARN |
+| D4 — SyntaxHighlighter 刷子按需加载未覆盖 | 检查 HTML 中 SyntaxHighlighter 的 `shBrush*.js` 动态加载逻辑是否与实际使用匹配 |
+| D5 — 未检测库的最小化版本与源映射 | 检查 .min.js/.min.css 是否缺少对应的 .map 文件，影响调试体验 |
+| D6 — 缺少库升级影响分析 | 建立库版本升级的影响范围分析：升级 Bootstrap 后需重新验证哪些网站页面 |
+| D7 — 许可证合规性未检查 | 扫描各库的 LICENSE 文件，确认所有库的许可证与项目兼容 |
+| D8 — 未覆盖 UI 插件（AOS/Swiper 等） | 将 data.js 中声明的 4 个 UI Plugin（AOS/Swiper/Jarallax/CountUp）纳入健康检查 |
+| D9 — 报告未提供升级建议 | 对过时版本（如 Bootstrap 3.x）自动生成升级路径建议和破坏性变更提示 |

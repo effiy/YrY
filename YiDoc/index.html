@@ -10,8 +10,15 @@
   <link rel="stylesheet" href="index.css">
   <link rel="stylesheet" href="../YiPet/cdn/styles/yidoc/semantic.css">
 
-  <!-- Vue 3 from CDN -->
-  <script src="https://unpkg.com/vue@3.4.27/dist/vue.global.prod.js"></script>
+  <!-- Vue 3 CDN (YiPet/cdn 自托管 · unpkg 降级) -->
+  <script src="../YiPet/cdn/vendor/vue.global.prod.js"></script>
+  <script>
+  if (typeof Vue === 'undefined') {
+    var s = document.createElement('script');
+    s.src = 'https://unpkg.com/vue@3.4.27/dist/vue.global.prod.js';
+    document.head.appendChild(s);
+  }
+  </script>
 </head>
 <body class="yry-doc dashboard-page">
 

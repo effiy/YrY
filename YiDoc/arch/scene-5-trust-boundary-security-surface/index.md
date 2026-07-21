@@ -14,7 +14,7 @@ graph TD
     end
 
     subgraph "不可信域: 外部依赖"
-        CDN1["unpkg.com<br/>Vue 3 CDN (Dashboard)"]
+        CDN1["../YiPet/cdn/vendor/<br/>Vue 3 CDN (Dashboard 主)<br/>unpkg.com (降级备选)"]
         CDN2["fonts.googleapis.com<br/>Google Fonts (Kasy, News)"]
         CDN3["bootstrapmb.com<br/>外链 (News navbar logo)"]
         CDN4["html5shim.googlecode.com<br/>IE shim (DpMarket, 已失效)"]
@@ -54,7 +54,7 @@ graph TD
 #### 边界 2: 本地 → CDN 外部依赖（有限信任）
 | CDN 来源 | 使用位置 | 风险 | 缓解措施 |
 |----------|---------|------|---------|
-| `unpkg.com` (Vue 3) | Dashboard `/index.html` | 🟡 中：若 unpkg 被劫持或不可用，Dashboard 完全失效 | 可本地化 Vue.js 文件，但当前设计依赖 CDN 的便捷性 |
+| `../YiPet/cdn/vendor/` (Vue 3, 主) | Dashboard `/index.html` | 🟢 低：自托管，完全受控 | 主 CDN 来源为自托管；unpkg.com 保留作为降级备选 |
 | `fonts.googleapis.com` | Kasy `/index.html`, News `/index.html` | 🟢 低：仅 CSS 字体文件，不影响功能 | 字体加载失败仅影响视觉，页面仍可用 |
 | `bootstrapmb.com` | News `/index.html`（navbar logo 链接） | 🟢 低：仅为 `<a href>` 外链，不加载资源 | 用户点击才会导航，仅影响品牌链接 |
 | `html5shim.googlecode.com` | DpMarket `/index.html`（IE 条件注释） | 🟢 低：Google Code 已关闭，但代码在 IE 条件注释中，现代浏览器不执行 | 可安全移除（已失效的 CDN） |
@@ -98,6 +98,8 @@ graph TD
   - **决策 1**: 保持纯静态架构——这是 YiDoc 最大的安全优势，不引入任何后端、数据库或用户认证系统。安全模型极简。
   - **决策 2**: CDN 依赖最小化但未完全消除——Dashboard 依赖 unpkg（Vue 3），Kasy/News 依赖 Google Fonts。当前风险评估为"可接受"，不要求立即本地化。
   - **决策 3**: Dashboard 的 `v-html` 使用是受控的——渲染内容来自 `data.js`（静态数据文件），不是用户输入。这是一个架构上安全的内部分界（开发者数据 vs 用户数据）。
+  - **决策 4**: 共享 CDN 资源已迁移至 `../YiPet/cdn/`（loader.js、Vue 3 vendor、公共组件、样式、工具函数），任何依赖变更应先分析此目录。
+  - **决策 5**: Dashboard Vue 3 主 CDN 来源为 YiPet/cdn/vendor/vue.global.prod.js（自托管），unpkg CDN 链接保留作为降级备选。
 
 ## §3 — 测试报告
 | 检查项 | 状态 | 备注 |
@@ -115,7 +117,7 @@ graph TD
 ## §4 — 自我改进
 | 诊断 | 问题 | 行动项 |
 |------|------|--------|
-| D0 | 通过 Grep 搜索 `document.cookie`、`localStorage`、`sessionStorage`、`innerHTML`、`eval(`、`v-html` 等安全相关 API 确认攻击面 | 无需行动——确认结果已记录 |
+| D0 | CLAUDE.md + README.md 已由 yry-init 流水线刷新，CDN 路径统一迁移至 YiPet/cdn | 无需行动——基线已更新 |
 | D1 | `html5shim.googlecode.com` 已失效（Google Code 2016 年关闭） | 建议从 DpMarket 的 HTML 中移除该 IE 条件注释块（低优先级） |
 | D2 | Dashboard Vue 3 来自 unpkg CDN，若 unpkg 不可用则 Dashboard 白屏 | 中优先级：可添加 fallback 到本地 Vue.js 副本，或接受 CDN 风险（unpkg 由 npm 维护，可用性高） |
 | D3 | Kasy 使用 `http://fonts.googleapis.com`（非 HTTPS） | 建议升级为 `https://`（或移除协议头使用 `//`）。当前浏览器可能混合内容警告。 |

@@ -60,6 +60,8 @@ graph TD
   - **JS 语法校验降级策略**：优先使用 `node --check`；若无 Node.js 环境，降级为文件存在性检查
   - **与 scene-1 的关系**：scene-1 是全量基线检查，scene-2 是增量快速检查；二者互补
 
+- **基线更新 (2026-07-21)**: yry-init 流水线已刷新根目录 CLAUDE.md（项目 profile + 约束 + 架构模式）和 README.md（系统概览 + 命令流 + 领域语言）。共享 CDN 已迁移至 ../YiPet/cdn/。
+
 ## §3 — 测试报告
 
 | 检查项 | 状态 | 备注 |
@@ -75,12 +77,13 @@ graph TD
 
 | 诊断 | 行动项 |
 |------|--------|
-| D0 — git diff 可能包含非代码文件 | 增加文件扩展名过滤（仅 .html/.css/.js），排除图片、字体、.json 等 |
-| D1 — HTML 格式检查过于宽松 | 引入更严格的标签嵌套规则检查和 W3C 验证子集 |
-| D2 — CSS 语法检查不检测属性值合法性 | 增加常见 CSS 属性值白名单校验（如 display、position 等） |
-| D3 — JS 语法检查不覆盖浏览器全局变量 | 对依赖浏览器 API（如 window/document）的 JS 文件使用 ESLint + 浏览器环境配置 |
-| D4 — 缺少 pre-commit hook 自动化安装 | 提供 `install-hooks.sh` 脚本，一键安装 pre-commit hook |
-| D5 — 无回滚机制 | 在 FAIL 时记录变更前文件快照，支持快速回滚 |
-| D6 — 报告可读性不足 | 输出彩色终端报告（ANSI escape codes），区分 PASS/FAIL/WARN |
-| D7 — 并发检查未利用 | 对多个变更文件使用并行检查以进一步缩短耗时 |
-| D8 — 缺少与 CI 流水线的集成指南 | 编写 GitHub Actions / GitLab CI 集成示例配置 |
+| D0 | CLAUDE.md + README.md 已由 yry-init 刷新，CDN 迁移至 YiPet/cdn | 基线已更新，重新验证通过 |
+| D1 — git diff 可能包含非代码文件 | 增加文件扩展名过滤（仅 .html/.css/.js），排除图片、字体、.json 等 |
+| D2 — HTML 格式检查过于宽松 | 引入更严格的标签嵌套规则检查和 W3C 验证子集 |
+| D3 — CSS 语法检查不检测属性值合法性 | 增加常见 CSS 属性值白名单校验（如 display、position 等） |
+| D4 — JS 语法检查不覆盖浏览器全局变量 | 对依赖浏览器 API（如 window/document）的 JS 文件使用 ESLint + 浏览器环境配置 |
+| D5 — 缺少 pre-commit hook 自动化安装 | 提供 `install-hooks.sh` 脚本，一键安装 pre-commit hook |
+| D6 — 无回滚机制 | 在 FAIL 时记录变更前文件快照，支持快速回滚 |
+| D7 — 报告可读性不足 | 输出彩色终端报告（ANSI escape codes），区分 PASS/FAIL/WARN |
+| D8 — 并发检查未利用 | 对多个变更文件使用并行检查以进一步缩短耗时 |
+| D9 — 缺少与 CI 流水线的集成指南 | 编写 GitHub Actions / GitLab CI 集成示例配置 |

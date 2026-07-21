@@ -36,23 +36,23 @@
     }
 
     function registerComponents(app) {
-        if (window.ruiReportApiSummary && window.ruiReportApiSummary.name === 'ruiReportApiSummary') {
-            app.component('yry-report-api-summary', window.ruiReportApiSummary);
+        if (window.yryReportApiSummary && window.yryReportApiSummary.name === 'yryReportApiSummary') {
+            app.component('yry-report-api-summary', window.yryReportApiSummary);
         }
-        if (window.ruiReportApiEndpoints && window.ruiReportApiEndpoints.name === 'ruiReportApiEndpoints') {
-            app.component('yry-report-api-endpoints', window.ruiReportApiEndpoints);
+        if (window.yryReportApiEndpoints && window.yryReportApiEndpoints.name === 'yryReportApiEndpoints') {
+            app.component('yry-report-api-endpoints', window.yryReportApiEndpoints);
         }
-        if (window.ruiReportApiSemantics && window.ruiReportApiSemantics.name === 'ruiReportApiSemantics') {
-            app.component('yry-report-api-semantics', window.ruiReportApiSemantics);
+        if (window.yryReportApiSemantics && window.yryReportApiSemantics.name === 'yryReportApiSemantics') {
+            app.component('yry-report-api-semantics', window.yryReportApiSemantics);
         }
-        if (window.ruiReportApiPatterns && window.ruiReportApiPatterns.name === 'ruiReportApiPatterns') {
-            app.component('yry-report-api-patterns', window.ruiReportApiPatterns);
+        if (window.yryReportApiPatterns && window.yryReportApiPatterns.name === 'yryReportApiPatterns') {
+            app.component('yry-report-api-patterns', window.yryReportApiPatterns);
         }
-        if (window.ruiReportApiSecurity && window.ruiReportApiSecurity.name === 'ruiReportApiSecurity') {
-            app.component('yry-report-api-security', window.ruiReportApiSecurity);
+        if (window.yryReportApiSecurity && window.yryReportApiSecurity.name === 'yryReportApiSecurity') {
+            app.component('yry-report-api-security', window.yryReportApiSecurity);
         }
-        if (window.ruiReportApiHealth && window.ruiReportApiHealth.name === 'ruiReportApiHealth') {
-            app.component('yry-report-api-health', window.ruiReportApiHealth);
+        if (window.yryReportApiHealth && window.yryReportApiHealth.name === 'yryReportApiHealth') {
+            app.component('yry-report-api-health', window.yryReportApiHealth);
         }
     }
 
@@ -60,12 +60,12 @@
         return Promise.resolve(window.__reportTemplatesReady)
             .then(function () {
                 return Promise.all([
-                    whenReportComponentReady('ruiReportApiSummary', 'yry-report-api-summary-tpl'),
-                    whenReportComponentReady('ruiReportApiEndpoints', 'yry-report-api-endpoints-tpl'),
-                    whenReportComponentReady('ruiReportApiSemantics', 'yry-report-api-semantics-tpl'),
-                    whenReportComponentReady('ruiReportApiPatterns', 'yry-report-api-patterns-tpl'),
-                    whenReportComponentReady('ruiReportApiSecurity', 'yry-report-api-security-tpl'),
-                    whenReportComponentReady('ruiReportApiHealth', 'yry-report-api-health-tpl'),
+                    whenReportComponentReady('yryReportApiSummary', 'yry-report-api-summary-tpl'),
+                    whenReportComponentReady('yryReportApiEndpoints', 'yry-report-api-endpoints-tpl'),
+                    whenReportComponentReady('yryReportApiSemantics', 'yry-report-api-semantics-tpl'),
+                    whenReportComponentReady('yryReportApiPatterns', 'yry-report-api-patterns-tpl'),
+                    whenReportComponentReady('yryReportApiSecurity', 'yry-report-api-security-tpl'),
+                    whenReportComponentReady('yryReportApiHealth', 'yry-report-api-health-tpl'),
                 ]);
             })
             .then(function () {

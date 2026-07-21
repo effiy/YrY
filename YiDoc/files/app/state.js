@@ -314,7 +314,7 @@
                     tone: 'info',
                     icon: 'μ',
                     label: 'Avg file size',
-                    value: window.RuiBytes.humanBytes(avg),
+                    value: window.YrYBytes.humanBytes(avg),
                     sub: `${s.totalFiles } files`,
                     href: '#size',
                 });

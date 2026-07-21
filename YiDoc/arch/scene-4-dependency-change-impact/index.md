@@ -45,7 +45,7 @@ graph TD
 | **Kasy** | **3.x** (bootstrap.min.css) | ✓ (独立 jquery.js) | Glyphicons (Bootstrap 3 内置) | jQuery.easing, prettify.js |
 | **News** | 5.x (bootstrap.min.css) | ✓ (jquery.min.js + jquery-migrate) | **Font Awesome 6.x** | Syntax Highlighter, easing |
 | **Prompt** | 5.x (vendor bundle) | ✓ (vendor.min.js bundle) | Feather Icons (替代 FA) | AOS, Swiper, Jarallax, CountUp |
-| **Dashboard** | — (无) | — (无) | — (无) | Vue 3 (CDN) |
+| **Dashboard** | — (无) | — (无) | — (无) | Vue 3 CDN (YiPet/cdn/vendor/vue.global.prod.js) |
 
 ### 变更影响分析
 
@@ -93,6 +93,7 @@ graph TD
   - **决策 1**: 不对各模板的依赖版本进行统一——每个模板保持其原始依赖版本，避免破坏性变更。升级由模板的原始上游作者负责，YiDoc 仅作为展示/文档聚合。
   - **决策 2**: 版本矩阵不深入 vendor bundle 内部——Adminto 和 Prompt 的 `vendor.min.js` 是压缩打包文件，解包分析成本高且收益低。仅基于 HTML 引用和文件命名推断。
   - **决策 3**: DpMarket 和 Kasy 使用 Bootstrap 3 是主要技术债——若未来需要统一技术栈，这两个模板需要最大改造投入。
+  - **决策 4**: 共享 CDN 资源已迁移至 `../YiPet/cdn/`（loader.js、Vue 3 vendor、公共组件、样式、工具函数），任何依赖变更应先分析此目录。
 
 ## §3 — 测试报告
 | 检查项 | 状态 | 备注 |
@@ -106,7 +107,7 @@ graph TD
 ## §4 — 自我改进
 | 诊断 | 问题 | 行动项 |
 |------|------|--------|
-| D0 | 依赖版本通过阅读 HTML 源码和 CSS/JS 文件命名确认 | 无需行动 |
+| D0 | CLAUDE.md + README.md 已由 yry-init 流水线刷新，CDN 路径统一迁移至 YiPet/cdn | 无需行动——基线已更新 |
 | D1 | vendor bundle 内部依赖未展开分析（Adminto, Prompt） | 可接受——bundle 内容在模板原始仓库中有独立文件，YiDoc 仅分发已构建的产物 |
 | D2 | 未评估 Popper.js 的依赖关系——News 使用 `bootstrap.bundle.min.js`（含 Popper），Adminto 独立引入 Popper | 记录在矩阵中，Popper 通常随 Bootstrap 5 一起升级 |
 | D4 | Kasy 同时引用 `bootstrap.css` 和 `bootstrap.min.css`——重复依赖 | 在 scene-2 D3 已记录，属于上游模板问题 |

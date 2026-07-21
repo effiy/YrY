@@ -8,13 +8,13 @@
     <link rel="stylesheet" href="index.css" />
     <link rel="stylesheet" href="../../YiPet/cdn/styles/yidoc/semantic.css" />
     <!-- Component stylesheets -->
-    <link rel="stylesheet" href="../YiPet/cdn/components/business/reports/apis/yry-report-api-summary/index.css" />
-    <link rel="stylesheet" href="../YiPet/cdn/components/business/reports/apis/yry-report-api-endpoints/index.css" />
-    <link rel="stylesheet" href="../YiPet/cdn/components/business/reports/apis/yry-report-api-semantics/index.css" />
-    <link rel="stylesheet" href="../YiPet/cdn/components/business/reports/apis/yry-report-api-patterns/index.css" />
-    <link rel="stylesheet" href="../YiPet/cdn/components/business/reports/apis/yry-report-api-security/index.css" />
-    <link rel="stylesheet" href="../YiPet/cdn/components/business/reports/apis/yry-report-api-health/index.css" />
-    <!-- Vue 3 CDN with fallback -->
+    <link rel="stylesheet" href="../../YiPet/cdn/components/business/reports/apis/yry-report-api-summary/index.css" />
+    <link rel="stylesheet" href="../../YiPet/cdn/components/business/reports/apis/yry-report-api-endpoints/index.css" />
+    <link rel="stylesheet" href="../../YiPet/cdn/components/business/reports/apis/yry-report-api-semantics/index.css" />
+    <link rel="stylesheet" href="../../YiPet/cdn/components/business/reports/apis/yry-report-api-patterns/index.css" />
+    <link rel="stylesheet" href="../../YiPet/cdn/components/business/reports/apis/yry-report-api-security/index.css" />
+    <link rel="stylesheet" href="../../YiPet/cdn/components/business/reports/apis/yry-report-api-health/index.css" />
+    <!-- Vue 3 CDN (YiPet/cdn 自托管 → unpkg → jsdelivr 降级) -->
     <script>
         (function () {
             const timestamp = new Date().getTime();
@@ -27,7 +27,10 @@
                     document.head.appendChild(s);
                 });
             }
-            window.__vueLoadPromise = loadVue('https://unpkg.com/vue@3/dist/vue.global.prod.js')
+            window.__vueLoadPromise = loadVue('../../YiPet/cdn/vendor/vue.global.prod.js')
+                .catch(function () {
+                    return loadVue('https://unpkg.com/vue@3/dist/vue.global.prod.js');
+                })
                 .catch(function () {
                     return loadVue('https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js');
                 });
@@ -596,15 +599,15 @@
     </script>
 
     <!-- Shared library (sortable) -->
-    <script src="../YiPet/cdn/components/business/reports/lib/yry-sortable.js"></script>
+    <script src="../../YiPet/cdn/components/business/reports/lib/yry-sortable.js"></script>
 
     <!-- Component scripts -->
-    <script src="../YiPet/cdn/components/business/reports/apis/yry-report-api-summary/index.js"></script>
-    <script src="../YiPet/cdn/components/business/reports/apis/yry-report-api-endpoints/index.js"></script>
-    <script src="../YiPet/cdn/components/business/reports/apis/yry-report-api-semantics/index.js"></script>
-    <script src="../YiPet/cdn/components/business/reports/apis/yry-report-api-patterns/index.js"></script>
-    <script src="../YiPet/cdn/components/business/reports/apis/yry-report-api-security/index.js"></script>
-    <script src="../YiPet/cdn/components/business/reports/apis/yry-report-api-health/index.js"></script>
+    <script src="../../YiPet/cdn/components/business/reports/apis/yry-report-api-summary/index.js"></script>
+    <script src="../../YiPet/cdn/components/business/reports/apis/yry-report-api-endpoints/index.js"></script>
+    <script src="../../YiPet/cdn/components/business/reports/apis/yry-report-api-semantics/index.js"></script>
+    <script src="../../YiPet/cdn/components/business/reports/apis/yry-report-api-patterns/index.js"></script>
+    <script src="../../YiPet/cdn/components/business/reports/apis/yry-report-api-security/index.js"></script>
+    <script src="../../YiPet/cdn/components/business/reports/apis/yry-report-api-health/index.js"></script>
 
     <!-- Data -->
     <script src="data.js"></script>

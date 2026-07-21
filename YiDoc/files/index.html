@@ -6,14 +6,25 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2322C55E'/><text x='16' y='22' font-size='18' font-family='sans-serif' font-weight='bold' fill='white' text-anchor='middle'>RF</text></svg>" type="image/svg+xml">
     <title>yry-report-files — {{ data.scope }}</title>
 
-    <!-- Vue 3 CDN -->
-    <script src="https://unpkg.com/vue@3.4.27/dist/vue.global.prod.js"></script>
-    <script>window.__vueLoadPromise = Promise.resolve();</script>
+    <!-- Vue 3 CDN (YiPet/cdn 自托管 · unpkg 降级) -->
+    <script src="../../YiPet/cdn/vendor/vue.global.prod.js"></script>
+    <script>
+    window.__vueLoadPromise = Promise.resolve();
+    if (typeof Vue === 'undefined') {
+        window.__vueLoadPromise = new Promise(function (resolve, reject) {
+            var s = document.createElement('script');
+            s.src = 'https://unpkg.com/vue@3.4.27/dist/vue.global.prod.js';
+            s.onload = resolve;
+            s.onerror = reject;
+            document.head.appendChild(s);
+        });
+    }
+    </script>
 
     <!-- Page-level styles (base, header, toc, footer, tables) -->
     <link rel="stylesheet" href="index.css">
 
-    <!-- Shared CDN components (migrated from YiDoc/files/lib) -->
+    <!-- Shared CDN components (loaded from YiPet/cdn) -->
     <script src="../../YiPet/cdn/utils/yidoc/breadcrumb.js"></script>
     <script src="../../YiPet/cdn/utils/yidoc/back-top.js"></script>
 
@@ -25,24 +36,24 @@
     <!--   - risk: hotspots / orphans / depth tabs with sortable table -->
     <!--   - health: cycles / freshness tabs -->
     <!--   - self-improvement: chart-first diagnostics, levers, roadmap, decay -->
-    <link rel="stylesheet" href="../YiPet/cdn/components/business/reports/files/yry-report-summary/index.css">
-    <link rel="stylesheet" href="../YiPet/cdn/components/business/reports/files/yry-report-size/index.css">
-    <link rel="stylesheet" href="../YiPet/cdn/components/business/reports/files/yry-report-largest/index.css">
-    <link rel="stylesheet" href="../YiPet/cdn/components/business/reports/files/yry-report-coupling/index.css">
-    <link rel="stylesheet" href="../YiPet/cdn/components/business/reports/files/yry-report-risk/index.css">
-    <link rel="stylesheet" href="../YiPet/cdn/components/business/reports/files/yry-report-health/index.css">
-    <link rel="stylesheet" href="../YiPet/cdn/components/business/reports/files/yry-report-self-improvement/index.css">
+    <link rel="stylesheet" href="../../YiPet/cdn/components/business/reports/files/yry-report-summary/index.css">
+    <link rel="stylesheet" href="../../YiPet/cdn/components/business/reports/files/yry-report-size/index.css">
+    <link rel="stylesheet" href="../../YiPet/cdn/components/business/reports/files/yry-report-largest/index.css">
+    <link rel="stylesheet" href="../../YiPet/cdn/components/business/reports/files/yry-report-coupling/index.css">
+    <link rel="stylesheet" href="../../YiPet/cdn/components/business/reports/files/yry-report-risk/index.css">
+    <link rel="stylesheet" href="../../YiPet/cdn/components/business/reports/files/yry-report-health/index.css">
+    <link rel="stylesheet" href="../../YiPet/cdn/components/business/reports/files/yry-report-self-improvement/index.css">
 
     <script>
         window.__reportTemplatesReady = (function () {
             var componentTemplateFiles = [
-                '../YiPet/cdn/components/business/reports/files/yry-report-summary/index.html',
-                '../YiPet/cdn/components/business/reports/files/yry-report-size/index.html',
-                '../YiPet/cdn/components/business/reports/files/yry-report-largest/index.html',
-                '../YiPet/cdn/components/business/reports/files/yry-report-coupling/index.html',
-                '../YiPet/cdn/components/business/reports/files/yry-report-risk/index.html',
-                '../YiPet/cdn/components/business/reports/files/yry-report-health/index.html',
-                '../YiPet/cdn/components/business/reports/files/yry-report-self-improvement/index.html'
+                '../../YiPet/cdn/components/business/reports/files/yry-report-summary/index.html',
+                '../../YiPet/cdn/components/business/reports/files/yry-report-size/index.html',
+                '../../YiPet/cdn/components/business/reports/files/yry-report-largest/index.html',
+                '../../YiPet/cdn/components/business/reports/files/yry-report-coupling/index.html',
+                '../../YiPet/cdn/components/business/reports/files/yry-report-risk/index.html',
+                '../../YiPet/cdn/components/business/reports/files/yry-report-health/index.html',
+                '../../YiPet/cdn/components/business/reports/files/yry-report-self-improvement/index.html'
             ];
 
             function appendTemplatesFromHTML(htmlText) {
@@ -71,16 +82,16 @@
     </script>
 
     <!-- Shared utilities (must load before any component using them) -->
-    <script src="../YiPet/cdn/components/business/reports/lib/yry-bytes.js"></script>
-    <script src="../YiPet/cdn/components/business/reports/lib/yry-sortable.js"></script>
+    <script src="../../YiPet/cdn/components/business/reports/lib/yry-bytes.js"></script>
+    <script src="../../YiPet/cdn/components/business/reports/lib/yry-sortable.js"></script>
 
-    <script src="../YiPet/cdn/components/business/reports/files/yry-report-summary/index.js"></script>
-    <script src="../YiPet/cdn/components/business/reports/files/yry-report-size/index.js"></script>
-    <script src="../YiPet/cdn/components/business/reports/files/yry-report-largest/index.js"></script>
-    <script src="../YiPet/cdn/components/business/reports/files/yry-report-coupling/index.js"></script>
-    <script src="../YiPet/cdn/components/business/reports/files/yry-report-risk/index.js"></script>
-    <script src="../YiPet/cdn/components/business/reports/files/yry-report-health/index.js"></script>
-    <script src="../YiPet/cdn/components/business/reports/files/yry-report-self-improvement/index.js"></script>
+    <script src="../../YiPet/cdn/components/business/reports/files/yry-report-summary/index.js"></script>
+    <script src="../../YiPet/cdn/components/business/reports/files/yry-report-size/index.js"></script>
+    <script src="../../YiPet/cdn/components/business/reports/files/yry-report-largest/index.js"></script>
+    <script src="../../YiPet/cdn/components/business/reports/files/yry-report-coupling/index.js"></script>
+    <script src="../../YiPet/cdn/components/business/reports/files/yry-report-risk/index.js"></script>
+    <script src="../../YiPet/cdn/components/business/reports/files/yry-report-health/index.js"></script>
+    <script src="../../YiPet/cdn/components/business/reports/files/yry-report-self-improvement/index.js"></script>
 
 </head>
 <body>
