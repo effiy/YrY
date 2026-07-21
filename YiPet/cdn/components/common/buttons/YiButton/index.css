@@ -1,0 +1,232 @@
+/**
+ * YiButton Component Styles
+ * Soft UI + Minimalism — based on --yi-* design tokens
+ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--yi-space-2);
+  padding: var(--yi-space-2) var(--yi-space-5);
+  border: none;
+  border-radius: var(--yi-radius-md);
+  font-family: var(--yi-font-ui);
+  font-size: var(--yi-text-base);
+  font-weight: 500;
+  line-height: var(--yi-leading-tight);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--yi-duration-fast) var(--yi-easing-default);
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+  color: inherit;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Primary */
+.btn-primary {
+  background: var(--yi-primary);
+  color: var(--yi-text-on-primary);
+  box-shadow: var(--yi-shadow-sm);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--yi-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--yi-shadow-md);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: var(--yi-shadow-sm);
+}
+
+/* Secondary */
+.btn-secondary {
+  background: var(--yi-surface);
+  color: var(--yi-text);
+  border: 1px solid var(--yi-border);
+  box-shadow: var(--yi-shadow-sm);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--yi-surface-hover);
+  border-color: var(--yi-border-focus);
+  transform: translateY(-1px);
+  box-shadow: var(--yi-shadow-md);
+}
+
+/* Outline */
+.btn-outline {
+  background: transparent;
+  color: var(--yi-text);
+  border: 1.5px solid var(--yi-border);
+}
+
+.btn-outline:hover:not(:disabled) {
+  background: var(--yi-surface-hover);
+  border-color: var(--yi-primary);
+  color: var(--yi-primary);
+}
+
+/* Ghost */
+.btn-ghost {
+  background: transparent;
+  color: var(--yi-text);
+  border: none;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: var(--yi-surface-hover);
+}
+
+/* Accent */
+.btn-accent {
+  background: var(--yi-info);
+  color: var(--yi-text-on-primary);
+  box-shadow: var(--yi-shadow-sm);
+}
+
+.btn-accent:hover:not(:disabled) {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+  box-shadow: var(--yi-shadow-md);
+}
+
+/* Status */
+.btn-success {
+  background: var(--yi-success);
+  color: var(--yi-text-on-primary);
+  box-shadow: var(--yi-shadow-sm);
+}
+
+.btn-success:hover:not(:disabled) {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+.btn-warning {
+  background: var(--yi-warning);
+  color: var(--yi-text);
+  box-shadow: var(--yi-shadow-sm);
+}
+
+.btn-warning:hover:not(:disabled) {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+.btn-danger {
+  background: var(--yi-danger);
+  color: var(--yi-text-on-danger);
+  box-shadow: var(--yi-shadow-sm);
+}
+
+.btn-danger:hover:not(:disabled) {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+/* Sizes */
+.btn-sm {
+  padding: var(--yi-space-1) var(--yi-space-3);
+  font-size: var(--yi-text-sm);
+  min-height: 36px;
+}
+
+.btn-lg {
+  padding: var(--yi-space-3) var(--yi-space-6);
+  font-size: var(--yi-text-lg);
+  min-height: 52px;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn-icon {
+  padding: var(--yi-space-2);
+  width: 44px;
+  height: 44px;
+}
+
+.btn-icon.btn-sm {
+  width: 36px;
+  height: 36px;
+  padding: var(--yi-space-1);
+}
+
+.btn-icon.btn-lg {
+  width: 52px;
+  height: 52px;
+  padding: var(--yi-space-3);
+}
+
+/* Focus */
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--yi-shadow-focus);
+}
+
+/* Loading */
+.btn-loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Button group */
+.btn-group {
+  display: inline-flex;
+  gap: var(--yi-space-1);
+}
+
+.btn-group .btn {
+  border-radius: 0;
+}
+
+.btn-group .btn:first-child {
+  border-top-left-radius: var(--yi-radius-md);
+  border-bottom-left-radius: var(--yi-radius-md);
+}
+
+.btn-group .btn:last-child {
+  border-top-right-radius: var(--yi-radius-md);
+  border-bottom-right-radius: var(--yi-radius-md);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .btn {
+    transition: none;
+  }
+  .btn:hover:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* High contrast */
+@media (prefers-contrast: high) {
+  .btn {
+    border: 2px solid currentColor;
+  }
+  .btn:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+}

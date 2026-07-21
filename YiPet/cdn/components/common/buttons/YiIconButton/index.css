@@ -1,0 +1,105 @@
+/**
+ * YiIconButton Component Styles
+ * Soft UI — based on --yi-* design tokens
+ */
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--yi-radius-md);
+  color: var(--yi-text-secondary);
+  font-size: var(--yi-text-base);
+  cursor: pointer;
+  transition: all var(--yi-duration-fast) var(--yi-easing-default);
+  user-select: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.icon-button:hover:not([disabled]):not([aria-disabled="true"]) {
+  background: var(--yi-surface-hover);
+  color: var(--yi-text);
+  border-color: var(--yi-border);
+}
+
+.icon-button:active:not([disabled]):not([aria-disabled="true"]) {
+  background: var(--yi-surface-active);
+  transform: scale(0.96);
+}
+
+.icon-button:focus-visible {
+  outline: none;
+  box-shadow: var(--yi-shadow-focus);
+}
+
+.icon-button.active,
+.icon-button[aria-pressed="true"] {
+  background: var(--yi-primary-subtle);
+  color: var(--yi-primary);
+  border-color: rgba(var(--yi-primary-rgb), 0.3);
+}
+
+.icon-button[disabled],
+.icon-button[aria-disabled="true"] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Size variants */
+.icon-button-sm {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  font-size: var(--yi-text-sm);
+}
+
+.icon-button-lg {
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  min-height: 52px;
+  font-size: var(--yi-text-lg);
+}
+
+/* Variant: primary */
+.icon-button-primary {
+  background: var(--yi-primary-subtle);
+  color: var(--yi-primary);
+  border-color: rgba(var(--yi-primary-rgb), 0.25);
+}
+
+.icon-button-primary:hover:not([disabled]):not([aria-disabled="true"]) {
+  background: rgba(var(--yi-primary-rgb), 0.25);
+  border-color: rgba(var(--yi-primary-rgb), 0.4);
+}
+
+/* Variant: ghost */
+.icon-button-ghost {
+  background: transparent;
+  color: var(--yi-text-secondary);
+  border-color: transparent;
+}
+
+.icon-button-ghost:hover:not([disabled]):not([aria-disabled="true"]) {
+  background: var(--yi-surface-hover);
+  color: var(--yi-text);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .icon-button {
+    transition: none;
+  }
+  .icon-button:active:not([disabled]):not([aria-disabled="true"]) {
+    transform: none;
+  }
+}
