@@ -20,7 +20,7 @@ class InjectionService {
     'core/utils/ui/loadingAnimationMixin.js',
     'core/utils/ui/loadingAnimation.js',
     'core/constants/endpoints.js',
-    'core/api/core/ApiManager.js',
+    'cdn/utils/core/apiManager.js',
     'core/api/services/SessionService.js',
     'core/utils/session/sessionManager.js',
     'core/api/services/FaqService.js',
