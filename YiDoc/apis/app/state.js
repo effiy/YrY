@@ -54,7 +54,7 @@
 
         sections: function () {
             const L = this.CONFIG.labels || {};
-            return [
+            const base = [
                 { id: 'summary',     label: L.sectionSummary || 'Summary' },
                 { id: 'endpoints',   label: L.sectionEndpoints || 'Endpoints' },
                 { id: 'semantics',   label: L.sectionSemantics || 'HTTP Semantics' },
@@ -62,6 +62,10 @@
                 { id: 'security',    label: L.sectionSecurity || 'Security' },
                 { id: 'health',      label: L.sectionHealth || 'Health & Contracts' },
             ];
+            if (this.data && this.data.thirdPartyLibraries && this.data.thirdPartyLibraries.length) {
+                base.push({ id: 'libraries', label: L.sectionLibraries || 'Libraries & Frameworks' });
+            }
+            return base;
         },
 
         alertCounts: function () {

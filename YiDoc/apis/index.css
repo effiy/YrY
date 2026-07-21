@@ -980,6 +980,110 @@
         border: 1px solid var(--yry-border-light);
     }
 
+    /* ── Third-Party Libraries & Frameworks ────────────────────────────── */
+    .section-subtitle {
+        margin: calc(-1 * var(--yry-space-sm)) 0 var(--yry-space-lg);
+        font-size: var(--yry-font-size-sm);
+        color: var(--yry-fg-muted);
+    }
+
+    .lib-category {
+        margin-bottom: var(--yry-space-lg);
+        padding: var(--yry-card-padding);
+        background: var(--yry-card-bg);
+        border: 1px solid var(--yry-card-border);
+        border-radius: var(--yry-card-radius);
+    }
+    .lib-category-head {
+        margin-bottom: var(--yry-space-md);
+    }
+    .lib-category-title {
+        margin: 0 0 var(--yry-space-xs);
+        font-size: var(--yry-font-size-md);
+        font-weight: 600;
+        color: var(--yry-fg);
+    }
+    .lib-category-desc {
+        margin: 0;
+        font-size: var(--yry-font-size-sm);
+        color: var(--yry-fg-muted);
+        line-height: 1.5;
+    }
+
+    .lib-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: var(--yry-space-sm);
+    }
+    @media (max-width: 600px) {
+        .lib-grid { grid-template-columns: 1fr; }
+    }
+
+    .lib-card {
+        display: flex; flex-direction: column; gap: var(--yry-space-xs);
+        padding: var(--yry-space);
+        background: var(--yry-bg-sunken);
+        border: 1px solid var(--yry-border-light);
+        border-radius: var(--yry-radius);
+        cursor: pointer;
+        transition: border-color var(--yry-duration-fast) var(--yry-ease-out),
+                    background var(--yry-duration-fast) var(--yry-ease-out),
+                    transform var(--yry-duration-fast) var(--yry-ease-out),
+                    box-shadow var(--yry-duration-fast) var(--yry-ease-out);
+    }
+    .lib-card:hover {
+        border-color: var(--yry-accent);
+        background: color-mix(in srgb, var(--yry-bg-elev) 60%, var(--yry-bg-sunken));
+        transform: translateY(-1px);
+        box-shadow: var(--yry-shadow-sm);
+    }
+    .lib-card:focus-visible {
+        border-color: var(--yry-accent);
+        box-shadow: var(--yry-ring);
+    }
+
+    .lib-card-top {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: var(--yry-space-sm);
+    }
+    .lib-card-name {
+        font-family: var(--yry-font-mono);
+        font-size: var(--yry-font-size);
+        font-weight: 700;
+        color: var(--yry-fg);
+        text-decoration: none;
+    }
+    .lib-card-name:hover { color: var(--yry-accent); text-decoration: underline; }
+    .lib-card:hover .lib-card-name { color: var(--yry-accent); }
+
+    .lib-card-version {
+        font-family: var(--yry-font-mono);
+        font-size: var(--yry-font-size-xs);
+        padding: 1px 6px;
+        border-radius: var(--yry-badge-radius);
+        background: color-mix(in srgb, var(--yry-ok) 15%, transparent);
+        color: var(--yry-ok);
+        flex-shrink: 0;
+    }
+
+    .lib-card-purpose {
+        margin: 0;
+        font-size: var(--yry-font-size-sm);
+        color: var(--yry-fg-muted);
+        line-height: 1.5;
+        flex: 1;
+    }
+    .lib-card-link {
+        align-self: flex-end;
+        font-size: var(--yry-font-size-xs);
+        font-weight: 600;
+        color: var(--yry-fg-subtle);
+        text-decoration: none;
+        transition: color var(--yry-duration-fast) var(--yry-ease-out);
+    }
+    .lib-card-link:hover { color: var(--yry-accent); text-decoration: underline; }
+    .lib-card:hover .lib-card-link { color: var(--yry-accent); }
+
     /* ── API Method List (semantics section) ───────────────────────────── */
     .api-method-list {
         display: flex; flex-direction: column; gap: var(--yry-space-sm);
