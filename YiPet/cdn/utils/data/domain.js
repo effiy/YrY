@@ -161,7 +161,7 @@ export function getDomainDisplayName(domain) {
  * @param {string} domain - 完整域名
  * @returns {Object} 分类信息
  */
-import { getIconClass } from '/cdn/icons/iconMap.js';
+import { getIconClass } from '/cdn/components/common/icons/iconMap.js';
 
 export function getDomainCategory(domain) {
     if (!domain) {

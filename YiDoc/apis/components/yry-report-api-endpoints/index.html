@@ -30,7 +30,7 @@
                             <span class="mw-list" v-if="ep.middleware && ep.middleware.length">
                                 <span class="mw-chip" v-for="mw in ep.middleware" :key="mw">{{ mw }}</span>
                             </span>
-                            <span v-else style="color: var(--yry-fg-subtle, #4a5062)">—</span>
+                            <span v-else class="text-fg-subtle">—</span>
                         </td>
                         <td><span class="bool-chip" :class="ep.auth">&#x2713;</span><span v-if="!ep.auth" class="bool-chip false">&#x2717;</span></td>
                         <td><span class="bool-chip" :class="ep.validation">&#x2713;</span><span v-if="!ep.validation" class="bool-chip false">&#x2717;</span></td>
@@ -39,12 +39,12 @@
                             <template v-if="ep.statusCodes && ep.statusCodes.length">
                                 <span class="status-code-chip" v-for="sc in ep.statusCodes" :key="sc">{{ sc }}</span>
                             </template>
-                            <span v-else style="color: var(--yry-fg-subtle, #4a5062)">—</span>
+                            <span v-else class="text-fg-subtle">—</span>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        <p v-else style="color: var(--yry-fg-muted, #848893); font-size: 12px;">{{ col.emptyEndpoints || 'No API endpoints detected in scope.' }}</p>
+        <p v-else class="text-fg-muted">{{ col.emptyEndpoints || 'No API endpoints detected in scope.' }}</p>
     </section>
 </script>

@@ -6,6 +6,7 @@
     <title>yry-report-apis · Yi Ecosystem</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2322C55E'/><text x='16' y='22' font-size='18' font-family='sans-serif' font-weight='bold' fill='white' text-anchor='middle'>YD</text></svg>" type="image/svg+xml">
     <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="../css/semantic.css" />
     <!-- Component stylesheets -->
     <link rel="stylesheet" href="components/yry-report-api-summary/index.css" />
     <link rel="stylesheet" href="components/yry-report-api-endpoints/index.css" />
@@ -204,9 +205,9 @@
                         <div class="remediation-cell">
                             <a :href="item.href" class="remediation-link" @click.stop="document.getElementById(item.href.slice(1)).scrollIntoView({behavior:'smooth',block:'start'})">
                                 <span class="remediation-marker">
-                                    <span v-if="item.marker === 'P0'" style="color:var(--yry-critical,#dc2626);font-weight:700;">{{ item.marker }}</span>
-                                    <span v-else-if="item.marker === 'P1'" style="color:var(--yry-warn,#d97706);font-weight:700;">{{ item.marker }}</span>
-                                    <span v-else style="color:var(--yry-ok,#16a34a);font-weight:700;">{{ item.marker }}</span>
+                                    <span v-if="item.marker === 'P0'" class="marker-p0">{{ item.marker }}</span>
+                                    <span v-else-if="item.marker === 'P1'" class="marker-p1">{{ item.marker }}</span>
+                                    <span v-else class="marker-ok">{{ item.marker }}</span>
                                 </span>
                                 <div class="remediation-body">
                                     <div class="remediation-file">
@@ -269,7 +270,7 @@
                 </div>
             </div>
             </template>
-            <p v-if="!remediationQueue.length" style="color: var(--yry-ok, #16a34a); font-size: 13px; font-weight: 600; padding: 16px 0;">
+            <p v-if="!remediationQueue.length" class="text-ok-status">
                 &#x2713; {{ CONFIG.labels.emptyRemediation || 'No remediation items — all clear.' }}
             </p>
         </section>
@@ -372,7 +373,7 @@
                                 <span class="mw-list" v-if="ep.middleware && ep.middleware.length">
                                     <span class="mw-chip" v-for="mw in ep.middleware" :key="mw">{{ mw }}</span>
                                 </span>
-                                <span v-else style="color: var(--yry-fg-subtle, #4a5062)">—</span>
+                                <span v-else class="text-fg-subtle">—</span>
                             </td>
                             <td><span class="bool-chip" :class="ep.auth">&#x2713;</span><span v-if="!ep.auth" class="bool-chip false">&#x2717;</span></td>
                             <td><span class="bool-chip" :class="ep.validation">&#x2713;</span><span v-if="!ep.validation" class="bool-chip false">&#x2717;</span></td>
@@ -381,13 +382,13 @@
                                 <template v-if="ep.statusCodes && ep.statusCodes.length">
                                     <span class="status-code-chip" v-for="sc in ep.statusCodes" :key="sc">{{ sc }}</span>
                                 </template>
-                                <span v-else style="color: var(--yry-fg-subtle, #4a5062)">—</span>
+                                <span v-else class="text-fg-subtle">—</span>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <p v-else style="color: var(--yry-fg-muted, #848893); font-size: 12px;">{{ col.emptyEndpoints || 'No API endpoints detected in scope.' }}</p>
+            <p v-else class="text-fg-muted">{{ col.emptyEndpoints || 'No API endpoints detected in scope.' }}</p>
         </section>
     </script>
     <script type="text/x-template" id="yry-report-api-semantics-tpl">
@@ -435,7 +436,7 @@
                 </div>
             </div>
             <table class="misuse-table" v-if="methodMisuse.length">
-                <caption style="text-align:left;color:var(--yry-fg-muted,#848893);font-size:12px;margin-bottom:8px;">{{ labels.semanticsMisuseTable || 'Method Misuse Detected' }} — {{ methodMisuse.length }} violations</caption>
+                <caption class="table-caption">{{ labels.semanticsMisuseTable || 'Method Misuse Detected' }} — {{ methodMisuse.length }} violations</caption>
                 <thead>
                     <tr>
                         <th>{{ labels.colMethod || 'Method' }}</th>
@@ -448,12 +449,12 @@
                     <tr v-for="(m, idx) in methodMisuse" :key="idx">
                         <td><span class="semantics-method-chip" :class="'m-' + m.method.toLowerCase()">{{ m.method }}</span></td>
                         <td><code>{{ m.path }}</code></td>
-                        <td style="font-size:12px;">{{ m.issue }}</td>
+                        <td class="text-xs">{{ m.issue }}</td>
                         <td><span class="semantics-severity" :class="m.severity.toLowerCase()">{{ m.severity }}</span></td>
                     </tr>
                 </tbody>
             </table>
-            <p v-if="!methodMisuse.length" style="color: var(--yry-ok, #16a34a); font-size: 12px; font-weight: 600;">
+            <p v-if="!methodMisuse.length" class="text-ok-status-sm">
                 &#x2713; All HTTP methods used correctly per RFC 7231.
             </p>
         </section>
@@ -477,19 +478,19 @@
                         <td>{{ p.version || '—' }}</td>
                         <td>{{ p.resource }}</td>
                         <td>
-                            <span :style="{ color: p.restScore >= 80 ? 'var(--yry-ok, #16a34a)' : p.restScore >= 50 ? 'var(--yry-warn, #d97706)' : 'var(--yry-critical, #dc2626)' }" style="font-weight: 700; font-family: var(--yry-font-mono, ui-monospace, monospace);">{{ p.restScore }}</span>
+                            <span :style="{ color: p.restScore >= 80 ? 'var(--yry-ok, #16a34a)' : p.restScore >= 50 ? 'var(--yry-warn, #d97706)' : 'var(--yry-critical, #dc2626)' }" class="text-mono-bold">{{ p.restScore }}</span>
                         </td>
                         <td>{{ p.methodCount }}</td>
                         <td>
-                            <ul v-if="p.issues && p.issues.length" style="margin:0;padding-left:16px;">
-                                <li v-for="iss in p.issues" :key="iss" style="font-size:11px;color:var(--yry-fg-muted,#848893);">{{ iss }}</li>
+                            <ul v-if="p.issues && p.issues.length" class="issues-list">
+                                <li v-for="iss in p.issues" :key="iss" class="issues-list__item">{{ iss }}</li>
                             </ul>
-                            <span v-else style="font-size:11px;color:var(--yry-ok,#16a34a);">&#x2713; Clean</span>
+                            <span v-else class="text-clean-xs">&#x2713; Clean</span>
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <p v-else style="color: var(--yry-fg-muted, #848893); font-size: 12px;">{{ labels.emptyPatterns || 'No route patterns identified.' }}</p>
+            <p v-else class="text-fg-muted">{{ labels.emptyPatterns || 'No route patterns identified.' }}</p>
         </section>
     </script>
     <script type="text/x-template" id="yry-report-api-security-tpl">
@@ -544,7 +545,7 @@
                 </table>
             </div>
             <p v-if="!endpointsMissingAuth.length && !endpointsMissingValidation.length && !endpointsMissingRateLimit.length"
-               style="color: var(--yry-ok, #16a34a); font-size: 12px; font-weight: 600;">
+               class="text-ok-status-sm">
                &#x2713; {{ labels.emptySecurity || 'No security issues detected.' }}
             </p>
         </section>
@@ -580,7 +581,7 @@
                             <td><code>{{ h.path }}</code></td>
                             <td><span class="method-chip" :class="h.method">{{ h.method }}</span></td>
                             <td>{{ h.handler }}</td>
-                            <td style="font-family: var(--yry-font-mono, ui-monospace, monospace); font-weight: 700;">{{ h.lines }}</td>
+                            <td class="text-mono-bold">{{ h.lines }}</td>
                             <td><span class="complexity-badge" :class="h.complexity">{{ h.complexity }}</span></td>
                             <td><code>{{ h.handlerFile }}</code><template v-if="h.line">:{{ h.line }}</template></td>
                         </tr>
@@ -588,7 +589,7 @@
                 </table>
             </div>
             <p v-if="!endpointsWithoutErrorHandling.length && !handlerComplexity.length"
-               style="color: var(--yry-ok, #16a34a); font-size: 12px; font-weight: 600;">
+               class="text-ok-status-sm">
                &#x2713; {{ labels.emptyHealth || 'No health issues detected.' }}
             </p>
         </section>

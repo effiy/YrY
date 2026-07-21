@@ -4,7 +4,7 @@
  */
 
 import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
-import { renderMarkdownHtml, renderStreamingHtml } from '/cdn/markdown/index.js';
+import { renderMarkdownHtml, renderStreamingHtml } from '/cdn/components/markdown/index.js';
 
 const componentOptions = {
     name: 'MarkdownView',

@@ -102,6 +102,11 @@
 .modal-xl { width: 960px; }
 .modal-full { width: 100%; max-width: 1200px; }
 
+/* Body scroll lock — used by modal open */
+.body-scroll-locked {
+  overflow: hidden;
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .modal {

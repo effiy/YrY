@@ -29,7 +29,7 @@
                         <td><code>{{ h.path }}</code></td>
                         <td><span class="method-chip" :class="h.method">{{ h.method }}</span></td>
                         <td>{{ h.handler }}</td>
-                        <td style="font-family: var(--yry-font-mono, ui-monospace, monospace); font-weight: 700;">{{ h.lines }}</td>
+                        <td class="text-mono-bold">{{ h.lines }}</td>
                         <td><span class="complexity-badge" :class="h.complexity">{{ h.complexity }}</span></td>
                         <td><code>{{ h.handlerFile }}</code><template v-if="h.line">:{{ h.line }}</template></td>
                     </tr>
@@ -37,7 +37,7 @@
             </table>
         </div>
         <p v-if="!endpointsWithoutErrorHandling.length && !handlerComplexity.length"
-           style="color: var(--yry-ok, #16a34a); font-size: 12px; font-weight: 600;">
+           class="text-ok-status-sm">
            &#x2713; {{ labels.emptyHealth || 'No health issues detected.' }}
         </p>
     </section>

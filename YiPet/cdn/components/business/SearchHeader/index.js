@@ -1,6 +1,6 @@
 import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 import { SearchHandler } from '/cdn/utils/browser/events.js';
-import { getIconClass } from '/cdn/icons/iconMap.js';
+import { getIconClass } from '/cdn/components/common/icons/iconMap.js';
 
 const compDef = {
   name: 'SearchHeader',

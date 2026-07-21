@@ -46,7 +46,7 @@
         </div>
         <!-- Method misuse detail table -->
         <table class="misuse-table" v-if="methodMisuse.length">
-            <caption style="text-align:left;color:var(--yry-fg-muted,#848893);font-size:12px;margin-bottom:8px;">{{ labels.semanticsMisuseTable || 'Method Misuse Detected' }} — {{ methodMisuse.length }} violations</caption>
+            <caption class="table-caption">{{ labels.semanticsMisuseTable || 'Method Misuse Detected' }} — {{ methodMisuse.length }} violations</caption>
             <thead>
                 <tr>
                     <th>{{ labels.colMethod || 'Method' }}</th>
@@ -59,12 +59,12 @@
                 <tr v-for="(m, idx) in methodMisuse" :key="idx">
                     <td><span class="semantics-method-chip" :class="'m-' + m.method.toLowerCase()">{{ m.method }}</span></td>
                     <td><code>{{ m.path }}</code></td>
-                    <td style="font-size:12px;">{{ m.issue }}</td>
+                    <td class="text-xs">{{ m.issue }}</td>
                     <td><span class="semantics-severity" :class="m.severity.toLowerCase()">{{ m.severity }}</span></td>
                 </tr>
             </tbody>
         </table>
-        <p v-if="!methodMisuse.length" style="color: var(--yry-ok, #16a34a); font-size: 12px; font-weight: 600;">
+        <p v-if="!methodMisuse.length" class="text-ok-status-sm">
             &#x2713; All HTTP methods used correctly per RFC 7231.
         </p>
     </section>

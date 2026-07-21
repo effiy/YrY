@@ -194,11 +194,11 @@
     app.component('yry-panel-hub-inline', {
       props: { buttons: Array, flow: String, label: Object },
       emits: ['select'],
-      template: '<div style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;padding:14px 16px;border-radius:12px;background:color-mix(in srgb, var(--yry-text,#F8FAFC) 3%, transparent);border:1px solid color-mix(in srgb, var(--yry-text,#F8FAFC) 8%, transparent)">'
+      template: '<div class="panel-hub-container">'
         + '<button v-for="(btn, i) in buttons" :key="i" :style="{color: btn.color || \'var(--yry-accent,#22C55E)\'}" @click="$emit(\'select\', {detail:{panel:btn.panel}})">'
-        + '<span v-html="btn.icon" style="margin-right:4px"></span><span>{{ btn.name }}</span>'
+        + '<span v-html="btn.icon" class="panel-hub-btn-icon"></span><span>{{ btn.name }}</span>'
         + '</button>'
-        + '<div v-if="flow" style="width:100%;text-align:center;font-size:.7rem;color:var(--yry-text-muted,#64748b);margin-top:4px">{{ flow }}</div>'
+        + '<div v-if="flow" class="panel-hub-flow">{{ flow }}</div>'
         + '</div>'
     });
 

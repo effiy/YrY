@@ -50,7 +50,7 @@
             </table>
         </div>
         <p v-if="!endpointsMissingAuth.length && !endpointsMissingValidation.length && !endpointsMissingRateLimit.length"
-           style="color: var(--yry-ok, #16a34a); font-size: 12px; font-weight: 600;">
+           class="text-ok-status-sm">
            &#x2713; {{ labels.emptySecurity || 'No security issues detected.' }}
         </p>
     </section>

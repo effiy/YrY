@@ -114,14 +114,14 @@ const compDef = {
 
             // 锁定body滚动
             if (typeof document !== 'undefined') {
-                document.body.style.overflow = 'hidden';
+                document.body.classList.add('body-scroll-locked');
             }
         }
     },
     beforeUnmount() {
         // 恢复body滚动
         if (typeof document !== 'undefined') {
-            document.body.style.overflow = '';
+            document.body.classList.remove('body-scroll-locked');
         }
     }
 };
