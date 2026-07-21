@@ -15,7 +15,7 @@
 
   @four_file_layout: data.js · index.html · index.css · index.js
   @lib_files:         lib/planToMarkdown.js (exposed as window.dailyPlanToMarkdown)
-  @shared_dependencies: /YiPet/cdn/loader.js (Vue 3 + components)
+  @shared_dependencies: /.claude/shared/loader.js (Vue 3 + components)
 -->
 <head>
   <meta charset="UTF-8">
@@ -33,10 +33,10 @@
     console logging.
     ═══════════════════════════════════════════════════════════════════
   -->
-  <script src="/YiPet/cdn/loader.js" data-namespace="rui-plan-report"></script>
+  <script src="/.claude/shared/loader.js" data-namespace="rui-plan-report"></script>
 
   <!-- Shared rui-back-top scroll-to-top button (optional, defensive mount) -->
-  <script src="/YiPet/cdn/components/rui-back-top/index.js"></script>
+  <script src="/.claude/shared/components/rui-back-top/index.js"></script>
 
   <!--
     Page resources (must be loaded in this order: schema first, then

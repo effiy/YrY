@@ -27,7 +27,7 @@
  *
  *   Resource layout (YiPet):
  *     cdn/loader.js          — this file
- *     cdn/components/rui-*/  — shared Vue components (data.js, index.css, index.html, index.js)
+ *     cdn/components/rui-back-top/  — shared Vue components (data.js, index.css, index.html, index.js)
  *     cdn/diagram/           — SVG diagram engine
  *     cdn/fonts/             — self-hosted font files
  *     libs/                  — vendor libraries (vue.global.js, mermaid.min.js, etc.)

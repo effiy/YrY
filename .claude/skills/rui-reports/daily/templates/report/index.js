@@ -14,7 +14,7 @@
  *                                    reactive defaults below)
  * @data_fallback: window.REPORT_DATA_SCHEMA.example (so the template
  *                 renders something useful when opened directly)
- * @runtime:       Vue 3.x (auto-injected by /YiPet/cdn/loader.js)
+ * @runtime:       Vue 3.x (auto-injected by /.claude/shared/loader.js)
  */
 (function () {
   'use strict';
@@ -397,7 +397,7 @@
      ─────────────────────────────────────────────────────────────────── */
   waitForVue().then(function (Vue) {
     if (!Vue) {
-      console.error('[rui-daily-report] Vue 3 was not loaded by the shared CDN loader. Check /YiPet/cdn/loader.js.');
+      console.error('[rui-daily-report] Vue 3 was not loaded by the shared CDN loader. Check /.claude/shared/loader.js.');
       return;
     }
 
