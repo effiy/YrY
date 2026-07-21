@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>FAQ | Adminto - Bootstrap 5 Admin Dashboard Template</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
+    <meta content="Coderthemes" name="author" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+
+    <!-- Vendor CSS (YiPet/cdn) -->
+    <link href="/YiPet/cdn/vendor/bootstrap@5.2.3/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/remixicon.css" rel="stylesheet" type="text/css" />
+    <link href="/YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- App CSS -->
+    <link href="assets/css/app.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="loading">
+
+    <main id="page-content" data-page="faq">
+
+        <div class="card">
+            <div class="card-body">
+                <h3 class="mt-0 mb-3 font-lg"><i class="ri-question-answer-line text-primary me-1"></i> Frequently Asked Questions</h3>
+                <p>以下汇总了 Adminto 管理后台模板在使用、定制和部署过程中的常见问题。如未能找到解答，请通过官方支持渠道联系我们。</p>
+            </div>
+        </div>
+
+        <!-- General -->
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mt-0 mb-3 font-semibold"><i class="ri-question-answer-line text-primary"></i> General Questions</h4>
+
+                <div class="mb-4">
+                    <h5 class="mb-2">Q: Adminto 适用于哪些类型的项目？</h5>
+                    <p class="mb-0 text-muted">Adminto 是为企业级后台管理系统设计的全能型管理面板模板，适用于 CRM（客户关系管理）、CMS（内容管理系统）、ERP、数据分析仪表盘、SaaS 管理后台、项目管理工具等各类 Web 应用。内置丰富的组件库和布局方案，覆盖绝大多数业务场景。</p>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="mb-2">Q: 购买后可获得哪些交付物？</h5>
+                    <p class="mb-0 text-muted">解压购买后的 ZIP 包，你将获得：</p>
+                    <ul class="text-muted">
+                        <li><strong>Admin/</strong> — 管理后台模板源码，包含 SCSS 源文件、未压缩 JS、HTML 页面源文件、Gulp 构建配置</li>
+                        <li><strong>dist/</strong> — 预编译的生产就绪文件，可直接部署</li>
+                        <li><strong>Documentation/</strong> — 本文档系统，涵盖使用指南、定制说明和规范</li>
+                        <li><strong>README.md</strong> — 快速入门说明</li>
+                    </ul>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="mb-2">Q: 是否支持多语言 (i18n) 和 RTL？</h5>
+                    <p class="mb-0 text-muted">是的。Adminto 原生支持 RTL（从右到左）布局，只需在 <code>&lt;html&gt;</code> 标签上设置 <code>dir="rtl"</code> 即可激活。多语言集成可通过第三方库（如 <code>i18next</code>）实现，模板提供了友好的扩展接口。</p>
+                </div>
+
+                <div class="mb-0">
+                    <h5 class="mb-2">Q: 如何获取最新版本更新？</h5>
+                    <p class="mb-0 text-muted">更新会通过购买平台（如 ThemeForest）发布。我们建议关注更新通知，并在升级前备份自定义代码。版本变更详情可参阅 <a href="changelog.html">Changelog</a> 页面。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Setup & Environment -->
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mt-0 mb-3 font-semibold"><i class="ri-settings-3-line text-primary"></i> Setup &amp; Environment</h4>
+
+                <div class="mb-4">
+                    <h5 class="mb-2">Q: 运行 gulp 时报错 <code>Error: ENOENT: no such file or directory, scandir '.../node-sass/vendor'</code>，如何解决？</h5>
+                    <p class="mb-0 text-muted">这是 node-sass 原生二进制未正确构建导致的。依次尝试以下方案：</p>
+                    <ol class="text-muted">
+                        <li>运行 <code>npm rebuild node-sass</code> 重建绑定</li>
+                        <li>删除 <code>node_modules/</code> 目录，重新执行 <code>yarn install</code></li>
+                        <li>如问题持续，考虑升级 node-sass 或切换至 sass (dart-sass)</li>
+                    </ol>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="mb-2">Q: 能否跳过构建流程直接使用 <code>dist/</code> 目录？</h5>
+                    <p class="mb-0 text-muted">可以。如果你不需要修改 SCSS 或进行自定义构建，直接使用 <code>dist/</code> 目录中的预编译文件即可。该目录包含所有已压缩的 CSS、JS 和 HTML 页面，可直接部署到生产环境。</p>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="mb-2">Q: 支持哪些 Node.js 版本？</h5>
+                    <p class="mb-0 text-muted">建议使用 Node.js 16.x 及以上 LTS 版本。较低版本可能存在兼容性问题，尤其是 Gulp 4.x 和 node-sass 原生模块构建方面。</p>
+                </div>
+
+                <div class="mb-0">
+                    <h5 class="mb-2">Q: <code>yarn install</code> 安装依赖缓慢怎么办？</h5>
+                    <p class="mb-0 text-muted">建议：</p>
+                    <ul class="text-muted mb-0">
+                        <li>配置国内镜像源 — <code>yarn config set registry https://registry.npmmirror.com</code></li>
+                        <li>使用代理网络环境</li>
+                        <li>确保 Node.js 版本和 Yarn 版本均为 LTS 最新版</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customization -->
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mt-0 mb-3 font-semibold"><i class="ri-paint-brush-line text-primary"></i> Customization</h4>
+
+                <div class="mb-4">
+                    <h5 class="mb-2">Q: 如何修改主题的主色调？</h5>
+                    <p class="mb-0 text-muted">有几种方式：</p>
+                    <ul class="text-muted">
+                        <li><strong>SCSS 方式</strong>：修改 <code>src/assets/scss/_variables.scss</code> 中的 <code>$primary</code> 变量，重新执行 <code>gulp build</code></li>
+                        <li><strong>CSS 变量方式</strong>：覆盖 <code>:root</code> 中的 <code>--color-primary</code> 和 <code>--color-primary-hover</code></li>
+                        <li><strong>Tailwind 方式</strong>：修改 <code>tailwind.config.js</code> 中的颜色配置</li>
+                    </ul>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="mb-2">Q: 如何切换布局模式（垂直 vs 水平）？</h5>
+                    <p class="mb-0 text-muted">布局模式由 <code>data-layout</code> 属性控制。在 <code>&lt;html&gt;</code> 标签上设置对应属性值即可。详见 <a href="customization.html">Customization</a> 页面中的完整配置选项表。</p>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="mb-2">Q: 如何添加新的页面？</h5>
+                    <p class="mb-0 text-muted">使用 <code>pages-starter.html</code> 作为模板创建新页面。确保引入必要的 CSS（<code>app.min.css</code>, <code>icons.min.css</code>）和 JS（<code>app.min.js</code>）。如使用图表、表格等组件，还需额外引入对应的插件资源文件。</p>
+                </div>
+
+                <div class="mb-0">
+                    <h5 class="mb-2">Q: 能否禁用深色模式？</h5>
+                    <p class="mb-0 text-muted">可以。通过设置 <code>&lt;html data-mode="light"&gt;</code> 固定为浅色模式，或移除模式切换相关的 JS 逻辑。默认情况下，主题会根据系统偏好或用户选择切换。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Components & Plugins -->
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mt-0 mb-3 font-semibold"><i class="ri-apps-line text-primary"></i> Components &amp; Plugins</h4>
+
+                <div class="mb-4">
+                    <h5 class="mb-2">Q: 模板内置了哪些第三方插件？</h5>
+                    <p class="mb-0 text-muted">Adminto 集成了广泛的第三方优秀插件，包括但不限于：</p>
+                    <ul class="text-muted">
+                        <li><strong>图表</strong>: ApexCharts, Chart.js</li>
+                        <li><strong>表格</strong>: DataTables</li>
+                        <li><strong>表单</strong>: Select2, Flatpickr, Dropzone, Quill Editor</li>
+                        <li><strong>地图</strong>: Google Maps, Vector Maps</li>
+                        <li><strong>图标</strong>: Remix Icon, Feather Icons, Material Design Icons</li>
+                        <li><strong>其他</strong>: FullCalendar, SweetAlert2, SimpleBar</li>
+                    </ul>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="mb-2">Q: 如何升级某个第三方插件到最新版本？</h5>
+                    <p class="mb-0 text-muted">通过 <code>yarn upgrade &lt;package-name&gt;</code> 升级后，重新运行 <code>gulp build</code> 即可。注意部分插件的 API 可能在主版本升级中发生 Breaking Change，请在升级前查阅相应插件的 Changelog。</p>
+                </div>
+
+                <div class="mb-0">
+                    <h5 class="mb-2">Q: 能否使用其他 UI 组件库替代 Bootstrap？</h5>
+                    <p class="mb-0 text-muted">Adminto 深度基于 Bootstrap 5 构建，核心布局、网格系统和大量组件都依赖 Bootstrap。不建议替换，但可以通过 SCSS 变量覆盖或 CSS 层叠来定制 Bootstrap 的整体视觉风格，以匹配你的品牌。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deployment -->
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mt-0 mb-3 font-semibold"><i class="ri-cloud-line text-primary"></i> Deployment &amp; Production</h4>
+
+                <div class="mb-4">
+                    <h5 class="mb-2">Q: 如何部署到生产环境？</h5>
+                    <p class="mb-0 text-muted">执行 <code>gulp build</code> 后，将 <code>dist/</code> 目录部署到你的 Web 服务器（Nginx、Apache、CDN 等）。该目录包含所有已压缩优化的文件，可直接提供服务。建议额外配置 HTTP/2、Gzip/Brotli 压缩和 Cache-Control 头以最大化性能。</p>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="mb-2">Q: 能否用于 SPA 框架（React / Vue / Angular）？</h5>
+                    <p class="mb-0 text-muted">Adminto 的原生 HTML/JS/CSS 架构不直接兼容 SPA 框架，但可以将 SCSS 样式体系迁移至你的框架项目中使用。CSS 变量系统和 Tailwind 配置是框架无关的，可直接复用。</p>
+                </div>
+
+                <div class="mb-0">
+                    <h5 class="mb-2">Q: 模板是否包含后端代码？</h5>
+                    <p class="mb-0 text-muted">不包含。Adminto 是纯前端模板，不涉及任何服务端逻辑。你可以使用任何后端技术栈（PHP、Node.js、Python、Java、Go 等）与之集成。模板页面的表单、表格等组件可与后端 API 进行对接。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Licensing & Support -->
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mt-0 mb-3 font-semibold"><i class="ri-shield-line text-primary"></i> Licensing &amp; Support</h4>
+
+                <div class="mb-4">
+                    <h5 class="mb-2">Q: 许可证允许用于哪些场景？</h5>
+                    <p class="mb-0 text-muted">Adminto 采用标准商业许可。单次购买可在一个最终项目中无限期使用。如需用于多个项目或作为 SaaS 产品的一部分出售，请参考购买时的具体许可条款或联系销售获取扩展许可。</p>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="mb-2">Q: 技术支持的响应范围和时效？</h5>
+                    <p class="mb-0 text-muted">技术支持涵盖模板使用、Bug 修复和配置相关问题。不包含深度定制开发、第三方插件集成或后端集成支持。支持团队通常在 24-48 小时内响应工单。紧急问题可通过购买平台的消息系统直接联系。</p>
+                </div>
+
+                <div class="mb-0">
+                    <h5 class="mb-2">Q: 如何反馈 Bug 或提交功能建议？</h5>
+                    <p class="mb-0 text-muted">请通过购买平台（如 ThemeForest）的联系表单提交 Bug 报告或功能请求。提供清晰的复现步骤、环境信息（浏览器版本、操作系统）和截图，将有助于我们更快定位和解决问题。</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Layout injection -->
+    <script src="assets/js/layout.js"></script>
+
+    <!-- Vendor JS (YiPet/cdn) -->
+    <script src="/YiPet/cdn/vendor/jquery@3.7.1/jquery.min.js"></script>
+    <script src="/YiPet/cdn/vendor/bootstrap@5.2.3/js/bootstrap.bundle.min.js"></script>
+    <script src="/YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.js"></script>
+
+    <!-- App JS -->
+    <script src="assets/js/app.min.js"></script>
+
+</body>
+</html>

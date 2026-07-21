@@ -5,14 +5,14 @@
  * 暴露为 window.HELP_CONFIG，供 index.js (Vue 3) 消费。
  *
  * 项目概述：
- *   YiDoc 是一个静态 HTML 网站模板集合，包含 5 个不同风格的网站模板。
- *   涵盖管理后台 (Adminto)、营销落地页 (DpMarket)、商业展示 (Kasy)、
- *   新闻杂志 (News)、UI 组件展示 (Prompt) 等场景。
+ *   YiDoc 是 YrY 生态的文档中枢，整合 6 个子项目（YiAi / YiH5 / YiPet /
+ *   YiPot / YiWeb / Websites）的 rui-init 流水线报告。每个子项目包含
+ *   完整的 detect → explore → generate → arch → verify 产出。
  */
 window.HELP_CONFIG = {
   titleIcon:     "📚",
-  title:         "YiDoc · Website Templates Catalog",
-  tagline:       "静态 HTML 网站模板集合 · 5 个不同风格的网站 · 31 个 HTML 页面 · 18MB 总大小 · /rui-init 生成",
+  title:         "YiDoc · YrY 项目文档中枢",
+  tagline:       "6 个项目的 rui-init 流水线报告 · 68+ 架构 & 自检场景 · detect → explore → generate → arch → verify · 统一仪表盘",
   backTopLabel:  "Back to Top",
   footerNote:    "由 rui-init 流水线自动生成 · detect → explore → generate → arch → verify",
 
@@ -24,10 +24,10 @@ window.HELP_CONFIG = {
 
   // 顶层 KPI 统计卡片
   stats: [
-    { value: "5",   label: "Websites",          modifier: "accent", sub: "template sites" },
-    { value: "31",  label: "HTML Pages",         modifier: "cyan",   sub: "static pages" },
-    { value: "62",  label: "JS Scripts",         modifier: "info",   sub: "javascript files" },
-    { value: "35",  label: "CSS Styles",         modifier: "health", sub: "stylesheet files" }
+    { value: "6",   label: "Projects",          modifier: "accent", sub: "rui-init 报告" },
+    { value: "68+", label: "Scenes",             modifier: "cyan",   sub: "arch + test" },
+    { value: "500+",label: "Source Files",       modifier: "info",   sub: "全项目合计" },
+    { value: "11",  label: "Tech Stacks",        modifier: "health", sub: "Python · JS · Rust · Vue" }
   ],
 
   // 跨面板导航工具栏
@@ -38,14 +38,14 @@ window.HELP_CONFIG = {
       { icon: '🏛', name: 'Architecture',   desc: 'Architecture scenes',  color: 'var(--rui-accent)', panel: 'arch' },
       { icon: '📊', name: 'Files Report',   desc: 'Code health analysis',  color: 'var(--rui-violet)', panel: 'files' },
       { icon: '✅', name: 'Test Scenes',    desc: 'Self-check strategy',  color: 'var(--rui-cyan)',   panel: 'test', targetBlank: false },
-      { icon: '🌐', name: 'Websites',       desc: 'Browse all sites',     color: 'var(--rui-accent)', panel: 'websites' },
+      { icon: '📁', name: 'Projects',       desc: 'All project reports',  color: 'var(--rui-accent)', panel: 'projects' },
     ],
-    flow: 'File Analysis → Code Review → Health Audit → Tech Trends',
+    flow: 'File Analysis → Project Reports → Arch Scenes → Test Verification',
     urls: {
       arch:       'arch/index.html',
       files:      'files/index.html',
       test:       'test/index.html',
-      websites:   'Websites/',
+      projects:   'projects/',
     },
   },
 
@@ -58,20 +58,20 @@ window.HELP_CONFIG = {
         title:   'Daily Report · YiDoc',
         href:    '#',
         status:  'verified',
-        summary: 'All 5 website templates verified. 31 HTML pages pass validation. 62 JS scripts and 35 CSS stylesheets intact. No broken links detected across the entire collection.',
+        summary: 'All 6 project rui-init pipelines completed. 66+ architecture and test scenes generated. YiAi (Python/FastAPI), YiH5 (Vanilla JS SPA), YiPet (Chrome Extension), YiPot (Tauri Desktop), YiWeb (Vue 3 SPA), Websites (14 static templates).',
         metrics: [
-          { label: 'Window',   value: '1d',        tone: 'is-neutral' },
-          { label: 'Sites',    value: '5',          tone: 'is-pass'   },
-          { label: 'Pages',    value: '31',         tone: 'is-pass'   },
-          { label: 'CSS',      value: '35 valid',   tone: 'is-pass'   },
-          { label: 'JS',       value: '62 scripts', tone: 'is-pass'   },
-          { label: 'Size',     value: '18 MB',      tone: 'is-neutral'},
+          { label: 'Window',    value: '1d',       tone: 'is-neutral' },
+          { label: 'Projects',  value: '6',         tone: 'is-pass'   },
+          { label: 'Scenes',    value: '66+',       tone: 'is-pass'   },
+          { label: 'Arch',      value: '31 scenes', tone: 'is-pass'   },
+          { label: 'Test',      value: '36 scenes', tone: 'is-pass'   },
+          { label: 'Status',    value: 'All Pass',  tone: 'is-pass'   },
         ],
         tags: [
           { label: 'all-pass',  tone: 'is-pass' },
-          { label: 'static',    tone: 'is-info' },
+          { label: 'rui-init',  tone: 'is-info' },
         ],
-        meta: '5 websites · 18 MB total',
+        meta: '6 projects · 66+ scenes · all pipelines verified',
       },
     ],
     weekly: [],
@@ -236,10 +236,132 @@ window.HELP_CONFIG = {
       ]
     },
 
-    // ── §3 · 主要网站模块 ────────────────────────────────
+    // ── §3 · 项目 rui-init 报告总览 ─────────────────────
+    {
+      id:    "section-projects",
+      badge: "3",
+      badgeTone: null,
+      title: "Project rui-init Reports",
+      meta:  "6 projects · 68+ scenes · 500+ source files · 4 languages",
+      groups: [
+        {
+          kind:  "stories",
+          icon:  "📁",
+          title: "Project Report Catalog",
+          items: [
+            {
+              icon:        "🐍",
+              title:       "YiAi · Python FastAPI Backend",
+              badge:       "11 scenes",
+              description: "AI 服务 API · <strong>FastAPI + MongoDB</strong> · 模块化执行引擎 · AI 对话 + RSS 订阅 + OSS 存储 · 47 源文件 · 19 运行时依赖",
+              sceneLinks: [
+                { label: "1. Module Location",         href: "projects/YiAi/arch/scene-1-module-location/index.md" },
+                { label: "2. Data Flow Tracing",        href: "projects/YiAi/arch/scene-2-data-flow-tracing/index.md" },
+                { label: "3. Newcomer Onboarding",     href: "projects/YiAi/arch/scene-3-newcomer-onboarding/index.md" },
+                { label: "4. Dependency Impact",        href: "projects/YiAi/arch/scene-4-dependency-change-impact/index.md" },
+                { label: "5. Security Surface",        href: "projects/YiAi/arch/scene-5-trust-boundary-security-surface/index.md" }
+              ],
+              links: [
+                { label: "YiAi Data Model →", href: "projects/YiAi/data.js", target: "_blank" }
+              ],
+              meta: "5 arch + 6 test scenes · risk: medium · Python backend"
+            },
+            {
+              icon:        "📱",
+              title:       "YiH5 · Vanilla JS H5 Frontend",
+              badge:       "11 scenes",
+              description: "原生 JS SPA · <strong>会话管理 + AI 聊天 + 信息流</strong> · 9 组件 + 7 服务 · Mermaid 图表集成 · 38 源文件 · 3 外部库",
+              sceneLinks: [
+                { label: "1. Module Location",         href: "projects/YiH5/arch/scene-1-module-location/index.md" },
+                { label: "2. Data Flow Tracing",        href: "projects/YiH5/arch/scene-2-data-flow-tracing/index.md" },
+                { label: "3. Newcomer Onboarding",     href: "projects/YiH5/arch/scene-3-newcomer-onboarding/index.md" },
+                { label: "4. Dependency Impact",        href: "projects/YiH5/arch/scene-4-dependency-change-impact/index.md" },
+                { label: "5. Security Surface",        href: "projects/YiH5/arch/scene-5-trust-boundary-security-surface/index.md" }
+              ],
+              links: [
+                { label: "YiH5 Data Model →", href: "projects/YiH5/data.js", target: "_blank" }
+              ],
+              meta: "5 arch + 6 test scenes · risk: low · Vanilla JS SPA"
+            },
+            {
+              icon:        "🐾",
+              title:       "YiPet · AI Chrome Extension",
+              badge:       "12 scenes",
+              description: "温柔陪伴助手 · <strong>Manifest V3</strong> · IIFE 模块化 · 26 CDN 组件 · 49 第三方库 · 275 源文件 · Markdown + Mermaid 渲染",
+              sceneLinks: [
+                { label: "1. Module Location",         href: "projects/YiPet/arch/scene-1-module-location/index.md" },
+                { label: "2. Data Flow Tracing",        href: "projects/YiPet/arch/scene-2-data-flow-tracing/index.md" },
+                { label: "3. Newcomer Onboarding",     href: "projects/YiPet/arch/scene-3-newcomer-onboarding/index.md" },
+                { label: "4. Dependency Impact",        href: "projects/YiPet/arch/scene-4-dependency-change-impact/index.md" },
+                { label: "5. Security Surface",        href: "projects/YiPet/arch/scene-5-trust-boundary-security-surface/index.md" }
+              ],
+              links: [
+                { label: "YiPet Data Model →", href: "projects/YiPet/data.js", target: "_blank" }
+              ],
+              meta: "6 arch + 6 test scenes · risk: medium · Chrome Extension"
+            },
+            {
+              icon:        "🖥",
+              title:       "YiPot · Tauri Desktop Translation Tool",
+              badge:       "12 scenes",
+              description: "跨平台桌面翻译器 · <strong>Tauri + React</strong> · 21 翻译引擎 + 15 OCR 后端 + TTS · 55+ 源文件 · Rust 后端 + JSX 前端",
+              sceneLinks: [
+                { label: "1. Module Location",         href: "projects/YiPot/arch/scene-1-module-location/index.md" },
+                { label: "2. Data Flow Tracing",        href: "projects/YiPot/arch/scene-2-data-flow-tracing/index.md" },
+                { label: "3. Newcomer Onboarding",     href: "projects/YiPot/arch/scene-3-newcomer-onboarding/index.md" },
+                { label: "4. Dependency Impact",        href: "projects/YiPot/arch/scene-4-dependency-change-impact/index.md" },
+                { label: "5. Security Surface",        href: "projects/YiPot/arch/scene-5-trust-boundary-security-surface/index.md" },
+                { label: "6. IPC & Window Lifecycle",  href: "projects/YiPot/arch/scene-6-ipc-window-lifecycle/index.md" }
+              ],
+              links: [
+                { label: "YiPot Data Model →", href: "projects/YiPot/data.js", target: "_blank" }
+              ],
+              meta: "6 arch + 6 test scenes · risk: medium · Tauri fullstack"
+            },
+            {
+              icon:        "🔍",
+              title:       "YiWeb · AI Code Review Web Application",
+              badge:       "12 scenes",
+              description: "Vue 3 SPA · <strong>三个视图 (aicr / claude / story)</strong> · Hook 模式状态管理 · CDN 组件系统 · 95 源文件 · 3 视图 + 20 组件",
+              sceneLinks: [
+                { label: "1. Module Location",         href: "projects/YiWeb/arch/scene-1-module-location/index.md" },
+                { label: "2. Data Flow Tracing",        href: "projects/YiWeb/arch/scene-2-data-flow-tracing/index.md" },
+                { label: "3. Newcomer Onboarding",     href: "projects/YiWeb/arch/scene-3-newcomer-onboarding/index.md" },
+                { label: "4. Dependency Impact",        href: "projects/YiWeb/arch/scene-4-dependency-change-impact/index.md" },
+                { label: "5. Security Surface",        href: "projects/YiWeb/arch/scene-5-trust-boundary-security-surface/index.md" },
+                { label: "6. View & Hook Lifecycle",   href: "projects/YiWeb/arch/scene-6-view-hook-lifecycle/index.md" }
+              ],
+              links: [
+                { label: "YiWeb Data Model →", href: "projects/YiWeb/data.js", target: "_blank" }
+              ],
+              meta: "6 arch + 6 test scenes · risk: medium · Vue 3 SPA"
+            },
+            {
+              icon:        "🌐",
+              title:       "Websites · Static HTML Template Collection",
+              badge:       "11 scenes",
+              description: "14 独立静态 HTML 模板 · <strong>Bootstrap / Tailwind / jQuery / Swiper</strong> · 282 HTML 页面 · 39 CSS · 89 JS · 独立部署",
+              sceneLinks: [
+                { label: "1. Module Location",         href: "projects/Websites/arch/scene-1-module-location/index.md" },
+                { label: "2. Data Flow Tracing",        href: "projects/Websites/arch/scene-2-data-flow-tracing/index.md" },
+                { label: "3. Newcomer Onboarding",     href: "projects/Websites/arch/scene-3-newcomer-onboarding/index.md" },
+                { label: "4. Dependency Impact",        href: "projects/Websites/arch/scene-4-dependency-change-impact/index.md" },
+                { label: "5. Security Surface",        href: "projects/Websites/arch/scene-5-trust-boundary-security-surface/index.md" }
+              ],
+              links: [
+                { label: "Websites Data Model →", href: "projects/Websites/data.js", target: "_blank" }
+              ],
+              meta: "5 arch + 6 test scenes · risk: low · Static HTML"
+            }
+          ]
+        }
+      ]
+    },
+
+    // ── §4 · 主要网站模块 ────────────────────────────────
     {
       id:    "section-source",
-      badge: "3",
+      badge: "4",
       badgeTone: null,
       title: "Website Template Collection",
       meta:  "5 sites · 31 pages · 35 CSS · 62 JS · 41 fonts · 31 images",
@@ -310,12 +432,13 @@ window.HELP_CONFIG = {
   ],
 
   footerLinks: [
-    { label: "Adminto",       href: "Websites/Adminto/index.html",   targetBlank: true },
-    { label: "DpMarket",     href: "Websites/DpMarket/index.html",   targetBlank: true },
-    { label: "Kasy",         href: "Websites/Kasy/index.html",       targetBlank: true },
-    { label: "News",         href: "Websites/News/index.html",       targetBlank: true },
-    { label: "Prompt",       href: "Websites/Prompt/index.html",     targetBlank: true },
-    { label: "Architecture", href: "arch/index.html",                targetBlank: true },
-    { label: "Test Scenes",  href: "test/index.html",                targetBlank: true }
+    { label: "YiAi Report",     href: "projects/YiAi/data.js",        targetBlank: true },
+    { label: "YiH5 Report",     href: "projects/YiH5/data.js",        targetBlank: true },
+    { label: "YiPet Report",    href: "projects/YiPet/data.js",       targetBlank: true },
+    { label: "YiPot Report",    href: "projects/YiPot/data.js",       targetBlank: true },
+    { label: "YiWeb Report",    href: "projects/YiWeb/data.js",       targetBlank: true },
+    { label: "Websites Report", href: "projects/Websites/data.js",    targetBlank: true },
+    { label: "Architecture",    href: "arch/index.html",              targetBlank: true },
+    { label: "Test Scenes",     href: "test/index.html",              targetBlank: true }
   ]
 };

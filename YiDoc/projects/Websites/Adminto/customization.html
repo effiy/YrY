@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Customization | Adminto - Bootstrap 5 Admin Dashboard Template</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
+    <meta content="Coderthemes" name="author" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+
+    <!-- Vendor CSS (YiPet/cdn) -->
+    <link href="/YiPet/cdn/vendor/bootstrap@5.2.3/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/remixicon.css" rel="stylesheet" type="text/css" />
+    <link href="/YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- App CSS -->
+    <link href="assets/css/app.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="loading">
+
+    <main id="page-content" data-page="customization">
+
+        <div class="card">
+            <div class="card-body">
+                <h3 class="mt-0 mb-3 font-lg">Customization</h3>
+                <p>Adminto 提供了全面的定制化能力，从布局模式、色彩方案到字体和组件样式均可灵活调整。本指南涵盖了从入门到高级的定制方法，帮助你快速适配品牌需求。</p>
+            </div>
+        </div>
+
+        <!-- Layout Options -->
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mb-2 mt-0 font-semibold"><i class="ri-layout-line text-primary"></i> Layout Options</h4>
+                <p>Adminto 提供多种布局选择，包括垂直布局（左侧主导航）和水平布局（顶部主导航）。通过修改 <code>&lt;html&gt;</code> 元素上的 data 属性即可切换：</p>
+                <p class="mb-0">参考 <code>src/</code> 或 <code>dist/</code> 目录下的 <code>layouts-horizontal.html</code> 文件了解水平布局的激活方式。</p>
+            </div>
+        </div>
+
+        <!-- Data Attribute Config Reference -->
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mb-2 mt-0 font-semibold"><i class="ri-settings-4-line text-primary"></i> Data Attribute Configuration Reference</h4>
+                <p>通过 <code>&lt;html&gt;</code> 元素上的 data 属性控制布局、色彩和组件行为。完整配置项如下：</p>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th width="18%">Attribute</th>
+                                <th width="10%">Type</th>
+                                <th width="28%">Options</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>data-mode</code></td>
+                                <td>String</td>
+                                <td><code>"light"</code> | <code>"dark"</code></td>
+                                <td>全局色彩模式。默认跟随系统偏好，可强制指定。</td>
+                            </tr>
+                            <tr>
+                                <td><code>dir</code></td>
+                                <td>String</td>
+                                <td><code>"ltr"</code> | <code>"rtl"</code></td>
+                                <td>布局方向。LTR 为从左到右，RTL 为从右到左。</td>
+                            </tr>
+                            <tr>
+                                <td><code>data-layout-width</code></td>
+                                <td>String</td>
+                                <td><code>"fluid"</code> | <code>"boxed"</code></td>
+                                <td>内容区域宽度。fluid 为自适应全宽，boxed 为固定宽度居中。</td>
+                            </tr>
+                            <tr>
+                                <td><code>data-sidenav-view</code></td>
+                                <td>String</td>
+                                <td><code>"default"</code> | <code>"condensed"</code> | <code>"compact"</code></td>
+                                <td>侧边栏显示模式。default 展开完整菜单，condensed 仅显示图标，compact 为紧凑模式。</td>
+                            </tr>
+                            <tr>
+                                <td><code>data-layout-position</code></td>
+                                <td>String</td>
+                                <td><code>"fixed"</code> | <code>"scrollable"</code></td>
+                                <td>布局定位方式。fixed 固定侧边栏和顶栏，scrollable 随页面滚动。</td>
+                            </tr>
+                            <tr>
+                                <td><code>data-menu-color</code></td>
+                                <td>String</td>
+                                <td><code>"light"</code> | <code>"dark"</code> | <code>"brand"</code> | <code>"gradient"</code></td>
+                                <td>侧边栏菜单配色。brand 使用主题色，gradient 使用渐变背景。</td>
+                            </tr>
+                            <tr>
+                                <td><code>data-topbar-color</code></td>
+                                <td>String</td>
+                                <td><code>"light"</code> | <code>"dark"</code></td>
+                                <td>顶部导航栏配色。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h5 class="mt-4 mb-2">配置示例</h5>
+                <pre>&lt;!-- 深色侧边栏 + 浅色顶栏 + 固定布局 --&gt;
+&lt;html data-menu-color="dark" data-topbar-color="light" data-layout-position="fixed"&gt;
+
+&lt;!-- 品牌色侧边栏 + 深色模式 --&gt;
+&lt;html data-menu-color="brand" data-mode="dark"&gt;
+
+&lt;!-- 紧凑侧边栏 + RTL + 盒装布局 --&gt;
+&lt;html data-sidenav-view="compact" dir="rtl" data-layout-width="boxed"&gt;</pre>
+            </div>
+        </div>
+
+        <!-- SCSS Variable Override -->
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mb-2 mt-0 font-semibold"><i class="ri-palette-line text-primary"></i> SCSS Variable Override</h4>
+                <p>Adminto 使用 SCSS 变量系统实现全局样式控制。通过覆盖以下核心变量来快速定制主题外观：</p>
+                <div class="table-responsive">
+                    <table class="table table-bordered mb-3">
+                        <thead>
+                            <tr>
+                                <th width="28%">Variable</th>
+                                <th width="22%">Default</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>$primary</code></td><td><code>#727cf5</code></td><td>主题色，影响按钮、链接、活跃状态、进度条等</td></tr>
+                            <tr><td><code>$secondary</code></td><td><code>#6c757d</code></td><td>次要色，用于次要按钮和背景</td></tr>
+                            <tr><td><code>$success</code></td><td><code>#0acf97</code></td><td>成功色，用于成功状态、通知</td></tr>
+                            <tr><td><code>$danger</code></td><td><code>#fa5c7c</code></td><td>危险/错误色，用于错误提示和删除操作</td></tr>
+                            <tr><td><code>$warning</code></td><td><code>#ffbc00</code></td><td>警告色，用于警告提示</td></tr>
+                            <tr><td><code>$info</code></td><td><code>#39afd1</code></td><td>信息色，用于信息提示</td></tr>
+                            <tr><td><code>$font-family-base</code></td><td><code>'Inter', sans-serif</code></td><td>全局基础字体栈</td></tr>
+                            <tr><td><code>$font-size-base</code></td><td><code>0.875rem</code></td><td>基准字号</td></tr>
+                            <tr><td><code>$body-bg</code></td><td><code>#fafbfe</code></td><td>页面背景色</td></tr>
+                            <tr><td><code>$body-color</code></td><td><code>#6c757d</code></td><td>正文文字颜色</td></tr>
+                            <tr><td><code>$border-radius</code></td><td><code>0.25rem</code></td><td>全局圆角值</td></tr>
+                            <tr><td><code>$input-btn-padding-y</code></td><td><code>0.45rem</code></td><td>按钮/输入框垂直内边距</td></tr>
+                            <tr><td><code>$input-btn-padding-x</code></td><td><code>0.9rem</code></td><td>按钮/输入框水平内边距</td></tr>
+                            <tr><td><code>$enable-shadows</code></td><td><code>true</code></td><td>是否启用全局阴影效果</td></tr>
+                            <tr><td><code>$enable-gradients</code></td><td><code>false</code></td><td>是否启用渐变背景</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>修改变量后，运行 <code>gulp build</code> 重新编译 SCSS 即可生效。建议在 <code>src/assets/scss/_variables.scss</code> 中集中管理所有变量覆盖。</p>
+            </div>
+        </div>
+
+        <!-- CSS Custom Properties -->
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mb-2 mt-0 font-semibold"><i class="ri-braces-line text-primary"></i> CSS Custom Properties (Runtime Theming)</h4>
+                <p>除了 SCSS 编译时变量，Adminto 还提供运行时 CSS 变量系统，无需重新构建即可动态调整样式。在 <code>:root</code> 或任意选择器中覆盖即可：</p>
+                <pre>/* 动态切换主题色（无需重新编译） */
+:root {
+    --color-primary: #0acf97;
+    --color-primary-hover: #09b885;
+    --color-bg: #f5f6fa;
+    --color-surface: #ffffff;
+    --color-text: #4a5568;
+}
+
+/* 按需覆盖侧边栏变量 */
+:root {
+    --color-sidebar-bg: #1a1c2e;
+    --color-sidebar-text: #a0a7b8;
+    --sidebar-width: 260px;
+}
+
+/* 启用深色模式 */
+.dark {
+    --color-bg: #0f1117;
+    --color-surface: #1a1d2e;
+    --color-text: #a0a7b8;
+    --color-heading: #e2e4e9;
+}</pre>
+                <p class="mb-0">完整的设计 Token 列表请参阅 <a href="specifications.html">Specifications</a> 页面。深色模式通过 <code>.dark</code> 类自动激活，切换按钮位于顶栏右侧的月亮/太阳图标。</p>
+            </div>
+        </div>
+
+        <!-- Typographic Scale -->
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mb-2 mt-0 font-semibold"><i class="ri-font-size text-primary"></i> Typographic Scale</h4>
+                <p>Adminto 内置了一套完整的排版系统，通过 CSS 自定义属性控制字体层级：</p>
+                <div class="table-responsive">
+                    <table class="table table-bordered mb-0">
+                        <thead>
+                            <tr>
+                                <th width="25%">CSS Variable</th>
+                                <th width="18%">Default</th>
+                                <th width="18%">Size in px</th>
+                                <th>Usage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>--font-size-xs</code></td><td>0.6875rem</td><td>11px</td><td>超小文本 — 标签、徽章、脚注</td></tr>
+                            <tr><td><code>--font-size-sm</code></td><td>0.825rem</td><td>13.2px</td><td>小号文本 — 辅助说明、表格内容</td></tr>
+                            <tr><td><code>--font-size-base</code></td><td>0.875rem</td><td>14px</td><td>正文基准字号 — 段落、列表、表单</td></tr>
+                            <tr><td><code>--font-size-md</code></td><td>0.8925rem</td><td>14.28px</td><td>中等强调 — 导航项、卡片标题</td></tr>
+                            <tr><td><code>--font-size-lg</code></td><td>1.375rem</td><td>22px</td><td>大标题 — h3/h4 级别</td></tr>
+                            <tr><td><code>--font-size-icon</code></td><td>1.1rem</td><td>17.6px</td><td>标准图标尺寸</td></tr>
+                            <tr><td><code>--font-size-icon-lg</code></td><td>1.35rem</td><td>21.6px</td><td>大型图标尺寸</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Adding Pages -->
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mb-2 mt-0 font-semibold"><i class="ri-file-add-line text-primary"></i> Adding New Pages</h4>
+                <p>使用 <code>pages-starter.html</code> 作为模板创建新页面。请确保以下要点：</p>
+                <ol>
+                    <li><strong>引入核心资源</strong>：确保页面包含 <code>css/app.min.css</code>、<code>css/icons.min.css</code> 和 <code>js/app.min.js</code></li>
+                    <li><strong>设置页面标识</strong>：在 <code>&lt;main&gt;</code> 元素上设置 <code>data-page</code> 属性，以便 layout.js 正确高亮侧边栏菜单</li>
+                    <li><strong>引入组件资源</strong>：如使用图表、数据表格、日历、地图等组件，需额外引入对应的 CSS 和 JS 文件</li>
+                    <li><strong>构建</strong>：运行 <code>gulp build</code> 编译新页面到 <code>dist/</code> 目录</li>
+                </ol>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Layout injection -->
+    <script src="assets/js/layout.js"></script>
+
+    <!-- Vendor JS (YiPet/cdn) -->
+    <script src="/YiPet/cdn/vendor/jquery@3.7.1/jquery.min.js"></script>
+    <script src="/YiPet/cdn/vendor/bootstrap@5.2.3/js/bootstrap.bundle.min.js"></script>
+    <script src="/YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.js"></script>
+
+    <!-- App JS -->
+    <script src="assets/js/app.min.js"></script>
+
+</body>
+</html>

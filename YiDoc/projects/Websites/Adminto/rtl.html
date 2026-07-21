@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>RTL | Adminto - Bootstrap 5 Admin Dashboard Template</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
+    <meta content="Coderthemes" name="author" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+
+    <!-- Vendor CSS (YiPet/cdn) -->
+    <link href="/YiPet/cdn/vendor/bootstrap@5.2.3/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/remixicon.css" rel="stylesheet" type="text/css" />
+    <link href="/YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- App CSS -->
+    <link href="assets/css/app.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="loading">
+
+    <main id="page-content" data-page="rtl">
+
+        <div class="card">
+            <div class="card-body">
+                <h3 class="mt-0 mb-3 font-lg">RTL (Right-to-Left) Support</h3>
+                <p>Adminto 原生支持 RTL（从右到左）布局模式，适用于阿拉伯语、希伯来语、波斯语、乌尔都语等 RTL 语言的 Web 应用。RTL 模式自动反转布局方向、文本对齐、间距和图标方向，无需手动调整任何组件。</p>
+            </div>
+        </div>
+
+        <!-- Activation -->
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mt-0 mb-3 font-semibold"><i class="ri-toggle-line text-primary"></i> Activation</h4>
+                <p>激活 RTL 模式只需两步，无需额外的 CSS 或 JS 文件：</p>
+
+                <h5 class="mt-4 mb-2">方法一：HTML 属性（推荐）</h5>
+                <p>在 <code>&lt;html&gt;</code> 标签上同时设置 <code>dir="rtl"</code> 和 <code>lang</code> 属性：</p>
+                <pre>&lt;html lang="ar" dir="rtl"&gt;
+  ...
+&lt;/html&gt;</pre>
+                <p class="text-muted">Bootstrap 5 内置的 RTL 支持会自动响应 <code>dir</code> 属性，无需额外引入 bootstrap.rtl.css。所有工具类（如 <code>me-*</code>/<code>ms-*</code>、<code>pe-*</code>/<code>ps-*</code>）都会自动翻转。</p>
+
+                <h5 class="mt-4 mb-2">方法二：data 属性配置</h5>
+                <p>通过 <code>data-layout</code> 属性配置 RTL：</p>
+                <pre>&lt;html lang="ar" data-layout='{"dir": "rtl"}'&gt;
+  ...
+&lt;/html&gt;</pre>
+
+                <div class="alert alert-info mt-3">
+                    <i class="ri-information-line"></i> 在 <code>src/partials/main.html</code> 文件中修改 <code>&lt;html&gt;</code> 标签即可全局生效。
+                </div>
+            </div>
+        </div>
+
+        <!-- What gets flipped -->
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mt-0 mb-3 font-semibold"><i class="ri-arrow-left-right-line text-primary"></i> What Gets Flipped Automatically</h4>
+                <p>启用 RTL 后，以下元素会自动适配：</p>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered mb-0">
+                        <thead>
+                            <tr>
+                                <th width="25%">Category</th>
+                                <th width="40%">LTR Default</th>
+                                <th>RTL Behavior</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Layout Direction</strong></td>
+                                <td>Content flows left → right</td>
+                                <td>Content flows right → left</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Sidebar Position</strong></td>
+                                <td>Left side (<code>left: 0</code>)</td>
+                                <td>Right side (<code>right: 0</code>)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Content Offset</strong></td>
+                                <td><code>margin-left: 250px</code></td>
+                                <td><code>margin-right: 250px</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Topbar Position</strong></td>
+                                <td><code>left: 250px; right: 0</code></td>
+                                <td><code>right: 250px; left: 0</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Text Alignment</strong></td>
+                                <td><code>text-align: left</code></td>
+                                <td><code>text-align: right</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Margin/Padding</strong></td>
+                                <td><code>margin-left</code>, <code>padding-right</code></td>
+                                <td>Logical properties auto-flip</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Icons</strong></td>
+                                <td>Normal orientation</td>
+                                <td>Mirrored where appropriate</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tables</strong></td>
+                                <td>Columns left → right</td>
+                                <td>Columns right → left</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- RTL CSS Architecture -->
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mt-0 mb-3 font-semibold"><i class="ri-code-s-slash-line text-primary"></i> RTL CSS Architecture</h4>
+                <p>Adminto 的 RTL 支持基于以下 CSS 特性实现：</p>
+
+                <h5 class="mt-4 mb-2">1. Bootstrap 5 Logical Properties</h5>
+                <p>Bootstrap 5 广泛使用 CSS Logical Properties，在 <code>dir="rtl"</code> 时自动翻转方向：</p>
+                <pre>/* 使用逻辑属性替代物理属性 */
+margin-inline-start: 1rem;   /* 替代 margin-left (LTR) / margin-right (RTL) */
+padding-inline-end: 1rem;    /* 替代 padding-right (LTR) / padding-left (RTL) */
+border-inline-start: 1px;    /* 替代 border-left (LTR) / border-right (RTL) */
+text-align: start;           /* 替代 text-align: left/right */</pre>
+
+                <h5 class="mt-4 mb-2">2. Direction-Aware Utility Classes</h5>
+                <p>使用 Bootstrap 5 的方向感知类，避免硬编码左右方向：</p>
+                <div class="table-responsive">
+                    <table class="table table-bordered mb-3 table-sm">
+                        <thead>
+                            <tr>
+                                <th>Old (Physical)</th>
+                                <th>New (Logical)</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>.ml-*</code></td><td><code>.ms-*</code></td><td>Margin start（LTR 时左侧，RTL 时右侧）</td></tr>
+                            <tr><td><code>.mr-*</code></td><td><code>.me-*</code></td><td>Margin end（LTR 时右侧，RTL 时左侧）</td></tr>
+                            <tr><td><code>.pl-*</code></td><td><code>.ps-*</code></td><td>Padding start</td></tr>
+                            <tr><td><code>.pr-*</code></td><td><code>.pe-*</code></td><td>Padding end</td></tr>
+                            <tr><td><code>.text-left</code></td><td><code>.text-start</code></td><td>Text align start</td></tr>
+                            <tr><td><code>.text-right</code></td><td><code>.text-end</code></td><td>Text align end</td></tr>
+                            <tr><td><code>.float-left</code></td><td><code>.float-start</code></td><td>Float start</td></tr>
+                            <tr><td><code>.float-right</code></td><td><code>.float-end</code></td><td>Float end</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h5 class="mt-4 mb-2">3. SCSS RTL Mixins</h5>
+                <p>在 SCSS 源文件中，使用 RTL mixin 编写方向感知样式：</p>
+                <pre>// In SCSS source files
+.sidebar {
+    @include ltr {
+        left: 0;
+        border-right: 1px solid $border-color;
+    }
+    @include rtl {
+        right: 0;
+        border-left: 1px solid $border-color;
+    }
+}</pre>
+            </div>
+        </div>
+
+        <!-- RTL Browser Coverage -->
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mt-0 mb-3 font-semibold"><i class="ri-global-line text-primary"></i> Supported Languages &amp; Locales</h4>
+                <p>Adminto RTL 模式已在以下语言环境中经过验证：</p>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <ul class="mb-0">
+                            <li><strong>Arabic</strong> (ar) — العربية</li>
+                            <li><strong>Hebrew</strong> (he) — עברית</li>
+                            <li><strong>Persian / Farsi</strong> (fa) — فارسی</li>
+                            <li><strong>Urdu</strong> (ur) — اردو</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="mb-0">
+                            <li><strong>Pashto</strong> (ps) — پښتو</li>
+                            <li><strong>Dari</strong> (prs) — دری</li>
+                            <li><strong>Sindhi</strong> (sd) — سنڌي</li>
+                            <li><strong>Kurdish</strong> (ku) — کوردی</li>
+                        </ul>
+                    </div>
+                </div>
+                <p class="mt-3 mb-0 text-muted"><i class="ri-information-line"></i> RTL 布局与所有内置组件（图表、表格、表单、模态框）兼容。第三方插件的 RTL 支持情况请参考各自文档。</p>
+            </div>
+        </div>
+
+        <!-- Best Practices -->
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mt-0 mb-3 font-semibold"><i class="ri-checkbox-circle-line text-primary"></i> RTL Development Best Practices</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="mb-2">Do</h5>
+                        <ul class="mb-0">
+                            <li>使用 Bootstrap 5 逻辑工具类（<code>.ms-*</code>, <code>.me-*</code>）</li>
+                            <li>使用 <code>text-start</code> / <code>text-end</code> 而非 <code>text-left</code> / <code>text-right</code></li>
+                            <li>图标方向相关的用 CSS <code>transform: scaleX(-1)</code> 翻转</li>
+                            <li>在 SCSS 中使用 <code>@include rtl { }</code> mixin</li>
+                            <li>使用 CSS 自定义属性动态调整方向相关值</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="mb-2">Don't</h5>
+                        <ul class="mb-0">
+                            <li>避免硬编码 <code>left</code> / <code>right</code> 定位</li>
+                            <li>避免使用 <code>.ml-*</code> / <code>.mr-*</code>（已废弃）</li>
+                            <li>避免在 JS 中直接计算元素方向</li>
+                            <li>避免使用 <code>direction: ltr</code> 内联覆盖</li>
+                            <li>避免对图标使用固定的旋转角度</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Layout injection -->
+    <script src="assets/js/layout.js"></script>
+
+    <!-- Vendor JS (YiPet/cdn) -->
+    <script src="/YiPet/cdn/vendor/jquery@3.7.1/jquery.min.js"></script>
+    <script src="/YiPet/cdn/vendor/bootstrap@5.2.3/js/bootstrap.bundle.min.js"></script>
+    <script src="/YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.js"></script>
+
+    <!-- App JS -->
+    <script src="assets/js/app.min.js"></script>
+
+</body>
+</html>

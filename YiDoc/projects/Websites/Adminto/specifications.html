@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Specifications | Adminto - Bootstrap 5 Admin Dashboard Template</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
+    <meta content="Coderthemes" name="author" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+
+    <!-- Vendor CSS (YiPet/cdn) -->
+    <link href="/YiPet/cdn/vendor/bootstrap@5.2.3/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/remixicon.css" rel="stylesheet" type="text/css" />
+    <link href="/YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- App CSS -->
+    <link href="assets/css/app.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="loading">
+
+    <main id="page-content" data-page="specifications">
+
+        <div class="card">
+            <div class="card-body">
+                <h3 class="mt-0 mb-3 font-lg"><i class="ri-file-list-3-line text-primary me-1"></i> Technical Specifications</h3>
+                <p>Adminto 遵循严格的技术栈规范与工程化标准。以下为项目的完整技术规格，涵盖前端架构、构建工具链、编码规范及浏览器兼容性等核心维度。</p>
+            </div>
+        </div>
+
+        <!-- Tech Stack -->
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mt-0 mb-3 font-semibold"><i class="ri-stack-line text-primary"></i> Technology Stack</h4>
+                <div class="table-responsive">
+                    <table class="table table-bordered mb-0">
+                        <thead>
+                            <tr>
+                                <th width="25%">Category</th>
+                                <th width="30%">Technology</th>
+                                <th>Version</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>CSS Framework</td><td>Tailwind CSS</td><td><span class="badge bg-primary">3.3.3</span></td></tr>
+                            <tr><td>UI Components</td><td>Bootstrap</td><td><span class="badge bg-primary">5.2.3</span></td></tr>
+                            <tr><td>JavaScript Engine</td><td>jQuery</td><td><span class="badge bg-primary">3.7.1</span></td></tr>
+                            <tr><td>Icon Library</td><td>Remix Icon</td><td><span class="badge bg-primary">3.5.0</span></td></tr>
+                            <tr><td>Custom Scrollbar</td><td>SimpleBar</td><td><span class="badge bg-primary">5.1.0</span></td></tr>
+                            <tr><td>Build System</td><td>Gulp</td><td><span class="badge bg-primary">4.0.x</span></td></tr>
+                            <tr><td>Package Manager</td><td>Yarn</td><td><span class="badge bg-primary">1.22.x</span></td></tr>
+                            <tr><td>CSS Preprocessor</td><td>Sass / SCSS</td><td><span class="badge bg-primary">1.62.x</span></td></tr>
+                            <tr><td>Runtime</td><td>Node.js</td><td><span class="badge bg-primary">≥16.x (LTS)</span></td></tr>
+                            <tr><td>Markup</td><td>HTML5</td><td><span class="badge bg-primary">—</span></td></tr>
+                            <tr><td>Styling</td><td>CSS3 (Custom Properties)</td><td><span class="badge bg-primary">—</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coding Standards -->
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mt-0 mb-3 font-semibold"><i class="ri-code-box-line text-primary"></i> Coding Standards &amp; Conventions</h4>
+
+                <h5 class="mt-4 mb-2">CSS / SCSS</h5>
+                <ul>
+                    <li><strong>Design Tokens (CSS Custom Properties)</strong>: 所有颜色、字体、间距等设计变量统一通过 <code>:root</code> 中的 CSS 变量定义，变量名遵循语义化命名规范（如 <code>--color-primary</code>、<code>--font-size-base</code>），禁止在变量名中使用数字。</li>
+                    <li><strong>变量命名规范</strong>: 采用两层结构 <code>--{category}-{property}</code>，例如：
+                        <ul>
+                            <li><code>--color-*</code> — 色彩系统（bg, surface, text, primary, danger 等）</li>
+                            <li><code>--font-*</code> — 字体系统（family, size-*, mono）</li>
+                            <li><code>--sidebar-*</code> — 侧边栏相关</li>
+                            <li><code>--topbar-*</code> — 顶栏相关</li>
+                            <li><code>--radius-*</code> — 圆角系统</li>
+                            <li><code>--shadow-*</code> — 阴影系统</li>
+                        </ul>
+                    </li>
+                    <li><strong>响应式断点</strong>: 继承 Tailwind CSS 默认断点 — <code>sm: 640px</code>, <code>md: 768px</code>, <code>lg: 1024px</code>, <code>xl: 1280px</code>, <code>2xl: 1536px</code>。</li>
+                    <li><strong>类命名</strong>: 采用 Bootstrap 风格的功能性前缀命名法，如 <code>.font-*</code>、<code>.bg-*</code>、<code>.text-*</code>。</li>
+                    <li><strong>布局模式</strong>: 使用 Flexbox 和 CSS Grid 进行布局，侧边栏采用 <code>position: fixed</code> 实现固定定位。</li>
+                </ul>
+
+                <h5 class="mt-4 mb-2">JavaScript</h5>
+                <ul>
+                    <li><strong>模块化架构</strong>: JS 按职责分离 — <code>layout.js</code> 负责共享布局注入（侧边栏、顶栏、页脚），<code>app.min.js</code> 负责页面交互逻辑（菜单高亮、移动端折叠、滚动条初始化等）。</li>
+                    <li><strong>页面识别</strong>: 通过 <code>main#page-content</code> 上的 <code>data-page</code> 属性标识当前页面，layout.js 据此动态高亮对应菜单项。</li>
+                    <li><strong>初始化模式</strong>: 采用 <code>DOMContentLoaded</code> 事件驱动的初始化流程，各功能模块封装为独立函数（<code>initLoading</code>, <code>initMenuToggle</code>, <code>initActiveMenu</code>, <code>initSimpleBar</code>）。</li>
+                    <li><strong>严格模式</strong>: 所有脚本默认启用 <code>'use strict'</code>。</li>
+                    <li><strong>无全局污染</strong>: 使用 IIFE（Immediately Invoked Function Expression）包裹，避免变量泄漏至全局作用域。</li>
+                    <li><strong>防御性编程</strong>: 在调用第三方库（如 SimpleBar）时提供 <code>try/catch</code> 包裹及降级方案。</li>
+                </ul>
+
+                <h5 class="mt-4 mb-2">HTML</h5>
+                <ul>
+                    <li><strong>语义化标签</strong>: 使用 <code>&lt;main&gt;</code> 包裹页面主体内容，<code>&lt;footer&gt;</code> 定义页脚区域。</li>
+                    <li><strong>无障碍访问</strong>: 图片提供 <code>alt</code> 属性，链接使用 <code>aria-label</code> 或描述性文本。</li>
+                    <li><strong>编码规范</strong>: 统一使用 <code>UTF-8</code> 编码，设置 <code>X-UA-Compatible</code> 为 <code>IE=edge</code>。</li>
+                    <li><strong>Viewport</strong>: 统一设置 <code>width=device-width, initial-scale=1.0</code> 以适配移动端。</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Architecture -->
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mt-0 mb-3 font-semibold"><i class="ri-folders-line text-primary"></i> Architecture &amp; Project Structure</h4>
+                <pre class="mb-0">
+Adminto Admin Dashboard
+├── Documentation/                # 文档站点（本目录）
+│   ├── index.html                # 产品介绍
+│   ├── setup.html                # 环境搭建指南
+│   ├── customization.html        # 定制化说明
+│   ├── specifications.html       # 技术规范
+│   ├── rtl.html                  # RTL 支持
+│   ├── faq.html                  # 常见问题
+│   └── assets/
+│       ├── css/                  # 样式文件
+│       │   ├── app.min.css       # 应用核心样式
+│       │   └── remixicon.css     # Remix Icon
+│       ├── js/
+│       │   ├── layout.js         # 共享布局注入器
+│       │   └── app.min.js        # 应用初始化逻辑
+│       └── images/               # 图片资源
+│           ├── favicon.svg
+│           ├── logo-light.svg
+│           └── logo-sm.svg
+│
+└── Admin/                        # 管理后台模板源码
+    ├── dist/                     # 生产就绪文件
+    ├── src/                      # 源文件
+    │   ├── assets/
+    │   │   ├── fonts/            # 字体文件
+    │   │   ├── images/           # 图片资源
+    │   │   ├── js/               # JavaScript 源文件
+    │   │   ├── scss/             # SCSS 源文件
+    │   │   └── data/             # 数据文件
+    │   └── *.html                # HTML 页面源文件
+    ├── gulpfile.js               # Gulp 构建配置
+    ├── tailwind.config.js        # Tailwind CSS 配置
+    ├── package.json              # 依赖清单
+    └── yarn.lock                 # 依赖锁定文件</pre>
+            </div>
+        </div>
+
+        <!-- Browser Support -->
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mt-0 mb-3 font-semibold"><i class="ri-global-line text-primary"></i> Browser Compatibility</h4>
+                <div class="table-responsive">
+                    <table class="table table-bordered mb-0 text-center">
+                        <thead>
+                            <tr>
+                                <th width="25%">Browser</th>
+                                <th>Chrome</th>
+                                <th>Firefox</th>
+                                <th>Safari</th>
+                                <th>Edge</th>
+                                <th>Opera</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Desktop</strong></td>
+                                <td><i class="ri-checkbox-circle-fill text-success"></i> ≥90</td>
+                                <td><i class="ri-checkbox-circle-fill text-success"></i> ≥90</td>
+                                <td><i class="ri-checkbox-circle-fill text-success"></i> ≥14</td>
+                                <td><i class="ri-checkbox-circle-fill text-success"></i> ≥90</td>
+                                <td><i class="ri-checkbox-circle-fill text-success"></i> ≥75</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Mobile</strong></td>
+                                <td><i class="ri-checkbox-circle-fill text-success"></i> Android Chrome</td>
+                                <td><i class="ri-checkbox-circle-fill text-success"></i> Android Firefox</td>
+                                <td><i class="ri-checkbox-circle-fill text-success"></i> iOS Safari</td>
+                                <td><i class="ri-checkbox-circle-fill text-success"></i> Android Edge</td>
+                                <td><i class="ri-checkbox-circle-fill text-success"></i> Android Opera</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="mt-3 mb-0 text-muted"><i class="ri-information-line"></i> 以上为最低兼容版本。实际支持范围覆盖所有主流现代浏览器（基于 ES6 和 CSS Custom Properties 支持）。</p>
+            </div>
+        </div>
+
+        <!-- Performance & Accessibility -->
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mt-0 mb-3 font-semibold"><i class="ri-speed-line text-primary"></i> Performance &amp; Accessibility Targets</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="mb-2">Performance</h5>
+                        <ul class="mb-0">
+                            <li><strong>首次内容绘制 (FCP)</strong>: &lt; 1.5s</li>
+                            <li><strong>最大内容绘制 (LCP)</strong>: &lt; 2.5s</li>
+                            <li><strong>累计布局偏移 (CLS)</strong>: &lt; 0.1</li>
+                            <li><strong>总阻塞时间 (TBT)</strong>: &lt; 200ms</li>
+                            <li><strong>CSS 体积</strong>: 核心样式 &lt; 150KB (未压缩)</li>
+                            <li><strong>JS 体积</strong>: 核心脚本 &lt; 100KB (未压缩)</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="mb-2">Accessibility</h5>
+                        <ul class="mb-0">
+                            <li><strong>WCAG 级别</strong>: 目标 AA 级合规</li>
+                            <li><strong>色彩对比度</strong>: 正文 ≥ 4.5:1，大文本 ≥ 3:1</li>
+                            <li><strong>键盘导航</strong>: 支持完整的 Tab 键焦点导航</li>
+                            <li><strong>屏幕阅读器</strong>: 关键交互元素配备 <code>aria-*</code> 属性</li>
+                            <li><strong>焦点指示器</strong>: 保留浏览器默认 <code>:focus-visible</code> 样式</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Design System -->
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mt-0 mb-3 font-semibold"><i class="ri-palette-line text-primary"></i> Design System (CSS Custom Properties)</h4>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm mb-0">
+                        <thead>
+                            <tr>
+                                <th width="30%">Token</th>
+                                <th width="35%">Default Value</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>--color-bg</code></td><td>#fafbfe</td><td>页面背景色</td></tr>
+                            <tr><td><code>--color-surface</code></td><td>#fff</td><td>卡片/面板背景色</td></tr>
+                            <tr><td><code>--color-surface-hover</code></td><td>#f5f7fb</td><td>卡片/表格行悬停背景</td></tr>
+                            <tr><td><code>--color-border</code></td><td>#eef2f7</td><td>边框颜色</td></tr>
+                            <tr><td><code>--color-text</code></td><td>#6c757d</td><td>正文颜色</td></tr>
+                            <tr><td><code>--color-text-muted</code></td><td>#98a6ad</td><td>次要文本颜色</td></tr>
+                            <tr><td><code>--color-heading</code></td><td>#313a46</td><td>标题颜色</td></tr>
+                            <tr><td><code>--color-primary</code></td><td>#727cf5</td><td>主题色</td></tr>
+                            <tr><td><code>--color-primary-hover</code></td><td>#5a63e0</td><td>主题色悬停</td></tr>
+                            <tr><td><code>--color-secondary</code></td><td>#f1f3f9</td><td>次要背景色</td></tr>
+                            <tr><td><code>--color-success</code></td><td>#0acf97</td><td>成功色</td></tr>
+                            <tr><td><code>--color-warning</code></td><td>#ffbc00</td><td>警告色</td></tr>
+                            <tr><td><code>--color-danger</code></td><td>#fa5c7c</td><td>危险/错误色</td></tr>
+                            <tr><td><code>--color-info</code></td><td>#39afd1</td><td>信息色</td></tr>
+                            <tr><td><code>--color-sidebar-bg</code></td><td>#313a46</td><td>侧边栏背景</td></tr>
+                            <tr><td><code>--color-sidebar-text</code></td><td>#8391a2</td><td>侧边栏文本</td></tr>
+                            <tr><td><code>--color-sidebar-text-hover</code></td><td>#bccee4</td><td>侧边栏文本悬停</td></tr>
+                            <tr><td><code>--color-code-bg</code></td><td>#f7f7f7</td><td>代码块背景</td></tr>
+                            <tr><td><code>--color-code-text</code></td><td>#e83e8c</td><td>行内代码文字色</td></tr>
+                            <tr><td><code>--font-family</code></td><td>Inter, system-ui</td><td>全局字体栈</td></tr>
+                            <tr><td><code>--font-mono</code></td><td>SF Mono, Monospace</td><td>等宽字体栈</td></tr>
+                            <tr><td><code>--font-size-caption</code></td><td>0.6875rem</td><td>超小文本 — 标签、徽章</td></tr>
+                            <tr><td><code>--font-size-body-sm</code></td><td>0.825rem</td><td>小号文本 — 辅助说明</td></tr>
+                            <tr><td><code>--font-size-body</code></td><td>0.875rem</td><td>正文基准字号</td></tr>
+                            <tr><td><code>--font-size-nav</code></td><td>0.8925rem</td><td>导航项文本</td></tr>
+                            <tr><td><code>--font-size-heading</code></td><td>1.375rem</td><td>标题字号 (h3/h4)</td></tr>
+                            <tr><td><code>--font-size-icon</code></td><td>1.1rem</td><td>标准图标尺寸</td></tr>
+                            <tr><td><code>--font-size-icon-lg</code></td><td>1.35rem</td><td>大型图标尺寸</td></tr>
+                            <tr><td><code>--line-height-body</code></td><td>1.7</td><td>正文字行高</td></tr>
+                            <tr><td><code>--line-height-heading</code></td><td>1.35</td><td>标题行高</td></tr>
+                            <tr><td><code>--sidebar-width</code></td><td>250px</td><td>侧边栏宽度</td></tr>
+                            <tr><td><code>--topbar-height</code></td><td>70px</td><td>顶栏高度</td></tr>
+                            <tr><td><code>--radius-sm</code></td><td>0.2rem</td><td>小圆角</td></tr>
+                            <tr><td><code>--radius</code></td><td>0.25rem</td><td>默认圆角</td></tr>
+                            <tr><td><code>--shadow-card</code></td><td>0 0.75rem 1.5rem rgba(18,38,63,.03)</td><td>卡片阴影</td></tr>
+                            <tr><td><code>--shadow-card-hover</code></td><td>0 0.75rem 2rem rgba(18,38,63,.08)</td><td>卡片悬停阴影</td></tr>
+                            <tr><td><code>--ring-color</code></td><td>var(--color-primary)</td><td>焦点指示环颜色</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Build Pipeline -->
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mt-0 mb-3 font-semibold"><i class="ri-tools-line text-primary"></i> Build Pipeline</h4>
+                <div class="table-responsive">
+                    <table class="table table-bordered mb-3">
+                        <thead>
+                            <tr>
+                                <th width="20%">Command</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>yarn install</code></td>
+                                <td>安装所有依赖至 <code>node_modules/</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>gulp</code></td>
+                                <td>启动开发服务器（默认 vertical 布局），监听文件变更并实时刷新。访问 <a href="http://localhost:3000/">http://localhost:3000/</a></td>
+                            </tr>
+                            <tr>
+                                <td><code>gulp build</code></td>
+                                <td>编译 SCSS → CSS，合并/压缩 JS，输出至 <code>dist/</code> 目录用于生产部署</td>
+                            </tr>
+                            <tr>
+                                <td><code>npm rebuild node-sass</code></td>
+                                <td>重建 node-sass 原生绑定（用于解决安装过程中的二进制兼容问题）</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="alert alert-info mb-0">
+                    <i class="ri-information-line"></i> Gulp 构建流程包括：SCSS 编译 → Autoprefixer 添加浏览器前缀 → CSS 压缩 → JS 合并与压缩 → HTML 文件复制。
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Layout injection -->
+    <script src="assets/js/layout.js"></script>
+
+    <!-- Vendor JS (YiPet/cdn) -->
+    <script src="/YiPet/cdn/vendor/jquery@3.7.1/jquery.min.js"></script>
+    <script src="/YiPet/cdn/vendor/bootstrap@5.2.3/js/bootstrap.bundle.min.js"></script>
+    <script src="/YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.js"></script>
+
+    <!-- App JS -->
+    <script src="assets/js/app.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Changelog | Adminto - Bootstrap 5 Admin Dashboard Template</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
+    <meta content="Coderthemes" name="author" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+
+    <!-- Vendor CSS (YiPet/cdn) -->
+    <link href="/YiPet/cdn/vendor/bootstrap@5.2.3/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/remixicon.css" rel="stylesheet" type="text/css" />
+    <link href="/YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- App CSS -->
+    <link href="assets/css/app.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="loading">
+
+    <main id="page-content" data-page="changelog">
+
+        <div class="card">
+            <div class="card-body">
+                <h3 class="mt-0 mb-3 font-lg">Changelog</h3>
+                <p>Adminto 的完整版本变更记录。我们持续改进模板的功能、性能和开发体验。建议在升级前查阅变更内容并备份自定义代码。</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+
+                <!-- v1.2.0 -->
+                <div class="mb-4">
+                    <h4>
+                        <span class="badge bg-primary font-sm">v1.2.0</span>
+                        <span class="sub-header"> — 15 March 2024 (Latest)</span>
+                    </h4>
+                    <h5 class="mt-3 mb-2 font-semibold">New Features</h5>
+                    <ul class="changlog-list">
+                        <li>Added <strong>Kanban Board</strong> page with drag-and-drop task management</li>
+                        <li>Introduced <strong>File Manager</strong> with grid/list views, upload, and folder management</li>
+                        <li>Added <strong>Timeline</strong> component for activity feeds and event logging</li>
+                        <li>New <strong>Email</strong> pages: Inbox, Compose, Read, and Templates</li>
+                        <li>Introduced <strong>Vector Maps</strong> integration (jsvectormap) for geographic data visualization</li>
+                        <li>Added <strong>Sweetalert2</strong> integration for enhanced alert dialogs</li>
+                    </ul>
+                    <h5 class="mt-3 mb-2 font-semibold">Improvements</h5>
+                    <ul class="changlog-list">
+                        <li>Enhanced dark mode contrast ratios for better WCAG AA compliance</li>
+                        <li>Optimized SCSS compilation pipeline — build time reduced by ~40%</li>
+                        <li>Refactored sidebar menu to support multi-level nested navigation</li>
+                        <li>Improved mobile touch interaction for DataTables and Select2</li>
+                        <li>Updated Remix Icon to v4.1.0 with 300+ new icons</li>
+                        <li>Added CSS logical properties throughout for seamless RTL support</li>
+                    </ul>
+                    <h5 class="mt-3 mb-2 font-semibold">Bug Fixes</h5>
+                    <ul class="changlog-list">
+                        <li>Fixed dropdown menu overflow issue on small viewports</li>
+                        <li>Resolved z-index stacking conflict between modals and offcanvas</li>
+                        <li>Fixed Chart.js responsive resize on sidebar toggle</li>
+                        <li>Corrected Flatpickr date picker alignment in RTL mode</li>
+                    </ul>
+                </div>
+
+                <hr class="mb-4" style="border-color: var(--color-border);">
+
+                <!-- v1.1.0 -->
+                <div class="mb-4">
+                    <h4>
+                        <span class="badge bg-primary font-sm">v1.1.0</span>
+                        <span class="sub-header"> — 05 December 2023</span>
+                    </h4>
+                    <ul class="changlog-list">
+                        <li>Added CSS Custom Properties design token system (<code>--color-*</code>, <code>--font-*</code>, etc.)</li>
+                        <li>Introduced shared layout injector (<code>layout.js</code>) to eliminate HTML duplication across documentation pages — reduced code footprint by ~80%</li>
+                        <li>Enhanced RTL support with automatic direction detection via <code>dir</code> attribute</li>
+                        <li>Added SimpleBar custom scrollbar integration for sidebar and content areas with graceful fallback</li>
+                        <li>Improved responsive behavior on mobile devices — sidebar overlay mode for small screens</li>
+                        <li>Updated Bootstrap to v5.2.3 and jQuery to v3.7.1</li>
+                        <li>Documentation site restructured with modular shared assets architecture</li>
+                        <li>Added search functionality in documentation with keyboard shortcut support</li>
+                        <li>Introduced light/dark mode toggle with system preference detection</li>
+                    </ul>
+                </div>
+
+                <hr class="mb-4" style="border-color: var(--color-border);">
+
+                <!-- v1.0.1 -->
+                <div class="mb-4">
+                    <h4>
+                        <span class="badge bg-primary font-sm">v1.0.1</span>
+                        <span class="sub-header"> — 20 September 2023</span>
+                    </h4>
+                    <ul class="changlog-list">
+                        <li>Fixed sidebar scroll position persistence issue on page reload</li>
+                        <li>Resolved dark mode color contrast issues on form elements (input, select, textarea)</li>
+                        <li>Optimized SCSS compilation output — reduced CSS bundle by 15%</li>
+                        <li>Fixed overlapping tooltip on collapsed sidebar menu items</li>
+                        <li>Minor UI refinements: typography scale, card shadows, button hover states</li>
+                        <li>Improved NPM post-install script compatibility on Windows environments</li>
+                    </ul>
+                </div>
+
+                <hr class="mb-4" style="border-color: var(--color-border);">
+
+                <!-- v1.0.0 -->
+                <div>
+                    <h4>
+                        <span class="badge bg-primary font-sm">v1.0.0</span>
+                        <span class="sub-header"> — 17 August 2023 (Initial Release)</span>
+                    </h4>
+                    <h5 class="mt-3 mb-2 font-semibold">Core Architecture</h5>
+                    <ul class="changlog-list">
+                        <li>Vertical and Horizontal dual layout modes, switchable via data attributes</li>
+                        <li>Light and Dark color modes with CSS custom property-driven theming</li>
+                        <li>Full RTL (right-to-left) layout support leveraging Bootstrap 5 logical properties</li>
+                        <li>Gulp 4.x build pipeline: SCSS compilation, Autoprefixer, CSS/JS minification, live reload</li>
+                        <li>Tailwind CSS 3.3.3 integration as design foundation</li>
+                        <li>Bootstrap 5.2.3 component library with full grid system and utilities</li>
+                    </ul>
+                    <h5 class="mt-3 mb-2 font-semibold">Pages &amp; Features</h5>
+                    <ul class="changlog-list">
+                        <li>Dashboard analytics with ApexCharts integration — line, bar, area, pie, and radial charts</li>
+                        <li>DataTables integration with sorting, filtering, pagination, and server-side support</li>
+                        <li>Built-in authentication pages: Login, Register, Recover Password, Lock Screen, Logout</li>
+                        <li>Error pages: 404 Not Found, 500 Internal Server Error, Maintenance Mode</li>
+                        <li>Starter page template for rapid new page creation</li>
+                    </ul>
+                    <h5 class="mt-3 mb-2 font-semibold">UI Components</h5>
+                    <ul class="changlog-list">
+                        <li>Base: Alerts, Badges, Breadcrumbs, Buttons, Cards, Dropdowns, Progress Bars, Spinners</li>
+                        <li>Navigation: Tabs, Pills, Accordions, Pagination</li>
+                        <li>Form: Inputs, Select2, Flatpickr date/time picker, Dropzone file upload, Quill rich text editor</li>
+                        <li>Advanced: Modals, Offcanvas, Tooltips, Popovers, Toasts, Carousel</li>
+                        <li>Icon libraries: Remix Icon (2000+ icons), Feather Icons, Material Design Icons</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Upgrade Guide -->
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mt-0 mb-3 font-semibold"><i class="ri-arrow-up-circle-line text-primary"></i> Upgrade Guide</h4>
+                <p>从旧版本升级到最新版本时的注意事项：</p>
+
+                <h5 class="mt-4 mb-2">v1.1.x → v1.2.0</h5>
+                <ul class="mb-3">
+                    <li>新增 Kanban、File Manager、Timeline、Email 等页面文件，需手动复制到项目中</li>
+                    <li>Remix Icon 升级至 v4.1.0 — 部分图标类名可能变更，请参考 <a href="https://remixicon.com/" target="_blank" rel="noopener">Remix Icon 官方文档</a></li>
+                    <li>SCSS 构建配置优化 — 如自定义了 gulpfile.js，需合并上游变更</li>
+                </ul>
+
+                <h5 class="mt-4 mb-2">v1.0.x → v1.1.0</h5>
+                <ul class="mb-0">
+                    <li>CSS Custom Properties 系统引入 — 旧版硬编码的颜色值需迁移至 <code>var(--color-*)</code> 变量</li>
+                    <li>文档站点重构 — <code>layout.js</code> 统一管理布局注入，自定义文档页面需适配新的数据属性约定</li>
+                    <li>Bootstrap 更新至 5.2.3 — 使用已废弃的类（如 <code>.form-group</code>）需更新</li>
+                </ul>
+
+                <div class="alert alert-info mt-4 mb-0">
+                    <i class="ri-information-line"></i> <strong>提示：</strong>升级前务必备份 <code>src/</code> 目录下的自定义代码。建议使用版本控制（Git）管理项目，以便在升级出现问题时回滚。
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Layout injection -->
+    <script src="assets/js/layout.js"></script>
+
+    <!-- Vendor JS (YiPet/cdn) -->
+    <script src="/YiPet/cdn/vendor/jquery@3.7.1/jquery.min.js"></script>
+    <script src="/YiPet/cdn/vendor/bootstrap@5.2.3/js/bootstrap.bundle.min.js"></script>
+    <script src="/YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.js"></script>
+
+    <!-- App JS -->
+    <script src="assets/js/app.min.js"></script>
+
+</body>
+</html>
