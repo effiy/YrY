@@ -1,0 +1,90 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY · H5 BaseList styles — shared list item layout primitives
+
+   Classes used:
+     .item__mid               Flex-1 middle column (min-width safety)
+     .item__row1              Top row: title + spacing
+     .item__title             Title line with icon support
+     .item__row2              Second row: preview + meta
+     .item__preview           Two-line clamped preview text
+     .item__meta              Flex-none meta column (time, badges, etc.)
+     .time                    Timestamp text
+     .item__right             Right-side action column
+
+   Naming: all classes use the `item__` prefix inherited from the BaseList
+   template structure. These are shared by SessionList, NewsList, and other
+   list-based components.
+
+   Depends on design tokens:
+     --muted, --primary-rgb, --primary, --accent
+     --text-primary, --text-secondary
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Item layout ────────────────────────────────────────────────────────── */
+.item__mid{flex:1;min-width:0}
+.item__row1{display:flex;align-items:flex-start;gap:8px;min-width:0;justify-content:space-between}
+.item__title{
+  font-weight:700;
+  font-size:15px;
+  display:flex;
+  align-items:flex-start;
+  gap:6px;
+  min-width:0;
+  line-height:1.4;
+}
+.item__title > *:not(.newsItem__icon){
+  flex:1;
+  min-width:0;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-height:2.8em;
+}
+/* 新闻列表中的图标在标题中显示 */
+.item__title .newsItem__icon{
+  flex:none;
+  font-size:14px;
+  opacity:0.7;
+  margin-top:2px;
+}
+
+/* ── Second row + preview ───────────────────────────────────────────────── */
+.item__row2{
+  margin-top:5px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  color:var(--muted);
+  font-size:12px;
+}
+.item__preview{
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  min-width:0;
+  flex:1;
+  line-height:1.4;
+  max-height:2.8em;
+}
+.item__meta{flex:none;display:flex;align-items:center;gap:8px}
+
+/* ── Time + right column ────────────────────────────────────────────────── */
+.time{color:var(--text-muted)}
+
+.item__right{flex:none;display:flex;align-items:center;gap:10px}
+
+/* ── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .item__title{font-size:14px}
+  .item__row2{font-size:11px}
+}
+
+/* ── a11y: reduced-motion preference ────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}

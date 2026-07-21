@@ -6,8 +6,8 @@
 import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 import { renderMarkdownHtml, renderStreamingHtml } from '/cdn/components/markdown/index.js';
 
-const componentOptions = {
-    name: 'MarkdownView',
+const compDef = {
+    name: 'yryMarkdownView',
     props: {
         content: {
             type: [String, Number, Object, Array],
@@ -54,5 +54,5 @@ const componentOptions = {
     `
 };
 
-registerGlobalComponent(componentOptions);
-export default componentOptions;
+registerGlobalComponent(compDef);
+export default compDef;

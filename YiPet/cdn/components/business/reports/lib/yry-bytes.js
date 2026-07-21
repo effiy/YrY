@@ -2,7 +2,7 @@
  * yry-bytes — shared low-level utilities used by both the page-level app
  *             and the section components.
  * ----------------------------------------------------------------------
- * Exposes `window.RuiBytes` with:
+ * Exposes `window.YrYBytes` with:
  *   - humanBytes(b)    → string (e.g. "4.3 MB")
  *   - debounce(fn, ms) → debounced wrapper
  *
@@ -41,7 +41,7 @@
         };
     }
 
-    window.RuiBytes = {
+    window.YrYBytes = {
         humanBytes: humanBytes,
         debounce: debounce,
     };

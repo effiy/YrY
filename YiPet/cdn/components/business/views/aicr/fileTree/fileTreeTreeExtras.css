@@ -14,23 +14,23 @@
 
 /* ========== 文件统计 ========== */
 .folder-count {
-    color: var(--yi-text-muted);
+    color: var(--yry-text-muted);
     font-size: 11px;
     margin-left: auto;
-    background: var(--yi-surface-hover);
+    background: var(--yry-surface-hover);
     padding: 1px var(--spacing-xs);
     border-radius: 10px;
     min-width: 16px;
     text-align: center;
     opacity: 0.7;
-    transition: all var(--yi-duration-fast) var(--yi-easing-default);
+    transition: all var(--yry-duration-fast) var(--yry-easing-default);
     flex: 0 0 auto; /* 防止挤压文件名 */
 }
 
 .file-tree-item:hover .folder-count {
     opacity: 1;
-    background: rgba(var(--yi-primary-rgb), 0.2);
-    color: var(--yi-primary);
+    background: rgba(var(--yry-primary-rgb), 0.2);
+    color: var(--yry-primary);
 }
 
 /* ========== 嵌套文件夹 ========== */
@@ -43,7 +43,7 @@
 /* ========== 展开/折叠动画 ========== */
 .file-tree-collapse {
     overflow: hidden;
-    transition: all var(--yi-duration-normal) var(--yi-easing-default);
+    transition: all var(--yry-duration-normal) var(--yry-easing-default);
 }
 
 .file-tree-collapse.collapsed {
@@ -64,7 +64,7 @@
     align-items: center;
     justify-content: center;
     padding: var(--spacing-xl);
-    color: var(--yi-text-muted);
+    color: var(--yry-text-muted);
     font-size: 14px;
 }
 
@@ -85,7 +85,7 @@
     align-items: center;
     justify-content: center;
     padding: var(--spacing-xl);
-    color: var(--yi-danger);
+    color: var(--yry-danger);
     font-size: 14px;
     text-align: center;
 }
@@ -102,23 +102,23 @@
     align-items: center;
     justify-content: center;
     padding: 48px 0 32px 0;
-    color: var(--yi-text-muted);
-    background: var(--yi-surface);
+    color: var(--yry-text-muted);
+    background: var(--yry-surface);
     border-radius: 12px;
     min-height: 180px;
-    border: 1px solid var(--yi-border);
+    border: 1px solid var(--yry-border);
     margin: 32px 16px 0 16px;
-    transition: background var(--yi-duration-fast) var(--yi-easing-default);
+    transition: background var(--yry-duration-fast) var(--yry-easing-default);
 }
 .empty-state:hover {
-    background: var(--yi-surface-hover);
+    background: var(--yry-surface-hover);
 }
 .empty-icon {
     font-size: 44px;
-    color: var(--yi-primary);
+    color: var(--yry-primary);
     margin-bottom: 12px;
     opacity: 0.7;
-    transition: color var(--yi-duration-fast) var(--yi-easing-default);
+    transition: color var(--yry-duration-fast) var(--yry-easing-default);
 }
 .empty-state:hover .empty-icon {
     opacity: 1;
@@ -126,19 +126,19 @@
 .empty-title {
     font-size: 18px;
     font-weight: 600;
-    color: var(--yi-code-text);
+    color: var(--yry-code-text);
     margin-bottom: 6px;
     letter-spacing: 1px;
 }
 
 /* ========== 搜索高亮 ========== */
 .file-tree-item.search-match {
-    background: rgba(var(--yi-warning-rgb), 0.1);
-    border-color: var(--yi-warning);
+    background: rgba(var(--yry-warning-rgb), 0.1);
+    border-color: var(--yry-warning);
 }
 
 .file-tree-item.search-match .file-name {
-    color: var(--yi-warning);
+    color: var(--yry-warning);
     font-weight: 600;
 }
 
@@ -233,19 +233,19 @@
 }
 
 .file-tree::-webkit-scrollbar-thumb {
-    background: var(--yi-border);
+    background: var(--yry-border);
     border-radius: 2px;
-    transition: background var(--yi-duration-fast) var(--yi-easing-default);
+    transition: background var(--yry-duration-fast) var(--yry-easing-default);
 }
 
 .file-tree::-webkit-scrollbar-thumb:hover {
-    background: var(--yi-border-focus);
+    background: var(--yry-border-focus);
 }
 
 /* ========== 拖拽支持 ========== */
 .file-tree-item.drag-over {
-    background: rgba(var(--yi-info-rgb), 0.2);
-    border: 2px dashed rgba(var(--yi-info-rgb), 0.5);
+    background: rgba(var(--yry-info-rgb), 0.2);
+    border: 2px dashed rgba(var(--yry-info-rgb), 0.5);
 }
 
 .file-tree-item.dragging {
@@ -260,7 +260,7 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: rgba(var(--yi-info-rgb), 0.8);
+    background: rgba(var(--yry-info-rgb), 0.8);
     border-radius: 2px;
 }
 
@@ -271,7 +271,7 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: rgba(var(--yi-info-rgb), 0.8);
+    background: rgba(var(--yry-info-rgb), 0.8);
     border-radius: 2px;
 } 
 
@@ -289,7 +289,7 @@
     gap: 6px;
     margin-left: auto;
     opacity: 0;
-    transition: opacity var(--yi-duration-fast) var(--yi-easing-default);
+    transition: opacity var(--yry-duration-fast) var(--yry-easing-default);
 }
 
 .file-tree-item:hover .file-actions,
@@ -307,14 +307,14 @@
     border: 1px solid transparent;
     border-radius: 4px;
     background: transparent;
-    color: var(--yi-text-muted);
+    color: var(--yry-text-muted);
     cursor: pointer;
 }
 
 .file-actions button:hover {
-    color: var(--yi-primary);
-    background: var(--yi-surface-hover);
-    border-color: var(--yi-border);
+    color: var(--yry-primary);
+    background: var(--yry-surface-hover);
+    border-color: var(--yry-border);
 }
 
 .file-actions button i {

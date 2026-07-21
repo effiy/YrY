@@ -1,7 +1,7 @@
 import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
-registerGlobalComponent({
-    name: 'AiModelSelector',
+const compDef = {
+    name: 'yryAiModelSelector',
     html: '/YiPet/cdn/components/business/views/aicr/AiModelSelector/index.html',
     css: '/YiPet/cdn/components/business/views/aicr/AiModelSelector/index.css',
     props: {
@@ -101,4 +101,7 @@ registerGlobalComponent({
             toggleInputMode
         };
     }
-});
+};
+
+registerGlobalComponent(compDef);
+export default compDef;

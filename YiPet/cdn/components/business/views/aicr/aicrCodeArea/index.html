@@ -2,14 +2,14 @@
     aria-label="代码区">
     <button type="button" class="chat-expand-handle" v-show="chatPanelCollapsed"
         @click="toggleChatPanel" aria-label="展开聊天面板" title="展开聊天面板">
-        <yi-icon name="chevron-left"></yi-icon>
+        <yry-icon name="chevron-left"></yry-icon>
         <span class="label">聊天</span>
     </button>
 
     <button type="button" class="chat-panel-toggle" v-show="!chatPanelCollapsed"
         @click="toggleChatPanel" title="收起聊天面板" aria-label="收起聊天面板"
         :style="{ right: ((chatPanelWidth || 420) - 14) + 'px', left: 'auto' }">
-        <yi-icon name="chevron-right"></yi-icon>
+        <yry-icon name="chevron-right"></yry-icon>
     </button>
 
     <div class="aicr-code-layout is-tree">
@@ -22,18 +22,18 @@
             :style="{ '--aicr-chat-width': (chatPanelWidth || 420) + 'px' }">
             <div class="pet-chat-right-panel" aria-label="会话聊天面板">
                 <div class="pet-chat-messages" id="pet-chat-messages" role="log" aria-live="polite">
-                    <yi-loading
+                    <yry-loading
                         v-if="activeSessionLoading"
                         container-class="pet-chat-loading"
                         text="正在加载会话..."
-                    ></yi-loading>
-                    <yi-error-state
+                    ></yry-loading>
+                    <yry-error-state
                         v-else-if="activeSessionError"
                         container-class="pet-chat-error"
                         message-class="error-text"
                         :message="activeSessionError"
-                    ></yi-error-state>
-                    <yi-empty-state
+                    ></yry-error-state>
+                    <yry-empty-state
                         v-else-if="!activeSession"
                         wrapper-class="pet-chat-empty"
                         card-class="pet-chat-empty-card"
@@ -45,10 +45,10 @@
                     >
                         <template #icon>
                             <div class="pet-chat-empty-icon" aria-hidden="true">
-                                <yi-icon name="inbox"></yi-icon>
+                                <yry-icon name="inbox"></yry-icon>
                             </div>
                         </template>
-                    </yi-empty-state>
+                    </yry-empty-state>
                     <div v-else class="w-full">
                         <div v-if="activeSession" class="pet-chat-message is-pet" data-welcome-message="true" v-html="buildWelcomeCardHtmlForSession(activeSession)" ref="welcomeCardRef"></div>
                         

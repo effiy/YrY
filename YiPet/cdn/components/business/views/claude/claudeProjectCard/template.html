@@ -1,22 +1,22 @@
 <div v-if="project" class="cc-card" @click="onClick">
     <div class="cc-card-top">
         <div class="cc-card-name" :title="project.name">{{ project.name }}</div>
-        <yi-tag :variant="healthVariant" size="sm">{{ healthLabel }}</yi-tag>
+        <yry-tag :variant="healthVariant" size="sm">{{ healthLabel }}</yry-tag>
     </div>
 
     <div class="cc-card-stats">
         <div class="cc-stat" title="Skills 数量">
-            <yi-icon name="puzzle-piece" class-name="cc-stat-icon"></yi-icon>
+            <yry-icon name="puzzle-piece" class-name="cc-stat-icon"></yry-icon>
             <span class="cc-stat-num">{{ project.skillCount }}</span>
             <span class="cc-stat-lbl">Skills</span>
         </div>
         <div class="cc-stat" title="Agents 数量">
-            <yi-icon name="robot" class-name="cc-stat-icon"></yi-icon>
+            <yry-icon name="robot" class-name="cc-stat-icon"></yry-icon>
             <span class="cc-stat-num">{{ project.agentCount }}</span>
             <span class="cc-stat-lbl">Agents</span>
         </div>
         <div class="cc-stat" title="文件总数">
-            <yi-icon name="file-alt" class-name="cc-stat-icon"></yi-icon>
+            <yry-icon name="file-alt" class-name="cc-stat-icon"></yry-icon>
             <span class="cc-stat-num">{{ project.fileCount }}</span>
             <span class="cc-stat-lbl">文件</span>
         </div>

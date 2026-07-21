@@ -12,11 +12,11 @@
                     :title="tagFilterNoTags ? '取消筛选无标签文件' : '筛选没有标签的文件'"
                     aria-label="筛选无标签">
                     <span class="tag-icon-wrapper">
-                        <yi-icon name="tag"></yi-icon>
-                        <yi-icon
+                        <yry-icon name="tag"></yry-icon>
+                        <yry-icon
                             v-if="tagFilterNoTags"
                             name="delete"
-                            class-name="tag-ban-overlay"></yi-icon>
+                            class-name="tag-ban-overlay"></yry-icon>
                     </span>
                 </button>
                 <!-- 清除所有过滤按钮 -->
@@ -27,7 +27,7 @@
                     :disabled="!selectedTags || (selectedTags.length === 0 && !tagFilterNoTags)"
                     @click="clearAllFilters"
                     :title="(selectedTags && (selectedTags.length > 0 || tagFilterNoTags)) ? '清除所有过滤条件' : '无过滤条件'">
-                    <yi-icon name="close"></yi-icon>
+                    <yry-icon name="close"></yry-icon>
                 </button>
             </div>
         </div>

@@ -1,24 +1,32 @@
-/*
- * AicrHeader 组件样式
- * 作者：YiWeb
- * 说明：AICR 页面头部组件样式
- */
+/* ═══════════════════════════════════════════════════════════════════════════
+   YiPet · AicrHeader component styles
 
-/* 优化头部区域为 flex 单行布局：
-   SearchHeader（标签列表 + 标签控制合并到同一行） */
+   Template structure:
+     <header class="aicr-header">
+       <div class="header-row">
+         <div class="header-nav"/>
+         <div class="header-center"/>
+         <div class="header-actions"/>
+       </div>
+     </header>
+
+   Naming convention: all class names use the `aicr-header-` / `header-` prefix.
+   Depends on design tokens from theme/index.css.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Header ────────────────────────────────────────────────────────── */
 .aicr-header {
     padding: 4px var(--spacing-md);
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    background: var(--yi-code-bg);
-    border-bottom: 1px solid var(--yi-border);
+    background: var(--yry-code-bg);
+    border-bottom: 1px solid var(--yry-border);
     min-height: auto;
-    transition: all var(--yi-duration-fast) var(--yi-easing-default);
+    transition: all var(--yry-duration-fast) var(--yry-easing-default);
 }
 
-/* SearchHeader 集成优化：移除独立背景和边框，与整体风格统一 */
-/* 注意：SearchHeader 渲染后根元素为 .header-row，不保留 search-header 标签 */
+/* ── Header row ────────────────────────────────────────────────────── */
 .aicr-header .header-row {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
@@ -42,7 +50,7 @@
     justify-self: end;
 }
 
-/* ========== header-center 重新设计 ========== */
+/* ── Header center ──────────────────────────────────────────────── */
 .aicr-header .header-row .header-center {
     justify-content: center;
     align-items: center;
@@ -51,7 +59,7 @@
     gap: 12px;
 }
 
-/* 标签列表与控制器容器 */
+/* ── Slot content ──────────────────────────────────────────────── */
 .header-slot-content {
     display: flex;
     flex-wrap: wrap;
@@ -61,7 +69,7 @@
     max-width: 1100px;
 }
 
-/* 桌面端：标签列表居中 */
+/* ── Desktop breakpoints ───────────────────────────────────────────── */
 @media (min-width: 1025px) {
     .header-slot-content {
         flex: 1;
@@ -73,7 +81,6 @@
     }
 }
 
-/* 超宽屏优化 */
 @media (min-width: 1440px) {
     .aicr-header .header-row .header-center {
         max-width: 1200px;
@@ -85,16 +92,38 @@
     }
 }
 
-/* Header 一级目录标签：与侧边栏二级标签同尺寸，通过字重区分层级 */
+/* ── Tag items ─────────────────────────────────────────────────────── */
 .aicr-header .tag-item {
     font-size: 12px;
     padding: 4px 6px;
     font-weight: 600;
 }
 
-/* 尊重用户减少动画偏好 */
+/* ── Responsive ────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+    .aicr-header {
+        padding: 4px 8px;
+    }
+    .aicr-header .header-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    .aicr-header .header-row .header-center {
+        max-width: 100%;
+    }
+    .header-slot-content {
+        max-width: 100%;
+    }
+}
+
+/* ── a11y: reduced-motion ──────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
     .aicr-header {
         transition: none;
+    }
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 }

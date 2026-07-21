@@ -1,7 +1,7 @@
 import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
-registerGlobalComponent({
-    name: 'DepEditor',
+const compDef = {
+    name: 'yryDepEditor',
     html: '/YiPet/cdn/components/business/views/story/depEditor/template.html',
     css: '/YiPet/cdn/components/business/views/story/depEditor/index.css',
     props: {
@@ -39,4 +39,7 @@ registerGlobalComponent({
             this.$emit('cancel');
         },
     },
-});
+};
+
+registerGlobalComponent(compDef);
+export default compDef;

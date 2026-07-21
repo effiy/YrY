@@ -1,29 +1,41 @@
-/* ==============================================
-   StoryCard — 故事任务卡片
-   ============================================== */
+/* ═══════════════════════════════════════════════════════════════════════════
+   YiPet · StoryCard component styles
 
+   Template structure:
+     <div class="sc-card">
+       <div class="sc-card-tags"/>
+       <div class="sc-card-name"/>
+       <div class="sc-card-desc"/>
+       <div class="sc-card-stages"/>
+     </div>
+
+   Naming convention: all class names use the `sc-` prefix.
+   Depends on design tokens from theme/index.css.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Card ──────────────────────────────────────────────────────────── */
 .sc-card {
-    background: var(--yi-surface);
+    background: var(--yry-surface);
     border-radius: 8px;
     padding: 12px 14px;
     border-left: 3px solid transparent;
     cursor: pointer;
     transition: transform 0.12s, box-shadow 0.12s;
-    box-shadow: var(--yi-shadow-sm);
+    box-shadow: var(--yry-shadow-sm);
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
 .sc-card:hover {
     transform: translateY(-1px);
-    box-shadow: 0 0 20px rgba(var(--yi-primary-rgb), 0.08), 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 0 20px rgba(var(--yry-primary-rgb), 0.08), 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.sc-card--planning     { border-left-color: var(--sc-accent, var(--yi-text-muted)); }
-.sc-card--design       { border-left-color: var(--sc-accent, var(--yi-warning)); }
-.sc-card--develop      { border-left-color: var(--sc-accent, var(--yi-info)); }
-.sc-card--testing      { border-left-color: var(--sc-accent, var(--yi-primary)); }
-.sc-card--operations   { border-left-color: var(--sc-accent, var(--yi-success)); }
+.sc-card--planning     { border-left-color: var(--sc-accent, var(--yry-text-muted)); }
+.sc-card--design       { border-left-color: var(--sc-accent, var(--yry-warning)); }
+.sc-card--develop      { border-left-color: var(--sc-accent, var(--yry-info)); }
+.sc-card--testing      { border-left-color: var(--sc-accent, var(--yry-primary)); }
+.sc-card--operations   { border-left-color: var(--sc-accent, var(--yry-success)); }
 
 
 .sc-card--empty {
@@ -31,17 +43,18 @@
     align-items: center;
     justify-content: center;
     padding: 24px 0;
-    color: var(--yi-text-muted);
+    color: var(--yry-text-muted);
     font-size: 16px;
     cursor: default;
     border-left-color: transparent;
-    box-shadow: var(--yi-shadow-sm);
+    box-shadow: var(--yry-shadow-sm);
 }
 .sc-card--empty:hover {
     transform: none;
-    box-shadow: var(--yi-shadow-sm);
+    box-shadow: var(--yry-shadow-sm);
 }
 
+/* ── Tags ──────────────────────────────────────────────────────────── */
 .sc-card-tags {
     display: flex;
     justify-content: space-between;
@@ -57,12 +70,12 @@
 
 .sc-card-date {
     font-size: 10px;
-    color: var(--yi-text-muted);
+    color: var(--yry-text-muted);
     white-space: nowrap;
     flex-shrink: 0;
 }
 
-/* ---- dependency badge ---- */
+/* ── Dependency badge ──────────────────────────────────────────────── */
 .sc-card-dep-badge {
     display: inline-flex;
     align-items: center;
@@ -91,8 +104,8 @@
     display: inline-block;
     font-size: 10px;
     font-weight: 500;
-    color: var(--sc-accent, var(--yi-primary));
-    background: var(--sc-accent-bg, rgba(var(--yi-primary-rgb), 0.10));
+    color: var(--sc-accent, var(--yry-primary));
+    background: var(--sc-accent-bg, rgba(var(--yry-primary-rgb), 0.10));
     padding: 1px 6px;
     border-radius: 4px;
     vertical-align: middle;
@@ -100,6 +113,7 @@
     letter-spacing: 0.02em;
 }
 
+/* ── Name ──────────────────────────────────────────────────────────── */
 .sc-card-name {
     display: flex;
     justify-content: space-between;
@@ -107,19 +121,20 @@
     gap: 8px;
     font-size: 13px;
     font-weight: 600;
-    color: var(--yi-text);
+    color: var(--yry-text);
     font-family: 'JetBrains Mono', monospace;
     word-break: break-word;
     line-height: 1.35;
 }
 
+/* ── Stages ────────────────────────────────────────────────────────── */
 .sc-card-stages {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 4px;
     padding-top: 6px;
-    border-top: 1px solid var(--yi-border);
+    border-top: 1px solid var(--yry-border);
 }
 
 .sc-stage-item {
@@ -127,7 +142,7 @@
     align-items: center;
     gap: 2px;
     font-size: 10px;
-    color: var(--yi-text-muted);
+    color: var(--yry-text-muted);
     min-width: 24px;
     justify-content: center;
 }
@@ -135,19 +150,19 @@
 .sc-stage-num {
     font-weight: 600;
     font-size: 10px;
-    color: var(--yi-text-secondary);
+    color: var(--yry-text-secondary);
 }
 
 .sc-card-file-count {
     font-size: 11px;
     font-weight: 400;
-    color: var(--yi-text-muted);
+    color: var(--yry-text-muted);
     font-family: inherit;
     white-space: nowrap;
     flex-shrink: 0;
 }
 
-/* ---- edit button ---- */
+/* ── Edit button ───────────────────────────────────────────────────── */
 .sc-card-edit-btn {
     display: inline-flex;
     align-items: center;
@@ -158,7 +173,7 @@
     border: none;
     border-radius: 4px;
     background: transparent;
-    color: var(--yi-text-muted);
+    color: var(--yry-text-muted);
     cursor: pointer;
     opacity: 0;
     transition: opacity 0.15s, color 0.15s, background 0.15s;
@@ -168,21 +183,21 @@
     opacity: 1;
 }
 .sc-card-edit-btn:hover {
-    background: var(--yi-surface-hover);
-    color: var(--yi-primary);
+    background: var(--yry-surface-hover);
+    color: var(--yry-primary);
 }
 .sc-card-edit-icon {
     font-size: 12px;
 }
 
-/* ---- editing state ---- */
+/* ── Editing state ─────────────────────────────────────────────────── */
 .sc-card--editing {
-    border-color: var(--yi-primary) !important;
-    box-shadow: 0 0 0 1px var(--yi-primary), 0 0 16px rgba(var(--yi-primary-rgb), 0.10);
+    border-color: var(--yry-primary) !important;
+    box-shadow: 0 0 0 1px var(--yry-primary), 0 0 16px rgba(var(--yry-primary-rgb), 0.10);
 }
 .sc-card-desc {
     font-size: 12px;
-    color: var(--yi-text-secondary);
+    color: var(--yry-text-secondary);
     line-height: 1.4;
     word-break: break-word;
     display: -webkit-box;
@@ -198,20 +213,20 @@
 .sc-card-textarea {
     width: 100%;
     padding: 6px 8px;
-    border: 1px solid var(--yi-border);
+    border: 1px solid var(--yry-border);
     border-radius: 6px;
     font-size: 12px;
     font-family: inherit;
-    color: var(--yi-text);
-    background: var(--yi-bg);
+    color: var(--yry-text);
+    background: var(--yry-bg);
     resize: vertical;
     outline: none;
     line-height: 1.4;
     box-sizing: border-box;
 }
 .sc-card-textarea:focus {
-    border-color: var(--yi-primary);
-    box-shadow: var(--yi-shadow-focus);
+    border-color: var(--yry-primary);
+    box-shadow: var(--yry-shadow-focus);
 }
 .sc-card-edit-actions {
     display: flex;
@@ -228,9 +243,9 @@
     transition: all 0.15s;
 }
 .sc-card-edit-save {
-    border: 1px solid var(--yi-primary);
-    background: var(--yi-primary);
-    color: var(--yi-text-on-primary);
+    border: 1px solid var(--yry-primary);
+    background: var(--yry-primary);
+    color: var(--yry-text-on-primary);
 }
 .sc-card-edit-save:hover:not(:disabled) {
     opacity: 0.9;
@@ -240,11 +255,30 @@
     cursor: not-allowed;
 }
 .sc-card-edit-cancel {
-    border: 1px solid var(--yi-border);
-    background: var(--yi-surface);
-    color: var(--yi-text-secondary);
+    border: 1px solid var(--yry-border);
+    background: var(--yry-surface);
+    color: var(--yry-text-secondary);
 }
 .sc-card-edit-cancel:hover {
-    border-color: var(--yi-text-muted);
-    color: var(--yi-text);
+    border-color: var(--yry-text-muted);
+    color: var(--yry-text);
+}
+
+/* ── Responsive ────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+    .sc-card {
+        padding: 10px 12px;
+    }
+    .sc-card-name {
+        font-size: 12px;
+    }
+}
+
+/* ── a11y: reduced-motion ──────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }

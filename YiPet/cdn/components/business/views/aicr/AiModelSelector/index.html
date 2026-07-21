@@ -4,7 +4,7 @@
   <div class="model-selector-wrapper">
     <!-- 下拉框模式 -->
     <div v-if="!showManualInput" class="model-dropdown-wrapper">
-      <yi-select
+      <yry-select
         :model-value="currentModel"
         :options="modelOptions"
         :placeholder="placeholder"
@@ -21,7 +21,7 @@
             <span v-if="option.sizeFormatted" class="model-size">{{ option.sizeFormatted }}</span>
           </div>
         </template>
-      </yi-select>
+      </yry-select>
 
       <!-- 刷新按钮 -->
       <button
@@ -31,8 +31,8 @@
         @click="handleRefresh"
         :title="modelsLoading ? '加载中...' : '刷新模型列表'"
       >
-        <yi-icon name="loading" :spin="modelsLoading"></yi-icon>
-        <yi-icon v-if="!modelsLoading" name="refresh"></yi-icon>
+        <yry-icon name="loading" :spin="modelsLoading"></yry-icon>
+        <yry-icon v-if="!modelsLoading" name="refresh"></yry-icon>
       </button>
     </div>
 
@@ -58,13 +58,13 @@
       @click="toggleInputMode"
       :title="showManualInput ? '切换到下拉框选择' : '手动输入模型名称'"
     >
-      <yi-icon :name="showManualInput ? 'list' : 'keyboard'"></yi-icon>
+      <yry-icon :name="showManualInput ? 'list' : 'keyboard'"></yry-icon>
     </button>
   </div>
 
   <!-- 错误提示 -->
   <div v-if="modelsError" class="model-error">
-    <yi-icon name="warning"></yi-icon>
+    <yry-icon name="warning"></yry-icon>
     <span>{{ modelsError }}</span>
   </div>
 </div>

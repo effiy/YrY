@@ -1,0 +1,322 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrYLoading · Multi-type loading indicator (spinner / dots / pulse / wave / skeleton / progress)
+   Template structure: .yry-loading-container > (.yry-loading-spinner|.yry-loading-dots|.yry-loading-pulse|.yry-loading-wave) + .yry-loading-text + .yry-loading-subtext
+   Naming: yry- prefix, BEM
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Container ────────────────────────────────────────────────────── */
+
+.yry-loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: var(--yry-space-6, 24px);
+  gap: var(--yry-space-4, 16px);
+}
+
+.yry-loading-container p {
+  color: var(--yry-text-secondary, #666);
+  font-family: var(--yry-font-ui, system-ui, -apple-system, sans-serif);
+  font-size: var(--yry-text-base, 1rem);
+  margin: 0;
+}
+
+/* ── Fullscreen ───────────────────────────────────────────────────── */
+
+.yry-loading-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-loading, 9999);
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--yry-bg-flat, #fff);
+  padding: var(--yry-space-6, 24px);
+}
+
+/* ── Overlay ──────────────────────────────────────────────────────── */
+
+.yry-loading-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-loading, 9999);
+  background: rgba(var(--bg-primary-rgb, 255,255,255), 0.85);
+  border-radius: inherit;
+}
+
+/* ── Spinner ──────────────────────────────────────────────────────── */
+
+.yry-loading-spinner {
+  width: 40px;
+  height: 40px;
+  position: relative;
+  display: inline-block;
+}
+
+.yry-loading-spinner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid var(--yry-border, #e5e5e5);
+  border-top-color: var(--yry-primary, #3b82f6);
+  animation: spin var(--yry-duration-slow, 0.8s) linear infinite;
+}
+
+.yry-loading-spinner.yry-loading-small,
+.yry-loading-spinner-sm {
+  width: 24px;
+  height: 24px;
+}
+
+.yry-loading-spinner.yry-loading-small::before,
+.yry-loading-spinner-sm::before {
+  border-width: 2px;
+}
+
+.yry-loading-spinner.yry-loading-large,
+.yry-loading-spinner-lg {
+  width: 56px;
+  height: 56px;
+}
+
+.yry-loading-spinner.yry-loading-large::before,
+.yry-loading-spinner-lg::before {
+  border-width: 4px;
+}
+
+/* ── Dots ─────────────────────────────────────────────────────────── */
+
+.yry-loading-dots {
+  display: flex;
+  gap: var(--yry-space-1, 4px);
+  align-items: center;
+}
+
+.yry-loading-dots .yry-loading-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--yry-primary, #3b82f6);
+  border-radius: var(--yry-radius-full, 9999px);
+  animation: dot-bounce var(--yry-duration-normal, 0.4s) ease-in-out infinite;
+}
+
+.yry-loading-dots .yry-loading-dot:nth-child(1) { animation-delay: 0s; }
+.yry-loading-dots .yry-loading-dot:nth-child(2) { animation-delay: calc(var(--yry-duration-fast, 0.15s) * 0.5); }
+.yry-loading-dots .yry-loading-dot:nth-child(3) { animation-delay: var(--yry-duration-fast, 0.15s); }
+
+/* ── Pulse ────────────────────────────────────────────────────────── */
+
+.yry-loading-pulse {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--yry-radius-full, 9999px);
+  background: var(--yry-primary, #3b82f6);
+  animation: loading-pulse var(--yry-duration-slow, 1.2s) ease-in-out infinite;
+}
+
+/* ── Wave ─────────────────────────────────────────────────────────── */
+
+.yry-loading-wave {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 40px;
+}
+
+.yry-loading-wave .bar {
+  width: 4px;
+  background: var(--yry-primary, #3b82f6);
+  border-radius: 2px;
+  animation: loading-wave var(--yry-duration-slow, 1.2s) ease-in-out infinite;
+}
+
+.yry-loading-wave .bar:nth-child(1) { height: 16px; animation-delay: 0s; }
+.yry-loading-wave .bar:nth-child(2) { height: 26px; animation-delay: calc(var(--yry-duration-fast, 0.15s) * -1); }
+.yry-loading-wave .bar:nth-child(3) { height: 36px; animation-delay: calc(var(--yry-duration-fast, 0.15s) * -2); }
+.yry-loading-wave .bar:nth-child(4) { height: 26px; animation-delay: calc(var(--yry-duration-fast, 0.15s) * -3); }
+.yry-loading-wave .bar:nth-child(5) { height: 16px; animation-delay: calc(var(--yry-duration-fast, 0.15s) * -4); }
+
+/* ── Text ─────────────────────────────────────────────────────────── */
+
+.yry-loading-text {
+  color: var(--yry-text-secondary, #666);
+  font-size: var(--yry-text-sm, 0.875rem);
+}
+
+.yry-loading-subtext {
+  color: var(--yry-text-muted, #999);
+  font-size: var(--yry-text-xs, 0.75rem);
+  margin-top: calc(var(--yry-space-1, 4px) * -1);
+}
+
+/* ── Skeleton ─────────────────────────────────────────────────────── */
+
+.yry-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--yry-border-subtle, #f0f0f0) 25%,
+    var(--yry-border, #e5e5e5) 50%,
+    var(--yry-border-subtle, #f0f0f0) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton var(--yry-duration-slow, 1.5s) ease-in-out infinite;
+  border-radius: var(--yry-radius-sm, 4px);
+}
+
+.yry-skeleton-text {
+  height: 1em;
+  margin: var(--yry-space-2, 8px) 0;
+}
+
+.yry-skeleton-text.short  { width: 60%; }
+.yry-skeleton-text.medium { width: 80%; }
+.yry-skeleton-text.long   { width: 100%; }
+
+.yry-skeleton-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--yry-radius-full, 9999px);
+}
+
+.yry-skeleton-button {
+  width: 100px;
+  height: 40px;
+  border-radius: var(--yry-radius-md, 6px);
+}
+
+/* ── Progress ─────────────────────────────────────────────────────── */
+
+.yry-progress {
+  width: 100%;
+  height: 6px;
+  background: var(--yry-border-subtle, #f0f0f0);
+  border-radius: var(--yry-radius-full, 9999px);
+  overflow: hidden;
+}
+
+.yry-progress-bar {
+  height: 100%;
+  background: var(--yry-primary, #3b82f6);
+  border-radius: var(--yry-radius-full, 9999px);
+  transition: width var(--yry-duration-normal, 0.3s) var(--yry-easing-default, ease);
+}
+
+/* ── Inline loading ───────────────────────────────────────────────── */
+
+.yry-loading-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--yry-space-2, 8px);
+}
+
+/* ── Global loading indicator ─────────────────────────────────────── */
+
+.yry-loading-indicator {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-loading, 9999);
+  display: none;
+  opacity: 0;
+  transition: opacity var(--yry-duration-fast, 0.15s) var(--yry-easing-default, ease);
+  background: rgba(var(--bg-primary-rgb, 255,255,255), 0.35);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.yry-loading-indicator.show {
+  display: grid;
+  opacity: 1;
+  place-items: center;
+}
+
+.yry-loading-indicator .yry-loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--yry-space-4, 16px);
+  background: var(--yry-surface, #fff);
+  border: 1px solid var(--yry-border, #e5e5e5);
+  border-radius: var(--yry-radius-lg, 12px);
+  padding: var(--yry-space-6, 24px);
+  box-shadow: var(--yry-shadow-lg, 0 10px 30px rgba(0,0,0,.12));
+  max-width: min(90vw, 400px);
+}
+
+.yry-loading-indicator .yry-loading-spinner {
+  width: 36px;
+  height: 36px;
+}
+
+.yry-loading-indicator .yry-loading-text {
+  color: var(--yry-text, #111);
+  font-weight: 500;
+  text-align: center;
+  margin: 0;
+}
+
+/* ── Keyframes ────────────────────────────────────────────────────── */
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes dot-bounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40%           { transform: scale(1); }
+}
+
+@keyframes skeleton {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes loading-pulse {
+  0%, 100% { transform: scale(0.8); opacity: 0.5; }
+  50%      { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes loading-wave {
+  0%, 100% { height: 12px; }
+  50%      { height: 40px; }
+}
+
+/* ── Reduced motion ───────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .yry-loading-spinner::before,
+  .yry-loading-dots .yry-loading-dot,
+  .yry-skeleton,
+  .yry-loading-pulse,
+  .yry-loading-wave .bar {
+    animation: none;
+  }
+
+  .yry-progress-bar {
+    transition: none;
+  }
+
+  .yry-loading-indicator {
+    transition: none;
+  }
+}
+
+/* ── Responsive ───────────────────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .yry-loading-container {
+    min-height: 140px;
+    padding: var(--yry-space-4, 16px);
+  }
+
+  .yry-loading-indicator .yry-loading-content {
+    width: calc(100vw - var(--yry-space-6, 24px));
+    margin: 0 var(--yry-space-3, 12px);
+    padding: var(--yry-space-4, 16px);
+  }
+
+  .yry-loading-fullscreen {
+    padding: var(--yry-space-4, 16px);
+  }
+}

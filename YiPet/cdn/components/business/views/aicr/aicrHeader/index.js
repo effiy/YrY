@@ -190,8 +190,8 @@ const sessionListTagsMethods = {
     }
 };
 
-registerGlobalComponent({
-    name: 'AicrHeader',
+const compDef = {
+    name: 'yryAicrHeader',
     html: '/YiPet/cdn/components/business/views/aicr/aicrHeader/index.html',
     css: '/YiPet/cdn/components/business/views/aicr/sessionListTags/index.css',
     props: {
@@ -257,4 +257,7 @@ registerGlobalComponent({
             this.$emit('clear-search');
         }
     }
-});
+};
+
+registerGlobalComponent(compDef);
+export default compDef;

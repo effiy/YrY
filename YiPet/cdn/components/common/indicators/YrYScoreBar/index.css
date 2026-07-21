@@ -1,0 +1,100 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY · Vue 3 score-bar component styles
+
+   Template structure (from index.html):
+     <div class="yry-score-bar">
+       <div class="yry-score-grade [grade-a|b|c|d|f]">{grade}</div>
+       <div class="yry-score-value">{value}</div>
+       <div class="yry-score-meta">...</div>
+       <div class="yry-score-weights">
+         <div class="yry-progress-bar">...</div>
+       </div>
+       <div class="yry-score-alerts">
+         <span class="yry-badge yry-badge--md {modifier}">...</span>
+       </div>
+     </div>
+
+   Alert chips and progress bars use shared yry-badge / yry-progress-bar styles
+   (imported below). This file only contains score-bar-specific layout/grade/value styles.
+
+   Design tokens (--yry-bg-card / --yry-border / --yry-radius / --yry-accent /
+   --yry-pass / --yry-warn / --yry-fail / --yry-text / --yry-text-muted /
+   --yry-font-mono) are provided by the host page's theme.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@import url("../yry-badge/index.css");
+@import url("../yry-progress-bar/index.css");
+
+.yry-score-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+  background: var(--yry-bg-card, rgba(38,38,52,1));
+  border: 1px solid var(--yry-border, rgba(255,255,255,.06));
+  border-radius: var(--yry-radius, 12px);
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: yry-fade-in .5s .1s var(--yry-ease-out, ease) both;
+}
+
+.yry-score-grade {
+  font-family: var(--yry-font-mono, ui-monospace, monospace);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+}
+.yry-score-grade.grade-a { color: var(--yry-pass, #22c55e); }
+.yry-score-grade.grade-b { color: var(--yry-pass, #22c55e); }
+.yry-score-grade.grade-c { color: var(--yry-warn, #f59e0b); }
+.yry-score-grade.grade-d { color: var(--yry-warn, #f59e0b); }
+.yry-score-grade.grade-f { color: var(--yry-fail, #ef4444); }
+
+.yry-score-value {
+  font-family: var(--yry-font-mono, ui-monospace, monospace);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--yry-accent, #ffc107);
+  line-height: 1;
+}
+
+.yry-score-meta { display: flex; flex-direction: column; gap: 2px; }
+.yry-score-label {
+  font-size: 11px;
+  color: var(--yry-text-muted, rgba(110,110,114,1));
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.yry-score-trend {
+  font-size: 11px;
+  color: var(--yry-text-muted, rgba(110,110,114,1));
+}
+
+.yry-score-weights {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 240px;
+}
+
+.yry-score-alerts { display: flex; gap: 8px; }
+
+@media (max-width: 640px) {
+  .yry-score-bar { padding: 12px 14px; gap: 12px; }
+  .yry-score-grade { font-size: 22px; width: 36px; height: 36px; }
+  .yry-score-value { font-size: 26px; }
+  .yry-score-weights { min-width: 100%; }
+}
+
+/* ── a11y: reduced-motion preference ─────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .yry-score-bar { animation: none; }
+}

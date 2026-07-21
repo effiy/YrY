@@ -248,8 +248,8 @@
       ? 'Rebuilt from the current <code>.claude/skills</code> inventory using the visual language of <code>yry-reports/diagram</code>.'
       : 'Generated from the docs card inventory using the visual language of <code>yry-reports/diagram</code>.';
     var svg = '';
-    if (data.diagram && window.ruiDepsDiagram && window.ruiDepsDiagram.render) {
-      try { svg = window.ruiDepsDiagram.render(data.diagram); }
+    if (data.diagram && window.yryDepsDiagram && window.yryDepsDiagram.render) {
+      try { svg = window.yryDepsDiagram.render(data.diagram); }
       catch (e) { svg = data.svgDiagram || ''; }
     } else {
       svg = data.svgDiagram || '';

@@ -1,0 +1,69 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY Breadcrumb · Vue 3 breadcrumb navigation styles
+
+   Applicable to: review · test panel · demo · plan list · architecture diagram · knowledge graph
+
+   Template structure (from index.html, <script type="text/x-template" id="yry-breadcrumb-tpl">):
+     <nav class="yry-breadcrumb" :aria-label="ariaLabel">
+       <a v-if="item.href" :href="item.href">{{ item.label }}</a>
+       <span v-else>{{ item.label }}</span>
+       <span class="yry-breadcrumb-sep">{{ separator }}</span>
+       <span class="yry-breadcrumb-current">{{ ... }}</span>
+     </nav>
+
+   This file is auto-injected as a <link> by index.js; host pages do not need
+   to include it manually.
+
+   Design tokens (--yry-text / --yry-text-soft / --yry-text-muted /
+   --yry-accent / --yry-ease-out) are provided by the host page; all colors in
+   this file carry fallbacks so the page still renders correctly even without
+   a loaded theme.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.yry-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 1.25rem;
+  font-size: .76rem;
+  line-height: 1.4;
+}
+
+.yry-breadcrumb a {
+  color: var(--yry-text-soft, var(--yry-gray-soft));
+  text-decoration: none;
+  transition: color .15s var(--yry-ease-out, ease);
+}
+
+.yry-breadcrumb a:hover {
+  color: var(--yry-accent, var(--yry-amber));
+  text-decoration: underline;
+}
+/* Focus-visible: apply .yry-focus-ring on the element */
+
+.yry-breadcrumb-sep {
+  color: var(--yry-text-muted, var(--yry-gray-soft));
+  opacity: .4;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.yry-breadcrumb-current {
+  color: var(--yry-text, var(--yry-gray-pale));
+  font-weight: 500;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .yry-breadcrumb {
+    font-size: .68rem;
+    gap: 4px;
+    margin-bottom: 1rem;
+  }
+}
+
+/* ── a11y: reduced-motion ─────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .yry-breadcrumb a { transition: none; }
+}

@@ -38,7 +38,7 @@ function applyBodyClass(enabled) {
 }
 
 const compDef = {
-  name: 'HeaderActions',
+  name: 'yryHeaderActions',
   html: '/cdn/components/business/HeaderActions/template.html',
   css: '/cdn/components/business/HeaderActions/index.css',
   props: {

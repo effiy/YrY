@@ -1,0 +1,132 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY · Vue 3 panel-hub toolbar component styles
+
+   Template structure (from index.html, <script type="text/x-template" id="yry-panel-hub-tpl">):
+     <div class="yry-panel-hub" role="toolbar">
+       <span class="yry-panel-hub-label" />         ← optional · clickable label
+       <button class="yry-panel-hub-btn">           ×N · dispatches 'panel-hub-select'
+         <span class="yry-panel-hub-icon" />
+         <span class="yry-panel-hub-name" />
+         <span class="yry-panel-hub-desc" />
+       </button>
+       <span class="yry-panel-hub-flow" />          ← optional · flow description
+     </div>
+
+  Click event (resolved in onSelect, in this order):
+    1. If `urls[panel]` is set on the component, the component opens that
+       URL in a new tab. The legacy 'panel-hub-select' event is NOT fired
+       in this path.
+     2. Otherwise the component root dispatches CustomEvent(
+        'panel-hub-select', { detail: { panel: <name> }, bubbles: true }).
+        Host pages addEventListener('panel-hub-select', ...) → window.PanelHub.open().
+
+   Depends on design tokens (from yry-html-cdn/theme/*.css or the page :root):
+     --yry-bg-card / --yry-border / --yry-radius
+     --yry-shadow / --yry-shadow-lg
+     --yry-text / --yry-text-soft / --yry-text-muted
+     --yry-cyan / --yry-accent / --yry-ease-out
+
+   All colors carry fallbacks so the page still renders correctly even
+   without a loaded theme.
+   Opacity is implemented via color-mix(in srgb, ..., transparent N%),
+   so no paired --yry-*-rgb variables are required.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.yry-panel-hub {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 36px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  background: var(--yry-bg-card, linear-gradient(159deg, #26262c 0%, #22222e 100%));
+  border: var(--yry-border, 1px solid rgba(255, 255, 255, .06));
+  border-radius: 10px;
+  box-shadow: var(--yry-shadow, 0 4px 20px rgba(0, 0, 0, .30));
+  animation: yry-fade-in .5s .2s ease both;
+}
+
+.yry-panel-hub-label {
+  font-size: .64rem;
+  font-weight: 600;
+  color: var(--yry-text-muted, #6e6e72);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-right: 4px;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: color .15s var(--yry-ease-out, ease);
+}
+.yry-panel-hub-label:hover { color: var(--yry-accent, #ffc107); }
+
+.yry-panel-hub-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  background: color-mix(in srgb, #fff 2%, transparent);
+  border: 1px solid rgba(255, 255, 255, .06);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all .2s var(--yry-ease-out, ease);
+  color: var(--yry-text-soft, #d4d4d4);
+  font-size: .72rem;
+  font-family: inherit;
+}
+.yry-panel-hub-btn:hover {
+  background: color-mix(in srgb, #fff 6%, transparent);
+  border-color: rgba(255, 255, 255, .15);
+  transform: translateY(-2px);
+  box-shadow: var(--yry-shadow-lg, 0 12px 32px rgba(0, 0, 0, .45));
+}
+/* Focus-visible: apply .yry-focus-ring on the element */
+.yry-panel-hub-btn .yry-panel-hub-icon {
+  font-size: .9rem;
+  flex-shrink: 0;
+  color: var(--yry-panel-hub-icon-color, inherit);
+}
+.yry-panel-hub-btn .yry-panel-hub-name {
+  font-weight: 600;
+}
+.yry-panel-hub-btn .yry-panel-hub-desc {
+  font-size: .6rem;
+  color: var(--yry-text-muted, #6e6e72);
+  margin-left: 2px;
+}
+
+.yry-panel-hub-flow {
+  flex-basis: 100%;
+  text-align: center;
+  font-size: .6rem;
+  color: var(--yry-text-muted, #6e6e72);
+  opacity: .7;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  white-space: nowrap;
+  margin-top: 4px;
+}
+
+/* ── Entrance animation: see @keyframes yry-fade-in above ───────── */
+
+/* ── panelLink generated link (used by window.PanelHub.panelLink) ───────── */
+.yry-panel-hub-link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: rgba(255, 255, 255, .2);
+}
+
+/* ── Mobile: more compact buttons / hide desc / hide flow ──────────────── */
+@media (max-width: 768px) {
+  .yry-panel-hub { gap: 4px; padding: 10px 8px; }
+  .yry-panel-hub-btn { padding: 4px 8px; gap: 3px; }
+  .yry-panel-hub-btn .yry-panel-hub-desc { display: none; }
+  .yry-panel-hub-flow { display: none; }
+}
+
+/* ── a11y: reduced-motion preference ─────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .yry-panel-hub { animation: none; }
+  .yry-panel-hub-btn { transition: none; }
+}

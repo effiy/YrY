@@ -1,7 +1,7 @@
 import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
-registerGlobalComponent({
-    name: 'StoryStatusBadge',
+const compDef = {
+    name: 'yryStoryStatusBadge',
     html: '/YiPet/cdn/components/business/views/story/storyStatusBadge/template.html',
     css: '/YiPet/cdn/components/business/views/story/storyStatusBadge/index.css',
     props: {
@@ -26,4 +26,7 @@ registerGlobalComponent({
             return classes;
         }
     }
-});
+};
+
+registerGlobalComponent(compDef);
+export default compDef;

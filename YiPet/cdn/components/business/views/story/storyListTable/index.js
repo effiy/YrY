@@ -1,7 +1,7 @@
 import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
-registerGlobalComponent({
-    name: 'StoryListTable',
+const compDef = {
+    name: 'yryStoryListTable',
     html: '/YiPet/cdn/components/business/views/story/storyListTable/template.html',
     css: '/YiPet/cdn/components/business/views/story/storyListTable/index.css',
     props: {
@@ -60,4 +60,7 @@ registerGlobalComponent({
             this.$emit('select', story.name);
         },
     }
-});
+};
+
+registerGlobalComponent(compDef);
+export default compDef;

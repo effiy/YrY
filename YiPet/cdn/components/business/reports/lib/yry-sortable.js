@@ -2,7 +2,7 @@
  * yry-sortable — shared sortable-table mixin for the section components
  *                (largest / coupling / risk / health).
  * ----------------------------------------------------------------------
- * Exposes `window.RuiSortable` with:
+ * Exposes `window.YrYSortable` with:
  *   - sortBy(rows, key, dir)  → new sorted array (does not mutate input)
  *   - setSortMixin(defaults)  → Vue 2-style options fragment that adds
  *                                data.sortKey / data.sortDir + the
@@ -11,13 +11,13 @@
  * Usage in a component:
  *
  *     (function () {
- *         window.ruiReportLargest = Object.assign({
- *             name: 'ruiReportLargest',
+ *         window.yryReportLargest = Object.assign({
+ *             name: 'yryReportLargest',
  *             template: '#yry-report-largest-tpl',
  *             props: { ... },
  *             computed: { ... },
  *             methods: { ... }
- *         }, window.RuiSortable.setSortMixin({ sortKey: 'bytes', sortDir: -1 }));
+ *         }, window.YrYSortable.setSortMixin({ sortKey: 'bytes', sortDir: -1 }));
  *     })();
  *
  * This keeps the per-component file focused on its own data + computed
@@ -84,7 +84,7 @@
         };
     }
 
-    window.RuiSortable = {
+    window.YrYSortable = {
         sortBy: sortBy,
         setSortMixin: setSortMixin,
     };

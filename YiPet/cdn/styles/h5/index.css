@@ -1,0 +1,30 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY · H5 Master Stylesheet
+   Aggregates all H5 design tokens, reset, layout, component, and semantic styles.
+
+   Migration: Originally at YiH5/styles/index.css, now consolidated in CDN.
+   Component styles reference the CDN h5/ business components.
+
+   Depends on design tokens defined in base/variables.css (--primary, --bg-*,
+   --text-*, --border-*, --shadow-*, --safe-*, --vv-bottom, etc.)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@import "./base/variables.css";
+@import "./base/reset.css";
+@import "./layout/app.css";
+@import "./layout/topbar.css";
+@import "./layout/footer.css";
+
+/* ── H5 Business Components ─────────────────────────────────────────────── */
+@import "../../components/business/h5/UI/index.css";
+@import "../../components/business/h5/Search/index.css";
+@import "../../components/business/h5/VirtualList/index.css";
+@import "../../components/business/h5/BaseList/index.css";
+@import "../../components/business/h5/SessionList/index.css";
+@import "../../components/business/h5/NewsList/index.css";
+@import "../../components/business/h5/Chat/index.css";
+@import "../../components/business/h5/Preview/index.css";
+@import "../../components/business/h5/Content/index.css";
+
+/* ── Semantic Extensions ────────────────────────────────────────────────── */
+@import "./components/semantic.css";

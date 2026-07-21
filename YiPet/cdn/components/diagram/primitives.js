@@ -9,7 +9,7 @@
    shared by every yry-report diagram. Both generators load it first
    (see their index.html) and consume its exports.
 
-   Exports a single global: window.ruiDiagramPrimitives
+   Exports a single global: window.yryDiagramPrimitives
 
    Contents
    --------
@@ -185,7 +185,7 @@
   }
 
   /* ── EXPORT ─────────────────────────────────────────────────────── */
-  window.ruiDiagramPrimitives = {
+  window.yryDiagramPrimitives = {
     PALETTE: PALETTE,
     esc: esc,
     snap: snap,

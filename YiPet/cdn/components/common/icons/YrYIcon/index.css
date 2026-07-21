@@ -1,0 +1,19 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   yryIcon · Lightweight inline icon wrapper for Font Awesome icons
+   Template structure: single <i> element with computed class
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Base ─────────────────────────────────────────────────────────── */
+
+.yry-icon {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+    .yry-icon {
+        vertical-align: middle;
+    }
+}

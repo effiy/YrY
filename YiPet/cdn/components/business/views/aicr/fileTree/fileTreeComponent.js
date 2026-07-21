@@ -1,11 +1,12 @@
 import { createFileTreeNode } from './fileTreeNode.js';
 import { fileTreeComputed } from './fileTreeComputed.js';
 import { fileTreeMethods } from './fileTreeMethods.js';
+import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
-const componentOptions = {
-    name: 'FileTree',
-    css: '/YiPet/cdn/components/business/views/aicr/fileTree/index.css',
-    html: '/YiPet/cdn/components/business/views/aicr/fileTree/index.html',
+const compDef = {
+    name: 'yryFileTree',
+    css: '/cdn/components/business/views/aicr/fileTree/index.css',
+    html: '/cdn/components/business/views/aicr/fileTree/index.html',
     components: {
         'file-tree-node': createFileTreeNode()
     },
@@ -130,4 +131,5 @@ const componentOptions = {
     methods: fileTreeMethods
 };
 
-export { componentOptions };
+registerGlobalComponent(compDef);
+export default compDef;

@@ -1,0 +1,26 @@
+<div :class="computedContainerClass" role="status" aria-live="polite" :aria-label="text">
+    <!-- Spinner type -->
+    <div v-if="type === 'spinner'" :class="computedSpinnerClass" aria-hidden="true"></div>
+
+    <!-- Dots type -->
+    <div v-else-if="type === 'dots'" class="yry-loading-dots" aria-hidden="true">
+        <span class="yry-loading-dot"></span>
+        <span class="yry-loading-dot"></span>
+        <span class="yry-loading-dot"></span>
+    </div>
+
+    <!-- Pulse type -->
+    <div v-else-if="type === 'pulse'" class="yry-loading-pulse" aria-hidden="true"></div>
+
+    <!-- Wave type -->
+    <div v-else-if="type === 'wave'" class="yry-loading-wave" aria-hidden="true">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+    </div>
+
+    <div v-if="text" :class="textClass">{{ text }}</div>
+    <div v-if="subtext" :class="subtextClass">{{ subtext }}</div>
+</div>

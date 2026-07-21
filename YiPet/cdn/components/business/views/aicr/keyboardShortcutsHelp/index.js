@@ -1,7 +1,7 @@
 import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
 const componentOptions = {
-    name: 'KeyboardShortcutsHelp',
+    name: 'yryKeyboardShortcutsHelp',
     html: '/YiPet/cdn/components/business/views/aicr/keyboardShortcutsHelp/index.html',
     props: {
         visible: {
@@ -53,3 +53,4 @@ const componentOptions = {
 };
 
 registerGlobalComponent(componentOptions);
+export default componentOptions;

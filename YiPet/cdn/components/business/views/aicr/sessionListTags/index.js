@@ -3,7 +3,7 @@ import { sessionListTagsComputed } from './sessionListTagsComputed.js';
 import { sessionListTagsMethods } from './sessionListTagsMethods.js';
 
 const componentOptions = {
-    name: 'SessionListTags',
+    name: 'yrySessionListTags',
     css: '/YiPet/cdn/components/business/views/aicr/sessionListTags/index.css',
     html: '/YiPet/cdn/components/business/views/aicr/sessionListTags/index.html',
     props: {
@@ -35,3 +35,4 @@ const componentOptions = {
 };
 
 registerGlobalComponent(componentOptions);
+export default componentOptions;

@@ -1,16 +1,39 @@
-/**
- * AicrCodeArea 组件样式
- * author: YiWeb
- * 说明：AICR 代码区域组件样式
- */
+/* ═══════════════════════════════════════════════════════════════════════════
+   YiPet · AicrCodeArea component styles
+
+   Template structure:
+     <div class="aicr-code-area">
+       <div class="aicr-code-header"/>
+       <div class="aicr-code-body"/>
+     </div>
+
+   Naming convention: all class names use semantic utility prefixes.
+   Depends on design tokens from theme/index.css.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Utility classes ───────────────────────────────────────────────── */
 
 /* 组件样式将在后续迭代中逐步从全局样式迁移至此 */
 
-/* 语义化工具类 */
+/* ── Semantic utilities ──────────────────────────────────────── */
 .w-full {
     width: 100%;
 }
 
 .is-hidden {
     display: none !important;
+}
+
+/* ── Responsive ────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+    /* reduce padding, font-sizes for mobile */
+}
+
+/* ── a11y: reduced-motion ──────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }

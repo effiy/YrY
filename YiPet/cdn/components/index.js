@@ -1,27 +1,27 @@
 // Common Components (re-export from common/index.js)
 export {
-  YiButton,
-  YiIconButton,
-  YiIcon,
-  YiInput,
-  YiSelect,
-  YiTextarea,
-  YiEmptyState,
-  YiErrorState,
-  YiToast,
-  YiLoading,
-  YiModal,
-  YiTag,
-  YiTagChip,
-  YiBadge,
-  YiProgressBar,
-  YiScoreBar,
-  YiBackTop,
-  YiBreadcrumb,
-  YiCrossNav,
-  YiStatsGrid,
-  YiSceneCard,
-  YiPanelHub
+  YrYButton,
+  YrYIconButton,
+  YrYIcon,
+  YrYInput,
+  YrYSelect,
+  YrYTextarea,
+  YrYEmptyState,
+  YrYErrorState,
+  YrYToast,
+  YrYLoading,
+  YrYModal,
+  YrYTag,
+  YrYTagChip,
+  YrYBadge,
+  YrYProgressBar,
+  YrYScoreBar,
+  YrYBackTop,
+  YrYBreadcrumb,
+  YrYCrossNav,
+  YrYStatsGrid,
+  YrYSceneCard,
+  YrYPanelHub
 } from './common/index.js';
 
 // Business Components
@@ -31,7 +31,7 @@ export { default as SearchHeader } from './business/SearchHeader/index.js';
 export { default as MarkdownView } from './business/MarkdownView/index.js';
 
 // Core
-export { default as YiLoader } from './core/YiLoader/index.js';
+export { default as YrYLoader } from './core/YrYLoader/index.js';
 
 // Plugins
 export { default as DiagramEngine } from './diagram/index.js';
@@ -49,7 +49,7 @@ export default {
   HeaderActions,
   SearchHeader,
   MarkdownView,
-  YiLoader,
+  YrYLoader,
   DiagramEngine,
   MarkdownEngine,
   MermaidEngine

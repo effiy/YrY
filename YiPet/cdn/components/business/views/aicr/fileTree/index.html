@@ -9,7 +9,7 @@
     <skeleton-loader v-if="loading" variant="file-tree" :item-count="10"></skeleton-loader>
 
     <!-- 错误状态 -->
-    <yi-error-state
+    <yry-error-state
         v-else-if="error"
         :message="error"
         icon-class="warning"
@@ -18,9 +18,9 @@
         @retry="$emit('reload')"
     >
         <template #retryIcon>
-            <yi-icon name="redo"></yi-icon>
+            <yry-icon name="redo"></yry-icon>
         </template>
-    </yi-error-state>
+    </yry-error-state>
 
     <!-- 文件树内容 -->
     <div v-else-if="tree.length > 0" class="file-tree-content">
@@ -114,7 +114,7 @@
                             <span v-if="file.pageDescription" class="file-card-desc">{{ file.pageDescription }}</span>
                             <span v-else class="file-card-desc-placeholder">+ 添加描述</span>
                             <button v-if="file.pageDescription && !batchMode" type="button" class="file-card-edit-btn" title="编辑描述">
-                                <yi-icon name="edit" class-name="file-card-edit-icon"></yi-icon>
+                                <yry-icon name="edit" class-name="file-card-edit-icon"></yry-icon>
                             </button>
                         </div>
                         <span v-if="editingCardKey !== file.key" class="file-card-meta">
@@ -390,7 +390,7 @@
                     <!-- 操作 -->
                     <div v-if="ftSelectedNode._kind === 'file'" class="file-graph-detail-actions">
                         <button class="file-graph-detail-action" @click="handleTagClick(ftSelectedNode._key)" title="在代码视图中打开文件">
-                            <yi-icon name="file-code"></yi-icon> 打开文件
+                            <yry-icon name="file-code"></yry-icon> 打开文件
                         </button>
                     </div>
 
@@ -410,7 +410,7 @@
     </div>
 
     <!-- 空状态 -->
-    <yi-empty-state
+    <yry-empty-state
         v-else
         wrapper-class="empty-state"
         :cardless="true"
@@ -419,20 +419,20 @@
     >
         <template #icon>
             <div class="empty-icon" aria-hidden="true">
-                <yi-icon name="folder-open"></yi-icon>
+                <yry-icon name="folder-open"></yry-icon>
             </div>
         </template>
         <template #actions>
             <div class="empty-actions">
-                <yi-button variant="primary" size="small" @click="$emit('create-session')" aria-label="新建会话">
-                    <yi-icon name="add"></yi-icon>
+                <yry-button variant="primary" size="small" @click="$emit('create-session')" aria-label="新建会话">
+                    <yry-icon name="add"></yry-icon>
                     <span>新建会话</span>
-                </yi-button>
-                <yi-button variant="secondary" size="small" @click="triggerUpload" aria-label="上传项目">
-                    <yi-icon name="upload"></yi-icon>
+                </yry-button>
+                <yry-button variant="secondary" size="small" @click="triggerUpload" aria-label="上传项目">
+                    <yry-icon name="upload"></yry-icon>
                     <span>上传项目</span>
-                </yi-button>
+                </yry-button>
             </div>
         </template>
-    </yi-empty-state>
+    </yry-empty-state>
 </aside>

@@ -1,7 +1,33 @@
-/**
- * AicrModals 组件样式
- * author: YiWeb
- * 说明：AICR 弹框组件样式
- */
+/* ═══════════════════════════════════════════════════════════════════════════
+   YiPet · AicrModals component styles
+
+   Template structure:
+     <div class="aicr-modal-overlay">
+       <div class="aicr-modal">
+         <div class="aicr-modal-header"/>
+         <div class="aicr-modal-body"/>
+         <div class="aicr-modal-footer"/>
+       </div>
+     </div>
+
+   Naming convention: all class names use the `aicr-modal-` prefix.
+   Depends on design tokens from theme/index.css.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Modals ────────────────────────────────────────────────────────── */
 
 /* 组件样式将在后续迭代中逐步从全局样式迁移至此 */
+
+/* ── Responsive ────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+    /* reduce padding, font-sizes for mobile */
+}
+
+/* ── a11y: reduced-motion ──────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

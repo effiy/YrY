@@ -1,20 +1,35 @@
-/* ClaudeProjectCard */
+/* ═══════════════════════════════════════════════════════════════════════════
+   YiPet · ClaudeProjectCard component styles
+
+   Template structure:
+     <div class="cc-card">
+       <div class="cc-card-top"/>
+       <div class="cc-card-stats"/>
+       <div class="cc-card-flags"/>
+       <div class="cc-card-footer"/>
+     </div>
+
+   Naming convention: all class names use the `cc-` prefix.
+   Depends on design tokens from theme/index.css.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Card ──────────────────────────────────────────────────────────── */
 .cc-card {
-    background: var(--yi-surface);
+    background: var(--yry-surface);
     border-radius: 10px;
     padding: 16px;
-    border: 1px solid var(--yi-border, rgba(255,255,255,0.08));
+    border: 1px solid var(--yry-border, rgba(255,255,255,0.08));
     cursor: pointer;
     transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s;
-    box-shadow: var(--yi-shadow-sm);
+    box-shadow: var(--yry-shadow-sm);
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 .cc-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 0 24px rgba(var(--yi-primary-rgb), 0.10), 0 4px 12px rgba(0, 0, 0, 0.08);
-    border-color: var(--yi-primary);
+    box-shadow: 0 0 24px rgba(var(--yry-primary-rgb), 0.10), 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: var(--yry-primary);
 }
 
 .cc-card--empty {
@@ -22,16 +37,17 @@
     align-items: center;
     justify-content: center;
     padding: 24px 0;
-    color: var(--yi-text-muted);
+    color: var(--yry-text-muted);
     font-size: 16px;
     cursor: default;
 }
 .cc-card--empty:hover {
     transform: none;
-    box-shadow: var(--yi-shadow-sm);
-    border-color: var(--yi-border, rgba(255,255,255,0.08));
+    box-shadow: var(--yry-shadow-sm);
+    border-color: var(--yry-border, rgba(255,255,255,0.08));
 }
 
+/* ── Top row ───────────────────────────────────────────────────────── */
 .cc-card-top {
     display: flex;
     align-items: center;
@@ -42,7 +58,7 @@
 .cc-card-name {
     font-size: 15px;
     font-weight: 600;
-    color: var(--yi-text);
+    color: var(--yry-text);
     font-family: 'JetBrains Mono', monospace;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -50,7 +66,7 @@
     flex: 1;
 }
 
-/* Stats row */
+/* ── Stats ─────────────────────────────────────────────────────────── */
 .cc-card-stats {
     display: flex;
     gap: 16px;
@@ -62,19 +78,19 @@
 }
 .cc-stat-icon {
     font-size: 13px;
-    color: var(--yi-text-muted);
+    color: var(--yry-text-muted);
 }
 .cc-stat-num {
     font-size: 14px;
     font-weight: 600;
-    color: var(--yi-text);
+    color: var(--yry-text);
 }
 .cc-stat-lbl {
     font-size: 11px;
-    color: var(--yi-text-muted);
+    color: var(--yry-text-muted);
 }
 
-/* Flags */
+/* ── Flags ─────────────────────────────────────────────────────────── */
 .cc-card-flags {
     display: flex;
     flex-wrap: wrap;
@@ -89,15 +105,16 @@
     font-family: 'JetBrains Mono', monospace;
 }
 .cc-flag--on {
-    background: var(--yi-primary-subtle);
-    color: var(--yi-primary);
+    background: var(--yry-primary-subtle);
+    color: var(--yry-primary);
 }
 .cc-flag--off {
-    background: var(--yi-surface-hover);
-    color: var(--yi-text-muted);
+    background: var(--yry-surface-hover);
+    color: var(--yry-text-muted);
     text-decoration: line-through;
 }
 
+/* ── Footer ────────────────────────────────────────────────────────── */
 .cc-card-footer {
     display: flex;
     align-items: center;
@@ -106,5 +123,28 @@
 
 .cc-card-date {
     font-size: 11px;
-    color: var(--yi-text-muted);
+    color: var(--yry-text-muted);
+}
+
+/* ── Responsive ────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+    .cc-card {
+        padding: 12px;
+    }
+    .cc-card-name {
+        font-size: 13px;
+    }
+    .cc-card-stats {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+}
+
+/* ── a11y: reduced-motion ──────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }

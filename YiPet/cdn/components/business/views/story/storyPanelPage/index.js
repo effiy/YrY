@@ -1,7 +1,7 @@
 import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
-registerGlobalComponent({
-    name: 'StoryPanelPage',
+const compDef = {
+    name: 'yryStoryPanelPage',
     html: '/YiPet/cdn/components/business/views/story/storyPanelPage/template.html',
     css: '/YiPet/cdn/components/business/views/story/storyPanelPage/index.css',
     props: {
@@ -353,4 +353,7 @@ registerGlobalComponent({
         this._isDestroyed = true;
         document.removeEventListener('keydown', this.onKeydown);
     }
-});
+};
+
+registerGlobalComponent(compDef);
+export default compDef;

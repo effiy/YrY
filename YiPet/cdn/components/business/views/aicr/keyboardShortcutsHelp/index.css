@@ -1,12 +1,27 @@
-/* 键盘快捷键帮助面板样式 */
+/* ═══════════════════════════════════════════════════════════════════════════
+   YiPet · KeyboardShortcutsHelp component styles
 
+   Template structure:
+     <div class="keyboard-shortcuts-overlay">
+       <div class="keyboard-shortcuts-panel">
+         <div class="shortcuts-header"/>
+         <div class="shortcuts-content"/>
+         <div class="shortcuts-footer"/>
+       </div>
+     </div>
+
+   Naming convention: all class names use the `shortcuts-` / `keyboard-shortcuts-` prefix.
+   Depends on design tokens from theme/index.css.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Overlay ───────────────────────────────────────────────────────── */
 .keyboard-shortcuts-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(var(--yi-dark-surface-rgb), 0.6);
+    background: rgba(var(--yry-dark-surface-rgb), 0.6);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     display: flex;
@@ -14,7 +29,7 @@
     justify-content: center;
     z-index: var(--z-overlay);
     padding: 20px;
-    animation: overlayFadeIn var(--yi-duration-fast) var(--yi-easing-out);
+    animation: overlayFadeIn var(--yry-duration-fast) var(--yry-easing-out);
 }
 
 @keyframes overlayFadeIn {
@@ -26,17 +41,18 @@
     }
 }
 
+/* ── Panel ─────────────────────────────────────────────────────────── */
 .keyboard-shortcuts-panel {
-    background: var(--yi-surface-elevated);
-    border: 1px solid var(--yi-border);
+    background: var(--yry-surface-elevated);
+    border: 1px solid var(--yry-border);
     border-radius: 16px;
-    box-shadow: var(--yi-shadow-xl);
+    box-shadow: var(--yry-shadow-xl);
     max-width: 700px;
     width: 100%;
     max-height: 85vh;
     display: flex;
     flex-direction: column;
-    animation: panelSlideIn var(--yi-duration-normal) var(--yi-easing-out);
+    animation: panelSlideIn var(--yry-duration-normal) var(--yry-easing-out);
 }
 
 @keyframes panelSlideIn {
@@ -50,13 +66,14 @@
     }
 }
 
+/* ── Header ─────────────────────────────────────────────────────── */
 .shortcuts-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 14px 20px;
-    border-bottom: 1px solid var(--yi-border-subtle);
-    background: var(--yi-code-bg);
+    border-bottom: 1px solid var(--yry-border-subtle);
+    background: var(--yry-code-bg);
     border-radius: 16px 16px 0 0;
 }
 
@@ -64,14 +81,14 @@
     margin: 0;
     font-size: 1.25rem;
     font-weight: 700;
-    color: var(--yi-code-text);
+    color: var(--yry-code-text);
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
 .shortcuts-title i {
-    color: rgba(var(--yi-primary-rgb), 0.8);
+    color: rgba(var(--yry-primary-rgb), 0.8);
     font-size: 1.1rem;
 }
 
@@ -79,23 +96,24 @@
     width: 36px;
     height: 36px;
     border-radius: 10px;
-    border: 1px solid var(--yi-border-subtle);
-    background: var(--yi-surface);
-    color: var(--yi-text-secondary);
+    border: 1px solid var(--yry-border-subtle);
+    background: var(--yry-surface);
+    color: var(--yry-text-secondary);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all var(--yi-duration-fast) var(--yi-easing-default);
+    transition: all var(--yry-duration-fast) var(--yry-easing-default);
 }
 
 .shortcuts-close-btn:hover {
-    background: var(--yi-surface-elevated);
-    color: var(--yi-code-text);
-    border-color: var(--yi-border-focus);
+    background: var(--yry-surface-elevated);
+    color: var(--yry-code-text);
+    border-color: var(--yry-border-focus);
     transform: scale(1.05);
 }
 
+/* ── Content ──────────────────────────────────────────────────────── */
 .shortcuts-content {
     flex: 1;
     overflow-y: auto;
@@ -114,7 +132,7 @@
     margin: 0 0 14px 0;
     font-size: 0.95rem;
     font-weight: 600;
-    color: var(--yi-text-secondary);
+    color: var(--yry-text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -130,15 +148,15 @@
     align-items: center;
     justify-content: space-between;
     padding: 12px 16px;
-    background: var(--yi-surface);
-    border: 1px solid var(--yi-border-subtle);
+    background: var(--yry-surface);
+    border: 1px solid var(--yry-border-subtle);
     border-radius: 10px;
-    transition: all var(--yi-duration-fast) var(--yi-easing-default);
+    transition: all var(--yry-duration-fast) var(--yry-easing-default);
 }
 
 .shortcut-item:hover {
-    background: var(--yi-surface-elevated);
-    border-color: var(--yi-border-focus);
+    background: var(--yry-surface-elevated);
+    border-color: var(--yry-border-focus);
 }
 
 .shortcut-keys {
@@ -155,14 +173,14 @@
     min-width: 32px;
     height: 28px;
     padding: 0 10px;
-    background: var(--yi-dark-surface);
-    border: 1px solid var(--yi-border);
+    background: var(--yry-dark-surface);
+    border: 1px solid var(--yry-border);
     border-radius: 6px;
-    box-shadow: var(--yi-shadow-sm);
+    box-shadow: var(--yry-shadow-sm);
     font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--yi-code-text);
+    color: var(--yry-code-text);
     text-transform: uppercase;
 }
 
@@ -170,27 +188,28 @@
     flex: 1;
     margin-left: 16px;
     font-size: 0.95rem;
-    color: var(--yi-code-text);
+    color: var(--yry-code-text);
 }
 
+/* ── Footer ──────────────────────────────────────────────────────── */
 .shortcuts-footer {
     padding: 16px 24px;
-    border-top: 1px solid var(--yi-border-subtle);
-    background: var(--yi-code-bg);
+    border-top: 1px solid var(--yry-border-subtle);
+    background: var(--yry-code-bg);
     border-radius: 0 0 16px 16px;
 }
 
 .shortcuts-hint {
     margin: 0;
     font-size: 0.9rem;
-    color: var(--yi-text-secondary);
+    color: var(--yry-text-secondary);
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
 .shortcuts-hint i {
-    color: rgba(var(--yi-warning-rgb), 0.8);
+    color: rgba(var(--yry-warning-rgb), 0.8);
 }
 
 .shortcuts-hint kbd {
@@ -200,16 +219,16 @@
     min-width: 24px;
     height: 22px;
     padding: 0 8px;
-    background: var(--yi-dark-surface);
-    border: 1px solid var(--yi-border);
+    background: var(--yry-dark-surface);
+    border: 1px solid var(--yry-border);
     border-radius: 4px;
     font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
     font-size: 0.8rem;
     font-weight: 600;
-    color: var(--yi-code-text);
+    color: var(--yry-code-text);
 }
 
-/* 响应式优化 */
+/* ── Responsive ────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
     .keyboard-shortcuts-panel {
         max-width: 100%;
@@ -240,7 +259,22 @@
     }
 }
 
-/* 尊重用户减少动画偏好 */
+@media (max-width: 640px) {
+    .keyboard-shortcuts-overlay {
+        padding: 10px;
+    }
+    .keyboard-shortcuts-panel {
+        max-height: 95vh;
+    }
+    .shortcuts-header {
+        padding: 12px 16px;
+    }
+    .shortcuts-content {
+        padding: 16px;
+    }
+}
+
+/* ── a11y: reduced-motion ──────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
     .keyboard-shortcuts-overlay {
         animation: none;
@@ -256,23 +290,28 @@
     .shortcut-item:hover {
         transform: none;
     }
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }
 
-/* 滚动条样式 */
+/* ── Scrollbar ─────────────────────────────────────────────────────── */
 .shortcuts-content::-webkit-scrollbar {
     width: 8px;
 }
 
 .shortcuts-content::-webkit-scrollbar-track {
-    background: var(--yi-code-bg);
+    background: var(--yry-code-bg);
     border-radius: 4px;
 }
 
 .shortcuts-content::-webkit-scrollbar-thumb {
-    background: var(--yi-border-focus);
+    background: var(--yry-border-focus);
     border-radius: 4px;
 }
 
 .shortcuts-content::-webkit-scrollbar-thumb:hover {
-    background: var(--yi-text-muted);
+    background: var(--yry-text-muted);
 }

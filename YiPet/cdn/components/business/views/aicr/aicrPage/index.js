@@ -1,8 +1,8 @@
 import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 import { clearCacheAndRefresh } from '/cdn/utils/core/clearCache.js';
 
-registerGlobalComponent({
-    name: 'AicrPage',
+const compDef = {
+    name: 'yryAicrPage',
     html: '/YiPet/cdn/components/business/views/aicr/aicrPage/index.html',
     setup() {
         const ctx = Vue.inject('viewContext') || {};
@@ -254,5 +254,8 @@ registerGlobalComponent({
             this.tagsMutationObserver.observe(el, { childList: true, subtree: true });
         }
     }
-});
+};
+
+registerGlobalComponent(compDef);
+export default compDef;
 

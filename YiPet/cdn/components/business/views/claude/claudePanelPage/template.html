@@ -6,7 +6,7 @@
         </div>
         <header-actions @clear-cache="clearCache">
             <div class="cp-search">
-                <yi-icon name="search" class-name="cp-search-icon"></yi-icon>
+                <yry-icon name="search" class-name="cp-search-icon"></yry-icon>
                 <input
                     type="text"
                     class="cp-search-input"
@@ -20,7 +20,7 @@
                     @click="localSearchQuery = ''"
                     aria-label="清除搜索"
                 >
-                    <yi-icon name="close"></yi-icon>
+                    <yry-icon name="close"></yry-icon>
                 </button>
             </div>
         </header-actions>
@@ -36,7 +36,7 @@
                         @click="toggleFilterBar"
                         :title="filterBarCollapsed ? '展开筛选栏' : '折叠筛选栏'"
                     >
-                        <yi-icon :name="filterBarCollapsed ? 'chevron-down' : 'chevron-up'"></yi-icon>
+                        <yry-icon :name="filterBarCollapsed ? 'chevron-down' : 'chevron-up'"></yry-icon>
                         <span class="cp-meta-filter-toggle-label">筛选</span>
                     </button>
                 </div>
@@ -88,7 +88,7 @@
         </div>
         <div class="cp-stats-bar">
             <div class="cp-stat-item">
-                <yi-icon name="folder" class-name="cp-stat-icon quantum-stat-icon"></yi-icon>
+                <yry-icon name="folder" class-name="cp-stat-icon quantum-stat-icon"></yry-icon>
                 <span class="cp-stat-value">{{ totalProjects }}</span>
                 <span class="cp-stat-label">项目</span>
             </div>
@@ -98,7 +98,7 @@
                 :class="{ 'cp-stat-btn--active': healthFilters.hasSkills }"
                 @click="toggleHealthFilter('hasSkills')"
             >
-                <yi-icon name="puzzle-piece" class-name="cp-stat-icon quantum-stat-icon"></yi-icon>
+                <yry-icon name="puzzle-piece" class-name="cp-stat-icon quantum-stat-icon"></yry-icon>
                 <span class="cp-stat-value">{{ totalSkills }}</span>
                 <span class="cp-stat-label">Skills</span>
             </button>
@@ -108,7 +108,7 @@
                 :class="{ 'cp-stat-btn--active': healthFilters.hasAgents }"
                 @click="toggleHealthFilter('hasAgents')"
             >
-                <yi-icon name="robot" class-name="cp-stat-icon quantum-stat-icon"></yi-icon>
+                <yry-icon name="robot" class-name="cp-stat-icon quantum-stat-icon"></yry-icon>
                 <span class="cp-stat-value">{{ totalAgents }}</span>
                 <span class="cp-stat-label">Agents</span>
             </button>
@@ -188,7 +188,7 @@
                 @click="clearAllFilters"
                 title="清除配置筛选"
             >
-                <yi-icon name="close"></yi-icon>
+                <yry-icon name="close"></yry-icon>
             </button>
         </div>
         <div class="cp-filter-collapsed-row">
@@ -230,16 +230,16 @@
                 @click="clearAllFilters"
                 title="清除所有筛选"
             >
-                <yi-icon name="close"></yi-icon>
+                <yry-icon name="close"></yry-icon>
             </button>
         </div>
     </div>
 
     <div v-if="loading" class="cp-loading">
-        <yi-icon name="loading" spin></yi-icon> 加载中...
+        <yry-icon name="loading" spin></yry-icon> 加载中...
     </div>
     <div v-else-if="error" class="cp-error">
-        <yi-icon name="error"></yi-icon> {{ error }}
+        <yry-icon name="error"></yry-icon> {{ error }}
     </div>
 
     <div v-else class="cp-card-grid">
@@ -250,7 +250,7 @@
             @select="openDetail"
         ></claude-project-card>
         <div v-if="filteredProjects.length === 0 && !loading" class="cp-card-grid-empty">
-            <yi-icon name="folder-open" class-name="cp-empty-icon"></yi-icon>
+            <yry-icon name="folder-open" class-name="cp-empty-icon"></yry-icon>
             <span>{{ localSearchQuery || hasActiveHealthFilters ? '没有匹配的项目' : '暂无 .claude 配置项目' }}</span>
             <button
                 v-if="localSearchQuery || hasActiveHealthFilters"
@@ -267,7 +267,7 @@
             <div class="cp-panel-header">
                 <h2 class="cp-panel-title">{{ panelProject.name }}</h2>
                 <button class="cp-panel-close" @click="closePanel" aria-label="关闭面板">
-                    <yi-icon name="close"></yi-icon>
+                    <yry-icon name="close"></yry-icon>
                 </button>
             </div>
             <div class="cp-panel-body">

@@ -1,7 +1,7 @@
 import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
-registerGlobalComponent({
-    name: 'ClaudeProjectCard',
+const compDef = {
+    name: 'yryClaudeProjectCard',
     html: '/YiPet/cdn/components/business/views/claude/claudeProjectCard/template.html',
     css: '/YiPet/cdn/components/business/views/claude/claudeProjectCard/index.css',
     props: {
@@ -52,4 +52,7 @@ registerGlobalComponent({
             }
         }
     }
-});
+};
+
+registerGlobalComponent(compDef);
+export default compDef;

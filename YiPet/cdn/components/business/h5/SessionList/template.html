@@ -1,0 +1,40 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════
+   YrY · H5 SessionList — HTML template for session list items
+
+   All template logic previously inlined in index.js is now defined here.
+   SessionList/index.js loads this file via the template engine at module init.
+
+   Template ID:
+     tpl-session-item — Full session list item with swipe actions
+   ═══════════════════════════════════════════════════════════════════════════ -->
+
+<template id="tpl-session-item">
+  <div class="swipe-item-wrapper">
+    <article class="item{mutedCls}" data-key="{key}">
+      <div class="item__mid">
+        <div class="item__row1">
+          <div class="item__title"><span>{title}</span></div>
+          <div class="item__meta">{messageBadge}</div>
+        </div>
+        <div class="item__row2">
+          <div class="item__preview">{desc}</div>
+        </div>
+        <div class="item__row2" style="margin-top:6px">
+          <div class="item__tags">{tagBadges}</div>
+          <div class="item__meta">
+            <span class="time">{date}</span>{otherBadges}
+          </div>
+        </div>
+      </div>
+      <div class="item__right"></div>
+    </article>
+    <div class="swipe-item__actions">
+      <button class="swipe-item__favorite{favCls}"
+              data-action="toggleFavorite" data-key="{key}"
+              aria-label="{favoriteLabel}">{favoriteIcon}</button>
+      <button class="swipe-item__delete"
+              data-action="swipeDelete" data-key="{key}"
+              aria-label="删除会话">删除</button>
+    </div>
+  </div>
+</template>

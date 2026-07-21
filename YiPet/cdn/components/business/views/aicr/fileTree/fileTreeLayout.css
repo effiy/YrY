@@ -37,11 +37,11 @@
     /* 防止被压缩 */
     flex-shrink: 0;
     /* 确保背景不透明，避免滚动时内容透过 */
-    background-color: var(--yi-code-bg) !important;
+    background-color: var(--yry-code-bg) !important;
     /* 添加底部边框，增强视觉分离 */
-    border-bottom: 1px solid var(--yi-border);
+    border-bottom: 1px solid var(--yry-border);
     /* 添加阴影，增强置顶效果 */
-    box-shadow: var(--yi-shadow-sm);
+    box-shadow: var(--yry-shadow-sm);
     /* 确保在滚动时保持可见 */
     will-change: transform;
 }
@@ -94,12 +94,12 @@
     min-height: 32px;
     font-size: 13px;
     font-weight: 500;
-    color: var(--yi-text-on-primary);
-    background: var(--yi-primary);
-    border: 1px solid var(--yi-primary);
-    border-radius: var(--yi-radius-md);
+    color: var(--yry-text-on-primary);
+    background: var(--yry-primary);
+    border: 1px solid var(--yry-primary);
+    border-radius: var(--yry-radius-md);
     cursor: pointer;
-    transition: all var(--yi-duration-fast) var(--yi-easing-default);
+    transition: all var(--yry-duration-fast) var(--yry-easing-default);
     white-space: nowrap;
     box-sizing: border-box;
     width: 100%;
@@ -119,9 +119,9 @@
 }
 
 .toolbar-btn:hover {
-    background: var(--yi-primary-hover);
+    background: var(--yry-primary-hover);
     transform: translateY(-1px);
-    box-shadow: var(--yi-shadow-sm);
+    box-shadow: var(--yry-shadow-sm);
 }
 
 .toolbar-btn:active {
@@ -135,24 +135,24 @@
 }
 
 .toolbar-btn.active {
-    background: var(--yi-success);
-    border-color: var(--yi-success);
+    background: var(--yry-success);
+    border-color: var(--yry-success);
 }
 
 .toolbar-btn.active:hover {
-    background: var(--yi-success-hover);
-    box-shadow: var(--yi-shadow-sm);
+    background: var(--yry-success-hover);
+    box-shadow: var(--yry-shadow-sm);
 }
 
 /* 批量删除按钮样式 */
 .toolbar-btn-danger {
-    background: var(--yi-danger) !important;
-    border-color: var(--yi-danger) !important;
+    background: var(--yry-danger) !important;
+    border-color: var(--yry-danger) !important;
 }
 
 .toolbar-btn-danger:hover {
-    background: var(--yi-danger-hover) !important;
-    box-shadow: var(--yi-shadow-sm) !important;
+    background: var(--yry-danger-hover) !important;
+    box-shadow: var(--yry-shadow-sm) !important;
 }
 
 .toolbar-btn-danger:disabled {
@@ -167,48 +167,48 @@
     padding: 4px 10px;
     font-size: 12px;
     font-weight: 500;
-    color: var(--yi-text-muted);
+    color: var(--yry-text-muted);
     white-space: nowrap;
     flex-shrink: 0;
 }
 
 .toolbar-selected-count.has-selection {
-    color: var(--yi-primary);
+    color: var(--yry-primary);
     font-weight: 600;
 }
 
 /* 全选按钮样式 */
 .toolbar-btn-select-all {
-    background: var(--yi-surface) !important;
-    color: var(--yi-text) !important;
-    border: 1px solid var(--yi-border) !important;
+    background: var(--yry-surface) !important;
+    color: var(--yry-text) !important;
+    border: 1px solid var(--yry-border) !important;
 }
 
 .toolbar-btn-select-all:hover {
-    background: var(--yi-surface-hover) !important;
-    border-color: var(--yi-border-focus) !important;
+    background: var(--yry-surface-hover) !important;
+    border-color: var(--yry-border-focus) !important;
 }
 
 /* 下载按钮样式 */
 .toolbar-btn:has(.fa-download) {
-    background: var(--yi-info);
-    border-color: var(--yi-info);
+    background: var(--yry-info);
+    border-color: var(--yry-info);
 }
 
 .toolbar-btn:has(.fa-download):hover {
-    background: var(--yi-info-hover);
-    box-shadow: var(--yi-shadow-sm);
+    background: var(--yry-info-hover);
+    box-shadow: var(--yry-shadow-sm);
 }
 
 /* 上传按钮样式 */
 .toolbar-btn:has(.fa-upload) {
-    background: var(--yi-success);
-    border-color: var(--yi-success);
+    background: var(--yry-success);
+    border-color: var(--yry-success);
 }
 
 .toolbar-btn:has(.fa-upload):hover {
-    background: var(--yi-success-hover);
-    box-shadow: var(--yi-shadow-sm);
+    background: var(--yry-success-hover);
+    box-shadow: var(--yry-shadow-sm);
 }
 
 .toolbar-btn i {
@@ -297,7 +297,7 @@
     position: sticky;
     top: 0;
     z-index: var(--z-local-10);
-    background: var(--yi-code-bg);
+    background: var(--yry-code-bg);
     flex-shrink: 0;
 }
 
@@ -311,25 +311,25 @@
     transform: translateY(-50%);
     width: 28px;
     height: 28px;
-    background: var(--yi-code-bg);
-    border: 1px solid var(--yi-border);
+    background: var(--yry-code-bg);
+    border: 1px solid var(--yry-border);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     z-index: var(--z-local-30);
-    transition: all var(--yi-duration-normal) var(--yi-easing-default);
-    color: var(--yi-text-secondary);
-    box-shadow: var(--yi-shadow-sm);
+    transition: all var(--yry-duration-normal) var(--yry-easing-default);
+    color: var(--yry-text-secondary);
+    box-shadow: var(--yry-shadow-sm);
     font-size: 12px;
 }
 
 .file-tree-toggle:hover {
-    background: var(--yi-primary);
-    color: var(--yi-text-on-primary);
-    border-color: var(--yi-primary);
-    box-shadow: var(--yi-shadow-md);
+    background: var(--yry-primary);
+    color: var(--yry-text-on-primary);
+    border-color: var(--yry-primary);
+    box-shadow: var(--yry-shadow-md);
     transform: translateY(-50%) scale(1.05);
 }
 
@@ -339,11 +339,11 @@
 
 .file-tree-toggle:focus-visible {
     outline: none;
-    box-shadow: var(--yi-shadow-focus);
+    box-shadow: var(--yry-shadow-focus);
 }
 
 .file-tree-toggle i {
-    transition: transform var(--yi-duration-fast) var(--yi-easing-default);
+    transition: transform var(--yry-duration-fast) var(--yry-easing-default);
     font-size: 12px;
 }
 
@@ -354,13 +354,13 @@
 /* 收起状态下的特殊样式 */
 .file-tree-container.collapsed .file-tree-toggle {
     right: -12px;
-    background: var(--yi-primary);
-    color: var(--yi-text-on-primary);
-    border-color: var(--yi-primary);
+    background: var(--yry-primary);
+    color: var(--yry-text-on-primary);
+    border-color: var(--yry-primary);
 }
 
 .file-tree-container.collapsed .file-tree-toggle:hover {
-    background: var(--yi-primary-hover);
+    background: var(--yry-primary-hover);
 }
 
 /* ========== 文件树内容容器 ========== */
@@ -387,7 +387,7 @@
     margin: 0px;
     padding: var(--spacing-sm);
     font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
-    background: var(--yi-code-bg);
+    background: var(--yry-code-bg);
     /* 移除独立的滚动，由 .file-tree-content 处理 */
     overflow: visible;
     flex: 1;
@@ -405,13 +405,13 @@
 .file-tree-container .empty-icon {
     width: 64px;
     height: 64px;
-    border-radius: var(--yi-radius-lg);
+    border-radius: var(--yry-radius-lg);
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--yi-primary-subtle);
-    border: 1px solid rgba(var(--yi-primary-rgb), 0.2);
-    color: var(--yi-primary);
+    background: var(--yry-primary-subtle);
+    border: 1px solid rgba(var(--yry-primary-rgb), 0.2);
+    color: var(--yry-primary);
     font-size: 28px;
     margin-bottom: 16px;
 }
@@ -419,7 +419,7 @@
 .file-tree-container .empty-title {
     font-size: 1.1rem;
     font-weight: 700;
-    color: var(--yi-code-text);
+    color: var(--yry-code-text);
     margin-bottom: 8px;
 }
 

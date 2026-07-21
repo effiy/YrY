@@ -7,7 +7,7 @@
         </div>
         <header-actions @clear-cache="onClearCache">
             <div class="sp-search">
-                <yi-icon name="search" class-name="sp-search-icon"></yi-icon>
+                <yry-icon name="search" class-name="sp-search-icon"></yry-icon>
                 <input
                     type="text"
                     class="sp-search-input"
@@ -22,7 +22,7 @@
                     @click="onClearSearch"
                     aria-label="清除搜索"
                 >
-                    <yi-icon name="close"></yi-icon>
+                    <yry-icon name="close"></yry-icon>
                 </button>
             </div>
             <div class="sp-view-segmented">
@@ -34,7 +34,7 @@
                     @click="onSetView(mode.value)"
                     :title="mode.label"
                 >
-                    <yi-icon :name="mode.icon"></yi-icon>
+                    <yry-icon :name="mode.icon"></yry-icon>
                     <span class="sp-view-seg-label">{{ mode.label }}</span>
                 </button>
             </div>
@@ -50,7 +50,7 @@
                     @click="onToggleFilterBar"
                     :title="filterBarCollapsed ? '展开筛选' : '收起筛选'"
                 >
-                    <yi-icon :name="filterBarCollapsed ? 'chevron-down' : 'chevron-up'"></yi-icon>
+                    <yry-icon :name="filterBarCollapsed ? 'chevron-down' : 'chevron-up'"></yry-icon>
                     <span class="sp-filter-toggle-label">筛选</span>
                 </button>
                 <button
@@ -95,7 +95,7 @@
                 @click="onClearMissingTags"
                 title="清除缺失文档筛选"
             >
-                <yi-icon name="close"></yi-icon>
+                <yry-icon name="close"></yry-icon>
             </button>
         </div>
         <div class="sp-filter-collapsed-row">
@@ -121,16 +121,16 @@
                 @click="onClearAllFilters"
                 title="清除所有筛选"
             >
-                <yi-icon name="close"></yi-icon>
+                <yry-icon name="close"></yry-icon>
             </button>
         </div>
     </div>
 
     <div v-if="loading" class="sp-loading">
-        <yi-icon name="loading" spin></yi-icon> 加载中...
+        <yry-icon name="loading" spin></yry-icon> 加载中...
     </div>
     <div v-else-if="error" class="sp-error">
-        <yi-icon name="error"></yi-icon> {{ error }}
+        <yry-icon name="error"></yry-icon> {{ error }}
     </div>
 
     <template v-else>
@@ -173,7 +173,7 @@
                 @node-click="onGraphNodeClick"
             ></knowledge-graph-viewer>
             <div v-else class="sp-graph-empty">
-                <yi-icon name="share"></yi-icon>
+                <yry-icon name="share"></yry-icon>
                 <p v-if="_graphLoading || _tagGraphLoading">加载图谱中...</p>
                 <p v-else>暂无图谱数据，请确认 故事依赖.json 存在</p>
             </div>
@@ -205,7 +205,7 @@
             <div class="sp-panel-header">
                 <h2 class="sp-panel-title">{{ panelStory.name }}</h2>
                 <button class="sp-panel-close" @click="onClosePanel" aria-label="关闭面板">
-                    <yi-icon name="close"></yi-icon>
+                    <yry-icon name="close"></yry-icon>
                 </button>
             </div>
             <div class="sp-panel-body">

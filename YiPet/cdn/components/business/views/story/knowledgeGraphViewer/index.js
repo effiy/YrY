@@ -244,8 +244,8 @@ function extractLegendGroups(nodes) {
 
 // ── Vue 组件 ──
 
-registerGlobalComponent({
-    name: 'KnowledgeGraphViewer',
+const compDef = {
+    name: 'yryKnowledgeGraphViewer',
     html: '/YiPet/cdn/components/business/views/story/knowledgeGraphViewer/template.html',
     css: '/YiPet/cdn/components/business/views/story/knowledgeGraphViewer/index.css',
     props: {
@@ -736,4 +736,7 @@ registerGlobalComponent({
         this._isDestroyed = true;
         this.cleanup();
     },
-});
+};
+
+registerGlobalComponent(compDef);
+export default compDef;

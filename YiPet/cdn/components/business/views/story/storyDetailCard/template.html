@@ -1,7 +1,7 @@
 <div v-if="story" :class="['sp-detail', { 'sp-detail--panel': panel }]">
     <div class="sp-detail-header">
         <button v-if="!panel" class="sp-detail-back" @click="onBack">
-            <yi-icon name="arrow-left"></yi-icon> 返回列表
+            <yry-icon name="arrow-left"></yry-icon> 返回列表
         </button>
         <story-status-badge :status="story.status" size="lg"></story-status-badge>
     </div>
@@ -26,7 +26,7 @@
         <div v-else class="sp-summary-item sp-summary-item--editable" @click="startDescEdit">
             <span class="sp-summary-label">📝 描述</span>
             <span class="sp-summary-text">{{ story.description || '点击添加描述' }}</span>
-            <yi-icon name="edit" class-name="sp-summary-edit-icon"></yi-icon>
+            <yry-icon name="edit" class-name="sp-summary-edit-icon"></yry-icon>
         </div>
         <div class="sp-summary-item">
             <span class="sp-summary-label">👉 下一步</span>
@@ -101,10 +101,10 @@
             <h4 class="sp-file-group-title">{{ group.prefix }} <span class="sp-file-group-count">{{ group.files.length }}</span></h4>
             <ul class="sp-file-list">
                 <li v-for="file in group.files" :key="file.filePath" class="sp-file-item" @click="onFileClick(file)" :title="'在代码审查中打开: ' + file.filePath">
-                    <yi-icon name="file-alt" class-name="sp-file-icon"></yi-icon>
+                    <yry-icon name="file-alt" class-name="sp-file-icon"></yry-icon>
                     <span class="sp-file-name">{{ file.fileName }}</span>
                     <span class="sp-file-date">{{ formatDate(file.updatedAt) }}</span>
-                    <yi-icon name="external-link" class-name="sp-file-action-icon"></yi-icon>
+                    <yry-icon name="external-link" class-name="sp-file-action-icon"></yry-icon>
                 </li>
             </ul>
         </div>

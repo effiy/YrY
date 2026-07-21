@@ -1,0 +1,1670 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY · H5 Chat styles — message bubbles, input composer, markdown rendering
+
+   Classes used:
+     .chatPage / .chatPanel                        Page + panel containers
+     .chatPage__messages / .pet-chat-messages      Scrollable message area
+     .pet-chat-message / .pet-chat-bubble           Message layout primitives
+     .pet-chat-content / .pet-chat-meta / .pet-chat-time  Content + meta
+     .pet-chat-meta-btn / .chatMsgActionBtn         Action buttons
+     .chatComposer / .pet-chat-input-container      Input area
+     .chat-message-input / .chatComposer__btn--send  Input + send button
+     .chatBubble--md / .markdown-content            Markdown formatting
+     .mermaid / .mermaid-actions                    Mermaid diagram support
+
+   Merged from styles/components/chat.css — preserved below with ═══ marker.
+
+   Depends on design tokens:
+     --safe-top, --safe-bottom, --safe-left, --safe-right
+     --primary-rgb, --text-primary, --text-secondary, --text-muted
+     --border-glass, --bg-hover, --bg-elevated, --shadow, --shadow-sm
+     --divider, --muted, --accent, --success, --warning, --error
+     --primary-gradient, --text-inverse, --text-accent
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.chatPage{
+  /* 兜底：部分浏览器不支持 100dvh，会导致高度计算失效，从而把底部输入框“挤出屏幕” */
+  height: calc(100vh - 56px - var(--safe-top));
+  height: calc(100dvh - 56px - var(--safe-top));
+  display:flex;
+  flex-direction:column;
+  background:transparent;
+}
+.chatPage[hidden]{display:none !important}
+.chatPanel{
+  flex: 1;
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+  background: linear-gradient(180deg, rgba(15,23,42,1) 0%, rgba(30,41,59,1) 100%);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.06);
+  overflow:hidden;
+}
+.chatPage__messages{
+  flex:1;
+  overflow:auto;
+  -webkit-overflow-scrolling: touch;
+  /* 为底部输入框预留空间，避免最后几条消息被盖住（两行布局需要更多空间） */
+  padding: 10px 12px calc(170px + var(--safe-bottom));
+  overscroll-behavior: contain;
+  /* 降低滚动时的重绘影响（尤其长对话） */
+  contain: paint layout style;
+  /* 启用硬件加速，优化滚动性能 - 使用更强的硬件加速 */
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+  will-change: scroll-position;
+  /* 优化滚动性能 */
+  scroll-behavior: auto;
+  /* 减少滚动时的重绘 */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  /* 优化合成层性能 */
+  isolation: isolate;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+}
+
+/* 确保聊天页的输入框固定在屏幕底部且不会被遮挡 */
+.chatComposer{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom: var(--vv-bottom);
+  z-index:55;
+}
+
+.chatMsg{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin: 10px 0;
+  /* 长列表滚动性能：对支持 content-visibility 的浏览器提升明显；不支持的会忽略 */
+  content-visibility: auto;
+  contain: content layout style;
+  contain-intrinsic-size: 120px;
+  /* 优化渲染性能 - 使用硬件加速 */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  /* 减少重绘 */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.chatMsg--bot{ --chat-bubble-bg:rgba(255,255,255,0.04); --chat-bubble-border:var(--border-glass); }
+.chatMsg--me{ --chat-bubble-bg:rgba(var(--primary-rgb),0.2); --chat-bubble-border:rgba(var(--primary-rgb),0.35); }
+
+.chatMsgContentRow{
+  display:flex;
+  gap:6px;
+  align-items:flex-end;
+}
+.chatMsg--me .chatMsgContentRow{
+  justify-content:flex-end;
+}
+.chatAvatar{
+  width:30px;height:30px;border-radius:7px;
+  background: rgba(255,255,255,0.06);
+  border:1px solid var(--border-glass);
+  flex:none;
+  display:grid;place-items:center;
+  font-weight:800;
+  color:var(--text-secondary);
+}
+.chatMsg--me .chatAvatar{
+  background: rgba(var(--primary-rgb),0.22);
+  border-color: rgba(var(--primary-rgb),0.35);
+  color:var(--text-primary);
+}
+.chatBubble{
+  max-width: 100%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.6;
+  word-break: break-word;
+  white-space: pre-wrap;
+  box-shadow: var(--shadow-sm);
+  border:1px solid var(--chat-bubble-border, var(--border-glass));
+}
+
+.chatBubbleWrap{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  min-width:0;
+  position: relative;
+  width: fit-content;
+  max-width: min(1100px, 96%);
+}
+.chatMsg--bot .chatBubbleWrap{align-items:flex-start}
+.chatMsg--me .chatBubbleWrap{align-items:flex-end}
+
+/* 消息时间和操作按钮容器（时间在第一行，按钮在第二行） */
+.chatMsgTimeActions{
+  display:flex;
+  flex-direction:row;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  margin-top:0;
+  width: min(1100px, 96%);
+  opacity:1;
+  transition:opacity 0.2s ease;
+  box-sizing:border-box;
+}
+.chatMsg--bot .chatMsgTimeActions{
+  align-items:flex-start;
+}
+.chatMsg--me .chatMsgTimeActions{
+  margin-left:auto;
+  margin-right:0;
+  align-items:flex-end;
+}
+
+/* 消息时间样式 */
+.chatMsgTime{
+  font-size:11px;
+  color:var(--text-muted);
+  min-width:0;
+}
+.chatMsg--me .chatMsgTime{
+  text-align:right;
+}
+.chatMsg--bot .chatMsgTime{
+  text-align:left;
+}
+
+/* 消息操作按钮容器 */
+.chatMsgActions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  flex-shrink:0;
+}
+
+/* 复制按钮样式 */
+.chatMsgActionBtn{
+  height:28px;
+  border-radius:10px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid var(--border-glass);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  font-size:12px;
+  padding: 0 10px;
+  color: var(--text-secondary);
+  transition:all 0.2s ease;
+  opacity:0.7;
+  flex-shrink:0;
+}
+.chatMsgActionBtn svg{
+  width:16px;
+  height:16px;
+  fill:currentColor;
+}
+.chatMsgActionBtn:hover{
+  background:rgba(255,255,255,0.1);
+  transform:translateY(-1px);
+  opacity:1;
+}
+.chatMsgActionBtn:active{
+  transform:translateY(0);
+}
+.chatMsgActionBtn:disabled{
+  opacity:0.3;
+  cursor:not-allowed;
+  pointer-events:none;
+}
+
+/* 排序按钮样式 */
+.chatMsgActionBtn--sort{
+  font-size:12px;
+}
+
+/* 纸飞机按钮样式（发送 prompt 接口，参考 YiPet 项目） */
+.chatMsgActionBtn--prompt{
+  font-weight:800;
+  color:var(--text-primary);
+  background:rgba(var(--primary-rgb),0.16);
+  border:1px solid rgba(var(--primary-rgb),0.35);
+  transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  height:28px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.chatMsgActionBtn--prompt:hover{
+  background:rgba(var(--primary-rgb),0.26);
+  color:var(--text-primary);
+  border-color:rgba(var(--primary-rgb),0.5);
+  transform:translateY(-1px);
+  opacity:1;
+}
+.chatMsgActionBtn--prompt:active{
+  transform:translateY(0);
+}
+.chatMsgActionBtn--prompt:disabled{
+  opacity:0.5;
+  cursor:not-allowed;
+  pointer-events:none;
+}
+
+/* 删除按钮样式 */
+.chatMsgActionBtn--delete{
+  font-weight:800;
+  color:var(--text-primary);
+  background:rgba(239,68,68,.16);
+  border:1px solid rgba(239,68,68,.35);
+  transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  height:28px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.chatMsgActionBtn--delete:hover{
+  background:rgba(239,68,68,.26);
+  color:var(--text-primary);
+  border-color:rgba(239,68,68,.5);
+  transform:translateY(-1px);
+  opacity:1;
+}
+.chatMsgActionBtn--delete:active{
+  transform:translateY(0);
+}
+.chatMsgActionBtn--delete:disabled{
+  opacity:0.5;
+  cursor:not-allowed;
+  pointer-events:none;
+}
+
+.chatMsgActionBtn.is-copied{
+  color:var(--success);
+}
+.chatMsgActionBtn.is-busy{
+  opacity:0.5;
+}
+
+/* Markdown/代码块基础样式（服务 Mermaid 代码块展示） */
+.chatBubble--md{
+  /* marked 输出为 HTML（p/ul/pre...），这里不要用 pre-wrap，避免默认段落间距叠加导致“空一大块” */
+  white-space: normal;
+  font-size: 13px;
+  line-height: 1.48;
+}
+
+/* 欢迎消息样式 */
+[data-welcome-message] {
+  margin-bottom: 20px;
+}
+
+[data-welcome-message] .chatBubble {
+  padding: 8px 10px 0;
+  line-height: 1.6;
+  overflow: visible;
+  max-height: none;
+}
+
+[data-welcome-message] .chatBubble > div {
+  margin: 0;
+  overflow: visible;
+}
+
+[data-welcome-message] .welcomeMessage{
+  margin-bottom:10px;
+  padding:16px;
+  background: linear-gradient(135deg, rgba(6,182,212,0.14), rgba(102,126,234,0.08));
+  border-radius:12px;
+  border-left:3px solid var(--accent);
+}
+[data-welcome-message] .welcomeSection{
+  margin-bottom:12px;
+}
+[data-welcome-message] .welcomeLabel{
+  font-size:12px;
+  color:var(--text-muted);
+  margin-bottom:4px;
+  font-weight:500;
+}
+[data-welcome-message] .welcomeLink{
+  word-break: break-all;
+  color:var(--text-accent);
+  text-decoration:none;
+  font-size:13px;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient: vertical;
+  overflow:hidden;
+  max-width:100%;
+  line-height:1.6;
+  text-overflow:ellipsis;
+}
+[data-welcome-message] .welcomeLink:hover{
+  text-decoration:underline;
+}
+[data-welcome-message] .welcomeDesc{
+  font-size:13px;
+  color:var(--text-secondary);
+  border-radius:7px;
+  padding:8px 12px;
+  line-height:1.7;
+  padding-left:0.5em;
+}
+
+[data-welcome-message] a {
+  transition: all 0.2s ease;
+}
+
+/* 统一 Markdown 的块级元素间距：更紧凑、更接近聊天气泡的阅读节奏 */
+.chatBubble--md p,
+.chatBubble--md ul,
+.chatBubble--md ol,
+.chatBubble--md blockquote,
+.chatBubble--md pre,
+.chatBubble--md table,
+.chatBubble--md hr{
+  margin: 0 0 6px;
+}
+.chatBubble--md h1,
+.chatBubble--md h2,
+.chatBubble--md h3,
+.chatBubble--md h4,
+.chatBubble--md h5,
+.chatBubble--md h6{
+  margin: 8px 0 6px;
+  line-height: 1.25;
+  font-weight: 800;
+}
+.chatBubble--md > :first-child{ margin-top: 0; }
+.chatBubble--md > :last-child{ margin-bottom: 0; }
+
+.chatBubble--md ul,
+.chatBubble--md ol{
+  padding-left: 16px;
+}
+.chatBubble--md li{ margin: 2px 0; }
+.chatBubble--md li > p{ margin: 0; }
+
+.chatBubble--md blockquote{
+  padding: 6px 10px;
+  border-left: 3px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.04);
+  border-radius: 10px;
+}
+.chatBubble--md hr{
+  border: 0;
+  border-top: 1px solid rgba(255,255,255,0.14);
+}
+.chatBubble--md a{
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.chatBubble--md img{
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 10px;
+  margin: 4px 0;
+  cursor: zoom-in;
+}
+
+.chatImage{
+  max-width:200px;
+  margin-bottom:6px;
+}
+.chatImage__img{
+  max-width:100%;
+  height:auto;
+  border-radius:4px;
+  display:block;
+}
+
+.chatBubble--md pre{
+  margin: 6px 0;
+  padding: 8px 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border-glass);
+  border-radius: 10px;
+  overflow-x: auto;
+}
+.chatBubble--md code{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 13px;
+}
+.chatBubble--md :not(pre) > code{
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border-glass);
+}
+
+/* Mermaid 渲染结果 - 优化自适应尺寸 */
+.chatBubble--md .mermaid-diagram-wrapper,
+.chatBubble--md .mermaid-diagram-container {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border-glass);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin: 8px 0;
+  display: inline-block;
+  width: auto;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  /* 允许横向滚动，但优先自适应 */
+  overflow-x: auto;
+  overflow-y: visible;
+  /* 确保内容居中 */
+  text-align: center;
+  /* 优化滚动体验 */
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+/* Webkit 浏览器滚动条样式 */
+.chatBubble--md .mermaid-diagram-wrapper::-webkit-scrollbar,
+.chatBubble--md .mermaid-diagram-container::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+.chatBubble--md .mermaid-diagram-wrapper::-webkit-scrollbar-track,
+.chatBubble--md .mermaid-diagram-container::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 3px;
+}
+
+.chatBubble--md .mermaid-diagram-wrapper::-webkit-scrollbar-thumb,
+.chatBubble--md .mermaid-diagram-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.chatBubble--md .mermaid-diagram-wrapper::-webkit-scrollbar-thumb:hover,
+.chatBubble--md .mermaid-diagram-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* 小屏幕下优化显示 */
+@media (max-width: 768px) {
+  .chatBubble--md .mermaid-diagram-wrapper,
+  .chatBubble--md .mermaid-diagram-container {
+    padding: 10px 12px;
+    margin: 6px 0;
+    max-width: calc(100vw - 80px); /* 确保在小屏幕上不会溢出 */
+  }
+}
+
+.chatBubble--md .mermaid-diagram-wrapper svg,
+.chatBubble--md .mermaid-diagram-container svg {
+  display: block;
+  margin: 0 auto;
+  /* 移除固定尺寸限制，让 SVG 根据内容自适应 */
+  width: auto !important;
+  height: auto !important;
+  max-width: 100%;
+  /* 确保 SVG 可以正确缩放 */
+  overflow: visible;
+}
+
+/* 确保 mermaid 容器内的内容正确对齐 */
+.chatBubble--md .mermaid-diagram-wrapper > *,
+.chatBubble--md .mermaid-diagram-container > * {
+  max-width: 100%;
+}
+
+/* 针对不同消息类型的 mermaid 容器优化 */
+.pet-chat-message.is-pet .chatBubble--md .mermaid-diagram-wrapper,
+.pet-chat-message.is-pet .chatBubble--md .mermaid-diagram-container {
+  width: fit-content;
+  max-width: min(100%, 1200px); /* 限制最大宽度，避免过大 */
+}
+
+.pet-chat-message.is-user .chatBubble--md .mermaid-diagram-wrapper,
+.pet-chat-message.is-user .chatBubble--md .mermaid-diagram-container {
+  width: fit-content;
+  max-width: min(100%, 800px); /* 用户消息中的 mermaid 稍小一些 */
+}
+.chatMsg--bot .chatBubble{
+  background:var(--chat-bubble-bg);
+  border-top-left-radius: 6px;
+}
+.chatMsg--me .chatBubble{
+  background:var(--chat-bubble-bg);
+  border-top-right-radius: 6px;
+}
+
+.chatComposer{
+  display:flex;
+  flex-direction:column;
+  padding:0;
+  background:transparent;
+  border-top:none;
+}
+
+.chatPanel__composer{
+  display:flex;
+  justify-content:center;
+  padding-left: calc(12px + var(--safe-left));
+  padding-right: calc(12px + var(--safe-right));
+}
+
+.chatPanel__composer .pet-chat-input-container{
+  width: min(1100px, 100%);
+  margin: 0 auto;
+}
+
+.pet-chat-input-container{
+  --pet-chat-input-border: rgba(255,255,255,0.08);
+  --pet-chat-input-surface: rgba(2, 6, 23, 0.96);
+  --pet-chat-input-surface-2: rgba(15, 23, 42, 0.92);
+  --pet-chat-input-soft: rgba(2, 6, 23, 0.25);
+  --pet-chat-input-soft-border: rgba(255,255,255,0.10);
+  --pet-chat-input-btn-bg: rgba(255,255,255,0.04);
+  --pet-chat-input-btn-bg-hover: rgba(255,255,255,0.08);
+  --pet-chat-input-btn-border: rgba(255,255,255,0.10);
+  --pet-chat-input-btn-border-hover: rgba(255,255,255,0.16);
+  --pet-chat-input-text: var(--text-primary);
+  --pet-chat-input-muted: var(--text-muted);
+  --pet-chat-input-accent: rgba(var(--primary-rgb), 0.55);
+  --pet-chat-textarea-bg: rgba(2, 6, 23, 0.55);
+  --pet-chat-textarea-focus-bg: rgba(2, 6, 23, 0.75);
+  --pet-chat-textarea-border: rgba(255,255,255,0.10);
+  --pet-chat-textarea-focus-border: rgba(var(--primary-rgb), 0.55);
+  --pet-chat-textarea-focus-shadow: rgba(var(--primary-rgb), 0.18);
+  --pet-chat-placeholder: rgba(148, 163, 184, 0.5);
+
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  border: 1px solid var(--pet-chat-input-border);
+  border-radius: 18px;
+  background: linear-gradient(180deg, var(--pet-chat-input-surface) 0%, var(--pet-chat-input-surface-2) 100%);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  padding: 12px 12px calc(12px + var(--safe-bottom));
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.34);
+}
+
+.chat-input-container{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.pet-chat-input-container:focus-within{
+  border-color: rgba(var(--primary-rgb), 0.42);
+  box-shadow:
+    0 0 0 1px rgba(var(--primary-rgb), 0.20),
+    0 14px 36px rgba(0, 0, 0, 0.38);
+}
+
+.chat-input-toolbar{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.chat-input-btn-group{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+  flex-wrap:nowrap;
+  overflow-x:auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  flex: 1;
+}
+.chat-input-btn-group:empty{display:none}
+.chat-input-btn-group::-webkit-scrollbar{display:none}
+
+.chat-input-btn-group .pet-chat-btn{
+  flex: 1;
+  height:34px;
+  border-radius:10px;
+  padding: 0;
+  border: 1px solid var(--pet-chat-input-btn-border);
+  background: var(--pet-chat-input-btn-bg);
+  color: var(--pet-chat-input-text);
+  transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease, opacity 0.12s ease;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:0;
+  white-space:nowrap;
+}
+.chat-input-btn-group .pet-chat-btn:hover{
+  background: var(--pet-chat-input-btn-bg-hover);
+  border-color: var(--pet-chat-input-btn-border-hover);
+  transform: translateY(-1px);
+}
+.chat-input-btn-group .pet-chat-btn:active{opacity:.85}
+.chat-input-btn-group .pet-chat-btn svg{
+  width:18px;
+  height:18px;
+  flex:none;
+}
+.chat-input-btn-group .pet-chat-btn .chatComposer__btnLabel {
+  display: none;
+}
+.chatComposer__btnLabel{
+  font-size:12px;
+  font-weight:600;
+  line-height:1;
+}
+
+.chatInputRow{
+  display:flex;
+  gap:10px;
+  width:100%;
+  align-items:flex-end;
+}
+
+.chat-message-input{
+  resize:none;
+  flex:1;
+  min-height:60px;
+  max-height: 180px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--pet-chat-textarea-bg);
+  color: var(--pet-chat-input-text);
+  border: 1px solid var(--pet-chat-textarea-border);
+  font-size: 16px;
+  line-height:1.5;
+  overflow-y:hidden;
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.chat-message-input::placeholder{color: var(--pet-chat-placeholder)}
+.chat-message-input:focus{
+  outline:none;
+  background: var(--pet-chat-textarea-focus-bg);
+  border-color: var(--pet-chat-textarea-focus-border);
+  box-shadow: 0 0 0 3px var(--pet-chat-textarea-focus-shadow);
+}
+
+.chatComposer__btn{
+  height:40px;
+  border-radius:12px;
+  padding: 0 14px;
+  font-weight:800;
+  font-size:14px;
+}
+.chatComposer__btn--send{
+  background: var(--primary-gradient);
+  color: var(--text-primary);
+  border: 1px solid rgba(var(--primary-rgb),0.35);
+  min-width: 76px;
+  cursor: pointer;
+}
+.chatComposer__btn:active{opacity:.85}
+
+.chatComposer__btn--send:not(:disabled):hover{filter: brightness(1.06)}
+.chatComposer__btn--send:disabled{
+  background: rgba(148, 163, 184, 0.14);
+  border-color: rgba(148, 163, 184, 0.20);
+  color: rgba(226, 232, 240, 0.55);
+  cursor: not-allowed;
+}
+.chatComposer__btn--send.is-sending{
+  background: rgba(239, 68, 68, 0.20);
+  border-color: rgba(239, 68, 68, 0.44);
+}
+
+@media (hover: hover) and (min-width: 900px){
+  .chatComposer{
+    backdrop-filter: saturate(140%) blur(16px);
+  }
+}
+
+.pet-chat-messages{
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 10px 12px calc(170px + var(--safe-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.pet-chat-message{
+  display: flex;
+  width: 100%;
+  margin: 12px 0;
+  max-width: 100%;
+}
+
+.pet-chat-message[data-welcome-message="true"]{
+  justify-content: flex-start;
+}
+
+.pet-chat-message.is-user{
+  justify-content: flex-end;
+}
+
+.pet-chat-message.is-pet{
+  justify-content: flex-start;
+}
+
+.pet-chat-bubble{
+  max-width: min(1100px, 98%);
+  width: fit-content;
+  min-width: 0;
+  border-radius: 14px;
+  padding: 12px 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  background: rgba(30, 41, 59, 0.55);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.pet-chat-message.is-user .pet-chat-bubble{
+  background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.62) 0%, rgba(34, 211, 238, 0.28) 100%);
+  border-color: rgba(var(--primary-rgb), 0.35);
+}
+
+.pet-chat-message.is-pet .pet-chat-bubble{
+  background: rgba(15, 23, 42, 0.62);
+  border-color: rgba(148, 163, 184, 0.15);
+}
+
+.pet-chat-message.is-error .pet-chat-bubble{
+  border-color: rgba(248, 113, 113, 0.55);
+  box-shadow: 0 8px 24px rgba(248, 113, 113, 0.08);
+}
+
+.pet-chat-message.is-aborted .pet-chat-bubble{
+  border-color: rgba(148, 163, 184, 0.35);
+}
+
+.pet-chat-content{
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  color: rgba(226, 232, 240, 0.95);
+  font-size: 14px;
+  line-height: 1.6;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+.pet-chat-time{
+  display: block;
+  font-size: 12px;
+  color: rgba(148, 163, 184, 0.7);
+  white-space: nowrap;
+}
+
+.pet-chat-meta{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.pet-chat-meta-actions{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pet-chat-meta-btn{
+  border: 1px solid rgba(51, 65, 85, 0.9);
+  background: rgba(30, 41, 59, 0.72);
+  color: rgba(226, 232, 240, 0.92);
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+}
+
+.pet-chat-meta-btn:disabled{
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.pet-chat-meta-btn:hover{
+  background: rgba(51, 65, 85, 0.78);
+  border-color: rgba(71, 85, 105, 0.95);
+  transform: translateY(-1px);
+}
+
+.pet-chat-images{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.pet-chat-image{
+  max-width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  display: block;
+}
+
+.pet-chat-typing{
+  color: rgba(148, 163, 184, 0.9);
+  font-size: 14px;
+  padding: 6px 2px;
+}
+
+
+/* ═══ Merged from styles/components/chat.css ═══ */
+/* Chat window styles */
+
+/* 允许聊天内容被选中 */
+#pet-chat-messages {
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    /* 优化滚动性能 */
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior: contain !important;
+    contain: paint layout style !important;
+    transform: translateZ(0) !important;
+    will-change: scroll-position !important;
+    scroll-behavior: auto !important;
+}
+
+[data-message-type="pet-bubble"],
+[data-message-type="user-bubble"] {
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    overflow: hidden !important;
+}
+
+/* 确保消息气泡中的图片不会超出边界 */
+[data-message-type="pet-bubble"] img,
+[data-message-type="user-bubble"] img {
+    max-width: 100%;
+    width: 100% ;
+    height: auto !important;
+    object-fit: contain !important;
+    display: block !important;
+}
+
+/* 确保图片容器不会超出消息气泡 */
+[data-message-type="pet-bubble"] > div,
+[data-message-type="user-bubble"] > div {
+    max-width: 100% !important;
+    overflow: hidden !important;
+}
+
+/* Markdown 内容样式 */
+.markdown-content {
+    color: #e5e7eb !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+}
+
+/* 预览框中的 Markdown 内容样式（深色背景） */
+#pet-context-preview.markdown-content {
+    color: #e5e7eb !important;
+}
+
+#pet-context-preview.markdown-content img {
+    max-width: 100% !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
+    display: block !important;
+}
+
+#pet-context-preview.markdown-content h1,
+#pet-context-preview.markdown-content h2,
+#pet-context-preview.markdown-content h3,
+#pet-context-preview.markdown-content h4,
+#pet-context-preview.markdown-content h5,
+#pet-context-preview.markdown-content h6 {
+    color: #f3f4f6 !important;
+    margin: 0.8em 0 0.4em 0 !important;
+}
+
+#pet-context-preview.markdown-content p {
+    margin: 0.6em 0 !important;
+    color: #e5e7eb !important;
+}
+
+#pet-context-preview.markdown-content code {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #fbbf24 !important;
+    padding: 0.2em 0.4em !important;
+    border-radius: 3px !important;
+    font-size: 0.9em !important;
+}
+
+#pet-context-preview.markdown-content pre {
+    background: rgba(0, 0, 0, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #e5e7eb !important;
+}
+
+#pet-context-preview.markdown-content pre code {
+    background: transparent !important;
+    color: #e5e7eb !important;
+}
+
+#pet-context-preview.markdown-content blockquote {
+    border-left: 3px solid rgba(255, 255, 255, 0.3) !important;
+    color: #d1d5db !important;
+}
+
+#pet-context-preview.markdown-content a {
+    color: #60a5fa !important;
+}
+
+#pet-context-preview.markdown-content a:hover {
+    color: #93c5fd !important;
+}
+
+#pet-context-preview.markdown-content table {
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+#pet-context-preview.markdown-content th {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #f3f4f6 !important;
+}
+
+#pet-context-preview.markdown-content td {
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    color: #e5e7eb !important;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+    margin: 0.5em 0 !important;
+    font-weight: 600 !important;
+    line-height: 1.25 !important;
+}
+
+.markdown-content h1 { font-size: 1.5em !important; }
+.markdown-content h2 { font-size: 1.25em !important; }
+.markdown-content h3 { font-size: 1.1em !important; }
+.markdown-content h4 { font-size: 1em !important; }
+.markdown-content h5 { font-size: 0.875em !important; }
+.markdown-content h6 { font-size: 0.85em !important; }
+
+.markdown-content p {
+    margin: 0.5em 0 !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+    margin: 0.5em 0 !important;
+    padding-left: 1.5em !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+}
+
+.markdown-content li {
+    margin: 0.25em 0 !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+}
+
+.markdown-content code {
+    background: rgba(0, 0, 0, 0.2) !important;
+    padding: 0.2em 0.4em !important;
+    border-radius: 3px !important;
+    font-size: 0.9em !important;
+    font-family: 'Courier New', monospace !important;
+}
+
+.markdown-content pre {
+    background: rgba(0, 0, 0, 0.3) !important;
+    padding: 0.5em !important;
+    border-radius: 4px !important;
+    overflow-x: auto !important;
+    margin: 0.5em 0 !important;
+}
+
+.markdown-content pre code {
+    background: transparent !important;
+    padding: 0 !important;
+}
+
+.markdown-content blockquote {
+    border-left: 3px solid rgba(255, 255, 255, 0.3) !important;
+    margin: 0.5em 0 !important;
+    padding-left: 1em !important;
+    font-style: italic !important;
+}
+
+.markdown-content a {
+    color: rgba(255, 255, 255, 0.9) !important;
+    text-decoration: underline !important;
+}
+
+.markdown-content strong {
+    font-weight: 600 !important;
+}
+
+.markdown-content u {
+    text-decoration: underline !important;
+}
+
+.markdown-content em {
+    font-style: italic !important;
+}
+
+.markdown-content hr {
+    border: none !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.3) !important;
+    margin: 0.5em 0 !important;
+}
+
+.markdown-content table {
+    border-collapse: collapse !important;
+    margin: 0.5em 0 !important;
+    width: 100% !important;
+}
+
+.markdown-content th,
+.markdown-content td {
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    padding: 0.4em !important;
+    text-align: left !important;
+}
+
+.markdown-content th {
+    font-weight: 600 !important;
+    background: rgba(0, 0, 0, 0.2) !important;
+}
+
+.markdown-content .pet-card-group {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+    gap: 10px !important;
+    margin: 0.75em 0 !important;
+}
+
+.markdown-content .pet-card {
+    display: block !important;
+    padding: 10px 12px !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: inherit !important;
+    text-decoration: none !important;
+    transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease !important;
+}
+
+.markdown-content a.pet-card:hover {
+    border-color: rgba(var(--primary-rgb, 102, 126, 234), 0.6) !important;
+    background: rgba(255, 255, 255, 0.07) !important;
+    transform: translateY(-1px) !important;
+}
+
+.markdown-content .pet-card__header {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin-bottom: 4px !important;
+    font-weight: 600 !important;
+    color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.markdown-content .pet-card__icon {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 22px !important;
+    height: 22px !important;
+    border-radius: 6px !important;
+    background: rgba(var(--primary-rgb, 102, 126, 234), 0.18) !important;
+    color: rgba(255, 255, 255, 0.95) !important;
+    flex: 0 0 auto !important;
+    font-size: 14px !important;
+}
+
+.markdown-content .pet-card__title {
+    min-width: 0 !important;
+    word-break: break-word !important;
+}
+
+.markdown-content .pet-card__desc {
+    margin: 2px 0 0 0 !important;
+    color: rgba(229, 231, 235, 0.86) !important;
+    font-size: 12px !important;
+    line-height: 1.5 !important;
+}
+
+.markdown-content .pet-card__body {
+    margin-top: 8px !important;
+    color: rgba(229, 231, 235, 0.92) !important;
+    font-size: 12px !important;
+    line-height: 1.6 !important;
+}
+
+.markdown-content .pet-tip {
+    margin: 0.75em 0 !important;
+    padding: 10px 12px !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-left-width: 4px !important;
+}
+
+.markdown-content .pet-tip__title {
+    font-weight: 700 !important;
+    margin: 0 0 6px 0 !important;
+    color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.markdown-content .pet-tip__content {
+    color: rgba(229, 231, 235, 0.9) !important;
+    line-height: 1.6 !important;
+    font-size: 12px !important;
+}
+
+.markdown-content .pet-tip--info { border-left-color: rgba(var(--info-rgb, 59, 130, 246), 0.95) !important; }
+.markdown-content .pet-tip--tip { border-left-color: rgba(var(--accent-rgb, 6, 182, 212), 0.95) !important; }
+.markdown-content .pet-tip--note { border-left-color: rgba(var(--info-rgb, 59, 130, 246), 0.95) !important; }
+.markdown-content .pet-tip--success { border-left-color: rgba(34, 197, 94, 0.95) !important; }
+.markdown-content .pet-tip--warning { border-left-color: rgba(245, 158, 11, 0.95) !important; }
+.markdown-content .pet-tip--caution { border-left-color: rgba(245, 158, 11, 0.95) !important; }
+.markdown-content .pet-tip--danger { border-left-color: rgba(239, 68, 68, 0.95) !important; }
+
+.markdown-content .pet-tabs {
+    margin: 0.75em 0 !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    overflow: hidden !important;
+}
+
+.markdown-content .pet-tabs__nav {
+    display: flex !important;
+    gap: 6px !important;
+    padding: 8px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    overflow-x: auto !important;
+}
+
+.markdown-content .pet-tabs__tab {
+    cursor: pointer !important;
+    padding: 6px 10px !important;
+    border-radius: 10px !important;
+    user-select: none !important;
+    font-weight: 600 !important;
+    color: rgba(255, 255, 255, 0.92) !important;
+    background: transparent !important;
+    white-space: nowrap !important;
+}
+
+.markdown-content .pet-tabs__tab.is-active {
+    background: rgba(var(--primary-rgb, 102, 126, 234), 0.16) !important;
+    box-shadow: 0 0 0 1px rgba(var(--primary-rgb, 102, 126, 234), 0.22) inset !important;
+}
+
+.markdown-content .pet-tabs__panels {
+    padding: 10px 12px !important;
+}
+
+.markdown-content .pet-tabs__panel {
+    display: none !important;
+    color: rgba(229, 231, 235, 0.9) !important;
+    line-height: 1.6 !important;
+    font-size: 12px !important;
+}
+
+.markdown-content .pet-tabs__panel.is-active {
+    display: block !important;
+}
+
+/* Mermaid 图表样式 */
+.markdown-content .mermaid,
+.mermaid {
+    background: rgba(255, 255, 255, 0.1) !important;
+    padding: 15px !important;
+    border-radius: 8px !important;
+    margin: 15px 0 !important;
+    overflow-x: auto !important;
+    text-align: center !important;
+    min-height: 100px !important;
+}
+
+.mermaid-has-relative-position {
+    position: relative !important;
+}
+
+.markdown-content .mermaid svg,
+.mermaid svg {
+    max-width: 100% !important;
+    height: auto !important;
+    background: transparent !important;
+}
+
+.markdown-content .mermaid-error {
+    background: rgba(239, 68, 68, 0.1) !important;
+    padding: 10px !important;
+    border-radius: 5px !important;
+    color: #ef4444 !important;
+    font-size: 12px !important;
+    margin: 10px 0 !important;
+}
+
+/* Mermaid 操作按钮样式 */
+.mermaid-actions {
+    position: absolute !important;
+    top: 10px !important;
+    right: 10px !important;
+    display: flex !important;
+    gap: 8px !important;
+    z-index: 10 !important;
+    opacity: 0 !important;
+    transition: opacity 0.2s ease !important;
+}
+
+.mermaid:hover .mermaid-actions {
+    opacity: 1 !important;
+}
+
+.mermaid-copy-button,
+.mermaid-download-button,
+.mermaid-download-png-button,
+.mermaid-edit-button,
+.mermaid-fullscreen-button {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: none !important;
+    border-radius: 4px !important;
+    width: 28px !important;
+    height: 28px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+    transition: all 0.2s ease !important;
+    opacity: 0.8 !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+    backdrop-filter: blur(4px) !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.mermaid-copy-button:hover,
+.mermaid-download-button:hover,
+.mermaid-download-png-button:hover,
+.mermaid-edit-button:hover,
+.mermaid-fullscreen-button:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+    transform: scale(1.1) !important;
+    opacity: 1 !important;
+}
+
+.mermaid-copy-button:active,
+.mermaid-download-button:active,
+.mermaid-download-png-button:active,
+.mermaid-edit-button:active,
+.mermaid-fullscreen-button:active {
+    transform: scale(0.95) !important;
+}
+
+/* Mermaid 按钮状态样式 */
+.mermaid-download-png-button.js-loading {
+    cursor: wait !important;
+}
+
+.mermaid-edit-button.js-loading {
+    cursor: wait !important;
+}
+
+.mermaid-download-png-button.js-success {
+    background: rgba(76, 175, 80, 0.3) !important;
+    cursor: pointer !important;
+}
+
+.mermaid-download-png-button.js-error {
+    background: rgba(244, 67, 54, 0.3) !important;
+    cursor: pointer !important;
+}
+
+.mermaid-edit-button.js-success {
+    background: rgba(76, 175, 80, 0.3) !important;
+}
+
+.mermaid-edit-button.js-warning {
+    background: rgba(255, 193, 7, 0.3) !important;
+}
+
+.mermaid-tip {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    background: rgba(0, 0, 0, 0.85) !important;
+    color: white !important;
+    padding: 14px 28px !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    z-index: 10000 !important;
+    pointer-events: none !important;
+    animation: mermaidFadeInOut 2.5s ease-in-out !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    max-width: 90% !important;
+    text-align: center !important;
+    word-wrap: break-word !important;
+}
+
+/* 全屏容器样式 */
+#mermaid-fullscreen-container {
+    position: fixed !important;
+    z-index: 2147483649 !important;
+    background: rgba(0, 0, 0, 0.95) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+}
+
+.mermaid-fullscreen-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 10px 15px !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    flex-shrink: 0 !important;
+}
+
+.mermaid-fullscreen-title {
+    color: white !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+}
+
+.mermaid-fullscreen-close {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: none !important;
+    color: white !important;
+    font-size: 18px !important;
+    cursor: pointer !important;
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+}
+
+.mermaid-fullscreen-close:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+}
+
+.mermaid-fullscreen-content {
+    flex: 1 !important;
+    overflow: hidden !important;
+    display: flex !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
+    padding: 0 !important;
+    position: relative !important;
+}
+
+/* 全屏容器内的 Mermaid 图表样式 */
+#mermaid-fullscreen-container .mermaid {
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+}
+
+#mermaid-fullscreen-container .mermaid-fullscreen-mermaid {
+    background: rgba(255, 255, 255, 0.1) !important;
+    padding: 20px !important;
+    border-radius: 0 !important;
+}
+
+#mermaid-fullscreen-container .mermaid svg {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+}
+
+/* 调整大小手柄样式 - 已禁用四边缩放拖拽手柄 */
+/* .resize-handle {
+    position: absolute !important;
+    width: 12px !important;
+    height: 12px !important;
+    background: rgba(255, 255, 255, 0.3) !important;
+    border: 2px solid rgba(255, 255, 255, 0.6) !important;
+    border-radius: 2px !important;
+    z-index: 1000 !important;
+    transition: all 0.2s ease !important;
+}
+
+.resize-handle:hover {
+    background: rgba(255, 255, 255, 0.5) !important;
+
+    border-color: rgba(255, 255, 255, 0.9) !important;
+    transform: scale(1.2) !important;
+} */
+
+/* 复制按钮样式 */
+.copy-button {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: none !important;
+    border-radius: 50% !important;
+    width: 22px !important;
+    height: 22px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    font-size: 16px !important;
+    transition: all 0.2s ease !important;
+    opacity: 0.8 !important;
+    flex-shrink: 0 !important;
+}
+
+.copy-button:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+    transform: scale(1.1) !important;
+    opacity: 1 !important;
+}
+
+.copy-button:active {
+    transform: scale(0.95) !important;
+}
+
+/* 闪卡按钮样式 */
+.flashcard-button {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: none !important;
+    border-radius: 50% !important;
+    width: 22px !important;
+    height: 22px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    font-size: 16px !important;
+    transition: all 0.2s ease !important;
+    opacity: 0.8 !important;
+    flex-shrink: 0 !important;
+}
+
+.flashcard-button:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+    transform: scale(1.1) !important;
+    opacity: 1 !important;
+}
+
+.flashcard-button:active {
+    transform: scale(0.95) !important;
+}
+
+/* 删除按钮样式 */
+.delete-button {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: none !important;
+    border-radius: 50% !important;
+    width: 22px !important;
+    height: 22px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    font-size: 16px !important;
+    transition: all 0.2s ease !important;
+    opacity: 0.8 !important;
+    flex-shrink: 0 !important;
+}
+
+.delete-button:hover {
+    background: rgba(244, 67, 54, 0.3) !important;
+    transform: scale(1.1) !important;
+    opacity: 1 !important;
+}
+
+.delete-button:active {
+    transform: scale(0.95) !important;
+}
+
+/* 编辑按钮样式 */
+.edit-button {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: none !important;
+    border-radius: 50% !important;
+    width: 22px !important;
+    height: 22px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    font-size: 16px !important;
+    transition: all 0.2s ease !important;
+    opacity: 0.8 !important;
+    flex-shrink: 0 !important;
+}
+
+.edit-button:hover {
+    background: rgba(33, 150, 243, 0.3) !important;
+    transform: scale(1.1) !important;
+    opacity: 1 !important;
+}
+
+.edit-button:active {
+    transform: scale(0.95) !important;
+}
+
+.edit-button[data-editing="true"] {
+    background: rgba(34, 197, 94, 0.3) !important;
+}
+
+/* 排序按钮样式 */
+.sort-up-button,
+.sort-down-button {
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
+    padding: 4px 8px !important;
+    opacity: 0.7 !important;
+    transition: opacity 0.2s ease, transform 0.2s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 14px !important;
+    min-width: 24px !important;
+    min-height: 24px !important;
+    border-radius: 4px !important;
+}
+
+.sort-up-button:hover,
+.sort-down-button:hover {
+    opacity: 1 !important;
+    transform: scale(1.1) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.sort-up-button:active,
+.sort-down-button:active {
+    transform: scale(0.95) !important;
+}
+
+.sort-up-button:disabled,
+.sort-down-button:disabled {
+    opacity: 0.3 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+}
+
+/* 第一条欢迎消息的优化样式 */
+[data-welcome-message] {
+    margin-bottom: 20px !important;
+}
+
+[data-welcome-message] [data-message-type="pet-bubble"] {
+    padding: 0 !important;
+    line-height: 1.6 !important;
+    overflow: visible !important;
+    max-height: none !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+
+[data-welcome-message] [data-message-type="pet-bubble"] > div {
+    margin: 0 !important;
+    overflow: visible !important;
+}
+
+/* 优化欢迎消息中的链接样式 */
+[data-welcome-message] a {
+    transition: all 0.2s ease !important;
+}
+
+/* 优化欢迎消息中的代码块样式 - 移除滚动条 */
+[data-welcome-message] [data-message-type="pet-bubble"] div[style*="font-family: monospace"] {
+    overflow: visible !important;
+    max-height: none !important;
+}
+
+/* ── a11y: reduced-motion preference ────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}

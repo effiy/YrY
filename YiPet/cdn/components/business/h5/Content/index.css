@@ -1,0 +1,2332 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY · H5 Content styles — changelog, context, modals, FAQ, tag manager,
+   context editor, image preview, AI settings, and YrY Checklist page styles
+
+   This file aggregates styles from multiple sources:
+     • Changelog / Version history display
+     • Context / Page description (contextHint, contextContent, contextSection)
+     • Modal overlays (token-settings, message editor)
+     • Image preview modal (petManager.media.js)
+     • AI settings modal (petManager.ai.js)
+     • FAQ manager (petManager.faq.js)
+     • Tag manager (petManager.tags.js)
+     • Context editor (petManager.editor.js)
+     • YrY Checklist page component (complete page styles)
+
+   Each merged section is marked with its own ═══ block header.
+
+   Depends on design tokens:
+     --muted, --primary-rgb, --text-primary, --text-secondary, --text-muted
+     --text-accent, --border-glass, --border-primary, --bg-secondary
+     --bg-tertiary, --shadow-primary, --primary-gradient, --primary
+     --accent-rgb, --accent
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Changelog / Version History ────────────────────────────────────────── */
+/* ---------- Changelog / Version history ---------- */
+.changelogMeta{
+  padding: 2px 0 10px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.changelogMeta__row{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+}
+.changelogMeta__k{
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  flex:none;
+}
+.changelogMeta__v{
+  font-size: 12px;
+  font-weight: 800;
+  color:var(--text-primary);
+  text-align:right;
+  min-width:0;
+}
+
+.changelogList{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.changelogEmpty{
+  padding: 10px 0 4px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.release{
+  padding: 10px 12px;
+  border-radius: 14px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--border-glass);
+}
+.release__head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.release__ver{
+  font-weight: 900;
+  font-size: 13px;
+  color:var(--text-primary);
+}
+.release__date{
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--muted);
+  flex:none;
+}
+.release__title{
+  margin-top: 6px;
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 1.35;
+  color:var(--text-secondary);
+}
+.release__changes{
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.release__change{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.release__tag{
+  flex:none;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background:rgba(var(--primary-rgb),0.16);
+  border:1px solid rgba(var(--primary-rgb),0.35);
+  color:var(--text-primary);
+}
+.release__text{
+  color:var(--text-secondary);
+  font-weight: 700;
+  min-width:0;
+}
+.release__notes{
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border-glass);
+}
+
+/* Context / Page Desc */
+.contextHint{
+  margin: 2px 0 10px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.contextContent{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  font-size:13px;
+  color:var(--text-secondary);
+  overflow-x:hidden;
+  overflow-wrap:break-word;
+  word-wrap:break-word;
+  max-width:100%;
+}
+.contextSection{
+  padding:10px 12px;
+  border-radius:12px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--border-glass);
+  overflow-x:hidden;
+  overflow-wrap:break-word;
+  word-wrap:break-word;
+  max-width:100%;
+}
+.contextLabel{
+  font-weight:700;
+  margin-bottom:4px;
+  color:var(--text-muted);
+  overflow-x:hidden;
+  overflow-wrap:break-word;
+  word-wrap:break-word;
+  max-width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.modeToggleBtn{
+  font-size:11px;
+  padding:2px 8px;
+  border:1px solid var(--border-glass);
+  border-radius:10px;
+  background:rgba(255,255,255,0.06);
+  color:var(--text-accent);
+  cursor:pointer;
+  white-space:nowrap;
+  flex-shrink:0;
+  line-height:1.4;
+}
+.modeToggleBtn:hover{
+  background:rgba(255,255,255,0.12);
+}
+.contextValue{
+  line-height:1.5;
+  word-break:break-word;
+  overflow-wrap:break-word;
+  word-wrap:break-word;
+  overflow-x:hidden;
+  max-width:100%;
+}
+.contextLink{
+  color:var(--text-accent);
+  word-break:break-all;
+  overflow-wrap:break-word;
+  word-wrap:break-word;
+  overflow-x:hidden;
+  max-width:100%;
+  text-decoration:none;
+}
+.contextLink:hover{
+  text-decoration:underline;
+}
+
+/* 页面上下文和页面描述中的内容禁止横向滚动，自动换行 */
+.contextContent *,
+#contextContent *,
+#pageDescContent *{
+  max-width:100%;
+  overflow-x:hidden;
+  overflow-wrap:break-word;
+  word-wrap:break-word;
+  box-sizing:border-box;
+}
+
+/* 代码块和预格式化文本也要换行 */
+.contextContent pre,
+.contextContent code,
+#contextContent pre,
+#contextContent code,
+#pageDescContent pre,
+#pageDescContent code{
+  white-space:pre-wrap;
+  word-break:break-word;
+  overflow-wrap:break-word;
+  max-width:100%;
+  overflow-x:hidden;
+}
+
+/* 表格也要禁止横向滚动 */
+.contextContent table,
+#contextContent table,
+#pageDescContent table{
+  max-width:100%;
+  table-layout:fixed;
+  word-break:break-word;
+  overflow-wrap:break-word;
+}
+
+.contextContent table td,
+.contextContent table th,
+#contextContent table td,
+#contextContent table th,
+#pageDescContent table td,
+#pageDescContent table th{
+  word-break:break-word;
+  overflow-wrap:break-word;
+  max-width:100%;
+}
+
+/* ═══ Merged from styles/components/modal.css ═══ */
+/* Modal styles */
+
+#token-settings-modal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.7) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    animation: fadeIn 0.3s ease-out !important;
+}
+
+#token-settings-modal .token-settings-container {
+    background: #1e293b !important;
+    border-radius: 16px !important;
+    padding: 30px !important;
+    max-width: 500px !important;
+    width: 90% !important;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3) !important;
+    position: relative !important;
+    animation: modalScaleIn 0.3s ease-out !important;
+}
+
+
+
+#pet-context-editor[data-mode="preview"] #pet-context-preview {
+    width: 100% !important;
+}
+
+#pet-message-editor {
+    position: absolute !important;
+    top: var(--pet-message-editor-top, 0px) !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: rgba(0,0,0,0.6) !important;
+    -webkit-backdrop-filter: blur(2px) !important;
+    backdrop-filter: blur(2px) !important;
+    z-index: 1000 !important;
+    display: none !important;
+    flex-direction: column !important;
+    animation: fadeIn 0.2s ease !important;
+}
+
+#pet-message-editor.js-visible {
+    display: flex !important;
+}
+
+#pet-message-editor .context-editor-modal {
+    flex: 1 !important;
+    background: var(--bg-secondary, #1e293b) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+}
+
+#pet-message-editor .context-editor-header {
+    padding: 16px !important;
+    border-bottom: 1px solid var(--border-primary, rgba(255,255,255,0.12)) !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    background: var(--bg-tertiary, #334155) !important;
+}
+
+#pet-message-editor .context-editor-title {
+    color: var(--text-primary, #f8fafc) !important;
+    font-weight: 500 !important;
+    font-size: 15px !important;
+}
+
+#pet-message-editor #pet-message-close-btn {
+    color: rgba(226, 232, 240, 0.65) !important;
+    cursor: pointer !important;
+    width: 30px !important;
+    height: 30px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 6px !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    background: rgba(255,255,255,0.04) !important;
+    font-size: 14px !important;
+}
+
+#pet-message-editor #pet-message-close-btn:hover {
+    color: rgba(226, 232, 240, 0.9) !important;
+}
+
+#pet-message-editor .editor-header-btns {
+    display: flex !important;
+    gap: 8px !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+}
+
+#pet-message-editor .chat-toolbar-btn {
+    width: 30px !important;
+    height: 30px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    font-size: 14px !important;
+    border-radius: 6px !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    background: rgba(255,255,255,0.04) !important;
+    color: #e5e7eb !important;
+    cursor: pointer !important;
+    transition: transform .12s ease, background .12s ease, border-color .12s ease, color .12s ease, opacity .12s ease !important;
+    outline: none !important;
+    line-height: 1 !important;
+}
+
+#pet-message-editor .chat-toolbar-btn:hover:not([data-saving]):not([data-optimizing]) {
+    background: rgba(255,255,255,0.12) !important;
+    border-color: rgba(255,255,255,0.25) !important;
+}
+
+#pet-message-editor .chat-toolbar-btn[data-saving],
+#pet-message-editor .chat-toolbar-btn[data-optimizing] {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+}
+
+#pet-message-editor #pet-message-optimize-btn {
+    border-color: rgba(76, 175, 80, 0.3) !important;
+    background: rgba(76, 175, 80, 0.15) !important;
+    color: #22c55e !important;
+}
+
+#pet-message-editor #pet-message-optimize-btn:hover:not([data-optimizing]) {
+    filter: brightness(1.05) !important;
+}
+
+#pet-message-editor .chat-toolbar-btn[data-status="success"] {
+    background: rgba(76, 175, 80, 0.2) !important;
+    color: #22c55e !important;
+    border-color: rgba(76, 175, 80, 0.4) !important;
+}
+
+#pet-message-editor .chat-toolbar-btn[data-status="error"] {
+    background: rgba(244, 67, 54, 0.2) !important;
+    color: #ef4444 !important;
+    border-color: rgba(244, 67, 54, 0.4) !important;
+}
+
+#pet-message-editor .context-editor-content {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    padding: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+}
+
+#pet-message-editor .context-editor-body {
+    flex: 1 !important;
+    display: flex !important;
+    gap: 10px !important;
+    min-height: 0 !important;
+}
+
+#pet-message-editor #pet-message-editor-textarea {
+    flex: 1 !important;
+    width: 50% !important;
+    height: 100% !important;
+    background: #121212 !important;
+    color: #fff !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    border-radius: 8px !important;
+    padding: 12px !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace !important;
+    font-size: 12px !important;
+    line-height: 1.6 !important;
+    outline: none !important;
+    resize: none !important;
+    white-space: pre-wrap !important;
+    min-height: 0 !important;
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    display: block !important;
+}
+
+#pet-message-editor #pet-message-preview {
+    flex: 1 !important;
+    width: 50% !important;
+    height: 100% !important;
+    background: #0e0e0e !important;
+    color: #e5e7eb !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    border-radius: 8px !important;
+    padding: 12px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    pointer-events: auto !important;
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+    display: block !important;
+}
+
+.pet-clipboard-temp {
+    position: fixed !important;
+    opacity: 0 !important;
+    left: -9999px !important;
+    top: 0 !important;
+}
+
+#pet-chat-window.context-editor-open #sidebar-toggle-btn,
+#pet-chat-window.context-editor-open #input-container-toggle-btn {
+    display: none !important;
+}
+
+
+.pet-notification {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    color: white !important;
+    padding: 12px 20px !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    z-index: 2147483650 !important;
+    animation: slideInRight 0.3s ease-out !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+}
+
+.pet-notification.success {
+    background: #22c55e !important;
+}
+
+.pet-notification.info {
+    background: #3b82f6 !important;
+}
+
+.pet-notification.error {
+    background: #ef4444 !important;
+}
+
+.pet-notification.is-closing {
+  animation: slideInRight 0.3s ease-out reverse !important;
+}
+
+/* ============================================
+   图片预览模态框样式 - 从 petManager.media.js 提取
+   ============================================ */
+
+.image-preview-modal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.95) !important;
+    z-index: 2147483650 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+}
+
+.image-preview-modal .image-preview-container {
+    position: relative !important;
+    max-width: 95% !important;
+    max-height: 90% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.image-preview-modal .image-preview-loading {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 40px !important;
+    height: 40px !important;
+    border: 3px solid rgba(255, 255, 255, 0.3) !important;
+    border-top-color: #fff !important;
+    border-radius: 50% !important;
+    animation: modalSpin 1s linear infinite !important;
+}
+
+.image-preview-modal .image-preview-loading.js-hidden {
+    display: none !important;
+}
+
+.image-preview-modal img {
+    max-width: 100% !important;
+    max-height: 85vh !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+    opacity: 0 !important;
+    transition: opacity 0.3s ease !important;
+    object-fit: contain !important;
+}
+
+.image-preview-modal img.js-loaded {
+    opacity: 1 !important;
+}
+
+.image-preview-modal .image-preview-error {
+    color: white !important;
+    font-size: 14px !important;
+    text-align: center !important;
+    padding: 20px !important;
+}
+
+.image-preview-modal .image-preview-title-bar {
+    position: absolute !important;
+    top: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    background: rgba(0, 0, 0, 0.6) !important;
+    color: white !important;
+    padding: 8px 16px !important;
+    border-radius: 20px !important;
+    font-size: 12px !important;
+    white-space: nowrap !important;
+    max-width: 80% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.image-preview-modal .image-preview-button-container {
+    position: absolute !important;
+    top: 20px !important;
+    right: 20px !important;
+    display: flex !important;
+    gap: 12px !important;
+    align-items: center !important;
+}
+
+.image-preview-modal .image-preview-download-btn,
+.image-preview-modal .image-preview-close-btn {
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: white !important;
+    border: none !important;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.3s ease !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    backdrop-filter: blur(10px) !important;
+    line-height: 1 !important;
+}
+
+.image-preview-modal .image-preview-download-btn {
+    font-size: 20px !important;
+}
+
+.image-preview-modal .image-preview-close-btn {
+    font-size: 24px !important;
+}
+
+.image-preview-modal .image-preview-download-btn:hover,
+.image-preview-modal .image-preview-close-btn:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+    transform: scale(1.1) !important;
+}
+
+/* ============================================
+   AI 设置模态框样式 (从 petManager.ai.js 提取)
+   ============================================ */
+#pet-ai-settings {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0,0,0,0.5) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: var(--modal-z-index, 10000) !important;
+}
+
+#pet-ai-settings > div {
+    background: #1e293b !important;  /* 量子灰 */
+    border-radius: 12px !important;
+    padding: 20px !important;
+    width: 90% !important;
+    max-width: 520px !important;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.2) !important;
+}
+
+#pet-ai-settings .pet-ai-settings-title {
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    margin-bottom: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    color: #1f2937 !important;
+}
+
+#pet-ai-settings .pet-ai-settings-row {
+    display: flex !important;
+    gap: 12px !important;
+    align-items: center !important;
+    margin-bottom: 16px !important;
+}
+
+#pet-ai-settings .pet-ai-settings-label {
+    min-width: 48px !important;
+    color: #374151 !important;
+}
+
+#pet-ai-settings .pet-ai-settings-select,
+#pet-ai-settings .pet-ai-settings-input {
+    flex: 1 !important;
+    padding: 8px 10px !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px !important;
+    outline: none !important;
+}
+
+#pet-ai-settings .pet-ai-settings-buttons {
+    display: flex !important;
+    justify-content: flex-end !important;
+    gap: 10px !important;
+}
+
+#pet-ai-settings .pet-ai-settings-token-btn {
+    padding: 8px 12px !important;
+    border-radius: 8px !important;
+    border: 1px solid #e5e7eb !important;
+    background: #334155 !important;  /* 中量子灰 */
+    color: #f8fafc !important;  /* 量子白 */
+    cursor: pointer !important;
+}
+
+#pet-ai-settings .pet-ai-settings-save-btn {
+    padding: 8px 12px !important;
+    border-radius: 8px !important;
+    border: 1px solid #3b82f6 !important;
+    background: #3b82f6 !important;
+    color: #fff !important;
+    cursor: pointer !important;
+}
+
+#pet-ai-settings .pet-ai-settings-cancel-btn {
+    padding: 8px 12px !important;
+    border-radius: 8px !important;
+    border: 1px solid #e5e7eb !important;
+    background: #1e293b !important;  /* 量子灰 */
+    color: #f8fafc !important;  /* 量子白 */
+    cursor: pointer !important;
+}
+
+
+/* ═══ Merged from styles/components/faq.css ═══ */
+#pet-faq-manager.pet-faq-manager {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: rgba(0,0,0,0.6) !important;
+    -webkit-backdrop-filter: blur(2px) !important;
+    backdrop-filter: blur(2px) !important;
+    z-index: 1000 !important;
+    display: none !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 18px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    overscroll-behavior: contain !important;
+    animation: fadeIn 0.2s ease !important;
+}
+
+#pet-faq-manager.pet-faq-manager.pet-is-visible {
+    display: flex !important;
+}
+
+.pet-faq-tag-manager.tw-hidden {
+    display: none !important;
+}
+
+.pet-faq-manager-modal {
+    width: min(980px, 100%) !important;
+    max-height: min(760px, calc(100% - 36px)) !important;
+    background: #1a1b1e !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    border-radius: 16px !important;
+    border: 1px solid rgba(148, 163, 184, 0.18) !important;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.42) !important;
+    animation: scaleIn 0.2s ease-out !important;
+    min-height: 0 !important;
+}
+
+.pet-faq-manager-header {
+    padding: 16px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    background: #25262b !important;
+}
+
+.pet-faq-manager-title {
+    color: #fff !important;
+    font-weight: 500 !important;
+    font-size: 15px !important;
+}
+
+.pet-faq-manager-title-sub {
+    font-size: 12px !important;
+    color: rgba(255,255,255,0.6) !important;
+}
+
+.pet-faq-modal-close {
+    color: rgba(255,255,255,0.5) !important;
+    cursor: pointer !important;
+    padding: 4px !important;
+    font-size: 14px !important;
+    border-radius: 10px !important;
+    border: 1px solid rgba(148, 163, 184, 0.18) !important;
+    background: rgba(15, 23, 42, 0.35) !important;
+}
+
+.pet-faq-modal-close:hover {
+    color: rgba(255,255,255,0.88) !important;
+    background: rgba(15, 23, 42, 0.55) !important;
+}
+
+.pet-faq-modal-close:focus-visible {
+    outline: 2px solid rgba(59, 130, 246, 0.85) !important;
+    outline-offset: 2px !important;
+}
+
+.pet-faq-modal-content {
+    flex: 1 !important;
+    overflow: hidden !important;
+    padding: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 0 !important;
+}
+
+.pet-faq-layout {
+    display: flex !important;
+    gap: 14px !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+}
+
+.pet-faq-sidebar {
+    width: 320px !important;
+    max-width: 42% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    min-height: 0 !important;
+}
+
+.pet-faq-main {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    min-height: 0 !important;
+}
+
+.pet-faq-search-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.pet-faq-search-input,
+.pet-faq-tag-search-input,
+.pet-faq-input {
+    background: rgba(15, 23, 42, 0.62) !important;
+    color: rgba(226, 232, 240, 0.95) !important;
+    border: 1px solid rgba(148, 163, 184, 0.22) !important;
+    border-radius: 12px !important;
+    padding: 10px 12px !important;
+    font-size: 13px !important;
+    outline: none !important;
+}
+
+.pet-faq-search-input {
+    flex: 1 !important;
+    min-width: 0 !important;
+}
+
+.pet-faq-search-input:focus,
+.pet-faq-tag-search-input:focus,
+.pet-faq-input:focus {
+    border-color: rgba(59, 130, 246, 0.8) !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+}
+
+.pet-faq-search-clear {
+    border: 1px solid rgba(148, 163, 184, 0.22) !important;
+    background: rgba(15, 23, 42, 0.35) !important;
+    color: rgba(226, 232, 240, 0.9) !important;
+    border-radius: 12px !important;
+    padding: 9px 12px !important;
+    font-size: 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 36px !important;
+    cursor: pointer !important;
+    transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease !important;
+}
+
+.pet-faq-search-clear:hover:enabled {
+    background: rgba(15, 23, 42, 0.55) !important;
+    border-color: rgba(148, 163, 184, 0.34) !important;
+    transform: translateY(-1px) !important;
+}
+
+.pet-faq-search-clear:disabled {
+    opacity: 0.55 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+}
+
+.pet-faq-filter-row {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    min-height: 0 !important;
+}
+
+.pet-faq-filter-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    align-items: center !important;
+}
+
+.pet-faq-filter-btn {
+    border: 1px solid rgba(148, 163, 184, 0.22) !important;
+    background: rgba(15, 23, 42, 0.35) !important;
+    color: rgba(226, 232, 240, 0.9) !important;
+    border-radius: 10px !important;
+    padding: 7px 10px !important;
+    font-size: 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 32px !important;
+    cursor: pointer !important;
+    transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease !important;
+    user-select: none !important;
+}
+
+.pet-faq-filter-btn:hover:enabled {
+    background: rgba(15, 23, 42, 0.55) !important;
+    border-color: rgba(148, 163, 184, 0.34) !important;
+    transform: translateY(-1px) !important;
+}
+
+.pet-faq-filter-btn.active {
+    border-color: rgba(59, 130, 246, 0.8) !important;
+    background: rgba(59, 130, 246, 0.18) !important;
+    color: rgba(219, 234, 254, 0.98) !important;
+}
+
+.pet-faq-filter-btn:disabled {
+    opacity: 0.55 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+}
+
+.pet-faq-filter-btn:focus-visible,
+.pet-faq-search-clear:focus-visible,
+.pet-faq-tag:focus-visible,
+.pet-faq-item-btn:focus-visible,
+.pet-faq-item-tag:focus-visible,
+.pet-faq-tag-manager-btn:focus-visible {
+    outline: 2px solid rgba(59, 130, 246, 0.85) !important;
+    outline-offset: 2px !important;
+}
+
+.pet-faq-tag-search {
+    display: flex !important;
+    gap: 8px !important;
+    align-items: center !important;
+}
+
+.pet-faq-tag-search-input {
+    flex: 1 !important;
+    min-width: 0 !important;
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+}
+
+.pet-faq-tag-list {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    padding: 2px !important;
+    max-height: 180px !important;
+    overflow: auto !important;
+    min-height: 0 !important;
+}
+
+.pet-faq-tag {
+    border: 1px solid rgba(148, 163, 184, 0.22) !important;
+    background: rgba(15, 23, 42, 0.35) !important;
+    color: rgba(226, 232, 240, 0.9) !important;
+    border-radius: 999px !important;
+    padding: 6px 10px !important;
+    font-size: 12px !important;
+    cursor: pointer !important;
+    transition: background 0.12s ease, border-color 0.12s ease, transform 0.12s ease !important;
+    user-select: none !important;
+    max-width: 100% !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
+}
+
+.pet-faq-tag:hover {
+    background: rgba(15, 23, 42, 0.55) !important;
+    border-color: rgba(148, 163, 184, 0.34) !important;
+    transform: translateY(-1px) !important;
+}
+
+.pet-faq-tag.active {
+    border-color: rgba(34, 197, 94, 0.75) !important;
+    background: rgba(34, 197, 94, 0.16) !important;
+    color: rgba(220, 252, 231, 0.96) !important;
+}
+
+.pet-faq-tag.more {
+    border-style: dashed !important;
+}
+
+.pet-faq-tag-manager {
+    margin-top: 10px !important;
+    background: rgba(15, 23, 42, 0.42) !important;
+    border: 1px solid rgba(148, 163, 184, 0.18) !important;
+    border-radius: 14px !important;
+    padding: 10px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    max-height: 240px !important;
+    overflow: hidden !important;
+    min-height: 0 !important;
+}
+
+.pet-faq-tag-manager-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+}
+
+.pet-faq-tag-manager-title {
+    color: rgba(226, 232, 240, 0.92) !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+}
+
+.pet-faq-tag-manager-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    overflow: auto !important;
+    min-height: 0 !important;
+}
+
+.pet-faq-tag-manager-item {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+    padding: 8px 10px !important;
+    border: 1px solid rgba(148, 163, 184, 0.16) !important;
+    background: rgba(0,0,0,0.2) !important;
+    border-radius: 12px !important;
+}
+
+.pet-faq-tag-manager-item-tag {
+    color: rgba(226, 232, 240, 0.92) !important;
+    font-size: 12px !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+.pet-faq-tag-manager-item-actions {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex-shrink: 0 !important;
+}
+
+.pet-faq-tag-manager-btn {
+    border: 1px solid rgba(148, 163, 184, 0.22) !important;
+    background: rgba(15, 23, 42, 0.35) !important;
+    color: rgba(226, 232, 240, 0.9) !important;
+    border-radius: 10px !important;
+    padding: 6px 10px !important;
+    font-size: 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 32px !important;
+    cursor: pointer !important;
+    transition: background 0.12s ease, border-color 0.12s ease, transform 0.12s ease !important;
+}
+
+.pet-faq-tag-manager-btn:hover {
+    background: rgba(15, 23, 42, 0.55) !important;
+    border-color: rgba(148, 163, 184, 0.34) !important;
+    transform: translateY(-1px) !important;
+}
+
+.pet-faq-tag-manager-btn.danger {
+    border-color: rgba(248, 113, 113, 0.4) !important;
+    background: rgba(248, 113, 113, 0.14) !important;
+    color: rgba(254, 226, 226, 0.95) !important;
+}
+
+.pet-faq-summary {
+    color: rgba(226, 232, 240, 0.78) !important;
+    font-size: 12px !important;
+    padding: 2px 2px 0 2px !important;
+}
+
+.pet-faq-input-row {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+}
+
+.pet-faq-input {
+    width: 100% !important;
+    min-height: 86px !important;
+    resize: vertical !important;
+    line-height: 1.55 !important;
+}
+
+.pet-faq-input-hint {
+    color: rgba(148, 163, 184, 0.85) !important;
+    font-size: 12px !important;
+}
+
+.pet-faq-status {
+    color: rgba(226, 232, 240, 0.8) !important;
+    font-size: 12px !important;
+    padding: 8px 10px !important;
+    border: 1px solid rgba(148, 163, 184, 0.16) !important;
+    background: rgba(15, 23, 42, 0.35) !important;
+    border-radius: 12px !important;
+}
+
+.pet-faq-error {
+    color: rgba(254, 226, 226, 0.95) !important;
+    font-size: 12px !important;
+    padding: 8px 10px !important;
+    border: 1px solid rgba(248, 113, 113, 0.45) !important;
+    background: rgba(248, 113, 113, 0.14) !important;
+    border-radius: 12px !important;
+}
+
+.pet-faq-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    overflow: auto !important;
+    min-height: 0 !important;
+    padding-right: 6px !important;
+}
+
+.pet-faq-empty {
+    color: rgba(148, 163, 184, 0.9) !important;
+    font-size: 13px !important;
+    padding: 14px 12px !important;
+    border: 1px dashed rgba(148, 163, 184, 0.26) !important;
+    border-radius: 14px !important;
+    background: rgba(15, 23, 42, 0.25) !important;
+}
+
+.pet-faq-item {
+    border: 1px solid rgba(148, 163, 184, 0.16) !important;
+    background: rgba(0,0,0,0.18) !important;
+    border-radius: 14px !important;
+    padding: 12px 14px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    cursor: pointer !important;
+    transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease !important;
+}
+
+.pet-faq-item:hover {
+    transform: translateY(-1px) !important;
+    border-color: rgba(148, 163, 184, 0.26) !important;
+    background: rgba(0,0,0,0.26) !important;
+}
+
+.pet-faq-item:focus-visible {
+    outline: 2px solid rgba(59, 130, 246, 0.85) !important;
+    outline-offset: 2px !important;
+}
+
+.pet-faq-item-header {
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    min-width: 0 !important;
+}
+
+.pet-faq-item-title-row {
+    display: flex !important;
+    align-items: flex-start !important;
+    min-width: 0 !important;
+}
+
+.pet-faq-item-meta-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+    min-width: 0 !important;
+}
+
+.pet-faq-item-title {
+    color: rgba(226, 232, 240, 0.96) !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+    min-width: 0 !important;
+    flex: 1 !important;
+    word-break: break-word !important;
+    overflow: visible !important;
+    display: block !important;
+}
+
+.pet-faq-item-actions {
+    display: inline-flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 6px !important;
+    flex-shrink: 0 !important;
+    margin-left: auto !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: none !important;
+}
+
+.pet-faq-item-btn {
+    border: 1px solid rgba(148, 163, 184, 0.22) !important;
+    background: rgba(15, 23, 42, 0.35) !important;
+    color: rgba(226, 232, 240, 0.9) !important;
+    border-radius: 10px !important;
+    width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    font-size: 13px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease !important;
+}
+
+.pet-faq-item-btn svg {
+    width: 16px !important;
+    height: 16px !important;
+    display: block !important;
+}
+
+.pet-faq-item-btn:hover:enabled {
+    background: rgba(15, 23, 42, 0.55) !important;
+    border-color: rgba(148, 163, 184, 0.34) !important;
+    transform: translateY(-1px) !important;
+}
+
+.pet-faq-item-btn:disabled {
+    opacity: 0.55 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+}
+
+.pet-faq-item-btn.primary {
+    border-color: rgba(59, 130, 246, 0.5) !important;
+    background: rgba(59, 130, 246, 0.18) !important;
+    color: rgba(219, 234, 254, 0.98) !important;
+}
+
+.pet-faq-item-btn.danger {
+    border-color: rgba(248, 113, 113, 0.45) !important;
+    background: rgba(248, 113, 113, 0.14) !important;
+    color: rgba(254, 226, 226, 0.95) !important;
+}
+
+.pet-faq-item-tags {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin-top: 0 !important;
+    min-width: 0 !important;
+    flex: 1 !important;
+}
+
+.pet-faq-item-tag {
+    border: 1px solid rgba(148, 163, 184, 0.2) !important;
+    background: rgba(15, 23, 42, 0.25) !important;
+    color: rgba(226, 232, 240, 0.86) !important;
+    border-radius: 999px !important;
+    padding: 5px 10px !important;
+    font-size: 12px !important;
+    cursor: pointer !important;
+    transition: background 0.12s ease, border-color 0.12s ease !important;
+}
+
+.pet-faq-item-tag:hover {
+    background: rgba(15, 23, 42, 0.45) !important;
+    border-color: rgba(148, 163, 184, 0.32) !important;
+}
+
+.pet-faq-item-prompt {
+    margin-top: 0 !important;
+    color: rgba(148, 163, 184, 0.9) !important;
+    font-size: 13px !important;
+    line-height: 1.6 !important;
+    white-space: pre-line !important;
+    word-break: break-word !important;
+    overflow: visible !important;
+    display: block !important;
+    -webkit-box-orient: initial !important;
+    -webkit-line-clamp: initial !important;
+}
+
+@media (max-width: 720px) {
+    #pet-faq-manager.pet-faq-manager {
+        padding: 12px !important;
+    }
+
+    .pet-faq-manager-modal {
+        max-height: calc(100% - 24px) !important;
+        border-radius: 14px !important;
+    }
+
+    .pet-faq-layout {
+        flex-direction: column !important;
+    }
+
+    .pet-faq-sidebar {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .pet-faq-tag-list {
+        max-height: 120px !important;
+    }
+}
+
+.faq-tag-manager-close {
+    width: 30px !important;
+    height: 30px !important;
+}
+
+.faq-tag-manager-input {
+    flex: 1 !important;
+}
+
+.faq-tag-manager-input:focus {
+    border-color: #22c55e !important;
+}
+
+.faq-tag-manager-add-btn {
+    background: #4CAF50 !important;
+    color: #fff !important;
+}
+
+.faq-tag-manager-add-btn:hover {
+    background: #45a049 !important;
+}
+
+.faq-tag-manager-smart-generate {
+    background: #9C27B0 !important;
+    color: #fff !important;
+    white-space: nowrap !important;
+}
+
+.faq-tag-manager-smart-generate:hover:enabled {
+    background: #7B1FA2 !important;
+}
+
+.faq-tag-manager-smart-generate:disabled {
+    background: #ccc !important;
+    cursor: not-allowed !important;
+    opacity: 0.85 !important;
+}
+
+.faq-tag-manager-tags-box {
+    min-height: 100px !important;
+    max-height: 300px !important;
+    margin-bottom: 20px !important;
+    padding: 12px !important;
+    background: #0f172a !important;
+    border-radius: 6px !important;
+}
+
+.faq-tag-manager-save-btn {
+    background: #3b82f6 !important;
+    color: #fff !important;
+}
+
+.faq-tag-manager-save-btn:hover {
+    background: #1976D2 !important;
+}
+
+.faq-tag-chip {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 6px 12px !important;
+    margin: 6px !important;
+    background: #e8f5e9 !important;
+    color: #2e7d32 !important;
+    border: 1px solid #c8e6c9 !important;
+    border-radius: 16px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
+    transition: all 0.2s ease !important;
+}
+
+.faq-tag-chip-remove {
+    background: transparent !important;
+    border: none !important;
+    color: #2e7d32 !important;
+    cursor: pointer !important;
+    font-size: 13px !important;
+    padding: 0 !important;
+    width: 18px !important;
+    height: 18px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    transition: all 0.2s ease !important;
+}
+
+.faq-tag-chip-remove:hover {
+    background: rgba(46, 125, 50, 0.1) !important;
+}
+
+.faq-tag-manager-quick-tag-btn.is-selected,
+.faq-tag-manager-quick-tag-btn:disabled {
+    background: #22c55e !important;
+    color: #fff !important;
+    border-color: #22c55e !important;
+    cursor: not-allowed !important;
+    opacity: 0.8 !important;
+}
+
+.faq-tag-manager-quick-tag-btn:hover:enabled {
+    border-color: #22c55e !important;
+}
+
+#token-settings-modal .token-settings-title {
+    margin: 0 0 10px 0 !important;
+    color: #f8fafc !important;
+    font-size: 20px !important;
+    font-weight: 600 !important;
+    text-align: center !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+}
+
+#token-settings-modal .token-settings-description {
+    margin: 0 0 20px 0 !important;
+    color: #94a3b8 !important;
+    font-size: 14px !important;
+    text-align: center !important;
+}
+
+#token-settings-modal .auth-input-container {
+    margin: 0 0 20px 0 !important;
+}
+
+#token-settings-modal .auth-input {
+    width: 100% !important;
+    padding: 12px 14px !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(var(--text-muted-rgb, 148, 163, 184), 0.35) !important;
+    background: rgba(var(--bg-primary-rgb, 15, 23, 42), 0.35) !important;
+    color: var(--text-primary, #f8fafc) !important;
+    outline: none !important;
+    font-size: 14px !important;
+    box-sizing: border-box !important;
+}
+
+#token-settings-modal .auth-input:focus {
+    border-color: rgba(var(--accent-rgb, 6, 182, 212), 0.55) !important;
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb, 6, 182, 212), 0.18) !important;
+}
+
+#token-settings-modal .auth-input.invalid {
+    border-color: rgba(239, 68, 68, 0.75) !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18) !important;
+}
+
+#token-settings-modal .auth-button-container {
+    display: flex !important;
+    gap: 12px !important;
+    justify-content: flex-end !important;
+}
+
+#token-settings-modal .auth-save-btn,
+#token-settings-modal .auth-cancel-btn {
+    padding: 10px 14px !important;
+    border-radius: 10px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    border: 1px solid transparent !important;
+}
+
+#token-settings-modal .auth-save-btn {
+    background: rgba(34, 197, 94, 0.95) !important;
+    color: white !important;
+    border-color: rgba(34, 197, 94, 0.65) !important;
+}
+
+#token-settings-modal .auth-save-btn:hover {
+    filter: brightness(1.05) !important;
+}
+
+#token-settings-modal .auth-cancel-btn {
+    background: rgba(148, 163, 184, 0.12) !important;
+    color: rgba(226, 232, 240, 0.95) !important;
+    border-color: rgba(148, 163, 184, 0.25) !important;
+}
+
+#token-settings-modal .auth-cancel-btn:hover {
+    background: rgba(148, 163, 184, 0.18) !important;
+}
+
+.pet-export-toast {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    color: white !important;
+    padding: 16px 24px !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    z-index: 2147483650 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.pet-export-toast.is-loading {
+    background: rgba(59, 130, 246, 0.95) !important;
+}
+
+.pet-export-toast.is-success {
+    background: rgba(34, 197, 94, 0.95) !important;
+    animation: exportToastFadeInOut 2s ease-in-out !important;
+}
+
+.pet-export-toast.is-error {
+    background: rgba(239, 68, 68, 0.95) !important;
+    animation: exportToastFadeInOut 3s ease-in-out !important;
+}
+
+/* ============================================
+   标签管理器样式 - 从 petManager.tags.js 提取
+   ============================================ */
+
+/* 标签管理器覆盖层 */
+#pet-tag-manager {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: rgba(0,0,0,0.6) !important;
+    -webkit-backdrop-filter: blur(2px) !important;
+    backdrop-filter: blur(2px) !important;
+    z-index: 1000 !important;
+    display: none !important;
+    flex-direction: column !important;
+    animation: fadeIn 0.2s ease !important;
+}
+
+#pet-tag-manager.js-visible {
+    display: flex !important;
+}
+
+/* 标签管理器模态容器 */
+#pet-tag-manager .tag-manager-modal-container {
+    flex: 1 !important;
+    background: var(--bg-secondary, #1e293b) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+}
+
+/* 标签管理器头部 */
+#pet-tag-manager .tag-manager-header {
+    padding: 16px !important;
+    border-bottom: 1px solid var(--border-primary, rgba(255,255,255,0.12)) !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    background: var(--bg-tertiary, #334155) !important;
+}
+
+#pet-tag-manager .tag-manager-title {
+    color: var(--text-primary, #f8fafc) !important;
+    font-weight: 500 !important;
+    font-size: 15px !important;
+}
+
+#pet-tag-manager .tag-manager-close {
+    color: rgba(226, 232, 240, 0.65) !important;
+    cursor: pointer !important;
+    padding: 4px !important;
+    font-size: 14px !important;
+}
+
+#pet-tag-manager .tag-manager-close:hover {
+    color: rgba(226, 232, 240, 0.9) !important;
+}
+
+/* 标签管理器内容区域 */
+#pet-tag-manager .tag-manager-content {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    padding: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+}
+
+/* 标签管理器输入组 */
+#pet-tag-manager .tag-manager-input-group {
+    display: flex !important;
+    gap: 12px !important;
+}
+
+/* 标签管理器输入框 */
+#pet-tag-manager .tag-manager-input {
+    flex: 1 !important;
+    padding: 12px 16px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    font-size: 14px !important;
+    outline: none !important;
+    background: rgba(15, 23, 42, 0.6) !important;
+    color: var(--text-primary, #f8fafc) !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2) !important;
+}
+
+#pet-tag-manager .tag-manager-input:focus {
+    border-color: var(--primary, #667eea) !important;
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb, 102, 126, 234), 0.25) !important;
+    background: rgba(15, 23, 42, 0.8) !important;
+}
+
+/* 标签管理器添加按钮 */
+#pet-tag-manager .tag-manager-add-btn {
+    padding: 12px 24px !important;
+    background: var(--primary-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 12px !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+    box-shadow: var(--shadow-primary, 0 4px 20px rgba(102,126,234,0.4)) !important;
+}
+
+#pet-tag-manager .tag-manager-add-btn:hover {
+    background: var(--primary-gradient-hover, linear-gradient(135deg, #5a67d8 0%, #6b46c1 50%, #d946ef 100%)) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* 标签管理器智能生成按钮 */
+#pet-tag-manager .tag-manager-smart-generate {
+    padding: 12px 24px !important;
+    background: var(--gradient-primary, linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 12px !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    white-space: nowrap !important;
+    box-shadow: 0 4px 6px -1px rgba(var(--primary-rgb, 102, 126, 234), 0.22), 0 2px 4px -1px rgba(var(--primary-rgb, 102, 126, 234), 0.12) !important;
+}
+
+#pet-tag-manager .tag-manager-smart-generate:hover:not(:disabled) {
+    filter: brightness(1.1) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 10px 15px -3px rgba(var(--primary-rgb, 102, 126, 234), 0.32), 0 4px 6px -2px rgba(var(--primary-rgb, 102, 126, 234), 0.14) !important;
+}
+
+#pet-tag-manager .tag-manager-smart-generate:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+}
+
+#pet-tag-manager .tag-manager-smart-generate.is-loading:disabled {
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%) !important;
+    box-shadow: none !important;
+}
+
+#pet-tag-manager .tag-error-message {
+    padding: 12px 16px !important;
+    margin: 10px 0 !important;
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%) !important;
+    color: #dc2626 !important;
+    border: 1.5px solid #fca5a5 !important;
+    border-radius: 10px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1) !important;
+    animation: fadeIn 0.3s ease !important;
+    opacity: 1 !important;
+    transition: opacity 0.3s ease !important;
+}
+
+#pet-tag-manager .tag-error-message.is-hiding {
+    opacity: 0 !important;
+}
+
+/* ============================================
+   上下文编辑器样式 - 从 petManager.editor.js 提取
+   ============================================ */
+
+/* 上下文编辑器覆盖层 */
+#pet-context-editor {
+    position: absolute !important;
+    top: var(--pet-context-editor-top, 0px) !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: rgba(0,0,0,0.6) !important;
+    -webkit-backdrop-filter: blur(2px) !important;
+    backdrop-filter: blur(2px) !important;
+    z-index: 1000 !important;
+    display: none !important;
+    flex-direction: column !important;
+    animation: fadeIn 0.2s ease !important;
+}
+
+#pet-context-editor.js-visible {
+    display: flex !important;
+}
+
+/* 上下文编辑器模态容器 */
+#pet-context-editor .context-editor-modal {
+    flex: 1 !important;
+    background: var(--bg-secondary, #1e293b) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+}
+
+/* 上下文编辑器头部 */
+#pet-context-editor .context-editor-header {
+    padding: 16px !important;
+    border-bottom: 1px solid var(--border-primary, rgba(255,255,255,0.12)) !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    background: var(--bg-tertiary, #334155) !important;
+}
+
+#pet-context-editor .context-editor-title {
+    color: var(--text-primary, #f8fafc) !important;
+    font-weight: 500 !important;
+    font-size: 15px !important;
+}
+
+#pet-context-editor #pet-context-close-btn {
+    color: rgba(226, 232, 240, 0.65) !important;
+    cursor: pointer !important;
+    width: 30px !important;
+    height: 30px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 6px !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    background: rgba(255,255,255,0.04) !important;
+    font-size: 14px !important;
+}
+
+#pet-context-editor #pet-context-close-btn:hover {
+    color: rgba(226, 232, 240, 0.9) !important;
+}
+
+#pet-context-editor .editor-header-btns {
+    display: flex !important;
+    gap: 8px !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+}
+
+#pet-context-editor .editor-mode-group {
+    display: flex !important;
+    gap: 4px !important;
+    align-items: center !important;
+    padding: 2px !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    border-radius: 8px !important;
+    background: rgba(0,0,0,0.15) !important;
+}
+
+#pet-context-editor .editor-mode-btn {
+    width: 30px !important;
+    height: 30px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    font-size: 13px !important;
+    border-radius: 6px !important;
+    border: none !important;
+    background: transparent !important;
+    color: #e5e7eb !important;
+    cursor: pointer !important;
+    transition: background .12s ease, color .12s ease !important;
+    line-height: 1 !important;
+}
+
+#pet-context-editor .editor-mode-btn:hover:not(.is-active) {
+    background: rgba(255,255,255,0.08) !important;
+}
+
+#pet-context-editor .editor-mode-btn.is-active {
+    background: var(--pet-context-active-color, #3b82f6) !important;
+    color: #fff !important;
+}
+
+#pet-context-editor .optimize-btn-group,
+#pet-context-editor .translate-btn-group {
+    display: flex !important;
+    gap: 6px !important;
+    align-items: center !important;
+}
+
+#pet-context-editor .chat-toolbar-btn {
+    width: 30px !important;
+    height: 30px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    font-size: 14px !important;
+    border-radius: 6px !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    background: rgba(255,255,255,0.04) !important;
+    color: #e5e7eb !important;
+    cursor: pointer !important;
+    transition: transform .12s ease, background .12s ease, border-color .12s ease, color .12s ease, opacity .12s ease !important;
+    outline: none !important;
+    line-height: 1 !important;
+}
+
+#pet-context-editor .chat-toolbar-btn:hover:not([data-refreshing]):not([data-saving]):not([data-translating]):not([data-optimizing]) {
+    background: rgba(255,255,255,0.12) !important;
+    border-color: rgba(255,255,255,0.25) !important;
+}
+
+#pet-context-editor .chat-toolbar-btn[data-refreshing],
+#pet-context-editor .chat-toolbar-btn[data-saving],
+#pet-context-editor .chat-toolbar-btn[data-translating],
+#pet-context-editor .chat-toolbar-btn[data-optimizing] {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+}
+
+#pet-context-editor .chat-toolbar-btn[data-status="success"] {
+    background: rgba(76, 175, 80, 0.2) !important;
+    color: #22c55e !important;
+    border-color: rgba(76, 175, 80, 0.4) !important;
+}
+
+#pet-context-editor .chat-toolbar-btn[data-status="error"] {
+    background: rgba(244, 67, 54, 0.2) !important;
+    color: #ef4444 !important;
+    border-color: rgba(244, 67, 54, 0.4) !important;
+}
+
+#pet-context-editor .chat-toolbar-btn[data-status="warn"] {
+    background: rgba(245, 158, 11, 0.18) !important;
+    color: #f59e0b !important;
+    border-color: rgba(245, 158, 11, 0.42) !important;
+}
+
+#pet-context-editor #pet-context-refresh-btn[data-refreshing]::after {
+    content: none !important;
+}
+
+#pet-context-editor #pet-context-refresh-btn[data-confirm] {
+    animation: pet-context-pulse 0.9s ease-in-out infinite !important;
+}
+
+#pet-context-editor #pet-context-optimize-btn {
+    border-color: rgba(76, 175, 80, 0.3) !important;
+    background: rgba(76, 175, 80, 0.15) !important;
+    color: #22c55e !important;
+}
+
+#pet-context-editor #pet-context-optimize-btn:hover:not([data-optimizing]) {
+    filter: brightness(1.05) !important;
+}
+
+#pet-context-editor[data-flash] #pet-context-editor-textarea,
+#pet-context-editor[data-flash] #pet-context-preview {
+    animation: pet-context-flash 0.42s ease-out !important;
+}
+
+#pet-context-editor #pet-context-translate-zh-btn {
+    border-color: rgba(33, 150, 243, 0.3) !important;
+    background: rgba(33, 150, 243, 0.15) !important;
+    color: #3b82f6 !important;
+}
+
+#pet-context-editor #pet-context-translate-zh-btn:hover:not([data-translating]) {
+    background: rgba(33, 150, 243, 0.25) !important;
+    border-color: rgba(33, 150, 243, 0.4) !important;
+}
+
+#pet-context-editor #pet-context-translate-en-btn {
+    border-color: rgba(156, 39, 176, 0.3) !important;
+    background: rgba(156, 39, 176, 0.15) !important;
+    color: #9c27b0 !important;
+}
+
+#pet-context-editor #pet-context-translate-en-btn:hover:not([data-translating]) {
+    background: rgba(156, 39, 176, 0.25) !important;
+    border-color: rgba(156, 39, 176, 0.4) !important;
+}
+
+#pet-context-editor .context-editor-content {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    padding: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+}
+
+#pet-context-editor .context-editor-body {
+    flex: 1 !important;
+    display: flex !important;
+    gap: 10px !important;
+    min-height: 0 !important;
+}
+
+#pet-context-editor #pet-context-editor-textarea {
+    flex: 1 !important;
+    width: 50% !important;
+    height: 100% !important;
+    background: #121212 !important;
+    color: #fff !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    border-radius: 8px !important;
+    padding: 12px !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace !important;
+    font-size: 12px !important;
+    line-height: 1.6 !important;
+    outline: none !important;
+    resize: none !important;
+    white-space: pre-wrap !important;
+    min-height: 0 !important;
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    display: block !important;
+}
+
+#pet-context-editor #pet-context-preview {
+    flex: 1 !important;
+    width: 50% !important;
+    height: 100% !important;
+    background: #0e0e0e !important;
+    color: #e5e7eb !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    border-radius: 8px !important;
+    padding: 12px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    pointer-events: auto !important;
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+    display: block !important;
+}
+
+#pet-context-editor[data-mode="edit"] #pet-context-preview {
+    display: none !important;
+    width: 0% !important;
+}
+
+#pet-context-editor[data-mode="edit"] #pet-context-editor-textarea {
+    width: 100% !important;
+}
+
+#pet-context-editor[data-mode="preview"] #pet-context-editor-textarea {
+    display: none !important;
+    width: 0% !important;
+}
+
+/* ═══ Merged from styles/components/checklist.css ═══ */
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY Checklist CSS — 计划清单页面专用组件样式
+   适用: 所有场景的计划清单.html
+   依赖: tokens.css + theme.css (需先加载，提供 --yry-* 变量与基础样式)
+
+   使用方式:
+     <link rel="stylesheet" href="../../../../cdn/styles/base/tokens.css">
+     <link rel="stylesheet" href="../../../../cdn/styles/base/theme.css">
+     <link rel="stylesheet" href="../../../../cdn/yry-checklist.css">
+
+   对应场景文档:
+     - docs/故事任务面板/yry-arch/
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── CSS Variables alias (bridge: old --var names → --yry-* from tokens.css) ─ */
+:root {
+  --bg: var(--yry-bg, rgba(22,22,32,1));
+  --bg-card: var(--yry-bg-card, linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%));
+  --bg-flat: var(--yry-bg-flat, rgba(34,34,46,1));
+  --bg-raised: var(--yry-bg-raised, rgba(42,42,56,1));
+  --accent: var(--yry-accent, #FFC107);
+  --cyan: var(--yry-cyan, #22d3ee);
+  --pass: var(--yry-pass, #22c55e);
+  --fail: var(--yry-fail, #ef4444);
+  --warn: var(--yry-warn, #f59e0b);
+  --info: var(--yry-info, #6b7280);
+  --skip: var(--yry-skip, #6b7280);
+  --text: var(--yry-text, rgba(250,250,252,1));
+  --text2: var(--yry-text2, rgba(160,160,164,1));
+  --text3: var(--yry-text3, rgba(110,110,114,1));
+  --shadow: var(--yry-shadow, 0 4px 20px rgba(0,0,0,0.3));
+  --shadow-lg: var(--yry-shadow-lg, 0 12px 32px rgba(0,0,0,0.45));
+  --radius: var(--yry-radius, 12px);
+  --border: var(--yry-border, 1px solid rgba(255,255,255,0.06));
+}
+
+/* ── Body & Container (delegates to tokens.css + theme.css classes when used) ─ */
+body {
+  background: var(--bg); color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif;
+  line-height: 1.6; min-height: 100vh;
+}
+.container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+.header { text-align: center; margin-bottom: 28px; animation: yry-fadeInDown .5s ease both; }
+.header h1 { font-size: 1.8rem; font-weight: 700; }
+.header h1 .accent { color: var(--accent); }
+.header .sub { color: var(--text2); font-size: .9rem; margin-top: 4px; }
+.header .meta { color: var(--text3); font-size: .75rem; margin-top: 6px; }
+
+/* ── Stats ──────────────────────────────────────────────────────────────── */
+.stats-grid {
+  display: flex; gap: 12px; justify-content: center; margin-bottom: 20px;
+  flex-wrap: wrap; animation: yry-fadeInDown .5s .1s ease both;
+}
+.stat-card {
+  background: var(--bg-card); border: var(--border); border-radius: var(--radius);
+  padding: 16px 20px; text-align: center; box-shadow: var(--shadow); min-width: 80px;
+  transition: transform .15s, box-shadow .15s; cursor: pointer;
+}
+.stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.stat-card .val { font-size: 1.6rem; font-weight: 700; line-height: 1.1; }
+.stat-card .val.health { color: var(--pass); }
+.stat-card .val.warn-h { color: var(--warn); }
+.stat-card .lbl { font-size: .68rem; color: var(--text3); margin-top: 2px; letter-spacing: .5px; }
+
+/* ── Health Bar ─────────────────────────────────────────────────────────── */
+.bar-wrap { margin-bottom: 28px; animation: yry-fadeInDown .5s .12s ease both; }
+.bar-outer {
+  height: 10px; border-radius: 5px; overflow: hidden; display: flex;
+  background: rgba(255,255,255,.04);
+}
+.bar-outer .seg { height: 100%; transition: width .5s ease; min-width: 3px; }
+.bar-outer .seg.strength   { background: var(--pass); }
+.bar-outer .seg.gap        { background: var(--fail); }
+.bar-outer .seg.suggestion { background: var(--warn); }
+.bar-outer .seg.neutral    { background: var(--info); }
+
+/* ── Progress ───────────────────────────────────────────────────────────── */
+.progress-wrap { margin-bottom: 20px; animation: yry-fadeInDown .5s .14s ease both; }
+.progress-label {
+  display: flex; justify-content: space-between; font-size: 0.78rem;
+  margin-bottom: 6px; color: var(--text2);
+}
+.progress-bar { width: 100%; height: 6px; background: var(--bg-flat); border-radius: 3px; overflow: hidden; }
+.progress-fill {
+  height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, #3d59a1, var(--accent));
+  transition: width 0.4s ease;
+}
+
+/* ── Tabs ───────────────────────────────────────────────────────────────── */
+.tabs {
+  display: flex; gap: 0; border-bottom: var(--border); margin-bottom: 24px;
+  animation: yry-fadeInDown .5s .18s ease both;
+}
+.tab {
+  padding: 10px 20px; cursor: pointer; font-size: .84rem; color: var(--text3);
+  border-bottom: 2px solid transparent; transition: all .15s; user-select: none;
+}
+.tab:hover { color: var(--text2); }
+.tab.on { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ── Panels ─────────────────────────────────────────────────────────────── */
+.panel { display: none; animation: yry-fadeInUp .4s ease both; padding-top: 8px; }
+.panel.on { display: block; }
+
+/* ── Section ────────────────────────────────────────────────────────────── */
+.section { margin-bottom: 28px; }
+.section h2 {
+  font-size: .95rem; color: var(--accent); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section h2 .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+.section h2 .s-done { color: var(--text3); font-size: .72rem; font-weight: 400; margin-left: 2px; }
+
+/* ── Step Card ──────────────────────────────────────────────────────────── */
+.step {
+  background: var(--bg-card); border: var(--border); border-radius: var(--radius);
+  margin: 10px 0; overflow: hidden; box-shadow: var(--shadow);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  animation: yry-stepIn .3s ease both;
+}
+.step:nth-child(1) { animation-delay: .02s; }
+.step:nth-child(2) { animation-delay: .06s; }
+.step:nth-child(3) { animation-delay: .10s; }
+.step:nth-child(4) { animation-delay: .14s; }
+.step:nth-child(5) { animation-delay: .18s; }
+.step:hover { border-color: rgba(255,193,7,0.12); }
+.step-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 18px; cursor: pointer; user-select: none;
+  transition: background 0.12s;
+}
+.step-header:hover { background: rgba(255,193,7,0.04); }
+.step-checkbox {
+  width: 18px; height: 18px; accent-color: var(--accent);
+  cursor: pointer; flex-shrink: 0;
+}
+.step-num { font-weight: 700; color: var(--accent); min-width: 26px; font-size: .88rem; }
+.step-title { flex: 1; font-size: .92rem; }
+.step-status {
+  font-size: .72rem; padding: 3px 12px; border-radius: 12px;
+  flex-shrink: 0; white-space: nowrap; font-weight: 500;
+}
+.status-done    { background: rgba(34,197,94,0.12);  color: var(--pass); }
+.status-pending { background: rgba(110,110,114,0.18); color: var(--text3); }
+.status-active  { background: rgba(245,158,11,0.12);  color: var(--warn); }
+
+/* ── Step Body ──────────────────────────────────────────────────────────── */
+.step-body {
+  display: none; padding: 0 18px 18px 54px;
+  font-size: .84rem; border-top: var(--border);
+}
+.step-body.open { display: block; }
+.step-body p { color: var(--text2); margin: 6px 0; }
+
+/* ── Skill Hint ─────────────────────────────────────────────────────────── */
+.skill-hint {
+  background: rgba(255,193,7,0.06); border-left: 3px solid var(--accent);
+  border-radius: 0 6px 6px 0; padding: 8px 14px; margin: 10px 0;
+  font-size: .82rem; color: var(--text); display: flex; align-items: flex-start; gap: 6px;
+}
+.skill-hint .hint-icon { color: var(--accent); font-weight: 700; flex-shrink: 0; }
+.skill-hint code {
+  background: rgba(0,0,0,0.3); color: var(--cyan);
+  padding: 2px 6px; border-radius: 4px;
+  font-size: .78rem; font-family: 'SF Mono','Fira Code',monospace;
+}
+
+/* ── Dependency Badges ──────────────────────────────────────────────────── */
+.step-deps {
+  display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
+  margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.04);
+}
+.step-deps .dep-label { font-size: .7rem; color: var(--text3); margin-right: 2px; }
+.dep-badge {
+  font-size: .7rem; color: var(--cyan); text-decoration: none;
+  background: var(--bg-flat); border: 1px solid rgba(34,211,238,0.12);
+  border-radius: 12px; padding: 3px 10px; transition: all .15s;
+}
+.dep-badge:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+
+/* ── Code Block ─────────────────────────────────────────────────────────── */
+.code-block {
+  background: rgba(0,0,0,0.3); border: var(--border);
+  border-radius: 6px; padding: 10px 14px; margin: 8px 0;
+  font-size: .76rem; overflow-x: auto; white-space: pre-wrap;
+  font-family: 'SF Mono','Fira Code',monospace; color: var(--cyan);
+}
+
+/* ── Verify Command / Expected ──────────────────────────────────────────── */
+.verify-cmd {
+  background: rgba(34,197,94,0.06); border-left: 3px solid var(--pass);
+  border-radius: 0 4px 4px 0; padding: 6px 10px; margin: 6px 0; font-size: .8rem;
+}
+.verify-cmd::before { content: "▶ 验证: "; color: var(--pass); font-weight: 600; }
+.expected { color: var(--text3); font-size: .78rem; margin: 2px 0; }
+.expected::before { content: "✓ 期望: "; color: var(--accent); font-weight: 600; }
+
+/* ── Log Entry ──────────────────────────────────────────────────────────── */
+.log-entry {
+  font-size: .74rem; color: var(--text3);
+  border-left: 2px solid var(--border); padding-left: 8px; margin: 4px 0;
+}
+.log-time { color: #7aa2f7; }
+
+/* ── Tab 2: Overview Stats ──────────────────────────────────────────────── */
+.stat-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+.stat-mini {
+  background: var(--bg-card); border: var(--border); border-radius: var(--radius);
+  padding: 14px 18px; text-align: center; box-shadow: var(--shadow);
+  min-width: 80px; flex: 1;
+}
+.stat-mini .sv { font-size: 1.4rem; font-weight: 700; }
+.stat-mini .sv.g { color: var(--pass); }
+.stat-mini .sv.y { color: var(--accent); }
+.stat-mini .sv.c { color: var(--cyan); }
+.stat-mini .sl {
+  font-size: .64rem; color: var(--text3); margin-top: 2px;
+  text-transform: uppercase; letter-spacing: .4px;
+}
+.section-stat {
+  background: var(--bg-card); border: var(--border); border-radius: var(--radius);
+  padding: 12px 16px; margin: 8px 0; box-shadow: var(--shadow);
+  display: flex; align-items: center; gap: 12px;
+}
+.section-stat .ss-label { font-size: .82rem; font-weight: 600; min-width: 100px; }
+.section-stat .ss-bar-wrap { flex: 1; height: 6px; background: var(--bg-flat); border-radius: 3px; overflow: hidden; }
+.section-stat .ss-bar { height: 100%; border-radius: 3px; transition: width .4s; }
+.section-stat .ss-pct { font-size: .76rem; color: var(--text2); min-width: 44px; text-align: right; }
+
+/* ── Tab 3: Command Grid ────────────────────────────────────────────────── */
+.cmd-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; }
+.cmd-card {
+  background: var(--bg-card); border: var(--border); border-radius: var(--radius);
+  padding: 16px 18px; box-shadow: var(--shadow);
+  transition: transform .15s, box-shadow .15s;
+}
+.cmd-card:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(0,0,0,0.35); }
+.cmd-card .c-stage { font-size: .64rem; color: var(--text3); margin-bottom: 4px; }
+.cmd-card .c-name { font-weight: 700; font-size: .84rem; color: var(--accent); font-family: monospace; margin-bottom: 2px; }
+.cmd-card .c-desc { font-size: .74rem; color: var(--text2); line-height: 1.5; }
+.cmd-card pre {
+  background: rgba(0,0,0,0.3); border-radius: 6px;
+  padding: 8px 36px 8px 12px; margin-top: 8px;
+  font-size: .74rem; color: var(--cyan);
+  overflow-x: auto; font-family: 'SF Mono',monospace;
+  cursor: pointer; position: relative;
+}
+
+/* ── Copy Button ────────────────────────────────────────────────────────── */
+.cb {
+  position: absolute; top: 4px; right: 6px;
+  background: var(--bg-flat); border: var(--border); border-radius: 4px;
+  color: var(--text3); font-size: .6rem; padding: 1px 6px;
+  cursor: pointer; opacity: 0; transition: opacity .15s; font-family: inherit;
+}
+pre:hover .cb { opacity: 1; }
+
+/* ── Tab 4: Related Pages ───────────────────────────────────────────────── */
+.link-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+.link-card {
+  background: var(--bg-card); border: var(--border); border-radius: var(--radius);
+  padding: 16px; box-shadow: var(--shadow); text-decoration: none; color: inherit;
+  display: block; transition: transform .15s, border-color .15s;
+}
+.link-card:hover { transform: translateY(-2px); border-color: rgba(255,193,7,0.25); }
+.link-card .lc-icon { font-size: 1.2rem; margin-bottom: 6px; }
+.link-card .lc-name { font-weight: 700; font-size: .88rem; color: var(--accent); }
+.link-card .lc-desc { font-size: .74rem; color: var(--text2); margin-top: 4px; line-height: 1.5; }
+
+/* ── Tab 5: Verify ──────────────────────────────────────────────────────── */
+.verify-list { display: flex; flex-direction: column; gap: 10px; }
+.verify-item {
+  background: var(--bg-card); border: var(--border); border-radius: var(--radius);
+  padding: 14px 18px; box-shadow: var(--shadow);
+}
+.verify-item .vi-label { font-size: .78rem; color: var(--text2); margin-bottom: 6px; }
+.verify-item pre {
+  background: rgba(0,0,0,0.3); border-radius: 6px;
+  padding: 8px 36px 8px 12px; font-size: .76rem;
+  color: var(--cyan); overflow-x: auto;
+  font-family: 'SF Mono',monospace; cursor: pointer; position: relative;
+}
+.verify-item .vi-expect { font-size: .74rem; color: var(--text3); margin-top: 4px; }
+.verify-item .vi-expect::before { content: "✓ "; color: var(--accent); }
+
+/* ── Toast ──────────────────────────────────────────────────────────────── */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: var(--bg-raised); border: 1px solid rgba(255,193,7,0.3);
+  border-radius: 8px; color: var(--text); padding: 10px 20px;
+  font-size: .82rem; z-index: 300; box-shadow: var(--shadow-lg);
+  opacity: 0; transition: opacity .2s; pointer-events: none;
+}
+.toast.show { opacity: 1; }
+
+/* ── Footer ─────────────────────────────────────────────────────────────── */
+.footer {
+  margin-top: 40px; padding-top: 16px; border-top: var(--border);
+  color: var(--text3); font-size: .72rem; text-align: center;
+}
+
+/* ── Cross-Nav ──────────────────────────────────────────────────────────── */
+.cross-nav {
+  display: flex; gap: 4px; justify-content: center; align-items: center;
+  margin-bottom: 32px; flex-wrap: wrap;
+  animation: yry-fadeInDown .5s .15s ease both;
+}
+.cross-link {
+  color: var(--cyan); text-decoration: none; font-size: .74rem;
+  padding: 3px 10px; border-radius: 4px; transition: color .15s, background .15s;
+}
+.cross-link:hover { color: var(--accent); background: rgba(255,193,7,.06); text-decoration: underline; }
+.cross-link.on { color: var(--accent); font-weight: 600; }
+.cross-sep { color: var(--text3); font-size: .5rem; opacity: .35; user-select: none; }
+
+/* ── Breadcrumb ─────────────────────────────────────────────────────────── */
+.breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 1.25rem; font-size: .76rem; }
+.breadcrumb a { color: #7aa2f7; text-decoration: none; transition: color .15s; }
+.breadcrumb a:hover { color: #fbbf24; text-decoration: underline; }
+.breadcrumb .bc-sep { color: #53576c; opacity: .5; user-select: none; }
+.breadcrumb .bc-current { color: #94a3b8; font-weight: 500; }
+
+/* ── External link ──────────────────────────────────────────────────────── */
+a[target="_blank"]::after { content: " ↗"; font-size: .7em; opacity: .5; }
+
+/* ── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .container { padding: 20px 12px 60px; }
+  .header h1 { font-size: 1.3rem; }
+  .step-body { padding: 0 10px 14px 40px; }
+  .cmd-grid, .link-grid { grid-template-columns: 1fr; }
+  .stat-grid { flex-direction: column; }
+}
+
+/* ── a11y: reduced-motion preference ────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}

@@ -1,241 +1,136 @@
 /**
- * 新闻列表组件
- * 负责渲染新闻与来源于新闻的会话项
+ * YrY · H5 NewsList — renders news articles and news-derived sessions
+ *
+ * All HTML rendering is driven by template.html.
+ * Template IDs: see NewsList/template.html header for full inventory.
  */
 
-import { escapeHtml, dateUtil } from "../../../../../../YiH5/utils/index.js";
-import { config } from "../../../../../../YiH5/config.js?v=2";
+import { loadTemplate } from "../../../../utils/h5/template.js";
+import { escapeHtml, dateUtil } from "../../../../utils/h5/index.js";
+import { config } from "../../../../utils/h5/config.js";
 import { BaseList } from "../BaseList/index.js";
 
+/* ── Template loading (sync, at module init) ─────────────────────────────── */
+const tpl = loadTemplate("NewsList", new URL("./template.html", import.meta.url).href);
+
 export class NewsList extends BaseList {
-  /**
-   * @param {Object} options
-   * @param {HTMLElement} options.container
-   * @param {HTMLElement} options.emptyState
-   */
+  /** @type {typeof tpl} */
+  static tpl = tpl;
+
   constructor({ container, emptyState }) {
     super({
-      container,
-      emptyState,
+      container, emptyState,
       itemHeight: 96,
       minItemsForVirtual: Number(config.ui.newsVlistMinItems) || 60,
     });
   }
 
-  /**
-   * @override
-   * @protected
-   */
+  /** @override */
   _handleLoading() {
     this.virtualList.unmount();
     if (this.emptyState) this.emptyState.hidden = true;
-
-    const count = 7;
-    const blocks = Array.from({ length: count }).map(() => {
-      return `
-        <article class="newsItem newsItem--skeleton" aria-hidden="true">
-          <div class="newsItem__link">
-            <div class="newsItem__main">
-              <div class="newsItem__header">
-                 <span class="skeletonDot"></span>
-                 <span class="skeletonBar is-w-70"></span>
-              </div>
-              <div class="newsItem__sub newsItem__sub--skeleton">
-                <span class="skeletonBar is-w-30"></span>
-                <span class="skeletonBar is-w-22 skeletonBar--end"></span>
-              </div>
-              <div class="newsItem__tags newsItem__tags--skeleton">
-                <span class="skeletonBar is-w-18"></span>
-                <span class="skeletonBar is-w-18"></span>
-                <span class="skeletonBar is-w-18"></span>
-              </div>
-            </div>
-          </div>
-        </article>
-      `;
-    });
-    this.container.innerHTML = blocks.join("");
+    this.container.innerHTML = Array.from({ length: 7 }, () => tpl.render('tpl-news-skeleton')).join("");
   }
 
-  /**
-   * @override
-   * @protected
-   */
+  /** @override */
   _updateEmptyState(isEmpty, error) {
     if (!this.emptyState) return;
-
     this.emptyState.hidden = !isEmpty;
     if (isEmpty) {
       const title = this.emptyState.querySelector(".empty__title");
       const desc = this.emptyState.querySelector(".empty__desc");
-      const retryBtn = this.emptyState.querySelector('[data-action="retryNews"]');
+      const retry = this.emptyState.querySelector('[data-action="retryNews"]');
       if (title) title.textContent = error ? "加载失败" : "暂无匹配新闻";
       if (desc) desc.textContent = error ? error : "试试清空搜索或调整筛选条件";
-      if (retryBtn) retryBtn.hidden = !error;
+      if (retry) retry.hidden = !error;
     }
   }
 
-  /**
-   * @override
-   * @protected
-   */
+  /** @override */
   _renderItem(item) {
-    // Session item (converted from news)
-    if (item.fromNews) {
-      return this._renderSessionItem(item);
-    }
-    // Regular news item
-    return this._renderNewsItem(item);
+    return item.fromNews ? this._renderSessionItem(item) : this._renderNewsItem(item);
   }
+
+  /* ── Session Item ────────────────────────────────────────────────────── */
 
   _renderSessionItem(item) {
-    const mutedCls = item.muted ? " is-muted" : "";
-    const displayTitle = (item.pageTitle && item.pageTitle.trim()) || item.title || "未命名会话";
-    const displayDesc = (item.pageDescription && item.pageDescription.trim()) || item.preview || "—";
-    const isFavorite = item.isFavorite === true;
-    
-    const rawTags = Array.isArray(item.tags) ? item.tags : (item.tags ? [item.tags] : []);
-    const normTags = rawTags.map((t) => String(t || "").trim()).filter(Boolean);
-    const displayTags = normTags;
-    
-    const tagBadges = displayTags
-      .slice(0, 4)
-      .map((t, idx) => {
-        const colorCls = `is-sessionTag-${idx % 4}`;
-        return `<span class="badge ${colorCls}">${escapeHtml(t)}</span>`;
-      })
+    const tags = Array.isArray(item.tags) ? item.tags : (item.tags ? [item.tags] : []);
+    const normTags = tags.map(t => String(t || '').trim()).filter(Boolean);
+    const tagBadges = normTags.slice(0, 4)
+      .map((t, i) => `<span class="badge is-sessionTag-${i % 4}">${escapeHtml(t)}</span>`)
       .join("");
 
-    // Date formatting
     const ts = item.lastAccessTime || item.lastActiveAt || item.updatedAt;
-    let displayDate = "—";
-    if (ts) {
-      const d = new Date(ts);
-      if (!isNaN(d.getTime())) {
-        displayDate = dateUtil.formatYMD(d);
-      }
-    }
+    let d = "—";
+    if (ts) { const dt = new Date(ts); if (!isNaN(dt.getTime())) d = dateUtil.formatYMD(dt); }
 
-    // Session icon
-    const sessionIcon = '<span class="newsItem__sessionIcon" title="来自新闻">📰</span>';
-    const favoriteIcon = isFavorite ? '<span class="newsItem__favIcon">❤️</span>' : '';
-    const displayTitleWithIcon = sessionIcon + favoriteIcon + escapeHtml(displayTitle);
+    const title = `<span class="newsItem__sessionIcon" title="来自新闻">📰</span>${
+      item.isFavorite ? '<span class="newsItem__favIcon">❤️</span>' : ''
+    }${escapeHtml((item.pageTitle?.trim() || item.title || '未命名会话'))}`;
 
-    return `
-      <div class="swipe-item-wrapper">
-        <article class="newsItem newsItem--session${mutedCls}" data-key="${escapeHtml(item.key || "")}" data-news-key="${escapeHtml(item.newsKey || "")}">
-          <div class="newsItem__link">
-            <div class="item__mid">
-              <div class="item__row1">
-                <div class="item__title"><span>${displayTitleWithIcon}</span></div>
-                <div class="item__meta">
-                </div>
-              </div>
-              <div class="item__row2">
-                <div class="item__preview">${escapeHtml(displayDesc)}</div>
-              </div>
-              <div class="item__row2" style="margin-top:6px">
-                <div class="item__tags">${tagBadges}</div>
-                <div class="item__meta">
-                  <span class="time">${escapeHtml(displayDate)}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </article>
-        <div class="swipe-item__actions">
-          <button class="swipe-item__favorite${isFavorite ? ' is-favorited' : ''}" data-action="toggleFavorite" data-key="${escapeHtml(item.key || "")}" aria-label="${isFavorite ? '取消收藏' : '收藏'}">
-            ${isFavorite ? '❤️ 已收藏' : '🤍 收藏'}
-          </button>
-        </div>
-      </div>
-    `;
+    const favBtn = this._favBtn('tpl-session-fav-btn', item);
+
+    return tpl.render('tpl-news-session-item', {
+      key: escapeHtml(item.key || ''),
+      newsKey: escapeHtml(item.newsKey || ''),
+      mutedCls: item.muted ? ' is-muted' : '',
+      title,
+      desc: escapeHtml(item.pageDescription?.trim() || item.preview || '—'),
+      tagBadges,
+      date: escapeHtml(d),
+      favBtn
+    });
   }
 
+  /* ── News Item ───────────────────────────────────────────────────────── */
+
   _renderNewsItem(item) {
-    const filteredTags = (item.tags || []).filter((t) => t !== "网文");
-    const tagBadges = filteredTags
-      .slice(0, 4)
-      .map((t) => `<span class="newsItem__tag">${escapeHtml(t)}</span>`)
-      .join("");
+    const filteredTags = (item.tags || []).filter(t => t !== '网文');
+    const tagItems = filteredTags.slice(0, 4)
+      .map(t => tpl.render('tpl-news-tag', { text: escapeHtml(t) }))
+      .join('');
+    const tagsHtml = tagItems ? tpl.render('tpl-news-tags', { items: tagItems }) : '';
 
-    // Date formatting
-    let displayDate = "—";
+    let d = '—';
     if (item.createdTime || item.published) {
-      const ts = item.createdTime || item.published;
-      const d = new Date(ts);
-      if (!isNaN(d.getTime())) {
-        displayDate = dateUtil.formatYMD(d);
-      }
+      const dt = new Date(item.createdTime || item.published);
+      if (!isNaN(dt.getTime())) d = dateUtil.formatYMD(dt);
     }
 
-    const isRead = item.isRead === true;
-    const isFavorite = item.isFavorite === true;
-    let host = "";
-    if (item.link) {
-      try {
-        host = new URL(String(item.link)).hostname.replace(/^www\./, "");
-      } catch {
-        host = "";
-      }
-    }
-    const sourceText = String(item.sourceName || item.source_name || "").trim() || host || "—";
-    const sourceHtml = `
-      <span class="newsItem__source">${escapeHtml(sourceText)}</span>
-      ${host && sourceText !== host ? `<span class="newsItem__host">${escapeHtml(host)}</span>` : ""}
-    `;
+    let host = '';
+    if (item.link) { try { host = new URL(String(item.link)).hostname.replace(/^www\./, ''); } catch {} }
+    const sourceText = String(item.sourceName || item.source_name || '').trim() || host || '—';
+    const sourceHtml = sourceText !== '—' ? tpl.render('tpl-news-source', { text: escapeHtml(sourceText) }) : '';
+    const hostHtml = host && sourceText !== host
+      ? tpl.render('tpl-news-host', { text: escapeHtml(host) })
+      : '';
 
-    // 构建链接
-    // 如果没有 link，则不渲染 a 标签，而是普通 div
-    const titlePrefix = isFavorite ? "❤️ " : "";
-    const content = `
-      <div class="newsItem__main">
-        <div class="newsItem__header">
-          ${isRead ? "" : '<span class="newsItem__dot" aria-hidden="true"></span>'}
-          <h3 class="newsItem__title">${titlePrefix}${escapeHtml(item.title)}</h3>
-        </div>
+    const dot = item.isRead ? '' : tpl.render('tpl-news-dot', {});
+    const title = (item.isFavorite ? '❤️ ' : '') + escapeHtml(item.title);
+    const favBtn = this._favBtn('tpl-news-fav-btn', item);
 
-        <div class="newsItem__sub">
-          <div class="newsItem__meta">
-            ${sourceHtml}
-          </div>
-          <span class="newsItem__time">${escapeHtml(displayDate)}</span>
-        </div>
+    const content = tpl.render('tpl-news-content', {
+      dot, title, source: sourceHtml, host: hostHtml, date: escapeHtml(d), tags: tagsHtml
+    });
 
-        ${tagBadges ? `<div class="newsItem__tags">${tagBadges}</div>` : ""}
-      </div>
-    `;
+    const tplId = item.link ? 'tpl-news-item' : 'tpl-news-item-nolink';
+    return tpl.render(tplId, {
+      key: escapeHtml(item.key || ''),
+      readCls: item.isRead ? ' is-read' : '',
+      link: item.link ? escapeHtml(item.link) : '',
+      content,
+      favBtn
+    });
+  }
 
-    if (item.link) {
-      return `
-        <div class="swipe-item-wrapper">
-          <article class="newsItem${isRead ? " is-read" : ""}" data-key="${escapeHtml(item.key || "")}">
-            <a class="newsItem__link" href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer">
-              ${content}
-            </a>
-          </article>
-          <div class="swipe-item__actions">
-            <button class="swipe-item__favorite${isFavorite ? ' is-favorited' : ''}" data-action="toggleNewsFavorite" data-key="${escapeHtml(item.key || "")}" aria-label="${isFavorite ? '取消收藏' : '收藏'}">
-              ${isFavorite ? '❤️ 已收藏' : '🤍 收藏'}
-            </button>
-          </div>
-        </div>
-      `;
-    }
+  /* ── Helpers ─────────────────────────────────────────────────────────── */
 
-    return `
-      <div class="swipe-item-wrapper">
-        <article class="newsItem${isRead ? " is-read" : ""}" data-key="${escapeHtml(item.key || "")}">
-          <div class="newsItem__link">
-            ${content}
-          </div>
-        </article>
-        <div class="swipe-item__actions">
-          <button class="swipe-item__favorite${isFavorite ? ' is-favorited' : ''}" data-action="toggleNewsFavorite" data-key="${escapeHtml(item.key || "")}" aria-label="${isFavorite ? '取消收藏' : '收藏'}">
-            ${isFavorite ? '❤️ 已收藏' : '🤍 收藏'}
-          </button>
-        </div>
-      </div>
-    `;
+  _favBtn(tplId, item) {
+    return tpl.render(tplId, {
+      key: escapeHtml(item.key || ''),
+      favCls: item.isFavorite ? ' is-favorited' : '',
+      icon: item.isFavorite ? '❤️ 已收藏' : '🤍 收藏',
+      label: item.isFavorite ? '取消收藏' : '收藏'
+    });
   }
 }

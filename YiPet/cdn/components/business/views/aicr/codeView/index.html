@@ -1,14 +1,14 @@
 <section class="code-view-container" role="main" aria-label="代码查看器">
   <skeleton-loader v-if="loading" variant="code-view" :line-count="25"></skeleton-loader>
-  <yi-error-state
+  <yry-error-state
     v-else-if="error"
     :message="error"
     icon-class="warning"
-  ></yi-error-state>
+  ></yry-error-state>
   <div v-else-if="file" class="code-content" :class="{ editing: isEditingFile, wrap: wrapEnabled, modified: hasUnsavedChanges }" :style="codeContentStyle">
     <div class="code-header">
       <div class="file-name" :title="fullFilePath">
-        <yi-icon :name="shouldShowImagePreview ? 'file-image' : 'file-code'"></yi-icon>
+        <yry-icon :name="shouldShowImagePreview ? 'file-image' : 'file-code'"></yry-icon>
         <span class="file-name-text">{{ displayFileName }}</span>
         <span v-if="hasUnsavedChanges" class="unsaved-indicator" title="有未保存的更改">●</span>
       </div>
@@ -23,7 +23,7 @@
           :title="showKnowledgeGraph ? '关闭知识图谱' : '查看知识图谱'"
           aria-label="查看知识图谱"
         >
-          <yi-icon name="share"></yi-icon>
+          <yry-icon name="share"></yry-icon>
         </button>
         <button
           v-if="!isEditingFile && !shouldShowImagePreview"
@@ -34,7 +34,7 @@
           title="编辑文件"
           aria-label="编辑文件"
         >
-          <yi-icon name="edit"></yi-icon>
+          <yry-icon name="edit"></yry-icon>
         </button>
         <template v-else>
           <button
@@ -45,7 +45,7 @@
             :title="editSaving ? '保存中' : '保存修改'"
             aria-label="保存修改"
           >
-            <yi-icon :name="editSaving ? 'loading' : 'save'" :spin="editSaving"></yi-icon>
+            <yry-icon :name="editSaving ? 'loading' : 'save'" :spin="editSaving"></yry-icon>
           </button>
           <button
             type="button"
@@ -55,7 +55,7 @@
             title="取消编辑"
             aria-label="取消编辑"
           >
-            <yi-icon name="close"></yi-icon>
+            <yry-icon name="close"></yry-icon>
           </button>
         </template>
         <button
@@ -67,7 +67,7 @@
           title="复制代码"
           aria-label="复制代码"
         >
-          <yi-icon name="copy"></yi-icon>
+          <yry-icon name="copy"></yry-icon>
         </button>
         <button
           v-if="!isEditingFile"
@@ -78,7 +78,7 @@
           title="在文件树中定位"
           aria-label="在文件树中定位"
         >
-          <yi-icon name="crosshairs"></yi-icon>
+          <yry-icon name="crosshairs"></yry-icon>
         </button>
         <button
           v-if="!isEditingFile"
@@ -89,7 +89,7 @@
           :title="isFullscreen ? '退出全屏' : '全屏模式'"
           :aria-label="isFullscreen ? '退出全屏' : '全屏模式'"
         >
-          <yi-icon :name="isFullscreen ? 'compress' : 'expand'"></yi-icon>
+          <yry-icon :name="isFullscreen ? 'compress' : 'expand'"></yry-icon>
         </button>
         <button
           v-if="!isEditingFile"
@@ -100,14 +100,14 @@
           title="在新标签页中打开静态文件"
           aria-label="在新标签页中打开静态文件"
         >
-          <yi-icon name="external-link"></yi-icon>
+          <yry-icon name="external-link"></yry-icon>
         </button>
       </div>
     </div>
 
     <div v-if="showSearchBar && !isEditingFile && !shouldShowImagePreview" class="code-search-bar">
       <div class="code-search-input-wrapper">
-        <yi-icon name="search" class-name="code-search-input-icon"></yi-icon>
+        <yry-icon name="search" class-name="code-search-input-icon"></yry-icon>
         <input
           ref="codeSearchInput"
           type="text"
@@ -123,7 +123,7 @@
           @click="clearSearch"
           aria-label="清除搜索"
         >
-          <yi-icon name="close"></yi-icon>
+          <yry-icon name="close"></yry-icon>
         </button>
       </div>
       <span v-if="searchQuery" class="code-search-count">{{ activeMatchIndex >= 0 ? activeMatchIndex + 1 : 0 }}/{{ searchMatchCount }}</span>
@@ -135,7 +135,7 @@
         title="上一个匹配"
         aria-label="上一个匹配"
       >
-        <yi-icon name="chevron-up"></yi-icon>
+        <yry-icon name="chevron-up"></yry-icon>
       </button>
       <button
         type="button"
@@ -145,7 +145,7 @@
         title="下一个匹配"
         aria-label="下一个匹配"
       >
-        <yi-icon name="chevron-down"></yi-icon>
+        <yry-icon name="chevron-down"></yry-icon>
       </button>
       <button
         type="button"
@@ -154,7 +154,7 @@
         title="关闭搜索"
         aria-label="关闭搜索"
       >
-        <yi-icon name="close"></yi-icon>
+        <yry-icon name="close"></yry-icon>
       </button>
     </div>
 
@@ -169,7 +169,7 @@
         aria-label="编辑文件内容"
       ></textarea>
       <div class="save-error" v-if="saveError">
-        <yi-icon name="error"></yi-icon> {{ saveError }}
+        <yry-icon name="error"></yry-icon> {{ saveError }}
       </div>
     </div>
 
@@ -190,7 +190,7 @@
           title="点击查看大图"
         />
         <div v-else class="image-preview-error">
-          <yi-icon name="image"></yi-icon>
+          <yry-icon name="image"></yry-icon>
           <p>无法加载图片</p>
         </div>
       </div>
@@ -600,11 +600,11 @@
     </div>
 
     <div v-else-if="showKnowledgeGraph && kgLoading" class="graph-reader">
-      <yi-loading text="加载知识图谱..."></yi-loading>
+      <yry-loading text="加载知识图谱..."></yry-loading>
     </div>
 
     <div v-else-if="showKnowledgeGraph && kgError" class="graph-reader">
-      <yi-error-state :message="kgError" icon-class="warning"></yi-error-state>
+      <yry-error-state :message="kgError" icon-class="warning"></yry-error-state>
     </div>
 
     <div v-else class="code-reader">
@@ -631,7 +631,7 @@
               title="复制此行"
               aria-label="复制此行"
             >
-              <yi-icon name="copy"></yi-icon>
+              <yry-icon name="copy"></yry-icon>
             </button>
             <span class="line-content" v-html="renderLineContent(line) || ' '"></span>
           </code>
@@ -639,7 +639,7 @@
       </div>
     </div>
   </div>
-  <yi-empty-state
+  <yry-empty-state
     v-else
     wrapper-class="empty-container"
     card-class="empty-card"
@@ -650,15 +650,15 @@
     <template #icon>
       <div class="empty-hero" aria-hidden="true">
         <div class="empty-icon" aria-hidden="true">
-          <yi-icon name="file-code"></yi-icon>
+          <yry-icon name="file-code"></yry-icon>
         </div>
       </div>
     </template>
     <div class="empty-actions">
-      <yi-button variant="primary" size="small" @click.stop="emitCreateSession" aria-label="新建会话">
-        <yi-icon name="add"></yi-icon>
+      <yry-button variant="primary" size="small" @click.stop="emitCreateSession" aria-label="新建会话">
+        <yry-icon name="add"></yry-icon>
         <span>新建会话</span>
-      </yi-button>
+      </yry-button>
     </div>
-  </yi-empty-state>
+  </yry-empty-state>
 </section>

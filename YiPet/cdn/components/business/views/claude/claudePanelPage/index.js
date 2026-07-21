@@ -1,8 +1,8 @@
 import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 import { clearCacheAndRefresh } from '/cdn/utils/core/clearCache.js';
 
-registerGlobalComponent({
-    name: 'ClaudePanelPage',
+const compDef = {
+    name: 'yryClaudePanelPage',
     html: '/YiPet/cdn/components/business/views/claude/claudePanelPage/template.html',
     css: '/YiPet/cdn/components/business/views/claude/claudePanelPage/index.css',
     props: {
@@ -131,4 +131,7 @@ registerGlobalComponent({
     beforeUnmount() {
         document.removeEventListener('keydown', this.onKeydown);
     }
-});
+};
+
+registerGlobalComponent(compDef);
+export default compDef;

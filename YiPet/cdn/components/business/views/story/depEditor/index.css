@@ -1,12 +1,31 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YiPet · DepEditor component styles
+
+   Template structure:
+     <div class="dep-editor">
+       <div class="dep-editor-row">
+         <select class="dep-editor-select"/>
+         <select class="dep-editor-relation"/>
+       </div>
+       <div class="dep-editor-actions"/>
+     </div>
+
+   Naming convention: all class names use the `dep-editor-` prefix.
+   Depends on design tokens from theme/index.css.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Editor ────────────────────────────────────────────────────────── */
 .dep-editor {
     display: flex;
     flex-direction: column;
     gap: 8px;
     padding: 8px 10px;
-    background: var(--yi-surface-hover);
-    border: 1px solid var(--yi-border);
+    background: var(--yry-surface-hover);
+    border: 1px solid var(--yry-border);
     border-radius: 8px;
 }
+
+/* ── Row ───────────────────────────────────────────────────────────── */
 .dep-editor-row {
     display: flex;
     gap: 6px;
@@ -15,32 +34,34 @@
 .dep-editor-select {
     flex: 1;
     padding: 5px 8px;
-    border: 1px solid var(--yi-border);
+    border: 1px solid var(--yry-border);
     border-radius: 6px;
     font-size: 12px;
     font-family: inherit;
-    color: var(--yi-text);
-    background: var(--yi-bg);
+    color: var(--yry-text);
+    background: var(--yry-bg);
     outline: none;
     min-width: 0;
 }
 .dep-editor-select:focus {
-    border-color: var(--yi-primary);
+    border-color: var(--yry-primary);
 }
 .dep-editor-relation {
     padding: 5px 8px;
-    border: 1px solid var(--yi-border);
+    border: 1px solid var(--yry-border);
     border-radius: 6px;
     font-size: 12px;
     font-family: inherit;
-    color: var(--yi-text);
-    background: var(--yi-bg);
+    color: var(--yry-text);
+    background: var(--yry-bg);
     outline: none;
     flex-shrink: 0;
 }
 .dep-editor-relation:focus {
-    border-color: var(--yi-primary);
+    border-color: var(--yry-primary);
 }
+
+/* ── Actions ───────────────────────────────────────────────────────── */
 .dep-editor-actions {
     display: flex;
     gap: 6px;
@@ -56,9 +77,9 @@
     transition: all 0.15s;
 }
 .dep-editor-confirm {
-    border: 1px solid var(--yi-primary);
-    background: var(--yi-primary);
-    color: var(--yi-text-on-primary);
+    border: 1px solid var(--yry-primary);
+    background: var(--yry-primary);
+    color: var(--yry-text-on-primary);
 }
 .dep-editor-confirm:hover:not(:disabled) {
     opacity: 0.9;
@@ -68,11 +89,30 @@
     cursor: not-allowed;
 }
 .dep-editor-cancel {
-    border: 1px solid var(--yi-border);
-    background: var(--yi-surface);
-    color: var(--yi-text-secondary);
+    border: 1px solid var(--yry-border);
+    background: var(--yry-surface);
+    color: var(--yry-text-secondary);
 }
 .dep-editor-cancel:hover {
-    border-color: var(--yi-text-muted);
-    color: var(--yi-text);
+    border-color: var(--yry-text-muted);
+    color: var(--yry-text);
+}
+
+/* ── Responsive ────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+    .dep-editor-row {
+        flex-direction: column;
+    }
+    .dep-editor-select {
+        width: 100%;
+    }
+}
+
+/* ── a11y: reduced-motion ──────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }

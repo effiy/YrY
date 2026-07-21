@@ -1,0 +1,141 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY · Vue 3 textarea component styles
+
+   Template structure (from template.html):
+     <textarea
+       :class="computedClass"
+       :value="modelValue"
+       :placeholder="placeholder"
+       :disabled="disabled" :readonly="readonly" :required="required"
+       :name="name" :id="id" :aria-label="ariaLabel || null"
+       :rows="rows" :style="resizeStyle"
+       @input @focus @blur
+     ></textarea>
+
+   Naming convention: all class names use the `yry-textarea-` prefix, consistent
+   with the input `yry-input-*` and toast `yry-toast-*` series.
+   Depends on design tokens (from theme/index.css or the page :root):
+     --yry-surface / --yry-border / --yry-radius-md
+     --yry-font-ui / --yry-text-base / --yry-text / --yry-text-muted
+     --yry-text-sm / --yry-text-lg / --yry-leading-normal
+     --yry-space-1 → 4 / --yry-duration-fast / --yry-easing-default
+     --yry-border-focus / --yry-shadow-focus / --yry-surface-hover
+     --yry-danger / --yry-danger-subtle
+
+   All var() calls carry fallbacks so the page still renders correctly even
+   without a loaded theme.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Base textarea ──────────────────────────────────────────────────── */
+
+.yry-textarea {
+  width: 100%;
+  padding: var(--yry-space-2, 8px) var(--yry-space-3, 12px);
+  min-height: 80px;
+  background: var(--yry-surface, #fff);
+  border: 1px solid var(--yry-border, #d1d5db);
+  border-radius: var(--yry-radius-md, 8px);
+  font-family: var(--yry-font-ui, system-ui, -apple-system, sans-serif);
+  font-size: var(--yry-text-base, 1rem);
+  color: var(--yry-text, #1f2937);
+  line-height: var(--yry-leading-normal, 1.5);
+  transition: all var(--yry-duration-fast, 150ms) var(--yry-easing-default, ease);
+  outline: none;
+  box-sizing: border-box;
+}
+
+/* ── Placeholder ────────────────────────────────────────────────────── */
+
+.yry-textarea::placeholder {
+  color: var(--yry-text-muted, #9ca3af);
+}
+
+/* ── Hover / Focus ──────────────────────────────────────────────────── */
+
+.yry-textarea:hover:not(:disabled):not([readonly]) {
+  border-color: var(--yry-border-focus, #3b82f6);
+  background: var(--yry-surface-hover, #f9fafb);
+}
+
+.yry-textarea:focus-visible {
+  border-color: var(--yry-border-focus, #3b82f6);
+  box-shadow: var(--yry-shadow-focus, 0 0 0 3px rgba(59, 130, 246, 0.3));
+}
+
+/* ── Disabled / Readonly ────────────────────────────────────────────── */
+
+.yry-textarea:disabled,
+.yry-textarea[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--yry-surface-hover, #f9fafb);
+}
+
+.yry-textarea[readonly] {
+  cursor: default;
+}
+
+/* ── Size variants ──────────────────────────────────────────────────── */
+
+.yry-textarea-sm {
+  padding: var(--yry-space-1, 4px) var(--yry-space-2, 8px);
+  min-height: 60px;
+  font-size: var(--yry-text-sm, 0.875rem);
+}
+
+.yry-textarea-lg {
+  padding: var(--yry-space-3, 12px) var(--yry-space-4, 16px);
+  min-height: 120px;
+  font-size: var(--yry-text-lg, 1.125rem);
+}
+
+/* ── Error variant ──────────────────────────────────────────────────── */
+
+.yry-textarea-error {
+  border-color: var(--yry-danger, #ef4444);
+}
+
+.yry-textarea-error:focus-visible {
+  border-color: var(--yry-danger, #ef4444);
+  box-shadow: 0 0 0 3px var(--yry-danger-subtle, rgba(239, 68, 68, 0.15));
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .yry-textarea {
+    padding: var(--yry-space-1, 4px) var(--yry-space-2, 8px);
+    min-height: 64px;
+  }
+
+  .yry-textarea-sm {
+    padding: var(--yry-space-1, 4px) var(--yry-space-1, 4px);
+    min-height: 48px;
+  }
+
+  .yry-textarea-lg {
+    padding: var(--yry-space-2, 8px) var(--yry-space-3, 12px);
+    min-height: 96px;
+  }
+}
+
+/* ── High contrast ──────────────────────────────────────────────────── */
+
+@media (prefers-contrast: high) {
+  .yry-textarea {
+    border-width: 2px;
+  }
+
+  .yry-textarea:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .yry-textarea {
+    transition: none;
+  }
+}

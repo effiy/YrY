@@ -1,73 +1,73 @@
 // Common Components - organized in category directories
 
 // Buttons
-export { default as YiButton } from './buttons/YiButton/index.js';
-export { default as YiIconButton } from './buttons/YiIconButton/index.js';
+export { default as YrYButton } from './buttons/YrYButton/index.js';
+export { default as YrYIconButton } from './buttons/YrYIconButton/index.js';
 
 // Forms
-export { default as YiInput } from './forms/YiInput/index.js';
-export { default as YiSelect } from './forms/YiSelect/index.js';
-export { default as YiTextarea } from './forms/YiTextarea/index.js';
+export { default as YrYInput } from './forms/YrYInput/index.js';
+export { default as YrYSelect } from './forms/YrYSelect/index.js';
+export { default as YrYTextarea } from './forms/YrYTextarea/index.js';
 
 // Feedback
-export { default as YiEmptyState } from './feedback/YiEmptyState/index.js';
-export { default as YiErrorState } from './feedback/YiErrorState/index.js';
-export { default as YiToast } from './feedback/YiToast/index.js';
+export { default as YrYEmptyState } from './feedback/YrYEmptyState/index.js';
+export { default as YrYErrorState } from './feedback/YrYErrorState/index.js';
+export { default as YrYToast } from './feedback/YrYToast/index.js';
 
 // Loaders
-export { default as YiLoading } from './loaders/YiLoading/index.js';
+export { default as YrYLoading } from './loaders/YrYLoading/index.js';
 
 // Modals
-export { default as YiModal } from './modals/YiModal/index.js';
+export { default as YrYModal } from './modals/YrYModal/index.js';
 
 // Tags
-export { default as YiTag } from './tags/YiTag/index.js';
-export { default as YiTagChip } from './tags/YiTagChip/index.js';
+export { default as YrYTag } from './tags/YrYTag/index.js';
+export { default as YrYTagChip } from './tags/YrYTagChip/index.js';
 
 // Indicators
-export { default as YiBadge } from './indicators/YiBadge/index.js';
-export { default as YiProgressBar } from './indicators/YiProgressBar/index.js';
-export { default as YiScoreBar } from './indicators/YiScoreBar/index.js';
+export { default as YrYBadge } from './indicators/YrYBadge/index.js';
+export { default as YrYProgressBar } from './indicators/YrYProgressBar/index.js';
+export { default as YrYScoreBar } from './indicators/YrYScoreBar/index.js';
 
 // Navigation
-export { default as YiBackTop } from './navigation/YiBackTop/index.js';
-export { default as YiBreadcrumb } from './navigation/YiBreadcrumb/index.js';
-export { default as YiCrossNav } from './navigation/YiCrossNav/index.js';
+export { default as YrYBackTop } from './navigation/YrYBackTop/index.js';
+export { default as YrYBreadcrumb } from './navigation/YrYBreadcrumb/index.js';
+export { default as YrYCrossNav } from './navigation/YrYCrossNav/index.js';
 
 // Data Display
-export { default as YiStatsGrid } from './data-display/YiStatsGrid/index.js';
+export { default as YrYStatsGrid } from './data-display/YrYStatsGrid/index.js';
 
 // Cards
-export { default as YiSceneCard } from './cards/YiSceneCard/index.js';
+export { default as YrYSceneCard } from './cards/YrYSceneCard/index.js';
 
 // Panels
-export { default as YiPanelHub } from './panels/YiPanelHub/index.js';
+export { default as YrYPanelHub } from './panels/YrYPanelHub/index.js';
 
 // Icons
-export { default as YiIcon } from './icons/YiIcon/index.js';
+export { default as YrYIcon } from './icons/YrYIcon/index.js';
 
 // Default export - object with all common components
 export default {
-  YiButton,
-  YiIconButton,
-  YiIcon,
-  YiInput,
-  YiSelect,
-  YiTextarea,
-  YiEmptyState,
-  YiErrorState,
-  YiToast,
-  YiLoading,
-  YiModal,
-  YiTag,
-  YiTagChip,
-  YiBadge,
-  YiProgressBar,
-  YiScoreBar,
-  YiBackTop,
-  YiBreadcrumb,
-  YiCrossNav,
-  YiStatsGrid,
-  YiSceneCard,
-  YiPanelHub
+  YrYButton,
+  YrYIconButton,
+  YrYIcon,
+  YrYInput,
+  YrYSelect,
+  YrYTextarea,
+  YrYEmptyState,
+  YrYErrorState,
+  YrYToast,
+  YrYLoading,
+  YrYModal,
+  YrYTag,
+  YrYTagChip,
+  YrYBadge,
+  YrYProgressBar,
+  YrYScoreBar,
+  YrYBackTop,
+  YrYBreadcrumb,
+  YrYCrossNav,
+  YrYStatsGrid,
+  YrYSceneCard,
+  YrYPanelHub
 };

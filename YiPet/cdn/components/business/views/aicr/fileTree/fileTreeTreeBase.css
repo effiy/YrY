@@ -11,10 +11,10 @@
 /* ========== 文件树标题 ========== */
 .file-tree-header {
     padding: var(--spacing-sm) var(--spacing-md);
-    background: var(--yi-code-bg);
+    background: var(--yry-code-bg);
     font-weight: 600;
     font-size: 14px;
-    color: var(--yi-code-text);
+    color: var(--yry-code-text);
     display: flex;
     align-items: center;
     gap: var(--spacing-xs);
@@ -38,7 +38,7 @@
     gap: var(--spacing-xs);
     -webkit-user-select: none;
     user-select: none;
-    transition: all var(--yi-duration-fast) var(--yi-easing-default);
+    transition: all var(--yry-duration-fast) var(--yry-easing-default);
     font-size: 13px;
     line-height: 1.5;
     margin: 2px 0;
@@ -48,78 +48,78 @@
 }
 
 .file-tree-item:focus-visible {
-    outline: 2px solid rgba(var(--yi-primary-rgb), 0.6);
+    outline: 2px solid rgba(var(--yry-primary-rgb), 0.6);
     outline-offset: 2px;
-    box-shadow: 0 0 0 4px rgba(var(--yi-primary-rgb), 0.15);
+    box-shadow: 0 0 0 4px rgba(var(--yry-primary-rgb), 0.15);
 }
 
 .file-tree-item:hover {
-    background: var(--yi-surface-hover);
-    color: var(--yi-code-text);
+    background: var(--yry-surface-hover);
+    color: var(--yry-code-text);
 }
 
 /* ========== 选中状态 ========== */
 .file-tree-item.selected {
-    background: rgba(var(--yi-primary-rgb), 0.15);
-    color: var(--yi-code-text);
+    background: rgba(var(--yry-primary-rgb), 0.15);
+    color: var(--yry-code-text);
     font-weight: 500;
-    border-left: 3px solid rgba(var(--yi-primary-rgb), 0.8);
+    border-left: 3px solid rgba(var(--yry-primary-rgb), 0.8);
     padding-left: calc(var(--spacing-sm) - 3px);
-    box-shadow: inset 0 0 0 1px rgba(var(--yi-primary-rgb), 0.1);
+    box-shadow: inset 0 0 0 1px rgba(var(--yry-primary-rgb), 0.1);
 }
 
 /* ========== 批量选择状态 ========== */
 .file-tree-item.batch-selected {
-    background: rgba(var(--yi-success-rgb), 0.15);
-    border-left: 3px solid rgba(var(--yi-success-rgb), 0.8);
+    background: rgba(var(--yry-success-rgb), 0.15);
+    border-left: 3px solid rgba(var(--yry-success-rgb), 0.8);
     padding-left: calc(var(--spacing-sm) - 3px);
 }
 
 /* ========== 高亮状态（用于视图切换时的锚定效果） ========== */
 .file-tree-item.highlight-file {
-    background: rgba(var(--yi-primary-rgb), 0.25);
-    color: var(--yi-code-text);
+    background: rgba(var(--yry-primary-rgb), 0.25);
+    color: var(--yry-code-text);
     font-weight: 600;
-    box-shadow: 0 0 0 2px rgba(var(--yi-primary-rgb), 0.4);
+    box-shadow: 0 0 0 2px rgba(var(--yry-primary-rgb), 0.4);
 }
 
 @keyframes highlightFilePulse {
     0% {
-        box-shadow: 0 0 0 2px rgba(var(--yi-primary-rgb), 0.6);
-        background: rgba(var(--yi-primary-rgb), 0.3);
+        box-shadow: 0 0 0 2px rgba(var(--yry-primary-rgb), 0.6);
+        background: rgba(var(--yry-primary-rgb), 0.3);
     }
     50% {
-        box-shadow: 0 0 0 2px rgba(var(--yi-primary-rgb), 0.3);
-        background: rgba(var(--yi-primary-rgb), 0.2);
+        box-shadow: 0 0 0 2px rgba(var(--yry-primary-rgb), 0.3);
+        background: rgba(var(--yry-primary-rgb), 0.2);
     }
     100% {
         box-shadow: none;
-        background: rgba(var(--yi-primary-rgb), 0.15);
+        background: rgba(var(--yry-primary-rgb), 0.15);
     }
 }
 
 /* ========== 文件树高亮动画（从代码视图触发） ========== */
 .file-tree-item.file-tree-highlight {
-    background: rgba(var(--yi-warning-rgb), 0.25);
-    color: var(--yi-code-text);
+    background: rgba(var(--yry-warning-rgb), 0.25);
+    color: var(--yry-code-text);
     font-weight: 600;
-    box-shadow: 0 0 0 2px rgba(var(--yi-warning-rgb), 0.5);
+    box-shadow: 0 0 0 2px rgba(var(--yry-warning-rgb), 0.5);
 }
 
 @keyframes fileTreeHighlightPulse {
     0% {
-        box-shadow: 0 0 0 3px rgba(var(--yi-warning-rgb), 0.7);
-        background: rgba(var(--yi-warning-rgb), 0.35);
+        box-shadow: 0 0 0 3px rgba(var(--yry-warning-rgb), 0.7);
+        background: rgba(var(--yry-warning-rgb), 0.35);
         transform: scale(1.02);
     }
     50% {
-        box-shadow: 0 0 0 2px rgba(var(--yi-warning-rgb), 0.4);
-        background: rgba(var(--yi-warning-rgb), 0.25);
+        box-shadow: 0 0 0 2px rgba(var(--yry-warning-rgb), 0.4);
+        background: rgba(var(--yry-warning-rgb), 0.25);
         transform: scale(1.01);
     }
     100% {
         box-shadow: none;
-        background: rgba(var(--yi-primary-rgb), 0.15);
+        background: rgba(var(--yry-primary-rgb), 0.15);
         transform: scale(1);
     }
 }
@@ -127,30 +127,30 @@
 /* ========== 文件夹样式 ========== */
 .folder-item {
     font-weight: 500;
-    color: var(--yi-text-secondary);
+    color: var(--yry-text-secondary);
 }
 
 .folder-item.expanded {
-    color: var(--yi-code-text);
+    color: var(--yry-code-text);
 }
 
 .folder-toggle {
     margin-right: var(--spacing-xs);
-    color: var(--yi-text-muted);
+    color: var(--yry-text-muted);
     font-size: 12px;
-    transition: all var(--yi-duration-fast) var(--yi-easing-default);
+    transition: all var(--yry-duration-fast) var(--yry-easing-default);
     min-width: 30px;
     text-align: center;
 }
 
 .folder-toggle:hover {
-    color: var(--yi-primary);
+    color: var(--yry-primary);
     transform: scale(1.1);
 }
 
 .folder-toggle.expanded {
     transform: rotate(90deg);
-    color: var(--yi-primary);
+    color: var(--yry-primary);
 }
 
 /* ========== 文件图标 ========== */
@@ -173,33 +173,33 @@
 
 /* ========== 搜索高亮 ========== */
 .file-name mark.search-highlight {
-    background: rgba(var(--yi-warning-rgb), 0.35);
-    color: var(--yi-code-text);
+    background: rgba(var(--yry-warning-rgb), 0.35);
+    color: var(--yry-code-text);
     padding: 2px 4px;
     border-radius: 3px;
     font-weight: 600;
-    box-shadow: 0 0 0 1px rgba(var(--yi-warning-rgb), 0.5);
+    box-shadow: 0 0 0 1px rgba(var(--yry-warning-rgb), 0.5);
 }
 
 .file-tree-item:hover .file-name mark.search-highlight {
-    background: rgba(var(--yi-warning-rgb), 0.5);
-    box-shadow: 0 0 0 2px rgba(var(--yi-warning-rgb), 0.7);
+    background: rgba(var(--yry-warning-rgb), 0.5);
+    box-shadow: 0 0 0 2px rgba(var(--yry-warning-rgb), 0.7);
 }
 
 /* ========== 文件大小显示 ========== */
 .file-size {
     margin-left: auto;
     font-size: 11px;
-    color: var(--yi-text-muted);
+    color: var(--yry-text-muted);
     font-variant-numeric: tabular-nums;
     padding: 2px 6px;
     border-radius: 4px;
-    background: var(--yi-surface-hover);
+    background: var(--yry-surface-hover);
 }
 
 .file-size.large-file-size {
-    color: rgba(var(--yi-warning-rgb), 0.9);
-    background: rgba(var(--yi-warning-rgb), 0.15);
+    color: rgba(var(--yry-warning-rgb), 0.9);
+    background: rgba(var(--yry-warning-rgb), 0.15);
     font-weight: 600;
 }
 
@@ -211,7 +211,7 @@
     width: 18px;
     height: 18px;
     margin-left: 4px;
-    color: rgba(var(--yi-warning-rgb), 1);
+    color: rgba(var(--yry-warning-rgb), 1);
     font-size: 10px;
 }
 
@@ -227,12 +227,12 @@
 }
 
 .file-tree-item.large-file {
-    border-left: 2px solid rgba(var(--yi-warning-rgb), 0.3);
+    border-left: 2px solid rgba(var(--yry-warning-rgb), 0.3);
     padding-left: calc(var(--spacing-sm) - 2px);
 }
 
 .file-tree-item.large-file:hover {
-    border-left-color: rgba(var(--yi-warning-rgb), 0.6);
+    border-left-color: rgba(var(--yry-warning-rgb), 0.6);
 }
 
 /* ========== 文件类型图标颜色 ========== */

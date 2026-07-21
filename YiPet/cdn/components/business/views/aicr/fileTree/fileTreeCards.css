@@ -26,11 +26,11 @@
     align-items: center;
     gap: 6px;
     padding: 18px 14px 14px;
-    background: var(--yi-surface);
-    border: 1px solid var(--yi-border);
+    background: var(--yry-surface);
+    border: 1px solid var(--yry-border);
     border-radius: 10px;
     cursor: pointer;
-    transition: all var(--yi-duration-fast) var(--yi-easing-default);
+    transition: all var(--yry-duration-fast) var(--yry-easing-default);
     text-align: center;
     min-height: 130px;
     justify-content: flex-start;
@@ -46,16 +46,16 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: var(--yi-primary);
+    background: var(--yry-primary);
     opacity: 0;
-    transition: opacity var(--yi-duration-fast) var(--yi-easing-default);
+    transition: opacity var(--yry-duration-fast) var(--yry-easing-default);
 }
 
 .file-card:hover {
-    background: var(--yi-surface-hover);
-    border-color: var(--yi-primary);
+    background: var(--yry-surface-hover);
+    border-color: var(--yry-primary);
     transform: translateY(-1px);
-    box-shadow: var(--yi-shadow-md), 0 0 12px rgba(var(--yi-primary-rgb), 0.10);
+    box-shadow: var(--yry-shadow-md), 0 0 12px rgba(var(--yry-primary-rgb), 0.10);
 }
 
 .file-card:hover::before {
@@ -63,9 +63,9 @@
 }
 
 .file-card.selected {
-    background: var(--yi-primary-subtle);
-    border-color: var(--yi-primary);
-    box-shadow: 0 0 0 1px var(--yi-primary), 0 0 16px rgba(var(--yi-primary-rgb), 0.12);
+    background: var(--yry-primary-subtle);
+    border-color: var(--yry-primary);
+    box-shadow: 0 0 0 1px var(--yry-primary), 0 0 16px rgba(var(--yry-primary-rgb), 0.12);
 }
 
 .file-card.selected::before {
@@ -73,9 +73,9 @@
 }
 
 .file-card.batch-selected {
-    background: rgba(var(--yi-primary-rgb), 0.14);
-    border-color: var(--yi-primary);
-    box-shadow: 0 0 0 1px var(--yi-primary);
+    background: rgba(var(--yry-primary-rgb), 0.14);
+    border-color: var(--yry-primary);
+    box-shadow: 0 0 0 1px var(--yry-primary);
 }
 
 .file-card.batch-selected::before {
@@ -89,9 +89,9 @@
     right: 8px;
     font-size: 10px;
     font-weight: 600;
-    color: var(--yi-text-muted);
-    background: var(--yi-surface-hover);
-    border: 1px solid var(--yi-border);
+    color: var(--yry-text-muted);
+    background: var(--yry-surface-hover);
+    border: 1px solid var(--yry-border);
     border-radius: 4px;
     padding: 2px 6px;
     line-height: 1.2;
@@ -103,9 +103,9 @@
 .file-card:hover .file-card-badge,
 .file-card.selected .file-card-badge,
 .file-card.batch-selected .file-card-badge {
-    color: var(--yi-primary);
-    background: rgba(var(--yi-primary-rgb), 0.08);
-    border-color: var(--yi-primary);
+    color: var(--yry-primary);
+    background: rgba(var(--yry-primary-rgb), 0.08);
+    border-color: var(--yry-primary);
 }
 
 .file-card-icon {
@@ -118,7 +118,7 @@
 .file-card-name {
     font-size: 13px;
     font-weight: 600;
-    color: var(--yi-text);
+    color: var(--yry-text);
     line-height: 1.3;
     word-break: break-word;
     display: -webkit-box;
@@ -141,18 +141,18 @@
     transition: background 0.15s ease;
 }
 .file-card:hover .file-card-desc-row {
-    background: rgba(var(--yi-primary-rgb), 0.04);
+    background: rgba(var(--yry-primary-rgb), 0.04);
 }
 .file-card-desc-row:has(.file-card-desc-placeholder) {
     cursor: pointer;
 }
 .file-card:hover .file-card-desc-row:has(.file-card-desc-placeholder) {
-    background: rgba(var(--yi-primary-rgb), 0.06);
+    background: rgba(var(--yry-primary-rgb), 0.06);
 }
 
 .file-card-desc {
     font-size: 11px;
-    color: var(--yi-text-muted);
+    color: var(--yry-text-muted);
     line-height: 1.4;
     word-break: break-word;
     display: -webkit-box;
@@ -166,7 +166,7 @@
 
 .file-card-desc-placeholder {
     font-size: 11px;
-    color: var(--yi-text-muted);
+    color: var(--yry-text-muted);
     line-height: 1.4;
     opacity: 0;
     transition: opacity 0.15s ease;
@@ -174,7 +174,7 @@
 }
 .file-card:hover .file-card-desc-placeholder {
     opacity: 1;
-    color: var(--yi-primary);
+    color: var(--yry-primary);
 }
 
 /* ---- card edit button (inline in desc row) ---- */
@@ -188,7 +188,7 @@
     border: none;
     border-radius: 4px;
     background: transparent;
-    color: var(--yi-text-muted);
+    color: var(--yry-text-muted);
     cursor: pointer;
     opacity: 0;
     flex-shrink: 0;
@@ -198,8 +198,8 @@
     opacity: 1;
 }
 .file-card-edit-btn:hover {
-    background: rgba(var(--yi-primary-rgb), 0.10);
-    color: var(--yi-primary);
+    background: rgba(var(--yry-primary-rgb), 0.10);
+    color: var(--yry-primary);
 }
 .file-card-edit-icon {
     font-size: 11px;
@@ -207,8 +207,8 @@
 
 /* ---- card editing state ---- */
 .file-card--editing {
-    border-color: var(--yi-primary) !important;
-    box-shadow: 0 0 0 1px var(--yi-primary), 0 0 16px rgba(var(--yi-primary-rgb), 0.10);
+    border-color: var(--yry-primary) !important;
+    box-shadow: 0 0 0 1px var(--yry-primary), 0 0 16px rgba(var(--yry-primary-rgb), 0.10);
     cursor: default;
 }
 .file-card--editing::before {
@@ -223,20 +223,20 @@
 .file-card-textarea {
     width: 100%;
     padding: 6px 8px;
-    border: 1px solid var(--yi-border);
+    border: 1px solid var(--yry-border);
     border-radius: 6px;
     font-size: 11px;
     font-family: inherit;
-    color: var(--yi-text);
-    background: var(--yi-bg);
+    color: var(--yry-text);
+    background: var(--yry-bg);
     resize: vertical;
     outline: none;
     line-height: 1.4;
     box-sizing: border-box;
 }
 .file-card-textarea:focus {
-    border-color: var(--yi-primary);
-    box-shadow: var(--yi-shadow-focus);
+    border-color: var(--yry-primary);
+    box-shadow: var(--yry-shadow-focus);
 }
 .file-card-edit-actions {
     display: flex;
@@ -253,9 +253,9 @@
     transition: all 0.15s;
 }
 .file-card-edit-save {
-    border: 1px solid var(--yi-primary);
-    background: var(--yi-primary);
-    color: var(--yi-text-on-primary);
+    border: 1px solid var(--yry-primary);
+    background: var(--yry-primary);
+    color: var(--yry-text-on-primary);
 }
 .file-card-edit-save:hover:not(:disabled) {
     opacity: 0.9;
@@ -265,13 +265,13 @@
     cursor: not-allowed;
 }
 .file-card-edit-cancel {
-    border: 1px solid var(--yi-border);
-    background: var(--yi-surface);
-    color: var(--yi-text-secondary);
+    border: 1px solid var(--yry-border);
+    background: var(--yry-surface);
+    color: var(--yry-text-secondary);
 }
 .file-card-edit-cancel:hover {
-    border-color: var(--yi-text-muted);
-    color: var(--yi-text);
+    border-color: var(--yry-text-muted);
+    color: var(--yry-text);
 }
 
 /* Metadata row at bottom */
@@ -283,12 +283,12 @@
     padding-top: 8px;
     width: 100%;
     justify-content: center;
-    border-top: 1px solid var(--yi-border-subtle);
+    border-top: 1px solid var(--yry-border-subtle);
 }
 
 .file-card-meta-item {
     font-size: 11px;
-    color: var(--yi-text-muted);
+    color: var(--yry-text-muted);
     flex-shrink: 0;
     white-space: nowrap;
 }
@@ -296,7 +296,7 @@
 .file-card-meta-item + .file-card-meta-item::before {
     content: '·';
     margin-right: 10px;
-    color: var(--yi-border);
+    color: var(--yry-border);
 }
 
 .file-card-size {
@@ -341,14 +341,14 @@
 .graph-tooltip-name {
     font-size: 13px;
     font-weight: 600;
-    color: var(--yi-text);
+    color: var(--yry-text);
     line-height: 1.3;
     word-break: break-word;
 }
 
 .graph-tooltip-desc {
     font-size: 11px;
-    color: var(--yi-text-secondary);
+    color: var(--yry-text-secondary);
     line-height: 1.4;
     margin-top: 4px;
     word-break: break-word;
@@ -356,7 +356,7 @@
 
 .graph-tooltip-meta {
     font-size: 10.5px;
-    color: var(--yi-text-muted);
+    color: var(--yry-text-muted);
     margin-top: 5px;
     padding-top: 5px;
     border-top: 1px solid rgba(0,0,0,0.06);
@@ -365,7 +365,7 @@
 .graph-tooltip-action {
     font-size: 10.5px;
     font-weight: 500;
-    color: var(--yi-primary);
+    color: var(--yry-primary);
     margin-top: 4px;
 }
 
@@ -383,7 +383,7 @@
     border-radius: 20px;
     padding: 6px 16px;
     font-size: 10px;
-    color: var(--yi-text-secondary);
+    color: var(--yry-text-secondary);
     pointer-events: none;
     box-shadow: 0 2px 12px rgba(0,0,0,0.06);
     z-index: var(--z-local-50);
@@ -434,7 +434,7 @@
     background: transparent;
     border: none;
     border-radius: 7px;
-    color: var(--yi-text-secondary);
+    color: var(--yry-text-secondary);
     font-size: 15px;
     font-weight: 500;
     cursor: pointer;
@@ -444,7 +444,7 @@
 
 .graph-zoom-btn:hover {
     background: rgba(0,0,0,0.06);
-    color: var(--yi-text);
+    color: var(--yry-text);
 }
 
 .graph-zoom-btn:active {
@@ -455,7 +455,7 @@
 .graph-zoom-level {
     font-size: 10px;
     font-weight: 500;
-    color: var(--yi-text-muted);
+    color: var(--yry-text-muted);
     min-width: 30px;
     text-align: center;
     padding: 2px 0;
@@ -467,7 +467,7 @@
 
 .graph-zoom-level:hover {
     background: rgba(0,0,0,0.04);
-    color: var(--yi-text);
+    color: var(--yry-text);
 }
 
 .graph-zoom-divider {
@@ -479,7 +479,7 @@
 
 .graph-zoom-btn--action {
     font-size: 12px;
-    color: var(--yi-text-muted);
+    color: var(--yry-text-muted);
 }
 
 /* ====== 迷你地图 ====== */
@@ -493,7 +493,7 @@
     box-shadow: 0 2px 12px rgba(0,0,0,0.06);
     cursor: pointer;
     opacity: 0.85;
-    transition: opacity var(--yi-duration-fast) var(--yi-easing-default);
+    transition: opacity var(--yry-duration-fast) var(--yry-easing-default);
     z-index: var(--z-local-50);
 }
 
@@ -505,12 +505,12 @@
 .graph-tooltip-code {
     margin: 6px 0 0 0;
     padding: 6px 8px;
-    background: var(--yi-bg);
-    border: 1px solid var(--yi-border);
+    background: var(--yry-bg);
+    border: 1px solid var(--yry-border);
     border-radius: 4px;
     font-size: 10px;
     line-height: 1.5;
-    color: var(--yi-text);
+    color: var(--yry-text);
     max-height: 180px;
     overflow-y: auto;
     white-space: pre-wrap;
@@ -538,7 +538,7 @@
 .cards-batch-bar__label {
     font-size: 12px;
     font-weight: 600;
-    color: var(--yi-text-secondary);
+    color: var(--yry-text-secondary);
     white-space: nowrap;
     user-select: none;
     margin-right: 2px;
@@ -547,7 +547,7 @@
 /* 计数 */
 .cards-batch-bar__count {
     font-size: 12px;
-    color: var(--yi-text-muted);
+    color: var(--yry-text-muted);
     white-space: nowrap;
     user-select: none;
 }
@@ -555,11 +555,11 @@
 .cards-batch-bar__count em {
     font-style: normal;
     font-weight: 600;
-    color: var(--yi-primary);
+    color: var(--yry-primary);
 }
 
 .cards-batch-bar__count.has-selection {
-    color: var(--yi-text);
+    color: var(--yry-text);
 }
 
 /* 弹性填充 */
@@ -573,21 +573,21 @@
     display: inline-flex;
     align-items: center;
     padding: 4px 12px;
-    border: 1px solid var(--yi-border);
+    border: 1px solid var(--yry-border);
     border-radius: 6px;
     font-size: 12px;
-    background: var(--yi-surface);
-    color: var(--yi-text-secondary);
+    background: var(--yry-surface);
+    color: var(--yry-text-secondary);
     cursor: pointer;
-    transition: border-color var(--yi-duration-fast) var(--yi-easing-default),
-                color var(--yi-duration-fast) var(--yi-easing-default);
+    transition: border-color var(--yry-duration-fast) var(--yry-easing-default),
+                color var(--yry-duration-fast) var(--yry-easing-default);
     white-space: nowrap;
-    font-family: var(--yi-font-ui);
+    font-family: var(--yry-font-ui);
 }
 
 .cards-batch-bar__btn:hover:not(:disabled) {
-    border-color: var(--yi-primary);
-    color: var(--yi-text);
+    border-color: var(--yry-primary);
+    color: var(--yry-text);
 }
 
 .cards-batch-bar__btn:disabled {
@@ -600,33 +600,33 @@
     display: inline-flex;
     align-items: center;
     padding: 4px 12px;
-    border: 1px solid var(--yi-border);
+    border: 1px solid var(--yry-border);
     border-radius: 6px;
     font-size: 12px;
-    background: var(--yi-surface);
-    color: var(--yi-text-muted);
+    background: var(--yry-surface);
+    color: var(--yry-text-muted);
     cursor: pointer;
-    transition: border-color var(--yi-duration-fast) var(--yi-easing-default),
-                color var(--yi-duration-fast) var(--yi-easing-default),
-                background var(--yi-duration-fast) var(--yi-easing-default);
+    transition: border-color var(--yry-duration-fast) var(--yry-easing-default),
+                color var(--yry-duration-fast) var(--yry-easing-default),
+                background var(--yry-duration-fast) var(--yry-easing-default);
     white-space: nowrap;
-    font-family: var(--yi-font-ui);
+    font-family: var(--yry-font-ui);
     font-weight: 500;
 }
 
 .cards-batch-bar__delete:hover:not(:disabled) {
-    color: var(--yi-text);
+    color: var(--yry-text);
 }
 
 .cards-batch-bar__delete.has-selection {
-    background: var(--yi-danger);
-    border-color: var(--yi-danger);
-    color: var(--yi-text-on-danger);
+    background: var(--yry-danger);
+    border-color: var(--yry-danger);
+    color: var(--yry-text-on-danger);
 }
 
 .cards-batch-bar__delete.has-selection:hover:not(:disabled) {
-    background: var(--yi-danger-hover);
-    border-color: var(--yi-danger-hover);
+    background: var(--yry-danger-hover);
+    border-color: var(--yry-danger-hover);
 }
 
 .cards-batch-bar__delete:disabled {
@@ -639,21 +639,21 @@
     display: inline-flex;
     align-items: center;
     padding: 4px 12px;
-    border: 1px solid var(--yi-border);
+    border: 1px solid var(--yry-border);
     border-radius: 6px;
     font-size: 12px;
-    background: var(--yi-surface);
-    color: var(--yi-text-secondary);
+    background: var(--yry-surface);
+    color: var(--yry-text-secondary);
     cursor: pointer;
-    transition: border-color var(--yi-duration-fast) var(--yi-easing-default),
-                color var(--yi-duration-fast) var(--yi-easing-default);
+    transition: border-color var(--yry-duration-fast) var(--yry-easing-default),
+                color var(--yry-duration-fast) var(--yry-easing-default);
     white-space: nowrap;
-    font-family: var(--yi-font-ui);
+    font-family: var(--yry-font-ui);
 }
 
 .cards-batch-bar__exit:hover {
-    border-color: var(--yi-primary);
-    color: var(--yi-text);
+    border-color: var(--yry-primary);
+    color: var(--yry-text);
 }
 
 /* ==========================================
@@ -674,21 +674,21 @@
     padding: 4px 12px;
     font-size: 12px;
     font-weight: 500;
-    font-family: var(--yi-font-ui);
-    border: 1px solid var(--yi-border);
+    font-family: var(--yry-font-ui);
+    border: 1px solid var(--yry-border);
     border-radius: 6px;
-    background: var(--yi-surface);
-    color: var(--yi-text-secondary);
+    background: var(--yry-surface);
+    color: var(--yry-text-secondary);
     cursor: pointer;
-    transition: border-color var(--yi-duration-fast) var(--yi-easing-default),
-                color var(--yi-duration-fast) var(--yi-easing-default);
+    transition: border-color var(--yry-duration-fast) var(--yry-easing-default),
+                color var(--yry-duration-fast) var(--yry-easing-default);
     white-space: nowrap;
 }
 
 .cards-toolbar__btn:hover {
-    border-color: var(--yi-primary);
-    color: var(--yi-primary);
-    background: rgba(var(--yi-primary-rgb), 0.05);
+    border-color: var(--yry-primary);
+    color: var(--yry-primary);
+    background: rgba(var(--yry-primary-rgb), 0.05);
 }
 
 /* ==========================================
@@ -701,13 +701,13 @@
     gap: 8px;
     margin-bottom: 12px;
     padding-bottom: 8px;
-    border-bottom: 1px solid var(--yi-border);
+    border-bottom: 1px solid var(--yry-border);
 }
 
 .cards-group__title {
     font-size: 13px;
     font-weight: 600;
-    color: var(--yi-text-secondary);
+    color: var(--yry-text-secondary);
     margin: 0;
     flex: 1;
 }
@@ -715,9 +715,9 @@
 .cards-group__count {
     font-size: 11px;
     font-weight: 500;
-    color: var(--yi-text-muted);
-    background: var(--yi-surface);
-    border: 1px solid var(--yi-border);
+    color: var(--yry-text-muted);
+    background: var(--yry-surface);
+    border: 1px solid var(--yry-border);
     border-radius: 10px;
     padding: 1px 8px;
 }
@@ -748,7 +748,7 @@
 }
 
 .file-card:hover .file-card__check--off {
-    border-color: var(--yi-text-muted);
+    border-color: var(--yry-text-muted);
 }
 
 .file-card.batch-selected .file-card__check--off {
@@ -762,12 +762,12 @@
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: var(--yi-primary);
-    color: var(--yi-text-on-primary);
+    background: var(--yry-primary);
+    color: var(--yry-text-on-primary);
     font-size: 10px;
     font-weight: 800;
     line-height: 1;
-    box-shadow: 0 1px 4px rgba(var(--yi-primary-rgb), 0.4);
+    box-shadow: 0 1px 4px rgba(var(--yry-primary-rgb), 0.4);
     animation: checkPopIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -790,9 +790,9 @@
 }
 
 .file-card.batch-selected {
-    background: rgba(var(--yi-primary-rgb), 0.10);
-    border-color: var(--yi-primary);
-    box-shadow: 0 0 0 1px rgba(var(--yi-primary-rgb), 0.4);
+    background: rgba(var(--yry-primary-rgb), 0.10);
+    border-color: var(--yry-primary);
+    box-shadow: 0 0 0 1px rgba(var(--yry-primary-rgb), 0.4);
 }
 
 .file-card.batch-selected::before {
@@ -800,5 +800,5 @@
 }
 
 .file-card.batch-selected .file-card-name {
-    color: var(--yi-primary);
+    color: var(--yry-primary);
 }

@@ -10,7 +10,7 @@
    Each per-page data.js declares a `diagram` model instead of an inline
    `svgDiagram`. At render time, shared/index.js calls:
 
-       ruiDepsDiagram.render(diagramModel)
+       ruiDepsDiagram.render(diagramModel) → yryDepsDiagram.render(diagramModel)
 
    and uses the returned string as the SVG markup.
 
@@ -46,12 +46,12 @@
 
   /* ═══════════════════════════════════════════════════════════════════
      SECTION 1 — PRIMITIVES RESOLUTION
-     Resolve the shared primitives from window.ruiDiagramPrimitives.
+     Resolve the shared primitives from window.yryDiagramPrimitives.
      If not available (e.g., when running this file standalone in a
      test sandbox), use the same inline defaults so the file is
      never broken.
      ═══════════════════════════════════════════════════════════════════ */
-  var P = window.ruiDiagramPrimitives;
+  var P = window.yryDiagramPrimitives;
   if (!P) {
     /* Minimal fallback so the file still works in isolation. */
     P = {
@@ -392,5 +392,5 @@
     return parts.join('');
   }
 
-  window.ruiDepsDiagram = { render: render, BOXES: BOXES };
+  window.yryDepsDiagram = { render: render, BOXES: BOXES };
 })();

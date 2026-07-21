@@ -1,3 +1,16 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YiPet · StoryStatusBadge component styles
+
+   Template structure:
+     <span class="sp-status-badge sp-status-badge--{status}">
+       {label}
+     </span>
+
+   Naming convention: all class names use the `sp-status-badge-` prefix.
+   Depends on design tokens from theme/index.css.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Badge ─────────────────────────────────────────────────────────── */
 .sp-status-badge {
     display: inline-flex;
     align-items: center;
@@ -8,6 +21,8 @@
     line-height: 20px;
     white-space: nowrap;
 }
+
+/* ── Size variants ─────────────────────────────────────────────── */
 .sp-status-badge--sm {
     font-size: 11px;
     padding: 1px 8px;
@@ -18,23 +33,41 @@
     padding: 3px 12px;
     line-height: 22px;
 }
+
+/* ── Status variants ───────────────────────────────────────────── */
 .sp-status-badge--planning {
-    background: var(--yi-surface);
-    color: var(--yi-text-secondary);
+    background: var(--yry-surface);
+    color: var(--yry-text-secondary);
 }
 .sp-status-badge--design {
-    background: var(--yi-warning-subtle);
-    color: var(--yi-warning-hover);
+    background: var(--yry-warning-subtle);
+    color: var(--yry-warning-hover);
 }
 .sp-status-badge--develop {
-    background: var(--yi-info-subtle);
-    color: var(--yi-info-hover);
+    background: var(--yry-info-subtle);
+    color: var(--yry-info-hover);
 }
 .sp-status-badge--testing {
-    background: var(--yi-primary-subtle);
-    color: var(--yi-primary-hover);
+    background: var(--yry-primary-subtle);
+    color: var(--yry-primary-hover);
 }
 .sp-status-badge--operations {
-    background: var(--yi-success-subtle);
-    color: var(--yi-success-hover);
+    background: var(--yry-success-subtle);
+    color: var(--yry-success-hover);
+}
+
+/* ── Responsive ────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+    .sp-status-badge {
+        font-size: 11px;
+    }
+}
+
+/* ── a11y: reduced-motion ──────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }

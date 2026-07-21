@@ -3,7 +3,7 @@ import { SearchHandler } from '/cdn/utils/browser/events.js';
 import { getIconClass } from '/cdn/components/common/icons/iconMap.js';
 
 const compDef = {
-  name: 'SearchHeader',
+  name: 'yrySearchHeader',
   html: '/cdn/components/business/SearchHeader/template.html',
   css: '/cdn/components/business/SearchHeader/index.css',
   props: {

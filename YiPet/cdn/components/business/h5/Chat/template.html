@@ -1,0 +1,99 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════
+   YrY · H5 Chat — HTML templates for all chat message rendering
+
+   All template strings previously inlined in index.js are now defined here.
+   Chat/index.js loads this file via the template engine and calls tpl.render().
+
+   Template IDs:
+     tpl-chat-message      — Full message bubble (role, images, content, actions)
+     tpl-chat-message-pet  — Pet welcome message variant (static content)
+     tpl-chat-empty         — Empty state when no session found
+     tpl-chat-actions      — Meta action buttons row (move up/down, regen, delete)
+     tpl-chat-robot-btn    — Single robot send button (repeated per robot)
+     tpl-chat-images       — Image gallery wrapper
+     tpl-chat-image-item   — Single image in gallery
+     tpl-chat-content-md   — Markdown content block
+     tpl-chat-content-type — Typing indicator
+     tpl-chat-time         — Timestamp element
+   ═══════════════════════════════════════════════════════════════════════════ -->
+
+<!-- ── Core: Chat Message Bubble ─────────────────────────────────────────── -->
+<template id="tpl-chat-message">
+  <div class="pet-chat-message {role}{extra}" data-message-index="{index}">
+    <div class="pet-chat-bubble">
+      {images}
+      {content}
+      {actions}
+    </div>
+  </div>
+</template>
+
+<!-- ── Pet Welcome Message ───────────────────────────────────────────────── -->
+<template id="tpl-chat-message-pet">
+  <div class="pet-chat-message is-pet" {welcome}>
+    <div class="pet-chat-bubble">
+      <div class="pet-chat-content md-preview-body">{content}</div>
+    </div>
+  </div>
+</template>
+
+<!-- ── Empty State ───────────────────────────────────────────────────────── -->
+<template id="tpl-chat-empty">
+  <div class="empty empty--transparent">
+    <div class="empty__icon">💬</div>
+    <div class="empty__title">找不到该会话</div>
+    <div class="empty__desc">请返回会话列表重试</div>
+  </div>
+</template>
+
+<!-- ── Actions Row (rendered for every message) ──────────────────────────── -->
+<template id="tpl-chat-actions">
+  <div class="pet-chat-meta">
+    <div class="pet-chat-meta-actions">{robotBtns}{upBtn}{downBtn}{regenBtn}{delBtn}</div>
+  </div>
+</template>
+
+<!-- ── Single Robot Button ───────────────────────────────────────────────── -->
+<template id="tpl-chat-robot-btn">
+  <button type="button" class="pet-chat-meta-btn" data-action="send-robot" data-robot-id="{id}" title="发送到：{name}">{name}</button>
+</template>
+
+<!-- ── Image Gallery ─────────────────────────────────────────────────────── -->
+<template id="tpl-chat-images">
+  <div class="pet-chat-images">{items}</div>
+</template>
+
+<template id="tpl-chat-image-item">
+  <img class="pet-chat-image" src="{src}" alt="图片消息" />
+</template>
+
+<!-- ── Content Blocks ────────────────────────────────────────────────────── -->
+<template id="tpl-chat-content-md">
+  <div class="pet-chat-content md-preview-body">{html}</div>
+</template>
+
+<template id="tpl-chat-content-typing">
+  <div class="pet-chat-typing" aria-label="生成中">...</div>
+</template>
+
+<!-- ── Timestamp ─────────────────────────────────────────────────────────── -->
+<template id="tpl-chat-time">
+  <time class="pet-chat-time" datetime="{ts}">{text}</time>
+</template>
+
+<!-- ── Action Buttons ────────────────────────────────────────────────────── -->
+<template id="tpl-chat-btn-move-up">
+  <button type="button" class="pet-chat-meta-btn" data-action="move-up" title="上移"{disabled}>⬆️</button>
+</template>
+
+<template id="tpl-chat-btn-move-down">
+  <button type="button" class="pet-chat-meta-btn" data-action="move-down" title="下移"{disabled}>⬇️</button>
+</template>
+
+<template id="tpl-chat-btn-regen">
+  <button type="button" class="pet-chat-meta-btn" data-action="regenerate" title="重新生成回复">🔄</button>
+</template>
+
+<template id="tpl-chat-btn-delete">
+  <button type="button" class="pet-chat-meta-btn" data-action="delete" title="删除">🗑️</button>
+</template>
