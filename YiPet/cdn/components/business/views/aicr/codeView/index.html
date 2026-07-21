@@ -1,0 +1,664 @@
+<section class="code-view-container" role="main" aria-label="代码查看器">
+  <skeleton-loader v-if="loading" variant="code-view" :line-count="25"></skeleton-loader>
+  <yi-error-state
+    v-else-if="error"
+    :message="error"
+    icon-class="warning"
+  ></yi-error-state>
+  <div v-else-if="file" class="code-content" :class="{ editing: isEditingFile, wrap: wrapEnabled, modified: hasUnsavedChanges }" :style="codeContentStyle">
+    <div class="code-header">
+      <div class="file-name" :title="fullFilePath">
+        <yi-icon :name="shouldShowImagePreview ? 'file-image' : 'file-code'"></yi-icon>
+        <span class="file-name-text">{{ displayFileName }}</span>
+        <span v-if="hasUnsavedChanges" class="unsaved-indicator" title="有未保存的更改">●</span>
+      </div>
+      <div class="code-actions">
+        <button
+          v-if="!isEditingFile && canShowKnowledgeGraph"
+          type="button"
+          class="action-button"
+          :class="{ active: showKnowledgeGraph }"
+          @click="toggleKnowledgeGraph"
+          :disabled="!file"
+          :title="showKnowledgeGraph ? '关闭知识图谱' : '查看知识图谱'"
+          aria-label="查看知识图谱"
+        >
+          <yi-icon name="share"></yi-icon>
+        </button>
+        <button
+          v-if="!isEditingFile && !shouldShowImagePreview"
+          type="button"
+          class="action-button"
+          @click="startEditFile"
+          :disabled="!file"
+          title="编辑文件"
+          aria-label="编辑文件"
+        >
+          <yi-icon name="edit"></yi-icon>
+        </button>
+        <template v-else>
+          <button
+            type="button"
+            class="action-button"
+            :disabled="editSaving"
+            @click="saveEditedFile"
+            :title="editSaving ? '保存中' : '保存修改'"
+            aria-label="保存修改"
+          >
+            <yi-icon :name="editSaving ? 'loading' : 'save'" :spin="editSaving"></yi-icon>
+          </button>
+          <button
+            type="button"
+            class="action-button"
+            :disabled="editSaving"
+            @click="cancelEditFile"
+            title="取消编辑"
+            aria-label="取消编辑"
+          >
+            <yi-icon name="close"></yi-icon>
+          </button>
+        </template>
+        <button
+          v-if="!isEditingFile"
+          type="button"
+          class="action-button"
+          @click="copyEntireFile"
+          :disabled="!file"
+          title="复制代码"
+          aria-label="复制代码"
+        >
+          <yi-icon name="copy"></yi-icon>
+        </button>
+        <button
+          v-if="!isEditingFile"
+          type="button"
+          class="action-button"
+          @click="scrollToFileInTree"
+          :disabled="!file"
+          title="在文件树中定位"
+          aria-label="在文件树中定位"
+        >
+          <yi-icon name="crosshairs"></yi-icon>
+        </button>
+        <button
+          v-if="!isEditingFile"
+          type="button"
+          class="action-button"
+          @click="toggleFullscreen"
+          :disabled="!file"
+          :title="isFullscreen ? '退出全屏' : '全屏模式'"
+          :aria-label="isFullscreen ? '退出全屏' : '全屏模式'"
+        >
+          <yi-icon :name="isFullscreen ? 'compress' : 'expand'"></yi-icon>
+        </button>
+        <button
+          v-if="!isEditingFile"
+          type="button"
+          class="action-button"
+          @click="openExternalUrl"
+          :disabled="!file"
+          title="在新标签页中打开静态文件"
+          aria-label="在新标签页中打开静态文件"
+        >
+          <yi-icon name="external-link"></yi-icon>
+        </button>
+      </div>
+    </div>
+
+    <div v-if="showSearchBar && !isEditingFile && !shouldShowImagePreview" class="code-search-bar">
+      <div class="code-search-input-wrapper">
+        <yi-icon name="search" class-name="code-search-input-icon"></yi-icon>
+        <input
+          ref="codeSearchInput"
+          type="text"
+          class="code-search-input"
+          v-model="searchQuery"
+          placeholder="在文件中搜索..."
+          @keydown="onCodeSearchKeydown"
+        />
+        <button
+          v-if="searchQuery"
+          type="button"
+          class="code-search-input-clear"
+          @click="clearSearch"
+          aria-label="清除搜索"
+        >
+          <yi-icon name="close"></yi-icon>
+        </button>
+      </div>
+      <span v-if="searchQuery" class="code-search-count">{{ activeMatchIndex >= 0 ? activeMatchIndex + 1 : 0 }}/{{ searchMatchCount }}</span>
+      <button
+        type="button"
+        class="code-search-nav-btn"
+        @click="findPrevMatch"
+        :disabled="!searchMatchCount"
+        title="上一个匹配"
+        aria-label="上一个匹配"
+      >
+        <yi-icon name="chevron-up"></yi-icon>
+      </button>
+      <button
+        type="button"
+        class="code-search-nav-btn"
+        @click="findNextMatch"
+        :disabled="!searchMatchCount"
+        title="下一个匹配"
+        aria-label="下一个匹配"
+      >
+        <yi-icon name="chevron-down"></yi-icon>
+      </button>
+      <button
+        type="button"
+        class="code-search-close-btn"
+        @click="toggleSearchBar"
+        title="关闭搜索"
+        aria-label="关闭搜索"
+      >
+        <yi-icon name="close"></yi-icon>
+      </button>
+    </div>
+
+    <div v-if="isEditingFile" class="edit-container">
+      <textarea
+        class="edit-textarea"
+        v-model="editingFileContent"
+        @keydown="onEditKeydown"
+        @paste="onEditPaste"
+        spellcheck="false"
+        placeholder="编辑文件内容..."
+        aria-label="编辑文件内容"
+      ></textarea>
+      <div class="save-error" v-if="saveError">
+        <yi-icon name="error"></yi-icon> {{ saveError }}
+      </div>
+    </div>
+
+    <div v-else-if="shouldShowMarkdownPreview" class="markdown-preview-container">
+      <div class="markdown-preview-wrapper">
+        <markdown-view class="markdown-preview-content md-preview-body" :content="rawContent" mode="markdown" :show-toc="true"></markdown-view>
+      </div>
+    </div>
+
+    <div v-else-if="shouldShowImagePreview" class="image-preview-container">
+      <div class="image-preview-wrapper">
+        <img
+          v-if="imageSrc"
+          class="image-preview-img"
+          :src="imageSrc"
+          :alt="displayFileName"
+          @click="openImagePreview"
+          title="点击查看大图"
+        />
+        <div v-else class="image-preview-error">
+          <yi-icon name="image"></yi-icon>
+          <p>无法加载图片</p>
+        </div>
+      </div>
+    </div>
+
+    <div v-else-if="showKnowledgeGraph && kgGraphData" class="graph-reader" :class="{ 'graph-reader--fullscreen': kgFullscreen }" ref="graphReader">
+      <div class="graph-reader-header">
+        <span class="graph-reader-title">{{ kgTitle }}</span>
+        <span class="graph-reader-stats">
+          {{ kgGraphData.nodes.length }} 节点 · {{ kgGraphData.edges.length }} 边
+          <span v-if="kgMatchedIds && kgMatchedIds.size" class="graph-reader-matched"> · 🎯 {{ kgMatchedIds.size }} 关联</span>
+        </span>
+        <div class="graph-reader-actions">
+<button type="button" class="graph-reader-btn" @click="resetKgLayout" title="重置布局">↻</button>
+          <button type="button" class="graph-reader-btn" @click="toggleKgFullscreen" :title="kgFullscreen ? '退出全屏' : '全屏'">{{ kgFullscreen ? '⊠' : '⛶' }}</button>
+          <button type="button" class="graph-reader-btn" @click="toggleKgSidebar" :title="kgSidebarCollapsed ? '展开侧边栏' : '收起侧边栏'">{{ kgSidebarCollapsed ? '◀' : '▶' }}</button>
+        </div>
+      </div>
+      <!-- 面包屑导航 + 层级切换 -->
+      <div v-if="kgBreadcrumb && kgBreadcrumb.path && kgBreadcrumb.path.length > 0" class="graph-breadcrumb">
+        <div class="graph-breadcrumb-path">
+          <template v-for="(item, idx) in kgBreadcrumb.path" :key="idx">
+            <span v-if="idx > 0" class="graph-breadcrumb-sep">/</span>
+            <span class="graph-breadcrumb-item" :class="{ current: item.current }"
+                  @click="navigateBreadcrumb(item)"
+                  :title="item.action === 'overview' ? '返回全景' : item.action === 'scenario' ? '筛选: ' + item.label : '定位: ' + item.label">
+              <span v-if="item.kind" class="graph-breadcrumb-kind">{{ item.kind }}</span>
+              <span v-if="item.kind" class="graph-breadcrumb-kind-sep">·</span>
+              {{ item.label }}
+            </span>
+          </template>
+        </div>
+        <div class="graph-breadcrumb-layers">
+          <span class="graph-breadcrumb-layer-label">层级</span>
+          <button v-for="l in [1,2]" :key="l"
+                  class="graph-breadcrumb-layer"
+                  :class="{ active: kgBreadcrumb.layer === l }"
+                  @click="switchToLayer(l)">L{{ l }}</button>
+        </div>
+      </div>
+      <div class="graph-reader-body">
+        <div class="graph-reader-canvas" ref="kgCanvas"></div>
+        <!-- 侧边栏面板 -->
+        <div v-show="!kgSidebarCollapsed" class="graph-sidebar">
+        <!-- 图谱总览（未选中节点时） -->
+        <div v-if="!kgSelectedNode && kgGraphOverview" class="graph-node-detail">
+          <div class="graph-node-detail-header">
+            <span class="graph-node-detail-label">{{ kgGraphOverview.storyName }}</span>
+            <span v-if="kgGraphOverview.version" class="graph-overview-version">{{ kgGraphOverview.version }}</span>
+          </div>
+
+          <!-- 1. 图谱统计数字 -->
+          <div>
+            <div class="graph-section-header" @click="toggleKgSection('ovStats')">
+              <span class="graph-section-arrow" :class="{ collapsed: kgCollapsed['ovStats'] }">▼</span>
+              图谱统计
+            </div>
+            <div v-if="!kgCollapsed['ovStats']" class="graph-overview-stats">
+              <div class="graph-overview-stat clickable"
+                   :class="{ active: kgActiveFilter && kgActiveFilter.type === 'story' }"
+                   @click="filterKgByStoryType"
+                   title="点击筛选故事节点">
+                <span class="graph-overview-stat-num">{{ kgGraphOverview.storyCount }}</span>
+                <span class="graph-overview-stat-label">故事</span>
+              </div>
+              <div class="graph-overview-stat">
+                <span class="graph-overview-stat-num">{{ kgGraphOverview.scenarioCount }}</span>
+                <span class="graph-overview-stat-label">场景</span>
+              </div>
+              <div class="graph-overview-stat">
+                <span class="graph-overview-stat-num">{{ kgGraphOverview.totalNodes }}</span>
+                <span class="graph-overview-stat-label">节点</span>
+              </div>
+              <div class="graph-overview-stat">
+                <span class="graph-overview-stat-num">{{ kgGraphOverview.totalEdges }}</span>
+                <span class="graph-overview-stat-label">边</span>
+              </div>
+              <div v-if="kgGraphOverview.crossStoryEdges > 0" class="graph-overview-stat highlight">
+                <span class="graph-overview-stat-num">{{ kgGraphOverview.crossStoryEdges }}</span>
+                <span class="graph-overview-stat-label">跨故事边</span>
+              </div>
+              <div v-if="kgGraphOverview.hasFilter" class="graph-overview-stat highlight">
+                <span class="graph-overview-stat-num">{{ kgGraphOverview.matchedNodes }}</span>
+                <span class="graph-overview-stat-label">关联</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. 描述 -->
+          <div v-if="kgGraphOverview.description">
+            <div class="graph-section-header" @click="toggleKgSection('ovDesc')">
+              <span class="graph-section-arrow" :class="{ collapsed: kgCollapsed['ovDesc'] }">▼</span>
+              描述
+            </div>
+            <p v-if="!kgCollapsed['ovDesc']" class="graph-node-detail-desc">{{ firstSentence(kgGraphOverview.description) }}</p>
+          </div>
+
+          <!-- 3. 跨故事依赖 -->
+          <div v-if="kgGraphOverview.storyDeps && kgGraphOverview.storyDeps.length">
+            <div class="graph-section-header" @click="toggleKgSection('ovStoryDeps')">
+              <span class="graph-section-arrow" :class="{ collapsed: kgCollapsed['ovStoryDeps'] }">▼</span>
+              跨故事依赖 ({{ kgGraphOverview.storyDeps.length }})
+            </div>
+            <div v-if="!kgCollapsed['ovStoryDeps']" class="graph-overview-story-deps">
+              <div v-for="dep in kgGraphOverview.storyDeps" :key="dep.from + '→' + dep.to" class="graph-overview-story-dep">
+                <span class="graph-overview-story-dep-from">{{ dep.fromLabel }}</span>
+                <span class="graph-overview-story-dep-arrow">{{ dep.typeLabel }}</span>
+                <span class="graph-overview-story-dep-to">{{ dep.toLabel }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. 节点分组 -->
+          <div v-if="kgGraphOverview.topGroups.length">
+            <div class="graph-section-header" @click="toggleKgSection('ovGroups')">
+              <span class="graph-section-arrow" :class="{ collapsed: kgCollapsed['ovGroups'] }">▼</span>
+              节点分组 ({{ kgGraphOverview.topGroups.length }})
+            </div>
+            <div v-if="!kgCollapsed['ovGroups']" class="graph-overview-bars">
+              <div v-for="[name, count] in kgGraphOverview.topGroups" :key="name" class="graph-overview-bar">
+                <span class="graph-overview-bar-label">{{ name }}</span>
+                <span class="graph-overview-bar-count">{{ count }}</span>
+                <div class="graph-overview-bar-track"><div class="graph-overview-bar-fill" :style="{width: (count/kgGraphOverview.totalNodes*100)+'%'}"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. 场景文档 -->
+          <div v-if="kgGraphOverview.sceneNodes && kgGraphOverview.sceneNodes.length">
+            <div class="graph-section-header" @click="toggleKgSection('ovScenes')">
+              <span class="graph-section-arrow" :class="{ collapsed: kgCollapsed['ovScenes'] }">▼</span>
+              场景文档 ({{ kgGraphOverview.sceneNodes.length }})
+              <span class="graph-node-detail-hint">点击场景筛选 · 点击节点定位</span>
+            </div>
+            <div v-if="!kgCollapsed['ovScenes']" class="graph-overview-scenes">
+              <div v-for="scene in kgGraphOverview.sceneNodes" :key="scene.name"
+                   class="graph-overview-scene clickable"
+                   :class="{ active: kgActiveFilter && kgActiveFilter.value === scene.name }"
+                   @click="filterKgByScenario(scene.name)">
+                <div class="graph-overview-scene-header">
+                  <span class="graph-overview-scene-name">{{ scene.name }}</span>
+                  <span class="graph-overview-scene-count">{{ scene.count }} 节点</span>
+                </div>
+                <p v-if="scene.desc" class="graph-overview-scene-desc">{{ scene.desc }}</p>
+                <div class="graph-overview-scene-nodes">
+                  <span v-for="n in scene.nodes" :key="n.id"
+                        class="graph-overview-scene-node clickable"
+                        :title="n.file + (n.description ? '\n' + n.description : '')"
+                        @click.stop="focusKgNode(n.id)">
+                    <span class="graph-overview-scene-node-label">{{ n.label }}</span>
+                    <span v-if="n.group" class="graph-overview-scene-node-group">{{ n.group }}</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. 边类型分布 -->
+          <div v-if="kgGraphOverview.topRelations.length">
+            <div class="graph-section-header" @click="toggleKgSection('ovRelations')">
+              <span class="graph-section-arrow" :class="{ collapsed: kgCollapsed['ovRelations'] }">▼</span>
+              边类型 ({{ kgGraphOverview.topRelations.length }})
+            </div>
+            <div v-if="!kgCollapsed['ovRelations']" class="graph-overview-rels">
+              <span v-for="[name, count] in kgGraphOverview.topRelations" :key="name" class="graph-overview-rel">
+                {{ name }} ({{ count }})
+              </span>
+            </div>
+          </div>
+
+          <!-- 7. 跨场景节点 -->
+          <div v-if="kgGraphOverview.nodeSceneList && kgGraphOverview.nodeSceneList.length">
+            <div class="graph-section-header" @click="toggleKgSection('ovCrossSceneNodes')">
+              <span class="graph-section-arrow" :class="{ collapsed: kgCollapsed['ovCrossSceneNodes'] }">▼</span>
+              跨场景节点 ({{ kgGraphOverview.nodeSceneList.length }})
+              <span class="graph-node-detail-hint">点击节点定位</span>
+            </div>
+            <div v-if="!kgCollapsed['ovCrossSceneNodes']" class="graph-overview-node-scenes">
+              <div v-for="ns in kgGraphOverview.nodeSceneList" :key="ns.id"
+                   class="graph-overview-node-scene clickable"
+                   @click="focusKgNode(ns.id)">
+                <div class="graph-overview-node-scene-header">
+                  <code class="graph-overview-node-scene-label">{{ ns.label }}</code>
+                  <span class="graph-overview-node-scene-badge">{{ ns.sceneCount }} 场景</span>
+                  <span v-if="ns.group" class="graph-overview-node-scene-group">{{ ns.group }}</span>
+                </div>
+                <p v-if="ns.description" class="graph-overview-node-scene-desc">{{ ns.description }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 节点详情（选中节点时） -->
+        <div v-if="kgSelectedNode" class="graph-node-detail">
+          <div class="graph-node-detail-header">
+            <div class="graph-node-detail-header-left">
+              <span class="graph-node-detail-dot" :style="{background: kgSelectedNode.color || '#94A3B8'}"></span>
+              <div class="graph-node-detail-header-info">
+                <span class="graph-node-detail-label">{{ kgSelectedNode.label }}</span>
+                <span v-if="kgSelectedNode.contextPath && kgSelectedNode.contextPath.length > 1" class="graph-node-detail-context">
+                  <template v-for="(seg, idx) in kgSelectedNode.contextPath" :key="idx">
+                    <span v-if="idx > 0" class="graph-node-detail-context-sep">/</span>
+                    <span class="graph-node-detail-context-seg" :class="{ current: idx === kgSelectedNode.contextPath.length - 1 }">{{ seg }}</span>
+                  </template>
+                </span>
+              </div>
+            </div>
+            <button class="graph-reader-btn" @click="closeNodeDetail()" title="返回上一级">✕</button>
+          </div>
+
+          <!-- 筛选提示 + 统计 -->
+          <div v-if="kgSelectedNode.hasActiveFilter" class="graph-node-filter-banner">
+            <span class="graph-node-filter-text">🔍 筛选上下文：{{ kgActiveFilter.value }}（{{ kgSelectedNode.activeFilteredCount }} 个节点）</span>
+            <button class="graph-node-filter-clear" @click="resetKgFilter()" title="清除筛选">✕</button>
+          </div>
+
+          <!-- 1. 图谱统计 -->
+          <div>
+            <div class="graph-section-header" @click="toggleKgSection('stats')">
+              <span class="graph-section-arrow" :class="{ collapsed: kgCollapsed['stats'] }">▼</span>
+              图谱统计
+            </div>
+            <div v-if="!kgCollapsed['stats']" class="graph-overview-stats">
+              <div class="graph-overview-stat"
+                   :class="{ highlight: kgSelectedNode.hasActiveFilter }">
+                <span class="graph-overview-stat-num">
+                  <template v-if="kgSelectedNode.hasActiveFilter && kgSelectedNode.totalSceneCount !== kgSelectedNode.sceneCount">
+                    {{ kgSelectedNode.sceneCount }}/{{ kgSelectedNode.totalSceneCount }}
+                  </template>
+                  <template v-else>{{ kgSelectedNode.sceneCount }}</template>
+                </span>
+                <span class="graph-overview-stat-label">场景</span>
+              </div>
+              <div class="graph-overview-stat">
+                <span class="graph-overview-stat-num">{{ kgSelectedNode.neighborCount }}</span>
+                <span class="graph-overview-stat-label">节点</span>
+              </div>
+              <div class="graph-overview-stat">
+                <span class="graph-overview-stat-num">{{ kgSelectedNode.totalEdges }}</span>
+                <span class="graph-overview-stat-label">边</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. 场景节点特殊内容 -->
+          <div v-if="kgSelectedNode.isSceneNode">
+            <div v-if="kgSelectedNode.sceneOwnDescription">
+              <div class="graph-section-header" @click="toggleKgSection('sceneDesc')">
+                <span class="graph-section-arrow" :class="{ collapsed: kgCollapsed['sceneDesc'] }">▼</span>
+                场景描述
+              </div>
+              <p v-if="!kgCollapsed['sceneDesc']" class="graph-node-detail-desc">{{ kgSelectedNode.sceneOwnDescription }}</p>
+            </div>
+            <div v-if="kgSelectedNode.sceneContainedNodes && kgSelectedNode.sceneContainedNodes.length">
+              <div class="graph-section-header" @click="toggleKgSection('sceneNodes')">
+                <span class="graph-section-arrow" :class="{ collapsed: kgCollapsed['sceneNodes'] }">▼</span>
+                包含节点 ({{ kgSelectedNode.sceneContainedNodes.length }})
+                <span class="graph-node-detail-hint">点击定位</span>
+              </div>
+              <div v-if="!kgCollapsed['sceneNodes']" class="graph-node-detail-neighbors">
+                <div v-for="n in kgSelectedNode.sceneContainedNodes" :key="n.id"
+                     class="graph-node-neighbor-card clickable"
+                     :style="{borderColor: n.color || '#4B5563'}"
+                     @click="focusKgNode(n.id)"
+                     :title="'点击定位: ' + n.label">
+                  <span class="graph-node-neighbor-label">{{ n.label }}</span>
+                  <span v-if="n.type" class="graph-node-neighbor-type-tag">{{ n.type }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. 节点分组（非场景节点） -->
+          <div v-if="!kgSelectedNode.isSceneNode">
+            <div class="graph-section-header" @click="toggleKgSection('grouping')">
+              <span class="graph-section-arrow" :class="{ collapsed: kgCollapsed['grouping'] }">▼</span>
+              节点分组
+            </div>
+            <div v-if="!kgCollapsed['grouping']">
+              <div class="graph-node-detail-meta">
+                <span v-if="kgSelectedNode.type" class="graph-node-badge">{{ kgSelectedNode.typeLabel }}</span>
+                <span v-if="kgSelectedNode.group" class="graph-node-badge group">{{ kgSelectedNode.group }}</span>
+              </div>
+              <p v-if="kgSelectedNode.roleSummary" class="graph-node-detail-role" v-html="kgSelectedNode.roleSummary"></p>
+            </div>
+          </div>
+
+          <!-- 4. 描述 -->
+          <div v-if="kgSelectedNode.description || kgSelectedNode.file || (kgSelectedNode.functionList && kgSelectedNode.functionList.length)">
+            <div class="graph-section-header" @click="toggleKgSection('desc')">
+              <span class="graph-section-arrow" :class="{ collapsed: kgCollapsed['desc'] }">▼</span>
+              描述
+            </div>
+            <div v-if="!kgCollapsed['desc']">
+              <p v-if="kgSelectedNode.description" class="graph-node-detail-desc">{{ firstSentence(kgSelectedNode.description) }}</p>
+              <div v-if="kgSelectedNode.relNarrative" class="graph-node-detail-narrative" v-html="kgSelectedNode.relNarrative"></div>
+              <div v-if="kgSelectedNode.file" class="mt-2">
+                <code class="graph-node-detail-file">{{ kgSelectedNode.file }}</code>
+              </div>
+              <div v-if="kgSelectedNode.functionList && kgSelectedNode.functionList.length" class="graph-node-func-chips mt-2">
+                <span v-for="(fn, i) in kgSelectedNode.functionList" :key="i" class="graph-node-func-chip">{{ fn }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. 关联场景文档 -->
+          <div v-if="kgSelectedNode.mdFiles && kgSelectedNode.mdFiles.length">
+            <div class="graph-section-header" @click="toggleKgSection('mdFiles')">
+              <span class="graph-section-arrow" :class="{ collapsed: kgCollapsed['mdFiles'] }">▼</span>
+              关联场景文档 ({{ kgSelectedNode.mdFiles.length }})
+              <span class="graph-node-detail-hint">点击筛选图谱</span>
+            </div>
+            <div v-if="!kgCollapsed['mdFiles']" class="graph-node-detail-mdfiles">
+              <div v-for="mf in kgSelectedNode.mdFiles" :key="mf.file"
+                   class="graph-node-mdfile clickable"
+                   :class="{ active: kgActiveFilter && kgActiveFilter.value === mf.scenario }"
+                   @click="filterKgByScenario(mf.scenario)"
+                   :title="'点击筛选场景: ' + (mf.scenario || mf.file)">
+                <div class="graph-node-mdfile-header">
+                  <span class="graph-node-mdfile-dot">◆</span>
+                  <span class="graph-node-mdfile-name">{{ mf.scenario || mf.file }}</span>
+                  <span class="graph-node-mdfile-section">{{ mf.section || '' }}</span>
+                  <span v-if="mf._sceneIdx != null" class="graph-node-mdfile-idx">场景{{ mf._sceneIdx + 1 }}</span>
+                </div>
+                <p v-if="mf._desc" class="graph-node-mdfile-desc">{{ mf._desc }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. 邻居节点 -->
+          <div v-if="kgSelectedNode.neighbors && kgSelectedNode.neighbors.length">
+            <div class="graph-section-header" @click="toggleKgSection('neighbors')">
+              <span class="graph-section-arrow" :class="{ collapsed: kgCollapsed['neighbors'] }">▼</span>
+              邻居节点 ({{ kgSelectedNode.neighbors.length }})
+              <span class="graph-node-detail-hint">点击定位</span>
+            </div>
+            <div v-if="!kgCollapsed['neighbors']" class="graph-node-detail-neighbors">
+              <div v-for="n in kgSelectedNode.neighbors" :key="n.id"
+                   class="graph-node-neighbor-card clickable"
+                   :style="{borderColor: n.color || '#4B5563'}"
+                   @click="focusKgNode(n.id)"
+                   :title="'点击定位: ' + n.label">
+                <span class="graph-node-neighbor-label">{{ n.label }}</span>
+                <span v-if="n.relations && n.relations.length" class="graph-node-neighbor-rels">
+                  <span v-for="r in n.relations.slice(0, 3)" :key="r" class="graph-node-neighbor-rel">{{ r }}</span>
+                  <span v-if="n.relations.length > 3" class="graph-node-neighbor-rel-more">+{{ n.relations.length - 3 }}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 7. 关联边 -->
+          <div v-if="kgSelectedNode.edgeGroups && kgSelectedNode.edgeGroups.length">
+            <div class="graph-section-header" @click="toggleKgSection('edges')">
+              <span class="graph-section-arrow" :class="{ collapsed: kgCollapsed['edges'] }">▼</span>
+              关联边 ({{ kgSelectedNode.totalEdges }})
+              <span class="graph-node-detail-hint">点击高亮 · 出={{ kgSelectedNode.outgoing }} 入={{ kgSelectedNode.incoming }}</span>
+            </div>
+            <div v-if="!kgCollapsed['edges']" class="graph-node-detail-edges">
+              <div v-for="grp in kgSelectedNode.edgeGroups" :key="grp.relation" class="graph-node-edge-group">
+                <div class="graph-node-edge-group-header">
+                  <span class="graph-node-edge-group-label">{{ grp.label }}</span>
+                  <span class="graph-node-edge-group-counts">
+                    <span v-if="grp.outgoingCount" class="graph-node-edge-dir-out">出 {{ grp.outgoingCount }}</span>
+                    <span v-if="grp.incomingCount" class="graph-node-edge-dir-in">入 {{ grp.incomingCount }}</span>
+                  </span>
+                </div>
+                <!-- 出边 -->
+                <div v-if="grp._outShow.length" class="graph-node-edge-sub">
+                  <div class="graph-node-edge-sub-label">出边</div>
+                  <div v-for="(edge, i) in grp._outShow" :key="'out'+i"
+                       class="graph-node-edge clickable"
+                       @click="highlightKgEdge(edge.edgeId)"
+                       :title="edge.sourceLabel + ' → ' + edge.targetLabel">
+                    <span class="graph-node-edge-dir">→</span>
+                    <span class="graph-node-edge-label" v-if="edge.label && edge.label !== edge.relation">{{ edge.label }}</span>
+                    <span class="graph-node-edge-target">{{ edge.targetLabel }}</span>
+                  </div>
+                  <div v-if="grp._outMore && !grp._expanded" class="graph-node-edge-more clickable" @click="toggleEdgeGroup(grp)">+{{ grp._outMore }} 条更多出边</div>
+                </div>
+                <!-- 入边 -->
+                <div v-if="grp._inShow.length" class="graph-node-edge-sub">
+                  <div class="graph-node-edge-sub-label">入边</div>
+                  <div v-for="(edge, i) in grp._inShow" :key="'in'+i"
+                       class="graph-node-edge clickable"
+                       @click="highlightKgEdge(edge.edgeId)"
+                       :title="edge.sourceLabel + ' → ' + edge.targetLabel">
+                    <span class="graph-node-edge-dir">←</span>
+                    <span class="graph-node-edge-label" v-if="edge.label && edge.label !== edge.relation">{{ edge.label }}</span>
+                    <span class="graph-node-edge-target">{{ edge.sourceLabel }}</span>
+                  </div>
+                  <div v-if="grp._inMore && !grp._expanded" class="graph-node-edge-more clickable" @click="toggleEdgeGroup(grp)">+{{ grp._inMore }} 条更多入边</div>
+                </div>
+                <!-- 已展开时显示收起 -->
+                <div v-if="grp._expanded && (grp._outMore || grp._inMore)" class="graph-node-edge-more clickable" @click="toggleEdgeGroup(grp)">▲ 收起</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+        <!-- 侧边栏展开按钮（收起时显示） -->
+        <div v-show="kgSidebarCollapsed" class="graph-sidebar-expand" @click="toggleKgSidebar" title="展开侧边栏">
+          <span class="graph-sidebar-expand-arrow">◀</span>
+          <span class="graph-sidebar-expand-label">详情</span>
+        </div>
+      </div>
+    </div>
+
+    <div v-else-if="showKnowledgeGraph && kgLoading" class="graph-reader">
+      <yi-loading text="加载知识图谱..."></yi-loading>
+    </div>
+
+    <div v-else-if="showKnowledgeGraph && kgError" class="graph-reader">
+      <yi-error-state :message="kgError" icon-class="warning"></yi-error-state>
+    </div>
+
+    <div v-else class="code-reader">
+      <div class="code-scroll" tabindex="0" aria-label="代码区域">
+        <pre class="code-block" :class="'language-' + languageType">
+          <code
+            v-for="(line, index) in codeLines"
+            :key="index + 1"
+            :id="'L' + (index + 1)"
+            :class="[
+              'code-line',
+              highlightedLines.includes(index + 1) ? 'highlight' : '',
+              isActiveMatchLine(index + 1) ? 'active-match' : ''
+            ]"
+            :data-line="index + 1"
+            @mouseenter="showCopyButton(index + 1)"
+            @mouseleave="hideCopyButton"
+          >
+            <span class="line-number" role="button" tabindex="0" @click="onLineNumberClick(index + 1)">{{ index + 1 }}</span>
+            <button
+              v-if="hoveredLine === index + 1"
+              class="line-copy-btn"
+              @click="copyLine(index + 1)"
+              title="复制此行"
+              aria-label="复制此行"
+            >
+              <yi-icon name="copy"></yi-icon>
+            </button>
+            <span class="line-content" v-html="renderLineContent(line) || ' '"></span>
+          </code>
+        </pre>
+      </div>
+    </div>
+  </div>
+  <yi-empty-state
+    v-else
+    wrapper-class="empty-container"
+    card-class="empty-card"
+    title="未选择文件"
+    title-class="empty-title"
+    @click="focusFileTree"
+  >
+    <template #icon>
+      <div class="empty-hero" aria-hidden="true">
+        <div class="empty-icon" aria-hidden="true">
+          <yi-icon name="file-code"></yi-icon>
+        </div>
+      </div>
+    </template>
+    <div class="empty-actions">
+      <yi-button variant="primary" size="small" @click.stop="emitCreateSession" aria-label="新建会话">
+        <yi-icon name="add"></yi-icon>
+        <span>新建会话</span>
+      </yi-button>
+    </div>
+  </yi-empty-state>
+</section>

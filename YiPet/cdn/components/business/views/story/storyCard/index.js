@@ -1,0 +1,88 @@
+import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
+
+registerGlobalComponent({
+    name: 'StoryCard',
+    html: '/YiPet/cdn/components/business/views/story/storyCard/template.html',
+    css: '/YiPet/cdn/components/business/views/story/storyCard/index.css',
+    props: {
+        story: { type: Object, default: null },
+        storyDeps: { type: Array, default: () => [] },
+        saving: { type: Boolean, default: false }
+    },
+    emits: ['select', 'update-story'],
+    data() {
+        return {
+            editing: false,
+            editDescription: '',
+        };
+    },
+    computed: {
+        depCounts() {
+            const name = this.story?.name;
+            const deps = this.storyDeps || [];
+            if (!name || deps.length === 0) return null;
+            const self = deps.find(s => s.directory === name);
+            if (!self) return null;
+            const dependedBy = deps.filter(s =>
+                Array.isArray(s.dependsOn) && s.dependsOn.some(d => d.directory === name)
+            ).length;
+            const dependsOn = (self.dependsOn || []).length;
+            if (dependedBy === 0 && dependsOn === 0) return null;
+            return { dependsOn, dependedBy };
+        },
+        cardClass() {
+            if (!this.story) return 'sc-card';
+            return `sc-card sc-card--${this.story.status}`;
+        },
+        tagAccentStyle() {
+            if (!this.story || !this.story.projectTags || this.story.projectTags.length === 0) return '';
+            const tag = this.story.projectTags[0];
+            let hash = 0;
+            for (let i = 0; i < tag.length; i++) {
+                hash = tag.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const hue = Math.abs(hash) % 360;
+            return `--sc-accent: hsl(${hue}, 55%, 50%); --sc-accent-bg: hsla(${hue}, 55%, 50%, 0.08);`;
+        },
+        stageCounts() {
+            if (!this.story || !this.story.files) return null;
+            const names = this.story.files.map(f => f.fileName || '');
+            return {
+                plan: names.filter(n => n.endsWith('-故事任务.md')).length,
+                design: names.filter(n => n.endsWith('-使用场景.md')).length,
+                dev: names.filter(n => n.endsWith('-实施报告.md')).length,
+                test: names.filter(n => n.endsWith('-测试报告.md')).length,
+                ops: names.filter(n => n.endsWith('-自改进复盘.md')).length,
+            };
+        }
+    },
+    methods: {
+        formatDate(ts) {
+            if (!ts) return '';
+            const d = new Date(ts);
+            if (isNaN(d.getTime())) return '';
+            const pad = (n) => String(n).padStart(2, '0');
+            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        },
+        onClick() {
+            if (this.editing) return;
+            if (this.story) {
+                this.$emit('select', this.story);
+            }
+        },
+        startEdit(e) {
+            if (e) e.stopPropagation();
+            this.editDescription = this.story?.description || '';
+            this.editing = true;
+        },
+        cancelEdit() {
+            this.editing = false;
+            this.editDescription = '';
+        },
+        async saveEdit() {
+            if (!this.story) return;
+            this.$emit('update-story', { name: this.story.name, description: this.editDescription });
+            this.editing = false;
+        },
+    }
+});

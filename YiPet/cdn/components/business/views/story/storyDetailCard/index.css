@@ -1,0 +1,366 @@
+.sp-detail {
+    background: var(--yi-surface);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--yi-shadow-sm);
+}
+.sp-detail--panel {
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+}
+.sp-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+.sp-detail-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: 1px solid var(--yi-border, rgba(255,255,255,0.08));
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 13px;
+    color: var(--yi-text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.sp-detail-back:hover {
+    background: var(--yi-surface-hover);
+    color: var(--yi-text);
+}
+.sp-detail-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--yi-text);
+    margin: 0;
+    flex: 1;
+    font-family: 'JetBrains Mono', monospace;
+}
+.sp-detail-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding: 10px 14px;
+    background: var(--yi-surface-hover);
+    border-radius: 8px;
+}
+.sp-summary-item {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+.sp-summary-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--yi-text-secondary);
+    white-space: nowrap;
+    min-width: 72px;
+}
+.sp-summary-text {
+    font-size: 13px;
+    color: var(--yi-text);
+    line-height: 1.4;
+}
+.sp-summary-text--action {
+    color: var(--yi-primary);
+    font-weight: 500;
+}
+.sp-summary-text--muted {
+    color: var(--yi-text-muted);
+}
+.sp-summary-item--editable {
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 2px 6px;
+    margin: -2px -6px;
+    transition: background 0.15s;
+}
+.sp-summary-item--editable:hover {
+    background: var(--yi-surface-hover);
+}
+.sp-summary-item--editable:hover .sp-summary-edit-icon {
+    opacity: 1;
+}
+.sp-summary-edit-icon {
+    font-size: 12px;
+    color: var(--yi-text-muted);
+    opacity: 0;
+    transition: opacity 0.15s;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+.sp-summary-item--edit {
+    flex-direction: column;
+    align-items: stretch;
+}
+.sp-summary-edit-area {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 4px;
+}
+.sp-summary-textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--yi-border);
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--yi-text);
+    background: var(--yi-bg);
+    resize: vertical;
+    outline: none;
+    line-height: 1.4;
+    box-sizing: border-box;
+}
+.sp-summary-textarea:focus {
+    border-color: var(--yi-primary);
+    box-shadow: var(--yi-shadow-focus);
+}
+.sp-summary-edit-actions {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+}
+.sp-summary-edit-save,
+.sp-summary-edit-cancel {
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.sp-summary-edit-save {
+    border: 1px solid var(--yi-primary);
+    background: var(--yi-primary);
+    color: var(--yi-text-on-primary);
+}
+.sp-summary-edit-save:hover:not(:disabled) {
+    opacity: 0.9;
+}
+.sp-summary-edit-save:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.sp-summary-edit-cancel {
+    border: 1px solid var(--yi-border);
+    background: var(--yi-surface);
+    color: var(--yi-text-secondary);
+}
+.sp-summary-edit-cancel:hover {
+    border-color: var(--yi-text-muted);
+    color: var(--yi-text);
+}
+.sp-detail-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.sp-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.sp-meta-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--yi-text-secondary);
+}
+.sp-meta-value {
+    font-size: 14px;
+    color: var(--yi-text);
+}
+.sp-meta-value--path {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--yi-primary);
+}
+/* ---- dependency section ---- */
+.sp-dep-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+.sp-dep-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--yi-text-secondary);
+    white-space: nowrap;
+    min-width: 60px;
+    padding-top: 3px;
+}
+.sp-dep-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.sp-dep-tag--depends {
+    background: rgba(255, 152, 0, 0.12);
+    color: #ff9800;
+    border: 1px solid rgba(255, 152, 0, 0.2);
+}
+.sp-dep-tag--depends:hover { background: rgba(255, 152, 0, 0.22); }
+.sp-dep-tag--depended {
+    background: rgba(33, 150, 243, 0.12);
+    color: #2196f3;
+    border: 1px solid rgba(33, 150, 243, 0.2);
+}
+.sp-dep-tag--depended:hover { background: rgba(33, 150, 243, 0.22); }
+.sp-dep-tag--child {
+    background: rgba(76, 175, 80, 0.12);
+    color: #4caf50;
+    border: 1px solid rgba(76, 175, 80, 0.2);
+}
+.sp-dep-tag--child:hover { background: rgba(76, 175, 80, 0.22); }
+.sp-dep-tag--parent {
+    background: rgba(156, 39, 176, 0.12);
+    color: #9c27b0;
+    border: 1px solid rgba(156, 39, 176, 0.2);
+}
+.sp-dep-tag--parent:hover { background: rgba(156, 39, 176, 0.22); }
+.sp-dep-rel {
+    font-size: 10px;
+    opacity: 0.7;
+    font-family: inherit;
+}
+.sp-dep-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    color: inherit;
+    font-size: 10px;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s, background 0.15s;
+    margin-left: 2px;
+}
+.sp-dep-tag:hover .sp-dep-remove {
+    opacity: 1;
+}
+.sp-dep-remove:hover {
+    background: rgba(244, 63, 94, 0.3);
+    color: #f43f5e;
+}
+.sp-dep-add-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px dashed var(--yi-border);
+    background: transparent;
+    color: var(--yi-text-muted);
+}
+.sp-dep-add-btn:hover {
+    border-color: var(--yi-primary);
+    color: var(--yi-primary);
+    background: rgba(var(--yi-primary-rgb), 0.05);
+}
+
+.sp-detail-section {
+    margin-bottom: 16px;
+}
+.sp-section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--yi-text);
+    margin: 0 0 10px;
+}
+.sp-file-group {
+    margin-bottom: 16px;
+}
+.sp-file-group:last-child {
+    margin-bottom: 0;
+}
+.sp-file-group-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--yi-text-secondary);
+    margin: 0 0 6px;
+    padding: 0 12px;
+    text-transform: none;
+    letter-spacing: 0.3px;
+}
+.sp-file-group-count {
+    font-weight: 400;
+    font-size: 11px;
+    color: var(--yi-text-muted);
+    margin-left: 4px;
+}
+.sp-file-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.sp-file-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+.sp-file-item:hover {
+    background: var(--yi-surface-hover);
+}
+.sp-file-item:hover .sp-file-name {
+    color: var(--yi-primary);
+}
+.sp-file-item:hover .sp-file-action-icon {
+    opacity: 1;
+}
+.sp-file-icon {
+    color: var(--yi-text-secondary);
+    font-size: 12px;
+    width: 16px;
+    text-align: center;
+}
+.sp-file-name {
+    flex: 1;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--yi-text);
+}
+.sp-file-date {
+    color: var(--yi-text-secondary);
+    font-size: 12px;
+    white-space: nowrap;
+}
+.sp-file-action-icon {
+    color: var(--yi-primary);
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.15s;
+    flex-shrink: 0;
+}

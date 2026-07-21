@@ -1,0 +1,250 @@
+/* ==============================================
+   StoryCard — 故事任务卡片
+   ============================================== */
+
+.sc-card {
+    background: var(--yi-surface);
+    border-radius: 8px;
+    padding: 12px 14px;
+    border-left: 3px solid transparent;
+    cursor: pointer;
+    transition: transform 0.12s, box-shadow 0.12s;
+    box-shadow: var(--yi-shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.sc-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 20px rgba(var(--yi-primary-rgb), 0.08), 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.sc-card--planning     { border-left-color: var(--sc-accent, var(--yi-text-muted)); }
+.sc-card--design       { border-left-color: var(--sc-accent, var(--yi-warning)); }
+.sc-card--develop      { border-left-color: var(--sc-accent, var(--yi-info)); }
+.sc-card--testing      { border-left-color: var(--sc-accent, var(--yi-primary)); }
+.sc-card--operations   { border-left-color: var(--sc-accent, var(--yi-success)); }
+
+
+.sc-card--empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 0;
+    color: var(--yi-text-muted);
+    font-size: 16px;
+    cursor: default;
+    border-left-color: transparent;
+    box-shadow: var(--yi-shadow-sm);
+}
+.sc-card--empty:hover {
+    transform: none;
+    box-shadow: var(--yi-shadow-sm);
+}
+
+.sc-card-tags {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.sc-card-tags-left {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.sc-card-date {
+    font-size: 10px;
+    color: var(--yi-text-muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* ---- dependency badge ---- */
+.sc-card-dep-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+.sc-dep-count {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1.4;
+}
+.sc-dep-count--by {
+    color: #2196f3;
+    background: rgba(33, 150, 243, 0.1);
+}
+.sc-dep-count--on {
+    color: #ff9800;
+    background: rgba(255, 152, 0, 0.1);
+}
+
+.sc-card-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--sc-accent, var(--yi-primary));
+    background: var(--sc-accent-bg, rgba(var(--yi-primary-rgb), 0.10));
+    padding: 1px 6px;
+    border-radius: 4px;
+    vertical-align: middle;
+    font-family: inherit;
+    letter-spacing: 0.02em;
+}
+
+.sc-card-name {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--yi-text);
+    font-family: 'JetBrains Mono', monospace;
+    word-break: break-word;
+    line-height: 1.35;
+}
+
+.sc-card-stages {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+    padding-top: 6px;
+    border-top: 1px solid var(--yi-border);
+}
+
+.sc-stage-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 10px;
+    color: var(--yi-text-muted);
+    min-width: 24px;
+    justify-content: center;
+}
+
+.sc-stage-num {
+    font-weight: 600;
+    font-size: 10px;
+    color: var(--yi-text-secondary);
+}
+
+.sc-card-file-count {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--yi-text-muted);
+    font-family: inherit;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* ---- edit button ---- */
+.sc-card-edit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--yi-text-muted);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s, color 0.15s, background 0.15s;
+    flex-shrink: 0;
+}
+.sc-card:hover .sc-card-edit-btn {
+    opacity: 1;
+}
+.sc-card-edit-btn:hover {
+    background: var(--yi-surface-hover);
+    color: var(--yi-primary);
+}
+.sc-card-edit-icon {
+    font-size: 12px;
+}
+
+/* ---- editing state ---- */
+.sc-card--editing {
+    border-color: var(--yi-primary) !important;
+    box-shadow: 0 0 0 1px var(--yi-primary), 0 0 16px rgba(var(--yi-primary-rgb), 0.10);
+}
+.sc-card-desc {
+    font-size: 12px;
+    color: var(--yi-text-secondary);
+    line-height: 1.4;
+    word-break: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.sc-card-edit-area {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.sc-card-textarea {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid var(--yi-border);
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: inherit;
+    color: var(--yi-text);
+    background: var(--yi-bg);
+    resize: vertical;
+    outline: none;
+    line-height: 1.4;
+    box-sizing: border-box;
+}
+.sc-card-textarea:focus {
+    border-color: var(--yi-primary);
+    box-shadow: var(--yi-shadow-focus);
+}
+.sc-card-edit-actions {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+}
+.sc-card-edit-save,
+.sc-card-edit-cancel {
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.sc-card-edit-save {
+    border: 1px solid var(--yi-primary);
+    background: var(--yi-primary);
+    color: var(--yi-text-on-primary);
+}
+.sc-card-edit-save:hover:not(:disabled) {
+    opacity: 0.9;
+}
+.sc-card-edit-save:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.sc-card-edit-cancel {
+    border: 1px solid var(--yi-border);
+    background: var(--yi-surface);
+    color: var(--yi-text-secondary);
+}
+.sc-card-edit-cancel:hover {
+    border-color: var(--yi-text-muted);
+    color: var(--yi-text);
+}
