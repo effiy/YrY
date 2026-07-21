@@ -20,7 +20,7 @@
 
   // 如果仍然没有，尝试使用 chrome API（在扩展上下文中可用）
   if (!scriptUrl && typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.getURL) {
-    scriptUrl = chrome.runtime.getURL('libs/mermaid.min.js')
+    scriptUrl = chrome.runtime.getURL('cdn/vendor/mermaid.min.js')
   }
 
   if (!scriptUrl) {

@@ -153,7 +153,8 @@
    宠物样式 (从 petManager.pet.js 提取)
    注意：位置、大小、显示状态等动态属性保留在 JS 中
    ============================================ */
-#chrome-pet {
+#chrome-pet,
+#chat_assistant_element {
     position: fixed !important;
     border-radius: 12px !important;
     cursor: grab !important;

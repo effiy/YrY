@@ -48,7 +48,7 @@
         }
       }
 
-      var scriptUrl = chrome.runtime.getURL('libs/mermaid.min.js')
+      var scriptUrl = chrome.runtime.getURL('cdn/vendor/mermaid.min.js')
       var loadScriptUrl = chrome.runtime.getURL('cdn/markdown/mermaid-page-load.js')
 
       if (typeof DomHelper === 'undefined' || typeof DomHelper.runPageScriptWithData !== 'function') {
