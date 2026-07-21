@@ -1,0 +1,153 @@
+{
+  "manifest_version": 3,
+  "name": "温柔陪伴助手",
+  "version": "1.1.2",
+  "description": "在浏览器中添加一位温柔体贴的伴侣，陪伴您的浏览时光。支持多种互动功能，让网页浏览更加有趣！",
+  "permissions": ["storage", "tabs", "scripting", "webRequest"],
+  "host_permissions": ["<all_urls>", "https://api.effiy.cn/*"],
+  "background": {
+    "service_worker": "modules/extension/background/index.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "core/config.js",
+        "libs/md5.js",
+        "core/utils/api/token.js",
+        "core/utils/api/logger.js",
+        "core/utils/api/error.js",
+        "core/utils/api/request.js",
+        "core/utils/media/imageResourceManager.js",
+        "core/utils/ui/loadingAnimationMixin.js",
+        "core/utils/ui/loadingAnimation.js",
+        "core/constants/endpoints.js",
+        "core/api/core/ApiManager.js",
+        "core/api/services/SessionService.js",
+        "core/utils/session/sessionManager.js",
+        "core/api/services/FaqService.js",
+        "libs/marked.min.js",
+        "cdn/markdown/markdown.js",
+        "libs/turndown.js",
+        "libs/vue.global.js",
+        "core/utils/logging/loggerUtils.js",
+        "core/utils/error/errorHandler.js",
+        "core/utils/dom/fileHelper.js",
+        "core/utils/dom/templateHelper.js",
+        "core/utils/dom/scriptHelper.js",
+        "core/utils/dom/domHelper.js",
+        "core/bootstrap/bootstrap.js",
+        "modules/pet/content/core/petManager.core.js",
+        "modules/pet/components/modal/TokenSettingsModal/index.js",
+        "modules/pet/content/modules/petManager.auth.js",
+        "modules/pet/content/modules/petManager.roles.js",
+        "modules/pet/content/modules/petManager.robot.js",
+        "modules/pet/components/modal/AiSettingsModal/index.js",
+        "modules/pet/content/session/petManager.session.crud.js",
+        "modules/pet/content/session/petManager.session.filter.js",
+        "modules/pet/content/session/petManager.session.tag.js",
+        "modules/pet/content/session/petManager.session.batch.js",
+        "modules/pet/content/ai/petManager.ai.api.js",
+        "modules/pet/content/ai/petManager.ai.prompt.js",
+        "modules/pet/content/modules/petManager.sessionEditor.js",
+        "modules/pet/content/editor/petManager.editor.core.js",
+        "modules/pet/content/editor/petManager.editor.ui.js",
+        "modules/pet/content/modules/petManager.editor.js",
+        "cdn/markdown/mermaid.js",
+        "modules/pet/content/mermaid/petManager.mermaid.renderer.js",
+        "modules/pet/content/mermaid/petManager.mermaid.ui.js",
+        "modules/pet/components/manager/SessionTagManager/index.js",
+        "modules/pet/content/modules/petManager.tags.js",
+        "modules/pet/content/modules/petManager.parser.js",
+        "modules/pet/components/manager/FaqManager/index.js",
+        "modules/pet/components/manager/FaqTagManager/index.js",
+        "modules/faq/content/faq.js",
+        "modules/faq/content/tags.js",
+        "modules/pet/content/modules/petManager.messaging.js",
+        "modules/pet/content/modules/petManager.pageInfo.js",
+        "modules/pet/content/modules/petManager.session.js",
+        "modules/pet/components/chat/ChatWindow/hooks/store.js",
+        "modules/pet/components/chat/ChatWindow/hooks/useComputed.js",
+        "modules/pet/components/chat/ChatWindow/hooks/useMethods.js",
+        "modules/pet/components/chat/ChatWindow/utils.js",
+        "modules/pet/components/chat/ChatHeader/index.js",
+        "modules/pet/components/chat/ChatInput/index.js",
+        "modules/pet/components/chat/ChatMessages/index.js",
+        "modules/pet/components/chat/ChatWindow/index.js",
+        "modules/pet/content/petManager.ui.js",
+        "modules/pet/content/petManager.drag.js",
+        "modules/pet/content/petManager.pet.js",
+        "modules/pet/content/petManager.state.js",
+        "modules/pet/content/petManager.chat.js",
+        "modules/pet/content/petManager.chatUi.js",
+        "modules/pet/content/petManager.events.js",
+        "modules/pet/content/petManager.media.js",
+        "modules/pet/content/petManager.message.js",
+        "modules/pet/content/petManager.js",
+        "core/bootstrap/index.js"
+      ],
+      "css": [
+        "assets/styles/tailwind.css",
+        "assets/styles/content.css",
+        "assets/styles/components/pet.css",
+        "assets/styles/components/chat.css",
+        "assets/styles/components/faq.css",
+        "assets/styles/components/tags.css",
+        "assets/styles/components/session.css",
+        "assets/styles/components/modal.css",
+        "modules/pet/components/chat/ChatWindow/index.css"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "action": {
+    "default_popup": "modules/extension/popup/index.html",
+    "default_title": "伴侣控制面板"
+  },
+  "commands": {
+    "toggle-pet": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+P",
+        "mac": "Command+Shift+P"
+      },
+      "description": "切换宠物显示/隐藏"
+    },
+    "open-chat": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+X",
+        "mac": "Command+Shift+X"
+      },
+      "description": "打开聊天窗口"
+    }
+  },
+  "icons": {
+    "16": "assets/icons/icon16.png",
+    "32": "assets/icons/icon32.png",
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/icons/icon.png",
+        "assets/images/*/icon.png",
+        "assets/images/*/run/*.png",
+        "libs/mermaid.min.js",
+        "cdn/markdown/mermaid-page-load.js",
+        "cdn/markdown/mermaid-page-render.js",
+        "cdn/markdown/mermaid-page-preview.js",
+        "modules/pet/components/chat/ChatWindow/index.html",
+        "modules/pet/components/chat/ChatHeader/index.html",
+        "modules/pet/components/manager/SessionTagManager/index.html",
+        "modules/pet/components/chat/ChatInput/index.html",
+        "modules/pet/components/chat/ChatMessages/index.html",
+        "modules/pet/components/modal/TokenSettingsModal/index.html",
+        "modules/pet/components/modal/AiSettingsModal/index.html",
+        "modules/pet/components/editor/SessionInfoEditor/index.html",
+        "modules/pet/components/manager/FaqManager/index.html",
+        "modules/pet/components/manager/FaqTagManager/index.html"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

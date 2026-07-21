@@ -1,0 +1,81 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   rui CDN Theme -- Desert Rose
+   Mode: light
+   Generated from rui-ui theme palette by generate-themes.py.
+
+   Colors:
+     Background   #e8d5c4
+     Accent       #d4a5a5
+     Secondary    #b87d6d
+     Text         #5d2e46
+
+   Fonts:
+     Headers  FreeSans Bold
+     Body     FreeSans
+
+   This file is self-contained -- all values are static hex.
+   Load it on any page to set --rui-* design tokens on :root.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+    /* ── Surface ──────────────────────────────────────── */
+    --rui-bg-card:        #e8d5c4;
+    --rui-bg-flat:        #e4cdb9;
+    --rui-bg-raised:      #e9d8c8;
+    --rui-bg-overlay:     #ecddcf;
+
+    /* ── Text ─────────────────────────────────────────── */
+    --rui-text:           #5d2e46;
+    --rui-text-soft:      #805866;
+    --rui-text-muted:     #9c797f;
+    --rui-text-heading:   #5d2e46;
+
+    /* ── Accent ───────────────────────────────────────── */
+    --rui-accent:         #d4a5a5;
+    --rui-accent-rgb:     212, 165, 165;
+    --rui-accent-soft:    #e4ccbe;
+
+    /* ── Semantic ─────────────────────────────────────── */
+    --rui-pass:           #16a34a;
+    --rui-pass-rgb:       22, 163, 74;
+    --rui-fail:           #dc2626;
+    --rui-fail-rgb:       220, 38, 38;
+    --rui-warn:           #d97706;
+    --rui-warn-rgb:       217, 119, 6;
+    --rui-cyan:           #0891b2;
+    --rui-cyan-rgb:       8, 145, 178;
+    --rui-violet:         #7c3aed;
+    --rui-violet-rgb:     124, 58, 237;
+    --rui-blue:           #2563eb;
+    --rui-amber:          #d97706;
+    --rui-purple:         #7c3aed;
+    --rui-info:           #9c797f;
+
+    /* ── Grays ────────────────────────────────────────── */
+    --rui-gray-pale:      #805866;
+    --rui-gray-soft:      #9c797f;
+    --rui-gray:           #a98a8b;
+
+    /* ── Border & Shadow ──────────────────────────────── */
+    --rui-border-color:   #d7b698;
+    --rui-border:         1px solid #d7b698;
+    --rui-shadow:         0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    --rui-shadow-lg:      0 10px 25px rgba(0, 0, 0, 0.08);
+
+    /* ── Shape ────────────────────────────────────────── */
+    --rui-radius:         8px;
+    --rui-radius-sm:      6px;
+    --rui-radius-lg:      12px;
+    --rui-radius-full:    9999px;
+
+    /* ── Animation ────────────────────────────────────── */
+    --rui-ease-out:       cubic-bezier(0, 0, 0.2, 1);
+    --rui-ease-in:        cubic-bezier(0.4, 0, 1, 1);
+    --rui-duration-fast:  150ms;
+    --rui-duration-normal: 200ms;
+    --rui-duration-slow:  300ms;
+
+    /* ── Fonts ────────────────────────────────────────── */
+    --rui-font-sans:      'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
+    --rui-font-mono:      'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', 'Source Code Pro', monospace;
+}

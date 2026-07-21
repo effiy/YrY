@@ -1,0 +1,81 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   rui CDN Theme -- Midnight Galaxy
+   Mode: dark
+   Generated from rui-ui theme palette by generate-themes.py.
+
+   Colors:
+     Background   #2b1e3e
+     Accent       #4a4e8f
+     Secondary    #a490c2
+     Text         #e6e6fa
+
+   Fonts:
+     Headers  FreeSans Bold
+     Body     FreeSans
+
+   This file is self-contained -- all values are static hex.
+   Load it on any page to set --rui-* design tokens on :root.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+    /* ── Surface ──────────────────────────────────────── */
+    --rui-bg-card:        #2b1e3e;
+    --rui-bg-flat:        #211730;
+    --rui-bg-raised:      #392853;
+    --rui-bg-overlay:     #432f60;
+
+    /* ── Text ─────────────────────────────────────────── */
+    --rui-text:           #e6e6fa;
+    --rui-text-soft:      #aeaac2;
+    --rui-text-muted:     #88829c;
+    --rui-text-heading:   #e6e6fa;
+
+    /* ── Accent ───────────────────────────────────────── */
+    --rui-accent:         #4a4e8f;
+    --rui-accent-rgb:     74, 78, 143;
+    --rui-accent-soft:    #31274d;
+
+    /* ── Semantic ─────────────────────────────────────── */
+    --rui-pass:           #22c55e;
+    --rui-pass-rgb:       34, 197, 94;
+    --rui-fail:           #ef4444;
+    --rui-fail-rgb:       239, 68, 68;
+    --rui-warn:           #f59e0b;
+    --rui-warn-rgb:       245, 158, 11;
+    --rui-cyan:           #22d3ee;
+    --rui-cyan-rgb:       34, 211, 238;
+    --rui-violet:         #a78bfa;
+    --rui-violet-rgb:     167, 139, 250;
+    --rui-blue:           #3b82f6;
+    --rui-amber:          #f59e0b;
+    --rui-purple:         #a78bfa;
+    --rui-info:           #88829c;
+
+    /* ── Grays ────────────────────────────────────────── */
+    --rui-gray-pale:      #aeaac2;
+    --rui-gray-soft:      #88829c;
+    --rui-gray:           #6c6480;
+
+    /* ── Border & Shadow ──────────────────────────────── */
+    --rui-border-color:   #4f3772;
+    --rui-border:         1px solid #4f3772;
+    --rui-shadow:         0 1px 3px rgba(43,30,62, 0.4), 0 1px 2px rgba(43,30,62, 0.3);
+    --rui-shadow-lg:      0 10px 25px rgba(43,30,62, 0.5);
+
+    /* ── Shape ────────────────────────────────────────── */
+    --rui-radius:         8px;
+    --rui-radius-sm:      6px;
+    --rui-radius-lg:      12px;
+    --rui-radius-full:    9999px;
+
+    /* ── Animation ────────────────────────────────────── */
+    --rui-ease-out:       cubic-bezier(0, 0, 0.2, 1);
+    --rui-ease-in:        cubic-bezier(0.4, 0, 1, 1);
+    --rui-duration-fast:  150ms;
+    --rui-duration-normal: 200ms;
+    --rui-duration-slow:  300ms;
+
+    /* ── Fonts ────────────────────────────────────────── */
+    --rui-font-sans:      'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
+    --rui-font-mono:      'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', 'Source Code Pro', monospace;
+}
