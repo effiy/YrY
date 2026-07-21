@@ -77,7 +77,7 @@
 
         sections: function () {
             const L = this.CONFIG.labels || {};
-            return [
+            const base = [
                 {id: 'summary', label: L.sectionSummary || 'Summary'},
                 {id: 'size', label: L.sectionSize || 'Size'},
                 {id: 'largest', label: L.sectionLargest || 'Largest Files'},
@@ -86,6 +86,10 @@
                 {id: 'health', label: L.sectionHealth || 'Health'},
                 {id: 'self-improvement', label: L.selfImprovementLabel || 'Self-Improvement Analysis'},
             ];
+            if (this.data && this.data.thirdPartyLibraries && this.data.thirdPartyLibraries.length) {
+                base.push({ id: 'libraries', label: 'Libraries & Frameworks' });
+            }
+            return base;
         },
 
         alertCounts: function () {

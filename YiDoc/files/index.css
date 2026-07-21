@@ -1169,3 +1169,97 @@ section > h2[role="button"]:hover { color: var(--yry-accent, #3b82f6); }
 }
 #toc .toc-flag.flag-critical { background: var(--yry-critical, #dc2626); }
 #toc .toc-flag.flag-warn { background: var(--yry-warn, #d97706); }
+
+/* ── Third-Party Libraries & Frameworks ────────────────────────────────── */
+.section-subtitle {
+    margin: -8px 0 24px;
+    font-size: 12px;
+    color: var(--yry-fg-muted, #8b949e);
+}
+.lib-category {
+    margin-bottom: 24px;
+    padding: 16px;
+    background: var(--yry-bg-elev, #161b22);
+    border: 1px solid var(--yry-border, #30363d);
+    border-radius: var(--yry-radius, 8px);
+}
+.lib-category-head { margin-bottom: 16px; }
+.lib-category-title {
+    margin: 0 0 4px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--yry-fg, #e6e8eb);
+}
+.lib-category-desc {
+    margin: 0;
+    font-size: 12px;
+    color: var(--yry-fg-muted, #8b949e);
+    line-height: 1.5;
+}
+.lib-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 8px;
+}
+@media (max-width: 600px) { .lib-grid { grid-template-columns: 1fr; } }
+.lib-card {
+    display: flex; flex-direction: column; gap: 4px;
+    padding: 12px;
+    background: var(--yry-bg-sunken, #0c111b);
+    border: 1px solid var(--yry-border-light, #21262d);
+    border-radius: var(--yry-radius, 8px);
+    cursor: pointer;
+    transition: border-color .15s ease-out, background .15s ease-out,
+                transform .15s ease-out, box-shadow .15s ease-out;
+}
+.lib-card:hover {
+    border-color: var(--yry-accent, #3b82f6);
+    background: color-mix(in srgb, var(--yry-bg-elev, #161b22) 60%, var(--yry-bg-sunken, #0c111b));
+    transform: translateY(-1px);
+    box-shadow: 0 1px 3px rgba(0,0,0,.24);
+}
+.lib-card:focus-visible { border-color: var(--yry-accent, #3b82f6); outline: 2px solid var(--yry-accent, #3b82f6); outline-offset: 2px; }
+.lib-card-top {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px;
+}
+.lib-card-name {
+    font-family: var(--yry-font-mono, ui-monospace, monospace);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--yry-fg, #e6e8eb);
+    text-decoration: none;
+}
+.lib-card-name:hover { color: var(--yry-accent, #3b82f6); text-decoration: underline; }
+.lib-card:hover .lib-card-name { color: var(--yry-accent, #3b82f6); }
+.lib-card-version {
+    font-family: var(--yry-font-mono, ui-monospace, monospace);
+    font-size: 11px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--yry-ok, #16a34a) 15%, transparent);
+    color: var(--yry-ok, #16a34a);
+    flex-shrink: 0;
+}
+.lib-card-purpose {
+    margin: 0;
+    font-size: 12px;
+    color: var(--yry-fg-muted, #8b949e);
+    line-height: 1.5;
+    flex: 1;
+}
+.lib-card-link {
+    align-self: flex-end;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--yry-fg-subtle, #4a5062);
+    text-decoration: none;
+    transition: color .15s ease-out;
+}
+.lib-card-link:hover { color: var(--yry-accent, #3b82f6); text-decoration: underline; }
+.lib-card:hover .lib-card-link { color: var(--yry-accent, #3b82f6); }
+@media (prefers-reduced-motion: reduce) {
+    .lib-card { transition: none; }
+    .lib-card:hover { transform: none; }
+}
+@media print { .lib-grid, .lib-category { break-inside: avoid; } }

@@ -589,3 +589,102 @@ a.yry-tag-chip:hover { background: color-mix(in srgb, var(--yry-accent) 24%, tra
   .yry-doc .section-header { border-bottom-color: #1a6b3c; }
   .yry-doc .dashboard-shell { max-width: 100%; padding: 0; }
 }
+
+/* ── Third-Party Libraries & Frameworks ────────────────────────────────── */
+.dashboard-section .section-subtitle {
+    margin: -8px 0 24px;
+    font-size: 13px;
+    color: var(--yry-text-muted, #64748b);
+}
+.dashboard-section .lib-category {
+    margin-bottom: 24px;
+    padding: 20px;
+    background: var(--yry-bg-raised, #161b25);
+    border: var(--yry-border, 1px solid rgba(255,255,255,.08));
+    border-radius: 12px;
+}
+.dashboard-section .lib-category-head { margin-bottom: 16px; }
+.dashboard-section .lib-category-title {
+    margin: 0 0 4px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--yry-text, #F8FAFC);
+}
+.dashboard-section .lib-category-desc {
+    margin: 0;
+    font-size: 13px;
+    color: var(--yry-text-muted, #64748b);
+    line-height: 1.5;
+}
+.lib-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 10px;
+}
+@media (max-width: 600px) { .lib-grid { grid-template-columns: 1fr; } }
+.lib-card {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 14px;
+    background: var(--yry-bg-flat, #0c111b);
+    border: var(--yry-border, 1px solid rgba(255,255,255,.08));
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color .15s var(--yry-ease-out, ease-out),
+                background .15s var(--yry-ease-out, ease-out),
+                transform .15s var(--yry-ease-out, ease-out),
+                box-shadow .15s var(--yry-ease-out, ease-out);
+}
+.lib-card:hover {
+    border-color: var(--yry-accent, #22C55E);
+    background: color-mix(in srgb, var(--yry-bg-raised, #161b25) 60%, var(--yry-bg-flat, #0c111b));
+    transform: translateY(-1px);
+    box-shadow: var(--yry-shadow, 0 4px 20px rgba(0,0,0,.3));
+}
+.lib-card:focus-visible { border-color: var(--yry-accent, #22C55E); outline: 2px solid var(--yry-accent, #22C55E); outline-offset: 2px; }
+.lib-card-top {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px;
+}
+.lib-card-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--yry-text, #F8FAFC);
+    text-decoration: none;
+}
+.lib-card-name:hover { color: var(--yry-accent, #22C55E); text-decoration: underline; }
+.lib-card:hover .lib-card-name { color: var(--yry-accent, #22C55E); }
+.lib-card-version {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--yry-accent, #22C55E) 15%, transparent);
+    color: var(--yry-accent, #22C55E);
+    flex-shrink: 0;
+}
+.lib-card-purpose {
+    margin: 0;
+    font-size: 12px;
+    color: var(--yry-text-muted, #64748b);
+    line-height: 1.5;
+    flex: 1;
+}
+.lib-card-link {
+    align-self: flex-end;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--yry-text-muted, #64748b);
+    text-decoration: none;
+    transition: color .15s var(--yry-ease-out, ease-out);
+}
+.lib-card-link:hover { color: var(--yry-accent, #22C55E); text-decoration: underline; }
+.lib-card:hover .lib-card-link { color: var(--yry-accent, #22C55E); }
+@media (prefers-reduced-motion: reduce) {
+    .lib-card { transition: none; }
+    .lib-card:hover { transform: none; }
+}
+@media print {
+    .lib-card { background: #fff; border: 1px solid #ddd; box-shadow: none; break-inside: avoid; }
+    .lib-card-name { color: #1a1a2e; }
+    .lib-category { background: #fafafa; border-color: #ddd; }
+}

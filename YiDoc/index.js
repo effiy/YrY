@@ -42,7 +42,7 @@
         return {
           key: 'stories:' + st.title,
           icon: st.icon || '', iconTone: '',
-          name: (st.icon ? st.icon + ' ' : '') + st.title,
+          name: st.title,
           badge: st.badge || null,
           desc: st.description,
           tags: (st.sceneLinks || []).map(function (sl) {
@@ -100,6 +100,7 @@
           stats:            _resolveStats(config.stats),
           panelHub:         config.panelHub    || null,
           sections:         config.sections    || [],
+          thirdPartyLibraries: config.thirdPartyLibraries || [],
           footerLinks:      config.footerLinks || [],
           footerNote:       config.footerNote  || '',
           reportPanelOpen:  false,
@@ -169,6 +170,11 @@
           var self = this;
           if (animationFrameId) window.cancelAnimationFrame(animationFrameId);
           animationFrameId = window.requestAnimationFrame(function () { self.syncScrollState(); });
+        },
+
+        openLibUrl: function (url) {
+          if (!url) return;
+          window.open(url, '_blank', 'noopener,noreferrer');
         }
       },
 

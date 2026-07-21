@@ -85,115 +85,11 @@ window.HELP_CONFIG = {
     monthly: [],
   },
 
-  // ── §1 · 第三方依赖库 & 框架 ──────────────────────────
+  // ── §1 · 网站目录 & 场景 ─────────────────────────────
   sections: [
     {
-      id:    "section-dependencies",
-      badge: "1",
-      badgeTone: null,
-      title: "Third-Party Libraries & Frameworks",
-      meta:  "7 runtime · shared across 5 websites",
-      groups: [
-        {
-          id:    "deps-runtime",
-          kind:  "items",
-          icon:  "📦",
-          title: "Core Libraries (7)",
-          items: [
-            {
-              icon:        "B",
-              iconTone:    "is-module",
-              title:       "Bootstrap",
-              description: "Responsive CSS framework · <strong>v4.3.1 ~ v5.1.3</strong> across all sites",
-              meta:        "<span class=\"accent\">Runtime</span> · 5/5 sites"
-            },
-            {
-              icon:        "J",
-              iconTone:    "is-module",
-              title:       "jQuery",
-              description: "DOM manipulation library · <strong>used in 4/5 websites</strong> for interactivity",
-              meta:        "<span class=\"accent\">Runtime</span> · 4/5 sites"
-            },
-            {
-              icon:        "F",
-              iconTone:    "is-module",
-              title:       "Font Awesome",
-              description: "Icon font library · <strong>v4.7 ~ v6.x</strong> · used by DpMarket + News",
-              meta:        "<span class=\"accent\">Runtime</span> · 2/5 sites"
-            },
-            {
-              icon:        "P",
-              iconTone:    "is-module",
-              title:       "Popper.js",
-              description: "Positioning engine for tooltips & popovers · <strong>bundled with Bootstrap</strong>",
-              meta:        "<span class=\"accent\">Runtime</span> · Adminto"
-            },
-            {
-              icon:        "R",
-              iconTone:    "is-module",
-              title:       "RemixIcon",
-              description: "Open-source icon set · <strong>SVG + font formats</strong> · Adminto dashboard icons",
-              meta:        "<span class=\"accent\">Runtime</span> · Adminto"
-            },
-            {
-              icon:        "S",
-              iconTone:    "is-module",
-              title:       "SimpleBar",
-              description: "Custom scrollbar plugin · <strong>ESM + UMD</strong> · used in Adminto admin panel",
-              meta:        "<span class=\"accent\">Runtime</span> · Adminto"
-            },
-            {
-              icon:        "H",
-              iconTone:    "is-module",
-              title:       "SyntaxHighlighter",
-              description: "Code syntax highlighting · <strong>25+ language brushes</strong> · News documentation",
-              meta:        "<span class=\"accent\">Runtime</span> · News"
-            }
-          ]
-        },
-        {
-          id:    "deps-plugins",
-          kind:  "items",
-          icon:  "🔌",
-          title: "UI Plugins (4)",
-          items: [
-            {
-              icon:        "A",
-              iconTone:    "is-module",
-              title:       "AOS (Animate on Scroll)",
-              description: "Scroll-triggered CSS animations · <strong>fade/zoom/flip/slide</strong> via data attributes",
-              meta:        "<span class=\"accent\">Plugin</span> · Prompt"
-            },
-            {
-              icon:        "S",
-              iconTone:    "is-module",
-              title:       "Swiper",
-              description: "Modern touch slider · <strong>carousels & hero sliders</strong> · Prompt showcase pages",
-              meta:        "<span class=\"accent\">Plugin</span> · Prompt"
-            },
-            {
-              icon:        "P",
-              iconTone:    "is-module",
-              title:       "Jarallax",
-              description: "Parallax scrolling effect · <strong>smooth background parallax</strong> · Prompt demo pages",
-              meta:        "<span class=\"accent\">Plugin</span> · Prompt"
-            },
-            {
-              icon:        "C",
-              iconTone:    "is-module",
-              title:       "CountUp.js",
-              description: "Animated number counter · <strong>count-up animation</strong> · Prompt statistics sections",
-              meta:        "<span class=\"accent\">Plugin</span> · Prompt"
-            }
-          ]
-        }
-      ]
-    },
-
-    // ── §2 · 网站目录 & 场景 ─────────────────────────────
-    {
       id:    "section-stories",
-      badge: "2",
+      badge: "1",
       badgeTone: "is-secondary",
       title: "Website Catalog & Document Scenes",
       meta:  "5 websites · 31 HTML pages · 2 story directories",
@@ -243,10 +139,10 @@ window.HELP_CONFIG = {
       ]
     },
 
-    // ── §3 · 项目 yry-init 报告总览 ─────────────────────
+    // ── §2 · 项目 yry-init 报告总览 ─────────────────────
     {
       id:    "section-projects",
-      badge: "3",
+      badge: "2",
       badgeTone: null,
       title: "Project yry-init Reports",
       meta:  "6 projects · 68+ scenes · 500+ source files · 4 languages",
@@ -365,36 +261,21 @@ window.HELP_CONFIG = {
       ]
     },
 
-    // ── §4 · 主要网站模块 ────────────────────────────────
+    // ── §3 · 主要网站模块 ────────────────────────────────
     {
       id:    "section-source",
-      badge: "4",
+      badge: "3",
       badgeTone: null,
       title: "Website Template Collection",
-      meta:  "5 sites · 31 pages · 35 CSS · 62 JS · 41 fonts · 31 images",
+      meta:  "4 sites · 7 entries · verified links",
       groups: [
-        {
-          id:    "site-adminto",
-          kind:  "items",
-          icon:  "🖥",
-          title: "Adminto · Admin Dashboard (4.0 MB)",
-          items: [
-            { icon: "🏠", iconTone: "is-module", title: "index.html",          description: "Admin dashboard introduction · <strong>Bootstrap 5</strong>",       meta: "<span class=\"accent\">5 pages</span> · Websites/Adminto/" },
-            { icon: "⚙️", iconTone: "is-module", title: "changelog.html",      description: "Version changelog · <strong>release history</strong>",              meta: "<span class=\"accent\">Page</span> · Websites/Adminto/" },
-            { icon: "🎨", iconTone: "is-module", title: "customization.html",   description: "Customization guide · <strong>theme options</strong>",               meta: "<span class=\"accent\">Page</span> · Websites/Adminto/" },
-            { icon: "🌐", iconTone: "is-module", title: "rtl.html",             description: "RTL layout support · <strong>right-to-left</strong>",                meta: "<span class=\"accent\">Page</span> · Websites/Adminto/" },
-            { icon: "🔧", iconTone: "is-module", title: "setup.html",           description: "Setup guide · <strong>getting started</strong>",                     meta: "<span class=\"accent\">Page</span> · Websites/Adminto/" }
-          ]
-        },
         {
           id:    "site-dpmarket",
           kind:  "items",
           icon:  "🛒",
           title: "DpMarket · Digital Marketplace (3.8 MB)",
           items: [
-            { icon: "🏠", iconTone: "is-module", title: "index.html",          description: "Digital marketplace landing · <strong>Bootstrap + Font Awesome</strong>", meta: "<span class=\"accent\">1 page</span> · Websites/DpMarket/" },
-            { icon: "🎨", iconTone: "is-module", title: "style.css",            description: "Custom marketplace theme · <strong>responsive layout</strong>",      meta: "<span class=\"accent\">CSS</span> · Websites/DpMarket/css/" },
-            { icon: "⚡", iconTone: "is-module", title: "script.js",            description: "Main site logic · <strong>jQuery nav & scroll</strong>",             meta: "<span class=\"accent\">JS</span> · Websites/DpMarket/js/" }
+            { icon: "🏠", iconTone: "is-module", title: "index.html", description: "Digital marketplace landing · <strong>Bootstrap + Font Awesome</strong>", meta: "<span class=\"accent\">1 page</span> · Websites/DpMarket/", href: "../Websites/DpMarket/index.html", targetBlank: true }
           ]
         },
         {
@@ -403,9 +284,7 @@ window.HELP_CONFIG = {
           icon:  "💼",
           title: "Kasy · Business Landing (2.3 MB)",
           items: [
-            { icon: "🏠", iconTone: "is-module", title: "index.html",          description: "Multi-purpose landing page · <strong>Bootstrap 5.1.3</strong>",    meta: "<span class=\"accent\">1 page</span> · Websites/Kasy/" },
-            { icon: "🎨", iconTone: "is-module", title: "styles.css",           description: "Business theme styles · <strong>modern design</strong>",             meta: "<span class=\"accent\">CSS</span> · Websites/Kasy/css/" },
-            { icon: "📝", iconTone: "is-module", title: "prettify.js",          description: "Code syntax prettifier · <strong>code samples</strong>",             meta: "<span class=\"accent\">JS</span> · Websites/Kasy/js/" }
+            { icon: "🏠", iconTone: "is-module", title: "index.html", description: "Multi-purpose landing page · <strong>Bootstrap 5.1.3</strong>", meta: "<span class=\"accent\">1 page</span> · Websites/Kasy/", href: "../Websites/Kasy/index.html", targetBlank: true }
           ]
         },
         {
@@ -414,10 +293,9 @@ window.HELP_CONFIG = {
           icon:  "📰",
           title: "News · Magazine Template (6.6 MB)",
           items: [
-            { icon: "🏠", iconTone: "is-module", title: "index.html",          description: "News magazine layout · <strong>Font Awesome 6 + Bootstrap</strong>", meta: "<span class=\"accent\">1 page</span> · Websites/News/" },
-            { icon: "🎨", iconTone: "is-module", title: "main.css",             description: "Magazine theme · <strong>responsive grid</strong>",                  meta: "<span class=\"accent\">CSS</span> · Websites/News/assets/css/" },
-            { icon: "💻", iconTone: "is-module", title: "SyntaxHighlighter",    description: "Code highlighting library · <strong>25+ language brushes</strong>",   meta: "<span class=\"accent\">Plugin</span> · Websites/News/assets/" },
-            { icon: "⚡", iconTone: "is-module", title: "main.js",              description: "Magazine interactivity · <strong>jQuery + Bootstrap bundle</strong>",meta: "<span class=\"accent\">JS</span> · Websites/News/assets/js/" }
+            { icon: "🏠", iconTone: "is-module", title: "index.html",          description: "News magazine layout · <strong>Font Awesome 6 + Bootstrap</strong>", meta: "<span class=\"accent\">1 page</span> · Websites/News/", href: "../Websites/News/index.html", targetBlank: true },
+            { icon: "💻", iconTone: "is-module", title: "SyntaxHighlighter",    description: "Code highlighting library · <strong>25+ language brushes</strong>",   meta: "<span class=\"accent\">Plugin</span> · Websites/News/assets/", href: "../Websites/News/assets/", targetBlank: true },
+            { icon: "⚡", iconTone: "is-module", title: "main.js",              description: "Magazine interactivity · <strong>jQuery + Bootstrap bundle</strong>",meta: "<span class=\"accent\">JS</span> · Websites/News/assets/js/", href: "../Websites/News/assets/js/main.js", targetBlank: true }
           ]
         },
         {
@@ -426,16 +304,232 @@ window.HELP_CONFIG = {
           icon:  "🎯",
           title: "Prompt · UI Components Showcase (1.3 MB)",
           items: [
-            { icon: "🏠", iconTone: "is-module", title: "index.html",          description: "Prompt landing page · <strong>Bootstrap 5.1.3</strong> · entry point", meta: "<span class=\"accent\">22 pages</span> · Websites/Prompt/" },
-            { icon: "🧩", iconTone: "is-module", title: "bootstrap.html",       description: "Bootstrap components reference · <strong>core grid + utilities</strong>", meta: "<span class=\"accent\">Doc</span> · Websites/Prompt/" },
-            { icon: "✨", iconTone: "is-module", title: "custom-heros.html",    description: "Hero section variations · <strong>AOS animations</strong>",         meta: "<span class=\"accent\">Demo</span> · Websites/Prompt/" },
-            { icon: "🎠", iconTone: "is-module", title: "custom-swiper.html",   description: "Swiper carousel demos · <strong>touch slider</strong>",             meta: "<span class=\"accent\">Demo</span> · Websites/Prompt/" },
-            { icon: "🖼", iconTone: "is-module", title: "custom-gallery.html",  description: "Image gallery demos · <strong>lightbox plugin</strong>",             meta: "<span class=\"accent\">Demo</span> · Websites/Prompt/" },
-            { icon: "🚀", iconTone: "is-module", title: "quick-start.html",     description: "Quick start guide · <strong>build & compile steps</strong>",         meta: "<span class=\"accent\">Doc</span> · Websites/Prompt/" }
+            { icon: "🏠", iconTone: "is-module", title: "index.html", description: "Prompt landing page · <strong>Bootstrap 5.1.3</strong> · entry point", meta: "<span class=\"accent\">22 pages</span> · Websites/Prompt/", href: "../Websites/Prompt/index.html", targetBlank: true }
+          ]
+        }
+      ]
+    },
+    // ── §4 · 共享 CDN 资源体系 (YiPet/cdn/) ─────────────────
+    {
+      id:    "section-cdn",
+      badge: "4",
+      badgeTone: null,
+      title: "Shared CDN Resource System",
+      meta:  "52 components · 49 vendors · 12 util modules · 3 render engines · 4 style layers",
+      groups: [
+        {
+          id:    "cdn-components",
+          kind:  "items",
+          icon:  "🧩",
+          title: "Component System (52 Web Components)",
+          items: [
+            { icon: "🔘", iconTone: "is-module", title: "YrYButton · YrYIconButton", description: "Primary & icon button components — <strong>variant, size, disabled states</strong> · click/keyboard handlers", meta: "<span class=\"accent\">buttons/</span> · 2 packages" },
+            { icon: "🃏", iconTone: "is-module", title: "YrYSceneCard",            description: "Scene navigation card — <strong>icon, title, description, badge, tag links</strong> · hover animation", meta: "<span class=\"accent\">cards/</span> · 1 package" },
+            { icon: "📊", iconTone: "is-module", title: "YrYStatsGrid",            description: "KPI statistics grid — <strong>responsive auto-fill</strong> · value + label + subline · color modifiers", meta: "<span class=\"accent\">data-display/</span> · 1 package" },
+            { icon: "📭", iconTone: "is-module", title: "YrYEmptyState · YrYErrorState", description: "Empty & error placeholder states — <strong>icon + title + message + action slot</strong>", meta: "<span class=\"accent\">feedback/</span> · 2 packages" },
+            { icon: "🔔", iconTone: "is-module", title: "YrYToast",                description: "Toast notification system — <strong>success/warning/error/info</strong> · auto-dismiss · stacking", meta: "<span class=\"accent\">feedback/</span> · 1 package" },
+            { icon: "📝", iconTone: "is-module", title: "YrYInput · Select · Textarea", description: "Form controls — <strong>validation, placeholder, disabled, readonly</strong> · consistent sizing", meta: "<span class=\"accent\">forms/</span> · 3 packages" },
+            { icon: "⭐", iconTone: "is-module", title: "YrYIcon · iconMap",        description: "SVG icon renderer + icon registry — <strong>size, color variants</strong> · centralized icon definitions", meta: "<span class=\"accent\">icons/</span> · 2 files" },
+            { icon: "🏷", iconTone: "is-module", title: "YrYBadge · ProgressBar · ScoreBar", description: "Status indicators — <strong>inline badge, horizontal progress, graded score bar</strong> · tone variants", meta: "<span class=\"accent\">indicators/</span> · 3 packages" },
+            { icon: "⏳", iconTone: "is-module", title: "YrYLoading",               description: "Loading spinner/skeleton — <strong>size + variant</strong> · inline or full-page modes", meta: "<span class=\"accent\">loaders/</span> · 1 package" },
+            { icon: "🪟", iconTone: "is-module", title: "YrYModal",                 description: "Modal dialog — <strong>title + body + footer slots</strong> · backdrop + Escape close · focus trap", meta: "<span class=\"accent\">modals/</span> · 1 package" },
+            { icon: "🧭", iconTone: "is-module", title: "YrYBackTop · Breadcrumb · CrossNav", description: "Navigation aids — <strong>back-to-top button, breadcrumb trail, cross-panel navigator</strong>", meta: "<span class=\"accent\">navigation/</span> · 3 packages" },
+            { icon: "🎛", iconTone: "is-module", title: "YrYPanelHub",              description: "Cross-panel command hub — <strong>icon buttons + flow description</strong> · multi-panel routing", meta: "<span class=\"accent\">panels/</span> · 1 package" },
+            { icon: "🏷️", iconTone: "is-module", title: "YrYTag · YrYTagChip",     description: "Tag & chip components — <strong>clickable chips + non-interactive tags</strong> · tone/color variants", meta: "<span class=\"accent\">tags/</span> · 2 packages" },
+            { icon: "🧬", iconTone: "is-module", title: "YrYLoader (Core)",         description: "Dynamic component loader — <strong>import + register + mount</strong> Vue 3 components from CDN paths", meta: "<span class=\"accent\">core/</span> · 1 package" },
+            { icon: "📑", iconTone: "is-module", title: "HeaderActions",            description: "Page header action bar — <strong>export, refresh, filter buttons</strong> · responsive layout", meta: "<span class=\"accent\">business/</span> · 1 package" },
+            { icon: "📖", iconTone: "is-module", title: "MarkdownView",             description: "Markdown content renderer — <strong>GFM + frontmatter + TOC</strong> · plugin-driven architecture", meta: "<span class=\"accent\">business/</span> · 1 package" },
+            { icon: "🔍", iconTone: "is-module", title: "SearchHeader",             description: "Global search bar — <strong>input + filters + suggestions</strong> · keyboard shortcut trigger", meta: "<span class=\"accent\">business/</span> · 1 package" },
+            { icon: "💀", iconTone: "is-module", title: "SkeletonLoader",           description: "Content placeholder skeleton — <strong>text, card, list shapes</strong> · shimmer animation", meta: "<span class=\"accent\">business/</span> · 1 package" },
+            { icon: "📱", iconTone: "is-module", title: "h5/ · 10 Mobile Components", description: "Mobile-optimized widgets — <strong>Chat, Content, NewsList, Search, SessionList, VirtualList, BaseList, Preview, UI, SwipeScrollController</strong>", meta: "<span class=\"accent\">business/h5/</span> · 10 packages" },
+            { icon: "📋", iconTone: "is-module", title: "yry-report-api-* (7)",     description: "API report widgets — <strong>endpoints, health, methods, patterns, security, semantics, summary</strong> · shared across YiDoc/apis/", meta: "<span class=\"accent\">reports/apis/</span> · 7 packages" },
+            { icon: "📁", iconTone: "is-module", title: "yry-report-* (7)",         description: "File analysis widgets — <strong>summary, size, largest, coupling, risk, health, self-improvement</strong> · shared across YiDoc/files/", meta: "<span class=\"accent\">reports/files/</span> · 7 packages" },
+            { icon: "📐", iconTone: "is-module", title: "yry-bytes · yry-sortable", description: "Report utility libs — <strong>byte formatting + sortable table</strong> · shared across all report components", meta: "<span class=\"accent\">reports/lib/</span> · 2 files" },
+            { icon: "🤖", iconTone: "is-module", title: "aicr/ · AI Code Review (9)", description: "AI code review suite — <strong>ModelSelector, CodeArea, Header, Modals, Page, Sidebar, codeView, fileTree (8 modules), keyboardShortcuts, sessionListTags</strong>", meta: "<span class=\"accent\">views/aicr/</span> · 10 packages" },
+            { icon: "🧠", iconTone: "is-module", title: "claude/ · Claude Panels (3)", description: "Claude project dashboard — <strong>DetailCard, PanelPage, ProjectCard</strong> · session & project views", meta: "<span class=\"accent\">views/claude/</span> · 3 packages" },
+            { icon: "📖", iconTone: "is-module", title: "story/ · Story Manager (7)", description: "Story/dependency manager — <strong>DepEditor, KnowledgeGraphViewer, StoryCard, StoryDetail, StoryList, StoryPanel, StatusBadge</strong>", meta: "<span class=\"accent\">views/story/</span> · 7 packages" },
+          ]
+        },
+        {
+          id:    "cdn-vendors",
+          kind:  "items",
+          icon:  "📦",
+          title: "Vendor Libraries (49 CDN Packages)",
+          items: [
+            { icon: "🎨", iconTone: "is-module", title: "UI Frameworks & CSS",    description: "<strong>Bootstrap 5.2.3</strong>, Animate.css 3.5.1, SimpleBar 5.1.0", meta: "<span class=\"accent\">3 packages</span> · bootstrap + animate + simplebar" },
+            { icon: "📐", iconTone: "is-module", title: "Icons & Fonts",          description: "<strong>Font Awesome 4.7.0</strong>, Feather Icons, RemixIcon, Flaticon, Material Design Icons", meta: "<span class=\"accent\">5 packages</span> · 4 icon sets + 1 icon font" },
+            { icon: "📈", iconTone: "is-module", title: "Charts & Visualization", description: "<strong>ApexCharts 3.46.0</strong>, ProgressBar.js 1.1.0", meta: "<span class=\"accent\">2 packages</span> · charts + progress" },
+            { icon: "🎬", iconTone: "is-module", title: "Animation & Effects",    description: "<strong>anime.js 3.0.0</strong>, GSAP/TweenMax, AOS, WOW.js 1.1.3, Typed.js 2.0.11, CountUp, Jarallax", meta: "<span class=\"accent\">7 packages</span> · anime + gsap + aos + wow + typed" },
+            { icon: "🖼", iconTone: "is-module", title: "Media & Lightbox",       description: "<strong>Fancybox 3.5.7</strong>, Magnific Popup 1.1.0, Venobox 1.7.3, YouTube Popup 1.0.1", meta: "<span class=\"accent\">4 packages</span> · fancybox + magnific + venobox + youtube" },
+            { icon: "📱", iconTone: "is-module", title: "Sliders & Carousels",    description: "<strong>Swiper 7.0.3</strong>, Slick Carousel 1.8.1, Owl Carousel 2.2.1", meta: "<span class=\"accent\">3 packages</span> · swiper + slick + owl" },
+            { icon: "📄", iconTone: "is-module", title: "Document & Export",      description: "<strong>html2canvas 1.4.1</strong>, jsPDF 2.5.2, SheetJS/xlsx 0.20.3", meta: "<span class=\"accent\">3 packages</span> · screenshot + pdf + excel" },
+            { icon: "🗺", iconTone: "is-module", title: "Layout & Navigation",    description: "<strong>Isotope 3.0.6</strong> (filter/sort layout), Smooth Scrollbar, Perfect Scrollbar 1.5.0, Overscroll, Waypoints 4.0.0, SlickNav 1.0.10, Sticky Kit 1.1.2, Theia Sticky Sidebar 1.7.0, ScrollUp 2.4.1, Swup (page transitions)", meta: "<span class=\"accent\">10 packages</span> · isotope + scrolls + sticky + nav" },
+            { icon: "⚙️", iconTone: "is-module", title: "Core Libraries",        description: "<strong>jQuery 3.7.1</strong>, Popper.js, Modernizr 3.6.0, Day.js 1.11.21, React 15.6.1, Leaflet 1.1.1, Countdown.js, md5.js", meta: "<span class=\"accent\">8 packages</span> · jquery + popper + modernizr + dayjs + react + leaflet" },
+            { icon: "📝", iconTone: "is-module", title: "Markdown & Rendering",   description: "<strong>marked.min.js</strong> (GFM parser), turndown.js (HTML→MD), mermaid.min.js (diagrams)", meta: "<span class=\"accent\">3 packages</span> · marked + turndown + mermaid" },
+          ]
+        },
+        {
+          id:    "cdn-utils",
+          kind:  "items",
+          icon:  "🔧",
+          title: "Utility Modules (12 Categories · 50+ Modules)",
+          items: [
+            { icon: "🌐", iconTone: "is-module", title: "browser/",          description: "DOM helpers · event delegation · browser detection", meta: "<span class=\"accent\">3 modules</span> · dom + events + index" },
+            { icon: "🏗", iconTone: "is-module", title: "core/",             description: "API client · animation · event bus · HTTP · i18n · logging · storage · validation · performance", meta: "<span class=\"accent\">16 modules</span> · api + eventBus + http + i18n + storage" },
+            { icon: "🔌", iconTone: "is-module", title: "core-ext/",         description: "Extended API (request/token/error) · DOM helpers · error handler · session manager · image resource · notification · time · storage · module loader", meta: "<span class=\"accent\">8 sub-categories</span> · api + dom + error + session + ui" },
+            { icon: "📊", iconTone: "is-module", title: "data/",             description: "Data normalization · domain mapping · data utilities", meta: "<span class=\"accent\">2 modules</span> · dataUtils + domain" },
+            { icon: "📱", iconTone: "is-module", title: "h5/",               description: "Mobile scroll · viewport · markdown · template · config · messaging", meta: "<span class=\"accent\">8 modules</span> · scroll + viewport + markdown + msg" },
+            { icon: "💾", iconTone: "is-module", title: "io/",               description: "File export utilities · data serialization", meta: "<span class=\"accent\">1 module</span> · exportUtils" },
+            { icon: "🎨", iconTone: "is-module", title: "render/",           description: "Template rendering engine", meta: "<span class=\"accent\">1 module</span> · index" },
+            { icon: "🕐", iconTone: "is-module", title: "time/",             description: "Date formatting · time parameters · selectors", meta: "<span class=\"accent\">4 modules</span> · date + timeParams + timeSelectors" },
+            { icon: "💬", iconTone: "is-module", title: "ui/",               description: "Dialog · loading · message · toast · tooltip portal · template", meta: "<span class=\"accent\">6 modules</span> · dialog + loading + message + toast" },
+            { icon: "👁", iconTone: "is-module", title: "view/",             description: "Base view class · component loader · registry · lifecycle management", meta: "<span class=\"accent\">3 modules</span> · baseView + componentLoader + registry" },
+            { icon: "📐", iconTone: "is-module", title: "yidoc/",            description: "Back-to-top button · breadcrumb navigation", meta: "<span class=\"accent\">2 modules</span> · back-top + breadcrumb" },
+            { icon: "🧬", iconTone: "is-module", title: "loader.js",         description: "Component auto-loader — dynamic <strong>Vue 3 component registration</strong> from CDN", meta: "<span class=\"accent\">Entry</span> · YiPet/cdn/loader.js" },
+          ]
+        },
+        {
+          id:    "cdn-engines",
+          kind:  "items",
+          icon:  "⚡",
+          title: "Render Engines & Style System",
+          items: [
+            { icon: "📐", iconTone: "is-module", title: "diagram/",           description: "SVG diagram engine — <strong>9×7 grid layout + orthogonal Manhattan routing</strong> · 23 professional components · dynamic outermost wireframe · shared across all deps/ reports", meta: "<span class=\"accent\">4 files</span> · diagram.js + index.js + index.css + primitives.js" },
+            { icon: "📝", iconTone: "is-module", title: "markdown/",          description: "Plugin-based Markdown renderer — <strong>9 plugins</strong> (Accordion, Containers, Frontmatter, InternalLink, Mermaid, Nested, Sanitize, TableCell, TOC) · PluginSystem + MarkdownRenderer core", meta: "<span class=\"accent\">12 files</span> · 9 plugins + 3 core modules" },
+            { icon: "🧜", iconTone: "is-module", title: "mermaid/",           description: "Mermaid diagram renderer — <strong>5 plugins</strong> (AIFix, Clipboard, Download, Fullscreen, Toolbar) · dark theme config · interactive toolbar", meta: "<span class=\"accent\">7 files</span> · 5 plugins + css + config + renderer" },
+            { icon: "🎨", iconTone: "is-module", title: "Style System",       description: "4-layer CSS architecture — <strong>base/ (animations + theme + tokens)</strong> · h5/ (base reset + components + layout) · yidoc/ (semantic.css) · content.css · popup.css", meta: "<span class=\"accent\">styles/</span> · 4 layer groups" },
+            { icon: "✍️", iconTone: "is-module", title: "RemixIcon Fonts",    description: "Open-source icon font — <strong>woff2 · woff · ttf · svg</strong> · symbol sprite support · 2200+ icons", meta: "<span class=\"accent\">fonts/remixicon/</span> · 5 formats" },
           ]
         }
       ]
     }
+  ],
+
+  thirdPartyLibraries: [
+    {
+      category: 'Python Backend (YiAi)',
+      description: 'Async API server — FastAPI ecosystem with MongoDB, scheduling, LLM gateway, and RSS ingestion',
+      items: [
+        { name: 'FastAPI',          purpose: 'High-performance async web framework with auto-generated OpenAPI docs', url: 'https://fastapi.tiangolo.com/', version: '0.104+' },
+        { name: 'Uvicorn',          purpose: 'ASGI server — production-grade serving for FastAPI apps', url: 'https://www.uvicorn.org/', version: '0.24+' },
+        { name: 'Pydantic',         purpose: 'Data validation and settings management via Python type annotations', url: 'https://docs.pydantic.dev/', version: '2.x' },
+        { name: 'Motor',            purpose: 'Async MongoDB driver — non-blocking database access for FastAPI handlers', url: 'https://motor.readthedocs.io/', version: '3.3+' },
+        { name: 'PyMongo',          purpose: 'Synchronous MongoDB driver — underlying connection layer for Motor', url: 'https://pymongo.readthedocs.io/', version: '4.6+' },
+        { name: 'aiohttp',          purpose: 'Async HTTP client/server — RSS fetching and external API calls', url: 'https://docs.aiohttp.org/', version: '3.9+' },
+        { name: 'APScheduler',      purpose: 'Advanced job scheduler — cron and interval-based RSS refresh tasks', url: 'https://apscheduler.readthedocs.io/', version: '3.10+' },
+        { name: 'feedparser',       purpose: 'Universal RSS/Atom feed parser', url: 'https://feedparser.readthedocs.io/', version: '6.0+' },
+        { name: 'Ollama (Python)',  purpose: 'Local LLM client — Ollama API integration for AI features', url: 'https://github.com/ollama/ollama-python', version: '0.1+' },
+        { name: 'oss2',             purpose: 'Alibaba Cloud OSS SDK — object storage for file uploads', url: 'https://www.alibabacloud.com/help/en/oss/', version: '2.18+' },
+        { name: 'Typer',            purpose: 'CLI application framework — type-hint-driven command-line interfaces', url: 'https://typer.tiangolo.com/', version: '0.9+' },
+        { name: 'python-multipart', purpose: 'Multipart form-data parsing for file upload endpoints', url: 'https://github.com/Kludex/python-multipart', version: '-' },
+        { name: 'aiofiles',         purpose: 'Async file I/O — non-blocking file read/write operations', url: 'https://github.com/Tinche/aiofiles', version: '23.2+' },
+        { name: 'tenacity',         purpose: 'Retry/backoff decorators — resilient external API calls', url: 'https://tenacity.readthedocs.io/', version: '8.2+' },
+        { name: 'PyYAML',           purpose: 'YAML configuration parsing — config.yaml application settings', url: 'https://pyyaml.org/', version: '6.0+' },
+      ],
+    },
+    {
+      category: 'Python ML / Video (YiViY)',
+      description: 'Video translation & dubbing platform — speech recognition, diarization, TTS, and LLM orchestration',
+      items: [
+        { name: 'Streamlit',                purpose: 'Web UI framework — interactive dashboards with zero frontend code', url: 'https://streamlit.io/', version: '1.49' },
+        { name: 'HuggingFace Transformers', purpose: 'Pretrained NLP & speech models — WAV2VEC2, Whisper pipelines', url: 'https://huggingface.co/docs/transformers', version: '4.48+' },
+        { name: 'WhisperX',                 purpose: 'Word-level timestamped speech recognition with forced alignment', url: 'https://github.com/m-bain/whisperX', version: '3.8+' },
+        { name: 'PyAnnote Audio',           purpose: 'Speaker diarization — multi-speaker separation and labeling', url: 'https://github.com/pyannote/pyannote-audio', version: '4.0+' },
+        { name: 'PyTorch Lightning',        purpose: 'PyTorch training framework wrapper — streamlined ML pipelines', url: 'https://lightning.ai/docs/pytorch', version: '2.6' },
+        { name: 'MoviePy',                  purpose: 'Video editing — cutting, compositing, and subtitle overlay', url: 'https://zulko.github.io/moviepy/', version: '1.0' },
+        { name: 'OpenAI (Python)',          purpose: 'OpenAI API client — GPT translation and TTS synthesis', url: 'https://github.com/openai/openai-python', version: '1.55+' },
+        { name: 'CTranslate2',              purpose: 'Fast inference engine — optimized transformer model execution on GPU', url: 'https://github.com/OpenNMT/CTranslate2', version: '4.5+' },
+        { name: 'spaCy',                    purpose: 'NLP library — sentence splitting and linguistic analysis', url: 'https://spacy.io/', version: '3.8' },
+        { name: 'librosa',                  purpose: 'Audio analysis — feature extraction for speech processing', url: 'https://librosa.org/', version: '0.11' },
+        { name: 'OpenCV',                   purpose: 'Computer vision — video frame extraction and processing', url: 'https://opencv.org/', version: '4.11' },
+        { name: 'yt-dlp',                   purpose: 'Video downloading — YouTube and 1000+ site support', url: 'https://github.com/yt-dlp/yt-dlp', version: '-' },
+        { name: 'Replicate',                purpose: 'ML model API client — cloud-hosted model inference', url: 'https://replicate.com/', version: '0.33' },
+        { name: 'pandas',                   purpose: 'Data analysis — subtitle DataFrame manipulation', url: 'https://pandas.pydata.org/', version: '2.2+' },
+      ],
+    },
+    {
+      category: 'Desktop App · Frontend (YiPot)',
+      description: 'Tauri-based cross-platform desktop app — React UI with 39 translation/OCR service integrations',
+      items: [
+        { name: 'React',            purpose: 'Declarative UI library — component-based frontend architecture', url: 'https://react.dev/', version: '18.3' },
+        { name: 'NextUI',           purpose: 'React UI component library — accessible design system with dark mode', url: 'https://nextui.org/', version: '2.4' },
+        { name: 'Tailwind CSS',     purpose: 'Utility-first CSS framework — rapid styling without context switching', url: 'https://tailwindcss.com/', version: '3.4' },
+        { name: 'React Router',     purpose: 'Client-side routing — declarative navigation for single-page app', url: 'https://reactrouter.com/', version: '6.27' },
+        { name: 'Jotai',            purpose: 'Atomic state management — bottom-up reactive state for React', url: 'https://jotai.org/', version: '2.10' },
+        { name: 'Framer Motion',    purpose: 'Declarative animation library — gesture-driven UI transitions', url: 'https://www.framer.com/motion/', version: '11.11' },
+        { name: 'i18next',          purpose: 'Internationalization framework — multi-language translation UI', url: 'https://www.i18next.com/', version: '23.16' },
+        { name: 'Tesseract.js',     purpose: 'Browser-based OCR engine — in-app image text recognition', url: 'https://tesseract.projectnaptha.com/', version: '5.1' },
+        { name: 'crypto-js',        purpose: 'Cryptographic hashing — HMAC-SHA256 sign for 9 API services', url: 'https://github.com/brix/crypto-js', version: '4.2' },
+        { name: 'jose',             purpose: 'JWT/JWS/JWE/JWK implementation — token signing and verification', url: 'https://github.com/panva/jose', version: '5.9' },
+        { name: 'React Markdown',   purpose: 'Markdown rendering — translation result display in rich text', url: 'https://github.com/remarkjs/react-markdown', version: '9.0' },
+      ],
+    },
+    {
+      category: 'Desktop App · Backend (YiPot · Rust)',
+      description: 'Tauri native shell — HTTP server, screen capture, clipboard, language detection, and system integration',
+      items: [
+        { name: 'Tauri (Rust)',     purpose: 'Desktop app framework — native window, tray, menu, and filesystem APIs', url: 'https://tauri.app/', version: '1.8' },
+        { name: 'Reqwest',          purpose: 'Ergonomic HTTP client — translation API calls with connection pooling', url: 'https://docs.rs/reqwest/', version: '0.12' },
+        { name: 'Serde',            purpose: 'Serialization framework — JSON request/response handling', url: 'https://serde.rs/', version: '1.0' },
+        { name: 'tiny_http',        purpose: 'Embedded HTTP server — local loopback OCR/translate endpoint', url: 'https://docs.rs/tiny_http/', version: '0.12' },
+        { name: 'screenshots',      purpose: 'Screen capture — screenshot-based OCR for any application', url: 'https://docs.rs/screenshots/', version: '0.7' },
+        { name: 'arboard',          purpose: 'Clipboard access — cross-platform copy/paste integration', url: 'https://docs.rs/arboard/', version: '3.4' },
+        { name: 'Lingua',           purpose: 'Language detection — 22-language identification without external API', url: 'https://github.com/pemistahl/lingua-rs', version: '1.6' },
+        { name: 'image',            purpose: 'Image processing — format conversion and manipulation', url: 'https://docs.rs/image/', version: '0.25' },
+        { name: 'base64',           purpose: 'Base64 encoding — image data serialization for API requests', url: 'https://docs.rs/base64/', version: '0.22' },
+      ],
+    },
+    {
+      category: 'Frontend Dashboards (YiDoc · Websites/Flow)',
+      description: 'Vue 3 ecosystem — interactive workflow editors, API reports, and enterprise admin panels',
+      items: [
+        { name: 'Vue 3',            purpose: 'Progressive JavaScript framework — Composition API with reactive data binding', url: 'https://vuejs.org/', version: '3.4' },
+        { name: 'LogicFlow',        purpose: 'Workflow diagram engine — visual process designer with minimap extension', url: 'https://site.logic-flow.cn/', version: '1.2' },
+        { name: 'Ant Design Vue',   purpose: 'Enterprise UI component library — 60+ components for admin panels', url: 'https://antdv.com/', version: '4.x' },
+        { name: 'Element Plus',     purpose: 'Vue 3 UI component library — Material Design inspired widgets', url: 'https://element-plus.org/', version: '2.7' },
+        { name: 'Vite',             purpose: 'Next-gen build tool — instant HMR and optimized production builds', url: 'https://vitejs.dev/', version: '5.3' },
+      ],
+    },
+    {
+      category: 'Websites & Templates',
+      description: 'Static site UI libraries — Admin dashboards, landing pages, portfolios, and blog templates',
+      items: [
+        { name: 'Bootstrap',        purpose: 'Responsive CSS framework — grid system and prebuilt components (v4/v5)', url: 'https://getbootstrap.com/', version: '5.2' },
+        { name: 'ApexCharts',       purpose: 'Interactive charting — 16 chart types for data visualization', url: 'https://apexcharts.com/', version: '3.27' },
+        { name: 'Apache ECharts',   purpose: 'Declarative visualization — highly customizable interactive charts', url: 'https://echarts.apache.org/', version: '5.4' },
+        { name: 'Swiper',           purpose: 'Touch slider/carousel — hardware-accelerated transitions', url: 'https://swiperjs.com/', version: '8.4' },
+        { name: 'AOS',              purpose: 'Animate on Scroll — CSS-driven scroll reveal animations', url: 'https://michalsnik.github.io/aos/', version: '2.x' },
+        { name: 'FullCalendar',     purpose: 'Calendar & event management — drag-and-drop scheduling', url: 'https://fullcalendar.io/', version: '6.1' },
+        { name: 'Quill',            purpose: 'Rich text editor — WYSIWYG editing with custom formats', url: 'https://quilljs.com/', version: '1.3' },
+        { name: 'Fancybox',         purpose: 'Lightbox gallery — image, video, and iframe modal display', url: 'https://fancyapps.com/fancybox/', version: '3.5' },
+        { name: 'anime.js',         purpose: 'Animation engine — lightweight JavaScript animation toolkit', url: 'https://animejs.com/', version: '3.0' },
+        { name: 'GSAP',             purpose: 'Professional animation — high-performance SVG and DOM animations', url: 'https://greensock.com/gsap/', version: '-' },
+      ],
+    },
+    {
+      category: 'Browser Extension (YiPet)',
+      description: 'Chrome extension — markdown conversion, mind map rendering, PDF generation, and data export',
+      items: [
+        { name: 'Mermaid',          purpose: 'Diagram & mind map rendering — flowchart, sequence, and gantt charts', url: 'https://mermaid.js.org/', version: '-' },
+        { name: 'Marked',           purpose: 'Markdown parser — fast .md to HTML conversion with GFM support', url: 'https://marked.js.org/', version: '-' },
+        { name: 'Turndown',         purpose: 'HTML to Markdown converter — DOM-based rich text extraction', url: 'https://github.com/mixmark-io/turndown', version: '-' },
+        { name: 'html2canvas',      purpose: 'HTML screenshots — render DOM elements to canvas images', url: 'https://html2canvas.hertzen.com/', version: '1.4' },
+        { name: 'jsPDF',            purpose: 'PDF generation — client-side PDF creation from HTML content', url: 'https://github.com/parallax/jsPDF', version: '2.5' },
+        { name: 'SheetJS',          purpose: 'Excel read/write — xlsx export for data tables and reports', url: 'https://sheetjs.com/', version: '0.20' },
+        { name: 'Leaflet',          purpose: 'Interactive maps — lightweight open-source mapping library', url: 'https://leafletjs.com/', version: '1.1' },
+      ],
+    },
+    {
+      category: 'Infrastructure & External Services',
+      description: 'Cross-cutting dependencies — databases, storage, LLM serving, and containerization',
+      items: [
+        { name: 'MongoDB',          purpose: 'Document database — primary data store for YiAi API server', url: 'https://www.mongodb.com/docs/', version: '-' },
+        { name: 'Ollama',           purpose: 'Local LLM serving — self-hosted GPT, embedding, and vision models', url: 'https://ollama.com/', version: '-' },
+        { name: 'Docker',           purpose: 'Container platform — GPU-accelerated YiviY deployment with CUDA 12.4', url: 'https://docs.docker.com/', version: '-' },
+        { name: 'Alibaba Cloud OSS',purpose: 'Object storage — image upload and static asset hosting', url: 'https://www.alibabacloud.com/help/en/oss/', version: '-' },
+        { name: 'Nginx',            purpose: 'Reverse proxy — SSL termination and static asset serving', url: 'https://nginx.org/en/docs/', version: '-' },
+      ],
+    },
   ],
 
   footerLinks: [

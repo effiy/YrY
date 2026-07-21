@@ -112,6 +112,36 @@
       </div>
     </section>
 
+    <!-- Third-Party Libraries & Frameworks -->
+    <section v-if="thirdPartyLibraries && thirdPartyLibraries.length" id="libraries" class="dashboard-section">
+      <div class="section-header">
+        <span class="section-badge tonal-muted">📦</span>
+        <h2 class="section-title">Third-Party Libraries &amp; Frameworks</h2>
+        <span class="section-meta">76 libraries · 8 categories · official docs</span>
+      </div>
+      <p class="section-subtitle">Core dependencies powering the Yi ecosystem — click to open official docs</p>
+      <div class="lib-category" v-for="cat in thirdPartyLibraries" :key="cat.category">
+        <div class="lib-category-head">
+          <h3 class="lib-category-title">{{ cat.category }}</h3>
+          <p class="lib-category-desc">{{ cat.description }}</p>
+        </div>
+        <div class="lib-grid">
+          <div v-for="lib in cat.items" :key="lib.name"
+               class="lib-card" @click="openLibUrl(lib.url)" tabindex="0"
+               @keydown.enter="openLibUrl(lib.url)" @keydown.space.prevent="openLibUrl(lib.url)">
+            <div class="lib-card-top">
+              <a :href="lib.url" target="_blank" rel="noopener noreferrer"
+                 class="lib-card-name" @click.stop>{{ lib.name }}</a>
+              <span v-if="lib.version && lib.version !== '-'" class="lib-card-version">{{ lib.version }}</span>
+            </div>
+            <p class="lib-card-purpose">{{ lib.purpose }}</p>
+            <a :href="lib.url" target="_blank" rel="noopener noreferrer"
+               class="lib-card-link" @click.stop>docs &#x2197;</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Footer -->
     <footer class="dashboard-footer">
       <div class="footer-links">
