@@ -1,16 +1,10 @@
 /**
- * rui-report-files — Static configuration
+ * rui-report-files — Runtime data
  * ----------------------------------------------------------------------
- * window.REPORT_CONFIG provides static labels and options. Runtime data
- * lives in window.REPORT_DATA.
- *
  * Generated: 2026-07-21
- * Scope: YiAi/, YiDoc/, YiH5/, YiPet/, YiWeb/, YiPot/
- *
- * Design principles:
- *   - Labels are technical, precise, and self-contained.
- *   - All visible text lives here so the Vue layer is a pure renderer.
- *   - Token references (--rui-*) are preferred over hardcoded values.
+ * Scope: Websites/ YiAi/ YiH5/ YiPet/ YiPot/ YiWeb/
+ * 4462 source files · 185.30 MB · 1,462,127 lines
+ * Health Score: 68 (Grade: C)
  */
 
 window.REPORT_CONFIG = {
@@ -18,7 +12,7 @@ window.REPORT_CONFIG = {
         topN: 20,
         noCycles: false,
         theme: 'dark',
-        generatedAt: '2026-07-21T04:15:00.000Z',
+        generatedAt: '2026-07-21T04:37:24.102Z',
     },
     constants: {
         filterDebounceMs: 200,
@@ -129,429 +123,2953 @@ window.REPORT_CONFIG = {
     },
 };
 
-/**
- * Runtime data — generated from real project analysis.
- * Scope: YiAi/, YiDoc/, YiH5/, YiPet/, YiWeb/, YiPot/
- *
- * 623 source files · 4.80 MB · 131,979 lines
- * Health Score: 54 (Grade: D+)
- *
- * Key observations:
- *   - YiWeb/src/views/aicr/ is the largest subsystem with 30+ fan-out in useMethods.js
- *   - 92 orphan files detected across the monorepo (scripts, unused utils, standalone entries)
- *   - 1 potential circular dependency: mainPageMethods.js ↔ useMethods.js
- *   - YiWeb has highest coupling: aicr/hooks/index.js re-exports 40+ modules
- *   - YiPet ChatWindow modules exceed 3,000-line CSS (split candidate)
- *   - YiAi has clean layered architecture, no cycles, well-structured
- */
 window.REPORT_DATA = {
-    scope: 'YiAi/ YiDoc/ YiH5/ YiPet/ YiWeb/ YiPot/',
-
-    /* Overall health score (0–100). Computed across 6 dimensions. */
-    score: 54,
-
-    /* Alerts surfaced to remediation queue. */
-    alerts: [
-        {
-            severity: 'P0', marker: 'P0', category: 'cycle',
-            file: 'YiWeb/src/views/aicr/hooks/useMethods.js',
-            line: 8, message: 'Potential cycle: useMethods.js ↔ mainPageMethods.js — mutual imports detected',
-            metric: 'cycle len 2', impact: 'Circular import → init-order bugs, tree-shaking breakage, hot-reload instability.', effort: 'medium', scoreUplift: 7,
-            cyclePath: 'useMethods.js → mainPageMethods.js → useMethods.js',
-            recommendations: [
-                'Extract shared logic into a third module (e.g., sharedMethods.js) that both files import.',
-                'Invert one edge via dependency injection — pass the function reference instead of importing it.',
-                'Merge overlapping concerns into one file if the cycle indicates artificial separation.',
-                'Re-run cycle detection after each edge removal to catch regressions.',
-            ],
-        },
-        {
-            severity: 'P0', marker: 'P0', category: 'bloat',
-            file: 'YiWeb/src/views/aicr/components/codeView/index.js',
-            line: 1, message: 'File exceeds 2000 LOC (2912 lines) — monolithic component, split candidate',
-            metric: '2912 LOC', impact: 'Large file → high cognitive load, merge conflicts, review fatigue, slower onboarding.', effort: 'high', scoreUplift: 10,
-            recommendations: [
-                'Split into codeView/{editor,preview,toolbar,diff}.js and re-export from a barrel index.',
-                'Move pure helpers into a sibling codeView-utils.js and unit-test in isolation.',
-                'Add a LOC budget to CI (e.g., 1000 max) so the file cannot silently regress.',
-                'After split, re-run this report and confirm fan-out drops before merge.',
-            ],
-        },
-        {
-            severity: 'P0', marker: 'P0', category: 'bloat',
-            file: 'YiH5/views/home/index.js',
-            line: 1, message: 'File exceeds 2000 LOC (3348 lines) — entry point with excessive responsibilities',
-            metric: '3348 LOC', impact: 'Monolithic entry point → hard to test, high merge-conflict risk, slow onboarding.', effort: 'high', scoreUplift: 10,
-            recommendations: [
-                'Split by concern into home/{chat,router,state,layout}.js and re-export from a barrel.',
-                'Move DOM helpers and event bindings into dedicated modules under home/utils/.',
-                'Add a LOC budget to CI so the file cannot silently regress beyond 1500 lines.',
-                'After the split, re-run this report and verify fan-out drops.',
-            ],
-        },
-        {
-            severity: 'P0', marker: 'P0', category: 'bloat',
-            file: 'YiPet/modules/pet/components/chat/ChatWindow/index.css',
-            line: 1, message: 'CSS file exceeds 3000 LOC (3197 lines) — style monolith, split by component',
-            metric: '3197 LOC', impact: 'Monolithic stylesheet → specificity wars, hard to maintain, slows rendering.', effort: 'high', scoreUplift: 8,
-            recommendations: [
-                'Split by component into ChatWindow/{input,message,sidebar,header}.css.',
-                'Extract shared tokens into a ChatWindow/variables.css file.',
-                'Use CSS @layer to manage cascade between component styles.',
-                'Add a pre-commit hook to warn when any CSS file exceeds 500 lines.',
-            ],
-        },
-        {
-            severity: 'P1', marker: 'P1', category: 'coupling',
-            file: 'YiWeb/src/views/aicr/hooks/useMethods.js',
-            line: 1, message: 'Extreme fan-out (30+) — imports 30+ modules, central coupling hub',
-            metric: 'fan-out 30+', impact: 'God module → changes ripple to 30+ dependents; any edit here risks cascading failures.', effort: 'high', scoreUplift: 8,
-            recommendations: [
-                'Split into domain-scoped method files: useMethods/{chat,session,fileTree,project}.js.',
-                'Introduce a façade pattern — have callers depend on the façade instead of reaching into internals.',
-                'Replace direct imports with a dependency-injection container for cross-cutting services.',
-                'Add a module-boundary lint (e.g., dependency-cruiser) to enforce fan-out limits ≤ 15.',
-            ],
-        },
-        {
-            severity: 'P1', marker: 'P1', category: 'coupling',
-            file: 'YiWeb/src/views/aicr/hooks/index.js',
-            line: 1, message: 'Barrel file re-exports 40+ modules — masks real dependency graph',
-            metric: 'barrel 40+', impact: 'Barrel files with 40+ re-exports hide real coupling and slow bundler tree-shaking.', effort: 'medium', scoreUplift: 5,
-            recommendations: [
-                'Break into domain-specific barrels: hooks/{chat,fileTree,session,project}.js.',
-                'Each barrel should re-export at most 10–12 symbols.',
-                'Use explicit imports at call sites instead of barrel re-exports for better tree-shaking.',
-                'Add a lint rule to cap re-exports per barrel file.',
-            ],
-        },
-        {
-            severity: 'P1', marker: 'P1', category: 'freshness',
-            file: 'YiPot/pnpm-lock.yaml',
-            line: 1, message: 'Large lockfile (6656 lines, 281KB) — high churn risk, review overhead',
-            metric: '6656 LOC', impact: 'Large lockfile creates noisy diffs and review overhead on every dependency change.', effort: 'low', scoreUplift: 2,
-            recommendations: [
-                'Ensure lockfile is only updated intentionally, not on every install.',
-                'Use pnpm dedupe to reduce lockfile bloat.',
-                'Add lockfile diff to CI review checklist.',
-            ],
-        },
-        {
-            severity: 'P2', marker: 'P2', category: 'bloat',
-            file: 'YiPet/modules/pet/content/petManager.chat.js',
-            line: 1, message: 'File exceeds 1000 LOC (1677 lines) — chat logic monolith, split by concern',
-            metric: '1677 LOC', impact: 'Large chat module → difficult to test individual chat features in isolation.', effort: 'medium', scoreUplift: 5,
-            recommendations: [
-                'Split into petManager/{chat,streaming,history,mentions}.js and re-export from a barrel.',
-                'Move pure helpers into a sibling chat-utils.js and unit-test them in isolation.',
-                'Add a LOC budget to CI so the file cannot silently regress beyond 1000 lines.',
-            ],
-        },
-        {
-            severity: 'P2', marker: 'P2', category: 'bloat',
-            file: 'YiPet/modules/pet/components/chat/ChatWindow/index.js',
-            line: 1, message: 'File exceeds 1000 LOC (1668 lines) — ChatWindow component is too large',
-            metric: '1668 LOC', impact: 'Large component → difficult to test, high merge-conflict risk.', effort: 'medium', scoreUplift: 5,
-            recommendations: [
-                'Split into ChatWindow/{ChatInput,ChatMessages,ChatSidebar}.js and re-export from a barrel.',
-                'Extract reusable logic into composables/hooks.',
-                'Add a LOC budget to CI for component files.',
-            ],
-        },
-        {
-            severity: 'P2', marker: 'P2', category: 'orphan',
-            file: 'YiWeb/src/core/services/business/businessProcessManager.js',
-            line: null, message: 'Orphan file — no inbound references detected, potential dead code',
-            metric: '0 inbound refs', impact: 'No inbound references → dead code or forgotten entry; inflates cognitive surface.', effort: 'low', scoreUplift: 2,
-            recommendations: [
-                'Grep for dynamic imports / reflection / string-based resolvers before deletion.',
-                'Check git log for last touch and contact prior authors.',
-                'Delete in a dedicated PR; revert is cheap if needed.',
-                'If kept as a script entry, exclude it from report scope via .ruiignore.',
-            ],
-        },
-        {
-            severity: 'P2', marker: 'P2', category: 'orphan',
-            file: 'YiWeb/src/core/services/business/businessScenarioAnalyzer.js',
-            line: null, message: 'Orphan file — no inbound references, likely dead code',
-            metric: '0 inbound refs', impact: 'No inbound references → dead code; inflates cognitive surface and bundle size.', effort: 'low', scoreUplift: 2,
-            recommendations: [
-                'Verify no dynamic references via grep + CI before adding to a purge PR.',
-                'Check git log and contact prior authors.',
-                'Delete in a dedicated PR.',
-            ],
-        },
-        {
-            severity: 'P2', marker: 'P2', category: 'orphan',
-            file: 'YiWeb/src/core/services/business/requirementAnalysisManager.js',
-            line: null, message: 'Orphan file — no inbound references, potential dead code',
-            metric: '0 inbound refs', impact: 'No inbound references → dead code; inflates cognitive surface.', effort: 'low', scoreUplift: 2,
-            recommendations: [
-                'Verify no dynamic references before deletion.',
-                'Delete in a dedicated PR if confirmed dead.',
-            ],
-        },
-        {
-            severity: 'P2', marker: 'P2', category: 'orphan',
-            file: 'YiH5/utils/data.js',
-            line: null, message: 'Orphan utility — not imported by any file, suspected abandoned',
-            metric: '0 inbound refs', impact: 'Unused utility → dead code that may confuse future developers.', effort: 'low', scoreUplift: 1,
-            recommendations: [
-                'Grep for string-based require() or dynamic imports of "data.js" before deletion.',
-                'Delete in a dedicated PR if confirmed unused.',
-            ],
-        },
-        {
-            severity: 'P2', marker: 'P2', category: 'orphan',
-            file: 'YiH5/mermaid/plugins/AIFixPlugin.js',
-            line: null, message: 'Orphan plugin — exported but never imported, suspected future feature',
-            metric: '0 inbound refs', impact: 'Reserved feature → either integrate into a release or remove to reduce noise.', effort: 'low', scoreUplift: 1,
-            recommendations: [
-                'If planned for a future release, add a TODO comment and reference the tracking issue.',
-                'Otherwise, delete and restore from git history when needed.',
-            ],
-        },
-    ],
-
-    summary: {
-        totalFiles: 623,
-        totalBytes: 4798960,
-        totalBytesHuman: '4.58 MB',
-        totalLines: 131979,
-        maxDepth: 5,
-        criticalCount: 4,
-        hotspotCount: 6,
-        cycleCount: 1,
-        staleCount: 0,
+  "scope": "Websites/ YiAi/ YiH5/ YiPet/ YiPot/ YiWeb/",
+  "score": 68,
+  "alerts": [
+    {
+      "severity": "P1",
+      "marker": "P1",
+      "category": "bloat",
+      "file": "Websites/Adminto/Admin/src/assets/js/pages/apex-area.init.js",
+      "line": 1,
+      "message": "File exceeds 1000 LOC (1386 lines) — consider splitting by concern",
+      "metric": "1386 LOC",
+      "impact": "Moderately large file → harder to test, review, and maintain.",
+      "effort": "medium",
+      "scoreUplift": 5,
+      "recommendations": [
+        "Split apex-area.init.js into smaller, focused modules.",
+        "Extract pure helpers into separate utility files.",
+        "Add a LOC budget to CI for long-term prevention."
+      ]
     },
-
-    /* Directory-level size breakdown */
-    treemap: [
-        { name: 'YiWeb/src/',        bytes: 1703732, humanBytes: '1.63 MB' },
-        { name: 'YiPet/modules/',    bytes: 1201000, humanBytes: '1.15 MB' },
-        { name: 'YiPot/src/',        bytes: 1113833, humanBytes: '1.06 MB' },
-        { name: 'YiH5/',             bytes: 426511,  humanBytes: '417 KB' },
-        { name: 'YiAi/src/',         bytes: 230891,  humanBytes: '226 KB' },
-        { name: 'YiDoc/',            bytes: 122993,  humanBytes: '120 KB' },
-    ],
-
-    /* File-type breakdown */
-    types: [
-        { type: '.js',       fileCount: 260, pctFiles: 41.7, totalBytes: 2661109, totalBytesHuman: '2.54 MB', pctBytes: 55.4, totalLines: 72723 },
-        { type: '.jsx',      fileCount: 141, pctFiles: 22.6, totalBytes: 657061,  totalBytesHuman: '642 KB',  pctBytes: 13.7, totalLines: 16161 },
-        { type: '.css',      fileCount: 51,  pctFiles: 8.2,  totalBytes: 453714,  totalBytesHuman: '443 KB',  pctBytes: 9.5,  totalLines: 18251 },
-        { type: '.py',       fileCount: 48,  pctFiles: 7.7,  totalBytes: 228596,  totalBytesHuman: '223 KB',  pctBytes: 4.8,  totalLines: 6465  },
-        { type: '.html',     fileCount: 39,  pctFiles: 6.3,  totalBytes: 284170,  totalBytesHuman: '278 KB',  pctBytes: 5.9,  totalLines: 5583  },
-        { type: '.ts',       fileCount: 41,  pctFiles: 6.6,  totalBytes: 20768,   totalBytesHuman: '20 KB',   pctBytes: 0.4,  totalLines: 1142  },
-        { type: '.yaml',     fileCount: 2,   pctFiles: 0.3,  totalBytes: 290175,  totalBytesHuman: '283 KB',  pctBytes: 6.0,  totalLines: 6781  },
-        { type: '.rs',       fileCount: 15,  pctFiles: 2.4,  totalBytes: 84685,   totalBytesHuman: '83 KB',   pctBytes: 1.8,  totalLines: 2391  },
-        { type: '.md',       fileCount: 12,  pctFiles: 1.9,  totalBytes: 62650,   totalBytesHuman: '61 KB',   pctBytes: 1.3,  totalLines: 1014  },
-        { type: '.json',     fileCount: 12,  pctFiles: 1.9,  totalBytes: 50865,   totalBytesHuman: '50 KB',   pctBytes: 1.1,  totalLines: 1334  },
-        { type: '.toml',     fileCount: 1,   pctFiles: 0.2,  totalBytes: 2548,    totalBytesHuman: '2 KB',    pctBytes: 0.1,  totalLines: 58    },
-        { type: '.cjs',      fileCount: 1,   pctFiles: 0.2,  totalBytes: 2619,    totalBytesHuman: '3 KB',    pctBytes: 0.1,  totalLines: 76    },
-    ],
-
-    /* Size histogram buckets (lines) */
-    histogram: [
-        { bucket: '0-100',     count: 298, pctFiles: 47.8 },
-        { bucket: '100-300',   count: 152, pctFiles: 24.4 },
-        { bucket: '300-800',   count: 98,  pctFiles: 15.7 },
-        { bucket: '800-2K',    count: 48,  pctFiles: 7.7  },
-        { bucket: '2K-5K',     count: 22,  pctFiles: 3.5  },
-        { bucket: '5K+',       count: 5,   pctFiles: 0.8  },
-    ],
-
-    /* Largest files (top 15) */
-    largest: [
-        { path: 'YiPot/pnpm-lock.yaml',                                         bytes: 287880, bytesHuman: '281 KB', lines: 6656, type: '.yaml', depth: 1, fanIn: 0, fanOut: 0  },
-        { path: 'YiWeb/src/views/aicr/components/codeView/index.js',            bytes: 131347, bytesHuman: '128 KB', lines: 2912, type: '.js',   depth: 4, fanIn: 1, fanOut: 5  },
-        { path: 'YiH5/views/home/index.js',                                     bytes: 119975, bytesHuman: '117 KB', lines: 3348, type: '.js',   depth: 4, fanIn: 0, fanOut: 17 },
-        { path: 'YiPet/modules/pet/components/chat/ChatWindow/index.css',       bytes: 94008,  bytesHuman: '92 KB',  lines: 3197, type: '.css',  depth: 1, fanIn: 0, fanOut: 0  },
-        { path: 'YiPet/modules/pet/content/petManager.chat.js',                 bytes: 64576,  bytesHuman: '63 KB',  lines: 1677, type: '.js',   depth: 2, fanIn: 1, fanOut: 4  },
-        { path: 'YiPet/modules/pet/components/chat/ChatWindow/index.js',        bytes: 63357,  bytesHuman: '62 KB',  lines: 1668, type: '.js',   depth: 3, fanIn: 2, fanOut: 8  },
-        { path: 'YiPet/modules/pet/content/modules/petManager.roles.js',        bytes: 50021,  bytesHuman: '49 KB',  lines: 1292, type: '.js',   depth: 2, fanIn: 1, fanOut: 2  },
-        { path: 'YiWeb/src/views/aicr/index.js',                                bytes: 48446,  bytesHuman: '47 KB',  lines: 874,  type: '.js',   depth: 5, fanIn: 0, fanOut: 11 },
-        { path: 'YiPet/modules/pet/content/editor/petManager.editor.core.js',   bytes: 44379,  bytesHuman: '43 KB',  lines: 1329, type: '.js',   depth: 2, fanIn: 1, fanOut: 3  },
-        { path: 'YiWeb/src/views/aicr/hooks/sessionChatContextChatMethods.streaming.js', bytes: 43954,  bytesHuman: '43 KB',  lines: 816,  type: '.js',   depth: 3, fanIn: 2, fanOut: 5  },
-        { path: 'YiWeb/src/views/aicr/components/fileTree/fileTreeMethods.js',  bytes: 43395,  bytesHuman: '42 KB',  lines: 968,  type: '.js',   depth: 3, fanIn: 2, fanOut: 5  },
-        { path: 'YiPet/modules/pet/components/manager/FaqManager/index.js',     bytes: 39085,  bytesHuman: '38 KB',  lines: 1050, type: '.js',   depth: 2, fanIn: 1, fanOut: 3  },
-        { path: 'YiPet/modules/pet/content/core/petManager.core.js',            bytes: 38497,  bytesHuman: '38 KB',  lines: 1035, type: '.js',   depth: 3, fanIn: 8, fanOut: 2  },
-        { path: 'YiWeb/src/views/aicr/hooks/helpers/sessionChatContextShared.js', bytes: 37681,  bytesHuman: '37 KB',  lines: 710,  type: '.js',   depth: 3, fanIn: 3, fanOut: 4  },
-        { path: 'YiWeb/src/core/services/aicr/sessionSyncService.js',           bytes: 37626,  bytesHuman: '37 KB',  lines: 680,  type: '.js',   depth: 4, fanIn: 3, fanOut: 8  },
-    ],
-
-    /* Fan-in coupling */
-    fanin: [
-        { path: 'YiAi/src/core/config.py',                               fanIn: 25, fanOut: 0,  extDeps: 1, lines: 120,  type: '.py'  },
-        { path: 'YiWeb/src/views/aicr/hooks/index.js',                   fanIn: 12, fanOut: 40, extDeps: 0, lines: 45,   type: '.js'  },
-        { path: 'YiAi/src/core/database.py',                             fanIn: 10, fanOut: 1,  extDeps: 1, lines: 180,  type: '.py'  },
-        { path: 'YiAi/src/core/error_codes.py',                          fanIn: 10, fanOut: 0,  extDeps: 0, lines: 85,   type: '.py'  },
-        { path: 'YiWeb/src/core/services/index.js',                      fanIn: 10, fanOut: 6,  extDeps: 0, lines: 32,   type: '.js'  },
-        { path: 'YiH5/utils/index.js',                                   fanIn: 8,  fanOut: 1,  extDeps: 0, lines: 24,   type: '.js'  },
-        { path: 'YiAi/src/core/exceptions.py',                           fanIn: 8,  fanOut: 0,  extDeps: 0, lines: 55,   type: '.py'  },
-        { path: 'YiAi/src/models/schemas.py',                            fanIn: 8,  fanOut: 2,  extDeps: 0, lines: 210,  type: '.py'  },
-        { path: 'YiPet/modules/pet/content/core/petManager.core.js',     fanIn: 8,  fanOut: 2,  extDeps: 0, lines: 1035, type: '.js'  },
-        { path: 'YiAi/src/core/response.py',                             fanIn: 7,  fanOut: 1,  extDeps: 0, lines: 45,   type: '.py'  },
-        { path: 'YiH5/config.js',                                        fanIn: 6,  fanOut: 0,  extDeps: 0, lines: 65,   type: '.js'  },
-        { path: 'YiH5/services/client.js',                               fanIn: 4,  fanOut: 1,  extDeps: 0, lines: 95,   type: '.js'  },
-    ],
-
-    /* Fan-out coupling */
-    fanout: [
-        { path: 'YiWeb/src/views/aicr/hooks/index.js',                   fanIn: 12, fanOut: 40, extDeps: 0, lines: 45,   type: '.js'  },
-        { path: 'YiWeb/src/views/aicr/hooks/useMethods.js',              fanIn: 3,  fanOut: 30, extDeps: 0, lines: 520,  type: '.js'  },
-        { path: 'YiH5/views/home/index.js',                              fanIn: 0,  fanOut: 17, extDeps: 0, lines: 3348, type: '.js'  },
-        { path: 'YiWeb/src/views/aicr/index.js',                         fanIn: 0,  fanOut: 11, extDeps: 0, lines: 874,  type: '.js'  },
-        { path: 'YiAi/src/main.py',                                      fanIn: 0,  fanOut: 10, extDeps: 3, lines: 95,   type: '.py'  },
-        { path: 'YiAi/src/services/execution/executor.py',              fanIn: 2,  fanOut: 10, extDeps: 1, lines: 260,  type: '.py'  },
-        { path: 'YiWeb/src/core/services/aicr/sessionSyncService.js',    fanIn: 3,  fanOut: 8,  extDeps: 0, lines: 680,  type: '.js'  },
-        { path: 'YiPet/modules/pet/components/chat/ChatWindow/index.js', fanIn: 2,  fanOut: 8,  extDeps: 0, lines: 1668, type: '.js'  },
-        { path: 'YiWeb/src/views/aicr/hooks/context.js',                 fanIn: 2,  fanOut: 8,  extDeps: 0, lines: 340,  type: '.js'  },
-        { path: 'YiWeb/src/views/story/hooks/storeFactory.js',           fanIn: 1,  fanOut: 7,  extDeps: 0, lines: 180,  type: '.js'  },
-        { path: 'YiWeb/src/core/services/index.js',                      fanIn: 10, fanOut: 6,  extDeps: 0, lines: 32,   type: '.js'  },
-        { path: 'YiWeb/src/views/story/index.js',                        fanIn: 0,  fanOut: 6,  extDeps: 0, lines: 320,  type: '.js'  },
-        { path: 'YiWeb/src/views/claude/index.js',                       fanIn: 0,  fanOut: 6,  extDeps: 0, lines: 280,  type: '.js'  },
-    ],
-
-    /* Hotspot files (risk score > threshold) */
-    hotspots: [
-        { path: 'YiWeb/src/views/aicr/hooks/useMethods.js',              bytes: 30000, bytesHuman: '29 KB', lines: 520,  type: '.js', fanIn: 3,  fanOut: 30, maxDepth: 3, score: 95 },
-        { path: 'YiH5/views/home/index.js',                              bytes: 119975,bytesHuman: '117 KB', lines: 3348, type: '.js', fanIn: 0,  fanOut: 17, maxDepth: 4, score: 88 },
-        { path: 'YiWeb/src/views/aicr/components/codeView/index.js',     bytes: 131347,bytesHuman: '128 KB', lines: 2912, type: '.js', fanIn: 1,  fanOut: 5,  maxDepth: 4, score: 82 },
-        { path: 'YiPet/modules/pet/components/chat/ChatWindow/index.js', bytes: 63357, bytesHuman: '62 KB',  lines: 1668, type: '.js', fanIn: 2,  fanOut: 8,  maxDepth: 3, score: 75 },
-        { path: 'YiPet/modules/pet/components/chat/ChatWindow/index.css',bytes: 94008, bytesHuman: '92 KB',  lines: 3197, type: '.css',fanIn: 0,  fanOut: 0,  maxDepth: 1, score: 72 },
-        { path: 'YiWeb/src/core/services/aicr/sessionSyncService.js',    bytes: 37626, bytesHuman: '37 KB',  lines: 680,  type: '.js', fanIn: 3,  fanOut: 8,  maxDepth: 4, score: 68 },
-    ],
-
-    /* Orphan files (fan-in + fan-out == 0) */
-    orphans: [
-        { path: 'YiWeb/src/core/services/business/businessProcessManager.js',      bytes: 8500,  bytesHuman: '8 KB',   lines: 220,  type: '.js', fanIn: 0, fanOut: 0, maxDepth: 1, score: 35 },
-        { path: 'YiWeb/src/core/services/business/businessScenarioAnalyzer.js',    bytes: 7200,  bytesHuman: '7 KB',   lines: 185,  type: '.js', fanIn: 0, fanOut: 0, maxDepth: 1, score: 30 },
-        { path: 'YiWeb/src/core/services/business/requirementAnalysisManager.js',  bytes: 6500,  bytesHuman: '6 KB',   lines: 160,  type: '.js', fanIn: 0, fanOut: 0, maxDepth: 1, score: 28 },
-        { path: 'YiH5/utils/data.js',                                              bytes: 3500,  bytesHuman: '3 KB',   lines: 95,   type: '.js', fanIn: 0, fanOut: 0, maxDepth: 1, score: 22 },
-        { path: 'YiH5/mermaid/plugins/AIFixPlugin.js',                            bytes: 2800,  bytesHuman: '3 KB',   lines: 72,   type: '.js', fanIn: 0, fanOut: 0, maxDepth: 1, score: 20 },
-        { path: 'YiAi/src/cli/state_query.py',                                     bytes: 1800,  bytesHuman: '2 KB',   lines: 45,   type: '.py',fanIn: 0, fanOut: 0, maxDepth: 1, score: 18 },
-    ],
-
-    /* Depth statistics */
-    depthStats: { max: 5, mean: 2.1, median: 2, p90: 4, filesAtMax: 3 },
-    depthRanking: [
-        { path: 'YiWeb/src/views/aicr/index.js',                                bytes: 48446,  bytesHuman: '47 KB',  lines: 874,  type: '.js', fanIn: 0,  fanOut: 11, maxDepth: 5, score: 72 },
-        { path: 'YiH5/views/home/index.js',                                     bytes: 119975, bytesHuman: '117 KB', lines: 3348, type: '.js', fanIn: 0,  fanOut: 17, maxDepth: 4, score: 88 },
-        { path: 'YiWeb/src/views/aicr/components/codeView/index.js',            bytes: 131347, bytesHuman: '128 KB', lines: 2912, type: '.js', fanIn: 1,  fanOut: 5,  maxDepth: 4, score: 82 },
-        { path: 'YiWeb/src/core/services/aicr/sessionSyncService.js',           bytes: 37626,  bytesHuman: '37 KB',  lines: 680,  type: '.js', fanIn: 3,  fanOut: 8,  maxDepth: 4, score: 68 },
-        { path: 'YiWeb/src/views/aicr/hooks/useMethods.js',                     bytes: 30000,  bytesHuman: '29 KB',  lines: 520,  type: '.js', fanIn: 3,  fanOut: 30, maxDepth: 3, score: 95 },
-    ],
-
-    /* Cyclic dependencies */
-    cycles: [
-        {
-            severity: 'critical',
-            path: 'YiWeb/src/views/aicr/hooks/useMethods.js → YiWeb/src/views/aicr/hooks/mainPageMethods.js → YiWeb/src/views/aicr/hooks/useMethods.js',
-            length: 2,
-            suggestedFix: 'Extract shared logic into a dedicated module (e.g., hooks/sharedMethodUtils.js) and have both files import from it.',
-        },
-    ],
-
-    /* Freshness (file age in days) */
-    freshness: [
-        { path: 'YiPot/pnpm-lock.yaml',                     ageDays: 3, lastModified: '2026-07-18', lastModifiedHuman: '2026-07-18', type: '.yaml', lines: 6656 },
-        { path: 'YiPot/tailwind.config.cjs',                ageDays: 3, lastModified: '2026-07-18', lastModifiedHuman: '2026-07-18', type: '.cjs',  lines: 76   },
-        { path: 'YiWeb/src/views/aicr/components/codeView/index.js', ageDays: 1, lastModified: '2026-07-20', lastModifiedHuman: '2026-07-20', type: '.js',   lines: 2912 },
-        { path: 'YiH5/views/home/index.js',                 ageDays: 1, lastModified: '2026-07-20', lastModifiedHuman: '2026-07-20', type: '.js',   lines: 3348 },
-        { path: 'YiH5/services/client.js',                  ageDays: 1, lastModified: '2026-07-20', lastModifiedHuman: '2026-07-20', type: '.js',   lines: 95   },
-        { path: 'YiAi/src/main.py',                         ageDays: 1, lastModified: '2026-07-20', lastModifiedHuman: '2026-07-20', type: '.py',  lines: 95   },
-        { path: 'YiAi/src/core/config.py',                  ageDays: 1, lastModified: '2026-07-20', lastModifiedHuman: '2026-07-20', type: '.py',  lines: 120  },
-    ],
-    freshnessBuckets: [
-        { bucket: '0-7d',     count: 610, pctFiles: 97.9 },
-        { bucket: '7-30d',    count: 10,  pctFiles: 1.6  },
-        { bucket: '30-90d',   count: 3,   pctFiles: 0.5  },
-        { bucket: '90-180d',  count: 0,   pctFiles: 0.0  },
-        { bucket: '180d+',    count: 0,   pctFiles: 0.0  },
-    ],
-    freshnessStats: { asOf: 1751544900000, asOfHuman: '2026-07-21', maxAge: 3, median: 1, p90: 3, staleCount: 0, criticalCount: 0 },
-
-    /* Full record list */
-    records: [],
-    adjacency: {},
-
-    /* ═══════════════════════════════════════════════════════════════════════
-     * Self-Improvement Analysis
-     * Chart-first diagnostics: severity mix, risk vectors, ranked levers,
-     * remediation roadmap, and decay forecast.
-     * ═══════════════════════════════════════════════════════════════════════ */
-    selfImprovement: {
-        /* ── Top P0 actions ─────────────────────────────────────── */
-        topP0: [
-            { action: 'Break useMethods.js ↔ mainPageMethods.js cycle by extracting shared logic', file: 'YiWeb/src/views/aicr/hooks/useMethods.js', line: 8, severity: 'P0' },
-            { action: 'Split codeView/index.js (2912 LOC) into modular sub-components',            file: 'YiWeb/src/views/aicr/components/codeView/index.js', line: 1, severity: 'P0' },
-            { action: 'Decompose views/home/index.js (3348 LOC) by concern (router, chat, state)', file: 'YiH5/views/home/index.js', line: 1, severity: 'P0' },
-            { action: 'Split ChatWindow/index.css (3197 lines) into per-component stylesheets',     file: 'YiPet/modules/pet/components/chat/ChatWindow/index.css', line: 1, severity: 'P0' },
-        ],
-
-        /* ── Focus area ──────────────────────────────────────────── */
-        focusArea: {
-            dimName: 'Coupling (fan-out)',
-            score: 32,
-            why: 'YiWeb aicr/hooks/index.js re-exports 40+ modules and useMethods.js has 30+ fan-out. Combined with the mainPageMethods ↔ useMethods cycle, coupling is the primary drag on overall health.',
-            hint: 'Invest 3–5 days refactoring the aicr hooks directory. Break the barrel file, flatten the coupling, and resolve the cycle. Expected uplift: +18–22 pts.'
-        },
-
-        /* ── Trend insight & weights ─────────────────────────────── */
-        trendInsight: 'Score at 54 (D+). Primary concerns: coupling (YiWeb aicr hooks), file size (3 files > 2000 LOC), and orphan count (6 unreferenced files). Architecture is generally sound with clean layering in YiAi.',
-        weightsHint: 'Consider increasing Coupling weight from 0.20 → 0.25 given its outsized impact on the health score.',
-
-        /* ── Narrative summary (executive readout) ────────────────── */
-        narrative: [
-            'Overall health at 54/100 (grade D+) — moderate risk with clear remediation path across 6 dimensions.',
-            '4 critical (P0) and 3 major (P1) alerts active. Primary risks cluster around Coupling (1 cycle, extreme fan-out in YiWeb hooks) and Size (3 monoliths > 2000 LOC).',
-            'Top lever: decompose YiWeb aicr/hooks monolith (+18 pts). Remediation roadmap projects 82/100 after P0+P1 closure.',
-            'Score 54 | grade D+ | gap 21 pts to B | projected 82 after plan | YiAi subsystem is cleanly architected as a reference standard.',
-        ],
-
-        /* ── Severity donut chart data ────────────────────────────── */
-        severityDonut: { p0: 4, p1: 3, p2: 7, total: 14 },
-
-        /* ── Risk vectors (dimension-level scores) ────────────────── */
-        riskVectors: [
-            { dimension: 'Depth',         score: 78, weight: 0.15, p0: 0, p1: 0, p2: 1 },
-            { dimension: 'Size',          score: 48, weight: 0.25, p0: 3, p1: 0, p2: 2 },
-            { dimension: 'Coupling',      score: 32, weight: 0.20, p0: 1, p1: 2, p2: 1 },
-            { dimension: 'Orphans',       score: 62, weight: 0.10, p0: 0, p1: 0, p2: 3 },
-            { dimension: 'Complexity',    score: 55, weight: 0.15, p0: 0, p1: 1, p2: 0 },
-            { dimension: 'Freshness',     score: 95, weight: 0.15, p0: 0, p1: 0, p2: 0 },
-        ],
-
-        /* ── Top remediation levers ───────────────────────────────── */
-        levers: [
-            { rank: 1, dimension: 'Coupling',  severity: 'P0', kind: 'refactor', action: 'Decompose YiWeb aicr/hooks monolith — split useMethods.js into domain-scoped modules and break the barrel index', file: 'YiWeb/src/views/aicr/hooks/useMethods.js',              line: 1,  scoreUplift: 18, effort: 'high'    },
-            { rank: 2, dimension: 'Size',       severity: 'P0', kind: 'split',    action: 'Split codeView/index.js (2912 LOC) into codeView/{editor,preview,toolbar,diff}.js',                     file: 'YiWeb/src/views/aicr/components/codeView/index.js', line: 1,  scoreUplift: 10, effort: 'high'    },
-            { rank: 3, dimension: 'Size',       severity: 'P0', kind: 'split',    action: 'Decompose views/home/index.js (3348 LOC) by concern into home/{chat,router,state,layout}.js',        file: 'YiH5/views/home/index.js',                            line: 1,  scoreUplift: 10, effort: 'high'    },
-            { rank: 4, dimension: 'Size',       severity: 'P0', kind: 'split',    action: 'Split ChatWindow/index.css (3197 lines) into per-component stylesheets under ChatWindow/{input,message,sidebar}.css', file: 'YiPet/modules/pet/components/chat/ChatWindow/index.css', line: 1,  scoreUplift: 8,  effort: 'medium'  },
-            { rank: 5, dimension: 'Coupling',  severity: 'P1', kind: 'refactor', action: 'Break aicr/hooks/index.js barrel (40+ re-exports) into domain-specific sub-barrels',                     file: 'YiWeb/src/views/aicr/hooks/index.js',                line: 1,  scoreUplift: 5,  effort: 'medium'  },
-            { rank: 6, dimension: 'Orphans',    severity: 'P2', kind: 'cleanup',  action: 'Remove 3 orphan business service files (processManager, scenarioAnalyzer, requirementManager)',         file: 'YiWeb/src/core/services/business/',                 line: null, scoreUplift: 4,  effort: 'low'     },
-            { rank: 7, dimension: 'Orphans',    severity: 'P2', kind: 'cleanup',  action: 'Remove unused YiH5 utils/data.js and mermaid/AIFixPlugin.js',                                         file: 'YiH5/utils/data.js',                                line: null, scoreUplift: 2,  effort: 'low'     },
-        ],
-
-        /* ── Benchmark grading ────────────────────────────────────── */
-        benchmarks: { currentGrade: 'D+', currentValue: 54, targetGrade: 'B', targetValue: 75, gapToNext: 21 },
-
-        /* ── Remediation roadmap ──────────────────────────────────── */
-        remediationPlan: {
-            phases: [
-                { phase: 'P0 — Blocking fixes (this sprint)', severity: 'P0', itemCount: 4, estUplift: 18, projected: 72, deadline: '3 weeks'     },
-                { phase: 'P1 — Important (next sprint)',      severity: 'P1', itemCount: 3, estUplift: 10, projected: 82, deadline: '6 weeks'     },
-                { phase: 'P2 — Nice-to-have (this quarter)',  severity: 'P2', itemCount: 7, estUplift: 8,  projected: 90, deadline: 'this quarter' },
-            ],
-            currentScore: 54,
-            projectedScoreIfAllP0P1Remediated: 82,
-        },
-
-        /* ── Decay forecast ───────────────────────────────────────── */
-        decayForecast: { currentScore: 54, projectedNext: 50, delta: -4, rationale: 'Without action, coupling debt in YiWeb aicr/ grows as new features add to the hook monolith, and file sizes naturally inflate. Estimated –4 pts per quarter if no remediation.' },
+    {
+      "severity": "P1",
+      "marker": "P1",
+      "category": "bloat",
+      "file": "Websites/Adminto/Admin/src/assets/js/pages/apex-column.init.js",
+      "line": 1,
+      "message": "File exceeds 1000 LOC (1272 lines) — consider splitting by concern",
+      "metric": "1272 LOC",
+      "impact": "Moderately large file → harder to test, review, and maintain.",
+      "effort": "medium",
+      "scoreUplift": 5,
+      "recommendations": [
+        "Split apex-column.init.js into smaller, focused modules.",
+        "Extract pure helpers into separate utility files.",
+        "Add a LOC budget to CI for long-term prevention."
+      ]
     },
+    {
+      "severity": "P1",
+      "marker": "P1",
+      "category": "bloat",
+      "file": "Websites/Adminto/Admin/src/assets/js/pages/apex-line.init.js",
+      "line": 1,
+      "message": "File exceeds 1000 LOC (1093 lines) — consider splitting by concern",
+      "metric": "1093 LOC",
+      "impact": "Moderately large file → harder to test, review, and maintain.",
+      "effort": "medium",
+      "scoreUplift": 5,
+      "recommendations": [
+        "Split apex-line.init.js into smaller, focused modules.",
+        "Extract pure helpers into separate utility files.",
+        "Add a LOC budget to CI for long-term prevention."
+      ]
+    },
+    {
+      "severity": "P1",
+      "marker": "P1",
+      "category": "bloat",
+      "file": "Websites/Adminto/Admin/src/assets/js/pages/icons-fontawesome.init.js",
+      "line": 1,
+      "message": "File exceeds 1000 LOC (1976 lines) — consider splitting by concern",
+      "metric": "1976 LOC",
+      "impact": "Moderately large file → harder to test, review, and maintain.",
+      "effort": "medium",
+      "scoreUplift": 5,
+      "recommendations": [
+        "Split icons-fontawesome.init.js into smaller, focused modules.",
+        "Extract pure helpers into separate utility files.",
+        "Add a LOC budget to CI for long-term prevention."
+      ]
+    },
+    {
+      "severity": "P1",
+      "marker": "P1",
+      "category": "bloat",
+      "file": "Websites/Mortal/assets/libs/tobii/js/tobii.cjs.js",
+      "line": 1,
+      "message": "File exceeds 1000 LOC (1360 lines) — consider splitting by concern",
+      "metric": "1360 LOC",
+      "impact": "Moderately large file → harder to test, review, and maintain.",
+      "effort": "medium",
+      "scoreUplift": 5,
+      "recommendations": [
+        "Split tobii.cjs.js into smaller, focused modules.",
+        "Extract pure helpers into separate utility files.",
+        "Add a LOC budget to CI for long-term prevention."
+      ]
+    },
+    {
+      "severity": "P1",
+      "marker": "P1",
+      "category": "bloat",
+      "file": "Websites/News/assets/js/vendor/perfect-scrollbar.js",
+      "line": 1,
+      "message": "File exceeds 1000 LOC (1349 lines) — consider splitting by concern",
+      "metric": "1349 LOC",
+      "impact": "Moderately large file → harder to test, review, and maintain.",
+      "effort": "medium",
+      "scoreUplift": 5,
+      "recommendations": [
+        "Split perfect-scrollbar.js into smaller, focused modules.",
+        "Extract pure helpers into separate utility files.",
+        "Add a LOC budget to CI for long-term prevention."
+      ]
+    },
+    {
+      "severity": "P1",
+      "marker": "P1",
+      "category": "bloat",
+      "file": "Websites/Prompt/assets/libs/swiper/angular/fesm2015/swiper_angular.js",
+      "line": 1,
+      "message": "File exceeds 1000 LOC (1082 lines) — consider splitting by concern",
+      "metric": "1082 LOC",
+      "impact": "Moderately large file → harder to test, review, and maintain.",
+      "effort": "medium",
+      "scoreUplift": 5,
+      "recommendations": [
+        "Split swiper_angular.js into smaller, focused modules.",
+        "Extract pure helpers into separate utility files.",
+        "Add a LOC budget to CI for long-term prevention."
+      ]
+    },
+    {
+      "severity": "P1",
+      "marker": "P1",
+      "category": "coupling",
+      "file": "Websites/Prompt/assets/libs/swiper/swiper-bundle.esm.js",
+      "line": 1,
+      "message": "High fan-out (20) — imports 20 modules, consider decoupling",
+      "metric": "fan-out 20",
+      "impact": "High coupling → changes may have unexpected side effects.",
+      "effort": "medium",
+      "scoreUplift": 5,
+      "recommendations": [
+        "Review the dependency list and identify unnecessary imports.",
+        "Group related dependencies into a façade module."
+      ]
+    },
+    {
+      "severity": "P1",
+      "marker": "P1",
+      "category": "bloat",
+      "file": "YiPet/cdn/markdown/index.js",
+      "line": 1,
+      "message": "File exceeds 1000 LOC (1072 lines) — consider splitting by concern",
+      "metric": "1072 LOC",
+      "impact": "Moderately large file → harder to test, review, and maintain.",
+      "effort": "medium",
+      "scoreUplift": 5,
+      "recommendations": [
+        "Split index.js into smaller, focused modules.",
+        "Extract pure helpers into separate utility files.",
+        "Add a LOC budget to CI for long-term prevention."
+      ]
+    },
+    {
+      "severity": "P1",
+      "marker": "P1",
+      "category": "bloat",
+      "file": "YiPet/cdn/utils/index.js",
+      "line": 1,
+      "message": "File exceeds 1000 LOC (1869 lines) — consider splitting by concern",
+      "metric": "1869 LOC",
+      "impact": "Moderately large file → harder to test, review, and maintain.",
+      "effort": "medium",
+      "scoreUplift": 5,
+      "recommendations": [
+        "Split index.js into smaller, focused modules.",
+        "Extract pure helpers into separate utility files.",
+        "Add a LOC budget to CI for long-term prevention."
+      ]
+    },
+    {
+      "severity": "P1",
+      "marker": "P1",
+      "category": "bloat",
+      "file": "YiPet/libs/marked.min.js",
+      "line": 1,
+      "message": "File exceeds 1000 LOC (1904 lines) — consider splitting by concern",
+      "metric": "1904 LOC",
+      "impact": "Moderately large file → harder to test, review, and maintain.",
+      "effort": "medium",
+      "scoreUplift": 5,
+      "recommendations": [
+        "Split marked.min.js into smaller, focused modules.",
+        "Extract pure helpers into separate utility files.",
+        "Add a LOC budget to CI for long-term prevention."
+      ]
+    },
+    {
+      "severity": "P1",
+      "marker": "P1",
+      "category": "bloat",
+      "file": "YiPet/libs/perfect-scrollbar@1.5.0/perfect-scrollbar.min.js",
+      "line": 1,
+      "message": "File exceeds 1000 LOC (1349 lines) — consider splitting by concern",
+      "metric": "1349 LOC",
+      "impact": "Moderately large file → harder to test, review, and maintain.",
+      "effort": "medium",
+      "scoreUplift": 5,
+      "recommendations": [
+        "Split perfect-scrollbar.min.js into smaller, focused modules.",
+        "Extract pure helpers into separate utility files.",
+        "Add a LOC budget to CI for long-term prevention."
+      ]
+    },
+    {
+      "severity": "P1",
+      "marker": "P1",
+      "category": "bloat",
+      "file": "YiPet/libs/turndown.js",
+      "line": 1,
+      "message": "File exceeds 1000 LOC (1016 lines) — consider splitting by concern",
+      "metric": "1016 LOC",
+      "impact": "Moderately large file → harder to test, review, and maintain.",
+      "effort": "medium",
+      "scoreUplift": 5,
+      "recommendations": [
+        "Split turndown.js into smaller, focused modules.",
+        "Extract pure helpers into separate utility files.",
+        "Add a LOC budget to CI for long-term prevention."
+      ]
+    },
+    {
+      "severity": "P1",
+      "marker": "P1",
+      "category": "bloat",
+      "file": "YiPet/modules/pet/components/chat/ChatWindow/index.js",
+      "line": 1,
+      "message": "File exceeds 1000 LOC (1668 lines) — consider splitting by concern",
+      "metric": "1668 LOC",
+      "impact": "Moderately large file → harder to test, review, and maintain.",
+      "effort": "medium",
+      "scoreUplift": 5,
+      "recommendations": [
+        "Split index.js into smaller, focused modules.",
+        "Extract pure helpers into separate utility files.",
+        "Add a LOC budget to CI for long-term prevention."
+      ]
+    },
+    {
+      "severity": "P1",
+      "marker": "P1",
+      "category": "bloat",
+      "file": "YiPet/modules/pet/components/manager/FaqManager/index.js",
+      "line": 1,
+      "message": "File exceeds 1000 LOC (1027 lines) — consider splitting by concern",
+      "metric": "1027 LOC",
+      "impact": "Moderately large file → harder to test, review, and maintain.",
+      "effort": "medium",
+      "scoreUplift": 5,
+      "recommendations": [
+        "Split index.js into smaller, focused modules.",
+        "Extract pure helpers into separate utility files.",
+        "Add a LOC budget to CI for long-term prevention."
+      ]
+    },
+    {
+      "severity": "P1",
+      "marker": "P1",
+      "category": "bloat",
+      "file": "YiPet/modules/pet/content/core/petManager.core.js",
+      "line": 1,
+      "message": "File exceeds 1000 LOC (1035 lines) — consider splitting by concern",
+      "metric": "1035 LOC",
+      "impact": "Moderately large file → harder to test, review, and maintain.",
+      "effort": "medium",
+      "scoreUplift": 5,
+      "recommendations": [
+        "Split petManager.core.js into smaller, focused modules.",
+        "Extract pure helpers into separate utility files.",
+        "Add a LOC budget to CI for long-term prevention."
+      ]
+    },
+    {
+      "severity": "P1",
+      "marker": "P1",
+      "category": "bloat",
+      "file": "YiPet/modules/pet/content/editor/petManager.editor.core.js",
+      "line": 1,
+      "message": "File exceeds 1000 LOC (1329 lines) — consider splitting by concern",
+      "metric": "1329 LOC",
+      "impact": "Moderately large file → harder to test, review, and maintain.",
+      "effort": "medium",
+      "scoreUplift": 5,
+      "recommendations": [
+        "Split petManager.editor.core.js into smaller, focused modules.",
+        "Extract pure helpers into separate utility files.",
+        "Add a LOC budget to CI for long-term prevention."
+      ]
+    },
+    {
+      "severity": "P1",
+      "marker": "P1",
+      "category": "bloat",
+      "file": "YiPet/modules/pet/content/modules/petManager.roles.js",
+      "line": 1,
+      "message": "File exceeds 1000 LOC (1292 lines) — consider splitting by concern",
+      "metric": "1292 LOC",
+      "impact": "Moderately large file → harder to test, review, and maintain.",
+      "effort": "medium",
+      "scoreUplift": 5,
+      "recommendations": [
+        "Split petManager.roles.js into smaller, focused modules.",
+        "Extract pure helpers into separate utility files.",
+        "Add a LOC budget to CI for long-term prevention."
+      ]
+    },
+    {
+      "severity": "P1",
+      "marker": "P1",
+      "category": "bloat",
+      "file": "YiPet/modules/pet/content/petManager.chat.js",
+      "line": 1,
+      "message": "File exceeds 1000 LOC (1677 lines) — consider splitting by concern",
+      "metric": "1677 LOC",
+      "impact": "Moderately large file → harder to test, review, and maintain.",
+      "effort": "medium",
+      "scoreUplift": 5,
+      "recommendations": [
+        "Split petManager.chat.js into smaller, focused modules.",
+        "Extract pure helpers into separate utility files.",
+        "Add a LOC budget to CI for long-term prevention."
+      ]
+    },
+    {
+      "severity": "P1",
+      "marker": "P1",
+      "category": "bloat",
+      "file": "YiPet/modules/pet/content/session/petManager.session.crud.js",
+      "line": 1,
+      "message": "File exceeds 1000 LOC (1079 lines) — consider splitting by concern",
+      "metric": "1079 LOC",
+      "impact": "Moderately large file → harder to test, review, and maintain.",
+      "effort": "medium",
+      "scoreUplift": 5,
+      "recommendations": [
+        "Split petManager.session.crud.js into smaller, focused modules.",
+        "Extract pure helpers into separate utility files.",
+        "Add a LOC budget to CI for long-term prevention."
+      ]
+    },
+    {
+      "severity": "P1",
+      "marker": "P1",
+      "category": "cycle",
+      "file": "YiPot/src/services/translate/openai/Config.jsx",
+      "line": 1,
+      "message": "Circular dependency (len 2): YiPot/src/services/translate/openai/Config.jsx → YiPot/src/services/translate/openai/index.jsx → YiPot/src/services/translate/openai/Config.jsx",
+      "metric": "cycle len 2",
+      "impact": "Circular imports → init-order bugs, tree-shaking breakage, hot-reload instability.",
+      "effort": "medium",
+      "scoreUplift": 4,
+      "cyclePath": "YiPot/src/services/translate/openai/Config.jsx → YiPot/src/services/translate/openai/index.jsx → YiPot/src/services/translate/openai/Config.jsx",
+      "recommendations": [
+        "Extract shared logic into a third module that both files import.",
+        "Invert one edge via dependency injection.",
+        "Merge overlapping concerns if the cycle indicates artificial separation."
+      ]
+    },
+    {
+      "severity": "P1",
+      "marker": "P1",
+      "category": "bloat",
+      "file": "YiWeb/src/views/aicr/components/fileTree/fileTreeMethods.js",
+      "line": 1,
+      "message": "File exceeds 1000 LOC (1028 lines) — consider splitting by concern",
+      "metric": "1028 LOC",
+      "impact": "Moderately large file → harder to test, review, and maintain.",
+      "effort": "medium",
+      "scoreUplift": 5,
+      "recommendations": [
+        "Split fileTreeMethods.js into smaller, focused modules.",
+        "Extract pure helpers into separate utility files.",
+        "Add a LOC budget to CI for long-term prevention."
+      ]
+    },
+    {
+      "severity": "P1",
+      "marker": "P1",
+      "category": "coupling",
+      "file": "YiWeb/src/views/aicr/hooks/useMethods.js",
+      "line": 1,
+      "message": "High fan-out (18) — imports 18 modules, consider decoupling",
+      "metric": "fan-out 18",
+      "impact": "High coupling → changes may have unexpected side effects.",
+      "effort": "medium",
+      "scoreUplift": 5,
+      "recommendations": [
+        "Review the dependency list and identify unnecessary imports.",
+        "Group related dependencies into a façade module."
+      ]
+    },
+    {
+      "severity": "P2",
+      "marker": "P2",
+      "category": "orphan",
+      "file": "Websites/DpMarket/assets/js/apexchart.js",
+      "line": null,
+      "message": "Orphan file — no inbound references detected, potential dead code",
+      "metric": "0 inbound refs",
+      "impact": "No inbound references → dead code or forgotten entry; inflates cognitive surface.",
+      "effort": "low",
+      "scoreUplift": 2,
+      "recommendations": [
+        "Grep for dynamic imports / reflection / string-based resolvers before deletion.",
+        "Check git log for last touch and contact prior authors.",
+        "Delete in a dedicated PR; revert is cheap if needed."
+      ]
+    },
+    {
+      "severity": "P2",
+      "marker": "P2",
+      "category": "orphan",
+      "file": "Websites/Prompt/assets/js/vendor.js",
+      "line": null,
+      "message": "Orphan file — no inbound references detected, potential dead code",
+      "metric": "0 inbound refs",
+      "impact": "No inbound references → dead code or forgotten entry; inflates cognitive surface.",
+      "effort": "low",
+      "scoreUplift": 2,
+      "recommendations": [
+        "Grep for dynamic imports / reflection / string-based resolvers before deletion.",
+        "Check git log for last touch and contact prior authors.",
+        "Delete in a dedicated PR; revert is cheap if needed."
+      ]
+    },
+    {
+      "severity": "P2",
+      "marker": "P2",
+      "category": "orphan",
+      "file": "Websites/Prompt/assets/js/vendor.min.js",
+      "line": null,
+      "message": "Orphan file — no inbound references detected, potential dead code",
+      "metric": "0 inbound refs",
+      "impact": "No inbound references → dead code or forgotten entry; inflates cognitive surface.",
+      "effort": "low",
+      "scoreUplift": 2,
+      "recommendations": [
+        "Grep for dynamic imports / reflection / string-based resolvers before deletion.",
+        "Check git log for last touch and contact prior authors.",
+        "Delete in a dedicated PR; revert is cheap if needed."
+      ]
+    },
+    {
+      "severity": "P2",
+      "marker": "P2",
+      "category": "orphan",
+      "file": "Websites/Prompt/assets/libs/leaflet/leaflet-src.esm.js",
+      "line": null,
+      "message": "Orphan file — no inbound references detected, potential dead code",
+      "metric": "0 inbound refs",
+      "impact": "No inbound references → dead code or forgotten entry; inflates cognitive surface.",
+      "effort": "low",
+      "scoreUplift": 2,
+      "recommendations": [
+        "Grep for dynamic imports / reflection / string-based resolvers before deletion.",
+        "Check git log for last touch and contact prior authors.",
+        "Delete in a dedicated PR; revert is cheap if needed."
+      ]
+    },
+    {
+      "severity": "P2",
+      "marker": "P2",
+      "category": "orphan",
+      "file": "Websites/Prompt/assets/libs/leaflet/leaflet-src.js",
+      "line": null,
+      "message": "Orphan file — no inbound references detected, potential dead code",
+      "metric": "0 inbound refs",
+      "impact": "No inbound references → dead code or forgotten entry; inflates cognitive surface.",
+      "effort": "low",
+      "scoreUplift": 2,
+      "recommendations": [
+        "Grep for dynamic imports / reflection / string-based resolvers before deletion.",
+        "Check git log for last touch and contact prior authors.",
+        "Delete in a dedicated PR; revert is cheap if needed."
+      ]
+    },
+    {
+      "severity": "P2",
+      "marker": "P2",
+      "category": "orphan",
+      "file": "YiPet/libs/apexcharts@3.46.0/apexcharts.min.js",
+      "line": null,
+      "message": "Orphan file — no inbound references detected, potential dead code",
+      "metric": "0 inbound refs",
+      "impact": "No inbound references → dead code or forgotten entry; inflates cognitive surface.",
+      "effort": "low",
+      "scoreUplift": 2,
+      "recommendations": [
+        "Grep for dynamic imports / reflection / string-based resolvers before deletion.",
+        "Check git log for last touch and contact prior authors.",
+        "Delete in a dedicated PR; revert is cheap if needed."
+      ]
+    },
+    {
+      "severity": "P2",
+      "marker": "P2",
+      "category": "orphan",
+      "file": "YiPet/libs/mermaid.min.js",
+      "line": null,
+      "message": "Orphan file — no inbound references detected, potential dead code",
+      "metric": "0 inbound refs",
+      "impact": "No inbound references → dead code or forgotten entry; inflates cognitive surface.",
+      "effort": "low",
+      "scoreUplift": 2,
+      "recommendations": [
+        "Grep for dynamic imports / reflection / string-based resolvers before deletion.",
+        "Check git log for last touch and contact prior authors.",
+        "Delete in a dedicated PR; revert is cheap if needed."
+      ]
+    },
+    {
+      "severity": "P2",
+      "marker": "P2",
+      "category": "orphan",
+      "file": "YiPet/libs/vue.global.js",
+      "line": null,
+      "message": "Orphan file — no inbound references detected, potential dead code",
+      "metric": "0 inbound refs",
+      "impact": "No inbound references → dead code or forgotten entry; inflates cognitive surface.",
+      "effort": "low",
+      "scoreUplift": 2,
+      "recommendations": [
+        "Grep for dynamic imports / reflection / string-based resolvers before deletion.",
+        "Check git log for last touch and contact prior authors.",
+        "Delete in a dedicated PR; revert is cheap if needed."
+      ]
+    },
+    {
+      "severity": "P2",
+      "marker": "P2",
+      "category": "orphan",
+      "file": "YiPet/libs/xlsx@0.20.3/xlsx.full.min.js",
+      "line": null,
+      "message": "Orphan file — no inbound references detected, potential dead code",
+      "metric": "0 inbound refs",
+      "impact": "No inbound references → dead code or forgotten entry; inflates cognitive surface.",
+      "effort": "low",
+      "scoreUplift": 2,
+      "recommendations": [
+        "Grep for dynamic imports / reflection / string-based resolvers before deletion.",
+        "Check git log for last touch and contact prior authors.",
+        "Delete in a dedicated PR; revert is cheap if needed."
+      ]
+    },
+    {
+      "severity": "P2",
+      "marker": "P2",
+      "category": "orphan",
+      "file": "YiPot/public/tesseract-core-simd-lstm.wasm.js",
+      "line": null,
+      "message": "Orphan file — no inbound references detected, potential dead code",
+      "metric": "0 inbound refs",
+      "impact": "No inbound references → dead code or forgotten entry; inflates cognitive surface.",
+      "effort": "low",
+      "scoreUplift": 2,
+      "recommendations": [
+        "Grep for dynamic imports / reflection / string-based resolvers before deletion.",
+        "Check git log for last touch and contact prior authors.",
+        "Delete in a dedicated PR; revert is cheap if needed."
+      ]
+    },
+    {
+      "severity": "P0",
+      "marker": "P0",
+      "category": "bloat",
+      "file": "Websites/Corporato/js/slick.js",
+      "line": 1,
+      "message": "File exceeds 2000 LOC (2892 lines) — monolithic js file, split candidate",
+      "metric": "2892 LOC",
+      "impact": "Large file → high cognitive load, merge conflicts, review fatigue, slower onboarding.",
+      "effort": "high",
+      "scoreUplift": 10,
+      "recommendations": [
+        "Split slick.js by concern into modular sub-files.",
+        "Move pure helpers into dedicated utility modules.",
+        "Add a LOC budget to CI so the file cannot silently regress.",
+        "After split, re-run this report and confirm fan-out drops before merge."
+      ]
+    },
+    {
+      "severity": "P0",
+      "marker": "P0",
+      "category": "bloat",
+      "file": "Websites/Duck/script.js",
+      "line": 1,
+      "message": "File exceeds 2000 LOC (3286 lines) — monolithic js file, split candidate",
+      "metric": "3286 LOC",
+      "impact": "Large file → high cognitive load, merge conflicts, review fatigue, slower onboarding.",
+      "effort": "high",
+      "scoreUplift": 10,
+      "recommendations": [
+        "Split script.js by concern into modular sub-files.",
+        "Move pure helpers into dedicated utility modules.",
+        "Add a LOC budget to CI so the file cannot silently regress.",
+        "After split, re-run this report and confirm fan-out drops before merge."
+      ]
+    },
+    {
+      "severity": "P0",
+      "marker": "P0",
+      "category": "bloat",
+      "file": "Websites/Prompt/assets/libs/leaflet/leaflet-src.esm.js",
+      "line": 1,
+      "message": "File exceeds 2000 LOC (13968 lines) — monolithic js file, split candidate",
+      "metric": "13968 LOC",
+      "impact": "Large file → high cognitive load, merge conflicts, review fatigue, slower onboarding.",
+      "effort": "high",
+      "scoreUplift": 10,
+      "recommendations": [
+        "Split leaflet-src.esm.js by concern into modular sub-files.",
+        "Move pure helpers into dedicated utility modules.",
+        "Add a LOC budget to CI so the file cannot silently regress.",
+        "After split, re-run this report and confirm fan-out drops before merge."
+      ]
+    },
+    {
+      "severity": "P0",
+      "marker": "P0",
+      "category": "bloat",
+      "file": "Websites/Prompt/assets/libs/leaflet/leaflet-src.js",
+      "line": 1,
+      "message": "File exceeds 2000 LOC (14062 lines) — monolithic js file, split candidate",
+      "metric": "14062 LOC",
+      "impact": "Large file → high cognitive load, merge conflicts, review fatigue, slower onboarding.",
+      "effort": "high",
+      "scoreUplift": 10,
+      "recommendations": [
+        "Split leaflet-src.js by concern into modular sub-files.",
+        "Move pure helpers into dedicated utility modules.",
+        "Add a LOC budget to CI so the file cannot silently regress.",
+        "After split, re-run this report and confirm fan-out drops before merge."
+      ]
+    },
+    {
+      "severity": "P0",
+      "marker": "P0",
+      "category": "coupling",
+      "file": "Websites/Prompt/assets/libs/swiper/esm/components/core/core-class.js",
+      "line": 1,
+      "message": "Extreme fan-out (22) — imports 22+ modules, central coupling hub",
+      "metric": "fan-out 22",
+      "impact": "God module → changes ripple to many dependents; any edit here risks cascading failures.",
+      "effort": "high",
+      "scoreUplift": 8,
+      "recommendations": [
+        "Split into domain-scoped modules.",
+        "Introduce a façade pattern for cross-cutting services.",
+        "Add module-boundary lint to enforce fan-out limits."
+      ]
+    },
+    {
+      "severity": "P0",
+      "marker": "P0",
+      "category": "bloat",
+      "file": "Websites/Socialite/public/assets/js/simplebar.js",
+      "line": 1,
+      "message": "File exceeds 2000 LOC (4391 lines) — monolithic js file, split candidate",
+      "metric": "4391 LOC",
+      "impact": "Large file → high cognitive load, merge conflicts, review fatigue, slower onboarding.",
+      "effort": "high",
+      "scoreUplift": 10,
+      "recommendations": [
+        "Split simplebar.js by concern into modular sub-files.",
+        "Move pure helpers into dedicated utility modules.",
+        "Add a LOC budget to CI so the file cannot silently regress.",
+        "After split, re-run this report and confirm fan-out drops before merge."
+      ]
+    },
+    {
+      "severity": "P0",
+      "marker": "P0",
+      "category": "bloat",
+      "file": "YiH5/views/home/index.js",
+      "line": 1,
+      "message": "File exceeds 2000 LOC (3348 lines) — monolithic js file, split candidate",
+      "metric": "3348 LOC",
+      "impact": "Large file → high cognitive load, merge conflicts, review fatigue, slower onboarding.",
+      "effort": "high",
+      "scoreUplift": 10,
+      "recommendations": [
+        "Split index.js by concern into modular sub-files.",
+        "Move pure helpers into dedicated utility modules.",
+        "Add a LOC budget to CI so the file cannot silently regress.",
+        "After split, re-run this report and confirm fan-out drops before merge."
+      ]
+    },
+    {
+      "severity": "P0",
+      "marker": "P0",
+      "category": "bloat",
+      "file": "YiPet/libs/mermaid.min.js",
+      "line": 1,
+      "message": "File exceeds 2000 LOC (177342 lines) — monolithic js file, split candidate",
+      "metric": "177342 LOC",
+      "impact": "Large file → high cognitive load, merge conflicts, review fatigue, slower onboarding.",
+      "effort": "high",
+      "scoreUplift": 10,
+      "recommendations": [
+        "Split mermaid.min.js by concern into modular sub-files.",
+        "Move pure helpers into dedicated utility modules.",
+        "Add a LOC budget to CI so the file cannot silently regress.",
+        "After split, re-run this report and confirm fan-out drops before merge."
+      ]
+    },
+    {
+      "severity": "P0",
+      "marker": "P0",
+      "category": "bloat",
+      "file": "YiPet/libs/slick@1.6.0/js/slick.js",
+      "line": 1,
+      "message": "File exceeds 2000 LOC (2892 lines) — monolithic js file, split candidate",
+      "metric": "2892 LOC",
+      "impact": "Large file → high cognitive load, merge conflicts, review fatigue, slower onboarding.",
+      "effort": "high",
+      "scoreUplift": 10,
+      "recommendations": [
+        "Split slick.js by concern into modular sub-files.",
+        "Move pure helpers into dedicated utility modules.",
+        "Add a LOC budget to CI so the file cannot silently regress.",
+        "After split, re-run this report and confirm fan-out drops before merge."
+      ]
+    },
+    {
+      "severity": "P0",
+      "marker": "P0",
+      "category": "bloat",
+      "file": "YiPet/libs/vue.global.js",
+      "line": 1,
+      "message": "File exceeds 2000 LOC (17739 lines) — monolithic js file, split candidate",
+      "metric": "17739 LOC",
+      "impact": "Large file → high cognitive load, merge conflicts, review fatigue, slower onboarding.",
+      "effort": "high",
+      "scoreUplift": 10,
+      "recommendations": [
+        "Split vue.global.js by concern into modular sub-files.",
+        "Move pure helpers into dedicated utility modules.",
+        "Add a LOC budget to CI so the file cannot silently regress.",
+        "After split, re-run this report and confirm fan-out drops before merge."
+      ]
+    },
+    {
+      "severity": "P0",
+      "marker": "P0",
+      "category": "bloat",
+      "file": "YiWeb/src/views/aicr/components/codeView/index.js",
+      "line": 1,
+      "message": "File exceeds 2000 LOC (2912 lines) — monolithic js file, split candidate",
+      "metric": "2912 LOC",
+      "impact": "Large file → high cognitive load, merge conflicts, review fatigue, slower onboarding.",
+      "effort": "high",
+      "scoreUplift": 10,
+      "recommendations": [
+        "Split index.js by concern into modular sub-files.",
+        "Move pure helpers into dedicated utility modules.",
+        "Add a LOC budget to CI so the file cannot silently regress.",
+        "After split, re-run this report and confirm fan-out drops before merge."
+      ]
+    }
+  ],
+  "summary": {
+    "totalFiles": 4462,
+    "totalBytes": 194304348,
+    "totalBytesHuman": "185.30 MB",
+    "totalLines": 1462127,
+    "maxDepth": 4,
+    "criticalCount": 11,
+    "hotspotCount": 20,
+    "cycleCount": 1,
+    "staleCount": 0
+  },
+  "treemap": [
+    {
+      "name": "Websites/DpMarket",
+      "bytes": 33417031,
+      "humanBytes": "31.87 MB"
+    },
+    {
+      "name": "Websites/Prompt",
+      "bytes": 21730363,
+      "humanBytes": "20.72 MB"
+    },
+    {
+      "name": "Websites/Mortal",
+      "bytes": 19451292,
+      "humanBytes": "18.55 MB"
+    },
+    {
+      "name": "Websites/Adminto",
+      "bytes": 19186123,
+      "humanBytes": "18.30 MB"
+    },
+    {
+      "name": "Websites/News",
+      "bytes": 14568889,
+      "humanBytes": "13.89 MB"
+    },
+    {
+      "name": "Websites/Arter",
+      "bytes": 13351084,
+      "humanBytes": "12.73 MB"
+    },
+    {
+      "name": "Websites/Socialite",
+      "bytes": 12345027,
+      "humanBytes": "11.77 MB"
+    },
+    {
+      "name": "YiPet/libs",
+      "bytes": 11818290,
+      "humanBytes": "11.27 MB"
+    },
+    {
+      "name": "YiPet/cdn",
+      "bytes": 8813892,
+      "humanBytes": "8.41 MB"
+    },
+    {
+      "name": "YiPot/asset",
+      "bytes": 7685326,
+      "humanBytes": "7.33 MB"
+    },
+    {
+      "name": "YiPot/public",
+      "bytes": 5845543,
+      "humanBytes": "5.57 MB"
+    },
+    {
+      "name": "Websites/Corporato",
+      "bytes": 5655354,
+      "humanBytes": "5.39 MB"
+    },
+    {
+      "name": "Websites/Kasy",
+      "bytes": 5600522,
+      "humanBytes": "5.34 MB"
+    },
+    {
+      "name": "YiPet/assets",
+      "bytes": 3662115,
+      "humanBytes": "3.49 MB"
+    },
+    {
+      "name": "YiPot/src-tauri",
+      "bytes": 2456605,
+      "humanBytes": "2.34 MB"
+    },
+    {
+      "name": "Websites/Blog",
+      "bytes": 2013902,
+      "humanBytes": "1.92 MB"
+    },
+    {
+      "name": "Websites/Blogez",
+      "bytes": 1824881,
+      "humanBytes": "1.74 MB"
+    },
+    {
+      "name": "YiWeb/src",
+      "bytes": 1703506,
+      "humanBytes": "1.62 MB"
+    },
+    {
+      "name": "YiPet/modules",
+      "bytes": 1018081,
+      "humanBytes": "994 KB"
+    },
+    {
+      "name": "YiPot/src",
+      "bytes": 721439,
+      "humanBytes": "705 KB"
+    }
+  ],
+  "types": [
+    {
+      "type": ".img",
+      "fileCount": 2327,
+      "pctFiles": 52.2,
+      "totalBytes": 106220172,
+      "totalBytesHuman": "101.30 MB",
+      "pctBytes": 54.7,
+      "totalLines": 419485
+    },
+    {
+      "type": ".font",
+      "fileCount": 158,
+      "pctFiles": 3.5,
+      "totalBytes": 27622488,
+      "totalBytesHuman": "26.34 MB",
+      "pctBytes": 14.2,
+      "totalLines": 173706
+    },
+    {
+      "type": ".js",
+      "fileCount": 881,
+      "pctFiles": 19.7,
+      "totalBytes": 26735023,
+      "totalBytesHuman": "25.50 MB",
+      "pctBytes": 13.8,
+      "totalLines": 395554
+    },
+    {
+      "type": ".html",
+      "fileCount": 325,
+      "pctFiles": 7.3,
+      "totalBytes": 15383108,
+      "totalBytesHuman": "14.67 MB",
+      "pctBytes": 7.9,
+      "totalLines": 257979
+    },
+    {
+      "type": ".media",
+      "fileCount": 2,
+      "pctFiles": 0,
+      "totalBytes": 6506015,
+      "totalBytesHuman": "6.20 MB",
+      "pctBytes": 3.3,
+      "totalLines": 25216
+    },
+    {
+      "type": ".css",
+      "fileCount": 228,
+      "pctFiles": 5.1,
+      "totalBytes": 6065134,
+      "totalBytesHuman": "5.78 MB",
+      "pctBytes": 3.1,
+      "totalLines": 98128
+    },
+    {
+      "type": ".map",
+      "fileCount": 8,
+      "pctFiles": 0.2,
+      "totalBytes": 1847559,
+      "totalBytesHuman": "1.76 MB",
+      "pctBytes": 1,
+      "totalLines": 8
+    },
+    {
+      "type": ".icns",
+      "fileCount": 2,
+      "pctFiles": 0,
+      "totalBytes": 1052796,
+      "totalBytesHuman": "1.00 MB",
+      "pctBytes": 0.5,
+      "totalLines": 1850
+    },
+    {
+      "type": ".scss",
+      "fileCount": 157,
+      "pctFiles": 3.5,
+      "totalBytes": 899523,
+      "totalBytesHuman": "878 KB",
+      "pctBytes": 0.5,
+      "totalLines": 52752
+    },
+    {
+      "type": ".jsx",
+      "fileCount": 141,
+      "pctFiles": 3.2,
+      "totalBytes": 657061,
+      "totalBytesHuman": "642 KB",
+      "pctBytes": 0.3,
+      "totalLines": 16161
+    },
+    {
+      "type": ".other",
+      "fileCount": 17,
+      "pctFiles": 0.4,
+      "totalBytes": 507170,
+      "totalBytesHuman": "495 KB",
+      "pctBytes": 0.3,
+      "totalLines": 2291
+    },
+    {
+      "type": ".py",
+      "fileCount": 48,
+      "pctFiles": 1.1,
+      "totalBytes": 228596,
+      "totalBytesHuman": "223 KB",
+      "pctBytes": 0.1,
+      "totalLines": 6465
+    },
+    {
+      "type": ".json",
+      "fileCount": 23,
+      "pctFiles": 0.5,
+      "totalBytes": 215392,
+      "totalBytesHuman": "210 KB",
+      "pctBytes": 0.1,
+      "totalLines": 1835
+    },
+    {
+      "type": ".txt",
+      "fileCount": 29,
+      "pctFiles": 0.6,
+      "totalBytes": 120034,
+      "totalBytesHuman": "117 KB",
+      "pctBytes": 0.1,
+      "totalLines": 2553
+    },
+    {
+      "type": ".rs",
+      "fileCount": 15,
+      "pctFiles": 0.3,
+      "totalBytes": 84685,
+      "totalBytesHuman": "83 KB",
+      "pctBytes": 0,
+      "totalLines": 2391
+    },
+    {
+      "type": ".ts",
+      "fileCount": 71,
+      "pctFiles": 1.6,
+      "totalBytes": 74565,
+      "totalBytesHuman": "73 KB",
+      "pctBytes": 0,
+      "totalLines": 3173
+    },
+    {
+      "type": ".vue",
+      "fileCount": 9,
+      "pctFiles": 0.2,
+      "totalBytes": 20973,
+      "totalBytesHuman": "20 KB",
+      "pctBytes": 0,
+      "totalLines": 699
+    },
+    {
+      "type": ".svelte",
+      "fileCount": 4,
+      "pctFiles": 0.1,
+      "totalBytes": 13240,
+      "totalBytesHuman": "13 KB",
+      "pctBytes": 0,
+      "totalLines": 516
+    },
+    {
+      "type": ".xml",
+      "fileCount": 1,
+      "pctFiles": 0,
+      "totalBytes": 12978,
+      "totalBytesHuman": "13 KB",
+      "pctBytes": 0,
+      "totalLines": 237
+    },
+    {
+      "type": ".md",
+      "fileCount": 2,
+      "pctFiles": 0,
+      "totalBytes": 12598,
+      "totalBytesHuman": "12 KB",
+      "pctBytes": 0,
+      "totalLines": 408
+    },
+    {
+      "type": ".php",
+      "fileCount": 3,
+      "pctFiles": 0.1,
+      "totalBytes": 7525,
+      "totalBytesHuman": "7 KB",
+      "pctBytes": 0,
+      "totalLines": 192
+    },
+    {
+      "type": ".mjs",
+      "fileCount": 2,
+      "pctFiles": 0,
+      "totalBytes": 7395,
+      "totalBytesHuman": "7 KB",
+      "pctBytes": 0,
+      "totalLines": 174
+    },
+    {
+      "type": ".cjs",
+      "fileCount": 1,
+      "pctFiles": 0,
+      "totalBytes": 2619,
+      "totalBytesHuman": "3 KB",
+      "pctBytes": 0,
+      "totalLines": 76
+    },
+    {
+      "type": ".toml",
+      "fileCount": 1,
+      "pctFiles": 0,
+      "totalBytes": 2548,
+      "totalBytesHuman": "2 KB",
+      "pctBytes": 0,
+      "totalLines": 58
+    },
+    {
+      "type": ".yaml",
+      "fileCount": 1,
+      "pctFiles": 0,
+      "totalBytes": 2295,
+      "totalBytesHuman": "2 KB",
+      "pctBytes": 0,
+      "totalLines": 125
+    },
+    {
+      "type": ".plist",
+      "fileCount": 1,
+      "pctFiles": 0,
+      "totalBytes": 1196,
+      "totalBytesHuman": "1 KB",
+      "pctBytes": 0,
+      "totalLines": 35
+    },
+    {
+      "type": ".patch",
+      "fileCount": 1,
+      "pctFiles": 0,
+      "totalBytes": 1091,
+      "totalBytesHuman": "1 KB",
+      "pctBytes": 0,
+      "totalLines": 38
+    },
+    {
+      "type": ".sh",
+      "fileCount": 3,
+      "pctFiles": 0.1,
+      "totalBytes": 392,
+      "totalBytesHuman": "392 B",
+      "pctBytes": 0,
+      "totalLines": 15
+    },
+    {
+      "type": ".ps1",
+      "fileCount": 1,
+      "pctFiles": 0,
+      "totalBytes": 177,
+      "totalBytesHuman": "177 B",
+      "pctBytes": 0,
+      "totalLines": 7
+    }
+  ],
+  "histogram": [
+    {
+      "bucket": "0",
+      "count": 676,
+      "pctFiles": 15.2
+    },
+    {
+      "bucket": "1-50",
+      "count": 1792,
+      "pctFiles": 40.2
+    },
+    {
+      "bucket": "51-100",
+      "count": 510,
+      "pctFiles": 11.4
+    },
+    {
+      "bucket": "101-250",
+      "count": 592,
+      "pctFiles": 13.3
+    },
+    {
+      "bucket": "251-500",
+      "count": 362,
+      "pctFiles": 8.1
+    },
+    {
+      "bucket": "501-1000",
+      "count": 294,
+      "pctFiles": 6.6
+    },
+    {
+      "bucket": "1001-2000",
+      "count": 150,
+      "pctFiles": 3.4
+    },
+    {
+      "bucket": "2000+",
+      "count": 86,
+      "pctFiles": 1.9
+    }
+  ],
+  "largest": [
+    {
+      "path": "YiPet/libs/mermaid.min.js",
+      "bytes": 6935293,
+      "bytesHuman": "6.61 MB",
+      "lines": 177342,
+      "type": ".js",
+      "depth": 0,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "Websites/Adminto/Admin/src/assets/images/lightbox-video.mp4",
+      "bytes": 4363546,
+      "bytesHuman": "4.16 MB",
+      "lines": 16762,
+      "type": ".media",
+      "depth": 0,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "YiPot/public/tesseract-core-simd-lstm.wasm.js",
+      "bytes": 3938114,
+      "bytesHuman": "3.76 MB",
+      "lines": 281,
+      "type": ".js",
+      "depth": 0,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "Websites/Mortal/assets/fonts/materialdesignicons-webfont.svg",
+      "bytes": 3658029,
+      "bytesHuman": "3.49 MB",
+      "lines": 9879,
+      "type": ".img",
+      "depth": 0,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "Websites/DpMarket/assets/images/gradients/pricing-gradient-bg.png",
+      "bytes": 3473214,
+      "bytesHuman": "3.31 MB",
+      "lines": 9341,
+      "type": ".img",
+      "depth": 0,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "Websites/Adminto/Admin/src/assets/fonts/lucide.svg",
+      "bytes": 3210820,
+      "bytesHuman": "3.06 MB",
+      "lines": 15298,
+      "type": ".img",
+      "depth": 0,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "Websites/Arter/img/face-2.png",
+      "bytes": 2312355,
+      "bytesHuman": "2.21 MB",
+      "lines": 8462,
+      "type": ".img",
+      "depth": 0,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "Websites/DpMarket/assets/images/gradients/newsletter-gradient-bg.png",
+      "bytes": 2291592,
+      "bytesHuman": "2.19 MB",
+      "lines": 4285,
+      "type": ".img",
+      "depth": 0,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "Websites/DpMarket/assets/images/gradients/thank-you-gradient.png",
+      "bytes": 2168995,
+      "bytesHuman": "2.07 MB",
+      "lines": 6766,
+      "type": ".img",
+      "depth": 0,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "Websites/Mortal/assets/images/modern.mp4",
+      "bytes": 2142469,
+      "bytesHuman": "2.04 MB",
+      "lines": 8454,
+      "type": ".media",
+      "depth": 0,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "Websites/Prompt/assets/images/hero/marketing.png",
+      "bytes": 1701077,
+      "bytesHuman": "1.62 MB",
+      "lines": 17262,
+      "type": ".img",
+      "depth": 0,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "Websites/DpMarket/assets/images/gradients/footer-gradient-bg.png",
+      "bytes": 1607977,
+      "bytesHuman": "1.53 MB",
+      "lines": 4408,
+      "type": ".img",
+      "depth": 0,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "YiPot/asset/eg4.gif",
+      "bytes": 1506035,
+      "bytesHuman": "1.44 MB",
+      "lines": 6792,
+      "type": ".img",
+      "depth": 0,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "Websites/Corporato/images/liader.gif",
+      "bytes": 1433594,
+      "bytesHuman": "1.37 MB",
+      "lines": 6144,
+      "type": ".img",
+      "depth": 0,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "YiPot/asset/eg3.gif",
+      "bytes": 1390562,
+      "bytesHuman": "1.33 MB",
+      "lines": 6884,
+      "type": ".img",
+      "depth": 0,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "Websites/DpMarket/assets/images/gradients/banner-gradient.png",
+      "bytes": 1314807,
+      "bytesHuman": "1.25 MB",
+      "lines": 5093,
+      "type": ".img",
+      "depth": 0,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "Websites/Arter/img/testimonials/face-2.jpg",
+      "bytes": 1282373,
+      "bytesHuman": "1.22 MB",
+      "lines": 5119,
+      "type": ".img",
+      "depth": 0,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "Websites/Adminto/Admin/src/assets/fonts/materialdesignicons-webfont.eot",
+      "bytes": 1280212,
+      "bytesHuman": "1.22 MB",
+      "lines": 8669,
+      "type": ".font",
+      "depth": 0,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "Websites/Mortal/assets/libs/@mdi/font/fonts/materialdesignicons-webfont.eot",
+      "bytes": 1280212,
+      "bytesHuman": "1.22 MB",
+      "lines": 8669,
+      "type": ".font",
+      "depth": 0,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "Websites/Adminto/Admin/src/assets/fonts/materialdesignicons-webfont.ttf",
+      "bytes": 1279992,
+      "bytesHuman": "1.22 MB",
+      "lines": 8669,
+      "type": ".font",
+      "depth": 0,
+      "fanIn": 0,
+      "fanOut": 0
+    }
+  ],
+  "fanin": [
+    {
+      "path": "YiPot/src/utils/service_instance.ts",
+      "fanIn": 53,
+      "fanOut": 0,
+      "extDeps": 0,
+      "lines": 50,
+      "type": ".ts"
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/esm/utils/utils.js",
+      "fanIn": 33,
+      "fanOut": 0,
+      "extDeps": 1,
+      "lines": 162,
+      "type": ".js"
+    },
+    {
+      "path": "YiPot/src/hooks/useConfig.jsx",
+      "fanIn": 31,
+      "fanOut": 2,
+      "extDeps": 2,
+      "lines": 67,
+      "type": ".jsx"
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/esm/utils/dom.js",
+      "fanIn": 23,
+      "fanOut": 0,
+      "extDeps": 1,
+      "lines": 45,
+      "type": ".js"
+    },
+    {
+      "path": "YiPot/src/utils/env.js",
+      "fanIn": 21,
+      "fanOut": 0,
+      "extDeps": 2,
+      "lines": 14,
+      "type": ".js"
+    },
+    {
+      "path": "Websites/Flow/packages/flow-designer/src/types/enums.ts",
+      "fanIn": 11,
+      "fanOut": 0,
+      "extDeps": 0,
+      "lines": 31,
+      "type": ".ts"
+    },
+    {
+      "path": "YiWeb/src/views/aicr/utils/fileFieldNormalizer.js",
+      "fanIn": 11,
+      "fanOut": 0,
+      "extDeps": 0,
+      "lines": 192,
+      "type": ".js"
+    },
+    {
+      "path": "YiPot/src/utils/store.js",
+      "fanIn": 8,
+      "fanOut": 0,
+      "extDeps": 4,
+      "lines": 16,
+      "type": ".js"
+    },
+    {
+      "path": "Websites/Flow/packages/flow-designer/src/tool.ts",
+      "fanIn": 7,
+      "fanOut": 0,
+      "extDeps": 0,
+      "lines": 17,
+      "type": ".ts"
+    },
+    {
+      "path": "YiH5/utils/index.js",
+      "fanIn": 7,
+      "fanOut": 0,
+      "extDeps": 0,
+      "lines": 135,
+      "type": ".js"
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/esm/react/utils.js",
+      "fanIn": 6,
+      "fanOut": 0,
+      "extDeps": 0,
+      "lines": 58,
+      "type": ".js"
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/esm/svelte/utils.js",
+      "fanIn": 6,
+      "fanOut": 0,
+      "extDeps": 0,
+      "lines": 58,
+      "type": ".js"
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/esm/vue/utils.js",
+      "fanIn": 6,
+      "fanOut": 0,
+      "extDeps": 0,
+      "lines": 58,
+      "type": ".js"
+    },
+    {
+      "path": "YiPot/src/utils/language.ts",
+      "fanIn": 6,
+      "fanOut": 0,
+      "extDeps": 0,
+      "lines": 68,
+      "type": ".ts"
+    },
+    {
+      "path": "YiH5/services/client.js",
+      "fanIn": 4,
+      "fanOut": 1,
+      "extDeps": 0,
+      "lines": 158,
+      "type": ".js"
+    },
+    {
+      "path": "YiPot/src/utils/invoke_plugin.js",
+      "fanIn": 4,
+      "fanOut": 1,
+      "extDeps": 6,
+      "lines": 35,
+      "type": ".js"
+    },
+    {
+      "path": "Websites/Flow/packages/flow-designer/src/ui/UIAdapter.ts",
+      "fanIn": 3,
+      "fanOut": 0,
+      "extDeps": 2,
+      "lines": 122,
+      "type": ".ts"
+    },
+    {
+      "path": "YiH5/views/home/state.js",
+      "fanIn": 3,
+      "fanOut": 0,
+      "extDeps": 0,
+      "lines": 216,
+      "type": ".js"
+    },
+    {
+      "path": "YiWeb/src/views/aicr/hooks/state/store.js",
+      "fanIn": 3,
+      "fanOut": 0,
+      "extDeps": 0,
+      "lines": 3,
+      "type": ".js"
+    },
+    {
+      "path": "YiWeb/src/views/story/hooks/validators.js",
+      "fanIn": 3,
+      "fanOut": 0,
+      "extDeps": 1,
+      "lines": 142,
+      "type": ".js"
+    }
+  ],
+  "fanout": [
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/esm/components/core/core-class.js",
+      "fanIn": 1,
+      "fanOut": 22,
+      "extDeps": 0,
+      "lines": 591,
+      "type": ".js"
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/swiper-bundle.esm.js",
+      "fanIn": 0,
+      "fanOut": 20,
+      "extDeps": 0,
+      "lines": 37,
+      "type": ".js"
+    },
+    {
+      "path": "YiWeb/src/views/aicr/hooks/useMethods.js",
+      "fanIn": 0,
+      "fanOut": 18,
+      "extDeps": 6,
+      "lines": 295,
+      "type": ".js"
+    },
+    {
+      "path": "YiH5/views/home/index.js",
+      "fanIn": 0,
+      "fanOut": 12,
+      "extDeps": 1,
+      "lines": 3348,
+      "type": ".js"
+    },
+    {
+      "path": "Websites/Flow/packages/flow-designer/src/plugins/Flow.ts",
+      "fanIn": 1,
+      "fanOut": 10,
+      "extDeps": 2,
+      "lines": 398,
+      "type": ".ts"
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/esm/components/core/update/index.js",
+      "fanIn": 1,
+      "fanOut": 9,
+      "extDeps": 0,
+      "lines": 19,
+      "type": ".js"
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/esm/react/swiper.js",
+      "fanIn": 1,
+      "fanOut": 9,
+      "extDeps": 1,
+      "lines": 205,
+      "type": ".js"
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/esm/vue/swiper.js",
+      "fanIn": 1,
+      "fanOut": 8,
+      "extDeps": 1,
+      "lines": 643,
+      "type": ".js"
+    },
+    {
+      "path": "YiWeb/src/views/aicr/hooks/state/storeFactory.js",
+      "fanIn": 0,
+      "fanOut": 8,
+      "extDeps": 3,
+      "lines": 71,
+      "type": ".js"
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/esm/components/core/slide/index.js",
+      "fanIn": 1,
+      "fanOut": 7,
+      "extDeps": 0,
+      "lines": 15,
+      "type": ".js"
+    },
+    {
+      "path": "YiWeb/src/views/aicr/hooks/sessionChatContextMethods.js",
+      "fanIn": 1,
+      "fanOut": 7,
+      "extDeps": 1,
+      "lines": 728,
+      "type": ".js"
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/esm/components/core/events/index.js",
+      "fanIn": 1,
+      "fanOut": 6,
+      "extDeps": 1,
+      "lines": 135,
+      "type": ".js"
+    },
+    {
+      "path": "YiWeb/src/views/story/hooks/state/storeFactory.js",
+      "fanIn": 0,
+      "fanOut": 6,
+      "extDeps": 0,
+      "lines": 35,
+      "type": ".js"
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/esm/components/core/manipulation/index.js",
+      "fanIn": 1,
+      "fanOut": 5,
+      "extDeps": 0,
+      "lines": 11,
+      "type": ".js"
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/esm/components/core/translate/index.js",
+      "fanIn": 1,
+      "fanOut": 5,
+      "extDeps": 0,
+      "lines": 11,
+      "type": ".js"
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/esm/svelte/swiper.js",
+      "fanIn": 1,
+      "fanOut": 5,
+      "extDeps": 2,
+      "lines": 553,
+      "type": ".js"
+    },
+    {
+      "path": "YiPot/src/window/Config/pages/History/index.jsx",
+      "fanIn": 0,
+      "fanOut": 5,
+      "extDeps": 11,
+      "lines": 380,
+      "type": ".jsx"
+    },
+    {
+      "path": "YiPot/src/window/Translate/components/TargetArea/index.jsx",
+      "fanIn": 0,
+      "fanOut": 5,
+      "extDeps": 16,
+      "lines": 459,
+      "type": ".jsx"
+    },
+    {
+      "path": "YiPot/src/window/Config/pages/Backup/index.jsx",
+      "fanIn": 0,
+      "fanOut": 4,
+      "extDeps": 15,
+      "lines": 317,
+      "type": ".jsx"
+    },
+    {
+      "path": "YiPot/src/window/Translate/components/SourceArea/index.jsx",
+      "fanIn": 0,
+      "fanOut": 4,
+      "extDeps": 8,
+      "lines": 370,
+      "type": ".jsx"
+    }
+  ],
+  "hotspots": [
+    {
+      "path": "YiPet/libs/mermaid.min.js",
+      "bytes": 6935293,
+      "bytesHuman": "6.61 MB",
+      "lines": 177342,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 88.67
+    },
+    {
+      "path": "Websites/Adminto/Admin/src/assets/scss/icons/_materialdesignicons.scss",
+      "bytes": 409198,
+      "bytesHuman": "400 KB",
+      "lines": 29457,
+      "type": ".scss",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 14.73
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/leaflet/reference-1.6.0-newleafdoc.html",
+      "bytes": 820089,
+      "bytesHuman": "801 KB",
+      "lines": 25076,
+      "type": ".html",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 12.54
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/leaflet/reference-1.6.0-oldleafdoc.html",
+      "bytes": 821856,
+      "bytesHuman": "803 KB",
+      "lines": 25051,
+      "type": ".html",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 12.53
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/leaflet/reference-1.6.0.html",
+      "bytes": 821856,
+      "bytesHuman": "803 KB",
+      "lines": 25051,
+      "type": ".html",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 12.53
+    },
+    {
+      "path": "YiPot/src/utils/service_instance.ts",
+      "bytes": 1745,
+      "bytesHuman": "2 KB",
+      "lines": 50,
+      "type": ".ts",
+      "fanIn": 53,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 10.63
+    },
+    {
+      "path": "YiPet/libs/vue.global.js",
+      "bytes": 561941,
+      "bytesHuman": "549 KB",
+      "lines": 17739,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 8.87
+    },
+    {
+      "path": "Websites/Prompt/assets/images/hero/marketing.png",
+      "bytes": 1701077,
+      "bytesHuman": "1.62 MB",
+      "lines": 17262,
+      "type": ".img",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 8.63
+    },
+    {
+      "path": "Websites/Adminto/Admin/src/assets/images/lightbox-video.mp4",
+      "bytes": 4363546,
+      "bytesHuman": "4.16 MB",
+      "lines": 16762,
+      "type": ".media",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 8.38
+    },
+    {
+      "path": "Websites/Adminto/Admin/src/assets/fonts/lucide.svg",
+      "bytes": 3210820,
+      "bytesHuman": "3.06 MB",
+      "lines": 15298,
+      "type": ".img",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 7.65
+    },
+    {
+      "path": "Websites/Prompt/assets/css/theme.css",
+      "bytes": 370867,
+      "bytesHuman": "362 KB",
+      "lines": 14277,
+      "type": ".css",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 7.14
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/leaflet/leaflet-src.js",
+      "bytes": 431131,
+      "bytesHuman": "421 KB",
+      "lines": 14062,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 7.03
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/leaflet/leaflet-src.esm.js",
+      "bytes": 406479,
+      "bytesHuman": "397 KB",
+      "lines": 13968,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 6.98
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/esm/utils/utils.js",
+      "bytes": 4616,
+      "bytesHuman": "5 KB",
+      "lines": 162,
+      "type": ".js",
+      "fanIn": 33,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 6.68
+    },
+    {
+      "path": "YiPot/src/hooks/useConfig.jsx",
+      "bytes": 1925,
+      "bytesHuman": "2 KB",
+      "lines": 67,
+      "type": ".jsx",
+      "fanIn": 31,
+      "fanOut": 2,
+      "maxDepth": 1,
+      "score": 6.63
+    },
+    {
+      "path": "Websites/Prompt/assets/images/hero/marketing1.svg",
+      "bytes": 953563,
+      "bytesHuman": "931 KB",
+      "lines": 12331,
+      "type": ".img",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 6.17
+    },
+    {
+      "path": "Websites/Mortal/assets/fonts/materialdesignicons-webfont.svg",
+      "bytes": 3658029,
+      "bytesHuman": "3.49 MB",
+      "lines": 9879,
+      "type": ".img",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 4.94
+    },
+    {
+      "path": "Websites/DpMarket/assets/images/gradients/pricing-gradient-bg.png",
+      "bytes": 3473214,
+      "bytesHuman": "3.31 MB",
+      "lines": 9341,
+      "type": ".img",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 4.67
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/esm/utils/dom.js",
+      "bytes": 1203,
+      "bytesHuman": "1 KB",
+      "lines": 45,
+      "type": ".js",
+      "fanIn": 23,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 4.62
+    },
+    {
+      "path": "Websites/DpMarket/index-two.html",
+      "bytes": 462819,
+      "bytesHuman": "452 KB",
+      "lines": 8716,
+      "type": ".html",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 4.36
+    }
+  ],
+  "orphans": [
+    {
+      "path": "YiPet/libs/mermaid.min.js",
+      "bytes": 6935293,
+      "bytesHuman": "6.61 MB",
+      "lines": 177342,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 1773.42
+    },
+    {
+      "path": "YiPot/public/tesseract-core-simd-lstm.wasm.js",
+      "bytes": 3938114,
+      "bytesHuman": "3.76 MB",
+      "lines": 281,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 2.81
+    },
+    {
+      "path": "YiPet/libs/xlsx@0.20.3/xlsx.full.min.js",
+      "bytes": 951904,
+      "bytesHuman": "930 KB",
+      "lines": 24,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 0.24
+    },
+    {
+      "path": "Websites/Prompt/assets/js/vendor.min.js",
+      "bytes": 682105,
+      "bytesHuman": "666 KB",
+      "lines": 356,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 3.56
+    },
+    {
+      "path": "Websites/Prompt/assets/js/vendor.js",
+      "bytes": 682065,
+      "bytesHuman": "666 KB",
+      "lines": 354,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 3.54
+    },
+    {
+      "path": "YiPet/libs/vue.global.js",
+      "bytes": 561941,
+      "bytesHuman": "549 KB",
+      "lines": 17739,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 177.39
+    },
+    {
+      "path": "Websites/DpMarket/assets/js/apexchart.js",
+      "bytes": 524399,
+      "bytesHuman": "512 KB",
+      "lines": 13,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 0.13
+    },
+    {
+      "path": "YiPet/libs/apexcharts@3.46.0/apexcharts.min.js",
+      "bytes": 524399,
+      "bytesHuman": "512 KB",
+      "lines": 13,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 0.13
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/leaflet/leaflet-src.js",
+      "bytes": 431131,
+      "bytesHuman": "421 KB",
+      "lines": 14062,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 140.62
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/leaflet/leaflet-src.esm.js",
+      "bytes": 406479,
+      "bytesHuman": "397 KB",
+      "lines": 13968,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 139.68
+    },
+    {
+      "path": "YiPet/libs/jspdf@2.5.2/jspdf.umd.min.js",
+      "bytes": 365730,
+      "bytesHuman": "357 KB",
+      "lines": 398,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 3.98
+    },
+    {
+      "path": "Websites/Adminto/Admin/src/assets/js/pages/icons-material-design.init.js",
+      "bytes": 356486,
+      "bytesHuman": "348 KB",
+      "lines": 42,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 0.42
+    },
+    {
+      "path": "YiPet/libs/html2canvas@1.4.1/html2canvas.min.js",
+      "bytes": 198689,
+      "bytesHuman": "194 KB",
+      "lines": 19,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 0.19
+    },
+    {
+      "path": "Websites/Duck/script.js",
+      "bytes": 172967,
+      "bytesHuman": "169 KB",
+      "lines": 3286,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 32.86
+    },
+    {
+      "path": "Websites/Socialite/public/assets/js/simplebar.js",
+      "bytes": 150426,
+      "bytesHuman": "147 KB",
+      "lines": 4391,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 43.91
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/swiper-bundle.esm.browser.min.js",
+      "bytes": 147812,
+      "bytesHuman": "144 KB",
+      "lines": 13,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 0.13
+    },
+    {
+      "path": "YiPet/libs/vue.global.prod.js",
+      "bytes": 147796,
+      "bytesHuman": "144 KB",
+      "lines": 12,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 0.12
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/swiper-bundle.min.js",
+      "bytes": 142248,
+      "bytesHuman": "139 KB",
+      "lines": 13,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 0.13
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/leaflet/leaflet.js",
+      "bytes": 141941,
+      "bytesHuman": "139 KB",
+      "lines": 5,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 0.05
+    },
+    {
+      "path": "YiPet/libs/leaflet@1.1.1/leaflet.js",
+      "bytes": 141941,
+      "bytesHuman": "139 KB",
+      "lines": 5,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 0.05
+    },
+    {
+      "path": "Websites/Socialite/public/assets/js/uikit.min.js",
+      "bytes": 135975,
+      "bytesHuman": "133 KB",
+      "lines": 1,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 0.01
+    },
+    {
+      "path": "Websites/Kasy/js/swiper-bundle.min.js",
+      "bytes": 134834,
+      "bytesHuman": "132 KB",
+      "lines": 13,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 0.13
+    },
+    {
+      "path": "YiPet/libs/swiper@7.0.3/js/swiper-bundle.min.js",
+      "bytes": 134834,
+      "bytesHuman": "132 KB",
+      "lines": 13,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 0.13
+    },
+    {
+      "path": "YiPet/libs/react@15.6.1/react-dom.min.js",
+      "bytes": 130293,
+      "bytesHuman": "127 KB",
+      "lines": 15,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 0.15
+    },
+    {
+      "path": "YiPot/public/worker.min.js",
+      "bytes": 126321,
+      "bytesHuman": "123 KB",
+      "lines": 2,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 0.02
+    },
+    {
+      "path": "Websites/Arter/js/plugins/swiper.min.js",
+      "bytes": 124740,
+      "bytesHuman": "122 KB",
+      "lines": 13,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 0.13
+    },
+    {
+      "path": "YiPet/libs/gsap/TweenMax.min.js",
+      "bytes": 114925,
+      "bytesHuman": "112 KB",
+      "lines": 16,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 0.16
+    },
+    {
+      "path": "Websites/Corporato/js/jquery-1.12.4.min.js",
+      "bytes": 97163,
+      "bytesHuman": "95 KB",
+      "lines": 5,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 0.05
+    },
+    {
+      "path": "Websites/News/assets/js/vendor/jquery-3.6.0.min.js",
+      "bytes": 89503,
+      "bytesHuman": "87 KB",
+      "lines": 2,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 0.02
+    },
+    {
+      "path": "Websites/Blog/js/jquery-3.6.0.min.js",
+      "bytes": 89501,
+      "bytesHuman": "87 KB",
+      "lines": 2,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 0,
+      "maxDepth": 0,
+      "score": 0.02
+    }
+  ],
+  "depthStats": {
+    "max": 4,
+    "mean": 0.27,
+    "median": 0,
+    "p90": 1,
+    "filesAtMax": 1
+  },
+  "depthRanking": [
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/swiper-bundle.esm.js",
+      "bytes": 1817,
+      "bytesHuman": "2 KB",
+      "lines": 37,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 20,
+      "maxDepth": 4,
+      "score": 2.82
+    },
+    {
+      "path": "Websites/Flow/examples/main.ts",
+      "bytes": 503,
+      "bytesHuman": "503 B",
+      "lines": 14,
+      "type": ".ts",
+      "fanIn": 0,
+      "fanOut": 1,
+      "maxDepth": 3,
+      "score": 0.71
+    },
+    {
+      "path": "Websites/Flow/packages/flow-designer/index.ts",
+      "bytes": 71,
+      "bytesHuman": "71 B",
+      "lines": 1,
+      "type": ".ts",
+      "fanIn": 0,
+      "fanOut": 1,
+      "maxDepth": 3,
+      "score": 0.7
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/esm/components/core/core-class.js",
+      "bytes": 17274,
+      "bytesHuman": "17 KB",
+      "lines": 591,
+      "type": ".js",
+      "fanIn": 1,
+      "fanOut": 22,
+      "maxDepth": 3,
+      "score": 3.3
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/swiper-react.esm.js",
+      "bytes": 393,
+      "bytesHuman": "393 B",
+      "lines": 15,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 2,
+      "maxDepth": 3,
+      "score": 0.81
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/swiper-svelte.esm.js",
+      "bytes": 409,
+      "bytesHuman": "409 B",
+      "lines": 16,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 2,
+      "maxDepth": 3,
+      "score": 0.81
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/swiper-vue.esm.js",
+      "bytes": 387,
+      "bytesHuman": "387 B",
+      "lines": 15,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 2,
+      "maxDepth": 3,
+      "score": 0.81
+    },
+    {
+      "path": "YiH5/components/Chat/index.js",
+      "bytes": 12806,
+      "bytesHuman": "13 KB",
+      "lines": 401,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 3,
+      "maxDepth": 3,
+      "score": 1.1
+    },
+    {
+      "path": "YiH5/views/home/index.js",
+      "bytes": 119975,
+      "bytesHuman": "117 KB",
+      "lines": 3348,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 12,
+      "maxDepth": 3,
+      "score": 3.47
+    },
+    {
+      "path": "YiWeb/src/views/aicr/components/fileTree/index.js",
+      "bytes": 181,
+      "bytesHuman": "181 B",
+      "lines": 4,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 1,
+      "maxDepth": 3,
+      "score": 0.7
+    },
+    {
+      "path": "YiWeb/src/views/aicr/hooks/useMethods.js",
+      "bytes": 9060,
+      "bytesHuman": "9 KB",
+      "lines": 295,
+      "type": ".js",
+      "fanIn": 0,
+      "fanOut": 18,
+      "maxDepth": 3,
+      "score": 2.55
+    },
+    {
+      "path": "Websites/Flow/examples/App.vue",
+      "bytes": 172,
+      "bytesHuman": "172 B",
+      "lines": 11,
+      "type": ".vue",
+      "fanIn": 1,
+      "fanOut": 1,
+      "maxDepth": 2,
+      "score": 0.71
+    },
+    {
+      "path": "Websites/Flow/packages/flow-designer/src/index.vue",
+      "bytes": 3623,
+      "bytesHuman": "4 KB",
+      "lines": 127,
+      "type": ".vue",
+      "fanIn": 1,
+      "fanOut": 3,
+      "maxDepth": 2,
+      "score": 0.96
+    },
+    {
+      "path": "Websites/Flow/packages/flow-designer/src/ui/button/index.ts",
+      "bytes": 55,
+      "bytesHuman": "55 B",
+      "lines": 1,
+      "type": ".ts",
+      "fanIn": 0,
+      "fanOut": 1,
+      "maxDepth": 2,
+      "score": 0.5
+    },
+    {
+      "path": "Websites/Flow/packages/flow-designer/src/ui/drawer/index.ts",
+      "bytes": 55,
+      "bytesHuman": "55 B",
+      "lines": 1,
+      "type": ".ts",
+      "fanIn": 0,
+      "fanOut": 1,
+      "maxDepth": 2,
+      "score": 0.5
+    },
+    {
+      "path": "Websites/Flow/packages/flow-designer/src/ui/modal/index.ts",
+      "bytes": 52,
+      "bytesHuman": "52 B",
+      "lines": 1,
+      "type": ".ts",
+      "fanIn": 0,
+      "fanOut": 1,
+      "maxDepth": 2,
+      "score": 0.5
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/esm/components/core/breakpoints/index.js",
+      "bytes": 172,
+      "bytesHuman": "172 B",
+      "lines": 5,
+      "type": ".js",
+      "fanIn": 1,
+      "fanOut": 2,
+      "maxDepth": 2,
+      "score": 0.8
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/esm/components/core/events/index.js",
+      "bytes": 4883,
+      "bytesHuman": "5 KB",
+      "lines": 135,
+      "type": ".js",
+      "fanIn": 1,
+      "fanOut": 6,
+      "maxDepth": 2,
+      "score": 1.27
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/esm/components/core/images/index.js",
+      "bytes": 156,
+      "bytesHuman": "156 B",
+      "lines": 5,
+      "type": ".js",
+      "fanIn": 1,
+      "fanOut": 2,
+      "maxDepth": 2,
+      "score": 0.8
+    },
+    {
+      "path": "Websites/Prompt/assets/libs/swiper/esm/components/core/loop/index.js",
+      "bytes": 205,
+      "bytesHuman": "205 B",
+      "lines": 7,
+      "type": ".js",
+      "fanIn": 1,
+      "fanOut": 3,
+      "maxDepth": 2,
+      "score": 0.9
+    }
+  ],
+  "cycles": [
+    {
+      "severity": "warning",
+      "path": "YiPot/src/services/translate/openai/Config.jsx → YiPot/src/services/translate/openai/index.jsx → YiPot/src/services/translate/openai/Config.jsx",
+      "length": 2,
+      "suggestedFix": "Extract shared logic into a dedicated module and have both files import from it."
+    }
+  ],
+  "freshness": [
+    {
+      "path": "YiPot/.gitignore",
+      "ageDays": 3,
+      "lastModified": "2026-07-17",
+      "lastModifiedHuman": "2026-07-17",
+      "type": ".other",
+      "lines": 22
+    },
+    {
+      "path": "YiPot/.node-version",
+      "ageDays": 3,
+      "lastModified": "2026-07-17",
+      "lastModifiedHuman": "2026-07-17",
+      "type": ".other",
+      "lines": 0
+    },
+    {
+      "path": "YiPot/.npmrc",
+      "ageDays": 3,
+      "lastModified": "2026-07-17",
+      "lastModifiedHuman": "2026-07-17",
+      "type": ".other",
+      "lines": 4
+    },
+    {
+      "path": "YiPot/.prettierignore",
+      "ageDays": 3,
+      "lastModified": "2026-07-17",
+      "lastModifiedHuman": "2026-07-17",
+      "type": ".other",
+      "lines": 6
+    },
+    {
+      "path": "YiPot/.prettierrc.json",
+      "ageDays": 3,
+      "lastModified": "2026-07-17",
+      "lastModifiedHuman": "2026-07-17",
+      "type": ".json",
+      "lines": 21
+    },
+    {
+      "path": "YiPot/.scripts/popclip/build.sh",
+      "ageDays": 3,
+      "lastModified": "2026-07-17",
+      "lastModifiedHuman": "2026-07-17",
+      "type": ".sh",
+      "lines": 7
+    },
+    {
+      "path": "YiPot/.scripts/popclip/Config.plist",
+      "ageDays": 3,
+      "lastModified": "2026-07-17",
+      "lastModifiedHuman": "2026-07-17",
+      "type": ".plist",
+      "lines": 35
+    },
+    {
+      "path": "YiPot/.scripts/popclip/Pot.png",
+      "ageDays": 3,
+      "lastModified": "2026-07-17",
+      "lastModifiedHuman": "2026-07-17",
+      "type": ".img",
+      "lines": 172
+    },
+    {
+      "path": "YiPot/.scripts/popclip/Pot.sh",
+      "ageDays": 3,
+      "lastModified": "2026-07-17",
+      "lastModifiedHuman": "2026-07-17",
+      "type": ".sh",
+      "lines": 8
+    },
+    {
+      "path": "YiPot/.scripts/snipdo/build.sh",
+      "ageDays": 3,
+      "lastModified": "2026-07-17",
+      "lastModifiedHuman": "2026-07-17",
+      "type": ".sh",
+      "lines": 0
+    },
+    {
+      "path": "YiPot/.scripts/snipdo/pot.json",
+      "ageDays": 3,
+      "lastModified": "2026-07-17",
+      "lastModifiedHuman": "2026-07-17",
+      "type": ".json",
+      "lines": 12
+    },
+    {
+      "path": "YiPot/.scripts/snipdo/pot.png",
+      "ageDays": 3,
+      "lastModified": "2026-07-17",
+      "lastModifiedHuman": "2026-07-17",
+      "type": ".img",
+      "lines": 172
+    },
+    {
+      "path": "YiPot/.scripts/snipdo/pot.ps1",
+      "ageDays": 3,
+      "lastModified": "2026-07-17",
+      "lastModifiedHuman": "2026-07-17",
+      "type": ".ps1",
+      "lines": 7
+    },
+    {
+      "path": "YiPot/com.pot_app.pot.metainfo.xml",
+      "ageDays": 3,
+      "lastModified": "2026-07-17",
+      "lastModifiedHuman": "2026-07-17",
+      "type": ".xml",
+      "lines": 237
+    },
+    {
+      "path": "YiPot/daemon.html",
+      "ageDays": 3,
+      "lastModified": "2026-07-17",
+      "lastModifiedHuman": "2026-07-17",
+      "type": ".html",
+      "lines": 16
+    },
+    {
+      "path": "YiPot/index.html",
+      "ageDays": 3,
+      "lastModified": "2026-07-17",
+      "lastModifiedHuman": "2026-07-17",
+      "type": ".html",
+      "lines": 27
+    },
+    {
+      "path": "YiPot/package.json",
+      "ageDays": 3,
+      "lastModified": "2026-07-17",
+      "lastModifiedHuman": "2026-07-17",
+      "type": ".json",
+      "lines": 58
+    },
+    {
+      "path": "YiPot/patches/hyprland.patch",
+      "ageDays": 3,
+      "lastModified": "2026-07-17",
+      "lastModifiedHuman": "2026-07-17",
+      "type": ".patch",
+      "lines": 38
+    },
+    {
+      "path": "YiPot/postcss.config.js",
+      "ageDays": 3,
+      "lastModified": "2026-07-17",
+      "lastModifiedHuman": "2026-07-17",
+      "type": ".js",
+      "lines": 6
+    },
+    {
+      "path": "YiPot/src-tauri/.gitignore",
+      "ageDays": 3,
+      "lastModified": "2026-07-17",
+      "lastModifiedHuman": "2026-07-17",
+      "type": ".other",
+      "lines": 4
+    }
+  ],
+  "freshnessBuckets": [
+    {
+      "bucket": "<30d",
+      "count": 4462,
+      "pctFiles": 100
+    }
+  ],
+  "freshnessStats": {
+    "asOf": 1784607892000,
+    "asOfHuman": "2026-07-21",
+    "maxAge": 3,
+    "median": 0,
+    "p90": 0,
+    "staleCount": 0,
+    "criticalCount": 0
+  },
+  "selfImprovement": {
+    "topP0": [
+      {
+        "action": "File exceeds 2000 LOC (2892 lines) — monolithic js file, split candidate",
+        "file": "Websites/Corporato/js/slick.js",
+        "line": 1,
+        "severity": "P0"
+      },
+      {
+        "action": "File exceeds 2000 LOC (3286 lines) — monolithic js file, split candidate",
+        "file": "Websites/Duck/script.js",
+        "line": 1,
+        "severity": "P0"
+      },
+      {
+        "action": "File exceeds 2000 LOC (13968 lines) — monolithic js file, split candidate",
+        "file": "Websites/Prompt/assets/libs/leaflet/leaflet-src.esm.js",
+        "line": 1,
+        "severity": "P0"
+      },
+      {
+        "action": "File exceeds 2000 LOC (14062 lines) — monolithic js file, split candidate",
+        "file": "Websites/Prompt/assets/libs/leaflet/leaflet-src.js",
+        "line": 1,
+        "severity": "P0"
+      },
+      {
+        "action": "Extreme fan-out (22) — imports 22+ modules, central coupling hub",
+        "file": "Websites/Prompt/assets/libs/swiper/esm/components/core/core-class.js",
+        "line": 1,
+        "severity": "P0"
+      },
+      {
+        "action": "File exceeds 2000 LOC (4391 lines) — monolithic js file, split candidate",
+        "file": "Websites/Socialite/public/assets/js/simplebar.js",
+        "line": 1,
+        "severity": "P0"
+      },
+      {
+        "action": "File exceeds 2000 LOC (3348 lines) — monolithic js file, split candidate",
+        "file": "YiH5/views/home/index.js",
+        "line": 1,
+        "severity": "P0"
+      },
+      {
+        "action": "File exceeds 2000 LOC (177342 lines) — monolithic js file, split candidate",
+        "file": "YiPet/libs/mermaid.min.js",
+        "line": 1,
+        "severity": "P0"
+      }
+    ],
+    "focusArea": {
+      "dimName": "Size",
+      "score": 0,
+      "why": "Lowest-scoring dimension. Address the 10 P0 bloat and 1 P0 coupling alerts for maximum improvement.",
+      "hint": "Focus on this dimension for the highest score uplift per effort."
+    },
+    "trendInsight": "Score at 68 (C). Total 4462 files, 185.30 MB. 44 alerts: 11 P0, 23 P1, 10 P2.",
+    "weightsHint": "Focus remediation on the lowest-scoring dimension for maximum impact.",
+    "narrative": [
+      "Overall health at 68/100 (grade C). 11 critical (P0) and 23 major (P1) alerts active.",
+      "Primary concerns: file bloat (10 P0), coupling (1 P0), and cycles (0 P0).",
+      "Top lever: address P0 items for projected 176/100 score."
+    ],
+    "severityDonut": {
+      "p0": 11,
+      "p1": 23,
+      "p2": 10,
+      "total": 44
+    },
+    "riskVectors": [
+      {
+        "dimension": "Size",
+        "score": 0,
+        "weight": 0.3,
+        "p0": 10,
+        "p1": 20,
+        "p2": 0
+      },
+      {
+        "dimension": "Coupling",
+        "score": 90,
+        "weight": 0.15,
+        "p0": 1,
+        "p1": 2,
+        "p2": 0
+      },
+      {
+        "dimension": "Cycles",
+        "score": 98,
+        "weight": 0.2,
+        "p0": 0,
+        "p1": 1,
+        "p2": 0
+      },
+      {
+        "dimension": "Depth",
+        "score": 100,
+        "weight": 0.2,
+        "p0": 0,
+        "p1": 0,
+        "p2": 0
+      },
+      {
+        "dimension": "Freshness",
+        "score": 100,
+        "weight": 0.15,
+        "p0": 0,
+        "p1": 0,
+        "p2": 0
+      }
+    ],
+    "levers": [
+      {
+        "rank": 1,
+        "dimension": "Size",
+        "severity": "P1",
+        "kind": "split",
+        "action": "File exceeds 1000 LOC (1386 lines) — consider splitting by concern",
+        "file": "Websites/Adminto/Admin/src/assets/js/pages/apex-area.init.js",
+        "line": 1,
+        "scoreUplift": 5,
+        "effort": "medium"
+      },
+      {
+        "rank": 2,
+        "dimension": "Size",
+        "severity": "P1",
+        "kind": "split",
+        "action": "File exceeds 1000 LOC (1272 lines) — consider splitting by concern",
+        "file": "Websites/Adminto/Admin/src/assets/js/pages/apex-column.init.js",
+        "line": 1,
+        "scoreUplift": 5,
+        "effort": "medium"
+      },
+      {
+        "rank": 3,
+        "dimension": "Size",
+        "severity": "P1",
+        "kind": "split",
+        "action": "File exceeds 1000 LOC (1093 lines) — consider splitting by concern",
+        "file": "Websites/Adminto/Admin/src/assets/js/pages/apex-line.init.js",
+        "line": 1,
+        "scoreUplift": 5,
+        "effort": "medium"
+      },
+      {
+        "rank": 4,
+        "dimension": "Size",
+        "severity": "P1",
+        "kind": "split",
+        "action": "File exceeds 1000 LOC (1976 lines) — consider splitting by concern",
+        "file": "Websites/Adminto/Admin/src/assets/js/pages/icons-fontawesome.init.js",
+        "line": 1,
+        "scoreUplift": 5,
+        "effort": "medium"
+      },
+      {
+        "rank": 5,
+        "dimension": "Size",
+        "severity": "P1",
+        "kind": "split",
+        "action": "File exceeds 1000 LOC (1360 lines) — consider splitting by concern",
+        "file": "Websites/Mortal/assets/libs/tobii/js/tobii.cjs.js",
+        "line": 1,
+        "scoreUplift": 5,
+        "effort": "medium"
+      },
+      {
+        "rank": 6,
+        "dimension": "Size",
+        "severity": "P1",
+        "kind": "split",
+        "action": "File exceeds 1000 LOC (1349 lines) — consider splitting by concern",
+        "file": "Websites/News/assets/js/vendor/perfect-scrollbar.js",
+        "line": 1,
+        "scoreUplift": 5,
+        "effort": "medium"
+      },
+      {
+        "rank": 7,
+        "dimension": "Size",
+        "severity": "P1",
+        "kind": "split",
+        "action": "File exceeds 1000 LOC (1082 lines) — consider splitting by concern",
+        "file": "Websites/Prompt/assets/libs/swiper/angular/fesm2015/swiper_angular.js",
+        "line": 1,
+        "scoreUplift": 5,
+        "effort": "medium"
+      },
+      {
+        "rank": 8,
+        "dimension": "Coupling",
+        "severity": "P1",
+        "kind": "refactor",
+        "action": "High fan-out (20) — imports 20 modules, consider decoupling",
+        "file": "Websites/Prompt/assets/libs/swiper/swiper-bundle.esm.js",
+        "line": 1,
+        "scoreUplift": 5,
+        "effort": "medium"
+      },
+      {
+        "rank": 9,
+        "dimension": "Size",
+        "severity": "P1",
+        "kind": "split",
+        "action": "File exceeds 1000 LOC (1072 lines) — consider splitting by concern",
+        "file": "YiPet/cdn/markdown/index.js",
+        "line": 1,
+        "scoreUplift": 5,
+        "effort": "medium"
+      },
+      {
+        "rank": 10,
+        "dimension": "Size",
+        "severity": "P1",
+        "kind": "split",
+        "action": "File exceeds 1000 LOC (1869 lines) — consider splitting by concern",
+        "file": "YiPet/cdn/utils/index.js",
+        "line": 1,
+        "scoreUplift": 5,
+        "effort": "medium"
+      }
+    ],
+    "benchmarks": {
+      "currentGrade": "C",
+      "currentValue": 68,
+      "targetGrade": "B",
+      "targetValue": 75,
+      "gapToNext": 7
+    },
+    "remediationPlan": {
+      "phases": [
+        {
+          "phase": "P0 — Blocking fixes",
+          "severity": "P0",
+          "itemCount": 11,
+          "estUplift": 108,
+          "projected": 100,
+          "deadline": "3 weeks"
+        },
+        {
+          "phase": "P1 — Important",
+          "severity": "P1",
+          "itemCount": 23,
+          "estUplift": 114,
+          "projected": 100,
+          "deadline": "6 weeks"
+        },
+        {
+          "phase": "P2 — Nice-to-have",
+          "severity": "P2",
+          "itemCount": 10,
+          "estUplift": 20,
+          "projected": 100,
+          "deadline": "this quarter"
+        }
+      ],
+      "currentScore": 68,
+      "projectedScoreIfAllP0P1Remediated": 100
+    },
+    "decayForecast": {
+      "currentScore": 68,
+      "projectedNext": 63,
+      "delta": -5,
+      "rationale": "Without action, code debt compounds. Estimated -5 pts per quarter if no remediation."
+    }
+  },
+  "records": [],
+  "adjacency": {}
 };
+
 
 /* ── Category defaults for alert enrichment ── */
 (function () {
