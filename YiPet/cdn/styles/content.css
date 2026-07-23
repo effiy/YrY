@@ -1,5 +1,9 @@
 /* Chrome Extension Content Script - Shared base styles */
 
+/* 通用工具类 */
+.tw-hidden { display: none !important; }
+.tw-flex { display: flex !important; }
+
 /* Chrome扩展内容脚本样式 */
 
 /* 确保宠物在所有网站上都能正常显示 */
@@ -93,6 +97,7 @@
     z-index: 2147483650 !important;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
     pointer-events: auto !important;
+    user-select: none !important;
     -webkit-user-select: none !important;
     -moz-user-select: none !important;
     -ms-user-select: none !important;
@@ -1079,4 +1084,3 @@
 #pet-robot-settings .robot-button.js-error {
     cursor: default !important;
 }
-

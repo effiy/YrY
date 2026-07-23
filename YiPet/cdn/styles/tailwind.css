@@ -1,0 +1,6 @@
+/* Tailwind-style utility classes for YiPet Popup */
+
+.tw-hidden { display: none !important; }
+.tw-flex { display: flex !important; }
+.tw-block { display: block !important; }
+.tw-inline-flex { display: inline-flex !important; }
