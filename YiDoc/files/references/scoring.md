@@ -4,6 +4,46 @@
 > [yry-report/references/scoring-alert-spec.md](../../yry-report/references/scoring-alert-spec.md) v1.0.
 > The orchestrator (`yry-report`) reads this block to compute the composite score.
 
+```mermaid
+graph TB
+    subgraph "5 维评分信号 📊"
+        OS[Oversized-file Health<br/>权重: 30%<br/>lines>1000/500-1000]
+        ND[Nesting-depth Health<br/>权重: 20%<br/>maxDepth>15/8-15]
+        CY[Cycle Health<br/>权重: 20%<br/>length≥3/length=2]
+        CO[Coupling Health<br/>权重: 15%<br/>fanOut>20/fanIn>30]
+        FR[Freshness Health<br/>权重: 15%<br/>age>365/180-365]
+    end
+
+    subgraph "评分计算 🔢"
+        OS --> SCORE[filesScore<br/>0-100 加权求和]
+        ND --> SCORE
+        CY --> SCORE
+        CO --> SCORE
+        FR --> SCORE
+        SCORE --> GRADE{Grade 等级}
+        GRADE -->|90-100| A[A]
+        GRADE -->|75-89| B[B]
+        GRADE -->|60-74| C[C]
+        GRADE -->|40-59| D[D]
+        GRADE -->|0-39| F[F]
+    end
+
+    subgraph "告警映射 🚨"
+        SCORE --> ALERTS[alerts[] 数组]
+        ALERTS --> P0[P0 · Critical]
+        ALERTS --> P1[P1 · Warning]
+        ALERTS --> P2[P2 · Info]
+    end
+
+    style OS fill:#ffcdd2
+    style ND fill:#f8bbd0
+    style CY fill:#e1bee7
+    style CO fill:#d1c4e9
+    style FR fill:#c5cae9
+    style SCORE fill:#fff9c4
+    style GRADE fill:#b2dfdb
+```
+
 ## Scoring rubric (0–100)
 
 The `files` sub-skill score is a weighted blend of five signals.

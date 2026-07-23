@@ -2,6 +2,29 @@
 
 **What this scene demonstrates**: Before committing changes to the Websites project, a developer runs a lightweight incremental check that focuses only on the files that changed — not the entire 14-website collection. The check verifies that modified HTML files have no broken asset links, that edited CSS files have valid syntax, and that any change to a shared third-party library (e.g., upgrading jQuery in one website) is intentional and documented.
 
+```mermaid
+graph TD
+    START[git diff --name-only] --> CLASS{变更文件分类}
+    CLASS -->|*.html| HTML[Step 2<br/>验证 CSS/JS/img 引用]
+    CLASS -->|*.css| CSS[Step 3<br/>检查语法错误]
+    CLASS -->|*.js| JS[Step 4<br/>扫描 debug 语句<br/>console.log / debugger / alert]
+    CLASS -->|plugins/libs 路径| LIB[Step 5<br/>确认第三方库变更有意]
+
+    HTML --> PASS[5/5 PASS · 允许提交]
+    CSS --> PASS
+    JS --> PASS
+    LIB --> PASS
+
+    HTML -.->|引用断链| FAIL[FAIL · 阻止提交]
+    CSS -.->|未闭合括号| FAIL
+    JS -.->|发现 debug 语句| FAIL
+    LIB -.->|非预期修改| FAIL
+
+    style PASS fill:#c8e6c9,stroke:#2e7d32
+    style FAIL fill:#ffcdd2,stroke:#d32f2f
+    style START fill:#e1f5fe
+```
+
 **Why it matters**: A full post-init check across 14 websites with 282 HTML pages takes too long to run before every commit. The incremental check runs in under 5 seconds by scoping to the `git diff` output, making it practical as a pre-commit hook. It catches the most common mistakes — broken links from renamed/moved files, accidentally committed debug code (`console.log`), and unintended file deletions — before they enter the repository.
 
 ---

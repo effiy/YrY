@@ -1,6 +1,23 @@
 # §0 Effect Sketch — Dependency Change Impact
 
-**What this scene demonstrates**: What breaks when a dependency is upgraded. YiPot has three dependency manifests (`package.json` for NPM, `Cargo.toml` for Rust crates, and platform-specific sections). This scene maps the impact surface for each category — framework upgrades (React, Tauri, Vite), service SDK upgrades (OpenAI client, ollama JS client), and native crate upgrades (lingua, screenshots, arboard).
+**What this scene demonstrates**: What breaks when a dependency is upgraded. YiPot has three dependency manifests (`package.json` for NPM, `Cargo.toml` for Rust crates, and platform-specific sections).
+
+```mermaid
+graph TD
+    subgraph "依赖影响矩阵 🎯"
+        REACT[React + NextUI<br/>UI 框架 5 Panels] -->|高风险| ALL_PANELS[全部窗口面板]
+        TAURI[Tauri v1→v2<br/>Rust 运行时] -->|高风险| IPC[IPC 桥接 + allowlist]
+        VITE[Vite<br/>构建工具] -->|中风险| BUILD[构建管线]
+        OPENAI[OpenAI SDK<br/>翻译服务] -->|中风险| TR[translate 引擎]
+        OLLAMA[Ollama JS<br/>本地 LLM] -->|中风险| LLM[AI 对话功能]
+        LINGUA[lingua-rs<br/>语言检测] -->|低风险| LANG[lang_detect]
+    end
+
+    style REACT fill:#ffcdd2
+    style TAURI fill:#ffcdd2
+    style VITE fill:#fff9c4
+    style OPENAI fill:#fff9c4
+```
 
 **Why it matters**: YiPot aggregates 29 NPM runtime deps, 9 dev deps, and 20+ Rust crates. A single `pnpm update` or `cargo update` can silently break the clipboard monitor, the OCR pipeline, or an LLM translation engine. This scene provides a risk matrix and a verification protocol so upgrades can be assessed before they land.
 

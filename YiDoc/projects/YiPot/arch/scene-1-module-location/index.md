@@ -2,6 +2,32 @@
 
 **What this scene demonstrates**: How to locate any module — frontend service engine, window panel, React hook, or Rust backend module — within YiPot's source tree. Given a feature description (e.g. "DeepL translation" or "clipboard monitor"), the scene traces the exact file path, its module dependencies, and where it fits in the overall architecture.
 
+```mermaid
+graph TD
+    subgraph "YiPot 模块全景 🗺️"
+        ROOT[YiPot/] --> FE[src/ · React 前端<br/>39 service engines]
+        ROOT --> Tauri[src-tauri/ · Rust 后端<br/>14 modules]
+
+        FE --> SVCS[services/]
+        FE --> PANELS[windows/ · 5 panels]
+        FE --> HOOKS[hooks/ · 7 modules]
+        FE --> STORE[store/ · config + query]
+
+        SVCS --> TR[translate/ · 21 engines]
+        SVCS --> RC[recognize/ · 15 OCR engines]
+        SVCS --> TTS[tts/ · 1 engine]
+        SVCS --> CL[collection/ · 2 engines]
+
+        Tauri --> MAIN[main.rs · Tauri Builder]
+        Tauri --> CMD[commands/ · 9 IPC groups]
+    end
+
+    style ROOT fill:#e1f5fe
+    style FE fill:#e8f5e9
+    style Tauri fill:#fff3e0
+    style SVCS fill:#c8e6c9
+```
+
 **Why it matters**: YiPot has 39 service engines, 5 window panels, 7 hook modules, and 14 Rust modules spread across two codebases. Without a systematic module-location strategy, developers waste time guessing file paths. This scene maps the naming conventions and directory hierarchy so every module is findable in seconds.
 
 ---

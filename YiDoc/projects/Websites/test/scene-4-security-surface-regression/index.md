@@ -1,6 +1,31 @@
 # §0 Effect Sketch — Security Surface Regression
 
-**What this scene demonstrates**: The Websites project has a baseline security surface of "all false": no user input handling, no API endpoints, no data storage, no authentication, and no third-party HTTP requests. This scene verifies that the security surface has not expanded since the last baseline — no new PHP endpoint was accidentally added, no `<form>` gained a real `action` URL, and no third-party script started making outbound `fetch()` calls. A regression in any of the five dimensions would indicate that the project has unknowingly gained an attack surface.
+**What this scene demonstrates**: The Websites project has a baseline security surface of "all false": no user input handling, no API endpoints, no data storage, no authentication, and no third-party HTTP requests. This scene verifies that the security surface has not expanded since the last baseline.
+
+```mermaid
+graph TD
+    BASELINE[安全基线: all false] --> SCAN[扫描全部 14 个网站]
+
+    SCAN --> S1[Step 1<br/>新服务端文件?<br/>.php / .py / .rb]
+    SCAN --> S2[Step 2<br/>form action 外发?<br/>非占位符 URL]
+    SCAN --> S3[Step 3<br/>JS 外发请求?<br/>fetch / XHR / axios]
+    SCAN --> S4[Step 4<br/>认证代码引入?<br/>jwt / oauth / token]
+    SCAN --> S5[Step 5<br/>输入元素激增?<br/>≥20 个新 input]
+
+    S1 -->|仅 3 个已知 PHP 桩| OK[5/5 PASS · 安全面无变化]
+    S2 -->|全部占位符| OK
+    S3 -->|零外发请求| OK
+    S4 -->|零认证代码| OK
+    S5 -->|计数稳定| OK
+
+    S1 -.->|新 .php 文件| ALERT[REGRESSION 检测<br/>安全面扩大]
+    S2 -.->|真实 URL| ALERT
+    S3 -.->|发现 fetch| ALERT
+
+    style OK fill:#c8e6c9,stroke:#2e7d32
+    style ALERT fill:#ffcdd2,stroke:#d32f2f
+    style BASELINE fill:#e1f5fe
+```
 
 **Why it matters**: Static HTML templates are attractive targets for "feature creep" — someone adds a "working contact form" by connecting it to a real email service, introducing a server-side component without updating the documentation or security model. The security surface regression check catches these silent expansions before they become production vulnerabilities.
 

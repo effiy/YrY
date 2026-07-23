@@ -1,6 +1,22 @@
 # §0 Effect Sketch — Newcomer Onboarding
 
-**What this scene demonstrates**: A structured reading order for developers new to the YiPot codebase. Starting from the highest-level architectural decisions and descending into implementation details, the scene provides a 30-minute guided tour that covers the Tauri dual-codebase model, the service plugin architecture, the window dispatch system, and the config store as the single source of truth.
+**What this scene demonstrates**: A structured reading order for developers new to the YiPot codebase. Starting from the highest-level architectural decisions and descending into implementation details.
+
+```mermaid
+graph LR
+    P1[① Tauri 架构<br/>main.rs + tauri.conf<br/>双代码库模型] --> P2[② 配置系统<br/>store/ + config rust<br/>单一事实来源]
+    P2 --> P3[③ Service 插件<br/>services/translate/engine<br/>39 引擎统一接口]
+    P3 --> P4[④ Window 调度<br/>windows/ 5 panels<br/>React + NextUI]
+    P4 --> P5[⑤ IPC 桥接<br/>commands/ 9 groups<br/>Rust ↔ JS 通信]
+    P5 --> P6[⑥ 引擎开发<br/>新增翻译/OCR引擎<br/>完整流程]
+
+    style P1 fill:#e1f5fe
+    style P2 fill:#e8f5e9
+    style P3 fill:#fff3e0
+    style P4 fill:#f3e5f5
+    style P5 fill:#fce4ec
+    style P6 fill:#e0f2f1
+```
 
 **Why it matters**: YiPot is a non-trivial fullstack project — 39 service engines, 5 Tauri windows, a Rust backend with 14 modules, and a React frontend with NextUI + Jotai + i18next. Without a guided onboarding path, newcomers face a steep learning curve. This scene reduces time-to-first-contribution by prescribing a reading order and explaining the "why" behind each architectural decision.
 

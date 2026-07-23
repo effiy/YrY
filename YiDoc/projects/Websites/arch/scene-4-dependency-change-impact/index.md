@@ -2,6 +2,29 @@
 
 **What this scene demonstrates**: The Websites project has no centralized dependency manager — each of the 14 websites manages its own third-party libraries independently, either through local files (`css/plugins/bootstrap.min.css`) or CDN URLs (`<script src="https://cdn.jsdelivr.net/...">`). When a shared library like Bootstrap or jQuery needs an upgrade, the impact analysis is manual and per-website: which websites use the library? Which version? Is it a local file or a CDN link? Are there breaking changes between versions that could affect each website's custom code?
 
+```mermaid
+graph TD
+    subgraph "核心依赖影响矩阵 🎯"
+        BS[Bootstrap<br/>6 个网站使用] --> BS_VER[v3: Corporato<br/>v4: Arter + News<br/>v5: Kasy + Mortal + Prompt]
+        JQ[jQuery<br/>5 个网站使用] --> JQ_VER[v1.12: Corporato ⚠️<br/>v3.6+: Blog<br/>v3.7+: Adminto + Arter]
+    end
+
+    subgraph "升级风险评估 ⚠️"
+        BS_UPGRADE[Bootstrap v4→v5<br/>Arter + News] --> BS_RISK[🔴 高风险<br/>float-left → float-start<br/>jQuery 依赖变化<br/>~50处 class 需更名]
+        JQ_UPGRADE[jQuery 1.12→3.7<br/>Corporato] --> JQ_RISK[🔴 高风险<br/>CVE-2020-11022/11023<br/>owlCarousel 兼容性待验证]
+    end
+
+    subgraph "依赖管理现状"
+        LOCAL[本地文件 · 13/14 个网站] -.-> CDN[CDN 加载 · Duck React]
+        PKG[package.json · 3/14 网站<br/>Adminto/Prompt/Flow]
+    end
+
+    style BS_RISK fill:#ffcdd2
+    style JQ_RISK fill:#ffcdd2
+    style BS fill:#fff3e0
+    style JQ fill:#fff3e0
+```
+
 **Why it matters**: A blind upgrade of Bootstrap from v4 to v5 across all websites would break several templates — Bootstrap 5 dropped jQuery dependency, removed several utility classes, and changed the grid breakpoint names. Without a per-website impact analysis, a seemingly simple library update could silently break layouts, carousels, and modals across multiple templates.
 
 ---

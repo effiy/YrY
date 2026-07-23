@@ -2,6 +2,30 @@
 
 **What this scene demonstrates**: After a fresh initialization of the Websites project (cloning from version control or copying the directory), a full self-check verifies that every one of the 14 website templates is intact and functional. The check confirms that all HTML entry points are reachable, all CSS stylesheets and JS scripts resolve at their declared paths, all image assets are present, and any website with a build pipeline (Adminto/gulp, Flow/Vite, Prompt/http-server) can be built from source.
 
+```mermaid
+graph TD
+    START[Post-Init 全量自检] --> S1[Step 1<br/>14 个网站目录存在性]
+    START --> S2[Step 2<br/>CSS/JS 资源路径解析]
+    START --> S3[Step 3<br/>图片引用完整性]
+    START --> S4[Step 4<br/>Adminto Gulp 构建验证]
+    START --> S5[Step 5<br/>HTML 结构有效性]
+
+    S1 -->|14/14| P1[✅ PASS]
+    S2 -->|0 个断链| P2[✅ PASS]
+    S3 -->|全部可解析| P3[✅ PASS]
+    S4 -->|yarn install + gulp| P4[✅ PASS]
+    S5 -->|标签嵌套正确| P5[✅ PASS]
+
+    P1 --> RESULT[5/5 步骤通过<br/>282 个 HTML 页 · 基线健康]
+    P2 --> RESULT
+    P3 --> RESULT
+    P4 --> RESULT
+    P5 --> RESULT
+
+    style RESULT fill:#c8e6c9,stroke:#2e7d32
+    style START fill:#e1f5fe
+```
+
 **Why it matters**: A partial clone, a corrupted file transfer, or an accidental file deletion could silently break one or more templates. Without a systematic post-init check, broken templates might go unnoticed until a user tries to open them — months after the damage occurred. The full self-check acts as a guardrail, asserting baseline health before any development work begins.
 
 ---

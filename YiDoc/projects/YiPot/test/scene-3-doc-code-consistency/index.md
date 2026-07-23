@@ -1,6 +1,28 @@
 # §0 Effect Sketch — Doc-Code Consistency
 
-**What this scene demonstrates**: A systematic check that YiPot's documentation (CLAUDE.md, README.md, docs/data.js, arch and test scenes) accurately reflects the current state of the source code. Doc-code drift happens silently: a service engine is added but not listed in data.js, a Rust module is renamed but README.md still references the old name, or the config store gains a new key without a domain language entry.
+**What this scene demonstrates**: A systematic check that YiPot's documentation (CLAUDE.md, README.md, docs/data.js, arch and test scenes) accurately reflects the current state of the source code.
+
+```mermaid
+graph TD
+    subgraph "源代码 📂"
+        SRC_SVCS[src/services/<br/>39 engines actual count]
+        SRC_DEPS[package.json + Cargo.toml<br/>actual dependencies]
+        SRC_RUST[src-tauri/<br/>14 Rust modules]
+    end
+
+    subgraph "文档 📝"
+        DOC_SVCS[data.js stats<br/>claimed engine counts]
+        DOC_DEPS[data.js deps<br/>claimed dependencies]
+        DOC_RUST[arch/scene-1<br/>claimed modules]
+    end
+
+    SRC_SVCS -->|diff 比对| DOC_SVCS
+    SRC_DEPS -->|diff 比对| DOC_DEPS
+    SRC_RUST -->|diff 比对| DOC_RUST
+
+    style SRC_SVCS fill:#e8f5e9
+    style DOC_SVCS fill:#fff3e0
+```
 
 **Why it matters**: Generated documentation is only as good as its freshness. Without a periodic consistency check, the docs become a liability — misleading newcomers and wasting debugging time. This scene defines a cross-reference protocol between the source tree and the docs tree.
 

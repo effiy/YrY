@@ -1,6 +1,37 @@
 # §0 Effect Sketch — Third-Party Framework & Service Health
 
-**What this scene demonstrates**: The 14 Websites templates depend on 11 major third-party libraries (Bootstrap, Tailwind CSS, jQuery, Swiper, AOS, Fancybox, Chart.js, ApexCharts, Vue 3, Element Plus, React). This scene verifies that every third-party library file is intact (not corrupted), functional (loads without errors in a browser), and compatible with the template's other dependencies. It also checks that any CDN-based dependencies are reachable and serving the expected content.
+**What this scene demonstrates**: The 14 Websites templates depend on 11 major third-party libraries (Bootstrap, Tailwind CSS, jQuery, Swiper, AOS, Fancybox, Chart.js, ApexCharts, Vue 3, Element Plus, React).
+
+```mermaid
+graph TD
+    subgraph "11 大第三方库 · 使用矩阵"
+        BS[Bootstrap · 6 网站<br/>Arter/Kasy/Corporato/Prompt/News/Mortal]
+        JQ[jQuery · 5 网站<br/>Arter/Blog/Corporato/Duck/Adminto]
+        SW[Swiper · 3 网站<br/>Arter/Kasy/DpMarket]
+        TW[Tailwind · 2 网站<br/>Adminto/Mortal]
+        APX[ApexCharts · 2 网站<br/>Adminto/DpMarket]
+        FB[Fancybox · 2 网站<br/>Arter/Blog]
+        AOS[AOS · 1 网站 · Prompt]
+        CHART[Chart.js · 1 网站 · Adminto]
+        REACT[React 16 · 1 网站 · Duck]
+        VUE[Vue 3 · 1 网站 · Flow]
+        ELP[Element Plus · 1 网站 · Flow]
+    end
+
+    subgraph "健康检查 5 步"
+        S1[Step 1: 文件完整性<br/>非截断 · 结尾语法正确]
+        S2[Step 2: 版本兼容性<br/>单页无冲突]
+        S3[Step 3: CDN 可达性<br/>本地文件为主]
+        S4[Step 4: 版本最低要求<br/>⚠️ Corporato jQuery 1.12]
+        S5[Step 5: 恶意签名扫描<br/>eval · base64 · 矿机]
+    end
+
+    BS --> S1
+    JQ --> S1
+
+    style BS fill:#e1f5fe
+    style JQ fill:#fff3e0
+```
 
 **Why it matters**: Third-party library files are treated as opaque blobs — they are rarely inspected, never modified, and assumed to "just work." A corrupted download, a partial file transfer, or a CDN deprecation could silently break one or more templates. Since these libraries are shared across multiple websites (Bootstrap is used by 6 of 14 templates), a single corrupted file has a blast radius proportional to the number of websites that depend on it.
 

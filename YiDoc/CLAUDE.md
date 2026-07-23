@@ -32,23 +32,68 @@
 
 ## Architecture Pattern — Cascading Documentation Catalog
 
-```
-YiDoc/                         ← dashboard entry + root-level docs (arch/, test/)
-├── index.html / index.js / index.css / data.js   ← Vue 3 dashboard
-├── arch/                      ← Architecture reference scenes (5)
-├── test/                      ← Self-check scenes (6)
-├── apis/                      ← API analysis report (yry-report-apis)
-├── files/                     ← Code health report (yry-report-files)
-└── projects/                  ← 6 sub-project documentation catalogs
-    ├── YiAi/                  ← Python FastAPI backend (5 arch + 6 test)
-    ├── YiH5/                  ← Vanilla JS H5 frontend (5 arch + 6 test)
-    ├── YiPet/                 ← Chrome Extension (6 arch + 6 test)
-    ├── YiPot/                 ← Tauri Desktop (6 arch + 6 test)
-    ├── YiWeb/                 ← Vue 3 SPA (6 arch + 6 test)
-    └── Websites/              ← Static HTML template collection (5 arch + 6 test)
+```mermaid
+graph LR
+    subgraph "YiDoc Dashboard 🏠"
+        DASH[Vue 3 Dashboard<br/>index.html + data.js]
+    end
+
+    subgraph "第一层：YiDoc 自身 Panels"
+        ARCH[Arch Scenes<br/>5 个架构场景]
+        TEST[Test Scenes<br/>6 个自检场景]
+        APIS[APIs Panel<br/>yry-report-apis]
+        FILES[Files Panel<br/>yry-report-files]
+    end
+
+    subgraph "第二层：子项目 Catalogs"
+        YIAI[YiAi · FastAPI<br/>5 arch + 6 test]
+        YIH5[YiH5 · Vanilla JS<br/>5 arch + 6 test]
+        YIPET[YiPet · Chrome Ext<br/>6 arch + 6 test]
+        YIPOT[YiPot · Tauri<br/>6 arch + 6 test]
+        YIWEB[YiWeb · Vue 3 SPA<br/>6 arch + 6 test]
+        WEB[Websites · Static<br/>5 arch + 6 test]
+    end
+
+    subgraph "数据源 🔗"
+        INIT[yry-init Pipeline<br/>detect → explore → generate → verify]
+        DS[data.js<br/>window.HELP_CONFIG]
+    end
+
+    INIT -->|生成| DS
+    DS -->|驱动| DASH
+    DASH -->|panel-hub| ARCH
+    DASH -->|panel-hub| TEST
+    DASH -->|panel-hub| APIS
+    DASH -->|panel-hub| FILES
+    DASH -->|projects/| YIAI
+    DASH -->|projects/| YIH5
+    DASH -->|projects/| YIPET
+    DASH -->|projects/| YIPOT
+    DASH -->|projects/| YIWEB
+    DASH -->|projects/| WEB
+
+    ARCH -.->|§0-§4 模板| YIAI
+    TEST -.->|§0-§4 模板| YIAI
 ```
 
 ## Guidance
+
+```mermaid
+graph TB
+    subgraph "Scene §0–§4 Lifecycle 🔄"
+        S0[§0 Effect Sketch<br/>Mermaid 图表优先] --> S1[§1 Test Design<br/>AC 验收标准 + SC 成功条件]
+        S1 --> S2[§2 Output Inventory<br/>输出清单 + 架构决策]
+        S2 --> S3[§3 Test Report<br/>检查项状态表格]
+        S3 --> S4[§4 Self-Improvement<br/>诊断 + 行动项]
+        S4 -.->|持续改进| S0
+    end
+
+    style S0 fill:#e1f5fe
+    style S1 fill:#e8f5e9
+    style S2 fill:#fff3e0
+    style S3 fill:#f3e5f5
+    style S4 fill:#fce4ec
+```
 
 The YiDoc dashboard is a cascading catalog: every sub-panel (arch, test, apis, files, projects) and every sub-project catalog re-exports a `data.js` model that the Vue 3 dashboard consumes. To navigate:
 

@@ -1,6 +1,27 @@
 # §0 Effect Sketch — Security Surface Regression
 
-**What this scene demonstrates**: A regression test for YiPot's security surface. After any code change that touches the Tauri allowlist, the HTTP server bridge, clipboard access, or third-party API communication, this scene re-runs the trust boundary audit from arch/scene-5 and compares results against the baseline to detect regressions.
+**What this scene demonstrates**: A regression test for YiPot's security surface. After any code change that touches the Tauri allowlist, the HTTP server bridge, clipboard access, or third-party API communication.
+
+```mermaid
+graph TD
+    BASELINE[安全基线 · arch/scene-5] --> DIFF[git diff 影响面检测]
+    DIFF -->|tauri.conf| A1[Tauri allowlist 变化?]
+    DIFF -->|src-tauri/| A2[Rust 命令变更?]
+    DIFF -->|src/services/| A3[新引擎引入 API 调用?]
+    DIFF -->|package.json| A4[新依赖引入?]
+
+    A1 -->|all:true 扩大| ALERT[⚠️ REGRESSION<br/>安全面扩大]
+    A2 -->|新 IPC 命令| ALERT
+    A3 -->|新外部 API| REVIEW{审查}
+    A4 -->|高危/未知来源| ALERT
+
+    A1 -->|不变| SAFE[✅ SAFE<br/>安全面无变化]
+    A3 -->|已有引擎| SAFE
+    A4 -->|已知信任源| SAFE
+
+    style ALERT fill:#ffcdd2,stroke:#d32f2f
+    style SAFE fill:#c8e6c9,stroke:#2e7d32
+```
 
 **Why it matters**: Security regressions are silent. A new engine might introduce unauthenticated data exfiltration. A Tauri config change might widen the allowlist. A dependency upgrade might expose a new attack vector. This scene provides a diff-based approach: compare the current security surface against the last known-good baseline, and flag any expansion.
 

@@ -2,6 +2,35 @@
 
 **What this scene demonstrates**: The Websites project is a flat collection of 14 independent static HTML template websites, each living in its own top-level directory under `/Users/yi/YrY/Websites/`. Every website is a self-contained module with its own HTML pages, CSS stylesheets, JavaScript scripts, and image assets. There is no shared build system, no cross-module imports, and no runtime coupling between websites — each one can be opened directly in a browser via its `index.html` entry point.
 
+```mermaid
+graph TD
+    ROOT[Websites/ · 14 个独立网站模板] --> TIER1
+
+    subgraph "复杂度分级 📊"
+        TIER1[简单 · 无依赖] --> CARDS[Cards<br/>1页 · 纯 CSS + Vanilla JS]
+        TIER1 --> BLOGEZ[Blogez<br/>1页 · 极简排版]
+        TIER1 --> SOCIALITE[Socialite<br/>31页 · 纯 CSS]
+
+        TIER2[中等 · 多插件] --> ARTER[Arter<br/>14页 · Bootstrap4 + Swiper + Isotope]
+        TIER2 --> BLOG[Blog<br/>12页 · jQuery + Fancybox]
+        TIER2 --> CORPORATO[Corporato<br/>Landing · Bootstrap3 + Owl Carousel]
+        TIER2 --> DPMARKET[DpMarket<br/>26页 · SASS + ApexCharts]
+        TIER2 --> NEWS[News<br/>20页 · Slick + WOW.js]
+        TIER2 --> MORTAL[Mortal<br/>18页 · Tailwind + Bootstrap5]
+        TIER2 --> PROMPT[Prompt<br/>30页 · Bootstrap5 + AOS + Leaflet]
+        TIER2 --> KASY[Kasy<br/>2页 · Bootstrap5 + Swiper]
+
+        TIER3[复杂 · 构建工具] --> ADM[Adminto<br/>29页 · Gulp + Tailwind + ApexCharts]
+        TIER3 --> FLOW[Flow<br/>Vue3 + Vite + TypeScript + LogicFlow]
+        TIER3 --> DUCK[Duck<br/>React16 CDN + TweenMax 动画]
+    end
+
+    style ROOT fill:#e1f5fe
+    style TIER1 fill:#c8e6c9
+    style TIER2 fill:#fff9c4
+    style TIER3 fill:#ffcdd2
+```
+
 **Why it matters**: Understanding the module layout is the prerequisite for any maintenance task. When a developer needs to fix a bug in the "News" template or upgrade Bootstrap across all templates, they must know exactly which directories to touch and whether a change in one website has any cascading effect on others (it does not — each is independent). The flat architecture means operations can be parallelized: 14 websites can be inspected, updated, or deployed in isolation.
 
 ---

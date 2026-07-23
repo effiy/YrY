@@ -2,6 +2,43 @@
 
 ## System View
 
+```mermaid
+graph TB
+    subgraph "YrY 生态系统 🌐"
+        YIAI[YiAi · Python/FastAPI<br/>AI + RSS + OSS 后端]
+        YIH5[YiH5 · Vanilla JS<br/>AI Chat 前端]
+        YIPET[YiPet · Chrome Extension<br/>AI 指挥面板]
+        YIPOT[YiPot · Tauri Desktop<br/>翻译 + 效率工具]
+        YIWEB[YiWeb · Vue 3 SPA<br/>AI 问答界面]
+        WEB[Websites · Static HTML<br/>模板集合]
+    end
+
+    subgraph "YiDoc 文档中枢 📚"
+        DASH[Vue 3 Dashboard<br/>index.html + data.js]
+        PANELS[Panels: Arch | Test | APIs | Files | Projects]
+        SCENES[85+ Scenes<br/>arch/ + test/ 目录]
+    end
+
+    PIPELINE[yry-init Pipeline<br/>detect → explore → generate<br/>→ arch → verify]
+
+    PIPELINE -->|自动生成| YIAI
+    PIPELINE -->|自动生成| YIH5
+    PIPELINE -->|自动生成| YIPET
+    PIPELINE -->|自动生成| YIPOT
+    PIPELINE -->|自动生成| YIWEB
+    PIPELINE -->|自动生成| WEB
+
+    YIAI -->|data.js| DASH
+    YIH5 -->|data.js| DASH
+    YIPET -->|data.js| DASH
+    YIPOT -->|data.js| DASH
+    YIWEB -->|data.js| DASH
+    WEB -->|data.js| DASH
+
+    DASH --> PANELS
+    PANELS --> SCENES
+```
+
 YiDoc is the documentation central hub of the YrY ecosystem, integrating yry-init pipeline reports across 6 sub-projects (YiAi, YiH5, YiPet, YiPot, YiWeb, Websites). Each sub-project contains full detect → explore → generate → arch → verify pipeline outputs, presented through a unified Vue 3 dashboard with cross-panel navigation.
 
 ## Command Flow
@@ -72,6 +109,23 @@ YiDoc domain terms describe the cascading documentation catalog structure:
 - **Cascading catalog** — the property that navigating from the root dashboard → panel → sub-project catalog maintains the same data-model shape (`window.HELP_CONFIG`) at each level.
 
 ### Relationships
+
+```mermaid
+graph LR
+    DASHBOARD[Dashboard<br/>Vue 3 Entry] -->|panel-hub links| PANEL[Panel<br/>子目录 + index.html]
+    DASHBOARD -->|story cards ref| SCENE[Scene<br/>§0-§4 index.md]
+    PANEL -->|projects/ contains| CATALOG[Sub-project Catalog<br/>YiAi / YiH5 / YiPet/...]
+    CATALOG -->|mirrors| STRUCTURE[data.js + arch/ + test/]
+    SCENE -->|implements| LIFECYCLE[§0 → §1 → §2 → §3 → §4]
+    PANEL --> CATALOG
+
+    style DASHBOARD fill:#e1f5fe
+    style PANEL fill:#e8f5e9
+    style SCENE fill:#fff3e0
+    style CATALOG fill:#f3e5f5
+    style STRUCTURE fill:#fce4ec
+    style LIFECYCLE fill:#e0f2f1
+```
 
 - Dashboard **links to** Panel (via panel-hub toolbar)
 - Dashboard **references** Scene (via section story cards)

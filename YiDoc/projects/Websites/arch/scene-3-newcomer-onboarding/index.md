@@ -2,6 +2,35 @@
 
 **What this scene demonstrates**: A developer joining the Websites project needs a guided path from zero to productivity. This scene provides that path: start with the simplest single-page template (`Cards/index.html` — one HTML, one CSS, one JS file), then explore a medium-complexity website (`Arter` — multi-page with SCSS and plugins), and finally understand the most complex one (`Adminto` — gulp build pipeline with dozens of pages). At each stage, the developer learns about the project's conventions, dependency patterns, and the mental model for how these static websites are structured.
 
+```mermaid
+graph LR
+    subgraph "渐进式学习路径 🎯"
+        S1[Cards<br/>最简单 · 1页<br/>无依赖 · 纯 CSS/JS] --> S2[Arter<br/>中等 · 14页<br/>Bootstrap4 + 4个插件]
+        S2 --> S3[Adminto<br/>最复杂 · 29页<br/>Gulp + Tailwind + 40+ npm包]
+    end
+
+    subgraph "理解产出"
+        S1 --> L1[✓ 文件结构模式<br/>1 HTML + 1 CSS + 1 JS]
+        S2 --> L2[✓ 插件依赖链<br/>jQuery → Swiper → main.js]
+        S3 --> L3[✓ 构建管线<br/>src/ → Gulp → dist/]
+    end
+
+    subgraph "构建分类"
+        ALL[14 个模板] --> DIRECT[11 个 · 直接打开]
+        ALL --> BUILD[3 个 · 需要构建]
+        BUILD --> ADM[Adminto · Gulp]
+        BUILD --> FLOW[Flow · Vite]
+        BUILD --> PRMT[Prompt · http-server]
+    end
+
+    style S1 fill:#c8e6c9
+    style S2 fill:#fff9c4
+    style S3 fill:#ffcdd2
+    style L1 fill:#e1f5fe
+    style L2 fill:#e8f5e9
+    style L3 fill:#fff3e0
+```
+
 **Why it matters**: Without a structured onboarding path, a newcomer might open `Adminto` first and be overwhelmed by 29 HTML pages, a gulpfile, and Tailwind config. Or they might open `Flow` (a Vue 3 project) and assume all templates require a build step. The progressive onboarding path prevents confusion and establishes correct mental models from the start.
 
 ---

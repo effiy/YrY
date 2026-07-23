@@ -2,6 +2,38 @@
 
 **What this scene demonstrates**: In a collection of static HTML template websites, the "data flow" is the browser's rendering pipeline: the user opens an `index.html` file → the browser parses the HTML DOM → fetches linked CSS stylesheets (`<link rel="stylesheet">`) and JavaScript files (`<script src="...">`) → executes scripts to initialize interactive components (carousels, charts, modals) → renders the final visual page. There is no server-side processing, no API calls, and no database — everything is pre-built static content served from the filesystem.
 
+```mermaid
+graph TB
+    subgraph "浏览器渲染管线 🌐"
+        STEP1[① 用户打开 index.html] --> STEP2[② 浏览器解析 HTML DOM]
+        STEP2 --> STEP3[③ 发现 CSS link 标签]
+        STEP2 --> STEP4[④ 发现 JS script 标签]
+        STEP3 --> STEP5[⑤ 并行加载 CSS 文件<br/>bootstrap.css / swiper.css / style.css]
+        STEP4 --> STEP6[⑥ 顺序执行 JS 文件<br/>jquery.js → swiper.js → main.js]
+        STEP5 --> STEP7[⑦ CSSOM 构建 → 首屏渲染]
+        STEP6 --> STEP7
+        STEP7 --> STEP8[⑧ DOMContentLoaded 触发]
+        STEP8 --> STEP9[⑨ main.js 初始化插件<br/>new Swiper / Fancybox / Isotope]
+        STEP9 --> STEP10[⑩ 完整页面就绪]
+    end
+
+    subgraph "典型加载链（以 Arter 为例）"
+        HTML[index.html] --> CSS1[bootstrap.min.css<br/>Bootstrap 4.6 网格+组件]
+        HTML --> CSS2[swiper.min.css<br/>轮播过渡样式]
+        HTML --> CSS3[fancybox.min.css<br/>灯箱遮罩样式]
+        HTML --> JS1[jquery.min.js<br/>DOM 工具基础层]
+        JS1 --> JS2[swiper.min.js<br/>轮播交互]
+        JS2 --> JS3[fancybox.min.js<br/>灯箱交互]
+        JS3 --> JS4[isotope.min.js<br/>网格过滤]
+        JS4 --> MAIN[main.js<br/>DOM-ready 初始化]
+    end
+
+    style STEP1 fill:#e1f5fe
+    style STEP5 fill:#e8f5e9
+    style STEP6 fill:#fff3e0
+    style STEP10 fill:#f3e5f5
+```
+
 **Why it matters**: Understanding this flow is essential for debugging rendering issues. If a carousel doesn't animate, the root cause could be: (a) the Swiper JS file failed to load, (b) jQuery (a Swiper dependency) wasn't loaded first, (c) the CSS file is missing, or (d) the initialization script runs before the DOM is ready. Tracing the dependency chain from HTML entry → CSS/JS assets → runtime initialization is the systematic way to diagnose such failures.
 
 ---

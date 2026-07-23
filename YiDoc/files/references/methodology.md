@@ -4,6 +4,26 @@
 > reads this once before executing, then follows it step by
 > step.
 
+```mermaid
+graph LR
+    S1[Stage 1<br/>File Inventory<br/>文件遍历 + 属性采集] --> S2[Stage 2<br/>Size Distribution<br/>按目录聚合 + 类型归组]
+    S2 --> S3[Stage 3<br/>Dependency Graph<br/>import 解析 + 邻接表]
+    S3 --> S4[Stage 4<br/>Nesting Depth<br/>DFS 最大深度计算]
+    S4 --> S5[Stage 5<br/>Cycle Detection<br/>3-Color DFS 环检测]
+    S5 --> S55[Stage 5.5<br/>Freshness<br/>文件新鲜度分析]
+    S55 --> S56[Stage 5.6<br/>Alerts<br/>风险信号 → P0/P1/P2]
+    S56 --> S6[Stage 6<br/>Vue Page Emit<br/>data.js + HTML 渲染]
+
+    style S1 fill:#e1f5fe
+    style S2 fill:#e8f5e9
+    style S3 fill:#fff3e0
+    style S4 fill:#f3e5f5
+    style S5 fill:#fce4ec
+    style S55 fill:#e0f2f1
+    style S56 fill:#ffebee
+    style S6 fill:#ede7f6
+```
+
 ## Stage 1 — File Inventory
 
 Walk the scope with `find` (or equivalent Glob), applying the

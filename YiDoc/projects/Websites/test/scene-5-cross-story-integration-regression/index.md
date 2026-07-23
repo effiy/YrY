@@ -1,6 +1,32 @@
 # §0 Effect Sketch — Cross-Story Integration Regression
 
-**What this scene demonstrates**: The arch and test stories (11 scenes total) form an integrated knowledge graph — arch scenes document the system architecture, and test scenes define verification strategies that reference and validate the arch claims. This scene verifies that the cross-story links are intact: every file path mentioned in a test scene exists in the corresponding arch scene's inventory, every scene-link in `data.js` points to a real `index.md`, and every cross-reference between scenes resolves to an existing file.
+**What this scene demonstrates**: The arch and test stories (11 scenes total) form an integrated knowledge graph — arch scenes document the system architecture, and test scenes define verification strategies that reference and validate the arch claims.
+
+```mermaid
+graph LR
+    subgraph "文档知识图谱 🔗"
+        DATA[data.js<br/>sceneLinks × 11] --> ARCH[arch/ 5 个场景<br/>scene-1 ~ scene-5]
+        DATA --> TEST[test/ 6 个场景<br/>scene-1 ~ scene-6]
+        ARCH -.->|交叉引用| TEST
+        TEST -.->|验证引用| ARCH
+    end
+
+    subgraph "5 步完整性检查"
+        S1[Step 1: sceneLinks<br/>→ index.md 存在性]
+        S2[Step 2: 交叉引用<br/>→ 目标文件存在]
+        S3[Step 3: data.js meta<br/>vs §3 Test Report]
+        S4[Step 4: 孤儿场景<br/>目录 vs data.js 条目]
+        S5[Step 5: panelHub 目录<br/>arch/ test/ 存在]
+    end
+
+    DATA --> S1
+    ARCH --> S2
+    TEST --> S2
+
+    style DATA fill:#e1f5fe
+    style ARCH fill:#e8f5e9
+    style TEST fill:#fff3e0
+```
 
 **Why it matters**: As the project evolves, scenes may be added, renamed, or removed. If a test scene's §1 step references a file path that was removed from an arch scene's §2 inventory, the documentation becomes internally inconsistent — an AI agent following the test instructions would encounter a dead end. Cross-story integration checks prevent this silent documentation decay.
 

@@ -2,6 +2,40 @@
 
 **What this scene demonstrates**: The Websites project is a collection of static HTML templates — there is no backend server, no database, no API endpoints, and no authentication system. The entire "application" runs in the user's browser after opening a local HTML file. The trust boundary is therefore the browser sandbox itself: all code (HTML, CSS, JS) is trusted by default because it comes from the local filesystem, and the only external surface is third-party library files (Bootstrap, jQuery, Swiper, etc.) and any CDN-loaded scripts.
 
+```mermaid
+graph TB
+    subgraph "信任域 · 本地文件系统 🏠"
+        HTML[HTML 文件<br/>14 个 index.html]
+        CSS[CSS 样式<br/>35 个 .css 文件]
+        JS[JS 脚本<br/>62 个 .js 文件]
+        IMG[图片资源<br/>本地相对路径]
+    end
+
+    subgraph "信任边界 🛡"
+        BOUNDARY((浏览器沙箱<br/>file:// 协议))
+    end
+
+    subgraph "不可信域 · 外部面 ⚡"
+        CDN[CDN 依赖<br/>React · TweenMax]
+        VULN[已知漏洞<br/>jQuery 1.12.4<br/>CVE-2020-11022/11023]
+        FORMS[Demo 表单<br/>Adminto · Mortal · Prompt<br/>无后端 · 数据不外发]
+        PHP[PHP 桩文件<br/>Arter · Kasy · Mortal<br/>需 PHP 运行时才可执行]
+    end
+
+    HTML --> BOUNDARY
+    CSS --> BOUNDARY
+    JS --> BOUNDARY
+    BOUNDARY --> CDN
+    BOUNDARY --> VULN
+    BOUNDARY --> FORMS
+    BOUNDARY --> PHP
+
+    style BOUNDARY fill:#ffcdd2,stroke:#d32f2f,stroke-width:3px
+    style VULN fill:#ffcdd2
+    style CDN fill:#fff9c4
+    style FORMS fill:#e1f5fe
+```
+
 **Why it matters**: Even a static HTML project has a security surface. Third-party libraries may contain vulnerabilities (e.g., jQuery < 3.5.0 has known XSS via `$.htmlPrefilter()`). CDN-loaded scripts execute in the same origin as the page and can access the DOM. Form elements (`<input>`, `<textarea>`) exist in templates like `Adminto` (login forms) and `Mortal` (signup forms) — even though they don't submit to a backend, they could be repurposed by a compromised third-party script to exfiltrate test data. Understanding the trust boundary helps assess the blast radius of any dependency vulnerability.
 
 ---

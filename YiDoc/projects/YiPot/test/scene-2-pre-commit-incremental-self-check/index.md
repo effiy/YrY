@@ -1,6 +1,25 @@
 # §0 Effect Sketch — Pre-Commit Incremental Self-Check
 
-**What this scene demonstrates**: A lightweight self-check that runs before every git commit. Unlike the full post-init check, this scene focuses on what changed — running only the checks relevant to the files in the staging area. The goal is sub-second verification that catches regressions before they land in the repository.
+**What this scene demonstrates**: A lightweight self-check that runs before every git commit. Unlike the full post-init check, this scene focuses on what changed — running only the checks relevant to the files in the staging area.
+
+```mermaid
+graph TD
+    START[git diff --cached] --> MAP{文件 → 检查映射}
+    MAP -->|CLAUDE.md| C1[项目身份验证]
+    MAP -->|docs/data.js| C2[数据模型完整性]
+    MAP -->|*.js/tsx| C3[Service 引擎变更]
+    MAP -->|tauri.conf| C4[Tauri allowlist]
+    MAP -->|scene-*.md| C5[场景交叉引用]
+
+    C1 --> VERDICT{快速判决}
+    C2 --> VERDICT
+    C3 --> VERDICT
+    VERDICT -->|全部 PASS| OK[⚡ 允许提交 · sub-second]
+    VERDICT -->|任一 FAIL| BLOCK[⛔ 阻止提交]
+
+    style OK fill:#c8e6c9,stroke:#2e7d32
+    style BLOCK fill:#ffcdd2,stroke:#d32f2f
+```
 
 **Why it matters**: Full self-checks (scene 1) take 30+ seconds across all 11 scenes. A pre-commit check must be fast enough to run on every commit without disrupting developer flow. This scene defines the incremental check strategy: detect what changed, run only the overlapping checks, and produce a "fast-pass" or "block" verdict.
 

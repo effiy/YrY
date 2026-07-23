@@ -1,6 +1,28 @@
 # §0 Effect Sketch — Cross-Story Integration Regression
 
-**What this scene demonstrates**: A verification that all 11 scenes (5 arch + 6 test) remain internally consistent with each other. Cross-story integration checks ensure that a fix in one scene doesn't contradict a claim in another, that shared file references resolve consistently, and that the overall documentation narrative is coherent.
+**What this scene demonstrates**: A verification that all 11 scenes (5 arch + 6 test) remain internally consistent with each other.
+
+```mermaid
+graph LR
+    subgraph "交叉引用矩阵 🔗"
+        S1[scene-1<br/>Module Location] -.-> S2[scene-2<br/>Data Flow]
+        S2 -.-> S4[scene-4<br/>Dependency Impact]
+        S2 -.-> S5[scene-5<br/>Security Surface]
+        S5 -.-> T4[test-4<br/>Security Regress]
+        S1 -.-> T1[test-1<br/>Post-Init Check]
+    end
+
+    subgraph "5 步完整性校验"
+        V1[Step 1: 跨场景文件路径一致性]
+        V2[Step 2: sceneLinks 无死链]
+        V3[Step 3: data.js meta vs §3]
+        V4[Step 4: 孤儿场景检测]
+        V5[Step 5: 引擎计数一致性]
+    end
+
+    style S1 fill:#e1f5fe
+    style S5 fill:#ffcdd2
+```
 
 **Why it matters**: Each scene is written independently but references the same codebase. An arch scene saying "there are 15 recognize engines" and a test scene referencing "14 OCR backends" creates confusion. This scene runs cross-references between all scene pairs and flags inconsistencies, contradictions, and stale cross-scene references.
 

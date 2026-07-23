@@ -21,10 +21,10 @@
   ;[
     'core/config.js',
 
-    'core/utils/logging/loggerUtils.js',
-    'core/utils/error/errorHandler.js',
-    'core/utils/runtime/moduleUtils.js',
-    'core/utils/runtime/globalAccessor.js',
+    'cdn/utils/core-ext/logging/loggerUtils.js',
+    'cdn/utils/core-ext/error/errorHandler.js',
+    'cdn/utils/core-ext/runtime/moduleUtils.js',
+    'cdn/utils/core-ext/runtime/globalAccessor.js',
 
     'modules/extension/background/services/tabMessaging.js',
     'modules/extension/background/services/injectionService.js',

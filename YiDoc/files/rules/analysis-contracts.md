@@ -4,6 +4,55 @@
 > yry-report-files. Violations are bugs in the execution, not the
 > spec.
 
+```mermaid
+graph TB
+    subgraph "分析契约体系 📜"
+        WALK[Walk Exclusions<br/>node_modules/.git/dist/ 等排除规则] --> INV[File Inventory<br/>path/bytes/lines/type/mtime]
+    end
+
+    subgraph "核心计算契约 🔬"
+        IMPORT[Import Regex Contract<br/>按语言解析 import 语句] --> DEPTH[Depth Computation<br/>DFS + memoization 最大深度]
+        IMPORT --> CYCLE[Cycle Detection<br/>3-Color DFS 环检测]
+        IMPORT --> HOTSPOT[Hotspot Score<br/>lines×0.5 + fanIn×0.2 + fanOut×0.1 + depth×0.2]
+    end
+
+    subgraph "输出契约 📤"
+        DETERM[Output Determinism<br/>同输入→同 data.js]
+        XSS[XSS Safety<br/>textContent 防注入]
+        TRUNC[Truncation Rules<br/>>50K records / >100K adj]
+        BATCH[Walk Batching<br/>批量 stat + wc -l]
+    end
+
+    subgraph "数据契约 📊"
+        ALERT[Alerts Contract<br/>P0/P1/P2 severity/marker/category]
+        ORDER[Key Order Contract<br/>REPORT_DATA 固定 key 顺序]
+        FRESH[Freshness Contract<br/>asOf = max lastModified]
+    end
+
+    INV --> IMPORT
+    DEPTH --> DETERM
+    CYCLE --> DETERM
+    HOTSPOT --> ALERT
+    ALERT --> ORDER
+    TRUNC --> DETERM
+    BATCH --> DETERM
+    XSS --> DETERM
+    FRESH --> DETERM
+
+    style WALK fill:#e1f5fe
+    style IMPORT fill:#e8f5e9
+    style DEPTH fill:#fff3e0
+    style CYCLE fill:#f3e5f5
+    style HOTSPOT fill:#fce4ec
+    style DETERM fill:#ffcdd2
+    style XSS fill:#f8bbd0
+    style TRUNC fill:#e1bee7
+    style BATCH fill:#d1c4e9
+    style ALERT fill:#c5cae9
+    style ORDER fill:#b2dfdb
+    style FRESH fill:#c8e6c9
+```
+
 ## Walk exclusions
 
 Default exclusion set (matched as path globs under the scope):
