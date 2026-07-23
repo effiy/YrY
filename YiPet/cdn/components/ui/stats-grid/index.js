@@ -2,7 +2,7 @@ import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
 const compDef = {
     name: 'yryStatsGrid',
-    html: '/cdn/components/common/data-display/YrYStatsGrid/template.html',
+    html: '/cdn/components/common/data-display/YrYStatsGrid/index.html',
     css: '/cdn/components/common/data-display/YrYStatsGrid/index.css',
     props: {
         items:  { type: Array,  required: true },

@@ -31,43 +31,32 @@
     return tpl.content.cloneNode(true)
   }
 
+  var IMAGE_PREVIEW_DOM_TPL = `<div class="image-preview-modal">
+    <div class="image-preview-container">
+      <div class="image-preview-loading"></div>
+      <img class="js-image-preview-img" alt="">
+    </div>
+    <div class="image-preview-button-container">
+      <button class="image-preview-close-btn js-image-preview-close">✕</button>
+    </div>
+  </div>`
+
   /**
    * 创建 DOM（降级方案）
    */
   function createLegacy () {
-    var modal = document.createElement('div')
-    modal.className = 'image-preview-modal'
-
-    var imageContainer = document.createElement('div')
-    imageContainer.className = 'image-preview-container'
-
-    var loadingIndicator = document.createElement('div')
-    loadingIndicator.className = 'image-preview-loading'
-    imageContainer.appendChild(loadingIndicator)
-
-    var img = document.createElement('img')
-    img.className = 'js-image-preview-img'
-    img.alt = ''
-    imageContainer.appendChild(img)
-
-    var buttonContainer = document.createElement('div')
-    buttonContainer.className = 'image-preview-button-container'
-
-    var closeBtn = document.createElement('button')
-    closeBtn.className = 'image-preview-close-btn js-image-preview-close'
-    closeBtn.textContent = '✕'
-    buttonContainer.appendChild(closeBtn)
-
-    modal.appendChild(imageContainer)
-    modal.appendChild(buttonContainer)
+    var tpl = document.createElement('template')
+    tpl.innerHTML = IMAGE_PREVIEW_DOM_TPL
+    var fragment = tpl.content.cloneNode(true)
+    var modal = fragment.firstElementChild
 
     return {
       modal: modal,
       titleBar: null,
-      img: img,
-      loadingIndicator: loadingIndicator,
+      img: modal.querySelector('.js-image-preview-img'),
+      loadingIndicator: modal.querySelector('.image-preview-loading'),
       downloadBtn: null,
-      closeBtn: closeBtn
+      closeBtn: modal.querySelector('.js-image-preview-close')
     }
   }
 

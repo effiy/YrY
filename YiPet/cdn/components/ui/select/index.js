@@ -4,7 +4,7 @@ let selectIdCounter = 0;
 
 const compDef = {
     name: 'yrySelect',
-    html: '/cdn/components/common/forms/YrYSelect/template.html',
+    html: '/cdn/components/common/forms/YrYSelect/index.html',
     css: '/cdn/components/common/forms/YrYSelect/index.css',
     props: {
         modelValue: {

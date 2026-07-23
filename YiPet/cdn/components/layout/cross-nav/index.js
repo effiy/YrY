@@ -2,7 +2,7 @@ import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
 const compDef = {
     name: 'yryCrossNav',
-    html: '/cdn/components/common/navigation/YrYCrossNav/template.html',
+    html: '/cdn/components/common/navigation/YrYCrossNav/index.html',
     css: '/cdn/components/common/navigation/YrYCrossNav/index.css',
     props: {
         pages:           { type: Array,  required: true },

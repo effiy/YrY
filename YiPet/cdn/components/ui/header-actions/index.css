@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    YrY · HeaderActions — business-level action buttons & environment badge
 
-   Template structure (from template.html):
+   Template structure (from index.html):
      <div class="header-actions">
        <slot></slot>
        <button class="header-icon-btn" :class="{ active }" data-tooltip="..." ><yry-icon /></button>

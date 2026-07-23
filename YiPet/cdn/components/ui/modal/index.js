@@ -2,7 +2,7 @@ import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
 const compDef = {
     name: 'yryModal',
-    html: '/cdn/components/common/modals/YrYModal/template.html',
+    html: '/cdn/components/common/modals/YrYModal/index.html',
     css: '/cdn/components/common/modals/YrYModal/index.css',
     props: {
         visible: {

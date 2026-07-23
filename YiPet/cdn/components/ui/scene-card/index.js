@@ -12,7 +12,7 @@ const _defaultLinks = [
 
 const compDef = {
     name: 'yrySceneCard',
-    html: '/cdn/components/common/cards/YrYSceneCard/template.html',
+    html: '/cdn/components/common/cards/YrYSceneCard/index.html',
     css: '/cdn/components/common/cards/YrYSceneCard/index.css',
     components: {
         yryTagChip: {

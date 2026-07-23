@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    YrY · SkeletonLoader — content placeholder with pulse animation
 
-   Template structure (from template.html):
+   Template structure (from index.html):
      <div class="skeleton-loader" :class="variant">
        <!-- variant="file-tree" -->
        <div class="skeleton-file-tree">

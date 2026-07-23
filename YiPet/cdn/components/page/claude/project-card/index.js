@@ -2,7 +2,7 @@ import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
 const compDef = {
     name: 'yryClaudeProjectCard',
-    html: '/YiPet/cdn/components/business/views/claude/claudeProjectCard/template.html',
+    html: '/YiPet/cdn/components/business/views/claude/claudeProjectCard/index.html',
     css: '/YiPet/cdn/components/business/views/claude/claudeProjectCard/index.css',
     props: {
         project: { type: Object, default: null }

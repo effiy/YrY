@@ -2,7 +2,7 @@ import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
 const compDef = {
     name: 'yryInput',
-    html: '/cdn/components/common/forms/YrYInput/template.html',
+    html: '/cdn/components/common/forms/YrYInput/index.html',
     css: '/cdn/components/common/forms/YrYInput/index.css',
     props: {
         type: {

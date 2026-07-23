@@ -31,67 +31,31 @@
   }
 
   /**
-   * 创建 DOM 结构（降级方案 - createElement）
+   * 降级用的 DOM 模板（当远程模板加载失败时使用）
+   * 结构与 createLegacy() 生成的 DOM 完全一致
+   */
+  var BATCH_TOOLBAR_DOM_TPL = '<div id="batch-toolbar" class="session-batch-toolbar">\
+    <div class="batch-toolbar-left">\
+      <label class="batch-select-all">\
+        <input type="checkbox" id="select-all-checkbox" />\
+        <span>全选</span>\
+      </label>\
+      <span id="selected-count" class="batch-selected-count js-hidden"></span>\
+    </div>\
+    <div class="batch-toolbar-right">\
+      <button type="button" id="batch-delete-btn" class="batch-action-btn batch-delete-btn" disabled title="删除选中会话">\
+        <i class="fas fa-trash-alt"></i> 删除\
+      </button>\
+      <button type="button" class="batch-action-btn batch-cancel-btn" title="退出批量模式">取消</button>\
+    </div>\
+  </div>'
+
+  /**
+   * 创建 DOM 结构（降级方案 - 从内置模板克隆）
    */
   function createLegacy () {
-    var toolbar = document.createElement('div')
-    toolbar.id = 'batch-toolbar'
-    toolbar.className = 'session-batch-toolbar'
-
-    // 左区域：全选 + 已选数量
-    var leftSection = document.createElement('div')
-    leftSection.className = 'batch-toolbar-left'
-
-    var selectAllLabel = document.createElement('label')
-    selectAllLabel.className = 'batch-select-all'
-
-    var selectAllCheckbox = document.createElement('input')
-    selectAllCheckbox.type = 'checkbox'
-    selectAllCheckbox.id = 'select-all-checkbox'
-
-    var selectAllText = document.createElement('span')
-    selectAllText.textContent = '\u5168\u9009'
-
-    selectAllLabel.appendChild(selectAllCheckbox)
-    selectAllLabel.appendChild(selectAllText)
-    leftSection.appendChild(selectAllLabel)
-
-    var selectedCount = document.createElement('span')
-    selectedCount.id = 'selected-count'
-    selectedCount.className = 'batch-selected-count js-hidden'
-    selectedCount.textContent = ''
-    leftSection.appendChild(selectedCount)
-
-    // 右区域：删除按钮 + 取消按钮
-    var rightSection = document.createElement('div')
-    rightSection.className = 'batch-toolbar-right'
-
-    var batchDeleteBtn = document.createElement('button')
-    batchDeleteBtn.type = 'button'
-    batchDeleteBtn.id = 'batch-delete-btn'
-    batchDeleteBtn.className = 'batch-action-btn batch-delete-btn'
-    batchDeleteBtn.disabled = true
-    batchDeleteBtn.title = '\u5220\u9664\u9009\u4E2D\u4F1A\u8BDD'
-
-    var deleteIcon = document.createElement('i')
-    deleteIcon.className = 'fas fa-trash-alt'
-    var deleteText = document.createTextNode(' \u5220\u9664')
-    batchDeleteBtn.appendChild(deleteIcon)
-    batchDeleteBtn.appendChild(deleteText)
-
-    var cancelBatchBtn = document.createElement('button')
-    cancelBatchBtn.type = 'button'
-    cancelBatchBtn.className = 'batch-action-btn batch-cancel-btn'
-    cancelBatchBtn.textContent = '\u53D6\u6D88'
-    cancelBatchBtn.title = '\u9000\u51FA\u6279\u91CF\u6A21\u5F0F'
-
-    rightSection.appendChild(batchDeleteBtn)
-    rightSection.appendChild(cancelBatchBtn)
-
-    toolbar.appendChild(leftSection)
-    toolbar.appendChild(rightSection)
-
-    return toolbar
+    var fragment = cloneFromTemplate(BATCH_TOOLBAR_DOM_TPL)
+    return fragment.firstElementChild
   }
 
   // 预加载模板

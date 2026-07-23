@@ -3,7 +3,7 @@ import { getIconClass } from '/cdn/components/common/icons/iconMap.js';
 
 const compDef = {
     name: 'yryEmptyState',
-    html: '/cdn/components/common/feedback/YrYEmptyState/template.html',
+    html: '/cdn/components/common/feedback/YrYEmptyState/index.html',
     css: '/cdn/components/common/feedback/YrYEmptyState/index.css',
     props: {
         title: {

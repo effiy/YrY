@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    YrY · Vue 3 text input component styles
 
-   Template structure (from template.html):
+   Template structure (from index.html):
      <input
        :type="type"
        :class="computedClass"

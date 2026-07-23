@@ -69,6 +69,29 @@ let __codeViewImagePreviewStyleMounted = false;
 let __codeViewImagePreviewCloseTimer = 0;
 let __codeViewImagePreviewPrevActiveEl = null;
 
+const CODE_VIEW_PREVIEW_MODAL_CSS = `
+                    #codeview-image-preview{color:var(--yry-text-on-primary);opacity:0;pointer-events:auto;transition:opacity 140ms ease}
+                    #codeview-image-preview.is-open{opacity:1}
+                    #codeview-image-preview .codeview-image-preview-frame{position:relative;max-width:min(96vw,1400px);max-height:96vh;transform:translate3d(0,6px,0) scale(.985);opacity:.98;transition:transform 160ms cubic-bezier(.2,.9,.2,1),opacity 160ms ease}
+                    #codeview-image-preview.is-open .codeview-image-preview-frame{transform:translate3d(0,0,0) scale(1);opacity:1}
+                    #codeview-image-preview .codeview-image-preview-img{display:block;max-width:96vw;max-height:96vh;border-radius:14px;box-shadow:0 20px 80px rgba(0,0,0,.55);background:rgba(255,255,255,0.06);object-fit:contain}
+                    #codeview-image-preview .codeview-image-preview-toolbar{position:absolute;top:10px;right:10px;display:flex;gap:8px;align-items:center}
+                    #codeview-image-preview .codeview-image-preview-btn{position:relative;top:auto;right:auto;transform:none;height:34px;padding:0 12px;border-radius:12px;border:1px solid rgba(var(--yry-dark-text-secondary-rgb), 0.22);background:rgba(var(--yry-dark-surface-rgb), 0.38);color:var(--yry-text-on-primary);font-size:13px;cursor:pointer;backdrop-filter:blur(10px)}
+                    #codeview-image-preview .codeview-image-preview-close{position:relative;top:auto;right:auto;transform:none;width:38px;height:38px;padding:0;font-size:18px;background:rgba(var(--yry-dark-surface-rgb), 0.46)}
+                    #codeview-image-preview .codeview-image-preview-btn:hover{background:rgba(var(--yry-dark-surface-rgb), 0.6);border-color:rgba(var(--yry-dark-text-secondary-rgb), 0.3)}
+                    #codeview-image-preview .codeview-image-preview-btn:active{transform:translateY(1px)}
+                `.trim();
+
+const CODE_VIEW_PREVIEW_MODAL_TPL = `
+                <div class="codeview-image-preview-frame">
+                    <img class="codeview-image-preview-img" alt="预览图片" />
+                    <div class="codeview-image-preview-toolbar" aria-label="图片工具栏">
+                        <button type="button" class="codeview-image-preview-btn codeview-image-preview-download" title="下载" aria-label="下载">下载</button>
+                        <button type="button" class="codeview-image-preview-btn codeview-image-preview-close" title="关闭（Esc）" aria-label="关闭">✕</button>
+                    </div>
+                </div>
+            `;
+
 const guessLanguage = (name) => {
     const n = String(name || '').toLowerCase();
     console.log('[guessLanguage] 文件名:', n);
@@ -1210,18 +1233,7 @@ const componentOptions = {
                 }
                 const style = document.createElement('style');
                 style.id = 'codeview-image-preview-style';
-                style.textContent = `
-                    #codeview-image-preview{color:var(--yry-text-on-primary);opacity:0;pointer-events:auto;transition:opacity 140ms ease}
-                    #codeview-image-preview.is-open{opacity:1}
-                    #codeview-image-preview .codeview-image-preview-frame{position:relative;max-width:min(96vw,1400px);max-height:96vh;transform:translate3d(0,6px,0) scale(.985);opacity:.98;transition:transform 160ms cubic-bezier(.2,.9,.2,1),opacity 160ms ease}
-                    #codeview-image-preview.is-open .codeview-image-preview-frame{transform:translate3d(0,0,0) scale(1);opacity:1}
-                    #codeview-image-preview .codeview-image-preview-img{display:block;max-width:96vw;max-height:96vh;border-radius:14px;box-shadow:0 20px 80px rgba(0,0,0,.55);background:rgba(255,255,255,0.06);object-fit:contain}
-                    #codeview-image-preview .codeview-image-preview-toolbar{position:absolute;top:10px;right:10px;display:flex;gap:8px;align-items:center}
-                    #codeview-image-preview .codeview-image-preview-btn{position:relative;top:auto;right:auto;transform:none;height:34px;padding:0 12px;border-radius:12px;border:1px solid rgba(var(--yry-dark-text-secondary-rgb), 0.22);background:rgba(var(--yry-dark-surface-rgb), 0.38);color:var(--yry-text-on-primary);font-size:13px;cursor:pointer;backdrop-filter:blur(10px)}
-                    #codeview-image-preview .codeview-image-preview-close{position:relative;top:auto;right:auto;transform:none;width:38px;height:38px;padding:0;font-size:18px;background:rgba(var(--yry-dark-surface-rgb), 0.46)}
-                    #codeview-image-preview .codeview-image-preview-btn:hover{background:rgba(var(--yry-dark-surface-rgb), 0.6);border-color:rgba(var(--yry-dark-text-secondary-rgb), 0.3)}
-                    #codeview-image-preview .codeview-image-preview-btn:active{transform:translateY(1px)}
-                `.trim();
+                style.textContent = CODE_VIEW_PREVIEW_MODAL_CSS;
                 document.head.appendChild(style);
                 __codeViewImagePreviewStyleMounted = true;
             } catch (_) { }
@@ -1235,15 +1247,7 @@ const componentOptions = {
             root.setAttribute('role', 'dialog');
             root.setAttribute('aria-modal', 'true');
             root.style.cssText = 'position:fixed;inset:0;z-index:var(--z-overlay);display:none;align-items:center;justify-content:center;padding:18px;background:rgba(var(--yry-dark-surface-rgb), 0.72);backdrop-filter:blur(2px)';
-            root.innerHTML = `
-                <div class="codeview-image-preview-frame">
-                    <img class="codeview-image-preview-img" alt="预览图片" />
-                    <div class="codeview-image-preview-toolbar" aria-label="图片工具栏">
-                        <button type="button" class="codeview-image-preview-btn codeview-image-preview-download" title="下载" aria-label="下载">下载</button>
-                        <button type="button" class="codeview-image-preview-btn codeview-image-preview-close" title="关闭（Esc）" aria-label="关闭">✕</button>
-                    </div>
-                </div>
-            `;
+            root.innerHTML = CODE_VIEW_PREVIEW_MODAL_TPL;
 
             root.addEventListener('click', (e) => {
                 try {

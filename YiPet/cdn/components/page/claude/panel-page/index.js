@@ -3,7 +3,7 @@ import { clearCacheAndRefresh } from '/cdn/utils/core/clearCache.js';
 
 const compDef = {
     name: 'yryClaudePanelPage',
-    html: '/YiPet/cdn/components/business/views/claude/claudePanelPage/template.html',
+    html: '/YiPet/cdn/components/business/views/claude/claudePanelPage/index.html',
     css: '/YiPet/cdn/components/business/views/claude/claudePanelPage/index.css',
     props: {
         loading: { type: Boolean, default: false },

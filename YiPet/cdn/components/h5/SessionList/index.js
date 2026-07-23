@@ -1,7 +1,7 @@
 /**
  * YrY · H5 SessionList — renders session items with swipe actions
  *
- * All HTML rendering is driven by template.html.
+ * All HTML rendering is driven by index.html.
  * Template ID: tpl-session-item
  */
 
@@ -11,7 +11,7 @@ import { config } from "../../../../utils/h5/config.js";
 import { BaseList } from "../BaseList/index.js";
 
 /* ── Template loading (sync, at module init) ─────────────────────────────── */
-const tpl = loadTemplate("SessionList", new URL("./template.html", import.meta.url).href);
+const tpl = loadTemplate("SessionList", new URL("./index.html", import.meta.url).href);
 
 export class SessionList extends BaseList {
   /** @type {typeof tpl} */

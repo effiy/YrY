@@ -2,7 +2,7 @@ import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
 const compDef = {
     name: 'yryStoryPanelPage',
-    html: '/YiPet/cdn/components/business/views/story/storyPanelPage/template.html',
+    html: '/YiPet/cdn/components/business/views/story/storyPanelPage/index.html',
     css: '/YiPet/cdn/components/business/views/story/storyPanelPage/index.css',
     props: {
         loading:               { type: Boolean, default: false },

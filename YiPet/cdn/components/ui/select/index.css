@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    YrY · Vue 3 select/dropdown component styles
 
-   Template structure (from template.html):
+   Template structure (from index.html):
      <div :class="wrapperClass" v-click-outside="closeDropdown">
        <label v-if="label" :for="selectId" :class="labelClass">
          {{ label }} <span v-if="required" class="select-required">*</span>

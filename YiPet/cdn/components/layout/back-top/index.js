@@ -92,7 +92,7 @@ function _mountApp(templateHTML) {
 const compDef = {
     name: 'yryBackTop',
     css: '/cdn/components/common/navigation/YrYBackTop/index.css',
-    html: '/cdn/components/common/navigation/YrYBackTop/template.html',
+    html: '/cdn/components/common/navigation/YrYBackTop/index.html',
     mounted() {
         // Template will be loaded by componentLoader; trigger auto-mount after
         _mountApp(this.$options.template);

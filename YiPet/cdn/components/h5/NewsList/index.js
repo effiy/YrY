@@ -1,8 +1,8 @@
 /**
  * YrY · H5 NewsList — renders news articles and news-derived sessions
  *
- * All HTML rendering is driven by template.html.
- * Template IDs: see NewsList/template.html header for full inventory.
+ * All HTML rendering is driven by index.html.
+ * Template IDs: see NewsList/index.html header for full inventory.
  */
 
 import { loadTemplate } from "../../../../utils/h5/template.js";
@@ -11,7 +11,7 @@ import { config } from "../../../../utils/h5/config.js";
 import { BaseList } from "../BaseList/index.js";
 
 /* ── Template loading (sync, at module init) ─────────────────────────────── */
-const tpl = loadTemplate("NewsList", new URL("./template.html", import.meta.url).href);
+const tpl = loadTemplate("NewsList", new URL("./index.html", import.meta.url).href);
 
 export class NewsList extends BaseList {
   /** @type {typeof tpl} */

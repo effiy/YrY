@@ -2,7 +2,7 @@ import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
 const compDef = {
     name: 'yryLoading',
-    html: '/cdn/components/common/loaders/YrYLoading/template.html',
+    html: '/cdn/components/common/loaders/YrYLoading/index.html',
     css: '/cdn/components/common/loaders/YrYLoading/index.css',
     props: {
         text: {

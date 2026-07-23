@@ -2,7 +2,7 @@ import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
 const compDef = {
     name: 'yryScoreBar',
-    html: '/cdn/components/common/indicators/YrYScoreBar/template.html',
+    html: '/cdn/components/common/indicators/YrYScoreBar/index.html',
     css: '/cdn/components/common/indicators/YrYScoreBar/index.css',
     props: {
         score:      { type: Object,  required: true },

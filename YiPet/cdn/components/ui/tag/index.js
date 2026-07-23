@@ -6,7 +6,7 @@ import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
 const compDef = {
     name: 'yryTag',
-    html: '/cdn/components/common/tags/YrYTag/template.html',
+    html: '/cdn/components/common/tags/YrYTag/index.html',
     css: '/cdn/components/common/tags/YrYTag/index.css',
     props: {
         as: {

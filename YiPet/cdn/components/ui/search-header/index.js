@@ -4,7 +4,7 @@ import { getIconClass } from '/cdn/components/common/icons/iconMap.js';
 
 const compDef = {
   name: 'yrySearchHeader',
-  html: '/cdn/components/business/SearchHeader/template.html',
+  html: '/cdn/components/business/SearchHeader/index.html',
   css: '/cdn/components/business/SearchHeader/index.css',
   props: {
     homeHref: {

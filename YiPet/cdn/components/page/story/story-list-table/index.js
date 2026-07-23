@@ -2,7 +2,7 @@ import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
 const compDef = {
     name: 'yryStoryListTable',
-    html: '/YiPet/cdn/components/business/views/story/storyListTable/template.html',
+    html: '/YiPet/cdn/components/business/views/story/storyListTable/index.html',
     css: '/YiPet/cdn/components/business/views/story/storyListTable/index.css',
     props: {
         stories: { type: Array, default: () => [] },

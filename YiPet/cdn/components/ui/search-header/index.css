@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    YrY · SearchHeader — top navigation bar with search, history panel & actions
 
-   Template structure (from template.html):
+   Template structure (from index.html):
      <header class="header-row">
        <div class="header-nav">
          <button class="home-btn" data-tooltip="..."><i /></button>

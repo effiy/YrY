@@ -1,8 +1,8 @@
 /**
  * YrY · H5 Chat — message rendering with action delegation
  *
- * All HTML rendering is driven by template.html.
- * Template IDs: see Chat/template.html header for full inventory.
+ * All HTML rendering is driven by index.html.
+ * Template IDs: see Chat/index.html header for full inventory.
  */
 
 import { loadTemplate } from "../../../../utils/h5/template.js";
@@ -11,7 +11,7 @@ import { normalizeRole, normalizeText } from "../../../../utils/h5/msg.js";
 import { renderMarkdown, renderMermaidIn } from "../../../../utils/h5/markdown.js";
 
 /* ── Template loading (sync, at module init) ─────────────────────────────── */
-const tpl = loadTemplate("Chat", new URL("./template.html", import.meta.url).href);
+const tpl = loadTemplate("Chat", new URL("./index.html", import.meta.url).href);
 
 export class Chat {
   /** @type {import("../../../../utils/h5/template.js").TemplateHandle} */
@@ -133,7 +133,7 @@ export class Chat {
     return msg ? parseInt(msg.getAttribute('data-message-index') || '-1') : -1;
   }
 
-  /* ── Rendering (all HTML from template.html) ──────────────────────────── */
+  /* ── Rendering (all HTML from index.html) ──────────────────────────── */
 
   _isNearBottom(th = 50) {
     if (!this.container) return true;

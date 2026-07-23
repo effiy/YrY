@@ -187,7 +187,7 @@ function _flushEarlyQueue() {
 /* ── Register component via componentLoader ───────────────────────────────── */
 const compDef = {
     name: 'yryToast',
-    html: '/cdn/components/common/feedback/YrYToast/template.html',
+    html: '/cdn/components/common/feedback/YrYToast/index.html',
     css: '/cdn/components/common/feedback/YrYToast/index.css'
 };
 

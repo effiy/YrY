@@ -3,7 +3,7 @@ import { getIconClass } from '/cdn/components/common/icons/iconMap.js';
 
 const compDef = {
     name: 'yryErrorState',
-    html: '/cdn/components/common/feedback/YrYErrorState/template.html',
+    html: '/cdn/components/common/feedback/YrYErrorState/index.html',
     css: '/cdn/components/common/feedback/YrYErrorState/index.css',
     props: {
         message: {

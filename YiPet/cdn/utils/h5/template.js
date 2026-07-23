@@ -1,26 +1,26 @@
 /**
- * YrY · H5 Template Engine — loads template.html files and provides sync rendering
+ * YrY · H5 Template Engine — loads index.html files and provides sync rendering
  *
- * Templates are parsed from <template id="tpl-xxx"> elements inside template.html
+ * Templates are parsed from <template id="tpl-xxx"> elements inside index.html
  * using DOMParser. Placeholders use {key} syntax and are replaced via simple
  * string interpolation at render time.
  *
  * Usage:
- *   const tpl = loadTemplate('Chat', '../Chat/template.html');
+ *   const tpl = loadTemplate('Chat', '../Chat/index.html');
  *   const html = tpl.render('tpl-chat-message', { role: 'is-user', ... });
  */
 
 /**
- * Synchronously load and parse a template.html file.
+ * Synchronously load and parse a index.html file.
  * Uses synchronous XHR (small files, instant at module init time).
  *
  * @param {string} name - component name for caching
- * @param {string} url - path to template.html (relative to current module)
+ * @param {string} url - path to index.html (relative to current module)
  * @returns {{ render: (id:string, data:object) => string }}
  */
 export function loadTemplate(name, url) {
   const xhr = new XMLHttpRequest();
-  xhr.open('GET', url, false); // sync — template.html files are tiny (<5KB)
+  xhr.open('GET', url, false); // sync — index.html files are tiny (<5KB)
   try { xhr.send(); } catch (_) {}
 
   const templates = {};

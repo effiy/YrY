@@ -2,7 +2,7 @@ import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
 const compDef = {
     name: 'yryTextarea',
-    html: '/cdn/components/common/forms/YrYTextarea/template.html',
+    html: '/cdn/components/common/forms/YrYTextarea/index.html',
     css: '/cdn/components/common/forms/YrYTextarea/index.css',
     props: {
         rows: {

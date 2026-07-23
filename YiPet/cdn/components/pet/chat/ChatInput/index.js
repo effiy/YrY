@@ -9,6 +9,57 @@
   let domTemplateCache = ''
   let draftPreviewTemplateCache = ''
 
+  const DOM_FALLBACK_TEMPLATE = `
+  <div class="yi-pet-chat-input-container chat-input-container">
+    <div class="yi-pet-chat-toolbar chat-input-toolbar">
+      <div class="yi-pet-chat-toolbar-left chat-input-btn-group">
+        <button type="button" class="yi-pet-chat-btn chat-input-btn chat-input-text-btn ui-btn" title="编辑页面上下文" aria-label="页面上下文" data-action="context">📝</button>
+        <button type="button" class="yi-pet-chat-btn chat-input-btn chat-input-text-btn ui-btn" title="编辑当前会话信息（标题、描述等）" aria-label="编辑会话" id="edit-session-btn" data-action="edit-session">✏️</button>
+        <button type="button" class="yi-pet-chat-btn chat-input-btn chat-input-text-btn ui-btn" title="管理会话标签" aria-label="标签管理" data-action="tag-manager">🏷️</button>
+        <button type="button" class="yi-pet-chat-btn chat-input-btn chat-input-text-btn ui-btn" title="常见问题" aria-label="常见问题" data-action="faq">💡</button>
+        <button type="button" class="yi-pet-chat-btn chat-input-btn chat-input-text-btn ui-btn" title="微信机器人设置" aria-label="微信机器人设置" data-action="wechat">🤖</button>
+        <button type="button" class="yi-pet-chat-btn chat-input-btn chat-input-text-btn ui-btn" title="上传图片" aria-label="上传图片" data-action="image">🖼️</button>
+        <input type="file" accept="image/*" multiple class="js-hidden" id="yi-pet-chat-image-input" />
+      </div>
+      <div class="yi-pet-chat-toolbar-right chat-input-btn-group">
+        <div class="context-switch-container" title="开启/关闭页面上下文，帮助AI理解当前页面内容">
+          <span class="context-switch-label">页面上下文</span>
+          <div class="context-switch-wrapper">
+            <div class="context-switch-thumb"></div>
+          </div>
+          <input type="checkbox" id="context-switch" class="context-switch-input" checked />
+        </div>
+        <button type="button" id="request-status-btn" class="chat-input-status-btn" aria-label="请求状态" title="请求状态：空闲" disabled>⏹️</button>
+      </div>
+    </div>
+    <div class="chat-input-wrapper">
+      <div class="yi-pet-chat-draft-images js-hidden" aria-label="待发送图片"></div>
+      <div class="yi-pet-chat-input-row">
+        <textarea
+          id="yi-pet-chat-input"
+          class="yi-pet-chat-textarea chat-message-input"
+          placeholder="输入消息... (Shift+Enter 换行，Enter 发送)"
+          rows="4"
+          aria-label="会话输入框"
+        ></textarea>
+      </div>
+    </div>
+  </div>`
+
+  const DRAFT_IMAGE_ITEM_TPL = (escapedSrc, index) => `
+                    <div class="yi-pet-chat-draft-image yi-pet-chat-draft-image-loading" data-image-index="${index}">
+                        <img class="yi-pet-chat-draft-image-preview" src="${escapedSrc}" alt="待发送图片 ${index + 1}" loading="lazy" />
+                        <button type="button" class="yi-pet-chat-draft-image-remove" aria-label="移除第 ${index + 1} 张图片" title="移除">✕</button>
+                    </div>`
+
+  const DRAFT_IMAGES_CLEAR_BTN_TPL = (count) => `
+            <button
+                type="button"
+                class="yi-pet-chat-draft-images-clear"
+                aria-label="清空所有 ${count} 张图片"
+                title="清空所有图片"
+            >清空图片 (${count})</button>`
+
   async function loadTemplate() {
     if (chatInputTemplateCache) return chatInputTemplateCache
     const DomHelper = window.DomHelper
@@ -561,27 +612,14 @@
         .replaceAll("'", '&#39;')
 
     const imagesHtml = draftImages
-      .map((src, index) => {
-        const idx = Number(index) + 1
-        return `
-                    <div class="yi-pet-chat-draft-image yi-pet-chat-draft-image-loading" data-image-index="${Number(index)}">
-                        <img class="yi-pet-chat-draft-image-preview" src="${escapeAttr(src || '')}" alt="待发送图片 ${idx}" loading="lazy" />
-                        <button type="button" class="yi-pet-chat-draft-image-remove" aria-label="移除第 ${idx} 张图片" title="移除">✕</button>
-                    </div>
-                `.trim()
-      })
+      .map((src, index) =>
+        DRAFT_IMAGE_ITEM_TPL(escapeAttr(src || ''), Number(index)).trim(),
+      )
       .join('')
 
-    const clearBtnHtml = `
-            <button
-                type="button"
-                class="yi-pet-chat-draft-images-clear"
-                aria-label="清空所有 ${draftImages.length} 张图片"
-                title="清空所有图片"
-            >清空图片 (${draftImages.length})</button>
-        `.trim()
+    const clearBtnHtml = DRAFT_IMAGES_CLEAR_BTN_TPL(draftImages.length).trim()
 
-    container.innerHTML = `${imagesHtml}${clearBtnHtml}`
+    container.innerHTML = imagesHtml + clearBtnHtml
 
     if (!container._yiPetDraftImagesBound) {
       container._yiPetDraftImagesBound = true
@@ -793,25 +831,7 @@
     if (!root) {
       root = document.createElement('div')
       root.className = 'yi-pet-chat-input-container chat-input-container'
-      root.innerHTML = [
-        '<div class="yi-pet-chat-toolbar chat-input-toolbar">',
-        '<div class="yi-pet-chat-toolbar-left chat-input-btn-group">',
-        '<button type="button" class="yi-pet-chat-btn chat-input-btn chat-input-text-btn ui-btn" title="编辑页面上下文" aria-label="页面上下文" data-action="context">' + '\ud83d\udcdd' + '</button>',
-        '<button type="button" class="yi-pet-chat-btn chat-input-btn chat-input-text-btn ui-btn" title="编辑当前会话信息" aria-label="编辑会话" id="edit-session-btn" data-action="edit-session">' + '\u270f\ufe0f' + '</button>',
-        '<button type="button" class="yi-pet-chat-btn chat-input-btn chat-input-text-btn ui-btn" title="管理会话标签" aria-label="标签管理" data-action="tag-manager">' + '\ud83c\udff7\ufe0f' + '</button>',
-        '<button type="button" class="yi-pet-chat-btn chat-input-btn chat-input-text-btn ui-btn" title="常见问题" aria-label="常见问题" data-action="faq">' + '\ud83d\udca1' + '</button>',
-        '<button type="button" class="yi-pet-chat-btn chat-input-btn chat-input-text-btn ui-btn" title="微信机器人设置" aria-label="微信机器人设置" data-action="wechat">' + '\ud83e\udd16' + '</button>',
-        '<button type="button" class="yi-pet-chat-btn chat-input-btn chat-input-text-btn ui-btn" title="上传图片" aria-label="上传图片" data-action="image">' + '\ud83d\uddbc\ufe0f' + '</button>',
-        '<input type="file" accept="image/*" multiple class="js-hidden" id="yi-pet-chat-image-input" />',
-        '</div>',
-        '<div class="yi-pet-chat-toolbar-right chat-input-btn-group">',
-        '<div class="context-switch-container" title="开启/关闭页面上下文"><span class="context-switch-label">页面上下文</span><div class="context-switch-wrapper"><div class="context-switch-thumb"></div></div><input type="checkbox" id="context-switch" class="context-switch-input" checked /></div>',
-        '<button type="button" id="request-status-btn" class="chat-input-status-btn" aria-label="请求状态" title="请求状态：空闲" disabled>' + '\u23f9\ufe0f' + '</button>',
-        '</div></div>',
-        '<div class="chat-input-wrapper"><div class="yi-pet-chat-draft-images js-hidden" aria-label="待发送图片"></div>',
-        '<div class="yi-pet-chat-input-row"><textarea id="yi-pet-chat-input" class="yi-pet-chat-textarea chat-message-input" placeholder="输入消息... (Shift+Enter 换行，Enter 发送)" rows="4" aria-label="会话输入框"></textarea></div>',
-        '</div>'
-      ].join('')
+      root.innerHTML = DOM_FALLBACK_TEMPLATE
     }
 
     const textarea = root.querySelector('#yi-pet-chat-input')

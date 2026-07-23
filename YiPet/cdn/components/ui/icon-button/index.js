@@ -2,7 +2,7 @@ import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
 const compDef = {
     name: 'yryIconButton',
-    html: '/cdn/components/common/buttons/YrYIconButton/template.html',
+    html: '/cdn/components/common/buttons/YrYIconButton/index.html',
     css: '/cdn/components/common/buttons/YrYIconButton/index.css',
     props: {
         type: {

@@ -2,7 +2,7 @@ import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
 const compDef = {
     name: 'yryBreadcrumb',
-    html: '/cdn/components/common/navigation/YrYBreadcrumb/template.html',
+    html: '/cdn/components/common/navigation/YrYBreadcrumb/index.html',
     css: '/cdn/components/common/navigation/YrYBreadcrumb/index.css',
     props: {
         items:     { type: Array,  required: true },

@@ -2,7 +2,7 @@ import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
 const compDef = {
     name: 'yryStoryStatusBadge',
-    html: '/YiPet/cdn/components/business/views/story/storyStatusBadge/template.html',
+    html: '/YiPet/cdn/components/business/views/story/storyStatusBadge/index.html',
     css: '/YiPet/cdn/components/business/views/story/storyStatusBadge/index.css',
     props: {
         status: { type: String, default: '' },

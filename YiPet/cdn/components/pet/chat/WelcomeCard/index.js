@@ -15,6 +15,15 @@
   const TEMPLATE_ID = '#yi-pet-welcome-card-template'
   let templateCache = ''
 
+  // 模块级模板常量
+  var WELCOME_FOOTER_TPL = '<div class="welcome-card-footer"><div class="welcome-card-meta">{{metaParts}}</div></div>'
+  var WELCOME_TAG_ITEM_TPL = function (tagText, index) {
+    return '<span class="welcome-card-tag">' + tagText + '</span>'
+  }
+  var WELCOME_META_PART_TPL = function (metaText) {
+    return '<span>' + metaText + '</span>'
+  }
+
   /**
    * 预加载模板
    */
@@ -124,13 +133,8 @@
    */
   function buildFooterHtml (meta) {
     if (meta.metaParts.length === 0) return ''
-    return [
-      '<div class="welcome-card-footer">',
-      '<div class="welcome-card-meta">',
-      meta.metaParts.map(function (part) { return '<span>' + part + '</span>' }).join(''),
-      '</div>',
-      '</div>'
-    ].join('')
+    var metaPartsHtml = meta.metaParts.map(WELCOME_META_PART_TPL).join('')
+    return WELCOME_FOOTER_TPL.replace('{{metaParts}}', metaPartsHtml)
   }
 
   /**
@@ -209,7 +213,7 @@
           if (meta.tags.length > 0) {
             tagsRow.style.display = ''
             tagsEl.innerHTML = meta.tags.map(function (tag) {
-              return '<span class="welcome-card-tag">' + escapeHtml(tag) + '</span>'
+              return WELCOME_TAG_ITEM_TPL(escapeHtml(tag))
             }).join('')
           } else {
             tagsRow.style.display = 'none'
@@ -222,9 +226,7 @@
         if (footerEl && metaEl) {
           if (meta.metaParts.length > 0) {
             footerEl.style.display = ''
-            metaEl.innerHTML = meta.metaParts.map(function (part) {
-              return '<span>' + part + '</span>'
-            }).join('')
+            metaEl.innerHTML = meta.metaParts.map(WELCOME_META_PART_TPL).join('')
           } else {
             footerEl.style.display = 'none'
           }
@@ -297,7 +299,7 @@
 
     if (meta.tags.length > 0) {
       var tagsHtml = meta.tags.map(function (tag) {
-        return '<span class="welcome-card-tag">' + escapeHtml(tag) + '</span>'
+        return WELCOME_TAG_ITEM_TPL(escapeHtml(tag))
       }).join('')
       html += [
         '<div class="welcome-card-row welcome-card-row--multiline">',

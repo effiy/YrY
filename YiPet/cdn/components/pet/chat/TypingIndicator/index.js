@@ -32,37 +32,37 @@
   }
 
   /**
-   * 创建打字指示器 DOM 元素（降级方案 - createElement）
+   * 打字指示器 DOM 模板
+   */
+  var TYPING_INDICATOR_DOM_TPL = [
+    '<div class="chat-message" data-typing-indicator="true">',
+    '  <div class="chat-message-typing-avatar" data-message-type="pet-avatar"></div>',
+    '  <div class="chat-message-content">',
+    '    <div class="chat-message-typing-bubble" data-message-type="pet-bubble">💭 正在思考中...</div>',
+    '    <div class="chat-message-typing-time"></div>',
+    '  </div>',
+    '</div>'
+  ].join('')
+
+  /**
+   * 创建打字指示器 DOM 元素（降级方案 - 使用模板）
    */
   function createLegacy ({ color, icon }) {
     var currentColor = color || ((PET_CONFIG && PET_CONFIG.pet && PET_CONFIG.pet.colors && PET_CONFIG.pet.colors[0]) || '#4C97FF')
 
-    var messageDiv = document.createElement('div')
-    messageDiv.setAttribute('data-typing-indicator', 'true')
-    messageDiv.className = 'chat-message'
+    var fragment = cloneFromTemplate(TYPING_INDICATOR_DOM_TPL)
+    var messageDiv = fragment.firstElementChild
 
-    var avatar = document.createElement('div')
-    avatar.className = 'chat-message-typing-avatar'
-    avatar.style.setProperty('background', currentColor, 'important')
-    avatar.textContent = icon || '🐾'
-    avatar.setAttribute('data-message-type', 'pet-avatar')
+    var avatar = messageDiv.querySelector('[data-message-type="pet-avatar"]')
+    if (avatar) {
+      avatar.style.setProperty('background', currentColor, 'important')
+      avatar.textContent = icon || '🐾'
+    }
 
-    var content = document.createElement('div')
-    content.className = 'chat-message-content'
-
-    var messageText = document.createElement('div')
-    messageText.className = 'chat-message-typing-bubble'
-    messageText.style.setProperty('background', currentColor, 'important')
-    messageText.setAttribute('data-message-type', 'pet-bubble')
-    messageText.textContent = '💭 正在思考中...'
-
-    var messageTime = document.createElement('div')
-    messageTime.className = 'chat-message-typing-time'
-
-    content.appendChild(messageText)
-    content.appendChild(messageTime)
-    messageDiv.appendChild(avatar)
-    messageDiv.appendChild(content)
+    var bubble = messageDiv.querySelector('[data-message-type="pet-bubble"]')
+    if (bubble) {
+      bubble.style.setProperty('background', currentColor, 'important')
+    }
 
     return messageDiv
   }

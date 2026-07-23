@@ -2,7 +2,7 @@ import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
 const compDef = {
     name: 'yryTagChip',
-    html: '/cdn/components/common/tags/YrYTagChip/template.html',
+    html: '/cdn/components/common/tags/YrYTagChip/index.html',
     css: '/cdn/components/common/tags/YrYTagChip/index.css',
     props: {
         text:     { type: String, required: true },

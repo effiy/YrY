@@ -39,7 +39,7 @@ function applyBodyClass(enabled) {
 
 const compDef = {
   name: 'yryHeaderActions',
-  html: '/cdn/components/business/HeaderActions/template.html',
+  html: '/cdn/components/business/HeaderActions/index.html',
   css: '/cdn/components/business/HeaderActions/index.css',
   props: {
     showClearCache: { type: Boolean, default: true },

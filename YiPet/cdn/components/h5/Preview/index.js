@@ -1,14 +1,14 @@
 /**
  * YrY · H5 Preview — image preview overlay with navigation and save
  *
- * All HTML rendering is driven by template.html.
- * The overlay DOM structure lives in template.html and is created once at init().
+ * All HTML rendering is driven by index.html.
+ * The overlay DOM structure lives in index.html and is created once at init().
  */
 
 import { loadTemplate } from "../../../../utils/h5/template.js";
 
 /* ── Template loading (sync, at module init) ─────────────────────────────── */
-const tpl = loadTemplate("Preview", new URL("./template.html", import.meta.url).href);
+const tpl = loadTemplate("Preview", new URL("./index.html", import.meta.url).href);
 
 // ── State ──
 let overlayEl = null;

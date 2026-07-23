@@ -2,7 +2,7 @@ import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
 
 const compDef = {
     name: 'yryBadge',
-    html: '/cdn/components/common/indicators/YrYBadge/template.html',
+    html: '/cdn/components/common/indicators/YrYBadge/index.html',
     css: '/cdn/components/common/indicators/YrYBadge/index.css',
     props: {
         text:     { type: String, required: true },

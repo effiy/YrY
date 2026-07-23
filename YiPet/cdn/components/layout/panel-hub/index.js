@@ -121,7 +121,7 @@ if (!window.openPanel) {
 /* ── Vue component definition ───────────────────────────────────────────── */
 const compDef = {
     name: 'yryPanelHub',
-    html: '/cdn/components/common/panels/YrYPanelHub/template.html',
+    html: '/cdn/components/common/panels/YrYPanelHub/index.html',
     css: '/cdn/components/common/panels/YrYPanelHub/index.css',
     props: {
         label:       { type: Object,  default: null },

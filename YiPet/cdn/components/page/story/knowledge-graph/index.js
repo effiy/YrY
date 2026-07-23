@@ -246,7 +246,7 @@ function extractLegendGroups(nodes) {
 
 const compDef = {
     name: 'yryKnowledgeGraphViewer',
-    html: '/YiPet/cdn/components/business/views/story/knowledgeGraphViewer/template.html',
+    html: '/YiPet/cdn/components/business/views/story/knowledgeGraphViewer/index.html',
     css: '/YiPet/cdn/components/business/views/story/knowledgeGraphViewer/index.css',
     props: {
         graphData:      { type: Object, default: () => ({ nodes: [], edges: [] }) },
