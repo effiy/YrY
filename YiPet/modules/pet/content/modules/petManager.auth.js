@@ -162,7 +162,7 @@
 
     modal._mountPromise = (async () => {
       try {
-        const mod = window.PetManager?.Components?.TokenSettingsModal
+        const mod = window.PetManager?.Components?.TokenSettings
         if (!mod || typeof mod.createComponent !== 'function') return
         const template = canUseTemplate && typeof mod.loadTemplate === 'function' ? await mod.loadTemplate() : ''
         const ctor = mod.createComponent({ manager: this, store, template })

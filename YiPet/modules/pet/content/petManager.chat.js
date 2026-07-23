@@ -673,131 +673,35 @@
   }
 
   // 构建欢迎卡片 HTML（只显示有值的字段，参考 YiWeb 的条件渲染）
-  proto.buildWelcomeCardHtml = function (pageInfo, session = null) {
-    // 如果会话为空，尝试从当前会话ID获取
-    if (!session && this.currentSessionId) {
-      session = this.sessions[this.currentSessionId]
-    }
+  proto.buildWelcomeCardHtml = function (pageInfo, session) {
+    var WC = window.PetManager && window.PetManager.Components && window.PetManager.Components.WelcomeCard
+    if (!WC) return '<div class="welcome-card"><div class="welcome-card-header"><div class="welcome-card-title">' + (pageInfo && pageInfo.title ? this.escapeHtml(pageInfo.title) : '\u5F53\u524D\u9875\u9762') + '</div></div></div>'
 
-    // 提取会话元数据（消除与 buildWelcomeCardModel 的重复逻辑）
-    const meta = this._extractWelcomeCardMeta(session)
-
-    // 调试日志
-    if (meta.messages.length > 0 || !session) {
-      console.log('[buildWelcomeCardHtml] 会话信息:', {
-        hasSession: !!session,
-        currentSessionId: this.currentSessionId,
-        sessionId: session ? session.key : null,
-        messagesCount: meta.messages.length,
-        messages: meta.messages.slice(0, 3).map(function (m) { return { type: m.type, role: m.role, hasContent: !!(m.content || m.message) } })
-      })
-    }
-
-    // 检查会话是否有有效的 URL
-    const shouldShowUrl = !session || meta.hasSessionUrl
-
-    // 构建欢迎卡片 HTML（只显示有值的字段）
-    let pageInfoHtml = '<div class="welcome-card">'
-
-    const titleText = pageInfo && pageInfo.title && pageInfo.title.trim() ? pageInfo.title.trim() : '当前页面'
-    const safeTitle = this.escapeHtml(titleText)
-    const iconUrl = pageInfo && pageInfo.iconUrl && pageInfo.iconUrl.trim() ? pageInfo.iconUrl.trim() : ''
-
-    pageInfoHtml += `
-            <div class="welcome-card-header">
-                <div class="welcome-card-header-left">
-                    ${iconUrl ? `<img class="welcome-card-favicon" src="${this.escapeHtml(iconUrl)}" alt="" />` : ''}
-                    <div class="welcome-card-title" title="${safeTitle}">${safeTitle}</div>
-                </div>
-            </div>
-        `
-
-    // 检查是否有任何内容可显示
-    const hasUrl = shouldShowUrl && pageInfo.url && pageInfo.url.trim()
-
-    // 网址（如果有且应该显示）
-    // 如果会话存在但没有 url 对象或者 url 对象为空，就不显示网址和网址内容
-    if (hasUrl) {
-      const urlId = `welcome-url-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-      pageInfoHtml += `
-                <div class="welcome-card-row">
-                    <div class="welcome-card-label">网址</div>
-                    <div class="welcome-card-value">
-                        <a href="${this.escapeHtml(pageInfo.url)}" target="_blank" rel="noopener noreferrer" class="welcome-card-url" id="${urlId}">${this.escapeHtml(pageInfo.url)}</a>
-                    </div>
-                    <button type="button" class="welcome-card-action-btn" data-copy-target="${urlId}" title="复制网址" aria-label="复制网址">
-                        <i class="fas fa-copy"></i>
-                    </button>
-                </div>
-            `
-    }
-
-    // 页面描述（如果有）
-    if (pageInfo.description && pageInfo.description.trim()) {
-      const descId = `welcome-desc-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-      pageInfoHtml += `
-                <div class="welcome-card-row welcome-card-row--multiline">
-                    <div class="welcome-card-label">描述</div>
-                    <div class="welcome-card-value welcome-card-value--stack welcome-card-description">
-                        <div class="markdown-content" id="${descId}">${this.renderMarkdown(pageInfo.description)}</div>
-                    </div>
-                    <button type="button" class="welcome-card-action-btn" data-copy-text="${this.escapeHtml(pageInfo.description)}" title="复制描述" aria-label="复制描述">
-                        <i class="fas fa-copy"></i>
-                    </button>
-                </div>
-            `
-    }
-
-    // 标签（如果有）
-    if (meta.tags.length > 0) {
-      const tagsHtml = meta.tags.map(tag => {
-        const escapedTag = this.escapeHtml(tag)
-        return `<span class="welcome-card-tag">${escapedTag}</span>`
-      }).join('')
-      pageInfoHtml += `
-                <div class="welcome-card-row welcome-card-row--multiline">
-                    <div class="welcome-card-label">标签</div>
-                    <div class="welcome-card-value welcome-card-tags">${tagsHtml}</div>
-                </div>
-            `
-    }
-
-    pageInfoHtml += this._buildWelcomeCardFooterHtml(meta)
-
-    pageInfoHtml += '</div>'
-    return pageInfoHtml
+    if (!session && this.currentSessionId) session = this.sessions[this.currentSessionId]
+    return WC.buildHtml({
+      pageInfo: pageInfo,
+      session: session,
+      renderMarkdown: this.renderMarkdown.bind(this),
+      formatDate: this.formatDate.bind(this)
+    })
   }
 
-  proto.buildWelcomeCardModel = function (pageInfo, session = null) {
-    if (!session && this.currentSessionId) {
-      session = this.sessions[this.currentSessionId]
-    }
+  proto.buildWelcomeCardModel = function (pageInfo, session) {
+    var WC = window.PetManager && window.PetManager.Components && window.PetManager.Components.WelcomeCard
+    if (!WC) return { titleText: (pageInfo && pageInfo.title) || '\u5F53\u524D\u9875\u9762', iconUrl: '', url: '', descriptionText: '', descriptionHtml: '', tags: [], metaParts: [] }
 
-    const meta = this._extractWelcomeCardMeta(session)
-
-    const titleText = pageInfo && pageInfo.title && pageInfo.title.trim() ? pageInfo.title.trim() : '当前页面'
-    const iconUrl = pageInfo && pageInfo.iconUrl && pageInfo.iconUrl.trim() ? pageInfo.iconUrl.trim() : ''
-
-    const shouldShowUrl = !session || meta.hasSessionUrl
-    const url = shouldShowUrl && pageInfo && pageInfo.url && pageInfo.url.trim() ? pageInfo.url.trim() : ''
-
-    const descriptionText = pageInfo && pageInfo.description && pageInfo.description.trim() ? pageInfo.description.trim() : ''
-    const descriptionHtml = descriptionText ? (this.renderMarkdown(descriptionText) || '') : ''
-
-    return {
-      titleText,
-      iconUrl,
-      url,
-      descriptionText,
-      descriptionHtml,
-      tags: meta.tags,
-      metaParts: meta.metaParts
-    }
+    if (!session && this.currentSessionId) session = this.sessions[this.currentSessionId]
+    return WC.buildModel({
+      pageInfo: pageInfo,
+      session: session,
+      renderMarkdown: this.renderMarkdown.bind(this),
+      formatDate: this.formatDate.bind(this)
+    })
   }
 
   proto.escapeHtml = function (text) {
     if (!text) return ''
-    const div = document.createElement('div')
+    var div = document.createElement('div')
     div.textContent = text
     return div.innerHTML
   }
@@ -832,13 +736,9 @@
     if (!this.pet) return
 
     // 先清理之前的动画
-    if (this.chatBubbleInterval) {
-      clearInterval(this.chatBubbleInterval)
-      this.chatBubbleInterval = null
-    }
-    if (this.lastChatBubble && this.lastChatBubble.parentNode) {
-      this.lastChatBubble.parentNode.removeChild(this.lastChatBubble)
-      this.lastChatBubble = null
+    if (this.chatBubbleController) {
+      this.chatBubbleController.stop()
+      this.chatBubbleController = null
     }
 
     // 添加思考动画（更丰富的动画效果）
@@ -862,61 +762,11 @@
   proto.showChatBubble = function () {
     if (!this.pet) return
 
-    // 创建聊天气泡
-    const bubble = document.createElement('div')
-    bubble.className = 'pet-chat-bubble'
+    var ThinkingBubble = window.PetManager.Components.ThinkingBubble
+    if (!ThinkingBubble) return
 
-    // 随机选择思考文本（更有趣的提示语）
-    const thinkingTexts = (PET_CONFIG?.constants?.ANIMATION?.THINKING_BUBBLE_TEXTS) || [
-      '🤔 让我想想...',
-      '💭 思考中...',
-      '✨ 灵感涌现',
-      '🌟 整理思路',
-      '🎯 深度分析',
-      '🔍 搜索答案',
-      '💡 想法来了',
-      '🌊 头脑风暴',
-      '📝 组织语言',
-      '🎨 酝酿回复',
-      '⚡ 快想好了',
-      '🌈 无限接近',
-      '🚀 马上就来'
-    ]
-    bubble.textContent = thinkingTexts[Math.floor(Math.random() * thinkingTexts.length)]
-
-    this.pet.appendChild(bubble)
-
-    // 保存气泡到实例以便后续更新
-    this.lastChatBubble = bubble
-
-    // 动态更新气泡文本（让用户感受到进展）
-    const updateBubbleInterval = setInterval(() => {
-      if (bubble.parentNode) {
-        let newText
-        do {
-          newText = thinkingTexts[Math.floor(Math.random() * thinkingTexts.length)]
-        } while (newText === bubble.textContent && thinkingTexts.length > 1)
-        bubble.textContent = newText
-      } else {
-        clearInterval(updateBubbleInterval)
-      }
-    }, (PET_CONFIG?.constants?.TIMING?.CHAT_BUBBLE_UPDATE_INTERVAL) || 1500)
-
-    // 保存interval以便后续清理
-    this.chatBubbleInterval = updateBubbleInterval
-
-    // 3秒后移除气泡
-    setTimeout(() => {
-      clearInterval(updateBubbleInterval)
-      if (bubble.parentNode) {
-        bubble.style.animation = 'bubbleAppear 0.3s ease-out reverse'
-        setTimeout(() => {
-          if (bubble.parentNode) {
-            bubble.parentNode.removeChild(bubble)
-          }
-          this.lastChatBubble = null
-        }, 300)
-      }
-    }, 3000)
+    this.chatBubbleController = ThinkingBubble.show({
+      petElement: this.pet
+    })
   }
 })()

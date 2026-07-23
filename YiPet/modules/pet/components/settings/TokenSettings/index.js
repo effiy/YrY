@@ -4,7 +4,7 @@
   if (!window.PetManager) return
   if (!window.PetManager.Components) window.PetManager.Components = {}
 
-  const TEMPLATE_RESOURCE_PATH = 'modules/pet/components/modal/TokenSettingsModal/index.html'
+  const TEMPLATE_RESOURCE_PATH = 'modules/pet/components/settings/TokenSettings/index.html'
   let templateCache = ''
 
   function canUseVueTemplate(Vue) {
@@ -43,7 +43,7 @@
     if (!useTemplate && typeof h !== 'function') return null
 
     const componentOptions = {
-      name: 'YiPetTokenSettingsModal',
+      name: 'YiPetTokenSettings',
       setup() {
         const tokenInputEl = ref(null)
         const models =
@@ -113,7 +113,7 @@
         return () =>
           h('div', { class: 'token-settings-container' }, [
             h('h3', { class: 'token-settings-title' }, '🔑 设置 X-Token'),
-            h('p', { class: 'token-settings-description' }, '请输入 X-Token 以访问 api.effiy.cn 服务'),
+            h('p', { class: 'token-settings-description' }, '请输入 X-Token 以访问本地 YiAi 服务'),
             h('div', { class: 'auth-input-container' }, [
               h('input', {
                 ref: tokenInputEl,
@@ -156,7 +156,7 @@
     return defineComponent(componentOptions)
   }
 
-  window.PetManager.Components.TokenSettingsModal = {
+  window.PetManager.Components.TokenSettings = {
     loadTemplate,
     createComponent,
   }

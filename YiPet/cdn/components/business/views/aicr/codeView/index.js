@@ -760,7 +760,7 @@ const componentOptions = {
         },
         saveImageToProject(dataUrl, filename) {
             return safeExecuteAsync(async () => {
-                const apiUrl = window.API_URL || 'https://api.effiy.cn';
+                const apiUrl = window.API_URL || 'http://localhost:10086';
 
                 const header = dataUrl.slice(0, dataUrl.indexOf(','));
                 const mimeMatch = header.match(/^data:([^;]+);/i);
@@ -1184,7 +1184,7 @@ const componentOptions = {
 
                 // 确保文件名不以 / 开头
                 const cleanFileName = fileName.startsWith('/') ? fileName.substring(1) : fileName;
-                const url = `https://api.effiy.cn/static/${cleanFileName}`;
+                const url = `http://localhost:10086/static/${cleanFileName}`;
 
                 window.open(url, '_blank', 'noopener,noreferrer');
             }, '在新标签页中打开静态文件');

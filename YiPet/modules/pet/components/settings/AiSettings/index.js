@@ -4,7 +4,7 @@
   if (!window.PetManager) return
   if (!window.PetManager.Components) window.PetManager.Components = {}
 
-  const TEMPLATE_RESOURCE_PATH = 'modules/pet/components/modal/AiSettingsModal/index.html'
+  const TEMPLATE_RESOURCE_PATH = 'modules/pet/components/settings/AiSettings/index.html'
   let templateCache = ''
 
   function canUseVueTemplate(Vue) {
@@ -43,7 +43,7 @@
     if (!useTemplate && typeof h !== 'function') return null
 
     const componentOptions = {
-      name: 'YiPetAiSettingsModal',
+      name: 'YiPetAiSettings',
       setup() {
         const openToken = () => {
           try {
@@ -97,7 +97,7 @@
     return defineComponent(componentOptions)
   }
 
-  window.PetManager.Components.AiSettingsModal = {
+  window.PetManager.Components.AiSettings = {
     loadTemplate,
     createComponent,
   }

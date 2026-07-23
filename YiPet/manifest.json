@@ -4,7 +4,7 @@
   "version": "1.1.2",
   "description": "在浏览器中添加一位温柔体贴的伴侣，陪伴您的浏览时光。支持多种互动功能，让网页浏览更加有趣！",
   "permissions": ["storage", "tabs", "scripting", "webRequest"],
-  "host_permissions": ["<all_urls>", "https://api.effiy.cn/*"],
+  "host_permissions": ["<all_urls>", "https://api.effiy.cn/*", "http://localhost:10086/*"],
   "background": {
     "service_worker": "modules/extension/background/index.js"
   },
@@ -42,11 +42,11 @@
         "modules/pet/content/petManager.colorUtils.js",
         "modules/pet/content/petManager.logger.js",
         "modules/pet/content/petManager.welcomeCard.js",
-        "modules/pet/components/modal/TokenSettingsModal/index.js",
+        "modules/pet/components/settings/TokenSettings/index.js",
         "modules/pet/content/modules/petManager.auth.js",
         "modules/pet/content/modules/petManager.roles.js",
         "modules/pet/content/modules/petManager.robot.js",
-        "modules/pet/components/modal/AiSettingsModal/index.js",
+        "modules/pet/components/settings/AiSettings/index.js",
         "modules/pet/content/session/petManager.session.crud.js",
         "modules/pet/content/session/petManager.session.filter.js",
         "modules/pet/content/session/petManager.session.tag.js",
@@ -150,8 +150,8 @@
         "modules/pet/components/manager/SessionTagManager/index.html",
         "modules/pet/components/chat/ChatInput/index.html",
         "modules/pet/components/chat/ChatMessages/index.html",
-        "modules/pet/components/modal/TokenSettingsModal/index.html",
-        "modules/pet/components/modal/AiSettingsModal/index.html",
+        "modules/pet/components/settings/TokenSettings/index.html",
+        "modules/pet/components/settings/AiSettings/index.html",
         "modules/pet/components/editor/SessionInfoEditor/index.html",
         "modules/pet/components/manager/FaqManager/index.html",
         "modules/pet/components/manager/FaqTagManager/index.html"

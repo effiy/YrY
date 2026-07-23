@@ -4,40 +4,43 @@
 ;(function () {
   'use strict'
   if (typeof window === 'undefined' || typeof window.PetManager === 'undefined') return
-  const proto = window.PetManager.prototype
+  var proto = window.PetManager.prototype
 
   proto.updateBatchToolbar = function () {
     if (this.sessionSidebar && this.sessionSidebar.querySelector('[data-pet-batch-toolbar="vue"]')) {
       return
     }
-    const selectedCount = document.getElementById('selected-count')
-    const batchDeleteBtn = document.getElementById('batch-delete-btn')
-    const selectAllCheckbox = this._selectAllCheckbox || document.getElementById('select-all-checkbox')
 
-    const count = this.selectedSessionIds.size
+    var count = this.selectedSessionIds.size
 
-    // 更新已选数量显示（参考 YiWeb 格式：已选 X 项）
-    if (selectedCount) {
-      if (count > 0) {
-        selectedCount.textContent = `已选 ${count} 项`
-        selectedCount.classList.remove('js-hidden')
-      } else {
-        selectedCount.textContent = ''
-        selectedCount.classList.add('js-hidden')
+    // 通过组件 controller 更新已选数量和删除按钮状态
+    if (this._batchToolbarController && typeof this._batchToolbarController.update === 'function') {
+      this._batchToolbarController.update(count)
+    } else {
+      // 兜底：直接操作 DOM
+      var selectedCountEl = document.getElementById('selected-count')
+      var batchDeleteBtnEl = document.getElementById('batch-delete-btn')
+      if (selectedCountEl) {
+        if (count > 0) {
+          selectedCountEl.textContent = '已选 ' + count + ' 项'
+          selectedCountEl.classList.remove('js-hidden')
+        } else {
+          selectedCountEl.textContent = ''
+          selectedCountEl.classList.add('js-hidden')
+        }
+      }
+      if (batchDeleteBtnEl) {
+        batchDeleteBtnEl.disabled = count === 0
       }
     }
 
-    // 更新删除按钮状态
-    if (batchDeleteBtn) {
-      batchDeleteBtn.disabled = count === 0
-    }
-
     // 更新全选 checkbox 状态（参考 YiWeb 实现）
+    var selectAllCheckbox = this._selectAllCheckbox || document.getElementById('select-all-checkbox')
     if (selectAllCheckbox) {
-      const filteredSessions = this._getFilteredSessions()
-      const allSelected =
+      var filteredSessions = this._getFilteredSessions()
+      var allSelected =
         filteredSessions.length > 0 &&
-        filteredSessions.every((session) => session.key && this.selectedSessionIds.has(session.key))
+        filteredSessions.every(function (session) { return session.key && this.selectedSessionIds.has(session.key) }, this)
       selectAllCheckbox.checked = allSelected
     }
   }
@@ -45,30 +48,30 @@
   // 切换全选/取消全选（参考 YiWeb 实现）
   proto.toggleSelectAll = function () {
     // 会话列表模式
-    const filteredSessions = this._getFilteredSessions()
-    const allSelected =
+    var filteredSessions = this._getFilteredSessions()
+    var allSelected =
       filteredSessions.length > 0 &&
-      filteredSessions.every((session) => session.key && this.selectedSessionIds.has(session.key))
+      filteredSessions.every(function (session) { return session.key && this.selectedSessionIds.has(session.key) }, this)
 
     if (allSelected) {
       // 取消全选：只取消当前显示的会话
-      filteredSessions.forEach((session) => {
+      filteredSessions.forEach(function (session) {
         if (session.key) {
           this.selectedSessionIds.delete(session.key)
         }
-      })
+      }, this)
     } else {
       // 全选：选中所有当前显示的会话
-      filteredSessions.forEach((session) => {
+      filteredSessions.forEach(function (session) {
         if (session.key) {
           this.selectedSessionIds.add(session.key)
         }
-      })
+      }, this)
     }
 
-    const hasVueSessionList =
+    var hasVueSessionList =
       !!this._sessionListVueApp && this._sessionListVueMount === this.sessionSidebar?.querySelector?.('.session-list')
-    const hasVueBatchToolbar = !!this.sessionSidebar?.querySelector?.('[data-pet-batch-toolbar="vue"]')
+    var hasVueBatchToolbar = !!this.sessionSidebar?.querySelector?.('[data-pet-batch-toolbar="vue"]')
     if (hasVueSessionList || hasVueBatchToolbar) {
       if (typeof this._bumpSidebarUiTick === 'function') {
         this._bumpSidebarUiTick()
@@ -79,11 +82,11 @@
     }
 
     // 更新所有复选框状态和选中类（使用 batch-selected 类，参考 YiWeb）
-    const sessionItems = this.sessionSidebar.querySelectorAll('.session-item')
-    sessionItems.forEach((item) => {
-      const sessionId = item.dataset.sessionId
-      const checkbox = item.querySelector('.session-batch-checkbox')
-      const isSelected = this.selectedSessionIds.has(sessionId)
+    var sessionItems = this.sessionSidebar.querySelectorAll('.session-item')
+    sessionItems.forEach(function (item) {
+      var sessionId = item.dataset.sessionId
+      var checkbox = item.querySelector('.session-batch-checkbox')
+      var isSelected = this.selectedSessionIds.has(sessionId)
 
       if (checkbox) {
         checkbox.checked = isSelected
@@ -95,133 +98,78 @@
       } else {
         item.classList.remove('batch-selected')
       }
-    })
+    }, this)
 
-    // 更新批量工具栏
-    this.updateBatchToolbar()
+    // 通过组件 controller 更新批量工具栏
+    if (this._batchToolbarController && typeof this._batchToolbarController.update === 'function') {
+      this._batchToolbarController.update(this.selectedSessionIds.size)
+    } else {
+      this.updateBatchToolbar()
+    }
   }
 
   proto.buildBatchToolbar = function () {
-    // 参考 YiWeb 的 session-batch-toolbar 结构
-    const toolbar = document.createElement('div')
-    toolbar.id = 'batch-toolbar'
-    toolbar.className = 'session-batch-toolbar'
+    var self = this
+    var BatchToolbar = window.PetManager && window.PetManager.Components && window.PetManager.Components.BatchToolbar
+    if (!BatchToolbar || typeof BatchToolbar.create !== 'function') {
+      // 兜底：返回 null，由调用方处理
+      return null
+    }
 
-    // Left section: 全选 checkbox + 已选数量
-    const leftSection = document.createElement('div')
-    leftSection.className = 'batch-toolbar-left'
-
-    // 全选 checkbox (参考 YiWeb 的 batch-select-all)
-    const selectAllLabel = document.createElement('label')
-    selectAllLabel.className = 'batch-select-all'
-
-    const selectAllCheckbox = document.createElement('input')
-    selectAllCheckbox.type = 'checkbox'
-    selectAllCheckbox.id = 'select-all-checkbox'
-    selectAllCheckbox.addEventListener('change', () => {
-      this.toggleSelectAll()
-    })
-
-    const selectAllText = document.createElement('span')
-    selectAllText.textContent = '全选'
-
-    selectAllLabel.appendChild(selectAllCheckbox)
-    selectAllLabel.appendChild(selectAllText)
-    leftSection.appendChild(selectAllLabel)
-
-    // 已选数量
-    const selectedCount = document.createElement('span')
-    selectedCount.id = 'selected-count'
-    selectedCount.className = 'batch-selected-count'
-    selectedCount.classList.add('js-hidden')
-    selectedCount.textContent = ''
-    leftSection.appendChild(selectedCount)
-
-    // Right section: 删除按钮 + 取消按钮
-    const rightSection = document.createElement('div')
-    rightSection.className = 'batch-toolbar-right'
-
-    // 删除按钮
-    const batchDeleteBtn = document.createElement('button')
-    batchDeleteBtn.type = 'button'
-    batchDeleteBtn.id = 'batch-delete-btn'
-    batchDeleteBtn.className = 'batch-action-btn batch-delete-btn'
-    batchDeleteBtn.disabled = true
-    batchDeleteBtn.title = '删除选中会话'
-
-    const deleteIcon = document.createElement('i')
-    deleteIcon.className = 'fas fa-trash-alt'
-    const deleteText = document.createTextNode(' 删除')
-    batchDeleteBtn.appendChild(deleteIcon)
-    batchDeleteBtn.appendChild(deleteText)
-
-    batchDeleteBtn.addEventListener('click', async () => {
-      if (batchDeleteBtn.disabled) return
-      const originalContent = batchDeleteBtn.innerHTML
-      batchDeleteBtn.disabled = true
-      batchDeleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 删除中...'
-      try {
-        await this.batchDeleteSessions()
-      } finally {
-        batchDeleteBtn.disabled = false
-        batchDeleteBtn.innerHTML = originalContent
+    this._batchToolbarController = BatchToolbar.create({
+      onSelectAll: function () {
+        self.toggleSelectAll()
+      },
+      onDelete: function () {
+        self.batchDeleteSessions()
+      },
+      onCancel: function () {
+        self.exitBatchMode()
       }
     })
 
-    // 取消按钮
-    const cancelBatchBtn = document.createElement('button')
-    cancelBatchBtn.type = 'button'
-    cancelBatchBtn.className = 'batch-action-btn batch-cancel-btn'
-    cancelBatchBtn.textContent = '取消'
-    cancelBatchBtn.title = '退出批量模式'
-    cancelBatchBtn.addEventListener('click', () => {
-      this.exitBatchMode()
-    })
-
-    rightSection.appendChild(batchDeleteBtn)
-    rightSection.appendChild(cancelBatchBtn)
-
-    toolbar.appendChild(leftSection)
-    toolbar.appendChild(rightSection)
-
     // 保存 checkbox 引用以便更新状态
-    this._selectAllCheckbox = selectAllCheckbox
+    this._selectAllCheckbox = this._batchToolbarController.element.querySelector('#select-all-checkbox')
 
-    return toolbar
+    return this._batchToolbarController.element
   }
+
   // 批量删除（支持会话、文件和请求接口）
   proto.batchDeleteSessions = async function () {
-    // eslint-disable-next-line no-unused-vars -- sessionList queried for validation, used in full method
-    const sessionList = this.sessionSidebar.querySelector('.session-list')
     // 批量删除会话
     if (this.selectedSessionIds.size === 0) {
       this.showNotification('请先选择要删除的会话', 'error')
       return
     }
 
-    const count = this.selectedSessionIds.size
-    const confirmMessage = `确定要删除选中的 ${count} 个会话吗？此操作不可撤销。`
+    var count = this.selectedSessionIds.size
+    var confirmMessage = '确定要删除选中的 ' + count + ' 个会话吗？此操作不可撤销。'
     if (!confirm(confirmMessage)) {
       return
     }
 
-    const sessionIds = Array.from(this.selectedSessionIds)
+    var sessionIds = Array.from(this.selectedSessionIds)
+
+    // 通过组件 controller 设置删除中状态
+    if (this._batchToolbarController && typeof this._batchToolbarController.setDeleting === 'function') {
+      this._batchToolbarController.setDeleting(true)
+    }
 
     try {
       // 同时收集会话信息用于删除 aicr 项目文件
-      const sessionsToDelete = []
-      sessionIds.forEach((sessionId) => {
-        const session = this.sessions[sessionId]
+      var sessionsToDelete = []
+      sessionIds.forEach(function (sessionId) {
+        var session = this.sessions[sessionId]
         if (session) {
           sessionsToDelete.push({
-            sessionId,
-            unifiedSessionId: session.key || sessionId,
+            sessionId: sessionId,
+            unifiedSessionId: session.key || sessionId
           })
         }
-      })
+      }, this)
 
       // 从本地删除
-      sessionIds.forEach((sessionId) => {
+      sessionIds.forEach(function (sessionId) {
         if (this.sessions[sessionId]) {
           delete this.sessions[sessionId]
         }
@@ -230,13 +178,13 @@
           this.currentSessionId = null
           this.hasAutoCreatedSessionForPage = false
         }
-      })
+      }, this)
 
       // 保存本地更改
       if (this.sessionManager) {
         // 使用 SessionManager 批量删除
-        for (const sessionId of sessionIds) {
-          await this.sessionManager.deleteSession(sessionId)
+        for (var i = 0; i < sessionIds.length; i++) {
+          await this.sessionManager.deleteSession(sessionIds[i])
         }
       } else {
         // 保存到本地存储
@@ -264,10 +212,15 @@
       await this.updateSessionSidebar(true)
 
       // 显示成功通知
-      this.showNotification(`已成功删除 ${count} 个会话`, 'success')
+      this.showNotification('已成功删除 ' + count + ' 个会话', 'success')
     } catch (error) {
       console.error('批量删除会话失败:', error)
-      this.showNotification(`批量删除会话失败: ${error.message}`, 'error')
+      this.showNotification('批量删除会话失败: ' + error.message, 'error')
+    } finally {
+      // 通过组件 controller 恢复删除按钮状态
+      if (this._batchToolbarController && typeof this._batchToolbarController.setDeleting === 'function') {
+        this._batchToolbarController.setDeleting(false)
+      }
     }
   }
 

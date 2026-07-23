@@ -28,7 +28,7 @@
 
 const DEFAULT_CONFIG = {
   appName: "YiH5",
-  apiBase: "https://api.effiy.cn",
+  apiBase: "http://localhost:10086",
   endpoints: {
     mongodb: "/mongodb/",
     faq: "/", // 新 API 使用根路径，参数在 faq.js 中构建

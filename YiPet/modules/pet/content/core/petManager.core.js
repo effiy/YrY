@@ -798,36 +798,7 @@
           }
         }
 
-        const messageDiv = document.createElement('div')
-        messageDiv.setAttribute('data-typing-indicator', 'true')
-        messageDiv.className = 'chat-message'
-
-        const avatar = document.createElement('div')
-        avatar.className = 'chat-message-typing-avatar'
-        avatar.style.setProperty('background', currentColor, 'important')
-
-        avatar.textContent = indicatorIcon
-        avatar.setAttribute('data-message-type', 'pet-avatar')
-
-        const content = document.createElement('div')
-        content.className = 'chat-message-content'
-
-        const messageText = document.createElement('div')
-        messageText.className = 'chat-message-typing-bubble'
-        messageText.style.setProperty('background', currentColor, 'important')
-
-        messageText.setAttribute('data-message-type', 'pet-bubble')
-        messageText.textContent = '💭 正在思考中...'
-
-        const messageTime = document.createElement('div')
-        messageTime.className = 'chat-message-typing-time'
-
-        content.appendChild(messageText)
-        content.appendChild(messageTime)
-        messageDiv.appendChild(avatar)
-        messageDiv.appendChild(content)
-
-        return messageDiv
+        return window.PetManager.Components.TypingIndicator.create({ color: currentColor, icon: indicatorIcon })
       }
 
       // 上移消息

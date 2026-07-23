@@ -102,11 +102,11 @@ import { createChat } from "./chat.js";
 
   const BOTTOM_TAB_KEY = STORAGE_KEYS.BOTTOM_TAB;
   // 新闻 API 基础 URL（查询参数在构建请求时动态添加）
-  const NEWS_API_BASE = "https://api.effiy.cn/mongodb/";
+  const NEWS_API_BASE = "http://localhost:10086/mongodb/";
 
   const openAuth = () => {
     const curToken = String(state.auth.token || "").trim();
-    const token = window.prompt("请输入 X-Token（用于访问 api.effiy.cn）", curToken);
+    const token = window.prompt("请输入 X-Token（用于访问本地 YiAi）", curToken);
     if (token == null) return;
     saveAuthToken(token);
     // 配置完立即尝试刷新
@@ -1090,7 +1090,7 @@ import { createChat } from "./chat.js";
     // 关闭 FAQ 弹层
     closeFaq();
 
-    // 构造与 YiPet 后端兼容的会话保存数据，并调用 https://api.effiy.cn/session/save
+    // 构造与 YiPet 后端兼容的会话保存数据，并通过 saveSessionApi 调用本地 YiAi
     try {
       const messagesForBackend = (s.messages || []).map((m) => {
         const role = normalizeRole(m); // 'user' | 'assistant'

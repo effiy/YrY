@@ -10,7 +10,7 @@ const options = {
   dir: process.cwd(),
   exts: ['md'],
   token: process.env.API_X_TOKEN || null,
-  apiUrl: 'https://api.effiy.cn',
+  apiUrl: 'http://localhost:10086',
   prefix: []
 };
 
@@ -36,7 +36,7 @@ Options:
   --dir, -d     Directory to traverse (default: current directory)
   --exts, -e    File extensions (comma-separated, default: md)
   --token, -t   X-Token authentication (default from API_X_TOKEN env var)
-  --api-url, -a API base URL (default: https://api.effiy.cn)
+  --api-url, -a API base URL (default: http://localhost:10086)
   --prefix, -p  Path prefix (comma-separated, e.g. Projects,YiWeb)
   --help, -h    Show this help message
 `);

@@ -73,10 +73,10 @@ const DEFAULT_CONFIG = {
         faqApiUrl: 'https://staging.api.effiy.cn'
       },
       development: {
-        streamPromptUrl: 'http://localhost:8000/prompt',
-        promptUrl: 'http://localhost:8080/prompt/',
-        yiaiBaseUrl: 'http://localhost:8000',
-        faqApiUrl: 'http://localhost:8000'
+        streamPromptUrl: 'http://localhost:10086/prompt',
+        promptUrl: 'http://localhost:10086/prompt/',
+        yiaiBaseUrl: 'http://localhost:10086',
+        faqApiUrl: 'http://localhost:10086'
       }
     }
   },

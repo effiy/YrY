@@ -81,7 +81,7 @@ startup:
 
 # Middleware Configuration
 middleware:
-  auth_enabled: true
+  auth_enabled: false
   auth_token: "dev-token-change-me"
 
 # Module Execution Settings

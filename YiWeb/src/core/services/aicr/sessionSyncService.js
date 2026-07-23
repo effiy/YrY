@@ -22,7 +22,7 @@ import { COLLECTIONS, URL_PROTOCOLS, MESSAGE_TYPES, FILE_TYPES } from '/src/view
 
 class SessionSyncService {
     constructor() {
-        this.apiUrl = window.API_URL || 'https://api.effiy.cn';
+        this.apiUrl = window.API_URL || 'http://localhost:10086';
         this.syncEnabled = true;
         this.syncQueue = new Map(); // 同步队列
         this.syncTimer = null;

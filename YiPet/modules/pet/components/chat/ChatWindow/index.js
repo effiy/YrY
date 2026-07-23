@@ -354,12 +354,12 @@
       }
 
       const FaqManager = await loadComponent(
-        'FaqManager',
+        'FaqPanel',
         { manager, store: manager?._faqManagerStore },
         { includeTemplate: true, requireTemplateLoader: true }
       )
       const FaqTagManager = await loadComponent(
-        'FaqTagManager',
+        'FaqTagPanel',
         { manager, store: manager?._faqTagManagerStore },
         { includeTemplate: true, requireTemplateLoader: true }
       )
@@ -374,11 +374,11 @@
       const templates = await safeCallAsync(() => loadChatWindowTemplates(), null)
       const resolvedTemplate =
                 String(templates?.chatWindow || '').trim() ||
-                '<div><ChatHeader ref="headerEl" :uiTick="uiTick" /><div class="yi-pet-chat-content-container"><div class="yi-pet-chat-right-panel" ref="mainEl" aria-label="会话聊天面板"><div id="yi-pet-chat-messages" ref="messagesEl" class="yi-pet-chat-messages" role="log" aria-live="polite"><ChatMessages :instance="instance" :manager="manager" /></div><ChatInput :uiTick="uiTick" /></div></div><FaqManager /><FaqTagManager /></div>'
+                '<div><ChatHeader ref="headerEl" :uiTick="uiTick" /><div class="yi-pet-chat-content-container"><div class="yi-pet-chat-right-panel" ref="mainEl" aria-label="会话聊天面板"><div id="yi-pet-chat-messages" ref="messagesEl" class="yi-pet-chat-messages" role="log" aria-live="polite"><ChatMessages :instance="instance" :manager="manager" /></div><ChatInput :uiTick="uiTick" /></div></div><FaqPanel /><FaqTagPanel /></div>'
 
       const Root = defineComponent({
         name: 'YiPetChatWindow',
-        components: { ChatHeader, ChatInput, ChatMessages, FaqManager, FaqTagManager },
+        components: { ChatHeader, ChatInput, ChatMessages, FaqPanel: FaqManager, FaqTagPanel: FaqTagManager },
         setup () {
           const headerEl = ref(null)
           const mainEl = ref(null)

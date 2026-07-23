@@ -9,174 +9,88 @@
   var proto = window.PetManager.prototype
 
   /**
-   * 从会话对象中提取欢迎卡所需的公共元数据
-   * 消除 buildWelcomeCardHtml 和 buildWelcomeCardModel 中的重复逻辑
+   * @deprecated 委托给 WelcomeCard 组件
    */
   proto._extractWelcomeCardMeta = function (session) {
-    var sessionTags = (session && Array.isArray(session.tags) ? session.tags.filter(function (t) { return t && t.trim() }) : [])
-    var sessionMessages = (session && Array.isArray(session.messages) ? session.messages : [])
-    var sessionCreatedAt = (session && session.createdAt ? session.createdAt : null)
-    var sessionUpdatedAt = (session && session.updatedAt ? session.updatedAt : null)
-    var hasSessionUrl = !!(session && session.url && session.url.trim())
-
-    // 用户消息和助手消息计数
-    var userCount = sessionMessages.filter(function (m) {
-      if (!m || typeof m !== 'object') return false
-      var role = m.role || (m.type === 'user' ? 'user' : null)
-      return role === 'user'
-    }).length
-
-    var assistantCount = sessionMessages.filter(function (m) {
-      if (!m || typeof m !== 'object') return false
-      var role = m.role || (m.type === 'pet' ? 'pet' : (m.type === 'assistant' ? 'assistant' : null))
-      return role === 'assistant' || role === 'pet'
-    }).length
-
-    // 日期信息
-    var createdDate = sessionCreatedAt ? new Date(sessionCreatedAt) : null
-    var updatedDate = sessionUpdatedAt ? new Date(sessionUpdatedAt) : null
-    var hasValidCreated = createdDate && !isNaN(createdDate.getTime())
-    var hasValidUpdated = updatedDate && !isNaN(updatedDate.getTime())
-    var isSameTime = hasValidCreated && hasValidUpdated &&
-      Math.abs(createdDate.getTime() - updatedDate.getTime()) < 60000
-
-    // 消息详情文本
-    var detailParts = []
-    if (userCount > 0) detailParts.push('\u7528\u6237 ' + userCount)
-    if (assistantCount > 0) detailParts.push('\u52A9\u624B ' + assistantCount)
-    var detailText = detailParts.length > 0 ? '\uFF08' + detailParts.join(' / ') + '\uFF09' : ''
-
-    // 元数据项
-    var metaParts = []
-    if (sessionMessages.length > 0) {
-      metaParts.push('\u6D88\u606F ' + sessionMessages.length + detailText)
-    }
-    if (hasValidCreated) {
-      metaParts.push('\u521B\u5EFA ' + this.formatDate(createdDate))
-    }
-    if (hasValidUpdated && !isSameTime) {
-      metaParts.push('\u66F4\u65B0 ' + this.formatDate(updatedDate))
-    }
-
-    return {
-      tags: sessionTags,
-      messages: sessionMessages,
-      messagesCount: sessionMessages.length,
-      userCount: userCount,
-      assistantCount: assistantCount,
-      detailText: detailText,
-      metaParts: metaParts,
-      hasSessionUrl: hasSessionUrl,
-      createdDate: createdDate,
-      updatedDate: updatedDate,
-      hasValidCreated: hasValidCreated,
-      hasValidUpdated: hasValidUpdated,
-      isSameTime: isSameTime
-    }
+    var WC = window.PetManager && window.PetManager.Components && window.PetManager.Components.WelcomeCard
+    return WC ? WC.extractMeta(session, this.formatDate.bind(this)) : { tags: [], messages: [], messagesCount: 0, userCount: 0, assistantCount: 0, detailText: '', metaParts: [], hasSessionUrl: false, createdDate: null, updatedDate: null, hasValidCreated: false, hasValidUpdated: false, isSameTime: true }
   }
 
   /**
-   * 构建页脚元数据 HTML
+   * @deprecated 委托给 WelcomeCard 组件
    */
   proto._buildWelcomeCardFooterHtml = function (meta) {
-    if (meta.metaParts.length === 0) return ''
-
-    return [
-      '<div class="welcome-card-footer">',
-      '<div class="welcome-card-meta">',
-      meta.metaParts.map(function (part) { return '<span>' + part + '</span>' }).join(''),
-      '</div>',
-      '</div>'
-    ].join('')
+    var WC = window.PetManager && window.PetManager.Components && window.PetManager.Components.WelcomeCard
+    return WC ? WC.buildFooterHtml(meta) : ''
   }
 
-  // 绑定欢迎卡片的交互事件
+  /**
+   * 绑定欢迎卡片的交互事件（委托给 WelcomeCard 组件）
+   */
   proto.bindWelcomeCardEvents = function (container) {
     if (!container) return
-
-    // 复制功能
-    const copyButtons = container.querySelectorAll('[data-copy-target], [data-copy-text]')
-    copyButtons.forEach(btn => {
-      btn.addEventListener('click', async (e) => {
+    var WC = window.PetManager && window.PetManager.Components && window.PetManager.Components.WelcomeCard
+    if (WC && typeof WC.bindEvents === 'function') {
+      WC.bindEvents(container, {
+        renderMarkdown: this.renderMarkdown.bind(this),
+        processTabs: typeof this.processTabs === 'function' ? this.processTabs.bind(this) : null
+      })
+      return
+    }
+    // Fallback: 内联事件绑定
+    var self = this
+    var copyButtons = container.querySelectorAll('[data-copy-target], [data-copy-text]')
+    copyButtons.forEach(function (btn) {
+      btn.addEventListener('click', async function (e) {
         e.preventDefault()
         e.stopPropagation()
-
-        let textToCopy = ''
-
-        // 从目标元素复制
-        const copyTarget = btn.getAttribute('data-copy-target')
+        var textToCopy = ''
+        var copyTarget = btn.getAttribute('data-copy-target')
         if (copyTarget) {
-          const targetElement = container.querySelector(`#${copyTarget}`)
-          if (targetElement) {
-            textToCopy = targetElement.textContent || targetElement.innerText || ''
-          }
+          var targetElement = container.querySelector('#' + copyTarget)
+          if (targetElement) textToCopy = targetElement.textContent || targetElement.innerText || ''
         }
-
-        // 从属性复制
         if (!textToCopy) {
-          const copyText = btn.getAttribute('data-copy-text')
-          if (copyText) {
-            textToCopy = copyText
-          }
+          var copyText = btn.getAttribute('data-copy-text')
+          if (copyText) textToCopy = copyText
         }
-
         if (textToCopy) {
           try {
             await navigator.clipboard.writeText(textToCopy)
-            // 显示成功反馈
-            const icon = btn.querySelector('i')
+            var icon = btn.querySelector('i')
             if (icon) {
-              const originalClass = icon.className
+              var originalClass = icon.className
               icon.className = 'fas fa-check'
               btn.classList.add('js-copy-success')
-              setTimeout(() => {
-                icon.className = originalClass
-                btn.classList.remove('js-copy-success')
-              }, 2000)
+              setTimeout(function () { icon.className = originalClass; btn.classList.remove('js-copy-success') }, 2000)
             }
-          } catch (err) {
-            console.error('复制失败:', err)
-          }
+          } catch (err) { console.error('\u590D\u5236\u5931\u8D25:', err) }
         }
       })
     })
-
-    // 展开/折叠功能
-    const toggleButtons = container.querySelectorAll('.welcome-card-toggle-btn')
-    toggleButtons.forEach(btn => {
-      btn.addEventListener('click', (e) => {
+    var toggleButtons = container.querySelectorAll('.welcome-card-toggle-btn')
+    toggleButtons.forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
         e.preventDefault()
         e.stopPropagation()
-
-        const targetId = btn.getAttribute('data-toggle-target')
-        const previewText = btn.getAttribute('data-preview-text')
-        const fullText = btn.getAttribute('data-full-text')
-
+        var targetId = btn.getAttribute('data-toggle-target')
+        var previewText = btn.getAttribute('data-preview-text')
+        var fullText = btn.getAttribute('data-full-text')
         if (!targetId) return
-
-        const targetElement = container.querySelector(`#${targetId}`)
-        const icon = btn.querySelector('i')
-
+        var targetElement = container.querySelector('#' + targetId)
+        var icon = btn.querySelector('i')
         if (!targetElement) return
-
-        const isExpanded = targetElement.classList.contains('expanded')
-
+        var isExpanded = targetElement.classList.contains('expanded')
         if (isExpanded) {
-          // 折叠
           targetElement.classList.remove('expanded')
-          targetElement.innerHTML = this.renderMarkdown(previewText)
-          if (typeof this.processTabs === 'function') this.processTabs(targetElement)
-          if (icon) {
-            icon.className = 'fas fa-chevron-down'
-          }
+          targetElement.innerHTML = self.renderMarkdown(previewText)
+          if (typeof self.processTabs === 'function') self.processTabs(targetElement)
+          if (icon) icon.className = 'fas fa-chevron-down'
         } else {
-          // 展开
           targetElement.classList.add('expanded')
-          targetElement.innerHTML = this.renderMarkdown(fullText)
-          if (typeof this.processTabs === 'function') this.processTabs(targetElement)
-          if (icon) {
-            icon.className = 'fas fa-chevron-up'
-          }
+          targetElement.innerHTML = self.renderMarkdown(fullText)
+          if (typeof self.processTabs === 'function') self.processTabs(targetElement)
+          if (icon) icon.className = 'fas fa-chevron-up'
         }
       })
     })
