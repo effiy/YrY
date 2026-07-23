@@ -6,34 +6,17 @@
   'use strict'
   if (typeof window === 'undefined' || typeof window.PetManager === 'undefined') return
   const proto = window.PetManager.prototype
-  const logger =
-    typeof window !== 'undefined' && window.LoggerUtils && typeof window.LoggerUtils.getLogger === 'function'
-      ? window.LoggerUtils.getLogger('chat-ui')
-      : console
+  const logger = window.PetLogger ? window.PetLogger.get('chat-ui') : console
 
-  function clampNumber(value, min, max) {
-    const n = Number(value)
-    if (!Number.isFinite(n)) return min
-    return Math.min(Math.max(n, min), max)
-  }
-
-  function getViewportSize() {
-    const vv = window.visualViewport
-    const width =
-      (vv && Number.isFinite(vv.width) && vv.width > 0 ? vv.width : window.innerWidth) ||
-      document.documentElement?.clientWidth ||
-      0
-    const height =
-      (vv && Number.isFinite(vv.height) && vv.height > 0 ? vv.height : window.innerHeight) ||
-      document.documentElement?.clientHeight ||
-      0
-    return { width, height }
-  }
+  var V = window.ViewportUtils
+  var clampNumber = V.clampNumber
 
   proto.adjustChatWindowToViewport = function () {
     if (!this.chatWindowState || this.chatWindowState.isFullscreen) return
 
-    const { width: vw, height: vh } = getViewportSize()
+    var viewport = V.getViewportSize()
+    var vw = viewport.width
+    var vh = viewport.height
     if (!vw || !vh) return
 
     const sizeLimits = PET_CONFIG?.chatWindow?.sizeLimits || {}

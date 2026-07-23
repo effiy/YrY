@@ -9,10 +9,7 @@
   }
 
   const proto = window.PetManager.prototype
-  const logger =
-    typeof window !== 'undefined' && window.LoggerUtils && typeof window.LoggerUtils.getLogger === 'function'
-      ? window.LoggerUtils.getLogger('assistant')
-      : console
+  const logger = window.PetLogger ? window.PetLogger.get('assistant') : console
 
   // 创建宠物
   proto.createPet = function () {

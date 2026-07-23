@@ -11,22 +11,10 @@
   const proto = window.PetManager.prototype
 
   function computeDockedChatWindowRect (widthRatio) {
-    const ratio = Number(widthRatio)
-    const viewportWidth = window.innerWidth || document.documentElement?.clientWidth || 0
-    const viewportHeight = window.innerHeight || document.documentElement?.clientHeight || 0
     const sizeLimits = PET_CONFIG?.chatWindow?.sizeLimits || {}
-    const minWidth = Number.isFinite(sizeLimits.minWidth) ? sizeLimits.minWidth : 300
-    const maxWidth = Number.isFinite(sizeLimits.maxWidth) ? sizeLimits.maxWidth : viewportWidth
-    const maxHeight = Number.isFinite(sizeLimits.maxHeight) ? sizeLimits.maxHeight : viewportHeight
-
-    const desiredWidth = Math.round(viewportWidth * (Number.isFinite(ratio) ? ratio : 0.5))
-    const width = Math.min(Math.max(desiredWidth, minWidth), Math.min(maxWidth, viewportWidth))
-
-    const desiredHeight = viewportHeight
-    const height = Math.min(Math.min(Math.max(desiredHeight, 0), maxHeight), viewportHeight)
-
-    const pos = getChatWindowDefaultPosition(width, height)
-    return { x: pos.x, y: pos.y, width, height }
+    const rect = window.ViewportUtils.computeChatWindowRect(widthRatio, sizeLimits)
+    const pos = getChatWindowDefaultPosition(rect.width, rect.height)
+    return { x: pos.x, y: pos.y, width: rect.width, height: rect.height }
   }
 
   // 切换聊天窗口
@@ -402,35 +390,9 @@
 
     if (!this.chatWindow) return
 
-    const toRgbFromHex = (hex) => {
-      const normalized = String(hex || '').trim()
-      const match = normalized.match(/^#([0-9a-fA-F]{6})$/)
-      if (!match) return null
-      const value = match[1]
-      const r = parseInt(value.slice(0, 2), 16)
-      const g = parseInt(value.slice(2, 4), 16)
-      const b = parseInt(value.slice(4, 6), 16)
-      if (![r, g, b].every((n) => Number.isFinite(n))) return null
-      return { r, g, b }
-    }
-
-    const clampInt = (n, min, max) => {
-      const x = Math.round(Number(n))
-      if (!Number.isFinite(x)) return min
-      return Math.min(Math.max(x, min), max)
-    }
-
-    const shadeHexColor = (hex, ratio) => {
-      const rgb = toRgbFromHex(hex)
-      if (!rgb) return null
-      const t = ratio < 0 ? 0 : 255
-      const p = Math.abs(Number(ratio))
-      if (!Number.isFinite(p)) return null
-      const r = clampInt((t - rgb.r) * p + rgb.r, 0, 255)
-      const g = clampInt((t - rgb.g) * p + rgb.g, 0, 255)
-      const b = clampInt((t - rgb.b) * p + rgb.b, 0, 255)
-      return `#${[r, g, b].map((c) => c.toString(16).padStart(2, '0')).join('')}`
-    }
+    var C = window.ColorUtils
+    var toRgbFromHex = C.hexToRgb
+    var shadeHexColor = C.shadeHexColor
 
     const colors = Array.isArray(this.colors) ? this.colors : []
     const currentColor =
@@ -710,98 +672,6 @@
     }, 500) // 延迟 500ms 确保所有消息的 DOM 和异步内容都已准备好
   }
 
-  // 绑定欢迎卡片的交互事件
-  proto.bindWelcomeCardEvents = function (container) {
-    if (!container) return
-
-    // 复制功能
-    const copyButtons = container.querySelectorAll('[data-copy-target], [data-copy-text]')
-    copyButtons.forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-
-        let textToCopy = ''
-
-        // 从目标元素复制
-        const copyTarget = btn.getAttribute('data-copy-target')
-        if (copyTarget) {
-          const targetElement = container.querySelector(`#${copyTarget}`)
-          if (targetElement) {
-            textToCopy = targetElement.textContent || targetElement.innerText || ''
-          }
-        }
-
-        // 从属性复制
-        if (!textToCopy) {
-          const copyText = btn.getAttribute('data-copy-text')
-          if (copyText) {
-            textToCopy = copyText
-          }
-        }
-
-        if (textToCopy) {
-          try {
-            await navigator.clipboard.writeText(textToCopy)
-            // 显示成功反馈
-            const icon = btn.querySelector('i')
-            if (icon) {
-              const originalClass = icon.className
-              icon.className = 'fas fa-check'
-              btn.classList.add('js-copy-success')
-              setTimeout(() => {
-                icon.className = originalClass
-                btn.classList.remove('js-copy-success')
-              }, 2000)
-            }
-          } catch (err) {
-            console.error('复制失败:', err)
-          }
-        }
-      })
-    })
-
-    // 展开/折叠功能
-    const toggleButtons = container.querySelectorAll('.welcome-card-toggle-btn')
-    toggleButtons.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-
-        const targetId = btn.getAttribute('data-toggle-target')
-        const previewText = btn.getAttribute('data-preview-text')
-        const fullText = btn.getAttribute('data-full-text')
-
-        if (!targetId) return
-
-        const targetElement = container.querySelector(`#${targetId}`)
-        const icon = btn.querySelector('i')
-
-        if (!targetElement) return
-
-        const isExpanded = targetElement.classList.contains('expanded')
-
-        if (isExpanded) {
-          // 折叠
-          targetElement.classList.remove('expanded')
-          targetElement.innerHTML = this.renderMarkdown(previewText)
-          if (typeof this.processTabs === 'function') this.processTabs(targetElement)
-          if (icon) {
-            icon.className = 'fas fa-chevron-down'
-          }
-        } else {
-          // 展开
-          targetElement.classList.add('expanded')
-          targetElement.innerHTML = this.renderMarkdown(fullText)
-          if (typeof this.processTabs === 'function') this.processTabs(targetElement)
-          if (icon) {
-            icon.className = 'fas fa-chevron-up'
-          }
-        }
-      })
-    })
-  }
-
   // 构建欢迎卡片 HTML（只显示有值的字段，参考 YiWeb 的条件渲染）
   proto.buildWelcomeCardHtml = function (pageInfo, session = null) {
     // 如果会话为空，尝试从当前会话ID获取
@@ -809,31 +679,22 @@
       session = this.sessions[this.currentSessionId]
     }
 
-    // 获取会话信息（如果有）
-    const sessionTags = session && Array.isArray(session.tags) ? session.tags.filter(t => t && t.trim()) : []
-    const sessionMessages = session && Array.isArray(session.messages) ? session.messages : []
-    const sessionCreatedAt = session && session.createdAt ? session.createdAt : null
-    const sessionUpdatedAt = session && session.updatedAt ? session.updatedAt : null
+    // 提取会话元数据（消除与 buildWelcomeCardModel 的重复逻辑）
+    const meta = this._extractWelcomeCardMeta(session)
 
-    // 调试日志：检查会话消息（仅在开发环境或消息数量大于0时输出）
-    if (sessionMessages.length > 0 || !session) {
+    // 调试日志
+    if (meta.messages.length > 0 || !session) {
       console.log('[buildWelcomeCardHtml] 会话信息:', {
         hasSession: !!session,
         currentSessionId: this.currentSessionId,
         sessionId: session ? session.key : null,
-        messagesCount: sessionMessages.length,
-        messages: sessionMessages.slice(0, 3).map(m => ({
-          type: m.type,
-          role: m.role,
-          hasContent: !!(m.content || m.message)
-        }))
+        messagesCount: meta.messages.length,
+        messages: meta.messages.slice(0, 3).map(function (m) { return { type: m.type, role: m.role, hasContent: !!(m.content || m.message) } })
       })
     }
 
     // 检查会话是否有有效的 URL
-    // 如果会话存在但没有 url 对象或者 url 对象为空，就不显示网址
-    const hasSessionUrl = session && session.url && session.url.trim()
-    const shouldShowUrl = !session || hasSessionUrl // 如果没有会话，或者会话有有效URL，才显示
+    const shouldShowUrl = !session || meta.hasSessionUrl
 
     // 构建欢迎卡片 HTML（只显示有值的字段）
     let pageInfoHtml = '<div class="welcome-card">'
@@ -888,8 +749,8 @@
     }
 
     // 标签（如果有）
-    if (sessionTags.length > 0) {
-      const tagsHtml = sessionTags.map(tag => {
+    if (meta.tags.length > 0) {
+      const tagsHtml = meta.tags.map(tag => {
         const escapedTag = this.escapeHtml(tag)
         return `<span class="welcome-card-tag">${escapedTag}</span>`
       }).join('')
@@ -901,51 +762,7 @@
             `
     }
 
-    const footerMetaItems = []
-    if (sessionMessages.length > 0) {
-      const userMessages = sessionMessages.filter(m => {
-        if (!m || typeof m !== 'object') return false
-        const role = m.role || (m.type === 'user' ? 'user' : null)
-        return role === 'user'
-      }).length
-      const assistantMessages = sessionMessages.filter(m => {
-        if (!m || typeof m !== 'object') return false
-        const role = m.role || (m.type === 'pet' ? 'pet' : (m.type === 'assistant' ? 'assistant' : null))
-        return role === 'assistant' || role === 'pet'
-      }).length
-
-      const detailParts = []
-      if (userMessages > 0) detailParts.push(`用户 ${userMessages}`)
-      if (assistantMessages > 0) detailParts.push(`助手 ${assistantMessages}`)
-      const detailText = detailParts.length > 0 ? `（${detailParts.join(' / ')}）` : ''
-      footerMetaItems.push(`<span>消息 ${sessionMessages.length}${detailText}</span>`)
-    }
-
-    if (sessionCreatedAt || sessionUpdatedAt) {
-      const createdDate = sessionCreatedAt ? new Date(sessionCreatedAt) : null
-      const updatedDate = sessionUpdatedAt ? new Date(sessionUpdatedAt) : null
-      const hasValidCreated = createdDate && !isNaN(createdDate.getTime())
-      const hasValidUpdated = updatedDate && !isNaN(updatedDate.getTime())
-      const isSameTime = hasValidCreated && hasValidUpdated &&
-                Math.abs(createdDate.getTime() - updatedDate.getTime()) < 60000
-
-      if (hasValidCreated) {
-        footerMetaItems.push(`<span>创建 ${this.escapeHtml(this.formatDate(createdDate))}</span>`)
-      }
-      if (hasValidUpdated && !isSameTime) {
-        footerMetaItems.push(`<span>更新 ${this.escapeHtml(this.formatDate(updatedDate))}</span>`)
-      }
-    }
-
-    if (footerMetaItems.length > 0) {
-      pageInfoHtml += `
-                <div class="welcome-card-footer">
-                    <div class="welcome-card-meta">
-                        ${footerMetaItems.join('')}
-                    </div>
-                </div>
-            `
-    }
+    pageInfoHtml += this._buildWelcomeCardFooterHtml(meta)
 
     pageInfoHtml += '</div>'
     return pageInfoHtml
@@ -956,56 +773,16 @@
       session = this.sessions[this.currentSessionId]
     }
 
-    const sessionTags = session && Array.isArray(session.tags) ? session.tags.filter(t => t && t.trim()) : []
-    const sessionMessages = session && Array.isArray(session.messages) ? session.messages : []
-    const sessionCreatedAt = session && session.createdAt ? session.createdAt : null
-    const sessionUpdatedAt = session && session.updatedAt ? session.updatedAt : null
+    const meta = this._extractWelcomeCardMeta(session)
 
     const titleText = pageInfo && pageInfo.title && pageInfo.title.trim() ? pageInfo.title.trim() : '当前页面'
     const iconUrl = pageInfo && pageInfo.iconUrl && pageInfo.iconUrl.trim() ? pageInfo.iconUrl.trim() : ''
 
-    const hasSessionUrl = session && session.url && session.url.trim()
-    const shouldShowUrl = !session || hasSessionUrl
+    const shouldShowUrl = !session || meta.hasSessionUrl
     const url = shouldShowUrl && pageInfo && pageInfo.url && pageInfo.url.trim() ? pageInfo.url.trim() : ''
 
     const descriptionText = pageInfo && pageInfo.description && pageInfo.description.trim() ? pageInfo.description.trim() : ''
     const descriptionHtml = descriptionText ? (this.renderMarkdown(descriptionText) || '') : ''
-
-    const metaParts = []
-    if (sessionMessages.length > 0) {
-      const userMessages = sessionMessages.filter(m => {
-        if (!m || typeof m !== 'object') return false
-        const role = m.role || (m.type === 'user' ? 'user' : null)
-        return role === 'user'
-      }).length
-      const assistantMessages = sessionMessages.filter(m => {
-        if (!m || typeof m !== 'object') return false
-        const role = m.role || (m.type === 'pet' ? 'pet' : (m.type === 'assistant' ? 'assistant' : null))
-        return role === 'assistant' || role === 'pet'
-      }).length
-
-      const detailParts = []
-      if (userMessages > 0) detailParts.push(`用户 ${userMessages}`)
-      if (assistantMessages > 0) detailParts.push(`助手 ${assistantMessages}`)
-      const detailText = detailParts.length > 0 ? `（${detailParts.join(' / ')}）` : ''
-      metaParts.push(`消息 ${sessionMessages.length}${detailText}`)
-    }
-
-    if (sessionCreatedAt || sessionUpdatedAt) {
-      const createdDate = sessionCreatedAt ? new Date(sessionCreatedAt) : null
-      const updatedDate = sessionUpdatedAt ? new Date(sessionUpdatedAt) : null
-      const hasValidCreated = createdDate && !isNaN(createdDate.getTime())
-      const hasValidUpdated = updatedDate && !isNaN(updatedDate.getTime())
-      const isSameTime = hasValidCreated && hasValidUpdated &&
-                Math.abs(createdDate.getTime() - updatedDate.getTime()) < 60000
-
-      if (hasValidCreated) {
-        metaParts.push(`创建 ${this.formatDate(createdDate)}`)
-      }
-      if (hasValidUpdated && !isSameTime) {
-        metaParts.push(`更新 ${this.formatDate(updatedDate)}`)
-      }
-    }
 
     return {
       titleText,
@@ -1013,508 +790,9 @@
       url,
       descriptionText,
       descriptionHtml,
-      tags: sessionTags,
-      metaParts
+      tags: meta.tags,
+      metaParts: meta.metaParts
     }
-  }
-
-  // @param {Object} pageInfo - 页面信息对象（可选，如果不提供则使用当前页面信息）
-  //   - title: 页面标题
-  //   - url: 页面URL
-  //   - description: 页面描述（可选）
-  proto.createWelcomeMessage = async function (messagesContainer, pageInfo = null, skipAutoHandle = false) {
-    // 获取当前会话信息
-    const session = this.currentSessionId ? this.sessions[this.currentSessionId] : null
-
-    // 调试日志（仅在开发环境或会话有消息时输出）
-    if (!session || (session.messages && session.messages.length > 0)) {
-      console.log('[createWelcomeMessage] 创建欢迎消息:', {
-        currentSessionId: this.currentSessionId,
-        hasSession: !!session,
-        messagesCount: session && session.messages ? session.messages.length : 0
-      })
-    }
-
-    // 检查是否是接口会话
-    const isApiRequestSession = session && session._isApiRequestSession
-    const apiRequestInfo = session && session._apiRequestInfo ? session._apiRequestInfo : null
-
-    // 如果是接口会话，使用接口信息
-    if (isApiRequestSession && apiRequestInfo) {
-      return await this.createApiRequestWelcomeMessage(messagesContainer, apiRequestInfo)
-    }
-
-    // 如果没有提供页面信息，使用当前页面信息或会话信息
-    if (!pageInfo) {
-      // 优先使用当前会话的页面信息，如果没有则使用当前页面信息
-      if (session) {
-        // 如果会话没有 url 对象或者 url 对象为空，就不设置 url
-        const sessionUrl = session.url && session.url.trim() ? session.url : null
-        pageInfo = {
-          title: session.title || document.title || '当前页面',
-          url: sessionUrl || window.location.href,
-          description: session.pageDescription || ''
-        }
-        // 如果会话没有有效的 url，将 url 设置为空字符串，这样 buildWelcomeCardHtml 就不会显示网址
-        if (!sessionUrl) {
-          pageInfo.url = ''
-        }
-      } else {
-        // 使用 getPageInfo 方法获取当前页面信息
-        const currentPageInfo = this.getPageInfo()
-        pageInfo = {
-          title: currentPageInfo.title,
-          url: currentPageInfo.url,
-          description: currentPageInfo.description || ''
-        }
-      }
-    }
-
-    // 获取页面图标
-    const pageIconUrl = this.getPageIconUrl()
-    pageInfo.iconUrl = pageIconUrl
-
-    // 使用统一的构建方法生成欢迎卡片 HTML
-    const pageInfoHtml = this.buildWelcomeCardHtml(pageInfo, session)
-
-    // 创建欢迎消息元素
-    const welcomeMessage = this.createMessageElement('', 'pet')
-    welcomeMessage.setAttribute('data-welcome-message', 'true')
-    // 将欢迎消息添加到容器最前面（如果容器已有内容，使用 insertBefore，否则使用 appendChild）
-    if (messagesContainer.firstChild) {
-      messagesContainer.insertBefore(welcomeMessage, messagesContainer.firstChild)
-    } else {
-      messagesContainer.appendChild(welcomeMessage)
-    }
-
-    const messageText = welcomeMessage.querySelector('[data-message-type="pet-bubble"]')
-    if (messageText) {
-      messageText.innerHTML = pageInfoHtml
-      // 保存原始HTML用于后续保存（虽然欢迎消息不会被保存到消息数组中）
-      messageText.setAttribute('data-original-text', pageInfoHtml)
-
-      // 绑定交互事件
-      this.bindWelcomeCardEvents(messageText)
-    }
-
-    // 自动处理会话保存和选中（仅在未跳过时执行）
-    if (!skipAutoHandle) {
-      await this.autoHandleSessionForUrl(pageInfo.url)
-    }
-
-    return welcomeMessage
-  }
-
-  // 刷新第一条欢迎消息（当会话信息更新时调用）
-  proto.refreshWelcomeMessage = async function () {
-    if (!this.chatWindow || !this.currentSessionId) {
-      return
-    }
-
-    const chatWindowComponent = this.chatWindowComponent
-    if (chatWindowComponent && typeof chatWindowComponent._messagesUpdateWelcome === 'function') {
-      const session = this.sessions[this.currentSessionId]
-      if (!session) return
-      const pageInfo = {
-        title: session.title || document.title || '当前页面',
-        url: session.url || window.location.href,
-        description: session.pageDescription || ''
-      }
-      pageInfo.iconUrl = this.getPageIconUrl()
-      const pageInfoHtml = this.buildWelcomeCardHtml(pageInfo, session)
-      chatWindowComponent._messagesUpdateWelcome(pageInfoHtml)
-      if (typeof chatWindowComponent._messagesUpdateWelcomeModel === 'function') {
-        const pageInfoModel = this.buildWelcomeCardModel(pageInfo, session)
-        chatWindowComponent._messagesUpdateWelcomeModel(pageInfoModel)
-      }
-      await this.autoHandleSessionForUrl(pageInfo.url)
-      return
-    }
-
-    const messagesContainer = this.chatWindow.querySelector('#yi-pet-chat-messages')
-    if (!messagesContainer) {
-      return
-    }
-
-    // 查找第一条欢迎消息
-    const welcomeMessage = messagesContainer.querySelector('[data-welcome-message]')
-    if (!welcomeMessage) {
-      console.log('未找到欢迎消息，跳过刷新')
-      return
-    }
-
-    // 获取当前会话的更新后的页面信息
-    const session = this.sessions[this.currentSessionId]
-    if (!session) {
-      return
-    }
-
-    const pageInfo = {
-      title: session.title || document.title || '当前页面',
-      url: session.url || window.location.href,
-      description: session.pageDescription || ''
-    }
-
-    // 获取页面图标
-    const pageIconUrl = this.getPageIconUrl()
-    pageInfo.iconUrl = pageIconUrl
-
-    // 使用统一的构建方法生成欢迎卡片 HTML
-    const pageInfoHtml = this.buildWelcomeCardHtml(pageInfo, session)
-
-    // 更新欢迎消息的内容
-    const messageText = welcomeMessage.querySelector('[data-message-type="pet-bubble"]')
-    if (messageText) {
-      messageText.innerHTML = pageInfoHtml
-      // 更新原始HTML
-      messageText.setAttribute('data-original-text', pageInfoHtml)
-
-      // 绑定交互事件
-      this.bindWelcomeCardEvents(messageText)
-    }
-
-    // 自动处理会话保存和选中
-    await this.autoHandleSessionForUrl(pageInfo.url)
-
-    console.log('欢迎消息已刷新')
-  }
-
-  /**
-     * 自动处理会话：根据URL查找或创建会话，并自动选中和锚定位置
-     * 这个方法确保在创建欢迎消息时，会话已正确初始化并选中
-     * @param {string} url - 页面URL
-     */
-  proto.autoHandleSessionForUrl = async function (url) {
-    if (!url) {
-      console.warn('URL为空，跳过自动处理会话')
-      return
-    }
-
-    try {
-      // 如果当前会话的URL匹配，只需要滚动到位置
-      if (this.currentSessionId && this.sessions[this.currentSessionId]) {
-        const currentSession = this.sessions[this.currentSessionId]
-        if (currentSession.url === url) {
-          // 当前会话已匹配，只需滚动到位置
-          if (typeof this.scrollToSessionItem === 'function') {
-            await this.scrollToSessionItem(this.currentSessionId)
-          }
-          return
-        }
-      }
-
-      // 如果当前会话不匹配，调用 initSession 重新初始化
-      // initSession 会自动查找或创建匹配的会话，并选中和滚动
-      await this.handleUrlBasedSession()
-    } catch (error) {
-      console.error('自动处理会话失败:', error)
-    }
-  }
-
-  /**
-     * 通过会话对象查找对应的 sessionId（辅助函数）
-     * @param {Object} targetSession - 目标会话对象
-     * @returns {string|null} 对应的 sessionId，如果未找到则返回 null
-     */
-  proto._findSessionIdBySession = function (targetSession) {
-    if (!targetSession) return null
-
-    // 遍历所有会话，找到匹配的会话对象
-    for (const [sessionId, session] of Object.entries(this.sessions)) {
-      // 通过对象引用或 key 字段匹配
-      if (session === targetSession || (session.key && targetSession.key && session.key === targetSession.key)) {
-        return sessionId
-      }
-    }
-    return null
-  }
-
-  /**
-     * 处理基于 URL 的会话：检查当前页面 URL 是否在会话列表中
-     * 如果不在，则立即自动新建会话并保存后刷新会话列表
-     * 如果存在，则自动选中该会话并锚定到对应会话的位置
-     *
-     * 重新设计：直接基于 URL 查找会话，不依赖 sessionId 进行查找
-     */
-  proto.handleUrlBasedSession = async function () {
-    try {
-      // 确保会话列表已加载（如果使用后端同步）
-      if (this.sessionApi && this.sessionApi.isEnabled()) {
-        if (!this.hasLoadedSessionsForChat) {
-          console.log('会话列表未加载，先加载会话列表...')
-          await this.loadSessionsFromBackend(true)
-          this.hasLoadedSessionsForChat = true
-        }
-      }
-
-      // 获取当前页面 URL
-      const pageInfo = this.getPageInfo()
-      const currentUrl = pageInfo.url
-
-      if (!currentUrl) {
-        console.warn('当前页面 URL 为空，跳过 URL 匹配检查')
-        return
-      }
-
-      // 确保已加载所有会话
-      if (typeof this.loadAllSessions === 'function') {
-        await this.loadAllSessions()
-      }
-
-      // 确保 sessions 对象已初始化
-      if (!this.sessions) {
-        this.sessions = {}
-      }
-
-      // 首先查找是否存在URL匹配的会话（遍历所有会话）
-      let matchedSessionKey = null
-      for (const [key, session] of Object.entries(this.sessions)) {
-        if (session && session.url === currentUrl) {
-          matchedSessionKey = key
-          break
-        }
-      }
-
-      // 如果找到了匹配的会话，直接选中
-      if (matchedSessionKey) {
-        const existingSession = this.sessions[matchedSessionKey]
-        if (existingSession) {
-          // 更新会话页面信息
-          if (typeof this.updateSessionPageInfo === 'function') {
-            this.updateSessionPageInfo(matchedSessionKey, pageInfo)
-          }
-
-          // 自动选中匹配的会话
-          if (typeof this.activateSession === 'function') {
-            await this.activateSession(matchedSessionKey, {
-              saveCurrent: false,
-              updateConsistency: true,
-              updateUI: true
-            })
-          }
-
-          // 注意：滚动到会话项位置应该在侧边栏更新完成后进行
-          // 这里不立即滚动，由 openChatWindow 在 updateSessionSidebar 后统一处理
-          // 但如果侧边栏已经存在，也可以立即滚动
-          if (this.sessionSidebar && typeof this.scrollToSessionItem === 'function') {
-            // 等待侧边栏更新完成
-            await new Promise(resolve => setTimeout(resolve, 100))
-            await this.scrollToSessionItem(matchedSessionKey)
-          }
-
-          console.log('找到URL匹配的会话，已自动选中:', matchedSessionKey)
-          return matchedSessionKey
-        }
-      } else {
-        // 创建新会话：参考 YiWeb 的 handleSessionCreate，由后端生成 key
-        try {
-          // 创建会话数据对象（不包含 key，让后端生成）
-          const sessionData = this.createSessionObject(pageInfo)
-
-          // 获取当前时间戳
-          const now = Date.now()
-
-          // 构建要发送到后端的会话数据（不包含 key）
-          // 优先使用当前页面 URL，如果没有则使用会话数据中的 URL
-          const title = this._addMdSuffix(sessionData.title || '新会话')
-
-          const sessionDataToSave = {
-            // 不包含 key 字段，让后端生成
-            url: currentUrl || sessionData.url || '',
-            title,
-            pageDescription: sessionData.pageDescription || '',
-            pageContent: sessionData.pageContent || '',
-            messages: sessionData.messages || [],
-            tags: sessionData.tags || [],
-            createdAt: sessionData.createdAt || now,
-            updatedAt: now,
-            lastAccessTime: now
-          }
-
-          // 如果启用了后端同步，调用后端 API 创建会话
-          if (this.sessionApi && this.sessionApi.isEnabled()) {
-            const createResult = await this.sessionApi.createSession(sessionDataToSave)
-
-            if (createResult?.success && createResult?.key) {
-              const sessionKey = createResult.key
-              sessionDataToSave.key = sessionKey
-
-              const newSession = {
-                ...sessionDataToSave,
-                key: sessionKey
-              }
-
-              const sessionId = sessionKey
-              this.sessions[sessionId] = newSession
-
-              // 调用 write-file 接口写入页面上下文
-              if (typeof this.writeSessionPageContent === 'function') {
-                await this.writeSessionPageContent(sessionId)
-              }
-
-              // 保存到本地存储
-              if (typeof this.saveSession === 'function') {
-                await this.saveSession(sessionId)
-              }
-
-              // 自动选中新创建的会话
-              if (typeof this.activateSession === 'function') {
-                await this.activateSession(sessionId, {
-                  saveCurrent: false,
-                  updateConsistency: true,
-                  updateUI: true
-                })
-              }
-
-              if (this.sessionSidebar && typeof this.scrollToSessionItem === 'function') {
-                await new Promise(resolve => setTimeout(resolve, 100))
-                await this.scrollToSessionItem(sessionId)
-              }
-
-              console.log('[handleUrlBasedSession] 已通过后端创建新会话，Key:', sessionKey, 'URL:', currentUrl)
-              return sessionId
-            } else {
-              console.error('[handleUrlBasedSession] 创建会话失败，结果:', createResult)
-              throw new Error('后端创建会话失败：未返回 key')
-            }
-          } else {
-            // 如果未启用后端同步，使用本地方式创建（生成临时 key）
-            console.warn('[handleUrlBasedSession] 后端同步未启用，使用本地方式创建会话')
-            const tempKey = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-            sessionDataToSave.key = tempKey
-
-            const sessionId = tempKey
-            this.sessions[sessionId] = sessionDataToSave
-
-            // 保存到本地存储
-            if (typeof this.saveSession === 'function') {
-              await this.saveSession(sessionId)
-            }
-
-            // 自动选中新创建的会话
-            if (typeof this.activateSession === 'function') {
-              await this.activateSession(sessionId, {
-                saveCurrent: false,
-                updateConsistency: true,
-                updateUI: true
-              })
-            }
-
-            // 注意：滚动到会话项位置应该在侧边栏更新完成后进行
-            // 这里不立即滚动，由 openChatWindow 在 updateSessionSidebar 后统一处理
-            // 但如果侧边栏已经存在，也可以立即滚动
-            if (this.sessionSidebar && typeof this.scrollToSessionItem === 'function') {
-              // 等待侧边栏更新完成
-              await new Promise(resolve => setTimeout(resolve, 100))
-              await this.scrollToSessionItem(sessionId)
-            }
-
-            console.log('[handleUrlBasedSession] 已通过本地方式创建新会话，临时 Key:', tempKey, 'URL:', currentUrl)
-            return sessionId
-          }
-        } catch (error) {
-          console.error('[handleUrlBasedSession] 创建新会话失败:', error)
-          // 不抛出错误，避免影响主流程
-          return null
-        }
-      }
-    } catch (error) {
-      console.error('处理基于 URL 的会话失败:', error)
-      return null
-    }
-  }
-
-  /**
-     * 滚动到指定的会话项位置（锚定）
-     * @param {string} sessionId - 会话ID
-     */
-  proto.scrollToSessionItem = async function (sessionId) {
-    if (!this.sessionSidebar || !sessionId) {
-      return
-    }
-
-    // 等待DOM更新
-    await new Promise(resolve => setTimeout(resolve, 200))
-
-    // 查找会话项（只使用 key）
-    // 首先尝试直接使用 sessionId 查找（如果 sessionId 就是 key）
-    let sessionItem = this.sessionSidebar.querySelector(`[data-session-id="${sessionId}"]`)
-
-    // 如果找不到，尝试从 sessions 中获取 key
-    if (!sessionItem && this.sessions[sessionId]) {
-      const session = this.sessions[sessionId]
-      const sessionKey = session.key
-      if (sessionKey && sessionKey !== sessionId) {
-        sessionItem = this.sessionSidebar.querySelector(`[data-session-id="${sessionKey}"]`)
-      }
-    }
-
-    if (!sessionItem) {
-      console.warn('未找到会话项，尝试更新侧边栏后重试，sessionId:', sessionId)
-      // 如果找不到，先更新侧边栏
-      if (typeof this.updateSessionSidebar === 'function') {
-        await this.updateSessionSidebar()
-        // 再次等待DOM更新
-        await new Promise(resolve => setTimeout(resolve, 300))
-
-        // 再次尝试查找
-        sessionItem = this.sessionSidebar.querySelector(`[data-session-id="${sessionId}"]`)
-        if (!sessionItem && this.sessions[sessionId]) {
-          const session = this.sessions[sessionId]
-          const sessionKey = session.key
-          if (sessionKey && sessionKey !== sessionId) {
-            sessionItem = this.sessionSidebar.querySelector(`[data-session-id="${sessionKey}"]`)
-          }
-        }
-
-        if (sessionItem) {
-          this._scrollToElement(sessionItem)
-        } else {
-          console.warn('更新侧边栏后仍未找到会话项，sessionId:', sessionId)
-        }
-      }
-      return
-    }
-
-    // 滚动到会话项
-    this._scrollToElement(sessionItem)
-  }
-
-  /**
-     * 滚动到指定元素（内部方法）
-     * @param {HTMLElement} element - 要滚动到的元素
-     */
-  proto._scrollToElement = function (element) {
-    if (!element) return
-
-    // 查找可滚动的父容器
-    const scrollableContainer = element.closest('.session-sidebar-scrollable-content')
-    if (!scrollableContainer) return
-
-    // 计算元素相对于容器的位置
-    const containerRect = scrollableContainer.getBoundingClientRect()
-    const elementRect = element.getBoundingClientRect()
-
-    // 计算需要滚动的距离
-    const scrollTop = scrollableContainer.scrollTop
-    const elementTop = elementRect.top - containerRect.top + scrollTop
-    const elementHeight = elementRect.height
-    const containerHeight = containerRect.height
-
-    // 计算目标滚动位置（让元素居中显示）
-    const targetScrollTop = elementTop - (containerHeight / 2) + (elementHeight / 2)
-
-    // 平滑滚动
-    scrollableContainer.scrollTo({
-      top: Math.max(0, targetScrollTop),
-      behavior: 'smooth'
-    })
-
-    // 添加高亮效果
-    element.classList.add('highlight-session')
-    setTimeout(() => {
-      element.classList.remove('highlight-session')
-    }, 2000)
   }
 
   proto.escapeHtml = function (text) {
