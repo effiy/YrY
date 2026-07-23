@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <title>YiH5</title>
+    <link rel="icon" type="image/x-icon" href="../../assets/favicon.ico" />
+    <link rel="stylesheet" href="../../../YiPet/cdn/styles/h5/index.css" />
+  </head>
+  <body>
+    <svg xmlns="http://www.w3.org/2000/svg" class="sprite-svg" aria-hidden="true">
+      <symbol id="icon-search" viewBox="0 0 24 24">
+        <path d="M10.5 3a7.5 7.5 0 1 1 4.7 13.3l3.8 3.8a1 1 0 0 1-1.4 1.4l-3.8-3.8A7.5 7.5 0 0 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"/>
+      </symbol>
+      <symbol id="icon-plus-circle" viewBox="0 0 24 24">
+        <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16Z"/>
+        <path d="M12 7a1 1 0 0 1 1 1v3h3a1 1 0 1 1 0 2h-3v3a1 1 0 1 1-2 0v-3H8a1 1 0 1 1 0-2h3V8a1 1 0 0 1 1-1Z"/>
+      </symbol>
+      <symbol id="icon-back" viewBox="0 0 24 24">
+        <path d="M14.7 6.7a1 1 0 0 1 0 1.4L10.8 12l3.9 3.9a1 1 0 1 1-1.4 1.4l-4.6-4.6a1 1 0 0 1 0-1.4l4.6-4.6a1 1 0 0 1 1.4 0Z"/>
+      </symbol>
+      <symbol id="icon-next" viewBox="0 0 24 24">
+        <path d="M9.3 17.3a1 1 0 0 1 0-1.4l3.9-3.9-3.9-3.9a1 1 0 1 1 1.4-1.4l4.6 4.6a1 1 0 0 1 0 1.4l-4.6 4.6a1 1 0 0 1-1.4 0Z"/>
+      </symbol>
+      <symbol id="icon-trash" viewBox="0 0 24 24">
+        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+      </symbol>
+      <symbol id="icon-close" viewBox="0 0 24 24">
+        <path d="M18.3 5.7a1 1 0 0 1 0 1.4L13.4 12l4.9 4.9a1 1 0 1 1-1.4 1.4L12 13.4l-4.9 4.9a1 1 0 1 1-1.4-1.4L10.6 12 5.7 7.1a1 1 0 0 1 1.4-1.4L12 10.6l4.9-4.9a1 1 0 0 1 1.4 0Z"/>
+      </symbol>
+      <symbol id="icon-send" viewBox="0 0 24 24">
+        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+      </symbol>
+      <symbol id="icon-auth" viewBox="0 0 24 24">
+        <path d="M7 10V8a5 5 0 0 1 10 0v2h1a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h1Zm2 0h6V8a3 3 0 0 0-6 0v2Zm3 4a1 1 0 0 0-1 1v2a1 1 0 1 0 2 0v-2a1 1 0 0 0-1-1Z"/>
+      </symbol>
+      <symbol id="icon-refresh" viewBox="0 0 24 24">
+        <path d="M17.65 6.35A7.95 7.95 0 0 0 12 4V1L7 6l5 5V7c2.76 0 5 2.24 5 5a5 5 0 0 1-8.66 3.54l-1.42 1.42A7 7 0 1 0 19 12c0-1.93-.78-3.68-2.05-4.95Z"/>
+      </symbol>
+      <symbol id="icon-context" viewBox="0 0 24 24">
+        <path d="M6 3a2 2 0 0 0-2 2v14a1 1 0 0 0 1.52.85L9 18.76l3.48 2.09a1 1 0 0 0 1 0L17 18.76l3.48 2.09A1 1 0 0 0 22 19V5a2 2 0 0 0-2-2H6Zm0 2h14v11.38l-2.48-1.49a1 1 0 0 0-1 0L13 17.24l-3.52-2.09a1 1 0 0 0-1 0L6 16.38V5Z"/>
+        <path d="M11 7h6a1 1 0 1 1 0 2h-6a1 1 0 0 1 0-2Zm0 4h4a1 1 0 1 1 0 2h-4a1 1 0 0 1 0-2Z"/>
+      </symbol>
+      <symbol id="icon-desc" viewBox="0 0 24 24">
+        <path d="M12 2a10 10 0 1 0 .001 20.001A10 10 0 0 0 12 2Zm0 2a8 8 0 1 1 0 16a8 8 0 0 1 0-16Z"/>
+        <path d="M12 10a1 1 0 0 1 1 1v5a1 1 0 1 1-2 0v-5a1 1 0 0 1 1-1Zm0-3a1.25 1.25 0 1 1 0 2.5A1.25 1.25 0 0 1 12 7Z"/>
+      </symbol>
+      <symbol id="icon-external" viewBox="0 0 24 24">
+        <path d="M18 19H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5v2H6v10h12v-5h2v5a2 2 0 0 1-2 2Z"/>
+        <path d="M13 3v2h4.59l-9.83 9.83 1.41 1.41L19 6.41V11h2V3h-8Z"/>
+      </symbol>
+      <symbol id="icon-faq" viewBox="0 0 24 24">
+        <path d="M12 2.25a9.75 9.75 0 1 0 0 19.5 9.75 9.75 0 0 0 0-19.5Zm0 2a7.75 7.75 0 1 1 0 15.5 7.75 7.75 0 0 1 0-15.5Z"/>
+        <path d="M12 8a3 3 0 0 0-3 3 1 1 0 1 0 2 0 1 1 0 1 1 2 0c0 .34-.09.5-.32.73-.1.1-.24.22-.43.37-.46.37-1.15.93-1.15 2.15V15a1 1 0 1 0 2 0v-.75c0-.46.18-.64.73-1.08.22-.18.45-.37.64-.56.58-.58.78-1.11.78-1.86A3 3 0 0 0 12 8Z"/>
+        <path d="M12 16.75a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Z"/>
+      </symbol>
+      <symbol id="icon-sort-time" viewBox="0 0 24 24">
+        <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+      </symbol>
+      <symbol id="icon-sort-alpha" viewBox="0 0 24 24">
+        <path d="M14.5 15.5L16 18l1.5-2.5h-3zm-3.5-8H7v2h2.3L7 14v2h5v-2h-2.3L12 9.5v-2zm6.5 4h4v-2h-4v-1h3.5l-3.5-4.5V5h5v2h-4v1h3.5L22 12.5V14h-5v-2z"/>
+      </symbol>
+    </svg>
+    <div class="app page-container" id="app">
+      <header class="topbar">
+        <div class="topbar__left">
+          <button
+            id="prevDay"
+            class="iconbtn topbar__dayBtn"
+            type="button"
+            aria-label="上一天"
+            title="上一天"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-back"/></svg>
+          </button>
+        </div>
+        <div class="topbar__center">
+          <div class="topbar__dateNav" aria-label="日期选择">
+            <input
+              type="text"
+              id="datePicker"
+              class="topbar__datePicker"
+              value=""
+              placeholder="全部日期"
+              inputmode="none"
+              aria-label="选择日期"
+              title="选择日期"
+            />
+          </div>
+          <div class="topbar__chatTitle" id="chatTopTitle" aria-label="会话标题">
+            <div class="topbar__title" id="chatTitle">会话</div>
+          </div>
+        </div>
+        <div class="topbar__right">
+          <button
+            id="authBtn"
+            class="iconbtn"
+            type="button"
+            aria-label="API 鉴权"
+            title="API 鉴权（X-Token）"
+            data-action="openAuth"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-auth"/></svg>
+          </button>
+          <button
+            id="clearCacheBtn"
+            class="iconbtn"
+            type="button"
+            aria-label="清缓存并刷新"
+            title="清缓存并刷新（保留 Token）"
+            data-action="clearCacheAndRefresh"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-refresh"/></svg>
+          </button>
+          <button
+            id="nextDay"
+            class="iconbtn topbar__dayBtn"
+            type="button"
+            aria-label="下一天"
+            title="下一天"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-next"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <main class="main-content" id="main">
+      <section class="main main-content container" id="pageSessions">
+        <section class="searchCard" id="searchCard">
+          <div class="tagRow" id="sessionTags"></div>
+          <div class="searchRow">
+            <div class="searchBox">
+              <svg class="searchBox__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#icon-search"/></svg>
+              <input
+                id="q"
+                class="searchBox__input"
+                type="search"
+                placeholder="搜索标题 / URL / 标签"
+                autocomplete="off"
+              />
+              <button
+                id="clearQ"
+                class="searchBox__clear"
+                type="button"
+                aria-label="清除搜索"
+              >
+                ×
+              </button>
+            </div>
+            <button
+              id="sortBtn"
+              class="iconbtn iconbtn--sort"
+              type="button"
+              aria-label="排序切换"
+              title="排序切换"
+              data-action="toggleSort"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-sort-time"/></svg>
+            </button>
+          </div>
+
+          <div class="chips" id="chips"></div>
+        </section>
+
+        <section class="listCard">
+          <div class="list" id="list" aria-live="polite"></div>
+          <div class="empty" id="empty" hidden>
+            <div class="empty__icon">🗂️</div>
+            <div class="empty__title">暂无匹配会话</div>
+            <div class="empty__desc">试试清空搜索或调整筛选条件</div>
+          </div>
+        </section>
+      </section>
+
+      <section class="main main-content container" id="pageNews" hidden>
+        <section class="searchCard" id="newsSearchCard">
+          <div class="tagRow" id="newsTags"></div>
+          <div class="searchRow">
+            <div class="searchBox">
+              <svg class="searchBox__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#icon-search"/></svg>
+              <input
+                id="newsQ"
+                class="searchBox__input"
+                type="search"
+                placeholder="搜索标题 / URL / 标签"
+                autocomplete="off"
+              />
+              <button
+                id="clearNewsQ"
+                class="searchBox__clear"
+                type="button"
+                aria-label="清除搜索"
+              >
+                ×
+              </button>
+            </div>
+            <button
+              id="newsSortBtn"
+              class="iconbtn iconbtn--sort"
+              type="button"
+              aria-label="新闻排序切换"
+              title="新闻排序切换"
+              data-action="toggleNewsSort"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-sort-time"/></svg>
+            </button>
+          </div>
+
+          <div class="chips" id="newsChips"></div>
+        </section>
+
+        <section class="listCard">
+          <div class="list" id="newsList" aria-live="polite"></div>
+          <div class="empty" id="newsEmpty" hidden>
+            <div class="empty__icon">📰</div>
+            <div class="empty__title">暂无匹配新闻</div>
+            <div class="empty__desc">试试清空搜索或调整筛选条件</div>
+            <button class="miniBtn" type="button" data-action="retryNews" hidden>重试</button>
+          </div>
+        </section>
+      </section>
+
+      <section class="chatPage main-content" id="pageChat" hidden>
+        <section class="chatPanel" aria-label="会话聊天">
+          <div class="chatPage__messages chatPanel__messages" id="chatMessages" aria-live="polite"></div>
+          <form class="chatComposer chatPanel__composer" id="chatComposer" autocomplete="off">
+            <div class="pet-chat-input-container chat-input-container">
+              <div class="pet-chat-toolbar chat-input-toolbar" role="toolbar" aria-label="聊天工具">
+                <div class="pet-chat-toolbar-left chat-input-btn-group">
+                  <button
+                    id="contextBtn"
+                    class="iconbtn chatComposer__btn chatComposer__btn--context pet-chat-btn"
+                    type="button"
+                    aria-label="页面上下文"
+                    title="页面上下文"
+                    data-action="openContext"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-context"/></svg>
+                    <span class="chatComposer__btnLabel">上下文</span>
+                  </button>
+                  <button
+                    id="pageDescBtn"
+                    class="iconbtn chatComposer__btn chatComposer__btn--context pet-chat-btn"
+                    type="button"
+                    aria-label="页面描述"
+                    title="页面描述"
+                    data-action="openPageDescription"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-desc"/></svg>
+                    <span class="chatComposer__btnLabel">描述</span>
+                  </button>
+                  <button
+                    id="openUrlBtn"
+                    class="iconbtn chatComposer__btn chatComposer__btn--url pet-chat-btn"
+                    type="button"
+                    aria-label="打开原文"
+                    title="打开原文"
+                    data-action="openUrl"
+                    hidden
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-external"/></svg>
+                    <span class="chatComposer__btnLabel">原文</span>
+                  </button>
+                  <button
+                    id="faqBtn"
+                    class="iconbtn chatComposer__btn chatComposer__btn--faq pet-chat-btn"
+                    type="button"
+                    aria-label="常见问题"
+                    title="常见问题"
+                    data-action="openFaq"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-faq"/></svg>
+                    <span class="chatComposer__btnLabel">问题</span>
+                  </button>
+                </div>
+                <div class="pet-chat-toolbar-right chat-input-btn-group"></div>
+              </div>
+              <div class="chat-input-wrapper">
+                <div class="pet-chat-input-row chatInputRow">
+                  <textarea
+                    id="chatInput"
+                    class="chatComposer__input chatComposer__textarea chat-message-input"
+                    placeholder="输入消息..."
+                    rows="2"
+                    autocomplete="off"
+                    spellcheck="false"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+          </form>
+        </section>
+      </section>
+      </main>
+
+      <!-- 常见问题弹层（聊天页） -->
+      <div class="sheetMask" id="faqSheetMask" hidden></div>
+      <section class="sheet" id="faqSheet" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="faqSheetTitle" tabindex="-1">
+        <div class="sheet__header">
+          <button class="topbar__link" type="button" data-action="closeFaq">取消</button>
+          <div class="sheet__title" id="faqSheetTitle">常见问题</div>
+          <span class="sheet__headerSpacer" aria-hidden="true"></span>
+        </div>
+        <div class="sheet__body">
+          <div class="faqHint">点击一条即可插入到输入框</div>
+          <div class="faqList" id="faqList"></div>
+          <div class="faqEmpty" id="faqEmpty" hidden>暂无常见问题</div>
+        </div>
+      </section>
+
+      <!-- 页面上下文弹层（聊天页） -->
+      <div class="sheetMask" id="contextSheetMask" hidden></div>
+      <section class="sheet" id="contextSheet" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="contextSheetTitle" tabindex="-1">
+        <div class="sheet__header">
+          <button class="topbar__link" type="button" data-action="closeContext">关闭</button>
+          <div class="sheet__title" id="contextSheetTitle">页面上下文</div>
+          <button class="pillBtn pillBtn--primary" type="button" data-action="savePageContext">保存</button>
+        </div>
+        <div class="sheet__body">
+          <div class="contextHint">
+            预览并编辑当前会话对应网页的上下文内容，可智能优化或中英互译，便于 AI 更好理解页面。
+          </div>
+          <div class="buttonGroup buttonGroup--wrap sheet__actionGroup">
+            <button
+              type="button"
+              class="pillBtn"
+              data-action="optimizePageContext"
+            >
+              🚀 智能优化
+            </button>
+            <button
+              type="button"
+              class="pillBtn"
+              data-action="translatePageContextZh"
+            >
+              🇨🇳 中文
+            </button>
+            <button
+              type="button"
+              class="pillBtn"
+              data-action="translatePageContextEn"
+            >
+              🇺🇸 English
+            </button>
+          </div>
+          <div class="contextContent" id="contextContent"></div>
+        </div>
+      </section>
+
+      <!-- 页面描述弹层（聊天页） -->
+      <div class="sheetMask" id="pageDescSheetMask" hidden></div>
+      <section class="sheet" id="pageDescSheet" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="pageDescSheetTitle" tabindex="-1">
+        <div class="sheet__header">
+          <button class="topbar__link" type="button" data-action="closePageDescription">关闭</button>
+          <div class="sheet__title" id="pageDescSheetTitle">页面描述</div>
+          <button class="pillBtn pillBtn--primary" type="button" data-action="savePageDescription">保存</button>
+        </div>
+        <div class="sheet__body">
+          <div class="contextHint">
+            预览并编辑当前会话对应网页的描述信息（pageDescription），可基于页面上下文智能生成描述或中英互译，便于 AI 更快把握页面要点。
+          </div>
+          <div class="buttonGroup buttonGroup--wrap sheet__actionGroup">
+            <button
+              type="button"
+              class="pillBtn"
+              data-action="generatePageDescription"
+            >
+              ✨ 智能生成
+            </button>
+            <button
+              type="button"
+              class="pillBtn"
+              data-action="translatePageDescriptionZh"
+            >
+              🇨🇳 中文
+            </button>
+            <button
+              type="button"
+              class="pillBtn"
+              data-action="translatePageDescriptionEn"
+            >
+              🇺🇸 English
+            </button>
+          </div>
+          <div class="contextContent" id="pageDescContent"></div>
+        </div>
+      </section>
+
+      <!-- 更新日志弹层 -->
+      <div class="sheetMask" id="changelogSheetMask" hidden></div>
+      <section class="sheet" id="changelogSheet" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="changelogSheetTitle" tabindex="-1">
+        <div class="sheet__header">
+          <button class="topbar__link" type="button" data-action="closeChangelog">关闭</button>
+          <div class="sheet__title" id="changelogSheetTitle">更新日志</div>
+          <span class="sheet__headerSpacer" aria-hidden="true"></span>
+        </div>
+        <div class="sheet__body">
+          <div class="changelogMeta" id="changelogMeta"></div>
+          <div class="changelogList" id="changelogList"></div>
+          <div class="changelogEmpty" id="changelogEmpty" hidden>暂无更新日志</div>
+        </div>
+      </section>
+
+      <!-- 底部导航：会话 / 新闻 -->
+      <nav class="bottomNav" id="bottomNav" aria-label="底部导航">
+        <button
+          type="button"
+          class="bottomNav__item is-active"
+          data-action="switchBottomTab"
+          data-tab="sessions"
+          aria-current="page"
+          aria-label="会话"
+        >
+          <span class="bottomNav__icon" aria-hidden="true">💬</span>
+          <span class="bottomNav__label">会话</span>
+        </button>
+        <button
+          type="button"
+          class="bottomNav__item"
+          data-action="switchBottomTab"
+          data-tab="news"
+          aria-label="新闻"
+        >
+          <span class="bottomNav__icon" aria-hidden="true">📰</span>
+          <span class="bottomNav__label">新闻</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- 调试控制台 -->
+    <div id="debugPanel" aria-hidden="true">
+      <div id="debugHeader">
+        <h4>🐛 调试控制台</h4>
+        <div id="debugActions">
+          <button id="debugCopy">复制</button>
+          <button id="debugClear">清空</button>
+          <button id="debugClose">关闭</button>
+        </div>
+      </div>
+      <div id="debugBody"></div>
+    </div>
+    <button id="debugFab" aria-label="打开调试控制台">🐛<span class="debug-count" id="debugCount" hidden>0</span></button>
+    <script>
+    (function() {
+      const panel = document.getElementById('debugPanel');
+      const body = document.getElementById('debugBody');
+      const fab = document.getElementById('debugFab');
+      const countEl = document.getElementById('debugCount');
+      let errorCount = 0;
+      let logs = [];
+
+      function fmtTime() {
+        const d = new Date();
+        return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0') + ':' + String(d.getSeconds()).padStart(2,'0');
+      }
+
+      function render(tag, args) {
+        const row = document.createElement('div');
+        row.className = 'debug-row';
+        const msg = Array.from(args).map(function(a) {
+          if (a instanceof Error) return a.stack || a.message || String(a);
+          try { return typeof a === 'object' ? JSON.stringify(a) : String(a); } catch { return String(a); }
+        }).join(' ');
+        row.innerHTML = '<span class="debug-time">' + fmtTime() + '</span><span class="debug-tag ' + tag + '">' + tag.toUpperCase() + '</span><span class="debug-msg">' + msg.replace(/</g, '&lt;') + '</span>';
+        body.appendChild(row);
+        body.scrollTop = body.scrollHeight;
+        logs.push({ t: Date.now(), tag: tag, msg: msg });
+        if (tag === 'error' || tag === 'warn') {
+          errorCount++;
+          countEl.textContent = errorCount;
+          countEl.hidden = false;
+          fab.classList.add('has-error');
+        }
+      }
+
+      const orig = { log: console.log, info: console.info, warn: console.warn, error: console.error };
+      console.log = function() { orig.log.apply(console, arguments); render('log', arguments); };
+      console.info = function() { orig.info.apply(console, arguments); render('info', arguments); };
+      console.warn = function() { orig.warn.apply(console, arguments); render('warn', arguments); };
+      console.error = function() { orig.error.apply(console, arguments); render('error', arguments); };
+
+      window.addEventListener('error', function(e) {
+        console.error('[window.onerror]', e.message, '@', e.filename, ':', e.lineno);
+      });
+      window.addEventListener('unhandledrejection', function(e) {
+        console.error('[unhandledrejection]', e.reason);
+      });
+
+      fab.addEventListener('click', function() {
+        panel.classList.toggle('is-open');
+        panel.setAttribute('aria-hidden', String(!panel.classList.contains('is-open')));
+      });
+      document.getElementById('debugClose').addEventListener('click', function() {
+        panel.classList.remove('is-open');
+        panel.setAttribute('aria-hidden', 'true');
+      });
+      document.getElementById('debugClear').addEventListener('click', function() {
+        body.innerHTML = ''; logs = []; errorCount = 0; countEl.hidden = true; fab.classList.remove('has-error');
+      });
+      document.getElementById('debugCopy').addEventListener('click', function() {
+        const text = logs.map(function(l) { return '[' + new Date(l.t).toLocaleTimeString() + '][' + l.tag.toUpperCase() + '] ' + l.msg; }).join('\n');
+        navigator.clipboard.writeText(text).catch(function(){});
+      });
+    })();
+    </script>
+
+    <!-- Markdown + Mermaid（用于聊天内容渲染） -->
+    <script src="../../libs/marked.min.js"></script>
+    <script src="../../libs/mermaid.min.js"></script>
+    <script src="../../libs/md5.js"></script>
+    <script type="module" src="./index.js"></script>
+  </body>
+</html>

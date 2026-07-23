@@ -1,0 +1,465 @@
+import os
+import base64
+import re
+import logging
+import shutil
+from datetime import datetime
+from fastapi import APIRouter
+from core.error_codes import ErrorCode
+from core.exceptions import BusinessException
+from models.schemas import FileUploadRequest, ImageUploadToOssRequest, FolderDeleteRequest, FileDeleteRequest, FileReadRequest, FileWriteRequest, FileRenameRequest, FolderRenameRequest
+from core.response import success
+
+logger = logging.getLogger(__name__)
+router = APIRouter()
+
+from core.config import settings
+from core.database import db
+from core.utils import get_current_time
+from services.storage.oss_client import upload_bytes_to_oss
+
+
+def _is_image_file(filename: str) -> bool:
+    """判断是否是图片文件"""
+    if not filename:
+        return False
+    n = str(filename).lower()
+    image_extensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.bmp', '.ico']
+    for ext in image_extensions:
+        if n.endswith(ext):
+            return True
+    return False
+
+def _normalize_no_spaces(value: str) -> str:
+    return re.sub(r"\s+", "_", (value or "").strip())
+
+def _normalize_db_key(target_file: str) -> str:
+    """将 target_file 规范化为统一的 DB 键（去掉 static/ 前缀）"""
+    key = (target_file or "").strip().replace("\\", "/")
+    if key.startswith("static/"):
+        key = key[7:]
+    return key.lstrip("/")
+
+def _validate_path(path: str, param_name: str = "路径") -> str:
+    """验证路径安全性，返回规范化的相对路径。使用 realpath 防止编码绕过。"""
+    if not path:
+        raise BusinessException(ErrorCode.INVALID_PARAMS, message=f"非法{param_name}")
+    cleaned = path.strip().replace("\\", "/")
+    if cleaned.startswith("/"):
+        raise BusinessException(ErrorCode.INVALID_PARAMS, message=f"非法{param_name}")
+    norm = os.path.normpath(cleaned)
+    if norm.startswith("..") or os.path.isabs(norm):
+        raise BusinessException(ErrorCode.INVALID_PARAMS, message=f"非法{param_name}")
+    return norm
+
+def _resolve_static_path(target_file: str) -> str:
+    """将相对路径解析为安全的绝对路径"""
+    rel = (target_file or "").strip().replace("\\", "/")
+    if rel.startswith("static/"):
+        rel = rel[7:]
+    if not rel or rel.startswith("/") or ".." in rel:
+        raise BusinessException(ErrorCode.INVALID_PARAMS, message="非法路径")
+
+    base_dir = os.path.realpath(os.path.abspath(settings.static_base_dir))
+    abs_path = os.path.realpath(os.path.abspath(os.path.join(base_dir, os.path.normpath(rel))))
+
+    if os.path.commonpath([base_dir, abs_path]) != base_dir:
+        raise BusinessException(ErrorCode.INVALID_PARAMS, message="非法路径")
+
+    return abs_path
+
+def _safe_rename(old_path: str, new_path: str, is_dir: bool = False) -> tuple[str, str]:
+    """安全地重命名文件或目录，返回 (旧绝对路径, 新绝对路径)"""
+    base_dir = os.path.abspath(settings.static_base_dir)
+
+    # 构造绝对路径
+    abs_old = os.path.join(base_dir, old_path)
+    abs_new = os.path.join(base_dir, new_path)
+
+    # 验证路径在 base_dir 内
+    if not os.path.abspath(abs_old).startswith(base_dir):
+        raise BusinessException(ErrorCode.INVALID_PARAMS, message="非法旧路径")
+    if not os.path.abspath(abs_new).startswith(base_dir):
+        raise BusinessException(ErrorCode.INVALID_PARAMS, message="非法新路径")
+
+    # 检查源路径存在
+    if not os.path.exists(abs_old):
+        raise BusinessException(ErrorCode.DATA_NOT_FOUND, message=f"原{'目录' if is_dir else '文件'}不存在: {old_path}")
+
+    # 检查类型匹配
+    if is_dir and not os.path.isdir(abs_old):
+        raise BusinessException(ErrorCode.INVALID_PARAMS, message=f"路径不是一个目录: {old_path}")
+    if not is_dir and not os.path.isfile(abs_old):
+        raise BusinessException(ErrorCode.INVALID_PARAMS, message=f"路径不是一个文件: {old_path}")
+
+    return abs_old, abs_new
+
+async def _upload_to_local_storage(content: bytes, filename: str, directory: str) -> dict:
+    """Upload image to local static storage"""
+    # Get file extension
+    safe_filename = (filename or "").strip() or "image.png"
+    file_ext = os.path.splitext(safe_filename)[1].lower() or ".png"
+
+    # Generate unique filename with timestamp
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    unique_filename = f"{timestamp}{file_ext}"
+
+    # Build paths
+    rel_dir = directory.strip("/")
+    rel_path = f"{rel_dir}/{unique_filename}"
+    abs_path = os.path.join(settings.static_base_dir, rel_path)
+
+    # Create directory if it doesn't exist
+    os.makedirs(os.path.dirname(abs_path), exist_ok=True)
+
+    # Write file
+    with open(abs_path, "wb") as f:
+        f.write(content)
+
+    # Build URL
+    static_url = f"{settings.static_base_url.rstrip('/')}/{rel_path}"
+
+    return {
+        "url": static_url,
+        "filename": safe_filename,
+        "object_name": rel_path
+    }
+
+
+@router.post("/upload-image-to-oss", operation_id="upload_image_to_oss")
+@router.post("/upload/upload-image-to-oss", operation_id="upload_image_to_oss_alt")
+async def upload_image_to_oss(request: ImageUploadToOssRequest):
+    raw = (request.data_url or "").strip()
+    if not raw:
+        raise BusinessException(ErrorCode.INVALID_PARAMS, message="图片数据为空")
+
+    base64_part = raw
+    if raw.startswith("data:"):
+        comma = raw.find(",")
+        if comma < 0:
+            raise BusinessException(ErrorCode.INVALID_PARAMS, message="图片数据格式错误")
+        base64_part = raw[comma + 1 :].strip()
+
+    try:
+        content = base64.b64decode(base64_part, validate=True)
+    except Exception as e:
+        raise BusinessException(ErrorCode.INVALID_PARAMS, message="Base64 解码失败") from e
+
+    filename = _normalize_no_spaces(request.filename)
+    directory = _normalize_no_spaces(request.directory or "aicr")
+
+    # Try OSS first, fall back to local storage if OSS not configured
+    try:
+        result = await upload_bytes_to_oss(content, filename, directory=directory)
+        return success(data=result)
+    except Exception as e:
+        logger.warning(f"OSS upload failed, falling back to local storage: {e}")
+        result = await _upload_to_local_storage(content, filename, directory)
+        return success(data=result)
+
+@router.post("/read-file", operation_id="read_file")
+async def read_file(request: FileReadRequest):
+    """
+    读取文件接口
+    对于图片文件，直接返回静态文件 URL 而不是 base64 编码
+    优先从磁盘读取，磁盘未找到时回退到 MongoDB
+    """
+    target_file = _normalize_no_spaces(request.target_file)
+    db_key = _normalize_db_key(target_file)
+
+    found_path = _resolve_static_path(target_file)
+
+    if not os.path.exists(found_path) or not os.path.isfile(found_path):
+        try:
+            await db.initialize()
+            doc = await db.db[settings.collection_static_files].find_one(
+                {'target_file': db_key},
+                projection={'_id': 0}
+            )
+            if doc:
+                content = doc.get('content', '')
+                is_base64 = doc.get('is_base64', False)
+
+                filename = os.path.basename(target_file)
+                if _is_image_file(filename):
+                    static_url = f"{settings.static_base_url.rstrip('/')}/{db_key}"
+                    logger.info(f"从 MongoDB 读取图片，返回静态 URL: {static_url}")
+                    return success(data={"content": static_url, "type": "url", "source": "database"})
+
+                logger.info(f"从 MongoDB 读取文件: {target_file}")
+                return success(data={"content": content, "type": "base64" if is_base64 else "text", "source": "database"})
+            else:
+                raise BusinessException(ErrorCode.DATA_NOT_FOUND, message=f"文件不存在: {target_file}")
+        except BusinessException:
+            raise
+        except Exception as e:
+            logger.error(f"MongoDB 回退读取失败: {target_file}: {e}")
+            raise BusinessException(ErrorCode.DATA_NOT_FOUND, message=f"文件不存在: {target_file}")
+
+    if not os.path.isfile(found_path):
+        raise BusinessException(ErrorCode.DATA_NOT_FOUND, message=f"路径不是一个文件: {target_file}")
+
+    # 获取文件名，用于判断是否是图片
+    filename = os.path.basename(target_file)
+
+    # 如果是图片文件，返回静态文件 URL
+    if _is_image_file(filename):
+        # 构建静态文件 URL，确保路径格式正确
+        clean_path = target_file.replace('\\', '/')
+        if clean_path.startswith('static/'):
+            clean_path = clean_path[7:]
+        # 确保不以 / 开头
+        clean_path = clean_path.lstrip('/')
+        static_url = f"{settings.static_base_url.rstrip('/')}/{clean_path}"
+        logger.info(f"图片文件，返回静态 URL: {static_url}")
+        return success(data={"content": static_url, "type": "url"})
+
+    try:
+        # 尝试以文本方式读取
+        try:
+            with open(found_path, "r", encoding="utf-8") as f:
+                content = f.read()
+                return success(data={"content": content, "type": "text"})
+        except UnicodeDecodeError:
+            # 如果不是文本文件，读取为 Base64
+            with open(found_path, "rb") as f:
+                content_bytes = f.read()
+                content_base64 = base64.b64encode(content_bytes).decode('utf-8')
+                return success(data={"content": content_base64, "type": "base64"})
+
+    except Exception as e:
+        logger.error(f"读取文件失败: {str(e)}", exc_info=True)
+        raise BusinessException(ErrorCode.INTERNAL_ERROR, message=f"读取文件失败: {str(e)}") from e
+
+@router.post("/write-file", operation_id="write_file")
+async def write_file(request: FileWriteRequest):
+    """
+    写入文件接口
+    磁盘 + MongoDB 双持久化。MongoDB 使用 upsert（已存在则覆盖，不存在则插入），
+    通过 target_file 唯一索引保证不产生重复数据。MongoDB 写入为 best-effort，失败不影响磁盘写入。
+    """
+    target_file = _normalize_no_spaces(request.target_file)
+    _validate_path(target_file, "目标文件路径")
+    content = request.content
+    is_base64 = request.is_base64
+
+    target_path = _resolve_static_path(target_file)
+
+    try:
+        os.makedirs(os.path.dirname(target_path), exist_ok=True)
+        if is_base64:
+            content_bytes = base64.b64decode(content)
+            with open(target_path, "wb") as f:
+                f.write(content_bytes)
+        else:
+            content_bytes = content.encode("utf-8")
+            with open(target_path, "w", encoding="utf-8") as f:
+                f.write(content)
+
+        if not os.path.exists(target_path) or not os.path.isfile(target_path):
+            raise BusinessException(
+                ErrorCode.DATA_STORE_FAIL,
+                message=f"文件写入后验证失败: {target_file}"
+            )
+
+        # MongoDB 同步持久化（upsert：已存在则覆盖，不存在则插入）
+        db_key = _normalize_db_key(target_file)
+        try:
+            await db.initialize()
+            await db.db[settings.collection_static_files].update_one(
+                {'target_file': db_key},
+                {'$set': {
+                    'target_file': db_key,
+                    'content': content,
+                    'is_base64': is_base64,
+                    'size': len(content_bytes),
+                    'updatedTime': get_current_time(),
+                }, '$setOnInsert': {
+                    'createdTime': get_current_time(),
+                }},
+                upsert=True
+            )
+            logger.info(f"文件已同步到 MongoDB: {db_key}")
+        except Exception as e:
+            logger.warning(f"MongoDB 持久化失败 (文件已落盘): {target_file}: {e}")
+
+        logger.info(f"文件写入成功: {target_path} ({len(content_bytes)} bytes)")
+        return success(data={"message": "写入成功", "path": target_path})
+    except BusinessException:
+        raise
+    except Exception as e:
+        logger.error(f"写入文件失败: {str(e)}", exc_info=True)
+        raise BusinessException(ErrorCode.DATA_STORE_FAIL, message=f"写入文件失败: {str(e)}") from e
+
+@router.post("/delete-file", operation_id="delete_file")
+async def delete_file(request: FileDeleteRequest):
+    """
+    删除文件接口
+    """
+    target_file = _normalize_no_spaces(request.target_file)
+    _validate_path(target_file)
+    db_key = _normalize_db_key(target_file)
+
+    abs_path = _resolve_static_path(target_file)
+
+    if not os.path.exists(abs_path):
+        raise BusinessException(ErrorCode.DATA_NOT_FOUND, message=f"文件不存在: {target_file}")
+
+    if not os.path.isfile(abs_path):
+        raise BusinessException(ErrorCode.INVALID_PARAMS, message=f"路径不是一个文件: {target_file}")
+
+    try:
+        os.remove(abs_path)
+        logger.info(f"成功删除文件: {abs_path}")
+    except Exception as e:
+        logger.error(f"删除文件失败: {str(e)}", exc_info=True)
+        raise BusinessException(ErrorCode.DATA_DESTROY_FAIL, message=f"删除文件失败: {str(e)}") from e
+
+    try:
+        await db.initialize()
+        result = await db.db[settings.collection_static_files].delete_one(
+            {'target_file': db_key}
+        )
+        if result.deleted_count > 0:
+            logger.info(f"已从 MongoDB 删除文件: {db_key}")
+    except Exception as e:
+        logger.warning(f"MongoDB 删除失败: {db_key}: {e}")
+
+    return success(data={"message": "删除成功", "path": target_file})
+
+@router.post("/delete-folder", operation_id="delete_folder")
+async def delete_folder(request: FolderDeleteRequest):
+    """
+    删除文件夹接口
+    """
+    target_dir = _normalize_no_spaces(request.target_dir)
+    _validate_path(target_dir)
+
+    abs_path = _resolve_static_path(target_dir)
+
+    if not os.path.exists(abs_path):
+        raise BusinessException(ErrorCode.DATA_NOT_FOUND, message=f"目录不存在: {target_dir}")
+
+    if not os.path.isdir(abs_path):
+        raise BusinessException(ErrorCode.INVALID_PARAMS, message=f"路径不是一个目录: {target_dir}")
+
+    try:
+        shutil.rmtree(abs_path)
+        logger.info(f"成功删除目录: {abs_path}")
+    except Exception as e:
+        logger.error(f"删除目录失败: {str(e)}", exc_info=True)
+        raise BusinessException(ErrorCode.DATA_DESTROY_FAIL, message=f"删除目录失败: {str(e)}") from e
+
+    return success(data={"message": "删除成功", "path": target_dir})
+
+@router.post("/rename-file", operation_id="rename_file")
+async def rename_file(request: FileRenameRequest):
+    """
+    重命名文件接口
+    """
+    old_path_str = _validate_path(request.old_path, "旧路径")
+    new_path_str = _validate_path(_normalize_no_spaces(request.new_path), "新路径")
+
+    abs_old, abs_new = _safe_rename(old_path_str, new_path_str, is_dir=False)
+
+    try:
+        os.makedirs(os.path.dirname(abs_new), exist_ok=True)
+        os.rename(abs_old, abs_new)
+        logger.info(f"成功重命名文件: {abs_old} -> {abs_new}")
+    except Exception as e:
+        logger.error(f"重命名文件失败: {str(e)}", exc_info=True)
+        raise BusinessException(ErrorCode.DATA_UPDATE_FAIL, message=f"重命名文件失败: {str(e)}") from e
+
+    # 同步 MongoDB 中的旧记录（如果存在）
+    old_db_key = _normalize_db_key(old_path_str)
+    new_db_key = _normalize_db_key(new_path_str)
+    try:
+        await db.initialize()
+        result = await db.db[settings.collection_static_files].update_one(
+            {'target_file': old_db_key},
+            {'$set': {'target_file': new_db_key, 'updatedTime': get_current_time()}}
+        )
+        if result.matched_count > 0:
+            logger.info(f"已同步 MongoDB 重命名: {old_db_key} -> {new_db_key}")
+    except Exception as e:
+        logger.warning(f"MongoDB 重命名同步失败: {old_db_key} -> {new_db_key}: {e}")
+
+    return success(data={"message": "重命名成功", "old_path": old_path_str, "new_path": new_path_str})
+
+@router.post("/rename-folder", operation_id="rename_folder")
+async def rename_folder(request: FolderRenameRequest):
+    """
+    重命名文件夹接口
+    """
+    old_dir_str = _validate_path(request.old_dir, "旧路径")
+    new_dir_str = _validate_path(_normalize_no_spaces(request.new_dir), "新路径")
+
+    abs_old, abs_new = _safe_rename(old_dir_str, new_dir_str, is_dir=True)
+
+    try:
+        os.makedirs(os.path.dirname(abs_new), exist_ok=True)
+        os.rename(abs_old, abs_new)
+        logger.info(f"成功重命名文件夹: {abs_old} -> {abs_new}")
+    except Exception as e:
+        logger.error(f"重命名文件夹失败: {str(e)}", exc_info=True)
+        raise BusinessException(ErrorCode.DATA_UPDATE_FAIL, message=f"重命名文件夹失败: {str(e)}") from e
+
+    # 同步 MongoDB 中该目录下所有旧记录（如果存在）
+    old_db_prefix = _normalize_db_key(old_dir_str)
+    new_db_prefix = _normalize_db_key(new_dir_str)
+    try:
+        await db.initialize()
+        collection = db.db[settings.collection_static_files]
+        old_docs = collection.find({'target_file': {'$regex': f'^{re.escape(old_db_prefix)}/'}})
+        updated_count = 0
+        async for doc in old_docs:
+            old_key = doc['target_file']
+            new_key = new_db_prefix + old_key[len(old_db_prefix):]
+            await collection.update_one(
+                {'target_file': old_key},
+                {'$set': {'target_file': new_key, 'updatedTime': get_current_time()}}
+            )
+            updated_count += 1
+        if updated_count > 0:
+            logger.info(f"已同步 MongoDB 文件夹重命名: {old_db_prefix} -> {new_db_prefix} ({updated_count} 条)")
+    except Exception as e:
+        logger.warning(f"MongoDB 文件夹重命名同步失败: {old_db_prefix} -> {new_db_prefix}: {e}")
+
+    return success(data={"message": "重命名成功", "old_path": old_dir_str, "new_path": new_dir_str})
+
+@router.post("/upload", operation_id="upload_file")
+async def upload_file(request: FileUploadRequest):
+    """
+    文件上传接口 (JSON 方式)
+    """
+    target_dir = _validate_path(_normalize_no_spaces(request.target_dir), "目标目录")
+    base_dir = os.path.abspath(settings.static_base_dir)
+    save_dir = os.path.join(base_dir, target_dir)
+    os.makedirs(save_dir, exist_ok=True)
+    
+    filename = _normalize_no_spaces(request.filename)
+    file_path = os.path.join(save_dir, filename)
+    
+    try:
+        if request.is_base64:
+            # Base64 解码并写入二进制文件
+            content_bytes = base64.b64decode(request.content)
+            with open(file_path, "wb") as f:
+                f.write(content_bytes)
+        else:
+            # 直接写入文本文件
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write(request.content)
+    except Exception as e:
+        logger.error(f"文件保存失败: {str(e)}", exc_info=True)
+        raise BusinessException(ErrorCode.DATA_STORE_FAIL, message=f"文件保存失败: {str(e)}") from e
+        
+    # 返回相对路径
+    rel_path = f"/{target_dir}/{filename}"
+    # 统一路径分隔符
+    rel_path = rel_path.replace(os.sep, '/')
+    # 确保不以 // 开头 (如果 target_dir 为空或 / 开头)
+    if rel_path.startswith('//'):
+        rel_path = rel_path[1:]
+        
+    return success(data={"url": rel_path})
