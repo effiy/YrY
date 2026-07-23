@@ -1,0 +1,35 @@
+<template id="yi-pet-welcome-card-template">
+  <div class="welcome-card">
+    <div class="welcome-card-header">
+      <div class="welcome-card-header-left">
+        <img class="welcome-card-favicon js-welcome-favicon" src="" alt="" />
+        <div class="welcome-card-title js-welcome-title" title=""></div>
+      </div>
+    </div>
+    <div class="welcome-card-row js-welcome-url-row">
+      <div class="welcome-card-label">网址</div>
+      <div class="welcome-card-value">
+        <a class="welcome-card-url js-welcome-url" target="_blank" rel="noopener noreferrer"></a>
+      </div>
+      <button type="button" class="welcome-card-action-btn js-welcome-copy-url" title="复制网址" aria-label="复制网址">
+        <i class="fas fa-copy"></i>
+      </button>
+    </div>
+    <div class="welcome-card-row welcome-card-row--multiline js-welcome-desc-row">
+      <div class="welcome-card-label">描述</div>
+      <div class="welcome-card-value welcome-card-value--stack welcome-card-description">
+        <div class="markdown-content js-welcome-description"></div>
+      </div>
+      <button type="button" class="welcome-card-action-btn js-welcome-copy-desc" title="复制描述" aria-label="复制描述">
+        <i class="fas fa-copy"></i>
+      </button>
+    </div>
+    <div class="welcome-card-row welcome-card-row--multiline js-welcome-tags-row">
+      <div class="welcome-card-label">标签</div>
+      <div class="welcome-card-value welcome-card-tags js-welcome-tags"></div>
+    </div>
+    <div class="welcome-card-footer js-welcome-footer">
+      <div class="welcome-card-meta js-welcome-meta"></div>
+    </div>
+  </div>
+</template>

@@ -1,578 +1,231 @@
 /**
- * 错误处理工具函数
- * 提供统一的错误处理、日志记录和用户提示功能
- * author: liangliang
+ * 统一错误处理工具类
+ *
+ * 功能说明：
+ * - 提供统一的错误处理和用户提示机制
+ * - 自动显示错误通知（可选）
+ * - 检查特定类型的错误（上下文失效、配额错误等）
+ * - 安全执行异步操作，自动捕获错误
+ *
+ * 使用示例：
+ * ```javascript
+ * // 安全执行异步操作
+ * const result = await ErrorHandler.safeExecute(async () => {
+ *     return await someAsyncOperation();
+ * }, { showNotification: true });
+ *
+ * // 检查是否是上下文失效错误
+ * if (ErrorHandler.isContextInvalidated(error)) {
+ *     // 处理上下文失效
+ * }
+ * ```
  */
 
-/**
- * 错误类型枚举
- */
-export const ErrorTypes = {
-    NETWORK: 'NETWORK',
-    VALIDATION: 'VALIDATION',
-    API: 'API',
-    RUNTIME: 'RUNTIME',
-    UNKNOWN: 'UNKNOWN'
-};
+class ErrorHandler {
+  /**
+   * 获取默认兜底错误文案（避免对 CONSTANTS 的隐式强依赖导致运行时异常）
+   * @returns {string}
+   */
+  static getDefaultFallback() {
+    try {
+      const cfg =
+        typeof globalThis !== 'undefined' && globalThis.PET_CONFIG && globalThis.PET_CONFIG.constants
+          ? globalThis.PET_CONFIG.constants
+          : null
+      const msg = cfg && cfg.ERROR_MESSAGES && cfg.ERROR_MESSAGES.OPERATION_FAILED
+      return typeof msg === 'string' && msg.trim() ? msg : '操作失败'
+    } catch (e) {
+      return '操作失败'
+    }
+  }
 
-export const ErrorCodes = {
-    UNKNOWN: 'UNKNOWN',
-    AUTH_401: 'AUTH_401',
-    HTTP_ERROR: 'HTTP_ERROR',
-    REQUEST_TIMEOUT: 'REQUEST_TIMEOUT',
-    NETWORK_FETCH_FAILED: 'NETWORK_FETCH_FAILED',
-    CORS_BLOCKED: 'CORS_BLOCKED',
-    STREAM_API_ERROR: 'STREAM_API_ERROR',
-    STREAM_PARSE_FAILED: 'STREAM_PARSE_FAILED',
-    COMPONENT_LOAD_TIMEOUT: 'COMPONENT_LOAD_TIMEOUT',
-    MODULE_LOAD_FAILED: 'MODULE_LOAD_FAILED',
-    TEMPLATE_FETCH_FAILED: 'TEMPLATE_FETCH_FAILED'
-};
+  /**
+   * 处理操作错误
+   * @param {Error|string} error - 错误对象或错误消息
+   * @param {Object} options - 选项 {showNotification, fallback}
+   * @returns {Object} 错误信息对象
+   */
+  static handle(error, options = {}) {
+    const showNotification = options.showNotification !== false
+    const fallback = options.fallback || this.getDefaultFallback()
+    const normalized = this.normalize(error, { fallback })
+    if (showNotification && typeof globalThis !== 'undefined' && typeof globalThis.showNotification === 'function') {
+      const msg = normalized.hint ? `${normalized.message}（${normalized.hint}）` : normalized.message
+      globalThis.showNotification(msg, normalized.severity === 'error' ? 'error' : 'warn')
+    }
+    return {
+      success: false,
+      code: normalized.code,
+      error: normalized.message,
+      hint: normalized.hint,
+      severity: normalized.severity,
+      originalError: error,
+    }
+  }
 
-/**
- * 错误级别枚举
- */
-export const ErrorLevels = {
-    DEBUG: 'debug',
-    INFO: 'info',
-    WARN: 'warn',
-    ERROR: 'error',
-    FATAL: 'fatal'
-};
+  /**
+   * 安全执行异步操作（带错误处理）
+   * @param {Function} asyncFn - 异步函数
+   * @param {Object} options - 选项
+   * @returns {Promise<Object>} 结果对象 {success, data, error}
+   */
+  static async safeExecute(asyncFn, options = {}) {
+    try {
+      const data = await asyncFn()
+      return { success: true, data }
+    } catch (error) {
+      return this.handle(error, options)
+    }
+  }
 
-/**
- * 错误信息配置
- */
-const ERROR_MESSAGES = {
-    [ErrorTypes.NETWORK]: {
-        title: '网络错误',
-        defaultMessage: '网络连接失败，请检查网络设置'
+  /**
+   * 检查是否是扩展上下文失效错误
+   * @param {Error|Object} error - 错误对象
+   * @returns {boolean} 是否是上下文失效错误
+   */
+  static isContextInvalidated(error) {
+    if (!error) return false
+    const errorMsg = (error.message || error.toString() || '').toLowerCase()
+    return (
+      errorMsg.includes('extension context invalidated') ||
+      errorMsg.includes('context invalidated') ||
+      errorMsg.includes('the message port closed')
+    )
+  }
+
+  /**
+   * 检查是否是配额错误
+   * @param {Error|Object} error - 错误对象
+   * @returns {boolean} 是否是配额错误
+   */
+  static isQuotaError(error) {
+    if (!error) return false
+    const errorMsg = (error.message || error.toString() || '').toLowerCase()
+    return (
+      errorMsg.includes('quota_bytes') ||
+      errorMsg.includes('quota exceeded') ||
+      errorMsg.includes('max_write_operations')
+    )
+  }
+
+  static CODES = {
+    SYS_CONTEXT_INVALIDATED: {
+      code: 'E_SYS_001',
+      message: '扩展上下文失效',
+      hint: '请刷新页面或重新打开标签',
+      severity: 'error',
     },
-    [ErrorTypes.VALIDATION]: {
-        title: '参数错误',
-        defaultMessage: '输入参数无效，请检查后重试'
+    STORAGE_QUOTA_EXCEEDED: {
+      code: 'E_STORAGE_001',
+      message: '存储配额超限',
+      hint: '请清理历史或降低写入频率',
+      severity: 'warn',
     },
-    [ErrorTypes.API]: {
-        title: '接口错误',
-        defaultMessage: '服务器接口异常，请稍后重试'
+    NET_NETWORK_ERROR: { code: 'E_NET_001', message: '网络异常', hint: '请检查网络连接或稍后重试', severity: 'error' },
+    AUTH_UNAUTHORIZED: {
+      code: 'E_AUTH_401',
+      message: '未授权或登录失效',
+      hint: '请重新登录或设置有效凭证',
+      severity: 'warn',
     },
-    [ErrorTypes.RUNTIME]: {
-        title: '运行时错误',
-        defaultMessage: '程序运行异常，请刷新页面重试'
-    },
-    [ErrorTypes.UNKNOWN]: {
-        title: '未知错误',
-        defaultMessage: '发生未知错误，请稍后重试'
-    }
-};
+    AUTH_FORBIDDEN: { code: 'E_AUTH_403', message: '无访问权限', hint: '请检查权限或联系管理员', severity: 'warn' },
+    API_BAD_REQUEST: { code: 'E_API_400', message: '请求参数错误', hint: '请检查输入数据', severity: 'warn' },
+    API_NOT_FOUND: { code: 'E_API_404', message: '接口或资源不存在', hint: '请确认接口地址', severity: 'warn' },
+    API_SERVER_ERROR: { code: 'E_API_5XX', message: '服务端错误', hint: '请稍后重试或联系支持', severity: 'error' },
+    UNKNOWN: { code: 'E_UNKNOWN', message: '操作失败', hint: '', severity: 'error' },
+  }
 
-/**
- * 错误记录器类
- */
-class ErrorLogger {
-    constructor() {
-        this.errors = [];
-        this.maxErrors = 100; // 最多记录100条错误
-    }
+  static fromStatus(status) {
+    if (status === 400) return this.CODES.API_BAD_REQUEST
+    if (status === 401) return this.CODES.AUTH_UNAUTHORIZED
+    if (status === 403) return this.CODES.AUTH_FORBIDDEN
+    if (status === 404) return this.CODES.API_NOT_FOUND
+    if (status >= 500) return this.CODES.API_SERVER_ERROR
+    return null
+  }
 
-    /**
-     * 记录错误
-     * @param {Error} error - 错误对象
-     * @param {string} context - 错误上下文
-     * @param {ErrorLevels} level - 错误级别
-     */
-    log(error, context = '', level = ErrorLevels.ERROR) {
-        const errorRecord = {
-            timestamp: new Date().toISOString(),
-            message: error.message || '未知错误',
-            stack: error.stack,
-            context,
-            level,
-            type: this.getErrorType(error),
-            code: (error && typeof error === 'object' && error.code) ? String(error.code) : ErrorCodes.UNKNOWN
-        };
-
-        this.errors.push(errorRecord);
-
-        // 限制错误记录数量
-        if (this.errors.length > this.maxErrors) {
-            this.errors.shift();
-        }
-
-        // 控制台输出
-        this.consoleOutput(errorRecord);
-    }
-
-    /**
-     * 获取错误类型
-     * @param {Error} error - 错误对象
-     * @returns {ErrorTypes} 错误类型
-     */
-    getErrorType(error) {
-        if (error.name === 'NetworkError' || error.message.includes('fetch')) {
-            return ErrorTypes.NETWORK;
-        }
-        if (error.name === 'ValidationError' || error.message.includes('参数')) {
-            return ErrorTypes.VALIDATION;
-        }
-        if (error.name === 'APIError' || error.message.includes('API')) {
-            return ErrorTypes.API;
-        }
-        if (error.name === 'RuntimeError') {
-            return ErrorTypes.RUNTIME;
-        }
-        return ErrorTypes.UNKNOWN;
-    }
-
-    /**
-     * 控制台输出错误
-     * @param {Object} errorRecord - 错误记录
-     */
-    consoleOutput(errorRecord) {
-        const { level, message, context, timestamp } = errorRecord;
-        const prefix = `[${timestamp}] [${level.toUpperCase()}]`;
-        
-        try {
-            switch (level) {
-                case ErrorLevels.DEBUG:
-                    if (window.logDebug) window.logDebug(`${prefix} ${context}: ${message}`);
-                    else console.debug(`${prefix} ${context}: ${message}`);
-                    break;
-                case ErrorLevels.INFO:
-                    if (window.logInfo) window.logInfo(`${prefix} ${context}: ${message}`);
-                    else console.info(`${prefix} ${context}: ${message}`);
-                    break;
-                case ErrorLevels.WARN:
-                    if (window.logWarn) window.logWarn(`${prefix} ${context}: ${message}`);
-                    else console.warn(`${prefix} ${context}: ${message}`);
-                    break;
-                case ErrorLevels.ERROR:
-                case ErrorLevels.FATAL:
-                    if (window.logError) window.logError(`${prefix} ${context}: ${message}`);
-                    else console.error(`${prefix} ${context}: ${message}`);
-                    break;
-            }
-        } catch (_) { }
-    }
-
-    /**
-     * 获取所有错误记录
-     * @returns {Array} 错误记录数组
-     */
-    getErrors() {
-        return [...this.errors];
-    }
-
-    /**
-     * 清空错误记录
-     */
-    clear() {
-        this.errors = [];
-    }
-}
-
-// 创建全局错误记录器实例
-const errorLogger = new ErrorLogger();
-
-/**
- * 创建错误对象
- * @param {string} message - 错误消息
- * @param {string} type - 错误类型
- * @param {string} context - 错误上下文
- * @returns {Error} 错误对象
- */
-export function createError(message, type = ErrorTypes.UNKNOWN, context = '') {
-    const error = new Error(message);
-    error.type = type;
-    error.context = context;
-    if (arguments.length >= 4 && arguments[3]) {
-        error.code = String(arguments[3]);
-    }
-    errorLogger.log(error, context, ErrorLevels.ERROR);
-    return error;
-}
-
-/**
- * 处理错误
- * @param {Error} error - 错误对象
- * @param {string} context - 错误上下文
- * @param {Function} onError - 错误处理回调
- */
-export function handleError(error, context = '', onError = null) {
-    // 记录错误
-    errorLogger.log(error, context);
-
-    // 获取错误信息
-    const errorType = errorLogger.getErrorType(error);
-    const errorConfig = ERROR_MESSAGES[errorType];
-    
-    const errorInfo = {
-        type: errorType,
-        title: errorConfig.title,
-        message: error.message || errorConfig.defaultMessage,
-        code: (error && typeof error === 'object' && error.code) ? String(error.code) : ErrorCodes.UNKNOWN,
-        context,
-        timestamp: new Date().toISOString()
-    };
-
-    // 调用自定义错误处理函数
-    if (typeof onError === 'function') {
-        onError(errorInfo);
-    } else {
-        // 默认错误处理：显示错误信息
-        showErrorMessage(errorInfo);
-    }
-
-    return errorInfo;
-}
-
-/**
- * 显示错误信息
- * @param {Object} errorInfo - 错误信息对象
- */
-export function showErrorMessage(errorInfo) {
-    const { title, message } = errorInfo;
-    
-    const text = `❌ ${title}: ${message}`;
+  static normalize(error, { fallback } = {}) {
     try {
-        if (typeof window !== 'undefined' && typeof window.showError === 'function') {
-            window.showError(text);
-            return;
+      const fb = typeof fallback === 'string' && fallback.trim() ? fallback : this.getDefaultFallback()
+      if (!error) {
+        const base = this.CODES.UNKNOWN
+        return { code: base.code, message: fb, hint: base.hint, severity: base.severity }
+      }
+      if (this.isContextInvalidated(error)) {
+        const base = this.CODES.SYS_CONTEXT_INVALIDATED
+        return { code: base.code, message: base.message, hint: base.hint, severity: base.severity }
+      }
+      if (this.isQuotaError(error)) {
+        const base = this.CODES.STORAGE_QUOTA_EXCEEDED
+        return { code: base.code, message: base.message, hint: base.hint, severity: base.severity }
+      }
+      const status = error.status || (error.response && error.response.status) || error.statusCode
+      if (typeof status === 'number') {
+        const base = this.fromStatus(status) || this.CODES.UNKNOWN
+        const message = error.message || (error.response && error.response.statusText) || base.message || fb
+        return { code: base.code, message, hint: base.hint, severity: base.severity }
+      }
+      const codeField = error.code || (error.response && error.response.data && error.response.data.code)
+      if (typeof codeField === 'string') {
+        const upper = codeField.toUpperCase()
+        const known = Object.values(this.CODES).find((c) => c.code === upper)
+        if (known) {
+          const message =
+            error.message ||
+            (error.response && error.response.data && error.response.data.message) ||
+            known.message ||
+            fb
+          return { code: known.code, message, hint: known.hint, severity: known.severity }
         }
-    } catch (_) {}
-    alert(text);
+        const message = error.message || (error.response && error.response.data && error.response.data.message) || fb
+        return { code: upper, message, hint: '', severity: 'error' }
+      }
+      if (error instanceof Error) {
+        const msg = error.message || fb
+        if (/network/i.test(msg)) {
+          const base = this.CODES.NET_NETWORK_ERROR
+          return { code: base.code, message: base.message, hint: base.hint, severity: base.severity }
+        }
+        return { code: this.CODES.UNKNOWN.code, message: msg, hint: '', severity: 'error' }
+      }
+      if (typeof error === 'string') {
+        const msg = error
+        return { code: this.CODES.UNKNOWN.code, message: msg, hint: '', severity: 'error' }
+      }
+      const msg = error.message || fb
+      return { code: this.CODES.UNKNOWN.code, message: msg, hint: '', severity: 'error' }
+    } catch (_) {
+      const base = this.CODES.UNKNOWN
+      return { code: base.code, message: fallback || base.message, hint: base.hint, severity: base.severity }
+    }
+  }
+
+  static create(code, message, meta = {}) {
+    const err = new Error(message || '')
+    err.code = code
+    err.meta = meta
+    return err
+  }
+  // 注意：safeExecute 方法已在上面定义（第69行），此处删除重复定义
 }
 
-/**
- * 显示成功信息
- * @param {string} message - 成功消息
- */
-export function showSuccessMessage(message) {
-    if (!message) return;
-    
-    // 移除弹框显示，只保留控制台日志
-    try {
-        if (window.logInfo) window.logInfo(`✅ ${message}`);
-        else console.log(`✅ ${message}`);
-    } catch (_) { }
+// 导出
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = ErrorHandler
+} else if (typeof self !== 'undefined') {
+  // Service Worker / Web Worker 环境
+  self.ErrorHandler = ErrorHandler
+  if (typeof globalThis !== 'undefined') {
+    globalThis.ErrorHandler = ErrorHandler
+  }
+} else if (typeof window !== 'undefined') {
+  // 浏览器环境
+  window.ErrorHandler = ErrorHandler
+} else {
+  // 最后兜底
+  try {
+    globalThis.ErrorHandler = ErrorHandler
+  } catch (e) {
+    this.ErrorHandler = ErrorHandler
+  }
 }
-
-/**
- * 验证参数
- * @param {any} value - 要验证的值
- * @param {string} name - 参数名称
- * @param {string} type - 期望的类型
- * @param {boolean} required - 是否必需
- */
-export function validateParameter(value, name, type = 'any', required = false) {
-    if (required && (value === undefined || value === null || value === '')) {
-        throw createError(`参数 ${name} 是必需的`, ErrorTypes.VALIDATION, '参数验证');
-    }
-
-    if (value !== undefined && value !== null) {
-        switch (type) {
-            case 'string':
-                if (typeof value !== 'string') {
-                    throw createError(`参数 ${name} 必须是字符串类型`, ErrorTypes.VALIDATION, '参数验证');
-                }
-                break;
-            case 'number':
-                if (typeof value !== 'number' || isNaN(value)) {
-                    throw createError(`参数 ${name} 必须是数字类型`, ErrorTypes.VALIDATION, '参数验证');
-                }
-                break;
-            case 'boolean':
-                if (typeof value !== 'boolean') {
-                    throw createError(`参数 ${name} 必须是布尔类型`, ErrorTypes.VALIDATION, '参数验证');
-                }
-                break;
-            case 'array':
-                if (!Array.isArray(value)) {
-                    throw createError(`参数 ${name} 必须是数组类型`, ErrorTypes.VALIDATION, '参数验证');
-                }
-                break;
-            case 'object':
-                if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-                    throw createError(`参数 ${name} 必须是对象类型`, ErrorTypes.VALIDATION, '参数验证');
-                }
-                break;
-            case 'date':
-                if (!(value instanceof Date)) {
-                    throw createError(`参数 ${name} 必须是Date对象`, ErrorTypes.VALIDATION, '参数验证');
-                }
-                break;
-        }
-    }
-}
-
-/**
- * 安全执行函数
- * @param {Function} fn - 要执行的函数
- * @param {string} context - 执行上下文
- * @param {Function} onError - 错误处理回调
- * @returns {any} 函数执行结果
- */
-export function safeExecute(fn, context = '', onError = null) {
-    try {
-        return fn();
-    } catch (error) {
-        return handleError(error, context, onError);
-    }
-}
-
-/**
- * 异步安全执行函数
- * @param {Function} fn - 要执行的异步函数
- * @param {string} context - 执行上下文
- * @param {Function} onError - 错误处理回调
- * @returns {Promise<any>} 异步函数执行结果
- */
-export async function safeExecuteAsync(fn, context = '', onError = null) {
-    try {
-        return await fn();
-    } catch (error) {
-        return handleError(error, context, onError);
-    }
-}
-
-/**
- * 检查是否是浏览器扩展错误
- * @param {Error|Object} error - 错误对象
- * @param {string} filename - 文件名（可选）
- * @param {string} stack - 错误堆栈（可选）
- * @returns {boolean} 是否是浏览器扩展错误
- */
-export function isBrowserExtensionError(error, filename = '', stack = '') {
-    // 检查文件名
-    if (filename && (
-        filename.includes('content.js') || 
-        filename.includes('extension') || 
-        filename.includes('chrome-extension') ||
-        filename.includes('moz-extension') ||
-        filename.includes('safari-extension')
-    )) {
-        return true;
-    }
-    
-    // 检查错误堆栈
-    if (stack && (
-        stack.includes('content.js') || 
-        stack.includes('extension') || 
-        stack.includes('chrome-extension') ||
-        stack.includes('moz-extension') ||
-        stack.includes('safari-extension')
-    )) {
-        return true;
-    }
-    
-    // 检查错误消息中的特定模式
-    if (error && error.message) {
-        const message = error.message.toLowerCase();
-        // 检查常见的浏览器扩展错误模式
-        if (message.includes('cannot read properties of null') && 
-            (message.includes("reading '0'") || 
-             message.includes("reading '1'") || 
-             message.includes("reading '2'") ||
-             message.includes("reading '3'"))) {
-            return true;
-        }
-        
-        // 检查其他常见的扩展错误
-        if (message.includes('extension') || 
-            message.includes('content script') ||
-            message.includes('injected script')) {
-            return true;
-        }
-    }
-    
-    return false;
-}
-
-/**
- * 处理浏览器扩展错误
- * @param {Error|Object} error - 错误对象
- * @param {string} context - 错误上下文
- * @param {string} filename - 文件名（可选）
- * @param {string} stack - 错误堆栈（可选）
- * @returns {boolean} 是否已处理（true表示已忽略）
- */
-export function handleBrowserExtensionError(error, context = '', filename = '', stack = '') {
-    if (isBrowserExtensionError(error, filename, stack)) {
-        try {
-            const payload = {
-                message: error?.message || '未知错误',
-                filename: filename || '未知文件',
-                stack: stack || '无堆栈信息'
-            };
-            if (window.logInfo) window.logInfo(`[${context}] 检测到浏览器扩展错误，已忽略:`, payload);
-            else console.log(`[${context}] 检测到浏览器扩展错误，已忽略:`, payload);
-        } catch (_) { }
-        return true; // 已处理，可以忽略
-    }
-    return false; // 未处理，需要继续处理
-}
-
-/**
- * 设置浏览器扩展错误过滤器
- * @param {string} context - 上下文名称
- * @param {boolean} enablePromiseFilter - 是否启用Promise错误过滤
- */
-export function setupBrowserExtensionErrorFilter(context = 'App', enablePromiseFilter = true) {
-    // 全局错误处理
-    window.addEventListener('error', (event) => {
-        if (handleBrowserExtensionError(event.error, context, event.filename)) {
-            event.preventDefault(); // 阻止默认的错误处理
-            return;
-        }
-        
-        // 如果不是扩展错误，记录到错误日志
-        if (event.error) {
-            errorLogger.log(event.error, context, ErrorLevels.ERROR);
-        }
-    });
-    
-    // Promise错误处理
-    if (enablePromiseFilter) {
-        window.addEventListener('unhandledrejection', (event) => {
-            if (handleBrowserExtensionError(event.reason, context, '', event.reason?.stack)) {
-                event.preventDefault(); // 阻止默认的错误处理
-                return;
-            }
-            
-            // 如果不是扩展错误，记录到错误日志
-            if (event.reason) {
-                errorLogger.log(event.reason, context, ErrorLevels.ERROR);
-            }
-        });
-    }
-    
-    try {
-        if (window.logInfo) window.logInfo(`[${context}] 浏览器扩展错误过滤器已启用`);
-        else console.log(`[${context}] 浏览器扩展错误过滤器已启用`);
-    } catch (_) { }
-}
-
-/**
- * 安全的数组访问函数
- * @param {Array|Object} obj - 要访问的对象或数组
- * @param {string|number} key - 要访问的键或索引
- * @param {any} defaultValue - 默认值
- * @returns {any} 安全访问的结果
- */
-export function safeGet(obj, key, defaultValue = null) {
-    try {
-        if (obj === null || obj === undefined) {
-            return defaultValue;
-        }
-        
-        if (typeof key === 'number' && Array.isArray(obj)) {
-            return (key >= 0 && key < obj.length) ? obj[key] : defaultValue;
-        }
-        
-        if (typeof key === 'string' && typeof obj === 'object') {
-            return Object.prototype.hasOwnProperty.call(obj, key) ? obj[key] : defaultValue;
-        }
-        
-        return defaultValue;
-    } catch (error) {
-        try {
-            const payload = { obj, key, error: error.message };
-            if (window.logWarn) window.logWarn('[safeGet] 访问失败:', payload);
-            else console.warn('[safeGet] 访问失败:', payload);
-        } catch (_) { }
-        return defaultValue;
-    }
-}
-
-/**
- * 安全的数组访问函数（支持链式访问）
- * @param {any} obj - 要访问的对象
- * @param {string} path - 访问路径，如 'a.b.c' 或 'items[0].name'
- * @param {any} defaultValue - 默认值
- * @returns {any} 安全访问的结果
- */
-export function safeGetPath(obj, path, defaultValue = null) {
-    try {
-        if (!obj || !path) {
-            return defaultValue;
-        }
-        
-        const keys = path.split(/[\.\[\]]+/).filter(key => key !== '');
-        let current = obj;
-        
-        for (const key of keys) {
-            if (current === null || current === undefined) {
-                return defaultValue;
-            }
-            
-            if (Array.isArray(current)) {
-                const index = parseInt(key, 10);
-                if (isNaN(index) || index < 0 || index >= current.length) {
-                    return defaultValue;
-                }
-                current = current[index];
-            } else if (typeof current === 'object') {
-                current = current[key];
-            } else {
-                return defaultValue;
-            }
-        }
-        
-        return current !== undefined ? current : defaultValue;
-    } catch (error) {
-        try {
-            const payload = { obj, path, error: error.message };
-            if (window.logWarn) window.logWarn('[safeGetPath] 访问失败:', payload);
-            else console.warn('[safeGetPath] 访问失败:', payload);
-        } catch (_) { }
-        return defaultValue;
-    }
-}
-
-/**
- * 安全的数组操作函数
- * @param {Array} arr - 要操作的数组
- * @param {Function} operation - 操作函数
- * @param {any} defaultValue - 默认值
- * @returns {any} 操作结果
- */
-export function safeArrayOperation(arr, operation, defaultValue = null) {
-    try {
-        if (!Array.isArray(arr)) {
-            return defaultValue;
-        }
-        
-        return operation(arr);
-    } catch (error) {
-        try {
-            const payload = { arr, error: error.message };
-            if (window.logWarn) window.logWarn('[safeArrayOperation] 操作失败:', payload);
-            else console.warn('[safeArrayOperation] 操作失败:', payload);
-        } catch (_) { }
-        return defaultValue;
-    }
-}
-
-// 导出错误记录器实例
-export { errorLogger };
-
-// 在全局作用域中暴露（用于非模块环境）
-if (typeof window !== 'undefined') {
-    window.ErrorTypes = ErrorTypes;
-    window.ErrorCodes = ErrorCodes;
-    window.ErrorLevels = ErrorLevels;
-    window.createError = createError;
-    window.handleError = handleError;
-    window.showErrorMessage = showErrorMessage;
-    window.showSuccessMessage = showSuccessMessage;
-    window.validateParameter = validateParameter;
-    window.safeExecute = safeExecute;
-    window.safeExecuteAsync = safeExecuteAsync;
-    window.errorLogger = errorLogger;
-    window.isBrowserExtensionError = isBrowserExtensionError;
-    window.handleBrowserExtensionError = handleBrowserExtensionError;
-    window.setupBrowserExtensionErrorFilter = setupBrowserExtensionErrorFilter;
-    window.safeGet = safeGet;
-    window.safeGetPath = safeGetPath;
-    window.safeArrayOperation = safeArrayOperation;
-} 
