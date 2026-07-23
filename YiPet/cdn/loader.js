@@ -515,4 +515,88 @@
   };
 
   window.ruiBootstrapComponent = ruiBootstrapComponent;
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     8. API & Config Bootstrap (YiPet)
+     ─────────────────────────────────────────────────────────────────────────
+     当 <script src="loader.js" data-bootstrap="api"> 时，自动加载完整的
+     API 运行时依赖链，使 __YiPet_API__ 可立即使用。
+
+     依赖加载顺序：
+       cdn/utils/http/request.js  → RequestClient
+       cdn/utils/http/logger.js   → Logger
+       cdn/utils/http/token.js    → TokenManager
+       cdn/utils/http/error.js    → ApiErrorHandler
+       cdn/utils/http/index.js    → 降级兜底
+       cdn/utils/core/configLoader.js  → __YiPet_Config__
+       cdn/utils/core/serviceRegistry.js → __YiPet_Services__
+       cdn/utils/core/apiManager.js → ApiManager
+       src/api/faq.service.js      → FaqService
+       src/api/session.service.js  → SessionService
+       src/api/index.js            → __YiPet_API__ (统一门面)
+
+     使用方式：
+       <script src="/cdn/loader.js" data-bootstrap="api"></script>
+       <script>
+         window.__YiPet_API__.ready().then(function(api) {
+           api.faq.getFaqs().then(console.log)
+         })
+       </script>
+     ═══════════════════════════════════════════════════════════════════════════ */
+
+  (function bootstrapYiPetAPI() {
+    var cs = document.currentScript
+    var bootstrap = cs && (cs.dataset.bootstrap || '')
+    if (bootstrap !== 'api') return
+
+    // 从 loader.js 位置推导 cdn/ 根目录
+    var loaderSrc = cs ? cs.src : ''
+    var cdnRoot = loaderSrc.replace(/\/loader\.js(\?.*)?$/, '')
+    var srcRoot = cdnRoot.replace(/\/cdn\/?$/, '') + '/src'
+
+    // 依赖加载顺序（严格有序）
+    var deps = [
+      // HTTP 运行时
+      cdnRoot + '/utils/http/request.js',
+      cdnRoot + '/utils/http/logger.js',
+      cdnRoot + '/utils/http/token.js',
+      cdnRoot + '/utils/http/error.js',
+      cdnRoot + '/utils/http/index.js',
+      // 配置 & 服务注册
+      cdnRoot + '/utils/core/configLoader.js',
+      cdnRoot + '/utils/core/serviceRegistry.js',
+      cdnRoot + '/utils/core/apiManager.js',
+      // 业务 Service
+      srcRoot + '/api/faq.service.js',
+      srcRoot + '/api/session.service.js',
+      // 统一 API 入口
+      srcRoot + '/api/index.js'
+    ]
+
+    function loadScript(src) {
+      return new Promise(function (resolve, reject) {
+        var s = document.createElement('script')
+        s.src = src
+        s.async = false
+        s.onload = function () { resolve() }
+        s.onerror = function () {
+          console.warn('[YiPet:Bootstrap] 脚本加载失败: ' + src)
+          resolve() // 不阻塞后续加载
+        }
+        document.head.appendChild(s)
+      })
+    }
+
+    // 串行加载所有依赖
+    console.log('[YiPet:Bootstrap] 开始加载 API 运行时 (' + deps.length + ' 个模块) ...')
+    var chain = Promise.resolve()
+    deps.forEach(function (url) {
+      chain = chain.then(function () { return loadScript(url) })
+    })
+    chain.then(function () {
+      console.log('[YiPet:Bootstrap] API 运行时加载完成，__YiPet_API__ 已就绪')
+    }).catch(function (err) {
+      console.error('[YiPet:Bootstrap] 加载失败:', err && err.message || err)
+    })
+  })();
 })();
