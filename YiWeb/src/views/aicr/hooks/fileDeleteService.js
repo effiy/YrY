@@ -16,7 +16,7 @@ class FileDeleteService {
      * 构造函数
      */
     constructor() {
-        this.apiUrl = window.API_URL || 'https://api.effiy.cn';
+        this.apiUrl = window.API_URL || 'http://localhost:10086';
     }
 
     /**

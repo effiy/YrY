@@ -12,12 +12,36 @@
   'use strict'
 
   try {
-    // 初始化宠物管理器（防止重复初始化）
-    if (typeof window.petManager === 'undefined') {
-      window.petManager = new window.PetManager()
+    // Deferred instantiation with retry to avoid race condition
+    // with prototype augmentation files (28 files attach methods to
+    // PetManager.prototype; the constructor's init() depends on them).
+    function tryInstantiate(retries) {
+      var remaining = typeof retries === 'number' ? retries : 10
+      var Klass = window.PetManager
+      if (!Klass) {
+        console.warn('[bootstrap] PetManager class not yet defined, retrying...')
+        if (remaining > 0) {
+          setTimeout(function () { tryInstantiate(remaining - 1) }, 100)
+        } else {
+          console.error('[bootstrap] PetManager class never defined after max retries')
+        }
+        return
+      }
+      if (typeof window.petManager === 'undefined') {
+        // Safety: verify at least one prototype method exists before instantiation
+        var proto = Klass.prototype
+        var hasCore = typeof proto.createPet === 'function' || typeof proto.init === 'function'
+        if (!hasCore && remaining > 0) {
+          setTimeout(function () { tryInstantiate(remaining - 1) }, 80)
+          return
+        }
+        window.petManager = new Klass()
+      }
     }
+
+    tryInstantiate()
   } catch (e) {
-    console.error('初始化 petManager 失败:', e)
+    console.error('init petManager error:', e)
   }
 
   // 页面卸载时清理资源

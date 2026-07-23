@@ -829,23 +829,18 @@
     let isComposing = false
     let compositionEndTime = 0
     const COMPOSITION_END_DELAY = 100
+    // Shared IME composition handler for the DOM fallback path
+    const compositionHandler =
+      window.PetManager?.Components?.ChatWindowUtils?.createCompositionHandler?.() || null
+    const suffEnter = compositionHandler
+      ? (e) => compositionHandler.shouldSuppressEnter(e)
+      : (e) => {
+          if (e.isComposing || e.keyCode === 229 || textarea.composing || isComposing) return true
+          if (compositionEndTime > 0 && Date.now() - compositionEndTime < COMPOSITION_END_DELAY) return true
+          return false
+        }
 
-    const onCompositionStart = () => {
-      isComposing = true
-      compositionEndTime = 0
-      if (textarea) textarea.composing = true
-    }
-    const onCompositionUpdate = () => {
-      isComposing = true
-      compositionEndTime = 0
-      if (textarea) textarea.composing = true
-    }
-    const onCompositionEnd = () => {
-      isComposing = false
-      compositionEndTime = Date.now()
-      if (textarea) textarea.composing = false
-    }
-
+    // IME-aware keydown handler using shared utility when available
     const onTextareaKeydown = (e) => {
       if (!textarea) return
       if (e.key !== 'Enter') {
@@ -858,23 +853,23 @@
         }
         return
       }
-
-      if (e.isComposing || e.keyCode === 229 || textarea.composing || isComposing) return
-      if (e.key === 'Enter' && compositionEndTime > 0 && Date.now() - compositionEndTime < COMPOSITION_END_DELAY) return
-      if (e.key === 'Enter' && e.shiftKey) return
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault()
-        if (instance && typeof instance.sendMessage === 'function') instance.sendMessage()
-      }
+      if (suffEnter(e)) return
+      if (e.shiftKey) return
+      e.preventDefault()
+      if (instance && typeof instance.sendMessage === 'function') instance.sendMessage()
     }
 
     if (textarea) {
       textarea.addEventListener('input', onTextareaInput)
       textarea.addEventListener('keydown', onTextareaKeydown)
       textarea.addEventListener('paste', onTextareaPaste)
-      textarea.addEventListener('compositionstart', onCompositionStart)
-      textarea.addEventListener('compositionupdate', onCompositionUpdate)
-      textarea.addEventListener('compositionend', onCompositionEnd)
+      if (compositionHandler) {
+        compositionHandler.bindTo(textarea)
+      } else {
+        textarea.addEventListener('compositionstart', onCompositionStart)
+        textarea.addEventListener('compositionupdate', onCompositionUpdate)
+        textarea.addEventListener('compositionend', onCompositionEnd)
+      }
     }
 
     const bindAction = (action, handler) => {

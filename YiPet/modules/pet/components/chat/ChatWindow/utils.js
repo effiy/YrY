@@ -90,5 +90,75 @@
     return '#' + [r, g, b].map(function (c) { return c.toString(16).padStart(2, '0') }).join('')
   }
 
+  // ── Shared Template Loader ──
+  // Factory for the loadTemplate pattern duplicated across components.
+  // Returns an async loadTemplate() function with built-in caching.
+  utils.createTemplateLoader = function (resourcePath, templateSelector, errorMsg) {
+    if (!resourcePath || !templateSelector) return function () { return '' }
+    var cache = ''
+    return async function () {
+      if (cache) return cache
+      var DomHelper = window.DomHelper
+      if (!DomHelper || typeof DomHelper.loadHtmlTemplate !== 'function') return ''
+      cache = await DomHelper.loadHtmlTemplate(resourcePath, templateSelector, errorMsg || 'Failed to load template')
+      return cache
+    }
+  }
+
+  // ── Shared IME Composition Helper ──
+  // Creates a composition-state tracker for textarea elements.
+  // Eliminates the ~40-line duplication between Vue setup() and DOM fallback paths.
+  utils.createCompositionHandler = function () {
+    var state = {
+      isComposing: false,
+      compositionEndTime: 0,
+      COMPOSITION_END_DELAY: 100
+    }
+
+    return {
+      getState: function () { return state },
+
+      onCompositionStart: function () {
+        state.isComposing = true
+        state.compositionEndTime = 0
+      },
+
+      onCompositionUpdate: function () {
+        state.isComposing = true
+        state.compositionEndTime = 0
+      },
+
+      onCompositionEnd: function () {
+        state.isComposing = false
+        state.compositionEndTime = Date.now()
+      },
+
+      // Returns true if the Enter key should be suppressed due to ongoing composition.
+      shouldSuppressEnter: function (event) {
+        if (event.isComposing || event.keyCode === 229 || state.isComposing) return true
+        if (state.compositionEndTime > 0 && Date.now() - state.compositionEndTime < state.COMPOSITION_END_DELAY) return true
+        return false
+      },
+
+      // Attaches composition event listeners to a textarea element
+      bindTo: function (textarea) {
+        if (!textarea) return
+        var self = this
+        textarea.addEventListener('compositionstart', self.onCompositionStart)
+        textarea.addEventListener('compositionupdate', self.onCompositionUpdate)
+        textarea.addEventListener('compositionend', self.onCompositionEnd)
+      },
+
+      // Removes composition event listeners from a textarea element
+      unbindFrom: function (textarea) {
+        if (!textarea) return
+        var self = this
+        textarea.removeEventListener('compositionstart', self.onCompositionStart)
+        textarea.removeEventListener('compositionupdate', self.onCompositionUpdate)
+        textarea.removeEventListener('compositionend', self.onCompositionEnd)
+      }
+    }
+  }
+
   window.PetManager.Components.ChatWindowUtils = utils
 })()

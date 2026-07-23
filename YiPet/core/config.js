@@ -42,10 +42,10 @@ const DEFAULT_CONFIG = {
     borderRadius: { pet: '50%', chatWindow: '16px', input: '25px', button: '25px' }
   },
   api: {
-    streamPromptUrl: 'https://api.effiy.cn/prompt',
-    promptUrl: 'https://api.effiy.cn/prompt/',
-    yiaiBaseUrl: 'https://api.effiy.cn',
-    faqApiUrl: 'https://api.effiy.cn',
+    streamPromptUrl: 'http://localhost:10086/prompt',
+    promptUrl: 'http://localhost:10086/prompt/',
+    yiaiBaseUrl: 'http://localhost:10086',
+    faqApiUrl: 'http://localhost:10086',
     syncSessionsToBackend: true
   },
   chatModels: {
@@ -61,16 +61,16 @@ const DEFAULT_CONFIG = {
     },
     endpoints: {
       production: {
-        streamPromptUrl: 'https://api.effiy.cn/prompt',
-        promptUrl: 'https://api.effiy.cn/prompt/',
-        yiaiBaseUrl: 'https://api.effiy.cn',
-        faqApiUrl: 'https://api.effiy.cn'
+        streamPromptUrl: 'http://localhost:10086/prompt',
+        promptUrl: 'http://localhost:10086/prompt/',
+        yiaiBaseUrl: 'http://localhost:10086',
+        faqApiUrl: 'http://localhost:10086'
       },
       staging: {
-        streamPromptUrl: 'https://staging.api.effiy.cn/prompt',
-        promptUrl: 'https://staging.api.effiy.cn/prompt/',
-        yiaiBaseUrl: 'https://staging.api.effiy.cn',
-        faqApiUrl: 'https://staging.api.effiy.cn'
+        streamPromptUrl: 'http://localhost:10086/prompt',
+        promptUrl: 'http://localhost:10086/prompt/',
+        yiaiBaseUrl: 'http://localhost:10086',
+        faqApiUrl: 'http://localhost:10086'
       },
       development: {
         streamPromptUrl: 'http://localhost:10086/prompt',

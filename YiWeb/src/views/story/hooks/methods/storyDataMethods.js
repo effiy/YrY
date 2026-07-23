@@ -75,7 +75,7 @@ export function createStoryDataMethods(state) {
         state.loading.value = true;
         state.error.value = null;
         try {
-            const apiUrl = window.API_URL || 'https://api.effiy.cn';
+            const apiUrl = window.API_URL || 'http://localhost:10086';
             const body = {
                 module_name: 'services.database.data_service',
                 method_name: 'query_documents',

@@ -14,6 +14,10 @@
     : console
 
   const DEFAULT_SYSTEM_PROMPT = '你是一个俏皮活泼、古灵精怪的小女友，聪明有趣，时而调侃时而贴心。语气活泼可爱，会开小玩笑，但也会关心用户。'
+  // Canonical location — shared with ai.api.js via prototype
+  if (proto && proto.DEFAULT_SYSTEM_PROMPT === undefined) {
+    proto.DEFAULT_SYSTEM_PROMPT = DEFAULT_SYSTEM_PROMPT
+  }
 
   proto.showSettingsModal = function () {
     if (!this.chatWindow) return

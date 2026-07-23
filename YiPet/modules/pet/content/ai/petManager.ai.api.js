@@ -13,7 +13,7 @@
     ? window.LoggerUtils.getLogger('ai')
     : console
 
-  const DEFAULT_SYSTEM_PROMPT = '你是一个俏皮活泼、古灵精怪的小女友，聪明有趣，时而调侃时而贴心。语气活泼可爱，会开小玩笑，但也会关心用户。'
+  const DEFAULT_SYSTEM_PROMPT = proto.DEFAULT_SYSTEM_PROMPT || '你是一个俏皮活泼、古灵精怪的小女友，聪明有趣，时而调侃时而贴心。语气活泼可爱，会开小玩笑，但也会关心用户。'
   const isDefaultSessionTitle = (title) => {
     const currentTitle = String(title ?? '')
     return !currentTitle ||

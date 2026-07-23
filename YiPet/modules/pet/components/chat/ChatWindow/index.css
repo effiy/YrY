@@ -1,9 +1,71 @@
 /**
- * ChatWindow.css
- * Styles for the ChatWindow component
+ * ChatWindow.css — Main stylesheet for the YiPet chat window
+ *
+ * Architecture (CSS @layer equivalent for Chrome extension context):
+ *   Layer 1: TOKENS    — --pet-chat-* design variables, theme bridge
+ *   Layer 2: BASE      — Reset, #pet-chat-window root, UI buttons
+ *   Layer 3: LAYOUT    — Header, input container, content area, sidebar
+ *   Layer 4: COMPONENTS — Messages, draft images, context switch, modals (auth, FAQ, tag manager)
+ *   Layer 5: STATES    — Fullscreen, collapsed, streaming, loading, empty, error
+ *   Layer 6: RESPONSIVE — @media queries (≤1200, ≤768, ≤640, ≤480), prefers-reduced-motion, prefers-contrast
+ *
+ * TOC:
+ *   §1  Tokens          — Custom properties & theme bridge       (L ~95)
+ *   §2  Base            — Root window, UI buttons                (L ~100)
+ *   §3  Fullscreen      — Fullscreen mode overrides              (L ~106)
+ *   §4  Header          — Chat header bar                        (L ~236)
+ *   §5  Input Container — Textarea, toolbar, draft images        (L ~310)
+ *   §6  Messages        — Message bubble, meta, streaming        (L ~768)
+ *   §7  Context Switch  — Page context toggle                    (L ~1116)
+ *   §8  Window Handles  — Resize handles (corners only)          (L ~1363)
+ *   §9  Welcome Actions — Quick action buttons                   (L ~1451)
+ *   §10 Auth Modal      — Token settings modal                   (L ~1969)
+ *   §11 Context Editor  — Page context editor modal              (L ~2087)
+ *   §12 Typing Indicator — Streaming animation dots              (L ~2636)
+ *   §13 States          — Empty, loading, error, disabled        (L ~2667)
+ *   §14 Responsive      — Media queries                          (L ~2885)
+ *   §15 Misc            — Animations, hidden, copy success       (L ~2935)
  */
 
-/* UI Button Base - 限定在聊天窗口作用域内 */
+/* ═════════════════════════════════════════════════════════════════
+ * §1 TOKENS — Design Variables & Theme Bridge
+ * All --pet-chat-* custom properties live here.
+ * References --bg-*-rgb and --text-*-rgb set by JS updateTheme().
+ * ═════════════════════════════════════════════════════════════════ */
+
+#pet-chat-window {
+  position: fixed !important;
+  z-index: 2147483646 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: var(--bg-secondary, #1e293b) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+  transition:
+    width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    top 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  pointer-events: auto !important;
+  min-height: 450px !important;
+  max-height: 100vh !important;
+  max-height: 100dvh !important;
+  overflow: hidden !important;
+
+  /* Theme bridge — overridden by JS updateTheme() */
+  --pet-chat-primary-color: var(--primary, #667eea);
+  --pet-chat-main-color: var(--primary, #667eea);
+  --pet-chat-bg-gradient: var(
+    --bg-gradient,
+    linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%)
+  );
+  --pet-chat-border-color: var(--border-primary, rgba(255, 255, 255, 0.12));
+}
+
+/* ═════════════════════════════════════════════════════════════════
+ * §2 BASE — Root Window & UI Buttons
+ * ═════════════════════════════════════════════════════════════════ */
 #pet-chat-window .ui-btn,
 #chrome-pet-container .ui-btn {
   display: inline-flex !important;
@@ -68,36 +130,9 @@
   padding: 0 !important;
 }
 
-#pet-chat-window {
-  /* Base styles to be populated from updateChatWindowStyle */
-  position: fixed !important;
-  z-index: 2147483646 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  background: var(--bg-secondary, #1e293b) !important;
-  border-radius: 16px !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
-  transition:
-    width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    top 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  pointer-events: auto !important;
-  min-height: 450px !important;
-  max-height: 100vh !important;
-  max-height: 100dvh !important;
-  overflow: hidden !important; /* 防止内容溢出 */
-
-  /* Variables scope - 使用全局主题色变量 */
-  --pet-chat-primary-color: var(--primary, #667eea);
-  --pet-chat-main-color: var(--primary, #667eea);
-  --pet-chat-bg-gradient: var(
-    --bg-gradient,
-    linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%)
-  );
-}
-
+/* ═════════════════════════════════════════════════════════════════
+ * §3 FULLSCREEN — Fullscreen Mode Overrides
+ * ═════════════════════════════════════════════════════════════════ */
 #pet-chat-window.dragging,
 #pet-chat-window.resizing {
   transition: none !important;

@@ -182,7 +182,7 @@ export function createAicrStoreSessionsOps(deps, state) {
 
             // 文件树未加载时回退到 API
             try {
-                const apiUrl = window.API_URL || 'https://api.effiy.cn';
+                const apiUrl = window.API_URL || 'http://localhost:10086';
                 const authHeaders = getAuthHeaders();
 
                 const body = {

@@ -1,12 +1,14 @@
 /**
- * PetManager Session Module (Compatibility Layer)
- * 会话模块兼容层 - 代码已拆分到 session/ 目录
+ * PetManager Session Module — Cross-cutting Operations
  *
- * 此文件保留以确保向后兼容，所有功能已迁移到以下文件：
- * - session/petManager.session.crud.js     - 会话增删改查
- * - session/petManager.session.filter.js   - 会话过滤搜索
- * - session/petManager.session.tag.js      - 会话标签管理
- * - session/petManager.session.batch.js    - 会话批量操作
+ * Shared session operations that span multiple session sub-modules:
+ * - Message addition & deduplication (addMessageToSession)
+ * - Backend API sync (callUpdateDocument, saveCurrentSession)
+ * - Session lifecycle (initSessionWithDelay, manualRefresh, switchSession)
+ * - File I/O bridge (writeSessionPageContent, fetchSessionPageContent, deleteSessionFile)
+ * - Title editing gateway (editSessionTitle)
+ *
+ * Separate from session/ sub-modules which handle CRUD, filtering, tagging, and batching.
  */
 ;(function () {
   'use strict'
@@ -16,7 +18,7 @@
 
   const proto = window.PetManager.prototype
 
-  console.log('[PetManager] Session compatibility layer loaded')
+  console.log('[PetManager] Session cross-cutting operations module loaded')
 
   proto.addMessageToSession = async function (
     type,

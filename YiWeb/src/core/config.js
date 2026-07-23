@@ -22,9 +22,9 @@ const ENDPOINTS = {
     OLLAMA_URL: 'http://localhost:11434'
   },
   prod: {
-    DATA_URL: 'https://data.effiy.cn',
-    API_URL: 'https://api.effiy.cn',
-    OLLAMA_URL: 'https://ollama.effiy.cn'
+    DATA_URL: 'http://localhost:9000',
+    API_URL: 'http://localhost:10086',
+    OLLAMA_URL: 'http://localhost:11434'
   }
 };
 

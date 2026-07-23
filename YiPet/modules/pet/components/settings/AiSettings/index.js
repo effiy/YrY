@@ -8,13 +8,11 @@
   let templateCache = ''
 
   function canUseVueTemplate(Vue) {
+    var _u = window.PetManager?.Components?.ChatWindowUtils
+    if (_u && typeof _u.canUseVueTemplate === 'function') return _u.canUseVueTemplate(Vue)
+    // Fallback for when ChatWindowUtils hasn't loaded yet
     if (typeof Vue?.compile !== 'function') return false
-    try {
-      Function('return 1')()
-      return true
-    } catch (_) {
-      return false
-    }
+    try { Function('return 1')(); return true } catch (_) { return false }
   }
 
   async function loadTemplate() {
