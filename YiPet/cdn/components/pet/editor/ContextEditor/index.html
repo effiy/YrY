@@ -1,0 +1,137 @@
+<template id="yi-pet-context-editor-template">
+  <div
+    ref="modalEl"
+    class="context-editor-modal"
+    :data-mode="mode"
+    role="document"
+    tabindex="0"
+    @keydown.esc.prevent.stop="close"
+  >
+    <div class="context-editor-header">
+      <div class="context-editor-title">📝 页面上下文（Markdown）</div>
+      <div class="editor-header-btns">
+        <div class="editor-mode-group">
+          <button
+            id="pet-context-mode-split"
+            class="editor-mode-btn"
+            :class="{ 'is-active': mode === 'split' }"
+            title="并排模式"
+            aria-label="并排模式"
+            @click="setMode('split')"
+          >▦</button>
+          <button
+            id="pet-context-mode-edit"
+            class="editor-mode-btn"
+            :class="{ 'is-active': mode === 'edit' }"
+            title="仅编辑模式"
+            aria-label="仅编辑模式"
+            @click="setMode('edit')"
+          >✏️</button>
+          <button
+            id="pet-context-mode-preview"
+            class="editor-mode-btn"
+            :class="{ 'is-active': mode === 'preview' }"
+            title="仅预览模式"
+            aria-label="仅预览模式"
+            @click="setMode('preview')"
+          >👁️</button>
+        </div>
+
+        <button
+          id="pet-context-refresh-btn"
+          class="chat-toolbar-btn"
+          title="拉取当前网页上下文"
+          aria-label="拉取当前网页上下文"
+          :disabled="refreshing"
+          :data-status="refreshStatus"
+          @click="refresh"
+        >{{ refreshLabel }}</button>
+
+        <div class="optimize-btn-group">
+          <button
+            id="pet-context-optimize-btn"
+            type="button"
+            class="chat-toolbar-btn context-optimize-btn"
+            title="智能优化上下文内容"
+            aria-label="智能优化上下文内容"
+            @click="optimize"
+          >✨</button>
+        </div>
+
+        <div class="translate-btn-group">
+          <button
+            id="pet-context-translate-zh-btn"
+            class="chat-toolbar-btn"
+            title="翻译成中文"
+            aria-label="翻译成中文"
+            @click="translate('zh')"
+          >🇨🇳</button>
+          <button
+            id="pet-context-translate-en-btn"
+            class="chat-toolbar-btn"
+            title="翻译成英文"
+            aria-label="翻译成英文"
+            @click="translate('en')"
+          >🇺🇸</button>
+        </div>
+
+        <button
+          id="pet-context-copy-btn"
+          class="chat-toolbar-btn"
+          title="复制内容"
+          aria-label="复制内容"
+          :data-status="copyStatus"
+          @click="copyContent"
+        >{{ copyLabel }}</button>
+
+        <button
+          id="pet-context-save-btn"
+          class="chat-toolbar-btn"
+          title="保存修改 (Ctrl+S / Cmd+S)"
+          aria-label="保存修改"
+          :disabled="saving"
+          :data-status="saveStatus"
+          @click="save"
+        >{{ saveLabel }}</button>
+
+        <button
+          id="pet-context-download-btn"
+          class="chat-toolbar-btn"
+          title="下载当前上下文为 Markdown (.md)"
+          aria-label="下载当前上下文为 Markdown (.md)"
+          @click="download"
+        >⬇️</button>
+
+        <div
+          id="pet-context-close-btn"
+          role="button"
+          aria-label="关闭上下文面板 (Esc)"
+          title="关闭 (Esc)"
+          @click="close"
+        >✕</div>
+      </div>
+    </div>
+
+    <div class="context-editor-content">
+      <div class="context-editor-body">
+        <textarea
+          id="pet-context-editor-textarea"
+          ref="textareaEl"
+          v-model="content"
+          @input="onInput"
+          @scroll="syncScroll"
+          @paste="onPaste"
+        ></textarea>
+        <div
+          id="pet-context-preview"
+          ref="previewEl"
+          class="context-editor-preview markdown-content"
+          v-html="previewHtml"
+          @click="onPreviewClick"
+          @wheel.stop
+          @touchmove.stop
+        ></div>
+      </div>
+    </div>
+  </div>
+</template>

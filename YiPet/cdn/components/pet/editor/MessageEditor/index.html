@@ -1,0 +1,72 @@
+<template id="yi-pet-message-editor-template">
+  <div
+    ref="modalEl"
+    class="context-editor-modal"
+    role="document"
+    tabindex="0"
+    @keydown.esc.prevent.stop="close"
+  >
+    <div class="context-editor-header">
+      <div class="context-editor-title">✏️ 编辑消息（Markdown）</div>
+      <div class="editor-header-btns">
+        <button
+          id="pet-message-copy-btn"
+          class="chat-toolbar-btn"
+          title="复制内容"
+          aria-label="复制内容"
+          :data-status="copyStatus"
+          @click="copyContent"
+        >{{ copyLabel }}</button>
+
+        <div class="optimize-btn-group">
+          <button
+            id="pet-message-optimize-btn"
+            type="button"
+            class="chat-toolbar-btn context-optimize-btn"
+            title="智能优化消息内容"
+            aria-label="智能优化消息内容"
+            @click="optimize"
+          >✨</button>
+        </div>
+
+        <button
+          id="pet-message-save-btn"
+          class="chat-toolbar-btn"
+          title="保存修改 (Ctrl+S / Cmd+S)"
+          aria-label="保存修改"
+          :disabled="saving"
+          :data-status="saveStatus"
+          @click="save"
+        >{{ saveLabel }}</button>
+
+        <div
+          id="pet-message-close-btn"
+          role="button"
+          aria-label="关闭编辑器 (Esc)"
+          title="关闭 (Esc)"
+          @click="close"
+        >✕</div>
+      </div>
+    </div>
+
+    <div class="context-editor-content">
+      <div class="context-editor-body">
+        <textarea
+          id="pet-message-editor-textarea"
+          ref="textareaEl"
+          v-model="content"
+          @input="onInput"
+          @scroll="syncScroll"
+        ></textarea>
+        <div
+          id="pet-message-preview"
+          ref="previewEl"
+          class="context-editor-preview markdown-content"
+          v-html="previewHtml"
+          @wheel.stop
+          @touchmove.stop
+        ></div>
+      </div>
+    </div>
+  </div>
+</template>
