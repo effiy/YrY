@@ -132,7 +132,7 @@
 
     // 保存原始背景图片（使用与当前显示尺寸匹配的 icon 资源）
     if (!this.originalBackgroundImage) {
-      const iconRes = pickRoleIconResource(this.size)
+      const iconRes = 'icon.png'
       this.originalBackgroundImage = chrome.runtime.getURL(`assets/images/${role}/${iconRes}`)
     }
 
