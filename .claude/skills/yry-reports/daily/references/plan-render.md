@@ -1,6 +1,6 @@
 # plan-render — Template rendering pipeline
 
-> The contract for turning the 4-file template (`templates/index.html`
+> The contract for turning the 4-file template (`YiDoc/templates/daily/index.html`
 > + `data.js` + `index.css` + `index.js`) into a finished plan file.
 > Read this before writing the renderer — the Vue 3 app and the
 > `planToMarkdown()` exporter are the contract, not a suggestion.
@@ -9,8 +9,8 @@
 
 The old pipeline was a 6-stage placeholder substitution:
 
-1. Read `templates/plan-report.html` (page shell)
-2. Read `templates/partials/*.html` (one per section)
+1. Read `YiDoc/templates/daily/plan-report.html` (page shell)
+2. Read `YiDoc/templates/daily/partials/*.html` (one per section)
 3. Collect data
 4. Expand inner rows
 5. Splice partials → page
@@ -24,12 +24,12 @@ template + README placeholder reference) in sync.
 
 The new pipeline is data-driven:
 
-1. Read `templates/data.js` (schema + defaults + example)
+1. Read `YiDoc/templates/daily/data.js` (schema + defaults + example)
 2. Collect data
 3. Validate
 4. Write
 
-The Vue 3 app in `templates/index.js` is the single source of
+The Vue 3 app in `YiDoc/templates/daily/index.js` is the single source of
 truth for what the page can render. `planToMarkdown()` in the
 same file is the single source of truth for what the markdown
 can render. They read the same `window.PLAN_DATA` shape, so
@@ -46,7 +46,7 @@ the schema lives in exactly one place.
 
 ## Stage 1 — Read the schema
 
-`templates/data.js` is the contract. It exports:
+`YiDoc/templates/daily/data.js` is the contract. It exports:
 
 ```js
 window.PLAN_DATA_SCHEMA = {
@@ -62,7 +62,7 @@ The merge function makes the renderer robust: any field the
 caller forgets to fill still renders as a sensible empty value
 (`—` for scalars, `[]` for arrays) rather than crashing Vue.
 
-Read `templates/data.js` to see the full shape. The
+Read `YiDoc/templates/daily/data.js` to see the full shape. The
 `@data_shape` JSDoc block at the top is the authoritative
 reference; the section-by-section rendering rules below are
 the operational contract.
@@ -73,7 +73,7 @@ Offline + git-only. Same contract as `report` mode. See
 `plan-workflow.md` §"Data collection" for the exact commands.
 
 The shape the renderer needs (matches the schema in
-`templates/data.js`):
+`YiDoc/templates/daily/data.js`):
 
 ```js
 {
@@ -126,11 +126,13 @@ client-side. To produce a self-contained file:
    `window.PLAN_DATA` and the `EXAMPLE_DATA` stripped), the
    minified Vue 3 runtime, `index.css`, and the `TEMPLATE`
    literal from `index.js`.
-2. Substitute `<title>{{PROJECT}} — Engineering Plan — {{DATE}}</title>`
-   with the real project + date (Vue doesn't render `<title>`
-   in the body).
-3. Remove the `shared/loader.js` script tag — the
-   rendered file is offline, no loader needed.
+2. The `<title>` in `index.html` is already set at runtime by the
+   inline script after `data.js` loads (it reads
+   `window.PLAN_DATA.meta.project` / `.date`), so no title
+   substitution is needed here.
+3. The template's `data.js` / `index.css` / `lib/planToMarkdown.js` /
+   `index.js` `<script>` tags are already self-contained — no
+   loader to remove.
 4. Remove the `<div v-cloak></div>` shell from the body.
 5. Write to `~/.claude/plans/<project>/<YYYY-MM-DD>-plan.html`.
 
@@ -139,7 +141,7 @@ Open it in any browser; the Vue app boots and renders.
 
 ### Markdown output (`--format md`)
 
-Call `window.planToMarkdown(plan)` from `templates/index.js`.
+Call `window.planToMarkdown(plan)` from `YiDoc/templates/daily/index.js`.
 The function is pure — it has no Vue dependency, reads the
 same `window.PLAN_DATA` shape, and returns a string. Write
 the string to
@@ -156,7 +158,7 @@ const md = window.planToMarkdown(plan);
 writeFileSync(outPath, md);
 ```
 
-## Render helpers (in `templates/index.js`)
+## Render helpers (in `YiDoc/templates/daily/index.js`)
 
 The Vue app uses these helpers for tag-style content:
 
@@ -241,7 +243,7 @@ from the plan rather than explicitly stated by the user.
 All helpers are also exposed on `window.planHelpers` so the
 `--format md` exporter can use them without booting Vue.
 
-## Composables (in `templates/index.js`)
+## Composables (in `YiDoc/templates/daily/index.js`)
 
 The Vue app wires up two composables after mount:
 
@@ -284,7 +286,7 @@ the same DOM id, just with a single line of text inside.
 
 ## Markdown rendering
 
-`planToMarkdown(plan)` (in `templates/index.js`) renders
+`planToMarkdown(plan)` (in `YiDoc/templates/daily/index.js`) renders
 all 13 sections in the same order as the HTML page:
 
 1. Plan Diff vs Prior

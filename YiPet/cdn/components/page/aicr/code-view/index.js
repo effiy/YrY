@@ -596,20 +596,20 @@ const componentOptions = {
             const hay = text;
             const hayLower = hay.toLowerCase();
             const needleLower = q.toLowerCase();
-            let out = '';
+            const segments = [];
             let pos = 0;
             while (pos < hay.length) {
                 const idx = hayLower.indexOf(needleLower, pos);
                 if (idx === -1) {
-                    out += this.escapeHtml(hay.slice(pos));
+                    segments.push(this.escapeHtml(hay.slice(pos)));
                     break;
                 }
-                out += this.escapeHtml(hay.slice(pos, idx));
-                out += `<mark class="code-search-hit">${this.escapeHtml(hay.slice(idx, idx + q.length))}</mark>`;
+                segments.push(this.escapeHtml(hay.slice(pos, idx)));
+                segments.push(`<mark class="code-search-hit">${this.escapeHtml(hay.slice(idx, idx + q.length))}</mark>`);
                 pos = idx + q.length;
                 if (q.length === 0) break;
             }
-            return out;
+            return segments.join('');
         },
         toggleWrap() {
             this.wrapEnabled = !this.wrapEnabled;

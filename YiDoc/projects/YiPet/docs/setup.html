@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Setup | YiPet - AI Chrome Extension</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta content="温柔陪伴助手 — Chrome Extension powered by Manifest V3" name="description" />
+        <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+
+        <!-- Vendor CSS (YiPet/cdn) -->
+        <link href="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/remixicon.css" rel="stylesheet" />
+        <link href="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.css" rel="stylesheet" />
+
+        <!-- App CSS -->
+        <link href="../../../templates/docs/css/app.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/docs.css" rel="stylesheet" />
+        <link href="assets/css/docs.css" rel="stylesheet" />
+    </head>
+    <body class="loading">
+        <main id="page-content" data-page="setup" data-no-toc>
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="mt-0 mb-3 font-lg">Setup</h3>
+
+                    <div class="alert alert-info" role="alert">
+                        <p class="mb-0">
+                            <strong>Note:</strong> YiPet 是一个 Chrome 扩展，需要通过 Chrome
+                            的"加载已解压的扩展程序"方式安装。无需构建步骤，但需要确保 manifest.json
+                            路径正确。整个安装过程约 2 分钟。
+                        </p>
+                    </div>
+
+                    <h4 class="mt-4"><i class="ri-list-check-2 me-1"></i> Prerequisites</h4>
+
+                    <p class="text-muted">安装前请确认你的环境满足以下要求：</p>
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 25%">Requirement</th>
+                                <th style="width: 15%">Version</th>
+                                <th style="width: 10%">Required</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Google Chrome</strong></td>
+                                <td>≥ 116</td>
+                                <td><span class="badge bg-danger">Yes</span></td>
+                                <td>Manifest V3 运行时环境</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Git</strong></td>
+                                <td>≥ 2.30</td>
+                                <td><span class="badge bg-secondary">Optional</span></td>
+                                <td>克隆 YiPet 仓库（或直接下载 ZIP）</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Node.js</strong></td>
+                                <td>≥ 18</td>
+                                <td><span class="badge bg-secondary">Optional</span></td>
+                                <td>仅当需要运行 <code>npm run lint</code> / <code>npm test</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>代码编辑器</strong></td>
+                                <td>任意</td>
+                                <td><span class="badge bg-secondary">Optional</span></td>
+                                <td>推荐 VS Code + Chrome Extension Snippets 插件</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4"><i class="ri-download-cloud-2-line me-1"></i> Installation Steps</h4>
+
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <span
+                                        class="badge bg-dark me-2"
+                                        style="min-width: 32px; height: 32px; line-height: 32px"
+                                        >1</span
+                                    >
+                                    <div>
+                                        <h6 class="mt-0 mb-1">获取 YiPet 源码</h6>
+                                        <p class="text-muted mb-2 font-sm">克隆仓库或下载 ZIP 到本地：</p>
+                                        <pre class="bg-light p-2 border rounded mb-0"><code># 克隆仓库
+git clone https://github.com/your-org/YiPet.git
+
+# 或：从 Release 页下载 ZIP 并解压</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <span
+                                        class="badge bg-dark me-2"
+                                        style="min-width: 32px; height: 32px; line-height: 32px"
+                                        >2</span
+                                    >
+                                    <div>
+                                        <h6 class="mt-0 mb-1">打开 Chrome 扩展管理页</h6>
+                                        <p class="text-muted mb-2 font-sm">在地址栏输入：</p>
+                                        <pre
+                                            class="bg-light p-2 border rounded mb-0"
+                                        ><code>chrome://extensions/</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <span
+                                        class="badge bg-dark me-2"
+                                        style="min-width: 32px; height: 32px; line-height: 32px"
+                                        >3</span
+                                    >
+                                    <div>
+                                        <h6 class="mt-0 mb-1">启用开发者模式</h6>
+                                        <p class="text-muted mb-2 font-sm">
+                                            在扩展管理页右上角，开启"开发者模式"开关。
+                                        </p>
+                                        <div class="alert alert-warning mb-0 font-sm">
+                                            <i class="ri-error-warning-line me-1"></i> 首次启用会弹出 Chrome
+                                            警告，点击"确定"即可。
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <span
+                                        class="badge bg-dark me-2"
+                                        style="min-width: 32px; height: 32px; line-height: 32px"
+                                        >4</span
+                                    >
+                                    <div>
+                                        <h6 class="mt-0 mb-1">加载已解压的扩展</h6>
+                                        <p class="text-muted mb-2 font-sm">
+                                            点击"加载已解压的扩展程序"，选择 <code>YiPet/</code> 目录（包含
+                                            <code>manifest.json</code> 的目录）。
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <span
+                                        class="badge bg-dark me-2"
+                                        style="min-width: 32px; height: 32px; line-height: 32px"
+                                        >5</span
+                                    >
+                                    <div>
+                                        <h6 class="mt-0 mb-1">固定扩展到工具栏</h6>
+                                        <p class="text-muted mb-2 font-sm">
+                                            点击 Chrome 工具栏的拼图图标 🧩，找到 YiPet，点击 📌 图标将其固定。
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <span
+                                        class="badge bg-dark me-2"
+                                        style="min-width: 32px; height: 32px; line-height: 32px"
+                                        >6</span
+                                    >
+                                    <div>
+                                        <h6 class="mt-0 mb-1">验证安装成功</h6>
+                                        <p class="text-muted mb-2 font-sm">
+                                            点击工具栏 YiPet 图标，应看到 Pet 主界面。如未出现，请检查下方故障排除。
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4"><i class="ri-tools-line me-1"></i> Development Workflow</h4>
+
+                    <p>YiPet 采用 IIFE 模块化架构，无需构建步骤。修改代码后的工作流：</p>
+
+                    <table class="table table-bordered m-0">
+                        <thead>
+                            <tr>
+                                <th style="width: 20%">步骤</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>修改代码</td>
+                                <td>编辑 YiPet/ 目录下的文件（manifest.json, core/, modules/, cdn/）</td>
+                            </tr>
+                            <tr>
+                                <td>重新加载扩展</td>
+                                <td>在 chrome://extensions/ 页面点击 YiPet 卡片上的🔄刷新按钮</td>
+                            </tr>
+                            <tr>
+                                <td>查看日志</td>
+                                <td>右键点击扩展图标 → "检查弹出内容"（Popup）或 Service Worker 链接</td>
+                            </tr>
+                            <tr>
+                                <td>运行测试（可选）</td>
+                                <td><code>npm run lint</code> 与 <code>npm test</code> 确保代码质量</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="alert alert-warning mt-3">
+                        <strong>Content Script 注入顺序：</strong> manifest.json 中的 content_scripts.js
+                        数组决定了脚本加载顺序，确保依赖关系正确（如 config.js 必须在 token.js
+                        之前）。错误的顺序会导致运行时 ReferenceError。
+                    </div>
+
+                    <h4 class="mt-4"><i class="ri-bug-line me-1"></i> Troubleshooting</h4>
+
+                    <div class="accordion" id="troubleshootingAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#ts1"
+                                >
+                                    Manifest 文件缺失或无法读取
+                                </button>
+                            </h2>
+                            <div
+                                id="ts1"
+                                class="accordion-collapse collapse"
+                                data-bs-parent="#troubleshootingAccordion"
+                            >
+                                <div class="accordion-body">
+                                    <p class="mb-1">错误信息：<code>Could not load manifest</code></p>
+                                    <p class="mb-0">
+                                        检查：① 选择的目录是否直接包含 <code>manifest.json</code>（不能是子目录）；②
+                                        manifest.json 的 JSON 语法是否有效（可用
+                                        <code>node -e "JSON.parse(require('fs').readFileSync('manifest.json'))"</code>
+                                        验证）。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#ts2"
+                                >
+                                    Content Script 注入失败
+                                </button>
+                            </h2>
+                            <div
+                                id="ts2"
+                                class="accordion-collapse collapse"
+                                data-bs-parent="#troubleshootingAccordion"
+                            >
+                                <div class="accordion-body">
+                                    <p class="mb-1">症状：Popup 打开但网页上 Pet 组件不显示。</p>
+                                    <p class="mb-0">
+                                        检查：① manifest.json 的
+                                        <code>content_scripts.matches</code> 是否覆盖目标网站；② Service Worker
+                                        控制台是否有 <code>chrome.scripting.executeScript</code> 错误；③ 页面是否属于
+                                        chrome:// 或 chrome-extension:// 等受限 URL。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#ts3"
+                                >
+                                    Service Worker 启动后立即休眠
+                                </button>
+                            </h2>
+                            <div
+                                id="ts3"
+                                class="accordion-collapse collapse"
+                                data-bs-parent="#troubleshootingAccordion"
+                            >
+                                <div class="accordion-body">
+                                    <p class="mb-1">MV3 Service Worker 30 秒无活动即被 Chrome 回收。</p>
+                                    <p class="mb-0">
+                                        解决方案：使用 <code>chrome.alarms</code> 周期性唤醒；使用
+                                        <code>chrome.storage.session</code> 持久化瞬时状态；避免在 SW
+                                        中持有大对象引用。详见 <a href="modules.html">Modules</a>。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#ts4"
+                                >
+                                    API 请求 401 / CORS 错误
+                                </button>
+                            </h2>
+                            <div
+                                id="ts4"
+                                class="accordion-collapse collapse"
+                                data-bs-parent="#troubleshootingAccordion"
+                            >
+                                <div class="accordion-body">
+                                    <p class="mb-1">
+                                        常见原因：manifest.json 缺少 <code>host_permissions</code>，或
+                                        <code>chrome.storage.local</code> 中 API key 未初始化。
+                                    </p>
+                                    <p class="mb-0">
+                                        检查：① manifest.json 声明了
+                                        <code>host_permissions: ["https://api.openai.com/*"]</code>；② Popup → Settings
+                                        页面正确填写 API Key；③ Service Worker 控制台
+                                        <code>chrome.storage.local.get('apiKey')</code> 返回值非空。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4"><i class="ri-arrow-right-circle-line me-1"></i> Next Steps</h4>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 mb-3">
+                                <h6><i class="ri-palette-line text-primary me-1"></i> Customization</h6>
+                                <p class="text-muted mb-0 font-sm">学习如何修改主题变量、配置 brand 颜色、定制布局。</p>
+                                <a href="customization.html" class="stretched-link"></a>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 mb-3">
+                                <h6><i class="ri-stack-line text-primary me-1"></i> Modules</h6>
+                                <p class="text-muted mb-0 font-sm">深入了解 52 个 Web Components 与核心模块体系。</p>
+                                <a href="modules.html" class="stretched-link"></a>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 mb-3">
+                                <h6><i class="ri-question-line text-primary me-1"></i> FAQ</h6>
+                                <p class="text-muted mb-0 font-sm">常见问题与最佳实践合集。</p>
+                                <a href="faq.html" class="stretched-link"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Layout injection -->
+        <script src="assets/js/layout.js"></script>
+
+        <!-- Vendor JS (YiPet/cdn) -->
+        <script src="../../../../YiPet/cdn/vendor/jquery@3.7.1/jquery.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/js/bootstrap.bundle.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.js"></script>
+
+        <!-- App JS -->
+        <script src="../../../templates/docs/js/app.min.js"></script>
+    </body>
+</html>

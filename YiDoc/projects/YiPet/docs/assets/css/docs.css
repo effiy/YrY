@@ -1,0 +1,12 @@
+/*!
+ * YiPet · Docs — per-project brand overrides
+ * --------------------------------------------------------------------------
+ * Interaction styles live in /templates/docs/css/docs.css.
+ * This file only sets the project-specific brand color + a few tweaks.
+ */
+:root {
+  --yry-doc-accent:      #22C55E;   /* YiPet green */
+  --yry-doc-accent-ink:  #ffffff;
+}
+.badge.bg-danger,
+.badge-danger { background: var(--yry-doc-accent) !important; }

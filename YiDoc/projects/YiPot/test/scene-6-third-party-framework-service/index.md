@@ -1,28 +1,6 @@
 # §0 Effect Sketch — Third-Party Framework & Service Health
 
-**What this scene demonstrates**: A health monitoring protocol for YiPot's third-party dependencies and external services.
-
-```mermaid
-graph TD
-    subgraph "三级健康检查 🏥"
-        L1[L1 · 框架健康] --> F1[React + NextUI<br/>UI 渲染正常?]
-        L1 --> F2[Tauri + Vite<br/>构建/启动正常?]
-        L1 --> F3[Jotai + i18next<br/>状态/国际化正常?]
-
-        L2[L2 · 引擎健康] --> E1[21 translate engines]
-        L2 --> E2[15 OCR engines]
-        L2 --> E3[1 TTS engine]
-        L2 --> E4[2 collection engines]
-
-        L3[L3 · 基础设施] --> I1[config store<br/>SQLite plugin]
-        L3 --> I2[fs-watch<br/>clipboard monitor]
-        L3 --> I3[HTTP server bridge<br/>localhost]
-    end
-
-    style L1 fill:#c8e6c9
-    style L2 fill:#fff9c4
-    style L3 fill:#e1f5fe
-```
+**What this scene demonstrates**: A health monitoring protocol for YiPot's third-party dependencies and external services. This covers three categories: (1) framework health — are React, Tauri, Vite, NextUI, Tailwind CSS, and Jotai functioning correctly? (2) service engine health — are the 21 translation + 15 OCR + 1 TTS + 2 collection engines responding? (3) infrastructure health — is the config store, SQLite plugin, fs-watch, and HTTP server bridge operational?
 
 **Why it matters**: YiPot's value proposition is aggregating 39 service engines. Each external API (DeepL, OpenAI, Google, etc.) has its own uptime SLA, rate limits, and breaking changes. Framework upgrades can break the UI. This scene defines a health-check protocol that can detect degradation before users notice.
 

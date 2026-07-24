@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="color-scheme" content="dark" />
+        <link
+            rel="icon"
+            href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3' fill='%230369a1'/></svg>"
+        />
+        <title>YiAi · ai · Scene 2 · Provider Routing</title>
+        <style>
+            :root {
+                --bg: #0b1220;
+                --fg: #e6edf3;
+                --muted: #8b949e;
+                --accent: #2f81f7;
+                --card: #111a2b;
+                --border: #1f2a3a;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                margin: 0;
+                background: var(--bg);
+                color: var(--fg);
+                font:
+                    15px/1.6 -apple-system,
+                    BlinkMacSystemFont,
+                    "PingFang SC",
+                    sans-serif;
+            }
+            a {
+                color: var(--accent);
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            .shell {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 32px 24px 64px;
+            }
+            header {
+                border-bottom: 1px solid var(--border);
+                padding-bottom: 14px;
+                margin-bottom: 22px;
+            }
+            h1 {
+                margin: 0 0 4px;
+                font-size: 22px;
+            }
+            .tagline {
+                color: var(--muted);
+                font-size: 12px;
+            }
+            h2 {
+                margin: 24px 0 8px;
+                font-size: 17px;
+                color: #c9d1d9;
+            }
+            ul {
+                margin: 6px 0;
+                padding-left: 22px;
+            }
+            code {
+                background: #0d1626;
+                padding: 1px 5px;
+                border-radius: 3px;
+                font-family: ui-monospace, Menlo, monospace;
+                font-size: 13px;
+            }
+            .links {
+                margin-top: 18px;
+                display: flex;
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+            .links a {
+                background: #0d1626;
+                border: 1px solid var(--border);
+                padding: 5px 11px;
+                border-radius: 6px;
+                font-size: 12px;
+            }
+            footer {
+                margin-top: 40px;
+                border-top: 1px solid var(--border);
+                padding-top: 12px;
+                color: var(--muted);
+                font-size: 11px;
+            }
+        </style>
+    </head>
+    <body>
+        <main class="shell">
+            <header>
+                <h1>Scene · 按 key 路由不同 provider</h1>
+                <div class="tagline">Story: <a href="../index.html">ai</a> · US-AI-2 · 2026-07-24</div>
+            </header>
+            <h2>用户故事</h2>
+            <p>作为调用方，我能为 AI 配置不同 provider（OpenAI / 自建），按 key 路由。</p>
+            <h2>验收</h2>
+            <ul>
+                <li><code>config.yaml</code> 维护 provider 注册表（id / endpoint / model）。</li>
+                <li>请求 header <code>X-Provider-Id</code> 选择 provider；缺省走 <code>default_provider</code>。</li>
+                <li>未知 provider 返回 <code>PROVIDER_NOT_FOUND</code>，不暴露其他 provider 配置。</li>
+            </ul>
+            <h2>使用场景 · 模块化</h2>
+            <ul>
+                <li>
+                    <code>domain/ai.chat()</code> 路由由 provider_id；<code>services/ai/&lt;provider&gt;/</code> 实现
+                    SDK 适配。
+                </li>
+                <li><code>domain/ai</code> 不 import 任何 provider SDK → 新增 provider 只动 services 与配置。</li>
+            </ul>
+            <div class="links"><a href="../index.html">↑ ai Story</a><a href="../../index.html">↑ YiAi Story</a></div>
+            <footer>由 yry-init 分析轴线驱动 · 后端模块化</footer>
+        </main>
+    </body>
+</html>

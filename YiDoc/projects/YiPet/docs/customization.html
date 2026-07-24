@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Customization | YiPet - AI Chrome Extension</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta content="温柔陪伴助手 — Chrome Extension powered by Manifest V3" name="description" />
+        <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+
+        <!-- Vendor CSS (YiPet/cdn) -->
+        <link href="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/remixicon.css" rel="stylesheet" />
+        <link href="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.css" rel="stylesheet" />
+
+        <!-- App CSS -->
+        <link href="../../../templates/docs/css/app.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/docs.css" rel="stylesheet" />
+        <link href="assets/css/docs.css" rel="stylesheet" />
+    </head>
+    <body class="loading">
+        <main id="page-content" data-page="customization" data-no-toc>
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="mt-0 mb-3 font-lg">Customization</h3>
+
+                    <p>
+                        YiPet 提供了多个配置入口，允许你自定义 API 端点、UI 主题、功能开关等。所有配置集中在
+                        <code>core/config.js</code> 中，运行时可通过 chrome.storage API 持久化用户偏好。
+                    </p>
+
+                    <div class="alert alert-info mt-3">
+                        <h6><i class="ri-file-list-3-line me-1"></i> Config Entry Points</h6>
+                        <div class="row">
+                            <div class="col-md-4 font-sm">
+                                <strong>core/config.js</strong><br />
+                                全局运行时配置
+                            </div>
+                            <div class="col-md-4 font-sm">
+                                <strong>cdn/styles/*</strong><br />
+                                CSS Variables 主题层
+                            </div>
+                            <div class="col-md-4 font-sm">
+                                <strong>modules/pet/config.js</strong><br />
+                                Pet 角色参数
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4"><i class="ri-settings-4-line me-1"></i> API Endpoints 配置</h4>
+
+                    <p>在 <code>core/config.js</code> 中定义 API 端点和认证信息：</p>
+
+                    <pre class="bg-light p-3 border rounded"><code>// core/config.js
+window.YIPET_CONFIG = {
+  api: {
+    baseUrl: 'https://api.effiy.cn/v1',
+    endpoints: {
+      chat: '/chat/completions',
+      session: '/sessions',
+      faq: '/faq/query'
+    }
+  },
+  features: {
+    enablePetAnimation: true,
+    enableMarkdownRender: true,
+    enableMermaidRender: true,
+    debugMode: false
+  },
+  ui: {
+    theme: 'auto', // 'light' | 'dark' | 'auto'
+    animationSpeed: 'normal' // 'slow' | 'normal' | 'fast'
+  }
+};</code></pre>
+
+                    <h4 class="mt-4"><i class="ri-toggle-line me-1"></i> Feature Flags</h4>
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 30%">Flag</th>
+                                <th style="width: 15%">Default</th>
+                                <th>Effect</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>enablePetAnimation</code></td>
+                                <td><code>true</code></td>
+                                <td>Pet 角色的表情、动作动画</td>
+                            </tr>
+                            <tr>
+                                <td><code>enableMarkdownRender</code></td>
+                                <td><code>true</code></td>
+                                <td>Markdown 渲染插件系统（9 插件）</td>
+                            </tr>
+                            <tr>
+                                <td><code>enableMermaidRender</code></td>
+                                <td><code>true</code></td>
+                                <td>Mermaid 图表渲染（5 插件）</td>
+                            </tr>
+                            <tr>
+                                <td><code>debugMode</code></td>
+                                <td><code>false</code></td>
+                                <td>启用 verbose 日志输出（debug 级别）</td>
+                            </tr>
+                            <tr>
+                                <td><code>enableOfflineMode</code></td>
+                                <td><code>true</code></td>
+                                <td>FAQ 离线访问（Service Worker 缓存）</td>
+                            </tr>
+                            <tr>
+                                <td><code>enableMultiSession</code></td>
+                                <td><code>true</code></td>
+                                <td>支持同时保持多个会话</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4"><i class="ri-palette-line me-1"></i> Theme 主题定制</h4>
+
+                    <p>
+                        YiPet 使用 CSS 自定义属性（CSS Variables）实现主题切换。你可以通过修改
+                        <code>cdn/styles/</code> 下的样式文件来自定义主题：
+                    </p>
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 30%">变量名</th>
+                                <th style="width: 20%">默认值</th>
+                                <th>说明</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>--yipet-bg</code></td>
+                                <td><code>#ffffff</code></td>
+                                <td>主背景色</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yipet-text</code></td>
+                                <td><code>#333333</code></td>
+                                <td>主文字颜色</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yipet-accent</code></td>
+                                <td><code>#6366f1</code></td>
+                                <td>强调色（按钮、链接）</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yipet-border</code></td>
+                                <td><code>#e5e7eb</code></td>
+                                <td>边框颜色</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yipet-shadow</code></td>
+                                <td><code>0 2px 8px rgba(0,0,0,.08)</code></td>
+                                <td>浮层阴影（Popup / 卡片）</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yipet-radius</code></td>
+                                <td><code>8px</code></td>
+                                <td>圆角半径</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yipet-font</code></td>
+                                <td><code>'Inter', sans-serif</code></td>
+                                <td>主字体</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p class="mt-3">自定义主题示例 — 在 <code>assets/css/docs.css</code> 中覆盖：</p>
+                    <pre class="bg-light p-3 border rounded"><code>:root {
+  --yipet-bg: #fafafa;
+  --yipet-accent: #ec4899; /* pink accent */
+  --yipet-border: #f3f4f6;
+  --yipet-radius: 12px;
+}</code></pre>
+
+                    <h4 class="mt-4"><i class="ri-paw-print-line me-1"></i> Pet 角色定制</h4>
+
+                    <p>YiPet 的陪伴角色外观定义在 <code>modules/pet/components/</code> 中。你可以：</p>
+
+                    <ul>
+                        <li><strong>替换角色图片</strong> — 修改 <code>modules/pet/assets/</code> 下的图片资源</li>
+                        <li>
+                            <strong>调整动画参数</strong> — 在
+                            <code>modules/pet/config.js</code> 中配置动画速度、触发条件
+                        </li>
+                        <li>
+                            <strong>扩展交互行为</strong> — 在 <code>modules/pet/content/</code> 中添加新的事件监听器
+                        </li>
+                    </ul>
+
+                    <pre class="bg-light p-3 border rounded"><code>// modules/pet/config.js
+window.YIPET_PET = {
+  companion: {
+    name: 'YiPet',
+    idleAnimation: 'breathing',
+    emotionCycle: ['happy', 'curious', 'sleepy'],
+    emotionInterval: 30000, // ms
+  },
+  triggers: {
+    onPageLoad: { emotion: 'happy', duration: 2000 },
+    onScroll:   { emotion: 'curious', duration: 1500 },
+    onIdle:     { emotion: 'sleepy', duration: 5000 }
+  }
+};</code></pre>
+
+                    <h4 class="mt-4"><i class="ri-question-answer-line me-1"></i> FAQ 知识库配置</h4>
+
+                    <p>FAQ 模块的内容通过 API 动态获取，但你可以配置本地缓存策略：</p>
+
+                    <pre class="bg-light p-3 border rounded"><code>// core/config.js 中的 FAQ 配置
+faq: {
+  cacheTTL: 3600,       // 缓存有效期（秒）
+  maxEntries: 100,      // 本地缓存最大条目数
+  enableOfflineMode: true // 启用离线访问已缓存的 FAQ
+}</code></pre>
+
+                    <h4 class="mt-4"><i class="ri-code-box-line me-1"></i> Common Recipes</h4>
+
+                    <div class="accordion" id="recipesAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#recipe1"
+                                >
+                                    自定义 API 端点（使用自建 LLM）
+                                </button>
+                            </h2>
+                            <div id="recipe1" class="accordion-collapse collapse" data-bs-parent="#recipesAccordion">
+                                <div class="accordion-body">
+                                    <p>修改 <code>api.baseUrl</code> 指向自建 OpenAI 兼容服务：</p>
+                                    <pre class="bg-light p-2 border rounded mb-0"><code>api: {
+  baseUrl: 'https://my-llm.example.com/v1',
+  endpoints: {
+    chat: '/chat/completions',
+    // 支持自定义端点
+    translate: '/translate'
+  }
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#recipe2"
+                                >
+                                    添加自定义 Markdown 插件
+                                </button>
+                            </h2>
+                            <div id="recipe2" class="accordion-collapse collapse" data-bs-parent="#recipesAccordion">
+                                <div class="accordion-body">
+                                    <p>
+                                        在 <code>cdn/markdown/plugins/</code> 创建新插件文件，命名规范
+                                        <code>XxxPlugin.js</code>，必须实现：
+                                    </p>
+                                    <pre
+                                        class="bg-light p-2 border rounded mb-0"
+                                    ><code>// cdn/markdown/plugins/MyPlugin.js
+window.YrYMarkdownPlugins = window.YrYMarkdownPlugins || [];
+window.YrYMarkdownPlugins.push({
+  name: 'my-plugin',
+  init: function (md) {
+    md.use(/* marked extension */);
+  }
+});</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#recipe3"
+                                >
+                                    国际化（i18n）扩展
+                                </button>
+                            </h2>
+                            <div id="recipe3" class="accordion-collapse collapse" data-bs-parent="#recipesAccordion">
+                                <div class="accordion-body">
+                                    <p>YiPet 通过 <code>cdn/i18n/</code> 管理多语言。添加新语言：</p>
+                                    <ol class="mb-0">
+                                        <li>复制 <code>en.json</code> 为 <code>ja.json</code>（日语为例）</li>
+                                        <li>翻译所有 <code>key</code> 对应的 <code>value</code></li>
+                                        <li>在 Popup 设置中选择 "Language: Japanese"</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info mt-3">
+                        <strong>提示：</strong>修改配置后需要重新加载扩展（chrome://extensions/ →
+                        🔄）才能生效。所有配置变更可通过 Popup → Settings → Advanced → Export 导出为 JSON 文件备份。
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Layout injection -->
+        <script src="assets/js/layout.js"></script>
+
+        <!-- Vendor JS (YiPet/cdn) -->
+        <script src="../../../../YiPet/cdn/vendor/jquery@3.7.1/jquery.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/js/bootstrap.bundle.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.js"></script>
+
+        <!-- App JS -->
+        <script src="../../../templates/docs/js/app.min.js"></script>
+    </body>
+</html>

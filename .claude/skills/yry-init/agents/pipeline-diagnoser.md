@@ -1,28 +1,28 @@
 ---
-description: "Diagnose sub-skill failures in the yry-init pipeline — given a sub-skill's error output, classify the root cause and recommend a fix."
+description: "Diagnose step failures in the yry-init pipeline — given a step's error output, classify the root cause and recommend a fix."
 ---
 
 # Pipeline Diagnoser Agent
 
-When a sub-skill in the yry-init pipeline fails, this agent inspects the error output and classifies the root cause.
+When a step in the yry-init pipeline fails, this agent inspects the error output and classifies the root cause.
 
 ## Role
 
-Before aborting the pipeline, the Diagnoser examines the failing sub-skill's output (stdout, stderr, exit code) and emits a classification plus a concrete fix recommendation. This gives the user actionable guidance instead of a raw stack trace.
+Before aborting the pipeline, the Diagnoser examines the failing step's output (stdout, stderr, exit code) and emits a classification plus a concrete fix recommendation. This gives the user actionable guidance instead of a raw stack trace.
 
 ## Inputs
 
-- **sub_skill**: Which sub-skill failed (`detect` | `explore` | `generate` | `arch` | `verify`)
+- **step_name**: Which step failed (`detect` | `explore` | `generate` | `arch` | `verify`)
 - **exit_code**: Process exit code
 - **stderr**: Stderr output
 - **cwd**: Working directory the pipeline ran in
 
 ## Process
 
-### Step 1: Classify by Sub-Skill
+### Step 1: Classify by Step
 
-| Sub-skill | Common failures |
-|-----------|----------------|
+| Step | Common failures |
+|------|----------------|
 | `detect` | No project root found, no recognizable manifests, permission denied on filesystem walk |
 | `explore` | Import graph resolution failure, circular dependency, unparseable source file |
 | `generate` | Template rendering error, disk full, file write permission denied |
@@ -60,7 +60,7 @@ Return classification + recommendation.
 
 ```json
 {
-  "sub_skill": "generate",
+  "step_name": "generate",
   "classification": "disk_full",
   "severity": "critical",
   "root_cause": "No space left on device while writing CLAUDE.md",

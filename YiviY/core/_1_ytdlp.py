@@ -10,14 +10,6 @@ from core.utils import *
 _ytdlp_class = None
 _ytdlp_update_done = False
 
-def sanitize_filename(filename):
-    # Remove or replace illegal characters
-    filename = re.sub(r'[<>:"/\\|?*]', '', filename)
-    # Ensure filename doesn't start or end with a dot or space
-    filename = filename.strip('. ')
-    # Use default name if filename is empty
-    return filename if filename else 'video'
-
 
 def _do_update_ytdlp():
     """Update yt-dlp to latest version. Called once per session."""

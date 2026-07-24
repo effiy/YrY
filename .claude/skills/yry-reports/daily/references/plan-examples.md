@@ -3,7 +3,7 @@
 > A fully worked example of what `plan` mode should produce for a
 > realistic mid-stage project. Use this as a reference when
 > rendering — every field in the `window.PLAN_DATA` shape (defined
-> in `templates/data.js`) has a concrete expansion here. Do not
+> in `YiDoc/templates/daily/data.js`) has a concrete expansion here. Do not
 > copy this content into another project's plan verbatim; use it
 > to calibrate granularity and tone.
 

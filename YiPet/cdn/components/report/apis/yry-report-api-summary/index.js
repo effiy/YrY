@@ -1,9 +1,40 @@
-import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
-
+(function () {
 const compDef = {
     name: 'yryReportApiSummary',
-    html: '/cdn/components/business/reports/apis/yry-report-api-summary/index.html',
-    css: '/cdn/components/business/reports/apis/yry-report-api-summary/index.css',
+    template: `
+    <section id="summary" class="api-summary">
+        <div class="score-card">
+            <div class="score-gauge" :class="scoreClass">
+                <div class="score-value">{{ data.score }}</div>
+                <div class="score-label">Health Score / 100</div>
+                <div class="score-grade">{{ scoreGrade }}</div>
+            </div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" :class="scoreClass" :style="{ width: (data.score || 0) + '%' }"></div>
+            </div>
+        </div>
+        <div class="stat-cards">
+            <div class="stat-card" v-for="c in statCards" :key="c.label">
+                <div class="stat-card-label">{{ c.label }}</div>
+                <div class="stat-card-value" :class="c.tone">{{ c.value }}</div>
+                <div class="stat-card-sub" v-if="c.sub">{{ c.sub }}</div>
+            </div>
+        </div>
+        <div class="method-dist" v-if="methods.length">
+            <div class="method-dist-label">HTTP Method Distribution</div>
+            <div class="method-bars">
+                <div class="method-bar" v-for="m in methods" :key="m.method">
+                    <span class="method-bar-tag" :class="'method-' + m.method.toLowerCase()">{{ m.method }}</span>
+                    <span class="method-bar-track">
+                        <span class="method-bar-fill" :class="'method-' + m.method.toLowerCase()" :style="{ width: m.pct + '%' }"></span>
+                    </span>
+                    <span class="method-bar-val">{{ m.count }} ({{ Math.round(m.pct) }}%)</span>
+                </div>
+            </div>
+        </div>
+    </section>
+`,
+    css: '../../../YiPet/cdn/components/report/apis/yry-report-api-summary/index.css',
     props: {
         data: { type: Object, default: function() { return {}; } },
         labels: { type: Object, default: function() { return {}; } },
@@ -48,5 +79,6 @@ const compDef = {
         },
     },
 };
-registerGlobalComponent(compDef);
-export default compDef;
+if (typeof window !== 'undefined' && window.registerGlobalComponent) { window.registerGlobalComponent(compDef); }
+
+})();

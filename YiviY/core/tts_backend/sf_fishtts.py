@@ -9,7 +9,7 @@ from pydub import AudioSegment
 from rich.panel import Panel
 from rich.text import Text
 from core._1_ytdlp import find_video_files
-from core.asr_backend.audio_preprocess import get_audio_duration
+from core.asr_backend import get_audio_duration
 from core.utils import *
 from core.utils.models import *
 

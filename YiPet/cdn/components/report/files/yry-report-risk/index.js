@@ -1,9 +1,60 @@
-import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
-
+(function () {
 const compDef = {
     name: 'yryReportRisk',
-    html: '/cdn/components/business/reports/files/yry-report-risk/index.html',
-    css: '/cdn/components/business/reports/files/yry-report-risk/index.css',
+    template: `
+    <section id="risk">
+        <h2>{{ title }}</h2>
+        <div class="tabs" role="tablist">
+            <button type="button" role="tab"
+                    :class="{ active: tab === 'hotspots' }"
+                    :aria-selected="tab === 'hotspots' ? 'true' : 'false'"
+                    @click="setTab('hotspots')">{{ tabHotspots || 'Hotspots' }}</button>
+            <button type="button" role="tab"
+                    :class="{ active: tab === 'orphans' }"
+                    :aria-selected="tab === 'orphans' ? 'true' : 'false'"
+                    @click="setTab('orphans')">{{ tabOrphans || 'Orphans' }}</button>
+            <button type="button" role="tab"
+                    :class="{ active: tab === 'depth' }"
+                    :aria-selected="tab === 'depth' ? 'true' : 'false'"
+                    @click="setTab('depth')">{{ tabDepth || 'Depth' }}</button>
+        </div>
+        <p class="stat-line" v-if="tab === 'depth' && depthStats">
+            {{ depthMaxLabel }} {{ depthStats.max }}
+            · {{ depthMeanLabel }} {{ depthStats.mean }}
+            · {{ depthMedianLabel }} {{ depthStats.median }}
+            · {{ depthP90Label }} {{ depthStats.p90 }}
+            · {{ depthFilesAtMaxLabel }} {{ depthStats.filesAtMax }}
+        </p>
+        <table data-sortable v-if="sorted.length">
+            <thead>
+                <tr>
+                    <th @click="setSort('path')" :class="sortClass('path')" :aria-sort="sortAria('path')">{{ colPath || 'Path' }}</th>
+                    <th @click="setSort('bytes')" :class="sortClass('bytes')" :aria-sort="sortAria('bytes')">{{ colBytes || 'Bytes' }}</th>
+                    <th @click="setSort('lines')" :class="sortClass('lines')" :aria-sort="sortAria('lines')">{{ colLines || 'Lines' }}</th>
+                    <th @click="setSort('type')" :class="sortClass('type')" :aria-sort="sortAria('type')">{{ colType || 'Type' }}</th>
+                    <th @click="setSort('fanIn')" :class="sortClass('fanIn')" :aria-sort="sortAria('fanIn')">{{ colFanIn || 'Fan-in' }}</th>
+                    <th @click="setSort('fanOut')" :class="sortClass('fanOut')" :aria-sort="sortAria('fanOut')">{{ colFanOut || 'Fan-out' }}</th>
+                    <th @click="setSort('maxDepth')" :class="sortClass('maxDepth')" :aria-sort="sortAria('maxDepth')">{{ colDepth || 'Depth' }}</th>
+                    <th @click="setSort('score')" :class="sortClass('score')" :aria-sort="sortAria('score')">{{ colScore || 'Score' }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="row in sorted" :key="row.path">
+                    <td><code>{{ row.path }}</code></td>
+                    <td>{{ row.bytesHuman }}</td>
+                    <td>{{ row.lines }}</td>
+                    <td>{{ row.type }}</td>
+                    <td>{{ row.fanIn }}</td>
+                    <td>{{ row.fanOut }}</td>
+                    <td>{{ row.maxDepth }}</td>
+                    <td>{{ row.score }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="empty" v-else>{{ emptyRisk || 'No risk files met the threshold.' }}</p>
+    </section>
+`,
+    css: '../../../YiPet/cdn/components/report/files/yry-report-risk/index.css',
     mixins: [window.YrYSortable.setSortMixin({ sortKey: 'score', sortDir: -1 })],
     props: {
         hotspots: { type: Array, default: function() { return []; } },
@@ -53,5 +104,6 @@ const compDef = {
         }
     }
 };
-registerGlobalComponent(compDef);
-export default compDef;
+if (typeof window !== 'undefined' && window.registerGlobalComponent) { window.registerGlobalComponent(compDef); }
+
+})();

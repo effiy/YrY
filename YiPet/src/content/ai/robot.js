@@ -41,20 +41,37 @@
   }
 
   // 打开企微机器人设置弹窗
-  proto.openWeWorkRobotSettingsModal = async function (editId = null) {
+  proto.openWeWorkRobotSettingsModal = function (editId = null) {
     if (!this.chatWindow) return
 
     // 如果已经存在弹窗，先移除
     const existing = this.chatWindow.querySelector('#pet-robot-settings')
     if (existing) existing.remove()
 
-    // 确保模板已加载
-    const RS = window.PetManager?.Components?.RobotSettings
-    if (RS) await RS.loadAllTemplates()
-
     this.chatWindow.insertAdjacentHTML(
       'beforeend',
-      RS ? RS.render(RS.MODAL_TPL_ID) : '',
+      `
+                <div
+                    id="pet-robot-settings"
+                    class="js-visible"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label="企微机器人设置"
+                    tabindex="0"
+                >
+                    <div class="robot-settings-modal" role="document">
+                        <div class="robot-settings-header">
+                            <div class="robot-settings-title">🤖 企微机器人设置</div>
+                            <button type="button" class="robot-settings-close" aria-label="关闭">✕</button>
+                        </div>
+                        <div class="robot-settings-content">
+                            <button type="button" class="robot-add-btn">+ 新增机器人</button>
+                            <div id="pet-robot-list" class="robot-list"></div>
+                            <div id="pet-robot-form" class="robot-form"></div>
+                        </div>
+                    </div>
+                </div>
+            `.trim(),
     )
 
     const overlay = this.chatWindow.querySelector('#pet-robot-settings')
@@ -142,13 +159,44 @@
     }
 
     const configs = await this.getWeWorkRobotConfigs()
-    const RS = window.PetManager?.Components?.RobotSettings
     if (!Array.isArray(configs) || configs.length === 0) {
-      list.innerHTML = RS ? RS.render(RS.LIST_EMPTY_TPL_ID) : '<div class="robot-list-empty">暂无配置机器人</div>'
+      list.innerHTML = '<div class="robot-list-empty">暂无配置机器人</div>'
       return
     }
 
-    const rows = configs.map((config) => (RS ? RS.renderListItem(config) : '')).join('')
+    const escapeHtml = (text) =>
+      String(text ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;')
+
+    const rows = configs
+      .map((config) => {
+        const id = escapeHtml(config?.id || '')
+        const icon = escapeHtml(config?.icon || '🤖')
+        const name = escapeHtml(config?.name || '未命名机器人')
+        const urlText = config?.webhookUrl ? `${String(config.webhookUrl).substring(0, 30)}...` : '未配置 Webhook'
+        const url = escapeHtml(urlText)
+
+        return `
+                    <div class="robot-list-item" data-robot-id="${id}" role="button" tabindex="0">
+                        <div class="robot-list-item-info">
+                            <span class="robot-list-item-icon">${icon}</span>
+                            <div class="robot-list-item-name">
+                                <span class="robot-list-item-name-text">${name}</span>
+                                <span class="robot-list-item-url-text">${url}</span>
+                            </div>
+                        </div>
+                        <div class="robot-list-item-actions">
+                            <button type="button" class="robot-list-item-delete-btn" title="删除" aria-label="删除">🗑️</button>
+                        </div>
+                    </div>
+                `.trim()
+      })
+      .join('')
+
     list.innerHTML = rows
   }
 
@@ -157,10 +205,8 @@
     const form = this.chatWindow.querySelector('#pet-robot-form')
     if (!form) return
 
-    const RS = window.PetManager?.Components?.RobotSettings
-
     if (showEmptyState) {
-      form.innerHTML = RS ? RS.render(RS.FORM_EMPTY_TPL_ID) : '<div class="robot-form-empty">👈 请选择左侧列表进行编辑，或点击"新增机器人"</div>'
+      form.innerHTML = '<div class="robot-form-empty">👈 请选择左侧列表进行编辑，或点击"新增机器人"</div>'
       return
     }
 
@@ -179,8 +225,50 @@
       return
     }
 
+    const escapeHtml = (text) =>
+      String(text ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;')
+
     form.setAttribute('data-edit-id', String(config.id || ''))
-    form.innerHTML = RS ? RS.renderForm(config) : ''
+    form.innerHTML = `
+            <div class="robot-config-field">
+                <div class="robot-config-label">机器人名称</div>
+                <input
+                    type="text"
+                    class="robot-config-input"
+                    data-field="name"
+                    value="${escapeHtml(config.name || '')}"
+                    placeholder="例如：研发群助手"
+                />
+            </div>
+            <div class="robot-config-field">
+                <div class="robot-config-label">图标 (Emoji)</div>
+                <input
+                    type="text"
+                    class="robot-config-input"
+                    data-field="icon"
+                    value="${escapeHtml(config.icon || '')}"
+                    placeholder="例如：🤖"
+                />
+            </div>
+            <div class="robot-config-field">
+                <div class="robot-config-label">Webhook 地址</div>
+                <input
+                    type="text"
+                    class="robot-config-input"
+                    data-field="webhookUrl"
+                    value="${escapeHtml(config.webhookUrl || '')}"
+                    placeholder="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=..."
+                />
+            </div>
+            <div class="robot-config-btn-row">
+                <button type="button" class="robot-config-save-btn">保存配置</button>
+            </div>
+        `.trim()
 
     const saveBtn = form.querySelector('.robot-config-save-btn')
     if (saveBtn) {

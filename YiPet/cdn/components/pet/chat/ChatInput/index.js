@@ -619,7 +619,7 @@
 
     const clearBtnHtml = DRAFT_IMAGES_CLEAR_BTN_TPL(draftImages.length).trim()
 
-    container.innerHTML = imagesHtml + clearBtnHtml
+    container.innerHTML = `${imagesHtml}${clearBtnHtml}`
 
     if (!container._yiPetDraftImagesBound) {
       container._yiPetDraftImagesBound = true

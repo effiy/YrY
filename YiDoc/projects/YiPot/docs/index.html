@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Introduction | YiPot - Tauri Desktop Translator</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta content="跨平台桌面翻译器 — Tauri + React · 21 翻译引擎 + 15 OCR 后端 + TTS" name="description" />
+        <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+
+        <!-- Vendor CSS (YiPet/cdn) -->
+        <link href="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/remixicon.css" rel="stylesheet" />
+        <link href="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.css" rel="stylesheet" />
+
+        <!-- App CSS -->
+        <link href="../../../templates/docs/css/app.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/docs.css" rel="stylesheet" />
+        <link href="assets/css/docs.css" rel="stylesheet" />
+    </head>
+    <body class="loading">
+        <main id="page-content" data-page="index">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="mt-0 mb-3 font-lg">Introduction</h3>
+
+                    <p>
+                        YiPot 是一款基于 <strong class="text-danger">Tauri + React</strong> 的跨平台桌面翻译器，集成
+                        <strong class="text-danger">21 种翻译引擎</strong>、<strong class="text-danger"
+                            >15 种 OCR 后端</strong
+                        >与 TTS 语音合成能力。支持 Windows / macOS / Linux 三大平台，通过 Rust
+                        原生后端提供高性能的本地服务。
+                    </p>
+
+                    <p>
+                        项目采用 <strong class="text-danger">Rust 后端 + JSX 前端</strong>的混合架构：Rust 侧通过 Tauri
+                        框架提供窗口管理、系统调用、HTTP 服务与 IPC 通信；React 侧通过 hooks、services、components
+                        构建响应式 UI。前端使用
+                        <strong class="text-danger">Tailwind CSS + NextUI</strong> 组件库，支持深色模式与多语言国际化。
+                    </p>
+
+                    <p>
+                        本文档面向所有希望安装、使用、定制或贡献 YiPot 的用户与开发者。7
+                        个页面覆盖了从快速上手到架构定制的完整旅程。
+                    </p>
+
+                    <div class="row text-center mt-4 mb-2">
+                        <div class="col-6 col-md-3">
+                            <div class="border rounded p-3 bg-light">
+                                <div class="font-lg font-semibold text-primary">21</div>
+                                <div class="text-muted font-sm">Translation Engines</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="border rounded p-3 bg-light">
+                                <div class="font-lg font-semibold text-primary">15</div>
+                                <div class="text-muted font-sm">OCR Backends</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="border rounded p-3 bg-light">
+                                <div class="font-lg font-semibold text-primary">~20 MB</div>
+                                <div class="text-muted font-sm">Bundle Size</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="border rounded p-3 bg-light">
+                                <div class="font-lg font-semibold text-primary">v3.0.7</div>
+                                <div class="text-muted font-sm">Latest Version</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="mt-0 mb-3 font-lg">Architecture Overview</h3>
+                    <p>
+                        YiPot 采用 <strong>5 窗口 + Rust 后端</strong> 的桌面架构：React 前端通过 Tauri IPC 与 Rust
+                        后端通信，Rust 侧负责窗口管理、HTTP 服务、系统集成与原生 OCR 调用。每个窗口独立打包 React
+                        应用，共享统一的 Jotai 状态与 i18n 实例。
+                    </p>
+
+                    <pre
+                        class="bg-light p-3 border rounded"
+                    ><code>┌─────────────────────────────────────────────────────────────────┐
+│                   Tauri Application (Rust + React)              │
+├─────────────────────────────────────────────────────────────────┤
+│  Windows (5)      │  Translate  │  Recognize  │  Screenshot      │
+│                    │  Config     │  Updater    │                  │
+│                    └──────┬──────┴──────┬──────┴──────────────────┘
+│                           │             │
+│                     Tauri IPC (invoke / event)
+│                           ▼             ▼
+├─────────────────────────────────────────────────────────────────┤
+│  React Frontend   │  Hooks  ·  Services  ·  Components            │
+│                    │  ┌──────────────────────────────────────┐  │
+│                    │  │ Jotai atoms · i18next · Framer Motion │  │
+│                    │  └─────────────────┬────────────────────┘  │
+│                    └────────────────────┼────────────────────────┘
+│                                         │
+├─────────────────────────────────────────────────────────────────┤
+│  Rust Backend     │  tauri::Builder · tauri::Window              │
+│                    │  ┌──────────────────────────────────────┐  │
+│                    │  │ tiny_http (HTTP server :12315)        │  │
+│                    │  │ reqwest (async HTTP client)           │  │
+│                    │  │ screenshots (screen capture)          │  │
+│                    │  │ tesseract-rs (optional native OCR)    │  │
+│                    │  └─────────────────┬────────────────────┘  │
+│                    └────────────────────┼────────────────────────┘
+│                                         │
+├─────────────────────────────────────────────────────────────────┤
+│  External APIs    │  21 Translation Engines · 15 OCR Backends    │
+│                    │  TTS Services · OS Native APIs              │
+└─────────────────────────────────────────────────────────────────┘</code></pre>
+
+                    <div class="alert alert-info mt-3 mb-0">
+                        <i class="ri-information-line me-1"></i> <strong>Note:</strong> v3.0.0 完成从 Electron 到 Tauri
+                        的架构重构，应用体积从 120MB 降至 20MB，启动速度提升 3 倍。详见
+                        <a href="changelog.html#v3-0-0">Changelog · v3.0.0</a>。
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="mt-0 mb-3 font-lg">Key Features</h3>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul>
+                                <li><strong>Tauri 1.8</strong> — 轻量级桌面框架，Rust 原生后端 + WebView 前端</li>
+                                <li>
+                                    <strong>21 翻译引擎</strong> — Google · DeepL · Bing · 百度 · 有道 · 彩云 · OpenAI …
+                                </li>
+                                <li><strong>15 OCR 后端</strong> — Tesseract.js · 系统原生 OCR · 在线 OCR 服务</li>
+                                <li><strong>TTS 语音合成</strong> — 多引擎语音朗读与发音</li>
+                                <li><strong>React 18.3</strong> — 函数式组件 + Hooks 架构</li>
+                                <li><strong>NextUI 2.4</strong> — 企业级 React 组件库，内置无障碍与深色模式</li>
+                                <li><strong>Tailwind CSS 3.4</strong> — 原子化 CSS，快速样式迭代</li>
+                                <li><strong>Jotai 2.10</strong> — 原子化状态管理，自底向上响应式</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul>
+                                <li><strong>i18next 23.16</strong> — 多语言国际化框架</li>
+                                <li><strong>Framer Motion 11.11</strong> — 声明式动画库</li>
+                                <li><strong>Tesseract.js 5.1</strong> — 浏览器端 OCR 引擎</li>
+                                <li><strong>crypto-js + jose</strong> — HMAC-SHA256 签名 + JWT 令牌</li>
+                                <li>
+                                    <strong>5 个独立窗口</strong> — Config · Recognize · Screenshot · Translate ·
+                                    Updater
+                                </li>
+                                <li><strong>Rust 后端服务</strong> — tiny_http 嵌入式 HTTP + Reqwest 异步客户端</li>
+                                <li><strong>跨平台支持</strong> — Windows · macOS · Linux 三端原生构建</li>
+                                <li><strong>324 源文件</strong> — 完整的桌面应用生态 · 20MB 资源体量</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="mt-0 mb-3 font-lg">Use Cases</h3>
+                    <p>YiPot 的多引擎架构使其能适配多种翻译与识别场景：</p>
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <h5 class="font-semibold"><i class="ri-translate-2 text-primary"></i> 多引擎翻译</h5>
+                                <p class="text-muted mb-0">
+                                    21
+                                    种翻译引擎自由切换，支持文本翻译、文档翻译、批量翻译，满足不同语言对与专业领域的需求。
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <h5 class="font-semibold">
+                                    <i class="ri-image-2-line text-primary"></i> 截图 OCR 识别
+                                </h5>
+                                <p class="text-muted mb-0">
+                                    通过 screenshots 模块截取屏幕区域，调用 Tesseract.js 或系统 OCR 识别文字，支持 15 种
+                                    OCR 后端。
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <h5 class="font-semibold"><i class="ri-volume-up-line text-primary"></i> 语音朗读</h5>
+                                <p class="text-muted mb-0">
+                                    TTS 引擎支持多语言语音合成，适用于外语学习、文档听读、无障碍辅助等场景。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="mt-0 mb-3 font-lg">Next Steps</h3>
+                    <p>Ready to dive in? Choose your path:</p>
+                    <div class="row mt-3">
+                        <div class="col-md-3">
+                            <a href="setup.html" class="text-decoration-none">
+                                <div class="border rounded p-3 h-100 hover-shadow">
+                                    <i class="ri-download-cloud-2-line font-lg text-primary"></i>
+                                    <h6 class="mt-2 mb-1">Setup</h6>
+                                    <small class="text-muted"
+                                        >Install dependencies, build for Windows/macOS/Linux.</small
+                                    >
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="customization.html" class="text-decoration-none">
+                                <div class="border rounded p-3 h-100 hover-shadow">
+                                    <i class="ri-settings-3-line font-lg text-primary"></i>
+                                    <h6 class="mt-2 mb-1">Customization</h6>
+                                    <small class="text-muted"
+                                        >Tailwind theme, i18next locales, Tauri window config.</small
+                                    >
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="windows.html" class="text-decoration-none">
+                                <div class="border rounded p-3 h-100 hover-shadow">
+                                    <i class="ri-stack-line font-lg text-primary"></i>
+                                    <h6 class="mt-2 mb-1">Windows</h6>
+                                    <small class="text-muted"
+                                        >5-window architecture: Translate/Recognize/Screenshot/...</small
+                                    >
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="specifications.html" class="text-decoration-none">
+                                <div class="border rounded p-3 h-100 hover-shadow">
+                                    <i class="ri-list-check-2 font-lg text-primary"></i>
+                                    <h6 class="mt-2 mb-1">Specifications</h6>
+                                    <small class="text-muted">File tree, tech-stack versions, size breakdown.</small>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Layout injection -->
+        <script src="assets/js/layout.js"></script>
+
+        <!-- Vendor JS (YiPet/cdn) -->
+        <script src="../../../../YiPet/cdn/vendor/jquery@3.7.1/jquery.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/js/bootstrap.bundle.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.js"></script>
+
+        <!-- App JS -->
+        <script src="../../../templates/docs/js/app.min.js"></script>
+    </body>
+</html>

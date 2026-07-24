@@ -2,33 +2,6 @@
 
 **What this scene demonstrates**: The end-to-end data flow of YiPot's primary use case: the user copies text → the clipboard monitor detects it → the translate window opens → a translation engine is invoked → the result is rendered. This scene traces the data path across three architectural tiers: Rust system layer, the Tauri IPC bridge, and the React frontend service layer.
 
-```mermaid
-sequenceDiagram
-    participant User as 👤 用户
-    participant OS as macOS Clipboard
-    participant Rust as 🦀 Rust Backend<br/>clipboard monitor
-    participant IPC as ⚡ Tauri IPC<br/>invoke_handler
-    participant React as ⚛️ React Frontend
-    participant API as 🌐 翻译 API<br/>DeepL / OpenAI
-
-    User->>OS: Cmd+C 复制文本
-    OS->>Rust: clipboard change event
-    Rust->>Rust: StringWrapper managed state
-    Rust->>IPC: emit clipboard-update
-
-    IPC->>React: @tauri-apps/api listen
-    React->>React: TranslateWindow 自动弹出
-    React->>React: lang_detect 语言识别
-    React->>IPC: invoke('translate', {text, engine})
-
-    IPC->>Rust: command::translate handler
-    Rust->>API: HTTP POST /v2/translate
-    API-->>Rust: 翻译结果 JSON
-    Rust-->>IPC: Ok(translated_text)
-    IPC-->>React: Promise resolve
-    React->>User: 渲染翻译结果
-```
-
 **Why it matters**: YiPot's architecture is split across Rust (system interaction) and JS (UI + service orchestration). Understanding data flow is essential for debugging — an error at any tier can block the entire pipeline. This scene documents the exact data types and crossing points so developers can insert logging, fix bugs, or add new engines without breaking the flow.
 
 ---

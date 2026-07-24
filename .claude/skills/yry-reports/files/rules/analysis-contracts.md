@@ -172,10 +172,11 @@ in the verify step.
 ## Output determinism
 
 Two runs with identical `(scope, options, file contents)` MUST
-produce byte-identical files in `docs/reports/files/`. There are no
-non-deterministic fields — no `generatedAt` timestamp, no `{ts}`
-suffix on the output directory. The latest run overwrites the
-previous run's `data.js` in place.
+produce byte-identical `data.js` output in `YiDoc/projects/<project>/files/`. The only
+non-deterministic field is `REPORT_CONFIG.options.generatedAt`
+(ISO 8601 UTC of the run). All other fields are derived from
+the file inventory and are stable. The latest run overwrites
+the previous run's `data.js` in place.
 
 Sort keys for all collections are pinned in the methodology
 reference; do not rely on filesystem traversal order.

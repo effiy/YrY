@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Architecture Scenes</title>
+        <link
+            rel="icon"
+            href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3' fill='%230369a1'/></svg>"
+        />
+        <link rel="stylesheet" href="../../dashboard/index.css" />
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                max-width: 880px;
+                margin: 0 auto;
+                padding: 2rem 1.5rem;
+                color: #1f2937;
+            }
+            h1 {
+                font-size: 1.6rem;
+                margin-bottom: 0.25rem;
+            }
+            .meta {
+                color: #6b7280;
+                font-size: 0.9rem;
+                margin-bottom: 2rem;
+            }
+            ul {
+                list-style: none;
+                padding: 0;
+            }
+            li {
+                padding: 0.9rem 1rem;
+                border: 1px solid #e5e7eb;
+                border-radius: 0.5rem;
+                margin-bottom: 0.75rem;
+                transition: box-shadow 0.15s;
+            }
+            li:hover {
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            }
+            a {
+                color: #0369a1;
+                text-decoration: none;
+                font-weight: 600;
+                font-size: 1.05rem;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            .desc {
+                color: #4b5563;
+                font-size: 0.875rem;
+                margin-top: 0.25rem;
+            }
+            .back {
+                display: inline-block;
+                margin-bottom: 1.5rem;
+                color: #6b7280;
+                font-size: 0.85rem;
+            }
+        </style>
+    </head>
+    <body>
+        <a class="back" href="index.html">&larr; Back to Architecture</a>
+        <h1></h1>
+        <p class="meta"></p>
+        <ul id="scene-list"></ul>
+        <script>
+            (function () {
+                var params = new URLSearchParams(location.search);
+                var project = params.get("project") || "YiAi";
+                var archHref = "index.html?project=" + encodeURIComponent(project);
+                document.querySelector(".back").href = archHref;
+
+                var sceneDefs = {
+                    YiAi: [
+                        {
+                            name: "1. Module Location",
+                            dir: "scene-1-module-location",
+                            desc: "Where modules physically live and how to locate them in the FastAPI backend.",
+                        },
+                        {
+                            name: "2. Data Flow Tracing",
+                            dir: "scene-2-data-flow-tracing",
+                            desc: "Request/response flow through the API layer — from ingress to persistence.",
+                        },
+                        {
+                            name: "3. Newcomer Onboarding",
+                            dir: "scene-3-newcomer-onboarding",
+                            desc: "First-day orientation path through the codebase.",
+                        },
+                        {
+                            name: "4. Dependency Change Impact",
+                            dir: "scene-4-dependency-change-impact",
+                            desc: "Blast-radius analysis when a dependency upgrades or breaks.",
+                        },
+                        {
+                            name: "5. Trust Boundary & Security Surface",
+                            dir: "scene-5-trust-boundary-security-surface",
+                            desc: "Where trust transitions happen and what attack surfaces they expose.",
+                        },
+                    ],
+                    YiH5: [
+                        {
+                            name: "1. Module Location",
+                            dir: "scene-1-module-location",
+                            desc: "Where modules physically live and how to locate them in the H5 frontend.",
+                        },
+                        {
+                            name: "2. Data Flow Tracing",
+                            dir: "scene-2-data-flow-tracing",
+                            desc: "Data and event flow through components, services, and views.",
+                        },
+                        {
+                            name: "3. Newcomer Onboarding",
+                            dir: "scene-3-newcomer-onboarding",
+                            desc: "First-day orientation path through the codebase.",
+                        },
+                        {
+                            name: "4. Dependency Change Impact",
+                            dir: "scene-4-dependency-change-impact",
+                            desc: "Blast-radius analysis when a dependency upgrades or breaks.",
+                        },
+                        {
+                            name: "5. Trust Boundary & Security Surface",
+                            dir: "scene-5-trust-boundary-security-surface",
+                            desc: "Where trust transitions happen and what attack surfaces they expose.",
+                        },
+                    ],
+                    YiPet: [
+                        {
+                            name: "1. Module Location",
+                            dir: "scene-1-module-location",
+                            desc: "Where modules physically live and how to locate them in the Chrome extension.",
+                        },
+                        {
+                            name: "2. Data Flow Tracing",
+                            dir: "scene-2-data-flow-tracing",
+                            desc: "Data and event flow through content scripts, modules, and CDN components.",
+                        },
+                        {
+                            name: "3. Newcomer Onboarding",
+                            dir: "scene-3-newcomer-onboarding",
+                            desc: "First-day orientation path through the codebase.",
+                        },
+                        {
+                            name: "4. Dependency Change Impact",
+                            dir: "scene-4-dependency-change-impact",
+                            desc: "Blast-radius analysis when a dependency upgrades or breaks.",
+                        },
+                        {
+                            name: "5. Trust Boundary & Security Surface",
+                            dir: "scene-5-trust-boundary-security-surface",
+                            desc: "Where trust transitions happen and what attack surfaces they expose.",
+                        },
+                        {
+                            name: "6. CDN Component Lifecycle",
+                            dir: "scene-6-cdn-component-lifecycle",
+                            desc: "CDN component loading, versioning, and cache strategy.",
+                        },
+                    ],
+                    YiPot: [
+                        {
+                            name: "1. Module Location",
+                            dir: "scene-1-module-location",
+                            desc: "Where modules physically live and how to locate them in the Tauri + React project.",
+                        },
+                        {
+                            name: "2. Data Flow Tracing",
+                            dir: "scene-2-data-flow-tracing",
+                            desc: "Clipboard → translate → output flow through services and windows.",
+                        },
+                        {
+                            name: "3. Newcomer Onboarding",
+                            dir: "scene-3-newcomer-onboarding",
+                            desc: "First-day orientation path through the codebase.",
+                        },
+                        {
+                            name: "4. Dependency Change Impact",
+                            dir: "scene-4-dependency-change-impact",
+                            desc: "Blast-radius analysis when a dependency upgrades or breaks.",
+                        },
+                        {
+                            name: "5. Trust Boundary & Security Surface",
+                            dir: "scene-5-trust-boundary-security-surface",
+                            desc: "Tauri IPC trust boundaries and security surface analysis.",
+                        },
+                        {
+                            name: "6. IPC & Window Lifecycle",
+                            dir: "scene-6-ipc-window-lifecycle",
+                            desc: "Tauri IPC communication and multi-window lifecycle management.",
+                        },
+                    ],
+                    YiWeb: [
+                        {
+                            name: "1. Module Location",
+                            dir: "scene-1-module-location",
+                            desc: "Where modules physically live and how to locate them in the Vue 3 project.",
+                        },
+                        {
+                            name: "2. Data Flow Tracing",
+                            dir: "scene-2-data-flow-tracing",
+                            desc: "End-to-end request trace from entry to API persistence.",
+                        },
+                        {
+                            name: "3. Newcomer Onboarding",
+                            dir: "scene-3-newcomer-onboarding",
+                            desc: "First-day orientation path through the codebase.",
+                        },
+                        {
+                            name: "4. Dependency Change Impact",
+                            dir: "scene-4-dependency-change-impact",
+                            desc: "Blast-radius analysis when a dependency upgrades or breaks.",
+                        },
+                        {
+                            name: "5. Trust Boundary & Security Surface",
+                            dir: "scene-5-trust-boundary-security-surface",
+                            desc: "Where trust transitions happen and what attack surfaces they expose.",
+                        },
+                        {
+                            name: "6. View & Hook Lifecycle",
+                            dir: "scene-6-view-hook-lifecycle",
+                            desc: "Vue view and hook lifecycle patterns across the frontend.",
+                        },
+                    ],
+                    YiviY: [
+                        {
+                            name: "1. Module Location",
+                            dir: "scene-1-module-location",
+                            desc: "Where pipeline steps live (st.py entry, core/_N_*.py step modules, backend adapters).",
+                        },
+                        {
+                            name: "2. Data Flow Tracing",
+                            dir: "scene-2-data-flow-tracing",
+                            desc: "How a video flows through 12 steps (download → ASR → segment → translate → TTS → merge → synthesize).",
+                        },
+                        {
+                            name: "3. Newcomer Onboarding",
+                            dir: "scene-3-newcomer-onboarding",
+                            desc: "First-day path through the codebase — install, configure, run a single step, run full pipeline.",
+                        },
+                        {
+                            name: "4. Dependency Change Impact",
+                            dir: "scene-4-dependency-change-impact",
+                            desc: "Blast radius when WhisperX / openai / replicate upgrades or breaks.",
+                        },
+                        {
+                            name: "5. Trust Boundary & Security Surface",
+                            dir: "scene-5-trust-boundary-security-surface",
+                            desc: "Where external API keys enter, where user uploads (video URLs) land, subprocess boundary.",
+                        },
+                    ],
+                };
+
+                var scenes = sceneDefs[project] || [];
+                var basePath = "../../projects/" + project + "/arch/";
+
+                document.title = project + " \u00b7 Architecture Scenes";
+                document.querySelector("h1").textContent = project + " \u00b7 Architecture Scenes";
+                document.querySelector(".meta").textContent =
+                    "Architecture knowledge codification \u00b7 " +
+                    scenes.length +
+                    " scenes \u00b7 YiDoc/projects/" +
+                    project +
+                    "/arch/";
+
+                var list = document.getElementById("scene-list");
+                scenes.forEach(function (s) {
+                    var li = document.createElement("li");
+                    li.innerHTML =
+                        '<a href="' +
+                        basePath +
+                        s.dir +
+                        '/index.md">' +
+                        s.name +
+                        '</a><div class="desc">' +
+                        s.desc +
+                        "</div>";
+                    list.appendChild(li);
+                });
+            })();
+        </script>
+    </body>
+</html>

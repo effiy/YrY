@@ -1,6 +1,6 @@
 ---
 paths:
-  - ".claude/yry-init-explore/SKILL.md"
+  - ".claude/yry-init/steps/02-explore/STEP.md"
 description: "Exploration contracts: module map construction rules, convention detection invariants, and security surface correction protocol."
 ---
 

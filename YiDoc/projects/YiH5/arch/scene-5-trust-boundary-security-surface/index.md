@@ -8,194 +8,100 @@
 
 ```mermaid
 graph TD
-    subgraph Browser[Browser Trust Zone]
-        USER[User Input]
-        LS[localStorage]
-        DOM[DOM Tree]
-        WIN[window.*]
-    end
+    UNTRUST["Untrusted · Browser / User Input"] -->|chat / search / faq query| UI["src/views/*, src/components/*"]
+    UI -->|sanitized input| COMPOSE["src/composables/*"]
+    COMPOSE -->|call| SVC["src/services/*"]
+    SVC -->|X-Token header| NET["Network Boundary"]
+    NET -->|HTTPS| BACKEND["api.effiy.cn (trusted)"]
+    BACKEND -->|response| SVC
+    SVC -->|data| STORE["src/store/index.js"]
+    STORE -->|render| UI
 
-    subgraph App[YiH5 Application Zone]
-        STATE[views/home/state.js]
-        AUTH[services/auth.js]
-        CLIENT[services/client.js]
-        RENDER[utils/markdown.js]
-        CONFIG[config.js]
-    end
-
-    subgraph Network[Network Trust Zone]
-        API[api.effiy.cn]
-        CDN[No CDN - all local]
-    end
-
-    subgraph Backend[Backend Trust Zone]
-        DB[(MongoDB via data_service)]
-        AI[AI Chat Service]
-        FILES[File System via /read-file]
-    end
-
-    USER -->|untrusted| DOM
-    DOM -->|sanitized via escapeHtml| STATE
-    LS -->|read| AUTH
-    AUTH -->|X-Token header| CLIENT
-    CLIENT -->|HTTPS| API
-    API -->|authenticated| DB
-    API -->|authenticated| AI
-    API -->|authenticated| FILES
-    STATE -->|renderMarkdown + escapeHtml| DOM
-    RENDER -->|marked.parse| DOM
-
-    style Browser fill:#4CAF50,stroke:#333,color:#fff
-    style App fill:#2196F3,stroke:#333,color:#fff
-    style Network fill:#FF9800,stroke:#333,color:#fff
-    style Backend fill:#9C27B0,stroke:#333,color:#fff
+    LS["localStorage"] -.persists.-> AUTH["src/services/auth.js · X-Token"]
+    AUTH -.reads/writes.-> LS
 ```
 
-**Scene Overview**: Maps all trust boundaries in the YiH5 application and the security surface exposed at each boundary. Covers input sanitization, authentication, data storage, API calls, and the rendering pipeline. Identifies what is trusted, what is untrusted, and what mitigations are in place.
+**What this scene demonstrates**: Two trust boundaries — (1) the
+**browser→backend** boundary at `services/client.js`, where every
+outbound request is stamped with `X-Token` and every inbound response
+is treated as semi-trusted; (2) the **localStorage→runtime** boundary
+at `services/auth.js`, where the persisted `X-Token` is read into
+memory.
+
+**Why it matters**: YiH5 is an H5 chat app that holds a user credential
+in `localStorage`. The trust model is "the backend verifies the
+token; the client treats token-storage as a trusted enclave". Any
+XSS in `ChatMessage` (which renders `marked` output as `v-html`)
+would compromise the token. The blast radius is "full account
+takeover" if that boundary is breached.
 
 ---
 
-## §1 — Test Design
+## §1 Test Design — Verification Steps
 
-### Acceptance Criteria (AC)
+### Step 1: X-Token storage
+**Action**: `grep -n "localStorage\|X-Token" /Users/ruiyi/Downloads/YrY/YiH5/src/services/auth.js`
+**Expected**: `getToken` / `setToken` wrap `localStorage.getItem` /
+`setItem` with a fixed key; no other module touches `localStorage`
+directly.
+**File**: `src/services/auth.js`
 
-| # | AC | Mapping |
-|---|----|---------|
-| AC-1 | All user input paths are traced to their sanitization point | §2 input surface |
-| AC-2 | All API calls are authenticated (or documented as public) | §2 API surface |
-| AC-3 | localStorage usage is documented and privacy risks assessed | §2 storage surface |
-| AC-4 | XSS vectors in Markdown/Mermaid rendering are mitigated | §2 XSS surface |
-| AC-5 | The authentication flow (token → header → API) is documented end-to-end | §2 auth flow |
+### Step 2: Auth header injection
+**Action**: `grep -n "authHeader\|X-Token\|fetchWithAuth" /Users/ruiyi/Downloads/YrY/YiH5/src/services/client.js`
+**Expected**: `fetchWithAuth` merges `authHeader()` into every
+outbound `fetch` call.
+**File**: `src/services/client.js`
 
-### Spot Checks (SC)
-
-| # | Spot Check | Expected |
-|---|------------|----------|
-| SC-1 | `escapeHtml()` used on all user-controlled strings before innerHTML | ✅ Present in renderList, renderNews, welcome message, FAQ |
-| SC-2 | `X-Token` stored in localStorage, sent on every API request | ✅ services/auth.js getAuthHeaders |
-| SC-3 | `marked.parse()` output is inserted via innerHTML — is there sanitization? | ⚠️ Marked output is trusted; no DOMPurify or sanitation layer |
-| SC-4 | `mermaid.run()` renders SVG — can malicious Mermaid code execute JS? | ⚠️ Mermaid securityLevel defaults to 'strict' but needs verification |
-| SC-5 | `fetchWithAuth` uses HTTPS — are there any HTTP fallbacks? | ✅ api.effiy.cn is https:// only |
-
----
-
-## §2 — Output Inventory + Architecture Decisions
-
-### Trust Boundary Map
-
-#### Boundary 1: User Input → Application
-
-| Surface | Entry Point | Data | Sanitization | Risk |
-|---------|------------|------|-------------|------|
-| Chat input | `dom.chatInput.value` | Free text | None before storage; `escapeHtml()` before DOM insertion | Low — text is stored as-is, rendered with escaping |
-| Search query | `dom.q.value` / `dom.newsQ.value` | Free text | `escapeHtml()` in renderChips | Low |
-| Auth token prompt | `window.prompt()` | Token string | Stored to localStorage, sent as header | Medium — token visible in prompt dialog |
-| FAQ click-to-insert | `el.dataset.faqText` | Pre-fetched FAQ text | `escapeHtml()` in renderFaqSheet | Low |
-| Date picker | `dom.datePicker.value` | YYYY-MM-DD string | `isValidYMD()` validation | Low |
-| News items from API | `fetchNewsApi()` response | External content | `escapeHtml()` before DOM | Medium — content from external sources |
-
-#### Boundary 2: Application → localStorage
-
-| Key | Data | Sensitivity | Expiry |
-|-----|------|-------------|--------|
-| `YiH5.apiToken.v1` | X-Token string | **High** — API authentication | None (persists until cleared) |
-| `yiH5_sessions_scroll_position` | Scroll position integer | None | Session-only |
-| `YiH5.chat.fold` | Chat fold state | None | Persistent |
-| `YiH5.readNews` | Set of read news keys | None | Persistent |
-| `YiH5.favoriteNews` | Set of favorited news keys | None | Persistent |
-| `YiH5.tagOrder` | Tag display order | None | Persistent |
-| `YiH5.appVersion` | App version string | None | Persistent |
-| `YiH5.bottomTab` | Active tab | None | Persistent |
-| `YiH5.deleteSuccess` | Deletion confirmation message | None | 5-minute TTL |
-
-**Key finding**: Only the X-Token is sensitive. It has no expiry and is never cleared automatically. A compromised token grants full API access.
-
-#### Boundary 3: Application → Network (api.effiy.cn)
-
-| Endpoint | Auth Required | Method | Data Sent | Data Received |
-|----------|--------------|--------|-----------|---------------|
-| `/?module_name=data_service&method_name=query_documents` (sessions) | X-Token | GET | Query params | Session list |
-| `/?module_name=data_service&method_name=query_documents` (news) | X-Token | GET | Query params | News list |
-| `/?module_name=data_service&method_name=query_documents` (faqs) | X-Token | GET | Query params | FAQ list |
-| `/` (executeModule — chat) | X-Token | POST | System prompt, user prompt, model | SSE stream or JSON response |
-| `/` (executeModule — session save) | X-Token | POST | Full session object | Success/error |
-| `/` (executeModule — session delete) | X-Token | POST | Session key | Success/error |
-| `/read-file` | X-Token | POST | `target_file` path | File content |
-| `/session/save` | X-Token | POST | Session payload | Success/error |
-
-**All endpoints require X-Token authentication.** No anonymous/public endpoints exist.
-
-#### Boundary 4: Application → DOM (XSS Surface)
-
-| Vector | Source | Mitigation | Status |
-|--------|--------|------------|--------|
-| `innerHTML` with user text | Chat messages, session titles, news titles, FAQ text | `escapeHtml()` applied | ✅ Safe |
-| `innerHTML` with Markdown | `renderMarkdown(text)` → `marked.parse(text)` → `innerHTML` | marked output is trusted HTML; no post-processing | ⚠️ Review needed |
-| `innerHTML` with Mermaid SVG | `mermaid.run()` → SVG → `innerHTML` | Mermaid `securityLevel: 'strict'` blocks script execution | ✅ Mitigated by mermaid |
-| `innerHTML` with API data | News descriptions, page contexts from backend | `renderMarkdown()` wraps API data; no raw HTML insertion | ⚠️ Depends on backend trust |
-| `window.open(url, '_blank')` | Session URLs, news links | Validated as http/https only | ✅ Safe |
-
-**⚠️ Markdown XSS Risk**: `marked.parse()` can produce HTML with event handlers if the input contains raw HTML. No DOMPurify or sanitization layer exists between `marked.parse()` and `innerHTML`. The risk is partially mitigated because:
-1. Chat messages and page contexts come from the backend (trusted source)
-2. User-typed messages are plain text, not HTML
-3. But if a malicious session is fetched from the backend, its rendered HTML could contain XSS vectors
-
-#### Boundary 5: Config Injection
-
-```javascript
-const runtimeConfig = (typeof window !== "undefined" && window.YI_CONFIG) || {};
-export const config = Object.freeze(deepMerge(DEFAULT_CONFIG, runtimeConfig));
-```
-
-**Risk**: `window.YI_CONFIG` can override any config value including `apiBase`. An attacker who controls `window.YI_CONFIG` (e.g., via a browser extension or a compromised parent frame) could redirect API calls. **Severity: Medium** — requires browser-level compromise.
-
-### Security Surface Summary (from yry-init-detect)
-
-| Dimension | Value | Evidence |
-|-----------|-------|----------|
-| `userInput` | ✅ true | `chatInput`, `q`, `newsQ`, `datePicker`, `window.prompt()` |
-| `apiEndpoints` | ❌ false | No server-side endpoints defined; consumer only |
-| `dataStorage` | ❌ false | Only localStorage (not mongoose/sequelize/prisma/redis/fs.write) |
-| `authentication` | ✅ true | X-Token in localStorage, `getAuthHeaders()` on every request |
-| `thirdParty` | ✅ true | `fetch()` calls to `api.effiy.cn`, SSE streaming |
+### Step 3: v-html surface (XSS exposure)
+**Action**: `grep -rn "v-html\|innerHTML" /Users/ruiyi/Downloads/YrY/YiH5/src/`
+**Expected**: `ChatMessage` uses `v-html` to render `marked`-parsed
+Markdown; mermaid diagrams inject `innerHTML`.
+**File**: `src/components/ChatMessage/index.js`
 
 ---
 
-## §3 — Test Report
+## §2 Output Inventory
 
-| Check | Status | Notes |
-|-------|--------|-------|
-| AC-1 (input paths traced) | ✅ PASS | 6 input surfaces documented with sanitization |
-| AC-2 (API auth) | ✅ PASS | All 8 endpoints require X-Token |
-| AC-3 (localStorage documented) | ✅ PASS | 9 localStorage keys documented with sensitivity |
-| AC-4 (XSS vectors assessed) | ⚠️ REVIEW | Markdown rendering lacks HTML sanitization between marked and innerHTML |
-| AC-5 (auth flow documented) | ✅ PASS | Token → localStorage → getAuthHeaders → fetchWithAuth |
-| SC-1 (escapeHtml coverage) | ✅ PASS | Used on all user-controlled DOM insertions |
-| SC-2 (X-Token flow) | ✅ PASS | services/auth.js → all fetch calls |
-| SC-3 (marked HTML sanitization) | ⚠️ REVIEW | No DOMPurify; marked output is trusted as-is |
-| SC-4 (mermaid security) | ✅ PASS | securityLevel defaults to 'strict' in MermaidConfig |
-| SC-5 (HTTPS only) | ✅ PASS | api.effiy.cn is https:// |
-
-**Overall**: ✅ 8/10 passed, ⚠️ 2 review items.
+| File/Directory | Type | Description |
+|---------------|------|-------------|
+| `src/services/auth.js` | file | Trust boundary 1 — `localStorage` ↔ runtime |
+| `src/services/client.js` | file | Trust boundary 2 — runtime ↔ `api.effiy.cn` |
+| `src/components/ChatMessage/index.js` | file | XSS exposure surface — `v-html` of `marked` output |
+| `config.js` | file | `apiBase` — defines which origin is trusted |
+| `index.html` (source) | file | Declares CDN libs — their integrity is part of the trust boundary |
 
 ---
 
-## §4 — Self-Improvement
+## §3 Test Report — 2026-07-24
 
-| Diagnosis | Severity | Action |
-|-----------|----------|--------|
-| D0 — No HTML sanitization after marked.parse() | **High** | Add DOMPurify or similar between `marked.parse()` and `innerHTML()`. Current trust in backend data is not a sufficient security boundary. |
-| D1 — X-Token has no expiry | Medium | Token persists indefinitely in localStorage. Consider adding token expiry with refresh flow. |
-| D2 — X-Token visible in prompt dialog | Low | `window.prompt()` shows the token as plain text. Consider a password-type input or settings page. |
-| D3 — No CSP headers | Medium | Inline scripts and styles are used extensively. Adding a CSP would require significant refactoring. |
-| D4 — `window.YI_CONFIG` mutable | Low | Config injection surface is small; runtime config changes require browser compromise. |
-| D5 — No subresource integrity | Low | Script tags lack integrity hashes; only relevant if libs were loaded from CDN. |
-| D6 — No HTTPS enforcement in code | Low | Config hardcodes https://; no downgrade path exists. |
-| D7 — `window.open` with `_blank` | Low | Uses `noopener,noreferrer` — prevents tab-napping. |
-| D8 — localStorage used for auth token | Medium | Consider httpOnly cookies if a backend proxy were added, but not applicable to this SPA architecture. |
+| Step | Result | Notes |
+|------|:---:|-------|
+| 1 | ✅ | `auth.js` is the only `localStorage` accessor |
+| 2 | ✅ | `fetchWithAuth` injects `X-Token` |
+| 3 | ✅ | `ChatMessage` has a `v-html` surface — flagged for XSS review |
 
-**Follow-up Actions**:
-1. **Critical**: Add HTML sanitization (DOMPurify) between `marked.parse()` output and `innerHTML` insertion.
-2. Add token expiry mechanism or periodic token rotation.
-3. Document the security model in a SECURITY.md.
-4. Consider a periodic security review of the backend's data_service module (out of scope for this frontend assessment).
+**Overall**: pass — 3/3 steps passed
+
+---
+
+## §4 Self-Improvement
+
+### Edge Cases Found
+- `marked` is called without `sanitize: true` — backend-returned
+  assistant messages can inject arbitrary HTML into the chat view.
+- The `X-Token` is stored unencrypted in `localStorage`; any XSS
+  exfiltrates it.
+- `apiBase` is read from `config.js` (a static file) — there is no
+  per-environment override, so staging and prod share the same
+  origin (or none).
+
+### Suggested Improvements
+- Replace `marked` + `v-html` with a sanitizer (`DOMPurify`) before
+  rendering assistant replies.
+- Move the `X-Token` to `sessionStorage` (or to a JS-only closure)
+  to reduce the persistent XSS window.
+- Gate `apiBase` behind an env-aware loader (`?env=staging` query).
+
+### Limitations
+- Trust-boundary analysis assumes the CDN origin is trusted; a CDN
+  compromise is out of scope here.

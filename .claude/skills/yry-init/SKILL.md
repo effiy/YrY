@@ -38,7 +38,7 @@ type PipelineState = {
   steps: string[];           // completed step names
   profile: Profile;          // step 01-detect
   exploration: Exploration;  // step 02-explore
-  // step 03-generate writes CLAUDE.md + README.md + docs/{theme,index.html,index.css,index.js,data.js}
+  // step 03-generate writes CLAUDE.md + README.md + docs/{index.html,index.css,index.js,data.js}
   //   docs/data.js exposes three fixed sections in this order:
   //     §1 section-dependencies (third-party deps & frameworks)
   //     §2 section-stories      (arch + test story trees)
@@ -55,7 +55,7 @@ type PipelineState = {
 |---|------|-----------|----------------|--------------|
 | ① | [01-detect](./steps/01-detect/STEP.md) | `steps/01-detect/` | Probe filesystem → emit `profile` fact baseline | input: `cwd` · output: `Profile` |
 | ② | [02-explore](./steps/02-explore/STEP.md) | `steps/02-explore/` | Read source → emit `exploration` (module map + conventions + corrected security surface) | input: `profile` · output: `Exploration` |
-| ③ | [03-generate](./steps/03-generate/STEP.md) | `steps/03-generate/` | Emit `CLAUDE.md` + `README.md` + `docs/{theme,index.html,index.css,index.js,data.js}` from `profile` + `exploration` | input: `profile`, `exploration` · output: files on disk |
+| ③ | [03-generate](./steps/03-generate/STEP.md) | `steps/03-generate/` | Emit `CLAUDE.md` + `README.md` + `docs/{index.html,index.css,index.js,data.js}` from `profile` + `exploration` | input: `profile`, `exploration` · output: files on disk |
 | ④ | [04-arch](./steps/04-arch/STEP.md) | `steps/04-arch/` | Build `docs/arch/` and `docs/test/` story directories | input: `profile`, `exploration` · output: files on disk |
 | ⑤ | [05-verify](./steps/05-verify/STEP.md) | `steps/05-verify/` | 7-point readiness check + engineering gate | input: `profile`, `exploration` · output: `{ result, failures }` |
 
@@ -81,7 +81,7 @@ type PipelineState = {
 | 6 | Steps do not invoke each other | They communicate only through the `pipelineState` object held by this skill |
 | 7 | On any step failure, surface the failure to the user and halt | No silent retries, no silent skips |
 | 8 | All generated docs-facing artifacts live under `docs/` | The docs home entry, both story directories, and the reports tree stay colocated |
-| 9 | The docs home **layout** is the single source of truth at `steps/03-generate/templates/`; only the docs home **data model** is regenerated | Layout drift between `steps/03-generate/templates/` and any `<cwd>/docs/` is a verify failure |
+| 9 | Report leaf layouts live at `YiDoc/templates/<leaf>/` (repo root, shared across all projects); per-project deployment is a path-adjusted byte-copy of `index.html` only (depth-4 paths, manually maintained — apply depth-3 → depth-4 path substitution when the template changes); `index.css` / `index.js` / `app/*` are NOT copied — they're served from the shared template via `../../../templates/<leaf>/` relative paths. Only the **data model** (`YiDoc/projects/<project>/<leaf>/data.js`) is regenerated per project. Any byte-level drift between `YiDoc/templates/<leaf>/index.html` and a project's `<leaf>/index.html` shell (after path substitution) is a verify failure. The docs home (`yry-init/templates/`) is a seed for new project inits, not a byte-stable SoT — existing catalogs may carry legitimate per-project customization (e.g. inline `<style>` overrides for project-specific print footers) that diverges from the seed | The report-leaf consolidation is the load-bearing contract; the docs-home seed is a starting point, not an invariant |
 
 ## Reports Phase (after 04-arch, before 05-verify)
 
@@ -104,6 +104,7 @@ type PipelineState = {
 |----------|-----------|
 | `<cwd>/**/*` (project under init) | read + write (init's purpose is to bootstrap files) |
 | `steps/**`, `references/**`, `agents/**`, `rules/**`, `templates/**` (this skill) | read |
+| `YiDoc/templates/<leaf>/**` (shared report + arch shells, repo root) | read |
 | `docs/**` (output) | read + write |
 | Outside `<cwd>` and this skill | no automatic writes |
 
@@ -111,8 +112,9 @@ type PipelineState = {
 
 - [rules/orchestration-safety.md](./rules/orchestration-safety.md) — abort conditions, state-corruption detection, partial-run recovery, pipeline timeout.
 - [rules/pipeline-contracts.md](./rules/pipeline-contracts.md) — pipeline ordering, `pipelineState` shape, output ownership, degradation countermeasures.
+- [rules/architecture-direction.md](./rules/architecture-direction.md) — canonical YrY architecture direction: frontend projects → componentization, backend projects → modularization. Baked into CLAUDE.md and arch scenes by this skill.
 - [agents/artifact-consistency-checker.md](./agents/artifact-consistency-checker.md) — post-pipeline cross-artifact consistency checker.
-- [agents/pipeline-diagnoser.md](./agents/pipeline-diagnoser.md) — classify sub-skill failures and recommend fixes.
+- [agents/pipeline-diagnoser.md](./agents/pipeline-diagnoser.md) — classify step failures and recommend fixes.
 - [references/pipeline-lifecycle.md](./references/pipeline-lifecycle.md) — execution timeline, state transitions, artifact generation order.
 - [references/pipeline-state-reference.md](./references/pipeline-state-reference.md) — `pipelineState` type definitions, verify check catalog, filesystem output layout.
 - [steps/01-detect/STEP.md](./steps/01-detect/STEP.md) · [steps/02-explore/STEP.md](./steps/02-explore/STEP.md) · [steps/03-generate/STEP.md](./steps/03-generate/STEP.md) · [steps/04-arch/STEP.md](./steps/04-arch/STEP.md) · [steps/05-verify/STEP.md](./steps/05-verify/STEP.md) — per-step contracts.

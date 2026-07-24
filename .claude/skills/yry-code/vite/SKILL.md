@@ -83,14 +83,9 @@ user_invocable: true
 
 ## Workflow
 
-1. **Read** `references/sources.json` and `references/index.json` (the
-   manifest with `summary` + per-category `file` pointers). For a
+1. **Read** `references/index.md`). For a
    human-readable view of every resource, also read
    `references/index.md`.
-2. **Open** the per-category file at `references/categories/<slug>.json`
-   for the routed topic (e.g. `categories/plugins.json` for
-   "Vite plugin for X", `categories/get-started.json` for "starter
-   template for X framework", `categories/ssr.json` for "SSR for X").
 3. **Match** the user's intent:
    - "starter template for X framework" → `Get Started / Templates / <framework>`
    - "scaffolding tool / create-X" → `Get Started / Get Started` (8 official scaffolders)
@@ -112,29 +107,26 @@ user_invocable: true
 
 ## Supporting resources
 
-- [references/index.json](./references/index.json) — slim manifest of
-  `sources`, a `summary` (category/topic/resource counts), and a
-  `categories` list with `slug` + `file` pointer for each top-level
-  category. Start here to discover what is registered.
 - [references/index.md](./references/index.md) — human-readable topic
-  index (every resource, with `[src:…]` provenance). Regenerate from
-  the category JSON files when the upstream snapshot changes.
-- [references/categories/](./references/categories/) — per-category
-  payloads. One JSON file per top-level category (`resources.json`,
-  `get-started.json`, `plugins.json`, `ssr.json`,
-  `integrations-with-backends.json`, `migrations.json`,
-  `projects-using-vite-js.json`). Open the one matching the routed
-  topic.
-- [references/sources.json](./references/sources.json) — registered
-  sources.
-- [references/README-awesome-vite.md](./references/README-awesome-vite.md) — verbatim upstream README.
+  index (every resource, with `[src:…]` provenance). Start here to
+  discover what is registered.
+
+## Test hints
+
+For `yry-test` dispatcher consumption.
+
+| Vite concern | Recommended yry-test topic |
+|--------------|------------------------------|
+| Test runner choice (happy-dom vs jsdom vs browser mode) | `runner-choice` |
+| Dev server for Playwright E2E | `e2e-playwright` (`webServer` config) |
+| Source map / stack trace in failing test | `vitest-setup` (`server.deps.inline`) |
+| HMR stub not reloading in test | `fixture` (force remount per test) |
 
 ## Fallback
 
 | Situation | Behavior |
 |-----------|----------|
-| `references/index.md` missing | Grep `references/README-awesome-vite.md` directly, or read `references/categories/<slug>.json` for the routed topic. |
-| `references/categories/<slug>.json` missing | Use `references/index.json` `categories[*].file` as the source of truth, then fall back to grepping `references/README-awesome-vite.md`. |
+| `references/index.md` missing | Re-run `/yry-init` to rebuild the index. |
 | Topic not in the registered source | State the gap, suggest the closest related topic. |
 | User asks about Webpack / Rollup standalone / Parcel / Turbopack | Out of scope; defer to general Claude. |
 | User wants me to actually scaffold a Vite project | Recommend a template or one of the 8 scaffolders, then hand off. |

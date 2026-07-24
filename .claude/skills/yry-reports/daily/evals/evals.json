@@ -227,7 +227,7 @@
         "Uses T+Nd offsets, never calendar dates",
         "Owner placeholders are <unassigned> or git-blame suggestions labeled as draft",
         "Header is labeled DRAFT — <YYYY-MM-DD>",
-        "Reads templates/index.html (page shell) + templates/data.js (schema) before writing output"
+        "Reads YiDoc/templates/daily/index.html (page shell) + YiDoc/templates/daily/data.js (schema) before writing output"
       ]
     },
     {
@@ -238,7 +238,7 @@
       "files": [],
       "expectations": [
         "Routes to plan mode from the plan cue",
-        "Honors --format md by calling window.planToMarkdown(plan) exported from templates/index.js",
+        "Honors --format md by calling window.planToMarkdown(plan) exported from YiDoc/templates/daily/index.js",
         "Renders 30d / 90d / long-term tiers",
         "Uses - [ ] checkboxes for DoD (no - [x])",
         "Output is a single markdown file"
@@ -356,7 +356,7 @@
       "files": [],
       "expectations": [
         "Routes to plan mode",
-        "Renders the #traceability section from the Vue template in templates/index.js (data.traceability)",
+        "Renders the #traceability section from the Vue template in YiDoc/templates/daily/index.js (data.traceability)",
         "Produces one row per 30d work item",
         "Each row traces 30d work item → 30d milestone → 90d theme → long-term bet → north-star metric",
         "No cell shows — ORPHAN — (roll-up is intact)"
@@ -413,7 +413,7 @@
       "files": [],
       "expectations": [
         "Routes to plan mode",
-        "Renders the #assumptions section from the Vue template in templates/index.js (data.assumptions)",
+        "Renders the #assumptions section from the Vue template in YiDoc/templates/daily/index.js (data.assumptions)",
         "Each row has ID, Assumption, Tier, Validation (T+Nd), Signal, Consequence, Owner, Status",
         "Inferred assumptions are tagged [inferred]",
         "No consequence is 're-evaluate' or 'monitor'"
@@ -428,7 +428,7 @@
       "expectations": [
         "Routes to plan mode",
         "Finds the most recent prior plan file in ~/.claude/plans/myapp/",
-        "Renders the #diff section from the Vue template in templates/index.js (data.diff)",
+        "Renders the #diff section from the Vue template in YiDoc/templates/daily/index.js (data.diff)",
         "Drift verdict is one of: stable, minor drift, major drift",
         "Shows counts of stable / changed / added / removed items",
         "Each changed item lists ≥ 1 field-level diff with → notation"
@@ -469,7 +469,7 @@
       "files": [],
       "expectations": [
         "Routes to plan mode",
-        "Renders the #review section from the Vue template in templates/index.js (static checklist + data.review)",
+        "Renders the #review section from the Vue template in YiDoc/templates/daily/index.js (static checklist + data.review)",
         "Section sits at the bottom, after DoD",
         "Contains 6 groups: narrative, roll-up, capacity, assumptions, risks, sign-off",
         "All checkboxes are unchecked (plan is a draft — review hasn't happened)",
@@ -498,7 +498,7 @@
       "files": [],
       "expectations": [
         "Routes to plan mode",
-        "Renders the #decisions section from the Vue template in templates/index.js (data.decisions)",
+        "Renders the #decisions section from the Vue template in YiDoc/templates/daily/index.js (data.decisions)",
         "Each row has ID, Date, Decision, Rationale, Alternatives, Reversibility, Tier, Owner, Status",
         "Reversibility is one of: reversible, hard to reverse, irreversible",
         "Inferred decisions are tagged [inferred]",
@@ -556,7 +556,7 @@
       "files": [],
       "expectations": [
         "Routes to plan mode",
-        "Calls window.planToMarkdown(plan) from templates/index.js for the markdown output",
+        "Calls window.planToMarkdown(plan) from YiDoc/templates/daily/index.js for the markdown output",
         "All 13 sections render as markdown (pipe tables, - [ ] checkboxes)",
         "No HTML tags in the output (no <span>, <div>, <input>, <table>)",
         "Size tags render as plain letters (S/M/L/XL), not colored spans",
@@ -577,7 +577,7 @@
         "Tier badges render as '(30d)' / '(90d)', not <span class='tier-badge'>",
         "Status tags render as plain 'open' / 'validated', not <span class='status-open'>",
         "Action blocks use blockquote syntax (> **Action:** …), not <div class='action'>",
-        "Follows the markdown rendering contract implemented in planToMarkdown() inside templates/index.js (data shape in templates/data.js)"
+        "Follows the markdown rendering contract implemented in planToMarkdown() inside YiDoc/templates/daily/index.js (data shape in YiDoc/templates/daily/data.js)"
       ]
     }
   ]

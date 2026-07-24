@@ -1,6 +1,7 @@
 import os
 import glob
 from core._1_ytdlp import find_video_files
+from core.utils import sanitize_filename
 import shutil
 
 def cleanup(history_dir="history"):
@@ -68,13 +69,6 @@ def move_file(src, dst):
     except Exception as e:
         print(f"❌ Move failed: {src} -> {dst}")
         print(f"Error message: {str(e)}")
-
-def sanitize_filename(filename):
-    # Remove or replace disallowed characters
-    invalid_chars = '<>:"/\\|?*'
-    for char in invalid_chars:
-        filename = filename.replace(char, '_')
-    return filename
 
 if __name__ == "__main__":
     cleanup()

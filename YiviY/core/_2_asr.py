@@ -1,6 +1,12 @@
 from core.utils import *
-from core.asr_backend.demucs_vl import demucs_audio
-from core.asr_backend.audio_preprocess import process_transcription, convert_video_to_audio, split_audio, save_results, normalize_audio_volume
+from core.asr_backend import (
+    demucs_audio,
+    process_transcription,
+    convert_video_to_audio,
+    split_audio,
+    save_results,
+    normalize_audio_volume,
+)
 from core._1_ytdlp import find_video_files
 from core.utils.models import *
 
@@ -24,13 +30,13 @@ def transcribe():
     all_results = []
     runtime = load_key("whisper.runtime")
     if runtime == "local":
-        from core.asr_backend.whisperX_local import transcribe_audio as ts
+        from core.asr_backend import transcribe_audio as ts
         rprint("[cyan]🎤 Transcribing audio with local model...[/cyan]")
     elif runtime == "cloud":
-        from core.asr_backend.whisperX_302 import transcribe_audio_302 as ts
+        from core.asr_backend import transcribe_audio_302 as ts
         rprint("[cyan]🎤 Transcribing audio with 302 API...[/cyan]")
     elif runtime == "elevenlabs":
-        from core.asr_backend.elevenlabs_asr import transcribe_audio_elevenlabs as ts
+        from core.asr_backend import transcribe_audio_elevenlabs as ts
         rprint("[cyan]🎤 Transcribing audio with ElevenLabs API...[/cyan]")
 
     for start, end in segments:

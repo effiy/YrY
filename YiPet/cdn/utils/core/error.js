@@ -209,7 +209,8 @@ class ErrorHandler {
   // 注意：safeExecute 方法已在上面定义（第69行），此处删除重复定义
 }
 
-// 导出
+// 导出（classic script 风格：赋值到 module.exports / self / window）
+// ESM 具名导出见同目录 error-esm.js（YiWeb 等模块化项目使用）。
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = ErrorHandler
 } else if (typeof self !== 'undefined') {

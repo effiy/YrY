@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Setup | YiPot - Tauri Desktop Translator</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta content="跨平台桌面翻译器 — Tauri + React · 21 翻译引擎 + 15 OCR 后端 + TTS" name="description" />
+        <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+
+        <link href="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/remixicon.css" rel="stylesheet" />
+        <link href="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/app.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/docs.css" rel="stylesheet" />
+        <link href="assets/css/docs.css" rel="stylesheet" />
+    </head>
+    <body class="loading">
+        <main id="page-content" data-page="setup" data-no-toc>
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="mt-0 mb-3 font-lg">Setup</h3>
+
+                    <div class="alert alert-info" role="alert">
+                        <p class="mb-0">
+                            <strong>Note:</strong> YiPot 是 Tauri
+                            桌面应用，可从预编译安装包直接使用，或从源码构建。开发模式需要 Rust + Node.js 环境；首次
+                            Rust 编译约 5–10 分钟，后续增量编译 &lt; 30 秒。
+                        </p>
+                    </div>
+
+                    <h4 class="mt-4"><i class="ri-list-check-2 me-1"></i> Prerequisites</h4>
+
+                    <p class="text-muted">根据你的操作系统，安装以下依赖：</p>
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 22%">Requirement</th>
+                                <th style="width: 15%">Version</th>
+                                <th style="width: 15%">Platform</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Rust toolchain</strong></td>
+                                <td>≥ 1.75</td>
+                                <td>All</td>
+                                <td>编译 Rust 后端（<code>rustup</code> 推荐）</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Node.js</strong></td>
+                                <td>≥ 18 LTS</td>
+                                <td>All</td>
+                                <td>构建 React 前端 + Vite dev server</td>
+                            </tr>
+                            <tr>
+                                <td><strong>pnpm</strong></td>
+                                <td>≥ 8</td>
+                                <td>All</td>
+                                <td>包管理器（推荐）· 也可用 yarn / npm</td>
+                            </tr>
+                            <tr>
+                                <td><strong>WebKit2GTK</strong></td>
+                                <td>4.0-dev</td>
+                                <td>Linux</td>
+                                <td>Tauri WebView 后端</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Edge WebView2</strong></td>
+                                <td>≥ 110</td>
+                                <td>Windows</td>
+                                <td>Tauri WebView 后端（Win11 已内置）</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Xcode CLT</strong></td>
+                                <td>≥ 15</td>
+                                <td>macOS</td>
+                                <td>原生编译工具链</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h5 class="mt-3">Rust 安装命令</h5>
+                    <pre class="bg-light p-2 border rounded"><code># macOS / Linux
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# Windows: 下载 rustup-init.exe
+# https://win.rustup.rs/x86_64
+
+# 验证
+rustc --version
+cargo --version</code></pre>
+
+                    <h5 class="mt-3">Linux 系统依赖（Ubuntu / Debian）</h5>
+                    <pre class="bg-light p-2 border rounded"><code>sudo apt update
+sudo apt install -y libwebkit2gtk-4.0-dev build-essential libssl-dev \
+  libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev</code></pre>
+
+                    <h4 class="mt-4"><i class="ri-download-cloud-2-line me-1"></i> Installation Steps</h4>
+
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <span
+                                        class="badge bg-dark me-2"
+                                        style="min-width: 32px; height: 32px; line-height: 32px"
+                                        >1</span
+                                    >
+                                    <div class="flex-grow-1">
+                                        <h6 class="mt-0 mb-1">克隆仓库</h6>
+                                        <pre
+                                            class="bg-light p-2 border rounded mb-0"
+                                        ><code>git clone https://github.com/your-org/YiPot.git
+cd YiPot</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <span
+                                        class="badge bg-dark me-2"
+                                        style="min-width: 32px; height: 32px; line-height: 32px"
+                                        >2</span
+                                    >
+                                    <div class="flex-grow-1">
+                                        <h6 class="mt-0 mb-1">安装前端依赖</h6>
+                                        <pre class="bg-light p-2 border rounded mb-0"><code>pnpm install
+# 或 yarn install / npm install</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <span
+                                        class="badge bg-dark me-2"
+                                        style="min-width: 32px; height: 32px; line-height: 32px"
+                                        >3</span
+                                    >
+                                    <div class="flex-grow-1">
+                                        <h6 class="mt-0 mb-1">开发模式启动</h6>
+                                        <p class="text-muted mb-2 font-sm">
+                                            同时编译 Rust 后端 + 启动 Vite dev server：
+                                        </p>
+                                        <pre class="bg-light p-2 border rounded mb-0"><code>pnpm tauri dev</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <span
+                                        class="badge bg-dark me-2"
+                                        style="min-width: 32px; height: 32px; line-height: 32px"
+                                        >4</span
+                                    >
+                                    <div class="flex-grow-1">
+                                        <h6 class="mt-0 mb-1">生产构建</h6>
+                                        <p class="text-muted mb-2 font-sm">生成 .msi / .dmg / .AppImage 安装包：</p>
+                                        <pre class="bg-light p-2 border rounded mb-0"><code>pnpm tauri build
+# 产物: src-tauri/target/release/bundle/</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4"><i class="ri-ship-2-line me-1"></i> Docker Build (Optional)</h4>
+
+                    <p>无需本地 Rust 环境？可使用 Docker 构建产物：</p>
+
+                    <pre class="bg-light p-2 border rounded"><code># 使用提供的 Dockerfile
+docker build -t yipot-builder .
+
+# 提取构建产物
+docker create --name tmp yipot-builder
+docker cp tmp:/app/src-tauri/target/release/bundle ./dist
+docker rm tmp</code></pre>
+
+                    <h4 class="mt-4"><i class="ri-bug-line me-1"></i> Troubleshooting</h4>
+
+                    <div class="accordion" id="troubleshootingAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#ts1"
+                                >
+                                    Rust 编译失败：linker `cc` not found
+                                </button>
+                            </h2>
+                            <div
+                                id="ts1"
+                                class="accordion-collapse collapse"
+                                data-bs-parent="#troubleshootingAccordion"
+                            >
+                                <div class="accordion-body">
+                                    <p class="mb-1">原因：缺少 C/C++ 编译器（Rust 依赖系统 linker）。</p>
+                                    <p class="mb-0">
+                                        解决：macOS 安装 Xcode CLT（<code>xcode-select --install</code>）；Linux 安装
+                                        <code>build-essential</code>；Windows 安装 Visual Studio Build Tools（C++
+                                        workload）。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#ts2"
+                                >
+                                    WebView 空白 / 白屏
+                                </button>
+                            </h2>
+                            <div
+                                id="ts2"
+                                class="accordion-collapse collapse"
+                                data-bs-parent="#troubleshootingAccordion"
+                            >
+                                <div class="accordion-body">
+                                    <p class="mb-1">检查项：</p>
+                                    <ul class="mb-0">
+                                        <li>
+                                            Linux：确认 <code>libwebkit2gtk-4.0-dev</code> 已安装（<code
+                                                >dpkg -l | grep webkit2gtk</code
+                                            >）
+                                        </li>
+                                        <li>
+                                            Windows：确认 Edge WebView2 Runtime 已安装（Win11 内置，Win10 需手动安装）
+                                        </li>
+                                        <li>macOS：系统自带 WebKit，无需额外安装</li>
+                                        <li>打开 DevTools（右键 → Inspect Element）查看 Console 错误</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#ts3"
+                                >
+                                    前端热更新不生效
+                                </button>
+                            </h2>
+                            <div
+                                id="ts3"
+                                class="accordion-collapse collapse"
+                                data-bs-parent="#troubleshootingAccordion"
+                            >
+                                <div class="accordion-body">
+                                    <p class="mb-1">
+                                        Tauri 通过 <code>tauri.conf.json</code> 的 <code>build.devUrl</code> 指向 Vite
+                                        dev server。
+                                    </p>
+                                    <p class="mb-0">
+                                        检查：① <code>vite.config.js</code> 的 <code>server.port</code> 与
+                                        <code>tauri.conf.json</code> 的 <code>build.devUrl</code> 一致；②
+                                        未被防火墙拦截；③ 浏览器访问 <code>http://localhost:1420</code> 验证 Vite
+                                        是否正常。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#ts4"
+                                >
+                                    macOS 签名 / 公证错误
+                                </button>
+                            </h2>
+                            <div
+                                id="ts4"
+                                class="accordion-collapse collapse"
+                                data-bs-parent="#troubleshootingAccordion"
+                            >
+                                <div class="accordion-body">
+                                    <p class="mb-1">开发模式无需签名。生产分发需配置：</p>
+                                    <pre class="bg-white p-2 border rounded mb-0"><code>// tauri.conf.json
+"mac": {
+  "signingIdentity": "Developer ID Application: ...",
+  "entitlements": "entitlements.plist"
+}</code></pre>
+                                    <p class="mb-0 mt-2">
+                                        公证命令：<code
+                                            >xcrun notarytool submit &lt;app.zip&gt; --apple-id &lt;email&gt; --team-id
+                                            &lt;team&gt; --password &lt;app-pwd&gt; --wait</code
+                                        >
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4"><i class="ri-arrow-right-circle-line me-1"></i> Next Steps</h4>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 mb-3">
+                                <h6><i class="ri-palette-line text-primary me-1"></i> Customization</h6>
+                                <p class="text-muted mb-0 font-sm">Tailwind 主题、i18next 多语言、Tauri 窗口配置。</p>
+                                <a href="customization.html" class="stretched-link"></a>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 mb-3">
+                                <h6><i class="ri-stack-line text-primary me-1"></i> Windows</h6>
+                                <p class="text-muted mb-0 font-sm">5 窗口架构详解与 IPC 通信模式。</p>
+                                <a href="windows.html" class="stretched-link"></a>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 mb-3">
+                                <h6><i class="ri-question-line text-primary me-1"></i> FAQ</h6>
+                                <p class="text-muted mb-0 font-sm">翻译引擎选择、OCR 后端对比、签名问题。</p>
+                                <a href="faq.html" class="stretched-link"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script src="assets/js/layout.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/jquery@3.7.1/jquery.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/js/bootstrap.bundle.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.js"></script>
+        <script src="../../../templates/docs/js/app.min.js"></script>
+    </body>
+</html>

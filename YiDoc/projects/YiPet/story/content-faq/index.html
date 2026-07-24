@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="color-scheme" content="dark" />
+        <link
+            rel="icon"
+            href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3' fill='%230369a1'/></svg>"
+        />
+        <title>YiPet · content-faq · Story</title>
+        <style>
+            :root {
+                --bg: #0b1220;
+                --fg: #e6edf3;
+                --muted: #8b949e;
+                --accent: #2f81f7;
+                --card: #111a2b;
+                --border: #1f2a3a;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                margin: 0;
+                background: var(--bg);
+                color: var(--fg);
+                font:
+                    15px/1.6 -apple-system,
+                    BlinkMacSystemFont,
+                    "PingFang SC",
+                    sans-serif;
+            }
+            a {
+                color: var(--accent);
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            .shell {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 32px 24px 64px;
+            }
+            header {
+                border-bottom: 1px solid var(--border);
+                padding-bottom: 14px;
+                margin-bottom: 22px;
+            }
+            h1 {
+                margin: 0 0 4px;
+                font-size: 22px;
+            }
+            .tagline {
+                color: var(--muted);
+                font-size: 12px;
+            }
+            h2 {
+                margin: 24px 0 8px;
+                font-size: 17px;
+                color: #c9d1d9;
+            }
+            ul {
+                margin: 6px 0;
+                padding-left: 22px;
+            }
+            code {
+                background: #0d1626;
+                padding: 1px 5px;
+                border-radius: 3px;
+                font-family: ui-monospace, Menlo, monospace;
+                font-size: 13px;
+            }
+            .links {
+                margin-top: 18px;
+                display: flex;
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+            .links a {
+                background: #0d1626;
+                border: 1px solid var(--border);
+                padding: 5px 11px;
+                border-radius: 6px;
+                font-size: 12px;
+            }
+            footer {
+                margin-top: 40px;
+                border-top: 1px solid var(--border);
+                padding-top: 12px;
+                color: var(--muted);
+                font-size: 11px;
+            }
+        </style>
+    </head>
+    <body>
+        <main class="shell">
+            <header>
+                <h1>Story · content/faq · FAQ 快捷问答</h1>
+                <div class="tagline">Page: <a href="../index.html">YiPet Story</a> · <code>src/content/faq/</code></div>
+            </header>
+            <h2>场景</h2>
+            <ul>
+                <li><a href="scene-1-preset-send/index.html">US-F1 · 从 FAQ 列表一键发送预设问答</a></li>
+                <li><a href="scene-2-frequency-sort/index.html">US-F2 · FAQ 按使用频次排序</a></li>
+            </ul>
+            <h2>使用场景 · 组件化</h2>
+            <ul>
+                <li><code>FilterBar</code> 风格组件复用（来自共享 CDN），faq 仅提供数据契约。</li>
+            </ul>
+            <div class="links"><a href="../index.html">↑ YiPet Story</a></div>
+            <footer>由 yry-init 分析轴线驱动 · 前端组件化</footer>
+        </main>
+    </body>
+</html>

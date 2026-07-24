@@ -10,8 +10,7 @@
     {"path": "docs/index.html", "action": "copied", "source": "yry-init/templates/index.html"},
     {"path": "docs/index.css", "action": "copied", "source": "yry-init/templates/index.css"},
     {"path": "docs/index.js", "action": "copied", "source": "yry-init/templates/index.js"},
-    {"path": "docs/data.js", "action": "generated", "sections": 3},
-    {"path": "docs/theme.css", "action": "copied", "source": "yry-init/templates/theme.css"}
+    {"path": "docs/data.js", "action": "generated", "sections": 3}
   ],
   "warnings": [],
   "duration_ms": 234

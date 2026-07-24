@@ -1,0 +1,453 @@
+/*
+ * @file: index.css
+ * @purpose: All styles for the daily CTO report page.
+ *           Layered CSS architecture (CSS @layer) — lower-numbered layers
+ *           lose specificity conflicts to higher layers. This makes it safe
+ *           for any future third-party component to override base styles
+ *           without !important.
+ *
+ * @layer order: reset, tokens, base, layout, components, sections, utilities, responsive, print
+ */
+
+/* ═══════════════════════════════════════════════════════════════════
+   LAYER DECLARATIONS
+   ═══════════════════════════════════════════════════════════════════ */
+@layer reset, tokens, base, layout, components, sections, utilities, responsive, print;
+
+/* ── reset (scoped, NOT the aggressive `* { margin: 0; padding: 0 }`) ── */
+@layer reset {
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  body, h1, h2, h3, p, ul, ol, dl, dd { margin: 0; }
+  ul, ol { padding: 0; list-style: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  table { border-collapse: collapse; border-spacing: 0; }
+  [v-cloak] { display: none; }
+}
+
+/* ── design tokens (overridable per project) ────────────────────── */
+@layer tokens {
+  :root {
+    /* Surfaces */
+    --bg-primary:  #fafafa;
+    --bg-card:     #ffffff;
+    --bg-elevated: #f3f4f6;
+    --bg-narrative:#f9fafb;
+
+    /* Borders */
+    --border-default: #e3e3e8;
+    --border-strong:  #d1d5db;
+    --border-faint:   #eef0f3;
+
+    /* Text */
+    --text-primary:   #111827;
+    --text-secondary: #4b5563;
+    --text-muted:     #6b7280;
+    --text-dim:       #9ca3af;
+
+    /* Semantic palette */
+    --color-accent: #0369a1;
+    --color-green:  #15803d;  --green-bg:  #dcfce7;
+    --color-amber:  #b45309;  --amber-bg:  #fef3c7;
+    --color-red:    #b91c1c;  --red-bg:    #fee2e2;
+
+    /* Typography — system stack first, web fallback only when the
+       system has none. font-display: swap is implicit (no @font-face). */
+    --font-system: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+                   Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+                   "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+    --font-mono:   ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+                   "Liberation Mono", monospace;
+
+    /* Motion */
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --dur-fast: 150ms;
+    --dur-base: 250ms;
+
+    /* Spacing */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.625rem;
+    --radius-xl: 0.75rem;
+
+    /* Layout */
+    --content-max: 960px;
+    --safe-top:    env(safe-area-inset-top, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-primary:  #0b0d10;
+      --bg-card:     #16191d;
+      --bg-elevated: #1e2125;
+      --bg-narrative:#121519;
+
+      --border-default: #2a2f36;
+      --border-strong:  #3a3f47;
+      --border-faint:   #1f2329;
+
+      --text-primary:   #e5e7eb;
+      --text-secondary: #c5cad3;
+      --text-muted:     #9aa3af;
+      --text-dim:       #6b7280;
+
+      --color-accent: #60a5fa;
+      --color-green:  #4ade80;  --green-bg:  #052e16;
+      --color-amber:  #fbbf24;  --amber-bg:  #422006;
+      --color-red:    #f87171;  --red-bg:    #450a0a;
+    }
+  }
+}
+
+/* ── base typography + body ─────────────────────────────────────── */
+@layer base {
+  html { color-scheme: light dark; }
+  body {
+    font-family: var(--font-system);
+    background: var(--bg-primary);
+    min-height: 100vh;
+    color: var(--text-primary);
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* H5 best practice: respect iOS safe-area on body padding so the
+       floating back-to-top button never collides with the notch. */
+    padding-top: var(--safe-top);
+  }
+  a { color: var(--color-accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code, kbd, .mono {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    color: var(--text-primary);
+  }
+  h1, h2, h3, h4 { font-weight: 600; line-height: 1.3; margin: 0; }
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.0625rem; }
+  h3 { font-size: 0.875rem; }
+  p  { line-height: 1.55; }
+
+  .muted   { color: var(--text-muted); }
+  .num     { font-variant-numeric: tabular-nums; }
+  .nowrap  { white-space: nowrap; }
+}
+
+/* ── layout (page chrome) ───────────────────────────────────────── */
+@layer layout {
+  .wrap {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: 1.5rem 1.25rem 5rem;
+  }
+  header {
+    padding: 1.25rem 0 0.75rem;
+    border-bottom: 1px solid var(--border-default);
+    margin-bottom: 1rem;
+  }
+  header .meta {
+    color: var(--text-muted);
+    font-size: 0.8125rem;
+    margin-top: 0.375rem;
+  }
+  nav {
+    display: flex;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+    padding: 0.5rem 0 1rem;
+    border-bottom: 1px solid var(--border-default);
+    margin-bottom: 1rem;
+  }
+  nav a {
+    padding: 0.375rem 0.75rem;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    background: var(--bg-card);
+    font-size: 0.8125rem;
+    transition: background var(--dur-fast) var(--ease-out),
+                color      var(--dur-fast) var(--ease-out);
+  }
+  nav a:hover {
+    background: var(--color-accent);
+    color: #fff;
+    border-color: var(--color-accent);
+    text-decoration: none;
+  }
+  footer {
+    margin-top: 1.5rem;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    text-align: center;
+  }
+  footer p { margin: 0.25rem 0; }
+}
+
+/* ── components (cards, pills, KPIs, tables) ────────────────────── */
+@layer components {
+  /* Section card */
+  section {
+    margin: 1.125rem 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
+    border-radius: 0.625rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+  }
+  section > .head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  section > .head h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  section > .head .toggle {
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+  }
+  section > .body {
+    padding: 0 1rem 1rem;
+  }
+  section > .body > p,
+  section > .body > ul,
+  section > .body > ol {
+    padding: 0 0 0.75rem;
+  }
+  section.collapsed > .body { display: none; }
+
+  /* Severity pills */
+  .pill {
+    display: inline-block;
+    padding: 0.0625rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+  }
+  .pill.green  { background: var(--green-bg);  color: var(--color-green); }
+  .pill.amber  { background: var(--amber-bg);  color: var(--color-amber); }
+  .pill.red    { background: var(--red-bg);    color: var(--color-red);   }
+  .pill.muted  { background: var(--bg-elevated); color: var(--text-muted); }
+
+  /* KPI grid */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8.75rem, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .kpi {
+    padding: 0.625rem 0.75rem;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    background: var(--bg-elevated);
+  }
+  .kpi .label {
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.25rem;
+  }
+  .kpi .value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .kpi .value.critical { color: var(--color-red); }
+  .kpi .value.warn     { color: var(--color-amber); }
+  .kpi .sub {
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+    margin-top: 0.125rem;
+  }
+
+  /* Table */
+  table {
+    width: 100%;
+    font-size: 0.8125rem;
+  }
+  th, td {
+    text-align: left;
+    padding: 0.375rem 0.5rem;
+    border-bottom: 1px solid var(--border-default);
+    vertical-align: top;
+  }
+  th {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* Inline horizontal bar (used in contributor / hot-file rows) */
+  .hbar {
+    display: inline-block;
+    height: 0.5rem;
+    background: var(--color-accent);
+    border-radius: 2px;
+    vertical-align: middle;
+  }
+  .hbar.green { background: var(--color-green); }
+  .hbar.amber { background: var(--color-amber); }
+  .hbar.red   { background: var(--color-red);   }
+
+  /* Narrative block (executive summary, CTO standup) */
+  .narrative {
+    background: var(--bg-narrative);
+    border-left: 3px solid var(--color-accent);
+    padding: 0.625rem 0.875rem;
+    border-radius: var(--radius-sm);
+    margin-top: 0.5rem;
+  }
+  .narrative p { margin: 0 0 0.375rem 0; }
+  .narrative p:last-child { margin-bottom: 0; }
+  .narrative strong { color: var(--text-primary); }
+
+  /* Toolbar (date-range + project switcher) */
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    margin: 1rem 0 0.5rem;
+  }
+  .toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .toolbar-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-right: 0.25rem;
+  }
+  .date-input {
+    padding: 0.375rem 0.625rem;
+    font-size: 0.8125rem;
+    font-family: var(--font-mono);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+  .date-input:focus { outline: 2px solid var(--color-accent); outline-offset: 1px; }
+  .preset-btn {
+    padding: 0.3125rem 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--dur-fast) var(--ease-out);
+  }
+  .preset-btn:hover { color: var(--text-primary); border-color: var(--border-strong); }
+  .project-btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--dur-fast) var(--ease-out);
+    white-space: nowrap;
+  }
+  .project-btn:hover { color: var(--text-primary); border-color: var(--border-strong); transform: translateY(-1px); }
+  .project-btn.is-active {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 10%, var(--bg-card));
+    font-weight: 600;
+  }
+}
+
+/* ── section-specific layouts ───────────────────────────────────── */
+@layer sections {
+  .legend {
+    display: flex;
+    gap: 0.75rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+  .risk-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed var(--border-default);
+  }
+  .risk-row:last-child { border-bottom: 0; }
+  .risk-row .body { flex: 1; }
+  .risk-row .body .name { font-weight: 600; margin-bottom: 0.125rem; }
+  .risk-row .body .hint { color: var(--text-muted); font-size: 0.75rem; }
+  .risk-row .body .action {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+  }
+  .risk-row .sev { flex: 0 0 4rem; text-align: right; }
+
+  .truncate {
+    display: inline-block;
+    max-width: 60ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+  }
+}
+
+/* ── utilities ──────────────────────────────────────────────────── */
+@layer utilities {
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .row--wrap { flex-wrap: wrap; }
+}
+
+/* ── responsive (mobile-first overrides) ────────────────────────── */
+@layer responsive {
+  @media (max-width: 600px) {
+    h1 { font-size: 1.25rem; }
+    .wrap { padding: 1rem 0.875rem 4rem; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    table { font-size: 0.75rem; }
+    th, td { padding: 0.25rem 0.375rem; }
+  }
+}
+
+/* ── print ──────────────────────────────────────────────────────── */
+@layer print {
+  @media print {
+    body { background: #fff; color: #000; }
+    section { box-shadow: none; break-inside: avoid; }
+    nav { display: none; }
+    .toolbar { display: none; }
+    section.collapsed > .body { display: block; }
+    .pill { border: 1px solid currentColor; }
+  }
+}

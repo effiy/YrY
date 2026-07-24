@@ -124,18 +124,24 @@ Sort keys for collections:
 
 ## Page determinism
 
-`templates/index.html`, `templates/index.css`, `templates/index.js`
+`YiDoc/templates/test/index.html`, `YiDoc/templates/test/index.css`, `YiDoc/templates/test/index.js`
 are byte-stable. The analyzer MUST copy them verbatim — no
-inline substitution except:
+inline substitution. All path / scope resolution happens at
+runtime:
 
-- `{{SCOPE_TITLE}}` → the scope's basename
-- `{{SHARED_ROOT}}` → a *relative* path from `outDir` to
-  `<repo>/.claude/shared/`
+- `<title>` / `<meta description>` ← `window.REPORT_CONFIG.options.scopeTitle`
+- Shared loader path ← runtime directory-tree probe
+  (depths 0..12, then `/.claude/shared/loader.js`, then jsDelivr CDN)
 
-`{{SHARED_ROOT}}` MUST be a relative path, not the absolute
-`/.claude/shared/`. The browser resolves absolute paths to the
-filesystem root under `file://`, which breaks the report in
-offline mode.
+The `{{SCOPE_TITLE}}`, `{{SHARED_ROOT}}`,
+`{{SHARED_ROOT_LOADER_JS_ARRAY}}`, and
+`{{SHARED_ROOT_MERMAID_JS_ARRAY}}` write-time placeholders are
+**retired**. Only `data.js` varies per scope.
+
+When served over HTTP, the runtime probe prefers a relative
+`.claude/shared/loader.js` over the absolute `/` path because
+the browser resolves absolute paths against the HTTP server
+root, which may differ from the filesystem repo root.
 
 ## Markdown mirror
 

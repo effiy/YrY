@@ -78,7 +78,7 @@ roll up into long-term bets.
 2. **Collect state** — git identity, velocity, branches, churn, TODO density, test ratio
 3. **Render tiers** — 30d (milestones + WBS) → 90d (themes + epics) → long-term (bets)
 4. **Validate roll-up** — every 30d milestone → 90d theme → long-term bet; every bet has kill criteria
-5. **Write + (optional) open** — mount the Vue app from `templates/index.html` + `data.js`; or call `planToMarkdown(plan)` from `templates/index.js` for `--format md`
+5. **Write + (optional) open** — mount the Vue app from `YiDoc/templates/daily/index.html` + `data.js`; or call `planToMarkdown(plan)` from `YiDoc/templates/daily/index.js` for `--format md`
 
 ## Output layout
 
@@ -87,8 +87,8 @@ roll up into long-term bets.
 └── <YYYY-MM-DD>-plan.html   (or .md)
 ```
 
-Self-contained HTML: layered CSS in `templates/index.css` (inlined
-when the plan is written), tiny inline JS in `templates/index.js`
+Self-contained HTML: layered CSS in `YiDoc/templates/daily/index.css` (inlined
+when the plan is written), tiny inline JS in `YiDoc/templates/daily/index.js`
 for section collapse + toolbar (expand / collapse / copy-as-markdown
 / print) + risk matrix filter. No external resources at render
 time (Vue 3 is inlined too). Shareable as a single file.
@@ -117,7 +117,7 @@ time (Vue 3 is inlined too). Shareable as a single file.
    final get shared prematurely.
 5. **Owner placeholders are `<unassigned>`** until the user
    confirms. Git-blame suggestions are labeled as draft.
-6. **Template-driven.** Read `templates/index.html` (the page shell) and `templates/data.js` (the schema) before writing; do not reinvent the structure inline. The 4-file layout (`data.js · index.html · index.css · index.js`) is the source of truth. For `--format md`, call `window.planToMarkdown(plan)` exported from `templates/index.js` — the old `plan-checklist.md` template has been folded into the Vue app.
+6. **Template-driven.** Read `YiDoc/templates/daily/index.html` (the page shell) and `YiDoc/templates/daily/data.js` (the schema) before writing; do not reinvent the structure inline. The 4-file layout (`data.js · index.html · index.css · index.js`) is the source of truth. For `--format md`, call `window.planToMarkdown(plan)` exported from `YiDoc/templates/daily/index.js` — the old `plan-checklist.md` template has been folded into the Vue app.
 7. **Offline.** No network calls. Same contract as `report` mode.
 
 ## Cross-references
@@ -146,17 +146,17 @@ time (Vue 3 is inlined too). Shareable as a single file.
   template substitution pipeline (Vue mount + `planToMarkdown()`
   export, conditional rendering pattern replacing the old
   `{{*_BLOCK}}` convention, common bugs).
-- [templates/index.html](../templates/index.html) —
+- [templates/index.html](../../../../YiDoc/templates/daily/index.html) —
   page shell with Vue mount point `#app` and resource loader
-  (loads `shared/loader.js`, `data.js`, `index.css`, `index.js`).
-- [templates/index.js](../templates/index.js) —
+  (loads `data.js`, `lib/planToMarkdown.js`, `index.css`, `index.js`).
+- [templates/index.js](../../../../YiDoc/templates/daily/index.js) —
   Vue 3 app: inline template (13 sections), interactivity
   (expand/collapse, risk matrix filter, copy-as-markdown,
   print), and the `window.planToMarkdown(plan)` exporter.
-- [templates/index.css](../templates/index.css) —
+- [templates/index.css](../../../../YiDoc/templates/daily/index.css) —
   all styles, layered (`reset → tokens → base → layout →
   components → sections → utilities → responsive → print`).
-- [templates/data.js](../templates/data.js) —
+- [templates/data.js](../../../../YiDoc/templates/daily/data.js) —
   data schema (default values + example fixture), the single
   source of truth for what the renderer can render. Replaces
   the old `README.md` placeholder reference.

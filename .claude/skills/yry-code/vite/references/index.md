@@ -1,6 +1,6 @@
 # Topic Index
 
-Auto-generated from the registered sources in `references/sources.json`. Each resource is tagged with its `[src:source-id]` so the reader can trace provenance. Run `python3 scripts/parse_readme.py` to rebuild.
+Curated from registered sources. Each resource is tagged with its `[src:source-id]` so the reader can trace provenance. Run `python3 scripts/parse_readme.py` to rebuild.
 
 **Sources:**
 - `awesome-vite` — [Awesome Vite.js](https://github.com/vitejs/awesome-vite)

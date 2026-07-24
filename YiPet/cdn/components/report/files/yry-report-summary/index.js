@@ -1,9 +1,16 @@
-import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
-
+(function () {
 const compDef = {
     name: 'yryReportSummary',
-    html: '/cdn/components/business/reports/files/yry-report-summary/index.html',
-    css: '/cdn/components/business/reports/files/yry-report-summary/index.css',
+    template: `
+    <section id="summary">
+        <yry-score-bar :score="scoreObj" :alerts="alertCounts"></yry-score-bar>
+        <div class="card" v-for="c in cards" :key="c.label">
+            <div class="card-label">{{ c.label }}</div>
+            <div class="value">{{ c.value }}</div>
+        </div>
+    </section>
+`,
+    css: '../../../YiPet/cdn/components/report/files/yry-report-summary/index.css',
     props: {
         score: { type: Number, required: true },
         alertCounts: { type: Object, default: function() { return { p0: 0, p1: 0, p2: 0 }; } },
@@ -24,5 +31,6 @@ const compDef = {
         }
     }
 };
-registerGlobalComponent(compDef);
-export default compDef;
+if (typeof window !== 'undefined' && window.registerGlobalComponent) { window.registerGlobalComponent(compDef); }
+
+})();

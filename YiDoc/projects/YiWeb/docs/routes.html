@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Routes | YiWeb</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta content="YiWeb documentation" name="description" />
+        <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+
+        <link href="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/remixicon.css" rel="stylesheet" />
+        <link href="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/app.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/docs.css" rel="stylesheet" />
+        <link href="assets/css/docs.css" rel="stylesheet" />
+    </head>
+    <body class="loading">
+        <main id="page-content" data-page="routes" data-no-toc>
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="mt-0 mb-3 font-lg">Vue Router Routes</h3>
+                    <p>YiWeb Vue 3 SPA 的路由清单。使用 Vue Router 4，支持懒加载与嵌套路由。</p>
+
+                    <h4 class="mt-4">Route Catalog</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 25%">Path</th>
+                                <th style="width: 20%">Name</th>
+                                <th style="width: 20%">Component</th>
+                                <th>Meta</th>
+                                <th style="width: 10%">Lazy</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>/</code></td>
+                                <td>home</td>
+                                <td><code>views/Home.vue</code></td>
+                                <td>title: 首页</td>
+                                <td>✓</td>
+                            </tr>
+                            <tr>
+                                <td><code>/about</code></td>
+                                <td>about</td>
+                                <td><code>views/About.vue</code></td>
+                                <td>title: 关于</td>
+                                <td>✓</td>
+                            </tr>
+                            <tr>
+                                <td><code>/dashboard</code></td>
+                                <td>dashboard</td>
+                                <td><code>views/Dashboard.vue</code></td>
+                                <td>title: 仪表盘 · auth: true</td>
+                                <td>✓</td>
+                            </tr>
+                            <tr>
+                                <td><code>/profile</code></td>
+                                <td>profile</td>
+                                <td><code>views/Profile.vue</code></td>
+                                <td>title: 个人中心 · auth: true</td>
+                                <td>✓</td>
+                            </tr>
+                            <tr>
+                                <td><code>/settings</code></td>
+                                <td>settings</td>
+                                <td><code>views/Settings.vue</code></td>
+                                <td>title: 设置 · auth: true</td>
+                                <td>✓</td>
+                            </tr>
+                            <tr>
+                                <td><code>/login</code></td>
+                                <td>login</td>
+                                <td><code>views/Login.vue</code></td>
+                                <td>title: 登录 · layout: blank</td>
+                                <td>✓</td>
+                            </tr>
+                            <tr>
+                                <td><code>/:pathMatch(.*)*</code></td>
+                                <td>not-found</td>
+                                <td><code>views/NotFound.vue</code></td>
+                                <td>title: 404</td>
+                                <td>✓</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4">Router Configuration</h4>
+                    <pre class="bg-light p-3 border rounded"><code>// src/router/index.js
+import { createRouter, createWebHistory } from 'vue-router'
+
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    { path: '/', name: 'home', component: () => import('@/views/Home.vue'), meta: { title: '首页' } },
+    { path: '/dashboard', name: 'dashboard', component: () => import('@/views/Dashboard.vue'), meta: { title: '仪表盘', auth: true } },
+    // ...
+  ]
+})
+
+router.beforeEach((to, from, next) => {
+  document.title = to.meta.title ? `${to.meta.title} · YiWeb` : 'YiWeb'
+  if (to.meta.auth && !isAuthenticated()) next('/login')
+  else next()
+})</code></pre>
+
+                    <h4 class="mt-4">Navigation Guards</h4>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="border rounded p-3 h-100">
+                                <h6>beforeEach</h6>
+                                <p class="text-muted font-sm mb-0">全局前置守卫 — 处理 auth 检查与页面 title 设置</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="border rounded p-3 h-100">
+                                <h6>beforeResolve</h6>
+                                <p class="text-muted font-sm mb-0">组件加载完成后执行 — 常用于数据预加载</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="border rounded p-3 h-100">
+                                <h6>afterEach</h6>
+                                <p class="text-muted font-sm mb-0">导航完成后触发 — 常用于分析埋点、滚动恢复</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4">Meta Fields Reference</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 20%">Meta Key</th>
+                                <th style="width: 15%">Type</th>
+                                <th style="width: 20%">Default</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>title</code></td>
+                                <td>string</td>
+                                <td>'YiWeb'</td>
+                                <td>页面标题 — 显示在浏览器标签页</td>
+                            </tr>
+                            <tr>
+                                <td><code>auth</code></td>
+                                <td>boolean</td>
+                                <td>false</td>
+                                <td>是否需要登录 — 未认证重定向到 /login</td>
+                            </tr>
+                            <tr>
+                                <td><code>layout</code></td>
+                                <td>string</td>
+                                <td>'default'</td>
+                                <td>布局类型 — 'blank' 用于登录/错误页</td>
+                            </tr>
+                            <tr>
+                                <td><code>keepAlive</code></td>
+                                <td>boolean</td>
+                                <td>false</td>
+                                <td>是否缓存组件状态</td>
+                            </tr>
+                            <tr>
+                                <td><code>icon</code></td>
+                                <td>string</td>
+                                <td>—</td>
+                                <td>侧边栏图标 class</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4">Lazy Loading Strategy</h4>
+                    <p>所有页面组件使用动态 <code>import()</code> 实现懒加载。Vite 自动进行 code-splitting：</p>
+                    <pre class="bg-light p-3 border rounded"><code>// 懒加载组件 — 按需加载
+component: () => import('@/views/Dashboard.vue')
+
+// Vite 构建产物
+dist/
+├── index.html
+├── assets/
+│   ├── Dashboard-abc123.js   # 按需加载
+│   ├── Home-def456.js        # 按需加载
+│   ├── Profile-ghi789.js     # 按需加载
+│   └── vendor-jkl012.js      # 第三方库（长期缓存）
+
+// 预加载关键路由
+import(/* prefetch */ '@/views/Dashboard.vue')
+
+// 预获取数据
+router.beforeRouteEnter((to, from, next) => {
+  fetchDashboardData().then(data => {
+    next(vm => vm.initData = data)
+  })
+})</code></pre>
+
+                    <h4 class="mt-4">Route Transition</h4>
+                    <pre class="bg-light p-3 border rounded"><code>&lt;!-- App.vue --&gt;
+&lt;template&gt;
+  &lt;router-view v-slot="{ Component }"&gt;
+    &lt;transition name="fade" mode="out-in"&gt;
+      &lt;component :is="Component" /&gt;
+    &lt;/transition&gt;
+  &lt;/router-view&gt;
+&lt;/template&gt;
+
+&lt;style&gt;
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+&lt;/style&gt;</code></pre>
+
+                    <div class="alert alert-info mt-3">
+                        <strong>Tip:</strong> 添加新路由时，确保在 <code>src/router/index.js</code> 注册、创建对应的
+                        <code>views/*.vue</code> 组件、并更新侧边栏导航。
+                    </div>
+
+                    <h4 class="mt-4"><i class="ri-shield-keyhole-line me-1"></i> Navigation Guards</h4>
+                    <p>YiWeb 使用全局前置守卫进行鉴权与标题同步：</p>
+                    <pre class="bg-light p-3 border rounded"><code>router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('yry-token')
+
+  // 1. 标题同步
+  document.title = to.meta.title
+    ? `${to.meta.title} · YiWeb`
+    : 'YiWeb'
+
+  // 2. 鉴权
+  if (to.meta.requiresAuth && !token) {
+    next({ name: 'login', query: { redirect: to.fullPath } })
+    return
+  }
+
+  // 3. 埋点
+  trackPageView(to.path)
+
+  next()
+})
+
+router.afterEach((to) => {
+  // 关闭全局 loading
+  store.loading = false
+  // 滚动到顶部
+  window.scrollTo(0, 0)
+})</code></pre>
+
+                    <h4 class="mt-4"><i class="ri-route-line me-1"></i> Route Metadata Reference</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 18%">Field</th>
+                                <th style="width: 15%">Type</th>
+                                <th style="width: 15%">Required</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>title</code></td>
+                                <td>string</td>
+                                <td>yes</td>
+                                <td>浏览器标签页标题</td>
+                            </tr>
+                            <tr>
+                                <td><code>icon</code></td>
+                                <td>string</td>
+                                <td>no</td>
+                                <td>侧边栏图标（Remixicon class）</td>
+                            </tr>
+                            <tr>
+                                <td><code>requiresAuth</code></td>
+                                <td>boolean</td>
+                                <td>no</td>
+                                <td>是否需要登录</td>
+                            </tr>
+                            <tr>
+                                <td><code>keepAlive</code></td>
+                                <td>boolean</td>
+                                <td>no</td>
+                                <td>是否缓存组件状态</td>
+                            </tr>
+                            <tr>
+                                <td><code>showInNav</code></td>
+                                <td>boolean</td>
+                                <td>no</td>
+                                <td>是否在侧边栏显示</td>
+                            </tr>
+                            <tr>
+                                <td><code>order</code></td>
+                                <td>number</td>
+                                <td>no</td>
+                                <td>侧边栏排序权重</td>
+                            </tr>
+                            <tr>
+                                <td><code>permission</code></td>
+                                <td>string[]</td>
+                                <td>no</td>
+                                <td>所需权限码</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4"><i class="ri-history-line me-1"></i> History Mode</h4>
+                    <p>
+                        YiWeb 使用 <code>createWebHistory()</code>（HTML5 History API）。部署时需配置服务器回退到
+                        <code>index.html</code>：
+                    </p>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 25%">Server</th>
+                                <th>Config</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Nginx</td>
+                                <td><code>try_files $uri $uri/ /index.html;</code></td>
+                            </tr>
+                            <tr>
+                                <td>Apache</td>
+                                <td><code>FallbackResource /index.html</code></td>
+                            </tr>
+                            <tr>
+                                <td>Vercel</td>
+                                <td>自动处理（无需配置）</td>
+                            </tr>
+                            <tr>
+                                <td>Netlify</td>
+                                <td><code>/* /index.html 200</code></td>
+                            </tr>
+                            <tr>
+                                <td>GitHub Pages</td>
+                                <td>使用 <code>createWebHashHistory()</code>（# 路由）</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4"><i class="ri-refresh-line me-1"></i> Route Reload Pattern</h4>
+                    <p>强制重新加载当前路由组件（清除 keep-alive 缓存）：</p>
+                    <pre class="bg-light p-3 border rounded"><code>// 方法 1：key 强制重渲染
+&lt;router-view :key="$route.fullPath" /&gt;
+
+// 方法 2：编程式 reload
+function reloadPage() {
+  const path = route.fullPath
+  router.replace({ path: '/redirect' + path })
+}
+// redirect 路由定义
+{ path: '/redirect/:path(.*)', redirect: to => '/' + to.params.path }</code></pre>
+                </div>
+            </div>
+        </main>
+
+        <script src="assets/js/layout.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/jquery@3.7.1/jquery.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/js/bootstrap.bundle.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.js"></script>
+        <script src="../../../templates/docs/js/app.min.js"></script>
+    </body>
+</html>

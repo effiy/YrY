@@ -66,13 +66,14 @@ free-form.
 - **api mode** — calls the daily.dev REST API on the user's behalf
   (feeds, posts, tags, sources, bookmarks, custom feeds, profile
   stack, search).
-- **report mode** — reads a local git repository + filesystem,
-  synthesizes a CTO-lens daily briefing (summary, risk, health,
-  people), and writes a self-contained static HTML page built from
-  the 4-file template at `templates/report/{index.html,index.js,
-  index.css,data.js}`. Output goes to
-  `<out>/<YYYY-MM-DD>/{index.html,index.js,index.css,data.js}`
-  (default `~/.claude/reports/<project>/<YYYY-MM-DD>/`; override
+- **report mode** — reads one or more local git repositories + filesystem,
+  synthesizes a CTO-lens daily briefing for each project, and writes a
+  **data.js** file per project per date. The shell (`index.html`,
+  `index.css`, `index.js`, `app/*`) lives in
+  `YiDoc/templates/daily/` and is referenced from each project's
+  `daily/` directory via a thin loader; only `data.js` varies per
+  project per date. Output goes to
+  `YiDoc/projects/<project>/daily/<YYYY-MM-DD>.js` (override base
   with `--out`). Offline + git-only, no network calls.
 - **plan mode** — reads a local git repository + filesystem, infers
   the current state (active branches, TODOs, hot files, recent
@@ -132,7 +133,7 @@ ambiguous, ask.
 2. Mode-specific flow
    ├─ ask:      search (keyword + semantic) → dedupe → synthesize → cite
    ├─ api:      load api-reference.md → pick endpoint → curl with bearer
-   ├─ report:   git + filesystem → 4 sections → write self-contained HTML
+   ├─ report:   git + filesystem → 4 sections per project → multi-project data.js + copy of unified shell
    └─ plan:     git + filesystem → 3 tiers (30d/90d/long) × 5 sections → write self-contained HTML / MD
 3. Handle errors     → 401 / 403 / 404 / 429 with the right recovery
 4. Cite sources      → ask cites every claim; report / plan cite nothing (offline)
@@ -163,10 +164,11 @@ Key principles:
    calendar and the headcount. Always label the output as a draft
    until the user confirms.
 8. **`plan` mode uses the 4-file template.** The Vue 3 app
-   lives in `templates/index.html` + `templates/index.js`; the
-   data schema lives in `templates/data.js`; styles in
-   `templates/index.css`. Read the schema (`@data_shape` JSDoc
-   in `data.js`) before writing the output; do not reinvent
+   lives in `YiDoc/templates/daily/index.html` +
+   `YiDoc/templates/daily/index.js`; the data schema lives in
+   `YiDoc/templates/daily/data.js`; styles in
+   `YiDoc/templates/daily/index.css`. Read the schema (`@data_shape`
+   JSDoc in `data.js`) before writing the output; do not reinvent
    the structure inline. For `--format md`, call
    `window.planToMarkdown(plan)` exported from `index.js`.
 9. **`plan` mode uses the three-horizon model.** 30 days (sprint),
@@ -177,26 +179,29 @@ Key principles:
     file guesses; 90d is XL epics with themes; long-term is bets
     with kill criteria. Finer granularity at longer horizons is
     theater.
-11. **`report` mode uses the 4-file template at `templates/report/`.**
-    Output goes to `<out>/<YYYY-MM-DD>/{index.html,index.js,
-    index.css,data.js}` (default `~/.claude/reports/<project>/
-    <YYYY-MM-DD>/`; override with `--out`). The schema lives in
-    `templates/report/data.js`; do not write a one-off HTML file
-    — match the catalog pattern of `files` / `diagram` / `arch` /
-    `test` so all reports render consistently. Read
-    `@data_shape` in `data.js` before populating; `mergeWithDefaults()`
-    fills missing fields so the page still renders with sensible
-    `—` placeholders.
+11. **`report` mode uses the shared template at `YiDoc/templates/daily/`.**
+    Output goes to `YiDoc/projects/<project>/daily/<YYYY-MM-DD>.js`
+    (override base dir with `--out`). The shell
+    (`daily/index.html`) is a thin entry point, byte-identical across
+    all 6 projects, that loads the shared `index.css` and `index.js`
+    from `YiDoc/templates/daily/` via `../../../templates/daily/`. It
+    uses `?date=<YYYY-MM-DD>` query param + `document.write('<script src="' + date + '.js">')`
+    runtime injection — **not** copied from `YiDoc/templates/daily/report/`
+    (that subdir holds a *different* design — per-date-directory model,
+    shape reference only). Only `<YYYY-MM-DD>.js` varies per date per
+    project. The schema lives in `YiDoc/templates/daily/report/data.js`
+    and carries a multi-project shape (`meta` + `projects[]`) — read
+    `@data_shape` before populating. `mergeWithDefaults()` fills missing
+    fields so the page still renders with sensible `—` placeholders.
 
 ## Borders
 
 | Boundary | Permission |
 |----------|-----------|
 | `references/**` (ask-workflow, api-reference, security, token-storage, project-report-workflow, plan-workflow) | read |
-| `templates/**` (index.html, index.js, index.css, data.js — for `plan` mode) | read |
-| `templates/report/**` (index.html, index.js, index.css, data.js — for `report` mode) | read |
+| `YiDoc/templates/daily/**` (index.html, index.js, index.css, data.js — for `plan` mode; `report/` subdir for `report` mode shell) | read |
 | Skill directory | read + write |
-| `~/.claude/reports/<project>/<YYYY-MM-DD>/` (report mode output, 4-file layout) | read + write |
+| `YiDoc/projects/<project>/daily/` (report mode output: `<YYYY-MM-DD>.js` per project per date) | read + write |
 | `~/.claude/plans/<project>/` (plan mode output) | read + write |
 | `<project>/.git/**` and `<project>/**` (report / plan mode input) | read |
 | Network to `api.daily.dev` only (ask / api modes) | required (via `Bash` + `curl`) |
@@ -225,10 +230,12 @@ Key principles:
 | 8 | Back off on 429 with the `Retry-After` value | 60 req/min is shared; one runaway subagent can starve the rest |
 | 9 | Never print the `DAILY_DEV_TOKEN`, even redacted — refer to it as `$DAILY_DEV_TOKEN` | Token leaks in shared transcripts are the #1 risk |
 | 10 | In `report` mode, never execute the project; only read files | The report is offline + git-only; running the project is a different skill |
-| 11 | In `report` mode, the output is the 4-file layout under `<out>/<YYYY-MM-DD>/`: `index.html` + `index.js` + `index.css` + `data.js`, loaded from `templates/report/` | The 4-file layout matches the other yry-reports (files, diagram, arch, test) so the catalog renders consistently; do not collapse to a single self-contained `.html` |
+| 11 | In `report` mode, the output is `YiDoc/projects/<project>/daily/<YYYY-MM-DD>.js` (data only, multi-project shape: `meta` + `projects[]` — one date covers all projects). The shell — `daily/index.html` — is a thin entry point, byte-identical across all projects, that loads the shared `index.css` and `index.js` from `YiDoc/templates/daily/` via `../../../templates/daily/`. `<YYYY-MM-DD>.js` is the only file that varies per date. Do **not** copy `index.css` / `index.js` / `app/*` into the project — those live in the shared template | Unified template contract — adding a new date is a 1-file write, not a 4-file write |
+| 24 | In `report` mode, write only `YiDoc/projects/<project>/daily/<YYYY-MM-DD>.js`. The shell (`daily/index.html`) is byte-identical across all 6 projects — a thin path-adjusted entry point that loads `index.css` / `index.js` from `YiDoc/templates/daily/` via `../../../templates/daily/`. Do **not** copy `index.css` / `index.js` / `app/*` into the project; those live in the shared template. `<title>` is set at runtime from `window.REPORT_DATA.meta.title` | Unified template contract — if the shell differs between projects/dates, drift accumulates and the layout stops being a contract. The old 4-file-per-project write-time substitution is retired |
+| 25 | In `plan` mode, copy `index.html` / `index.css` / `index.js` / `lib/planToMarkdown.js` from `YiDoc/templates/daily/` verbatim — never substitute per-project values into the shell. Only `data.js` varies; the `<title>` is built at runtime as `"<project> — Engineering Plan — <date>"` from `window.PLAN_DATA.meta` | Unified template contract for plan mode — the old `{{PROJECT}}` / `{{DATE}}` write-time substitution is retired |
 | 12 | If the user asks for a curated reading list (CTO, interview, design patterns), do NOT route to a missing mode — say "out of scope for this skill" and suggest a dedicated skill | The skill used to bundle curated indexes; those have been removed, so do not pretend to have them |
-| 13 | In `plan` mode, load the template from `templates/index.html` (with `data.js` as the schema) before writing output | The 4-file layout (`data.js · index.html · index.css · index.js`) is the source of truth; reinventing the structure inline drifts from the contract and breaks evals |
-| 14 | In `plan` mode, when `--format md` is requested, call `planToMarkdown(plan)` from `templates/index.js` (the markdown exporter is a function, not a separate template file) | The old `plan-checklist.md` template has been folded into the Vue app's `planToMarkdown()` so the schema only lives in one place |
+| 13 | In `plan` mode, load the template from `YiDoc/templates/daily/index.html` (with `YiDoc/templates/daily/data.js` as the schema) before writing output | The 4-file layout (`data.js · index.html · index.css · index.js`) is the source of truth; reinventing the structure inline drifts from the contract and breaks evals |
+| 14 | In `plan` mode, when `--format md` is requested, call `planToMarkdown(plan)` from `YiDoc/templates/daily/index.js` (the markdown exporter is a function, not a separate template file) | The old `plan-checklist.md` template has been folded into the Vue app's `planToMarkdown()` so the schema only lives in one place |
 | 15 | In `plan` mode, every 30d work item must have an owner placeholder (`<unassigned>` is valid) and a size estimate (S / M / L / XL) | Unowned, unestimated tasks are the #1 reason plans rot |
 | 16 | In `plan` mode, every milestone / theme / bet (any tier) must have a DoD checklist with ≥ 1 acceptance criterion | A milestone without DoD is a wish, not a plan |
 | 17 | In `plan` mode, never invent dates. Use `T+Nd` relative offsets; the user converts to calendar dates | The skill does not know the user's calendar, holidays, or sprint cadence |
@@ -304,47 +311,59 @@ Key principles:
   the load-bearing ones for review.
 - [references/plan-render.md](./references/plan-render.md) —
   template substitution pipeline: the contract for turning
-  `templates/index.html` + `data.js` into a finished plan file.
+  `YiDoc/templates/daily/index.html` + `data.js` into a finished plan file.
   Documents the Vue mount + `planToMarkdown()` export, the
   conditional rendering pattern (replacing the old
   `{{*_BLOCK}}` → `''` convention), and the common bugs
   (unexpanded placeholders, orphan cells, pre-checked
   checkboxes, calendar dates).
-- [templates/index.html](./templates/index.html) —
+- `YiDoc/templates/daily/index.html` —
   self-contained page shell for `plan` mode output. Loads
-  `shared/loader.js`, `data.js`, `index.css`, `index.js`.
-- [templates/index.js](./templates/index.js) —
+  `data.js`, `lib/planToMarkdown.js`, `index.css`, `index.js`.
+- `YiDoc/templates/daily/index.js` —
   Vue 3 app: inline template (13 sections), interactivity
   (expand/collapse, risk matrix filter, copy-as-markdown,
   print), and the `window.planToMarkdown(plan)` exporter.
-- [templates/index.css](./templates/index.css) —
+- `YiDoc/templates/daily/index.css` —
   all styles, layered (`reset → tokens → base → layout →
   components → sections → utilities → responsive → print`).
-- [templates/data.js](./templates/data.js) —
+- `YiDoc/templates/daily/data.js` —
   data schema (default values + example fixture), the single
   source of truth for what the renderer can render. Replaces
   the old `README.md` placeholder reference.
-- [templates/report/index.html](./templates/report/index.html) —
-  page shell for `report` mode output. Loads
-  `shared/loader.js`, the `yry-back-top` shared component, the
-  report `data.js`, `index.css`, and `index.js`. The
-  `{{REPORT_TITLE}}` placeholder is replaced at write time.
-- [templates/report/index.js](./templates/report/index.js) —
-  Vue 3 app: runtime template (4 sections: summary, risk,
+- `YiDoc/templates/daily/report/index.html` —
+  **shape reference only** for a per-date-directory layout (`<YYYY-MM-DD>/index.html`
+  + `data.js`). Projects do **not** copy from this file — their `daily/index.html`
+  uses a different design (`?date=` query param + flat `<YYYY-MM-DD>.js` model +
+  `document.write` runtime injection). Kept as a design alternative; the canonical
+  source for the project REPORT-mode shell is the byte-stable copy maintained in
+  each project's `daily/index.html` (byte-identical across all 6 projects).
+- `YiDoc/templates/daily/report/index.js` —
+  Vue 3 app for the per-date-directory shape reference (4 sections: summary, risk,
   health, people), interactivity (section collapse, severity
   pills, KPI grid, horizontal bars, hbar widths), and the
   `yry-daily-report-ready` mount event. Reads
   `window.REPORT_DATA`.
-- [templates/report/index.css](./templates/report/index.css) —
+- `YiDoc/templates/daily/report/index.css` —
   all styles, layered CSS (`reset → tokens → base → layout →
   components → sections → utilities → responsive → print`)
   with light/dark mode via `prefers-color-scheme`.
-- [templates/report/data.js](./templates/report/data.js) —
+- `YiDoc/templates/daily/report/data.js` —
   data schema (`meta`, `summary`, `risk`, `health`, `people`)
   with `DEFAULT_DATA`, `EXAMPLE_DATA`, and `mergeWithDefaults()`
   so any missing scalar renders as `—` and any missing array
   produces no orphan header. `version: 1` for consumers to
   detect shape mismatches.
+- `YiDoc/templates/daily/gen_daily.js` —
+  canonical data generator (504 lines, Node.js). Reads from
+  `REPO_ROOT` (absolute, location-independent) and writes its
+  output to `process.cwd()/<YYYY-MM-DD>.js`. Each project's
+  `daily/gen_daily.js` is a 3-line wrapper that `process.chdir()`s
+  to its own `daily/` dir then `require()`s this shared script —
+  so per-project output still lands in the project's `daily/`
+  directory while the generator logic lives in one place. Run
+  via `node gen_daily.js [YYYY-MM-DD]` from any project's
+  `daily/` dir.
 
 ## Fallback
 
@@ -362,13 +381,13 @@ Key principles:
 | `report` mode: no `git` binary on PATH | Refuse with a one-line error; exit code 2 |
 | `report` mode: empty repo / no activity in window | Render the report with "no material activity" and a "this is normal" note |
 | `report` mode: `cloc` / `tokei` not installed | Fall back to a coarse `find … | xargs wc -l` count, mark the section as "coarse" |
-| `report` mode: `--out` directory not writable | Surface the underlying error, suggest `~/.claude/reports/<project>/` |
+| `report` mode: `--out` directory not writable | Surface the underlying error, suggest `YiDoc/projects/<project>/daily/` |
 | `report` mode: stale `.git` lock | Wait 5s once, retry; surface if it persists |
 | `plan` mode: `--project` not provided | Ask for the project path before touching the filesystem |
 | `plan` mode: path is not a git repo | Refuse with a one-line error; exit code 2 |
 | `plan` mode: no `git` binary on PATH | Refuse with a one-line error; exit code 2 |
 | `plan` mode: empty repo / no activity | Render the plan with "no historical signal — greenfield plan" note; still render all three tiers |
-| `plan` mode: `--format md` requested | Use `planToMarkdown(plan)` exported from `templates/index.js`; default is HTML via `templates/index.html` |
+| `plan` mode: `--format md` requested | Use `planToMarkdown(plan)` exported from `YiDoc/templates/daily/index.js`; default is HTML via `YiDoc/templates/daily/index.html` |
 | `plan` mode: `--horizon <duration>` not provided | Default to 30d for the inner tier; reflect the chosen horizon in the header |
 | `plan` mode: `--tiers` excludes one or more tiers | Render the excluded section with a single "— excluded via --tiers —" line; keep nav anchors stable |
 | `plan` mode: `--out` directory not writable | Surface the underlying error, suggest `~/.claude/plans/<project>/` |

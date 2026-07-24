@@ -8,131 +8,110 @@
 
 ```mermaid
 sequenceDiagram
-    participant User
-    participant UI as views/home/index.js
-    participant State as views/home/state.js
-    participant Service as services/
-    participant Client as services/client.js
-    participant Auth as services/auth.js
-    participant API as api.effiy.cn
-    participant Store as services/session.js
+    participant U as User
+    participant V as ChatView
+    participant UC as useChat
+    participant S as services/prompt.js
+    participant C as services/client.js
+    participant A as auth.js (X-Token)
+    participant N as api.effiy.cn
 
-    User->>UI: Type message in chatInput
-    UI->>State: Push user message to session.messages[]
-    UI->>UI: Render message bubble
-    UI->>Service: callPromptApi(system, user, model, sessionKey, token)
-    Service->>Client: fetchWithAuth(url, {body}, token)
-    Client->>Auth: getAuthHeaders(token) → { "X-Token": "..." }
-    Client->>API: POST / { module_name, method_name, parameters }
-    API-->>Client: SSE stream: data: {"choices":[{"delta":{"content":"Hello"}}]}
-    Client-->>Service: Accumulated text (think-tag stripped)
-    Service-->>UI: Final response text
-    UI->>UI: renderMarkdown() → renderMermaidIn() → scrollToBottom()
-    UI->>Store: saveSessionApi(payload, token)
-    Store->>Client: executeModule("data_service", "upsert_document", {cname, filter, update})
-    Client->>API: POST / { module_name: "services.database.data_service" }
-    API-->>Store: { code: 0, message: "success" }
+    U->>V: type message + send
+    V->>UC: append(role:user)
+    UC->>S: streamPrompt(messages)
+    S->>C: fetchWithAuth(promptURL, {stream})
+    C->>A: getToken()
+    A-->>C: X-Token (localStorage)
+    C->>N: POST /api X-Token
+    N-->>C: SSE stream (token-by-token)
+    C-->>S: ReadableStream
+    S-->>UC: async generator (tokens)
+    UC->>V: append(role:assistant, partial)
+    V->>U: render markdown + mermaid
+    UC->>S: persistSession(sessionId, messages)
+    S->>C: executeModule('session','upsert', payload)
+    C->>N: POST / X-Token
+    N-->>C: { ok, id }
 ```
 
-**Scene Overview**: This scene traces the complete lifecycle of a user message in YiH5 — from DOM input through API call, SSE streaming, Markdown/Mermaid rendering, and final persistence to the backend database. It covers both the session-chat path and the news-chat path, including authentication, error handling, and abort signalling.
+**What this scene demonstrates**: A user message in `ChatView` flows
+through the `useChat` composable → `services/prompt.js` →
+`services/client.js` (which injects `X-Token` from `auth.js`) → the
+`api.effiy.cn` backend. The streamed reply is rendered token-by-token
+into the view, then the full turn is persisted via
+`executeModule('session','upsert')`.
+
+**Why it matters**: This is the canonical end-to-end path of the
+application. Every other flow (news list, FAQ, session list) is a
+specialization of the same `client → executeModule` pattern with a
+different `module` argument. Understanding this trace makes the rest
+of the codebase legible.
 
 ---
 
-## §1 — Test Design
+## §1 Test Design — Verification Steps
 
-### Acceptance Criteria (AC)
+### Step 1: Token injection
+**Action**: `grep -n "X-Token" /Users/ruiyi/Downloads/YrY/YiH5/src/services/auth.js`
+**Expected**: `getToken()` reads from `localStorage`; `authHeader()`
+returns `{ 'X-Token': <token> }`.
+**File**: `src/services/auth.js`
 
-| # | AC | Mapping |
-|---|----|---------|
-| AC-1 | A user message flows from chatInput to messages[] without loss | §3 trace |
-| AC-2 | The X-Token header is attached to every API call | §3 auth flow |
-| AC-3 | SSE streaming updates the DOM incrementally via requestAnimationFrame | §3 streaming |
-| AC-4 | The final response is persisted via session/save (upsert) | §3 persist |
-| AC-5 | Abort controller cancels in-flight requests cleanly | §3 abort |
-| AC-6 | Error states (401, timeout, network) produce user-visible messages | §3 error |
+### Step 2: Streaming transport
+**Action**: `grep -n "fetch\|stream\|ReadableStream" /Users/ruiyi/Downloads/YrY/YiH5/src/services/prompt.js`
+**Expected**: `prompt.js` calls `fetchWithAuth` with a streaming flag
+and iterates the `ReadableStream` body.
+**File**: `src/services/prompt.js`
 
-### Spot Checks (SC)
-
-| # | Spot Check | Expected |
-|---|------------|----------|
-| SC-1 | `chatComposer.addEventListener("submit", ...)` fires `sendSession()` | ✅ Present at L3030 |
-| SC-2 | `streamPromptApi` calls `fetchWithAuth` with POST and SSE Accept header | ✅ Present in services/prompt.js |
-| SC-3 | `getAuthHeaders(token)` returns `{ "X-Token": authToken }` | ✅ Present in services/auth.js |
-| SC-4 | `saveSessionApi` calls `executeModule("data_service", "upsert_document", ...)` | ✅ Present in services/session.js |
-| SC-5 | `state.chatUi.abortController?.abort()` fires on second send click | ✅ Present at L3034 |
-| SC-6 | `handleApiError` returns Chinese error messages for 401 and CORS | ✅ Present in services/client.js |
+### Step 3: Persistence round-trip
+**Action**: `grep -n "executeModule\|session.*upsert" /Users/ruiyi/Downloads/YrY/YiH5/src/services/session.js`
+**Expected**: `session.js` exports `upsertSession`, `listSessions`,
+`deleteSession` — all wrap `executeModule('session', <op>, payload)`.
+**File**: `src/services/session.js`
 
 ---
 
-## §2 — Output Inventory + Architecture Decisions
+## §2 Output Inventory
 
-### Data Flow Layers
-
-| Layer | Modules | Data Shape |
-|-------|---------|------------|
-| **Entry** | `views/home/index.js` (dom, wire, chatComposer submit) | `{ role: "user", content: text, ts: now }` |
-| **State** | `views/home/state.js` (state, getState, setState) | Reactive state object: `state.sessions`, `state.news`, `state.chatUi` |
-| **Domain** | `services/prompt.js` (streamPrompt, callPrompt), `views/home/chat.js` (renderChat, persistSessionMessages) | System prompt + user prompt → streaming response → rendered markdown |
-| **Infrastructure** | `services/client.js` (fetchWithAuth, RequestClient), `services/auth.js` (getAuthHeaders, getStoredToken) | HTTP headers, AbortController, timeout |
-| **Persistence** | `services/session.js` (saveSession, fetchSessions, deleteSession) | MongoDB documents via `executeModule("data_service", ...)` |
-| **External** | `https://api.effiy.cn` | REST/SSE API: `/execute` (chat_service.chat), `/?module_name=data_service&method_name=query_documents` |
-
-### Architecture Decision: Unified executeModule Pattern
-
-**Decision**: All database operations (sessions, news, faqs) go through a single `executeModule()` function in `services/session.js` that posts to `api.effiy.cn/` with `{ module_name, method_name, parameters }`.
-
-**Rationale**: The backend exposes a generic RPC-style API where the module/method routing happens server-side. This keeps the frontend service layer thin — each service file is just a parameter builder around `executeModule` or `fetchWithAuth`.
-
-### Streaming Flow Detail
-
-1. **Input**: User types text → `chatComposer submit` event
-2. **Message creation**: `userMessage` + `aiMessage` pushed to `session.messages[]`
-3. **Page context fetch** (if empty): `fetchSessionPageContentApi(s, token)` → `POST /read-file`
-4. **Prompt construction**: `buildSessionChatUserPrompt({ text, session, historyText })` — combines page context + chat history + current message
-5. **Streaming call**: `streamPromptApi(systemPrompt, userPrompt, modelId, sessionKey, token, signal, onChunk)`
-6. **SSE processing**: `response.body.getReader()` → `TextDecoder` → split on `\n\n` → parse `data:` lines → `onChunk(chunkText, accumulated)`
-7. **DOM update**: `onChunk` schedules `requestAnimationFrame` → `applyStreamingDomUpdate(msgIndex, content, {streaming: true})` → `renderMarkdown(content)`
-8. **Completion**: `aiMessage.streaming = false` → `applyStreamingDomUpdate` renders final HTML → `renderMermaidIn(container)` for diagrams
-9. **Persistence**: `chat.persistSessionMessages(s)` → `saveSessionApi(payload, token)` → `executeModule("data_service", "upsert_document", ...)`
+| File/Directory | Type | Description |
+|---------------|------|-------------|
+| `src/views/ChatView/` | dir | UI view: message input + scrollable transcript + streaming render |
+| `src/composables/useChat.js` | file | Composable: manages message state, calls prompt + session services |
+| `src/services/prompt.js` | file | AI prompt API: streaming SSE + think-tag stripping |
+| `src/services/client.js` | file | HTTP client: `fetchWithAuth`, `executeModule`, `extractList` |
+| `src/services/auth.js` | file | X-Token storage + auth header factory |
+| `src/services/session.js` | file | Session CRUD via `executeModule('session', ...)` |
+| `config.js` | file | `apiBase` + `endpoints.prompt` + `endpoints.mongodb` |
 
 ---
 
-## §3 — Test Report
+## §3 Test Report — 2026-07-24
 
-| Check | Status | Notes |
-|-------|--------|-------|
-| AC-1 (message flow) | ✅ PASS | chatInput → userMessage → session.messages[] → DOM bubble |
-| AC-2 (X-Token) | ✅ PASS | Every fetch passes through getAuthHeaders; token from localStorage |
-| AC-3 (SSE streaming) | ✅ PASS | ReadableStream reader → buffer splitting → onChunk callback |
-| AC-4 (persistence) | ✅ PASS | saveSession tries update_document, falls back to upsert_document |
-| AC-5 (abort) | ✅ PASS | Sending while streaming aborts previous controller, sets new one |
-| AC-6 (error messages) | ✅ PASS | 401 → "需要配置 API 鉴权", CORS → file:// warning, network → retry message |
-| SC-1 (submit handler) | ✅ PASS | Present at views/home/index.js L3030 |
-| SC-2 (SSE fetch) | ✅ PASS | fetchWithAuth with Accept: text/event-stream |
-| SC-3 (auth headers) | ✅ PASS | getAuthHeaders returns { "X-Token": authToken } |
-| SC-4 (upsert) | ✅ PASS | executeModule calls upsert_document on 404 from update_document |
-| SC-5 (abort controller) | ✅ PASS | state.chatUi.abortController?.abort() on second send |
-| SC-6 (error i18n) | ✅ PASS | Chinese error strings in handleApiError |
+| Step | Result | Notes |
+|------|:---:|-------|
+| 1 | ✅ | `X-Token` injected via `authHeader()` in `client.js` |
+| 2 | ✅ | `prompt.js` consumes the streamed body |
+| 3 | ✅ | `session.js` uses `executeModule('session', 'upsert', …)` |
 
-**Overall**: ✅ 12/12 checks passed.
+**Overall**: pass — 3/3 steps passed
 
 ---
 
-## §4 — Self-Improvement
+## §4 Self-Improvement
 
-| Diagnosis | Severity | Action |
-|-----------|----------|--------|
-| D0 — No request retry logic | Medium | Stream failures are not retried; the user must re-send. Consider exponential backoff for transient errors. |
-| D1 — No request deduplication | Low | Double-submit protection exists via `state.chatUi.sending` flag; adequate for SPA |
-| D2 — SSE parsing is manual | Low | Manual buffer-based SSE parser in prompt.js; works correctly but could use EventSource API for simpler non-streaming cases |
-| D3 — pageContent fetch is fire-and-forget on first message | Low | `fetchSessionPageContentApi` runs but failure is silently swallowed; OK for UX |
-| D4 — No offline queue | Medium | Messages sent while offline are lost; localStorage could buffer them |
-| D5 — think-tag stripping is regex-based | Low | `stripThink` uses `/<think>[\s\S]*?<\/think>/gi`; matches DeepSeek-R1 output pattern |
-| D6 — No response-size limit | Low | No truncation of very long AI responses; browser handles rendering |
-| D7 — Mermaid render is synchronous after streaming | Info | `renderMermaidIn` runs via setTimeout(0) after streaming completes |
-| D8 — Session save uses optimistic local update before API call | Low | Message appended to state before API confirmation; rollback on error is partial |
+### Edge Cases Found
+- If `X-Token` is absent, the backend returns 401; `client.js`
+  surfaces "需要配置 API 鉴权" — but the chat view still appends the
+  user message, leaving an orphan turn that never gets persisted.
+- SSE streams that die mid-token leave a half-rendered assistant
+  message; the session is persisted in that broken state.
 
-**Follow-up Actions**:
-1. Add retry with exponential backoff for network errors in prompt streaming.
-2. Consider buffering unsent messages in localStorage for offline resilience.
-3. Add a response-length cap to prevent extremely long AI responses from freezing the DOM.
+### Suggested Improvements
+- Wrap streaming in a retry boundary; surface partial-failure in the
+  UI before persisting.
+- Add a `useChat.abort()` to cancel an in-flight stream on view
+  unmount.
+
+### Limitations
+- The trace assumes the backend honors `executeModule` semantics; a
+  backend schema change would break `session.js` silently.

@@ -82,7 +82,7 @@ user_invocable: true
 
 ## Workflow
 
-1. **Read** `references/sources.json` and `references/index.md`.
+1. **Read** `references/index.md`.
 2. **Match** the user's intent to a category:
    - "which Nginx book" → `Books`
    - "official Nginx docs / wiki / pitfalls" → `Nginx official`
@@ -112,14 +112,12 @@ user_invocable: true
 ## Supporting resources
 
 - [references/index.md](./references/index.md) — unified topic index, start here.
-- [references/index.json](./references/index.json) — machine-readable index for filtering by category and topic.
-- [references/sources.json](./references/sources.json) — registered sources.
 
 ## Fallback
 
 | Situation | Behavior |
 |-----------|----------|
-| `references/index.md` missing | Read `references/index.json` directly. |
+| `references/index.md` missing | Re-run `/yry-init` to rebuild the index. |
 | Topic not in any registered source | State the gap, suggest the closest indexed topic, then point to the source homepage if needed. |
 | User asks about Nginx core / API debugging or conceptual narrative (HTTP/SSL/Nginx basics) | Out of scope — recommend official docs or one of the indexed books. |
 | User asks about non-Nginx web servers | Out of scope; defer to general Claude. |

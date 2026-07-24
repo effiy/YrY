@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Customization | YiH5</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta content="YiH5 documentation" name="description" />
+        <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+
+        <link href="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/remixicon.css" rel="stylesheet" />
+        <link href="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/app.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/docs.css" rel="stylesheet" />
+        <link href="assets/css/docs.css" rel="stylesheet" />
+    </head>
+    <body class="loading">
+        <main id="page-content" data-page="customization" data-no-toc>
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="mt-0 mb-3 font-lg">Customization</h3>
+                    <p>YiH5 提供多种定制选项，覆盖配置、主题、API 端点与扩展机制。以下是常用定制场景与代码示例。</p>
+
+                    <h4 class="mt-4">
+                        <i class="ri-file-settings-line me-2" style="color: #f59e0b"></i>Configuration Files
+                    </h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 30%">File</th>
+                                <th>Purpose</th>
+                                <th style="width: 30%">Common Edits</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>.env</code></td>
+                                <td>环境变量配置</td>
+                                <td>API base URL · feature flags · 密钥</td>
+                            </tr>
+                            <tr>
+                                <td><code>vite.config.js</code></td>
+                                <td>Vite 构建配置</td>
+                                <td>路径别名 · 端口 · 代理 · 插件</td>
+                            </tr>
+                            <tr>
+                                <td><code>package.json</code></td>
+                                <td>依赖与脚本</td>
+                                <td>dependencies · scripts · engines</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4">
+                        <i class="ri-palette-line me-2" style="color: #f59e0b"></i>CSS Variable Reference
+                    </h4>
+                    <p>
+                        YiH5 的文档页面通过 <code>projects/templates/docs/css/docs.css</code> 定义了一套 CSS 变量。在
+                        <code>docs/assets/css/docs.css</code> 中覆盖即可定制品牌色与主题：
+                    </p>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 35%">Variable</th>
+                                <th style="width: 20%">Default</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>--yry-doc-accent</code></td>
+                                <td><code>#f59e0b</code></td>
+                                <td>品牌主色 — 侧边栏高亮、按钮、链接、进度条</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yry-doc-accent-ink</code></td>
+                                <td><code>#fff</code></td>
+                                <td>品牌色上的文字颜色（通常为白或深色）</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yry-doc-bg</code></td>
+                                <td><code>#f5f5f5</code></td>
+                                <td>页面整体背景色</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yry-doc-sidebar-bg</code></td>
+                                <td><code>#ffffff</code></td>
+                                <td>侧边栏背景色</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yry-doc-topbar-bg</code></td>
+                                <td><code>#ffffff</code></td>
+                                <td>顶部栏背景色</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yry-doc-card-bg</code></td>
+                                <td><code>#ffffff</code></td>
+                                <td>卡片背景色</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yry-doc-text</code></td>
+                                <td><code>#212529</code></td>
+                                <td>主文本颜色</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yry-doc-muted</code></td>
+                                <td><code>#6c757d</code></td>
+                                <td>次要文本颜色</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yry-doc-border</code></td>
+                                <td><code>#dee2e6</code></td>
+                                <td>边框颜色</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yry-doc-code-bg</code></td>
+                                <td><code>#f8f9fa</code></td>
+                                <td>代码块背景色</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4">
+                        <i class="ri-magic-line me-2" style="color: #f59e0b"></i>Common Customization Scenarios
+                    </h4>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="border rounded p-3 h-100">
+                                <h5><i class="ri-paint-line me-2" style="color: #f59e0b"></i> Theme & Branding</h5>
+                                <p class="text-muted font-sm">
+                                    修改 <code>docs/assets/css/docs.css</code> 中的
+                                    <code>--yry-doc-accent</code>
+                                    以适配品牌色。所有交互组件（侧边栏高亮、按钮、链接）自动继承。
+                                </p>
+                                <pre class="bg-light p-2 border rounded mb-0"><code>:root {
+  --yry-doc-accent: #ff6b6b;
+  --yry-doc-accent-ink: #ffffff;
+}</code></pre>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="border rounded p-3 h-100">
+                                <h5>
+                                    <i class="ri-plug-line me-2" style="color: #f59e0b"></i> API / Service Extension
+                                </h5>
+                                <p class="text-muted font-sm">
+                                    在 <code>src/services/</code> 或 <code>src/api/</code> 添加新模块
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="border rounded p-3 h-100">
+                                <h5><i class="ri-translate-2 me-2" style="color: #f59e0b"></i> i18n / Localization</h5>
+                                <p class="text-muted font-sm">HTML <code>lang</code> attribute + 文案替换</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="border rounded p-3 h-100">
+                                <h5>
+                                    <i class="ri-shield-keyhole-line me-2" style="color: #f59e0b"></i> Security & Auth
+                                </h5>
+                                <p class="text-muted font-sm">按需配置 CORS / CSP headers</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4">
+                        <i class="ri-code-s-slash-line me-2" style="color: #f59e0b"></i>Code Sample — Env + Vite Config
+                    </h4>
+                    <pre class="bg-light p-3 border rounded"><code># .env — YiH5 环境变量
+VITE_API_BASE_URL=https://api.example.com
+VITE_API_TIMEOUT=30000
+VITE_FEATURE_FLAG_NEW_UI=true
+VITE_FEATURE_FLAG_DARK_MODE=true
+VITE_GA_TRACKING_ID=UA-XXXXX-Y
+
+# vite.config.js — 构建配置
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import path from 'path'
+
+export default defineConfig({
+  plugins: [vue()],
+  resolve: {
+    alias: { '@': path.resolve(__dirname, 'src') }
+  },
+  server: {
+    port: 5173,
+    proxy: {
+      '/api': 'http://localhost:8000'
+    }
+  }
+})</code></pre>
+
+                    <h4 class="mt-4">
+                        <i class="ri-settings-6-line me-2" style="color: #f59e0b"></i>layout.js Configuration Shim
+                    </h4>
+                    <p>
+                        每个项目的 <code>docs/assets/js/layout.js</code> 是一个 30 行的 shim，设置
+                        <code>window.YRY_DOC_CONFIG</code> 后加载共享 layout.js：
+                    </p>
+                    <pre class="bg-light p-3 border rounded"><code>window.YRY_DOC_CONFIG = {
+    brand:        'YiH5',
+    tagline:      'Vanilla JS H5 前端',
+    version:      'v1.2.0',
+    brandColor:   '#f59e0b',
+    pages: [
+        { key: 'index',    href: 'index.html',    icon: 'ri-honour-line',    label: 'Introduction' },
+        { key: 'setup',    href: 'setup.html',    icon: 'ri-tools-fill',     label: 'Setup'        },
+        { key: 'customization', href: 'customization.html', icon: 'ri-paint-line', label: 'Customization' },
+        { key: 'specifications', href: 'specifications.html', icon: 'ri-file-list-3-line', label: 'Specifications' },
+        { key: 'pages', href: 'pages.html', icon: 'ri-window-2-line', label: 'Pages' },
+        { key: 'faq',      href: 'faq.html',      icon: 'ri-question-answer-line', label: 'FAQ'    },
+        { key: 'changelog',href: 'changelog.html',icon: 'ri-book-open-line',  label: 'Changelog'   },
+    ]
+};
+(function () {
+    var s = document.createElement('script');
+    s.src = '../../../templates/docs/js/layout.js';
+    document.head.appendChild(s);
+})();</code></pre>
+
+                    <h4 class="mt-4"><i class="ri-rocket-line me-2" style="color: #f59e0b"></i>Extension Recipes</h4>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <h6>Add a New Doc Page</h6>
+                            <ol class="font-sm">
+                                <li>创建 <code>docs/new-page.html</code></li>
+                                <li>在 layout.js shim 的 <code>pages</code> 数组添加条目</li>
+                                <li>使用 <code>&lt;main id="page-content" data-page="new-page"&gt;</code> 包裹内容</li>
+                            </ol>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6>Override Shared Styles</h6>
+                            <ol class="font-sm">
+                                <li>编辑 <code>docs/assets/css/docs.css</code></li>
+                                <li>覆盖 <code>--yry-doc-*</code> 变量</li>
+                                <li>共享 layout.js 自动应用新主题</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info mt-3">
+                        <strong>Tip:</strong> 所有 YiH5 文档页面共享 <code>projects/templates/docs/</code> 中的
+                        layout.js 与
+                        docs.css。定制交互行为（暗色模式、侧边栏搜索、TOC、代码复制按钮）时编辑共享文件即可全局生效。
+                    </div>
+
+                    <h4 class="mt-4"><i class="ri-bug-line me-1"></i> Debugging Patterns</h4>
+                    <p>YiH5 是零构建项目，所有源码在浏览器 DevTools 中可见。常用调试技巧：</p>
+                    <ul>
+                        <li><strong>Network 过滤：</strong>XHR 面板查看 <code>api.effiy.cn</code> 请求耗时与响应</li>
+                        <li>
+                            <strong>Console 断点：</strong>在 <code>index.js</code> 顶部
+                            <code>debugger;</code> 语句触发断点
+                        </li>
+                        <li><strong>Storage 查看：</strong>Application → Local Storage 检查缓存数据</li>
+                        <li><strong>Performance：</strong>录制主线程长任务 · Layout Shift 分析</li>
+                        <li><strong>Mobile 调试：</strong><code>chrome://inspect</code> · USB 连接手机</li>
+                    </ul>
+
+                    <h4 class="mt-4"><i class="ri-puzzle-line me-1"></i> Web Component Development</h4>
+                    <pre class="bg-light p-3 border rounded"><code>// 创建新组件 · cdn/components/my-widget/MyWidget.js
+class MyWidget extends HTMLElement {
+  connectedCallback() {
+    this.innerHTML = `
+      &lt;div class="my-widget"&gt;
+        &lt;slot name="header"&gt;&lt;/slot&gt;
+        &lt;slot&gt;&lt;/slot&gt;
+      &lt;/div&gt;`;
+    this.addEventListener('click', this._onClick);
+  }
+
+  static get observedAttributes() {
+    return ['variant', 'size'];
+  }
+
+  attributeChangedCallback(name, old, val) {
+    if (val !== old) this.render();
+  }
+
+  _onClick = (e) => {
+    this.dispatchEvent(new CustomEvent('action', {
+      bubbles: true,
+      detail: { source: this }
+    }));
+  }
+}
+customElements.define('my-widget', MyWidget);</code></pre>
+
+                    <h4 class="mt-4"><i class="ri-palette-line me-1"></i> Theme Tokens</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Token</th>
+                                <th style="width: 20%">Default</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>--yry-primary</code></td>
+                                <td><code>#f59e0b</code></td>
+                                <td>主品牌色（YiH5 橙）</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yry-bg</code></td>
+                                <td><code>#ffffff</code></td>
+                                <td>背景色</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yry-text</code></td>
+                                <td><code>#1f2937</code></td>
+                                <td>主文字色</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yry-border</code></td>
+                                <td><code>#e5e7eb</code></td>
+                                <td>边框色</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yry-radius</code></td>
+                                <td><code>0.5rem</code></td>
+                                <td>圆角大小</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yry-shadow-sm</code></td>
+                                <td><code>0 1px 2px rgba(0,0,0,.05)</code></td>
+                                <td>小阴影</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4"><i class="ri-speed-up-line me-1"></i> Performance Budgets</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th style="width: 20%">Target</th>
+                                <th>Budget</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>First Contentful Paint</td>
+                                <td>&lt; 1.5s</td>
+                                <td>HTML 骨架屏 · 关键 CSS 内联</td>
+                            </tr>
+                            <tr>
+                                <td>Largest Contentful Paint</td>
+                                <td>&lt; 2.5s</td>
+                                <td>图片 lazy load · 关键图预加载</td>
+                            </tr>
+                            <tr>
+                                <td>Cumulative Layout Shift</td>
+                                <td>&lt; 0.1</td>
+                                <td>图片尺寸预留 · 字体 display: swap</td>
+                            </tr>
+                            <tr>
+                                <td>Total JS Size</td>
+                                <td>&lt; 100 KB gzip</td>
+                                <td>按页面按需加载 · tree-shake</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <script src="assets/js/layout.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/jquery@3.7.1/jquery.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/js/bootstrap.bundle.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.js"></script>
+        <script src="../../../templates/docs/js/app.min.js"></script>
+    </body>
+</html>

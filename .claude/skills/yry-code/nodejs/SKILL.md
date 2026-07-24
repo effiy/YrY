@@ -72,7 +72,7 @@ user_invocable: true
 
 ## Workflow
 
-1. **Read** `references/sources.json` and `references/index.md`.
+1. **Read** `references/index.md`.
 2. **Match** the user's intent to a category:
    - "project structure / folder layout / config" → `Project Architecture`
    - "async error handling / Error class / graceful shutdown / mature logger" → `Error Handling`
@@ -98,14 +98,23 @@ user_invocable: true
 ## Supporting resources
 
 - [references/index.md](./references/index.md) — unified topic index, start here.
-- [references/index.json](./references/index.json) — machine-readable index for filtering by category, topic, and tags.
-- [references/sources.json](./references/sources.json) — registered sources.
+
+## Test hints
+
+For `yry-test` dispatcher consumption.
+
+| Node concern | Recommended yry-test topic |
+|--------------|------------------------------|
+| Vitest setup in a Node project | `vitest-setup` |
+| ESM vs CJS module resolution in tests | `vitest-setup` (`server.deps.inline`) |
+| `vi.mock` for native modules (`fs`, `child_process`) | `vitest-setup` (mock interop) |
+| Fake timers for `setTimeout` / `setInterval` | `vitest-setup` (`vi.useFakeTimers`) |
 
 ## Fallback
 
 | Situation | Behavior |
 |-----------|----------|
-| `references/index.md` missing | Read `references/index.json` directly. |
+| `references/index.md` missing | Re-run `/yry-init` to rebuild the index. |
 | Practice not in any registered source | State the gap, suggest the closest related practice (e.g. "no 'event-loop monitoring' practice — see 7.1 'Don't block the event loop'"). |
 | User asks about Node 22 / Node 24 specific features | Out of scope; point the user at the official Node.js docs or release notes. |
 | User asks about a framework tutorial (Nest, Express, Fastify, Koa) | Out of scope; defer to each framework's docs. |

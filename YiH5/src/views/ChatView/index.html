@@ -1,0 +1,53 @@
+<div class="page page-chat">
+  <van-nav-bar
+    :title="chatTitle"
+    left-text="返回"
+    left-arrow
+    @click-left="goBack"
+  >
+    <template #right>
+      <van-icon name="delete-o" size="20" @click="onDeleteSession" v-if="isSession" />
+    </template>
+  </van-nav-bar>
+
+  <div class="chat-messages" ref="msgContainer">
+    <van-empty v-if="!messages.length && !sending" description="开始对话吧" />
+    <chat-message
+      v-for="(msg, idx) in messages"
+      :key="idx"
+      :role="msg.role"
+      :content="msg.content"
+      :ts="msg.ts"
+    />
+    <van-loading v-if="sending" size="20" class="loading-center" />
+  </div>
+
+  <div class="chat-input-bar">
+    <van-field
+      v-model="inputText"
+      type="textarea"
+      rows="2"
+      autosize
+      placeholder="输入消息..."
+      :disabled="sending"
+      @keydown.enter.exact.prevent="sendMessage"
+    />
+    <van-button
+      type="primary"
+      size="small"
+      round
+      :loading="sending"
+      :disabled="!inputText.trim()"
+      @click="sendMessage"
+    >发送</van-button>
+  </div>
+
+  <faq-popup
+    v-model:show="showFaq"
+    :loading="store.faqLoading"
+    :items="store.faqItems"
+    @select="insertFaq"
+  />
+
+  <van-floating-bubble icon="question-o" @click="showFaq = true" />
+</div>

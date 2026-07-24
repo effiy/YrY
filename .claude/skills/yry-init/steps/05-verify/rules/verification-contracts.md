@@ -1,12 +1,11 @@
 ---
-paths:
-  - ".claude/yry-init-verify/SKILL.md"
+paths: [".claude/yry-init/steps/05-verify/STEP.md"]
 description: "Verification contracts: 7-check invariants, failure handling protocol, edge case rules, and the engineering gate contract."
 ---
 
 # Verification Contracts
 
-`yry-init-verify` is the engineering gate of the yry-init pipeline. These contracts define the 7 checks and failure handling rules.
+`yry-init-verify` is the engineering gate of the yry-init pipeline (step ⑤ of the yry-init skill). These contracts define the 7 checks and failure handling rules.
 
 ## The 7 Checks (Immutable)
 

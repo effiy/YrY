@@ -1,0 +1,37 @@
+<div class="filter-bar">
+  <div class="search-bar">
+    <van-search
+      :model-value="query"
+      :placeholder="queryPlaceholder"
+      shape="round"
+      @update:model-value="$emit('update:query', $event)"
+      @clear="$emit('update:query', '')"
+    />
+  </div>
+
+  <div class="date-row">
+    <van-icon name="arrow-left" class="date-arrow" @click="$emit('prev-day')" />
+    <input
+      type="date"
+      class="date-input"
+      :value="selectedDate"
+      @change="$emit('update:selectedDate', $event.target.value || '')"
+      placeholder="全部日期"
+    />
+    <van-icon name="arrow" class="date-arrow" @click="$emit('next-day')" />
+    <van-button size="small" plain type="primary" @click="$emit('toggle-sort')" class="sort-btn">
+      {{ sortKey === 'time' ? '时间' : '标题' }}
+      <van-icon :name="sortKey === 'time' ? 'clock-o' : 'a-z'" />
+    </van-button>
+  </div>
+
+  <div class="tag-row" v-if="allTags.length">
+    <span
+      v-for="tag in allTags"
+      :key="tag"
+      class="tag-pill"
+      :class="{ active: selectedTags.includes(tag) }"
+      @click="$emit('toggle-tag', tag)"
+    >{{ tag }}</span>
+  </div>
+</div>

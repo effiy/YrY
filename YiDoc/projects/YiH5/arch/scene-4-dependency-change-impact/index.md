@@ -8,170 +8,91 @@
 
 ```mermaid
 graph TD
-    subgraph External Libs
-        MARKED[marked.js]
-        MERMAID[mermaid.js]
-        MD5[md5.js]
-    end
+    V["Vue 3.4.27 (YiPet/cdn/vendor/vue.global.prod.js)"] --> A["src/App/index.js"]
+    V --> VIEWS["src/views/*"]
+    V --> COMP["src/components/*"]
+    V --> CO["src/composables/*"]
+    V --> STORE["src/store/index.js"]
+    V --> ROUTER["src/router/index.js"]
 
-    subgraph Core Modules
-        MARKDOWN[utils/markdown.js]
-        PROMPT[services/prompt.js]
-        CHAT[views/home/chat.js]
-        ENTRY[views/home/index.js]
-    end
-
-    subgraph Consumers
-        SESSION_LIST[SessionList]
-        NEWS_LIST[NewsList]
-        CHAT_UI[Chat UI]
-    end
-
-    MARKED --> MARKDOWN
-    MERMAID --> MARKDOWN
-    MD5 --> ENTRY
-
-    MARKDOWN --> CHAT
-    MARKDOWN --> ENTRY
-    PROMPT --> ENTRY
-    CHAT --> ENTRY
-
-    ENTRY --> SESSION_LIST
-    ENTRY --> NEWS_LIST
-    ENTRY --> CHAT_UI
-
-    style MARKED fill:#E91E63,stroke:#333,color:#fff
-    style MERMAID fill:#E91E63,stroke:#333,color:#fff
-    style MD5 fill:#E91E63,stroke:#333,color:#fff
+    M["marked (CDN)"] --> CM["src/components/ChatMessage/index.js"]
+    ME["mermaid (CDN)"] --> CM
+    MD5["md5 (CDN)"] --> SESSION["src/services/session.js (sessionId)"]
+    FE["fetch (browser)"] --> C["src/services/client.js"]
 ```
 
-**Scene Overview**: YiH5 has exactly three external library dependencies — marked, mermaid, and md5 — all loaded as `<script>` tags (not npm). This scene maps the blast radius of each dependency: which modules depend on it, what APIs they use, and what breaks if the library changes or is removed.
+**What this scene demonstrates**: The dependency surface and the
+blast radius of upgrading each.
+
+**Why it matters**: There is no `package.json` — all dependencies are
+either CDN `<script>` tags (Vue, marked, mermaid, md5) or browser
+natives (`fetch`). An "upgrade" is editing a URL in
+`YiPet/cdn/vendor/` (a sibling repo) or in `index.html`. The blast
+radius is wide because Vue is consumed by every view, composable,
+and the store.
 
 ---
 
-## §1 — Test Design
+## §1 Test Design — Verification Steps
 
-### Acceptance Criteria (AC)
+### Step 1: Vue version pin
+**Action**: `grep "vue.global.prod.js" /Users/ruiyi/Downloads/YrY/YiH5/index.html /Users/ruiyi/Downloads/YrY/YiDoc/projects/YiH5/index.html`
+**Expected**: Both reference `vue@3.4.27` (or unpinned fallback).
+**File**: `YiH5/index.html`, `YiDoc/projects/YiH5/index.html`
 
-| # | AC | Mapping |
-|---|----|---------|
-| AC-1 | Every external library has a documented dependency graph | §2 inventory |
-| AC-2 | The API surface each module consumes from each library is known | §2 API surface |
-| AC-3 | Upgrade/downgrade risks are documented for each library | §2 risks |
-| AC-4 | Removal impact is documented (what breaks first) | §2 removal |
-| AC-5 | No hidden transitive dependencies exist | §3 scan |
+### Step 2: Component-library imports
+**Action**: `grep -rn "from 'vue'\|from \"vue\"" /Users/ruiyi/Downloads/YrY/YiH5/src/`
+**Expected**: Zero hits — Vue is global, not imported. (If hits
+appear, the source has been migrated to bundler-style imports.)
+**File**: `src/` tree
 
-### Spot Checks (SC)
-
-| # | Spot Check | Expected |
-|---|------------|----------|
-| SC-1 | If `marked` is removed, `renderMarkdown()` fails | ✅ Chat bubbles show raw markdown text |
-| SC-2 | If `mermaid` is removed, `renderMermaidIn()` is a no-op | ✅ Diagrams silently missing; no crash |
-| SC-3 | If `md5` is removed, session ID generation falls back to simple hash | ✅ Fallback exists at L1300 in views/home/index.js |
-| SC-4 | `marked` API: only `marked.parse()` is used | ✅ Check utils/markdown.js |
-| SC-5 | `mermaid` API: only `mermaid.run()` and `mermaid.initialize()` are used | ✅ Check utils/markdown.js + mermaid/core/ |
+### Step 3: CDN library consumers
+**Action**: `grep -rn "marked\|mermaid\|md5" /Users/ruiyi/Downloads/YrY/YiH5/src/`
+**Expected**: `ChatMessage` references `marked` + `mermaid`;
+`session.js` references `md5`.
+**File**: `src/components/ChatMessage/index.js`, `src/services/session.js`
 
 ---
 
-## §2 — Output Inventory + Architecture Decisions
+## §2 Output Inventory
 
-### Dependency Impact Matrix
-
-#### 1. marked.js (`libs/marked.min.js`)
-
-| Property | Value |
-|----------|-------|
-| **Loaded in** | `views/home/index.html` (L540) |
-| **Consumed by** | `utils/markdown.js` → `renderMarkdown()` |
-| **API surface used** | `marked.parse(markdownText)` |
-| **Indirect consumers** | `views/home/index.js` (chat message rendering), `views/home/chat.js` (message bubbles), `views/home/page-context.js` (context/preview rendering) |
-| **Upgrade risk** | **Low**. `marked.parse()` is the stable API since marked v4.0. Breaking changes are rare. |
-| **Downgrade risk** | **Low**. Older versions may lack GFM table support. |
-| **Removal impact** | `renderMarkdown()` throws `ReferenceError: marked is not defined`. Chat messages render as raw Markdown text. FAQ descriptions, page contexts, changelog notes all lose formatting. **Severity: High** — core UX feature breaks. |
-
-#### 2. mermaid.js (`libs/mermaid.min.js`)
-
-| Property | Value |
-|----------|-------|
-| **Loaded in** | `views/home/index.html` (L541) |
-| **Consumed by** | `utils/markdown.js` → `renderMermaidIn()`, `mermaid/core/MermaidRenderer.js` |
-| **API surface used** | `mermaid.initialize(config)`, `mermaid.run({ nodes })` |
-| **Indirect consumers** | Chat message rendering (via `renderMermaidIn`), Mermaid plugins (AIFix, Clipboard, Download, Fullscreen, Toolbar) |
-| **Upgrade risk** | **Medium**. Mermaid v10+ changed the render API. YiH5 uses `mermaid.run()` which is compatible with v9 and v10. Upgrading to v11 may require API changes. |
-| **Downgrade risk** | **Low**. Older Mermaid versions have fewer diagram types and less robust error handling. |
-| **Removal impact** | `renderMermaidIn()` silently fails (guarded by `typeof mermaid !== 'undefined'`). Diagrams don't render but no crash. Mermaid plugins are inert. **Severity: Medium** — diagrams are a nice-to-have, not critical path. |
-
-#### 3. md5.js (`libs/md5.js`)
-
-| Property | Value |
-|----------|-------|
-| **Loaded in** | `views/home/index.html` (L542) |
-| **Consumed by** | `views/home/index.js` → `generateSessionId(url)` |
-| **API surface used** | `md5(string)` → 32-char hex string |
-| **Indirect consumers** | `initNewsSession()` — session ID generation for news→session conversion |
-| **Upgrade risk** | **Very Low**. MD5 is a stable algorithm; any md5.js implementation produces the same output. |
-| **Downgrade risk** | **Very Low**. |
-| **Removal impact** | Fallback code at L1296–1316 computes a simple DJB2-style hash. Session IDs change, which means old sessions won't be found by URL. New sessions still work. **Severity: Medium** — breaks session deduplication but doesn't crash. |
-
-### Internal Dependency Chain (No NPM)
-
-| Source Module | Depends On | Nature |
-|---------------|-----------|--------|
-| `views/home/index.js` | `components/index.js`, `services/index.js`, `utils/index.js`, `config.js`, `views/home/state.js`, `views/home/router.js`, `views/home/chat.js`, `views/home/page-context.js`, `components/SwipeScrollController.js` | Orchestrator — imports everything |
-| `views/home/chat.js` | `services/prompt.js`, `services/session.js`, `utils/markdown.js`, `utils/msg.js`, `utils/scroll.js` | Chat factory |
-| `views/home/page-context.js` | `services/prompt.js`, `services/session.js`, `utils/markdown.js` | Page context panel |
-| `services/session.js` | `services/client.js`, `services/auth.js`, `config.js` | Session CRUD |
-| `services/news.js` | `services/client.js`, `config.js`, `utils/index.js` | News API |
-| `services/prompt.js` | `services/client.js`, `config.js` | AI Chat |
-| `services/faq.js` | `services/client.js`, `config.js` | FAQ API |
-| `services/client.js` | `services/auth.js` | HTTP client |
-| `components/BaseList` | `VirtualList` | Virtual-scroll base |
-| `components/SessionList` | `VirtualList` | Session list UI |
-| `components/NewsList` | `VirtualList` | News list UI |
-| `utils/markdown.js` | `libs/marked`, `libs/mermaid` | Markdown rendering |
-
-### Architecture Decision: No Package Manager
-
-**Decision**: YiH5 uses no package manager (npm/yarn/pnpm). External libraries are copied into `libs/` and loaded via `<script>` tags.
-
-**Rationale**: Zero-install deployment. No `node_modules/`, no lockfile, no build step. The tradeoff is manual version management and no automated vulnerability scanning. For a single-page tool with 3 dependencies, this is acceptable.
+| File/Directory | Type | Description |
+|---------------|------|-------------|
+| `YiH5/index.html` | file | Source shell — declares Vue CDN + marked + mermaid + md5 |
+| `YiDoc/projects/YiH5/index.html` | file | Dashboard shell — declares Vue CDN |
+| `src/components/ChatMessage/index.js` | file | Consumes `marked` (render) + `mermaid` (diagram) globals |
+| `src/services/session.js` | file | Consumes `md5` global for session ID generation |
+| `src/services/client.js` | file | Uses native `fetch` — no third-party HTTP lib |
 
 ---
 
-## §3 — Test Report
+## §3 Test Report — 2026-07-24
 
-| Check | Status | Notes |
-|-------|--------|-------|
-| AC-1 (dependency graph documented) | ✅ PASS | All 3 libs mapped with consumer modules |
-| AC-2 (API surface known) | ✅ PASS | marked.parse(), mermaid.run(), md5() documented |
-| AC-3 (upgrade risks documented) | ✅ PASS | marked: Low, mermaid: Medium, md5: Very Low |
-| AC-4 (removal impact documented) | ✅ PASS | marked: High, mermaid: Medium, md5: Medium |
-| AC-5 (no hidden transitive deps) | ✅ PASS | Only 3 script tags; no dynamic imports of external libs |
-| SC-1 (marked removal) | ✅ PASS | renderMarkdown throws ReferenceError |
-| SC-2 (mermaid removal) | ✅ PASS | Guarded by typeof check; no crash |
-| SC-3 (md5 fallback) | ✅ PASS | DJB2-style fallback at L1296 |
-| SC-4 (marked API surface) | ✅ PASS | Only marked.parse() called |
-| SC-5 (mermaid API surface) | ✅ PASS | Only mermaid.initialize() and mermaid.run() |
+| Step | Result | Notes |
+|------|:---:|-------|
+| 1 | ✅ | Vue 3.4.27 pinned at YiPet/cdn path |
+| 2 | ✅ | No `from 'vue'` imports — Vue is global |
+| 3 | ✅ | marked / mermaid in ChatMessage; md5 in session |
 
-**Overall**: ✅ 10/10 checks passed.
+**Overall**: pass — 3/3 steps passed
 
 ---
 
-## §4 — Self-Improvement
+## §4 Self-Improvement
 
-| Diagnosis | Severity | Action |
-|-----------|----------|--------|
-| D0 — No version pinning for libs | Medium | libs/ files have no version metadata. Consider adding a `libs/versions.json` or embedding version comments. |
-| D1 — No automated dependency check | Medium | No `npm audit` equivalent. A manual check of marked/mermaid/md5 for known CVEs is needed periodically. |
-| D2 — marked removal hard-fails | High | `renderMarkdown()` has no typeof guard. Add `if (typeof marked === 'undefined') return escapeHtml(raw)` as a safety net. |
-| D3 — No subresource integrity (SRI) | Low | Script tags lack `integrity` attributes. Not critical for local files, but good practice. |
-| D4 — md5 fallback produces different IDs | Medium | The fallback hash is not MD5-compatible; old sessions become orphans. Document as a known limitation. |
-| D5 — All three libs are synchronous blocking scripts | Low | Loaded before `<script type="module">`; blocks first paint by a few ms. Acceptable for tooling. |
-| D6 — No tree-shaking possible | Info | Full library files are loaded; no partial imports. Acceptable for these small libs. |
-| D7 — Mermaid plugins assume mermaid global | Low | Each plugin accesses `window.mermaid` directly; safe as long as mermaid.js loads first. |
-| D8 — No CSP headers | Low | No Content-Security-Policy; inline scripts and styles are used freely. |
+### Edge Cases Found
+- Upgrading Vue 3.4 → 3.5 may change reactivity timing for
+  `useChat`'s streaming append; manual smoke test required.
+- Marked v5 removes the default-exported `marked()` — `ChatMessage`
+  would need to switch to `marked.parse()`.
+- Mermaid v11 changes `initialize` signature; the
+  `MermaidConfig.js` would need updating (if still present).
 
-**Follow-up Actions**:
-1. Add a `typeof marked` guard in `renderMarkdown()` to prevent hard crashes.
-2. Add version comments at the top of each lib file.
-3. Consider adding a `libs/README.md` with download URLs and versions.
+### Suggested Improvements
+- Pin every CDN URL with an integrity hash (`subresource integrity`).
+- Add a smoke-test HTML page that loads each CDN lib and asserts the
+  global is present — run before any upgrade.
+
+### Limitations
+- Without a lockfile, transitive CDN deps (e.g., marked's
+  internal helpers) are invisible.

@@ -1,0 +1,32 @@
+/* FaqPopup — 常见问题弹窗样式 */
+.faq-popup {
+  padding: var(--spacing-lg);
+  height: 100%;
+  overflow-y: auto;
+}
+
+.faq-popup h3 {
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--spacing-md);
+  text-align: center;
+}
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.faq-item {
+  padding: 12px 16px;
+  background: var(--bg-color);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  font-size: var(--font-size-md);
+  color: var(--text-color);
+  transition: background 0.15s;
+}
+
+.faq-item:active {
+  background: var(--border-color);
+}

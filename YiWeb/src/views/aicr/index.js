@@ -2,17 +2,17 @@
  * 代码审查页面主入口
  * author: liangliang
  */
-import { createStore } from '/src/views/aicr/hooks/store.js';
-import { useComputed } from '/src/views/aicr/hooks/useComputed.js';
-import { useMethods } from '/src/views/aicr/hooks/useMethods.js';
-import { createMainPageMethods } from '/src/views/aicr/hooks/mainPageMethods.js';
+import { createStore } from './state/store.js';
+import { useComputed } from './composables/useComputed.js';
+import { createTagComputeds } from './composables/tagComputeds.js';
+import { useMethods } from './composables/useMethods.js';
+import { createMainPageMethods } from './composables/mainPageMethods.js';
 import { createBaseView } from '/cdn/utils/view/baseView.js';
 import { logInfo, logWarn, logError } from '/cdn/utils/core/log.js';
-import { setupBrowserExtensionErrorFilter } from '/cdn/utils/core/error.js';
+import { setupBrowserExtensionErrorFilter } from '/cdn/utils/core/error-esm.js';
 import '/cdn/utils/ui/tooltipPortal.js';
-import { createSidebarResizers } from '/src/views/aicr/utils/resizer.js';
-import { setupAicrEventListeners } from '/src/views/aicr/utils/listenerManager.js';
-import { getFirstLevelNames, extractStoryNames } from '/src/views/aicr/utils/filterHelpers.js';
+import { createSidebarResizers } from '/src/utils/resizer.js';
+import { setupAicrEventListeners } from '/src/utils/listenerManager.js';
 
 // 创建代码审查页面应用
 (async function initAicrApp() {
@@ -20,35 +20,7 @@ import { getFirstLevelNames, extractStoryNames } from '/src/views/aicr/utils/fil
         // 在外部创建 store，以便在 onMounted 中访问
         const store = createStore();
 
-        // 跨筛选联动助手：检查项目是否包含所有选中的 skills/templates
-        const _projectPassesClaudeFilter = (projectName) => {
-            const sessions = store.sessions?.value || [];
-            const selectedSkills = store.selectedSkillTags?.value || [];
-            const selectedTemplates = store.selectedTemplateTags?.value || [];
-            const selectedRules = store.selectedRuleTags?.value || [];
-            const selectedAgents = store.selectedAgentTags?.value || [];
-            if (selectedSkills.length === 0 && selectedTemplates.length === 0 && selectedRules.length === 0 && selectedAgents.length === 0) return true;
-
-            const _checkClaudeDir = (dirName, selectedNames) => {
-                if (selectedNames.length === 0) return true;
-                return selectedNames.every(name => {
-                    const seg = '/' + dirName + '/' + name;
-                    return sessions.some(s => {
-                        const fp = s.file_path || s.filePath || '';
-                        const tags = Array.isArray(s.tags) ? s.tags : [];
-                        const proj = tags[0] || fp.split('/')[0] || '';
-                        return proj === projectName && (fp.includes(seg + '/') || fp.endsWith(seg));
-                    });
-                });
-            };
-
-            if (!_checkClaudeDir('skills', selectedSkills)) return false;
-            if (!_checkClaudeDir('templates', selectedTemplates)) return false;
-            if (!_checkClaudeDir('rules', selectedRules)) return false;
-            if (!_checkClaudeDir('agents', selectedAgents)) return false;
-
-            return true;
-        };
+        const tagComputeds = createTagComputeds(store);
 
 
         const app = await createBaseView({
@@ -109,9 +81,6 @@ import { getFirstLevelNames, extractStoryNames } from '/src/views/aicr/utils/fil
                 sidebarWidth: store.sidebarWidth,
                 chatPanelCollapsed: store.chatPanelCollapsed,
                 chatPanelWidth: store.chatPanelWidth,
-                // 项目管理 - Removed
-                // projects: store.projects,
-                // selectedProject: store.selectedProject,
 
                 // 搜索相关状态
                 searchQuery: store.searchQuery,
@@ -176,45 +145,27 @@ import { getFirstLevelNames, extractStoryNames } from '/src/views/aicr/utils/fil
                     store.loadChatPanelSettings();
                 }
 
-                // 监听 activeSession 变化，绑定 welcome-card 事件
-                if (store && store.activeSession && mountedApp) {
-                    // 使用 setInterval 定期检查并绑定事件（简单但有效的方法）
-                    const bindWelcomeCardEventsInterval = setInterval(() => {
-                        try {
-                            const welcomeCard = document.querySelector('[data-welcome-message]');
-                            if (welcomeCard && mountedApp.bindWelcomeCardEvents) {
-                                // 检查是否已经绑定过事件（通过检查是否有 data-events-bound 属性）
-                                if (!welcomeCard.hasAttribute('data-events-bound')) {
+                // 监听 activeSession 变化，在其渲染后绑定 welcome-card 事件（替代旧 setInterval 轮询）
+                if (store && store.activeSession && mountedApp && typeof mountedApp.bindWelcomeCardEvents === 'function') {
+                    const { watch, nextTick } = Vue;
+                    watch(
+                        () => store.activeSession.value,
+                        () => {
+                            nextTick(() => {
+                                const welcomeCard = document.querySelector('[data-welcome-message]');
+                                if (welcomeCard && !welcomeCard.hasAttribute('data-events-bound')) {
                                     mountedApp.bindWelcomeCardEvents(welcomeCard);
                                     welcomeCard.setAttribute('data-events-bound', 'true');
                                 }
-                            }
-                        } catch (e) {
-                            // 忽略错误，继续运行
-                        }
-                    }, 500);
-
-                    // 清理定时器
-                    window.addEventListener('beforeunload', () => {
-                        clearInterval(bindWelcomeCardEventsInterval);
-                    });
+                            });
+                        },
+                        { immediate: true }
+                    );
                 }
-
-                // 调试：检查会话相关状态
-                logInfo('[代码审查页面] 会话相关状态检查:', {
-                    hasSessions: !!store.sessions,
-                    sessionsValue: store.sessions?.value,
-                    hasLoadSessions: typeof store.loadSessions === 'function',
-                    viewMode: store.viewMode?.value
-                });
 
                 // 创建侧边栏拖拽条
                 setTimeout(() => {
                     createSidebarResizers(store);
-                    // 监听侧边栏折叠状态，隐藏/显示拖拽条
-                    if (store.sidebarCollapsed) {
-                        store.sidebarCollapsed.value = store.sidebarCollapsed.value; // 触发响应式更新
-                    }
                 }, 500);
 
                 if (store) {
@@ -374,492 +325,22 @@ import { getFirstLevelNames, extractStoryNames } from '/src/views/aicr/utils/fil
                     selectedRuleTags: function () { return store.selectedRuleTags ? store.selectedRuleTags.value : []; },
                     selectedAgentTags: function () { return store.selectedAgentTags ? store.selectedAgentTags.value : []; },
                     claudeFilterAllowedSessionKeys: function () {
-                        const sks = store.selectedSkillTags?.value || [];
-                        const tms = store.selectedTemplateTags?.value || [];
-                        const rls = store.selectedRuleTags?.value || [];
-                        const ags = store.selectedAgentTags?.value || [];
-                        if (sks.length === 0 && tms.length === 0 && rls.length === 0 && ags.length === 0) return null;
-                        const sessions = store.sessions?.value || [];
-                        const _match = (fp, dir, names) => {
-                            if (names.length === 0) return true;
-                            return names.every(n => fp.includes('/' + dir + '/' + n + '/') || fp.endsWith('/' + dir + '/' + n));
-                        };
-                        const result = new Set();
-                        for (const s of sessions) {
-                            const fp = s.file_path || s.filePath || '';
-                            if (!_match(fp, 'skills', sks)) continue;
-                            if (!_match(fp, 'templates', tms)) continue;
-                            if (!_match(fp, 'rules', rls)) continue;
-                            if (!_match(fp, 'agents', ags)) continue;
-                            if (s.key != null) result.add(String(s.key));
-                        }
-                        return result.size > 0 ? result : null;
+                        return tagComputeds.claudeFilterAllowedSessionKeys.value;
                     }
                 }
             },
             methods: createMainPageMethods(store),
+            // 标签相关计算属性统一由 tagComputeds 提供；
+            // isAllSessionsSelected 已在 useComputed.js 中定义，此处不重复声明。
             computed: {
-                // 计算是否所有会话都已选中
-                isAllSessionsSelected: function () {
-                    if (!store || !store.sessions || !store.sessions.value || !Array.isArray(store.sessions.value)) {
-                        return false;
-                    }
-                    if (!store.selectedSessionKeys || !store.selectedSessionKeys.value) {
-                        return false;
-                    }
-                    const visibleSessions = store.sessions.value;
-                    if (visibleSessions.length === 0) {
-                        return false;
-                    }
-                    return visibleSessions.every(session => store.selectedSessionKeys.value.has(session.key));
-                },
-                // 项目标签：顶层文件夹名 + 文件数 [{ name, count }]
-                projectTags: function () {
-                    const tree = store.fileTree?.value;
-                    if (!tree || !Array.isArray(tree)) return [];
-
-                    // 递归计数
-                    const countInScope = (items) => {
-                        if (!Array.isArray(items)) return 0;
-                        let count = 0;
-                        for (const item of items) {
-                            if (item.type === 'file') {
-                                count++;
-                            } else if (item.type === 'folder' && item.children) {
-                                count += countInScope(item.children);
-                            }
-                        }
-                        return count;
-                    };
-
-                    const result = [];
-                    for (const item of tree) {
-                        if (item.type !== 'folder' || !item.children) continue;
-                        if (!_projectPassesClaudeFilter(item.name)) continue;
-                        result.push({ name: item.name, count: countInScope(item.children) });
-                    }
-
-                    // 按 localStorage 拖拽排序
-                    try {
-                        const saved = localStorage.getItem('aicr_file_tag_order');
-                        const savedOrder = saved ? JSON.parse(saved) : null;
-                        if (savedOrder && Array.isArray(savedOrder) && savedOrder.length > 0) {
-                            const nameSet = new Set(result.map(r => r.name));
-                            const ordered = savedOrder.filter(n => nameSet.has(n)).map(n => result.find(r => r.name === n));
-                            const remaining = result.filter(r => !savedOrder.includes(r.name));
-                            return [...ordered, ...remaining];
-                        }
-                    } catch (e) { /* ignore */ }
-
-                    return result.sort((a, b) => a.name.localeCompare(b.name));
-                },
-
-                // 根级文件数（用于"没有故事"按钮徽标）
-                rootFileCount: function () {
-                    const tree = store.fileTree?.value;
-                    if (!tree || !Array.isArray(tree)) return 0;
-                    let count = 0;
-                    for (const item of tree) {
-                        if (item.type === 'file') count++;
-                    }
-                    return count;
-                },
-
-                // 故事标签：从树中提取的故事名 + 文件数 [{ name, count }]
-                storyTags: function () {
-                    const tree = store.fileTree?.value;
-                    if (!tree || !Array.isArray(tree)) return [];
-
-                    const firstLevelNames = getFirstLevelNames(tree);
-
-                    const countInScope = (items) => {
-                        if (!Array.isArray(items)) return 0;
-                        let count = 0;
-                        for (const item of items) {
-                            if (item.type === 'file') {
-                                count++;
-                            } else if (item.type === 'folder' && item.children) {
-                                count += countInScope(item.children);
-                            }
-                        }
-                        return count;
-                    };
-
-                    const resultMap = new Map();
-                    const walk = (items, parentName = '') => {
-                        if (!Array.isArray(items)) return;
-                        for (const item of items) {
-                            if (item.type === 'folder') {
-                                if (parentName === '故事任务面板') {
-                                    const count = countInScope(item.children || []);
-                                    const existing = resultMap.get(item.name);
-                                    resultMap.set(item.name, existing !== undefined ? existing + count : count);
-                                }
-                                if (item.children) walk(item.children, item.name);
-                            }
-                        }
-                    };
-                    // 项目级联动：确定遍历起始范围
-                    const selectedTags = store.selectedSessionTags?.value || [];
-                    const projectSel = selectedTags.filter(t => firstLevelNames.has(t));
-                    const hasProject = projectSel.length > 0;
-
-                    if (hasProject) {
-                        for (const item of tree) {
-                            if (item.type === 'folder' && projectSel.includes(item.name)) {
-                                if (!_projectPassesClaudeFilter(item.name)) continue;
-                                walk(item.children || []);
-                            }
-                        }
-                    } else {
-                        for (const item of tree) {
-                            if (item.type !== 'folder') continue;
-                            if (!_projectPassesClaudeFilter(item.name)) continue;
-                            walk(item.children || []);
-                        }
-                    }
-
-                    const result = [];
-                    for (const [name, count] of resultMap) {
-                        if (count > 0) result.push({ name, count });
-                    }
-                    return result.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'zh-CN'));
-                },
-
-                // Skills 标签：从 sessions 的 file_path 中提取 skills/<name>（联动 project/story/type 筛选）
-                skillTags: function () {
-                    const sessions = store.sessions?.value;
-                    if (!sessions || !Array.isArray(sessions)) return [];
-
-                    const tree = store.fileTree?.value || [];
-                    const selectedTags = store.selectedSessionTags?.value || [];
-                    const firstLevelNames = getFirstLevelNames(tree);
-                    const storyNameSet = new Set(extractStoryNames(tree));
-                    const projectSel = selectedTags.filter(t => firstLevelNames.has(t));
-                    const storySel = selectedTags.filter(t => storyNameSet.has(t));
-                    const hasProject = projectSel.length > 0;
-                    const hasStory = storySel.length > 0;
-
-                    const projectSkills = new Map();
-                    for (const s of sessions) {
-                        const fp = s.file_path || s.filePath || '';
-                        const match = fp.match(/\/skills\/([^/]+)/);
-                        if (!match) continue;
-                        const tags = Array.isArray(s.tags) ? s.tags : [];
-                        const proj = tags[0] || fp.split('/')[0] || '';
-                        const skillName = match[1];
-                        if (!proj || !skillName) continue;
-
-                        if (hasProject && !projectSel.includes(proj)) continue;
-                        if (hasStory) {
-                            const projHasStory = sessions.some(ss => {
-                                const sfp = ss.file_path || ss.filePath || '';
-                                const stags = Array.isArray(ss.tags) ? ss.tags : [];
-                                const sproj = stags[0] || sfp.split('/')[0] || '';
-                                if (sproj !== proj) return false;
-                                const parts = sfp.split('/');
-                                const panelIdx = parts.indexOf('故事任务面板');
-                                return panelIdx !== -1 && panelIdx + 1 < parts.length && storySel.includes(parts[panelIdx + 1]);
-                            });
-                            if (!projHasStory) continue;
-                        }
-
-                        const key = proj + '|||' + skillName;
-                        if (!projectSkills.has(key)) {
-                            projectSkills.set(key, { proj, skillName });
-                        }
-                    }
-
-                    const counts = {};
-                    for (const [, v] of projectSkills) {
-                        counts[v.skillName] = (counts[v.skillName] || 0) + 1;
-                    }
-
-                    return Object.entries(counts)
-                        .map(([name, count]) => ({ name, count }))
-                        .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
-                },
-
-                // Templates 标签：从 sessions 的 file_path 中提取 templates/<name>（联动 project/story/type 筛选）
-                templateTags: function () {
-                    const sessions = store.sessions?.value;
-                    if (!sessions || !Array.isArray(sessions)) return [];
-
-                    const tree = store.fileTree?.value || [];
-                    const selectedTags = store.selectedSessionTags?.value || [];
-                    const firstLevelNames = getFirstLevelNames(tree);
-                    const storyNameSet = new Set(extractStoryNames(tree));
-                    const projectSel = selectedTags.filter(t => firstLevelNames.has(t));
-                    const storySel = selectedTags.filter(t => storyNameSet.has(t));
-                    const hasProject = projectSel.length > 0;
-                    const hasStory = storySel.length > 0;
-
-                    const projectTemplates = new Map();
-                    for (const s of sessions) {
-                        const fp = s.file_path || s.filePath || '';
-                        const match = fp.match(/\/templates\/([^/]+)/);
-                        if (!match) continue;
-                        const tags = Array.isArray(s.tags) ? s.tags : [];
-                        const proj = tags[0] || fp.split('/')[0] || '';
-                        const tmplName = match[1];
-                        if (!proj || !tmplName) continue;
-
-                        if (hasProject && !projectSel.includes(proj)) continue;
-                        if (hasStory) {
-                            const projHasStory = sessions.some(ss => {
-                                const sfp = ss.file_path || ss.filePath || '';
-                                const stags = Array.isArray(ss.tags) ? ss.tags : [];
-                                const sproj = stags[0] || sfp.split('/')[0] || '';
-                                if (sproj !== proj) return false;
-                                const parts = sfp.split('/');
-                                const panelIdx = parts.indexOf('故事任务面板');
-                                return panelIdx !== -1 && panelIdx + 1 < parts.length && storySel.includes(parts[panelIdx + 1]);
-                            });
-                            if (!projHasStory) continue;
-                        }
-
-                        const key = proj + '|||' + tmplName;
-                        if (!projectTemplates.has(key)) {
-                            projectTemplates.set(key, { proj, tmplName });
-                        }
-                    }
-
-                    const counts = {};
-                    for (const [, v] of projectTemplates) {
-                        counts[v.tmplName] = (counts[v.tmplName] || 0) + 1;
-                    }
-
-                    return Object.entries(counts)
-                        .map(([name, count]) => ({ name, count }))
-                        .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
-                },
-
-                // Rules 标签：从 sessions 的 file_path 中提取 rules/<name>（联动 project/story/type 筛选）
-                ruleTags: function () {
-                    const sessions = store.sessions?.value;
-                    if (!sessions || !Array.isArray(sessions)) return [];
-
-                    const tree = store.fileTree?.value || [];
-                    const selectedTags = store.selectedSessionTags?.value || [];
-                    const firstLevelNames = getFirstLevelNames(tree);
-                    const storyNameSet = new Set(extractStoryNames(tree));
-                    const projectSel = selectedTags.filter(t => firstLevelNames.has(t));
-                    const storySel = selectedTags.filter(t => storyNameSet.has(t));
-                    const hasProject = projectSel.length > 0;
-                    const hasStory = storySel.length > 0;
-
-                    const projectRules = new Map();
-                    for (const s of sessions) {
-                        const fp = s.file_path || s.filePath || '';
-                        const match = fp.match(/\/rules\/([^/]+)/);
-                        if (!match) continue;
-                        const tags = Array.isArray(s.tags) ? s.tags : [];
-                        const proj = tags[0] || fp.split('/')[0] || '';
-                        const ruleName = match[1];
-                        if (!proj || !ruleName) continue;
-
-                        if (hasProject && !projectSel.includes(proj)) continue;
-                        if (hasStory) {
-                            const projHasStory = sessions.some(ss => {
-                                const sfp = ss.file_path || ss.filePath || '';
-                                const stags = Array.isArray(ss.tags) ? ss.tags : [];
-                                const sproj = stags[0] || sfp.split('/')[0] || '';
-                                if (sproj !== proj) return false;
-                                const parts = sfp.split('/');
-                                const panelIdx = parts.indexOf('故事任务面板');
-                                return panelIdx !== -1 && panelIdx + 1 < parts.length && storySel.includes(parts[panelIdx + 1]);
-                            });
-                            if (!projHasStory) continue;
-                        }
-
-                        const key = proj + '|||' + ruleName;
-                        if (!projectRules.has(key)) {
-                            projectRules.set(key, { proj, ruleName });
-                        }
-                    }
-
-                    const counts = {};
-                    for (const [, v] of projectRules) {
-                        counts[v.ruleName] = (counts[v.ruleName] || 0) + 1;
-                    }
-
-                    return Object.entries(counts)
-                        .map(([name, count]) => ({ name, count }))
-                        .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
-                },
-
-                // Agents 标签：从 sessions 的 file_path 中提取 agents/<name>（联动 project/story/type 筛选）
-                agentTags: function () {
-                    const sessions = store.sessions?.value;
-                    if (!sessions || !Array.isArray(sessions)) return [];
-
-                    const tree = store.fileTree?.value || [];
-                    const selectedTags = store.selectedSessionTags?.value || [];
-                    const firstLevelNames = getFirstLevelNames(tree);
-                    const storyNameSet = new Set(extractStoryNames(tree));
-                    const projectSel = selectedTags.filter(t => firstLevelNames.has(t));
-                    const storySel = selectedTags.filter(t => storyNameSet.has(t));
-                    const hasProject = projectSel.length > 0;
-                    const hasStory = storySel.length > 0;
-
-                    const projectAgents = new Map();
-                    for (const s of sessions) {
-                        const fp = s.file_path || s.filePath || '';
-                        const match = fp.match(/\/agents\/([^/]+)/);
-                        if (!match) continue;
-                        const tags = Array.isArray(s.tags) ? s.tags : [];
-                        const proj = tags[0] || fp.split('/')[0] || '';
-                        const agentName = match[1];
-                        if (!proj || !agentName) continue;
-
-                        if (hasProject && !projectSel.includes(proj)) continue;
-                        if (hasStory) {
-                            const projHasStory = sessions.some(ss => {
-                                const sfp = ss.file_path || ss.filePath || '';
-                                const stags = Array.isArray(ss.tags) ? ss.tags : [];
-                                const sproj = stags[0] || sfp.split('/')[0] || '';
-                                if (sproj !== proj) return false;
-                                const parts = sfp.split('/');
-                                const panelIdx = parts.indexOf('故事任务面板');
-                                return panelIdx !== -1 && panelIdx + 1 < parts.length && storySel.includes(parts[panelIdx + 1]);
-                            });
-                            if (!projHasStory) continue;
-                        }
-
-                        const key = proj + '|||' + agentName;
-                        if (!projectAgents.has(key)) {
-                            projectAgents.set(key, { proj, agentName });
-                        }
-                    }
-
-                    const counts = {};
-                    for (const [, v] of projectAgents) {
-                        counts[v.agentName] = (counts[v.agentName] || 0) + 1;
-                    }
-
-                    return Object.entries(counts)
-                        .map(([name, count]) => ({ name, count }))
-                        .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
-                },
-
-                // 允许的 session key 集合（供文件树 skills/templates 过滤）
-                claudeFilterAllowedSessionKeys: function () {
-                    const sks = store.selectedSkillTags?.value || [];
-                    const tms = store.selectedTemplateTags?.value || [];
-                    const rls = store.selectedRuleTags?.value || [];
-                    const ags = store.selectedAgentTags?.value || [];
-                    if (sks.length === 0 && tms.length === 0 && rls.length === 0 && ags.length === 0) return null;
-                    const sessions = store.sessions?.value || [];
-
-                    const _match = (fp, dir, names) => {
-                        if (names.length === 0) return true;
-                        return names.every(n => fp.includes('/' + dir + '/' + n + '/') || fp.endsWith('/' + dir + '/' + n));
-                    };
-
-                    const result = new Set();
-                    for (const s of sessions) {
-                        const fp = s.file_path || s.filePath || '';
-                        if (!_match(fp, 'skills', sks)) continue;
-                        if (!_match(fp, 'templates', tms)) continue;
-                        if (!_match(fp, 'rules', rls)) continue;
-                        if (!_match(fp, 'agents', ags)) continue;
-                        if (s.key != null) result.add(String(s.key));
-                    }
-                    return result.size > 0 ? result : null;
-                },
-
-                // 筛选后文件总数（项目/故事/类型三级级联 + 会话搜索 + skills/templates）
-                filteredFileCount: function () {
-                    const tree = store.fileTree?.value;
-                    if (!tree || !Array.isArray(tree)) return 0;
-
-                    const selectedTags = store.selectedSessionTags?.value || [];
-                    const noTags = store.tagFilterNoTags?.value || false;
-                    const sessionQuery = (store.sessionSearchQuery?.value || '').trim().toLowerCase();
-                    const firstLevelNames = getFirstLevelNames(tree);
-                    const storyNameSet = new Set(extractStoryNames(tree));
-                    const projectSel = selectedTags.filter(t => firstLevelNames.has(t));
-                    const storySel = selectedTags.filter(t => storyNameSet.has(t));
-                    const hasProject = projectSel.length > 0;
-                    const hasStory = storySel.length > 0;
-                    let workingTree = tree;
-                    if (sessionQuery) {
-                        workingTree = workingTree.filter(item => {
-                            if (item.type === 'folder') {
-                                if ((item.name || '').toLowerCase().includes(sessionQuery)) return true;
-                                if (Array.isArray(item.children)) {
-                                    return item.children.some(c => (c.name || '').toLowerCase().includes(sessionQuery));
-                                }
-                                return false;
-                            }
-                            return (item.name || '').toLowerCase().includes(sessionQuery);
-                        });
-                    }
-
-                    // "没有故事"：仅统计根级文件
-                    if (noTags && !hasProject && !hasStory) {
-                        let count = 0;
-                        for (const item of workingTree) {
-                            if (item.type === 'file') count++;
-                        }
-                        return count;
-                    }
-
-                    let total = 0;
-                    const walk = (items, depth, projectOk, storyOk, parentName = '') => {
-                        if (!Array.isArray(items)) return;
-                        for (const item of items) {
-                            if (item.type === 'file') {
-                                if (hasStory && !storyOk) continue;
-                                total++;
-                            } else if (item.type === 'folder' && item.children) {
-                                // 项目级范围
-                                let nextProjectOk = depth === 0
-                                    ? (!hasProject || projectSel.includes(item.name))
-                                    : projectOk;
-
-                                if (!nextProjectOk) continue;
-
-                                // skills/templates 筛选
-                                if (depth === 0 && !_projectPassesClaudeFilter(item.name)) continue;
-
-                                // 故事级范围：只有直接父目录为「故事任务面板」的才是故事
-                                const isStory = (parentName === '故事任务面板');
-
-                                // 跳过未选中的故事文件夹
-                                if (isStory && hasStory && !storySel.includes(item.name)) {
-                                    continue;
-                                }
-
-                                const nextStoryOk = isStory
-                                    ? (!hasStory || storySel.includes(item.name))
-                                    : storyOk;
-
-                                walk(item.children, depth + 1, nextProjectOk, nextStoryOk, item.name);
-                            }
-                        }
-                    };
-
-                    walk(workingTree, 0, !hasProject, !hasStory);
-                    return total;
-                }
+                ...tagComputeds
             }
         });
         window.aicrApp = app;
         window.aicrStore = store;
 
-        // 调试：检查 store 中的 loadSessions
-        console.log('[aicr/index] store.loadSessions 类型:', typeof store?.loadSessions);
-        console.log('[aicr/index] store 对象键:', Object.keys(store || {}));
-        if (store && store.loadSessions) {
-            console.log('[aicr/index] ✓ loadSessions 方法存在');
-        } else {
-            console.error('[aicr/index] ✗ loadSessions 方法不存在');
-        }
-
         // 全局错误处理 - 使用统一的 setupBrowserExtensionErrorFilter
         setupBrowserExtensionErrorFilter('aicr', true);
-
 
         if (window.aicrApp && window.aicrApp.reload) {
             const oldReload = window.aicrApp.reload;

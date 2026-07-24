@@ -3,7 +3,7 @@ import json
 import os
 import requests
 from pydub import AudioSegment
-from core.asr_backend.audio_preprocess import normalize_audio_volume
+from core.asr_backend import normalize_audio_volume
 from core.utils import *
 from core.utils.models import *
 

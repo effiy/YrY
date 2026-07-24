@@ -1,43 +1,43 @@
 # Topic Index
 
-Auto-generated from the on-disk references tree.
-Each topic folder contains a `README.md` listing its files.
-Run `python3 scripts/consolidate.py` to rebuild.
+Flat reference index for `yry-html-vue`. Each entry is a single file
+under `references/`.
 
-> The `Files` column below counts **every `.md` in each topic folder,
-> including that topic's `README.md`**. So `core/` is 7 (= 1 README + 6
-> reference docs). Subtract 1 per row to compare against the per-topic
-> README's "reference docs" count.
+## Vue 3 Core Topics (one file each)
 
-| Topic | Files |
-| --- | ---: |
-| [Core API (script setup / Composition API)](./core/README.md) | 7 |
-| [Reactivity system (ref / reactive / watch)](./reactivity/README.md) | 2 |
-| [Render / update performance](./perf/README.md) | 5 |
-| [Data flow (props / emits / v-model / provide-inject)](./data-flow/README.md) | 2 |
-| [Composable organization](./composables/README.md) | 2 |
-| [Built-in components (KeepAlive / Suspense / Teleport / Transition / TransitionGroup)](./builtin/README.md) | 6 |
-| [Animation (class-based / state-driven)](./animation/README.md) | 3 |
-| [Async components & lazy hydration](./async/README.md) | 2 |
-| [Plugins & state-management strategy](./state/README.md) | 3 |
-| [Custom directives & render functions](./directives/README.md) | 3 |
-| [Slots & fallthrough attrs](./slots/README.md) | 3 |
-| [4-file component pattern](./pattern/README.md) | 2 |
-| [CSS architecture](./css/README.md) | 2 |
-| [Infrastructure scripts & workflows](./infra/README.md) | 2 |
-| [Code review checklist (Vue 3 SFC)](./review/README.md) | 1 |
-| [Optimization reports (Vue 3 SFC)](./optimize/README.md) | 1 |
-| [Component extraction (identify & refactor)](./extract/README.md) | 3 |
-| [VueUse · Animation](./vueuse-animation/README.md) | 10 |
-| [VueUse · Array](./vueuse-array/README.md) | 14 |
-| [VueUse · Browser](./vueuse-browser/README.md) | 46 |
-| [VueUse · Component](./vueuse-component/README.md) | 17 |
-| [VueUse · Elements](./vueuse-elements/README.md) | 16 |
-| [VueUse · Network](./vueuse-network/README.md) | 4 |
-| [VueUse · Reactivity](./vueuse-reactivity/README.md) | 22 |
-| [VueUse · Sensors](./vueuse-sensors/README.md) | 39 |
-| [VueUse · State](./vueuse-state/README.md) | 16 |
-| [VueUse · Time](./vueuse-time/README.md) | 5 |
-| [VueUse · Utilities](./vueuse-utilities/README.md) | 26 |
-| [VueUse · Watch](./vueuse-watch/README.md) | 14 |
-| **Total (incl. per-topic READMEs)** | **280** |
+| Topic | Reference |
+| --- | --- |
+| Core API (script setup / Composition API / SFC) | [core.md](./core.md) |
+| Reactivity system (ref / reactive / watch) | [reactivity.md](./reactivity.md) |
+| Render / update performance | [perf.md](./perf.md) |
+| Data flow (props / emits / v-model / provide-inject) | [data-flow.md](./data-flow.md) |
+| Composable organization | [composables.md](./composables.md) |
+| Built-in components (KeepAlive / Suspense / Teleport / Transition / TransitionGroup) | [builtin.md](./builtin.md) |
+| Animation (class-based / state-driven) | [animation.md](./animation.md) |
+| Async components & lazy hydration | [async.md](./async.md) |
+| Plugins & state-management strategy | [state.md](./state.md) |
+| Custom directives & render functions | [directives.md](./directives.md) |
+| Slots & fallthrough attrs | [slots.md](./slots.md) |
+| 4-file component pattern | [pattern.md](./pattern.md) |
+| CSS architecture | [css.md](./css.md) |
+| Infrastructure scripts & workflows | [infra.md](./infra.md) |
+| Code review checklist (Vue 3 SFC) | [review.md](./review.md) |
+| Optimization reports (Vue 3 SFC) | [optimize.md](./optimize.md) |
+| Component extraction (identify & refactor) | [extract.md](./extract.md) |
+
+## VueUse Categories (one consolidated file each)
+
+| Category | Reference |
+| --- | --- |
+| VueUse · Animation | [vueuse-animation.md](./vueuse-animation.md) |
+| VueUse · Array | [vueuse-array.md](./vueuse-array.md) |
+| VueUse · Browser | [vueuse-browser.md](./vueuse-browser.md) |
+| VueUse · Component | [vueuse-component.md](./vueuse-component.md) |
+| VueUse · Elements | [vueuse-elements.md](./vueuse-elements.md) |
+| VueUse · Network | [vueuse-network.md](./vueuse-network.md) |
+| VueUse · Reactivity | [vueuse-reactivity.md](./vueuse-reactivity.md) |
+| VueUse · Sensors | [vueuse-sensors.md](./vueuse-sensors.md) |
+| VueUse · State | [vueuse-state.md](./vueuse-state.md) |
+| VueUse · Time | [vueuse-time.md](./vueuse-time.md) |
+| VueUse · Utilities | [vueuse-utilities.md](./vueuse-utilities.md) |
+| VueUse · Watch | [vueuse-watch.md](./vueuse-watch.md) |

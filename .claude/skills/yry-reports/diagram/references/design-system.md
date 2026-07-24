@@ -1,10 +1,10 @@
 # Architecture Diagram — Design System
 
-> The visual language used by the 4-file split under `templates/` (entry point: `templates/index.html`). Use this when filling placeholders or extending the template.
+> The visual language used by the 4-file split under `YiDoc/templates/diagram/` (entry point: `YiDoc/templates/diagram/index.html`). Use this when filling placeholders or extending the template.
 
 ## Algorithmic Generator (v2)
 
-`templates/data.js` no longer hand-positions SVG primitives. Instead it
+`YiDoc/templates/diagram/data.js` no longer hand-positions SVG primitives. Instead it
 defines a structured model (components, boundaries, connections) and
 runs it through a layout engine that produces the final SVG. The
 engine has four stages:

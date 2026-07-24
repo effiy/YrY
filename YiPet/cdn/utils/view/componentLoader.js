@@ -3,8 +3,8 @@
  * 用于标准化 Vue 组件的加载、定义和样式注入
  */
 
-import { safeGetItem, safeSetItem } from '/cdn/utils/core/common.js';
-import { createError, ErrorCodes, ErrorTypes } from '/cdn/utils/core/error.js';
+import { safeGetItem, safeSetItem } from '../../utils/core/common.js';
+import { createError, ErrorCodes, ErrorTypes } from '../../utils/core/error.js';
 
 /**
  * 加载 CSS 文件

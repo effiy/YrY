@@ -15,26 +15,32 @@ T+10s   → generate starts (document rendering)
 T+12s   → generate writes CLAUDE.md + README.md + docs/
 T+12s   → arch starts (scene generation)
 T+20s   → arch writes docs/arch/ + docs/test/
-T+20s   → verify starts (7 checks)
-T+21s   → verify emits pass/fail
+T+20s   → reports phase (optional, skipped if yry-report absent)
+T+21s   → verify starts (7 checks)
+T+22s   → verify emits pass/fail
 ```
 
 ## State Transitions
 
 ```
-[IDLE] → detect → [DETECTED] → explore → [EXPLORED] → generate → [GENERATED] → arch → [BUILT] → verify → [VERIFIED]
-                                                                                                    ↓ (fail)
-                                                                                              [FAILED] → user fixes → re-run
+[IDLE] → detect → [DETECTED] → explore → [EXPLORED] → generate → [GENERATED] → arch → [BUILT] → reports → [REPORTED] → verify → [VERIFIED]
+                                                                                                                                              ↓ (fail)
+                                                                                                                                        [FAILED] → user fixes → re-run
 ```
+
+`reports` transitions to `[REPORTED]` even when skipped (`result:
+'skipped'`) — the phase always sets `pipelineState.reports` before
+verify runs.
 
 ## Artifact Generation Order
 
 1. `CLAUDE.md` (first — other artifacts reference it)
 2. `README.md` (second — references CLAUDE.md)
 3. `docs/data.js` (third — reads both CLAUDE.md and README.md)
-4. `docs/index.html` + CSS + JS + theme.css (copied from templates)
-5. `docs/arch/` scenes (5, parallel)
-6. `docs/test/` scenes (6, parallel)
+4. `docs/index.html` + `docs/index.css` + `docs/index.js` (copied from `yry-init/templates/`)
+5. `docs/arch/` scenes (≥ 5, parallel)
+6. `docs/test/` scenes (≥ 6, parallel)
+7. `docs/reports/` (only if `yry-report/scripts/run-orchestrator.mjs` exists; otherwise skipped)
 
 ## Post-Pipeline
 

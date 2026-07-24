@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="color-scheme" content="dark" />
+        <link
+            rel="icon"
+            href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3' fill='%230369a1'/></svg>"
+        />
+        <title>YiPot · main-window · Story</title>
+        <style>
+            :root {
+                --bg: #0b1220;
+                --fg: #e6edf3;
+                --muted: #8b949e;
+                --accent: #2f81f7;
+                --card: #111a2b;
+                --border: #1f2a3a;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                margin: 0;
+                background: var(--bg);
+                color: var(--fg);
+                font:
+                    15px/1.6 -apple-system,
+                    BlinkMacSystemFont,
+                    "PingFang SC",
+                    sans-serif;
+            }
+            a {
+                color: var(--accent);
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            .shell {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 32px 24px 64px;
+            }
+            header {
+                border-bottom: 1px solid var(--border);
+                padding-bottom: 14px;
+                margin-bottom: 22px;
+            }
+            h1 {
+                margin: 0 0 4px;
+                font-size: 22px;
+            }
+            .tagline {
+                color: var(--muted);
+                font-size: 12px;
+            }
+            h2 {
+                margin: 24px 0 8px;
+                font-size: 17px;
+                color: #c9d1d9;
+            }
+            ul {
+                margin: 6px 0;
+                padding-left: 22px;
+            }
+            code {
+                background: #0d1626;
+                padding: 1px 5px;
+                border-radius: 3px;
+                font-family: ui-monospace, Menlo, monospace;
+                font-size: 13px;
+            }
+            .links {
+                margin-top: 18px;
+                display: flex;
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+            .links a {
+                background: #0d1626;
+                border: 1px solid var(--border);
+                padding: 5px 11px;
+                border-radius: 6px;
+                font-size: 12px;
+            }
+            footer {
+                margin-top: 40px;
+                border-top: 1px solid var(--border);
+                padding-top: 12px;
+                color: var(--muted);
+                font-size: 11px;
+            }
+        </style>
+    </head>
+    <body>
+        <main class="shell">
+            <header>
+                <h1>Story · 主窗口 · 翻译主界面</h1>
+                <div class="tagline">Page: <a href="../index.html">YiPot Story</a> · <code>src/App.jsx</code></div>
+            </header>
+            <h2>场景</h2>
+            <ul>
+                <li><a href="scene-1-text-translate/index.html">US-M1 · 输入或粘贴文本选择引擎得到翻译</a></li>
+                <li><a href="scene-2-screenshot-translate/index.html">US-M2 · 截屏翻译（OCR + 翻译一气呵成）</a></li>
+                <li><a href="scene-3-engine-switch/index.html">US-M3 · 切换 21 个翻译引擎并对比结果</a></li>
+                <li><a href="scene-4-tts-copy/index.html">US-M4 · 翻译结果朗读（TTS）并复制</a></li>
+                <li><a href="scene-5-overlay-mode/index.html">US-M5 · 开启划词翻译 / 全屏翻译模式</a></li>
+            </ul>
+            <h2>使用场景 · 组件化</h2>
+            <ul>
+                <li>
+                    主窗口拆为 <code>&lt;TranslatorInput&gt;</code> / <code>&lt;TranslatorOutput&gt;</code> /
+                    <code>&lt;EngineSelector&gt;</code> / <code>&lt;OCRPanel&gt;</code> 等组件；<code>App.jsx</code>
+                    仅编排。
+                </li>
+                <li><code>hooks/useTranslate()</code> / <code>useOCR()</code> 抽出副作用，组件保持纯渲染。</li>
+                <li><code>services/</code> 统一引擎适配接口，组件只依赖抽象。</li>
+            </ul>
+            <div class="links"><a href="../index.html">↑ YiPot Story</a></div>
+            <footer>由 yry-init 分析轴线驱动 · 前端组件化</footer>
+        </main>
+    </body>
+</html>

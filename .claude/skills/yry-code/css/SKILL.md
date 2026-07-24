@@ -58,7 +58,7 @@ user_invocable: true
 
 ## Workflow
 
-1. **Read** `references/sources.json` and `references/index.md`.
+1. **Read** `references/index.md`.
 2. **Match** the user's intent:
    - "pick a framework" / "Bootstrap vs Tailwind vs Bulma" → look in
      `css-frameworks`, filter by category (utility-first / classless /
@@ -81,13 +81,23 @@ user_invocable: true
 ## Supporting resources
 
 - [references/index.md](./references/index.md) — unified topic index, start here.
-- [references/sources.json](./references/sources.json) — registered sources.
+
+## Test hints
+
+For `yry-test` dispatcher consumption.
+
+| CSS concern | Recommended yry-test topic |
+|-------------|------------------------------|
+| Visual regression on styled components | `fixture` (self-contained HTML + screenshot diff) |
+| Cascade layer ordering across tests | `vitest-setup` (isolate `@layer` reset per test) |
+| Computed style assertion flakiness | `async-flush` (`await nextTick` before `getComputedStyle`) |
+| Theme / `prefers-color-scheme` | `fixture` (media query stub) |
 
 ## Fallback
 
 | Situation | Behavior |
 |-----------|----------|
-| `references/index.md` missing | Re-run `/yry-init` to rebuild the index, or filter `sources.json` by topic manually. |
+| `references/index.md` missing | Re-run `/yry-init` to rebuild the index, or filter `references/index.md` by topic manually. |
 | Topic not in any registered source | State the gap, suggest the closest related topic. |
 | User asks about JS frameworks / design tokens / design systems | Out of scope; defer to general Claude or the yry-tools/design-system skill. |
 | User asks about a specific framework's API / config | Out of scope; point the user at the framework's official docs. |

@@ -1,0 +1,23 @@
+/**
+ * YiSkipLink 样式
+ * 无障碍跳过链接 — 仅键盘焦点可见
+ */
+
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 8px;
+  padding: 8px 16px;
+  background: var(--yi-primary, #3b82f6);
+  color: #fff;
+  font-family: var(--yi-font-ui, sans-serif);
+  font-size: 14px;
+  border-radius: var(--yi-radius-sm, 4px);
+  z-index: var(--z-skip-link, 10000);
+  text-decoration: none;
+  transition: top var(--yi-duration-fast, 0.15s) ease;
+}
+
+.skip-link:focus {
+  top: 8px;
+}

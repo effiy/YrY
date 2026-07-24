@@ -1,5 +1,5 @@
 ---
-paths: [".claude/yry-init-arch/SKILL.md"]
+paths: [".claude/yry-init/steps/04-arch/STEP.md"]
 description: "Scene generation constraints — directory naming, §0–§4 content minimums, cross-scene consistency, and file output rules."
 ---
 

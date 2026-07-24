@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+    <!--
+  @file: cto-report.html
+  @purpose: CTO daily report page — loads per-date data from the project
+            and renders using shared templates/daily/index.css + index.js.
+            Usage: cto-report.html?project=YiAi&date=2026-07-24
+-->
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>CTO Daily Report</title>
+        <meta name="color-scheme" content="light" />
+        <link
+            rel="icon"
+            href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3' fill='%230369a1'/><path d='M3 8h2M6 6h1M6 10h1M9 5h2M9 8h2M9 11h2' stroke='%23ffffff' stroke-width='1.2' fill='none' stroke-linecap='round'/></svg>"
+        />
+
+        <!-- Shared Vue 3 (YiPet/cdn self-hosted · unpkg fallback) -->
+        <script src="../../../YiPet/cdn/vendor/vue.global.prod.js"></script>
+        <script>
+            if (typeof Vue === "undefined") {
+                var s = document.createElement("script");
+                s.src = "https://unpkg.com/vue@3.4.27/dist/vue.global.prod.js";
+                document.head.appendChild(s);
+            }
+        </script>
+
+        <!-- Dynamic data loading: ?project=NAME&date=YYYY-MM-DD -->
+        <script>
+            (function () {
+                var params = new URLSearchParams(location.search);
+                var project = params.get("project") || "YiAi";
+                var date = params.get("date");
+                window.__YIDOC_PROJECT__ = project;
+
+                if (date) {
+                    var s = document.createElement("script");
+                    s.src = "../../projects/" + project + "/daily/" + date + ".js";
+                    s.onload = function () {
+                        var meta = (window.PLAN_DATA && window.PLAN_DATA.meta) || {};
+                        document.title = (project || "") + " Daily Report — " + (meta.date || date);
+                    };
+                    document.head.appendChild(s);
+                } else {
+                    document.title = project + " Daily Reports";
+                }
+            })();
+        </script>
+
+        <link rel="stylesheet" href="index.css" />
+        <script src="index.js"></script>
+    </head>
+    <body>
+        <div id="app" v-cloak></div>
+    </body>
+</html>

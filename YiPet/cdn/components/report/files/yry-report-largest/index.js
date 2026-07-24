@@ -1,9 +1,44 @@
-import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
-
+(function () {
 const compDef = {
     name: 'yryReportLargest',
-    html: '/cdn/components/business/reports/files/yry-report-largest/index.html',
-    css: '/cdn/components/business/reports/files/yry-report-largest/index.css',
+    template: `
+    <section id="largest">
+        <h2>{{ title }}</h2>
+        <input type="search"
+               class="filter"
+               :placeholder="filterPlaceholder || 'filter by path...'"
+               v-model="filterText"
+               aria-label="Filter largest files by path"
+               aria-describedby="filter-desc" />
+        <p id="filter-desc" class="sr-only" aria-live="polite">{{ filtered.length }} results</p>
+        <table data-sortable v-if="filtered.length">
+            <thead>
+                <tr>
+                    <th @click="setSort('path')" :class="sortClass('path')" :aria-sort="sortAria('path')">{{ colPath || 'Path' }}</th>
+                    <th @click="setSort('bytes')" :class="sortClass('bytes')" :aria-sort="sortAria('bytes')">{{ colBytes || 'Bytes' }}</th>
+                    <th @click="setSort('lines')" :class="sortClass('lines')" :aria-sort="sortAria('lines')">{{ colLines || 'Lines' }}</th>
+                    <th @click="setSort('type')" :class="sortClass('type')" :aria-sort="sortAria('type')">{{ colType || 'Type' }}</th>
+                    <th @click="setSort('depth')" :class="sortClass('depth')" :aria-sort="sortAria('depth')">{{ colDepth || 'Depth' }}</th>
+                    <th @click="setSort('fanIn')" :class="sortClass('fanIn')" :aria-sort="sortAria('fanIn')">{{ colFanIn || 'Fan-in' }}</th>
+                    <th @click="setSort('fanOut')" :class="sortClass('fanOut')" :aria-sort="sortAria('fanOut')">{{ colFanOut || 'Fan-out' }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="row in filtered" :key="row.path">
+                    <td><code>{{ row.path }}</code></td>
+                    <td>{{ row.bytesHuman }}</td>
+                    <td>{{ row.lines }}</td>
+                    <td>{{ row.type }}</td>
+                    <td>{{ row.depth }}</td>
+                    <td>{{ row.fanIn }}</td>
+                    <td>{{ row.fanOut }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="empty" v-else>{{ emptyLargest || 'No files in scope.' }}</p>
+    </section>
+`,
+    css: '../../../YiPet/cdn/components/report/files/yry-report-largest/index.css',
     mixins: [window.YrYSortable.setSortMixin({sortKey: 'bytes', sortDir: -1})],
     props: {
         largest: {type: Array, default: function () {
@@ -78,5 +113,6 @@ const compDef = {
         this.filterTextDebounced = this.filterText || '';
     },
 };
-registerGlobalComponent(compDef);
-export default compDef;
+if (typeof window !== 'undefined' && window.registerGlobalComponent) { window.registerGlobalComponent(compDef); }
+
+})();

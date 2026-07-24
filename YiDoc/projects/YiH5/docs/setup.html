@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Setup | YiH5</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta content="YiH5 documentation" name="description" />
+        <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+
+        <link href="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/remixicon.css" rel="stylesheet" />
+        <link href="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/app.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/docs.css" rel="stylesheet" />
+        <link href="assets/css/docs.css" rel="stylesheet" />
+    </head>
+    <body class="loading">
+        <main id="page-content" data-page="setup" data-no-toc>
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="mt-0 mb-3 font-lg">Setup</h3>
+                    <div class="alert alert-info" role="alert">
+                        <div class="d-flex">
+                            <i class="ri-information-line me-2" style="font-size: 1.5rem"></i>
+                            <div>
+                                <strong>Quick Start</strong> — YiH5 是一个
+                                <strong>Vanilla JS H5 前端</strong>。以下步骤假设你已具备基本的 Node.js
+                                开发经验。预计安装时间 5-10 分钟。
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4"><i class="ri-list-check me-2" style="color: #f59e0b"></i>Prerequisites</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 25%">Requirement</th>
+                                <th style="width: 15%">Version</th>
+                                <th>Purpose</th>
+                                <th style="width: 15%">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Node.js</strong></td>
+                                <td>18 LTS+</td>
+                                <td>JS 运行时 + npm</td>
+                                <td><span class="badge bg-danger">Required</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>npm</strong></td>
+                                <td>9+</td>
+                                <td>依赖管理</td>
+                                <td><span class="badge bg-danger">Required</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Git</strong></td>
+                                <td>2.30+</td>
+                                <td>版本控制</td>
+                                <td><span class="badge bg-danger">Required</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>VS Code</strong></td>
+                                <td>latest</td>
+                                <td>推荐编辑器</td>
+                                <td><span class="badge bg-secondary">Optional</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="row mt-3">
+                        <div class="col-md-4 mb-2">
+                            <div class="border rounded p-2 border-success">
+                                <div class="font-sm text-success">
+                                    <i class="ri-check-line"></i> <strong>Tested on</strong>
+                                </div>
+                                <div class="font-sm">macOS 13+ · Ubuntu 22.04 · Windows 11</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <div class="border rounded p-2 border-warning">
+                                <div class="font-sm text-warning">
+                                    <i class="ri-alert-line"></i> <strong>Known issues</strong>
+                                </div>
+                                <div class="font-sm">Node 16 已 EOL，请使用 18+</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <div class="border rounded p-2 border-info">
+                                <div class="font-sm text-info">
+                                    <i class="ri-lightbulb-line"></i> <strong>Tip</strong>
+                                </div>
+                                <div class="font-sm">推荐使用 nvm 管理 Node 版本</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4"><i class="ri-steps-line me-2" style="color: #f59e0b"></i>Installation Steps</h4>
+                    <ol class="list-unstyled">
+                        <li class="pb-3">
+                            <div class="d-flex align-items-start">
+                                <span
+                                    class="badge rounded-pill me-3"
+                                    style="background: #f59e0b; color: #fff; min-width: 32px; padding: 8px 10px"
+                                    >1</span
+                                >
+                                <div class="flex-grow-1">
+                                    <h5 class="mt-0 mb-1">
+                                        <i class="ri-git-clone-line me-2" style="color: #f59e0b"></i>Clone the
+                                        repository
+                                    </h5>
+                                    <pre class="bg-light p-2 border rounded mb-0"><code>git clone &lt;repository-url&gt;
+cd YiH5</code></pre>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li class="pb-3">
+                            <div class="d-flex align-items-start">
+                                <span
+                                    class="badge rounded-pill me-3"
+                                    style="background: #f59e0b; color: #fff; min-width: 32px; padding: 8px 10px"
+                                    >2</span
+                                >
+                                <div class="flex-grow-1">
+                                    <h5 class="mt-0 mb-1">
+                                        <i class="ri-nodejs-line me-2" style="color: #f59e0b"></i>Install Node.js (via
+                                        nvm)
+                                    </h5>
+                                    <pre class="bg-light p-2 border rounded mb-0"><code>nvm install 18
+nvm use 18</code></pre>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li class="pb-3">
+                            <div class="d-flex align-items-start">
+                                <span
+                                    class="badge rounded-pill me-3"
+                                    style="background: #f59e0b; color: #fff; min-width: 32px; padding: 8px 10px"
+                                    >3</span
+                                >
+                                <div class="flex-grow-1">
+                                    <h5 class="mt-0 mb-1">
+                                        <i class="ri-download-2-line me-2" style="color: #f59e0b"></i>Install
+                                        dependencies
+                                    </h5>
+                                    <pre class="bg-light p-2 border rounded mb-0"><code>npm install</code></pre>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li class="pb-3">
+                            <div class="d-flex align-items-start">
+                                <span
+                                    class="badge rounded-pill me-3"
+                                    style="background: #f59e0b; color: #fff; min-width: 32px; padding: 8px 10px"
+                                    >4</span
+                                >
+                                <div class="flex-grow-1">
+                                    <h5 class="mt-0 mb-1">
+                                        <i class="ri-settings-3-line me-2" style="color: #f59e0b"></i>Configure
+                                        environment
+                                    </h5>
+                                    <pre class="bg-light p-2 border rounded mb-0"><code>cp .env.example .env
+# 编辑 .env 填入 API base URL 等</code></pre>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li class="pb-3">
+                            <div class="d-flex align-items-start">
+                                <span
+                                    class="badge rounded-pill me-3"
+                                    style="background: #f59e0b; color: #fff; min-width: 32px; padding: 8px 10px"
+                                    >5</span
+                                >
+                                <div class="flex-grow-1">
+                                    <h5 class="mt-0 mb-1">
+                                        <i class="ri-play-circle-line me-2" style="color: #f59e0b"></i>Start dev server
+                                    </h5>
+                                    <pre class="bg-light p-2 border rounded mb-0"><code>npm run dev</code></pre>
+                                </div>
+                            </div>
+                        </li>
+                    </ol>
+
+                    <h4 class="mt-4">
+                        <i class="ri-code-box-line me-2" style="color: #f59e0b"></i>Development Workflow
+                    </h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 20%">步骤</th>
+                                <th>操作</th>
+                                <th style="width: 25%">Expected Result</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><i class="ri-edit-line me-1"></i> 修改代码</td>
+                                <td>编辑 YiH5/ 目录下的源文件</td>
+                                <td>编辑器保存即触发</td>
+                            </tr>
+                            <tr>
+                                <td><i class="ri-refresh-line me-1"></i> 热重载</td>
+                                <td><code>npm run dev</code> 启动 Vite HMR</td>
+                                <td>浏览器自动刷新</td>
+                            </tr>
+                            <tr>
+                                <td><i class="ri-file-list-line me-1"></i> 查看日志</td>
+                                <td>浏览器 DevTools Console</td>
+                                <td>实时输出错误信息</td>
+                            </tr>
+                            <tr>
+                                <td><i class="ri-test-tube-line me-1"></i> 运行测试</td>
+                                <td><code>npm run test</code></td>
+                                <td>All tests pass</td>
+                            </tr>
+                            <tr>
+                                <td><i class="ri-build-line me-1"></i> 构建产物</td>
+                                <td><code>npm run build</code></td>
+                                <td>dist/ 目录</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4">
+                        <i class="ri-docker-line me-2" style="color: #f59e0b"></i>Docker Setup (Optional)
+                    </h4>
+                    <p>推荐使用 Docker 进行生产部署，避免环境差异：</p>
+                    <pre class="bg-light p-3 border rounded"><code># # Dockerfile (Node)
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --production
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "start"]
+
+# docker-compose.yml
+version: '3.8'
+services:
+  yih5:
+    build: .
+    ports:
+      - "3000:3000}
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+
+# 启动
+docker-compose up -d</code></pre>
+
+                    <h4 class="mt-4" id="troubleshooting">
+                        <i class="ri-error-warning-line me-2" style="color: #f59e0b"></i>Troubleshooting
+                    </h4>
+                    <div class="accordion" id="setupTroubleshoot">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#ts1"
+                                >
+                                    <i class="ri-error-warning-line me-2 text-danger"></i> npm install 失败
+                                </button>
+                            </h2>
+                            <div id="ts1" class="accordion-collapse collapse show" data-bs-parent="#setupTroubleshoot">
+                                <div class="accordion-body">
+                                    <p>
+                                        尝试删除 <code>node_modules/</code> 和
+                                        <code>package-lock.json</code> 后重新安装。
+                                    </p>
+                                    <pre class="bg-light p-2 border rounded"><code>rm -rf node_modules package-lock.json
+npm cache clean --force
+npm install</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#ts2"
+                                >
+                                    <i class="ri-error-warning-line me-2 text-warning"></i> 热重载不生效
+                                </button>
+                            </h2>
+                            <div id="ts2" class="accordion-collapse collapse" data-bs-parent="#setupTroubleshoot">
+                                <div class="accordion-body">
+                                    <p>
+                                        检查 <code>vite.config.js</code> 中的
+                                        <code>server.watch</code> 配置。某些文件变更可能需要手动重启 dev server。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#ts3"
+                                >
+                                    <i class="ri-error-warning-line me-2 text-info"></i> 端口被占用 (EADDRINUSE)
+                                </button>
+                            </h2>
+                            <div id="ts3" class="accordion-collapse collapse" data-bs-parent="#setupTroubleshoot">
+                                <div class="accordion-body">
+                                    <p>默认端口 5173 被占用时，更改配置或释放端口：</p>
+                                    <pre class="bg-light p-2 border rounded"><code># vite.config.js
+export default { server: { port: 3000 } }
+
+# 或释放端口（macOS/Linux）
+lsof -i :5173
+kill -9 &lt;PID&gt;</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-success mt-4">
+                        <div class="d-flex">
+                            <i class="ri-check-double-line me-2" style="font-size: 1.5rem"></i>
+                            <div>
+                                <strong>Verification</strong> — 安装成功后：
+                                <ul class="mb-0 mt-1">
+                                    <li>访问 <code>http://localhost:5173</code> 应展示应用首页</li>
+                                    <li>浏览器 DevTools Console 无错误</li>
+                                    <li>所有依赖版本与 <code>package.json</code> 一致</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script src="assets/js/layout.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/jquery@3.7.1/jquery.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/js/bootstrap.bundle.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.js"></script>
+        <script src="../../../templates/docs/js/app.min.js"></script>
+    </body>
+</html>

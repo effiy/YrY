@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Specifications | YiviY - Video Translation & Dubbing</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta content="视频翻译配音工作台 — Streamlit + 12 步流水线 · ASR / 翻译 / TTS / 合成" name="description" />
+        <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+
+        <link href="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/remixicon.css" rel="stylesheet" />
+        <link href="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/app.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/docs.css" rel="stylesheet" />
+        <link href="assets/css/docs.css" rel="stylesheet" />
+    </head>
+    <body class="loading">
+        <main id="page-content" data-page="specifications" data-no-toc>
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="mt-0 mb-3 font-lg">Specifications</h3>
+
+                    <p>
+                        YiviY 采用 Python + Streamlit 架构，通过 12
+                        个独立模块组成流水线。以下是完整的目录结构与文件清单。
+                    </p>
+
+                    <div class="row text-center mt-3 mb-2">
+                        <div class="col-6 col-md-3">
+                            <div class="border rounded p-2 bg-light">
+                                <div class="font-lg font-semibold text-primary">74</div>
+                                <div class="text-muted font-sm">Total Files</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="border rounded p-2 bg-light">
+                                <div class="font-lg font-semibold text-primary">592 KB</div>
+                                <div class="text-muted font-sm">Source Size</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="border rounded p-2 bg-light">
+                                <div class="font-lg font-semibold text-primary">12</div>
+                                <div class="text-muted font-sm">Pipeline Steps</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="border rounded p-2 bg-light">
+                                <div class="font-lg font-semibold text-primary">40+</div>
+                                <div class="text-muted font-sm">Python Files</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4"><i class="ri-folder-line me-1"></i> 目录结构</h4>
+
+                    <pre class="bg-light p-3 border rounded"><code>YiviY/
+├── st.py                       # Streamlit 入口（Web UI）
+├── config.yaml                 # 全局配置
+├── requirements.txt            # Python 依赖（40+ 包）
+├── Dockerfile                  # 容器化部署
+├── install.py                  # 一键安装脚本
+├── launch.py                   # 启动脚本
+├── setup.py                    # 包配置
+├── setup_env.py                # 环境配置
+├── custom_terms.xlsx           # 术语表
+├── VideoLingo_colab.ipynb      # Colab 笔记本
+├── core/                       # 核心流水线（12 步）
+│   ├── __init__.py
+│   ├── _1_ytdlp.py             # 步骤 1：视频下载
+│   ├── _2_asr.py               # 步骤 2：语音识别
+│   ├── _3_1_split_nlp.py       # 步骤 3.1：NLP 句切分
+│   ├── _3_2_split_meaning.py   # 步骤 3.2：语义切分
+│   ├── _4_1_summarize.py       # 步骤 4.1：摘要
+│   ├── _4_2_translate.py       # 步骤 4.2：翻译
+│   ├── _5_split_sub.py         # 步骤 5：字幕切分
+│   ├── _6_gen_sub.py           # 步骤 6：字幕生成
+│   ├── _7_sub_into_vid.py      # 步骤 7：字幕嵌入
+│   ├── _8_1_audio_task.py      # 步骤 8.1：音频任务
+│   ├── _8_2_dub_chunks.py      # 步骤 8.2：分块配音
+│   ├── _9_refer_audio.py       # 步骤 9：参考音频
+│   ├── _10_gen_audio.py        # 步骤 10：音频生成
+│   ├── _11_merge_audio.py      # 步骤 11：音频合并
+│   ├── _12_dub_to_vid.py       # 步骤 12：配音合成
+│   ├── asr_backend/            # ASR 引擎适配器
+│   ├── tts_backend/            # TTS 引擎适配器
+│   ├── st_utils/               # Streamlit 工具
+│   ├── spacy_utils/            # NLP 工具
+│   ├── prompts.py              # Prompt 模板
+│   ├── translate_lines.py      # 翻译行处理
+│   └── utils/                  # 通用工具
+├── translations/               # 国际化
+│   ├── en.json
+│   ├── zh-CN.json
+│   └── translations.py
+└── batch/                      # 批量运行
+    ├── OneKeyBatch.bat
+    ├── OneKeyBatch_uv.bat
+    └── utils/</code></pre>
+
+                    <h4 class="mt-4"><i class="ri-bar-chart-grouped-line me-1"></i> File Statistics</h4>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="font-semibold">By Type</h6>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th style="width: 20%">Count</th>
+                                        <th style="width: 25%">Size</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Python (.py)</td>
+                                        <td>40+</td>
+                                        <td>~350 KB</td>
+                                    </tr>
+                                    <tr>
+                                        <td>JSON (.json)</td>
+                                        <td>4</td>
+                                        <td>~45 KB</td>
+                                    </tr>
+                                    <tr>
+                                        <td>YAML (.yaml)</td>
+                                        <td>1</td>
+                                        <td>~2 KB</td>
+                                    </tr>
+                                    <tr>
+                                        <td>XLSX (.xlsx)</td>
+                                        <td>1</td>
+                                        <td>~8 KB</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Jupyter (.ipynb)</td>
+                                        <td>1</td>
+                                        <td>~80 KB</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Markdown</td>
+                                        <td>5</td>
+                                        <td>~15 KB</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Dockerfile / Bat</td>
+                                        <td>5</td>
+                                        <td>~12 KB</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Total</strong></td>
+                                        <td><strong>74</strong></td>
+                                        <td><strong>~592 KB</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="font-semibold">By Module</h6>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Module</th>
+                                        <th style="width: 20%">Files</th>
+                                        <th>Role</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>st.py</code></td>
+                                        <td>1</td>
+                                        <td>Streamlit Web UI</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>core/</code> (pipeline)</td>
+                                        <td>16</td>
+                                        <td>12 步流水线模块</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>core/</code> (backends)</td>
+                                        <td>10</td>
+                                        <td>ASR / TTS 适配器</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>core/</code> (utils)</td>
+                                        <td>8</td>
+                                        <td>Streamlit / spaCy / 通用</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>translations/</code></td>
+                                        <td>3</td>
+                                        <td>双语 UI 文案</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>batch/</code></td>
+                                        <td>3</td>
+                                        <td>Windows 批处理</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Top-level scripts</td>
+                                        <td>8</td>
+                                        <td>安装 / 启动 / 配置</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4"><i class="ri-flow-chart me-1"></i> Pipeline Step Breakdown</h4>
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%">Step</th>
+                                <th style="width: 25%">Module</th>
+                                <th style="width: 20%">Backend</th>
+                                <th>Input → Output</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>01</td>
+                                <td>_1_ytdlp</td>
+                                <td>yt-dlp</td>
+                                <td>URL → mp4</td>
+                            </tr>
+                            <tr>
+                                <td>02</td>
+                                <td>_2_asr</td>
+                                <td>WhisperX / CTranslate2</td>
+                                <td>mp4 → segments.json</td>
+                            </tr>
+                            <tr>
+                                <td>03.1</td>
+                                <td>_3_1_split_nlp</td>
+                                <td>spaCy</td>
+                                <td>segments → sentences.json</td>
+                            </tr>
+                            <tr>
+                                <td>03.2</td>
+                                <td>_3_2_split_meaning</td>
+                                <td>GPT-4o</td>
+                                <td>sentences → meaning.json</td>
+                            </tr>
+                            <tr>
+                                <td>04.1</td>
+                                <td>_4_1_summarize</td>
+                                <td>GPT-4o</td>
+                                <td>text → summary.json</td>
+                            </tr>
+                            <tr>
+                                <td>04.2</td>
+                                <td>_4_2_translate</td>
+                                <td>GPT-4o / Replicate</td>
+                                <td>sentences → translated.json</td>
+                            </tr>
+                            <tr>
+                                <td>05</td>
+                                <td>_5_split_sub</td>
+                                <td>spaCy</td>
+                                <td>translated → subtitle.json</td>
+                            </tr>
+                            <tr>
+                                <td>06</td>
+                                <td>_6_gen_sub</td>
+                                <td>local</td>
+                                <td>subtitle → .srt / .vtt</td>
+                            </tr>
+                            <tr>
+                                <td>07</td>
+                                <td>_7_sub_into_vid</td>
+                                <td>MoviePy + FFmpeg</td>
+                                <td>mp4 + srt → mp4 (hardsub)</td>
+                            </tr>
+                            <tr>
+                                <td>08.1</td>
+                                <td>_8_1_audio_task</td>
+                                <td>OpenAI / Replicate</td>
+                                <td>segments → tasks.json</td>
+                            </tr>
+                            <tr>
+                                <td>08.2</td>
+                                <td>_8_2_dub_chunks</td>
+                                <td>TTS backend</td>
+                                <td>tasks.json → chunks/</td>
+                            </tr>
+                            <tr>
+                                <td>09</td>
+                                <td>_9_refer_audio</td>
+                                <td>pydub</td>
+                                <td>chunks → references/</td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td>_10_gen_audio</td>
+                                <td>TTS backend</td>
+                                <td>references → full_dub.wav</td>
+                            </tr>
+                            <tr>
+                                <td>11</td>
+                                <td>_11_merge_audio</td>
+                                <td>FFmpeg</td>
+                                <td>dub + original → mixed.wav</td>
+                            </tr>
+                            <tr>
+                                <td>12</td>
+                                <td>_12_dub_to_vid</td>
+                                <td>MoviePy</td>
+                                <td>mp4 + mixed → final.mp4</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4"><i class="ri-stack-line me-1"></i> 技术栈清单</h4>
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 18%">层级</th>
+                                <th style="width: 30%">技术</th>
+                                <th style="width: 12%">版本</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td rowspan="2">UI</td>
+                                <td>Streamlit</td>
+                                <td>1.49</td>
+                                <td>Web UI 框架</td>
+                            </tr>
+                            <tr>
+                                <td>Rich</td>
+                                <td>13.x</td>
+                                <td>彩色终端日志</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="3">ASR</td>
+                                <td>WhisperX</td>
+                                <td>3.8+</td>
+                                <td>本地 GPU ASR</td>
+                            </tr>
+                            <tr>
+                                <td>HuggingFace Transformers</td>
+                                <td>4.48+</td>
+                                <td>ASR 模型加载</td>
+                            </tr>
+                            <tr>
+                                <td>PyAnnote Audio</td>
+                                <td>4.0+</td>
+                                <td>说话人分离</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="2">NLP</td>
+                                <td>spaCy</td>
+                                <td>3.8</td>
+                                <td>句切分 · 词切分</td>
+                            </tr>
+                            <tr>
+                                <td>CTranslate2</td>
+                                <td>4.5+</td>
+                                <td>优化推理引擎</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="2">翻译/TTS</td>
+                                <td>OpenAI Python</td>
+                                <td>1.55+</td>
+                                <td>GPT-4o + TTS</td>
+                            </tr>
+                            <tr>
+                                <td>Replicate</td>
+                                <td>0.33</td>
+                                <td>云端 ML 模型</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="3">视频/音频</td>
+                                <td>MoviePy</td>
+                                <td>1.0</td>
+                                <td>视频编辑</td>
+                            </tr>
+                            <tr>
+                                <td>librosa</td>
+                                <td>0.11</td>
+                                <td>音频特征</td>
+                            </tr>
+                            <tr>
+                                <td>OpenCV</td>
+                                <td>4.11</td>
+                                <td>视频解码</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="2">基础设施</td>
+                                <td>yt-dlp</td>
+                                <td>latest</td>
+                                <td>视频下载</td>
+                            </tr>
+                            <tr>
+                                <td>Docker + CUDA</td>
+                                <td>12.4</td>
+                                <td>容器 + GPU 加速</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4"><i class="ri-cpu-line me-1"></i> Hardware Requirements</h4>
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Mode</th>
+                                <th>CPU</th>
+                                <th>GPU</th>
+                                <th>RAM</th>
+                                <th>Typical Throughput</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Local GPU</strong></td>
+                                <td>Any modern</td>
+                                <td>≥ 8 GB VRAM (RTX 3070+)</td>
+                                <td>16 GB</td>
+                                <td>1 分钟视频 / 2-3 分钟处理</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Local CPU</strong></td>
+                                <td>≥ 4 cores</td>
+                                <td>—</td>
+                                <td>16 GB</td>
+                                <td>1 分钟视频 / 10-15 分钟处理</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cloud (Replicate)</strong></td>
+                                <td>—</td>
+                                <td>Remote</td>
+                                <td>8 GB</td>
+                                <td>1 分钟视频 / 30-60 秒处理</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Google Colab</strong></td>
+                                <td>T4 GPU</td>
+                                <td>15 GB VRAM</td>
+                                <td>12 GB</td>
+                                <td>1 分钟视频 / 2-3 分钟处理</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="alert alert-info mt-3">
+                        <i class="ri-information-line me-1"></i> <strong>存储要求：</strong>本地 GPU 模式下 WhisperX
+                        large-v3 模型约需 3 GB 磁盘空间；TTS CTranslate2 模型约需 1 GB。推荐使用 SSD。
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script src="assets/js/layout.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/jquery@3.7.1/jquery.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/js/bootstrap.bundle.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.js"></script>
+        <script src="../../../templates/docs/js/app.min.js"></script>
+    </body>
+</html>

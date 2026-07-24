@@ -1,32 +1,6 @@
 # §0 Effect Sketch — Trust Boundary & Security Surface
 
-**What this scene demonstrates**: YiPot's trust boundaries and security surface. The application runs a local HTTP server, monitors the clipboard, captures screenshots, reads/writes the filesystem, and communicates with third-party translation APIs.
-
-```mermaid
-graph TB
-    subgraph "信任域 🏠"
-        APP[YiPot App<br/>React + Rust]
-    end
-
-    subgraph "信任边界 🛡"
-        APP --> B1[Clipboard<br/>读/写系统剪贴板]
-        APP --> B2[Filesystem<br/>读/写本地文件]
-        APP --> B3[Screen Capture<br/>截图 + OCR]
-        APP --> B4[HTTP Server<br/>localhost 服务桥]
-        APP --> B5[Notification<br/>系统通知推送]
-    end
-
-    subgraph "外部面 🌐"
-        B1 --> EXT1[用户剪贴板数据]
-        B2 --> EXT2[本地文件系统]
-        B4 --> EXT3[外部 API<br/>DeepL · OpenAI · Google]
-    end
-
-    style APP fill:#e1f5fe
-    style B1 fill:#ffcdd2
-    style B2 fill:#ffcdd2
-    style B4 fill:#fff9c4
-```
+**What this scene demonstrates**: YiPot's trust boundaries and security surface. The application runs a local HTTP server, monitors the clipboard, captures screenshots, reads/writes the filesystem, and communicates with third-party translation APIs. Each of these is a trust boundary. This scene maps what is exposed at each boundary, what permissions are configured in `tauri.conf.json`, and what an attacker could do if a boundary is breached.
 
 **Why it matters**: YiPot's Tauri allowlist is permissive (`all: true` for shell, fs, clipboard, notification, http). While appropriate for a local-only desktop tool, this configuration means every bound function is a potential vector. Understanding the boundaries is essential for auditing security and for making informed decisions when tightening permissions for distribution.
 

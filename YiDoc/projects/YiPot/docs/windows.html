@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Windows | YiPot - Tauri Desktop Translator</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta content="跨平台桌面翻译器 — Tauri + React · 21 翻译引擎 + 15 OCR 后端 + TTS" name="description" />
+        <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+
+        <link href="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/remixicon.css" rel="stylesheet" />
+        <link href="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/app.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/docs.css" rel="stylesheet" />
+        <link href="assets/css/docs.css" rel="stylesheet" />
+    </head>
+    <body class="loading">
+        <main id="page-content" data-page="windows" data-no-toc>
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="mt-0 mb-3 font-lg">Windows</h3>
+
+                    <p>
+                        YiPot 采用 <strong>5 窗口架构</strong>，通过 Tauri 的窗口管理 API 创建独立窗口。每个窗口对应一个
+                        <code>src/window/</code> 模块，拥有独立的 React 路由与状态管理。窗口间通过 Tauri 事件系统 +
+                        共享存储 + 全局快捷键进行通信。
+                    </p>
+
+                    <div class="row text-center mt-3 mb-2">
+                        <div class="col-6 col-md-3">
+                            <div class="border rounded p-2 bg-light">
+                                <div class="font-lg font-semibold text-primary">5</div>
+                                <div class="text-muted font-sm">Windows</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="border rounded p-2 bg-light">
+                                <div class="font-lg font-semibold text-primary">2</div>
+                                <div class="text-muted font-sm">HTML Entries</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="border rounded p-2 bg-light">
+                                <div class="font-lg font-semibold text-primary">12+</div>
+                                <div class="text-muted font-sm">IPC Commands</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="border rounded p-2 bg-light">
+                                <div class="font-lg font-semibold text-primary">8</div>
+                                <div class="text-muted font-sm">Event Channels</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4"><i class="ri-apps-2-line me-1"></i> Window Catalog</h4>
+
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <div class="border rounded p-3 mb-3 bg-light">
+                                <div class="d-flex align-items-start">
+                                    <i class="ri-translate-2 font-lg text-primary me-3 mt-1"></i>
+                                    <div class="flex-grow-1">
+                                        <h5 class="mt-0 mb-1">
+                                            Translate Window（翻译主窗口）<span class="badge bg-primary ms-2"
+                                                >Primary</span
+                                            >
+                                        </h5>
+                                        <p class="text-muted mb-2">
+                                            核心翻译界面，支持文本输入、21 引擎切换、语言选择、多引擎结果对比。通过
+                                            <code>src/window/Translate/</code> 实现。
+                                        </p>
+                                        <ul class="mb-0 font-sm">
+                                            <li>
+                                                <strong>入口：</strong><code>index.html</code> · 路由
+                                                <code>/translate</code>
+                                            </li>
+                                            <li>
+                                                <strong>关键 Hooks：</strong><code>useConfig</code> ·
+                                                <code>useGetState</code> · <code>useToastStyle</code>
+                                            </li>
+                                            <li><strong>体积：</strong>~85 KB（含 React + NextUI + Jotai）</li>
+                                            <li>
+                                                <strong>特性：</strong>多引擎结果对比 · 翻译历史 · 实时预览 · Markdown
+                                                渲染
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 mb-3 h-100">
+                                <div class="d-flex align-items-start">
+                                    <i class="ri-image-2-line font-lg text-primary me-3 mt-1"></i>
+                                    <div class="flex-grow-1">
+                                        <h5 class="mt-0 mb-1">Recognize Window（OCR 窗口）</h5>
+                                        <p class="text-muted mb-2 font-sm">
+                                            图片 OCR 识别界面，支持拖拽图片、框选区域、识别结果编辑。调用
+                                            <code>services/recognize/</code> 中的 15 个 OCR 后端。
+                                        </p>
+                                        <ul class="mb-0 font-sm">
+                                            <li>
+                                                <strong>入口：</strong><code>index.html</code> · 路由
+                                                <code>/recognize</code>
+                                            </li>
+                                            <li><strong>后端：</strong>Tesseract.js · 系统原生 OCR · 在线服务</li>
+                                            <li><strong>特性：</strong>批量识别 · 多语言混合 · 结果复制</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 mb-3 h-100">
+                                <div class="d-flex align-items-start">
+                                    <i class="ri-screenshot-line font-lg text-primary me-3 mt-1"></i>
+                                    <div class="flex-grow-1">
+                                        <h5 class="mt-0 mb-1">Screenshot Window（截图窗口）</h5>
+                                        <p class="text-muted mb-2 font-sm">
+                                            屏幕截图与区域选择工具，通过 Rust 后端的 <code>screenshots</code> crate
+                                            捕获屏幕，前端处理区域裁剪与坐标传递。
+                                        </p>
+                                        <ul class="mb-0 font-sm">
+                                            <li><strong>入口：</strong><code>daemon.html</code>（独立窗口）</li>
+                                            <li>
+                                                <strong>Rust API：</strong><code>capture_screen</code> ·
+                                                <code>save_clipboard</code>
+                                            </li>
+                                            <li><strong>特性：</strong>多屏支持 · 自动识别后翻译</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 mb-3 h-100">
+                                <div class="d-flex align-items-start">
+                                    <i class="ri-settings-3-line font-lg text-primary me-3 mt-1"></i>
+                                    <div class="flex-grow-1">
+                                        <h5 class="mt-0 mb-1">Config Window（配置窗口）</h5>
+                                        <p class="text-muted mb-2 font-sm">
+                                            应用设置界面，管理 API Key、翻译引擎优先级、OCR
+                                            后端选择、主题切换、快捷键绑定、语言偏好。
+                                        </p>
+                                        <ul class="mb-0 font-sm">
+                                            <li>
+                                                <strong>入口：</strong><code>index.html</code> · 路由
+                                                <code>/config</code>
+                                            </li>
+                                            <li>
+                                                <strong>持久化：</strong>Tauri <code>appConfig</code>（v3.0.6 起替代
+                                                localStorage）
+                                            </li>
+                                            <li><strong>特性：</strong>导入/导出 TOML · 配置校验 · 版本回滚</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 mb-3 h-100">
+                                <div class="d-flex align-items-start">
+                                    <i class="ri-download-2-line font-lg text-primary me-3 mt-1"></i>
+                                    <div class="flex-grow-1">
+                                        <h5 class="mt-0 mb-1">Updater Window（更新窗口）</h5>
+                                        <p class="text-muted mb-2 font-sm">
+                                            版本检查与自动更新界面，通过 Tauri 的 updater API
+                                            下载并安装新版本。支持手动检查与后台静默更新。
+                                        </p>
+                                        <ul class="mb-0 font-sm">
+                                            <li>
+                                                <strong>入口：</strong><code>index.html</code> · 路由
+                                                <code>/updater</code>
+                                            </li>
+                                            <li>
+                                                <strong>API：</strong>Tauri <code>updater</code> 插件 + 自定义签名验证
+                                            </li>
+                                            <li><strong>特性：</strong>差量更新 · 回滚保护 · 更新日志展示</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4"><i class="ri-flow-chart me-1"></i> Window Lifecycle</h4>
+
+                    <p>每个窗口遵循 Tauri 的标准生命周期：</p>
+
+                    <pre
+                        class="bg-light p-3 border rounded"
+                    ><code>┌──────────────────────────────────────────────────────────────┐
+│  Rust: WindowBuilder::new(label, url)                         │
+│    │                                                           │
+│    ▼                                                           │
+│  WebView loads index.html (or daemon.html)                    │
+│    │                                                           │
+│    ▼                                                           │
+│  React Router → /translate | /recognize | /config | /updater  │
+│    │                                                           │
+│    ▼                                                           │
+│  Mount React App · Load Jotai atoms · Restore appConfig       │
+│    │                                                           │
+│    ▼                                                           │
+│  Ready — User interaction                                      │
+│    │                                                           │
+│    ├─ invoke('command_name', args) ──► Rust handler            │
+│    │                                     │                     │
+│    │  ◄───── emit('event_name', payload) ─┘                    │
+│    │                                                           │
+│    ▼                                                           │
+│  Window close → State persisted → Resources released          │
+└──────────────────────────────────────────────────────────────┘</code></pre>
+
+                    <h4 class="mt-4"><i class="ri-link me-1"></i> Inter-Window Communication</h4>
+
+                    <p>窗口间通过以下方式通信：</p>
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 20%">Channel</th>
+                                <th style="width: 25%">API</th>
+                                <th>Use Case</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Tauri Events</strong></td>
+                                <td><code>emit</code> / <code>listen</code></td>
+                                <td>跨窗口实时通知（如截图完成 → 翻译窗口）</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Shared Storage</strong></td>
+                                <td><code>appConfig</code> (Tauri storage)</td>
+                                <td>持久化全局配置（API Keys · 引擎优先级）</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Clipboard</strong></td>
+                                <td><code>arboard</code> crate (Rust)</td>
+                                <td>翻译结果复制到剪贴板，供其他窗口使用</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Global Shortcut</strong></td>
+                                <td><code>globalShortcut</code> API</td>
+                                <td>触发跨窗口操作（如 ⌘+Shift+T 唤起翻译窗口）</td>
+                            </tr>
+                            <tr>
+                                <td><strong>System Tray</strong></td>
+                                <td><code>SystemTray</code> (Rust)</td>
+                                <td>托盘菜单快速打开任意窗口</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4"><i class="ri-terminal-line me-1"></i> IPC Command Reference</h4>
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Command</th>
+                                <th>Window</th>
+                                <th>Args</th>
+                                <th>Returns</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>capture_screen</code></td>
+                                <td>Screenshot</td>
+                                <td>display_id, rect</td>
+                                <td>base64 PNG</td>
+                            </tr>
+                            <tr>
+                                <td><code>translate_text</code></td>
+                                <td>Translate</td>
+                                <td>text, from, to, engine</td>
+                                <td>translated string</td>
+                            </tr>
+                            <tr>
+                                <td><code>recognize_image</code></td>
+                                <td>Recognize</td>
+                                <td>image, lang, backend</td>
+                                <td>recognized text</td>
+                            </tr>
+                            <tr>
+                                <td><code>save_config</code></td>
+                                <td>Config</td>
+                                <td>key, value</td>
+                                <td>Result&lt;()&gt;</td>
+                            </tr>
+                            <tr>
+                                <td><code>check_update</code></td>
+                                <td>Updater</td>
+                                <td>—</td>
+                                <td>UpdateManifest</td>
+                            </tr>
+                            <tr>
+                                <td><code>install_update</code></td>
+                                <td>Updater</td>
+                                <td>—</td>
+                                <td>Result&lt;()&gt;</td>
+                            </tr>
+                            <tr>
+                                <td><code>write_clipboard</code></td>
+                                <td>All</td>
+                                <td>text</td>
+                                <td>Result&lt;()&gt;</td>
+                            </tr>
+                            <tr>
+                                <td><code>open_window</code></td>
+                                <td>All</td>
+                                <td>window_label</td>
+                                <td>Result&lt;()&gt;</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="alert alert-info mt-3">
+                        <i class="ri-information-line me-1"></i> <strong>Tip:</strong> 所有 IPC 命令在 Rust 侧通过
+                        <code>#[tauri::command]</code> 宏声明，自动生成 TypeScript
+                        类型定义（<code>src/types/ipc.d.ts</code>），前端调用时享有完整的类型推导。
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script src="assets/js/layout.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/jquery@3.7.1/jquery.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/js/bootstrap.bundle.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.js"></script>
+        <script src="../../../templates/docs/js/app.min.js"></script>
+    </body>
+</html>

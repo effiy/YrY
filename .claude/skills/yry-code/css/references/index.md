@@ -1,6 +1,6 @@
 # Topic Index
 
-Auto-generated from the registered sources in `references/sources.json`.
+Curated from registered sources.
 Each resource is tagged with its `[src:source-id]` so the reader can
 trace provenance. Run `python3 scripts/parse_readme.py` to rebuild.
 

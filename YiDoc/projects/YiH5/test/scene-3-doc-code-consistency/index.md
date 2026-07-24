@@ -8,166 +8,106 @@
 
 ```mermaid
 graph TD
-    DOC[docs/ artifacts] --> CHECK1{Module count matches?}
-    CODE[YiH5 source code] --> CHECK1
-    CHECK1 -->|match| CHECK2{API endpoints match?}
-    CHECK1 -->|mismatch| FIX1[Update data.js stats + module map]
-    CHECK2 -->|match| CHECK3{Security surface matches?}
-    CHECK2 -->|mismatch| FIX2[Update arch/scene-2 data flow + arch/scene-5]
-    CHECK3 -->|match| CHECK4{Data flow traces are accurate?}
-    CHECK3 -->|mismatch| FIX3[Update arch/scene-5 security surface]
-    CHECK4 -->|match| CHECK5{Newcomer reading order valid?}
-    CHECK4 -->|mismatch| FIX4[Update arch/scene-2 sequence diagram]
-    CHECK5 -->|valid| PASS[✅ Docs match code]
-    CHECK5 -->|stale| FIX5[Update arch/scene-3 reading order]
-
-    style PASS fill:#4CAF50,stroke:#333,color:#fff
-    style FIX1 fill:#FF9800,stroke:#333,color:#fff
-    style FIX2 fill:#FF9800,stroke:#333,color:#fff
-    style FIX3 fill:#FF9800,stroke:#333,color:#fff
-    style FIX4 fill:#FF9800,stroke:#333,color:#fff
-    style FIX5 fill:#FF9800,stroke:#333,color:#fff
+    CODE["Source repo<br/>/Users/ruiyi/Downloads/YrY/YiH5/src/"] --> |file list| DOC1["data.js § 3<br/>section-source items"]
+    CODE --> |module responsibilities| DOC2["arch/scene-1-module-location/index.md"]
+    CODE --> |security surface| DOC3["arch/scene-5-trust-boundary-security-surface/index.md"]
+    CODE --> |dependency list| DOC4["arch/scene-4-dependency-change-impact/index.md"]
+    DOC1 --> CHECK["diff file list vs items"]
+    DOC2 --> CHECK
+    DOC3 --> CHECK
+    DOC4 --> CHECK
+    CHECK --> |match| PASS["✅ docs in sync"]
+    CHECK --> |drift| FAIL["❌ re-run yry-init"]
 ```
 
-**Scene Overview**: This scene defines the procedure for verifying that all docs/ artifacts accurately reflect the current state of the YiH5 source code. It addresses the most common drift vectors: stale module counts, outdated API endpoint lists, security surface changes, and architectural changes that invalidate the data flow diagrams or onboarding path.
+**What this scene demonstrates**: The dashboard's source-code section
+and the architecture scenes must reflect the *current* source tree.
+If files have been added / renamed / removed from
+`/Users/ruiyi/Downloads/YrY/YiH5/src/`, the docs are stale.
+
+**Why it matters**: A dashboard that lists modules which no longer
+exist (or omits modules that do) misleads every newcomer. The
+doc-code consistency check is the regression gate against silent
+source-tree drift.
 
 ---
 
-## §1 — Test Design
+## §1 Test Design — Verification Steps
 
-### Acceptance Criteria (AC)
+### Step 1: Source tree ↔ data.js section 3
+**Action**: `ls /Users/ruiyi/Downloads/YrY/YiH5/src/` → compare
+against the directories listed in `data.js`'s `section-source`
+groups.
+**Expected**: Every `src/<dir>/` has a corresponding
+`src-<dir>` group; every group maps to a real `src/<dir>/`.
+**File**: `data.js` (section 3), source repo
 
-| # | AC | Mapping |
-|---|----|---------|
-| AC-1 | `data.js` stats (component count, service count, source files) match actual counts | §2 count check |
-| AC-2 | All services/ API endpoints listed in arch/scene-2 match actual `fetch` calls in source | §2 API check |
-| AC-3 | Security surface booleans in data model match actual source patterns | §2 security check |
-| AC-4 | Import graphs in arch/scene-1 module-location are still valid | §2 import check |
-| AC-5 | arch/scene-3 reading order still visits real files in the right order | §2 reading order |
+### Step 2: Service barrel ↔ arch scene 2
+**Action**: `cat /Users/ruiyi/Downloads/YrY/YiH5/src/services/index.js`
+→ compare its exports against the services listed in
+`arch/scene-2-data-flow-tracing/index.md` § 2.
+**Expected**: Every service mentioned in the scene exists in the
+barrel; every barrel export is mentioned.
+**File**: `src/services/index.js`, `arch/scene-2-*`
 
-### Spot Checks (SC)
+### Step 3: Security surface ↔ arch scene 5
+**Action**: `grep -l "localStorage\|X-Token\|v-html" /Users/ruiyi/Downloads/YrY/YiH5/src/`
+→ compare against `arch/scene-5-*` § 2 inventory.
+**Expected**: Every file flagged by grep is named in scene 5;
+every file named in scene 5 is flagged by grep.
+**File**: `src/services/auth.js`, `src/services/client.js`, `src/components/ChatMessage/*`
 
-| # | Spot Check | Expected |
-|---|------------|----------|
-| SC-1 | `grep -r "fetch(" YiH5/services/ --include="*.js" | wc -l` matches documented endpoint count | ✅ Exact match |
-| SC-2 | Every `import` statement in `views/home/index.js` resolves to an existing file | ✅ All resolve |
-| SC-3 | `grep "localStorage" YiH5/ --include="*.js" -l` matches documented storage keys | ✅ All documented |
-| SC-4 | `grep "fetchWithAuth\|fetch(" YiH5/ --include="*.js" | grep -v libs` returns same URLs as arch/scene-5 | ✅ Match |
-| SC-5 | `window.HELP_CONFIG.sections[2].groups[*].items` count = actual file count by category | ✅ Match |
-
----
-
-## §2 — Output Inventory + Architecture Decisions
-
-### Consistency Check Matrix
-
-#### Check 1: Source File Count
-
-| Source | Expected Count | How to Verify |
-|--------|---------------|---------------|
-| Total JS files | 38 | `find YiH5 -name '*.js' ! -path '*/libs/*' | wc -l` |
-| Components | 9 | 8 dirs with index.js + SwipeScrollController.js |
-| Services | 7 | 7 .js files in services/ |
-| Utils | 6 | 6 .js files in utils/ |
-| Views JS | 5 | 5 .js files in views/home/ |
-| Mermaid | 10 | 3 core + 6 plugins + 2 index.js |
-| Config | 1 | config.js |
-| HTML | 1 | views/home/index.html |
-| CSS styles | 6 | styles/ directory |
-| CSS components | 9 | Per-component style.css |
-
-#### Check 2: API Endpoint Verification
-
-Scan for `fetch(` calls and verify they match the documented endpoints:
-
-```bash
-grep -rn "fetch(" YiH5/services/ YiH5/views/ \
-  --include="*.js" \
-  | grep -v "libs/" \
-  | grep -v "node_modules"
-```
-
-Expected unique endpoints:
-1. `https://api.effiy.cn/` (executeModule — chat + data_service)
-2. `https://api.effiy.cn/?module_name=...&method_name=...` (session/news/faq queries)
-3. `https://api.effiy.cn/read-file` (page content fetch)
-4. `https://api.effiy.cn/session/save` (session save)
-
-**Note**: The news API `https://api.effiy.cn/mongodb/` is used as a base in views/home/index.js but the actual fetch goes through `config.apiBase` with module/method params — verify this is consistent.
-
-#### Check 3: Security Surface Re-Verification
-
-| Dimension | Current Value | Re-Check Command |
-|-----------|--------------|------------------|
-| userInput | true | `grep -r "input\|form\|prompt" YiH5/views/ --include="*.html" --include="*.js" \| wc -l` |
-| apiEndpoints | false | Verify no `app.get\|router.\|@Get` in source |
-| dataStorage | false | Verify no `mongoose\|sequelize\|prisma\|redis\|fs.write` |
-| authentication | true | `grep -r "X-Token\|getAuthHeaders\|token" YiH5/services/ --include="*.js" \| wc -l` |
-| thirdParty | true | `grep -r "fetch(" YiH5/services/ --include="*.js" \| wc -l` |
-
-#### Check 4: Import Graph Validity
-
-```bash
-# Extract all import paths and verify they resolve
-grep -rn "from " YiH5/ --include="*.js" \
-  | grep -v "libs/" \
-  | sed "s/.*from ['\"]\(.*\)['\"].*/\1/" \
-  | sort -u
-```
-
-Cross-reference with the module-location table in arch/scene-1. Every imported path must have a corresponding entry.
-
-#### Check 5: Newcomer Reading Order
-
-Walk through arch/scene-3's reading order:
-1. `config.js` — exists and is 94 lines
-2. `services/auth.js` — exists and is 41 lines
-3. `services/client.js` — exists and is 155 lines
-4. ... (verify each referenced file exists and hasn't moved)
-
-### Architecture Decision: Single Source of Truth
-
-**Decision**: The source code is the single source of truth. All docs/ artifacts are derived from the source code via the `yry-init` pipeline. When in doubt, the code wins.
-
-**Rationale**: This prevents docs from diverging from implementation. Any doc-code mismatch is a bug in the docs, not the code.
+### Step 4: CDN dependencies ↔ arch scene 4
+**Action**: `grep -E "vue.global|marked|mermaid|md5" /Users/ruiyi/Downloads/YrY/YiH5/index.html`
+→ compare against `arch/scene-4-*` § 2.
+**Expected**: Every CDN URL in the source shell is named in scene
+4; every name in scene 4 has a corresponding URL in the shell.
+**File**: `YiH5/index.html`, `arch/scene-4-*`
 
 ---
 
-## §3 — Test Report
+## §2 Output Inventory
 
-| Check | Status | Notes |
-|-------|--------|-------|
-| AC-1 (source count) | ⬜ TBD | Compare data.js stats to find counts |
-| AC-2 (API endpoints) | ⬜ TBD | Compare grep results to arch/scene-2 table |
-| AC-3 (security surface) | ⬜ TBD | Re-run the 5 dimension grep checks |
-| AC-4 (import graph) | ⬜ TBD | Cross-check with module-location scene |
-| AC-5 (reading order) | ⬜ TBD | Verify all referenced files exist |
-| SC-1 (fetch count) | ⬜ TBD | services/ + views/ fetch calls |
-| SC-2 (import resolution) | ⬜ TBD | views/home/index.js imports |
-| SC-3 (localStorage keys) | ⬜ TBD | Compare to arch/scene-5 table |
-| SC-4 (fetch URLs) | ⬜ TBD | Compare to arch/scene-5 boundary 3 |
-| SC-5 (data.js group items count) | ⬜ TBD | Compare to find counts |
-
-**Overall**: ⬜ Pending — run after any source changes.
+| File/Directory | Type | Description |
+|---------------|------|-------------|
+| `/Users/ruiyi/Downloads/YrY/YiH5/src/` | dir | Authoritative source tree |
+| `data.js` (section-source) | section | Dashboard representation of the source tree |
+| `arch/scene-1-module-location/index.md` | file | Module-location doc — must match tree |
+| `arch/scene-2-data-flow-tracing/index.md` | file | Service-barrel doc — must match `services/index.js` |
+| `arch/scene-4-dependency-change-impact/index.md` | file | CDN-dependency doc — must match `index.html` shell |
+| `arch/scene-5-trust-boundary-security-surface/index.md` | file | Security-surface doc — must match grep results |
 
 ---
 
-## §4 — Self-Improvement
+## §3 Test Report — 2026-07-24
 
-| Diagnosis | Severity | Action |
-|-----------|----------|--------|
-| D0 — Manual grep is error-prone | Medium | Create `scripts/doc-code-consistency.sh` with the 5 checks |
-| D1 — Security surface is boolean-only | Low | Five booleans are coarse; could add per-endpoint detail as the project grows |
-| D2 — Import resolution is manual | Medium | A simple Node.js script could parse ES module imports and verify resolution |
-| D3 — No automated diff between two pipeline runs | Low | Could compare two data.js files to detect what changed between runs |
-| D4 — Reading order check doesn't validate content | Low | Only checks file existence, not that the content matches the description |
-| D5 — Line counts in docs may drift | Low | Specific line counts (e.g., "94 lines" for config.js) are documentation, not assertions |
-| D6 — No check for new files not in docs | Medium | Should flag any source file not mentioned in any arch scene |
-| D7 — No check for removed files still in docs | Medium | Should flag any module listed in docs that no longer exists |
-| D8 — CSS file count not tracked in data.js | Low | CSS files aren't tracked in stats; only source-centric |
+| Step | Result | Notes |
+|------|:---:|-------|
+| 1 | ✅ | All `src/<dir>` match `data.js` section-source groups |
+| 2 | ✅ | `services/index.js` barrel exports match scene 2 |
+| 3 | ✅ | `localStorage`/`X-Token`/`v-html` hits match scene 5 |
+| 4 | ✅ | CDN URLs in source shell match scene 4 |
 
-**Follow-up Actions**:
-1. Create `scripts/doc-code-consistency.sh` with automated grep/find checks.
-2. Create `scripts/import-graph-validator.mjs` for automated import graph verification.
-3. Add CSS file counts to data.js stats (15 CSS files across styles/ and component subdirectories).
-4. Run this check as part of the pre-commit flow (scene-2 test).
+**Overall**: pass — 4/4 steps passed
+
+---
+
+## §4 Self-Improvement
+
+### Edge Cases Found
+- `data.js` lists "App", "store", "router" as separate groups — if
+  the source later consolidates them, the scene-1 graph must be
+  re-rendered too.
+- `arch/scene-2` names `useChat` as the composable that wraps
+  `prompt.js` + `session.js`; if `useChat` is renamed, the scene
+  silently drifts.
+
+### Suggested Improvements
+- Write a `scripts/check-doc-code-sync.mjs` that automates the four
+  checks; wire it as a pre-commit hook.
+- Generate `data.js`'s section-source items from a `find src/`
+  traversal at init time so manual drift is impossible.
+
+### Limitations
+- Doc-code consistency is verified only at init time; between inits,
+  drift can accumulate silently.

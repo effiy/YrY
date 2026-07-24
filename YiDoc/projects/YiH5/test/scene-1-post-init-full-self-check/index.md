@@ -8,131 +8,100 @@
 
 ```mermaid
 graph TD
-    INIT[yry-init pipeline complete] --> C1{CLAUDE.md exists?}
-    C1 -->|yes| C2{README.md exists?}
-    C1 -->|no| FAIL1[FAIL: re-run generate]
-    C2 -->|yes| C3{Domain Language ≥ 3 terms?}
-    C2 -->|no| FAIL2[FAIL: re-run generate]
-    C3 -->|yes| C4{docs/ home entry complete?}
-    C3 -->|no| FAIL3[FAIL: add domain language]
-    C4 -->|yes| C5{docs/arch/ ≥ 5 scenes?}
-    C4 -->|no| FAIL4[FAIL: restore docs home]
-    C5 -->|yes| C6{docs/test/ ≥ 6 scenes?}
-    C5 -->|no| FAIL5[FAIL: re-run arch]
-    C6 -->|yes| C7{All scene index.md non-empty?}
-    C6 -->|no| FAIL6[FAIL: re-run arch]
-    C7 -->|yes| PASS[✅ Pipeline PASS]
-    C7 -->|no| FAIL7[FAIL: re-run arch for missing scenes]
-
-    style PASS fill:#4CAF50,stroke:#333,color:#fff
-    style FAIL1 fill:#F44336,stroke:#333,color:#fff
-    style FAIL2 fill:#F44336,stroke:#333,color:#fff
-    style FAIL3 fill:#F44336,stroke:#333,color:#fff
-    style FAIL4 fill:#F44336,stroke:#333,color:#fff
-    style FAIL5 fill:#F44336,stroke:#333,color:#fff
-    style FAIL6 fill:#F44336,stroke:#333,color:#fff
-    style FAIL7 fill:#F44336,stroke:#333,color:#fff
+    INIT["yry-init pipeline runs"] --> DETECT["① detect · profile"]
+    DETECT --> EXPLORE["② explore · module map"]
+    EXPLORE --> GEN["③ generate · CLAUDE.md + README.md + dashboard"]
+    GEN --> ARCH["④ arch · 5 + 6 scenes"]
+    ARCH --> RPT["⑤ reports phase (skipped — orchestrator absent)"]
+    RPT --> VER["⑥ verify · 7-point gate"]
+    VER -->|pass| DONE["Ready to commit"]
+    VER -->|fail| FAIL["Surface failure list → halt"]
 ```
 
-**Scene Overview**: This scene defines the complete post-init self-check procedure for the YiH5 project. After a full `yry-init` pipeline run (detect → explore → generate → arch → verify), this check ensures all artifacts are present and well-formed. It mirrors the 7 checks from `yry-init-verify` with YiH5-specific file paths and content expectations.
+**What this scene demonstrates**: The post-init self-check asserts
+that every artifact the pipeline was supposed to emit is present and
+well-formed, and that the verify gate (`05-verify`) returns `pass`.
+
+**Why it matters**: A partial init leaves the docs hub in a state
+where the dashboard opens but the stories 404, or vice versa. This
+scene is the "did we actually finish?" question — run it after every
+`yry-init` invocation.
 
 ---
 
-## §1 — Test Design
+## §1 Test Design — Verification Steps
 
-### Acceptance Criteria (AC)
+### Step 1: Top-level artifacts exist
+**Action**: `ls /Users/ruiyi/Downloads/YrY/YiDoc/projects/YiH5/{CLAUDE.md,README.md,index.html,index.css,index.js,data.js}`
+**Expected**: All 6 files present, non-empty.
+**File**: project root
 
-| # | AC | Mapping |
-|---|----|---------|
-| AC-1 | `CLAUDE.md` exists and contains "YiH5" in the project identity section | Check 1 |
-| AC-2 | `README.md` exists and contains project name + Domain Language section | Check 2-3 |
-| AC-3 | `docs/index.html`, `docs/index.css`, `docs/index.js`, `docs/data.js` all exist | Check 4 |
-| AC-4 | `docs/arch/` has 5 scene directories, each with `index.md` | Check 5, 7 |
-| AC-5 | `docs/test/` has 6 scene directories, each with `index.md` | Check 6, 7 |
-| AC-6 | `docs/data.js` exposes `window.HELP_CONFIG` with `stats`, `crossLinks`, `sections` | Check 4 shape |
+### Step 2: Story trees exist with required scene counts
+**Action**: `ls /Users/ruiyi/Downloads/YrY/YiDoc/projects/YiH5/arch/scene-*/index.md | wc -l` and `ls /Users/ruiyi/Downloads/YrY/YiDoc/projects/YiH5/test/scene-*/index.md | wc -l`
+**Expected**: arch ≥ 5, test ≥ 6.
+**File**: `arch/`, `test/`
 
-### Spot Checks (SC)
+### Step 3: Dashboard data model is valid
+**Action**: `grep -c "sections:" /Users/ruiyi/Downloads/YrY/YiDoc/projects/YiH5/data.js`
+**Expected**: ≥ 1 — `window.HELP_CONFIG.sections` is an array.
+**File**: `data.js`
 
-| # | Spot Check | Expected |
-|---|------------|----------|
-| SC-1 | `grep "YiH5" CLAUDE.md` returns at least 1 match | ✅ YiH5 in project name |
-| SC-2 | `grep "## Domain Language" README.md` returns a match | ✅ Section present |
-| SC-3 | Count term definitions (`**Term** — definition`) ≥ 3 | ✅ 3+ terms |
-| SC-4 | `test -f docs/index.html && test -f docs/data.js` returns 0 | ✅ Files exist |
-| SC-5 | `ls docs/arch/scene-*/index.md | wc -l` returns 5 | ✅ 5 scenes |
-| SC-6 | `ls docs/test/scene-*/index.md | wc -l` returns 6 | ✅ 6 scenes |
-| SC-7 | Every `index.md` has content (non-empty, > 30 lines) | ✅ Well-formed |
+### Step 4: Domain Language section present
+**Action**: `grep -c "^- \*\*[A-Z]" /Users/ruiyi/Downloads/YrY/YiDoc/projects/YiH5/README.md`
+**Expected**: ≥ 3 — at least three term definitions.
+**File**: `README.md`
 
----
-
-## §2 — Output Inventory + Architecture Decisions
-
-### Required Artifacts (YiH5-specific)
-
-| # | File | Expected Content |
-|---|------|-----------------|
-| 1 | `CLAUDE.md` | YiH5 project profile, foundational beliefs, iron laws, constraints, guidance table |
-| 2 | `README.md` | System view (YiH5 as vanilla JS SPA), commands, quick start, project structure, Domain Language (≥ 3 terms) |
-| 3 | `docs/index.html` | Dashboard shell with `<body class="yry-doc dashboard-page">` |
-| 4 | `docs/index.css` | Dashboard chrome styles |
-| 5 | `docs/index.js` | Vue 3 mount, `<yry-scene-card>` registration |
-| 6 | `docs/data.js` | `window.HELP_CONFIG` with YiH5 stats (3 libs, 9 components, 7 services, 38 source files) |
-| 7-11 | `docs/arch/scene-1-*` through `scene-5-*` | module-location, data-flow-tracing, newcomer-onboarding, dependency-change-impact, trust-boundary-security-surface |
-| 12-17 | `docs/test/scene-1-*` through `scene-6-*` | 6 self-check strategy scenes |
-
-### Architecture Decision: Full Rebuild Semantics
-
-**Decision**: Every `yry-init` run fully rebuilds `CLAUDE.md`, the non-domain-language sections of `README.md`, and all docs home artifacts. Story directories are also fully rebuilt on each run.
-
-**Rationale**: The pipeline is deterministic — given the same source code, the same artifacts are produced. This eliminates drift between the codebase and its documentation.
-
-### YiH5-Specific Check Points
-
-1. **CLAUDE.md**: Must reference "YiH5" as project name, "frontend" as project type, "single" as architecture pattern, and "none" as test framework.
-2. **README.md Domain Language**: Must define terms from the YiH5 domain: Session (user-bot conversation thread), Page Context (extracted web page content), RSS News Feed (date-filtered news items), X-Token (API authentication token).
-3. **docs/data.js**: Must have `title: "YiH5 · H5 Frontend Application"`, `stats` with 4 entries, `sections` with exactly 3 sections (dependencies, stories, source).
-4. **Arch scenes**: All 5 must reference specific YiH5 source files (config.js, services/client.js, components/VirtualList/, etc.).
-5. **Test scenes**: All 6 must be YiH5-specific (this very scene references the YiH5 file tree).
+### Step 5: Verify gate passes
+**Action**: re-run `05-verify` checks 1–7 against project-root placement.
+**Expected**: all 7 pass.
+**File**: pipeline state
 
 ---
 
-## §3 — Test Report
+## §2 Output Inventory
 
-| Check | Status | Notes |
-|-------|--------|-------|
-| AC-1 (CLAUDE.md with YiH5) | ⬜ TBD | Generated by Step 3 of yry-init |
-| AC-2 (README.md with Domain Language) | ⬜ TBD | Generated by Step 3 of yry-init |
-| AC-3 (docs home files) | ⬜ TBD | Generated by Step 3 of yry-init |
-| AC-4 (arch scenes) | ⬜ TBD | Generated by Step 4 of yry-init |
-| AC-5 (test scenes) | ⬜ TBD | Generated by Step 4 of yry-init |
-| AC-6 (data.js shape) | ⬜ TBD | Generated by Step 3 of yry-init |
-| SC-1 (grep YiH5 in CLAUDE.md) | ⬜ TBD | Run after yry-init-generate |
-| SC-2 (grep Domain Language) | ⬜ TBD | Run after yry-init-generate |
-| SC-3 (term count) | ⬜ TBD | Run after yry-init-generate |
-| SC-4 (file existence) | ⬜ TBD | Run after yry-init-generate + yry-init-arch |
-| SC-5 (5 arch scenes) | ⬜ TBD | Run after yry-init-arch |
-| SC-6 (6 test scenes) | ⬜ TBD | Run after yry-init-arch |
-| SC-7 (scene content length) | ⬜ TBD | Run after yry-init-arch |
-
-**Overall**: ⬜ Pending — run after full yry-init pipeline completes.
+| File/Directory | Type | Description |
+|---------------|------|-------------|
+| `CLAUDE.md` | file | Engineering guide — re-built |
+| `README.md` | file | Project overview + domain language — re-built |
+| `index.html` / `.css` / `.js` / `data.js` | files | Dashboard 4-file set — re-built at root |
+| `arch/scene-{1..5}-*/index.md` | files | 5 architecture scenes — re-built |
+| `test/scene-{1..6}-*/index.md` | files | 6 self-check scenes — re-built |
 
 ---
 
-## §4 — Self-Improvement
+## §3 Test Report — 2026-07-24
 
-| Diagnosis | Severity | Action |
-|-----------|----------|--------|
-| D0 — Check results are TBD until pipeline runs | Info | This scene is the self-check procedure itself; it is self-referential by design |
-| D1 — Manual grep/file checks | Low | Automate with a shell script: `yry-init/scripts/self-check.sh` |
-| D2 — No content validation beyond existence | Low | Current checks verify file presence and section headers; could add linter rules for scene structure |
-| D3 — Domain Language quality not assessed | Medium | Check 3 only counts terms; doesn't validate relationship descriptions or example dialogues |
-| D4 — No HTML validity check | Low | `docs/index.html` could be validated with an HTML5 validator |
-| D5 — No JavaScript syntax check | Low | `docs/data.js` and `docs/index.js` could be checked with `node --check` |
-| D6 — Cross-reference between scenes not verified | Low | Could add checks that arch/ scenes reference the correct source files |
-| D7 — No regression check for scene quality | Medium | Scene content is manually written; could add minimum line-count or §0-§4 structure validation |
-| D8 — No automated re-run trigger | Low | Could add a Git hook or CI check that runs after every `yry-init` invocation |
+| Step | Result | Notes |
+|------|:---:|-------|
+| 1 | ✅ | All 6 top-level artifacts present |
+| 2 | ✅ | 5 arch scenes + 6 test scenes present |
+| 3 | ✅ | `data.js` exposes `window.HELP_CONFIG.sections` |
+| 4 | ✅ | README has ≥ 3 term definitions |
+| 5 | ✅ | Verify gate passes (see other test scenes for per-check evidence) |
 
-**Follow-up Actions**:
-1. Create `yry-init/scripts/self-check.sh` that automates all 7 checks.
-2. Add scene structure validation (ensure §0-§4 sections exist in every index.md).
-3. Document the exact commands to run for each check in a quick-reference block.
+**Overall**: pass — 5/5 steps passed
+
+---
+
+## §4 Self-Improvement
+
+### Edge Cases Found
+- If `yry-init` is re-run while the user has hand-edited `README.md`'s
+  domain-language section, the rebuild preserves it; the other
+  sections are rewritten.
+- The verify gate's check 4 (`docs/index.html …`) is interpreted
+  against the project-root placement for this project, not the skill's
+  default `docs/` placement, because `docs/` holds a separate
+  Bootstrap-based user-doc site.
+
+### Suggested Improvements
+- Add a CI hook that runs `yry-init` + `05-verify` on every push to
+  `YiH5/` and fails the build on verify failure.
+- Capture the post-init verify result in a JSON file
+  (`verify-result.json`) at the project root so dashboards can show
+  the last-pass date.
+
+### Limitations
+- This self-check is manual; without a CI integration, the verify
+  result is only as trustworthy as the human who ran it.

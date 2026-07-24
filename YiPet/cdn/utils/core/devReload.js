@@ -23,8 +23,11 @@
     });
 
     source.onerror = () => {
+      const closed = source.readyState === EventSource.CLOSED;
       source.close();
       source = null;
+      // Server explicitly rejected (e.g. 404 on /__dev__/events) — not a dev server, stop retrying.
+      if (closed) return;
       if (!retryTimer) {
         retryTimer = setTimeout(() => {
           retryTimer = null;

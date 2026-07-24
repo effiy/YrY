@@ -1,5 +1,5 @@
 ---
-paths: [".claude/yry-init-verify/SKILL.md"]
+paths: [".claude/yry-init/steps/05-verify/STEP.md"]
 description: "Failure escalation rules — when to warn vs fail vs abort, retry policy, and degradation countermeasures."
 ---
 
@@ -25,7 +25,7 @@ description: "Failure escalation rules — when to warn vs fail vs abort, retry 
 
 - **Never auto-retry.** A failed check is surfaced to the user.
 - The user decides whether to re-run the pipeline.
-- No partial recovery — a crashed sub-skill aborts the entire pipeline.
+- No partial recovery — a crashed step aborts the entire pipeline.
 
 ## Degradation Countermeasures
 

@@ -40,7 +40,7 @@ For every markdown link in CLAUDE.md (`[text](./path)`), verify the target file 
 
 ### Check 4: Template Drift Detection
 
-Compare `docs/{theme,index.html,index.css,index.js}` against `yry-init/templates/`:
+Compare `docs/{index.html,index.css,index.js,data.js}` against `yry-init/templates/`:
 - Layout structure must match (ignore path rewrites)
 - Any divergence is a warning
 
@@ -56,9 +56,9 @@ Verify `README.md` contains a `## Domain Language` section if one existed before
   "checks": [
     { "name": "claude-readme-alignment", "passed": true },
     { "name": "docs-file-inventory", "passed": true },
-    { "name": "cross-reference-integrity", "passed": false, "detail": "Broken link: ./yry-init-explore/SKILL.md" },
+    { "name": "cross-reference-integrity", "passed": false, "detail": "Broken link: ./legacy/old-reference.md" },
     { "name": "template-drift", "passed": true },
-    { "name": "domain-language-preserved", "passed": true }
+    { "name": "domain-language", "passed": true }
   ],
   "warnings": [],
   "recommendation": "Fix 1 broken link in CLAUDE.md"

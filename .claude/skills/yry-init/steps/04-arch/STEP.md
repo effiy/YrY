@@ -1,28 +1,27 @@
 ---
-name: yry-init-arch
+name: arch-step
 description: >
   Build the project's two story directories from the detect + explore
   outputs: arch (system architecture knowledge) and
   test (self-check strategy). All generated story directories and
   files live under `docs/`. Each scene directory ships an `index.md`
-  following the §0–§4 lifecycle. Run this skill after
-  yry-init-generate, before yry-init-verify.
+  following the §0–§4 lifecycle. Run this step after
+  step 03-generate, before step 05-verify.
 ---
 
-# yry-init-arch
+# yry-init-arch (step ④ of yry-init)
 
 > Single responsibility: emit the two story directories
 > `docs/arch` (system architecture knowledge) and
 > `docs/test` (self-check strategy) under the docs root.
-> This skill does not run tests, does not generate maturity reports,
-> and does not verify the artifacts — those are separate skills.
+> This step does not run tests, does not generate maturity reports,
+> and does not verify the artifacts — those are separate steps.
 >
 > Triggered by the parent pipeline (yry-init), right after
 > yry-init-generate.
 >
-> **Story naming**: `arch` and `test`
-> (kebab-case, lowercase). For example, a project named `rui`
-> produces `yry-arch` and `yry-test`.
+> **Story naming**: `arch` and `test` (kebab-case, lowercase). The
+> directory names are fixed — they do not carry the project prefix.
 
 [Inputs](#inputs) · [Outputs](#outputs) · [1. arch Layout](#1-arch-layout) · [2. test Layout](#2-test-layout) · [3. Scene §0–§4 Lifecycle](#3-scene-04-lifecycle) · [Fallback](#fallback) · [Active Markers](#active-markers)
 
@@ -53,7 +52,7 @@ dashboard) produced by yry-init-generate.
 |---|------|---------|
 | 1 | `scene-N-<slug>/index.md` | Architecture reference scenes, each self-contained §0–§4 |
 
-### Required Scenes (≥ 5)
+### Required Scenes (≥ 6)
 
 The arch story must include at least the following scene types.
 Slug names are kebab-case.
@@ -63,6 +62,7 @@ Slug names are kebab-case.
 3. **newcomer-onboarding** — "I'm new here; what should I read first?"
 4. **dependency-change-impact** — "What breaks if I upgrade dependency Y?"
 5. **trust-boundary-security-surface** — "Where are the trust boundaries, and what is exposed at each?"
+6. **componentization-or-modularization** — "Where does this project stand on its architecture-direction axis (frontend → componentization, backend → modularization), and what is the next concrete extraction or module-boundary move?" Required by [rules/architecture-direction.md](../../rules/architecture-direction.md). Scene §2 must list (a) the project's classification (frontend/backend → axis), (b) a current-state inventory of duplicated markup or scattered handlers, and (c) the next 1–3 concrete moves with file paths.
 
 Additional scenes are allowed.
 
@@ -121,17 +121,19 @@ structured graph file.
 | Marker | Verification | Expected behavior |
 |--------|--------------|-------------------|
 | `docs/arch/` exists | `test -d` | Pipeline may proceed |
-| `docs/arch/` has ≥ 5 scenes | count | Pipeline may proceed |
+| `docs/arch/` has ≥ 6 scenes | count | Pipeline may proceed |
 | Every scene has `index.md` | per-scene check | Pipeline may proceed |
 | `docs/test/` exists | `test -d` | Pipeline may proceed |
 | `docs/test/` has ≥ 6 scenes | count | Pipeline may proceed |
 | Every test scene has `index.md` | per-scene check | Pipeline may proceed |
+| `docs/arch/` contains a `componentization-or-modularization` scene | directory glob | Pipeline may proceed (gate — see [rules/architecture-direction.md](../../rules/architecture-direction.md)) |
 
 
 ## Rules
 
 - [scene-constraints.md](./rules/scene-constraints.md) — ---
 - [story-generation-contracts.md](./rules/story-generation-contracts.md) — ---
+- [../../rules/architecture-direction.md](../../rules/architecture-direction.md) — canonical YrY architecture direction; mandates the `componentization-or-modularization` required scene above.
 
 ## Specialized Agents
 
@@ -141,22 +143,7 @@ structured graph file.
 ## References
 
 - [scene-catalog.md](./references/scene-catalog.md) — ---
-- [test-scenes.md](./references/test-scenes.md) — ---
-
-## Rules
-
-- [scene-constraints.md](./rules/scene-constraints.md) — ---
-- [story-generation-contracts.md](./rules/story-generation-contracts.md) — ---
-
-## Specialized Agents
-
-- [scene-builder.md](./agents/scene-builder.md) — ---
-- [scene-validator.md](./agents/scene-validator.md) — ---
-
-## References
-
-- [scene-catalog.md](./references/scene-catalog.md) — ---
-- [test-scenes.md](./references/test-scenes.md) — ---
+- [self-test-scenes.md](./references/self-test-scenes.md) — ---
 
 ## Templates
 

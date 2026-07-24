@@ -1,7 +1,7 @@
 # Topic Index
 
 Curated local topic index derived from the registered sources in
-`references/sources.json`. Each resource is tagged with its
+registered sources. Each resource is tagged with its
 `[src:source-id]` so the reader can trace provenance.
 
 **Sources:**

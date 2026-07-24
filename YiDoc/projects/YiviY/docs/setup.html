@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Setup | YiviY - Video Translation & Dubbing</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta content="视频翻译配音工作台 — Streamlit + 12 步流水线 · ASR / 翻译 / TTS / 合成" name="description" />
+        <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+
+        <link href="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/remixicon.css" rel="stylesheet" />
+        <link href="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/app.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/docs.css" rel="stylesheet" />
+        <link href="assets/css/docs.css" rel="stylesheet" />
+    </head>
+    <body class="loading">
+        <main id="page-content" data-page="setup" data-no-toc>
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="mt-0 mb-3 font-lg">Setup</h3>
+
+                    <div class="alert alert-info" role="alert">
+                        <p class="mb-0">
+                            <strong>Note:</strong> YiviY 需要 Python 3.10+ 与 FFmpeg。GPU 加速需要 NVIDIA GPU + CUDA
+                            12.4。支持本地运行、Docker 部署、Google Colab 三种方式。完整安装约 10–15
+                            分钟（含模型下载）。
+                        </p>
+                    </div>
+
+                    <h4 class="mt-4"><i class="ri-list-check-2 me-1"></i> Prerequisites</h4>
+
+                    <p class="text-muted">根据你的使用场景，准备以下依赖：</p>
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 22%">Requirement</th>
+                                <th style="width: 15%">Version</th>
+                                <th style="width: 12%">Required</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Python</strong></td>
+                                <td>≥ 3.10</td>
+                                <td><span class="badge bg-danger">Yes</span></td>
+                                <td>主运行时（Streamlit + core 流水线）</td>
+                            </tr>
+                            <tr>
+                                <td><strong>FFmpeg</strong></td>
+                                <td>≥ 6.0</td>
+                                <td><span class="badge bg-danger">Yes</span></td>
+                                <td>视频/音频抽取、合并、转码</td>
+                            </tr>
+                            <tr>
+                                <td><strong>NVIDIA GPU</strong></td>
+                                <td>≥ 8GB VRAM</td>
+                                <td><span class="badge bg-secondary">Optional</span></td>
+                                <td>WhisperX / CTranslate2 GPU 推理（CPU 也可运行）</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CUDA Toolkit</strong></td>
+                                <td>12.4 + cuDNN</td>
+                                <td><span class="badge bg-secondary">Optional</span></td>
+                                <td>GPU 加速依赖（仅 GPU 模式）</td>
+                            </tr>
+                            <tr>
+                                <td><strong>OpenAI API Key</strong></td>
+                                <td>—</td>
+                                <td><span class="badge bg-secondary">Optional</span></td>
+                                <td>GPT-4o 翻译 + OpenAI TTS</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Replicate Token</strong></td>
+                                <td>—</td>
+                                <td><span class="badge bg-secondary">Optional</span></td>
+                                <td>云端 ML 模型（ASR / TTS / 翻译）</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h5 class="mt-3">FFmpeg 安装命令</h5>
+                    <pre class="bg-light p-2 border rounded"><code># macOS
+brew install ffmpeg
+
+# Ubuntu / Debian
+sudo apt install ffmpeg
+
+# Windows (Chocolatey)
+choco install ffmpeg
+
+# 验证
+ffmpeg -version</code></pre>
+
+                    <h4 class="mt-4"><i class="ri-download-cloud-2-line me-1"></i> Installation Steps</h4>
+
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <span
+                                        class="badge bg-dark me-2"
+                                        style="min-width: 32px; height: 32px; line-height: 32px"
+                                        >1</span
+                                    >
+                                    <div class="flex-grow-1">
+                                        <h6 class="mt-0 mb-1">克隆仓库</h6>
+                                        <pre
+                                            class="bg-light p-2 border rounded mb-0"
+                                        ><code>git clone https://github.com/your-org/YiviY.git
+cd YiviY</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <span
+                                        class="badge bg-dark me-2"
+                                        style="min-width: 32px; height: 32px; line-height: 32px"
+                                        >2</span
+                                    >
+                                    <div class="flex-grow-1">
+                                        <h6 class="mt-0 mb-1">创建虚拟环境</h6>
+                                        <pre class="bg-light p-2 border rounded mb-0"><code>python -m venv venv
+source venv/bin/activate  # macOS/Linux
+# venv\Scripts\activate   # Windows</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <span
+                                        class="badge bg-dark me-2"
+                                        style="min-width: 32px; height: 32px; line-height: 32px"
+                                        >3</span
+                                    >
+                                    <div class="flex-grow-1">
+                                        <h6 class="mt-0 mb-1">安装 Python 依赖</h6>
+                                        <pre
+                                            class="bg-light p-2 border rounded mb-0"
+                                        ><code>pip install -r requirements.txt
+# 或使用一键脚本
+python install.py</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <span
+                                        class="badge bg-dark me-2"
+                                        style="min-width: 32px; height: 32px; line-height: 32px"
+                                        >4</span
+                                    >
+                                    <div class="flex-grow-1">
+                                        <h6 class="mt-0 mb-1">配置 config.yaml</h6>
+                                        <p class="text-muted mb-2 font-sm">编辑 API Key、模型路径、输出目录：</p>
+                                        <pre class="bg-light p-2 border rounded mb-0"><code>openai:
+  api_key: "sk-xxx"
+asr:
+  backend: "whisperx"
+  model: "large-v3"
+tts:
+  backend: "openai"</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <span
+                                        class="badge bg-dark me-2"
+                                        style="min-width: 32px; height: 32px; line-height: 32px"
+                                        >5</span
+                                    >
+                                    <div class="flex-grow-1">
+                                        <h6 class="mt-0 mb-1">启动 Streamlit</h6>
+                                        <pre class="bg-light p-2 border rounded mb-0"><code>streamlit run st.py
+# 访问 http://localhost:8501</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <span
+                                        class="badge bg-dark me-2"
+                                        style="min-width: 32px; height: 32px; line-height: 32px"
+                                        >6</span
+                                    >
+                                    <div class="flex-grow-1">
+                                        <h6 class="mt-0 mb-1">验证流水线</h6>
+                                        <p class="text-muted mb-0 font-sm">
+                                            在 UI 中粘贴一个短视频 URL，点击"1-Key Full Pipeline"，等待 12 步完成。
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4"><i class="ri-ship-2-line me-1"></i> Docker Deployment</h4>
+
+                    <p>使用 Docker 快速部署，无需本地 Python 环境：</p>
+
+                    <pre class="bg-light p-3 border rounded"><code># 构建镜像
+docker build -t yiviy .
+
+# CPU 模式运行
+docker run -p 8501:8501 yiviy
+
+# GPU 模式运行（需要 nvidia-docker）
+docker run --gpus all -p 8501:8501 yiviy
+
+# 挂载配置与输出目录
+docker run --gpus all -p 8501:8501 \
+  -v $(pwd)/config.yaml:/app/config.yaml \
+  -v $(pwd)/output:/app/output \
+  yiviy</code></pre>
+
+                    <h4 class="mt-4"><i class="ri-cloud-line me-1"></i> Google Colab</h4>
+
+                    <p>无需本地 GPU？使用 Google Colab 云端运行：</p>
+
+                    <ol>
+                        <li>上传 <code>VideoLingo_colab.ipynb</code> 到 Google Drive</li>
+                        <li>双击在 Colab 中打开，选择 <strong>Runtime → Change runtime type → T4 GPU</strong></li>
+                        <li>按顺序执行所有单元格</li>
+                        <li>运行后通过 <strong>Files</strong> 面板下载输出</li>
+                    </ol>
+
+                    <div class="alert alert-warning mt-3">
+                        <strong>Windows 用户：</strong>可以使用
+                        <code>batch/OneKeyBatch.bat</code> 一键安装与运行，无需手动配置环境。首次运行会自动下载 Python
+                        嵌入版与 FFmpeg。
+                    </div>
+
+                    <h4 class="mt-4"><i class="ri-bug-line me-1"></i> Troubleshooting</h4>
+
+                    <div class="accordion" id="troubleshootingAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#ts1"
+                                >
+                                    WhisperX 模型下载失败
+                                </button>
+                            </h2>
+                            <div
+                                id="ts1"
+                                class="accordion-collapse collapse"
+                                data-bs-parent="#troubleshootingAccordion"
+                            >
+                                <div class="accordion-body">
+                                    <p class="mb-1">
+                                        症状：<code>OSError: Could not download model</code> 或 HuggingFace 连接超时。
+                                    </p>
+                                    <p class="mb-0">
+                                        解决：① 使用代理（<code>export HF_ENDPOINT=https://hf-mirror.com</code>）；②
+                                        手动下载模型到 <code>~/.cache/huggingface/hub/</code>；③ 切换 backend 为
+                                        <code>replicate</code> 走云端推理。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#ts2"
+                                >
+                                    CUDA out of memory
+                                </button>
+                            </h2>
+                            <div
+                                id="ts2"
+                                class="accordion-collapse collapse"
+                                data-bs-parent="#troubleshootingAccordion"
+                            >
+                                <div class="accordion-body">
+                                    <p class="mb-1">症状：<code>RuntimeError: CUDA out of memory</code></p>
+                                    <p class="mb-0">
+                                        解决：① 在 config.yaml 中将 <code>asr.model</code> 从 <code>large-v3</code> 降为
+                                        <code>medium</code> 或 <code>small</code>；② 关闭其他占用显存的进程；③ 使用
+                                        <code>--device cpu</code> 强制 CPU 模式（慢 5-10 倍）。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#ts3"
+                                >
+                                    FFmpeg not found
+                                </button>
+                            </h2>
+                            <div
+                                id="ts3"
+                                class="accordion-collapse collapse"
+                                data-bs-parent="#troubleshootingAccordion"
+                            >
+                                <div class="accordion-body">
+                                    <p class="mb-1">症状：<code>FileNotFoundError: ffmpeg</code></p>
+                                    <p class="mb-0">
+                                        解决：① 确认 <code>ffmpeg -version</code> 在终端能正常执行；② Windows
+                                        用户手动下载 FFmpeg 并将 bin 目录加入 PATH；③ 在 config.yaml 中显式指定
+                                        <code>ffmpeg_path: /usr/local/bin/ffmpeg</code>。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#ts4"
+                                >
+                                    Streamlit 端口被占用
+                                </button>
+                            </h2>
+                            <div
+                                id="ts4"
+                                class="accordion-collapse collapse"
+                                data-bs-parent="#troubleshootingAccordion"
+                            >
+                                <div class="accordion-body">
+                                    <p class="mb-1">症状：<code>Port 8501 is already in use</code></p>
+                                    <p class="mb-0">
+                                        解决：<code>streamlit run st.py --server.port 8502</code>，或杀掉占用进程：<code
+                                            >lsof -ti:8501 | xargs kill</code
+                                        >。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4"><i class="ri-arrow-right-circle-line me-1"></i> Next Steps</h4>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 mb-3">
+                                <h6><i class="ri-palette-line text-primary me-1"></i> Customization</h6>
+                                <p class="text-muted mb-0 font-sm">config.yaml 完整键值、自定义术语表、i18n 配置。</p>
+                                <a href="customization.html" class="stretched-link"></a>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 mb-3">
+                                <h6><i class="ri-stack-line text-primary me-1"></i> Pipeline</h6>
+                                <p class="text-muted mb-0 font-sm">12 步流水线深度解析、ASR/TTS 后端选择。</p>
+                                <a href="pipeline.html" class="stretched-link"></a>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 mb-3">
+                                <h6><i class="ri-question-line text-primary me-1"></i> FAQ</h6>
+                                <p class="text-muted mb-0 font-sm">常见问题、最佳实践、性能调优。</p>
+                                <a href="faq.html" class="stretched-link"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script src="assets/js/layout.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/jquery@3.7.1/jquery.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/js/bootstrap.bundle.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.js"></script>
+        <script src="../../../templates/docs/js/app.min.js"></script>
+    </body>
+</html>

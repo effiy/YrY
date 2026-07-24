@@ -288,12 +288,12 @@ single-line error and exit code 2.
 ## Template usage
 
 The plan output is rendered from the 4-file template
-(`templates/index.html` + `data.js` + `index.css` + `index.js`),
+(`YiDoc/templates/daily/index.html` + `data.js` + `index.css` + `index.js`),
 not invented inline.
 
-1. Read `templates/index.html` (the page shell) and
-   `templates/data.js` (the schema + defaults + example).
-2. The Vue 3 app in `templates/index.js` reads
+1. Read `YiDoc/templates/daily/index.html` (the page shell) and
+   `YiDoc/templates/daily/data.js` (the schema + defaults + example).
+2. The Vue 3 app in `YiDoc/templates/daily/index.js` reads
    `window.PLAN_DATA` and renders the page client-side. The
    shape of the data is documented in the JSDoc block at
    the top of `data.js` (`@data_shape`). The same shape is
@@ -305,7 +305,7 @@ not invented inline.
 5. If `--open` was passed, open the file in the default browser.
 
 Do not reinvent the structure. If any of the four files is
-missing, exit with a one-line error pointing at `templates/`
+missing, exit with a one-line error pointing at `YiDoc/templates/daily/`
 — do not fall back to an inline structure. The 4-file layout
 is the source of truth for the renderer.
 
@@ -380,7 +380,7 @@ across all three tiers.
 | `--format` is neither `html` nor `md` | Reject with usage hint before touching the filesystem |
 | `--horizon` is invalid | Reject with usage hint; default to 30d for the inner tier |
 | `--tiers` contains an unknown tier | Reject with usage hint; default to `30d,90d,long` |
-| Template file missing | Exit 2 with a one-line error pointing at `templates/`; do not fall back to inline structure |
+| Template file missing | Exit 2 with a one-line error pointing at `YiDoc/templates/daily/`; do not fall back to inline structure |
 | Stale `.git` lock (concurrent git op) | Wait 5s once, retry; surface if it persists |
 | User asks the skill to pin calendar dates | Refuse — propose T+Nd offsets and let the user convert |
 | User passes `--tiers long` only | Render only the long-term tier; still label as DRAFT |

@@ -205,16 +205,23 @@ through the replacement workflow when the source changes.
 ## Stage 5 — Page Emit
 
 The page is byte-stable: `index.html`, `index.css`, `index.js`
-are copied verbatim from `templates/`. Only `data.js` is
+are copied verbatim from `YiDoc/templates/test/`. Only `data.js` is
 regenerated.
 
-`{{SCOPE_TITLE}}` and `{{SHARED_ROOT}}` in `templates/index.html`
-are substituted at copy time:
-- `{{SCOPE_TITLE}}` → the basename of the scope
-- `{{SHARED_ROOT}}` → a *relative* path from the output directory
-  to `/.claude/shared/`. The analyzer computes
-  `path.relative(outDir, '<repo>/.claude/shared')` so the page
-  works under both `file://` and `http://`.
+`{{SHARED_ROOT}}`, `{{SHARED_ROOT_LOADER_JS_ARRAY}}`, and
+`{{SHARED_ROOT_MERMAID_JS_ARRAY}}` in `YiDoc/templates/test/index.html` are
+**retired** — the bootstrap now walks up the directory tree at
+runtime (trying depths 0..12) and probes for
+`.claude/shared/loader.js`. The template is therefore byte-stable
+across all deployments.
+
+`{{SCOPE_TITLE}}` is **retired** — the shell reads
+`window.REPORT_CONFIG.options.scopeTitle` at runtime so the
+template stays byte-identical across scopes.
+
+> **No write-time substitutions remain.** The 4-file template
+> (`index.html`, `index.css`, `index.js`, `data.js`) is now fully
+> byte-stable; only `data.js` varies per scope.
 
 ## Stage 6 — Markdown Mirror (optional)
 

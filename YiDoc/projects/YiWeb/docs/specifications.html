@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Specifications | YiWeb</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta content="YiWeb documentation" name="description" />
+        <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+
+        <link href="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/remixicon.css" rel="stylesheet" />
+        <link href="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/app.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/docs.css" rel="stylesheet" />
+        <link href="assets/css/docs.css" rel="stylesheet" />
+    </head>
+    <body class="loading">
+        <main id="page-content" data-page="specifications" data-no-toc>
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="mt-0 mb-3 font-lg">Specifications</h3>
+                    <p>YiWeb Vue 3 SPA。以下是完整的目录结构、技术栈清单与模块统计。</p>
+
+                    <h4 class="mt-4">Directory Structure</h4>
+                    <pre class="bg-light p-3 border rounded"><code>YiWeb/
+├── ai code review view views/aicr//   # AI Code Review View (views/aicr/)
+├── story management view views/story//   # Story Management View (views/story/)
+├── claude panel view views/claude//   # Claude Panel View (views/claude/)
+├── core services layer core/services//   # Core Services Layer (core/services/)
+├── utility layer/   # Utility Layer
+├── config.yaml or package.json   # Configuration
+├── requirements.txt              # Dependencies
+├── README.md                     # Project overview
+├── CLAUDE.md                     # AI agent context
+└── docs/                         # This documentation</code></pre>
+
+                    <h4 class="mt-4">File Statistics</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Views</td>
+                                        <td><strong>3</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Components</td>
+                                        <td><strong>20</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Hooks</td>
+                                        <td><strong>66</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Source Files</td>
+                                        <td><strong>95</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Layer</th>
+                                        <th>Responsibility</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>🔬 AI Code Review View (views/aicr/)</code></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>📖 Story Management View (views/story/)</code></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>🤖 Claude Panel View (views/claude/)</code></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>⚙️ Core Services Layer (core/services/)</code></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>🛠 Utility Layer</code></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4">Technology Stack</h4>
+                    <h5 class="mt-3">Runtime Dependencies (CDN-loaded, no package.json)</h5>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 25%">Package</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>Vue 3</code></td>
+                                <td>Progressive framework · Composition API · reactive data-driven views</td>
+                            </tr>
+                            <tr>
+                                <td><code>baseView.js</code></td>
+                                <td>Custom view bootstrap · dynamic component loader · createBaseView factory</td>
+                            </tr>
+                            <tr>
+                                <td><code>Component Loader</code></td>
+                                <td>Dynamic HTML/CSS/JS component system · registerGlobalComponent</td>
+                            </tr>
+                            <tr>
+                                <td><code>Log System</code></td>
+                                <td>Structured logging (logInfo / logWarn / logError) with browser integration</td>
+                            </tr>
+                            <tr>
+                                <td><code>Error Handling</code></td>
+                                <td>Error codes, safe execution wrappers, browser extension error filter</td>
+                            </tr>
+                            <tr>
+                                <td><code>Fetch API</code></td>
+                                <td>Native fetch wrapper with timeout, abort, retry, caching, auth headers</td>
+                            </tr>
+                            <tr>
+                                <td><code>Markdown Renderer</code></td>
+                                <td>Streaming + static markdown-to-HTML rendering</td>
+                            </tr>
+                            <tr>
+                                <td><code>Storage Utils</code></td>
+                                <td>localStorage / sessionStorage / cookie wrappers</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h5 class="mt-3">Build & Infrastructure (server-side)</h5>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 25%">Package</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>Nginx</code></td>
+                                <td>Reverse proxy · static file serving · CORS configuration</td>
+                            </tr>
+                            <tr>
+                                <td><code>Ollama</code></td>
+                                <td>Local LLM inference · model list fetching · API proxy</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4">Source Code Map</h4>
+                    <h5 class="mt-3">AI Code Review View (views/aicr/)</h5>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 30%">File</th>
+                                <th>Description</th>
+                                <th style="width: 25%">Location</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>aicr/index.js</code></td>
+                                <td>Main entry · createStore + useComputed + useMethods + createBaseView bootstrap</td>
+                                <td><span class="accent">Entry</span> · src/views/aicr/index.js</td>
+                            </tr>
+                            <tr>
+                                <td><code>aicr/hooks/store.js</code></td>
+                                <td>Central reactive state · sessions, fileTree, selectedKey, sidebar state</td>
+                                <td><span class="accent">State</span> · src/views/aicr/hooks/store.js</td>
+                            </tr>
+                            <tr>
+                                <td><code>useComputed.js</code></td>
+                                <td>Derived state · storyTags, skillTags, templateTags, filteredFileCount</td>
+                                <td><span class="accent">Computed</span> · src/views/aicr/hooks/useComputed.js</td>
+                            </tr>
+                            <tr>
+                                <td><code>useMethods.js</code></td>
+                                <td>All methods · search, chat, fileTree CRUD, session management, streaming</td>
+                                <td><span class="accent">Methods</span> · src/views/aicr/hooks/useMethods.js</td>
+                            </tr>
+                            <tr>
+                                <td><code>aicrPage component</code></td>
+                                <td>Shell layout · keyboard shortcuts · view mode switching (tree/cards/graph)</td>
+                                <td><span class="accent">Component</span> · src/views/aicr/components/aicrPage/</td>
+                            </tr>
+                            <tr>
+                                <td><code>fileTree component</code></td>
+                                <td>File tree with batch ops · expand/collapse · drag sort · search filter</td>
+                                <td><span class="accent">Component</span> · src/views/aicr/components/fileTree/</td>
+                            </tr>
+                            <tr>
+                                <td><code>SessionChatContext</code></td>
+                                <td>AI chat panel · streaming responses · context editing · scroll sync</td>
+                                <td><span class="accent">Hooks</span> · sessionChatContextMethods.js</td>
+                            </tr>
+                            <tr>
+                                <td><code>Tag & Filter System</code></td>
+                                <td>Multi-level tag filtering · skills/templates/rules/agents cross-filter</td>
+                                <td><span class="accent">Hooks</span> · tagFilterMethods.js</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h5 class="mt-3">Story Management View (views/story/)</h5>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 30%">File</th>
+                                <th>Description</th>
+                                <th style="width: 25%">Location</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>story/index.js</code></td>
+                                <td>Main entry · createStore + useComputed + useMethods pattern</td>
+                                <td><span class="accent">Entry</span> · src/views/story/index.js</td>
+                            </tr>
+                            <tr>
+                                <td><code>hooks/state/store.js</code></td>
+                                <td>Reactive state · stories, fileTree, filters, editing, deps</td>
+                                <td><span class="accent">State</span> · src/views/story/hooks/state/store.js</td>
+                            </tr>
+                            <tr>
+                                <td><code>useComputed.js</code></td>
+                                <td>Derived state · filteredStories, statusCounts, projectTags</td>
+                                <td>
+                                    <span class="accent">Computed</span> · src/views/story/hooks/computed/useComputed.js
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>useMethods.js</code></td>
+                                <td>Story CRUD, deps management, filter/sort, knowledge graph</td>
+                                <td><span class="accent">Methods</span> · src/views/story/hooks/useMethods.js</td>
+                            </tr>
+                            <tr>
+                                <td><code>storyPanelPage</code></td>
+                                <td>Main panel · story list + detail · status filtering · panel view</td>
+                                <td>
+                                    <span class="accent">Component</span> · src/views/story/components/storyPanelPage/
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>depEditor</code></td>
+                                <td>Dependency editor · add/remove bidirectional deps between stories</td>
+                                <td><span class="accent">Component</span> · src/views/story/components/depEditor/</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h5 class="mt-3">Claude Panel View (views/claude/)</h5>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 30%">File</th>
+                                <th>Description</th>
+                                <th style="width: 25%">Location</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>claude/index.js</code></td>
+                                <td>Main entry · createStore pattern, project list + detail drill-down</td>
+                                <td><span class="accent">Entry</span> · src/views/claude/index.js</td>
+                            </tr>
+                            <tr>
+                                <td><code>hooks/store.js</code></td>
+                                <td>Projects state · loading, error, selectedProject, fetchProjects</td>
+                                <td><span class="accent">State</span> · src/views/claude/hooks/store.js</td>
+                            </tr>
+                            <tr>
+                                <td><code>claudePanelPage</code></td>
+                                <td>Project list with card grid · search, sort, select</td>
+                                <td>
+                                    <span class="accent">Component</span> · src/views/claude/components/claudePanelPage/
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>claudeDetailCard</code></td>
+                                <td>Project detail view · skills, templates, rules, agents info</td>
+                                <td>
+                                    <span class="accent">Component</span> ·
+                                    src/views/claude/components/claudeDetailCard/
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h5 class="mt-3">Core Services Layer (core/services/)</h5>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 30%">File</th>
+                                <th>Description</th>
+                                <th style="width: 25%">Location</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>services/index.js</code></td>
+                                <td>API module aggregator · re-exports all service functions</td>
+                                <td><span class="accent">Aggregator</span> · src/core/services/index.js</td>
+                            </tr>
+                            <tr>
+                                <td><code>requestHelper.js</code></td>
+                                <td>HTTP client · fetch wrapper, timeout, CORS, retry, caching, auth</td>
+                                <td><span class="accent">Network</span> · src/core/services/helper/requestHelper.js</td>
+                            </tr>
+                            <tr>
+                                <td><code>authUtils.js</code></td>
+                                <td>X-Token management · localStorage persistence · API settings dialog</td>
+                                <td><span class="accent">Auth</span> · src/core/services/helper/authUtils.js</td>
+                            </tr>
+                            <tr>
+                                <td><code>crud.js</code></td>
+                                <td>Generic CRUD operations · streamPrompt, streamPromptJSON, batchOps</td>
+                                <td><span class="accent">Data</span> · src/core/services/modules/crud.js</td>
+                            </tr>
+                            <tr>
+                                <td><code>business/</code></td>
+                                <td>Business logic · process manager, scenario analyzer, requirement analysis</td>
+                                <td><span class="accent">Domain</span> · src/core/services/business/</td>
+                            </tr>
+                            <tr>
+                                <td><code>sessionSyncService.js</code></td>
+                                <td>Session sync between aicr view and backend · data consistency</td>
+                                <td><span class="accent">Sync</span> · src/core/services/aicr/sessionSyncService.js</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h5 class="mt-3">Utility Layer</h5>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 30%">File</th>
+                                <th>Description</th>
+                                <th style="width: 25%">Location</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>core/config.js</code></td>
+                                <td>Environment config · local/prod endpoint switching · debug mode</td>
+                                <td><span class="accent">Config</span> · src/core/config.js</td>
+                            </tr>
+                            <tr>
+                                <td><code>core/utils/index.js</code></td>
+                                <td>Utility re-exports · CDN storage, eventBus, http, animation, validation</td>
+                                <td><span class="accent">Utils</span> · src/core/utils/index.js</td>
+                            </tr>
+                            <tr>
+                                <td><code>fileToStoryMapper.js</code></td>
+                                <td>File-to-story knowledge graph mapper · cross-view integration utility</td>
+                                <td><span class="accent">Mapper</span> · src/utils/fileToStoryMapper.js</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4">Architecture & Test Scenes</h4>
+                    <p>2 stories · 12 scenes · architecture + self-check</p>
+                    <ul>
+                        <li>
+                            <strong>System Architecture & Knowledge Codification</strong> — End-to-end request trace
+                            from aicr entry to API persistence · <strong>6 architecture scenes</strong> · module
+                            location, data flow, onboarding, dependency impact, security surface,
+                            <strong>view & hook lifecycle</strong> <span class="badge bg-secondary">6 scenes</span>
+                        </li>
+                        <li>
+                            <strong>Self-Check Strategy & Verification Suite</strong> — Continuous verification pipeline
+                            · <strong>6 test scenes</strong> · post-init, pre-commit, doc consistency, security
+                            regression, cross-story integration, third-party health
+                            <span class="badge bg-secondary">6 scenes</span>
+                        </li>
+                    </ul>
+
+                    <h4 class="mt-4"><i class="ri-bar-chart-grouped-line me-1"></i> Module Statistics</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Module</th>
+                                <th style="width: 15%">Files</th>
+                                <th>Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>src/views/aicr/</code></td>
+                                <td>~18</td>
+                                <td>AI 代码评审主视图</td>
+                            </tr>
+                            <tr>
+                                <td><code>src/views/claude/</code></td>
+                                <td>~12</td>
+                                <td>Claude 项目面板</td>
+                            </tr>
+                            <tr>
+                                <td><code>src/views/story/</code></td>
+                                <td>~22</td>
+                                <td>故事生成与依赖图</td>
+                            </tr>
+                            <tr>
+                                <td><code>src/components/</code></td>
+                                <td>20</td>
+                                <td>共享 SFC 组件</td>
+                            </tr>
+                            <tr>
+                                <td><code>src/hooks/</code></td>
+                                <td>66</td>
+                                <td>自定义 Hook（状态/副作用/计算）</td>
+                            </tr>
+                            <tr>
+                                <td><code>src/core/services/</code></td>
+                                <td>~15</td>
+                                <td>API 客户端 · 业务服务</td>
+                            </tr>
+                            <tr>
+                                <td><code>src/router/</code></td>
+                                <td>3</td>
+                                <td>路由 + 守卫</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4"><i class="ri-stack-line me-1"></i> Tech Stack</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 18%">层级</th>
+                                <th style="width: 30%">技术</th>
+                                <th style="width: 15%">版本</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td rowspan="2">框架</td>
+                                <td>Vue 3</td>
+                                <td>3.4</td>
+                                <td>CDN 加载 · Composition API</td>
+                            </tr>
+                            <tr>
+                                <td>Vue Router</td>
+                                <td>4.4</td>
+                                <td>History 模式 · 懒加载</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="2">状态</td>
+                                <td>Pinia</td>
+                                <td>2.2</td>
+                                <td>响应式 store</td>
+                            </tr>
+                            <tr>
+                                <td>自定义 Hook</td>
+                                <td>66 个</td>
+                                <td>统一状态/副作用/计算</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="2">UI</td>
+                                <td>Bootstrap 5</td>
+                                <td>5.3</td>
+                                <td>响应式布局</td>
+                            </tr>
+                            <tr>
+                                <td>Remixicon</td>
+                                <td>4.x</td>
+                                <td>图标字体</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="2">构建</td>
+                                <td>CDN</td>
+                                <td>—</td>
+                                <td>零构建 · 直接部署</td>
+                            </tr>
+                            <tr>
+                                <td>esbuild（可选）</td>
+                                <td>0.24</td>
+                                <td>生产压缩</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4"><i class="ri-cpu-line me-1"></i> Performance Profile</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th style="width: 20%">Value</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Total JS Size</td>
+                                <td>~180 KB</td>
+                                <td>gzip · 含 Vue 全家桶</td>
+                            </tr>
+                            <tr>
+                                <td>Initial Load</td>
+                                <td>~85 KB</td>
+                                <td>仅 router + app shell</td>
+                            </tr>
+                            <tr>
+                                <td>LCP Target</td>
+                                <td>&lt; 2.0s</td>
+                                <td>4G 网络</td>
+                            </tr>
+                            <tr>
+                                <td>Memory Footprint</td>
+                                <td>~25 MB</td>
+                                <td>典型 session</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <script src="assets/js/layout.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/jquery@3.7.1/jquery.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/js/bootstrap.bundle.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.js"></script>
+        <script src="../../../templates/docs/js/app.min.js"></script>
+    </body>
+</html>

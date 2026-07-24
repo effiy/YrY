@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Customization | YiAi</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta content="YiAi documentation" name="description" />
+        <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+
+        <link href="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/remixicon.css" rel="stylesheet" />
+        <link href="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/app.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/docs.css" rel="stylesheet" />
+        <link href="assets/css/docs.css" rel="stylesheet" />
+    </head>
+    <body class="loading">
+        <main id="page-content" data-page="customization" data-no-toc>
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="mt-0 mb-3 font-lg">Customization</h3>
+                    <p>YiAi 提供多种定制选项，覆盖配置、主题、API 端点与扩展机制。以下是常用定制场景与代码示例。</p>
+
+                    <h4 class="mt-4">
+                        <i class="ri-file-settings-line me-2" style="color: #ef4444"></i>Configuration Files
+                    </h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 30%">File</th>
+                                <th>Purpose</th>
+                                <th style="width: 30%">Common Edits</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>config.yaml</code></td>
+                                <td>主配置文件 — MongoDB、API、认证</td>
+                                <td>URI · Token · CORS · 日志级别</td>
+                            </tr>
+                            <tr>
+                                <td><code>src/core/config.py</code></td>
+                                <td>Pydantic Settings 模型</td>
+                                <td>字段验证 · 默认值 · 环境变量映射</td>
+                            </tr>
+                            <tr>
+                                <td><code>.env (optional)</code></td>
+                                <td>环境变量覆盖</td>
+                                <td>生产密钥 · 敏感配置</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4">
+                        <i class="ri-palette-line me-2" style="color: #ef4444"></i>CSS Variable Reference
+                    </h4>
+                    <p>
+                        YiAi 的文档页面通过 <code>projects/templates/docs/css/docs.css</code> 定义了一套 CSS 变量。在
+                        <code>docs/assets/css/docs.css</code> 中覆盖即可定制品牌色与主题：
+                    </p>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 35%">Variable</th>
+                                <th style="width: 20%">Default</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>--yry-doc-accent</code></td>
+                                <td><code>#ef4444</code></td>
+                                <td>品牌主色 — 侧边栏高亮、按钮、链接、进度条</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yry-doc-accent-ink</code></td>
+                                <td><code>#fff</code></td>
+                                <td>品牌色上的文字颜色（通常为白或深色）</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yry-doc-bg</code></td>
+                                <td><code>#f5f5f5</code></td>
+                                <td>页面整体背景色</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yry-doc-sidebar-bg</code></td>
+                                <td><code>#ffffff</code></td>
+                                <td>侧边栏背景色</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yry-doc-topbar-bg</code></td>
+                                <td><code>#ffffff</code></td>
+                                <td>顶部栏背景色</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yry-doc-card-bg</code></td>
+                                <td><code>#ffffff</code></td>
+                                <td>卡片背景色</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yry-doc-text</code></td>
+                                <td><code>#212529</code></td>
+                                <td>主文本颜色</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yry-doc-muted</code></td>
+                                <td><code>#6c757d</code></td>
+                                <td>次要文本颜色</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yry-doc-border</code></td>
+                                <td><code>#dee2e6</code></td>
+                                <td>边框颜色</td>
+                            </tr>
+                            <tr>
+                                <td><code>--yry-doc-code-bg</code></td>
+                                <td><code>#f8f9fa</code></td>
+                                <td>代码块背景色</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4">
+                        <i class="ri-magic-line me-2" style="color: #ef4444"></i>Common Customization Scenarios
+                    </h4>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="border rounded p-3 h-100">
+                                <h5><i class="ri-paint-line me-2" style="color: #ef4444"></i> Theme & Branding</h5>
+                                <p class="text-muted font-sm">
+                                    修改 <code>docs/assets/css/docs.css</code> 中的
+                                    <code>--yry-doc-accent</code>
+                                    以适配品牌色。所有交互组件（侧边栏高亮、按钮、链接）自动继承。
+                                </p>
+                                <pre class="bg-light p-2 border rounded mb-0"><code>:root {
+  --yry-doc-accent: #ff6b6b;
+  --yry-doc-accent-ink: #ffffff;
+}</code></pre>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="border rounded p-3 h-100">
+                                <h5>
+                                    <i class="ri-plug-line me-2" style="color: #ef4444"></i> API / Service Extension
+                                </h5>
+                                <p class="text-muted font-sm">在 <code>src/api/routes/</code> 添加新路由模块</p>
+                                <pre
+                                    class="bg-light p-2 border rounded mb-0"
+                                ><code># src/api/routes/my_feature.py\nfrom fastapi import APIRouter\nrouter = APIRouter()\n\n@router.get("/my-feature")\nasync def handler():\n    return {"status": "ok"}</code></pre>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="border rounded p-3 h-100">
+                                <h5><i class="ri-translate-2 me-2" style="color: #ef4444"></i> i18n / Localization</h5>
+                                <p class="text-muted font-sm">Pydantic schemas · <code>error_codes.py</code></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="border rounded p-3 h-100">
+                                <h5>
+                                    <i class="ri-shield-keyhole-line me-2" style="color: #ef4444"></i> Security & Auth
+                                </h5>
+                                <p class="text-muted font-sm">X-Token 中间件 · <code>core/middleware.py</code></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4">
+                        <i class="ri-code-s-slash-line me-2" style="color: #ef4444"></i>Code Sample — YAML Config
+                    </h4>
+                    <pre class="bg-light p-3 border rounded"><code># config.yaml — YiAi 典型配置
+server:
+  host: 0.0.0.0
+  port: 8000
+  workers: 4
+  cors_origins:
+    - http://localhost:5173
+    - https://yiai.example.com
+
+mongodb:
+  uri: mongodb://localhost:27017
+  db_name: yiai
+  pool_size: 10
+  connect_timeout: 5000
+
+auth:
+  token: your-secret-token
+  algorithm: HS256
+
+logging:
+  level: INFO
+  file: logs/yiai.log
+  max_size: 10MB
+  backup_count: 5</code></pre>
+
+                    <h4 class="mt-4">
+                        <i class="ri-settings-6-line me-2" style="color: #ef4444"></i>layout.js Configuration Shim
+                    </h4>
+                    <p>
+                        每个项目的 <code>docs/assets/js/layout.js</code> 是一个 30 行的 shim，设置
+                        <code>window.YRY_DOC_CONFIG</code> 后加载共享 layout.js：
+                    </p>
+                    <pre class="bg-light p-3 border rounded"><code>window.YRY_DOC_CONFIG = {
+    brand:        'YiAi',
+    tagline:      'FastAPI + MongoDB 后端',
+    version:      'v1.0.0',
+    brandColor:   '#ef4444',
+    pages: [
+        { key: 'index',    href: 'index.html',    icon: 'ri-honour-line',    label: 'Introduction' },
+        { key: 'setup',    href: 'setup.html',    icon: 'ri-tools-fill',     label: 'Setup'        },
+        { key: 'customization', href: 'customization.html', icon: 'ri-paint-line', label: 'Customization' },
+        { key: 'specifications', href: 'specifications.html', icon: 'ri-file-list-3-line', label: 'Specifications' },
+        { key: 'endpoints', href: 'endpoints.html', icon: 'ri-router-line', label: 'Endpoints' },
+        { key: 'faq',      href: 'faq.html',      icon: 'ri-question-answer-line', label: 'FAQ'    },
+        { key: 'changelog',href: 'changelog.html',icon: 'ri-book-open-line',  label: 'Changelog'   },
+    ]
+};
+(function () {
+    var s = document.createElement('script');
+    s.src = '../../../templates/docs/js/layout.js';
+    document.head.appendChild(s);
+})();</code></pre>
+
+                    <h4 class="mt-4"><i class="ri-rocket-line me-2" style="color: #ef4444"></i>Extension Recipes</h4>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <h6>Add a New Doc Page</h6>
+                            <ol class="font-sm">
+                                <li>创建 <code>docs/new-page.html</code></li>
+                                <li>在 layout.js shim 的 <code>pages</code> 数组添加条目</li>
+                                <li>使用 <code>&lt;main id="page-content" data-page="new-page"&gt;</code> 包裹内容</li>
+                            </ol>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6>Override Shared Styles</h6>
+                            <ol class="font-sm">
+                                <li>编辑 <code>docs/assets/css/docs.css</code></li>
+                                <li>覆盖 <code>--yry-doc-*</code> 变量</li>
+                                <li>共享 layout.js 自动应用新主题</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info mt-3">
+                        <strong>Tip:</strong> 所有 YiAi 文档页面共享 <code>projects/templates/docs/</code> 中的
+                        layout.js 与
+                        docs.css。定制交互行为（暗色模式、侧边栏搜索、TOC、代码复制按钮）时编辑共享文件即可全局生效。
+                    </div>
+
+                    <h4 class="mt-4"><i class="ri-database-2-line me-1"></i> Environment Variables</h4>
+                    <p>YiAi 支持通过 <code>.env</code> 文件或系统环境变量覆盖 <code>config.yaml</code> 中的值：</p>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Variable</th>
+                                <th>Default</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>YIAI_MONGODB_URL</code></td>
+                                <td>—</td>
+                                <td>MongoDB 连接字符串（覆盖 mongodb.url）</td>
+                            </tr>
+                            <tr>
+                                <td><code>YIAI_AUTH_TOKEN</code></td>
+                                <td>—</td>
+                                <td>X-Token 鉴权密钥</td>
+                            </tr>
+                            <tr>
+                                <td><code>YIAI_LOG_LEVEL</code></td>
+                                <td>INFO</td>
+                                <td>日志级别（DEBUG/INFO/WARN/ERROR）</td>
+                            </tr>
+                            <tr>
+                                <td><code>YIAI_OSS_ENDPOINT</code></td>
+                                <td>—</td>
+                                <td>OSS 服务端点（S3 兼容）</td>
+                            </tr>
+                            <tr>
+                                <td><code>YIAI_OPENAI_API_KEY</code></td>
+                                <td>—</td>
+                                <td>LLM Provider API Key</td>
+                            </tr>
+                            <tr>
+                                <td><code>YIAI_SENTRY_DSN</code></td>
+                                <td>—</td>
+                                <td>Sentry 错误监控 DSN（可选）</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4"><i class="ri-puzzle-line me-1"></i> Module Development</h4>
+                    <p>添加新模块到 <code>/api/execute</code> 的步骤：</p>
+                    <pre class="bg-light p-3 border rounded"><code># 1. 创建模块文件
+# src/modules/my_feature/__init__.py
+from typing import Dict, Any
+
+async def execute(input: Dict[str, Any]) -> Dict[str, Any]:
+    """模块入口函数"""
+    name = input.get("name", "world")
+    return {"greeting": f"Hello, {name}!"}
+
+# 2. 注册到 ModuleRegistry
+# src/modules/registry.py
+from . import my_feature
+REGISTRY["my_feature.greet"] = my_feature.execute
+
+# 3. 调用
+curl -X POST /api/execute \
+  -H "X-Token: ..." \
+  -d '{"module": "my_feature.greet", "input": {"name": "YiAi"}}'</code></pre>
+
+                    <h4 class="mt-4"><i class="ri-shield-check-line me-1"></i> Security Hardening Checklist</h4>
+                    <ul>
+                        <li><strong>生产环境</strong>：将 <code>auth.token</code> 替换为 JWT 签发机制（避免硬编码）</li>
+                        <li>
+                            <strong>CORS</strong>：在 <code>main.py</code> 中限制 <code>allow_origins</code> 为已知域名
+                        </li>
+                        <li><strong>HTTPS</strong>：通过 Nginx/Caddy 终止 TLS · HSTS · HTTP/2</li>
+                        <li><strong>速率限制</strong>：启用 <code>slowapi</code> 中间件 · IP 级 + Token 级</li>
+                        <li>
+                            <strong>日志脱敏</strong>：在 logging filter 中过滤 <code>password</code> /
+                            <code>token</code> 字段
+                        </li>
+                        <li>
+                            <strong>数据库索引</strong>：为 <code>user_id</code> / <code>created_at</code> 建立复合索引
+                        </li>
+                    </ul>
+
+                    <h4 class="mt-4"><i class="ri-pulse-line me-1"></i> Observability Hooks</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Hook</th>
+                                <th style="width: 25%">Trigger</th>
+                                <th>Use Case</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>@app.middleware("http")</code></td>
+                                <td>每个请求</td>
+                                <td>请求日志 · 耗时统计</td>
+                            </tr>
+                            <tr>
+                                <td><code>startup</code> event</td>
+                                <td>应用启动</td>
+                                <td>连接池预热 · 缓存加载</td>
+                            </tr>
+                            <tr>
+                                <td><code>shutdown</code> event</td>
+                                <td>应用关闭</td>
+                                <td>资源释放 · 数据 flush</td>
+                            </tr>
+                            <tr>
+                                <td><code>exception_handler</code></td>
+                                <td>未捕获异常</td>
+                                <td>Sentry 上报 · 500 返回</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <script src="assets/js/layout.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/jquery@3.7.1/jquery.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/js/bootstrap.bundle.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.js"></script>
+        <script src="../../../templates/docs/js/app.min.js"></script>
+    </body>
+</html>

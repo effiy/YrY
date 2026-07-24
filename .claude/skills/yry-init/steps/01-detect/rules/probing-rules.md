@@ -1,5 +1,5 @@
 ---
-paths: [".claude/yry-init-detect/SKILL.md"]
+paths: [".claude/yry-init/steps/01-detect/STEP.md"]
 description: "Filesystem probing rules — scan depth limits, file exclusion patterns, encoding handling, and fallback for unreadable files."
 ---
 

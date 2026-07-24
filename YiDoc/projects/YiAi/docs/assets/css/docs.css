@@ -1,0 +1,10 @@
+/*!
+ * YiAi · Docs — per-project brand overrides
+ * --------------------------------------------------------------------------
+ * Interaction styles live in /templates/docs/css/docs.css.
+ * This file only sets the project-specific brand color + tweaks.
+ */
+:root {
+  --yry-doc-accent:      #ef4444;
+  --yry-doc-accent-ink:  #fff;
+}

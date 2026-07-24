@@ -1,13 +1,42 @@
-import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
-
+(function () {
 const compDef = Object.assign({
     name: 'yryReportApiMethods',
-    html: '/cdn/components/business/reports/apis/yry-report-api-methods/index.html',
-    css: '/cdn/components/business/reports/apis/yry-report-api-methods/index.css',
+    template: `
+    <section id="methods">
+        <div class="api-method-list" v-if="methods.length">
+            <div class="api-method-item" v-for="m in sortBy(methods)" :key="m.method">
+                <span class="api-method-icon" :class="'m-' + m.method.toLowerCase()">{{ m.method }}</span>
+                <span class="api-method-track">
+                    <span class="api-method-fill" :class="'m-' + m.method.toLowerCase()" :style="{ width: m.pct + '%' }"></span>
+                </span>
+                <span class="api-method-stats">{{ m.count }} <span class="api-method-pct">{{ Math.round(m.pct) }}%</span></span>
+            </div>
+        </div>
+        <table v-if="methods.length">
+            <thead>
+                <tr>
+                    <th @click="setSort('method')" :class="sortClass('method')" :aria-sort="sortAria('method')">Method</th>
+                    <th @click="setSort('count')" :class="sortClass('count')" :aria-sort="sortAria('count')">Count</th>
+                    <th @click="setSort('pct')" :class="sortClass('pct')" :aria-sort="sortAria('pct')">%</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="m in sortBy(methods)" :key="m.method">
+                    <td><strong>{{ m.method }}</strong></td>
+                    <td>{{ m.count }}</td>
+                    <td>{{ Math.round(m.pct) }}%</td>
+                </tr>
+            </tbody>
+        </table>
+        <p v-else style="color: var(--yry-fg-muted, #848893); font-size: 12px;">{{ labels.emptyMethods || 'No HTTP method data collected.' }}</p>
+    </section>
+`,
+    css: '../../../YiPet/cdn/components/report/apis/yry-report-api-methods/index.css',
     props: {
         methods: { type: Array, default: function() { return []; } },
         labels: { type: Object, default: function() { return {}; } },
     },
 }, window.YrYSortable.setSortMixin({ sortKey: 'count', sortDir: -1 }));
-registerGlobalComponent(compDef);
-export default compDef;
+if (typeof window !== 'undefined' && window.registerGlobalComponent) { window.registerGlobalComponent(compDef); }
+
+})();

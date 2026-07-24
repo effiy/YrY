@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="color-scheme" content="dark" />
+        <link
+            rel="icon"
+            href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3' fill='%230369a1'/></svg>"
+        />
+        <title>YiviY · download-split · Scene 3 · NLP Segment</title>
+        <style>
+            :root {
+                --bg: #0b1220;
+                --fg: #e6edf3;
+                --muted: #8b949e;
+                --accent: #2f81f7;
+                --card: #111a2b;
+                --border: #1f2a3a;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                margin: 0;
+                background: var(--bg);
+                color: var(--fg);
+                font:
+                    15px/1.6 -apple-system,
+                    BlinkMacSystemFont,
+                    "PingFang SC",
+                    sans-serif;
+            }
+            a {
+                color: var(--accent);
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            .shell {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 32px 24px 64px;
+            }
+            header {
+                border-bottom: 1px solid var(--border);
+                padding-bottom: 14px;
+                margin-bottom: 22px;
+            }
+            h1 {
+                margin: 0 0 4px;
+                font-size: 22px;
+            }
+            .tagline {
+                color: var(--muted);
+                font-size: 12px;
+            }
+            h2 {
+                margin: 24px 0 8px;
+                font-size: 17px;
+                color: #c9d1d9;
+            }
+            ul {
+                margin: 6px 0;
+                padding-left: 22px;
+            }
+            code {
+                background: #0d1626;
+                padding: 1px 5px;
+                border-radius: 3px;
+                font-family: ui-monospace, Menlo, monospace;
+                font-size: 13px;
+            }
+            .links {
+                margin-top: 18px;
+                display: flex;
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+            .links a {
+                background: #0d1626;
+                border: 1px solid var(--border);
+                padding: 5px 11px;
+                border-radius: 6px;
+                font-size: 12px;
+            }
+            footer {
+                margin-top: 40px;
+                border-top: 1px solid var(--border);
+                padding-top: 12px;
+                color: var(--muted);
+                font-size: 11px;
+            }
+        </style>
+    </head>
+    <body>
+        <main class="shell">
+            <header>
+                <h1>Scene · NLP / 语义切分粒度可调</h1>
+                <div class="tagline">Story: <a href="../index.html">download-split</a> · US-D3 · 2026-07-24</div>
+            </header>
+            <h2>用户故事</h2>
+            <p>作为用户，NLP / 语义切分粒度可调（细粒度 / 句级 / 段级）。</p>
+            <h2>验收</h2>
+            <ul>
+                <li>切分模式可配置：NLP / 语义 / 句级。</li>
+                <li>每行长度目标可配置（默认 30-50 字符）。</li>
+                <li>切分结果保留原始时间戳映射。</li>
+            </ul>
+            <h2>使用场景 · 模块化</h2>
+            <ul>
+                <li>
+                    <code>_3_1_split_nlp.py</code> 与 <code>_3_2_split_meaning.py</code> 共享
+                    <code>core/spacy_utils/</code> 基础。
+                </li>
+                <li>切分器选择由 <code>config.yaml</code> 驱动；两个切分器互不感知 → 边界稳定。</li>
+            </ul>
+            <div class="links">
+                <a href="../index.html">↑ download-split Story</a><a href="../../index.html">↑ YiviY Story</a>
+            </div>
+            <footer>由 yry-init 分析轴线驱动 · 后端模块化</footer>
+        </main>
+    </body>
+</html>

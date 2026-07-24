@@ -1,5 +1,5 @@
 ---
-paths: [".claude/yry-init-explore/SKILL.md"]
+paths: [".claude/yry-init/steps/02-explore/STEP.md"]
 description: "Import resolution rules — path resolution algorithm, alias handling, external package classification, and circular dependency detection."
 ---
 

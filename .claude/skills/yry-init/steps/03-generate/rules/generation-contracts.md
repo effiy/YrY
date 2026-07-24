@@ -1,6 +1,6 @@
 ---
 paths:
-  - ".claude/yry-init-generate/SKILL.md"
+  - ".claude/yry-init/steps/03-generate/STEP.md"
   - ".claude/yry-init/templates/"
 description: "Generation contracts: CLAUDE.md section structure, rebuild idempotence rules, domain language preservation, and docs/ output layout."
 ---
@@ -39,10 +39,10 @@ description: "Generation contracts: CLAUDE.md section structure, rebuild idempot
 
 > Tagline
 
-## Quick Start
-## System View
-## Command Flow
-## Architecture
+## System view
+## Command flow
+## Quick start
+## Project structure
 ## Domain Language (preserved section — append-once)
 ```
 
@@ -66,7 +66,7 @@ description: "Generation contracts: CLAUDE.md section structure, rebuild idempot
 
 | File | Source | Transform |
 |------|--------|-----------|
-| `index.html` | `yry-init/templates/index.html` | Copy verbatim |
+| `index.html` | `yry-init/templates/index.html` | Copy + rewrite CDN paths (`../../yry-html-cdn/` → `../yry-html-cdn/`) + rewrite page title to `<project profile> · Documentation Center` + rewrite body class to `yry-doc dashboard-page` |
 | `index.css`  | `yry-init/templates/index.css`  | Copy verbatim |
 | `index.js`   | `yry-init/templates/index.js`   | Copy verbatim |
 | `data.js`    | Generated | `window.HELP_CONFIG` from CLAUDE.md + README.md (see §3.1 / §3.2 of `STEP.md`) |

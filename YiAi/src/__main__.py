@@ -7,11 +7,11 @@ sys.dont_write_bytecode = True
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from main import app, create_app
+from app import app, create_app
 
 if __name__ == "__main__":
     import uvicorn
-    from core.config import settings
+    from shared.config import settings
 
     host = settings.server_host
     port = settings.server_port
@@ -26,7 +26,7 @@ if __name__ == "__main__":
     timeout_keep_alive = settings.uvicorn_timeout_keep_alive
 
     uvicorn.run(
-        "main:app",
+        "app:app",
         host=host,
         port=port,
         reload=reload,

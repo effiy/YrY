@@ -6,7 +6,7 @@ import numpy as np
 from rich.console import Console
 
 from core._1_ytdlp import find_video_files
-from core.asr_backend.audio_preprocess import normalize_audio_volume
+from core.asr_backend import normalize_audio_volume
 from core.utils import *
 from core.utils.models import *
 

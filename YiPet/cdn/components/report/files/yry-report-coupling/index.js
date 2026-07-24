@@ -1,9 +1,45 @@
-import { registerGlobalComponent } from '/cdn/utils/view/componentLoader.js';
-
+(function () {
 const compDef = {
     name: 'yryReportCoupling',
-    html: '/cdn/components/business/reports/files/yry-report-coupling/index.html',
-    css: '/cdn/components/business/reports/files/yry-report-coupling/index.css',
+    template: `
+    <section id="coupling">
+        <h2>{{ title }}</h2>
+        <div class="tabs" role="tablist">
+            <button type="button" role="tab"
+                    :class="{ active: tab === 'fanin' }"
+                    :aria-selected="tab === 'fanin' ? 'true' : 'false'"
+                    @click="setTab('fanin')">{{ tabFanin || 'Fan-in' }}</button>
+            <button type="button" role="tab"
+                    :class="{ active: tab === 'fanout' }"
+                    :aria-selected="tab === 'fanout' ? 'true' : 'false'"
+                    @click="setTab('fanout')">{{ tabFanout || 'Fan-out' }}</button>
+        </div>
+        <table data-sortable v-if="sorted.length">
+            <thead>
+                <tr>
+                    <th @click="setSort('path')" :class="sortClass('path')" :aria-sort="sortAria('path')">{{ colPath || 'Path' }}</th>
+                    <th @click="setSort('fanIn')" :class="sortClass('fanIn')" :aria-sort="sortAria('fanIn')">{{ colFanIn || 'Fan-in' }}</th>
+                    <th @click="setSort('fanOut')" :class="sortClass('fanOut')" :aria-sort="sortAria('fanOut')">{{ colFanOut || 'Fan-out' }}</th>
+                    <th @click="setSort('extDeps')" :class="sortClass('extDeps')" :aria-sort="sortAria('extDeps')">{{ colExt || 'Ext' }}</th>
+                    <th @click="setSort('lines')" :class="sortClass('lines')" :aria-sort="sortAria('lines')">{{ colLines || 'Lines' }}</th>
+                    <th @click="setSort('type')" :class="sortClass('type')" :aria-sort="sortAria('type')">{{ colType || 'Type' }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="row in sorted" :key="row.path">
+                    <td><code>{{ row.path }}</code></td>
+                    <td>{{ row.fanIn }}</td>
+                    <td>{{ row.fanOut }}</td>
+                    <td>{{ row.extDeps != null ? row.extDeps : '' }}</td>
+                    <td>{{ row.lines }}</td>
+                    <td>{{ row.type }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="empty" v-else>{{ emptyCoupling || 'No coupling data.' }}</p>
+    </section>
+`,
+    css: '../../../YiPet/cdn/components/report/files/yry-report-coupling/index.css',
     mixins: [window.YrYSortable.setSortMixin({ sortKey: 'fanIn', sortDir: -1 })],
     props: {
         fanin: { type: Array, default: function() { return []; } },
@@ -39,5 +75,6 @@ const compDef = {
         }
     }
 };
-registerGlobalComponent(compDef);
-export default compDef;
+if (typeof window !== 'undefined' && window.registerGlobalComponent) { window.registerGlobalComponent(compDef); }
+
+})();

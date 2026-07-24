@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""YiAi API Server - Root Entry Point.
+"""YiAi API Server — Root Entry Point.
 
-For production use, consider: `uvicorn main:app --host 0.0.0.0 --port 8000`
+For production use, consider: `uvicorn src.app:app --host 0.0.0.0 --port 8000`
 """
 import sys
 import os
@@ -12,11 +12,11 @@ sys.dont_write_bytecode = True
 # Add the project root to path to support the src layout
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
-from main import app, create_app
+from app import app, create_app
 
 if __name__ == "__main__":
     import uvicorn
-    from core.config import settings
+    from shared.config import settings
 
     host = settings.server_host
     port = settings.server_port
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     timeout_keep_alive = settings.uvicorn_timeout_keep_alive
 
     uvicorn.run(
-        "main:app",
+        "app:app",
         host=host,
         port=port,
         reload=reload,

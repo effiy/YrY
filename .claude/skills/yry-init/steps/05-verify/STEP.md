@@ -1,16 +1,16 @@
 ---
-name: yry-init-verify
+name: verify-step
 description: >
   7-point readiness check + engineering gate for the yry-init
   pipeline. Verify that every artifact produced by the upstream
   pipeline steps (detect, explore, generate, arch) is present and
   well-formed. Any failure terminates the pipeline and surfaces the
-  fix list to the caller. Run this skill after yry-init-arch.
+  fix list to the caller. Run this step after step 04-arch.
 lifecycle: pipeline-step
 user_invocable: false
 ---
 
-# yry-init-verify
+# yry-init-verify (step ⑤ of yry-init)
 
 > Single responsibility: assert that the upstream pipeline steps
 > produced all required artifacts. It does not generate files, run
@@ -54,15 +54,15 @@ type Failure = {
 Each check is independent. All 7 must pass for the pipeline to
 proceed.
 
-| # | Check | Method | On failure |
-|---|-------|--------|------------|
-| 1 | `CLAUDE.md` contains project name | `grep <projectName>` | Re-run yry-init-generate |
-| 2 | `README.md` contains project name | `grep <projectName>` | Add project name |
-| 3 | `README.md` contains `## Domain Language` + ≥ 3 terms | `grep` + count of term definitions | Add domain-language section |
-| 4 | `docs/index.html`, `docs/index.css`, `docs/index.js`, `docs/data.js` all exist | file check | Re-run yry-init-generate and restore the docs home entry |
-| 5 | `docs/arch/` directory exists and each scene has `index.md` | directory + per-scene check | Re-run yry-init-arch or add missing `index.md` |
-| 6 | `docs/test/` directory exists and each scene has `index.md` | directory + per-scene check | Re-run yry-init-arch or add missing `index.md` |
-| 7 | `docs/arch/` scene count ≥ 5, `docs/test/` scene count ≥ 6 | Count | Add scenes |
+| # | Check ID | Check | Method | On failure |
+|---|----------|-------|--------|------------|
+| 1 | `claude-md-name` | `CLAUDE.md` contains project name | `grep <projectName>` | Re-run yry-init-generate |
+| 2 | `readme-md-name` | `README.md` contains project name | `grep <projectName>` | Add project name |
+| 3 | `domain-language` | `README.md` contains `## Domain Language` + ≥ 3 terms | `grep` + count of term definitions | Add domain-language section |
+| 4 | `docs-home-files` | `docs/index.html`, `docs/index.css`, `docs/index.js`, `docs/data.js` all exist | file check | Re-run yry-init-generate and restore the docs home entry |
+| 5 | `arch-scenes` | `docs/arch/` directory exists and each scene has `index.md` | directory + per-scene check | Re-run yry-init-arch or add missing `index.md` |
+| 6 | `test-scenes` | `docs/test/` directory exists and each scene has `index.md` | directory + per-scene check | Re-run yry-init-arch or add missing `index.md` |
+| 7 | `scene-counts` | `docs/arch/` scene count ≥ 5, `docs/test/` scene count ≥ 6 | Count | Add scenes |
 
 ### Check 3 — Domain Language Term Count
 
@@ -143,16 +143,6 @@ the check fails.
 | `result === 'pass'` | boolean | Pipeline may proceed |
 | `result === 'fail'` | boolean | Pipeline halts; no further steps run |
 
-
-## Rules
-
-- [failure-escalation.md](./rules/failure-escalation.md) — ---
-- [verification-contracts.md](./rules/verification-contracts.md) — ---
-
-## Specialized Agents
-
-- [check-runner.md](./agents/check-runner.md) — ---
-- [failure-diagnoser.md](./agents/failure-diagnoser.md) — ---
 
 ## Rules
 

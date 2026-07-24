@@ -69,38 +69,37 @@ the canonical reference doc inside that folder.
 
 | Keyword / Trigger | Topic | Reference |
 |---|---|---|
-| `<script setup>`, `defineProps`, `defineEmits`, `defineModel`, `defineExpose`, `defineOptions`, `defineSlots`, generic SFC, Vue 3 language | `core/` | [script-setup-macros.md](./references/core/core--script-setup-macros.md), [core-new-apis.md](./references/core/core--core-new-apis.md) |
-| SFC structure, `useTemplateRef`, `v-if` vs `v-show`, `v-for` key, `v-html` security, scoped CSS, PascalCase, `camelCase :style` | `core/` | [sfc.md](./references/core/sfc--sfc.md) |
-| `ref` vs `shallowRef` vs `reactive`, `computed` vs `watch`, `watchEffect`, `useStorage`, `refDebounced`, `refThrottled`, destructuring from reactive, deep watcher | `reactivity/` | [reactivity.md](./references/reactivity/reactivity--reactivity.md) |
-| `v-once`, `v-memo`, virtualize large list, `updated` hook perf, component abstraction in lists | `perf/` | [perf-v-once-v-memo-directives.md](./references/perf/perf-v-once-v-memo-directives.md), [perf-virtualize-large-lists.md](./references/perf/perf-virtualize-large-lists.md), [perf-avoid-component-abstraction-in-lists.md](./references/perf/perf-avoid-component-abstraction-in-lists.md), [perf-updated-hook-performance.md](./references/perf/perf-updated-hook-performance.md) |
-| props / emits / `defineModel` / `v-model` modifier / `provide` / `inject` / `InjectionKey` / props drilling | `data-flow/` | [component-data-flow.md](./references/data-flow/component-data-flow.md) |
-| Extract composable, `useXxx`, options-object composable, readonly state, pure utility vs composable, `onScopeDispose` | `composables/` | [composables.md](./references/composables/composables.md) |
-| `KeepAlive` / `Suspense` / `Teleport` / `Transition` / `TransitionGroup` / `onActivated` / `onDeactivated` / FLIP / `mode out-in` / `move class` | `builtin/` | [component-keep-alive.md](./references/builtin/component-keep-alive.md), [component-suspense.md](./references/builtin/component-suspense.md), [component-teleport.md](./references/builtin/component-teleport.md), [component-transition.md](./references/builtin/component-transition.md), [component-transition-group.md](./references/builtin/component-transition-group.md) |
-| Class-based animation (shake / pulse / highlight) / state-driven animation (`:style` + `transition`) / GPU acceleration | `animation/` | [animation-class-based-technique.md](./references/animation/animation-class-based-technique.md), [animation-state-driven-technique.md](./references/animation/animation-state-driven-technique.md) |
-| `defineAsyncComponent`, `loadingComponent`, `errorComponent`, `delay` 200ms, `hydrateOnIdle`, `hydrateWhenVisible`, SSR hydration | `async/` | [component-async.md](./references/async/component-async.md) |
-| Vue plugin `install()` / `app.use(plugin, options)` / `InjectionKey<T>` / Pinia vs singleton composable / SSR state leak | `state/` | [plugins.md](./references/state/plugins.md), [state-management.md](./references/state/state-management.md) |
-| Custom directive / `v-mounted` / `unmounted` cleanup / `h()` render function / JSX / `withModifiers` / `withKeys` / v-model in render | `directives/` | [directives.md](./references/directives/directives.md), [render-functions.md](./references/directives/render-functions.md) |
-| Named slot (`#`) / scoped slot / `defineSlots` / slot fallback / `useAttrs` / `attrs.onClick` / `attrs['data-testid']` / `onUpdated` attrs | `slots/` | [component-slots.md](./references/slots/component-slots.md), [component-fallthrough-attrs.md](./references/slots/component-fallthrough-attrs.md) |
-| 4-file component pattern / `index.html` + `data.js` + `index.js` + `index.css` / `mountDocComponent` / `data.js` flat / template id unique | `pattern/` | [component-pattern-spec.md](./references/pattern/component-pattern-spec.md) |
-| CSS `@import` chain / `--yry-*` → `--yry-doc-*` token bridge / layer responsibilities / theme switch | `css/` | [css-architecture.md](./references/css/css-architecture.md) |
-| `mountDocComponent` / `includeHTML` / `data-include` / scroll spy / W1–W6 / pre-delivery checklist | `infra/` | [infrastructure-and-workflows.md](./references/infra/infrastructure-and-workflows.md) |
-| Code review of an SFC, `v-html` on user input, `v-for` key, `v-if` + `v-for`, missing cleanup, `useAttrs` reactivity, leaky singleton, severity anchors | `review/` | [code-review-checklist.md](./references/review/code-review-checklist.md) |
-| Optimization page report, perf audit, "what can I improve on this page", severity / effort / impact scoring, sprint slice, risk matrix | `optimize/` | [optimization-report.md](./references/optimize/optimization-report.md) |
-| **Extract component** (detection side) — is this a candidate? which heuristic? scan a codebase mechanically. 6-question decision tree, priority scoring rubric, signal catalog, triage matrix, falsifiers. Trigger: "is this a candidate", "scan for extractions", "which extraction first", "is this duplicated", "should I extract this" | `extract/` | [component-identification.md](./references/extract/component-identification.md) |
-| **Extract component** (refactor side) — execute the extraction. naming convention, slot-vs-prop decision matrix, CSS scoping pitfalls, risk classification, edge cases (SSR / KeepAlive / Teleport / async / provide-inject), testing, multi-extraction order, 8-step transformation recipe, single-file SFC vs 4-file pattern decision, 5-entry before/after cookbook, anti-patterns, scanning patterns, verification | `extract/` | [component-extraction.md](./references/extract/component-extraction.md) |
-| `useAnimate`, `useInterval`, `useIntervalFn`, `useNow`, `useRafFn`, `useTimeout`, `useTimeoutFn`, `useTimestamp`, `useTransition` | `vueuse-animation/` | (per-function .md) |
-| `useArrayDifference`, `useArrayEvery`, `useArrayFilter`, `useArrayFind`, `useArrayFindIndex`, `useArrayFindLast`, `useArrayIncludes`, `useArrayJoin`, `useArrayMap`, `useArrayReduce`, `useArraySome`, `useArrayUnique`, `useSorted` | `vueuse-array/` | (per-function .md) |
-| `useBluetooth`, `useBreakpoints`, `useBroadcastChannel`, `useBrowserLocation`, `useClipboard`, `useColorMode`, `useDark`, `useEventListener`, `useFullscreen`, `useMediaQuery`, `usePermission`, `usePreferredDark`, `useScriptTag`, `useShare`, `useStyleTag`, `useTitle`, `useUrlSearchParams`, `useWakeLock`, `useWebNotification`, `useWebWorker`, … | `vueuse-browser/` | (per-function .md) |
-| `computedInject`, `createReusableTemplate`, `createTemplatePromise`, `templateRef`, `tryOnBeforeMount`, `tryOnMounted`, `tryOnScopeDispose`, `useCurrentElement`, `useMounted`, `useTemplateRefsList`, `useVModel`, `useVModels`, `useVirtualList`, `unrefElement` | `vueuse-component/` | (per-function .md) |
-| `useActiveElement`, `useDocumentVisibility`, `useDraggable`, `useDropZone`, `useElementBounding`, `useElementSize`, `useElementVisibility`, `useIntersectionObserver`, `useMouseInElement`, `useMutationObserver`, `useResizeObserver`, `useWindowFocus`, `useWindowScroll`, `useWindowSize` | `vueuse-elements/` | (per-function .md) |
-| `useEventSource`, `useFetch`, `useWebSocket` | `vueuse-network/` | (per-function .md) |
-| `computedAsync`, `computedEager`, `computedWithControl`, `createRef`, `extendRef`, `reactify`, `reactifyObject`, `reactiveComputed`, `reactiveOmit`, `reactivePick`, `refAutoReset`, `refDebounced`, `refDefault`, `refThrottled`, `refManualReset`, `refWithControl`, `syncRef`, `syncRefs`, `toReactive`, `toRef`, `toRefs` | `vueuse-reactivity/` | (per-function .md) |
-| `onClickOutside`, `onKeyStroke`, `onLongPress`, `useBattery`, `useDeviceMotion`, `useDeviceOrientation`, `useEventListener`, `useFocus`, `useFocusWithin`, `useFps`, `useGeolocation`, `useIdle`, `useInfiniteScroll`, `useMagicKeys`, `useMouse`, `useMousePressed`, `useNetwork`, `useOnline`, `usePageLeave`, `useParallax`, `usePointer`, `usePointerSwipe`, `useScroll`, `useScrollLock`, `useSpeechRecognition`, `useSwipe`, `useTextSelection`, `useUserMedia` | `vueuse-sensors/` | (per-function .md) |
-| `createGlobalState`, `createInjectionState`, `createSharedComposable`, `injectLocal`, `provideLocal`, `useAsyncState`, `useDebouncedRefHistory`, `useLastChanged`, `useLocalStorage`, `useManualRefHistory`, `useRefHistory`, `useSessionStorage`, `useStorage`, `useStorageAsync`, `useThrottledRefHistory` | `vueuse-state/` | (per-function .md) |
-| `useCountdown`, `useDateFormat`, `useTimeAgo`, `useTimeAgoIntl` | `vueuse-time/` | (per-function .md) |
-| `createDisposableDirective`, `createEventHook`, `createUnrefFn`, `get`, `isDefined`, `makeDestructurable`, `set`, `useAsyncQueue`, `useCached`, `useCloned`, `useConfirmDialog`, `useCounter`, `useCycleList`, `useDebounceFn`, `useEventBus`, `useMemoize`, `useOffsetPagination`, `usePrevious`, `useStepper`, `useSupported`, `useThrottleFn`, `useTimeoutPoll`, `useToNumber`, `useToString`, `useToggle` | `vueuse-utilities/` | (per-function .md) |
-| `until`, `watchArray`, `watchAtMost`, `watchDebounced`, `watchDeep`, `watchIgnorable`, `watchImmediate`, `watchOnce`, `watchPausable`, `watchThrottled`, `watchTriggerable`, `watchWithFilter`, `whenever` | `vueuse-watch/` | (per-function .md) |
-
+| `<script setup>`, `defineProps`, `defineEmits`, `defineModel`, `defineExpose`, `defineOptions`, `defineSlots`, generic SFC, Vue 3 language | `core.md` | [core.md](./references/core.md) |
+| SFC structure, `useTemplateRef`, `v-if` vs `v-show`, `v-for` key, `v-html` security, scoped CSS, PascalCase, `camelCase :style` | `core.md` | [core.md](./references/core.md) |
+| `ref` vs `shallowRef` vs `reactive`, `computed` vs `watch`, `watchEffect`, `useStorage`, `refDebounced`, `refThrottled`, destructuring from reactive, deep watcher | `reactivity.md` | [reactivity.md](./references/reactivity.md) |
+| `v-once`, `v-memo`, virtualize large list, `updated` hook perf, component abstraction in lists | `perf.md` | [perf.md](./references/perf.md) |
+| props / emits / `defineModel` / `v-model` modifier / `provide` / `inject` / `InjectionKey` / props drilling | `data-flow.md` | [data-flow.md](./references/data-flow.md) |
+| Extract composable, `useXxx`, options-object composable, readonly state, pure utility vs composable, `onScopeDispose` | `composables.md` | [composables.md](./references/composables.md) |
+| `KeepAlive` / `Suspense` / `Teleport` / `Transition` / `TransitionGroup` / `onActivated` / `onDeactivated` / FLIP / `mode out-in` / `move class` | `builtin.md` | [builtin.md](./references/builtin.md) |
+| Class-based animation (shake / pulse / highlight) / state-driven animation (`:style` + `transition`) / GPU acceleration | `animation.md` | [animation.md](./references/animation.md) |
+| `defineAsyncComponent`, `loadingComponent`, `errorComponent`, `delay` 200ms, `hydrateOnIdle`, `hydrateWhenVisible`, SSR hydration | `async.md` | [async.md](./references/async.md) |
+| Vue plugin `install()` / `app.use(plugin, options)` / `InjectionKey<T>` / Pinia vs singleton composable / SSR state leak | `state.md` | [state.md](./references/state.md) |
+| Custom directive / `v-mounted` / `unmounted` cleanup / `h()` render function / JSX / `withModifiers` / `withKeys` / v-model in render | `directives.md` | [directives.md](./references/directives.md) |
+| Named slot (`#`) / scoped slot / `defineSlots` / slot fallback / `useAttrs` / `attrs.onClick` / `attrs['data-testid']` / `onUpdated` attrs | `slots.md` | [slots.md](./references/slots.md) |
+| 4-file component pattern / `index.html` + `data.js` + `index.js` + `index.css` / `mountDocComponent` / `data.js` flat / template id unique | `pattern.md` | [pattern.md](./references/pattern.md) |
+| CSS `@import` chain / `--yry-*` → `--yry-doc-*` token bridge / layer responsibilities / theme switch | `css.md` | [css.md](./references/css.md) |
+| `mountDocComponent` / `includeHTML` / `data-include` / scroll spy / W1–W6 / pre-delivery checklist | `infra.md` | [infra.md](./references/infra.md) |
+| Code review of an SFC, `v-html` on user input, `v-for` key, `v-if` + `v-for`, missing cleanup, `useAttrs` reactivity, leaky singleton, severity anchors | `review.md` | [review.md](./references/review.md) |
+| Optimization page report, perf audit, "what can I improve on this page", severity / effort / impact scoring, sprint slice, risk matrix | `optimize.md` | [optimize.md](./references/optimize.md) |
+| **Extract component** (detection side) — is this a candidate? which heuristic? scan a codebase mechanically. 6-question decision tree, priority scoring rubric, signal catalog, triage matrix, falsifiers. Trigger: "is this a candidate", "scan for extractions", "which extraction first", "is this duplicated", "should I extract this" | `extract.md` | [extract.md](./references/extract.md) |
+| **Extract component** (refactor side) — execute the extraction. naming convention, slot-vs-prop decision matrix, CSS scoping pitfalls, risk classification, edge cases (SSR / KeepAlive / Teleport / async / provide-inject), testing, multi-extraction order, 8-step transformation recipe, single-file SFC vs 4-file pattern decision, 5-entry before/after cookbook, anti-patterns, scanning patterns, verification | `extract.md` | [extract.md](./references/extract.md) |
+| `useAnimate`, `useInterval`, `useIntervalFn`, `useNow`, `useRafFn`, `useTimeout`, `useTimeoutFn`, `useTimestamp`, `useTransition` | `vueuse-animation.md` | [vueuse-animation.md](./references/vueuse-animation.md) |
+| `useArrayDifference`, `useArrayEvery`, `useArrayFilter`, `useArrayFind`, `useArrayFindIndex`, `useArrayFindLast`, `useArrayIncludes`, `useArrayJoin`, `useArrayMap`, `useArrayReduce`, `useArraySome`, `useArrayUnique`, `useSorted` | `vueuse-array.md` | [vueuse-array.md](./references/vueuse-array.md) |
+| `useBluetooth`, `useBreakpoints`, `useBroadcastChannel`, `useBrowserLocation`, `useClipboard`, `useColorMode`, `useDark`, `useEventListener`, `useFullscreen`, `useMediaQuery`, `usePermission`, `usePreferredDark`, `useScriptTag`, `useShare`, `useStyleTag`, `useTitle`, `useUrlSearchParams`, `useWakeLock`, `useWebNotification`, `useWebWorker`, … | `vueuse-browser.md` | [vueuse-browser.md](./references/vueuse-browser.md) |
+| `computedInject`, `createReusableTemplate`, `createTemplatePromise`, `templateRef`, `tryOnBeforeMount`, `tryOnMounted`, `tryOnScopeDispose`, `useCurrentElement`, `useMounted`, `useTemplateRefsList`, `useVModel`, `useVModels`, `useVirtualList`, `unrefElement` | `vueuse-component.md` | [vueuse-component.md](./references/vueuse-component.md) |
+| `useActiveElement`, `useDocumentVisibility`, `useDraggable`, `useDropZone`, `useElementBounding`, `useElementSize`, `useElementVisibility`, `useIntersectionObserver`, `useMouseInElement`, `useMutationObserver`, `useResizeObserver`, `useWindowFocus`, `useWindowScroll`, `useWindowSize` | `vueuse-elements.md` | [vueuse-elements.md](./references/vueuse-elements.md) |
+| `useEventSource`, `useFetch`, `useWebSocket` | `vueuse-network.md` | [vueuse-network.md](./references/vueuse-network.md) |
+| `computedAsync`, `computedEager`, `computedWithControl`, `createRef`, `extendRef`, `reactify`, `reactifyObject`, `reactiveComputed`, `reactiveOmit`, `reactivePick`, `refAutoReset`, `refDebounced`, `refDefault`, `refThrottled`, `refManualReset`, `refWithControl`, `syncRef`, `syncRefs`, `toReactive`, `toRef`, `toRefs` | `vueuse-reactivity.md` | [vueuse-reactivity.md](./references/vueuse-reactivity.md) |
+| `onClickOutside`, `onKeyStroke`, `onLongPress`, `useBattery`, `useDeviceMotion`, `useDeviceOrientation`, `useEventListener`, `useFocus`, `useFocusWithin`, `useFps`, `useGeolocation`, `useIdle`, `useInfiniteScroll`, `useMagicKeys`, `useMouse`, `useMousePressed`, `useNetwork`, `useOnline`, `usePageLeave`, `useParallax`, `usePointer`, `usePointerSwipe`, `useScroll`, `useScrollLock`, `useSpeechRecognition`, `useSwipe`, `useTextSelection`, `useUserMedia` | `vueuse-sensors.md` | [vueuse-sensors.md](./references/vueuse-sensors.md) |
+| `createGlobalState`, `createInjectionState`, `createSharedComposable`, `injectLocal`, `provideLocal`, `useAsyncState`, `useDebouncedRefHistory`, `useLastChanged`, `useLocalStorage`, `useManualRefHistory`, `useRefHistory`, `useSessionStorage`, `useStorage`, `useStorageAsync`, `useThrottledRefHistory` | `vueuse-state.md` | [vueuse-state.md](./references/vueuse-state.md) |
+| `useCountdown`, `useDateFormat`, `useTimeAgo`, `useTimeAgoIntl` | `vueuse-time.md` | [vueuse-time.md](./references/vueuse-time.md) |
+| `createDisposableDirective`, `createEventHook`, `createUnrefFn`, `get`, `isDefined`, `makeDestructurable`, `set`, `useAsyncQueue`, `useCached`, `useCloned`, `useConfirmDialog`, `useCounter`, `useCycleList`, `useDebounceFn`, `useEventBus`, `useMemoize`, `useOffsetPagination`, `usePrevious`, `useStepper`, `useSupported`, `useThrottleFn`, `useTimeoutPoll`, `useToNumber`, `useToString`, `useToggle` | `vueuse-utilities.md` | [vueuse-utilities.md](./references/vueuse-utilities.md) |
+| `until`, `watchArray`, `watchAtMost`, `watchDebounced`, `watchDeep`, `watchIgnorable`, `watchImmediate`, `watchOnce`, `watchPausable`, `watchThrottled`, `watchTriggerable`, `watchWithFilter`, `whenever` | `vueuse-watch.md` | [vueuse-watch.md](./references/vueuse-watch.md) |
 ## What this skill does NOT do
 
 - Does NOT cover React / Angular / Svelte — Vue 3 only.
@@ -127,7 +126,7 @@ the canonical reference doc inside that folder.
 15. **For VueUse: pick by category, not by name.**
 16. **Code review vs optimization report are different deliverables.** Review = correctness against the rules; report = opportunity list with severity / effort / impact. Don't conflate them.
 17. **Every opportunity in a report cites a location, a rule, and a verification step.** A report without verifiable wins is just a checklist.
-18. **Component Extraction entries cite a detection heuristic and a target file.** "This could be a component" is a refactor wish, not a report item — every extraction entry must reference one of the five heuristics (#1 repeated pattern, #2 local state, #3 nesting+size, #4 mixed concerns, #5 inlined primitive) and a concrete `path/to/NewComponent.vue`. If neither can be filled in, drop the entry. The detection heuristics, signal catalog, decision tree, priority rubric, and triage matrix live in [component-identification.md](./references/extract/component-identification.md); the transformation recipe, naming, slot-vs-prop, CSS scoping, risk, edge cases, testing, multi-extraction order, decision tree (single SFC vs 4-file pattern), and before/after cookbook live in [component-extraction.md](./references/extract/component-extraction.md); the optimization report only owns the *entry shape*.
+18. **Component Extraction entries cite a detection heuristic and a target file.** "This could be a component" is a refactor wish, not a report item — every extraction entry must reference one of the five heuristics (#1 repeated pattern, #2 local state, #3 nesting+size, #4 mixed concerns, #5 inlined primitive) and a concrete `path/to/NewComponent.vue`. If neither can be filled in, drop the entry. The detection heuristics, signal catalog, decision tree, priority rubric, and triage matrix live in [extract.md](./references/extract.md); the transformation recipe, naming, slot-vs-prop, CSS scoping, risk, edge cases, testing, multi-extraction order, decision tree (single SFC vs 4-file pattern), and before/after cookbook live in [extract.md](./references/extract.md); the optimization report only owns the *entry shape*.
 
 ## Borders
 
@@ -140,6 +139,26 @@ the canonical reference doc inside that folder.
 ## Supporting resources
 
 - [`references/index.md`](./references/index.md) — human-readable topic table.
+
+## Test hints
+
+For `yry-test` dispatcher consumption — read this section instead
+of re-asking the user about component shape.
+
+| Component shape | Recommended yry-test topic |
+|-----------------|------------------------------|
+| `<script setup>` + `defineComponent` | `fixture` (mount with `mountSuspense` if async) |
+| `defineAsyncComponent` / `Suspense` | `suspense` + `async-component` |
+| Composable using `onMounted` / `inject` | `composable-wrapper` (`withSetup` helper) |
+| Pinia store under test | `pinia-setup` (`createTestingPinia`, `stubActions`) |
+| Teleported modal / tooltip / popover | `teleport` (`document.body` query) |
+| Async `setup()` top-level `await` | `suspense` (parent `<Suspense>` required) |
+| Flaky update / stale DOM | `async-flush` (`flushPromises`, `await nextTick`) |
+| Snapshot-only assertion | `no-snapshot` (rewrite to black-box) |
+
+Runner default: Vitest + `happy-dom`; switch to `jsdom` only when
+`Teleport` / `IntersectionObserver` / `matchMedia` are involved
+(see `runner-choice`).
 
 ## Fallback
 

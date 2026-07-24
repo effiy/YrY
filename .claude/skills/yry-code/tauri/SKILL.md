@@ -72,7 +72,7 @@ user_invocable: true
 
 ## Workflow
 
-1. **Read** `references/sources.json` and `references/index.md`.
+1. **Read** `references/index.md`.
 2. **Match** the user's intent:
    - "starter template for X framework" → `Getting Started / Templates`,
      filter by frontend stack.
@@ -98,14 +98,12 @@ user_invocable: true
 ## Supporting resources
 
 - [references/index.md](./references/index.md) — unified topic index, start here.
-- [references/index.json](./references/index.json) — machine-readable index for filtering topics and resources.
-- [references/sources.json](./references/sources.json) — registered sources.
 
 ## Fallback
 
 | Situation | Behavior |
 |-----------|----------|
-| `references/index.md` missing | Read `references/index.json` directly. |
+| `references/index.md` missing | Re-run `/yry-init` to rebuild the index. |
 | Topic not in any registered source | State the gap, suggest the closest related topic (e.g. "no Tauri mobile templates in the registry — check `tauri-mobile` upstream"). |
 | Stale README (upstream has moved on) | Tell the user the snapshot may be stale; suggest re-fetching from the upstream `tauri-apps/awesome-tauri` repo. |
 | User asks about Tauri 1.x vs 2.x migration | Out of scope; point the user at the official Tauri migration guide. |

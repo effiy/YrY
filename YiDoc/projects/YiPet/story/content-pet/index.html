@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="color-scheme" content="dark" />
+        <link
+            rel="icon"
+            href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3' fill='%230369a1'/></svg>"
+        />
+        <title>YiPet · content-pet · Story</title>
+        <style>
+            :root {
+                --bg: #0b1220;
+                --fg: #e6edf3;
+                --muted: #8b949e;
+                --accent: #2f81f7;
+                --card: #111a2b;
+                --border: #1f2a3a;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                margin: 0;
+                background: var(--bg);
+                color: var(--fg);
+                font:
+                    15px/1.6 -apple-system,
+                    BlinkMacSystemFont,
+                    "PingFang SC",
+                    sans-serif;
+            }
+            a {
+                color: var(--accent);
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            .shell {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 32px 24px 64px;
+            }
+            header {
+                border-bottom: 1px solid var(--border);
+                padding-bottom: 14px;
+                margin-bottom: 22px;
+            }
+            h1 {
+                margin: 0 0 4px;
+                font-size: 22px;
+            }
+            .tagline {
+                color: var(--muted);
+                font-size: 12px;
+            }
+            h2 {
+                margin: 24px 0 8px;
+                font-size: 17px;
+                color: #c9d1d9;
+            }
+            ul {
+                margin: 6px 0;
+                padding-left: 22px;
+            }
+            code {
+                background: #0d1626;
+                padding: 1px 5px;
+                border-radius: 3px;
+                font-family: ui-monospace, Menlo, monospace;
+                font-size: 13px;
+            }
+            .links {
+                margin-top: 18px;
+                display: flex;
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+            .links a {
+                background: #0d1626;
+                border: 1px solid var(--border);
+                padding: 5px 11px;
+                border-radius: 6px;
+                font-size: 12px;
+            }
+            footer {
+                margin-top: 40px;
+                border-top: 1px solid var(--border);
+                padding-top: 12px;
+                color: var(--muted);
+                font-size: 11px;
+            }
+        </style>
+    </head>
+    <body>
+        <main class="shell">
+            <header>
+                <h1>Story · content/pet · 桌宠交互</h1>
+                <div class="tagline">Page: <a href="../index.html">YiPet Story</a> · <code>src/content/pet/</code></div>
+            </header>
+            <h2>场景</h2>
+            <ul>
+                <li><a href="scene-1-drag-click/index.html">US-PT1 · 桌宠在页面角落常驻，可拖拽与点击触发动作</a></li>
+                <li><a href="scene-2-emotion/index.html">US-PT2 · 桌宠能表达情绪（待机 / 思考 / 回复中）</a></li>
+                <li><a href="scene-3-toggle-visibility/index.html">US-PT3 · 桌宠可隐藏 / 显示</a></li>
+            </ul>
+            <h2>使用场景 · 组件化</h2>
+            <ul>
+                <li>
+                    <code>pet-manager-core.js</code> / <code>pet-manager-ui.js</code> /
+                    <code>pet-manager.js</code> 已分层（core / ui / facade）→ 组件化的良好样本。
+                </li>
+                <li>下一步：将 pet-manager-ui 抽为 <code>&lt;YiPetAvatar&gt;</code> 组件入 CDN 库。</li>
+            </ul>
+            <div class="links"><a href="../index.html">↑ YiPet Story</a></div>
+            <footer>由 yry-init 分析轴线驱动 · 前端组件化</footer>
+        </main>
+    </body>
+</html>

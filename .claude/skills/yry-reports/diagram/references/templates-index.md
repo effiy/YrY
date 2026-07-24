@@ -1,18 +1,18 @@
 # Output Templates — Index
 
-> The `yry-report-diagram` skill produces a self-contained architecture-diagram page. The rendered artifact is **one** browser-viewable HTML; its **sources** are a 4-file split under `templates/`.
+> The `yry-report-diagram` skill produces a self-contained architecture-diagram page. The rendered artifact is **one** browser-viewable HTML; its **sources** are a 4-file split under `YiDoc/templates/diagram/`.
 
 ## Templates
 
 | Template | Format | Purpose | Produced by | Storage |
 |----------|--------|---------|-------------|---------|
-| [templates/index.html](../templates/index.html) | HTML (entry point) | DOM skeleton, script wiring, inline favicon | `/yry-report-diagram create` | Stays in the skill directory |
-| [templates/index.css](../templates/index.css) | CSS (layered) | Reset → tokens → base → layout → components → utilities → responsive → print | `/yry-report-diagram create` | Stays in the skill directory |
-| [templates/data.js](../templates/data.js) | JS (data) | Pure data: `meta`, `svgDiagram` SVG markup string, all section arrays, exposed as `window.REPORT_DATA` | `/yry-report-diagram create` | Stays in the skill directory |
-| [templates/index.js](../templates/index.js) | JS (runtime) | Vue 3 app, `useSvgInteractions` composable, `useExport` composable | `/yry-report-diagram create` | Stays in the skill directory |
+| [templates/index.html](../../../../YiDoc/templates/diagram/index.html) | HTML (entry point) | DOM skeleton, script wiring, inline favicon | `/yry-report-diagram create` | Stays in the skill directory |
+| [templates/index.css](../../../../YiDoc/templates/diagram/index.css) | CSS (layered) | Reset → tokens → base → layout → components → utilities → responsive → print | `/yry-report-diagram create` | Stays in the skill directory |
+| [templates/data.js](../../../../YiDoc/templates/diagram/data.js) | JS (data) | Pure data: `meta`, `svgDiagram` SVG markup string, all section arrays, exposed as `window.REPORT_DATA` | `/yry-report-diagram create` | Stays in the skill directory |
+| [templates/index.js](../../../../YiDoc/templates/diagram/index.js) | JS (runtime) | Vue 3 app, `useSvgInteractions` composable, `useExport` composable | `/yry-report-diagram create` | Stays in the skill directory |
 | `<OUTPUT_DIR>/index.html` | self-contained HTML+SVG | **Rendered artifact** (the user-facing deliverable) | `/yry-report-diagram create` | user-specified path (default `./index.html`) |
 
-> The 4 `templates/` files together compose the rendered artifact. To customize the page, edit the appropriate file by responsibility (see SKILL.md **Output Contract** for the header-block map). The rendered HTML is what the user opens in a browser; the 4 sources are checked into the skill.
+> The 4 `YiDoc/templates/diagram/` files together compose the rendered artifact. To customize the page, edit the appropriate file by responsibility (see SKILL.md **Output Contract** for the header-block map). The rendered HTML is what the user opens in a browser; the 4 sources are checked into the skill.
 
 ## Intermediate Data
 
@@ -34,7 +34,7 @@ template sources and the final rendered HTML output.
 | **Language** | Follow the `--language` flag (defaults to `en`). Consult `locales/<lang>.md` for tone. |
 | **Citations** | Use full file paths with backticks in prose when source references are needed. |
 | **Timestamps** | ISO 8601, UTC, e.g. `2026-07-13T10:00:00Z`. |
-| **Self-containment** | The diagram is an HTML file with inline SVG/CSS/JS — the only external resources are `/.claude/shared/...` (Vue, html2canvas, jsPDF, yry-back-top, yry-toast). Public CDNs are forbidden. |
+| **Self-containment** | The diagram is an HTML file with inline SVG/CSS/JS — the only external resources are `YiPet/cdn/vendor/` and `YiPet/cdn/components/diagram/` (Vue, html2canvas, jsPDF, yry-back-top, primitives). The Vue loader also has an unpkg fallback for when the repo is served via HTTP. |
 | **Idempotency** | Re-running the same command on the same input produces a deterministic output. |
 | **Failure mode** | Always save what's done. A partial artifact beats an exception. |
 
@@ -55,7 +55,7 @@ Before delivering any diagram artifact, verify:
 | 9 | Color palette used consistently | Same component type = same fill/stroke colors throughout |
 | 10 | Legend entries only for actually-used types | Count legend swatches; should match distinct component types in diagram |
 | 11 | Line style legend matches arrow styles used | Count line samples; should match distinct dash patterns used |
-| 12 | Shared vendor scripts included for export | `/.claude/shared/vendor/html2canvas@1.4.1/html2canvas.min.js` and `/.claude/shared/vendor/jspdf@2.5.2/jspdf.umd.min.js` are present in `templates/index.html`. NO public CDN `<script src>` tags. |
+| 12 | Shared vendor scripts included for export | `YiPet/cdn/vendor/html2canvas@1.4.1/html2canvas.min.js` and `YiPet/cdn/vendor/jspdf@2.5.2/jspdf.umd.min.js` are present in `YiDoc/templates/diagram/index.html`. The Vue loader uses `YiPet/cdn/vendor/vue.global.prod.js` with an unpkg fallback. |
 | 13 | viewBox accommodates all content | Max x+w of rightmost element < viewBox width; max y+h of bottommost element + legend < viewBox height |
 | 14 | No placeholder text remains (e.g., Card Title N, Item one) | Text search for common placeholder patterns |
 | 15 | Footer metadata line populated | Footer `<p>` text is not the `[...]` sentinel form |
@@ -81,7 +81,7 @@ Before delivering any diagram artifact, verify:
 
 If a future requirement needs a second output (e.g., a printable PDF, a slide deck, or a docs page):
 
-1. Add the template file under `templates/` (it is user-facing) **OR** colocate under `commands/<command-name>/<output-name>.md` (if it is an internal contract).
+1. Add the template file under `YiDoc/templates/diagram/` (it is user-facing) **OR** colocate under `commands/<command-name>/<output-name>.md` (if it is an internal contract).
 2. **Follow the 4-file split pattern** if it is an HTML+CSS+JS page: `index.html` (entry + DOM), `index.css` (styles), `data.js` (pure data), `index.js` (runtime). Skip the split only for very small one-off outputs.
 3. Include the header block: `@template`, `@purpose`, `@command`, `@style`, `@sections`, `@placeholders`.
 4. Document a Section Contract, a Schema/Template section, and Cross-References.

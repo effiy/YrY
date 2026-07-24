@@ -1,12 +1,12 @@
 ---
-name: yry-init-detect
+name: detect-step
 description: >
   Signal probing for project initialization. Extract the fact
   baseline: project identity, project type (frontend / backend /
   fullstack / meta / unknown), dependency inventory (package.json /
   pyproject.toml / go.mod / Cargo.toml), security surface, test
   framework, and architecture pattern. Six dimensions emitted as a
-  `profile` JSON passed downstream to yry-init-explore and beyond.
+  `profile` JSON passed downstream to step 02-explore and beyond.
   Run this detect phase first to produce the profile; classify the
   project type; extract deps from ecosystem manifests; map the
   security surface; identify the test framework; determine the
@@ -16,14 +16,14 @@ description: >
   "architecture pattern", "yry-init detect phase".
 ---
 
-# yry-init-detect
+# yry-init-detect (step ① of yry-init)
 
 > Single responsibility: probe the project filesystem and emit a fact
-> baseline. Source-code reading and doc generation are separate skills.
-> This skill produces a profile that the rest of the pipeline consumes.
+> baseline. Source-code reading and doc generation are separate steps.
+> This step produces a profile that the rest of the pipeline consumes.
 >
 > Triggered by the parent pipeline (yry-init). The output is the
-> `profile` object passed downstream to yry-init-explore and beyond.
+> `profile` object passed downstream to step 02-explore and beyond.
 >
 > **Output contract**: a `profile` JSON document with the six dimensions
 > listed below. The pipeline treats this object as the fact baseline for
@@ -48,7 +48,8 @@ type Profile = {
   };
   projectType: 'frontend' | 'backend' | 'fullstack' | 'meta' | 'unknown' | 'non-node';
   inventory: {
-    dependencies: Record<string, string>;
+    dependencies: Record<string, string>;      // name → version range
+    devDependencies: Record<string, string>;   // name → version range
     buildCommands: string[];
     testCommands: string[];
     frameworkVersions: Record<string, string>;
@@ -104,8 +105,12 @@ yry-init-explore.
 
 Extract from ecosystem manifests:
 
-- `dependencies` — flat object `{ name: versionRange }` for all
-  `dependencies` and `devDependencies` keys.
+- `dependencies` — flat object `{ name: versionRange }` for
+  `dependencies` of `package.json`.
+- `devDependencies` — flat object `{ name: versionRange }` for
+  `devDependencies` of `package.json`. Kept separate from
+  `dependencies` so downstream consumers (e.g. `section-dependencies`
+  in the dashboard) can distinguish runtime from dev-only packages.
 - `buildCommands` — from `scripts.build`, `scripts.start`, or the
   equivalent in the ecosystem manifest.
 - `testCommands` — from `scripts.test` or its equivalent.
@@ -182,16 +187,6 @@ is read by the parent pipeline, never by the user directly.
 | `profile.securitySurface` has all five boolean keys | key set check | Pipeline may proceed |
 | `profile.testFramework` is a known enum value | enum check | Pipeline may proceed; `none` is allowed but flagged |
 
-
-## Rules
-
-- [detection-contracts.md](./rules/detection-contracts.md) — ---
-- [probing-rules.md](./rules/probing-rules.md) — ---
-
-## Specialized Agents
-
-- [manifest-parser.md](./agents/manifest-parser.md) — ---
-- [project-classifier.md](./agents/project-classifier.md) — ---
 
 ## Rules
 

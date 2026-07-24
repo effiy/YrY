@@ -4,7 +4,7 @@ description: >
   Curated Vue 3 H5 / mobile-web navigator — combines best practices,
   a full reference H5 e-commerce project, and a starter template
   through local indexes and recommends the right mix for a given task.
-  Uses three registered sources from references/sources.json, merged
+  Uses three registered sources, merged
   into a single topic tree, and
   answers H5 / mobile-web / Vue3-mobile questions with exact titles,
   URLs, and source provenance. Trigger when the user wants to:
@@ -77,7 +77,7 @@ user_invocable: true
 
 ## Workflow
 
-1. **Read** `references/sources.json` and `references/index.md`.
+1. **Read** `references/index.md`.
 2. **Match** the user's intent to a `kind`:
    - "scaffold / starter / template" → `starter-template` (`vue3-h5-template`).
      Surface the right branch (`master` / `i18n` / `js-version`) and the
@@ -104,14 +104,23 @@ user_invocable: true
 ## Supporting resources
 
 - [references/index.md](./references/index.md) — unified topic index, start here.
-- [references/index.json](./references/index.json) — machine-readable index across kinds and topics.
-- [references/sources.json](./references/sources.json) — registered sources and their kind / dialect.
+
+## Test hints
+
+For `yry-test` dispatcher consumption.
+
+| H5 concern | Recommended yry-test topic |
+|------------|------------------------------|
+| Viewport / `1px` border / `vw` adaptation | `fixture` (visual regression at device widths) |
+| Touch event / `touchstart` delay | `fixture` (`jsdom` + manual event dispatch) |
+| iOS Safari-specific quirk | `e2e-playwright` (real device or Safari channel) |
+| Layout shift on soft keyboard | `e2e-playwright` (Playwright + `webkit` channel) |
 
 ## Fallback
 
 | Situation | Behavior |
 |-----------|----------|
-| `references/index.md` missing | Read `references/index.json` directly. |
+| `references/index.md` missing | Re-run `/yry-init` to rebuild the index. |
 | Topic not in any registered source | State the gap, suggest the closest related topic. |
 | User wants to actually scaffold a project | Recommend `vue3-h5-template` (right branch) and point at its README for `pnpm install` / `pnpm dev`. |
 | User wants a real H5 shop code reference | Recommend `newbee-mall-vue3-app` and the matching `newbee-mall-api` for the backend. |

@@ -1,106 +1,68 @@
 ---
-paths:
-  - ".claude/yry-init/SKILL.md"
-  - ".claude/yry-init-detect/SKILL.md"
-  - ".claude/yry-init-explore/SKILL.md"
-  - ".claude/yry-init-generate/SKILL.md"
-  - ".claude/yry-init-arch/SKILL.md"
-  - ".claude/yry-init-verify/SKILL.md"
-description: "Pipeline contracts for yry-init: step ordering, sub-skill communication protocol, pipelineState shape, output ownership, and degradation countermeasures."
+paths: [".claude/yry-init/SKILL.md"]
+description: "Pipeline contracts for yry-init: step ordering, step communication protocol, pipelineState shape (single source of truth in references/), output ownership, and degradation countermeasures."
 ---
 
 # Pipeline Orchestration Contracts
 
-`yry-init` is the sole user-invocable entry point for the project initialization pipeline. It orchestrates five sub-skills in strict order, communicating only through a shared `pipelineState` object.
+`yry-init` is the sole user-invocable entry point for the project initialization pipeline. It orchestrates five steps plus one optional phase in strict order, communicating only through a shared `pipelineState` object.
 
 ## Pipeline Order (Immutable)
 
 ```
-detect → explore → generate → arch → verify
+detect → explore → generate → arch → reports → verify
 ```
 
-## PipelineState Contract
+`reports` is the optional phase between `arch` and `verify`. If the
+`yry-report` orchestrator script is absent, the phase is skipped
+non-blocking and `pipelineState.reports.result` is `'skipped'`.
 
-```typescript
-interface PipelineState {
+## PipelineState Shape
+
+The complete `PipelineState` / `Profile` / `Exploration` / `VerifyResult` /
+`Failure` / `ReportsResult` type definitions live in
+[`references/pipeline-state-reference.md`](./references/pipeline-state-reference.md)
+(single source of truth). The summary below is for orientation only —
+the reference file is authoritative.
+
+```ts
+type PipelineState = {
   steps: string[];
-  profile: Profile;
-  exploration: Exploration;
-  verify: VerifyResult;
-}
-
-interface Profile {
-  identity: {
-    projectName: string;
-    branchPrefix: string;
-  };
-  projectType: string;          // 'node' | 'python' | 'go' | 'rust' | 'unknown' | ...
-  inventory: {
-    topLevelFiles: string[];
-    topLevelDirs: string[];
-    manifests: Record<string, string>;
-  };
-  securitySurface: {
-    authFiles: string[];
-    secretFiles: string[];
-    envFiles: string[];
-  };
-  testFramework: string | null;
-  architecturePattern: string | null;
-}
-
-interface Exploration {
-  moduleMap: Record<string, string[]>;
-  architecture: {
-    pattern: string;
-    notes: string;
-  };
-  securitySurface: {
-    authFiles: string[];
-    secretFiles: string[];
-    envFiles: string[];
-  };
-  conventions: Record<string, string>;
-}
-
-interface VerifyResult {
-  result: 'pass' | 'fail';
-  failures: Failure[];
-}
-
-interface Failure {
-  check: string;
-  detail: string;
-  fix: string;
-}
+  profile: Profile;                // step 01-detect
+  exploration: Exploration;        // step 02-explore
+  reports?: ReportsResult;         // reports phase (optional)
+  verify: VerifyResult;            // step 05-verify
+};
 ```
 
-## Sub-Skill Communication Protocol
+## Step Communication Protocol
 
 | Rule | Description |
 |------|-------------|
-| No direct calls | Sub-skills never invoke each other |
-| Single writer per field | Each sub-skill writes its designated pipelineState field |
+| No direct calls | Steps never invoke each other |
+| Single writer per field | Each step writes its designated pipelineState field |
 | Upstream is read-only | step N may read fields from steps < N only |
-| No cross-sub-skill imports | Skills must not import from sibling skill directories |
+| No cross-step imports | Steps must not import from sibling step directories |
 
 ## Output Ownership Matrix
 
-| Artifact | Owner | Other skills may |
+| Artifact | Owner | Other steps may |
 |----------|-------|-----------------|
-| `CLAUDE.md` | yry-init-generate | Read (all) |
-| `README.md` (main sections) | yry-init-generate | Read (all) |
+| `CLAUDE.md` | step 03-generate | Read (all) |
+| `README.md` (main sections) | step 03-generate | Read (all) |
 | `README.md` (Domain Language) | User (append-once, preserved) | Read (all) |
-| `docs/index.html`, `index.css`, `index.js` | yry-init/templates/ (source of truth) | Copied by yry-init-generate |
-| `docs/data.js` | yry-init-generate (regenerated) | Read by docs dashboard |
-| `docs/arch/` | yry-init-arch | Read (all) |
-| `docs/test/` | yry-init-arch | Read (all) |
+| `docs/index.html`, `index.css`, `index.js` | `yry-init/templates/` (source of truth) | Copied by step 03-generate |
+| `docs/data.js` | step 03-generate (regenerated) | Read by docs dashboard |
+| `docs/arch/` | step 04-arch | Read (all) |
+| `docs/test/` | step 04-arch | Read (all) |
 
 ## Degradation Countermeasures
 
 | Condition | Action |
 |-----------|--------|
 | `verify.result === 'fail'` | Halt pipeline; surface failure list to user; no retry |
-| Sub-skill crash mid-run | Abort entire pipeline; surface stack trace; no partial recovery |
+| Step crash mid-run | Abort entire pipeline; surface stack trace; no partial recovery |
 | `projectType === 'unknown'` | Continue with warning; emit `# TODO: project type unknown` in generated artifacts |
-| Missing `profile` fields | yry-init-explore must fill gaps before generate runs |
+| Missing `profile` fields | step 02-explore must fill gaps before step 03-generate runs |
+| `reports` orchestrator absent | Set `pipelineState.reports = { result: 'skipped', reason: 'yry-report-absent' }`, continue to verify |
+| `reports` orchestrator fails | Set `pipelineState.reports = { result: 'fail', stderr }`; let verify surface it; no retry |

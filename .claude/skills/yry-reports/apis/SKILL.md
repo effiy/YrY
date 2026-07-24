@@ -99,31 +99,36 @@ Key principles:
 
 ## Page Architecture
 
+**Template source (single, byte-stable):** `YiDoc/templates/apis/`
+**Per-project output (regenerated):** `YiDoc/projects/<project>/apis/data.js`
+
 ```
-docs/reports/apis/
-├── index.html          # Vue 3 template with CDN loader + section components
+YiDoc/templates/apis/                   # shared template (byte-stable)
+├── index.html          # Vue 3 shell with CDN loader + inline section components (depth-3 paths)
 ├── index.css           # Page-level styles (layout, TOC, header, footer, print)
 ├── index.js            # Entry point — deferred mount
-├── data.js             # window.REPORT_CONFIG + window.REPORT_DATA
-├── app/
-│   ├── state.js        # data() + computed properties
-│   ├── actions.js      # methods (toggle remediation, copy path)
-│   ├── lifecycle.js    # mounted/beforeUnmount (Observer, scroll, keyboard)
-│   └── mount.js        # Vue app boot + component registration
-├── components/
-│   ├── yry-report-api-summary/    # Health score + stat cards
-│   ├── yry-report-api-endpoints/  # Request inventory (sortable, filterable)
-│   ├── yry-report-api-semantics/  # HTTP semantics analysis (NEW)
-│   ├── yry-report-api-patterns/   # Pattern analysis table
-│   ├── yry-report-api-security/   # Security audit table
-│   ├── yry-report-api-health/     # Error handling + response quality + contracts
-│   └── yry-report-api-remediation/# P0/P1/P2 action queue
-├── lib/
-│   └── yry-sortable.js           # Sortable table utility
-└── references/
-    ├── methodology.md             # Analysis methodology (embedded or linked)
-    └── schemas.md                 # Data schemas
+├── data.js             # Empty / schema skeleton — overwritten in-project
+└── app/
+    ├── state.js        # data() + computed properties
+    ├── actions.js      # methods (toggle remediation, copy path)
+    ├── lifecycle.js    # mounted/beforeUnmount (Observer, scroll, keyboard)
+    └── mount.js        # Vue app boot + component registration
+
+YiDoc/projects/<project>/apis/
+├── index.html          # byte-identical to template's index.html, but with depth-4 paths (../../../../YiPet/cdn/, ../../../templates/apis/)
+└── data.js             # regenerated each run: window.REPORT_CONFIG + window.REPORT_DATA
+
+.claude/skills/yry-reports/apis/references/
+├── methodology.md      # Analysis methodology (linked from report footer)
+└── schemas.md          # Data schemas
 ```
+
+Section components (`yry-report-api-summary/`, `yry-report-api-endpoints/`,
+`yry-report-api-semantics/`, `yry-report-api-patterns/`,
+`yry-report-api-security/`, `yry-report-api-health/`,
+`yry-report-api-remediation/`) are registered inline inside
+`YiDoc/templates/apis/index.js` from templates in the same shell —
+they are **not** separate on-disk folders.
 
 ## Data Model
 

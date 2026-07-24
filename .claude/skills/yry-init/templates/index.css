@@ -255,8 +255,8 @@ html { scroll-behavior: smooth; }
 
 /* ── Footer ────────────────────────────────────────────────────────────── */
 .yry-doc .dashboard-footer {
-  margin-top: 28px;
-  padding-bottom: 20px;
+  margin-top: 16px;
+  padding-bottom: 12px;
   text-align: center;
 }
 .yry-doc .footer-links {

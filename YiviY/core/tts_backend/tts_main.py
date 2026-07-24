@@ -2,17 +2,17 @@ import os
 import re
 from pydub import AudioSegment
 
-from core.asr_backend.audio_preprocess import get_audio_duration
-from core.tts_backend.gpt_sovits_tts import gpt_sovits_tts_for_videolingo
-from core.tts_backend.sf_fishtts import siliconflow_fish_tts_for_videolingo
-from core.tts_backend.openai_tts import openai_tts
-from core.tts_backend.fish_tts import fish_tts
-from core.tts_backend.azure_tts import azure_tts
-from core.tts_backend.edge_tts import edge_tts
-from core.tts_backend.sf_cosyvoice2 import cosyvoice_tts_for_videolingo
-from core.tts_backend.custom_tts import custom_tts
+from core.asr_backend import get_audio_duration
+from .gpt_sovits_tts import gpt_sovits_tts_for_videolingo
+from .sf_fishtts import siliconflow_fish_tts_for_videolingo
+from .openai_tts import openai_tts
+from .fish_tts import fish_tts
+from .azure_tts import azure_tts
+from .edge_tts import edge_tts
+from .sf_cosyvoice2 import cosyvoice_tts_for_videolingo
+from .custom_tts import custom_tts
 from core.prompts import get_correct_text_prompt
-from core.tts_backend._302_f5tts import f5_tts_for_videolingo
+from ._302_f5tts import f5_tts_for_videolingo
 from core.utils import *
 
 def clean_text_for_tts(text):

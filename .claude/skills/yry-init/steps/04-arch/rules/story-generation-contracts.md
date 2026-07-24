@@ -1,6 +1,6 @@
 ---
 paths:
-  - ".claude/yry-init-arch/SKILL.md"
+  - ".claude/yry-init/steps/04-arch/STEP.md"
 description: "Architecture story contracts: §0–§4 lifecycle, scene directory structure, cross-scene consistency rules."
 ---
 

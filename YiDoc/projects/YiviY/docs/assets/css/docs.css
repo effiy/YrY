@@ -1,0 +1,10 @@
+/*!
+ * YiviY · Docs — per-project brand overrides
+ * --------------------------------------------------------------------------
+ * Interaction styles live in /templates/docs/css/docs.css.
+ * This file only sets the project-specific brand color + tweaks.
+ */
+:root {
+  --yry-doc-accent:      #a78bfa;   /* YiviY violet */
+  --yry-doc-accent-ink:  #ffffff;
+}

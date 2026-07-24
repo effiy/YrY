@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Introduction | YiH5</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta content="YiH5 documentation" name="description" />
+        <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+
+        <link href="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/remixicon.css" rel="stylesheet" />
+        <link href="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/app.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/docs.css" rel="stylesheet" />
+        <link href="assets/css/docs.css" rel="stylesheet" />
+    </head>
+    <body class="loading">
+        <main id="page-content" data-page="index">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="mt-0 mb-3 font-lg">Introduction</h3>
+                    <p>
+                        <strong style="color: #f59e0b">YiH5</strong> Vanilla JS SPA · Session management + AI Chat +
+                        News feed · Powered by api.effiy.cn。本文档涵盖项目架构、安装步骤、配置选项、模块清单、API
+                        端点与常见问题。
+                    </p>
+
+                    <div class="row mt-4">
+                        <div class="col-md-3 col-6">
+                            <div class="text-center p-3 border rounded">
+                                <div class="h3 mb-0" style="color: #f59e0b">3</div>
+                                <div class="text-muted font-sm">External Libs</div>
+                                <div class="text-muted" style="font-size: 0.7rem">libs</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="text-center p-3 border rounded">
+                                <div class="h3 mb-0" style="color: #f59e0b">9</div>
+                                <div class="text-muted font-sm">Components</div>
+                                <div class="text-muted" style="font-size: 0.7rem">modules</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="text-center p-3 border rounded">
+                                <div class="h3 mb-0" style="color: #f59e0b">7</div>
+                                <div class="text-muted font-sm">Services</div>
+                                <div class="text-muted" style="font-size: 0.7rem">modules</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="text-center p-3 border rounded">
+                                <div class="h3 mb-0" style="color: #f59e0b">38</div>
+                                <div class="text-muted font-sm">Source Files</div>
+                                <div class="text-muted" style="font-size: 0.7rem">JS files</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4"><i class="ri-stack-line me-1"></i> Architecture Overview</h4>
+                    <p>
+                        YiH5 是零构建的 Vanilla JS 单页应用：HTML 入口 → ES Module 加载 → 服务层调用
+                        <code>api.effiy.cn</code>。所有 UI 通过 Web Components + 原生 DOM 渲染，无需 React/Vue 等框架。
+                    </p>
+
+                    <pre class="bg-light p-3 border rounded"><code>┌────────────────────────────────────────────┐
+│        Browser · index.html (entry)         │
+│  ┌────────────────────────────────────────┐ │
+│  │  ES Module Loader (type="module")      │ │
+│  │  import from /static/js/*.js            │ │
+│  └─────────────────┬──────────────────────┘ │
+└────────────────────┼─────────────────────────┘
+                     │
+        ┌────────────▼────────────┐
+        │   App Shell (main.js)   │
+        │  Router · Session · UI  │
+        └─┬──────────┬─────────┬──┘
+          │          │         │
+          ▼          ▼         ▼
+   ┌──────────┐ ┌──────────┐ ┌──────────┐
+   │ Auth     │ │ Chat     │ │ News     │
+   │ Service  │ │ Service  │ │ Service  │
+   └────┬─────┘ └────┬─────┘ └────┬─────┘
+        │            │            │
+        └────────────┼────────────┘
+                     ▼
+          api.effiy.cn (YiAi backend)
+                     │
+                     ▼
+              chrome.storage / IndexedDB</code></pre>
+
+                    <h4 class="mt-4"><i class="ri-lightbulb-flash-line me-1"></i> Key Features</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul>
+                                <li><strong>零构建</strong> — 无 Webpack/Vite，ES Module 原生加载，部署即用</li>
+                                <li><strong>会话管理</strong> — 双 token 机制 · 自动续期 · 失效跳登录</li>
+                                <li><strong>AI 对话</strong> — 流式 SSE · 多轮上下文 · Markdown 渲染</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul>
+                                <li><strong>新闻订阅</strong> — RSS 源聚合 · 离线缓存 · 关键词高亮</li>
+                                <li><strong>组件化</strong> — 9 个 Web Components · 可复用 · 可插拔</li>
+                                <li><strong>极速首屏</strong> — 总 JS 体积 &lt; 80 KB · 3 秒内 TTI</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4"><i class="ri-route-line me-1"></i> Quick Navigation</h4>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <a href="setup.html" class="text-decoration-none">
+                                <div class="border rounded p-3 h-100 hover-shadow">
+                                    <h5 class="mb-1">
+                                        <i class="ri-tools-fill me-2" style="color: #f59e0b"></i> Setup
+                                    </h5>
+                                    <p class="text-muted mb-0 font-sm">安装步骤、环境要求、启动命令</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a href="specifications.html" class="text-decoration-none">
+                                <div class="border rounded p-3 h-100 hover-shadow">
+                                    <h5 class="mb-1">
+                                        <i class="ri-file-list-3-line me-2" style="color: #f59e0b"></i> Specifications
+                                    </h5>
+                                    <p class="text-muted mb-0 font-sm">目录结构、技术栈、模块清单</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a href="pages.html" class="text-decoration-none">
+                                <div class="border rounded p-3 h-100 hover-shadow">
+                                    <h5 class="mb-1">
+                                        <i class="ri-window-2-line me-2" style="color: #f59e0b"></i> Pages
+                                    </h5>
+                                    <p class="text-muted mb-0 font-sm">H5 页面清单 · 入口/依赖/截图</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="mt-0 mb-3 font-lg">Use Cases</h3>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="border rounded p-3 h-100">
+                                <h6 class="text-primary"><i class="ri-chat-3-line me-1"></i> 移动 AI 助手</h6>
+                                <p class="text-muted mb-0 font-sm">手机浏览器访问 · SSE 流式响应 · 免安装即用。</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="border rounded p-3 h-100">
+                                <h6 class="text-success"><i class="ri-newspaper-line me-1"></i> 资讯聚合</h6>
+                                <p class="text-muted mb-0 font-sm">订阅多源 RSS · 离线阅读 · 摘要速览。</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="border rounded p-3 h-100">
+                                <h6 class="text-warning"><i class="ri-shield-user-line me-1"></i> 轻量登录态</h6>
+                                <p class="text-muted mb-0 font-sm">双 token 会话 · 7 天免登录 · 安全失效。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="mt-0 mb-3 font-lg">Directory Layout</h3>
+                    <pre class="bg-light p-3 border rounded"><code>YiH5/
+├── index.html                # 应用入口
+├── /static/js/
+│   ├── main.js               # App Shell · 路由 + 启动
+│   ├── router.js             # 哈希路由
+│   ├── auth/                 # 会话管理（登录/续期）
+│   ├── chat/                 # AI 对话组件 + SSE
+│   ├── news/                 # RSS 聚合
+│   ├── components/           # 9 个 Web Components
+│   ├── services/             # 7 个业务服务
+│   └── utils/                # 工具函数
+└── /static/css/
+    └── app.css               # 原子样式 + 主题</code></pre>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="mt-0 mb-3 font-lg">Next Steps</h3>
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a href="setup.html" class="text-decoration-none">
+                                <div class="border rounded p-3 h-100 hover-shadow text-center">
+                                    <i class="ri-rocket-line font-lg text-primary"></i>
+                                    <div class="mt-2 mb-0 font-semibold">1. Setup</div>
+                                    <small class="text-muted">安装与启动</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="specifications.html" class="text-decoration-none">
+                                <div class="border rounded p-3 h-100 hover-shadow text-center">
+                                    <i class="ri-file-list-3-line font-lg text-primary"></i>
+                                    <div class="mt-2 mb-0 font-semibold">2. Specifications</div>
+                                    <small class="text-muted">结构与技术栈</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="pages.html" class="text-decoration-none">
+                                <div class="border rounded p-3 h-100 hover-shadow text-center">
+                                    <i class="ri-window-2-line font-lg text-primary"></i>
+                                    <div class="mt-2 mb-0 font-semibold">3. Pages</div>
+                                    <small class="text-muted">页面清单</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="faq.html" class="text-decoration-none">
+                                <div class="border rounded p-3 h-100 hover-shadow text-center">
+                                    <i class="ri-question-line font-lg text-primary"></i>
+                                    <div class="mt-2 mb-0 font-semibold">4. FAQ</div>
+                                    <small class="text-muted">常见问题</small>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script src="assets/js/layout.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/jquery@3.7.1/jquery.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/js/bootstrap.bundle.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.js"></script>
+        <script src="../../../templates/docs/js/app.min.js"></script>
+    </body>
+</html>

@@ -16,12 +16,14 @@
   let templateCache = ''
 
   // 模块级模板常量
-  var WELCOME_FOOTER_TPL = '<div class="welcome-card-footer"><div class="welcome-card-meta">{{metaParts}}</div></div>'
+  var welcomeFooterHtml = function (metaPartsHtml) {
+    return `<div class="welcome-card-footer"><div class="welcome-card-meta">${metaPartsHtml}</div></div>`
+  }
   var WELCOME_TAG_ITEM_TPL = function (tagText, index) {
-    return '<span class="welcome-card-tag">' + tagText + '</span>'
+    return `<span class="welcome-card-tag">${tagText}</span>`
   }
   var WELCOME_META_PART_TPL = function (metaText) {
-    return '<span>' + metaText + '</span>'
+    return `<span>${metaText}</span>`
   }
 
   /**
@@ -134,7 +136,7 @@
   function buildFooterHtml (meta) {
     if (meta.metaParts.length === 0) return ''
     var metaPartsHtml = meta.metaParts.map(WELCOME_META_PART_TPL).join('')
-    return WELCOME_FOOTER_TPL.replace('{{metaParts}}', metaPartsHtml)
+    return welcomeFooterHtml(metaPartsHtml)
   }
 
   /**

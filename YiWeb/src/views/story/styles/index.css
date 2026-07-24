@@ -1,28 +1,6 @@
 @import url('/cdn/styles/index.css');
+@import url('/src/styles/common.css');
 @import url('/cdn/components/business/views/story/storyPanelPage/index.css');
 @import url('/cdn/components/business/views/story/storyListTable/index.css');
 @import url('/cdn/components/business/views/story/storyDetailCard/index.css');
 @import url('/cdn/components/business/views/story/storyStatusBadge/index.css');
-
-html, body {
-    height: 100%;
-}
-
-#main-content {
-    height: 100%;
-}
-
-#app {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background: var(--quantum-app-nebula);
-}
-
-/* noscript 回退提示 */
-.noscript-fallback {
-    text-align: center;
-    padding: 48px 24px;
-    color: var(--yi-text-secondary, #6b7280);
-    font-family: var(--yi-font-ui, sans-serif);
-}

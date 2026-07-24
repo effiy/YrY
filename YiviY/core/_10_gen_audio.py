@@ -12,8 +12,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from core.utils import *
 from core.utils.models import *
-from core.asr_backend.audio_preprocess import get_audio_duration
-from core.tts_backend.tts_main import tts_main
+from core.asr_backend import get_audio_duration
+from core.tts_backend import tts_main
 
 console = Console()
 

@@ -1,16 +1,15 @@
 /**
  * 故事任务面板 - 主入口
  *
- * 对标 aicr/index.js 数据流模式：
- *   createStore() → useComputed(store) → useMethods(store)
- *   → createBaseView({ data: state+computed, methods, ... })
+ * 数据流：createStore() → useComputed(store) → useMethods(store)
+ * → createBaseView({ data: state+computed, methods, ... })
  */
-import { createStore } from '/src/views/story/hooks/state/storeFactory.js';
-import { useComputed } from '/src/views/story/hooks/computed/useComputed.js';
-import { useMethods } from '/src/views/story/hooks/useMethods.js';
+import { createStore } from './state/storeFactory.js';
+import { useComputed } from './composables/useComputed.js';
+import { useMethods } from './composables/useMethods.js';
 import { createBaseView } from '/cdn/utils/view/baseView.js';
 import { logInfo, logError } from '/cdn/utils/core/log.js';
-import { setupBrowserExtensionErrorFilter } from '/cdn/utils/core/error.js';
+import { setupBrowserExtensionErrorFilter } from '/cdn/utils/core/error-esm.js';
 import '/cdn/utils/ui/tooltipPortal.js';
 
 (async function initStoryPanelApp() {

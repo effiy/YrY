@@ -1,6 +1,5 @@
 ---
-paths:
-  - ".claude/yry-init-detect/SKILL.md"
+paths: [".claude/yry-init/steps/01-detect/STEP.md"]
 description: "Detection contracts: decision tree rules, signal probing invariants, and fallback behavior for project type detection."
 ---
 

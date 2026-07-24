@@ -7,7 +7,7 @@ from core.utils.models import *
 import pandas as pd
 import soundfile as sf
 console = Console()
-from core.asr_backend.demucs_vl import demucs_audio
+from core.asr_backend import demucs_audio
 from core.utils.models import *
 
 def time_to_samples(time_str, sr):

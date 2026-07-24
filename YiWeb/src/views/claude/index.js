@@ -1,12 +1,12 @@
 /**
  * Claude 管理面板 - 主入口
  */
-import { createStore } from '/src/views/claude/hooks/store.js';
-import { useComputed } from '/src/views/claude/hooks/useComputed.js';
-import { useMethods } from '/src/views/claude/hooks/useMethods.js';
+import { createStore } from '/src/views/claude/composables/store.js';
+import { useComputed } from '/src/views/claude/composables/useComputed.js';
+import { useMethods } from '/src/views/claude/composables/useMethods.js';
 import { createBaseView } from '/cdn/utils/view/baseView.js';
 import { logInfo, logError } from '/cdn/utils/core/log.js';
-import { setupBrowserExtensionErrorFilter } from '/cdn/utils/core/error.js';
+import { setupBrowserExtensionErrorFilter } from '/cdn/utils/core/error-esm.js';
 import '/cdn/utils/ui/tooltipPortal.js';
 
 (async function initClaudePanelApp() {

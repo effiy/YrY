@@ -1,0 +1,75 @@
+/* Remixicon - local font-face referencing YiPet/cdn fonts */
+@font-face {
+    font-family: remixicon;
+    src: url('../../../../YiPet/cdn/fonts/remixicon/remixicon.woff2') format('woff2'),
+         url('../../../../YiPet/cdn/fonts/remixicon/remixicon.woff') format('woff'),
+         url('../../../../YiPet/cdn/fonts/remixicon/remixicon.ttf') format('truetype'),
+         url('../../../../YiPet/cdn/fonts/remixicon/remixicon.svg#remixicon') format('svg');
+    font-display: swap;
+}
+
+[class*=" ri-"],
+[class^=ri-] {
+    font-family: remixicon !important;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.ri-lg { font-size: 1.3333em; line-height: .75em; vertical-align: -.0667em; }
+.ri-xl { font-size: 1.5em; line-height: .6666em; vertical-align: -.075em; }
+.ri-xxs { font-size: .5em; }
+.ri-xs { font-size: .75em; }
+.ri-sm { font-size: .875em; }
+.ri-1x { font-size: 1em; }
+.ri-2x { font-size: 2em; }
+.ri-3x { font-size: 3em; }
+.ri-4x { font-size: 4em; }
+.ri-5x { font-size: 5em; }
+.ri-6x { font-size: 6em; }
+.ri-7x { font-size: 7em; }
+.ri-8x { font-size: 8em; }
+.ri-9x { font-size: 9em; }
+.ri-10x { font-size: 10em; }
+.ri-fw { text-align: center; width: 1.25em; }
+
+/* Icon glyph mappings */
+.ri-honour-line:before { content: "\ee00"; }
+.ri-tools-fill:before { content: "\f1a8"; }
+.ri-paint-line:before { content: "\ef6f"; }
+.ri-global-line:before { content: "\eda8"; }
+.ri-book-open-line:before { content: "\ead9"; }
+.ri-menu-line:before { content: "\eef7"; }
+.ri-file-line:before { content: "\eccb"; }
+.ri-dashboard-line:before { content: "\ec04"; }
+.ri-user-settings-line:before { content: "\f1fa"; }
+.ri-file-list-3-line:before { content: "\eccf"; }
+.ri-shopping-cart-line:before { content: "\f0ba"; }
+.ri-server-line:before { content: "\f07c"; }
+.ri-bar-chart-grouped-line:before { content: "\ea99"; }
+.ri-eye-line:before { content: "\ec95"; }
+.ri-customer-service-line:before { content: "\ec02"; }
+.ri-question-answer-line:before { content: "\efe9"; }
+.ri-layout-line:before { content: "\ee56"; }
+.ri-settings-4-line:before { content: "\f084"; }
+.ri-palette-line:before { content: "\ef71"; }
+.ri-braces-line:before { content: "\eae7"; }
+.ri-font-size:before { content: "\ed66"; }
+.ri-file-add-line:before { content: "\eca9"; }
+.ri-stack-line:before { content: "\f119"; }
+.ri-code-box-line:before { content: "\eb9f"; }
+.ri-checkbox-circle-fill:before { content: "\eb7a"; }
+.ri-checkbox-circle-line:before { content: "\eb7b"; }
+.ri-information-line:before { content: "\ee22"; }
+.ri-speed-line:before { content: "\f111"; }
+.ri-tools-line:before { content: "\f1a9"; }
+.ri-settings-3-line:before { content: "\f082"; }
+.ri-paint-brush-line:before { content: "\ef6d"; }
+.ri-cloud-line:before { content: "\eb95"; }
+.ri-shield-line:before { content: "\f0a2"; }
+.ri-toggle-line:before { content: "\f1a7"; }
+.ri-arrow-left-right-line:before { content: "\ea60"; }
+.ri-code-s-slash-line:before { content: "\eba5"; }
+.ri-arrow-up-circle-line:before { content: "\ea70"; }
+.ri-apps-line:before { content: "\ea42"; }
+.ri-folders-line:before { content: "\ed63"; }

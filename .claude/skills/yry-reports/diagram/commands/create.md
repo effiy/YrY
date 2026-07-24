@@ -23,7 +23,7 @@ Create a self-contained architecture-diagram page from requirements.
 ## Workflow
 
 1. Gather the system brief if the user has not provided one.
-2. Read the 4 template files in `templates/` before editing output.
+2. Read the 4 template files in `YiDoc/templates/diagram/` before editing output.
 3. Plan component groups, boundaries, and connection flow.
 4. Build the SVG and summary cards.
 5. Save the final self-contained page and report the output path.

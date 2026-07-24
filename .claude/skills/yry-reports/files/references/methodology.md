@@ -277,17 +277,19 @@ so the report can show a "more alerts suppressed" notice.
 
 ## Stage 6 — Vue page emit
 
-Copy the three stable files from `templates/` into
-`docs/reports/files/`:
+Per-project deployment is **2 files** at `YiDoc/projects/<project>/files/`:
+- `data.js` (regenerated) — `window.REPORT_CONFIG` (verbatim from the
+  template) + `window.REPORT_DATA` filled with this run's analysis
+- `index.html` (path-adjusted byte-copy of `YiDoc/templates/files/index.html`)
+  — depth-4 paths (`../../../../YiPet/cdn/`, `../../../templates/files/`).
+  Byte-identical across all 7 projects. Manually maintained — apply
+  depth-3 → depth-4 path substitution when the template changes.
 
-- `index.html` — Vue 3 standalone template with inline CDN loader
-- `index.js` — `PAGE_REPORT_FILES_APP` Vue options + deferred mount
-- `index.css` — `--yry-*` token values in `:root` + layout/print CSS
-
-Then write `docs/reports/files/data.js` with `window.REPORT_CONFIG`
-(verbatim from the template) and `window.REPORT_DATA` filled with
-this run's analysis. Theme is selected via `<html
-data-yry-theme="dark|light">` — the implementing agent sets the
+The remaining template assets (`index.css`, `index.js`, `app/state.js`,
+`app/actions.js`, `app/lifecycle.js`, `app/mount.js`) are **NOT copied** —
+they live in `YiDoc/templates/files/` and are referenced from the project's
+`index.html` via `../../../templates/files/`. Theme is selected via
+`<html data-yry-theme="dark|light">` — the implementing agent sets the
 attribute in `index.html` per the `--theme` option.
 
 **No HTML string concatenation.** All dynamic content flows through

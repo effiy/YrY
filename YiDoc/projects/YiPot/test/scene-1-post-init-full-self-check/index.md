@@ -1,28 +1,6 @@
 # §0 Effect Sketch — Post-Init Full Self-Check
 
-**What this scene demonstrates**: A comprehensive self-check that runs after a fresh `yry-init` pipeline execution against the YiPot project.
-
-```mermaid
-graph TD
-    START[yry-init 完成] --> S1[Step 1<br/>CLAUDE.md 身份验证]
-    START --> S2[Step 2<br/>README.md 完整性]
-    START --> S3[Step 3<br/>data.js 数据模型]
-    START --> S4[Step 4<br/>Docs 四文件存在]
-    START --> S5[Step 5<br/>Arch 5 场景]
-    START --> S6[Step 6<br/>Test 6 场景]
-    START --> S7[Step 7<br/>场景数量 ≥5/≥6]
-
-    S1 --> OK[✅ 全部通过]
-    S2 --> OK
-    S3 --> OK
-    S4 --> OK
-    S5 --> OK
-    S6 --> OK
-    S7 --> OK
-
-    style OK fill:#c8e6c9,stroke:#2e7d32
-    style START fill:#e1f5fe
-```
+**What this scene demonstrates**: A comprehensive self-check that runs after a fresh `yry-init` pipeline execution against the YiPot project. It verifies that all generated artifacts (CLAUDE.md, README.md, docs/data.js, docs/index.html/css/js, arch/x5 scenes, test/x6 scenes) exist, are well-formed, and contain project-specific content rather than generic placeholders.
 
 **Why it matters**: The yry-init pipeline is a generative process — it reads source code and emits documentation. Without a post-init self-check, silently partial or placeholder output can be accepted as valid. This scene defines the minimum pass criteria for YiPot's generated documentation baseline.
 

@@ -1,18 +1,18 @@
 ---
-name: yry-init-explore
+name: explore-step
 description: >
   Deep exploration of project source code to validate and supplement the
   detect-phase profile. Read core source, identify architecture patterns
   and code conventions, confirm or correct the security surface, and
-  emit a module map. Run this skill after yry-init-detect, before any
+  emit a module map. Run this step after step 01-detect, before any
   content generation work begins.
 ---
 
-# yry-init-explore
+# yry-init-explore (step ② of yry-init)
 
 > Single responsibility: read source code and emit a module map. It does
 > not generate docs, run tests, or change files. The output is the
-> `exploration` object passed to yry-init-generate and yry-init-arch.
+> `exploration` object passed to step 03-generate and step 04-arch.
 >
 > Triggered by the parent pipeline (yry-init), right after
 > yry-init-detect.
@@ -150,16 +150,6 @@ It is read by the parent pipeline, never by the user directly.
 | `exploration.securitySurface` has all five boolean keys | key set check | Pipeline may proceed |
 | `exploration.conventions.language` is a non-empty string | non-empty check | Pipeline may proceed; `null` is allowed but flagged |
 
-
-## Rules
-
-- [exploration-contracts.md](./rules/exploration-contracts.md) — ---
-- [import-resolution.md](./rules/import-resolution.md) — ---
-
-## Specialized Agents
-
-- [convention-detector.md](./agents/convention-detector.md) — ---
-- [module-graph-builder.md](./agents/module-graph-builder.md) — ---
 
 ## Rules
 

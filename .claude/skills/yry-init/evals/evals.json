@@ -7,7 +7,7 @@
       "expected_output": "Runs the full pipeline: detect → explore → generate → arch → reports → verify.",
       "files": [],
       "expectations": [
-        "Runs all five steps in pipeline order",
+        "Runs all five steps in pipeline order, plus the optional reports phase when yry-report is present",
         "Shares a single pipelineState object across steps",
         "Halts on any step failure (no silent retries)"
       ]
@@ -103,10 +103,10 @@
     {
       "id": 10,
       "prompt": "Where does the docs home layout come from?",
-      "expected_output": "Explains the layout source of truth is steps/03-generate/templates/; only the data model is regenerated.",
+      "expected_output": "Explains the layout source of truth is yry-init/templates/ (skill root); only the data model is regenerated.",
       "files": [],
       "expectations": [
-        "Cites steps/03-generate/templates/ as the layout source of truth",
+        "Cites yry-init/templates/ as the layout source of truth",
         "Notes that only the data model is regenerated",
         "Flags layout drift as a verify failure"
       ]

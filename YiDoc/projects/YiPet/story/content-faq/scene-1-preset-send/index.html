@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="color-scheme" content="dark" />
+        <link
+            rel="icon"
+            href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3' fill='%230369a1'/></svg>"
+        />
+        <title>YiPet · content-faq · scene-1 · Story</title>
+        <style>
+            :root {
+                --bg: #0b1220;
+                --fg: #e6edf3;
+                --muted: #8b949e;
+                --accent: #2f81f7;
+                --card: #111a2b;
+                --border: #1f2a3a;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                margin: 0;
+                background: var(--bg);
+                color: var(--fg);
+                font:
+                    15px/1.6 -apple-system,
+                    BlinkMacSystemFont,
+                    "PingFang SC",
+                    sans-serif;
+            }
+            a {
+                color: var(--accent);
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            .shell {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 32px 24px 64px;
+            }
+            header {
+                border-bottom: 1px solid var(--border);
+                padding-bottom: 14px;
+                margin-bottom: 22px;
+            }
+            h1 {
+                margin: 0 0 4px;
+                font-size: 22px;
+            }
+            .tagline {
+                color: var(--muted);
+                font-size: 12px;
+            }
+            h2 {
+                margin: 24px 0 8px;
+                font-size: 17px;
+                color: #c9d1d9;
+            }
+            ul {
+                margin: 6px 0;
+                padding-left: 22px;
+            }
+            code {
+                background: #0d1626;
+                padding: 1px 5px;
+                border-radius: 3px;
+                font-family: ui-monospace, Menlo, monospace;
+                font-size: 13px;
+            }
+            .links {
+                margin-top: 18px;
+                display: flex;
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+            .links a {
+                background: #0d1626;
+                border: 1px solid var(--border);
+                padding: 5px 11px;
+                border-radius: 6px;
+                font-size: 12px;
+            }
+            footer {
+                margin-top: 40px;
+                border-top: 1px solid var(--border);
+                padding-top: 12px;
+                color: var(--muted);
+                font-size: 11px;
+            }
+        </style>
+    </head>
+    <body>
+        <main class="shell">
+            <header>
+                <h1>US-F1 · 快捷键唤起 + 上下文注入</h1>
+                <div class="tagline">Story: <a href="../index.html">content-faq</a> · 前端组件化</div>
+            </header>
+            <h2>用户故事</h2>
+            <p>
+                作为浏览长文档的用户，我想在当前页面按快捷键唤起 FAQ 面板，并自动带上当前选区/URL
+                作为上下文，以便一键获得针对本页内容的解释。
+            </p>
+            <h2>验收标准</h2>
+            <ul>
+                <li>
+                    快捷键（默认 <code>Cmd/Ctrl+Shift+F</code>）在任意页面 300ms 内唤起 FAQ 面板，焦点自动落在输入框。
+                </li>
+                <li>有选区则自动填入输入框并折叠展示；无选区时以"询问本页"模式启动。</li>
+                <li>再次按同一快捷键或 <code>Esc</code> 关闭面板，不影响页面原有滚动位置。</li>
+            </ul>
+            <h2>使用场景 · 组件化</h2>
+            <ul>
+                <li>
+                    <code>&lt;FaqPanel&gt;</code> 由
+                    <code>&lt;HotkeyListener&gt;</code>、<code>&lt;ContextPreview&gt;</code>、<code
+                        >&lt;QuestionInput&gt;</code
+                    >
+                    拼装；快捷键逻辑独立于面板渲染。
+                </li>
+                <li>
+                    <code>useSelectionSnapshot()</code> composable 监听 <code>selectionchange</code>，去抖 150ms 后交给
+                    <code>&lt;ContextPreview&gt;</code>。
+                </li>
+            </ul>
+            <div class="links"><a href="../index.html">↑ content-faq</a></div>
+            <footer>由 yry-init 分析轴线驱动 · 前端组件化</footer>
+        </main>
+    </body>
+</html>

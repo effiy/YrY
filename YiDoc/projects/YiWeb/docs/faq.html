@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>FAQ | YiWeb</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta content="YiWeb documentation" name="description" />
+        <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+
+        <link href="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/remixicon.css" rel="stylesheet" />
+        <link href="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/app.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/docs.css" rel="stylesheet" />
+        <link href="assets/css/docs.css" rel="stylesheet" />
+    </head>
+    <body class="loading">
+        <main id="page-content" data-page="faq" data-no-toc>
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="mt-0 mb-3 font-lg">Frequently Asked Questions</h3>
+                    <p>
+                        关于 YiWeb 的常见问题与解答。共 <strong>16</strong> 个问题，按 4
+                        个类别分组。若未找到答案，请查阅 <a href="specifications.html">Specifications</a> 或联系维护者。
+                    </p>
+
+                    <div class="row mb-3">
+                        <div class="col-md-3 col-6 mb-2">
+                            <a href="#faq-section-general" class="text-decoration-none">
+                                <div class="border rounded p-2 text-center">
+                                    <i class="ri-information-line" style="color: #22c55e"></i>
+                                    <div class="font-sm">General</div>
+                                    <span class="badge bg-light text-dark">4</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6 mb-2">
+                            <a href="#faq-section-development" class="text-decoration-none">
+                                <div class="border rounded p-2 text-center">
+                                    <i class="ri-code-s-slash-line" style="color: #22c55e"></i>
+                                    <div class="font-sm">Development</div>
+                                    <span class="badge bg-light text-dark">5</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6 mb-2">
+                            <a href="#faq-section-troubleshooting" class="text-decoration-none">
+                                <div class="border rounded p-2 text-center">
+                                    <i class="ri-error-warning-line" style="color: #22c55e"></i>
+                                    <div class="font-sm">Troubleshooting</div>
+                                    <span class="badge bg-light text-dark">4</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6 mb-2">
+                            <a href="#faq-section-security" class="text-decoration-none">
+                                <div class="border rounded p-2 text-center">
+                                    <i class="ri-shield-keyhole-line" style="color: #22c55e"></i>
+                                    <div class="font-sm">Security</div>
+                                    <span class="badge bg-light text-dark">3</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="accordion mt-3" id="faqAccordion">
+                        <h4 class="mt-4 mb-3">
+                            <i class="ri-information-line me-2" style="color: #22c55e"></i>General
+                            <span class="badge bg-light text-dark ms-1">4</span>
+                        </h4>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq1"
+                                >
+                                    YiWeb 支持哪些部署方式?
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>
+                                        YiWeb 支持 Vercel / Netlify / 自建 Node 服务器等主流部署方式。推荐生产环境使用
+                                        Docker 或 CI/CD 自动化部署。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq2"
+                                >
+                                    如何升级到最新版本?
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>
+                                        查看
+                                        <a href="changelog.html">Changelog</a>
+                                        了解版本变更，按迁移指南操作。建议先在开发环境验证后再部署生产。每次升级前请备份数据和配置。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq3"
+                                >
+                                    YiWeb 的技术栈是什么?
+                                </button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>Vue 3 · Vite · Vue Router 4 · Pinia · Bootstrap 5。</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq4"
+                                >
+                                    项目采用什么许可证?
+                                </button>
+                            </h2>
+                            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>本项目遵循 MIT 许可证开源。你可以自由使用、修改和分发，但需保留原始版权声明。</p>
+                                </div>
+                            </div>
+                        </div>
+                        <h4 class="mt-4 mb-3">
+                            <i class="ri-code-s-slash-line me-2" style="color: #22c55e"></i>Development
+                            <span class="badge bg-light text-dark ms-1">5</span>
+                        </h4>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq5"
+                                >
+                                    如何添加新功能?
+                                </button>
+                            </h2>
+                            <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>
+                                        参考
+                                        <a href="specifications.html">Specifications</a>
+                                        中的模块清单，在对应目录添加新文件并遵循现有架构模式。建议先创建 arch scene
+                                        记录设计决策，再编写代码。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq6"
+                                >
+                                    开发环境的推荐编辑器配置?
+                                </button>
+                            </h2>
+                            <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>
+                                        推荐 VS Code + Volar + ESLint + Prettier。项目根目录已包含 .editorconfig 和
+                                        .gitignore。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq7"
+                                >
+                                    如何运行测试?
+                                </button>
+                            </h2>
+                            <div id="faq7" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>
+                                        <code>npm run test</code> 或 <code>npm run test:watch</code> 进入 watch 模式。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq8"
+                                >
+                                    代码风格检查怎么做?
+                                </button>
+                            </h2>
+                            <div id="faq8" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>
+                                        <code>npm run lint</code> — ESLint + Prettier 联合检查。建议在 CI 中集成 lint
+                                        步骤。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq9"
+                                >
+                                    如何贡献代码?
+                                </button>
+                            </h2>
+                            <div id="faq9" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>
+                                        Fork → 创建 feature 分支 → 编写代码 + 测试 → 提交 PR。PR 需通过 CI 检查（lint +
+                                        test + build）并由维护者 review。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <h4 class="mt-4 mb-3">
+                            <i class="ri-error-warning-line me-2" style="color: #22c55e"></i>Troubleshooting
+                            <span class="badge bg-light text-dark ms-1">4</span>
+                        </h4>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq10"
+                                >
+                                    遇到错误怎么办?
+                                </button>
+                            </h2>
+                            <div id="faq10" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>
+                                        查阅 <a href="setup.html">Setup</a> 的 Troubleshooting 章节，或查看 浏览器
+                                        DevTools Console 面板。常见问题已在下方列出。如果问题无法解决，请在 Git 仓库提
+                                        issue。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq11"
+                                >
+                                    数据如何备份?
+                                </button>
+                            </h2>
+                            <div id="faq11" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>项目源码通过 Git 版本控制，定期 push 到远程仓库即可。配置文件建议独立备份。</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq12"
+                                >
+                                    性能如何优化?
+                                </button>
+                            </h2>
+                            <div id="faq12" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>
+                                        Vue 3 + Vite 构建产物 gzip 后 <100KB。优化建议：路由懒加载、组件异步加载、图片
+                                        WebP 格式、CDN 加速静态资源。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq13"
+                                >
+                                    热重载不生效怎么办?
+                                </button>
+                            </h2>
+                            <div id="faq13" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>
+                                        检查 <code>vite.config.js</code> 中
+                                        <code>server.watch</code> 配置。部分文件变更可能需要重启 dev server。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <h4 class="mt-4 mb-3">
+                            <i class="ri-shield-keyhole-line me-2" style="color: #22c55e"></i>Security
+                            <span class="badge bg-light text-dark ms-1">3</span>
+                        </h4>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq14"
+                                >
+                                    如何保护 API 端点?
+                                </button>
+                            </h2>
+                            <div id="faq14" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>配置 CORS 白名单，仅允许信任的域名访问 API。使用 HTTPS 防止中间人攻击。</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq15"
+                                >
+                                    敏感信息（密码、密钥）如何管理?
+                                </button>
+                            </h2>
+                            <div id="faq15" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>
+                                        使用 <code>.env</code> 文件（已加入 .gitignore）管理环境变量。生产环境通过 CI/CD
+                                        注入。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq16"
+                                >
+                                    是否支持 HTTPS?
+                                </button>
+                            </h2>
+                            <div id="faq16" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>
+                                        部署到 Vercel/Netlify 自动获得 HTTPS。自建服务器推荐使用 Let's Encrypt + Caddy
+                                        自动证书。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info mt-4">
+                        <strong>Still stuck?</strong> 查阅 <a href="setup.html">Setup Troubleshooting</a> 或检查
+                        <a href="changelog.html">Changelog</a> 是否已知问题已在最新版本修复。也可以在 Git 仓库提 issue
+                        获取帮助。
+                    </div>
+
+                    <div class="mt-3 p-3 border rounded bg-light">
+                        <p class="mb-0">
+                            <strong>Was this helpful?</strong> 如果 FAQ 解决了你的问题，欢迎通过 Git commit
+                            补充更多常见问题。文档质量依赖于社区贡献。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script src="assets/js/layout.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/jquery@3.7.1/jquery.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/js/bootstrap.bundle.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.js"></script>
+        <script src="../../../templates/docs/js/app.min.js"></script>
+    </body>
+</html>

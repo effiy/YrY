@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="color-scheme" content="dark" />
+        <link
+            rel="icon"
+            href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3' fill='%230369a1'/></svg>"
+        />
+        <title>YiviY · batch-ui · Story</title>
+        <style>
+            :root {
+                --bg: #0b1220;
+                --fg: #e6edf3;
+                --muted: #8b949e;
+                --accent: #2f81f7;
+                --card: #111a2b;
+                --border: #1f2a3a;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                margin: 0;
+                background: var(--bg);
+                color: var(--fg);
+                font:
+                    15px/1.6 -apple-system,
+                    BlinkMacSystemFont,
+                    "PingFang SC",
+                    sans-serif;
+            }
+            a {
+                color: var(--accent);
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            .shell {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 32px 24px 64px;
+            }
+            header {
+                border-bottom: 1px solid var(--border);
+                padding-bottom: 14px;
+                margin-bottom: 22px;
+            }
+            h1 {
+                margin: 0 0 4px;
+                font-size: 22px;
+            }
+            .tagline {
+                color: var(--muted);
+                font-size: 12px;
+            }
+            h2 {
+                margin: 24px 0 8px;
+                font-size: 17px;
+                color: #c9d1d9;
+            }
+            ul {
+                margin: 6px 0;
+                padding-left: 22px;
+            }
+            code {
+                background: #0d1626;
+                padding: 1px 5px;
+                border-radius: 3px;
+                font-family: ui-monospace, Menlo, monospace;
+                font-size: 13px;
+            }
+            .links {
+                margin-top: 18px;
+                display: flex;
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+            .links a {
+                background: #0d1626;
+                border: 1px solid var(--border);
+                padding: 5px 11px;
+                border-radius: 6px;
+                font-size: 12px;
+            }
+            footer {
+                margin-top: 40px;
+                border-top: 1px solid var(--border);
+                padding-top: 12px;
+                color: var(--muted);
+                font-size: 11px;
+            }
+        </style>
+    </head>
+    <body>
+        <main class="shell">
+            <header>
+                <h1>Story · 批量与 UI（batch-ui）</h1>
+                <div class="tagline">
+                    Module: <a href="../index.html">YiviY Story</a> · <code>launch.py + batch/ + st_utils/</code>
+                </div>
+            </header>
+            <h2>场景</h2>
+            <ul>
+                <li><a href="scene-1-one-click-streamlit/index.html">US-B1 · Streamlit UI 一键触发全流程</a></li>
+                <li><a href="scene-2-parallel-batch/index.html">US-B2 · 批量脚本并行处理多视频</a></li>
+                <li><a href="scene-3-i18n-switch/index.html">US-B3 · UI 多语资源可运行时切换</a></li>
+            </ul>
+            <h2>使用场景 · 模块化</h2>
+            <ul>
+                <li><code>launch.py</code> 只做参数解析与阶段编排，不内嵌业务逻辑。</li>
+                <li><code>batch/</code> 与 Streamlit UI 共享 <code>core/</code> 公共接口，不直接调用内部阶段函数。</li>
+            </ul>
+            <div class="links"><a href="../index.html">↑ YiviY Story</a></div>
+            <footer>由 yry-init 分析轴线驱动 · 后端模块化</footer>
+        </main>
+    </body>
+</html>

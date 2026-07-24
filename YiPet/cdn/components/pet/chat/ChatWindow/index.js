@@ -30,26 +30,29 @@
   const shadeHexColor = _u.shadeHexColor || function() { return null }
 
   // Template constants
-  const LOADING_STATE_TPL = `<div class="yi-pet-chat-loading" role="status" aria-live="polite">
+  const loadingStateHtml = (message) => `<div class="yi-pet-chat-loading" role="status" aria-live="polite">
   <div class="loading-spinner" aria-hidden="true"></div>
-  <div class="loading-text">{{message}}</div>
+  <div class="loading-text">${message}</div>
 </div>`
 
-  const ERROR_STATE_TPL = `<div class="yi-pet-chat-error" role="alert" aria-live="polite">
-  <div class="error-text">{{message}}</div>
+  const errorStateHtml = (message) => `<div class="yi-pet-chat-error" role="alert" aria-live="polite">
+  <div class="error-text">${message}</div>
 </div>`
 
-  const EMPTY_STATE_TPL = `<div class="yi-pet-chat-empty">
-  <div class="sr-only" role="status" aria-live="polite">{{subtitle}}</div>
+  const emptyStateHtml = ({ title, subtitle, hint }) => {
+    const hintStyle = hint ? '' : 'display:none'
+    return `<div class="yi-pet-chat-empty">
+  <div class="sr-only" role="status" aria-live="polite">${subtitle}</div>
   <div class="pet-chat-empty-card">
     <div class="pet-chat-empty-icon" aria-hidden="true">
       <i class="fas fa-comments"></i>
     </div>
-    <div class="pet-chat-empty-title">{{title}}</div>
-    <div class="pet-chat-empty-subtitle">{{subtitle}}</div>
-    <div class="pet-chat-empty-hint" style="{{hintStyle}}">{{hint}}</div>
+    <div class="pet-chat-empty-title">${title}</div>
+    <div class="pet-chat-empty-subtitle">${subtitle}</div>
+    <div class="pet-chat-empty-hint" style="${hintStyle}">${hint || ''}</div>
   </div>
 </div>`
+  }
 
   const SIDEBAR_EXPAND_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>'
   const SIDEBAR_COLLAPSE_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>'
@@ -1082,7 +1085,7 @@
       if (!this.messagesContainer) return
       this.clearMessagesContainer()
       const loadingDiv = document.createElement('div')
-      loadingDiv.innerHTML = LOADING_STATE_TPL.replace('{{message}}', message)
+      loadingDiv.innerHTML = loadingStateHtml(message)
       this.messagesContainer.appendChild(loadingDiv)
     }
 
@@ -1097,7 +1100,7 @@
       if (!this.messagesContainer) return
       this.clearMessagesContainer()
       const errorDiv = document.createElement('div')
-      errorDiv.innerHTML = ERROR_STATE_TPL.replace('{{message}}', errorMessage || '发生错误')
+      errorDiv.innerHTML = errorStateHtml(errorMessage || '发生错误')
       this.messagesContainer.appendChild(errorDiv)
     }
 
@@ -1112,11 +1115,7 @@
       if (!this.messagesContainer) return
       this.clearMessagesContainer()
       const emptyDiv = document.createElement('div')
-      emptyDiv.innerHTML = EMPTY_STATE_TPL
-        .replace('{{title}}', title)
-        .replace('{{subtitle}}', subtitle)
-        .replace('{{hint}}', hint || '')
-        .replace('{{hintStyle}}', hint ? '' : 'display:none')
+      emptyDiv.innerHTML = emptyStateHtml({ title, subtitle, hint })
       this.messagesContainer.appendChild(emptyDiv)
     }
 

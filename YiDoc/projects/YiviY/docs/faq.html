@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>FAQ | YiviY - Video Translation & Dubbing</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta content="视频翻译配音工作台 — Streamlit + 12 步流水线 · ASR / 翻译 / TTS / 合成" name="description" />
+        <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+
+        <link href="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/remixicon.css" rel="stylesheet" />
+        <link href="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/app.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/docs.css" rel="stylesheet" />
+        <link href="assets/css/docs.css" rel="stylesheet" />
+    </head>
+    <body class="loading">
+        <main id="page-content" data-page="faq" data-no-toc>
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="mt-0 mb-3 font-lg">Frequently Asked Questions</h3>
+
+                    <p class="text-muted">
+                        YiviY 社区最常见的 13 个问题，按
+                        <strong>Hardware / Pipeline / Translation / Development / Deployment</strong>
+                        五类组织。找不到答案？请提交 Issue。
+                    </p>
+
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <span class="badge bg-primary">Hardware</span>
+                        <span class="badge bg-success">Pipeline</span>
+                        <span class="badge bg-info">Translation</span>
+                        <span class="badge bg-warning text-dark">Development</span>
+                        <span class="badge bg-danger">Deployment</span>
+                    </div>
+
+                    <h5 class="mt-3 mb-2"><span class="badge bg-primary me-1">Hardware</span></h5>
+
+                    <div class="accordion" id="hwAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq1"
+                                >
+                                    没有 GPU 能运行 YiviY 吗？
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#hwAccordion">
+                                <div class="accordion-body">
+                                    <p>可以，但速度较慢。解决方案：</p>
+                                    <ul>
+                                        <li>
+                                            <strong>CPU 模式：</strong>在 config.yaml 中设置
+                                            <code>asr.device: "cpu"</code>，WhisperX 仍可运行但速度慢 5-10 倍
+                                        </li>
+                                        <li>
+                                            <strong>Replicate 后端：</strong>将 ASR/TTS 切换到 Replicate
+                                            云端推理，无需本地 GPU
+                                        </li>
+                                        <li>
+                                            <strong>Google Colab：</strong>使用
+                                            <code>VideoLingo_colab.ipynb</code> 在云端免费 GPU 上运行
+                                        </li>
+                                        <li>
+                                            <strong>降低模型：</strong>使用 whisperx 的 small 或 medium 模型（large-v3
+                                            在 CPU 下可能内存不足）
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq2"
+                                >
+                                    CUDA out of memory 怎么办？
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#hwAccordion">
+                                <div class="accordion-body">
+                                    <p>常见原因与解决：</p>
+                                    <ul>
+                                        <li>
+                                            <strong>模型太大：</strong>在 config.yaml 中将 <code>asr.model</code> 从
+                                            <code>large-v3</code> 降为 <code>medium</code>
+                                        </li>
+                                        <li>
+                                            <strong>批处理太多：</strong>降低 <code>pipeline.batch_size</code>（默认 10
+                                            → 5）
+                                        </li>
+                                        <li>
+                                            <strong>其他进程占显存：</strong>运行 <code>nvidia-smi</code> 检查，必要时
+                                            kill 其他 Python 进程
+                                        </li>
+                                        <li>
+                                            <strong>显存清理：</strong>重启 Python 进程释放显存（PyTorch 有时不释放）
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="mt-4 mb-2"><span class="badge bg-success me-1">Pipeline</span></h5>
+
+                    <div class="accordion" id="pipeAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq3"
+                                >
+                                    ASR 识别结果不准怎么办？
+                                </button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#pipeAccordion">
+                                <div class="accordion-body">
+                                    <p>提高 ASR 精度的方法：</p>
+                                    <ul>
+                                        <li>
+                                            <strong>指定语言：</strong>在 config.yaml 中设置
+                                            <code>asr.language</code>，避免自动检测出错
+                                        </li>
+                                        <li><strong>升级模型：</strong>使用 whisperx 的 large-v3 模型（1.5GB+）</li>
+                                        <li><strong>音频预处理：</strong>确保视频音质清晰，避免背景噪音</li>
+                                        <li>
+                                            <strong>切换后端：</strong>尝试不同的 ASR 后端（WhisperX / HuggingFace /
+                                            Replicate）
+                                        </li>
+                                        <li>
+                                            <strong>手动校正：</strong>修改
+                                            <code>output/segments.json</code> 中识别错误的片段后重跑后续步骤
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq4"
+                                >
+                                    配音与原声如何混合？
+                                </button>
+                            </h2>
+                            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#pipeAccordion">
+                                <div class="accordion-body">
+                                    <p>YiviY 在步骤 11（<code>_11_merge_audio.py</code>）中合并原声与配音：</p>
+                                    <ul>
+                                        <li><strong>默认策略：</strong>原声降低音量（-20dB）作为背景，配音为主音轨</li>
+                                        <li>
+                                            <strong>说话人分离：</strong>通过 PyAnnote
+                                            识别不同说话人，可为每个说话人分配不同的 TTS 声音
+                                        </li>
+                                        <li>
+                                            <strong>时间对齐：</strong>配音时长与原语音片段对齐，通过 TTS 速度调整（步骤
+                                            10）
+                                        </li>
+                                    </ul>
+                                    <p>可在 config.yaml 中调整混合策略与音量比例。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq5"
+                                >
+                                    如何批量处理多个视频？
+                                </button>
+                            </h2>
+                            <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#pipeAccordion">
+                                <div class="accordion-body">
+                                    <p>使用批量处理工具：</p>
+                                    <ul>
+                                        <li>
+                                            <strong>Windows：</strong>运行
+                                            <code>batch/OneKeyBatch.bat</code>，按提示输入视频 URL 列表
+                                        </li>
+                                        <li>
+                                            <strong>Python：</strong>编写脚本循环调用 <code>core/_1_ytdlp.py</code> 至
+                                            <code>core/_12_dub_to_vid.py</code>
+                                        </li>
+                                        <li>
+                                            <strong>Colab：</strong>在
+                                            <code>VideoLingo_colab.ipynb</code> 中扩展为批量模式
+                                        </li>
+                                        <li>
+                                            <strong>Docker：</strong>挂载多个输入目录，用 <code>--batch</code> 参数启动
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="mt-4 mb-2"><span class="badge bg-info me-1">Translation</span></h5>
+
+                    <div class="accordion" id="transAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq6"
+                                >
+                                    翻译质量不好怎么办？
+                                </button>
+                            </h2>
+                            <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#transAccordion">
+                                <div class="accordion-body">
+                                    <p>提高翻译质量的方法：</p>
+                                    <ul>
+                                        <li><strong>升级模型：</strong>在 config.yaml 中使用更强的 LLM（如 gpt-4o）</li>
+                                        <li>
+                                            <strong>添加术语表：</strong>在
+                                            <code>custom_terms.xlsx</code> 中定义专业术语映射
+                                        </li>
+                                        <li>
+                                            <strong>调整 Prompt：</strong>修改
+                                            <code>core/prompts.py</code> 中的翻译提示词
+                                        </li>
+                                        <li>
+                                            <strong>检查源文本：</strong>NLP 句切分（步骤
+                                            3）的结果影响翻译质量，可手动检查 segments.json
+                                        </li>
+                                        <li><strong>添加上下文：</strong>在 Prompt 中加入前后文作为上下文</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq7"
+                                >
+                                    字幕时间轴不对齐怎么办？
+                                </button>
+                            </h2>
+                            <div id="faq7" class="accordion-collapse collapse" data-bs-parent="#transAccordion">
+                                <div class="accordion-body">
+                                    <p>字幕对齐由步骤 05（<code>_5_split_sub.py</code>）控制：</p>
+                                    <ul>
+                                        <li>
+                                            <strong>检查 ASR 时间戳：</strong>确保 segments.json 中的 start/end 时间准确
+                                        </li>
+                                        <li>
+                                            <strong>调整切分粒度：</strong>在 config.yaml 中设置
+                                            <code>pipeline.subtitle_max_chars</code>（默认 80）
+                                        </li>
+                                        <li>
+                                            <strong>手动编辑：</strong>修改
+                                            <code>output/subtitle.srt</code> 中错误的时间戳
+                                        </li>
+                                        <li>
+                                            <strong>重跑步骤 05-12：</strong>修改 <code>subtitle.srt</code> 后跳过前 4
+                                            步直接运行后续
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="mt-4 mb-2"><span class="badge bg-warning text-dark me-1">Development</span></h5>
+
+                    <div class="accordion" id="devAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq8"
+                                >
+                                    如何添加新的 ASR/TTS 后端？
+                                </button>
+                            </h2>
+                            <div id="faq8" class="accordion-collapse collapse" data-bs-parent="#devAccordion">
+                                <div class="accordion-body">
+                                    <p>
+                                        添加新后端需要修改 <code>core/asr_backend/</code> 或
+                                        <code>core/tts_backend/</code>：
+                                    </p>
+                                    <ol>
+                                        <li>在对应目录下创建新后端的适配器文件</li>
+                                        <li>
+                                            实现统一接口（<code>recognize(audio)</code> 或
+                                            <code>synthesize(text)</code>）
+                                        </li>
+                                        <li>在 <code>__init__.py</code> 中注册后端</li>
+                                        <li>在 config.yaml 中切换到新后端</li>
+                                    </ol>
+                                    <p>详见 <a href="customization.html">Customization · Recipes</a>。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq9"
+                                >
+                                    流水线失败了如何调试？
+                                </button>
+                            </h2>
+                            <div id="faq9" class="accordion-collapse collapse" data-bs-parent="#devAccordion">
+                                <div class="accordion-body">
+                                    <p>调试步骤：</p>
+                                    <ol>
+                                        <li>查看 Streamlit 控制台错误堆栈</li>
+                                        <li>在 config.yaml 中启用 <code>debug: true</code> 获得详细日志</li>
+                                        <li>检查 <code>output/</code> 目录中失败步骤之前的 JSON 输出</li>
+                                        <li>单独运行失败步骤的 Python 文件：<code>python -m core._6_gen_sub</code></li>
+                                        <li>对比 segments.json 的输入/输出是否合理</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq10"
+                                >
+                                    如何跳过某个流水线步骤？
+                                </button>
+                            </h2>
+                            <div id="faq10" class="accordion-collapse collapse" data-bs-parent="#devAccordion">
+                                <div class="accordion-body">
+                                    <p>在 config.yaml 中配置 <code>pipeline.skip_steps</code>：</p>
+                                    <pre class="bg-light p-2 border rounded mb-0"><code>pipeline:
+  skip_steps: [5]  # 跳过 Step 05 说话人分离</code></pre>
+                                    <p class="mb-0 mt-2">
+                                        注意：跳过步骤可能导致后续步骤缺少依赖数据。建议先确认中间产物已存在于
+                                        <code>output/</code> 目录。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="mt-4 mb-2"><span class="badge bg-danger me-1">Deployment</span></h5>
+
+                    <div class="accordion" id="deployAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq11"
+                                >
+                                    Docker 部署需要什么配置？
+                                </button>
+                            </h2>
+                            <div id="faq11" class="accordion-collapse collapse" data-bs-parent="#deployAccordion">
+                                <div class="accordion-body">
+                                    <p>Docker 部署的硬件要求：</p>
+                                    <ul>
+                                        <li><strong>CPU 模式：</strong>4 核 CPU · 8GB RAM · 20GB 磁盘</li>
+                                        <li>
+                                            <strong>GPU 模式：</strong>NVIDIA GPU · CUDA 12.4 · 8GB+ VRAM · 16GB RAM
+                                        </li>
+                                        <li><strong>软件要求：</strong>Docker 20+ · nvidia-docker2（GPU 模式）</li>
+                                    </ul>
+                                    <p>
+                                        Dockerfile 基于
+                                        <code>nvidia/cuda:12.4-runtime-ubuntu22.04</code>，已预装所有依赖。详见
+                                        <a href="setup.html">Setup · Docker</a>。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq12"
+                                >
+                                    如何在服务器上长期运行？
+                                </button>
+                            </h2>
+                            <div id="faq12" class="accordion-collapse collapse" data-bs-parent="#deployAccordion">
+                                <div class="accordion-body">
+                                    <p>生产环境部署建议：</p>
+                                    <ul>
+                                        <li>
+                                            <strong>Docker Compose：</strong>使用 <code>docker-compose.yml</code> 编排
+                                            YiviY + Redis + 对象存储
+                                        </li>
+                                        <li><strong>反向代理：</strong>Nginx 配置 SSL，限制上传大小</li>
+                                        <li><strong>任务队列：</strong>集成 Celery + Redis 处理长时任务</li>
+                                        <li>
+                                            <strong>日志监控：</strong>挂载 <code>logs/</code> 到宿主机，使用 Loki /
+                                            Grafana 监控
+                                        </li>
+                                        <li>
+                                            <strong>模型缓存：</strong>挂载
+                                            <code>~/.cache/huggingface/</code> 避免重复下载
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button
+                                    class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq13"
+                                >
+                                    Google Colab 会话断开后如何恢复？
+                                </button>
+                            </h2>
+                            <div id="faq13" class="accordion-collapse collapse" data-bs-parent="#deployAccordion">
+                                <div class="accordion-body">
+                                    <p>Colab 会话断开后：</p>
+                                    <ul>
+                                        <li>
+                                            <strong>中间产物：</strong>存储在 Google Drive（挂载 /content/drive/）可保留
+                                        </li>
+                                        <li><strong>重启 Colab：</strong>重新运行前几个单元格挂载 Drive</li>
+                                        <li>
+                                            <strong>跳过前段：</strong>从断点处恢复（<code>output/</code> 中已有中间
+                                            JSON）
+                                        </li>
+                                        <li>
+                                            <strong>自动保存：</strong>使用 <code>google.colab.drive.mount</code> 挂载
+                                            Drive 后设置 <code>output_dir</code> 指向 Drive
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info mt-4">
+                        <i class="ri-customer-service-2-line me-1"></i> <strong>没找到答案？</strong>请通过 GitHub Issue
+                        或邮件反馈。建议提交前提供：① 系统环境（OS / GPU / Python）；② config.yaml（脱敏）；③
+                        错误堆栈与中间 JSON 片段。
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script src="assets/js/layout.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/jquery@3.7.1/jquery.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/js/bootstrap.bundle.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.js"></script>
+        <script src="../../../templates/docs/js/app.min.js"></script>
+    </body>
+</html>

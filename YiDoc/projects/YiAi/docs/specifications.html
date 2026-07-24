@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Specifications | YiAi</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta content="YiAi documentation" name="description" />
+        <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+
+        <link href="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/remixicon.css" rel="stylesheet" />
+        <link href="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/app.min.css" rel="stylesheet" />
+        <link href="../../../templates/docs/css/docs.css" rel="stylesheet" />
+        <link href="assets/css/docs.css" rel="stylesheet" />
+    </head>
+    <body class="loading">
+        <main id="page-content" data-page="specifications" data-no-toc>
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="mt-0 mb-3 font-lg">Specifications</h3>
+                    <p>YiAi FastAPI + MongoDB 后端。以下是完整的目录结构、技术栈清单与模块统计。</p>
+
+                    <h4 class="mt-4">Directory Structure</h4>
+                    <pre class="bg-light p-3 border rounded"><code>YiAi/
+├── api layer/   # API Layer — Routes & Endpoints (9 files)
+├── cli layer/   # CLI Layer — 命令行工具 (2 files)
+├── core infrastructure/   # Core Infrastructure — 配置/数据库/中间件 (16 files)
+├── data models/   # Data Models — Pydantic Schemas (3 files)
+├── business services/   # Business Services — 业务逻辑层 (14 files)
+├── entry points 3 files/   # Entry Points (3 files)
+├── config.yaml or package.json   # Configuration
+├── requirements.txt              # Dependencies
+├── README.md                     # Project overview
+├── CLAUDE.md                     # AI agent context
+└── docs/                         # This documentation</code></pre>
+
+                    <h4 class="mt-4">File Statistics</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Runtime Deps</td>
+                                        <td><strong>19</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Dev Deps</td>
+                                        <td><strong>0</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Stories</td>
+                                        <td><strong>11</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Source Files</td>
+                                        <td><strong>47</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Layer</th>
+                                        <th>Responsibility</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>🌐 API Layer</code></td>
+                                        <td>Routes & Endpoints (9 files)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>🖥 CLI Layer</code></td>
+                                        <td>命令行工具 (2 files)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>⚙️ Core Infrastructure</code></td>
+                                        <td>配置/数据库/中间件 (16 files)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>📐 Data Models</code></td>
+                                        <td>Pydantic Schemas (3 files)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>🔧 Business Services</code></td>
+                                        <td>业务逻辑层 (14 files)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>🚀 Entry Points (3 files)</code></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4">Technology Stack</h4>
+                    <h5 class="mt-3">Runtime Dependencies (19)</h5>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 25%">Package</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>FastAPI</code></td>
+                                <td>高性能 Web 框架 · <strong>核心 API 引擎</strong></td>
+                            </tr>
+                            <tr>
+                                <td><code>Uvicorn</code></td>
+                                <td>ASGI 服务器 · <strong>生产级并发</strong></td>
+                            </tr>
+                            <tr>
+                                <td><code>Pydantic</code></td>
+                                <td>数据验证与序列化 · <strong>请求/响应模型</strong></td>
+                            </tr>
+                            <tr>
+                                <td><code>pydantic-settings</code></td>
+                                <td>配置管理 · <strong>YAML + 环境变量</strong></td>
+                            </tr>
+                            <tr>
+                                <td><code>Motor</code></td>
+                                <td>MongoDB 异步驱动 · <strong>连接池 + 索引管理</strong></td>
+                            </tr>
+                            <tr>
+                                <td><code>PyMongo</code></td>
+                                <td>MongoDB 同步驱动 · <strong>Motor 依赖</strong></td>
+                            </tr>
+                            <tr>
+                                <td><code>python-dotenv</code></td>
+                                <td>环境变量加载 · <strong>.env 文件解析</strong></td>
+                            </tr>
+                            <tr>
+                                <td><code>Ollama</code></td>
+                                <td>本地 LLM 客户端 · <strong>qwen3.5 / qwen3-vl 推理</strong></td>
+                            </tr>
+                            <tr>
+                                <td><code>aiohttp</code></td>
+                                <td>异步 HTTP 客户端 · <strong>RSS 抓取 / Webhook / 图片下载</strong></td>
+                            </tr>
+                            <tr>
+                                <td><code>feedparser</code></td>
+                                <td>RSS/Atom 解析 · <strong>信息聚合订阅</strong></td>
+                            </tr>
+                            <tr>
+                                <td><code>APScheduler</code></td>
+                                <td>任务调度器 · <strong>RSS 定时抓取</strong></td>
+                            </tr>
+                            <tr>
+                                <td><code>qwen-vl-utils</code></td>
+                                <td>Qwen-VL 工具库 · <strong>多模态视觉模型</strong></td>
+                            </tr>
+                            <tr>
+                                <td><code>Transformers</code></td>
+                                <td>HuggingFace 模型库 · <strong>ML 管线</strong></td>
+                            </tr>
+                            <tr>
+                                <td><code>PyYAML</code></td>
+                                <td>YAML 解析 · <strong>config.yaml 配置源</strong></td>
+                            </tr>
+                            <tr>
+                                <td><code>oss2</code></td>
+                                <td>阿里云 OSS SDK · <strong>对象存储上传/删除</strong></td>
+                            </tr>
+                            <tr>
+                                <td><code>python-multipart</code></td>
+                                <td>多部分表单解析 · <strong>文件上传支持</strong></td>
+                            </tr>
+                            <tr>
+                                <td><code>aiofiles</code></td>
+                                <td>异步文件 I/O · <strong>非阻塞读写</strong></td>
+                            </tr>
+                            <tr>
+                                <td><code>Tenacity</code></td>
+                                <td>重试库 · <strong>指数退避 + 重试策略</strong></td>
+                            </tr>
+                            <tr>
+                                <td><code>Typer + Rich</code></td>
+                                <td>CLI 框架 + 终端美化 · <strong>state_query 命令行</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h5 class="mt-3">Dev Dependencies (0)</h5>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 25%">Package</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+
+                    <h4 class="mt-4">Source Code Map</h4>
+                    <h5 class="mt-3">API Layer — Routes & Endpoints (9 files)</h5>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 30%">File</th>
+                                <th>Description</th>
+                                <th style="width: 25%">Location</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>api/__init__.py</code></td>
+                                <td>API 层包入口 · <strong>routes 与依赖</strong></td>
+                                <td><span class="accent">API</span> · src/api/__init__.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>routes/__init__.py</code></td>
+                                <td>路由子包入口</td>
+                                <td><span class="accent">API</span> · src/api/routes/__init__.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>routes/execution.py</code></td>
+                                <td>模块执行 API · <strong>GET/POST 通用执行入口 + SSE 流</strong></td>
+                                <td><span class="accent">API</span> · src/api/routes/execution.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>routes/upload.py</code></td>
+                                <td>文件上传/读写/删除/重命名 · <strong>磁盘 + MongoDB 双持久化</strong></td>
+                                <td><span class="accent">API</span> · src/api/routes/upload.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>routes/maintenance.py</code></td>
+                                <td>系统维护 API · <strong>图片清理 + session 清理</strong></td>
+                                <td><span class="accent">API</span> · src/api/routes/maintenance.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>routes/state.py</code></td>
+                                <td>状态存储 CRUD API · <strong>结构化状态记录管理</strong></td>
+                                <td><span class="accent">API</span> · src/api/routes/state.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>routes/wework.py</code></td>
+                                <td>企业微信 Webhook · <strong>消息推送</strong></td>
+                                <td><span class="accent">API</span> · src/api/routes/wework.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>routes/observer_health.py</code></td>
+                                <td>Observer 健康检查 API · <strong>限流/采样/沙箱状态</strong></td>
+                                <td><span class="accent">API</span> · src/api/routes/observer_health.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>routes/story_panel.py</code></td>
+                                <td>故事面板 API · <strong>Markdown 文档 CRUD + git 同步</strong></td>
+                                <td><span class="accent">API</span> · src/api/routes/story_panel.py</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h5 class="mt-3">CLI Layer — 命令行工具 (2 files)</h5>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 30%">File</th>
+                                <th>Description</th>
+                                <th style="width: 25%">Location</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>cli/__init__.py</code></td>
+                                <td>CLI 工具包入口</td>
+                                <td><span class="accent">CLI</span> · src/cli/__init__.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>cli/state_query.py</code></td>
+                                <td>状态查询 CLI · <strong>Typer + Rich 表格/json/csv 输出</strong></td>
+                                <td><span class="accent">CLI</span> · src/cli/state_query.py</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h5 class="mt-3">Core Infrastructure — 配置/数据库/中间件 (16 files)</h5>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 30%">File</th>
+                                <th>Description</th>
+                                <th style="width: 25%">Location</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>core/__init__.py</code></td>
+                                <td>核心基础设施包入口</td>
+                                <td><span class="accent">Core</span> · src/core/__init__.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>core/config.py</code></td>
+                                <td>配置管理 · <strong>YAML + env + pydantic-settings</strong></td>
+                                <td><span class="accent">Core</span> · src/core/config.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>core/database.py</code></td>
+                                <td>MongoDB 单例 · <strong>连接池 + 索引 + CRUD 包装</strong></td>
+                                <td><span class="accent">Core</span> · src/core/database.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>core/middleware.py</code></td>
+                                <td>X-Token 认证中间件 · <strong>白名单 + CORS</strong></td>
+                                <td><span class="accent">Core</span> · src/core/middleware.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>core/exceptions.py</code></td>
+                                <td>BusinessException · <strong>统一异常定义</strong></td>
+                                <td><span class="accent">Core</span> · src/core/exceptions.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>core/error_codes.py</code></td>
+                                <td>ErrorCode 枚举 · <strong>标准化错误码</strong></td>
+                                <td><span class="accent">Core</span> · src/core/error_codes.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>core/exception_handler.py</code></td>
+                                <td>全局异常处理器 · <strong>FastAPI exception_handlers</strong></td>
+                                <td><span class="accent">Core</span> · src/core/exception_handler.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>core/logger.py</code></td>
+                                <td>日志配置 · <strong>uvicorn propagation 控制</strong></td>
+                                <td><span class="accent">Core</span> · src/core/logger.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>core/response.py</code></td>
+                                <td>统一响应格式 · <strong>success/fail 包装</strong></td>
+                                <td><span class="accent">Core</span> · src/core/response.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>core/utils.py</code></td>
+                                <td>工具函数 · <strong>时间格式化等</strong></td>
+                                <td><span class="accent">Core</span> · src/core/utils.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>observer/__init__.py</code></td>
+                                <td>Observer 组件包 · <strong>限流/采样/沙箱/守卫/懒启动</strong></td>
+                                <td><span class="accent">Core</span> · src/core/observer/__init__.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>observer/throttle.py</code></td>
+                                <td>IP 限流中间件 · <strong>滑动窗口 + 白名单</strong></td>
+                                <td><span class="accent">Core</span> · src/core/observer/throttle.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>observer/sampler.py</code></td>
+                                <td>请求采样器 · <strong>TailSampler + 慢请求阈值</strong></td>
+                                <td><span class="accent">Core</span> · src/core/observer/sampler.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>observer/sandbox.py</code></td>
+                                <td>代码沙箱 · <strong>文件系统 + 网络隔离</strong></td>
+                                <td><span class="accent">Core</span> · src/core/observer/sandbox.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>observer/guard.py</code></td>
+                                <td>重入守卫 · <strong>调用深度限制</strong></td>
+                                <td><span class="accent">Core</span> · src/core/observer/guard.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>observer/lazy_start.py</code></td>
+                                <td>懒启动管理器 · <strong>延迟初始化</strong></td>
+                                <td><span class="accent">Core</span> · src/core/observer/lazy_start.py</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h5 class="mt-3">Data Models — Pydantic Schemas (3 files)</h5>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 30%">File</th>
+                                <th>Description</th>
+                                <th style="width: 25%">Location</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>models/__init__.py</code></td>
+                                <td>数据模型包入口 · <strong>schemas + collections 导出</strong></td>
+                                <td><span class="accent">Models</span> · src/models/__init__.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>models/schemas.py</code></td>
+                                <td>Pydantic 请求模型 · <strong>Execute/Upload/State/WeWork 请求</strong></td>
+                                <td><span class="accent">Models</span> · src/models/schemas.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>models/collections.py</code></td>
+                                <td>MongoDB 集合名常量 · <strong>8 个业务集合</strong></td>
+                                <td><span class="accent">Models</span> · src/models/collections.py</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h5 class="mt-3">Business Services — 业务逻辑层 (14 files)</h5>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 30%">File</th>
+                                <th>Description</th>
+                                <th style="width: 25%">Location</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>services/__init__.py</code></td>
+                                <td>业务服务包入口</td>
+                                <td><span class="accent">Services</span> · src/services/__init__.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>ai/chat_service.py</code></td>
+                                <td>Ollama AI 聊天服务 · <strong>文本生成 + 多模态 + SSE 流</strong></td>
+                                <td><span class="accent">Services</span> · src/services/ai/chat_service.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>database/data_service.py</code></td>
+                                <td>通用数据服务</td>
+                                <td><span class="accent">Services</span> · src/services/database/data_service.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>database/mongo_store.py</code></td>
+                                <td>MongoDB 存储抽象</td>
+                                <td><span class="accent">Services</span> · src/services/database/mongo_store.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>execution/executor.py</code></td>
+                                <td>模块执行引擎 · <strong>白名单校验 + 沙箱 + 重入守卫</strong></td>
+                                <td><span class="accent">Services</span> · src/services/execution/executor.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>maintenance/session_service.py</code></td>
+                                <td>Session 管理服务 · <strong>CRUD + 清理</strong></td>
+                                <td>
+                                    <span class="accent">Services</span> · src/services/maintenance/session_service.py
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>rss/feed_service.py</code></td>
+                                <td>RSS 解析服务 · <strong>aiohttp 抓取 + feedparser 解析</strong></td>
+                                <td><span class="accent">Services</span> · src/services/rss/feed_service.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>rss/rss_scheduler.py</code></td>
+                                <td>RSS 调度器 · <strong>APScheduler 定时任务</strong></td>
+                                <td><span class="accent">Services</span> · src/services/rss/rss_scheduler.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>state/__init__.py</code></td>
+                                <td>状态服务子包入口</td>
+                                <td><span class="accent">Services</span> · src/services/state/__init__.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>state/state_service.py</code></td>
+                                <td>状态存储服务 · <strong>CRUD + 分页查询 + TTL</strong></td>
+                                <td><span class="accent">Services</span> · src/services/state/state_service.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>state/skill_recorder.py</code></td>
+                                <td>技能调用记录器 · <strong>执行追踪</strong></td>
+                                <td><span class="accent">Services</span> · src/services/state/skill_recorder.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>state/session_adapters.py</code></td>
+                                <td>Session 适配器</td>
+                                <td><span class="accent">Services</span> · src/services/state/session_adapters.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>storage/oss_client.py</code></td>
+                                <td>阿里云 OSS 客户端 · <strong>文件上传/删除/标签</strong></td>
+                                <td><span class="accent">Services</span> · src/services/storage/oss_client.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>static/static_files.py</code></td>
+                                <td>静态文件服务 · <strong>磁盘 + OSS 双层存储</strong></td>
+                                <td><span class="accent">Services</span> · src/services/static/static_files.py</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h5 class="mt-3">Entry Points (3 files)</h5>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 30%">File</th>
+                                <th>Description</th>
+                                <th style="width: 25%">Location</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>src/__init__.py</code></td>
+                                <td>包版本声明 · <strong>__version__ = 1.0.0</strong></td>
+                                <td><span class="accent">Entry</span> · src/__init__.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>src/main.py</code></td>
+                                <td>FastAPI 应用工厂 · <strong>create_app + lifespan + CORS</strong></td>
+                                <td><span class="accent">Entry</span> · src/main.py</td>
+                            </tr>
+                            <tr>
+                                <td><code>src/__main__.py</code></td>
+                                <td>python -m 入口 · <strong>uvicorn.run</strong></td>
+                                <td><span class="accent">Entry</span> · src/__main__.py</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4">Architecture & Test Scenes</h4>
+                    <p>2 stories · 11 scenes · arch + test</p>
+                    <ul>
+                        <li>
+                            <strong>System Architecture & Knowledge Codification</strong> — FastAPI 端到端请求追踪 ·
+                            <strong>5 个验证场景</strong> · 模块定位 · 数据流 · 新人入职 · 依赖影响 · 安全边界
+                            <span class="badge bg-secondary">5 scenes</span>
+                        </li>
+                        <li>
+                            <strong>Automation Self-Check Suite</strong> — 项目自检策略 ·
+                            <strong>6 个测试场景</strong> · 全量自检 · 增量提交 · 文档一致性 · 安全回归 · 跨故事集成 ·
+                            第三方服务 <span class="badge bg-secondary">6 scenes</span>
+                        </li>
+                    </ul>
+
+                    <h4 class="mt-4"><i class="ri-stack-line me-1"></i> Tech Stack</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 18%">层级</th>
+                                <th style="width: 30%">技术</th>
+                                <th style="width: 15%">版本</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td rowspan="3">Web 框架</td>
+                                <td>FastAPI</td>
+                                <td>0.104+</td>
+                                <td>ASGI 路由与依赖注入</td>
+                            </tr>
+                            <tr>
+                                <td>Uvicorn</td>
+                                <td>0.24+</td>
+                                <td>生产 ASGI 服务器</td>
+                            </tr>
+                            <tr>
+                                <td>Pydantic</td>
+                                <td>2.x</td>
+                                <td>请求/响应模型验证</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="3">数据层</td>
+                                <td>Motor</td>
+                                <td>3.x</td>
+                                <td>异步 MongoDB 客户端</td>
+                            </tr>
+                            <tr>
+                                <td>Pydantic-Settings</td>
+                                <td>2.x</td>
+                                <td>YAML + 环境变量配置</td>
+                            </tr>
+                            <tr>
+                                <td>阿里云 OSS</td>
+                                <td>—</td>
+                                <td>S3 兼容对象存储</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="2">AI / LLM</td>
+                                <td>OpenAI Python</td>
+                                <td>1.55+</td>
+                                <td>GPT-4o 对话与 TTS</td>
+                            </tr>
+                            <tr>
+                                <td>Ollama</td>
+                                <td>本地</td>
+                                <td>本地 LLM 推理</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="3">基础设施</td>
+                                <td>APScheduler</td>
+                                <td>3.x</td>
+                                <td>RSS 定时任务</td>
+                            </tr>
+                            <tr>
+                                <td>aiohttp</td>
+                                <td>3.x</td>
+                                <td>异步 HTTP 客户端</td>
+                            </tr>
+                            <tr>
+                                <td>slowapi</td>
+                                <td>0.1.x</td>
+                                <td>速率限制</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4"><i class="ri-cpu-line me-1"></i> Runtime Requirements</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Resource</th>
+                                <th style="width: 20%">Min</th>
+                                <th style="width: 20%">Recommended</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Python</td>
+                                <td>3.10</td>
+                                <td>3.12</td>
+                                <td>asyncio · typing enhancements</td>
+                            </tr>
+                            <tr>
+                                <td>CPU</td>
+                                <td>2 cores</td>
+                                <td>4+ cores</td>
+                                <td>并发 ASGI worker</td>
+                            </tr>
+                            <tr>
+                                <td>RAM</td>
+                                <td>2 GB</td>
+                                <td>4 GB</td>
+                                <td>Motor 缓冲 · LLM 流式</td>
+                            </tr>
+                            <tr>
+                                <td>Disk</td>
+                                <td>5 GB</td>
+                                <td>20 GB</td>
+                                <td>日志 + 上传文件缓存</td>
+                            </tr>
+                            <tr>
+                                <td>MongoDB</td>
+                                <td>5.0</td>
+                                <td>7.0</td>
+                                <td>时序集合 · 聚合管道</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-4"><i class="ri-bar-chart-grouped-line me-1"></i> Module Statistics</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Module</th>
+                                <th style="width: 15%">Files</th>
+                                <th>Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>src/routes/</code></td>
+                                <td>9</td>
+                                <td>FastAPI 路由层</td>
+                            </tr>
+                            <tr>
+                                <td><code>src/core/</code></td>
+                                <td>11</td>
+                                <td>配置 · observer · middleware</td>
+                            </tr>
+                            <tr>
+                                <td><code>src/models/</code></td>
+                                <td>3</td>
+                                <td>Pydantic schemas + collections</td>
+                            </tr>
+                            <tr>
+                                <td><code>src/services/</code></td>
+                                <td>14</td>
+                                <td>业务逻辑（AI · DB · RSS · OSS）</td>
+                            </tr>
+                            <tr>
+                                <td><code>src/main.py</code></td>
+                                <td>1</td>
+                                <td>FastAPI app factory</td>
+                            </tr>
+                            <tr>
+                                <td><code>tests/</code></td>
+                                <td>9</td>
+                                <td>pytest 集成测试</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <script src="assets/js/layout.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/jquery@3.7.1/jquery.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/bootstrap@5.2.3/js/bootstrap.bundle.min.js"></script>
+        <script src="../../../../YiPet/cdn/vendor/simplebar@5.1.0/simplebar.min.js"></script>
+        <script src="../../../templates/docs/js/app.min.js"></script>
+    </body>
+</html>

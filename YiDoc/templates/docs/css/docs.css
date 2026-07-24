@@ -1,0 +1,385 @@
+/*!
+ * YrY Docs - Interaction & Extension Styles
+ * --------------------------------------------------------------------------
+ * Supplements `app.min.css` (the base Adminto-derived theme). This file adds
+ * styles for the 10 interaction features provided by the shared layout.js:
+ *   - Right-side TOC with scroll-spy
+ *   - Code block copy buttons
+ *   - Sidebar search box
+ *   - Back-to-top button
+ *   - External link indicator
+ *   - Theme toggle icons
+ *   - Page loading fade
+ *   - Sidebar collapsed state (mobile + persisted)
+ *   - Skip-link
+ *   - Dark-mode overrides
+ *
+ * Projects may add their own `docs/assets/css/docs.css` for brand-color
+ * overrides only — all interaction styling lives here.
+ */
+
+/* ============================================================================
+ * 0. Root tokens (light defaults, dark overrides below)
+ * ========================================================================== */
+:root {
+  --yry-doc-bg:          #f5f7fb;
+  --yry-doc-surface:     #ffffff;
+  --yry-doc-surface-2:   #fafbfc;
+  --yry-doc-border:      rgba(0, 0, 0, .08);
+  --yry-doc-border-strong: rgba(0, 0, 0, .16);
+  --yry-doc-text:        #212529;
+  --yry-doc-text-soft:   #495057;
+  --yry-doc-text-muted:  #6c757d;
+  --yry-doc-accent:      #22C55E;
+  --yry-doc-accent-ink:  #ffffff;
+  --yry-doc-code-bg:     #f6f8fa;
+  --yry-doc-code-border: rgba(0, 0, 0, .06);
+  --yry-doc-shadow-sm:   0 1px 2px rgba(0, 0, 0, .04);
+  --yry-doc-shadow-md:   0 4px 14px rgba(0, 0, 0, .06);
+}
+
+html[data-bs-theme="dark"] {
+  --yry-doc-bg:          #0f1419;
+  --yry-doc-surface:     #1a1f27;
+  --yry-doc-surface-2:   #161b22;
+  --yry-doc-border:      rgba(255, 255, 255, .08);
+  --yry-doc-border-strong: rgba(255, 255, 255, .16);
+  --yry-doc-text:        #e6edf3;
+  --yry-doc-text-soft:   #b0b7bf;
+  --yry-doc-text-muted:  #7d8590;
+  --yry-doc-code-bg:     #161b22;
+  --yry-doc-code-border: rgba(255, 255, 255, .08);
+}
+
+html, body { background: var(--yry-doc-bg); color: var(--yry-doc-text); }
+.card, .left-side-menu, .navbar-custom, .footer {
+  background: var(--yry-doc-surface);
+  border-color: var(--yry-doc-border);
+  color: var(--yry-doc-text);
+}
+.text-muted { color: var(--yry-doc-text-muted) !important; }
+
+/* ============================================================================
+ * 1. Page loading fade
+ *    body starts with class="loading"; we remove it 60ms after DOMContentLoaded.
+ * ========================================================================== */
+body.loading #wrapper,
+body.loading .back-to-top { opacity: 0; }
+#wrapper {
+  opacity: 1;
+  transition: opacity .28s ease;
+}
+
+/* ============================================================================
+ * 2. Skip link (accessibility)
+ * ========================================================================== */
+.skip-link {
+  position: fixed;
+  top: -40px;
+  left: 8px;
+  z-index: 200;
+  padding: 8px 14px;
+  background: var(--yry-doc-accent);
+  color: var(--yry-doc-accent-ink);
+  border-radius: 6px;
+  font-size: .82rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: top .2s ease;
+}
+.skip-link:focus { top: 8px; }
+
+/* ============================================================================
+ * 3. Sidebar search box
+ * ========================================================================== */
+.sidebar-search-wrap {
+  padding: 8px 16px 4px;
+  border-bottom: 1px solid var(--yry-doc-border);
+}
+.sidebar-search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: var(--yry-doc-surface-2);
+  border: 1px solid var(--yry-doc-border);
+  border-radius: 8px;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.sidebar-search:focus-within {
+  border-color: var(--yry-doc-accent);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, .12);
+}
+.sidebar-search i { color: var(--yry-doc-text-muted); font-size: .95rem; }
+.sidebar-search input {
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--yry-doc-text);
+  font-size: .82rem;
+  padding: 2px 0;
+}
+.sidebar-search input::placeholder { color: var(--yry-doc-text-muted); }
+
+/* ============================================================================
+ * 4. Sidebar collapsed state (mobile + persisted)
+ * ========================================================================== */
+body.sidebar-collapsed .left-side-menu {
+  transform: translateX(-100%);
+}
+body.sidebar-collapsed .content-page {
+  margin-left: 0;
+}
+@media (min-width: 992px) {
+  body.sidebar-collapsed .left-side-menu {
+    transform: translateX(-100%);
+    width: 0;
+    overflow: hidden;
+  }
+  body.sidebar-collapsed .content-page { margin-left: 0; }
+}
+
+/* ============================================================================
+ * 5. Back-to-top button
+ * ========================================================================== */
+.back-to-top {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--yry-doc-border-strong);
+  background: var(--yry-doc-surface);
+  color: var(--yry-doc-text-soft);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  box-shadow: var(--yry-doc-shadow-md);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity .2s ease, visibility .2s ease, transform .2s ease, background .15s ease, color .15s ease;
+  z-index: 30;
+}
+.back-to-top.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.back-to-top:hover {
+  background: var(--yry-doc-accent);
+  color: var(--yry-doc-accent-ink);
+  border-color: var(--yry-doc-accent);
+}
+
+/* ============================================================================
+ * 6. Theme toggle icons (show/hide based on active theme)
+ * ========================================================================== */
+#theme-toggle .theme-icon-sun,
+#theme-toggle .theme-icon-auto { display: none; }
+#theme-toggle .theme-icon-moon { display: inline; }
+
+html[data-yry-theme="light"] #theme-toggle .theme-icon-moon { display: none; }
+html[data-yry-theme="light"] #theme-toggle .theme-icon-sun  { display: inline; }
+
+html[data-yry-theme="auto"] #theme-toggle .theme-icon-moon { display: none; }
+html[data-yry-theme="auto"] #theme-toggle .theme-icon-auto { display: inline; }
+
+/* ============================================================================
+ * 7. Right-side TOC (auto-generated from h2/h3)
+ * ========================================================================== */
+.yry-toc {
+  position: sticky;
+  top: 80px;
+  align-self: start;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  padding: 16px 18px;
+  margin-left: 20px;
+  border-left: 2px solid var(--yry-doc-border);
+  font-size: .82rem;
+  display: none;
+}
+.has-toc {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 240px;
+  gap: 0;
+}
+.has-toc > .yry-toc { display: block; }
+.yry-toc-title {
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--yry-doc-text-muted);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+.yry-toc ul { list-style: none; padding: 0; margin: 0; }
+.yry-toc-item { margin: 2px 0; }
+.yry-toc-item a {
+  display: block;
+  padding: 4px 0 4px 12px;
+  color: var(--yry-doc-text-soft);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  margin-left: -2px;
+  transition: color .15s ease, border-color .15s ease;
+  line-height: 1.45;
+}
+.yry-toc-h3 a { padding-left: 24px; font-size: .78rem; }
+.yry-toc-item a:hover { color: var(--yry-doc-accent); }
+.yry-toc-item a.active {
+  color: var(--yry-doc-accent);
+  border-left-color: var(--yry-doc-accent);
+  font-weight: 500;
+}
+@media (max-width: 1100px) {
+  .has-toc { grid-template-columns: 1fr; }
+  .yry-toc {
+    position: static;
+    max-height: none;
+    margin: 20px 0 0;
+    padding: 14px 16px;
+    border-left: 0;
+    border-top: 1px solid var(--yry-doc-border);
+    display: none;
+  }
+  .has-toc > .yry-toc { display: block; }
+}
+
+/* ============================================================================
+ * 8. Code block copy buttons
+ * ========================================================================== */
+pre { position: relative; }
+.yry-copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: .72rem;
+  font-weight: 500;
+  color: var(--yry-doc-text-soft);
+  background: var(--yry-doc-surface-2);
+  border: 1px solid var(--yry-doc-border);
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity .15s ease, background .15s ease, color .15s ease, border-color .15s ease;
+  z-index: 2;
+}
+pre:hover .yry-copy-btn,
+.yry-copy-btn:focus { opacity: 1; }
+.yry-copy-btn:hover {
+  background: var(--yry-doc-accent);
+  color: var(--yry-doc-accent-ink);
+  border-color: var(--yry-doc-accent);
+}
+.yry-copy-btn.copied {
+  opacity: 1;
+  background: var(--yry-doc-accent);
+  color: var(--yry-doc-accent-ink);
+  border-color: var(--yry-doc-accent);
+}
+
+/* ============================================================================
+ * 9. External link indicator
+ * ========================================================================== */
+.yry-ext-indicator {
+  font-size: .7em;
+  color: var(--yry-doc-text-muted);
+  vertical-align: super;
+  margin-left: 2px;
+}
+
+/* ============================================================================
+ * 10. Dark-mode overrides (cards, tables, alerts, pre, etc.)
+ * ========================================================================== */
+html[data-bs-theme="dark"] .card,
+html[data-bs-theme="dark"] .left-side-menu,
+html[data-bs-theme="dark"] .navbar-custom,
+html[data-bs-theme="dark"] .footer {
+  background: var(--yry-doc-surface);
+  color: var(--yry-doc-text);
+  border-color: var(--yry-doc-border);
+}
+html[data-bs-theme="dark"] .bg-light {
+  background: var(--yry-doc-surface-2) !important;
+  color: var(--yry-doc-text);
+}
+html[data-bs-theme="dark"] pre,
+html[data-bs-theme="dark"] code {
+  background: var(--yry-doc-code-bg);
+  color: var(--yry-doc-text);
+  border-color: var(--yry-doc-code-border);
+}
+html[data-bs-theme="dark"] .table {
+  color: var(--yry-doc-text);
+  border-color: var(--yry-doc-border);
+}
+html[data-bs-theme="dark"] .table-bordered th,
+html[data-bs-theme="dark"] .table-bordered td {
+  border-color: var(--yry-doc-border);
+}
+html[data-bs-theme="dark"] .alert-info {
+  background: rgba(56, 189, 248, .08);
+  border-color: rgba(56, 189, 248, .24);
+  color: #7dd3fc;
+}
+html[data-bs-theme="dark"] .alert-warning {
+  background: rgba(251, 191, 36, .08);
+  border-color: rgba(251, 191, 36, .24);
+  color: #fcd34d;
+}
+html[data-bs-theme="dark"] .accordion-item {
+  background: var(--yry-doc-surface);
+  border-color: var(--yry-doc-border);
+}
+html[data-bs-theme="dark"] .accordion-button {
+  background: var(--yry-doc-surface);
+  color: var(--yry-doc-text);
+}
+html[data-bs-theme="dark"] .accordion-button:not(.collapsed) {
+  background: var(--yry-doc-surface-2);
+  color: var(--yry-doc-accent);
+}
+html[data-bs-theme="dark"] .accordion-body {
+  background: var(--yry-doc-surface);
+  color: var(--yry-doc-text-soft);
+}
+html[data-bs-theme="dark"] a { color: inherit; }
+html[data-bs-theme="dark"] .logo-box { border-bottom-color: var(--yry-doc-border); }
+html[data-bs-theme="dark"] #side-menu li a { color: var(--yry-doc-text-soft); }
+html[data-bs-theme="dark"] #side-menu li a:hover,
+html[data-bs-theme="dark"] #side-menu li a.active { color: var(--yry-doc-accent); }
+html[data-bs-theme="dark"] .menu-title { color: var(--yry-doc-text-muted); }
+html[data-bs-theme="dark"] .footer { color: var(--yry-doc-text-muted); }
+
+/* ============================================================================
+ * 11. Responsive tweaks
+ * ========================================================================== */
+@media (max-width: 768px) {
+  .back-to-top { bottom: 16px; right: 16px; width: 36px; height: 36px; font-size: 1rem; }
+  .yry-toc { margin-left: 0; padding: 12px 14px; }
+}
+
+/* ============================================================================
+ * 12. Layout refinements
+ *    a) Force top-level cards inside #page-container to stack in a single
+ *       column even when .has-toc grid layout is active (prevents cards
+ *       from spilling into the TOC column on multi-card pages).
+ *    b) Slim the footer: the outer .footer padding plus the nested
+ *       .container-fluid padding combined to ~2.5rem of vertical chrome —
+ *       collapse to a single tight band.
+ * ========================================================================== */
+#page-container.has-toc > .card { grid-column: 1; }
+#page-container.has-toc > .yry-toc { grid-column: 2; grid-row: 1 / -1; }
+
+.footer { padding: .5rem 1.5rem; }
+.footer .container-fluid { padding: 0; }

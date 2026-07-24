@@ -9,8 +9,8 @@ description: "Orchestration safety rules — abort conditions, state corruption 
 
 | Condition | Action |
 |-----------|--------|
-| Sub-skill returns non-zero exit code | Halt pipeline, surface error |
-| Sub-skill crashes (uncaught exception) | Halt pipeline, surface stack trace |
+| Step returns non-zero exit code | Halt pipeline, surface error |
+| Step crashes (uncaught exception) | Halt pipeline, surface stack trace |
 | `verify.result === 'fail'` | Halt pipeline, surface failure list |
 | `cwd` doesn't exist | Abort with `cwd-not-found` |
 
@@ -32,5 +32,5 @@ description: "Orchestration safety rules — abort conditions, state corruption 
 ## Pipeline Timeout
 
 - No hard timeout — pipeline runs to completion
-- If a sub-skill hangs, the user interrupts (Ctrl+C)
+- If a step hangs, the user interrupts (Ctrl+C)
 - Long-running steps (explore on large codebases) are expected

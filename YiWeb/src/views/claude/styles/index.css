@@ -1,27 +1,5 @@
 @import url('/cdn/styles/index.css');
-@import url('/cdn/components/business/views/claude/claudePanelPage/index.css');
+@import url('/src/styles/common.css');
 @import url('/cdn/components/business/views/claude/claudeProjectCard/index.css');
 @import url('/cdn/components/business/views/claude/claudeDetailCard/index.css');
-
-html, body {
-    height: 100%;
-}
-
-#main-content {
-    height: 100%;
-}
-
-#app {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background: var(--quantum-app-nebula);
-}
-
-/* noscript 回退提示 */
-.noscript-fallback {
-    text-align: center;
-    padding: 48px 24px;
-    color: var(--yi-text-secondary, #6b7280);
-    font-family: var(--yi-font-ui, sans-serif);
-}
+@import url('/cdn/components/business/views/claude/claudePanelPage/index.css');
