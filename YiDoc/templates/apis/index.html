@@ -808,6 +808,81 @@
             })();
         </script>
         <!-- App modules -->
+        <script>
+            ;(function () {
+                'use strict';
+                var instances = [];
+                function _isIgnored(e) {
+                    var tag = e.target.tagName;
+                    return (
+                        e.ctrlKey || e.metaKey || e.altKey ||
+                        tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' ||
+                        e.target.isContentEditable
+                    );
+                }
+                function _onKeydown(e) {
+                    if (_isIgnored(e)) return;
+                    for (var i = instances.length - 1; i >= 0; i--) {
+                        var inst = instances[i];
+                        if (!inst._bindings) continue;
+                        for (var j = 0; j < inst._bindings.length; j++) {
+                            var b = inst._bindings[j];
+                            var matched = false;
+                            var key = e.key;
+                            if (b.key && b.key === key) {
+                                matched = true;
+                            } else if (b.keys && b.keys.indexOf(key) !== -1) {
+                                matched = true;
+                                key = key;
+                            }
+                            if (matched) {
+                                e.preventDefault();
+                                var fn = b.handler;
+                                var ctx = b.scope || null;
+                                if (b.keys) {
+                                    fn.call(ctx, e.key);
+                                } else {
+                                    fn.call(ctx);
+                                }
+                                return;
+                            }
+                        }
+                    }
+                }
+                document.addEventListener('keydown', _onKeydown, true);
+                window.yryKbd = {
+                    register: function (vm, bindings) {
+                        this.unregister(vm);
+                        vm._yryKbdBindings = bindings;
+                        instances.push(vm);
+                    },
+                    unregister: function (vm) {
+                        var idx = instances.indexOf(vm);
+                        if (idx !== -1) {
+                            instances.splice(idx, 1);
+                        }
+                        delete vm._yryKbdBindings;
+                    },
+                    getDescriptions: function () {
+                        var result = [];
+                        for (var i = 0; i < instances.length; i++) {
+                            var bnds = instances[i]._bindings;
+                            if (!bnds) continue;
+                            for (var j = 0; j < bnds.length; j++) {
+                                var b = bnds[j];
+                                if (b.desc) {
+                                    result.push({
+                                        key: b.key || (b.keys ? b.keys.join(' ') : ''),
+                                        desc: b.desc
+                                    });
+                                }
+                            }
+                        }
+                        return result;
+                    }
+                };
+            })();
+        </script>
         <script src="app/state.js"></script>
         <script src="app/actions.js"></script>
         <script src="app/lifecycle.js"></script>

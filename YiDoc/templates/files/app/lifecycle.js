@@ -138,38 +138,14 @@
             });
         });
 
-        // Keyboard navigation.
-        this._onKey = (e) => {
-            if (e.ctrlKey || e.metaKey || e.altKey) {
-                return;
-            }
-            const tag = (e.target && e.target.tagName) || '';
-            if (/^(INPUT|TEXTAREA|SELECT)$/.test(tag)) {
-                return;
-            }
-            if (e.key === '?') {
-                const h = document.querySelector('.read-helper');
-                if (h) {
-                    h.open = !h.open;
-                }
-                e.preventDefault();
-                return;
-            }
-            if (e.key === 't') {
-                window.scrollTo({top: 0, behavior: 'smooth'});
-                e.preventDefault();
-                return;
-            }
-            const n = parseInt(e.key, 10);
-            if (!isNaN(n) && n >= 1 && n <= this.sections.length) {
-                const target = document.getElementById(this.sections[n - 1].id);
-                if (target) {
-                    target.scrollIntoView({behavior: 'smooth', block: 'start'});
-                    e.preventDefault();
-                }
-            }
-        };
-        document.addEventListener('keydown', this._onKey);
+        // Keyboard shortcuts (via shared yryKbd module).
+        const sectionIds = (this.sections || []).map(function (s) { return s.id; });
+        const sectionKeys = sectionIds.map(function (_, i) { return String(i + 1); });
+        yryKbd.register(this, [
+            { keys: sectionKeys, handler: function (key) { const el = sectionIds[+key - 1] ? document.getElementById(sectionIds[+key - 1]) : null; if (el) el.scrollIntoView({behavior:'smooth',block:'start'}); }, desc: 'Jump to section 1–' + sectionIds.length },
+            { key: 't', handler: function () { window.scrollTo({top:0,behavior:'smooth'}); }, desc: 'Scroll to top' },
+            { key: '?', handler: function () { const h = document.querySelector('.read-helper'); if (h) h.open = !h.open; }, desc: 'Show/hide reading help' },
+        ]);
     };
 
     RuiReportApp.beforeUnmount = function () {
@@ -185,9 +161,8 @@
             window.removeEventListener('scroll', this._onScroll);
             this._onScroll = null;
         }
-        if (this._onKey) {
-            document.removeEventListener('keydown', this._onKey);
-            this._onKey = null;
+        if (typeof yryKbd !== 'undefined') {
+            yryKbd.unregister(this);
         }
     };
 })();

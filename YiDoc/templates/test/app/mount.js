@@ -15,7 +15,7 @@
                 if (src.indexOf('loader.js') !== -1) return src;
             }
         } catch (e) {}
-        return '../../shared/loader.js';
+        return 'loader.js';
     })();
 
     function hideVueMissing() {

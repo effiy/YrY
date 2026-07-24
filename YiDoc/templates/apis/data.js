@@ -379,7 +379,7 @@ window.REPORT_DATA = {
 
 /* ── Enrichment fallback: category defaults for alert enrichment ──────── */
 (function () {
-    var byCategory = {
+    const byCategory = {
         security: {
             risk: 'Unauthenticated requests expose sensitive data and enable unauthorized mutations.',
             blastRadius: 'request path + user data',
@@ -481,10 +481,10 @@ window.REPORT_DATA = {
             rollbackPlan: 'Remove pagination params; revert to unbounded query.',
         },
     };
-    var alerts = (window.REPORT_DATA && window.REPORT_DATA.alerts) || [];
-    for (var i = 0; i < alerts.length; i++) {
-        var a = alerts[i];
-        var d = byCategory[(a.category || '').toLowerCase()];
+    const alerts = (window.REPORT_DATA && window.REPORT_DATA.alerts) || [];
+    for (let i = 0; i < alerts.length; i++) {
+        const a = alerts[i];
+        const d = byCategory[(a.category || '').toLowerCase()];
         if (!d) continue;
         if (!a.risk) a.risk = d.risk;
         if (!a.blastRadius) a.blastRadius = d.blastRadius;

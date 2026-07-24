@@ -37,9 +37,10 @@ window.HELP_CONFIG = {
     buttons: [
         {icon: '🏛', name: 'Architecture', desc: '5 个架构场景', color: 'var(--yry-accent)', panel: 'arch'},
         {icon: '🧪', name: 'Self-Check',   desc: '6 个自检场景', color: 'var(--yry-pass)',   panel: 'test'},
-        {icon: '📁', name: 'Files',         desc: '73 文件 · 592 KB', color: 'var(--yry-info)', panel: 'files'}
+        {icon: '📁', name: 'Files',         desc: '73 文件 · 592 KB', color: 'var(--yry-info)', panel: 'files'},
+        {icon: '🔌', name: 'APIs',           desc: 'API 接口清单',   color: 'var(--yry-cyan)',  panel: 'apis'}
     ],
-    flow: '架构分析 → 自检 → 文件体检',
+    flow: '架构分析 → 自检 → 文件体检 → API 清单',
     urls: {
       arch:  '../../templates/arch/index.html?project=YiviY',
       test:  '../../templates/test/index.html?project=YiviY',

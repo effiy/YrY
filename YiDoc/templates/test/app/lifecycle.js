@@ -1,5 +1,7 @@
 /**
  * app/lifecycle.js — mount-time side effects for the test report.
+ * ------------------------------------------------------------------
+ * Keyboard shortcuts now delegated to shared yry-kbd.js module.
  */
 (function () {
     'use strict';
@@ -19,40 +21,13 @@
         window.addEventListener('scroll', this._onScroll, { passive: true });
         this.onScroll();
 
-        this._onKey = function (event) {
-            var tag = (event.target && event.target.tagName) || '';
-            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-            if (event.metaKey || event.ctrlKey || event.altKey) return;
-
-            if (event.key >= '1' && event.key <= '6') {
-                var sceneNumber = parseInt(event.key, 10);
-                var target = document.getElementById('scene-' + sceneNumber);
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    event.preventDefault();
-                }
-                return;
-            }
-
-            if (event.key === 't') {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                event.preventDefault();
-                return;
-            }
-
-            if (event.key === 'l') {
-                this.toggleTheme();
-                event.preventDefault();
-                return;
-            }
-
-            if (event.key === 'p') {
-                window.print();
-                event.preventDefault();
-            }
-        }.bind(this);
-
-        window.addEventListener('keydown', this._onKey);
+        // Keyboard shortcuts (via shared yryKbd module).
+        yryKbd.register(this, [
+            { keys: ['1', '2', '3', '4', '5', '6'], handler: function (key) { var el = document.getElementById('scene-' + key); if (el) el.scrollIntoView({behavior:'smooth',block:'start'}); }, desc: 'Jump to scene 1–6' },
+            { key: 't', handler: function () { window.scrollTo({top:0,behavior:'smooth'}); }, desc: 'Scroll to top' },
+            { key: 'l', handler: function () { this.toggleTheme(); }, desc: 'Toggle dark/light theme', scope: this },
+            { key: 'p', handler: function () { window.print(); }, desc: 'Print / Save as PDF' },
+        ]);
     };
 
     RuiSelfTestApp.beforeUnmount = function () {
@@ -60,9 +35,8 @@
             window.removeEventListener('scroll', this._onScroll);
             this._onScroll = null;
         }
-        if (this._onKey) {
-            window.removeEventListener('keydown', this._onKey);
-            this._onKey = null;
+        if (typeof yryKbd !== 'undefined') {
+            yryKbd.unregister(this);
         }
     };
 })();

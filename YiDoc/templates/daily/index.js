@@ -836,11 +836,17 @@
       mounted: function () {
         riskMatrix.init();
         useToolbar(plan).init();
-        // Update document title to the active project (the page shell
-        // uses {{PROJECT}} but Vue doesn't render <title> in the body)
         if (plan.meta && plan.meta.project) {
           document.title = plan.meta.project + ' — Engineering Plan — ' + plan.meta.date;
         }
+        // Keyboard shortcuts (via shared yryKbd module).
+        yryKbd.register(this, [
+          { key: 't', handler: function () { window.scrollTo({top:0,behavior:'smooth'}); }, desc: 'Scroll to top' },
+          { key: 'p', handler: function () { window.print(); }, desc: 'Print / Save as PDF' },
+        ]);
+      },
+      beforeUnmount: function () {
+        if (typeof yryKbd !== 'undefined') yryKbd.unregister(this);
       }
     });
 

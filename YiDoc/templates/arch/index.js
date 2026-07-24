@@ -722,16 +722,12 @@
         }
 
         // Escape resets focus + closes toolbar
-        this._onKey = function (e) {
-          if (e.key === 'Escape') {
-            svgInteractions.resetFocus();
-            this.toolbarOpen = false;
-          }
-        }.bind(this);
-        document.addEventListener('keydown', this._onKey);
+        yryKbd.register(this, [
+          { key: 'Escape', handler: function () { svgInteractions.resetFocus(); this.toolbarOpen = false; }, scope: this, desc: 'Reset focus' },
+        ]);
       },
       beforeUnmount: function () {
-        if (this._onKey) document.removeEventListener('keydown', this._onKey);
+        if (typeof yryKbd !== 'undefined') yryKbd.unregister(this);
       }
     });
 
