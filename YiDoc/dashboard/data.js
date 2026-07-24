@@ -41,58 +41,24 @@ window.HELP_CONFIG = {
     label: { text: '📊', panel: 'reports', title: 'Report Dashboards' },
     targetBlank: true,
     buttons: [
-      { icon: '📁', name: 'Projects',       desc: 'All project reports',  color: 'var(--yry-accent)', panel: 'projects' },
+      { icon: '📁', name: 'Projects',    desc: 'All yry-init reports',       color: 'var(--yry-accent)', panel: 'projects' },
+      { icon: '📊', name: 'Reports',     desc: 'Daily analysis reports',     color: 'var(--yry-cyan)',   panel: 'reports' },
+      { icon: '🧭', name: 'Source',      desc: 'Project source navigator',   color: '#60a5fa',           panel: 'source' },
+      { icon: '🧩', name: 'CDN',         desc: 'Shared resource system',     color: 'var(--yry-violet)', panel: 'cdn' },
+      { icon: '⚙️', name: 'Pipeline',    desc: 'yry-init skill engine',      color: '#f59e0b',           panel: 'pipeline' },
     ],
-    flow: 'Project Reports → Arch Scenes → Test Verification',
+    flow: '⌨ j/k nav · / search · t top · Esc close',
     urls: {
-      projects:   '../projects/',
+      projects: '../projects/',
+      source:   '#section-source',
+      cdn:      '#section-cdn',
+      pipeline: '#claude-pipeline',
     },
   },
 
   // Reports 浮动面板数据（按日期组织 · 每日期一份报告含全部项目）
   reportsList: {
-    daily: [
-      {
-        date:    '2026-07-24',
-        label:   '2026-07-24',
-        title:   'YrY · Daily CTO Report',
-        href:    '../reports/daily/index.html?date=2026-07-24',
-        status:  'verified',
-        summary: '7 个项目 · 1d 窗口 · YiDoc/YiAi/YiH5/YiPet/YiPot/YiWeb/YiviY · 统一模板 · 仅更新当天 data.js',
-        metrics: [
-          { label: 'Window',    value: '1d',       tone: 'is-neutral' },
-          { label: 'Projects',  value: '7',        tone: 'is-pass'   },
-          { label: 'Commits',   value: '7',        tone: 'is-pass'   },
-          { label: 'Date',      value: '07-24',    tone: 'is-neutral' },
-        ],
-        tags: [
-          { label: 'all-projects', tone: 'is-info' },
-          { label: 'single-day',   tone: 'is-pass' },
-          { label: 'unified-tpl',  tone: 'is-info' },
-        ],
-        meta: '7 projects · 1d window · 2026-07-24',
-      },
-      {
-        date:    '2026-07-23',
-        label:   '2026-07-23',
-        title:   'YrY · Daily CTO Report',
-        href:    '../reports/daily/index.html?date=2026-07-23',
-        status:  'verified',
-        summary: '7 个项目 · 1d 窗口 · YiDoc/YiAi/YiH5/YiPet/YiPot/YiWeb/YiviY · 统一模板 · 仅更新当天 data.js',
-        metrics: [
-          { label: 'Window',    value: '1d',       tone: 'is-neutral' },
-          { label: 'Projects',  value: '7',        tone: 'is-pass'   },
-          { label: 'Commits',   value: '46+',      tone: 'is-pass'   },
-          { label: 'Date',      value: '07-23',    tone: 'is-neutral' },
-        ],
-        tags: [
-          { label: 'all-projects', tone: 'is-info' },
-          { label: 'single-day',   tone: 'is-pass' },
-          { label: 'unified-tpl',  tone: 'is-info' },
-        ],
-        meta: '7 projects · 1d window · 2026-07-23',
-      },
-    ],
+    daily: [],
     weekly: [],
     monthly: [],
   },
@@ -653,13 +619,13 @@ window.HELP_CONFIG = {
   ],
 
   footerLinks: [
-    { label: "CLAUDE.md",       href: "../CLAUDE.md",                    targetBlank: true },
-    { label: "README.md",       href: "../README.md",                    targetBlank: true },
-    { label: "YiAi Report",     href: "../projects/YiAi/data.js",        targetBlank: true },
-    { label: "YiH5 Report",     href: "../projects/YiH5/data.js",        targetBlank: true },
-    { label: "YiPet Report",    href: "../projects/YiPet/data.js",       targetBlank: true },
-    { label: "YiPot Report",    href: "../projects/YiPot/data.js",       targetBlank: true },
-    { label: "YiWeb Report",    href: "../projects/YiWeb/data.js",       targetBlank: true },
-    { label: "YiviY Source",    href: "../../YiviY/",                    targetBlank: true }
+    { label: "YiDoc Index",     href: "../index.html",                    targetBlank: true },
+    { label: "YiAi Report",     href: "../projects/YiAi/data.js",         targetBlank: true },
+    { label: "YiH5 Report",     href: "../projects/YiH5/data.js",         targetBlank: true },
+    { label: "YiPet Report",    href: "../projects/YiPet/data.js",        targetBlank: true },
+    { label: "YiPot Report",    href: "../projects/YiPot/data.js",        targetBlank: true },
+    { label: "YiWeb Report",    href: "../projects/YiWeb/data.js",        targetBlank: true },
+    { label: "YiviY Source",    href: "../../YiviY/",                     targetBlank: true },
+    { label: ".claude Skills",  href: "../../.claude/skills/",            targetBlank: true }
   ]
 };

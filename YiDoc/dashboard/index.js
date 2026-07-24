@@ -141,16 +141,9 @@
       },
 
       computed: {
-        _tabDefs: function () {
-          return [
-            { key: 'daily',   label: 'Daily',   icon: '\u2600\uFE0F' },
-            { key: 'weekly',  label: 'Weekly',  icon: '\uD83D\uDCC5' },
-            { key: 'monthly', label: 'Monthly', icon: '\uD83D\uDDD3'  }
-          ];
-        },
         visibleReportTabs: function () {
           var self = this;
-          return this._tabDefs.map(function (t) {
+          return TAB_DEFS.map(function (t) {
             return {
               key: t.key, label: t.label, icon: t.icon,
               count: self.reportsList ? (self.reportsList[t.key] || []).length : 0
@@ -163,10 +156,9 @@
         },
         notifCount: function () {
           if (!this.reportsList) return 0;
-          var tabs = this._tabDefs;
           var n = 0;
-          for (var i = 0; i < tabs.length; i++) {
-            n += (this.reportsList[tabs[i].key] || []).length;
+          for (var i = 0; i < TAB_DEFS.length; i++) {
+            n += (this.reportsList[TAB_DEFS[i].key] || []).length;
           }
           return n;
         },
@@ -180,16 +172,15 @@
           return this.notifCount > 0 && !this.reportPanelOpen;
         },
         latestReportDate: function () {
-          if (!this.reportsList) return '—';
-          var tabs = this._tabDefs;
+          if (!this.reportsList) return '\u2014';
           var latest = '';
-          for (var i = 0; i < tabs.length; i++) {
-            var items = this.reportsList[tabs[i].key] || [];
+          for (var i = 0; i < TAB_DEFS.length; i++) {
+            var items = this.reportsList[TAB_DEFS[i].key] || [];
             for (var j = 0; j < items.length; j++) {
               if (!latest || items[j].date > latest) latest = items[j].date;
             }
           }
-          return latest || '—';
+          return latest || '\u2014';
         },
         librariesMeta: function () {
           var cats = this.thirdPartyLibraries.length;
@@ -225,6 +216,12 @@
           }
           var url = (ph.urls || {})[panel];
           if (!url) return;
+          // In-page anchor navigation
+          if (url.charAt(0) === '#') {
+            var el = document.getElementById(url.slice(1));
+            if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+            return;
+          }
           var btn = (ph.buttons || []).filter(function (b) { return b && b.panel === panel; })[0];
           var open = btn && btn.targetBlank !== undefined
             ? btn.targetBlank
@@ -253,6 +250,21 @@
         openLibUrl: function (url) {
           if (!url) return;
           window.open(url, '_blank', 'noopener,noreferrer');
+        },
+
+        _navigateSection: function (dir) {
+          var sections = document.querySelectorAll('.dashboard-section[id]');
+          if (!sections.length) return;
+          // Find the section closest to the top of viewport
+          var viewTop = window.pageYOffset + 80; // small offset for header
+          var current = -1;
+          for (var i = 0; i < sections.length; i++) {
+            if (sections[i].getBoundingClientRect().top + window.pageYOffset <= viewTop) current = i;
+          }
+          var next = current + dir;
+          if (next < 0) next = 0;
+          if (next >= sections.length) next = sections.length - 1;
+          sections[next].scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       },
 
@@ -264,7 +276,13 @@
           passive: true, signal: self._teardownCtrl.signal
         });
         document.addEventListener('keydown', function (e) {
-          if (e.key === 'Escape' && self.reportPanelOpen) self.closeReportPanel();
+          if (e.key === 'Escape' && self.reportPanelOpen) { self.closeReportPanel(); return; }
+          // Skip shortcuts when typing in input/textarea or with modifiers
+          var tag = (document.activeElement || {}).tagName;
+          if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.metaKey || e.ctrlKey) return;
+          if (e.key === 't' || e.key === 'T') { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+          if (e.key === 'j') { self._navigateSection(1); return; }
+          if (e.key === 'k') { self._navigateSection(-1); return; }
         }, { signal: self._teardownCtrl.signal });
         self.$nextTick(function () { self.syncScrollState(); });
       },
@@ -283,10 +301,12 @@
         '<div class="panel-hub-container">' +
         '<button v-for="(btn, i) in buttons" :key="i"' +
         '  :style="{color: btn.color || \'var(--yry-accent,#22C55E)\'}"' +
+        '  :title="(btn.desc || btn.name)"' +
         '  @click="$emit(\'select\', {detail:{panel:btn.panel}})">' +
-        '<span v-html="btn.icon" class="panel-hub-btn-icon"></span><span>{{ btn.name }}</span>' +
+        '<span v-html="btn.icon" class="panel-hub-btn-icon"></span><span class="panel-hub-btn-name">{{ btn.name }}</span>' +
+        '<span v-if="btn.desc" class="panel-hub-btn-desc">{{ btn.desc }}</span>' +
         '</button>' +
-        '<div v-if="flow" class="panel-hub-flow">{{ flow }}</div>' +
+        '<div v-if="flow" class="panel-hub-flow" v-html="flow"></div>' +
         '</div>'
     });
 
