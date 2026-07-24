@@ -17,11 +17,21 @@
         <!-- Vue 3 CDN (YiPet/cdn 自托管 · unpkg 降级) -->
         <script src="../../YiPet/cdn/vendor/vue.global.prod.js"></script>
         <script>
-            if (typeof Vue === "undefined") {
-                var s = document.createElement("script");
-                s.src = "https://unpkg.com/vue@3.4.27/dist/vue.global.prod.js";
-                document.head.appendChild(s);
-            }
+            (function () {
+                if (typeof Vue !== "undefined") {
+                    window.__vueLoadPromise = Promise.resolve();
+                    return;
+                }
+                // Primary CDN missed — inject unpkg fallback and expose
+                // __vueLoadPromise so index.js (boot) takes the fast path.
+                window.__vueLoadPromise = new Promise(function (resolve) {
+                    var s = document.createElement("script");
+                    s.src = "https://unpkg.com/vue@3.4.27/dist/vue.global.prod.js";
+                    s.onload  = function () { resolve(); };
+                    s.onerror = function () { resolve(); }; // resolve anyway — index.js shows error banner
+                    document.head.appendChild(s);
+                });
+            })();
         </script>
     </head>
     <body class="yry-doc dashboard-page">
@@ -36,30 +46,29 @@
                 <button
                     type="button"
                     class="dashboard-notif-btn"
-                    :class="{ 'is-active': reportPanelOpen }"
-                    :title="notifTitle"
-                    :aria-label="notifTitle"
-                    @click="openReportPanel('daily')"
+                    :class="{ 'is-active': reportPanelOpen, 'has-unread': notifCount > 0 }"
+                    :aria-label="reportPanelOpen ? 'Close reports drawer' : notifTitle"
+                    :title="reportPanelOpen ? 'Close reports drawer' : notifTitle"
+                    @click="reportPanelOpen ? closeReportPanel() : openReportPanel('daily')"
                 >
-                    <svg
-                        class="dashboard-notif-icon"
-                        viewBox="0 0 24 24"
-                        width="20"
-                        height="20"
-                        aria-hidden="true"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    >
-                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-                    </svg>
-                    <span v-if="notifCount > 0" class="dashboard-notif-badge" aria-hidden="true"
+                    <span class="dashboard-notif-icon">
+                        <span class="notif-icon-bell" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                                <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                            </svg>
+                        </span>
+                        <span class="notif-icon-close" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                        </span>
+                    </span>
+                    <span v-if="notifCount > 0 && !reportPanelOpen" class="dashboard-notif-badge" aria-hidden="true"
                         >{{ notifCount > 9 ? '9+' : notifCount }}</span
                     >
                     <span v-if="notifPulse" class="dashboard-notif-pulse" aria-hidden="true"></span>
+                    <span class="dashboard-notif-label" aria-hidden="true">{{ notifCount > 0 ? notifCount + ' reports' : 'Reports' }}</span>
                 </button>
 
                 <!-- Breadcrumb -->
@@ -242,7 +251,7 @@
                 <p class="footer-note">{{ footerNote }}</p>
             </footer>
 
-            <!-- Floating Reports Panel -->
+            <!-- Reports Drawer (right-side slide-in) -->
             <div
                 v-if="reportsList"
                 class="dashboard-reports-overlay"
@@ -250,93 +259,87 @@
                 @click="closeReportPanel"
                 aria-hidden="true"
             ></div>
-            <section
+            <aside
                 v-if="reportsList"
-                class="dashboard-reports-panel"
+                class="dashboard-reports-drawer"
                 :class="{ 'is-open': reportPanelOpen }"
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="dashboard-reports-title"
             >
-                <header class="reports-panel-header">
-                    <h2 id="dashboard-reports-title" class="reports-panel-title">📅 Reports</h2>
-                    <button type="button" class="reports-panel-close" aria-label="Close" @click="closeReportPanel">
-                        ×
+                <!-- Drawer header -->
+                <header class="reports-drawer-header">
+                    <div class="reports-drawer-header-left">
+                        <h2 id="dashboard-reports-title" class="reports-drawer-title">Reports</h2>
+                        <span class="reports-drawer-summary" v-if="notifCount > 0">
+                            {{ notifCount }} report{{ notifCount > 1 ? 's' : '' }}
+                            <span class="reports-drawer-summary-sep">·</span>
+                            Latest {{ latestReportDate }}
+                        </span>
+                        <span class="reports-drawer-summary is-empty" v-else>No reports yet</span>
+                    </div>
+                    <button type="button" class="reports-drawer-close" aria-label="Close drawer" @click="closeReportPanel">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
                     </button>
                 </header>
-                <nav class="reports-panel-tabs" role="tablist">
+
+                <!-- Tabs -->
+                <nav class="reports-drawer-tabs" role="tablist" aria-label="Report cadence">
                     <button
-                        v-for="tab in reportTabs"
+                        v-for="tab in visibleReportTabs"
                         :key="tab.key"
                         type="button"
                         role="tab"
                         :aria-selected="activeReportTab === tab.key"
-                        :class="['reports-panel-tab', { 'is-active': activeReportTab === tab.key }]"
+                        :class="['reports-drawer-tab', { 'is-active': activeReportTab === tab.key }]"
                         @click="selectReportTab(tab.key)"
                     >
-                        <span aria-hidden="true">{{ tab.icon }}</span>
-                        <span>{{ tab.label }}</span>
-                        <span class="reports-panel-tab-count">{{ (reportsList[tab.key] || []).length }}</span>
+                        <span class="reports-drawer-tab-icon" aria-hidden="true">{{ tab.icon }}</span>
+                        <span class="reports-drawer-tab-label">{{ tab.label }}</span>
+                        <span v-if="tab.count > 0" class="reports-drawer-tab-count">{{ tab.count }}</span>
                     </button>
                 </nav>
-                <div class="reports-panel-body" role="tabpanel">
-                    <ul v-if="activeReportItems.length" class="reports-panel-list">
-                        <li v-for="item in activeReportItems" :key="item.href" class="reports-panel-item">
-                            <a :href="item.href" class="reports-panel-item-link" target="_blank" rel="noopener">
-                                <header class="reports-panel-item-head">
-                                    <span class="reports-panel-item-date">{{ item.label }}</span>
-                                    <span class="reports-panel-item-title">{{ item.title }}</span>
-                                    <span
-                                        v-if="item.status"
-                                        class="reports-panel-item-status"
-                                        :class="['is-' + item.status]"
-                                        >{{ item.status }}</span
-                                    >
-                                </header>
-                                <p v-if="item.summary" class="reports-panel-item-summary">{{ item.summary }}</p>
-                                <dl v-if="item.metrics && item.metrics.length" class="reports-panel-item-metrics">
-                                    <div
-                                        v-for="m in item.metrics"
-                                        :key="m.label"
-                                        class="reports-panel-item-metric"
-                                        :class="m.tone"
-                                    >
-                                        <dt class="reports-panel-item-metric-label">{{ m.label }}</dt>
-                                        <dd class="reports-panel-item-metric-value">{{ m.value }}</dd>
-                                    </div>
-                                </dl>
-                                <footer class="reports-panel-item-foot">
-                                    <ul v-if="item.tags && item.tags.length" class="reports-panel-item-tags">
-                                        <li
-                                            v-for="t in item.tags"
-                                            :key="t.label"
-                                            class="reports-panel-item-tag"
-                                            :class="t.tone"
-                                        >
-                                            {{ t.label }}
-                                        </li>
-                                    </ul>
-                                    <span v-if="item.meta" class="reports-panel-item-meta">{{ item.meta }}</span>
-                                </footer>
+
+                <!-- Body -->
+                <div class="reports-drawer-body">
+                    <ul v-if="activeReportItems.length" class="reports-drawer-list">
+                        <li
+                            v-for="(item, idx) in activeReportItems"
+                            :key="item.href"
+                            class="reports-drawer-item"
+                            :style="{ '--item-delay': (idx * 0.04) + 's' }"
+                        >
+                            <a :href="item.href" class="reports-drawer-item-link" target="_blank" rel="noopener">
+                                <div class="reports-drawer-item-top">
+                                    <span class="reports-drawer-item-status" :class="'is-' + item.status">{{ item.status }}</span>
+                                    <span class="reports-drawer-item-date">{{ item.label }}</span>
+                                </div>
+                                <h3 class="reports-drawer-item-title">{{ item.title }}</h3>
+                                <p v-if="item.summary" class="reports-drawer-item-summary">{{ item.summary }}</p>
+                                <div v-if="item.metrics && item.metrics.length" class="reports-drawer-item-metrics">
+                                    <span v-for="m in item.metrics" :key="m.label" class="reports-drawer-item-metric" :class="m.tone">
+                                        <b>{{ m.value }}</b> {{ m.label }}
+                                    </span>
+                                </div>
+                                <div class="reports-drawer-item-foot">
+                                    <span class="reports-drawer-item-tags" v-if="item.tags && item.tags.length">
+                                        <span v-for="t in item.tags" :key="t.label" class="reports-drawer-item-tag" :class="t.tone">{{ t.label }}</span>
+                                    </span>
+                                    <span v-if="item.meta" class="reports-drawer-item-meta">{{ item.meta }}</span>
+                                </div>
                             </a>
                         </li>
                     </ul>
-                    <p v-else class="reports-panel-empty">No <strong>{{ activeReportTab }}</strong> reports yet.</p>
+                    <div v-else class="reports-drawer-empty">
+                        <span class="reports-drawer-empty-icon">📭</span>
+                        <p>No <strong>{{ activeReportTab }}</strong> reports yet</p>
+                        <span class="reports-drawer-empty-hint">Reports will appear here once generated by the pipeline.</span>
+                    </div>
                 </div>
-            </section>
+            </aside>
         </main>
-
-        <!-- yry-panel-hub inline component -->
-        <script>
-            // Minimal inline panel-hub component (no CDN dependency)
-            var ruiPanelHubTemplate =
-                '<div class="panel-hub-container">' +
-                '<button v-for="(btn, i) in buttons" :key="i" :style="{color: btn.color}" @click="$emit(\'select\', {detail:{panel:btn.panel}})">' +
-                "<span>{{ btn.icon }}</span><span>{{ btn.name }}</span>" +
-                "</button>" +
-                '<div v-if="flow" class="panel-hub-flow">{{ flow }}</div>' +
-                "</div>";
-        </script>
 
         <script src="data.js"></script>
         <script src="index.js"></script>
