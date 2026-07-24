@@ -1,0 +1,81 @@
+<template id="yi-pet-robot-settings-modal-template">
+  <div
+    id="pet-robot-settings"
+    class="js-visible"
+    role="dialog"
+    aria-modal="true"
+    aria-label="企微机器人设置"
+    tabindex="0"
+  >
+    <div class="robot-settings-modal" role="document">
+      <div class="robot-settings-header">
+        <div class="robot-settings-title">🤖 企微机器人设置</div>
+        <button type="button" class="robot-settings-close" aria-label="关闭">✕</button>
+      </div>
+      <div class="robot-settings-content">
+        <button type="button" class="robot-add-btn">+ 新增机器人</button>
+        <div id="pet-robot-list" class="robot-list"></div>
+        <div id="pet-robot-form" class="robot-form"></div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template id="yi-pet-robot-list-item-template">
+  <div class="robot-list-item" data-robot-id="{id}" role="button" tabindex="0">
+    <div class="robot-list-item-info">
+      <span class="robot-list-item-icon">{icon}</span>
+      <div class="robot-list-item-name">
+        <span class="robot-list-item-name-text">{name}</span>
+        <span class="robot-list-item-url-text">{url}</span>
+      </div>
+    </div>
+    <div class="robot-list-item-actions">
+      <button type="button" class="robot-list-item-delete-btn" title="删除" aria-label="删除">🗑️</button>
+    </div>
+  </div>
+</template>
+
+<template id="yi-pet-robot-form-template">
+  <div class="robot-config-field">
+    <div class="robot-config-label">机器人名称</div>
+    <input
+      type="text"
+      class="robot-config-input"
+      data-field="name"
+      value="{name}"
+      placeholder="例如：研发群助手"
+    />
+  </div>
+  <div class="robot-config-field">
+    <div class="robot-config-label">图标 (Emoji)</div>
+    <input
+      type="text"
+      class="robot-config-input"
+      data-field="icon"
+      value="{icon}"
+      placeholder="例如：🤖"
+    />
+  </div>
+  <div class="robot-config-field">
+    <div class="robot-config-label">Webhook 地址</div>
+    <input
+      type="text"
+      class="robot-config-input"
+      data-field="webhookUrl"
+      value="{webhookUrl}"
+      placeholder="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=..."
+    />
+  </div>
+  <div class="robot-config-btn-row">
+    <button type="button" class="robot-config-save-btn">保存配置</button>
+  </div>
+</template>
+
+<template id="yi-pet-robot-list-empty-template">
+  <div class="robot-list-empty">暂无配置机器人</div>
+</template>
+
+<template id="yi-pet-robot-form-empty-template">
+  <div class="robot-form-empty">👈 请选择左侧列表进行编辑，或点击"新增机器人"</div>
+</template>
