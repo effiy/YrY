@@ -39,24 +39,6 @@ const debug = (() => {
   return typeof location !== 'undefined' ? isLocalHost(location.hostname) : false;
 })();
 
-// --- 深合并工具（从 YiH5 对齐） ---
-const deepMerge = (target, source) => {
-  if (!source || typeof source !== 'object') return target;
-  const output = { ...target };
-  Object.keys(source).forEach(key => {
-    if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
-      if (target[key] !== undefined) {
-        output[key] = deepMerge(target[key], source[key]);
-      } else {
-        output[key] = source[key];
-      }
-    } else {
-      output[key] = source[key];
-    }
-  });
-  return output;
-};
-
 // --- 基础配置（DEFAULT_CONFIG） ---
 const baseConfig = {
   env: ENV,
@@ -69,11 +51,8 @@ const baseConfig = {
   // setEnv 挂在 unfrozen wrapper，见下方 setEnv 注释
 };
 
-// --- 运行时注入（window.__YI_CONFIG） ---
-const runtimeConfig = (typeof window !== 'undefined' && window.__YI_CONFIG) || {};
-
 // --- 冻结后的 config 对象 ---
-export const config = Object.freeze(deepMerge(baseConfig, runtimeConfig));
+export const config = baseConfig;
 
 // --- 环境切换（YiWeb 特有） ---
 // config 已冻结，setEnv 通过 localStorage + reload 重新生效。

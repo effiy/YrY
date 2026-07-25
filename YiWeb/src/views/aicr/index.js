@@ -204,11 +204,11 @@ import { setupAicrEventListeners } from '/src/utils/listenerManager.js';
                                                                 rangeInfo
                                                             }
                                                         }));
-                                                        logInfo('[代码審查] URL触发高亮事件', rangeInfo);
-                                                    } catch (e) { logWarn('[代码審查] 触发高亮事件失败', e); }
+                                                        logInfo('[代码审查] URL触发高亮事件', rangeInfo);
+                                                    } catch (e) { logWarn('[代码审查] 触发高亮事件失败', e); }
                                                 }, 300);
                                             }
-                                        } catch (e) { logWarn('[代码審查] URL高亮处理失败', e); }
+                                        } catch (e) { logWarn('[代码审查] URL高亮处理失败', e); }
                                     }).catch(() => { });
                                 }
                             }
