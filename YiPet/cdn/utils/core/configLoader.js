@@ -13,8 +13,19 @@
   'use strict';
 
   var DEFAULT_ENV = 'production'
-  var REMOTE_CONFIG_URL = '/cdn/config.json'
   var LOAD_TIMEOUT_MS = 5000
+
+  /**
+   * 获取 config.json 的正确 URL
+   * Chrome Extension 环境下需使用 chrome.runtime.getURL()，
+   * 否则相对路径会被解析为宿主网页的路径而非扩展路径
+   */
+  function getConfigUrl() {
+    if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.getURL) {
+      try { return chrome.runtime.getURL('cdn/config.json') } catch (_) {}
+    }
+    return '/cdn/config.json'
+  }
 
   /* ═══════════════════════ 环境检测 ═══════════════════════ */
 
@@ -137,7 +148,7 @@
   function ConfigLoader(options) {
     var opts = options || {}
     this._env       = opts.env || detectEnv()
-    this._remoteUrl = opts.remoteUrl || REMOTE_CONFIG_URL
+    this._remoteUrl = opts.remoteUrl || getConfigUrl()
     this._timeout   = opts.timeout || LOAD_TIMEOUT_MS
     this._config    = deepMerge(DEFAULT_CONFIG, opts.defaults || {})
     this._ready     = false
@@ -204,37 +215,13 @@
   }
 
   /**
-   * 异步初始化（加载远程配置）
+   * 初始化（同步，不加载远程配置）
    */
   ConfigLoader.prototype.init = function () {
-    var self = this
-    // 如果已有 PET_CONFIG 且不需要远程，直接返回
-    if (this._ready && root.PET_CONFIG) {
-      this._notify()
-      return Promise.resolve(this._config)
-    }
-
-    return fetchRemoteConfig(self._remoteUrl, self._timeout)
-      .then(function (remoteCfg) {
-        // 按环境选择端点
-        var envCfg = remoteCfg.env && remoteCfg.env.endpoints && remoteCfg.env.endpoints[self._env]
-          ? remoteCfg.env.endpoints[self._env]
-          : (remoteCfg.api || {})
-        self._config = deepMerge(self._config, remoteCfg)
-        if (envCfg) self._config.api = deepMerge(self._config.api || {}, envCfg)
-        self._config = applyUrlOverrides(self._config)
-        self._ready = true
-        self._notify()
-        return self._config
-      })
-      .catch(function (err) {
-        console.warn('[ConfigLoader] 远程配置加载失败，使用默认配置:', err.message)
-        self._error = err
-        self._config = applyUrlOverrides(self._config)
-        self._ready = true
-        self._notify()
-        return self._config
-      })
+    this._config = applyUrlOverrides(this._config)
+    this._ready = true
+    this._notify()
+    return Promise.resolve(this._config)
   }
 
   /**
@@ -273,12 +260,10 @@
   root.__YiPet_Config__ = instance
   root.ConfigLoader = ConfigLoader
 
-  // 如果 PET_CONFIG 未加载，异步尝试远程加载
-  if (!root.PET_CONFIG) {
-    instance.init().then(function () {
-      console.log('[YiPet:Config] 配置已就绪 (env=' + instance.getEnv() + ')')
-    })
-  } else {
+  instance.init()
+  if (root.PET_CONFIG) {
     console.log('[YiPet:Config] 配置已从 PET_CONFIG 同步加载 (env=' + instance.getEnv() + ')')
+  } else {
+    console.log('[YiPet:Config] 配置已就绪 (env=' + instance.getEnv() + ')')
   }
 })(typeof globalThis !== 'undefined' ? globalThis : typeof self !== 'undefined' ? self : window)

@@ -90,7 +90,6 @@
     'cdn/utils/http/request.js',           // → window.RequestClient, requestClient
     // 业务服务层
     'cdn/utils/core/apiManager.js',        // → window.ApiManager
-    'cdn/utils/core/session.js',           // → window.SessionManager
     // DOM 工具层
     'cdn/utils/dom/dom-helper.js',         // → window.DomHelper
     'cdn/utils/dom/file-helper.js',        // → window.FileHelper
@@ -99,10 +98,6 @@
     // UI 工具层
     'cdn/utils/ui/loading-animation.js',        // → window.petLoadingAnimation, LoadingAnimation
     'cdn/utils/ui/loading-animation-mixin.js',  // → window.LoadingAnimationMixin
-    // Markdown / Mermaid 引擎
-    'cdn/engines/markdown/markdown.js',    // → window.MarkdownRenderer
-    'cdn/engines/markdown/mermaid.js',     // → window.MermaidRenderer
-
     // ═══════════════════ 补充经典脚本工具 ═══════════════════
     'cdn/utils/core/module-utils.js',       // → window.ModuleUtils（模块导出、环境检测）
     'cdn/utils/core/global-accessor.js',    // → window.GlobalAccessor（安全全局属性访问）
@@ -112,9 +107,6 @@
     'cdn/utils/time/time-utils.js',         // → window.TimeUtils（时间格式化）
     'cdn/utils/ui/notification-utils.js',   // → window.NotificationUtils（通知气泡）
     'cdn/utils/messaging/message-helper.js',// → window.MessageHelper（扩展消息通信）
-
-    // ═══════════════════ ESM 桥接（动态 import 所有 ESM 模块） ═══════════════════
-    'cdn/window-expose.js',                // → 动态加载所有 ESM barrel 文件并注册到 window
   ]
 
   // 顺序注入，每个加载完后注入下一个

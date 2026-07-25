@@ -19,6 +19,28 @@
     proto.DEFAULT_SYSTEM_PROMPT = DEFAULT_SYSTEM_PROMPT
   }
 
+  // ── Shared utility: strip wrapping smart/typographic quotes from API responses ──
+  var QUOTE_PAIRS = [
+    ['"', '"'],
+    ['"', '"'],
+    ['"', '"'],
+    ["'", "'"],
+    ['`', '`'],
+    ['「', '」'],
+    ['『', '』'],
+  ]
+  proto._stripResponseQuotes = function (text) {
+    var result = String(text || '').trim()
+    for (var i = 0; i < QUOTE_PAIRS.length; i++) {
+      var startQuote = QUOTE_PAIRS[i][0]
+      var endQuote = QUOTE_PAIRS[i][1]
+      if (result.startsWith(startQuote) && result.endsWith(endQuote)) {
+        result = result.slice(startQuote.length, -endQuote.length).trim()
+      }
+    }
+    return result
+  }
+
   proto.showSettingsModal = function () {
     if (!this.chatWindow) return
     this.ensureAiSettingsUi()
@@ -197,20 +219,7 @@ ${originalText}
     improved = this.stripThinkContent ? this.stripThinkContent(improved) : improved
     improved = String(improved || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim()
 
-    const quotePairs = [
-      ['"', '"'],
-      ['"', '"'],
-      ['"', '"'],
-      ["'", "'"],
-      ['`', '`'],
-      ['「', '」'],
-      ['『', '』']
-    ]
-    for (const [startQuote, endQuote] of quotePairs) {
-      if (improved.startsWith(startQuote) && improved.endsWith(endQuote)) {
-        improved = improved.slice(startQuote.length, -endQuote.length).trim()
-      }
-    }
+    improved = this._stripResponseQuotes(improved)
     return improved
   }
 
@@ -433,21 +442,7 @@ ${originalText}
       optimizedText = this.stripThinkContent ? this.stripThinkContent(optimizedText) : optimizedText
       optimizedText = optimizedText.trim()
 
-      const quotePairs = [
-        ['"', '"'],
-        ['"', '"'],
-        ['"', '"'],
-        ["'", "'"],
-        ['`', '`'],
-        ['「', '」'],
-        ['『', '』']
-      ]
-
-      for (const [startQuote, endQuote] of quotePairs) {
-        if (optimizedText.startsWith(startQuote) && optimizedText.endsWith(endQuote)) {
-          optimizedText = optimizedText.slice(startQuote.length, -endQuote.length).trim()
-        }
-      }
+      optimizedText = this._stripResponseQuotes(optimizedText)
 
       const prefixes = [
         /^优化后的消息：?\s*/i,
@@ -628,21 +623,7 @@ ${originalText}
       translatedText = this.stripThinkContent ? this.stripThinkContent(translatedText) : translatedText
       translatedText = translatedText.trim()
 
-      const quotePairs = [
-        ['"', '"'],
-        ['"', '"'],
-        ['"', '"'],
-        ["'", "'"],
-        ['`', '`'],
-        ['「', '」'],
-        ['『', '』']
-      ]
-
-      for (const [startQuote, endQuote] of quotePairs) {
-        if (translatedText.startsWith(startQuote) && translatedText.endsWith(endQuote)) {
-          translatedText = translatedText.slice(startQuote.length, -endQuote.length).trim()
-        }
-      }
+      translatedText = this._stripResponseQuotes(translatedText)
 
       const prefixes = [
         /^翻译后的[内容上下文]：?\s*/i,

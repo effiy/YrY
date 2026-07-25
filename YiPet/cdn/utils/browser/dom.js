@@ -421,22 +421,174 @@ export function setFormData(form, data) {
     });
 }
 
+// ═══════════════════════════════════════════════════════════
+// 补充 DOM 快捷操作（来自 index.js）
+// ═══════════════════════════════════════════════════════════
+
+export function $(selector, ctx = document) { return ctx.querySelector(selector); }
+export function $$(selector, ctx = document) { return Array.from(ctx.querySelectorAll(selector)); }
+
+export function addClass(el, ...classes) {
+    const e = typeof el === 'string' ? $(el) : el;
+    if (e) e.classList.add(...classes);
+    return e;
+}
+
+export function removeClass(el, ...classes) {
+    const e = typeof el === 'string' ? $(el) : el;
+    if (e) e.classList.remove(...classes);
+    return e;
+}
+
+export function setStyle(el, styles) {
+    const e = typeof el === 'string' ? $(el) : el;
+    if (e && typeof styles === 'object') Object.assign(e.style, styles);
+    return e;
+}
+
+export function getStyle(el, prop) {
+    const e = typeof el === 'string' ? $(el) : el;
+    return e ? window.getComputedStyle(e)[prop] : null;
+}
+
+export function show(el, display = 'block') {
+    const e = typeof el === 'string' ? $(el) : el;
+    if (e) e.style.display = display;
+    return e;
+}
+
+export function hide(el) {
+    const e = typeof el === 'string' ? $(el) : el;
+    if (e) e.style.display = 'none';
+    return e;
+}
+
+export function toggle(el, display = 'block') {
+    const e = typeof el === 'string' ? $(el) : el;
+    if (!e) return null;
+    e.style.display = e.style.display === 'none' ? display : 'none';
+    return e;
+}
+
+export function attr(el, name, value) {
+    const e = typeof el === 'string' ? $(el) : el;
+    if (!e) return null;
+    if (value === undefined) return e.getAttribute(name);
+    if (value === null) e.removeAttribute(name);
+    else e.setAttribute(name, value);
+    return e;
+}
+
+export function data(el, key, value) {
+    const e = typeof el === 'string' ? $(el) : el;
+    if (!e) return null;
+    if (value === undefined) return e.dataset[key];
+    e.dataset[key] = value;
+    return e;
+}
+
+export function on(el, event, handler, opts) {
+    const e = typeof el === 'string' ? $(el) : el;
+    if (e) e.addEventListener(event, handler, opts);
+    return e;
+}
+
+export function off(el, event, handler, opts) {
+    const e = typeof el === 'string' ? $(el) : el;
+    if (e) e.removeEventListener(event, handler, opts);
+    return e;
+}
+
+export function trigger(el, eventName, detail) {
+    const e = typeof el === 'string' ? $(el) : el;
+    if (!e) return null;
+    e.dispatchEvent(new CustomEvent(eventName, { detail, bubbles: true, cancelable: true }));
+    return e;
+}
+
+export function offset(el) {
+    const e = typeof el === 'string' ? $(el) : el;
+    if (!e) return { top: 0, left: 0 };
+    const r = e.getBoundingClientRect();
+    return { top: r.top + window.pageYOffset, left: r.left + window.pageXOffset, width: r.width, height: r.height };
+}
+
+export function size(el) {
+    const e = typeof el === 'string' ? $(el) : el;
+    return e ? { width: e.offsetWidth, height: e.offsetHeight } : { width: 0, height: 0 };
+}
+
+// ═══════════════════════════════════════════════════════════
+// 浏览器工具（来自 index.js）
+// ═══════════════════════════════════════════════════════════
+
+export function downloadFile(data, filename, type = 'application/octet-stream') {
+    const blob = data instanceof Blob ? data : new Blob([data], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+export function safeJsonParse(str, defaultValue = null) {
+    try { return JSON.parse(str); } catch { return defaultValue; }
+}
+
+export function scrollToTop(smooth = true) {
+    window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' });
+}
+
+export function scrollToElement(el, opts = {}) {
+    const e = typeof el === 'string' ? document.querySelector(el) : el;
+    if (e) e.scrollIntoView({ behavior: 'smooth', block: 'start', ...opts });
+}
+
+export function getSelectedText() {
+    return window.getSelection()?.toString() || '';
+}
+
+export async function toggleFullscreen(el = document.documentElement) {
+    try {
+        if (!document.fullscreenElement) { await el.requestFullscreen(); return true; }
+        else { await document.exitFullscreen(); return false; }
+    } catch { return null; }
+}
+
+export function isInViewport(el) {
+    const e = typeof el === 'string' ? document.querySelector(el) : el;
+    if (!e) return false;
+    const r = e.getBoundingClientRect();
+    return r.top >= 0 && r.left >= 0 &&
+        r.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        r.right <= (window.innerWidth || document.documentElement.clientWidth);
+}
+
+export function printElement(el) {
+    const e = typeof el === 'string' ? document.querySelector(el) : el;
+    if (!e) return;
+    const w = window.open('', '', 'width=800,height=600');
+    w.document.write(`<!DOCTYPE html><html><body>${e.innerHTML}</body></html>`);
+    w.document.close(); w.print(); w.close();
+}
+
 // 导出默认工具对象
 export default {
-    autoResizeTextarea,
-    safeRemoveElement,
-    createAnimationElement,
-    addEventDelegate,
-    smoothScrollTo,
-    getElementPosition,
-    isElementInViewport,
-    createIntersectionObserver,
-    copyToClipboard,
-    getElementStyles,
-    hasClass,
-    toggleClass,
-    setAttributes,
-    createElement,
-    getFormData,
-    setFormData
+    autoResizeTextarea, safeRemoveElement, createAnimationElement,
+    addEventDelegate, smoothScrollTo, getElementPosition,
+    isElementInViewport, createIntersectionObserver,
+    getScrollDistanceToBottom, shouldAutoScrollToBottom,
+    scrollElementToBottom, scrollIntoViewOrFallback,
+    applyChatScrollRequest, safeObserve, safeObserveAll,
+    copyToClipboard, getElementStyles,
+    hasClass, toggleClass, setAttributes, createElement,
+    getFormData, setFormData,
+    // DOM 快捷操作
+    $, $$, addClass, removeClass, setStyle, getStyle,
+    show, hide, toggle, attr, data, on, off, trigger,
+    offset, size,
+    // 浏览器工具
+    downloadFile, safeJsonParse, scrollToTop, scrollToElement,
+    getSelectedText, toggleFullscreen, isInViewport, printElement
 }; 

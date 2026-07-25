@@ -20,6 +20,56 @@
 
   console.log('[PetManager] Session cross-cutting operations module loaded')
 
+  // ── Shared file-path builder (used by write/read/delete/rename session file) ──
+  proto._buildSessionFilePath = function (session, opts = {}) {
+    const { normalizeFolders = true, title: overrideTitle, sanitizeFileNameFn = null } = opts
+
+    // Build directory path from tags
+    const tags = Array.isArray(session.tags) ? session.tags : []
+    let currentPath = ''
+    tags.forEach((folderName) => {
+      const folder = normalizeFolders ? this._normalizeNameSpaces(folderName) : String(folderName ?? '').trim()
+      if (!folder || folder.toLowerCase() === 'default') return
+      currentPath = currentPath ? `${currentPath}/${folder}` : folder
+    })
+
+    // Build file name from title
+    let fileName = overrideTitle || session.title || 'Untitled'
+    if (typeof sanitizeFileNameFn === 'function') {
+      fileName = sanitizeFileNameFn(fileName)
+    } else {
+      fileName = this._normalizeNameSpaces(fileName)
+    }
+    fileName = String(fileName).replace(/\//g, '-')
+
+    // Combine and clean path
+    let cleanPath = currentPath ? `${currentPath}/${fileName}` : fileName
+    cleanPath = cleanPath.replace(/\\/g, '/').replace(/^\/+/, '')
+    if (cleanPath.startsWith('static/')) {
+      cleanPath = cleanPath.substring(7)
+    }
+    cleanPath = cleanPath.replace(/^\/+/, '')
+
+    // Fallback: use session key
+    if (!cleanPath && session.key) {
+      cleanPath = `session_${session.key}.txt`
+    }
+
+    // Extract descPath from pageDescription for fallback scenarios
+    let descPath = ''
+    const pageDesc = session.pageDescription || ''
+    if (pageDesc && pageDesc.includes('文件：')) {
+      descPath = pageDesc.replace('文件：', '').trim()
+      descPath = descPath.replace(/\\/g, '/').replace(/^\/+/, '')
+      if (descPath.startsWith('static/')) {
+        descPath = descPath.substring(7)
+      }
+      descPath = descPath.replace(/^\/+/, '')
+    }
+
+    return { cleanPath, descPath }
+  }
+
   proto.addMessageToSession = async function (
     type,
     content,
@@ -124,27 +174,7 @@
       const existingMessages = Array.isArray(session.messages) ? session.messages : []
       const updatedMessages = [...existingMessages, ...newMessages]
 
-      const normalizeMessagesForBackend = (messages) => {
-        const list = Array.isArray(messages) ? messages : []
-        return list.map((m) => {
-          const type = m && m.type === 'pet' ? 'pet' : 'user'
-          const message = String(m?.message ?? m?.content ?? '').trim()
-          const timestamp = Number(m?.timestamp) || Date.now()
-          const imageDataUrls = Array.isArray(m?.imageDataUrls) ? m.imageDataUrls.filter(Boolean) : []
-          const imageDataUrl = String(m?.imageDataUrl || '').trim()
-          const payload = { type, message, timestamp }
-          if (imageDataUrls.length > 0) {
-            payload.imageDataUrls = imageDataUrls
-            payload.imageDataUrl = imageDataUrls[0]
-          } else if (imageDataUrl) {
-            payload.imageDataUrl = imageDataUrl
-            payload.imageDataUrls = [imageDataUrl]
-          }
-          if (m?.error) payload.error = true
-          if (m?.aborted) payload.aborted = true
-          return payload
-        })
-      }
+      const normalizeMessagesForBackend = (msgs) => this._normalizeMessagesForBackend(msgs)
 
       const sessionUrl = session.url || ''
       const pageDescription = session.pageDescription || ''
@@ -394,10 +424,13 @@
 
   proto.getMessageTimestamp = function (msgEl) {
     const timeEl = msgEl.querySelector('[data-message-time="true"]')
-    if (timeEl) {
-      // eslint-disable-next-line no-unused-vars -- timeText extracted for logging, intentionally unused
-      const timeText = timeEl.textContent.trim()
+    if (timeEl && timeEl.hasAttribute('datetime')) {
+      const parsed = Date.parse(timeEl.getAttribute('datetime'))
+      if (Number.isFinite(parsed)) return parsed
     }
+    // Fallback: try data-chat-timestamp on ancestor message element
+    const ts = Number(msgEl.getAttribute('data-chat-timestamp'))
+    if (Number.isFinite(ts) && ts > 0) return ts
     return Date.now()
   }
 
@@ -520,28 +553,7 @@
       return
     }
 
-    const tags = Array.isArray(session.tags) ? session.tags : []
-    let currentPath = ''
-    tags.forEach((folderName) => {
-      const folder = this._normalizeNameSpaces(folderName)
-      if (!folder || folder.toLowerCase() === 'default') return
-      currentPath = currentPath ? `${currentPath}/${folder}` : folder
-    })
-
-    let fileName = this._normalizeNameSpaces(session.title || 'Untitled')
-    fileName = String(fileName).replace(/\//g, '-')
-    let cleanPath = currentPath ? `${currentPath}/${fileName}` : fileName
-    cleanPath = cleanPath.replace(/\\/g, '/').replace(/^\/+/, '')
-
-    if (cleanPath.startsWith('static/')) {
-      cleanPath = cleanPath.substring(7)
-    }
-    cleanPath = cleanPath.replace(/^\/+/, '')
-
-    if (!cleanPath && session.key) {
-      cleanPath = `session_${session.key}.txt`
-    }
-
+    const { cleanPath } = this._buildSessionFilePath(session)
     if (!cleanPath) {
       console.warn('[writeSessionPageContent] 无法确定文件路径')
       return
@@ -605,40 +617,7 @@
       return
     }
 
-    const tags = Array.isArray(session.tags) ? session.tags : []
-    let currentPath = ''
-    tags.forEach((folderName) => {
-      const folder = this._normalizeNameSpaces(folderName)
-      if (!folder || folder.toLowerCase() === 'default') return
-      currentPath = currentPath ? `${currentPath}/${folder}` : folder
-    })
-
-    let fileName = this._normalizeNameSpaces(session.title || 'Untitled')
-    fileName = String(fileName).replace(/\//g, '-')
-    let cleanPath = currentPath ? `${currentPath}/${fileName}` : fileName
-    cleanPath = cleanPath.replace(/\\/g, '/').replace(/^\/+/, '')
-    if (cleanPath.startsWith('static/')) {
-      cleanPath = cleanPath.substring(7)
-    }
-    cleanPath = cleanPath.replace(/^\/+/, '')
-
-    const getDescPath = () => {
-      const pageDesc = session.pageDescription || ''
-      if (!pageDesc || !pageDesc.includes('文件：')) return ''
-      let p = pageDesc.replace('文件：', '').trim()
-      p = p.replace(/\\/g, '/').replace(/^\/+/, '')
-      if (p.startsWith('static/')) {
-        p = p.substring(7)
-      }
-      p = p.replace(/^\/+/, '')
-      return p
-    }
-    const descPath = getDescPath()
-
-    if (!cleanPath && session.key) {
-      cleanPath = `session_${session.key}.txt`
-    }
-
+    const { cleanPath, descPath } = this._buildSessionFilePath(session)
     if (!cleanPath) {
       console.warn('[fetchSessionPageContent] 无法确定文件路径')
       return
@@ -692,41 +671,7 @@
       return
     }
 
-    const tags = Array.isArray(session.tags) ? session.tags : []
-    let currentPath = ''
-    tags.forEach((folderName) => {
-      const folder = this._normalizeNameSpaces(folderName)
-      if (!folder || folder.toLowerCase() === 'default') return
-      currentPath = currentPath ? `${currentPath}/${folder}` : folder
-    })
-
-    let fileName = this._normalizeNameSpaces(session.title || 'Untitled')
-    fileName = String(fileName).replace(/\//g, '-')
-    let cleanPath = currentPath ? `${currentPath}/${fileName}` : fileName
-    cleanPath = cleanPath.replace(/\\/g, '/').replace(/^\/+/, '')
-
-    if (cleanPath.startsWith('static/')) {
-      cleanPath = cleanPath.substring(7)
-    }
-    cleanPath = cleanPath.replace(/^\/+/, '')
-
-    const getDescPath = () => {
-      const pageDesc = session.pageDescription || ''
-      if (!pageDesc || !pageDesc.includes('文件：')) return ''
-      let p = pageDesc.replace('文件：', '').trim()
-      p = p.replace(/\\/g, '/').replace(/^\/+/, '')
-      if (p.startsWith('static/')) {
-        p = p.substring(7)
-      }
-      p = p.replace(/^\/+/, '')
-      return p
-    }
-    const descPath = getDescPath()
-
-    if (!cleanPath && session.key) {
-      cleanPath = `session_${session.key}.txt`
-    }
-
+    const { cleanPath, descPath } = this._buildSessionFilePath(session)
     if (!cleanPath) {
       console.warn('[deleteSessionFile] 无法确定文件路径')
       return

@@ -1,53 +1,48 @@
 /**
- * 字符串工具函数
- * author: liangliang
+ * 字符串工具函数 — 规范实现
+ * 合并自 index.js + core/string.js
  */
 
-/**
- * 首字母大写
- * @param {string} str - 字符串
- * @returns {string} 处理后的字符串
- */
+// ── 大小写转换 ──────────────────────────────────────────────
+
+/** 首字母大写 */
 export function capitalize(str) {
     if (!str || typeof str !== 'string') return '';
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
-/**
- * 驼峰转短横线
- * @param {string} str - 字符串
- * @returns {string} 处理后的字符串
- */
+/** 首字母小写 */
+export function uncapitalize(str) {
+    const s = String(str ?? '');
+    return s.charAt(0).toLowerCase() + s.slice(1);
+}
+
+/** 单词首字母大写 */
+export function titleize(str) {
+    return String(str ?? '').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+// ── 命名风格转换 ────────────────────────────────────────────
+
+/** 驼峰 → kebab-case */
 export function camelToKebab(str) {
     if (!str || typeof str !== 'string') return '';
     return str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
 }
 
-/**
- * 短横线转驼峰
- * @param {string} str - 字符串
- * @returns {string} 处理后的字符串
- */
+/** kebab-case → 驼峰 */
 export function kebabToCamel(str) {
     if (!str || typeof str !== 'string') return '';
-    return str.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+    return str.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
 }
 
-/**
- * 下划线转驼峰
- * @param {string} str - 字符串
- * @returns {string} 处理后的字符串
- */
+/** 下划线 → 驼峰 */
 export function snakeToCamel(str) {
     if (!str || typeof str !== 'string') return '';
-    return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+    return str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
 }
 
-/**
- * 驼峰转下划线
- * @param {string} str - 字符串
- * @returns {string} 处理后的字符串
- */
+/** 驼峰 → 下划线 */
 export function camelToSnake(str) {
     if (!str || typeof str !== 'string') return '';
     return str.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toLowerCase();
@@ -137,16 +132,76 @@ export function uuid() {
 }
 
 /**
- * 字符串模板替换
- * @param {string} template - 模板字符串
- * @param {Object} data - 数据对象
- * @returns {string} 替换后的字符串
+ * 字符串模板替换 (支持 {key} 和 {{key}} 两种语法)
  */
-export function template(template, data) {
-    if (!template || typeof template !== 'string') return '';
-    return template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
-        return data[key] !== undefined ? data[key] : match;
-    });
+export function template(tpl, data) {
+    if (!tpl || typeof tpl !== 'string') return '';
+    return tpl.replace(/\{(\w+)\}/g, (_, key) =>
+        data[key] !== undefined ? data[key] : `{${key}}`
+    );
+}
+
+// ── HTML / JS 转义 ──────────────────────────────────────────
+
+/** HTML 属性转义（额外转义双引号） */
+export function escapeHtmlAttr(str) {
+    return escapeHtml(str).replace(/"/g, '&quot;');
+}
+
+/** JavaScript 字符串转义 */
+export function escapeJs(str) {
+    return String(str ?? '')
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'")
+        .replace(/"/g, '\\"')
+        .replace(/\n/g, '\\n')
+        .replace(/\r/g, '\\r')
+        .replace(/\t/g, '\\t');
+}
+
+// ── 自定义 trim ─────────────────────────────────────────────
+
+/** 从开头移除指定字符 */
+export function trimStart(str, chars = ' \t\n\r') {
+    let s = String(str ?? ''), i = 0;
+    while (i < s.length && chars.includes(s[i])) i++;
+    return s.slice(i);
+}
+
+/** 从末尾移除指定字符 */
+export function trimEnd(str, chars = ' \t\n\r') {
+    let s = String(str ?? ''), i = s.length - 1;
+    while (i >= 0 && chars.includes(s[i])) i--;
+    return s.slice(0, i + 1);
+}
+
+// ── ID 生成 ─────────────────────────────────────────────────
+
+/** 生成带前缀的唯一 ID */
+export function generateId(prefix = 'id') {
+    return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+// ── 宽度计算 ────────────────────────────────────────────────
+
+/** CJK 感知的字符串宽度（中文 ≈ 2 字符宽度） */
+export function strWidth(str) {
+    return String(str ?? '').split('').reduce((len, c) =>
+        len + (c.charCodeAt(0) > 127 ? 2 : 1), 0);
+}
+
+/** URL 安全检查 */
+export function sanitizeUrl(href) {
+    const raw = String(href ?? '').trim();
+    if (!raw) return '';
+    if (raw.startsWith('import-')) return '';
+    if (raw.startsWith('#') || raw.startsWith('/') || raw.startsWith('./') || raw.startsWith('../')) return raw;
+    try {
+        const u = new URL(raw, window.location.origin);
+        const p = String(u.protocol ?? '').toLowerCase();
+        if (p === 'http:' || p === 'https:' || p === 'mailto:') return u.href;
+        return '';
+    } catch { return ''; }
 }
 
 /**
@@ -258,22 +313,26 @@ export function buildQuery(params) {
 }
 
 export default {
-    capitalize,
-    camelToKebab,
-    kebabToCamel,
-    snakeToCamel,
-    camelToSnake,
-    truncate,
-    stripHtml,
-    escapeHtml,
-    unescapeHtml,
-    randomString,
-    uuid,
-    template,
-    highlight,
-    byteLength,
-    truncateByBytes,
+    // 大小写
+    capitalize, uncapitalize, titleize,
+    // 命名风格
+    camelToKebab, kebabToCamel, snakeToCamel, camelToSnake,
+    // 截断
+    truncate, truncateByBytes,
+    // HTML
+    stripHtml, escapeHtml, unescapeHtml, escapeHtmlAttr, escapeJs,
+    // URL 安全
+    sanitizeUrl,
+    // 模板 & 高亮
+    template, highlight,
+    // 随机 & ID
+    randomString, uuid, generateId,
+    // 字节 / 宽度
+    byteLength, strWidth,
+    // trim
+    trimStart, trimEnd,
+    // 数字格式化
     formatNumber,
-    parseQuery,
-    buildQuery
+    // URL 查询
+    parseQuery, buildQuery
 };

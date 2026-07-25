@@ -5,80 +5,27 @@
 
 class InjectionService {
   /**
-   * 注入 content scripts 需要的文件列表（必须按依赖顺序）
-   * 注意：这里要与 manifest.json 里的 content_scripts.js 保持一致，
-   * 否则可能出现 window.PetManager 未定义等问题。
+   * 从 manifest.json 中动态获取 content_scripts 的 js 文件列表
+   * 避免与 manifest.json 手动维护重复的列表
+   * @returns {string[]}
    */
-  static CONTENT_SCRIPT_FILES = [
-    'src/config/pet.config.js',
-    'cdn/vendor/md5.js',
-    'cdn/utils/http/token.js',
-    'cdn/utils/http/logger.js',
-    'cdn/utils/http/error.js',
-    'cdn/utils/http/request.js',
-    'cdn/utils/media/image-resource.js',
-    'cdn/utils/ui/loading-animation-mixin.js',
-    'cdn/utils/ui/loading-animation.js',
-    'src/config/endpoints.js',
-    'cdn/utils/core/apiManager.js',
-    'src/api/session.service.js',
-    'cdn/utils/core/session.js',
-    'src/api/faq.service.js',
-    'cdn/vendor/marked.min.js',
-    'cdn/engines/markdown/markdown.js',
-    'cdn/vendor/vue.global.js',
-    'cdn/utils/core/logger.js',
-    'cdn/utils/core/error.js',
-    'cdn/utils/dom/dom-helper.js',
-    'src/bootstrap/bootstrap.js',
-    'src/content/pet-manager-core.js',
-    'cdn/components/pet/settings/TokenSettings/index.js',
-    'src/content/auth.js',
-    'src/content/ai/roles.js',
-    'src/content/ai/robot.js',
-    'cdn/components/pet/settings/AiSettings/index.js',
-    'src/content/session/session-crud.js',
-    'src/content/session/session-filter.js',
-    'src/content/session/session-tag.js',
-    'src/content/session/session-batch.js',
-    'src/content/ai/ai-api.js',
-    'src/content/ai/ai-prompt.js',
-    'src/content/session/session-editor.js',
-    'src/content/session/editor-core.js',
-    'src/content/session/editor-ui.js',
-    'src/content/session/session-editor-module.js',
-    'cdn/engines/markdown/mermaid.js',
-    'src/content/mermaid/mermaid-renderer.js',
-    'src/content/mermaid/mermaid-ui.js',
-    'cdn/components/pet/manager/SessionTagManager/index.js',
-    'src/content/session/session-tags.js',
-    'src/content/ai/parser.js',
-    'cdn/components/pet/manager/FaqManager/index.js',
-    'cdn/components/pet/manager/FaqTagManager/index.js',
-    'src/content/faq/faq-manager.js',
-    'src/content/faq/faq-tags.js',
-    'src/content/messaging-module.js',
-    'src/content/page-info.js',
-    'src/content/session/session-module.js',
-    'cdn/components/pet/chat/ChatWindow/hooks/store.js',
-    'cdn/components/pet/chat/ChatWindow/hooks/useComputed.js',
-    'cdn/components/pet/chat/ChatWindow/hooks/useMethods.js',
-    'cdn/components/pet/chat/ChatHeader/index.js',
-    'cdn/components/pet/chat/ChatInput/index.js',
-    'cdn/components/pet/chat/ChatMessages/index.js',
-    'cdn/components/pet/chat/ChatWindow/index.js',
-    'src/content/pet-manager-ui.js',
-    'src/content/pet/pet-drag.js',
-    'src/content/pet/pet-element.js',
-    'src/content/state.js',
-    'src/content/chat/chat-send.js',
-    'src/content/chat/chat-ui.js',
-    'src/content/event-bus.js',
-    'src/content/media.js',
-    'src/content/messaging.js',
-    'src/content/pet-manager.js',
-    'src/bootstrap/index.js',
-  ]
+  static getContentScriptFiles() {
+    try {
+      const manifest = chrome.runtime.getManifest()
+      const contentScripts = manifest.content_scripts || []
+      // 汇总所有 matches 匹配项中的 js 文件（通常只有一个 <all_urls> 条目）
+      const allFiles = []
+      for (const entry of contentScripts) {
+        if (Array.isArray(entry.js)) {
+          allFiles.push(...entry.js)
+        }
+      }
+      return allFiles
+    } catch (e) {
+      console.error('无法读取 manifest，使用空列表:', e)
+      return []
+    }
+  }
 
   /**
    * 直接注入content script到指定标签页
@@ -88,9 +35,14 @@ class InjectionService {
   async injectContentScript(tabId) {
     try {
       console.log('直接注入content script到标签页:', tabId)
+      const files = InjectionService.getContentScriptFiles()
+      if (files.length === 0) {
+        console.error('Content script 文件列表为空，无法注入')
+        return false
+      }
       await chrome.scripting.executeScript({
         target: { tabId },
-        files: InjectionService.CONTENT_SCRIPT_FILES,
+        files,
       })
       console.log('Content script 注入成功')
       return true

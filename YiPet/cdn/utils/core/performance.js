@@ -479,8 +479,49 @@ function initPerformanceMonitoring() {
     }
 }
 
+/**
+ * 请求动画帧节流
+ */
+export function rafThrottle(fn) {
+    let rafId = null;
+    return function (...args) {
+        if (rafId) return;
+        rafId = requestAnimationFrame(() => {
+            fn.apply(this, args);
+            rafId = null;
+        });
+    };
+}
+
+/**
+ * 空闲时执行
+ */
+export function idle(fn, options = {}) {
+    if ('requestIdleCallback' in window) return requestIdleCallback(fn, options);
+    return setTimeout(fn, 1);
+}
+
+/**
+ * 批量执行任务
+ */
+export function batch(tasks = [], batchSize = 10, delay = 0) {
+    return new Promise((resolve) => {
+        const results = [];
+        let index = 0;
+        function executeBatch() {
+            const end = Math.min(index + batchSize, tasks.length);
+            for (let i = index; i < end; i++) results.push(tasks[i]());
+            index = end;
+            if (index < tasks.length) setTimeout(executeBatch, delay);
+            else resolve(results);
+        }
+        executeBatch();
+    });
+}
+
 // 导出函数供外部使用
 export {
+    rafThrottle, idle, batch,
     monitorPageLoadPerformance,
     monitorErrors,
     initPerformanceMonitoring

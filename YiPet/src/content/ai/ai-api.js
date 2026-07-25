@@ -14,15 +14,7 @@
     : console
 
   const DEFAULT_SYSTEM_PROMPT = proto.DEFAULT_SYSTEM_PROMPT || '你是一个俏皮活泼、古灵精怪的小女友，聪明有趣，时而调侃时而贴心。语气活泼可爱，会开小玩笑，但也会关心用户。'
-  const isDefaultSessionTitle = (title) => {
-    const currentTitle = String(title ?? '')
-    return !currentTitle ||
-            currentTitle.trim() === '' ||
-            currentTitle === '未命名会话' ||
-            currentTitle === '新会话' ||
-            currentTitle === '未命名页面' ||
-            currentTitle === '当前页面'
-  }
+  const isDefaultSessionTitle = (title) => (proto._isDefaultSessionTitle ? proto._isDefaultSessionTitle(title) : false)
   const extractSseText = (chunk) => {
     if (!chunk) return null
     if (chunk.message && chunk.message.content) return chunk.message.content

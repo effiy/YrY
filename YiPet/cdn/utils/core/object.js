@@ -1,9 +1,14 @@
 /**
- * 对象工具函数
- * author: liangliang
+ * 对象工具函数 — 规范实现
+ * 合并自 index.js + core/object.js
  */
 
 /**
+ * 浅合并对象
+ */
+export function merge(...objects) {
+    return objects.reduce((acc, obj) => ({ ...acc, ...obj }), {});
+}
  * 深度合并对象
  * @param {Object} target - 目标对象
  * @param {...Object} sources - 源对象
@@ -351,23 +356,39 @@ export function diff(obj1, obj2) {
     return result;
 }
 
+/**
+ * 深拷贝（支持 Date、Array、Map、Set、普通对象）
+ */
+export function deepClone(obj) {
+    if (obj === null || typeof obj !== 'object') return obj;
+    if (obj instanceof Date) return new Date(obj.getTime());
+    if (obj instanceof Array) return obj.map(item => deepClone(item));
+    if (obj instanceof Map) return new Map(Array.from(obj, ([k, v]) => [k, deepClone(v)]));
+    if (obj instanceof Set) return new Set(Array.from(obj, v => deepClone(v)));
+    const copy = {};
+    for (const key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            copy[key] = deepClone(obj[key]);
+        }
+    }
+    return copy;
+}
+
+/** 对象转 [key, value] 对数组 */
+export function toPairs(obj) {
+    return Object.entries(obj || {});
+}
+
+/** [key, value] 对数组转对象 */
+export function fromPairs(pairs) {
+    return Object.fromEntries(pairs || []);
+}
+
 export default {
-    deepMerge,
-    isObject,
-    isEmpty,
-    get,
-    set,
-    unset,
-    has,
-    invert,
-    pick,
-    omit,
-    mapValues,
-    mapKeys,
-    filterObject,
-    flattenObject,
-    unflattenObject,
-    deepFreeze,
-    deepEqual,
-    diff
+    deepMerge, merge, isObject, isEmpty,
+    get, set, unset, has, invert,
+    pick, omit, mapValues, mapKeys, filterObject,
+    flattenObject, unflattenObject,
+    deepFreeze, deepEqual, diff, deepClone,
+    toPairs, fromPairs
 };

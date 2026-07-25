@@ -174,27 +174,6 @@
         console.log('资源清理完成')
       }
 
-      // 更新接口请求列表侧边栏
-      /**
-             * 获取过滤后的接口请求列表（统一过滤逻辑）
-             * @returns {Array} 过滤后的请求列表
-             */
-      /**
-             * 获取请求的唯一标识（使用 key 字段）
-             * @param {Object} req - 请求对象
-             * @returns {string|null} 唯一标识（key 字段）
-             */
-
-      // 优化页面上下文内容
-      /**
-             * 清理和优化文本内容
-             * 去除HTML标签、无意义内容，保留核心信息
-             * @param {string} text - 待清理的文本
-             * @returns {string} 清理后的文本
-             */
-
-      // 根据标签名称生成颜色（确保相同标签颜色一致）
-
       // 清除所有选中状态（切换视图时调用）
       clearAllSelections () {
         // 清除当前选中的会话
@@ -320,102 +299,7 @@
 
       // 更新批量操作工具栏
 
-      // 删除会话
-      async deleteSession (sessionId, skipConfirm = false) {
-        if (!sessionId || !this.sessions[sessionId]) return
-
-        // 获取会话标题用于提示
-        const session = this.sessions[sessionId]
-        const sessionTitle = session?.title || sessionId || '未命名会话'
-
-        // 确认删除（如果未跳过确认）
-        if (!skipConfirm) {
-          const confirmDelete = confirm(`确定要删除会话"${sessionTitle}"吗？`)
-          if (!confirmDelete) return
-        }
-
-        // 记录是否删除的是当前会话
-        const isCurrentSession = sessionId === this.currentSessionId
-
-        // 从选中集合中移除
-        if (this.selectedSessionIds && this.selectedSessionIds.has(sessionId)) {
-          this.selectedSessionIds.delete(sessionId)
-          if (typeof this.updateBatchToolbar === 'function') {
-            this.updateBatchToolbar()
-          }
-        }
-
-        // 注意：已移除自动保存会话功能，仅在 prompt 接口调用后保存
-        // 删除会话前不再自动保存当前会话
-
-        // 从后端删除会话（如果启用了后端同步）
-        if (this.sessionApi && PET_CONFIG.api.syncSessionsToBackend) {
-          try {
-            // 确保使用 session.key 作为统一标识
-            const unifiedSessionId = session.key || sessionId
-
-            await this.sessionApi.deleteSession(unifiedSessionId)
-            console.log('会话已从后端删除:', unifiedSessionId)
-          } catch (error) {
-            console.warn('从后端删除会话失败:', error)
-            // 即使后端删除失败，也继续本地删除，确保用户界面响应
-          }
-        }
-
-        // 从本地删除会话
-        delete this.sessions[sessionId]
-        // 注意：已移除自动保存会话功能，仅在 prompt 接口调用后保存
-        // 删除操作通过后端API完成持久化
-
-        // 删除会话后，重新从接口获取会话列表（强制刷新）
-        if (this.sessionApi && PET_CONFIG.api.syncSessionsToBackend && this.isChatOpen) {
-          try {
-            await this.loadSessionsFromBackend(true)
-            console.log('会话列表已从后端刷新')
-          } catch (error) {
-            console.warn('刷新会话列表失败:', error)
-          }
-        }
-
-        // 如果删除的是当前会话，切换到其他会话或清空
-        if (isCurrentSession) {
-          // 查找最新的其他会话
-          const otherSessions = Object.values(this.sessions)
-
-          if (otherSessions.length > 0) {
-            // 切换到最近访问的会话（使用 lastAccessTime，更符合"最新使用"的概念）
-            // 如果没有 lastAccessTime，则使用 createdAt 作为备选
-            const latestSession = otherSessions.sort((a, b) => {
-              const aTime = a.lastAccessTime || a.createdAt || 0
-              const bTime = b.lastAccessTime || b.createdAt || 0
-              return bTime - aTime // 最近访问的在前
-            })[0]
-
-            await this.activateSession(latestSession.id, {
-              saveCurrent: false, // 已经在前面保存了
-              updateUI: true,
-              syncToBackend: false // 删除会话后的自动切换不调用 session/save 接口
-            })
-          } else {
-            // 没有其他会话，清空当前会话
-            this.currentSessionId = null
-            this.hasAutoCreatedSessionForPage = false
-
-            // 清空消息显示
-            if (this.chatWindow && this.isChatOpen) {
-              const messagesContainer = this.chatWindow.querySelector('#yi-pet-chat-messages')
-              if (messagesContainer) {
-                messagesContainer.innerHTML = ''
-              }
-            }
-          }
-        }
-
-        // 更新侧边栏
-        await this.updateSessionUI({ updateSidebar: true })
-
-        console.log('会话已删除:', sessionId)
-      }
+      // 删除会话已迁移至 session/session-crud.js
 
       // 处理 Markdown 中的 Mermaid 代码块
       createMessageElement (text, sender, imageDataUrl = null, timestamp = null, options = {}) {

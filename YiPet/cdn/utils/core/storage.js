@@ -327,6 +327,23 @@ export const cookie = {
     }
 };
 
+/** 简版 getCookie（兼容 index.js API） */
+export function getCookie(name) {
+  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+  return match ? decodeURIComponent(match[2]) : null;
+}
+
+/** 简版 setCookie */
+export function setCookie(name, value, days = 7) {
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`;
+}
+
+/** 简版 deleteCookie */
+export function deleteCookie(name) {
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+}
+
 /**
  * IndexedDB封装
  */
@@ -480,8 +497,6 @@ export class IndexedDBStorage {
 }
 
 export default {
-    storage,
-    sessionStorage,
-    cookie,
-    IndexedDBStorage
+    storage, sessionStorage, cookie, IndexedDBStorage,
+    getCookie, setCookie, deleteCookie
 };

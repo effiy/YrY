@@ -326,50 +326,24 @@
 
     try {
       if (titleChanged) {
-        const buildFilePath = (session, title, normalizeFolders = true) => {
-          const tags = Array.isArray(session.tags) ? session.tags : []
-          let currentPath = ''
-          tags.forEach((folderName) => {
-            const folder = normalizeFolders ? this._normalizeNameSpaces(folderName) : String(folderName ?? '').trim()
-            if (!folder || folder.toLowerCase() === 'default') return
-            currentPath = currentPath ? `${currentPath}/${folder}` : folder
-          })
+        const sanitizeFileName = (name) =>
+          String(name || '')
+            .replace(/\s+/g, '_')
+            .replace(/[\\/:*?"<>|]/g, '-')
+            .trim()
 
-          const sanitizeFileName = (name) =>
-            String(name || '')
-              .replace(/\s+/g, '_')
-              .replace(/[\\/:*?"<>|]/g, '-')
-              .trim()
-          let fileName = sanitizeFileName(title) || 'Untitled'
-          fileName = String(fileName).replace(/\//g, '-')
+        const oldPath = this._buildSessionFilePath(session, {
+          normalizeFolders: false,
+          title: normalizedOriginalTitle,
+          sanitizeFileNameFn: sanitizeFileName,
+        }).cleanPath
 
-          let cleanPath = currentPath ? `${currentPath}/${fileName}` : fileName
-          cleanPath = cleanPath.replace(/\\/g, '/').replace(/^\/+/, '')
-          if (cleanPath.startsWith('static/')) {
-            cleanPath = cleanPath.substring(7)
-          }
-          cleanPath = cleanPath.replace(/^\/+/, '')
-
-          if (!cleanPath) {
-            const pageDesc = session.pageDescription || ''
-            if (pageDesc && pageDesc.includes('文件：')) {
-              const filePath = pageDesc.replace('文件：', '').trim()
-              const dirPath = filePath.substring(0, filePath.lastIndexOf('/') + 1)
-              cleanPath = dirPath + fileName
-              cleanPath = cleanPath.replace(/\\/g, '/').replace(/^\/+/, '')
-              if (cleanPath.startsWith('static/')) {
-                cleanPath = cleanPath.substring(7)
-              }
-              cleanPath = cleanPath.replace(/^\/+/, '')
-            }
-          }
-
-          return cleanPath
-        }
-
-        const oldPath = buildFilePath(session, normalizedOriginalTitle, false)
         const tempSession = { ...session, title: normalizedNewTitle }
-        const newPath = buildFilePath(tempSession, normalizedNewTitle, true)
+        const newPath = this._buildSessionFilePath(tempSession, {
+          normalizeFolders: true,
+          title: normalizedNewTitle,
+          sanitizeFileNameFn: sanitizeFileName,
+        }).cleanPath
 
         if (oldPath && newPath && oldPath !== newPath) {
           const apiBase =

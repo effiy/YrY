@@ -63,13 +63,6 @@
     const prevScrollTop = sessionList.scrollTop
     const allSessions = this._getFilteredSessions()
     console.log('当前会话数量:', allSessions.length)
-    const q = (this.sessionTitleFilter || '').trim()
-    // eslint-disable-next-line no-unused-vars -- hasFilter computed for future filter indicator
-    const hasFilter =
-      q ||
-      (this.selectedFilterTags && this.selectedFilterTags.length > 0) ||
-      this.tagFilterNoTags ||
-      this.dateRangeFilter
     const sortedSessions = allSessions.sort((a, b) => {
       const aTags = Array.isArray(a.tags) ? a.tags.map((t) => String(t).trim()) : []
       const bTags = Array.isArray(b.tags) ? b.tags.map((t) => String(t).trim()) : []

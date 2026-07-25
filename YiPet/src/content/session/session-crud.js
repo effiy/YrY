@@ -10,6 +10,41 @@
 
   const proto = window.PetManager.prototype
 
+  // ── Shared utility: normalize messages for backend API ──
+  proto._normalizeMessagesForBackend = function (messages) {
+    const list = Array.isArray(messages) ? messages : []
+    return list.map((m) => {
+      const type = m && m.type === 'pet' ? 'pet' : 'user'
+      const message = String(m?.message ?? m?.content ?? '').trim()
+      const timestamp = Number(m?.timestamp) || Date.now()
+      const imageDataUrls = Array.isArray(m?.imageDataUrls) ? m.imageDataUrls.filter(Boolean) : []
+      const imageDataUrl = String(m?.imageDataUrl || '').trim()
+      const payload = { type, message, timestamp }
+      if (imageDataUrls.length > 0) {
+        payload.imageDataUrls = imageDataUrls
+        payload.imageDataUrl = imageDataUrls[0]
+      } else if (imageDataUrl) {
+        payload.imageDataUrl = imageDataUrl
+        payload.imageDataUrls = [imageDataUrl]
+      }
+      if (m?.error) payload.error = true
+      if (m?.aborted) payload.aborted = true
+      return payload
+    })
+  }
+
+  // ── Shared utility: check if a session title is a default/placeholder ──
+  proto._isDefaultSessionTitle = function (title) {
+    const currentTitle = String(title ?? '')
+    return !currentTitle ||
+      currentTitle.trim() === '' ||
+      currentTitle === '未命名会话' ||
+      currentTitle === '新会话' ||
+      currentTitle === '未命名页面' ||
+      currentTitle === '当前页面' ||
+      currentTitle === '新会话.md'
+  }
+
   // ========== 会话初始化与核心流程 ==========
 
   proto.initSession = async function () {
@@ -324,14 +359,7 @@
       sessionTitle = normalizedSessionTitle
       updated = true
     }
-    const isDefaultTitle =
-      !sessionTitle ||
-      sessionTitle.trim() === '' ||
-      sessionTitle === '未命名会话' ||
-      sessionTitle === '新会话' ||
-      sessionTitle === '未命名页面' ||
-      sessionTitle === '当前页面' ||
-      sessionTitle === '新会话.md'
+    const isDefaultTitle = this._isDefaultSessionTitle(sessionTitle)
 
     const nextTitle = currentPageTitle ? this._addMdSuffix(currentPageTitle) : ''
 
@@ -513,34 +541,12 @@
         session.key = sessionKey
       }
 
-      const normalizeMessagesForBackend = (messages) => {
-        const list = Array.isArray(messages) ? messages : []
-        return list.map((m) => {
-          const type = m && m.type === 'pet' ? 'pet' : 'user'
-          const message = String(m?.message ?? m?.content ?? '').trim()
-          const timestamp = Number(m?.timestamp) || Date.now()
-          const imageDataUrls = Array.isArray(m?.imageDataUrls) ? m.imageDataUrls.filter(Boolean) : []
-          const imageDataUrl = String(m?.imageDataUrl || '').trim()
-          const payload = { type, message, timestamp }
-          if (imageDataUrls.length > 0) {
-            payload.imageDataUrls = imageDataUrls
-            payload.imageDataUrl = imageDataUrls[0]
-          } else if (imageDataUrl) {
-            payload.imageDataUrl = imageDataUrl
-            payload.imageDataUrls = [imageDataUrl]
-          }
-          if (m?.error) payload.error = true
-          if (m?.aborted) payload.aborted = true
-          return payload
-        })
-      }
-
       const sessionData = {
         key: sessionKey,
         url: sessionUrl,
         title,
         pageDescription,
-        messages: normalizeMessagesForBackend(session.messages),
+        messages: this._normalizeMessagesForBackend(session.messages),
         tags: session.tags || [],
         createdAt: session.createdAt || Date.now(),
         updatedAt: session.updatedAt || Date.now(),

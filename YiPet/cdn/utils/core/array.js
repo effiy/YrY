@@ -299,7 +299,7 @@ export function arrayToTree(arr, options = {}) {
 }
 
 /**
- * 树形结构转数组
+ * 树形结构转数组（同时别名为 flattenTree，兼容 index.js API）
  * @param {Array} tree - 树形数组
  * @param {string} childrenKey - 子节点键名
  * @returns {Array} 扁平数组
@@ -377,25 +377,61 @@ export function remove(arr, indexOrPredicate) {
     return arr;
 }
 
+/**
+ * 数组查找（符合条件的所有元素，同 filter 别名）
+ */
+export function findAll(arr, predicate) {
+    return Array.isArray(arr) ? arr.filter(predicate) : [];
+}
+
+/** @deprecated — 使用 treeToArray 代替，保留以兼容 index.js 旧 API */
+export const flattenTree = treeToArray;
+
+// ── 树形操作 ────────────────────────────────────────────────
+
+/** 查找树节点 */
+export function findTreeNode(tree, predicate, childrenKey = 'children') {
+    for (const node of tree) {
+        if (predicate(node)) return node;
+        if (node[childrenKey]) {
+            const found = findTreeNode(node[childrenKey], predicate, childrenKey);
+            if (found) return found;
+        }
+    }
+    return null;
+}
+
+/** 过滤树节点 */
+export function filterTree(tree, predicate, childrenKey = 'children') {
+    return tree.reduce((acc, node) => {
+        if (predicate(node)) {
+            const newNode = { ...node };
+            if (node[childrenKey]) {
+                newNode[childrenKey] = filterTree(node[childrenKey], predicate, childrenKey);
+            }
+            acc.push(newNode);
+        }
+        return acc;
+    }, []);
+}
+
+/** 遍历树 */
+export function traverseTree(tree, callback, childrenKey = 'children') {
+    function traverse(nodes, parent = null, level = 0) {
+        nodes.forEach((node, index) => {
+            callback(node, parent, level, index);
+            if (node[childrenKey]) {
+                traverse(node[childrenKey], node, level + 1);
+            }
+        });
+    }
+    traverse(Array.isArray(tree) ? tree : [tree]);
+}
+
 export default {
-    unique,
-    groupBy,
-    sortBy,
-    chunk,
-    flatten,
-    difference,
-    intersection,
-    union,
-    shuffle,
-    sample,
-    sum,
-    average,
-    max,
-    min,
-    paginate,
-    arrayToTree,
-    treeToArray,
-    move,
-    insert,
-    remove
+    unique, groupBy, sortBy, chunk, flatten,
+    difference, intersection, union, shuffle, sample,
+    sum, average, max, min, paginate,
+    arrayToTree, treeToArray, flattenTree, findTreeNode, filterTree, traverseTree,
+    findAll, move, insert, remove
 };
