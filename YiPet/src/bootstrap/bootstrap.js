@@ -46,7 +46,7 @@
 
   // 按依赖顺序注入：先注入基础库，后注入依赖它们的库
   var scripts = [
-    // 工具库
+    // ═══════════════════ Vendor 库 ═══════════════════
     'cdn/vendor/md5.js',
     // 日期库
     'cdn/vendor/dayjs@1.11.21/dayjs.min.js',
@@ -78,6 +78,30 @@
     'cdn/vendor/swiper@7.0.3/js/swiper-bundle.min.js',
     // anime.js
     'cdn/vendor/anime@3.0.0/anime.min.js',
+
+    // ═══════════════════ CDN 核心工具（主世界可访问） ═══════════════════
+    // 基础层
+    'cdn/utils/core/logger.js',            // → window.LoggerUtils
+    'cdn/utils/core/error.js',             // → window.ErrorHandler
+    // HTTP 层
+    'cdn/utils/http/logger.js',            // → window.Logger, LOG_LEVELS, LoggerUtils
+    'cdn/utils/http/error.js',             // → window.APIError, ApiErrorHandler, createError, ...
+    'cdn/utils/http/token.js',             // → window.TokenManager, tokenManager, TokenUtils
+    'cdn/utils/http/request.js',           // → window.RequestClient, requestClient
+    // 业务服务层
+    'cdn/utils/core/apiManager.js',        // → window.ApiManager
+    'cdn/utils/core/session.js',           // → window.SessionManager
+    // DOM 工具层
+    'cdn/utils/dom/dom-helper.js',         // → window.DomHelper
+    'cdn/utils/dom/file-helper.js',        // → window.FileHelper
+    'cdn/utils/dom/template-helper.js',    // → window.TemplateHelper
+    'cdn/utils/dom/script-helper.js',      // → window.ScriptHelper
+    // UI 工具层
+    'cdn/utils/ui/loading-animation.js',        // → window.petLoadingAnimation, LoadingAnimation
+    'cdn/utils/ui/loading-animation-mixin.js',  // → window.LoadingAnimationMixin
+    // Markdown / Mermaid 引擎
+    'cdn/engines/markdown/markdown.js',    // → window.MarkdownRenderer
+    'cdn/engines/markdown/mermaid.js',     // → window.MermaidRenderer
   ]
 
   // 顺序注入，每个加载完后注入下一个

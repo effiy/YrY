@@ -21,3 +21,23 @@ export function createMermaidRendererWithPlugins(options = {}) {
 export { createMermaidRenderer };
 export * from './core/index.js';
 export * from './plugins/index.js';
+
+// ── Window registration ─────────────────────────────────────────────────
+(function _registerMermaidEngineOnWindow() {
+  const engine = {
+    MermaidRenderer,
+    createMermaidRenderer,
+    createMermaidRendererWithPlugins
+  };
+
+  window.YiPet = window.YiPet || {};
+  window.YiPet.Engines = window.YiPet.Engines || {};
+  window.YiPet.Engines.Mermaid = engine;
+
+  // Expose key APIs directly on window (skip existing keys)
+  Object.keys(engine).forEach(function (key) {
+    if (!(key in window)) {
+      window[key] = engine[key];
+    }
+  });
+})();

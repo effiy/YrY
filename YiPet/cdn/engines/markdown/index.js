@@ -1075,3 +1075,28 @@ export const getMarkdownToc = (text, options = {}) => {
 export const renderStreamingHtml = (text) => {
   return renderMarkdownHtml(text);
 };
+
+// ── Window registration ─────────────────────────────────────────────────
+(function _registerMarkdownEngineOnWindow() {
+  const engine = {
+    MarkdownRenderer,
+    createMarkdownRendererWithPlugins,
+    renderMarkdownHtml,
+    parseMarkdownFrontmatter,
+    getMarkdownToc,
+    renderStreamingHtml,
+    escapeHtml,
+    sanitizeUrl
+  };
+
+  window.YiPet = window.YiPet || {};
+  window.YiPet.Engines = window.YiPet.Engines || {};
+  window.YiPet.Engines.Markdown = engine;
+
+  // Expose key APIs directly on window (skip existing keys)
+  Object.keys(engine).forEach(function (key) {
+    if (!(key in window)) {
+      window[key] = engine[key];
+    }
+  });
+})();

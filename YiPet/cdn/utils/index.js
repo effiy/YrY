@@ -1650,7 +1650,7 @@ export function traverseTree(tree, callback, childrenKey = 'children') {
 // 导出默认对象
 // ============================================
 
-export default {
+const _utilsExports = {
   // HTML
   escapeHtml,
   unescapeHtml,
@@ -1827,6 +1827,8 @@ export default {
   traverseTree
 };
 
+export default _utilsExports;
+
 // Component Loader
 export * from './view/componentLoader.js';
 
@@ -1867,3 +1869,59 @@ export { default as http } from '/cdn/utils/core/http.js';
 export { default as animation } from '/cdn/utils/core/animation.js';
 export { default as validation } from '/cdn/utils/core/validation.js';
 export { default as performance } from '/cdn/utils/core/performance.js';
+
+// ══════════════════════════════════════════════════════════════════════════
+// Window registration — imports are hoisted by ES module semantics
+// ══════════════════════════════════════════════════════════════════════════
+import * as _componentLoader from '/cdn/utils/view/componentLoader.js';
+import * as _browserDom     from '/cdn/utils/browser/dom.js';
+import * as _browserEvents  from '/cdn/utils/browser/events.js';
+import * as _timeDate       from '/cdn/utils/time/date.js';
+import * as _timeParams     from '/cdn/utils/time/timeParams.js';
+import * as _timeSelectors  from '/cdn/utils/time/timeSelectors.js';
+import * as _baseView       from '/cdn/utils/view/baseView.js';
+import * as _domainUtils    from '/cdn/utils/data/domain.js';
+import * as _exportUtils    from '/cdn/utils/io/exportUtils.js';
+import * as _uiLoading      from '/cdn/utils/ui/loading.js';
+import * as _uiMessage      from '/cdn/utils/ui/message.js';
+import * as _uiTemplate     from '/cdn/utils/ui/template.js';
+
+(function _registerUtilsOnWindow() {
+  // 1. Directly-defined exports (from this file)
+  const directExports = _utilsExports;
+
+  // 2. Sub-module exports
+  const subModuleExports = {
+    ..._componentLoader,
+    ..._browserDom,
+    ..._browserEvents,
+    ..._timeDate,
+    ..._timeParams,
+    ..._timeSelectors,
+    ..._baseView,
+    ..._domainUtils,
+    ..._exportUtils,
+    ..._uiLoading,
+    ..._uiMessage,
+    ..._uiTemplate
+  };
+
+  // 3. Merge all exports (core utilities are registered by core/index.js itself)
+  const allExports = { ...directExports, ...subModuleExports };
+
+  // 4. Register under window.YiPet.Utils
+  if (window.YiPet && typeof window.YiPet.register === 'function') {
+    window.YiPet.register('Utils', allExports);
+  } else {
+    window.YiPet = window.YiPet || {};
+    window.YiPet.Utils = allExports;
+  }
+
+  // 5. Expose all utility functions directly on window
+  //    Skip keys that already exist to avoid overwriting
+  Object.keys(allExports).forEach(function (key) {
+    if (!(key in window)) {
+      window[key] = allExports[key];
+    }
+  });
+})();
