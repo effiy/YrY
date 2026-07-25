@@ -83,7 +83,6 @@
     // 基础层
     'cdn/utils/core/logger.js',            // → window.LoggerUtils
     // HTTP 层
-    'cdn/utils/http/logger.js',            // → window.Logger, LOG_LEVELS, LoggerUtils
     'cdn/utils/http/error.js',             // → window.APIError, ApiErrorHandler, createError, ...
     'cdn/utils/http/token.js',             // → window.TokenManager, tokenManager, TokenUtils
     'cdn/utils/http/request.js',           // → window.RequestClient, requestClient

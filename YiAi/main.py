@@ -12,11 +12,10 @@ sys.dont_write_bytecode = True
 # Add the project root to path to support the src layout
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
-from app import app, create_app
-
 if __name__ == "__main__":
     import uvicorn
-    from shared.config import settings
+    from src.shared.config import settings
+
 
     host = settings.server_host
     port = settings.server_port

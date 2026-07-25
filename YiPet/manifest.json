@@ -24,6 +24,7 @@
         "cdn/vendor/turndown.js",
         "cdn/vendor/vue.global.js",
         "cdn/utils/core/logger.js",
+        "src/bootstrap/bootstrap.js",
         "src/config/pet.config.js",
         "src/config/endpoints.js",
         "src/bootstrap/index.js"
