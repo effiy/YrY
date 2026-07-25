@@ -4,8 +4,6 @@
  * 说明：处理消息输入、输入法事件等
  */
 
-import { safeExecute } from '/cdn/utils/core/error-esm.js';
-
 /**
  * 创建输入处理方法
  * @param {Object} deps - 依赖注入对象

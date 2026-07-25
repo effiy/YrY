@@ -5,8 +5,6 @@
  * 所有验证函数提供安全默认值，避免畸形数据导致运行时错误。
  */
 
-import { logWarn } from '/cdn/utils/core/log.js';
-
 /* ---- 常量 ---- */
 
 export const VALID_STATUSES = ['planning', 'design', 'develop', 'testing', 'operations'];

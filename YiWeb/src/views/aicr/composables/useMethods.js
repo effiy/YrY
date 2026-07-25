@@ -6,7 +6,6 @@
  * @param {Object} store - 状态存储对象
  * @returns {Object} 方法集合
  */
-import { safeExecute, safeExecuteAsync, createError, ErrorTypes, showSuccessMessage } from '/cdn/utils/core/error-esm.js';
 import { getData, postData, batchOperations } from '/src/services/index.js';
 import { getStoredToken, saveToken, clearToken as clearStoredToken, openAuth as openAuthSettings } from '/src/services/authUtils.js?v=1';
 import {
@@ -18,7 +17,6 @@ import {
 import { buildServiceUrl, SERVICE_MODULE } from '/src/services/requestHelper.js';
 import { getFileDeleteService } from '../state/store.js';
 import { getSessionSyncService } from '/src/services/sessionSyncService.js';
-import { renderMarkdownHtml, renderStreamingHtml } from '/cdn/markdown/index.js';
 import { createSessionFaqMethods } from './sessionFaqMethods.js';
 import { openTagManager as openTagManagerExternal, closeTagManager as closeTagManagerExternal } from './tagManagerMethods.js';
 import { createSessionChatContextMethods } from './sessionChatContextMethods.js';
@@ -41,29 +39,21 @@ import { fetchOllamaModels, refreshModels } from '/src/utils/modelService.js';
 export const useMethods = (store) => {
     const {
         fileTree,
-        normalizeKey,
-        toggleSidebar,
-        toggleChatPanel,
         loadFileTree,
         loadFiles,
         loadFileByKey,
-        refreshData,
         // 文件树CRUD
         deleteItem,
         // 本地持久化
-        // 会话相关方法
         loadSessions,
-
-        // 搜索相关状态
-        searchQuery,
-        // 加载状态
-        loading,
         files,
         // 视图模式
         viewMode,
-
         activeSession,
     } = store;
+
+    // 过滤浏览器扩展引发的错误
+    setupBrowserExtensionErrorFilter('aicr-methods', true);
 
     const sessionSync = getSessionSyncService();
 

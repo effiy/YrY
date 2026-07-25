@@ -10,7 +10,7 @@
 import { normalizeFilePath } from '/src/utils/fileFieldNormalizer.js';
 
 export const useComputed = (store) => {
-    const { computed } = Vue;
+    const { computed } = window.Vue;
 
     return {
         /**

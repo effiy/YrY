@@ -4,8 +4,6 @@
  * 说明：处理侧边栏切换、聊天面板切换、数据刷新、批量模式等UI交互
  */
 
-import { safeExecute } from '/cdn/utils/core/error-esm.js';
-
 /**
  * 创建UI事件处理方法
  * @param {Object} deps - 依赖注入对象

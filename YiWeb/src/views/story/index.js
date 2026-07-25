@@ -7,10 +7,6 @@
 import { createStore } from './state/storeFactory.js';
 import { useComputed } from './composables/useComputed.js';
 import { useMethods } from './composables/useMethods.js';
-import { createBaseView } from '/cdn/utils/view/baseView.js';
-import { logInfo, logError } from '/cdn/utils/core/log.js';
-import { setupBrowserExtensionErrorFilter } from '/cdn/utils/core/error-esm.js';
-import '/cdn/utils/ui/tooltipPortal.js';
 
 (async function initStoryPanelApp() {
     // 启用调试日志，确保数据流日志在浏览器控制台可见

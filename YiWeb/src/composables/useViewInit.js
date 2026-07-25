@@ -5,10 +5,6 @@
  * author: liangliang
  */
 
-import { createBaseView } from '/cdn/utils/view/baseView.js';
-import { logInfo, logError } from '/cdn/utils/core/log.js';
-import { setupBrowserExtensionErrorFilter } from '/cdn/utils/core/error-esm.js';
-
 /**
  * 初始化一个 YiWeb 视图应用
  *

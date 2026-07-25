@@ -16,9 +16,8 @@
 
 import { postData, getData } from '/src/services/index.js';
 import { buildServiceUrl, SERVICE_MODULE } from '/src/services/requestHelper.js';
-import { safeExecuteAsync } from '/cdn/utils/core/error-esm.js';
 import { normalizeFileObject, extractFileName, extractTagsFromPath } from '/src/utils/fileFieldNormalizer.js';
-import { COLLECTIONS, URL_PROTOCOLS, MESSAGE_TYPES, FILE_TYPES } from '/src/views/aicr/constants.js';
+import { MESSAGE_TYPES } from '/src/views/aicr/constants.js';
 
 class SessionSyncService {
     constructor() {

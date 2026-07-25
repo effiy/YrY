@@ -1,6 +1,4 @@
 import { useMethods } from '/src/views/aicr/composables/useMethods.js';
-import { logInfo, logWarn, logError } from '/cdn/utils/core/log.js';
-import { formatTime as formatTimeUtil } from '/cdn/utils/core/common.js';
 
 export const createMainPageMethods = (store) => {
     return {
@@ -725,8 +723,6 @@ export const createMainPageMethods = (store) => {
 
                     if (store.loadFileTree) await store.loadFileTree();
                     if (store.loadSessions) await store.loadSessions(false);
-
-                    const { showSuccessMessage } = await import('/cdn/utils/core/error-esm.js');
                     showSuccessMessage(`已删除 ${count} 个文件`);
                 } finally {
                     try { hideGlobalLoading(); } catch (_) { }

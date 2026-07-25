@@ -4,10 +4,6 @@
 import { createStore } from '/src/views/claude/composables/store.js';
 import { useComputed } from '/src/views/claude/composables/useComputed.js';
 import { useMethods } from '/src/views/claude/composables/useMethods.js';
-import { createBaseView } from '/cdn/utils/view/baseView.js';
-import { logInfo, logError } from '/cdn/utils/core/log.js';
-import { setupBrowserExtensionErrorFilter } from '/cdn/utils/core/error-esm.js';
-import '/cdn/utils/ui/tooltipPortal.js';
 
 (async function initClaudePanelApp() {
     try {

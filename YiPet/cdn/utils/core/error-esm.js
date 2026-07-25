@@ -1,5 +1,4 @@
 /**
- * ESM 桥接层 — YiWeb 等模块化项目通过 `import { ... } from '/cdn/utils/core/error-esm.js'` 使用。
  *
  * 为什么单独开一个文件：
  *   error.js 既要被 YiPet 的 MV3 background service worker 以 `importScripts()` 加载

@@ -4,14 +4,6 @@
  * author: liangliang
  */
 
-// 模块依赖改为全局方式
-// import { window.safeExecute } from './error.js';
-// import { window.logInfo, window.logWarn, window.logError } from './log.js';
-// 导入日志工具，确保 window.logError 等函数可用
-import { logError, logInfo, logWarn, timeEnd, timeStart } from '/cdn/utils/core/log.js';
-import { createError, ErrorCodes, ErrorTypes, safeExecute } from '/cdn/utils/core/error.js';
-import { loadCSS } from '/cdn/utils/view/componentLoader.js';
-
 /**
  * 视图配置选项
  */

@@ -4,7 +4,6 @@
  * 说明：处理标签选择、清除、筛选等功能
  */
 
-import { safeExecute } from '/cdn/utils/core/error-esm.js';
 import { buildParentChildMap, getFirstLevelNames } from '/src/utils/filterHelpers.js';
 
 /**

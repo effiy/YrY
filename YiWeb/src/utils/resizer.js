@@ -3,8 +3,6 @@
  * 从 aicr/index.js 提取
  */
 
-import { COMPONENTS } from '/cdn/utils/core/constants.js';
-
 /**
  * 创建侧边栏拖拽条（为 AICR 页面）
  * @param {Object} store - 状态存储对象

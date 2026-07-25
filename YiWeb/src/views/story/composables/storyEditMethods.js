@@ -5,7 +5,6 @@
  * 描述更新走 update_document API，依赖更新走 update_document 写回 JSON 文档。
  */
 
-import { logInfo, logWarn, logError } from '/cdn/utils/core/log.js';
 import { enrichDocumentPageDescription } from '/src/services/documentEnrichService.js';
 import { postData } from '/src/services/crud.js';
 

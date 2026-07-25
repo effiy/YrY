@@ -4,8 +4,6 @@
  * 说明：通用工具方法，如打开链接、复制为Prompt等
  */
 
-import { safeExecute, safeExecuteAsync, createError, ErrorTypes } from '/cdn/utils/core/error-esm.js';
-
 /**
  * 创建工具方法
  * @param {Object} deps - 依赖注入对象

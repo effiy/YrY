@@ -3,8 +3,6 @@
  * 用于加载、解析和查询知识图谱数据，建立文件到故事/场景的映射
  */
 
-import { logInfo, logWarn, logError } from '/cdn/utils/core/log.js';
-
 // 全局缓存的知识图谱数据
 let allKnowledgeGraphs = null;
 let fileToStoriesMap = null;

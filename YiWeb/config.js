@@ -130,10 +130,6 @@ if (typeof window !== 'undefined') {
   if (config.debug) {
     console.info('[YiWeb Config] Loaded:', window.__ENV__);
   }
-
-  if (config.debug && isLocalHost(location.hostname)) {
-    import('/cdn/utils/core/devReload.js').catch(() => {});
-  }
 }
 
 export default config;

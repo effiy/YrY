@@ -6,9 +6,6 @@
 
 import { getStoredToken, saveToken } from './authUtils.js';
 
-// 导入消息提示工具
-import '/cdn/utils/ui/message.js';
-
 /**
  * 认证错误处理配置
  */

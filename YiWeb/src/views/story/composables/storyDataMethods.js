@@ -5,7 +5,6 @@
  * 所有方法通过依赖注入接收 state，不直接引用外部模块变量。
  */
 
-import { logInfo, logError } from '/cdn/utils/core/log.js';
 import { getAuthHeaders } from '/src/services/authUtils.js?v=1';
 import {
     validateApiResponse,

@@ -4,8 +4,6 @@
  * 说明：处理搜索输入、执行搜索、清除搜索等功能
  */
 
-import { safeExecute } from '/cdn/utils/core/error-esm.js';
-
 /**
  * 创建搜索相关方法
  * @param {Object} deps - 依赖注入对象

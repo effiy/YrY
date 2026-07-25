@@ -1,5 +1,3 @@
-import { getIconClass } from '/cdn/icons/iconMap.js';
-
 const genId = (prefix) => `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 
 const EMPTY_CARD_HTML = `

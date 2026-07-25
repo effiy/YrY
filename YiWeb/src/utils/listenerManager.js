@@ -3,8 +3,6 @@
  * 从 aicr/index.js 提取，避免重复代码
  */
 
-import { logInfo, logWarn } from '/cdn/utils/core/log.js';
-
 /**
  * 创建监听器管理器
  * @returns {Object} 管理器实例

@@ -2,10 +2,8 @@
  * Claude 管理面板 - 状态管理
  * 管理远端各项目 .claude 目录
  */
-import { logInfo, logError } from '/cdn/utils/core/log.js';
 import { getData } from '/src/services/index.js';
 import { buildServiceUrl } from '/src/services/requestHelper.js';
-import { safeExecuteAsync } from '/cdn/utils/core/error-esm.js';
 
 const { ref } = Vue;
 

@@ -7,10 +7,10 @@ import { useComputed } from './composables/useComputed.js';
 import { createTagComputeds } from './composables/tagComputeds.js';
 import { useMethods } from './composables/useMethods.js';
 import { createMainPageMethods } from './composables/mainPageMethods.js';
-import { createBaseView } from '/cdn/utils/view/baseView.js';
-import { logInfo, logWarn, logError } from '/cdn/utils/core/log.js';
-import { setupBrowserExtensionErrorFilter } from '/cdn/utils/core/error-esm.js';
-import '/cdn/utils/ui/tooltipPortal.js';
+const { createBaseView } = window;
+const { logInfo, logWarn, logError } = window;
+const { setupBrowserExtensionErrorFilter } = window;
+
 import { createSidebarResizers } from '/src/utils/resizer.js';
 import { setupAicrEventListeners } from '/src/utils/listenerManager.js';
 
@@ -51,30 +51,7 @@ import { setupAicrEventListeners } from '/src/utils/listenerManager.js';
                 'SkeletonLoader',
                 'AiModelSelector',
             ],
-            componentModules: [
-                '/cdn/components/business/views/aicr/aicrPage/index.js',
-                '/cdn/components/business/views/aicr/aicrSidebar/index.js',
-                '/cdn/components/business/views/aicr/aicrCodeArea/index.js',
-                '/cdn/components/business/views/aicr/aicrModals/index.js',
-                '/cdn/components/common/modals/YiModal/index.js',
-                '/cdn/components/common/loaders/YiLoading/index.js',
-                '/cdn/components/common/feedback/YiEmptyState/index.js',
-                '/cdn/components/common/feedback/YiErrorState/index.js',
-                '/cdn/icons/YiIcon/index.js',
-                '/cdn/components/common/buttons/YiIconButton/index.js',
-                '/cdn/components/common/buttons/YiButton/index.js',
-                '/cdn/components/common/tags/YiTag/index.js',
-                '/cdn/components/common/forms/YiSelect/index.js',
-                '/cdn/components/common/forms/YiInput/index.js',
-                '/cdn/components/common/forms/YiTextarea/index.js',
-                '/cdn/components/business/HeaderActions/index.js',
-                '/cdn/components/business/views/aicr/fileTree/index.js',
-                '/cdn/components/business/views/aicr/codeView/index.js',
-                '/cdn/components/business/MarkdownView/index.js',
-                '/cdn/components/business/views/aicr/keyboardShortcutsHelp/index.js',
-                '/cdn/components/business/SkeletonLoader/index.js',
-                '/cdn/components/business/views/aicr/AiModelSelector/index.js'
-            ],
+
             data: {
                 // 暴露store数据给模板
                 sidebarCollapsed: store.sidebarCollapsed,
@@ -147,7 +124,7 @@ import { setupAicrEventListeners } from '/src/utils/listenerManager.js';
 
                 // 监听 activeSession 变化，在其渲染后绑定 welcome-card 事件（替代旧 setInterval 轮询）
                 if (store && store.activeSession && mountedApp && typeof mountedApp.bindWelcomeCardEvents === 'function') {
-                    const { watch, nextTick } = Vue;
+                    const { watch, nextTick } = window.Vue;
                     watch(
                         () => store.activeSession.value,
                         () => {
@@ -350,6 +327,6 @@ import { setupAicrEventListeners } from '/src/utils/listenerManager.js';
             };
         }
     } catch (error) {
-        logError('[代码审查页面] 应用初始化失败:', error);
+        window.logError?.('[代码审查页面] 应用初始化失败:', error);
     }
 })();

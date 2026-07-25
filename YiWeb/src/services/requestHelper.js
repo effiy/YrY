@@ -3,13 +3,11 @@
  * 作者：liangliang
  */
 
-import '/cdn/utils/core/log.js';
 import '/src/services/checkStatus.js';
 // 导入认证工具，确保 getAuthHeaders 函数可用
 import { getAuthHeaders } from '/src/services/authUtils.js?v=1';
 // 导入认证错误处理器
 import { isAuthError } from '/src/services/authErrorHandler.js';
-import { ErrorCodes, ErrorTypes } from '/cdn/utils/core/error-esm.js';
 
 /**
  * 默认请求配置

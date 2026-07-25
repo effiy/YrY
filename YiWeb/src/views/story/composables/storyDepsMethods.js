@@ -5,8 +5,6 @@
  * 所有方法通过依赖注入接收 state。
  */
 
-import { logInfo, logWarn, logError } from '/cdn/utils/core/log.js';
-
 const DEPS_JSON_PATH = '/docs/故事任务面板/故事依赖.json';
 
 export function createStoryDepsMethods(state) {

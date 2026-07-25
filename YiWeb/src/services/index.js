@@ -3,7 +3,6 @@
 
 // 注意：此文件已转换为全局变量方式，避免ES6模块语法错误
 // API函数将通过其他API文件以全局变量方式暴露
-import { logInfo } from '/cdn/utils/core/log.js';
 try { logInfo('[APIs] API模块聚合文件已加载'); } catch (_) { }
 
 // ES6模块导出（用于模块环境）

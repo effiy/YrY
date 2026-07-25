@@ -8,7 +8,7 @@ export const createSessionFaqMethods = ({
     SERVICE_MODULE,
     closeSessionContextEditor
 }) => {
-    const { computed } = Vue;
+    const { computed } = window.Vue;
 
     const {
         sessionFaqVisible,

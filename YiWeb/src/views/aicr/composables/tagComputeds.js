@@ -11,8 +11,6 @@
 
 import { getFirstLevelNames, extractStoryNames } from '/src/utils/filterHelpers.js';
 
-const { computed } = Vue;
-
 /**
  * 检查项目是否同时满足所有 skills/templates/rules/agents 标签筛选
  */
@@ -123,6 +121,7 @@ function createClaudeDirTag(store, dirName) {
  * @returns {Object} 计算属性集合
  */
 export const createTagComputeds = (store) => {
+    const { computed } = window.Vue;
     return {
         // 项目标签：顶层文件夹名 + 文件数 [{ name, count }]
         projectTags: computed(() => {

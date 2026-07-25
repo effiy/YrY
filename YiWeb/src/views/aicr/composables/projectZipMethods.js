@@ -663,7 +663,6 @@ export const createProjectZipMethods = ({
                     window.dispatchEvent(new CustomEvent('projectReady', { detail: {} }));
                 } catch (_) { }
 
-                const { showSuccess, showWarning } = await import('/cdn/utils/ui/message.js');
                 let msg = `导入完成：成功处理 ${filesUploaded} 个文件`;
                 if (filesUpdated > 0 && filesCreated > 0) {
                     msg += `（更新 ${filesUpdated} 个，新增 ${filesCreated} 个）`;
