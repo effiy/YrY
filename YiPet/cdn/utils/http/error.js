@@ -1,388 +1,365 @@
 /**
- * 错误处理工具类
- * 提供统一的错误处理、分类、格式化等功能
+ * HTTP Error — API 错误类型与错误处理器
+ *
+ * 提供结构化的 API 错误类型、错误创建工厂函数和统一错误处理器。
+ * 与 core/error.js 的通用错误检测不同，本模块专注于 HTTP/API 层错误。
+ *
+ * 全局导出:
+ *   window.APIError — API 错误类
+ *   window.ApiErrorHandler — 错误处理器
+ *   window.createError — 创建 APIError 的工厂函数
+ *   window.isAPIError — 判断是否为 APIError
+ *
+ * @module http/error
+ * @since 1.0.0
  */
 
-(function (root) {
-  class APIError extends Error {
-    constructor (message, code = 'UNKNOWN_ERROR', details = null) {
-      super(message)
-      this.name = 'APIError'
-      this.code = code
-      this.details = details
-      this.timestamp = Date.now()
+;(function (root) {
+  'use strict'
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     APIError Class
+     ═══════════════════════════════════════════════════════════════════════════ */
+
+  /**
+   * API 错误类
+   *
+   * @constructor
+   * @param {string} message - 错误消息
+   * @param {Object} [options]
+   * @param {string} [options.code='UNKNOWN'] - 错误码
+   * @param {number} [options.status=0] - HTTP 状态码
+   * @param {string} [options.url] - 请求 URL
+   * @param {string} [options.method] - HTTP 方法
+   * @param {*} [options.responseData] - 响应数据
+   * @param {Object} [options.requestBody] - 请求体
+   * @param {number} [options.timestamp=Date.now()] - 错误发生时间
+   * @param {Error} [options.cause] - 原始错误
+   *
+   * @example
+   *   throw new APIError('未授权', { status: 401, code: 'UNAUTHORIZED' })
+   */
+  function APIError(message, options) {
+    // 支持不带 new 调用
+    if (!(this instanceof APIError)) {
+      return new APIError(message, options)
+    }
+
+    var opts = options || {}
+
+    this.name = 'APIError'
+    this.message = String(message || 'Unknown API error')
+    this.code = opts.code || 'UNKNOWN'
+    this.status = opts.status || 0
+    this.url = opts.url || ''
+    this.method = (opts.method || 'GET').toUpperCase()
+    this.responseData = opts.responseData !== undefined ? opts.responseData : null
+    this.requestBody = opts.requestBody !== undefined ? opts.requestBody : null
+    this.timestamp = opts.timestamp || Date.now()
+    this.cause = opts.cause || null
+
+    // 保留原始堆栈
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, APIError)
+    } else {
+      this.stack = new Error().stack
     }
   }
 
-  class NetworkError extends APIError {
-    constructor (message, details = null) {
-      super(message, 'NETWORK_ERROR', details)
-      this.name = 'NetworkError'
-    }
+  APIError.prototype = Object.create(Error.prototype)
+  APIError.prototype.constructor = APIError
+
+  /**
+   * 判断是否为客户端错误 (4xx)
+   * @returns {boolean}
+   */
+  APIError.prototype.isClientError = function () {
+    return this.status >= 400 && this.status < 500
   }
 
-  class TimeoutError extends APIError {
-    constructor (message, timeout = 0, details = null) {
-      super(message, 'TIMEOUT_ERROR', details)
-      this.name = 'TimeoutError'
-      this.timeout = timeout
-    }
+  /**
+   * 判断是否为服务端错误 (5xx)
+   * @returns {boolean}
+   */
+  APIError.prototype.isServerError = function () {
+    return this.status >= 500 && this.status < 600
   }
 
-  class AuthError extends APIError {
-    constructor (message, details = null) {
-      super(message, 'AUTH_ERROR', details)
-      this.name = 'AuthError'
-    }
+  /**
+   * 判断是否为网络错误（无响应）
+   * @returns {boolean}
+   */
+  APIError.prototype.isNetworkError = function () {
+    return this.status === 0
   }
 
-  class ValidationError extends APIError {
-    constructor (message, fields = {}, details = null) {
-      super(message, 'VALIDATION_ERROR', details)
-      this.name = 'ValidationError'
-      this.fields = fields
-    }
+  /**
+   * 判断是否为超时错误
+   * @returns {boolean}
+   */
+  APIError.prototype.isTimeout = function () {
+    return this.code === 'TIMEOUT'
   }
 
-  class RateLimitError extends APIError {
-    constructor (message, retryAfter = 0, details = null) {
-      super(message, 'RATE_LIMIT_ERROR', details)
-      this.name = 'RateLimitError'
-      this.retryAfter = retryAfter
+  /**
+   * 判断是否为认证错误
+   * @returns {boolean}
+   */
+  APIError.prototype.isAuthError = function () {
+    return this.status === 401 || this.status === 403 || this.code === 'UNAUTHORIZED' || this.code === 'FORBIDDEN'
+  }
+
+  /**
+   * 判断错误是否可重试
+   * @returns {boolean}
+   */
+  APIError.prototype.isRetryable = function () {
+    return this.isNetworkError() || this.isTimeout() || this.isServerError()
+  }
+
+  /**
+   * 序列化为纯 JSON 对象（用于 postMessage 传输）
+   * @returns {Object}
+   */
+  APIError.prototype.toJSON = function () {
+    return {
+      name: this.name,
+      message: this.message,
+      code: this.code,
+      status: this.status,
+      url: this.url,
+      method: this.method,
+      timestamp: this.timestamp,
+      isClientError: this.isClientError(),
+      isServerError: this.isServerError(),
+      isNetworkError: this.isNetworkError(),
+      isTimeout: this.isTimeout(),
+      isAuthError: this.isAuthError(),
+      isRetryable: this.isRetryable()
     }
   }
 
   /**
- * 错误处理器
- */
-  class ApiErrorHandler {
-    constructor (options = {}) {
-      this.options = {
-        maxRetries: options.maxRetries || 3,
-        retryDelay: options.retryDelay || 1000,
-        onError: options.onError || null,
-        ...options
-      }
+   * 格式化错误为人类可读的字符串
+   * @returns {string}
+   */
+  APIError.prototype.toString = function () {
+    var parts = ['[' + this.code + ']']
+    if (this.status) parts.push(' HTTP ' + this.status)
+    parts.push(' ' + this.message)
+    if (this.url) parts.push(' (' + this.method + ' ' + this.url + ')')
+    return parts.join('')
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     Error Factory Functions
+     ═══════════════════════════════════════════════════════════════════════════ */
+
+  /**
+   * 创建一个 APIError 实例
+   * @param {string} message
+   * @param {Object} [options]
+   * @returns {APIError}
+   */
+  function createError(message, options) {
+    return new APIError(message, options)
+  }
+
+  /**
+   * 判断一个值是否为 APIError 实例
+   * @param {*} value
+   * @returns {boolean}
+   */
+  function isAPIError(value) {
+    return value instanceof APIError || (value && value.name === 'APIError')
+  }
+
+  /**
+   * 从 fetch Response 创建 APIError
+   * @param {Response} response
+   * @param {string} url
+   * @param {string} method
+   * @param {*} [responseData]
+   * @returns {APIError}
+   */
+  function fromResponse(response, url, method, responseData) {
+    var msg = 'HTTP ' + response.status + ': ' + response.statusText
+    if (responseData && responseData.message) {
+      msg = responseData.message
     }
 
-    /**
-     * 处理错误
-     */
-    async handle (error, context = {}) {
-      const categorizedError = this.categorize(error)
+    return new APIError(msg, {
+      status: response.status,
+      code: _statusToCode(response.status),
+      url: url,
+      method: method,
+      responseData: responseData
+    })
+  }
 
-      // 记录错误
-      console.error(`[API Error] ${categorizedError.name}: ${categorizedError.message}`, {
-        error: categorizedError,
-        context,
-        stack: categorizedError.stack
+  /**
+   * 从 fetch 异常创建 APIError
+   * @param {Error} error
+   * @param {string} url
+   * @param {string} method
+   * @returns {APIError}
+   */
+  function fromFetchError(error, url, method) {
+    var msg = error.message || '网络请求失败'
+    var code = 'NETWORK_ERROR'
+
+    if (error.name === 'AbortError') {
+      msg = '请求超时或已取消'
+      code = 'TIMEOUT'
+    } else if (msg.indexOf('Failed to fetch') !== -1) {
+      msg = '网络连接失败，请检查网络'
+      code = 'NETWORK_ERROR'
+    }
+
+    return new APIError(msg, {
+      code: code,
+      url: url,
+      method: method,
+      cause: error
+    })
+  }
+
+  /** HTTP 状态码 → 错误码映射 */
+  function _statusToCode(status) {
+    var map = {
+      400: 'BAD_REQUEST',
+      401: 'UNAUTHORIZED',
+      403: 'FORBIDDEN',
+      404: 'NOT_FOUND',
+      405: 'METHOD_NOT_ALLOWED',
+      408: 'TIMEOUT',
+      409: 'CONFLICT',
+      422: 'VALIDATION_ERROR',
+      429: 'RATE_LIMITED',
+      500: 'INTERNAL_ERROR',
+      502: 'BAD_GATEWAY',
+      503: 'SERVICE_UNAVAILABLE',
+      504: 'GATEWAY_TIMEOUT'
+    }
+    return map[status] || 'HTTP_' + status
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     ApiErrorHandler
+     ═══════════════════════════════════════════════════════════════════════════ */
+
+  /**
+   * API 错误处理器
+   * @namespace ApiErrorHandler
+   */
+  var ApiErrorHandler = {
+    /** @type {Array<Function>} 全局错误回调 */
+    _handlers: [],
+
+    /**
+     * 注册全局错误处理器
+     * @param {Function} handler - (error: APIError) => void
+     * @returns {Function} 取消注册的函数
+     */
+    onError: function (handler) {
+      if (typeof handler !== 'function') return function () {}
+      this._handlers.push(handler)
+      var self = this
+      return function () {
+        var idx = self._handlers.indexOf(handler)
+        if (idx !== -1) self._handlers.splice(idx, 1)
+      }
+    },
+
+    /**
+     * 处理错误（触发所有已注册的处理器）
+     * @param {APIError|Error|*} error
+     */
+    handle: function (error) {
+      var apiError = isAPIError(error) ? error : new APIError(
+        error && error.message ? error.message : 'Unknown error',
+        { cause: error }
+      )
+
+      this._handlers.forEach(function (handler) {
+        try { handler(apiError) } catch (_) {}
       })
 
-      // 执行自定义错误处理
-      if (this.options.onError) {
-        try {
-          await this.options.onError(categorizedError, context)
-        } catch (handlerError) {
-          console.error('自定义错误处理器失败:', handlerError)
+      // 默认控制台输出
+      if (apiError.isAuthError()) {
+        console.warn('[ApiErrorHandler] 认证错误:', apiError.toString())
+      } else if (apiError.isServerError()) {
+        console.error('[ApiErrorHandler] 服务端错误:', apiError.toString())
+      } else if (apiError.isNetworkError()) {
+        console.warn('[ApiErrorHandler] 网络错误:', apiError.toString())
+      } else if (apiError.isTimeout()) {
+        console.warn('[ApiErrorHandler] 超时:', apiError.toString())
+      } else {
+        console.error('[ApiErrorHandler]', apiError.toString())
+      }
+    },
+
+    /**
+     * 创建带默认行为的错误处理函数（用于 Promise.catch）
+     *
+     * @param {Object} [options]
+     * @param {*} [options.fallbackValue] - 错误时返回的回退值
+     * @param {boolean} [options.rethrow=false] - 是否重新抛出
+     * @param {Function} [options.onError] - 额外回调
+     * @returns {Function} (error) => fallbackValue | throw error
+     *
+     * @example
+     *   fetch('/api/data')
+     *     .then(r => r.json())
+     *     .catch(ApiErrorHandler.catchAll({ fallbackValue: [] }))
+     */
+    catchAll: function (options) {
+      var opts = options || {}
+      var self = this
+
+      return function (error) {
+        self.handle(error)
+        if (typeof opts.onError === 'function') {
+          try { opts.onError(error) } catch (_) {}
         }
+        if (opts.rethrow) throw error
+        return opts.fallbackValue
       }
-
-      // 重试逻辑
-      if (this._shouldRetry(categorizedError, context)) {
-        return this._retry(error, context)
-      }
-
-      return categorizedError
-    }
-
-    /**
-     * 分类错误
-     */
-    categorize (error) {
-      // 已经是APIError类型
-      if (error instanceof APIError) {
-        return error
-      }
-
-      // 网络错误
-      if (this.isNetworkError(error)) {
-        return new NetworkError(
-          error.message || '网络请求失败',
-          { originalError: error }
-        )
-      }
-
-      // 超时错误
-      if (this.isTimeoutError(error)) {
-        return new TimeoutError(
-          error.message || '请求超时',
-          error.timeout || 0,
-          { originalError: error }
-        )
-      }
-
-      // 认证错误
-      if (this.isAuthError(error)) {
-        return new AuthError(
-          error.message || '认证失败',
-          { originalError: error }
-        )
-      }
-
-      // 验证错误
-      if (this.isValidationError(error)) {
-        return new ValidationError(
-          error.message || '数据验证失败',
-          error.fields || {},
-          { originalError: error }
-        )
-      }
-
-      // 限流错误
-      if (this.isRateLimitError(error)) {
-        return new RateLimitError(
-          error.message || '请求过于频繁',
-          error.retryAfter || 0,
-          { originalError: error }
-        )
-      }
-
-      // 默认API错误
-      return new APIError(
-        (error && error.message) || '未知错误',
-        'UNKNOWN_ERROR',
-        { originalError: error }
-      )
-    }
-
-    /**
-     * 是否是网络错误
-     */
-    isNetworkError (error) {
-      if (!error) return false
-
-      // Fetch API 网络错误
-      if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-        return true
-      }
-
-      // 网络状态错误
-      if (error.message && (
-        error.message.includes('NetworkError') ||
-            error.message.includes('net::ERR_') ||
-            error.message.includes('ECONNREFUSED')
-      )) {
-        return true
-      }
-
-      return false
-    }
-
-    /**
-     * 是否是超时错误
-     */
-    isTimeoutError (error) {
-      if (!error) return false
-
-      // AbortError 通常是超时导致的
-      if (error.name === 'AbortError') {
-        return true
-      }
-
-      // 超时相关消息
-      if (error.message && (
-        error.message.includes('timeout') ||
-            error.message.includes('Timeout') ||
-            error.message.includes('ETIMEDOUT')
-      )) {
-        return true
-      }
-
-      return false
-    }
-
-    /**
-     * 是否是认证错误
-     */
-    isAuthError (error) {
-      if (!error) return false
-
-      // HTTP 401/403
-      if (error.status === 401 || error.status === 403) {
-        return true
-      }
-
-      // 认证相关消息
-      if (error.message && (
-        error.message.includes('Unauthorized') ||
-            error.message.includes('Forbidden') ||
-            error.message.includes('认证') ||
-            error.message.includes('授权')
-      )) {
-        return true
-      }
-
-      return false
-    }
-
-    /**
-     * 是否是验证错误
-     */
-    isValidationError (error) {
-      if (!error) return false
-
-      // HTTP 400/422
-      if (error.status === 400 || error.status === 422) {
-        return true
-      }
-
-      // 验证相关消息
-      if (error.message && (
-        error.message.includes('Validation') ||
-            error.message.includes('验证') ||
-            error.message.includes('无效')
-      )) {
-        return true
-      }
-
-      return false
-    }
-
-    /**
-     * 是否是限流错误
-     */
-    isRateLimitError (error) {
-      if (!error) return false
-
-      // HTTP 429
-      if (error.status === 429) {
-        return true
-      }
-
-      // 限流相关消息
-      if (error.message && (
-        error.message.includes('Rate limit') ||
-            error.message.includes('Too Many Requests') ||
-            error.message.includes('限流')
-      )) {
-        return true
-      }
-
-      return false
-    }
-
-    /**
-     * 是否应该重试
-     */
-    _shouldRetry (error, context) {
-      const retryCount = context.retryCount || 0
-
-      // 超过最大重试次数
-      if (retryCount >= this.options.maxRetries) {
-        return false
-      }
-
-      // 网络错误重试
-      if (error instanceof NetworkError) {
-        return true
-      }
-
-      // 超时错误重试
-      if (error instanceof TimeoutError) {
-        return true
-      }
-
-      // 限流错误等待后重试
-      if (error instanceof RateLimitError && error.retryAfter > 0) {
-        return true
-      }
-
-      return false
-    }
-
-    /**
-     * 重试请求
-     */
-    async _retry (originalError, context) {
-      const retryCount = (context.retryCount || 0) + 1
-      const delay = this._getRetryDelay(originalError, retryCount)
-
-      console.log(`[API Retry] 第 ${retryCount} 次重试，延迟 ${delay}ms`)
-
-      await this._delay(delay)
-
-      // 这里应该重新执行原始请求，但目前只是返回错误
-      // 在实际使用中，需要在更高层实现重试逻辑
-      return new APIError(
-            `请求重试失败 (${retryCount}/${this.options.maxRetries})`,
-            'RETRY_FAILED',
-            { originalError, retryCount }
-      )
-    }
-
-    /**
-     * 获取重试延迟
-     */
-    _getRetryDelay (error, retryCount) {
-      if (error instanceof RateLimitError && error.retryAfter > 0) {
-        return error.retryAfter * 1000
-      }
-
-      return this.options.retryDelay * Math.pow(2, retryCount - 1)
-    }
-
-    /**
-     * 延迟
-     */
-    _delay (ms) {
-      return new Promise(resolve => setTimeout(resolve, ms))
     }
   }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     Error Codes (参考)
+     ═══════════════════════════════════════════════════════════════════════════ */
+
+  /** @enum {string} */
+  var ERROR_CODES = {
+    NETWORK_ERROR: 'NETWORK_ERROR',
+    TIMEOUT: 'TIMEOUT',
+    BAD_REQUEST: 'BAD_REQUEST',
+    UNAUTHORIZED: 'UNAUTHORIZED',
+    FORBIDDEN: 'FORBIDDEN',
+    NOT_FOUND: 'NOT_FOUND',
+    METHOD_NOT_ALLOWED: 'METHOD_NOT_ALLOWED',
+    CONFLICT: 'CONFLICT',
+    VALIDATION_ERROR: 'VALIDATION_ERROR',
+    RATE_LIMITED: 'RATE_LIMITED',
+    INTERNAL_ERROR: 'INTERNAL_ERROR',
+    BAD_GATEWAY: 'BAD_GATEWAY',
+    SERVICE_UNAVAILABLE: 'SERVICE_UNAVAILABLE',
+    GATEWAY_TIMEOUT: 'GATEWAY_TIMEOUT',
+    UNKNOWN: 'UNKNOWN'
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     Global Export
+     ═══════════════════════════════════════════════════════════════════════════ */
 
   root.APIError = APIError
-  root.NetworkError = NetworkError
-  root.TimeoutError = TimeoutError
-  root.AuthError = AuthError
-  root.ValidationError = ValidationError
-  root.RateLimitError = RateLimitError
   root.ApiErrorHandler = ApiErrorHandler
-
-  function createError (message, code = 'UNKNOWN_ERROR', details = null) {
-    return new APIError(message, code, details)
-  }
-
-  function formatError (error) {
-    if (error instanceof APIError) {
-      return {
-        name: error.name,
-        message: error.message,
-        code: error.code,
-        details: error.details,
-        timestamp: error.timestamp
-      }
-    }
-
-    return {
-      name: error.name || 'Error',
-      message: error.message || 'Unknown error',
-      code: 'UNKNOWN_ERROR',
-      details: null,
-      timestamp: Date.now()
-    }
-  }
-
-  let globalErrorHandler = null
-
-  function setGlobalErrorHandler (handler) {
-    globalErrorHandler = handler
-  }
-
-  function getGlobalErrorHandler () {
-    return globalErrorHandler
-  }
-
   root.createError = createError
-  root.formatError = formatError
-  root.setGlobalErrorHandler = setGlobalErrorHandler
-  root.getGlobalErrorHandler = getGlobalErrorHandler
-})(typeof globalThis !== 'undefined' ? globalThis : (typeof self !== 'undefined' ? self : window))
+  root.isAPIError = isAPIError
+  root.fromResponse = fromResponse
+  root.fromFetchError = fromFetchError
+  root.ERROR_CODES = ERROR_CODES
+})(typeof globalThis !== 'undefined' ? globalThis : typeof self !== 'undefined' ? self : window)

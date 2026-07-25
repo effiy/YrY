@@ -3,82 +3,32 @@
   "name": "温柔陪伴助手",
   "version": "1.1.2",
   "description": "在浏览器中添加一位温柔体贴的伴侣，陪伴您的浏览时光。支持多种互动功能，让网页浏览更加有趣！",
-  "permissions": ["storage", "tabs", "scripting", "webRequest"],
-  "host_permissions": ["<all_urls>", "http://localhost:10086/*"],
-  "background": {
-    "service_worker": "src/background/index.js"
-  },
+  "permissions": [
+    "storage",
+    "tabs",
+    "scripting",
+    "webRequest"
+  ],
+  "host_permissions": [
+    "<all_urls>",
+    "http://localhost:10086/*"
+  ],
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": [
+        "<all_urls>"
+      ],
       "js": [
-        "src/config/pet.config.js",
         "cdn/vendor/md5.js",
-        "cdn/utils/http/token.js",
-        "cdn/utils/http/logger.js",
-        "cdn/utils/http/error.js",
-        "cdn/utils/http/request.js",
-        "cdn/utils/media/image-resource.js",
-        "cdn/utils/ui/loading-animation-mixin.js",
-        "cdn/utils/ui/loading-animation.js",
-        "src/config/endpoints.js",
-        "cdn/utils/core/apiManager.js",
-        "src/api/session.service.js",
-        "src/api/faq.service.js",
         "cdn/vendor/marked.min.js",
         "cdn/vendor/turndown.js",
         "cdn/vendor/vue.global.js",
         "cdn/utils/core/logger.js",
-        "cdn/utils/core/error.js",
-        "cdn/utils/dom/file-helper.js",
-        "cdn/utils/dom/template-helper.js",
-        "cdn/utils/dom/script-helper.js",
-        "cdn/utils/dom/dom-helper.js",
-        "src/bootstrap/bootstrap.js",
-        "src/content/pet-manager-core.js",
-        "src/content/viewport-utils.js",
-        "src/content/color-utils.js",
-        "src/content/pet/welcome-card.js",
-        "src/content/auth.js",
-        "src/content/ai/roles.js",
-        "src/content/ai/robot.js",
-        "src/content/session/session-crud.js",
-        "src/content/session/session-filter.js",
-        "src/content/session/session-tag.js",
-        "src/content/session/session-batch.js",
-        "src/content/ai/ai-api.js",
-        "src/content/ai/ai-prompt.js",
-        "src/content/session/session-editor.js",
-        "src/content/session/editor-core.js",
-        "src/content/session/editor-ui.js",
-        "src/content/session/session-editor-module.js",
-        "src/content/mermaid/mermaid-renderer.js",
-        "src/content/mermaid/mermaid-ui.js",
-        "src/content/session/session-tags.js",
-        "src/content/ai/parser.js",
-        "src/content/faq/faq-manager.js",
-        "src/content/faq/faq-tags.js",
-        "src/content/messaging-module.js",
-        "src/content/page-info.js",
-        "src/content/session/session-module.js",
-        "src/content/pet/sidebar-resizer.js",
-        "src/content/chat/batch-toolbar.js",
-        "src/content/pet-manager-ui.js",
-        "src/content/pet/pet-drag.js",
-        "src/content/pet/pet-element.js",
-        "src/content/state.js",
-        "src/content/chat/chat-session-nav.js",
-        "src/content/chat/chat-send.js",
-        "src/content/chat/chat-ui.js",
-        "src/content/event-bus.js",
-        "src/content/media.js",
-        "src/content/messaging.js",
-        "src/content/pet-manager.js",
+        "src/config/pet.config.js",
+        "src/config/endpoints.js",
         "src/bootstrap/index.js"
       ],
-      "css": [
-        "cdn/styles/animations.css"
-      ],
+      "css": [],
       "run_at": "document_end"
     }
   ],
@@ -127,7 +77,9 @@
         "cdn/**/*.jpg",
         "cdn/**/*.ico"
       ],
-      "matches": ["<all_urls>"]
+      "matches": [
+        "<all_urls>"
+      ]
     }
   ]
 }

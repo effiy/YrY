@@ -12,7 +12,7 @@ description: >
 
 > Single responsibility: read source code and emit a module map. It does
 > not generate docs, run tests, or change files. The output is the
-> `exploration` object passed to step 03-generate and step 04-arch.
+> `exploration` object passed to step 03-generate.
 >
 > Triggered by the parent pipeline (yry-init), right after
 > yry-init-detect.
@@ -80,8 +80,8 @@ For each top-level module, capture:
 | `coreDeps` | Other modules it depends on (module names, not file paths) | `["db", "session"]` |
 | `responsibility` | Single-responsibility description | "JWT issuance and refresh-token rotation" |
 
-The module map is the canonical input for yry-init-arch — it is what
-the arch stories are built from.
+The module map is the canonical input for yry-init-generate — it feeds
+the project structure section of README.md.
 
 ## 3. Architecture Confirmation
 

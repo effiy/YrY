@@ -1,37 +1,25 @@
 ---
 name: generate-step
 description: >
-  Generate the project's baseline docs (CLAUDE.md + README.md) and the
-  docs home entry (`docs/index.html`, `docs/index.css`,
-  `docs/index.js`, `docs/data.js`) from the
-  detect-phase profile and the explore-phase module map. The docs
-  home is emitted from the yry-init standalone dashboard template
-  (`yry-init/templates/`) — the generator does not redefine the
-  dashboard layout, only the data model. Run this step after
-  step 02-explore and before step 04-arch.
+  Generate the project's baseline docs (CLAUDE.md + README.md) from the
+  detect-phase profile and the explore-phase module map. Run this step
+  after step 02-explore and before step 05-verify.
 ---
 
 # yry-init-generate (step ③ of yry-init)
 
-> Single responsibility: emit `CLAUDE.md`, `README.md`, and the docs
-> home entry files (`docs/index.html`, `docs/index.css`,
-> `docs/index.js`, `docs/data.js`) from the
-> `profile` + `exploration` objects. The docs home layout (HTML
-> shell, CSS, Vue 3 mount) is the yry-init standalone dashboard
-> template at `yry-init/templates/`; this step only produces the
-> data model that the template consumes. It does not read source
-> code (that is step 02-explore's job), and it does not produce arch
-> stories (that is step 04-arch's job).
+> Single responsibility: emit `CLAUDE.md` and `README.md` from the
+> `profile` + `exploration` objects. It does not read source
+> code (that is step 02-explore's job), and it does not produce any
+> other artifacts.
 >
 > Triggered by the parent pipeline (yry-init), right after
 > yry-init-explore.
 >
-> **Repeatable**: every init run fully rebuilds `CLAUDE.md`, the
-> non-domain-language sections of `README.md`, and the docs home
-> data model. The template files in `yry-init/templates/` are the
-> single source of truth for the dashboard layout.
+> **Repeatable**: every init run fully rebuilds `CLAUDE.md` and the
+> non-domain-language sections of `README.md`.
 
-[Inputs](#inputs) · [Outputs](#outputs) · [1. CLAUDE.md Layout](#1-claudemd-layout) · [2. README.md Layout](#2-readmemd-layout) · [3. docs Home Layout](#3-docs-home-layout) · [4. Domain Language Section](#4-domain-language-section) · [5. Rebuild Semantics](#5-rebuild-semantics) · [6. Generation Principles](#6-generation-principles) · [Fallback](#fallback) · [Active Markers](#active-markers)
+[Inputs](#inputs) · [Outputs](#outputs) · [1. CLAUDE.md Layout](#1-claudemd-layout) · [2. README.md Layout](#2-readmemd-layout) · [3. Domain Language Section](#3-domain-language-section) · [4. Rebuild Semantics](#4-rebuild-semantics) · [5. Generation Principles](#5-generation-principles) · [Fallback](#fallback) · [Active Markers](#active-markers)
 
 ## Inputs
 
@@ -48,10 +36,6 @@ description: >
 |------|----------|-----------------|
 | `CLAUDE.md` | `<cwd>/CLAUDE.md` | Full file (rebuilt) |
 | `README.md` | `<cwd>/README.md` | Full file (rebuilt); domain-language section appended if not present |
-| `index.html` | `<cwd>/docs/index.html` | Standalone dashboard shell copied from `yry-init/templates/index.html` and rewritten to the project root (`../yry-html-cdn/...` paths) |
-| `index.css` | `<cwd>/docs/index.css` | Standalone dashboard styles copied from `yry-init/templates/index.css` |
-| `index.js` | `<cwd>/docs/index.js` | Standalone dashboard Vue 3 mount copied from `yry-init/templates/index.js`; registers `<yry-scene-card>` + `<yry-tag-chip>` + `<yry-back-top>`, mounts from `window.HELP_CONFIG`, and wires reading-progress + teardown via `window.__ruiInitTeardown()` |
-| `data.js` | `<cwd>/docs/data.js` | Standalone dashboard data model, derived from the freshly rebuilt `CLAUDE.md` + `README.md` and exposed as `window.HELP_CONFIG` with `stats` / `crossLinks` / `sections[].groups[].items` shape |
 
 ## 1. CLAUDE.md Layout
 
@@ -82,108 +66,7 @@ quick start / project structure sections are **rebuilt**. The
 domain-language section is **appended** if absent, and **preserved**
 if present.
 
-## 3. docs Home Layout
-
-> **Current state (post-2026-07-24 refactor)**: Existing project catalogs
-> have migrated to a loader-based consolidation. The docs home for each
-> project lives at `YiDoc/projects/<project>/` (not `<cwd>/docs/`) and
-> consists of:
-> - `data.js` (regenerated) — `window.HELP_CONFIG` data model
-> - The project dashboard template (`templates/project/`) has been
->   removed; per-project dashboard pages, if needed, should be
->   self-contained or reference shared CDN resources from `YiPet/cdn/`
->
-> The yry-init seed template at `.claude/skills/yry-init/templates/`
-> still describes the **pre-refactor architecture** (uses
-> `/.claude/shared/loader.js` + `<yry-scene-card>` / `<yry-stats-grid>`
-> / `<yry-breadcrumb>` CDN components + `yry-html-cdn/` path). Those
-> paths **do not exist in the current repo** — the seed is a shape
-> reference for a planned alternative architecture, not a working
-> template. The contract below describes the seed's intended behavior;
-> for new inits, prefer the loader-based approach documented in the
-> "Current state" note above.
-
-The docs home entry is emitted under `<cwd>/docs/` as four files
-that match the yry-init standalone dashboard template. The
-**layout** (HTML shell, CSS, Vue 3 mount) is the single source of
-truth at `yry-init/templates/`; this skill **copies** the layout
-files into `<cwd>/docs/` (rewriting CDN paths from `../../yry-html-cdn/...` to `../yry-html-cdn/...`) and **emits** the data model
-(`data.js`) that the template consumes.
-
-| File | Generation rule |
-|------|-----------------|
-| `docs/index.html` | Copied from `yry-init/templates/index.html`; rewrite CDN paths to `../yry-html-cdn/...`; rewrite page title to `<project profile> · Documentation Center`; rewrite body class to `yry-doc dashboard-page` |
-| `docs/index.css` | Copied verbatim from `yry-init/templates/index.css` (dashboard chrome, `--dashboard-*` token bridge, `.items-grid` / `.stories-grid` / `.scenes-grid` wrappers, `.yry-scene-card` print overrides) |
-| `docs/index.js` | Copied verbatim from `yry-init/templates/index.js` (Vue 3 mount, `<yry-scene-card>` / `<yry-tag-chip>` / `<yry-back-top>` registration, `sceneCardFor(group)` per-kind dispatch, `window.__ruiInitTeardown()`) |
-| `docs/data.js` | Emitted from the freshly rebuilt `CLAUDE.md` + `README.md`. Shape matches the template's `window.HELP_CONFIG` (see §3.1) |
-
-### 3.1 `data.js` shape (dashboard model)
-
-```ts
-type DataModel = {
-  titleIcon:    string;             // leading glyph, e.g. "★"
-  title:        string;             // dashboard title
-  tagline:      string;             // one-line subtitle
-  footerNote:   string;             // footer caption
-  stats:        Stat[];             // top stat cards
-  crossLinks:   CrossLink[];        // top cross-panel nav cards
-  sections:     Section[];          // main content sections (3, fixed order)
-  footerLinks:  FooterLink[];       // bottom nav row
-};
-type Stat        = { label, value, tone?, href };
-type CrossLink   = { icon, title, description, href, targetBlank? };
-type FooterLink  = { label, href, targetBlank? };
-type Section     = { id, badge, badgeTone?, title, meta, groups: Group[] };
-type Group       = { id?, kind: "items" | "stories" | "scenes", icon, title, items };
-```
-
-### 3.2 `sections[]` order (immutable)
-
-The dashboard home page always emits **exactly three sections in
-this fixed order**. Reordering or skipping a section is a verify
-failure (see `05-verify`).
-
-| # | `id` (required) | Title | Groups | Source in rebuilt docs |
-|---|-----------------|-------|--------|------------------------|
-| 1 | `section-dependencies` | Third-Party Dependencies / Frameworks | `deps-runtime` (kind: `items`) + `deps-dev` (kind: `items`) | `profile.inventory.dependencies` + `profile.inventory.devDependencies` (manifest-parser output) |
-| 2 | `section-stories`      | Story Documents & Scenes     | single `kind: 'stories'` group with arch + test stories | `docs/arch/` + `docs/test/` (yry-init-arch output) |
-| 3 | `section-source`       | Main Source Code         | one `kind: 'items'` group per source-code category (vue / runtime / scss / entry) | `exploration.moduleMap` grouped by directory |
-
-| Field | Source in rebuilt docs |
-|-------|-------------------------|
-| `title` / `tagline` | README.md `## System view` first sentence + first tagline line |
-| `stats` | Top-line counts from `profile` + `exploration`: runtime-dep count, dev-dep count, story count, source-file count (rendered by `<yry-stats-grid>`) |
-| `crossLinks` | Highest-priority sub-skills (e.g. `yry-html-cdn`, `yry-html-vue`, `yry-skill-help`) |
-| `sections[0].groups[deps-runtime].items` | One card per package in `profile.inventory.dependencies` (name + version + one-line role) |
-| `sections[0].groups[deps-dev].items`     | One card per package in `profile.inventory.devDependencies` |
-| `sections[1].groups[*].items`            | One story per `docs/arch/index.md` and `docs/test/index.md` (kind: `stories`, with `sceneLinks`) |
-| `sections[2].groups[*].items`            | One file card per node in `exploration.moduleMap`, grouped by top-level directory under `src/` |
-| `footerLinks` | Top sub-skill reference links + `CLAUDE.md` + `README.md` |
-
-> The runtime + dev dependency groups are both `kind: 'items'`
-> (the same shape as the source-code groups). The difference is
-> that dependency items use a per-item `icon` letter (e.g. "V"
-> for Vue) and a `meta` line of the form
-> `<span class="accent">Runtime</span> · ^x.y.z`, while source
-> items use a per-item file-icon emoji and a path-style `meta`
-> like `<span class="accent">Example</span> · src/views/Home.vue`.
-
-Required rules:
-
-- The generated docs home must preserve the dashboard layout
-  (4-file shape) from `yry-init/templates/`. Do **not** edit the
-  copied `index.html` / `index.css` / `index.js`
-  beyond the documented path and title rewrites.
-- The generated `docs/data.js` must be derived from the current
-  `CLAUDE.md` and `README.md`; only the data model is emitted by
-  this skill.
-- The generated docs home must link to the story outputs emitted
-  by `yry-init-arch` under `docs/arch/` and `docs/test/`.
-- The skill is the single source of truth for the docs data
-  model; the template is the single source of truth for the
-  layout. They never drift.
-
-## 4. Domain Language Section
+## 3. Domain Language Section
 
 The domain-language section is required and must contain:
 
@@ -199,21 +82,19 @@ The domain-language section is required and must contain:
 The section header is `## Domain Language` and it begins with a
 one-line description of the project's domain.
 
-## 5. Rebuild Semantics
+## 4. Rebuild Semantics
 
 | File | On repeat run | Rationale |
 |------|---------------|-----------|
 | `CLAUDE.md` | **Rebuilt** fully | Pure function of `profile` + `exploration` |
 | `README.md` (system view / commands / quick start / structure) | **Rebuilt** | Driven by `profile` + `exploration` |
 | `README.md` (domain-language section) | **Appended** if absent, **preserved** if present | Domain language is user-curated |
-| `docs/index.html` / `docs/index.css` / `docs/index.js` | **Copied from `yry-init/templates/`** with the documented path and title rewrites | The template is the single source of truth for the dashboard layout |
-| `docs/data.js` | **Rebuilt** | Pure function of this skill's data-model contract + current `CLAUDE.md` + `README.md` |
 
 The skill must not silently drop any pre-existing file. If a
 rebuild would discard user content, abort and surface the conflict
 to the parent pipeline.
 
-## 6. Generation Principles
+## 5. Generation Principles
 
 The `principles` input shapes the **Foundational beliefs** and
 **Iron laws** sections of the generated `CLAUDE.md`. When
@@ -258,10 +139,6 @@ behaviour-equivalent when no override is given.
 | `README.md` contains `## Domain Language` heading | grep | Section present |
 | `README.md` domain-language section has ≥ 3 term definitions | count | Section populated |
 | `CLAUDE.md` contains the four Karpathy principle headings | grep | Principles emitted |
-| `docs/index.html`, `docs/index.css`, `docs/index.js`, `docs/data.js` all exist | file check | Docs home entry emitted |
-| `docs/index.html` body class is `yry-doc dashboard-page` | grep | Template layout adopted |
-| `docs/index.html` references `../yry-html-cdn/...` CDN scripts | grep | CDN paths rewritten for the project root |
-| `docs/data.js` `window.HELP_CONFIG` has `stats` + `crossLinks` + `sections[].groups[].items` | shape check | Dashboard data model adopted |
 
 
 ## Rules

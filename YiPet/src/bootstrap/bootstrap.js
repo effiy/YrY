@@ -82,7 +82,6 @@
     // ═══════════════════ CDN 核心工具（主世界可访问） ═══════════════════
     // 基础层
     'cdn/utils/core/logger.js',            // → window.LoggerUtils
-    'cdn/utils/core/error.js',             // → window.ErrorHandler
     // HTTP 层
     'cdn/utils/http/logger.js',            // → window.Logger, LOG_LEVELS, LoggerUtils
     'cdn/utils/http/error.js',             // → window.APIError, ApiErrorHandler, createError, ...
@@ -90,23 +89,6 @@
     'cdn/utils/http/request.js',           // → window.RequestClient, requestClient
     // 业务服务层
     'cdn/utils/core/apiManager.js',        // → window.ApiManager
-    // DOM 工具层
-    'cdn/utils/dom/dom-helper.js',         // → window.DomHelper
-    'cdn/utils/dom/file-helper.js',        // → window.FileHelper
-    'cdn/utils/dom/template-helper.js',    // → window.TemplateHelper
-    'cdn/utils/dom/script-helper.js',      // → window.ScriptHelper
-    // UI 工具层
-    'cdn/utils/ui/loading-animation.js',        // → window.petLoadingAnimation, LoadingAnimation
-    'cdn/utils/ui/loading-animation-mixin.js',  // → window.LoadingAnimationMixin
-    // ═══════════════════ 补充经典脚本工具 ═══════════════════
-    'cdn/utils/core/module-utils.js',       // → window.ModuleUtils（模块导出、环境检测）
-    'cdn/utils/core/global-accessor.js',    // → window.GlobalAccessor（安全全局属性访问）
-    'cdn/utils/core/storage-utils.js',      // → window.StorageUtils（Chrome Storage 操作）
-    'cdn/utils/core/configLoader.js',       // → window.ConfigLoader, __YiPet_Config__
-    'cdn/utils/core/serviceRegistry.js',    // → window.ServiceRegistry, __YiPet_Services__
-    'cdn/utils/time/time-utils.js',         // → window.TimeUtils（时间格式化）
-    'cdn/utils/ui/notification-utils.js',   // → window.NotificationUtils（通知气泡）
-    'cdn/utils/messaging/message-helper.js',// → window.MessageHelper（扩展消息通信）
   ]
 
   // 顺序注入，每个加载完后注入下一个
