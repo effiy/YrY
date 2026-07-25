@@ -1,32 +1,3 @@
-<!--
-    yry-init · Standalone dashboard shell
-    --------------------------------------------------------------------------
-    Refactor over v1: every interactive UI element is delegated to the
-    rui HTML CDN library so this template is a thin Vue 3 + theme layer.
-
-      1. shared/loader.js (unified) provides:
-         - Vue 3 CDN injection (with primary + fallback URL)
-         - window.__vueLoadPromise (resolved once Vue is on `window`)
-         - ruiLoadComponent / createAsyncMountAPI / ruiBootstrapComponent
-      2. <yry-breadcrumb>  ─ top-of-page context bar (data.js: breadcrumb)
-      3. <yry-stats-grid>  ─ high-level KPIs (data.js: stats). The CDN
-                            component owns the card chrome (border / hover /
-                            animation) and the per-modifier color tokens.
-      4. <yry-scene-card>  ─ per-kind rendering inside section groups.
-                            Card chrome (border / hover / animation /
-                            tag-chip row) is owned by yry-scene-card; the
-                            helper sceneCardFor() in index.js only maps
-                            HELP_CONFIG's per-kind fields to yry-scene-card's
-                            prop shape.
-      5. <yry-panel-hub>   ─ cross-report navigation toolbar
-      6. <yry-back-top>    ─ floating button (auto-mounts via shared loader)
-      7. Reading-progress is a 2px fixed top div with width driven by
-         index.js on scroll. The CDN does not include a page-reading
-         progress component, so this stays as a page-level concern.
-      8. The .accent utility inside yry-scene-card's v-html desc slot is
-         the one piece of local CSS that needs to remain (yry-scene-card's
-         CSS does not own it).
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,30 +10,6 @@
   <!-- Page styles layer on top of the theme -->
   <link rel="stylesheet" href="index.css">
 
-  <!--
-    Unified shared loader: injects Vue 3 (primary + fallback) and exposes
-    ruiLoadComponent / createAsyncMountAPI / ruiBootstrapComponent on
-    window. data-namespace tags the console logs so it is clear which
-    page is loading. data-vue-path / data-vue-fallback override the
-    auto-derived CDN URLs; both are empty here so the loader auto-derives
-    them from /.claude/shared/vendor/vue@3.4.27/ and /shared/vendor/vue@3/.
-  -->
-  <script src="/.claude/shared/loader.js" data-namespace="yry-init"></script>
-
-  <!--
-    rui HTML CDN shared components. Load order matters:
-      · yry-tag-chip MUST come before yry-scene-card, because
-        yry-scene-card's onReady transitively waits for yry-tag-chip-ready.
-      · yry-stats-grid / yry-breadcrumb / yry-back-top / yry-panel-hub
-        are leaf components and can be loaded in any order after the
-        shared loader.
-  -->
-  <script src="/.claude/shared/components/yry-breadcrumb/index.js"></script>
-  <script src="/.claude/shared/components/yry-stats-grid/index.js"></script>
-  <script src="/.claude/shared/components/yry-tag-chip/index.js"></script>
-  <script src="/.claude/shared/components/yry-scene-card/index.js"></script>
-  <script src="/.claude/shared/components/yry-panel-hub/index.js"></script>
-  <script src="/.claude/shared/components/yry-back-top/index.js"></script>
 </head>
 <body class="yry-doc dashboard-page">
   <!-- Reading-progress: 2px fixed top bar, width driven by index.js. -->

@@ -102,6 +102,19 @@
     // Markdown / Mermaid 引擎
     'cdn/engines/markdown/markdown.js',    // → window.MarkdownRenderer
     'cdn/engines/markdown/mermaid.js',     // → window.MermaidRenderer
+
+    // ═══════════════════ 补充经典脚本工具 ═══════════════════
+    'cdn/utils/core/module-utils.js',       // → window.ModuleUtils（模块导出、环境检测）
+    'cdn/utils/core/global-accessor.js',    // → window.GlobalAccessor（安全全局属性访问）
+    'cdn/utils/core/storage-utils.js',      // → window.StorageUtils（Chrome Storage 操作）
+    'cdn/utils/core/configLoader.js',       // → window.ConfigLoader, __YiPet_Config__
+    'cdn/utils/core/serviceRegistry.js',    // → window.ServiceRegistry, __YiPet_Services__
+    'cdn/utils/time/time-utils.js',         // → window.TimeUtils（时间格式化）
+    'cdn/utils/ui/notification-utils.js',   // → window.NotificationUtils（通知气泡）
+    'cdn/utils/messaging/message-helper.js',// → window.MessageHelper（扩展消息通信）
+
+    // ═══════════════════ ESM 桥接（动态 import 所有 ESM 模块） ═══════════════════
+    'cdn/window-expose.js',                // → 动态加载所有 ESM barrel 文件并注册到 window
   ]
 
   // 顺序注入，每个加载完后注入下一个

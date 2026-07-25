@@ -1,26 +1,3 @@
-/**
- * yry-init · Standalone dashboard Vue 3 mount
- * ----------------------------------------------------------------------
- * Refactor over v1:
- *   1. Vue 3 is injected by shared/loader.js (unified). We just await
- *      window.__vueLoadPromise.
- *   2. <yry-scene-card> / <yry-tag-chip> / <yry-stats-grid> /
- *      <yry-breadcrumb> / <yry-panel-hub> are registered as global
- *      components once their *-ready event fires. The parallel
- *      _whenReady() pattern waits for all of them with a single
- *      Promise.all, then mounts the dashboard app. <yry-back-top> is
- *      auto-mounted by the shared loader and needs no registration.
- *   3. High-level KPIs: <yry-stats-grid> is a child component of the
- *      dashboard app — bound to data.js's `stats` array. The CDN
- *      component owns the card chrome (border / hover / animation)
- *      and the per-modifier color tokens.
- *   4. Cross-report navigation: <yry-panel-hub> dispatches
- *      'panel-hub-select' events; onPanelHubSelect navigates to the
- *      URL mapped in panelHub.urls.
- *   5. Reading-progress: the only page-level concern left. It writes
- *      width: % to [data-progress-bar] on every scroll, gated by a
- *      single requestAnimationFrame and torn down on __ruiInitTeardown.
- */
 (function () {
   'use strict';
 
@@ -296,29 +273,6 @@
         if (animationFrameId) { window.cancelAnimationFrame(animationFrameId); animationFrameId = 0; }
         if (this._ctrl)       { this._ctrl.abort(); this._ctrl = null; }
       }
-    });
-
-    Promise.all([
-      _whenReady('ruiBreadcrumb', 'yry-breadcrumb-ready', 'yry-breadcrumb-error'),
-      _whenReady('ruiStatsGrid',  'yry-stats-grid-ready', 'yry-stats-grid-error'),
-      _whenReady('ruiPanelHub',   'yry-panel-hub-ready',  'yry-panel-hub-error'),
-      _whenReady('ruiTagChip',    'yry-tag-chip-ready',   'yry-tag-chip-error'),
-      _whenReady('ruiSceneCard',  'yry-scene-card-ready', 'yry-scene-card-error')
-    ]).then(function () {
-      _registerComponent('ruiBreadcrumb', 'yry-breadcrumb');
-      _registerComponent('ruiStatsGrid',  'yry-stats-grid');
-      _registerComponent('ruiPanelHub',   'yry-panel-hub');
-      _registerComponent('ruiTagChip',    'yry-tag-chip');
-      _registerComponent('ruiSceneCard',  'yry-scene-card');
-      // yry-back-top is auto-mounted by the shared loader; it does not
-      // expose a Vue component definition, so we do not register it.
-
-      app.mount('#dashboard-app');
-
-      window.__ruiInitTeardown = function () {
-        if (animationFrameId) { window.cancelAnimationFrame(animationFrameId); animationFrameId = 0; }
-        if (app) app.unmount();
-      };
     });
   });
 })();

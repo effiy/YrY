@@ -1,7 +1,0 @@
-<div
-  class="chat-msg"
-  :class="{ 'chat-msg--user': role === 'user', 'chat-msg--ai': role === 'assistant' }"
->
-  <div class="chat-msg__bubble" v-html="renderContent(content)"></div>
-  <div class="chat-msg__time">{{ formatTime(ts) }}</div>
-</div>
