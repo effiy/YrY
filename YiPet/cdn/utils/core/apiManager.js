@@ -545,6 +545,15 @@
 
     // 缓存
     clearCache: clearCache,
-    invalidateCache: invalidateCache
+    invalidateCache: invalidateCache,
+
+    // 内部辅助（暴露到控制台供调试）
+    _executeRequest: _executeRequest,
+    _getCached: _getCached,
+    _setCache: _setCache,
+    _buildHeaders: _buildHeaders,
+    _createApiError: _createApiError,
+    _isRetryable: _isRetryable,
+    _cloneDeep: _cloneDeep
   }
 })(typeof globalThis !== 'undefined' ? globalThis : typeof self !== 'undefined' ? self : window)

@@ -419,6 +419,18 @@
   }
 
   /* ═══════════════════════════════════════════════════════════════════════════
+     Internal Helpers — exposed for console debugging
+     ═══════════════════════════════════════════════════════════════════════════ */
+
+  LoggerUtils._shouldLog = _shouldLog
+  LoggerUtils._safeArgs = _safeArgs
+  LoggerUtils._flushQueue = _flushQueue
+  LoggerUtils._writeLog = _writeLog
+  LoggerUtils._log = _log
+  LoggerUtils._readDevModeFromStorage = _readDevModeFromStorage
+  LoggerUtils._watchStorageChanges = _watchStorageChanges
+
+  /* ═══════════════════════════════════════════════════════════════════════════
      Global Export
      ═══════════════════════════════════════════════════════════════════════════ */
 

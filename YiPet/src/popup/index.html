@@ -4,32 +4,30 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>温柔陪伴助手</title>
-    <link rel="stylesheet" href="../../cdn/styles/base/animations.css" />
-    <link rel="stylesheet" href="../../cdn/styles/tokens/tokens.css" />
-    <link rel="stylesheet" href="../../cdn/styles/base/theme.css" />
-    <link rel="stylesheet" href="../../cdn/styles/tailwind.css" />
-    <link rel="stylesheet" href="../../cdn/styles/popup.css" />
+    <link rel="stylesheet" href="./index.css" />
   </head>
   <body>
-    <div id="notificationArea" class="notification-area" aria-live="polite" aria-relevant="additions"></div>
-
-    <div class="popup-container">
+    <div id="app" class="popup-container">
       <header class="header">
         <div class="logo" data-icon="💕">
           <div class="brand">
             <h1>温柔陪伴</h1>
-            <span class="brand-sub" id="modelText">模型：-</span>
+            <span class="brand-sub">模型：{{ status.model || '-' }}</span>
           </div>
         </div>
-        <div class="status-indicator" id="statusIndicator" role="status" aria-live="polite" aria-atomic="true">
-          <span class="status-text">连接中…</span>
+        <div
+          class="status-indicator"
+          role="status"
+          aria-live="polite"
+          :style="{ '--status-dot-color': statusDotColor }"
+        >
+          <span class="status-text">{{ statusText }}</span>
         </div>
       </header>
 
-      <main class="main-content" id="mainContent">
-        <section class="card" aria-labelledby="petSettingsTitle">
-          <h2 id="petSettingsTitle" class="card-title">宠物设置</h2>
-
+      <main class="main-content" :class="{ 'popup-controls-disabled': !controlsEnabled }">
+        <section class="card">
+          <h2 class="card-title">宠物设置</h2>
           <div class="setting-list">
             <div class="setting-row">
               <div class="setting-meta">
@@ -37,48 +35,41 @@
                 <span class="setting-desc">在当前标签页显示/隐藏</span>
               </div>
               <label class="switch">
-                <input id="visibilityToggle" type="checkbox" class="switch-input" aria-label="显示宠物" />
-                <span class="switch-track" aria-hidden="true"></span>
+                <input type="checkbox" class="switch-input"
+                  :checked="status.visible" :disabled="!controlsEnabled"
+                  @change="toggleVisibility" />
+                <span class="switch-track"></span>
               </label>
             </div>
 
             <div class="setting-row">
               <label for="sizeSlider" class="setting-label-inline">大小</label>
               <div class="slider-row">
-                <input
-                  id="sizeSlider"
-                  class="slider"
-                  type="range"
-                  min="80"
-                  max="400"
-                  step="10"
-                  aria-valuemin="80"
-                  aria-valuemax="400"
-                />
-                <output id="sizeValue" class="value-pill" for="sizeSlider">-</output>
+                <input id="sizeSlider" class="slider" type="range"
+                  :min="sizeMin" :max="sizeMax" :step="sizeStep"
+                  :value="displaySize" :disabled="!controlsEnabled"
+                  @input="previewSize" @change="updateSize" />
+                <output class="value-pill" for="sizeSlider">{{ displaySize }}px</output>
               </div>
             </div>
 
             <div class="setting-row">
               <label for="roleSelect" class="setting-label-inline">角色</label>
               <div class="role-control">
-                <select id="roleSelect" class="select">
-                  <option value="教师">教师</option>
-                  <option value="医生">医生</option>
-                  <option value="甜品师">甜品师</option>
-                  <option value="警察">警察</option>
+                <select id="roleSelect" class="select"
+                  :value="status.role" :disabled="!controlsEnabled"
+                  @change="updateRole">
+                  <option v-for="r in roles" :key="r" :value="r">{{ r }}</option>
                 </select>
               </div>
             </div>
 
             <div class="setting-row">
               <label for="colorSelect" class="setting-label-inline">颜色主题</label>
-              <select id="colorSelect" class="select">
-                <option value="0">量子蓝紫（主色）</option>
-                <option value="1">靛蓝紫</option>
-                <option value="2">量子海洋</option>
-                <option value="3">量子森林</option>
-                <option value="4">量子日落</option>
+              <select id="colorSelect" class="select"
+                :value="status.color" :disabled="!controlsEnabled"
+                @change="updateColor">
+                <option v-for="c in colors" :key="c.value" :value="c.value">{{ c.label }}</option>
               </select>
             </div>
           </div>
@@ -86,17 +77,17 @@
       </main>
 
       <footer class="footer">
-        <p id="hintText" class="hint-text">准备就绪</p>
-        <span id="versionText" class="version-badge">v1.1.0</span>
+        <p class="hint-text">{{ hintText }}</p>
+        <span class="version-badge">v1.1.2</span>
       </footer>
+
+      <div v-if="notification.visible" class="notification-area">
+        <div :class="['notification', notification.type]">{{ notification.message }}</div>
+      </div>
     </div>
 
-    <script src="../../cdn/utils/core/logger.js"></script>
-    <script src="../../cdn/utils/core/error.js"></script>
-    <script src="../../cdn/utils/core/storage-utils.js"></script>
-    <script src="../../cdn/utils/dom/dom-helper.js"></script>
-    <script src="../../cdn/utils/messaging/message-helper.js"></script>
-    <script src="../config/pet.config.js"></script>
+    <!-- Scripts: Vue first, then app (no pet.config dependency needed for rendering) -->
+    <script src="/cdn/vendor/vue.global.js"></script>
     <script src="./index.js"></script>
   </body>
 </html>

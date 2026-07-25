@@ -647,6 +647,16 @@
   }
 
   /* ═══════════════════════════════════════════════════════════════════════════
+     Internal Helpers — exposed as static methods for console debugging
+     ═══════════════════════════════════════════════════════════════════════════ */
+
+  RequestClient._isPlainObject = _isPlainObject
+  RequestClient._deepMerge = _deepMerge
+  RequestClient._buildQuery = _buildQuery
+  RequestClient._buildConfig = _buildConfig
+  RequestClient._isRetryableError = _isRetryableError
+
+  /* ═══════════════════════════════════════════════════════════════════════════
      Global Export
      ═══════════════════════════════════════════════════════════════════════════ */
 
