@@ -59,7 +59,8 @@
     // DOM / jQuery 生态
     'cdn/vendor/jquery@3.7.1/jquery.min.js',
     // UI 框架
-    'cdn/vendor/vue.global.js',
+    'cdn/vendor/react@15.6.1/react.min.js',
+    'cdn/vendor/react@15.6.1/react-dom.min.js',
     // Markdown / 富文本
     'cdn/vendor/marked.min.js',
     'cdn/vendor/turndown.js',

@@ -7,87 +7,16 @@
     <link rel="stylesheet" href="./index.css" />
   </head>
   <body>
-    <div id="app" class="popup-container">
-      <header class="header">
-        <div class="logo" data-icon="💕">
-          <div class="brand">
-            <h1>温柔陪伴</h1>
-            <span class="brand-sub">模型：{{ status.model || '-' }}</span>
-          </div>
-        </div>
-        <div
-          class="status-indicator"
-          role="status"
-          aria-live="polite"
-          :style="{ '--status-dot-color': statusDotColor }"
-        >
-          <span class="status-text">{{ statusText }}</span>
-        </div>
-      </header>
+    <div id="app"></div>
 
-      <main class="main-content" :class="{ 'popup-controls-disabled': !controlsEnabled }">
-        <section class="card">
-          <h2 class="card-title">宠物设置</h2>
-          <div class="setting-list">
-            <div class="setting-row">
-              <div class="setting-meta">
-                <span class="setting-label-inline">显示宠物</span>
-                <span class="setting-desc">在当前标签页显示/隐藏</span>
-              </div>
-              <label class="switch">
-                <input type="checkbox" class="switch-input"
-                  :checked="status.visible" :disabled="!controlsEnabled"
-                  @change="toggleVisibility" />
-                <span class="switch-track"></span>
-              </label>
-            </div>
-
-            <div class="setting-row">
-              <label for="sizeSlider" class="setting-label-inline">大小</label>
-              <div class="slider-row">
-                <input id="sizeSlider" class="slider" type="range"
-                  :min="sizeMin" :max="sizeMax" :step="sizeStep"
-                  :value="displaySize" :disabled="!controlsEnabled"
-                  @input="previewSize" @change="updateSize" />
-                <output class="value-pill" for="sizeSlider">{{ displaySize }}px</output>
-              </div>
-            </div>
-
-            <div class="setting-row">
-              <label for="roleSelect" class="setting-label-inline">角色</label>
-              <div class="role-control">
-                <select id="roleSelect" class="select"
-                  :value="status.role" :disabled="!controlsEnabled"
-                  @change="updateRole">
-                  <option v-for="r in roles" :key="r" :value="r">{{ r }}</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="setting-row">
-              <label for="colorSelect" class="setting-label-inline">颜色主题</label>
-              <select id="colorSelect" class="select"
-                :value="status.color" :disabled="!controlsEnabled"
-                @change="updateColor">
-                <option v-for="c in colors" :key="c.value" :value="c.value">{{ c.label }}</option>
-              </select>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      <footer class="footer">
-        <p class="hint-text">{{ hintText }}</p>
-        <span class="version-badge">v1.1.2</span>
-      </footer>
-
-      <div v-if="notification.visible" class="notification-area">
-        <div :class="['notification', notification.type]">{{ notification.message }}</div>
-      </div>
-    </div>
-
-    <!-- Scripts: Vue first, then app (no pet.config dependency needed for rendering) -->
-    <script src="/cdn/vendor/vue.global.js"></script>
+    <!-- Scripts: React → config → data → services → app -->
+    <script src="/cdn/vendor/react@15.6.1/react.min.js"></script>
+    <script src="/cdn/vendor/react@15.6.1/react-dom.min.js"></script>
+    <script src="../config/pet.config.js"></script>
+    <script src="./data.js"></script>
+    <script src="./services/notification.js"></script>
+    <script src="./services/chromeService.js"></script>
+    <script src="./services/connectionManager.js"></script>
     <script src="./index.js"></script>
   </body>
 </html>

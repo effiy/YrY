@@ -1,10 +1,27 @@
 /**
  * YiPet Configuration
  *
- * Centralized configuration for Chrome Extension.
- * Handles environment variables and default settings.
+ * Centralized configuration for the Chrome Extension.
+ * Single source of truth for all pet, chat, API, animation, and UI settings.
  *
- * 整合了 endpoints.js 的所有配置，保持向后兼容
+ * Exports: window.PET_CONFIG, window.PET_ENV
+ *
+ * Sections:
+ *   pet          — default size, position, colours, size limits
+ *   chatWindow   — default size/position, input constraints
+ *   animation    — float/blink/wag durations, transition speeds
+ *   storage      — chrome.storage keys and sync interval
+ *   ui           — z‑index stack, border radii
+ *   api          — endpoint URLs and feature flags
+ *   chatModels   — available LLM models
+ *   env          — environment mode, feature flags, per‑env endpoints
+ *   constants    — TIMING, RETRY, STORAGE, URLS, UI, ANIMATION, DEFAULTS,
+ *                   ERROR_MESSAGES, SUCCESS_MESSAGES, API limits, storageKeys
+ *   ENDPOINTS    — REST endpoint path templates (auth, sessions, FAQ, config, DB)
+ *   buildUrl / buildQueryParams / buildDatabaseUrl  — URL construction helpers
+ *
+ * @module config/pet.config
+ * @since 1.0.0
  */
 
 const DEFAULT_CONFIG = {
@@ -160,7 +177,8 @@ const DEFAULT_CONFIG = {
       ]
     },
     DEFAULTS: {
-      PET_ROLE: '教师'
+      PET_ROLE: '教师',
+      VERSION: '1.1.2'
     },
     ERROR_MESSAGES: {
       TAB_NOT_FOUND: '无法获取当前标签页',

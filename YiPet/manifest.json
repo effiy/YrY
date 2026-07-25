@@ -22,7 +22,6 @@
         "cdn/vendor/md5.js",
         "cdn/vendor/marked.min.js",
         "cdn/vendor/turndown.js",
-        "cdn/vendor/vue.global.js",
         "src/bootstrap/bootstrap.js",
         "src/config/pet.config.js",
         "src/config/endpoints.js",

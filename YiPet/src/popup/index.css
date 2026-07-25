@@ -1,36 +1,5 @@
-/* Chrome扩展弹窗样式 */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* ── Notification area ────────────────────────────────────────────── */
 
-body {
-  width: 420px;
-  min-height: 200px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: var(--bg-gradient, linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%));
-  color: var(--text-primary, #f8fafc);
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-
-/* ===== 暗色滚动条 ===== */
-body::-webkit-scrollbar {
-  width: 5px;
-}
-body::-webkit-scrollbar-track {
-  background: transparent;
-}
-body::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.25);
-  border-radius: 999px;
-}
-body::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.45);
-}
-
-/* ===== 通知区域 ===== */
 .notification-area {
   position: fixed;
   top: 0;
@@ -60,22 +29,26 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 .notification.success { background: var(--success, #22c55e); }
-.notification.error { background: var(--error, #ef4444); }
-.notification.info { background: var(--info, #3b82f6); }
+.notification.error   { background: var(--error,   #ef4444); }
+.notification.info    { background: var(--info,    #3b82f6); }
 .notification.warn,
 .notification.warning { background: var(--warning, #f59e0b); }
 
-/* ===== 容器 ===== */
+/* ── Container ────────────────────────────────────────────────────── */
+
 .popup-container {
   background: var(--bg-secondary, #1e293b);
   border-radius: 16px;
   margin: 8px;
-  box-shadow: var(--shadow-lg, 0 8px 32px rgba(0, 0, 0, 0.6)), 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+  box-shadow:
+    var(--shadow-lg, 0 8px 32px rgba(0, 0, 0, 0.6)),
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset;
   overflow: hidden;
   border: 1px solid var(--border-primary, rgba(255, 255, 255, 0.12));
 }
 
-/* ===== 头部 ===== */
+/* ── Header ───────────────────────────────────────────────────────── */
+
 .header {
   background: linear-gradient(135deg, #667eea 0%, #7c5ce7 35%, #a855f7 70%, #f093fb 100%);
   color: white;
@@ -91,8 +64,9 @@ body::-webkit-scrollbar-thumb:hover {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.15) 0%, transparent 60%),
-              radial-gradient(circle at 80% 50%, rgba(255, 255, 255, 0.08) 0%, transparent 40%);
+  background:
+    radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.15) 0%, transparent 60%),
+    radial-gradient(circle at 80% 50%, rgba(255, 255, 255, 0.08) 0%, transparent 40%);
   pointer-events: none;
 }
 
@@ -162,7 +136,8 @@ body::-webkit-scrollbar-thumb:hover {
   animation: popupPulse 2s infinite;
 }
 
-/* ===== 主内容 ===== */
+/* ── Main content ─────────────────────────────────────────────────── */
+
 .main-content {
   padding: 16px;
   max-height: none;
@@ -175,14 +150,18 @@ body::-webkit-scrollbar-thumb:hover {
   border-radius: 14px;
   padding: 16px;
   margin-bottom: 0;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.18),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
   backdrop-filter: blur(12px);
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card:hover {
   border-color: rgba(255, 255, 255, 0.16);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.22),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
 }
 
 .card-title {
@@ -205,7 +184,8 @@ body::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-/* ===== 设置列表 ===== */
+/* ── Settings list ────────────────────────────────────────────────── */
+
 .setting-list {
   display: flex;
   flex-direction: column;
@@ -286,7 +266,8 @@ body::-webkit-scrollbar-thumb:hover {
   border-color: rgba(148, 163, 184, 0.35);
 }
 
-/* ===== 开关 ===== */
+/* ── Toggle switch ────────────────────────────────────────────────── */
+
 .switch {
   position: relative;
   width: 44px;
@@ -322,7 +303,10 @@ body::-webkit-scrollbar-thumb:hover {
   border-radius: 50%;
   background: rgba(248, 250, 252, 0.95);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .switch-input:checked + .switch-track {
@@ -343,7 +327,8 @@ body::-webkit-scrollbar-thumb:hover {
   opacity: 0.55;
 }
 
-/* ===== 滑块 ===== */
+/* ── Range slider ─────────────────────────────────────────────────── */
+
 .slider {
   width: 100%;
   height: 6px;
@@ -382,7 +367,8 @@ body::-webkit-scrollbar-thumb:hover {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
-/* ===== 下拉选择 ===== */
+/* ── Select dropdown ──────────────────────────────────────────────── */
+
 .select {
   width: 100%;
   padding: 10px 12px;
@@ -405,7 +391,8 @@ body::-webkit-scrollbar-thumb:hover {
   border-color: var(--primary-light, #818cf8);
 }
 
-/* ===== 角色控制 ===== */
+/* ── Role control ─────────────────────────────────────────────────── */
+
 .role-control {
   display: flex;
   align-items: center;
@@ -419,8 +406,8 @@ body::-webkit-scrollbar-thumb:hover {
   min-width: 0;
 }
 
+/* ── Focus visible ────────────────────────────────────────────────── */
 
-/* ===== 焦点可见 ===== */
 .control-btn:focus-visible,
 .select:focus-visible,
 .slider:focus-visible,
@@ -429,14 +416,16 @@ body::-webkit-scrollbar-thumb:hover {
   outline-offset: 2px;
 }
 
-/* ===== 禁用状态 ===== */
+/* ── Disabled state ───────────────────────────────────────────────── */
+
 .popup-controls-disabled {
   opacity: 0.7;
   pointer-events: none;
   filter: grayscale(0.05);
 }
 
-/* ===== 底部 ===== */
+/* ── Footer ───────────────────────────────────────────────────────── */
+
 .footer {
   background: var(--bg-primary, #0f172a);
   padding: 10px 18px;
@@ -465,30 +454,35 @@ body::-webkit-scrollbar-thumb:hover {
   border-radius: 10px;
 }
 
-/* ===== 响应式 ===== */
+/* ── Responsive ───────────────────────────────────────────────────── */
+
 @media (max-width: 400px) {
   body { width: 360px; }
 }
 
-/* ===== Keyframes ===== */
+/* ── Keyframes ────────────────────────────────────────────────────── */
+
 @keyframes popupBounce {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+  50%      { transform: translateY(-4px); }
 }
 
 @keyframes popupPulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  50%      { opacity: 0.5; }
 }
 
 @keyframes popupSlideDown {
   from { opacity: 0; transform: translateY(-12px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ===== 无障碍：减少动画 ===== */
+/* ── a11y: reduced-motion ─────────────────────────────────────────── */
+
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
