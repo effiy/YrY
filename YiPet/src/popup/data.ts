@@ -26,7 +26,9 @@ const COLOR_LABELS = [
 ];
 
 function buildColors(gradients: string[]): { value: number; label: string }[] {
-  const result: { value: number; label: string }[] = [];
+  const result: { value: number; label: string }[] = [
+    { value: -1, label: 'None' },
+  ];
   for (let i = 0; i < gradients.length; i++) {
     result.push({ value: i, label: COLOR_LABELS[i] || `Theme ${i + 1}` });
   }

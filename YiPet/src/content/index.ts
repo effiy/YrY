@@ -149,6 +149,8 @@ function setPetRole(role: string): void {
 function setPetColor(color: number): void {
   _petColor = color;
   notifyMainWorld('colorChanged', { color });
+  // Persist color theme globally (cross-page default)
+  chrome.storage.local.set({ petColorTheme: color }).catch(() => {});
 }
 
 function notifyMainWorld(type: string, detail: Record<string, unknown>): void {

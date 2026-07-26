@@ -14,9 +14,10 @@ describe('popup data adapter', () => {
     });
 
     it('exports COLORS array with values and labels', () => {
-      expect(popupConfig.COLORS).toHaveLength(5);
-      expect(popupConfig.COLORS[0]).toEqual({ value: 0, label: 'Quantum Violet' });
-      expect(popupConfig.COLORS[4]).toEqual({ value: 4, label: 'Quantum Sunset' });
+      expect(popupConfig.COLORS).toHaveLength(6);
+      expect(popupConfig.COLORS[0]).toEqual({ value: -1, label: 'None' });
+      expect(popupConfig.COLORS[1]).toEqual({ value: 0, label: 'Quantum Violet' });
+      expect(popupConfig.COLORS[5]).toEqual({ value: 4, label: 'Quantum Sunset' });
     });
 
     it('exports SIZE limits', () => {

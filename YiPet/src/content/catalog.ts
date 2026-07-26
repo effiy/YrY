@@ -107,6 +107,13 @@ export const CDN_CATALOG: CdnEntry[] = [
   // YiPet Styles
   { key: 'variables-css', path: 'styles/variables.css',                     type: 'css', desc: 'YiPet design variables' },
   { key: 'reset-css', path: 'styles/reset.css',                             type: 'css', desc: 'YiPet CSS reset' },
+
+  // YiPet Color Themes (override variables.css primary palette)
+  { key: 'theme-quantum-violet', path: 'styles/themes/quantum-violet.css',   type: 'css', desc: 'Quantum Violet theme' },
+  { key: 'theme-indigo-violet',  path: 'styles/themes/indigo-violet.css',    type: 'css', desc: 'Indigo Violet theme' },
+  { key: 'theme-quantum-ocean',  path: 'styles/themes/quantum-ocean.css',    type: 'css', desc: 'Quantum Ocean theme' },
+  { key: 'theme-quantum-forest', path: 'styles/themes/quantum-forest.css',   type: 'css', desc: 'Quantum Forest theme' },
+  { key: 'theme-quantum-sunset', path: 'styles/themes/quantum-sunset.css',   type: 'css', desc: 'Quantum Sunset theme' },
 ];
 
 export const catalogByKey: Record<string, CdnEntry> = Object.fromEntries(

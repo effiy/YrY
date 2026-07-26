@@ -1,0 +1,107 @@
+/* ── Quantum Sunset Theme (Index 4) ────────────────────────────────
+   Warm amber-pink-purple gradient evoking a vibrant sunset sky. */
+:root {
+  --primary: #f59e0b;
+  --primary-hover: #d97706;
+  --primary-light: #fbbf24;
+  --primary-gradient: linear-gradient(135deg, #f59e0b 0%, #ec4899 50%, #a855f7 100%);
+  --primary-gradient-hover: linear-gradient(135deg, #d97706 0%, #db2777 50%, #9333ea 100%);
+  --primary-rgb: 245, 158, 11;
+  --primary-alpha: rgba(245, 158, 11, 0.1);
+
+  --accent: #fbbf24;
+  --accent-rgb: 251, 191, 36;
+  --accent-gradient: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+
+  --success: #22c55e;
+  --success-gradient: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #15803d 100%);
+  --warning: #f59e0b;
+  --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+  --error: #ef4444;
+  --error-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
+  --info: #3b82f6;
+  --info-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
+
+  --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb;
+  --gray-300: #d1d5db; --gray-400: #9ca3af; --gray-500: #6b7280;
+  --gray-600: #4b5563; --gray-700: #374151; --gray-800: #1f2937;
+  --gray-900: #111827;
+
+  --bg-primary: #1a140a;
+  --bg-secondary: #281e0e;
+  --bg-tertiary: #3d2e14;
+  --bg-elevated: rgba(40, 30, 14, 0.9);
+  --bg-glass: rgba(255, 255, 255, 0.03);
+  --bg-gradient: linear-gradient(135deg, #1a140a 0%, #281e0e 25%, #3d2e14 50%, #5c401a 75%, #855e22 100%);
+
+  --text-primary: #fdf8f0;
+  --text-secondary: #e8dcc8;
+  --text-muted: #94a3b8;
+  --text-inverse: #0f172a;
+  --text-accent: #fcd34d;
+  --text-tertiary: #64748b;
+
+  --link-color: #fcd34d;
+  --placeholder-color: rgba(232, 220, 200, 0.5);
+
+  --button-bg: #f59e0b;
+  --button-hover: #d97706;
+  --button-text: #1a140a;
+  --input-bg: #1f180e;
+  --input-border: rgba(251, 191, 36, 0.2);
+  --selection-bg: rgba(245, 158, 11, 0.3);
+
+  --border-primary: rgba(255, 255, 255, 0.12);
+  --border-secondary: rgba(251, 191, 36, 0.3);
+  --border-focus: #fbbf24;
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.2);
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-primary: 0 4px 20px rgba(245, 158, 11, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+
+  --bg-hover: rgba(255, 255, 255, 0.05);
+  --radius: 14px;
+  --radius2: 12px;
+
+  --bg: var(--bg-primary);
+  --card: var(--bg-elevated);
+  --text: var(--text-primary);
+  --muted: var(--text-muted);
+  --divider: var(--border-primary);
+  --green: var(--primary);
+  --danger: var(--error);
+  --shadow: var(--shadow-md);
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --vv-bottom: 0px;
+
+  --font: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", Roboto, Helvetica, Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+@media (prefers-contrast: high) {
+  :root {
+    --text-secondary: #f1f5f9;
+    --text-muted: #cbd5e1;
+    --border-primary: rgba(255, 255, 255, 0.3);
+    --border-secondary: rgba(251, 191, 36, 0.5);
+    --primary-alpha: rgba(245, 158, 11, 0.2);
+    --divider: var(--border-primary);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --primary-gradient: #d97706;
+    --accent-gradient: #fbbf24;
+    --success-gradient: #22c55e;
+    --warning-gradient: #f59e0b;
+    --error-gradient: #ef4444;
+    --info-gradient: #3b82f6;
+  }
+}

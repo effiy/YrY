@@ -39,9 +39,9 @@ body::before{
   position:fixed;
   inset:0;
   background:
-    radial-gradient(circle at 20% 80%, rgba(6,182,212,0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(102,126,234,0.12) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(236,72,153,0.06) 0%, transparent 50%);
+    radial-gradient(circle at 20% 80%, rgba(var(--accent-rgb, 6,182,212), 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(var(--primary-rgb, 102,126,234), 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(var(--primary-rgb, 102,126,234), 0.06) 0%, transparent 50%);
   pointer-events:none;
   z-index:-1;
   opacity:.9;
@@ -55,6 +55,34 @@ body.is-imgPreviewOpen{
 button,input{font:inherit}
 button{border:0;background:none}
 input{border:0;outline:none}
+
+/* ── Themed native elements ─────────────────────────────────── */
+
+button:not([class]), [role=button], input[type=button], input[type=submit], input[type=reset],
+.btn{background:var(--button-bg, var(--primary));color:var(--button-text, #fff);border:none;
+  border-radius:8px;padding:8px 18px;cursor:pointer;font-weight:600;font-size:14px;
+  transition:background .2s ease,box-shadow .2s ease;}
+button:not([class]):hover, [role=button]:hover, input[type=button]:hover, input[type=submit]:hover,
+.btn:hover{background:var(--button-hover, var(--primary-hover))}
+button:not([class]):focus-visible, [role=button]:focus-visible, input[type=button]:focus-visible,
+input[type=submit]:focus-visible,.btn:focus-visible{outline:2px solid var(--border-focus);outline-offset:2px}
+
+input:not([type]), input[type=text], input[type=email], input[type=password], input[type=url],
+input[type=search], input[type=tel], input[type=number], textarea, select{
+  background:var(--input-bg, var(--bg-tertiary, #1e293b));
+  border:1px solid var(--input-border, var(--border-primary));
+  border-radius:8px;padding:8px 12px;color:var(--text-primary);font-size:14px;
+  transition:border-color .2s ease,box-shadow .2s ease;}
+input:focus, textarea:focus, select:focus{
+  border-color:var(--border-focus);outline:none;
+  box-shadow:0 0 0 3px var(--primary-alpha)}
+
+::placeholder{color:var(--placeholder-color, rgba(148,163,184,0.5))}
+::selection{background:var(--selection-bg, rgba(102,126,234,0.3))}
+a{color:var(--link-color, var(--text-accent));text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ── End themed elements ────────────────────────────────────── */
 
 /* Force hidden to take effect, prevent page styles from overriding */
 [hidden]{display:none !important}
@@ -70,9 +98,4 @@ a:focus-visible{
 
 @media (prefers-reduced-motion: reduce){
   body::after{animation:none}
-}
-
-@keyframes yi-bg-flow{
-  0%,100%{background-position:0% 50%}
-  50%{background-position:100% 50%}
 }

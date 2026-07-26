@@ -10,6 +10,7 @@
   --primary-alpha:rgba(102,126,234,0.1);
 
   --accent:#06b6d4;
+  --accent-rgb:6,182,212;
   --accent-gradient:linear-gradient(135deg,#06b6d4 0%,#0891b2 50%,#0e7490 100%);
   --success:#22c55e;
   --success-gradient:linear-gradient(135deg,#22c55e 0%,#16a34a 50%,#15803d 100%);
@@ -44,6 +45,17 @@
   --text-inverse:#0f172a;
   --text-accent:#06b6d4;
   --text-tertiary:#64748b;
+
+  --link-color: var(--text-accent);
+  --placeholder-color: rgba(148,163,184,0.5);
+
+  /* Interactive elements */
+  --button-bg:var(--primary);
+  --button-hover:var(--primary-hover);
+  --button-text:#ffffff;
+  --input-bg:var(--bg-tertiary);
+  --input-border:var(--border-primary);
+  --selection-bg:rgba(102,126,234,0.3);
 
   --border-primary:rgba(255,255,255,0.12);
   --border-secondary:rgba(6,182,212,0.3);

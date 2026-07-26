@@ -19,6 +19,7 @@ import { createPopupServices } from './services';
 import { connect } from './services/connect';
 import { POPUP_CONFIG } from './data';
 import { LangSwitch } from './components/LangSwitch/LangSwitch';
+import { applyThemeColors } from '../shared/theme-colors';
 
 // CSS imports — Vite bundles these
 import './popup.css';
@@ -108,6 +109,10 @@ class PopupComponent {
       }
       if (this._chrome) this._chrome.saveState(this.state as unknown as Record<string, unknown>);
       if (this._notify) this._notify.show(opts.okMsg, 'success');
+      // Apply theme CSS when color changes
+      if (opts.msg.action === 'setColor') {
+        applyThemeColors(document.documentElement, this.state.color);
+      }
       this._render();
     });
   }
@@ -246,6 +251,9 @@ class PopupComponent {
           self.state.controlsEnabled = true;
           self.state.hintText = t('popupStatusReady');
           self._render();
+
+          // Apply the stored color theme to popup CSS
+          applyThemeColors(document.documentElement, self.state.color);
 
           // Sync content script visibility with stored tab state
           self._chrome!.sendMessage({
