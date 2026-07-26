@@ -16,6 +16,7 @@
   "popupModelPrefix": { "message": "模型：$MODEL$", "placeholders": { "model": { "content": "$1", "example": "GPT-4" } } },
   "popupSizeUnit": { "message": "像素" },
   "popupVersion": { "message": "v$VERSION$", "placeholders": { "version": { "content": "$1", "example": "1.1.2" } } },
+  "popupLanguageLabel": { "message": "语言" },
 
   "popupStatusConnecting": { "message": "连接中…" },
   "popupStatusReady": { "message": "就绪" },

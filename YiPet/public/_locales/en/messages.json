@@ -16,6 +16,7 @@
   "popupModelPrefix": { "message": "Model: $MODEL$", "placeholders": { "model": { "content": "$1", "example": "GPT-4" } } },
   "popupSizeUnit": { "message": "px" },
   "popupVersion": { "message": "v$VERSION$", "placeholders": { "version": { "content": "$1", "example": "1.1.2" } } },
+  "popupLanguageLabel": { "message": "Language" },
 
   "popupStatusConnecting": { "message": "Connecting…" },
   "popupStatusReady": { "message": "Ready" },

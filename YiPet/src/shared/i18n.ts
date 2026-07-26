@@ -92,15 +92,25 @@ export type MessageKey =
   | 'aboutDevDepsTitle'
   // Misc
   | 'popupSizeUnit'
-  | 'popupVersion';
+  | 'popupVersion'
+  // Language
+  | 'popupLanguageLabel';
+
+import { lookupMessage } from './locale-messages';
 
 /* ── Public API ─────────────────────────────────────────────────────────── */
 
 /**
- * Translate a message key. Falls back to the key itself if the message
- * is not found (never returns "" — caller always gets something displayable).
+ * Translate a message key. Uses the runtime-loaded locale cache first,
+ * falling back to chrome.i18n.getMessage() (which is keyed to the browser
+ * UI language). Never returns "" — caller always gets something displayable.
  */
 export function t(key: MessageKey, substitutions?: string | string[]): string {
+  // Try runtime cache first (supports user-selected locale)
+  const cached = lookupMessage(key, undefined, substitutions);
+  if (cached) return cached;
+
+  // Fallback to Chrome's built-in i18n
   return chrome.i18n.getMessage(key, substitutions) || key;
 }
 

@@ -4,7 +4,8 @@
 
 import '../shared/globals';
 import { t } from '../shared/i18n';
-import { resolveLocale, applyLocale } from '../shared/locale';
+import { resolveLocale, applyLocale, setUserLocale } from '../shared/locale';
+import type { SupportedLocale } from '../shared/locale';
 import { AppHeader } from './components/AppHeader/AppHeader';
 import { SettingsCard } from './components/SettingsCard/SettingsCard';
 import { SwitchRow } from './components/SwitchRow/SwitchRow';
@@ -16,6 +17,7 @@ import { AboutCard } from './components/AboutCard/AboutCard';
 import { createPopupServices } from './services';
 import { connect } from './services/connect';
 import { POPUP_CONFIG } from './data';
+import { LangSwitch } from './components/LangSwitch/LangSwitch';
 
 // CSS imports — Vite bundles these
 import './popup.css';
@@ -27,6 +29,7 @@ import './components/SelectRow/SelectRow.css';
 import './components/Notification/Notification.css';
 import './components/AppFooter/AppFooter.css';
 import './components/AboutCard/AboutCard.css';
+import './components/LangSwitch/LangSwitch.css';
 
 // ── State ──────────────────────────────────────────────────────────────
 
@@ -40,6 +43,7 @@ interface PopupState {
   controlsEnabled: boolean;
   hintText: string;
   notification: { visible: boolean; message: string; type: string };
+  locale: SupportedLocale;
 }
 
 // ── Component ──────────────────────────────────────────────────────────
@@ -63,6 +67,7 @@ class PopupComponent {
       controlsEnabled: false,
       hintText: t('popupStatusConnecting'),
       notification: { visible: false, message: '', type: 'info' },
+      locale: 'en' as SupportedLocale,
     };
 
     const svc = createPopupServices({
@@ -154,6 +159,22 @@ class PopupComponent {
       msg: { action: 'setColor', color: idx },
       okMsg: t('notifyColorSet'),
       optimistic: { color: idx },
+    });
+  }
+
+  // ── Language ────────────────────────────────────────────────────
+
+  private _changeLanguage(locale: SupportedLocale) {
+    const self = this;
+    setUserLocale(locale).then(() => {
+      applyLocale(locale).then(() => {
+        self.state.locale = locale;
+        self._render();
+      }).catch((err: Error) => {
+        console.error('[YiPet Popup] applyLocale failed on switch:', err.message);
+        self.state.locale = locale;
+        self._render();
+      });
     });
   }
 
@@ -276,6 +297,11 @@ class PopupComponent {
             onChange: (e: { target: { value: string } }) => this._updateColor(e),
             options: POPUP_CONFIG.COLORS,
           }),
+          c(LangSwitch, {
+            value: state.locale,
+            disabled,
+            onChange: (loc: SupportedLocale) => this._changeLanguage(loc),
+          }),
         ),
         c(AboutCard, null),
       ),
@@ -308,6 +334,7 @@ if (!rootEl) {
   // Initialize locale + timezone, then mount.
   // mount() immediately renders the skeleton — the popup is never blank.
   resolveLocale().then(({ locale }) => {
+    popup.state.locale = locale;
     applyLocale(locale).then(() => {
       popup.mount();
     }).catch((err: Error) => {

@@ -84,15 +84,20 @@ export async function resolveLocale(): Promise<{
 
 /**
  * Apply the active locale to the document:
+ *   - Load messages for this locale at runtime (bypasses chrome.i18n lock)
  *   - <html lang="...">
  *   - <html dir="rtl|ltr">
- * Then re-localize all [data-i18n] elements.
+ *   - Re-localize all [data-i18n] elements
  */
 export async function applyLocale(locale: SupportedLocale): Promise<void> {
+  // Preload messages for the target locale before anything reads t()
+  const { setActiveLocale } = await import('./locale-messages');
+  await setActiveLocale(locale);
+
   document.documentElement.lang = locale.replace('_', '-');
   document.documentElement.dir = isRTL(locale) ? 'rtl' : 'ltr';
 
-  // Dynamic import — localizeDOM is only needed at runtime
+  // Re-process [data-i18n] elements with the new locale
   const { localizeDOM } = await import('./i18n');
   localizeDOM();
 }

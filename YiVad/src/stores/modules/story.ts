@@ -183,7 +183,6 @@ export const useStoryStore = defineStore("yivad-story", () => {
       startDate: today,
       dueDate: nextWeek,
       completedAt: null,
-      sprint: "",
       scheduleStatus: "planned",
       tags: [],
       scenarios: [],

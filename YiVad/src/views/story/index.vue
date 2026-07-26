@@ -1,36 +1,43 @@
 <script setup lang="ts" name="storyBoard">
-import { onMounted } from "vue";
+import { computed, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 import { useStoryStore } from "@/stores/modules/story";
 import type { StoryDocument } from "@/api/modules/story";
 import StoryStatusBadge from "./components/StoryStatusBadge.vue";
 
+const { t } = useI18n();
 const store = useStoryStore();
 
-const statusLabels: Record<string, string> = {
-  planning: "Planning",
-  design: "Design",
-  develop: "Develop",
-  testing: "Testing",
-  operations: "Operations",
-  archived: "Archived"
-};
+const statusLabels = computed(() => ({
+  planning: t("story.planning"),
+  design: t("story.design"),
+  develop: t("story.develop"),
+  testing: t("story.testing"),
+  operations: t("story.operations"),
+  archived: t("story.archived")
+}));
 const statusOrder = ["planning", "design", "develop", "testing", "operations", "archived"];
-const priorityLabels: Record<string, string> = { p0: "P0 · Critical", p1: "P1 · High", p2: "P2 · Medium", p3: "P3 · Low" };
+const priorityLabels = computed(() => ({
+  p0: t("story.p0Critical"),
+  p1: t("story.p1High"),
+  p2: t("story.p2Medium"),
+  p3: t("story.p3Low")
+}));
 const priorityColors: Record<string, string> = { p0: "danger", p1: "warning", p2: "info", p3: "" };
-const scenarioStatusLabels: Record<string, string> = {
-  pending: "Pending",
-  in_progress: "In Progress",
-  done: "Done",
-  blocked: "Blocked"
-};
+const scenarioStatusLabels = computed(() => ({
+  pending: t("story.pending"),
+  in_progress: t("story.inProgress"),
+  done: t("story.doneStatus"),
+  blocked: t("story.blocked")
+}));
 const stepActions = ["Given", "When", "Then", "And"];
-const scheduleLabels: Record<string, string> = {
-  planned: "Planned",
-  on_track: "On Track",
-  at_risk: "At Risk",
-  delayed: "Delayed",
-  completed: "Completed"
-};
+const scheduleLabels = computed(() => ({
+  planned: t("story.planned"),
+  on_track: t("story.onTrack"),
+  at_risk: t("story.atRisk"),
+  delayed: t("story.delayed"),
+  completed: t("story.completed")
+}));
 const scheduleColors: Record<string, string> = {
   planned: "info",
   on_track: "success",
@@ -43,20 +50,20 @@ function dueLabel(dueDate: number | null): { text: string; type: string } {
   if (!dueDate) return { text: "", type: "" };
   const now = Date.now();
   const days = Math.ceil((dueDate - now) / 86400000);
-  if (days < 0) return { text: `Overdue ${-days}d`, type: "danger" };
-  if (days === 0) return { text: "Due today", type: "danger" };
-  if (days <= 3) return { text: `Due in ${days}d`, type: "warning" };
-  if (days <= 7) return { text: `Due in ${days}d`, type: "info" };
-  return { text: `Due in ${days}d`, type: "" };
+  if (days < 0) return { text: t("story.overdue", { days: -days }), type: "danger" };
+  if (days === 0) return { text: t("story.dueToday"), type: "danger" };
+  if (days <= 3) return { text: t("story.dueIn", { days }), type: "warning" };
+  if (days <= 7) return { text: t("story.dueIn", { days }), type: "info" };
+  return { text: t("story.dueIn", { days }), type: "" };
 }
 
-const timeOptions = [
-  { label: "All", value: "all" as const },
-  { label: "This Week", value: "week" as const },
-  { label: "This Month", value: "month" as const },
-  { label: "This Quarter", value: "quarter" as const },
-  { label: "Custom", value: "custom" as const }
-];
+const timeOptions = computed(() => [
+  { label: t("story.all"), value: "all" as const },
+  { label: t("story.thisWeek"), value: "week" as const },
+  { label: t("story.thisMonth"), value: "month" as const },
+  { label: t("story.thisQuarter"), value: "quarter" as const },
+  { label: t("story.custom"), value: "custom" as const }
+]);
 
 function fmtDate(ts: number | null): string {
   if (!ts) return "";
@@ -86,16 +93,16 @@ onMounted(() => store.fetchStories());
     <!-- Header -->
     <div class="sb-hdr">
       <div class="sb-hdr-l">
-        <h2 class="sb-title">Story Board</h2>
-        <span class="sb-count">{{ store.totalStories }} stories</span>
+        <h2 class="sb-title">{{ $t("story.title") }}</h2>
+        <span class="sb-count">{{ $t("story.storiesCount", { count: store.totalStories }) }}</span>
       </div>
       <div class="sb-hdr-r">
-        <el-button type="primary" @click="store.openCreateDialog()">+ New Story</el-button>
+        <el-button type="primary" @click="store.openCreateDialog()">{{ $t("story.newStory") }}</el-button>
         <el-segmented
           v-model="store.viewMode"
           :options="[
-            { label: 'Cards', value: 'cards' },
-            { label: 'List', value: 'list' }
+            { label: $t('story.cards'), value: 'cards' },
+            { label: $t('story.list'), value: 'list' }
           ]"
         />
       </div>
@@ -104,21 +111,21 @@ onMounted(() => store.fetchStories());
     <!-- Dimensions -->
     <div class="sb-dims">
       <div class="sb-dim">
-        <span class="sb-dim-lbl">Project</span>
+        <span class="sb-dim-lbl">{{ $t("story.project") }}</span>
         <el-select
           v-model="store.selectedProject"
-          placeholder="All"
+          :placeholder="$t('story.all')"
           clearable
           size="small"
           style="width: 180px"
           @change="store.selectProject(store.selectedProject || '')"
         >
-          <el-option label="All Projects" value="" />
+          <el-option :label="$t('story.allProjects')" value="" />
           <el-option v-for="p in store.projects" :key="p" :label="`${p} (${store.projectStoryCounts[p] || 0})`" :value="p" />
         </el-select>
       </div>
       <div class="sb-dim">
-        <span class="sb-dim-lbl">Time</span>
+        <span class="sb-dim-lbl">{{ $t("story.time") }}</span>
         <el-select v-model="store.timeRange" size="small" style="width: 140px" @change="(v: any) => store.setTimeRange(v)">
           <el-option v-for="o in timeOptions" :key="o.value" :label="o.label" :value="o.value" />
         </el-select>
@@ -126,7 +133,7 @@ onMounted(() => store.fetchStories());
           <el-date-picker
             v-model="store.customStart"
             type="date"
-            placeholder="Start"
+            :placeholder="$t('story.start')"
             size="small"
             style="width: 130px"
             @change="store.fetchStories()"
@@ -135,7 +142,7 @@ onMounted(() => store.fetchStories());
           <el-date-picker
             v-model="store.customEnd"
             type="date"
-            placeholder="End"
+            :placeholder="$t('story.end')"
             size="small"
             style="width: 130px"
             @change="store.fetchStories()"
@@ -145,7 +152,7 @@ onMounted(() => store.fetchStories());
       <div class="sb-dim-r">
         <el-input
           v-model="store.searchQuery"
-          placeholder="Search..."
+          :placeholder="$t('story.search')"
           clearable
           size="small"
           style="width: 200px"
@@ -158,19 +165,19 @@ onMounted(() => store.fetchStories());
     <div v-if="!store.loading && store.scheduleStats.total > 0" class="sb-sched">
       <span class="sb-sched-item" :class="{ on: store.scheduleStats.on_track }"
         ><span class="sb-sched-n">{{ store.scheduleStats.on_track }}</span
-        >On Track</span
+        >{{ $t("story.onTrack") }}</span
       >
       <span class="sb-sched-item" :class="{ warn: store.scheduleStats.at_risk }"
         ><span class="sb-sched-n">{{ store.scheduleStats.at_risk }}</span
-        >At Risk</span
+        >{{ $t("story.atRisk") }}</span
       >
       <span class="sb-sched-item" :class="{ bad: store.scheduleStats.delayed }"
         ><span class="sb-sched-n">{{ store.scheduleStats.delayed }}</span
-        >Delayed</span
+        >{{ $t("story.delayed") }}</span
       >
       <span class="sb-sched-item" :class="{ done: store.scheduleStats.completed }"
         ><span class="sb-sched-n">{{ store.scheduleStats.completed }}</span
-        >Completed</span
+        >{{ $t("story.completed") }}</span
       >
     </div>
 
@@ -214,7 +221,7 @@ onMounted(() => store.fetchStories());
               <div class="sc-meta">
                 <el-tag v-if="s.project" size="small" type="info">{{ s.project }}</el-tag>
               </div>
-              <p class="sc-desc">{{ s.description || "No description" }}</p>
+              <p class="sc-desc">{{ s.description || $t("story.noDescription") }}</p>
               <!-- Tags -->
               <div v-if="s.tags?.length" class="sc-tags">
                 <el-tag v-for="t in s.tags" :key="t" size="small" class="sc-tag-chip">{{ t }}</el-tag>
@@ -227,15 +234,15 @@ onMounted(() => store.fetchStories());
               </div>
               <!-- Actions -->
               <div class="sc-acts" @click.stop>
-                <el-button size="small" text @click="store.openEditDialog(s)">Edit</el-button>
-                <el-button size="small" text type="danger" @click="store.handleDelete(s)">Del</el-button>
+                <el-button size="small" text @click="store.openEditDialog(s)">{{ $t("story.edit") }}</el-button>
+                <el-button size="small" text type="danger" @click="store.handleDelete(s)">{{ $t("story.del") }}</el-button>
               </div>
             </el-card>
           </div>
         </div>
       </template>
-      <el-empty v-if="store.filteredStories.length === 0" description="No stories"
-        ><el-button type="primary" @click="store.openCreateDialog()">Create</el-button></el-empty
+      <el-empty v-if="store.filteredStories.length === 0" :description="$t('story.noStories')"
+        ><el-button type="primary" @click="store.openCreateDialog()">{{ $t("story.create") }}</el-button></el-empty
       >
     </div>
 
@@ -247,17 +254,17 @@ onMounted(() => store.fetchStories());
       @row-click="(r: StoryDocument) => store.openDetail(r)"
       style="cursor: pointer"
     >
-      <el-table-column prop="name" label="Name" min-width="180"
+      <el-table-column prop="name" :label="$t('story.name')" min-width="180"
         ><template #default="{ row }"
           ><span style="font-weight: 600">{{ row.name }}</span></template
         ></el-table-column
       >
-      <el-table-column prop="project" label="Project" width="90"
+      <el-table-column prop="project" :label="$t('story.project')" width="90"
         ><template #default="{ row }"
           ><el-tag v-if="row.project" size="small" type="info">{{ row.project }}</el-tag></template
         ></el-table-column
       >
-      <el-table-column label="Schedule" width="100"
+      <el-table-column :label="$t('story.schedule')" width="100"
         ><template #default="{ row }"
           ><el-tag v-if="row.scheduleStatus" :type="scheduleColors[row.scheduleStatus] as any" size="small" effect="dark">{{
             scheduleLabels[row.scheduleStatus]
@@ -265,38 +272,38 @@ onMounted(() => store.fetchStories());
         ></el-table-column
       >
 
-      <el-table-column prop="status" label="Status" width="110"
+      <el-table-column prop="status" :label="$t('story.status')" width="110"
         ><template #default="{ row }"><StoryStatusBadge :status="row.status" /></template
       ></el-table-column>
-      <el-table-column label="Priority" width="90"
+      <el-table-column :label="$t('story.priority')" width="90"
         ><template #default="{ row }"
           ><el-tag v-if="row.priority" :type="priorityColors[row.priority] as any" size="small"
             >{{ row.priority.toUpperCase() }}
           </el-tag>
         </template></el-table-column
       >
-      <el-table-column label="Scenarios" width="90" align="center"
+      <el-table-column :label="$t('story.scenarios')" width="90" align="center"
         ><template #default="{ row }"
           >{{ scenarioDone(row as StoryDocument) }}/{{ scenarioCount(row as StoryDocument) }}</template
         ></el-table-column
       >
-      <el-table-column label="Due" width="100"
+      <el-table-column :label="$t('story.dueDate')" width="100"
         ><template #default="{ row }"
           ><span v-if="row.dueDate" :class="{ 'sc-overdue': dueLabel(row.dueDate).type === 'danger' }">{{
             fmtDate(row.dueDate)
           }}</span></template
         ></el-table-column
       >
-      <el-table-column prop="assignee" label="Assignee" width="90" />
+      <el-table-column prop="assignee" :label="$t('story.assignee')" width="90" />
 
-      <el-table-column prop="description" label="Description" min-width="140" show-overflow-tooltip />
-      <el-table-column label="Updated" width="110"
+      <el-table-column prop="description" :label="$t('story.description')" min-width="140" show-overflow-tooltip />
+      <el-table-column :label="$t('story.updated')" width="110"
         ><template #default="{ row }">{{ fmtDate(row.updatedAt) }}</template></el-table-column
       >
-      <el-table-column label="Actions" width="140" fixed="right">
+      <el-table-column :label="$t('story.actions')" width="140" fixed="right">
         <template #default="{ row }">
           <el-button size="small" text type="primary" @click.stop="store.openEditDialog(row as StoryDocument)">Edit</el-button>
-          <el-button size="small" text type="danger" @click.stop="store.handleDelete(row)">Del</el-button>
+          <el-button size="small" text type="danger" @click.stop="store.handleDelete(row as StoryDocument)">Del</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -304,18 +311,18 @@ onMounted(() => store.fetchStories());
     <!-- Detail Drawer -->
     <el-drawer
       v-model="store.panelVisible"
-      :title="store.selectedStory?.name ?? 'Detail'"
+      :title="store.selectedStory?.name ?? $t('story.detail')"
       size="650px"
       @close="store.closePanel()"
     >
       <div v-if="store.selectedStory" class="sd-root">
         <el-tabs v-model="store.scenarioTab">
-          <el-tab-pane label="Overview" name="overview">
+          <el-tab-pane :label="$t('story.overview')" name="overview">
             <el-descriptions :column="2" border size="small">
-              <el-descriptions-item label="Status"
+              <el-descriptions-item :label="$t('story.status')"
                 ><StoryStatusBadge :status="store.selectedStory.status"
               /></el-descriptions-item>
-              <el-descriptions-item label="Priority"
+              <el-descriptions-item :label="$t('story.priority')"
                 ><el-tag
                   v-if="store.selectedStory.priority"
                   :type="priorityColors[store.selectedStory.priority] as any"
@@ -323,9 +330,9 @@ onMounted(() => store.fetchStories());
                   >{{ priorityLabels[store.selectedStory.priority] }}</el-tag
                 ></el-descriptions-item
               >
-              <el-descriptions-item label="Project">{{ store.selectedStory.project || "-" }}</el-descriptions-item>
-              <el-descriptions-item label="Assignee">{{ store.selectedStory.assignee || "-" }}</el-descriptions-item>
-              <el-descriptions-item label="Schedule"
+              <el-descriptions-item :label="$t('story.project')">{{ store.selectedStory.project || "-" }}</el-descriptions-item>
+              <el-descriptions-item :label="$t('story.assignee')">{{ store.selectedStory.assignee || "-" }}</el-descriptions-item>
+              <el-descriptions-item :label="$t('story.schedule')"
                 ><el-tag
                   v-if="store.selectedStory.scheduleStatus"
                   :type="scheduleColors[store.selectedStory.scheduleStatus] as any"
@@ -334,42 +341,46 @@ onMounted(() => store.fetchStories());
                 ></el-descriptions-item
               >
 
-              <el-descriptions-item label="Start">{{ fmtDate(store.selectedStory.startDate) || "-" }}</el-descriptions-item>
-              <el-descriptions-item label="Due"
+              <el-descriptions-item :label="$t('story.startDate')">{{
+                fmtDate(store.selectedStory.startDate) || "-"
+              }}</el-descriptions-item>
+              <el-descriptions-item :label="$t('story.dueDate')"
                 ><span>{{ fmtDate(store.selectedStory.dueDate) || "-" }}</span>
               </el-descriptions-item>
-              <el-descriptions-item v-if="store.selectedStory.completedAt" label="Completed">{{
+              <el-descriptions-item v-if="store.selectedStory.completedAt" :label="$t('story.completedDate')">{{
                 fmtDate(store.selectedStory.completedAt)
               }}</el-descriptions-item>
-              <el-descriptions-item label="Updated">{{ fmtDate(store.selectedStory.updatedAt) }}</el-descriptions-item>
+              <el-descriptions-item :label="$t('story.updated')">{{
+                fmtDate(store.selectedStory.updatedAt)
+              }}</el-descriptions-item>
             </el-descriptions>
-            <h4 class="sd-sec">Background</h4>
-            <p class="sd-txt">{{ store.selectedStory.background || "None" }}</p>
-            <h4 class="sd-sec">Description</h4>
-            <p class="sd-txt">{{ store.selectedStory.description || "None" }}</p>
-            <h4 class="sd-sec">Acceptance Criteria</h4>
-            <p class="sd-txt" style="white-space: pre-wrap">{{ store.selectedStory.acceptance || "None" }}</p>
-            <h4 class="sd-sec">Tags</h4>
+            <h4 class="sd-sec">{{ $t("story.background") }}</h4>
+            <p class="sd-txt">{{ store.selectedStory.background || $t("story.none") }}</p>
+            <h4 class="sd-sec">{{ $t("story.description") }}</h4>
+            <p class="sd-txt">{{ store.selectedStory.description || $t("story.none") }}</p>
+            <h4 class="sd-sec">{{ $t("story.acceptance") }}</h4>
+            <p class="sd-txt" style="white-space: pre-wrap">{{ store.selectedStory.acceptance || $t("story.none") }}</p>
+            <h4 class="sd-sec">{{ $t("story.tags") }}</h4>
             <div class="sd-tags">
               <el-tag v-for="t in store.selectedStory.tags" :key="t" size="small">{{ t }}</el-tag
-              ><span v-if="!store.selectedStory.tags?.length" class="sd-muted">None</span>
+              ><span v-if="!store.selectedStory.tags?.length" class="sd-muted">{{ $t("story.none") }}</span>
             </div>
-            <h4 class="sd-sec">Files</h4>
+            <h4 class="sd-sec">{{ $t("story.files") }}</h4>
             <div v-if="store.selectedStory.files?.length" class="sd-files">
               <div v-for="f in store.selectedStory.files" :key="f.filePath" class="sd-file-item">
                 <el-icon><Document /></el-icon>
                 <span class="sd-file-name">{{ f.fileName || f.filePath }}</span>
               </div>
             </div>
-            <p v-else class="sd-muted">None</p>
+            <p v-else class="sd-muted">{{ $t("story.none") }}</p>
           </el-tab-pane>
 
-          <el-tab-pane label="Scenarios" name="scenarios">
+          <el-tab-pane :label="$t('story.scenarios')" name="scenarios">
             <div class="sd-sc-hdr">
-              <span class="sd-sc-count"
-                >{{ scenarioCount(store.selectedStory) }} scenarios · {{ scenarioDone(store.selectedStory) }} done</span
-              >
-              <el-button size="small" type="primary" @click="store.openScenarioCreate()">+ Add Scenario</el-button>
+              <span class="sd-sc-count">{{
+                $t("story.scenariosCount", { total: scenarioCount(store.selectedStory), done: scenarioDone(store.selectedStory) })
+              }}</span>
+              <el-button size="small" type="primary" @click="store.openScenarioCreate()">{{ $t("story.addScenario") }}</el-button>
             </div>
             <el-progress
               v-if="scenarioCount(store.selectedStory) > 0"
@@ -378,7 +389,7 @@ onMounted(() => store.fetchStories());
               :color="scenarioProgress(store.selectedStory) === 100 ? '#67c23a' : '#409eff'"
               style="margin-bottom: 16px"
             />
-            <el-empty v-if="!store.selectedStory.scenarios?.length" description="No scenarios yet" :image-size="60" />
+            <el-empty v-if="!store.selectedStory.scenarios?.length" :description="$t('story.noScenarios')" :image-size="60" />
             <template v-for="scStatus in ['done', 'in_progress', 'pending', 'blocked']" :key="scStatus">
               <template v-if="store.selectedStory.scenarios?.filter(sc => sc.status === scStatus).length">
                 <div class="sd-sc-group-hdr">
@@ -396,7 +407,7 @@ onMounted(() => store.fetchStories());
                         <el-tag :type="priorityColors[sc.priority] as any" size="small">{{ sc.priority.toUpperCase() }}</el-tag>
                       </div>
                     </div>
-                    <p class="sd-sc-desc">{{ sc.description || "No description" }}</p>
+                    <p class="sd-sc-desc">{{ sc.description || $t("story.noDescription") }}</p>
                     <div v-if="sc.steps?.length" class="sd-sc-steps">
                       <div v-for="(step, si) in sc.steps" :key="`${si}_${step.action}`" class="sd-step">
                         <span class="sd-step-act">{{ step.action }}</span>
@@ -407,8 +418,10 @@ onMounted(() => store.fetchStories());
                       <el-tag v-for="t in sc.tags" :key="t" size="small" class="sc-tag-chip">{{ t }}</el-tag>
                     </div>
                     <div class="sd-sc-acts">
-                      <el-button size="small" text @click="store.openScenarioEdit(idx)">Edit</el-button>
-                      <el-button size="small" text type="danger" @click="store.handleScenarioDelete(idx)">Del</el-button>
+                      <el-button size="small" text @click="store.openScenarioEdit(idx)">{{ $t("story.edit") }}</el-button>
+                      <el-button size="small" text type="danger" @click="store.handleScenarioDelete(idx)">{{
+                        $t("story.del")
+                      }}</el-button>
                     </div>
                   </div>
                 </div>
@@ -420,106 +433,122 @@ onMounted(() => store.fetchStories());
     </el-drawer>
 
     <!-- Story Dialog -->
-    <el-dialog v-model="store.dialogVisible" :title="store.isEdit ? 'Edit Story' : 'New Story'" width="600px" destroy-on-close>
+    <el-dialog
+      v-model="store.dialogVisible"
+      :title="store.isEdit ? $t('story.editStory') : $t('story.newStoryTitle')"
+      width="1000px"
+      destroy-on-close
+    >
       <el-form label-width="110px">
         <el-row :gutter="16">
           <el-col :span="14"
-            ><el-form-item label="Name" required
-              ><el-input v-model="store.form.name" placeholder="e.g. Pet Settings" /></el-form-item
+            ><el-form-item :label="$t('story.name')" required
+              ><el-input v-model="store.form.name" :placeholder="$t('story.namePlaceholder')" /></el-form-item
           ></el-col>
           <el-col :span="10"
-            ><el-form-item label="Project"
+            ><el-form-item :label="$t('story.project')"
               ><el-select v-model="store.form.project" filterable allow-create default-first-option style="width: 100%"
                 ><el-option v-for="p in store.projects" :key="p" :label="p" :value="p" /></el-select></el-form-item
           ></el-col>
         </el-row>
         <el-row :gutter="16">
           <el-col :span="12"
-            ><el-form-item label="Status"
+            ><el-form-item :label="$t('story.status')"
               ><el-select v-model="store.form.status" style="width: 100%"
                 ><el-option v-for="s in statusOrder" :key="s" :label="statusLabels[s]" :value="s" /></el-select></el-form-item
           ></el-col>
           <el-col :span="12"
-            ><el-form-item label="Priority"
+            ><el-form-item :label="$t('story.priority')"
               ><el-select v-model="store.form.priority" style="width: 100%"
                 ><el-option v-for="(lbl, val) in priorityLabels" :key="val" :label="lbl" :value="val" /></el-select></el-form-item
           ></el-col>
         </el-row>
-        <el-form-item label="Description"
-          ><el-input v-model="store.form.description" type="textarea" :rows="2" placeholder="Brief summary"
+        <el-form-item :label="$t('story.description')"
+          ><el-input v-model="store.form.description" type="textarea" :rows="4" :placeholder="$t('story.briefSummary')"
         /></el-form-item>
-        <el-form-item label="Background"
-          ><el-input v-model="store.form.background" type="textarea" :rows="2" placeholder="Why this story matters"
+        <el-form-item :label="$t('story.background')"
+          ><el-input v-model="store.form.background" type="textarea" :rows="2" :placeholder="$t('story.whyThisStory')"
         /></el-form-item>
-        <el-form-item label="Acceptance"
-          ><el-input v-model="store.form.acceptance" type="textarea" :rows="2" placeholder="Acceptance criteria (markdown)"
+        <el-form-item :label="$t('story.acceptance')"
+          ><el-input v-model="store.form.acceptance" type="textarea" :rows="6" :placeholder="$t('story.acceptancePlaceholder')"
         /></el-form-item>
         <el-row :gutter="16">
           <el-col :span="12"
-            ><el-form-item label="Assignee"><el-input v-model="store.form.assignee" placeholder="Name" /></el-form-item
+            ><el-form-item :label="$t('story.assignee')"
+              ><el-input v-model="store.form.assignee" placeholder="Name" /></el-form-item
           ></el-col>
         </el-row>
         <el-row :gutter="16">
           <el-col :span="12"
-            ><el-form-item label="Start Date"
-              ><el-date-picker v-model="store.form.startDate" type="date" placeholder="Start" style="width: 100%" /></el-form-item
+            ><el-form-item :label="$t('story.startDate')"
+              ><el-date-picker
+                v-model="store.form.startDate"
+                type="date"
+                :placeholder="$t('story.start')"
+                style="width: 100%" /></el-form-item
           ></el-col>
           <el-col :span="12"
-            ><el-form-item label="Due Date"
-              ><el-date-picker v-model="store.form.dueDate" type="date" placeholder="Due" style="width: 100%" /></el-form-item
+            ><el-form-item :label="$t('story.dueDate')"
+              ><el-date-picker
+                v-model="store.form.dueDate"
+                type="date"
+                :placeholder="$t('story.dueDate')"
+                style="width: 100%" /></el-form-item
           ></el-col>
         </el-row>
         <el-row :gutter="16">
           <el-col :span="12"
-            ><el-form-item label="Schedule"
+            ><el-form-item :label="$t('story.schedule')"
               ><el-select v-model="store.form.scheduleStatus" style="width: 100%"
                 ><el-option v-for="(lbl, val) in scheduleLabels" :key="val" :label="lbl" :value="val" /></el-select></el-form-item
           ></el-col>
           <el-col :span="12"
-            ><el-form-item label="Completed"
+            ><el-form-item :label="$t('story.completedDate')"
               ><el-date-picker
                 v-model="store.form.completedAt"
                 type="date"
-                placeholder="Completed"
+                :placeholder="$t('story.completedDate')"
                 style="width: 100%" /></el-form-item
           ></el-col>
         </el-row>
-        <el-form-item label="Tags"
+        <el-form-item :label="$t('story.tags')"
           ><el-select
             v-model="store.form.tags"
             multiple
             filterable
             allow-create
             default-first-option
-            placeholder="Add tags"
+            :placeholder="$t('story.addTags')"
             style="width: 100%"
         /></el-form-item>
       </el-form>
       <template #footer
-        ><el-button @click="store.dialogVisible = false">Cancel</el-button
-        ><el-button type="primary" :loading="store.saving" @click="store.handleSave()">Save</el-button></template
+        ><el-button @click="store.dialogVisible = false">{{ $t("story.cancel") }}</el-button
+        ><el-button type="primary" :loading="store.saving" @click="store.handleSave()">{{
+          $t("story.save")
+        }}</el-button></template
       >
     </el-dialog>
 
     <!-- Scenario Dialog -->
     <el-dialog
       v-model="store.scenarioDialogVisible"
-      :title="store.scenarioEditIdx >= 0 ? 'Edit Scenario' : 'Add Scenario'"
-      width="560px"
+      :title="store.scenarioEditIdx >= 0 ? $t('story.editScenario') : $t('story.addScenarioTitle')"
+      width="900px"
       destroy-on-close
     >
       <el-form label-width="100px">
-        <el-form-item label="Name" required
-          ><el-input v-model="store.scenarioForm.name" placeholder="e.g. User can toggle dark mode"
+        <el-form-item :label="$t('story.name')" required
+          ><el-input v-model="store.scenarioForm.name" :placeholder="$t('story.scenarioNamePlaceholder')"
         /></el-form-item>
         <el-row :gutter="16">
           <el-col :span="12"
-            ><el-form-item label="Priority"
+            ><el-form-item :label="$t('story.priority')"
               ><el-select v-model="store.scenarioForm.priority" style="width: 100%"
                 ><el-option v-for="(lbl, val) in priorityLabels" :key="val" :label="lbl" :value="val" /></el-select></el-form-item
           ></el-col>
           <el-col :span="12"
-            ><el-form-item label="Status"
+            ><el-form-item :label="$t('story.status')"
               ><el-select v-model="store.scenarioForm.status" style="width: 100%"
                 ><el-option
                   v-for="(lbl, val) in scenarioStatusLabels"
@@ -528,37 +557,41 @@ onMounted(() => store.fetchStories());
                   :value="val" /></el-select></el-form-item
           ></el-col>
         </el-row>
-        <el-form-item label="Description"
-          ><el-input v-model="store.scenarioForm.description" type="textarea" :rows="2" placeholder="Describe the scenario"
+        <el-form-item :label="$t('story.description')"
+          ><el-input
+            v-model="store.scenarioForm.description"
+            type="textarea"
+            :rows="2"
+            :placeholder="$t('story.scenarioDescPlaceholder')"
         /></el-form-item>
 
-        <el-form-item label="Steps">
+        <el-form-item :label="$t('story.steps')">
           <div class="sf-steps">
             <div v-for="(step, idx) in store.scenarioForm.steps" :key="`sf_${idx}_${step.action}`" class="sf-step">
               <el-select v-model="step.action" size="small" style="width: 90px"
                 ><el-option v-for="a in stepActions" :key="a" :label="a" :value="a"
               /></el-select>
-              <el-input v-model="step.description" size="small" placeholder="Step description" />
+              <el-input v-model="step.description" size="small" :placeholder="$t('story.stepPlaceholder')" />
               <el-button size="small" text type="danger" @click="store.removeStep(idx)">×</el-button>
             </div>
-            <el-button size="small" text type="primary" @click="store.addStep()">+ Add Step</el-button>
+            <el-button size="small" text type="primary" @click="store.addStep()">{{ $t("story.addStep") }}</el-button>
           </div>
         </el-form-item>
 
-        <el-form-item label="Tags"
+        <el-form-item :label="$t('story.tags')"
           ><el-select
             v-model="store.scenarioForm.tags"
             multiple
             filterable
             allow-create
             default-first-option
-            placeholder="Tags"
+            :placeholder="$t('story.addTags')"
             style="width: 100%"
         /></el-form-item>
       </el-form>
       <template #footer
-        ><el-button @click="store.scenarioDialogVisible = false">Cancel</el-button
-        ><el-button type="primary" @click="store.handleScenarioSave()">Save</el-button></template
+        ><el-button @click="store.scenarioDialogVisible = false">{{ $t("story.cancel") }}</el-button
+        ><el-button type="primary" @click="store.handleScenarioSave()">{{ $t("story.save") }}</el-button></template
       >
     </el-dialog>
   </div>

@@ -98,7 +98,7 @@ export async function createStory(data: Omit<StoryDocument, "createdAt" | "updat
 }
 
 export async function updateStory(key: string, data: Partial<StoryDocument>): Promise<YiAiEnvelope> {
-  return updateDocument(CNAME, key, { ...data, updatedAt: Date.now() });
+  return updateDocument(CNAME, key, { ...data, key, updatedAt: Date.now() });
 }
 
 export async function deleteStory(key: string): Promise<YiAiEnvelope> {
