@@ -76,6 +76,8 @@
   "aboutArchLayerBackend": { "message": "YiAi API\n(FastAPI)" },
   "aboutBackendTitle": { "message": "Backend" },
   "aboutBackendDesc": { "message": "Powered by YiAi — a FastAPI server on localhost:10086 providing Ollama chat, file management, WeCom messaging, RSS aggregation, and a module-execution engine with MongoDB persistence." },
+  "aboutProdDepsTitle": { "message": "Production Dependencies" },
+  "aboutDevDepsTitle": { "message": "Development Dependencies" },
   "aboutVersion": { "message": "Extension Version: 1.2.0 (Chrome MV3)" },
   "aboutTechStack": { "message": "TypeScript + Vite 5 + React 15.6.1 (CDN) + Bootstrap 5.2.3 (CDN) + chrome.i18n" }
 }

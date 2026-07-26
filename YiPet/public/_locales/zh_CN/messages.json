@@ -76,6 +76,8 @@
   "aboutArchLayerBackend": { "message": "YiAi API\n(FastAPI)" },
   "aboutBackendTitle": { "message": "后端" },
   "aboutBackendDesc": { "message": "由 YiAi 驱动 — 运行在 localhost:10086 的 FastAPI 服务器，提供 Ollama 聊天、文件管理、企业微信消息、RSS 聚合以及基于 MongoDB 持久化的模块执行引擎。" },
+  "aboutProdDepsTitle": { "message": "生产依赖" },
+  "aboutDevDepsTitle": { "message": "开发依赖" },
   "aboutVersion": { "message": "扩展版本：1.2.0（Chrome MV3）" },
   "aboutTechStack": { "message": "TypeScript + Vite 5 + React 15.6.1（CDN）+ Bootstrap 5.2.3（CDN）+ chrome.i18n" }
 }

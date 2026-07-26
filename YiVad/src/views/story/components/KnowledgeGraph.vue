@@ -1,7 +1,13 @@
 <script setup lang="ts" name="knowledgeGraph">
 import { ref, watch, onMounted, nextTick } from "vue";
-import type { StoryItem, StoryDep } from "@/stores/modules/story";
 
+interface StoryDep {
+  directory: string;
+  dependsOn?: { directory: string }[];
+}
+interface StoryItem {
+  name: string;
+}
 const props = defineProps<{ stories: StoryItem[]; deps: StoryDep[] }>();
 const containerRef = ref<HTMLDivElement>();
 let cyInstance: any = null;

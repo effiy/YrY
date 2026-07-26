@@ -1,11 +1,11 @@
 <script setup lang="ts" name="storyDetail">
 import { ref } from "vue";
-import type { StoryItem, StoryDep } from "@/stores/modules/story";
+import type { Story, StoryDep } from "@/stores/modules/story";
 import StoryStatusBadge from "./StoryStatusBadge.vue";
 import DepEditor from "./DepEditor.vue";
 
 const props = defineProps<{
-  story: StoryItem;
+  story: Story;
   deps: StoryDep[];
   getStoryDeps: (dir: string) => StoryDep | undefined;
   getDirectDependents: (dir: string) => StoryDep[];
@@ -85,8 +85,8 @@ function formatDate(ts: number): string {
       }}</el-button>
       <DepEditor
         v-if="showDepEditor"
-        all-stories=""
-        available-dirs=""
+        :all-stories="[]"
+        :available-dirs="[]"
         @confirm="
           (depDir: string, rel: string) => {
             emit('addDep', story.name, depDir, rel);

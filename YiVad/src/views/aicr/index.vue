@@ -1,9 +1,10 @@
 <script setup lang="ts" name="aicrDashboard">
-import { onMounted, watch } from "vue";
+import { onMounted, watch, computed } from "vue";
 import { useAicrFileTreeStore } from "@/stores/modules/aicr/fileTree";
 import { useAicrSessionStore } from "@/stores/modules/aicr/sessions";
 import { useAicrUiStore } from "@/stores/modules/aicr/ui";
 import { useAicrModelStore } from "@/stores/modules/aicr/models";
+import { useAicrFilterStore } from "@/stores/modules/aicr/filters";
 import { useResizable } from "@/hooks/useResizable";
 import FileTree from "./components/FileTree.vue";
 import FilterBar from "./components/FilterBar.vue";
@@ -12,6 +13,8 @@ import ChatPanel from "./components/ChatPanel.vue";
 
 const uiStore = useAicrUiStore();
 const modelStore = useAicrModelStore();
+const filterStore = useAicrFilterStore();
+const fileTreeStore = useAicrFileTreeStore();
 
 const { width: sidebarW, startResize: startSidebarResize } = useResizable(320, 200, 600, "aicr_sidebar_width");
 const { width: chatW, startResize: startChatResize } = useResizable(420, 280, 800, "aicr_chat_panel_width");
@@ -24,39 +27,116 @@ watch(chatW, v => {
 });
 
 const viewModeLabels = [
-  { label: "树形", value: "tree" as const },
-  { label: "卡片", value: "cards" as const },
-  { label: "图谱", value: "graph" as const }
+  { label: "Tree", value: "tree" as const },
+  { label: "Cards", value: "cards" as const },
+  { label: "Graph", value: "graph" as const }
 ];
+
+const timeOptions = [
+  { label: "All", value: "all" as const },
+  { label: "This Week", value: "week" as const },
+  { label: "This Month", value: "month" as const },
+  { label: "This Quarter", value: "quarter" as const },
+  { label: "Custom", value: "custom" as const }
+];
+
+const fileCount = computed(() => fileTreeStore.flatFiles.length);
+
+function onProjectChange(p: string | null) {
+  filterStore.selectProject(p);
+  fileTreeStore.loadFileTree(true);
+}
+
+function onTimeRangeChange(r: any) {
+  filterStore.setTimeRange(r);
+  fileTreeStore.loadFileTree(true);
+}
+
+function onCustomDateChange() {
+  fileTreeStore.loadFileTree(true);
+}
 
 onMounted(() => {
   uiStore.loadWidths();
   const sessionStore = useAicrSessionStore();
-  const fileTreeStore = useAicrFileTreeStore();
-  sessionStore.loadSessions().then(() => {
-    fileTreeStore.loadFileTree(true);
-  });
+  sessionStore.loadSessions();
+  fileTreeStore.loadFileTree(true);
   modelStore.fetchModels();
 });
 </script>
 
 <template>
   <div class="aicr-app">
-    <header class="aicr-header">
-      <div class="aicr-header-left">
-        <h2 class="aicr-title">代码审查</h2>
-        <span class="aicr-subtitle">AICR</span>
+    <!-- Header -->
+    <div class="aicr-hdr">
+      <div class="aicr-hdr-l">
+        <h2 class="aicr-title">Code Review</h2>
+        <span class="aicr-count">{{ fileCount }} files</span>
       </div>
-      <div class="aicr-header-right">
+      <div class="aicr-hdr-r">
         <el-segmented
           :model-value="uiStore.viewMode"
           @update:model-value="(v: any) => uiStore.setViewMode(v)"
-          :options="viewModeLabels.map(m => m)"
+          :options="viewModeLabels"
         />
       </div>
-    </header>
+    </div>
 
+    <!-- Dimensions -->
+    <div class="aicr-dims">
+      <div class="aicr-dim">
+        <span class="aicr-dim-lbl">Project</span>
+        <el-select
+          :model-value="filterStore.selectedProject"
+          placeholder="All"
+          clearable
+          size="small"
+          style="width: 180px"
+          @change="onProjectChange"
+        >
+          <el-option label="All Projects" :value="null" />
+          <el-option
+            v-for="p in filterStore.projects"
+            :key="p"
+            :label="`${p} (${filterStore.projectFileCounts[p] || 0})`"
+            :value="p"
+          />
+        </el-select>
+      </div>
+      <div class="aicr-dim">
+        <span class="aicr-dim-lbl">Time</span>
+        <el-select :model-value="filterStore.timeRange" size="small" style="width: 140px" @change="onTimeRangeChange">
+          <el-option v-for="o in timeOptions" :key="o.value" :label="o.label" :value="o.value" />
+        </el-select>
+        <template v-if="filterStore.timeRange === 'custom'">
+          <el-date-picker
+            v-model="filterStore.customStart"
+            type="date"
+            placeholder="Start"
+            size="small"
+            style="width: 130px"
+            @change="onCustomDateChange"
+          />
+          <span class="aicr-sep">-</span>
+          <el-date-picker
+            v-model="filterStore.customEnd"
+            type="date"
+            placeholder="End"
+            size="small"
+            style="width: 130px"
+            @change="onCustomDateChange"
+          />
+        </template>
+      </div>
+      <div class="aicr-dim-r">
+        <el-input v-model="fileTreeStore.searchQuery" placeholder="Search..." clearable size="small" style="width: 200px" />
+      </div>
+    </div>
+
+    <!-- Tag filters -->
     <FilterBar />
+
+    <!-- Main content -->
     <main class="aicr-main" :class="{ 'is-cards': uiStore.viewMode === 'cards', 'is-graph': uiStore.viewMode === 'graph' }">
       <aside
         class="aicr-sidebar"
@@ -69,7 +149,7 @@ onMounted(() => {
           v-show="uiStore.sidebarCollapsed"
           class="aicr-expand-btn aicr-expand-btn--left"
           @click="uiStore.toggleSidebar()"
-          title="展开侧边栏"
+          title="Expand sidebar"
         >
           <el-icon><ArrowRight /></el-icon>
         </button>
@@ -79,7 +159,7 @@ onMounted(() => {
         class="aicr-collapse-btn aicr-collapse-btn--sidebar"
         :style="{ left: sidebarW + 'px' }"
         @click="uiStore.toggleSidebar()"
-        title="收起侧边栏"
+        title="Collapse sidebar"
       >
         <el-icon><ArrowLeft /></el-icon>
       </button>
@@ -102,7 +182,7 @@ onMounted(() => {
           v-show="uiStore.chatPanelCollapsed"
           class="aicr-expand-btn aicr-expand-btn--right"
           @click="uiStore.toggleChatPanel()"
-          title="展开聊天面板"
+          title="Expand chat panel"
         >
           <el-icon><ArrowLeft /></el-icon>
         </button>
@@ -112,7 +192,7 @@ onMounted(() => {
         class="aicr-collapse-btn aicr-collapse-btn--chat"
         :style="{ right: chatW + 'px' }"
         @click="uiStore.toggleChatPanel()"
-        title="收起聊天面板"
+        title="Collapse chat panel"
       >
         <el-icon><ArrowRight /></el-icon>
       </button>
@@ -127,29 +207,69 @@ onMounted(() => {
   height: 100%;
   overflow: hidden;
 }
-.aicr-header {
+
+// Header — matches sb-hdr
+.aicr-hdr {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  border-bottom: 1px solid var(--el-border-color-light);
   flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 10px;
 }
-.aicr-header-left {
+.aicr-hdr-l {
   display: flex;
   align-items: baseline;
   gap: 10px;
 }
 .aicr-title {
   margin: 0;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
+  color: var(--el-text-color-primary);
 }
-.aicr-subtitle {
-  font-size: 12px;
+.aicr-count {
+  font-size: 14px;
   color: var(--el-text-color-secondary);
 }
+.aicr-hdr-r {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
+// Dimensions — matches sb-dims
+.aicr-dims {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin: 0 16px 8px;
+  padding: 10px 14px;
+  background: var(--el-fill-color-lighter);
+  border-radius: 8px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.aicr-dim {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.aicr-dim-lbl {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+  white-space: nowrap;
+}
+.aicr-dim-r {
+  margin-left: auto;
+}
+.aicr-sep {
+  color: var(--el-text-color-placeholder);
+}
+
+// Main
 .aicr-main {
   display: flex;
   flex: 1;

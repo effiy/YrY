@@ -17,3 +17,6 @@ export const AMAP_MAP_KEY: string = "";
 
 // Baidu Map key
 export const BAIDU_MAP_KEY: string = "";
+
+// Project dictionary
+export const PROJECTS: string[] = ["YiAi", "YiPet", "YiVad"];

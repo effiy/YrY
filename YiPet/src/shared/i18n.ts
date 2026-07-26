@@ -88,6 +88,8 @@ export type MessageKey =
   | 'aboutArchLayerBackend'
   | 'aboutBackendTitle'
   | 'aboutBackendDesc'
+  | 'aboutProdDepsTitle'
+  | 'aboutDevDepsTitle'
   // Misc
   | 'popupSizeUnit'
   | 'popupVersion';

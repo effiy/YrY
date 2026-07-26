@@ -12,7 +12,6 @@ export const useAicrUiStore = defineStore("yivad-aicr-ui", () => {
   const chatPanelCollapsed = ref(false);
   const chatPanelWidth = ref(420);
   const viewMode = ref<AicrViewMode>("tree");
-  const filterBarCollapsed = ref(false);
 
   function loadWidths() {
     try {
@@ -46,22 +45,16 @@ export const useAicrUiStore = defineStore("yivad-aicr-ui", () => {
     viewMode.value = mode;
   }
 
-  function toggleFilterBar() {
-    filterBarCollapsed.value = !filterBarCollapsed.value;
-  }
-
   return {
     sidebarCollapsed,
     sidebarWidth,
     chatPanelCollapsed,
     chatPanelWidth,
     viewMode,
-    filterBarCollapsed,
     loadWidths,
     saveWidths,
     toggleSidebar,
     toggleChatPanel,
-    setViewMode,
-    toggleFilterBar
+    setViewMode
   };
 });

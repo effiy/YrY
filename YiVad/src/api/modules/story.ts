@@ -1,36 +1,81 @@
 /**
- * Story CRUD module — calls YiAi data-service RPC for the "stories" collection.
+ * Story CRUD — calls YiAi data-service RPC for the "stories" collection.
+ * Each story contains multiple scenarios describing concrete use cases.
  */
 import { queryDocuments, createDocument, updateDocument, deleteDocument } from "./dataService";
 import type { YiAiEnvelope } from "@/api/interface/yiweb";
 
 const CNAME = "stories";
 
+// ── Types ──
+
+export type StoryStatus = "planning" | "design" | "develop" | "testing" | "operations" | "archived";
+export type ScenarioPriority = "p0" | "p1" | "p2" | "p3";
+export type ScenarioStatus = "pending" | "in_progress" | "done" | "blocked";
+export type ScheduleStatus = "planned" | "on_track" | "at_risk" | "delayed" | "completed";
+
+export interface ScenarioStep {
+  order: number;
+  action: string; // "Given" | "When" | "Then" | "And"
+  description: string;
+}
+
+export interface Scenario {
+  key: string;
+  name: string;
+  description: string;
+  priority: ScenarioPriority;
+  status: ScenarioStatus;
+  steps: ScenarioStep[];
+  tags: string[];
+  createdAt: number;
+  updatedAt: number;
+}
+
 export interface StoryDocument {
   key: string;
   name: string;
-  status: "planning" | "design" | "develop" | "testing" | "operations";
-  description: string;
-  tags: string[];
   project: string;
-  files: { filePath: string; fileName: string; updatedAt: number }[];
-  dependencies: { directory: string; relation: string }[];
+  status: StoryStatus;
+  priority: ScenarioPriority;
+  description: string;
+  background: string;
+  acceptance: string;
+  assignee: string;
+  // Schedule
+  startDate: number | null;
+  dueDate: number | null;
+  completedAt: number | null;
+  sprint: string;
+  scheduleStatus: ScheduleStatus;
+  // Content
+  tags: string[];
+  scenarios: Scenario[];
+  dependencies: { storyKey: string; storyName: string; relation: "blocks" | "depends_on" | "related" }[];
+  files: { filePath: string; fileName: string }[];
   createdAt: number;
   updatedAt: number;
 }
 
 export interface StoryListParams {
   search?: string;
+  project?: string;
   status?: string;
   tags?: string[];
   pageNum?: number;
   pageSize?: number;
 }
 
-/** List stories with optional filters and pagination */
+// ── API ──
+
 export async function getStoryList(params: StoryListParams = {}) {
+  const filter: Record<string, any> = {};
+  if (params.project) filter.project = params.project;
+  if (params.status) filter.status = params.status;
+
   const res = await queryDocuments<StoryDocument>({
     cname: CNAME,
+    filter: Object.keys(filter).length > 0 ? filter : undefined,
     search: params.search,
     tags: params.tags,
     pageNum: params.pageNum ?? 1,
@@ -42,25 +87,20 @@ export async function getStoryList(params: StoryListParams = {}) {
   return { list: res.data?.list ?? [], total: res.data?.total ?? 0 };
 }
 
-/** Get single story by key */
 export async function getStory(key: string): Promise<StoryDocument | null> {
   const res = await queryDocuments<StoryDocument>({ cname: CNAME, filter: { key }, limit: 1 });
   if (res.code !== 0) throw new Error(res.message || "Failed to load story");
   return res.data?.list?.[0] ?? null;
 }
 
-/** Create a story */
 export async function createStory(data: Omit<StoryDocument, "createdAt" | "updatedAt">): Promise<YiAiEnvelope> {
-  const now = Date.now();
-  return createDocument(CNAME, { ...data, createdAt: now, updatedAt: now });
+  return createDocument(CNAME, { ...data, scenarios: data.scenarios ?? [], createdAt: Date.now(), updatedAt: Date.now() });
 }
 
-/** Update a story */
 export async function updateStory(key: string, data: Partial<StoryDocument>): Promise<YiAiEnvelope> {
   return updateDocument(CNAME, key, { ...data, updatedAt: Date.now() });
 }
 
-/** Delete a story */
 export async function deleteStory(key: string): Promise<YiAiEnvelope> {
   return deleteDocument(CNAME, key);
 }

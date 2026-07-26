@@ -1,10 +1,12 @@
 /**
  * AICR File Tree store — file tree data, selection, CRUD operations.
+ * Builds the file tree from session documents, applying project and time-range filters.
  */
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { getSessions } from "@/api/modules/sessions";
 import { readFile } from "@/api/modules/fileService";
+import { useAicrFilterStore } from "@/stores/modules/aicr/filters";
 import type { SessionDocument } from "@/api/interface/yiweb";
 
 export interface FileNode {
@@ -94,6 +96,25 @@ export const useAicrFileTreeStore = defineStore("yivad-aicr-fileTree", () => {
     return toArray(root);
   }
 
+  /** Merge dictionary projects with any discovered from session file paths */
+  function extractProjects(sessions: SessionDocument[]) {
+    const filterStore = useAicrFilterStore();
+    // Start with dictionary projects
+    const projectSet = new Set<string>(filterStore.projects);
+    const counts: Record<string, number> = { ...filterStore.projectFileCounts };
+    // Add any projects discovered from file paths
+    for (const s of sessions) {
+      const fp = s.file_path || s.filePath || "";
+      const firstSeg = fp.split("/").filter(Boolean)[0];
+      if (firstSeg) {
+        projectSet.add(firstSeg);
+        counts[firstSeg] = (counts[firstSeg] || 0) + 1;
+      }
+    }
+    filterStore.projects = [...projectSet].sort((a, b) => a.localeCompare(b, "zh-CN"));
+    filterStore.projectFileCounts = counts;
+  }
+
   async function loadFileTree(forceClear = false) {
     if (forceClear) {
       tree.value = [];
@@ -103,7 +124,27 @@ export const useAicrFileTreeStore = defineStore("yivad-aicr-fileTree", () => {
     error.value = null;
     try {
       const sessions = await getSessions();
-      const t = buildTree(sessions);
+
+      // Extract projects from ALL sessions (before filtering)
+      extractProjects(sessions);
+
+      // Apply project filter
+      const filterStore = useAicrFilterStore();
+      let filtered = sessions;
+      if (filterStore.selectedProject) {
+        const proj = filterStore.selectedProject;
+        filtered = filtered.filter(s => {
+          const fp = s.file_path || s.filePath || "";
+          return fp.startsWith(proj + "/") || fp === proj;
+        });
+      }
+
+      // Apply time filter
+      const tf = filterStore.getTimeFilter();
+      if (tf.start) filtered = filtered.filter(s => (s.createdAt || 0) >= tf.start!);
+      if (tf.end) filtered = filtered.filter(s => (s.createdAt || 0) <= tf.end!);
+
+      const t = buildTree(filtered);
       tree.value = t;
       flatFiles.value = flattenTree(t);
     } catch (e: any) {

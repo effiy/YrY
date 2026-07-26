@@ -31,6 +31,9 @@ body {
 /* ── Main content ─────────────────────────────────────────────────── */
 
 .main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
   padding: 20px;
   max-height: none;
   overflow: visible;

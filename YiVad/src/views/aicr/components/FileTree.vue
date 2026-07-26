@@ -34,7 +34,6 @@ function handleNodeClick(data: TreeNode) {
 
 <template>
   <div class="aicr-file-tree">
-    <el-input v-model="fileTreeStore.searchQuery" placeholder="Search files..." size="small" clearable class="ft-search" />
     <el-skeleton v-if="fileTreeStore.loading" :rows="3" animated />
     <el-alert v-else-if="fileTreeStore.error" :title="fileTreeStore.error" type="error" show-icon />
     <el-tree
@@ -64,9 +63,6 @@ function handleNodeClick(data: TreeNode) {
   height: 100%;
   display: flex;
   flex-direction: column;
-}
-.ft-search {
-  margin-bottom: 8px;
 }
 .ft-node {
   display: flex;

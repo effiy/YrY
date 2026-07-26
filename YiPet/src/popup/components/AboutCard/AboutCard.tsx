@@ -44,17 +44,26 @@ export function AboutCard() {
           </ul>
         </div>
 
-        {/* Architecture Overview */}
+        {/* Production Dependencies */}
         <div className="about-section">
-          <h3 className="about-section-title">{t('aboutArchitectureTitle')}</h3>
-          <p className="about-arch-desc">{t('aboutArchitectureDesc')}</p>
-          <div className="about-arch-diagram">
-            <div className="about-arch-layer">{t('aboutArchLayerPopup')}</div>
-            <span className="about-arch-arrow">↔</span>
-            <div className="about-arch-layer">{t('aboutArchLayerContent')}</div>
-            <span className="about-arch-arrow">↔</span>
-            <div className="about-arch-layer">{t('aboutArchLayerBackend')}</div>
-          </div>
+          <h3 className="about-section-title">{t('aboutProdDepsTitle')}</h3>
+          <ul className="about-dep-list">
+            <li className="about-dep-item"><span className="about-dep-name">react</span><span className="about-dep-ver">15.6.1</span><span className="about-dep-src">CDN</span></li>
+            <li className="about-dep-item"><span className="about-dep-name">react-dom</span><span className="about-dep-ver">15.6.1</span><span className="about-dep-src">CDN</span></li>
+            <li className="about-dep-item"><span className="about-dep-name">bootstrap</span><span className="about-dep-ver">5.2.3</span><span className="about-dep-src">CDN</span></li>
+          </ul>
+        </div>
+
+        {/* Development Dependencies */}
+        <div className="about-section">
+          <h3 className="about-section-title">{t('aboutDevDepsTitle')}</h3>
+          <ul className="about-dep-list">
+            <li className="about-dep-item"><span className="about-dep-name">typescript</span><span className="about-dep-ver">^5.5</span></li>
+            <li className="about-dep-item"><span className="about-dep-name">vite</span><span className="about-dep-ver">^5.4</span></li>
+            <li className="about-dep-item"><span className="about-dep-name">vitest</span><span className="about-dep-ver">^2.0</span></li>
+            <li className="about-dep-item"><span className="about-dep-name">@types/chrome</span><span className="about-dep-ver">^0.0.270</span></li>
+            <li className="about-dep-item"><span className="about-dep-name">jsdom</span><span className="about-dep-ver">^29.1</span></li>
+          </ul>
         </div>
 
         {/* Backend Connection */}
