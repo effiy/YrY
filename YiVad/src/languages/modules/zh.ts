@@ -116,6 +116,12 @@ export default {
     aiCodingHistory: "AI 编码历史",
     aiCodingCopy: "复制",
     aiCodingGenerated: "生成于 {time}",
+    analysisFiles: "分析文件",
+    analysisFilesGenerating: "正在分析文件并生成提示语...",
+    analysisFilesCopied: "分析提示语已复制到剪贴板",
+    analysisFilesFailed: "分析提示语生成失败",
+    analysisFilesHistory: "分析文件历史",
+    clickToCopy: "点击复制路径",
     petSettingsPreset: [
       {
         name: "切换宠物显示",

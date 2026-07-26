@@ -26,6 +26,12 @@ export interface AiCodingEntry {
   generatedAt: number;
 }
 
+export interface AnalysisFilesEntry {
+  id?: string;
+  prompt: string;
+  generatedAt: number;
+}
+
 export interface Scenario {
   key: string;
   name: string;
@@ -34,7 +40,9 @@ export interface Scenario {
   status: ScenarioStatus;
   steps: ScenarioStep[];
   tags: string[];
+  files: { filePath: string; fileName: string }[];
   aiCodingHistory?: AiCodingEntry[];
+  analysisFilesHistory?: AnalysisFilesEntry[];
   createdAt: number;
   updatedAt: number;
 }

@@ -150,6 +150,7 @@ export interface AiCodingHistoryDocument {
   scenarioName: string;
   prompt: string;
   generatedAt: number;
+  type?: "ai_coding" | "analysis_files";
   createdAt: number;
   updatedAt: number;
 }

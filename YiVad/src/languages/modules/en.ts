@@ -116,6 +116,12 @@ export default {
     aiCodingHistory: "AI Coding History",
     aiCodingCopy: "Copy",
     aiCodingGenerated: "Generated at {time}",
+    analysisFiles: "Analysis Files",
+    analysisFilesGenerating: "Analyzing files and generating prompt...",
+    analysisFilesCopied: "Analysis prompt copied to clipboard",
+    analysisFilesFailed: "Failed to generate analysis prompt",
+    analysisFilesHistory: "Analysis Files History",
+    clickToCopy: "Click to copy path",
     petSettingsPreset: [
       {
         name: "Toggle pet visibility",

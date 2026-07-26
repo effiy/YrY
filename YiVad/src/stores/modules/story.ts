@@ -67,6 +67,7 @@ export const useStoryStore = defineStore("yivad-story", () => {
     status: "planning",
     steps: [],
     tags: [],
+    files: [],
     createdAt: 0,
     updatedAt: 0
   });
@@ -257,24 +258,39 @@ export const useStoryStore = defineStore("yivad-story", () => {
     loadAiCodingHistoryForStory(story.key);
   }
 
-  /** Load AI coding history from the dedicated collection and merge into scenario arrays. */
+  /** Load AI coding + analysis files history from the dedicated collection and merge into scenario arrays. */
   async function loadAiCodingHistoryForStory(storyKey: string) {
     try {
-      const { list } = await getHistoryList({ storyKey, pageSize: 500 });
-      if (!list.length || !selectedStory.value || selectedStory.value.key !== storyKey) return;
+      const [aiCodingRes, analysisRes] = await Promise.all([
+        getHistoryList({ storyKey, type: "ai_coding", pageSize: 500 }),
+        getHistoryList({ storyKey, type: "analysis_files", pageSize: 500 })
+      ]);
 
-      // Build a map of scenarioKey → entries
-      const byScenario: Record<string, { id?: string; prompt: string; generatedAt: number }[]> = {};
-      for (const doc of list) {
-        if (!byScenario[doc.scenarioKey]) byScenario[doc.scenarioKey] = [];
-        byScenario[doc.scenarioKey].push({ id: doc.key, prompt: doc.prompt, generatedAt: doc.generatedAt });
+      if (!selectedStory.value || selectedStory.value.key !== storyKey) return;
+
+      // Build maps of scenarioKey → entries for each type
+      const byScenarioAi: Record<string, { id?: string; prompt: string; generatedAt: number }[]> = {};
+      for (const doc of aiCodingRes.list) {
+        if (!byScenarioAi[doc.scenarioKey]) byScenarioAi[doc.scenarioKey] = [];
+        byScenarioAi[doc.scenarioKey].push({ id: doc.key, prompt: doc.prompt, generatedAt: doc.generatedAt });
+      }
+
+      const byScenarioAnalysis: Record<string, { id?: string; prompt: string; generatedAt: number }[]> = {};
+      for (const doc of analysisRes.list) {
+        if (!byScenarioAnalysis[doc.scenarioKey]) byScenarioAnalysis[doc.scenarioKey] = [];
+        byScenarioAnalysis[doc.scenarioKey].push({ id: doc.key, prompt: doc.prompt, generatedAt: doc.generatedAt });
       }
 
       // Merge into each scenario
       const scenarios = selectedStory.value.scenarios.map(sc => {
-        const entries = byScenario[sc.key];
-        if (!entries?.length) return sc;
-        return { ...sc, aiCodingHistory: entries };
+        const aiEntries = byScenarioAi[sc.key];
+        const analysisEntries = byScenarioAnalysis[sc.key];
+        if (!aiEntries?.length && !analysisEntries?.length) return sc;
+        return {
+          ...sc,
+          ...(aiEntries?.length ? { aiCodingHistory: aiEntries } : {}),
+          ...(analysisEntries?.length ? { analysisFilesHistory: analysisEntries } : {})
+        };
       });
 
       selectedStory.value = { ...selectedStory.value, scenarios };
@@ -303,6 +319,7 @@ export const useStoryStore = defineStore("yivad-story", () => {
       status: "planning",
       steps: [],
       tags: [],
+      files: [],
       aiCodingHistory: [],
       createdAt: Date.now(),
       updatedAt: Date.now()
@@ -420,6 +437,64 @@ export const useStoryStore = defineStore("yivad-story", () => {
     }
   }
 
+  async function saveAnalysisFilesPrompt(scenarioKey: string, prompt: string) {
+    if (!selectedStory.value) return;
+    const story = selectedStory.value;
+    const idx = story.scenarios.findIndex(s => s.key === scenarioKey);
+    if (idx < 0) return;
+
+    const sc = story.scenarios[idx];
+    const generatedAt = Date.now();
+
+    try {
+      const result = await createHistoryEntry({
+        storyKey: story.key,
+        scenarioKey,
+        scenarioName: sc.name,
+        prompt,
+        generatedAt,
+        type: "analysis_files"
+      });
+
+      const scenarios = [...story.scenarios];
+      const history = sc.analysisFilesHistory ? [...sc.analysisFilesHistory] : [];
+      history.push({ id: result?.key, prompt, generatedAt });
+      scenarios[idx] = { ...sc, analysisFilesHistory: history };
+      selectedStory.value = { ...story, scenarios };
+    } catch (e: any) {
+      console.error("Failed to save analysis files history:", e);
+    }
+  }
+
+  async function deleteAnalysisFilesEntry(scenarioKey: string, entryIdx: number) {
+    if (!selectedStory.value) return;
+    const story = selectedStory.value;
+    const idx = story.scenarios.findIndex(s => s.key === scenarioKey);
+    if (idx < 0) return;
+
+    const sc = story.scenarios[idx];
+    if (!sc.analysisFilesHistory?.length) return;
+
+    const entry = sc.analysisFilesHistory[entryIdx];
+    if (!entry) return;
+
+    try {
+      await ElMessageBox.confirm("Delete this analysis files history entry?", "Confirm", { type: "warning" });
+
+      if (entry.id) {
+        await deleteHistoryEntry(entry.id);
+      }
+
+      const scenarios = [...story.scenarios];
+      const history = sc.analysisFilesHistory.filter((_, i) => i !== entryIdx);
+      scenarios[idx] = { ...sc, analysisFilesHistory: history };
+      selectedStory.value = { ...story, scenarios };
+      ElMessage.success("History entry deleted");
+    } catch {
+      /* cancelled */
+    }
+  }
+
   // ── Scenario step helpers ──
   function addStep() {
     const steps = [...scenarioForm.value.steps];
@@ -430,6 +505,17 @@ export const useStoryStore = defineStore("yivad-story", () => {
   function removeStep(idx: number) {
     const steps = scenarioForm.value.steps.filter((_, i) => i !== idx).map((s, i) => ({ ...s, order: i + 1 }));
     scenarioForm.value = { ...scenarioForm.value, steps };
+  }
+
+  function addScenarioFile() {
+    const files = [...scenarioForm.value.files];
+    files.push({ filePath: "", fileName: "" });
+    scenarioForm.value = { ...scenarioForm.value, files };
+  }
+
+  function removeScenarioFile(idx: number) {
+    const files = scenarioForm.value.files.filter((_, i) => i !== idx);
+    scenarioForm.value = { ...scenarioForm.value, files };
   }
 
   return {
@@ -473,8 +559,12 @@ export const useStoryStore = defineStore("yivad-story", () => {
     handleScenarioDelete,
     saveAiCodingPrompt,
     deleteAiCodingEntry,
+    saveAnalysisFilesPrompt,
+    deleteAnalysisFilesEntry,
     loadAiCodingHistoryForStory,
     addStep,
-    removeStep
+    removeStep,
+    addScenarioFile,
+    removeScenarioFile
   };
 });

@@ -17,6 +17,7 @@ export type { AiCodingHistoryDocument };
 export interface AiCodingHistoryListParams {
   storyKey?: string;
   scenarioKey?: string;
+  type?: "ai_coding" | "analysis_files";
   pageNum?: number;
   pageSize?: number;
 }
@@ -28,6 +29,7 @@ export async function getHistoryList(params: AiCodingHistoryListParams = {}) {
   const filter: Record<string, unknown> = {};
   if (params.storyKey) filter.storyKey = params.storyKey;
   if (params.scenarioKey) filter.scenarioKey = params.scenarioKey;
+  if (params.type) filter.type = params.type;
 
   const res = await queryDocuments<AiCodingHistoryDocument>({
     cname: CNAME,
@@ -48,9 +50,11 @@ export async function createHistoryEntry(data: {
   scenarioName: string;
   prompt: string;
   generatedAt: number;
+  type?: "ai_coding" | "analysis_files";
 }) {
   const res = await createDocument(CNAME, {
     ...data,
+    type: data.type ?? "ai_coding",
     createdAt: Date.now(),
     updatedAt: Date.now()
   });

@@ -6,12 +6,17 @@ import { useStoryStore } from "@/stores/modules/story";
 import type { StoryDocument, Scenario } from "@/api/modules/story";
 import { YIAI_OLLAMA_URL } from "@/config/yiweb";
 import StoryStatusBadge from "./components/StoryStatusBadge.vue";
+import CardListToggle from "./components/CardListToggle.vue";
+import StoryCard from "./components/StoryCard.vue";
+import StoryTable from "./components/StoryTable.vue";
 
 const { t } = useI18n();
 const store = useStoryStore();
 
 // Track which scenario keys are currently generating AI coding prompts
 const generatingKeys = reactive<Set<string>>(new Set());
+// Track which scenario keys are currently generating analysis file prompts
+const generatingAnalysisKeys = reactive<Set<string>>(new Set());
 
 /** Copy text to clipboard via the async Clipboard API. */
 async function copyToClipboard(text: string): Promise<boolean> {
@@ -104,6 +109,99 @@ Generate a Claude Code prompt for this scenario.`;
   }
 }
 
+async function handleAnalysisFiles(sc: Scenario) {
+  const key = sc.key;
+  if (generatingAnalysisKeys.has(key)) return;
+  generatingAnalysisKeys.add(key);
+
+  try {
+    const story = store.selectedStory;
+    const stepsText = (sc.steps ?? []).map(s => `  ${s.action} ${s.description}`).join("\n");
+    const tagsText = (sc.tags ?? []).join(", ");
+    const storyFiles = (story?.files ?? []).map(f => `  ${f.fileName} (${f.filePath})`);
+    const scenarioFiles = (sc.files ?? []).map(f => `  ${f.fileName} (${f.filePath})`);
+    const allFiles = [...storyFiles, ...scenarioFiles];
+    const filesText = allFiles.join("\n");
+
+    const systemPrompt = `You are an expert at writing Claude Code prompts. Given a software scenario (with Gherkin-style Given/When/Then steps, tags, and a project file inventory), produce a single, self-contained prompt that instructs Claude Code to:
+
+1. Analyze the scenario's name, description, steps, and tags to determine which project files are relevant
+2. Fill in the scenario's \`files\` array with those relevant files (format: {filePath, fileName})
+3. Use the project's API (updateDocument / updateStory) to persist the updated scenario data
+
+The output prompt MUST:
+- Reference the actual project file paths from the provided inventory and match them to the scenario's domain
+- Include the specific API call format: POST to the RPC endpoint with module_name/services.database.data_service, method_name/update_document, parameters/{cname: "stories", key: storyKey, data: {scenarios: [...]}}
+- Be self-contained — ready to copy-paste and run
+- NOT include preamble, explanation, or markdown fences — just the prompt text itself`;
+
+    const userMessage = `Scenario: ${sc.name}
+Description: ${sc.description || "N/A"}
+Priority: ${sc.priority.toUpperCase()}
+Tags: ${tagsText || "N/A"}
+Steps:
+${stepsText || "N/A"}
+
+Project File Inventory:
+${filesText || "N/A"}
+
+Generate a Claude Code prompt that analyzes this scenario and maps the most relevant project files to its \`files\` array, then updates via the API.`;
+
+    const ollamaBase = import.meta.env.DEV ? "/ollama" : YIAI_OLLAMA_URL;
+    const response = await fetch(`${ollamaBase}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "qwen3.5",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userMessage }
+        ],
+        stream: false
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Ollama returned ${response.status}`);
+    }
+
+    const data = await response.json();
+    const result: string = data?.message?.content ?? "";
+
+    if (!result) {
+      throw new Error("Empty response from AI");
+    }
+
+    const trimmed = result.trim();
+
+    // Auto-copy
+    window.focus();
+    await copyToClipboard(trimmed);
+
+    const escaped = trimmed.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
+    ElNotification({
+      title: t("story.analysisFiles"),
+      message: `<div style="max-height:calc(88vh - 120px);overflow-y:auto;white-space:pre-wrap;font-size:14px;line-height:1.7;">${escaped}</div>`,
+      type: "success",
+      duration: 0,
+      customClass: "ai-coding-notify",
+      dangerouslyUseHTMLString: true,
+      onClick: () => {
+        copyToClipboard(trimmed);
+        ElMessage.success(t("story.analysisFilesCopied"));
+      }
+    });
+
+    // Persist generated prompt to analysis files history
+    store.saveAnalysisFilesPrompt(sc.key, trimmed);
+  } catch (err) {
+    console.error("Analysis Files prompt generation failed:", err);
+    ElMessage.error(t("story.analysisFilesFailed"));
+  } finally {
+    generatingAnalysisKeys.delete(key);
+  }
+}
+
 const statusLabels = computed(() => ({
   planning: t("story.planning"),
   design: t("story.design"),
@@ -121,17 +219,6 @@ const priorityLabels = computed(() => ({
 }));
 const priorityColors: Record<string, string> = { p0: "danger", p1: "warning", p2: "info", p3: "" };
 const stepActions = ["Given", "When", "Then", "And"];
-
-function dueLabel(dueDate: number | null): { text: string; type: string } {
-  if (!dueDate) return { text: "", type: "" };
-  const now = Date.now();
-  const days = Math.ceil((dueDate - now) / 86400000);
-  if (days < 0) return { text: t("story.overdue", { days: -days }), type: "danger" };
-  if (days === 0) return { text: t("story.dueToday"), type: "danger" };
-  if (days <= 3) return { text: t("story.dueIn", { days }), type: "warning" };
-  if (days <= 7) return { text: t("story.dueIn", { days }), type: "info" };
-  return { text: t("story.dueIn", { days }), type: "" };
-}
 
 const timeOptions = computed(() => [
   { label: t("story.all"), value: "all" as const },
@@ -174,13 +261,7 @@ onMounted(() => store.fetchStories());
       </div>
       <div class="sb-hdr-r">
         <el-button type="primary" @click="store.openCreateDialog()">{{ $t("story.newStory") }}</el-button>
-        <el-segmented
-          v-model="store.viewMode"
-          :options="[
-            { label: $t('story.cards'), value: 'cards' },
-            { label: $t('story.list'), value: 'list' }
-          ]"
-        />
+        <CardListToggle v-model="store.viewMode" />
       </div>
     </div>
 
@@ -242,55 +323,21 @@ onMounted(() => store.fetchStories());
     <el-alert v-else-if="store.error" :title="store.error" type="error" show-icon />
 
     <!-- Cards -->
-    <div v-else-if="store.viewMode === 'cards'" class="sb-cards">
+    <div v-show="store.viewMode === 'cards'" class="sb-cards">
       <template v-for="st in statusOrder" :key="st">
         <div v-if="store.groupedStories[st]?.length" class="sb-grp">
           <h3 class="sb-grp-title">
             <StoryStatusBadge :status="st" /><span class="sb-grp-count">{{ store.groupedStories[st].length }}</span>
           </h3>
           <div class="sb-grid">
-            <el-card
+            <StoryCard
               v-for="s in store.groupedStories[st]"
               :key="s.key"
-              class="sb-card"
-              shadow="hover"
+              :story="s"
               @click="store.openDetail(s)"
-            >
-              <!-- Header: name + status + priority -->
-              <div class="sc-hdr">
-                <span class="sc-name">{{ s.name }}</span>
-                <div class="sc-badges">
-                  <StoryStatusBadge :status="s.status" />
-                  <el-tag v-if="s.priority" :type="priorityColors[s.priority] as any" size="small">{{
-                    s.priority.toUpperCase()
-                  }}</el-tag>
-                </div>
-                <!-- Progress -->
-                <div v-if="scenarioCount(s) > 0" class="sc-progress">
-                  <el-progress :percentage="scenarioProgress(s)" :stroke-width="6" :show-text="false" />
-                  <span class="sc-progress-text">{{ scenarioDone(s) }}/{{ scenarioCount(s) }}</span>
-                </div>
-              </div>
-              <div class="sc-meta">
-                <el-tag v-if="s.project" size="small" type="info">{{ s.project }}</el-tag>
-              </div>
-              <p class="sc-desc">{{ s.description || $t("story.noDescription") }}</p>
-              <!-- Tags -->
-              <div v-if="s.tags?.length" class="sc-tags">
-                <el-tag v-for="t in s.tags" :key="t" size="small" class="sc-tag-chip">{{ t }}</el-tag>
-              </div>
-              <!-- Counts row -->
-              <div class="sc-counts">
-                <span v-if="s.files?.length" class="sc-count-item"
-                  >📎 {{ s.files.length }} file{{ s.files.length > 1 ? "s" : "" }}</span
-                >
-              </div>
-              <!-- Actions -->
-              <div class="sc-acts" @click.stop>
-                <el-button size="small" text @click="store.openEditDialog(s)">{{ $t("story.edit") }}</el-button>
-                <el-button size="small" text type="danger" @click="store.handleDelete(s)">{{ $t("story.del") }}</el-button>
-              </div>
-            </el-card>
+              @edit="store.openEditDialog(s)"
+              @delete="store.handleDelete(s)"
+            />
           </div>
         </div>
       </template>
@@ -300,58 +347,14 @@ onMounted(() => store.fetchStories());
     </div>
 
     <!-- List -->
-    <el-table
-      v-else
-      :data="store.filteredStories"
-      stripe
-      @row-click="(r: StoryDocument) => store.openDetail(r)"
-      style="cursor: pointer"
-    >
-      <el-table-column prop="name" :label="$t('story.name')" min-width="180"
-        ><template #default="{ row }"
-          ><span style="font-weight: 600">{{ row.name }}</span></template
-        ></el-table-column
-      >
-      <el-table-column prop="project" :label="$t('story.project')" width="90"
-        ><template #default="{ row }"
-          ><el-tag v-if="row.project" size="small" type="info">{{ row.project }}</el-tag></template
-        ></el-table-column
-      >
-      <el-table-column prop="status" :label="$t('story.status')" width="110"
-        ><template #default="{ row }"><StoryStatusBadge :status="row.status" /></template
-      ></el-table-column>
-      <el-table-column :label="$t('story.priority')" width="90"
-        ><template #default="{ row }"
-          ><el-tag v-if="row.priority" :type="priorityColors[row.priority] as any" size="small"
-            >{{ row.priority.toUpperCase() }}
-          </el-tag>
-        </template></el-table-column
-      >
-      <el-table-column :label="$t('story.scenarios')" width="90" align="center"
-        ><template #default="{ row }"
-          >{{ scenarioDone(row as StoryDocument) }}/{{ scenarioCount(row as StoryDocument) }}</template
-        ></el-table-column
-      >
-      <el-table-column :label="$t('story.dueDate')" width="100"
-        ><template #default="{ row }"
-          ><span v-if="row.dueDate" :class="{ 'sc-overdue': dueLabel(row.dueDate).type === 'danger' }">{{
-            fmtDate(row.dueDate)
-          }}</span></template
-        ></el-table-column
-      >
-      <el-table-column prop="assignee" :label="$t('story.assignee')" width="90" />
-
-      <el-table-column prop="description" :label="$t('story.description')" min-width="140" show-overflow-tooltip />
-      <el-table-column :label="$t('story.updated')" width="110"
-        ><template #default="{ row }">{{ fmtDate(row.updatedAt) }}</template></el-table-column
-      >
-      <el-table-column :label="$t('story.actions')" width="140" fixed="right">
-        <template #default="{ row }">
-          <el-button size="small" text type="primary" @click.stop="store.openEditDialog(row as StoryDocument)">Edit</el-button>
-          <el-button size="small" text type="danger" @click.stop="store.handleDelete(row as StoryDocument)">Del</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <div v-show="store.viewMode === 'list'" class="sb-list">
+      <StoryTable
+        :stories="store.filteredStories"
+        @row-click="store.openDetail"
+        @edit="store.openEditDialog"
+        @delete="store.handleDelete"
+      />
+    </div>
 
     <!-- Detail Drawer -->
     <el-drawer
@@ -399,14 +402,26 @@ onMounted(() => store.fetchStories());
             <p class="sd-txt" style="white-space: pre-wrap">{{ store.selectedStory.acceptance || $t("story.none") }}</p>
             <h4 class="sd-sec">{{ $t("story.tags") }}</h4>
             <div class="sd-tags">
-              <el-tag v-for="t in store.selectedStory.tags" :key="t" size="small">{{ t }}</el-tag
+              <el-tag v-for="tag in store.selectedStory.tags" :key="tag" size="small">{{ tag }}</el-tag
               ><span v-if="!store.selectedStory.tags?.length" class="sd-muted">{{ $t("story.none") }}</span>
             </div>
             <h4 class="sd-sec">{{ $t("story.files") }}</h4>
             <div v-if="store.selectedStory.files?.length" class="sd-files">
-              <div v-for="f in store.selectedStory.files" :key="f.filePath" class="sd-file-item">
+              <div
+                v-for="f in store.selectedStory.files"
+                :key="f.filePath"
+                class="sd-file-item"
+                :title="$t('story.clickToCopy')"
+                @click="
+                  copyToClipboard(f.filePath);
+                  ElMessage.success($t('story.aiCodingCopied'));
+                "
+              >
                 <el-icon><Document /></el-icon>
-                <span class="sd-file-name">{{ f.fileName || f.filePath }}</span>
+                <div class="sd-file-info">
+                  <span class="sd-file-name">{{ f.fileName || f.filePath }}</span>
+                  <span class="sd-file-path">{{ f.filePath }}</span>
+                </div>
               </div>
             </div>
             <p v-else class="sd-muted">{{ $t("story.none") }}</p>
@@ -453,7 +468,33 @@ onMounted(() => store.fetchStories());
                       </div>
                     </div>
                     <div v-if="sc.tags?.length" class="sd-sc-tags">
-                      <el-tag v-for="t in sc.tags" :key="t" size="small" class="sc-tag-chip">{{ t }}</el-tag>
+                      <el-tag v-for="tag in sc.tags" :key="tag" size="small" class="sc-tag-chip">{{ tag }}</el-tag>
+                    </div>
+                    <!-- Scenario Files -->
+                    <div v-if="sc.files?.length" class="sd-sc-history">
+                      <el-collapse>
+                        <el-collapse-item>
+                          <template #title>
+                            <span class="sd-sc-history-title">{{ $t("story.files") }} ({{ sc.files.length }})</span>
+                          </template>
+                          <div
+                            v-for="f in sc.files"
+                            :key="f.filePath"
+                            class="sd-file-item"
+                            :title="$t('story.clickToCopy')"
+                            @click="
+                              copyToClipboard(f.filePath);
+                              ElMessage.success($t('story.aiCodingCopied'));
+                            "
+                          >
+                            <el-icon><Document /></el-icon>
+                            <div class="sd-file-info">
+                              <span class="sd-file-name">{{ f.fileName || f.filePath }}</span>
+                              <span class="sd-file-path">{{ f.filePath }}</span>
+                            </div>
+                          </div>
+                        </el-collapse-item>
+                      </el-collapse>
                     </div>
                     <!-- AI Coding History -->
                     <div v-if="sc.aiCodingHistory?.length" class="sd-sc-history">
@@ -476,12 +517,48 @@ onMounted(() => store.fetchStories());
                                   type="primary"
                                   @click="
                                     copyToClipboard(entry.prompt);
-                                    ElMessage.success(t('story.aiCodingCopied'));
+                                    ElMessage.success($t('story.aiCodingCopied'));
                                   "
                                 >
                                   {{ $t("story.aiCodingCopy") }}
                                 </el-button>
                                 <el-button size="small" text type="danger" @click="store.deleteAiCodingEntry(sc.key, ei)">
+                                  {{ $t("story.del") }}
+                                </el-button>
+                              </div>
+                            </div>
+                            <div class="sd-sc-history-text">{{ entry.prompt }}</div>
+                          </div>
+                        </el-collapse-item>
+                      </el-collapse>
+                    </div>
+                    <!-- Analysis Files History -->
+                    <div v-if="sc.analysisFilesHistory?.length" class="sd-sc-history">
+                      <el-collapse>
+                        <el-collapse-item>
+                          <template #title>
+                            <span class="sd-sc-history-title"
+                              >{{ $t("story.analysisFilesHistory") }} ({{ sc.analysisFilesHistory.length }})</span
+                            >
+                          </template>
+                          <div v-for="(entry, ei) in sc.analysisFilesHistory" :key="ei" class="sd-sc-history-entry">
+                            <div class="sd-sc-history-meta">
+                              <span class="sd-sc-history-time">{{
+                                $t("story.aiCodingGenerated", { time: fmtDate(entry.generatedAt) })
+                              }}</span>
+                              <div class="sd-sc-history-acts">
+                                <el-button
+                                  size="small"
+                                  text
+                                  type="primary"
+                                  @click="
+                                    copyToClipboard(entry.prompt);
+                                    ElMessage.success($t('story.analysisFilesCopied'));
+                                  "
+                                >
+                                  {{ $t("story.aiCodingCopy") }}
+                                </el-button>
+                                <el-button size="small" text type="danger" @click="store.deleteAnalysisFilesEntry(sc.key, ei)">
                                   {{ $t("story.del") }}
                                 </el-button>
                               </div>
@@ -500,6 +577,14 @@ onMounted(() => store.fetchStories());
                         :loading="generatingKeys.has(sc.key)"
                         @click="handleAiCoding(sc)"
                         >{{ $t("story.aiCoding") }}</el-button
+                      >
+                      <el-button
+                        size="small"
+                        text
+                        type="success"
+                        :loading="generatingAnalysisKeys.has(sc.key)"
+                        @click="handleAnalysisFiles(sc)"
+                        >{{ $t("story.analysisFiles") }}</el-button
                       >
                       <el-button size="small" text type="danger" @click="store.handleScenarioDelete(idx)">{{
                         $t("story.del")
@@ -661,6 +746,17 @@ onMounted(() => store.fetchStories());
             :placeholder="$t('story.addTags')"
             style="width: 100%"
         /></el-form-item>
+
+        <el-form-item :label="$t('story.files')">
+          <div class="sf-steps">
+            <div v-for="(f, idx) in store.scenarioForm.files" :key="`scfile_${idx}`" class="sf-step">
+              <el-input v-model="f.filePath" size="small" placeholder="Full path e.g. src/views/foo.vue" style="flex: 1" />
+              <el-input v-model="f.fileName" size="small" placeholder="Display name" style="width: 160px; flex-shrink: 0" />
+              <el-button size="small" text type="danger" @click="store.removeScenarioFile(idx)">×</el-button>
+            </div>
+            <el-button size="small" text type="primary" @click="store.addScenarioFile()">+ Add File</el-button>
+          </div>
+        </el-form-item>
       </el-form>
       <template #footer
         ><el-button @click="store.scenarioDialogVisible = false">{{ $t("story.cancel") }}</el-button
@@ -751,126 +847,6 @@ onMounted(() => store.fetchStories());
   gap: 12px;
 }
 
-.sb-card {
-  cursor: pointer;
-  transition:
-    transform 0.15s,
-    box-shadow 0.15s;
-  border-left: 3px solid transparent;
-}
-.sb-card:hover {
-  transform: translateY(-2px);
-}
-.sc-hdr {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 6px;
-  gap: 6px;
-}
-.sc-name {
-  font-size: 15px;
-  font-weight: 600;
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.sc-badges {
-  display: flex;
-  gap: 4px;
-  flex-shrink: 0;
-}
-.sc-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-  flex-wrap: wrap;
-}
-.sc-desc {
-  margin: 0 0 8px;
-  font-size: 13px;
-  color: var(--el-text-color-regular);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  line-height: 1.5;
-}
-.sc-progress {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
-}
-.sc-progress-text {
-  font-size: 11px;
-  color: var(--el-text-color-secondary);
-  white-space: nowrap;
-}
-.sc-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin-bottom: 8px;
-}
-.sc-tag-chip {
-  font-size: 11px;
-  opacity: 0.8;
-}
-.sc-foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  margin-bottom: 4px;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-.sc-avatar {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--el-color-primary-light-3);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 600;
-  margin-right: 3px;
-  vertical-align: middle;
-}
-.sc-assignee {
-  color: var(--el-text-color-secondary);
-  display: inline-flex;
-  align-items: center;
-}
-.sc-counts {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 4px;
-}
-.sc-count-item {
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-}
-.sc-acts {
-  display: flex;
-  gap: 2px;
-  justify-content: flex-end;
-  margin-top: 2px;
-  padding-top: 4px;
-  border-top: 1px solid var(--el-border-color-lighter);
-}
-.sc-overdue {
-  color: var(--el-color-danger);
-  font-weight: 600;
-}
-
 // detail drawer
 .sd-root {
   padding: 0 4px;
@@ -902,17 +878,34 @@ onMounted(() => store.fetchStories());
 }
 .sd-file-item {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 8px;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 10px;
   font-size: 13px;
   color: var(--el-text-color-regular);
   background: var(--el-fill-color-light);
   border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.sd-file-item:hover {
+  background: var(--el-fill-color);
+}
+.sd-file-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 .sd-file-name {
+  font-size: 13px;
+  font-weight: 600;
+}
+.sd-file-path {
   font-family: "SF Mono", "Menlo", monospace;
-  font-size: 12px;
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+  word-break: break-all;
 }
 
 .sd-sc-hdr {
@@ -941,6 +934,9 @@ onMounted(() => store.fetchStories());
 .sd-sc-group-n {
   font-size: 12px;
   color: var(--el-text-color-secondary);
+}
+.sd-sc-files {
+  margin: 6px 0 8px;
 }
 .sd-sc-tags {
   display: flex;
