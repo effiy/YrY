@@ -1,0 +1,46 @@
+/*
+ * YiPet Popup — SelectRow Styles
+ *
+ * Component: components/ui/SelectRow.js
+ */
+
+.select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid var(--border-primary, rgba(255, 255, 255, 0.12));
+  border-radius: 8px;
+  background: var(--bg-tertiary, #334155);
+  font-size: 13px;
+  color: var(--text-primary, #f8fafc);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--primary, #667eea);
+  box-shadow: 0 0 0 3px var(--primary-alpha, rgba(102, 126, 234, 0.1));
+}
+
+.select:hover {
+  border-color: var(--primary-light, #818cf8);
+}
+
+.setting-row .select {
+  width: auto;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.role-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.role-control .select {
+  flex: 1 1 auto;
+  min-width: 0;
+}

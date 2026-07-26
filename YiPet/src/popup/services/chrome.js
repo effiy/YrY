@@ -6,7 +6,7 @@
  *
  * Exports: window.YiPetPopup.services.chromeService
  *
- * @module popup/services/chromeService
+ * @module popup/services/chrome
  */
 ;(function (root) {
   'use strict'

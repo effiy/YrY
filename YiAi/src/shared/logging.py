@@ -6,34 +6,34 @@ from shared.config import settings
 
 def setup_logging():
     """
-    配置全局日志
-    - 控制台输出
-    - 文件输出 (按大小轮转)
-    - 统一格式
+    Configure global logging
+    - Console output
+    - File output (size-based rotation)
+    - Unified format
     """
     log_level = settings.logging_level
     log_format = settings.logging_format
     log_datefmt = settings.logging_datefmt
     
-    # 获取根日志记录器
+    # Get root logger
     root_logger = logging.getLogger()
-    # 使用 get_logging_level_value 获取 int 类型的日志级别
+    # Use get_logging_level_value to get int-type log level
     level = getattr(logging, log_level.upper(), logging.INFO)
     root_logger.setLevel(level)
     
-    # 清除现有的 handlers
+    # Clear existing handlers
     root_logger.handlers = []
     
-    # 创建 formatter
+    # Create formatter
     formatter = logging.Formatter(fmt=log_format, datefmt=log_datefmt)
     
-    # 1. 控制台 Handler
+    # 1. Console Handler
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(formatter)
     root_logger.addHandler(console_handler)
     
-    # 2. 文件 Handler (如果配置了日志文件路径)
-    # 假设我们在 config 中可以获取日志目录，这里默认 logs/app.log
+    # 2. File Handler (if log file path is configured)
+    # Assume log dir is obtainable from config, default to logs/app.log
     log_dir = "logs"
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
@@ -47,10 +47,10 @@ def setup_logging():
     file_handler.setFormatter(formatter)
     root_logger.addHandler(file_handler)
     
-    # 调整第三方库的日志级别
+    # Adjust third-party library log levels
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
     logging.getLogger("uvicorn.error").setLevel(logging.ERROR)
 
-# 导出 logger 供其他模块使用 (其实直接用 logging.getLogger(__name__) 也可以，但这里可以做一些封装)
+# Export logger for other modules (you can also use logging.getLogger(__name__) directly, but this provides some encapsulation)
 def get_logger(name: str):
     return logging.getLogger(name)

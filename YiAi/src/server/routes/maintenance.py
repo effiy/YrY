@@ -1,7 +1,7 @@
 """
-维护相关 API
-- 清理未引用的图片
-- 清理 sessions 集合
+Maintenance-related APIs
+- Clean up unreferenced images
+- Clean up sessions collection
 """
 import os
 import re
@@ -20,11 +20,11 @@ from data.sessions import get_all_sessions, delete_session_by_key
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-# 图片文件扩展名
+# Image file extensions
 IMAGE_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.bmp', '.ico'}
 MAX_UNUSED_IMAGE_DETAILS = 100  # limit detailed response to avoid OOM
 
-# 图片引用模式
+# Image reference patterns
 IMAGE_PATTERNS = [
     re.compile(r'!\[.*?\]\((.*?)\)', re.IGNORECASE),
     re.compile(r'<img[^>]+src=["\'](.*?)["\']', re.IGNORECASE),
@@ -33,18 +33,18 @@ IMAGE_PATTERNS = [
 
 
 class CleanupRequest(BaseModel):
-    dry_run: bool = Field(True, description="是否只预览不实际删除")
-    cleanup_sessions: bool = Field(False, description="是否清理引用了不存在图片的 sessions")
+    dry_run: bool = Field(True, description="Whether to preview only without actually deleting")
+    cleanup_sessions: bool = Field(False, description="Whether to clean up sessions referencing non-existent images")
 
 
 def is_image_file(filepath: str) -> bool:
-    """判断是否是图片文件"""
+    """Check if file is an image"""
     ext = Path(filepath).suffix.lower()
     return ext in IMAGE_EXTENSIONS
 
 
 def scan_static_images(static_dir: str) -> Set[str]:
-    """扫描 static 目录下的所有图片文件"""
+    """Scan all image files in the static directory"""
     static_path = Path(static_dir)
     if not static_path.exists():
         return set()
@@ -61,7 +61,7 @@ def scan_static_images(static_dir: str) -> Set[str]:
 
 
 def extract_referenced_images(text: str) -> Set[str]:
-    """从文本中提取引用的图片路径"""
+    """Extract referenced image paths from text"""
     referenced = set()
 
     for pattern in IMAGE_PATTERNS:
@@ -90,7 +90,7 @@ def extract_referenced_images(text: str) -> Set[str]:
 
 
 def _extract_refs_from_value(field_value: Any) -> Set[str]:
-    """从任意嵌套结构的字段值中提取图片引用"""
+    """Extract image references from field values of any nested structure"""
     refs: Set[str] = set()
     if isinstance(field_value, str):
         refs.update(extract_referenced_images(field_value))
@@ -104,7 +104,7 @@ def _extract_refs_from_value(field_value: Any) -> Set[str]:
 
 
 async def get_all_session_contents() -> tuple[Set[str], List[Dict[str, Any]]]:
-    """从数据库 sessions 集合中获取所有引用的图片"""
+    """Get all referenced images from the database sessions collection"""
     all_sessions = await get_all_sessions()
     referenced_images: Set[str] = set()
     for doc in all_sessions:
@@ -114,7 +114,7 @@ async def get_all_session_contents() -> tuple[Set[str], List[Dict[str, Any]]]:
 
 
 def find_unused_images(static_images: Set[str], referenced_images: Set[str]) -> Set[str]:
-    """找出未使用的图片"""
+    """Find unused images"""
     unused = static_images - referenced_images
     referenced_lower = {p.lower() for p in referenced_images}
     still_unused = set()
@@ -125,7 +125,7 @@ def find_unused_images(static_images: Set[str], referenced_images: Set[str]) -> 
 
 
 def delete_image_files(static_dir: str, unused_images: Set[str], dry_run: bool = True) -> tuple[int, int]:
-    """删除未使用的图片文件，返回 (删除数量, 释放空间字节数)"""
+    """Delete unused image files, return (deletion count, freed space in bytes)"""
     static_path = Path(static_dir)
     deleted_count = 0
     freed_space = 0
@@ -158,7 +158,7 @@ async def cleanup_sessions_with_missing_images(
     all_sessions: List[Dict[str, Any]],
     dry_run: bool = True
 ) -> int:
-    """清理 sessions 集合中引用了不存在图片的文档"""
+    """Clean up documents in the sessions collection that reference non-existent images"""
     static_path = Path(static_dir)
     cleaned_count = 0
 
@@ -205,31 +205,31 @@ async def cleanup_sessions_with_missing_images(
 @router.post("/maintenance/cleanup-unused-images", operation_id="cleanup_unused_images_alt")
 async def cleanup_unused_images(request: CleanupRequest):
     """
-    清理未引用的图片
+    Clean up unreferenced images
 
     Args:
-        request: 清理请求参数
-            - dry_run: 是否只预览不实际删除 (默认: true)
-            - cleanup_sessions: 是否清理引用了不存在图片的 sessions (默认: false)
+        request: Cleanup request parameters
+            - dry_run: Whether to preview only without actually deleting (default: true)
+            - cleanup_sessions: Whether to clean up sessions referencing non-existent images (default: false)
 
     Returns:
-        清理结果统计
+        Cleanup result statistics
     """
     static_dir = os.path.abspath(settings.static_base_dir)
     logger.info(f"Static directory: {static_dir}")
     logger.info(f"Dry run: {request.dry_run}")
     logger.info(f"Cleanup sessions: {request.cleanup_sessions}")
 
-    # 1. 扫描静态图片
+    # 1. Scan static images
     static_images = scan_static_images(static_dir)
 
-    # 2. 获取数据库中引用的图片
+    # 2. Get referenced images from database
     referenced_images, all_sessions = await get_all_session_contents()
 
-    # 3. 找出未使用的图片
+    # 3. Find unused images
     unused_images = find_unused_images(static_images, referenced_images)
 
-    # 4. 计算统计信息
+    # 4. Calculate statistics
     total_size = 0
     unused_list = []
     for img in sorted(unused_images):
@@ -243,10 +243,10 @@ async def cleanup_unused_images(request: CleanupRequest):
                 "size_kb": round(size / 1024, 2)
             })
 
-    # 5. 删除未使用的图片
+    # 5. Delete unused images
     deleted_count, freed_space = delete_image_files(static_dir, unused_images, dry_run=request.dry_run)
 
-    # 6. 清理引用了不存在图片的 sessions
+    # 6. Clean up sessions referencing non-existent images
     cleaned_sessions = 0
     if request.cleanup_sessions:
         cleaned_sessions = await cleanup_sessions_with_missing_images(

@@ -16,63 +16,63 @@ RSS_CHUNK_SIZE = 8192  # bytes per chunk when streaming RSS feed
 
 async def fetch_rss_feed(url: str) -> feedparser.FeedParserDict:
     """
-    获取并解析 RSS 源内容
+    Fetch and parse RSS feed content.
     
     Args:
-        url: RSS 源地址
+        url: RSS feed URL.
         
     Returns:
-        feedparser.FeedParserDict: 解析后的 RSS 数据
+        feedparser.FeedParserDict: Parsed RSS data.
         
     Raises:
-        HTTPException: 获取或解析失败时抛出
+        HTTPException: Raised when fetch or parse fails.
     """
-    # 限制最大 RSS 大小为 10MB，防止内存溢出
+    # Limit max RSS size to 10MB to prevent memory overflow
     MAX_RSS_SIZE = 10 * 1024 * 1024
     
     try:
         async with aiohttp.ClientSession() as session:
-            # 增加超时时间到 60秒
+            # Increase timeout to 60 seconds
             async with session.get(url, timeout=aiohttp.ClientTimeout(total=60)) as response:
                 if response.status != 200:
                     raise BusinessException(
                         ErrorCode.INVALID_PARAMS,
-                        message=f"无法获取 RSS 源，HTTP 状态码: {response.status}"
+                        message=f"Cannot fetch RSS feed, HTTP status code: {response.status}"
                     )
                 
-                # 检查 Content-Length
+                # Check Content-Length
                 content_length = response.headers.get('Content-Length')
                 if content_length and int(content_length) > MAX_RSS_SIZE:
                     raise BusinessException(
                         ErrorCode.INVALID_PARAMS,
-                        message=f"RSS 源过大 (Content-Length: {content_length})，超过限制 {MAX_RSS_SIZE} 字节"
+                        message=f"RSS feed too large (Content-Length: {content_length}), exceeds limit of {MAX_RSS_SIZE} bytes"
                     )
 
-                # 流式读取并限制大小
+                # Stream read with size limit
                 content = bytearray()
                 async for chunk in response.content.iter_chunked(RSS_CHUNK_SIZE):
                     content.extend(chunk)
                     if len(content) > MAX_RSS_SIZE:
                         raise BusinessException(
                             ErrorCode.INVALID_PARAMS,
-                            message=f"RSS 源实际内容过大，超过限制 {MAX_RSS_SIZE} 字节"
+                            message=f"RSS feed actual content too large, exceeds limit of {MAX_RSS_SIZE} bytes"
                         )
                 
                 feed = feedparser.parse(bytes(content))
 
                 if feed.bozo and feed.bozo_exception:
-                    logger.warning(f"RSS 解析警告: {feed.bozo_exception}")
+                    logger.warning(f"RSS parse warning: {feed.bozo_exception}")
 
                 return feed
     except aiohttp.ClientError as e:
-        logger.error(f"获取 RSS 源失败: {str(e)}")
-        raise BusinessException(ErrorCode.INVALID_PARAMS, message=f"获取 RSS 源失败: {str(e)}")
+        logger.error(f"Failed to fetch RSS feed: {str(e)}")
+        raise BusinessException(ErrorCode.INVALID_PARAMS, message=f"Failed to fetch RSS feed: {str(e)}")
     except Exception as e:
-        logger.error(f"解析 RSS 源失败: {str(e)}")
-        raise BusinessException(ErrorCode.INTERNAL_ERROR, message=f"解析 RSS 源失败: {str(e)}")
+        logger.error(f"Failed to parse RSS feed: {str(e)}")
+        raise BusinessException(ErrorCode.INTERNAL_ERROR, message=f"Failed to parse RSS feed: {str(e)}")
 
 def _build_entry_data(entry, source_name: str, tags: list[str], url: str, current_time: str) -> Dict[str, Any]:
-    """从 RSS entry 构建入库数据"""
+    """Build database entry data from RSS entry"""
     item_data = {
         'title': entry.get('title', ''),
         'link': entry.get('link', ''),
@@ -94,7 +94,7 @@ def _build_entry_data(entry, source_name: str, tags: list[str], url: str, curren
 
 
 async def _save_or_update_entry(collection, item_data: Dict[str, Any], current_time: str) -> int:
-    """保存或更新单条RSS条目，返回 added=1 或 updated=1"""
+    """Save or update a single RSS entry, returns added=1 or updated=1"""
     existing_item = await collection.find_one({'link': item_data['link']})
     if existing_item:
         item_data['key'] = existing_item.get('key', str(uuid.uuid4()))
@@ -108,11 +108,11 @@ async def _save_or_update_entry(collection, item_data: Dict[str, Any], current_t
 
 
 async def process_feed_from_url(url: str, name: Optional[str] = None) -> Dict[str, Any]:
-    """获取、解析并保存 RSS 源数据"""
+    """Fetch, parse, and save RSS feed data"""
     try:
         await db.initialize()
         feed = await fetch_rss_feed(url)
-        source_name = name or feed.feed.get('title', '未知源')
+        source_name = name or feed.feed.get('title', 'Unknown Source')
         tags = [source_name] if source_name else []
         current_time = get_current_time()
         collection = db.db[settings.collection_rss]
@@ -134,20 +134,20 @@ async def process_feed_from_url(url: str, name: Optional[str] = None) -> Dict[st
             'saved_count': saved_count, 'updated_count': updated_count, 'total_items': total_items,
         }
     except Exception as e:
-        logger.error(f"处理 RSS 源 {url} 失败: {str(e)}")
+        logger.error(f"Failed to process RSS feed {url}: {str(e)}")
         return {'url': url, 'source_name': name or url, 'success': False, 'error': str(e)}
 
 async def parse_feed(params: Dict[str, Any]) -> Dict[str, Any]:
     """
-    解析 RSS 源并存入 MongoDB (API 接口)
+    Parse RSS feed and save to MongoDB (API endpoint)
     
     Args:
-        params: 参数字典
-            - url (str): RSS 源地址
-            - name (str, optional): 源名称
+        params: Parameter dictionary
+            - url (str): RSS feed URL.
+            - name (str, optional): Feed name
             
     Returns:
-        Dict[str, Any]: 解析结果统计
+        Dict[str, Any]: Parse result statistics
     """
     url = params.get("url")
     if not url:
@@ -155,12 +155,12 @@ async def parse_feed(params: Dict[str, Any]) -> Dict[str, Any]:
     
     name = params.get("name")
     
-    logger.info(f"开始解析 RSS 源: {url}")
+    logger.info(f"Start parsing RSS feed: {url}")
     result = await process_feed_from_url(url, name)
     
     if not result.get('success'):
-        # 如果是 API 调用，可能希望抛出异常或返回错误信息
-        # 这里为了保持 API 兼容性，我们返回部分信息，但 parse_feed 原始设计是返回 success bool
+        # If this is an API call, may want to raise exception or return error info
+        # To maintain API compatibility, partial info is returned here, but parse_feed was originally designed to return success bool
         pass
         
     return {

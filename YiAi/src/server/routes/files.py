@@ -1,7 +1,7 @@
-"""文件管理接口 — 路由层。
+"""File management endpoints — route layer.
 
-只负责 request 解析 + 调 domain.files + 包装 success 响应。
-所有磁盘 / OSS / Mongo IO 都在 ``domain.files`` 里。
+Only responsible for request parsing + calling domain.files + wrapping success response.
+All disk / OSS / Mongo IO is in ``domain.files``.
 """
 import logging
 
@@ -42,14 +42,14 @@ async def upload_image_to_oss(request: ImageUploadToOssRequest):
 
 @router.post("/read-file", operation_id="read_file")
 async def read_file_route(request: FileReadRequest):
-    """读文件:磁盘优先,磁盘未中回退 MongoDB。图片返回静态 URL。"""
+    """Read file: disk first, fallback to MongoDB if not found on disk. Images return static URL."""
     data = await read_file(request.target_file)
     return success(data=data)
 
 
 @router.post("/write-file", operation_id="write_file")
 async def write_file_route(request: FileWriteRequest):
-    """磁盘 + MongoDB 双写。MongoDB upsert,best-effort。"""
+    """Disk + MongoDB dual write. MongoDB upsert, best-effort."""
     data = await write_file(request.target_file, request.content, request.is_base64)
     return success(data=data)
 
@@ -80,7 +80,7 @@ async def rename_folder_route(request: FolderRenameRequest):
 
 @router.post("/upload", operation_id="upload_file")
 async def upload_file_route(request: FileUploadRequest):
-    """JSON 方式文件上传(文本或 base64)。"""
+    """JSON file upload (text or base64)."""
     data = await upload_file(
         request.target_dir, request.filename, request.content, request.is_base64
     )

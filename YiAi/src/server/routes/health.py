@@ -1,4 +1,4 @@
-"""Observer 健康检查路由"""
+"""Observer health check routes"""
 import logging
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -30,7 +30,7 @@ def _get_components():
 
 
 class ObserverHealth(BaseModel):
-    """Observer 健康状态"""
+    """Observer health status"""
     throttle_enabled: bool
     throttle_active_ips: int
     sampler_enabled: bool
@@ -44,7 +44,7 @@ class ObserverHealth(BaseModel):
 
 @router.get("/health/observer", tags=["Observer"], operation_id="get_observer_health")
 async def observer_health():
-    """获取 Observer 运行时状态"""
+    """Get Observer runtime status"""
     health = ObserverHealth(
         throttle_enabled=settings.observer_throttle_enabled,
         throttle_active_ips=0,

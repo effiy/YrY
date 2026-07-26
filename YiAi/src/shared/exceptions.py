@@ -1,11 +1,11 @@
-"""自定义异常定义"""
+"""Custom exception definitions"""
 from typing import Any, Optional
 from shared.error_codes import ErrorCode
 
 class BusinessException(Exception):
     """
-    业务逻辑异常
-    主动抛出此异常时，会被全局异常处理器捕获并返回标准错误响应
+    Business logic exception
+    When raised, this exception is caught by the global exception handler and returns a standard error response
     """
     def __init__(
         self, 

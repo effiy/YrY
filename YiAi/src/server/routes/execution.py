@@ -46,7 +46,7 @@ async def execute_module_via_get(
     parameters: str = Query(default='{}')
 ):
     """
-    GET 方式执行指定模块方法
+    Execute specified module method via GET
     """
     result = await execute_module(module_name, method_name, parameters)
     if inspect.isasyncgen(result) or hasattr(result, "__aiter__"):
@@ -66,10 +66,10 @@ async def execute_module_via_get(
 @router.post("/", operation_id="execute_module_post")
 async def execute_module_via_post(request: ExecuteRequest):
     """
-    POST 方式执行指定模块方法
+    Execute specified module method via POST
     """
-    logger.info(f"执行模块: {request.module_name}, 方法: {request.method_name}")
-    logger.info(f"参数: {request.parameters}")
+    logger.info(f"Execute module: {request.module_name}, method: {request.method_name}")
+    logger.info(f"Parameters: {request.parameters}")
     result = await execute_module(request.module_name, request.method_name, request.parameters)
     if inspect.isasyncgen(result) or hasattr(result, "__aiter__"):
         return StreamingResponse(

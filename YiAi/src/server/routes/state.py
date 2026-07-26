@@ -11,7 +11,7 @@ from shared.response import success
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/state", tags=["State"])
 
-# 懒加载服务实例
+# Lazy-load service instance
 _state_service: StateStoreService | None = None
 
 
@@ -24,7 +24,7 @@ def _get_service() -> StateStoreService:
 
 @router.post("/records", operation_id="create_state_record")
 async def create_record(record: StateRecord):
-    """创建状态记录"""
+    """Create state record"""
     service = _get_service()
     data = record.model_dump(exclude_unset=True)
     if not data.get("key"):
@@ -43,7 +43,7 @@ async def query_records(
     page_num: int = Query(1, ge=1),
     page_size: int = Query(2000, ge=1, le=8000),
 ):
-    """查询状态记录"""
+    """Query state records"""
     service = _get_service()
     result = await service.query(
         record_type=record_type,
@@ -59,7 +59,7 @@ async def query_records(
 
 @router.get("/records/{key}", operation_id="get_state_record")
 async def get_record(key: str):
-    """根据 key 获取单条记录"""
+    """Get single record by key"""
     service = _get_service()
     record = await service.get(key)
     if not record:
@@ -69,7 +69,7 @@ async def get_record(key: str):
 
 @router.put("/records/{key}", operation_id="update_state_record")
 async def update_record(key: str, record: StateRecord):
-    """更新状态记录"""
+    """Update state record"""
     service = _get_service()
     try:
         data = record.model_dump(exclude_unset=True)
@@ -80,7 +80,7 @@ async def update_record(key: str, record: StateRecord):
 
 @router.delete("/records/{key}", operation_id="delete_state_record")
 async def delete_record(key: str):
-    """删除状态记录"""
+    """Delete state record"""
     service = _get_service()
     try:
         return success(data=await service.delete(key))

@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 def _validate_collection_name(collection_name: Optional[str]) -> str:
     if not collection_name:
-        raise ValueError("必须提供集合名称(collection_name)")
+        raise ValueError("Collection name (collection_name) must be provided")
     return collection_name
 
 def _build_published_date_filter(start_date: str, end_date: str) -> Dict[str, Any]:
@@ -61,7 +61,7 @@ def _build_published_date_filter(start_date: str, end_date: str) -> Dict[str, An
         return {}
 
 def _handle_iso_date_filter(key: str, value: Any, filter_dict: Dict[str, Any]) -> bool:
-    """处理 isoDate 特殊过滤逻辑"""
+    """Handle isoDate special filter logic"""
     if key != 'isoDate' or not isinstance(value, str):
         return False
 
@@ -83,7 +83,7 @@ def _handle_iso_date_filter(key: str, value: Any, filter_dict: Dict[str, Any]) -
     return False
 
 def _handle_range_or_list_filter(key: str, value: Any, filter_dict: Dict[str, Any]) -> bool:
-    """处理范围查询或列表查询"""
+    """Handle range query or list query"""
     if not (hasattr(value, '__iter__') and not isinstance(value, (str, bytes, dict))):
         return False
         
@@ -106,7 +106,7 @@ def _handle_range_or_list_filter(key: str, value: Any, filter_dict: Dict[str, An
     return True
 
 def _handle_string_search_filter(key: str, value: Any, filter_dict: Dict[str, Any]) -> bool:
-    """处理字符串模糊查询"""
+    """Handle string fuzzy search"""
     if not isinstance(value, str):
         return False
         
@@ -134,7 +134,7 @@ def _build_filter(query_params: Dict[str, Any]) -> Dict[str, Any]:
         if not value:
             continue
 
-        # key 字段使用精确匹配
+        # key field uses exact match
         if key == 'key' and isinstance(value, str):
             filter_dict[key] = value
             continue
@@ -170,22 +170,22 @@ def _build_sort_list(sort_param: str, sort_order: int) -> List[tuple]:
 # --- Public Service Methods ---
 
 async def query_documents(params: Dict[str, Any]) -> Dict[str, Any]:
-    # 支持 cname 和 collection_name
+    # Support cname and collection_name
     collection_name = params.get('collection_name') or params.get('cname')
     if not collection_name:
         raise ValueError("Collection name (collection_name/cname) is required")
-    
+
     query_params = params.copy()
     query_params.pop('cname', None)
     query_params.pop('collection_name', None)
-    
-    # 处理 filter 参数：如果存在 filter 参数，将其内容合并到查询参数中
+
+    # Handle filter parameter: if filter parameter exists, merge its content into query parameters
     filter_param = query_params.pop('filter', None)
     if filter_param and isinstance(filter_param, dict):
-        # 将 filter 中的内容合并到 query_params 中
+        # Merge filter content into query_params
         query_params.update(filter_param)
-    
-    # 兼容旧参数
+
+    # Compatibility with old parameters
     try:
         if 'limit' in query_params and 'pageSize' not in query_params:
             query_params['pageSize'] = int(query_params.pop('limit'))
@@ -212,7 +212,7 @@ async def query_documents(params: Dict[str, Any]) -> Dict[str, Any]:
         page_num = max(1, int(query_params.pop('pageNum', 1)))
         page_size = min(settings.pagination_max_size, max(settings.pagination_min_size, int(query_params.pop('pageSize', settings.pagination_default_size))))
     except ValueError:
-        raise ValueError("分页参数必须是有效的整数")
+        raise ValueError("Pagination parameters must be valid integers")
 
     sort_param = query_params.pop('orderBy', 'timestamp' if collection_name == 'apis' else 'order')
     sort_order = -1 if query_params.pop('orderType', 'asc').lower() == 'desc' else 1
@@ -231,7 +231,7 @@ async def query_documents(params: Dict[str, Any]) -> Dict[str, Any]:
         projection = {'_id': 0, **{f: 1 for f in fields}}
     elif exclude_fields_param:
         exclude_fields = [f.strip() for f in str(exclude_fields_param).split(',') if f.strip()]
-        # 确保 key 字段不被排除
+        # Ensure key field is not excluded
         if 'key' in exclude_fields:
             exclude_fields.remove('key')
         if collection_name == 'sessions' and 'pageContent' not in exclude_fields:
@@ -251,15 +251,15 @@ async def query_documents(params: Dict[str, Any]) -> Dict[str, Any]:
     total = await collection.count_documents(filter_dict)
     total_pages = (total + page_size - 1) // page_size
 
-    # 确保返回的每个文档都有 key 字段
+    # Ensure every returned document has a key field
     for doc in data:
         if 'key' not in doc:
-            # 如果文档没有 key，尝试从 _id 生成或使用默认值
+            # If document has no key, try to generate from _id or use default
             if '_id' in doc:
                 doc['key'] = str(doc['_id'])
             else:
                 doc['key'] = str(uuid.uuid4())
-            logger.warning(f"文档缺少 key 字段，已自动生成: {doc['key']}")
+            logger.warning(f"Document missing key field, auto-generated: {doc['key']}")
 
     return {
         'list': data,
@@ -284,8 +284,8 @@ async def get_document_detail(params: Dict[str, Any]) -> Dict[str, Any]:
     document = await collection.find_one({'key': doc_id}, projection)
 
     if not document:
-        raise ValueError(f"未找到ID为 {doc_id} 的数据")
-    
+        raise ValueError(f"Data with ID {doc_id} not found")
+
     return document
 
 async def create_document(params: Dict[str, Any]) -> Dict[str, Any]:
@@ -303,7 +303,7 @@ async def create_document(params: Dict[str, Any]) -> Dict[str, Any]:
     await db.initialize()
     collection_name = _validate_collection_name(collection_name)
     if not data:
-        raise ValueError("创建数据不能为空")
+        raise ValueError("Create data cannot be empty")
 
     collection = db.db[collection_name]
 
@@ -312,7 +312,7 @@ async def create_document(params: Dict[str, Any]) -> Dict[str, Any]:
         if link:
             existing_item = await collection.find_one({'link': link})
             if existing_item:
-                raise ValueError(f"link 字段值 '{link}' 已存在，不能重复创建")
+                raise ValueError(f"Link field value '{link}' already exists, cannot create duplicate")
 
     data_copy = {k: (str(v) if isinstance(v, ObjectId) else v) for k, v in data.items()}
     current_time = get_current_time()
@@ -332,7 +332,7 @@ async def create_document(params: Dict[str, Any]) -> Dict[str, Any]:
         max_order = max_order_doc.get("order", 0) if max_order_doc else 0
         data_copy['order'] = max_order + 1
     except Exception as e:
-        logger.warning(f"获取最大排序值失败: {str(e)}")
+        logger.warning(f"Failed to get maximum sort value: {str(e)}")
         data_copy['order'] = 1
 
     try:
@@ -340,9 +340,9 @@ async def create_document(params: Dict[str, Any]) -> Dict[str, Any]:
     except Exception as e:
         if 'duplicate key' in str(e).lower() or 'E11000' in str(e):
             if collection_name == 'rss':
-                raise ValueError(f"link 字段值 '{data_copy.get('link', '')}' 已存在，不能重复创建")
+                raise ValueError(f"Link field value '{data_copy.get('link', '')}' already exists, cannot create duplicate")
             else:
-                raise ValueError(f"数据创建失败: 唯一性约束冲突")
+                raise ValueError(f"Data creation failed: unique constraint violation")
         raise
 
     return {'key': data_copy['key']}
@@ -363,14 +363,14 @@ async def update_document(params: Dict[str, Any]) -> Dict[str, Any]:
     await db.initialize()
     collection_name = _validate_collection_name(collection_name)
 
-    # sessions 集合支持通过 file_path 作为查询键
+    # sessions collection supports using file_path as query key
     if collection_name == 'sessions' and file_path:
         query_filter = {'file_path': file_path}
         query_label = f'file_path={file_path}'
     else:
         doc_id = data.get('key')
         if not doc_id:
-            raise ValueError("更新数据必须包含 key 字段")
+            raise ValueError("Update data must contain key field")
         query_filter = {'key': doc_id}
         query_label = f'key={doc_id}'
 
@@ -378,9 +378,9 @@ async def update_document(params: Dict[str, Any]) -> Dict[str, Any]:
 
     existing_doc = await collection.find_one(query_filter)
     if not existing_doc:
-        raise ValueError(f"未找到 {query_label} 的数据")
+        raise ValueError(f"Data matching {query_label} not found")
 
-    # 移除不可更新字段
+    # Remove non-updatable fields
     update_data = data.copy()
     update_data.pop('_id', None)
     update_data.pop('key', None)
@@ -415,12 +415,12 @@ async def upsert_document(params: Dict[str, Any]) -> Dict[str, Any]:
     collection_name = _validate_collection_name(collection_name)
     collection = db.db[collection_name]
     
-    # 确保 update_doc 包含 atomic operators
+    # Ensure update_doc contains atomic operators
     if not any(k.startswith('$') for k in update_doc.keys()):
-        # 如果没有操作符，假设是 $set
+        # If no operator, assume $set
         update_doc = {'$set': update_doc}
 
-    # 强制添加系统字段
+    # Force add system fields
     if '$set' not in update_doc:
         update_doc['$set'] = {}
     update_doc['$set']['updatedTime'] = get_current_time()
@@ -434,7 +434,7 @@ async def upsert_document(params: Dict[str, Any]) -> Dict[str, Any]:
     if collection_name == 'sessions':
         if isinstance(update_doc.get('$set'), dict):
             update_doc['$set'].pop('pageContent', None)
-            # 如果 messages 为空数组，也不更新（避免覆盖已有的消息数据）
+            # If messages is an empty array, don't update (avoid overwriting existing message data)
             if 'messages' in update_doc['$set'] and update_doc['$set']['messages'] == []:
                 update_doc['$set'].pop('messages', None)
         if isinstance(update_doc.get('$setOnInsert'), dict):
@@ -462,21 +462,21 @@ async def delete_document(params: Dict[str, Any]) -> Dict[str, Any]:
     result = await collection.delete_one({'key': doc_id})
 
     if result.deleted_count == 0:
-        raise ValueError(f"未找到ID为 {doc_id} 的数据")
+        raise ValueError(f"Data with ID {doc_id} not found")
 
     return {'key': doc_id, 'deleted': True}
 
 
 async def list_story_task_dirs(params: Dict[str, Any]) -> Dict[str, Any]:
-    """查询 sessions 集合中故事任务面板下所有故事任务目录列表
+    """Query all story task directory listings under the story task panel in the sessions collection
 
-    遍历 sessions 集合，提取含 projectName + storyName 的文档，
-    按 projectName/storyName 去重后返回故事任务目录清单。
+    Iterate sessions collection, extract documents with projectName + storyName,
+    deduplicate by projectName/storyName and return story task directory list.
 
     Args:
-        params: 可选筛选参数
-            - project_name: 按项目名过滤（可选）
-            - page_num / page_size: 分页（默认 1 / 2000）
+        params: Optional filter parameters
+            - project_name: Filter by project name (optional)
+            - page_num / page_size: Pagination (default 1 / 2000)
 
     Returns:
         {list: [{project_name, story_name, dir_path, session_count, latest_time}], total, ...}
@@ -522,7 +522,7 @@ async def list_story_task_dirs(params: Dict[str, Any]) -> Dict[str, Any]:
         dirs.append({
             'project_name': proj,
             'story_name': story,
-            'dir_path': f'docs/故事任务面板/{proj}/{story}',
+            'dir_path': f'docs/StoryTaskPanel/{proj}/{story}',
             'session_count': doc['session_count'],
             'latest_time': doc['latest_time'],
         })

@@ -1,6 +1,6 @@
-"""数据模型定义 (Schemas)
-- 包含所有 API 请求和响应的 Pydantic 模型
-- 按功能模块组织：Module, RSS, etc.
+"""Data model definitions (Schemas)
+- Contains Pydantic models for all API requests and responses
+- Organized by functional module: Module, RSS, etc.
 """
 from typing import Optional, Dict, Any, Union, List
 from pydantic import BaseModel, Field
@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 # --- Module Schemas ---
 class ExecuteRequest(BaseModel):
     """
-    通用模块执行请求模型
+    Generic module execution request model
 
     Example:
         {
@@ -17,11 +17,11 @@ class ExecuteRequest(BaseModel):
             "parameters": {"key": "value"}
         }
     """
-    module_name: str = Field(default="", description="目标模块全路径")
-    method_name: str = Field(default="", description="目标函数名")
+    module_name: str = Field(default="", description="Full path of the target module")
+    method_name: str = Field(default="", description="Target function name")
     parameters: Union[Dict[str, Any], str] = Field(
         default_factory=lambda: {},
-        description="传递给目标函数的参数，支持字典或 JSON 字符串"
+        description="Parameters passed to the target function; supports dict or JSON string"
     )
 
     class Config:
@@ -29,87 +29,87 @@ class ExecuteRequest(BaseModel):
 
 class FileUploadRequest(BaseModel):
     """
-    文件上传请求模型 (JSON 方式)
+    File upload request model (JSON mode)
     """
-    filename: str = Field(..., description="文件名")
-    content: str = Field(..., description="文件内容 (文本或 Base64 字符串)")
-    is_base64: bool = Field(default=False, description="内容是否为 Base64 编码")
-    target_dir: str = Field(default="static", description="目标存储目录")
+    filename: str = Field(..., description="File name")
+    content: str = Field(..., description="File content (text or Base64 string)")
+    is_base64: bool = Field(default=False, description="Whether the content is Base64 encoded")
+    target_dir: str = Field(default="static", description="Target storage directory")
 
 class ImageUploadToOssRequest(BaseModel):
-    data_url: str = Field(..., description="DataURL 或 Base64 字符串")
-    filename: str = Field(default="image.png", description="文件名（含扩展名）")
-    directory: str = Field(default="aicr", description="OSS 目录前缀")
+    data_url: str = Field(..., description="DataURL or Base64 string")
+    filename: str = Field(default="image.png", description="File name (including extension)")
+    directory: str = Field(default="aicr", description="OSS directory prefix")
 
 class FolderDeleteRequest(BaseModel):
     """
-    文件夹删除请求模型
+    Folder deletion request model
     """
-    target_dir: str = Field(..., description="要删除的目录路径")
+    target_dir: str = Field(..., description="Directory path to delete")
 
 class FileDeleteRequest(BaseModel):
     """
-    文件删除请求模型
+    File deletion request model
     """
-    target_file: str = Field(..., description="要删除的文件路径")
+    target_file: str = Field(..., description="File path to delete")
 
 class FileReadRequest(BaseModel):
     """
-    文件读取请求模型
+    File read request model
     """
-    target_file: str = Field(..., description="要读取的文件路径")
+    target_file: str = Field(..., description="File path to read")
 
 class FileWriteRequest(BaseModel):
     """
-    文件写入请求模型
+    File write request model
     """
-    target_file: str = Field(..., description="要写入的文件路径")
-    content: str = Field(..., description="文件内容")
-    is_base64: bool = Field(default=False, description="内容是否为 Base64 编码")
+    target_file: str = Field(..., description="File path to write to")
+    content: str = Field(..., description="File content")
+    is_base64: bool = Field(default=False, description="Whether the content is Base64 encoded")
 
 class FileRenameRequest(BaseModel):
     """
-    文件重命名请求模型
+    File rename request model
     """
-    old_path: str = Field(..., description="旧文件路径")
-    new_path: str = Field(..., description="新文件路径")
+    old_path: str = Field(..., description="Old file path")
+    new_path: str = Field(..., description="New file path")
 
 class FolderRenameRequest(BaseModel):
     """
-    文件夹重命名请求模型
+    Folder rename request model
     """
-    old_dir: str = Field(..., description="旧目录路径")
-    new_dir: str = Field(..., description="新目录路径")
+    old_dir: str = Field(..., description="Old directory path")
+    new_dir: str = Field(..., description="New directory path")
 
 # --- RSS Schemas ---
 class ParseRssRequest(BaseModel):
     """
-    解析单个 RSS 源请求
-    
+    Parse single RSS source request
+
     Example:
         {
             "url": "https://example.com/rss.xml",
             "name": "Example RSS"
         }
     """
-    url: str = Field(..., description="RSS 源 URL")
-    name: Optional[str] = Field(None, description="自定义源名称，不填则自动获取")
+    url: str = Field(..., description="RSS source URL")
+    name: Optional[str] = Field(None, description="Custom source name; auto-fetched if not provided")
 
 class ParseAllRssRequest(BaseModel):
     """
-    批量解析 RSS 请求
-    
+    Batch parse RSS request
+
     Example:
         {
             "force": true
         }
     """
-    force: Optional[bool] = Field(False, description="是否强制刷新")
+    force: Optional[bool] = Field(False, description="Whether to force refresh")
 
 class SchedulerConfigRequest(BaseModel):
     """
-    RSS 调度器配置请求
-    
+    RSS scheduler configuration request
+
     Example:
         {
             "enabled": true,
@@ -117,75 +117,75 @@ class SchedulerConfigRequest(BaseModel):
             "interval": 3600
         }
     """
-    enabled: Optional[bool] = Field(None, description="是否启用调度器")
-    type: Optional[str] = Field(None, description="调度类型: interval 或 cron")
-    interval: Optional[int] = Field(None, description="间隔时间(秒)，仅 interval 类型有效")
-    cron: Optional[Dict[str, Any]] = Field(None, description="Cron 表达式配置，仅 cron 类型有效")
+    enabled: Optional[bool] = Field(None, description="Whether to enable the scheduler")
+    type: Optional[str] = Field(None, description="Schedule type: interval or cron")
+    interval: Optional[int] = Field(None, description="Interval in seconds; only valid for interval type")
+    cron: Optional[Dict[str, Any]] = Field(None, description="Cron expression configuration; only valid for cron type")
 
 # --- WeWork Schemas ---
 class WeWorkWebhookRequest(BaseModel):
     """
-    企业微信机器人 Webhook 请求模型
+    WeChat Work (WeCom) bot webhook request model
 
     Example:
         {
             "webhook_url": "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=xxx",
-            "content": "要发送的消息内容"
+            "content": "Message content to send"
         }
     """
-    webhook_url: str = Field(..., description="企业微信机器人 Webhook URL")
-    content: str = Field(..., description="要发送的消息内容")
+    webhook_url: str = Field(..., description="WeChat Work (WeCom) bot webhook URL")
+    content: str = Field(..., description="Message content to send")
 
 
 # --- State Store Schemas ---
 
 class StateRecord(BaseModel):
-    """通用状态记录模型"""
-    key: str = Field(default="", description="记录唯一标识")
-    record_type: str = Field(..., min_length=1, description="记录类型，如 conversation_summary")
-    title: str = Field(default="", description="记录标题，用于文本搜索")
-    payload: Dict[str, Any] = Field(default_factory=dict, description="灵活的业务负载")
-    tags: List[str] = Field(default_factory=list, description="标签列表")
-    created_time: str = Field(default="", description="创建时间 ISO 8601")
-    updated_time: str = Field(default="", description="更新时间 ISO 8601")
+    """Generic state record model"""
+    key: str = Field(default="", description="Unique record identifier")
+    record_type: str = Field(..., min_length=1, description="Record type, e.g., conversation_summary")
+    title: str = Field(default="", description="Record title; used for text search")
+    payload: Dict[str, Any] = Field(default_factory=dict, description="Flexible business payload")
+    tags: List[str] = Field(default_factory=list, description="Tag list")
+    created_time: str = Field(default="", description="Creation time (ISO 8601)")
+    updated_time: str = Field(default="", description="Update time (ISO 8601)")
 
 
 class SessionState(BaseModel):
-    """结构化会话状态模型"""
-    key: str = Field(..., description="与 sessions 集合的 key 保持一致")
-    page_content: str = Field(default="", description="对应遗留 pageContent")
-    messages: List[Dict[str, Any]] = Field(default_factory=list, description="对应遗留 messages")
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="扩展元数据")
+    """Structured session state model"""
+    key: str = Field(..., description="Must match the key in the sessions collection")
+    page_content: str = Field(default="", description="Corresponds to legacy pageContent")
+    messages: List[Dict[str, Any]] = Field(default_factory=list, description="Corresponds to legacy messages")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Extended metadata")
     created_time: str = Field(default="")
     updated_time: str = Field(default="")
 
 
 class SkillExecutionRecord(BaseModel):
-    """技能执行结果记录模型"""
-    key: str = Field(default="", description="记录唯一标识")
-    skill_name: str = Field(..., min_length=1, description="技能名称")
-    status: str = Field(..., pattern=r"^(success|failed|timeout|cancelled)$", description="执行状态")
-    duration_ms: float = Field(..., ge=0, description="执行耗时毫秒")
-    input_summary: str = Field(default="", max_length=2000, description="输入摘要")
-    output_summary: str = Field(default="", max_length=2000, description="输出摘要")
-    error_message: str = Field(default="", max_length=4000, description="错误信息")
-    timestamp: str = Field(default="", description="记录时间 ISO 8601")
-    tags: List[str] = Field(default_factory=lambda: ["skill_execution"], description="标签")
+    """Skill execution result record model"""
+    key: str = Field(default="", description="Unique record identifier")
+    skill_name: str = Field(..., min_length=1, description="Skill name")
+    status: str = Field(..., pattern=r"^(success|failed|timeout|cancelled)$", description="Execution status")
+    duration_ms: float = Field(..., ge=0, description="Execution duration in milliseconds")
+    input_summary: str = Field(default="", max_length=2000, description="Input summary")
+    output_summary: str = Field(default="", max_length=2000, description="Output summary")
+    error_message: str = Field(default="", max_length=4000, description="Error message")
+    timestamp: str = Field(default="", description="Record time (ISO 8601)")
+    tags: List[str] = Field(default_factory=lambda: ["skill_execution"], description="Tags")
 
 
 class StateQueryRequest(BaseModel):
-    """状态记录查询请求"""
-    record_type: Optional[str] = Field(None, description="按记录类型过滤")
-    tags: Optional[List[str]] = Field(None, description="按标签过滤")
-    title_contains: Optional[str] = Field(None, description="标题模糊搜索")
-    created_after: Optional[str] = Field(None, description="创建时间下限 ISO 8601")
-    created_before: Optional[str] = Field(None, description="创建时间上限 ISO 8601")
-    page_num: int = Field(default=1, ge=1, description="页码")
-    page_size: int = Field(default=2000, ge=1, le=8000, description="每页条数")
+    """State record query request"""
+    record_type: Optional[str] = Field(None, description="Filter by record type")
+    tags: Optional[List[str]] = Field(None, description="Filter by tags")
+    title_contains: Optional[str] = Field(None, description="Fuzzy search on title")
+    created_after: Optional[str] = Field(None, description="Lower bound of creation time (ISO 8601)")
+    created_before: Optional[str] = Field(None, description="Upper bound of creation time (ISO 8601)")
+    page_num: int = Field(default=1, ge=1, description="Page number")
+    page_size: int = Field(default=2000, ge=1, le=8000, description="Items per page")
 
 
 class AdaptationResult(BaseModel):
-    """批量适配结果"""
-    success_count: int = Field(default=0, description="成功数量")
-    failure_count: int = Field(default=0, description="失败数量")
-    errors: List[Dict[str, Any]] = Field(default_factory=list, description="错误明细")
+    """Batch adaptation result"""
+    success_count: int = Field(default=0, description="Number of successes")
+    failure_count: int = Field(default=0, description="Number of failures")
+    errors: List[Dict[str, Any]] = Field(default_factory=list, description="Error details")

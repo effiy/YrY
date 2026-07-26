@@ -1,5 +1,5 @@
-"""OSS 存储服务封装
-- 提供文件上传/删除、标签管理、文件信息维护与列表查询
+"""OSS storage service wrapper
+- Provides file upload/delete, tag management, file info maintenance, and list query
 """
 import os
 import oss2
@@ -15,9 +15,9 @@ from shared.exceptions import BusinessException
 logger = logging.getLogger(__name__)
 
 class OSSConfig:
-    """从配置加载 OSS 连接参数"""
+    """Load OSS connection parameters from config"""
     def __init__(self):
-        """初始化 OSS 配置"""
+        """Initialize OSS configuration"""
         self.access_key_id = settings.oss_access_key
         self.access_key_secret = settings.oss_secret_key
         self.endpoint = settings.oss_endpoint
@@ -28,13 +28,13 @@ class OSSConfig:
 
 def get_bucket(config: OSSConfig) -> oss2.Bucket:
     """
-    构建 Bucket 客户端
+    Build Bucket client
 
     Args:
-        config: OSS 配置对象
+        config: OSS configuration object
 
     Returns:
-        oss2.Bucket: OSS Bucket 实例
+        oss2.Bucket: OSS Bucket instance
 
     Raises:
         RuntimeError: If OSS configuration is incomplete
@@ -46,15 +46,15 @@ def get_bucket(config: OSSConfig) -> oss2.Bucket:
 
 def build_oss_url(bucket_name: str, endpoint: str, object_key: str) -> str:
     """
-    根据 bucket、endpoint 与对象名生成可访问 URL
-    
+    Generate accessible URL from bucket, endpoint, and object name
+
     Args:
-        bucket_name: Bucket 名称
-        endpoint: 接入点域名
-        object_key: 对象键名
-        
+        bucket_name: Bucket name
+        endpoint: Endpoint domain
+        object_key: Object key
+
     Returns:
-        str: 完整的 HTTPS URL
+        str: Complete HTTPS URL
     """
     clean_endpoint = endpoint.replace('http://', '').replace('https://', '')
     return f"https://{bucket_name}.{clean_endpoint}/{object_key}"
@@ -63,7 +63,7 @@ async def upload_file_to_oss(
     file: UploadFile,
     directory: Optional[str] = None
 ) -> dict:
-    """上传文件到 OSS（参数校验、大小限制、返回可访问地址）"""
+    """Upload file to OSS (parameter validation, size limit, return accessible URL)"""
     config = OSSConfig()
     bucket = get_bucket(config)
 
@@ -122,16 +122,16 @@ async def upload_bytes_to_oss(
 
 async def delete_oss_file(object_name: str):
     """
-    删除 OSS 文件，并清理相关标签与信息
-    
+    Delete OSS file, and clean up related tags and info
+
     Args:
-        object_name: 文件对象名
-        
+        object_name: File object name
+
     Returns:
-        str: 删除的对象名
-        
+        str: Deleted object name
+
     Raises:
-        HTTPException: 文件不存在
+        HTTPException: File not found
 
     Example:
         GET /?module_name=services.storage.oss_client&method_name=delete_oss_file&parameters={"object_name": "images/test.jpg"}
@@ -155,23 +155,23 @@ async def delete_oss_file(object_name: str):
 
 async def set_file_tags(object_name: str, tags: List[str]) -> Dict[str, Any]:
     """
-    设置文件标签（去重、幂等更新）
-    
+    Set file tags (deduplication, idempotent update)
+
     Args:
-        object_name: 文件对象名
-        tags: 标签列表
-        
+        object_name: File object name
+        tags: Tag list
+
     Returns:
-        Dict[str, Any]: 更新后的标签信息
-        
+        Dict[str, Any]: Updated tag info
+
     Raises:
-        ValueError: 文件对象名为空
+        ValueError: File object name cannot be empty
 
     Example:
         GET /?module_name=services.storage.oss_client&method_name=set_file_tags&parameters={"object_name": "images/test.jpg", "tags": ["vacation", "2023"]}
     """
     if not object_name:
-        raise ValueError("文件对象名不能为空")
+        raise ValueError("File object name cannot be empty")
 
     tags = [tag.strip() for tag in tags if tag.strip()]
     tags = list(set(tags))
@@ -194,13 +194,13 @@ async def set_file_tags(object_name: str, tags: List[str]) -> Dict[str, Any]:
 
 async def get_file_tags(object_name: str) -> List[str]:
     """
-    获取文件标签列表
-    
+    Get file tag list
+
     Example:
         GET /?module_name=services.storage.oss_client&method_name=get_file_tags&parameters={"object_name": "images/test.jpg"}
     """
     if not object_name:
-        raise ValueError("文件对象名不能为空")
+        raise ValueError("File object name cannot be empty")
 
     await db.initialize()
     tag_doc = await db.find_one(settings.collection_oss_file_tags, {"object_name": object_name})
@@ -208,13 +208,13 @@ async def get_file_tags(object_name: str) -> List[str]:
 
 async def delete_file_tags(object_name: str) -> bool:
     """
-    删除文件的所有标签
-    
+    Delete all file tags
+
     Example:
         GET /?module_name=services.storage.oss_client&method_name=delete_file_tags&parameters={"object_name": "images/test.jpg"}
     """
     if not object_name:
-        raise ValueError("文件对象名不能为空")
+        raise ValueError("File object name cannot be empty")
 
     await db.initialize()
     deleted_count = await db.delete_one(settings.collection_oss_file_tags, {"object_name": object_name})
@@ -222,10 +222,10 @@ async def delete_file_tags(object_name: str) -> bool:
 
 async def get_all_tags() -> List[Dict[str, Any]]:
     """
-    聚合所有标签及其使用计数
-    
+    Aggregate all tags and their usage counts
+
     Returns:
-        List[Dict[str, Any]]: 标签统计列表，包含 name 和 count
+        List[Dict[str, Any]]: Tag statistics list, containing name and count
 
     Example:
         GET /?module_name=services.storage.oss_client&method_name=get_all_tags&parameters={}
@@ -243,24 +243,24 @@ async def get_all_tags() -> List[Dict[str, Any]]:
 
 async def update_file_info(object_name: str, title: Optional[str] = None, description: Optional[str] = None) -> Dict[str, str]:
     """
-    更新文件信息（标题/描述），自动维护时间戳
-    
+    Update file info (title/description), auto-maintain timestamps
+
     Args:
-        object_name: 文件对象名
-        title: 标题 (可选)
-        description: 描述 (可选)
-        
+        object_name: File object name
+        title: Title (optional)
+        description: Description (optional)
+
     Returns:
-        Dict[str, str]: 更新后的文件信息
-        
+        Dict[str, str]: Updated file info
+
     Raises:
-        ValueError: 文件对象名为空
+        ValueError: File object name cannot be empty
 
     Example:
         GET /?module_name=services.storage.oss_client&method_name=update_file_info&parameters={"object_name": "images/test.jpg", "title": "New Title"}
     """
     if not object_name:
-        raise ValueError("文件对象名不能为空")
+        raise ValueError("File object name cannot be empty")
 
     update_data = {
         "object_name": object_name,
@@ -294,13 +294,13 @@ async def update_file_info(object_name: str, title: Optional[str] = None, descri
 
 async def get_file_info(object_name: str) -> Dict[str, str]:
     """
-    获取文件信息（标题/描述），不存在则返回空结构
-    
+    Get file info (title/description), return empty structure if not found
+
     Example:
         GET /?module_name=services.storage.oss_client&method_name=get_file_info&parameters={"object_name": "images/test.jpg"}
     """
     if not object_name:
-        raise ValueError("文件对象名不能为空")
+        raise ValueError("File object name cannot be empty")
 
     await db.initialize()
     info_doc = await db.find_one(settings.collection_oss_file_info, {"object_name": object_name})
@@ -320,7 +320,7 @@ async def get_file_info(object_name: str) -> Dict[str, str]:
 
 async def list_files(directory: Optional[str] = None, tags: Optional[str] = None) -> List[Dict[str, Any]]:
     """
-    列出目录下文件（支持标签过滤），返回基础元数据与标签/信息
+    List files in directory (supports tag filtering), returns basic metadata and tags/info
     
     Example:
         GET /?module_name=services.storage.oss_client&method_name=list_files&parameters={"directory": "images/"}

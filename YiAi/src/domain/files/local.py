@@ -1,11 +1,11 @@
-"""本地文件存储业务层。
+"""Local file storage service layer.
 
-封装磁盘 + MongoDB 双持久化:read / write / delete / rename /
-upload。路由层只解析 request 并包装 success 响应,所有 IO +
-错误转换 + dual-write 一致性都在这里。
+Encapsulates disk + MongoDB dual persistence: read / write / delete / rename /
+upload. Route layer only parses requests and wraps success responses; all IO +
+error conversion + dual-write consistency is handled here.
 
-边界:OSS 上传在 ``storage.py``;本文件只处理本地磁盘 + 本地
-Mongo 镜像。
+Boundary: OSS uploads are in ``storage.py``; this file only handles local
+disk + local Mongo mirroring.
 """
 import base64
 import logging
@@ -40,10 +40,10 @@ async def _db():
 # ---------------------------------------------------------------------------
 
 async def read_file(target_file: str) -> dict:
-    """读文件:磁盘优先,磁盘未中则回退 MongoDB。
+    """Read file: disk-first, fall back to MongoDB on miss.
 
-    图片文件返回静态 URL(``type=url``);文本返回 ``type=text``;
-    二进制返回 ``type=base64``。MongoDB 回退会附带 ``source=database``。
+    Image files return a static URL (``type=url``); text returns ``type=text``;
+    binary returns ``type=base64``. MongoDB fallback includes ``source=database``.
     """
     target_file = paths.normalize_no_spaces(target_file)
     db_key = paths.normalize_db_key(target_file)
@@ -55,7 +55,7 @@ async def read_file(target_file: str) -> dict:
     if not os.path.isfile(found_path):
         raise BusinessException(
             ErrorCode.DATA_NOT_FOUND,
-            message=f"路径不是一个文件: {target_file}",
+            message=f"Path is not a file: {target_file}",
         )
 
     filename = os.path.basename(target_file)
@@ -65,7 +65,7 @@ async def read_file(target_file: str) -> dict:
             clean_path = clean_path[7:]
         clean_path = clean_path.lstrip("/")
         static_url = _static_url(clean_path)
-        logger.info(f"图片文件,返回静态 URL: {static_url}")
+        logger.info(f"Image file, returning static URL: {static_url}")
         return {"content": static_url, "type": "url"}
 
     try:
@@ -79,14 +79,14 @@ async def read_file(target_file: str) -> dict:
             content_b64 = base64.b64encode(content_bytes).decode("utf-8")
             return {"content": content_b64, "type": "base64"}
     except Exception as e:
-        logger.error(f"读取文件失败: {str(e)}", exc_info=True)
+        logger.error(f"Failed to read file: {str(e)}", exc_info=True)
         raise BusinessException(
-            ErrorCode.INTERNAL_ERROR, message=f"读取文件失败: {str(e)}"
+            ErrorCode.INTERNAL_ERROR, message=f"Failed to read file: {str(e)}"
         ) from e
 
 
 async def _read_from_database(target_file: str, db_key: str) -> dict:
-    """磁盘未中时从 MongoDB 读取。"""
+    """Read from MongoDB when disk miss."""
     try:
         collection = await _db()
         doc = await collection.find_one(
@@ -94,7 +94,7 @@ async def _read_from_database(target_file: str, db_key: str) -> dict:
         )
         if not doc:
             raise BusinessException(
-                ErrorCode.DATA_NOT_FOUND, message=f"文件不存在: {target_file}"
+                ErrorCode.DATA_NOT_FOUND, message=f"File does not exist: {target_file}"
             )
 
         content = doc.get("content", "")
@@ -103,14 +103,14 @@ async def _read_from_database(target_file: str, db_key: str) -> dict:
 
         if paths.is_image_file(filename):
             static_url = _static_url(db_key)
-            logger.info(f"从 MongoDB 读取图片,返回静态 URL: {static_url}")
+            logger.info(f"Read image from MongoDB, returning static URL: {static_url}")
             return {
                 "content": static_url,
                 "type": "url",
                 "source": "database",
             }
 
-        logger.info(f"从 MongoDB 读取文件: {target_file}")
+        logger.info(f"Read file from MongoDB: {target_file}")
         return {
             "content": content,
             "type": "base64" if is_base64 else "text",
@@ -119,9 +119,9 @@ async def _read_from_database(target_file: str, db_key: str) -> dict:
     except BusinessException:
         raise
     except Exception as e:
-        logger.error(f"MongoDB 回退读取失败: {target_file}: {e}")
+        logger.error(f"MongoDB fallback read failed: {target_file}: {e}")
         raise BusinessException(
-            ErrorCode.DATA_NOT_FOUND, message=f"文件不存在: {target_file}"
+            ErrorCode.DATA_NOT_FOUND, message=f"File does not exist: {target_file}"
         ) from e
 
 
@@ -130,9 +130,9 @@ async def _read_from_database(target_file: str, db_key: str) -> dict:
 # ---------------------------------------------------------------------------
 
 async def write_file(target_file: str, content: str, is_base64: bool) -> dict:
-    """磁盘 + MongoDB 双写。MongoDB upsert,失败不影响磁盘。"""
+    """Disk + MongoDB dual write. MongoDB upsert, failure does not affect disk."""
     target_file = paths.normalize_no_spaces(target_file)
-    paths.validate_path(target_file, "目标文件路径")
+    paths.validate_path(target_file, "Target file path")
     target_path = paths.resolve_static_path(target_file)
 
     try:
@@ -149,19 +149,19 @@ async def write_file(target_file: str, content: str, is_base64: bool) -> dict:
         if not os.path.exists(target_path) or not os.path.isfile(target_path):
             raise BusinessException(
                 ErrorCode.DATA_STORE_FAIL,
-                message=f"文件写入后验证失败: {target_file}",
+                message=f"File write verification failed: {target_file}",
             )
 
         await _dual_write_mongo(target_file, content, is_base64, content_bytes)
 
-        logger.info(f"文件写入成功: {target_path} ({len(content_bytes)} bytes)")
-        return {"message": "写入成功", "path": target_path}
+        logger.info(f"File write successful: {target_path} ({len(content_bytes)} bytes)")
+        return {"message": "Write successful", "path": target_path}
     except BusinessException:
         raise
     except Exception as e:
-        logger.error(f"写入文件失败: {str(e)}", exc_info=True)
+        logger.error(f"Failed to write file: {str(e)}", exc_info=True)
         raise BusinessException(
-            ErrorCode.DATA_STORE_FAIL, message=f"写入文件失败: {str(e)}"
+            ErrorCode.DATA_STORE_FAIL, message=f"Failed to write file: {str(e)}"
         ) from e
 
 
@@ -185,9 +185,9 @@ async def _dual_write_mongo(
             },
             upsert=True,
         )
-        logger.info(f"文件已同步到 MongoDB: {db_key}")
+        logger.info(f"File synchronized to MongoDB: {db_key}")
     except Exception as e:
-        logger.warning(f"MongoDB 持久化失败 (文件已落盘): {target_file}: {e}")
+        logger.warning(f"MongoDB persistence failed (file already written to disk): {target_file}: {e}")
 
 
 # ---------------------------------------------------------------------------
@@ -202,31 +202,31 @@ async def delete_file(target_file: str) -> dict:
 
     if not os.path.exists(abs_path):
         raise BusinessException(
-            ErrorCode.DATA_NOT_FOUND, message=f"文件不存在: {target_file}"
+            ErrorCode.DATA_NOT_FOUND, message=f"File does not exist: {target_file}"
         )
     if not os.path.isfile(abs_path):
         raise BusinessException(
-            ErrorCode.INVALID_PARAMS, message=f"路径不是一个文件: {target_file}"
+            ErrorCode.INVALID_PARAMS, message=f"Path is not a file: {target_file}"
         )
 
     try:
         os.remove(abs_path)
-        logger.info(f"成功删除文件: {abs_path}")
+        logger.info(f"Successfully deleted file: {abs_path}")
     except Exception as e:
-        logger.error(f"删除文件失败: {str(e)}", exc_info=True)
+        logger.error(f"Failed to delete file: {str(e)}", exc_info=True)
         raise BusinessException(
-            ErrorCode.DATA_DESTROY_FAIL, message=f"删除文件失败: {str(e)}"
+            ErrorCode.DATA_DESTROY_FAIL, message=f"Failed to delete file: {str(e)}"
         ) from e
 
     try:
         collection = await _db()
         result = await collection.delete_one({"target_file": db_key})
         if result.deleted_count > 0:
-            logger.info(f"已从 MongoDB 删除文件: {db_key}")
+            logger.info(f"Deleted file from MongoDB: {db_key}")
     except Exception as e:
-        logger.warning(f"MongoDB 删除失败: {db_key}: {e}")
+        logger.warning(f"MongoDB delete failed: {db_key}: {e}")
 
-    return {"message": "删除成功", "path": target_file}
+    return {"message": "Delete successful", "path": target_file}
 
 
 async def delete_folder(target_dir: str) -> dict:
@@ -236,23 +236,23 @@ async def delete_folder(target_dir: str) -> dict:
 
     if not os.path.exists(abs_path):
         raise BusinessException(
-            ErrorCode.DATA_NOT_FOUND, message=f"目录不存在: {target_dir}"
+            ErrorCode.DATA_NOT_FOUND, message=f"Directory does not exist: {target_dir}"
         )
     if not os.path.isdir(abs_path):
         raise BusinessException(
-            ErrorCode.INVALID_PARAMS, message=f"路径不是一个目录: {target_dir}"
+            ErrorCode.INVALID_PARAMS, message=f"Path is not a directory: {target_dir}"
         )
 
     try:
         shutil.rmtree(abs_path)
-        logger.info(f"成功删除目录: {abs_path}")
+        logger.info(f"Successfully deleted directory: {abs_path}")
     except Exception as e:
-        logger.error(f"删除目录失败: {str(e)}", exc_info=True)
+        logger.error(f"Failed to delete directory: {str(e)}", exc_info=True)
         raise BusinessException(
-            ErrorCode.DATA_DESTROY_FAIL, message=f"删除目录失败: {str(e)}"
+            ErrorCode.DATA_DESTROY_FAIL, message=f"Failed to delete directory: {str(e)}"
         ) from e
 
-    return {"message": "删除成功", "path": target_dir}
+    return {"message": "Delete successful", "path": target_dir}
 
 
 # ---------------------------------------------------------------------------
@@ -260,19 +260,19 @@ async def delete_folder(target_dir: str) -> dict:
 # ---------------------------------------------------------------------------
 
 async def rename_file(old_path: str, new_path: str) -> dict:
-    old_path = paths.validate_path(old_path, "旧路径")
-    new_path = paths.validate_path(paths.normalize_no_spaces(new_path), "新路径")
+    old_path = paths.validate_path(old_path, "Old path")
+    new_path = paths.validate_path(paths.normalize_no_spaces(new_path), "New path")
 
     abs_old, abs_new = paths.safe_rename(old_path, new_path, is_dir=False)
 
     try:
         os.makedirs(os.path.dirname(abs_new), exist_ok=True)
         os.rename(abs_old, abs_new)
-        logger.info(f"成功重命名文件: {abs_old} -> {abs_new}")
+        logger.info(f"Successfully renamed file: {abs_old} -> {abs_new}")
     except Exception as e:
-        logger.error(f"重命名文件失败: {str(e)}", exc_info=True)
+        logger.error(f"Failed to rename file: {str(e)}", exc_info=True)
         raise BusinessException(
-            ErrorCode.DATA_UPDATE_FAIL, message=f"重命名文件失败: {str(e)}"
+            ErrorCode.DATA_UPDATE_FAIL, message=f"Failed to rename file: {str(e)}"
         ) from e
 
     old_db_key = paths.normalize_db_key(old_path)
@@ -284,29 +284,29 @@ async def rename_file(old_path: str, new_path: str) -> dict:
             {"$set": {"target_file": new_db_key, "updatedTime": get_current_time()}},
         )
         if result.matched_count > 0:
-            logger.info(f"已同步 MongoDB 重命名: {old_db_key} -> {new_db_key}")
+            logger.info(f"MongoDB rename synchronized: {old_db_key} -> {new_db_key}")
     except Exception as e:
         logger.warning(
-            f"MongoDB 重命名同步失败: {old_db_key} -> {new_db_key}: {e}"
+            f"MongoDB rename sync failed: {old_db_key} -> {new_db_key}: {e}"
         )
 
-    return {"message": "重命名成功", "old_path": old_path, "new_path": new_path}
+    return {"message": "Rename successful", "old_path": old_path, "new_path": new_path}
 
 
 async def rename_folder(old_dir: str, new_dir: str) -> dict:
-    old_dir = paths.validate_path(old_dir, "旧路径")
-    new_dir = paths.validate_path(paths.normalize_no_spaces(new_dir), "新路径")
+    old_dir = paths.validate_path(old_dir, "Old path")
+    new_dir = paths.validate_path(paths.normalize_no_spaces(new_dir), "New path")
 
     abs_old, abs_new = paths.safe_rename(old_dir, new_dir, is_dir=True)
 
     try:
         os.makedirs(os.path.dirname(abs_new), exist_ok=True)
         os.rename(abs_old, abs_new)
-        logger.info(f"成功重命名文件夹: {abs_old} -> {abs_new}")
+        logger.info(f"Successfully renamed folder: {abs_old} -> {abs_new}")
     except Exception as e:
-        logger.error(f"重命名文件夹失败: {str(e)}", exc_info=True)
+        logger.error(f"Failed to rename folder: {str(e)}", exc_info=True)
         raise BusinessException(
-            ErrorCode.DATA_UPDATE_FAIL, message=f"重命名文件夹失败: {str(e)}"
+            ErrorCode.DATA_UPDATE_FAIL, message=f"Failed to rename folder: {str(e)}"
         ) from e
 
     old_db_prefix = paths.normalize_db_key(old_dir)
@@ -327,14 +327,14 @@ async def rename_folder(old_dir: str, new_dir: str) -> dict:
             updated_count += 1
         if updated_count > 0:
             logger.info(
-                f"已同步 MongoDB 文件夹重命名: {old_db_prefix} -> {new_db_prefix} ({updated_count} 条)"
+                f"MongoDB folder rename synchronized: {old_db_prefix} -> {new_db_prefix} ({updated_count} entries)"
             )
     except Exception as e:
         logger.warning(
-            f"MongoDB 文件夹重命名同步失败: {old_db_prefix} -> {new_db_prefix}: {e}"
+            f"MongoDB folder rename sync failed: {old_db_prefix} -> {new_db_prefix}: {e}"
         )
 
-    return {"message": "重命名成功", "old_path": old_dir, "new_path": new_dir}
+    return {"message": "Rename successful", "old_path": old_dir, "new_path": new_dir}
 
 
 # ---------------------------------------------------------------------------
@@ -344,11 +344,11 @@ async def rename_folder(old_dir: str, new_dir: str) -> dict:
 async def upload_image(
     data_url: str, filename: str, directory: str
 ) -> dict:
-    """base64 图片上传:优先 OSS,失败回退本地静态目录。"""
+    """base64 image upload: OSS first, fall back to local static directory on failure."""
     raw = (data_url or "").strip()
     if not raw:
         raise BusinessException(
-            ErrorCode.INVALID_PARAMS, message="图片数据为空"
+            ErrorCode.INVALID_PARAMS, message="Image data is empty"
         )
 
     base64_part = raw
@@ -356,7 +356,7 @@ async def upload_image(
         comma = raw.find(",")
         if comma < 0:
             raise BusinessException(
-                ErrorCode.INVALID_PARAMS, message="图片数据格式错误"
+                ErrorCode.INVALID_PARAMS, message="Image data format error"
             )
         base64_part = raw[comma + 1:].strip()
 
@@ -364,7 +364,7 @@ async def upload_image(
         content = base64.b64decode(base64_part, validate=True)
     except Exception as e:
         raise BusinessException(
-            ErrorCode.INVALID_PARAMS, message="Base64 解码失败"
+            ErrorCode.INVALID_PARAMS, message="Base64 decode failed"
         ) from e
 
     filename = paths.normalize_no_spaces(filename)
@@ -405,9 +405,9 @@ async def _upload_to_local_storage(
 async def upload_file(
     target_dir: str, filename: str, content: str, is_base64: bool
 ) -> dict:
-    """JSON 方式文件上传(文本或 base64)。"""
+    """JSON file upload (text or base64)."""
     target_dir = paths.validate_path(
-        paths.normalize_no_spaces(target_dir), "目标目录"
+        paths.normalize_no_spaces(target_dir), "Target directory"
     )
     base_dir = os.path.abspath(settings.static_base_dir)
     save_dir = os.path.join(base_dir, target_dir)
@@ -425,9 +425,9 @@ async def upload_file(
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(content)
     except Exception as e:
-        logger.error(f"文件保存失败: {str(e)}", exc_info=True)
+        logger.error(f"Failed to save file: {str(e)}", exc_info=True)
         raise BusinessException(
-            ErrorCode.DATA_STORE_FAIL, message=f"文件保存失败: {str(e)}"
+            ErrorCode.DATA_STORE_FAIL, message=f"Failed to save file: {str(e)}"
         ) from e
 
     rel_path = f"/{target_dir}/{filename}".replace(os.sep, "/")

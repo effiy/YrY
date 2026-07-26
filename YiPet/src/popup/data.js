@@ -1,15 +1,11 @@
 /**
  * YiPet Popup — Configuration Adapter
  *
- * Reads canonical config from PET_CONFIG (pet.config.js) and exposes it
- * as window.YIPET_POPUP in the shape the popup component expects.
+ * Projects PET_CONFIG into the shape the popup expects (window.YIPET_POPUP).
+ * Single source of truth for popup configuration — no duplicated values.
+ * All defaults are defined here; PET_CONFIG can override any field.
  *
- * Single source of truth — no duplicated values.
- * Safe fallbacks ensure the popup still works even if PET_CONFIG is absent.
- *
- * Exports: window.YIPET_POPUP
- *
- * @see ../config/pet.config.js  — canonical config
+ * @see ../config/pet.config.js — canonical config
  */
 ;(function (root) {
   'use strict'
@@ -18,97 +14,92 @@
   var P = (root.PET_CONFIG && root.PET_CONFIG.pet)       || {}
   var U = C.UI || {}
 
-  /* ── Color labels (not in PET_CONFIG, only needed by popup UI) ──── */
-  var COLOR_LABELS = [
-    '量子蓝紫（主色）',
-    '靛蓝紫',
-    '量子海洋',
-    '量子森林',
-    '量子日落'
-  ]
+  /* ── Helpers ────────────────────────────────────────────────────────── */
 
-  /**
-   * Build COLORS array from PET_CONFIG.pet.colors gradient strings.
-   * Falls back to empty array so the popup gracefully hides the select.
-   */
+  /** Safe nested property access with default fallback. */
+  function pick(obj, path, fallback) {
+    var parts = path.split('.')
+    var cur = obj
+    for (var i = 0; i < parts.length; i++) {
+      if (cur == null) return fallback
+      cur = cur[parts[i]]
+    }
+    return cur !== undefined && cur !== null ? cur : fallback
+  }
+
+  /** Build a messages table from keys → PET_CONFIG path → default. */
+  function buildMessages(table) {
+    var out = {}
+    Object.keys(table).forEach(function (key) {
+      var entry = table[key]
+      out[key] = pick(C, entry.path, entry.def)
+    })
+    return out
+  }
+
+  /* ── Colour labels (UI-only, not in PET_CONFIG) ─────────────────────── */
+
+  var COLOR_LABELS = ['Quantum Violet (Default)', 'Indigo Violet', 'Quantum Ocean', 'Quantum Forest', 'Quantum Sunset']
+
   function buildColors() {
     var gradients = P.colors || []
     var result = []
     for (var i = 0; i < gradients.length; i++) {
-      result.push({
-        value: i,
-        label: COLOR_LABELS[i] || ('主题 ' + (i + 1))
-      })
+      result.push({ value: i, label: COLOR_LABELS[i] || ('Theme ' + (i + 1)) })
     }
     return result
   }
 
-  /* ── Assemble config ──────────────────────────────────────────────── */
+  /* ── Assemble ───────────────────────────────────────────────────────── */
 
-  /** @namespace */
   var YIPET_POPUP = {
 
-    /* Roles (popup-only, not in PET_CONFIG) */
-    ROLES: ['教师', '医生', '甜品师', '警察'],
+    ROLES: ['Teacher', 'Doctor', 'Pastry Chef', 'Police Officer'],
 
-    /* Colour themes → derived from PET_CONFIG.pet.colors */
     COLORS: buildColors(),
 
-    /* Size constraints → PET_CONFIG.pet.sizeLimits */
     SIZE: {
-      MIN:  (P.sizeLimits && P.sizeLimits.min)  || 80,
-      MAX:  (P.sizeLimits && P.sizeLimits.max)  || 400,
+      MIN:  pick(P, 'sizeLimits.min', 80),
+      MAX:  pick(P, 'sizeLimits.max', 400),
       STEP: 10
     },
 
-    /* Storage key → PET_CONFIG.constants.storageKeys.globalState */
-    STORAGE_KEY: (C.storageKeys && C.storageKeys.globalState) || 'pet_global_state',
+    STORAGE_KEY: pick(C, 'storageKeys.globalState', 'pet_global_state'),
 
-    /* Timing → PET_CONFIG.constants.TIMING + RETRY */
     TIMING: {
-      NOTIFICATION_DURATION: C.TIMING && C.TIMING.NOTIFICATION_DURATION || 3000,
-      CONNECT_RETRY_MAX:     (C.RETRY && C.RETRY.MAX_RETRIES)          || 3,
-      CONNECT_RETRY_BASE_MS: (C.RETRY && C.RETRY.INITIAL_DELAY)        || 500
+      NOTIFICATION_DURATION: pick(C, 'TIMING.NOTIFICATION_DURATION', 3000),
+      CONNECT_RETRY_MAX:     pick(C, 'RETRY.MAX_RETRIES', 3),
+      CONNECT_RETRY_BASE_MS: pick(C, 'RETRY.INITIAL_DELAY', 500)
     },
 
-    /* Status indicator colours → PET_CONFIG.constants.UI */
     STATUS_DOT: {
-      ACTIVE:   U.STATUS_DOT_ACTIVE   || '#22c55e',
-      INACTIVE: U.STATUS_DOT_INACTIVE || '#f59e0b'
+      ACTIVE:   pick(U, 'STATUS_DOT_ACTIVE', '#22c55e'),
+      INACTIVE: pick(U, 'STATUS_DOT_INACTIVE', '#f59e0b')
     },
 
-    /* Notification colours → PET_CONFIG.constants.UI */
-    NOTIFY: {
-      SUCCESS: U.NOTIFICATION_SUCCESS || '#22c55e',
-      ERROR:   U.NOTIFICATION_ERROR   || '#ef4444',
-      INFO:    U.NOTIFICATION_INFO    || '#3b82f6'
-    },
+    MSG: buildMessages({
+      CONNECTING:     { path: 'none',                         def: 'Connecting…' },
+      READY:          { path: 'none',                         def: 'Ready' },
+      READY_OFFLINE:  { path: 'none',                         def: 'Ready (Offline)' },
+      ACTIVE:         { path: 'none',                         def: 'Active' },
+      HIDDEN:         { path: 'none',                         def: 'Hidden' },
+      SHOWN:          { path: 'SUCCESS_MESSAGES.SHOWN',       def: 'Shown' },
+      SIZE_UPDATED:   { path: 'SUCCESS_MESSAGES.SIZE_UPDATED',def: 'Size Updated' },
+      ROLE_CHANGED:   { path: 'SUCCESS_MESSAGES.ROLE_CHANGED',def: 'Role Changed' },
+      COLOR_SET:      { path: 'SUCCESS_MESSAGES.COLOR_SET',   def: 'Color Theme Set' },
+      OP_FAILED:      { path: 'ERROR_MESSAGES.OPERATION_FAILED', def: 'Operation Failed' },
+      TAB_NOT_FOUND:  { path: 'ERROR_MESSAGES.TAB_NOT_FOUND', def: 'Cannot Get Current Tab' },
+      INIT_FAILED:    { path: 'ERROR_MESSAGES.INIT_FAILED',   def: 'Initialization Failed' },
+      CS_NOT_READY:   { path: 'none',                         def: 'Content Script Not Ready' }
+    }),
 
-    /* User-facing messages → PET_CONFIG.constants messages */
-    MSG: {
-      CONNECTING:   '连接中…',
-      READY:        '准备就绪',
-      READY_OFFLINE: '准备就绪（离线）',
-      ACTIVE:       '已激活',
-      HIDDEN:       '已隐藏',
-      SHOWN:        (C.SUCCESS_MESSAGES && C.SUCCESS_MESSAGES.SHOWN)           || '已显示',
-      SIZE_UPDATED: (C.SUCCESS_MESSAGES && C.SUCCESS_MESSAGES.SIZE_UPDATED)    || '大小已更新',
-      ROLE_CHANGED: (C.SUCCESS_MESSAGES && C.SUCCESS_MESSAGES.ROLE_CHANGED)    || '角色已切换',
-      COLOR_SET:    (C.SUCCESS_MESSAGES && C.SUCCESS_MESSAGES.COLOR_SET)       || '颜色主题已设置',
-      OP_FAILED:    (C.ERROR_MESSAGES   && C.ERROR_MESSAGES.OPERATION_FAILED)  || '操作失败',
-      TAB_NOT_FOUND: (C.ERROR_MESSAGES  && C.ERROR_MESSAGES.TAB_NOT_FOUND)     || '无法获取当前标签页',
-      INIT_FAILED:  (C.ERROR_MESSAGES   && C.ERROR_MESSAGES.INIT_FAILED)       || '初始化失败',
-      CS_NOT_READY: 'Content Script 未就绪'
-    },
-
-    /* Default state */
     DEFAULTS: {
-      VISIBLE: (P.defaultVisible !== undefined) ? P.defaultVisible : false,
-      SIZE:    P.defaultSize  || 260,
-      ROLE:    (C.DEFAULTS && C.DEFAULTS.PET_ROLE) || '教师',
-      COLOR:   (P.defaultColorIndex !== undefined) ? P.defaultColorIndex : 0,
+      VISIBLE: pick(P, 'defaultVisible', false),
+      SIZE:    pick(P, 'defaultSize', 260),
+      ROLE:    pick(C, 'DEFAULTS.PET_ROLE', 'Teacher'),
+      COLOR:   pick(P, 'defaultColorIndex', 0),
       MODEL:   null,
-      VERSION: (C.DEFAULTS && C.DEFAULTS.VERSION) || '1.1.2'
+      VERSION: pick(C, 'DEFAULTS.VERSION', '1.1.2')
     }
   }
 

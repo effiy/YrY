@@ -1,6 +1,6 @@
-"""响应对象封装
-- 定义统一的响应对象 StandardResponse
-- 提供 success 和 fail 辅助函数
+"""Response object wrapper
+- Defines unified response object StandardResponse
+- Provides success and fail helper functions
 """
 from typing import Union, Generic, TypeVar, Optional, Any
 from fastapi.responses import JSONResponse, Response
@@ -11,7 +11,7 @@ T = TypeVar("T")
 
 class StandardResponse(Generic[T]):
     """
-    标准响应对象
+    Standard response object
     """
     def __init__(
         self,
@@ -20,10 +20,10 @@ class StandardResponse(Generic[T]):
         data: Optional[T] = None,
         http_code: int = 200
     ):
-        self.code = code        # 业务状态码
-        self.message = message  # 提示消息
-        self.data = data        # 数据载荷
-        self.http_code = http_code # HTTP 状态码 (不包含在响应体中，仅用于 status_code)
+        self.code = code        # Business status code
+        self.message = message  # Status message
+        self.data = data        # Data payload
+        self.http_code = http_code # HTTP status code (not included in response body, only used for status_code)
 
     def to_dict(self) -> dict:
         return {
@@ -39,7 +39,7 @@ def success(
     http_code: int = 200
 ) -> Response:
     """
-    创建成功响应
+    Create success response
     """
     content = {
         "code": ErrorCode.OK.business,
@@ -60,7 +60,7 @@ def fail(
     data: Any = None
 ) -> Response:
     """
-    创建失败响应
+    Create failure response
     """
     return JSONResponse(
         status_code=error.http,

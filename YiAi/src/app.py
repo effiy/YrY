@@ -1,6 +1,6 @@
-"""应用入口与生命周期管理
-- 负责应用启动/关闭流程、路由动态注册、CORS 和认证中间件配置
-- 作为启动脚本直接运行
+"""Application entry point and lifecycle management
+- Handles app startup/shutdown flow, dynamic route registration, CORS and auth middleware configuration
+- Run directly as startup script
 """
 import logging
 import uvicorn
@@ -8,7 +8,7 @@ import os
 import sys
 from contextlib import asynccontextmanager
 
-# 设置字节码生成和路径
+# Configure bytecode generation and path
 sys.dont_write_bytecode = True
 sys.path.append(os.getcwd())
 
@@ -23,7 +23,7 @@ from shared.logging import setup_logging
 from server.errors import register_exception_handlers
 from server.routes import files, execution, wework, maintenance, state, health, story_panel
 
-# 导入服务模块
+# Import service modules
 from domain.rss import init_rss_system, shutdown_rss_system
 
 logger = logging.getLogger(__name__)
@@ -33,31 +33,31 @@ def _build_lifespan(init_db: bool, init_rss: bool):
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         """
-        应用生命周期管理
+        Application lifecycle management
         """
-        logger.info("正在启动应用...")
+        logger.info("Starting application...")
         try:
             if init_db and settings.startup_init_database:
                 await db.initialize()
-                logger.info("数据库初始化成功")
+                logger.info("Database initialized successfully")
             if init_rss and settings.startup_init_rss_system:
                 init_rss_system()
-            logger.info("应用启动完成")
+            logger.info("Application startup complete")
         except Exception as e:
-            logger.error(f"应用启动失败: {str(e)}", exc_info=True)
+            logger.error(f"Application startup failed: {str(e)}", exc_info=True)
             raise
 
         yield
 
-        logger.info("正在关闭应用...")
+        logger.info("Shutting down application...")
         try:
             if init_rss and settings.startup_init_rss_system:
                 shutdown_rss_system()
             if init_db and settings.startup_init_database:
                 await db.close()
-            logger.info("应用关闭完成")
+            logger.info("Application shutdown complete")
         except Exception as e:
-            logger.error(f"应用关闭时出错: {str(e)}", exc_info=True)
+            logger.error(f"Error during application shutdown: {str(e)}", exc_info=True)
     return lifespan
 
 
@@ -68,9 +68,9 @@ def create_app(
     init_rss: bool | None = None,
 ) -> FastAPI:
     """
-    创建 FastAPI 应用实例
+    Create FastAPI application instance
     """
-    # 配置日志
+    # Configure logging
     setup_logging()
 
     auth_enabled = enable_auth if enable_auth is not None else settings.middleware_auth_enabled
@@ -79,15 +79,15 @@ def create_app(
 
     app = FastAPI(
         title="YiAi API",
-        description="YiPet AI 服务 API",
+        description="YiPet AI Service API",
         version="1.0.0",
         lifespan=_build_lifespan(db_init_enabled, rss_init_enabled)
     )
 
-    # 注册全局异常处理器
+    # Register global exception handlers
     register_exception_handlers(app)
 
-    # 注册 Observer 中间件（仅在启用时）
+    # Register Observer middleware (only when enabled)
     if settings.observer_enabled:
         from observer import ThrottleMiddleware, SamplerMiddleware, TailSampler
 
@@ -108,7 +108,7 @@ def create_app(
             )
             logger.info("Observer Throttle middleware registered")
 
-    # 注册 API 路由
+    # Register API routes
     app.include_router(files.router, tags=["Upload"])
     app.include_router(execution.router, tags=["Execution"])
     app.include_router(wework.router, tags=["WeWork"])
@@ -127,33 +127,33 @@ def create_app(
         expose_headers=["*"],
         max_age=3600,
     )
-    logger.info(f"CORS 配置: 已启用, Origins: {origins}")
+    logger.info(f"CORS config: enabled, Origins: {origins}")
 
     if auth_enabled:
         app.middleware("http")(header_verification_middleware)
-        logger.info("认证中间件已启用")
+        logger.info("Auth middleware enabled")
     else:
-        logger.info("认证中间件已禁用")
+        logger.info("Auth middleware disabled")
 
-    # 挂载静态文件
+    # Mount static files
     static_dir = settings.static_base_dir
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
     return app
 
-# 默认应用实例（用于生产运行与兼容现有导入）
+# Default app instance (for production and compatibility with existing imports)
 app = create_app()
 
 if __name__ == "__main__":
-    # 从配置获取
+    # Get from config
     host = settings.server_host
     port = settings.server_port
     reload = settings.server_reload
 
-    print(f"正在启动服务器: http://{host}:{port}")
-    print(f"自动重载: {'启用' if reload else '禁用'}")
+    print(f"Starting server: http://{host}:{port}")
+    print(f"Auto-reload: {'enabled' if reload else 'disabled'}")
 
-    # 获取 uvicorn 配置参数
+    # Get uvicorn config parameters
     log_level = settings.logging_level.lower()
     limit_concurrency = settings.uvicorn_limit_concurrency
     limit_max_requests = settings.uvicorn_limit_max_requests

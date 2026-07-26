@@ -1,0 +1,45 @@
+/*
+ * YiPet Popup — SettingsCard Styles
+ *
+ * Component: components/ui/SettingsCard.js
+ */
+
+.card {
+  border: 1px solid var(--border-primary, rgba(255, 255, 255, 0.12));
+  background: rgba(15, 23, 42, 0.38);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 0;
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.18),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+  backdrop-filter: blur(12px);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.22),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+}
+
+.card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(248, 250, 252, 0.96);
+  margin: 0 0 14px;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.card-title::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 14px;
+  border-radius: 2px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}

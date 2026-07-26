@@ -14,26 +14,26 @@ logger = logging.getLogger(__name__)
 
 class MongoDBService:
     """
-    MongoDB 数据库服务封装
-    提供通用的数据库操作方法和数据清洗工具
+    MongoDB database service wrapper
+    Provides common database operations and data cleaning utilities
     """
     def __init__(self):
-        """初始化 MongoDB 服务实例"""
+        """Initialize MongoDB service instance"""
         self.db_client = db
 
     async def ensure_initialized(self):
-        """确保数据库连接已初始化"""
+        """Ensure database connection is initialized"""
         await self.db_client.initialize()
 
     def is_valid_date(self, date_str: str) -> bool:
         """
-        验证日期字符串格式是否有效 (YYYY-MM-DD)
-        
+        Validate if date string format is valid (YYYY-MM-DD)
+
         Args:
-            date_str: 日期字符串
-            
+            date_str: Date string
+
         Returns:
-            bool: 是否有效
+            bool: Whether valid
         """
         if not isinstance(date_str, str):
             return False
@@ -45,13 +45,13 @@ class MongoDBService:
 
     def is_number(self, value: Any) -> bool:
         """
-        验证值是否为数字
-        
+        Validate if value is a number
+
         Args:
-            value: 待验证的值
-            
+            value: Value to validate
+
         Returns:
-            bool: 是否为数字
+            bool: Whether it is a number
         """
         if value is None:
             return False
@@ -63,13 +63,13 @@ class MongoDBService:
 
     def parse_published_date(self, date_str: str) -> Optional[datetime]:
         """
-        解析多种格式的发布日期
-        
+        Parse published date in multiple formats
+
         Args:
-            date_str: 日期字符串
-            
+            date_str: Date string
+
         Returns:
-            Optional[datetime]: 解析后的 datetime 对象，失败返回 None
+            Optional[datetime]: Parsed datetime object, returns None on failure
         """
         if not date_str:
             return None
@@ -94,14 +94,14 @@ class MongoDBService:
 
     def build_published_date_filter(self, start_date: str, end_date: str) -> Dict[str, Any]:
         """
-        构建发布日期查询过滤器
-        
+        Build published date query filter
+
         Args:
-            start_date: 开始日期 (YYYY-MM-DD)
-            end_date: 结束日期 (YYYY-MM-DD)
-            
+            start_date: Start date (YYYY-MM-DD)
+            end_date: End date (YYYY-MM-DD)
+
         Returns:
-            Dict[str, Any]: MongoDB 查询条件
+            Dict[str, Any]: MongoDB query criteria
         """
         try:
             start_dt = datetime.strptime(start_date, '%Y-%m-%d')
@@ -151,13 +151,13 @@ class MongoDBService:
 
     def build_filter(self, query_params: Dict[str, Any]) -> Dict[str, Any]:
         """
-        根据查询参数构建 MongoDB 过滤条件
-        
+        Build MongoDB filter criteria from query parameters
+
         Args:
-            query_params: 查询参数字典
-            
+            query_params: Query parameters dictionary
+
         Returns:
-            Dict[str, Any]: MongoDB 过滤字典
+            Dict[str, Any]: MongoDB filter dictionary
         """
         filter_dict = {}
 
@@ -224,40 +224,40 @@ class MongoDBService:
 
     def get_current_time(self) -> str:
         """
-        获取当前 UTC 时间字符串
-        
+        Get current UTC time string
+
         Returns:
-            str: 格式化后的时间字符串 (YYYY-MM-DD HH:MM:SS)
+            str: Formatted time string (YYYY-MM-DD HH:MM:SS)
         """
         return datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
 
     def validate_collection_name(self, cname: Optional[str]) -> str:
         """
-        验证集合名称是否存在
-        
+        Validate collection name exists
+
         Args:
-            cname: 集合名称
-            
+            cname: Collection name
+
         Returns:
-            str: 验证后的集合名称
-            
+            str: Validated collection name
+
         Raises:
-            ValueError: 如果集合名称为空
+            ValueError: If collection name is empty
         """
         if not cname:
-            raise ValueError("必须提供集合名称(cname)")
+            raise ValueError("Collection name (cname) must be provided")
         return cname
 
     def build_sort_list(self, sort_param: str, sort_order: int) -> List[tuple]:
         """
-        构建排序列表
-        
+        Build sort list
+
         Args:
-            sort_param: 排序字段名
-            sort_order: 排序方向 (1 或 -1)
-            
+            sort_param: Sort field name
+            sort_order: Sort direction (1 or -1)
+
         Returns:
-            List[tuple]: 排序条件列表
+            List[tuple]: Sort criteria list
         """
         sort_list = []
         if sort_param == 'order':
@@ -274,14 +274,14 @@ class MongoDBService:
 
     async def query_documents(self, cname: str, query_params: Dict[str, Any]) -> Dict[str, Any]:
         """
-        查询文档列表
-        
+        Query document list
+
         Args:
-            cname: 集合名称
-            query_params: 查询参数
-            
+            cname: Collection name
+            query_params: Query parameters
+
         Returns:
-            Dict[str, Any]: 包含列表数据和分页信息的字典
+            Dict[str, Any]: Dictionary containing list data and pagination info
         """
         await self.ensure_initialized()
         
@@ -294,7 +294,7 @@ class MongoDBService:
             page_num = max(1, int(query_params.pop('pageNum', 1)))
             page_size = min(8000, max(1, int(query_params.pop('pageSize', 2000))))
         except ValueError:
-            raise ValueError("分页参数必须是有效的整数")
+            raise ValueError("Pagination parameters must be valid integers")
 
         sort_param = query_params.pop('orderBy', 'timestamp' if cname == 'apis' else 'order')
         sort_order = -1 if query_params.pop('orderType', 'asc').lower() == 'desc' else 1
@@ -339,8 +339,8 @@ class MongoDBService:
         document = await collection.find_one({'key': id}, {'_id': 0})
 
         if not document:
-            raise ValueError(f"未找到ID为 {id} 的数据")
-        
+            raise ValueError(f"Data with ID {id} not found")
+
         return document
 
     async def create_document(self, cname: str, data: Dict[str, Any]) -> Dict[str, Any]:
@@ -348,7 +348,7 @@ class MongoDBService:
         
         cname = self.validate_collection_name(cname)
         if not data:
-            raise ValueError("创建数据不能为空")
+            raise ValueError("Create data cannot be empty")
 
         collection = self.db_client.db[cname]
 
@@ -357,7 +357,7 @@ class MongoDBService:
             if link:
                 existing_item = await collection.find_one({'link': link})
                 if existing_item:
-                    raise ValueError(f"link 字段值 '{link}' 已存在，不能重复创建")
+                    raise ValueError(f"Link field value '{link}' already exists, cannot create duplicate")
 
         data_copy = {k: (str(v) if isinstance(v, ObjectId) else v) for k, v in data.items()}
         current_time = self.get_current_time()
@@ -375,7 +375,7 @@ class MongoDBService:
             max_order = max_order_doc.get("order", 0) if max_order_doc else 0
             data_copy['order'] = max_order + 1
         except Exception as e:
-            logger.warning(f"获取最大排序值失败: {str(e)}")
+            logger.warning(f"Failed to get maximum sort value: {str(e)}")
             data_copy['order'] = 1
 
         try:
@@ -383,26 +383,26 @@ class MongoDBService:
         except Exception as e:
             if 'duplicate key' in str(e).lower() or 'E11000' in str(e):
                 if cname == 'rss':
-                    raise ValueError(f"link 字段值 '{data_copy.get('link', '')}' 已存在，不能重复创建")
+                    raise ValueError(f"Link field value '{data_copy.get('link', '')}' already exists, cannot create duplicate")
                 else:
-                    raise ValueError(f"数据创建失败: 唯一性约束冲突")
+                    raise ValueError(f"Data creation failed: unique constraint violation")
             raise
 
         return {'key': data_copy['key']}
 
     async def update_document(self, cname: str, data: Dict[str, Any]) -> str:
         """
-        更新文档
-        
+        Update document
+
         Args:
-            cname: 集合名称
-            data: 更新数据（必须包含 key 或 link）
-            
+            cname: Collection name
+            data: Update data (must contain key or link)
+
         Returns:
-            str: 更新后的文档 key
-            
+            str: Updated document key
+
         Raises:
-            ValueError: 缺少标识字段或违反约束
+            ValueError: Missing identifier field or constraint violation
         """
         await self.ensure_initialized()
         
@@ -421,12 +421,12 @@ class MongoDBService:
             identifier = link
             identifier_type = 'link'
         else:
-            raise ValueError("更新数据时必须提供key字段或link字段")
+            raise ValueError("Must provide key field or link field when updating data")
 
         excluded_fields = ['key'] if key else []
         data_for_check = {k: v for k, v in data.items() if k not in excluded_fields}
         if not data_for_check:
-            raise ValueError("更新数据不能为空")
+            raise ValueError("Update data cannot be empty")
 
         collection = self.db_client.db[cname]
 
@@ -438,10 +438,10 @@ class MongoDBService:
                     existing_key = existing_item.get('key')
                     if key:
                         if existing_key != key:
-                            raise ValueError(f"link 字段值 '{new_link}' 已被其他记录使用（key: {existing_key}）")
+                            raise ValueError(f"Link field value '{new_link}' is already used by another record (key: {existing_key})")
                     elif link:
                         if new_link != link and existing_key:
-                            raise ValueError(f"link 字段值 '{new_link}' 已被其他记录使用（key: {existing_key}）")
+                            raise ValueError(f"Link field value '{new_link}' is already used by another record (key: {existing_key})")
             
             if key:
                 data['key'] = key
@@ -462,29 +462,29 @@ class MongoDBService:
             if 'duplicate key' in str(e).lower() or 'E11000' in str(e):
                 if cname == settings.collection_rss:
                     new_link = data.get('link')
-                    raise ValueError(f"link 字段值 '{new_link}' 已存在，不能重复")
+                    raise ValueError(f"Link field value '{new_link}' already exists, cannot duplicate")
                 else:
-                    raise ValueError(f"数据更新失败: 唯一性约束冲突")
+                    raise ValueError(f"Data update failed: unique constraint violation")
             raise
 
         if not result:
-            raise ValueError(f"未找到{identifier_type}为 {identifier} 的数据")
+            raise ValueError(f"Data with {identifier_type} {identifier} not found")
 
         return result.get('key', identifier)
 
     async def delete_document(self, cname: str, id: str) -> bool:
         """
-        删除文档
-        
+        Delete document
+
         Args:
-            cname: 集合名称
-            id: 文档 Key
-            
+            cname: Collection name
+            id: Document Key
+
         Returns:
-            bool: 是否删除成功
-            
+            bool: Whether deletion succeeded
+
         Raises:
-            ValueError: 删除失败（未找到）
+            ValueError: Deletion failed (not found)
         """
         await self.ensure_initialized()
         
@@ -494,31 +494,31 @@ class MongoDBService:
         result = await collection.delete_one({'key': id})
         
         if result.deleted_count == 0:
-            raise ValueError(f"未找到ID为 {id} 的数据")
-            
+            raise ValueError(f"Data with ID {id} not found")
+
         return True
 
     async def upsert_document(self, cname: str, filter_dict: Dict[str, Any], update_data: Dict[str, Any]) -> Dict[str, Any]:
         """
-        更新或插入文档
-        
+        Update or insert document (upsert)
+
         Args:
-            cname: 集合名称
-            filter_dict: 查询条件
-            update_data: 更新数据 (MongoDB update syntax like $set, $setOnInsert)
-            
+            cname: Collection name
+            filter_dict: Query criteria
+            update_data: Update data (MongoDB update syntax like $set, $setOnInsert)
+
         Returns:
-            Dict[str, Any]: 操作结果
+            Dict[str, Any]: Operation result
         """
         await self.ensure_initialized()
         collection = self.db_client.db[cname]
         
-        # 确保 update_data 包含 updatedTime
+        # Ensure update_data includes updatedTime
         if '$set' not in update_data:
             update_data['$set'] = {}
         update_data['$set']['updatedTime'] = self.get_current_time()
-        
-        # 确保插入时包含 createdTime 和 key
+
+        # Ensure createdTime and key are included on insert
         if '$setOnInsert' not in update_data:
             update_data['$setOnInsert'] = {}
         update_data['$setOnInsert']['createdTime'] = self.get_current_time()

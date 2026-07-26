@@ -1,6 +1,6 @@
-"""受控模块执行器
-- 校验白名单，解析参数，按同步/异步调用目标函数
-- 集成 Observer 沙箱和重入守卫
+"""Controlled Module Executor
+- Validate whitelist, parse parameters, invoke target functions synchronously or asynchronously
+- Integrates Observer sandbox and reentrancy guard
 """
 import importlib
 import asyncio
@@ -50,16 +50,16 @@ def _get_guard():
 
 def parse_parameters(parameters: Union[Dict[str, Any], str]) -> Dict[str, Any]:
     """
-    解析参数，支持字典或 JSON 字符串
+    Parse parameters, supports dict or JSON string
 
     Args:
-        parameters: 参数字典或 JSON 字符串
+        parameters: Parameter dict or JSON string
 
     Returns:
-        Dict[str, Any]: 解析后的参数字典
+        Dict[str, Any]: Parsed parameter dict
 
     Raises:
-        HTTPException: 如果 JSON 格式无效或解析后不是字典
+        HTTPException: If JSON format is invalid or parsed result is not a dict
     """
     if isinstance(parameters, dict):
         return parameters
@@ -73,19 +73,19 @@ def parse_parameters(parameters: Union[Dict[str, Any], str]) -> Dict[str, Any]:
 
 async def run_script(script_path: str, timeout: int = 300) -> Dict[str, Any]:
     """
-    执行 Python 脚本
+    Execute Python script
 
     Args:
-        script_path: 脚本路径
-        timeout: 超时时间（秒）
+        script_path: Script path
+        timeout: Timeout in seconds
 
     Returns:
-        执行结果
+        Execution result
     """
     try:
-        logger.info(f"开始执行脚本: {script_path}")
+        logger.info(f"Starting script execution: {script_path}")
 
-        # 使用 asyncio.create_subprocess_exec 执行脚本
+        # Execute script using asyncio.create_subprocess_exec
         process = await asyncio.create_subprocess_exec(
             'python3',
             script_path,
@@ -93,7 +93,7 @@ async def run_script(script_path: str, timeout: int = 300) -> Dict[str, Any]:
             stderr=asyncio.subprocess.PIPE
         )
 
-        # 等待执行完成，设置超时
+        # Wait for execution to complete with timeout
         try:
             stdout, stderr = await asyncio.wait_for(
                 process.communicate(),
@@ -102,19 +102,19 @@ async def run_script(script_path: str, timeout: int = 300) -> Dict[str, Any]:
         except asyncio.TimeoutError:
             process.kill()
             await process.wait()
-            raise Exception(f"脚本执行超时（{timeout}秒）")
+            raise Exception(f"Script execution timeout ({timeout}s)")
 
-        # 解码输出
+        # Decode output
         stdout_text = stdout.decode('utf-8') if stdout else ''
         stderr_text = stderr.decode('utf-8') if stderr else ''
 
-        logger.info(f"脚本执行完成，返回码: {process.returncode}")
+        logger.info(f"Script execution complete, return code: {process.returncode}")
 
         if process.returncode != 0:
-            logger.error(f"脚本执行失败: {stderr_text}")
+            logger.error(f"Script execution failed: {stderr_text}")
             return {
                 'success': False,
-                'message': f'脚本执行失败（返回码: {process.returncode}）',
+                'message': f'Script execution failed (return code: {process.returncode})',
                 'stdout': stdout_text,
                 'stderr': stderr_text,
                 'returncode': process.returncode
@@ -122,22 +122,22 @@ async def run_script(script_path: str, timeout: int = 300) -> Dict[str, Any]:
 
         return {
             'success': True,
-            'message': '脚本执行成功',
+            'message': 'Script execution successful',
             'stdout': stdout_text,
             'stderr': stderr_text,
             'returncode': process.returncode
         }
 
     except Exception as e:
-        logger.error(f"执行脚本失败: {str(e)}", exc_info=True)
+        logger.error(f"Script execution failed: {str(e)}", exc_info=True)
         return {
             'success': False,
-            'message': f'执行脚本失败: {str(e)}',
+            'message': f'Script execution failed: {str(e)}',
             'error': str(e)
         }
 
 async def _run_function(target_function, parameters_dict):
-    """在 Observer 沙箱上下文中执行目标函数"""
+    """Execute target function within Observer sandbox context"""
     if settings.observer_sandbox_enabled:
         from observer import sandbox_context
         with sandbox_context(
@@ -154,7 +154,7 @@ async def _run_function(target_function, parameters_dict):
 
 
 def _acquire_guard() -> Optional[Any]:
-    """获取重入守卫token，超过深度限制则抛出"""
+    """Acquire reentrancy guard token, raise if depth limit exceeded"""
     guard = _get_guard()
     if guard is None:
         return None
@@ -169,14 +169,14 @@ def _acquire_guard() -> Optional[Any]:
 
 
 def _release_guard(token: Optional[Any]) -> None:
-    """释放重入守卫token"""
+    """Release reentrancy guard token"""
     if token is not None:
         from observer.guard import _reentrancy_depth
         _reentrancy_depth.reset(token)
 
 
 def _check_whitelist(module_path: str, function_name: str) -> None:
-    """验证模块+函数在执行白名单中"""
+    """Verify module+function is in execution whitelist"""
     if not module_path or not function_name:
         raise BusinessException(ErrorCode.INVALID_PARAMS, message="Module path and function name required")
     allow_key = f"{module_path}:{function_name}"
@@ -185,7 +185,7 @@ def _check_whitelist(module_path: str, function_name: str) -> None:
 
 
 def _import_target_function(module_path: str, function_name: str):
-    """动态导入目标模块并返回函数对象"""
+    """Dynamically import target module and return function object"""
     # PR3: log every RPC dispatch so we can collect the real module_name
     # strings callers use, then deprecate the services.* shim. See
     # docs/arch/scene-06-componentization-or-modularization (PR3).
@@ -203,7 +203,7 @@ def _record_execution(
     parameters: Any, result: Any, error_message: str,
     duration_ms: float, status: str,
 ) -> None:
-    """异步记录执行结果到 State Store（best-effort）"""
+    """Asynchronously record execution result to State Store (best-effort)"""
     recorder = _get_recorder()
     if recorder is None:
         return
@@ -221,7 +221,7 @@ def _record_execution(
 
 
 async def execute_module(module_path: str, function_name: str, parameters: Union[Dict[str, Any], str]) -> Any:
-    """执行目标模块/函数，集成 Observer 沙箱和重入守卫"""
+    """Execute target module/function, integrates Observer sandbox and reentrancy guard"""
     token = _acquire_guard()
     try:
         _check_whitelist(module_path, function_name)

@@ -18,12 +18,12 @@ def _extract_user_only_text(user_content: str) -> str:
     text = (user_content or "").strip()
     if not text:
         return ""
-    if "## 当前消息" in text:
-        after = text.split("## 当前消息", 1)[1].strip()
+    if "## Current Message" in text:
+        after = text.split("## Current Message", 1)[1].strip()
         if after.startswith("#"):
             after = after.lstrip("#").strip()
-        if after.startswith("当前消息"):
-            after = after[len("当前消息") :].strip()
+        if after.startswith("Current Message"):
+            after = after[len("Current Message") :].strip()
         return after
     return text
 
@@ -88,20 +88,20 @@ async def _resolve_images(images: Any) -> List[bytes]:
     return out
 
 class OllamaService:
-    """Ollama 服务客户端封装"""
+    """Ollama service client wrapper"""
     def __init__(self, host: Optional[str] = None, auth: Optional[str] = None):
         """
-        初始化 Ollama 服务客户端
-        
+        Initialize Ollama service client
+
         Args:
-            host: Ollama 服务地址，默认从配置读取
-            auth: 认证信息，默认从配置读取
+            host: Ollama service address, defaults from config
+            auth: Authentication info, defaults from config
         """
         self.ollama_url = host or settings.ollama_url
         self.ollama_auth = auth or settings.ollama_auth
 
     def _get_client(self) -> Client:
-        """获取 Ollama 客户端实例"""
+        """Get Ollama client instance"""
         if self.ollama_auth:
             if ':' in self.ollama_auth:
                 username, password = self.ollama_auth.split(':', 1)
@@ -113,19 +113,19 @@ class OllamaService:
             return Client(host=self.ollama_url)
 
     def generate_response(self,
-                          system_prompt: str = "你是一个有用的AI助手。",
+                          system_prompt: str = "You are a helpful AI assistant.",
                           user_content: str = "",
                           model_name: str = "qwen3.5",
                           images: Optional[List[bytes]] = None,
                           max_retries: int = 2) -> Dict[str, Any]:
         """
-        生成 AI 响应
-        
+        Generate AI response
+
         Args:
-            system_prompt: 系统提示词
-            user_content: 用户输入内容
-            model_name: 模型名称
-            max_retries: 最大重试次数
+            system_prompt: System prompt
+            user_content: User input content
+            model_name: Model name
+            max_retries: Maximum retry attempts
         """
         client = self._get_client()
         images = images or []
@@ -149,9 +149,9 @@ class OllamaService:
                 }
             except Exception as e:
                 last_error = str(e)
-                logger.warning(f"Ollama 调用失败: {last_error}, attempt={attempt}")
+                logger.warning(f"Ollama call failed: {last_error}, attempt={attempt}")
                 attempt += 1
-        logger.error(f"Ollama 调用最终失败: {last_error}")
+        logger.error(f"Ollama call ultimately failed: {last_error}")
         return {
             "success": False,
             "error": last_error or "unknown error",
@@ -160,34 +160,34 @@ class OllamaService:
 
     def list_models(self) -> Dict[str, Any]:
         """
-        获取 Ollama 服务端可用模型列表
+        Get list of available models from the Ollama server
 
         Returns:
-            Dict[str, Any]: 包含模型列表的字典
-                - success: bool - 是否成功
-                - models: List[Dict] - 模型列表 (成功时)
-                - error: str - 错误信息 (失败时)
+            Dict[str, Any]: Dictionary containing model list
+                - success: bool - Whether the operation succeeded
+                - models: List[Dict] - List of models (on success)
+                - error: str - Error message (on failure)
         """
         client = self._get_client()
         try:
-            logger.debug("调用 Ollama list models API")
+            logger.debug("Calling Ollama list models API")
             response = client.list()
 
-            # 兼容字典和对象两种响应格式
+            # Compatible with both dict and object response formats
             models = []
             if isinstance(response, dict):
                 models = response.get('models', [])
             elif hasattr(response, 'models'):
                 models = response.models
 
-            logger.info(f"成功获取 Ollama 模型列表，共 {len(models)} 个模型")
+            logger.info(f"Successfully retrieved Ollama model list, {len(models)} models total")
             return {
                 "success": True,
                 "models": models
             }
         except Exception as e:
             error_msg = str(e)
-            logger.error(f"获取 Ollama 模型列表失败: {error_msg}")
+            logger.error(f"Failed to get Ollama model list: {error_msg}")
             return {
                 "success": False,
                 "error": error_msg
@@ -195,22 +195,22 @@ class OllamaService:
 
 async def chat(params: Dict[str, Any]) -> Dict[str, Any]:
     """
-    结构化对话接口
-    
+    Structured chat interface
+
     Args:
-        params: 参数字典
-            - system (str): 系统提示词 (可选)
-            - user (str): 用户输入 (必填)
-            - model (str): 模型名称 (可选)
-            
+        params: Parameter dictionary
+            - system (str): System prompt (optional)
+            - user (str): User input (required)
+            - model (str): Model name (optional)
+
     Returns:
-        Dict[str, Any]: 对话响应
+        Dict[str, Any]: Chat response
 
     Example:
         GET /?module_name=services.ai.chat_service&method_name=chat&parameters={"user": "Hello", "model": "qwen3"}
     """
     service = OllamaService()
-    system_prompt = params.get("system", "你是一个有用的AI助手。")
+    system_prompt = params.get("system", "You are a helpful AI assistant.")
     user_content = params.get("user", "")
     model_name = params.get("model", "qwen3.5")
     stream = params.get("stream") is True
@@ -257,7 +257,7 @@ async def chat(params: Dict[str, Any]) -> Dict[str, Any]:
                     except Exception:
                         continue
             except Exception as e:
-                asyncio.run_coroutine_threadsafe(queue.put(f"请求失败：{e}"), loop)
+                asyncio.run_coroutine_threadsafe(queue.put(f"Request failed: {e}"), loop)
             finally:
                 asyncio.run_coroutine_threadsafe(queue.put(None), loop)
 
@@ -274,24 +274,25 @@ async def chat(params: Dict[str, Any]) -> Dict[str, Any]:
 
 async def list_ollama_models(params: Dict[str, Any] = None) -> Dict[str, Any]:
     """
-    获取 Ollama 可用模型列表（异步模块函数）
+    Get available Ollama model list (async module function)
 
-    通过模块执行引擎调用此函数来获取 Ollama 服务端已安装的模型列表。
+    Call this function through the module execution engine to get the list of
+    models installed on the Ollama server.
 
     Args:
-        params: 参数字典 (可选，当前版本暂不使用)
+        params: Parameter dictionary (optional, not used in current version)
 
     Returns:
-        Dict[str, Any]: 模型列表响应，格式同 OllamaService.list_models()
+        Dict[str, Any]: Model list response, same format as OllamaService.list_models()
 
     Example:
         GET /?module_name=services.ai.chat_service&method_name=list_ollama_models&parameters=%7B%7D
     """
-    logger.debug("执行 list_ollama_models")
+    logger.debug("Executing list_ollama_models")
     service = OllamaService()
     loop = asyncio.get_running_loop()
 
-    # 使用线程池执行同步方法，避免阻塞事件循环
+    # Execute sync method in thread pool to avoid blocking the event loop
     return await loop.run_in_executor(
         None,
         service.list_models

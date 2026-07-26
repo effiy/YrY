@@ -1,347 +1,118 @@
 /**
- * YiPet Configuration
+ * YiPet Configuration — Orchestrator
  *
- * Centralized configuration for the Chrome Extension.
- * Single source of truth for all pet, chat, API, animation, and UI settings.
+ * Reads PET_DEFAULTS + PET_ENDPOINTS from pet.defaults.js,
+ * applies environment overrides, attaches URL builders, and
+ * exports the final PET_CONFIG object.
+ *
+ * Required before this file: src/config/pet.defaults.js
  *
  * Exports: window.PET_CONFIG, window.PET_ENV
- *
- * Sections:
- *   pet          — default size, position, colours, size limits
- *   chatWindow   — default size/position, input constraints
- *   animation    — float/blink/wag durations, transition speeds
- *   storage      — chrome.storage keys and sync interval
- *   ui           — z‑index stack, border radii
- *   api          — endpoint URLs and feature flags
- *   chatModels   — available LLM models
- *   env          — environment mode, feature flags, per‑env endpoints
- *   constants    — TIMING, RETRY, STORAGE, URLS, UI, ANIMATION, DEFAULTS,
- *                   ERROR_MESSAGES, SUCCESS_MESSAGES, API limits, storageKeys
- *   ENDPOINTS    — REST endpoint path templates (auth, sessions, FAQ, config, DB)
- *   buildUrl / buildQueryParams / buildDatabaseUrl  — URL construction helpers
  *
  * @module config/pet.config
  * @since 1.0.0
  */
 
-const DEFAULT_CONFIG = {
-  pet: {
-    defaultSize: 260,
-    defaultPosition: { x: 20, y: '20%' },
-    defaultColorIndex: 0,
-    defaultVisible: false,
-    colors: [
-      'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
-      'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)',
-      'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #6366f1 100%)',
-      'linear-gradient(135deg, #22c55e 0%, #10b981 50%, #059669 100%)',
-      'linear-gradient(135deg, #f59e0b 0%, #ec4899 50%, #a855f7 100%)'
-    ],
-    sizeLimits: { min: 80, max: 400 }
-  },
-  chatWindow: {
-    defaultSize: { width: 700, height: 720 },
-    defaultPosition: { x: 'center', y: '12%' },
-    sizeLimits: { minWidth: 300, maxWidth: 10000, minHeight: 450, maxHeight: 10000 },
-    input: { maxLength: 0, placeholder: '输入消息...' },
-    message: { maxLength: 0, thinkingDelay: { min: 1000, max: 2000 } }
-  },
-  animation: {
-    pet: { floatDuration: 3000, blinkDuration: 4000, wagDuration: 2000 },
-    chatWindow: { transitionDuration: 300, scaleEffect: 1.02 }
-  },
-  storage: {
-    keys: { globalState: 'pet_global_state', chatWindowState: 'pet_chat_window_state' },
-    syncInterval: 3000
-  },
-  ui: {
-    zIndex: { pet: 2147483647, chatWindow: 2147483648, resizeHandle: 20, inputContainer: 10, modal: 2147483649 },
-    borderRadius: { pet: '50%', chatWindow: '16px', input: '25px', button: '25px' }
-  },
-  api: {
-    streamPromptUrl: 'http://localhost:10086/prompt',
-    promptUrl: 'http://localhost:10086/prompt/',
-    yiaiBaseUrl: 'http://localhost:10086',
-    faqApiUrl: 'http://localhost:10086',
-    syncSessionsToBackend: true
-  },
-  chatModels: {
-    default: '',
-    models: []
-  },
-  env: {
-    mode: 'production',
-    flags: {
-      debug: false,
-      mockApi: false,
-      telemetry: false
-    },
-    endpoints: {
-      production: {
-        streamPromptUrl: 'http://localhost:10086/prompt',
-        promptUrl: 'http://localhost:10086/prompt/',
-        yiaiBaseUrl: 'http://localhost:10086',
-        faqApiUrl: 'http://localhost:10086'
-      },
-      staging: {
-        streamPromptUrl: 'http://localhost:10086/prompt',
-        promptUrl: 'http://localhost:10086/prompt/',
-        yiaiBaseUrl: 'http://localhost:10086',
-        faqApiUrl: 'http://localhost:10086'
-      },
-      development: {
-        streamPromptUrl: 'http://localhost:10086/prompt',
-        promptUrl: 'http://localhost:10086/prompt/',
-        yiaiBaseUrl: 'http://localhost:10086',
-        faqApiUrl: 'http://localhost:10086'
-      }
-    }
-  },
-  constants: {
-    TIMING: {
-      RETRY_DELAY: 500,
-      STATUS_SYNC_INTERVAL: 5000,
-      NOTIFICATION_DURATION: 3000,
-      CONTENT_SCRIPT_WAIT: 1000,
-      REQUEST_RETRY_DELAY: 500,
-      QUOTA_CLEANUP_TIMEOUT: 60000,
-      INJECT_PET_DELAY: 1000,
-      REQUEST_DEDUP_WINDOW: 5000,
-      REQUEST_CLEANUP_INTERVAL: 30000,
-      REQUEST_CLEANUP_TIMEOUT: 60000,
-      STORAGE_CLEANUP_INTERVAL: 86400000,
-      STORAGE_CLEANUP_AGE: 604800000,
-      SESSION_UPDATE_DEBOUNCE: 300,
-      SESSION_SAVE_THROTTLE: 1000,
-      SESSION_LIST_RELOAD_INTERVAL: 10000,
-      STATE_SAVE_THROTTLE: 2000,
-      AUTO_SCROLL_THRESHOLD_PX: 140,
-      CHAT_BUBBLE_UPDATE_INTERVAL: 1500
-    },
-    RETRY: {
-      MAX_RETRIES: 3,
-      INITIAL_DELAY: 500
-    },
-    STORAGE: {
-      MAX_REQUESTS: 1000,
-      MAX_SESSION_SIZE: 50000,
-      SYNC_INTERVAL: 60000
-    },
-    URLS: {
-      CHROME_PROTOCOL: 'chrome://',
-      CHROME_EXTENSION_PROTOCOL: 'chrome-extension://',
-      MOZ_EXTENSION_PROTOCOL: 'moz-extension://',
-      ABOUT_PROTOCOL: 'about:',
-      isSystemPage: function (url) {
-        if (!url || typeof url !== 'string') return false
-        return url.startsWith(this.CHROME_PROTOCOL) ||
-          url.startsWith(this.CHROME_EXTENSION_PROTOCOL) ||
-          url.startsWith(this.MOZ_EXTENSION_PROTOCOL) ||
-          url.startsWith(this.ABOUT_PROTOCOL)
-      }
-    },
-    UI: {
-      NOTIFICATION_TOP: 10,
-      STATUS_DOT_ACTIVE: '#22c55e',
-      STATUS_DOT_INACTIVE: '#f59e0b',
-      NOTIFICATION_SUCCESS: '#22c55e',
-      NOTIFICATION_ERROR: '#ef4444',
-      NOTIFICATION_INFO: '#3b82f6',
-      SIDEBAR_DEFAULT_WIDTH: 320,
-      SIDEBAR_MIN_WIDTH: 320,
-      SIDEBAR_MAX_WIDTH: 800,
-      CHAT_WINDOW_DEFAULT_WIDTH: 850,
-      CHAT_WINDOW_DEFAULT_HEIGHT: 720,
-      TAG_FILTER_VISIBLE_COUNT: 8
-    },
-    ANIMATION: {
-      THINKING_ANIMATIONS: [
-        'petThinking 0.8s ease-in-out infinite',
-        'petThinkingBounce 1.2s ease-in-out infinite',
-        'petThinkingPulse 1s ease-in-out infinite'
-      ],
-      THINKING_BUBBLE_TEXTS: [
-        '🤔 让我想想...',
-        '💭 思考中...',
-        '✨ 灵感涌现',
-        '🌟 整理思路',
-        '🎯 深度分析',
-        '🔍 搜索答案',
-        '💡 想法来了',
-        '🌊 头脑风暴',
-        '📝 组织语言',
-        '🎨 酝酿回复',
-        '⚡ 快想好了',
-        '🌈 无限接近',
-        '🚀 马上就来'
-      ]
-    },
-    DEFAULTS: {
-      PET_ROLE: '教师',
-      VERSION: '1.1.2'
-    },
-    ERROR_MESSAGES: {
-      TAB_NOT_FOUND: '无法获取当前标签页',
-      INIT_FAILED: '初始化失败',
-      OPERATION_FAILED: '操作失败',
-      CONTEXT_INVALIDATED: '扩展上下文已失效',
-      QUOTA_EXCEEDED: '存储配额超出',
-      RETRYING: '正在重试...',
-      RETRY_SUCCESS: '重试成功',
-      RETRY_FAILED: '多次尝试后仍失败'
-    },
-    SUCCESS_MESSAGES: {
-      SHOWN: '已显示',
-      HIDDEN: '已隐藏',
-      COLOR_CHANGED: '颜色已更换',
-      COLOR_SET: '颜色主题已设置',
-      SIZE_UPDATED: '大小已更新',
-      POSITION_RESET: '位置已重置',
-      CENTERED: '已居中',
-      ROLE_CHANGED: '角色已切换'
-    },
-    API: {
-      MAX_WEWORK_CONTENT_LENGTH: 4096,
-      MAX_WEWORK_CONTENT_TRUNCATE_MARGIN: 100
-    },
-    storageKeys: {
-      devMode: 'pet_dev_mode',
-      globalState: 'pet_global_state',
-      chatWindowState: 'pet_chat_window_state',
-      settings: 'pet_settings'
-    },
-    ids: {
-      assistantElement: 'chat_assistant_element'
-    }
-  }
-}
+;(function (root) {
+  'use strict'
 
-const ENDPOINTS = {
-  BASE_ENDPOINTS: {
-    API_BASE: '/api',
-    V1_BASE: '/api/v1',
-    V2_BASE: '/api/v2'
-  },
-  AUTH_ENDPOINTS: {
-    LOGIN: '/auth/login',
-    LOGOUT: '/auth/logout',
-    REFRESH: '/auth/refresh',
-    PROFILE: '/auth/profile',
-    VALIDATE: '/auth/validate'
-  },
-  SESSION_ENDPOINTS: {
-    LIST: '/sessions',
-    CREATE: '/sessions',
-    UPDATE: '/sessions/:id',
-    DELETE: '/sessions/:id',
-    BATCH_DELETE: '/sessions/batch',
-    SEARCH: '/sessions/search',
-    FAVORITES: '/sessions/favorites',
-    EXPORT: '/sessions/export',
-    IMPORT: '/sessions/import'
-  },
-  FAQ_ENDPOINTS: {
-    LIST: '/faqs',
-    CREATE: '/faqs',
-    UPDATE: '/faqs/:id',
-    DELETE: '/faqs/:id',
-    BATCH_UPDATE: '/faqs/batch',
-    REORDER: '/faqs/reorder'
-  },
-  CONFIG_ENDPOINTS: {
-    GET: '/config',
-    UPDATE: '/config',
-    RESET: '/config/reset'
-  },
-  DATABASE_ENDPOINTS: {
-    QUERY: '/database/query',
-    CREATE: '/database/create',
-    UPDATE: '/database/update',
-    DELETE: '/database/delete',
-    BATCH: '/database/batch'
-  }
-}
+  var DEFAULTS  = root.PET_DEFAULTS  || {}
+  var ENDPOINTS = root.PET_ENDPOINTS || {}
 
-function buildUrl(baseUrl, endpoint, params = {}) {
-  let url = endpoint
+  /* ── Environment Detection ──────────────────────────────────────────── */
 
-  Object.entries(params).forEach(([key, value]) => {
-    url = url.replace(`:${key}`, encodeURIComponent(value))
-  })
+  var envMode = 'production'
 
-  if (!url.startsWith('http') && baseUrl) {
-    url = `${baseUrl.replace(/\/$/, '')}/${url.replace(/^\//, '')}`
+  if (typeof window !== 'undefined' && window.__PET_ENV_MODE__) {
+    envMode = String(window.__PET_ENV_MODE__).toLowerCase()
+  } else if (typeof process !== 'undefined' && process.env && process.env.PET_ENV_MODE) {
+    envMode = String(process.env.PET_ENV_MODE).toLowerCase()
+  } else if (DEFAULTS.env && DEFAULTS.env.mode) {
+    envMode = String(DEFAULTS.env.mode).toLowerCase()
   }
 
-  return url
-}
+  var envFlags    = (DEFAULTS.env && DEFAULTS.env.flags) || {}
+  var envApi      = (DEFAULTS.env && DEFAULTS.env.endpoints && DEFAULTS.env.endpoints[envMode]) || null
 
-function buildQueryParams(params = {}) {
-  const searchParams = new URLSearchParams()
+  /* ── URL Builders (delegate to UrlBuilder when available) ───────────── */
 
-  Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined && value !== null) {
-      if (typeof value === 'object') {
-        searchParams.append(key, JSON.stringify(value))
-      } else {
-        searchParams.append(key, String(value))
-      }
+  function buildUrl(baseUrl, endpoint, params) {
+    if (typeof UrlBuilder !== 'undefined' && UrlBuilder.buildUrl) {
+      return UrlBuilder.buildUrl(baseUrl, endpoint, params)
     }
-  })
+    var url = endpoint
+    if (params) {
+      Object.keys(params).forEach(function (key) {
+        url = url.replace(':' + key, encodeURIComponent(params[key]))
+      })
+    }
+    if (!/^https?:\/\//.test(url) && baseUrl) {
+      url = baseUrl.replace(/\/$/, '') + '/' + url.replace(/^\//, '')
+    }
+    return url
+  }
 
-  return searchParams.toString()
-}
+  function buildQueryParams(params) {
+    if (typeof UrlBuilder !== 'undefined' && UrlBuilder.buildQueryParams) {
+      return UrlBuilder.buildQueryParams(params)
+    }
+    var sp = new URLSearchParams()
+    Object.keys(params || {}).forEach(function (key) {
+      var val = params[key]
+      if (val !== undefined && val !== null) {
+        sp.append(key, typeof val === 'object' ? JSON.stringify(val) : String(val))
+      }
+    })
+    return sp.toString()
+  }
 
-function buildDatabaseUrl(baseUrl, methodName, parameters = {}) {
-  const queryParams = new URLSearchParams({
-    module_name: 'services.database.data_service',
-    method_name: methodName,
-    parameters: JSON.stringify(parameters)
-  })
+  function buildDatabaseUrl(baseUrl, methodName, parameters) {
+    if (typeof UrlBuilder !== 'undefined' && UrlBuilder.buildDatabaseUrl) {
+      return UrlBuilder.buildDatabaseUrl(baseUrl, methodName, parameters)
+    }
+    var qp = new URLSearchParams({
+      module_name: 'services.database.data_service',
+      method_name: methodName,
+      parameters: JSON.stringify(parameters || {})
+    })
+    return baseUrl + '/?' + qp.toString()
+  }
 
-  return `${baseUrl}/?${queryParams.toString()}`
-}
+  /* ── Assemble & Export ──────────────────────────────────────────────── */
 
-let __ENV_MODE = 'production'
+  // Shallow-clone defaults, then apply env overrides
+  var config = {}
+  Object.keys(DEFAULTS).forEach(function (k) { config[k] = DEFAULTS[k] })
 
-if (typeof window !== 'undefined' && window.__PET_ENV_MODE__) {
-  __ENV_MODE = String(window.__PET_ENV_MODE__).toLowerCase()
-} else if (typeof process !== 'undefined' && process.env && process.env.PET_ENV_MODE) {
-  __ENV_MODE = String(process.env.PET_ENV_MODE).toLowerCase()
-} else if (DEFAULT_CONFIG.env && DEFAULT_CONFIG.env.mode) {
-  __ENV_MODE = String(DEFAULT_CONFIG.env.mode).toLowerCase()
-}
+  if (envApi) {
+    config.api = {}
+    Object.keys(DEFAULTS.api || {}).forEach(function (k) { config.api[k] = DEFAULTS.api[k] })
+    Object.keys(envApi).forEach(function (k) { config.api[k] = envApi[k] })
+  }
 
-const __ENV_FLAGS = (DEFAULT_CONFIG.env && DEFAULT_CONFIG.env.flags) || {}
-const __ENV_ENDPOINTS = (DEFAULT_CONFIG.env && DEFAULT_CONFIG.env.endpoints && DEFAULT_CONFIG.env.endpoints[__ENV_MODE])
-  ? DEFAULT_CONFIG.env.endpoints[__ENV_MODE]
-  : null
+  config.envInfo   = { mode: envMode, flags: envFlags }
+  config.ENDPOINTS = ENDPOINTS
+  config.buildUrl  = buildUrl
+  config.buildQueryParams   = buildQueryParams
+  config.buildDatabaseUrl   = buildDatabaseUrl
 
-const config = { ...DEFAULT_CONFIG }
+  root.PET_CONFIG = config
+  root.PET_ENV    = config.envInfo
 
-if (__ENV_ENDPOINTS) {
-  config.api = { ...config.api, ...__ENV_ENDPOINTS }
-}
+  // Legacy flat globals (formerly endpoints.js)
+  root.BASE_ENDPOINTS     = ENDPOINTS.BASE_ENDPOINTS
+  root.AUTH_ENDPOINTS     = ENDPOINTS.AUTH_ENDPOINTS
+  root.SESSION_ENDPOINTS  = ENDPOINTS.SESSION_ENDPOINTS
+  root.FAQ_ENDPOINTS      = ENDPOINTS.FAQ_ENDPOINTS
+  root.CONFIG_ENDPOINTS   = ENDPOINTS.CONFIG_ENDPOINTS
+  root.DATABASE_ENDPOINTS = ENDPOINTS.DATABASE_ENDPOINTS
+  root.buildUrl           = buildUrl
+  root.buildQueryParams   = buildQueryParams
+  root.buildDatabaseUrl   = buildDatabaseUrl
 
-config.envInfo = {
-  mode: __ENV_MODE,
-  flags: __ENV_FLAGS
-}
+  // CJS compatibility
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { config: config, PET_CONFIG: config }
+  }
 
-config.ENDPOINTS = ENDPOINTS
-config.buildUrl = buildUrl
-config.buildQueryParams = buildQueryParams
-config.buildDatabaseUrl = buildDatabaseUrl
-
-if (typeof self !== 'undefined') {
-  self.PET_CONFIG = config
-} else if (typeof window !== 'undefined') {
-  window.PET_CONFIG = config
-  window.PET_ENV = config.envInfo
-} else if (typeof global !== 'undefined') {
-  global.PET_CONFIG = config
-}
-
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { config, PET_CONFIG: config }
-}
+})(typeof globalThis !== 'undefined' ? globalThis : window)

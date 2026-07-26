@@ -1,5 +1,5 @@
-"""MongoDB 数据访问层（单例）
-- 管理连接、索引、常用 CRUD 包装
+"""MongoDB Data Access Layer (Singleton)
+- Manages connections, indexes, and common CRUD wrappers
 """
 import os
 import logging

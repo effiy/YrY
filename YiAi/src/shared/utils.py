@@ -1,4 +1,4 @@
-"""工具函数"""
+"""Utility functions"""
 import re
 import json
 import hashlib
@@ -8,13 +8,13 @@ import math
 from typing import Union, Any, List, Dict, Optional, Generator
 from datetime import datetime, timezone
 
-# --- 文本处理 ---
+# --- Text Processing ---
 
 def estimate_tokens(text: Union[str, bytes]) -> int:
     """
-    估算文本的 Token 数量 (简易版)
-    ASCII 字符 (如英文) 约 4 个字符为 1 token (0.25)
-    非 ASCII 字符 (如中文) 计为 1 token
+    Estimate token count for text (simplified)
+    ASCII characters (e.g. English) ~4 chars per token (0.25)
+    Non-ASCII characters (e.g. CJK) count as 1 token
     """
     if not isinstance(text, str):
         return 0
@@ -30,7 +30,7 @@ def estimate_tokens(text: Union[str, bytes]) -> int:
 
 def clean_text(text: str) -> str:
     """
-    清理文本：去除首尾空白，将连续空白字符替换为单个空格
+    Clean text: strip leading/trailing whitespace, replace consecutive whitespace with single space
     """
     if not text:
         return ""
@@ -38,35 +38,35 @@ def clean_text(text: str) -> str:
 
 def truncate_text(text: str, length: int, ellipsis: str = "...") -> str:
     """
-    截断文本，如果超出长度则添加省略号
+    Truncate text, append ellipsis if exceeds length
     """
     if not text or len(text) <= length:
         return text
     return text[:length] + ellipsis
 
 def generate_md5(text: str) -> str:
-    """生成字符串的 MD5 哈希"""
+    """Generate MD5 hash of string"""
     return hashlib.md5(text.encode('utf-8')).hexdigest()
 
 def generate_random_string(length: int = 8, chars: str = string.ascii_letters + string.digits) -> str:
-    """生成指定长度的随机字符串"""
+    """Generate random string of specified length"""
     return ''.join(random.choice(chars) for _ in range(length))
 
 def extract_json_from_text(text: str) -> Optional[Union[Dict, List]]:
     """
-    尝试从文本中提取并解析 JSON
-    支持提取 markdown 代码块中的 JSON (```json ... ```)
+    Try to extract and parse JSON from text
+    Supports extracting JSON from markdown code blocks (```json ... ```)
     """
     if not text:
         return None
         
-    # 尝试直接解析
+    # Try direct parse
     try:
         return json.loads(text)
     except json.JSONDecodeError:
         pass
 
-    # 尝试提取 Markdown 代码块
+    # Try to extract Markdown code block
     pattern = r"```(?:json)?\s*([\s\S]*?)\s*```"
     match = re.search(pattern, text)
     if match:
@@ -75,12 +75,12 @@ def extract_json_from_text(text: str) -> Optional[Union[Dict, List]]:
         except json.JSONDecodeError:
             pass
             
-    # 尝试查找第一个 { 或 [ 到最后一个 } 或 ]
+    # Try to find first { or [ to last } or ]
     try:
         start_idx = -1
         end_idx = -1
         
-        # 查找可能的开始位置
+        # Find possible start position
         first_brace = text.find('{')
         first_bracket = text.find('[')
         
@@ -89,7 +89,7 @@ def extract_json_from_text(text: str) -> Optional[Union[Dict, List]]:
         elif first_bracket != -1:
             start_idx = first_bracket
             
-        # 查找可能的结束位置
+        # Find possible end position
         last_brace = text.rfind('}')
         last_bracket = text.rfind(']')
         
@@ -106,14 +106,14 @@ def extract_json_from_text(text: str) -> Optional[Union[Dict, List]]:
         
     return None
 
-# --- 时间与日期 ---
+# --- Time & Date ---
 
 def get_current_time() -> str:
-    """获取当前 UTC 时间字符串 (ISO 8601 format with Z)"""
+    """Get current UTC time string (ISO 8601 format with Z)"""
     return datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
 
 def is_valid_date(date_str: str) -> bool:
-    """验证日期字符串格式是否有效 (YYYY-MM-DD)"""
+    """Validate date string format (YYYY-MM-DD)"""
     if not isinstance(date_str, str):
         return False
     try:
@@ -122,10 +122,10 @@ def is_valid_date(date_str: str) -> bool:
     except ValueError:
         return False
 
-# --- 数字与文件 ---
+# --- Numbers & Files ---
 
 def is_number(value: Any) -> bool:
-    """验证值是否为数字"""
+    """Validate if value is a number"""
     if value is None:
         return False
     try:
@@ -136,7 +136,7 @@ def is_number(value: Any) -> bool:
 
 def format_file_size(size_in_bytes: int) -> str:
     """
-    将字节大小转换为人类可读格式 (KB, MB, GB)
+    Convert byte size to human-readable format (KB, MB, GB)
     """
     if size_in_bytes == 0:
         return "0B"
@@ -149,8 +149,8 @@ def format_file_size(size_in_bytes: int) -> str:
 
 def format_tokens(tokens: int) -> str:
     """
-    将 token 数量转换为人类可读格式 (K, M)
-    保留完整数字用于显示，同时提供简化版本
+    Convert token count to human-readable format (K, M)
+    Preserves full number for display while providing simplified version
     """
     if tokens < 1000:
         return f"{tokens}"
@@ -162,15 +162,15 @@ def format_tokens(tokens: int) -> str:
 
 def format_tokens_with_commas(tokens: int) -> str:
     """
-    格式化 token 数量，添加千位分隔符
+    Format token count with thousands separator
     """
     return f"{tokens:,}"
 
-# --- 集合处理 ---
+# --- Collection Processing ---
 
 def chunk_list(lst: List[Any], size: int) -> Generator[List[Any], None, None]:
     """
-    将列表分割为指定大小的块
+    Split list into chunks of specified size
     """
     for i in range(0, len(lst), size):
         yield lst[i:i + size]

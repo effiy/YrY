@@ -1,4 +1,4 @@
-"""Sessions 维护服务层 — 封装数据库访问，供 routes 调用"""
+"""Sessions maintenance service layer — encapsulates database access for use by routes"""
 import logging
 from typing import List, Dict, Any
 from data.database import db
@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 async def get_all_sessions() -> List[Dict[str, Any]]:
-    """获取所有 sessions 文档"""
+    """Get all sessions documents"""
     await db.initialize()
     collection = db.db[settings.collection_sessions]
     sessions = []
@@ -19,7 +19,7 @@ async def get_all_sessions() -> List[Dict[str, Any]]:
 
 
 async def delete_session_by_key(session_key: str) -> int:
-    """按 key 删除单个 session，返回删除数量"""
+    """Delete a single session by key, return delete count"""
     await db.initialize()
     collection = db.db[settings.collection_sessions]
     result = await collection.delete_one({'key': session_key})
