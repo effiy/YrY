@@ -18,6 +18,16 @@ declare global {
     error(...args: unknown[]): void;
     debug(...args: unknown[]): void;
   };
+
+  const YiPetApi: {
+    createClient(config: { baseUrl: string; timeout?: number; headers?: Record<string, string>; retry?: { maxRetries: number; baseMs: number } }): {
+      get<T>(path: string, signal?: AbortSignal): Promise<{ ok: boolean; status: number; data: T; error?: string }>;
+      post<T>(path: string, body?: unknown, signal?: AbortSignal): Promise<{ ok: boolean; status: number; data: T; error?: string }>;
+      put<T>(path: string, body?: unknown, signal?: AbortSignal): Promise<{ ok: boolean; status: number; data: T; error?: string }>;
+      delete<T>(path: string, signal?: AbortSignal): Promise<{ ok: boolean; status: number; data: T; error?: string }>;
+      url(path: string): string;
+    };
+  };
 }
 
 export {};

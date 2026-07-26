@@ -3,7 +3,7 @@
  */
 
 import '../shared/globals';
-import { t, localizeDOM } from '../shared/i18n';
+import { t } from '../shared/i18n';
 import { resolveLocale, applyLocale } from '../shared/locale';
 import { AppHeader } from './components/AppHeader/AppHeader';
 import { SettingsCard } from './components/SettingsCard/SettingsCard';
@@ -159,6 +159,10 @@ class PopupComponent {
 
   mount() {
     const self = this;
+
+    // Render the skeleton immediately — the popup is never blank.
+    this._render();
+
     if (!this._chrome) {
       self.state.controlsEnabled = true;
       self.state.hintText = t('popupStatusReadyOffline');
@@ -169,6 +173,9 @@ class PopupComponent {
     this._chrome.getActiveTab().then((tab) => {
       if (!tab) {
         if (self._notify) self._notify.show(t('errorTabNotFound'), 'error');
+        self.state.controlsEnabled = true;
+        self.state.hintText = t('popupStatusReadyOffline');
+        self._render();
         return;
       }
 
@@ -198,6 +205,9 @@ class PopupComponent {
     }).catch((err: Error) => {
       console.error('[YiPet Popup] chrome.tabs.query failed:', err.message);
       if (self._notify) self._notify.show(t('errorInitFailed'), 'error');
+      self.state.controlsEnabled = true;
+      self.state.hintText = t('popupStatusReadyOffline');
+      self._render();
     });
   }
 
@@ -292,10 +302,17 @@ if (!rootEl) {
 } else {
   const popup = new PopupComponent();
 
-  // Initialize locale + timezone, then mount
+  // Initialize locale + timezone, then mount.
+  // mount() immediately renders the skeleton — the popup is never blank.
   resolveLocale().then(({ locale }) => {
     applyLocale(locale).then(() => {
       popup.mount();
+    }).catch((err: Error) => {
+      console.error('[YiPet Popup] applyLocale failed:', err.message);
+      popup.mount();
     });
+  }).catch((err: Error) => {
+    console.error('[YiPet Popup] resolveLocale failed:', err.message);
+    popup.mount();
   });
 }

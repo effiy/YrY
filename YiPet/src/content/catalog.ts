@@ -99,9 +99,10 @@ export const CDN_CATALOG: CdnEntry[] = [
   { key: 'leaflet',   path: 'vendor/leaflet@1.1.1/leaflet.js',              type: 'js',  desc: 'Leaflet 1.1.1 map' },
   { key: 'swup',      path: 'vendor/swup/swup.min.js',                      type: 'js',  global: 'Swup',       desc: 'Swup page transition' },
 
-  // YiPet Utils
-  { key: 'url',       path: 'utils/url.js',                                 type: 'js',  global: 'UrlBuilder', desc: 'UrlBuilder utility' },
-  { key: 'log',       path: 'utils/log.js',                                 type: 'js',  global: 'LoggerUtils', desc: 'LoggerUtils logging' },
+  // YiPet Utils (unified bundle — one file, three globals)
+  { key: 'url',        path: 'utils/index.js',  type: 'js',  global: 'UrlBuilder',  desc: 'UrlBuilder utility' },
+  { key: 'log',        path: 'utils/index.js',  type: 'js',  global: 'LoggerUtils', desc: 'LoggerUtils logging' },
+  { key: 'api-client', path: 'utils/index.js',  type: 'js',  global: 'YiPetApi',    desc: 'YiPet HTTP API client' },
 
   // YiPet Styles
   { key: 'variables-css', path: 'styles/variables.css',                     type: 'css', desc: 'YiPet design variables' },

@@ -1,23 +1,27 @@
 import { defineConfig } from 'vite';
-import { resolve } from 'node:path';
+import { resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { copyFileSync, writeFileSync } from 'node:fs';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const rootDir = __dirname;
 
 export default defineConfig(({ mode }) => {
   const isDev = mode === 'development';
 
   return {
-    root: '.',
-    publicDir: 'public',
+    root: rootDir,
+    publicDir: resolve(rootDir, 'public'),
     build: {
-      outDir: 'dist',
+      outDir: resolve(rootDir, 'dist'),
       emptyOutDir: true,
       minify: !isDev,
       sourcemap: isDev ? 'inline' : false,
       rollupOptions: {
         input: {
-          content:   resolve(__dirname, 'src/content/index.ts'),
-          bootstrap: resolve(__dirname, 'src/content/bootstrap.ts'),
-          popup:     resolve(__dirname, 'src/popup/popup.html'),
+          content:   resolve(rootDir, 'src/content/index.ts'),
+          bootstrap: resolve(rootDir, 'src/content/bootstrap.ts'),
+          popup:     resolve(rootDir, 'src/popup/popup.html'),
         },
         output: {
           entryFileNames: 'assets/[name].js',
@@ -30,15 +34,15 @@ export default defineConfig(({ mode }) => {
       {
         name: 'yipet-build',
         closeBundle() {
-          // 1. Copy manifest.json to dist/
+          // Copy manifest.json to dist/
           copyFileSync(
-            resolve(__dirname, 'manifest.json'),
-            resolve(__dirname, 'dist/manifest.json'),
+            resolve(rootDir, 'manifest.json'),
+            resolve(rootDir, 'dist', 'manifest.json'),
           );
 
-          // 2. Write build metadata for extension auto-reload detection
+          // Write build metadata for extension auto-reload detection
           writeFileSync(
-            resolve(__dirname, 'dist/build-meta.json'),
+            resolve(rootDir, 'dist', 'build-meta.json'),
             JSON.stringify({
               builtAt: Date.now(),
               mode,
@@ -46,7 +50,6 @@ export default defineConfig(({ mode }) => {
             }, null, 2),
           );
 
-          // 3. Dev-mode summary
           if (isDev) {
             console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
             console.log('  🐾  YiPet dev build ready');

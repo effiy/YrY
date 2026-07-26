@@ -4,11 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite build --mode development --watch",
-    "build": "vite build",
-    "typecheck": "tsc --noEmit",
-    "clean": "rm -rf dist",
-    "test": "vitest run",
+    "dev":        "vite build --mode development --watch",
+    "build":      "npm run build:cdn && vite build",
+    "build:cdn":  "vite build --config vite.cdn.config.ts",
+    "typecheck":  "tsc --noEmit",
+    "clean":      "rm -rf dist public/cdn/utils/index.js",
+    "test":       "vitest run",
     "test:watch": "vitest"
   },
   "devDependencies": {
