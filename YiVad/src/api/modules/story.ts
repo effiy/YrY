@@ -58,7 +58,6 @@ export interface StoryDocument {
   // Content
   tags: string[];
   scenarios: Scenario[];
-  dependencies: { storyKey: string; storyName: string; relation: "blocks" | "depends_on" | "related" }[];
   files: { filePath: string; fileName: string }[];
   createdAt: number;
   updatedAt: number;
