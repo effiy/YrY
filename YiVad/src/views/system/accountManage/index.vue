@@ -1,6 +1,6 @@
 <template>
   <div class="card content-box">
-    <span class="text"> 账号管理（待完善） 🍓🍇🍈🍉</span>
+    <span class="text"> Account Management (TBD) 🍓🍇🍈🍉</span>
   </div>
 </template>
 

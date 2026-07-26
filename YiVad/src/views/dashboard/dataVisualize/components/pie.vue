@@ -9,14 +9,14 @@ import { ECOption } from "@/components/ECharts/config";
 import ECharts from "@/components/ECharts/index.vue";
 
 const pieData = [
-  { value: 5000, name: "Gitee 访问量" },
-  { value: 5000, name: "GitHub 访问量" }
+  { value: 5000, name: "Gitee Visits" },
+  { value: 5000, name: "GitHub Visits" }
 ];
 
 const option: ECOption = {
   title: {
     text: "Gitee / GitHub",
-    subtext: "访问占比",
+    subtext: "Visit Share",
     left: "56%",
     top: "45%",
     textAlign: "center",
@@ -36,7 +36,7 @@ const option: ECOption = {
     top: "4%",
     left: "2%",
     orient: "vertical",
-    icon: "circle", //图例形状
+    icon: "circle", // legend shape
     align: "left",
     itemGap: 20,
     textStyle: {
@@ -92,11 +92,11 @@ const option: ECOption = {
           colorStops: [
             {
               offset: 0,
-              color: "#feb791" // 0% 处的颜色
+              color: "#feb791" // color at 0%
             },
             {
               offset: 1,
-              color: "#fe8b4c" // 100% 处的颜色
+              color: "#fe8b4c" // color at 100%
             }
           ]
         },
@@ -109,11 +109,11 @@ const option: ECOption = {
           colorStops: [
             {
               offset: 0,
-              color: "#b898fd" // 0% 处的颜色
+              color: "#b898fd" // color at 0%
             },
             {
               offset: 1,
-              color: "#8347fd" // 100% 处的颜色
+              color: "#8347fd" // color at 100%
             }
           ]
         }

@@ -1,5 +1,5 @@
 <template>
-  <!-- 年度使用 -->
+  <!-- Annual Usage -->
   <div class="echarts">
     <ECharts :option="option" :resize="false" />
   </div>
@@ -17,15 +17,15 @@ interface ChartProp {
 const gradientColors = ["rgba(254, 219, 101,0.1)", "rgba(0, 122, 254,0.1)", "rgba(255, 75, 122, 0.1)"];
 const annualData = [
   {
-    label: new Date().getFullYear() - 2 + "年",
+    label: new Date().getFullYear() - 2 + "",
     value: ["184", "90", "120", "0", "30", "100", "80", "40", "20", "510", "350", "180"]
   },
   {
-    label: new Date().getFullYear() - 1 + "年",
+    label: new Date().getFullYear() - 1 + "",
     value: ["118", "509", "366", "162", "380", "123", "321", "158", "352", "474", "154", "22"]
   },
   {
-    label: new Date().getFullYear() + "年",
+    label: new Date().getFullYear() + "",
     value: ["548", "259", "113", "90", "69", "512", "23", "49", "28", "420", "313", "156"]
   }
 ];
@@ -59,7 +59,7 @@ const option: ECOption = {
       });
       const dom = `
                     <div class="annual-tooltip">
-                      <span class="annual-month">${params[0].dataIndex + 1}月</span>
+                      <span class="annual-month">${params[0].dataIndex + 1} month</span>
                       <div class="annual-list">
                         ${str}
                       </div>
@@ -88,7 +88,7 @@ const option: ECOption = {
   },
   xAxis: [
     {
-      name: "(月份)",
+      name: "(Month)",
       type: "category",
       boundaryGap: false,
       axisLine: {
@@ -118,7 +118,7 @@ const option: ECOption = {
     }
   ],
   yAxis: {
-    name: "(人数)",
+    name: "(Visitors)",
     nameTextStyle: {
       color: "#D6DFEA",
       fontSize: 12,

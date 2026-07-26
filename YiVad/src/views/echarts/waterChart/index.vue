@@ -11,7 +11,7 @@ import ECharts from "@/components/ECharts/index.vue";
 const option = {
   title: [
     {
-      text: "预约量",
+      text: "Bookings",
       x: "25%",
       y: 30,
       textAlign: "center",
@@ -24,7 +24,7 @@ const option = {
       }
     },
     {
-      text: "实时客流量",
+      text: "Real-time Visitor Flow",
       x: "75%",
       y: 30,
       textAlign: "center",
@@ -120,7 +120,7 @@ const option = {
       }
     },
     {
-      name: "第二层白边",
+      name: "Second layer white border",
       type: "pie",
       z: 3,
       radius: ["0%", "55%"],
@@ -162,7 +162,7 @@ const option = {
       ]
     },
     {
-      name: "最外绿边",
+      name: "Outermost gold border",
       type: "pie",
       z: 1,
       radius: ["0%", "58%"],
@@ -217,7 +217,7 @@ const option = {
       }
     },
     {
-      name: "第二层白边",
+      name: "Second layer white border",
       type: "pie",
       z: 3,
       radius: ["0%", "55%"],
@@ -259,7 +259,7 @@ const option = {
       ]
     },
     {
-      name: "最外蓝边",
+      name: "Outermost blue border",
       type: "pie",
       z: 1,
       radius: ["0%", "58%"],
@@ -294,5 +294,5 @@ const option = {
 </script>
 
 <style scoped lang="scss">
-@import "./index.scss";
+@use "./index.scss" as *;
 </style>

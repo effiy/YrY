@@ -1,13 +1,13 @@
 <template>
-  <!-- 男女比例 -->
+  <!-- Male/Female Ratio -->
   <div class="ratio-main">
     <div class="ratio-header">
       <div class="man">
-        <span>男士</span>
+        <span>Male</span>
         <img src="../images/man.png" alt="" />
       </div>
       <div class="woman">
-        <span>女士</span>
+        <span>Female</span>
         <img src="../images/woman.png" alt="" />
       </div>
     </div>
@@ -47,7 +47,7 @@ const option: ECOption = {
     {
       type: "category",
       position: "left",
-      data: ["男生"],
+      data: ["Male"],
       axisTick: {
         show: false
       },
@@ -61,7 +61,7 @@ const option: ECOption = {
     {
       type: "category",
       position: "right",
-      data: ["女士"],
+      data: ["Female"],
       axisTick: {
         show: false
       },
@@ -103,7 +103,7 @@ const option: ECOption = {
         offset: [0, -20],
         fontSize: 12,
         formatter: () => {
-          return `男士 ${data.man * 100}%`;
+          return `Male ${data.man * 100}%`;
         }
       }
     },
@@ -123,7 +123,7 @@ const option: ECOption = {
         offset: [0, -20],
         fontSize: 12,
         formatter: () => {
-          return `女士 ${data.woman * 100}%`;
+          return `Female ${data.woman * 100}%`;
         }
       }
     }

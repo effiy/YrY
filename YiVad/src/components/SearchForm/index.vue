@@ -18,10 +18,10 @@
         </GridItem>
         <GridItem suffix>
           <div class="operation">
-            <el-button type="primary" :icon="Search" @click="search"> 搜索 </el-button>
-            <el-button :icon="Delete" @click="reset"> 重置 </el-button>
+            <el-button type="primary" :icon="Search" @click="search"> Search </el-button>
+            <el-button :icon="Delete" @click="reset"> Reset </el-button>
             <el-button v-if="showCollapse" type="primary" link class="search-isOpen" @click="collapsed = !collapsed">
-              {{ collapsed ? "展开" : "合并" }}
+              {{ collapsed ? "Expand" : "Collapse" }}
               <el-icon class="el-icon--right">
                 <component :is="collapsed ? ArrowDown : ArrowUp"></component>
               </el-icon>
@@ -42,20 +42,20 @@ import Grid from "@/components/Grid/index.vue";
 import GridItem from "@/components/Grid/components/GridItem.vue";
 
 interface ProTableProps {
-  columns?: ColumnProps[]; // 搜索配置列
-  searchParam?: { [key: string]: any }; // 搜索参数
+  columns?: ColumnProps[]; // Search config columns
+  searchParam?: { [key: string]: any }; // Search params
   searchCol: number | Record<BreakPoint, number>;
-  search: (params: any) => void; // 搜索方法
-  reset: (params: any) => void; // 重置方法
+  search: (params: any) => void; // Search method
+  reset: (params: any) => void; // Reset method
 }
 
-// 默认值
+// Default values
 const props = withDefaults(defineProps<ProTableProps>(), {
   columns: () => [],
   searchParam: () => ({})
 });
 
-// 获取响应式设置
+// Get responsive settings
 const getResponsive = (item: ColumnProps) => {
   return {
     span: item.search?.span,
@@ -68,14 +68,14 @@ const getResponsive = (item: ColumnProps) => {
   };
 };
 
-// 是否默认折叠搜索项
+// Whether to collapse search items by default
 const collapsed = ref(true);
 
-// 获取响应式断点
+// Get responsive breakpoint
 const gridRef = ref();
 const breakPoint = computed<BreakPoint>(() => gridRef.value?.breakPoint);
 
-// 判断是否显示 展开/合并 按钮
+// Determine whether to show expand/collapse button
 const showCollapse = computed(() => {
   let show = false;
   props.columns.reduce((prev, current) => {

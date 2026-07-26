@@ -1,4 +1,4 @@
-<!-- 分栏布局 -->
+<!-- Column Layout -->
 <template>
   <el-container class="layout">
     <div class="aside-split">
@@ -74,7 +74,7 @@ const splitActive = ref("");
 watch(
   () => [menuList, route],
   () => {
-    // 当前菜单没有数据直接 return
+    // Return directly if current menu has no data
     if (!menuList.value.length) return;
     splitActive.value = route.path;
     const menuItem = menuList.value.filter((item: Menu.MenuOptions) => {
@@ -99,5 +99,5 @@ const changeSubMenu = (item: Menu.MenuOptions) => {
 </script>
 
 <style scoped lang="scss">
-@import "./index.scss";
+@use "./index.scss" as *;
 </style>

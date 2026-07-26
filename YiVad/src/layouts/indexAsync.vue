@@ -1,4 +1,4 @@
-<!-- 💥 这里是异步加载 LayoutComponents -->
+<!-- 💥 Async loading of LayoutComponents -->
 <template>
   <el-watermark id="watermark" :font="font" :content="watermark ? ['YiVad', 'Happy Working'] : ''">
     <suspense>

@@ -135,6 +135,10 @@ def create_app(
     else:
         logger.info("Auth middleware disabled")
 
+    # Mount MCP server (before static to avoid route shadowing)
+    from server.mcp_server import mount_to_app
+    mount_to_app(app)
+
     # Mount static files
     static_dir = settings.static_base_dir
     app.mount("/static", StaticFiles(directory=static_dir), name="static")

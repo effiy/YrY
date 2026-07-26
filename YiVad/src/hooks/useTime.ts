@@ -1,24 +1,24 @@
 import { ref } from "vue";
 
 /**
- * @description 获取本地时间
+ * @description Get local time
  */
 export const useTime = () => {
-  const year = ref(0); // 年份
-  const month = ref(0); // 月份
-  const week = ref(""); // 星期几
-  const day = ref(0); // 天数
-  const hour = ref<number | string>(0); // 小时
-  const minute = ref<number | string>(0); // 分钟
-  const second = ref<number | string>(0); // 秒
-  const nowTime = ref<string>(""); // 当前时间
+  const year = ref(0); // Year
+  const month = ref(0); // Month
+  const week = ref(""); // Day of week
+  const day = ref(0); // Day
+  const hour = ref<number | string>(0); // Hour
+  const minute = ref<number | string>(0); // Minute
+  const second = ref<number | string>(0); // Second
+  const nowTime = ref<string>(""); // Current time
 
-  // 更新时间
+  // Update time
   const updateTime = () => {
     const date = new Date();
     year.value = date.getFullYear();
     month.value = date.getMonth() + 1;
-    week.value = "日一二三四五六".charAt(date.getDay());
+    week.value = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][date.getDay()];
     day.value = date.getDate();
     hour.value =
       (date.getHours() + "")?.padStart(2, "0") ||
@@ -29,7 +29,7 @@ export const useTime = () => {
     second.value =
       (date.getSeconds() + "")?.padStart(2, "0") ||
       new Intl.NumberFormat(undefined, { minimumIntegerDigits: 2 }).format(date.getSeconds());
-    nowTime.value = `${year.value}年${month.value}月${day.value} ${hour.value}:${minute.value}:${second.value}`;
+    nowTime.value = `${year.value}-${month.value}-${day.value} ${hour.value}:${minute.value}:${second.value}`;
   };
 
   updateTime();

@@ -14,7 +14,7 @@
       </template>
     </el-input>
     <el-dialog v-model="dialogVisible" :title="placeholder" top="50px" width="66%">
-      <el-input v-model="inputValue" placeholder="搜索图标" size="large" :prefix-icon="Icons.Search" />
+      <el-input v-model="inputValue" placeholder="Search icons" size="large" :prefix-icon="Icons.Search" />
       <el-scrollbar v-if="Object.keys(iconsList).length">
         <div class="icon-list">
           <div v-for="item in iconsList" :key="item" class="icon-item" @click="selectIcon(item)">
@@ -23,7 +23,7 @@
           </div>
         </div>
       </el-scrollbar>
-      <el-empty v-else description="未搜索到您要找的图标~" />
+      <el-empty v-else description="No icons found matching your search~" />
     </el-dialog>
   </div>
 </template>
@@ -41,19 +41,19 @@ interface SelectIconProps {
 
 const props = withDefaults(defineProps<SelectIconProps>(), {
   iconValue: "",
-  title: "请选择图标",
+  title: "Please select icon",
   clearable: true,
-  placeholder: "请选择图标"
+  placeholder: "Please select icon"
 });
 
-// 重新接收一下，防止打包后 clearable 报错
+// Re-receive to prevent clearable error after build
 const valueIcon = ref(props.iconValue);
 
 // open Dialog
 const dialogVisible = ref(false);
 const openDialog = () => (dialogVisible.value = true);
 
-// 选择图标(触发更新父组件数据)
+// Select icon (trigger parent component data update)
 const emit = defineEmits<{
   "update:iconValue": [value: string];
 }>();
@@ -64,7 +64,7 @@ const selectIcon = (item: any) => {
   setTimeout(() => inputRef.value.blur(), 0);
 };
 
-// 清空图标
+// Clear icon
 const inputRef = ref();
 const clearIcon = () => {
   valueIcon.value = "";
@@ -72,7 +72,7 @@ const clearIcon = () => {
   setTimeout(() => inputRef.value.blur(), 0);
 };
 
-// 监听搜索框值
+// Watch search input value
 const inputValue = ref("");
 const customIcons: { [key: string]: any } = Icons;
 const iconsList = computed((): { [key: string]: any } => {
@@ -86,5 +86,5 @@ const iconsList = computed((): { [key: string]: any } => {
 </script>
 
 <style scoped lang="scss">
-@import "./index.scss";
+@use "./index.scss" as *;
 </style>

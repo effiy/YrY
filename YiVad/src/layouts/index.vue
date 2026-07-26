@@ -1,4 +1,4 @@
-<!-- 💥 这里是一次性加载 LayoutComponents -->
+<!-- 💥 One-time loading of LayoutComponents -->
 <template>
   <el-watermark id="watermark" :font="font" :content="watermark ? ['YiVad', 'Happy Working'] : ''">
     <component :is="LayoutComponents[layout]" />

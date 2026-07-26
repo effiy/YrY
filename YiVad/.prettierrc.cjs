@@ -1,41 +1,41 @@
 // @see: https://www.prettier.cn
 
 module.exports = {
-  // 指定最大换行长度
+  // Specify the maximum line length
   printWidth: 130,
-  // 缩进制表符宽度 | 空格数
+  // Indentation tab width | number of spaces
   tabWidth: 2,
-  // 使用制表符而不是空格缩进行 (true：制表符，false：空格)
+  // Use tabs instead of spaces for indentation (true: tabs, false: spaces)
   useTabs: false,
-  // 结尾不用分号 (true：有，false：没有)
+  // Use semicolons at the end of statements (true: yes, false: no)
   semi: true,
-  // 使用单引号 (true：单引号，false：双引号)
+  // Use single quotes instead of double quotes (true: single quotes, false: double quotes)
   singleQuote: false,
-  // 在对象字面量中决定是否将属性名用引号括起来 可选值 "<as-needed|consistent|preserve>"
+  // Decide whether to quote property names in object literals. Options: "<as-needed|consistent|preserve>"
   quoteProps: "as-needed",
-  // 在JSX中使用单引号而不是双引号 (true：单引号，false：双引号)
+  // Use single quotes instead of double quotes in JSX (true: single quotes, false: double quotes)
   jsxSingleQuote: false,
-  // 多行时尽可能打印尾随逗号 可选值"<none|es5|all>"
+  // Print trailing commas wherever possible in multi-line. Options: "<none|es5|all>"
   trailingComma: "none",
-  // 在对象，数组括号与文字之间加空格 "{ foo: bar }" (true：有，false：没有)
+  // Print spaces between brackets in object literals (true: yes, false: no)
   bracketSpacing: true,
-  // 将 > 多行元素放在最后一行的末尾，而不是单独放在下一行 (true：放末尾，false：单独一行)
+  // Put the > of a multi-line element at the end of the last line instead of alone on the next line
   bracketSameLine: false,
-  // (x) => {} 箭头函数参数只有一个时是否要有小括号 (avoid：省略括号，always：不省略括号)
+  // Include parentheses around a sole arrow function parameter (avoid: omit parens, always: include parens)
   arrowParens: "avoid",
-  // 指定要使用的解析器，不需要写文件开头的 @prettier
+  // Specify which parser to use, no need to write @prettier at the top of files
   requirePragma: false,
-  // 可以在文件顶部插入一个特殊标记，指定该文件已使用 Prettier 格式化
+  // Insert a special @prettier pragma at the top of files to specify they have been formatted with Prettier
   insertPragma: false,
-  // 用于控制文本是否应该被换行以及如何进行换行
+  // Control how text should be wrapped
   proseWrap: "preserve",
-  // 在html中空格是否是敏感的 "css" - 遵守 CSS 显示属性的默认值， "strict" - 空格被认为是敏感的 ，"ignore" - 空格被认为是不敏感的
+  // How whitespace is handled in HTML. "css" - respect CSS display defaults, "strict" - whitespace is sensitive, "ignore" - whitespace is insensitive
   htmlWhitespaceSensitivity: "css",
-  // 控制在 Vue 单文件组件中 <script> 和 <style> 标签内的代码缩进方式
+  // Control indentation of <script> and <style> tags in Vue single-file components
   vueIndentScriptAndStyle: false,
-  // 换行符使用 lf 结尾是 可选值 "<auto|lf|crlf|cr>"
+  // Line ending style. Options: "<auto|lf|crlf|cr>"
   endOfLine: "auto",
-  // 这两个选项可用于格式化以给定字符偏移量（分别包括和不包括）开始和结束的代码 (rangeStart：开始，rangeEnd：结束)
+  // Format code within the given character offset range (rangeStart: start, rangeEnd: end)
   rangeStart: 0,
   rangeEnd: Infinity
 };

@@ -13,14 +13,14 @@ const slots = useSlots();
 
 const enumMap = inject("enumMap", ref(new Map()));
 
-// 渲染表格数据
+// Render table data
 const renderCellData = (item: ColumnProps, scope: RenderScope<any>) => {
   return enumMap.value.get(item.prop) && item.isFilterEnum
     ? filterEnum(handleRowAccordingToProp(scope.row, item.prop!), enumMap.value.get(item.prop)!, item.fieldNames)
     : formatValue(handleRowAccordingToProp(scope.row, item.prop!));
 };
 
-// 获取 tag 类型
+// Get tag type
 const getTagType = (item: ColumnProps, scope: RenderScope<any>) => {
   return (
     filterEnum(handleRowAccordingToProp(scope.row, item.prop!), enumMap.value.get(item.prop), item.fieldNames, "tag") || "primary"

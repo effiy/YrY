@@ -1,12 +1,12 @@
 <template>
   <div class="card content-box">
-    <span class="text"> 菜单权限 🍓🍇🍈🍉</span>
+    <span class="text"> Menu Permissions 🍓🍇🍈🍉</span>
     <el-alert
-      :title="'目前菜单权限使用动态路由实现，模拟后台根据不同用户角色返回对应路由，注意观察左侧菜单变化（admin 账号可查看所有菜单、user 账号只可查看部分菜单）'"
+      :title="'Menu permissions are currently implemented via dynamic routing, simulating backend returning different routes based on user roles. Observe the left menu changes (admin account can view all menus; user account can view only partial menus)'"
       type="success"
       :closable="false"
     />
-    <el-button class="mt20" type="primary" :icon="Promotion" @click="handleToLogin"> 登录其他账号 </el-button>
+    <el-button class="mt20" type="primary" :icon="Promotion" @click="handleToLogin"> Login as another account </el-button>
   </div>
 </template>
 
@@ -26,5 +26,5 @@ const handleToLogin = () => {
 </script>
 
 <style scoped lang="scss">
-@import "./index.scss";
+@use "./index.scss" as *;
 </style>

@@ -4,8 +4,8 @@ import { FieldNamesProps } from "@/components/ProTable/interface";
 const mode = import.meta.env.VITE_ROUTER_MODE;
 
 /**
- * @description 获取localStorage
- * @param {String} key Storage名称
+ * @description Get localStorage
+ * @param {String} key Storage name
  * @returns {String}
  */
 export function localGet(key: string) {
@@ -18,9 +18,9 @@ export function localGet(key: string) {
 }
 
 /**
- * @description 存储localStorage
- * @param {String} key Storage名称
- * @param {*} value Storage值
+ * @description Set localStorage
+ * @param {String} key Storage name
+ * @param {*} value Storage value
  * @returns {void}
  */
 export function localSet(key: string, value: any) {
@@ -28,8 +28,8 @@ export function localSet(key: string, value: any) {
 }
 
 /**
- * @description 清除localStorage
- * @param {String} key Storage名称
+ * @description Remove localStorage
+ * @param {String} key Storage name
  * @returns {void}
  */
 export function localRemove(key: string) {
@@ -37,7 +37,7 @@ export function localRemove(key: string) {
 }
 
 /**
- * @description 清除所有localStorage
+ * @description Clear all localStorage
  * @returns {void}
  */
 export function localClear() {
@@ -45,8 +45,8 @@ export function localClear() {
 }
 
 /**
- * @description 判断数据类型
- * @param {*} val 需要判断类型的数据
+ * @description Determine data type
+ * @param {*} val Data to check the type of
  * @returns {String}
  */
 export function isType(val: any) {
@@ -56,7 +56,7 @@ export function isType(val: any) {
 }
 
 /**
- * @description 生成唯一 uuid
+ * @description Generate unique UUID
  * @returns {String}
  */
 export function generateUUID() {
@@ -70,10 +70,10 @@ export function generateUUID() {
 }
 
 /**
- * 判断两个对象是否相同
- * @param {Object} a 要比较的对象一
- * @param {Object} b 要比较的对象二
- * @returns {Boolean} 相同返回 true，反之 false
+ * Check if two objects are equal
+ * @param {Object} a First object to compare
+ * @param {Object} b Second object to compare
+ * @returns {Boolean} true if equal, false otherwise
  */
 export function isObjectValueEqual(a: { [key: string]: any }, b: { [key: string]: any }) {
   if (!a || !b) return false;
@@ -95,9 +95,9 @@ export function isObjectValueEqual(a: { [key: string]: any }, b: { [key: string]
 }
 
 /**
- * @description 生成随机数
- * @param {Number} min 最小值
- * @param {Number} max 最大值
+ * @description Generate random number
+ * @param {Number} min Minimum value
+ * @param {Number} max Maximum value
  * @returns {Number}
  */
 export function randomNum(min: number, max: number): number {
@@ -106,21 +106,21 @@ export function randomNum(min: number, max: number): number {
 }
 
 /**
- * @description 获取当前时间对应的提示语
+ * @description Get greeting based on current time
  * @returns {String}
  */
 export function getTimeState() {
   let timeNow = new Date();
   let hours = timeNow.getHours();
-  if (hours >= 6 && hours <= 10) return `早上好 ⛅`;
-  if (hours >= 10 && hours <= 14) return `中午好 🌞`;
-  if (hours >= 14 && hours <= 18) return `下午好 🌞`;
-  if (hours >= 18 && hours <= 24) return `晚上好 🌛`;
-  if (hours >= 0 && hours <= 6) return `凌晨好 🌛`;
+  if (hours >= 6 && hours <= 10) return `Good morning ⛅`;
+  if (hours >= 10 && hours <= 14) return `Good afternoon 🌞`;
+  if (hours >= 14 && hours <= 18) return `Good afternoon 🌞`;
+  if (hours >= 18 && hours <= 24) return `Good evening 🌛`;
+  if (hours >= 0 && hours <= 6) return `Good night 🌛`;
 }
 
 /**
- * @description 获取浏览器默认语言
+ * @description Get browser default language
  * @returns {String}
  */
 export function getBrowserLang() {
@@ -135,7 +135,7 @@ export function getBrowserLang() {
 }
 
 /**
- * @description 获取不同路由模式所对应的 url + params
+ * @description Get url + params for different router modes
  * @returns {String}
  */
 export function getUrlWithParams() {
@@ -147,8 +147,8 @@ export function getUrlWithParams() {
 }
 
 /**
- * @description 使用递归扁平化菜单，方便添加动态路由
- * @param {Array} menuList 菜单列表
+ * @description Flatten menu recursively for easy dynamic route addition
+ * @param {Array} menuList Menu list
  * @returns {Array}
  */
 export function getFlatMenuList(menuList: Menu.MenuOptions[]): Menu.MenuOptions[] {
@@ -157,8 +157,8 @@ export function getFlatMenuList(menuList: Menu.MenuOptions[]): Menu.MenuOptions[
 }
 
 /**
- * @description 使用递归过滤出需要渲染在左侧菜单的列表 (需剔除 isHide == true 的菜单)
- * @param {Array} menuList 菜单列表
+ * @description Recursively filter menus to show in sidebar (excluding isHide == true)
+ * @param {Array} menuList Menu list
  * @returns {Array}
  * */
 export function getShowMenuList(menuList: Menu.MenuOptions[]) {
@@ -170,10 +170,10 @@ export function getShowMenuList(menuList: Menu.MenuOptions[]) {
 }
 
 /**
- * @description 使用递归找出所有面包屑存储到 pinia/vuex 中
- * @param {Array} menuList 菜单列表
- * @param {Array} parent 父级菜单
- * @param {Object} result 处理后的结果
+ * @description Recursively find all breadcrumbs to store in pinia/vuex
+ * @param {Array} menuList Menu list
+ * @param {Array} parent Parent menu
+ * @param {Object} result Processed result
  * @returns {Object}
  */
 export const getAllBreadcrumbList = (menuList: Menu.MenuOptions[], parent = [], result: { [key: string]: any } = {}) => {
@@ -185,9 +185,9 @@ export const getAllBreadcrumbList = (menuList: Menu.MenuOptions[], parent = [], 
 };
 
 /**
- * @description 使用递归处理路由菜单 path，生成一维数组 (第一版本地路由鉴权会用到，该函数暂未使用)
- * @param {Array} menuList 所有菜单列表
- * @param {Array} menuPathArr 菜单地址的一维数组 ['**','**']
+ * @description Recursively process route menu paths into a flat array (used by v1 local route auth, currently unused)
+ * @param {Array} menuList All menu list
+ * @param {Array} menuPathArr Flat array of menu paths
  * @returns {Array}
  */
 export function getMenuListPath(menuList: Menu.MenuOptions[], menuPathArr: string[] = []): string[] {
@@ -199,9 +199,9 @@ export function getMenuListPath(menuList: Menu.MenuOptions[], menuPathArr: strin
 }
 
 /**
- * @description 递归查询当前 path 所对应的菜单对象 (该函数暂未使用)
- * @param {Array} menuList 菜单列表
- * @param {String} path 当前访问地址
+ * @description Recursively find the menu object for current path (currently unused)
+ * @param {Array} menuList Menu list
+ * @param {String} path Current access path
  * @returns {Object | null}
  */
 export function findMenuByPath(menuList: Menu.MenuOptions[], path: string): Menu.MenuOptions | null {
@@ -216,9 +216,9 @@ export function findMenuByPath(menuList: Menu.MenuOptions[], path: string): Menu
 }
 
 /**
- * @description 使用递归过滤需要缓存的菜单 name (该函数暂未使用)
- * @param {Array} menuList 所有菜单列表
- * @param {Array} keepAliveNameArr 缓存的菜单 name ['**','**']
+ * @description Recursively filter menu names that need caching (currently unused)
+ * @param {Array} menuList All menu list
+ * @param {Array} keepAliveNameArr Cached menu names array
  * @returns {Array}
  * */
 export function getKeepAliveRouterName(menuList: Menu.MenuOptions[], keepAliveNameArr: string[] = []) {
@@ -230,33 +230,33 @@ export function getKeepAliveRouterName(menuList: Menu.MenuOptions[], keepAliveNa
 }
 
 /**
- * @description 格式化表格单元格默认值 (el-table-column)
- * @param {Number} row 行
- * @param {Number} col 列
- * @param {*} callValue 当前单元格值
+ * @description Format table cell default value (el-table-column)
+ * @param {Number} row Row
+ * @param {Number} col Column
+ * @param {*} callValue Current cell value
  * @returns {String}
  * */
 export function formatTableColumn(row: number, col: number, callValue: any) {
-  // 如果当前值为数组，使用 / 拼接（根据需求自定义）
+  // If current value is array, join with / (customizable)
   if (isArray(callValue)) return callValue.length ? callValue.join(" / ") : "--";
   return callValue ?? "--";
 }
 
 /**
- * @description 处理 ProTable 值为数组 || 无数据
- * @param {*} callValue 需要处理的值
+ * @description Handle ProTable array value or empty data
+ * @param {*} callValue Value to process
  * @returns {String}
  * */
 export function formatValue(callValue: any) {
-  // 如果当前值为数组，使用 / 拼接（根据需求自定义）
+  // If current value is array, join with / (customizable)
   if (isArray(callValue)) return callValue.length ? callValue.join(" / ") : "--";
   return callValue ?? "--";
 }
 
 /**
- * @description 处理 prop 为多级嵌套的情况，返回的数据 (列如: prop: user.name)
- * @param {Object} row 当前行数据
- * @param {String} prop 当前 prop
+ * @description Handle multi-level nested prop, return data (e.g. prop: user.name)
+ * @param {Object} row Current row data
+ * @param {String} prop Current prop
  * @returns {*}
  * */
 export function handleRowAccordingToProp(row: { [key: string]: any }, prop: string) {
@@ -266,8 +266,8 @@ export function handleRowAccordingToProp(row: { [key: string]: any }, prop: stri
 }
 
 /**
- * @description 处理 prop，当 prop 为多级嵌套时 ==> 返回最后一级 prop
- * @param {String} prop 当前 prop
+ * @description Process prop, return last level for nested props
+ * @param {String} prop Current prop
  * @returns {String}
  * */
 export function handleProp(prop: string) {
@@ -277,11 +277,11 @@ export function handleProp(prop: string) {
 }
 
 /**
- * @description 根据枚举列表查询当需要的数据（如果指定了 label 和 value 的 key值，会自动识别格式化）
- * @param {String} callValue 当前单元格值
- * @param {Array} enumData 字典列表
- * @param {Array} fieldNames label && value && children 的 key 值
- * @param {String} type 过滤类型（目前只有 tag）
+ * @description Query data from enum list (auto-detect label/value keys for formatting)
+ * @param {String} callValue Current cell value
+ * @param {Array} enumData Dictionary list
+ * @param {Array} fieldNames Key names for label, value, and children
+ * @param {String} type Filter type (currently only tag)
  * @returns {String}
  * */
 export function filterEnum(callValue: any, enumData?: any, fieldNames?: FieldNamesProps, type?: "tag") {
@@ -289,9 +289,9 @@ export function filterEnum(callValue: any, enumData?: any, fieldNames?: FieldNam
   const label = fieldNames?.label ?? "label";
   const children = fieldNames?.children ?? "children";
   let filterData: { [key: string]: any } = {};
-  // 判断 enumData 是否为数组
+  // Check if enumData is an array
   if (Array.isArray(enumData)) filterData = findItemNested(enumData, callValue, value, children);
-  // 判断是否输出的结果为 tag 类型
+  // Check if output is tag type
   if (type == "tag") {
     return filterData?.tagType ? filterData.tagType : "";
   } else {
@@ -300,7 +300,7 @@ export function filterEnum(callValue: any, enumData?: any, fieldNames?: FieldNam
 }
 
 /**
- * @description 递归查找 callValue 对应的 enum 值
+ * @description Recursively find enum value matching callValue
  * */
 export function findItemNested(enumData: any, callValue: any, value: string, children: string) {
   return enumData.reduce((accumulator: any, current: any) => {

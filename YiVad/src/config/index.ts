@@ -1,19 +1,19 @@
-// ? 全局默认配置项
+// ? Global default configuration
 
-// 首页地址（默认）
+// Home page URL (default)
 export const HOME_URL: string = "/home/index";
 
-// 登录页地址（默认）
+// Login page URL (default)
 export const LOGIN_URL: string = "/login";
 
-// 默认主题颜色
+// Default theme color
 export const DEFAULT_PRIMARY: string = "#009688";
 
-// 路由白名单地址（本地存在的路由 staticRouter.ts 中）
+// Route whitelist (routes existing in staticRouter.ts)
 export const ROUTER_WHITE_LIST: string[] = ["/500"];
 
-// 高德地图 key
+// AMap key
 export const AMAP_MAP_KEY: string = "";
 
-// 百度地图 key
+// Baidu Map key
 export const BAIDU_MAP_KEY: string = "";

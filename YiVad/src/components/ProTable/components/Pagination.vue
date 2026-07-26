@@ -1,5 +1,5 @@
 <template>
-  <!-- 分页组件 -->
+  <!-- Pagination Component -->
   <el-pagination
     :background="true"
     :current-page="pageable.pageNum"

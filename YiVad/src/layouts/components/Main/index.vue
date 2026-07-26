@@ -31,12 +31,12 @@ const { maximize, isCollapse, layout, tabs, footer } = storeToRefs(globalStore);
 const keepAliveStore = useKeepAliveStore();
 const { keepAliveName } = storeToRefs(keepAliveStore);
 
-// 注入刷新页面方法
+// Inject refresh page method
 const isRouterShow = ref(true);
 const refreshCurrentPage = (val: boolean) => (isRouterShow.value = val);
 provide("refresh", refreshCurrentPage);
 
-// 解决详情页 keep-alive 问题
+// Fix keep-alive issue for detail pages
 const wrapperMap = new Map();
 function createComponentWrapper(component, route) {
   if (!component) return;
@@ -49,7 +49,7 @@ function createComponentWrapper(component, route) {
   return h(wrapper);
 }
 
-// 监听当前页面是否最大化，动态添加 class
+// Watch if current page is maximized, dynamically add class
 watch(
   () => maximize.value,
   () => {
@@ -60,7 +60,7 @@ watch(
   { immediate: true }
 );
 
-// 监听布局变化，在 body 上添加相对应的 layout class
+// Watch layout changes, add corresponding layout class on body
 watch(
   () => layout.value,
   () => {
@@ -70,7 +70,7 @@ watch(
   { immediate: true }
 );
 
-// 监听窗口大小变化，折叠侧边栏
+// Watch window size changes, collapse sidebar
 const screenWidth = ref(0);
 const listeningWindow = useDebounceFn(() => {
   screenWidth.value = document.body.clientWidth;
@@ -84,5 +84,5 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
-@import "./index.scss";
+@use "./index.scss" as *;
 </style>

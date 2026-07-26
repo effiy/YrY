@@ -1,9 +1,9 @@
 <template>
-  <!-- 热门板块 -->
+  <!-- Hot Spots Ranking -->
   <div class="echarts-header">
-    <span>排名</span>
-    <span>景区</span>
-    <span>预约数量</span>
+    <span>Rank</span>
+    <span>Scenic Spot</span>
+    <span>Bookings</span>
   </div>
   <div class="echarts">
     <ECharts :option="option" :resize="false" />
@@ -25,31 +25,31 @@ interface ChartProp {
 const data = [
   {
     value: 79999,
-    name: "峨眉山",
+    name: "Mount Emei",
     percentage: "80%",
     maxValue: 100000
   },
   {
     value: 59999,
-    name: "稻城亚丁",
+    name: "Daocheng Yading",
     percentage: "60%",
     maxValue: 100000
   },
   {
     value: 49999,
-    name: "九寨沟",
+    name: "Jiuzhaigou",
     percentage: "50%",
     maxValue: 100000
   },
   {
     value: 39999,
-    name: "万里长城",
+    name: "Great Wall",
     percentage: "40%",
     maxValue: 100000
   },
   {
     value: 29999,
-    name: "北京故宫",
+    name: "Forbidden City",
     percentage: "30%",
     maxValue: 100000
   }
@@ -184,7 +184,7 @@ const option: ECOption = {
   ],
   series: [
     {
-      name: "条",
+      name: "bar",
       type: "bar",
       yAxisIndex: 0,
       data,
@@ -207,7 +207,7 @@ const option: ECOption = {
       }
     },
     {
-      name: "框",
+      name: "frame",
       type: "bar",
       yAxisIndex: 1,
       data: data.map((val: ChartProp) => {

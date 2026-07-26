@@ -1,9 +1,9 @@
 import { PersistedStateOptions } from "pinia-plugin-persistedstate";
 
 /**
- * @description pinia 持久化参数配置
- * @param {String} key 存储到持久化的 name
- * @param {Array} paths 需要持久化的 state name
+ * @description Pinia persistence parameter configuration
+ * @param {String} key Name for persisted storage
+ * @param {Array} paths State names to persist
  * @return persist
  * */
 const piniaPersistConfig = (key: string, paths?: string[]) => {

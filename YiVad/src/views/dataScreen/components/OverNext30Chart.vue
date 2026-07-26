@@ -1,5 +1,5 @@
 <template>
-  <!-- 未来30天访问量趋势预测图 -->
+  <!-- Next 30 Days Visitor Trend Forecast -->
   <div class="echarts">
     <ECharts :option="option" :resize="false" />
   </div>
@@ -25,7 +25,7 @@ const initDate = (): string[] => {
 };
 
 const data = {
-  unit: ["访问量"],
+  unit: ["Visits"],
   data: new Array(31).fill("").map(val => {
     val = randomNum(1, 200000);
     return val;
@@ -39,7 +39,7 @@ const option: ECOption = {
     formatter: params => {
       let tipData = (params as { name: string; value: string }[])[0];
       let html = `<div class="line-chart-bg">
-                        <span style="">${tipData.name} <i >${tipData.value}</i> 人次访问</span>
+                        <span style="">${tipData.name} <i >${tipData.value}</i> visits</span>
                     </div>`;
       return html;
     },
@@ -83,7 +83,7 @@ const option: ECOption = {
   ],
   yAxis: data.unit.map((_val: string, index: number) => {
     return {
-      name: "(访问量)",
+      name: "(Visits)",
       nameTextStyle: {
         color: "#7ec7ff",
         fontSize: 12,

@@ -2,7 +2,7 @@ import { RouteRecordRaw } from "vue-router";
 import { HOME_URL, LOGIN_URL } from "@/config";
 
 /**
- * staticRouter (静态路由)
+ * staticRouter (static routes)
  */
 export const staticRouter: RouteRecordRaw[] = [
   {
@@ -14,7 +14,7 @@ export const staticRouter: RouteRecordRaw[] = [
     name: "login",
     component: () => import("@/views/login/index.vue"),
     meta: {
-      title: "登录"
+      title: "Login"
     }
   },
   {
@@ -28,7 +28,7 @@ export const staticRouter: RouteRecordRaw[] = [
 ];
 
 /**
- * errorRouter (错误页面路由)
+ * errorRouter (error page routes)
  */
 export const errorRouter = [
   {
@@ -36,7 +36,7 @@ export const errorRouter = [
     name: "403",
     component: () => import("@/components/ErrorMessage/403.vue"),
     meta: {
-      title: "403页面"
+      title: "403 Page"
     }
   },
   {
@@ -44,7 +44,7 @@ export const errorRouter = [
     name: "404",
     component: () => import("@/components/ErrorMessage/404.vue"),
     meta: {
-      title: "404页面"
+      title: "404 Page"
     }
   },
   {
@@ -52,7 +52,7 @@ export const errorRouter = [
     name: "500",
     component: () => import("@/components/ErrorMessage/500.vue"),
     meta: {
-      title: "500页面"
+      title: "500 Page"
     }
   },
   // Resolve refresh page, route warnings

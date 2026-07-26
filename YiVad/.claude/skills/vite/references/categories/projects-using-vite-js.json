@@ -1,0 +1,186 @@
+{
+  "name": "Projects Using Vite.js",
+  "slug": "projects-using-vite-js",
+  "source_id": "awesome-vite",
+  "file": "categories/projects-using-vite-js.json",
+  "topics": [
+    {
+      "name": "Open Source",
+      "resources": [
+        {
+          "category": "Projects Using Vite.js",
+          "topic": "Open Source",
+          "title": "VitePress",
+          "url": "https://github.com/vuejs/vitepress",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Projects Using Vite.js",
+          "topic": "Open Source",
+          "title": "Slidev",
+          "url": "https://github.com/slidevjs/slidev",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Projects Using Vite.js",
+          "topic": "Open Source",
+          "title": "Astro",
+          "url": "https://github.com/withastro/astro",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Projects Using Vite.js",
+          "topic": "Open Source",
+          "title": "Hathora",
+          "url": "https://github.com/hathora/hathora",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Projects Using Vite.js",
+          "topic": "Open Source",
+          "title": "Nhost",
+          "url": "https://github.com/nhost/nhost",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Projects Using Vite.js",
+          "topic": "Open Source",
+          "title": "Ladle",
+          "url": "https://github.com/tajo/ladle",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Projects Using Vite.js",
+          "topic": "Open Source",
+          "title": "IslandJS",
+          "url": "https://github.com/sanyuan0704/island.js",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Projects Using Vite.js",
+          "topic": "Open Source",
+          "title": "Vituum",
+          "url": "https://github.com/vituum/vituum",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Projects Using Vite.js",
+          "topic": "Open Source",
+          "title": "Compiiile",
+          "url": "https://github.com/AlbanCrepel/compiiile",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Projects Using Vite.js",
+          "topic": "Open Source",
+          "title": "Gracile",
+          "url": "https://github.com/gracile-web/gracile",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Projects Using Vite.js",
+          "topic": "Open Source",
+          "title": "@lazarv/react-server",
+          "url": "https://github.com/lazarv/react-server",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Projects Using Vite.js",
+          "topic": "Open Source",
+          "title": "WXT",
+          "url": "https://github.com/wxt-dev/wxt",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Projects Using Vite.js",
+          "topic": "Open Source",
+          "title": "Revili",
+          "url": "https://github.com/revilijs/revili",
+          "source": "awesome-vite"
+        }
+      ]
+    },
+    {
+      "name": "Apps/Websites",
+      "resources": [
+        {
+          "category": "Projects Using Vite.js",
+          "topic": "Apps/Websites",
+          "title": "Icônes",
+          "url": "https://github.com/antfu/icones",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Projects Using Vite.js",
+          "topic": "Apps/Websites",
+          "title": "Awesome CN Café",
+          "url": "https://github.com/antfu/awesome-cn-cafe-web",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Projects Using Vite.js",
+          "topic": "Apps/Websites",
+          "title": "Todo Example",
+          "url": "https://github.com/beary/vite-example",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Projects Using Vite.js",
+          "topic": "Apps/Websites",
+          "title": "aitrack.work",
+          "url": "https://aitrack.work",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Projects Using Vite.js",
+          "topic": "Apps/Websites",
+          "title": "macOS in Svelte",
+          "url": "https://github.com/PuruVJ/macos-web/",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Projects Using Vite.js",
+          "topic": "Apps/Websites",
+          "title": "vue3-realworld-example-app",
+          "url": "https://github.com/mutoe/vue3-realworld-example-app",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Projects Using Vite.js",
+          "topic": "Apps/Websites",
+          "title": "react-device-frameset",
+          "url": "https://github.com/zheeeng/react-device-frameset",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Projects Using Vite.js",
+          "topic": "Apps/Websites",
+          "title": "Preview.js",
+          "url": "https://previewjs.com",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Projects Using Vite.js",
+          "topic": "Apps/Websites",
+          "title": "pointer-lock-movement",
+          "url": "https://github.com/zheeeng/pointer-lock-movement",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Projects Using Vite.js",
+          "topic": "Apps/Websites",
+          "title": "vite-run",
+          "url": "https://github.com/biggerstar/vite-run",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Projects Using Vite.js",
+          "topic": "Apps/Websites",
+          "title": "Dataviz Explorer",
+          "url": "https://github.com/fehmisener/dataviz-explorer",
+          "source": "awesome-vite"
+        }
+      ]
+    }
+  ]
+}

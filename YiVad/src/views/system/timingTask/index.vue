@@ -1,6 +1,6 @@
 <template>
   <div class="card content-box">
-    <span class="text"> 定时任务（待完善） 🍓🍇🍈🍉</span>
+    <span class="text"> Scheduled Tasks (TBD) 🍓🍇🍈🍉</span>
   </div>
 </template>
 

@@ -1,161 +1,164 @@
 <template>
   <div class="upload content-box">
-    <!-- 多图上传 -->
+    <!-- Multiple image upload -->
     <div class="card img-box">
-      <span class="text">多图片上传组件 🍓🍇🍈🍉</span>
+      <span class="text">Multi-Image Upload Component 🍓🍇🍈🍉</span>
       <div class="upload-list">
         <UploadImgs v-model:file-list="fileList" :drag="false" border-radius="50%">
           <template #empty>
             <el-icon><Picture /></el-icon>
-            <span>请上传照片</span>
+            <span>Please upload photos</span>
           </template>
-          <template #tip> 圆形组件，图片最大为 5M（禁止拖拽上传） </template>
+          <template #tip> Circular component, max image size 5MB (drag upload disabled) </template>
         </UploadImgs>
         <UploadImgs v-model:file-list="fileList1" width="250px">
           <template #empty>
             <el-icon><Picture /></el-icon>
-            <span>请上传照片</span>
+            <span>Please upload photos</span>
           </template>
-          <template #tip> 长方形组件（可拖拽上传） </template>
+          <template #tip> Rectangular component (drag upload enabled) </template>
         </UploadImgs>
       </div>
-      <el-descriptions title="配置项 📚（其它参数和单图上传组件相同）" :column="1" border>
+      <el-descriptions title="Config Options 📚 (other params same as single image upload)" :column="1" border>
         <el-descriptions-item label="fileList">
-          双向绑定的 fileList 值，使用示例： v-model:file-list="fileList"
+          Two-way bound fileList value, e.g.: v-model:file-list="fileList"
         </el-descriptions-item>
-        <el-descriptions-item label="limit"> 最大图片上传数，默认为 5 张 </el-descriptions-item>
+        <el-descriptions-item label="limit"> Max number of images, default 5 </el-descriptions-item>
       </el-descriptions>
     </div>
-    <!-- 单图上传 -->
+    <!-- Single image upload -->
     <div class="card img-box">
-      <span class="text">单图片上传组件 🍓🍇🍈🍉</span>
+      <span class="text">Single Image Upload Component 🍓🍇🍈🍉</span>
       <div class="upload-list">
         <UploadImg v-model:image-url="avatar1" :file-size="3">
-          <template #tip> 上传图片最大为 3M </template>
+          <template #tip> Max image size 3MB </template>
         </UploadImg>
         <UploadImg v-model:image-url="avatar2" :drag="false" border-radius="50%">
           <template #empty>
             <el-icon><Avatar /></el-icon>
-            <span>请上传头像</span>
+            <span>Please upload avatar</span>
           </template>
-          <template #tip> 圆形组件（禁止拖拽上传） </template>
+          <template #tip> Circular component (drag upload disabled) </template>
         </UploadImg>
         <UploadImg v-model:image-url="avatar3" width="250px">
           <template #empty>
             <el-icon><Picture /></el-icon>
-            <span>请上传 Banner 图</span>
+            <span>Please upload banner image</span>
           </template>
-          <template #tip> 长方形组件（可拖拽上传） </template>
+          <template #tip> Rectangular component (drag upload enabled) </template>
         </UploadImg>
         <UploadImg v-model:image-url="avatar4" disabled>
-          <template #tip> 无图（禁用上传） </template>
+          <template #tip> No image (upload disabled) </template>
         </UploadImg>
         <UploadImg v-model:image-url="avatar5" disabled>
-          <template #tip> 有图（禁用编辑、删除） </template>
+          <template #tip> Has image (edit & delete disabled) </template>
         </UploadImg>
       </div>
-      <el-descriptions title="配置项 📚" :column="1" border>
+      <el-descriptions title="Config Options 📚" :column="1" border>
         <el-descriptions-item label="imageUrl">
-          双向绑定的 imageUrl 值，使用示例： v-model:image-url="avatar"
+          Two-way bound imageUrl value, e.g.: v-model:image-url="avatar"
         </el-descriptions-item>
         <el-descriptions-item label="api">
-          上传图片的 api 方法，一般项目上传都是同一个 api 方法，在组件里直接引入即可（非必传）
+          API method for uploading images; typically the same API across the project, can be imported directly in the component
+          (optional)
         </el-descriptions-item>
-        <el-descriptions-item label="drag"> 是否支持拖拽上传图片，默认为 true </el-descriptions-item>
-        <el-descriptions-item label="disabled"> 是否禁用 上传、删除 功能，可查看图片 </el-descriptions-item>
-        <el-descriptions-item label="fileSize"> 单个图片文件大小限制，默认为 5M </el-descriptions-item>
+        <el-descriptions-item label="drag"> Whether drag upload is supported, default true </el-descriptions-item>
+        <el-descriptions-item label="disabled">
+          Whether to disable upload & delete; viewing is still allowed
+        </el-descriptions-item>
+        <el-descriptions-item label="fileSize"> Max single image file size, default 5MB </el-descriptions-item>
         <el-descriptions-item label="fileType">
-          图片类型限制，默认类型为 ["image/jpeg", "image/png", "image/gif"]
+          Allowed image types, defaults to ["image/jpeg", "image/png", "image/gif"]
         </el-descriptions-item>
-        <el-descriptions-item label="height"> 组件高度样式，默认为 "150px" </el-descriptions-item>
-        <el-descriptions-item label="width"> 组件宽度样式，默认为 "150px" </el-descriptions-item>
-        <el-descriptions-item label="borderRadius"> 组件边框圆角样式，默认为 "8px" </el-descriptions-item>
+        <el-descriptions-item label="height"> Component height style, default "150px" </el-descriptions-item>
+        <el-descriptions-item label="width"> Component width style, default "150px" </el-descriptions-item>
+        <el-descriptions-item label="borderRadius"> Component border radius style, default "8px" </el-descriptions-item>
       </el-descriptions>
     </div>
 
-    <!-- 表单使用 -->
+    <!-- Form usage -->
     <div class="form-box">
       <div class="card">
         <el-alert
-          title="图片上传组件在 form 表单中使用，上传之后成功会自动重新校验"
+          title="Image upload components used in forms will auto re-validate after upload success"
           type="warning"
           effect="dark"
           :closable="false"
           class="mb20"
         />
         <el-form ref="ruleFormRef" label-width="100px" label-suffix=" :" :rules="rules" :model="fromModel">
-          <el-form-item label="用户头像" prop="avatar">
+          <el-form-item label="Avatar" prop="avatar">
             <UploadImg v-model:image-url="fromModel.avatar" width="135px" height="135px" :file-size="3">
               <template #empty>
                 <el-icon><Avatar /></el-icon>
-                <span>请上传头像</span>
+                <span>Please upload avatar</span>
               </template>
-              <template #tip> 头像大小不能超过 3M </template>
+              <template #tip> Avatar size must not exceed 3MB </template>
             </UploadImg>
           </el-form-item>
-          <el-form-item label="用户照片" prop="photo">
+          <el-form-item label="Photo" prop="photo">
             <UploadImgs v-model:file-list="fromModel.photo" :limit="3" height="140px" width="140px" border-radius="50%">
               <template #empty>
                 <el-icon><Picture /></el-icon>
-                <span>请上传照片</span>
+                <span>Please upload photos</span>
               </template>
-              <template #tip> 最多上传 3 张照片 </template>
+              <template #tip> Max 3 photos </template>
             </UploadImgs>
           </el-form-item>
-          <el-form-item label="用户姓名" prop="username">
-            <el-input v-model="fromModel.username" placeholder="请填写用户姓名" clearable></el-input>
+          <el-form-item label="Username" prop="username">
+            <el-input v-model="fromModel.username" placeholder="Please enter username" clearable></el-input>
           </el-form-item>
-          <el-form-item label="身份证号" prop="idCard">
-            <el-input v-model="fromModel.idCard" placeholder="请填写身份证号" clearable></el-input>
+          <el-form-item label="ID Card" prop="idCard">
+            <el-input v-model="fromModel.idCard" placeholder="Please enter ID card number" clearable></el-input>
           </el-form-item>
-          <el-form-item label="邮箱" prop="email">
-            <el-input v-model="fromModel.email" placeholder="请填写邮箱" clearable></el-input>
+          <el-form-item label="Email" prop="email">
+            <el-input v-model="fromModel.email" placeholder="Please enter email" clearable></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button> 取消 </el-button>
-            <el-button type="primary" @click="submit"> 确定 </el-button>
+            <el-button> Cancel </el-button>
+            <el-button type="primary" @click="submit"> Confirm </el-button>
           </el-form-item>
         </el-form>
       </div>
       <div class="card">
         <el-alert
-          title="图片上传组件在 form 表单中使用，如果该表单禁用，则上传组件会自动禁用"
+          title="When image upload components are used in a disabled form, they are automatically disabled"
           type="warning"
           effect="dark"
           :closable="false"
           class="mb20"
         />
         <el-form label-width="100px" label-suffix=" :" disabled :model="fromModel1">
-          <el-form-item label="用户头像" prop="avatar">
+          <el-form-item label="Avatar" prop="avatar">
             <UploadImg v-model:image-url="fromModel1.avatar" width="135px" height="135px" :file-size="3">
               <template #empty>
                 <el-icon><Avatar /></el-icon>
-                <span>请上传头像</span>
+                <span>Please upload avatar</span>
               </template>
-              <template #tip> 头像大小不能超过 3M </template>
+              <template #tip> Avatar size must not exceed 3MB </template>
             </UploadImg>
           </el-form-item>
-          <el-form-item label="用户照片" prop="photo">
+          <el-form-item label="Photo" prop="photo">
             <UploadImgs v-model:file-list="fromModel1.photo" height="140px" width="140px" border-radius="50%">
               <template #empty>
                 <el-icon><Picture /></el-icon>
-                <span>请上传照片</span>
+                <span>Please upload photos</span>
               </template>
-              <template #tip> 照片大小不能超过 5M </template>
+              <template #tip> Photo size must not exceed 5MB </template>
             </UploadImgs>
           </el-form-item>
-          <el-form-item label="用户姓名" prop="username">
-            <el-input v-model="fromModel1.username" placeholder="请填写用户姓名" clearable></el-input>
+          <el-form-item label="Username" prop="username">
+            <el-input v-model="fromModel1.username" placeholder="Please enter username" clearable></el-input>
           </el-form-item>
-          <el-form-item label="身份证号" prop="idCard">
-            <el-input v-model="fromModel1.idCard" placeholder="请填写身份证号" clearable></el-input>
+          <el-form-item label="ID Card" prop="idCard">
+            <el-input v-model="fromModel1.idCard" placeholder="Please enter ID card number" clearable></el-input>
           </el-form-item>
-          <el-form-item label="邮箱" prop="email">
-            <el-input v-model="fromModel1.email" placeholder="请填写邮箱" clearable></el-input>
+          <el-form-item label="Email" prop="email">
+            <el-input v-model="fromModel1.email" placeholder="Please enter email" clearable></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button> 取消 </el-button>
-            <el-button type="primary" @click="submit"> 确定 </el-button>
+            <el-button> Cancel </el-button>
+            <el-button type="primary" @click="submit"> Confirm </el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -179,11 +182,11 @@ const avatar4 = ref("");
 const avatar5 = ref("https://i.imgtg.com/2023/01/16/QRqMK.jpg");
 
 const rules = reactive({
-  avatar: [{ required: true, message: "请上传用户头像" }],
-  photo: [{ required: true, message: "请上传用户照片" }],
-  username: [{ required: true, message: "请填写用户姓名" }],
-  idCard: [{ required: true, message: "请填写身份证号" }],
-  email: [{ required: true, message: "请填写邮箱" }]
+  avatar: [{ required: true, message: "Please upload an avatar" }],
+  photo: [{ required: true, message: "Please upload a photo" }],
+  username: [{ required: true, message: "Please enter a username" }],
+  idCard: [{ required: true, message: "Please enter an ID card number" }],
+  email: [{ required: true, message: "Please enter an email" }]
 });
 
 const fromModel = ref({
@@ -209,5 +212,5 @@ const submit = () => {
 </script>
 
 <style scoped lang="scss">
-@import "./index.scss";
+@use "./index.scss" as *;
 </style>

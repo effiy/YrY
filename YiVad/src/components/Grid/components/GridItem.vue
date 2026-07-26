@@ -32,7 +32,7 @@ const props = withDefaults(defineProps<Props>(), {
 const attrs = useAttrs() as { index: string };
 const isShow = ref(true);
 
-// 注入断点
+// Inject breakpoint
 const breakPoint = inject<Ref<BreakPoint>>("breakPoint", ref("xl"));
 const shouldHiddenIndex = inject<Ref<number>>("shouldHiddenIndex", ref(-1));
 watch(

@@ -6,23 +6,23 @@ import { getFlatMenuList, getShowMenuList, getAllBreadcrumbList } from "@/utils"
 export const useAuthStore = defineStore({
   id: "yivad-auth",
   state: (): AuthState => ({
-    // 按钮权限列表
+    // Button permission list
     authButtonList: {},
-    // 菜单权限列表
+    // Menu permission list
     authMenuList: [],
-    // 当前页面的 router name，用来做按钮权限筛选
+    // Current page router name, used for button permission filtering
     routeName: ""
   }),
   getters: {
-    // 按钮权限列表
+    // Button permission list
     authButtonListGet: state => state.authButtonList,
-    // 菜单权限列表 ==> 这里的菜单没有经过任何处理
+    // Menu permission list ==> raw menu data without any processing
     authMenuListGet: state => state.authMenuList,
-    // 菜单权限列表 ==> 左侧菜单栏渲染，需要剔除 isHide == true
+    // Menu permission list ==> filtered for sidebar rendering (isHide == true items excluded)
     showMenuListGet: state => getShowMenuList(state.authMenuList),
-    // 菜单权限列表 ==> 扁平化之后的一维数组菜单，主要用来添加动态路由
+    // Menu permission list ==> flattened 1D array, primarily used for adding dynamic routes
     flatMenuListGet: state => getFlatMenuList(state.authMenuList),
-    // 递归处理后的所有面包屑导航列表
+    // Recursively processed breadcrumb navigation list
     breadcrumbListGet: state => getAllBreadcrumbList(state.authMenuList)
   },
   actions: {

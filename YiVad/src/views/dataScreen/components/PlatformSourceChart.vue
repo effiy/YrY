@@ -1,5 +1,5 @@
 <template>
-  <!-- 平台来源 -->
+  <!-- Platform Source -->
   <div class="echarts">
     <ECharts :option="option" :resize="false" />
   </div>
@@ -16,10 +16,10 @@ interface ChartProp {
 }
 
 const data = [
-  { value: 40, name: "智慧文旅平台", percentage: "40%" },
-  { value: 10, name: "携程", percentage: "10%" },
-  { value: 20, name: "飞猪", percentage: "20%" },
-  { value: 30, name: "其他渠道", percentage: "30%" }
+  { value: 40, name: "Smart Tourism Platform", percentage: "40%" },
+  { value: 10, name: "Ctrip", percentage: "10%" },
+  { value: 20, name: "Fliggy", percentage: "20%" },
+  { value: 30, name: "Other Channels", percentage: "30%" }
 ];
 
 const option: ECOption = {
@@ -31,7 +31,7 @@ const option: ECOption = {
   },
   tooltip: {
     trigger: "item",
-    formatter: "{b} :  {c}人"
+    formatter: "{b} :  {c} people"
   },
   legend: {
     show: true,

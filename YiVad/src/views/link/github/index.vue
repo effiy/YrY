@@ -1,13 +1,11 @@
 <template>
   <div class="card content-box">
-    <span class="text">
-      GitHub 仓库 🍒🍉🍊
-    </span>
+    <span class="text"> GitHub Repository 🍒🍉🍊 </span>
   </div>
 </template>
 
 <script setup lang="ts" name="github"></script>
 
 <style scoped lang="scss">
-@import "./index.scss";
+@use "./index.scss" as *;
 </style>

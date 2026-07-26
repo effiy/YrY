@@ -36,7 +36,7 @@ const props = defineProps<SearchFormItem>();
 // Re receive SearchParam
 const _searchParam = computed(() => props.searchParam);
 
-// 判断 fieldNames 设置 label && value && children 的 key 值
+// Determine fieldNames key values for label, value, children
 const fieldNames = computed(() => {
   return {
     label: props.column.fieldNames?.label ?? "label",
@@ -45,7 +45,7 @@ const fieldNames = computed(() => {
   };
 });
 
-// 接收 enumMap (el 为 select-v2 需单独处理 enumData)
+// Receive enumMap (select-v2 needs separate enumData handling)
 const enumMap = inject("enumMap", ref(new Map()));
 const columnEnum = computed(() => {
   let enumData = enumMap.value.get(props.column.prop);
@@ -58,7 +58,7 @@ const columnEnum = computed(() => {
   return enumData;
 });
 
-// 处理透传的 searchProps (el 为 tree-select、cascader 的时候需要给下默认 label && value && children)
+// Process forwarded searchProps (tree-select/cascader need default label, value, children)
 const handleSearchProps = computed(() => {
   const label = fieldNames.value.label;
   const value = fieldNames.value.value;
@@ -74,21 +74,21 @@ const handleSearchProps = computed(() => {
   return searchProps;
 });
 
-// 处理默认 placeholder
+// Process default placeholder
 const placeholder = computed(() => {
   const search = props.column.search;
   if (["datetimerange", "daterange", "monthrange"].includes(search?.props?.type) || search?.props?.isRange) {
     return {
-      rangeSeparator: search?.props?.rangeSeparator ?? "至",
-      startPlaceholder: search?.props?.startPlaceholder ?? "开始时间",
-      endPlaceholder: search?.props?.endPlaceholder ?? "结束时间"
+      rangeSeparator: search?.props?.rangeSeparator ?? "to",
+      startPlaceholder: search?.props?.startPlaceholder ?? "Start time",
+      endPlaceholder: search?.props?.endPlaceholder ?? "End time"
     };
   }
-  const placeholder = search?.props?.placeholder ?? (search?.el?.includes("input") ? "请输入" : "请选择");
+  const placeholder = search?.props?.placeholder ?? (search?.el?.includes("input") ? "Please enter" : "Please select");
   return { placeholder };
 });
 
-// 是否有清除按钮 (当搜索项有默认值时，清除按钮不显示)
+// Whether to show clear button (hidden when search item has default value)
 const clearable = computed(() => {
   const search = props.column.search;
   return search?.props?.clearable ?? (search?.defaultValue == null || search?.defaultValue == undefined);

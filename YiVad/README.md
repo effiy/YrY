@@ -1,24 +1,24 @@
 # YiVad
 
-### 介绍 📖
+### Introduction 📖
 
-YiVad 一款基于 Vue3.4、TypeScript、Vite5、Pinia、Element-Plus 开源的后台管理框架，使用目前最新技术栈开发。项目提供强大的 ProTable 组件，在一定程度上提高您的开发效率。另外本项目还封装了一些常用组件、Hooks、指令、动态路由、按钮级别权限控制等功能。
+YiVad is an open-source admin management framework built with Vue 3.4, TypeScript, Vite 5, Pinia, and Element Plus, developed using the latest tech stack. The project provides a powerful ProTable component to improve your development efficiency. It also includes commonly used components, hooks, directives, dynamic routing, button-level permission control, and more.
 
-### 项目功能 🔨
+### Features 🔨
 
-- 使用 Vue3.4 + TypeScript 开发，单文件组件**＜script setup＞**
-- 采用 Vite5 作为项目开发、打包工具（配置 gzip/brotli 打包、tsx 语法、跨域代理…）
-- 使用 Pinia 替代 Vuex，轻量、简单、易用，集成 Pinia 持久化插件
-- 使用 TypeScript 对 Axios 整个二次封装（请求拦截、取消、常用请求封装…）
-- 基于 Element 二次封装 ProTable 组件，表格页面全部为配置项 Columns
-- 支持 Element 组件大小切换、多主题布局、暗黑模式、i18n 国际化
-- 使用 VueRouter 配置动态路由权限拦截、路由懒加载，支持页面按钮权限控制
-- 使用 KeepAlive 对页面进行缓存，支持多级嵌套路由缓存
-- 常用自定义指令开发（权限、复制、水印、拖拽、节流、防抖、长按…）
-- 使用 Prettier 统一格式化代码，集成 ESLint、Stylelint 代码校验规范
-- 使用 husky、lint-staged、commitlint、czg、cz-git 规范提交信息
+- Built with Vue 3.4 + TypeScript, single-file components with **<script setup>**
+- Uses Vite 5 for development and build tooling (configured with gzip/brotli bundling, TSX syntax, CORS proxy, and more)
+- Uses Pinia instead of Vuex — lightweight, simple, and easy to use, with integrated Pinia persistence plugin
+- Full Axios wrapper in TypeScript (request interception, cancellation, common request encapsulation, and more)
+- ProTable component built on Element Plus, with table pages driven entirely by column configuration
+- Supports Element component size switching, multi-theme layouts, dark mode, and i18n internationalization
+- Dynamic route permission guards with Vue Router, lazy loading, and page-level button permission control
+- Page caching via KeepAlive, with support for multi-level nested route caching
+- Custom directives (permission, copy, watermark, drag, throttle, debounce, long press, and more)
+- Unified code formatting with Prettier, integrated with ESLint and Stylelint
+- Standardized commit messages with husky, lint-staged, commitlint, czg, and cz-git
 
-### 安装使用步骤 📔
+### Installation & Usage 📔
 
 - **Install：**
 
@@ -36,93 +36,132 @@ pnpm serve
 - **Build：**
 
 ```text
-# 开发环境
+# Development environment
 pnpm build:dev
 
-# 测试环境
+# Test environment
 pnpm build:test
 
-# 生产环境
+# Production environment
 pnpm build:pro
 ```
 
 - **Lint：**
 
 ```text
-# eslint 检测代码
+# eslint code check
 pnpm lint:eslint
 
-# prettier 格式化代码
+# prettier code formatting
 pnpm lint:prettier
 
-# stylelint 格式化样式
+# stylelint style formatting
 pnpm lint:stylelint
 ```
 
 - **commit：**
 
 ```text
-# 提交代码（提交前会自动执行 lint:lint-staged 命令）
+# Commit code (automatically runs lint:lint-staged before committing)
 pnpm commit
 ```
 
-### 文件资源目录 📚
+### Directory Structure 📚
 
 ```text
 YiVad
-├─ .husky                  # husky 配置文件
-├─ .vscode                 # VSCode 推荐配置
-├─ build                   # Vite 配置项
-├─ public                  # 静态资源文件（该文件夹不会被打包）
+├─ .husky                  # husky config files
+├─ .vscode                 # VSCode recommended config
+├─ build                   # Vite config options
+├─ public                  # Static assets (this folder is not bundled)
 ├─ src
-│  ├─ api                  # API 接口管理
-│  ├─ assets               # 静态资源文件
-│  ├─ components           # 全局组件
-│  ├─ config               # 全局配置项
-│  ├─ directives           # 全局指令文件
-│  ├─ enums                # 项目常用枚举
-│  ├─ hooks                # 常用 Hooks 封装
-│  ├─ languages            # 语言国际化 i18n
-│  ├─ layouts              # 框架布局模块
-│  ├─ routers              # 路由管理
-│  ├─ stores               # pinia store
-│  ├─ styles               # 全局样式文件
-│  ├─ typings              # 全局 ts 声明
-│  ├─ utils                # 常用工具库
-│  ├─ views                # 项目所有页面
-│  ├─ App.vue              # 项目主组件
-│  ├─ main.ts              # 项目入口文件
-│  └─ vite-env.d.ts        # 指定 ts 识别 vue
-├─ .editorconfig           # 统一不同编辑器的编码风格
-├─ .env                    # vite 常用配置
-├─ .env.development        # 开发环境配置
-├─ .env.production         # 生产环境配置
-├─ .env.test               # 测试环境配置
-├─ .eslintignore           # 忽略 Eslint 校验
-├─ .eslintrc.cjs           # Eslint 校验配置文件
-├─ .gitignore              # 忽略 git 提交
-├─ .prettierignore         # 忽略 Prettier 格式化
-├─ .prettierrc.cjs         # Prettier 格式化配置
-├─ .stylelintignore        # 忽略 stylelint 格式化
-├─ .stylelintrc.cjs        # stylelint 样式格式化配置
-├─ CHANGELOG.md            # 项目更新日志
-├─ commitlint.config.cjs   # git 提交规范配置
-├─ index.html              # 入口 html
-├─ LICENSE                 # 开源协议文件
-├─ lint-staged.config.cjs  # lint-staged 配置文件
-├─ package-lock.json       # 依赖包包版本锁
-├─ package.json            # 依赖包管理
-├─ postcss.config.cjs      # postcss 配置
-├─ README.md               # README 介绍
-├─ tsconfig.json           # typescript 全局配置
-└─ vite.config.ts          # vite 全局配置文件
+│  ├─ api                  # API interface management
+│  ├─ assets               # Static assets
+│  ├─ components           # Global components
+│  ├─ config               # Global config
+│  ├─ directives           # Global directives
+│  ├─ enums                # Common enumerations
+│  ├─ hooks                # Common hooks
+│  ├─ languages            # i18n internationalization
+│  ├─ layouts              # Layout modules
+│  ├─ routers              # Route management
+│  ├─ stores               # Pinia store
+│  ├─ styles               # Global styles
+│  ├─ typings              # Global TypeScript declarations
+│  ├─ utils                # Utility functions
+│  ├─ views                # All project pages
+│  ├─ App.vue              # Root component
+│  ├─ main.ts              # Entry file
+│  └─ vite-env.d.ts        # TypeScript declaration for Vue SFCs
+├─ .editorconfig           # Unified editor coding style config
+├─ .env                    # Vite common config
+├─ .env.development        # Development environment config
+├─ .env.production         # Production environment config
+├─ .env.test               # Test environment config
+├─ .eslintignore           # Ignore ESLint checks
+├─ .eslintrc.cjs           # ESLint config file
+├─ .gitignore              # Ignore git commits
+├─ .prettierignore         # Ignore Prettier formatting
+├─ .prettierrc.cjs         # Prettier config
+├─ .stylelintignore        # Ignore stylelint formatting
+├─ .stylelintrc.cjs        # stylelint config
+├─ CHANGELOG.md            # Project changelog
+├─ commitlint.config.cjs   # Git commit convention config
+├─ index.html              # Entry HTML
+├─ LICENSE                 # Open source license
+├─ lint-staged.config.cjs  # lint-staged config
+├─ package-lock.json       # Dependency version lock
+├─ package.json            # Dependency management
+├─ postcss.config.cjs      # PostCSS config
+├─ README.md               # README introduction
+├─ tsconfig.json           # TypeScript global config
+└─ vite.config.ts          # Vite global config
 ```
 
-### 浏览器支持 🌎
+### Browser Support 🌎
 
-- 本地开发推荐使用 Chrome 最新版浏览器 [Download](https://www.google.com/intl/zh-CN/chrome/)。
-- 生产环境支持现代浏览器，不再支持 IE 浏览器，更多浏览器可以查看 [Can I Use Es Module](https://caniuse.com/?search=ESModule)。
+- For local development, the latest version of Chrome is recommended [Download](https://www.google.com/intl/zh-CN/chrome/).
+- Production supports modern browsers only. IE is no longer supported. For more details, see [Can I Use ES Module](https://caniuse.com/?search=ESModule).
 
 | ![IE](https://i.imgtg.com/2023/04/11/8z7ot.png) | ![Edge](https://i.imgtg.com/2023/04/11/8zr3p.png) | ![Firefox](https://i.imgtg.com/2023/04/11/8zKiU.png) | ![Chrome](https://i.imgtg.com/2023/04/11/8zNrx.png) | ![Safari](https://i.imgtg.com/2023/04/11/8zeGj.png) |
 | :---------------------------------------------: | :-----------------------------------------------: | :--------------------------------------------------: | :-------------------------------------------------: | :-------------------------------------------------: |
 |                   not support                   |                  last 2 versions                  |                   last 2 versions                    |                   last 2 versions                   |                   last 2 versions                   |
+
+## Domain Language
+
+YiVad is a domain model for admin management systems, built around three core concepts: **menu permission**, **dynamic routing**, and **component configuration**.
+
+### Terminology
+
+- **ProTable** — A declarative table component built on Element Plus `el-table`, driven by a `columns` configuration array for table rendering, search, pagination, and sorting, eliminating repetitive table template code.
+- **Dynamic Router** — A mechanism that fetches the permission menu tree from the backend menu API, flattens it, and registers routes at runtime via `router.addRoute()`. Unlike static routes, dynamic routes are visible only based on the user's permissions.
+- **AuthButton** — A permission model that controls page button visibility via the `v-auth` directive. Button permission lists are fetched from the backend API, decoupled from page routes, and support fine-grained operation-level permission control.
+- **Pinia Store Persist** — A mechanism that uses `pinia-plugin-persistedstate` to automatically sync Pinia store state to `localStorage`, ensuring user state (token, theme, tabs) is preserved after page refresh.
+- **Layout Mode** — YiVad supports four layout modes: `vertical` (sidebar), `classic` (classic), `transverse` (top navigation), `columns` (split), switchable dynamically via `globalStore.layout`.
+
+### Term Relationships
+
+- **Dynamic Router** depends on permission data from **AuthButton** to determine which menus are visible
+- **ProTable** relies on the `useTable` hook to handle pagination and data fetching
+- **Pinia Store Persist** applies to the `global`, `user`, and `tabs` stores
+- **Layout Mode** consumes theme and layout configuration from `globalStore`
+
+### Example Conversations
+
+> **User:** I want to add an edit button to the "User Management" page, but only the admin role should see it.
+>
+> **System:** Add the `v-auth="'user:edit'"` directive to the button. The backend returns the current role's button permission list via the `authButtonList` API. If `user:edit` is not in the list, the button will be automatically hidden.
+>
+> **User:** How do I add a new page to the sidebar menu?
+>
+> **System:** Create the page component under `src/views/`, then configure the menu item (path, name, component path) in the backend menu management API. The frontend uses **dynamic routing** to automatically fetch and register routes after login. If the backend is unavailable, you can add menu items directly in `src/assets/json/authMenuList.json`.
+
+### Disambiguation Markers
+
+| Term | Easily Confused Concept |
+|------|---------------|
+| **ProTable** | Not Element Plus's `el-table`; ProTable is a full table solution with search, pagination, and column configuration |
+| **Dynamic Router** | Not Vue Router's lazy loading (`() => import()`) or nested routes (children); dynamic routing specifically refers to runtime route registration based on permissions |
+| **AuthButton** | Not a route guard (`beforeEach`); route guards control page-level access, while AuthButton controls button-level visibility within a page |
+| **Persist** | Not the browser's `localStorage` API; refers to the Pinia plugin's automatic bidirectional sync mechanism |
+| **Layout Mode** | Not CSS layout or Element Plus's `el-row/el-col` grid; it is page-level framework structure switching |

@@ -7,7 +7,7 @@
       "component": "/home/index",
       "meta": {
         "icon": "HomeFilled",
-        "title": "首页",
+        "title": "Home",
         "isLink": "",
         "isHide": false,
         "isFull": false,
@@ -21,7 +21,7 @@
       "component": "/dataScreen/index",
       "meta": {
         "icon": "Histogram",
-        "title": "数据大屏",
+        "title": "Data Screen",
         "isLink": "",
         "isHide": false,
         "isFull": true,
@@ -35,7 +35,7 @@
       "redirect": "/proTable/useProTable",
       "meta": {
         "icon": "MessageBox",
-        "title": "超级表格",
+        "title": "ProTable",
         "isLink": "",
         "isHide": false,
         "isFull": false,
@@ -49,7 +49,7 @@
           "component": "/proTable/useProTable/index",
           "meta": {
             "icon": "Menu",
-            "title": "使用 ProTable",
+            "title": "Using ProTable",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -63,7 +63,7 @@
               "component": "/proTable/useProTable/detail",
               "meta": {
                 "icon": "Menu",
-                "title": "ProTable 详情",
+                "title": "ProTable Detail",
                 "activeMenu": "/proTable/useProTable",
                 "isLink": "",
                 "isHide": true,
@@ -80,7 +80,7 @@
           "component": "/proTable/useTreeFilter/index",
           "meta": {
             "icon": "Menu",
-            "title": "使用 TreeFilter",
+            "title": "Using TreeFilter",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -94,7 +94,7 @@
           "component": "/proTable/useTreeFilter/detail",
           "meta": {
             "icon": "Menu",
-            "title": "TreeFilter 详情",
+            "title": "TreeFilter Detail",
             "activeMenu": "/proTable/useTreeFilter",
             "isLink": "",
             "isHide": true,
@@ -109,7 +109,7 @@
           "component": "/proTable/useSelectFilter/index",
           "meta": {
             "icon": "Menu",
-            "title": "使用 SelectFilter",
+            "title": "Using SelectFilter",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -123,7 +123,7 @@
           "component": "/proTable/treeProTable/index",
           "meta": {
             "icon": "Menu",
-            "title": "树形 ProTable",
+            "title": "Tree ProTable",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -137,7 +137,7 @@
           "component": "/proTable/complexProTable/index",
           "meta": {
             "icon": "Menu",
-            "title": "复杂 ProTable",
+            "title": "Complex ProTable",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -151,7 +151,7 @@
           "component": "/proTable/document/index",
           "meta": {
             "icon": "Menu",
-            "title": "ProTable 文档",
+            "title": "ProTable Docs",
             "isLink": "https://juejin.cn/post/7166068828202336263/#heading-14",
             "isHide": false,
             "isFull": false,
@@ -167,7 +167,7 @@
       "redirect": "/auth/menu",
       "meta": {
         "icon": "Lock",
-        "title": "权限管理",
+        "title": "Permission Management",
         "isLink": "",
         "isHide": false,
         "isFull": false,
@@ -181,7 +181,7 @@
           "component": "/auth/menu/index",
           "meta": {
             "icon": "Menu",
-            "title": "菜单权限",
+            "title": "Menu Permission",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -195,7 +195,7 @@
           "component": "/auth/button/index",
           "meta": {
             "icon": "Menu",
-            "title": "按钮权限",
+            "title": "Button Permission",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -211,7 +211,7 @@
       "redirect": "/assembly/guide",
       "meta": {
         "icon": "Briefcase",
-        "title": "常用组件",
+        "title": "Common Components",
         "isLink": "",
         "isHide": false,
         "isFull": false,
@@ -225,7 +225,7 @@
           "component": "/assembly/guide/index",
           "meta": {
             "icon": "Menu",
-            "title": "引导页",
+            "title": "Guide",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -239,7 +239,7 @@
           "component": "/assembly/tabs/index",
           "meta": {
             "icon": "Menu",
-            "title": "标签页操作",
+            "title": "Tab Operations",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -253,7 +253,7 @@
               "component": "/assembly/tabs/detail",
               "meta": {
                 "icon": "Menu",
-                "title": "Tab 详情",
+                "title": "Tab Detail",
                 "activeMenu": "/assembly/tabs",
                 "isLink": "",
                 "isHide": true,
@@ -270,7 +270,7 @@
           "component": "/assembly/selectIcon/index",
           "meta": {
             "icon": "Menu",
-            "title": "图标选择器",
+            "title": "Icon Selector",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -284,7 +284,7 @@
           "component": "/assembly/selectFilter/index",
           "meta": {
             "icon": "Menu",
-            "title": "分类筛选器",
+            "title": "Category Filter",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -298,7 +298,7 @@
           "component": "/assembly/treeFilter/index",
           "meta": {
             "icon": "Menu",
-            "title": "树形筛选器",
+            "title": "Tree Filter",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -312,7 +312,7 @@
           "component": "/assembly/svgIcon/index",
           "meta": {
             "icon": "Menu",
-            "title": "SVG 图标",
+            "title": "SVG Icons",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -326,7 +326,7 @@
           "component": "/assembly/uploadFile/index",
           "meta": {
             "icon": "Menu",
-            "title": "文件上传",
+            "title": "File Upload",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -340,7 +340,7 @@
           "component": "/assembly/batchImport/index",
           "meta": {
             "icon": "Menu",
-            "title": "批量添加数据",
+            "title": "Batch Import",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -354,7 +354,7 @@
           "component": "/assembly/wangEditor/index",
           "meta": {
             "icon": "Menu",
-            "title": "富文本编辑器",
+            "title": "Rich Text Editor",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -368,7 +368,7 @@
           "component": "/assembly/draggable/index",
           "meta": {
             "icon": "Menu",
-            "title": "拖拽组件",
+            "title": "Drag Component",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -398,7 +398,7 @@
           "component": "/dashboard/dataVisualize/index",
           "meta": {
             "icon": "Menu",
-            "title": "数据可视化",
+            "title": "Data Visualization",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -414,7 +414,7 @@
       "redirect": "/form/proForm",
       "meta": {
         "icon": "Tickets",
-        "title": "表单 Form",
+        "title": "Form",
         "isLink": "",
         "isHide": false,
         "isFull": false,
@@ -428,7 +428,7 @@
           "component": "/form/proForm/index",
           "meta": {
             "icon": "Menu",
-            "title": "超级 Form",
+            "title": "Super Form",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -442,7 +442,7 @@
           "component": "/form/basicForm/index",
           "meta": {
             "icon": "Menu",
-            "title": "基础 Form",
+            "title": "Basic Form",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -456,7 +456,7 @@
           "component": "/form/validateForm/index",
           "meta": {
             "icon": "Menu",
-            "title": "校验 Form",
+            "title": "Validate Form",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -470,7 +470,7 @@
           "component": "/form/dynamicForm/index",
           "meta": {
             "icon": "Menu",
-            "title": "动态 Form",
+            "title": "Dynamic Form",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -500,7 +500,7 @@
           "component": "/echarts/waterChart/index",
           "meta": {
             "icon": "Menu",
-            "title": "水型图",
+            "title": "Water Chart",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -514,7 +514,7 @@
           "component": "/echarts/columnChart/index",
           "meta": {
             "icon": "Menu",
-            "title": "柱状图",
+            "title": "Column Chart",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -528,7 +528,7 @@
           "component": "/echarts/lineChart/index",
           "meta": {
             "icon": "Menu",
-            "title": "折线图",
+            "title": "Line Chart",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -542,7 +542,7 @@
           "component": "/echarts/pieChart/index",
           "meta": {
             "icon": "Menu",
-            "title": "饼图",
+            "title": "Pie Chart",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -556,7 +556,7 @@
           "component": "/echarts/radarChart/index",
           "meta": {
             "icon": "Menu",
-            "title": "雷达图",
+            "title": "Radar Chart",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -570,7 +570,7 @@
           "component": "/echarts/nestedChart/index",
           "meta": {
             "icon": "Menu",
-            "title": "嵌套环形图",
+            "title": "Nested Ring Chart",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -586,7 +586,7 @@
       "redirect": "/directives/copyDirect",
       "meta": {
         "icon": "Stamp",
-        "title": "自定义指令",
+        "title": "Custom Directives",
         "isLink": "",
         "isHide": false,
         "isFull": false,
@@ -600,7 +600,7 @@
           "component": "/directives/copyDirect/index",
           "meta": {
             "icon": "Menu",
-            "title": "复制指令",
+            "title": "Copy Directive",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -614,7 +614,7 @@
           "component": "/directives/watermarkDirect/index",
           "meta": {
             "icon": "Menu",
-            "title": "水印指令",
+            "title": "Watermark Directive",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -628,7 +628,7 @@
           "component": "/directives/dragDirect/index",
           "meta": {
             "icon": "Menu",
-            "title": "拖拽指令",
+            "title": "Drag Directive",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -642,7 +642,7 @@
           "component": "/directives/debounceDirect/index",
           "meta": {
             "icon": "Menu",
-            "title": "防抖指令",
+            "title": "Debounce Directive",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -656,7 +656,7 @@
           "component": "/directives/throttleDirect/index",
           "meta": {
             "icon": "Menu",
-            "title": "节流指令",
+            "title": "Throttle Directive",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -670,7 +670,7 @@
           "component": "/directives/longpressDirect/index",
           "meta": {
             "icon": "Menu",
-            "title": "长按指令",
+            "title": "Long Press Directive",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -686,7 +686,7 @@
       "redirect": "/menu/menu1",
       "meta": {
         "icon": "List",
-        "title": "菜单嵌套",
+        "title": "Nested Menu",
         "isLink": "",
         "isHide": false,
         "isFull": false,
@@ -700,7 +700,7 @@
           "component": "/menu/menu1/index",
           "meta": {
             "icon": "Menu",
-            "title": "菜单1",
+            "title": "Menu 1",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -714,7 +714,7 @@
           "redirect": "/menu/menu2/menu21",
           "meta": {
             "icon": "Menu",
-            "title": "菜单2",
+            "title": "Menu 2",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -728,7 +728,7 @@
               "component": "/menu/menu2/menu21/index",
               "meta": {
                 "icon": "Menu",
-                "title": "菜单2-1",
+                "title": "Menu 2-1",
                 "isLink": "",
                 "isHide": false,
                 "isFull": false,
@@ -742,7 +742,7 @@
               "redirect": "/menu/menu2/menu22/menu221",
               "meta": {
                 "icon": "Menu",
-                "title": "菜单2-2",
+                "title": "Menu 2-2",
                 "isLink": "",
                 "isHide": false,
                 "isFull": false,
@@ -756,7 +756,7 @@
                   "component": "/menu/menu2/menu22/menu221/index",
                   "meta": {
                     "icon": "Menu",
-                    "title": "菜单2-2-1",
+                    "title": "Menu 2-2-1",
                     "isLink": "",
                     "isHide": false,
                     "isFull": false,
@@ -770,7 +770,7 @@
                   "component": "/menu/menu2/menu22/menu222/index",
                   "meta": {
                     "icon": "Menu",
-                    "title": "菜单2-2-2",
+                    "title": "Menu 2-2-2",
                     "isLink": "",
                     "isHide": false,
                     "isFull": false,
@@ -786,7 +786,7 @@
               "component": "/menu/menu2/menu23/index",
               "meta": {
                 "icon": "Menu",
-                "title": "菜单2-3",
+                "title": "Menu 2-3",
                 "isLink": "",
                 "isHide": false,
                 "isFull": false,
@@ -802,7 +802,7 @@
           "component": "/menu/menu3/index",
           "meta": {
             "icon": "Menu",
-            "title": "菜单3",
+            "title": "Menu 3",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -818,7 +818,7 @@
       "redirect": "/system/accountManage",
       "meta": {
         "icon": "Tools",
-        "title": "系统管理",
+        "title": "System Management",
         "isLink": "",
         "isHide": false,
         "isFull": false,
@@ -832,7 +832,7 @@
           "component": "/system/accountManage/index",
           "meta": {
             "icon": "Menu",
-            "title": "账号管理",
+            "title": "Account Management",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -846,7 +846,7 @@
           "component": "/system/roleManage/index",
           "meta": {
             "icon": "Menu",
-            "title": "角色管理",
+            "title": "Role Management",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -860,7 +860,7 @@
           "component": "/system/menuMange/index",
           "meta": {
             "icon": "Menu",
-            "title": "菜单管理",
+            "title": "Menu Management",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -874,7 +874,7 @@
           "component": "/system/departmentManage/index",
           "meta": {
             "icon": "Menu",
-            "title": "部门管理",
+            "title": "Department Management",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -888,7 +888,7 @@
           "component": "/system/dictManage/index",
           "meta": {
             "icon": "Menu",
-            "title": "字典管理",
+            "title": "Dictionary Management",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -902,7 +902,7 @@
           "component": "/system/timingTask/index",
           "meta": {
             "icon": "Menu",
-            "title": "定时任务",
+            "title": "Scheduled Tasks",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -916,7 +916,7 @@
           "component": "/system/systemLog/index",
           "meta": {
             "icon": "Menu",
-            "title": "系统日志",
+            "title": "System Logs",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -932,7 +932,7 @@
       "redirect": "/link/bing",
       "meta": {
         "icon": "Paperclip",
-        "title": "外部链接",
+        "title": "External Links",
         "isLink": "",
         "isHide": false,
         "isFull": false,
@@ -946,7 +946,7 @@
           "component": "/link/bing/index",
           "meta": {
             "icon": "Menu",
-            "title": "Bing 内嵌",
+            "title": "Bing Embedded",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -962,7 +962,7 @@
       "component": "/about/index",
       "meta": {
         "icon": "InfoFilled",
-        "title": "关于项目",
+        "title": "About",
         "isLink": "",
         "isHide": false,
         "isFull": false,
@@ -971,5 +971,5 @@
       }
     }
   ],
-  "msg": "成功"
+  "msg": "Success"
 }

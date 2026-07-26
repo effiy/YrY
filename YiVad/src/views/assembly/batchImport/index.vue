@@ -1,18 +1,18 @@
 <template>
   <div class="card content-box">
-    <span class="text">批量添加数据 🍓🍇🍈🍉</span>
-    <el-button type="primary" :icon="Upload" @click="batchAdd"> 批量添加数据 </el-button>
+    <span class="text">Batch Import Data 🍓🍇🍈🍉</span>
+    <el-button type="primary" :icon="Upload" @click="batchAdd"> Batch Import </el-button>
     <ImportExcel ref="importRef" />
-    <el-descriptions title="配置项（通过 ref 传递） 📚" :column="1" border>
-      <el-descriptions-item label="title"> 组件显示标题 && 上传成功之后提示信息 </el-descriptions-item>
-      <el-descriptions-item label="fileSize"> 上传文件大小，默认为 5M </el-descriptions-item>
+    <el-descriptions title="Config Options (via ref) 📚" :column="1" border>
+      <el-descriptions-item label="title"> Component title && post-upload success message </el-descriptions-item>
+      <el-descriptions-item label="fileSize"> Max upload file size, default 5MB </el-descriptions-item>
       <el-descriptions-item label="fileType">
-        上传文件类型限制，默认类型为 ["application/vnd.ms-excel",
+        Allowed file types, defaults to ["application/vnd.ms-excel",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"]
       </el-descriptions-item>
-      <el-descriptions-item label="tempApi"> 下载模板的 Api </el-descriptions-item>
-      <el-descriptions-item label="importApi"> 上传数据的 Api </el-descriptions-item>
-      <el-descriptions-item label="getTableList"> 上传数据成功之后，刷新表格数据的 Api </el-descriptions-item>
+      <el-descriptions-item label="tempApi"> API for downloading the template </el-descriptions-item>
+      <el-descriptions-item label="importApi"> API for uploading data </el-descriptions-item>
+      <el-descriptions-item label="getTableList"> API for refreshing the table data after upload success </el-descriptions-item>
     </el-descriptions>
   </div>
 </template>
@@ -26,7 +26,7 @@ import ImportExcel from "@/components/ImportExcel/index.vue";
 const importRef = ref();
 const batchAdd = () => {
   let params = {
-    title: "数据",
+    title: "Data",
     tempApi: exportUserInfo,
     importApi: BatchAddUser
   };
@@ -35,5 +35,5 @@ const batchAdd = () => {
 </script>
 
 <style scoped lang="scss">
-@import "./index.scss";
+@use "./index.scss" as *;
 </style>

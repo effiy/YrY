@@ -1,27 +1,30 @@
 <template>
   <div>
     <div class="card mb10">
-      <h4 class="title">简介</h4>
+      <h4 class="title">Introduction</h4>
       <span class="text">
-        YiVad 一款基于 Vue3.4、TypeScript、Vite5、Pinia、Element-Plus 开源的后台管理框架，使用目前最新技术栈开发。项目提供强大的 ProTable 组件，在一定程度上提高您的开发效率。另外本项目还封装了一些常用组件、Hooks、指令、动态路由、按钮级别权限控制等功能。
+        YiVad is an open-source admin management framework based on Vue3.4, TypeScript, Vite5, Pinia, and Element-Plus, built with
+        the latest technology stack. The project provides a powerful ProTable component that greatly improves your development
+        efficiency. Additionally, this project also encapsulates commonly used components, Hooks, directives, dynamic routing,
+        button-level permission control, and more.
       </span>
     </div>
     <div class="card mb10">
-      <h4 class="title">项目信息</h4>
+      <h4 class="title">Project Info</h4>
       <el-descriptions :column="2" border>
-        <el-descriptions-item label="版本号" label-align="left">
+        <el-descriptions-item label="Version" label-align="left">
           <el-tag>{{ version }}</el-tag>
         </el-descriptions-item>
-        <el-descriptions-item label="发布时间" label-align="left">
+        <el-descriptions-item label="Release Date" label-align="left">
           <el-tag>{{ lastBuildTime }}</el-tag>
         </el-descriptions-item>
-        <el-descriptions-item label="技术栈" label-align="left">
+        <el-descriptions-item label="Tech Stack" label-align="left">
           Vue3 + TypeScript + Vite5 + Pinia + Element-Plus
         </el-descriptions-item>
       </el-descriptions>
     </div>
     <div class="card mb10">
-      <h4 class="title">生产环境依赖</h4>
+      <h4 class="title">Production Dependencies</h4>
       <el-descriptions :column="3" border>
         <el-descriptions-item v-for="(value, key) in dependencies" :key="key" width="400px" :label="key">
           <el-tag type="info">
@@ -31,7 +34,7 @@
       </el-descriptions>
     </div>
     <div class="card">
-      <h4 class="title">开发环境依赖</h4>
+      <h4 class="title">Development Dependencies</h4>
       <el-descriptions :column="3" border>
         <el-descriptions-item v-for="(value, key) in devDependencies" :key="key" width="400px" :label="key">
           <el-tag type="info">

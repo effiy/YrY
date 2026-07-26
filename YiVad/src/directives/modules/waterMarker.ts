@@ -1,17 +1,17 @@
 /*
-  需求：给整个页面添加背景水印。
+  Requirement: Add a background watermark to the entire page.
 
-  思路：
-    1、使用 canvas 特性生成 base64 格式的图片文件，设置其字体大小，颜色等。
-    2、将其设置为背景图片，从而实现页面或组件水印效果
-  
-  使用：设置水印文案，颜色，字体大小即可
-  <div v-waterMarker="{text:'版权所有',textColor:'rgba(180, 180, 180, 0.4)'}"></div>
+  Approach:
+    1. Use canvas to generate a base64 image, set font size, color, etc.
+    2. Set it as a background image to achieve a page or component watermark effect.
+
+  Usage: Set watermark text, color, and font size
+  <div v-waterMarker="{text:'Copyright',textColor:'rgba(180, 180, 180, 0.4)'}"></div>
 */
 
 import type { Directive, DirectiveBinding } from "vue";
 const addWaterMarker: Directive = (str: string, parentNode: any, font: any, textColor: string) => {
-  // 水印文字，父元素，字体，文字颜色
+  // Watermark text, parent element, font, text color
   let can: HTMLCanvasElement = document.createElement("canvas");
   parentNode.appendChild(can);
   can.width = 205;

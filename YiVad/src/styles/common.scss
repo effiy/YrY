@@ -23,14 +23,14 @@
   content: "";
 }
 
-/* 文字单行省略号 */
+/* Single-line text ellipsis */
 .sle {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* 文字多行省略号 */
+/* Multi-line text ellipsis */
 .mle {
   display: -webkit-box;
   overflow: hidden;
@@ -38,7 +38,7 @@
   -webkit-line-clamp: 2;
 }
 
-/* 文字多了自动換行 */
+/* Auto word wrap for long text */
 .break-word {
   word-break: break-all;
   word-wrap: break-word;
@@ -94,7 +94,7 @@
     0 0 5px var(--el-color-primary) !important;
 }
 
-/* 外边距、内边距全局样式 */
+/* Global margin and padding utility classes */
 @for $i from 0 through 100 {
   .mt#{$i} {
     margin-top: #{$i}px !important;

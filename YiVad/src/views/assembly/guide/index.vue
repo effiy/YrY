@@ -1,13 +1,13 @@
 <template>
   <div class="card content-box">
-    <span class="text"> 引导页 🍓🍇🍈🍉</span>
+    <span class="text"> Guide Page 🍓🍇🍈🍉</span>
     <el-alert
-      title="引导页对于一些第一次进入项目的人很有用，你可以简单介绍下项目的功能。本 Demo 是基于 driver.js."
+      title="The guide page is helpful for first-time users. You can briefly introduce the project's features. This demo is based on driver.js."
       type="warning"
       :closable="false"
     />
     <div id="YiVad">
-      <el-button type="primary" @click.prevent.stop="driverObj.drive()"> 打开引导页 🤹‍♂️ </el-button>
+      <el-button type="primary" @click.prevent.stop="driverObj.drive()"> Start Guide 🤹‍♂️ </el-button>
     </div>
   </div>
 </template>
@@ -18,9 +18,9 @@ import "driver.js/dist/driver.css";
 
 const driverObj = driver({
   allowClose: true,
-  doneBtnText: "结束",
-  nextBtnText: "下一步",
-  prevBtnText: "上一步",
+  doneBtnText: "Done",
+  nextBtnText: "Next",
+  prevBtnText: "Previous",
   steps: [
     {
       element: "#collapseIcon",
@@ -91,5 +91,5 @@ const driverObj = driver({
 </script>
 
 <style scoped lang="scss">
-@import "./index.scss";
+@use "./index.scss" as *;
 </style>

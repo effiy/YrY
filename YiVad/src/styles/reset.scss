@@ -1,6 +1,6 @@
 /* Reset style sheet */
 
-/* 目前项目中使用富文本编辑器需要注释，如果你项目中没有使用富文本编辑器，可以取消注释 */
+/* The reset below is commented out because the project uses a rich text editor. If your project does not use a rich text editor, you can uncomment. */
 // html,
 // body,
 // div,
@@ -137,7 +137,7 @@ body,
   margin: 0;
 }
 
-/* 解决 h1 标签在 webkit 内核浏览器中文字大小失效问题 */
+/* Fix h1 font-size not working in WebKit browsers */
 :-webkit-any(article, aside, nav, section) h1 {
   font-size: 2em;
 }

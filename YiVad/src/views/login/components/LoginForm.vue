@@ -1,7 +1,7 @@
 <template>
   <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules" size="large">
     <el-form-item prop="username">
-      <el-input v-model="loginForm.username" placeholder="用户名：admin / user">
+      <el-input v-model="loginForm.username" placeholder="Username: admin / user">
         <template #prefix>
           <el-icon class="el-input__icon">
             <user />
@@ -10,7 +10,13 @@
       </el-input>
     </el-form-item>
     <el-form-item prop="password">
-      <el-input v-model="loginForm.password" type="password" placeholder="密码：123456" show-password autocomplete="new-password">
+      <el-input
+        v-model="loginForm.password"
+        type="password"
+        placeholder="Password: 123456"
+        show-password
+        autocomplete="new-password"
+      >
         <template #prefix>
           <el-icon class="el-input__icon">
             <lock />
@@ -20,9 +26,9 @@
     </el-form-item>
   </el-form>
   <div class="login-btn">
-    <el-button :icon="CircleClose" round size="large" @click="resetForm(loginFormRef)"> 重置 </el-button>
+    <el-button :icon="CircleClose" round size="large" @click="resetForm(loginFormRef)"> Reset </el-button>
     <el-button :icon="UserFilled" round size="large" type="primary" :loading="loading" @click="login(loginFormRef)">
-      登录
+      Login
     </el-button>
   </div>
 </template>
@@ -51,8 +57,8 @@ const keepAliveStore = useKeepAliveStore();
 type FormInstance = InstanceType<typeof ElForm>;
 const loginFormRef = ref<FormInstance>();
 const loginRules = reactive({
-  username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
-  password: [{ required: true, message: "请输入密码", trigger: "blur" }]
+  username: [{ required: true, message: "Please enter username", trigger: "blur" }],
+  password: [{ required: true, message: "Please enter password", trigger: "blur" }]
 });
 
 const loading = ref(false);
@@ -68,22 +74,22 @@ const login = (formEl: FormInstance | undefined) => {
     if (!valid) return;
     loading.value = true;
     try {
-      // 1.执行登录接口
+      // 1. Execute login API
       const { data } = await loginApi({ ...loginForm, password: md5(loginForm.password) });
       userStore.setToken(data.access_token);
 
-      // 2.添加动态路由
+      // 2. Add dynamic routes
       await initDynamicRouter();
 
-      // 3.清空 tabs、keepAlive 数据
+      // 3. Clear tabs and keepAlive data
       tabsStore.setTabs([]);
       keepAliveStore.setKeepAliveName([]);
 
-      // 4.跳转到首页
+      // 4. Navigate to home page
       router.push(HOME_URL);
       ElNotification({
-        title: "欢迎登录",
-        message: "欢迎使用 YiVad 管理系统",
+        title: "Welcome",
+        message: "Welcome to YiVad Management System",
         type: "success",
         duration: 3000
       });
@@ -100,7 +106,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
 };
 
 onMounted(() => {
-  // 监听 enter 事件（调用登录）
+  // Listen for Enter key event (to trigger login)
   document.onkeydown = (e: KeyboardEvent) => {
     if (e.code === "Enter" || e.code === "enter" || e.code === "NumpadEnter") {
       if (loading.value) return;
@@ -115,5 +121,5 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
-@import "../index.scss";
+@use "../index.scss" as *;
 </style>

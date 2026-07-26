@@ -1,4 +1,4 @@
-<!-- 横向布局 -->
+<!-- Horizontal Layout -->
 <template>
   <el-container class="layout">
     <el-header>
@@ -7,7 +7,7 @@
         <span class="logo-text">{{ title }}</span>
       </div>
       <el-menu mode="horizontal" :router="false" :default-active="activeMenu">
-        <!-- 不能直接使用 SubMenu 组件，无法触发 el-menu 隐藏省略功能 -->
+        <!-- Cannot directly use SubMenu component, unable to trigger el-menu hidden overflow feature -->
         <template v-for="subItem in menuList" :key="subItem.path">
           <el-sub-menu v-if="subItem.children?.length" :key="subItem.path" :index="subItem.path + 'el-sub-menu'">
             <template #title>
@@ -57,5 +57,5 @@ const handleClickMenu = (subItem: Menu.MenuOptions) => {
 </script>
 
 <style scoped lang="scss">
-@import "./index.scss";
+@use "./index.scss" as *;
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="card content-box">
     <el-alert
-      title="通过 component :is 组件属性 && v-bind 属性透传，可以将 template 中的 html 代码全部改变为 columns 配置项，具体配置请看代码。"
+      title="Using component :is and v-bind prop forwarding, all template HTML can be converted into columns configuration. See code for details."
       type="warning"
       :closable="false"
     />
@@ -24,7 +24,7 @@ import { ref } from "vue";
 let model = ref<any>({});
 
 const options = ref({
-  // 表单整体配置项
+  // Form-level config
   form: {
     inline: false,
     labelPosition: "right",
@@ -33,11 +33,11 @@ const options = ref({
     disabled: false,
     labelSuffix: " :"
   },
-  // 表单列配置项 (formItem 代表 item 配置项，attrs 代表 输入、选择框 配置项)
+  // Form column config (formItem for item config, attrs for input/select config)
   columns: [
     {
       formItem: {
-        label: "用户名",
+        label: "Username",
         prop: "username",
         labelWidth: "80px",
         required: true
@@ -45,13 +45,13 @@ const options = ref({
       attrs: {
         typeName: "input",
         clearable: true,
-        placeholder: "请输入用户名",
+        placeholder: "Please enter username",
         disabled: true
       }
     },
     {
       formItem: {
-        label: "密码",
+        label: "Password",
         prop: "password",
         class: "data"
       },
@@ -59,18 +59,18 @@ const options = ref({
         typeName: "input",
         clearable: true,
         autofocus: true,
-        placeholder: "请输入密码",
+        placeholder: "Please enter password",
         type: "password"
       }
     },
     {
       formItem: {
-        label: "邮箱",
+        label: "Email",
         prop: "email"
       },
       attrs: {
         typeName: "input",
-        placeholder: "请输入邮箱",
+        placeholder: "Please enter email",
         clearable: true,
         style: "width:500px"
       }
@@ -80,5 +80,5 @@ const options = ref({
 </script>
 
 <style scoped lang="scss">
-@import "./index.scss";
+@use "./index.scss" as *;
 </style>

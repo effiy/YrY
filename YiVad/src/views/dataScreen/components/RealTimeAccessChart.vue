@@ -1,12 +1,12 @@
 <template>
-  <!-- 实时访问 -->
+  <!-- Real-time Access -->
   <div class="actual-total">
-    <div class="expect-total">可预约总量<i>999999</i>人</div>
+    <div class="expect-total">Total Available Bookings<i>999999</i> people</div>
     <div class="actual-total">
       <div v-for="(item, index) in actualTotal.split('')" :key="index" class="actual-item">
         {{ item }}
       </div>
-      <div class="actual-item">人</div>
+      <div class="actual-item">people</div>
     </div>
   </div>
   <div class="echarts">
@@ -40,7 +40,7 @@ const option = {
       }
     },
     {
-      text: "预约量",
+      text: "Bookings",
       left: "49%",
       top: "25%",
       textAlign: "center",

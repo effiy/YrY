@@ -1,14 +1,14 @@
 /*
-	需求：实现一个拖拽指令，可在父元素区域任意拖拽元素。
+  Requirement: Implement a draggable directive for freely dragging elements within the parent area.
 
-	思路：
-		1、设置需要拖拽的元素为absolute，其父元素为relative。
-		2、鼠标按下(onmousedown)时记录目标元素当前的 left 和 top 值。
-		3、鼠标移动(onmousemove)时计算每次移动的横向距离和纵向距离的变化值，并改变元素的 left 和 top 值
-		4、鼠标松开(onmouseup)时完成一次拖拽
+  Approach:
+    1. Set the draggable element to absolute positioning and its parent to relative.
+    2. On mousedown, record the current left and top values of the target element.
+    3. On mousemove, calculate the horizontal and vertical distance changes and update the element's left and top values.
+    4. On mouseup, complete the drag.
 
-	使用：在 Dom 上加上 v-draggable 即可
-	<div class="dialog-model" v-draggable></div>
+  Usage: Add v-draggable to a DOM element
+  <div class="dialog-model" v-draggable></div>
 */
 import type { Directive } from "vue";
 interface ElType extends HTMLElement {

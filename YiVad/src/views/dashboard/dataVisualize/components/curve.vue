@@ -9,15 +9,15 @@ import { ECOption } from "@/components/ECharts/config";
 import ECharts from "@/components/ECharts/index.vue";
 
 const curveData = [
-  { value: 30, spotName: "掘金" },
+  { value: 30, spotName: "Juejin" },
   { value: 90, spotName: "CSDN" },
   { value: 10, spotName: "Gitee" },
   { value: 70, spotName: "GitHub" },
-  { value: 20, spotName: "知乎" },
+  { value: 20, spotName: "Zhihu" },
   { value: 60, spotName: "MyBlog" },
-  { value: 55, spotName: "简书" },
+  { value: 55, spotName: "Jianshu" },
   { value: 80, spotName: "StackOverFlow" },
-  { value: 50, spotName: "博客园" }
+  { value: 50, spotName: "Cnblogs" }
 ];
 
 const option: ECOption = {
@@ -31,8 +31,8 @@ const option: ECOption = {
     formatter: (p: any) => {
       let dom = `<div style="width:100%; height: 70px !important; display:flex;flex-direction: column;justify-content: space-between;padding:10px;box-sizing: border-box;
       color:#fff; background: #6B9DFE;border-radius: 4px;font-size:14px; ">
-        <div style="display: flex; align-items: center;"> <div style="width:5px;height:5px;background:#ffffff;border-radius: 50%;margin-right:5px"></div>平台 :  ${p[0].name}</div>
-        <div style="display: flex;align-items: center;"><div style="width:5px;height:5px;background:#ffffff;border-radius: 50%;margin-right:5px"></div>数据量 :  ${p[0].value}</div>
+        <div style="display: flex; align-items: center;"> <div style="width:5px;height:5px;background:#ffffff;border-radius: 50%;margin-right:5px"></div>Platform :  ${p[0].name}</div>
+        <div style="display: flex;align-items: center;"><div style="width:5px;height:5px;background:#ffffff;border-radius: 50%;margin-right:5px"></div>Value :  ${p[0].value}</div>
       </div>`;
       return dom;
     }

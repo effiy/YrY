@@ -1,6 +1,6 @@
 /**
  * v-longpress
- * 长按指令，长按时触发事件
+ * Long press directive, triggers event on long press
  */
 import type { Directive, DirectiveBinding } from "vue";
 
@@ -9,9 +9,9 @@ const directive: Directive = {
     if (typeof binding.value !== "function") {
       throw "callback must be a function";
     }
-    // 定义变量
+    // Define variables
     let pressTimer: any = null;
-    // 创建计时器（ 2秒后执行函数 ）
+    // Create timer (execute function after 2 seconds)
     const start = (e: any) => {
       if (e.button) {
         if (e.type === "click" && e.button !== 0) {
@@ -24,21 +24,21 @@ const directive: Directive = {
         }, 1000);
       }
     };
-    // 取消计时器
+    // Cancel timer
     const cancel = () => {
       if (pressTimer !== null) {
         clearTimeout(pressTimer);
         pressTimer = null;
       }
     };
-    // 运行函数
+    // Execute function
     const handler = (e: MouseEvent | TouchEvent) => {
       binding.value(e);
     };
-    // 添加事件监听器
+    // Add event listeners
     el.addEventListener("mousedown", start);
     el.addEventListener("touchstart", start);
-    // 取消计时器
+    // Cancel timer
     el.addEventListener("click", cancel);
     el.addEventListener("mouseout", cancel);
     el.addEventListener("touchend", cancel);

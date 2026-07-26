@@ -1,12 +1,12 @@
 /*
-  需求：防止按钮在短时间内被多次点击，使用节流函数限制规定时间内只能点击一次。
+  Requirement: Prevent buttons from being clicked multiple times in a short period. Use a throttle function to limit clicks to once within a set interval.
 
-  思路：
-    1、第一次点击，立即调用方法并禁用按钮，等延迟结束再次激活按钮
-    2、将需要触发的方法绑定在指令上
-  
-  使用：给 Dom 加上 v-throttle 及回调函数即可
-  <button v-throttle="debounceClick">节流提交</button>
+  Approach:
+    1. On first click, immediately call the method and disable the button; re-enable after the delay ends.
+    2. Bind the target method to the directive.
+
+  Usage: Add v-throttle and a callback function to the DOM element
+  <button v-throttle="debounceClick">Throttle Submit</button>
 */
 import type { Directive, DirectiveBinding } from "vue";
 interface ElType extends HTMLElement {

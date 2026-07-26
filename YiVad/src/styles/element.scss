@@ -3,7 +3,7 @@
   border: 1px solid;
 }
 
-/* 当前页面最大化 css */
+/* Maximize current page CSS */
 .main-maximize {
   .aside-split,
   .el-aside,
@@ -31,7 +31,7 @@
   box-shadow: 0 0 12px rgb(0 0 0 / 5%);
 }
 
-/* ProTable 不需要 card 样式（在组件内使用 ProTable 会使用到） */
+/* ProTable does not need card styling (used when ProTable is nested inside a component) */
 .no-card {
   .card {
     padding: 0;
@@ -46,7 +46,7 @@
   }
 }
 
-/* content-box (常用内容盒子) */
+/* content-box (commonly used content box) */
 .content-box {
   display: flex;
   flex-direction: column;
@@ -70,7 +70,7 @@
   }
 }
 
-/* main-box (树形表格 treeFilter 页面会使用，左右布局 flex) */
+/* main-box (used by tree table treeFilter page, left-right flex layout) */
 .main-box {
   display: flex;
   width: 100%;
@@ -89,7 +89,7 @@
   width: 100%;
   height: 100%;
 
-  // table-search 表格搜索样式
+  // table-search table search styles
   .table-search {
     padding: 18px 18px 0;
     margin-bottom: 10px;
@@ -98,7 +98,7 @@
         width: 100%;
       }
 
-      // 去除时间选择器上下 padding
+      // Remove top/bottom padding from time picker
       .el-range-editor.el-input__wrapper {
         padding: 0 10px;
       }
@@ -111,7 +111,7 @@
     }
   }
 
-  // 表格 header 样式
+  // Table header styles
   .table-header {
     .header-button-lf,
     .header-button-ri {
@@ -131,11 +131,11 @@
     }
   }
 
-  // el-table 表格样式
+  // el-table table styles
   .el-table {
     flex: 1;
 
-    // 修复 safari 浏览器表格错位
+    // Fix Safari browser table misalignment
     table {
       width: 100%;
     }
@@ -157,13 +157,13 @@
       }
     }
 
-    // 设置 el-table 中 header 文字不换行，并省略
+    // Set el-table header text to no-wrap with ellipsis
     .el-table__header .el-table__cell > .cell {
       // white-space: nowrap;
       white-space: wrap;
     }
 
-    // 解决表格数据为空时样式不居中问题(仅在element-plus中)
+    // Fix table empty state alignment issue (element-plus only)
     .el-table__empty-block {
       position: absolute;
       .table-empty {
@@ -174,7 +174,7 @@
       }
     }
 
-    // table 中 image 图片样式
+    // Table image styles
     .table-image {
       width: 50px;
       height: 50px;
@@ -182,7 +182,7 @@
     }
   }
 
-  // 表格 pagination 样式
+  // Table pagination styles
   .el-pagination {
     display: flex;
     justify-content: flex-end;
@@ -190,7 +190,7 @@
   }
 }
 
-/* el-table 组件大小 */
+/* el-table component sizing */
 .el-table--small {
   .el-table__header th {
     height: 40px !important;
@@ -228,12 +228,12 @@
     border-top: 1px solid var(--el-border-color-lighter);
   }
 
-  // select 样式
+  // Select styles
   .el-select {
     width: 100%;
   }
 
-  // drawer-form 中存在两列 form-item 样式
+  // Two-column form-item layout inside drawer-form
   .drawer-multiColumn-form {
     display: flex;
     flex-wrap: wrap;

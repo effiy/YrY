@@ -36,26 +36,26 @@ import PasswordDialog from "./PasswordDialog.vue";
 const router = useRouter();
 const userStore = useUserStore();
 
-// 退出登录
+// Logout
 const logout = () => {
-  ElMessageBox.confirm("您是否确认退出登录?", "温馨提示", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
+  ElMessageBox.confirm("Are you sure you want to log out?", "Warning", {
+    confirmButtonText: "Confirm",
+    cancelButtonText: "Cancel",
     type: "warning"
   }).then(async () => {
-    // 1.执行退出登录接口
+    // 1. Execute logout API
     await logoutApi();
 
-    // 2.清除 Token
+    // 2. Clear Token
     userStore.setToken("");
 
-    // 3.重定向到登陆页
+    // 3. Redirect to login page
     router.replace(LOGIN_URL);
-    ElMessage.success("退出登录成功！");
+    ElMessage.success("Logged out successfully!");
   });
 };
 
-// 打开修改密码和个人信息弹窗
+// Open change password and personal info dialog
 const infoRef = ref<InstanceType<typeof InfoDialog> | null>(null);
 const passwordRef = ref<InstanceType<typeof PasswordDialog> | null>(null);
 const openDialog = (ref: string) => {

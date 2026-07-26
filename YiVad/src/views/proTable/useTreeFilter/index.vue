@@ -2,7 +2,7 @@
   <div class="main-box">
     <TreeFilter
       label="name"
-      title="部门列表(单选)"
+      title="Department List (Single Select)"
       :request-api="getUserDepartment"
       :default-value="initParam.departmentId"
       @change="changeTreeFilter"
@@ -15,19 +15,19 @@
         :init-param="initParam"
         :search-col="{ xs: 1, sm: 1, md: 2, lg: 3, xl: 3 }"
       >
-        <!-- 表格 header 按钮 -->
+        <!-- Table header buttons -->
         <template #tableHeader>
-          <el-button type="primary" :icon="CirclePlus" @click="openDrawer('新增')">新增用户</el-button>
-          <el-button type="primary" :icon="Upload" plain @click="batchAdd">批量添加用户</el-button>
-          <el-button type="primary" :icon="Download" plain @click="downloadFile">导出用户数据</el-button>
-          <el-button type="primary" plain @click="toDetail">To 平级详情页面</el-button>
+          <el-button type="primary" :icon="CirclePlus" @click="openDrawer('Add')">Add User</el-button>
+          <el-button type="primary" :icon="Upload" plain @click="batchAdd">Batch Add Users</el-button>
+          <el-button type="primary" :icon="Download" plain @click="downloadFile">Export User Data</el-button>
+          <el-button type="primary" plain @click="toDetail">To Same-Level Detail Page</el-button>
         </template>
-        <!-- 表格操作 -->
+        <!-- Table operations -->
         <template #operation="scope">
-          <el-button type="primary" link :icon="View" @click="openDrawer('查看', scope.row)">查看</el-button>
-          <el-button type="primary" link :icon="EditPen" @click="openDrawer('编辑', scope.row)">编辑</el-button>
-          <el-button type="primary" link :icon="Refresh" @click="resetPass(scope.row)">重置密码</el-button>
-          <el-button type="primary" link :icon="Delete" @click="deleteAccount(scope.row)">删除</el-button>
+          <el-button type="primary" link :icon="View" @click="openDrawer('View', scope.row)">View</el-button>
+          <el-button type="primary" link :icon="EditPen" @click="openDrawer('Edit', scope.row)">Edit</el-button>
+          <el-button type="primary" link :icon="Refresh" @click="resetPass(scope.row)">Reset Password</el-button>
+          <el-button type="primary" link :icon="Delete" @click="deleteAccount(scope.row)">Delete</el-button>
         </template>
       </ProTable>
       <UserDrawer ref="drawerRef" />
@@ -63,43 +63,43 @@ import {
 
 const router = useRouter();
 
-// 跳转详情页
+// Navigate to detail page
 const toDetail = () => {
   router.push(`/proTable/useTreeFilter/detail/123456?params=detail-page`);
 };
 
-// ProTable 实例
+// ProTable instance
 const proTable = ref<ProTableInstance>();
 
-// 如果表格需要初始化请求参数，直接定义传给 ProTable(之后每次请求都会自动带上该参数，此参数更改之后也会一直带上，改变此参数会自动刷新表格数据)
+// If the table needs initial request params, pass them directly to ProTable (they will be automatically included in every subsequent request; changes to these params will auto-refresh the table data)
 const initParam = reactive({ departmentId: "1" });
 
-// 树形筛选切换
+// Tree filter change
 const changeTreeFilter = (val: string) => {
-  ElMessage.success("请注意查看请求参数变化 🤔");
+  ElMessage.success("Notice the request parameter changes 🤔");
   proTable.value!.pageable.pageNum = 1;
   initParam.departmentId = val;
 };
 
-// 表格配置项
+// Table column config
 const columns = reactive<ColumnProps<User.ResUserList>[]>([
   { type: "index", label: "#", width: 80 },
-  { prop: "username", label: "用户姓名", width: 120, search: { el: "input" } },
+  { prop: "username", label: "Username", width: 120, search: { el: "input" } },
   {
     prop: "gender",
-    label: "性别",
+    label: "Gender",
     width: 120,
     sortable: true,
     enum: getUserGender,
     search: { el: "select" },
     fieldNames: { label: "genderLabel", value: "genderValue" }
   },
-  { prop: "idCard", label: "身份证号" },
-  { prop: "email", label: "邮箱" },
-  { prop: "address", label: "居住地址" },
+  { prop: "idCard", label: "ID Card" },
+  { prop: "email", label: "Email" },
+  { prop: "address", label: "Address" },
   {
     prop: "status",
-    label: "用户状态",
+    label: "Status",
     width: 120,
     sortable: true,
     tag: true,
@@ -107,34 +107,34 @@ const columns = reactive<ColumnProps<User.ResUserList>[]>([
     search: { el: "select" },
     fieldNames: { label: "userLabel", value: "userStatus" }
   },
-  { prop: "createTime", label: "创建时间", width: 180 },
-  { prop: "operation", label: "操作", width: 330, fixed: "right" }
+  { prop: "createTime", label: "Created At", width: 180 },
+  { prop: "operation", label: "Actions", width: 330, fixed: "right" }
 ]);
 
-// 删除用户信息
+// Delete user
 const deleteAccount = async (params: User.ResUserList) => {
-  await useHandleData(deleteUser, { id: [params.id] }, `删除【${params.username}】用户`);
+  await useHandleData(deleteUser, { id: [params.id] }, `Delete user【${params.username}】`);
   proTable.value?.getTableList();
 };
 
-// 重置用户密码
+// Reset user password
 const resetPass = async (params: User.ResUserList) => {
-  await useHandleData(resetUserPassWord, { id: params.id }, `重置【${params.username}】用户密码`);
+  await useHandleData(resetUserPassWord, { id: params.id }, `Reset password for【${params.username}】`);
   proTable.value?.getTableList();
 };
 
-// 导出用户列表
+// Export user list
 const downloadFile = async () => {
-  ElMessageBox.confirm("确认导出用户数据?", "温馨提示", { type: "warning" }).then(() =>
-    useDownload(exportUserInfo, "用户列表", proTable.value?.searchParam)
+  ElMessageBox.confirm("Confirm export user data?", "Tip", { type: "warning" }).then(() =>
+    useDownload(exportUserInfo, "User List", proTable.value?.searchParam)
   );
 };
 
-// 批量添加用户
+// Batch add users
 const dialogRef = ref<InstanceType<typeof ImportExcel> | null>(null);
 const batchAdd = () => {
   const params = {
-    title: "用户",
+    title: "User",
     tempApi: exportUserInfo,
     importApi: BatchAddUser,
     getTableList: proTable.value?.getTableList
@@ -142,14 +142,14 @@ const batchAdd = () => {
   dialogRef.value?.acceptParams(params);
 };
 
-// 打开 drawer(新增、查看、编辑)
+// Open drawer (Add, View, Edit)
 const drawerRef = ref<InstanceType<typeof UserDrawer> | null>(null);
 const openDrawer = (title: string, row: Partial<User.ResUserList> = {}) => {
   const params = {
     title,
-    isView: title === "查看",
+    isView: title === "View",
     row: { ...row },
-    api: title === "新增" ? addUser : title === "编辑" ? editUser : undefined,
+    api: title === "Add" ? addUser : title === "Edit" ? editUser : undefined,
     getTableList: proTable.value?.getTableList
   };
   drawerRef.value?.acceptParams(params);

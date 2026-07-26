@@ -3,14 +3,14 @@ import { PORT1 } from "@/api/config/servicePort";
 import http from "@/api";
 
 /**
- * @name 文件上传模块
+ * @name File upload module
  */
-// 图片上传
+// Image upload
 export const uploadImg = (params: FormData) => {
   return http.post<Upload.ResFileUrl>(PORT1 + `/file/upload/img`, params, { cancel: false });
 };
 
-// 视频上传
+// Video upload
 export const uploadVideo = (params: FormData) => {
   return http.post<Upload.ResFileUrl>(PORT1 + `/file/upload/video`, params, { cancel: false });
 };

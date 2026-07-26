@@ -1,3 +1,3 @@
-// 后端微服务模块前缀
+// Backend microservice module prefix
 export const PORT1 = "/yivad";
 export const PORT2 = "/hooks";

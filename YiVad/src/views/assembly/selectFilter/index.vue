@@ -1,11 +1,11 @@
 <template>
   <div class="card content-box">
-    <span class="text"> 分类筛选器 🍓🍇🍈🍉</span>
+    <span class="text"> Select Filter 🍓🍇🍈🍉</span>
     <SelectFilter :data="filterData" :default-values="filterResult" @change="changeFilter" />
-    <span class="result">返回值: {{ filterResult }}</span>
-    <el-descriptions title="配置项 📚" :column="1" border>
-      <el-descriptions-item label="data"> 需要筛选的数据列表，详情请查看代码 </el-descriptions-item>
-      <el-descriptions-item label="defaultValues"> 默认选中的值 </el-descriptions-item>
+    <span class="result">Return Value: {{ filterResult }}</span>
+    <el-descriptions title="Config Options 📚" :column="1" border>
+      <el-descriptions-item label="data"> Data list to filter, see code for details </el-descriptions-item>
+      <el-descriptions-item label="defaultValues"> Default selected values </el-descriptions-item>
     </el-descriptions>
   </div>
 </template>
@@ -22,63 +22,63 @@ const changeFilter = (val: typeof filterResult.value) => {
 
 const filterData = [
   {
-    title: "物流状态(单)",
+    title: "Logistics Status (Single)",
     key: "state",
     options: [
       {
-        label: "全部",
+        label: "All",
         value: ""
       },
       {
-        label: "已下单",
+        label: "Ordered",
         value: "1",
         icon: "ShoppingCart"
       },
       {
-        label: "已发货",
+        label: "Shipped",
         value: "2",
         icon: "Van"
       },
       {
-        label: "已签收",
+        label: "Received",
         value: "3",
         icon: "Edit"
       },
       {
-        label: "已退回",
+        label: "Returned",
         value: "4",
         icon: "Guide"
       },
       {
-        label: "已完成",
+        label: "Completed",
         value: "5",
         icon: "CircleCheck"
       }
     ]
   },
   {
-    title: "商品类型(多)",
+    title: "Product Type (Multiple)",
     key: "type",
     multiple: true,
     options: [
       {
-        label: "全部",
+        label: "All",
         value: ""
       },
       {
-        label: "食品类",
+        label: "Food",
         value: "1"
       },
       {
-        label: "服装类",
+        label: "Clothing",
         value: "2"
       },
       {
-        label: "家具类",
+        label: "Furniture",
         value: "3"
       },
       {
-        label: "日用品类",
+        label: "Daily Necessities",
         value: "4"
       }
     ]
@@ -87,5 +87,5 @@ const filterData = [
 </script>
 
 <style scoped lang="scss">
-@import "./index.scss";
+@use "./index.scss" as *;
 </style>

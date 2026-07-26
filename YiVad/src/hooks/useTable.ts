@@ -2,11 +2,11 @@ import { Table } from "./interface";
 import { reactive, computed, toRefs } from "vue";
 
 /**
- * @description table 页面操作方法封装
- * @param {Function} api 获取表格数据 api 方法 (必传)
- * @param {Object} initParam 获取数据初始化参数 (非必传，默认为{})
- * @param {Boolean} isPageable 是否有分页 (非必传，默认为true)
- * @param {Function} dataCallBack 对后台返回的数据进行处理的方法 (非必传)
+ * @description Table page operation methods
+ * @param {Function} api API method for fetching table data (required)
+ * @param {Object} initParam Initial parameters for fetching data (optional, default: {})
+ * @param {Boolean} isPageable Whether pagination is enabled (optional, default: true)
+ * @param {Function} dataCallBack Callback for processing backend data (optional)
  * */
 export const useTable = (
   api?: (params: any) => Promise<any>,
@@ -16,27 +16,27 @@ export const useTable = (
   requestError?: (error: any) => void
 ) => {
   const state = reactive<Table.StateProps>({
-    // 表格数据
+    // Table data
     tableData: [],
-    // 分页数据
+    // Pagination data
     pageable: {
-      // 当前页数
+      // Current page number
       pageNum: 1,
-      // 每页显示条数
+      // Items per page
       pageSize: 10,
-      // 总条数
+      // Total items
       total: 0
     },
-    // 查询参数(只包括查询)
+    // Search parameters (search only)
     searchParam: {},
-    // 初始化默认的查询参数
+    // Initial default search parameters
     searchInitParam: {},
-    // 总参数(包含分页和查询参数)
+    // Total parameters (including pagination and search)
     totalParam: {}
   });
 
   /**
-   * @description 分页查询参数(只包括分页和表格字段排序,其他排序方式可自行配置)
+   * @description Pagination query parameters (pagination and table column sorting; other sorting can be configured)
    * */
   const pageParam = computed({
     get: () => {
@@ -46,23 +46,23 @@ export const useTable = (
       };
     },
     set: (newVal: any) => {
-      console.log("我是分页更新之后的值", newVal);
+      console.log("Page update value", newVal);
     }
   });
 
   /**
-   * @description 获取表格数据
+   * @description Get table data
    * @return void
    * */
   const getTableList = async () => {
     if (!api) return;
     try {
-      // 先把初始化参数和分页参数放到总参数里面
+      // Put initial and pagination params into total params first
       Object.assign(state.totalParam, initParam, isPageable ? pageParam.value : {});
       let { data } = await api({ ...state.searchInitParam, ...state.totalParam });
       dataCallBack && (data = dataCallBack(data));
       state.tableData = isPageable ? data.list : data;
-      // 解构后台返回的分页数据 (如果有分页更新分页信息)
+      // Destructure pagination data from backend (update if applicable)
       if (isPageable) {
         state.pageable.total = data.total;
       }
@@ -72,16 +72,16 @@ export const useTable = (
   };
 
   /**
-   * @description 更新查询参数
+   * @description Update search parameters
    * @return void
    * */
   const updatedTotalParam = () => {
     state.totalParam = {};
-    // 处理查询参数，可以给查询参数加自定义前缀操作
+    // Process search params, custom prefix supported
     let nowSearchParam: Table.StateProps["searchParam"] = {};
-    // 防止手动清空输入框携带参数（这里可以自定义查询参数前缀）
+    // Prevent manually cleared inputs from carrying params (custom prefix supported)
     for (let key in state.searchParam) {
-      // 某些情况下参数为 false/0 也应该携带参数
+      // In some cases false/0 params should still be included
       if (state.searchParam[key] || state.searchParam[key] === false || state.searchParam[key] === 0) {
         nowSearchParam[key] = state.searchParam[key];
       }
@@ -90,7 +90,7 @@ export const useTable = (
   };
 
   /**
-   * @description 表格数据查询
+   * @description Table data search
    * @return void
    * */
   const search = () => {
@@ -100,20 +100,20 @@ export const useTable = (
   };
 
   /**
-   * @description 表格数据重置
+   * @description Table data reset
    * @return void
    * */
   const reset = () => {
     state.pageable.pageNum = 1;
-    // 重置搜索表单的时，如果有默认搜索参数，则重置默认的搜索参数
+    // When resetting search form, reset to default search params if available
     state.searchParam = { ...state.searchInitParam };
     updatedTotalParam();
     getTableList();
   };
 
   /**
-   * @description 每页条数改变
-   * @param {Number} val 当前条数
+   * @description Page size change
+   * @param {Number} val Current page size
    * @return void
    * */
   const handleSizeChange = (val: number) => {
@@ -123,8 +123,8 @@ export const useTable = (
   };
 
   /**
-   * @description 当前页改变
-   * @param {Number} val 当前页
+   * @description Current page change
+   * @param {Number} val Current page number
    * @return void
    * */
   const handleCurrentChange = (val: number) => {

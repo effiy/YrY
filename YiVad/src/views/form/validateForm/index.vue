@@ -105,7 +105,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   await formEl.validate((valid, fields) => {
     if (valid) {
-      ElMessage.success("提交的数据为 : " + JSON.stringify(ruleForm));
+      ElMessage.success("Submitted data : " + JSON.stringify(ruleForm));
     } else {
       console.log("error submit!", fields);
     }
@@ -119,5 +119,5 @@ const resetForm = (formEl: FormInstance | undefined) => {
 </script>
 
 <style scoped lang="scss">
-@import "./index.scss";
+@use "./index.scss" as *;
 </style>

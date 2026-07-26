@@ -1,12 +1,12 @@
 <template>
   <div class="card content-box">
-    <span class="text">拖拽指令 🍇🍇🍇🍓🍓🍓</span>
-    <div v-draggable class="drag-box flx-center">我可以拖拽哦~</div>
+    <span class="text">Drag Directive 🍇🍇🍇🍓🍓🍓</span>
+    <div v-draggable class="drag-box flx-center">You can drag me around~</div>
   </div>
 </template>
 
 <script setup lang="ts" name="dragDirect"></script>
 
 <style scoped lang="scss">
-@import "./index.scss";
+@use "./index.scss" as *;
 </style>

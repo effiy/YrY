@@ -1,7 +1,7 @@
 <template>
   <div class="card content-box">
-    <span class="text">我是menu3 🍓🍇🍈🍉</span>
-    <el-input v-model="value" placeholder="测试缓存"></el-input>
+    <span class="text">I'm menu3 🍓🍇🍈🍉</span>
+    <el-input v-model="value" placeholder="Test cache"></el-input>
   </div>
 </template>
 
@@ -11,5 +11,5 @@ const value = ref<string>("");
 </script>
 
 <style scoped lang="scss">
-@import "./index.scss";
+@use "./index.scss" as *;
 </style>

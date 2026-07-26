@@ -21,23 +21,23 @@ import { uploadImg, uploadVideo } from "@/api/modules/upload";
 import "@wangeditor/editor/dist/css/style.css";
 import { formContextKey, formItemContextKey } from "element-plus";
 
-// 富文本 DOM 元素
+// Rich text DOM element
 const editorRef = shallowRef();
 
-// 实列化编辑器
+// Initialize editor
 const handleCreated = (editor: any) => {
   editorRef.value = editor;
 };
 
-// 接收父组件参数，并设置默认值
+// Accept parent component params and set defaults
 interface RichEditorProps {
-  value: string; // 富文本值 ==> 必传
-  toolbarConfig?: Partial<IToolbarConfig>; // 工具栏配置 ==> 非必传（默认为空）
-  editorConfig?: Partial<IEditorConfig>; // 编辑器配置 ==> 非必传（默认为空）
-  height?: string; // 富文本高度 ==> 非必传（默认为 500px）
-  mode?: "default" | "simple"; // 富文本模式 ==> 非必传（默认为 default）
-  hideToolBar?: boolean; // 是否隐藏工具栏 ==> 非必传（默认为false）
-  disabled?: boolean; // 是否禁用编辑器 ==> 非必传（默认为false）
+  value: string; // Rich text value ==> required
+  toolbarConfig?: Partial<IToolbarConfig>; // Toolbar config ==> optional (default empty)
+  editorConfig?: Partial<IEditorConfig>; // Editor config ==> optional (default empty)
+  height?: string; // Rich text height ==> optional (default 500px)
+  mode?: "default" | "simple"; // Rich text mode ==> optional (default "default")
+  hideToolBar?: boolean; // Whether to hide toolbar ==> optional (default false)
+  disabled?: boolean; // Whether to disable editor ==> optional (default false)
 }
 const props = withDefaults(defineProps<RichEditorProps>(), {
   toolbarConfig: () => {
@@ -47,7 +47,7 @@ const props = withDefaults(defineProps<RichEditorProps>(), {
   },
   editorConfig: () => {
     return {
-      placeholder: "请输入内容...",
+      placeholder: "Please enter content...",
       MENU_CONF: {}
     };
   },
@@ -57,19 +57,19 @@ const props = withDefaults(defineProps<RichEditorProps>(), {
   disabled: false
 });
 
-// 获取 el-form 组件上下文
+// Get el-form component context
 const formContext = inject(formContextKey, void 0);
-// 获取 el-form-item 组件上下文
+// Get el-form-item component context
 const formItemContext = inject(formItemContextKey, void 0);
-// 判断是否禁用上传和删除
+// Determine if upload and delete are disabled
 const self_disabled = computed(() => {
   return props.disabled || formContext?.disabled;
 });
 
-// 判断当前富文本编辑器是否禁用
+// Determine if current rich text editor is disabled
 if (self_disabled.value) nextTick(() => editorRef.value.disable());
 
-// 富文本的内容监听，触发父组件改变，实现双向数据绑定
+// Watch rich text content, trigger parent component update for two-way binding
 const emit = defineEmits<{
   "update:value": [value: string];
   "check-validate": [];
@@ -79,16 +79,16 @@ const valueHtml = computed({
     return props.value;
   },
   set(val: string) {
-    // 防止富文本内容为空时，校验失败
+    // Prevent validation failure when rich text content is empty
     if (editorRef.value.isEmpty()) val = "";
     emit("update:value", val);
   }
 });
 
 /**
- * @description 图片自定义上传
- * @param file 上传的文件
- * @param insertFn 上传成功后的回调函数（插入到富文本编辑器中）
+ * @description Custom image upload
+ * @param file Uploaded file
+ * @param insertFn Callback after upload success (insert into rich text editor)
  * */
 type InsertFnTypeImg = (url: string, alt?: string, href?: string) => void;
 props.editorConfig.MENU_CONF!["uploadImage"] = {
@@ -105,16 +105,16 @@ props.editorConfig.MENU_CONF!["uploadImage"] = {
   }
 };
 
-// 图片上传前判断
+// Validate before image upload
 const uploadImgValidate = (file: File): boolean => {
   console.log(file);
   return true;
 };
 
 /**
- * @description 视频自定义上传
- * @param file 上传的文件
- * @param insertFn 上传成功后的回调函数（插入到富文本编辑器中）
+ * @description Custom video upload
+ * @param file Uploaded file
+ * @param insertFn Callback after upload success (insert into rich text editor)
  * */
 type InsertFnTypeVideo = (url: string, poster?: string) => void;
 props.editorConfig.MENU_CONF!["uploadVideo"] = {
@@ -131,18 +131,18 @@ props.editorConfig.MENU_CONF!["uploadVideo"] = {
   }
 };
 
-// 视频上传前判断
+// Validate before video upload
 const uploadVideoValidate = (file: File): boolean => {
   console.log(file);
   return true;
 };
 
-// 编辑框失去焦点时触发
+// Trigger on editor blur
 const handleBlur = () => {
   formItemContext?.prop && formContext?.validateField([formItemContext.prop as string]);
 };
 
-// 组件销毁时，也及时销毁编辑器
+// Also destroy editor when component is destroyed
 onBeforeUnmount(() => {
   if (!editorRef.value) return;
   editorRef.value.destroy();
@@ -154,5 +154,5 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
-@import "./index.scss";
+@use "./index.scss" as *;
 </style>

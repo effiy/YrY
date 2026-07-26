@@ -1,10 +1,10 @@
 <template>
   <div class="card content-box">
-    <span class="text">复制指令 🍇🍇🍇🍓🍓🍓</span>
+    <span class="text">Copy Directive 🍇🍇🍇🍓🍓🍓</span>
     <div class="box-content">
-      <el-input v-model="data" placeholder="请输入内容" style="width: 500px">
+      <el-input v-model="data" placeholder="Please enter content" style="width: 500px">
         <template #append>
-          <el-button v-copy="data"> 复制 </el-button>
+          <el-button v-copy="data"> Copy </el-button>
         </template>
       </el-input>
     </div>
@@ -14,9 +14,9 @@
 <script setup lang="ts" name="copyDirect">
 import { ref } from "vue";
 
-const data = ref<string>("我是被复制的内容 🍒 🍉 🍊");
+const data = ref<string>("I am the content being copied 🍒 🍉 🍊");
 </script>
 
 <style scoped lang="scss">
-@import "./index.scss";
+@use "./index.scss" as *;
 </style>

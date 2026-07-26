@@ -51,7 +51,7 @@ onDeactivated(() => {
   window.removeEventListener("resize", resize);
 });
 
-// 监听屏幕变化
+// Watch screen resize
 const resize = (e: UIEvent) => {
   let width = (e.target as Window).innerWidth;
   switch (!!width) {
@@ -73,25 +73,25 @@ const resize = (e: UIEvent) => {
   }
 };
 
-// 注入 gap 间距
+// Inject gap
 provide("gap", Array.isArray(props.gap) ? props.gap[0] : props.gap);
 
-// 注入响应式断点
+// Inject responsive breakpoint
 let breakPoint = ref<BreakPoint>("xl");
 provide("breakPoint", breakPoint);
 
-// 注入要开始折叠的 index
+// Inject the index to start collapsing
 const hiddenIndex = ref(-1);
 provide("shouldHiddenIndex", hiddenIndex);
 
-// 注入 cols
+// Inject cols
 const gridCols = computed(() => {
   if (typeof props.cols === "object") return props.cols[breakPoint.value] ?? props.cols;
   return props.cols;
 });
 provide("cols", gridCols);
 
-// 寻找需要开始折叠的字段 index
+// Find the field index to start collapsing
 const slots = useSlots().default!();
 
 const findIndex = () => {
@@ -104,7 +104,7 @@ const findIndex = () => {
     if (typeof slot.type === "symbol" && Array.isArray(slot.children)) fields.push(...slot.children);
   });
 
-  // 计算 suffix 所占用的列
+  // Calculate columns used by suffix
   let suffixCols = 0;
   if (suffix) {
     suffixCols =
@@ -130,7 +130,7 @@ const findIndex = () => {
   }
 };
 
-// 断点变化时执行 findIndex
+// Execute findIndex when breakpoint changes
 watch(
   () => breakPoint.value,
   () => {
@@ -138,7 +138,7 @@ watch(
   }
 );
 
-// 监听 collapsed
+// Watch collapsed
 watch(
   () => props.collapsed,
   value => {
@@ -147,14 +147,14 @@ watch(
   }
 );
 
-// 设置间距
+// Set gap
 const gridGap = computed(() => {
   if (typeof props.gap === "number") return `${props.gap}px`;
   if (Array.isArray(props.gap)) return `${props.gap[1]}px ${props.gap[0]}px`;
   return "unset";
 });
 
-// 设置 style
+// Set style
 const style = computed(() => {
   return {
     display: "grid",

@@ -62,10 +62,10 @@ const formData = reactive({
 });
 
 const onSubmit = () => {
-  ElMessage.success("提交的数据为 : " + JSON.stringify(formData));
+  ElMessage.success("Submitted data : " + JSON.stringify(formData));
 };
 </script>
 
 <style scoped lang="scss">
-@import "./index.scss";
+@use "./index.scss" as *;
 </style>

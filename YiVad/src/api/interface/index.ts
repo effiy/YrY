@@ -1,15 +1,15 @@
-// 请求响应参数（不包含data）
+// Request response params (excluding data)
 export interface Result {
   code: string;
   msg: string;
 }
 
-// 请求响应参数（包含data）
+// Request response params (including data)
 export interface ResultData<T = any> extends Result {
   data: T;
 }
 
-// 分页响应参数
+// Pagination response params
 export interface ResPage<T> {
   list: T[];
   pageNum: number;
@@ -17,20 +17,20 @@ export interface ResPage<T> {
   total: number;
 }
 
-// 分页请求参数
+// Pagination request params
 export interface ReqPage {
   pageNum: number;
   pageSize: number;
 }
 
-// 文件上传模块
+// File upload module
 export namespace Upload {
   export interface ResFileUrl {
     fileUrl: string;
   }
 }
 
-// 登录模块
+// Login module
 export namespace Login {
   export interface ReqLoginForm {
     username: string;
@@ -44,7 +44,7 @@ export namespace Login {
   }
 }
 
-// 用户管理模块
+// User management module
 export namespace User {
   export interface ReqUserParams extends ReqPage {
     username: string;

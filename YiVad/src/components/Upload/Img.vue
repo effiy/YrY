@@ -19,15 +19,15 @@
         <div class="upload-handle" @click.stop>
           <div v-if="!self_disabled" class="handle-icon" @click="editImg">
             <el-icon><Edit /></el-icon>
-            <span>编辑</span>
+            <span>Edit</span>
           </div>
           <div class="handle-icon" @click="imgViewVisible = true">
             <el-icon><ZoomIn /></el-icon>
-            <span>查看</span>
+            <span>View</span>
           </div>
           <div v-if="!self_disabled" class="handle-icon" @click="deleteImg">
             <el-icon><Delete /></el-icon>
-            <span>删除</span>
+            <span>Delete</span>
           </div>
         </div>
       </template>
@@ -35,7 +35,7 @@
         <div class="upload-empty">
           <slot name="empty">
             <el-icon><Plus /></el-icon>
-            <!-- <span>请上传图片</span> -->
+            <!-- <span>Please upload image</span> -->
           </slot>
         </div>
       </template>
@@ -55,18 +55,18 @@ import { ElNotification, formContextKey, formItemContextKey } from "element-plus
 import type { UploadProps, UploadRequestOptions } from "element-plus";
 
 interface UploadFileProps {
-  imageUrl: string; // 图片地址 ==> 必传
-  api?: (params: any) => Promise<any>; // 上传图片的 api 方法，一般项目上传都是同一个 api 方法，在组件里直接引入即可 ==> 非必传
-  drag?: boolean; // 是否支持拖拽上传 ==> 非必传（默认为 true）
-  disabled?: boolean; // 是否禁用上传组件 ==> 非必传（默认为 false）
-  fileSize?: number; // 图片大小限制 ==> 非必传（默认为 5M）
-  fileType?: File.ImageMimeType[]; // 图片类型限制 ==> 非必传（默认为 ["image/jpeg", "image/png", "image/gif"]）
-  height?: string; // 组件高度 ==> 非必传（默认为 150px）
-  width?: string; // 组件宽度 ==> 非必传（默认为 150px）
-  borderRadius?: string; // 组件边框圆角 ==> 非必传（默认为 8px）
+  imageUrl: string; // Image URL ==> required
+  api?: (params: any) => Promise<any>; // Upload image API method, usually the same API across the project, can be imported directly in the component ==> optional
+  drag?: boolean; // Whether to support drag upload ==> optional (default true)
+  disabled?: boolean; // Whether to disable upload component ==> optional (default false)
+  fileSize?: number; // Image size limit ==> optional (default 5M)
+  fileType?: File.ImageMimeType[]; // Image type limit ==> optional (default ["image/jpeg", "image/png", "image/gif"])
+  height?: string; // Component height ==> optional (default 150px)
+  width?: string; // Component width ==> optional (default 150px)
+  borderRadius?: string; // Component border radius ==> optional (default 8px)
 }
 
-// 接受父组件参数
+// Accept parent component params
 const props = withDefaults(defineProps<UploadFileProps>(), {
   imageUrl: "",
   drag: true,
@@ -78,23 +78,23 @@ const props = withDefaults(defineProps<UploadFileProps>(), {
   borderRadius: "8px"
 });
 
-// 生成组件唯一id
+// Generate unique component id
 const uuid = ref("id-" + generateUUID());
 
-// 查看图片
+// View image
 const imgViewVisible = ref(false);
-// 获取 el-form 组件上下文
+// Get el-form component context
 const formContext = inject(formContextKey, void 0);
-// 获取 el-form-item 组件上下文
+// Get el-form-item component context
 const formItemContext = inject(formItemContextKey, void 0);
-// 判断是否禁用上传和删除
+// Determine if upload and delete are disabled
 const self_disabled = computed(() => {
   return props.disabled || formContext?.disabled;
 });
 
 /**
- * @description 图片上传
- * @param options upload 所有配置项
+ * @description Image upload
+ * @param options All upload config options
  * */
 const emit = defineEmits<{
   "update:imageUrl": [value: string];
@@ -106,7 +106,7 @@ const handleHttpUpload = async (options: UploadRequestOptions) => {
     const api = props.api ?? uploadImg;
     const { data } = await api(formData);
     emit("update:imageUrl", data.fileUrl);
-    // 调用 el-form 内部的校验方法（可自动校验）
+    // Call el-form internal validation method (auto-validate)
     formItemContext?.prop && formContext?.validateField([formItemContext.prop as string]);
   } catch (error) {
     options.onError(error as any);
@@ -114,14 +114,14 @@ const handleHttpUpload = async (options: UploadRequestOptions) => {
 };
 
 /**
- * @description 删除图片
+ * @description Delete image
  * */
 const deleteImg = () => {
   emit("update:imageUrl", "");
 };
 
 /**
- * @description 编辑图片
+ * @description Edit image
  * */
 const editImg = () => {
   const dom = document.querySelector(`#${uuid.value} .el-upload__input`);
@@ -129,23 +129,23 @@ const editImg = () => {
 };
 
 /**
- * @description 文件上传之前判断
- * @param rawFile 选择的文件
+ * @description Validate before file upload
+ * @param rawFile Selected file
  * */
 const beforeUpload: UploadProps["beforeUpload"] = rawFile => {
   const imgSize = rawFile.size / 1024 / 1024 < props.fileSize;
   const imgType = props.fileType.includes(rawFile.type as File.ImageMimeType);
   if (!imgType)
     ElNotification({
-      title: "温馨提示",
-      message: "上传图片不符合所需的格式！",
+      title: "Notice",
+      message: "Uploaded image does not match the required format!",
       type: "warning"
     });
   if (!imgSize)
     setTimeout(() => {
       ElNotification({
-        title: "温馨提示",
-        message: `上传图片大小不能超过 ${props.fileSize}M！`,
+        title: "Notice",
+        message: `Image size cannot exceed ${props.fileSize}M!`,
         type: "warning"
       });
     }, 0);
@@ -153,23 +153,23 @@ const beforeUpload: UploadProps["beforeUpload"] = rawFile => {
 };
 
 /**
- * @description 图片上传成功
+ * @description Image upload success
  * */
 const uploadSuccess = () => {
   ElNotification({
-    title: "温馨提示",
-    message: "图片上传成功！",
+    title: "Notice",
+    message: "Image uploaded successfully!",
     type: "success"
   });
 };
 
 /**
- * @description 图片上传错误
+ * @description Image upload error
  * */
 const uploadError = () => {
   ElNotification({
-    title: "温馨提示",
-    message: "图片上传失败，请您重新上传！",
+    title: "Notice",
+    message: "Image upload failed, please re-upload!",
     type: "error"
   });
 };

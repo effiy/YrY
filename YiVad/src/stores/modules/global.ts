@@ -5,43 +5,43 @@ import piniaPersistConfig from "@/stores/helper/persist";
 
 export const useGlobalStore = defineStore({
   id: "yivad-global",
-  // 修改默认值之后，需清除 localStorage 数据
+  // After modifying default values, clear localStorage data
   state: (): GlobalState => ({
-    // 布局模式 (纵向：vertical | 经典：classic | 横向：transverse | 分栏：columns)
+    // Layout mode (vertical | classic | transverse | columns)
     layout: "vertical",
-    // element 组件大小
+    // Element component size
     assemblySize: "default",
-    // 当前系统语言
+    // Current system language
     language: null,
-    // 当前页面是否全屏
+    // Whether the current page is maximized
     maximize: false,
-    // 主题颜色
+    // Theme color
     primary: DEFAULT_PRIMARY,
-    // 深色模式
+    // Dark mode
     isDark: false,
-    // 灰色模式
+    // Grey mode
     isGrey: false,
-    // 色弱模式
+    // Color weakness mode
     isWeak: false,
-    // 侧边栏反转
+    // Sidebar inverted
     asideInverted: false,
-    // 头部反转
+    // Header inverted
     headerInverted: false,
-    // 折叠菜单
+    // Collapse menu
     isCollapse: false,
-    // 菜单手风琴
+    // Menu accordion
     accordion: true,
-    // 页面水印
+    // Page watermark
     watermark: false,
-    // 面包屑导航
+    // Breadcrumb navigation
     breadcrumb: true,
-    // 面包屑导航图标
+    // Breadcrumb icon
     breadcrumbIcon: true,
-    // 标签页
+    // Tabs
     tabs: true,
-    // 标签页图标
+    // Tab icons
     tabsIcon: true,
-    // 页脚
+    // Footer
     footer: true
   }),
   getters: {},

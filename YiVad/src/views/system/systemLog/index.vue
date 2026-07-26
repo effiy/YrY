@@ -1,6 +1,6 @@
 <template>
   <div class="card content-box">
-    <span class="text"> 系统日志（待完善） 🍓🍇🍈🍉</span>
+    <span class="text"> System Log (TBD) 🍓🍇🍈🍉</span>
   </div>
 </template>
 

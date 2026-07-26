@@ -1,0 +1,277 @@
+{
+  "name": "Integrations with Backends",
+  "slug": "integrations-with-backends",
+  "source_id": "awesome-vite",
+  "file": "categories/integrations-with-backends.json",
+  "topics": [
+    {
+      "name": "Craft CMS",
+      "resources": [
+        {
+          "category": "Integrations with Backends",
+          "topic": "Craft CMS",
+          "title": "Craft Vite",
+          "url": "https://github.com/nystudio107/craft-vite",
+          "source": "awesome-vite"
+        }
+      ]
+    },
+    {
+      "name": "Django",
+      "resources": [
+        {
+          "category": "Integrations with Backends",
+          "topic": "Django",
+          "title": "django-vite",
+          "url": "https://github.com/MrBin99/django-vite",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Integrations with Backends",
+          "topic": "Django",
+          "title": "django-vite-plugin",
+          "url": "https://github.com/protibimbok/django-vite-plugin",
+          "source": "awesome-vite"
+        }
+      ]
+    },
+    {
+      "name": "Flask",
+      "resources": [
+        {
+          "category": "Integrations with Backends",
+          "topic": "Flask",
+          "title": "Flask-Vite",
+          "url": "https://pypi.org/project/flask-vite/",
+          "source": "awesome-vite"
+        }
+      ]
+    },
+    {
+      "name": "Ruby on Rails",
+      "resources": [
+        {
+          "category": "Integrations with Backends",
+          "topic": "Ruby on Rails",
+          "title": "vite-plugin-ruby",
+          "url": "https://github.com/ElMassimo/vite_ruby/tree/main/vite-plugin-ruby",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Integrations with Backends",
+          "topic": "Ruby on Rails",
+          "title": "Vite Ruby",
+          "url": "https://github.com/ElMassimo/vite_ruby",
+          "source": "awesome-vite"
+        }
+      ]
+    },
+    {
+      "name": "Laravel",
+      "resources": [
+        {
+          "category": "Integrations with Backends",
+          "topic": "Laravel",
+          "title": "Laravel Vite",
+          "url": "https://github.com/innocenzi/laravel-vite",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Integrations with Backends",
+          "topic": "Laravel",
+          "title": "Laravel Vite Plugin",
+          "url": "https://github.com/laravel/vite-plugin",
+          "source": "awesome-vite"
+        }
+      ]
+    },
+    {
+      "name": "CakePHP",
+      "resources": [
+        {
+          "category": "Integrations with Backends",
+          "topic": "CakePHP",
+          "title": "cakephp-vite",
+          "url": "https://github.com/passchn/cakephp-vite",
+          "source": "awesome-vite"
+        }
+      ]
+    },
+    {
+      "name": "WordPress",
+      "resources": [
+        {
+          "category": "Integrations with Backends",
+          "topic": "WordPress",
+          "title": "wordpress-vite-assets",
+          "url": "https://github.com/idleberg/php-wordpress-vite-assets",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Integrations with Backends",
+          "topic": "WordPress",
+          "title": "Kima",
+          "url": "https://github.com/axelilali/kima",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Integrations with Backends",
+          "topic": "WordPress",
+          "title": "WordPlate",
+          "url": "https://github.com/vinkla/wordplate",
+          "source": "awesome-vite"
+        }
+      ]
+    },
+    {
+      "name": "TYPO3 CMS",
+      "resources": [
+        {
+          "category": "Integrations with Backends",
+          "topic": "TYPO3 CMS",
+          "title": "vite-plugin-typo3",
+          "url": "https://github.com/s2b/vite-plugin-typo3",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Integrations with Backends",
+          "topic": "TYPO3 CMS",
+          "title": "vite-asset-collector for TYPO3",
+          "url": "https://github.com/s2b/vite-asset-collector",
+          "source": "awesome-vite"
+        }
+      ]
+    },
+    {
+      "name": "Go",
+      "resources": [
+        {
+          "category": "Integrations with Backends",
+          "topic": "Go",
+          "title": "vite",
+          "url": "https://github.com/olivere/vite",
+          "source": "awesome-vite"
+        }
+      ]
+    },
+    {
+      "name": "Rust",
+      "resources": [
+        {
+          "category": "Integrations with Backends",
+          "topic": "Rust",
+          "title": "create-rust-app",
+          "url": "https://github.com/Wulf/create-rust-app",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Integrations with Backends",
+          "topic": "Rust",
+          "title": "vite-rs",
+          "url": "https://github.com/Wulf/vite-rs",
+          "source": "awesome-vite"
+        }
+      ]
+    },
+    {
+      "name": "Symfony",
+      "resources": [
+        {
+          "category": "Integrations with Backends",
+          "topic": "Symfony",
+          "title": "Vite Bundle",
+          "url": "https://github.com/lhapaipai/vite-bundle",
+          "source": "awesome-vite"
+        }
+      ]
+    },
+    {
+      "name": "Shopify",
+      "resources": [
+        {
+          "category": "Integrations with Backends",
+          "topic": "Shopify",
+          "title": "vite-plugin-shopify",
+          "url": "https://github.com/barrel/barrel-shopify/tree/main/packages/vite-plugin-shopify",
+          "source": "awesome-vite"
+        }
+      ]
+    },
+    {
+      "name": "Node.js",
+      "resources": [
+        {
+          "category": "Integrations with Backends",
+          "topic": "Node.js",
+          "title": "vite-express",
+          "url": "https://github.com/szymmis/vite-express",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Integrations with Backends",
+          "topic": "Node.js",
+          "title": "vite-manifest-parser",
+          "url": "https://github.com/sullay/vite-manifest-parser",
+          "source": "awesome-vite"
+        }
+      ]
+    },
+    {
+      "name": "ASP.NET Core",
+      "resources": [
+        {
+          "category": "Integrations with Backends",
+          "topic": "ASP.NET Core",
+          "title": "Vite.AspNetCore",
+          "url": "https://github.com/Eptagone/Vite.AspNetCore",
+          "source": "awesome-vite"
+        }
+      ]
+    },
+    {
+      "name": "Drupal",
+      "resources": [
+        {
+          "category": "Integrations with Backends",
+          "topic": "Drupal",
+          "title": "Vite module",
+          "url": "https://git.drupalcode.org/project/vite",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Integrations with Backends",
+          "topic": "Drupal",
+          "title": "vite-plugin-twig-drupal",
+          "url": "https://github.com/larowlan/vite-plugin-twig-drupal",
+          "source": "awesome-vite"
+        }
+      ]
+    },
+    {
+      "name": "PHP",
+      "resources": [
+        {
+          "category": "Integrations with Backends",
+          "topic": "PHP",
+          "title": "PHP-Vite",
+          "url": "https://github.com/mindplay-dk/php-vite",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Integrations with Backends",
+          "topic": "PHP",
+          "title": "PHP-Vite Starter Repo",
+          "url": "https://github.com/nititech/php-vite-starter",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "Integrations with Backends",
+          "topic": "PHP",
+          "title": "php-vitelinker",
+          "url": "https://github.com/Osteoporosis/php-vitelinker",
+          "source": "awesome-vite"
+        }
+      ]
+    }
+  ]
+}

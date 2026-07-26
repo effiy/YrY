@@ -1,12 +1,12 @@
 <template>
-  <el-drawer v-model="drawerVisible" title="布局设置" size="290px">
-    <!-- 布局样式 -->
+  <el-drawer v-model="drawerVisible" title="Layout Settings" size="290px">
+    <!-- Layout Style -->
     <el-divider class="divider" content-position="center">
       <el-icon><Notification /></el-icon>
-      布局样式
+      Layout Style
     </el-divider>
     <div class="layout-box">
-      <el-tooltip effect="dark" content="纵向" placement="top" :show-after="200">
+      <el-tooltip effect="dark" content="Vertical" placement="top" :show-after="200">
         <div :class="['layout-item layout-vertical', { 'is-active': layout == 'vertical' }]" @click="setLayout('vertical')">
           <div class="layout-dark"></div>
           <div class="layout-container">
@@ -18,7 +18,7 @@
           </el-icon>
         </div>
       </el-tooltip>
-      <el-tooltip effect="dark" content="经典" placement="top" :show-after="200">
+      <el-tooltip effect="dark" content="Classic" placement="top" :show-after="200">
         <div :class="['layout-item layout-classic', { 'is-active': layout == 'classic' }]" @click="setLayout('classic')">
           <div class="layout-dark"></div>
           <div class="layout-container">
@@ -30,7 +30,7 @@
           </el-icon>
         </div>
       </el-tooltip>
-      <el-tooltip effect="dark" content="横向" placement="top" :show-after="200">
+      <el-tooltip effect="dark" content="Horizontal" placement="top" :show-after="200">
         <div :class="['layout-item layout-transverse', { 'is-active': layout == 'transverse' }]" @click="setLayout('transverse')">
           <div class="layout-dark"></div>
           <div class="layout-content"></div>
@@ -39,7 +39,7 @@
           </el-icon>
         </div>
       </el-tooltip>
-      <el-tooltip effect="dark" content="分栏" placement="top" :show-after="200">
+      <el-tooltip effect="dark" content="Column" placement="top" :show-after="200">
         <div :class="['layout-item layout-columns', { 'is-active': layout == 'columns' }]" @click="setLayout('columns')">
           <div class="layout-dark"></div>
           <div class="layout-light"></div>
@@ -52,8 +52,8 @@
     </div>
     <div class="theme-item">
       <span>
-        侧边栏反转色
-        <el-tooltip effect="dark" content="侧边栏颜色变为深色模式" placement="top">
+        Sidebar Inverted
+        <el-tooltip effect="dark" content="Sidebar color changes to dark mode" placement="top">
           <el-icon><QuestionFilled /></el-icon>
         </el-tooltip>
       </span>
@@ -61,71 +61,71 @@
     </div>
     <div class="theme-item mb50">
       <span>
-        头部反转色
-        <el-tooltip effect="dark" content="头部颜色变为深色模式" placement="top">
+        Header Inverted
+        <el-tooltip effect="dark" content="Header color changes to dark mode" placement="top">
           <el-icon><QuestionFilled /></el-icon>
         </el-tooltip>
       </span>
       <el-switch v-model="headerInverted" @change="setHeaderTheme" />
     </div>
 
-    <!-- 全局主题 -->
+    <!-- Global Theme -->
     <el-divider class="divider" content-position="center">
       <el-icon><ColdDrink /></el-icon>
-      全局主题
+      Global Theme
     </el-divider>
     <div class="theme-item">
-      <span>主题颜色</span>
+      <span>Theme Color</span>
       <el-color-picker v-model="primary" :predefine="colorList" @change="changePrimary" />
     </div>
     <div class="theme-item">
-      <span>暗黑模式</span>
+      <span>Dark Mode</span>
       <SwitchDark />
     </div>
     <div class="theme-item">
-      <span>灰色模式</span>
+      <span>Grey Mode</span>
       <el-switch v-model="isGrey" @change="changeGreyOrWeak('grey', !!$event)" />
     </div>
     <div class="theme-item mb40">
-      <span>色弱模式</span>
+      <span>Color Weakness Mode</span>
       <el-switch v-model="isWeak" @change="changeGreyOrWeak('weak', !!$event)" />
     </div>
 
-    <!-- 界面设置 -->
+    <!-- Interface Settings -->
     <el-divider class="divider" content-position="center">
       <el-icon><Setting /></el-icon>
-      界面设置
+      Interface Settings
     </el-divider>
     <div class="theme-item">
-      <span>菜单折叠</span>
+      <span>Menu Collapse</span>
       <el-switch v-model="isCollapse" />
     </div>
     <div class="theme-item">
-      <span>菜单手风琴</span>
+      <span>Menu Accordion</span>
       <el-switch v-model="accordion" />
     </div>
     <div class="theme-item">
-      <span>水印</span>
+      <span>Watermark</span>
       <el-switch v-model="watermark" />
     </div>
     <div class="theme-item">
-      <span>面包屑</span>
+      <span>Breadcrumb</span>
       <el-switch v-model="breadcrumb" />
     </div>
     <div class="theme-item">
-      <span>面包屑图标</span>
+      <span>Breadcrumb Icon</span>
       <el-switch v-model="breadcrumbIcon" />
     </div>
     <div class="theme-item">
-      <span>标签栏</span>
+      <span>Tab Bar</span>
       <el-switch v-model="tabs" />
     </div>
     <div class="theme-item">
-      <span>标签栏图标</span>
+      <span>Tab Bar Icon</span>
       <el-switch v-model="tabsIcon" />
     </div>
     <div class="theme-item">
-      <span>页脚</span>
+      <span>Footer</span>
       <el-switch v-model="footer" />
     </div>
   </el-drawer>
@@ -161,7 +161,7 @@ const {
   footer
 } = storeToRefs(globalStore);
 
-// 预定义主题颜色
+// Predefined theme colors
 const colorList = [
   DEFAULT_PRIMARY,
   "#daa96e",
@@ -175,17 +175,17 @@ const colorList = [
   "#9b59b6"
 ];
 
-// 设置布局方式
+// Set layout mode
 const setLayout = (val: LayoutType) => {
   globalStore.setGlobalState("layout", val);
   setAsideTheme();
 };
 
-// 打开主题设置
+// Open theme settings
 const drawerVisible = ref(false);
 mittBus.on("openThemeDrawer", () => (drawerVisible.value = true));
 </script>
 
 <style scoped lang="scss">
-@import "./index.scss";
+@use "./index.scss" as *;
 </style>

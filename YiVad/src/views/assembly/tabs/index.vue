@@ -1,28 +1,28 @@
 <template>
   <div class="card content-box">
-    <span class="text"> 标签页操作 🍓🍇🍈🍉</span>
+    <span class="text"> Tab Operations 🍓🍇🍈🍉</span>
     <div class="mb30">
-      <el-input v-model="tabsTitle" placeholder="请输入内容" style="width: 500px">
+      <el-input v-model="tabsTitle" placeholder="Please enter content" style="width: 500px">
         <template #append>
-          <el-button type="primary" @click="editTabsTitle"> 设置 Tab 标题 </el-button>
+          <el-button type="primary" @click="editTabsTitle"> Set Tab Title </el-button>
         </template>
       </el-input>
     </div>
     <el-space class="mb30">
-      <el-button type="primary" :icon="Refresh" @click="refresh"> 刷新当前页 </el-button>
-      <el-button type="primary" :icon="FullScreen" @click="maximize"> 当前页全屏切换 </el-button>
-      <el-button type="primary" :icon="FullScreen" @click="closeOnSide('left')"> 关闭左侧标签页 </el-button>
-      <el-button type="primary" :icon="FullScreen" @click="closeOnSide('right')"> 关闭右侧标签页 </el-button>
-      <el-button type="primary" :icon="Remove" @click="closeCurrentTab"> 关闭当前页 </el-button>
-      <el-button type="primary" :icon="CircleClose" @click="closeOtherTab"> 关闭其他 </el-button>
-      <el-button type="primary" :icon="FolderDelete" @click="closeAllTab"> 全部关闭 </el-button>
+      <el-button type="primary" :icon="Refresh" @click="refresh"> Refresh Current Page </el-button>
+      <el-button type="primary" :icon="FullScreen" @click="maximize"> Toggle Fullscreen </el-button>
+      <el-button type="primary" :icon="FullScreen" @click="closeOnSide('left')"> Close Left Tabs </el-button>
+      <el-button type="primary" :icon="FullScreen" @click="closeOnSide('right')"> Close Right Tabs </el-button>
+      <el-button type="primary" :icon="Remove" @click="closeCurrentTab"> Close Current Tab </el-button>
+      <el-button type="primary" :icon="CircleClose" @click="closeOtherTab"> Close Others </el-button>
+      <el-button type="primary" :icon="FolderDelete" @click="closeAllTab"> Close All </el-button>
     </el-space>
     <el-space class="mb30">
-      <el-button type="info" :icon="Promotion" @click="handleToDetail('1')"> 打开详情页1 </el-button>
-      <el-button type="info" :icon="Promotion" @click="handleToDetail('2')"> 打开详情页2 </el-button>
-      <el-button type="info" :icon="Promotion" @click="handleToDetail('3')"> 打开详情页3 </el-button>
-      <el-button type="info" :icon="Promotion" @click="handleToDetail('4')"> 打开详情页4 </el-button>
-      <el-button type="info" :icon="Promotion" @click="handleToDetail('5')"> 打开详情页5 </el-button>
+      <el-button type="info" :icon="Promotion" @click="handleToDetail('1')"> Open Detail 1 </el-button>
+      <el-button type="info" :icon="Promotion" @click="handleToDetail('2')"> Open Detail 2 </el-button>
+      <el-button type="info" :icon="Promotion" @click="handleToDetail('3')"> Open Detail 3 </el-button>
+      <el-button type="info" :icon="Promotion" @click="handleToDetail('4')"> Open Detail 4 </el-button>
+      <el-button type="info" :icon="Promotion" @click="handleToDetail('5')"> Open Detail 5 </el-button>
     </el-space>
   </div>
 </template>
@@ -43,7 +43,7 @@ const tabStore = useTabsStore();
 const globalStore = useGlobalStore();
 const keepAliveStore = useKeepAliveStore();
 
-// 刷新当前页
+// Refresh current page
 const refreshCurrentPage: Function = inject("refresh") as Function;
 const refresh = () => {
   setTimeout(() => {
@@ -56,41 +56,41 @@ const refresh = () => {
   }, 0);
 };
 
-// 设置 Tab 标题
+// Set tab title
 const tabsTitle = ref("");
 const editTabsTitle = () => {
-  if (!tabsTitle.value) return ElMessage.warning("请输入标题");
+  if (!tabsTitle.value) return ElMessage.warning("Please enter a title");
   tabStore.setTabsTitle(tabsTitle.value);
 };
 
-// 当前页全屏
+// Toggle fullscreen for current page
 const maximize = () => {
   globalStore.setGlobalState("maximize", !globalStore.maximize);
 };
 
-// 关闭当前页
+// Close current tab
 const closeCurrentTab = () => {
   if (route.meta.isAffix) return;
   tabStore.removeTabs(route.fullPath);
 };
 
-// 关闭其他
+// Close other tabs
 const closeOtherTab = () => {
   tabStore.closeMultipleTab(route.fullPath);
 };
 
-// 关闭两侧
+// Close tabs on side
 const closeOnSide = (direction: "left" | "right") => {
   tabStore.closeTabsOnSide(route.fullPath, direction);
 };
 
-// 全部关闭
+// Close all tabs
 const closeAllTab = () => {
   tabStore.closeMultipleTab();
   router.push(HOME_URL);
 };
 
-// 打开详情页
+// Open detail page
 const handleToDetail = (id: string) => {
   router.push(`/assembly/tabs/detail/${id}`);
 };

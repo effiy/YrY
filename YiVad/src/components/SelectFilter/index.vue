@@ -2,9 +2,9 @@
   <div class="select-filter">
     <div v-for="item in data" :key="item.key" class="select-filter-item">
       <div class="select-filter-item-title">
-        <span>{{ item.title }} ：</span>
+        <span>{{ item.title }} :</span>
       </div>
-      <span v-if="!item.options.length" class="select-filter-notData">暂无数据 ~</span>
+      <span v-if="!item.options.length" class="select-filter-notData">No data ~</span>
       <el-scrollbar>
         <ul class="select-filter-list">
           <li
@@ -40,15 +40,15 @@ interface OptionsProps {
 }
 
 interface SelectDataProps {
-  title: string; // 列表标题
-  key: string; // 当前筛选项 key 值
-  multiple?: boolean; // 是否为多选
-  options: OptionsProps[]; // 筛选数据
+  title: string; // List title
+  key: string; // Current filter item key
+  multiple?: boolean; // Whether multi-select
+  options: OptionsProps[]; // Filter data
 }
 
 interface SelectFilterProps {
-  data?: SelectDataProps[]; // 选择的列表数据
-  defaultValues?: { [key: string]: any }; // 默认值
+  data?: SelectDataProps[]; // Selected list data
+  defaultValues?: { [key: string]: any }; // Default values
 }
 
 const props = withDefaults(defineProps<SelectFilterProps>(), {
@@ -56,7 +56,7 @@ const props = withDefaults(defineProps<SelectFilterProps>(), {
   defaultValues: () => ({})
 });
 
-// 重新接收默认值
+// Re-receive default values
 const selected = ref<{ [key: string]: any }>({});
 watch(
   () => props.defaultValues,
@@ -75,29 +75,29 @@ const emit = defineEmits<{
 }>();
 
 /**
- * @description 选择筛选项
- * @param {Object} item 选中的哪项列表
- * @param {Object} option 选中的值
+ * @description Select filter item
+ * @param {Object} item Selected list item
+ * @param {Object} option Selected value
  * @return void
  * */
 const select = (item: SelectDataProps, option: OptionsProps) => {
   if (!item.multiple) {
-    // * 单选
+    // * Single select
     if (selected.value[item.key] !== option.value) selected.value[item.key] = option.value;
   } else {
-    // * 多选
-    // 如果选中的是第一个值，则直接设置
+    // * Multi-select
+    // If first value is selected, set directly
     if (item.options[0].value === option.value) selected.value[item.key] = [option.value];
-    // 如果选择的值已经选中了，则删除选中的值
+    // If selected value is already selected, deselect it
     if (selected.value[item.key].includes(option.value)) {
       let currentIndex = selected.value[item.key].findIndex((s: any) => s === option.value);
       selected.value[item.key].splice(currentIndex, 1);
-      // 当全部删光时，把第第一个值选中
+      // When all are removed, select the first value
       if (selected.value[item.key].length == 0) selected.value[item.key] = [item.options[0].value];
     } else {
-      // 未选中点击值的时候，追加选中值
+      // When clicking an unselected value, add it
       selected.value[item.key].push(option.value);
-      // 单选中全部并且点击到了未选中的值，把第一个值删除掉
+      // When all is selected and clicking an unselected value, remove the first value
       if (selected.value[item.key].includes(item.options[0].value)) selected.value[item.key].splice(0, 1);
     }
   }
@@ -106,5 +106,5 @@ const select = (item: SelectDataProps, option: OptionsProps) => {
 </script>
 
 <style scoped lang="scss">
-@import "./index.scss";
+@use "./index.scss" as *;
 </style>

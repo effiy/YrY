@@ -1,7 +1,7 @@
 /**
  * v-copy
- * 复制某个值至剪贴板
- * 接收参数：string类型/Ref<string>类型/Reactive<string>类型
+ * Copy a value to clipboard
+ * Accepts: string / Ref<string> / Reactive<string>
  */
 
 import type { Directive, DirectiveBinding } from "vue";
@@ -27,10 +27,10 @@ async function handleClick(this: any) {
     await navigator.clipboard.writeText(this.copyData);
     ElMessage({
       type: "success",
-      message: "复制成功"
+      message: "Copied successfully"
     });
   } catch (err) {
-    console.error("复制操作不被支持或失败: ", err);
+    console.error("Copy operation not supported or failed: ", err);
   }
 }
 

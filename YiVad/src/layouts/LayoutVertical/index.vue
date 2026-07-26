@@ -1,4 +1,4 @@
-<!-- 纵向布局 -->
+<!-- Vertical Layout -->
 <template>
   <el-container class="layout">
     <el-aside>
@@ -52,5 +52,5 @@ const activeMenu = computed(() => (route.meta.activeMenu ? route.meta.activeMenu
 </script>
 
 <style scoped lang="scss">
-@import "./index.scss";
+@use "./index.scss" as *;
 </style>

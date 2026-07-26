@@ -41,7 +41,7 @@ onMounted(() => {
   initTabs();
 });
 
-// 监听路由的变化（防止浏览器后退/前进不变化 tabsMenuValue）
+// Watch route changes (prevent browser back/forward from not updating tabsMenuValue)
 watch(
   () => route.fullPath,
   () => {
@@ -60,7 +60,7 @@ watch(
   { immediate: true }
 );
 
-// 初始化需要固定的 tabs
+// Initialize tabs that need to be affixed
 const initTabs = () => {
   authStore.flatMenuListGet.forEach(item => {
     if (item.meta.isAffix && !item.meta.isHide && !item.meta.isFull) {
@@ -77,7 +77,7 @@ const initTabs = () => {
   });
 };
 
-// tabs 拖拽排序
+// Tabs drag sort
 const tabsDrop = () => {
   Sortable.create(document.querySelector(".el-tabs__nav") as HTMLElement, {
     draggable: ".el-tabs__item",
@@ -104,5 +104,5 @@ const tabRemove = (fullPath: TabPaneName) => {
 </script>
 
 <style scoped lang="scss">
-@import "./index.scss";
+@use "./index.scss" as *;
 </style>

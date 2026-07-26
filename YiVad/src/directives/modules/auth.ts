@@ -1,6 +1,6 @@
 /**
  * v-auth
- * 按钮权限指令
+ * Button permission directive
  */
 import { useAuthStore } from "@/stores/modules/auth";
 import type { Directive, DirectiveBinding } from "vue";

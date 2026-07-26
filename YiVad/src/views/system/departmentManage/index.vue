@@ -1,6 +1,6 @@
 <template>
   <div class="card content-box">
-    <span class="text"> 部门管理（待完善） 🍓🍇🍈🍉</span>
+    <span class="text"> Department Management (TBD) 🍓🍇🍈🍉</span>
   </div>
 </template>
 

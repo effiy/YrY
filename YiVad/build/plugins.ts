@@ -13,40 +13,40 @@ import NextDevTools from "vite-plugin-vue-devtools";
 import { codeInspectorPlugin } from "code-inspector-plugin";
 
 /**
- * 创建 vite 插件
+ * Create vite plugins
  * @param viteEnv
  */
 export const createVitePlugins = (viteEnv: ViteEnv): (PluginOption | PluginOption[])[] => {
   const { VITE_GLOB_APP_TITLE, VITE_REPORT, VITE_DEVTOOLS, VITE_PWA, VITE_CODEINSPECTOR } = viteEnv;
   return [
     vue(),
-    // vue 可以使用 jsx/tsx 语法
+    // Vue can use jsx/tsx syntax
     vueJsx(),
     // devTools
     VITE_DEVTOOLS && NextDevTools({ launchEditor: "code" }),
-    // esLint 报错信息显示在浏览器界面上
+    // Display esLint errors in the browser interface
     eslintPlugin(),
-    // name 可以写在 script 标签上
+    // name can be written on the script tag
     vueSetupExtend({}),
-    // 创建打包压缩配置
+    // Create build compression configuration
     createCompression(viteEnv),
-    // 注入变量到 html 文件
+    // Inject variables into the html file
     createHtmlPlugin({
       minify: true,
       inject: {
         data: { title: VITE_GLOB_APP_TITLE }
       }
     }),
-    // 使用 svg 图标
+    // Use svg icons
     createSvgIconsPlugin({
       iconDirs: [resolve(process.cwd(), "src/assets/icons")],
       symbolId: "icon-[dir]-[name]"
     }),
     // vitePWA
     VITE_PWA && createVitePwa(viteEnv),
-    // 是否生成包预览，分析依赖包大小做优化处理
+    // Generate bundle preview to analyze and optimize dependency sizes
     VITE_REPORT && (visualizer({ filename: "stats.html", gzipSize: true, brotliSize: true }) as PluginOption),
-    // 自动 IDE 并将光标定位到 DOM 对应的源代码位置。see: https://inspector.fe-dev.cn/guide/start.html
+    // Code inspector: automatically locates the DOM element's source code in IDE. See: https://inspector.fe-dev.cn/guide/start.html
     VITE_CODEINSPECTOR &&
       codeInspectorPlugin({
         bundler: "vite"
@@ -55,7 +55,7 @@ export const createVitePlugins = (viteEnv: ViteEnv): (PluginOption | PluginOptio
 };
 
 /**
- * @description 根据 compress 配置，生成不同的压缩规则
+ * @description Generate different compression rules based on compress configuration
  * @param viteEnv
  */
 const createCompression = (viteEnv: ViteEnv): PluginOption | PluginOption[] => {

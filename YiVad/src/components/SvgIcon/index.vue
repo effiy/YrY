@@ -8,9 +8,9 @@
 import { computed, CSSProperties } from "vue";
 
 interface SvgProps {
-  name: string; // 图标的名称 ==> 必传
-  prefix?: string; // 图标的前缀 ==> 非必传（默认为"icon"）
-  iconStyle?: CSSProperties; // 图标的样式 ==> 非必传
+  name: string; // Icon name ==> required
+  prefix?: string; // Icon prefix ==> optional (default "icon")
+  iconStyle?: CSSProperties; // Icon style ==> optional
 }
 
 const props = withDefaults(defineProps<SvgProps>(), {

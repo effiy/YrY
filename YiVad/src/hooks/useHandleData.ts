@@ -2,11 +2,11 @@ import { ElMessageBox, ElMessage } from "element-plus";
 import { HandleData } from "./interface";
 
 /**
- * @description 操作单条数据信息 (二次确认【删除、禁用、启用、重置密码】)
- * @param {Function} api 操作数据接口的api方法 (必传)
- * @param {Object} params 携带的操作数据参数 {id,params} (必传)
- * @param {String} message 提示信息 (必传)
- * @param {String} confirmType icon类型 (不必传,默认为 warning)
+ * @description Handle single data entry (confirmation for delete, disable, enable, reset password)
+ * @param {Function} api API method for data operation (required)
+ * @param {Object} params Operation parameters {id, params} (required)
+ * @param {String} message Tip message (required)
+ * @param {String} confirmType Icon type (optional, default: warning)
  * @returns {Promise}
  */
 export const useHandleData = (
@@ -16,9 +16,9 @@ export const useHandleData = (
   confirmType: HandleData.MessageType = "warning"
 ) => {
   return new Promise((resolve, reject) => {
-    ElMessageBox.confirm(`是否${message}?`, "温馨提示", {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
+    ElMessageBox.confirm(`${message}?`, "Tips", {
+      confirmButtonText: "Confirm",
+      cancelButtonText: "Cancel",
       type: confirmType,
       draggable: true
     })
@@ -27,7 +27,7 @@ export const useHandleData = (
         if (!res) return reject(false);
         ElMessage({
           type: "success",
-          message: `${message}成功!`
+          message: `${message} successfully!`
         });
         resolve(true);
       })

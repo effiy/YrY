@@ -1,8 +1,8 @@
 <template>
   <div class="card content-box">
-    <span class="text"> 我是 Tab 详情页 🍓🍇🍈🍉</span>
+    <span class="text"> Tab Detail Page 🍓🍇🍈🍉</span>
     <span class="text">params:{{ route.params }}</span>
-    <el-input v-model="value" placeholder="测试详情页缓存"></el-input>
+    <el-input v-model="value" placeholder="Test detail page cache"></el-input>
   </div>
 </template>
 
