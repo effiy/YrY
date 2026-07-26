@@ -8,7 +8,7 @@ import { ElMessage } from "element-plus";
 export const checkStatus = (status: number) => {
   switch (status) {
     case 400:
-      ElMessage.error("Request failed! Please try again later");
+      ElMessage.error("Invalid request! Please check the request parameters");
       break;
     case 401:
       ElMessage.error("Login expired! Please login again");
@@ -25,8 +25,11 @@ export const checkStatus = (status: number) => {
     case 408:
       ElMessage.error("Request timed out! Please try again later");
       break;
+    case 429:
+      ElMessage.error("Too many requests! Please try again later");
+      break;
     case 500:
-      ElMessage.error("Service error!");
+      ElMessage.error("Server error!");
       break;
     case 502:
       ElMessage.error("Gateway error!");

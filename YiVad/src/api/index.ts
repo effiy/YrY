@@ -46,7 +46,7 @@ class RequestHttp {
         config.loading ??= true;
         config.loading && showFullScreenLoading();
         if (config.headers && typeof config.headers.set === "function") {
-          config.headers.set("x-access-token", userStore.token);
+          config.headers.set("Authorization", `Bearer ${userStore.token}`);
         }
         return config;
       },
@@ -70,12 +70,12 @@ class RequestHttp {
         if (data.code == ResultEnum.OVERDUE) {
           userStore.setToken("");
           router.replace(LOGIN_URL);
-          ElMessage.error(data.msg);
+          ElMessage.error(data.message || data.msg);
           return Promise.reject(data);
         }
         // Global error message interception (prevents errors when downloading files returns data streams without code)
         if (data.code && data.code !== ResultEnum.SUCCESS) {
-          ElMessage.error(data.msg);
+          ElMessage.error(data.message || data.msg);
           return Promise.reject(data);
         }
         // Successful request (no need to handle failure logic on the page unless in special cases)

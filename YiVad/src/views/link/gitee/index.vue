@@ -1,7 +1,5 @@
 <template>
-  <div class="card content-box">
-    <span class="text"> Gitee Repository 🍒🍉🍊 </span>
-  </div>
+  <iframe src="https://gitee.com" class="link-iframe" />
 </template>
 
 <script setup lang="ts" name="gitee"></script>

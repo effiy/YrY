@@ -109,6 +109,10 @@ class Settings(BaseSettings):
     middleware_auth_enabled: bool = Field(False, validation_alias="middleware_auth_enabled")
     middleware_auth_token: str = Field("", validation_alias="middleware_auth_token")
 
+    # JWT
+    jwt_secret: str = Field("yi-ai-jwt-secret-change-in-production", validation_alias="jwt_secret")
+    jwt_expire_minutes: int = Field(1440, validation_alias="jwt_expire_minutes")
+
     # Module
     module_allowlist: Union[str, List[str]] = Field(["*"], validation_alias="module_allowlist")
 

@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 from shared.config import settings
 from shared.response import fail
 from shared.error_codes import ErrorCode
+from domain.auth import verify_jwt
 
 
 logger = logging.getLogger(__name__)
@@ -67,8 +68,9 @@ async def header_verification_middleware(request: Request, call_next):
 
         # Whitelist paths, skip auth
         # write-file/read-file/delete-file/upload are local file operation endpoints, typically called directly by the frontend
+        # /auth/login is the login endpoint, no auth needed
         # Content under /static is static assets, no auth needed
-        if request.url.path in ["/write-file", "/read-file", "/delete-file", "/upload"] or request.url.path.startswith("/static"):
+        if request.url.path in ["/write-file", "/read-file", "/delete-file", "/upload", "/auth/login"] or request.url.path.startswith("/static"):
             return await call_next(request)
 
         # Check if middleware is enabled
@@ -77,6 +79,27 @@ async def header_verification_middleware(request: Request, call_next):
             response = await call_next(request)
             return response
 
+        # ── JWT Bearer token verification ──
+        auth_header = request.headers.get("Authorization", "")
+        if auth_header.startswith("Bearer "):
+            token = auth_header[7:]
+            payload = verify_jwt(token)
+            if payload:
+                # Attach user info to request state for downstream handlers
+                request.state.user_id = payload.get("sub", "")
+                request.state.username = payload.get("username", "")
+                response = await call_next(request)
+                logger.info(f"Request processed (JWT): {request.method} {request.url}")
+                return response
+            else:
+                logger.warning("Invalid or expired JWT Bearer token")
+                error_response = fail(
+                    error=ErrorCode.UNAUTHORIZED,
+                    message="Invalid or expired token"
+                )
+                return _add_cors_headers(error_response, request)
+
+        # ── Static X-Token fallback ──
         # Get configuration
         required_token = settings.auth_token
 

@@ -84,6 +84,11 @@ middleware:
   auth_enabled: false
   auth_token: "dev-token-change-me"
 
+# JWT Configuration
+jwt:
+  secret: "yi-ai-jwt-secret-change-in-production"
+  expire_minutes: 1440
+
 # Module Execution Settings
 module:
   allowlist:
@@ -97,7 +102,7 @@ state_store:
 
 # Observer Reliability Configuration
 observer:
-  enabled: true
+  enabled: false
   throttle_enabled: false
   throttle_max_requests: 100
   throttle_window_seconds: 60

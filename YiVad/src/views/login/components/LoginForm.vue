@@ -47,7 +47,14 @@ import { useKeepAliveStore } from "@/stores/modules/keepAlive";
 import { initDynamicRouter } from "@/routers/modules/dynamicRouter";
 import { CircleClose, UserFilled } from "@element-plus/icons-vue";
 import type { ElForm } from "element-plus";
-import md5 from "md5";
+
+/** Compute SHA-256 hex digest using the Web Crypto API. */
+const sha256 = async (message: string): Promise<string> => {
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+};
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -74,8 +81,11 @@ const login = (formEl: FormInstance | undefined) => {
     if (!valid) return;
     loading.value = true;
     try {
-      // 1. Execute login API
-      const { data } = await loginApi({ ...loginForm, password: md5(loginForm.password) });
+      // 1. Execute login API (password is SHA-256 hashed before transmission)
+      const { data } = await loginApi({
+        username: loginForm.username,
+        password: await sha256(loginForm.password)
+      });
       userStore.setToken(data.access_token);
 
       // 2. Add dynamic routes

@@ -4,7 +4,7 @@
  */
 
 declare global {
-  // CDN utility globals (from public/cdn/utils/url.js and log.js)
+  // CDN utility globals (from public/cdn/utils/index.js)
   const UrlBuilder: {
     buildUrl(baseUrl: string, endpoint: string, params?: Record<string, unknown>): string;
     buildQueryParams(params: Record<string, unknown>): string;

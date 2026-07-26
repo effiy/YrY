@@ -1,71 +1,75 @@
 import { ResPage, User } from "@/api/interface/index";
-import { PORT1 } from "@/api/config/servicePort";
 import http from "@/api";
 
 /**
- * @name User management module
+ * @name User management module — calls YiAi /users/* REST routes
  */
-// Get user list
+
+// ── User CRUD ──
+
+// Get user list (paginated)
 export const getUserList = (params: User.ReqUserParams) => {
-  return http.post<ResPage<User.ResUserList>>(PORT1 + `/user/list`, params);
+  return http.post<ResPage<User.ResUserList>>(`/users/list`, params);
 };
 
 // Get tree user list
 export const getUserTreeList = (params: User.ReqUserParams) => {
-  return http.post<ResPage<User.ResUserList>>(PORT1 + `/user/tree/list`, params);
+  return http.post<ResPage<User.ResUserList>>(`/users/tree`, params);
 };
 
 // Add user
-export const addUser = (params: { id: string }) => {
-  return http.post(PORT1 + `/user/add`, params);
+export const addUser = (params: Record<string, any>) => {
+  return http.post(`/users`, params);
 };
 
-// Batch add users
+// Batch add users (FormData multipart)
 export const BatchAddUser = (params: FormData) => {
-  return http.post(PORT1 + `/user/import`, params);
+  return http.post(`/users/batch`, params);
 };
 
 // Edit user
-export const editUser = (params: { id: string }) => {
-  return http.post(PORT1 + `/user/edit`, params);
+export const editUser = (params: Record<string, any>) => {
+  return http.put(`/users/${params.key}`, params);
 };
 
 // Delete user
 export const deleteUser = (params: { id: string[] }) => {
-  return http.post(PORT1 + `/user/delete`, params);
+  return http.delete(`/users/${params.id[0]}`);
 };
 
 // Toggle user status
 export const changeUserStatus = (params: { id: string; status: number }) => {
-  return http.post(PORT1 + `/user/change`, params);
+  return http.put(`/users/${params.id}`, { status: params.status });
 };
 
 // Reset user password
 export const resetUserPassWord = (params: { id: string }) => {
-  return http.post(PORT1 + `/user/rest_password`, params);
+  return http.put(`/users/${params.id}`, { password: "" });
 };
 
 // Export user data
 export const exportUserInfo = (params: User.ReqUserParams) => {
-  return http.download(PORT1 + `/user/export`, params);
+  return http.download(`/users/export`, params);
 };
+
+// ── Dictionary queries ──
 
 // Get user status dictionary
 export const getUserStatus = () => {
-  return http.get<User.ResStatus[]>(PORT1 + `/user/status`);
+  return http.get<User.ResStatus[]>(`/users/dict/status`);
 };
 
 // Get user gender dictionary
 export const getUserGender = () => {
-  return http.get<User.ResGender[]>(PORT1 + `/user/gender`);
+  return http.get<User.ResGender[]>(`/users/dict/gender`);
 };
 
-// Get user department list
+// Get user department tree
 export const getUserDepartment = () => {
-  return http.get<User.ResDepartment[]>(PORT1 + `/user/department`, {}, { cancel: false });
+  return http.get<User.ResDepartment[]>(`/users/dict/department`, {}, { cancel: false });
 };
 
-// Get user role dictionary
+// Get user role tree
 export const getUserRole = () => {
-  return http.get<User.ResRole[]>(PORT1 + `/user/role`);
+  return http.get<User.ResRole[]>(`/users/dict/role`);
 };

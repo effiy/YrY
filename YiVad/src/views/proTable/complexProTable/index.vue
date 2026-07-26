@@ -14,9 +14,9 @@
     >
       <!-- Table header buttons -->
       <template #tableHeader="scope">
-        <el-button type="primary" :icon="CirclePlus" @click="proTable?.element?.toggleAllSelection"
-          >Select All / Deselect All</el-button
-        >
+        <el-button type="primary" :icon="CirclePlus" @click="proTable?.element?.toggleAllSelection">
+          Select All / Deselect All
+        </el-button>
         <el-button type="primary" :icon="Pointer" plain @click="setCurrent">Select Row 5</el-button>
         <el-button type="danger" :icon="Delete" plain :disabled="!scope.isSelected" @click="batchDelete(scope.selectedListIds)">
           Batch Delete Users
@@ -32,9 +32,9 @@
         <el-button type="primary" link :icon="Delete" @click="deleteAccount(scope.row)">Delete</el-button>
       </template>
       <template #append>
-        <span style="color: var(--el-color-primary)"
-          >I am content inserted at the end of the table. If the table has a summary row, this content will be above it.</span
-        >
+        <span style="color: var(--el-color-primary)">
+          I am content inserted at the end of the table. If the table has a summary row, this content will be above it.
+        </span>
       </template>
     </ProTable>
   </div>
@@ -98,7 +98,7 @@ const columns = reactive<ColumnProps<User.ResUserList>[]>([
     label: "Status",
     tag: true,
     enum: getUserStatus,
-    fieldNames: { label: "userLabel", value: "userStatus" }
+    fieldNames: { label: "userLabel", value: "userValue" }
   },
   { prop: "createTime", label: "Created At", width: 200 },
   { prop: "operation", label: "Actions", fixed: "right", width: 230 }

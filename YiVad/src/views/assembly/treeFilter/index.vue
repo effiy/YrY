@@ -3,7 +3,7 @@
     <TreeFilter
       label="name"
       title="Department List (Single Select)"
-      :request-api="getUserDepartment"
+      :request-api="getDepartmentTree"
       :default-value="treeFilterValue.departmentId"
       @change="changeTreeFilter"
     />
@@ -11,7 +11,7 @@
       title="Department List (Multiple Select)"
       multiple
       label="name"
-      :request-api="getUserDepartment"
+      :request-api="getDepartmentTree"
       :default-value="treeFilterValue1.departmentId"
       @change="changeTreeFilter1"
     />
@@ -35,6 +35,12 @@ import { reactive } from "vue";
 import { ElMessage } from "element-plus";
 import { getUserDepartment } from "@/api/modules/user";
 import TreeFilter from "@/components/TreeFilter/index.vue";
+
+// TreeFilter expects a flat array, but /users/dict/department returns { list, total }
+const getDepartmentTree = async () => {
+  const res: any = await getUserDepartment();
+  return { ...res, data: res.data?.list ?? res.data };
+};
 
 const treeFilterValue = reactive({ departmentId: "1" });
 const changeTreeFilter = (val: string) => {

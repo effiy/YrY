@@ -3,7 +3,7 @@
     <TreeFilter
       label="name"
       title="Department List (Single Select)"
-      :request-api="getUserDepartment"
+      :request-api="getDepartmentTree"
       :default-value="initParam.departmentId"
       @change="changeTreeFilter"
     />
@@ -61,6 +61,12 @@ import {
   getUserDepartment
 } from "@/api/modules/user";
 
+// TreeFilter expects a flat array, but /users/dict/department returns { list, total }
+const getDepartmentTree = async () => {
+  const res: any = await getUserDepartment();
+  return { ...res, data: res.data?.list ?? res.data };
+};
+
 const router = useRouter();
 
 // Navigate to detail page
@@ -105,7 +111,7 @@ const columns = reactive<ColumnProps<User.ResUserList>[]>([
     tag: true,
     enum: getUserStatus,
     search: { el: "select" },
-    fieldNames: { label: "userLabel", value: "userStatus" }
+    fieldNames: { label: "userLabel", value: "userValue" }
   },
   { prop: "createTime", label: "Created At", width: 180 },
   { prop: "operation", label: "Actions", width: 330, fixed: "right" }

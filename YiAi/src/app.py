@@ -21,7 +21,7 @@ from shared.config import settings
 from server.middleware import header_verification_middleware
 from shared.logging import setup_logging
 from server.errors import register_exception_handlers
-from server.routes import files, execution, wework, maintenance, state, health, story_panel
+from server.routes import auth, files, execution, wework, maintenance, state, health, users, system
 
 # Import service modules
 from domain.rss import init_rss_system, shutdown_rss_system
@@ -109,13 +109,15 @@ def create_app(
             logger.info("Observer Throttle middleware registered")
 
     # Register API routes
+    app.include_router(auth.router, tags=["Auth"])
+    app.include_router(users.router, tags=["Users"])
+    app.include_router(system.router, tags=["System"])
     app.include_router(files.router, tags=["Upload"])
     app.include_router(execution.router, tags=["Execution"])
     app.include_router(wework.router, tags=["WeWork"])
     app.include_router(maintenance.router, tags=["Maintenance"])
     app.include_router(state.router, tags=["State"])
     app.include_router(health.router, tags=["Observer"])
-    app.include_router(story_panel.router, tags=["StoryPanel"])
 
     origins = settings.get_cors_origins()
     app.add_middleware(

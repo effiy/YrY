@@ -1,7 +1,5 @@
 <template>
-  <div class="card content-box">
-    <span class="text"> Juejin Documentation 🍒🍉🍊 </span>
-  </div>
+  <iframe src="https://juejin.cn" class="link-iframe" />
 </template>
 
 <script setup lang="ts" name="juejin"></script>

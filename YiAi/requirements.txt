@@ -19,3 +19,5 @@ tenacity>=8.2.3
 typer>=0.9.0
 rich>=13.0.0
 mcp>=1.28.0
+bcrypt>=4.0.0
+PyJWT>=2.8.0

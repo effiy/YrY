@@ -2,9 +2,9 @@
  * @description: Request configuration
  */
 export enum ResultEnum {
-  SUCCESS = 200,
+  SUCCESS = 0,
   ERROR = 500,
-  OVERDUE = 401,
+  OVERDUE = 1009,
   TIMEOUT = 30000,
   TYPE = "success"
 }

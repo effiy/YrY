@@ -1,7 +1,5 @@
 <template>
-  <div class="card content-box">
-    <span class="text"> Project Documentation 🍒🍉🍊 </span>
-  </div>
+  <iframe src="/README.md" class="link-iframe" />
 </template>
 
 <script setup lang="ts" name="docs"></script>

@@ -1,7 +1,5 @@
 <template>
-  <div class="card content-box">
-    <span class="text"> GitHub Repository 🍒🍉🍊 </span>
-  </div>
+  <iframe src="https://github.com" class="link-iframe" />
 </template>
 
 <script setup lang="ts" name="github"></script>

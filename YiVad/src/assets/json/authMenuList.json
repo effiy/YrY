@@ -144,20 +144,6 @@
             "isAffix": false,
             "isKeepAlive": true
           }
-        },
-        {
-          "path": "/proTable/document",
-          "name": "proTableDocument",
-          "component": "/proTable/document/index",
-          "meta": {
-            "icon": "Menu",
-            "title": "ProTable Docs",
-            "isLink": "https://juejin.cn/post/7166068828202336263/#heading-14",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          }
         }
       ]
     },

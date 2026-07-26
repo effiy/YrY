@@ -4,7 +4,7 @@
       title="Department List (Multiple Select)"
       multiple
       label="name"
-      :request-api="getUserDepartment"
+      :request-api="getDepartmentTree"
       :default-value="treeFilterValues.departmentId"
       @change="changeTreeFilter"
     />
@@ -65,6 +65,12 @@ import {
   getUserRole
 } from "@/api/modules/user";
 
+// TreeFilter expects a flat array, but /users/dict/department returns { list, total }
+const getDepartmentTree = async () => {
+  const res: any = await getUserDepartment();
+  return { ...res, data: res.data?.list ?? res.data };
+};
+
 // ProTable instance
 const proTable = ref<ProTableInstance>();
 
@@ -104,11 +110,17 @@ const selectFilterData = reactive([
   }
 ]);
 
-// Get user role dict
+// Get user role dict (map { id, name } → { label, value })
 onMounted(() => getUserRoleDict());
 const getUserRoleDict = async () => {
   const { data } = await getUserRole();
-  selectFilterData[1].options = data as any;
+  const mapOptions = (nodes: any[]): any[] =>
+    nodes.map(n => ({
+      label: n.name,
+      value: n.id,
+      ...(n.children?.length ? { children: mapOptions(n.children) } : {})
+    }));
+  selectFilterData[1].options = mapOptions(data as any);
 };
 
 // Default selectFilter params

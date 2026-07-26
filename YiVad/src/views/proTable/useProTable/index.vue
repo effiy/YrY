@@ -171,7 +171,7 @@ const columns = reactive<ColumnProps<User.ResUserList>[]>([
     label: "Status",
     enum: getUserStatus,
     search: { el: "tree-select", props: { filterable: true } },
-    fieldNames: { label: "userLabel", value: "userStatus" },
+    fieldNames: { label: "userLabel", value: "userValue" },
     render: scope => {
       return (
         <>

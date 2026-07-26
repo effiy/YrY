@@ -79,7 +79,7 @@ const initParam = reactive({ departmentId: "" });
 const treeFilterData = ref<any>([]);
 const getTreeFilter = async () => {
   const { data } = await getUserDepartment();
-  treeFilterData.value = data;
+  treeFilterData.value = data.list;
   initParam.departmentId = treeFilterData.value[1].id;
 };
 
@@ -129,7 +129,7 @@ const columns = reactive<ColumnProps<User.ResUserList>[]>([
     tag: true,
     enum: getUserStatus,
     search: { el: "tree-select" },
-    fieldNames: { label: "userLabel", value: "userStatus" }
+    fieldNames: { label: "userLabel", value: "userValue" }
   },
   { prop: "createTime", label: "Created At", width: 180 },
   { prop: "operation", label: "Actions", width: 300, fixed: "right" }
