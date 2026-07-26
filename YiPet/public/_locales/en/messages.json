@@ -1,0 +1,61 @@
+{
+  "extName": { "message": "Gentle Companion" },
+  "extDescription": { "message": "Add a gentle, caring companion to your browser. Supports multiple interactive features to make browsing more enjoyable!" },
+  "extDefaultTitle": { "message": "Companion Control Panel" },
+
+  "cmdTogglePet": { "message": "Toggle pet show/hide" },
+  "cmdOpenChat": { "message": "Open chat window" },
+
+  "popupTitle": { "message": "Gentle Companion" },
+  "popupSwitchLabel": { "message": "Show Pet" },
+  "popupSwitchDesc": { "message": "Show/hide on current tab" },
+  "popupSizeLabel": { "message": "Size" },
+  "popupRoleLabel": { "message": "Role" },
+  "popupColorLabel": { "message": "Color Theme" },
+  "popupSettingsTitle": { "message": "Pet Settings" },
+  "popupModelPrefix": { "message": "Model: $MODEL$", "placeholders": { "model": { "content": "$1", "example": "GPT-4" } } },
+  "popupSizeUnit": { "message": "px" },
+  "popupVersion": { "message": "v$VERSION$", "placeholders": { "version": { "content": "$1", "example": "1.1.2" } } },
+
+  "popupStatusConnecting": { "message": "Connecting…" },
+  "popupStatusReady": { "message": "Ready" },
+  "popupStatusReadyOffline": { "message": "Ready (Offline)" },
+  "popupStatusActive": { "message": "Active" },
+  "popupStatusHidden": { "message": "Hidden" },
+
+  "notifyShown": { "message": "Shown" },
+  "notifyHidden": { "message": "Hidden" },
+  "notifySizeUpdated": { "message": "Size Updated" },
+  "notifyRoleChanged": { "message": "Role Changed" },
+  "notifyColorSet": { "message": "Color Theme Set" },
+
+  "errorOperationFailed": { "message": "Operation Failed" },
+  "errorTabNotFound": { "message": "Cannot Get Current Tab" },
+  "errorInitFailed": { "message": "Initialization Failed" },
+  "errorContentScriptNotReady": { "message": "Content Script Not Ready" },
+  "errorContextInvalidated": { "message": "Extension context invalidated" },
+  "errorQuotaExceeded": { "message": "Storage quota exceeded" },
+  "errorRetrying": { "message": "Retrying…" },
+  "errorRetrySuccess": { "message": "Retry succeeded" },
+  "errorRetryFailed": { "message": "Still failed after multiple attempts" },
+
+  "successColorChanged": { "message": "Color changed" },
+  "successPositionReset": { "message": "Position reset" },
+  "successCentered": { "message": "Centered" },
+
+  "chatInputPlaceholder": { "message": "Type a message…" },
+
+  "thinkLetMeThink": { "message": "Let me think…" },
+  "thinkThinking": { "message": "Thinking…" },
+  "thinkInspiration": { "message": "Inspiration strikes…" },
+  "thinkOrganizing": { "message": "Organizing thoughts…" },
+  "thinkDeepAnalysis": { "message": "Deep analysis…" },
+  "thinkSearching": { "message": "Searching for answers…" },
+  "thinkIdea": { "message": "Idea incoming…" },
+  "thinkBrainstorming": { "message": "Brainstorming…" },
+  "thinkChoosing": { "message": "Choosing words…" },
+  "thinkCrafting": { "message": "Crafting reply…" },
+  "thinkAlmostThere": { "message": "Almost there…" },
+  "thinkNearlyReady": { "message": "Nearly ready…" },
+  "thinkComingRightUp": { "message": "Coming right up…" }
+}

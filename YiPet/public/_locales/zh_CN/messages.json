@@ -1,0 +1,61 @@
+{
+  "extName": { "message": "温柔伴侣" },
+  "extDescription": { "message": "为您的浏览器添加一个温柔、贴心的伴侣。支持多种互动功能，让浏览更愉快！" },
+  "extDefaultTitle": { "message": "伴侣控制面板" },
+
+  "cmdTogglePet": { "message": "切换宠物显示/隐藏" },
+  "cmdOpenChat": { "message": "打开聊天窗口" },
+
+  "popupTitle": { "message": "温柔伴侣" },
+  "popupSwitchLabel": { "message": "显示宠物" },
+  "popupSwitchDesc": { "message": "在当前标签页显示/隐藏" },
+  "popupSizeLabel": { "message": "尺寸" },
+  "popupRoleLabel": { "message": "角色" },
+  "popupColorLabel": { "message": "颜色主题" },
+  "popupSettingsTitle": { "message": "宠物设置" },
+  "popupModelPrefix": { "message": "模型：$MODEL$", "placeholders": { "model": { "content": "$1", "example": "GPT-4" } } },
+  "popupSizeUnit": { "message": "像素" },
+  "popupVersion": { "message": "v$VERSION$", "placeholders": { "version": { "content": "$1", "example": "1.1.2" } } },
+
+  "popupStatusConnecting": { "message": "连接中…" },
+  "popupStatusReady": { "message": "就绪" },
+  "popupStatusReadyOffline": { "message": "就绪（离线）" },
+  "popupStatusActive": { "message": "已激活" },
+  "popupStatusHidden": { "message": "已隐藏" },
+
+  "notifyShown": { "message": "已显示" },
+  "notifyHidden": { "message": "已隐藏" },
+  "notifySizeUpdated": { "message": "尺寸已更新" },
+  "notifyRoleChanged": { "message": "角色已更改" },
+  "notifyColorSet": { "message": "颜色主题已设置" },
+
+  "errorOperationFailed": { "message": "操作失败" },
+  "errorTabNotFound": { "message": "无法获取当前标签页" },
+  "errorInitFailed": { "message": "初始化失败" },
+  "errorContentScriptNotReady": { "message": "内容脚本未就绪" },
+  "errorContextInvalidated": { "message": "扩展上下文已失效" },
+  "errorQuotaExceeded": { "message": "存储配额已超出" },
+  "errorRetrying": { "message": "重试中…" },
+  "errorRetrySuccess": { "message": "重试成功" },
+  "errorRetryFailed": { "message": "多次尝试后仍失败" },
+
+  "successColorChanged": { "message": "颜色已变更" },
+  "successPositionReset": { "message": "位置已重置" },
+  "successCentered": { "message": "已居中" },
+
+  "chatInputPlaceholder": { "message": "输入消息…" },
+
+  "thinkLetMeThink": { "message": "让我想想…" },
+  "thinkThinking": { "message": "思考中…" },
+  "thinkInspiration": { "message": "灵感来了…" },
+  "thinkOrganizing": { "message": "整理思路…" },
+  "thinkDeepAnalysis": { "message": "深入分析…" },
+  "thinkSearching": { "message": "寻找答案…" },
+  "thinkIdea": { "message": "想法来了…" },
+  "thinkBrainstorming": { "message": "头脑风暴…" },
+  "thinkChoosing": { "message": "斟酌用词…" },
+  "thinkCrafting": { "message": "构思回复…" },
+  "thinkAlmostThere": { "message": "马上就好…" },
+  "thinkNearlyReady": { "message": "快要好了…" },
+  "thinkComingRightUp": { "message": "马上就来…" }
+}

@@ -1,33 +1,23 @@
 {
   "manifest_version": 3,
-  "name": "Gentle Companion",
-  "version": "1.1.2",
-  "description": "Add a gentle, caring companion to your browser. Supports multiple interactive features to make browsing more enjoyable!",
-  "permissions": [
-    "storage",
-    "tabs",
-    "scripting",
-    "webRequest"
-  ],
+  "name": "__MSG_extName__",
+  "version": "1.2.0",
+  "default_locale": "en",
+  "description": "__MSG_extDescription__",
+  "permissions": ["storage", "tabs", "scripting", "webRequest"],
   "host_permissions": [
     "<all_urls>",
     "http://localhost:10086/*"
   ],
-  "content_scripts": [
-    {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "src/bootstrap/bootstrap.js"
-      ],
-      "css": [],
-      "run_at": "document_end"
-    }
-  ],
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": ["assets/bootstrap.js"],
+    "css": [],
+    "run_at": "document_end"
+  }],
   "action": {
-    "default_popup": "src/popup/index.html",
-    "default_title": "Companion Control Panel"
+    "default_popup": "src/popup/popup.html",
+    "default_title": "__MSG_extDefaultTitle__"
   },
   "commands": {
     "toggle-pet": {
@@ -35,14 +25,14 @@
         "default": "Ctrl+Shift+P",
         "mac": "Command+Shift+P"
       },
-      "description": "Toggle pet show/hide"
+      "description": "__MSG_cmdTogglePet__"
     },
     "open-chat": {
       "suggested_key": {
         "default": "Ctrl+Shift+X",
         "mac": "Command+Shift+X"
       },
-      "description": "Open chat window"
+      "description": "__MSG_cmdOpenChat__"
     }
   },
   "icons": {
@@ -51,31 +41,28 @@
     "48": "assets/icons/icon48.png",
     "128": "assets/icons/icon128.png"
   },
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "assets/icons/icon.png",
-        "assets/images/*/icon.png",
-        "assets/images/*/run/*.png",
-        "src/bootstrap/bootstrap.js",
-        "src/lib/**/*.js",
-        "src/styles/**/*.css",
-        "cdn/**/*.js",
-        "cdn/**/*.css",
-        "cdn/**/*.html",
-        "cdn/**/*.json",
-        "cdn/**/*.svg",
-        "cdn/**/*.ttf",
-        "cdn/**/*.woff",
-        "cdn/**/*.woff2",
-        "cdn/**/*.eot",
-        "cdn/**/*.png",
-        "cdn/**/*.jpg",
-        "cdn/**/*.ico"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
-    }
-  ]
+  "web_accessible_resources": [{
+    "resources": [
+      "assets/icons/icon.png",
+      "assets/images/*/icon.png",
+      "assets/images/*/run/*.png",
+      "src/content/bootstrap.js",
+      "assets/content.js",
+      "assets/bootstrap.js",
+      "src/chunks/*.js",
+      "cdn/**/*.js",
+      "cdn/**/*.css",
+      "cdn/**/*.html",
+      "cdn/**/*.json",
+      "cdn/**/*.svg",
+      "cdn/**/*.ttf",
+      "cdn/**/*.woff",
+      "cdn/**/*.woff2",
+      "cdn/**/*.eot",
+      "cdn/**/*.png",
+      "cdn/**/*.jpg",
+      "cdn/**/*.ico"
+    ],
+    "matches": ["<all_urls>"]
+  }]
 }
