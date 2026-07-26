@@ -118,13 +118,6 @@ onMounted(() => store.fetchStories());
         </el-select>
       </div>
       <div class="sb-dim">
-        <span class="sb-dim-lbl">Sprint</span>
-        <el-select v-model="store.selectedSprint" placeholder="All" clearable size="small" style="width: 130px">
-          <el-option label="All Sprints" value="" />
-          <el-option v-for="sp in store.sprints" :key="sp" :label="sp" :value="sp" />
-        </el-select>
-      </div>
-      <div class="sb-dim">
         <span class="sb-dim-lbl">Time</span>
         <el-select v-model="store.timeRange" size="small" style="width: 140px" @change="(v: any) => store.setTimeRange(v)">
           <el-option v-for="o in timeOptions" :key="o.value" :label="o.label" :value="o.value" />
@@ -340,7 +333,7 @@ onMounted(() => store.fetchStories());
                   >{{ scheduleLabels[store.selectedStory.scheduleStatus] }}</el-tag
                 ></el-descriptions-item
               >
-              <el-descriptions-item label="Sprint">{{ store.selectedStory.sprint || "-" }}</el-descriptions-item>
+
               <el-descriptions-item label="Start">{{ fmtDate(store.selectedStory.startDate) || "-" }}</el-descriptions-item>
               <el-descriptions-item label="Due"
                 ><span>{{ fmtDate(store.selectedStory.dueDate) || "-" }}</span>
@@ -373,42 +366,54 @@ onMounted(() => store.fetchStories());
 
           <el-tab-pane label="Scenarios" name="scenarios">
             <div class="sd-sc-hdr">
-              <span class="sd-sc-count">{{ scenarioCount(store.selectedStory) }} scenarios</span>
+              <span class="sd-sc-count"
+                >{{ scenarioCount(store.selectedStory) }} scenarios · {{ scenarioDone(store.selectedStory) }} done</span
+              >
               <el-button size="small" type="primary" @click="store.openScenarioCreate()">+ Add Scenario</el-button>
             </div>
+            <el-progress
+              v-if="scenarioCount(store.selectedStory) > 0"
+              :percentage="scenarioProgress(store.selectedStory)"
+              :stroke-width="8"
+              :color="scenarioProgress(store.selectedStory) === 100 ? '#67c23a' : '#409eff'"
+              style="margin-bottom: 16px"
+            />
             <el-empty v-if="!store.selectedStory.scenarios?.length" description="No scenarios yet" :image-size="60" />
-            <div v-for="(sc, idx) in store.selectedStory.scenarios" :key="sc.key" class="sd-sc">
-              <div class="sd-sc-top">
-                <span class="sd-sc-name">{{ sc.name }}</span>
-                <div class="sd-sc-badges">
-                  <el-tag :type="priorityColors[sc.priority] as any" size="small">{{ sc.priority.toUpperCase() }}</el-tag>
-                  <el-tag
-                    :type="
-                      sc.status === 'done'
-                        ? 'success'
-                        : sc.status === 'blocked'
-                          ? 'danger'
-                          : sc.status === 'in_progress'
-                            ? 'warning'
-                            : 'info'
-                    "
-                    size="small"
-                    >{{ scenarioStatusLabels[sc.status] }}</el-tag
-                  >
+            <template v-for="scStatus in ['done', 'in_progress', 'pending', 'blocked']" :key="scStatus">
+              <template v-if="store.selectedStory.scenarios?.filter(sc => sc.status === scStatus).length">
+                <div class="sd-sc-group-hdr">
+                  <span class="sd-sc-group-dot" :class="'sc-dot--' + scStatus"></span>
+                  <span class="sd-sc-group-label">{{ scenarioStatusLabels[scStatus] }}</span>
+                  <span class="sd-sc-group-n">{{
+                    store.selectedStory.scenarios.filter(sc => sc.status === scStatus).length
+                  }}</span>
                 </div>
-              </div>
-              <p class="sd-sc-desc">{{ sc.description || "No description" }}</p>
-              <div v-if="sc.steps?.length" class="sd-sc-steps">
-                <div v-for="(step, si) in sc.steps" :key="`${si}_${step.action}`" class="sd-step">
-                  <span class="sd-step-act">{{ step.action }}</span
-                  ><span class="sd-step-desc">{{ step.description }}</span>
+                <div v-for="(sc, idx) in store.selectedStory.scenarios" :key="sc.key">
+                  <div v-if="sc.status === scStatus" class="sd-sc">
+                    <div class="sd-sc-top">
+                      <span class="sd-sc-name">{{ sc.name }}</span>
+                      <div class="sd-sc-badges">
+                        <el-tag :type="priorityColors[sc.priority] as any" size="small">{{ sc.priority.toUpperCase() }}</el-tag>
+                      </div>
+                    </div>
+                    <p class="sd-sc-desc">{{ sc.description || "No description" }}</p>
+                    <div v-if="sc.steps?.length" class="sd-sc-steps">
+                      <div v-for="(step, si) in sc.steps" :key="`${si}_${step.action}`" class="sd-step">
+                        <span class="sd-step-act">{{ step.action }}</span>
+                        <span class="sd-step-desc">{{ step.description }}</span>
+                      </div>
+                    </div>
+                    <div v-if="sc.tags?.length" class="sd-sc-tags">
+                      <el-tag v-for="t in sc.tags" :key="t" size="small" class="sc-tag-chip">{{ t }}</el-tag>
+                    </div>
+                    <div class="sd-sc-acts">
+                      <el-button size="small" text @click="store.openScenarioEdit(idx)">Edit</el-button>
+                      <el-button size="small" text type="danger" @click="store.handleScenarioDelete(idx)">Del</el-button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div class="sd-sc-acts">
-                <el-button size="small" text @click="store.openScenarioEdit(idx)">Edit</el-button>
-                <el-button size="small" text type="danger" @click="store.handleScenarioDelete(idx)">Del</el-button>
-              </div>
-            </div>
+              </template>
+            </template>
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -452,9 +457,6 @@ onMounted(() => store.fetchStories());
         <el-row :gutter="16">
           <el-col :span="12"
             ><el-form-item label="Assignee"><el-input v-model="store.form.assignee" placeholder="Name" /></el-form-item
-          ></el-col>
-          <el-col :span="12"
-            ><el-form-item label="Sprint"><el-input v-model="store.form.sprint" placeholder="e.g. Sprint 1" /></el-form-item
           ></el-col>
         </el-row>
         <el-row :gutter="16">
@@ -872,6 +874,47 @@ onMounted(() => store.fetchStories());
 .sd-sc-count {
   font-size: 14px;
   color: var(--el-text-color-secondary);
+}
+.sd-sc-group-hdr {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--el-border-color-light);
+}
+.sd-sc-group-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.sc-dot--done {
+  background: var(--el-color-success);
+}
+.sc-dot--in_progress {
+  background: var(--el-color-warning);
+}
+.sc-dot--pending {
+  background: var(--el-color-info);
+}
+.sc-dot--blocked {
+  background: var(--el-color-danger);
+}
+.sd-sc-group-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+.sd-sc-group-n {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+.sd-sc-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 6px 0;
 }
 .sd-sc {
   padding: 12px;

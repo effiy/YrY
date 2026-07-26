@@ -31,7 +31,6 @@ export const useStoryStore = defineStore("yivad-story", () => {
 
   // ── Dimensions ──
   const selectedProject = ref("");
-  const selectedSprint = ref("");
   type TimeRange = "all" | "week" | "month" | "quarter" | "custom";
   const timeRange = ref<TimeRange>("all");
   const customStart = ref("");
@@ -58,11 +57,9 @@ export const useStoryStore = defineStore("yivad-story", () => {
     startDate: null as Date | null,
     dueDate: null as Date | null,
     completedAt: null as Date | null,
-    sprint: "",
     scheduleStatus: "planned" as ScheduleStatus,
     tags: [] as string[],
     scenarios: [] as Scenario[],
-    dependencies: [] as StoryDocument["dependencies"],
     files: [] as StoryDocument["files"]
   });
 
@@ -96,23 +93,12 @@ export const useStoryStore = defineStore("yivad-story", () => {
   const filteredStories = computed(() => {
     let result = [...stories.value];
     if (selectedProject.value) result = result.filter(s => s.project === selectedProject.value);
-    if (selectedSprint.value) result = result.filter(s => s.sprint === selectedSprint.value);
     return result;
   });
 
   function selectProject(p: string) {
     selectedProject.value = p;
   }
-  function selectSprint(sp: string) {
-    selectedSprint.value = sp;
-  }
-
-  const sprints = computed(() => {
-    const set = new Set<string>();
-    for (const s of stories.value) if (s.sprint) set.add(s.sprint);
-    return [...set].sort();
-  });
-
   const scheduleStats = computed(() => {
     const stats: Record<string, number> = { total: 0, planned: 0, on_track: 0, at_risk: 0, delayed: 0, completed: 0 };
     for (const s of filteredStories.value) {
@@ -201,7 +187,6 @@ export const useStoryStore = defineStore("yivad-story", () => {
       scheduleStatus: "planned",
       tags: [],
       scenarios: [],
-      dependencies: [],
       files: []
     };
     dialogVisible.value = true;
@@ -222,11 +207,9 @@ export const useStoryStore = defineStore("yivad-story", () => {
       startDate: story.startDate ? new Date(story.startDate) : null,
       dueDate: story.dueDate ? new Date(story.dueDate) : null,
       completedAt: story.completedAt ? new Date(story.completedAt) : null,
-      sprint: story.sprint ?? "",
       scheduleStatus: story.scheduleStatus ?? "planned",
       tags: [...(story.tags ?? [])],
       scenarios: [...(story.scenarios ?? [])],
-      dependencies: [...(story.dependencies ?? [])],
       files: [...(story.files ?? [])]
     };
     dialogVisible.value = true;
@@ -372,7 +355,6 @@ export const useStoryStore = defineStore("yivad-story", () => {
     error,
     selectedStory,
     selectedProject,
-    selectedSprint,
     timeRange,
     customStart,
     customEnd,
@@ -387,7 +369,6 @@ export const useStoryStore = defineStore("yivad-story", () => {
     scenarioForm,
     scenarioTab,
     projects,
-    sprints,
     totalStories,
     filteredStories,
     groupedStories,
@@ -402,7 +383,6 @@ export const useStoryStore = defineStore("yivad-story", () => {
     openDetail,
     closePanel,
     selectProject,
-    selectSprint,
     setTimeRange,
     openScenarioCreate,
     openScenarioEdit,
