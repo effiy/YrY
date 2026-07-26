@@ -66,6 +66,63 @@ if (_isContentScript && !_injectedBase) {
 
     (document.head || document.documentElement).appendChild(el);
   })();
+
+  /* ── Pet state + popup message relay (ISOLATED world) ──────────── */
+
+  let _petVisible = false;
+  let _petSize = 260;
+  let _petRole = 'Teacher';
+  let _petColor = 0;
+
+  function notifyMainWorld(type: string, detail: Record<string, unknown>): void {
+    window.dispatchEvent(new CustomEvent(`yipet:${type}`, { detail }));
+  }
+
+  chrome.runtime.onMessage.addListener(
+    (msg: Record<string, unknown>, _sender, sendResponse) => {
+      switch (msg.action) {
+        case 'ping': {
+          sendResponse({ success: true, visible: _petVisible, size: _petSize, role: _petRole });
+          break;
+        }
+        case 'toggleVisibility': {
+          _petVisible = !_petVisible;
+          notifyMainWorld('visibilityChanged', { visible: _petVisible });
+          sendResponse({ success: true, visible: _petVisible });
+          break;
+        }
+        case 'setVisibility': {
+          _petVisible = !!msg.visible;
+          notifyMainWorld('visibilityChanged', { visible: _petVisible });
+          sendResponse({ success: true, visible: _petVisible });
+          break;
+        }
+        case 'changeSize': {
+          _petSize = (msg.size as number) ?? _petSize;
+          notifyMainWorld('sizeChanged', { size: _petSize });
+          sendResponse({ success: true, size: _petSize });
+          break;
+        }
+        case 'setRole': {
+          _petRole = (msg.role as string) ?? _petRole;
+          notifyMainWorld('roleChanged', { role: _petRole });
+          sendResponse({ success: true, role: _petRole });
+          break;
+        }
+        case 'setColor': {
+          _petColor = (msg.color as number) ?? _petColor;
+          notifyMainWorld('colorChanged', { color: _petColor });
+          sendResponse({ success: true });
+          break;
+        }
+        default: {
+          sendResponse({ success: false });
+        }
+      }
+      return true; // keep channel open for async response
+    },
+  );
+
   // ISOLATED world done — do NOT fall through to Phase 2.
   // The original IIFE used `return` here; ES modules can't return at top level,
   // so we guard Phase 2 with a condition instead.
@@ -192,6 +249,52 @@ function createYiPet(root: typeof globalThis, BASE: string): void {
   /* ── Export ──────────────────────────────────────────────────────── */
 
   (root as unknown as Record<string, unknown>).YiPet = YiPet;
+
+  /* ── Pet Overlay ────────────────────────────────────────────────── */
+
+  // Derive extension root from CDN base (BASE = chrome-extension://xxx/cdn/)
+  const extRoot = BASE.replace(/cdn\/$/, '');
+
+  const petContainer = document.createElement('div');
+  petContainer.id = 'yipet-overlay';
+  petContainer.style.cssText =
+    'position:fixed;bottom:20%;right:20px;z-index:2147483647;' +
+    'transition:opacity 100ms ease;opacity:0;pointer-events:none;';
+  const petImg = document.createElement('img');
+  petImg.id = 'yipet-pet-img';
+  petImg.alt = 'YiPet';
+  petImg.style.cssText = 'width:260px;height:auto;';
+  petImg.src = extRoot + 'assets/images/teacher/icon.png';
+  petContainer.appendChild(petImg);
+
+  function ensureOverlayInDOM(): void {
+    if (!petContainer.parentNode && document.body) {
+      document.body.appendChild(petContainer);
+    }
+  }
+  ensureOverlayInDOM();
+
+  // Visibility listener
+  window.addEventListener('yipet:visibilityChanged', ((e: CustomEvent) => {
+    ensureOverlayInDOM();
+    petContainer.style.opacity = e.detail.visible ? '1' : '0';
+  }) as EventListener);
+
+  // Size listener
+  window.addEventListener('yipet:sizeChanged', ((e: CustomEvent) => {
+    petImg.style.width = String(e.detail.size) + 'px';
+  }) as EventListener);
+
+  // Role listener — swap pet icon
+  window.addEventListener('yipet:roleChanged', ((e: CustomEvent) => {
+    const role = String(e.detail.role || 'teacher').toLowerCase().replace(/\s+/g, '-');
+    petImg.src = extRoot + 'assets/images/' + role + '/icon.png';
+  }) as EventListener);
+
+  // Color listener — store color index for render layer
+  window.addEventListener('yipet:colorChanged', ((e: CustomEvent) => {
+    petContainer.dataset.colorIndex = String(Number(e.detail.color) || 0);
+  }) as EventListener);
 
   /* ── Auto-load all catalog resources ────────────────────────────── */
 

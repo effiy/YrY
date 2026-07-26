@@ -109,6 +109,10 @@ export default {
     actions: "操作",
     steps: "步骤",
     detail: "详情",
+    aiCoding: "AI 编码",
+    aiCodingGenerating: "正在生成 AI 编码提示语...",
+    aiCodingCopied: "AI 编码提示语已复制到剪贴板",
+    aiCodingFailed: "AI 编码提示语生成失败",
     petSettingsPreset: [
       {
         name: "切换宠物显示",

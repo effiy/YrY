@@ -1,12 +1,105 @@
 <script setup lang="ts" name="storyBoard">
-import { computed, onMounted } from "vue";
+import { computed, onMounted, reactive } from "vue";
 import { useI18n } from "vue-i18n";
+import { ElMessage, ElNotification } from "element-plus";
 import { useStoryStore } from "@/stores/modules/story";
-import type { StoryDocument } from "@/api/modules/story";
+import type { StoryDocument, Scenario } from "@/api/modules/story";
+import { YIAI_OLLAMA_URL } from "@/config/yiweb";
 import StoryStatusBadge from "./components/StoryStatusBadge.vue";
 
 const { t } = useI18n();
 const store = useStoryStore();
+
+// Track which scenario keys are currently generating AI coding prompts
+const generatingKeys = reactive<Set<string>>(new Set());
+
+/** Copy text to clipboard via the async Clipboard API. */
+async function copyToClipboard(text: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function handleAiCoding(sc: Scenario) {
+  const key = sc.key;
+  if (generatingKeys.has(key)) return;
+  generatingKeys.add(key);
+
+  try {
+    // Build the scenario content for the AI
+    const stepsText = (sc.steps ?? []).map(s => `  ${s.action} ${s.description}`).join("\n");
+    const tagsText = (sc.tags ?? []).join(", ");
+
+    const systemPrompt = `You are an expert at writing Claude Code prompts. Given a software scenario (with Gherkin-style Given/When/Then steps), produce a single, self-contained, actionable prompt that a developer can paste directly into Claude Code to implement the scenario. The prompt should:
+- Be written in the same language as the scenario description
+- Include the scenario's context, requirements, and acceptance criteria
+- Mention the tech stack if inferable from the tags
+- Be concise but complete — ready to copy-paste and run
+- NOT include any preamble, explanation, or markdown fences — just the prompt text itself`;
+
+    const userMessage = `Scenario: ${sc.name}
+Description: ${sc.description || "N/A"}
+Priority: ${sc.priority.toUpperCase()}
+Tags: ${tagsText || "N/A"}
+Steps:
+${stepsText || "N/A"}
+
+Generate a Claude Code prompt for this scenario.`;
+
+    const ollamaBase = import.meta.env.DEV ? "/ollama" : YIAI_OLLAMA_URL;
+    const response = await fetch(`${ollamaBase}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "qwen3.5",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userMessage }
+        ],
+        stream: false
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Ollama returned ${response.status}`);
+    }
+
+    const data = await response.json();
+    const result: string = data?.message?.content ?? "";
+
+    if (!result) {
+      throw new Error("Empty response from AI");
+    }
+
+    const trimmed = result.trim();
+
+    // Auto-copy (requires focus; may fail after long async call)
+    window.focus();
+    await copyToClipboard(trimmed);
+
+    const escaped = trimmed.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
+    ElNotification({
+      title: t("story.aiCoding"),
+      message: `<div style="max-height:calc(88vh - 120px);overflow-y:auto;white-space:pre-wrap;font-size:14px;line-height:1.7;">${escaped}</div>`,
+      type: "success",
+      duration: 0,
+      customClass: "ai-coding-notify",
+      dangerouslyUseHTMLString: true,
+      onClick: () => {
+        copyToClipboard(trimmed);
+        ElMessage.success(t("story.aiCodingCopied"));
+      }
+    });
+  } catch (err) {
+    console.error("AI Coding prompt generation failed:", err);
+    ElMessage.error(t("story.aiCodingFailed"));
+  } finally {
+    generatingKeys.delete(key);
+  }
+}
 
 const statusLabels = computed(() => ({
   planning: t("story.planning"),
@@ -419,6 +512,14 @@ onMounted(() => store.fetchStories());
                     </div>
                     <div class="sd-sc-acts">
                       <el-button size="small" text @click="store.openScenarioEdit(idx)">{{ $t("story.edit") }}</el-button>
+                      <el-button
+                        size="small"
+                        text
+                        type="warning"
+                        :loading="generatingKeys.has(sc.key)"
+                        @click="handleAiCoding(sc)"
+                        >{{ $t("story.aiCoding") }}</el-button
+                      >
                       <el-button size="small" text type="danger" @click="store.handleScenarioDelete(idx)">{{
                         $t("story.del")
                       }}</el-button>
@@ -1016,5 +1117,20 @@ onMounted(() => store.fetchStories());
   display: flex;
   gap: 8px;
   align-items: center;
+}
+</style>
+
+<style lang="scss">
+/* Wider AI coding notification (teleported, needs unscoped styles) */
+.ai-coding-notify {
+  width: 900px !important;
+  max-width: 92vw;
+  max-height: 88vh;
+  padding: 20px 28px !important;
+  overflow: hidden;
+}
+.ai-coding-notify .el-notification__content {
+  max-height: calc(88vh - 80px);
+  overflow: hidden;
 }
 </style>

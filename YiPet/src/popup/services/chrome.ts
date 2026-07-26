@@ -34,8 +34,11 @@ export function createChromeService(tabRef: TabRef, storageKey: string): ChromeS
 
     async loadState() {
       try {
+        const tabId = tabRef.current?.id;
         const result = await chrome.storage.local.get(storageKey);
-        return (result && result[storageKey]) || null;
+        const map = (result && result[storageKey]) || {};
+        if (tabId != null && map[tabId]) return map[tabId];
+        return null;
       } catch (err) {
         console.warn('[YiPet Popup] loadState failed:', (err as Error).message);
         return null;
@@ -44,15 +47,18 @@ export function createChromeService(tabRef: TabRef, storageKey: string): ChromeS
 
     async saveState(state: Record<string, unknown>) {
       try {
-        const payload: Record<string, unknown> = {};
-        payload[storageKey] = {
+        const tabId = tabRef.current?.id;
+        if (tabId == null) return;
+        const result = await chrome.storage.local.get(storageKey);
+        const map = (result && result[storageKey]) || {};
+        map[tabId] = {
           visible: state.visible,
           size: state.size,
           role: state.role,
           color: state.color,
           model: state.model,
         };
-        await chrome.storage.local.set(payload);
+        await chrome.storage.local.set({ [storageKey]: map });
       } catch (err) {
         console.warn('[YiPet Popup] saveState failed:', (err as Error).message);
       }

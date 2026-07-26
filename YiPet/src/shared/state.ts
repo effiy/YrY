@@ -39,6 +39,29 @@ export function onGlobalStateChanged(
   return () => chrome.storage.onChanged.removeListener(listener);
 }
 
+// ── Per-Tab State ─────────────────────────────────────────────────────────
+
+export type TabStateMap = Record<number, PetGlobalState>;
+
+export async function getTabState(tabId: number): Promise<PetGlobalState> {
+  const result = await chrome.storage.local.get(GLOBAL_STATE_KEY);
+  const map = (result[GLOBAL_STATE_KEY] as TabStateMap) || {};
+  return map[tabId] || {};
+}
+
+export async function setTabState(
+  tabId: number,
+  patch: Partial<PetGlobalState>,
+): Promise<PetGlobalState> {
+  const result = await chrome.storage.local.get(GLOBAL_STATE_KEY);
+  const map = (result[GLOBAL_STATE_KEY] as TabStateMap) || {};
+  const current = map[tabId] || {};
+  const updated = { ...current, ...patch };
+  map[tabId] = updated;
+  await chrome.storage.local.set({ [GLOBAL_STATE_KEY]: map });
+  return updated;
+}
+
 // ── User Prefs ──────────────────────────────────────────────────────────
 
 const DEFAULT_PREFS: UserPrefs = {

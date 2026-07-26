@@ -15,6 +15,12 @@ chrome.runtime.onMessage.addListener(
         sendResponse({ success: true });
         break;
       }
+      case 'setVisibility': {
+        _petVisible = msg.visible;
+        notifyMainWorld('visibilityChanged', { visible: _petVisible });
+        sendResponse({ success: true, visible: _petVisible });
+        break;
+      }
       case 'toggleVisibility': {
         // Toggle pet visibility — dispatched to MAIN world via
         // custom DOM event or direct window reference

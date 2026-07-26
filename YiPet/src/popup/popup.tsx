@@ -217,6 +217,14 @@ class PopupComponent {
           self.state.controlsEnabled = true;
           self.state.hintText = t('popupStatusReady');
           self._render();
+
+          // Sync content script visibility with stored tab state
+          self._chrome!.sendMessage({
+            action: 'setVisibility',
+            visible: self.state.visible,
+          }).catch(() => {
+            // Best-effort sync — content script may not be ready
+          });
         },
         onFailed() {
           if (self._notify) self._notify.show(t('errorContentScriptNotReady'), 'error');

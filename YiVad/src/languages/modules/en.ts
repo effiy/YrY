@@ -109,6 +109,10 @@ export default {
     actions: "Actions",
     steps: "Steps",
     detail: "Detail",
+    aiCoding: "AI Coding",
+    aiCodingGenerating: "Generating AI coding prompt...",
+    aiCodingCopied: "AI coding prompt copied to clipboard",
+    aiCodingFailed: "Failed to generate AI coding prompt",
     petSettingsPreset: [
       {
         name: "Toggle pet visibility",

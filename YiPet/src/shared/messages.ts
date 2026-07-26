@@ -12,6 +12,7 @@
 export type PopupToContent =
   | { action: 'ping' }
   | { action: 'toggleVisibility' }
+  | { action: 'setVisibility'; visible: boolean }
   | { action: 'changeSize'; size: number }
   | { action: 'setRole'; role: string }
   | { action: 'setColor'; color: number };
@@ -30,6 +31,11 @@ export interface PetGlobalState {
   role?: string;
   color?: number;
   model?: string | null;
+}
+
+/** Per-tab state map keyed by tab ID. */
+export interface TabStates {
+  [tabId: number]: PetGlobalState;
 }
 
 export interface UserPrefs {
