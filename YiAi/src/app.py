@@ -2,11 +2,13 @@
 - Handles app startup/shutdown flow, dynamic route registration, CORS and auth middleware configuration
 - Run directly as startup script
 """
+import json
 import logging
 import uvicorn
 import os
 import sys
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 # Configure bytecode generation and path
 sys.dont_write_bytecode = True
@@ -21,12 +23,37 @@ from shared.config import settings
 from server.middleware import header_verification_middleware
 from shared.logging import setup_logging
 from server.errors import register_exception_handlers
-from server.routes import auth, files, execution, wework, maintenance, state, health, users, system
+from server.routes import about, auth, files, execution, wework, maintenance, state, health, users, system
 
 # Import service modules
 from domain.rss import init_rss_system, shutdown_rss_system
 
 logger = logging.getLogger(__name__)
+
+_MENUS_SEED_PATH = Path(__file__).parent / "data" / "seeds" / "menus.json"
+
+
+async def _seed_menus_if_empty():
+    """Seed the ``menus`` collection with defaults if it is empty."""
+    try:
+        count = await db.db["menus"].count_documents({})
+        if count > 0:
+            return
+    except Exception:
+        return
+
+    if not _MENUS_SEED_PATH.exists():
+        logger.warning(f"Menus seed file not found: {_MENUS_SEED_PATH}")
+        return
+
+    with open(_MENUS_SEED_PATH, "r", encoding="utf-8") as f:
+        docs = json.load(f)
+
+    for doc in docs:
+        await db.db["menus"].replace_one(
+            {"path": doc["path"]}, doc, upsert=True
+        )
+    logger.info(f"Seeded {len(docs)} menu items into 'menus' collection")
 
 
 def _build_lifespan(init_db: bool, init_rss: bool):
@@ -40,6 +67,7 @@ def _build_lifespan(init_db: bool, init_rss: bool):
             if init_db and settings.startup_init_database:
                 await db.initialize()
                 logger.info("Database initialized successfully")
+                await _seed_menus_if_empty()
             if init_rss and settings.startup_init_rss_system:
                 init_rss_system()
             logger.info("Application startup complete")
@@ -109,6 +137,7 @@ def create_app(
             logger.info("Observer Throttle middleware registered")
 
     # Register API routes
+    app.include_router(about.router, tags=["About"])
     app.include_router(auth.router, tags=["Auth"])
     app.include_router(users.router, tags=["Users"])
     app.include_router(system.router, tags=["System"])

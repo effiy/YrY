@@ -57,5 +57,10 @@
   "thinkCrafting": { "message": "Crafting reply…" },
   "thinkAlmostThere": { "message": "Almost there…" },
   "thinkNearlyReady": { "message": "Nearly ready…" },
-  "thinkComingRightUp": { "message": "Coming right up…" }
+  "thinkComingRightUp": { "message": "Coming right up…" },
+
+  "aboutTitle": { "message": "About YiPet" },
+  "aboutDescription": { "message": "Chrome MV3 extension. Injects an interactive companion into any page, with multi-role chat, a React control panel, on-demand CDN resource injection, i18n (en + zh_CN), and timezone-aware display. Powered by a local YiAi FastAPI backend." },
+  "aboutVersion": { "message": "Extension Version: 1.2.0 (Chrome MV3)" },
+  "aboutTechStack": { "message": "TypeScript + Vite 5 + React 15.6.1 (CDN) + Bootstrap 5.2.3 (CDN) + chrome.i18n" }
 }

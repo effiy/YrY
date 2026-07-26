@@ -18,7 +18,7 @@
       <el-scrollbar v-if="Object.keys(iconsList).length">
         <div class="icon-list">
           <div v-for="item in iconsList" :key="item" class="icon-item" @click="selectIcon(item)">
-            <component :is="item"></component>
+            <el-icon :size="20"><component :is="item" /></el-icon>
             <span>{{ item.name }}</span>
           </div>
         </div>

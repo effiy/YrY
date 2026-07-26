@@ -1,0 +1,1178 @@
+[
+  {
+    "path": "/home/index",
+    "name": "home",
+    "component": "/home/index",
+    "redirect": "",
+    "meta": {
+      "icon": "HomeFilled",
+      "title": "Home",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": true,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 0
+  },
+  {
+    "path": "/dataScreen",
+    "name": "dataScreen",
+    "component": "/dataScreen/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Histogram",
+      "title": "Data Screen",
+      "isLink": "",
+      "isHide": false,
+      "isFull": true,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 1
+  },
+  {
+    "path": "/proTable",
+    "name": "proTable",
+    "component": "",
+    "redirect": "/proTable/useProTable",
+    "meta": {
+      "icon": "MessageBox",
+      "title": "ProTable",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 2
+  },
+  {
+    "path": "/proTable/useProTable",
+    "name": "useProTable",
+    "component": "/proTable/useProTable/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Using ProTable",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/proTable",
+    "order": 0
+  },
+  {
+    "path": "/proTable/useProTable/detail/:id",
+    "name": "useProTableDetail",
+    "component": "/proTable/useProTable/detail",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "ProTable Detail",
+      "activeMenu": "/proTable/useProTable",
+      "isLink": "",
+      "isHide": true,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/proTable/useProTable",
+    "order": 0
+  },
+  {
+    "path": "/proTable/useTreeFilter",
+    "name": "useTreeFilter",
+    "component": "/proTable/useTreeFilter/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Using TreeFilter",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/proTable",
+    "order": 1
+  },
+  {
+    "path": "/proTable/useTreeFilter/detail/:id",
+    "name": "useTreeFilterDetail",
+    "component": "/proTable/useTreeFilter/detail",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "TreeFilter Detail",
+      "activeMenu": "/proTable/useTreeFilter",
+      "isLink": "",
+      "isHide": true,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/proTable",
+    "order": 2
+  },
+  {
+    "path": "/proTable/useSelectFilter",
+    "name": "useSelectFilter",
+    "component": "/proTable/useSelectFilter/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Using SelectFilter",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/proTable",
+    "order": 3
+  },
+  {
+    "path": "/proTable/treeProTable",
+    "name": "treeProTable",
+    "component": "/proTable/treeProTable/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Tree ProTable",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/proTable",
+    "order": 4
+  },
+  {
+    "path": "/proTable/complexProTable",
+    "name": "complexProTable",
+    "component": "/proTable/complexProTable/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Complex ProTable",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/proTable",
+    "order": 5
+  },
+  {
+    "path": "/auth",
+    "name": "auth",
+    "component": "",
+    "redirect": "/auth/menu",
+    "meta": {
+      "icon": "Lock",
+      "title": "Permission Management",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 3
+  },
+  {
+    "path": "/auth/menu",
+    "name": "authMenu",
+    "component": "/auth/menu/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Menu Permission",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/auth",
+    "order": 0
+  },
+  {
+    "path": "/auth/button",
+    "name": "authButton",
+    "component": "/auth/button/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Button Permission",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/auth",
+    "order": 1
+  },
+  {
+    "path": "/assembly",
+    "name": "assembly",
+    "component": "",
+    "redirect": "/assembly/guide",
+    "meta": {
+      "icon": "Briefcase",
+      "title": "Common Components",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 4
+  },
+  {
+    "path": "/assembly/guide",
+    "name": "guide",
+    "component": "/assembly/guide/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Guide",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/assembly",
+    "order": 0
+  },
+  {
+    "path": "/assembly/tabs",
+    "name": "tabs",
+    "component": "/assembly/tabs/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Tab Operations",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/assembly",
+    "order": 1
+  },
+  {
+    "path": "/assembly/tabs/detail/:id",
+    "name": "tabsDetail",
+    "component": "/assembly/tabs/detail",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Tab Detail",
+      "activeMenu": "/assembly/tabs",
+      "isLink": "",
+      "isHide": true,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/assembly/tabs",
+    "order": 0
+  },
+  {
+    "path": "/assembly/selectIcon",
+    "name": "selectIcon",
+    "component": "/assembly/selectIcon/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Icon Selector",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/assembly",
+    "order": 2
+  },
+  {
+    "path": "/assembly/selectFilter",
+    "name": "selectFilter",
+    "component": "/assembly/selectFilter/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Category Filter",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/assembly",
+    "order": 3
+  },
+  {
+    "path": "/assembly/treeFilter",
+    "name": "treeFilter",
+    "component": "/assembly/treeFilter/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Tree Filter",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/assembly",
+    "order": 4
+  },
+  {
+    "path": "/assembly/svgIcon",
+    "name": "svgIcon",
+    "component": "/assembly/svgIcon/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "SVG Icons",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/assembly",
+    "order": 5
+  },
+  {
+    "path": "/assembly/uploadFile",
+    "name": "uploadFile",
+    "component": "/assembly/uploadFile/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "File Upload",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/assembly",
+    "order": 6
+  },
+  {
+    "path": "/assembly/batchImport",
+    "name": "batchImport",
+    "component": "/assembly/batchImport/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Batch Import",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/assembly",
+    "order": 7
+  },
+  {
+    "path": "/assembly/wangEditor",
+    "name": "wangEditor",
+    "component": "/assembly/wangEditor/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Rich Text Editor",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/assembly",
+    "order": 8
+  },
+  {
+    "path": "/assembly/draggable",
+    "name": "draggable",
+    "component": "/assembly/draggable/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Drag Component",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/assembly",
+    "order": 9
+  },
+  {
+    "path": "/dashboard",
+    "name": "dashboard",
+    "component": "",
+    "redirect": "/dashboard/dataVisualize",
+    "meta": {
+      "icon": "Odometer",
+      "title": "Dashboard",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 5
+  },
+  {
+    "path": "/dashboard/dataVisualize",
+    "name": "dataVisualize",
+    "component": "/dashboard/dataVisualize/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Data Visualization",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/dashboard",
+    "order": 0
+  },
+  {
+    "path": "/form",
+    "name": "form",
+    "component": "",
+    "redirect": "/form/proForm",
+    "meta": {
+      "icon": "Tickets",
+      "title": "Form",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 6
+  },
+  {
+    "path": "/form/proForm",
+    "name": "proForm",
+    "component": "/form/proForm/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Super Form",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/form",
+    "order": 0
+  },
+  {
+    "path": "/form/basicForm",
+    "name": "basicForm",
+    "component": "/form/basicForm/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Basic Form",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/form",
+    "order": 1
+  },
+  {
+    "path": "/form/validateForm",
+    "name": "validateForm",
+    "component": "/form/validateForm/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Validate Form",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/form",
+    "order": 2
+  },
+  {
+    "path": "/form/dynamicForm",
+    "name": "dynamicForm",
+    "component": "/form/dynamicForm/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Dynamic Form",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/form",
+    "order": 3
+  },
+  {
+    "path": "/echarts",
+    "name": "echarts",
+    "component": "",
+    "redirect": "/echarts/waterChart",
+    "meta": {
+      "icon": "TrendCharts",
+      "title": "ECharts",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 7
+  },
+  {
+    "path": "/echarts/waterChart",
+    "name": "waterChart",
+    "component": "/echarts/waterChart/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Water Chart",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/echarts",
+    "order": 0
+  },
+  {
+    "path": "/echarts/columnChart",
+    "name": "columnChart",
+    "component": "/echarts/columnChart/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Column Chart",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/echarts",
+    "order": 1
+  },
+  {
+    "path": "/echarts/lineChart",
+    "name": "lineChart",
+    "component": "/echarts/lineChart/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Line Chart",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/echarts",
+    "order": 2
+  },
+  {
+    "path": "/echarts/pieChart",
+    "name": "pieChart",
+    "component": "/echarts/pieChart/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Pie Chart",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/echarts",
+    "order": 3
+  },
+  {
+    "path": "/echarts/radarChart",
+    "name": "radarChart",
+    "component": "/echarts/radarChart/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Radar Chart",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/echarts",
+    "order": 4
+  },
+  {
+    "path": "/echarts/nestedChart",
+    "name": "nestedChart",
+    "component": "/echarts/nestedChart/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Nested Ring Chart",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/echarts",
+    "order": 5
+  },
+  {
+    "path": "/directives",
+    "name": "directives",
+    "component": "",
+    "redirect": "/directives/copyDirect",
+    "meta": {
+      "icon": "Stamp",
+      "title": "Custom Directives",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 8
+  },
+  {
+    "path": "/directives/copyDirect",
+    "name": "copyDirect",
+    "component": "/directives/copyDirect/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Copy Directive",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/directives",
+    "order": 0
+  },
+  {
+    "path": "/directives/watermarkDirect",
+    "name": "watermarkDirect",
+    "component": "/directives/watermarkDirect/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Watermark Directive",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/directives",
+    "order": 1
+  },
+  {
+    "path": "/directives/dragDirect",
+    "name": "dragDirect",
+    "component": "/directives/dragDirect/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Drag Directive",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/directives",
+    "order": 2
+  },
+  {
+    "path": "/directives/debounceDirect",
+    "name": "debounceDirect",
+    "component": "/directives/debounceDirect/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Debounce Directive",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/directives",
+    "order": 3
+  },
+  {
+    "path": "/directives/throttleDirect",
+    "name": "throttleDirect",
+    "component": "/directives/throttleDirect/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Throttle Directive",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/directives",
+    "order": 4
+  },
+  {
+    "path": "/directives/longpressDirect",
+    "name": "longpressDirect",
+    "component": "/directives/longpressDirect/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Long Press Directive",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/directives",
+    "order": 5
+  },
+  {
+    "path": "/menu",
+    "name": "menu",
+    "component": "",
+    "redirect": "/menu/menu1",
+    "meta": {
+      "icon": "List",
+      "title": "Nested Menu",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 9
+  },
+  {
+    "path": "/menu/menu1",
+    "name": "menu1",
+    "component": "/menu/menu1/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Menu 1",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/menu",
+    "order": 0
+  },
+  {
+    "path": "/menu/menu2",
+    "name": "menu2",
+    "component": "",
+    "redirect": "/menu/menu2/menu21",
+    "meta": {
+      "icon": "Menu",
+      "title": "Menu 2",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/menu",
+    "order": 1
+  },
+  {
+    "path": "/menu/menu2/menu21",
+    "name": "menu21",
+    "component": "/menu/menu2/menu21/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Menu 2-1",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/menu/menu2",
+    "order": 0
+  },
+  {
+    "path": "/menu/menu2/menu22",
+    "name": "menu22",
+    "component": "",
+    "redirect": "/menu/menu2/menu22/menu221",
+    "meta": {
+      "icon": "Menu",
+      "title": "Menu 2-2",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/menu/menu2",
+    "order": 1
+  },
+  {
+    "path": "/menu/menu2/menu22/menu221",
+    "name": "menu221",
+    "component": "/menu/menu2/menu22/menu221/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Menu 2-2-1",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/menu/menu2/menu22",
+    "order": 0
+  },
+  {
+    "path": "/menu/menu2/menu22/menu222",
+    "name": "menu222",
+    "component": "/menu/menu2/menu22/menu222/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Menu 2-2-2",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/menu/menu2/menu22",
+    "order": 1
+  },
+  {
+    "path": "/menu/menu2/menu23",
+    "name": "menu23",
+    "component": "/menu/menu2/menu23/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Menu 2-3",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/menu/menu2",
+    "order": 2
+  },
+  {
+    "path": "/menu/menu3",
+    "name": "menu3",
+    "component": "/menu/menu3/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Menu 3",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/menu",
+    "order": 2
+  },
+  {
+    "path": "/system",
+    "name": "system",
+    "component": "",
+    "redirect": "/system/accountManage",
+    "meta": {
+      "icon": "Tools",
+      "title": "System Management",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 10
+  },
+  {
+    "path": "/system/accountManage",
+    "name": "accountManage",
+    "component": "/system/accountManage/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Account Management",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/system",
+    "order": 0
+  },
+  {
+    "path": "/system/roleManage",
+    "name": "roleManage",
+    "component": "/system/roleManage/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Role Management",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/system",
+    "order": 1
+  },
+  {
+    "path": "/system/menuMange",
+    "name": "menuMange",
+    "component": "/system/menuMange/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Menu Management",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/system",
+    "order": 2
+  },
+  {
+    "path": "/system/departmentManage",
+    "name": "departmentManage",
+    "component": "/system/departmentManage/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Department Management",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/system",
+    "order": 3
+  },
+  {
+    "path": "/system/dictManage",
+    "name": "dictManage",
+    "component": "/system/dictManage/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Dictionary Management",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/system",
+    "order": 4
+  },
+  {
+    "path": "/system/timingTask",
+    "name": "timingTask",
+    "component": "/system/timingTask/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Scheduled Tasks",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/system",
+    "order": 5
+  },
+  {
+    "path": "/system/systemLog",
+    "name": "systemLog",
+    "component": "/system/systemLog/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "System Logs",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/system",
+    "order": 6
+  },
+  {
+    "path": "/link",
+    "name": "link",
+    "component": "",
+    "redirect": "/link/bing",
+    "meta": {
+      "icon": "Paperclip",
+      "title": "External Links",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 11
+  },
+  {
+    "path": "/link/bing",
+    "name": "bing",
+    "component": "/link/bing/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Claude Docs",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/link",
+    "order": 0
+  },
+  {
+    "path": "/about",
+    "name": "about",
+    "component": "",
+    "redirect": "/about/yivad",
+    "meta": {
+      "icon": "InfoFilled",
+      "title": "About",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 12
+  },
+  {
+    "path": "/about/yivad",
+    "name": "aboutYivad",
+    "component": "/about/yivad/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "YiVad",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/about",
+    "order": 0
+  },
+  {
+    "path": "/about/yiai",
+    "name": "aboutYiAi",
+    "component": "/about/yiai/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "YiAi",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/about",
+    "order": 1
+  },
+  {
+    "path": "/about/yipet",
+    "name": "aboutYiPet",
+    "component": "/about/yipet/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "YiPet",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/about",
+    "order": 2
+  }
+]

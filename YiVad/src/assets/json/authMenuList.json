@@ -932,7 +932,7 @@
           "component": "/link/bing/index",
           "meta": {
             "icon": "Menu",
-            "title": "Bing Embedded",
+            "title": "Claude Docs",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -943,9 +943,9 @@
       ]
     },
     {
-      "path": "/about/index",
+      "path": "/about",
       "name": "about",
-      "component": "/about/index",
+      "redirect": "/about/yivad",
       "meta": {
         "icon": "InfoFilled",
         "title": "About",
@@ -954,7 +954,51 @@
         "isFull": false,
         "isAffix": false,
         "isKeepAlive": true
-      }
+      },
+      "children": [
+        {
+          "path": "/about/yivad",
+          "name": "aboutYivad",
+          "component": "/about/yivad/index",
+          "meta": {
+            "icon": "Menu",
+            "title": "YiVad",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          }
+        },
+        {
+          "path": "/about/yiai",
+          "name": "aboutYiAi",
+          "component": "/about/yiai/index",
+          "meta": {
+            "icon": "Menu",
+            "title": "YiAi",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          }
+        },
+        {
+          "path": "/about/yipet",
+          "name": "aboutYiPet",
+          "component": "/about/yipet/index",
+          "meta": {
+            "icon": "Menu",
+            "title": "YiPet",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          }
+        }
+      ]
     }
   ],
   "msg": "Success"

@@ -12,6 +12,7 @@ import { SliderRow } from './components/SliderRow/SliderRow';
 import { SelectRow } from './components/SelectRow/SelectRow';
 import { Notification } from './components/Notification/Notification';
 import { AppFooter } from './components/AppFooter/AppFooter';
+import { AboutCard } from './components/AboutCard/AboutCard';
 import { createPopupServices } from './services';
 import { connect } from './services/connect';
 import { POPUP_CONFIG } from './data';
@@ -25,6 +26,7 @@ import './components/SliderRow/SliderRow.css';
 import './components/SelectRow/SelectRow.css';
 import './components/Notification/Notification.css';
 import './components/AppFooter/AppFooter.css';
+import './components/AboutCard/AboutCard.css';
 
 // ── State ──────────────────────────────────────────────────────────────
 
@@ -275,6 +277,7 @@ class PopupComponent {
             options: POPUP_CONFIG.COLORS,
           }),
         ),
+        c(AboutCard, null),
       ),
       // Footer + Notification
       ...[

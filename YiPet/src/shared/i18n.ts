@@ -68,6 +68,11 @@ export type MessageKey =
   | 'successColorChanged'
   | 'successPositionReset'
   | 'successCentered'
+  // About
+  | 'aboutTitle'
+  | 'aboutDescription'
+  | 'aboutVersion'
+  | 'aboutTechStack'
   // Misc
   | 'popupSizeUnit'
   | 'popupVersion';

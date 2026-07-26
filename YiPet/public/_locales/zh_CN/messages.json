@@ -57,5 +57,10 @@
   "thinkCrafting": { "message": "构思回复…" },
   "thinkAlmostThere": { "message": "马上就好…" },
   "thinkNearlyReady": { "message": "快要好了…" },
-  "thinkComingRightUp": { "message": "马上就来…" }
+  "thinkComingRightUp": { "message": "马上就来…" },
+
+  "aboutTitle": { "message": "关于 YiPet" },
+  "aboutDescription": { "message": "Chrome MV3 浏览器扩展。在任意页面注入互动伴侣，支持多角色聊天、React 控制面板、按需 CDN 资源注入、i18n（英文 + 简体中文）和时区感知显示。由本地 YiAi FastAPI 后端驱动。" },
+  "aboutVersion": { "message": "扩展版本：1.2.0（Chrome MV3）" },
+  "aboutTechStack": { "message": "TypeScript + Vite 5 + React 15.6.1（CDN）+ Bootstrap 5.2.3（CDN）+ chrome.i18n" }
 }

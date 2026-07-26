@@ -21,6 +21,7 @@
       </template>
       <template #operation="scope">
         <el-button type="primary" link :icon="EditPen" @click="openDialog(scope.row)">Edit</el-button>
+        <el-button type="primary" link :icon="CopyDocument" @click="handleCopy(scope.row)">Copy</el-button>
         <el-button type="primary" link :icon="Delete" @click="handleDelete(scope.row)">Delete</el-button>
       </template>
     </ProTable>
@@ -40,7 +41,7 @@
           <el-input v-model="form.component" placeholder="e.g. /home/index" />
         </el-form-item>
         <el-form-item label="Icon">
-          <el-input v-model="form.meta.icon" placeholder="Element Plus icon name" />
+          <SelectIcon v-model:icon-value="form.meta.icon" placeholder="Search and select icon" />
         </el-form-item>
         <el-form-item label="Sort Order">
           <el-input-number v-model="form.order" :min="0" />
@@ -70,8 +71,9 @@ import { ref, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { FormInstance, FormRules } from "element-plus";
 import { ColumnProps } from "@/components/ProTable/interface";
-import { Delete, EditPen, CirclePlus } from "@element-plus/icons-vue";
+import { Delete, EditPen, CirclePlus, CopyDocument } from "@element-plus/icons-vue";
 import ProTable from "@/components/ProTable/index.vue";
+import SelectIcon from "@/components/SelectIcon/index.vue";
 import { getMenuList, createMenu, updateMenu, deleteMenu } from "@/api/modules/system";
 
 const proTable = ref();
@@ -93,7 +95,7 @@ const rules: FormRules = {
   "meta.title": [{ required: true, message: "Required" }],
   name: [{ required: true, message: "Required" }],
   path: [{ required: true, message: "Required" }],
-  component: [{ required: true, message: "Required" }]
+  component: [{ required: false }]
 };
 
 const dataCallback = (data: any) => {
@@ -107,7 +109,7 @@ const columns: ColumnProps[] = [
   { prop: "name", label: "Route Name", search: { el: "input" } },
   { prop: "path", label: "Route Path", width: 260, search: { el: "input" } },
   { prop: "component", label: "Component Path", width: 260 },
-  { prop: "operation", label: "Actions", width: 200, fixed: "right" }
+  { prop: "operation", label: "Actions", width: 280, fixed: "right" }
 ];
 
 const openDialog = (row?: any) => {
@@ -155,5 +157,20 @@ const handleDelete = async (row: any) => {
   await deleteMenu(row.key);
   ElMessage.success("Menu deleted");
   proTable.value?.getTableList();
+};
+
+const handleCopy = (row: any) => {
+  isEdit.value = false;
+  Object.assign(form, {
+    name: row.name ? `${row.name}_copy` : "",
+    path: row.path ? `${row.path}_copy` : "",
+    component: row.component || "",
+    redirect: row.redirect || "",
+    order: (row.order ?? 0) + 1,
+    meta: { title: row.meta?.title ? `${row.meta.title} (Copy)` : "", icon: row.meta?.icon || "" },
+    parent: row.parent ?? undefined,
+    key: undefined
+  });
+  dialogVisible.value = true;
 };
 </script>
