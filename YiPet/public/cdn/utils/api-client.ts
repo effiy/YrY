@@ -8,11 +8,18 @@
  * CDN global:              const client = YiPetApi.createClient({ baseUrl: '...' });
  */
 
+// ── Types ──────────────────────────────────────────────────────────────
+
 export interface ApiClientConfig {
   baseUrl: string;
   timeout?: number;
   headers?: Record<string, string>;
   retry?: { maxRetries: number; baseMs: number };
+  /** Optional logger — when provided, non-ok responses and retries are logged. */
+  logger?: {
+    warn?(...args: unknown[]): void;
+    debug?(...args: unknown[]): void;
+  };
 }
 
 export interface ApiResponse<T = unknown> {
@@ -30,8 +37,10 @@ export interface ApiClient {
   url(path: string): string;
 }
 
+// ── Factory ────────────────────────────────────────────────────────────
+
 export function createApiClient(config: ApiClientConfig): ApiClient {
-  const { baseUrl, timeout = 30000, headers = {}, retry } = config;
+  const { baseUrl, timeout = 30000, headers = {}, retry, logger } = config;
   const defaultHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -73,17 +82,40 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
         data = (await response.text()) as unknown as T;
       }
 
-      return { ok: response.ok, status: response.status, data };
+      const result: ApiResponse<T> = {
+        ok: response.ok,
+        status: response.status,
+        data,
+      };
+
+      if (!response.ok) {
+        result.error = typeof data === 'object' && data !== null
+          ? (data as Record<string, unknown>).detail as string || `HTTP ${response.status}`
+          : `HTTP ${response.status}`;
+        logger?.warn?.(`API ${method} ${path} → ${response.status}`, result.error);
+      }
+
+      return result;
     } catch (err) {
       clearTimeout(timeoutId);
+
       if ((err as Error).name === 'AbortError') {
-        return { ok: false, status: 0, data: null as T, error: 'Timeout' };
+        return { ok: false, status: 0, data: null as T, error: 'Request timed out or was aborted' };
       }
+
+      // Retry on network errors
       if (retry && attempt < retry.maxRetries) {
+        logger?.debug?.(`API retry ${attempt + 1}/${retry.maxRetries} for ${method} ${path}`);
         await new Promise((r) => setTimeout(r, retry.baseMs * (attempt + 1)));
         return request<T>(method, path, body, signal, attempt + 1);
       }
-      return { ok: false, status: 0, data: null as T, error: (err as Error).message };
+
+      return {
+        ok: false,
+        status: 0,
+        data: null as T,
+        error: (err as Error).message || 'Network error',
+      };
     }
   }
 
@@ -100,7 +132,3 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
 
 const YiPetApi = { createClient: createApiClient };
 export default YiPetApi;
-
-if (typeof window !== 'undefined') {
-  (window as unknown as Record<string, unknown>).YiPetApi = YiPetApi;
-}

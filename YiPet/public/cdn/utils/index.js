@@ -253,7 +253,7 @@ var YiPetUtils = function(exports) {
     window.LoggerUtils = LoggerUtils;
   }
   function createApiClient(config) {
-    const { baseUrl, timeout = 3e4, headers = {}, retry } = config;
+    const { baseUrl, timeout = 3e4, headers = {}, retry, logger } = config;
     const defaultHeaders = {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -265,6 +265,7 @@ var YiPetUtils = function(exports) {
       return base + p;
     }
     async function request(method, path, body, signal, attempt = 0) {
+      var _a, _b;
       const url = resolveUrl(path);
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -283,17 +284,32 @@ var YiPetUtils = function(exports) {
         } else {
           data = await response.text();
         }
-        return { ok: response.ok, status: response.status, data };
+        const result = {
+          ok: response.ok,
+          status: response.status,
+          data
+        };
+        if (!response.ok) {
+          result.error = typeof data === "object" && data !== null ? data.detail || `HTTP ${response.status}` : `HTTP ${response.status}`;
+          (_a = logger == null ? void 0 : logger.warn) == null ? void 0 : _a.call(logger, `API ${method} ${path} → ${response.status}`, result.error);
+        }
+        return result;
       } catch (err) {
         clearTimeout(timeoutId);
         if (err.name === "AbortError") {
-          return { ok: false, status: 0, data: null, error: "Timeout" };
+          return { ok: false, status: 0, data: null, error: "Request timed out or was aborted" };
         }
         if (retry && attempt < retry.maxRetries) {
+          (_b = logger == null ? void 0 : logger.debug) == null ? void 0 : _b.call(logger, `API retry ${attempt + 1}/${retry.maxRetries} for ${method} ${path}`);
           await new Promise((r) => setTimeout(r, retry.baseMs * (attempt + 1)));
           return request(method, path, body, signal, attempt + 1);
         }
-        return { ok: false, status: 0, data: null, error: err.message };
+        return {
+          ok: false,
+          status: 0,
+          data: null,
+          error: err.message || "Network error"
+        };
       }
     }
     return {
@@ -303,10 +319,6 @@ var YiPetUtils = function(exports) {
       delete: (path, signal) => request("DELETE", path, void 0, signal),
       url: resolveUrl
     };
-  }
-  const YiPetApi = { createClient: createApiClient };
-  if (typeof window !== "undefined") {
-    window.YiPetApi = YiPetApi;
   }
   if (typeof window !== "undefined") {
     const w = window;

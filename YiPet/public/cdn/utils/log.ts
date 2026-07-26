@@ -4,7 +4,7 @@
  * Provides dev-mode-gated console logging with storage-backed toggle,
  * buffered queue before init, and namespace sub-loggers.
  *
- * Importable as ES module:  import { LoggerUtils } from '../cdn/log';
+ * Importable as ES module:  import { LoggerUtils } from './log';
  * CDN global:              window.LoggerUtils.log(...)
  */
 
@@ -217,7 +217,7 @@ export const LoggerUtils: LoggerUtilsType = {
 
   /* ── Internal (debug) ─────────────────────────────────────────── */
 
-  _shouldLog: _shouldLog,
+  _shouldLog,
   _safeArgs,
   _flushQueue,
   _writeLog,

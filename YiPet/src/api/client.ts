@@ -1,27 +1,26 @@
 /**
- * HTTP API Client — base fetch wrapper with error handling, retry, and streaming.
+ * HTTP API Client — extension wrapper around the CDN base client.
  *
  * Layer 1 of the API stack: consumed by all domain services.
  * Configured via createApiClient(baseUrl, options).
+ *
+ * Builds on public/cdn/utils/api-client.ts and adds:
+ *   - Logger integration (wired to the shared dev-gated logger)
+ *   - SSE streaming support (StreamChunk / AsyncGenerator)
  */
 
+import {
+  createApiClient as createBaseClient,
+  type ApiClientConfig,
+  type ApiResponse,
+} from '../../public/cdn/utils/api-client';
 import { logger } from '../shared/log';
 
-// ── Types ──────────────────────────────────────────────────────────────
+// ── Re-export base types ───────────────────────────────────────────────
 
-export interface ApiClientConfig {
-  baseUrl: string;
-  timeout?: number;
-  headers?: Record<string, string>;
-  retry?: { maxRetries: number; baseMs: number };
-}
+export type { ApiClientConfig, ApiResponse };
 
-export interface ApiResponse<T = unknown> {
-  ok: boolean;
-  status: number;
-  data: T;
-  error?: string;
-}
+// ── Streaming types (extension-only feature) ───────────────────────────
 
 export interface StreamChunk<T = unknown> {
   done: boolean;
@@ -29,7 +28,7 @@ export interface StreamChunk<T = unknown> {
   error?: string;
 }
 
-// ── Client Factory ─────────────────────────────────────────────────────
+// ── Extended client interface ──────────────────────────────────────────
 
 export interface ApiClient {
   get<T = unknown>(path: string, signal?: AbortSignal): Promise<ApiResponse<T>>;
@@ -37,105 +36,29 @@ export interface ApiClient {
   put<T = unknown>(path: string, body?: unknown, signal?: AbortSignal): Promise<ApiResponse<T>>;
   delete<T = unknown>(path: string, signal?: AbortSignal): Promise<ApiResponse<T>>;
   stream(path: string, body?: unknown, signal?: AbortSignal): AsyncGenerator<StreamChunk>;
-  /** Build a full URL from a path (for external use, e.g. constructing iframe src). */
   url(path: string): string;
 }
 
+// ── Factory ────────────────────────────────────────────────────────────
+
 export function createApiClient(config: ApiClientConfig): ApiClient {
-  const { baseUrl, timeout = 30000, headers = {}, retry } = config;
+  // Inject the extension's dev-gated logger into the base client
+  const base = createBaseClient({ ...config, logger });
+
+  const { baseUrl, headers = {} } = config;
   const defaultHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
-    'Accept': 'application/json',
+    Accept: 'text/event-stream, application/json',
     ...headers,
   };
 
-  // ── Internal helpers ────────────────────────────────────────────────
-
   function resolveUrl(path: string): string {
-    const base = baseUrl.replace(/\/+$/, '');
+    const b = baseUrl.replace(/\/+$/, '');
     const p = path.startsWith('/') ? path : '/' + path;
-    return base + p;
+    return b + p;
   }
 
-  async function request<T>(
-    method: string,
-    path: string,
-    body?: unknown,
-    signal?: AbortSignal,
-  ): Promise<ApiResponse<T>> {
-    const url = resolveUrl(path);
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    // Merge external signal
-    if (signal) {
-      signal.addEventListener('abort', () => controller.abort());
-    }
-
-    const tryRequest = async (attempt: number): Promise<ApiResponse<T>> => {
-      try {
-        const init: RequestInit = {
-          method,
-          headers: defaultHeaders,
-          signal: controller.signal,
-        };
-        if (body !== undefined && method !== 'GET') {
-          init.body = JSON.stringify(body);
-        }
-
-        const response = await fetch(url, init);
-        clearTimeout(timeoutId);
-
-        // Parse response
-        let data: T;
-        const contentType = response.headers.get('content-type') || '';
-        if (contentType.includes('application/json')) {
-          data = await response.json() as T;
-        } else {
-          data = (await response.text()) as unknown as T;
-        }
-
-        const result: ApiResponse<T> = {
-          ok: response.ok,
-          status: response.status,
-          data,
-        };
-
-        if (!response.ok) {
-          result.error = typeof data === 'object' && data !== null
-            ? (data as Record<string, unknown>).detail as string || `HTTP ${response.status}`
-            : `HTTP ${response.status}`;
-          logger.warn(`API ${method} ${path} → ${response.status}`, result.error);
-        }
-
-        return result;
-      } catch (err) {
-        clearTimeout(timeoutId);
-
-        if ((err as Error).name === 'AbortError') {
-          return { ok: false, status: 0, data: null as T, error: 'Request timed out or was aborted' };
-        }
-
-        // Retry on network errors
-        if (retry && attempt < retry.maxRetries) {
-          logger.debug(`API retry ${attempt + 1}/${retry.maxRetries} for ${method} ${path}`);
-          await new Promise(r => setTimeout(r, retry.baseMs * (attempt + 1)));
-          return tryRequest(attempt + 1);
-        }
-
-        return {
-          ok: false,
-          status: 0,
-          data: null as T,
-          error: (err as Error).message || 'Network error',
-        };
-      }
-    };
-
-    return tryRequest(0);
-  }
-
-  // ── Streaming ───────────────────────────────────────────────────────
+  // ── SSE Streaming ────────────────────────────────────────────────────
 
   async function* stream(
     path: string,
@@ -149,7 +72,7 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
     try {
       const init: RequestInit = {
         method: 'POST',
-        headers: { ...defaultHeaders, 'Accept': 'text/event-stream' },
+        headers: { ...defaultHeaders, Accept: 'text/event-stream' },
         body: body ? JSON.stringify(body) : undefined,
         signal: controller.signal,
       };
@@ -200,10 +123,7 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
   }
 
   return {
-    get: <T>(path: string, signal?: AbortSignal) => request<T>('GET', path, undefined, signal),
-    post: <T>(path: string, body?: unknown, signal?: AbortSignal) => request<T>('POST', path, body, signal),
-    put: <T>(path: string, body?: unknown, signal?: AbortSignal) => request<T>('PUT', path, body, signal),
-    delete: <T>(path: string, signal?: AbortSignal) => request<T>('DELETE', path, undefined, signal),
+    ...base,
     stream,
     url: resolveUrl,
   };

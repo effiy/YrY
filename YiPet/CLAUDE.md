@@ -16,7 +16,7 @@
 
 ## Architecture direction
 
-> **Componentization + API layering** — YiPet is a Vite + TypeScript Chrome extension. The frontend (popup UI, content script pet rendering) uses React 15.6.1 from CDN with JSX transpilation. The API layer (`src/api/`) follows a four-tier architecture: client → endpoints → types → services. Shared modules (`src/shared/`) provide cross-cutting i18n, timezone, datetime, IPC messaging, and Chrome storage helpers.
+> **Componentization + API layering** — YiPet is a Vite + TypeScript Chrome extension. The frontend (popup UI, content script pet rendering) uses React 15.6.1 from CDN with JSX transpilation. The API layer (`src/api/`) follows a four-tier architecture: client → endpoints → types → services. The HTTP client wraps `public/cdn/utils/api-client.ts` (the canonical base shared with CDN injection), adding the extension's dev-gated logger and SSE streaming. Shared modules (`src/shared/`) provide cross-cutting i18n, timezone, datetime, IPC messaging, and Chrome storage helpers.
 >
 > See also: [../../rules/architecture-direction.md](../../rules/architecture-direction.md)
 
@@ -70,8 +70,9 @@
 | Learn about datetime formatting | [src/shared/datetime.ts](./src/shared/datetime.ts) |
 | Learn about IPC message types | [src/shared/messages.ts](./src/shared/messages.ts) |
 | Learn about Chrome storage helpers | [src/shared/state.ts](./src/shared/state.ts) |
-| Call the YiAi backend API | [src/api/services/](./src/api/services/) — use `createApiServices(config)` |
-| Understand API client (fetch, retry, streaming) | [src/api/client.ts](./src/api/client.ts) |
+| Call the YiAi backend API | [src/api/services/](./src/api/services/) — use `createApiServices(config)`. Client wraps `public/cdn/utils/api-client.ts` with logger injection. |
+| Understand API client (base: fetch, retry, error extraction) | [public/cdn/utils/api-client.ts](./public/cdn/utils/api-client.ts) |
+| Understand API client (extension: logger + SSE streaming) | [src/api/client.ts](./src/api/client.ts) |
 | Understand API endpoint paths | [src/api/endpoints.ts](./src/api/endpoints.ts) |
 | Understand API request/response shapes | [src/api/types.ts](./src/api/types.ts) |
 | Modify design variables | [public/cdn/styles/variables.css](./public/cdn/styles/variables.css) |

@@ -25,12 +25,8 @@ user_invocable: true
 ## Quick Start
 
 ```
-/yry-code vue      → Vue 3 patterns (reactivity, composition, slots)
-/yry-code vite     → build config, plugins, splitting
 /yry-code fastapi  → Python FastAPI backend
 /yry-code nodejs   → Node runtime / package mgmt
-/yry-code css      → style system / cascade layers
-/yry-code h5       → mobile H5 adaptation
 /yry-code tauri    → desktop Tauri / IPC
 /yry-code nginx    → reverse proxy / static hosting
 /yry-code chrome   → browser ext / DevTools

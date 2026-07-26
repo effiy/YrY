@@ -8,7 +8,7 @@ YiPet is a Chrome MV3 extension with three layers:
 
 1. **Content script** — declared in `manifest.json`, runs in the ISOLATED world on matching pages. Handles popup-to-page message relay. The bootstrap module self-injects into the MAIN world to expose `window.YiPet` and auto-load CDN resources.
 2. **Popup control panel** (`action.default_popup`) — a React 15 app for toggling pet visibility, size (slider), role (select), and color theme (select). All strings are i18n'd via `chrome.i18n` — switches automatically with Chrome's UI language.
-3. **HTTP API layer** — typed service classes (`AuthService`, `SessionService`, `ChatService`, etc.) wrapping a `fetch`-based client with retry, timeout, and SSE streaming support. Endpoints are organised by domain.
+3. **HTTP API layer** — typed service classes (`AuthService`, `SessionService`, `ChatService`, etc.) wrapping a `fetch`-based client with retry, timeout, and SSE streaming support. The base client lives in `public/cdn/utils/api-client.ts` (shared with MAIN-world CDN injection); `src/api/client.ts` extends it with the extension's dev-gated logger and SSE streaming. Endpoints are organised by domain.
 
 State is persisted via `chrome.storage.local`. Popup-to-content-script communication uses `chrome.tabs.sendMessage`. The YiAi backend serves chat, sessions, auth, and config at `http://localhost:10086`.
 
@@ -47,7 +47,11 @@ YiPet/
 ├── public/                    # Copied to dist/ as-is by Vite
 │   ├── cdn/                   # Pre-bundled vendor libs (React, Vue, dayjs, Bootstrap, GSAP…)
 │   │   ├── styles/            # CSS design tokens + reset
-│   │   ├── utils/             # UrlBuilder, LoggerUtils
+│   │   ├── utils/             # UrlBuilder, LoggerUtils, YiPetApi — built as CDN IIFE
+│   │   │   ├── url.ts         #   UrlBuilder
+│   │   │   ├── log.ts         #   LoggerUtils (dev-mode silent)
+│   │   │   ├── api-client.ts  #   YiPetApi.createClient() — canonical HTTP client base
+│   │   │   └── index.ts       #   IIFE entry — bundles all three + window globals
 │   │   └── vendor/            # 80+ versioned libraries (react@15.6.1, dayjs@1.11.21, …)
 │   ├── _locales/              # Chrome i18n message files
 │   │   ├── en/messages.json   # English (source locale, 55 keys)
@@ -55,7 +59,7 @@ YiPet/
 │   └── assets/                # Icons (16/32/48/128 px) + pet role images
 └── src/
     ├── api/                   # HTTP API layer (4-tier architecture)
-    │   ├── client.ts          #   Layer 1: fetch wrapper (retry, timeout, SSE streaming)
+    │   ├── client.ts          #   Layer 1: wraps CDN api-client, adds logger + SSE streaming
     │   ├── endpoints.ts       #   Layer 2: path constants by domain (auth, sessions, chat…)
     │   ├── types.ts           #   Layer 3: request/response interfaces
     │   ├── index.ts           #   Barrel export
@@ -151,7 +155,7 @@ YiPet/
 - **Popup → Content Script:** `chrome.tabs.sendMessage` with typed action payloads.
 - **Content Script → MAIN World:** `<script>` element injection bridging the ISOLATED-world boundary, with `CustomEvent` for state handoff.
 - **Bootstrap → CDN Catalog:** Sequential JS + parallel CSS injection from local `chrome-extension://` URLs. Global-existence checks prevent double-loading.
-- **API Layer → YiAi:** Typed service classes (`api.auth.login()`, `api.chat.stream()`, `api.sessions.list()`) wrapping a shared `ApiClient` with retry and SSE support.
+- **API Layer → YiAi:** Typed service classes (`api.auth.login()`, `api.chat.stream()`, `api.sessions.list()`) wrapping a shared `ApiClient` with retry and SSE support. The client builds on `public/cdn/utils/api-client.ts` (the canonical base shared with CDN injection), adding the extension's dev-gated logger.
 
 ## Internationalization (i18n)
 
