@@ -53,7 +53,7 @@ export namespace Login {
 // Document shape stored in MongoDB "users" collection
 export interface UserDocument {
   key: string;
-  id: string;  // alias for key (used by existing views)
+  id: string; // alias for key (used by existing views)
   username: string;
   password?: string;
   gender: number;

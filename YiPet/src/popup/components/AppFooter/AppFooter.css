@@ -5,9 +5,9 @@
  */
 
 .footer {
-  background: var(--bg-primary, #0f172a);
-  padding: 10px 18px;
-  border-top: 1px solid var(--border-primary, rgba(255, 255, 255, 0.12));
+  background: var(--bg-primary);
+  padding: 10px 20px;
+  border-top: 1px solid var(--border-primary);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -15,7 +15,7 @@
 
 .hint-text {
   font-size: 11px;
-  color: var(--text-muted, #94a3b8);
+  color: var(--text-muted);
   line-height: 1.4;
 }
 
@@ -26,8 +26,8 @@
 
 .version-badge {
   font-size: 10px;
-  color: var(--text-tertiary, #64748b);
-  background: var(--bg-tertiary, #334155);
+  color: var(--text-tertiary);
+  background: var(--bg-tertiary);
   padding: 2px 8px;
   border-radius: 10px;
 }

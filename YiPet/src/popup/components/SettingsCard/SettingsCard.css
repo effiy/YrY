@@ -5,29 +5,29 @@
  */
 
 .card {
-  border: 1px solid var(--border-primary, rgba(255, 255, 255, 0.12));
-  background: rgba(15, 23, 42, 0.38);
-  border-radius: 14px;
-  padding: 16px;
+  border: 1px solid var(--border-primary);
+  background: var(--bg-glass);
+  border-radius: var(--radius, 14px);
+  padding: 18px;
   margin-bottom: 0;
   box-shadow:
-    0 10px 24px rgba(0, 0, 0, 0.18),
+    var(--shadow-md),
     0 0 0 1px rgba(255, 255, 255, 0.03) inset;
   backdrop-filter: blur(12px);
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card:hover {
-  border-color: rgba(255, 255, 255, 0.16);
+  border-color: var(--border-hover);
   box-shadow:
-    0 12px 28px rgba(0, 0, 0, 0.22),
+    var(--shadow-lg),
     0 0 0 1px rgba(255, 255, 255, 0.04) inset;
 }
 
 .card-title {
   font-size: 13px;
   font-weight: 700;
-  color: rgba(248, 250, 252, 0.96);
+  color: var(--text-primary);
   margin: 0 0 14px;
   letter-spacing: 0.3px;
   display: flex;
@@ -41,5 +41,5 @@
   width: 3px;
   height: 14px;
   border-radius: 2px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--primary-gradient);
 }

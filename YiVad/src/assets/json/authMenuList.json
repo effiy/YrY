@@ -915,7 +915,7 @@
     {
       "path": "/link",
       "name": "link",
-      "redirect": "/link/bing",
+      "redirect": "/link/claude",
       "meta": {
         "icon": "Paperclip",
         "title": "External Links",
@@ -927,12 +927,128 @@
       },
       "children": [
         {
-          "path": "/link/bing",
-          "name": "bing",
-          "component": "/link/bing/index",
+          "path": "/link/claude",
+          "name": "claudePanel",
+          "component": "/link/claude/index",
           "meta": {
             "icon": "Menu",
-            "title": "Claude Docs",
+            "title": "Claude Panel",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          }
+        },
+        {
+          "path": "/link/docs",
+          "name": "docs",
+          "component": "/link/docs/index",
+          "meta": {
+            "icon": "Menu",
+            "title": "Docs",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          }
+        },
+        {
+          "path": "/link/gitee",
+          "name": "gitee",
+          "component": "/link/gitee/index",
+          "meta": {
+            "icon": "Menu",
+            "title": "Gitee",
+            "isLink": "https://gitee.com",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          }
+        },
+        {
+          "path": "/link/github",
+          "name": "github",
+          "component": "/link/github/index",
+          "meta": {
+            "icon": "Menu",
+            "title": "GitHub",
+            "isLink": "https://github.com",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          }
+        },
+        {
+          "path": "/link/juejin",
+          "name": "juejin",
+          "component": "/link/juejin/index",
+          "meta": {
+            "icon": "Menu",
+            "title": "Juejin",
+            "isLink": "https://juejin.cn",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          }
+        }
+      ]
+    },
+    {
+      "path": "/aicr",
+      "name": "aicr",
+      "redirect": "/aicr/index",
+      "meta": {
+        "icon": "Monitor",
+        "title": "AICR",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "children": [
+        {
+          "path": "/aicr/index",
+          "name": "aicrDashboard",
+          "component": "/aicr/index",
+          "meta": {
+            "icon": "Menu",
+            "title": "Code Review",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          }
+        }
+      ]
+    },
+    {
+      "path": "/story",
+      "name": "story",
+      "redirect": "/story/index",
+      "meta": {
+        "icon": "Notebook",
+        "title": "Story Board",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "children": [
+        {
+          "path": "/story/index",
+          "name": "storyBoard",
+          "component": "/story/index",
+          "meta": {
+            "icon": "Menu",
+            "title": "Story Board",
             "isLink": "",
             "isHide": false,
             "isFull": false,

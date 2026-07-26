@@ -50,7 +50,7 @@ module.exports = {
     "vue/v-slot-style": "error", // Enforce v-slot directive style
     "vue/no-mutating-props": "error", // Disallow mutating component props
     "vue/custom-event-name-casing": "error", // Enforce specific casing for custom event names
-    "vue/html-closing-bracket-newline": "error", // Require or disallow a line break before closing brackets
+    "vue/html-closing-bracket-newline": "off", // Handled by prettier
     "vue/attribute-hyphenation": "error", // Enforce attribute naming style on custom components: my-prop="prop"
     "vue/attributes-order": "off", // Vue API ordering, enforce attributes order
     "vue/no-v-html": "off", // Disallow use of v-html

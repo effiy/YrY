@@ -60,7 +60,22 @@
   "thinkComingRightUp": { "message": "马上就来…" },
 
   "aboutTitle": { "message": "关于 YiPet" },
-  "aboutDescription": { "message": "Chrome MV3 浏览器扩展。在任意页面注入互动伴侣，支持多角色聊天、React 控制面板、按需 CDN 资源注入、i18n（英文 + 简体中文）和时区感知显示。由本地 YiAi FastAPI 后端驱动。" },
+  "aboutTagline": { "message": "一个温柔的互动伴侣，住在你的浏览器里 — 聊天、玩耍、陪伴你浏览网页。" },
+  "aboutDescription": { "message": "YiPet 是一个 Chrome Manifest V3 扩展，可以在任意网页中注入动画伴侣。支持由本地 YiAi 后端驱动的多角色 AI 聊天、基于 React 的控制面板、按需 CDN 资源注入，以及完整的 i18n 与时区感知显示。" },
+  "aboutFeaturesTitle": { "message": "功能亮点" },
+  "aboutFeaturePet": { "message": "任意页面上的动画宠物" },
+  "aboutFeatureChat": { "message": "多角色 AI 聊天窗口" },
+  "aboutFeatureI18n": { "message": "英文 & 简体中文" },
+  "aboutFeatureTimezone": { "message": "时区感知显示" },
+  "aboutFeatureCDN": { "message": "按需 CDN 资源注入" },
+  "aboutFeatureApi": { "message": "四层 API 架构" },
+  "aboutArchitectureTitle": { "message": "架构" },
+  "aboutArchitectureDesc": { "message": "YiPet 运行在 Chrome 双执行上下文（ISOLATED + MAIN world）中，与本地 YiAi FastAPI 后端通信。弹出窗口、内容脚本和 API 层构成了清晰的三层结构。" },
+  "aboutArchLayerPopup": { "message": "弹出窗口\n(React 15)" },
+  "aboutArchLayerContent": { "message": "内容脚本\n(MV3 双世界)" },
+  "aboutArchLayerBackend": { "message": "YiAi API\n(FastAPI)" },
+  "aboutBackendTitle": { "message": "后端" },
+  "aboutBackendDesc": { "message": "由 YiAi 驱动 — 运行在 localhost:10086 的 FastAPI 服务器，提供 Ollama 聊天、文件管理、企业微信消息、RSS 聚合以及基于 MongoDB 持久化的模块执行引擎。" },
   "aboutVersion": { "message": "扩展版本：1.2.0（Chrome MV3）" },
   "aboutTechStack": { "message": "TypeScript + Vite 5 + React 15.6.1（CDN）+ Bootstrap 5.2.3（CDN）+ chrome.i18n" }
 }

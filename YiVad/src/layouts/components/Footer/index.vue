@@ -1,6 +1,6 @@
 <template>
   <div class="footer flx-center">
-    <span> 2024 © YiVad </span>
+    <span> 2026 © YiVad </span>
   </div>
 </template>
 

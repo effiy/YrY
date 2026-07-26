@@ -1,31 +1,131 @@
+/* ── AboutCard ──────────────────────────────────────────────────────────── */
+
+/* Tagline */
+.about-tagline {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0 0 10px 0;
+  line-height: 1.5;
+}
+
+/* Description */
 .about-description {
   font-size: 12px;
-  color: var(--text-secondary, #cbd5e1);
+  color: var(--text-secondary);
   line-height: 1.6;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
 }
 
 .about-description p {
   margin: 0;
 }
 
+/* Section */
+.about-section {
+  margin-bottom: 14px;
+}
+
+.about-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border-glass);
+}
+
+/* Feature List */
+.about-feature-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 10px;
+}
+
+.about-feature-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.about-feature-icon {
+  flex-shrink: 0;
+  font-size: 13px;
+  width: 18px;
+  text-align: center;
+}
+
+.about-feature-text {
+  flex: 1;
+}
+
+/* Architecture */
+.about-arch-desc {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 8px 0;
+}
+
+.about-arch-diagram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+}
+
+.about-arch-layer {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  padding: 5px 8px;
+  border-radius: 4px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.about-arch-arrow {
+  font-size: 14px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* Backend */
+.about-backend-desc {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Meta (version + tech stack) */
 .about-meta {
   display: flex;
   flex-direction: column;
   gap: 6px;
   padding: 10px;
-  background: var(--bg-tertiary, #334155);
+  background: var(--bg-tertiary);
   border-radius: 8px;
 }
 
 .about-version {
   font-size: 11px;
   font-weight: 600;
-  color: var(--text-primary, #e2e8f0);
+  color: var(--text-primary);
 }
 
 .about-tech {
   font-size: 10px;
-  color: var(--text-muted, #94a3b8);
+  color: var(--text-muted);
   line-height: 1.5;
 }

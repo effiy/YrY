@@ -29,11 +29,11 @@
   max-width: 90%;
   text-align: center;
   backdrop-filter: blur(8px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-md);
 }
 
-.notification.success { background: var(--success, #22c55e); }
-.notification.error   { background: var(--error,   #ef4444); }
-.notification.info    { background: var(--info,    #3b82f6); }
+.notification.success { background: var(--success); }
+.notification.error   { background: var(--error);   }
+.notification.info    { background: var(--info);    }
 .notification.warn,
-.notification.warning { background: var(--warning, #f59e0b); }
+.notification.warning { background: var(--warning); }
