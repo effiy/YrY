@@ -65,7 +65,7 @@ describe('locale', () => {
     it('persists the locale to chrome.storage', async () => {
       const spy = vi.mocked(chrome.storage.local.set);
       await setUserLocale('zh_CN');
-      expect(spy).toHaveBeenCalledWith({ user_locale: 'zh_CN' });
+      expect(spy).toHaveBeenCalledWith({ locale: 'zh_CN' });
     });
   });
 

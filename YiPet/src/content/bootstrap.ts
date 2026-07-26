@@ -93,23 +93,62 @@ try {
   );
 } catch (_) { /* not a content script */ }
 
-// When injected into MAIN world, the &lt;script&gt; tag carries data-base
+// When injected into MAIN world, the &lt;script&gt; tag carries data-base + data-role
 const _cs = typeof document !== 'undefined' ? document.currentScript : null;
 const _injectedBase: string =
   (_cs && (_cs as HTMLScriptElement).dataset?.base) || '';
+const _injectedRole: string =
+  (_cs && (_cs as HTMLScriptElement).dataset?.role) || 'Teacher';
 
 /* ═══════════════════════════════════════════════════════════════════════════
    Phase 1: Content Script — inject self into MAIN world
    ═══════════════════════════════════════════════════════════════════════════ */
 
 if (_isContentScript && !_injectedBase) {
-  (function injectIntoMainWorld() {
+  /* ── Pet state + popup message relay (ISOLATED world) ──────────── */
+
+  const PET_URL_STATE_KEY = 'pet_state_by_url';
+  let _petVisible = false;
+  let _petSize = 260;
+  let _petRole = 'Teacher';
+  let _petColor = 0;
+
+  /** Derive a stable URL key from the current page (origin + pathname, ignoring hash/query). */
+  function getPageUrlKey(): string {
+    return window.location.origin + window.location.pathname;
+  }
+  (async function injectIntoMainWorld() {
     const extBase = chrome.runtime.getURL('cdn/');
     const selfUrl = chrome.runtime.getURL('assets/bootstrap.js');
+
+    // Load saved role BEFORE injecting into MAIN world so the
+    // initial pet image matches the user's chosen role immediately.
+    let initialRole = _petRole;
+    try {
+      const roleResult = await chrome.storage.local.get(ROLE_STORAGE_KEY);
+      const savedRole = roleResult?.[ROLE_STORAGE_KEY];
+      if (savedRole && isValidRole(savedRole)) {
+        initialRole = savedRole;
+        _petRole = savedRole;
+      }
+    } catch { /* use default */ }
+
+    // Also check per-URL state for a page-specific role override
+    try {
+      const urlKey = getPageUrlKey();
+      const stateResult = await chrome.storage.local.get(PET_URL_STATE_KEY);
+      const map = (stateResult && stateResult[PET_URL_STATE_KEY]) || {};
+      const urlState = map[urlKey];
+      if (urlState?.role && isValidRole(urlState.role)) {
+        initialRole = urlState.role;
+        _petRole = urlState.role;
+      }
+    } catch { /* use global role */ }
 
     const el = document.createElement('script');
     el.src = selfUrl;
     el.dataset.base = extBase;
+    el.dataset.role = initialRole;
     el.id = 'yipet-bootstrap';
 
     el.onerror = () => {
@@ -126,20 +165,6 @@ if (_isContentScript && !_injectedBase) {
 
     (document.head || document.documentElement).appendChild(el);
   })();
-
-  /* ── Pet state + popup message relay (ISOLATED world) ──────────── */
-
-  const PET_STATE_KEY = 'pet_global_state';
-  const PET_URL_STATE_KEY = 'pet_state_by_url';
-  let _petVisible = false;
-  let _petSize = 260;
-  let _petRole = 'Teacher';
-  let _petColor = 0;
-
-  /** Derive a stable URL key from the current page (origin + pathname, ignoring hash/query). */
-  function getPageUrlKey(): string {
-    return window.location.origin + window.location.pathname;
-  }
 
   /**
    * Persist current pet state to chrome.storage.local (keyed by page URL).
@@ -158,45 +183,36 @@ if (_isContentScript && !_injectedBase) {
   /**
    * Restore saved pet state from chrome.storage.local on content script init.
    * Uses page URL as key so no service worker is needed to resolve tab ID.
+   * Role is loaded before MAIN world injection — this restores visibility,
+   * size, and color, then always syncs the role with MAIN world.
    */
   function restorePetState(): void {
     const urlKey = getPageUrlKey();
 
-    // Load role preference (global, survives tab changes and browser restart)
-    chrome.storage.local.get(ROLE_STORAGE_KEY).then((roleResult) => {
-      const savedRole = roleResult?.[ROLE_STORAGE_KEY];
-      if (savedRole && isValidRole(savedRole) && savedRole !== _petRole) {
-        _petRole = savedRole;
-        notifyMainWorld('roleChanged', { role: _petRole, systemPrompt: lookupSystemPrompt(_petRole) });
-      }
-
-      // Load per-url pet state (visible, size, role, color)
-      return chrome.storage.local.get(PET_URL_STATE_KEY);
-    }).then((stateResult: any) => {
+    // Load per-url pet state (visible, size, color) — role already loaded before injection
+    chrome.storage.local.get(PET_URL_STATE_KEY).then((stateResult: any) => {
       const map = (stateResult && stateResult[PET_URL_STATE_KEY]) || {};
       const urlState = map[urlKey];
-      if (!urlState) return;
-
-      // Restore visibility
-      if (typeof urlState.visible === 'boolean' && urlState.visible !== _petVisible) {
-        _petVisible = urlState.visible;
-        notifyMainWorld('visibilityChanged', { visible: _petVisible });
+      if (urlState) {
+        // Restore visibility
+        if (typeof urlState.visible === 'boolean' && urlState.visible !== _petVisible) {
+          _petVisible = urlState.visible;
+          notifyMainWorld('visibilityChanged', { visible: _petVisible });
+        }
+        // Restore size
+        if (typeof urlState.size === 'number' && urlState.size !== _petSize) {
+          _petSize = urlState.size;
+          notifyMainWorld('sizeChanged', { size: _petSize });
+        }
+        // Restore color
+        if (typeof urlState.color === 'number' && urlState.color !== _petColor) {
+          _petColor = urlState.color;
+          notifyMainWorld('colorChanged', { color: _petColor });
+        }
       }
-      // Restore size
-      if (typeof urlState.size === 'number' && urlState.size !== _petSize) {
-        _petSize = urlState.size;
-        notifyMainWorld('sizeChanged', { size: _petSize });
-      }
-      // Restore role (url-specific overrides global)
-      if (typeof urlState.role === 'string' && isValidRole(urlState.role) && urlState.role !== _petRole) {
-        _petRole = urlState.role;
-        notifyMainWorld('roleChanged', { role: _petRole, systemPrompt: lookupSystemPrompt(_petRole) });
-      }
-      // Restore color
-      if (typeof urlState.color === 'number' && urlState.color !== _petColor) {
-        _petColor = urlState.color;
-        notifyMainWorld('colorChanged', { color: _petColor });
-      }
+    }).then(() => {
+      // Always sync role with MAIN world — corrects any stale state
+      notifyMainWorld('roleChanged', { role: _petRole, systemPrompt: lookupSystemPrompt(_petRole) });
     }).catch((err: Error) => {
       console.warn('[YiPet] Failed to restore pet state:', err.message);
     });
@@ -210,7 +226,7 @@ if (_isContentScript && !_injectedBase) {
     (msg: Record<string, unknown>, _sender, sendResponse) => {
       switch (msg.action) {
         case 'ping': {
-          sendResponse({ success: true, visible: _petVisible, size: _petSize, role: _petRole });
+          sendResponse({ success: true, visible: _petVisible, size: _petSize, role: _petRole, color: _petColor });
           break;
         }
         case 'toggleVisibility': {
@@ -270,6 +286,24 @@ if (_isContentScript && !_injectedBase) {
   // Restore saved pet state on content script initialization
   // so settings survive page refresh without needing to open the popup
   restorePetState();
+
+  // Persist state on page unload — defensive safety net ensuring the latest
+  // in-memory state is flushed to chrome.storage.local before the page destroys
+  // the execution context. Normal changes are already persisted synchronously
+  // in each message handler; this covers edge cases where a final state
+  // mutation arrives between the last persist call and page teardown.
+  window.addEventListener('beforeunload', () => {
+    persistPetState();
+  });
+
+  // Also persist when the page enters the back/forward cache (bfcache) or
+  // becomes hidden — not strictly required since beforeunload covers teardown,
+  // but visibilitychange fires sooner and covers tab-switch edge cases.
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      persistPetState();
+    }
+  });
 
   // ISOLATED world done — do NOT fall through to Phase 2.
   // The original IIFE used `return` here; ES modules can't return at top level,
@@ -412,7 +446,9 @@ function createYiPet(root: typeof globalThis, BASE: string): void {
   petImg.id = 'yipet-pet-img';
   petImg.alt = 'YiPet';
   petImg.style.cssText = 'width:260px;height:auto;';
-  petImg.src = extRoot + 'assets/images/teacher/icon.png';
+  // Use the role passed from ISOLATED world — always matches saved preference
+  petImg.src = extRoot + 'assets/images/' +
+    _injectedRole.toLowerCase().replace(/\s+/g, '-') + '/icon.png';
   petContainer.appendChild(petImg);
 
   function ensureOverlayInDOM(): void {
