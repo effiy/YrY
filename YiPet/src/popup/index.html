@@ -6,7 +6,7 @@
     <title>Gentle Companion</title>
     <!--
       Styles — loaded in cascade order:
-        base.css                shared layout, keyframes, a11y
+        index.css                shared layout, keyframes, a11y
         AppHeader/AppHeader.css     AppHeader component
         SettingsCard/SettingsCard.css  SettingsCard component
         SwitchRow/SwitchRow.css     SwitchRow component
@@ -15,15 +15,15 @@
         Notification/Notification.css  Notification component
         AppFooter/AppFooter.css     AppFooter component
     -->
-    <link rel="stylesheet" href="/src/styles/variables.css" />
-    <link rel="stylesheet" href="./components/ui/base.css" />
-    <link rel="stylesheet" href="./components/ui/AppHeader/AppHeader.css" />
-    <link rel="stylesheet" href="./components/ui/SettingsCard/SettingsCard.css" />
-    <link rel="stylesheet" href="./components/ui/SwitchRow/SwitchRow.css" />
-    <link rel="stylesheet" href="./components/ui/SliderRow/SliderRow.css" />
-    <link rel="stylesheet" href="./components/ui/SelectRow/SelectRow.css" />
-    <link rel="stylesheet" href="./components/ui/Notification/Notification.css" />
-    <link rel="stylesheet" href="./components/ui/AppFooter/AppFooter.css" />
+    <link rel="stylesheet" href="./index.css" />
+    
+    <link rel="stylesheet" href="./components/AppHeader/AppHeader.css" />
+    <link rel="stylesheet" href="./components/SettingsCard/SettingsCard.css" />
+    <link rel="stylesheet" href="./components/SwitchRow/SwitchRow.css" />
+    <link rel="stylesheet" href="./components/SliderRow/SliderRow.css" />
+    <link rel="stylesheet" href="./components/SelectRow/SelectRow.css" />
+    <link rel="stylesheet" href="./components/Notification/Notification.css" />
+    <link rel="stylesheet" href="./components/AppFooter/AppFooter.css" />
   </head>
   <body>
     <div id="app"></div>
@@ -33,8 +33,8 @@
         1. Vendor       — React
         2. Lib + Config — UrlBuilder → PET_CONFIG → data adapter
         3. Services     — notify, chrome, connect
-        4. Components   — ui/* (presentational) → Popup (container)
-        5. Bootstrap    — mount
+        4. Components   — ui/* (presentational)
+        5. Bootstrap    — Popup container + mount
     -->
     <script src="/cdn/vendor/react@15.6.1/react.min.js"></script>
     <script src="/cdn/vendor/react@15.6.1/react-dom.min.js"></script>
@@ -52,7 +52,6 @@
     <script src="./components/SelectRow/SelectRow.js"></script>
     <script src="./components/Notification/Notification.js"></script>
     <script src="./components/AppFooter/AppFooter.js"></script>
-    <script src="./components/Popup.js"></script>
     <script src="./index.js"></script>
   </body>
 </html>
