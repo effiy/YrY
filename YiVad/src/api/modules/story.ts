@@ -10,14 +10,19 @@ const CNAME = "stories";
 // ── Types ──
 
 export type StoryStatus = "planning" | "design" | "develop" | "testing" | "operations" | "archived";
+export type ScenarioStatus = StoryStatus;
 export type ScenarioPriority = "p0" | "p1" | "p2" | "p3";
-export type ScenarioStatus = "pending" | "in_progress" | "done" | "blocked";
 export type ScheduleStatus = "planned" | "on_track" | "at_risk" | "delayed" | "completed";
 
 export interface ScenarioStep {
   order: number;
   action: string; // "Given" | "When" | "Then" | "And"
   description: string;
+}
+
+export interface AiCodingEntry {
+  prompt: string;
+  generatedAt: number;
 }
 
 export interface Scenario {
@@ -28,6 +33,7 @@ export interface Scenario {
   status: ScenarioStatus;
   steps: ScenarioStep[];
   tags: string[];
+  aiCodingHistory?: AiCodingEntry[];
   createdAt: number;
   updatedAt: number;
 }

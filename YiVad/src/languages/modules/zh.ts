@@ -113,6 +113,9 @@ export default {
     aiCodingGenerating: "正在生成 AI 编码提示语...",
     aiCodingCopied: "AI 编码提示语已复制到剪贴板",
     aiCodingFailed: "AI 编码提示语生成失败",
+    aiCodingHistory: "AI 编码历史",
+    aiCodingCopy: "复制",
+    aiCodingGenerated: "生成于 {time}",
     petSettingsPreset: [
       {
         name: "切换宠物显示",

@@ -93,6 +93,9 @@ Generate a Claude Code prompt for this scenario.`;
         ElMessage.success(t("story.aiCodingCopied"));
       }
     });
+
+    // Persist generated prompt to scenario history
+    store.saveAiCodingPrompt(sc.key, trimmed);
   } catch (err) {
     console.error("AI Coding prompt generation failed:", err);
     ElMessage.error(t("story.aiCodingFailed"));
@@ -117,12 +120,6 @@ const priorityLabels = computed(() => ({
   p3: t("story.p3Low")
 }));
 const priorityColors: Record<string, string> = { p0: "danger", p1: "warning", p2: "info", p3: "" };
-const scenarioStatusLabels = computed(() => ({
-  pending: t("story.pending"),
-  in_progress: t("story.inProgress"),
-  done: t("story.doneStatus"),
-  blocked: t("story.blocked")
-}));
 const stepActions = ["Given", "When", "Then", "And"];
 const scheduleLabels = computed(() => ({
   planned: t("story.planned"),
@@ -169,7 +166,7 @@ function scenarioCount(story: StoryDocument): number {
 }
 
 function scenarioDone(story: StoryDocument): number {
-  return story.scenarios?.filter(sc => sc.status === "done").length ?? 0;
+  return story.scenarios?.filter(sc => sc.status === "operations").length ?? 0;
 }
 
 function scenarioProgress(story: StoryDocument): number {
@@ -483,11 +480,11 @@ onMounted(() => store.fetchStories());
               style="margin-bottom: 16px"
             />
             <el-empty v-if="!store.selectedStory.scenarios?.length" :description="$t('story.noScenarios')" :image-size="60" />
-            <template v-for="scStatus in ['done', 'in_progress', 'pending', 'blocked']" :key="scStatus">
+            <template v-for="scStatus in statusOrder" :key="scStatus">
               <template v-if="store.selectedStory.scenarios?.filter(sc => sc.status === scStatus).length">
                 <div class="sd-sc-group-hdr">
-                  <span class="sd-sc-group-dot" :class="'sc-dot--' + scStatus"></span>
-                  <span class="sd-sc-group-label">{{ scenarioStatusLabels[scStatus] }}</span>
+                  <StoryStatusBadge :status="scStatus" />
+                  <span class="sd-sc-group-label">{{ statusLabels[scStatus] }}</span>
                   <span class="sd-sc-group-n">{{
                     store.selectedStory.scenarios.filter(sc => sc.status === scStatus).length
                   }}</span>
@@ -509,6 +506,42 @@ onMounted(() => store.fetchStories());
                     </div>
                     <div v-if="sc.tags?.length" class="sd-sc-tags">
                       <el-tag v-for="t in sc.tags" :key="t" size="small" class="sc-tag-chip">{{ t }}</el-tag>
+                    </div>
+                    <!-- AI Coding History -->
+                    <div v-if="sc.aiCodingHistory?.length" class="sd-sc-history">
+                      <el-collapse>
+                        <el-collapse-item>
+                          <template #title>
+                            <span class="sd-sc-history-title"
+                              >{{ $t("story.aiCodingHistory") }} ({{ sc.aiCodingHistory.length }})</span
+                            >
+                          </template>
+                          <div v-for="(entry, ei) in sc.aiCodingHistory" :key="ei" class="sd-sc-history-entry">
+                            <div class="sd-sc-history-meta">
+                              <span class="sd-sc-history-time">{{
+                                $t("story.aiCodingGenerated", { time: fmtDate(entry.generatedAt) })
+                              }}</span>
+                              <div class="sd-sc-history-acts">
+                                <el-button
+                                  size="small"
+                                  text
+                                  type="primary"
+                                  @click="
+                                    copyToClipboard(entry.prompt);
+                                    ElMessage.success(t('story.aiCodingCopied'));
+                                  "
+                                >
+                                  {{ $t("story.aiCodingCopy") }}
+                                </el-button>
+                                <el-button size="small" text type="danger" @click="store.deleteAiCodingEntry(sc.key, ei)">
+                                  {{ $t("story.del") }}
+                                </el-button>
+                              </div>
+                            </div>
+                            <div class="sd-sc-history-text">{{ entry.prompt }}</div>
+                          </div>
+                        </el-collapse-item>
+                      </el-collapse>
                     </div>
                     <div class="sd-sc-acts">
                       <el-button size="small" text @click="store.openScenarioEdit(idx)">{{ $t("story.edit") }}</el-button>
@@ -651,11 +684,7 @@ onMounted(() => store.fetchStories());
           <el-col :span="12"
             ><el-form-item :label="$t('story.status')"
               ><el-select v-model="store.scenarioForm.status" style="width: 100%"
-                ><el-option
-                  v-for="(lbl, val) in scenarioStatusLabels"
-                  :key="val"
-                  :label="lbl"
-                  :value="val" /></el-select></el-form-item
+                ><el-option v-for="(lbl, val) in statusLabels" :key="val" :label="lbl" :value="val" /></el-select></el-form-item
           ></el-col>
         </el-row>
         <el-form-item :label="$t('story.description')"
@@ -1017,24 +1046,6 @@ onMounted(() => store.fetchStories());
   padding-bottom: 6px;
   border-bottom: 1px solid var(--el-border-color-light);
 }
-.sd-sc-group-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.sc-dot--done {
-  background: var(--el-color-success);
-}
-.sc-dot--in_progress {
-  background: var(--el-color-warning);
-}
-.sc-dot--pending {
-  background: var(--el-color-info);
-}
-.sc-dot--blocked {
-  background: var(--el-color-danger);
-}
 .sd-sc-group-label {
   font-size: 13px;
   font-weight: 600;
@@ -1100,6 +1111,48 @@ onMounted(() => store.fetchStories());
   display: flex;
   gap: 4px;
   justify-content: flex-end;
+}
+
+// AI coding history
+.sd-sc-history {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+.sd-sc-history-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+.sd-sc-history-entry {
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--el-border-color-lighter);
+  &:last-child {
+    border-bottom: none;
+  }
+}
+.sd-sc-history-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.sd-sc-history-acts {
+  display: flex;
+  gap: 0;
+}
+.sd-sc-history-time {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+.sd-sc-history-text {
+  font-size: 13px;
+  color: var(--el-text-color-regular);
+  white-space: pre-wrap;
+  line-height: 1.6;
+  padding: 6px 10px;
+  background: var(--el-fill-color-light);
+  border-radius: 6px;
 }
 
 .sd-acts {

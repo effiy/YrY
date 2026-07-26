@@ -113,6 +113,9 @@ export default {
     aiCodingGenerating: "Generating AI coding prompt...",
     aiCodingCopied: "AI coding prompt copied to clipboard",
     aiCodingFailed: "Failed to generate AI coding prompt",
+    aiCodingHistory: "AI Coding History",
+    aiCodingCopy: "Copy",
+    aiCodingGenerated: "Generated at {time}",
     petSettingsPreset: [
       {
         name: "Toggle pet visibility",

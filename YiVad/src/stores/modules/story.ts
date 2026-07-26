@@ -6,16 +6,9 @@ import { ref, computed } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { getStoryList, createStory, updateStory, deleteStory } from "@/api/modules/story";
 import { PROJECTS } from "@/config";
-import type {
-  StoryDocument,
-  Scenario,
-  ScenarioStep,
-  ScenarioPriority,
-  ScenarioStatus,
-  ScheduleStatus
-} from "@/api/modules/story";
+import type { StoryDocument, Scenario, ScenarioStep, ScenarioPriority, ScheduleStatus } from "@/api/modules/story";
 
-export type { StoryDocument, Scenario, ScenarioStep, ScenarioPriority, ScenarioStatus, ScheduleStatus };
+export type { StoryDocument, Scenario, ScenarioStep, ScenarioPriority, ScheduleStatus };
 
 function newScenarioKey() {
   return `sc_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -71,7 +64,7 @@ export const useStoryStore = defineStore("yivad-story", () => {
     name: "",
     description: "",
     priority: "p2",
-    status: "pending",
+    status: "planning",
     steps: [],
     tags: [],
     createdAt: 0,
@@ -154,6 +147,20 @@ export const useStoryStore = defineStore("yivad-story", () => {
       const result = await getStoryList({ search: searchQuery.value || undefined, project: selectedProject.value || undefined });
       const tf = getTimeFilter();
       let list = result.list;
+      // Migrate old scenario status values to the shared StoryStatus set
+      const statusMap: Record<string, string> = {
+        pending: "planning",
+        in_progress: "develop",
+        done: "operations",
+        blocked: "planning"
+      };
+      for (const s of list) {
+        if (s.scenarios) {
+          for (const sc of s.scenarios) {
+            if (statusMap[sc.status]) sc.status = statusMap[sc.status] as any;
+          }
+        }
+      }
       if (tf.start) list = list.filter(s => (s.createdAt || 0) >= tf.start!);
       if (tf.end) list = list.filter(s => (s.createdAt || 0) <= tf.end!);
       stories.value = list;
@@ -277,9 +284,10 @@ export const useStoryStore = defineStore("yivad-story", () => {
       name: "",
       description: "",
       priority: "p2",
-      status: "pending",
+      status: "planning",
       steps: [],
       tags: [],
+      aiCodingHistory: [],
       createdAt: Date.now(),
       updatedAt: Date.now()
     };
@@ -330,6 +338,47 @@ export const useStoryStore = defineStore("yivad-story", () => {
       await updateStory(selectedStory.value.key, { scenarios } as any);
       selectedStory.value = { ...selectedStory.value, scenarios };
       ElMessage.success("Scenario deleted");
+    } catch {
+      /* cancelled */
+    }
+  }
+
+  async function saveAiCodingPrompt(scenarioKey: string, prompt: string) {
+    if (!selectedStory.value) return;
+    const scenarios = [...selectedStory.value.scenarios];
+    const idx = scenarios.findIndex(s => s.key === scenarioKey);
+    if (idx < 0) return;
+
+    const sc = { ...scenarios[idx] };
+    const history = sc.aiCodingHistory ? [...sc.aiCodingHistory] : [];
+    history.push({ prompt, generatedAt: Date.now() });
+    sc.aiCodingHistory = history;
+    scenarios[idx] = sc;
+
+    try {
+      await updateStory(selectedStory.value.key, { scenarios } as any);
+      selectedStory.value = { ...selectedStory.value, scenarios };
+    } catch (e: any) {
+      console.error("Failed to save AI coding history:", e);
+    }
+  }
+
+  async function deleteAiCodingEntry(scenarioKey: string, entryIdx: number) {
+    if (!selectedStory.value) return;
+    const scenarios = [...selectedStory.value.scenarios];
+    const idx = scenarios.findIndex(s => s.key === scenarioKey);
+    if (idx < 0) return;
+
+    const sc = { ...scenarios[idx] };
+    if (!sc.aiCodingHistory) return;
+
+    try {
+      await ElMessageBox.confirm("Delete this history entry?", "Confirm", { type: "warning" });
+      sc.aiCodingHistory = sc.aiCodingHistory.filter((_, i) => i !== entryIdx);
+      scenarios[idx] = sc;
+      await updateStory(selectedStory.value.key, { scenarios } as any);
+      selectedStory.value = { ...selectedStory.value, scenarios };
+      ElMessage.success("History entry deleted");
     } catch {
       /* cancelled */
     }
@@ -387,6 +436,8 @@ export const useStoryStore = defineStore("yivad-story", () => {
     openScenarioEdit,
     handleScenarioSave,
     handleScenarioDelete,
+    saveAiCodingPrompt,
+    deleteAiCodingEntry,
     addStep,
     removeStep
   };
