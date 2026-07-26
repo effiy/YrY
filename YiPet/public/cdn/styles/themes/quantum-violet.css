@@ -1,8 +1,14 @@
-/* ── Quantum Violet Theme (Index 0) ───────────────────────────────
-   Purple-amber-pink gradient palette.  Complete design tokens —
-   same variable set as the base variables.css, themed for this palette. */
+/*
+ * Quantum Violet Theme (Index 0) — YiPet design tokens.
+ * Purple-amber-pink gradient palette.  Override this file to
+ * switch the extension's entire visual identity.
+ *
+ * Variables defined: Brand · Accent · Backgrounds · Text ·
+ *                    Borders · Shadows · Interactive
+ */
+
 :root {
-  /* Primary */
+  /* ── Brand ───────────────────────────────────────────── */
   --primary: #667eea;
   --primary-hover: #5a67d8;
   --primary-light: #818cf8;
@@ -11,46 +17,33 @@
   --primary-rgb: 102, 126, 234;
   --primary-alpha: rgba(102, 126, 234, 0.1);
 
-  /* Accent */
+  /* ── Accent ──────────────────────────────────────────── */
   --accent: #a78bfa;
   --accent-rgb: 167, 139, 250;
   --accent-gradient: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #7c3aed 100%);
 
-  /* Semantic (unchanged — consistent across themes) */
-  --success: #22c55e;
-  --success-gradient: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #15803d 100%);
-  --warning: #f59e0b;
-  --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
-  --error: #ef4444;
-  --error-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
-  --info: #3b82f6;
-  --info-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
-
-  /* Gray scale */
-  --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb;
-  --gray-300: #d1d5db; --gray-400: #9ca3af; --gray-500: #6b7280;
-  --gray-600: #4b5563; --gray-700: #374151; --gray-800: #1f2937;
-  --gray-900: #111827;
-
-  /* Backgrounds */
+  /* ── Backgrounds ─────────────────────────────────────── */
   --bg-primary: #13122a;
   --bg-secondary: #1e1a3b;
   --bg-tertiary: #312d55;
   --bg-elevated: rgba(30, 26, 59, 0.9);
-  --bg-glass: rgba(255, 255, 255, 0.03);
   --bg-gradient: linear-gradient(135deg, #13122a 0%, #1e1a3b 25%, #312d55 50%, #3d3870 75%, #5b5290 100%);
 
-  /* Text */
+  /* ── Text ────────────────────────────────────────────── */
   --text-primary: #f5f3ff;
   --text-secondary: #d4d0e8;
-  --text-muted: #94a3b8;
-  --text-inverse: #0f172a;
   --text-accent: #c4b5fd;
-  --text-tertiary: #64748b;
-
   --link-color: #c4b5fd;
   --placeholder-color: rgba(212, 208, 232, 0.5);
 
+  /* ── Borders ─────────────────────────────────────────── */
+  --border-secondary: rgba(167, 139, 250, 0.3);
+  --border-focus: #a78bfa;
+
+  /* ── Shadows ─────────────────────────────────────────── */
+  --shadow-primary: 0 4px 20px rgba(102, 126, 234, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+
+  /* ── Interactive ─────────────────────────────────────── */
   --button-bg: #667eea;
   --button-hover: #5a67d8;
   --button-text: #ffffff;
@@ -58,61 +51,6 @@
   --input-border: rgba(167, 139, 250, 0.2);
   --selection-bg: rgba(102, 126, 234, 0.3);
 
-  /* Borders */
-  --border-primary: rgba(255, 255, 255, 0.12);
-  --border-secondary: rgba(167, 139, 250, 0.3);
-  --border-focus: #a78bfa;
-  --border-glass: rgba(255, 255, 255, 0.08);
-  --border-hover: rgba(255, 255, 255, 0.2);
-
-  /* Shadows */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
-  --shadow-primary: 0 4px 20px rgba(102, 126, 234, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-
-  --bg-hover: rgba(255, 255, 255, 0.05);
-  --radius: 14px;
-  --radius2: 12px;
-
-  /* Shortcuts */
-  --bg: var(--bg-primary);
-  --card: var(--bg-elevated);
-  --text: var(--text-primary);
-  --muted: var(--text-muted);
-  --divider: var(--border-primary);
+  /* ── Alias ───────────────────────────────────────────── */
   --green: var(--primary);
-  --danger: var(--error);
-  --shadow: var(--shadow-md);
-
-  /* Safe area */
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --safe-left: env(safe-area-inset-left, 0px);
-  --safe-right: env(safe-area-inset-right, 0px);
-  --vv-bottom: 0px;
-
-  --font: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", Roboto, Helvetica, Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
-}
-
-@media (prefers-contrast: high) {
-  :root {
-    --text-secondary: #f1f5f9;
-    --text-muted: #cbd5e1;
-    --border-primary: rgba(255, 255, 255, 0.3);
-    --border-secondary: rgba(167, 139, 250, 0.5);
-    --primary-alpha: rgba(99, 102, 241, 0.2);
-    --divider: var(--border-primary);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  :root {
-    --primary-gradient: #6366f1;
-    --accent-gradient: #a78bfa;
-    --success-gradient: #22c55e;
-    --warning-gradient: #f59e0b;
-    --error-gradient: #ef4444;
-    --info-gradient: #3b82f6;
-  }
 }
