@@ -39,7 +39,7 @@
 
   /* ── Colour labels (UI-only, not in PET_CONFIG) ─────────────────────── */
 
-  var COLOR_LABELS = ['Quantum Violet (Default)', 'Indigo Violet', 'Quantum Ocean', 'Quantum Forest', 'Quantum Sunset']
+  var COLOR_LABELS = ['Quantum Violet', 'Indigo Violet', 'Quantum Ocean', 'Quantum Forest', 'Quantum Sunset']
 
   function buildColors() {
     var gradients = P.colors || []
