@@ -248,6 +248,13 @@ function scenarioProgress(story: StoryDocument): number {
   return Math.round((scenarioDone(story) / total) * 100);
 }
 
+function formatSize(bytes: number | undefined): string {
+  if (!bytes) return "";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 onMounted(() => store.fetchStories());
 </script>
 
@@ -422,6 +429,11 @@ onMounted(() => store.fetchStories());
                   <span class="sd-file-name">{{ f.fileName || f.filePath }}</span>
                   <span class="sd-file-path">{{ f.filePath }}</span>
                 </div>
+                <div class="sd-file-meta">
+                  <span v-if="f.language" class="sd-file-lang">{{ f.language }}</span>
+                  <span v-if="f.lines" class="sd-file-lines">{{ f.lines }} lines</span>
+                  <span v-if="f.size" class="sd-file-size">{{ formatSize(f.size) }}</span>
+                </div>
               </div>
             </div>
             <p v-else class="sd-muted">{{ $t("story.none") }}</p>
@@ -491,6 +503,11 @@ onMounted(() => store.fetchStories());
                             <div class="sd-file-info">
                               <span class="sd-file-name">{{ f.fileName || f.filePath }}</span>
                               <span class="sd-file-path">{{ f.filePath }}</span>
+                            </div>
+                            <div class="sd-file-meta">
+                              <span v-if="f.language" class="sd-file-lang">{{ f.language }}</span>
+                              <span v-if="f.lines" class="sd-file-lines">{{ f.lines }} lines</span>
+                              <span v-if="f.size" class="sd-file-size">{{ formatSize(f.size) }}</span>
                             </div>
                           </div>
                         </el-collapse-item>
@@ -906,6 +923,36 @@ onMounted(() => store.fetchStories());
   font-size: 11px;
   color: var(--el-text-color-secondary);
   word-break: break-all;
+}
+
+.sd-file-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.sd-file-lang {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--el-color-primary-light-9);
+  color: var(--el-color-primary);
+}
+
+.sd-file-lines {
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+  white-space: nowrap;
+}
+
+.sd-file-size {
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
+  font-family: "SF Mono", "Menlo", monospace;
+  white-space: nowrap;
 }
 
 .sd-sc-hdr {

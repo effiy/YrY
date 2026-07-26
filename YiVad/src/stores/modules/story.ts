@@ -7,9 +7,9 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { getStoryList, createStory, updateStory, deleteStory } from "@/api/modules/story";
 import { getHistoryList, createHistoryEntry, deleteHistoryEntry } from "@/api/modules/aiCodingHistory";
 import { PROJECTS } from "@/config";
-import type { StoryDocument, Scenario, ScenarioStep, ScenarioPriority } from "@/api/modules/story";
+import type { StoryDocument, Scenario, ScenarioStep, ScenarioPriority, ScenarioFile } from "@/api/modules/story";
 
-export type { StoryDocument, Scenario, ScenarioStep, ScenarioPriority };
+export type { StoryDocument, Scenario, ScenarioStep, ScenarioPriority, ScenarioFile };
 
 function newScenarioKey() {
   return `sc_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;

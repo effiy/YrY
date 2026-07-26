@@ -32,6 +32,17 @@ export interface AnalysisFilesEntry {
   generatedAt: number;
 }
 
+export interface ScenarioFile {
+  filePath: string;
+  fileName: string;
+  /** Line count */
+  lines?: number;
+  /** File size in bytes */
+  size?: number;
+  /** Programming language or file type */
+  language?: string;
+}
+
 export interface Scenario {
   key: string;
   name: string;
@@ -40,7 +51,7 @@ export interface Scenario {
   status: ScenarioStatus;
   steps: ScenarioStep[];
   tags: string[];
-  files: { filePath: string; fileName: string }[];
+  files: ScenarioFile[];
   aiCodingHistory?: AiCodingEntry[];
   analysisFilesHistory?: AnalysisFilesEntry[];
   createdAt: number;
@@ -66,7 +77,7 @@ export interface StoryDocument {
   // Content
   tags: string[];
   scenarios: Scenario[];
-  files: { filePath: string; fileName: string }[];
+  files: ScenarioFile[];
   createdAt: number;
   updatedAt: number;
 }
