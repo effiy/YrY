@@ -50,7 +50,10 @@ export function createChromeService(tabRef: TabRef, storageKey: string): ChromeS
     async saveState(state: Record<string, unknown>) {
       try {
         const tabId = tabRef.current?.id;
+        const tabUrl = tabRef.current?.url;
         if (tabId == null) return;
+
+        // Persist per-tab (existing mechanism — popup reads this on open)
         const result = await chrome.storage.local.get(storageKey);
         const map = (result && result[storageKey]) || {};
         map[tabId] = {
@@ -61,6 +64,20 @@ export function createChromeService(tabRef: TabRef, storageKey: string): ChromeS
           model: state.model,
         };
         await chrome.storage.local.set({ [storageKey]: map });
+
+        // Also persist by page URL so content script can restore on page refresh
+        if (tabUrl) {
+          const urlKey = new URL(tabUrl).origin + new URL(tabUrl).pathname;
+          const urlResult = await chrome.storage.local.get('pet_state_by_url');
+          const urlMap = (urlResult && urlResult['pet_state_by_url']) || {};
+          urlMap[urlKey] = {
+            visible: state.visible,
+            size: state.size,
+            role: state.role,
+            color: state.color,
+          };
+          await chrome.storage.local.set({ pet_state_by_url: urlMap });
+        }
       } catch (err) {
         console.warn('[YiPet Popup] saveState failed:', (err as Error).message);
       }

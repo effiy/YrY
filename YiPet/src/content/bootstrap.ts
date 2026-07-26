@@ -129,10 +129,78 @@ if (_isContentScript && !_injectedBase) {
 
   /* ── Pet state + popup message relay (ISOLATED world) ──────────── */
 
+  const PET_STATE_KEY = 'pet_global_state';
+  const PET_URL_STATE_KEY = 'pet_state_by_url';
   let _petVisible = false;
   let _petSize = 260;
   let _petRole = 'Teacher';
   let _petColor = 0;
+
+  /** Derive a stable URL key from the current page (origin + pathname, ignoring hash/query). */
+  function getPageUrlKey(): string {
+    return window.location.origin + window.location.pathname;
+  }
+
+  /**
+   * Persist current pet state to chrome.storage.local (keyed by page URL).
+   * The content script reads this on init to survive page refresh;
+   * the popup also writes here so popup changes survive refresh.
+   */
+  function persistPetState(): void {
+    const urlKey = getPageUrlKey();
+    chrome.storage.local.get(PET_URL_STATE_KEY).then((result) => {
+      const map = (result && result[PET_URL_STATE_KEY]) || {};
+      map[urlKey] = { visible: _petVisible, size: _petSize, role: _petRole, color: _petColor };
+      chrome.storage.local.set({ [PET_URL_STATE_KEY]: map }).catch(() => {});
+    }).catch(() => {});
+  }
+
+  /**
+   * Restore saved pet state from chrome.storage.local on content script init.
+   * Uses page URL as key so no service worker is needed to resolve tab ID.
+   */
+  function restorePetState(): void {
+    const urlKey = getPageUrlKey();
+
+    // Load role preference (global, survives tab changes and browser restart)
+    chrome.storage.local.get(ROLE_STORAGE_KEY).then((roleResult) => {
+      const savedRole = roleResult?.[ROLE_STORAGE_KEY];
+      if (savedRole && isValidRole(savedRole) && savedRole !== _petRole) {
+        _petRole = savedRole;
+        notifyMainWorld('roleChanged', { role: _petRole, systemPrompt: lookupSystemPrompt(_petRole) });
+      }
+
+      // Load per-url pet state (visible, size, role, color)
+      return chrome.storage.local.get(PET_URL_STATE_KEY);
+    }).then((stateResult: any) => {
+      const map = (stateResult && stateResult[PET_URL_STATE_KEY]) || {};
+      const urlState = map[urlKey];
+      if (!urlState) return;
+
+      // Restore visibility
+      if (typeof urlState.visible === 'boolean' && urlState.visible !== _petVisible) {
+        _petVisible = urlState.visible;
+        notifyMainWorld('visibilityChanged', { visible: _petVisible });
+      }
+      // Restore size
+      if (typeof urlState.size === 'number' && urlState.size !== _petSize) {
+        _petSize = urlState.size;
+        notifyMainWorld('sizeChanged', { size: _petSize });
+      }
+      // Restore role (url-specific overrides global)
+      if (typeof urlState.role === 'string' && isValidRole(urlState.role) && urlState.role !== _petRole) {
+        _petRole = urlState.role;
+        notifyMainWorld('roleChanged', { role: _petRole, systemPrompt: lookupSystemPrompt(_petRole) });
+      }
+      // Restore color
+      if (typeof urlState.color === 'number' && urlState.color !== _petColor) {
+        _petColor = urlState.color;
+        notifyMainWorld('colorChanged', { color: _petColor });
+      }
+    }).catch((err: Error) => {
+      console.warn('[YiPet] Failed to restore pet state:', err.message);
+    });
+  }
 
   function notifyMainWorld(type: string, detail: Record<string, unknown>): void {
     window.dispatchEvent(new CustomEvent(`yipet:${type}`, { detail }));
@@ -148,18 +216,21 @@ if (_isContentScript && !_injectedBase) {
         case 'toggleVisibility': {
           _petVisible = !_petVisible;
           notifyMainWorld('visibilityChanged', { visible: _petVisible });
+          persistPetState();
           sendResponse({ success: true, visible: _petVisible });
           break;
         }
         case 'setVisibility': {
           _petVisible = !!msg.visible;
           notifyMainWorld('visibilityChanged', { visible: _petVisible });
+          persistPetState();
           sendResponse({ success: true, visible: _petVisible });
           break;
         }
         case 'changeSize': {
           _petSize = (msg.size as number) ?? _petSize;
           notifyMainWorld('sizeChanged', { size: _petSize });
+          persistPetState();
           sendResponse({ success: true, size: _petSize });
           break;
         }
@@ -177,12 +248,14 @@ if (_isContentScript && !_injectedBase) {
           chrome.storage.local.set({ [ROLE_STORAGE_KEY]: _petRole }).catch((err: Error) => {
             console.warn('[YiPet] Failed to persist role preference:', err.message);
           });
+          persistPetState();
           sendResponse({ success: true, role: _petRole });
           break;
         }
         case 'setColor': {
           _petColor = (msg.color as number) ?? _petColor;
           notifyMainWorld('colorChanged', { color: _petColor });
+          persistPetState();
           sendResponse({ success: true });
           break;
         }
@@ -193,6 +266,10 @@ if (_isContentScript && !_injectedBase) {
       return true; // keep channel open for async response
     },
   );
+
+  // Restore saved pet state on content script initialization
+  // so settings survive page refresh without needing to open the popup
+  restorePetState();
 
   // ISOLATED world done — do NOT fall through to Phase 2.
   // The original IIFE used `return` here; ES modules can't return at top level,
