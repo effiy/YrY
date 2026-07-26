@@ -141,6 +141,19 @@ export interface ChatPayload {
   temperature?: number;
 }
 
+// ── AI Coding History documents ──
+
+export interface AiCodingHistoryDocument {
+  key: string;
+  storyKey: string;
+  scenarioKey: string;
+  scenarioName: string;
+  prompt: string;
+  generatedAt: number;
+  createdAt: number;
+  updatedAt: number;
+}
+
 // ── Goal documents ──
 
 export interface GoalDocument {

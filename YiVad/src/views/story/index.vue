@@ -121,20 +121,6 @@ const priorityLabels = computed(() => ({
 }));
 const priorityColors: Record<string, string> = { p0: "danger", p1: "warning", p2: "info", p3: "" };
 const stepActions = ["Given", "When", "Then", "And"];
-const scheduleLabels = computed(() => ({
-  planned: t("story.planned"),
-  on_track: t("story.onTrack"),
-  at_risk: t("story.atRisk"),
-  delayed: t("story.delayed"),
-  completed: t("story.completed")
-}));
-const scheduleColors: Record<string, string> = {
-  planned: "info",
-  on_track: "success",
-  at_risk: "warning",
-  delayed: "danger",
-  completed: ""
-};
 
 function dueLabel(dueDate: number | null): { text: string; type: string } {
   if (!dueDate) return { text: "", type: "" };
@@ -251,26 +237,6 @@ onMounted(() => store.fetchStories());
       </div>
     </div>
 
-    <!-- Schedule stats -->
-    <div v-if="!store.loading && store.scheduleStats.total > 0" class="sb-sched">
-      <span class="sb-sched-item" :class="{ on: store.scheduleStats.on_track }"
-        ><span class="sb-sched-n">{{ store.scheduleStats.on_track }}</span
-        >{{ $t("story.onTrack") }}</span
-      >
-      <span class="sb-sched-item" :class="{ warn: store.scheduleStats.at_risk }"
-        ><span class="sb-sched-n">{{ store.scheduleStats.at_risk }}</span
-        >{{ $t("story.atRisk") }}</span
-      >
-      <span class="sb-sched-item" :class="{ bad: store.scheduleStats.delayed }"
-        ><span class="sb-sched-n">{{ store.scheduleStats.delayed }}</span
-        >{{ $t("story.delayed") }}</span
-      >
-      <span class="sb-sched-item" :class="{ done: store.scheduleStats.completed }"
-        ><span class="sb-sched-n">{{ store.scheduleStats.completed }}</span
-        >{{ $t("story.completed") }}</span
-      >
-    </div>
-
     <!-- Content -->
     <el-skeleton v-if="store.loading" :rows="5" animated />
     <el-alert v-else-if="store.error" :title="store.error" type="error" show-icon />
@@ -287,17 +253,14 @@ onMounted(() => store.fetchStories());
               v-for="s in store.groupedStories[st]"
               :key="s.key"
               class="sb-card"
-              :class="'sc-border--' + (s.scheduleStatus || 'planned')"
               shadow="hover"
               @click="store.openDetail(s)"
             >
-              <!-- Header: name + schedule + priority -->
+              <!-- Header: name + status + priority -->
               <div class="sc-hdr">
                 <span class="sc-name">{{ s.name }}</span>
                 <div class="sc-badges">
-                  <el-tag v-if="s.scheduleStatus" :type="scheduleColors[s.scheduleStatus] as any" size="small" effect="dark">{{
-                    scheduleLabels[s.scheduleStatus]
-                  }}</el-tag>
+                  <StoryStatusBadge :status="s.status" />
                   <el-tag v-if="s.priority" :type="priorityColors[s.priority] as any" size="small">{{
                     s.priority.toUpperCase()
                   }}</el-tag>
@@ -354,14 +317,6 @@ onMounted(() => store.fetchStories());
           ><el-tag v-if="row.project" size="small" type="info">{{ row.project }}</el-tag></template
         ></el-table-column
       >
-      <el-table-column :label="$t('story.schedule')" width="100"
-        ><template #default="{ row }"
-          ><el-tag v-if="row.scheduleStatus" :type="scheduleColors[row.scheduleStatus] as any" size="small" effect="dark">{{
-            scheduleLabels[row.scheduleStatus]
-          }}</el-tag></template
-        ></el-table-column
-      >
-
       <el-table-column prop="status" :label="$t('story.status')" width="110"
         ><template #default="{ row }"><StoryStatusBadge :status="row.status" /></template
       ></el-table-column>
@@ -422,14 +377,6 @@ onMounted(() => store.fetchStories());
               >
               <el-descriptions-item :label="$t('story.project')">{{ store.selectedStory.project || "-" }}</el-descriptions-item>
               <el-descriptions-item :label="$t('story.assignee')">{{ store.selectedStory.assignee || "-" }}</el-descriptions-item>
-              <el-descriptions-item :label="$t('story.schedule')"
-                ><el-tag
-                  v-if="store.selectedStory.scheduleStatus"
-                  :type="scheduleColors[store.selectedStory.scheduleStatus] as any"
-                  size="small"
-                  >{{ scheduleLabels[store.selectedStory.scheduleStatus] }}</el-tag
-                ></el-descriptions-item
-              >
 
               <el-descriptions-item :label="$t('story.startDate')">{{
                 fmtDate(store.selectedStory.startDate) || "-"
@@ -494,6 +441,7 @@ onMounted(() => store.fetchStories());
                     <div class="sd-sc-top">
                       <span class="sd-sc-name">{{ sc.name }}</span>
                       <div class="sd-sc-badges">
+                        <StoryStatusBadge :status="sc.status" />
                         <el-tag :type="priorityColors[sc.priority] as any" size="small">{{ sc.priority.toUpperCase() }}</el-tag>
                       </div>
                     </div>
@@ -631,11 +579,6 @@ onMounted(() => store.fetchStories());
           ></el-col>
         </el-row>
         <el-row :gutter="16">
-          <el-col :span="12"
-            ><el-form-item :label="$t('story.schedule')"
-              ><el-select v-model="store.form.scheduleStatus" style="width: 100%"
-                ><el-option v-for="(lbl, val) in scheduleLabels" :key="val" :label="lbl" :value="val" /></el-select></el-form-item
-          ></el-col>
           <el-col :span="12"
             ><el-form-item :label="$t('story.completedDate')"
               ><el-date-picker
@@ -818,23 +761,6 @@ onMounted(() => store.fetchStories());
 .sb-card:hover {
   transform: translateY(-2px);
 }
-// Left border accent by schedule
-.sc-border--planned {
-  border-left-color: var(--el-color-info);
-}
-.sc-border--on_track {
-  border-left-color: var(--el-color-success);
-}
-.sc-border--at_risk {
-  border-left-color: var(--el-color-warning);
-}
-.sc-border--delayed {
-  border-left-color: var(--el-color-danger);
-}
-.sc-border--completed {
-  border-left-color: var(--el-text-color-placeholder);
-}
-
 .sc-hdr {
   display: flex;
   align-items: flex-start;
@@ -943,45 +869,6 @@ onMounted(() => store.fetchStories());
 .sc-overdue {
   color: var(--el-color-danger);
   font-weight: 600;
-}
-
-.sb-sched {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 14px;
-  padding: 8px 14px;
-  background: var(--el-fill-color-lighter);
-  border-radius: 8px;
-}
-.sb-sched-item {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 13px;
-  color: var(--el-text-color-secondary);
-  padding: 4px 12px;
-  border-radius: 6px;
-  cursor: default;
-}
-.sb-sched-item.on {
-  background: var(--el-color-success-light-9);
-  color: var(--el-color-success);
-}
-.sb-sched-item.warn {
-  background: var(--el-color-warning-light-9);
-  color: var(--el-color-warning);
-}
-.sb-sched-item.bad {
-  background: var(--el-color-danger-light-9);
-  color: var(--el-color-danger);
-}
-.sb-sched-item.done {
-  background: var(--el-fill-color);
-  color: var(--el-text-color-placeholder);
-}
-.sb-sched-n {
-  font-size: 20px;
-  font-weight: 700;
 }
 
 // detail drawer

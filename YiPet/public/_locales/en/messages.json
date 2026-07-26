@@ -27,7 +27,7 @@
   "notifyShown": { "message": "Shown" },
   "notifyHidden": { "message": "Hidden" },
   "notifySizeUpdated": { "message": "Size Updated" },
-  "notifyRoleChanged": { "message": "Role Changed" },
+  "notifyRoleChanged": { "message": "Role Changed: $ROLE$", "placeholders": { "role": { "content": "$1", "example": "Doctor" } } },
   "notifyColorSet": { "message": "Color Theme Set" },
 
   "errorOperationFailed": { "message": "Operation Failed" },

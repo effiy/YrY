@@ -9,6 +9,8 @@ export interface ChromeService {
   sendMessage(msg: unknown): Promise<unknown>;
   loadState(): Promise<Record<string, unknown> | null>;
   saveState(state: Record<string, unknown>): Promise<void>;
+  saveRolePreference(role: string): Promise<void>;
+  loadRolePreference(): Promise<string | null>;
 }
 
 export function createChromeService(tabRef: TabRef, storageKey: string): ChromeService {
@@ -61,6 +63,24 @@ export function createChromeService(tabRef: TabRef, storageKey: string): ChromeS
         await chrome.storage.local.set({ [storageKey]: map });
       } catch (err) {
         console.warn('[YiPet Popup] saveState failed:', (err as Error).message);
+      }
+    },
+
+    async saveRolePreference(role: string) {
+      try {
+        await chrome.storage.local.set({ petRole: role });
+      } catch (err) {
+        console.warn('[YiPet Popup] saveRolePreference failed:', (err as Error).message);
+      }
+    },
+
+    async loadRolePreference() {
+      try {
+        const result = await chrome.storage.local.get('petRole');
+        return (result && result.petRole) || null;
+      } catch (err) {
+        console.warn('[YiPet Popup] loadRolePreference failed:', (err as Error).message);
+        return null;
       }
     },
   };

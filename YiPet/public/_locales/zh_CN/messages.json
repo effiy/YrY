@@ -27,7 +27,7 @@
   "notifyShown": { "message": "已显示" },
   "notifyHidden": { "message": "已隐藏" },
   "notifySizeUpdated": { "message": "尺寸已更新" },
-  "notifyRoleChanged": { "message": "角色已更改" },
+  "notifyRoleChanged": { "message": "角色已更改：$ROLE$", "placeholders": { "role": { "content": "$1", "example": "医生" } } },
   "notifyColorSet": { "message": "颜色主题已设置" },
 
   "errorOperationFailed": { "message": "操作失败" },

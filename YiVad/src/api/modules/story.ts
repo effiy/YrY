@@ -21,6 +21,7 @@ export interface ScenarioStep {
 }
 
 export interface AiCodingEntry {
+  id?: string; // dedicated collection document key
   prompt: string;
   generatedAt: number;
 }

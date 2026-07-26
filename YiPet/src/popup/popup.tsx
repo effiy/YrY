@@ -6,6 +6,7 @@ import '../shared/globals';
 import { t } from '../shared/i18n';
 import { resolveLocale, applyLocale, setUserLocale } from '../shared/locale';
 import type { SupportedLocale } from '../shared/locale';
+import { validateRole, ROLE_STORAGE_KEY } from '../shared/roles';
 import { AppHeader } from './components/AppHeader/AppHeader';
 import { SettingsCard } from './components/SettingsCard/SettingsCard';
 import { SwitchRow } from './components/SwitchRow/SwitchRow';
@@ -141,12 +142,24 @@ class PopupComponent {
   }
 
   private _updateRole(e: { target: { value: string } }) {
-    const role = String(e.target.value || POPUP_CONFIG.DEFAULTS.ROLE).trim();
+    const raw = String(e.target.value || POPUP_CONFIG.DEFAULTS.ROLE).trim();
+    const role = validateRole(raw);
+    if (!role) {
+      console.warn('[YiPet Popup] Invalid role rejected:', raw);
+      return;
+    }
+    const chromeSvc = this._chrome;
     this._send({
       msg: { action: 'setRole', role },
-      okMsg: t('notifyRoleChanged'),
+      okMsg: t('notifyRoleChanged', role),
       optimistic: { role },
       onOk(response: Record<string, unknown>) {
+        // Persist role preference globally (separate from per-tab state)
+        if (chromeSvc) {
+          chromeSvc.saveRolePreference(role).catch(() => {
+            // Best-effort persistence — state already applied
+          });
+        }
         return { role: response.role || role };
       },
     });
@@ -206,6 +219,7 @@ class PopupComponent {
         sendMessage: (msg: unknown) => self._chrome!.sendMessage(msg),
         loadState: () => self._chrome!.loadState(),
         onConnected(stored: Record<string, unknown> | null) {
+          // Priority: stored tab state → global role preference → defaults
           if (stored) {
             const KEYS = ['visible', 'size', 'role', 'color', 'model'];
             const st = self.state as unknown as Record<string, unknown>;
@@ -213,6 +227,17 @@ class PopupComponent {
               if (stored[k] !== undefined) st[k] = stored[k];
             }
             if ('size' in stored) st.displaySize = stored.size;
+          }
+          // Fall back to global role preference if no tab-specific role
+          if (!self.state.role || self.state.role === POPUP_CONFIG.DEFAULTS.ROLE) {
+            self._chrome!.loadRolePreference().then((savedRole) => {
+              if (savedRole && validateRole(savedRole) && savedRole !== self.state.role) {
+                self.state.role = savedRole;
+                // Sync content script with the loaded role
+                self._chrome!.sendMessage({ action: 'setRole', role: savedRole }).catch(() => {});
+                self._render();
+              }
+            }).catch(() => {});
           }
           self.state.controlsEnabled = true;
           self.state.hintText = t('popupStatusReady');
