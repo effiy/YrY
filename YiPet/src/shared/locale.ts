@@ -13,7 +13,8 @@ import type { MessageKey } from './i18n';
 export const SUPPORTED_LOCALES = ['en', 'zh_CN'] as const;
 export type SupportedLocale = typeof SUPPORTED_LOCALES[number];
 
-const STORAGE_KEY = 'user_locale';
+const STORAGE_KEY = 'locale';
+const LEGACY_STORAGE_KEY = 'user_locale';
 
 /* ── RTL Locales ───────────────────────────────────────────────────────── */
 
@@ -51,10 +52,17 @@ export function getChromeLocale(): SupportedLocale {
 /* ── User Preference ───────────────────────────────────────────────────── */
 
 export async function getUserLocale(): Promise<SupportedLocale | null> {
-  const result = await chrome.storage.local.get(STORAGE_KEY);
+  const result = await chrome.storage.local.get([STORAGE_KEY, LEGACY_STORAGE_KEY]);
   const val = result[STORAGE_KEY] as string | undefined;
   if (val && SUPPORTED_LOCALES.includes(val as SupportedLocale)) {
     return val as SupportedLocale;
+  }
+  // Migration: fall back to legacy key
+  const legacy = result[LEGACY_STORAGE_KEY] as string | undefined;
+  if (legacy && SUPPORTED_LOCALES.includes(legacy as SupportedLocale)) {
+    // Migrate to new key asynchronously (fire-and-forget)
+    chrome.storage.local.set({ [STORAGE_KEY]: legacy }).catch(() => {});
+    return legacy as SupportedLocale;
   }
   return null;
 }

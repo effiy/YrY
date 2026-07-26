@@ -37,6 +37,7 @@ export type MessageKey =
   | 'notifySizeUpdated'
   | 'notifyRoleChanged'
   | 'notifyColorSet'
+  | 'notifyLanguageChanged'
   // Popup — error notifications
   | 'errorOperationFailed'
   | 'errorTabNotFound'

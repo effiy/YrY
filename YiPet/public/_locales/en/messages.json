@@ -29,6 +29,7 @@
   "notifySizeUpdated": { "message": "Size Updated" },
   "notifyRoleChanged": { "message": "Role Changed: $ROLE$", "placeholders": { "role": { "content": "$1", "example": "Doctor" } } },
   "notifyColorSet": { "message": "Color Theme Set" },
+  "notifyLanguageChanged": { "message": "Language switched to English" },
 
   "errorOperationFailed": { "message": "Operation Failed" },
   "errorTabNotFound": { "message": "Cannot Get Current Tab" },

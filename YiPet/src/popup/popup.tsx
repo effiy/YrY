@@ -183,6 +183,10 @@ class PopupComponent {
       applyLocale(locale).then(() => {
         self.state.locale = locale;
         self._render();
+        // Show confirmation in the newly-selected language
+        if (self._notify) {
+          self._notify.show(t('notifyLanguageChanged'), 'success');
+        }
       }).catch((err: Error) => {
         console.error('[YiPet Popup] applyLocale failed on switch:', err.message);
         self.state.locale = locale;
