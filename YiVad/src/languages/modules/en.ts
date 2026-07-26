@@ -166,6 +166,19 @@ export default {
         tags: ["ui", "theme", "color"]
       },
       {
+        name: "Toggle pet with keyboard shortcut",
+        description:
+          "As a user who wants to focus on work without the pet overlay, I want to toggle Show Pet on/off using a keyboard shortcut (Command+Shift+P on Mac / Ctrl+Shift+P on Windows/Linux) so I can hide the pet on distracting pages and restore it when I want companionship.",
+        priority: "p1",
+        steps: [
+          { action: "Given", description: "the pet is currently visible (or hidden) on the active tab" },
+          { action: "When", description: "the user presses Command+Shift+P (Mac) or Ctrl+Shift+P (Windows/Linux)" },
+          { action: "Then", description: "the pet visibility should toggle immediately — hidden if visible, shown if hidden" },
+          { action: "And", description: "the toggle state should persist in chrome.storage for the tab" }
+        ],
+        tags: ["keyboard", "shortcut", "toggle", "visibility", "accessibility"]
+      },
+      {
         name: "Switch display language",
         description: "User can switch between English and Simplified Chinese in the extension UI",
         priority: "p3",

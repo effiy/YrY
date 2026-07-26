@@ -19,6 +19,7 @@ export default defineConfig(({ mode }) => {
       sourcemap: isDev ? 'inline' : false,
       rollupOptions: {
         input: {
+          background: resolve(rootDir, 'src/background/index.ts'),
           content:   resolve(rootDir, 'src/content/index.ts'),
           bootstrap: resolve(rootDir, 'src/content/bootstrap.ts'),
           popup:     resolve(rootDir, 'src/popup/popup.html'),

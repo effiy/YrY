@@ -166,6 +166,19 @@ export default {
         tags: ["界面", "主题", "颜色"]
       },
       {
+        name: "使用快捷键切换宠物显示",
+        description:
+          "作为想要专注工作而不被宠物覆盖层干扰的用户，我希望通过键盘快捷键（Mac: Command+Shift+P / Windows/Linux: Ctrl+Shift+P）来切换显示/隐藏宠物，以便在需要专注的页面隐藏宠物，在想有陪伴时恢复显示。",
+        priority: "p1",
+        steps: [
+          { action: "Given", description: "宠物在当前活动标签页上可见（或隐藏）" },
+          { action: "When", description: "用户按下 Command+Shift+P (Mac) 或 Ctrl+Shift+P (Windows/Linux)" },
+          { action: "Then", description: "宠物显示状态应立即切换 — 可见则隐藏，隐藏则显示" },
+          { action: "And", description: "切换状态应持久化到 chrome.storage 中对应标签页" }
+        ],
+        tags: ["键盘", "快捷键", "切换", "可见性", "无障碍"]
+      },
+      {
         name: "切换显示语言",
         description: "用户可以在英文和简体中文之间切换扩展界面语言",
         priority: "p3",
