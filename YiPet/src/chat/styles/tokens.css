@@ -1,0 +1,37 @@
+/*
+ * YiPet Chat — Design Tokens
+ * Scoped under #yipet-chat-root to avoid polluting host pages.
+ * Values use CSS custom properties for theming support.
+ * All component CSS references these tokens via var() with fallbacks.
+ */
+
+#yipet-chat-root {
+  /* ── Brand ── */
+  --primary: #667eea;
+  --primary-rgb: 102, 126, 234;
+  --primary-hover: #5a67d8;
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  --link-color: #c4b5fd;
+
+  /* ── Backgrounds ── */
+  --bg-primary: #13122a;
+  --bg-secondary: #1e1a3b;
+  --bg-elevated: rgba(30, 26, 59, 0.9);
+  --bg-tertiary: #312d55;
+  --input-bg: #1a1835;
+
+  /* ── Borders ── */
+  --border-secondary: rgba(167, 139, 250, 0.3);
+
+  /* ── Text ── */
+  --text-primary: #f5f3ff;
+  --text-secondary: #d4d0e8;
+  --placeholder-color: rgba(212, 208, 232, 0.5);
+
+  /* ── Buttons ── */
+  --button-bg: #667eea;
+  --button-hover: #5a67d8;
+
+  /* ── Shadows ── */
+  --shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.15);
+}

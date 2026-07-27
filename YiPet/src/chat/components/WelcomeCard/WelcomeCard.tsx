@@ -4,7 +4,6 @@
  * Replaces the HTML-string-based welcome card in ChatController._buildWelcomeHtml().
  */
 
-import './WelcomeCard.css';
 import type { PageInfo } from '@/chat/types';
 
 export type { PageInfo };

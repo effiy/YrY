@@ -2,7 +2,6 @@
  * YiPet Chat — ChatWindow Root Component
  */
 
-import './ChatWindow.css';
 import type { ChatController } from '@/chat/controller';
 import type { PageInfo } from '@/chat/types';
 import { ChatHeader, ChatInput, ChatMessages, ChatSidebar } from '../';

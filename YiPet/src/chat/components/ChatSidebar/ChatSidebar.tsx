@@ -2,7 +2,6 @@
  * YiPet Chat — ChatSidebar Component
  */
 
-import './ChatSidebar.css';
 import type { ChatController } from '@/chat/controller';
 import { SearchBar, SessionListItem } from '../';
 

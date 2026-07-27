@@ -1,116 +1,53 @@
-/*
+} /*
  * YiPet Chat — ChatHeader Styles
  */
 
-.yipet-chat-header {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  padding: 10px 18px !important;
-  background:
-    linear-gradient(135deg,
-      rgba(99, 102, 241, 0.95) 0%,
-      rgba(139, 92, 246, 0.9) 45%,
-      rgba(168, 85, 247, 0.85) 100%
-    ),
-    linear-gradient(180deg,
-      rgba(255, 255, 255, 0.06) 0%,
-      transparent 60%
-    ) !important;
-  border-radius: 16px 16px 0 0 !important;
-  cursor: move !important;
-  flex-shrink: 0 !important;
-  user-select: none !important;
-  position: relative !important;
-  z-index: 5 !important;
-}
-
-/* Bottom glow line */
-.yipet-chat-header::after {
-  content: '' !important;
-  position: absolute !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  height: 1px !important;
-  background: linear-gradient(90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.2) 30%,
-    rgba(255, 255, 255, 0.35) 50%,
-    rgba(255, 255, 255, 0.2) 70%,
-    transparent 100%
-  ) !important;
-}
-
-.yipet-chat-header-left {
-  display: flex !important;
-  align-items: center !important;
-  gap: 10px !important;
-  min-width: 0 !important;
-  flex: 1 !important;
-}
-
-.yipet-chat-header-icon {
-  font-size: 20px !important;
-  flex-shrink: 0 !important;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2)) !important;
-}
-
-.yipet-chat-header-title {
-  color: #fff !important;
-  font-size: 14px !important;
-  font-weight: 600 !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15) !important;
-  letter-spacing: 0.01em !important;
-}
-
-.yipet-chat-header-buttons {
-  display: flex !important;
-  align-items: center !important;
-  gap: 6px !important;
-  flex-shrink: 0 !important;
-}
-
-.yipet-chat-header-btn {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 30px !important;
-  height: 30px !important;
-  border-radius: 8px !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  background: rgba(255, 255, 255, 0.1) !important;
-  color: #fff !important;
-  cursor: pointer !important;
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    transform 0.1s ease !important;
-  padding: 0 !important;
-  -webkit-backdrop-filter: blur(4px) !important;
-  backdrop-filter: blur(4px) !important;
-}
-
-.yipet-chat-header-btn:hover {
-  background: rgba(255, 255, 255, 0.22) !important;
-  border-color: rgba(255, 255, 255, 0.3) !important;
-  transform: scale(1.05) !important;
-}
-
-.yipet-chat-header-btn:active {
-  transform: scale(0.96) !important;
-}
-
-.yipet-chat-header-btn svg {
-  width: 16px !important;
-  height: 16px !important;
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.15)) !important;
-}
-
-.yipet-close-btn:hover {
-  background: rgba(239, 68, 68, 0.35) !important;
-  border-color: rgba(239, 68, 68, 0.5) !important;
-}
+.yipet-chat-header  {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: var(--primary-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%));
+  border-radius: 16px 16px 0 0;
+  cursor: move;
+  flex-shrink: 0;
+  user-select: none;
+}#yipet-chat-root .yipet-chat-header-left  {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}#yipet-chat-root .yipet-chat-header-icon  {
+  font-size: 18px;
+  flex-shrink: 0;
+}#yipet-chat-root .yipet-chat-header-title  {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}#yipet-chat-root .yipet-chat-header-buttons  {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}#yipet-chat-root .yipet-chat-header-btn  {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  padding: 0;
+}#yipet-chat-root .yipet-chat-header-btn:hover  {
+  background: rgba(255, 255, 255, 0.25);
+}#yipet-chat-root .yipet-chat-header-btn svg  {
+  width: 18px;
+  height: 18px;
+} /*

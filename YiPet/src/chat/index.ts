@@ -9,7 +9,6 @@
 
 // Styles: shared.css for cross-component markdown/scrollbar rules;
 // each component imports its own CSS internally (co-location pattern)
-import './styles/shared.css';
 import { createApiServices } from '@/api';
 import { ChatController } from './controller';
 

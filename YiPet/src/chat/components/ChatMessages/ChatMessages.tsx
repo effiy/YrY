@@ -4,7 +4,6 @@
  * Renders loading / error / empty states, the welcome card, and the message list.
  */
 
-import './ChatMessages.css';
 import type { ChatController } from '@/chat/controller';
 import type { Message, PageInfo } from '@/chat/types';
 import { MessageBubble, WelcomeCard } from '../';

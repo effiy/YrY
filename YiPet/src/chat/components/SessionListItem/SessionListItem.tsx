@@ -2,7 +2,6 @@
  * YiPet Chat — SessionListItem Component
  */
 
-import './SessionListItem.css';
 import type { SessionItem } from '@/chat/types';
 import { formatDate } from '@/chat/utils';
 

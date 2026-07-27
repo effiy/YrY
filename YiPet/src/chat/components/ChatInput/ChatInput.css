@@ -1,581 +1,65 @@
-/*
  * YiPet Chat — ChatInput Styles
- * Toolbar, draft images, textarea, send/stop buttons.
- *
- * Token system: CSS custom properties scoped to .yipet-chat-input-container
- * follows the primitive → semantic → component pattern. All visual values
- * reference tokens — never raw hex — for theme consistency and dark mode.
  */
 
-/* ── Design Tokens (scoped) ──────────────────────────────────────────── */
-
-.yipet-chat-input-container {
-  /* Primitive palette */
-  --yipet-purple-200: #c4b5fd;
-  --yipet-purple-400: #a78bfa;
-  --yipet-purple-500: #8b5cf6;
-  --yipet-purple-600: #7c3aed;
-  --yipet-indigo-500: #6366f1;
-  --yipet-red-400: #f87171;
-  --yipet-red-500: #ef4444;
-  --yipet-red-600: #dc2626;
-  --yipet-slate-600: #475569;
-  --yipet-slate-400: #94a3b8;
-  --yipet-slate-300: #cbd5e1;
-  --yipet-gray-900: #0f172a;
-  --yipet-gray-950: #0a0f1e;
-  --yipet-white: #ffffff;
-  --yipet-black: #000000;
-
-  /* Semantic tokens */
-  --yipet-surface-bg: rgba(18, 22, 38, 0.92);
-  --yipet-surface-bg-bottom: rgba(15, 20, 35, 0.96);
-  --yipet-border-color: rgba(167, 139, 250, 0.15);
-  --yipet-border-focus: rgba(139, 92, 246, 0.5);
-  --yipet-ring-focus: rgba(139, 92, 246, 0.3);
-  --yipet-text-primary: #f5f3ff;
-  --yipet-text-secondary: rgba(212, 208, 232, 0.75);
-  --yipet-text-muted: rgba(148, 163, 184, 0.45);
-  --yipet-text-active: rgba(245, 243, 255, 0.95);
-
-  /* Component tokens — toolbar */
-  --yipet-toolbar-btn-bg: rgba(167, 139, 250, 0.05);
-  --yipet-toolbar-btn-bg-hover: rgba(167, 139, 250, 0.16);
-  --yipet-toolbar-btn-border: rgba(167, 139, 250, 0.1);
-  --yipet-toolbar-btn-border-hover: rgba(167, 139, 250, 0.35);
-  --yipet-toolbar-btn-size: 30px;
-  --yipet-toolbar-btn-radius: 7px;
-  --yipet-toolbar-gap: 4px;
-  --yipet-toolbar-section-gap: 8px;
-
-  /* Component tokens — context switch */
-  --yipet-switch-bg: rgba(167, 139, 250, 0.04);
-  --yipet-switch-bg-hover: rgba(167, 139, 250, 0.1);
-  --yipet-switch-bg-active: rgba(139, 92, 246, 0.1);
-  --yipet-switch-border-active: rgba(139, 92, 246, 0.25);
-  --yipet-switch-track-bg: rgba(51, 65, 85, 0.65);
-  --yipet-switch-track-bg-active: rgba(139, 92, 246, 0.45);
-  --yipet-switch-thumb-bg: rgba(148, 163, 184, 0.85);
-  --yipet-switch-thumb-bg-active: #c4b5fd;
-
-  /* Component tokens — status button */
-  --yipet-status-bg: rgba(167, 139, 250, 0.05);
-  --yipet-status-bg-active: rgba(239, 68, 68, 0.15);
-  --yipet-status-bg-active-hover: rgba(239, 68, 68, 0.25);
-  --yipet-status-border-active: rgba(239, 68, 68, 0.3);
-  --yipet-status-border-active-hover: rgba(239, 68, 68, 0.5);
-
-  /* Transitions */
-  --yipet-transition-fast: 0.12s ease;
-  --yipet-transition-normal: 0.15s ease;
-  --yipet-transition-slow: 0.2s ease;
-  --yipet-transition-thumb: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-
-  /* Shadows */
-  --yipet-shadow-container: 0 -4px 20px rgba(0, 0, 0, 0.2);
-  --yipet-shadow-focus-ring: 0 0 0 3px var(--yipet-ring-focus);
+.yipet-chat-input-container  {
+  flex: 0 0 auto;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-secondary, rgba(167, 139, 250, 0.3));
+  background: var(--bg-secondary, #1e1a3b);
+  z-index: 10;
 }
-
-/* ── Container ──────────────────────────────────────────────────────── */
-
-.yipet-chat-input-container {
-  flex: 0 0 auto !important;
-  padding: 10px 16px 12px !important;
-  border-top: 1px solid var(--yipet-border-color) !important;
-  background: linear-gradient(
-    180deg,
-    var(--yipet-surface-bg) 0%,
-    var(--yipet-surface-bg-bottom) 100%
-  ) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  backdrop-filter: blur(16px) !important;
-  z-index: 10 !important;
-  box-shadow: var(--yipet-shadow-container) !important;
+#yipet-chat-root .yipet-chat-input-row  {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
 }
-
-/* ── Toolbar ─────────────────────────────────────────────────────────── */
-
-.yipet-chat-toolbar {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  gap: var(--yipet-toolbar-section-gap) !important;
-  margin-bottom: 8px !important;
-  flex-wrap: nowrap !important;
-  min-height: 34px !important;
-}
-
-.yipet-chat-toolbar-left {
-  display: flex !important;
-  align-items: center !important;
-  gap: var(--yipet-toolbar-gap) !important;
-  flex: 1 1 auto !important;
-  min-width: 0 !important;
-  overflow: hidden !important;
-  flex-wrap: wrap !important;
-}
-
-.yipet-chat-toolbar-right {
-  display: flex !important;
-  align-items: center !important;
-  gap: 5px !important;
-  flex-shrink: 0 !important;
-}
-
-/* ── Toolbar Separator ──────────────────────────────────────────────── */
-
-.yipet-toolbar-separator {
-  width: 1px !important;
-  height: 18px !important;
-  background: var(--yipet-toolbar-btn-border) !important;
-  flex-shrink: 0 !important;
-  margin: 0 1px !important;
-  border-radius: 1px !important;
-}
-
-/* ── Toolbar Buttons ────────────────────────────────────────────────── */
-
-.yipet-toolbar-btn {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: var(--yipet-toolbar-btn-size) !important;
-  height: var(--yipet-toolbar-btn-size) !important;
-  padding: 0 !important;
-  border-radius: var(--yipet-toolbar-btn-radius) !important;
-  border: 1px solid var(--yipet-toolbar-btn-border) !important;
-  background: var(--yipet-toolbar-btn-bg) !important;
-  color: var(--yipet-text-secondary) !important;
-  cursor: pointer !important;
-  flex-shrink: 0 !important;
-  line-height: 1 !important;
-  position: relative !important;
-  transition:
-    background var(--yipet-transition-fast),
-    border-color var(--yipet-transition-fast),
-    color var(--yipet-transition-fast),
-    transform 0.1s ease,
-    box-shadow var(--yipet-transition-fast) !important;
-}
-
-/* SVG icons inside toolbar buttons */
-.yipet-toolbar-btn svg {
-  width: 15px !important;
-  height: 15px !important;
-  flex-shrink: 0 !important;
-  pointer-events: none !important;
-}
-
-/* Hover */
-.yipet-toolbar-btn:hover:not(:disabled) {
-  background: var(--yipet-toolbar-btn-bg-hover) !important;
-  border-color: var(--yipet-toolbar-btn-border-hover) !important;
-  color: var(--yipet-text-active) !important;
-  transform: translateY(-1px) !important;
-}
-
-/* Active / pressed */
-.yipet-toolbar-btn:active:not(:disabled) {
-  transform: scale(0.94) !important;
-  transition: transform 0.08s ease !important;
-}
-
-/* Focus-visible ring — shadcn/ui pattern */
-.yipet-toolbar-btn:focus-visible {
-  outline: none !important;
-  box-shadow: var(--yipet-shadow-focus-ring) !important;
-  border-color: var(--yipet-border-focus) !important;
-}
-
-/* Disabled */
-.yipet-toolbar-btn:disabled {
-  opacity: 0.3 !important;
-  cursor: not-allowed !important;
-  transform: none !important;
-  pointer-events: none !important;
-}
-
-/* ── Context Switch ─────────────────────────────────────────────────── */
-
-.yipet-context-switch {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 5px !important;
-  padding: 3px 8px !important;
-  border-radius: var(--yipet-toolbar-btn-radius) !important;
-  border: 1px solid var(--yipet-toolbar-btn-border) !important;
-  background: var(--yipet-switch-bg) !important;
-  cursor: pointer !important;
-  user-select: none !important;
-  -webkit-user-select: none !important;
-  transition:
-    background var(--yipet-transition-normal),
-    border-color var(--yipet-transition-normal),
-    box-shadow var(--yipet-transition-fast) !important;
-  flex-shrink: 0 !important;
-}
-
-.yipet-context-switch:hover {
-  background: var(--yipet-switch-bg-hover) !important;
-}
-
-/* Focus-visible ring */
-.yipet-context-switch:focus-visible {
-  outline: none !important;
-  box-shadow: var(--yipet-shadow-focus-ring) !important;
-  border-color: var(--yipet-border-focus) !important;
-}
-
-.yipet-context-switch.active {
-  background: var(--yipet-switch-bg-active) !important;
-  border-color: var(--yipet-switch-border-active) !important;
-}
-
-.yipet-context-switch-label {
-  font-size: 11px !important;
-  font-weight: 500 !important;
-  color: rgba(148, 163, 184, 0.8) !important;
-  white-space: nowrap !important;
-  transition: color var(--yipet-transition-normal) !important;
-}
-
-.yipet-context-switch.active .yipet-context-switch-label {
-  color: var(--yipet-purple-200) !important;
-}
-
-.yipet-context-switch-track {
-  position: relative !important;
-  width: 28px !important;
-  height: 16px !important;
-  border-radius: 8px !important;
-  background: var(--yipet-switch-track-bg) !important;
-  transition: background-color var(--yipet-transition-thumb) !important;
-}
-
-.yipet-context-switch-thumb {
-  position: absolute !important;
-  top: 2px !important;
-  left: 2px !important;
-  width: 12px !important;
-  height: 12px !important;
-  border-radius: 50% !important;
-  background: var(--yipet-switch-thumb-bg) !important;
-  transition:
-    transform var(--yipet-transition-thumb),
-    background var(--yipet-transition-normal) !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
-}
-
-.yipet-context-switch.active .yipet-context-switch-track {
-  background: var(--yipet-switch-track-bg-active) !important;
-}
-
-.yipet-context-switch.active .yipet-context-switch-thumb {
-  transform: translateX(12px) !important;
-  background: var(--yipet-switch-thumb-bg-active) !important;
-}
-
-/* ── Status Button ──────────────────────────────────────────────────── */
-
-.yipet-status-btn {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: var(--yipet-toolbar-btn-size) !important;
-  height: var(--yipet-toolbar-btn-size) !important;
-  padding: 0 !important;
-  border-radius: var(--yipet-toolbar-btn-radius) !important;
-  border: 1px solid rgba(167, 139, 250, 0.12) !important;
-  background: var(--yipet-status-bg) !important;
-  cursor: default !important;
-  opacity: 0.4 !important;
-  flex-shrink: 0 !important;
-  line-height: 1 !important;
-  transition:
-    opacity var(--yipet-transition-normal),
-    background var(--yipet-transition-normal),
-    border-color var(--yipet-transition-normal),
-    box-shadow var(--yipet-transition-fast) !important;
-}
-
-.yipet-status-btn svg {
-  width: 15px !important;
-  height: 15px !important;
-  flex-shrink: 0 !important;
-  pointer-events: none !important;
-}
-
-.yipet-status-btn.active {
-  opacity: 1 !important;
-  cursor: pointer !important;
-  background: var(--yipet-status-bg-active) !important;
-  border-color: var(--yipet-status-border-active) !important;
-  animation: yipet-status-pulse 1.8s ease-in-out infinite !important;
-}
-
-/* Focus-visible ring */
-.yipet-status-btn:focus-visible {
-  outline: none !important;
-  box-shadow: var(--yipet-shadow-focus-ring) !important;
-}
-
-@keyframes yipet-status-pulse {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0);
-  }
-}
-
-.yipet-status-btn.active:hover {
-  background: var(--yipet-status-bg-active-hover) !important;
-  border-color: var(--yipet-status-border-active-hover) !important;
-}
-
-/* ── Draft Images ───────────────────────────────────────────────────── */
-
-.yipet-draft-images {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 6px !important;
-  align-items: center !important;
-  padding: 6px 8px !important;
-  margin-bottom: 8px !important;
-  border-radius: 10px !important;
-  border: 1px dashed rgba(167, 139, 250, 0.2) !important;
-  background: rgba(15, 23, 42, 0.35) !important;
-}
-
-.yipet-draft-image {
-  position: relative !important;
-  width: 52px !important;
-  height: 40px !important;
-  border-radius: 7px !important;
-  overflow: hidden !important;
-  border: 1px solid rgba(167, 139, 250, 0.2) !important;
-  background: rgba(15, 23, 42, 0.5) !important;
-  flex-shrink: 0 !important;
-  cursor: pointer !important;
-  transition: border-color var(--yipet-transition-normal) !important;
-}
-
-.yipet-draft-image:hover {
-  border-color: rgba(167, 139, 250, 0.45) !important;
-}
-
-.yipet-draft-image-preview {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  display: block !important;
-}
-
-.yipet-draft-image-remove {
-  position: absolute !important;
-  top: 2px !important;
-  right: 2px !important;
-  width: 16px !important;
-  height: 16px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 4px !important;
-  border: none !important;
-  background: rgba(0, 0, 0, 0.7) !important;
-  color: var(--yipet-white) !important;
-  font-size: 9px !important;
-  cursor: pointer !important;
-  padding: 0 !important;
-  line-height: 1 !important;
-  opacity: 0 !important;
-  transition: opacity var(--yipet-transition-fast) !important;
-}
-
-.yipet-draft-image:hover .yipet-draft-image-remove {
-  opacity: 1 !important;
-}
-
-.yipet-draft-image-remove:hover {
-  background: rgba(239, 68, 68, 0.8) !important;
-}
-
-.yipet-draft-images-clear {
-  padding: 4px 8px !important;
-  border-radius: 6px !important;
-  border: 1px solid rgba(167, 139, 250, 0.15) !important;
-  background: rgba(167, 139, 250, 0.06) !important;
-  color: rgba(212, 208, 232, 0.7) !important;
-  font-size: 11px !important;
-  cursor: pointer !important;
-  white-space: nowrap !important;
-  transition:
-    background var(--yipet-transition-fast),
-    color var(--yipet-transition-fast) !important;
-}
-
-.yipet-draft-images-clear:hover {
-  background: rgba(239, 68, 68, 0.12) !important;
-  border-color: rgba(239, 68, 68, 0.25) !important;
-  color: rgba(248, 113, 113, 0.9) !important;
-}
-
-/* ── Input Row ──────────────────────────────────────────────────────── */
-
-.yipet-chat-input-row {
-  display: flex !important;
-  align-items: flex-end !important;
-  gap: 8px !important;
-}
-
-/* ── Textarea ───────────────────────────────────────────────────────── */
-
-.yipet-chat-textarea {
-  flex: 1 1 auto !important;
-  min-width: 0 !important;
-  border: 1px solid rgba(167, 139, 250, 0.2) !important;
-  border-radius: 12px !important;
-  padding: 10px 14px !important;
-  background: rgba(15, 23, 42, 0.45) !important;
-  color: var(--yipet-text-primary) !important;
-  font-size: 13.5px !important;
-  font-family: inherit !important;
-  line-height: 1.55 !important;
-  resize: none !important;
-  outline: none !important;
-  min-height: 44px !important;
-  max-height: 200px !important;
-  transition:
-    border-color var(--yipet-transition-slow),
-    box-shadow var(--yipet-transition-slow),
-    background var(--yipet-transition-slow) !important;
-  scrollbar-width: thin !important;
-  scrollbar-color: rgba(167, 139, 250, 0.25) transparent !important;
-}
-
-.yipet-chat-textarea:focus {
-  border-color: var(--yipet-border-focus) !important;
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15) !important;
-  background: rgba(15, 23, 42, 0.65) !important;
-}
-
-.yipet-chat-textarea::placeholder {
-  color: var(--yipet-text-muted) !important;
-  font-size: 13px !important;
-}
-
-.yipet-chat-textarea:disabled {
-  opacity: 0.45 !important;
-  cursor: not-allowed !important;
-}
-
-.yipet-chat-textarea::-webkit-scrollbar {
-  width: 4px !important;
-}
-
-.yipet-chat-textarea::-webkit-scrollbar-thumb {
-  background: rgba(167, 139, 250, 0.25) !important;
-  border-radius: 2px !important;
-}
-
-/* ── Send / Stop Buttons ────────────────────────────────────────────── */
-
-.yipet-send-btn,
-.yipet-stop-btn {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 38px !important;
-  height: 38px !important;
-  border-radius: 10px !important;
-  border: none !important;
-  cursor: pointer !important;
-  flex-shrink: 0 !important;
-  transition: all var(--yipet-transition-normal) !important;
-}
-
-.yipet-send-btn:focus-visible,
-.yipet-stop-btn:focus-visible {
-  outline: none !important;
-  box-shadow: var(--yipet-shadow-focus-ring) !important;
-}
-
-.yipet-send-btn {
-  background: linear-gradient(
-    135deg,
-    rgba(99, 102, 241, 0.6) 0%,
-    rgba(139, 92, 246, 0.5) 100%
-  ) !important;
-  border: 1px solid rgba(139, 92, 246, 0.2) !important;
-  color: rgba(255, 255, 255, 0.7) !important;
-  opacity: 0.4 !important;
-}
-
-.yipet-send-btn.has-content {
-  opacity: 1 !important;
-  background: linear-gradient(
-    135deg,
-    rgba(99, 102, 241, 0.9) 0%,
-    rgba(139, 92, 246, 0.75) 100%
-  ) !important;
-  border-color: rgba(139, 92, 246, 0.4) !important;
-  color: var(--yipet-white) !important;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3) !important;
-}
-
-.yipet-send-btn.has-content:hover {
-  transform: scale(1.06) !important;
-  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4) !important;
-}
-
-.yipet-send-btn.has-content:active {
-  transform: scale(0.95) !important;
-}
-
-.yipet-send-btn svg,
-.yipet-stop-btn svg {
-  width: 17px !important;
-  height: 17px !important;
-}
-
-.yipet-stop-btn {
-  background: linear-gradient(
-    135deg,
-    rgba(239, 68, 68, 0.85) 0%,
-    rgba(220, 38, 38, 0.75) 100%
-  ) !important;
-  border: 1px solid rgba(239, 68, 68, 0.3) !important;
-  color: var(--yipet-white) !important;
-  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25) !important;
-  animation: yipet-stop-pulse 1.5s ease-in-out infinite !important;
-}
-
-@keyframes yipet-stop-pulse {
-  0%, 100% {
-    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
-  }
-  50% {
-    box-shadow: 0 2px 16px rgba(239, 68, 68, 0.4);
-  }
-}
-
-.yipet-stop-btn:hover {
-  transform: scale(1.06) !important;
-  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.45) !important;
-}
-
-.yipet-stop-btn:active {
-  transform: scale(0.95) !important;
-}
-
-/* ── Reduced Motion ─────────────────────────────────────────────────── */
-
-@media (prefers-reduced-motion: reduce) {
-  .yipet-chat-input-container *,
-  .yipet-chat-input-container *::before,
-  .yipet-chat-input-container *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
+#yipet-chat-root .yipet-chat-textarea  {
+  flex: 1;
+  border: 1px solid var(--border-secondary, rgba(167, 139, 250, 0.3));
+  border-radius: 12px;
+  padding: 10px 14px;
+  background: var(--input-bg, #1a1835);
+  color: var(--text-primary, #f5f3ff);
+  font-size: 13px;
+  font-family: inherit;
+  line-height: 1.5;
+  resize: none;
+  outline: none;
+  min-height: 40px;
+  max-height: 200px;
+  transition: border-color 0.15s ease;
+}#yipet-chat-root .yipet-chat-textarea:focus  {
+  border-color: var(--primary, #667eea);
+  box-shadow: 0 0 0 2px rgba(var(--primary-rgb, 102, 126, 234), 0.2);
+}#yipet-chat-root .yipet-chat-textarea::placeholder  {
+  color: var(--placeholder-color, rgba(212, 208, 232, 0.5));
+}#yipet-chat-root .yipet-send-btn, #yipet-chat-root .yipet-stop-btn  {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}#yipet-chat-root .yipet-send-btn  {
+  background: var(--button-bg, #667eea);
+  color: #fff;
+  opacity: 0.4;
+}#yipet-chat-root .yipet-send-btn.has-content  {
+  opacity: 1;
+}#yipet-chat-root .yipet-send-btn:hover.has-content  {
+  background: var(--button-hover, #5a67d8);
+  transform: scale(1.05);
+}#yipet-chat-root .yipet-send-btn svg, #yipet-chat-root .yipet-stop-btn svg  {
+  width: 18px;
+  height: 18px;
+}#yipet-chat-root .yipet-stop-btn  {
+  background: #ef4444;
+  color: #fff;
+}#yipet-chat-root .yipet-stop-btn:hover  {
+  background: #dc2626;
+  transform: scale(1.05);
+} /*

@@ -7,7 +7,6 @@
  * focus-visible rings, aria-pressed for toggles, prefers-reduced-motion.
  */
 
-import './ChatInput.css';
 import type { ChatController } from '@/chat/controller';
 
 /* ── Inline SVG Icons ────────────────────────────────────────────────── */
@@ -108,7 +107,7 @@ export function ChatInput(props: ChatInputProps) {
   const s = ctrl.state;
   const disabled = !s.currentSessionId;
   const isProcessing = s.isProcessing;
-  const placeholder = '输入消息... (Shift+Enter 换行，Enter 发送)';
+  const placeholder = '输入消息... (Enter 发送，Shift+Enter 换行)';
   const draftImages = s.draftImages || [];
   const contextEnabled = s.contextEnabled;
   const maxDraftImages = 4;
@@ -249,17 +248,17 @@ export function ChatInput(props: ChatInputProps) {
       <div className="yipet-chat-toolbar" role="toolbar" aria-label="会话工具栏">
         <div className="yipet-chat-toolbar-left">
           {/* Session actions */}
-          <button type="button" className="yipet-toolbar-btn" title="编辑页面上下文" aria-label="页面上下文" onClick={() => ctrl.openContextEditor()}>
+          <button type="button" className="yipet-toolbar-btn" title="页面上下文" aria-label="页面上下文" onClick={() => ctrl.openContextEditor()}>
             <Icons.PageContext />
           </button>
-          <button type="button" className="yipet-toolbar-btn" title="编辑会话标题" aria-label="编辑会话" id="edit-session-btn" disabled={!s.currentSessionId} onClick={() => ctrl.editSessionInfo()}>
+          <button type="button" className="yipet-toolbar-btn" title="编辑会话" aria-label="编辑会话" id="edit-session-btn" disabled={!s.currentSessionId} onClick={() => ctrl.editSessionInfo()}>
             <Icons.Edit />
           </button>
 
           <ToolbarSeparator />
 
-          {/* Content organization */}
-          <button type="button" className="yipet-toolbar-btn" title="会话标签" aria-label="标签管理" onClick={() => ctrl.openTagManager()}>
+          {/* Content & help */}
+          <button type="button" className="yipet-toolbar-btn" title="标签管理" aria-label="标签管理" onClick={() => ctrl.openTagManager()}>
             <Icons.Tag />
           </button>
           <button type="button" className="yipet-toolbar-btn" title="常见问题" aria-label="常见问题" onClick={() => ctrl.openFaqManager()}>
@@ -268,7 +267,7 @@ export function ChatInput(props: ChatInputProps) {
 
           <ToolbarSeparator />
 
-          {/* Configuration & media */}
+          {/* Media & settings */}
           <button type="button" className="yipet-toolbar-btn" title="机器人设置" aria-label="机器人设置" onClick={() => ctrl.openWeChatSettings()}>
             <Icons.Bot />
           </button>
@@ -396,6 +395,12 @@ export function ChatInput(props: ChatInputProps) {
             </svg>
           </button>
         )}
+      </div>
+
+      {/* Keyboard hint */}
+      <div className="yipet-chat-input-hint" aria-hidden="true">
+        <span><kbd>Enter</kbd> 发送</span>
+        <span><kbd>Shift</kbd>+<kbd>Enter</kbd> 换行</span>
       </div>
     </div>
   );

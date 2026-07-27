@@ -1,6 +1,7 @@
 import { copyFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execSync } from 'node:child_process';
 import { defineConfig } from 'vite';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -61,6 +62,16 @@ export default defineConfig(({ mode }) => {
               2,
             ),
           );
+
+          // Build chat CSS from component sources
+          try {
+            execSync('node scripts/build-chat-css.mjs', {
+              cwd: rootDir,
+              stdio: 'pipe',
+            });
+          } catch {
+            console.warn('  ⚠️  chat.css build failed (non-fatal)');
+          }
 
           if (isDev) {
             console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');

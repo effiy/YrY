@@ -2,7 +2,6 @@
  * YiPet Chat — ChatHeader Component
  */
 
-import './ChatHeader.css';
 
 export interface ChatHeaderProps {
   title: string;

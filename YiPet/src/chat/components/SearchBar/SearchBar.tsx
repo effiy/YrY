@@ -2,7 +2,6 @@
  * YiPet Chat — SearchBar Component
  */
 
-import './SearchBar.css';
 import type { ChatController } from '@/chat/controller';
 
 export interface SearchBarProps {

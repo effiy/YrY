@@ -2,7 +2,6 @@
  * YiPet Chat — MessageBubble Component
  */
 
-import './MessageBubble.css';
 import type { Message } from '@/chat/types';
 import { formatTime, renderMarkdown } from '@/chat/utils';
 
