@@ -1,38 +1,29 @@
 /**
- * Database API service — generic collection query/create/update/delete.
+ * Database API service — generic collection CRUD via YiAi's execution module
+ * (services.database.data_service).
  */
 
 import type { ApiClient, ApiResponse } from '../client';
-import { DATABASE } from '../endpoints';
-import type {
-  DatabaseBatchRequest,
-  DatabaseDeleteRequest,
-  DatabaseQueryRequest,
-  DatabaseResponse,
-  DatabaseUpdateRequest,
-  DatabaseWriteRequest,
-} from '../types';
+import type { CreateParams, DeleteParams, MutationResult, QueryParams, QueryResult, UpdateParams } from '../types';
+
+const DB_MODULE = 'services.database.data_service';
 
 export class DatabaseService {
   constructor(private client: ApiClient) {}
 
-  async query(req: DatabaseQueryRequest): Promise<ApiResponse<DatabaseResponse>> {
-    return this.client.post<DatabaseResponse>(DATABASE.QUERY, req);
+  async query(params: Partial<QueryParams>): Promise<ApiResponse<QueryResult>> {
+    return this.client.rpc<QueryResult>(DB_MODULE, 'query_documents', params as Record<string, unknown>);
   }
 
-  async create(req: DatabaseWriteRequest): Promise<ApiResponse<DatabaseResponse>> {
-    return this.client.post<DatabaseResponse>(DATABASE.CREATE, req);
+  async create(params: Partial<CreateParams>): Promise<ApiResponse<MutationResult>> {
+    return this.client.rpc<MutationResult>(DB_MODULE, 'create_document', params as Record<string, unknown>);
   }
 
-  async update(req: DatabaseUpdateRequest): Promise<ApiResponse<DatabaseResponse>> {
-    return this.client.post<DatabaseResponse>(DATABASE.UPDATE, req);
+  async update(params: Partial<UpdateParams>): Promise<ApiResponse<MutationResult>> {
+    return this.client.rpc<MutationResult>(DB_MODULE, 'update_document', params as Record<string, unknown>);
   }
 
-  async delete(req: DatabaseDeleteRequest): Promise<ApiResponse<DatabaseResponse>> {
-    return this.client.post<DatabaseResponse>(DATABASE.DELETE, req);
-  }
-
-  async batch(req: DatabaseBatchRequest): Promise<ApiResponse<DatabaseResponse>> {
-    return this.client.post<DatabaseResponse>(DATABASE.BATCH, req);
+  async delete(params: Partial<DeleteParams>): Promise<ApiResponse<MutationResult>> {
+    return this.client.rpc<MutationResult>(DB_MODULE, 'delete_document', params as Record<string, unknown>);
   }
 }

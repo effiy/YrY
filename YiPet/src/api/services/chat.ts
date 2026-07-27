@@ -1,35 +1,63 @@
 /**
- * Chat / Prompt API service — prompt streaming (SSE) and one-shot prompts.
+ * Chat / Prompt API service — streaming (SSE) and one-shot prompts
+ * via YiAi's execution module (services.ai.chat_service).
  */
 
 import type { ApiClient, ApiResponse, StreamChunk } from '../client';
-import { CHAT } from '../endpoints';
-import type { PromptRequest, PromptResponse } from '../types';
+import { EXECUTION } from '../endpoints';
+import type { ChatParams, ChatResponse } from '../types';
+
+const CHAT_MODULE = 'services.ai.chat_service';
+const CHAT_METHOD = 'chat';
 
 export class ChatService {
   constructor(private client: ApiClient) {}
 
   /** Send a one-shot prompt and get the full response. */
-  async prompt(req: PromptRequest): Promise<ApiResponse<PromptResponse>> {
-    return this.client.post<PromptResponse>(CHAT.PROMPT, { ...req, stream: false });
+  async prompt(params: ChatParams): Promise<ApiResponse<ChatResponse>> {
+    return this.client.rpc<ChatResponse>(CHAT_MODULE, CHAT_METHOD, {
+      ...params,
+      stream: false,
+    });
   }
 
-  /** Send a prompt and consume the SSE stream chunk by chunk. */
-  async *stream(req: PromptRequest, signal?: AbortSignal): AsyncGenerator<StreamChunk> {
-    for await (const chunk of this.client.stream(CHAT.STREAM, { ...req, stream: true }, signal)) {
-      yield chunk;
-    }
+  /** Send a prompt and consume the SSE stream via the execution module. */
+  stream(
+    params: ChatParams,
+    signal?: AbortSignal,
+  ): AsyncGenerator<StreamChunk> {
+    return this.client.stream(
+      EXECUTION.ROOT,
+      {
+        module_name: CHAT_MODULE,
+        method_name: CHAT_METHOD,
+        parameters: { ...params, stream: true },
+      },
+      signal,
+    );
   }
 
-  /** Convenience: collect all streamed tokens into a single response. */
-  async collectStream(req: PromptRequest, signal?: AbortSignal): Promise<string> {
-    let result = '';
-    for await (const chunk of this.stream(req, signal)) {
+  /**
+   * Convenience: consume the SSE stream with a per-token callback.
+   * Returns the full concatenated response text.
+   */
+  async streamWithCallback(
+    params: ChatParams,
+    onToken: (token: string) => void,
+    signal?: AbortSignal,
+  ): Promise<string> {
+    let fullText = '';
+    for await (const chunk of this.stream(params, signal)) {
       if (chunk.error) throw new Error(chunk.error);
       if (chunk.done) break;
-      const token = (chunk.data as Record<string, string> | undefined)?.token || '';
-      result += token;
+      // YiAi's SSE token format: {data: {message: "token"}}
+      const data = chunk.data as Record<string, unknown> | undefined;
+      const token = (data?.message as string) || (data?.content as string) || '';
+      if (token) {
+        fullText += token;
+        onToken(token);
+      }
     }
-    return result;
+    return fullText;
   }
 }

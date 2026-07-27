@@ -1,14 +1,15 @@
 /**
- * API endpoint path constants — organised by domain.
+ * API endpoint path constants — organised by domain, matching YiAi's actual routes.
  *
  * Layer 2: consumed by service modules to build request paths.
  * All paths exclude the base URL (handled by the client layer).
  */
 
-export const BASE = {
-  API: '/api',
-  V1: '/api/v1',
-  V2: '/api/v2',
+// ── Execution module (JSON-RPC) ────────────────────────────────────────
+
+/** YiAi's generic module execution engine. POST {module_name, method_name, parameters}. */
+export const EXECUTION = {
+  ROOT: '/',
 } as const;
 
 // ── Auth ──────────────────────────────────────────────────────────────
@@ -16,59 +17,23 @@ export const BASE = {
 export const AUTH = {
   LOGIN: '/auth/login',
   LOGOUT: '/auth/logout',
-  REFRESH: '/auth/refresh',
-  PROFILE: '/auth/profile',
-  VALIDATE: '/auth/validate',
 } as const;
 
-// ── Sessions ──────────────────────────────────────────────────────────
+// ── Files ─────────────────────────────────────────────────────────────
 
-export const SESSIONS = {
-  LIST: '/sessions',
-  CREATE: '/sessions',
-  GET: (id: string) => `/sessions/${encodeURIComponent(id)}`,
-  UPDATE: (id: string) => `/sessions/${encodeURIComponent(id)}`,
-  DELETE: (id: string) => `/sessions/${encodeURIComponent(id)}`,
-  BATCH_DELETE: '/sessions/batch',
-  SEARCH: '/sessions/search',
-  FAVORITES: '/sessions/favorites',
-  EXPORT: '/sessions/export',
-  IMPORT: '/sessions/import',
+export const FILES = {
+  READ: '/files/read-file',
+  WRITE: '/files/write-file',
+  DELETE: '/files/delete-file',
+  DELETE_FOLDER: '/files/delete-folder',
+  RENAME: '/files/rename-file',
+  RENAME_FOLDER: '/files/rename-folder',
+  UPLOAD_IMAGE: '/files/upload-image-to-oss',
 } as const;
 
-// ── Chat / Prompt ─────────────────────────────────────────────────────
+// ── State Store ───────────────────────────────────────────────────────
 
-export const CHAT = {
-  STREAM: '/prompt',
-  PROMPT: '/prompt/',
-} as const;
-
-// ── FAQ ───────────────────────────────────────────────────────────────
-
-export const FAQ = {
-  LIST: '/faqs',
-  CREATE: '/faqs',
-  GET: (id: string) => `/faqs/${encodeURIComponent(id)}`,
-  UPDATE: (id: string) => `/faqs/${encodeURIComponent(id)}`,
-  DELETE: (id: string) => `/faqs/${encodeURIComponent(id)}`,
-  BATCH_UPDATE: '/faqs/batch',
-  REORDER: '/faqs/reorder',
-} as const;
-
-// ── Config ────────────────────────────────────────────────────────────
-
-export const CONFIG = {
-  GET: '/config',
-  UPDATE: '/config',
-  RESET: '/config/reset',
-} as const;
-
-// ── Database ──────────────────────────────────────────────────────────
-
-export const DATABASE = {
-  QUERY: '/database/query',
-  CREATE: '/database/create',
-  UPDATE: '/database/update',
-  DELETE: '/database/delete',
-  BATCH: '/database/batch',
+export const STATE = {
+  RECORDS: '/state/records',
+  RECORD: (key: string) => `/state/records/${encodeURIComponent(key)}`,
 } as const;

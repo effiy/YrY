@@ -49,10 +49,7 @@ export interface PetDefaults {
     borderRadius: { pet: string; chatWindow: string; input: string; button: string };
   };
   api: {
-    streamPromptUrl: string;
-    promptUrl: string;
     yiaiBaseUrl: string;
-    faqApiUrl: string;
     syncSessionsToBackend: boolean;
   };
   chatModels: { default: string; models: unknown[] };
@@ -129,10 +126,8 @@ export const PET_DEFAULTS: PetDefaults = {
   },
 
   api: {
-    streamPromptUrl: 'http://localhost:10086/prompt',
-    promptUrl: 'http://localhost:10086/prompt/',
+    /** YiAi backend base URL. All requests go through this server. */
     yiaiBaseUrl: 'http://localhost:10086',
-    faqApiUrl: 'http://localhost:10086',
     syncSessionsToBackend: true,
   },
 
@@ -143,22 +138,13 @@ export const PET_DEFAULTS: PetDefaults = {
     flags: { debug: false, mockApi: false, telemetry: false },
     endpoints: {
       production: {
-        streamPromptUrl: 'http://localhost:10086/prompt',
-        promptUrl: 'http://localhost:10086/prompt/',
         yiaiBaseUrl: 'http://localhost:10086',
-        faqApiUrl: 'http://localhost:10086',
       },
       staging: {
-        streamPromptUrl: 'http://localhost:10086/prompt',
-        promptUrl: 'http://localhost:10086/prompt/',
         yiaiBaseUrl: 'http://localhost:10086',
-        faqApiUrl: 'http://localhost:10086',
       },
       development: {
-        streamPromptUrl: 'http://localhost:10086/prompt',
-        promptUrl: 'http://localhost:10086/prompt/',
         yiaiBaseUrl: 'http://localhost:10086',
-        faqApiUrl: 'http://localhost:10086',
       },
     },
   },
@@ -269,40 +255,23 @@ export const PET_DEFAULTS: PetDefaults = {
   },
 };
 
+/** YiAi API endpoint constants (for CDN/external access). Mirrors src/api/endpoints.ts. */
 export const PET_ENDPOINTS = {
-  BASE_ENDPOINTS: { API_BASE: '/api', V1_BASE: '/api/v1', V2_BASE: '/api/v2' },
+  EXECUTION: { ROOT: '/' },
   AUTH_ENDPOINTS: {
     LOGIN: '/auth/login',
     LOGOUT: '/auth/logout',
-    REFRESH: '/auth/refresh',
-    PROFILE: '/auth/profile',
-    VALIDATE: '/auth/validate',
   },
-  SESSION_ENDPOINTS: {
-    LIST: '/sessions',
-    CREATE: '/sessions',
-    UPDATE: '/sessions/:id',
-    DELETE: '/sessions/:id',
-    BATCH_DELETE: '/sessions/batch',
-    SEARCH: '/sessions/search',
-    FAVORITES: '/sessions/favorites',
-    EXPORT: '/sessions/export',
-    IMPORT: '/sessions/import',
+  FILE_ENDPOINTS: {
+    READ: '/files/read-file',
+    WRITE: '/files/write-file',
+    DELETE: '/files/delete-file',
+    DELETE_FOLDER: '/files/delete-folder',
+    RENAME: '/files/rename-file',
+    RENAME_FOLDER: '/files/rename-folder',
+    UPLOAD_IMAGE: '/files/upload-image-to-oss',
   },
-  FAQ_ENDPOINTS: {
-    LIST: '/faqs',
-    CREATE: '/faqs',
-    UPDATE: '/faqs/:id',
-    DELETE: '/faqs/:id',
-    BATCH_UPDATE: '/faqs/batch',
-    REORDER: '/faqs/reorder',
-  },
-  CONFIG_ENDPOINTS: { GET: '/config', UPDATE: '/config', RESET: '/config/reset' },
-  DATABASE_ENDPOINTS: {
-    QUERY: '/database/query',
-    CREATE: '/database/create',
-    UPDATE: '/database/update',
-    DELETE: '/database/delete',
-    BATCH: '/database/batch',
+  STATE_ENDPOINTS: {
+    RECORDS: '/state/records',
   },
 } as const;

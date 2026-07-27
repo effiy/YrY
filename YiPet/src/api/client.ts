@@ -7,6 +7,8 @@
  * Builds on public/cdn/utils/api-client.ts and adds:
  *   - Logger integration (wired to the shared dev-gated logger)
  *   - SSE streaming support (StreamChunk / AsyncGenerator)
+ *   - YiAi JSON-RPC support (rpc method for execution module)
+ *   - YiAi response envelope unwrapping ({code, message, data} → ApiResponse)
  */
 
 import { logger } from '@/utils/log';
@@ -19,6 +21,15 @@ import {
 // ── Re-export base types ───────────────────────────────────────────────
 
 export type { ApiClientConfig, ApiResponse };
+
+// ── YiAi types ─────────────────────────────────────────────────────────
+
+/** YiAi standard response envelope. */
+export interface YiAiEnvelope<T = unknown> {
+  code: number;
+  message: string;
+  data: T;
+}
 
 // ── Streaming types (extension-only feature) ───────────────────────────
 
@@ -35,8 +46,36 @@ export interface ApiClient {
   post<T = unknown>(path: string, body?: unknown, signal?: AbortSignal): Promise<ApiResponse<T>>;
   put<T = unknown>(path: string, body?: unknown, signal?: AbortSignal): Promise<ApiResponse<T>>;
   delete<T = unknown>(path: string, signal?: AbortSignal): Promise<ApiResponse<T>>;
+  /** JSON-RPC call via YiAi execution module. Unwraps {code, message, data} envelope. */
+  rpc<T = unknown>(
+    moduleName: string,
+    methodName: string,
+    parameters?: Record<string, unknown>,
+    signal?: AbortSignal,
+  ): Promise<ApiResponse<T>>;
   stream(path: string, body?: unknown, signal?: AbortSignal): AsyncGenerator<StreamChunk>;
   url(path: string): string;
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────
+
+/** Convert YiAi's {code, message, data} envelope to ApiResponse. */
+function unwrapEnvelope<T>(json: unknown, httpStatus: number): ApiResponse<T> {
+  if (json && typeof json === 'object' && 'code' in json) {
+    const envelope = json as YiAiEnvelope<T>;
+    return {
+      ok: envelope.code === 0,
+      status: httpStatus,
+      data: envelope.data as T,
+      error: envelope.code !== 0 ? envelope.message : undefined,
+    };
+  }
+  // Not a YiAi envelope — pass through as-is
+  return {
+    ok: httpStatus >= 200 && httpStatus < 300,
+    status: httpStatus,
+    data: json as T,
+  };
 }
 
 // ── Factory ────────────────────────────────────────────────────────────
@@ -56,6 +95,53 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
     const b = baseUrl.replace(/\/+$/, '');
     const p = path.startsWith('/') ? path : '/' + path;
     return b + p;
+  }
+
+  // ── JSON-RPC (YiAi execution module) ──────────────────────────────────
+
+  async function rpc<T>(
+    moduleName: string,
+    methodName: string,
+    parameters: Record<string, unknown> = {},
+    signal?: AbortSignal,
+  ): Promise<ApiResponse<T>> {
+    const url = resolveUrl('/');
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), config.timeout ?? 30000);
+    if (signal) signal.addEventListener('abort', () => controller.abort());
+
+    try {
+      const init: RequestInit = {
+        method: 'POST',
+        headers: { ...defaultHeaders, Accept: 'application/json' },
+        body: JSON.stringify({ module_name: moduleName, method_name: methodName, parameters }),
+        signal: controller.signal,
+      };
+
+      const response = await fetch(url, init);
+      clearTimeout(timeoutId);
+
+      const ct = response.headers.get('content-type') || '';
+      let json: unknown;
+      if (ct.includes('application/json')) {
+        json = await response.json();
+      } else {
+        const text = await response.text();
+        return { ok: false, status: response.status, data: null as T, error: text || `HTTP ${response.status}` };
+      }
+
+      const result = unwrapEnvelope<T>(json, response.status);
+      if (!result.ok) {
+        logger?.warn?.(`RPC ${moduleName}:${methodName} → ${result.error}`);
+      }
+      return result;
+    } catch (err) {
+      clearTimeout(timeoutId);
+      if ((err as Error).name === 'AbortError') {
+        return { ok: false, status: 0, data: null as T, error: 'Request timed out or was aborted' };
+      }
+      return { ok: false, status: 0, data: null as T, error: (err as Error).message || 'Network error' };
+    }
   }
 
   // ── SSE Streaming ────────────────────────────────────────────────────
@@ -106,7 +192,14 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
               return;
             }
             try {
-              yield { done: false, data: JSON.parse(jsonStr) };
+              const parsed = JSON.parse(jsonStr);
+              // YiAi SSE format: {"done": true} or {"data": {"message": "token"}}
+              if (parsed.done) {
+                yield { done: true };
+                return;
+              }
+              // Unwrap YiAi's nested data envelope for streaming
+              yield { done: false, data: parsed.data ?? parsed };
             } catch {
               yield { done: false, data: jsonStr };
             }
@@ -124,6 +217,7 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
 
   return {
     ...base,
+    rpc,
     stream,
     url: resolveUrl,
   };

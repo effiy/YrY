@@ -2,183 +2,188 @@
  * API request/response type definitions — single source of truth for all API shapes.
  *
  * Layer 3: consumed by service modules and callers for compile-time safety.
+ * All types match YiAi's actual request/response schemas.
  */
+
+// ── Execution module (JSON-RPC) ────────────────────────────────────────
+
+/** Request body for YiAi's / execution module endpoint. */
+export interface RpcRequest {
+  module_name: string;
+  method_name: string;
+  parameters: Record<string, unknown>;
+}
 
 // ── Auth ──────────────────────────────────────────────────────────────
 
 export interface LoginRequest {
-  username?: string;
-  password?: string;
+  username: string;
+  password: string;
 }
 
 export interface LoginResponse {
   access_token: string;
-  refresh_token?: string;
-  token_type: string;
-}
-
-export interface UserProfile {
   username: string;
-  roles: string[];
-  permissions: string[];
 }
 
-// ── Sessions ──────────────────────────────────────────────────────────
+// ── Chat / Prompt (via execution module: services.ai.chat_service) ────
 
-export interface SessionRecord {
-  id: string;
-  title: string;
-  created_at: string; // ISO 8601 UTC
-  updated_at: string; // ISO 8601 UTC
-  favorite: boolean;
-  tags: string[];
-  message_count?: number;
-}
-
-export interface SessionCreateRequest {
-  title?: string;
-  tags?: string[];
-}
-
-export interface SessionUpdateRequest {
-  title?: string;
-  favorite?: boolean;
-  tags?: string[];
-}
-
-export interface SessionSearchRequest {
-  query: string;
-  limit?: number;
-  offset?: number;
-}
-
-export interface SessionListResponse {
-  sessions: SessionRecord[];
-  total: number;
-}
-
-// ── Chat / Prompt ─────────────────────────────────────────────────────
-
-export interface PromptRequest {
-  prompt: string;
-  session_id?: string;
+export interface ChatParams {
+  /** User prompt text. */
+  user: string;
+  /** System prompt (optional). */
+  system?: string;
+  /** Model name (optional). */
   model?: string;
+  /** Enable SSE streaming. */
   stream?: boolean;
-  options?: Record<string, unknown>;
+  /** Conversation/session ID. */
+  conversation_id?: string;
+  /** Base64-encoded images or HTTP URLs. */
+  images?: string[];
 }
 
-export interface PromptResponse {
-  id: string;
-  response: string;
-  session_id: string;
-  model: string;
-  tokens?: { prompt: number; completion: number };
-}
-
-export interface StreamChunk {
-  token?: string;
-  done?: boolean;
+export interface ChatResponse {
+  success: boolean;
+  model?: string;
+  message?: string;
   error?: string;
 }
 
-// ── FAQ ───────────────────────────────────────────────────────────────
+// ── CRUD params (via execution module: services.database.data_service) ─
 
-export interface FAQRecord {
-  id: string;
-  question: string;
-  answer: string;
-  order: number;
-  category?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface FAQCreateRequest {
-  question: string;
-  answer: string;
-  category?: string;
-}
-
-export interface FAQUpdateRequest {
-  question?: string;
-  answer?: string;
-  category?: string;
-}
-
-export interface FAQBatchUpdateRequest {
-  faqs: { id: string; order?: number }[];
-}
-
-export interface FAQReorderRequest {
-  ids: string[];
-}
-
-// ── Config ────────────────────────────────────────────────────────────
-
-export interface AppConfigRecord {
-  key: string;
-  value: unknown;
-  updated_at: string;
-}
-
-export interface ConfigUpdateRequest {
-  updates: Record<string, unknown>;
-}
-
-// ── Database ──────────────────────────────────────────────────────────
-
-export interface DatabaseQueryRequest {
-  collection: string;
+export interface QueryParams {
+  /** Collection name (cname for short). */
+  cname: string;
+  /** MongoDB query filter. */
   query?: Record<string, unknown>;
-  projection?: Record<string, number>;
+  /** Sort specification. */
   sort?: Record<string, number>;
-  limit?: number;
-  skip?: number;
+  /** Page number (1-indexed). */
+  pageNum?: number;
+  /** Page size. */
+  pageSize?: number;
+  /** Fields to include/exclude. */
+  projection?: Record<string, number>;
 }
 
-export interface DatabaseWriteRequest {
-  collection: string;
-  document: Record<string, unknown>;
+export interface CreateParams {
+  cname: string;
+  data: Record<string, unknown>;
 }
 
-export interface DatabaseUpdateRequest {
-  collection: string;
-  filter: Record<string, unknown>;
-  update: Record<string, unknown>;
-  upsert?: boolean;
+export interface UpdateParams {
+  cname: string;
+  /** Document key (for sessions collection). */
+  key?: string;
+  /** Alternative: file_path query (for sessions collection). */
+  file_path?: string;
+  data: Record<string, unknown>;
 }
 
-export interface DatabaseDeleteRequest {
-  collection: string;
-  filter: Record<string, unknown>;
+export interface DeleteParams {
+  cname: string;
+  key: string;
 }
 
-export interface DatabaseBatchRequest {
-  operations: {
-    method: 'insert' | 'update' | 'delete';
-    collection: string;
-    filter?: Record<string, unknown>;
-    document?: Record<string, unknown>;
-    update?: Record<string, unknown>;
-  }[];
+/** YiAi query_documents response wrapper. */
+export interface QueryResult<T = unknown> {
+  list?: T[];
+  documents?: T[];
+  result?: T[];
+  total?: number;
+  pageNum?: number;
+  pageSize?: number;
+  totalPages?: number;
 }
 
-export interface DatabaseResponse {
-  ok: boolean;
-  result?: unknown;
-  count?: number;
+/** YiAi create_document / update_document / delete_document response. */
+export interface MutationResult {
+  key?: string;
+  query?: Record<string, unknown>;
+  updated?: boolean;
+  deleted?: boolean;
 }
 
-// ── Generic Wrappers ──────────────────────────────────────────────────
+// ── Session record (sessions collection) ───────────────────────────────
 
-export interface PaginatedResponse<T> {
-  items: T[];
-  total: number;
-  page?: number;
+export interface SessionRecord {
+  key: string;
+  url?: string;
+  title?: string;
+  pageDescription?: string;
+  pageContent?: string;
+  messages?: ChatMessage[];
+  tags?: string[];
+  createdAt?: number;
+  updatedAt?: number;
+  lastAccessTime?: number;
+}
+
+export interface ChatMessage {
+  type: 'user' | 'pet';
+  content?: string;
+  message?: string;
+  timestamp?: number;
+  imageDataUrl?: string;
+  error?: boolean;
+  aborted?: boolean;
+}
+
+// ── Files ─────────────────────────────────────────────────────────────
+
+export interface FileReadRequest {
+  target_file: string;
+}
+
+export interface FileWriteRequest {
+  target_file: string;
+  content: string;
+  is_base64?: boolean;
+}
+
+export interface FileDeleteRequest {
+  target_file: string;
+}
+
+export interface FolderDeleteRequest {
+  target_dir: string;
+}
+
+export interface FileRenameRequest {
+  old_path: string;
+  new_path: string;
+}
+
+export interface FolderRenameRequest {
+  old_dir: string;
+  new_dir: string;
+}
+
+export interface ImageUploadRequest {
+  data_url: string;
+  filename?: string;
+  directory?: string;
+}
+
+// ── State Store ────────────────────────────────────────────────────────
+
+export interface StateRecord {
+  key?: string;
+  record_type: string;
+  title?: string;
+  payload?: Record<string, unknown>;
+  tags?: string[];
+  created_time?: string;
+  updated_time?: string;
+}
+
+export interface StateQueryParams {
+  record_type?: string;
+  tags?: string[];
+  title_contains?: string;
+  created_after?: string;
+  created_before?: string;
+  page_num?: number;
   page_size?: number;
-}
-
-export interface ErrorResponse {
-  detail: string;
-  code?: string;
 }

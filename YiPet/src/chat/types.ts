@@ -2,7 +2,7 @@
  * YiPet Chat — Shared type definitions.
  */
 
-import type { ChatMessage } from './api/chat';
+import type { ChatMessage } from '@/api/types';
 
 // ── Page Info ─────────────────────────────────────────────────────────────
 

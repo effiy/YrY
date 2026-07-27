@@ -3,7 +3,8 @@
  * Pattern-matches PopupComponent: plain class with manual _render() + ReactDOM.render().
  */
 
-import type { ChatApi, ChatMessage } from './api/chat';
+import type { ChatService, SessionService } from '@/api/services';
+import type { ChatMessage } from '@/api/types';
 import { ChatWindowRender } from './components';
 import type { ChatState, Message, SessionItem } from './types';
 
@@ -25,7 +26,8 @@ const MAX_DRAFT_IMAGES = 4;
 
 export class ChatController {
   state: ChatState;
-  private _api: ChatApi;
+  private _chat: ChatService;
+  private _sessions: SessionService;
   private _abortController: AbortController | null = null;
   private _rootEl: HTMLElement | null = null;
   private _searchTimer: ReturnType<typeof setTimeout> | null = null;
@@ -38,8 +40,9 @@ export class ChatController {
   // Sidebar resize state
   private _sidebarResizeStart = { x: 0, startWidth: 0 };
 
-  constructor(api: ChatApi, _colorIndex: number) {
-    this._api = api;
+  constructor(chat: ChatService, sessions: SessionService, _colorIndex: number) {
+    this._chat = chat;
+    this._sessions = sessions;
 
     const vw = window.innerWidth;
     const vh = window.innerHeight;
@@ -209,7 +212,8 @@ export class ChatController {
     this.state.sessionLoading = true;
     this._render();
     try {
-      const records = await this._api.listSessions();
+      const result = await this._sessions.list();
+      const records = result.ok ? result.data : [];
       this.state.sessions = records.map((r) => ({
         id: r.key,
         title: r.title || '未命名会话',
@@ -237,7 +241,8 @@ export class ChatController {
 
       // Load full messages from backend
       try {
-        const record = await this._api.getSession(existing.id);
+        const getResult = await this._sessions.get(existing.id);
+        const record = getResult.ok ? getResult.data : null;
         if (record?.messages) {
           this.state.messages = this._mapMessages(record.messages);
           this.state.viewState = record.messages.length > 0 ? 'messages' : 'empty';
@@ -256,7 +261,7 @@ export class ChatController {
       : '新会话.md';
     const now = Date.now();
     try {
-      const record = await this._api.createSession({
+      const createResult = await this._sessions.create({
         url,
         title,
         pageDescription:
@@ -267,6 +272,7 @@ export class ChatController {
         messages: [],
         tags: [],
       });
+      const record = createResult.ok ? createResult.data : null;
       if (record?.key) {
         this.state.sessions.unshift({
           id: record.key,
@@ -294,7 +300,8 @@ export class ChatController {
 
       // Load full messages from backend
       try {
-        const record = await this._api.getSession(id);
+        const getResult = await this._sessions.get(id);
+        const record = getResult.ok ? getResult.data : null;
         if (record?.messages) {
           this.state.messages = this._mapMessages(record.messages);
           this.state.viewState = record.messages.length > 0 ? 'messages' : 'empty';
@@ -311,7 +318,7 @@ export class ChatController {
     const title = (document.title?.trim() || '新会话') + '.md';
     const now = Date.now();
     try {
-      const record = await this._api.createSession({
+      const createResult = await this._sessions.create({
         url,
         title,
         createdAt: now,
@@ -320,6 +327,7 @@ export class ChatController {
         messages: [],
         tags: [],
       });
+      const record = createResult.ok ? createResult.data : null;
       if (record?.key) {
         this.state.sessions.unshift({
           id: record.key,
@@ -341,7 +349,8 @@ export class ChatController {
   }
 
   async deleteSession(id: string) {
-    const ok = await this._api.deleteSession(id);
+    const result = await this._sessions.delete(id);
+    const ok = result.ok && result.data === true;
     if (ok) {
       const idx = this.state.sessions.findIndex((s) => s.id === id);
       if (idx >= 0) this.state.sessions.splice(idx, 1);
@@ -419,7 +428,7 @@ export class ChatController {
 
     for (const id of ids) {
       try {
-        await this._api.deleteSession(id);
+        await this._sessions.delete(id);
       } catch {
         /* continue */
       }
@@ -490,9 +499,8 @@ export class ChatController {
     let responseText = '';
 
     try {
-      responseText = await this._api.streamPrompt(
-        text,
-        this.state.currentSessionId,
+      responseText = await this._chat.streamWithCallback(
+        { user: text, conversation_id: this.state.currentSessionId },
         (token) => {
           responseText += token;
           this.state.messages[petIdx].content = responseText;
@@ -667,7 +675,7 @@ export class ChatController {
       error: m.error,
       imageDataUrl: m.imageDataUrl,
     }));
-    this._api.updateSession(this.state.currentSessionId, { messages: msgs }).catch(() => {});
+    this._sessions.update(this.state.currentSessionId, { messages: msgs }).catch(() => {});
   }
 
   // ── Image Management ───────────────────────────────────────────────
@@ -717,8 +725,8 @@ export class ChatController {
     if (session) {
       session.title = newTitle.trim();
       this.state.title = newTitle.trim();
-      this._api
-        .updateSession(this.state.currentSessionId, { title: newTitle.trim() })
+      this._sessions
+        .update(this.state.currentSessionId, { title: newTitle.trim() })
         .catch(() => {});
       this._notify('会话标题已更新', 'success');
     }

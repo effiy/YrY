@@ -10,7 +10,7 @@
 // Styles: shared.css for cross-component markdown/scrollbar rules;
 // each component imports its own CSS internally (co-location pattern)
 import './styles/shared.css';
-import { createChatApi } from './api/chat';
+import { createApiServices } from '@/api';
 import { ChatController } from './controller';
 
 const currentScript = document.currentScript as HTMLScriptElement | null;
@@ -38,8 +38,8 @@ function initChatApp() {
   document.body.appendChild(container);
 
   // Init services and controller
-  const api = createChatApi({ baseUrl: API_BASE });
-  const controller = new ChatController(api, COLOR_INDEX);
+  const api = createApiServices({ baseUrl: API_BASE });
+  const controller = new ChatController(api.chat, api.sessions, COLOR_INDEX);
   controller.mount(container);
 
   // Expose global API
