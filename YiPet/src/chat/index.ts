@@ -7,16 +7,9 @@
  * Exposes window.YiPetChat for external control (toggle, open, close).
  */
 
+// Styles: shared.css for cross-component markdown/scrollbar rules;
+// each component imports its own CSS internally (co-location pattern)
 import './styles/shared.css';
-import './window/ChatWindow.css';
-import './header/ChatHeader.css';
-import './messages/ChatMessages.css';
-import './messages/MessageBubble.css';
-import './messages/WelcomeCard.css';
-import './input/ChatInput.css';
-import './sidebar/ChatSidebar.css';
-import './sidebar/SearchBar.css';
-import './sidebar/SessionListItem.css';
 import { createChatApi } from './api/chat';
 import { ChatController } from './controller';
 
@@ -27,8 +20,10 @@ const COLOR_INDEX = parseInt(dataset.colorIndex || '0', 10);
 
 function initChatApp() {
   // Wait for React (loaded from CDN)
-  if (typeof (window as unknown as Record<string, unknown>).React === 'undefined' ||
-      typeof (window as unknown as Record<string, unknown>).ReactDOM === 'undefined') {
+  if (
+    typeof (window as unknown as Record<string, unknown>).React === 'undefined' ||
+    typeof (window as unknown as Record<string, unknown>).ReactDOM === 'undefined'
+  ) {
     setTimeout(initChatApp, 100);
     return;
   }
@@ -77,8 +72,10 @@ function initChatApp() {
 
   console.log(
     '%c🐾 YiPet Chat%c ready — %cwindow.YiPetChat.toggle()%c to open',
-    'color:#6366f1;font-weight:bold', 'color:inherit',
-    'color:#22c55e', 'color:#888',
+    'color:#6366f1;font-weight:bold',
+    'color:inherit',
+    'color:#22c55e',
+    'color:#888',
   );
 }
 

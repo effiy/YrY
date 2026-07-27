@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   getSystemTimezone,
   getUserTimezone,
-  setUserTimezone,
   resolveTimezone,
-} from '../../src/shared/timezone';
+  setUserTimezone,
+} from '../../src/shared/i18n/timezone';
 import { resetChromeStorage } from '../setup';
 
 describe('timezone', () => {

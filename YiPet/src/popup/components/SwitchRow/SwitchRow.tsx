@@ -1,3 +1,5 @@
+import './SwitchRow.css';
+
 export interface SwitchRowProps {
   label: string;
   desc: string;

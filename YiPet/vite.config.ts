@@ -1,7 +1,7 @@
-import { defineConfig } from 'vite';
-import { resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { copyFileSync, writeFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { defineConfig } from 'vite';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = __dirname;
@@ -12,6 +12,11 @@ export default defineConfig(({ mode }) => {
   return {
     root: rootDir,
     publicDir: resolve(rootDir, 'public'),
+    resolve: {
+      alias: {
+        '@': resolve(rootDir, 'src'),
+      },
+    },
     build: {
       outDir: resolve(rootDir, 'dist'),
       emptyOutDir: true,
@@ -20,10 +25,9 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         input: {
           background: resolve(rootDir, 'src/background/index.ts'),
-          content:   resolve(rootDir, 'src/content/index.ts'),
           bootstrap: resolve(rootDir, 'src/content/bootstrap.ts'),
-          popup:     resolve(rootDir, 'src/popup/popup.html'),
-          chat:      resolve(rootDir, 'src/chat/index.ts'),
+          popup: resolve(rootDir, 'src/popup/popup.html'),
+          chat: resolve(rootDir, 'src/chat/index.ts'),
         },
         output: {
           entryFileNames: 'assets/[name].js',
@@ -47,11 +51,15 @@ export default defineConfig(({ mode }) => {
           // Write build metadata for extension auto-reload detection
           writeFileSync(
             resolve(rootDir, 'dist', 'build-meta.json'),
-            JSON.stringify({
-              builtAt: Date.now(),
-              mode,
-              version: '1.2.0',
-            }, null, 2),
+            JSON.stringify(
+              {
+                builtAt: Date.now(),
+                mode,
+                version: '1.2.0',
+              },
+              null,
+              2,
+            ),
           );
 
           if (isDev) {

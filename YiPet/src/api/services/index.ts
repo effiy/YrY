@@ -8,19 +8,19 @@
  */
 
 export { AuthService } from './auth';
-export { SessionService } from './sessions';
 export { ChatService } from './chat';
-export { FAQService } from './faq';
 export { ConfigService } from './config';
 export { DatabaseService } from './database';
+export { FAQService } from './faq';
+export { SessionService } from './sessions';
 
-import { createApiClient, type ApiClient, type ApiClientConfig } from '../client';
+import { type ApiClient, type ApiClientConfig, createApiClient } from '../client';
 import { AuthService } from './auth';
-import { SessionService } from './sessions';
 import { ChatService } from './chat';
-import { FAQService } from './faq';
 import { ConfigService } from './config';
 import { DatabaseService } from './database';
+import { FAQService } from './faq';
+import { SessionService } from './sessions';
 
 export interface ApiServices {
   client: ApiClient;
@@ -40,11 +40,11 @@ export function createApiServices(config: ApiClientConfig): ApiServices {
   const client = createApiClient(config);
   return {
     client,
-    auth:      new AuthService(client),
-    sessions:  new SessionService(client),
-    chat:      new ChatService(client),
-    faq:       new FAQService(client),
-    config:    new ConfigService(client),
-    database:  new DatabaseService(client),
+    auth: new AuthService(client),
+    sessions: new SessionService(client),
+    chat: new ChatService(client),
+    faq: new FAQService(client),
+    config: new ConfigService(client),
+    database: new DatabaseService(client),
   };
 }

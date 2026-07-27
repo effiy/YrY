@@ -5,7 +5,7 @@
  * module-level variables (service workers only live ~30s).
  */
 
-import type { PetGlobalState, UserPrefs } from './messages';
+import type { PetGlobalState, UserPrefs } from '@/shared/ipc/messages';
 
 const GLOBAL_STATE_KEY = 'pet_global_state';
 const PREFS_KEY = 'prefs';
@@ -24,13 +24,8 @@ export async function setGlobalState(patch: Partial<PetGlobalState>): Promise<Pe
   return updated;
 }
 
-export function onGlobalStateChanged(
-  cb: (state: PetGlobalState) => void,
-): () => void {
-  const listener = (
-    changes: Record<string, chrome.storage.StorageChange>,
-    area: string,
-  ) => {
+export function onGlobalStateChanged(cb: (state: PetGlobalState) => void): () => void {
+  const listener = (changes: Record<string, chrome.storage.StorageChange>, area: string) => {
     if (area === 'local' && changes[GLOBAL_STATE_KEY]) {
       cb(changes[GLOBAL_STATE_KEY].newValue as PetGlobalState);
     }
@@ -72,7 +67,7 @@ const DEFAULT_PREFS: UserPrefs = {
 
 export async function getPrefs(): Promise<UserPrefs> {
   const result = await chrome.storage.local.get(PREFS_KEY);
-  return { ...DEFAULT_PREFS, ...(result[PREFS_KEY] as UserPrefs || {}) };
+  return { ...DEFAULT_PREFS, ...((result[PREFS_KEY] as UserPrefs) || {}) };
 }
 
 export async function setPrefs(patch: Partial<UserPrefs>): Promise<UserPrefs> {

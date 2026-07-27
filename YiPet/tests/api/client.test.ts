@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { createApiClient } from '../../src/api/client';
 
 describe('API client', () => {
@@ -38,10 +38,12 @@ describe('API client', () => {
     it('get() returns ApiResponse structure on success', async () => {
       // Mock fetch for a successful response
       const mockFetch = vi.fn(() =>
-        Promise.resolve(new Response(JSON.stringify({ ok: true }), {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' },
-        }))
+        Promise.resolve(
+          new Response(JSON.stringify({ ok: true }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        ),
       );
       vi.stubGlobal('fetch', mockFetch);
 
@@ -52,10 +54,12 @@ describe('API client', () => {
 
     it('post() sends JSON body', async () => {
       const mockFetch = vi.fn(() =>
-        Promise.resolve(new Response(JSON.stringify({ id: '1' }), {
-          status: 201,
-          headers: { 'Content-Type': 'application/json' },
-        }))
+        Promise.resolve(
+          new Response(JSON.stringify({ id: '1' }), {
+            status: 201,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        ),
       );
       vi.stubGlobal('fetch', mockFetch);
 
@@ -70,10 +74,12 @@ describe('API client', () => {
 
     it('put() sends JSON body', async () => {
       const mockFetch = vi.fn(() =>
-        Promise.resolve(new Response(JSON.stringify({ ok: true }), {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' },
-        }))
+        Promise.resolve(
+          new Response(JSON.stringify({ ok: true }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        ),
       );
       vi.stubGlobal('fetch', mockFetch);
 
@@ -82,9 +88,7 @@ describe('API client', () => {
     });
 
     it('delete() sends no body', async () => {
-      const mockFetch = vi.fn(() =>
-        Promise.resolve(new Response('', { status: 204 }))
-      );
+      const mockFetch = vi.fn(() => Promise.resolve(new Response('', { status: 204 })));
       vi.stubGlobal('fetch', mockFetch);
 
       await client.delete('/sessions/123');
@@ -93,10 +97,12 @@ describe('API client', () => {
 
     it('handles HTTP errors', async () => {
       const mockFetch = vi.fn(() =>
-        Promise.resolve(new Response(JSON.stringify({ detail: 'Not found' }), {
-          status: 404,
-          headers: { 'Content-Type': 'application/json' },
-        }))
+        Promise.resolve(
+          new Response(JSON.stringify({ detail: 'Not found' }), {
+            status: 404,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        ),
       );
       vi.stubGlobal('fetch', mockFetch);
 
@@ -107,12 +113,15 @@ describe('API client', () => {
     });
 
     it('handles network errors with retry', async () => {
-      const mockFetch = vi.fn()
+      const mockFetch = vi
+        .fn()
         .mockRejectedValueOnce(new Error('Network error'))
-        .mockResolvedValueOnce(new Response(JSON.stringify({ ok: true }), {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' },
-        }));
+        .mockResolvedValueOnce(
+          new Response(JSON.stringify({ ok: true }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        );
       vi.stubGlobal('fetch', mockFetch);
 
       const result = await client.get('/retry-test');

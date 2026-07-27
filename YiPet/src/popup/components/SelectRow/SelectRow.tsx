@@ -1,3 +1,5 @@
+import './SelectRow.css';
+
 export interface SelectRowProps {
   label: string;
   id: string;
@@ -10,7 +12,9 @@ export interface SelectRowProps {
 export function SelectRow(props: SelectRowProps) {
   return (
     <div className="setting-row">
-      <label className="setting-label-inline" htmlFor={props.id}>{props.label}</label>
+      <label className="setting-label-inline" htmlFor={props.id}>
+        {props.label}
+      </label>
       <div className="role-control">
         <select
           id={props.id}
@@ -20,7 +24,9 @@ export function SelectRow(props: SelectRowProps) {
           onChange={props.onChange}
         >
           {(props.options || []).map((opt) => (
-            <option key={opt.value} value={opt.value}>{opt.label}</option>
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
           ))}
         </select>
       </div>

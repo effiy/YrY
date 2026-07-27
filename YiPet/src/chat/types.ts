@@ -3,10 +3,14 @@
  */
 
 import type { ChatMessage } from './api/chat';
-import type { PageInfo } from './messages/WelcomeCard';
 
-// Re-export for convenience
-export type { PageInfo };
+// ── Page Info ─────────────────────────────────────────────────────────────
+
+export interface PageInfo {
+  title: string;
+  url: string;
+  iconUrl: string;
+}
 
 // ── Message ─────────────────────────────────────────────────────────────
 
@@ -16,6 +20,8 @@ export interface Message {
   timestamp: number;
   streaming?: boolean;
   error?: boolean;
+  /** Base64 data URL for image messages */
+  imageDataUrl?: string;
 }
 
 // ── Session ─────────────────────────────────────────────────────────────
@@ -52,9 +58,24 @@ export interface ChatState {
   isProcessing: boolean;
   sessions: SessionItem[];
   currentSessionId: string | null;
+  /** Immediate input value for responsive UI (before debounce) */
+  searchInputValue: string;
+  /** Debounced query used for actual filtering */
   searchQuery: string;
   sessionLoading: boolean;
   sidebarCollapsed: boolean;
+  /** Sidebar width in pixels (default 320) */
+  sidebarWidth: number;
+  /** Batch mode for multi-select session operations */
+  batchMode: boolean;
+  /** Session IDs selected in batch mode */
+  selectedSessionIds: string[];
+  /** Draft images (base64 data URLs) waiting to be sent */
+  draftImages: string[];
+  /** Page context toggle — when enabled, page content is sent as AI context */
+  contextEnabled: boolean;
+  /** Notification toast message */
+  notification: { message: string; type: 'info' | 'success' | 'error' | 'warning' } | null;
   ws: WindowState;
   isDragging: boolean;
   isResizing: boolean;

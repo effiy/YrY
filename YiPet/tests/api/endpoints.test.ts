@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import * as endpoints from '../../src/api/endpoints';
 
 describe('API endpoints', () => {

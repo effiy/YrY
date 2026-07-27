@@ -50,7 +50,6 @@
       "assets/images/*/icon.png",
       "assets/images/*/run/*.png",
       "src/content/bootstrap.js",
-      "assets/content.js",
       "assets/bootstrap.js",
       "assets/chat.js",
       "src/chunks/*.js",

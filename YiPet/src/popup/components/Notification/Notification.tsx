@@ -1,3 +1,5 @@
+import './Notification.css';
+
 export interface NotificationProps {
   visible: boolean;
   message: string;

@@ -17,9 +17,7 @@ export interface ExtensionComponent {
  * Wrap a component with error boundaries — mount/unmount failures
  * are caught, logged, and never propagated.
  */
-export function wrapComponent(
-  component: ExtensionComponent,
-): ExtensionComponent {
+export function wrapComponent(component: ExtensionComponent): ExtensionComponent {
   const originalMount = component.mount.bind(component);
   const originalUnmount = component.unmount.bind(component);
 

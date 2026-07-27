@@ -1,26 +1,30 @@
 /*
  * YiPet Chat — ChatMessages Styles
- * Layout & state styles only. Bubble styles → MessageBubble.css, card styles → WelcomeCard.css.
+ * Layout, state displays, and message container.
+ * Bubble styles → MessageBubble.css
  */
+
+/* ── Messages Container ──────────────────────────────────────────────── */
 
 #yipet-chat-messages {
   flex: 1 1 0 !important;
   min-height: 0 !important;
-  height: 0 !important;
+  height: 0 !important;  /* flex: 1 works via height: 0 trick */
   overflow-y: auto !important;
   overflow-x: hidden !important;
-  padding: 16px !important;
+  padding: 16px 18px !important;
   user-select: text !important;
   -webkit-user-select: text !important;
+  scroll-behavior: smooth !important;
 }
 
 .yipet-chat-messages-inner {
   display: flex !important;
   flex-direction: column !important;
-  gap: 12px !important;
+  gap: 14px !important;
 }
 
-/* ── Empty / Loading / Error States ───────────────────────────────────── */
+/* ── Empty State ────────────────────────────────────────────────────── */
 
 .yipet-chat-empty {
   display: flex !important;
@@ -32,15 +36,14 @@
 
 .yipet-empty-card {
   text-align: center !important;
-  max-width: 320px !important;
+  max-width: 300px !important;
 }
 
 .yipet-empty-icon {
-  width: 56px !important;
-  height: 56px !important;
+  width: 52px !important;
+  height: 52px !important;
   margin: 0 auto 16px !important;
-  color: var(--text-secondary, #d4d0e8) !important;
-  opacity: 0.5 !important;
+  color: rgba(167, 139, 250, 0.35) !important;
 }
 
 .yipet-empty-icon svg {
@@ -49,7 +52,7 @@
 }
 
 .yipet-empty-title {
-  font-size: 16px !important;
+  font-size: 15px !important;
   font-weight: 600 !important;
   color: var(--text-primary, #f5f3ff) !important;
   margin-bottom: 8px !important;
@@ -57,39 +60,47 @@
 
 .yipet-empty-subtitle {
   font-size: 13px !important;
-  color: var(--text-secondary, #d4d0e8) !important;
-  line-height: 1.5 !important;
+  color: var(--text-secondary, #94a3b8) !important;
+  line-height: 1.55 !important;
 }
 
 .yipet-empty-hint {
   font-size: 12px !important;
-  color: var(--text-secondary, #d4d0e8) !important;
-  opacity: 0.7 !important;
-  margin-top: 8px !important;
+  color: var(--text-secondary, #94a3b8) !important;
+  opacity: 0.65 !important;
+  margin-top: 10px !important;
 }
+
+/* ── Loading State ──────────────────────────────────────────────────── */
 
 .yipet-chat-loading {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 12px !important;
+  gap: 14px !important;
   height: 100% !important;
-  color: var(--text-secondary, #d4d0e8) !important;
+}
+
+.yipet-loading-text {
+  font-size: 13px !important;
+  color: var(--text-secondary, #94a3b8) !important;
 }
 
 .yipet-spinner {
-  width: 32px !important;
-  height: 32px !important;
-  border: 3px solid var(--border-secondary, rgba(167, 139, 250, 0.3)) !important;
+  width: 28px !important;
+  height: 28px !important;
+  border: 2.5px solid rgba(167, 139, 250, 0.15) !important;
   border-top-color: var(--primary, #667eea) !important;
   border-radius: 50% !important;
-  animation: yipet-spin 0.8s linear infinite !important;
+  animation: yipet-spin 0.7s linear infinite !important;
 }
 
 @keyframes yipet-spin {
   to { transform: rotate(360deg); }
 }
+
+/* ── Error State ────────────────────────────────────────────────────── */
 
 .yipet-chat-error {
   display: flex !important;
@@ -98,9 +109,15 @@
   justify-content: center !important;
   gap: 12px !important;
   height: 100% !important;
-  color: #ef4444 !important;
 }
 
 .yipet-error-icon {
-  font-size: 32px !important;
+  font-size: 28px !important;
+  opacity: 0.7 !important;
+}
+
+.yipet-error-text {
+  font-size: 13px !important;
+  color: rgba(248, 113, 113, 0.9) !important;
+  font-weight: 500 !important;
 }

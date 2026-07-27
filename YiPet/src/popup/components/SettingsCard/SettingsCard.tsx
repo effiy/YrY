@@ -1,4 +1,5 @@
-import { t } from '../../../shared/i18n';
+import './SettingsCard.css';
+import { t } from '@/shared/i18n/index';
 
 export function SettingsCard(props: { children?: unknown }) {
   return (

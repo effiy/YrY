@@ -9,12 +9,12 @@
  *   - SSE streaming support (StreamChunk / AsyncGenerator)
  */
 
+import { logger } from '@/utils/log';
 import {
-  createApiClient as createBaseClient,
   type ApiClientConfig,
   type ApiResponse,
+  createApiClient as createBaseClient,
 } from '../../public/cdn/utils/api-client';
-import { logger } from '../shared/log';
 
 // ── Re-export base types ───────────────────────────────────────────────
 

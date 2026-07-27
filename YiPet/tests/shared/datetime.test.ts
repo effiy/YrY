@@ -1,12 +1,12 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
-  nowUTC,
-  isValidUTC,
+  formatDate,
   formatDateTime,
   formatRelativeTime,
-  formatDate,
   formatTime,
-} from '../../src/shared/datetime';
+  isValidUTC,
+  nowUTC,
+} from '@/utils/datetime';
 
 describe('datetime', () => {
   describe('nowUTC()', () => {

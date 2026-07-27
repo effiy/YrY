@@ -4,7 +4,7 @@
 
 import type { TabRef } from './chrome';
 import { createChromeService } from './chrome';
-import { createNotifyController } from './notify';
+import { createNotifyController } from './notification';
 
 export interface PopupServices {
   chrome: ReturnType<typeof createChromeService> | null;

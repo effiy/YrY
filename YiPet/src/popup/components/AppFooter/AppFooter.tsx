@@ -1,3 +1,5 @@
+import './AppFooter.css';
+
 export interface AppFooterProps {
   hintText: string;
   version: string;

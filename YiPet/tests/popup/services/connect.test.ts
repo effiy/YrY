@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { connect, type ConnectDeps } from '../../../src/popup/services/connect';
+import { describe, expect, it } from 'vitest';
+import { connect } from '../../../src/popup/services/connection';
 
 describe('connect', () => {
   it('calls onConnected when ping succeeds immediately', async () => {

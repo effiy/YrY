@@ -7,8 +7,8 @@
  *   - api/services/index.ts → createApiServices()
  */
 
-import { PET_DEFAULTS } from './defaults';
 import type { ApiClientConfig } from '../api/client';
+import { PET_DEFAULTS } from './defaults';
 
 export type Env = 'production' | 'staging' | 'development';
 

@@ -45,7 +45,11 @@ export function createChatApi(config?: ChatApiConfig) {
   const timeout = config?.timeout ?? 30000;
 
   /** Generic JSON-RPC request. */
-  async function rpc<T>(moduleName: string, methodName: string, parameters: Record<string, unknown> = {}): Promise<T> {
+  async function rpc<T>(
+    moduleName: string,
+    methodName: string,
+    parameters: Record<string, unknown> = {},
+  ): Promise<T> {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeout);
     try {
@@ -156,47 +160,69 @@ export function createChatApi(config?: ChatApiConfig) {
 
   async function listSessions(): Promise<SessionRecord[]> {
     try {
-      const data = await rpc<SessionRecord[] | { documents?: SessionRecord[]; result?: SessionRecord[] }>(
-        DB_MODULE,
-        'query_documents',
-        { cname: COLLECTION, query: {} },
-      );
+      const data = await rpc<
+        SessionRecord[] | { documents?: SessionRecord[]; result?: SessionRecord[] }
+      >(DB_MODULE, 'query_documents', { cname: COLLECTION, query: {} });
       if (Array.isArray(data)) return data;
-      if (Array.isArray((data as { documents?: SessionRecord[] }).documents)) return (data as { documents: SessionRecord[] }).documents;
-      if (Array.isArray((data as { result?: SessionRecord[] }).result)) return (data as { result: SessionRecord[] }).result;
+      if (Array.isArray((data as { documents?: SessionRecord[] }).documents))
+        return (data as { documents: SessionRecord[] }).documents;
+      if (Array.isArray((data as { result?: SessionRecord[] }).result))
+        return (data as { result: SessionRecord[] }).result;
       return [];
-    } catch { return []; }
+    } catch {
+      return [];
+    }
   }
 
   async function createSession(doc: Record<string, unknown>): Promise<SessionRecord | null> {
     try {
-      return await rpc<SessionRecord>(
-        DB_MODULE,
-        'create_document',
-        { cname: COLLECTION, data: doc },
-      );
-    } catch { return null; }
+      return await rpc<SessionRecord>(DB_MODULE, 'create_document', {
+        cname: COLLECTION,
+        data: doc,
+      });
+    } catch {
+      return null;
+    }
   }
 
-  async function updateSession(id: string, update: Record<string, unknown>): Promise<SessionRecord | null> {
+  async function updateSession(
+    id: string,
+    update: Record<string, unknown>,
+  ): Promise<SessionRecord | null> {
     try {
-      return await rpc<SessionRecord>(
+      return await rpc<SessionRecord>(DB_MODULE, 'update_document', {
+        cname: COLLECTION,
+        key: id,
+        data: { key: id, ...update, updatedAt: Date.now() },
+      });
+    } catch {
+      return null;
+    }
+  }
+
+  async function getSession(id: string): Promise<SessionRecord | null> {
+    try {
+      const result = await rpc<{ documents?: SessionRecord[]; result?: SessionRecord[] }>(
         DB_MODULE,
-        'update_document',
-        { cname: COLLECTION, key: id, data: { key: id, ...update, updatedAt: Date.now() } },
+        'query_documents',
+        { cname: COLLECTION, query: { key: id } },
       );
-    } catch { return null; }
+      const docs = Array.isArray(result)
+        ? result
+        : result.documents || result.result || [];
+      return docs.length > 0 ? docs[0] : null;
+    } catch {
+      return null;
+    }
   }
 
   async function deleteSession(id: string): Promise<boolean> {
     try {
-      await rpc<unknown>(
-        DB_MODULE,
-        'delete_document',
-        { cname: COLLECTION, key: id },
-      );
+      await rpc<unknown>(DB_MODULE, 'delete_document', { cname: COLLECTION, key: id });
       return true;
-    } catch { return false; }
+    } catch {
+      return false;
+    }
   }
 
   return {
@@ -204,6 +230,7 @@ export function createChatApi(config?: ChatApiConfig) {
     streamPrompt,
     prompt,
     listSessions,
+    getSession,
     createSession,
     updateSession,
     deleteSession,

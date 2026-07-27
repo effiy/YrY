@@ -1,9 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import {
-  createConfig,
-  type AppConfig,
-  type Env,
-} from '../../src/config/config';
+import { describe, expect, it } from 'vitest';
+import { createConfig } from '../../src/config/config';
 
 describe('config', () => {
   describe('createConfig()', () => {

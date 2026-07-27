@@ -5,12 +5,11 @@
 import type { ApiClient, ApiResponse } from '../client';
 import { SESSIONS } from '../endpoints';
 import type {
-  SessionRecord,
   SessionCreateRequest,
-  SessionUpdateRequest,
-  SessionSearchRequest,
   SessionListResponse,
-  PaginatedResponse,
+  SessionRecord,
+  SessionSearchRequest,
+  SessionUpdateRequest,
 } from '../types';
 
 export class SessionService {

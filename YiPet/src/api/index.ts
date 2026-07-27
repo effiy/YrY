@@ -13,7 +13,13 @@
  *   const result = await api.sessions.list();
  */
 
-export { createApiClient, type ApiClient, type ApiClientConfig, type ApiResponse, type StreamChunk } from './client';
+export {
+  type ApiClient,
+  type ApiClientConfig,
+  type ApiResponse,
+  createApiClient,
+  type StreamChunk,
+} from './client';
 export * as endpoints from './endpoints';
+export { type ApiServices, createApiServices } from './services';
 export * from './types';
-export { createApiServices, type ApiServices } from './services';

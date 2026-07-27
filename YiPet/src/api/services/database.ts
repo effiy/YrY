@@ -5,12 +5,12 @@
 import type { ApiClient, ApiResponse } from '../client';
 import { DATABASE } from '../endpoints';
 import type {
-  DatabaseQueryRequest,
-  DatabaseWriteRequest,
-  DatabaseUpdateRequest,
-  DatabaseDeleteRequest,
   DatabaseBatchRequest,
+  DatabaseDeleteRequest,
+  DatabaseQueryRequest,
   DatabaseResponse,
+  DatabaseUpdateRequest,
+  DatabaseWriteRequest,
 } from '../types';
 
 export class DatabaseService {

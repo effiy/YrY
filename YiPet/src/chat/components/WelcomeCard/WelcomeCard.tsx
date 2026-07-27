@@ -4,11 +4,10 @@
  * Replaces the HTML-string-based welcome card in ChatController._buildWelcomeHtml().
  */
 
-export interface PageInfo {
-  title: string;
-  url: string;
-  iconUrl: string;
-}
+import './WelcomeCard.css';
+import type { PageInfo } from '@/chat/types';
+
+export type { PageInfo };
 
 export interface WelcomeCardProps {
   pageInfo: PageInfo;
@@ -23,14 +22,18 @@ export function WelcomeCard(props: WelcomeCardProps) {
       <div className="welcome-card-header">
         <div className="welcome-card-header-left">
           {iconUrl ? <img className="welcome-card-favicon" src={iconUrl} alt="" /> : null}
-          <div className="welcome-card-title" title={title}>{title}</div>
+          <div className="welcome-card-title" title={title}>
+            {title}
+          </div>
         </div>
       </div>
       {url ? (
         <div className="welcome-card-row">
           <div className="welcome-card-label">网址</div>
           <div className="welcome-card-value">
-            <a href={url} target="_blank" rel="noopener noreferrer" className="welcome-card-url">{url}</a>
+            <a href={url} target="_blank" rel="noopener noreferrer" className="welcome-card-url">
+              {url}
+            </a>
           </div>
         </div>
       ) : null}

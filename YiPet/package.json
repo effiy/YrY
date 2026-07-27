@@ -4,15 +4,19 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev":        "vite build --mode development --watch",
-    "build":      "npm run build:cdn && vite build",
-    "build:cdn":  "vite build --config vite.cdn.config.ts",
-    "typecheck":  "tsc --noEmit",
-    "clean":      "rm -rf dist public/cdn/utils/index.js",
-    "test":       "vitest run",
-    "test:watch": "vitest"
+    "dev": "vite build --mode development --watch",
+    "build": "npm run build:cdn && vite build",
+    "build:cdn": "vite build --config vite.cdn.config.ts",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist public/cdn/utils/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "biome check",
+    "lint:fix": "biome check --write",
+    "format": "biome format --write"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.5.5",
     "@types/chrome": "^0.0.270",
     "jsdom": "^29.1.1",
     "typescript": "^5.5.0",

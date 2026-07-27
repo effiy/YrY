@@ -1,4 +1,5 @@
-import { t } from '../../../shared/i18n';
+import './AppHeader.css';
+import { t } from '@/shared/i18n/index';
 
 export interface AppHeaderProps {
   model: string | null;
@@ -14,9 +15,7 @@ export function AppHeader(props: AppHeaderProps) {
       <div className="logo" data-icon={'💕'}>
         <div className="brand">
           <h1>{t('extName')}</h1>
-          <span className="brand-sub">
-            {t('popupModelPrefix', props.model || '-')}
-          </span>
+          <span className="brand-sub">{t('popupModelPrefix', props.model || '-')}</span>
         </div>
       </div>
       <div

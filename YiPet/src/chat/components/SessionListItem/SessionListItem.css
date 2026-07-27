@@ -1,27 +1,64 @@
 /*
  * YiPet Chat — SessionListItem Styles
+ * Row layout, active/selected states, hover effects, batch checkbox.
  */
 
 .yipet-sidebar-item {
   display: flex !important;
   align-items: center !important;
-  padding: 10px 12px !important;
+  padding: 9px 10px !important;
   border-radius: 8px !important;
   cursor: pointer !important;
-  transition: background 0.1s ease !important;
-  gap: 4px !important;
+  transition:
+    background 0.12s ease,
+    box-shadow 0.12s ease !important;
+  gap: 6px !important;
+  margin-bottom: 1px !important;
 }
 
 .yipet-sidebar-item:hover {
-  background: var(--bg-tertiary, #312d55) !important;
+  background: rgba(167, 139, 250, 0.06) !important;
 }
 
 .yipet-sidebar-item.active {
-  background: rgba(var(--primary-rgb, 102, 126, 234), 0.15) !important;
+  background: linear-gradient(135deg,
+    rgba(99, 102, 241, 0.15) 0%,
+    rgba(139, 92, 246, 0.1) 100%
+  ) !important;
+  box-shadow: inset 3px 0 0 var(--primary, #667eea) !important;
 }
 
+.yipet-sidebar-item.selected {
+  background: rgba(139, 92, 246, 0.08) !important;
+}
+
+.yipet-sidebar-item.active.selected {
+  background: linear-gradient(135deg,
+    rgba(99, 102, 241, 0.18) 0%,
+    rgba(139, 92, 246, 0.12) 100%
+  ) !important;
+}
+
+/* ── Batch Checkbox ────────────────────────────────────────────────── */
+
+.yipet-sidebar-item-check {
+  display: flex !important;
+  align-items: center !important;
+  flex-shrink: 0 !important;
+}
+
+.yipet-sidebar-item-check input[type="checkbox"] {
+  width: 15px !important;
+  height: 15px !important;
+  cursor: pointer !important;
+  accent-color: #a78bfa !important;
+  margin: 0 !important;
+}
+
+/* ── Content ───────────────────────────────────────────────────────── */
+
 .yipet-sidebar-item-content {
-  flex: 1 !important;
+  flex: 1 1 auto !important;
   min-width: 0 !important;
 }
 
@@ -32,15 +69,32 @@
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
+  line-height: 1.4 !important;
+}
+
+.yipet-sidebar-item.active .yipet-sidebar-item-title {
+  color: #f5f3ff !important;
+  font-weight: 600 !important;
 }
 
 .yipet-sidebar-item-meta {
   display: flex !important;
   gap: 8px !important;
   font-size: 11px !important;
-  color: var(--text-secondary, #d4d0e8) !important;
+  color: var(--text-secondary, #94a3b8) !important;
   margin-top: 2px !important;
 }
+
+.yipet-sidebar-item-count {
+  flex-shrink: 0 !important;
+}
+
+.yipet-sidebar-item-date {
+  flex-shrink: 0 !important;
+  opacity: 0.7 !important;
+}
+
+/* ── Delete Button ──────────────────────────────────────────────────── */
 
 .yipet-sidebar-item-delete {
   display: none !important;
@@ -51,9 +105,12 @@
   border-radius: 6px !important;
   border: none !important;
   background: transparent !important;
-  color: var(--text-secondary, #d4d0e8) !important;
+  color: rgba(148, 163, 184, 0.6) !important;
   cursor: pointer !important;
   flex-shrink: 0 !important;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease !important;
 }
 
 .yipet-sidebar-item:hover .yipet-sidebar-item-delete {
@@ -61,11 +118,11 @@
 }
 
 .yipet-sidebar-item-delete:hover {
-  background: rgba(239, 68, 68, 0.2) !important;
-  color: #ef4444 !important;
+  background: rgba(239, 68, 68, 0.18) !important;
+  color: rgba(248, 113, 113, 0.9) !important;
 }
 
 .yipet-sidebar-item-delete svg {
-  width: 14px !important;
-  height: 14px !important;
+  width: 13px !important;
+  height: 13px !important;
 }

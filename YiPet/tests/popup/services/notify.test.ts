@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createNotifyController } from '../../../src/popup/services/notify';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { createNotifyController } from '../../../src/popup/services/notification';
 
 describe('notify', () => {
   let setState: ReturnType<typeof vi.fn>;

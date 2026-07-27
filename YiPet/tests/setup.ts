@@ -39,7 +39,7 @@ vi.stubGlobal('chrome', {
         return Promise.resolve();
       }),
       clear: vi.fn(() => {
-        Object.keys(storageData).forEach(k => delete storageData[k]);
+        Object.keys(storageData).forEach((k) => delete storageData[k]);
         return Promise.resolve();
       }),
     },
@@ -75,5 +75,5 @@ vi.stubGlobal('chrome', {
 // ── Clear storage between tests ────────────────────────────────────
 
 export function resetChromeStorage() {
-  Object.keys(storageData).forEach(k => delete storageData[k]);
+  Object.keys(storageData).forEach((k) => delete storageData[k]);
 }

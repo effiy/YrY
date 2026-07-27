@@ -28,8 +28,8 @@ export interface UserProfile {
 export interface SessionRecord {
   id: string;
   title: string;
-  created_at: string;   // ISO 8601 UTC
-  updated_at: string;   // ISO 8601 UTC
+  created_at: string; // ISO 8601 UTC
+  updated_at: string; // ISO 8601 UTC
   favorite: boolean;
   tags: string[];
   message_count?: number;

@@ -1,4 +1,5 @@
-import { t } from '../../../shared/i18n';
+import './AboutCard.css';
+import { t } from '@/shared/i18n/index';
 
 export function AboutCard() {
   return (
@@ -48,9 +49,21 @@ export function AboutCard() {
         <div className="about-section">
           <h3 className="about-section-title">{t('aboutProdDepsTitle')}</h3>
           <ul className="about-dep-list">
-            <li className="about-dep-item"><span className="about-dep-name">react</span><span className="about-dep-ver">15.6.1</span><span className="about-dep-src">CDN</span></li>
-            <li className="about-dep-item"><span className="about-dep-name">react-dom</span><span className="about-dep-ver">15.6.1</span><span className="about-dep-src">CDN</span></li>
-            <li className="about-dep-item"><span className="about-dep-name">bootstrap</span><span className="about-dep-ver">5.2.3</span><span className="about-dep-src">CDN</span></li>
+            <li className="about-dep-item">
+              <span className="about-dep-name">react</span>
+              <span className="about-dep-ver">15.6.1</span>
+              <span className="about-dep-src">CDN</span>
+            </li>
+            <li className="about-dep-item">
+              <span className="about-dep-name">react-dom</span>
+              <span className="about-dep-ver">15.6.1</span>
+              <span className="about-dep-src">CDN</span>
+            </li>
+            <li className="about-dep-item">
+              <span className="about-dep-name">bootstrap</span>
+              <span className="about-dep-ver">5.2.3</span>
+              <span className="about-dep-src">CDN</span>
+            </li>
           </ul>
         </div>
 
@@ -58,11 +71,26 @@ export function AboutCard() {
         <div className="about-section">
           <h3 className="about-section-title">{t('aboutDevDepsTitle')}</h3>
           <ul className="about-dep-list">
-            <li className="about-dep-item"><span className="about-dep-name">typescript</span><span className="about-dep-ver">^5.5</span></li>
-            <li className="about-dep-item"><span className="about-dep-name">vite</span><span className="about-dep-ver">^5.4</span></li>
-            <li className="about-dep-item"><span className="about-dep-name">vitest</span><span className="about-dep-ver">^2.0</span></li>
-            <li className="about-dep-item"><span className="about-dep-name">@types/chrome</span><span className="about-dep-ver">^0.0.270</span></li>
-            <li className="about-dep-item"><span className="about-dep-name">jsdom</span><span className="about-dep-ver">^29.1</span></li>
+            <li className="about-dep-item">
+              <span className="about-dep-name">typescript</span>
+              <span className="about-dep-ver">^5.5</span>
+            </li>
+            <li className="about-dep-item">
+              <span className="about-dep-name">vite</span>
+              <span className="about-dep-ver">^5.4</span>
+            </li>
+            <li className="about-dep-item">
+              <span className="about-dep-name">vitest</span>
+              <span className="about-dep-ver">^2.0</span>
+            </li>
+            <li className="about-dep-item">
+              <span className="about-dep-name">@types/chrome</span>
+              <span className="about-dep-ver">^0.0.270</span>
+            </li>
+            <li className="about-dep-item">
+              <span className="about-dep-name">jsdom</span>
+              <span className="about-dep-ver">^29.1</span>
+            </li>
           </ul>
         </div>
 

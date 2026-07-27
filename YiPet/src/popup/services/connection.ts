@@ -10,11 +10,7 @@ export interface ConnectDeps {
   onFailed(): void;
 }
 
-export function connect(
-  deps: ConnectDeps,
-  maxRetries = 3,
-  baseMs = 500,
-): void {
+export function connect(deps: ConnectDeps, maxRetries = 3, baseMs = 500): void {
   let retries = 0;
 
   function tryConnect(): void {

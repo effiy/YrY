@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { CDN_CATALOG, catalogByKey } from '../../src/content/catalog';
+import { describe, expect, it } from 'vitest';
+import { CDN_CATALOG, catalogByKey } from '../../src/content/cdn/catalog';
 
 describe('CDN catalog', () => {
   describe('CDN_CATALOG', () => {
@@ -17,12 +17,12 @@ describe('CDN catalog', () => {
     });
 
     it('all keys are unique', () => {
-      const keys = CDN_CATALOG.map(e => e.key);
+      const keys = CDN_CATALOG.map((e) => e.key);
       expect(new Set(keys).size).toBe(keys.length);
     });
 
     it('includes core frameworks', () => {
-      const keys = CDN_CATALOG.map(e => e.key);
+      const keys = CDN_CATALOG.map((e) => e.key);
       expect(keys).toContain('react');
       expect(keys).toContain('react-dom');
       expect(keys).toContain('vue');
@@ -30,7 +30,7 @@ describe('CDN catalog', () => {
     });
 
     it('includes dayjs with all plugins and locales', () => {
-      const keys = CDN_CATALOG.map(e => e.key);
+      const keys = CDN_CATALOG.map((e) => e.key);
       expect(keys).toContain('dayjs');
       expect(keys).toContain('dayjs-utc');
       expect(keys).toContain('dayjs-tz');
@@ -39,7 +39,7 @@ describe('CDN catalog', () => {
     });
 
     it('includes YiPet utils', () => {
-      const keys = CDN_CATALOG.map(e => e.key);
+      const keys = CDN_CATALOG.map((e) => e.key);
       expect(keys).toContain('url');
       expect(keys).toContain('log');
       expect(keys).toContain('variables-css');
@@ -47,7 +47,7 @@ describe('CDN catalog', () => {
     });
 
     it('JS entries with global set have a global field', () => {
-      const jsWithGlobal = CDN_CATALOG.filter(e => e.type === 'js' && e.global);
+      const jsWithGlobal = CDN_CATALOG.filter((e) => e.type === 'js' && e.global);
       expect(jsWithGlobal.length).toBeGreaterThan(0);
       for (const entry of jsWithGlobal) {
         expect(typeof entry.global).toBe('string');
@@ -55,7 +55,7 @@ describe('CDN catalog', () => {
     });
 
     it('CSS entries have no global field', () => {
-      const cssEntries = CDN_CATALOG.filter(e => e.type === 'css');
+      const cssEntries = CDN_CATALOG.filter((e) => e.type === 'css');
       expect(cssEntries.length).toBeGreaterThan(0);
       for (const entry of cssEntries) {
         expect(entry.global).toBeUndefined();
@@ -71,7 +71,7 @@ describe('CDN catalog', () => {
     });
 
     it('returns undefined for unknown keys', () => {
-      expect(catalogByKey['nonexistent']).toBeUndefined();
+      expect(catalogByKey.nonexistent).toBeUndefined();
     });
   });
 });

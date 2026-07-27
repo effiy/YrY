@@ -4,20 +4,22 @@
  * Renders loading / error / empty states, the welcome card, and the message list.
  */
 
-import type { Message } from '../types';
-import type { PageInfo } from './WelcomeCard';
-import { WelcomeCard } from './WelcomeCard';
-import { MessageBubble } from './MessageBubble';
+import './ChatMessages.css';
+import type { ChatController } from '@/chat/controller';
+import type { Message, PageInfo } from '@/chat/types';
+import { MessageBubble, WelcomeCard } from '../';
 
 export interface ChatMessagesProps {
+  controller: ChatController;
   messages: Message[];
   viewState: string;
   pageInfo: PageInfo;
   currentSessionMessageCount: number;
-  onCopy: (text: string) => void;
 }
 
 export function ChatMessages(props: ChatMessagesProps) {
+  const ctrl = props.controller;
+
   // Loading state
   if (props.viewState === 'loading') {
     return (
@@ -32,7 +34,9 @@ export function ChatMessages(props: ChatMessagesProps) {
   if (props.viewState === 'error') {
     return (
       <div className="yipet-chat-error" role="alert">
-        <div className="yipet-error-icon" aria-hidden="true">⚠️</div>
+        <div className="yipet-error-icon" aria-hidden="true">
+          ⚠️
+        </div>
         <div className="yipet-error-text">发生错误</div>
       </div>
     );
@@ -73,7 +77,15 @@ export function ChatMessages(props: ChatMessagesProps) {
           key={idx}
           message={msg}
           index={idx}
-          onCopy={props.onCopy}
+          totalMessages={props.messages.length}
+          isProcessing={ctrl.state.isProcessing}
+          onCopy={ctrl.copyMessage}
+          onEdit={(i) => ctrl.editMessage(i)}
+          onResend={(i) => ctrl.resendMessage(i)}
+          onDelete={(i) => { if (confirm('确定要删除这条消息吗？')) ctrl.deleteMessage(i); }}
+          onMoveUp={(i) => ctrl.moveMessageUp(i)}
+          onMoveDown={(i) => ctrl.moveMessageDown(i)}
+          onRegenerate={(i) => ctrl.regenerateMessage(i)}
         />
       ))}
     </div>

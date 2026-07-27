@@ -97,7 +97,7 @@ export type MessageKey =
   // Language
   | 'popupLanguageLabel';
 
-import { lookupMessage } from './locale-messages';
+import { lookupMessage } from './messages';
 
 /* ── Public API ─────────────────────────────────────────────────────────── */
 

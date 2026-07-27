@@ -3,8 +3,8 @@
  * In MV3, chrome.commands.onCommand fires here, not in content scripts.
  */
 
-import type { PopupToContent } from '../shared/messages';
-import { getTabState, setTabState } from '../shared/state';
+import type { PopupToContent } from '@/shared/ipc/messages';
+import { getTabState, setTabState } from '@/shared/storage/state';
 
 // ── Command Handler ─────────────────────────────────────────────────────
 
@@ -22,9 +22,7 @@ chrome.commands.onCommand.addListener(async (command) => {
         // Persist the toggled visibility state per-tab
         if (response?.success !== undefined) {
           const current = await getTabState(tab.id);
-          const nextVisible = response.visible !== undefined
-            ? response.visible
-            : !current.visible;
+          const nextVisible = response.visible !== undefined ? response.visible : !current.visible;
           await setTabState(tab.id, { visible: nextVisible });
         }
       } catch {

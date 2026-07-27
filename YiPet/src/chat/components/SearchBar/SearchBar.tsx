@@ -2,14 +2,18 @@
  * YiPet Chat — SearchBar Component
  */
 
+import './SearchBar.css';
+import type { ChatController } from '@/chat/controller';
+
 export interface SearchBarProps {
-  searchQuery: string;
-  onSearchInput: (e: { target: { value: string } }) => void;
-  onClearSearch: () => void;
-  onCreateSession: () => void;
+  controller: ChatController;
 }
 
 export function SearchBar(props: SearchBarProps) {
+  const ctrl = props.controller;
+  const s = ctrl.state;
+  const query = s.searchInputValue;
+
   return (
     <div className="yipet-sidebar-search">
       <div className="yipet-sidebar-search-input-wrap">
@@ -28,25 +32,29 @@ export function SearchBar(props: SearchBarProps) {
           className="yipet-sidebar-search-input"
           type="text"
           placeholder="搜索会话..."
-          value={props.searchQuery}
-          onInput={props.onSearchInput}
-          onKeyDown={(e: KeyboardEvent) => { if (e.key === 'Escape') props.onClearSearch(); }}
+          value={query}
+          onInput={ctrl.onSearchInput}
+          onKeyDown={(e: KeyboardEvent) => {
+            if (e.key === 'Escape') ctrl.clearSearch();
+          }}
           aria-label="搜索会话"
         />
-        {props.searchQuery
-          ? (
-            <button
-              className="yipet-sidebar-search-clear"
-              onClick={props.onClearSearch}
-              title="清除搜索"
-              aria-label="清除搜索"
-            >✕</button>
-            )
-          : null}
+        {query ? (
+          <button
+            type="button"
+            className="yipet-sidebar-search-clear"
+            onClick={ctrl.clearSearch}
+            title="清除搜索"
+            aria-label="清除搜索"
+          >
+            ✕
+          </button>
+        ) : null}
       </div>
       <button
+        type="button"
         className="yipet-sidebar-new-btn"
-        onClick={props.onCreateSession}
+        onClick={() => ctrl.createSession()}
         title="新建会话"
         aria-label="新建会话"
       >
@@ -54,6 +62,17 @@ export function SearchBar(props: SearchBarProps) {
           <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
         </svg>
       </button>
+      {!s.batchMode ? (
+        <button
+          type="button"
+          className="yipet-sidebar-batch-btn"
+          onClick={() => ctrl.enterBatchMode()}
+          title="批量管理会话"
+          aria-label="批量管理"
+        >
+          ☰
+        </button>
+      ) : null}
     </div>
   );
 }

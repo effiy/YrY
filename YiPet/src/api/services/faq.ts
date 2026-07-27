@@ -5,11 +5,11 @@
 import type { ApiClient, ApiResponse } from '../client';
 import { FAQ } from '../endpoints';
 import type {
-  FAQRecord,
-  FAQCreateRequest,
-  FAQUpdateRequest,
   FAQBatchUpdateRequest,
+  FAQCreateRequest,
+  FAQRecord,
   FAQReorderRequest,
+  FAQUpdateRequest,
 } from '../types';
 
 export class FAQService {

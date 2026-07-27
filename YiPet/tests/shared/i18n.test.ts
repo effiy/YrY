@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { t, localizeDOM, type MessageKey } from '../../src/shared/i18n';
+import { describe, expect, it, vi } from 'vitest';
+import { localizeDOM, type MessageKey, t } from '../../src/shared/i18n';
 
 describe('i18n', () => {
   describe('t()', () => {
@@ -27,15 +27,33 @@ describe('i18n', () => {
     it('handles all known message keys without crashing', () => {
       vi.mocked(chrome.i18n.getMessage).mockReturnValue('ok');
       const keys: MessageKey[] = [
-        'extName', 'extDescription', 'extDefaultTitle',
-        'cmdTogglePet', 'cmdOpenChat',
-        'popupSwitchLabel', 'popupSizeLabel', 'popupRoleLabel', 'popupColorLabel',
-        'popupSettingsTitle', 'popupModelPrefix',
-        'popupStatusConnecting', 'popupStatusReady', 'popupStatusReadyOffline',
-        'popupStatusActive', 'popupStatusHidden',
-        'notifyShown', 'notifyHidden', 'notifySizeUpdated', 'notifyRoleChanged', 'notifyColorSet',
-        'errorOperationFailed', 'errorTabNotFound', 'errorInitFailed', 'errorContentScriptNotReady',
-        'popupSizeUnit', 'popupVersion',
+        'extName',
+        'extDescription',
+        'extDefaultTitle',
+        'cmdTogglePet',
+        'cmdOpenChat',
+        'popupSwitchLabel',
+        'popupSizeLabel',
+        'popupRoleLabel',
+        'popupColorLabel',
+        'popupSettingsTitle',
+        'popupModelPrefix',
+        'popupStatusConnecting',
+        'popupStatusReady',
+        'popupStatusReadyOffline',
+        'popupStatusActive',
+        'popupStatusHidden',
+        'notifyShown',
+        'notifyHidden',
+        'notifySizeUpdated',
+        'notifyRoleChanged',
+        'notifyColorSet',
+        'errorOperationFailed',
+        'errorTabNotFound',
+        'errorInitFailed',
+        'errorContentScriptNotReady',
+        'popupSizeUnit',
+        'popupVersion',
       ];
       for (const key of keys) {
         expect(() => t(key)).not.toThrow();

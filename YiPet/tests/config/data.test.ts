@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { createPopupConfig } from '../../src/popup/data';
+import { describe, expect, it } from 'vitest';
 import { createConfig } from '../../src/config/config';
+import { createPopupConfig } from '../../src/popup/data';
 
 describe('popup data adapter', () => {
   const appConfig = createConfig('production', 'http://localhost:10086');
@@ -8,9 +8,7 @@ describe('popup data adapter', () => {
 
   describe('createPopupConfig()', () => {
     it('exports ROLES array', () => {
-      expect(popupConfig.ROLES).toEqual([
-        'Teacher', 'Doctor', 'Pastry Chef', 'Police Officer',
-      ]);
+      expect(popupConfig.ROLES).toEqual(['Teacher', 'Doctor', 'Pastry Chef', 'Police Officer']);
     });
 
     it('exports COLORS array with values and labels', () => {

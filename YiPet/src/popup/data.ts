@@ -4,8 +4,8 @@
  * Layer 3 of the config layering pattern.
  */
 
-import type { AppConfig } from '../config/config';
-import { PET_CONFIG } from '../config/config';
+import type { AppConfig } from '@/config/config';
+import { PET_CONFIG } from '@/config/config';
 
 // ── Helpers ─────────────────────────────────────────────────────────────
 
@@ -22,13 +22,15 @@ function pick<T>(obj: unknown, path: string, fallback: T): T {
 // ── Color Labels ────────────────────────────────────────────────────────
 
 const COLOR_LABELS = [
-  'Quantum Violet', 'Indigo Violet', 'Quantum Ocean', 'Quantum Forest', 'Quantum Sunset',
+  'Quantum Violet',
+  'Indigo Violet',
+  'Quantum Ocean',
+  'Quantum Forest',
+  'Quantum Sunset',
 ];
 
 function buildColors(gradients: string[]): { value: number; label: string }[] {
-  const result: { value: number; label: string }[] = [
-    { value: -1, label: 'None' },
-  ];
+  const result: { value: number; label: string }[] = [{ value: -1, label: 'None' }];
   for (let i = 0; i < gradients.length; i++) {
     result.push({ value: i, label: COLOR_LABELS[i] || `Theme ${i + 1}` });
   }
@@ -37,7 +39,10 @@ function buildColors(gradients: string[]): { value: number; label: string }[] {
 
 // ── Message Table ───────────────────────────────────────────────────────
 
-interface MessageEntry { path: string; def: string }
+interface MessageEntry {
+  path: string;
+  def: string;
+}
 
 function buildMessages(table: Record<string, MessageEntry>): Record<string, string> {
   const out: Record<string, string> = {};
@@ -103,19 +108,19 @@ export function createPopupConfig(cfg: AppConfig): PopupConfig {
     },
 
     MSG: buildMessages({
-      CONNECTING:     { path: 'none',                         def: 'Connecting…' },
-      READY:          { path: 'none',                         def: 'Ready' },
-      READY_OFFLINE:  { path: 'none',                         def: 'Ready (Offline)' },
-      ACTIVE:         { path: 'none',                         def: 'Active' },
-      HIDDEN:         { path: 'none',                         def: 'Hidden' },
-      SHOWN:          { path: 'SUCCESS_MESSAGES.SHOWN',       def: 'Shown' },
-      SIZE_UPDATED:   { path: 'SUCCESS_MESSAGES.SIZE_UPDATED',def: 'Size Updated' },
-      ROLE_CHANGED:   { path: 'SUCCESS_MESSAGES.ROLE_CHANGED',def: 'Role Changed' },
-      COLOR_SET:      { path: 'SUCCESS_MESSAGES.COLOR_SET',   def: 'Color Theme Set' },
-      OP_FAILED:      { path: 'ERROR_MESSAGES.OPERATION_FAILED', def: 'Operation Failed' },
-      TAB_NOT_FOUND:  { path: 'ERROR_MESSAGES.TAB_NOT_FOUND', def: 'Cannot Get Current Tab' },
-      INIT_FAILED:    { path: 'ERROR_MESSAGES.INIT_FAILED',   def: 'Initialization Failed' },
-      CS_NOT_READY:   { path: 'none',                         def: 'Content Script Not Ready' },
+      CONNECTING: { path: 'none', def: 'Connecting…' },
+      READY: { path: 'none', def: 'Ready' },
+      READY_OFFLINE: { path: 'none', def: 'Ready (Offline)' },
+      ACTIVE: { path: 'none', def: 'Active' },
+      HIDDEN: { path: 'none', def: 'Hidden' },
+      SHOWN: { path: 'SUCCESS_MESSAGES.SHOWN', def: 'Shown' },
+      SIZE_UPDATED: { path: 'SUCCESS_MESSAGES.SIZE_UPDATED', def: 'Size Updated' },
+      ROLE_CHANGED: { path: 'SUCCESS_MESSAGES.ROLE_CHANGED', def: 'Role Changed' },
+      COLOR_SET: { path: 'SUCCESS_MESSAGES.COLOR_SET', def: 'Color Theme Set' },
+      OP_FAILED: { path: 'ERROR_MESSAGES.OPERATION_FAILED', def: 'Operation Failed' },
+      TAB_NOT_FOUND: { path: 'ERROR_MESSAGES.TAB_NOT_FOUND', def: 'Cannot Get Current Tab' },
+      INIT_FAILED: { path: 'ERROR_MESSAGES.INIT_FAILED', def: 'Initialization Failed' },
+      CS_NOT_READY: { path: 'none', def: 'Content Script Not Ready' },
     }),
 
     DEFAULTS: {

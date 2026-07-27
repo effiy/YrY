@@ -5,13 +5,14 @@
  * Supports dynamic switching for popup/options pages.
  */
 
-import type { MessageKey } from './i18n';
+import { localizeDOM } from './index';
+import { setActiveLocale } from './messages';
 
 /* ── Supported Locales ─────────────────────────────────────────────────── */
 
 /** Must match _locales/ directory names exactly. */
 export const SUPPORTED_LOCALES = ['en', 'zh_CN'] as const;
-export type SupportedLocale = typeof SUPPORTED_LOCALES[number];
+export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
 const STORAGE_KEY = 'locale';
 const LEGACY_STORAGE_KEY = 'user_locale';
@@ -34,7 +35,7 @@ export function isRTL(locale: string): boolean {
  */
 export function getChromeLocale(): SupportedLocale {
   const raw = chrome.i18n.getUILanguage(); // e.g. "zh-CN", "en-US", "ja"
-  const base = raw.replace('-', '_');       // normalize to "zh_CN"
+  const base = raw.replace('-', '_'); // normalize to "zh_CN"
 
   // Exact match first
   if (SUPPORTED_LOCALES.includes(base as SupportedLocale)) {
@@ -43,7 +44,7 @@ export function getChromeLocale(): SupportedLocale {
 
   // Try base language only (e.g. "zh" matches "zh_CN")
   const lang = base.split('_')[0];
-  const match = SUPPORTED_LOCALES.find(l => l.startsWith(lang));
+  const match = SUPPORTED_LOCALES.find((l) => l.startsWith(lang));
   if (match) return match;
 
   return 'en';
@@ -99,13 +100,11 @@ export async function resolveLocale(): Promise<{
  */
 export async function applyLocale(locale: SupportedLocale): Promise<void> {
   // Preload messages for the target locale before anything reads t()
-  const { setActiveLocale } = await import('./locale-messages');
   await setActiveLocale(locale);
 
   document.documentElement.lang = locale.replace('_', '-');
   document.documentElement.dir = isRTL(locale) ? 'rtl' : 'ltr';
 
   // Re-process [data-i18n] elements with the new locale
-  const { localizeDOM } = await import('./i18n');
   localizeDOM();
 }

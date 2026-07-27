@@ -62,11 +62,11 @@ export async function loadMessages(locale: SupportedLocale): Promise<MessageTabl
 export function lookupMessage(
   key: string,
   locale?: SupportedLocale,
-  substitutions?: string | string[]
+  substitutions?: string | string[],
 ): string | null {
   const loc = locale ?? _activeLocale;
   const table = cache.get(loc);
-  if (!table || !table[key]) return null;
+  if (!table?.[key]) return null;
 
   const entry = table[key];
   let text = entry.message;
@@ -74,9 +74,7 @@ export function lookupMessage(
   // Apply $PLACEHOLDER$ → value substitution
   if (entry.placeholders) {
     const subs: string[] =
-      typeof substitutions === 'string'
-        ? [substitutions]
-        : substitutions ?? [];
+      typeof substitutions === 'string' ? [substitutions] : (substitutions ?? []);
 
     for (const [phName, phDef] of Object.entries(entry.placeholders)) {
       const m = phDef.content.match(/^\$(\d+)$/);

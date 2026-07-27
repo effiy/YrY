@@ -2,7 +2,9 @@
  * Popup service factory for chrome.tabs and chrome.storage wrappers.
  */
 
-export interface TabRef { current: chrome.tabs.Tab | null }
+export interface TabRef {
+  current: chrome.tabs.Tab | null;
+}
 
 export interface ChromeService {
   getActiveTab(): Promise<chrome.tabs.Tab | null>;
@@ -38,7 +40,7 @@ export function createChromeService(tabRef: TabRef, storageKey: string): ChromeS
       try {
         const tabId = tabRef.current?.id;
         const result = await chrome.storage.local.get(storageKey);
-        const map = (result && result[storageKey]) || {};
+        const map = result?.[storageKey] || {};
         if (tabId != null && map[tabId]) return map[tabId];
         return null;
       } catch (err) {
@@ -55,7 +57,7 @@ export function createChromeService(tabRef: TabRef, storageKey: string): ChromeS
 
         // Persist per-tab (existing mechanism — popup reads this on open)
         const result = await chrome.storage.local.get(storageKey);
-        const map = (result && result[storageKey]) || {};
+        const map = result?.[storageKey] || {};
         map[tabId] = {
           visible: state.visible,
           size: state.size,
@@ -69,7 +71,7 @@ export function createChromeService(tabRef: TabRef, storageKey: string): ChromeS
         if (tabUrl) {
           const urlKey = new URL(tabUrl).origin + new URL(tabUrl).pathname;
           const urlResult = await chrome.storage.local.get('pet_state_by_url');
-          const urlMap = (urlResult && urlResult['pet_state_by_url']) || {};
+          const urlMap = urlResult?.pet_state_by_url || {};
           urlMap[urlKey] = {
             visible: state.visible,
             size: state.size,
@@ -94,7 +96,7 @@ export function createChromeService(tabRef: TabRef, storageKey: string): ChromeS
     async loadRolePreference() {
       try {
         const result = await chrome.storage.local.get('petRole');
-        return (result && result.petRole) || null;
+        return result?.petRole || null;
       } catch (err) {
         console.warn('[YiPet Popup] loadRolePreference failed:', (err as Error).message);
         return null;

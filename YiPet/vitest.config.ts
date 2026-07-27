@@ -1,5 +1,5 @@
-import { defineConfig } from 'vitest/config';
 import { resolve } from 'node:path';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
@@ -9,9 +9,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@shared': resolve(__dirname, 'src/shared'),
-      '@config': resolve(__dirname, 'src/config'),
-      '@api': resolve(__dirname, 'src/api'),
+      '@': resolve(__dirname, 'src'),
     },
   },
 });

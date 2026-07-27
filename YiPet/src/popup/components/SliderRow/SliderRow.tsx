@@ -1,4 +1,5 @@
-import { t } from '../../../shared/i18n';
+import './SliderRow.css';
+import { t } from '@/shared/i18n/index';
 
 export interface SliderRowProps {
   label: string;
@@ -15,7 +16,9 @@ export interface SliderRowProps {
 export function SliderRow(props: SliderRowProps) {
   return (
     <div className="setting-row">
-      <label className="setting-label-inline" htmlFor={props.id}>{props.label}</label>
+      <label className="setting-label-inline" htmlFor={props.id}>
+        {props.label}
+      </label>
       <div className="slider-row">
         <input
           id={props.id}
@@ -30,7 +33,8 @@ export function SliderRow(props: SliderRowProps) {
           onChange={props.onChange}
         />
         <output className="value-pill" htmlFor={props.id}>
-          {props.value}{t('popupSizeUnit')}
+          {props.value}
+          {t('popupSizeUnit')}
         </output>
       </div>
     </div>

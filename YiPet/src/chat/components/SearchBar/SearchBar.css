@@ -5,77 +5,136 @@
 .yipet-sidebar-search {
   display: flex !important;
   align-items: center !important;
-  gap: 8px !important;
-  padding: 12px !important;
-  border-bottom: 1px solid var(--border-secondary, rgba(167, 139, 250, 0.3)) !important;
+  gap: 6px !important;
+  padding: 10px 10px !important;
+  border-bottom: 1px solid rgba(167, 139, 250, 0.12) !important;
   flex-shrink: 0 !important;
 }
 
 .yipet-sidebar-search-input-wrap {
   display: flex !important;
   align-items: center !important;
-  flex: 1 !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
   position: relative !important;
 }
 
 .yipet-sidebar-search-icon {
   position: absolute !important;
-  left: 10px !important;
-  width: 14px !important;
-  height: 14px !important;
-  color: var(--text-secondary, #d4d0e8) !important;
+  left: 9px !important;
+  width: 13px !important;
+  height: 13px !important;
+  color: rgba(148, 163, 184, 0.5) !important;
   pointer-events: none !important;
 }
 
 .yipet-sidebar-search-input {
   width: 100% !important;
-  padding: 8px 28px 8px 32px !important;
-  border: 1px solid var(--border-secondary, rgba(167, 139, 250, 0.3)) !important;
+  height: 32px !important;
+  padding: 0 26px 0 30px !important;
+  border: 1px solid rgba(167, 139, 250, 0.15) !important;
   border-radius: 8px !important;
-  background: var(--input-bg, #1a1835) !important;
+  background: rgba(15, 23, 42, 0.35) !important;
   color: var(--text-primary, #f5f3ff) !important;
   font-size: 12px !important;
   outline: none !important;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease !important;
 }
 
 .yipet-sidebar-search-input:focus {
-  border-color: var(--primary, #667eea) !important;
+  border-color: rgba(139, 92, 246, 0.45) !important;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.12) !important;
+  background: rgba(15, 23, 42, 0.55) !important;
+}
+
+.yipet-sidebar-search-input::placeholder {
+  color: rgba(148, 163, 184, 0.4) !important;
+  font-size: 11.5px !important;
 }
 
 .yipet-sidebar-search-clear {
   position: absolute !important;
-  right: 6px !important;
+  right: 4px !important;
   width: 20px !important;
   height: 20px !important;
   border: none !important;
-  background: none !important;
-  color: var(--text-secondary, #d4d0e8) !important;
+  border-radius: 4px !important;
+  background: transparent !important;
+  color: rgba(212, 208, 232, 0.5) !important;
   cursor: pointer !important;
-  font-size: 12px !important;
+  font-size: 11px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+  transition: color 0.12s ease, background 0.12s ease !important;
 }
+
+.yipet-sidebar-search-clear:hover {
+  color: rgba(245, 243, 255, 0.85) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* ── New Session Button ─────────────────────────────────────────────── */
 
 .yipet-sidebar-new-btn {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 32px !important;
-  height: 32px !important;
-  border-radius: 8px !important;
-  border: none !important;
-  background: var(--primary, #667eea) !important;
-  color: #fff !important;
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 7px !important;
+  border: 1px solid rgba(139, 92, 246, 0.25) !important;
+  background: rgba(99, 102, 241, 0.15) !important;
+  color: #c4b5fd !important;
   cursor: pointer !important;
   flex-shrink: 0 !important;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    transform 0.1s ease !important;
 }
 
 .yipet-sidebar-new-btn:hover {
-  background: var(--primary-hover, #5a67d8) !important;
+  background: rgba(99, 102, 241, 0.28) !important;
+  border-color: rgba(139, 92, 246, 0.5) !important;
+  transform: scale(1.05) !important;
+}
+
+.yipet-sidebar-new-btn:active {
+  transform: scale(0.95) !important;
 }
 
 .yipet-sidebar-new-btn svg {
-  width: 16px !important;
-  height: 16px !important;
+  width: 14px !important;
+  height: 14px !important;
+}
+
+/* ── Batch Mode Button ──────────────────────────────────────────────── */
+
+.yipet-sidebar-batch-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 7px !important;
+  border: 1px solid rgba(167, 139, 250, 0.15) !important;
+  background: transparent !important;
+  color: rgba(212, 208, 232, 0.6) !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  font-size: 13px !important;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease,
+    border-color 0.12s ease !important;
+}
+
+.yipet-sidebar-batch-btn:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: rgba(245, 243, 255, 0.85) !important;
+  border-color: rgba(167, 139, 250, 0.3) !important;
 }

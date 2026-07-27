@@ -1,14 +1,285 @@
 /*
  * YiPet Chat — ChatInput Styles
+ * Toolbar, draft images, textarea, send/stop buttons.
  */
+
+/* ── Container ──────────────────────────────────────────────────────── */
 
 .yipet-chat-input-container {
   flex: 0 0 auto !important;
-  padding: 12px 16px !important;
-  border-top: 1px solid var(--border-secondary, rgba(167, 139, 250, 0.3)) !important;
-  background: var(--bg-secondary, #1e1a3b) !important;
+  padding: 10px 16px 12px !important;
+  border-top: 1px solid rgba(167, 139, 250, 0.15) !important;
+  background: linear-gradient(180deg,
+    rgba(18, 22, 38, 0.92) 0%,
+    rgba(15, 20, 35, 0.96) 100%
+  ) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  backdrop-filter: blur(16px) !important;
   z-index: 10 !important;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2) !important;
 }
+
+/* ── Toolbar ─────────────────────────────────────────────────────────── */
+
+.yipet-chat-toolbar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 6px !important;
+  margin-bottom: 8px !important;
+  flex-wrap: nowrap !important;
+  overflow: hidden !important;
+}
+
+.yipet-chat-toolbar-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 3px !important;
+  flex-shrink: 1 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  flex-wrap: wrap !important;
+}
+
+.yipet-chat-toolbar-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  flex-shrink: 0 !important;
+}
+
+.yipet-toolbar-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 28px !important;
+  height: 28px !important;
+  padding: 0 !important;
+  border-radius: 7px !important;
+  border: 1px solid rgba(167, 139, 250, 0.1) !important;
+  background: rgba(167, 139, 250, 0.05) !important;
+  color: rgba(212, 208, 232, 0.75) !important;
+  font-size: 13px !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease,
+    transform 0.1s ease !important;
+}
+
+.yipet-toolbar-btn:hover {
+  background: rgba(167, 139, 250, 0.16) !important;
+  border-color: rgba(167, 139, 250, 0.35) !important;
+  color: rgba(245, 243, 255, 0.95) !important;
+  transform: translateY(-1px) !important;
+}
+
+.yipet-toolbar-btn:active {
+  transform: scale(0.94) !important;
+}
+
+.yipet-toolbar-btn:disabled {
+  opacity: 0.3 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  pointer-events: none !important;
+}
+
+/* ── Context Switch ─────────────────────────────────────────────────── */
+
+.yipet-context-switch {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  padding: 2px 7px !important;
+  border-radius: 7px !important;
+  border: 1px solid rgba(167, 139, 250, 0.1) !important;
+  background: rgba(167, 139, 250, 0.04) !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  transition: background 0.15s ease, border-color 0.15s ease !important;
+  flex-shrink: 0 !important;
+}
+
+.yipet-context-switch:hover {
+  background: rgba(167, 139, 250, 0.1) !important;
+}
+
+.yipet-context-switch.active {
+  background: rgba(139, 92, 246, 0.1) !important;
+  border-color: rgba(139, 92, 246, 0.25) !important;
+}
+
+.yipet-context-switch-label {
+  font-size: 10.5px !important;
+  font-weight: 500 !important;
+  color: rgba(148, 163, 184, 0.8) !important;
+  white-space: nowrap !important;
+  transition: color 0.15s ease !important;
+}
+
+.yipet-context-switch.active .yipet-context-switch-label {
+  color: #c4b5fd !important;
+}
+
+.yipet-context-switch-track {
+  position: relative !important;
+  width: 26px !important;
+  height: 14px !important;
+  border-radius: 7px !important;
+  background: rgba(51, 65, 85, 0.65) !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.yipet-context-switch-thumb {
+  position: absolute !important;
+  top: 2px !important;
+  left: 2px !important;
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50% !important;
+  background: rgba(148, 163, 184, 0.85) !important;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s ease !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+.yipet-context-switch.active .yipet-context-switch-track {
+  background: rgba(139, 92, 246, 0.45) !important;
+}
+
+.yipet-context-switch.active .yipet-context-switch-thumb {
+  transform: translateX(12px) !important;
+  background: #c4b5fd !important;
+}
+
+/* ── Status Button ──────────────────────────────────────────────────── */
+
+.yipet-status-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 30px !important;
+  height: 28px !important;
+  padding: 0 !important;
+  border-radius: 7px !important;
+  border: 1px solid rgba(167, 139, 250, 0.12) !important;
+  background: rgba(167, 139, 250, 0.05) !important;
+  font-size: 13px !important;
+  cursor: default !important;
+  opacity: 0.4 !important;
+  transition:
+    opacity 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease !important;
+}
+
+.yipet-status-btn.active {
+  opacity: 1 !important;
+  cursor: pointer !important;
+  background: rgba(239, 68, 68, 0.15) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  animation: yipet-status-pulse 1.8s ease-in-out infinite !important;
+}
+
+@keyframes yipet-status-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.3); }
+  50%      { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0); }
+}
+
+.yipet-status-btn.active:hover {
+  background: rgba(239, 68, 68, 0.25) !important;
+  border-color: rgba(239, 68, 68, 0.5) !important;
+}
+
+/* ── Draft Images ───────────────────────────────────────────────────── */
+
+.yipet-draft-images {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  align-items: center !important;
+  padding: 6px 8px !important;
+  margin-bottom: 8px !important;
+  border-radius: 10px !important;
+  border: 1px dashed rgba(167, 139, 250, 0.2) !important;
+  background: rgba(15, 23, 42, 0.35) !important;
+}
+
+.yipet-draft-image {
+  position: relative !important;
+  width: 52px !important;
+  height: 40px !important;
+  border-radius: 7px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(167, 139, 250, 0.2) !important;
+  background: rgba(15, 23, 42, 0.5) !important;
+  flex-shrink: 0 !important;
+  cursor: pointer !important;
+  transition: border-color 0.15s ease !important;
+}
+
+.yipet-draft-image:hover {
+  border-color: rgba(167, 139, 250, 0.45) !important;
+}
+
+.yipet-draft-image-preview {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+.yipet-draft-image-remove {
+  position: absolute !important;
+  top: 2px !important;
+  right: 2px !important;
+  width: 16px !important;
+  height: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 4px !important;
+  border: none !important;
+  background: rgba(0, 0, 0, 0.7) !important;
+  color: #fff !important;
+  font-size: 9px !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  opacity: 0 !important;
+  transition: opacity 0.12s ease !important;
+}
+
+.yipet-draft-image:hover .yipet-draft-image-remove {
+  opacity: 1 !important;
+}
+
+.yipet-draft-image-remove:hover {
+  background: rgba(239, 68, 68, 0.8) !important;
+}
+
+.yipet-draft-images-clear {
+  padding: 4px 8px !important;
+  border-radius: 6px !important;
+  border: 1px solid rgba(167, 139, 250, 0.15) !important;
+  background: rgba(167, 139, 250, 0.06) !important;
+  color: rgba(212, 208, 232, 0.7) !important;
+  font-size: 11px !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  transition: background 0.12s ease, color 0.12s ease !important;
+}
+
+.yipet-draft-images-clear:hover {
+  background: rgba(239, 68, 68, 0.12) !important;
+  border-color: rgba(239, 68, 68, 0.25) !important;
+  color: rgba(248, 113, 113, 0.9) !important;
+}
+
+/* ── Input Row ──────────────────────────────────────────────────────── */
 
 .yipet-chat-input-row {
   display: flex !important;
@@ -16,40 +287,66 @@
   gap: 8px !important;
 }
 
+/* ── Textarea ───────────────────────────────────────────────────────── */
+
 .yipet-chat-textarea {
-  flex: 1 !important;
-  border: 1px solid var(--border-secondary, rgba(167, 139, 250, 0.3)) !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  border: 1px solid rgba(167, 139, 250, 0.2) !important;
   border-radius: 12px !important;
   padding: 10px 14px !important;
-  background: var(--input-bg, #1a1835) !important;
+  background: rgba(15, 23, 42, 0.45) !important;
   color: var(--text-primary, #f5f3ff) !important;
-  font-size: 13px !important;
+  font-size: 13.5px !important;
   font-family: inherit !important;
-  line-height: 1.5 !important;
+  line-height: 1.55 !important;
   resize: none !important;
   outline: none !important;
-  min-height: 40px !important;
+  min-height: 44px !important;
   max-height: 200px !important;
-  transition: border-color 0.15s ease !important;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(167, 139, 250, 0.25) transparent !important;
 }
 
 .yipet-chat-textarea:focus {
-  border-color: var(--primary, #667eea) !important;
-  box-shadow: 0 0 0 2px rgba(var(--primary-rgb, 102, 126, 234), 0.2) !important;
+  border-color: rgba(139, 92, 246, 0.5) !important;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15) !important;
+  background: rgba(15, 23, 42, 0.65) !important;
 }
 
 .yipet-chat-textarea::placeholder {
-  color: var(--placeholder-color, rgba(212, 208, 232, 0.5)) !important;
+  color: rgba(148, 163, 184, 0.45) !important;
+  font-size: 13px !important;
 }
+
+.yipet-chat-textarea:disabled {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+}
+
+.yipet-chat-textarea::-webkit-scrollbar {
+  width: 4px !important;
+}
+
+.yipet-chat-textarea::-webkit-scrollbar-thumb {
+  background: rgba(167, 139, 250, 0.25) !important;
+  border-radius: 2px !important;
+}
+
+/* ── Send / Stop Buttons ────────────────────────────────────────────── */
 
 .yipet-send-btn,
 .yipet-stop-btn {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 40px !important;
-  height: 40px !important;
-  border-radius: 12px !important;
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 10px !important;
   border: none !important;
   cursor: pointer !important;
   flex-shrink: 0 !important;
@@ -57,32 +354,62 @@
 }
 
 .yipet-send-btn {
-  background: var(--button-bg, #667eea) !important;
-  color: #fff !important;
+  background: linear-gradient(135deg,
+    rgba(99, 102, 241, 0.6) 0%,
+    rgba(139, 92, 246, 0.5) 100%
+  ) !important;
+  border: 1px solid rgba(139, 92, 246, 0.2) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
   opacity: 0.4 !important;
 }
 
 .yipet-send-btn.has-content {
   opacity: 1 !important;
+  background: linear-gradient(135deg,
+    rgba(99, 102, 241, 0.9) 0%,
+    rgba(139, 92, 246, 0.75) 100%
+  ) !important;
+  border-color: rgba(139, 92, 246, 0.4) !important;
+  color: #fff !important;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3) !important;
 }
 
-.yipet-send-btn:hover.has-content {
-  background: var(--button-hover, #5a67d8) !important;
-  transform: scale(1.05) !important;
+.yipet-send-btn.has-content:hover {
+  transform: scale(1.06) !important;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4) !important;
+}
+
+.yipet-send-btn.has-content:active {
+  transform: scale(0.95) !important;
 }
 
 .yipet-send-btn svg,
 .yipet-stop-btn svg {
-  width: 18px !important;
-  height: 18px !important;
+  width: 17px !important;
+  height: 17px !important;
 }
 
 .yipet-stop-btn {
-  background: #ef4444 !important;
+  background: linear-gradient(135deg,
+    rgba(239, 68, 68, 0.85) 0%,
+    rgba(220, 38, 38, 0.75) 100%
+  ) !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
   color: #fff !important;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25) !important;
+  animation: yipet-stop-pulse 1.5s ease-in-out infinite !important;
+}
+
+@keyframes yipet-stop-pulse {
+  0%, 100% { box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25); }
+  50%      { box-shadow: 0 2px 16px rgba(239, 68, 68, 0.4); }
 }
 
 .yipet-stop-btn:hover {
-  background: #dc2626 !important;
-  transform: scale(1.05) !important;
+  transform: scale(1.06) !important;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.45) !important;
+}
+
+.yipet-stop-btn:active {
+  transform: scale(0.95) !important;
 }

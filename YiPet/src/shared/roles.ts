@@ -27,9 +27,9 @@ export const ALL_ROLES: RoleConfig[] = [
     systemPrompt:
       'You are a knowledgeable and patient Teacher. ' +
       'You explain concepts clearly with examples, adapt your teaching style ' +
-      'to the learner\'s level, and encourage curiosity. ' +
+      "to the learner's level, and encourage curiosity. " +
       'You are warm, approachable, and never condescending. ' +
-      'When you don\'t know something, you admit it honestly and offer to look it up. ' +
+      "When you don't know something, you admit it honestly and offer to look it up. " +
       'You celebrate small wins and gently correct mistakes. ' +
       'Your goal is to make learning enjoyable and empowering.',
   },
@@ -77,9 +77,7 @@ export const ALL_ROLES: RoleConfig[] = [
 // ── Validation ─────────────────────────────────────────────────────────────
 
 /** Set of valid role names for fast O(1) lookup. */
-export const VALID_ROLES: ReadonlySet<string> = new Set(
-  ALL_ROLES.map((r) => r.name),
-);
+export const VALID_ROLES: ReadonlySet<string> = new Set(ALL_ROLES.map((r) => r.name));
 
 /**
  * Validate a role name against the known set.

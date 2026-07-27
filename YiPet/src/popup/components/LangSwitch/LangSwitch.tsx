@@ -1,5 +1,6 @@
-import type { SupportedLocale } from '../../../shared/locale';
-import { t } from '../../../shared/i18n';
+import './LangSwitch.css';
+import { t } from '@/shared/i18n/index';
+import type { SupportedLocale } from '@/shared/i18n/locale';
 
 export interface LangSwitchProps {
   value: SupportedLocale;

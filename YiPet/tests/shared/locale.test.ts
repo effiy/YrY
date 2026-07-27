@@ -1,12 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  SUPPORTED_LOCALES,
   getChromeLocale,
   getUserLocale,
-  setUserLocale,
-  resolveLocale,
   isRTL,
-} from '../../src/shared/locale';
+  resolveLocale,
+  SUPPORTED_LOCALES,
+  setUserLocale,
+} from '../../src/shared/i18n/locale';
 import { resetChromeStorage } from '../setup';
 
 describe('locale', () => {

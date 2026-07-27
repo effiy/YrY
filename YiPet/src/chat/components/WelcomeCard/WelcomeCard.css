@@ -1,38 +1,55 @@
 /*
  * YiPet Chat — WelcomeCard Styles
+ * Page info card shown at top of message list.
  */
 
 .welcome-card {
-  background: var(--bg-elevated, rgba(30, 26, 59, 0.9)) !important;
-  border: 1px solid var(--border-secondary, rgba(167, 139, 250, 0.3)) !important;
-  border-radius: 12px !important;
-  padding: 16px !important;
+  background: rgba(22, 27, 51, 0.65) !important;
+  border: 1px solid rgba(167, 139, 250, 0.12) !important;
+  border-left: 2px solid rgba(139, 92, 246, 0.55) !important;
+  border-radius: 10px !important;
+  padding: 14px 16px !important;
   color: var(--text-primary, #f5f3ff) !important;
   font-size: 13px !important;
   line-height: 1.6 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+  transition: border-color 0.2s ease, background 0.2s ease !important;
+}
+
+.welcome-card:hover {
+  background: rgba(22, 27, 51, 0.75) !important;
+  border-color: rgba(167, 139, 250, 0.2) !important;
 }
 
 .welcome-card-header {
   display: flex !important;
   align-items: center !important;
   margin-bottom: 12px !important;
+  padding-bottom: 10px !important;
+  border-bottom: 1px solid rgba(167, 139, 250, 0.1) !important;
 }
 
 .welcome-card-header-left {
   display: flex !important;
   align-items: center !important;
   gap: 8px !important;
+  min-width: 0 !important;
 }
 
 .welcome-card-favicon {
   width: 16px !important;
   height: 16px !important;
+  border-radius: 3px !important;
   flex-shrink: 0 !important;
 }
 
 .welcome-card-title {
   font-weight: 600 !important;
   font-size: 14px !important;
+  color: var(--text-primary, #f5f3ff) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 
 .welcome-card-row {
@@ -42,11 +59,17 @@
   margin-bottom: 8px !important;
 }
 
+.welcome-card-row:last-child {
+  margin-bottom: 0 !important;
+}
+
 .welcome-card-label {
-  color: var(--text-secondary, #d4d0e8) !important;
+  color: var(--text-secondary, #94a3b8) !important;
   flex-shrink: 0 !important;
-  min-width: 40px !important;
+  min-width: 36px !important;
   font-size: 12px !important;
+  font-weight: 500 !important;
+  padding-top: 1px !important;
 }
 
 .welcome-card-value {
@@ -56,12 +79,16 @@
 }
 
 .welcome-card-url {
-  color: var(--link-color, #c4b5fd) !important;
+  color: #c4b5fd !important;
   text-decoration: none !important;
+  font-size: 12.5px !important;
+  transition: color 0.15s ease !important;
 }
 
 .welcome-card-url:hover {
+  color: #ddd6fe !important;
   text-decoration: underline !important;
+  text-underline-offset: 2px !important;
 }
 
 .welcome-card-tags {
@@ -71,23 +98,31 @@
 }
 
 .welcome-card-tag {
-  display: inline-block !important;
+  display: inline-flex !important;
+  align-items: center !important;
   padding: 2px 8px !important;
-  border-radius: 10px !important;
-  background: rgba(var(--primary-rgb, 102, 126, 234), 0.15) !important;
-  color: var(--primary, #667eea) !important;
+  border-radius: 999px !important;
+  background: rgba(139, 92, 246, 0.12) !important;
+  color: #c4b5fd !important;
   font-size: 11px !important;
+  font-weight: 500 !important;
+  border: 1px solid rgba(139, 92, 246, 0.12) !important;
 }
 
 .welcome-card-footer {
-  border-top: 1px solid var(--border-secondary, rgba(167, 139, 250, 0.3)) !important;
+  border-top: 1px solid rgba(167, 139, 250, 0.1) !important;
   padding-top: 8px !important;
-  margin-top: 4px !important;
+  margin-top: 6px !important;
 }
 
 .welcome-card-meta {
   display: flex !important;
   gap: 12px !important;
   font-size: 11px !important;
-  color: var(--text-secondary, #d4d0e8) !important;
+  color: var(--text-secondary, #94a3b8) !important;
+}
+
+.welcome-card-meta span {
+  display: inline-flex !important;
+  align-items: center !important;
 }

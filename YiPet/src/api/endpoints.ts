@@ -14,61 +14,61 @@ export const BASE = {
 // ── Auth ──────────────────────────────────────────────────────────────
 
 export const AUTH = {
-  LOGIN:    '/auth/login',
-  LOGOUT:   '/auth/logout',
-  REFRESH:  '/auth/refresh',
-  PROFILE:  '/auth/profile',
+  LOGIN: '/auth/login',
+  LOGOUT: '/auth/logout',
+  REFRESH: '/auth/refresh',
+  PROFILE: '/auth/profile',
   VALIDATE: '/auth/validate',
 } as const;
 
 // ── Sessions ──────────────────────────────────────────────────────────
 
 export const SESSIONS = {
-  LIST:         '/sessions',
-  CREATE:       '/sessions',
-  GET:          (id: string) => `/sessions/${encodeURIComponent(id)}`,
-  UPDATE:       (id: string) => `/sessions/${encodeURIComponent(id)}`,
-  DELETE:       (id: string) => `/sessions/${encodeURIComponent(id)}`,
+  LIST: '/sessions',
+  CREATE: '/sessions',
+  GET: (id: string) => `/sessions/${encodeURIComponent(id)}`,
+  UPDATE: (id: string) => `/sessions/${encodeURIComponent(id)}`,
+  DELETE: (id: string) => `/sessions/${encodeURIComponent(id)}`,
   BATCH_DELETE: '/sessions/batch',
-  SEARCH:       '/sessions/search',
-  FAVORITES:    '/sessions/favorites',
-  EXPORT:       '/sessions/export',
-  IMPORT:       '/sessions/import',
+  SEARCH: '/sessions/search',
+  FAVORITES: '/sessions/favorites',
+  EXPORT: '/sessions/export',
+  IMPORT: '/sessions/import',
 } as const;
 
 // ── Chat / Prompt ─────────────────────────────────────────────────────
 
 export const CHAT = {
-  STREAM:  '/prompt',
-  PROMPT:  '/prompt/',
+  STREAM: '/prompt',
+  PROMPT: '/prompt/',
 } as const;
 
 // ── FAQ ───────────────────────────────────────────────────────────────
 
 export const FAQ = {
-  LIST:         '/faqs',
-  CREATE:       '/faqs',
-  GET:          (id: string) => `/faqs/${encodeURIComponent(id)}`,
-  UPDATE:       (id: string) => `/faqs/${encodeURIComponent(id)}`,
-  DELETE:       (id: string) => `/faqs/${encodeURIComponent(id)}`,
+  LIST: '/faqs',
+  CREATE: '/faqs',
+  GET: (id: string) => `/faqs/${encodeURIComponent(id)}`,
+  UPDATE: (id: string) => `/faqs/${encodeURIComponent(id)}`,
+  DELETE: (id: string) => `/faqs/${encodeURIComponent(id)}`,
   BATCH_UPDATE: '/faqs/batch',
-  REORDER:      '/faqs/reorder',
+  REORDER: '/faqs/reorder',
 } as const;
 
 // ── Config ────────────────────────────────────────────────────────────
 
 export const CONFIG = {
-  GET:    '/config',
+  GET: '/config',
   UPDATE: '/config',
-  RESET:  '/config/reset',
+  RESET: '/config/reset',
 } as const;
 
 // ── Database ──────────────────────────────────────────────────────────
 
 export const DATABASE = {
-  QUERY:  '/database/query',
+  QUERY: '/database/query',
   CREATE: '/database/create',
   UPDATE: '/database/update',
   DELETE: '/database/delete',
-  BATCH:  '/database/batch',
+  BATCH: '/database/batch',
 } as const;
