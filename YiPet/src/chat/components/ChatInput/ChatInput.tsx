@@ -1,10 +1,103 @@
 /**
  * YiPet Chat — ChatInput Component
  * Includes toolbar, draft images, and textarea with send/stop controls.
+ *
+ * Toolbar icons are inline SVGs for consistent cross-platform rendering
+ * and proper theming via currentColor. Follows shadcn/ui patterns:
+ * focus-visible rings, aria-pressed for toggles, prefers-reduced-motion.
  */
 
 import './ChatInput.css';
 import type { ChatController } from '@/chat/controller';
+
+/* ── Inline SVG Icons ────────────────────────────────────────────────── */
+
+/** Minimal SVG icons — 24x24 viewBox, stroke-based, via currentColor */
+const Icons = {
+  /** Document with lines — page context */
+  PageContext: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="16" y1="13" x2="8" y2="13" />
+      <line x1="16" y1="17" x2="8" y2="17" />
+      <polyline points="10 9 9 9 8 9" />
+    </svg>
+  ),
+
+  /** Pencil — edit session */
+  Edit: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+    </svg>
+  ),
+
+  /** Tag — tag manager */
+  Tag: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+      <line x1="7" y1="7" x2="7.01" y2="7" />
+    </svg>
+  ),
+
+  /** Lightbulb — FAQ / help */
+  Help: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M9 18h6" />
+      <path d="M10 22h4" />
+      <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14" />
+    </svg>
+  ),
+
+  /** Bot / robot — settings */
+  Bot: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+      <circle cx="9" cy="16" r="1" fill="currentColor" stroke="none" />
+      <circle cx="15" cy="16" r="1" fill="currentColor" stroke="none" />
+    </svg>
+  ),
+
+  /** Image — upload */
+  Image: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+      <circle cx="8.5" cy="8.5" r="1.5" />
+      <polyline points="21 15 16 10 5 21" />
+    </svg>
+  ),
+
+  /** Stop / square */
+  Stop: () => (
+    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">
+      <rect x="6" y="6" width="12" height="12" rx="1" />
+    </svg>
+  ),
+
+  /** Circle dot — idle status */
+  Circle: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+    </svg>
+  ),
+};
+
+/* ── Toolbar Separator ───────────────────────────────────────────────── */
+
+const ToolbarSeparator = () => (
+  <span className="yipet-toolbar-separator" aria-hidden="true" />
+);
+
+/* ── Component ───────────────────────────────────────────────────────── */
 
 export interface ChatInputProps {
   controller: ChatController;
@@ -148,17 +241,40 @@ export function ChatInput(props: ChatInputProps) {
     target.value = '';
   };
 
+  /* ── Render ────────────────────────────────────────────────────────── */
+
   return (
     <div className="yipet-chat-input-container">
       {/* Toolbar */}
-      <div className="yipet-chat-toolbar">
+      <div className="yipet-chat-toolbar" role="toolbar" aria-label="会话工具栏">
         <div className="yipet-chat-toolbar-left">
-          <button type="button" className="yipet-toolbar-btn" title="编辑页面上下文" aria-label="页面上下文" onClick={() => ctrl.openContextEditor()}>📝</button>
-          <button type="button" className="yipet-toolbar-btn" title="编辑会话标题" aria-label="编辑会话" id="edit-session-btn" disabled={!s.currentSessionId} onClick={() => ctrl.editSessionInfo()}>✏️</button>
-          <button type="button" className="yipet-toolbar-btn" title="会话标签" aria-label="标签管理" onClick={() => ctrl.openTagManager()}>🏷️</button>
-          <button type="button" className="yipet-toolbar-btn" title="常见问题" aria-label="常见问题" onClick={() => ctrl.openFaqManager()}>💡</button>
-          <button type="button" className="yipet-toolbar-btn" title="机器人设置" aria-label="机器人设置" onClick={() => ctrl.openWeChatSettings()}>🤖</button>
-          <button type="button" className="yipet-toolbar-btn yipet-toolbar-btn--image" title="上传图片 (支持粘贴)" aria-label="上传图片" onClick={onImageClick}>🖼️</button>
+          {/* Session actions */}
+          <button type="button" className="yipet-toolbar-btn" title="编辑页面上下文" aria-label="页面上下文" onClick={() => ctrl.openContextEditor()}>
+            <Icons.PageContext />
+          </button>
+          <button type="button" className="yipet-toolbar-btn" title="编辑会话标题" aria-label="编辑会话" id="edit-session-btn" disabled={!s.currentSessionId} onClick={() => ctrl.editSessionInfo()}>
+            <Icons.Edit />
+          </button>
+
+          <ToolbarSeparator />
+
+          {/* Content organization */}
+          <button type="button" className="yipet-toolbar-btn" title="会话标签" aria-label="标签管理" onClick={() => ctrl.openTagManager()}>
+            <Icons.Tag />
+          </button>
+          <button type="button" className="yipet-toolbar-btn" title="常见问题" aria-label="常见问题" onClick={() => ctrl.openFaqManager()}>
+            <Icons.Help />
+          </button>
+
+          <ToolbarSeparator />
+
+          {/* Configuration & media */}
+          <button type="button" className="yipet-toolbar-btn" title="机器人设置" aria-label="机器人设置" onClick={() => ctrl.openWeChatSettings()}>
+            <Icons.Bot />
+          </button>
+          <button type="button" className="yipet-toolbar-btn yipet-toolbar-btn--image" title="上传图片 (支持粘贴)" aria-label="上传图片" onClick={onImageClick}>
+            <Icons.Image />
+          </button>
           <input
             ref={(el: HTMLInputElement | null) => { imageInputEl = el; }}
             type="file" accept="image/*" multiple
@@ -169,21 +285,22 @@ export function ChatInput(props: ChatInputProps) {
         </div>
 
         <div className="yipet-chat-toolbar-right">
-          {/* Context switch */}
+          {/* Context toggle switch */}
           <div
             className={'yipet-context-switch' + (contextEnabled ? ' active' : '')}
             title={contextEnabled ? '页面上下文已开启：AI 会参考当前页面内容' : '页面上下文已关闭'}
             role="switch"
             aria-checked={contextEnabled ? 'true' : 'false'}
+            aria-label="页面上下文开关"
             tabIndex={0}
             onClick={() => ctrl.toggleContext()}
-            onKeyDown={(e: { key: string }) => { if (e.key === 'Enter' || e.key === ' ') ctrl.toggleContext(); }}
+            onKeyDown={(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ctrl.toggleContext(); } }}
           >
             <span className="yipet-context-switch-label">上下文</span>
             <div className="yipet-context-switch-track">
               <div className="yipet-context-switch-thumb" />
             </div>
-            <input type="checkbox" checked={contextEnabled} style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }} readOnly />
+            <input type="checkbox" checked={contextEnabled} style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }} readOnly tabIndex={-1} />
           </div>
 
           {/* Request status button */}
@@ -191,12 +308,13 @@ export function ChatInput(props: ChatInputProps) {
             type="button"
             id="request-status-btn"
             className={'yipet-status-btn' + (isProcessing ? ' active' : '')}
-            aria-label="请求状态"
+            aria-label={isProcessing ? '终止请求' : '请求空闲'}
             title={isProcessing ? '点击终止请求' : '空闲'}
             disabled={!isProcessing}
+            aria-pressed={isProcessing ? 'true' : 'false'}
             onClick={() => ctrl.abortRequest()}
           >
-            {isProcessing ? '⏸️' : '⏹️'}
+            {isProcessing ? <Icons.Stop /> : <Icons.Circle />}
           </button>
         </div>
       </div>
