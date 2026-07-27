@@ -1,0 +1,81 @@
+/*
+ * YiPet Chat — SearchBar Styles
+ */
+
+.yipet-sidebar-search {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 12px !important;
+  border-bottom: 1px solid var(--border-secondary, rgba(167, 139, 250, 0.3)) !important;
+  flex-shrink: 0 !important;
+}
+
+.yipet-sidebar-search-input-wrap {
+  display: flex !important;
+  align-items: center !important;
+  flex: 1 !important;
+  position: relative !important;
+}
+
+.yipet-sidebar-search-icon {
+  position: absolute !important;
+  left: 10px !important;
+  width: 14px !important;
+  height: 14px !important;
+  color: var(--text-secondary, #d4d0e8) !important;
+  pointer-events: none !important;
+}
+
+.yipet-sidebar-search-input {
+  width: 100% !important;
+  padding: 8px 28px 8px 32px !important;
+  border: 1px solid var(--border-secondary, rgba(167, 139, 250, 0.3)) !important;
+  border-radius: 8px !important;
+  background: var(--input-bg, #1a1835) !important;
+  color: var(--text-primary, #f5f3ff) !important;
+  font-size: 12px !important;
+  outline: none !important;
+}
+
+.yipet-sidebar-search-input:focus {
+  border-color: var(--primary, #667eea) !important;
+}
+
+.yipet-sidebar-search-clear {
+  position: absolute !important;
+  right: 6px !important;
+  width: 20px !important;
+  height: 20px !important;
+  border: none !important;
+  background: none !important;
+  color: var(--text-secondary, #d4d0e8) !important;
+  cursor: pointer !important;
+  font-size: 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.yipet-sidebar-new-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 8px !important;
+  border: none !important;
+  background: var(--primary, #667eea) !important;
+  color: #fff !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+}
+
+.yipet-sidebar-new-btn:hover {
+  background: var(--primary-hover, #5a67d8) !important;
+}
+
+.yipet-sidebar-new-btn svg {
+  width: 16px !important;
+  height: 16px !important;
+}

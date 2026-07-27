@@ -1,0 +1,93 @@
+/*
+ * YiPet Chat — WelcomeCard Styles
+ */
+
+.welcome-card {
+  background: var(--bg-elevated, rgba(30, 26, 59, 0.9)) !important;
+  border: 1px solid var(--border-secondary, rgba(167, 139, 250, 0.3)) !important;
+  border-radius: 12px !important;
+  padding: 16px !important;
+  color: var(--text-primary, #f5f3ff) !important;
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+}
+
+.welcome-card-header {
+  display: flex !important;
+  align-items: center !important;
+  margin-bottom: 12px !important;
+}
+
+.welcome-card-header-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.welcome-card-favicon {
+  width: 16px !important;
+  height: 16px !important;
+  flex-shrink: 0 !important;
+}
+
+.welcome-card-title {
+  font-weight: 600 !important;
+  font-size: 14px !important;
+}
+
+.welcome-card-row {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 8px !important;
+  margin-bottom: 8px !important;
+}
+
+.welcome-card-label {
+  color: var(--text-secondary, #d4d0e8) !important;
+  flex-shrink: 0 !important;
+  min-width: 40px !important;
+  font-size: 12px !important;
+}
+
+.welcome-card-value {
+  flex: 1 !important;
+  min-width: 0 !important;
+  word-break: break-all !important;
+}
+
+.welcome-card-url {
+  color: var(--link-color, #c4b5fd) !important;
+  text-decoration: none !important;
+}
+
+.welcome-card-url:hover {
+  text-decoration: underline !important;
+}
+
+.welcome-card-tags {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 4px !important;
+}
+
+.welcome-card-tag {
+  display: inline-block !important;
+  padding: 2px 8px !important;
+  border-radius: 10px !important;
+  background: rgba(var(--primary-rgb, 102, 126, 234), 0.15) !important;
+  color: var(--primary, #667eea) !important;
+  font-size: 11px !important;
+}
+
+.welcome-card-footer {
+  border-top: 1px solid var(--border-secondary, rgba(167, 139, 250, 0.3)) !important;
+  padding-top: 8px !important;
+  margin-top: 4px !important;
+}
+
+.welcome-card-meta {
+  display: flex !important;
+  gap: 12px !important;
+  font-size: 11px !important;
+  color: var(--text-secondary, #d4d0e8) !important;
+}

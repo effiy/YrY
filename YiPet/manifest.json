@@ -52,6 +52,7 @@
       "src/content/bootstrap.js",
       "assets/content.js",
       "assets/bootstrap.js",
+      "assets/chat.js",
       "src/chunks/*.js",
       "cdn/**/*.js",
       "cdn/**/*.css",

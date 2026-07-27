@@ -1,0 +1,106 @@
+/*
+ * YiPet Chat — ChatMessages Styles
+ * Layout & state styles only. Bubble styles → MessageBubble.css, card styles → WelcomeCard.css.
+ */
+
+#yipet-chat-messages {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 16px !important;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+}
+
+.yipet-chat-messages-inner {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+}
+
+/* ── Empty / Loading / Error States ───────────────────────────────────── */
+
+.yipet-chat-empty {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 100% !important;
+  padding: 40px 20px !important;
+}
+
+.yipet-empty-card {
+  text-align: center !important;
+  max-width: 320px !important;
+}
+
+.yipet-empty-icon {
+  width: 56px !important;
+  height: 56px !important;
+  margin: 0 auto 16px !important;
+  color: var(--text-secondary, #d4d0e8) !important;
+  opacity: 0.5 !important;
+}
+
+.yipet-empty-icon svg {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.yipet-empty-title {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: var(--text-primary, #f5f3ff) !important;
+  margin-bottom: 8px !important;
+}
+
+.yipet-empty-subtitle {
+  font-size: 13px !important;
+  color: var(--text-secondary, #d4d0e8) !important;
+  line-height: 1.5 !important;
+}
+
+.yipet-empty-hint {
+  font-size: 12px !important;
+  color: var(--text-secondary, #d4d0e8) !important;
+  opacity: 0.7 !important;
+  margin-top: 8px !important;
+}
+
+.yipet-chat-loading {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  height: 100% !important;
+  color: var(--text-secondary, #d4d0e8) !important;
+}
+
+.yipet-spinner {
+  width: 32px !important;
+  height: 32px !important;
+  border: 3px solid var(--border-secondary, rgba(167, 139, 250, 0.3)) !important;
+  border-top-color: var(--primary, #667eea) !important;
+  border-radius: 50% !important;
+  animation: yipet-spin 0.8s linear infinite !important;
+}
+
+@keyframes yipet-spin {
+  to { transform: rotate(360deg); }
+}
+
+.yipet-chat-error {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  height: 100% !important;
+  color: #ef4444 !important;
+}
+
+.yipet-error-icon {
+  font-size: 32px !important;
+}

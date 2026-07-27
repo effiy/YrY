@@ -1,0 +1,41 @@
+/*
+ * YiPet Chat — ChatSidebar Styles
+ * Layout & list styles only. Item styles → SessionListItem.css, search → SearchBar.css.
+ */
+
+.yipet-sidebar {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 300px !important;
+  min-width: 260px !important;
+  max-width: 450px !important;
+  border-right: 1px solid var(--border-secondary, rgba(167, 139, 250, 0.3)) !important;
+  background: var(--bg-primary, #13122a) !important;
+  flex-shrink: 0 !important;
+}
+
+.yipet-sidebar.collapsed {
+  display: none !important;
+}
+
+.yipet-sidebar-list {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  padding: 4px !important;
+}
+
+.yipet-sidebar-loading,
+.yipet-sidebar-empty {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 32px 16px !important;
+  color: var(--text-secondary, #d4d0e8) !important;
+  font-size: 13px !important;
+  gap: 8px !important;
+}
+
+.yipet-sidebar-empty-icon {
+  font-size: 28px !important;
+}

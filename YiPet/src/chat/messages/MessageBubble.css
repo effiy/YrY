@@ -1,0 +1,103 @@
+/*
+ * YiPet Chat — MessageBubble Styles
+ */
+
+.pet-chat-message {
+  display: flex !important;
+  flex-direction: column !important;
+  max-width: min(1400px, 98%) !important;
+}
+
+.pet-chat-message.is-user {
+  align-self: flex-end !important;
+  align-items: flex-end !important;
+}
+
+.pet-chat-message.is-pet {
+  align-self: flex-start !important;
+  align-items: flex-start !important;
+}
+
+.pet-chat-bubble {
+  padding: 12px 16px !important;
+  border-radius: 14px !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  max-width: 100% !important;
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+}
+
+[data-message-type="user-bubble"] {
+  background: var(--primary-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)) !important;
+  color: #fff !important;
+  border-bottom-right-radius: 4px !important;
+}
+
+[data-message-type="pet-bubble"] {
+  background: var(--bg-elevated, rgba(30, 26, 59, 0.9)) !important;
+  color: var(--text-primary, #f5f3ff) !important;
+  border-bottom-left-radius: 4px !important;
+  border: 1px solid var(--border-secondary, rgba(167, 139, 250, 0.3)) !important;
+}
+
+.pet-chat-bubble--welcome {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  max-width: 100% !important;
+}
+
+.pet-chat-message.is-streaming [data-message-type="pet-bubble"]::after {
+  content: '▍' !important;
+  animation: yipet-blink 1s step-end infinite !important;
+  color: var(--primary, #667eea) !important;
+}
+
+@keyframes yipet-blink {
+  50% { opacity: 0; }
+}
+
+/* ── Message Meta ─────────────────────────────────────────────────────── */
+
+.pet-chat-meta {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  margin-top: 6px !important;
+  font-size: 11px !important;
+  color: var(--text-secondary, #d4d0e8) !important;
+  opacity: 0.7 !important;
+}
+
+.pet-chat-meta-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 2px !important;
+}
+
+.pet-chat-meta-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 6px !important;
+  border: none !important;
+  background: transparent !important;
+  cursor: pointer !important;
+  font-size: 12px !important;
+  transition: background 0.15s ease !important;
+  padding: 0 !important;
+  color: inherit !important;
+}
+
+.pet-chat-meta-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.pet-chat-time {
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}

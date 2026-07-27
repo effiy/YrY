@@ -270,6 +270,18 @@ if (_isContentScript && !_injectedBase) {
     };
 
     (document.head || document.documentElement).appendChild(el);
+
+    // Inject chat script into MAIN world
+    try {
+      const chatUrl = chrome.runtime.getURL('assets/chat.js');
+      const chatEl = document.createElement('script');
+      chatEl.src = chatUrl;
+      chatEl.dataset.apiBase = 'http://localhost:10086';
+      chatEl.dataset.colorIndex = String(_petColor);
+      chatEl.dataset.role = initialRole;
+      chatEl.id = 'yipet-chat';
+      (document.head || document.documentElement).appendChild(chatEl);
+    } catch { /* chat unavailable */ }
   })();
 
   /**
@@ -380,6 +392,11 @@ if (_isContentScript && !_injectedBase) {
           persistPetState();
           // Persist color theme globally (cross-page default)
           chrome.storage.local.set({ petColorTheme: _petColor }).catch(() => {});
+          sendResponse({ success: true });
+          break;
+        }
+        case 'toggleChat': {
+          notifyMainWorld('chatToggled', {});
           sendResponse({ success: true });
           break;
         }
@@ -563,6 +580,15 @@ function createYiPet(root: typeof globalThis, BASE: string): void {
   petImg.src = extRoot + 'assets/images/' +
     _injectedRole.toLowerCase().replace(/\s+/g, '-') + '/icon.png';
   petContainer.appendChild(petImg);
+
+  // Click pet to toggle chat window
+  petImg.style.cursor = 'pointer';
+  petImg.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if ((window as unknown as Record<string, unknown>).YiPetChat) {
+      ((window as unknown as Record<string, unknown>).YiPetChat as { toggle: () => void }).toggle();
+    }
+  });
 
   function ensureOverlayInDOM(): void {
     if (!petContainer.parentNode && document.body) {

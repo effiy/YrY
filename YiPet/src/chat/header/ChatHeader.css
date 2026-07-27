@@ -1,0 +1,67 @@
+/*
+ * YiPet Chat — ChatHeader Styles
+ */
+
+.yipet-chat-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 12px 20px !important;
+  background: var(--primary-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)) !important;
+  border-radius: 16px 16px 0 0 !important;
+  cursor: move !important;
+  flex-shrink: 0 !important;
+  user-select: none !important;
+}
+
+.yipet-chat-header-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  min-width: 0 !important;
+}
+
+.yipet-chat-header-icon {
+  font-size: 18px !important;
+  flex-shrink: 0 !important;
+}
+
+.yipet-chat-header-title {
+  color: #fff !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.yipet-chat-header-buttons {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  flex-shrink: 0 !important;
+}
+
+.yipet-chat-header-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 8px !important;
+  border: none !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: #fff !important;
+  cursor: pointer !important;
+  transition: background 0.15s ease !important;
+  padding: 0 !important;
+}
+
+.yipet-chat-header-btn:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+}
+
+.yipet-chat-header-btn svg {
+  width: 18px !important;
+  height: 18px !important;
+}

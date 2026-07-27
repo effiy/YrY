@@ -33,7 +33,15 @@ chrome.commands.onCommand.addListener(async (command) => {
       break;
     }
     case 'open-chat': {
-      console.log('[YiPet BG] open-chat command received');
+      try {
+        const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+        const tab = tabs[0];
+        if (!tab?.id) return;
+        const msg: PopupToContent = { action: 'toggleChat' };
+        await chrome.tabs.sendMessage(tab.id, msg);
+      } catch {
+        // Content script may not be ready on this tab
+      }
       break;
     }
     default:

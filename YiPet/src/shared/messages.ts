@@ -15,7 +15,8 @@ export type PopupToContent =
   | { action: 'setVisibility'; visible: boolean }
   | { action: 'changeSize'; size: number }
   | { action: 'setRole'; role: string }
-  | { action: 'setColor'; color: number };
+  | { action: 'setColor'; color: number }
+  | { action: 'toggleChat' };
 
 // ── Content Script → Popup ──────────────────────────────────────────────
 
