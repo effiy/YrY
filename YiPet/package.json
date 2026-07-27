@@ -7,7 +7,6 @@
     "dev": "vite build --mode development --watch",
     "build": "npm run build:cdn && vite build",
     "build:cdn": "vite build --config vite.cdn.config.ts",
-    "build:chat-css": "node scripts/build-chat-css.mjs",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
     "test": "vitest run",

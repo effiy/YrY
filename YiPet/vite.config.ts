@@ -1,11 +1,54 @@
-import { copyFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, writeFileSync, readFileSync, mkdirSync, existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { execSync } from 'node:child_process';
 import { defineConfig } from 'vite';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = __dirname;
+
+// ── Chat CSS build (inlined from scripts/build-chat-css.mjs) ──────────
+
+function buildChatCSS() {
+  const stylesDir = resolve(rootDir, 'src/chat/styles');
+  const componentsDir = resolve(rootDir, 'src/chat/components');
+  const outDir = resolve(rootDir, 'dist', 'cdn', 'styles');
+  const outPath = resolve(outDir, 'chat.css');
+
+  const sharedFirst = ['tokens.css', 'layout.css'];
+  const sharedLast = ['chat-markdown.css', 'animations.css', 'scrollbar.css'];
+  const componentOrder = [
+    'ChatHeader/ChatHeader.css',
+    'ChatMessages/ChatMessages.css',
+    'MessageBubble/MessageBubble.css',
+    'WelcomeCard/WelcomeCard.css',
+    'ChatInput/ChatInput.css',
+    'ChatSidebar/ChatSidebar.css',
+    'SearchBar/SearchBar.css',
+    'SessionListItem/SessionListItem.css',
+  ];
+
+  const parts: string[] = [];
+  const missing: string[] = [];
+
+  function add(label: string, filePath: string) {
+    try {
+      parts.push(readFileSync(filePath, 'utf-8').trimEnd());
+    } catch {
+      missing.push(label);
+    }
+  }
+
+  for (const name of sharedFirst) add(name, resolve(stylesDir, name));
+  for (const name of componentOrder) add(name, resolve(componentsDir, name));
+  for (const name of sharedLast) add(name, resolve(stylesDir, name));
+
+  if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
+  writeFileSync(outPath, parts.join('\n\n') + '\n', 'utf-8');
+
+  if (missing.length > 0) {
+    console.log(`  ⚠️  chat.css: ${missing.length} file(s) skipped (${missing.join(', ')})`);
+  }
+}
 
 export default defineConfig(({ mode }) => {
   const isDev = mode === 'development';
@@ -64,14 +107,7 @@ export default defineConfig(({ mode }) => {
           );
 
           // Build chat CSS from component sources
-          try {
-            execSync('node scripts/build-chat-css.mjs', {
-              cwd: rootDir,
-              stdio: 'pipe',
-            });
-          } catch {
-            console.warn('  ⚠️  chat.css build failed (non-fatal)');
-          }
+          buildChatCSS();
 
           if (isDev) {
             console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
