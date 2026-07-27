@@ -444,10 +444,14 @@ export class ChatController {
 
   private _mapMessages(raw: ChatMessage[]): Message[] {
     return raw
-      .filter((m) => !!(m.content || m.imageDataUrl || '').trim() || m.type === 'pet')
+      .filter(
+        (m) =>
+          !!((m.content || m.message || m.imageDataUrl || '').trim()) ||
+          m.type === 'pet',
+      )
       .map((m) => ({
         type: m.type,
-        content: m.content,
+        content: m.content || m.message || '',
         timestamp: m.timestamp || Date.now(),
         error: !!m.error,
         imageDataUrl: m.imageDataUrl,
@@ -505,20 +509,8 @@ export class ChatController {
       const session = this.state.sessions.find((s) => s.id === this.state.currentSessionId);
       if (session) session.messageCount = this.state.messages.length;
 
-      // Persist to backend
-      this._api
-        .updateSession(this.state.currentSessionId, {
-          messages: [
-            {
-              type: 'user',
-              content: text,
-              timestamp: userMsg.timestamp,
-              imageDataUrl: userMsg.imageDataUrl,
-            },
-            { type: 'pet', content: final, timestamp: petMsg.timestamp },
-          ],
-        })
-        .catch(() => {});
+      // Persist full message history to backend
+      this._persistMessages();
     } catch (err: unknown) {
       const isAbort = (err as Error)?.name === 'AbortError';
       this.state.messages[petIdx].streaming = false;

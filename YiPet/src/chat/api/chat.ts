@@ -8,6 +8,13 @@
  *     "method_name": "chat" | "create_document" | "query_documents" | ...,
  *     "parameters": { ... }
  *   }
+ *
+ * YiAi wraps all responses in a standard envelope:
+ *   { "code": 0, "message": "success", "data": <actual_payload> }
+ *
+ * SSE streaming format from YiAi:
+ *   data: {"data": {"message": "token_text"}}
+ *   data: {"done": true}
  */
 
 const DEFAULT_BASE = 'http://localhost:10086';
@@ -33,10 +40,19 @@ export interface SessionRecord {
 export interface ChatMessage {
   type: 'user' | 'pet';
   content: string;
+  /** Backward-compat: some stored messages use "message" instead of "content". */
+  message?: string;
   timestamp: number;
   imageDataUrl?: string;
   error?: boolean;
   aborted?: boolean;
+}
+
+/** YiAi standard response envelope. */
+interface YiAiEnvelope<T = unknown> {
+  code: number;
+  message: string;
+  data: T;
 }
 
 export function createChatApi(config?: ChatApiConfig) {
@@ -44,7 +60,15 @@ export function createChatApi(config?: ChatApiConfig) {
   const API_URL = `${baseUrl}/`;
   const timeout = config?.timeout ?? 30000;
 
-  /** Generic JSON-RPC request. */
+  /** Unwrap YiAi's standard response envelope, returning just the data payload. */
+  function unwrap<T>(envelope: YiAiEnvelope<T>): T {
+    if (envelope && typeof envelope === 'object' && 'code' in envelope && 'data' in envelope) {
+      return (envelope as YiAiEnvelope<T>).data;
+    }
+    return envelope as unknown as T;
+  }
+
+  /** Generic JSON-RPC request. Returns unwrapped data payload. */
   async function rpc<T>(
     moduleName: string,
     methodName: string,
@@ -63,7 +87,8 @@ export function createChatApi(config?: ChatApiConfig) {
         const text = await res.text().catch(() => '');
         throw new Error(`API ${res.status}: ${text || res.statusText}`);
       }
-      return (await res.json()) as T;
+      const envelope = (await res.json()) as YiAiEnvelope<T>;
+      return unwrap(envelope);
     } finally {
       clearTimeout(timer);
     }
@@ -71,7 +96,11 @@ export function createChatApi(config?: ChatApiConfig) {
 
   // ── AI Chat ──────────────────────────────────────────────────────
 
-  /** SSE streaming prompt. */
+  /**
+   * SSE streaming prompt.
+   * YiAi SSE format: data: {"data": {"message": "token"}}
+   *                    data: {"done": true}
+   */
   async function streamPrompt(
     prompt: string,
     sessionId: string,
@@ -122,12 +151,21 @@ export function createChatApi(config?: ChatApiConfig) {
             if (data === '[DONE]') break;
             try {
               const parsed = JSON.parse(data);
-              const token = parsed.token || parsed.content || '';
+              // Check for done marker
+              if (parsed.done) break;
+              // YiAi format: {"data": {"message": "token"}}
+              const token =
+                parsed.data?.message ||
+                parsed.data?.content ||
+                parsed.token ||
+                parsed.content ||
+                '';
               if (token) {
                 fullText += token;
                 onToken(token);
               }
             } catch {
+              // Non-JSON SSE data — treat as plain text token
               if (data && data !== '[DONE]') {
                 fullText += data;
                 onToken(data);
@@ -145,12 +183,12 @@ export function createChatApi(config?: ChatApiConfig) {
 
   /** Non-streaming prompt. */
   async function prompt(promptText: string, sessionId: string): Promise<string> {
-    const res = await rpc<{ response?: string; content?: string }>(
+    const res = await rpc<{ success?: boolean; response?: string; content?: string; message?: string }>(
       'services.ai.chat_service',
       'chat',
       { user: promptText, stream: false, conversation_id: sessionId },
     );
-    return res.response || res.content || '';
+    return res.message || res.response || res.content || '';
   }
 
   // ── Sessions (database service) ──────────────────────────────────
@@ -158,16 +196,28 @@ export function createChatApi(config?: ChatApiConfig) {
   const DB_MODULE = 'services.database.data_service';
   const COLLECTION = 'sessions';
 
+  /** YiAi query_documents returns { list: [...], total, pageNum, pageSize, totalPages } */
+  interface QueryResult<T> {
+    list?: T[];
+    documents?: T[];
+    result?: T[];
+    total?: number;
+  }
+
   async function listSessions(): Promise<SessionRecord[]> {
     try {
-      const data = await rpc<
-        SessionRecord[] | { documents?: SessionRecord[]; result?: SessionRecord[] }
-      >(DB_MODULE, 'query_documents', { cname: COLLECTION, query: {} });
+      const data = await rpc<SessionRecord[] | QueryResult<SessionRecord>>(
+        DB_MODULE,
+        'query_documents',
+        { cname: COLLECTION, query: {} },
+      );
       if (Array.isArray(data)) return data;
-      if (Array.isArray((data as { documents?: SessionRecord[] }).documents))
-        return (data as { documents: SessionRecord[] }).documents;
-      if (Array.isArray((data as { result?: SessionRecord[] }).result))
-        return (data as { result: SessionRecord[] }).result;
+      if (data && typeof data === 'object') {
+        const qr = data as QueryResult<SessionRecord>;
+        if (Array.isArray(qr.list)) return qr.list;
+        if (Array.isArray(qr.documents)) return qr.documents;
+        if (Array.isArray(qr.result)) return qr.result;
+      }
       return [];
     } catch {
       return [];
@@ -176,10 +226,15 @@ export function createChatApi(config?: ChatApiConfig) {
 
   async function createSession(doc: Record<string, unknown>): Promise<SessionRecord | null> {
     try {
-      return await rpc<SessionRecord>(DB_MODULE, 'create_document', {
+      // YiAi returns { key: "uuid" } from create_document
+      const result = await rpc<{ key?: string }>(DB_MODULE, 'create_document', {
         cname: COLLECTION,
         data: doc,
       });
+      if (result?.key) {
+        return { key: result.key, ...doc } as SessionRecord;
+      }
+      return null;
     } catch {
       return null;
     }
@@ -190,11 +245,13 @@ export function createChatApi(config?: ChatApiConfig) {
     update: Record<string, unknown>,
   ): Promise<SessionRecord | null> {
     try {
-      return await rpc<SessionRecord>(DB_MODULE, 'update_document', {
+      // YiAi returns { query: {...}, updated: true } from update_document
+      await rpc<{ query?: unknown; updated?: boolean }>(DB_MODULE, 'update_document', {
         cname: COLLECTION,
         key: id,
         data: { key: id, ...update, updatedAt: Date.now() },
       });
+      return { key: id, ...update } as SessionRecord;
     } catch {
       return null;
     }
@@ -202,15 +259,16 @@ export function createChatApi(config?: ChatApiConfig) {
 
   async function getSession(id: string): Promise<SessionRecord | null> {
     try {
-      const result = await rpc<{ documents?: SessionRecord[]; result?: SessionRecord[] }>(
+      // YiAi query_documents returns { list: [...] }
+      const result = await rpc<QueryResult<SessionRecord>>(
         DB_MODULE,
         'query_documents',
         { cname: COLLECTION, query: { key: id } },
       );
-      const docs = Array.isArray(result)
-        ? result
-        : result.documents || result.result || [];
-      return docs.length > 0 ? docs[0] : null;
+      const docs: SessionRecord[] | undefined =
+        result?.list || result?.documents || result?.result;
+      if (Array.isArray(docs) && docs.length > 0) return docs[0];
+      return null;
     } catch {
       return null;
     }
@@ -218,8 +276,13 @@ export function createChatApi(config?: ChatApiConfig) {
 
   async function deleteSession(id: string): Promise<boolean> {
     try {
-      await rpc<unknown>(DB_MODULE, 'delete_document', { cname: COLLECTION, key: id });
-      return true;
+      // YiAi returns { key: "...", deleted: true }
+      const result = await rpc<{ key?: string; deleted?: boolean }>(
+        DB_MODULE,
+        'delete_document',
+        { cname: COLLECTION, key: id },
+      );
+      return result?.deleted === true;
     } catch {
       return false;
     }
