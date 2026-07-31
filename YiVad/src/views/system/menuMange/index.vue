@@ -21,6 +21,25 @@
           <component :is="scope.row.meta.icon"></component>
         </el-icon>
       </template>
+      <!-- 重定向 -->
+      <template #redirect="scope">
+        <span v-if="scope.row.redirect">{{ scope.row.redirect }}</span>
+        <span v-else style="color: #c0c4cc">-</span>
+      </template>
+      <!-- 排序 -->
+      <template #order="scope">
+        <el-tag size="small" type="info">{{ scope.row.order }}</el-tag>
+      </template>
+      <!-- 父级菜单 -->
+      <template #parent="scope">
+        <span v-if="scope.row.parent">{{ scope.row.parent }}</span>
+        <el-tag v-else size="small" type="">顶级</el-tag>
+      </template>
+      <!-- 隐藏状态 -->
+      <template #isHide="scope">
+        <el-tag v-if="scope.row.meta?.isHide" size="small" type="danger">隐藏</el-tag>
+        <el-tag v-else size="small" type="success">可见</el-tag>
+      </template>
       <!-- 菜单操作 -->
       <template #operation="scope">
         <el-button type="primary" link :icon="EditPen" @click="openEdit(scope.row)">编辑</el-button>
@@ -40,6 +59,18 @@
       <el-form ref="formRef" :model="form" :rules="rules" label-width="110px" label-suffix=":">
         <el-form-item label="菜单名称" prop="title">
           <el-input v-model="form.title" placeholder="菜单显示名称" clearable />
+        </el-form-item>
+        <el-form-item label="父级菜单">
+          <el-tree-select
+            v-model="form.parent"
+            :data="parentMenuOptions"
+            :props="{ label: 'title', value: 'path', children: 'children' }"
+            placeholder="留空为顶级菜单"
+            clearable
+            check-strictly
+            filterable
+            style="width: 100%"
+          />
         </el-form-item>
         <el-form-item label="路由路径" prop="path">
           <el-input v-model="form.path" placeholder="/example/path" clearable />
@@ -106,6 +137,17 @@ const saving = ref(false);
 // Using authMenuListGet (raw, all items) so hidden menus are still manageable.
 const menuData = computed(() => authStore.authMenuListGet);
 
+// Tree-select options for parent menu picker — show full menu tree
+const parentMenuOptions = computed(() => {
+  const addTitle = (nodes: any[]): any[] =>
+    nodes.map(node => ({
+      ...node,
+      title: node.meta?.title || node.name,
+      children: node.children ? addTitle(node.children) : undefined
+    }));
+  return addTitle(menuData.value);
+});
+
 // ── Form ──
 interface MenuForm {
   title: string;
@@ -115,6 +157,7 @@ interface MenuForm {
   redirect: string;
   icon: string;
   isLink: string;
+  parent: string;
   order: number;
   isHide: boolean;
   isFull: boolean;
@@ -130,6 +173,7 @@ const defaultForm = (): MenuForm => ({
   redirect: "",
   icon: "",
   isLink: "",
+  parent: "",
   order: 0,
   isHide: false,
   isFull: false,
@@ -153,6 +197,7 @@ function populateForm(row: any) {
   form.redirect = row.redirect ?? "";
   form.icon = row.meta?.icon ?? "";
   form.isLink = row.meta?.isLink ?? "";
+  form.parent = row.parent ?? "";
   form.order = row.order ?? 0;
   form.isHide = row.meta?.isHide ?? false;
   form.isFull = row.meta?.isFull ?? false;
@@ -191,6 +236,7 @@ async function handleSave() {
       name: form.name,
       component: form.component,
       redirect: form.redirect,
+      parent: form.parent || null,
       order: form.order,
       meta: {
         title: form.title,
@@ -203,9 +249,6 @@ async function handleSave() {
       }
     };
     if (isAdd.value) {
-      // New menus default to top-level (no parent)
-      params.parent = null;
-      params.createdAt = Date.now();
       await createMenu(params);
       ElMessage.success("菜单已创建");
     } else {
@@ -244,11 +287,15 @@ async function handleDelete(row: any) {
 
 // 表格配置项
 const columns: ColumnProps[] = [
-  { prop: "meta.title", label: "菜单名称", align: "left", search: { el: "input" } },
-  { prop: "meta.icon", label: "菜单图标" },
-  { prop: "name", label: "菜单 name", search: { el: "input" } },
-  { prop: "path", label: "菜单路径", width: 300, search: { el: "input" } },
-  { prop: "component", label: "组件路径", width: 300 },
-  { prop: "operation", label: "操作", width: 250, fixed: "right" }
+  { prop: "meta.title", label: "菜单名称", align: "left", width: 180, search: { el: "input" } },
+  { prop: "meta.icon", label: "图标", width: 80 },
+  { prop: "name", label: "路由 name", width: 150, search: { el: "input" } },
+  { prop: "path", label: "路由路径", width: 220, search: { el: "input" } },
+  { prop: "component", label: "组件路径", width: 220 },
+  { prop: "redirect", label: "重定向", width: 180 },
+  { prop: "order", label: "排序", width: 70 },
+  { prop: "parent", label: "父级菜单", width: 180 },
+  { prop: "meta.isHide", label: "可见性", width: 80 },
+  { prop: "operation", label: "操作", width: 180, fixed: "right" }
 ];
 </script>

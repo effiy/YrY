@@ -86,18 +86,22 @@ const fileCount = computed(() => props.story.files?.length ?? 0);
   &:hover {
     transform: translateY(-2px);
   }
+
+  :deep(.el-card__body) {
+    padding: 10px 12px;
+  }
 }
 
 .sc-hdr {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  margin-bottom: 6px;
-  gap: 6px;
+  margin-bottom: 4px;
+  gap: 4px;
 }
 
 .sc-name {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
   flex: 1;
   min-width: 0;
@@ -108,38 +112,38 @@ const fileCount = computed(() => props.story.files?.length ?? 0);
 
 .sc-badges {
   display: flex;
-  gap: 4px;
+  gap: 3px;
   flex-shrink: 0;
 }
 
 .sc-meta {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 4px;
+  margin-bottom: 3px;
   flex-wrap: wrap;
 }
 
 .sc-desc {
-  margin: 0 0 8px;
-  font-size: 13px;
+  margin: 0 0 4px;
+  font-size: 12px;
   color: var(--el-text-color-regular);
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 .sc-progress {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
+  gap: 6px;
+  margin-bottom: 3px;
 }
 
 .sc-progress-text {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--el-text-color-secondary);
   white-space: nowrap;
 }
@@ -147,32 +151,31 @@ const fileCount = computed(() => props.story.files?.length ?? 0);
 .sc-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
-  margin-bottom: 8px;
+  gap: 3px;
+  margin-bottom: 3px;
 }
 
 .sc-tag-chip {
-  font-size: 11px;
+  font-size: 10px;
   opacity: 0.8;
 }
 
 .sc-counts {
   display: flex;
-  gap: 12px;
-  margin-bottom: 4px;
+  gap: 8px;
 }
 
 .sc-count-item {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--el-text-color-secondary);
 }
 
 .sc-acts {
   display: flex;
-  gap: 2px;
+  gap: 0;
   justify-content: flex-end;
-  margin-top: 2px;
-  padding-top: 4px;
+  margin-top: 3px;
+  padding-top: 3px;
   border-top: 1px solid var(--el-border-color-lighter);
 }
 </style>

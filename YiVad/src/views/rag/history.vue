@@ -78,17 +78,9 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="Top Score" width="120" align="center" sortable prop="topScore">
+        <el-table-column label="Top Score" width="110" align="center" sortable prop="topScore">
           <template #default="{ row }">
-            <div class="score-cell">
-              <el-progress
-                :percentage="scorePercent(getTopScore(row))"
-                :stroke-width="6"
-                :color="scoreColor(getTopScore(row))"
-                :show-text="false"
-              />
-              <span class="score-text">{{ scoreLabel(getTopScore(row)) }}</span>
-            </div>
+            <ScoreBar :score="getTopScore(row)" :bar-width="45" :stroke-width="6" />
           </template>
         </el-table-column>
         <el-table-column label="Avg Score" width="120" align="center">
@@ -156,14 +148,7 @@
             <div class="detail-source__header">
               <span class="detail-source__rank">#{{ si + 1 }}</span>
               <span class="detail-source__path">{{ s.file_path }}</span>
-              <el-progress
-                :percentage="scorePercent(s.score)"
-                :stroke-width="6"
-                :color="scoreColor(s.score)"
-                :show-text="false"
-                style="width: 50px"
-              />
-              <span class="detail-source__score">{{ scoreLabel(s.score) }}</span>
+              <ScoreBar :score="s.score" :bar-width="45" :stroke-width="6" />
             </div>
             <p class="detail-source__text">{{ truncateText(s.text, 200) }}</p>
           </div>
@@ -184,6 +169,12 @@ import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { Search, Delete, RefreshRight } from "@element-plus/icons-vue";
 import { useRagStore } from "@/stores/modules/rag";
+import {
+  scorePercent, scoreLabel, scoreColor, bestScore, avgScore,
+  truncateText, formatTimestamp
+} from "@/views/rag/constants";
+import ScoreBar from "./components/ScoreBar.vue";
+import SourceDetail from "./components/SourceDetail.vue";
 import type { RagSource } from "@/api/interface/rag";
 
 const router = useRouter();
@@ -243,15 +234,11 @@ const detailVisible = ref(false);
 const detailQuery = ref<HistoryEntry | null>(null);
 
 function getTopScore(entry: any): number {
-  const sources = entry.sources ?? [];
-  if (!sources.length) return 0;
-  return Math.max(...sources.map((s: RagSource) => s.score ?? 0));
+  return bestScore(entry.sources ?? []);
 }
 
 function getAvgScore(entry: any): number {
-  const sources = entry.sources ?? [];
-  if (!sources.length) return 0;
-  return sources.reduce((a: number, s: RagSource) => a + (s.score ?? 0), 0) / sources.length;
+  return avgScore(entry.sources ?? []);
 }
 
 function showQueryDetail(row: HistoryEntry) {
@@ -268,36 +255,6 @@ function rerunQuery(index?: number) {
 
 function clearAll() {
   ragStore.clearQueryHistory();
-}
-
-function formatTimestamp(ts: number): string {
-  try {
-    const d = new Date(ts);
-    return d.toLocaleString();
-  } catch {
-    return String(ts);
-  }
-}
-
-function scorePercent(score: number): number {
-  if (score == null || isNaN(score)) return 0;
-  return Math.round(score * 100);
-}
-
-function scoreLabel(score: number): string {
-  if (score == null || isNaN(score)) return "—";
-  return (score * 100).toFixed(1) + "%";
-}
-
-function scoreColor(score: number): string {
-  if (score >= 0.7) return "#67c23a";
-  if (score >= 0.4) return "#e6a23c";
-  return "#f56c6c";
-}
-
-function truncateText(text: string, maxLen: number): string {
-  if (!text) return "";
-  return text.length > maxLen ? text.slice(0, maxLen) + "…" : text;
 }
 </script>
 
@@ -360,92 +317,5 @@ function truncateText(text: string, maxLen: number): string {
 .text-muted {
   color: var(--el-text-color-placeholder);
   font-size: 12px;
-}
-
-.score-cell {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  .el-progress { width: 50px; }
-  .score-text {
-    font-size: 12px;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-  }
-}
-
-.avg-score {
-  font-size: 12px;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  color: var(--el-text-color-secondary);
-}
-
-// Detail drawer
-.detail-section {
-  margin-bottom: 20px;
-  h4 {
-    margin: 0 0 8px;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--el-text-color-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-}
-
-.detail-question {
-  margin: 0;
-  font-size: 15px;
-  font-weight: 500;
-  line-height: 1.6;
-  color: var(--el-text-color-primary);
-}
-
-.detail-source {
-  padding: 10px 0;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-
-  &:last-child { border-bottom: none; }
-
-  &__header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 4px;
-  }
-  &__rank {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--el-color-primary);
-    min-width: 24px;
-  }
-  &__path {
-    font-size: 12px;
-    font-family: monospace;
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    color: var(--el-text-color-regular);
-  }
-  &__score {
-    font-size: 12px;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-    min-width: 42px;
-    text-align: right;
-  }
-  &__text {
-    margin: 4px 0 0 32px;
-    font-size: 12px;
-    color: var(--el-text-color-secondary);
-    line-height: 1.5;
-  }
-}
-
-.detail-actions {
-  padding-top: 12px;
-  border-top: 1px solid var(--el-border-color-lighter);
 }
 </style>

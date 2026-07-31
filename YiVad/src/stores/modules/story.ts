@@ -447,12 +447,11 @@ export const useStoryStore = defineStore("yivad-story", () => {
     loadStoryMarkdown(story);
   }
 
-  /** Load AI coding & analysis-files history from the dedicated collection and merge into scenario arrays. */
+  /** Load AI coding history from the dedicated collection and merge into scenario arrays. */
   async function loadAiCodingHistoryForStory(storyKey: string) {
     try {
-      const [aiCodingRes, analysisFilesRes] = await Promise.all([
-        getHistoryList({ storyKey, type: "ai_coding", pageSize: 500 }),
-        getHistoryList({ storyKey, type: "analysis_files", pageSize: 500 })
+      const [aiCodingRes] = await Promise.all([
+        getHistoryList({ storyKey, type: "ai_coding", pageSize: 500 })
       ]);
 
       if (!selectedStory.value || selectedStory.value.key !== storyKey) return;
@@ -464,21 +463,13 @@ export const useStoryStore = defineStore("yivad-story", () => {
         byScenarioAi[doc.scenarioKey].push({ id: doc.key, prompt: doc.prompt, generatedAt: doc.generatedAt });
       }
 
-      const byScenarioAnalysis: Record<string, { id?: string; prompt: string; generatedAt: number }[]> = {};
-      for (const doc of analysisFilesRes.list) {
-        if (!byScenarioAnalysis[doc.scenarioKey]) byScenarioAnalysis[doc.scenarioKey] = [];
-        byScenarioAnalysis[doc.scenarioKey].push({ id: doc.key, prompt: doc.prompt, generatedAt: doc.generatedAt });
-      }
-
       // Merge into each scenario
       const scenarios = selectedStory.value.scenarios.map(sc => {
         const aiEntries = byScenarioAi[sc.key];
-        const analysisEntries = byScenarioAnalysis[sc.key];
-        if (!aiEntries?.length && !analysisEntries?.length) return sc;
+        if (!aiEntries?.length) return sc;
         return {
           ...sc,
-          ...(aiEntries?.length ? { aiCodingHistory: aiEntries } : {}),
-          ...(analysisEntries?.length ? { analysisFilesHistory: analysisEntries } : {})
+          ...(aiEntries?.length ? { aiCodingHistory: aiEntries } : {})
         };
       });
 
@@ -634,68 +625,6 @@ export const useStoryStore = defineStore("yivad-story", () => {
       const scenarios = [...story.scenarios];
       const history = sc.aiCodingHistory.filter((_, i) => i !== entryIdx);
       scenarios[idx] = { ...sc, aiCodingHistory: history };
-      selectedStory.value = { ...story, scenarios };
-      ElMessage.success("History entry deleted");
-    } catch {
-      /* cancelled */
-    }
-  }
-
-  async function saveAnalysisFilesPrompt(scenarioKey: string, prompt: string) {
-    if (!selectedStory.value) return;
-    const story = selectedStory.value;
-    const idx = story.scenarios.findIndex(s => s.key === scenarioKey);
-    if (idx < 0) return;
-
-    const sc = story.scenarios[idx];
-    const generatedAt = Date.now();
-
-    try {
-      // Persist to dedicated collection
-      const result = await createHistoryEntry({
-        storyKey: story.key,
-        scenarioKey,
-        scenarioName: sc.name,
-        prompt,
-        generatedAt,
-        type: "analysis_files"
-      });
-
-      // Update local state for immediate UI feedback
-      const scenarios = [...story.scenarios];
-      const history = sc.analysisFilesHistory ? [...sc.analysisFilesHistory] : [];
-      history.push({ id: result?.key, prompt, generatedAt });
-      scenarios[idx] = { ...sc, analysisFilesHistory: history };
-      selectedStory.value = { ...story, scenarios };
-    } catch (e: any) {
-      console.error("Failed to save analysis files history:", e);
-    }
-  }
-
-  async function deleteAnalysisFilesEntry(scenarioKey: string, entryIdx: number) {
-    if (!selectedStory.value) return;
-    const story = selectedStory.value;
-    const idx = story.scenarios.findIndex(s => s.key === scenarioKey);
-    if (idx < 0) return;
-
-    const sc = story.scenarios[idx];
-    if (!sc.analysisFilesHistory?.length) return;
-
-    const entry = sc.analysisFilesHistory[entryIdx];
-    if (!entry) return;
-
-    try {
-      await ElMessageBox.confirm("Delete this history entry?", "Confirm", { type: "warning" });
-
-      // Delete from dedicated collection if we have the document key
-      if (entry.id) {
-        await deleteHistoryEntry(entry.id);
-      }
-
-      // Update local state
-      const scenarios = [...story.scenarios];
-      const history = sc.analysisFilesHistory.filter((_, i) => i !== entryIdx);
-      scenarios[idx] = { ...sc, analysisFilesHistory: history };
       selectedStory.value = { ...story, scenarios };
       ElMessage.success("History entry deleted");
     } catch {
@@ -883,8 +812,6 @@ export const useStoryStore = defineStore("yivad-story", () => {
     handleScenarioDelete,
     saveAiCodingPrompt,
     deleteAiCodingEntry,
-    saveAnalysisFilesPrompt,
-    deleteAnalysisFilesEntry,
     addStep,
     removeStep,
     addScenarioFile,

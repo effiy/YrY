@@ -103,7 +103,7 @@ function pascal(s: string): string {
     .join("");
 }
 
-const routePrefix = props.tree === "tech-leadership" ? "tlr" : "cr";
+const routePrefix = props.tree === "tech-leadership" ? "tlr" : props.tree === "brd" ? "brd" : "cr";
 
 function toDetail(key: string) {
   const routeName = `${routePrefix}${pascal(props.topic)}Detail`;

@@ -10,7 +10,7 @@
 import { queryDocuments, createDocument, updateDocument, deleteDocument } from "./dataService";
 import type { YiAiEnvelope, QueryDocumentsData } from "@/api/interface/yiweb";
 
-export type TopicTree = "tech-leadership" | "code-review";
+export type TopicTree = "tech-leadership" | "code-review" | "brd";
 
 export interface TopicEntryDocument {
   key: string;
@@ -31,15 +31,17 @@ export interface TopicListParams {
   pageSize?: number;
 }
 
-/** Convention: tech-leadership topics → `tech_<value>`; code-review → `cr_<value>`. */
+/** Convention: tech-leadership → `tech_<value>`; code-review → `cr_<value>`; brd → `brd_<value>`. */
 export function cnameFor(tree: TopicTree, topic: string): string {
-  return tree === "tech-leadership" ? `tech_${topic}` : `cr_${topic}`;
+  if (tree === "tech-leadership") return `tech_${topic}`;
+  if (tree === "brd") return `brd_${topic}`;
+  return `cr_${topic}`;
 }
 
 function makeKey(tree: TopicTree, topic: string): string {
   const stamp = Date.now().toString(36);
   const rand = Math.random().toString(36).slice(2, 8);
-  const prefix = tree === "tech-leadership" ? "tl" : "cr";
+  const prefix = tree === "tech-leadership" ? "tl" : tree === "brd" ? "brd" : "cr";
   return `${prefix}_${topic}_${stamp}${rand}`;
 }
 

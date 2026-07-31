@@ -20,108 +20,9 @@
 
     <!-- Index Overview Cards -->
     <section class="rag-dashboard__cards">
-      <el-card shadow="hover" class="rag-dashboard__card rag-dashboard__card--status">
-        <template #header>
-          <div class="card-header">
-            <span><el-icon><DataBoard /></el-icon> Index Status</span>
-            <el-tag :type="status.built ? 'success' : 'warning'" size="small" effect="dark">
-              {{ status.built ? "HEALTHY" : "NOT BUILT" }}
-            </el-tag>
-          </div>
-        </template>
-        <div class="card-body">
-          <div class="stat-row">
-            <span class="stat-label">Documents Indexed</span>
-            <span class="stat-value">{{ status.num_docs ?? "—" }}</span>
-          </div>
-          <div class="stat-row">
-            <span class="stat-label">Last Built</span>
-            <span class="stat-value stat-value--time">{{ status.last_built_at ? formatTime(status.last_built_at) : "Never" }}</span>
-          </div>
-          <div class="stat-row">
-            <span class="stat-label">Persist Directory</span>
-            <span class="stat-value stat-value--path">{{ status.persist_dir ?? "—" }}</span>
-          </div>
-          <div v-if="status.error" class="stat-row stat-row--error">
-            <span class="stat-label">Error</span>
-            <span class="stat-value">{{ status.error }}</span>
-          </div>
-        </div>
-      </el-card>
-
-      <el-card shadow="hover" class="rag-dashboard__card rag-dashboard__card--config">
-        <template #header>
-          <span><el-icon><Setting /></el-icon> Retrieval Configuration</span>
-        </template>
-        <div class="card-body">
-          <div class="stat-row">
-            <span class="stat-label">Embedding Model</span>
-            <el-tag size="small" type="info">{{ indexInfo.embed_model || "nomic-embed-text" }}</el-tag>
-          </div>
-          <div class="stat-row">
-            <span class="stat-label">Chat LLM</span>
-            <el-tag size="small" type="info">{{ indexInfo.llm_model || "qwen2.5" }}</el-tag>
-          </div>
-          <div class="stat-row">
-            <span class="stat-label">Chunk Size / Overlap</span>
-            <span class="stat-value">{{ indexInfo.chunk_size || 500 }} / {{ indexInfo.chunk_overlap || 50 }} tokens</span>
-          </div>
-          <div class="stat-row">
-            <span class="stat-label">Hybrid Retrieval</span>
-            <el-tag size="small" :type="indexInfo.hybrid_retrieval !== false ? 'success' : 'info'">
-              {{ indexInfo.hybrid_retrieval !== false ? "Vector + BM25" : "Vector only" }}
-            </el-tag>
-          </div>
-          <div class="stat-row">
-            <span class="stat-label">Cross-Encoder Rerank</span>
-            <el-tag size="small" :type="indexInfo.rerank_enabled ? 'success' : 'info'">
-              {{ indexInfo.rerank_enabled ? "Enabled" : "Disabled" }}
-            </el-tag>
-          </div>
-          <div class="stat-row">
-            <span class="stat-label">Inline Citations</span>
-            <el-tag size="small" :type="indexInfo.inline_citations !== false ? 'success' : 'info'">
-              {{ indexInfo.inline_citations !== false ? "[Source N]" : "Off" }}
-            </el-tag>
-          </div>
-        </div>
-      </el-card>
-
-      <el-card shadow="hover" class="rag-dashboard__card rag-dashboard__card--quick">
-        <template #header>
-          <span><el-icon><Opportunity /></el-icon> Quick Query</span>
-        </template>
-        <div class="card-body">
-          <el-input
-            v-model="quickQuestion"
-            placeholder="Ask a quick question..."
-            @keyup.enter.ctrl="runQuickQuery"
-            :disabled="!status.built"
-          />
-          <el-button
-            type="primary"
-            :loading="quickLoading"
-            @click="runQuickQuery"
-            :disabled="!status.built || !quickQuestion.trim()"
-            style="margin-top: 12px; width: 100%"
-          >
-            {{ quickLoading ? "Retrieving..." : "Search Knowledge Base" }}
-          </el-button>
-          <div v-if="quickSources.length" class="quick-results">
-            <div class="quick-results__title">
-              Top {{ quickSources.length }} results
-              <span class="quick-results__best">(best: {{ (quickSources[0].score * 100).toFixed(1) }}%)</span>
-            </div>
-            <div v-for="(s, i) in quickSources.slice(0, 3)" :key="i" class="quick-result">
-              <div class="quick-result__header">
-                <el-tag size="small" :type="scoreType(s.score)">{{ (s.score * 100).toFixed(0) }}%</el-tag>
-                <span class="quick-result__path">{{ s.file_path }}</span>
-              </div>
-              <p class="quick-result__text">{{ truncateText(s.text, 120) }}</p>
-            </div>
-          </div>
-        </div>
-      </el-card>
+      <IndexStatusCard :status="status" />
+      <RetrievalConfigCard :index-info="indexInfo" />
+      <QuickQueryCard :disabled="!status.built" />
     </section>
 
     <!-- Recent Queries Table -->
@@ -155,20 +56,13 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="Best Score" width="110" align="center">
+          <el-table-column label="Best Score" width="120" align="center">
             <template #default="{ row }">
-              <div class="score-cell">
-                <el-progress
-                  :percentage="scorePercent(row.top_score ?? bestScore(row.sources))"
-                  :stroke-width="6"
-                  :show-text="false"
-                />
-                <span class="score-text">{{ scoreLabel(row.top_score ?? bestScore(row.sources)) }}</span>
-              </div>
+              <ScoreBar :score="row.top_score ?? bestScore(row.sources)" :bar-width="50" :stroke-width="6" />
             </template>
           </el-table-column>
           <el-table-column label="Time" width="160" align="center">
-            <template #default="{ row }">{{ fmtTs(row.timestamp) }}</template>
+            <template #default="{ row }">{{ formatTimestamp(row.timestamp) }}</template>
           </el-table-column>
         </el-table>
         <el-empty v-else description="No queries yet. Start exploring in the Retrieval Explorer." :image-size="60" />
@@ -205,29 +99,24 @@
 <script setup lang="ts" name="ragDashboard">
 import { ref, reactive, onMounted, computed } from "vue";
 import { ElMessage } from "element-plus";
-import { Search, ChatDotRound, RefreshRight, DataBoard, Setting, Opportunity, Timer, Document, Reading, Notebook } from "@element-plus/icons-vue";
-import { ragQuery, ragBuild, ragStatus } from "@/api/modules/ragService";
+import { RefreshRight, Timer, Document, Reading, Notebook } from "@element-plus/icons-vue";
+import { ragBuild, ragStatus } from "@/api/modules/ragService";
 import { useRagStore } from "@/stores/modules/rag";
-import type { RagSource, RagStatusResponse } from "@/api/interface/rag";
+import {
+  scorePercent, scoreLabel, bestScore, INDEX_INFO_DEFAULTS
+} from "@/views/rag/constants";
+import ScoreBar from "./components/ScoreBar.vue";
+import IndexStatusCard from "./components/IndexStatusCard.vue";
+import QuickQueryCard from "./components/QuickQueryCard.vue";
+import RetrievalConfigCard from "./components/RetrievalConfigCard.vue";
+import type { RagStatusResponse } from "@/api/interface/rag";
 
 const ragStore = useRagStore();
 
 const status = reactive<RagStatusResponse>({ built: false, num_docs: 0 });
 const building = ref(false);
 
-const indexInfo = reactive({
-  embed_model: "nomic-embed-text",
-  llm_model: "qwen2.5",
-  chunk_size: 500,
-  chunk_overlap: 50,
-  hybrid_retrieval: true,
-  rerank_enabled: false,
-  inline_citations: true,
-});
-
-const quickQuestion = ref("");
-const quickLoading = ref(false);
-const quickSources = ref<RagSource[]>([]);
+const indexInfo = reactive({ ...INDEX_INFO_DEFAULTS });
 
 const queryHistory = computed(() => {
   return ragStore.queryHistory.map((entry: any) => ({
@@ -258,64 +147,6 @@ async function rebuildIndex() {
   }
 }
 
-async function runQuickQuery() {
-  const q = quickQuestion.value.trim();
-  if (!q) return;
-  quickLoading.value = true;
-  quickSources.value = [];
-  try {
-    const res = await ragQuery({ question: q, top_k: 5 });
-    quickSources.value = res.sources ?? [];
-  } catch (e: any) {
-    ElMessage.error(e.message ?? "Query failed");
-  } finally {
-    quickLoading.value = false;
-  }
-}
-
-function formatTime(iso: string): string {
-  try {
-    const d = new Date(iso);
-    return d.toLocaleString();
-  } catch {
-    return iso;
-  }
-}
-
-function truncateText(text: string, maxLen: number): string {
-  if (!text) return "";
-  return text.length > maxLen ? text.slice(0, maxLen) + "…" : text;
-}
-
-function scoreType(score: number): string {
-  if (score >= 0.7) return "success";
-  if (score >= 0.4) return "warning";
-  return "danger";
-}
-
-function scorePercent(score: number | undefined): number {
-  if (score == null || isNaN(score)) return 0;
-  return Math.round(score * 100);
-}
-
-function scoreLabel(score: number | undefined): string {
-  if (score == null || isNaN(score)) return "—";
-  return (score * 100).toFixed(1) + "%";
-}
-
-function bestScore(sources: RagSource[]): number {
-  if (!sources?.length) return 0;
-  return Math.max(...sources.map((s) => s.score ?? 0));
-}
-
-function fmtTs(ts: number | string): string {
-  if (!ts) return "—";
-  try {
-    return new Date(ts).toLocaleString();
-  } catch {
-    return String(ts);
-  }
-}
 </script>
 
 <style scoped lang="scss">
@@ -505,22 +336,6 @@ function fmtTs(ts: number | string): string {
     font-size: 12px;
     color: var(--el-text-color-secondary);
     line-height: 1.5;
-  }
-}
-
-.score-cell {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-
-  .el-progress {
-    width: 50px;
-  }
-
-  .score-text {
-    font-size: 12px;
-    font-weight: 500;
-    font-variant-numeric: tabular-nums;
   }
 }
 

@@ -67,18 +67,12 @@
           <div class="sources-title">
             <el-icon><Document /></el-icon> Retrieved Sources
           </div>
-          <div v-for="(s, si) in compareRagSources" :key="si" class="panel-source">
-            <span class="panel-source__num">[{{ si + 1 }}]</span>
-            <span class="panel-source__path">{{ s.file_path }}</span>
-            <el-progress
-              :percentage="scorePercent(s.score)"
-              :stroke-width="4"
-              :show-text="false"
-              :color="scoreColor(s.score)"
-              style="width: 30px"
-            />
-            <span class="panel-source__score">{{ scoreLabel(s.score) }}</span>
-          </div>
+          <SourceChip
+            v-for="(s, si) in compareRagSources"
+            :key="si"
+            :source="s"
+            :index="si"
+          />
         </div>
       </el-card>
 
@@ -141,6 +135,9 @@ import { ref, computed, onBeforeUnmount } from "vue";
 import { Close, Switch, Loading, Document, WarningFilled, DataAnalysis } from "@element-plus/icons-vue";
 import { streamRagChat } from "@/api/modules/ragService";
 import { streamChat } from "@/api/modules/chatService";
+import { scorePercent, scoreLabel, scoreColor, renderAnswer } from "@/views/rag/constants";
+import ScoreBar from "./components/ScoreBar.vue";
+import SourceChip from "./components/SourceChip.vue";
 import type { RagSource } from "@/api/interface/rag";
 
 const compareInput = ref("");
@@ -215,30 +212,6 @@ function clearCompare() {
   compareRagError.value = "";
   comparePlainError.value = "";
   compareInput.value = "";
-}
-
-function renderAnswer(text: string): string {
-  if (!text) return "";
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/\[(\d+)\]/g, '<span class="citation">[$1]</span>')
-    .replace(/\n/g, "<br>");
-}
-
-function scorePercent(score: number): number {
-  if (score == null || isNaN(score)) return 0;
-  return Math.round(score * 100);
-}
-function scoreLabel(score: number): string {
-  if (score == null || isNaN(score)) return "—";
-  return (score * 100).toFixed(1) + "%";
-}
-function scoreColor(score: number): string {
-  if (score >= 0.7) return "#67c23a";
-  if (score >= 0.4) return "#e6a23c";
-  return "#f56c6c";
 }
 
 onBeforeUnmount(() => { stopCompare(); });
@@ -384,19 +357,6 @@ onBeforeUnmount(() => { stopCompare(); });
     align-items: center;
     gap: 4px;
   }
-
-  .panel-source {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    padding: 2px 0;
-
-    &__num { font-weight: 700; color: var(--el-color-primary); flex-shrink: 0; }
-    &__path { font-family: monospace; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--el-text-color-regular); }
-    &__score { font-weight: 600; font-variant-numeric: tabular-nums; min-width: 36px; text-align: right; }
-  }
-}
 
 .text-danger { color: var(--el-color-danger); font-weight: 500; }
 .text-success { color: var(--el-color-success); font-weight: 500; }

@@ -154,6 +154,50 @@ export const staticRouter: RouteRecordRaw[] = [
         name: "crObservabilityGapDetail",
         component: () => import("@/views/code-review/observability-gap/detail.vue"),
         meta: { title: "Observability gap", isHide: true, isKeepAlive: true }
+      },
+      // BRD: list routes come from authMenuList.json;
+      // detail routes are hidden children and registered statically.
+      {
+        path: "/brd/brd-documents/detail/:id?",
+        name: "brdDocumentsDetail",
+        component: () => import("@/views/brd/brd-documents/detail.vue"),
+        meta: { title: "BRD Document detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/brd/brd-rules/detail/:id?",
+        name: "brdRulesDetail",
+        component: () => import("@/views/brd/brd-rules/detail.vue"),
+        meta: { title: "Business Rule detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/brd/brd-milestones/detail/:id?",
+        name: "brdMilestonesDetail",
+        component: () => import("@/views/brd/brd-milestones/detail.vue"),
+        meta: { title: "Milestone detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/brd/brd-approvals/detail/:id?",
+        name: "brdApprovalsDetail",
+        component: () => import("@/views/brd/brd-approvals/detail.vue"),
+        meta: { title: "Approval Record detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/brd/brd-stakeholders/detail/:id?",
+        name: "brdStakeholdersDetail",
+        component: () => import("@/views/brd/brd-stakeholders/detail.vue"),
+        meta: { title: "Stakeholder detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/brd/brd-objectives/detail/:id?",
+        name: "brdObjectivesDetail",
+        component: () => import("@/views/brd/brd-objectives/detail.vue"),
+        meta: { title: "Business Objective detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/brd/brd-acceptance/detail/:id?",
+        name: "brdAcceptanceDetail",
+        component: () => import("@/views/brd/brd-acceptance/detail.vue"),
+        meta: { title: "Acceptance Criteria detail", isHide: true, isKeepAlive: true }
       }
     ]
   }

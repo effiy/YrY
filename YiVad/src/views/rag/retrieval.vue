@@ -50,8 +50,8 @@
         <div class="results-header">
           <span><el-icon><List /></el-icon> Retrieved Chunks ({{ sources.length }})</span>
           <span class="results-summary">
-            Best: <strong>{{ scoreLabel(bestScore) }}</strong>
-            &nbsp;|&nbsp; Avg: <strong>{{ scoreLabel(avgScore) }}</strong>
+            Best: <strong>{{ scoreLabel(best) }}</strong>
+            &nbsp;|&nbsp; Avg: <strong>{{ scoreLabel(avg) }}</strong>
             &nbsp;|&nbsp; Latency: <strong>{{ lastLatency }}ms</strong>
           </span>
         </div>
@@ -69,17 +69,7 @@
         <el-table-column type="index" label="#" width="50" align="center" sortable />
         <el-table-column label="Relevance" width="140" align="center" sortable prop="score">
           <template #default="{ row }">
-            <div class="score-col">
-              <el-progress
-                :percentage="scorePercent(row.score)"
-                :stroke-width="8"
-                :color="scoreColor(row.score)"
-                :show-text="false"
-              />
-              <span class="score-col__text" :style="{ color: scoreColor(row.score) }">
-                {{ scoreLabel(row.score) }}
-              </span>
-            </div>
+            <ScoreBar :score="row.score" :bar-width="70" :stroke-width="8" />
           </template>
         </el-table-column>
         <el-table-column prop="file_path" label="Document" min-width="200" sortable>
@@ -95,7 +85,7 @@
             <el-tag
               v-if="row.metadata?.category"
               size="small"
-              :type="categoryType(row.metadata.category)"
+              :type="categoryTagType(row.metadata.category)"
               effect="light"
             >
               {{ row.metadata.category }}
@@ -153,58 +143,7 @@
       size="560px"
       direction="rtl"
     >
-      <template v-if="detailSource">
-        <div class="detail-section">
-          <h4>Document</h4>
-          <el-link :href="kbDetailLink(detailSource.file_path)" target="_blank" type="primary" :underline="false">
-            <el-icon><Link /></el-icon> {{ detailSource.file_path }}
-          </el-link>
-        </div>
-
-        <div class="detail-section">
-          <h4>Relevance Score</h4>
-          <div class="detail-score">
-            <el-progress
-              :percentage="scorePercent(detailSource.score)"
-              :stroke-width="12"
-              :color="scoreColor(detailSource.score)"
-            />
-            <span class="detail-score__text">{{ scoreLabel(detailSource.score) }}</span>
-          </div>
-        </div>
-
-        <div class="detail-section" v-if="detailSource.metadata && Object.keys(detailSource.metadata).length">
-          <h4>Metadata</h4>
-          <el-descriptions :column="1" border size="small" class="detail-meta">
-            <el-descriptions-item
-              v-for="(val, key) in visibleMeta"
-              :key="key"
-              :label="String(key)"
-            >
-              <template v-if="Array.isArray(val)">
-                <el-tag v-for="(t, ti) in val" :key="ti" size="small" style="margin: 1px 2px">{{ t }}</el-tag>
-              </template>
-              <template v-else>{{ val }}</template>
-            </el-descriptions-item>
-          </el-descriptions>
-        </div>
-
-        <div class="detail-section">
-          <h4>Chunk Content</h4>
-          <div class="detail-text">
-            <pre>{{ detailSource.text }}</pre>
-          </div>
-        </div>
-
-        <div class="detail-actions">
-          <el-button plain size="small" @click="copyText(detailSource.text)">
-            <el-icon><CopyDocument /></el-icon> Copy Text
-          </el-button>
-          <el-button plain size="small" @click="openInKb(detailSource.file_path)">
-            <el-icon><Document /></el-icon> Open in Knowledge Base
-          </el-button>
-        </div>
-      </template>
+      <SourceDetail v-if="detailSource" :source="detailSource" :index="detailIndex" />
     </el-drawer>
   </div>
 </template>
@@ -212,9 +151,15 @@
 <script setup lang="ts" name="ragRetrievalExplorer">
 import { ref, computed } from "vue";
 import { ElMessage } from "element-plus";
-import { Search, List, Document, Link, CopyDocument } from "@element-plus/icons-vue";
+import { Search, List, Document } from "@element-plus/icons-vue";
 import { ragQuery } from "@/api/modules/ragService";
 import { useRagStore } from "@/stores/modules/rag";
+import {
+  scorePercent, scoreLabel, scoreColor, bestScore, avgScore,
+  stripSourcePrefix, categoryTagType
+} from "@/views/rag/constants";
+import ScoreBar from "./components/ScoreBar.vue";
+import SourceDetail from "./components/SourceDetail.vue";
 import type { RagSource } from "@/api/interface/rag";
 
 const ragStore = useRagStore();
@@ -234,23 +179,14 @@ const drawerVisible = ref(false);
 const detailSource = ref<RagSource | null>(null);
 const detailIndex = ref(0);
 
-const bestScore = computed(() => {
-  if (!sources.value.length) return 0;
-  return Math.max(...sources.value.map((s) => s.score ?? 0));
-});
+const best = computed(() => bestScore(sources.value));
+const avg = computed(() => avgScore(sources.value));
 
-const avgScore = computed(() => {
-  if (!sources.value.length) return 0;
-  return sources.value.reduce((a, s) => a + (s.score ?? 0), 0) / sources.value.length;
-});
-
-const visibleMeta = computed(() => {
-  if (!detailSource.value?.metadata) return {};
-  const m = { ...detailSource.value.metadata };
-  delete m.char_count;
-  delete m.token_estimate;
-  return m;
-});
+function showDetail(source: RagSource, index?: number) {
+  detailSource.value = source;
+  detailIndex.value = index ?? 0;
+  drawerVisible.value = true;
+}
 
 async function runQuery() {
   const q = question.value.trim();
@@ -308,58 +244,6 @@ function clearQuery() {
   sources.value = [];
   searched.value = false;
   lastError.value = "";
-}
-
-function showDetail(source: RagSource, index?: number) {
-  detailSource.value = source;
-  detailIndex.value = index ?? 0;
-  drawerVisible.value = true;
-}
-
-function stripSourcePrefix(text: string): string {
-  return (text || "").replace(/^\[Source \d+\]\s*/gm, "");
-}
-
-function scorePercent(score: number): number {
-  if (score == null || isNaN(score)) return 0;
-  return Math.round(score * 100);
-}
-
-function scoreLabel(score: number): string {
-  if (score == null || isNaN(score)) return "—";
-  return (score * 100).toFixed(1) + "%";
-}
-
-function scoreColor(score: number): string {
-  if (score >= 0.7) return "#67c23a";
-  if (score >= 0.4) return "#e6a23c";
-  return "#f56c6c";
-}
-
-function categoryType(cat: string): string {
-  const map: Record<string, string> = {
-    methodology: "",
-    tech: "success",
-    work: "warning",
-    projects: "primary",
-    resources: "info",
-    industry: "danger",
-  };
-  return map[cat.split("/")[0]] || "";
-}
-
-function kbDetailLink(filePath: string): string {
-  return `/knowledge/detail?path=${encodeURIComponent(filePath)}`;
-}
-
-function copyText(text: string) {
-  navigator.clipboard.writeText(text).then(() => {
-    ElMessage.success("Chunk text copied to clipboard");
-  });
-}
-
-function openInKb(filePath: string) {
-  window.open(kbDetailLink(filePath), "_blank");
 }
 </script>
 
@@ -455,25 +339,6 @@ function openInKb(filePath: string) {
   }
 }
 
-.score-col {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-
-  .el-progress {
-    flex: 1;
-    min-width: 60px;
-  }
-
-  &__text {
-    font-size: 12px;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-    min-width: 42px;
-    text-align: right;
-  }
-}
-
 .file-col {
   display: flex;
   align-items: center;
@@ -516,69 +381,4 @@ function openInKb(filePath: string) {
   }
 }
 
-// Detail Drawer
-.detail-section {
-  margin-bottom: 20px;
-
-  h4 {
-    margin: 0 0 8px;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--el-text-color-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-}
-
-.detail-score {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  .el-progress {
-    flex: 1;
-  }
-
-  &__text {
-    font-size: 18px;
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-  }
-}
-
-.detail-meta {
-  :deep(.el-descriptions__label) {
-    font-size: 12px;
-  }
-  :deep(.el-descriptions__content) {
-    font-size: 12px;
-    word-break: break-all;
-  }
-}
-
-.detail-text {
-  background: var(--el-fill-color-light);
-  border-radius: 6px;
-  padding: 12px;
-  max-height: 300px;
-  overflow-y: auto;
-
-  pre {
-    margin: 0;
-    font-size: 13px;
-    line-height: 1.7;
-    white-space: pre-wrap;
-    word-break: break-word;
-    font-family: inherit;
-    color: var(--el-text-color-primary);
-  }
-}
-
-.detail-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  padding-top: 12px;
-  border-top: 1px solid var(--el-border-color-lighter);
-}
 </style>

@@ -230,7 +230,8 @@ async function handleDelete() {
 }
 
 function back() {
-  router.push({ name: props.tree === "tech-leadership" ? `tlr${pascal(props.topic)}List` : `cr${pascal(props.topic)}List` });
+  const prefix = props.tree === "tech-leadership" ? "tlr" : props.tree === "brd" ? "brd" : "cr";
+  router.push({ name: `${prefix}${pascal(props.topic)}List` });
 }
 
 function pascal(s: string) {

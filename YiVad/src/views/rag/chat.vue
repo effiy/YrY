@@ -24,7 +24,7 @@
             <div class="welcome-prompts">
               <p>Try asking:</p>
               <el-tag
-                v-for="(p, i) in examplePrompts"
+                v-for="(p, i) in CHAT_EXAMPLE_PROMPTS"
                 :key="i"
                 class="welcome-tag"
                 @click="chatInput = p; sendChat()"
@@ -48,7 +48,7 @@
             {{ m.role === "user" ? "You" : "RAG" }}
           </el-tag>
         </div>
-        <div class="chat-msg__content" v-html="renderContent(m.content)"></div>
+        <div class="chat-msg__content" v-html="renderAnswer(m.content)"></div>
         <div v-if="m.streaming" class="chat-msg__streaming">
           <el-icon class="is-loading"><Loading /></el-icon> Generating…
         </div>
@@ -63,18 +63,13 @@
             </el-icon>
           </div>
           <div v-show="m._showSources" class="sources-list">
-            <div v-for="(s, si) in m.sources" :key="si" class="source-chip" @click="showSourceDetail(s, si)">
-              <span class="source-chip__num">[{{ si + 1 }}]</span>
-              <span class="source-chip__path">{{ s.file_path }}</span>
-              <el-progress
-                :percentage="scorePercent(s.score)"
-                :stroke-width="4"
-                :show-text="false"
-                :color="scoreColor(s.score)"
-                style="width: 40px"
-              />
-              <span class="source-chip__score">{{ scoreLabel(s.score) }}</span>
-            </div>
+            <SourceChip
+              v-for="(s, si) in m.sources"
+              :key="si"
+              :source="s"
+              :index="si"
+              @click="showSourceDetail(s, si)"
+            />
           </div>
         </div>
       </div>
@@ -106,29 +101,7 @@
 
     <!-- Source Detail Dialog -->
     <el-dialog v-model="sourceDialogVisible" title="Source Detail" width="600px">
-      <template v-if="dialogSource">
-        <div class="detail-section">
-          <h4>Document</h4>
-          <el-link :href="kbDetailLink(dialogSource.file_path)" target="_blank" type="primary" :underline="false">
-            {{ dialogSource.file_path }}
-          </el-link>
-        </div>
-        <div class="detail-section">
-          <h4>Relevance Score</h4>
-          <div class="detail-score">
-            <el-progress
-              :percentage="scorePercent(dialogSource.score)"
-              :stroke-width="10"
-              :color="scoreColor(dialogSource.score)"
-            />
-            <span class="detail-score__text">{{ scoreLabel(dialogSource.score) }}</span>
-          </div>
-        </div>
-        <div class="detail-section">
-          <h4>Chunk Text</h4>
-          <div class="detail-text"><pre>{{ dialogSource.text }}</pre></div>
-        </div>
-      </template>
+      <SourceDetail v-if="dialogSource" :source="dialogSource" :index="dialogSourceIndex" />
     </el-dialog>
   </div>
 </template>
@@ -139,6 +112,13 @@ import { ElMessage } from "element-plus";
 import { Document, ArrowDown, Close, Promotion, Loading } from "@element-plus/icons-vue";
 import { streamRagChat } from "@/api/modules/ragService";
 import { useRagStore } from "@/stores/modules/rag";
+import {
+  scorePercent, scoreLabel, scoreColor, renderAnswer,
+  CHAT_EXAMPLE_PROMPTS
+} from "@/views/rag/constants";
+import ScoreBar from "./components/ScoreBar.vue";
+import SourceChip from "./components/SourceChip.vue";
+import SourceDetail from "./components/SourceDetail.vue";
 import type { RagSource } from "@/api/interface/rag";
 
 const ragStore = useRagStore();
@@ -160,13 +140,7 @@ let abortFn: (() => void) | null = null;
 
 const sourceDialogVisible = ref(false);
 const dialogSource = ref<RagSource | null>(null);
-
-const examplePrompts = [
-  "What are the RAG design patterns for chunking?",
-  "How does the YiVad ProTable component work?",
-  "Explain the dual-write file persistence model",
-  "What are the best practices for hybrid retrieval?",
-];
+const dialogSourceIndex = ref(0);
 
 async function sendChat() {
   const q = chatInput.value.trim();
@@ -221,6 +195,12 @@ async function sendChat() {
   abortFn = abort;
 }
 
+function showSourceDetail(source: RagSource, index: number) {
+  dialogSource.value = source;
+  dialogSourceIndex.value = index;
+  sourceDialogVisible.value = true;
+}
+
 function stopChat() {
   abortFn?.();
   abortFn = null;
@@ -242,41 +222,6 @@ function scrollToBottom() {
     const el = msgContainer.value;
     if (el) el.scrollTop = el.scrollHeight;
   });
-}
-
-function renderContent(text: string): string {
-  if (!text) return "";
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/\[(\d+)\]/g, '<span class="citation">[$1]</span>')
-    .replace(/\n/g, "<br>");
-}
-
-function showSourceDetail(source: RagSource, _index: number) {
-  dialogSource.value = source;
-  sourceDialogVisible.value = true;
-}
-
-function scorePercent(score: number): number {
-  if (score == null || isNaN(score)) return 0;
-  return Math.round(score * 100);
-}
-
-function scoreLabel(score: number): string {
-  if (score == null || isNaN(score)) return "—";
-  return (score * 100).toFixed(1) + "%";
-}
-
-function scoreColor(score: number): string {
-  if (score >= 0.7) return "#67c23a";
-  if (score >= 0.4) return "#e6a23c";
-  return "#f56c6c";
-}
-
-function kbDetailLink(filePath: string): string {
-  return `/knowledge/detail?path=${encodeURIComponent(filePath)}`;
 }
 
 onBeforeUnmount(() => {
@@ -418,42 +363,6 @@ onBeforeUnmount(() => {
   margin-top: 6px;
 }
 
-.source-chip {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  background: var(--el-color-primary-light-9);
-  cursor: pointer;
-  transition: background 0.15s;
-
-  &:hover { background: var(--el-color-primary-light-7); }
-
-  &__num {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--el-color-primary);
-    flex-shrink: 0;
-  }
-  &__path {
-    font-size: 11px;
-    font-family: monospace;
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    color: var(--el-text-color-regular);
-  }
-  &__score {
-    font-size: 11px;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-    min-width: 38px;
-    text-align: right;
-  }
-}
-
 .input-actions {
   display: flex;
   justify-content: space-between;
@@ -466,19 +375,4 @@ onBeforeUnmount(() => {
   color: var(--el-text-color-placeholder);
 }
 
-// Detail dialog (same styles as retrieval page)
-.detail-section {
-  margin-bottom: 16px;
-  h4 { margin: 0 0 8px; font-size: 13px; font-weight: 600; color: var(--el-text-color-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
-}
-.detail-score {
-  display: flex; align-items: center; gap: 12px;
-  .el-progress { flex: 1; }
-  &__text { font-size: 18px; font-weight: 700; }
-}
-.detail-text {
-  background: var(--el-fill-color-light);
-  border-radius: 6px; padding: 12px; max-height: 250px; overflow-y: auto;
-  pre { margin: 0; font-size: 13px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
-}
 </style>

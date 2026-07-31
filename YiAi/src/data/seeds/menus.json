@@ -1,5 +1,6 @@
 [
   {
+    "key": "menu_home",
     "path": "/home/index",
     "name": "home",
     "component": "/home/index",
@@ -17,6 +18,7 @@
     "order": 0
   },
   {
+    "key": "menu_dataScreen",
     "path": "/dataScreen",
     "name": "dataScreen",
     "component": "/dataScreen/index",
@@ -34,6 +36,7 @@
     "order": 1
   },
   {
+    "key": "menu_proTable",
     "path": "/proTable",
     "name": "proTable",
     "component": "",
@@ -51,6 +54,7 @@
     "order": 2
   },
   {
+    "key": "menu_useProTable",
     "path": "/proTable/useProTable",
     "name": "useProTable",
     "component": "/proTable/useProTable/index",
@@ -68,6 +72,7 @@
     "order": 0
   },
   {
+    "key": "menu_useProTableDetail",
     "path": "/proTable/useProTable/detail/:id",
     "name": "useProTableDetail",
     "component": "/proTable/useProTable/detail",
@@ -86,6 +91,7 @@
     "order": 0
   },
   {
+    "key": "menu_useTreeFilter",
     "path": "/proTable/useTreeFilter",
     "name": "useTreeFilter",
     "component": "/proTable/useTreeFilter/index",
@@ -103,6 +109,7 @@
     "order": 1
   },
   {
+    "key": "menu_useTreeFilterDetail",
     "path": "/proTable/useTreeFilter/detail/:id",
     "name": "useTreeFilterDetail",
     "component": "/proTable/useTreeFilter/detail",
@@ -121,6 +128,7 @@
     "order": 2
   },
   {
+    "key": "menu_useSelectFilter",
     "path": "/proTable/useSelectFilter",
     "name": "useSelectFilter",
     "component": "/proTable/useSelectFilter/index",
@@ -138,6 +146,7 @@
     "order": 3
   },
   {
+    "key": "menu_treeProTable",
     "path": "/proTable/treeProTable",
     "name": "treeProTable",
     "component": "/proTable/treeProTable/index",
@@ -155,6 +164,7 @@
     "order": 4
   },
   {
+    "key": "menu_complexProTable",
     "path": "/proTable/complexProTable",
     "name": "complexProTable",
     "component": "/proTable/complexProTable/index",
@@ -172,6 +182,7 @@
     "order": 5
   },
   {
+    "key": "menu_auth",
     "path": "/auth",
     "name": "auth",
     "component": "",
@@ -189,6 +200,7 @@
     "order": 3
   },
   {
+    "key": "menu_authMenu",
     "path": "/auth/menu",
     "name": "authMenu",
     "component": "/auth/menu/index",
@@ -206,6 +218,7 @@
     "order": 0
   },
   {
+    "key": "menu_authButton",
     "path": "/auth/button",
     "name": "authButton",
     "component": "/auth/button/index",
@@ -223,6 +236,7 @@
     "order": 1
   },
   {
+    "key": "menu_assembly",
     "path": "/assembly",
     "name": "assembly",
     "component": "",
@@ -240,6 +254,7 @@
     "order": 4
   },
   {
+    "key": "menu_guide",
     "path": "/assembly/guide",
     "name": "guide",
     "component": "/assembly/guide/index",
@@ -257,6 +272,7 @@
     "order": 0
   },
   {
+    "key": "menu_tabs",
     "path": "/assembly/tabs",
     "name": "tabs",
     "component": "/assembly/tabs/index",
@@ -274,6 +290,7 @@
     "order": 1
   },
   {
+    "key": "menu_tabsDetail",
     "path": "/assembly/tabs/detail/:id",
     "name": "tabsDetail",
     "component": "/assembly/tabs/detail",
@@ -292,6 +309,7 @@
     "order": 0
   },
   {
+    "key": "menu_selectIcon",
     "path": "/assembly/selectIcon",
     "name": "selectIcon",
     "component": "/assembly/selectIcon/index",
@@ -309,6 +327,7 @@
     "order": 2
   },
   {
+    "key": "menu_selectFilter",
     "path": "/assembly/selectFilter",
     "name": "selectFilter",
     "component": "/assembly/selectFilter/index",
@@ -326,6 +345,7 @@
     "order": 3
   },
   {
+    "key": "menu_treeFilter",
     "path": "/assembly/treeFilter",
     "name": "treeFilter",
     "component": "/assembly/treeFilter/index",
@@ -343,6 +363,7 @@
     "order": 4
   },
   {
+    "key": "menu_svgIcon",
     "path": "/assembly/svgIcon",
     "name": "svgIcon",
     "component": "/assembly/svgIcon/index",
@@ -360,6 +381,7 @@
     "order": 5
   },
   {
+    "key": "menu_uploadFile",
     "path": "/assembly/uploadFile",
     "name": "uploadFile",
     "component": "/assembly/uploadFile/index",
@@ -377,6 +399,7 @@
     "order": 6
   },
   {
+    "key": "menu_batchImport",
     "path": "/assembly/batchImport",
     "name": "batchImport",
     "component": "/assembly/batchImport/index",
@@ -394,6 +417,7 @@
     "order": 7
   },
   {
+    "key": "menu_wangEditor",
     "path": "/assembly/wangEditor",
     "name": "wangEditor",
     "component": "/assembly/wangEditor/index",
@@ -411,6 +435,7 @@
     "order": 8
   },
   {
+    "key": "menu_draggable",
     "path": "/assembly/draggable",
     "name": "draggable",
     "component": "/assembly/draggable/index",
@@ -428,6 +453,7 @@
     "order": 9
   },
   {
+    "key": "menu_dashboard",
     "path": "/dashboard",
     "name": "dashboard",
     "component": "",
@@ -445,6 +471,7 @@
     "order": 5
   },
   {
+    "key": "menu_dataVisualize",
     "path": "/dashboard/dataVisualize",
     "name": "dataVisualize",
     "component": "/dashboard/dataVisualize/index",
@@ -462,6 +489,7 @@
     "order": 0
   },
   {
+    "key": "menu_form",
     "path": "/form",
     "name": "form",
     "component": "",
@@ -479,6 +507,7 @@
     "order": 6
   },
   {
+    "key": "menu_proForm",
     "path": "/form/proForm",
     "name": "proForm",
     "component": "/form/proForm/index",
@@ -496,6 +525,7 @@
     "order": 0
   },
   {
+    "key": "menu_basicForm",
     "path": "/form/basicForm",
     "name": "basicForm",
     "component": "/form/basicForm/index",
@@ -513,6 +543,7 @@
     "order": 1
   },
   {
+    "key": "menu_validateForm",
     "path": "/form/validateForm",
     "name": "validateForm",
     "component": "/form/validateForm/index",
@@ -530,6 +561,7 @@
     "order": 2
   },
   {
+    "key": "menu_dynamicForm",
     "path": "/form/dynamicForm",
     "name": "dynamicForm",
     "component": "/form/dynamicForm/index",
@@ -547,6 +579,7 @@
     "order": 3
   },
   {
+    "key": "menu_echarts",
     "path": "/echarts",
     "name": "echarts",
     "component": "",
@@ -564,6 +597,7 @@
     "order": 7
   },
   {
+    "key": "menu_waterChart",
     "path": "/echarts/waterChart",
     "name": "waterChart",
     "component": "/echarts/waterChart/index",
@@ -581,6 +615,7 @@
     "order": 0
   },
   {
+    "key": "menu_columnChart",
     "path": "/echarts/columnChart",
     "name": "columnChart",
     "component": "/echarts/columnChart/index",
@@ -598,6 +633,7 @@
     "order": 1
   },
   {
+    "key": "menu_lineChart",
     "path": "/echarts/lineChart",
     "name": "lineChart",
     "component": "/echarts/lineChart/index",
@@ -615,6 +651,7 @@
     "order": 2
   },
   {
+    "key": "menu_pieChart",
     "path": "/echarts/pieChart",
     "name": "pieChart",
     "component": "/echarts/pieChart/index",
@@ -632,6 +669,7 @@
     "order": 3
   },
   {
+    "key": "menu_radarChart",
     "path": "/echarts/radarChart",
     "name": "radarChart",
     "component": "/echarts/radarChart/index",
@@ -649,6 +687,7 @@
     "order": 4
   },
   {
+    "key": "menu_nestedChart",
     "path": "/echarts/nestedChart",
     "name": "nestedChart",
     "component": "/echarts/nestedChart/index",
@@ -666,6 +705,7 @@
     "order": 5
   },
   {
+    "key": "menu_directives",
     "path": "/directives",
     "name": "directives",
     "component": "",
@@ -683,6 +723,7 @@
     "order": 8
   },
   {
+    "key": "menu_copyDirect",
     "path": "/directives/copyDirect",
     "name": "copyDirect",
     "component": "/directives/copyDirect/index",
@@ -700,6 +741,7 @@
     "order": 0
   },
   {
+    "key": "menu_watermarkDirect",
     "path": "/directives/watermarkDirect",
     "name": "watermarkDirect",
     "component": "/directives/watermarkDirect/index",
@@ -717,6 +759,7 @@
     "order": 1
   },
   {
+    "key": "menu_dragDirect",
     "path": "/directives/dragDirect",
     "name": "dragDirect",
     "component": "/directives/dragDirect/index",
@@ -734,6 +777,7 @@
     "order": 2
   },
   {
+    "key": "menu_debounceDirect",
     "path": "/directives/debounceDirect",
     "name": "debounceDirect",
     "component": "/directives/debounceDirect/index",
@@ -751,6 +795,7 @@
     "order": 3
   },
   {
+    "key": "menu_throttleDirect",
     "path": "/directives/throttleDirect",
     "name": "throttleDirect",
     "component": "/directives/throttleDirect/index",
@@ -768,6 +813,7 @@
     "order": 4
   },
   {
+    "key": "menu_longpressDirect",
     "path": "/directives/longpressDirect",
     "name": "longpressDirect",
     "component": "/directives/longpressDirect/index",
@@ -785,6 +831,7 @@
     "order": 5
   },
   {
+    "key": "menu_menu",
     "path": "/menu",
     "name": "menu",
     "component": "",
@@ -802,6 +849,7 @@
     "order": 9
   },
   {
+    "key": "menu_menu1",
     "path": "/menu/menu1",
     "name": "menu1",
     "component": "/menu/menu1/index",
@@ -819,6 +867,7 @@
     "order": 0
   },
   {
+    "key": "menu_menu2",
     "path": "/menu/menu2",
     "name": "menu2",
     "component": "",
@@ -836,6 +885,7 @@
     "order": 1
   },
   {
+    "key": "menu_menu21",
     "path": "/menu/menu2/menu21",
     "name": "menu21",
     "component": "/menu/menu2/menu21/index",
@@ -853,6 +903,7 @@
     "order": 0
   },
   {
+    "key": "menu_menu22",
     "path": "/menu/menu2/menu22",
     "name": "menu22",
     "component": "",
@@ -870,6 +921,7 @@
     "order": 1
   },
   {
+    "key": "menu_menu221",
     "path": "/menu/menu2/menu22/menu221",
     "name": "menu221",
     "component": "/menu/menu2/menu22/menu221/index",
@@ -887,6 +939,7 @@
     "order": 0
   },
   {
+    "key": "menu_menu222",
     "path": "/menu/menu2/menu22/menu222",
     "name": "menu222",
     "component": "/menu/menu2/menu22/menu222/index",
@@ -904,6 +957,7 @@
     "order": 1
   },
   {
+    "key": "menu_menu23",
     "path": "/menu/menu2/menu23",
     "name": "menu23",
     "component": "/menu/menu2/menu23/index",
@@ -921,6 +975,7 @@
     "order": 2
   },
   {
+    "key": "menu_menu3",
     "path": "/menu/menu3",
     "name": "menu3",
     "component": "/menu/menu3/index",
@@ -938,6 +993,7 @@
     "order": 2
   },
   {
+    "key": "menu_system",
     "path": "/system",
     "name": "system",
     "component": "",
@@ -955,6 +1011,7 @@
     "order": 10
   },
   {
+    "key": "menu_accountManage",
     "path": "/system/accountManage",
     "name": "accountManage",
     "component": "/system/accountManage/index",
@@ -972,6 +1029,7 @@
     "order": 0
   },
   {
+    "key": "menu_roleManage",
     "path": "/system/roleManage",
     "name": "roleManage",
     "component": "/system/roleManage/index",
@@ -989,6 +1047,7 @@
     "order": 1
   },
   {
+    "key": "menu_menuMange",
     "path": "/system/menuMange",
     "name": "menuMange",
     "component": "/system/menuMange/index",
@@ -1006,6 +1065,7 @@
     "order": 2
   },
   {
+    "key": "menu_departmentManage",
     "path": "/system/departmentManage",
     "name": "departmentManage",
     "component": "/system/departmentManage/index",
@@ -1023,6 +1083,7 @@
     "order": 3
   },
   {
+    "key": "menu_dictManage",
     "path": "/system/dictManage",
     "name": "dictManage",
     "component": "/system/dictManage/index",
@@ -1040,6 +1101,7 @@
     "order": 4
   },
   {
+    "key": "menu_timingTask",
     "path": "/system/timingTask",
     "name": "timingTask",
     "component": "/system/timingTask/index",
@@ -1057,6 +1119,7 @@
     "order": 5
   },
   {
+    "key": "menu_systemLog",
     "path": "/system/systemLog",
     "name": "systemLog",
     "component": "/system/systemLog/index",
@@ -1074,6 +1137,7 @@
     "order": 6
   },
   {
+    "key": "menu_link",
     "path": "/link",
     "name": "link",
     "component": "",
@@ -1091,6 +1155,7 @@
     "order": 11
   },
   {
+    "key": "menu_bing",
     "path": "/link/bing",
     "name": "bing",
     "component": "/link/bing/index",
@@ -1108,6 +1173,7 @@
     "order": 0
   },
   {
+    "key": "menu_about",
     "path": "/about",
     "name": "about",
     "component": "",
@@ -1125,6 +1191,7 @@
     "order": 12
   },
   {
+    "key": "menu_aboutYivad",
     "path": "/about/yivad",
     "name": "aboutYivad",
     "component": "/about/yivad/index",
@@ -1142,6 +1209,7 @@
     "order": 0
   },
   {
+    "key": "menu_aboutYiAi",
     "path": "/about/yiai",
     "name": "aboutYiAi",
     "component": "/about/yiai/index",
@@ -1159,6 +1227,7 @@
     "order": 1
   },
   {
+    "key": "menu_aboutYiPet",
     "path": "/about/yipet",
     "name": "aboutYiPet",
     "component": "/about/yipet/index",
@@ -1176,6 +1245,151 @@
     "order": 2
   },
   {
+    "key": "menu_brd",
+    "path": "/brd",
+    "name": "brd",
+    "component": "",
+    "redirect": "/brd/brd-documents",
+    "meta": {
+      "icon": "DocumentChecked",
+      "title": "BRD Management",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 13
+  },
+  {
+    "key": "menu_brdDocuments",
+    "path": "/brd/brd-documents",
+    "name": "brdDocuments",
+    "component": "/brd/brd-documents/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "BRD Documents",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/brd",
+    "order": 0
+  },
+  {
+    "key": "menu_brdObjectives",
+    "path": "/brd/brd-objectives",
+    "name": "brdObjectives",
+    "component": "/brd/brd-objectives/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Business Objectives",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/brd",
+    "order": 1
+  },
+  {
+    "key": "menu_brdStakeholders",
+    "path": "/brd/brd-stakeholders",
+    "name": "brdStakeholders",
+    "component": "/brd/brd-stakeholders/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Stakeholders",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/brd",
+    "order": 2
+  },
+  {
+    "key": "menu_brdRules",
+    "path": "/brd/brd-rules",
+    "name": "brdRules",
+    "component": "/brd/brd-rules/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Business Rules",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/brd",
+    "order": 3
+  },
+  {
+    "key": "menu_brdAcceptance",
+    "path": "/brd/brd-acceptance",
+    "name": "brdAcceptance",
+    "component": "/brd/brd-acceptance/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Acceptance Criteria",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/brd",
+    "order": 4
+  },
+  {
+    "key": "menu_brdMilestones",
+    "path": "/brd/brd-milestones",
+    "name": "brdMilestones",
+    "component": "/brd/brd-milestones/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Milestones",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/brd",
+    "order": 5
+  },
+  {
+    "key": "menu_brdApprovals",
+    "path": "/brd/brd-approvals",
+    "name": "brdApprovals",
+    "component": "/brd/brd-approvals/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Approval Records",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/brd",
+    "order": 6
+  },
+  {
+    "key": "menu_storyBoard",
     "path": "/story",
     "name": "storyBoard",
     "component": "/story/index",
@@ -1193,6 +1407,7 @@
     "order": 98
   },
   {
+    "key": "menu_ragPlayground",
     "path": "/rag",
     "name": "ragPlayground",
     "component": "/rag/index",
