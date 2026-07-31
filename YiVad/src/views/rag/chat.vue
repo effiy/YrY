@@ -1,13 +1,13 @@
 <template>
-  <div class="rag-chat">
-    <header class="rag-chat__header">
+  <div class="rag-page rag-page--narrow rag-chat">
+    <header class="rag-page-header">
       <div>
         <h1>RAG Chat Playground</h1>
         <p>Conversational interface grounded in YiKnowledge. Each answer cites its sources with [N] markers.</p>
       </div>
-      <div class="rag-chat__header-actions">
-        <div class="scope-input">
-          <span class="scope-label">Scope:</span>
+      <div class="rag-page-header__actions">
+        <div style="display: flex; align-items: center; gap: 4px">
+          <span class="rag-param-label">Scope:</span>
           <el-input v-model="chatScope" placeholder="Full KB" size="small" clearable style="width: 160px" />
         </div>
         <el-button text type="danger" size="small" @click="clearChat" :disabled="!messages.length">
@@ -87,8 +87,8 @@
         resize="none"
       />
       <div class="input-actions">
-        <span class="input-hint">Enter to send, Shift+Enter for newline</span>
-        <div>
+        <span class="rag-text-muted" style="font-size: 11px">Enter to send, Shift+Enter for newline</span>
+        <div style="display: flex; gap: 8px">
           <el-button v-if="sending" type="danger" plain size="small" @click="stopChat">
             <el-icon><Close /></el-icon> Stop
           </el-button>
@@ -111,17 +111,12 @@ import { ref, nextTick, onBeforeUnmount } from "vue";
 import { ElMessage } from "element-plus";
 import { Document, ArrowDown, Close, Promotion, Loading } from "@element-plus/icons-vue";
 import { streamRagChat } from "@/api/modules/ragService";
-import { useRagStore } from "@/stores/modules/rag";
 import {
-  scorePercent, scoreLabel, scoreColor, renderAnswer,
-  CHAT_EXAMPLE_PROMPTS
+  renderAnswer, CHAT_EXAMPLE_PROMPTS
 } from "@/views/rag/constants";
-import ScoreBar from "./components/ScoreBar.vue";
 import SourceChip from "./components/SourceChip.vue";
 import SourceDetail from "./components/SourceDetail.vue";
 import type { RagSource } from "@/api/interface/rag";
-
-const ragStore = useRagStore();
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -230,32 +225,12 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
+@use "./styles/shared.scss";
+
 .rag-chat {
   display: flex;
   flex-direction: column;
   height: calc(100vh - 120px);
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 24px;
-
-  &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 20px 0 16px;
-    flex-shrink: 0;
-    flex-wrap: wrap;
-    gap: 12px;
-
-    h1 { margin: 0 0 4px; font-size: 20px; }
-    p { margin: 0; color: var(--el-text-color-secondary); font-size: 13px; }
-  }
-
-  &__header-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
 
   &__messages {
     flex: 1;
@@ -263,9 +238,7 @@ onBeforeUnmount(() => {
     padding: 0 0 16px;
   }
 
-  &__welcome {
-    margin-top: 40px;
-  }
+  &__welcome { margin-top: 40px; }
 
   &__input {
     flex-shrink: 0;
@@ -273,12 +246,6 @@ onBeforeUnmount(() => {
     border-top: 1px solid var(--el-border-color-lighter);
     background: var(--el-bg-color);
   }
-}
-
-.scope-label {
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  margin-right: 4px;
 }
 
 .welcome-prompts {
@@ -299,7 +266,6 @@ onBeforeUnmount(() => {
     background: var(--el-color-primary-light-9);
     border: 1px solid var(--el-color-primary-light-7);
   }
-
   &--assistant {
     background: var(--el-fill-color);
     border: 1px solid var(--el-border-color-light);
@@ -347,7 +313,6 @@ onBeforeUnmount(() => {
   color: var(--el-text-color-secondary);
   cursor: pointer;
   user-select: none;
-
   &:hover { color: var(--el-color-primary); }
 
   .sources-chevron {
@@ -369,10 +334,4 @@ onBeforeUnmount(() => {
   align-items: center;
   margin-top: 8px;
 }
-
-.input-hint {
-  font-size: 11px;
-  color: var(--el-text-color-placeholder);
-}
-
 </style>

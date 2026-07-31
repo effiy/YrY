@@ -1,5 +1,135 @@
 {
   "code": 200,
-  "data": [],
+  "data": [
+    {
+      "path": "/brd",
+      "name": "brd",
+      "component": "",
+      "redirect": "/brd/brd-documents",
+      "meta": {
+        "icon": "DocumentChecked",
+        "title": "BRD Management",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "children": [
+        {
+          "path": "/brd/brd-documents",
+          "name": "brdDocuments",
+          "component": "/brd/brd-documents/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "BRD Documents",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/brd/brd-objectives",
+          "name": "brdObjectives",
+          "component": "/brd/brd-objectives/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Business Objectives",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/brd/brd-stakeholders",
+          "name": "brdStakeholders",
+          "component": "/brd/brd-stakeholders/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Stakeholders",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/brd/brd-rules",
+          "name": "brdRules",
+          "component": "/brd/brd-rules/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Business Rules",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/brd/brd-acceptance",
+          "name": "brdAcceptance",
+          "component": "/brd/brd-acceptance/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Acceptance Criteria",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/brd/brd-milestones",
+          "name": "brdMilestones",
+          "component": "/brd/brd-milestones/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Milestones",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/brd/brd-approvals",
+          "name": "brdApprovals",
+          "component": "/brd/brd-approvals/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Approval Records",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        }
+      ]
+    }
+  ],
   "msg": "成功"
 }

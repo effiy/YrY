@@ -4,38 +4,25 @@
  * Inline semantic search over the knowledge base with top-3 result preview.
  */
 import { ref } from "vue";
-import { ElMessage } from "element-plus";
 import { Opportunity } from "@element-plus/icons-vue";
-import { ragQuery } from "@/api/modules/ragService";
+import { useRagQuery } from "@/views/rag/composables/useRagQuery";
 import { scoreLabel, scoreTagType, truncateText } from "@/views/rag/constants";
-import type { RagSource } from "@/api/interface/rag";
 
 const props = defineProps<{
   disabled: boolean;
 }>();
 
 const question = ref("");
-const loading = ref(false);
-const sources = ref<RagSource[]>([]);
+const { querying, sources, execute } = useRagQuery();
 
 async function run() {
-  const q = question.value.trim();
-  if (!q) return;
-  loading.value = true;
-  sources.value = [];
-  try {
-    const res = await ragQuery({ question: q, top_k: 5 });
-    sources.value = res.sources ?? [];
-  } catch (e: any) {
-    ElMessage.error(e.message ?? "Query failed");
-  } finally {
-    loading.value = false;
-  }
+  if (!question.value.trim()) return;
+  await execute(question.value, 5);
 }
 </script>
 
 <template>
-  <el-card shadow="hover" class="qqc-card">
+  <el-card shadow="hover">
     <template #header>
       <span><el-icon><Opportunity /></el-icon> Quick Query</span>
     </template>
@@ -48,12 +35,12 @@ async function run() {
       />
       <el-button
         type="primary"
-        :loading="loading"
+        :loading="querying"
         @click="run"
         :disabled="disabled || !question.trim()"
         style="margin-top: 12px; width: 100%"
       >
-        {{ loading ? "Retrieving..." : "Search Knowledge Base" }}
+        {{ querying ? "Retrieving..." : "Search Knowledge Base" }}
       </el-button>
       <div v-if="sources.length" class="qqc-results">
         <div class="qqc-results__title">
@@ -73,11 +60,9 @@ async function run() {
 </template>
 
 <style scoped lang="scss">
-.qqc-card {
-  .qqc-body {
-    display: flex;
-    flex-direction: column;
-  }
+.qqc-body {
+  display: flex;
+  flex-direction: column;
 }
 .qqc-results {
   margin-top: 12px;

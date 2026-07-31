@@ -1,11 +1,11 @@
 <template>
-  <div class="rag-history">
-    <header class="rag-history__header">
+  <div class="rag-page">
+    <header class="rag-page-header">
       <div>
         <h1>Query History</h1>
         <p>Browse, search, and rerun previous retrieval queries. History is session-local (last 20 queries).</p>
       </div>
-      <div class="rag-history__header-actions">
+      <div class="rag-page-header__actions">
         <el-input
           v-model="searchText"
           placeholder="Search questions…"
@@ -21,22 +21,22 @@
     </header>
 
     <!-- Stats row -->
-    <div class="rag-history__stats" v-if="history.length">
-      <el-card shadow="hover" class="stat-card">
-        <div class="stat-value">{{ history.length }}</div>
-        <div class="stat-label">Total Queries</div>
+    <div class="rag-stat-grid" v-if="history.length">
+      <el-card shadow="hover" class="rag-stat-card">
+        <div class="rag-stat-value">{{ history.length }}</div>
+        <div class="rag-stat-label">Total Queries</div>
       </el-card>
-      <el-card shadow="hover" class="stat-card">
-        <div class="stat-value">{{ uniqueScopes }}</div>
-        <div class="stat-label">Unique Scopes</div>
+      <el-card shadow="hover" class="rag-stat-card">
+        <div class="rag-stat-value">{{ uniqueScopes }}</div>
+        <div class="rag-stat-label">Unique Scopes</div>
       </el-card>
-      <el-card shadow="hover" class="stat-card">
-        <div class="stat-value">{{ scoreLabel(avgBestScore) }}</div>
-        <div class="stat-label">Avg Best Score</div>
+      <el-card shadow="hover" class="rag-stat-card">
+        <div class="rag-stat-value">{{ scoreLabel(avgBestScore) }}</div>
+        <div class="rag-stat-label">Avg Best Score</div>
       </el-card>
-      <el-card shadow="hover" class="stat-card">
-        <div class="stat-value">{{ totalSources }}</div>
-        <div class="stat-label">Total Sources Retrieved</div>
+      <el-card shadow="hover" class="rag-stat-card">
+        <div class="rag-stat-value">{{ totalSources }}</div>
+        <div class="rag-stat-label">Total Sources Retrieved</div>
       </el-card>
     </div>
 
@@ -52,7 +52,7 @@
       >
         <el-table-column label="Time" width="170" align="center" sortable prop="timestamp">
           <template #default="{ row }">
-            <span class="time-cell">{{ formatTimestamp(row.timestamp) }}</span>
+            <span style="font-size: 12px; font-variant-numeric: tabular-nums">{{ formatTimestamp(row.timestamp) }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="question" label="Question" min-width="220" show-overflow-tooltip sortable />
@@ -61,7 +61,7 @@
             <el-tag v-if="row.scope" size="small" type="warning" effect="light">
               {{ row.scope }}
             </el-tag>
-            <span v-else class="text-muted">Full Knowledge Base</span>
+            <span v-else class="rag-text-muted">Full Knowledge Base</span>
           </template>
         </el-table-column>
         <el-table-column label="Top-K" width="70" align="center" sortable prop="topK">
@@ -74,7 +74,7 @@
               size="small"
               effect="dark"
             >
-              {{ row.resultCount ?? row.sources?.length ?? 0 }}
+              {{ row.resultCount }}
             </el-tag>
           </template>
         </el-table-column>
@@ -85,7 +85,7 @@
         </el-table-column>
         <el-table-column label="Avg Score" width="120" align="center">
           <template #default="{ row }">
-            <span class="avg-score">{{ scoreLabel(getAvgScore(row)) }}</span>
+            {{ scoreLabel(getAvgScore(row)) }}
           </template>
         </el-table-column>
         <el-table-column label="Actions" width="140" align="center" fixed="right">
@@ -101,11 +101,11 @@
       </el-table>
     </el-card>
 
-    <el-card v-else-if="history.length && !filteredHistory.length" shadow="hover" class="rag-history__empty">
+    <el-card v-else-if="history.length && !filteredHistory.length" shadow="hover">
       <el-empty description="No queries match your search." :image-size="60" />
     </el-card>
 
-    <el-card v-else shadow="hover" class="rag-history__empty">
+    <el-card v-else shadow="hover">
       <el-empty description="No query history yet. Start exploring in the Retrieval Explorer." :image-size="60">
         <template #extra>
           <el-button type="primary" @click="$router.push('/rag/retrieval')">
@@ -116,45 +116,35 @@
     </el-card>
 
     <!-- Query Detail Drawer -->
-    <el-drawer
-      v-model="detailVisible"
-      title="Query Detail"
-      size="560px"
-      direction="rtl"
-    >
+    <el-drawer v-model="detailVisible" title="Query Detail" size="560px" direction="rtl">
       <template v-if="detailQuery">
-        <div class="detail-section">
-          <h4>Question</h4>
-          <p class="detail-question">{{ detailQuery.question }}</p>
+        <div style="margin-bottom: 20px">
+          <h4 style="margin: 0 0 8px; font-size: 13px; font-weight: 600; color: var(--el-text-color-secondary); text-transform: uppercase; letter-spacing: 0.5px">Question</h4>
+          <p style="margin: 0; font-size: 14px; line-height: 1.7">{{ detailQuery.question }}</p>
         </div>
-
-        <div class="detail-section">
-          <h4>Query Parameters</h4>
+        <div style="margin-bottom: 20px">
+          <h4 style="margin: 0 0 8px; font-size: 13px; font-weight: 600; color: var(--el-text-color-secondary); text-transform: uppercase; letter-spacing: 0.5px">Query Parameters</h4>
           <el-descriptions :column="2" border size="small">
             <el-descriptions-item label="Top-K">{{ detailQuery.topK }}</el-descriptions-item>
-            <el-descriptions-item label="Scope">
-              {{ detailQuery.scope || "Full KB" }}
-            </el-descriptions-item>
+            <el-descriptions-item label="Scope">{{ detailQuery.scope || "Full KB" }}</el-descriptions-item>
             <el-descriptions-item label="Time">{{ formatTimestamp(detailQuery.timestamp) }}</el-descriptions-item>
-            <el-descriptions-item label="Results">{{ detailQuery.resultCount ?? detailQuery.sources?.length ?? 0 }}</el-descriptions-item>
+            <el-descriptions-item label="Results">{{ detailQuery.resultCount }}</el-descriptions-item>
             <el-descriptions-item label="Top Score">{{ scoreLabel(getTopScore(detailQuery)) }}</el-descriptions-item>
             <el-descriptions-item label="Avg Score">{{ scoreLabel(getAvgScore(detailQuery)) }}</el-descriptions-item>
           </el-descriptions>
         </div>
-
-        <div class="detail-section" v-if="detailQuery.sources?.length">
-          <h4>Retrieved Sources ({{ detailQuery.sources.length }})</h4>
-          <div v-for="(s, si) in detailQuery.sources" :key="si" class="detail-source">
-            <div class="detail-source__header">
-              <span class="detail-source__rank">#{{ si + 1 }}</span>
-              <span class="detail-source__path">{{ s.file_path }}</span>
+        <div v-if="detailQuery.sources?.length" style="margin-bottom: 20px">
+          <h4 style="margin: 0 0 8px; font-size: 13px; font-weight: 600; color: var(--el-text-color-secondary); text-transform: uppercase; letter-spacing: 0.5px">Retrieved Sources ({{ detailQuery.sources.length }})</h4>
+          <div v-for="(s, si) in detailQuery.sources" :key="si" style="margin-bottom: 12px">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px">
+              <span style="font-size: 11px; font-weight: 700; color: var(--el-color-primary)">#{{ si + 1 }}</span>
+              <span style="font-size: 12px; font-family: monospace; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{ s.file_path }}</span>
               <ScoreBar :score="s.score" :bar-width="45" :stroke-width="6" />
             </div>
-            <p class="detail-source__text">{{ truncateText(s.text, 200) }}</p>
+            <p style="margin: 0; font-size: 12px; color: var(--el-text-color-secondary); line-height: 1.5">{{ truncateText(s.text, 200) }}</p>
           </div>
         </div>
-
-        <div class="detail-actions">
+        <div style="padding-top: 12px; border-top: 1px solid var(--el-border-color-lighter)">
           <el-button type="primary" size="small" @click="rerunQuery(detailQuery._index); detailVisible = false">
             <el-icon><RefreshRight /></el-icon> Rerun This Query
           </el-button>
@@ -170,11 +160,9 @@ import { useRouter } from "vue-router";
 import { Search, Delete, RefreshRight } from "@element-plus/icons-vue";
 import { useRagStore } from "@/stores/modules/rag";
 import {
-  scorePercent, scoreLabel, scoreColor, bestScore, avgScore,
-  truncateText, formatTimestamp
+  scoreLabel, bestScore, avgScore, truncateText, formatTimestamp
 } from "@/views/rag/constants";
 import ScoreBar from "./components/ScoreBar.vue";
-import SourceDetail from "./components/SourceDetail.vue";
 import type { RagSource } from "@/api/interface/rag";
 
 const router = useRouter();
@@ -188,55 +176,50 @@ interface HistoryEntry {
   topK: number;
   sources: RagSource[];
   timestamp: number;
-  resultCount?: number;
-  topScore?: number;
-  avgScore?: number;
-  _index?: number;
+  resultCount: number;
+  topScore: number;
+  avgScore: number;
+  _index: number;
 }
 
-const history = computed<HistoryEntry[]>(() => {
-  return ragStore.queryHistory.map((entry: any, idx: number) => ({
+const history = computed<HistoryEntry[]>(() =>
+  ragStore.queryHistory.map((entry: any, idx: number) => ({
     ...entry,
-    topK: entry.topK ?? entry.top_k ?? 4,
-    resultCount: entry.resultCount ?? entry.sources?.length ?? 0,
+    topK: entry.topK ?? 4,
+    resultCount: entry.sources?.length ?? 0,
     topScore: getTopScore(entry),
     avgScore: getAvgScore(entry),
     _index: idx,
-  }));
-});
+  }))
+);
 
 const filteredHistory = computed(() => {
   const q = searchText.value.toLowerCase().trim();
   if (!q) return history.value;
   return history.value.filter(
-    (h) =>
-      h.question.toLowerCase().includes(q) ||
-      h.scope.toLowerCase().includes(q)
+    (h) => h.question.toLowerCase().includes(q) || h.scope.toLowerCase().includes(q)
   );
 });
 
-const uniqueScopes = computed(() => {
-  const scopes = new Set(history.value.map((h) => h.scope || "(full KB)"));
-  return scopes.size;
-});
+const uniqueScopes = computed(() =>
+  new Set(history.value.map((h) => h.scope || "(full KB)")).size
+);
 
 const avgBestScore = computed(() => {
   if (!history.value.length) return 0;
-  return history.value.reduce((a, h) => a + (h.topScore ?? 0), 0) / history.value.length;
+  return history.value.reduce((a, h) => a + h.topScore, 0) / history.value.length;
 });
 
-const totalSources = computed(() => {
-  return history.value.reduce((a, h) => a + (h.resultCount ?? 0), 0);
-});
+const totalSources = computed(() =>
+  history.value.reduce((a, h) => a + h.resultCount, 0)
+);
 
-// Detail drawer
 const detailVisible = ref(false);
 const detailQuery = ref<HistoryEntry | null>(null);
 
 function getTopScore(entry: any): number {
   return bestScore(entry.sources ?? []);
 }
-
 function getAvgScore(entry: any): number {
   return avgScore(entry.sources ?? []);
 }
@@ -259,63 +242,5 @@ function clearAll() {
 </script>
 
 <style scoped lang="scss">
-.rag-history {
-  padding: 24px;
-  max-width: 1300px;
-  margin: 0 auto;
-
-  &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-    gap: 16px;
-
-    h1 { margin: 0 0 4px; font-size: 24px; font-weight: 700; }
-    p { margin: 0; color: var(--el-text-color-secondary); font-size: 14px; }
-  }
-
-  &__header-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  &__stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 12px;
-    margin-bottom: 20px;
-  }
-
-  &__empty {
-    text-align: center;
-  }
-}
-
-.stat-card {
-  text-align: center;
-  .stat-value {
-    font-size: 24px;
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-    color: var(--el-color-primary);
-    margin-bottom: 2px;
-  }
-  .stat-label {
-    font-size: 12px;
-    color: var(--el-text-color-secondary);
-  }
-}
-
-.time-cell {
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
-}
-
-.text-muted {
-  color: var(--el-text-color-placeholder);
-  font-size: 12px;
-}
+@use "./styles/shared.scss";
 </style>

@@ -1,8 +1,9 @@
 /**
- * Shared RAG query execution logic.
+ * Shared RAG query composable — one-shot semantic search + history recording.
  *
- * Used by the Retrieval Explorer and Quick Query card to run one-shot
- * semantic searches and record results in the store's query history.
+ * Used by retrieval.vue and QuickQueryCard.vue to eliminate duplicated
+ * fetch/error/history logic. The store's `recordQuery()` keeps query history
+ * in sync across pages.
  */
 import { ref } from "vue";
 import { ragQuery } from "@/api/modules/ragService";
@@ -38,19 +39,9 @@ export function useRagQuery() {
         },
       }));
 
-      // Record in store history
-      ragStore.question = q;
-      ragStore.topK = topK;
-      ragStore.scope = scope || "";
-      ragStore.lastSources = sources.value;
-      ragStore.lastError = null;
-      ragStore.queryHistory = [
-        { question: q, scope, topK, sources: sources.value, timestamp: Date.now() },
-        ...ragStore.queryHistory,
-      ].slice(0, 20);
+      ragStore.recordQuery(q, topK, scope || "", sources.value);
     } catch (e: any) {
       lastError.value = e.message ?? "Retrieval failed";
-      ragStore.lastError = lastError.value;
     } finally {
       querying.value = false;
       lastLatency.value = Math.round(performance.now() - t0);

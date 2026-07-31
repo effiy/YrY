@@ -1,14 +1,14 @@
 <template>
-  <div class="rag-compare">
-    <header class="rag-compare__header">
+  <div class="rag-page rag-page--wide">
+    <header class="rag-page-header">
       <div>
         <h1>RAG vs Baseline Comparison</h1>
         <p>Submit the same question to both the RAG pipeline (YiKnowledge-grounded) and the plain LLM (no retrieval). Compare quality, sourcing, and hallucination side by side.</p>
       </div>
     </header>
 
-    <el-card shadow="hover" class="rag-compare__query">
-      <div class="query-form">
+    <el-card shadow="hover" class="rag-section">
+      <div class="rag-query-form">
         <el-input
           v-model="compareInput"
           type="textarea"
@@ -17,12 +17,12 @@
           @keyup.enter.ctrl="runCompare"
           :disabled="compareRunning"
         />
-        <div class="query-controls">
-          <div class="scope-row">
-            <span class="param-label">Scope:</span>
+        <div class="rag-query-controls">
+          <div style="display: flex; align-items: center; gap: 8px">
+            <span class="rag-param-label">Scope:</span>
             <el-input v-model="compareScope" placeholder="Full KB" size="small" clearable style="width: 180px" :disabled="compareRunning" />
           </div>
-          <div class="action-row">
+          <div class="rag-query-actions">
             <el-button v-if="compareRunning" type="danger" plain size="small" @click="stopCompare">
               <el-icon><Close /></el-icon> Stop
             </el-button>
@@ -36,7 +36,7 @@
     </el-card>
 
     <!-- Side-by-Side Results -->
-    <div v-if="compareRagAnswer || comparePlainAnswer || compareRunning" class="rag-compare__results">
+    <div v-if="compareRagAnswer || comparePlainAnswer || compareRunning" class="rag-section compare-results">
       <!-- RAG Column -->
       <el-card shadow="hover" class="compare-panel compare-panel--rag">
         <template #header>
@@ -62,17 +62,11 @@
         <div v-else-if="compareRagStreaming" class="panel-waiting">Waiting for response…</div>
         <div v-else class="panel-empty">No response yet.</div>
 
-        <!-- RAG Sources -->
         <div v-if="compareRagSources.length" class="panel-sources">
           <div class="sources-title">
             <el-icon><Document /></el-icon> Retrieved Sources
           </div>
-          <SourceChip
-            v-for="(s, si) in compareRagSources"
-            :key="si"
-            :source="s"
-            :index="si"
-          />
+          <SourceChip v-for="(s, si) in compareRagSources" :key="si" :source="s" :index="si" />
         </div>
       </el-card>
 
@@ -106,7 +100,7 @@
     </div>
 
     <!-- Comparison Summary -->
-    <el-card v-if="compareRagAnswer && comparePlainAnswer" shadow="hover" class="rag-compare__summary">
+    <el-card v-if="compareRagAnswer && comparePlainAnswer" shadow="hover" class="rag-section">
       <template #header>
         <span><el-icon><DataAnalysis /></el-icon> Comparison Metrics</span>
       </template>
@@ -135,8 +129,7 @@ import { ref, computed, onBeforeUnmount } from "vue";
 import { Close, Switch, Loading, Document, WarningFilled, DataAnalysis } from "@element-plus/icons-vue";
 import { streamRagChat } from "@/api/modules/ragService";
 import { streamChat } from "@/api/modules/chatService";
-import { scorePercent, scoreLabel, scoreColor, renderAnswer } from "@/views/rag/constants";
-import ScoreBar from "./components/ScoreBar.vue";
+import { scoreLabel, scoreColor, renderAnswer } from "@/views/rag/constants";
 import SourceChip from "./components/SourceChip.vue";
 import type { RagSource } from "@/api/interface/rag";
 
@@ -218,65 +211,18 @@ onBeforeUnmount(() => { stopCompare(); });
 </script>
 
 <style scoped lang="scss">
-.rag-compare {
-  padding: 24px;
-  max-width: 1400px;
-  margin: 0 auto;
+@use "./styles/shared.scss";
 
-  &__header {
-    margin-bottom: 20px;
-    h1 { margin: 0 0 4px; font-size: 24px; font-weight: 700; }
-    p { margin: 0; color: var(--el-text-color-secondary); font-size: 14px; }
-  }
+.compare-results {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 
-  &__query {
-    margin-bottom: 20px;
-  }
-
-  &__results {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 20px;
-
-    @media (max-width: 900px) {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  &__summary {
-    margin-bottom: 20px;
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
   }
 }
 
-.query-form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.query-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-.scope-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.param-label {
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  font-weight: 500;
-}
-.action-row {
-  display: flex;
-  gap: 8px;
-}
-
-// Panels
 .compare-panel {
   min-height: 200px;
 
@@ -286,18 +232,18 @@ onBeforeUnmount(() => { stopCompare(); });
     align-items: center;
     flex-wrap: wrap;
     gap: 8px;
+  }
 
-    .panel-label {
-      font-size: 13px;
-      color: var(--el-text-color-secondary);
-      margin-left: 8px;
-    }
+  .panel-label {
+    font-size: 13px;
+    color: var(--el-text-color-secondary);
+    margin-left: 8px;
+  }
 
-    .panel-meta {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+  .panel-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   .streaming-badge {
@@ -357,6 +303,7 @@ onBeforeUnmount(() => { stopCompare(); });
     align-items: center;
     gap: 4px;
   }
+}
 
 .text-danger { color: var(--el-color-danger); font-weight: 500; }
 .text-success { color: var(--el-color-success); font-weight: 500; }

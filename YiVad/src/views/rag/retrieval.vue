@@ -1,6 +1,6 @@
 <template>
-  <div class="rag-retrieval">
-    <header class="rag-retrieval__header">
+  <div class="rag-page">
+    <header class="rag-page-header">
       <div>
         <h1>Retrieval Explorer</h1>
         <p>One-shot semantic search over the YiKnowledge index. No LLM generation — inspect what the retriever returns.</p>
@@ -8,21 +8,20 @@
     </header>
 
     <!-- Query Controls -->
-    <el-card shadow="hover" class="rag-retrieval__query">
-      <div class="query-form">
+    <el-card shadow="hover" class="rag-section">
+      <div class="rag-query-form">
         <el-input
           v-model="question"
           type="textarea"
           :rows="2"
           placeholder="Enter a query to retrieve semantically similar chunks from the knowledge base…"
           @keyup.enter.ctrl="runQuery"
-          class="query-input"
         />
-        <div class="query-controls">
-          <div class="query-params">
-            <span class="param-label">Top-K</span>
+        <div class="rag-query-controls">
+          <div class="rag-query-params">
+            <span class="rag-param-label">Top-K</span>
             <el-input-number v-model="topK" :min="1" :max="50" size="small" controls-position="right" />
-            <span class="param-label">Scope</span>
+            <span class="rag-param-label">Scope</span>
             <el-input
               v-model="scope"
               placeholder="e.g. projects/YiVad"
@@ -31,7 +30,7 @@
               style="width: 180px"
             />
           </div>
-          <div class="query-actions">
+          <div class="rag-query-actions">
             <el-button type="primary" :loading="querying" @click="runQuery" :disabled="!question.trim()">
               <el-icon><Search /></el-icon> {{ querying ? "Retrieving…" : "Retrieve" }}
             </el-button>
@@ -42,10 +41,10 @@
     </el-card>
 
     <!-- Error -->
-    <el-alert v-if="lastError" :title="lastError" type="error" show-icon closable @close="lastError = ''" class="rag-retrieval__alert" />
+    <el-alert v-if="lastError" :title="lastError" type="error" show-icon closable @close="lastError = ''" class="rag-section" />
 
     <!-- Results Table -->
-    <el-card v-if="sources.length" shadow="hover" class="rag-retrieval__results">
+    <el-card v-if="sources.length" shadow="hover" class="rag-section">
       <template #header>
         <div class="results-header">
           <span><el-icon><List /></el-icon> Retrieved Chunks ({{ sources.length }})</span>
@@ -90,7 +89,7 @@
             >
               {{ row.metadata.category }}
             </el-tag>
-            <span v-else class="text-muted">—</span>
+            <span v-else class="rag-text-muted">—</span>
           </template>
         </el-table-column>
         <el-table-column label="Type" width="90" align="center">
@@ -98,7 +97,7 @@
             <el-tag v-if="row.metadata?.type" size="small" type="info" effect="plain">
               {{ row.metadata.type }}
             </el-tag>
-            <span v-else class="text-muted">—</span>
+            <span v-else class="rag-text-muted">—</span>
           </template>
         </el-table-column>
         <el-table-column label="Chunk Preview" min-width="280" show-overflow-tooltip>
@@ -120,7 +119,7 @@
     </el-card>
 
     <!-- Empty State -->
-    <el-card v-if="!sources.length && !querying && searched" shadow="hover" class="rag-retrieval__empty">
+    <el-card v-if="!sources.length && !querying && searched" shadow="hover" class="rag-section">
       <el-empty description="No chunks matched your query. Try broader terms or a different scope." :image-size="80">
         <template #extra>
           <div class="empty-tips">
@@ -150,12 +149,11 @@
 
 <script setup lang="ts" name="ragRetrievalExplorer">
 import { ref, computed } from "vue";
-import { ElMessage } from "element-plus";
 import { Search, List, Document } from "@element-plus/icons-vue";
-import { ragQuery } from "@/api/modules/ragService";
 import { useRagStore } from "@/stores/modules/rag";
+import { useRagQuery } from "@/views/rag/composables/useRagQuery";
 import {
-  scorePercent, scoreLabel, scoreColor, bestScore, avgScore,
+  scoreLabel, bestScore, avgScore,
   stripSourcePrefix, categoryTagType
 } from "@/views/rag/constants";
 import ScoreBar from "./components/ScoreBar.vue";
@@ -163,16 +161,13 @@ import SourceDetail from "./components/SourceDetail.vue";
 import type { RagSource } from "@/api/interface/rag";
 
 const ragStore = useRagStore();
+const { querying, sources, lastError, lastLatency, execute, clear } = useRagQuery();
 
-// Query state
-const question = ref(ragStore.question || "");
-const topK = ref(ragStore.topK || 4);
-const scope = ref(ragStore.scope || "");
-const querying = ref(false);
-const sources = ref<RagSource[]>([]);
+// Query state — seeded from store on mount (e.g. from history rerun)
+const question = ref(ragStore.lastQuestion || "");
+const topK = ref(ragStore.lastTopK || 4);
+const scope = ref(ragStore.lastScope || "");
 const searched = ref(false);
-const lastError = ref("");
-const lastLatency = ref(0);
 
 // Detail drawer
 const drawerVisible = ref(false);
@@ -189,137 +184,19 @@ function showDetail(source: RagSource, index?: number) {
 }
 
 async function runQuery() {
-  const q = question.value.trim();
-  if (!q || querying.value) return;
-
-  querying.value = true;
-  searched.value = false;
-  sources.value = [];
-  lastError.value = "";
-  lastLatency.value = 0;
-
-  const t0 = performance.now();
-  try {
-    const res = await ragQuery({
-      question: q,
-      top_k: topK.value,
-      scope: scope.value || undefined,
-    });
-    sources.value = (res.sources ?? []).map((s) => ({
-      ...s,
-      metadata: {
-        ...s.metadata,
-        char_count: s.metadata?.char_count ?? (s.text?.length || 0),
-        token_estimate: s.metadata?.token_estimate ?? Math.round((s.text?.length || 0) / 4),
-      },
-    }));
-    searched.value = true;
-
-    // Push to store history
-    ragStore.question = q;
-    ragStore.topK = topK.value;
-    ragStore.scope = scope.value;
-    ragStore.lastSources = sources.value;
-    ragStore.lastError = null;
-    ragStore.queryHistory = [
-      {
-        question: q,
-        scope: scope.value,
-        topK: topK.value,
-        sources: sources.value,
-        timestamp: Date.now(),
-      },
-      ...ragStore.queryHistory,
-    ].slice(0, 20);
-  } catch (e: any) {
-    lastError.value = e.message ?? "Retrieval failed";
-    ragStore.lastError = lastError.value;
-  } finally {
-    querying.value = false;
-    lastLatency.value = Math.round(performance.now() - t0);
-  }
+  if (!question.value.trim() || querying.value) return;
+  searched.value = true;
+  await execute(question.value, topK.value, scope.value || undefined);
 }
 
 function clearQuery() {
-  sources.value = [];
+  clear();
   searched.value = false;
-  lastError.value = "";
 }
 </script>
 
 <style scoped lang="scss">
-.rag-retrieval {
-  padding: 24px;
-  max-width: 1300px;
-  margin: 0 auto;
-
-  &__header {
-    margin-bottom: 20px;
-
-    h1 {
-      margin: 0 0 4px;
-      font-size: 24px;
-      font-weight: 700;
-    }
-    p {
-      margin: 0;
-      color: var(--el-text-color-secondary);
-      font-size: 14px;
-    }
-  }
-
-  &__query {
-    margin-bottom: 16px;
-  }
-
-  &__alert {
-    margin-bottom: 16px;
-  }
-
-  &__results {
-    margin-bottom: 16px;
-  }
-
-  &__empty {
-    text-align: center;
-  }
-}
-
-.query-form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.query-input {
-  font-family: inherit;
-}
-
-.query-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.query-params {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.param-label {
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  font-weight: 500;
-}
-
-.query-actions {
-  display: flex;
-  gap: 8px;
-}
+@use "./styles/shared.scss";
 
 .results-header {
   display: flex;
@@ -359,19 +236,12 @@ function clearQuery() {
   line-height: 1.5;
 }
 
-.text-muted {
-  color: var(--el-text-color-placeholder);
-  font-size: 12px;
-}
-
 .empty-tips {
   text-align: left;
   max-width: 400px;
   margin: 0 auto;
 
-  p {
-    margin: 0 0 8px;
-  }
+  p { margin: 0 0 8px; }
   ul {
     margin: 0;
     padding-left: 20px;
@@ -380,5 +250,4 @@ function clearQuery() {
     line-height: 1.8;
   }
 }
-
 </style>
