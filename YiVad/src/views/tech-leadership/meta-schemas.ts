@@ -111,7 +111,35 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
       { key: "decider", label: "Decider", type: "input", placeholder: "e.g. Arch Group + FE Lead" },
       { key: "decision_date", label: "Decision Date", type: "date" },
       { key: "supersedes", label: "Supersedes", type: "input", placeholder: "e.g. ADR-003" }
-    ]
+    ],
+    templateContent: `# ADR: [Title]
+
+## Context
+[What is the problem we're solving? What constraints apply?]
+
+## Decision
+[What did we choose? Be specific: version, deployment mode, configuration.]
+
+## Options Considered
+| Option | Pros | Cons |
+|--------|------|------|
+| | | |
+
+## Consequences
+- **Positive:** [What improves?]
+- **Negative:** [What trade-offs are we making?]
+
+## Risk & Rollback
+- **Risk:** [What could go wrong?]
+- **Rollback plan:** [How would we revert?]
+
+## Review Schedule
+- **Next review:** [Date or trigger condition]
+
+---
+> References: YiKnowledge → [ADR 模板](resources/templates/adr-template.md) | [ADR 摘要](resources/templates/adr-summary.md)
+> Related projects: YiAi · YiVad · YiPet
+`
   },
 
   // ── Tech Selection Evaluation ───────────────────────────────────────────
@@ -150,7 +178,47 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
       { key: "candidates", label: "Candidates", type: "textarea", rows: 2, placeholder: "e.g. Rsbuild, Webpack, Vite, Turbopack" },
       { key: "conclusion", label: "Conclusion", type: "textarea", rows: 2, placeholder: "Recommendation + rationale" },
       { key: "adr_ref", label: "ADR Reference", type: "input", placeholder: "e.g. ADR-007" }
-    ]
+    ],
+    templateContent: `# Tech Selection: [Capability]
+
+## Context
+[What capability are we selecting for? What problem does it solve?]
+
+## Non-Negotiable Constraints
+- [e.g. Must run on-prem, no data egress, budget < ¥X/mo, team already knows TypeScript]
+
+## Candidates
+
+| Candidate | Type | License | Community | Notes |
+|-----------|------|---------|-----------|-------|
+| | | | | |
+
+## Evaluation Matrix (1-5 score, weighted)
+
+| Dimension | Weight | Candidate A | Candidate B | Candidate C |
+|-----------|--------|-------------|-------------|-------------|
+| Performance | | | | |
+| Cost (3yr TCO) | | | | |
+| Ecosystem | | | | |
+| Maintainability | | | | |
+| Risk | | | | |
+| **Weighted Total** | | | | |
+
+## PoC Results
+[Key findings from proof-of-concept testing.]
+
+## Decision
+- **Selected:** [Winner]
+- **Fallback:** [Runner-up]
+- **Rationale:** [Why winner over fallback]
+
+## Review Trigger
+[Condition or date to re-evaluate this decision.]
+
+---
+> References: YiKnowledge → [技术选型评估摘要](resources/templates/tech-selection-evaluation-summary.md) | [选型模板](resources/templates/tech-selection-evaluation-template.md) | [ADR 模板](resources/templates/adr-template.md)
+> Related: [YiVad Vite → Rsbuild migration](lessons/gotchas/vite-to-rsbuild-migration.md) | [YiPet React 15 → 18 migration]
+`
   },
 
   // ── Tech Debt Inventory ─────────────────────────────────────────────────
@@ -214,7 +282,35 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
       },
       { key: "interest_rate", label: "Interest Rate (person-days/mo)", type: "input", placeholder: "e.g. 2" },
       { key: "repayment_cost", label: "Repayment Cost (person-days)", type: "input", placeholder: "e.g. 8" }
-    ]
+    ],
+    templateContent: `# Tech Debt: [Title]
+
+## Debt Item
+[What is the suboptimal decision? When / why was it made?]
+
+## Classification
+- **Type:** [Deliberate / Accidental / Reckless]
+- **Domain:** [Code / Test / Architecture / Dependency / Data / Docs / Deploy / Monitoring]
+- **Severity:** [High — blocks daily dev / Medium — affects specific modules / Low — cosmetic]
+
+## Impact
+- **Interest rate:** [person-days lost per month due to this debt]
+- **Affected modules:** [Which parts of the codebase?]
+- **Downstream effects:** [Does this slow onboarding? Increase bug rate? Block features?]
+
+## Repayment Plan
+- **Estimated cost:** [person-days to repay]
+- **Approach:** [Incremental via strangler fig / Big-bang migration / Opportunistic]
+- **Target quarter:** [e.g. 2026 Q3]
+- **Dependencies:** [Any prerequisite work?]
+
+## Verification
+[How do we confirm the debt is repaid? What metric improves?]
+
+---
+> References: YiKnowledge → [技术债务盘点摘要](tech/infra/tech-debt-inventory-summary.md) | [盘点模板](tech/infra/tech-debt-inventory-template.md) | [季度清偿流程](work/processes/quarterly-tech-debt-process.md)
+> Known debts: YiAi lacks tests + linter | YiPet has dual ApiClient implementations | YiVad RSS body in MongoDB before offload
+`
   },
 
   // ── Risk Register ───────────────────────────────────────────────────────
@@ -268,7 +364,36 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
         options: STATUS_OPTIONS,
         required: true
       }
-    ]
+    ],
+    templateContent: `# Risk: [Title]
+
+## Risk Description
+[What could go wrong? Be specific about the scenario.]
+
+## Assessment
+- **Probability:** [High / Medium / Low]
+- **Impact:** [Critical / Major / Minor]
+- **Category:** [e.g. Security, Vendor, Schedule, Data Loss, Compliance]
+- **Exposure:** Probability × Impact = [qualitative assessment]
+
+## Mitigation
+[What are we doing now to reduce the probability or impact?]
+
+## Contingency
+[Plan B if the risk materializes. Who does what?]
+
+## Tracking
+- **Owner:** [Name / role]
+- **Next review:** [Date]
+- **Trigger signal:** [What early warning would indicate this risk is increasing?]
+
+## Status
+[Open / In Progress / Resolved / Closed]
+
+---
+> References: YiKnowledge → [依赖升级流程](work/processes/dependency-upgrade-process.md) | [季度安全审计](work/processes/quarterly-security-audit-process.md) | [数据合规](work/processes/data-compliance-process.md)
+> Yi family risks: YiAi auth disabled by default | YiAi no test/lint coverage | macOS FSEvents silent drop → polling fallback
+`
   },
 
   // ── Postmortem ──────────────────────────────────────────────────────────
@@ -295,7 +420,52 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
       },
       { key: "duration_minutes", label: "Duration (minutes)", type: "number", min: 0 },
       { key: "detection_method", label: "Detection Method", type: "input", placeholder: "e.g. PagerDuty alert, user report" }
-    ]
+    ],
+    templateContent: `# Postmortem: [Incident Title]
+
+## Incident Summary
+- **Date:** [YYYY-MM-DD]
+- **Severity:** [P0 / P1 / P2]
+- **Duration:** [minutes]
+- **Impact:** [Users affected, revenue impact, data loss]
+- **Detection:** [How was it discovered?]
+
+## Timeline (UTC)
+| Time | Event |
+|------|-------|
+| HH:MM | [Discovery] |
+| HH:MM | [Response began] |
+| HH:MM | [Mitigation applied] |
+| HH:MM | [Service restored] |
+
+## Root Cause Chain (5-Why)
+1. **Why** did [symptom] happen? → [answer]
+2. **Why** [answer]? → [answer]
+3. **Why** [answer]? → [answer]
+4. **Why** [answer]? → [answer]
+5. **Why** [answer]? → **[ROOT CAUSE]**
+
+## Contributing Factors
+- [Monitoring gap / Process gap / Human error / External dependency]
+
+## What Went Well
+- [Actions that limited damage or sped recovery]
+
+## What Went Wrong
+- [Actions that delayed recovery or worsened impact]
+
+## Where We Got Lucky
+- [Factors outside our control that helped]
+
+## Action Items
+| # | Action | Owner | Due | Priority |
+|---|--------|-------|-----|----------|
+| 1 | | | | P0/P1/P2 |
+
+---
+> References: YiKnowledge → [事件复盘摘要](lessons/failures/incident-postmortem-summary.md) | [复盘模板](lessons/failures/incident-postmortem-template.md) | [事件响应流程](work/processes/incident-response-process.md)
+> Blameless principle: ask "how did the system allow this?" not "who caused this?"
+`
   },
 
   // ── Oncall Handover ─────────────────────────────────────────────────────
@@ -311,7 +481,39 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
       { key: "to_engineer", label: "To Engineer", type: "input", placeholder: "e.g. Bob" },
       { key: "ongoing_incidents", label: "Ongoing Incidents", type: "number", min: 0 },
       { key: "pending_alerts", label: "Pending Alerts", type: "number", min: 0 }
-    ]
+    ],
+    templateContent: `# Oncall Handover: [Shift Period]
+
+## Shift Info
+- **Period:** [e.g. 2026-W31]
+- **From:** [Outgoing engineer]
+- **To:** [Incoming engineer]
+- **Handover date:** [YYYY-MM-DD]
+
+## Ongoing Incidents
+| # | Incident | Severity | Status | Next Step |
+|---|----------|----------|--------|-----------|
+| 1 | | | | |
+
+## Pending Alerts / Known Issues
+- [Alert that triggered but hasn't been fully resolved]
+- [Known flaky alert to watch]
+
+## Recent Changes (last 7 days)
+- [Deploy / config change / migration that could cause issues]
+
+## Monitoring Dashboard
+- [Link to key dashboards]
+- [Any unusual trends to watch]
+
+## Escalation Contacts
+- **Secondary oncall:** [Name]
+- **Service owners:** [Name — service]
+- **Manager:** [Name]
+
+---
+> References: YiKnowledge → [Oncall 流程](work/processes/oncall-rotation-process.md) | [监控治理](work/processes/monitoring-governance-process.md) | [事件响应](work/processes/incident-response-process.md)
+`
   },
 
   // ── Org Diagnose ────────────────────────────────────────────────────────
@@ -359,7 +561,33 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
         options: MATURITY_LEVELS,
         required: true
       }
-    ]
+    ],
+    templateContent: `# Org Diagnose: [Team] — [Dimension]
+
+## Assessment Context
+- **Team:** [Name / scope]
+- **Dimension:** [Delivery / Quality / Collaboration / Tooling & Automation / Knowledge Sharing]
+- **Current maturity:** [L1 — Initial / L2 — Managed / L3 — Defined / L4 — Measured / L5 — Optimising]
+
+## Observations
+[What evidence supports this maturity level? What does the team do well? What's missing?]
+
+## Gap Analysis
+| Capability | Current State | Desired State | Gap |
+|------------|---------------|---------------|-----|
+| | | | |
+
+## Improvement Recommendations
+1. **[Action]** — [Rationale, expected impact]
+2. **[Action]** — [Rationale, expected impact]
+
+## Related Metrics
+- [DORA metrics, delivery lead time, bug rate, etc.]
+
+---
+> References: YiKnowledge → [组织效能诊断摘要](work/processes/org-productivity-diagnosis-summary.md) | [诊断模板](work/processes/org-productivity-diagnosis-template.md) | [Team Topologies](work/processes/org-productivity-diagnosis-summary.md)
+> Yi family teams: YiAi (backend) | YiVad (frontend) | YiPet (extension)
+`
   },
 
   // ── Dependency Audit ────────────────────────────────────────────────────
@@ -398,7 +626,39 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
       { key: "outdated", label: "Outdated", type: "number", min: 0 },
       { key: "vulnerable", label: "Vulnerable", type: "number", min: 0 },
       { key: "unmaintained", label: "Unmaintained", type: "number", min: 0 }
-    ]
+    ],
+    templateContent: `# Dependency Audit: [Ecosystem] — [Date]
+
+## Audit Summary
+- **Ecosystem:** [npm / pip / cargo / Go modules / Other]
+- **Audit date:** [YYYY-MM-DD]
+- **Tool used:** [npm audit / pip-audit / cargo-audit / govulncheck]
+- **Total dependencies:** [N]
+
+## Findings
+
+### Critical CVEs
+| Package | Installed | Patched | CVE | Severity | Action |
+|---------|-----------|---------|-----|----------|--------|
+| | | | | | |
+
+### Outdated (major version behind)
+| Package | Current | Latest | Breaking changes | Migration effort |
+|---------|---------|--------|------------------|------------------|
+| | | | | |
+
+### Unmaintained / Deprecated
+| Package | Last release | Risk | Replacement |
+|---------|-------------|------|-------------|
+| | | | |
+
+## Recommendations
+1. **[Action]** — [Priority / timeline]
+
+---
+> References: YiKnowledge → [依赖升级流程](work/processes/dependency-upgrade-process.md) | [季度安全审计](work/processes/quarterly-security-audit-process.md)
+> Yi family: YiVad (npm/Element Plus/Rsbuild) | YiPet (npm/React/Ant Design) | YiAi (pip/FastAPI/Motor/llama_index)
+`
   },
 
   // ── Roadmap Review ──────────────────────────────────────────────────────
@@ -450,7 +710,41 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
         required: true
       },
       { key: "owner", label: "Owner", type: "input", placeholder: "e.g. FE Lead" }
-    ]
+    ],
+    templateContent: `# Roadmap Review: [Quarter]
+
+## Initiative
+[Brief description of the initiative.]
+
+## Investment Distribution (this quarter)
+
+| Domain | Investment (person-months) | vs Last Q | Strategic Alignment (1-5) |
+|--------|---------------------------|-----------|---------------------------|
+| Platform (inference / gateway / observability) | | | |
+| Middleware (vector DB / message / cache) | | | |
+| Business (BRD / chat / aicr) | | | |
+| Infrastructure (deploy / monitoring / security) | | | |
+
+## Milestone Alignment
+| Milestone | Target Date | Status | Blocker? |
+|-----------|-------------|--------|----------|
+| | | | |
+
+## Risks & Blockers
+- [Risk / dependency / resource gap]
+
+## Decision
+- **Keep:** [Initiatives to continue]
+- **Adjust:** [Initiatives to modify]
+- **Drop:** [Initiatives to deprioritize or stop]
+
+## Next Quarter Preview
+[Key focus areas for next quarter.]
+
+---
+> References: YiKnowledge → [路线图审查摘要](work/processes/tech-roadmap-review-summary.md) | [审查模板](work/processes/tech-roadmap-review-template.md)
+> Related: [OKR 设计](methodology/pm-frameworks/okr-design-summary.md) | [Now/Next/Later](product/strategy/now-next-later-roadmap-summary.md)
+`
   },
 
   // ── Capacity Plan ───────────────────────────────────────────────────────
@@ -489,7 +783,39 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
       },
       { key: "current_capacity", label: "Current Capacity", type: "input", placeholder: "e.g. 200 cores" },
       { key: "projected_growth_pct", label: "Projected Growth (%)", type: "number", min: 0, max: 1000 }
-    ]
+    ],
+    templateContent: `# Capacity Plan: [System] — [Period]
+
+## Baseline
+- **System:** [Service / cluster name]
+- **Resource:** [Compute / Memory / Storage / Network / GPU]
+- **Planning period:** [e.g. 2026 Q3]
+
+## Current State
+- **Current capacity:** [e.g. 200 cores, 800 GB]
+- **Peak utilization:** [% at peak]
+- **Average utilization:** [% avg]
+- **Bottleneck resource:** [CPU / IO / GPU / Memory]
+
+## Projected Demand
+- **Growth driver:** [New feature / user growth / data growth]
+- **Projected growth:** [% over planning period]
+- **Required capacity:** [current × (1 + growth%) × safety factor 1.5]
+- **Headroom:** [Required − Current]
+
+## Scaling Triggers
+| Metric | Threshold | Action |
+|--------|-----------|--------|
+| CPU > 70% | 5 min | Auto-scale |
+| GPU > 80% | 5 min | Scale or throttle |
+
+## Recommendations
+1. **[Action]** — [Timeline / cost estimate]
+
+---
+> References: YiKnowledge → [容量与成本摘要](tech/infra/capacity-and-cost-summary.md) | [容量规划流程](work/processes/capacity-planning-process.md)
+> Yi family services: YiAi (Ollama inference, GPU-bound) | MongoDB (memory-bound) | OSS (storage-bound)
+`
   },
 
   // ── Capacity & Cost (FinOps) ────────────────────────────────────────────
@@ -507,7 +833,46 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
       { key: "compute_pct", label: "Compute (%)", type: "number", min: 0, max: 100 },
       { key: "api_pct", label: "3rd-party API (%)", type: "number", min: 0, max: 100 },
       { key: "storage_pct", label: "Storage (%)", type: "number", min: 0, max: 100 }
-    ]
+    ],
+    templateContent: `# FinOps Report: [System] — [Period]
+
+## Overview
+- **Period:** [e.g. 2026-07]
+- **System / Service:** [e.g. YiAi + YiVad + YiPet]
+- **Monthly cost:** ¥[amount]
+- **Budget:** ¥[amount]
+- **Variance:** [±% vs budget]
+
+## Cost Breakdown
+| Category | Cost (¥) | % of Total | vs Last Month |
+|----------|----------|------------|---------------|
+| GPU Inference | | | |
+| CPU / Memory | | | |
+| Storage | | | |
+| Network | | | |
+| 3rd-party API | | | |
+| **Total** | | 100% | |
+
+## Unit Economics
+- **Cost per chat request:** ¥[amount]
+- **Cost per RAG query:** ¥[amount]
+- **Cost per GB stored:** ¥[amount]
+
+## Optimization Opportunities
+| # | Opportunity | Est. Monthly Saving | Effort | Priority |
+|---|-------------|--------------------|--------|----------|
+| 1 | | | | |
+| 2 | | | | |
+
+## Health Indicators
+- CPU utilization: [%] (target: 50-80%)
+- GPU utilization: [%] (target: 60-90%)
+- Cache hit rate: [%] (target: >50%)
+
+---
+> References: YiKnowledge → [容量与成本摘要](tech/infra/capacity-and-cost-summary.md) | [FinOps 模板](tech/infra/capacity-and-cost-template.md)
+> Yi family cost drivers: Ollama GPU inference (~50%) | MongoDB Atlas / self-hosted | OSS storage
+`
   },
 
   // ── Maturity Model ──────────────────────────────────────────────────────
@@ -568,7 +933,39 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
         options: MATURITY_LEVELS,
         required: true
       }
-    ]
+    ],
+    templateContent: `# Maturity Assessment: [Practice Area]
+
+## Practice Area
+[CI/CD / Testing & Quality / Observability / Security / Architecture / Documentation]
+
+## Current State
+- **Current level:** [L1 / L2 / L3 / L4 / L5]
+- **Evidence:** [What practices are in place today?]
+
+## Target State
+- **Target level:** [L1 / L2 / L3 / L4 / L5]
+- **Rationale:** [Why this target? Business need? Industry benchmark?]
+
+## Gap Analysis
+| Capability | L1 | L2 | L3 | L4 | L5 | Current | Target | Gap |
+|------------|----|----|----|----|----|---------|--------|-----|
+| | | | | | | | | |
+
+## Improvement Plan
+| # | Action | From → To | Effort | Timeline | Owner |
+|---|--------|-----------|--------|----------|-------|
+| 1 | | | | | |
+| 2 | | | | | |
+
+## Progress Tracking
+- **Assessment date:** [YYYY-MM-DD]
+- **Next review:** [YYYY-MM-DD]
+
+---
+> References: YiKnowledge → [DORA 指标](work/processes/engineering-productivity-metrics-summary.md) | [季度技术债流程](work/processes/quarterly-tech-debt-process.md)
+> Maturity levels: L1=Ad-hoc | L2=Managed | L3=Defined | L4=Measured | L5=Optimising
+`
   },
 
   // ── DORA Metrics ────────────────────────────────────────────────────────
@@ -614,6 +1011,40 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
           { label: "→ Flat", value: "flat" }
         ]
       }
-    ]
+    ],
+    templateContent: `# DORA Metric: [Metric Type]
+
+## Measurement
+- **Metric:** [Deployment Frequency / Lead Time for Changes / MTTR / Change Failure Rate]
+- **Period:** [e.g. 2026-07]
+- **Current value:** [e.g. 4/day, 3h, 45min, 5%]
+- **Target value:** [e.g. on-demand, <1h, <1h, <15%]
+- **Elite benchmark:** [On-demand / <1h / <1h / 0-15%]
+
+## Trend
+[↑ Improving / ↓ Degrading / → Flat]
+
+## Contributing Factors
+- [What practices / tooling / process changes explain the current value?]
+
+## Lead Time Breakdown (if applicable)
+| Phase | Duration | % of Total | Bottleneck? |
+|-------|----------|------------|-------------|
+| Idea → Dev start | | | |
+| Dev → PR merged | | | |
+| PR merged → Deploy | | | |
+| **Total Lead Time** | | 100% | |
+
+## Improvement Actions
+| # | Action | Expected Impact | Timeline |
+|---|--------|----------------|----------|
+| 1 | | | |
+| 2 | | | |
+
+---
+> References: YiKnowledge → [工程效能指标摘要](work/processes/engineering-productivity-metrics-summary.md) | [指标模板](work/processes/engineering-productivity-metrics-template.md)
+> Remember: all 4 DORA metrics must be tracked together. High deploy frequency + high failure rate = not real velocity.
+> Yi family: YiVad (SPA, manual deploy) | YiPet (Chrome extension, review-gated release) | YiAi (server, no CI/CD pipeline)
+`
   }
 };

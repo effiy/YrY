@@ -66,7 +66,29 @@ export const crMetaSchemas: Record<string, TopicMetaSchema> = {
     metaFields: [
       { key: "file_path", label: "File Path", type: "input", placeholder: "e.g. src/components/Foo.vue" },
       { key: "language", label: "Language", type: "input", placeholder: "e.g. TypeScript, Python, Go" }
-    ]
+    ],
+    templateContent: `# File Summary
+
+## File: [file_path]
+
+## What it does
+(Summarise the file's core purpose in 1-2 sentences)
+
+## Key Entry Points
+- Public API / exports: (list exported functions, components, classes)
+- Called by: (which modules depend on this)
+
+## Main Responsibilities
+1. (responsibility 1)
+2. (responsibility 2)
+
+## Dependencies
+- Internal: (other modules in this project)
+- External: (third-party packages used)
+
+## Notes
+- Project context — YiAi (FastAPI/async Python), YiVad (Vue 3 SPA), YiPet (Chrome MV3/React), YiKnowledge (Markdown docs)
+- Language-specific: Vue SFC check template/script/style; Python check async/await + Pydantic; React check hooks + MV3 CSP`
   },
 
   explain: {
@@ -97,7 +119,37 @@ export const crMetaSchemas: Record<string, TopicMetaSchema> = {
           { label: "Complex — deeply nested, async, or stateful", value: "complex" }
         ]
       }
-    ]
+    ],
+    templateContent: `# Logic Walkthrough: [file_path]
+
+## File: [file_path]
+## Language: [language] | Complexity: [simple|medium|complex]
+
+## Step-by-step Logic Flow
+
+### 1. Entry Point
+(How does execution enter this module? Import, route handler, event listener?)
+
+### 2. Core Algorithm / Pipeline
+(Walk through the main function or component render cycle)
+
+### 3. Branching Paths
+- Happy path: (normal execution flow)
+- Error path: (exception handling, error boundaries)
+- Edge cases: (null/empty inputs, boundary values, concurrent calls)
+
+### 4. State & Side Effects
+- Mutable state: (reactive refs, store mutations, class fields)
+- Side effects: (API calls, file I/O, DOM mutations, event emissions)
+- Cleanup: (onUnmounted, finally blocks, context cancellation)
+
+### 5. Non-obvious Behaviour
+(Surprising patterns, implicit contracts, undocumented assumptions)
+
+## Project-specific Patterns to Watch
+- **YiAi (Python)**: async/await chains, Motor cursor lifecycle, Pydantic validation boundaries, config.yaml fallback logic
+- **YiVad (Vue 3)**: reactive ref vs shallowRef choice, computed dependency tracking, Pinia store cross-talk, ProTable requestApi callback chain
+- **YiPet (MV3)**: ISOLATED vs MAIN world message bridge, chrome.storage quota, CSP constraints on dynamic content, useSyncExternalStore subscription`
   },
 
   security: {
@@ -152,7 +204,47 @@ export const crMetaSchemas: Record<string, TopicMetaSchema> = {
         required: true
       },
       { key: "cwe_id", label: "CWE ID", type: "input", placeholder: "e.g. CWE-89" }
-    ]
+    ],
+    templateContent: `# Security Review
+
+## File: [file_path] | Severity: [blocker|major|minor|nit] | Vuln Type: [injection|auth|xss|csrf|secret_leak|deserialization|ssrf|other]
+
+## Finding
+
+### Description
+(What is the vulnerability? How can it be triggered?)
+
+### Attack Scenario
+1. Attacker provides: (malicious input / crafted request)
+2. Code path: (which function/layer processes it)
+3. Result: (data leak, privilege escalation, denial of service)
+
+### Impact
+- Confidentiality: (what data is exposed)
+- Integrity: (what can be modified)
+- Availability: (can the service be disrupted)
+
+## Fix
+
+### Recommended Approach
+(Parameterised queries, input validation, CSP headers, etc.)
+
+### Code Diff
+\`\`\`
+// Before (vulnerable)
+...
+
+// After (fixed)
+...
+\`\`\`
+
+### Verification
+(How to test the fix — manual steps or test cases)
+
+## Project-specific Checklist
+- **YiAi (Python/FastAPI)**: SQL/NoSQL injection via string formatting, SSRF in file fetchers, unsafe pickle/json deserialization, JWT secret strength, X-Token header bypass when auth disabled, file upload path traversal
+- **YiVad (Vue 3)**: XSS via v-html / innerHTML, exposed API keys in env vars (RSBUILD_ENV_*), token in localStorage (XSS-readable), route guard bypass, dependency supply chain (npm audit)
+- **YiPet (MV3)**: CSP bypass via dynamic script injection, message passing spoofing (sender origin check), chrome.storage sensitive data exposure, content script DOM injection, manifest.json permission creep`
   },
 
   "dependency-risk": {
@@ -179,7 +271,42 @@ export const crMetaSchemas: Record<string, TopicMetaSchema> = {
         options: RISK_OPTIONS,
         required: true
       }
-    ]
+    ],
+    templateContent: `# Dependency Risk Assessment
+
+## Package: [package_name] | Current: [current_ver] → Latest: [latest_ver] | Risk: [critical|high|medium|low]
+
+## Assessment
+
+### What This Dependency Does
+(Brief description of the package's role in the project)
+
+### Version Gap Analysis
+- Current version release date:
+- Latest version release date:
+- Number of skipped releases:
+- Breaking changes in between: (list major semver bumps)
+
+### Known Vulnerabilities
+- CVE / GHSA IDs:
+- Severity:
+- Fix version:
+
+### Maintenance Health
+- Last publish date:
+- GitHub stars / issues / PR velocity:
+- Is the project actively maintained?: Yes / No / At-risk
+- Bus factor: (how many active maintainers)
+
+### Usage in Our Codebase
+- Imported by (files):
+- Depth of usage: (surface API only / deep integration / monkey-patched)
+- Can we remove or replace it?: Yes (with ___) / No, because ___
+
+## Project-specific Dependencies
+- **YiAi (Python)**: motor (MongoDB async), pydantic / pydantic-settings, fastapi + uvicorn, tenacity, apscheduler, llama_index, ollama (client), bcrypt, PyJWT, pyyaml
+- **YiVad (npm)**: vue 3.5, vue-router 5, pinia 4, element-plus 2.14, echarts 6, axios, @rspack/core, vue-i18n 11, vue-tsc
+- **YiPet (npm)**: react 18.3, antd 5.21, marked, @rsbuild/core, @rsbuild/plugin-react, vitest 2, @biomejs/biome 2.5`
   },
 
   "access-review": {
@@ -205,7 +332,42 @@ export const crMetaSchemas: Record<string, TopicMetaSchema> = {
         options: RISK_OPTIONS,
         required: true
       }
-    ]
+    ],
+    templateContent: `# Access Review
+
+## Code Path: [code_path] | Risk: [critical|high|medium|low]
+
+## Access Analysis
+
+### What This Code Path Does
+(Summarise the endpoint / function / component)
+
+### Caller Identity
+- Who can reach this code?: (public, authenticated user, admin, service account, internal-only)
+- Authentication mechanism: (JWT token, API key, session cookie, none)
+- Authorization check: (role-based, attribute-based, none)
+
+### Privilege Boundary
+- Current privilege level: (anonymous → user → admin → system)
+- What higher-privilege operations does it perform?: (data access, config changes, user impersonation)
+- Does it cross a trust boundary?: (internal→external, user→admin, read→write)
+
+### Data Accessed
+- Data classification: (public, internal, confidential, PII, payment, secrets)
+- Read vs Write: (read-only, write, delete)
+- Scope: (single record, bulk, cross-tenant)
+
+### Missing Checks
+- [ ] Authentication required? Currently: Yes / No
+- [ ] Authorization check? Currently: Yes / No
+- [ ] Rate limiting? Currently: Yes / No
+- [ ] Input validation? Currently: Yes / No
+- [ ] Audit logging? Currently: Yes / No
+
+## Project-specific Boundaries
+- **YiAi**: X-Token optional (check if auth enabled in config.yaml), RPC envelope — any caller can invoke any module, repository layer has no auth
+- **YiVad**: route guards (beforeEach), v-auth directive on buttons, dynamic menu permission, env vars RSBUILD_ENV_*
+- **YiPet**: MV3 service worker (no DOM access), content script ISOLATED world, chrome.storage (shared across extension contexts)`
   },
 
   refactor: {
@@ -238,7 +400,44 @@ export const crMetaSchemas: Record<string, TopicMetaSchema> = {
         type: "select",
         options: IMPACT_OPTIONS
       }
-    ]
+    ],
+    templateContent: `# Refactor Suggestion
+
+## File: [file_path] | Effort: [s|m|l|xl] | Impact: [high|medium|low]
+
+## Current State
+
+### Pain Points
+1. (What makes this code hard to change or understand?)
+2. (Performance issue, coupling, testability?)
+3. (Duplication across the codebase?)
+
+### Root Cause
+(Why is it like this? Historical reasons, rushed delivery, missing abstraction?)
+
+## Proposed Refactor
+
+### Approach
+(Extract function, introduce interface, split component, deduplicate, etc.)
+
+### Before / After Sketch
+- Before: (current structure)
+- After: (target structure)
+
+### Expected Benefits
+- Readability: (easier to understand because...)
+- Maintainability: (easier to change because...)
+- Performance: (faster because...)
+- Testability: (easier to test because...)
+
+### Risks
+- Regression risk: (what could break)
+- Migration strategy: (big bang vs strangler fig)
+
+## Project-specific Anti-patterns
+- **YiAi**: sync code in async context (blocking the event loop), fat service functions (>100 lines), missing Pydantic validation at API boundary, raw dict passing instead of typed models
+- **YiVad**: large SFCs (>300 lines), Options API mixed with Composition API, store methods importing axios directly, duplicate ProTable column configs, inline styles
+- **YiPet**: mixed concerns in content script bootstrap, unused CDN catalog entries, React class component remnants, missing cleanup in useEffect`
   },
 
   perf: {
@@ -276,7 +475,45 @@ export const crMetaSchemas: Record<string, TopicMetaSchema> = {
       },
       { key: "current_metric", label: "Current Metric", type: "input", placeholder: "e.g. p99 = 420ms" },
       { key: "target_metric", label: "Target Metric", type: "input", placeholder: "e.g. p99 < 100ms" }
-    ]
+    ],
+    templateContent: `# Performance Analysis
+
+## File: [file_path] | Bottleneck: [cpu|memory|io|network|db|locking]
+
+## Profiling Data
+
+### Current Metric
+- Measurement: (p99 latency, requests/sec, memory usage, etc.)
+- Profiling tool: (Chrome DevTools, Python cProfile, MongoDB explain, etc.)
+
+### Hot Path Identification
+- Function / component: (which code is slow)
+- Call frequency: (how often is it called)
+- Time spent: (absolute time and % of total)
+
+## Root Cause
+
+### Bottleneck Type
+- **CPU**: expensive computation, deep recursion, unnecessary re-renders
+- **Memory**: large allocations, memory leak, missing cleanup, deep reactive wrapping
+- **I/O**: blocking I/O in async context, no connection pooling, missing caching
+- **Network**: chatty API calls, large payloads, no compression, missing HTTP/2
+- **DB**: N+1 queries, missing index, full collection scan, no projection
+- **Locking**: mutex contention, transaction isolation level, deadlock potential
+
+## Proposed Fix
+
+### Approach
+(Add index, batch query, memoize, lazy load, use web worker, connection pool, etc.)
+
+### Expected Improvement
+- Target metric: (p99 < Xms, memory < YMB, etc.)
+- Estimated effort: (hours/days)
+
+## Project-specific Hotspots
+- **YiAi**: Motor (async MongoDB) — check for N+1 in repository.query_documents calls, SSE streaming backpressure, llama_index embedding batch size, apscheduler poll interval tuning
+- **YiVad**: Vue reactivity — shallowRef for large objects, ProTable requestApi debounce, ECharts resize on container change, keep-alive cache size, route lazy loading
+- **YiPet**: Chrome extension — service worker idle timeout, chrome.storage.sync quota (100KB), content script injection on every page load, CDN resource load order`
   },
 
   tests: {
@@ -308,7 +545,50 @@ export const crMetaSchemas: Record<string, TopicMetaSchema> = {
         ],
         required: true
       }
-    ]
+    ],
+    templateContent: `# Test Cases
+
+## Target: [target_func] | Type: [unit|integration|e2e|snapshot]
+
+## Test Plan
+
+### Happy Path
+\`\`\`
+// Given: (preconditions, input values, mock setup)
+// When: (call the function / render the component / send the request)
+// Then: (expected return value, state change, side effect)
+\`\`\`
+
+### Edge Cases
+1. **Null / Empty input**: (what happens with undefined, null, "", [], {})
+2. **Boundary values**: (min, max, off-by-one)
+3. **Concurrent calls**: (race conditions, double-submit)
+4. **Error path**: (network failure, timeout, invalid response)
+
+### Test Implementation
+
+\`\`\`typescript
+// Example test case for [target_func]
+import { describe, it, expect } from "vitest"; // or pytest for Python
+
+describe("[target_func]", () => {
+  it("should [expected behavior] when [condition]", () => {
+    // Arrange
+    // Act
+    // Assert
+  });
+});
+\`\`\`
+
+### Coverage Notes
+- Lines covered: (estimate %)
+- Branches covered: (which conditions are tested)
+- What's NOT tested: (explicitly out of scope)
+
+## Project-specific Test Setup
+- **YiAi**: No test framework yet — add pytest + httpx (see CLAUDE.md). Test FastAPI routes with TestClient, mock Motor with mongomock or fakeredis, test SSE streaming with httpx.stream()
+- **YiVad**: No test framework yet — add Vitest (see CLAUDE.md). Test Pinia stores, test composables with @vue/test-utils, test ProTable requestApi mocks
+- **YiPet**: Vitest 2 + jsdom 29 — running! Test React components with @testing-library/react, mock chrome.* APIs, test API services with MSW`
   },
 
   style: {
@@ -339,7 +619,48 @@ export const crMetaSchemas: Record<string, TopicMetaSchema> = {
           { label: "Style Consistency", value: "consistency" }
         ]
       }
-    ]
+    ],
+    templateContent: `# Naming & Style Review
+
+## File: [file_path] | Issue: [naming|comments|structure|consistency]
+
+## Finding
+
+### Current State
+(What is the naming / style issue? Quote the specific line or pattern.)
+
+### Why It Matters
+(Confusion risk, inconsistency with codebase conventions, maintenance burden)
+
+### Suggested Fix
+- Current: \`badName\` / \`unclear_structure\`
+- Proposed: \`goodName\` / \`clear_structure\`
+- Rationale: (follows convention X, clearer intent, matches sibling modules)
+
+## Project-specific Conventions
+
+### YiAi (Python)
+- File naming: snake_case
+- Class: PascalCase, functions/variables: snake_case
+- Imports: stdlib → third-party → internal (separated by blank line)
+- Type hints: required for all function signatures (Python 3.10+ syntax)
+- Docstrings: descriptive for public API, not required for trivial private helpers
+- Async: prefer async def throughout, no sync/async mix in same module
+
+### YiVad (Vue 3 + TypeScript)
+- Component: PascalCase filenames, kebab-case CSS classes, camelCase composables
+- SFC order: <script setup lang="ts"> → <template> → <style scoped lang="scss">
+- Props: defineProps<{...}>() with type generics
+- Stores: defineStore with setup-function syntax (not options)
+- Paths: @/ alias for cross-module, relative for siblings
+- No Options API, no inline styles except dynamic values
+
+### YiPet (React + TypeScript)
+- Component: PascalCase dir + co-located CSS (Foo/Foo.tsx + Foo/Foo.css)
+- Imports: @/ alias for src/, barrel exports via index.ts
+- Hooks: useXxx naming, no class components
+- API: four-tier (client → endpoints → types → services), no raw fetch
+- Format: Biome 2.5 (not ESLint/Prettier), no semicolons`
   },
 
   "api-contract": {
@@ -383,7 +704,62 @@ export const crMetaSchemas: Record<string, TopicMetaSchema> = {
         ],
         required: true
       }
-    ]
+    ],
+    templateContent: `# API Contract Check
+
+## Endpoint: [endpoint] | Method: [GET|POST|PUT|PATCH|DELETE] | Status: [compliant|breaking|drift]
+
+## Contract Definition
+
+### Request
+\`\`\`json
+{
+  "module_name": "services.[domain].[service]",
+  "method_name": "[method]",
+  "parameters": {
+    // Document expected parameters
+  }
+}
+\`\`\`
+
+### Response (Success)
+\`\`\`json
+{
+  "code": 0,
+  "message": "ok",
+  "data": {
+    // Document expected shape
+  }
+}
+\`\`\`
+
+### Response (Error)
+- Error codes: (list known error codes and their meanings)
+- HTTP status: (200 envelope with code≠0 vs actual HTTP error)
+
+## Contract Check Results
+
+### Backward Compatibility
+- [ ] Field names unchanged? (breaking if renamed)
+- [ ] Field types unchanged? (breaking if string→number)
+- [ ] Required fields not removed? (breaking if client sends and gets ignored)
+- [ ] Response shape same? (breaking if array→object or vice versa)
+
+### Drift Detection
+- [ ] Spec document matches implementation?
+- [ ] Client code matches actual response shape?
+- [ ] Type definitions match runtime behavior?
+
+### Found Issues
+1. (Issue description — what mismatches)
+2. (Impact on callers — which projects break)
+
+## Project-specific Contracts
+- **YiAi ↔ YiVad/YiPet RPC Envelope**: { module_name, method_name, parameters } → { code, message, data }
+- **Critical parameter names**: \`filter\` (not \`query\`) for data_service.query_documents, \`target_file\` (not \`path\`) for /read-file & /write-file, \`cname\` or \`collection_name\` for collection target
+- **SSE Streaming**: data: { "data": { "message": "..." } } per frame, data: { "done": true } to terminate
+- **YiAi → Ollama**: http://localhost:11434/api/chat — model-specific parameter passthrough
+- **YiPet → Chrome APIs**: chrome.storage, chrome.tabs, chrome.runtime — MV3 manifest v3 constraints`
   },
 
   "observability-gap": {
@@ -417,6 +793,57 @@ export const crMetaSchemas: Record<string, TopicMetaSchema> = {
         ],
         required: true
       }
-    ]
+    ],
+    templateContent: `# Observability Gap Analysis
+
+## File / Component: [file_path] | Gap: [logs|metrics|traces|alerts|dashboard]
+
+## Current State
+
+### What's Observable
+(What logs, metrics, traces, or alerts currently exist for this code path?)
+
+### What's Missing
+(Specific logging statements, metric counters, span wrappers, or alert rules that should exist)
+
+## Gap Details
+
+### For Logs
+- Missing events: (request start, success, failure, retry, timeout)
+- Log levels: (info vs warn vs error — is the right level used?)
+- Structured logging: (are key-value pairs used vs string interpolation?)
+- Sensitive data: (is PII/secrets accidentally logged?)
+
+### For Metrics
+- Missing counters: (requests total, errors total, cache hits/misses)
+- Missing gauges: (queue depth, connection pool size, active sessions)
+- Missing histograms: (request latency, response size, DB query time)
+- Labels / dimensions: (are metrics tagged by endpoint, status, tenant?)
+
+### For Traces
+- Missing spans: (DB query, external API call, cache lookup, auth check)
+- Span context propagation: (is trace_id passed across service boundaries?)
+- Sampling: (is head vs tail sampling configured?)
+
+### For Alerts
+- Missing alert rules: (error rate > threshold, latency p99 > SLA, queue depth > max)
+- Alert routing: (who gets paged? is there an on-call rotation?)
+- Runbooks: (does each alert have a documented response procedure?)
+
+### For Dashboards
+- Missing panels: (request rate, error rate, latency percentiles, saturation)
+- Audience: (who needs this dashboard — dev, ops, PM?)
+
+## Fix Recommendation
+
+### Action Items
+1. Add: (specific log statement / metric / span / alert rule)
+2. Tool: (use YiAi logging, Chrome DevTools, Python structlog, etc.)
+3. Priority: (blocker / major / minor — based on incident risk)
+
+## Project-specific Gaps
+- **YiAi**: No structured logging framework (print statements), no metrics/monitoring, no alerting, apscheduler watcher has no health check, SSE connections not tracked, MongoDB connection pool not monitored, Ollama latency not measured
+- **YiVad**: Frontend errors caught by browser console only, no error reporting service (Sentry), no performance monitoring (Web Vitals), no user analytics, ProTable errors silently swallowed
+- **YiPet**: Chrome extension has no crash reporting, service worker termination not logged, chat streaming errors not instrumented, CDN load failures silent, chrome.storage quota exceeded not surfaced`
   }
 };
