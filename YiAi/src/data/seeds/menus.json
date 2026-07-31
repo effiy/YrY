@@ -1176,6 +1176,23 @@
     "order": 2
   },
   {
+    "path": "/story",
+    "name": "storyBoard",
+    "component": "/story/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Document",
+      "title": "Story Board",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 98
+  },
+  {
     "path": "/rag",
     "name": "ragPlayground",
     "component": "/rag/index",

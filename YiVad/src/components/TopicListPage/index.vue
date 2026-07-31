@@ -50,10 +50,47 @@ import type { ColumnProps, ProTableInstance } from "@/components/ProTable/interf
 import { getTopicList, deleteTopicEntry, type TopicEntryDocument, type TopicTree } from "@/api/modules/topic";
 import { useHandleData } from "@/hooks/useHandleData";
 
+export interface MetaColumn {
+  key: string;
+  label: string;
+  width?: number;
+  minWidth?: number;
+  tagTypeFn?: (val: any) => "" | "danger" | "warning" | "info" | "primary" | "success";
+  enum?: { label: string; value: string }[];
+}
+
+/** Convert a simplified MetaColumn config into a ProTable ColumnProps. */
+function toColumnProps(mc: MetaColumn): ColumnProps<TopicEntryDocument> {
+  return {
+    prop: `meta.${mc.key}`,
+    label: mc.label,
+    width: mc.width,
+    minWidth: mc.minWidth,
+    render: (scope: { row: TopicEntryDocument }) => {
+      const val = scope.row.meta?.[mc.key];
+      if (val === undefined || val === null || val === "") return <span class="topic-list__empty">—</span>;
+      // Tag rendering
+      if (mc.tagTypeFn) {
+        const tagType = mc.tagTypeFn(val);
+        return <el-tag type={tagType || undefined} size="small">{val}</el-tag>;
+      }
+      // Enum label mapping
+      if (mc.enum) {
+        const opt = mc.enum.find(o => o.value === val);
+        const display = opt ? opt.label : val;
+        return <span>{display}</span>;
+      }
+      return <span>{String(val)}</span>;
+    }
+  };
+}
+
 const props = defineProps<{
   tree: TopicTree;
   topic: string;
   label: string;
+  /** Domain-specific columns rendered from row.meta (injected between title and tags). */
+  metaColumns?: MetaColumn[];
 }>();
 
 const router = useRouter();
@@ -109,6 +146,8 @@ const columns = reactive<ColumnProps<TopicEntryDocument>[]>([
     search: { el: "input", props: { placeholder: "Search by title" } },
     minWidth: 240
   },
+  // Domain-specific meta columns — rendered from row.meta
+  ...(props.metaColumns ?? []).map(toColumnProps),
   {
     prop: "tags",
     label: "Tags",

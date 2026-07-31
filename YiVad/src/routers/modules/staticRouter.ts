@@ -34,10 +34,51 @@ export const staticRouter: RouteRecordRaw[] = [
       },
 {
         path: "/rag",
-        name: "ragPlayground",
+        name: "rag",
         component: () => import("@/views/rag/index.vue"),
         meta: {
-          title: "RAG Playground"
+          title: "RAG System",
+          icon: "DataBoard"
+        }
+      },
+      {
+        path: "/rag/retrieval",
+        name: "ragRetrieval",
+        component: () => import("@/views/rag/retrieval.vue"),
+        meta: {
+          title: "Retrieval Explorer",
+          icon: "Search",
+          activeMenu: "/rag"
+        }
+      },
+      {
+        path: "/rag/chat",
+        name: "ragChat",
+        component: () => import("@/views/rag/chat.vue"),
+        meta: {
+          title: "RAG Chat",
+          icon: "ChatDotRound",
+          activeMenu: "/rag"
+        }
+      },
+      {
+        path: "/rag/compare",
+        name: "ragCompare",
+        component: () => import("@/views/rag/compare.vue"),
+        meta: {
+          title: "RAG vs Baseline",
+          icon: "Switch",
+          activeMenu: "/rag"
+        }
+      },
+      {
+        path: "/rag/history",
+        name: "ragHistory",
+        component: () => import("@/views/rag/history.vue"),
+        meta: {
+          title: "Query History",
+          icon: "Timer",
+          activeMenu: "/rag"
         }
       },
       // Tech-leadership + Code-review: list routes come from authMenuList.json;

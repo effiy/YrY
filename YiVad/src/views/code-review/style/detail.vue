@@ -1,10 +1,8 @@
 <script setup lang="ts" name="crStyleDetail">
 import TopicDetailPage from "@/components/TopicDetailPage/index.vue";
-import { findTopicConfig } from "@/views/code-review/constants";
-
-const config = findTopicConfig("style")!;
+import { crMetaSchemas } from "@/views/code-review/meta-schemas";
+const schema = crMetaSchemas["style"];
 </script>
-
 <template>
-  <TopicDetailPage tree="code-review" topic="style" :label="config.label" :template-content="config.content" />
+  <TopicDetailPage tree="code-review" topic="style" label="Naming & style" :meta-fields="schema.metaFields" :template-content="schema.templateContent" />
 </template>

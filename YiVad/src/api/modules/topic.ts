@@ -18,6 +18,8 @@ export interface TopicEntryDocument {
   title: string;
   content: string;
   tags?: string[];
+  /** Topic-specific structured fields (e.g. severity, status, file_path). */
+  meta?: Record<string, any>;
   createdAt: number;
   updatedAt: number;
 }
@@ -85,7 +87,7 @@ export async function getTopicEntry<T extends TopicEntryDocument = TopicEntryDoc
 export async function createTopicEntry(
   tree: TopicTree,
   topic: string,
-  payload: { title: string; content: string; tags?: string[] }
+  payload: { title: string; content: string; tags?: string[]; meta?: Record<string, any> }
 ): Promise<YiAiEnvelope> {
   const now = Date.now();
   const doc = {
@@ -94,6 +96,7 @@ export async function createTopicEntry(
     title: payload.title,
     content: payload.content,
     tags: payload.tags ?? [],
+    meta: payload.meta ?? {},
     createdAt: now,
     updatedAt: now
   };
@@ -104,7 +107,7 @@ export async function updateTopicEntry(
   tree: TopicTree,
   topic: string,
   key: string,
-  patch: Partial<{ title: string; content: string; tags: string[] }>
+  patch: Partial<{ title: string; content: string; tags: string[]; meta: Record<string, any> }>
 ): Promise<YiAiEnvelope> {
   return updateDocument(cnameFor(tree, topic), key, { ...patch, updatedAt: Date.now() });
 }

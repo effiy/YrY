@@ -1,7 +1,10 @@
 <script setup lang="ts" name="storyTable">
 import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 import type { StoryDocument } from "@/api/modules/story";
 import StoryStatusBadge from "./StoryStatusBadge.vue";
+
+const { t } = useI18n();
 
 const props = defineProps<{
   stories: StoryDocument[];
@@ -18,6 +21,14 @@ const priorityColors: Record<string, string> = {
   p1: "warning",
   p2: "info",
   p3: ""
+};
+
+const scheduleStatusColors: Record<string, string> = {
+  planned: "",
+  on_track: "success",
+  at_risk: "warning",
+  delayed: "danger",
+  completed: "info"
 };
 
 // ── Utilities ──
@@ -39,6 +50,33 @@ function scenarioDone(story: StoryDocument): number {
 function isOverdue(dueDate: number | null): boolean {
   if (!dueDate) return false;
   return dueDate < Date.now();
+}
+
+function milestoneDone(story: StoryDocument): number {
+  return story.milestones?.filter(m => m.status === "done").length ?? 0;
+}
+
+function milestoneTotal(story: StoryDocument): number {
+  return story.milestones?.length ?? 0;
+}
+
+function milestoneProgress(story: StoryDocument): number {
+  const total = milestoneTotal(story);
+  if (!total) return 0;
+  return Math.round((milestoneDone(story) / total) * 100);
+}
+
+const scheduleLabels: Record<string, string> = {
+  planned: "planned",
+  on_track: "onTrack",
+  at_risk: "atRisk",
+  delayed: "delayed",
+  completed: "completed"
+};
+
+function scheduleLabel(status: string): string {
+  const k = scheduleLabels[status];
+  return k ? t(`story.${k}`) : status;
 }
 
 // ── Footer summary ──
@@ -63,6 +101,12 @@ const statusSummary = computed(() => {
         </template>
       </el-table-column>
 
+      <el-table-column :label="$t('story.sprint')" width="100">
+        <template #default="{ row }">
+          <span>{{ row.sprint || "—" }}</span>
+        </template>
+      </el-table-column>
+
       <el-table-column :label="$t('story.project')" width="90">
         <template #default="{ row }">
           <el-tag v-if="row.project" size="small" type="info">
@@ -77,6 +121,19 @@ const statusSummary = computed(() => {
         </template>
       </el-table-column>
 
+      <el-table-column :label="$t('story.schedule')" width="110">
+        <template #default="{ row }">
+          <el-tag
+            v-if="row.scheduleStatus"
+            :type="scheduleStatusColors[row.scheduleStatus] as any"
+            size="small"
+          >
+            {{ scheduleLabel(row.scheduleStatus) }}
+          </el-tag>
+          <span v-else class="text-muted">—</span>
+        </template>
+      </el-table-column>
+
       <el-table-column :label="$t('story.priority')" width="90">
         <template #default="{ row }">
           <el-tag v-if="row.priority" :type="priorityColors[row.priority] as any" size="small">
@@ -88,6 +145,35 @@ const statusSummary = computed(() => {
       <el-table-column :label="$t('story.scenarios')" width="90" align="center">
         <template #default="{ row }">
           {{ scenarioDone(row as StoryDocument) }}/{{ scenarioCount(row as StoryDocument) }}
+        </template>
+      </el-table-column>
+
+      <el-table-column :label="$t('brd.objectives')" width="90" align="center">
+        <template #default="{ row }">
+          <span>{{ (row as StoryDocument).objectives?.length || 0 }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column :label="$t('story.milestoneProgress')" width="120" align="center">
+        <template #default="{ row }">
+          <template v-if="milestoneTotal(row as StoryDocument)">
+            <div class="milestone-col">
+              <el-progress
+                :percentage="milestoneProgress(row as StoryDocument)"
+                :stroke-width="6"
+                :show-text="false"
+                :color="milestoneProgress(row as StoryDocument) === 100 ? '#67c23a' : '#409eff'"
+              />
+              <span class="milestone-text">{{ milestoneDone(row as StoryDocument) }}/{{ milestoneTotal(row as StoryDocument) }}</span>
+            </div>
+          </template>
+          <span v-else class="text-muted">—</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column :label="$t('brd.rules')" width="90" align="center">
+        <template #default="{ row }">
+          <span>{{ (row as StoryDocument).businessRules?.length || 0 }}</span>
         </template>
       </el-table-column>
 
@@ -179,5 +265,28 @@ const statusSummary = computed(() => {
   font-weight: 600;
   font-size: 12px;
   color: var(--el-text-color-regular);
+}
+
+.milestone-col {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  .el-progress {
+    flex: 1;
+    min-width: 40px;
+  }
+}
+
+.milestone-text {
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.text-muted {
+  font-size: 12px;
+  color: var(--el-text-color-placeholder);
 }
 </style>

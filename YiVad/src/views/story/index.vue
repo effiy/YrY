@@ -2,7 +2,7 @@
 import { computed, onMounted, reactive } from "vue";
 import { useI18n } from "vue-i18n";
 import { ElMessage, ElNotification } from "element-plus";
-import { Document } from "@element-plus/icons-vue";
+import { Document, Link } from "@element-plus/icons-vue";
 import { useStoryStore } from "@/stores/modules/story";
 import type { StoryDocument, Scenario } from "@/api/modules/story";
 import { YIAI_OLLAMA_URL } from "@/config/yiweb";
@@ -256,6 +256,70 @@ function formatSize(bytes: number | undefined): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+// ── BRD detail helpers ──
+
+function freqTagType(freq: string): string {
+  const m: Record<string, string> = { daily: "", weekly: "info", monthly: "warning", on_demand: "success" };
+  return m[freq] || "";
+}
+
+function freqLabel(freq: string): string {
+  const m: Record<string, string> = { daily: "Daily", weekly: "Weekly", monthly: "Monthly", on_demand: "OnDemand" };
+  return m[freq] || "Daily";
+}
+
+function rulePriorityType(p: string): string {
+  const m: Record<string, string> = { must: "danger", should: "warning", could: "info" };
+  return m[p] || "";
+}
+
+function rulePriorityLabel(p: string): string {
+  const m: Record<string, string> = { must: "Must", should: "Should", could: "Could" };
+  return m[p] || "Must";
+}
+
+function hasConstraints(c: { compliance?: string[]; technical?: string[]; performance?: string[] } | undefined): boolean {
+  if (!c) return false;
+  return !!(c.compliance?.length || c.technical?.length || c.performance?.length);
+}
+
+const milestoneDrawerProgress = computed(() => {
+  const ms = store.selectedStory?.milestones;
+  if (!ms?.length) return 0;
+  const done = ms.filter(m => m.status === "done").length;
+  return Math.round((done / ms.length) * 100);
+});
+
+function msStatusType(s: string): string {
+  const m: Record<string, string> = { pending_review: "warning", not_started: "info", in_progress: "primary", done: "success" };
+  return m[s] || "";
+}
+
+function msStatusLabel(s: string): string {
+  const m: Record<string, string> = { pending_review: "Pending", not_started: "NotStarted", in_progress: "InProgress", done: "Done" };
+  return m[s] || "NotStarted";
+}
+
+function hasAcceptanceCriteria(ac: StoryDocument["acceptanceCriteria"]): boolean {
+  if (!ac) return false;
+  return !!(ac.functional?.length || ac.data?.length || ac.objectiveVerification?.length);
+}
+
+function approvalRoleLabel(role: string): string {
+  const m: Record<string, string> = {
+    business_owner: "roleBusinessOwner",
+    eu_hub_itbp: "roleEuHubItbp",
+    rsc_business: "roleRscBusiness",
+    hq_counterpart: "roleHqCounterpart"
+  };
+  const k = m[role];
+  return k ? t(`brd.${k}`) : role;
+}
+
+function openAttachment(url: string) {
+  window.open(url, "_blank");
+}
+
 onMounted(() => store.fetchStories());
 </script>
 
@@ -438,6 +502,187 @@ onMounted(() => store.fetchStories());
               </div>
             </div>
             <p v-else class="sd-muted">{{ $t("story.none") }}</p>
+
+            <!-- BRD: Business Objectives -->
+            <template v-if="store.selectedStory.objectives?.length">
+              <h4 class="sd-sec">{{ $t("brd.objectives") }}</h4>
+              <el-table :data="store.selectedStory.objectives" border size="small" class="sd-brd-table">
+                <el-table-column type="index" label="#" width="40" align="center" />
+                <el-table-column :label="$t('brd.objective')" prop="objective" min-width="160" show-overflow-tooltip />
+                <el-table-column :label="$t('brd.metric')" prop="metric" min-width="140" show-overflow-tooltip />
+                <el-table-column :label="$t('brd.target')" prop="target" min-width="120" show-overflow-tooltip />
+              </el-table>
+            </template>
+
+            <!-- BRD: Core Users -->
+            <template v-if="store.selectedStory.coreUsers?.length">
+              <h4 class="sd-sec">{{ $t("brd.coreUsers") }}</h4>
+              <el-table :data="store.selectedStory.coreUsers" border size="small" class="sd-brd-table">
+                <el-table-column :label="$t('brd.userRole')" prop="role" min-width="120" show-overflow-tooltip />
+                <el-table-column :label="$t('brd.roleDesc')" prop="description" min-width="160" show-overflow-tooltip />
+                <el-table-column :label="$t('brd.frequency')" width="110" align="center">
+                  <template #default="{ row }">
+                    <el-tag size="small" :type="freqTagType(row.frequency)">{{ $t(`brd.freq${freqLabel(row.frequency)}`) }}</el-tag>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </template>
+
+            <!-- BRD: Involved Countries -->
+            <template v-if="store.selectedStory.involvedCountries?.length">
+              <h4 class="sd-sec">{{ $t("brd.countries") }}</h4>
+              <el-table :data="store.selectedStory.involvedCountries" border size="small" class="sd-brd-table">
+                <el-table-column :label="$t('brd.country')" prop="country" min-width="120" show-overflow-tooltip />
+                <el-table-column :label="$t('brd.brand')" prop="brand" min-width="120" show-overflow-tooltip />
+                <el-table-column :label="$t('brd.scope')" width="100" align="center">
+                  <template #default="{ row }">
+                    <el-tag size="small" :type="row.scope === 'all' ? 'info' : 'warning'">{{ $t(`brd.scope${row.scope === 'all' ? 'All' : 'Partial'}`) }}</el-tag>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </template>
+
+            <!-- BRD: Involved Modules -->
+            <template v-if="store.selectedStory.involvedModules?.length">
+              <h4 class="sd-sec">{{ $t("brd.modules") }}</h4>
+              <el-table :data="store.selectedStory.involvedModules" border size="small" class="sd-brd-table">
+                <el-table-column :label="$t('brd.module')" prop="module" min-width="160" show-overflow-tooltip />
+                <el-table-column :label="$t('brd.impact')" prop="impact" min-width="200" show-overflow-tooltip />
+              </el-table>
+            </template>
+
+            <!-- BRD: Business Rules -->
+            <template v-if="store.selectedStory.businessRules?.length">
+              <h4 class="sd-sec">{{ $t("brd.rules") }}</h4>
+              <el-table :data="store.selectedStory.businessRules" border size="small" class="sd-brd-table">
+                <el-table-column :label="$t('brd.ruleId')" prop="id" width="90" />
+                <el-table-column :label="$t('brd.ruleDesc')" prop="description" min-width="200" show-overflow-tooltip />
+                <el-table-column :label="$t('brd.rulePriority')" width="100" align="center">
+                  <template #default="{ row }">
+                    <el-tag size="small" :type="rulePriorityType(row.priority)">{{ $t(`brd.pri${rulePriorityLabel(row.priority)}`) }}</el-tag>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </template>
+
+            <!-- BRD: Constraints -->
+            <template v-if="store.selectedStory.constraints && hasConstraints(store.selectedStory.constraints)">
+              <h4 class="sd-sec">{{ $t("brd.constraints") }}</h4>
+              <div class="sd-constraints">
+                <div v-if="store.selectedStory.constraints.compliance?.length" class="sd-constraint-group">
+                  <span class="sd-constraint-label">{{ $t("brd.compliance") }}</span>
+                  <div class="sd-tags">
+                    <el-tag v-for="(c, ci) in store.selectedStory.constraints.compliance" :key="'cc'+ci" size="small" type="danger">{{ c }}</el-tag>
+                  </div>
+                </div>
+                <div v-if="store.selectedStory.constraints.technical?.length" class="sd-constraint-group">
+                  <span class="sd-constraint-label">{{ $t("brd.technical") }}</span>
+                  <div class="sd-tags">
+                    <el-tag v-for="(c, ci) in store.selectedStory.constraints.technical" :key="'ct'+ci" size="small" type="warning">{{ c }}</el-tag>
+                  </div>
+                </div>
+                <div v-if="store.selectedStory.constraints.performance?.length" class="sd-constraint-group">
+                  <span class="sd-constraint-label">{{ $t("brd.performance") }}</span>
+                  <div class="sd-tags">
+                    <el-tag v-for="(c, ci) in store.selectedStory.constraints.performance" :key="'cp'+ci" size="small" type="info">{{ c }}</el-tag>
+                  </div>
+                </div>
+              </div>
+            </template>
+
+            <!-- BRD: Milestones -->
+            <template v-if="store.selectedStory.milestones?.length">
+              <h4 class="sd-sec">{{ $t("brd.milestones") }}</h4>
+              <el-progress
+                v-if="store.selectedStory.milestones.length"
+                :percentage="milestoneDrawerProgress"
+                :stroke-width="8"
+                :color="milestoneDrawerProgress === 100 ? '#67c23a' : '#409eff'"
+                style="margin-bottom: 10px"
+              />
+              <el-table :data="store.selectedStory.milestones" border size="small" class="sd-brd-table">
+                <el-table-column :label="$t('brd.milestoneName')" prop="name" min-width="140" show-overflow-tooltip />
+                <el-table-column :label="$t('brd.expectedDate')" width="120" align="center">
+                  <template #default="{ row }">{{ fmtDate(row.expectedDate) || "—" }}</template>
+                </el-table-column>
+                <el-table-column :label="$t('brd.milestoneStatus')" width="110" align="center">
+                  <template #default="{ row }">
+                    <el-tag size="small" :type="msStatusType(row.status)">{{ $t(`brd.ms${msStatusLabel(row.status)}`) }}</el-tag>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </template>
+
+            <!-- BRD: Urgency -->
+            <template v-if="store.selectedStory.urgency">
+              <h4 class="sd-sec">{{ $t("brd.urgency") }}</h4>
+              <el-tag :type="priorityColors[store.selectedStory.urgency] as any" size="small">{{ store.selectedStory.urgency.toUpperCase() }}</el-tag>
+            </template>
+
+            <!-- BRD: Acceptance Criteria -->
+            <template v-if="hasAcceptanceCriteria(store.selectedStory.acceptanceCriteria)">
+              <h4 class="sd-sec">{{ $t("brd.acceptance") }}</h4>
+              <template v-if="store.selectedStory.acceptanceCriteria?.functional?.length">
+                <h5 class="sd-sub-sec">{{ $t("brd.functional") }}</h5>
+                <el-table :data="store.selectedStory.acceptanceCriteria.functional" border size="small" class="sd-brd-table">
+                  <el-table-column :label="$t('brd.acId')" prop="id" width="90" />
+                  <el-table-column :label="$t('brd.acDesc')" prop="description" min-width="200" show-overflow-tooltip />
+                  <el-table-column :label="$t('brd.acPri')" width="90" align="center">
+                    <template #default="{ row }">
+                      <el-tag size="small" :type="rulePriorityType(row.priority)">{{ $t(`brd.pri${rulePriorityLabel(row.priority)}`) }}</el-tag>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </template>
+              <template v-if="store.selectedStory.acceptanceCriteria?.data?.length">
+                <h5 class="sd-sub-sec">{{ $t("brd.data") }}</h5>
+                <ul class="sd-data-list">
+                  <li v-for="(d, di) in store.selectedStory.acceptanceCriteria.data" :key="'ad'+di">{{ d }}</li>
+                </ul>
+              </template>
+              <template v-if="store.selectedStory.acceptanceCriteria?.objectiveVerification?.length">
+                <h5 class="sd-sub-sec">{{ $t("brd.objectiveVerification") }}</h5>
+                <el-table :data="store.selectedStory.acceptanceCriteria.objectiveVerification" border size="small" class="sd-brd-table">
+                  <el-table-column :label="$t('brd.verificationObjective')" prop="objective" min-width="140" show-overflow-tooltip />
+                  <el-table-column :label="$t('brd.verificationMethod')" prop="method" min-width="140" show-overflow-tooltip />
+                  <el-table-column :label="$t('brd.verificationCriteria')" prop="criteria" min-width="160" show-overflow-tooltip />
+                </el-table>
+              </template>
+            </template>
+
+            <!-- BRD: Attachments -->
+            <template v-if="store.selectedStory.attachments?.length">
+              <h4 class="sd-sec">{{ $t("brd.attachments") }}</h4>
+              <div class="sd-files">
+                <div v-for="att in store.selectedStory.attachments" :key="att.id" class="sd-file-item" @click="openAttachment(att.url)">
+                  <el-icon><Link /></el-icon>
+                  <div class="sd-file-info">
+                    <span class="sd-file-name">{{ att.label }}</span>
+                    <span class="sd-file-path">{{ att.url }}</span>
+                  </div>
+                </div>
+              </div>
+            </template>
+
+            <!-- BRD: Approval Records -->
+            <template v-if="store.selectedStory.approvalRecords?.length">
+              <h4 class="sd-sec">{{ $t("brd.approvals") }}</h4>
+              <el-table :data="store.selectedStory.approvalRecords" border size="small" class="sd-brd-table">
+                <el-table-column :label="$t('brd.apprRole')" width="140">
+                  <template #default="{ row }">{{ approvalRoleLabel(row.role) }}</template>
+                </el-table-column>
+                <el-table-column :label="$t('brd.approver')" prop="approver" width="100" />
+                <el-table-column :label="$t('brd.apprDate')" width="120" align="center">
+                  <template #default="{ row }">{{ fmtDate(row.date) || "—" }}</template>
+                </el-table-column>
+                <el-table-column :label="$t('brd.apprResult')" width="100" align="center">
+                  <template #default="{ row }">
+                    <el-tag size="small" :type="row.result === 'approved' ? 'success' : 'danger'">{{ $t(`brd.result${row.result === 'approved' ? 'Approved' : 'Rejected'}`) }}</el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column :label="$t('brd.apprComments')" prop="comments" min-width="140" show-overflow-tooltip />
+              </el-table>
+            </template>
           </el-tab-pane>
 
           <el-tab-pane :label="$t('story.scenarios')" name="scenarios">
@@ -701,6 +946,289 @@ onMounted(() => store.fetchStories());
             :placeholder="$t('story.addTags')"
             style="width: 100%"
         /></el-form-item>
+
+        <!-- BRD: Business Objectives -->
+        <el-divider content-position="left">{{ $t("brd.objectives") }}</el-divider>
+        <div class="brd-section">
+          <el-table :data="store.form.objectives" border size="small">
+            <el-table-column :label="$t('brd.objective')" min-width="180">
+              <template #default="{ row }"><el-input v-model="row.objective" size="small" placeholder="e.g. Reduce ticket resolution time" /></template>
+            </el-table-column>
+            <el-table-column :label="$t('brd.metric')" min-width="140">
+              <template #default="{ row }"><el-input v-model="row.metric" size="small" placeholder="e.g. Avg ticket resolution time" /></template>
+            </el-table-column>
+            <el-table-column :label="$t('brd.target')" min-width="120">
+              <template #default="{ row }"><el-input v-model="row.target" size="small" placeholder="e.g. < 2 hours" /></template>
+            </el-table-column>
+            <el-table-column width="50" align="center">
+              <template #default="{ $index }"><el-button text type="danger" size="small" @click="store.removeObjective($index)">×</el-button></template>
+            </el-table-column>
+          </el-table>
+          <el-button text type="primary" size="small" style="margin-top: 6px" @click="store.addObjective()">+ {{ $t("brd.addObjective") }}</el-button>
+        </div>
+
+        <!-- BRD: Core Users -->
+        <el-divider content-position="left">{{ $t("brd.coreUsers") }}</el-divider>
+        <div class="brd-section">
+          <el-table :data="store.form.coreUsers" border size="small">
+            <el-table-column :label="$t('brd.userRole')" min-width="140">
+              <template #default="{ row }"><el-input v-model="row.role" size="small" placeholder="e.g. Customer Support Agent" /></template>
+            </el-table-column>
+            <el-table-column :label="$t('brd.roleDesc')" min-width="160">
+              <template #default="{ row }"><el-input v-model="row.description" size="small" placeholder="e.g. Handles incoming customer tickets" /></template>
+            </el-table-column>
+            <el-table-column :label="$t('brd.frequency')" width="130">
+              <template #default="{ row }">
+                <el-select v-model="row.frequency" size="small" style="width: 100%">
+                  <el-option :label="$t('brd.freqDaily')" value="daily" />
+                  <el-option :label="$t('brd.freqWeekly')" value="weekly" />
+                  <el-option :label="$t('brd.freqMonthly')" value="monthly" />
+                  <el-option :label="$t('brd.freqOnDemand')" value="on_demand" />
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column width="50" align="center">
+              <template #default="{ $index }"><el-button text type="danger" size="small" @click="store.removeCoreUser($index)">×</el-button></template>
+            </el-table-column>
+          </el-table>
+          <el-button text type="primary" size="small" style="margin-top: 6px" @click="store.addCoreUser()">+ {{ $t("brd.addUser") }}</el-button>
+        </div>
+
+        <!-- BRD: Involved Countries -->
+        <el-divider content-position="left">{{ $t("brd.countries") }}</el-divider>
+        <div class="brd-section">
+          <el-table :data="store.form.involvedCountries" border size="small">
+            <el-table-column :label="$t('brd.country')" min-width="140">
+              <template #default="{ row }"><el-input v-model="row.country" size="small" placeholder="e.g. Germany" /></template>
+            </el-table-column>
+            <el-table-column :label="$t('brd.brand')" min-width="120">
+              <template #default="{ row }"><el-input v-model="row.brand" size="small" placeholder="e.g. Brand A" /></template>
+            </el-table-column>
+            <el-table-column :label="$t('brd.scope')" width="110">
+              <template #default="{ row }">
+                <el-select v-model="row.scope" size="small" style="width: 100%">
+                  <el-option :label="$t('brd.scopeAll')" value="all" />
+                  <el-option :label="$t('brd.scopePartial')" value="partial" />
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column width="50" align="center">
+              <template #default="{ $index }"><el-button text type="danger" size="small" @click="store.removeCountry($index)">×</el-button></template>
+            </el-table-column>
+          </el-table>
+          <el-button text type="primary" size="small" style="margin-top: 6px" @click="store.addCountry()">+ {{ $t("brd.addCountry") }}</el-button>
+        </div>
+
+        <!-- BRD: Involved Modules -->
+        <el-divider content-position="left">{{ $t("brd.modules") }}</el-divider>
+        <div class="brd-section">
+          <el-table :data="store.form.involvedModules" border size="small">
+            <el-table-column :label="$t('brd.module')" min-width="160">
+              <template #default="{ row }"><el-input v-model="row.module" size="small" placeholder="e.g. YiAi Ticket Service" /></template>
+            </el-table-column>
+            <el-table-column :label="$t('brd.impact')" min-width="200">
+              <template #default="{ row }"><el-input v-model="row.impact" size="small" placeholder="e.g. New API endpoint for ticket routing" /></template>
+            </el-table-column>
+            <el-table-column width="50" align="center">
+              <template #default="{ $index }"><el-button text type="danger" size="small" @click="store.removeModule($index)">×</el-button></template>
+            </el-table-column>
+          </el-table>
+          <el-button text type="primary" size="small" style="margin-top: 6px" @click="store.addModule()">+ {{ $t("brd.addModule") }}</el-button>
+        </div>
+
+        <!-- BRD: Business Rules -->
+        <el-divider content-position="left">{{ $t("brd.rules") }}</el-divider>
+        <div class="brd-section">
+          <el-table :data="store.form.businessRules" border size="small">
+            <el-table-column :label="$t('brd.ruleId')" width="100">
+              <template #default="{ row }"><el-input v-model="row.id" size="small" placeholder="BR-001" /></template>
+            </el-table-column>
+            <el-table-column :label="$t('brd.ruleDesc')" min-width="220">
+              <template #default="{ row }"><el-input v-model="row.description" size="small" placeholder="e.g. All tickets must be acknowledged within 15 min" /></template>
+            </el-table-column>
+            <el-table-column :label="$t('brd.rulePriority')" width="110">
+              <template #default="{ row }">
+                <el-select v-model="row.priority" size="small" style="width: 100%">
+                  <el-option :label="$t('brd.priMust')" value="must" />
+                  <el-option :label="$t('brd.priShould')" value="should" />
+                  <el-option :label="$t('brd.priCould')" value="could" />
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column width="50" align="center">
+              <template #default="{ $index }"><el-button text type="danger" size="small" @click="store.removeBusinessRule($index)">×</el-button></template>
+            </el-table-column>
+          </el-table>
+          <el-button text type="primary" size="small" style="margin-top: 6px" @click="store.addBusinessRule()">+ {{ $t("brd.addRule") }}</el-button>
+        </div>
+
+        <!-- BRD: Constraints -->
+        <el-divider content-position="left">{{ $t("brd.constraints") }}</el-divider>
+        <div class="brd-section">
+          <el-row :gutter="16">
+            <el-col :span="8">
+              <div class="brd-constraint-item">
+                <span class="brd-constraint-label">{{ $t("brd.compliance") }}</span>
+                <el-input v-model="store.constraintsText.compliance" type="textarea" :rows="3" :placeholder="$t('brd.constraintsHint')" />
+              </div>
+            </el-col>
+            <el-col :span="8">
+              <div class="brd-constraint-item">
+                <span class="brd-constraint-label">{{ $t("brd.technical") }}</span>
+                <el-input v-model="store.constraintsText.technical" type="textarea" :rows="3" :placeholder="$t('brd.constraintsHint')" />
+              </div>
+            </el-col>
+            <el-col :span="8">
+              <div class="brd-constraint-item">
+                <span class="brd-constraint-label">{{ $t("brd.performance") }}</span>
+                <el-input v-model="store.constraintsText.performance" type="textarea" :rows="3" :placeholder="$t('brd.constraintsHint')" />
+              </div>
+            </el-col>
+          </el-row>
+        </div>
+
+        <!-- BRD: Milestones -->
+        <el-divider content-position="left">{{ $t("brd.milestones") }}</el-divider>
+        <div class="brd-section">
+          <el-table :data="store.form.milestones" border size="small">
+            <el-table-column :label="$t('brd.milestoneName')" min-width="160">
+              <template #default="{ row }"><el-input v-model="row.name" size="small" placeholder="e.g. MVP Release" /></template>
+            </el-table-column>
+            <el-table-column :label="$t('brd.expectedDate')" width="160">
+              <template #default="{ row }">
+                <el-date-picker v-model="row.expectedDate" type="date" :placeholder="$t('story.start')" size="small" style="width: 100%" value-format="x" />
+              </template>
+            </el-table-column>
+            <el-table-column :label="$t('brd.milestoneStatus')" width="140">
+              <template #default="{ row }">
+                <el-select v-model="row.status" size="small" style="width: 100%">
+                  <el-option :label="$t('brd.msPending')" value="pending_review" />
+                  <el-option :label="$t('brd.msNotStarted')" value="not_started" />
+                  <el-option :label="$t('brd.msInProgress')" value="in_progress" />
+                  <el-option :label="$t('brd.msDone')" value="done" />
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column width="50" align="center">
+              <template #default="{ $index }"><el-button text type="danger" size="small" @click="store.removeMilestone($index)">×</el-button></template>
+            </el-table-column>
+          </el-table>
+          <el-button text type="primary" size="small" style="margin-top: 6px" @click="store.addMilestone()">+ {{ $t("brd.addMilestone") }}</el-button>
+        </div>
+
+        <!-- BRD: Urgency -->
+        <el-divider content-position="left">{{ $t("brd.urgency") }}</el-divider>
+        <el-form-item :label="$t('story.priority')">
+          <el-select v-model="store.form.urgency" style="width: 200px">
+            <el-option v-for="(lbl, val) in priorityLabels" :key="val" :label="lbl" :value="val" />
+          </el-select>
+        </el-form-item>
+
+        <!-- BRD: Acceptance Criteria -->
+        <el-divider content-position="left">{{ $t("brd.acceptance") }}</el-divider>
+
+        <h5 style="margin: 0 0 8px; font-size: 13px; font-weight: 600;">{{ $t("brd.functional") }}</h5>
+        <div class="brd-section">
+          <el-table :data="store.form.acceptanceCriteria.functional" border size="small">
+            <el-table-column :label="$t('brd.acId')" width="100">
+              <template #default="{ row }"><el-input v-model="row.id" size="small" placeholder="AC-001" /></template>
+            </el-table-column>
+            <el-table-column :label="$t('brd.acDesc')" min-width="220">
+              <template #default="{ row }"><el-input v-model="row.description" size="small" placeholder="e.g. User can create a ticket within 3 clicks" /></template>
+            </el-table-column>
+            <el-table-column :label="$t('brd.acPri')" width="110">
+              <template #default="{ row }">
+                <el-select v-model="row.priority" size="small" style="width: 100%">
+                  <el-option :label="$t('brd.priMust')" value="must" />
+                  <el-option :label="$t('brd.priShould')" value="should" />
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column width="50" align="center">
+              <template #default="{ $index }"><el-button text type="danger" size="small" @click="store.removeAcceptance($index)">×</el-button></template>
+            </el-table-column>
+          </el-table>
+          <el-button text type="primary" size="small" style="margin-top: 6px" @click="store.addAcceptance()">+ {{ $t("brd.addAc") }}</el-button>
+        </div>
+
+        <h5 style="margin: 12px 0 8px; font-size: 13px; font-weight: 600;">{{ $t("brd.data") }}</h5>
+        <el-input v-model="store.acceptanceDataText" type="textarea" :rows="3" :placeholder="$t('brd.constraintsHint')" />
+
+        <h5 style="margin: 12px 0 8px; font-size: 13px; font-weight: 600;">{{ $t("brd.objectiveVerification") }}</h5>
+        <div class="brd-section">
+          <el-table :data="store.form.acceptanceCriteria.objectiveVerification" border size="small">
+            <el-table-column :label="$t('brd.verificationObjective')" min-width="140">
+              <template #default="{ row }"><el-input v-model="row.objective" size="small" placeholder="e.g. Reduce ticket resolution time" /></template>
+            </el-table-column>
+            <el-table-column :label="$t('brd.verificationMethod')" min-width="140">
+              <template #default="{ row }"><el-input v-model="row.method" size="small" placeholder="e.g. Compare avg resolution time before/after launch" /></template>
+            </el-table-column>
+            <el-table-column :label="$t('brd.verificationCriteria')" min-width="140">
+              <template #default="{ row }"><el-input v-model="row.criteria" size="small" placeholder="e.g. P95 < 2 hours for 2 weeks" /></template>
+            </el-table-column>
+            <el-table-column width="50" align="center">
+              <template #default="{ $index }"><el-button text type="danger" size="small" @click="store.removeObjectiveVerification($index)">×</el-button></template>
+            </el-table-column>
+          </el-table>
+          <el-button text type="primary" size="small" style="margin-top: 6px" @click="store.addObjectiveVerification()">+ {{ $t("brd.addVerification") }}</el-button>
+        </div>
+
+        <!-- BRD: Attachments -->
+        <el-divider content-position="left">{{ $t("brd.attachments") }}</el-divider>
+        <div class="brd-section">
+          <el-table :data="store.form.attachments" border size="small">
+            <el-table-column :label="$t('brd.attLabel')" min-width="160">
+              <template #default="{ row }"><el-input v-model="row.label" size="small" placeholder="e.g. Wireframe v2" /></template>
+            </el-table-column>
+            <el-table-column :label="$t('brd.attUrl')" min-width="220">
+              <template #default="{ row }"><el-input v-model="row.url" size="small" placeholder="https://..." /></template>
+            </el-table-column>
+            <el-table-column width="50" align="center">
+              <template #default="{ $index }"><el-button text type="danger" size="small" @click="store.removeAttachment($index)">×</el-button></template>
+            </el-table-column>
+          </el-table>
+          <el-button text type="primary" size="small" style="margin-top: 6px" @click="store.addAttachment()">+ {{ $t("brd.addAttachment") }}</el-button>
+        </div>
+
+        <!-- BRD: Approval Records -->
+        <el-divider content-position="left">{{ $t("brd.approvals") }}</el-divider>
+        <div class="brd-section">
+          <el-table :data="store.form.approvalRecords" border size="small">
+            <el-table-column :label="$t('brd.apprRole')" width="150">
+              <template #default="{ row }">
+                <el-select v-model="row.role" size="small" style="width: 100%">
+                  <el-option :label="$t('brd.roleBusinessOwner')" value="business_owner" />
+                  <el-option :label="$t('brd.roleEuHubItbp')" value="eu_hub_itbp" />
+                  <el-option :label="$t('brd.roleRscBusiness')" value="rsc_business" />
+                  <el-option :label="$t('brd.roleHqCounterpart')" value="hq_counterpart" />
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column :label="$t('brd.approver')" width="120">
+              <template #default="{ row }"><el-input v-model="row.approver" size="small" placeholder="Name" /></template>
+            </el-table-column>
+            <el-table-column :label="$t('brd.apprDate')" width="150">
+              <template #default="{ row }">
+                <el-date-picker v-model="row.date" type="date" :placeholder="$t('story.start')" size="small" style="width: 100%" value-format="x" />
+              </template>
+            </el-table-column>
+            <el-table-column :label="$t('brd.apprResult')" width="110">
+              <template #default="{ row }">
+                <el-select v-model="row.result" size="small" style="width: 100%">
+                  <el-option :label="$t('brd.resultApproved')" value="approved" />
+                  <el-option :label="$t('brd.resultRejected')" value="rejected" />
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column :label="$t('brd.apprComments')" min-width="140">
+              <template #default="{ row }"><el-input v-model="row.comments" size="small" placeholder="Comments" /></template>
+            </el-table-column>
+            <el-table-column width="50" align="center">
+              <template #default="{ $index }"><el-button text type="danger" size="small" @click="store.removeApproval($index)">×</el-button></template>
+            </el-table-column>
+          </el-table>
+          <el-button text type="primary" size="small" style="margin-top: 6px" @click="store.addApproval()">+ {{ $t("brd.addApproval") }}</el-button>
+        </div>
       </el-form>
       <template #footer
         ><el-button @click="store.dialogVisible = false">{{ $t("story.cancel") }}</el-button
@@ -1101,6 +1629,74 @@ onMounted(() => store.fetchStories());
   display: flex;
   gap: 8px;
   align-items: center;
+}
+
+// BRD detail sections
+.sd-brd-table {
+  margin-bottom: 4px;
+}
+
+.sd-sub-sec {
+  margin: 12px 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--el-text-color-regular);
+}
+
+.sd-constraints {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sd-constraint-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sd-constraint-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+}
+
+.sd-data-list {
+  margin: 4px 0;
+  padding-left: 20px;
+  font-size: 13px;
+  color: var(--el-text-color-regular);
+  line-height: 1.8;
+}
+
+// BRD edit dialog sections
+.brd-section {
+  margin-bottom: 16px;
+}
+
+.brd-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+
+  span {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--el-text-color-secondary);
+  }
+}
+
+.brd-constraint-item {
+  margin-bottom: 12px;
+
+  .brd-constraint-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--el-text-color-secondary);
+    margin-bottom: 4px;
+    display: block;
+  }
 }
 </style>
 

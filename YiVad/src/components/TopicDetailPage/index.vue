@@ -17,10 +17,76 @@
     </header>
 
     <div class="topic-detail__body">
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" label-suffix=" :">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="120px" label-suffix=" :">
         <el-form-item label="Title" prop="title">
           <el-input v-model="form.title" placeholder="Concise entry title" clearable />
         </el-form-item>
+
+        <!-- Structured meta fields -->
+        <template v-if="metaFields.length">
+          <el-divider content-position="left">
+            <span class="topic-detail__meta-divider-text">Structured fields</span>
+          </el-divider>
+          <el-row :gutter="16">
+            <el-col v-for="field in metaFields" :key="field.key" :span="field.colSpan ?? 12" :xs="24" :sm="field.colSpan ?? 12">
+              <el-form-item :label="field.label" :prop="`meta.${field.key}`" :required="field.required">
+                <!-- Input -->
+                <el-input
+                  v-if="field.type === 'input'"
+                  v-model="formMeta[field.key]"
+                  :placeholder="field.placeholder ?? `Enter ${field.label.toLowerCase()}`"
+                  clearable
+                />
+                <!-- Number -->
+                <el-input-number
+                  v-else-if="field.type === 'number'"
+                  v-model="formMeta[field.key]"
+                  :placeholder="field.placeholder"
+                  :min="field.min"
+                  :max="field.max"
+                  controls-position="right"
+                  style="width: 100%"
+                />
+                <!-- Select -->
+                <el-select
+                  v-else-if="field.type === 'select'"
+                  v-model="formMeta[field.key]"
+                  :placeholder="field.placeholder ?? `Select ${field.label.toLowerCase()}`"
+                  clearable
+                  style="width: 100%"
+                >
+                  <el-option
+                    v-for="opt in field.options"
+                    :key="opt.value"
+                    :label="opt.label"
+                    :value="opt.value"
+                  />
+                </el-select>
+                <!-- Date -->
+                <el-date-picker
+                  v-else-if="field.type === 'date'"
+                  v-model="formMeta[field.key]"
+                  type="date"
+                  :placeholder="field.placeholder ?? 'Pick a date'"
+                  style="width: 100%"
+                  value-format="YYYY-MM-DD"
+                />
+                <!-- Textarea -->
+                <el-input
+                  v-else-if="field.type === 'textarea'"
+                  v-model="formMeta[field.key]"
+                  type="textarea"
+                  :rows="field.rows ?? 3"
+                  :placeholder="field.placeholder ?? `Enter ${field.label.toLowerCase()}`"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </template>
+
+        <el-divider content-position="left">
+          <span class="topic-detail__meta-divider-text">Content</span>
+        </el-divider>
         <el-form-item label="Tags" prop="tags">
           <el-select v-model="form.tags" multiple filterable allow-create default-first-option placeholder="Press Enter to add a tag" class="topic-detail__tags">
             <el-option v-for="t in tagOptions" :key="t" :label="t" :value="t" />
@@ -48,12 +114,28 @@ import {
   type TopicTree
 } from "@/api/modules/topic";
 
+export interface MetaField {
+  key: string;
+  label: string;
+  type: "input" | "select" | "date" | "number" | "textarea";
+  options?: { label: string; value: string }[];
+  required?: boolean;
+  placeholder?: string;
+  /** 1-24, Element Plus col span (default 12 for 2-col layout). */
+  colSpan?: number;
+  min?: number;
+  max?: number;
+  rows?: number;
+}
+
 const props = defineProps<{
   tree: TopicTree;
   topic: string;
   label: string;
   /** Original prompt content — pre-fills the editor when creating a new entry. */
   templateContent?: string;
+  /** Topic-specific structured form fields rendered above the content textarea. */
+  metaFields?: MetaField[];
 }>();
 
 const route = useRoute();
@@ -64,11 +146,16 @@ const entry = ref<TopicEntryDocument | null>(null);
 
 const isNew = computed(() => route.params.id === "new" || !route.params.id);
 
+const metaFields = computed(() => props.metaFields ?? []);
+
 const form = reactive({
   title: "",
   content: props.templateContent ?? "",
   tags: [] as string[]
 });
+
+/** Reactive bag for meta field values — synced to entry.meta on load / save. */
+const formMeta = reactive<Record<string, any>>({});
 
 const tagOptions = computed(() => Array.from(new Set([...(entry.value?.tags ?? []), ...form.tags])));
 
@@ -91,6 +178,11 @@ async function loadEntry() {
     form.title = doc.title;
     form.content = doc.content;
     form.tags = [...(doc.tags ?? [])];
+    // Populate meta fields from saved data
+    if (doc.meta) {
+      Object.keys(formMeta).forEach(k => delete formMeta[k]);
+      Object.assign(formMeta, doc.meta);
+    }
   } catch (e: any) {
     ElMessage.error(e?.message || "Failed to load entry");
   } finally {
@@ -107,14 +199,16 @@ async function handleSave() {
       await createTopicEntry(props.tree, props.topic, {
         title: form.title,
         content: form.content,
-        tags: form.tags
+        tags: form.tags,
+        meta: { ...formMeta }
       });
       ElMessage.success("Entry created");
     } else {
       await updateTopicEntry(props.tree, props.topic, entry.value!.key, {
         title: form.title,
         content: form.content,
-        tags: form.tags
+        tags: form.tags,
+        meta: { ...formMeta }
       });
       ElMessage.success("Entry updated");
     }
@@ -187,5 +281,12 @@ onMounted(loadEntry);
 }
 .topic-detail__tags {
   width: 100%;
+}
+.topic-detail__meta-divider-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 </style>
