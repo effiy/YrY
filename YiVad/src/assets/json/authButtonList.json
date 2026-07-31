@@ -4,5 +4,5 @@
     "useProTable": ["add", "batchAdd", "export", "batchDelete", "status"],
     "authButton": ["add", "edit", "delete", "import", "export"]
   },
-  "msg": "Success"
+  "msg": "成功"
 }

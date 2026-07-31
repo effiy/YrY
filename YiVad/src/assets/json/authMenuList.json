@@ -7,7 +7,7 @@
       "component": "/home/index",
       "meta": {
         "icon": "HomeFilled",
-        "title": "Home",
+        "title": "首页",
         "isLink": "",
         "isHide": false,
         "isFull": false,
@@ -21,7 +21,7 @@
       "component": "/dataScreen/index",
       "meta": {
         "icon": "Histogram",
-        "title": "Data Screen",
+        "title": "数据大屏",
         "isLink": "",
         "isHide": false,
         "isFull": true,
@@ -35,7 +35,7 @@
       "redirect": "/proTable/useProTable",
       "meta": {
         "icon": "MessageBox",
-        "title": "ProTable",
+        "title": "超级表格",
         "isLink": "",
         "isHide": false,
         "isFull": false,
@@ -49,7 +49,7 @@
           "component": "/proTable/useProTable/index",
           "meta": {
             "icon": "Menu",
-            "title": "Using ProTable",
+            "title": "使用 ProTable",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -63,7 +63,7 @@
               "component": "/proTable/useProTable/detail",
               "meta": {
                 "icon": "Menu",
-                "title": "ProTable Detail",
+                "title": "ProTable 详情",
                 "activeMenu": "/proTable/useProTable",
                 "isLink": "",
                 "isHide": true,
@@ -80,7 +80,7 @@
           "component": "/proTable/useTreeFilter/index",
           "meta": {
             "icon": "Menu",
-            "title": "Using TreeFilter",
+            "title": "使用 TreeFilter",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -94,7 +94,7 @@
           "component": "/proTable/useTreeFilter/detail",
           "meta": {
             "icon": "Menu",
-            "title": "TreeFilter Detail",
+            "title": "TreeFilter 详情",
             "activeMenu": "/proTable/useTreeFilter",
             "isLink": "",
             "isHide": true,
@@ -109,7 +109,7 @@
           "component": "/proTable/useSelectFilter/index",
           "meta": {
             "icon": "Menu",
-            "title": "Using SelectFilter",
+            "title": "使用 SelectFilter",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -123,7 +123,7 @@
           "component": "/proTable/treeProTable/index",
           "meta": {
             "icon": "Menu",
-            "title": "Tree ProTable",
+            "title": "树形 ProTable",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -137,8 +137,22 @@
           "component": "/proTable/complexProTable/index",
           "meta": {
             "icon": "Menu",
-            "title": "Complex ProTable",
+            "title": "复杂 ProTable",
             "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          }
+        },
+        {
+          "path": "/proTable/document",
+          "name": "proTableDocument",
+          "component": "/proTable/document/index",
+          "meta": {
+            "icon": "Menu",
+            "title": "ProTable 文档",
+            "isLink": "https://juejin.cn/post/7166068828202336263/#heading-14",
             "isHide": false,
             "isFull": false,
             "isAffix": false,
@@ -153,7 +167,7 @@
       "redirect": "/auth/menu",
       "meta": {
         "icon": "Lock",
-        "title": "Permission Management",
+        "title": "权限管理",
         "isLink": "",
         "isHide": false,
         "isFull": false,
@@ -167,7 +181,7 @@
           "component": "/auth/menu/index",
           "meta": {
             "icon": "Menu",
-            "title": "Menu Permission",
+            "title": "菜单权限",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -181,7 +195,7 @@
           "component": "/auth/button/index",
           "meta": {
             "icon": "Menu",
-            "title": "Button Permission",
+            "title": "按钮权限",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -197,7 +211,7 @@
       "redirect": "/assembly/guide",
       "meta": {
         "icon": "Briefcase",
-        "title": "Common Components",
+        "title": "常用组件",
         "isLink": "",
         "isHide": false,
         "isFull": false,
@@ -211,7 +225,7 @@
           "component": "/assembly/guide/index",
           "meta": {
             "icon": "Menu",
-            "title": "Guide",
+            "title": "引导页",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -225,7 +239,7 @@
           "component": "/assembly/tabs/index",
           "meta": {
             "icon": "Menu",
-            "title": "Tab Operations",
+            "title": "标签页操作",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -239,7 +253,7 @@
               "component": "/assembly/tabs/detail",
               "meta": {
                 "icon": "Menu",
-                "title": "Tab Detail",
+                "title": "Tab 详情",
                 "activeMenu": "/assembly/tabs",
                 "isLink": "",
                 "isHide": true,
@@ -256,7 +270,7 @@
           "component": "/assembly/selectIcon/index",
           "meta": {
             "icon": "Menu",
-            "title": "Icon Selector",
+            "title": "图标选择器",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -270,7 +284,7 @@
           "component": "/assembly/selectFilter/index",
           "meta": {
             "icon": "Menu",
-            "title": "Category Filter",
+            "title": "分类筛选器",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -284,7 +298,7 @@
           "component": "/assembly/treeFilter/index",
           "meta": {
             "icon": "Menu",
-            "title": "Tree Filter",
+            "title": "树形筛选器",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -298,7 +312,7 @@
           "component": "/assembly/svgIcon/index",
           "meta": {
             "icon": "Menu",
-            "title": "SVG Icons",
+            "title": "SVG 图标",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -312,7 +326,7 @@
           "component": "/assembly/uploadFile/index",
           "meta": {
             "icon": "Menu",
-            "title": "File Upload",
+            "title": "文件上传",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -326,7 +340,7 @@
           "component": "/assembly/batchImport/index",
           "meta": {
             "icon": "Menu",
-            "title": "Batch Import",
+            "title": "批量添加数据",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -340,7 +354,7 @@
           "component": "/assembly/wangEditor/index",
           "meta": {
             "icon": "Menu",
-            "title": "Rich Text Editor",
+            "title": "富文本编辑器",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -354,7 +368,7 @@
           "component": "/assembly/draggable/index",
           "meta": {
             "icon": "Menu",
-            "title": "Drag Component",
+            "title": "拖拽组件",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -384,7 +398,7 @@
           "component": "/dashboard/dataVisualize/index",
           "meta": {
             "icon": "Menu",
-            "title": "Data Visualization",
+            "title": "数据可视化",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -400,7 +414,7 @@
       "redirect": "/form/proForm",
       "meta": {
         "icon": "Tickets",
-        "title": "Form",
+        "title": "表单 Form",
         "isLink": "",
         "isHide": false,
         "isFull": false,
@@ -414,7 +428,7 @@
           "component": "/form/proForm/index",
           "meta": {
             "icon": "Menu",
-            "title": "Super Form",
+            "title": "超级 Form",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -428,7 +442,7 @@
           "component": "/form/basicForm/index",
           "meta": {
             "icon": "Menu",
-            "title": "Basic Form",
+            "title": "基础 Form",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -442,7 +456,7 @@
           "component": "/form/validateForm/index",
           "meta": {
             "icon": "Menu",
-            "title": "Validate Form",
+            "title": "校验 Form",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -456,7 +470,7 @@
           "component": "/form/dynamicForm/index",
           "meta": {
             "icon": "Menu",
-            "title": "Dynamic Form",
+            "title": "动态 Form",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -486,7 +500,7 @@
           "component": "/echarts/waterChart/index",
           "meta": {
             "icon": "Menu",
-            "title": "Water Chart",
+            "title": "水型图",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -500,7 +514,7 @@
           "component": "/echarts/columnChart/index",
           "meta": {
             "icon": "Menu",
-            "title": "Column Chart",
+            "title": "柱状图",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -514,7 +528,7 @@
           "component": "/echarts/lineChart/index",
           "meta": {
             "icon": "Menu",
-            "title": "Line Chart",
+            "title": "折线图",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -528,7 +542,7 @@
           "component": "/echarts/pieChart/index",
           "meta": {
             "icon": "Menu",
-            "title": "Pie Chart",
+            "title": "饼图",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -542,7 +556,7 @@
           "component": "/echarts/radarChart/index",
           "meta": {
             "icon": "Menu",
-            "title": "Radar Chart",
+            "title": "雷达图",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -556,7 +570,7 @@
           "component": "/echarts/nestedChart/index",
           "meta": {
             "icon": "Menu",
-            "title": "Nested Ring Chart",
+            "title": "嵌套环形图",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -572,7 +586,7 @@
       "redirect": "/directives/copyDirect",
       "meta": {
         "icon": "Stamp",
-        "title": "Custom Directives",
+        "title": "自定义指令",
         "isLink": "",
         "isHide": false,
         "isFull": false,
@@ -586,7 +600,7 @@
           "component": "/directives/copyDirect/index",
           "meta": {
             "icon": "Menu",
-            "title": "Copy Directive",
+            "title": "复制指令",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -600,7 +614,7 @@
           "component": "/directives/watermarkDirect/index",
           "meta": {
             "icon": "Menu",
-            "title": "Watermark Directive",
+            "title": "水印指令",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -614,7 +628,7 @@
           "component": "/directives/dragDirect/index",
           "meta": {
             "icon": "Menu",
-            "title": "Drag Directive",
+            "title": "拖拽指令",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -628,7 +642,7 @@
           "component": "/directives/debounceDirect/index",
           "meta": {
             "icon": "Menu",
-            "title": "Debounce Directive",
+            "title": "防抖指令",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -642,7 +656,7 @@
           "component": "/directives/throttleDirect/index",
           "meta": {
             "icon": "Menu",
-            "title": "Throttle Directive",
+            "title": "节流指令",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -656,7 +670,7 @@
           "component": "/directives/longpressDirect/index",
           "meta": {
             "icon": "Menu",
-            "title": "Long Press Directive",
+            "title": "长按指令",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -672,7 +686,7 @@
       "redirect": "/menu/menu1",
       "meta": {
         "icon": "List",
-        "title": "Nested Menu",
+        "title": "菜单嵌套",
         "isLink": "",
         "isHide": false,
         "isFull": false,
@@ -686,7 +700,7 @@
           "component": "/menu/menu1/index",
           "meta": {
             "icon": "Menu",
-            "title": "Menu 1",
+            "title": "菜单1",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -700,7 +714,7 @@
           "redirect": "/menu/menu2/menu21",
           "meta": {
             "icon": "Menu",
-            "title": "Menu 2",
+            "title": "菜单2",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -714,7 +728,7 @@
               "component": "/menu/menu2/menu21/index",
               "meta": {
                 "icon": "Menu",
-                "title": "Menu 2-1",
+                "title": "菜单2-1",
                 "isLink": "",
                 "isHide": false,
                 "isFull": false,
@@ -728,7 +742,7 @@
               "redirect": "/menu/menu2/menu22/menu221",
               "meta": {
                 "icon": "Menu",
-                "title": "Menu 2-2",
+                "title": "菜单2-2",
                 "isLink": "",
                 "isHide": false,
                 "isFull": false,
@@ -742,7 +756,7 @@
                   "component": "/menu/menu2/menu22/menu221/index",
                   "meta": {
                     "icon": "Menu",
-                    "title": "Menu 2-2-1",
+                    "title": "菜单2-2-1",
                     "isLink": "",
                     "isHide": false,
                     "isFull": false,
@@ -756,7 +770,7 @@
                   "component": "/menu/menu2/menu22/menu222/index",
                   "meta": {
                     "icon": "Menu",
-                    "title": "Menu 2-2-2",
+                    "title": "菜单2-2-2",
                     "isLink": "",
                     "isHide": false,
                     "isFull": false,
@@ -772,7 +786,7 @@
               "component": "/menu/menu2/menu23/index",
               "meta": {
                 "icon": "Menu",
-                "title": "Menu 2-3",
+                "title": "菜单2-3",
                 "isLink": "",
                 "isHide": false,
                 "isFull": false,
@@ -788,7 +802,7 @@
           "component": "/menu/menu3/index",
           "meta": {
             "icon": "Menu",
-            "title": "Menu 3",
+            "title": "菜单3",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -804,7 +818,7 @@
       "redirect": "/system/accountManage",
       "meta": {
         "icon": "Tools",
-        "title": "System Management",
+        "title": "系统管理",
         "isLink": "",
         "isHide": false,
         "isFull": false,
@@ -818,7 +832,7 @@
           "component": "/system/accountManage/index",
           "meta": {
             "icon": "Menu",
-            "title": "Account Management",
+            "title": "账号管理",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -832,7 +846,7 @@
           "component": "/system/roleManage/index",
           "meta": {
             "icon": "Menu",
-            "title": "Role Management",
+            "title": "角色管理",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -846,7 +860,7 @@
           "component": "/system/menuMange/index",
           "meta": {
             "icon": "Menu",
-            "title": "Menu Management",
+            "title": "菜单管理",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -860,7 +874,7 @@
           "component": "/system/departmentManage/index",
           "meta": {
             "icon": "Menu",
-            "title": "Department Management",
+            "title": "部门管理",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -874,7 +888,7 @@
           "component": "/system/dictManage/index",
           "meta": {
             "icon": "Menu",
-            "title": "Dictionary Management",
+            "title": "字典管理",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -888,7 +902,7 @@
           "component": "/system/timingTask/index",
           "meta": {
             "icon": "Menu",
-            "title": "Scheduled Tasks",
+            "title": "定时任务",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -902,7 +916,7 @@
           "component": "/system/systemLog/index",
           "meta": {
             "icon": "Menu",
-            "title": "System Logs",
+            "title": "系统日志",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -915,10 +929,10 @@
     {
       "path": "/link",
       "name": "link",
-      "redirect": "/link/claude",
+      "redirect": "/link/bing",
       "meta": {
         "icon": "Paperclip",
-        "title": "External Links",
+        "title": "外部链接",
         "isLink": "",
         "isHide": false,
         "isFull": false,
@@ -927,26 +941,12 @@
       },
       "children": [
         {
-          "path": "/link/claude",
-          "name": "claudePanel",
-          "component": "/link/claude/index",
+          "path": "/link/bing",
+          "name": "bing",
+          "component": "/link/bing/index",
           "meta": {
             "icon": "Menu",
-            "title": "Claude Panel",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          }
-        },
-        {
-          "path": "/link/docs",
-          "name": "docs",
-          "component": "/link/docs/index",
-          "meta": {
-            "icon": "Menu",
-            "title": "Docs",
+            "title": "Bing 内嵌",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -960,8 +960,8 @@
           "component": "/link/gitee/index",
           "meta": {
             "icon": "Menu",
-            "title": "Gitee",
-            "isLink": "https://gitee.com",
+            "title": "Gitee 仓库",
+            "isLink": "https://gitee.com/HalseySpicy/Geeker-Admin",
             "isHide": false,
             "isFull": false,
             "isAffix": false,
@@ -974,8 +974,22 @@
           "component": "/link/github/index",
           "meta": {
             "icon": "Menu",
-            "title": "GitHub",
-            "isLink": "https://github.com",
+            "title": "GitHub 仓库",
+            "isLink": "https://github.com/HalseySpicy/Geeker-Admin",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          }
+        },
+        {
+          "path": "/link/docs",
+          "name": "docs",
+          "component": "/link/docs/index",
+          "meta": {
+            "icon": "Menu",
+            "title": "项目文档",
+            "isLink": "https://docs.spicyboy.cn",
             "isHide": false,
             "isFull": false,
             "isAffix": false,
@@ -988,8 +1002,8 @@
           "component": "/link/juejin/index",
           "meta": {
             "icon": "Menu",
-            "title": "Juejin",
-            "isLink": "https://juejin.cn",
+            "title": "掘金主页",
+            "isLink": "https://juejin.cn/user/3263814531551816/posts",
             "isHide": false,
             "isFull": false,
             "isAffix": false,
@@ -999,369 +1013,12 @@
       ]
     },
     {
-      "path": "/aicr",
-      "name": "aicr",
-      "redirect": "/aicr/index",
-      "meta": {
-        "icon": "Monitor",
-        "title": "AICR",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "children": [
-        {
-          "path": "/aicr/index",
-          "name": "aicrDashboard",
-          "component": "/aicr/index",
-          "meta": {
-            "icon": "Menu",
-            "title": "Code Review",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          }
-        }
-      ]
-    },
-    {
-      "path": "/story",
-      "name": "story",
-      "redirect": "/story/index",
-      "meta": {
-        "icon": "Notebook",
-        "title": "Story Board",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "children": [
-        {
-          "path": "/story/index",
-          "name": "storyBoard",
-          "component": "/story/index",
-          "meta": {
-            "icon": "Menu",
-            "title": "Story Board",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          }
-        }
-      ]
-    },
-    {
-      "path": "/bug",
-      "name": "bug",
-      "redirect": "/bug/list",
-      "meta": {
-        "icon": "Warning",
-        "title": "Bug 管理",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "children": [
-        {
-          "path": "/bug/list",
-          "name": "bugList",
-          "component": "/bug/index",
-          "meta": {
-            "icon": "Menu",
-            "title": "Bug List",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          }
-        },
-        {
-          "path": "/bug/detail/:id",
-          "name": "bugDetail",
-          "component": "/bug/detail",
-          "meta": {
-            "icon": "Menu",
-            "title": "Bug Detail",
-            "activeMenu": "/bug/list",
-            "isLink": "",
-            "isHide": true,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          }
-        }
-      ]
-    },
-    {
-      "path": "/tech-leadership",
-      "name": "techLeadership",
-      "redirect": "/tech-leadership/overview",
-      "meta": {
-        "icon": "Cpu",
-        "title": "Tech Leadership",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "children": [
-        {
-          "path": "/tech-leadership/overview",
-          "name": "techLeadershipOverview",
-          "component": "/tech-leadership/index",
-          "meta": { "icon": "Menu", "title": "Overview", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        },
-        {
-          "path": "/tech-leadership/roadmap-review",
-          "name": "tlrRoadmapReviewList",
-          "component": "/tech-leadership/roadmap-review/index",
-          "meta": { "icon": "Menu", "title": "Tech roadmap review", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        },
-        {
-          "path": "/tech-leadership/adr-review",
-          "name": "tlrAdrReviewList",
-          "component": "/tech-leadership/adr-review/index",
-          "meta": { "icon": "Menu", "title": "Architecture decision records", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        },
-        {
-          "path": "/tech-leadership/risk-register",
-          "name": "tlrRiskRegisterList",
-          "component": "/tech-leadership/risk-register/index",
-          "meta": { "icon": "Menu", "title": "Risk register", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        },
-        {
-          "path": "/tech-leadership/dora-metrics",
-          "name": "tlrDoraMetricsList",
-          "component": "/tech-leadership/dora-metrics/index",
-          "meta": { "icon": "Menu", "title": "Engineering productivity metrics", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        },
-        {
-          "path": "/tech-leadership/tech-debt",
-          "name": "tlrTechDebtList",
-          "component": "/tech-leadership/tech-debt/index",
-          "meta": { "icon": "Menu", "title": "Tech debt inventory", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        },
-        {
-          "path": "/tech-leadership/oncall-handover",
-          "name": "tlrOncallHandoverList",
-          "component": "/tech-leadership/oncall-handover/index",
-          "meta": { "icon": "Menu", "title": "Oncall handover", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        },
-        {
-          "path": "/tech-leadership/dependency-audit",
-          "name": "tlrDependencyAuditList",
-          "component": "/tech-leadership/dependency-audit/index",
-          "meta": { "icon": "Menu", "title": "Dependency audit", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        },
-        {
-          "path": "/tech-leadership/tech-selection",
-          "name": "tlrTechSelectionList",
-          "component": "/tech-leadership/tech-selection/index",
-          "meta": { "icon": "Menu", "title": "Tech selection evaluation", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        },
-        {
-          "path": "/tech-leadership/org-diagnose",
-          "name": "tlrOrgDiagnoseList",
-          "component": "/tech-leadership/org-diagnose/index",
-          "meta": { "icon": "Menu", "title": "Org productivity diagnosis", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        },
-        {
-          "path": "/tech-leadership/postmortem",
-          "name": "tlrPostmortemList",
-          "component": "/tech-leadership/postmortem/index",
-          "meta": { "icon": "Menu", "title": "Incident postmortem", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        },
-        {
-          "path": "/tech-leadership/capacity-cost",
-          "name": "tlrCapacityCostList",
-          "component": "/tech-leadership/capacity-cost/index",
-          "meta": { "icon": "Menu", "title": "Capacity and cost", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        },
-        {
-          "path": "/tech-leadership/capacity-plan",
-          "name": "tlrCapacityPlanList",
-          "component": "/tech-leadership/capacity-plan/index",
-          "meta": { "icon": "Menu", "title": "Capacity plan", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        },
-        {
-          "path": "/tech-leadership/maturity-model",
-          "name": "tlrMaturityModelList",
-          "component": "/tech-leadership/maturity-model/index",
-          "meta": { "icon": "Menu", "title": "Maturity model", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        }
-      ]
-    },
-    {
-      "path": "/code-review",
-      "name": "codeReview",
-      "redirect": "/code-review/overview",
-      "meta": {
-        "icon": "DocumentChecked",
-        "title": "Code Review",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "children": [
-        {
-          "path": "/code-review/overview",
-          "name": "codeReviewOverview",
-          "component": "/code-review/index",
-          "meta": { "icon": "Menu", "title": "Overview", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        },
-        {
-          "path": "/code-review/summary",
-          "name": "crSummaryList",
-          "component": "/code-review/summary/index",
-          "meta": { "icon": "Menu", "title": "Summarize this file", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        },
-        {
-          "path": "/code-review/bugs",
-          "name": "crBugsList",
-          "component": "/code-review/bugs/index",
-          "meta": { "icon": "Menu", "title": "Find potential bugs", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        },
-        {
-          "path": "/code-review/explain",
-          "name": "crExplainList",
-          "component": "/code-review/explain/index",
-          "meta": { "icon": "Menu", "title": "Explain the logic", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        },
-        {
-          "path": "/code-review/security",
-          "name": "crSecurityList",
-          "component": "/code-review/security/index",
-          "meta": { "icon": "Menu", "title": "Security review", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        },
-        {
-          "path": "/code-review/dependency-risk",
-          "name": "crDependencyRiskList",
-          "component": "/code-review/dependency-risk/index",
-          "meta": { "icon": "Menu", "title": "Dependency risk", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        },
-        {
-          "path": "/code-review/access-review",
-          "name": "crAccessReviewList",
-          "component": "/code-review/access-review/index",
-          "meta": { "icon": "Menu", "title": "Access review", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        },
-        {
-          "path": "/code-review/refactor",
-          "name": "crRefactorList",
-          "component": "/code-review/refactor/index",
-          "meta": { "icon": "Menu", "title": "Refactor suggestions", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        },
-        {
-          "path": "/code-review/perf",
-          "name": "crPerfList",
-          "component": "/code-review/perf/index",
-          "meta": { "icon": "Menu", "title": "Performance analysis", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        },
-        {
-          "path": "/code-review/tests",
-          "name": "crTestsList",
-          "component": "/code-review/tests/index",
-          "meta": { "icon": "Menu", "title": "Generate tests", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        },
-        {
-          "path": "/code-review/style",
-          "name": "crStyleList",
-          "component": "/code-review/style/index",
-          "meta": { "icon": "Menu", "title": "Naming & style", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        },
-        {
-          "path": "/code-review/api-contract",
-          "name": "crApiContractList",
-          "component": "/code-review/api-contract/index",
-          "meta": { "icon": "Menu", "title": "API contract check", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        },
-        {
-          "path": "/code-review/observability-gap",
-          "name": "crObservabilityGapList",
-          "component": "/code-review/observability-gap/index",
-          "meta": { "icon": "Menu", "title": "Observability gap", "isLink": "", "isHide": false, "isFull": false, "isAffix": false, "isKeepAlive": true }
-        }
-      ]
-    },
-    {
-      "path": "/about",
+      "path": "/about/index",
       "name": "about",
-      "redirect": "/about/yivad",
+      "component": "/about/index",
       "meta": {
         "icon": "InfoFilled",
-        "title": "About",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "children": [
-        {
-          "path": "/about/yivad",
-          "name": "aboutYivad",
-          "component": "/about/yivad/index",
-          "meta": {
-            "icon": "Menu",
-            "title": "YiVad",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          }
-        },
-        {
-          "path": "/about/yiai",
-          "name": "aboutYiAi",
-          "component": "/about/yiai/index",
-          "meta": {
-            "icon": "Menu",
-            "title": "YiAi",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          }
-        },
-        {
-          "path": "/about/yipet",
-          "name": "aboutYiPet",
-          "component": "/about/yipet/index",
-          "meta": {
-            "icon": "Menu",
-            "title": "YiPet",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          }
-        }
-      ]
-    },
-    {
-      "path": "/rag",
-      "name": "ragPlayground",
-      "component": "/rag/index",
-      "meta": {
-        "icon": "MagicStick",
-        "title": "RAG Playground",
+        "title": "关于项目",
         "isLink": "",
         "isHide": false,
         "isFull": false,
@@ -1370,5 +1027,5 @@
       }
     }
   ],
-  "msg": "Success"
+  "msg": "成功"
 }
