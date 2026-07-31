@@ -19,15 +19,20 @@ export function persistPetState(state: {
   role: string;
   color: number;
 }): void {
+  if (!chrome?.runtime?.id) return;
   const urlKey = getPageUrlKey();
-  chrome.storage.local
-    .get(PET_URL_STATE_KEY)
-    .then((result) => {
-      const map = result?.[PET_URL_STATE_KEY] || {};
-      map[urlKey] = { ...state };
-      chrome.storage.local.set({ [PET_URL_STATE_KEY]: map }).catch(() => {});
-    })
-    .catch(() => {});
+  try {
+    chrome.storage.local
+      .get(PET_URL_STATE_KEY)
+      .then((result) => {
+        const map = result?.[PET_URL_STATE_KEY] || {};
+        map[urlKey] = { ...state };
+        chrome.storage.local.set({ [PET_URL_STATE_KEY]: map }).catch(() => {});
+      })
+      .catch(() => {});
+  } catch {
+    /* extension context invalidated — noop */
+  }
 }
 
 export interface RestoredState {

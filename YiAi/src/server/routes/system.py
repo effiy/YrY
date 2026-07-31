@@ -10,7 +10,6 @@ from pydantic import BaseModel
 
 from data.database import db
 from data.repository import create_document, delete_document, update_document
-from shared.config import settings
 from shared.error_codes import ErrorCode
 from shared.exceptions import BusinessException
 from shared.response import success
@@ -115,7 +114,7 @@ async def delete_menu(key: str):
 @router.get("/departments", operation_id="system_departments_list")
 async def list_departments():
     docs = await _list_collection("departments")
-    tree = _build_tree(docs, parent_field=None)
+    tree = _build_tree(docs, parent_field="parent", id_field="id")
     return success(data=tree)
 
 
@@ -149,7 +148,7 @@ async def delete_department(key: str):
 @router.get("/roles", operation_id="system_roles_list")
 async def list_roles():
     docs = await _list_collection("roles")
-    tree = _build_tree(docs, parent_field=None)
+    tree = _build_tree(docs, parent_field="parent", id_field="id")
     return success(data=tree)
 
 

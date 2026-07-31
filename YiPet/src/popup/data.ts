@@ -58,7 +58,7 @@ function buildMessages(table: Record<string, MessageEntry>): Record<string, stri
 export interface PopupConfig {
   ROLES: string[];
   COLORS: { value: number; label: string }[];
-  SIZE: { MIN: number; MAX: number; STEP: number };
+  SIZE: { MIN: number; MAX: number; STEP: number; MARKS: Record<number, string> };
   STORAGE_KEY: string;
   TIMING: {
     NOTIFICATION_DURATION: number;
@@ -91,7 +91,14 @@ export function createPopupConfig(cfg: AppConfig): PopupConfig {
     SIZE: {
       MIN: pick(P, 'sizeLimits.min', 80),
       MAX: pick(P, 'sizeLimits.max', 400),
-      STEP: 10,
+      STEP: 20,
+      MARKS: {
+        80: 'Mini',
+        120: 'Default',
+        200: 'Medium',
+        280: 'Large',
+        400: 'XL',
+      },
     },
 
     STORAGE_KEY: pick(C, 'storageKeys.globalState', 'pet_global_state'),
@@ -129,7 +136,7 @@ export function createPopupConfig(cfg: AppConfig): PopupConfig {
       ROLE: pick(C, 'DEFAULTS.PET_ROLE', 'Teacher'),
       COLOR: pick(P, 'defaultColorIndex', 0),
       MODEL: null,
-      VERSION: pick(C, 'DEFAULTS.VERSION', '1.1.2'),
+      VERSION: pick(C, 'DEFAULTS.VERSION', '1.2.0'),
     },
   };
 }

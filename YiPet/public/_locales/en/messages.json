@@ -47,19 +47,6 @@
 
   "chatInputPlaceholder": { "message": "Type a message…" },
 
-  "thinkLetMeThink": { "message": "Let me think…" },
-  "thinkThinking": { "message": "Thinking…" },
-  "thinkInspiration": { "message": "Inspiration strikes…" },
-  "thinkOrganizing": { "message": "Organizing thoughts…" },
-  "thinkDeepAnalysis": { "message": "Deep analysis…" },
-  "thinkSearching": { "message": "Searching for answers…" },
-  "thinkIdea": { "message": "Idea incoming…" },
-  "thinkBrainstorming": { "message": "Brainstorming…" },
-  "thinkChoosing": { "message": "Choosing words…" },
-  "thinkCrafting": { "message": "Crafting reply…" },
-  "thinkAlmostThere": { "message": "Almost there…" },
-  "thinkNearlyReady": { "message": "Nearly ready…" },
-  "thinkComingRightUp": { "message": "Coming right up…" },
 
   "aboutTitle": { "message": "About YiPet" },
   "aboutTagline": { "message": "A gentle interactive companion that lives in your browser — chat, play, and stay company while you browse." },
@@ -67,7 +54,7 @@
   "aboutFeaturesTitle": { "message": "Highlights" },
   "aboutFeaturePet": { "message": "Animated pet on any page" },
   "aboutFeatureChat": { "message": "Multi-role AI chat window" },
-  "aboutFeatureI18n": { "message": "English & 简体中文" },
+  "aboutFeatureI18n": { "message": "English & Simplified Chinese" },
   "aboutFeatureTimezone": { "message": "Timezone-aware display" },
   "aboutFeatureCDN": { "message": "On-demand CDN injection" },
   "aboutFeatureApi": { "message": "Four-tier API layer" },
@@ -81,5 +68,5 @@
   "aboutProdDepsTitle": { "message": "Production Dependencies" },
   "aboutDevDepsTitle": { "message": "Development Dependencies" },
   "aboutVersion": { "message": "Extension Version: 1.2.0 (Chrome MV3)" },
-  "aboutTechStack": { "message": "TypeScript + Vite 5 + React 15.6.1 (CDN) + Bootstrap 5.2.3 (CDN) + chrome.i18n" }
+  "aboutTechStack": { "message": "TypeScript + Rsbuild + React 18.3 + Ant Design 5.21 + chrome.i18n" }
 }

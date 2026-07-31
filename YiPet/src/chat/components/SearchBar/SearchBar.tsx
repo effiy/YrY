@@ -1,12 +1,21 @@
 /**
- * YiPet Chat — SearchBar Component
+ * YiPet Chat — SearchBar Component (antd Input.Search + Button)
  */
 
+import { CloseOutlined, PlusOutlined, UnorderedListOutlined } from '@ant-design/icons';
+import { Button, Input } from 'antd';
+import type { CSSProperties } from 'react';
 import type { ChatController } from '@/chat/controller';
 
 export interface SearchBarProps {
   controller: ChatController;
 }
+
+const wrapperStyle: CSSProperties = {
+  display: 'flex',
+  gap: 4,
+  padding: 8,
+};
 
 export function SearchBar(props: SearchBarProps) {
   const ctrl = props.controller;
@@ -14,64 +23,36 @@ export function SearchBar(props: SearchBarProps) {
   const query = s.searchInputValue;
 
   return (
-    <div className="yipet-sidebar-search">
-      <div className="yipet-sidebar-search-input-wrap">
-        <svg
-          className="yipet-sidebar-search-icon"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          aria-hidden="true"
-        >
-          <circle cx="11" cy="11" r="8" />
-          <path d="M21 21l-4.35-4.35" />
-        </svg>
-        <input
-          className="yipet-sidebar-search-input"
-          type="text"
-          placeholder="搜索会话..."
-          value={query}
-          onInput={ctrl.onSearchInput}
-          onKeyDown={(e: KeyboardEvent) => {
-            if (e.key === 'Escape') ctrl.clearSearch();
-          }}
-          aria-label="搜索会话"
-        />
-        {query ? (
-          <button
-            type="button"
-            className="yipet-sidebar-search-clear"
-            onClick={ctrl.clearSearch}
-            title="清除搜索"
-            aria-label="清除搜索"
-          >
-            ✕
-          </button>
-        ) : null}
-      </div>
-      <button
-        type="button"
-        className="yipet-sidebar-new-btn"
+    <div className="yipet-sidebar-search" style={wrapperStyle}>
+      <Input
+        placeholder="Search conversations..."
+        value={query}
+        onChange={(e) => ctrl.onSearchInput(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') ctrl.clearSearch();
+        }}
+        allowClear
+        onClear={() => ctrl.clearSearch()}
+        aria-label="Search conversations"
+      />
+      <Button
+        type="primary"
+        size="small"
+        icon={<PlusOutlined />}
         onClick={() => ctrl.createSession()}
-        title="新建会话"
-        aria-label="新建会话"
-      >
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-        </svg>
-      </button>
-      {!s.batchMode ? (
-        <button
-          type="button"
-          className="yipet-sidebar-batch-btn"
+        title="New conversation"
+        aria-label="New conversation"
+      />
+      {!s.batchMode && (
+        <Button
+          size="small"
+          icon={<UnorderedListOutlined />}
           onClick={() => ctrl.enterBatchMode()}
-          title="批量管理会话"
-          aria-label="批量管理"
-        >
-          ☰
-        </button>
-      ) : null}
+          title="Batch manage conversations"
+          aria-label="Batch manage"
+        />
+      )}
+      <CloseOutlined style={{ display: 'none' }} />
     </div>
   );
 }

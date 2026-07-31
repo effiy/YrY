@@ -11,6 +11,7 @@ from domain.files import (
     delete_file,
     delete_folder,
     read_file,
+    read_project_file,
     rename_file,
     rename_folder,
     upload_file,
@@ -26,6 +27,7 @@ from models.schemas import (
     FolderDeleteRequest,
     FolderRenameRequest,
     ImageUploadToOssRequest,
+    ProjectFileReadRequest,
 )
 from shared.response import success
 
@@ -44,6 +46,17 @@ async def upload_image_to_oss(request: ImageUploadToOssRequest):
 async def read_file_route(request: FileReadRequest):
     """Read file: disk first, fallback to MongoDB if not found on disk. Images return static URL."""
     data = await read_file(request.target_file)
+    return success(data=data)
+
+
+@router.post("/read-project-file", operation_id="read_project_file")
+async def read_project_file_route(request: ProjectFileReadRequest):
+    """Read a file directly from the corresponding project's source tree on disk.
+
+    Returns live on-disk content (no MongoDB fallback) so the caller always
+    sees what's in the project right now, not a stale snapshot.
+    """
+    data = await read_project_file(request.project, request.target_file)
     return success(data=data)
 
 

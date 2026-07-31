@@ -28,9 +28,21 @@ default_user:
 
 # Static Files Settings
 static:
-  base_dir: "~/YiKnowledge/static"
+  base_dir: "../YiKnowledge/static"
   base_url: "https://api.effiy.cn/static"
   max_zip_size_mb: 100
+
+# Project Sources Root (for cross-project file reads via /read-project-file)
+# Relative to YiAi's CWD. Default ".." points at the YrY workspace root
+# where YiVad/YiPet/YiAi/etc. live as siblings of YiAi.
+projects:
+  root: ".."
+
+# Knowledge Base Settings
+knowledge:
+  base_dir: "../YiKnowledge"
+  watcher_enabled: true
+  watcher_poll_seconds: 5
 
 # MongoDB Configuration
 mongodb:
@@ -49,6 +61,7 @@ collection:
   oss_file_tags: "oss_file_tags"
   oss_file_info: "oss_file_info"
   static_files: "static_files"
+  knowledge_files: "knowledge_files"
 
 # OSS (Object Storage Service) Configuration
 oss:
@@ -111,7 +124,7 @@ observer:
   sampler_max_size: 1000
   sampler_slow_threshold_ms: 5000.0
   sandbox_enabled: false
-  sandbox_fs_allowlist: "/tmp,/var/www/YiAi/static"
+  sandbox_fs_allowlist: "/tmp,/var/www/YiKnowledge/static"
   sandbox_network_allowlist: ""
   lazy_start: true
   guard_enabled: true
@@ -121,6 +134,20 @@ observer:
 ollama:
   url: "http://localhost:11434"
   auth: ""
+
+# RAG (llama_index) Configuration
+rag:
+  embed_model: "nomic-embed-text"
+  llm_model: "qwen3.5"
+  persist_dir: "./data/rag_store"
+  top_k: 4
+  chunk_size: 1024
+  chunk_overlap: 80
+  auto_rebuild_enabled: true
+  auto_rebuild_debounce_seconds: 30
+  hybrid_retrieval_enabled: true
+  rerank_enabled: false
+  inline_citations_enabled: true
 
 # Logging Configuration
 logging:

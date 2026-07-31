@@ -1,0 +1,20 @@
+{
+  "name": "Migrations",
+  "slug": "migrations",
+  "source_id": "awesome-vite",
+  "file": "categories/migrations.json",
+  "topics": [
+    {
+      "name": "React",
+      "resources": [
+        {
+          "category": "Migrations",
+          "topic": "React",
+          "title": "Viject",
+          "url": "https://github.com/bhbs/viject",
+          "source": "awesome-vite"
+        }
+      ]
+    }
+  ]
+}

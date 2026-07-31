@@ -1,356 +1,368 @@
 /**
- * YiPet Popup — Root Component (React 15 class component).
- * Extracted from popup.tsx for separation of concerns.
+ * YiPet Popup — Root Component (function component + hooks).
+ * Wraps content in antd ConfigProvider so color theme changes apply live.
  */
 
+import { CheckCircleOutlined, EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
+import {
+  App as AntApp,
+  Card,
+  ConfigProvider,
+  Form,
+  Layout,
+  Segmented,
+  Select,
+  Slider,
+  Switch,
+  Tag,
+  Typography,
+} from 'antd';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { t } from '@/shared/i18n/index';
 import type { SupportedLocale } from '@/shared/i18n/locale';
 import { applyLocale, setUserLocale } from '@/shared/i18n/locale';
 import { validateRole } from '@/shared/roles';
-import { applyThemeColors } from '@/shared/theme/colors';
-import {
-  AboutCard,
-  AppFooter,
-  AppHeader,
-  LangSwitch,
-  Notification,
-  SelectRow,
-  SettingsCard,
-  SliderRow,
-  SwitchRow,
-} from './components';
+import { applyThemeColors, getAntdTheme } from '@/shared/theme';
+import { AboutCard } from './components/AboutCard/AboutCard';
+import { AppFooter } from './components/AppFooter/AppFooter';
+import { AppHeader } from './components/AppHeader/AppHeader';
 import { POPUP_CONFIG } from './data';
-import { createPopupServices } from './services';
+import type { ChromeService } from './services/chrome';
+import { createChromeService } from './services/chrome';
 import { connect } from './services/connection';
-
-// CSS imports — only popup-level layout; component styles are co-located with each component
-import './index.css';
-
-// Types — co-located following Ant Design Pro data.d.ts pattern
 import type { PopupState } from './types';
 
-// ── Component ──────────────────────────────────────────────────────────
+const { Content, Footer } = Layout;
+const { useApp: useAntApp } = AntApp;
 
-export class PopupComponent {
-  state: PopupState;
-  private _tabRef = { current: null as chrome.tabs.Tab | null };
-  private _timerRef = { current: null as ReturnType<typeof setTimeout> | null };
-  private _chrome: ReturnType<typeof createPopupServices>['chrome'] = null;
-  private _notify: ReturnType<typeof createPopupServices>['notify'] = null;
+function buildInitialState(): PopupState {
+  const D = POPUP_CONFIG;
+  return {
+    visible: D.DEFAULTS.VISIBLE,
+    size: D.DEFAULTS.SIZE,
+    role: D.DEFAULTS.ROLE,
+    color: D.DEFAULTS.COLOR,
+    model: D.DEFAULTS.MODEL,
+    displaySize: D.DEFAULTS.SIZE,
+    controlsEnabled: false,
+    hintText: t('popupStatusConnecting'),
+    notification: { visible: false, message: '', type: 'info' },
+    locale: 'en' as SupportedLocale,
+  };
+}
 
-  constructor() {
-    const D = POPUP_CONFIG;
-    this.state = {
-      visible: D.DEFAULTS.VISIBLE,
-      size: D.DEFAULTS.SIZE,
-      role: D.DEFAULTS.ROLE,
-      color: D.DEFAULTS.COLOR,
-      model: D.DEFAULTS.MODEL,
-      displaySize: D.DEFAULTS.SIZE,
-      controlsEnabled: false,
-      hintText: t('popupStatusConnecting'),
-      notification: { visible: false, message: '', type: 'info' },
-      locale: 'en' as SupportedLocale,
-    };
+export function PopupApp() {
+  const [state, setState] = useState<PopupState>(buildInitialState);
+  const tabRef = useRef<chrome.tabs.Tab | null>(null);
+  const chromeSvcRef = useRef<ChromeService | null>(null);
+  const { message } = useAntApp();
 
-    const svc = createPopupServices({
-      tabRef: this._tabRef,
-      timerRef: this._timerRef,
-      storageKey: D.STORAGE_KEY,
-      duration: D.TIMING.NOTIFICATION_DURATION,
-      setState: (patch: Record<string, unknown>) => {
-        Object.assign(this.state, patch);
-        this._render();
-      },
-    });
-    this._chrome = svc.chrome;
-    this._notify = svc.notify;
+  if (!chromeSvcRef.current) {
+    chromeSvcRef.current = createChromeService(tabRef, POPUP_CONFIG.STORAGE_KEY);
   }
+
+  const stateRef = useRef(state);
+  stateRef.current = state;
 
   // ── Actions ──────────────────────────────────────────────────────
 
-  private _send(opts: {
-    msg: Record<string, unknown>;
-    okMsg: string;
-    optimistic?: Record<string, unknown>;
-    onOk?: (response: Record<string, unknown>) => Record<string, unknown>;
-  }) {
-    if (!this._chrome) return;
-    if (opts.optimistic)
-      Object.assign(this.state as unknown as Record<string, unknown>, opts.optimistic);
+  const send = useCallback(
+    (opts: {
+      msg: Record<string, unknown>;
+      okMsg: string;
+      optimistic?: Partial<PopupState>;
+      onOk?: (response: Record<string, unknown>) => Partial<PopupState>;
+    }) => {
+      const chrome = chromeSvcRef.current;
+      if (!chrome) return;
+      if (opts.optimistic) {
+        setState((s) => ({ ...s, ...opts.optimistic }));
+      }
+      chrome.sendMessage(opts.msg).then((response: unknown) => {
+        const r = response as Record<string, unknown> | null;
+        if (!r || r.success === false) {
+          message.error(t('errorOperationFailed'));
+          return;
+        }
+        if (opts.onOk) {
+          const patch = opts.onOk(r as Record<string, unknown>);
+          setState((s) => ({ ...s, ...patch }));
+        }
+        chrome.saveState(stateRef.current as unknown as Record<string, unknown>);
+        message.success(opts.okMsg);
+      }, (err: unknown) => {
+        // Rejection: extension context invalidated, content script port closed, etc.
+        const errMessage = err instanceof Error ? err.message : String(err);
+        console.error('[YiPet Popup] sendMessage rejected:', errMessage);
+        message.error(t('errorOperationFailed'));
+      });
+    },
+    [message],
+  );
 
-    this._chrome.sendMessage(opts.msg).then((response: unknown) => {
-      const r = response as Record<string, unknown> | null;
-      if (!r || r.success === false) {
-        if (this._notify) this._notify.show(t('errorOperationFailed'), 'error');
+  const toggleVisibility = useCallback(() => {
+    const visible = stateRef.current.visible;
+    send({
+      msg: { action: 'toggleVisibility' },
+      okMsg: visible ? t('notifyHidden') : t('notifyShown'),
+      onOk(response) {
+        const next = response.visible !== undefined ? response.visible : !visible;
+        return { visible: next as boolean };
+      },
+    });
+  }, [send]);
+
+  const previewSize = useCallback((v: number) => {
+    setState((s) => ({ ...s, displaySize: v }));
+  }, []);
+
+  const updateSize = useCallback(
+    (v: number | [number, number]) => {
+      const raw = Array.isArray(v) ? v[0] : v;
+      const clamped = Math.max(
+        POPUP_CONFIG.SIZE.MIN,
+        Math.min(POPUP_CONFIG.SIZE.MAX, Number.isNaN(raw) ? POPUP_CONFIG.SIZE.MIN : raw),
+      );
+      send({
+        msg: { action: 'changeSize', size: clamped },
+        okMsg: t('notifySizeUpdated'),
+        optimistic: { displaySize: clamped },
+        onOk(response) {
+          return { size: (response.size !== undefined ? response.size : clamped) as number };
+        },
+      });
+    },
+    [send],
+  );
+
+  const updateRole = useCallback(
+    (role: string) => {
+      const validated = validateRole(role);
+      if (!validated) {
+        console.warn('[YiPet Popup] Invalid role rejected:', role);
         return;
       }
-      if (opts.onOk) {
-        const patch = opts.onOk(r as Record<string, unknown>);
-        if (patch) Object.assign(this.state as unknown as Record<string, unknown>, patch);
-      }
-      if (this._chrome) this._chrome.saveState(this.state as unknown as Record<string, unknown>);
-      if (this._notify) this._notify.show(opts.okMsg, 'success');
-      if (opts.msg.action === 'setColor') {
-        applyThemeColors(document.documentElement, this.state.color);
-      }
-      this._render();
-    });
-  }
-
-  private _toggleVisibility() {
-    const self = this;
-    this._send({
-      msg: { action: 'toggleVisibility' },
-      okMsg: self.state.visible ? t('notifyHidden') : t('notifyShown'),
-      onOk(response: Record<string, unknown>) {
-        const next = response.visible !== undefined ? response.visible : !self.state.visible;
-        return { visible: next };
-      },
-    });
-  }
-
-  private _previewSize(e: { target: { value: string } }) {
-    const v = parseInt(e.target.value, 10);
-    if (!Number.isNaN(v)) {
-      this.state.displaySize = v;
-      this._render();
-    }
-  }
-
-  private _updateSize(e: { target: { value: string } }) {
-    const v = Math.max(
-      POPUP_CONFIG.SIZE.MIN,
-      Math.min(POPUP_CONFIG.SIZE.MAX, parseInt(e.target.value, 10) || POPUP_CONFIG.SIZE.MIN),
-    );
-    this._send({
-      msg: { action: 'changeSize', size: v },
-      okMsg: t('notifySizeUpdated'),
-      optimistic: { displaySize: v },
-      onOk(response: Record<string, unknown>) {
-        return { size: response.size !== undefined ? response.size : v };
-      },
-    });
-  }
-
-  private _updateRole(e: { target: { value: string } }) {
-    const raw = String(e.target.value || POPUP_CONFIG.DEFAULTS.ROLE).trim();
-    const role = validateRole(raw);
-    if (!role) {
-      console.warn('[YiPet Popup] Invalid role rejected:', raw);
-      return;
-    }
-    const chromeSvc = this._chrome;
-    this._send({
-      msg: { action: 'setRole', role },
-      okMsg: t('notifyRoleChanged', role),
-      optimistic: { role },
-      onOk(response: Record<string, unknown>) {
-        if (chromeSvc) {
-          chromeSvc.saveRolePreference(role).catch(() => {});
-        }
-        return { role: response.role || role };
-      },
-    });
-  }
-
-  private _updateColor(e: { target: { value: string } }) {
-    const idx = parseInt(e.target.value, 10);
-    if (Number.isNaN(idx)) return;
-    this._send({
-      msg: { action: 'setColor', color: idx },
-      okMsg: t('notifyColorSet'),
-      optimistic: { color: idx },
-    });
-  }
-
-  // ── Language ────────────────────────────────────────────────────
-
-  private _changeLanguage(locale: SupportedLocale) {
-    setUserLocale(locale).then(() => {
-      applyLocale(locale)
-        .then(() => {
-          this.state.locale = locale;
-          this._render();
-          if (this._notify) {
-            this._notify.show(t('notifyLanguageChanged'), 'success');
+      const chrome = chromeSvcRef.current;
+      send({
+        msg: { action: 'setRole', role: validated },
+        okMsg: t('notifyRoleChanged', validated),
+        optimistic: { role: validated },
+        onOk(response) {
+          if (chrome) {
+            chrome.saveRolePreference(validated).catch(() => {});
           }
+          return { role: (response.role || validated) as string };
+        },
+      });
+    },
+    [send],
+  );
+
+  const updateColor = useCallback(
+    (idx: number) => {
+      send({
+        msg: { action: 'setColor', color: idx },
+        okMsg: t('notifyColorSet'),
+        optimistic: { color: idx },
+      });
+    },
+    [send],
+  );
+
+  const changeLanguage = useCallback(
+    (locale: SupportedLocale) => {
+      setUserLocale(locale)
+        .then(() => applyLocale(locale))
+        .then(() => {
+          setState((s) => ({ ...s, locale }));
+          message.success(t('notifyLanguageChanged'));
         })
         .catch((err: Error) => {
           console.error('[YiPet Popup] applyLocale failed on switch:', err.message);
-          this.state.locale = locale;
-          this._render();
+          setState((s) => ({ ...s, locale }));
         });
-    });
-  }
+    },
+    [message],
+  );
 
   // ── Lifecycle ────────────────────────────────────────────────────
 
-  mount() {
-    const self = this;
+  useEffect(() => {
+    const chromeSvc = chromeSvcRef.current;
 
-    this._render();
-
-    if (!this._chrome) {
-      self.state.controlsEnabled = true;
-      self.state.hintText = t('popupStatusReadyOffline');
-      self._render();
+    if (!chromeSvc) {
+      setState((s) => ({
+        ...s,
+        controlsEnabled: true,
+        hintText: t('popupStatusReadyOffline'),
+      }));
       return;
     }
 
-    this._chrome
+    let cancelled = false;
+
+    chromeSvc
       .getActiveTab()
       .then((tab) => {
+        if (cancelled) return;
         if (!tab) {
-          if (self._notify) self._notify.show(t('errorTabNotFound'), 'error');
-          self.state.controlsEnabled = true;
-          self.state.hintText = t('popupStatusReadyOffline');
-          self._render();
+          message.error(t('errorTabNotFound'));
+          setState((s) => ({
+            ...s,
+            controlsEnabled: true,
+            hintText: t('popupStatusReadyOffline'),
+          }));
           return;
         }
-
         connect({
-          sendMessage: (msg: unknown) => self._chrome!.sendMessage(msg),
-          loadState: () => self._chrome!.loadState(),
-          onConnected(stored: Record<string, unknown> | null) {
-            if (stored) {
-              const KEYS = ['visible', 'size', 'role', 'color', 'model'];
-              const st = self.state as unknown as Record<string, unknown>;
-              for (const k of KEYS) {
-                if (stored[k] !== undefined) st[k] = stored[k];
+          sendMessage: (msg) => chromeSvc.sendMessage(msg),
+          loadState: () => chromeSvc.loadState(),
+          onConnected(stored) {
+            if (cancelled) return;
+            setState((s) => {
+              const next = { ...s };
+              if (stored) {
+                const KEYS = ['visible', 'size', 'role', 'color', 'model'] as const;
+                for (const k of KEYS) {
+                  if (stored[k] !== undefined) {
+                    (next as Record<string, unknown>)[k] = stored[k];
+                  }
+                }
+                if ('size' in stored) next.displaySize = stored.size as number;
               }
-              if ('size' in stored) st.displaySize = stored.size;
-            }
-            if (!self.state.role || self.state.role === POPUP_CONFIG.DEFAULTS.ROLE) {
-              self
-                ._chrome!.loadRolePreference()
+              next.controlsEnabled = true;
+              next.hintText = t('popupStatusReady');
+              return next;
+            });
+            chromeSvc
+              .sendMessage({ action: 'setVisibility', visible: stateRef.current.visible })
+              .catch(() => {});
+            chromeSvc
+              .sendMessage({ action: 'changeSize', size: stateRef.current.size })
+              .catch(() => {});
+            if (!stateRef.current.role || stateRef.current.role === POPUP_CONFIG.DEFAULTS.ROLE) {
+              chromeSvc
+                .loadRolePreference()
                 .then((savedRole) => {
-                  if (savedRole && validateRole(savedRole) && savedRole !== self.state.role) {
-                    self.state.role = savedRole;
-                    self
-                      ._chrome!.sendMessage({ action: 'setRole', role: savedRole })
-                      .catch(() => {});
-                    self._render();
+                  if (savedRole && validateRole(savedRole) && savedRole !== stateRef.current.role) {
+                    setState((s) => ({ ...s, role: savedRole }));
+                    chromeSvc.sendMessage({ action: 'setRole', role: savedRole }).catch(() => {});
                   }
                 })
                 .catch(() => {});
             }
-            self.state.controlsEnabled = true;
-            self.state.hintText = t('popupStatusReady');
-            self._render();
-
-            applyThemeColors(document.documentElement, self.state.color);
-
-            self
-              ._chrome!.sendMessage({
-                action: 'setVisibility',
-                visible: self.state.visible,
-              })
-              .catch(() => {});
           },
           onFailed() {
-            if (self._notify) self._notify.show(t('errorContentScriptNotReady'), 'error');
-            self.state.controlsEnabled = true;
-            self.state.hintText = t('popupStatusReadyOffline');
-            self._render();
+            if (cancelled) return;
+            message.error(t('errorContentScriptNotReady'));
+            setState((s) => ({
+              ...s,
+              controlsEnabled: true,
+              hintText: t('popupStatusReadyOffline'),
+            }));
           },
         });
       })
       .catch((err: Error) => {
         console.error('[YiPet Popup] chrome.tabs.query failed:', err.message);
-        if (self._notify) self._notify.show(t('errorInitFailed'), 'error');
-        self.state.controlsEnabled = true;
-        self.state.hintText = t('popupStatusReadyOffline');
-        self._render();
+        message.error(t('errorInitFailed'));
+        setState((s) => ({
+          ...s,
+          controlsEnabled: true,
+          hintText: t('popupStatusReadyOffline'),
+        }));
       });
-  }
 
-  unmount() {
-    if (this._timerRef.current) {
-      clearTimeout(this._timerRef.current);
-      this._timerRef.current = null;
-    }
-  }
+    return () => {
+      cancelled = true;
+    };
+  }, [message]);
 
   // ── Render ───────────────────────────────────────────────────────
 
-  private _render() {
-    const rootEl = document.getElementById('app');
-    if (!rootEl) return;
-    const state = this.state;
-    const disabled = !state.controlsEnabled;
+  // Inject CSS variables onto :root so popup's own CSS (var(--bg-primary), etc.)
+  // follows the active color theme — including None (light palette, black text).
+  useEffect(() => {
+    applyThemeColors(document.documentElement, state.color);
+  }, [state.color]);
 
-    const c = React.createElement as (...args: unknown[]) => unknown;
+  const theme = useMemo(() => getAntdTheme(state.color), [state.color]);
+  const disabled = !state.controlsEnabled;
 
-    const el = c(
-      'div',
-      { className: 'popup-container' },
-      c(AppHeader, {
-        model: state.model,
-        visible: state.visible,
-        statusText: state.visible ? t('popupStatusActive') : t('popupStatusHidden'),
-      }),
-      c(
-        'main',
-        { className: 'main-content' + (disabled ? ' popup-controls-disabled' : '') },
-        c(
-          SettingsCard,
-          null,
-          c(SwitchRow, {
-            label: t('popupSwitchLabel'),
-            desc: t('popupSwitchDesc'),
-            checked: state.visible,
-            disabled,
-            onChange: () => this._toggleVisibility(),
-          }),
-          c(SliderRow, {
-            label: t('popupSizeLabel'),
-            id: 'sizeSlider',
-            value: state.displaySize,
-            min: POPUP_CONFIG.SIZE.MIN,
-            max: POPUP_CONFIG.SIZE.MAX,
-            step: POPUP_CONFIG.SIZE.STEP,
-            disabled,
-            onInput: (e: { target: { value: string } }) => this._previewSize(e),
-            onChange: (e: { target: { value: string } }) => this._updateSize(e),
-          }),
-          c(SelectRow, {
-            label: t('popupRoleLabel'),
-            id: 'roleSelect',
-            value: state.role,
-            disabled,
-            onChange: (e: { target: { value: string } }) => this._updateRole(e),
-            options: POPUP_CONFIG.ROLES.map((r: string) => ({ value: r, label: r })),
-          }),
-          c(SelectRow, {
-            label: t('popupColorLabel'),
-            id: 'colorSelect',
-            value: state.color,
-            disabled,
-            onChange: (e: { target: { value: string } }) => this._updateColor(e),
-            options: POPUP_CONFIG.COLORS,
-          }),
-          c(LangSwitch, {
-            value: state.locale,
-            disabled,
-            onChange: (loc: SupportedLocale) => this._changeLanguage(loc),
-          }),
-        ),
-        c(AboutCard, null),
-      ),
-      ...[
-        c(AppFooter, {
-          hintText: state.hintText,
-          version: t('popupVersion', POPUP_CONFIG.DEFAULTS.VERSION),
-        }),
-        c(Notification, {
-          visible: state.notification.visible,
-          message: state.notification.message,
-          type: state.notification.type,
-        }),
-      ],
-    );
-
-    (ReactDOM as unknown as { render: (e: unknown, c: HTMLElement) => void }).render(el, rootEl);
-  }
+  return (
+    <ConfigProvider theme={theme}>
+      <Layout className="popup-layout">
+        <AppHeader
+          model={state.model}
+          visible={state.visible}
+          statusText={state.visible ? t('popupStatusActive') : t('popupStatusHidden')}
+        />
+        <Content className="popup-content">
+          <Card title={t('popupSettingsTitle')} size="small" className="popup-card">
+            <Form layout="vertical" disabled={disabled}>
+              <Form.Item label={t('popupSwitchLabel')} tooltip={t('popupSwitchDesc')}>
+                <Switch
+                  checked={state.visible}
+                  onChange={toggleVisibility}
+                  checkedChildren={<EyeOutlined />}
+                  unCheckedChildren={<EyeInvisibleOutlined />}
+                />
+              </Form.Item>
+              <Form.Item label={t('popupSizeLabel')}>
+                <Slider
+                  min={POPUP_CONFIG.SIZE.MIN}
+                  max={POPUP_CONFIG.SIZE.MAX}
+                  step={POPUP_CONFIG.SIZE.STEP}
+                  marks={POPUP_CONFIG.SIZE.MARKS}
+                  value={state.displaySize}
+                  onChange={previewSize}
+                  onChangeComplete={(v) => updateSize(v as number)}
+                />
+                <Typography.Text type="secondary">
+                  {state.displaySize}
+                  {t('popupSizeUnit')}
+                </Typography.Text>
+              </Form.Item>
+              <Form.Item label={t('popupRoleLabel')}>
+                <Select
+                  value={state.role}
+                  onChange={updateRole}
+                  options={POPUP_CONFIG.ROLES.map((r: string) => ({ value: r, label: r }))}
+                />
+              </Form.Item>
+              <Form.Item label={t('popupColorLabel')}>
+                <Select value={state.color} onChange={updateColor} options={POPUP_CONFIG.COLORS} />
+              </Form.Item>
+              <Form.Item label={t('popupLanguageLabel')}>
+                <Segmented
+                  value={state.locale}
+                  onChange={(v) => changeLanguage(v as SupportedLocale)}
+                  options={[
+                    { value: 'en', label: 'English' },
+                    { value: 'zh_CN', label: 'Simplified Chinese' },
+                  ]}
+                />
+              </Form.Item>
+            </Form>
+          </Card>
+          <AboutCard />
+          {state.controlsEnabled && (
+            <Tag
+              color={state.visible ? 'success' : 'warning'}
+              icon={state.visible ? <CheckCircleOutlined /> : undefined}
+              className="popup-status-tag"
+            >
+              {state.visible ? t('popupStatusActive') : t('popupStatusHidden')}
+            </Tag>
+          )}
+        </Content>
+        <Footer className="popup-footer">
+          <AppFooter
+            hintText={state.hintText}
+            version={t('popupVersion', POPUP_CONFIG.DEFAULTS.VERSION)}
+          />
+        </Footer>
+      </Layout>
+    </ConfigProvider>
+  );
 }

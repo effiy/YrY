@@ -13,7 +13,6 @@ import os
 import re
 import shutil
 from datetime import datetime
-from typing import Any
 
 from data.database import db
 from domain.files import paths
@@ -51,12 +50,6 @@ async def read_file(target_file: str) -> dict:
 
     if not os.path.exists(found_path) or not os.path.isfile(found_path):
         return await _read_from_database(target_file, db_key)
-
-    if not os.path.isfile(found_path):
-        raise BusinessException(
-            ErrorCode.DATA_NOT_FOUND,
-            message=f"Path is not a file: {target_file}",
-        )
 
     filename = os.path.basename(target_file)
     if paths.is_image_file(filename):
@@ -122,6 +115,119 @@ async def _read_from_database(target_file: str, db_key: str) -> dict:
         logger.error(f"MongoDB fallback read failed: {target_file}: {e}")
         raise BusinessException(
             ErrorCode.DATA_NOT_FOUND, message=f"File does not exist: {target_file}"
+        ) from e
+
+
+# ---------------------------------------------------------------------------
+# project disk read
+# ---------------------------------------------------------------------------
+
+async def read_project_file(project: str, target_file: str) -> dict:
+    """Read a file directly from a project's source tree on disk.
+
+    Resolves ``<projects_root>/<project>/<target_file>`` with path-traversal
+    protection. Returns ``{content, type, source}`` like :func:`read_file` but
+    does NOT fall back to MongoDB — the on-disk content is the source of
+    truth, so callers see the live project state, not a stale snapshot.
+
+    Path forms accepted (story cards are inconsistent about prefixing, so we
+    tolerate all three):
+
+    1. ``src/foo.vue`` (project-relative) → resolved under
+       ``<projects_root>/<project>/``.
+    2. ``YiAi/src/foo.vue`` (project-prefixed) → leading ``<project>/`` is
+       stripped, then resolved under ``<projects_root>/<project>/``.
+    3. ``YiKnowledge/projects/YiAi/.../scene.md`` (knowledge-prefixed) →
+       resolved under ``<knowledge_base_dir>`` (YiKnowledge lives as a
+       sibling of the projects, not inside any one project).
+
+    Used by the YiVad story sidebar preview: story/scenario cards reference
+    paths that may belong to a specific project's source tree or to the
+    shared YiKnowledge tree, and the preview must reflect what's on that
+    disk right now.
+    """
+    project_name = (project or "").strip()
+    if not project_name or "/" in project_name or ".." in project_name:
+        raise BusinessException(
+            ErrorCode.INVALID_PARAMS, message=f"Invalid project: {project}"
+        )
+
+    raw = (target_file or "").strip().replace("\\", "/")
+    if not raw or raw.startswith("/") or ".." in raw.split("/"):
+        raise BusinessException(
+            ErrorCode.INVALID_PARAMS, message=f"Invalid path: {target_file}"
+        )
+
+    # Knowledge files live under the shared YiKnowledge tree, not under any
+    # single project. Strip the "YiKnowledge/" prefix and resolve against
+    # the configured knowledge_base_dir (default ../YiKnowledge).
+    knowledge_prefix = "YiKnowledge/"
+    if raw.startswith(knowledge_prefix):
+        rel = raw[len(knowledge_prefix):]
+        if not rel or rel.startswith("/") or ".." in rel.split("/"):
+            raise BusinessException(
+                ErrorCode.INVALID_PARAMS, message=f"Invalid path: {target_file}"
+            )
+        base_dir = os.path.realpath(os.path.abspath(settings.knowledge_base_dir))
+        abs_path = os.path.realpath(os.path.join(base_dir, os.path.normpath(rel)))
+        if abs_path != base_dir and not abs_path.startswith(base_dir + os.sep):
+            raise BusinessException(
+                ErrorCode.INVALID_PARAMS, message="Invalid path"
+            )
+    else:
+        # Project source file. Story cards store paths with the project
+        # prefix already prepended ("YiAi/src/foo.py" or "YiVad/src/bar.vue");
+        # the project on the story may be "YiAi" but the file may live in a
+        # sibling project. Detect the actual project from the path's first
+        # segment when it matches a directory under projects_root; otherwise
+        # fall back to the caller-supplied project name.
+        root_abs = os.path.realpath(os.path.abspath(settings.projects_root))
+        segments = raw.split("/")
+        first = segments[0] if segments else ""
+        first_abs = os.path.realpath(os.path.join(root_abs, first)) if first else None
+        if first and first_abs != root_abs and first_abs.startswith(root_abs + os.sep) and os.path.isdir(first_abs):
+            project_name = first
+            rel = raw[len(first) + 1:]
+        else:
+            project_prefix = f"{project_name}/"
+            if raw.startswith(project_prefix):
+                rel = raw[len(project_prefix):]
+            else:
+                rel = raw
+        if not rel or rel.startswith("/") or ".." in rel.split("/"):
+            raise BusinessException(
+                ErrorCode.INVALID_PARAMS, message=f"Invalid path: {target_file}"
+            )
+
+        project_abs = os.path.realpath(os.path.join(root_abs, project_name))
+        if project_abs != root_abs and not project_abs.startswith(root_abs + os.sep):
+            raise BusinessException(
+                ErrorCode.INVALID_PARAMS, message=f"Invalid project: {project}"
+            )
+        abs_path = os.path.realpath(os.path.join(project_abs, os.path.normpath(rel)))
+        if abs_path != project_abs and not abs_path.startswith(project_abs + os.sep):
+            raise BusinessException(
+                ErrorCode.INVALID_PARAMS, message="Invalid path"
+            )
+
+    if not os.path.exists(abs_path) or not os.path.isfile(abs_path):
+        raise BusinessException(
+            ErrorCode.DATA_NOT_FOUND,
+            message=f"File does not exist on project disk: {project}/{target_file}",
+        )
+
+    try:
+        try:
+            with open(abs_path, "r", encoding="utf-8") as f:
+                return {"content": f.read(), "type": "text", "source": "project_disk"}
+        except UnicodeDecodeError:
+            with open(abs_path, "rb") as f:
+                content_b64 = base64.b64encode(f.read()).decode("utf-8")
+            return {"content": content_b64, "type": "base64", "source": "project_disk"}
+    except Exception as e:
+        logger.error(f"Failed to read project file: {str(e)}", exc_info=True)
+        raise BusinessException(
+            ErrorCode.INTERNAL_ERROR, message=f"Failed to read file: {str(e)}"
         ) from e
 
 
@@ -413,7 +519,7 @@ async def upload_file(
     save_dir = os.path.join(base_dir, target_dir)
     os.makedirs(save_dir, exist_ok=True)
 
-    filename = paths.normalize_no_spaces(filename)
+    filename = os.path.basename(paths.normalize_no_spaces(filename))
     file_path = os.path.join(save_dir, filename)
 
     try:

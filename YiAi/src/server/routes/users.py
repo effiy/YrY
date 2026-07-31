@@ -5,7 +5,7 @@ import json
 import logging
 from typing import Any, Optional
 
-from fastapi import APIRouter, Form, Query, UploadFile
+from fastapi import APIRouter, UploadFile
 from pydantic import BaseModel
 
 from data.database import db
@@ -16,7 +16,6 @@ from data.repository import (
     update_document,
 )
 from domain.auth import hash_password
-from shared.config import settings
 from shared.error_codes import ErrorCode
 from shared.exceptions import BusinessException
 from shared.response import success
@@ -86,6 +85,14 @@ async def list_users(body: UserQuery):
         "collection_name": _COLLECTION,
         "pageNum": body.pageNum,
         "pageSize": body.pageSize,
+        # Exclude the bcrypt password hash from list responses — the
+        # column would otherwise leak the hash to every user-list call
+        # (anyone with a token, since auth is optional in dev), enabling
+        # offline brute-force. tree_users already projects password:0 at
+        # the Mongo layer; list_users goes through query_documents and
+        # must opt out via excludeFields. export_users was fixed in
+        # a2d8196 but list_users was missed.
+        "excludeFields": "password",
     }
     # Build filter from known + extra fields
     extra = body.model_dump(exclude={"pageNum", "pageSize", "username", "gender", "status", "email", "filter"}, exclude_none=True)
@@ -240,15 +247,35 @@ async def export_users(body: UserQuery):
         "collection_name": _COLLECTION,
         "pageNum": 1,
         "pageSize": 100000,
+        # Exclude the bcrypt password hash from the export — the column
+        # would otherwise leak the hash to anyone downloading the CSV,
+        # enabling offline brute-force. tree_users projects password:0
+        # at the Mongo layer; the export path goes through query_documents
+        # and must opt out via excludeFields.
+        "excludeFields": "password",
     }
     if body.username:
         params["filter"] = {"username": body.username}
     result = await query_documents(params)
     rows = result.get("list", [])
 
+    # Defensive: strip any password field that slipped through (e.g. if
+    # query_documents ignored excludeFields or the column was renamed).
+    for r in rows:
+        r.pop("password", None)
+
     output = io.StringIO()
     if rows:
-        writer = csv.DictWriter(output, fieldnames=rows[0].keys())
+        # DictWriter requires every row's keys ⊆ fieldnames. Mongo is
+        # schema-less, so collect the union of all row keys first.
+        all_keys: list[str] = []
+        seen = set()
+        for r in rows:
+            for k in r.keys():
+                if k not in seen:
+                    seen.add(k)
+                    all_keys.append(k)
+        writer = csv.DictWriter(output, fieldnames=all_keys, extrasaction="ignore")
         writer.writeheader()
         writer.writerows(rows)
 

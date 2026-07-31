@@ -1174,5 +1174,22 @@
     },
     "parent": "/about",
     "order": 2
+  },
+  {
+    "path": "/rag",
+    "name": "ragPlayground",
+    "component": "/rag/index",
+    "redirect": "",
+    "meta": {
+      "icon": "MagicStick",
+      "title": "RAG Playground",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 99
   }
 ]

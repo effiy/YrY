@@ -117,9 +117,7 @@ export function formatDateTimeFromTs(ts: number, locale: string = 'zh-CN'): stri
   const day = pad(d.getDate());
   const h = pad(d.getHours());
   const min = pad(d.getMinutes());
-  return locale.startsWith('zh')
-    ? `${y}年${m}月${day}日 ${h}:${min}`
-    : `${y}-${m}-${day} ${h}:${min}`;
+  return locale.startsWith('zh') ? `${y}-${m}-${day} ${h}:${min}` : `${y}-${m}-${day} ${h}:${min}`;
 }
 
 /**

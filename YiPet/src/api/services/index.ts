@@ -11,12 +11,14 @@ export { AuthService } from './auth';
 export { ChatService } from './chat';
 export { DatabaseService } from './database';
 export { SessionService } from './sessions';
+export { WeWorkService } from './wework';
 
 import { type ApiClient, type ApiClientConfig, createApiClient } from '../client';
 import { AuthService } from './auth';
 import { ChatService } from './chat';
 import { DatabaseService } from './database';
 import { SessionService } from './sessions';
+import { WeWorkService } from './wework';
 
 export interface ApiServices {
   client: ApiClient;
@@ -24,6 +26,7 @@ export interface ApiServices {
   sessions: SessionService;
   chat: ChatService;
   database: DatabaseService;
+  wework: WeWorkService;
 }
 
 /**
@@ -38,5 +41,6 @@ export function createApiServices(config: ApiClientConfig): ApiServices {
     sessions: new SessionService(client),
     chat: new ChatService(client),
     database: new DatabaseService(client),
+    wework: new WeWorkService(client),
   };
 }

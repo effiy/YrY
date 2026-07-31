@@ -22,7 +22,7 @@ def _build_published_date_filter(start_date: str, end_date: str) -> Dict[str, An
     try:
         start_dt = datetime.strptime(start_date, '%Y-%m-%d')
         end_dt = datetime.strptime(end_date, '%Y-%m-%d')
-        
+
         month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
                       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
         date_patterns = []
@@ -71,14 +71,16 @@ def _handle_iso_date_filter(key: str, value: Any, filter_dict: Dict[str, Any]) -
             start_date, end_date = date_parts
             if is_valid_date(start_date) and is_valid_date(end_date):
                 published_filter = _build_published_date_filter(start_date, end_date)
-                if published_filter:
-                    filter_dict.update(published_filter)
+                if not published_filter:
+                    return False
+                filter_dict.update(published_filter)
                 return True
     else:
         if is_valid_date(value):
             published_filter = _build_published_date_filter(value, value)
-            if published_filter:
-                filter_dict.update(published_filter)
+            if not published_filter:
+                return False
+            filter_dict.update(published_filter)
             return True
     return False
 
@@ -86,7 +88,7 @@ def _handle_range_or_list_filter(key: str, value: Any, filter_dict: Dict[str, An
     """Handle range query or list query"""
     if not (hasattr(value, '__iter__') and not isinstance(value, (str, bytes, dict))):
         return False
-        
+
     value_list = list(value) if not isinstance(value, list) else value
     if not value_list:
         return True
@@ -101,6 +103,8 @@ def _handle_range_or_list_filter(key: str, value: Any, filter_dict: Dict[str, An
             filter_dict[key] = {'$gte': float(start)}
         elif is_number(end):
             filter_dict[key] = {'$lt': float(end)}
+        else:
+            filter_dict[key] = {'$in': value_list}
     else:
         filter_dict[key] = {'$in': value_list}
     return True
@@ -109,7 +113,7 @@ def _handle_string_search_filter(key: str, value: Any, filter_dict: Dict[str, An
     """Handle string fuzzy search"""
     if not isinstance(value, str):
         return False
-        
+
     if ',' in value:
         search_terms = [term.strip() for term in value.split(',') if term.strip()]
         if search_terms:
@@ -132,6 +136,15 @@ def _build_filter(query_params: Dict[str, Any]) -> Dict[str, Any]:
 
     for key, value in query_params.items():
         if not value:
+            continue
+
+        # Mongo logical operators ($or/$and/$nor/...) and field-level
+        # operator dicts ($regex/$ne/$gte/$lte/...) are passed through
+        # untouched. Otherwise _handle_range_or_list_filter would wrap a
+        # list of condition dicts into {$in: [...]}, corrupting $or, and
+        # _handle_string_search_filter would drop dict values entirely.
+        if key.startswith('$') or isinstance(value, dict):
+            filter_dict[key] = value
             continue
 
         # key field uses exact match
@@ -164,7 +177,7 @@ def _build_sort_list(sort_param: str, sort_order: int) -> List[tuple]:
         sort_list.append(('updatedTime', -1))
     if sort_param != 'createdTime':
         sort_list.append(('createdTime', -1))
-    
+
     return sort_list
 
 # --- Public Service Methods ---
@@ -204,7 +217,7 @@ async def query_documents(params: Dict[str, Any]) -> Dict[str, Any]:
 
     await db.initialize()
     collection_name = _validate_collection_name(collection_name)
-    
+
     fields_param = query_params.pop('fields', None) or query_params.pop('select', None)
     exclude_fields_param = query_params.pop('excludeFields', None) or query_params.pop('exclude', None)
 
@@ -220,7 +233,7 @@ async def query_documents(params: Dict[str, Any]) -> Dict[str, Any]:
     filter_dict = _build_filter(query_params)
     logger.info(f"Querying collection: {collection_name}, Filter: {filter_dict}")
     sort_list = _build_sort_list(sort_param, sort_order)
-    
+
     projection = {'_id': 0}
     if fields_param:
         fields = [f.strip() for f in str(fields_param).split(',') if f.strip()]
@@ -228,6 +241,8 @@ async def query_documents(params: Dict[str, Any]) -> Dict[str, Any]:
             fields.append('key')
         if collection_name == 'sessions':
             fields = [f for f in fields if f != 'pageContent']
+        if collection_name == 'users':
+            fields = [f for f in fields if f != 'password']
         projection = {'_id': 0, **{f: 1 for f in fields}}
     elif exclude_fields_param:
         exclude_fields = [f.strip() for f in str(exclude_fields_param).split(',') if f.strip()]
@@ -236,12 +251,16 @@ async def query_documents(params: Dict[str, Any]) -> Dict[str, Any]:
             exclude_fields.remove('key')
         if collection_name == 'sessions' and 'pageContent' not in exclude_fields:
             exclude_fields.append('pageContent')
+        if collection_name == 'users' and 'password' not in exclude_fields:
+            exclude_fields.append('password')
         projection = {'_id': 0, **{f: 0 for f in exclude_fields}}
     elif collection_name == 'sessions':
         projection = {'_id': 0, 'pageContent': 0}
+    elif collection_name == 'users':
+        projection = {'_id': 0, 'password': 0}
 
     collection = db.db[collection_name]
-    
+
     cursor = collection.find(filter_dict, projection) \
         .sort(sort_list) \
         .skip((page_num - 1) * page_size) \
@@ -272,15 +291,17 @@ async def query_documents(params: Dict[str, Any]) -> Dict[str, Any]:
 async def get_document_detail(params: Dict[str, Any]) -> Dict[str, Any]:
     collection_name = params.get('collection_name') or params.get('cname')
     doc_id = params.get('id')
-    
+
     if not collection_name or not doc_id:
         raise ValueError("collection_name/cname and id are required")
-        
+
     await db.initialize()
     collection = db.db[collection_name]
     projection = {'_id': 0}
     if collection_name == 'sessions':
         projection['pageContent'] = 0
+    if collection_name == 'users':
+        projection['password'] = 0
     document = await collection.find_one({'key': doc_id}, projection)
 
     if not document:
@@ -291,10 +312,10 @@ async def get_document_detail(params: Dict[str, Any]) -> Dict[str, Any]:
 async def create_document(params: Dict[str, Any]) -> Dict[str, Any]:
     collection_name = params.get('collection_name') or params.get('cname')
     data = params.get('data')
-    
+
     if not collection_name:
         raise ValueError("Collection name (collection_name/cname) is required")
-        
+
     if data is None:
         data = params.copy()
         data.pop('cname', None)
@@ -316,11 +337,14 @@ async def create_document(params: Dict[str, Any]) -> Dict[str, Any]:
 
     data_copy = {k: (str(v) if isinstance(v, ObjectId) else v) for k, v in data.items()}
     current_time = get_current_time()
-    data_copy.update({
-        'key': str(uuid.uuid4()),
-        'createdTime': current_time,
-        'updatedTime': current_time
-    })
+    # Honor a caller-supplied key (e.g. bugs' `bug_<ts>_<rand>` or sessions'
+    # `aichat_<ts>_<rand>`) — the previous unconditional `str(uuid.uuid4())`
+    # overwrote it, so bug.detail.vue showed a UUID while the markdown
+    # file was written to `<caller_key>.md`, and the two never matched.
+    if not data_copy.get('key'):
+        data_copy['key'] = str(uuid.uuid4())
+    data_copy.setdefault('createdTime', current_time)
+    data_copy['updatedTime'] = current_time
     if collection_name == 'sessions':
         data_copy.pop('pageContent', None)
 
@@ -342,7 +366,7 @@ async def create_document(params: Dict[str, Any]) -> Dict[str, Any]:
             if collection_name == 'rss':
                 raise ValueError(f"Link field value '{data_copy.get('link', '')}' already exists, cannot create duplicate")
             else:
-                raise ValueError(f"Data creation failed: unique constraint violation")
+                raise ValueError("Data creation failed: unique constraint violation")
         raise
 
     return {'key': data_copy['key']}
@@ -403,7 +427,7 @@ async def upsert_document(params: Dict[str, Any]) -> Dict[str, Any]:
     collection_name = params.get('collection_name') or params.get('cname')
     filter_doc = params.get('filter')
     update_doc = params.get('update')
-    
+
     if not collection_name:
         raise ValueError("Collection name (collection_name/cname) is required")
     if not filter_doc:
@@ -414,7 +438,7 @@ async def upsert_document(params: Dict[str, Any]) -> Dict[str, Any]:
     await db.initialize()
     collection_name = _validate_collection_name(collection_name)
     collection = db.db[collection_name]
-    
+
     # Ensure update_doc contains atomic operators
     if not any(k.startswith('$') for k in update_doc.keys()):
         # If no operator, assume $set
@@ -424,11 +448,11 @@ async def upsert_document(params: Dict[str, Any]) -> Dict[str, Any]:
     if '$set' not in update_doc:
         update_doc['$set'] = {}
     update_doc['$set']['updatedTime'] = get_current_time()
-    
+
     if '$setOnInsert' not in update_doc:
         update_doc['$setOnInsert'] = {}
     update_doc['$setOnInsert']['createdTime'] = get_current_time()
-    
+
     if 'key' not in update_doc['$setOnInsert']:
         update_doc['$setOnInsert']['key'] = str(uuid.uuid4())
     if collection_name == 'sessions':
@@ -441,7 +465,7 @@ async def upsert_document(params: Dict[str, Any]) -> Dict[str, Any]:
             update_doc['$setOnInsert'].pop('pageContent', None)
 
     result = await collection.update_one(filter_doc, update_doc, upsert=True)
-    
+
     return {
         "matched_count": result.matched_count,
         "modified_count": result.modified_count,
@@ -490,7 +514,7 @@ async def list_story_task_dirs(params: Dict[str, Any]) -> Dict[str, Any]:
     project_filter = params.get('project_name', params.get('projectName'))
 
     match_stage: Dict[str, Any] = {
-        'projectName': {'$exists': True, '$ne': None, '$ne': ''},
+        'projectName': {'$exists': True, '$nin': [None, '']},
     }
     if project_filter:
         match_stage['projectName'] = project_filter

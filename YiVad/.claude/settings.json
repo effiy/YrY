@@ -1,0 +1,12 @@
+{
+  "description": "YiVad — Vue 3.5 SPA. Rsbuild 1 + Element Plus 2.14 + Pinia 4 + TypeScript 6. Dev port from .env.development (default 8848).",
+  "permissions": {
+    "allow": [
+      "Bash(pnpm:*)",
+      "Bash(npm:*)",
+      "Bash(node:*)",
+      "Bash(git:*)",
+      "Bash(vue-tsc:*)"
+    ]
+  }
+}

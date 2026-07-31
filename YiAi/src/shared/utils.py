@@ -18,14 +18,14 @@ def estimate_tokens(text: Union[str, bytes]) -> int:
     """
     if not isinstance(text, str):
         return 0
-        
+
     token_count = 0
     for char in text:
-        if ord(char) > 127: 
+        if ord(char) > 127:
             token_count += 1
         else:
             token_count += 0.25
-            
+
     return int(token_count)
 
 def clean_text(text: str) -> str:
@@ -59,7 +59,7 @@ def extract_json_from_text(text: str) -> Optional[Union[Dict, List]]:
     """
     if not text:
         return None
-        
+
     # Try direct parse
     try:
         return json.loads(text)
@@ -74,36 +74,36 @@ def extract_json_from_text(text: str) -> Optional[Union[Dict, List]]:
             return json.loads(match.group(1))
         except json.JSONDecodeError:
             pass
-            
+
     # Try to find first { or [ to last } or ]
     try:
         start_idx = -1
         end_idx = -1
-        
+
         # Find possible start position
         first_brace = text.find('{')
         first_bracket = text.find('[')
-        
+
         if first_brace != -1 and (first_bracket == -1 or first_brace < first_bracket):
             start_idx = first_brace
         elif first_bracket != -1:
             start_idx = first_bracket
-            
+
         # Find possible end position
         last_brace = text.rfind('}')
         last_bracket = text.rfind(']')
-        
+
         if last_brace != -1 and (last_bracket == -1 or last_brace > last_bracket):
             end_idx = last_brace
         elif last_bracket != -1:
             end_idx = last_bracket
-            
+
         if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
             json_str = text[start_idx:end_idx+1]
             return json.loads(json_str)
     except Exception:
         pass
-        
+
     return None
 
 # --- Time & Date ---
@@ -126,13 +126,16 @@ def is_valid_date(date_str: str) -> bool:
 
 def is_number(value: Any) -> bool:
     """Validate if value is a number"""
-    if value is None:
+    # bool 是 int 子类，但语义上不是数字；nan/inf 会破坏 Mongo 数值范围查询
+    if value is None or isinstance(value, bool):
         return False
     try:
-        float(value)
-        return True
+        result = float(value)
     except (ValueError, TypeError):
         return False
+    if math.isnan(result) or math.isinf(result):
+        return False
+    return True
 
 def format_file_size(size_in_bytes: int) -> str:
     """

@@ -2,7 +2,7 @@ import logging
 from typing import Optional
 from fastapi import APIRouter, Query
 
-from models.schemas import StateRecord, StateQueryRequest
+from models.schemas import StateRecord
 from domain.state import StateStoreService
 from shared.error_codes import ErrorCode
 from shared.exceptions import BusinessException

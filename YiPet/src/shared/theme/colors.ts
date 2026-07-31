@@ -1,10 +1,12 @@
 /**
- * Color Theme Palettes — complete design-token overrides for all 5 YiPet themes.
+ * Color Theme Palettes — color tokens for all 5 YiPet themes.
  *
- * Each palette defines every color-related CSS custom property from variables.css:
- * primary family, backgrounds, accents, borders, text, shadows.  Apply via
- * `applyThemeColors()` which sets them on `document.documentElement.style` —
- * no file loading, no cache, immediate update.
+ * The full palette drives `getAntdTheme()` (popup + chat antd v5 theming via
+ * ConfigProvider, popup uses a fixed Quantum Violet). `applyThemeColors()`
+ * injects the WHOLE palette onto the host page's root element — primary,
+ * background, text, border, accent, button, input, and selection tokens —
+ * so the Color Theme setting recolors the entire page surface (fonts,
+ * buttons, backgrounds, borders, accents), not just the brand primary.
  *
  * Theme index → popup color dropdown order:
  *   0 = Quantum Violet  1 = Indigo Violet  2 = Quantum Ocean
@@ -48,11 +50,9 @@ export interface ThemePalette {
   inputBg: string;
   inputBorder: string;
   selectionBg: string;
-  /* ── Shadow ───────────────────────────────────────────── */
-  shadowPrimary: string;
 }
 
-/** CSS variable names injected by applyThemeColors (must stay in sync). */
+/** CSS variable names injected by applyThemeColors (the full theme surface). */
 export const THEME_VAR_KEYS = [
   '--primary',
   '--primary-hover',
@@ -82,9 +82,39 @@ export const THEME_VAR_KEYS = [
   '--input-bg',
   '--input-border',
   '--selection-bg',
-  '--shadow-primary',
-  '--green',
 ] as const;
+
+/** ThemePalette field → CSS variable name mapping. */
+const PALETTE_TO_CSS: ReadonlyArray<readonly [keyof ThemePalette, string]> = [
+  ['primary', '--primary'],
+  ['primaryHover', '--primary-hover'],
+  ['primaryLight', '--primary-light'],
+  ['primaryGradient', '--primary-gradient'],
+  ['primaryGradientHover', '--primary-gradient-hover'],
+  ['primaryRgb', '--primary-rgb'],
+  ['primaryAlpha', '--primary-alpha'],
+  ['bgPrimary', '--bg-primary'],
+  ['bgSecondary', '--bg-secondary'],
+  ['bgTertiary', '--bg-tertiary'],
+  ['bgElevated', '--bg-elevated'],
+  ['bgGradient', '--bg-gradient'],
+  ['accent', '--accent'],
+  ['accentRgb', '--accent-rgb'],
+  ['accentGradient', '--accent-gradient'],
+  ['borderSecondary', '--border-secondary'],
+  ['borderFocus', '--border-focus'],
+  ['textPrimary', '--text-primary'],
+  ['textSecondary', '--text-secondary'],
+  ['textAccent', '--text-accent'],
+  ['linkColor', '--link-color'],
+  ['placeholderColor', '--placeholder-color'],
+  ['buttonBg', '--button-bg'],
+  ['buttonHover', '--button-hover'],
+  ['buttonText', '--button-text'],
+  ['inputBg', '--input-bg'],
+  ['inputBorder', '--input-border'],
+  ['selectionBg', '--selection-bg'],
+];
 
 /** All 5 theme palettes, index-aligned with the popup color dropdown. */
 export const THEME_PALETTES: ThemePalette[] = [
@@ -119,7 +149,6 @@ export const THEME_PALETTES: ThemePalette[] = [
     inputBg: '#1a1835',
     inputBorder: 'rgba(167, 139, 250, 0.2)',
     selectionBg: 'rgba(102, 126, 234, 0.3)',
-    shadowPrimary: '0 4px 20px rgba(102, 126, 234, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset',
   },
   /* ── 1: Indigo Violet — deeper indigo/purple ────────── */
   {
@@ -152,7 +181,6 @@ export const THEME_PALETTES: ThemePalette[] = [
     inputBg: '#181730',
     inputBorder: 'rgba(129, 140, 248, 0.2)',
     selectionBg: 'rgba(99, 102, 241, 0.3)',
-    shadowPrimary: '0 4px 20px rgba(99, 102, 241, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset',
   },
   /* ── 2: Quantum Ocean — cyan/blue depths ────────────── */
   {
@@ -185,7 +213,6 @@ export const THEME_PALETTES: ThemePalette[] = [
     inputBg: '#0f1e28',
     inputBorder: 'rgba(34, 211, 238, 0.2)',
     selectionBg: 'rgba(6, 182, 212, 0.3)',
-    shadowPrimary: '0 4px 20px rgba(6, 182, 212, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset',
   },
   /* ── 3: Quantum Forest — emerald green ──────────────── */
   {
@@ -218,7 +245,6 @@ export const THEME_PALETTES: ThemePalette[] = [
     inputBg: '#0f1e16',
     inputBorder: 'rgba(52, 211, 153, 0.2)',
     selectionBg: 'rgba(34, 197, 94, 0.3)',
-    shadowPrimary: '0 4px 20px rgba(34, 197, 94, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset',
   },
   /* ── 4: Quantum Sunset — warm amber/pink ────────────── */
   {
@@ -251,66 +277,74 @@ export const THEME_PALETTES: ThemePalette[] = [
     inputBg: '#1f180e',
     inputBorder: 'rgba(251, 191, 36, 0.2)',
     selectionBg: 'rgba(245, 158, 11, 0.3)',
-    shadowPrimary: '0 4px 20px rgba(245, 158, 11, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset',
   },
 ];
 
 /**
- * Inject a complete theme palette onto a root element's inline style.
- * Sets ALL color variables — primary, backgrounds, accents, borders, text, shadows.
- * Pass idx = -1 to clear all injected variables (None / no theme).
+ * None palette — light/neutral theme applied when idx < 0 (Color Theme = None).
+ * Black text on white background, so the host page body and the chat modal
+ * render with black fonts instead of the dark variables.css defaults.
+ */
+export const NONE_PALETTE: ThemePalette = {
+  primary: '#6366f1',
+  primaryHover: '#4f46e5',
+  primaryLight: '#818cf8',
+  primaryGradient: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)',
+  primaryGradientHover: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #9333ea 100%)',
+  primaryRgb: '99, 102, 241',
+  primaryAlpha: 'rgba(99, 102, 241, 0.1)',
+  bgPrimary: '#ffffff',
+  bgSecondary: '#f9fafb',
+  bgTertiary: '#f3f4f6',
+  bgElevated: '#ffffff',
+  bgGradient: 'linear-gradient(135deg, #ffffff 0%, #f9fafb 50%, #f3f4f6 100%)',
+  accent: '#6366f1',
+  accentRgb: '99, 102, 241',
+  accentGradient: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)',
+  borderSecondary: 'rgba(99, 102, 241, 0.2)',
+  borderFocus: '#6366f1',
+  textPrimary: '#1f2937',
+  textSecondary: '#4b5563',
+  textAccent: '#4f46e5',
+  linkColor: '#4f46e5',
+  placeholderColor: 'rgba(0, 0, 0, 0.4)',
+  buttonBg: '#6366f1',
+  buttonHover: '#4f46e5',
+  buttonText: '#ffffff',
+  inputBg: '#ffffff',
+  inputBorder: 'rgba(0, 0, 0, 0.15)',
+  selectionBg: 'rgba(99, 102, 241, 0.2)',
+};
+
+/**
+ * Inject the active theme's full palette onto a root element's inline style.
+ * Primary, background, accent, border, text, button, input, and selection
+ * tokens are all written, so the Color Theme setting recolors the entire
+ * page surface — fonts, buttons, backgrounds, borders, accents — not just
+ * the brand primary. Pass idx = -1 to apply the None palette (light theme,
+ * black text on white background) instead of clearing.
  */
 export function applyThemeColors(root: HTMLElement, idx: number): void {
+  const s = root.style;
   if (idx < 0) {
-    clearThemeColors(root);
+    for (const [field, varName] of PALETTE_TO_CSS) {
+      s.setProperty(varName, NONE_PALETTE[field]);
+    }
+    s.colorScheme = 'light';
     return;
   }
+  s.colorScheme = 'dark';
   const safe = idx >= 0 && idx < THEME_PALETTES.length ? idx : 0;
   const p = THEME_PALETTES[safe];
-  const s = root.style;
-  s.setProperty('--primary', p.primary);
-  s.setProperty('--primary-hover', p.primaryHover);
-  s.setProperty('--primary-light', p.primaryLight);
-  s.setProperty('--primary-gradient', p.primaryGradient);
-  s.setProperty('--primary-gradient-hover', p.primaryGradientHover);
-  s.setProperty('--primary-rgb', p.primaryRgb);
-  s.setProperty('--primary-alpha', p.primaryAlpha);
-  s.setProperty('--bg-primary', p.bgPrimary);
-  s.setProperty('--bg-secondary', p.bgSecondary);
-  s.setProperty('--bg-tertiary', p.bgTertiary);
-  s.setProperty('--bg-elevated', p.bgElevated);
-  s.setProperty('--bg-gradient', p.bgGradient);
-  s.setProperty('--accent', p.accent);
-  s.setProperty('--accent-rgb', p.accentRgb);
-  s.setProperty('--accent-gradient', p.accentGradient);
-  s.setProperty('--border-secondary', p.borderSecondary);
-  s.setProperty('--border-focus', p.borderFocus);
-  s.setProperty('--text-primary', p.textPrimary);
-  s.setProperty('--text-secondary', p.textSecondary);
-  s.setProperty('--text-accent', p.textAccent);
-  s.setProperty('--link-color', p.linkColor);
-  s.setProperty('--placeholder-color', p.placeholderColor);
-  s.setProperty('--button-bg', p.buttonBg);
-  s.setProperty('--button-hover', p.buttonHover);
-  s.setProperty('--button-text', p.buttonText);
-  s.setProperty('--input-bg', p.inputBg);
-  s.setProperty('--input-border', p.inputBorder);
-  s.setProperty('--selection-bg', p.selectionBg);
-  s.setProperty('--shadow-primary', p.shadowPrimary);
-  s.setProperty('--green', p.primary);
+  for (const [field, varName] of PALETTE_TO_CSS) {
+    s.setProperty(varName, p[field]);
+  }
 }
 
-/** Remove all theme-injected CSS custom properties, restoring variables.css defaults. */
+/** Remove the theme-injected CSS variables, restoring variables.css defaults. */
 export function clearThemeColors(root: HTMLElement): void {
   for (const name of THEME_VAR_KEYS) {
     root.style.removeProperty(name);
   }
-}
-
-/** Look up a theme's primary CSS gradient (for pet background-image).
- *  Pass idx < 0 to clear the gradient (None). */
-export function getGradientByIndex(idx: number): string {
-  if (idx < 0) return 'none';
-  const safe = idx >= 0 && idx < THEME_PALETTES.length ? idx : 0;
-  return THEME_PALETTES[safe].primaryGradient;
+  root.style.colorScheme = '';
 }

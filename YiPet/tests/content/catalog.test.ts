@@ -23,8 +23,6 @@ describe('CDN catalog', () => {
 
     it('includes core frameworks', () => {
       const keys = CDN_CATALOG.map((e) => e.key);
-      expect(keys).toContain('react');
-      expect(keys).toContain('react-dom');
       expect(keys).toContain('vue');
       expect(keys).toContain('jquery');
     });

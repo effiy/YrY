@@ -6,9 +6,10 @@
  * CDN style management, CDN JS auto-loading, and the window.YiPet API.
  */
 
+import { PET_DEFAULTS } from '@/config/defaults';
 import { CDN_CATALOG, type CdnEntry, catalogByKey } from '../cdn/catalog';
 import { createInjector } from '../cdn/injector';
-import { applyThemeColors, getGradientByIndex } from '../config/theme-config';
+import { applyThemeColors } from '../config/theme-config';
 
 // ── Log Helpers ─────────────────────────────────────────────────────────
 
@@ -242,23 +243,104 @@ export function createPetOverlay(
     'position:fixed;bottom:20%;right:20px;z-index:2147483647;' +
     'transition:opacity 100ms ease;opacity:0;pointer-events:none;' +
     'padding:24px;border-radius:50%;' +
-    'background-size:cover;';
+    'background-size:cover;' +
+    'box-shadow:0 0 24px 4px rgba(var(--primary-rgb, 99, 102, 241), 0.45),' +
+    '0 0 8px 2px rgba(var(--primary-rgb, 99, 102, 241), 0.6);';
   petContainer.setAttribute('data-pet', 'yipet');
-  petContainer.style.backgroundImage = getGradientByIndex(initialColor);
   const petImg = document.createElement('img');
   petImg.id = 'yipet-pet-img';
   petImg.alt = 'YiPet';
-  petImg.style.cssText = 'width:260px;height:auto;';
+  petImg.style.cssText = `width:${PET_DEFAULTS.pet.defaultSize}px;height:auto;`;
   petImg.src =
     extRoot + 'assets/images/' + initialRole.toLowerCase().replace(/\s+/g, '-') + '/icon.png';
   petContainer.appendChild(petImg);
 
-  // Click pet to toggle chat window
-  petImg.style.cursor = 'pointer';
-  petImg.addEventListener('click', (e) => {
+  // Double-click pet to toggle chat window
+  petImg.style.cursor = 'grab';
+
+  let dragState: {
+    startX: number;
+    startY: number;
+    originLeft: number;
+    originTop: number;
+    moved: boolean;
+  } | null = null;
+
+  function beginDrag(clientX: number, clientY: number) {
+    const rect = petContainer.getBoundingClientRect();
+    petContainer.style.left = rect.left + 'px';
+    petContainer.style.top = rect.top + 'px';
+    petContainer.style.right = 'auto';
+    petContainer.style.bottom = 'auto';
+    dragState = {
+      startX: clientX,
+      startY: clientY,
+      originLeft: rect.left,
+      originTop: rect.top,
+      moved: false,
+    };
+    petImg.style.cursor = 'grabbing';
+    document.addEventListener('mousemove', onDocMouseMove);
+    document.addEventListener('mouseup', endDrag);
+    document.addEventListener('touchmove', onDocTouchMove, { passive: true });
+    document.addEventListener('touchend', endDrag);
+    document.addEventListener('touchcancel', endDrag);
+  }
+
+  function onDragMove(clientX: number, clientY: number) {
+    if (!dragState) return;
+    const dx = clientX - dragState.startX;
+    const dy = clientY - dragState.startY;
+    if (!dragState.moved && Math.abs(dx) < 4 && Math.abs(dy) < 4) return;
+    dragState.moved = true;
+    petContainer.style.left = dragState.originLeft + dx + 'px';
+    petContainer.style.top = dragState.originTop + dy + 'px';
+  }
+
+  function onDocMouseMove(e: MouseEvent) {
+    onDragMove(e.clientX, e.clientY);
+  }
+  function onDocTouchMove(e: TouchEvent) {
+    const t = e.touches[0];
+    if (!t) return;
+    onDragMove(t.clientX, t.clientY);
+  }
+
+  function endDrag() {
+    if (!dragState) return;
+    dragState = null;
+    petImg.style.cursor = 'grab';
+    document.removeEventListener('mousemove', onDocMouseMove);
+    document.removeEventListener('mouseup', endDrag);
+    document.removeEventListener('touchmove', onDocTouchMove);
+    document.removeEventListener('touchend', endDrag);
+    document.removeEventListener('touchcancel', endDrag);
+  }
+
+  petImg.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    beginDrag(e.clientX, e.clientY);
+  });
+
+  petImg.addEventListener(
+    'touchstart',
+    (e) => {
+      const t = e.touches[0];
+      if (!t) return;
+      beginDrag(t.clientX, t.clientY);
+    },
+    { passive: true },
+  );
+
+  petImg.addEventListener('dblclick', (e) => {
     e.stopPropagation();
-    if ((window as unknown as Record<string, unknown>).YiPetChat) {
-      ((window as unknown as Record<string, unknown>).YiPetChat as { toggle: () => void }).toggle();
+    if (dragState?.moved) return;
+    const w = window as unknown as Record<string, unknown>;
+    const chat = w.YiPetChat as { toggle: () => void } | undefined;
+    if (chat) {
+      chat.toggle();
+    } else {
+      w.__yipetPendingToggle = true;
     }
   });
 
@@ -276,7 +358,9 @@ export function createPetOverlay(
 
   window.addEventListener('yipet:visibilityChanged', ((e: CustomEvent) => {
     ensureOverlayInDOM();
-    petContainer.style.opacity = e.detail.visible ? '1' : '0';
+    const visible = e.detail.visible;
+    petContainer.style.opacity = visible ? '1' : '0';
+    petContainer.style.pointerEvents = visible ? 'auto' : 'none';
   }) as EventListener);
 
   window.addEventListener('yipet:sizeChanged', ((e: CustomEvent) => {
@@ -295,41 +379,18 @@ export function createPetOverlay(
 
   window.addEventListener('yipet:colorChanged', ((e: CustomEvent) => {
     const idx = Number(e.detail.color) || 0;
-    petContainer.style.backgroundImage = getGradientByIndex(idx);
     petContainer.dataset.colorIndex = String(idx);
     applyThemeColors(document.documentElement, idx);
-    if (idx < 0) removeCdnStyles();
-    else ensureCdnStyles();
   }) as EventListener);
 
-  // ── CDN Style Management ─────────────────────────────────────────────
-
-  const cdnStyleLinks: HTMLLinkElement[] = [];
-  const CDN_STYLE_ATTR = 'data-yipet-cdn';
-
-  function injectCdnCss(path: string): HTMLLinkElement {
-    const el = document.createElement('link');
-    el.rel = 'stylesheet';
-    el.setAttribute(CDN_STYLE_ATTR, '');
-    el.href = BASE + path;
-    document.head.appendChild(el);
-    cdnStyleLinks.push(el);
-    return el;
-  }
-
-  function removeCdnStyles(): void {
-    for (const el of document.querySelectorAll(`[${CDN_STYLE_ATTR}]`)) el.remove();
-    cdnStyleLinks.length = 0;
-  }
-
-  function ensureCdnStyles(): void {
-    if (cdnStyleLinks.length > 0) return;
-    for (const entry of CDN_CATALOG) {
-      if (entry.type === 'css') injectCdnCss(entry.path);
+  window.addEventListener('yipet:chatToggled', (() => {
+    const w = window as unknown as Record<string, unknown>;
+    const chat = w.YiPetChat as { toggle: () => void } | undefined;
+    if (!chat) {
+      w.__yipetPendingChatToggle = true;
     }
-  }
-
-  if (initialColor >= 0) ensureCdnStyles();
+    // When chat is loaded, index.tsx's own listener handles the toggle.
+  }) as EventListener);
 
   // ── Auto-load JS ─────────────────────────────────────────────────────
 

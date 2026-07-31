@@ -82,7 +82,7 @@ export interface PetDefaults {
 
 export const PET_DEFAULTS: PetDefaults = {
   pet: {
-    defaultSize: 260,
+    defaultSize: 120,
     defaultPosition: { x: 20, y: '20%' },
     defaultColorIndex: 0,
     defaultVisible: false,
@@ -223,7 +223,7 @@ export const PET_DEFAULTS: PetDefaults = {
         '🚀 Coming right up...',
       ],
     },
-    DEFAULTS: { PET_ROLE: 'Teacher', VERSION: '1.1.2' },
+    DEFAULTS: { PET_ROLE: 'Teacher', VERSION: '1.2.0' },
     ERROR_MESSAGES: {
       TAB_NOT_FOUND: 'Cannot get current tab',
       INIT_FAILED: 'Initialization failed',
@@ -263,13 +263,13 @@ export const PET_ENDPOINTS = {
     LOGOUT: '/auth/logout',
   },
   FILE_ENDPOINTS: {
-    READ: '/files/read-file',
-    WRITE: '/files/write-file',
-    DELETE: '/files/delete-file',
-    DELETE_FOLDER: '/files/delete-folder',
-    RENAME: '/files/rename-file',
-    RENAME_FOLDER: '/files/rename-folder',
-    UPLOAD_IMAGE: '/files/upload-image-to-oss',
+    READ: '/read-file',
+    WRITE: '/write-file',
+    DELETE: '/delete-file',
+    DELETE_FOLDER: '/delete-folder',
+    RENAME: '/rename-file',
+    RENAME_FOLDER: '/rename-folder',
+    UPLOAD_IMAGE: '/upload-image-to-oss',
   },
   STATE_ENDPOINTS: {
     RECORDS: '/state/records',

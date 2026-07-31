@@ -53,5 +53,5 @@ export function createConfig(env: Env = 'production', apiBase?: string): AppConf
 
 export const PET_CONFIG = createConfig(
   (import.meta.env.MODE as Env) || 'production',
-  import.meta.env.VITE_API_BASE,
+  import.meta.env.RSBUILD_API_BASE,
 );

@@ -19,7 +19,7 @@
     "service_worker": "assets/background.js"
   },
   "action": {
-    "default_popup": "src/popup/popup.html",
+    "default_popup": "popup.html",
     "default_title": "__MSG_extDefaultTitle__"
   },
   "commands": {
@@ -49,10 +49,8 @@
       "assets/icons/icon.png",
       "assets/images/*/icon.png",
       "assets/images/*/run/*.png",
-      "src/content/bootstrap.js",
       "assets/bootstrap.js",
       "assets/chat.js",
-      "src/chunks/*.js",
       "cdn/**/*.js",
       "cdn/**/*.css",
       "cdn/**/*.html",

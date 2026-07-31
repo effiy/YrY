@@ -2,10 +2,11 @@
  * Theme system barrel — color palettes and injection utilities.
  */
 
+export { getAntdTheme } from './antd-theme';
 export {
   applyThemeColors,
   clearThemeColors,
-  getGradientByIndex,
+  NONE_PALETTE,
   THEME_PALETTES,
   THEME_VAR_KEYS,
   type ThemePalette,

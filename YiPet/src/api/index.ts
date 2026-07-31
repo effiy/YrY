@@ -22,6 +22,12 @@ export {
   type YiAiEnvelope,
 } from './client';
 export * as endpoints from './endpoints';
+export type {
+  AuthService,
+  ChatService,
+  DatabaseService,
+  SessionService,
+  WeWorkService,
+} from './services';
 export { type ApiServices, createApiServices } from './services';
-export type { AuthService, ChatService, DatabaseService, SessionService } from './services';
 export * from './types';

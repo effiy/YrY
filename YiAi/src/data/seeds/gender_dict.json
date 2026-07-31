@@ -1,0 +1,5 @@
+[
+  { "key": "gender_dict_0", "label": "Unknown", "value": "0", "tag_type": "info" },
+  { "key": "gender_dict_1", "label": "Male", "value": "1", "tag_type": "primary" },
+  { "key": "gender_dict_2", "label": "Female", "value": "2", "tag_type": "success" }
+]

@@ -72,14 +72,14 @@ def resolve_static_path(target_file: str) -> str:
 
 def safe_rename(old_path: str, new_path: str, is_dir: bool = False) -> tuple[str, str]:
     """Safely rename a file or directory, return (old absolute path, new absolute path)."""
-    base_dir = os.path.abspath(settings.static_base_dir)
+    base_dir = os.path.realpath(os.path.abspath(settings.static_base_dir))
 
-    abs_old = os.path.join(base_dir, old_path)
-    abs_new = os.path.join(base_dir, new_path)
+    abs_old = os.path.realpath(os.path.abspath(os.path.join(base_dir, os.path.normpath(old_path))))
+    abs_new = os.path.realpath(os.path.abspath(os.path.join(base_dir, os.path.normpath(new_path))))
 
-    if not os.path.abspath(abs_old).startswith(base_dir):
+    if os.path.commonpath([base_dir, abs_old]) != base_dir:
         raise BusinessException(ErrorCode.INVALID_PARAMS, message="Invalid old path")
-    if not os.path.abspath(abs_new).startswith(base_dir):
+    if os.path.commonpath([base_dir, abs_new]) != base_dir:
         raise BusinessException(ErrorCode.INVALID_PARAMS, message="Invalid new path")
 
     if not os.path.exists(abs_old):

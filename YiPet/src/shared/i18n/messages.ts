@@ -35,8 +35,8 @@ export function getActiveLocale(): SupportedLocale {
  * Set the active locale and preload messages. Resolves when ready.
  */
 export async function setActiveLocale(locale: SupportedLocale): Promise<void> {
-  _activeLocale = locale;
   await loadMessages(locale);
+  _activeLocale = locale;
 }
 
 /**
@@ -81,7 +81,10 @@ export function lookupMessage(
       if (m) {
         const idx = parseInt(m[1], 10) - 1; // 1-based → 0-based
         const val = subs[idx] ?? '';
-        text = text.replace(new RegExp(`\\$${phName.replace(/\$/g, '\\$')}\\$`, 'g'), val);
+        // Chrome i18n placeholders are case-insensitive: text uses $KEY$,
+        // placeholder name is lowercase. Match both forms.
+        const re = new RegExp(`\\$${phName.replace(/\$/g, '\\$')}\\$`, 'gi');
+        text = text.replace(re, val);
       }
     }
   }

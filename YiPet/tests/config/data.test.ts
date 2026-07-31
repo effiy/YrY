@@ -21,7 +21,7 @@ describe('popup data adapter', () => {
     it('exports SIZE limits', () => {
       expect(popupConfig.SIZE.MIN).toBe(80);
       expect(popupConfig.SIZE.MAX).toBe(400);
-      expect(popupConfig.SIZE.STEP).toBe(10);
+      expect(popupConfig.SIZE.STEP).toBe(20);
     });
 
     it('exports STORAGE_KEY', () => {
@@ -51,11 +51,11 @@ describe('popup data adapter', () => {
 
     it('exports DEFAULTS', () => {
       expect(popupConfig.DEFAULTS.VISIBLE).toBe(false);
-      expect(popupConfig.DEFAULTS.SIZE).toBe(260);
+      expect(popupConfig.DEFAULTS.SIZE).toBe(120);
       expect(popupConfig.DEFAULTS.ROLE).toBe('Teacher');
       expect(popupConfig.DEFAULTS.COLOR).toBe(0);
       expect(popupConfig.DEFAULTS.MODEL).toBeNull();
-      expect(popupConfig.DEFAULTS.VERSION).toBe('1.1.2');
+      expect(popupConfig.DEFAULTS.VERSION).toBe('1.2.0');
     });
   });
 });

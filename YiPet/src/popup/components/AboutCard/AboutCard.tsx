@@ -1,111 +1,88 @@
-import './AboutCard.css';
+import { Card, List, Tag, Typography } from 'antd';
 import { t } from '@/shared/i18n/index';
+
+interface Feature {
+  icon: string;
+  textKey: string;
+}
+
+const FEATURES: Feature[] = [
+  { icon: '🐾', textKey: 'aboutFeaturePet' },
+  { icon: '💬', textKey: 'aboutFeatureChat' },
+  { icon: '🌐', textKey: 'aboutFeatureI18n' },
+  { icon: '🕐', textKey: 'aboutFeatureTimezone' },
+  { icon: '📦', textKey: 'aboutFeatureCDN' },
+  { icon: '🔌', textKey: 'aboutFeatureApi' },
+];
+
+interface Dep {
+  name: string;
+  ver: string;
+  src?: string;
+}
+
+const PROD_DEPS: Dep[] = [
+  { name: 'react', ver: '18.3.1', src: 'bundled' },
+  { name: 'react-dom', ver: '18.3.1', src: 'bundled' },
+  { name: 'antd', ver: '5.21', src: 'bundled' },
+  { name: '@ant-design/icons', ver: '5.5', src: 'bundled' },
+];
+
+const DEV_DEPS: Dep[] = [
+  { name: 'typescript', ver: '^5.5' },
+  { name: '@rsbuild/core', ver: '^1.7' },
+  { name: '@rsbuild/plugin-react', ver: '^1.4' },
+  { name: 'vitest', ver: '^2.0' },
+  { name: '@types/chrome', ver: '^0.0.270' },
+  { name: '@vitejs/plugin-react', ver: '^6.0' },
+  { name: 'jsdom', ver: '^29.1' },
+];
 
 export function AboutCard() {
   return (
-    <section className="card">
-      <h2 className="card-title">{t('aboutTitle')}</h2>
-      <div className="setting-list">
-        {/* Tagline */}
-        <p className="about-tagline">{t('aboutTagline')}</p>
+    <Card title={t('aboutTitle')} size="small" className="popup-about">
+      <Typography.Paragraph type="secondary">{t('aboutTagline')}</Typography.Paragraph>
+      <Typography.Paragraph>{t('aboutDescription')}</Typography.Paragraph>
 
-        {/* Description */}
-        <div className="about-description">
-          <p>{t('aboutDescription')}</p>
-        </div>
+      <Typography.Title level={5}>{t('aboutFeaturesTitle')}</Typography.Title>
+      <List
+        size="small"
+        dataSource={FEATURES}
+        renderItem={(f) => (
+          <List.Item>
+            <span style={{ marginRight: 8 }}>{f.icon}</span>
+            <span>{t(f.textKey as never)}</span>
+          </List.Item>
+        )}
+      />
 
-        {/* Feature Highlights */}
-        <div className="about-section">
-          <h3 className="about-section-title">{t('aboutFeaturesTitle')}</h3>
-          <ul className="about-feature-list">
-            <li className="about-feature-item">
-              <span className="about-feature-icon">🐾</span>
-              <span className="about-feature-text">{t('aboutFeaturePet')}</span>
-            </li>
-            <li className="about-feature-item">
-              <span className="about-feature-icon">💬</span>
-              <span className="about-feature-text">{t('aboutFeatureChat')}</span>
-            </li>
-            <li className="about-feature-item">
-              <span className="about-feature-icon">🌐</span>
-              <span className="about-feature-text">{t('aboutFeatureI18n')}</span>
-            </li>
-            <li className="about-feature-item">
-              <span className="about-feature-icon">🕐</span>
-              <span className="about-feature-text">{t('aboutFeatureTimezone')}</span>
-            </li>
-            <li className="about-feature-item">
-              <span className="about-feature-icon">📦</span>
-              <span className="about-feature-text">{t('aboutFeatureCDN')}</span>
-            </li>
-            <li className="about-feature-item">
-              <span className="about-feature-icon">🔌</span>
-              <span className="about-feature-text">{t('aboutFeatureApi')}</span>
-            </li>
-          </ul>
-        </div>
+      <Typography.Title level={5}>{t('aboutProdDepsTitle')}</Typography.Title>
+      <List
+        size="small"
+        dataSource={PROD_DEPS}
+        renderItem={(d: Dep) => (
+          <List.Item>
+            <span style={{ flex: 1 }}>{d.name}</span>
+            <Tag>{d.ver}</Tag>
+            {d.src && <Typography.Text type="secondary">{d.src}</Typography.Text>}
+          </List.Item>
+        )}
+      />
 
-        {/* Production Dependencies */}
-        <div className="about-section">
-          <h3 className="about-section-title">{t('aboutProdDepsTitle')}</h3>
-          <ul className="about-dep-list">
-            <li className="about-dep-item">
-              <span className="about-dep-name">react</span>
-              <span className="about-dep-ver">15.6.1</span>
-              <span className="about-dep-src">CDN</span>
-            </li>
-            <li className="about-dep-item">
-              <span className="about-dep-name">react-dom</span>
-              <span className="about-dep-ver">15.6.1</span>
-              <span className="about-dep-src">CDN</span>
-            </li>
-            <li className="about-dep-item">
-              <span className="about-dep-name">bootstrap</span>
-              <span className="about-dep-ver">5.2.3</span>
-              <span className="about-dep-src">CDN</span>
-            </li>
-          </ul>
-        </div>
+      <Typography.Title level={5}>{t('aboutDevDepsTitle')}</Typography.Title>
+      <List
+        size="small"
+        dataSource={DEV_DEPS}
+        renderItem={(d: Dep) => (
+          <List.Item>
+            <span style={{ flex: 1 }}>{d.name}</span>
+            <Tag>{d.ver}</Tag>
+          </List.Item>
+        )}
+      />
 
-        {/* Development Dependencies */}
-        <div className="about-section">
-          <h3 className="about-section-title">{t('aboutDevDepsTitle')}</h3>
-          <ul className="about-dep-list">
-            <li className="about-dep-item">
-              <span className="about-dep-name">typescript</span>
-              <span className="about-dep-ver">^5.5</span>
-            </li>
-            <li className="about-dep-item">
-              <span className="about-dep-name">vite</span>
-              <span className="about-dep-ver">^5.4</span>
-            </li>
-            <li className="about-dep-item">
-              <span className="about-dep-name">vitest</span>
-              <span className="about-dep-ver">^2.0</span>
-            </li>
-            <li className="about-dep-item">
-              <span className="about-dep-name">@types/chrome</span>
-              <span className="about-dep-ver">^0.0.270</span>
-            </li>
-            <li className="about-dep-item">
-              <span className="about-dep-name">jsdom</span>
-              <span className="about-dep-ver">^29.1</span>
-            </li>
-          </ul>
-        </div>
-
-        {/* Backend Connection */}
-        <div className="about-section">
-          <h3 className="about-section-title">{t('aboutBackendTitle')}</h3>
-          <p className="about-backend-desc">{t('aboutBackendDesc')}</p>
-        </div>
-
-        {/* Meta */}
-        <div className="about-meta">
-          <span className="about-version">{t('aboutVersion')}</span>
-          <span className="about-tech">{t('aboutTechStack')}</span>
-        </div>
-      </div>
-    </section>
+      <Typography.Title level={5}>{t('aboutBackendTitle')}</Typography.Title>
+      <Typography.Paragraph type="secondary">{t('aboutBackendDesc')}</Typography.Paragraph>
+    </Card>
   );
 }

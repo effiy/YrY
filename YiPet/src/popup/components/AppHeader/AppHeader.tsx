@@ -1,4 +1,4 @@
-import './AppHeader.css';
+import { Tag, Typography } from 'antd';
 import { t } from '@/shared/i18n/index';
 
 export interface AppHeaderProps {
@@ -8,24 +8,17 @@ export interface AppHeaderProps {
 }
 
 export function AppHeader(props: AppHeaderProps) {
-  const dotColor = props.visible ? '#22c55e' : '#f59e0b';
-
   return (
-    <header className="header">
-      <div className="logo" data-icon={'💕'}>
-        <div className="brand">
-          <h1>{t('extName')}</h1>
-          <span className="brand-sub">{t('popupModelPrefix', props.model || '-')}</span>
-        </div>
+    <div className="popup-header">
+      <div className="popup-header-brand">
+        <Typography.Title level={4} style={{ margin: 0 }}>
+          {t('extName')}
+        </Typography.Title>
+        <Typography.Text type="secondary">
+          {t('popupModelPrefix', props.model || '-')}
+        </Typography.Text>
       </div>
-      <div
-        className="status-indicator"
-        role="status"
-        aria-live="polite"
-        style={{ '--status-dot-color': dotColor } as Record<string, string>}
-      >
-        <span className="status-text">{props.statusText}</span>
-      </div>
-    </header>
+      <Tag color={props.visible ? 'success' : 'warning'}>{props.statusText}</Tag>
+    </div>
   );
 }

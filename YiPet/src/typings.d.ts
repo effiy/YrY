@@ -2,15 +2,12 @@
  * Module type declarations — ambient type definitions for non-TS imports.
  *
  * Usage: declare *.css, *.png, *.svg, etc. so TypeScript can resolve
- * these imports without error. The actual bundling is handled by Vite.
+ * these imports without error. The actual bundling is handled by Rsbuild.
  */
 
 /* ── Style Modules ─────────────────────────────────────────────────────── */
 
-declare module '*.css' {
-  const content: Record<string, string>;
-  export default content;
-}
+declare module '*.css';
 
 /* ── Image Assets ──────────────────────────────────────────────────────── */
 

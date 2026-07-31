@@ -14,16 +14,25 @@ export function connect(deps: ConnectDeps, maxRetries = 3, baseMs = 500): void {
   let retries = 0;
 
   function tryConnect(): void {
-    Promise.resolve(deps.sendMessage({ action: 'ping' })).then((response) => {
-      if (response) {
-        deps.loadState().then(deps.onConnected);
-      } else if (retries < maxRetries) {
-        retries++;
-        setTimeout(tryConnect, baseMs * retries);
-      } else {
-        deps.onFailed();
-      }
-    });
+    Promise.resolve(deps.sendMessage({ action: 'ping' }))
+      .then((response) => {
+        if (response) {
+          deps.loadState().then(deps.onConnected, () => deps.onFailed());
+        } else if (retries < maxRetries) {
+          retries++;
+          setTimeout(tryConnect, baseMs * retries);
+        } else {
+          deps.onFailed();
+        }
+      })
+      .catch(() => {
+        if (retries < maxRetries) {
+          retries++;
+          setTimeout(tryConnect, baseMs * retries);
+        } else {
+          deps.onFailed();
+        }
+      });
   }
 
   tryConnect();

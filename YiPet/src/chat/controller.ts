@@ -1,14 +1,17 @@
 /**
  * ChatController — manages all chat state and logic.
- * Pattern-matches PopupComponent: plain class with manual _render() + ReactDOM.render().
+ *
+ * Refactored to an external store so React function components can subscribe
+ * via `useSyncExternalStore`. The class owns state + actions; React tree
+ * reads `controller.state` snapshot and re-renders on emit.
  */
 
-import type { ChatService, SessionService } from '@/api/services';
-import type { ChatMessage } from '@/api/types';
-import { ChatWindowRender } from './components';
+import type { ChatService, SessionService, WeWorkService } from '@/api/services';
+import type { ChatMessage, WeWorkBot } from '@/api/types';
+import type { TreeDataNode } from 'antd';
+import { DEFAULT_MODEL } from './constants';
 import type { ChatState, Message, SessionItem } from './types';
 
-// Re-export types needed by components
 export type { ChatState, Message, SessionItem };
 
 // ── Defaults ─────────────────────────────────────────────────────────────
@@ -22,36 +25,50 @@ const MIN_SIDEBAR_WIDTH = 240;
 const MAX_SIDEBAR_WIDTH = 600;
 const MAX_DRAFT_IMAGES = 4;
 
+type NotifyType = 'info' | 'success' | 'error' | 'warning';
+type NotifyHandler = (message: string, type: NotifyType) => void;
+
 // ── Controller ───────────────────────────────────────────────────────────
 
 export class ChatController {
   state: ChatState;
   private _chat: ChatService;
   private _sessions: SessionService;
+  private _wework: WeWorkService;
   private _abortController: AbortController | null = null;
-  private _rootEl: HTMLElement | null = null;
   private _searchTimer: ReturnType<typeof setTimeout> | null = null;
+  private _scrollTimer: ReturnType<typeof setTimeout> | null = null;
+  private _listeners = new Set<() => void>();
+  private _notifyHandler: NotifyHandler | null = null;
+  private _loadSessionsPromise: Promise<void> | null = null;
+  private _treeSessionMap: Map<string, SessionItem> = new Map();
 
   // Drag state (non-reactive)
   private _dragStart = { x: 0, y: 0, wx: 0, wy: 0 };
   private _resizeDir = '';
-  private _resizeStart = { x: 0, y: 0, w: 0, h: 0 };
+  private _resizeStart = { x: 0, y: 0, wx: 0, w: 0, h: 0 };
 
   // Sidebar resize state
   private _sidebarResizeStart = { x: 0, startWidth: 0 };
 
-  constructor(chat: ChatService, sessions: SessionService, _colorIndex: number) {
+  constructor(
+    chat: ChatService,
+    sessions: SessionService,
+    wework: WeWorkService,
+    colorIndex: number,
+    systemPrompt: string,
+  ) {
     this._chat = chat;
     this._sessions = sessions;
+    this._wework = wework;
 
     const vw = window.innerWidth;
     const vh = window.innerHeight;
 
     this.state = {
       visible: false,
-      title: '与我聊天',
+      title: 'Chat with me',
       viewState: 'empty',
-      viewPayload: null,
       pageInfo: this._readPageInfo(),
       messages: [],
       isProcessing: false,
@@ -66,7 +83,24 @@ export class ChatController {
       selectedSessionIds: [],
       draftImages: [],
       contextEnabled: true,
-      notification: null,
+      weChatRobots: [],
+      weChatRobotsDraft: [],
+      weChatSettingsVisible: false,
+      colorIndex: colorIndex,
+      systemPrompt: systemPrompt || '',
+      streamingTargetTimestamp: null,
+      streamingType: '',
+      scrollTick: 0,
+      copyFeedback: {},
+      feedback: {},
+      faqVisible: false,
+      faqSearch: '',
+      faqApplyMode: 'append',
+      sessionEditVisible: false,
+      contextEditorVisible: false,
+      contextEditorDraft: '',
+      tagManagerVisible: false,
+      inputTemplate: '',
       ws: {
         x: Math.max(0, vw - DEFAULT_WIDTH),
         y: 60,
@@ -78,18 +112,47 @@ export class ChatController {
       isResizing: false,
     };
 
-    // Restore persisted state
     this._loadPersistedState();
   }
 
-  /** Bind the controller to a DOM element. */
-  mount(rootEl: HTMLElement) {
-    this._rootEl = rootEl;
-    this._render();
+  // ── External store ─────────────────────────────────────────────────
+
+  subscribe = (listener: () => void): (() => void) => {
+    this._listeners.add(listener);
+    return () => {
+      this._listeners.delete(listener);
+    };
+  };
+
+  getSnapshot = (): ChatState => this.state;
+
+  setColorIndex = (idx: number) => {
+    if (!Number.isFinite(idx) || idx === this.state.colorIndex) return;
+    this.state.colorIndex = idx;
+    this._emit();
+  };
+
+  setSystemPrompt = (text: string) => {
+    const next = String(text || '');
+    if (next === this.state.systemPrompt) return;
+    this.state.systemPrompt = next;
+    this._emit();
+  };
+
+  setNotifyHandler(handler: NotifyHandler): void {
+    this._notifyHandler = handler;
+  }
+
+  private _emit(): void {
+    this.state = { ...this.state };
+    for (const l of this._listeners) l();
+  }
+
+  /** Initialize the controller after the React tree mounts. */
+  mount() {
     this._init();
   }
 
-  /** Clean up. */
   unmount() {
     document.removeEventListener('mousemove', this._onDragMove);
     document.removeEventListener('mouseup', this._onDragEnd);
@@ -97,23 +160,31 @@ export class ChatController {
     document.removeEventListener('mouseup', this._onResizeEnd);
     document.removeEventListener('mousemove', this._onSidebarResizeMove);
     document.removeEventListener('mouseup', this._onSidebarResizeEnd);
+    if (this._abortController) {
+      this._abortController.abort();
+      this._abortController = null;
+    }
+    if (this._searchTimer) {
+      clearTimeout(this._searchTimer);
+      this._searchTimer = null;
+    }
+    if (this._scrollTimer) {
+      clearTimeout(this._scrollTimer);
+      this._scrollTimer = null;
+    }
   }
 
   // ── Public API ─────────────────────────────────────────────────────
 
   toggle = () => {
-    if (!this.state.visible) {
-      this.open();
-    } else {
-      this.close();
-    }
+    if (!this.state.visible) this.open();
+    else this.close();
   };
 
   open = () => {
     this.state.visible = true;
     this.state.pageInfo = this._readPageInfo();
-    this._render();
-    // Re-init sessions when opening (page may have changed)
+    this._emit();
     this._loadSessions().then(() => this._findOrCreateSession());
   };
 
@@ -121,15 +192,8 @@ export class ChatController {
 
   // ── Notification ───────────────────────────────────────────────────
 
-  private _notify(message: string, type: 'info' | 'success' | 'error' | 'warning' = 'info') {
-    this.state.notification = { message, type };
-    this._render();
-    setTimeout(() => {
-      if (this.state.notification?.message === message) {
-        this.state.notification = null;
-        this._render();
-      }
-    }, 3000);
+  private _notify(message: string, type: NotifyType = 'info') {
+    if (this._notifyHandler) this._notifyHandler(message, type);
   }
 
   // ── Init ──────────────────────────────────────────────────────────
@@ -137,14 +201,14 @@ export class ChatController {
   private async _init() {
     await this._loadSessions();
     await this._findOrCreateSession();
-    this._render();
+    this._emit();
   }
 
   // ── State ──────────────────────────────────────────────────────────
 
   private setState(patch: Partial<ChatState>) {
     Object.assign(this.state, patch);
-    this._render();
+    this._emit();
   }
 
   // ── Persisted State ─────────────────────────────────────────────────
@@ -160,7 +224,7 @@ export class ChatController {
 
       const result = await new Promise<Record<string, unknown>>((resolve) => {
         chrome.storage.local.get(
-          ['sidebarWidth', 'sidebarCollapsed', 'contextEnabled'],
+          ['sidebarWidth', 'sidebarCollapsed', 'contextEnabled', 'weChatRobots'],
           (items) => resolve(items || {}),
         );
       });
@@ -176,6 +240,11 @@ export class ChatController {
       }
       if (typeof result.contextEnabled === 'boolean') {
         this.state.contextEnabled = result.contextEnabled;
+      }
+      if (Array.isArray(result.weChatRobots)) {
+        this.state.weChatRobots = (result.weChatRobots as WeWorkBot[]).filter(
+          (r) => r && typeof r === 'object' && typeof r.webhook === 'string',
+        );
       }
     } catch {
       /* ignore */
@@ -200,33 +269,57 @@ export class ChatController {
 
   private _readPageInfo() {
     return {
-      title: document.title || '当前页面',
+      title: document.title || 'Current page',
       url: window.location.href,
       iconUrl: (document.querySelector('link[rel~="icon"]') as HTMLLinkElement)?.href || '',
     };
   }
 
+  /** pageContent for the currently-active session, or '' if none. */
+  private _currentPageContent(): string {
+    const s = this.state.sessions.find((x) => x.id === this.state.currentSessionId);
+    return (s?.pageContent || '').trim();
+  }
+
   // ── Sessions ───────────────────────────────────────────────────────
 
   private async _loadSessions() {
-    this.state.sessionLoading = true;
-    this._render();
+    // Reuse in-flight promise so concurrent callers (e.g. open() and sendMessage())
+    // don't trigger duplicate backend fetches or race past an unloaded sessions list.
+    if (this._loadSessionsPromise) return this._loadSessionsPromise;
+    const p = (async () => {
+      this.state.sessionLoading = true;
+      this._emit();
+      try {
+        const result = await this._sessions.list();
+        const records = result.ok ? result.data : [];
+        this.state.sessions = records.map((r) => ({
+          id: r.key,
+          title: r.title || 'Untitled conversation',
+          url: r.url || '',
+          createdAt: r.createdAt || 0,
+          updatedAt: r.updatedAt || 0,
+          messageCount: Array.isArray(r.messages) ? r.messages.length : 0,
+          messages: r.messages,
+          isFavorite: !!(r as any).isFavorite,
+          tags: Array.isArray((r as any).tags) ? (r as any).tags! : [],
+        }));
+        this.state.sessions.sort((a, b) => {
+          if (!!a.isFavorite !== !!b.isFavorite) return a.isFavorite ? -1 : 1;
+          return (b.updatedAt || 0) - (a.updatedAt || 0);
+        });
+      } catch {
+        /* ignore */
+      }
+      this.state.sessionLoading = false;
+      this._emit();
+    })();
+    this._loadSessionsPromise = p;
     try {
-      const result = await this._sessions.list();
-      const records = result.ok ? result.data : [];
-      this.state.sessions = records.map((r) => ({
-        id: r.key,
-        title: r.title || '未命名会话',
-        url: r.url || '',
-        createdAt: r.createdAt || 0,
-        updatedAt: r.updatedAt || 0,
-        messageCount: Array.isArray(r.messages) ? r.messages.length : 0,
-        messages: r.messages,
-      }));
-    } catch {
-      /* ignore */
+      await p;
+    } finally {
+      this._loadSessionsPromise = null;
     }
-    this.state.sessionLoading = false;
   }
 
   private async _findOrCreateSession() {
@@ -234,18 +327,22 @@ export class ChatController {
     const existing = this.state.sessions.find((s) => s.url === url);
     if (existing) {
       this.state.currentSessionId = existing.id;
-      this.state.title = existing.title || '未命名会话';
+      this.state.title = existing.title || 'Untitled conversation';
       const msgs = existing.messages || [];
       this.state.messages = this._mapMessages(msgs);
       this.state.viewState = msgs.length > 0 ? 'messages' : 'empty';
+      this._emit();
 
-      // Load full messages from backend
       try {
         const getResult = await this._sessions.get(existing.id);
         const record = getResult.ok ? getResult.data : null;
         if (record?.messages) {
           this.state.messages = this._mapMessages(record.messages);
           this.state.viewState = record.messages.length > 0 ? 'messages' : 'empty';
+          this._emit();
+        }
+        if (record && 'pageContent' in record) {
+          existing.pageContent = (record as { pageContent?: string }).pageContent || '';
         }
       } catch {
         /* use cached messages */
@@ -253,12 +350,11 @@ export class ChatController {
       return;
     }
 
-    // Create new session
     const title = document.title?.trim()
       ? document.title.endsWith('.md')
         ? document.title
         : `${document.title}.md`
-      : '新会话.md';
+      : 'New conversation.md';
     const now = Date.now();
     try {
       const createResult = await this._sessions.create({
@@ -281,6 +377,8 @@ export class ChatController {
           createdAt: record.createdAt || now,
           updatedAt: record.updatedAt || now,
           messageCount: 0,
+          isFavorite: false,
+          tags: []
         });
         this.state.currentSessionId = record.key;
       }
@@ -288,17 +386,26 @@ export class ChatController {
       /* ignore */
     }
     this.state.viewState = 'empty';
+    this._emit();
   }
 
   async selectSession(id: string) {
+    // Abort any in-flight stream before switching — otherwise chunks would
+    // be silently dropped (findPetIdx returns -1 in the new session), the
+    // old pet message would be abandoned as empty text, and the old stream
+    // would keep running / auto-forward to WeCom with no way to stop.
+    if (this.state.isProcessing) this.stopSending();
     this.state.currentSessionId = id;
+    // Reset the editor draft — openContextEditor will re-populate it from
+    // the new session's pageContent. Without this, the draft from the
+    // previous session would leak into the editor UI.
+    this.state.contextEditorDraft = '';
     const session = this.state.sessions.find((s) => s.id === id);
     if (session) {
-      this.state.title = session.title || '未命名会话';
+      this.state.title = session.title || 'Untitled conversation';
       this.state.messages = this._mapMessages(session.messages || []);
       this.state.viewState = this.state.messages.length > 0 ? 'messages' : 'empty';
 
-      // Load full messages from backend
       try {
         const getResult = await this._sessions.get(id);
         const record = getResult.ok ? getResult.data : null;
@@ -306,16 +413,22 @@ export class ChatController {
           this.state.messages = this._mapMessages(record.messages);
           this.state.viewState = record.messages.length > 0 ? 'messages' : 'empty';
         }
+        if (record && 'pageContent' in record) {
+          session.pageContent = (record as { pageContent?: string }).pageContent || '';
+        }
       } catch {
         /* use cached messages */
       }
     }
-    this._render();
+    this._emit();
   }
 
   async createSession() {
+    // Abort any in-flight stream before creating a new session — mirrors
+    // selectSession. Avoids orphan stream writing into stale messages array.
+    if (this.state.isProcessing) this.stopSending();
     const url = window.location.href;
-    const title = (document.title?.trim() || '新会话') + '.md';
+    const title = (document.title?.trim() || 'New conversation') + '.md';
     const now = Date.now();
     try {
       const createResult = await this._sessions.create({
@@ -336,6 +449,8 @@ export class ChatController {
           createdAt: record.createdAt || now,
           updatedAt: record.updatedAt || now,
           messageCount: 0,
+          isFavorite: false,
+          tags: [],
         });
         this.state.currentSessionId = record.key;
         this.state.messages = [];
@@ -345,7 +460,7 @@ export class ChatController {
     } catch {
       /* ignore */
     }
-    this._render();
+    this._emit();
   }
 
   async deleteSession(id: string) {
@@ -361,27 +476,67 @@ export class ChatController {
         else {
           this.state.messages = [];
           this.state.viewState = 'empty';
-          this.state.title = '与我聊天';
+          this.state.title = 'Chat with me';
         }
       }
     }
-    this._render();
+    this._emit();
+  }
+
+  async toggleFavorite(id: string) {
+    const session = this.state.sessions.find((s) => s.id === id);
+    if (!session) return;
+    const next = !session.isFavorite;
+    (session as SessionItem & { isFavorite: boolean }).isFavorite = next;
+    this._resortSessions();
+    this._emit();
+    try {
+      await this._sessions.update(id, { isFavorite: next });
+    } catch {
+      session.isFavorite = !next;
+      this._resortSessions();
+      this._emit();
+    }
+  }
+
+  async renameSession(id: string, title: string) {
+    const session = this.state.sessions.find((s) => s.id === id);
+    if (!session) return;
+    const trimmed = (title || '').trim();
+    if (!trimmed || trimmed === session.title) return;
+    const prev = session.title;
+    session.title = trimmed;
+    if (this.state.currentSessionId === id) this.state.title = trimmed;
+    this._emit();
+    try {
+      await this._sessions.update(id, { title: trimmed });
+    } catch {
+      session.title = prev;
+      if (this.state.currentSessionId === id) this.state.title = prev;
+      this._emit();
+    }
+  }
+
+  private _resortSessions() {
+    this.state.sessions.sort((a, b) => {
+      const aIsFavorite = !!(a as SessionItem & { isFavorite?: boolean }).isFavorite;
+      const bIsFavorite = !!(b as SessionItem & { isFavorite?: boolean }).isFavorite;
+      if (aIsFavorite !== bIsFavorite) return aIsFavorite ? -1 : 1;
+
+      return (b.updatedAt || 0) - (a.updatedAt || 0);
+    });
   }
 
   // ── Search (debounced) ─────────────────────────────────────────────
 
-  onSearchInput = (e: { target: { value: string } }) => {
-    const value = e.target.value;
-    // Update input value immediately for responsive UI
+  onSearchInput = (value: string) => {
     this.state.searchInputValue = value;
-    this._render();
-
-    // Debounce the actual filter query
+    this._emit();
     if (this._searchTimer) clearTimeout(this._searchTimer);
     this._searchTimer = setTimeout(() => {
       this.state.searchQuery = value.toLowerCase().trim();
       this.state.searchInputValue = value;
-      this._render();
+      this._emit();
     }, 300);
   };
 
@@ -424,7 +579,7 @@ export class ChatController {
   async bulkDeleteSessions() {
     const ids = this.state.selectedSessionIds;
     if (ids.length === 0) return;
-    if (!confirm(`确定要删除选中的 ${ids.length} 个会话吗？`)) return;
+    if (!confirm(`Delete ${ids.length} selected conversation(s)?`)) return;
 
     for (const id of ids) {
       try {
@@ -435,7 +590,6 @@ export class ChatController {
     }
 
     this.state.sessions = this.state.sessions.filter((s) => !ids.includes(s.id));
-    // If current session was deleted, switch to first remaining
     if (this.state.currentSessionId && ids.includes(this.state.currentSessionId)) {
       this.state.currentSessionId =
         this.state.sessions.length > 0 ? this.state.sessions[0].id : null;
@@ -443,7 +597,7 @@ export class ChatController {
       else {
         this.state.messages = [];
         this.state.viewState = 'empty';
-        this.state.title = '与我聊天';
+        this.state.title = 'Chat with me';
       }
     }
     this.setState({ batchMode: false, selectedSessionIds: [] });
@@ -455,15 +609,19 @@ export class ChatController {
     return raw
       .filter(
         (m) =>
-          !!((m.content || m.message || m.imageDataUrl || '').trim()) ||
-          m.type === 'pet',
+          !!(m.content || m.message || '').trim() ||
+          m.type === 'pet' ||
+          !!m.imageDataUrl ||
+          (Array.isArray(m.imageDataUrls) && m.imageDataUrls.length > 0),
       )
       .map((m) => ({
         type: m.type,
         content: m.content || m.message || '',
         timestamp: m.timestamp || Date.now(),
         error: !!m.error,
+        aborted: !!m.aborted,
         imageDataUrl: m.imageDataUrl,
+        imageDataUrls: Array.isArray(m.imageDataUrls) ? m.imageDataUrls : undefined,
       }));
   }
 
@@ -472,123 +630,221 @@ export class ChatController {
     if (!text.trim() && imageList.length === 0) return;
     if (this.state.isProcessing) return;
     if (!this.state.currentSessionId) {
+      await this._loadSessions();
       await this._findOrCreateSession();
       if (!this.state.currentSessionId) return;
     }
 
+    const now = Date.now();
     const userMsg: Message = {
       type: 'user',
       content: text,
-      timestamp: Date.now(),
+      timestamp: now,
       imageDataUrl: imageList.length > 0 ? imageList[0] : undefined,
+      imageDataUrls: imageList.length > 0 ? imageList : undefined,
     };
     const petMsg: Message = {
       type: 'pet',
-      content: '⏳ 正在思考...',
-      timestamp: Date.now(),
+      content: '',
+      timestamp: now + 1,
       streaming: true,
     };
     this.state.messages.push(userMsg, petMsg);
     this.state.viewState = 'messages';
     this.state.isProcessing = true;
     this.state.draftImages = [];
-    const petIdx = this.state.messages.length - 1;
-    this._render();
+    const userIdx = this.state.messages.length - 2;
+    this._emit();
 
+    await this._runStream(userIdx, petMsg.timestamp, 'send');
+  };
+
+  /**
+   * Shared streaming helper — sends the latest user message to the chat
+   * service and writes streamed chunks into the pet message identified by
+   * `petTimestamp`. Mirrors YiVad runStream (single-turn payload form).
+   */
+  private async _runStream(
+    userIdx: number,
+    petTimestamp: number,
+    type: 'send' | 'regenerate' | 'resend',
+  ) {
+    const slice = this.state.messages.slice(0, userIdx + 1);
+    const lastUserMsg = slice[slice.length - 1];
+    const images =
+      lastUserMsg?.imageDataUrls ?? (lastUserMsg?.imageDataUrl ? [lastUserMsg.imageDataUrl] : []);
+    const sessionPageContent = this._currentPageContent();
+    const userContent =
+      this.state.contextEnabled && sessionPageContent
+        ? `${sessionPageContent}\n\n---\n\n${lastUserMsg?.content || ''}`
+        : lastUserMsg?.content || '';
+
+    this.state.streamingTargetTimestamp = petTimestamp;
+    this.state.streamingType = type;
+    this.state.isProcessing = true;
     this._abortController = new AbortController();
-    let responseText = '';
+    let streamed = '';
+    let lastScrollAt = 0;
+    const SCROLL_THROTTLE_MS = 120;
+
+    const findPetIdx = () => this.state.messages.findIndex((m) => m.timestamp === petTimestamp);
 
     try {
-      responseText = await this._chat.streamWithCallback(
-        { user: text, conversation_id: this.state.currentSessionId },
+      streamed = await this._chat.streamWithCallback(
+        {
+          system: this.state.systemPrompt,
+          user: userContent,
+          model: DEFAULT_MODEL,
+          images: images.length > 0 ? images : undefined,
+        },
         (token) => {
-          responseText += token;
-          this.state.messages[petIdx].content = responseText;
-          this._render();
+          streamed += token;
+          const idx = findPetIdx();
+          if (idx >= 0) {
+            this.state.messages[idx].content = streamed;
+            this.state.messages[idx].error = false;
+            this.state.messages[idx].aborted = false;
+          }
+          const now2 = Date.now();
+          if (now2 - lastScrollAt > SCROLL_THROTTLE_MS) {
+            lastScrollAt = now2;
+            this.state.scrollTick++;
+          }
+          this._emit();
         },
         this._abortController.signal,
       );
 
-      const final = responseText.trim() || '请继续。';
-      this.state.messages[petIdx].streaming = false;
-      this.state.messages[petIdx].content = final;
+      const idx = findPetIdx();
+      if (idx >= 0) {
+        const final = streamed.trim() || 'Please continue.';
+        this.state.messages[idx].streaming = false;
+        this.state.messages[idx].content = final;
+      }
+      const target = this.state.sessions.find((s) => s.id === this.state.currentSessionId);
+      if (target) target.messageCount = this.state.messages.length;
 
-      // Update session message count
-      const session = this.state.sessions.find((s) => s.id === this.state.currentSessionId);
-      if (session) session.messageCount = this.state.messages.length;
-
-      // Persist full message history to backend
       this._persistMessages();
+      if (streamed.trim()) this._forwardToWeWorkBots(streamed);
     } catch (err: unknown) {
       const isAbort = (err as Error)?.name === 'AbortError';
-      this.state.messages[petIdx].streaming = false;
-      if (!isAbort) {
-        this.state.messages[petIdx].content = `❌ ${(err as Error).message || '发送失败'}`;
-        this.state.messages[petIdx].error = true;
-      } else {
-        this.state.messages[petIdx].content = responseText || '请求已取消。';
+      const idx = findPetIdx();
+      if (idx >= 0) {
+        this.state.messages[idx].streaming = false;
+        if (isAbort) {
+          this.state.messages[idx].aborted = true;
+          this.state.messages[idx].content = streamed.trim() || 'Stopped';
+        } else {
+          this.state.messages[idx].error = true;
+          this.state.messages[idx].content =
+            streamed || `❌ ${(err as Error).message || 'Generation failed'}`;
+        }
       }
+      this._persistMessages();
     } finally {
       this.state.isProcessing = false;
+      this.state.streamingTargetTimestamp = null;
+      this.state.streamingType = '';
       this._abortController = null;
-      // Scroll to bottom after response
       setTimeout(() => this.scrollToBottom(true), 50);
+      this._emit();
     }
-    this._render();
+  }
+
+  stopSending = () => {
+    const targetTs = this.state.streamingTargetTimestamp;
+    this._abortController?.abort();
+    this._abortController = null;
+    this.state.isProcessing = false;
+    this.state.streamingTargetTimestamp = null;
+    this.state.streamingType = '';
+    if (targetTs !== null) {
+      const idx = this.state.messages.findIndex((m) => m.timestamp === targetTs);
+      if (idx >= 0) {
+        const trimmed = (this.state.messages[idx].content || '').trim();
+        this.state.messages[idx].streaming = false;
+        this.state.messages[idx].aborted = true;
+        this.state.messages[idx].content = trimmed || 'Stopped';
+      }
+    }
+    this._persistMessages();
+    this._emit();
   };
 
-  abortRequest = () => {
-    if (this._abortController) {
-      this._abortController.abort();
-      this._abortController = null;
-    }
+  submitFeedback = (timestamp: number, rating: 'like' | 'dislike') => {
+    const current = this.state.feedback[timestamp];
+    const next = current === rating ? null : rating;
+    this.state.feedback = { ...this.state.feedback, [timestamp]: next };
+    this._emit();
   };
 
   // ── Message Actions ───────────────────────────────────────────────
 
-  copyMessage = async (text: string) => {
+  copyMessage = async (text: string, timestamp?: number) => {
     if (!text.trim()) return;
     try {
       await navigator.clipboard.writeText(text);
+      if (timestamp !== undefined) {
+        this.state.copyFeedback = {
+          ...this.state.copyFeedback,
+          [String(timestamp)]: 'copied',
+        };
+        this._emit();
+        setTimeout(() => {
+          const next = { ...this.state.copyFeedback };
+          delete next[String(timestamp)];
+          this.state.copyFeedback = next;
+          this._emit();
+        }, 2000);
+      } else {
+        this._notify('Copied', 'success');
+      }
     } catch {
       /* ignore */
     }
   };
 
-  editMessage = (idx: number) => {
+  editMessage = (idx: number, content?: string) => {
     const msg = this.state.messages[idx];
-    if (!msg || msg.type !== 'user') return;
-    const newContent = prompt('编辑消息内容：', msg.content);
-    if (newContent === null || newContent === msg.content) return;
-    msg.content = newContent;
-    // Persist edit
+    if (msg?.type !== 'user') return;
+    if (content === undefined) return;
+    if (content === msg.content) return;
+    msg.content = content;
     this._persistMessages();
-    this._render();
+    this._emit();
   };
 
-  resendMessage = (idx: number) => {
+  resendMessage = async (idx: number) => {
     const msg = this.state.messages[idx];
-    if (!msg || msg.type !== 'user') return;
+    if (msg?.type !== 'user') return;
+    if (this.state.isProcessing) return;
     const text = msg.content?.trim();
-    if (!text) return;
-    // Remove messages from this index onward
-    this.state.messages = this.state.messages.slice(0, idx);
-    this._render();
-    // Re-send
-    this.sendMessage(text);
+    const images = msg.imageDataUrls ?? (msg.imageDataUrl ? [msg.imageDataUrl] : []);
+    if (!text && images.length === 0) return;
+
+    const now = Date.now();
+    const insertedPet: Message = {
+      type: 'pet',
+      content: '',
+      timestamp: now + 1,
+      streaming: true,
+    };
+    this.state.messages.splice(idx + 1, 0, insertedPet);
+    this.state.viewState = 'messages';
+    this.state.scrollTick++;
+    this._emit();
+
+    await this._runStream(idx, insertedPet.timestamp, 'resend');
   };
 
   deleteMessage = (idx: number) => {
     if (idx < 0 || idx >= this.state.messages.length) return;
-    // Delete the message and the paired reply (user+pet or pet alone)
     const msg = this.state.messages[idx];
     let deleteCount = 1;
     if (msg.type === 'user' && idx + 1 < this.state.messages.length) {
-      // Also delete the following pet message
       const next = this.state.messages[idx + 1];
       if (next.type === 'pet') deleteCount = 2;
     } else if (msg.type === 'pet' && idx - 1 >= 0) {
-      // Also delete the preceding user message
       const prev = this.state.messages[idx - 1];
       if (prev.type === 'user') {
         this.state.messages.splice(idx - 1, 2);
@@ -597,23 +853,21 @@ export class ChatController {
       }
       this.state.viewState = this.state.messages.length > 0 ? 'messages' : 'empty';
       this._persistMessages();
-      this._render();
+      this._emit();
       return;
     }
     this.state.messages.splice(idx, deleteCount);
     this.state.viewState = this.state.messages.length > 0 ? 'messages' : 'empty';
     this._persistMessages();
-    this._render();
+    this._emit();
   };
 
   moveMessageUp = (idx: number) => {
     if (idx <= 1) return;
-    // Swap the user+pet pair at idx with the pair above
     const msg = this.state.messages[idx];
     const isPet = msg.type === 'pet';
     const pairStart = isPet ? idx - 1 : idx;
     if (pairStart < 2) return;
-    // Find previous pair end
     const prevPairEnd = pairStart - 1;
     const prevMsg = this.state.messages[prevPairEnd];
     const prevIsPet = prevMsg.type === 'pet';
@@ -624,15 +878,16 @@ export class ChatController {
     const insertAt = prevPairStart;
     this.state.messages.splice(insertAt, 0, ...currentPair);
     this._persistMessages();
-    this._render();
+    this._emit();
   };
 
   moveMessageDown = (idx: number) => {
+    if (idx < 0 || idx >= this.state.messages.length) return;
     const msg = this.state.messages[idx];
     const isUser = msg.type === 'user';
+    if (!isUser && idx - 1 < 0) return;
     const pairEnd = isUser ? idx + 1 : idx;
     if (pairEnd >= this.state.messages.length - 1) return;
-    // Find next pair start
     const nextPairStart = pairEnd + 1;
     if (nextPairStart >= this.state.messages.length) return;
 
@@ -647,23 +902,34 @@ export class ChatController {
     const insertAt = currentPairStart + nextPair.length;
     this.state.messages.splice(insertAt, 0, ...currentPair);
     this._persistMessages();
-    this._render();
+    this._emit();
   };
 
-  regenerateMessage = (idx: number) => {
+  regenerateMessage = async (idx: number) => {
     const msg = this.state.messages[idx];
-    if (!msg || msg.type !== 'pet') return;
+    if (msg?.type !== 'pet') return;
     if (this.state.isProcessing) return;
-    // Find the preceding user message
     let userIdx = idx - 1;
     while (userIdx >= 0 && this.state.messages[userIdx].type !== 'user') userIdx--;
     if (userIdx < 0) return;
-    const userText = this.state.messages[userIdx].content?.trim();
-    if (!userText) return;
-    // Remove from userIdx onward
-    this.state.messages = this.state.messages.slice(0, userIdx);
-    this._render();
-    this.sendMessage(userText);
+    const userMsg = this.state.messages[userIdx];
+    const text = userMsg.content?.trim();
+    const images = userMsg.imageDataUrls ?? (userMsg.imageDataUrl ? [userMsg.imageDataUrl] : []);
+    if (!text && images.length === 0) return;
+
+    const petTimestamp = msg.timestamp || Date.now();
+    this.state.messages[idx] = {
+      type: 'pet',
+      content: '',
+      timestamp: petTimestamp,
+      streaming: true,
+      error: false,
+      aborted: false,
+    };
+    this.state.scrollTick++;
+    this._emit();
+
+    await this._runStream(userIdx, petTimestamp, 'regenerate');
   };
 
   private _persistMessages() {
@@ -673,7 +939,9 @@ export class ChatController {
       content: m.content,
       timestamp: m.timestamp,
       error: m.error,
+      aborted: m.aborted,
       imageDataUrl: m.imageDataUrl,
+      imageDataUrls: m.imageDataUrls,
     }));
     this._sessions.update(this.state.currentSessionId, { messages: msgs }).catch(() => {});
   }
@@ -705,44 +973,332 @@ export class ChatController {
     const value = !this.state.contextEnabled;
     this.state.contextEnabled = value;
     this._persistSetting('contextEnabled', value);
-    this._render();
+    this._emit();
   };
 
-  // ── Toolbar Actions (stubs for future implementation) ──────────────
+  // ── Toolbar Actions ─────────────────────────────────────────────────
 
   openContextEditor = () => {
-    this._notify('页面上下文编辑器即将推出', 'info');
+    // Load the draft from the current session's saved pageContent so the
+    // editor opens with the correct content. Without this, the draft would
+    // be empty (initial state) or stale (from a previous session the user
+    // saved context on), and saving would silently overwrite the live
+    // pageContent with empty/stale text.
+    const session = this.state.sessions.find((s) => s.id === this.state.currentSessionId);
+    if (session) {
+      this.state.contextEditorDraft = session.pageContent || '';
+    }
+    this.state.contextEditorVisible = true;
+    this._emit();
+  };
+
+  closeContextEditor = () => {
+    this.state.contextEditorVisible = false;
+    this._emit();
+  };
+
+  setContextEditorDraft = (content: string) => {
+    this.state.contextEditorDraft = content;
+    this._emit();
+  };
+
+  saveContextEditorContent = (content: string) => {
+    this.state.contextEditorDraft = content;
+    this.state.contextEditorVisible = false;
+    if (this.state.currentSessionId) {
+      // Keep the local session's pageContent in sync with the backend write
+      // so subsequent _runStream calls and re-opened editors see the new
+      // content without needing a re-fetch.
+      const session = this.state.sessions.find((s) => s.id === this.state.currentSessionId);
+      if (session) session.pageContent = content;
+      this._sessions.update(this.state.currentSessionId, { pageContent: content }).catch(() => {});
+    }
+    this._notify('Page context saved', 'success');
+    this._emit();
   };
 
   editSessionInfo = () => {
     if (!this.state.currentSessionId) {
-      this._notify('请先选择一个会话', 'warning');
+      this._notify('Please select a conversation first', 'warning');
       return;
     }
+    this.state.sessionEditVisible = true;
+    this._emit();
+  };
+
+  closeSessionEdit = () => {
+    this.state.sessionEditVisible = false;
+    this._emit();
+  };
+
+  updateSessionMeta = (patch: { title?: string; pageTitle?: string; pageDescription?: string }) => {
+    if (!this.state.currentSessionId) return;
     const session = this.state.sessions.find((s) => s.id === this.state.currentSessionId);
-    const newTitle = prompt('编辑会话标题：', session?.title || '');
-    if (newTitle === null || !newTitle.trim()) return;
-    if (session) {
-      session.title = newTitle.trim();
-      this.state.title = newTitle.trim();
-      this._sessions
-        .update(this.state.currentSessionId, { title: newTitle.trim() })
-        .catch(() => {});
-      this._notify('会话标题已更新', 'success');
+    if (session && patch.title !== undefined) {
+      session.title = patch.title;
+      this.state.title = patch.title;
     }
-    this._render();
+    this._sessions
+      .update(this.state.currentSessionId, patch as Record<string, unknown>)
+      .catch(() => {});
+    this.state.sessionEditVisible = false;
+    this._notify('Conversation info updated', 'success');
+    this._emit();
   };
 
   openTagManager = () => {
-    this._notify('标签管理功能即将推出', 'info');
+    this.state.tagManagerVisible = true;
+    this._emit();
+  };
+
+  closeTagManager = () => {
+    this.state.tagManagerVisible = false;
+    this._emit();
+  };
+
+  addTag = (name: string) => {
+    const tag = name.trim();
+    if (!tag) return;
+    const session = this.state.sessions.find((s) => s.id === this.state.currentSessionId);
+    if (!session) return;
+    const tags = Array.isArray(session.tags) ? session.tags : [];
+    if (tags.includes(tag)) return;
+    session.tags = [...tags, tag];
+    if (this.state.currentSessionId) {
+      this._sessions.update(this.state.currentSessionId, { tags: [...tags, tag] }).catch(() => {});
+    }
+    this._emit();
+  };
+
+  removeTag = (name: string) => {
+    const session = this.state.sessions.find((s) => s.id === this.state.currentSessionId);
+    if (!session) return;
+    const tags = Array.isArray(session.tags) ? session.tags : [];
+    const next = tags.filter((t) => t !== name);
+    session.tags = next;
+    if (this.state.currentSessionId) {
+      this._sessions.update(this.state.currentSessionId, { tags: next }).catch(() => {});
+    }
+    this._emit();
   };
 
   openFaqManager = () => {
-    this._notify('常见问题功能即将推出', 'info');
+    this.state.faqVisible = true;
+    this._emit();
   };
 
+  closeFaq = () => {
+    this.state.faqVisible = false;
+    this._emit();
+  };
+
+  setFaqSearch = (value: string) => {
+    this.state.faqSearch = value;
+    this._emit();
+  };
+
+  setFaqApplyMode = (mode: 'append' | 'insert') => {
+    this.state.faqApplyMode = mode;
+    this._emit();
+  };
+
+  setInputTemplate = (content: string) => {
+    this.state.inputTemplate = content;
+    this._emit();
+  };
+
+  sendQuickButton = (content: string) => {
+    if (this.state.isProcessing) return;
+    this.sendMessage(content);
+  };
+
+  get currentSessionTags(): string[] {
+    const session = this.state.sessions.find((s) => s.id === this.state.currentSessionId);
+    if (!session) return [];
+    return Array.isArray(session.tags) ? session.tags : [];
+  }
+
+  // ── Conversation tree (mirrors aicr FileTree — folders from tags joined by /) ──
+
+  conversationTreeData(): TreeDataNode[] {
+    type Acc = Record<string, FileNode>;
+    interface FileNode {
+      key: string;
+      name: string;
+      type: 'file' | 'folder';
+      children?: Acc;
+      session?: SessionItem;
+      updatedAt?: number;
+    }
+    this._treeSessionMap = new Map();
+    const root: Acc = {};
+    for (const c of this.filteredSessions) {
+      const tags = (c.tags ?? []).map((t) => String(t).trim()).filter(Boolean);
+      const parts = [...tags, c.id];
+      if (parts.length === 0) continue;
+      let current = root;
+      for (let i = 0; i < parts.length; i++) {
+        const seg = parts[i];
+        const isLast = i === parts.length - 1;
+        const key = parts.slice(0, i + 1).join('/');
+        if (!current[seg]) {
+          current[seg] = {
+            key,
+            name: isLast ? (c.title || '(Untitled)') : seg,
+            type: isLast ? 'file' : 'folder',
+            children: isLast ? undefined : {},
+            session: isLast ? c : undefined,
+            updatedAt: c.updatedAt,
+          };
+        }
+        if (!isLast) {
+          const node = current[seg];
+          if (!node.children) node.children = {};
+          current = node.children;
+        }
+      }
+    }
+    const toArray = (nodes: Acc): TreeDataNode[] =>
+      Object.values(nodes)
+        .map((n) => {
+          if (n.session) this._treeSessionMap.set(n.key, n.session);
+          return {
+            key: n.key,
+            title: n.name,
+            children: n.children ? toArray(n.children) : undefined,
+            isLeaf: n.type === 'file',
+          } as TreeDataNode;
+        })
+        .sort((a, b) => {
+          const ta = (a as any).isLeaf;
+          const tb = (b as any).isLeaf;
+          if (ta !== tb) return ta ? 1 : -1;
+          return String(a.title).localeCompare(String(b.title), 'zh-CN');
+        });
+    return toArray(root);
+  }
+
+  treeSessionByKey(key: string): SessionItem | undefined {
+    return this._treeSessionMap.get(key);
+  }
+
+  expandedFolderKeys(): string[] {
+    const keys: string[] = [];
+    const walk = (nodes: TreeDataNode[]) => {
+      for (const n of nodes) {
+        if (!(n as any).isLeaf) keys.push(String(n.key));
+        if (n.children) walk(n.children);
+      }
+    };
+    walk(this.conversationTreeData());
+    return keys;
+  }
+
   openWeChatSettings = () => {
-    this._notify('机器人设置功能即将推出', 'info');
+    this.state.weChatRobotsDraft = this.state.weChatRobots.map((r) => ({ ...r }));
+    this.state.weChatSettingsVisible = true;
+    this._emit();
+  };
+
+  closeWeChatSettings = () => {
+    this.state.weChatSettingsVisible = false;
+    this._emit();
+  };
+
+  restoreWeChatSettingsDefaults = () => {
+    this.state.weChatRobotsDraft = [];
+    this._emit();
+  };
+
+  addWeChatRobotDraft = () => {
+    const list = [...this.state.weChatRobotsDraft];
+    const idx = list.length + 1;
+    list.push({
+      id: 'wr_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+      name: 'Bot ' + idx,
+      webhook: '',
+      enabled: true,
+      autoForward: true,
+    });
+    this.state.weChatRobotsDraft = list;
+    this._emit();
+  };
+
+  removeWeChatRobotDraft = (index: number) => {
+    const i = Number(index);
+    const list = [...this.state.weChatRobotsDraft];
+    if (!Number.isFinite(i) || i < 0 || i >= list.length) return;
+    list.splice(i, 1);
+    this.state.weChatRobotsDraft = list;
+    this._emit();
+  };
+
+  updateWeChatRobotDraft = (index: number, patch: Partial<WeWorkBot>) => {
+    const i = Number(index);
+    const list = [...this.state.weChatRobotsDraft];
+    if (!Number.isFinite(i) || i < 0 || i >= list.length) return;
+    list[i] = { ...list[i], ...patch };
+    this.state.weChatRobotsDraft = list;
+    this._emit();
+  };
+
+  saveWeChatSettings = () => {
+    const drafts = this.state.weChatRobotsDraft;
+    const normalized: WeWorkBot[] = drafts
+      .map((r) => ({
+        id: r.id || 'wr_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+        name: (r.name || '').trim() || 'Bot',
+        webhook: (r.webhook || '').trim(),
+        enabled: !!r.enabled,
+        autoForward: !!r.autoForward,
+      }))
+      .filter((r) => r.webhook);
+    const dropped = drafts.length - normalized.length;
+    this.state.weChatRobots = normalized;
+    this.state.weChatRobotsDraft = normalized.map((r) => ({ ...r }));
+    this._persistSetting('weChatRobots', normalized);
+    this.state.weChatSettingsVisible = false;
+    if (dropped > 0) {
+      this._notify(`Saved; ${dropped} bot(s) with empty webhook ignored`, 'warning');
+    } else {
+      this._notify('Saved', 'success');
+    }
+  };
+
+  private _forwardToWeWorkBots(content: string) {
+    const text = (content || '').trim();
+    if (!text) return;
+    const targets = this.state.weChatRobots.filter((r) => r.enabled && r.autoForward && r.webhook);
+    if (targets.length === 0) return;
+    targets.forEach((bot) => {
+      this._wework
+        .sendMessage({ webhook_url: bot.webhook, content: text })
+        .then((res) => {
+          if (!res.ok) {
+            this._notify(`Forward to ${bot.name} failed: ${res.error || 'Unknown error'}`, 'error');
+          }
+        })
+        .catch((err: unknown) => {
+          this._notify(
+            `Forward to ${bot.name} failed: ${(err as Error)?.message || 'Unknown error'}`,
+            'error',
+          );
+        });
+    });
+  }
+
+  // ── Voice input notifications ─────────────────────────────────────
+
+  notifyVoiceUnsupported = () => {
+    this._notify('Voice input not supported in this browser', 'warning');
+  };
+
+  notifyVoicePermissionDenied = () => {
+    this._notify('Microphone permission denied', 'error');
+  };
+
+  notifyVoiceStartFailed = (message: string) => {
+    this._notify(`Failed to start voice input: ${message}`, 'error');
   };
 
   // ── Scroll ────────────────────────────────────────────────────────
@@ -770,13 +1326,13 @@ export class ChatController {
     const collapsed = !this.state.sidebarCollapsed;
     this.state.sidebarCollapsed = collapsed;
     this._persistSetting('sidebarCollapsed', collapsed);
-    this._render();
+    this._emit();
   };
 
   toggleFullscreen = () => {
     const ws = this.state.ws;
     ws.isFullscreen = !ws.isFullscreen;
-    this._render();
+    this._emit();
   };
 
   // ── Sidebar Resize ────────────────────────────────────────────────
@@ -799,7 +1355,7 @@ export class ChatController {
       MAX_SIDEBAR_WIDTH,
     );
     this.state.sidebarWidth = newWidth;
-    this._render();
+    this._emit();
   };
 
   private _onSidebarResizeEnd = () => {
@@ -834,14 +1390,14 @@ export class ChatController {
         this._dragStart.wy + (e.clientY - this._dragStart.y),
       ),
     );
-    this._render();
+    this._emit();
   };
 
   private _onDragEnd = () => {
     this.state.isDragging = false;
     document.removeEventListener('mousemove', this._onDragMove);
     document.removeEventListener('mouseup', this._onDragEnd);
-    this._render();
+    this._emit();
   };
 
   // ── Resize ───────────────────────────────────────────────────────
@@ -853,6 +1409,7 @@ export class ChatController {
     this._resizeStart = {
       x: e.clientX,
       y: e.clientY,
+      wx: this.state.ws.x,
       w: this.state.ws.width,
       h: this.state.ws.height,
     };
@@ -869,25 +1426,20 @@ export class ChatController {
     const dy = e.clientY - this._resizeStart.y;
     if (this._resizeDir.includes('e')) ws.width = Math.max(MIN_WIDTH, this._resizeStart.w + dx);
     if (this._resizeDir.includes('s')) ws.height = Math.max(MIN_HEIGHT, this._resizeStart.h + dy);
-    this._render();
+    if (this._resizeDir.includes('w')) {
+      const newWidth = this._resizeStart.w - dx;
+      if (newWidth >= MIN_WIDTH) {
+        ws.width = newWidth;
+        ws.x = Math.max(0, this._resizeStart.wx + dx);
+      }
+    }
+    this._emit();
   };
 
   private _onResizeEnd = () => {
     this.state.isResizing = false;
     document.removeEventListener('mousemove', this._onResizeMove);
     document.removeEventListener('mouseup', this._onResizeEnd);
-    this._render();
+    this._emit();
   };
-
-  // ── Render ───────────────────────────────────────────────────────
-
-  private _render() {
-    if (!this._rootEl) return;
-    const c = React.createElement as (...args: unknown[]) => unknown;
-    const el = c(ChatWindowRender, { controller: this });
-    (ReactDOM as unknown as { render: (e: unknown, c: HTMLElement) => void }).render(
-      el,
-      this._rootEl,
-    );
-  }
 }

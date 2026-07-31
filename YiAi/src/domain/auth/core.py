@@ -1,15 +1,12 @@
 """Auth domain logic — password hashing and JWT token management.
 
 Password flow:
-  Client sends SHA-256(password) over the wire.
-  Server stores bcrypt(SHA-256(password)) in MongoDB.
-  On login, server runs bcrypt.verify(received_sha256, stored_hash).
-
-This ensures the plaintext password never leaves the client.
+  Client sends the plaintext password over HTTPS.
+  Server stores bcrypt(password) in MongoDB.
+  On login, server runs bcrypt.checkpw(received_password, stored_hash).
 """
-import hashlib
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 import bcrypt
@@ -22,28 +19,32 @@ logger = logging.getLogger(__name__)
 _JWT_ALGORITHM = "HS256"
 
 
-def _sha256(plain: str) -> str:
-    """Compute SHA-256 hex digest of a string."""
-    return hashlib.sha256(plain.encode("utf-8")).hexdigest()
-
-
 def hash_password(plain: str) -> str:
-    """Return bcrypt(SHA-256(plain)) for storage.
+    """Return bcrypt(plain) for storage.
 
     Call this when creating / updating a user password.
-    The *plain* argument is the raw password as received from the client
-    (which should already be SHA-256 hashed on the client side).
+    *plain* is the password string received from the client.
     """
-    hashed = _sha256(plain)
-    return bcrypt.hashpw(hashed.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+    return bcrypt.hashpw(plain.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
 
 def verify_password(plain: str, stored: str) -> bool:
-    """Verify a password against a stored bcrypt(SHA-256(*)) hash.
+    """Verify a password against a stored bcrypt(*) hash.
 
-    *plain* is the received SHA-256 hex string from the client.
+    Returns False on any failure (empty/malformed stored hash, no match).
+    Never raises — callers in the login flow rely on a bool so they can map
+    False to a clean 401 instead of a 500 from an uncaught ValueError.
     """
-    return bcrypt.checkpw(plain.encode("utf-8"), stored.encode("utf-8"))
+    if not plain or not stored:
+        return False
+    try:
+        return bcrypt.checkpw(plain.encode("utf-8"), stored.encode("utf-8"))
+    except (ValueError, TypeError) as exc:
+        # bcrypt raises ValueError("Invalid salt") for empty/malformed stored
+        # hashes — e.g. legacy rows with no password field, corrupted migrations,
+        # or someone stored plaintext. Treat as "no match", not a crash.
+        logger.warning(f"verify_password rejected malformed stored hash: {exc}")
+        return False
 
 
 def create_jwt(user_id: str, username: str) -> str:
@@ -58,8 +59,8 @@ def create_jwt(user_id: str, username: str) -> str:
     payload = {
         "sub": user_id,
         "username": username,
-        "iat": datetime.utcnow(),
-        "exp": datetime.utcnow() + timedelta(minutes=expire_minutes),
+        "iat": datetime.now(timezone.utc),
+        "exp": datetime.now(timezone.utc) + timedelta(minutes=expire_minutes),
     }
     return jwt.encode(payload, secret, algorithm=_JWT_ALGORITHM)
 

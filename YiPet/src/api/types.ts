@@ -55,8 +55,8 @@ export interface ChatResponse {
 export interface QueryParams {
   /** Collection name (cname for short). */
   cname: string;
-  /** MongoDB query filter. */
-  query?: Record<string, unknown>;
+  /** MongoDB query filter (merged into the backend's query_params). */
+  filter?: Record<string, unknown>;
   /** Sort specification. */
   sort?: Record<string, number>;
   /** Page number (1-indexed). */
@@ -75,9 +75,7 @@ export interface CreateParams {
 export interface UpdateParams {
   cname: string;
   /** Document key (for sessions collection). */
-  key?: string;
-  /** Alternative: file_path query (for sessions collection). */
-  file_path?: string;
+  key: string;
   data: Record<string, unknown>;
 }
 
@@ -118,6 +116,7 @@ export interface SessionRecord {
   createdAt?: number;
   updatedAt?: number;
   lastAccessTime?: number;
+  isFavorite?: boolean;
 }
 
 export interface ChatMessage {
@@ -126,6 +125,7 @@ export interface ChatMessage {
   message?: string;
   timestamp?: number;
   imageDataUrl?: string;
+  imageDataUrls?: string[];
   error?: boolean;
   aborted?: boolean;
 }
@@ -186,4 +186,31 @@ export interface StateQueryParams {
   created_before?: string;
   page_num?: number;
   page_size?: number;
+}
+
+// ── WeCom Bot Webhook ───────────────────────────────────────────
+
+/** A user-configured WeCom bot. Stored locally (chrome.storage) per browser. */
+export interface WeWorkBot {
+  /** Stable ID for list keys. */
+  id: string;
+  /** Display name shown in UI and per-message action buttons. */
+  name: string;
+  /** Full WeCom webhook URL (https://qyapi.weixin.qq.com/...). */
+  webhook: string;
+  /** Disabled bots are skipped for both manual and auto-forward. */
+  enabled: boolean;
+  /** When true, pet responses are auto-posted to this bot after streaming. */
+  autoForward: boolean;
+}
+
+/** Request body for POST /wework/send-message. */
+export interface WeWorkSendMessageParams {
+  webhook_url: string;
+  content: string;
+}
+
+/** Response from POST /wework/send-message. */
+export interface WeWorkSendMessageResult {
+  message?: string;
 }

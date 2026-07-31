@@ -44,7 +44,6 @@ const THEMES: ThemeRecord[] = [
     '--input-bg': '#1a1835',
     '--input-border': 'rgba(167,139,250,0.2)',
     '--selection-bg': 'rgba(102,126,234,0.3)',
-    '--shadow-primary': '0 4px 20px rgba(102,126,234,0.4),0 0 0 1px rgba(255,255,255,0.1) inset',
     '--green': '#667eea',
   },
   {
@@ -78,7 +77,6 @@ const THEMES: ThemeRecord[] = [
     '--input-bg': '#181730',
     '--input-border': 'rgba(129,140,248,0.2)',
     '--selection-bg': 'rgba(99,102,241,0.3)',
-    '--shadow-primary': '0 4px 20px rgba(99,102,241,0.4),0 0 0 1px rgba(255,255,255,0.1) inset',
     '--green': '#6366f1',
   },
   {
@@ -112,7 +110,6 @@ const THEMES: ThemeRecord[] = [
     '--input-bg': '#0f1e28',
     '--input-border': 'rgba(34,211,238,0.2)',
     '--selection-bg': 'rgba(6,182,212,0.3)',
-    '--shadow-primary': '0 4px 20px rgba(6,182,212,0.4),0 0 0 1px rgba(255,255,255,0.1) inset',
     '--green': '#06b6d4',
   },
   {
@@ -146,7 +143,6 @@ const THEMES: ThemeRecord[] = [
     '--input-bg': '#0f1e16',
     '--input-border': 'rgba(52,211,153,0.2)',
     '--selection-bg': 'rgba(34,197,94,0.3)',
-    '--shadow-primary': '0 4px 20px rgba(34,197,94,0.4),0 0 0 1px rgba(255,255,255,0.1) inset',
     '--green': '#22c55e',
   },
   {
@@ -180,26 +176,70 @@ const THEMES: ThemeRecord[] = [
     '--input-bg': '#1f180e',
     '--input-border': 'rgba(251,191,36,0.2)',
     '--selection-bg': 'rgba(245,158,11,0.3)',
-    '--shadow-primary': '0 4px 20px rgba(245,158,11,0.4),0 0 0 1px rgba(255,255,255,0.1) inset',
     '--green': '#f59e0b',
   },
 ];
 
 export const THEME_COUNT = THEMES.length;
 
-export function getGradientByIndex(idx: number): string {
-  if (idx < 0) return 'none';
-  const safe = idx >= 0 && idx < THEME_COUNT ? idx : 0;
-  return THEMES[safe]['--primary-gradient'] || 'none';
-}
+/**
+ * None palette — light/neutral theme applied when idx < 0 (Color Theme = None).
+ * Black text on white background instead of variables.css dark defaults, so
+ * the host page body and the YiPet chat modal both render with black fonts.
+ */
+const NONE_THEME: ThemeRecord = {
+  '--primary': '#6366f1',
+  '--primary-hover': '#4f46e5',
+  '--primary-light': '#818cf8',
+  '--primary-gradient': 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)',
+  '--primary-gradient-hover': 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #9333ea 100%)',
+  '--primary-rgb': '99,102,241',
+  '--primary-alpha': 'rgba(99,102,241,0.1)',
+  '--bg-primary': '#ffffff',
+  '--bg-secondary': '#f9fafb',
+  '--bg-tertiary': '#f3f4f6',
+  '--bg-elevated': '#ffffff',
+  '--bg-gradient': 'linear-gradient(135deg, #ffffff 0%, #f9fafb 50%, #f3f4f6 100%)',
+  '--accent': '#6366f1',
+  '--accent-rgb': '99,102,241',
+  '--accent-gradient': 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)',
+  '--border-secondary': 'rgba(99,102,241,0.2)',
+  '--border-focus': '#6366f1',
+  '--text-primary': '#1f2937',
+  '--text-secondary': '#4b5563',
+  '--text-accent': '#4f46e5',
+  '--link-color': '#4f46e5',
+  '--placeholder-color': 'rgba(0,0,0,0.4)',
+  '--button-bg': '#6366f1',
+  '--button-hover': '#4f46e5',
+  '--button-text': '#ffffff',
+  '--input-bg': '#ffffff',
+  '--input-border': 'rgba(0,0,0,0.15)',
+  '--selection-bg': 'rgba(99,102,241,0.2)',
+  '--green': '#6366f1',
+};
 
+/**
+ * Inject the active theme's full palette onto a root element's inline style.
+ * Primary, background, accent, border, text, button, input, and selection
+ * tokens are all written, so the Color Theme setting recolors the entire
+ * page surface — fonts, buttons, backgrounds, borders, accents — not just
+ * the brand primary. Pass idx = -1 to apply the None palette (light theme,
+ * black text on white background) instead of clearing.
+ */
 export function applyThemeColors(root: HTMLElement, idx: number): void {
+  const s = root.style;
   if (idx < 0) {
-    for (const k of Object.keys(THEMES[0])) root.style.removeProperty(k);
+    for (const [k, v] of Object.entries(NONE_THEME)) {
+      s.setProperty(k, v);
+    }
+    s.colorScheme = 'light';
     return;
   }
+  s.colorScheme = 'dark';
   const safe = idx >= 0 && idx < THEME_COUNT ? idx : 0;
   const vars = THEMES[safe];
-  const s = root.style;
-  for (const key of Object.keys(vars)) s.setProperty(key, vars[key]);
+  for (const [k, v] of Object.entries(vars)) {
+    s.setProperty(k, v);
+  }
 }

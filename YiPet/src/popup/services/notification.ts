@@ -1,35 +1,22 @@
 /**
- * Toast notification controller — auto-dismissing popup toasts.
+ * Toast notification controller — thin wrapper over antd `message` static API.
+ * Toast lifetime is managed by antd internally; dismiss() is a no-op kept
+ * for interface compatibility.
  */
+import { message as antdMessage } from 'antd';
 
 export interface NotifyController {
-  show(message: string, type?: 'success' | 'error' | 'info'): void;
+  show(message: string, type?: 'success' | 'error' | 'info' | 'warning'): void;
   dismiss(): void;
 }
 
-export function createNotifyController(
-  setState: (patch: Record<string, unknown>) => void,
-  timerRef: { current: ReturnType<typeof setTimeout> | null },
-  duration = 3000,
-): NotifyController {
+export function createNotifyController(): NotifyController {
   return {
-    show(message: string, type: 'success' | 'error' | 'info' = 'info') {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-      setState({ notification: { visible: true, message, type } });
-      timerRef.current = setTimeout(() => {
-        setState({ notification: { visible: false, message: '', type: 'info' } });
-        timerRef.current = null;
-      }, duration);
+    show(msg: string, type: 'success' | 'error' | 'info' | 'warning' = 'info'): void {
+      antdMessage[type](msg);
     },
-
-    dismiss() {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-      }
-      setState({ notification: { visible: false, message: '', type: 'info' } });
+    dismiss(): void {
+      /* no-op — antd message auto-dismisses */
     },
   };
 }

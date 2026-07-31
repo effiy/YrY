@@ -18,7 +18,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     for error in error_details:
         # Get field path
         loc = error.get("loc", [])
-        field = ".".join(str(l) for l in loc if l not in ('body', 'query', 'path'))
+        field = ".".join(str(part) for part in loc if part not in ('body', 'query', 'path'))
         msg = error.get("msg", "Validation failed")
         error_messages.append(f"{field}: {msg}" if field else msg)
 
@@ -46,7 +46,7 @@ async def http_exception_handler(request: Request, exc: HTTPException) -> JSONRe
 
     # Attempt to map to custom error code
     error_code = map_http_to_error_code(exc.status_code)
-    
+
     return fail(
         error=error_code,
         message=str(exc.detail),

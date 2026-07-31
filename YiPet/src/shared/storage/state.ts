@@ -10,30 +10,6 @@ import type { PetGlobalState, UserPrefs } from '@/shared/ipc/messages';
 const GLOBAL_STATE_KEY = 'pet_global_state';
 const PREFS_KEY = 'prefs';
 
-// ── Pet Global State ────────────────────────────────────────────────────
-
-export async function getGlobalState(): Promise<PetGlobalState> {
-  const result = await chrome.storage.local.get(GLOBAL_STATE_KEY);
-  return (result[GLOBAL_STATE_KEY] as PetGlobalState) || {};
-}
-
-export async function setGlobalState(patch: Partial<PetGlobalState>): Promise<PetGlobalState> {
-  const current = await getGlobalState();
-  const updated = { ...current, ...patch };
-  await chrome.storage.local.set({ [GLOBAL_STATE_KEY]: updated });
-  return updated;
-}
-
-export function onGlobalStateChanged(cb: (state: PetGlobalState) => void): () => void {
-  const listener = (changes: Record<string, chrome.storage.StorageChange>, area: string) => {
-    if (area === 'local' && changes[GLOBAL_STATE_KEY]) {
-      cb(changes[GLOBAL_STATE_KEY].newValue as PetGlobalState);
-    }
-  };
-  chrome.storage.onChanged.addListener(listener);
-  return () => chrome.storage.onChanged.removeListener(listener);
-}
-
 // ── Per-Tab State ─────────────────────────────────────────────────────────
 
 export type TabStateMap = Record<number, PetGlobalState>;

@@ -117,27 +117,39 @@ class OllamaService:
                           user_content: str = "",
                           model_name: str = "qwen3.5",
                           images: Optional[List[bytes]] = None,
+                          messages: Optional[List[Dict[str, Any]]] = None,
                           max_retries: int = 2) -> Dict[str, Any]:
         """
         Generate AI response
 
         Args:
-            system_prompt: System prompt
-            user_content: User input content
+            system_prompt: System prompt (used when `messages` is None)
+            user_content: User input content (used when `messages` is None)
             model_name: Model name
+            images: Optional image bytes attached to the last user message
+            messages: Full conversation history in Ollama format
+                [{role: "system"|"user"|"assistant", content: str}]; when provided,
+                overrides `system_prompt` + `user_content`.
             max_retries: Maximum retry attempts
         """
         client = self._get_client()
         images = images or []
-        messages = [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_content, **({"images": images} if images else {})}
-        ]
+        if messages is not None:
+            ollama_messages = list(messages)
+            if images and ollama_messages:
+                last = dict(ollama_messages[-1])
+                last["images"] = images
+                ollama_messages[-1] = last
+        else:
+            ollama_messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_content, **({"images": images} if images else {})}
+            ]
         attempt = 0
         last_error: Optional[str] = None
         while attempt <= max_retries:
             try:
-                response = client.chat(model=model_name, messages=messages)
+                response = client.chat(model=model_name, messages=ollama_messages)
                 if isinstance(response, dict):
                     result = response.get("message", {}).get("content", "")
                 else:
@@ -200,14 +212,15 @@ async def chat(params: Dict[str, Any]) -> Dict[str, Any]:
     Args:
         params: Parameter dictionary
             - system (str): System prompt (optional)
-            - user (str): User input (required)
+            - user (str): User input (used when `messages` is absent)
             - model (str): Model name (optional)
+            - messages (list): Full conversation history in Ollama format
+                [{role, content}]; when provided, overrides `system`+`user`.
+            - stream (bool): Enable SSE streaming
+            - images (list): Optional image refs (URL/data-URL/base64) for VL models
 
     Returns:
-        Dict[str, Any]: Chat response
-
-    Example:
-        GET /?module_name=services.ai.chat_service&method_name=chat&parameters={"user": "Hello", "model": "qwen3"}
+        Dict[str, Any]: Chat response (non-stream) or async generator (stream)
     """
     service = OllamaService()
     system_prompt = params.get("system", "You are a helpful AI assistant.")
@@ -217,10 +230,35 @@ async def chat(params: Dict[str, Any]) -> Dict[str, Any]:
     images_param = params.get("images")
     has_images_param = isinstance(images_param, list) and any(isinstance(x, str) and x.strip() for x in images_param)
     images = await _resolve_images(images_param)
+    raw_messages = params.get("messages")
+    use_messages = isinstance(raw_messages, list) and len(raw_messages) > 0
 
     if has_images_param:
         model_name = "qwen3-vl"
-        user_content = _extract_user_only_text(user_content)
+        if use_messages:
+            # Strip the marker block off the last user turn so the VL model
+            # sees the actual question, not the prompt template scaffolding.
+            last = dict(raw_messages[-1])  # type: ignore[index]
+            if last.get("role") == "user":
+                last["content"] = _extract_user_only_text(last.get("content", ""))
+                raw_messages = list(raw_messages)  # type: ignore[assignment]
+                raw_messages[-1] = last  # type: ignore[index]
+        else:
+            user_content = _extract_user_only_text(user_content)
+
+    def _build_ollama_messages() -> List[Dict[str, Any]]:
+        if use_messages:
+            ollama_messages = list(raw_messages)  # type: ignore[arg-type]
+        else:
+            ollama_messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_content},
+            ]
+        if images and ollama_messages:
+            last = dict(ollama_messages[-1])
+            last["images"] = images
+            ollama_messages[-1] = last
+        return ollama_messages
 
     loop = asyncio.get_running_loop()
     if not stream:
@@ -228,24 +266,21 @@ async def chat(params: Dict[str, Any]) -> Dict[str, Any]:
             None,
             functools.partial(
                 service.generate_response,
-                system_prompt=system_prompt,
-                user_content=user_content,
                 model_name=model_name,
-                images=images
+                messages=_build_ollama_messages(),
             )
         )
 
     async def gen():
-        queue: asyncio.Queue[Optional[str]] = asyncio.Queue()
+        # Queue items are either a str (normal delta), a dict with "error"
+        # (terminal error frame), or None (stream end sentinel).
+        queue: asyncio.Queue[Optional[Any]] = asyncio.Queue()
+        ollama_messages = _build_ollama_messages()
 
         def _worker():
             try:
                 client = service._get_client()
-                messages = [
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_content, **({"images": images} if images else {})}
-                ]
-                for item in client.chat(model=model_name, messages=messages, stream=True):
+                for item in client.chat(model=model_name, messages=ollama_messages, stream=True):
                     try:
                         delta = ""
                         if isinstance(item, dict):
@@ -257,7 +292,11 @@ async def chat(params: Dict[str, Any]) -> Dict[str, Any]:
                     except Exception:
                         continue
             except Exception as e:
-                asyncio.run_coroutine_threadsafe(queue.put(f"Request failed: {e}"), loop)
+                # Yield an explicit error frame — previously the error text
+                # was put as a regular delta, which clients would display as
+                # pet content and auto-forward to WeCom bots as if it were a
+                # model reply.
+                asyncio.run_coroutine_threadsafe(queue.put({"error": f"Request failed: {e}"}), loop)
             finally:
                 asyncio.run_coroutine_threadsafe(queue.put(None), loop)
 
@@ -267,7 +306,10 @@ async def chat(params: Dict[str, Any]) -> Dict[str, Any]:
             item = await queue.get()
             if item is None:
                 break
-            yield {"data": {"message": item}}
+            if isinstance(item, dict) and "error" in item:
+                yield item
+            else:
+                yield {"data": {"message": item}}
 
     return gen()
 

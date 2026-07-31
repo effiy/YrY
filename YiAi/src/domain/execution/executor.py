@@ -7,7 +7,6 @@ import asyncio
 import logging
 import json
 import inspect
-import subprocess
 import time
 from typing import Dict, Any, Optional, Union
 from shared.config import settings

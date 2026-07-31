@@ -3,7 +3,6 @@ import logging
 from typing import Any, Optional
 
 from data.database import db
-from shared.config import settings
 
 logger = logging.getLogger(__name__)
 

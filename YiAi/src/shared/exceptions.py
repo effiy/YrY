@@ -8,9 +8,9 @@ class BusinessException(Exception):
     When raised, this exception is caught by the global exception handler and returns a standard error response
     """
     def __init__(
-        self, 
-        error_code: ErrorCode, 
-        message: Optional[str] = None, 
+        self,
+        error_code: ErrorCode,
+        message: Optional[str] = None,
         data: Any = None
     ):
         self.error_code = error_code

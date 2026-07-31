@@ -1,0 +1,11 @@
+<template>
+  <div v-waterMarker="{ text: 'YiVad', textColor: 'rgba(180, 180, 180, 0.6)' }" class="card content-box">
+    <span class="text">Watermark Directive 🍇🍇🍇🍓🍓🍓</span>
+  </div>
+</template>
+
+<script setup lang="ts" name="watermarkDirect"></script>
+
+<style scoped lang="scss">
+@use "./index.scss" as *;
+</style>

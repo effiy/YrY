@@ -3,7 +3,7 @@
  *
  * Renders loading / error / empty states, the welcome card, and the message list.
  */
-
+import { Alert, Empty, Spin, Typography } from 'antd';
 import type { ChatController } from '@/chat/controller';
 import type { Message, PageInfo } from '@/chat/types';
 import { MessageBubble, WelcomeCard } from '../';
@@ -19,46 +19,38 @@ export interface ChatMessagesProps {
 export function ChatMessages(props: ChatMessagesProps) {
   const ctrl = props.controller;
 
-  // Loading state
   if (props.viewState === 'loading') {
     return (
-      <div className="yipet-chat-loading" role="status" aria-live="polite">
-        <div className="yipet-spinner" aria-hidden="true" />
-        <div className="yipet-loading-text">正在加载会话...</div>
+      <div style={{ textAlign: 'center', padding: 24 }}>
+        <Spin />
+        <div>
+          <Typography.Text type="secondary">Loading conversation...</Typography.Text>
+        </div>
       </div>
     );
   }
 
-  // Error state
   if (props.viewState === 'error') {
     return (
-      <div className="yipet-chat-error" role="alert">
-        <div className="yipet-error-icon" aria-hidden="true">
-          ⚠️
-        </div>
-        <div className="yipet-error-text">发生错误</div>
-      </div>
+      <Alert
+        type="error"
+        message="Error occurred"
+        description="Please retry shortly"
+        style={{ margin: 16 }}
+      />
     );
   }
 
-  // Empty state
   if (props.viewState === 'empty') {
     return (
-      <div className="yipet-chat-empty">
-        <div className="yipet-empty-card">
-          <div className="yipet-empty-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
-            </svg>
-          </div>
-          <div className="yipet-empty-title">未选择会话</div>
-          <div className="yipet-empty-subtitle">从左侧会话列表选择一个会话开始聊天</div>
-        </div>
-      </div>
+      <Empty
+        image={Empty.PRESENTED_IMAGE_SIMPLE}
+        description="No conversation selected — pick one from the sidebar to start chatting"
+        style={{ padding: 32 }}
+      />
     );
   }
 
-  // Messages view
   return (
     <div className="yipet-chat-messages-inner">
       <div className="yipet-chat-message pet-chat-message is-pet" data-welcome-message="true">
@@ -73,18 +65,11 @@ export function ChatMessages(props: ChatMessagesProps) {
       </div>
       {props.messages.map((msg, idx) => (
         <MessageBubble
-          key={idx}
+          key={`${msg.timestamp}-${idx}`}
+          controller={ctrl}
           message={msg}
           index={idx}
           totalMessages={props.messages.length}
-          isProcessing={ctrl.state.isProcessing}
-          onCopy={ctrl.copyMessage}
-          onEdit={(i) => ctrl.editMessage(i)}
-          onResend={(i) => ctrl.resendMessage(i)}
-          onDelete={(i) => { if (confirm('确定要删除这条消息吗？')) ctrl.deleteMessage(i); }}
-          onMoveUp={(i) => ctrl.moveMessageUp(i)}
-          onMoveDown={(i) => ctrl.moveMessageDown(i)}
-          onRegenerate={(i) => ctrl.regenerateMessage(i)}
         />
       ))}
     </div>

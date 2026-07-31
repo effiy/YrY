@@ -9,12 +9,20 @@ export {
   formatDateTimeFromTs as formatTime,
 } from '@/utils/datetime';
 
-declare var marked: { parse: (t: string) => string } | undefined;
+import { marked } from 'marked';
 
 /** Render markdown string to HTML. Falls back to plain-text escaping. */
 export function renderMarkdown(text: string): string {
   if (marked?.parse) {
-    return marked.parse(text) as string;
+    // Escape '<' so raw HTML in AI output / page context is rendered as text,
+    // not interpreted by the browser. Markdown formatting (which doesn't use
+    // '<') still works. marked v15 has no built-in sanitizer.
+    const escaped = text.replace(/</g, '&lt;');
+    // Neutralize dangerous URI schemes in markdown link/image URLs — marked
+    // v15+ has no built-in sanitizer, so `[x](javascript:alert(1))` would
+    // otherwise emit a clickable javascript: href.
+    const safe = escaped.replace(/]\s*\((javascript:|vbscript:)[^)]*\)/gi, '](#)');
+    return marked.parse(safe) as string;
   }
   return escapeHtml(text).replace(/\n/g, '<br>');
 }

@@ -1,0 +1,34 @@
+{
+  "description": "YrY workspace — YiAi (FastAPI backend) + YiVad (Vue 3 admin) + YiPet (Chrome MV3 extension) + YiKnowledge (markdown KB). Cross-project RPC envelope {module_name, method_name, parameters}.",
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "Bash(pip:*)",
+      "Bash(uvicorn:*)",
+      "Bash(pnpm:*)",
+      "Bash(npm:*)",
+      "Bash(node:*)",
+      "Bash(npx:*)",
+      "Bash(git:*)",
+      "Bash(gh:*)",
+      "Bash(vue-tsc:*)",
+      "Bash(biome:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(cp:*)"
+    ]
+  },
+  "mcpServers": {
+    "filesystem": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/ruiyi/Downloads/YrY"
+      ]
+    }
+  }
+}

@@ -23,40 +23,69 @@ from shared.config import settings
 from server.middleware import header_verification_middleware
 from shared.logging import setup_logging
 from server.errors import register_exception_handlers
-from server.routes import about, auth, files, execution, wework, maintenance, state, health, users, system
+from server.routes import about, auth, files, execution, wework, maintenance, state, health, users, system, knowledge, rag
 
 # Import service modules
 from domain.rss import init_rss_system, shutdown_rss_system
+from domain.knowledge import init_knowledge_watcher, shutdown_knowledge_watcher
 
 logger = logging.getLogger(__name__)
 
-_MENUS_SEED_PATH = Path(__file__).parent / "data" / "seeds" / "menus.json"
+_SEED_DIR = Path(__file__).parent / "data" / "seeds"
+
+# (collection_name, seed_file, lookup_field) — lookup_field is the unique key
+# used for upsert (must be present in every doc of the seed file).
+_SEED_SPECS: list[tuple[str, str, str]] = [
+    ("menus", "menus.json", "path"),
+    ("users", "users.json", "key"),
+    ("dict_status", "dict_status.json", "key"),
+    ("dict_gender", "dict_gender.json", "key"),
+    ("dict_department", "dict_department.json", "key"),
+    ("dict_role", "dict_role.json", "key"),
+    ("departments", "departments.json", "key"),
+    ("roles", "roles.json", "key"),
+    ("status_dict", "status_dict.json", "key"),
+    ("gender_dict", "gender_dict.json", "key"),
+]
 
 
-async def _seed_menus_if_empty():
-    """Seed the ``menus`` collection with defaults if it is empty."""
+async def _seed_collection_if_empty(cname: str, fname: str, lookup_field: str) -> None:
+    """Seed a collection from a bundled JSON file when the collection is empty."""
     try:
-        count = await db.db["menus"].count_documents({})
+        count = await db.db[cname].count_documents({})
         if count > 0:
             return
     except Exception:
         return
 
-    if not _MENUS_SEED_PATH.exists():
-        logger.warning(f"Menus seed file not found: {_MENUS_SEED_PATH}")
+    path = _SEED_DIR / fname
+    if not path.exists():
+        logger.warning(f"Seed file not found: {path}")
         return
 
-    with open(_MENUS_SEED_PATH, "r", encoding="utf-8") as f:
+    with open(path, "r", encoding="utf-8") as f:
         docs = json.load(f)
 
+    if not docs:
+        return
+
     for doc in docs:
-        await db.db["menus"].replace_one(
-            {"path": doc["path"]}, doc, upsert=True
+        if lookup_field not in doc:
+            logger.warning(f"  skip doc without '{lookup_field}' in {fname}: {doc}")
+            continue
+        await db.db[cname].replace_one(
+            {lookup_field: doc[lookup_field]}, doc, upsert=True
         )
-    logger.info(f"Seeded {len(docs)} menu items into 'menus' collection")
+    logger.info(f"Seeded {len(docs)} docs into '{cname}' from {fname}")
 
 
-def _build_lifespan(init_db: bool, init_rss: bool):
+async def _seed_all_if_empty() -> None:
+    """Seed all registered collections when empty."""
+    for spec in _SEED_SPECS:
+        await _seed_collection_if_empty(*spec)
+
+
+def _build_lifespan(init_db: bool, init_rss: bool, init_knowledge: bool):
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         """
@@ -67,9 +96,11 @@ def _build_lifespan(init_db: bool, init_rss: bool):
             if init_db and settings.startup_init_database:
                 await db.initialize()
                 logger.info("Database initialized successfully")
-                await _seed_menus_if_empty()
+                await _seed_all_if_empty()
             if init_rss and settings.startup_init_rss_system:
                 init_rss_system()
+            if init_knowledge and settings.knowledge_watcher_enabled:
+                await init_knowledge_watcher()
             logger.info("Application startup complete")
         except Exception as e:
             logger.error(f"Application startup failed: {str(e)}", exc_info=True)
@@ -79,6 +110,8 @@ def _build_lifespan(init_db: bool, init_rss: bool):
 
         logger.info("Shutting down application...")
         try:
+            if init_knowledge and settings.knowledge_watcher_enabled:
+                await shutdown_knowledge_watcher()
             if init_rss and settings.startup_init_rss_system:
                 shutdown_rss_system()
             if init_db and settings.startup_init_database:
@@ -94,6 +127,7 @@ def create_app(
     enable_auth: bool | None = None,
     init_db: bool | None = None,
     init_rss: bool | None = None,
+    init_knowledge: bool | None = None,
 ) -> FastAPI:
     """
     Create FastAPI application instance
@@ -104,12 +138,13 @@ def create_app(
     auth_enabled = enable_auth if enable_auth is not None else settings.middleware_auth_enabled
     db_init_enabled = init_db if init_db is not None else True
     rss_init_enabled = init_rss if init_rss is not None else True
+    knowledge_init_enabled = init_knowledge if init_knowledge is not None else True
 
     app = FastAPI(
         title="YiAi API",
         description="YiPet AI Service API",
         version="1.0.0",
-        lifespan=_build_lifespan(db_init_enabled, rss_init_enabled)
+        lifespan=_build_lifespan(db_init_enabled, rss_init_enabled, knowledge_init_enabled)
     )
 
     # Register global exception handlers
@@ -147,6 +182,8 @@ def create_app(
     app.include_router(maintenance.router, tags=["Maintenance"])
     app.include_router(state.router, tags=["State"])
     app.include_router(health.router, tags=["Observer"])
+    app.include_router(knowledge.router, tags=["Knowledge"])
+    app.include_router(rag.router, tags=["RAG"])
 
     origins = settings.get_cors_origins()
     app.add_middleware(

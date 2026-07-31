@@ -1,10 +1,9 @@
 """MongoDB Data Access Layer (Singleton)
 - Manages connections, indexes, and common CRUD wrappers
 """
-import os
 import logging
 import threading
-from typing import Optional, List, Dict, Any, TypeVar
+from typing import Optional, List, Dict, Any
 from motor.motor_asyncio import AsyncIOMotorClient
 from datetime import datetime, timezone
 from shared.config import settings
@@ -31,7 +30,7 @@ class MongoDB:
     async def initialize(self):
         """
         Initialize database connection and indexes
-        
+
         Example:
             >>> await db.initialize()
         """
@@ -42,7 +41,7 @@ class MongoDB:
             try:
                 mongodb_url = settings.mongodb_url
                 database_name = settings.mongodb_db_name
-                
+
                 # Configure connection pool
                 self._client = AsyncIOMotorClient(
                     mongodb_url,
@@ -55,10 +54,10 @@ class MongoDB:
                 )
                 self._db = self._client[database_name]
                 logger.info(f"MongoDB connected: {database_name}")
-                
+
                 # Ensure indexes
                 await self._ensure_indexes()
-                
+
                 self._initialized = True
             except Exception as e:
                 logger.error(f"MongoDB initialization failed: {str(e)}")
@@ -67,7 +66,7 @@ class MongoDB:
     async def close(self):
         """
         Close database connection
-        
+
         Example:
             >>> await db.close()
         """
@@ -86,7 +85,7 @@ class MongoDB:
     async def _ensure_indexes(self):
         """
         Create necessary indexes
-        
+
         Example:
             >>> await self._ensure_indexes()
         """
@@ -95,6 +94,8 @@ class MongoDB:
             await self._ensure_unique_index(settings.collection_rss, 'link')
             # Static Files target_file Unique Index
             await self._ensure_unique_index(settings.collection_static_files, 'target_file')
+            # Knowledge Files path Unique Index
+            await self._ensure_unique_index(settings.collection_knowledge_files, 'path')
         except Exception as e:
             logger.error(f"Index creation failed: {str(e)}")
 
@@ -107,14 +108,14 @@ class MongoDB:
     async def insert_one(self, collection_name: str, document: Dict[str, Any]) -> str:
         """
         Insert a single document
-        
+
         Args:
             collection_name: Collection name
             document: Document to insert
-            
+
         Returns:
             str: Inserted document ID
-            
+
         Example:
             >>> id = await db.insert_one("users", {"name": "test"})
         """
@@ -126,14 +127,14 @@ class MongoDB:
     async def insert_many(self, collection_name: str, documents: List[Dict[str, Any]]) -> List[str]:
         """
         Insert multiple documents
-        
+
         Args:
             collection_name: Collection name
             documents: List of documents to insert
-            
+
         Returns:
             List[str]: List of inserted document IDs
-            
+
         Example:
             >>> ids = await db.insert_many("users", [{"name": "test1"}, {"name": "test2"}])
         """
@@ -146,18 +147,52 @@ class MongoDB:
     async def find_one(self, collection_name: str, query: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """
         Find a single document
-        
+
         Args:
             collection_name: Collection name
             query: Query criteria
-            
+
         Returns:
             Optional[Dict[str, Any]]: Found document or None
-            
+
         Example:
             >>> user = await db.find_one("users", {"name": "test"})
         """
         return await self.db[collection_name].find_one(query)
+
+    async def find_many(
+        self,
+        collection_name: str,
+        query: Dict[str, Any],
+        projection: Optional[Dict[str, Any]] = None,
+    ) -> List[Dict[str, Any]]:
+        """
+        Find multiple documents
+
+        Args:
+            collection_name: Collection name
+            query: Query criteria
+            projection: Optional projection
+
+        Returns:
+            List[Dict[str, Any]]: Matching documents
+        """
+        cursor = self.db[collection_name].find(query, projection)
+        return [doc async for doc in cursor]
+
+    async def delete_one(self, collection_name: str, query: Dict[str, Any]) -> int:
+        """
+        Delete a single document
+
+        Args:
+            collection_name: Collection name
+            query: Query criteria
+
+        Returns:
+            int: Number of deleted documents
+        """
+        result = await self.db[collection_name].delete_one(query)
+        return result.deleted_count
 
 # Global instance
 db = MongoDB()

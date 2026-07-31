@@ -22,13 +22,13 @@ export const AUTH = {
 // ── Files ─────────────────────────────────────────────────────────────
 
 export const FILES = {
-  READ: '/files/read-file',
-  WRITE: '/files/write-file',
-  DELETE: '/files/delete-file',
-  DELETE_FOLDER: '/files/delete-folder',
-  RENAME: '/files/rename-file',
-  RENAME_FOLDER: '/files/rename-folder',
-  UPLOAD_IMAGE: '/files/upload-image-to-oss',
+  READ: '/read-file',
+  WRITE: '/write-file',
+  DELETE: '/delete-file',
+  DELETE_FOLDER: '/delete-folder',
+  RENAME: '/rename-file',
+  RENAME_FOLDER: '/rename-folder',
+  UPLOAD_IMAGE: '/upload-image-to-oss',
 } as const;
 
 // ── State Store ───────────────────────────────────────────────────────
@@ -36,4 +36,10 @@ export const FILES = {
 export const STATE = {
   RECORDS: '/state/records',
   RECORD: (key: string) => `/state/records/${encodeURIComponent(key)}`,
+} as const;
+
+// ── WeCom Bot Webhook ───────────────────────────────────────────
+
+export const WEWORK = {
+  SEND_MESSAGE: '/wework/send-message',
 } as const;

@@ -4,7 +4,7 @@ from fastapi.responses import StreamingResponse
 import inspect
 import json
 import types
-from typing import Any, AsyncIterator, Iterator, Optional, Union
+from typing import Any, AsyncIterator, Iterator
 from models.schemas import ExecuteRequest
 from shared.response import success
 from domain.execution import execute_module

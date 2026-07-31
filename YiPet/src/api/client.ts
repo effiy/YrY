@@ -85,9 +85,21 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
   const base = createBaseClient({ ...config, logger });
 
   const { baseUrl, headers = {} } = config;
+  const authHeaders: Record<string, string> = {};
+  try {
+    const token =
+      (typeof localStorage !== 'undefined' &&
+        (localStorage.getItem('YiWeb.apiToken.v1') as string | null)) ||
+      '';
+    const trimmed = String(token || '').trim();
+    if (trimmed) authHeaders['X-Token'] = trimmed;
+  } catch {
+    /* localStorage unavailable */
+  }
   const defaultHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
     Accept: 'text/event-stream, application/json',
+    ...authHeaders,
     ...headers,
   };
 
@@ -108,7 +120,8 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
     const url = resolveUrl('/');
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), config.timeout ?? 30000);
-    if (signal) signal.addEventListener('abort', () => controller.abort());
+    const onAbort = () => controller.abort();
+    if (signal) signal.addEventListener('abort', onAbort);
 
     try {
       const init: RequestInit = {
@@ -127,7 +140,12 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
         json = await response.json();
       } else {
         const text = await response.text();
-        return { ok: false, status: response.status, data: null as T, error: text || `HTTP ${response.status}` };
+        return {
+          ok: false,
+          status: response.status,
+          data: null as T,
+          error: text || `HTTP ${response.status}`,
+        };
       }
 
       const result = unwrapEnvelope<T>(json, response.status);
@@ -140,7 +158,14 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
       if ((err as Error).name === 'AbortError') {
         return { ok: false, status: 0, data: null as T, error: 'Request timed out or was aborted' };
       }
-      return { ok: false, status: 0, data: null as T, error: (err as Error).message || 'Network error' };
+      return {
+        ok: false,
+        status: 0,
+        data: null as T,
+        error: (err as Error).message || 'Network error',
+      };
+    } finally {
+      if (signal) signal.removeEventListener('abort', onAbort);
     }
   }
 
@@ -153,7 +178,8 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
   ): AsyncGenerator<StreamChunk> {
     const url = resolveUrl(path);
     const controller = new AbortController();
-    if (signal) signal.addEventListener('abort', () => controller.abort());
+    const onAbort = () => controller.abort();
+    if (signal) signal.addEventListener('abort', onAbort);
 
     try {
       const init: RequestInit = {
@@ -178,40 +204,57 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
         if (done) break;
 
         buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || '';
+        const messages = buffer.split('\n\n');
+        buffer = messages.pop() || '';
 
-        for (const line of lines) {
-          const trimmed = line.trim();
-          if (!trimmed || trimmed.startsWith(':')) continue; // comment / heartbeat
-
-          if (trimmed.startsWith('data: ')) {
-            const jsonStr = trimmed.slice(6);
-            if (jsonStr === '[DONE]') {
+        for (const message of messages) {
+          const lines = message.split('\n');
+          let dataStr = '';
+          let hasError = false;
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed || trimmed.startsWith(':')) continue;
+            if (trimmed.startsWith('data: ')) {
+              dataStr += trimmed.slice(6);
+            } else if (trimmed.startsWith('event: error')) {
+              hasError = true;
+            }
+          }
+          if (hasError) {
+            yield { done: true, error: 'Stream error' };
+            return;
+          }
+          if (!dataStr) continue;
+          if (dataStr === '[DONE]') {
+            yield { done: true };
+            return;
+          }
+          try {
+            const parsed = JSON.parse(dataStr);
+            if (parsed.error) {
+              yield { done: true, error: String(parsed.error) };
+              return;
+            }
+            if (parsed.done) {
               yield { done: true };
               return;
             }
-            try {
-              const parsed = JSON.parse(jsonStr);
-              // YiAi SSE format: {"done": true} or {"data": {"message": "token"}}
-              if (parsed.done) {
-                yield { done: true };
-                return;
-              }
-              // Unwrap YiAi's nested data envelope for streaming
-              yield { done: false, data: parsed.data ?? parsed };
-            } catch {
-              yield { done: false, data: jsonStr };
-            }
-          } else if (trimmed.startsWith('event: error')) {
-            yield { done: true, error: 'Stream error' };
-            return;
+            yield { done: false, data: parsed.data ?? parsed };
+          } catch {
+            yield { done: false, data: dataStr };
           }
         }
       }
       yield { done: true };
     } catch (err) {
+      // Preserve AbortError identity — otherwise streamWithCallback wraps the
+      // message into a fresh `new Error(...)` and the controller's
+      // `err.name === 'AbortError'` check fails, mislabeling user-initiated
+      // stops as errors (pet message marked `error: true` instead of `aborted: true`).
+      if ((err as Error)?.name === 'AbortError') throw err;
       yield { done: true, error: (err as Error).message || 'Stream error' };
+    } finally {
+      if (signal) signal.removeEventListener('abort', onAbort);
     }
   }
 

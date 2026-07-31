@@ -21,20 +21,6 @@ export const CDN_CATALOG: CdnEntry[] = [
     desc: 'Vue 3.5.13',
   },
   {
-    key: 'react',
-    path: 'vendor/react@15.6.1/react.min.js',
-    type: 'js',
-    global: 'React',
-    desc: 'React 15.6.1',
-  },
-  {
-    key: 'react-dom',
-    path: 'vendor/react@15.6.1/react-dom.min.js',
-    type: 'js',
-    global: 'ReactDOM',
-    desc: 'ReactDOM 15.6.1',
-  },
-  {
     key: 'jquery',
     path: 'vendor/jquery@3.7.1/jquery.min.js',
     type: 'js',

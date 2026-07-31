@@ -1,0 +1,109 @@
+{
+  "name": "SSR",
+  "slug": "ssr",
+  "source_id": "awesome-vite",
+  "file": "categories/ssr.json",
+  "topics": [
+    {
+      "name": "Libraries",
+      "resources": [
+        {
+          "category": "SSR",
+          "topic": "Libraries",
+          "title": "Vike",
+          "url": "https://github.com/vikejs/vike",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "SSR",
+          "topic": "Libraries",
+          "title": "ssr",
+          "url": "https://github.com/zhangyuang/ssr",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "SSR",
+          "topic": "Libraries",
+          "title": "vavite",
+          "url": "https://github.com/cyco130/vavite",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "SSR",
+          "topic": "Libraries",
+          "title": "vue-ssr",
+          "url": "https://github.com/bistroo/vue-ssr",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "SSR",
+          "topic": "Libraries",
+          "title": "vite-ssr-boost",
+          "url": "https://github.com/Lomray-Software/vite-ssr-boost",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "SSR",
+          "topic": "Libraries",
+          "title": "SSRx",
+          "url": "https://github.com/marbemac/ssrx",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "SSR",
+          "topic": "Libraries",
+          "title": "Vinxi",
+          "url": "https://github.com/nksaraf/vinxi",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "SSR",
+          "topic": "Libraries",
+          "title": "domco",
+          "url": "https://github.com/rossrobino/domco",
+          "source": "awesome-vite"
+        }
+      ]
+    },
+    {
+      "name": "Frameworks",
+      "resources": [
+        {
+          "category": "SSR",
+          "topic": "Frameworks",
+          "title": "Rakkas",
+          "url": "https://github.com/rakkasjs/rakkasjs",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "SSR",
+          "topic": "Frameworks",
+          "title": "Vise",
+          "url": "https://github.com/stauren/vise-ssr",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "SSR",
+          "topic": "Frameworks",
+          "title": "@fastify/fastify-dx",
+          "url": "https://github.com/fastify/fastify-dx",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "SSR",
+          "topic": "Frameworks",
+          "title": "vite-plugin-vercel",
+          "url": "https://github.com/magne4000/vite-plugin-vercel",
+          "source": "awesome-vite"
+        },
+        {
+          "category": "SSR",
+          "topic": "Frameworks",
+          "title": "vite-vlugin-vercel-skew-protection",
+          "url": "https://github.com/bitttttten/vite-vlugin-vercel-skew-protection",
+          "source": "awesome-vite"
+        }
+      ]
+    }
+  ]
+}

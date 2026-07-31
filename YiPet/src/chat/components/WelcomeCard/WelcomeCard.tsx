@@ -1,9 +1,8 @@
 /**
- * YiPet Chat — WelcomeCard Component
- *
- * Replaces the HTML-string-based welcome card in ChatController._buildWelcomeHtml().
+ * YiPet Chat — WelcomeCard Component (antd Card + Typography)
  */
-
+import { Card, Typography } from 'antd';
+import type { CSSProperties } from 'react';
 import type { PageInfo } from '@/chat/types';
 
 export type { PageInfo };
@@ -13,36 +12,37 @@ export interface WelcomeCardProps {
   messageCount: number;
 }
 
+const headerStyle: CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 8,
+  marginBottom: 8,
+};
+
 export function WelcomeCard(props: WelcomeCardProps) {
   const { title, url, iconUrl } = props.pageInfo;
 
   return (
-    <div className="welcome-card">
-      <div className="welcome-card-header">
-        <div className="welcome-card-header-left">
-          {iconUrl ? <img className="welcome-card-favicon" src={iconUrl} alt="" /> : null}
-          <div className="welcome-card-title" title={title}>
-            {title}
-          </div>
-        </div>
+    <Card size="small" className="welcome-card">
+      <div style={headerStyle}>
+        {iconUrl && <img src={iconUrl} alt="" style={{ width: 16, height: 16 }} />}
+        <Typography.Text strong ellipsis style={{ flex: 1 }}>
+          {title}
+        </Typography.Text>
       </div>
-      {url ? (
-        <div className="welcome-card-row">
-          <div className="welcome-card-label">网址</div>
-          <div className="welcome-card-value">
-            <a href={url} target="_blank" rel="noopener noreferrer" className="welcome-card-url">
-              {url}
-            </a>
-          </div>
+      {url && (
+        <div>
+          <Typography.Text type="secondary">URL:</Typography.Text>{' '}
+          <Typography.Link href={url} target="_blank" rel="noopener noreferrer" ellipsis>
+            {url}
+          </Typography.Link>
         </div>
-      ) : null}
-      {props.messageCount > 0 ? (
-        <div className="welcome-card-footer">
-          <div className="welcome-card-meta">
-            <span>消息 {props.messageCount}</span>
-          </div>
+      )}
+      {props.messageCount > 0 && (
+        <div style={{ marginTop: 8 }}>
+          <Typography.Text type="secondary">Messages {props.messageCount}</Typography.Text>
         </div>
-      ) : null}
-    </div>
+      )}
+    </Card>
   );
 }

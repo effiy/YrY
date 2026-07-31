@@ -77,7 +77,7 @@ async def upload_file_to_oss(
 
     content = await file.read()
     if len(content) > settings.oss_max_file_size:
-        raise BusinessException(ErrorCode.INVALID_PARAMS, message=f"File too large")
+        raise BusinessException(ErrorCode.INVALID_PARAMS, message="File too large")
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     object_name = f"{directory + '/' if directory else ''}{timestamp}{file_ext}"
@@ -138,19 +138,19 @@ async def delete_oss_file(object_name: str):
     """
     config = OSSConfig()
     bucket = get_bucket(config)
-    
+
     if not bucket.object_exists(object_name):
         raise BusinessException(ErrorCode.DATA_NOT_FOUND, message="File not found")
-        
+
     bucket.delete_object(object_name)
-    
+
     await db.initialize()
     try:
         await db.delete_one(settings.collection_oss_file_tags, {"object_name": object_name})
         await db.delete_one(settings.collection_oss_file_info, {"object_name": object_name})
     except Exception as e:
         logger.warning(f"Cleanup DB failed for {object_name}: {e}")
-        
+
     return object_name
 
 async def set_file_tags(object_name: str, tags: List[str]) -> Dict[str, Any]:
@@ -285,7 +285,7 @@ async def update_file_info(object_name: str, title: Optional[str] = None, descri
         },
         upsert=True
     )
-    
+
     return {
         "object_name": object_name,
         "title": title or "",
@@ -321,13 +321,13 @@ async def get_file_info(object_name: str) -> Dict[str, str]:
 async def list_files(directory: Optional[str] = None, tags: Optional[str] = None) -> List[Dict[str, Any]]:
     """
     List files in directory (supports tag filtering), returns basic metadata and tags/info
-    
+
     Example:
         GET /?module_name=services.storage.oss_client&method_name=list_files&parameters={"directory": "images/"}
     """
     config = OSSConfig()
     bucket = get_bucket(config)
-    
+
     prefix = f"{directory}/" if directory else ""
     files = []
 

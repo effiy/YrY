@@ -70,6 +70,14 @@ class Settings(BaseSettings):
     static_base_url: str = Field("https://api.effiy.cn/static", validation_alias="static_base_url")
     static_max_zip_size_mb: int = Field(100, validation_alias="static_max_zip_size_mb")
 
+    # Project sources root (cross-project file reads via /read-project-file)
+    projects_root: str = Field("..", validation_alias="projects_root")
+
+    # Knowledge base (~/YiKnowledge-style markdown tree with YAML frontmatter)
+    knowledge_base_dir: str = Field("../YiKnowledge", validation_alias="knowledge_base_dir")
+    knowledge_watcher_enabled: bool = Field(True, validation_alias="knowledge_watcher_enabled")
+    knowledge_watcher_poll_seconds: int = Field(5, validation_alias="knowledge_watcher_poll_seconds")
+
     # Database
     mongodb_url: str = Field("mongodb://localhost:27017", validation_alias="mongodb_url")
     mongodb_db_name: str = Field("ruiyi", validation_alias="mongodb_db_name")
@@ -84,6 +92,7 @@ class Settings(BaseSettings):
     collection_oss_file_tags: str = Field("oss_file_tags", validation_alias="collection_oss_file_tags")
     collection_oss_file_info: str = Field("oss_file_info", validation_alias="collection_oss_file_info")
     collection_static_files: str = Field("static_files", validation_alias="collection_static_files")
+    collection_knowledge_files: str = Field("knowledge_files", validation_alias="collection_knowledge_files")
 
     # OSS
     oss_access_key: str = Field("", validation_alias="oss_access_key")
@@ -142,12 +151,25 @@ class Settings(BaseSettings):
     ollama_url: str = Field("http://localhost:11434", validation_alias="ollama_url")
     ollama_auth: str = Field("", validation_alias="ollama_auth")
 
+    # RAG (llama_index) — embeddings + persisted VectorStoreIndex over ~/YiKnowledge
+    rag_embed_model: str = Field("nomic-embed-text", validation_alias="rag_embed_model")
+    rag_llm_model: str = Field("qwen3.5", validation_alias="rag_llm_model")
+    rag_persist_dir: str = Field("./data/rag_store", validation_alias="rag_persist_dir")
+    rag_top_k: int = Field(4, validation_alias="rag_top_k")
+    rag_chunk_size: int = Field(1024, validation_alias="rag_chunk_size")
+    rag_chunk_overlap: int = Field(80, validation_alias="rag_chunk_overlap")
+    rag_auto_rebuild_enabled: bool = Field(True, validation_alias="rag_auto_rebuild_enabled")
+    rag_auto_rebuild_debounce_seconds: int = Field(30, validation_alias="rag_auto_rebuild_debounce_seconds")
+    rag_hybrid_retrieval_enabled: bool = Field(True, validation_alias="rag_hybrid_retrieval_enabled")
+    rag_rerank_enabled: bool = Field(False, validation_alias="rag_rerank_enabled")
+    rag_inline_citations_enabled: bool = Field(True, validation_alias="rag_inline_citations_enabled")
+
     # Logging
     logging_level: str = Field("INFO", validation_alias="logging_level")
     logging_format: str = Field("%(asctime)s - %(name)s - %(levelname)s - %(message)s", validation_alias="logging_format")
     logging_datefmt: str = Field("%Y-%m-%d %H:%M:%S", validation_alias="logging_datefmt")
     logging_propagate_uvicorn: bool = Field(False, validation_alias="logging_propagate_uvicorn")
-    
+
     model_config = SettingsConfigDict(extra="ignore", populate_by_name=True)
 
     @classmethod
@@ -174,7 +196,7 @@ class Settings(BaseSettings):
     @property
     def oss_max_file_size(self) -> int:
         return self.oss_max_file_size_mb * MB
-    
+
     def get_cors_origins(self) -> List[str]:
         if isinstance(self.cors_origins, str) and self.cors_origins == "*":
             return ["*"]
@@ -201,10 +223,10 @@ class Settings(BaseSettings):
     def is_startup_init_rss_enabled(self) -> bool: return self.startup_init_rss_system
     def is_rss_scheduler_enabled(self) -> bool: return self.rss_scheduler_enabled
     def is_auth_middleware_enabled(self) -> bool: return self.middleware_auth_enabled
-    
+
     @property
     def auth_token(self) -> str:
         return os.getenv("API_X_TOKEN", self.middleware_auth_token)
-    
+
 
 settings = Settings()

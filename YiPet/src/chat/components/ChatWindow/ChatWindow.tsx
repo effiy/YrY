@@ -1,108 +1,142 @@
 /**
  * YiPet Chat — ChatWindow Root Component
+ *
+ * Subscribes to the ChatController external store via useSyncExternalStore.
+ * Wraps content in antd ConfigProvider + App so message API works and theme
+ * follows the active color palette.
  */
 
+import { App as AntApp, ConfigProvider, Layout } from 'antd';
+import { useEffect, useMemo, useSyncExternalStore } from 'react';
 import type { ChatController } from '@/chat/controller';
 import type { PageInfo } from '@/chat/types';
-import { ChatHeader, ChatInput, ChatMessages, ChatSidebar } from '../';
+import { getAntdTheme } from '@/shared/theme';
+import { ChatHeader } from '../ChatHeader/ChatHeader';
+import { ChatInput } from '../ChatInput/ChatInput';
+import { ChatMessages } from '../ChatMessages/ChatMessages';
+import { ChatSidebar } from '../ChatSidebar/ChatSidebar';
+import { FaqDialog } from '../FaqDialog/FaqDialog';
+import { PageContextEditor } from '../PageContextEditor/PageContextEditor';
+import { SessionEditDialog } from '../SessionEditDialog/SessionEditDialog';
+import { TagManagerDialog } from '../TagManagerDialog/TagManagerDialog';
+import { WeChatSettingsModal } from '../WeChatSettingsModal/WeChatSettingsModal';
 
-export interface ChatWindowRenderProps {
+const { Sider, Content } = Layout;
+
+export interface ChatWindowProps {
   controller: ChatController;
 }
 
-export function ChatWindowRender(props: ChatWindowRenderProps) {
+export function ChatWindow(props: ChatWindowProps) {
   const ctrl = props.controller;
-  const s = ctrl.state;
+  const state = useSyncExternalStore(ctrl.subscribe, ctrl.getSnapshot);
+  const { message } = AntApp.useApp();
 
-  if (!s.visible) return null;
+  // Wire controller._notify to antd message API
+  useEffect(() => {
+    ctrl.setNotifyHandler((msg, type) => {
+      message[type](msg);
+    });
+  }, [ctrl, message]);
 
-  // Compute welcome card data
-  const currentSession = s.sessions.find((ses) => ses.id === s.currentSessionId);
-  const pageInfo: PageInfo = s.pageInfo || {
-    title: document.title || '当前页面',
+  // Auto-scroll on message updates and during streaming (scrollTick throttled in controller)
+  useEffect(() => {
+    if (state.visible && state.messages.length > 0) {
+      const id = setTimeout(() => ctrl.scrollToBottom(), 50);
+      return () => clearTimeout(id);
+    }
+  }, [state.visible, state.messages.length, state.scrollTick, ctrl]);
+
+  const theme = useMemo(() => getAntdTheme(state.colorIndex), [state.colorIndex]);
+
+  if (!state.visible) return null;
+
+  const currentSession = state.sessions.find((s) => s.id === state.currentSessionId);
+  const pageInfo: PageInfo = state.pageInfo || {
+    title: document.title || 'Current page',
     url: window.location.href,
     iconUrl: '',
   };
   const messageCount = currentSession?.messageCount || 0;
 
-  return (
-    <div
-      id="yipet-chat-window"
-      className={
-        (s.ws.isFullscreen ? 'fullscreen' : '') +
-        (s.isDragging ? ' dragging' : '') +
-        (s.isResizing ? ' resizing' : '')
-      }
-      style={
-        s.ws.isFullscreen
-          ? {}
-          : {
-              width: s.ws.width + 'px',
-              height: s.ws.height + 'px',
-              left: s.ws.x + 'px',
-              top: s.ws.y + 'px',
-              bottom: 'auto',
-              right: 'auto',
-            }
-      }
-    >
-      <ChatHeader
-        title={s.title}
-        onClose={ctrl.close}
-        onToggleSidebar={ctrl.toggleSidebar}
-        onToggleFullscreen={ctrl.toggleFullscreen}
-        onMouseDown={ctrl.onHeaderMouseDown}
-      />
-      <div className="yipet-chat-content-container">
-        <ChatSidebar controller={ctrl} />
-        <div className="yipet-chat-main-content">
-          <div
-            id="yipet-chat-messages"
-            className="yipet-chat-messages"
-            role="log"
-            aria-live="polite"
-          >
-            <ChatMessages
-              controller={ctrl}
-              messages={s.messages}
-              viewState={s.viewState}
-              pageInfo={pageInfo}
-              currentSessionMessageCount={messageCount}
-            />
-          </div>
-          <ChatInput controller={ctrl} />
-        </div>
-      </div>
+  const fullscreen = state.ws.isFullscreen;
+  const windowStyle = fullscreen
+    ? {}
+    : {
+        width: `${state.ws.width}px`,
+        height: `${state.ws.height}px`,
+        left: `${state.ws.x}px`,
+        top: `${state.ws.y}px`,
+      };
 
-      {/* Notification toast */}
-      {s.notification ? (
-        <div className={'yipet-notification yipet-notification--' + s.notification.type}>
-          {s.notification.message}
+  return (
+    <ConfigProvider theme={theme}>
+      <AntApp>
+        <div
+          id="yipet-chat-window"
+          className={
+            (fullscreen ? 'fullscreen' : '') +
+            (state.isDragging ? ' dragging' : '') +
+            (state.isResizing ? ' resizing' : '')
+          }
+          style={windowStyle}
+        >
+          <ChatHeader
+            title={state.title}
+            onClose={ctrl.close}
+            onToggleSidebar={ctrl.toggleSidebar}
+            onToggleFullscreen={ctrl.toggleFullscreen}
+            onMouseDown={(e) => ctrl.onHeaderMouseDown(e.nativeEvent)}
+          />
+          <Layout className="yipet-chat-body">
+            {!state.sidebarCollapsed && (
+              <Sider width={state.sidebarWidth} className="yipet-sidebar-sider" theme="dark">
+                <ChatSidebar controller={ctrl} />
+              </Sider>
+            )}
+            <Layout className="yipet-chat-main">
+              <div
+                id="yipet-chat-messages"
+                className="yipet-chat-messages"
+                role="log"
+                aria-live="polite"
+              >
+                <ChatMessages
+                  controller={ctrl}
+                  messages={state.messages}
+                  viewState={state.viewState}
+                  pageInfo={pageInfo}
+                  currentSessionMessageCount={messageCount}
+                />
+              </div>
+              <Content className="yipet-chat-input-wrap">
+                <ChatInput controller={ctrl} />
+              </Content>
+            </Layout>
+          </Layout>
+
+          <WeChatSettingsModal controller={ctrl} />
+          <SessionEditDialog controller={ctrl} />
+          <PageContextEditor controller={ctrl} />
+          <TagManagerDialog controller={ctrl} />
+          <FaqDialog controller={ctrl} />
+
+          {!fullscreen && (
+            <div
+              className="yipet-resize-handle yipet-resize-se"
+              aria-hidden="true"
+              onMouseDown={(e) => ctrl.onResizeMouseDown('se', e as unknown as MouseEvent)}
+            />
+          )}
+          {!fullscreen && (
+            <div
+              className="yipet-resize-handle yipet-resize-sw"
+              aria-hidden="true"
+              onMouseDown={(e) => ctrl.onResizeMouseDown('sw', e as unknown as MouseEvent)}
+            />
+          )}
         </div>
-      ) : null}
-      {/* Resize handles */}
-      {!s.ws.isFullscreen ? (
-        <div
-          className="yipet-resize-handle yipet-resize-se"
-          role="separator"
-          aria-label="resize corner"
-          tabIndex={-1}
-          onMouseDown={(e: MouseEvent) => {
-            ctrl.onResizeMouseDown('se', e);
-          }}
-        />
-      ) : null}
-      {!s.ws.isFullscreen ? (
-        <div
-          className="yipet-resize-handle yipet-resize-sw"
-          role="separator"
-          aria-label="resize corner"
-          tabIndex={-1}
-          onMouseDown={(e: MouseEvent) => {
-            ctrl.onResizeMouseDown('sw', e);
-          }}
-        />
-      ) : null}
-    </div>
+      </AntApp>
+    </ConfigProvider>
   );
 }

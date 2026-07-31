@@ -7,7 +7,6 @@ to interact with YiAi's backend services when working on YiPet or YiVad.
 import logging
 import functools
 import asyncio
-from typing import Any
 
 from mcp.server.fastmcp import FastMCP
 

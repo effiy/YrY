@@ -45,20 +45,6 @@ export type MessageKey =
   | 'errorContentScriptNotReady'
   // Chat
   | 'chatInputPlaceholder'
-  // Thinking bubble texts
-  | 'thinkLetMeThink'
-  | 'thinkThinking'
-  | 'thinkInspiration'
-  | 'thinkOrganizing'
-  | 'thinkDeepAnalysis'
-  | 'thinkSearching'
-  | 'thinkIdea'
-  | 'thinkBrainstorming'
-  | 'thinkChoosing'
-  | 'thinkCrafting'
-  | 'thinkAlmostThere'
-  | 'thinkNearlyReady'
-  | 'thinkComingRightUp'
   // Error messages (shared)
   | 'errorContextInvalidated'
   | 'errorQuotaExceeded'

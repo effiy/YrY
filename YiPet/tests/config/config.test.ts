@@ -54,7 +54,7 @@ describe('config', () => {
 
     it('includes pet defaults', () => {
       const cfg = createConfig('production');
-      expect(cfg.pet.defaultSize).toBe(260);
+      expect(cfg.pet.defaultSize).toBe(120);
       expect(cfg.pet.sizeLimits.min).toBe(80);
       expect(cfg.pet.sizeLimits.max).toBe(400);
       expect(cfg.pet.colors).toHaveLength(5);

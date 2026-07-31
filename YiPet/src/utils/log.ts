@@ -1,6 +1,6 @@
 /**
  * Dev-gated logger — stripped from production bundles by tree-shaking.
- * All debug/info calls are wrapped in `if (IS_DEV)` blocks that Vite removes.
+ * All debug/info calls are wrapped in `if (IS_DEV)` blocks that Rsbuild removes.
  */
 
 import { IS_DEV, LOG_LEVEL } from './env';

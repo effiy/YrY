@@ -63,7 +63,8 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
     const url = resolveUrl(path);
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
-    if (signal) signal.addEventListener('abort', () => controller.abort());
+    const onAbort = () => controller.abort();
+    if (signal) signal.addEventListener('abort', onAbort);
 
     try {
       const init: RequestInit = { method, headers: defaultHeaders, signal: controller.signal };
@@ -116,6 +117,8 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
         data: null as T,
         error: (err as Error).message || 'Network error',
       };
+    } finally {
+      if (signal) signal.removeEventListener('abort', onAbort);
     }
   }
 

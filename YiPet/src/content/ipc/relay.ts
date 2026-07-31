@@ -5,6 +5,7 @@
  * Extracted from bootstrap.ts Phase 1 (ISOLATED world).
  */
 
+import { PET_DEFAULTS } from '@/config/defaults';
 import type { PopupToContent } from '@/shared/ipc/messages';
 import { getSystemPrompt, validateRole } from '../config/role-config';
 import type { RestoredState } from '../state/persistence';
@@ -18,7 +19,7 @@ import {
 // ── Pet State ────────────────────────────────────────────────────────────
 
 let _petVisible = false;
-let _petSize = 260;
+let _petSize = PET_DEFAULTS.pet.defaultSize;
 let _petRole = 'Teacher';
 let _petColor = 0;
 

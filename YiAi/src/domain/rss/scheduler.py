@@ -204,7 +204,8 @@ class RSSSchedulerManager:
             ]
 
             for field, min_val, max_val in validations:
-                if cron_config.get(field) is not None and not (min_val <= cron_config[field] <= max_val):
+                v = cron_config.get(field)
+                if isinstance(v, int) and not (min_val <= v <= max_val):
                     raise ValueError(f"{field} must be between {min_val}-{max_val}")
 
             self._config['type'] = 'cron'

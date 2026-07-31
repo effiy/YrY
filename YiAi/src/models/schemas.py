@@ -59,6 +59,17 @@ class FileReadRequest(BaseModel):
     """
     target_file: str = Field(..., description="File path to read")
 
+class ProjectFileReadRequest(BaseModel):
+    """Read a file directly from a project's source tree on disk.
+
+    Used by the YiVad story sidebar preview: paths stored on story/scenario
+    cards (e.g. ``src/views/foo.vue``) belong to a specific project, and the
+    preview must reflect the live content of that file on the project's disk
+    — NOT a stale snapshot in YiAi's static dir or MongoDB.
+    """
+    project: str = Field(..., description="Project name (e.g. YiVad, YiPet, YiAi)")
+    target_file: str = Field(..., description="Relative path within the project")
+
 class FileWriteRequest(BaseModel):
     """
     File write request model
@@ -80,6 +91,51 @@ class FolderRenameRequest(BaseModel):
     """
     old_dir: str = Field(..., description="Old directory path")
     new_dir: str = Field(..., description="New directory path")
+
+# --- Knowledge Base Schemas ---
+class KnowledgeScanRequest(BaseModel):
+    """Scan the ~/YiKnowledge markdown tree for a sidebar view."""
+    category: Optional[str] = Field(default=None, description="Limit to one top-level category (industry/lessons/...). Empty = all.")
+
+class KnowledgeReadRequest(BaseModel):
+    """Read a single knowledge markdown file with parsed frontmatter."""
+    target_file: str = Field(..., description="Relative path under the knowledge base dir")
+
+class KnowledgeStoriesRequest(BaseModel):
+    """List story.md entries under projects/{project}/."""
+    project: Optional[str] = Field(default=None, description="Limit to one project (YiAi/YiPet/YiVad/...). Empty = all.")
+
+class KnowledgeStoryReadRequest(BaseModel):
+    """Read a specific story's story.md."""
+    project: str = Field(..., description="Project name (e.g. YiVad)")
+    story_name: str = Field(..., description="Story directory name (semantic, e.g. ai-chat-function)")
+
+class KnowledgeFilesRequest(BaseModel):
+    """Read metadata from the DB mirror (no disk scan)."""
+    category: Optional[str] = Field(default=None, description="Filter by category (industry/lessons/.../static/__root__).")
+
+# --- RAG Schemas (llama_index) ---
+class RagQueryRequest(BaseModel):
+    """One-shot retrieval over the YiKnowledge VectorStoreIndex."""
+    question: str = Field(..., description="Query string")
+    top_k: Optional[int] = Field(default=None, description="Override settings.rag_top_k")
+    scope: Optional[str] = Field(default=None, description="Substring filter on file_path (e.g. 'projects/YiVad/')")
+
+class RagChatRequest(BaseModel):
+    """SSE-streaming RAG chat over the knowledge index."""
+    messages: List[Dict[str, Any]] = Field(..., description="[{role:'user'|'assistant'|'system', content}] — last must be user")
+    scope: Optional[str] = Field(default=None, description="Optional file_path substring filter")
+
+class RagFileChatRequest(BaseModel):
+    """SSE-streaming RAG chat grounded in a single file."""
+    target_file: str = Field(..., description="Relative path under knowledge base dir")
+    question: str = Field(..., description="Question about the file contents")
+
+class RagFileQueryRequest(BaseModel):
+    """One-shot retrieval over a single file's index."""
+    target_file: str = Field(..., description="Relative path under knowledge base dir")
+    question: str = Field(..., description="Query string")
+    top_k: Optional[int] = Field(default=None)
 
 # --- RSS Schemas ---
 class ParseRssRequest(BaseModel):

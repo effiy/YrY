@@ -1,5 +1,4 @@
 """Auth middleware - handles request header verification"""
-import os
 import logging
 from fastapi import Request
 from fastapi.responses import JSONResponse

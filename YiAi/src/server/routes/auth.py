@@ -1,13 +1,11 @@
 """Auth routes — login, logout, menu, and button-permission endpoints."""
 import logging
-from typing import Optional
 
 from fastapi import APIRouter
 from pydantic import BaseModel
 
 from data.database import db
 from domain.auth import create_jwt, verify_password
-from shared.config import settings
 from shared.error_codes import ErrorCode
 from shared.exceptions import BusinessException
 from shared.response import success
@@ -81,10 +79,13 @@ async def menu_list():
         return success(data=[])
 
     # Build lookup by path, then assemble tree
-    by_path: dict[str, dict] = {d["path"]: d for d in docs}
+    by_path: dict[str, dict] = {d["path"]: d for d in docs if "path" in d}
     roots: list[dict] = []
 
     for d in docs:
+        if "path" not in d:
+            roots.append(d)
+            continue
         parent = d.get("parent")
         if parent and parent in by_path:
             by_path[parent].setdefault("children", []).append(d)

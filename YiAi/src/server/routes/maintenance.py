@@ -7,12 +7,10 @@ import os
 import re
 import logging
 from pathlib import Path
-from typing import Set, Dict, List, Any, Optional
+from typing import Set, Dict, List, Any
 from pydantic import BaseModel, Field
 
 from fastapi import APIRouter
-from shared.error_codes import ErrorCode
-from shared.exceptions import BusinessException
 from shared.response import success
 from shared.config import settings
 from data.sessions import get_all_sessions, delete_session_by_key

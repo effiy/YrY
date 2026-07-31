@@ -4,7 +4,7 @@
  * switch the extension's entire visual identity.
  *
  * Variables defined: Brand · Accent · Backgrounds · Text ·
- *                    Borders · Shadows · Interactive
+ *                    Borders · Interactive
  */
 
 :root {
@@ -39,9 +39,6 @@
   /* ── Borders ─────────────────────────────────────────── */
   --border-secondary: rgba(167, 139, 250, 0.3);
   --border-focus: #a78bfa;
-
-  /* ── Shadows ─────────────────────────────────────────── */
-  --shadow-primary: 0 4px 20px rgba(102, 126, 234, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
 
   /* ── Interactive ─────────────────────────────────────── */
   --button-bg: #667eea;
