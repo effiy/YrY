@@ -215,6 +215,16 @@ export const useStoryStore = defineStore("yivad-story", () => {
     return [...set].sort((a, b) => a.localeCompare(b, "zh-CN"));
   });
 
+  const projectStoryCounts = computed(() => {
+    const counts: Record<string, number> = {};
+    for (const s of stories.value) {
+      if (s.project) {
+        counts[s.project] = (counts[s.project] || 0) + 1;
+      }
+    }
+    return counts;
+  });
+
   const totalStories = computed(() => total.value);
 
   const filteredStories = computed(() => {
@@ -437,10 +447,13 @@ export const useStoryStore = defineStore("yivad-story", () => {
     loadStoryMarkdown(story);
   }
 
-  /** Load AI coding history from the dedicated collection and merge into scenario arrays. */
+  /** Load AI coding & analysis-files history from the dedicated collection and merge into scenario arrays. */
   async function loadAiCodingHistoryForStory(storyKey: string) {
     try {
-      const aiCodingRes = await getHistoryList({ storyKey, type: "ai_coding", pageSize: 500 });
+      const [aiCodingRes, analysisFilesRes] = await Promise.all([
+        getHistoryList({ storyKey, type: "ai_coding", pageSize: 500 }),
+        getHistoryList({ storyKey, type: "analysis_files", pageSize: 500 })
+      ]);
 
       if (!selectedStory.value || selectedStory.value.key !== storyKey) return;
 
@@ -451,13 +464,21 @@ export const useStoryStore = defineStore("yivad-story", () => {
         byScenarioAi[doc.scenarioKey].push({ id: doc.key, prompt: doc.prompt, generatedAt: doc.generatedAt });
       }
 
+      const byScenarioAnalysis: Record<string, { id?: string; prompt: string; generatedAt: number }[]> = {};
+      for (const doc of analysisFilesRes.list) {
+        if (!byScenarioAnalysis[doc.scenarioKey]) byScenarioAnalysis[doc.scenarioKey] = [];
+        byScenarioAnalysis[doc.scenarioKey].push({ id: doc.key, prompt: doc.prompt, generatedAt: doc.generatedAt });
+      }
+
       // Merge into each scenario
       const scenarios = selectedStory.value.scenarios.map(sc => {
         const aiEntries = byScenarioAi[sc.key];
-        if (!aiEntries?.length) return sc;
+        const analysisEntries = byScenarioAnalysis[sc.key];
+        if (!aiEntries?.length && !analysisEntries?.length) return sc;
         return {
           ...sc,
-          aiCodingHistory: aiEntries
+          ...(aiEntries?.length ? { aiCodingHistory: aiEntries } : {}),
+          ...(analysisEntries?.length ? { analysisFilesHistory: analysisEntries } : {})
         };
       });
 
@@ -472,6 +493,11 @@ export const useStoryStore = defineStore("yivad-story", () => {
     storyMarkdown.value = null;
     storyKnowledgeDir.value = null;
   }
+  function selectProject(project: string) {
+    selectedProject.value = project;
+    fetchStories();
+  }
+
   function setTimeRange(r: TimeRange) {
     timeRange.value = r;
     fetchStories();
@@ -608,6 +634,68 @@ export const useStoryStore = defineStore("yivad-story", () => {
       const scenarios = [...story.scenarios];
       const history = sc.aiCodingHistory.filter((_, i) => i !== entryIdx);
       scenarios[idx] = { ...sc, aiCodingHistory: history };
+      selectedStory.value = { ...story, scenarios };
+      ElMessage.success("History entry deleted");
+    } catch {
+      /* cancelled */
+    }
+  }
+
+  async function saveAnalysisFilesPrompt(scenarioKey: string, prompt: string) {
+    if (!selectedStory.value) return;
+    const story = selectedStory.value;
+    const idx = story.scenarios.findIndex(s => s.key === scenarioKey);
+    if (idx < 0) return;
+
+    const sc = story.scenarios[idx];
+    const generatedAt = Date.now();
+
+    try {
+      // Persist to dedicated collection
+      const result = await createHistoryEntry({
+        storyKey: story.key,
+        scenarioKey,
+        scenarioName: sc.name,
+        prompt,
+        generatedAt,
+        type: "analysis_files"
+      });
+
+      // Update local state for immediate UI feedback
+      const scenarios = [...story.scenarios];
+      const history = sc.analysisFilesHistory ? [...sc.analysisFilesHistory] : [];
+      history.push({ id: result?.key, prompt, generatedAt });
+      scenarios[idx] = { ...sc, analysisFilesHistory: history };
+      selectedStory.value = { ...story, scenarios };
+    } catch (e: any) {
+      console.error("Failed to save analysis files history:", e);
+    }
+  }
+
+  async function deleteAnalysisFilesEntry(scenarioKey: string, entryIdx: number) {
+    if (!selectedStory.value) return;
+    const story = selectedStory.value;
+    const idx = story.scenarios.findIndex(s => s.key === scenarioKey);
+    if (idx < 0) return;
+
+    const sc = story.scenarios[idx];
+    if (!sc.analysisFilesHistory?.length) return;
+
+    const entry = sc.analysisFilesHistory[entryIdx];
+    if (!entry) return;
+
+    try {
+      await ElMessageBox.confirm("Delete this history entry?", "Confirm", { type: "warning" });
+
+      // Delete from dedicated collection if we have the document key
+      if (entry.id) {
+        await deleteHistoryEntry(entry.id);
+      }
+
+      // Update local state
+      const scenarios = [...story.scenarios];
+      const history = sc.analysisFilesHistory.filter((_, i) => i !== entryIdx);
+      scenarios[idx] = { ...sc, analysisFilesHistory: history };
       selectedStory.value = { ...story, scenarios };
       ElMessage.success("History entry deleted");
     } catch {
@@ -775,6 +863,7 @@ export const useStoryStore = defineStore("yivad-story", () => {
     scenarioForm,
     scenarioTab,
     projects,
+    projectStoryCounts,
     totalStories,
     filteredStories,
     groupedStories,
@@ -786,6 +875,7 @@ export const useStoryStore = defineStore("yivad-story", () => {
     handleDelete,
     openDetail,
     closePanel,
+    selectProject,
     setTimeRange,
     openScenarioCreate,
     openScenarioEdit,
@@ -793,6 +883,8 @@ export const useStoryStore = defineStore("yivad-story", () => {
     handleScenarioDelete,
     saveAiCodingPrompt,
     deleteAiCodingEntry,
+    saveAnalysisFilesPrompt,
+    deleteAnalysisFilesEntry,
     addStep,
     removeStep,
     addScenarioFile,

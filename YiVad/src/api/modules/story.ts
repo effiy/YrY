@@ -129,6 +129,7 @@ export interface Scenario {
   tags: string[];
   files: ScenarioFile[];
   aiCodingHistory?: AiCodingEntry[];
+  analysisFilesHistory?: AiCodingEntry[];
   // BRD 2.2
   trigger?: string;
   prerequisites?: string;

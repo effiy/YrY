@@ -409,8 +409,8 @@ Store appends deltas to the in-flight pet message; on abort marks aborted=true
 const recentChanges = [
   {
     date: "2026-07-31",
-    title: "Knowledge + RAG + Bug + Story pages",
-    desc: "New src/views/knowledge/ (CategoryList + Detail + MarkdownView) browsing the YiKnowledge markdown tree. New src/views/aicr/components/KnowledgeTree.vue bridges metadata into the aicr FileTree. src/views/story/ now displays story.md via MarkdownView with a cross-link to aicr. New src/views/bug/ (list + detail) implementing the YiKnowledge bug-logging-protocol. Added api/modules/knowledgeService.ts and ragService.ts (RAG chat uses the existing SSE parser).",
+    title: "Knowledge + RAG + Story pages",
+    desc: "New src/views/knowledge/ (CategoryList + Detail + MarkdownView) browsing the YiKnowledge markdown tree. New src/views/aicr/components/KnowledgeTree.vue bridges metadata into the aicr FileTree. src/views/story/ now displays story.md via MarkdownView with a cross-link to aicr. Added api/modules/knowledgeService.ts and ragService.ts (RAG chat uses the existing SSE parser).",
     hollow: false
   },
   {
