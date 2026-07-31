@@ -118,6 +118,19 @@ export function getShowMenuList(menuList: Menu.MenuOptions[]) {
 }
 
 /**
+ * @description Recursively sort menu tree children by meta.title alphabetically (A-Z, locale-aware).
+ * Returns a new sorted tree — does not mutate the original.
+ * @param {Array} nodes Menu tree nodes
+ * @returns {Array}
+ */
+export function sortMenuTree(nodes: any[]): any[] {
+  if (!nodes?.length) return [];
+  return [...nodes]
+    .map(node => (node.children?.length ? { ...node, children: sortMenuTree(node.children) } : node))
+    .sort((a, b) => (a.meta?.title ?? "").localeCompare(b.meta?.title ?? "", "zh-CN-u-kf-lower"));
+}
+
+/**
  * @description Recursively find all breadcrumbs to store in pinia/vuex
  * @param {Array} menuList Menu list
  * @param {Array} parent Parent menu

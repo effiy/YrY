@@ -1249,7 +1249,7 @@
     "path": "/brd",
     "name": "brd",
     "component": "",
-    "redirect": "/brd/brd-documents",
+    "redirect": "/brd/index",
     "meta": {
       "icon": "DocumentChecked",
       "title": "BRD Management",
@@ -1261,6 +1261,24 @@
     },
     "parent": null,
     "order": 13
+  },
+  {
+    "key": "menu_brdReviewHub",
+    "path": "/brd/index",
+    "name": "brdReviewHub",
+    "component": "/brd/index/index",
+    "redirect": "",
+    "meta": {
+      "icon": "DataAnalysis",
+      "title": "Review Hub",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/brd",
+    "order": -1
   },
   {
     "key": "menu_brdDocuments",

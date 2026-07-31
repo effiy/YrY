@@ -5,7 +5,7 @@
       "path": "/brd",
       "name": "brd",
       "component": "",
-      "redirect": "/brd/brd-documents",
+      "redirect": "/brd/index",
       "meta": {
         "icon": "DocumentChecked",
         "title": "BRD Management",
@@ -16,6 +16,22 @@
         "isKeepAlive": true
       },
       "children": [
+        {
+          "path": "/brd/index",
+          "name": "brdReviewHub",
+          "component": "/brd/index/index",
+          "redirect": "",
+          "meta": {
+            "icon": "DataAnalysis",
+            "title": "Review Hub",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
         {
           "path": "/brd/brd-documents",
           "name": "brdDocuments",

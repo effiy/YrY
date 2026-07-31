@@ -106,7 +106,12 @@ function pascal(s: string): string {
 const routePrefix = props.tree === "tech-leadership" ? "tlr" : props.tree === "brd" ? "brd" : "cr";
 
 function toDetail(key: string) {
-  const routeName = `${routePrefix}${pascal(props.topic)}Detail`;
+  // BRD topics already contain the tree prefix (e.g. "brd-documents"),
+  // so strip it before pascal-casing to avoid "brdBrdDocumentsDetail".
+  const topicName = props.topic.startsWith(props.tree + "-")
+    ? props.topic.slice(props.tree.length + 1)
+    : props.topic;
+  const routeName = `${routePrefix}${pascal(topicName)}Detail`;
   router.push({ name: routeName, params: { id: key } });
 }
 
@@ -119,8 +124,10 @@ async function fetchList(params: any) {
     pageSize
   });
   return {
-    list: res.data?.list ?? [],
-    total: res.data?.total ?? 0
+    data: {
+      list: res.data?.list ?? [],
+      total: res.data?.total ?? 0
+    }
   };
 }
 

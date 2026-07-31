@@ -133,9 +133,11 @@ const isAdd = ref(false);
 const editingKey = ref("");
 const saving = ref(false);
 
+import { sortMenuTree } from "@/utils";
+
 // Same tree data as the sidebar — el-table renders the hierarchy via tree-props.
 // Using authMenuListGet (raw, all items) so hidden menus are still manageable.
-const menuData = computed(() => authStore.authMenuListGet);
+const menuData = computed(() => sortMenuTree(authStore.authMenuListGet));
 
 // Tree-select options for parent menu picker — show full menu tree
 const parentMenuOptions = computed(() => {

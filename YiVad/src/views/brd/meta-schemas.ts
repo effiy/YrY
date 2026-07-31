@@ -273,7 +273,42 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
       { key: "created_date", label: "Created Date", type: "date", colSpan: 8 },
       { key: "last_reviewed_date", label: "Last Reviewed Date", type: "date", colSpan: 8 },
       { key: "executive_summary", label: "Executive Summary", type: "textarea", rows: 4, placeholder: "Brief overview: business problem, proposed solution scope, expected benefits, and key constraints. 3–5 sentences.", colSpan: 24 }
-    ]
+    ],
+    templateContent: `# BRD Document Title
+
+## Executive Summary
+[Brief overview: business problem, proposed solution, expected benefits, and key constraints. 3–5 sentences.]
+
+## Business Background
+
+### Current Status
+- [Describe the current business situation]
+
+### Problem / Opportunity
+- [What problem are we solving or opportunity are we capturing?]
+
+## Proposed Solution
+[High-level description of the proposed solution and its scope.]
+
+## Scope
+- **In scope**: [What is covered]
+- **Out of scope**: [What is explicitly NOT covered]
+
+## Key Stakeholders
+- [Role 1] — [Responsibility / interest]
+- [Role 2] — [Responsibility / interest]
+
+## Constraints & Assumptions
+- [Constraint 1]
+- [Assumption 1]
+
+## Expected Benefits
+- [Quantified benefit 1]
+- [Quantified benefit 2]
+
+---
+
+*Use the "Structured fields" section above to record metadata. Expand this content with detailed analysis.*`
   },
 
   // ── Business Objectives ─────────────────────────────────────────────────
@@ -323,7 +358,21 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
       },
       { key: "measurement_method", label: "Measurement & Verification Method", type: "textarea", rows: 2, placeholder: "How will success be measured? Data source, reporting cadence, responsible party. e.g. Monthly extract from Zendesk Explore dashboard, validated by After-Sales Operations Manager", colSpan: 24 },
       { key: "success_criteria", label: "Success Criteria", type: "textarea", rows: 2, placeholder: "What conditions must be met for this objective to be considered achieved? e.g. Resolution time < 2h sustained for 3 consecutive months across all EU markets", colSpan: 24 }
-    ]
+    ],
+    templateContent: `## Business Objective
+
+**Objective Statement**: [What do we want to achieve?]
+
+**Why this matters**: [Business context and urgency]
+
+**How we'll measure success**:
+- KPI: [Metric name]
+- Target: [Target value]
+- Baseline: [Current state]
+
+**Measurement Method**: [Data source, reporting cadence, responsible party]
+
+**Success Criteria**: [Conditions that must be met to consider this objective achieved]`
   },
 
   // ── Stakeholders / Core Users ───────────────────────────────────────────

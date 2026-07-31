@@ -231,7 +231,11 @@ async function handleDelete() {
 
 function back() {
   const prefix = props.tree === "tech-leadership" ? "tlr" : props.tree === "brd" ? "brd" : "cr";
-  router.push({ name: `${prefix}${pascal(props.topic)}List` });
+  // BRD topics already contain the tree prefix (e.g. "brd-documents").
+  const topicName = props.topic.startsWith(props.tree + "-")
+    ? props.topic.slice(props.tree.length + 1)
+    : props.topic;
+  router.push({ name: `${prefix}${pascal(topicName)}` });
 }
 
 function pascal(s: string) {
