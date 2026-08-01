@@ -1,6 +1,6 @@
 <script setup lang="ts" name="aiChatConversationListItem">
 import { computed } from "vue";
-import { Edit, Delete, Star, StarFilled } from "@element-plus/icons-vue";
+import { Edit, Delete, Star, StarFilled, Document } from "@element-plus/icons-vue";
 import type { SessionDocument } from "@/api/interface/yiweb";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 
@@ -14,6 +14,7 @@ const emit = defineEmits<{
   (e: "rename", key: string, title: string): void;
   (e: "delete", key: string, title: string): void;
   (e: "toggle-favorite", key: string): void;
+  (e: "edit-context", key: string): void;
 }>();
 
 const store = useAiChatStore();
@@ -63,6 +64,13 @@ function formatTime(ts?: number): string {
       >
         <el-icon><component :is="isFavorite ? StarFilled : Star" /></el-icon>
       </el-button>
+      <el-button
+        text
+        :icon="Document"
+        size="small"
+        title="Edit context"
+        @click="emit('edit-context', conversation.key)"
+      />
       <el-button
         text
         :icon="Edit"

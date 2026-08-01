@@ -266,6 +266,17 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     batchMode.value = false;
   }
 
+  async function clearAllConversations() {
+    const keys = conversations.value.map(c => c.key);
+    if (!keys.length) return;
+    await Promise.all(keys.map(k => deleteSession(k).catch(() => {})));
+    conversations.value = [];
+    activeConversation.value = null;
+    forgetActive();
+    selectedKeys.value = new Set();
+    batchMode.value = false;
+  }
+
   async function selectConversation(key: string) {
     if (activeConversation.value?.key === key) return;
     // Abort any in-flight stream before switching — otherwise the old stream
@@ -285,7 +296,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     }
   }
 
-  async function createConversation(title?: string) {
+  async function createConversation(title?: string, pageContent?: string, tags?: string[]) {
     const key = newKey();
     const now = Date.now();
     const session: SessionDocument = {
@@ -294,9 +305,9 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
       title: title || "New chat",
       pageTitle: "",
       pageDescription: "",
-      pageContent: "",
+      pageContent: pageContent || "",
       messages: [],
-      tags: [],
+      tags: tags || [],
       createdAt: now,
       updatedAt: now
     };
@@ -904,6 +915,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     toggleBatchMode,
     toggleSelection,
     bulkDelete,
+    clearAllConversations,
     openSessionEdit,
     closeSessionEdit,
     openContextEditor,

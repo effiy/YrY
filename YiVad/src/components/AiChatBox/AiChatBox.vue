@@ -1,9 +1,12 @@
 <script setup lang="ts" name="AiChatBox">
 import { computed, onBeforeUnmount, onMounted, provide, ref, watch } from "vue";
 import { useAiChatStore } from "@/stores/modules/aiChat";
+import { useAicrKnowledgeStore } from "@/stores/modules/aicr/knowledge";
+import { readKnowledgeFile } from "@/api/modules/knowledgeService";
 import { useResizable } from "@/hooks/useResizable";
 import MessageList from "@/views/aiChat/components/MessageList.vue";
 import ChatInput from "@/views/aiChat/components/ChatInput.vue";
+import ConversationSessionSidebar from "@/views/aiChat/components/ConversationSessionSidebar.vue";
 
 const props = withDefaults(
   defineProps<{
@@ -47,9 +50,10 @@ const props = withDefaults(
 );
 
 const store = useAiChatStore();
+const knowledgeStore = useAicrKnowledgeStore();
 
-// Right-side panels drag the LEFT edge (drag right = shrink, hence invert).
-// Left-side panels drag the RIGHT edge (drag right = grow, default).
+// ── Side-panel mode: resize / collapse (right/left) ──
+
 const invert = props.side === "right";
 const { width, isResizing, startResize } = useResizable(
   props.defaultWidth,
@@ -82,9 +86,6 @@ function toggleCollapse() {
 }
 loadCollapsed();
 
-// Expose collapse controls to the ChatToolbar (rendered deep inside ChatInput)
-// so the collapse button can sit as the first icon in ct-left rather than in
-// the panel header.
 provide("aiChatBoxCollapse", {
   collapsible: props.collapsible,
   side: props.side,
@@ -111,17 +112,110 @@ onBeforeUnmount(() => {
 });
 
 const isSide = computed(() => props.side !== "fill");
+const isFill = computed(() => props.side === "fill");
 const showResizer = computed(() => props.resizable && isSide.value && !collapsed.value);
 const showPanel = computed(() => !collapsed.value);
 
 const containerStyle = computed(() => {
   if (!isSide.value) return {};
-  // Collapsed keeps a sliver of width so the absolute-positioned expand tab
-  // (width 20px, anchored to the outer edge) stays inside the box. At 0px
-  // the parent's `overflow: hidden` clips the tab and the user has no way
-  // to bring the panel back.
   return { width: collapsed.value ? "20px" : `${width.value}px` };
 });
+
+// ── Session sidebar (fill mode only) ──
+
+const {
+  width: sessionSidebarW,
+  isResizing: isSessionResizing,
+  startResize: startSessionResize
+} = useResizable(240, 180, 480, "aiChat.sessionSidebarW");
+
+const sessionSidebarCollapsed = ref(false);
+function toggleSessionSidebar() {
+  sessionSidebarCollapsed.value = !sessionSidebarCollapsed.value;
+}
+provide("aiChatSessionSidebar", {
+  collapsed: sessionSidebarCollapsed,
+  toggle: toggleSessionSidebar
+});
+
+// ── Drop zone: drag a knowledge file from the left sidebar to create a session ──
+
+const isDragOver = ref(false);
+let dragOverCounter = 0;
+
+function onDragOver(e: DragEvent) {
+  if (!e.dataTransfer?.types.includes("application/x-knowledge-file")) return;
+  e.preventDefault();
+  e.dataTransfer!.dropEffect = "link";
+}
+
+function onDragEnter(e: DragEvent) {
+  if (!e.dataTransfer?.types.includes("application/x-knowledge-file")) return;
+  e.preventDefault();
+  dragOverCounter++;
+  isDragOver.value = true;
+}
+
+function onDragLeave(e: DragEvent) {
+  if (!e.dataTransfer?.types.includes("application/x-knowledge-file")) return;
+  dragOverCounter--;
+  if (dragOverCounter <= 0) {
+    dragOverCounter = 0;
+    isDragOver.value = false;
+  }
+}
+
+/** Recursively collect all file entries from a drag tree. */
+function collectDragFiles(
+  nodes: Array<{ type: string; name: string; path: string; content?: string; tags?: string[]; children?: any[] }>
+): Array<{ path: string; content: string; title: string; tags: string[] }> {
+  const out: Array<{ path: string; content: string; title: string; tags: string[] }> = [];
+  for (const n of nodes) {
+    if (n.type === "file") {
+      out.push({ path: n.path, content: n.content || "", title: n.name, tags: n.tags || [] });
+    }
+    if (n.children?.length) {
+      out.push(...collectDragFiles(n.children));
+    }
+  }
+  return out;
+}
+
+async function onDrop(e: DragEvent) {
+  isDragOver.value = false;
+  dragOverCounter = 0;
+  const raw = e.dataTransfer?.getData("application/x-knowledge-file");
+  if (!raw) return;
+  e.preventDefault();
+  try {
+    const parsed = JSON.parse(raw);
+    const nodes = Array.isArray(parsed) ? parsed : [parsed];
+    const files = collectDragFiles(nodes);
+
+    // Load content for any file that didn't have it in the drag payload
+    const needsContent = files.filter(f => !f.content && f.path);
+    if (needsContent.length) {
+      const results = await Promise.allSettled(
+        needsContent.map(f => readKnowledgeFile(f.path).catch(() => null))
+      );
+      results.forEach((r, i) => {
+        if (r.status === "fulfilled" && r.value) {
+          needsContent[i].content = r.value.content || "";
+        }
+      });
+    }
+
+    for (const f of files) {
+      if (!f.path) continue;
+      await knowledgeStore.ensureKnowledgeSession(f.path, f.content, { title: f.title, tags: f.tags });
+    }
+    if (files.length && files[0].path) {
+      await store.selectConversation(files[0].path);
+    }
+  } catch {
+    /* silently ignore malformed drag data */
+  }
+}
 </script>
 
 <template>
@@ -130,8 +224,7 @@ const containerStyle = computed(() => {
     :class="[`ai-chat-box--${side}`, { 'is-collapsed': collapsed, 'is-dragging': isResizing }]"
     :style="containerStyle"
   >
-    <!-- Drag handle: lives on the panel's inner edge so dragging outward grows.
-         The hit area is wider than the visible bar (8px vs 4px) for easier grabbing. -->
+    <!-- Side-panel drag handle -->
     <div
       v-if="showResizer"
       class="ai-chat-box__resizer"
@@ -139,7 +232,7 @@ const containerStyle = computed(() => {
       @pointerdown="startResize"
     />
 
-    <!-- Expand tab: only visible when collapsed. Sits on the panel's outer edge. -->
+    <!-- Side-panel expand tab -->
     <button
       v-if="collapsible && collapsed"
       class="ai-chat-box__expand"
@@ -151,11 +244,53 @@ const containerStyle = computed(() => {
     </button>
 
     <template v-if="showPanel">
-      <div v-if="title" class="ai-chat-box__hdr">
-        <span class="ai-chat-box__title">{{ title }}</span>
-      </div>
-      <MessageList />
-      <ChatInput />
+      <!-- Fill mode: session sidebar + chat area -->
+      <template v-if="isFill">
+        <div class="ai-chat-box__body">
+          <!-- Session sidebar -->
+          <div v-if="!sessionSidebarCollapsed" class="ai-chat-box__session-sidebar" :style="{ width: sessionSidebarW + 'px' }">
+            <ConversationSessionSidebar />
+          </div>
+          <!-- Session sidebar resizer -->
+          <div
+            v-if="!sessionSidebarCollapsed"
+            class="ai-chat-box__session-resizer"
+            :class="{ 'is-active': isSessionResizing }"
+            @pointerdown="startSessionResize"
+          />
+          <!-- Chat area with drop zone -->
+          <div
+            class="ai-chat-box__chat"
+            :class="{ 'is-drag-over': isDragOver }"
+            @dragover="onDragOver"
+            @dragenter="onDragEnter"
+            @dragleave="onDragLeave"
+            @drop="onDrop"
+          >
+            <div v-if="title" class="ai-chat-box__hdr">
+              <span class="ai-chat-box__title">{{ title }}</span>
+            </div>
+            <MessageList />
+            <ChatInput />
+            <!-- Drop overlay -->
+            <div v-if="isDragOver" class="ai-chat-box__drop-overlay">
+              <div class="ai-chat-box__drop-hint">
+                <span class="ai-chat-box__drop-icon">📄</span>
+                <span>Drop to start a new chat session</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <!-- Side mode: just message list + input -->
+      <template v-else>
+        <div v-if="title" class="ai-chat-box__hdr">
+          <span class="ai-chat-box__title">{{ title }}</span>
+        </div>
+        <MessageList />
+        <ChatInput />
+      </template>
     </template>
   </div>
 </template>
@@ -186,6 +321,74 @@ const containerStyle = computed(() => {
 .ai-chat-box.is-collapsed {
   border: none;
 }
+
+// ── Body (fill mode: session sidebar + chat) ──
+
+.ai-chat-box__body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.ai-chat-box__session-sidebar {
+  flex-shrink: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.ai-chat-box__session-resizer {
+  width: 4px;
+  flex-shrink: 0;
+  cursor: col-resize;
+  background: var(--el-border-color-lighter);
+  transition: background 0.15s;
+}
+.ai-chat-box__session-resizer:hover,
+.ai-chat-box__session-resizer.is-active {
+  background: var(--el-color-primary-light-7);
+}
+
+.ai-chat-box__chat {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+// ── Drop zone overlay ──
+
+.ai-chat-box__chat.is-drag-over {
+  outline: 2px dashed var(--el-color-primary);
+  outline-offset: -2px;
+}
+.ai-chat-box__drop-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--el-color-primary-light-9);
+  pointer-events: none;
+}
+.ai-chat-box__drop-hint {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--el-color-primary);
+}
+.ai-chat-box__drop-icon {
+  font-size: 40px;
+}
+
+// ── Side-panel resizer ──
+
 .ai-chat-box__resizer {
   position: absolute;
   top: 0;
@@ -217,6 +420,7 @@ const containerStyle = computed(() => {
 .ai-chat-box__resizer--left {
   right: 0;
 }
+
 .ai-chat-box__hdr {
   display: flex;
   flex-shrink: 0;
@@ -231,6 +435,7 @@ const containerStyle = computed(() => {
   font-weight: 600;
   color: var(--el-text-color-primary);
 }
+
 .ai-chat-box__expand {
   position: absolute;
   top: 50%;

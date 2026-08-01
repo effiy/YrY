@@ -1,7 +1,5 @@
 <script setup lang="ts" name="aiChatConversationSidebar">
 import { computed, onMounted } from "vue";
-import { ElMessageBox } from "element-plus";
-import { Plus, Delete, Operation } from "@element-plus/icons-vue";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { useAicrKnowledgeStore } from "@/stores/modules/aicr/knowledge";
 import type { KnowledgeFileEntry } from "@/api/interface/yiweb";
@@ -101,56 +99,60 @@ function isActive(path: string) {
   return store.activeConversation?.key === path;
 }
 
-// ── Conversation operations ──
-
-const selectedCount = computed(() => store.selectedKeys.size);
-
-async function onNew() {
-  const res = await ElMessageBox.prompt("Enter a title (optional)", "New conversation", {
-    confirmButtonText: "Create",
-    cancelButtonText: "Cancel",
-    inputPlaceholder: "New chat"
-  }).catch(() => null);
-  if (!res) return;
-  await store.createConversation(res.value?.trim() || "New chat");
-}
-
-async function onRename(key: string, currentTitle: string) {
-  const res = await ElMessageBox.prompt("Enter a new title", "Rename conversation", {
-    confirmButtonText: "Save",
-    cancelButtonText: "Cancel",
-    inputValue: currentTitle
-  }).catch(() => null);
-  if (!res) return;
-  await store.renameConversation(key, res.value?.trim() || currentTitle);
-}
-
-async function onDelete(key: string, title: string) {
-  const res = await ElMessageBox.confirm(`Delete conversation "${title}"?`, "Confirm delete", {
-    confirmButtonText: "Delete",
-    cancelButtonText: "Cancel",
-    type: "warning"
-  }).catch(() => null);
-  if (!res) return;
-  await store.deleteConversation(key);
-}
-
-async function onBulkDelete() {
-  if (selectedCount.value === 0) return;
-  const res = await ElMessageBox.confirm(
-    `Delete ${selectedCount.value} selected conversation(s)?`,
-    "Confirm delete",
-    { confirmButtonText: "Delete", cancelButtonText: "Cancel", type: "warning" }
-  ).catch(() => null);
-  if (!res) return;
-  await store.bulkDelete();
-}
-
 function fmtSize(bytes?: number) {
   if (!bytes) return "";
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+// ── Drag: initiate a new chat session by dragging knowledge files/folders ──
+
+interface DragContextNode {
+  type: "file" | "folder";
+  name: string;
+  path: string;
+  content?: string;
+  tags?: string[];
+  children?: DragContextNode[];
+}
+
+/** Build a tree node from a TreeNode (preserves directory structure). */
+function buildDragTree(node: TreeNode): DragContextNode | null {
+  if (node.type === "file" && node.entry) {
+    return {
+      type: "file",
+      name: node.label,
+      path: node.entry.path,
+      content: (node.entry.meta?.content as string) || "",
+      tags: (node.entry.meta?.tags as string[]) || []
+    };
+  }
+  if (node.type === "folder" && node.children?.length) {
+    const children = node.children
+      .map(c => buildDragTree(c))
+      .filter(Boolean) as DragContextNode[];
+    if (!children.length) return null;
+    return {
+      type: "folder",
+      name: node.label,
+      path: node.key.startsWith("folder:") ? node.key.slice(7) : node.key,
+      children
+    };
+  }
+  return null;
+}
+
+function onDragStart(e: DragEvent, data: TreeNode) {
+  const tree = buildDragTree(data);
+  if (!tree) {
+    e.preventDefault();
+    return;
+  }
+  // Always send as an array so drop handlers can treat uniformly
+  e.dataTransfer!.effectAllowed = "link";
+  e.dataTransfer!.setData("application/x-knowledge-file", JSON.stringify([tree]));
+  e.dataTransfer!.setData("text/plain", tree.name);
 }
 </script>
 
@@ -158,15 +160,7 @@ function fmtSize(bytes?: number) {
   <div class="cs-sidebar">
     <div class="cs-header">
       <el-input v-model="knowledgeStore.searchQuery" placeholder="Search knowledge..." clearable size="small" />
-      <el-button type="primary" :icon="Plus" size="small" title="New conversation" aria-label="New conversation" @click="onNew" />
-      <el-button
-        v-if="!store.batchMode"
-        size="small"
-        :icon="Operation"
-        title="Batch manage conversations"
-        aria-label="Batch manage"
-        @click="store.toggleBatchMode()"
-      />
+      <span class="cs-hint" title="Drag files to the chat area to start a session">Drag → Chat</span>
     </div>
 
     <el-scrollbar class="cs-list">
@@ -192,30 +186,25 @@ function fmtSize(bytes?: number) {
             class="kt-file"
             :class="{ active: isActive(data.entry!.path) }"
             :title="data.entry!.path"
+            draggable="true"
+            @dragstart="e => onDragStart(e, data)"
           >
             <span class="kt-file-label">{{ data.label }}</span>
             <span v-if="data.entry!.meta?.type" class="kt-file-type">{{ data.entry!.meta.type }}</span>
             <span class="kt-file-size">{{ fmtSize(data.entry!.size) }}</span>
           </div>
-          <span v-else class="kt-folder">
+          <span
+            v-else
+            class="kt-folder"
+            draggable="true"
+            @dragstart="e => onDragStart(e, data)"
+          >
             <span class="kt-folder-label">{{ data.label }}</span>
             <span class="kt-folder-count">{{ data.children?.length ?? 0 }}</span>
           </span>
         </template>
       </el-tree>
     </el-scrollbar>
-
-    <div v-if="store.batchMode" class="cs-batch-bar">
-      <span class="cs-batch-count">{{ selectedCount }} selected</span>
-      <el-button
-        size="small"
-        type="danger"
-        :icon="Delete"
-        :disabled="selectedCount === 0"
-        @click="onBulkDelete"
-      >Delete selected</el-button>
-      <el-button size="small" @click="store.toggleBatchMode()">Cancel</el-button>
-    </div>
   </div>
 </template>
 
@@ -231,21 +220,18 @@ function fmtSize(bytes?: number) {
 .cs-header {
   display: flex;
   gap: 8px;
+  align-items: center;
   padding: 8px;
   border-bottom: 1px solid var(--el-border-color-lighter);
 }
-.cs-batch-bar {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 8px 12px;
-  background: var(--el-fill-color-lighter);
-  border-top: 1px solid var(--el-border-color-lighter);
-}
-.cs-batch-count {
-  flex: 1;
-  font-size: 12px;
+.cs-hint {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  font-size: 11px;
   color: var(--el-text-color-secondary);
+  white-space: nowrap;
+  background: var(--el-fill-color-light);
+  border-radius: 3px;
 }
 .cs-list {
   flex: 1;
@@ -271,6 +257,10 @@ function fmtSize(bytes?: number) {
   font-size: 13px;
   font-weight: 600;
   color: var(--el-text-color-primary);
+  cursor: grab;
+}
+.kt-folder:active {
+  cursor: grabbing;
 }
 .kt-folder-count {
   padding: 0 6px;
@@ -288,7 +278,10 @@ function fmtSize(bytes?: number) {
   padding: 2px 0;
   font-size: 13px;
   color: var(--el-text-color-regular);
-  cursor: pointer;
+  cursor: grab;
+}
+.kt-file:active {
+  cursor: grabbing;
 }
 .kt-file-label {
   flex: 1;
