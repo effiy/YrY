@@ -73,18 +73,19 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   const contextEditorVisible = ref(false);
   const contextEditorDraft = ref("");
   const tagManagerVisible = ref(false);
-  // RAG is auto-enabled when the active conversation has ctx:-tagged context files.
-  // No manual toggle — the "Knowledge" button is removed; RAG is implicit when
-  // context files exist and the chat stream picks the right backend automatically.
+  // RAG toggle — user-controlled, default ON. When ON + conversation has ctx: files → RAG chat.
+  // When OFF → direct LLM chat even if ctx: files exist.
+  const ragEnabled = ref(true);
+
+  // True when the active conversation has ctx:-tagged files (can use RAG).
   const ragActive = computed(() => {
     const tags = activeConversation.value?.tags ?? [];
     return tags.some(t => typeof t === "string" && t.startsWith("ctx:"));
   });
 
   // Backward-compat aliases
-  const knowledgeMode = computed(() => ragActive.value);
-  const contextSwitchEnabled = computed(() => ragActive.value);
-  const ragEnabled = computed(() => ragActive.value);
+  const knowledgeMode = computed(() => ragEnabled.value && ragActive.value);
+  const contextSwitchEnabled = computed(() => ragEnabled.value);
   // Transient per-message system prompt — set by callers (e.g. story's
   // file-preview chat passes the file content as context) and consumed by
   // runStream on the next send. Not persisted: file content changes between
@@ -539,7 +540,8 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
       .filter(m => m.type === "user" || (m.type === "pet" && !!m.message))
       .map(m => ({ type: m.type, message: m.message, timestamp: m.timestamp }));
 
-    const contextText = ragActive.value ? (session.pageContent || "").trim() : "";
+    const useRag = ragEnabled.value && ragActive.value;
+    const contextText = useRag ? (session.pageContent || "").trim() : "";
     if (contextText) {
       aiMessages.unshift({
         type: "user",
@@ -613,7 +615,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     };
 
     let abort: () => void;
-    if (ragActive.value) {
+    if (ragEnabled.value && ragActive.value) {
       // RAG mode — scope to the conversation's ctx:-tagged files.
       const ctxPaths = (session.tags ?? [])
         .filter(t => typeof t === "string" && t.startsWith("ctx:"))

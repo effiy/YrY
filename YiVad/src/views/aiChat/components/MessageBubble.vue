@@ -1,6 +1,5 @@
 <script setup lang="ts" name="aiChatMessageBubble">
 import { computed } from "vue";
-import { useRouter } from "vue-router";
 import { ElMessageBox } from "element-plus";
 import { CopyDocument, Pointer, Star, RefreshRight, Delete, Edit, Promotion } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
@@ -16,7 +15,6 @@ const props = defineProps<{
 }>();
 
 const store = useAiChatStore();
-const router = useRouter();
 const { render } = useMarkdown();
 
 const isUser = computed(() => props.message.type === "user");
@@ -45,11 +43,6 @@ async function onDelete() {
     return;
   }
   await store.deleteMessage(props.index);
-}
-
-function onOpenSourceFile(filePath: string) {
-  if (!filePath) return;
-  router.push({ path: "/knowledge/detail", query: { path: filePath } });
 }
 
 async function onEdit() {
@@ -86,7 +79,6 @@ async function onEdit() {
       <RagSources
         v-if="!isUser && props.message.sources?.length"
         :sources="props.message.sources"
-        @open-file="onOpenSourceFile"
       />
     </div>
     <div class="mb-meta">

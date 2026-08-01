@@ -1,5 +1,5 @@
 <script setup lang="ts" name="aiChatInput">
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import { Promotion } from "@element-plus/icons-vue";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { useAiChatShortcuts } from "@/hooks/useAiChatShortcuts";
@@ -9,11 +9,6 @@ import DraftImageList from "./DraftImageList.vue";
 const store = useAiChatStore();
 const imageInput = ref<HTMLInputElement | null>(null);
 
-const CTX_PREFIX = "ctx:";
-const contextFileCount = computed(() => {
-  const tags = store.activeConversation?.tags ?? [];
-  return tags.filter(t => typeof t === "string" && t.startsWith(CTX_PREFIX)).length;
-});
 
 const { onCompositionStart, onCompositionEnd, onKeydown, onPaste } = useAiChatShortcuts(store);
 
@@ -35,15 +30,15 @@ async function onImageChange(e: Event) {
       :faq-active="store.faqVisible"
       :sending="store.sending"
       :streaming-type="store.streamingType"
-      :rag-active="store.ragActive"
-      :context-file-count="contextFileCount"
+      :rag-toggle="store.ragEnabled"
+      :rag-available="store.ragActive"
       :can-clear="store.input.trim().length > 0 || store.draftImages.length > 0"
       @toggle-faq="store.toggleFaq()"
       @pick-image="openImagePicker"
       @manage-tags="store.openTagManager()"
       @open-wechat="store.openWeChat()"
       @clear-input="store.clearInput()"
-      @open-rag-panel="store.openLlamaIndex()"
+      @toggle-rag="store.ragEnabled = !store.ragEnabled"
       @stop="store.stopSending()"
     />
     <input ref="imageInput" type="file" accept="image/*" multiple class="ci-file-input" @change="onImageChange" />

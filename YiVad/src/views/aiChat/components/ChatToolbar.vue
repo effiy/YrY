@@ -2,7 +2,7 @@
 import { inject } from "vue";
 import {
   ChatLineSquare, Picture, PriceTag, CircleClose, ChatDotRound,
-  ArrowLeft, ArrowRight, DataAnalysis
+  ArrowLeft, ArrowRight
 } from "@element-plus/icons-vue";
 import RequestStatusButton from "./RequestStatusButton.vue";
 import FaqPopover from "./FaqPopover.vue";
@@ -12,14 +12,11 @@ withDefaults(
     faqActive?: boolean;
     sending?: boolean;
     streamingType?: "" | "send" | "regenerate" | "resend";
-    ragActive?: boolean;
-    contextFileCount?: number;
+    ragToggle?: boolean;
+    ragAvailable?: boolean;
     canClear?: boolean;
   }>(),
-  {
-    faqActive: false, sending: false, streamingType: "",
-    ragActive: false, contextFileCount: 0, canClear: false
-  }
+  { faqActive: false, sending: false, streamingType: "", ragToggle: false, ragAvailable: false, canClear: false }
 );
 
 const emit = defineEmits<{
@@ -28,7 +25,7 @@ const emit = defineEmits<{
   (e: "manage-tags"): void;
   (e: "open-wechat"): void;
   (e: "clear-input"): void;
-  (e: "open-rag-panel"): void;
+  (e: "toggle-rag"): void;
   (e: "stop"): void;
 }>();
 
@@ -60,17 +57,10 @@ const collapseCtx = inject<{ collapsible: boolean; side: "fill" | "right" | "lef
       </el-tooltip>
     </div>
     <div class="ct-right">
-      <el-tooltip :content="ragActive ? `RAG active · ${contextFileCount} context file(s)` : 'RAG panel'" placement="bottom">
-        <el-button
-          circle size="default"
-          :icon="DataAnalysis"
-          :type="ragActive ? 'primary' : ''"
-          class="ct-rag-btn"
-          @click="emit('open-rag-panel')"
-        >
-          <span v-if="contextFileCount > 0" class="ct-rag-badge">{{ contextFileCount }}</span>
-        </el-button>
-      </el-tooltip>
+      <div class="ct-pill" :class="{ on: ragToggle }" :title="ragToggle ? 'RAG on — answers grounded in context files' : 'RAG off — direct chat'">
+        <span class="ct-pill-label">RAG</span>
+        <el-switch :model-value="ragToggle" :disabled="!ragAvailable" size="small" @update:model-value="emit('toggle-rag')" />
+      </div>
       <el-tooltip content="Clear input" placement="bottom">
         <el-button v-show="canClear" circle size="default" :icon="CircleClose" @click="emit('clear-input')" />
       </el-tooltip>
@@ -80,17 +70,9 @@ const collapseCtx = inject<{ collapsible: boolean; side: "fill" | "right" | "lef
 </template>
 
 <style scoped lang="scss">
-.ct-toolbar {
-  display: flex; gap: 8px; align-items: center; justify-content: space-between;
-  padding: 6px 12px; background: var(--el-bg-color);
-  border-bottom: 1px solid var(--el-border-color-lighter);
-}
+.ct-toolbar { display: flex; gap: 8px; align-items: center; justify-content: space-between; padding: 6px 12px; background: var(--el-bg-color); border-bottom: 1px solid var(--el-border-color-lighter); }
 .ct-left, .ct-right { display: flex; gap: 6px; align-items: center; }
-.ct-rag-btn { position: relative; }
-.ct-rag-badge {
-  position: absolute; top: -4px; right: -4px;
-  min-width: 16px; height: 14px; padding: 0 4px;
-  font-size: 10px; line-height: 14px; text-align: center;
-  color: #fff; background: var(--el-color-success); border-radius: 7px;
-}
+.ct-pill { display: inline-flex; gap: 6px; align-items: center; height: 28px; padding: 0 10px; font-size: 12px; color: var(--el-text-color-placeholder); cursor: pointer; user-select: none; background: var(--el-fill-color-blank); border: 1px solid var(--el-border-color-light); border-radius: 14px; transition: all .15s; }
+.ct-pill.on { color: var(--el-color-primary); background: var(--el-color-primary-light-9); border-color: var(--el-color-primary-light-5); }
+.ct-pill-label { line-height: 1; }
 </style>
