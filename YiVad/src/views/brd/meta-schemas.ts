@@ -173,6 +173,13 @@ const INFLUENCE_OPTIONS = [
   { label: "Informed — requires status visibility", value: "informed" }
 ];
 
+const URGENCY_OPTIONS = [
+  { label: "P0 — Critical: regulatory deadline / revenue at immediate risk", value: "p0" },
+  { label: "P1 — High: significant business impact within 1–3 months", value: "p1" },
+  { label: "P2 — Medium: important but no hard deadline", value: "p2" },
+  { label: "P3 — Low: nice-to-have / operational improvement", value: "p3" }
+];
+
 // ── Tag type helpers ────────────────────────────────────────────────────────
 
 function priorityTag(v: string): ReturnType<NonNullable<MetaColumn["tagTypeFn"]>> {
@@ -209,10 +216,12 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
   "brd-documents": {
     metaColumns: [
       { key: "document_id", label: "BRD ID", width: 160 },
-      { key: "title", label: "Document Title", minWidth: 360 },
+      { key: "title", label: "Document Title", minWidth: 280 },
       { key: "version", label: "Version", width: 100 },
+      { key: "author", label: "Author", width: 140 },
       { key: "business_owner", label: "Business Owner", width: 160 },
       { key: "department", label: "Department", width: 140, enum: DEPARTMENT_OPTIONS },
+      { key: "domain", label: "Business Domain", width: 140, enum: DOMAIN_OPTIONS },
       {
         key: "priority",
         label: "Priority",
@@ -227,8 +236,9 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
         enum: STATUS_OPTIONS,
         tagTypeFn: statusTag
       },
-      { key: "country", label: "Country / Region", width: 200, enum: COUNTRY_OPTIONS },
-      { key: "expected_golive", label: "Target Go-Live", width: 160 }
+      { key: "country", label: "Country / Region", width: 160, enum: COUNTRY_OPTIONS },
+      { key: "brand", label: "Brand", width: 120 },
+      { key: "expected_golive", label: "Target Go-Live", width: 140 }
     ],
     metaFields: [
       { key: "document_id", label: "BRD Identifier", type: "input", placeholder: "e.g. BRD-2026-001 or BRD-EU-AFS-001", required: true, colSpan: 8 },

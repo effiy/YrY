@@ -243,9 +243,7 @@ export function createPetOverlay(
     'position:fixed;bottom:20%;right:20px;z-index:2147483647;' +
     'transition:opacity 100ms ease;opacity:0;pointer-events:none;' +
     'padding:24px;border-radius:50%;' +
-    'background-size:cover;' +
-    'box-shadow:0 0 24px 4px rgba(var(--primary-rgb, 99, 102, 241), 0.45),' +
-    '0 0 8px 2px rgba(var(--primary-rgb, 99, 102, 241), 0.6);';
+    'background-size:cover;';
   petContainer.setAttribute('data-pet', 'yipet');
   const petImg = document.createElement('img');
   petImg.id = 'yipet-pet-img';
