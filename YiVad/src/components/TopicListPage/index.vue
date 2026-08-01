@@ -52,8 +52,10 @@ import { useRouter } from "vue-router";
 import { CirclePlus, Delete, EditPen, View } from "@element-plus/icons-vue";
 import ProTable from "@/components/ProTable/index.vue";
 import type { ColumnProps, ProTableInstance } from "@/components/ProTable/interface";
-import { getTopicList, deleteTopicEntry, createTopicEntry, makeKey, contentPathFor, type TopicEntryDocument, type TopicTree } from "@/api/modules/topic";
+import { getTopicList, deleteTopicEntry, makeKey, contentPathFor, type TopicEntryDocument, type TopicTree } from "@/api/modules/topic";
 import { useHandleData } from "@/hooks/useHandleData";
+import { callService } from "@/api/modules/dataService";
+import { syncKnowledge } from "@/api/modules/knowledgeService";
 import { useAicrKnowledgeStore } from "@/stores/modules/aicr/knowledge";
 import { ElMessage } from "element-plus";
 
@@ -153,28 +155,31 @@ const router = useRouter();
 const proTableRef = ref<ProTableInstance>();
 const knowledgeStore = useAicrKnowledgeStore();
 
-/** For BRD topics, create a new entry and navigate to aicr for AI-assisted editing.
+/** For BRD topics, create the YiKnowledge file (without MongoDB entry),
+ *  sync it, then navigate to aicr for AI-assisted editing.
  *  For other trees, navigate to the detail page as before. */
 async function handleNewEntry() {
   if (props.tree === "brd") {
     const key = makeKey(props.tree, props.topic);
+    const cpath = contentPathFor(props.tree, props.topic, key);
     const content = props.templateContent || "# New Entry\n\nDescribe the requirements below.";
     try {
-      await createTopicEntry(props.tree, props.topic, {
-        title: "New Entry",
+      // Create the YiKnowledge file on disk (MongoDB entry comes later via Save)
+      await callService("services.knowledge.knowledge_service", "write_entry_markdown", {
+        rel_path: cpath,
         content,
-        tags: [],
-        meta: {}
-      }, key);
-      const cpath = contentPathFor(props.tree, props.topic, key);
+        meta: { title: "New Entry", key, tags: [] }
+      });
+      // Sync disk → MongoDB so the sidebar's scanKnowledge picks it up immediately
+      await syncKnowledge();
+      // One-shot: tell aicr to select this file on mount (no race — file is already synced)
       knowledgeStore.setPendingSelectPath(cpath);
       router.push({
         path: "/aicr",
         query: {
-          source: "brd",
+          source: "brd-new",
           brdTopic: props.topic,
           brdKey: key,
-          brdTitle: "New Entry",
           brdBreadcrumb: props.label
         }
       });

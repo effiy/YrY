@@ -15,7 +15,7 @@
     </el-header>
     <el-container class="classic-content">
       <el-aside>
-        <div class="aside-box" :style="{ width: isCollapse ? '65px' : '210px' }">
+        <div class="aside-box" :style="{ width: isCollapse ? '65px' : '210px', height: 'calc(100vh - 55px)' }">
           <el-scrollbar>
             <el-menu
               :router="false"

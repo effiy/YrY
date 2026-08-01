@@ -2,17 +2,16 @@
   <Maximize v-show="maximize" />
   <Tabs v-show="tabs" />
   <el-main>
-    <router-view v-slot="{ Component, route }">
-      <transition appear name="fade-transform" mode="out-in">
-        <keep-alive :include="keepAliveName">
-          <component :is="createComponentWrapper(Component, route)" v-if="isRouterShow" :key="route.fullPath" />
-        </keep-alive>
-      </transition>
-    </router-view>
+    <el-scrollbar>
+      <router-view v-slot="{ Component, route }">
+        <transition appear name="fade-transform" mode="out-in">
+          <keep-alive :include="keepAliveName">
+            <component :is="createComponentWrapper(Component, route)" v-if="isRouterShow" :key="route.fullPath" />
+          </keep-alive>
+        </transition>
+      </router-view>
+    </el-scrollbar>
   </el-main>
-  <el-footer v-show="footer">
-    <Footer />
-  </el-footer>
 </template>
 
 <script setup lang="ts">
@@ -23,10 +22,9 @@ import { useGlobalStore } from "@/stores/modules/global";
 import { useKeepAliveStore } from "@/stores/modules/keepAlive";
 import Maximize from "./components/Maximize.vue";
 import Tabs from "@/layouts/components/Tabs/index.vue";
-import Footer from "@/layouts/components/Footer/index.vue";
 
 const globalStore = useGlobalStore();
-const { maximize, isCollapse, layout, tabs, footer } = storeToRefs(globalStore);
+const { maximize, isCollapse, layout, tabs } = storeToRefs(globalStore);
 
 const keepAliveStore = useKeepAliveStore();
 const { keepAliveName } = storeToRefs(keepAliveStore);

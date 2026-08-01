@@ -150,11 +150,6 @@ defineExpose({ setHighlight, selectedKey: () => selectedPath.value });
           <el-button v-if="!editMode" size="small" @click="toggleFullscreen" title="Fullscreen">
             <el-icon><FullScreen /></el-icon>
           </el-button>
-          <el-button-group v-if="!editMode" size="small">
-            <el-button :type="viewMode === 'preview' ? 'primary' : 'default'" @click="viewMode = 'preview'">Preview</el-button>
-            <el-button :type="viewMode === 'code' ? 'primary' : 'default'" @click="viewMode = 'code'">Code</el-button>
-          </el-button-group>
-          <el-button v-if="!editMode" size="small" type="primary" @click="enterEdit">Edit</el-button>
           <template v-else>
             <el-button size="small" :disabled="saving" @click="cancelEdit">Cancel</el-button>
             <el-button size="small" type="primary" :loading="saving" :disabled="!editDirty" @click="saveEdit">Save</el-button>

@@ -10,8 +10,9 @@ import { useAicrFilterStore } from "@/stores/modules/aicr/filters";
 import { useAicrModalStore } from "@/stores/modules/aicr/modals";
 import { useAicrChatStore } from "@/stores/modules/aicr/chat";
 import { useAiChatStore } from "@/stores/modules/aiChat";
-import { syncKnowledge } from "@/api/modules/knowledgeService";
+import { syncKnowledge, readKnowledgeFile } from "@/api/modules/knowledgeService";
 import { useAicrKnowledgeStore } from "@/stores/modules/aicr/knowledge";
+import { createTopicEntry, contentPathFor } from "@/api/modules/topic";
 import { useResizable } from "@/hooks/useResizable";
 import KnowledgeTree from "./components/KnowledgeTree.vue";
 import FileTree from "./components/FileTree.vue";
@@ -59,6 +60,18 @@ const brdOrigin = ref<{
   title: string;
   breadcrumb: string;
 } | null>(null);
+
+// ── BRD new-entry origin context ──
+// When the user clicks "New Entry" on a BRD list page, we route here
+// with `?source=brd-new&brdTopic=...&brdBreadcrumb=...`.
+// No MongoDB entry exists yet — the YiKnowledge file is created immediately,
+// and the user must click "Save as BRD" to persist the entry to the database.
+const brdNewOrigin = ref<{
+  topic: string;
+  key: string;
+  breadcrumb: string;
+} | null>(null);
+const savingBrd = ref(false);
 
 function readOriginFromUrl(): "story" | "scenario" | null {
   // Hash-mode router: query params live in `route.query`, not
@@ -149,6 +162,69 @@ function clearBrdOrigin() {
   knowledgeStore.clearBrdFilterPath();
   // Strip the origin query params so a refresh doesn't re-enter BRD mode
   if (route.query.source === "brd") {
+    router.replace({ query: {} });
+  }
+}
+
+// ── BRD new-entry — from BRD list "New Entry" ──
+
+/** Set up BRD new-entry context. The YiKnowledge file was already created and
+ *  synced by TopicListPage before navigating here — no async work needed.
+ *  MongoDB entry is created later when the user clicks "Save as BRD".
+ *
+ *  The sidebar is left unfiltered (same view as the regular /aicr page).
+ *  The file is auto-selected via pendingSelectPath so the template renders
+ *  in the CodeViewer and the chat has the right context. */
+function readBrdNewOriginFromUrl(): boolean {
+  const source = (route.query.source as string | undefined) ?? null;
+  if (source !== "brd-new") return false;
+  const topic = (route.query.brdTopic as string | undefined) ?? "";
+  const key = (route.query.brdKey as string | undefined) ?? "";
+  const breadcrumb = (route.query.brdBreadcrumb as string | undefined) ?? "";
+  if (!topic || !key) return false;
+
+  brdNewOrigin.value = { topic, key, breadcrumb };
+
+  return true;
+}
+
+/** Persist the BRD entry to MongoDB and navigate to the detail page. */
+async function saveBrdNew() {
+  if (!brdNewOrigin.value || savingBrd.value) return;
+  savingBrd.value = true;
+  try {
+    const { topic, key } = brdNewOrigin.value;
+    const cpath = contentPathFor("brd", topic, key);
+    // Read back current content in case the user edited it in aicr
+    let content = "";
+    try {
+      const file = await readKnowledgeFile(cpath);
+      content = file.content || "";
+    } catch { /* file might not be synced yet */ }
+
+    await createTopicEntry("brd", topic, {
+      title: "New Entry",
+      content: content || "# New Entry",
+      tags: [],
+      meta: {}
+    }, key);
+
+    ElMessage.success("BRD entry created");
+    clearBrdNewOrigin();
+    router.push({
+      path: `/brd/${topic}/detail/${key}`,
+      query: { mode: "view" }
+    });
+  } catch (e: any) {
+    ElMessage.error(e?.message || "Failed to save BRD entry");
+  } finally {
+    savingBrd.value = false;
+  }
+}
+
+function clearBrdNewOrigin() {
+  brdNewOrigin.value = null;
+  if (route.query.source === "brd-new") {
     router.replace({ query: {} });
   }
 }
@@ -309,6 +385,9 @@ onMounted(async () => {
   // BRD origin (from BRD detail "Edit in aicr"). Filters the knowledge
   // sidebar to only BRD content files for the source topic.
   if (!brdOrigin.value) readBrdOriginFromUrl();
+  // BRD new-entry origin (from BRD list "New Entry"). Creates a temp
+  // YiKnowledge file and shows a "Save as BRD" button.
+  if (!brdNewOrigin.value) readBrdNewOriginFromUrl();
 
   // External pages (Knowledge detail "Ask in aicr") stage a knowledge
   // file path via `knowledgeStore.setPendingSelectPath`. Select it so
@@ -350,6 +429,8 @@ onActivated(() => {
   readOriginFromUrl();
   // BRD origin re-application on KeepAlive re-entry.
   if (!brdOrigin.value) readBrdOriginFromUrl();
+  // BRD new-entry origin re-application on KeepAlive re-entry.
+  if (!brdNewOrigin.value) readBrdNewOriginFromUrl();
 });
 
 onBeforeUnmount(() => {
@@ -398,6 +479,12 @@ function onGlobalKeydown(e: KeyboardEvent) {
           <el-tag type="primary" size="small" effect="plain">{{ brdOrigin.breadcrumb }}</el-tag>
           <span class="aicr-brd-title">{{ brdOrigin.title }}</span>
           <el-button size="small" :icon="ArrowLeft" link @click="backToBrdDetail" title="Back to BRD detail" />
+        </template>
+        <template v-if="brdNewOrigin">
+          <el-tag type="success" size="small" effect="plain">{{ brdNewOrigin.breadcrumb }}</el-tag>
+          <span class="aicr-brd-title">New Entry</span>
+          <el-button type="primary" size="small" :loading="savingBrd" @click="saveBrdNew">Save as BRD</el-button>
+          <el-button size="small" link @click="clearBrdNewOrigin" title="Discard">Discard</el-button>
         </template>
       </div>
       <div class="aicr-hdr-r">
