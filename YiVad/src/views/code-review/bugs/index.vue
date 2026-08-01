@@ -9,9 +9,9 @@
     >
       <template #tableHeader></template>
       <template #operation="scope">
-        <el-button type="primary" link :icon="View" @click="toDetail(scope.row)">View</el-button>
-        <el-button type="primary" link :icon="EditPen" @click="openDrawer('Edit', scope.row)">Edit</el-button>
-        <el-button type="primary" link :icon="Delete" @click="handleDelete(scope.row)">Delete</el-button>
+        <el-button type="primary" link :icon="View" @click="toDetail(scope.row)" />
+        <el-button type="primary" link :icon="EditPen" @click="openDrawer('Edit', scope.row)" />
+        <el-button type="primary" link :icon="Delete" @click="handleDelete(scope.row)" />
       </template>
     </ProTable>
     <BugDrawer ref="drawerRef" />
@@ -187,6 +187,7 @@ const columns = reactive<ColumnProps<BugDocument>[]>([
     prop: "title",
     label: "Title",
     search: { el: "input", tooltip: "Search title or module" },
+    minWidth: 520,
     render: scope => (
       <el-button type="primary" link onClick={() => toDetail(scope.row)}>
         {scope.row.title}
@@ -198,13 +199,13 @@ const columns = reactive<ColumnProps<BugDocument>[]>([
     label: "Project",
     enum: projectOptions,
     search: { el: "select" },
-    width: 110
+    width: 120
   },
   {
     prop: "module",
     label: "Module",
     search: { el: "input" },
-    width: 130
+    width: 180
   },
   {
     prop: "severity",
@@ -225,23 +226,26 @@ const columns = reactive<ColumnProps<BugDocument>[]>([
     label: "Status",
     enum: statusOptions,
     search: { el: "select" },
+    width: 120,
     render: scope => <el-tag type={statusTag[scope.row.status] || undefined}>{scope.row.status}</el-tag>
   },
   {
     prop: "type",
     label: "Type",
     enum: typeOptions,
+    width: 120,
     search: { el: "select" }
   },
   {
     prop: "assignee",
     label: "Assignee",
-    search: { el: "input" }
+    search: { el: "input" },
+    width: 120
   },
   { prop: "reporter", label: "Reporter", width: 110 },
   { prop: "affectedVersion", label: "Affected Ver.", width: 130 },
   { prop: "updatedAt", label: "Updated At", width: 180 },
-  { prop: "operation", label: "Actions", fixed: "right", width: 220 }
+  { prop: "operation", label: "Actions", fixed: "right", width: 180 }
 ]);
 
 const toDetail = (row: BugDocument) => {

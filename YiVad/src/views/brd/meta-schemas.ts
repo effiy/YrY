@@ -173,6 +173,18 @@ const INFLUENCE_OPTIONS = [
   { label: "Informed — requires status visibility", value: "informed" }
 ];
 
+const LIKELIHOOD_OPTIONS = [
+  { label: "High — >60% probability or near-certain", value: "high" },
+  { label: "Medium — 20–60% probability", value: "medium" },
+  { label: "Low — <20% probability", value: "low" }
+];
+
+const IMPACT_OPTIONS = [
+  { label: "High — project failure, regulatory breach, or major revenue loss", value: "high" },
+  { label: "Medium — significant delay, budget overrun, or degraded user experience", value: "medium" },
+  { label: "Low — minor inconvenience, workaround available", value: "low" }
+];
+
 const URGENCY_OPTIONS = [
   { label: "P0 — Critical: regulatory deadline / revenue at immediate risk", value: "p0" },
   { label: "P1 — High: significant business impact within 1–3 months", value: "p1" },
@@ -208,6 +220,16 @@ function rulePriorityTag(v: string): ReturnType<NonNullable<MetaColumn["tagTypeF
   return (m[v] || "") as any;
 }
 
+function likelihoodTag(v: string): ReturnType<NonNullable<MetaColumn["tagTypeFn"]>> {
+  const m: Record<string, string> = { high: "danger", medium: "warning", low: "info" };
+  return (m[v] || "") as any;
+}
+
+function impactTag(v: string): ReturnType<NonNullable<MetaColumn["tagTypeFn"]>> {
+  const m: Record<string, string> = { high: "danger", medium: "warning", low: "info" };
+  return (m[v] || "") as any;
+}
+
 // ── BRD topic schemas ───────────────────────────────────────────────────────
 
 export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
@@ -215,12 +237,8 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
   // ── BRD Documents (core registry) ──────────────────────────────────────
   "brd-documents": {
     metaColumns: [
-      { key: "document_id", label: "BRD ID", width: 160 },
-      { key: "title", label: "Document Title", minWidth: 280 },
       { key: "version", label: "Version", width: 100 },
-      { key: "author", label: "Author", width: 140 },
       { key: "business_owner", label: "Business Owner", width: 160 },
-      { key: "department", label: "Department", width: 140, enum: DEPARTMENT_OPTIONS },
       { key: "domain", label: "Business Domain", width: 140, enum: DOMAIN_OPTIONS },
       {
         key: "priority",
@@ -236,9 +254,7 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
         enum: STATUS_OPTIONS,
         tagTypeFn: statusTag
       },
-      { key: "country", label: "Country / Region", width: 160, enum: COUNTRY_OPTIONS },
-      { key: "brand", label: "Brand", width: 120 },
-      { key: "expected_golive", label: "Target Go-Live", width: 140 }
+      { key: "country", label: "Country / Region", width: 160, enum: COUNTRY_OPTIONS }
     ],
     metaFields: [
       { key: "document_id", label: "BRD Identifier", type: "input", placeholder: "e.g. BRD-2026-001 or BRD-EU-AFS-001", required: true, colSpan: 8 },
@@ -308,7 +324,7 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
       { key: "estimated_effort", label: "Estimated Effort (Person-Months)", type: "input", placeholder: "e.g. 18 PM (6 dev × 3 months), or 'TBC — pending technical assessment'", colSpan: 8 },
 
       // ── Risk & Impact ─────────────────────────────────────────────────
-      { key: "risk_summary", label: "Key Risks & Mitigations", type: "textarea", rows: 3, placeholder: "Top 3–5 risks with likelihood, impact, and mitigation strategy.\ne.g.\n1. SAP API v2 delay (Likelihood: Medium, Impact: High) → Mitigation: Fallback to batch-file import; committed API delivery date from Core Platform team: 2026-10-01\n2. Key SME unavailability (Likelihood: Low, Impact: Medium) → Mitigation: Recorded knowledge transfer; backup SME identified: Anna Schmidt\n3. Multi-market regulatory divergence (Likelihood: Medium, Impact: High) → Mitigation: Legal review per market before Phase 2; Phase 1 limited to DE + FR (aligned regulatory frameworks)", colSpan: 24 },
+      { key: "risk_summary", label: "Key Risks & Mitigations (Summary)", type: "textarea", rows: 3, placeholder: "Top 3–5 risks at a glance. Detailed risk entries (with likelihood, impact, mitigation strategy, contingency plans, and trigger indicators) are maintained in the Risk Assessment register (brd-risks).\ne.g.\n1. SAP API v2 delay (Likelihood: Medium, Impact: High) → Mitigation: Fallback to batch-file import\n2. Key SME unavailability (Likelihood: Low, Impact: Medium) → Mitigation: Backup SME identified: Anna Schmidt\n3. Multi-market regulatory divergence (Likelihood: Medium, Impact: High) → Mitigation: Phase 1 limited to DE + FR", colSpan: 24 },
       { key: "impact_assessment", label: "Change Impact Assessment", type: "textarea", rows: 3, placeholder: "Which teams, processes, systems, and user groups are affected by this change? What training, communication, or migration effort is required?\ne.g.\n• After-Sales Operations (DE + FR): ~80 Tier-2 agents need 4-hour training + 2-week hypercare\n• IT Platform Team: New integration endpoints, monitoring dashboards\n• Dealer Network: No direct impact (dealer portal unchanged in Phase 1)\n• Reporting: Existing PowerBI dashboards need 2 new data sources\n• Migration: ~50K historical tickets from Zendesk → new platform (estimated 4-week migration window)", colSpan: 24 },
 
       // ── Attachments & Glossary ─────────────────────────────────────────
@@ -472,6 +488,8 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
 
 ## 9. Risk Assessment
 
+> Detailed risks are maintained in the Risk Assessment register (brd-risks).
+
 | Risk ID | Risk Description | Likelihood | Impact | Mitigation | Owner |
 |---------|------------------|------------|--------|------------|-------|
 | RK-001 | [What could go wrong?] | High / Med / Low | High / Med / Low | [How we reduce likelihood or impact] | [Name] |
@@ -573,6 +591,81 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
 **Measurement Method**: [Data source, reporting cadence, responsible party]
 
 **Success Criteria**: [Conditions that must be met to consider this objective achieved]`
+  },
+
+  // ── Risk Assessment ─────────────────────────────────────────────────────
+  "brd-risks": {
+    metaColumns: [
+      { key: "brd_ref", label: "BRD Ref", width: 100 },
+      { key: "risk_id", label: "Risk ID", width: 80 },
+      { key: "risk_description", label: "Risk Description", minWidth: 160 },
+      {
+        key: "likelihood",
+        label: "Likelihood",
+        width: 100,
+        enum: LIKELIHOOD_OPTIONS,
+        tagTypeFn: likelihoodTag
+      },
+      {
+        key: "impact",
+        label: "Impact",
+        width: 100,
+        enum: IMPACT_OPTIONS,
+        tagTypeFn: impactTag
+      },
+      {
+        key: "status",
+        label: "Status",
+        width: 110,
+        enum: [
+          { label: "Active", value: "active" },
+          { label: "Mitigated", value: "mitigated" },
+          { label: "Closed", value: "closed" },
+          { label: "Materialised", value: "materialized" }
+        ],
+        tagTypeFn: statusTag
+      },
+      { key: "owner", label: "Risk Owner", width: 100 }
+    ],
+    metaFields: [
+      { key: "brd_ref", label: "BRD Reference", type: "input", placeholder: "e.g. BRD-2026-001", required: true, colSpan: 8 },
+      { key: "risk_id", label: "Risk ID", type: "input", placeholder: "e.g. RK-001", required: true, colSpan: 8 },
+      { key: "risk_description", label: "Risk Description", type: "textarea", rows: 3, placeholder: "What could go wrong? Be specific about the scenario, trigger conditions, and affected scope. e.g. 'SAP API v2 delivery delayed beyond 2026-10-01 — downstream integration testing window compressed by 4 weeks, risking incomplete SIT coverage for DE + FR markets.'", required: true, colSpan: 24 },
+      {
+        key: "likelihood",
+        label: "Likelihood",
+        type: "select",
+        options: LIKELIHOOD_OPTIONS,
+        required: true,
+        colSpan: 8
+      },
+      {
+        key: "impact",
+        label: "Impact Severity",
+        type: "select",
+        options: IMPACT_OPTIONS,
+        required: true,
+        colSpan: 8
+      },
+      {
+        key: "status",
+        label: "Risk Status",
+        type: "select",
+        options: [
+          { label: "Active — monitoring in progress", value: "active" },
+          { label: "Mitigated — controls in place, residual risk accepted", value: "mitigated" },
+          { label: "Closed — no longer relevant", value: "closed" },
+          { label: "Materialised — risk event occurred", value: "materialized" }
+        ],
+        required: true,
+        colSpan: 8
+      },
+      { key: "mitigation", label: "Mitigation Strategy", type: "textarea", rows: 3, placeholder: "How do we reduce likelihood or impact? Include specific actions, owners, and timelines. e.g. 1. Automated data validation in sprint 4 (dev team) — reduces data entry errors by ~80%. 2. Fallback to batch-file import if API v2 delayed (Core Platform team committed to 2026-10-01 delivery)", required: true, colSpan: 24 },
+      { key: "owner", label: "Risk Owner", type: "input", placeholder: "e.g. Dr. Zhang Wei — After-Sales Director EU", required: true, colSpan: 8 },
+      { key: "review_date", label: "Last Review Date", type: "date", colSpan: 8 },
+      { key: "contingency_plan", label: "Contingency / Fallback Plan", type: "textarea", rows: 2, placeholder: "What happens if the risk materialises? What is the recovery or workaround plan? e.g. If API v2 is not delivered by Oct 2026, revert to batch-file import (integration test already completed, fallback tested in staging environment)", colSpan: 12 },
+      { key: "trigger_indicators", label: "Trigger Indicators / Early Warnings", type: "textarea", rows: 2, placeholder: "What metrics, events, or conditions signal that this risk is becoming more likely? e.g. API v2 milestone missed by > 2 weeks; test environment instability > 3 incidents/week; key SME extended leave", colSpan: 12 }
+    ]
   },
 
   // ── Stakeholders / Core Users ───────────────────────────────────────────

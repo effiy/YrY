@@ -194,6 +194,12 @@ export const staticRouter: RouteRecordRaw[] = [
         meta: { title: "Business Objective detail", isHide: true, isKeepAlive: true }
       },
       {
+        path: "/brd/brd-risks/detail/:id?",
+        name: "brdRisksDetail",
+        component: () => import("@/views/brd/brd-risks/detail.vue"),
+        meta: { title: "Risk Assessment detail", isHide: true, isKeepAlive: true }
+      },
+      {
         path: "/brd/brd-acceptance/detail/:id?",
         name: "brdAcceptanceDetail",
         component: () => import("@/views/brd/brd-acceptance/detail.vue"),

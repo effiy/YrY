@@ -114,6 +114,13 @@ const BRD_TOPICS = [
     count: undefined as number | undefined
   },
   {
+    value: "brd-risks",
+    label: "Risk Assessment",
+    icon: "⚠️",
+    content: "Risk register with likelihood, impact, mitigation strategies, contingency plans, and trigger indicators. Track risk status from active through mitigated to closed.",
+    count: undefined as number | undefined
+  },
+  {
     value: "brd-stakeholders",
     label: "Stakeholders & Core Users",
     icon: "👥",
@@ -185,7 +192,7 @@ async function loadStats() {
 
 // ── Topic entry counts ───────────────────────────────────────────────────
 async function loadTopicCounts() {
-  const topics = ["brd-documents", "brd-objectives", "brd-stakeholders", "brd-rules", "brd-acceptance", "brd-milestones", "brd-approvals"];
+  const topics = ["brd-documents", "brd-objectives", "brd-risks", "brd-stakeholders", "brd-rules", "brd-acceptance", "brd-milestones", "brd-approvals"];
   const results = await Promise.allSettled(
     topics.map(t => getTopicList<TopicEntryDocument>("brd", t, { pageSize: 1 }))
   );
