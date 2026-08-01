@@ -36,25 +36,6 @@ export default {
     arrayFieldAddRow: "Add row",
     arrayFieldEmpty: "(empty)"
   },
-  brdGenerate: {
-    title: "AI Generate BRD",
-    knowledgeBase: "Knowledge Base",
-    filesSelected: "files selected",
-    description: "Description",
-    descriptionPlaceholder:
-      "Describe the BRD you want to generate. Include: business domain, problem/opportunity, market/country scope, key constraints, and any specific requirements.\n\nExample:\n\"EU after-sales operations handle ~15,000 tickets/month across 5 markets. Current process uses Zendesk (DE/FR) and manual email/phone (IT/ES/NL), with average first-response time of 8.3 hours. Need a unified platform to reduce resolution time to under 2 hours. Phase 1: DE + FR markets, Tier-2 agent workflow.\"",
-    generate: "Generate",
-    generating: "Generating…",
-    preview: "Preview",
-    generatedTitle: "Title",
-    metaSummary: "Meta Fields Summary",
-    contentPreview: "Content Preview (click to expand)",
-    confirmCreate: "Confirm & Create",
-    cancel: "Cancel",
-    parseError: "Failed to parse AI response as JSON: {msg}",
-    incompleteData: "AI response missing required fields (title and content). Please try again with a more detailed description.",
-    generateError: "Generation failed: {msg}"
-  },
   brdMeta: {
     brdDocuments: {
       fields: {

@@ -4,5 +4,5 @@ import { brdMetaSchemas } from "@/views/brd/meta-schemas";
 const schema = brdMetaSchemas["brd-objectives"];
 </script>
 <template>
-  <TopicListPage tree="brd" topic="brd-objectives" label="Business Objectives" :meta-columns="schema.metaColumns" />
+  <TopicListPage tree="brd" topic="brd-objectives" label="Business Objectives" :meta-columns="schema.metaColumns" :template-content="schema.templateContent" />
 </template>

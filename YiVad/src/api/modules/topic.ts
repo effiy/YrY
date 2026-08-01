@@ -50,7 +50,7 @@ export function contentPathFor(tree: TopicTree, topic: string, key: string): str
   return `${tree}/${topic}/${key}.md`;
 }
 
-function makeKey(tree: TopicTree, topic: string): string {
+export function makeKey(tree: TopicTree, topic: string): string {
   const stamp = Date.now().toString(36);
   const rand = Math.random().toString(36).slice(2, 8);
   const prefix = tree === "tech-leadership" ? "tl" : tree === "brd" ? "brd" : "cr";
@@ -114,24 +114,25 @@ export async function getTopicEntry<T extends TopicEntryDocument = TopicEntryDoc
 export async function createTopicEntry(
   tree: TopicTree,
   topic: string,
-  payload: { title: string; content: string; tags?: string[]; meta?: Record<string, any> }
-): Promise<YiAiEnvelope & { key: string }> {
+  payload: { title: string; content: string; tags?: string[]; meta?: Record<string, any> },
+  key?: string
+): Promise<YiAiEnvelope> {
   const now = Date.now();
-  const key = makeKey(tree, topic);
+  const finalKey = key ?? makeKey(tree, topic);
   const isBrd = tree === "brd";
-  const cpath = isBrd ? contentPathFor(tree, topic, key) : undefined;
+  const cpath = isBrd ? contentPathFor(tree, topic, finalKey) : undefined;
 
   // BRD: write content to YiKnowledge file first
   if (isBrd && payload.content) {
     await callService("services.knowledge.knowledge_service", "write_entry_markdown", {
       rel_path: cpath,
       content: payload.content,
-      meta: { title: payload.title, key, tags: payload.tags ?? [], ...(payload.meta ?? {}) }
+      meta: { title: payload.title, key: finalKey, tags: payload.tags ?? [], ...(payload.meta ?? {}) }
     });
   }
 
   const doc: Record<string, any> = {
-    key,
+    key: finalKey,
     topic,
     title: payload.title,
     tags: payload.tags ?? [],
@@ -145,8 +146,7 @@ export async function createTopicEntry(
   } else {
     doc.content = payload.content;
   }
-  const res = await createDocument(cnameFor(tree, topic), doc);
-  return { ...res, key };
+  return createDocument(cnameFor(tree, topic), doc);
 }
 
 export async function updateTopicEntry(

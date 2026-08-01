@@ -7,7 +7,7 @@
       :pagination="true"
     >
       <template #tableHeader>
-        <el-button type="primary" :icon="CirclePlus" @click="handleNewEntry">{{ newEntryLabel }}</el-button>
+        <el-button type="primary" :icon="CirclePlus" @click="handleNewEntry">New Entry</el-button>
       </template>
 
       <template #title="scope">
@@ -52,8 +52,10 @@ import { useRouter } from "vue-router";
 import { CirclePlus, Delete, EditPen, View } from "@element-plus/icons-vue";
 import ProTable from "@/components/ProTable/index.vue";
 import type { ColumnProps, ProTableInstance } from "@/components/ProTable/interface";
-import { getTopicList, deleteTopicEntry, type TopicEntryDocument, type TopicTree } from "@/api/modules/topic";
+import { getTopicList, deleteTopicEntry, createTopicEntry, makeKey, contentPathFor, type TopicEntryDocument, type TopicTree } from "@/api/modules/topic";
 import { useHandleData } from "@/hooks/useHandleData";
+import { useAicrKnowledgeStore } from "@/stores/modules/aicr/knowledge";
+import { ElMessage } from "element-plus";
 
 export interface MetaColumn {
   key: string;
@@ -97,7 +99,7 @@ function toColumnProps(mc: MetaColumn): ColumnProps<TopicEntryDocument> {
   };
 }
 
-const props = withDefaults(defineProps<{
+const props = defineProps<{
   tree: TopicTree;
   topic: string;
   label: string;
@@ -106,13 +108,9 @@ const props = withDefaults(defineProps<{
   /** Customise which action buttons appear in the operations column and their labels.
    *  Default: [{ type: "view" }, { type: "edit" }, { type: "delete" }] */
   actions?: ActionButton[];
-  /** Label for the "New Entry" button. Default: "New Entry". */
-  newEntryLabel?: string;
-  /** Custom handler for the "New Entry" button. When provided, overrides the default navigate-to-detail behaviour. */
-  onNewEntry?: () => void;
-}>(), {
-  newEntryLabel: "New Entry"
-});
+  /** Markdown template for new BRD entries' YiKnowledge file (e.g. a BRD document skeleton). */
+  templateContent?: string;
+}>();
 
 interface ResolvedAction {
   type: ActionButton["type"];
@@ -153,6 +151,40 @@ const resolvedActions = computed<ResolvedAction[]>(() => {
 
 const router = useRouter();
 const proTableRef = ref<ProTableInstance>();
+const knowledgeStore = useAicrKnowledgeStore();
+
+/** For BRD topics, create a new entry and navigate to aicr for AI-assisted editing.
+ *  For other trees, navigate to the detail page as before. */
+async function handleNewEntry() {
+  if (props.tree === "brd") {
+    const key = makeKey(props.tree, props.topic);
+    const content = props.templateContent || "# New Entry\n\nDescribe the requirements below.";
+    try {
+      await createTopicEntry(props.tree, props.topic, {
+        title: "New Entry",
+        content,
+        tags: [],
+        meta: {}
+      }, key);
+      const cpath = contentPathFor(props.tree, props.topic, key);
+      knowledgeStore.setPendingSelectPath(cpath);
+      router.push({
+        path: "/aicr",
+        query: {
+          source: "brd",
+          brdTopic: props.topic,
+          brdKey: key,
+          brdTitle: "New Entry",
+          brdBreadcrumb: props.label
+        }
+      });
+    } catch (e: any) {
+      ElMessage.error(e?.message || "Failed to create BRD entry");
+    }
+    return;
+  }
+  toDetail("new");
+}
 
 function pascal(s: string): string {
   return s
@@ -175,15 +207,6 @@ function toDetail(key: string, viewMode = false) {
     params: { id: key },
     query: viewMode ? { mode: "view" } : {}
   });
-}
-
-/** Call the custom new-entry handler if provided; otherwise navigate to the detail page. */
-function handleNewEntry() {
-  if (props.onNewEntry) {
-    props.onNewEntry();
-  } else {
-    toDetail("new");
-  }
 }
 
 async function fetchList(params: any) {

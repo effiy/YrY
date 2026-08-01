@@ -36,25 +36,6 @@ export default {
     arrayFieldAddRow: "添加行",
     arrayFieldEmpty: "（空）"
   },
-  brdGenerate: {
-    title: "AI 生成 BRD",
-    knowledgeBase: "知识库",
-    filesSelected: "个文件已选择",
-    description: "需求描述",
-    descriptionPlaceholder:
-      "描述你想生成的 BRD 文档。包括：业务领域、问题/机会、市场/国家范围、关键约束条件和具体需求。\n\n示例：\n\"EU 售后运营每月处理约 15,000 个工单，覆盖 5 个市场。当前使用 Zendesk（DE/FR）和手动邮件/电话（IT/ES/NL），平均首次响应时间为 8.3 小时。需要一个统一平台将解决时间降至 2 小时以内。Phase 1：DE + FR 市场，Tier-2 坐席工作流。\"",
-    generate: "生成",
-    generating: "生成中…",
-    preview: "预览",
-    generatedTitle: "标题",
-    metaSummary: "元数据摘要",
-    contentPreview: "内容预览（点击展开）",
-    confirmCreate: "确认并创建",
-    cancel: "取消",
-    parseError: "无法解析 AI 响应为 JSON：{msg}",
-    incompleteData: "AI 响应缺少必要字段（标题和内容）。请提供更详细的描述后重试。",
-    generateError: "生成失败：{msg}"
-  },
   brdMeta: {
     brdDocuments: {
       fields: {
