@@ -137,7 +137,7 @@ const columns = reactive<ColumnProps<User.ResUserList>[]>([
 
 // Delete user
 const deleteAccount = async (params: User.ResUserList) => {
-  await useHandleData(deleteUser, { id: [params.id] }, `Delete【${params.username]`);
+  await useHandleData(deleteUser, { id: [params.id] }, `Delete user [${params.username}]`);
   proTable.value?.getTableList();
 };
 

@@ -99,7 +99,7 @@ const handleSubmit = () => {
     if (!valid) return;
     try {
       await drawerProps.value.api!(drawerProps.value.row);
-      ElMessage.success({ message: `${drawerProps.value.title}User saved successfully!` });
+      ElMessage.success({ message: `${drawerProps.value.title} User saved successfully!` });
       drawerProps.value.getTableList!();
       drawerVisible.value = false;
     } catch (error) {
