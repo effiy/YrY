@@ -2,46 +2,46 @@
   <div class="topic-detail" v-loading="loading">
     <header class="topic-detail__header">
       <div class="topic-detail__header-left">
-        <el-button :icon="ArrowLeft" link @click="back">Back to list</el-button>
+        <el-button :icon="ArrowLeft" link @click="back">{{ $t("topicDetail.backToList") }}</el-button>
         <el-divider direction="vertical" />
         <nav class="topic-detail__breadcrumb" aria-label="Breadcrumb">
           <span class="topic-detail__breadcrumb-root">{{ label }}</span>
           <el-icon><ArrowRight /></el-icon>
-          <span class="topic-detail__breadcrumb-current">{{ isNew ? "New entry" : entry?.title || route.params.id }}</span>
+          <span class="topic-detail__breadcrumb-current">{{ isNew ? $t("topicDetail.newEntry") : entry?.title || route.params.id }}</span>
         </nav>
       </div>
       <div class="topic-detail__header-right">
         <template v-if="isViewMode">
-          <el-button v-if="tree === 'brd' && !isNew" :icon="Connection" plain @click="editInAicr">Edit in aicr</el-button>
-          <el-button type="primary" :icon="EditPen" @click="switchToEdit">Edit</el-button>
+          <el-button v-if="tree === 'brd' && !isNew" :icon="Connection" plain @click="editInAicr">{{ $t("topicDetail.editInAicr") }}</el-button>
+          <el-button type="primary" :icon="EditPen" @click="switchToEdit">{{ $t("topicDetail.edit") }}</el-button>
         </template>
         <template v-else>
-          <el-button @click="handleCancel">Cancel</el-button>
-          <el-button v-if="!isNew" type="danger" :icon="DeleteIcon" @click="handleDelete">Delete</el-button>
-          <el-button type="primary" :icon="CirclePlus" @click="handleSave">Save</el-button>
+          <el-button @click="handleCancel">{{ $t("topicDetail.cancel") }}</el-button>
+          <el-button v-if="!isNew" type="danger" :icon="DeleteIcon" @click="handleDelete">{{ $t("topicDetail.delete") }}</el-button>
+          <el-button type="primary" :icon="CirclePlus" @click="handleSave">{{ $t("topicDetail.save") }}</el-button>
         </template>
       </div>
     </header>
 
     <div class="topic-detail__body">
       <el-form ref="formRef" :model="form" :rules="rules" :label-width="labelWidth" label-suffix=" :" class="topic-detail__form">
-        <el-form-item label="Title" prop="title">
-          <el-input v-model="form.title" placeholder="Concise entry title" clearable :disabled="isViewMode" />
+        <el-form-item :label="$t('topicDetail.title')" prop="title">
+          <el-input v-model="form.title" :placeholder="$t('topicDetail.titlePlaceholder')" clearable :disabled="isViewMode" />
         </el-form-item>
 
         <!-- Structured meta fields -->
         <template v-if="metaFields.length">
           <el-divider content-position="left">
-            <span class="topic-detail__meta-divider-text">Structured fields</span>
+            <span class="topic-detail__meta-divider-text">{{ $t("topicDetail.structuredFields") }}</span>
           </el-divider>
           <el-row :gutter="16">
-            <el-col v-for="field in metaFields" :key="field.key" :span="field.colSpan ?? 12" :xs="24" :sm="field.colSpan ?? 12">
+            <el-col v-for="field in translatedMetaFields" :key="field.key" :span="field.colSpan ?? 12" :xs="24" :sm="field.colSpan ?? 12">
               <el-form-item :label="field.label" :prop="`meta.${field.key}`" :required="field.required">
                 <!-- Input -->
                 <el-input
                   v-if="field.type === 'input'"
                   v-model="form.meta[field.key]"
-                  :placeholder="field.placeholder ?? `Enter ${field.label.toLowerCase()}`"
+                  :placeholder="field.placeholder"
                   clearable
                   :disabled="isViewMode"
                 />
@@ -60,7 +60,7 @@
                 <el-select
                   v-else-if="field.type === 'select'"
                   v-model="form.meta[field.key]"
-                  :placeholder="field.placeholder ?? `Select ${field.label.toLowerCase()}`"
+                  :placeholder="field.placeholder"
                   clearable
                   style="width: 100%"
                   :disabled="isViewMode"
@@ -77,7 +77,7 @@
                   v-else-if="field.type === 'date'"
                   v-model="form.meta[field.key]"
                   type="date"
-                  :placeholder="field.placeholder ?? 'Pick a date'"
+                  :placeholder="field.placeholder"
                   style="width: 100%"
                   value-format="YYYY-MM-DD"
                   :disabled="isViewMode"
@@ -88,7 +88,7 @@
                   v-model="form.meta[field.key]"
                   type="textarea"
                   :rows="field.rows ?? 3"
-                  :placeholder="field.placeholder ?? `Enter ${field.label.toLowerCase()}`"
+                  :placeholder="field.placeholder"
                   :disabled="isViewMode"
                 />
               </el-form-item>
@@ -97,15 +97,15 @@
         </template>
 
         <el-divider content-position="left">
-          <span class="topic-detail__meta-divider-text">Content</span>
+          <span class="topic-detail__meta-divider-text">{{ $t("topicDetail.contentDivider") }}</span>
         </el-divider>
-        <el-form-item label="Tags" prop="tags">
-          <el-select v-model="form.tags" multiple filterable allow-create default-first-option placeholder="Press Enter to add a tag" class="topic-detail__tags" :disabled="isViewMode">
+        <el-form-item :label="$t('topicDetail.tags')" prop="tags">
+          <el-select v-model="form.tags" multiple filterable allow-create default-first-option :placeholder="$t('topicDetail.tagsPlaceholder')" class="topic-detail__tags" :disabled="isViewMode">
             <el-option v-for="t in tagOptions" :key="t" :label="t" :value="t" />
           </el-select>
         </el-form-item>
-        <el-form-item label="Content" prop="content">
-          <el-input v-if="!isViewMode" v-model="form.content" type="textarea" :rows="14" placeholder="Fill the template; the original prompt is pre-loaded." />
+        <el-form-item :label="$t('topicDetail.contentLabel')" prop="content">
+          <el-input v-if="!isViewMode" v-model="form.content" type="textarea" :rows="14" :placeholder="$t('topicDetail.contentPlaceholder')" />
           <div v-else class="topic-detail__md" v-html="contentHtml" />
         </el-form-item>
       </el-form>
@@ -116,6 +116,7 @@
 <script setup lang="ts" name="TopicDetailPage">
 import { ref, reactive, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { ArrowRight, CirclePlus, ArrowLeft, Delete as DeleteIcon, EditPen, Connection } from "@element-plus/icons-vue";
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import { useMarkdown } from "@/hooks/useMarkdown";
@@ -155,9 +156,13 @@ const props = withDefaults(defineProps<{
   metaFields?: MetaField[];
   /** Form label-width (default "140px"). Pass a wider value for forms with longer labels. */
   labelWidth?: string;
+  /** i18n key prefix for translating meta-field labels (e.g. "brdMeta.brdDocuments"). Falls back to raw label when omitted. */
+  i18nPrefix?: string;
 }>(), {
   labelWidth: "140px"
 });
+
+const { t } = useI18n();
 
 const route = useRoute();
 const router = useRouter();
@@ -169,6 +174,58 @@ const isNew = computed(() => route.params.id === "new" || !route.params.id);
 const isViewMode = computed(() => route.query.mode === "view");
 
 const metaFields = computed(() => props.metaFields ?? []);
+
+/**
+ * Translates an option label using brdMeta.options.<value> convention.
+ * Falls back to the raw label when no translation is found.
+ */
+function translateOptionLabel(opt: { label: string; value: string }): string {
+  const key = `brdMeta.options.${opt.value}`;
+  const translated = t(key);
+  return translated !== key ? translated : opt.label;
+}
+
+/**
+ * Returns metaFields with all labels, placeholders, and option labels translated.
+ * Uses i18nPrefix (e.g. "brdMeta.brdDocuments") to resolve field-level keys:
+ *   - label: t(`${i18nPrefix}.fields.${field.key}`) ?? field.label
+ *   - placeholder: t(`${i18nPrefix}.placeholders.${field.key}`) ?? field.placeholder ?? dynamic fallback
+ */
+const translatedMetaFields = computed(() => {
+  if (!props.i18nPrefix) return metaFields.value;
+  return metaFields.value.map(field => {
+    // Translate label
+    const labelKey = `${props.i18nPrefix}.fields.${field.key}`;
+    const translatedLabel = t(labelKey);
+    const label = translatedLabel !== labelKey ? translatedLabel : field.label;
+
+    // Translate placeholder
+    let placeholder = field.placeholder;
+    const phKey = `${props.i18nPrefix}.placeholders.${field.key}`;
+    const translatedPh = t(phKey);
+    if (translatedPh !== phKey) {
+      placeholder = translatedPh;
+    } else if (!placeholder) {
+      // Dynamic fallback placeholder
+      const lcLabel = label.toLowerCase();
+      if (field.type === "date") {
+        placeholder = t("topicDetail.pickDate");
+      } else if (field.type === "select") {
+        placeholder = t("topicDetail.selectField", { field: lcLabel });
+      } else {
+        placeholder = t("topicDetail.enterField", { field: lcLabel });
+      }
+    }
+
+    // Translate option labels
+    const options = field.options?.map(opt => ({
+      ...opt,
+      label: translateOptionLabel(opt)
+    }));
+
+    return { ...field, label, placeholder, options };
+  });
+});
 
 const form = reactive({
   title: "",
@@ -183,8 +240,8 @@ const contentHtml = computed(() => render(form.content));
 const tagOptions = computed(() => Array.from(new Set([...(entry.value?.tags ?? []), ...form.tags])));
 
 const rules: FormRules = {
-  title: [{ required: true, message: "Title is required", trigger: "blur" }],
-  content: [{ required: true, message: "Content is required", trigger: "blur" }]
+  title: [{ required: true, message: t("topicDetail.titleRequired"), trigger: "blur" }],
+  content: [{ required: true, message: t("topicDetail.contentRequired"), trigger: "blur" }]
 };
 
 async function loadEntry() {
@@ -193,7 +250,7 @@ async function loadEntry() {
   try {
     const doc = await getTopicEntry<TopicEntryDocument>(props.tree, props.topic, String(route.params.id));
     if (!doc) {
-      ElMessage.error("Entry not found");
+      ElMessage.error(t("topicDetail.entryNotFound"));
       back();
       return;
     }
@@ -207,7 +264,7 @@ async function loadEntry() {
       Object.assign(form.meta, doc.meta);
     }
   } catch (e: any) {
-    ElMessage.error(e?.message || "Failed to load entry");
+    ElMessage.error(e?.message || t("topicDetail.loadFailed"));
   } finally {
     loading.value = false;
   }
@@ -226,7 +283,7 @@ async function editInAicr() {
       });
     }
     knowledgeStore.setPendingSelectPath(cpath);
-    ElMessage.success("Opening in aicr…");
+    ElMessage.success(t("topicDetail.openingInAicr"));
     router.push({
       path: "/aicr",
       query: {
@@ -238,7 +295,7 @@ async function editInAicr() {
       }
     });
   } catch (e: any) {
-    ElMessage.error(e?.message || "Failed to open in aicr");
+    ElMessage.error(e?.message || t("topicDetail.openInAicrFailed"));
   }
 }
 
@@ -254,7 +311,7 @@ async function handleSave() {
         tags: form.tags,
         meta: { ...form.meta }
       });
-      ElMessage.success("Entry created");
+      ElMessage.success(t("topicDetail.entryCreated"));
     } else {
       await updateTopicEntry(props.tree, props.topic, entry.value!.key, {
         title: form.title,
@@ -262,11 +319,11 @@ async function handleSave() {
         tags: form.tags,
         meta: { ...form.meta }
       });
-      ElMessage.success("Entry updated");
+      ElMessage.success(t("topicDetail.entryUpdated"));
     }
     back();
   } catch (e: any) {
-    ElMessage.error(e?.message || "Save failed");
+    ElMessage.error(e?.message || t("topicDetail.saveFailed"));
   }
 }
 
@@ -274,10 +331,10 @@ async function handleDelete() {
   if (!entry.value) return;
   try {
     await deleteTopicEntry(props.tree, props.topic, entry.value.key);
-    ElMessage.success("Entry deleted");
+    ElMessage.success(t("topicDetail.entryDeleted"));
     back();
   } catch (e: any) {
-    ElMessage.error(e?.message || "Delete failed");
+    ElMessage.error(e?.message || t("topicDetail.deleteFailed"));
   }
 }
 

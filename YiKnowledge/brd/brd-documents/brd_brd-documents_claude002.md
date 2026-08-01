@@ -1,12 +1,12 @@
 ---
-title: 'BRD-2026-005: YiVad Development Standards & Component Library'
+title: 'BRD-2026-005: YiVad Development Standards'
 key: brd_brd-documents_claude002
 tags:
 - yivad
 - vue3
 - standards
-- components
 - code-quality
+- development
 ---
 
 # BRD-2026-005: YiVad Development Standards & Component Library
