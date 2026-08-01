@@ -59,8 +59,8 @@ onMounted(() => {
   flex: 1;
   flex-direction: column;
   min-width: 0;
-  height: 100%;
-  overflow: hidden;
+  height: calc(100vh - 95px);
+  overflow: auto;
 }
 .ai-chat__box {
   flex: 1;

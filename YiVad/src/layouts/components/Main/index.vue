@@ -2,7 +2,7 @@
   <Maximize v-show="maximize" />
   <Tabs v-show="tabs" />
   <el-main>
-    <el-scrollbar>
+    <div class="main-view">
       <router-view v-slot="{ Component, route }">
         <transition appear name="fade-transform" mode="out-in">
           <keep-alive :include="keepAliveName">
@@ -10,7 +10,7 @@
           </keep-alive>
         </transition>
       </router-view>
-    </el-scrollbar>
+    </div>
   </el-main>
 </template>
 

@@ -7,8 +7,9 @@
   overflow: hidden;
   background-color: var(--el-bg-color-page);
 
-  > .el-scrollbar {
+  .main-view {
     flex: 1;
     min-height: 0;
+    overflow: hidden;
   }
 }
