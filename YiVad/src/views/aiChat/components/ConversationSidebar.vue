@@ -1,11 +1,11 @@
 <script setup lang="ts" name="aiChatConversationSidebar">
-import { computed, onMounted } from "vue";
-import { useAiChatStore } from "@/stores/modules/aiChat";
+import { computed, onMounted, ref } from "vue";
 import { useAicrKnowledgeStore } from "@/stores/modules/aicr/knowledge";
 import type { KnowledgeFileEntry } from "@/api/interface/yiweb";
+import KnowledgePreviewDialog from "./KnowledgePreviewDialog.vue";
 
-const store = useAiChatStore();
 const knowledgeStore = useAicrKnowledgeStore();
+const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
 
 // ── Tree: directory-based, mirrors aicr KnowledgeTree ──
 
@@ -79,24 +79,10 @@ onMounted(() => {
   knowledgeStore.loadAll();
 });
 
-// ── Node click: ensure session → select for chat ──
-
-async function handleNodeClick(data: TreeNode) {
+function onNodeClick(data: TreeNode) {
   if (data.type === "file" && data.entry) {
-    const path = data.entry.path;
-    const content = data.entry.meta?.content as string || "";
-    const title = (data.entry.meta?.title as string) || data.entry.name;
-    const tags = (data.entry.meta?.tags as string[]) || [];
-
-    // Ensure a session document exists so chat context is wired up
-    await knowledgeStore.ensureKnowledgeSession(path, content, { title, tags });
-    // Select the session for chatting (mirrors aicr's watcher: knowledgePath → chatSession)
-    await store.selectConversation(path);
+    previewDlg.value?.open(data.entry.path);
   }
-}
-
-function isActive(path: string) {
-  return store.activeConversation?.key === path;
 }
 
 function fmtSize(bytes?: number) {
@@ -177,14 +163,13 @@ function onDragStart(e: DragEvent, data: TreeNode) {
         node-key="key"
         highlight-current
         :expand-on-click-node="false"
-        @node-click="handleNodeClick"
+        @node-click="onNodeClick"
         size="small"
       >
         <template #default="{ data }">
           <div
             v-if="data.type === 'file'"
             class="kt-file"
-            :class="{ active: isActive(data.entry!.path) }"
             :title="data.entry!.path"
             draggable="true"
             @dragstart="e => onDragStart(e, data)"
@@ -205,6 +190,8 @@ function onDragStart(e: DragEvent, data: TreeNode) {
         </template>
       </el-tree>
     </el-scrollbar>
+
+    <KnowledgePreviewDialog ref="previewDlg" />
   </div>
 </template>
 
@@ -254,6 +241,7 @@ function onDragStart(e: DragEvent, data: TreeNode) {
   display: flex;
   gap: 6px;
   align-items: center;
+  padding-right: 8px;
   font-size: 13px;
   font-weight: 600;
   color: var(--el-text-color-primary);
@@ -275,7 +263,7 @@ function onDragStart(e: DragEvent, data: TreeNode) {
   gap: 8px;
   align-items: center;
   width: 100%;
-  padding: 2px 0;
+  padding: 2px 8px 2px 0;
   font-size: 13px;
   color: var(--el-text-color-regular);
   cursor: grab;
@@ -302,11 +290,6 @@ function onDragStart(e: DragEvent, data: TreeNode) {
   font-size: 11px;
   color: var(--el-text-color-placeholder);
 }
-.kt-file.active {
-  font-weight: 600;
-  color: var(--el-color-primary);
-}
-
 :deep(.el-tree-node__content) {
   height: auto;
   min-height: 28px;

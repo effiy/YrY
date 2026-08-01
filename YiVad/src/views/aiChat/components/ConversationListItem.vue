@@ -4,6 +4,8 @@ import { Edit, Delete, Star, StarFilled, Document } from "@element-plus/icons-vu
 import type { SessionDocument } from "@/api/interface/yiweb";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 
+const CTX_PREFIX = "ctx:";
+
 const props = defineProps<{
   conversation: SessionDocument;
   active: boolean;
@@ -21,15 +23,37 @@ const store = useAiChatStore();
 const isFavorite = computed(() => !!props.conversation.isFavorite);
 const isBatchChecked = computed(() => store.selectedKeys.has(props.conversation.key));
 
-function formatTime(ts?: number): string {
+const ctxCount = computed(() => {
+  const tags = props.conversation.tags || [];
+  return tags.filter(t => typeof t === "string" && t.startsWith(CTX_PREFIX)).length;
+});
+
+const msgCount = computed(() => (props.conversation.messages || []).length);
+
+function relativeTime(ts?: number): string {
   if (!ts) return "";
+  const delta = Date.now() - ts;
+  const mins = Math.floor(delta / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h`;
+  const days = Math.floor(hrs / 24);
+  if (days < 7) return `${days}d`;
   const d = new Date(ts);
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  const hh = String(d.getHours()).padStart(2, "0");
-  const mi = String(d.getMinutes()).padStart(2, "0");
-  return `${mm}-${dd} ${hh}:${mi}`;
+  return `${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
+
+const metaText = computed(() => {
+  const parts: string[] = [];
+  const c = ctxCount.value;
+  const m = msgCount.value;
+  if (c) parts.push(`${c} files`);
+  if (m) parts.push(`${m} msgs`);
+  const time = relativeTime(props.conversation.updatedAt);
+  if (time) parts.push(time);
+  return parts.join("  ·  ");
+});
 </script>
 
 <template>
@@ -45,47 +69,46 @@ function formatTime(ts?: number): string {
       @update:model-value="() => store.toggleSelection(conversation.key)"
       @click.stop
     />
-    <div class="cs-item-main">
-      <div class="cs-item-title-row">
+    <div class="cs-item-body">
+      <!-- Row 1: title left, meta right -->
+      <div class="cs-item-row">
         <span class="cs-item-title">{{ conversation.title || "(Untitled)" }}</span>
-        <el-icon v-if="isFavorite" class="cs-fav-mark" title="Favorite">
-          <StarFilled />
-        </el-icon>
+        <span class="cs-item-meta">{{ metaText }}</span>
       </div>
-      <div class="cs-item-meta">{{ formatTime(conversation.updatedAt) }}</div>
-    </div>
-    <div v-if="!store.batchMode" class="cs-item-actions" @click.stop>
-      <el-button
-        text
-        size="small"
-        :title="isFavorite ? 'Unfavorite' : 'Favorite'"
-        :class="{ 'is-fav': isFavorite }"
-        @click="emit('toggle-favorite', conversation.key)"
-      >
-        <el-icon><component :is="isFavorite ? StarFilled : Star" /></el-icon>
-      </el-button>
-      <el-button
-        text
-        :icon="Document"
-        size="small"
-        title="Edit context"
-        @click="emit('edit-context', conversation.key)"
-      />
-      <el-button
-        text
-        :icon="Edit"
-        size="small"
-        title="Rename"
-        @click="emit('rename', conversation.key, conversation.title || '')"
-      />
-      <el-button
-        text
-        :icon="Delete"
-        size="small"
-        title="Delete"
-        type="danger"
-        @click="emit('delete', conversation.key, conversation.title || '')"
-      />
+      <!-- Row 2: actions right -->
+      <div v-if="!store.batchMode" class="cs-item-actions" @click.stop>
+        <el-button
+          text
+          size="small"
+          :title="isFavorite ? 'Unfavorite' : 'Favorite'"
+          :class="{ 'is-fav': isFavorite }"
+          @click="emit('toggle-favorite', conversation.key)"
+        >
+          <el-icon><component :is="isFavorite ? StarFilled : Star" /></el-icon>
+        </el-button>
+        <el-button
+          text
+          :icon="Document"
+          size="small"
+          title="Edit context"
+          @click="emit('edit-context', conversation.key)"
+        />
+        <el-button
+          text
+          :icon="Edit"
+          size="small"
+          title="Rename"
+          @click="emit('rename', conversation.key, conversation.title || '')"
+        />
+        <el-button
+          text
+          :icon="Delete"
+          size="small"
+          title="Delete"
+          type="danger"
+          @click="emit('delete', conversation.key, conversation.title || '')"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -94,8 +117,8 @@ function formatTime(ts?: number): string {
 .cs-item {
   display: flex;
   gap: 4px;
-  align-items: center;
-  padding: 8px 12px;
+  align-items: flex-start;
+  padding: 6px 12px;
   cursor: pointer;
   transition: background 0.15s;
 }
@@ -107,15 +130,22 @@ function formatTime(ts?: number): string {
 }
 .cs-batch-check {
   flex-shrink: 0;
+  margin-top: 3px;
 }
-.cs-item-main {
+.cs-item-body {
   flex: 1;
   min-width: 0;
-}
-.cs-item-title-row {
   display: flex;
-  gap: 6px;
-  align-items: center;
+  flex-direction: column;
+  gap: 2px;
+}
+
+// Row 1: title + meta
+.cs-item-row {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  justify-content: space-between;
 }
 .cs-item-title {
   flex: 1;
@@ -123,21 +153,25 @@ function formatTime(ts?: number): string {
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
   color: var(--el-text-color-primary);
   white-space: nowrap;
 }
-.cs-fav-mark {
-  flex-shrink: 0;
-  font-size: 13px;
-  color: var(--el-color-warning);
-}
 .cs-item-meta {
+  flex-shrink: 0;
   font-size: 11px;
+  line-height: 1.4;
   color: var(--el-text-color-placeholder);
+  white-space: nowrap;
 }
+
+// Row 2: actions
 .cs-item-actions {
   display: flex;
-  flex-shrink: 0;
+  gap: 0;
+  justify-content: flex-end;
+  align-self: flex-end;
   opacity: 0;
   transition: opacity 0.15s;
 }
