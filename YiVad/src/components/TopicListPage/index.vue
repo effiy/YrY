@@ -11,7 +11,7 @@
       </template>
 
       <template #title="scope">
-        <el-button type="primary" link @click="toDetail(scope.row.key)">
+        <el-button type="primary" link @click="toDetail(scope.row.key, true)">
           {{ scope.row.title }}
         </el-button>
       </template>
@@ -33,22 +33,21 @@
       </template>
 
       <template #operation="scope">
-        <el-tooltip content="View" placement="top">
-          <el-button type="primary" link :icon="View" @click="toDetail(scope.row.key)" />
-        </el-tooltip>
-        <el-tooltip content="Edit" placement="top">
-          <el-button type="primary" link :icon="EditPen" @click="toDetail(scope.row.key)" />
-        </el-tooltip>
-        <el-tooltip content="Delete" placement="top">
-          <el-button type="primary" link :icon="Delete" @click="handleDelete(scope.row)" />
-        </el-tooltip>
+        <template v-for="action in resolvedActions" :key="action.type">
+          <el-button
+            type="primary"
+            link
+            :icon="action.icon"
+            @click="action.handler(scope.row)"
+          />
+        </template>
       </template>
     </ProTable>
   </div>
 </template>
 
 <script setup lang="tsx" name="TopicListPage">
-import { reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { CirclePlus, Delete, EditPen, View } from "@element-plus/icons-vue";
 import ProTable from "@/components/ProTable/index.vue";
@@ -63,6 +62,13 @@ export interface MetaColumn {
   minWidth?: number;
   tagTypeFn?: (val: any) => "" | "danger" | "warning" | "info" | "primary" | "success";
   enum?: { label: string; value: string }[];
+}
+
+export interface ActionButton {
+  /** Which built-in action to render. */
+  type: "view" | "edit" | "delete";
+  /** Tooltip label. Defaults to a sensible label per type. */
+  label?: string;
 }
 
 /** Convert a simplified MetaColumn config into a ProTable ColumnProps. */
@@ -97,7 +103,47 @@ const props = defineProps<{
   label: string;
   /** Domain-specific columns rendered from row.meta (injected between title and tags). */
   metaColumns?: MetaColumn[];
+  /** Customise which action buttons appear in the operations column and their labels.
+   *  Default: [{ type: "view" }, { type: "edit" }, { type: "delete" }] */
+  actions?: ActionButton[];
 }>();
+
+interface ResolvedAction {
+  type: ActionButton["type"];
+  label: string;
+  icon: typeof View;
+  handler: (row: TopicEntryDocument) => void;
+}
+
+const DEFAULT_ACTIONS: ActionButton[] = [
+  { type: "view", label: "View" },
+  { type: "edit", label: "Edit" },
+  { type: "delete", label: "Delete" }
+];
+
+const ACTION_META: Record<ActionButton["type"], { icon: typeof View; defaultLabel: string }> = {
+  view: { icon: View, defaultLabel: "View" },
+  edit: { icon: EditPen, defaultLabel: "Edit" },
+  delete: { icon: Delete, defaultLabel: "Delete" }
+};
+
+
+const resolvedActions = computed<ResolvedAction[]>(() => {
+  const source = props.actions ?? DEFAULT_ACTIONS;
+  return source.map(a => {
+    const meta = ACTION_META[a.type];
+    const handler =
+      a.type === "delete" ? handleDelete
+      : a.type === "view" ? (row: TopicEntryDocument) => toDetail(row.key, true)
+      : (row: TopicEntryDocument) => toDetail(row.key);
+    return {
+      type: a.type,
+      label: a.label ?? meta.defaultLabel,
+      icon: meta.icon,
+      handler
+    };
+  });
+});
 
 const router = useRouter();
 const proTableRef = ref<ProTableInstance>();
@@ -111,14 +157,18 @@ function pascal(s: string): string {
 
 const routePrefix = props.tree === "tech-leadership" ? "tlr" : props.tree === "brd" ? "brd" : "cr";
 
-function toDetail(key: string) {
+function toDetail(key: string, viewMode = false) {
   // BRD topics already contain the tree prefix (e.g. "brd-documents"),
   // so strip it before pascal-casing to avoid "brdBrdDocumentsDetail".
   const topicName = props.topic.startsWith(props.tree + "-")
     ? props.topic.slice(props.tree.length + 1)
     : props.topic;
   const routeName = `${routePrefix}${pascal(topicName)}Detail`;
-  router.push({ name: routeName, params: { id: key } });
+  router.push({
+    name: routeName,
+    params: { id: key },
+    query: viewMode ? { mode: "view" } : {}
+  });
 }
 
 async function fetchList(params: any) {

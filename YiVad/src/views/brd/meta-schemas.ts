@@ -208,8 +208,8 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
   // ── BRD Documents (core registry) ──────────────────────────────────────
   "brd-documents": {
     metaColumns: [
-      { key: "document_id", label: "BRD ID", width: 90 },
-      { key: "title", label: "Document Title", minWidth: 160 },
+      { key: "document_id", label: "BRD ID", width: 160 },
+      { key: "title", label: "Document Title", minWidth: 260 },
       { key: "version", label: "Version", width: 100 },
       { key: "business_owner", label: "Business Owner", width: 160 },
       { key: "department", label: "Department", width: 140, enum: DEPARTMENT_OPTIONS },
@@ -231,10 +231,12 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
       { key: "expected_golive", label: "Target Go-Live", width: 160 }
     ],
     metaFields: [
-      { key: "document_id", label: "BRD Identifier", type: "input", placeholder: "e.g. BRD-2026-001", required: true, colSpan: 8 },
+      { key: "document_id", label: "BRD Identifier", type: "input", placeholder: "e.g. BRD-2026-001 or BRD-EU-AFS-001", required: true, colSpan: 8 },
       { key: "title", label: "Document Title", type: "input", placeholder: "e.g. After-Sales Ticketing Platform — Phase 2 Enhancement", required: true, colSpan: 16 },
       { key: "version", label: "Version", type: "input", placeholder: "e.g. 1.0, 2.1-draft", required: true, colSpan: 8 },
-      { key: "business_owner", label: "Business Owner", type: "input", placeholder: "e.g. Dr. Zhang Wei — Director, After-Sales EU", required: true, colSpan: 8 },
+      { key: "version_date", label: "Version Date", type: "date", colSpan: 8 },
+      { key: "change_summary", label: "Change Summary", type: "textarea", rows: 2, placeholder: "What changed in this version? e.g. v1.1 — Added France market scope, updated SLA targets per Q3 steering committee decision", colSpan: 24 },
+      { key: "business_owner", label: "Business Owner / Sponsor", type: "input", placeholder: "e.g. Dr. Zhang Wei — Director, After-Sales EU", required: true, colSpan: 8 },
       { key: "author", label: "Author", type: "input", placeholder: "e.g. Li Ming — Business Analyst", colSpan: 8 },
       {
         key: "department",
@@ -268,47 +270,208 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
         colSpan: 8
       },
       { key: "country", label: "Target Country / Region", type: "select", options: COUNTRY_OPTIONS, colSpan: 8 },
-      { key: "brand", label: "Applicable Brand(s)", type: "input", placeholder: "e.g. Brand A, Brand B, All Brands", colSpan: 8 },
+      { key: "brand", label: "Applicable Brand(s)", type: "input", placeholder: "e.g. Brand A, Brand B, All Brands (comma-separated)", colSpan: 8 },
       { key: "expected_golive", label: "Target Go-Live Date", type: "date", colSpan: 8 },
+      { key: "related_brds", label: "Related BRDs / Documents", type: "input", placeholder: "e.g. BRD-2026-003 (CRM Integration Phase 1), PRD-2026-012 (Mobile App R1)", colSpan: 12 },
       { key: "created_date", label: "Created Date", type: "date", colSpan: 8 },
-      { key: "last_reviewed_date", label: "Last Reviewed Date", type: "date", colSpan: 8 },
-      { key: "executive_summary", label: "Executive Summary", type: "textarea", rows: 4, placeholder: "Brief overview: business problem, proposed solution scope, expected benefits, and key constraints. 3–5 sentences.", colSpan: 24 }
+      { key: "last_reviewed_date", label: "Last Reviewed / Updated Date", type: "date", colSpan: 8 },
+      { key: "regulatory_context", label: "Regulatory Context", type: "textarea", rows: 2, placeholder: "Applicable regulations and their impact on requirements. e.g. GDPR Art. 5(1)(c) — data minimisation constrains customer profile fields; EU Data Act 2025 — data sharing obligations for connected vehicle data", colSpan: 24 },
+      { key: "executive_summary", label: "Executive Summary", type: "textarea", rows: 4, placeholder: "Concise overview: business problem, proposed solution, expected benefits, and key constraints. 3–5 sentences. This is the most-read section of any BRD — make it self-contained.", colSpan: 24 }
     ],
-    templateContent: `# BRD Document Title
-
-## Executive Summary
-[Brief overview: business problem, proposed solution, expected benefits, and key constraints. 3–5 sentences.]
-
-## Business Background
-
-### Current Status
-- [Describe the current business situation]
-
-### Problem / Opportunity
-- [What problem are we solving or opportunity are we capturing?]
-
-## Proposed Solution
-[High-level description of the proposed solution and its scope.]
-
-## Scope
-- **In scope**: [What is covered]
-- **Out of scope**: [What is explicitly NOT covered]
-
-## Key Stakeholders
-- [Role 1] — [Responsibility / interest]
-- [Role 2] — [Responsibility / interest]
-
-## Constraints & Assumptions
-- [Constraint 1]
-- [Assumption 1]
-
-## Expected Benefits
-- [Quantified benefit 1]
-- [Quantified benefit 2]
+    templateContent: `# Business Requirements Document
 
 ---
 
-*Use the "Structured fields" section above to record metadata. Expand this content with detailed analysis.*`
+## Document Control
+
+| Field | Value |
+|-------|-------|
+| **BRD ID** | [BRD-YYYY-NNN] |
+| **Version** | [1.0] |
+| **Status** | [Draft / Under Review / Approved] |
+| **Author** | [Name — Role] |
+| **Business Owner** | [Name — Role, Department] |
+| **Created** | [YYYY-MM-DD] |
+| **Last Reviewed** | [YYYY-MM-DD] |
+
+### Version History
+
+| Version | Date | Author | Changes |
+|---------|------|--------|---------|
+| 0.1 | [YYYY-MM-DD] | [Name] | Initial draft |
+| 1.0 | [YYYY-MM-DD] | [Name] | First approved version |
+
+---
+
+## 1. Executive Summary
+
+**Business Problem**: [One sentence — what problem are we solving?]
+
+**Proposed Solution**: [One sentence — how will we solve it, at a high level?]
+
+**Expected Outcomes**: [2–3 quantified business outcomes — revenue, cost savings, efficiency gains, compliance achievement]
+
+**Key Constraints**: [Budget, timeline, regulatory, technology — one line each]
+
+---
+
+## 2. Business Context & Problem Statement
+
+### 2.1 Current State
+
+[Describe the current business process, system landscape, and operational context. What tools, manual processes, or workarounds are in use today? Include relevant metrics: volumes, error rates, turnaround times, headcount.]
+
+### 2.2 Problem / Opportunity
+
+[What specific pain points, inefficiencies, risks, or missed opportunities does this initiative address? Quantify the impact: e.g. "Current manual data entry costs ~120 FTE hours/week across EU markets."]
+
+### 2.3 Why Now?
+
+[Business urgency — regulatory deadline, competitive pressure, system end-of-life, strategic initiative alignment. What is the cost of inaction?]
+
+---
+
+## 3. Project Scope
+
+### 3.1 In Scope
+
+- [Capability / feature / process area — be specific]
+- [Market / region / brand coverage]
+- [User personas / roles covered]
+
+### 3.2 Out of Scope (Explicitly Excluded)
+
+- [Capability that stakeholders might expect but is deferred or owned by another initiative]
+- [Market / region NOT covered in this phase]
+
+### 3.3 Future Phases (if applicable)
+
+- [Phase 2 / roadmap items — at a high level]
+
+---
+
+## 4. Stakeholder Analysis
+
+| Role / Persona | Department | Influence | Key Needs & Expectations |
+|----------------|------------|-----------|--------------------------|
+| [e.g. Customer Support Agent — Tier 2] | After-Sales | Decision Maker | [What do they need the system to do?] |
+| [e.g. Regional Operations Manager] | After-Sales | Key Influencer | [Reporting, oversight, SLA monitoring] |
+
+> Detailed stakeholder profiles are maintained in the Stakeholders register.
+
+---
+
+## 5. Requirements Overview
+
+### 5.1 Functional Requirements
+
+[High-level summary. Link to detailed acceptance criteria register.]
+
+| ID | Requirement | Priority | Linked AC |
+|----|-------------|----------|-----------|
+| FR-001 | [Description] | Must / Should / Could | AC-001, AC-002 |
+
+### 5.2 Non-Functional Requirements
+
+| Category | Requirement | Target |
+|----------|-------------|--------|
+| Performance | [e.g. Page load time] | [e.g. < 2 seconds for 95th percentile] |
+| Availability | [e.g. System uptime] | [e.g. 99.9% during business hours] |
+| Security | [e.g. Authentication method] | [e.g. SSO with MFA] |
+| Scalability | [e.g. Concurrent users] | [e.g. 500 concurrent users across EU] |
+| Usability | [e.g. Training requirement] | [e.g. < 2 hours training for Tier-2 agent proficiency] |
+| Data Retention | [e.g. Ticket data retention] | [e.g. 7 years per local tax regulations] |
+
+### 5.3 Integration Requirements
+
+| System / Endpoint | Direction | Purpose | Owner |
+|-------------------|-----------|---------|-------|
+| [e.g. SAP ECC — Parts Master] | Inbound | Real-time parts availability lookup | Core Platform Team |
+| [e.g. Zendesk API] | Outbound | Ticket status sync to existing CRM | CRM Integration Team |
+
+---
+
+## 6. Business Rules Summary
+
+[High-level summary. Detailed rules are maintained in the Business Rules register.]
+
+| Rule ID | Rule | Priority |
+|---------|------|----------|
+| BR-001 | [Rule definition — one sentence] | Must / Should / Could |
+
+---
+
+## 7. Constraints, Assumptions & Dependencies
+
+### 7.1 Constraints
+
+- **Budget**: [CapEx / OpEx budget, if known]
+- **Timeline**: [Hard deadline, if any — e.g. regulatory effective date]
+- **Technology**: [Must use existing platform X, must not use cloud service Y]
+- **Regulatory**: [GDPR, SOX, industry-specific regulations — which articles / sections apply]
+
+### 7.2 Key Assumptions
+
+- [Assumption 1 — e.g. "Backend API v2 will be production-ready by Q1 2027"]
+- [Assumption 2 — e.g. "EU markets will share a single instance; no market-specific customizations required"]
+- [State what happens if an assumption proves false]
+
+### 7.3 External Dependencies
+
+- [Dependency 1 — owner team, expected delivery date, impact if delayed]
+- [Dependency 2 — third-party vendor, SLA, fallback plan]
+
+---
+
+## 8. Business Objectives & Success Metrics
+
+| Objective ID | Objective | KPI | Baseline | Target | Measurement Method |
+|--------------|-----------|-----|----------|--------|--------------------|
+| OBJ-001 | [Objective] | [KPI] | [Current] | [Target] | [How measured, cadence, owner] |
+
+> Detailed objectives are maintained in the Business Objectives register.
+
+---
+
+## 9. Risk Assessment
+
+| Risk ID | Risk Description | Likelihood | Impact | Mitigation | Owner |
+|---------|------------------|------------|--------|------------|-------|
+| RK-001 | [What could go wrong?] | High / Med / Low | High / Med / Low | [How we reduce likelihood or impact] | [Name] |
+
+---
+
+## 10. Milestone Plan (High-Level)
+
+| Milestone | Phase | Target Date | Key Deliverables | Owner |
+|-----------|-------|-------------|------------------|-------|
+| [e.g. BRD Approved] | Discovery | [YYYY-MM-DD] | Signed BRD by all approvers | [Name] |
+| [e.g. MVP Build Complete] | Development | [YYYY-MM-DD] | Deployed to staging, smoke tests passing | [Name] |
+| [e.g. UAT Sign-off — EU Markets] | UAT | [YYYY-MM-DD] | UAT report signed by business owners | [Name] |
+| [e.g. Go-Live] | Deployment | [YYYY-MM-DD] | Production deployment, hypercare started | [Name] |
+
+> Detailed milestones are maintained in the Milestones register.
+
+---
+
+## 11. Glossary
+
+| Term | Definition |
+|------|------------|
+| [Acronym or domain term] | [Plain-language definition] |
+
+---
+
+## 12. References
+
+| Document | Link / Location | Description |
+|----------|----------------|-------------|
+| [e.g. Technical Architecture Decision — ADR-042] | [URL or path] | [What it covers] |
+| [e.g. GDPR Art. 5 Assessment] | [URL or path] | [Relevance] |
+
+---
+
+*This is a living document. All substantive changes must be reflected in the Version History table above and re-approved per the Approval Records register.*`
   },
 
   // ── Business Objectives ─────────────────────────────────────────────────
@@ -316,14 +479,14 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
     metaColumns: [
       { key: "brd_ref", label: "BRD Ref", width: 100 },
       { key: "objective_id", label: "Obj ID", width: 90 },
-      { key: "objective_summary", label: "Objective", minWidth: 120 },
+      { key: "objective_summary", label: "Objective", minWidth: 110 },
       {
         key: "type",
         label: "Type",
         width: 90,
         enum: OBJECTIVE_TYPE_OPTIONS
       },
-      { key: "kpi", label: "KPI / Measure", minWidth: 150 },
+      { key: "kpi", label: "KPI / Measure", minWidth: 140 },
       { key: "target_value", label: "Target", width: 90 },
       {
         key: "priority",
@@ -384,13 +547,13 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
       {
         key: "influence",
         label: "Influence Level",
-        width: 200,
+        width: 190,
         enum: INFLUENCE_OPTIONS
       },
       {
         key: "frequency",
         label: "Usage Frequency",
-        width: 200,
+        width: 190,
         enum: FREQUENCY_OPTIONS
       },
       { key: "country", label: "Country", width: 120, enum: COUNTRY_OPTIONS }
@@ -441,7 +604,7 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
     metaColumns: [
       { key: "brd_ref", label: "BRD Ref", width: 100 },
       { key: "rule_id", label: "Rule ID", width: 100 },
-      { key: "rule_name", label: "Rule Name", minWidth: 120 },
+      { key: "rule_name", label: "Rule Name", minWidth: 110 },
       {
         key: "priority",
         label: "Priority",
@@ -491,7 +654,7 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
     metaColumns: [
       { key: "brd_ref", label: "BRD Ref", width: 100 },
       { key: "ac_id", label: "AC ID", width: 80 },
-      { key: "criteria_summary", label: "Acceptance Criteria", minWidth: 210 },
+      { key: "criteria_summary", label: "Acceptance Criteria", minWidth: 200 },
       {
         key: "priority",
         label: "Priority",
@@ -543,7 +706,7 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
   "brd-milestones": {
     metaColumns: [
       { key: "brd_ref", label: "BRD Ref", width: 100 },
-      { key: "milestone_name", label: "Milestone", minWidth: 120 },
+      { key: "milestone_name", label: "Milestone", minWidth: 110 },
       {
         key: "phase",
         label: "Phase",
@@ -599,7 +762,7 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
         width: 170,
         enum: APPROVAL_ROLE_OPTIONS
       },
-      { key: "approver_name", label: "Approver", width: 110 },
+      { key: "approver_name", label: "Approver", width: 100 },
       { key: "review_date", label: "Review Date", width: 130 },
       {
         key: "result",

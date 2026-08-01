@@ -198,6 +198,92 @@ export const staticRouter: RouteRecordRaw[] = [
         name: "brdAcceptanceDetail",
         component: () => import("@/views/brd/brd-acceptance/detail.vue"),
         meta: { title: "Acceptance Criteria detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/brd/claude/detail/:name?",
+        name: "claudeSkillsDetail",
+        component: () => import("@/views/brd/claude/detail.vue"),
+        meta: { title: "Claude Skill detail", isHide: true, isKeepAlive: true }
+      },
+      // Tech-leadership: list routes come from authMenuList.json;
+      // detail routes are hidden children and registered statically.
+      {
+        path: "/tech-leadership/adr-review/detail/:id?",
+        name: "tlrAdrReviewDetail",
+        component: () => import("@/views/tech-leadership/adr-review/detail.vue"),
+        meta: { title: "Architecture Decision Record detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/tech-leadership/tech-selection/detail/:id?",
+        name: "tlrTechSelectionDetail",
+        component: () => import("@/views/tech-leadership/tech-selection/detail.vue"),
+        meta: { title: "Tech Selection detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/tech-leadership/tech-debt/detail/:id?",
+        name: "tlrTechDebtDetail",
+        component: () => import("@/views/tech-leadership/tech-debt/detail.vue"),
+        meta: { title: "Tech Debt detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/tech-leadership/risk-register/detail/:id?",
+        name: "tlrRiskRegisterDetail",
+        component: () => import("@/views/tech-leadership/risk-register/detail.vue"),
+        meta: { title: "Risk Register detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/tech-leadership/postmortem/detail/:id?",
+        name: "tlrPostmortemDetail",
+        component: () => import("@/views/tech-leadership/postmortem/detail.vue"),
+        meta: { title: "Postmortem detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/tech-leadership/oncall-handover/detail/:id?",
+        name: "tlrOncallHandoverDetail",
+        component: () => import("@/views/tech-leadership/oncall-handover/detail.vue"),
+        meta: { title: "Oncall Handover detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/tech-leadership/org-diagnose/detail/:id?",
+        name: "tlrOrgDiagnoseDetail",
+        component: () => import("@/views/tech-leadership/org-diagnose/detail.vue"),
+        meta: { title: "Org Diagnose detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/tech-leadership/dependency-audit/detail/:id?",
+        name: "tlrDependencyAuditDetail",
+        component: () => import("@/views/tech-leadership/dependency-audit/detail.vue"),
+        meta: { title: "Dependency Audit detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/tech-leadership/roadmap-review/detail/:id?",
+        name: "tlrRoadmapReviewDetail",
+        component: () => import("@/views/tech-leadership/roadmap-review/detail.vue"),
+        meta: { title: "Roadmap Review detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/tech-leadership/capacity-plan/detail/:id?",
+        name: "tlrCapacityPlanDetail",
+        component: () => import("@/views/tech-leadership/capacity-plan/detail.vue"),
+        meta: { title: "Capacity Plan detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/tech-leadership/capacity-cost/detail/:id?",
+        name: "tlrCapacityCostDetail",
+        component: () => import("@/views/tech-leadership/capacity-cost/detail.vue"),
+        meta: { title: "Capacity & Cost detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/tech-leadership/maturity-model/detail/:id?",
+        name: "tlrMaturityModelDetail",
+        component: () => import("@/views/tech-leadership/maturity-model/detail.vue"),
+        meta: { title: "Maturity Model detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/tech-leadership/dora-metrics/detail/:id?",
+        name: "tlrDoraMetricsDetail",
+        component: () => import("@/views/tech-leadership/dora-metrics/detail.vue"),
+        meta: { title: "DORA Metrics detail", isHide: true, isKeepAlive: true }
       }
     ]
   }

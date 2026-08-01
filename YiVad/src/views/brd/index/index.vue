@@ -71,8 +71,9 @@
 <script setup lang="ts" name="brdReviewHub">
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { Plus, DocumentAdd, Checked, List, UserFilled } from "@element-plus/icons-vue";
+import { Plus, DocumentAdd, Checked, List, UserFilled, EditPen } from "@element-plus/icons-vue";
 import { getTopicList, type TopicEntryDocument } from "@/api/modules/topic";
+import { KNOWN_SKILLS } from "@/api/modules/claudeService";
 
 const router = useRouter();
 
@@ -146,6 +147,13 @@ const BRD_TOPICS = [
     icon: "✍️",
     content: "Multi-role sign-off audit trail — Business Owner, ITBP, RSC, HQ Counterpart, Security, Compliance, DPO.",
     count: undefined as number | undefined
+  },
+  {
+    value: "claude",
+    label: "Claude Skills",
+    icon: "🤖",
+    content: ".claude/skills/ registry — 21 slash-command skills for frameworks, tools, and project initialization. Browse, learn, and manage.",
+    count: undefined as number | undefined
   }
 ];
 
@@ -153,7 +161,8 @@ const quickLinks = [
   { key: "new-brd", label: "New BRD Document", icon: DocumentAdd, path: "/brd/brd-documents/detail/new" },
   { key: "all-brd", label: "All BRD Documents", icon: List, path: "/brd/brd-documents" },
   { key: "approvals", label: "Pending Approvals", icon: Checked, path: "/brd/brd-approvals" },
-  { key: "stakeholders", label: "Stakeholder Map", icon: UserFilled, path: "/brd/brd-stakeholders" }
+  { key: "stakeholders", label: "Stakeholder Map", icon: UserFilled, path: "/brd/brd-stakeholders" },
+  { key: "claude", label: "Claude Skills", icon: EditPen, path: "/brd/claude" }
 ];
 
 // ── Stats ────────────────────────────────────────────────────────────────
@@ -185,6 +194,8 @@ async function loadTopicCounts() {
       BRD_TOPICS[i].count = r.value.data?.total ?? 0;
     }
   });
+  // Claude skills count from known registry
+  BRD_TOPICS[BRD_TOPICS.length - 1].count = KNOWN_SKILLS.length;
 }
 
 function open(value: string) {

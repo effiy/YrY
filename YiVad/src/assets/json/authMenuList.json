@@ -143,6 +143,263 @@
             "isKeepAlive": true
           },
           "children": []
+        },
+        {
+          "path": "/brd/claude",
+          "name": "claudeSkills",
+          "component": "/brd/claude/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Claude Skills",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "path": "/tech-leadership",
+      "name": "techLeadership",
+      "component": "",
+      "redirect": "/tech-leadership/index",
+      "meta": {
+        "icon": "Monitor",
+        "title": "Tech Leadership",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "children": [
+        {
+          "path": "/tech-leadership/index",
+          "name": "tlrReviewHub",
+          "component": "/tech-leadership/index",
+          "redirect": "",
+          "meta": {
+            "icon": "DataAnalysis",
+            "title": "Review Hub",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/tech-leadership/adr-review",
+          "name": "tlrAdrReview",
+          "component": "/tech-leadership/adr-review/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Architecture Decision Records",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/tech-leadership/tech-selection",
+          "name": "tlrTechSelection",
+          "component": "/tech-leadership/tech-selection/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Tech Selection Evaluation",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/tech-leadership/tech-debt",
+          "name": "tlrTechDebt",
+          "component": "/tech-leadership/tech-debt/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Tech Debt Inventory",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/tech-leadership/risk-register",
+          "name": "tlrRiskRegister",
+          "component": "/tech-leadership/risk-register/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Risk Register",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/tech-leadership/postmortem",
+          "name": "tlrPostmortem",
+          "component": "/tech-leadership/postmortem/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Postmortems",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/tech-leadership/oncall-handover",
+          "name": "tlrOncallHandover",
+          "component": "/tech-leadership/oncall-handover/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Oncall Handover",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/tech-leadership/org-diagnose",
+          "name": "tlrOrgDiagnose",
+          "component": "/tech-leadership/org-diagnose/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Org Diagnose",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/tech-leadership/dependency-audit",
+          "name": "tlrDependencyAudit",
+          "component": "/tech-leadership/dependency-audit/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Dependency Audit",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/tech-leadership/roadmap-review",
+          "name": "tlrRoadmapReview",
+          "component": "/tech-leadership/roadmap-review/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Roadmap Review",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/tech-leadership/capacity-plan",
+          "name": "tlrCapacityPlan",
+          "component": "/tech-leadership/capacity-plan/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Capacity Plan",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/tech-leadership/capacity-cost",
+          "name": "tlrCapacityCost",
+          "component": "/tech-leadership/capacity-cost/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Capacity & Cost (FinOps)",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/tech-leadership/maturity-model",
+          "name": "tlrMaturityModel",
+          "component": "/tech-leadership/maturity-model/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Maturity Model",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/tech-leadership/dora-metrics",
+          "name": "tlrDoraMetrics",
+          "component": "/tech-leadership/dora-metrics/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "DORA Metrics",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
         }
       ]
     }

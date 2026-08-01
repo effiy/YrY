@@ -11,15 +11,20 @@
         </nav>
       </div>
       <div class="topic-detail__header-right">
-        <el-button v-if="!isNew" type="danger" :icon="DeleteIcon" @click="handleDelete">Delete</el-button>
-        <el-button type="primary" :icon="CirclePlus" @click="handleSave">Save</el-button>
+        <template v-if="isViewMode">
+          <el-button type="primary" :icon="EditPen" @click="switchToEdit">Edit</el-button>
+        </template>
+        <template v-else>
+          <el-button v-if="!isNew" type="danger" :icon="DeleteIcon" @click="handleDelete">Delete</el-button>
+          <el-button type="primary" :icon="CirclePlus" @click="handleSave">Save</el-button>
+        </template>
       </div>
     </header>
 
     <div class="topic-detail__body">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="120px" label-suffix=" :">
         <el-form-item label="Title" prop="title">
-          <el-input v-model="form.title" placeholder="Concise entry title" clearable />
+          <el-input v-model="form.title" placeholder="Concise entry title" clearable :disabled="isViewMode" />
         </el-form-item>
 
         <!-- Structured meta fields -->
@@ -33,27 +38,30 @@
                 <!-- Input -->
                 <el-input
                   v-if="field.type === 'input'"
-                  v-model="formMeta[field.key]"
+                  v-model="form.meta[field.key]"
                   :placeholder="field.placeholder ?? `Enter ${field.label.toLowerCase()}`"
                   clearable
+                  :disabled="isViewMode"
                 />
                 <!-- Number -->
                 <el-input-number
                   v-else-if="field.type === 'number'"
-                  v-model="formMeta[field.key]"
+                  v-model="form.meta[field.key]"
                   :placeholder="field.placeholder"
                   :min="field.min"
                   :max="field.max"
                   controls-position="right"
                   style="width: 100%"
+                  :disabled="isViewMode"
                 />
                 <!-- Select -->
                 <el-select
                   v-else-if="field.type === 'select'"
-                  v-model="formMeta[field.key]"
+                  v-model="form.meta[field.key]"
                   :placeholder="field.placeholder ?? `Select ${field.label.toLowerCase()}`"
                   clearable
                   style="width: 100%"
+                  :disabled="isViewMode"
                 >
                   <el-option
                     v-for="opt in field.options"
@@ -65,19 +73,21 @@
                 <!-- Date -->
                 <el-date-picker
                   v-else-if="field.type === 'date'"
-                  v-model="formMeta[field.key]"
+                  v-model="form.meta[field.key]"
                   type="date"
                   :placeholder="field.placeholder ?? 'Pick a date'"
                   style="width: 100%"
                   value-format="YYYY-MM-DD"
+                  :disabled="isViewMode"
                 />
                 <!-- Textarea -->
                 <el-input
                   v-else-if="field.type === 'textarea'"
-                  v-model="formMeta[field.key]"
+                  v-model="form.meta[field.key]"
                   type="textarea"
                   :rows="field.rows ?? 3"
                   :placeholder="field.placeholder ?? `Enter ${field.label.toLowerCase()}`"
+                  :disabled="isViewMode"
                 />
               </el-form-item>
             </el-col>
@@ -88,12 +98,12 @@
           <span class="topic-detail__meta-divider-text">Content</span>
         </el-divider>
         <el-form-item label="Tags" prop="tags">
-          <el-select v-model="form.tags" multiple filterable allow-create default-first-option placeholder="Press Enter to add a tag" class="topic-detail__tags">
+          <el-select v-model="form.tags" multiple filterable allow-create default-first-option placeholder="Press Enter to add a tag" class="topic-detail__tags" :disabled="isViewMode">
             <el-option v-for="t in tagOptions" :key="t" :label="t" :value="t" />
           </el-select>
         </el-form-item>
         <el-form-item label="Content" prop="content">
-          <el-input v-model="form.content" type="textarea" :rows="14" placeholder="Fill the template; the original prompt is pre-loaded." />
+          <el-input v-model="form.content" type="textarea" :rows="14" placeholder="Fill the template; the original prompt is pre-loaded." :disabled="isViewMode" />
         </el-form-item>
       </el-form>
     </div>
@@ -103,7 +113,7 @@
 <script setup lang="ts" name="TopicDetailPage">
 import { ref, reactive, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { ArrowRight, CirclePlus, ArrowLeft, Delete as DeleteIcon } from "@element-plus/icons-vue";
+import { ArrowRight, CirclePlus, ArrowLeft, Delete as DeleteIcon, EditPen } from "@element-plus/icons-vue";
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import {
   getTopicEntry,
@@ -145,17 +155,16 @@ const loading = ref(false);
 const entry = ref<TopicEntryDocument | null>(null);
 
 const isNew = computed(() => route.params.id === "new" || !route.params.id);
+const isViewMode = computed(() => route.query.mode === "view");
 
 const metaFields = computed(() => props.metaFields ?? []);
 
 const form = reactive({
   title: "",
   content: props.templateContent ?? "",
-  tags: [] as string[]
+  tags: [] as string[],
+  meta: {} as Record<string, any>
 });
-
-/** Reactive bag for meta field values — synced to entry.meta on load / save. */
-const formMeta = reactive<Record<string, any>>({});
 
 const tagOptions = computed(() => Array.from(new Set([...(entry.value?.tags ?? []), ...form.tags])));
 
@@ -180,8 +189,8 @@ async function loadEntry() {
     form.tags = [...(doc.tags ?? [])];
     // Populate meta fields from saved data
     if (doc.meta) {
-      Object.keys(formMeta).forEach(k => delete formMeta[k]);
-      Object.assign(formMeta, doc.meta);
+      Object.keys(form.meta).forEach(k => delete form.meta[k]);
+      Object.assign(form.meta, doc.meta);
     }
   } catch (e: any) {
     ElMessage.error(e?.message || "Failed to load entry");
@@ -200,7 +209,7 @@ async function handleSave() {
         title: form.title,
         content: form.content,
         tags: form.tags,
-        meta: { ...formMeta }
+        meta: { ...form.meta }
       });
       ElMessage.success("Entry created");
     } else {
@@ -208,7 +217,7 @@ async function handleSave() {
         title: form.title,
         content: form.content,
         tags: form.tags,
-        meta: { ...formMeta }
+        meta: { ...form.meta }
       });
       ElMessage.success("Entry updated");
     }
@@ -236,6 +245,10 @@ function back() {
     ? props.topic.slice(props.tree.length + 1)
     : props.topic;
   router.push({ name: `${prefix}${pascal(topicName)}` });
+}
+
+function switchToEdit() {
+  router.replace({ query: {} });
 }
 
 function pascal(s: string) {
