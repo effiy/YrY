@@ -22,7 +22,7 @@
     </header>
 
     <div class="topic-detail__body">
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="120px" label-suffix=" :">
+      <el-form ref="formRef" :model="form" :rules="rules" :label-width="labelWidth" label-suffix=" :" class="topic-detail__form">
         <el-form-item label="Title" prop="title">
           <el-input v-model="form.title" placeholder="Concise entry title" clearable :disabled="isViewMode" />
         </el-form-item>
@@ -138,7 +138,7 @@ export interface MetaField {
   rows?: number;
 }
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   tree: TopicTree;
   topic: string;
   label: string;
@@ -146,7 +146,11 @@ const props = defineProps<{
   templateContent?: string;
   /** Topic-specific structured form fields rendered above the content textarea. */
   metaFields?: MetaField[];
-}>();
+  /** Form label-width (default "140px"). Pass a wider value for forms with longer labels. */
+  labelWidth?: string;
+}>(), {
+  labelWidth: "140px"
+});
 
 const route = useRoute();
 const router = useRouter();
@@ -306,5 +310,12 @@ onMounted(loadEntry);
   color: var(--el-text-color-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+.topic-detail__form {
+  :deep(.el-form-item__label) {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 </style>

@@ -209,7 +209,7 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
   "brd-documents": {
     metaColumns: [
       { key: "document_id", label: "BRD ID", width: 160 },
-      { key: "title", label: "Document Title", minWidth: 260 },
+      { key: "title", label: "Document Title", minWidth: 360 },
       { key: "version", label: "Version", width: 100 },
       { key: "business_owner", label: "Business Owner", width: 160 },
       { key: "department", label: "Department", width: 140, enum: DEPARTMENT_OPTIONS },
@@ -223,7 +223,7 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
       {
         key: "status",
         label: "Status",
-        width: 110,
+        width: 120,
         enum: STATUS_OPTIONS,
         tagTypeFn: statusTag
       },
@@ -272,7 +272,7 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
       { key: "country", label: "Target Country / Region", type: "select", options: COUNTRY_OPTIONS, colSpan: 8 },
       { key: "brand", label: "Applicable Brand(s)", type: "input", placeholder: "e.g. Brand A, Brand B, All Brands (comma-separated)", colSpan: 8 },
       { key: "expected_golive", label: "Target Go-Live Date", type: "date", colSpan: 8 },
-      { key: "related_brds", label: "Related BRDs / Documents", type: "input", placeholder: "e.g. BRD-2026-003 (CRM Integration Phase 1), PRD-2026-012 (Mobile App R1)", colSpan: 12 },
+      { key: "related_brds", label: "Related BRDs / Documents", type: "input", placeholder: "e.g. BRD-2026-003 (CRM Integration Phase 1), PRD-2026-012 (Mobile App R1)", colSpan: 8 },
       { key: "created_date", label: "Created Date", type: "date", colSpan: 8 },
       { key: "last_reviewed_date", label: "Last Reviewed / Updated Date", type: "date", colSpan: 8 },
       { key: "regulatory_context", label: "Regulatory Context", type: "textarea", rows: 2, placeholder: "Applicable regulations and their impact on requirements. e.g. GDPR Art. 5(1)(c) — data minimisation constrains customer profile fields; EU Data Act 2025 — data sharing obligations for connected vehicle data", colSpan: 24 },

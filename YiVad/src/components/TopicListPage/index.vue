@@ -207,7 +207,7 @@ const columns = reactive<ColumnProps<TopicEntryDocument>[]>([
     prop: "title",
     label: "Title",
     search: { el: "input", props: { placeholder: "Search by title" } },
-    minWidth: 240
+    minWidth: 520
   },
   // Domain-specific meta columns — rendered from row.meta
   ...(props.metaColumns ?? []).map(toColumnProps),
