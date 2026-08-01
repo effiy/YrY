@@ -1,6 +1,6 @@
 <template>
   <div class="card content-box">
-    <span class="text"> 字典管理（待完善） 🍓🍇🍈🍉</span>
+    <span class="text"> Dictionary Management (Under Construction) 🍓🍇🍈🍉</span>
   </div>
 </template>
 

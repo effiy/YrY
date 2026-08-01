@@ -7,7 +7,7 @@
       <div class="home-entry__icon">Y</div>
       <div class="home-entry__text">
         <div class="home-entry__title">YiKnowledge</div>
-        <div class="home-entry__sub">行业 / 教训 / 方法论 / 人脉 / 产品 / 资源 / 技术 / 工作</div>
+        <div class="home-entry__sub">Industry / Lessons / Methodology / Network / Products / Resources / Technology / Work</div>
       </div>
     </router-link>
   </div>

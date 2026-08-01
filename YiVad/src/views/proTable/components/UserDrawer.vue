@@ -1,5 +1,5 @@
 <template>
-  <el-drawer v-model="drawerVisible" :destroy-on-close="true" size="450px" :title="`${drawerProps.title}用户`">
+  <el-drawer v-model="drawerVisible" :destroy-on-close="true" size="450px" :title="`${drawerProps.title} User`">
     <el-form
       ref="ruleFormRef"
       label-width="100px"
@@ -9,45 +9,45 @@
       :model="drawerProps.row"
       :hide-required-asterisk="drawerProps.isView"
     >
-      <el-form-item label="用户头像" prop="avatar">
+      <el-form-item label="Avatar" prop="avatar">
         <UploadImg v-model:image-url="drawerProps.row!.avatar" width="135px" height="135px" :file-size="3">
           <template #empty>
             <el-icon><Avatar /></el-icon>
-            <span>请上传头像</span>
+            <span>Please upload avatar</span>
           </template>
-          <template #tip> 头像大小不能超过 3M </template>
+          <template #tip> Avatar size must not exceed 3M </template>
         </UploadImg>
       </el-form-item>
-      <el-form-item label="用户照片" prop="photo">
+      <el-form-item label="Photo" prop="photo">
         <UploadImgs v-model:file-list="drawerProps.row!.photo" height="140px" width="140px" border-radius="50%">
           <template #empty>
             <el-icon><Picture /></el-icon>
-            <span>请上传照片</span>
+            <span>Please upload photo</span>
           </template>
-          <template #tip> 照片大小不能超过 5M </template>
+          <template #tip> Photo size must not exceed 5M </template>
         </UploadImgs>
       </el-form-item>
-      <el-form-item label="用户姓名" prop="username">
-        <el-input v-model="drawerProps.row!.username" placeholder="请填写用户姓名" clearable></el-input>
+      <el-form-item label="User Name" prop="username">
+        <el-input v-model="drawerProps.row!.username" placeholder="Please enter user name" clearable></el-input>
       </el-form-item>
-      <el-form-item label="性别" prop="gender">
-        <el-select v-model="drawerProps.row!.gender" placeholder="请选择性别" clearable>
+      <el-form-item label="Gender" prop="gender">
+        <el-select v-model="drawerProps.row!.gender" placeholder="Please select gender" clearable>
           <el-option v-for="item in genderType" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
-      <el-form-item label="身份证号" prop="idCard">
-        <el-input v-model="drawerProps.row!.idCard" placeholder="请填写身份证号" clearable></el-input>
+      <el-form-item label="ID Card" prop="idCard">
+        <el-input v-model="drawerProps.row!.idCard" placeholder="Please enter ID card" clearable></el-input>
       </el-form-item>
-      <el-form-item label="邮箱" prop="email">
-        <el-input v-model="drawerProps.row!.email" placeholder="请填写邮箱" clearable></el-input>
+      <el-form-item label="Email" prop="email">
+        <el-input v-model="drawerProps.row!.email" placeholder="Please enter email" clearable></el-input>
       </el-form-item>
-      <el-form-item label="居住地址" prop="address">
-        <el-input v-model="drawerProps.row!.address" placeholder="请填写居住地址" clearable></el-input>
+      <el-form-item label="Address" prop="address">
+        <el-input v-model="drawerProps.row!.address" placeholder="Please enter address" clearable></el-input>
       </el-form-item>
     </el-form>
     <template #footer>
-      <el-button @click="drawerVisible = false">取消</el-button>
-      <el-button v-show="!drawerProps.isView" type="primary" @click="handleSubmit">确定</el-button>
+      <el-button @click="drawerVisible = false">Cancel</el-button>
+      <el-button v-show="!drawerProps.isView" type="primary" @click="handleSubmit">Confirm</el-button>
     </template>
   </el-drawer>
 </template>
@@ -62,13 +62,13 @@ import UploadImgs from "@/components/Upload/Imgs.vue";
 import { genderType } from "@/utils/dict";
 
 const rules = reactive({
-  avatar: [{ required: true, message: "请上传用户头像" }],
-  photo: [{ required: true, message: "请上传用户照片" }],
-  username: [{ required: true, message: "请填写用户姓名" }],
-  gender: [{ required: true, message: "请选择性别" }],
-  idCard: [{ required: true, message: "请填写身份证号" }],
-  email: [{ required: true, message: "请填写邮箱" }],
-  address: [{ required: true, message: "请填写居住地址" }]
+  avatar: [{ required: true, message: "Please upload avatar" }],
+  photo: [{ required: true, message: "Please upload photo" }],
+  username: [{ required: true, message: "Enter user name" }],
+  gender: [{ required: true, message: "Select gender" }],
+  idCard: [{ required: true, message: "Enter ID card number" }],
+  email: [{ required: true, message: "Enter email" }],
+  address: [{ required: true, message: "Enter address" }]
 });
 
 interface DrawerProps {
@@ -86,20 +86,20 @@ const drawerProps = ref<DrawerProps>({
   row: {}
 });
 
-// 接收父组件传过来的参数
+// Receive params from parent component
 const acceptParams = (params: DrawerProps) => {
   drawerProps.value = params;
   drawerVisible.value = true;
 };
 
-// 提交数据（新增/编辑）
+// Submit data (Add/Edit)
 const ruleFormRef = ref<FormInstance>();
 const handleSubmit = () => {
   ruleFormRef.value!.validate(async valid => {
     if (!valid) return;
     try {
       await drawerProps.value.api!(drawerProps.value.row);
-      ElMessage.success({ message: `${drawerProps.value.title}用户成功！` });
+      ElMessage.success({ message: `${drawerProps.value.title}User saved successfully!` });
       drawerProps.value.getTableList!();
       drawerVisible.value = false;
     } catch (error) {

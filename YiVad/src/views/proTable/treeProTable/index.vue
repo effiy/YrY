@@ -2,7 +2,7 @@
   <div class="main-box">
     <TreeFilter
       label="name"
-      title="部门列表(单选)"
+      title="Department List (single)"
       :data="treeFilterData"
       :default-value="initParam.departmentId"
       @change="changeTreeFilter"
@@ -18,15 +18,15 @@
         :init-param="initParam"
         :search-col="{ xs: 1, sm: 1, md: 2, lg: 3, xl: 3 }"
       >
-        <!-- 表格 header 按钮 -->
+        <!-- Table Header Buttons -->
         <template #tableHeader>
-          <el-button type="primary" :icon="CirclePlus" @click="openDrawer('新增')">新增用户</el-button>
+          <el-button type="primary" :icon="CirclePlus" @click="openDrawer('Add')">Add User</el-button>
         </template>
-        <!-- 表格操作 -->
+        <!-- Table Operations -->
         <template #operation="scope">
-          <el-button type="primary" link :icon="View" @click="openDrawer('查看', scope.row)">查看</el-button>
-          <el-button type="primary" link :icon="EditPen" @click="openDrawer('编辑', scope.row)">编辑</el-button>
-          <el-button type="primary" link :icon="Delete" @click="deleteAccount(scope.row)">删除</el-button>
+          <el-button type="primary" link :icon="View" @click="openDrawer('View', scope.row)">View</el-button>
+          <el-button type="primary" link :icon="EditPen" @click="openDrawer('Edit', scope.row)">Edit</el-button>
+          <el-button type="primary" link :icon="Delete" @click="deleteAccount(scope.row)">Delete</el-button>
         </template>
       </ProTable>
       <UserDrawer ref="drawerRef" />
@@ -53,29 +53,29 @@ import UserDrawer from "@/views/proTable/components/UserDrawer.vue";
 onMounted(() => {
   getTreeFilter();
   ElNotification({
-    title: "温馨提示",
-    message: "该页面 ProTable 数据不会自动请求，需等待 treeFilter 数据请求完成之后，才会触发表格请求。",
+    title: "Tip",
+    message: "This page's ProTable data will not auto-request. It waits for the treeFilter data to complete before triggering the table request.",
     type: "info",
     duration: 10000
   });
   setTimeout(() => {
     ElNotification({
-      title: "温馨提示",
-      message: "该页面 ProTable 性别搜索框为远程数据搜索，详情可查看代码。",
+      title: "Tip",
+      message: "This page's ProTable gender search box is a remote data search. Check the code for details.",
       type: "info",
       duration: 10000
     });
   }, 0);
 });
 
-// ProTable 实例
+// ProTable instance
 const proTable = ref<ProTableInstance>();
 
-// 如果表格需要初始化请求参数，直接定义传给 ProTable(之后每次请求都会自动带上该参数，此参数更改之后也会一直带上，改变此参数会自动刷新表格数据)
+// Initial request params defined here are automatically included in every subsequent request. Changing initParam will auto-refresh table data.
 const initParam = reactive({ departmentId: "" });
 
-// 获取 treeFilter 数据
-// 当 proTable 的 requestAuto 属性为 false，不会自动请求表格数据，等待 treeFilter 数据回来之后，更改 initParam.departmentId 的值，才会触发请求 proTable 数据
+// Get treeFilter data
+// When requestAuto is false, table data is not automatically requested. The table will only load after treeFilter data is fetched and initParam.departmentId is updated.
 const treeFilterData = ref<any>([]);
 const getTreeFilter = async () => {
   const { data } = await getUserDepartment();
@@ -83,14 +83,14 @@ const getTreeFilter = async () => {
   initParam.departmentId = treeFilterData.value[1].id;
 };
 
-// 树形筛选切换
+// Tree filter change
 const changeTreeFilter = (val: string) => {
-  ElMessage.success("请注意查看请求参数变化 🤔");
+  ElMessage.success("Check request parameter changes 🤔");
   proTable.value!.pageable.pageNum = 1;
   initParam.departmentId = val;
 };
 
-// 模拟远程加载性别搜索框数据
+// Simulate remote loading of gender search data
 const loading = ref(false);
 const filterGenderEnum = ref<typeof genderType>([]);
 const remoteMethod = (query: string) => {
@@ -103,52 +103,52 @@ const remoteMethod = (query: string) => {
   }, 500);
 };
 
-// 表格配置项
+// Table column configuration
 const columns = reactive<ColumnProps<User.ResUserList>[]>([
   { type: "index", label: "#", width: 80 },
-  { prop: "username", label: "用户姓名" },
+  { prop: "username", label: "User Name" },
   {
     prop: "gender",
-    label: "性别",
+    label: "Gender",
     sortable: true,
     isFilterEnum: false,
     enum: filterGenderEnum,
     search: {
       el: "select",
-      props: { placeholder: "请输入性别查询", filterable: true, remote: true, reserveKeyword: true, loading, remoteMethod }
+      props: { placeholder: "Enter gender to search", filterable: true, remote: true, reserveKeyword: true, loading, remoteMethod }
     },
-    render: scope => <>{scope.row.gender === 1 ? "男" : "女"}</>
+    render: scope => <>{scope.row.gender === 1 ? "Male" : "Female"}</>
   },
-  { prop: "idCard", label: "身份证号" },
-  { prop: "email", label: "邮箱" },
-  { prop: "address", label: "居住地址" },
+  { prop: "idCard", label: "ID Card" },
+  { prop: "email", label: "Email" },
+  { prop: "address", label: "Address" },
   {
     prop: "status",
-    label: "用户状态",
+    label: "User Status",
     sortable: true,
     tag: true,
     enum: getUserStatus,
     search: { el: "tree-select" },
     fieldNames: { label: "userLabel", value: "userStatus" }
   },
-  { prop: "createTime", label: "创建时间", width: 180 },
-  { prop: "operation", label: "操作", width: 300, fixed: "right" }
+  { prop: "createTime", label: "Create Time", width: 180 },
+  { prop: "operation", label: "Operations", width: 300, fixed: "right" }
 ]);
 
-// 删除用户信息
+// Delete user
 const deleteAccount = async (params: User.ResUserList) => {
-  await useHandleData(deleteUser, { id: [params.id] }, `删除【${params.username}】用户`);
+  await useHandleData(deleteUser, { id: [params.id] }, `Delete【${params.username]`);
   proTable.value?.getTableList();
 };
 
-// 打开 drawer(新增、查看、编辑)
+// Open drawer (Add, View, Edit)
 const drawerRef = ref<InstanceType<typeof UserDrawer> | null>(null);
 const openDrawer = (title: string, row: Partial<User.ResUserList> = {}) => {
   const params = {
     title,
     row: { ...row },
-    isView: title === "查看",
-    api: title === "新增" ? addUser : title === "编辑" ? editUser : undefined,
+    isView: title === "View",
+    api: title === "Add" ? addUser : title === "Edit" ? editUser : undefined,
     getTableList: proTable.value?.getTableList
   };
   drawerRef.value?.acceptParams(params);

@@ -1,7 +1,7 @@
 <template>
   <div class="card content-box">
-    <span class="text">我是menu1 🍓🍇🍈🍉</span>
-    <el-input v-model="value" placeholder="测试缓存"></el-input>
+    <span class="text">I am menu1 🍓🍇🍈🍉</span>
+    <el-input v-model="value" placeholder="Test cache"></el-input>
   </div>
 </template>
 

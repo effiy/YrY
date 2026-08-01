@@ -2,11 +2,11 @@
 // password is MD5 of "123456": e10adc3949ba59abbe56e057f20f883e
 var MockJs = require('mockjs');
 
-// Apifox Mock 优先用 getParam（会从 body/query/path 取值）
+// Apifox Mock: prefers getParam (reads from body/query/path)
 var username = $$.mockRequest.getParam('username');
 var password = $$.mockRequest.getParam('password');
 
-// 兜底：部分环境下再从 body 解析
+// Fallback: parse from body in some environments
 if (username == null || password == null) {
   var body = {};
   try {
@@ -30,19 +30,19 @@ if (okAdmin) {
   $$.mockResponse.setBody({
     code: 200,
     data: { access_token: 'bqddxxwqmfncffacvbpkuxvwvqrhln' },
-    msg: '成功'
+    msg: 'Success'
   });
 } else if (okUser) {
   $$.mockResponse.setBody({
     code: 200,
     data: { access_token: 'unufvdotdqxuzfbdygovfmsbftlvbn' },
-    msg: '成功'
+    msg: 'Success'
   });
 } else {
   $$.mockResponse.setBody({
     code: 500,
     data: null,
-    msg: '用户名或密码错误'
+    msg: 'Invalid username or password'
   });
 }
 $$.mockResponse.setCode(200);

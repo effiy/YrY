@@ -86,5 +86,5 @@ if (query.username || query.gender || query.age || query.idCard || query.email |
   });
 }
 
-$$.mockResponse.setBody({ code: 200, data: data, msg: '成功' });
+$$.mockResponse.setBody({ code: 200, data: data, msg: 'Success' });
 $$.mockResponse.setCode(200);

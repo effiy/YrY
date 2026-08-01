@@ -108,7 +108,7 @@ export interface Attachment {
 
 export interface ApprovalRecord {
   id: string;
-  role: string; // 业务负责人 / EU HUB ITBP / RSC 业务 / HQ 对口业务
+  role: string; // Business Owner / EU HUB ITBP / RSC Business / HQ Counterpart
   approver: string;
   date: number | null;
   result: "approved" | "rejected";

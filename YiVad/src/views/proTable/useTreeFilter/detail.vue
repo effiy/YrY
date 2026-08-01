@@ -1,6 +1,6 @@
 <template>
   <div class="card content-box">
-    <span class="text">我是 TreeFilter 详情页，和 TreeFilter 是同一级路由 🍓🍇🍈🍉</span>
+    <span class="text">I am the TreeFilter detail page, at the same route level as TreeFilter 🍓🍇🍈🍉</span>
     <span class="text">params:{{ route.params }}</span>
     <span class="text">query:{{ route.query }}</span>
   </div>

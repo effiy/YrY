@@ -137,7 +137,7 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
 - **Next review:** [Date or trigger condition]
 
 ---
-> References: YiKnowledge → [ADR 模板](resources/templates/adr-template.md) | [ADR 摘要](resources/templates/adr-summary.md)
+> References: YiKnowledge → [ADR Template](resources/templates/adr-template.md) | [ADR Summary](resources/templates/adr-summary.md)
 > Related projects: YiAi · YiVad · YiPet
 `
   },
@@ -216,7 +216,7 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
 [Condition or date to re-evaluate this decision.]
 
 ---
-> References: YiKnowledge → [技术选型评估摘要](resources/templates/tech-selection-evaluation-summary.md) | [选型模板](resources/templates/tech-selection-evaluation-template.md) | [ADR 模板](resources/templates/adr-template.md)
+> References: YiKnowledge → [Tech Selection Evaluation Summary](resources/templates/tech-selection-evaluation-summary.md) | [Selection Template](resources/templates/tech-selection-evaluation-template.md) | [ADR Template](resources/templates/adr-template.md)
 > Related: [YiVad Vite → Rsbuild migration](lessons/gotchas/vite-to-rsbuild-migration.md) | [YiPet React 15 → 18 migration]
 `
   },
@@ -308,7 +308,7 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
 [How do we confirm the debt is repaid? What metric improves?]
 
 ---
-> References: YiKnowledge → [技术债务盘点摘要](tech/infra/tech-debt-inventory-summary.md) | [盘点模板](tech/infra/tech-debt-inventory-template.md) | [季度清偿流程](work/processes/quarterly-tech-debt-process.md)
+> References: YiKnowledge → [Tech Debt Inventory Summary](tech/infra/tech-debt-inventory-summary.md) | [Inventory Template](tech/infra/tech-debt-inventory-template.md) | [Quarterly Repayment Process](work/processes/quarterly-tech-debt-process.md)
 > Known debts: YiAi lacks tests + linter | YiPet has dual ApiClient implementations | YiVad RSS body in MongoDB before offload
 `
   },
@@ -391,7 +391,7 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
 [Open / In Progress / Resolved / Closed]
 
 ---
-> References: YiKnowledge → [依赖升级流程](work/processes/dependency-upgrade-process.md) | [季度安全审计](work/processes/quarterly-security-audit-process.md) | [数据合规](work/processes/data-compliance-process.md)
+> References: YiKnowledge → [Dependency Upgrade Process](work/processes/dependency-upgrade-process.md) | [Quarterly Security Audit](work/processes/quarterly-security-audit-process.md) | [Data Compliance](work/processes/data-compliance-process.md)
 > Yi family risks: YiAi auth disabled by default | YiAi no test/lint coverage | macOS FSEvents silent drop → polling fallback
 `
   },
@@ -463,7 +463,7 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
 | 1 | | | | P0/P1/P2 |
 
 ---
-> References: YiKnowledge → [事件复盘摘要](lessons/failures/incident-postmortem-summary.md) | [复盘模板](lessons/failures/incident-postmortem-template.md) | [事件响应流程](work/processes/incident-response-process.md)
+> References: YiKnowledge → [Incident Postmortem Summary](lessons/failures/incident-postmortem-summary.md) | [Postmortem Template](lessons/failures/incident-postmortem-template.md) | [Incident Response Process](work/processes/incident-response-process.md)
 > Blameless principle: ask "how did the system allow this?" not "who caused this?"
 `
   },
@@ -512,7 +512,7 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
 - **Manager:** [Name]
 
 ---
-> References: YiKnowledge → [Oncall 流程](work/processes/oncall-rotation-process.md) | [监控治理](work/processes/monitoring-governance-process.md) | [事件响应](work/processes/incident-response-process.md)
+> References: YiKnowledge → [Oncall Process](work/processes/oncall-rotation-process.md) | [Monitoring Governance](work/processes/monitoring-governance-process.md) | [Incident Response](work/processes/incident-response-process.md)
 `
   },
 
@@ -585,7 +585,7 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
 - [DORA metrics, delivery lead time, bug rate, etc.]
 
 ---
-> References: YiKnowledge → [组织效能诊断摘要](work/processes/org-productivity-diagnosis-summary.md) | [诊断模板](work/processes/org-productivity-diagnosis-template.md) | [Team Topologies](work/processes/org-productivity-diagnosis-summary.md)
+> References: YiKnowledge → [Org Productivity Diagnosis Summary](work/processes/org-productivity-diagnosis-summary.md) | [Diagnosis Template](work/processes/org-productivity-diagnosis-template.md) | [Team Topologies](work/processes/org-productivity-diagnosis-summary.md)
 > Yi family teams: YiAi (backend) | YiVad (frontend) | YiPet (extension)
 `
   },
@@ -656,7 +656,7 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
 1. **[Action]** — [Priority / timeline]
 
 ---
-> References: YiKnowledge → [依赖升级流程](work/processes/dependency-upgrade-process.md) | [季度安全审计](work/processes/quarterly-security-audit-process.md)
+> References: YiKnowledge → [Dependency Upgrade Process](work/processes/dependency-upgrade-process.md) | [Quarterly Security Audit](work/processes/quarterly-security-audit-process.md)
 > Yi family: YiVad (npm/Element Plus/Rsbuild) | YiPet (npm/React/Ant Design) | YiAi (pip/FastAPI/Motor/llama_index)
 `
   },
@@ -742,8 +742,8 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
 [Key focus areas for next quarter.]
 
 ---
-> References: YiKnowledge → [路线图审查摘要](work/processes/tech-roadmap-review-summary.md) | [审查模板](work/processes/tech-roadmap-review-template.md)
-> Related: [OKR 设计](methodology/pm-frameworks/okr-design-summary.md) | [Now/Next/Later](product/strategy/now-next-later-roadmap-summary.md)
+> References: YiKnowledge → [Roadmap Review Summary](work/processes/tech-roadmap-review-summary.md) | [Review Template](work/processes/tech-roadmap-review-template.md)
+> Related: [OKR Design](methodology/pm-frameworks/okr-design-summary.md) | [Now/Next/Later](product/strategy/now-next-later-roadmap-summary.md)
 `
   },
 
@@ -813,7 +813,7 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
 1. **[Action]** — [Timeline / cost estimate]
 
 ---
-> References: YiKnowledge → [容量与成本摘要](tech/infra/capacity-and-cost-summary.md) | [容量规划流程](work/processes/capacity-planning-process.md)
+> References: YiKnowledge → [Capacity & Cost Summary](tech/infra/capacity-and-cost-summary.md) | [Capacity Planning Process](work/processes/capacity-planning-process.md)
 > Yi family services: YiAi (Ollama inference, GPU-bound) | MongoDB (memory-bound) | OSS (storage-bound)
 `
   },
@@ -870,7 +870,7 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
 - Cache hit rate: [%] (target: >50%)
 
 ---
-> References: YiKnowledge → [容量与成本摘要](tech/infra/capacity-and-cost-summary.md) | [FinOps 模板](tech/infra/capacity-and-cost-template.md)
+> References: YiKnowledge → [Capacity & Cost Summary](tech/infra/capacity-and-cost-summary.md) | [FinOps Template](tech/infra/capacity-and-cost-template.md)
 > Yi family cost drivers: Ollama GPU inference (~50%) | MongoDB Atlas / self-hosted | OSS storage
 `
   },
@@ -963,7 +963,7 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
 - **Next review:** [YYYY-MM-DD]
 
 ---
-> References: YiKnowledge → [DORA 指标](work/processes/engineering-productivity-metrics-summary.md) | [季度技术债流程](work/processes/quarterly-tech-debt-process.md)
+> References: YiKnowledge → [DORA Metrics](work/processes/engineering-productivity-metrics-summary.md) | [Quarterly Tech Debt Process](work/processes/quarterly-tech-debt-process.md)
 > Maturity levels: L1=Ad-hoc | L2=Managed | L3=Defined | L4=Measured | L5=Optimising
 `
   },
@@ -1042,7 +1042,7 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
 | 2 | | | |
 
 ---
-> References: YiKnowledge → [工程效能指标摘要](work/processes/engineering-productivity-metrics-summary.md) | [指标模板](work/processes/engineering-productivity-metrics-template.md)
+> References: YiKnowledge → [Engineering Productivity Metrics Summary](work/processes/engineering-productivity-metrics-summary.md) | [Metrics Template](work/processes/engineering-productivity-metrics-template.md)
 > Remember: all 4 DORA metrics must be tracked together. High deploy frequency + high failure rate = not real velocity.
 > Yi family: YiVad (SPA, manual deploy) | YiPet (Chrome extension, review-gated release) | YiAi (server, no CI/CD pipeline)
 `

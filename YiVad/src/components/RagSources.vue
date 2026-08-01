@@ -25,7 +25,7 @@ function label(s: RagSource, idx: number): string {
 
 <template>
   <div v-if="props.sources.length" class="rag-sources">
-    <div class="rag-sources__title">来源</div>
+    <div class="rag-sources__title">Sources</div>
     <div class="rag-sources__list">
       <el-tag
         v-for="(s, i) in props.sources"

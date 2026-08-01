@@ -63,5 +63,5 @@ if (query.pageSize > 10) {
   });
 }
 
-$$.mockResponse.setBody({ code: 200, data: data, msg: '成功' });
+$$.mockResponse.setBody({ code: 200, data: data, msg: 'Success' });
 $$.mockResponse.setCode(200);

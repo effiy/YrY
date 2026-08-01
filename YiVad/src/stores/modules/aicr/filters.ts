@@ -81,10 +81,10 @@ export const useAicrFilterStore = defineStore("yivad-aicr-filters", () => {
         counts[t] = (counts[t] || 0) + 1;
         // Heuristic: classify by leading path segment keywords (mirrors YiWeb's tagComputeds).
         const lower = String(t).toLowerCase();
-        if (/skill|技能/.test(lower)) skills.add(t);
-        else if (/template|模板/.test(lower)) templates.add(t);
-        else if (/rule|规则/.test(lower)) rules.add(t);
-        else if (/agent|代理|智能体/.test(lower)) agents.add(t);
+        if (/skill|skills/.test(lower)) skills.add(t);
+        else if (/template|templates/.test(lower)) templates.add(t);
+        else if (/rule|rules/.test(lower)) rules.add(t);
+        else if (/agent|agents/.test(lower)) agents.add(t);
         else stories.add(t);
       }
     }

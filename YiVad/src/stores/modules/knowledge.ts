@@ -10,14 +10,14 @@ import { scanKnowledge, readKnowledgeFile } from "@/api/modules/knowledgeService
 import type { KnowledgeFileEntry, KnowledgeReadResponse } from "@/api/interface/yiweb";
 
 export const KNOWLEDGE_CATEGORIES = [
-  { key: "industry", label: "Industry", desc: "竞争对手、市场趋势、行业报告、使用案例" },
-  { key: "lessons", label: "Lessons", desc: "经验教训：成功、失败、踩坑" },
-  { key: "methodology", label: "Methodology", desc: "AI 专项、PM 框架、思维方法" },
-  { key: "people", label: "People", desc: "团队、干系人、专家" },
-  { key: "product", label: "Product", desc: "产品策略、PRD、UX、指标" },
-  { key: "resources", label: "Resources", desc: "prompts、模板、阅读清单" },
-  { key: "tech", label: "Tech", desc: "AI 基础、AI 平台、数据、基础设施" },
-  { key: "work", label: "Work", desc: "流程、协作、会议、工具" }
+  { key: "industry", label: "Industry", desc: "Competitors, market trends, industry reports, use cases" },
+  { key: "lessons", label: "Lessons", desc: "Lessons learned: successes, failures, pitfalls" },
+  { key: "methodology", label: "Methodology", desc: "AI specializations, PM frameworks, thinking methods" },
+  { key: "people", label: "People", desc: "Team, stakeholders, experts" },
+  { key: "product", label: "Product", desc: "Product strategy, PRD, UX, metrics" },
+  { key: "resources", label: "Resources", desc: "Prompts, templates, reading lists" },
+  { key: "tech", label: "Tech", desc: "AI foundations, AI platforms, data, infrastructure" },
+  { key: "work", label: "Work", desc: "Processes, collaboration, meetings, tools" }
 ] as const;
 
 export type KnowledgeCategoryKey = (typeof KNOWLEDGE_CATEGORIES)[number]["key"];

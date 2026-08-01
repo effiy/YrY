@@ -2,7 +2,7 @@
   <div class="table-box">
     <ProTable
       ref="proTable"
-      title="菜单列表"
+      title="Menu List"
       row-key="path"
       :pagination="false"
       :tree-props="{ children: 'children' }"
@@ -11,105 +11,105 @@
       :columns="columns"
       :data="menuData"
     >
-      <!-- 表格 header 按钮 -->
+      <!-- Table header buttons -->
       <template #tableHeader>
-        <el-button type="primary" :icon="CirclePlus" @click="openAdd">新增菜单</el-button>
+        <el-button type="primary" :icon="CirclePlus" @click="openAdd">Add Menu</el-button>
       </template>
-      <!-- 菜单图标 -->
+      <!-- Menu icon -->
       <template #icon="scope">
         <el-icon :size="18">
           <component :is="scope.row.meta.icon"></component>
         </el-icon>
       </template>
-      <!-- 重定向 -->
+      <!-- Redirect -->
       <template #redirect="scope">
         <span v-if="scope.row.redirect">{{ scope.row.redirect }}</span>
         <span v-else style="color: #c0c4cc">-</span>
       </template>
-      <!-- 排序 -->
+      <!-- Order -->
       <template #order="scope">
         <el-tag size="small" type="info">{{ scope.row.order }}</el-tag>
       </template>
-      <!-- 父级菜单 -->
+      <!-- Parent Menu -->
       <template #parent="scope">
         <span v-if="scope.row.parent">{{ scope.row.parent }}</span>
-        <el-tag v-else size="small" type="">顶级</el-tag>
+        <el-tag v-else size="small" type="">Top Level</el-tag>
       </template>
-      <!-- 隐藏状态 -->
+      <!-- Visibility -->
       <template #isHide="scope">
-        <el-tag v-if="scope.row.meta?.isHide" size="small" type="danger">隐藏</el-tag>
-        <el-tag v-else size="small" type="success">可见</el-tag>
+        <el-tag v-if="scope.row.meta?.isHide" size="small" type="danger">Hidden</el-tag>
+        <el-tag v-else size="small" type="success">Visible</el-tag>
       </template>
-      <!-- 菜单操作 -->
+      <!-- Operations -->
       <template #operation="scope">
-        <el-button type="primary" link :icon="EditPen" @click="openEdit(scope.row)">编辑</el-button>
-        <el-button type="primary" link :icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
+        <el-button type="primary" link :icon="EditPen" @click="openEdit(scope.row)">Edit</el-button>
+        <el-button type="primary" link :icon="Delete" @click="handleDelete(scope.row)">Delete</el-button>
       </template>
     </ProTable>
 
-    <!-- 编辑 / 新增菜单对话框 -->
+    <!-- Edit / Add Menu dialog -->
     <el-dialog
       v-model="dialogVisible"
-      :title="isAdd ? '新增菜单' : '编辑菜单'"
+      :title="isAdd ? 'Add Menu' : 'Edit Menu'"
       width="600px"
       :close-on-click-modal="false"
       append-to-body
       destroy-on-close
     >
       <el-form ref="formRef" :model="form" :rules="rules" label-width="110px" label-suffix=":">
-        <el-form-item label="菜单名称" prop="title">
-          <el-input v-model="form.title" placeholder="菜单显示名称" clearable />
+        <el-form-item label="Menu Name" prop="title">
+          <el-input v-model="form.title" placeholder="Menu display name" clearable />
         </el-form-item>
-        <el-form-item label="父级菜单">
+        <el-form-item label="Parent Menu">
           <el-tree-select
             v-model="form.parent"
             :data="parentMenuOptions"
             :props="{ label: 'title', value: 'path', children: 'children' }"
-            placeholder="留空为顶级菜单"
+            placeholder="Leave empty for top-level menu"
             clearable
             check-strictly
             filterable
             style="width: 100%"
           />
         </el-form-item>
-        <el-form-item label="路由路径" prop="path">
+        <el-form-item label="Route Path" prop="path">
           <el-input v-model="form.path" placeholder="/example/path" clearable />
         </el-form-item>
-        <el-form-item label="路由 name" prop="name">
+        <el-form-item label="Route Name" prop="name">
           <el-input v-model="form.name" placeholder="routeName" clearable />
         </el-form-item>
-        <el-form-item label="组件路径" prop="component">
+        <el-form-item label="Component Path" prop="component">
           <el-input v-model="form.component" placeholder="/example/index" clearable />
         </el-form-item>
-        <el-form-item label="重定向">
+        <el-form-item label="Redirect">
           <el-input v-model="form.redirect" placeholder="redirect path" clearable />
         </el-form-item>
-        <el-form-item label="图标">
+        <el-form-item label="Icon">
           <el-input v-model="form.icon" placeholder="HomeFilled" clearable />
         </el-form-item>
-        <el-form-item label="外部链接">
+        <el-form-item label="External Link">
           <el-input v-model="form.isLink" placeholder="https://..." clearable />
         </el-form-item>
-        <el-form-item label="排序">
+        <el-form-item label="Order">
           <el-input-number v-model="form.order" :min="0" />
         </el-form-item>
         <el-divider />
-        <el-form-item label="隐藏菜单">
+        <el-form-item label="Hidden Menu">
           <el-switch v-model="form.isHide" />
         </el-form-item>
-        <el-form-item label="全屏页面">
+        <el-form-item label="Full Screen">
           <el-switch v-model="form.isFull" />
         </el-form-item>
-        <el-form-item label="固定标签页">
+        <el-form-item label="Fixed Tab">
           <el-switch v-model="form.isAffix" />
         </el-form-item>
-        <el-form-item label="页面缓存">
+        <el-form-item label="Page Cache">
           <el-switch v-model="form.isKeepAlive" />
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="saving" @click="handleSave">保存</el-button>
+        <el-button @click="dialogVisible = false">Cancel</el-button>
+        <el-button type="primary" :loading="saving" @click="handleSave">Save</el-button>
       </template>
     </el-dialog>
   </div>
@@ -186,9 +186,9 @@ const defaultForm = (): MenuForm => ({
 const form = reactive<MenuForm>(defaultForm());
 
 const rules: FormRules = {
-  title: [{ required: true, message: "请输入菜单名称", trigger: "blur" }],
-  path: [{ required: true, message: "请输入路由路径", trigger: "blur" }],
-  name: [{ required: true, message: "请输入路由 name", trigger: "blur" }]
+  title: [{ required: true, message: "Please enter menu name", trigger: "blur" }],
+  path: [{ required: true, message: "Please enter route path", trigger: "blur" }],
+  name: [{ required: true, message: "Please enter route name", trigger: "blur" }]
 };
 
 function populateForm(row: any) {
@@ -252,16 +252,16 @@ async function handleSave() {
     };
     if (isAdd.value) {
       await createMenu(params);
-      ElMessage.success("菜单已创建");
+      ElMessage.success("Menu created");
     } else {
       await updateMenu(key, params);
-      ElMessage.success("菜单已更新");
+      ElMessage.success("Menu updated");
     }
     dialogVisible.value = false;
     // Refresh the auth store so the sidebar picks up changes
     await authStore.getAuthMenuList();
   } catch (e: any) {
-    ElMessage.error(e?.message || "保存失败");
+    ElMessage.error(e?.message || "Failed to save");
   } finally {
     saving.value = false;
   }
@@ -271,33 +271,33 @@ async function handleSave() {
 async function handleDelete(row: any) {
   try {
     await ElMessageBox.confirm(
-      `确定删除菜单「${row.meta?.title ?? row.name}」吗？删除后需刷新页面生效。`,
-      "删除确认",
-      { confirmButtonText: "确定", cancelButtonText: "取消", type: "warning" }
+      `Are you sure you want to delete menu "${row.meta?.title ?? row.name}"? Changes take effect after page refresh.`,
+      "Confirm Delete",
+      { confirmButtonText: "Confirm", cancelButtonText: "Cancel", type: "warning" }
     );
   } catch {
     return;
   }
   try {
     await deleteMenu(row.key);
-    ElMessage.success("菜单已删除");
+    ElMessage.success("Menu deleted");
     await authStore.getAuthMenuList();
   } catch (e: any) {
-    ElMessage.error(e?.message || "删除失败");
+    ElMessage.error(e?.message || "Failed to delete");
   }
 }
 
-// 表格配置项
+// Table column configuration
 const columns: ColumnProps[] = [
-  { prop: "meta.title", label: "菜单名称", align: "left", width: 180, search: { el: "input" } },
-  { prop: "meta.icon", label: "图标", width: 80 },
-  { prop: "name", label: "路由 name", width: 150, search: { el: "input" } },
-  { prop: "path", label: "路由路径", width: 220, search: { el: "input" } },
-  { prop: "component", label: "组件路径", width: 220 },
-  { prop: "redirect", label: "重定向", width: 180 },
-  { prop: "order", label: "排序", width: 70 },
-  { prop: "parent", label: "父级菜单", width: 180 },
-  { prop: "meta.isHide", label: "可见性", width: 80 },
-  { prop: "operation", label: "操作", width: 180, fixed: "right" }
+  { prop: "meta.title", label: "Menu Name", align: "left", width: 180, search: { el: "input" } },
+  { prop: "meta.icon", label: "Icon", width: 80 },
+  { prop: "name", label: "Route Name", width: 150, search: { el: "input" } },
+  { prop: "path", label: "Route Path", width: 220, search: { el: "input" } },
+  { prop: "component", label: "Component Path", width: 220 },
+  { prop: "redirect", label: "Redirect", width: 180 },
+  { prop: "order", label: "Order", width: 70 },
+  { prop: "parent", label: "Parent Menu", width: 180 },
+  { prop: "meta.isHide", label: "Visibility", width: 80 },
+  { prop: "operation", label: "Operations", width: 180, fixed: "right" }
 ];
 </script>
