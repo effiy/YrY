@@ -33,9 +33,15 @@
       </template>
 
       <template #operation="scope">
-        <el-button type="primary" link :icon="View" @click="toDetail(scope.row.key)">View</el-button>
-        <el-button type="primary" link :icon="EditPen" @click="toDetail(scope.row.key)">Edit</el-button>
-        <el-button type="primary" link :icon="Delete" @click="handleDelete(scope.row)">Delete</el-button>
+        <el-tooltip content="View" placement="top">
+          <el-button type="primary" link :icon="View" @click="toDetail(scope.row.key)" />
+        </el-tooltip>
+        <el-tooltip content="Edit" placement="top">
+          <el-button type="primary" link :icon="EditPen" @click="toDetail(scope.row.key)" />
+        </el-tooltip>
+        <el-tooltip content="Delete" placement="top">
+          <el-button type="primary" link :icon="Delete" @click="handleDelete(scope.row)" />
+        </el-tooltip>
       </template>
     </ProTable>
   </div>

@@ -208,27 +208,27 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
   // ── BRD Documents (core registry) ──────────────────────────────────────
   "brd-documents": {
     metaColumns: [
-      { key: "document_id", label: "BRD ID", width: 120 },
-      { key: "title", label: "Document Title", minWidth: 180 },
-      { key: "version", label: "Version", width: 80 },
-      { key: "business_owner", label: "Business Owner", width: 130 },
-      { key: "department", label: "Department", width: 130, enum: DEPARTMENT_OPTIONS },
+      { key: "document_id", label: "BRD ID", width: 90 },
+      { key: "title", label: "Document Title", minWidth: 160 },
+      { key: "version", label: "Version", width: 100 },
+      { key: "business_owner", label: "Business Owner", width: 160 },
+      { key: "department", label: "Department", width: 140, enum: DEPARTMENT_OPTIONS },
       {
         key: "priority",
         label: "Priority",
-        width: 90,
+        width: 120,
         enum: PRIORITY_OPTIONS,
         tagTypeFn: priorityTag
       },
       {
         key: "status",
         label: "Status",
-        width: 130,
+        width: 110,
         enum: STATUS_OPTIONS,
         tagTypeFn: statusTag
       },
-      { key: "country", label: "Country / Region", width: 110, enum: COUNTRY_OPTIONS },
-      { key: "expected_golive", label: "Target Go-Live", width: 120 }
+      { key: "country", label: "Country / Region", width: 200, enum: COUNTRY_OPTIONS },
+      { key: "expected_golive", label: "Target Go-Live", width: 160 }
     ],
     metaFields: [
       { key: "document_id", label: "BRD Identifier", type: "input", placeholder: "e.g. BRD-2026-001", required: true, colSpan: 8 },
@@ -314,21 +314,21 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
   // ── Business Objectives ─────────────────────────────────────────────────
   "brd-objectives": {
     metaColumns: [
-      { key: "brd_ref", label: "BRD Ref", width: 130 },
+      { key: "brd_ref", label: "BRD Ref", width: 100 },
       { key: "objective_id", label: "Obj ID", width: 90 },
-      { key: "objective_summary", label: "Objective", minWidth: 220 },
+      { key: "objective_summary", label: "Objective", minWidth: 120 },
       {
         key: "type",
         label: "Type",
-        width: 110,
+        width: 90,
         enum: OBJECTIVE_TYPE_OPTIONS
       },
-      { key: "kpi", label: "KPI / Measure", minWidth: 160 },
-      { key: "target_value", label: "Target", width: 120 },
+      { key: "kpi", label: "KPI / Measure", minWidth: 150 },
+      { key: "target_value", label: "Target", width: 90 },
       {
         key: "priority",
         label: "Priority",
-        width: 90,
+        width: 120,
         enum: PRIORITY_OPTIONS,
         tagTypeFn: priorityTag
       }
@@ -378,22 +378,22 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
   // ── Stakeholders / Core Users ───────────────────────────────────────────
   "brd-stakeholders": {
     metaColumns: [
-      { key: "brd_ref", label: "BRD Ref", width: 130 },
-      { key: "role_title", label: "Role / Persona", minWidth: 170 },
-      { key: "department", label: "Department", width: 130, enum: DEPARTMENT_OPTIONS },
+      { key: "brd_ref", label: "BRD Ref", width: 100 },
+      { key: "role_title", label: "Role / Persona", minWidth: 160 },
+      { key: "department", label: "Department", width: 140, enum: DEPARTMENT_OPTIONS },
       {
         key: "influence",
         label: "Influence Level",
-        width: 130,
+        width: 200,
         enum: INFLUENCE_OPTIONS
       },
       {
         key: "frequency",
         label: "Usage Frequency",
-        width: 120,
+        width: 200,
         enum: FREQUENCY_OPTIONS
       },
-      { key: "country", label: "Country", width: 100, enum: COUNTRY_OPTIONS }
+      { key: "country", label: "Country", width: 120, enum: COUNTRY_OPTIONS }
     ],
     metaFields: [
       { key: "brd_ref", label: "BRD Reference", type: "input", placeholder: "e.g. BRD-2026-001", required: true, colSpan: 8 },
@@ -439,23 +439,23 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
   // ── Business Rules ──────────────────────────────────────────────────────
   "brd-rules": {
     metaColumns: [
-      { key: "brd_ref", label: "BRD Ref", width: 130 },
+      { key: "brd_ref", label: "BRD Ref", width: 100 },
       { key: "rule_id", label: "Rule ID", width: 100 },
-      { key: "rule_name", label: "Rule Name", minWidth: 170 },
+      { key: "rule_name", label: "Rule Name", minWidth: 120 },
       {
         key: "priority",
         label: "Priority",
-        width: 90,
+        width: 120,
         enum: RULE_PRIORITY_OPTIONS,
         tagTypeFn: rulePriorityTag
       },
       {
         key: "category",
         label: "Category",
-        width: 150,
+        width: 120,
         enum: RULE_CATEGORY_OPTIONS
       },
-      { key: "source", label: "Source", width: 130 }
+      { key: "source", label: "Source", width: 90 }
     ],
     metaFields: [
       { key: "brd_ref", label: "BRD Reference", type: "input", placeholder: "e.g. BRD-2026-001", required: true, colSpan: 8 },
@@ -489,13 +489,13 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
   // ── Acceptance Criteria ─────────────────────────────────────────────────
   "brd-acceptance": {
     metaColumns: [
-      { key: "brd_ref", label: "BRD Ref", width: 130 },
-      { key: "ac_id", label: "AC ID", width: 90 },
-      { key: "criteria_summary", label: "Acceptance Criteria", minWidth: 220 },
+      { key: "brd_ref", label: "BRD Ref", width: 100 },
+      { key: "ac_id", label: "AC ID", width: 80 },
+      { key: "criteria_summary", label: "Acceptance Criteria", minWidth: 210 },
       {
         key: "priority",
         label: "Priority",
-        width: 90,
+        width: 120,
         enum: [
           { label: "Must", value: "must" },
           { label: "Should", value: "should" }
@@ -505,10 +505,10 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
       {
         key: "type",
         label: "Type",
-        width: 110,
+        width: 90,
         enum: AC_TYPE_OPTIONS
       },
-      { key: "related_rule", label: "Related Rule", width: 120 }
+      { key: "related_rule", label: "Related Rule", width: 140 }
     ],
     metaFields: [
       { key: "brd_ref", label: "BRD Reference", type: "input", placeholder: "e.g. BRD-2026-001", required: true, colSpan: 8 },
@@ -542,15 +542,15 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
   // ── Milestones ──────────────────────────────────────────────────────────
   "brd-milestones": {
     metaColumns: [
-      { key: "brd_ref", label: "BRD Ref", width: 130 },
-      { key: "milestone_name", label: "Milestone", minWidth: 170 },
+      { key: "brd_ref", label: "BRD Ref", width: 100 },
+      { key: "milestone_name", label: "Milestone", minWidth: 120 },
       {
         key: "phase",
         label: "Phase",
-        width: 140,
+        width: 100,
         enum: MILESTONE_PHASE_OPTIONS
       },
-      { key: "expected_date", label: "Target Date", width: 120 },
+      { key: "expected_date", label: "Target Date", width: 130 },
       {
         key: "status",
         label: "Status",
@@ -558,7 +558,7 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
         enum: MILESTONE_STATUS_OPTIONS,
         tagTypeFn: statusTag
       },
-      { key: "owner", label: "Owner", width: 120 }
+      { key: "owner", label: "Owner", width: 80 }
     ],
     metaFields: [
       { key: "brd_ref", label: "BRD Reference", type: "input", placeholder: "e.g. BRD-2026-001", required: true, colSpan: 8 },
@@ -592,19 +592,19 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
   // ── Approval Records ────────────────────────────────────────────────────
   "brd-approvals": {
     metaColumns: [
-      { key: "brd_ref", label: "BRD Ref", width: 130 },
+      { key: "brd_ref", label: "BRD Ref", width: 100 },
       {
         key: "role",
         label: "Approval Role",
         width: 170,
         enum: APPROVAL_ROLE_OPTIONS
       },
-      { key: "approver_name", label: "Approver", width: 120 },
-      { key: "review_date", label: "Review Date", width: 120 },
+      { key: "approver_name", label: "Approver", width: 110 },
+      { key: "review_date", label: "Review Date", width: 130 },
       {
         key: "result",
         label: "Result",
-        width: 130,
+        width: 110,
         enum: APPROVAL_RESULT_OPTIONS,
         tagTypeFn: resultTag
       }
