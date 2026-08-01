@@ -132,12 +132,9 @@ def build_kb_index() -> Any:
     for d in docs:
         rel = _to_rel_file_path(d)
         if rel:
-            # Stable doc id keyed on file_path so incremental delete_ref_doc
-            # works on file change/remove — otherwise llama_index assigns a
-            # random UUID per build and we'd never be able to remove a doc.
             d.id_ = rel
 
-    storage_context = StorageContext.from_defaults(persist_dir=persist)
+    storage_context = StorageContext.from_defaults()
     index = VectorStoreIndex.from_documents(
         docs,
         storage_context=storage_context,
@@ -290,11 +287,34 @@ def rag_status() -> Dict[str, Any]:
     built = _kb_index is not None or (
         os.path.isdir(persist) and any(os.scandir(persist))
     )
+    persist_dir_size = 0
+    if built and os.path.isdir(persist):
+        try:
+            import subprocess
+            result = subprocess.run(["du", "-sk", persist], capture_output=True, text=True, timeout=5)
+            persist_dir_size = int(result.stdout.split()[0]) * 1024 if result.returncode == 0 else 0
+        except Exception:
+            pass
+
     return {
         "built": built,
         "num_docs": _kb_doc_count if _kb_index is not None else _count_ref_docs(persist),
         "last_built_at": _kb_index_built_at,
         "persist_dir": persist,
+        "persist_dir_size": persist_dir_size,
+        # Config mirror for the frontend dashboard
+        "config": {
+            "embed_model": settings.rag_embed_model,
+            "llm_model": settings.rag_llm_model,
+            "chunk_size": settings.rag_chunk_size,
+            "chunk_overlap": settings.rag_chunk_overlap,
+            "top_k": settings.rag_top_k,
+            "hybrid_retrieval": settings.rag_hybrid_retrieval_enabled,
+            "rerank_enabled": settings.rag_rerank_enabled,
+            "inline_citations": settings.rag_inline_citations_enabled,
+            "auto_rebuild": settings.rag_auto_rebuild_enabled,
+            "knowledge_base_dir": settings.knowledge_base_dir,
+        },
     }
 
 
@@ -317,3 +337,79 @@ def build_file_index(abs_path: str) -> Any:
     for d in docs:
         _extract_frontmatter(d)
     return VectorStoreIndex.from_documents(docs, show_progress=False)
+
+
+def rag_categories() -> Dict[str, Any]:
+    """Return available categories and tag counts from the knowledge base.
+
+    Scans the knowledge base dir for top-level folders (categories)
+    and collects distinct YAML frontmatter tags from all .md files.
+    Cached for 60s to avoid repeated filesystem scans.
+    """
+    import os as _os
+    import re as _re
+    import time as _time
+
+    global _last_categories_scan, _cached_categories
+
+    now = _time.time()
+    if _last_categories_scan is not None and now - _last_categories_scan < 60:
+        return _cached_categories or {"categories": [], "tags": {}, "total_files": 0}
+
+    base = _os.path.realpath(_os.path.abspath(settings.knowledge_base_dir))
+    cats: list = []
+    tag_counts: dict = {}
+    total_files = 0
+
+    if _os.path.isdir(base):
+        for entry in sorted(_os.listdir(base)):
+            full = _os.path.join(base, entry)
+            if _os.path.isdir(full) and not entry.startswith("."):
+                file_count = sum(
+                    1 for _root, _dirs, files in _os.walk(full)
+                    for f in files if f.endswith(".md") and not f.startswith(".")
+                )
+                cats.append({"name": entry, "file_count": file_count})
+
+        # Sample tags from .md files (read up to 50 files per category for perf)
+        frontmatter_re = _re.compile(r"^---\s*\n(.*?)\n---", _re.DOTALL)
+        for cat in cats[:8]:  # Limit to first 8 categories
+            cat_dir = _os.path.join(base, cat["name"])
+            sampled = 0
+            for root, _dirs, files in _os.walk(cat_dir):
+                for f in files:
+                    if not f.endswith(".md") or sampled >= 50:
+                        break
+                    try:
+                        with open(_os.path.join(root, f), "r") as fh:
+                            content = fh.read(4096)
+                        m = frontmatter_re.match(content)
+                        if m:
+                            import yaml as _yaml
+                            fm = _yaml.safe_load(m.group(1)) or {}
+                            tags = fm.get("tags") or []
+                            if isinstance(tags, str):
+                                tags = [t.strip() for t in tags.split(",")]
+                            for t in tags:
+                                t = str(t).strip().lower()
+                                if t:
+                                    tag_counts[t] = tag_counts.get(t, 0) + 1
+                    except Exception:
+                        pass
+                    sampled += 1
+
+        total_files = sum(c["file_count"] for c in cats)
+
+    result = {
+        "categories": cats,
+        "tags": dict(sorted(tag_counts.items(), key=lambda x: -x[1])[:50]),
+        "total_files": total_files,
+    }
+    _cached_categories = result
+    _last_categories_scan = now
+    return result
+
+
+# Category cache globals
+_last_categories_scan: float | None = None
+_cached_categories: Dict[str, Any] | None = None

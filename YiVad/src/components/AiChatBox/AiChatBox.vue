@@ -1,5 +1,6 @@
 <script setup lang="ts" name="AiChatBox">
 import { computed, onBeforeUnmount, onMounted, provide, ref, watch } from "vue";
+import { useRouter } from "vue-router";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { useAicrKnowledgeStore } from "@/stores/modules/aicr/knowledge";
 import { readKnowledgeFile } from "@/api/modules/knowledgeService";
@@ -7,6 +8,7 @@ import { useResizable } from "@/hooks/useResizable";
 import MessageList from "@/views/aiChat/components/MessageList.vue";
 import ChatInput from "@/views/aiChat/components/ChatInput.vue";
 import ConversationSessionSidebar from "@/views/aiChat/components/ConversationSessionSidebar.vue";
+import LlamaIndexPanel from "@/views/aiChat/components/LlamaIndexPanel.vue";
 
 const props = withDefaults(
   defineProps<{
@@ -85,6 +87,26 @@ function toggleCollapse() {
   saveCollapsed();
 }
 loadCollapsed();
+
+const router = useRouter();
+
+function onOpenKnowledgeFile(filePath: string) {
+  if (!filePath) return;
+  router.push({ path: "/knowledge/detail", query: { path: filePath } });
+}
+
+// ── RAG panel context: extract ctx:-prefixed tags from the active conversation ──
+
+const CTX_PREFIX = "ctx:";
+
+const ragScopeFiles = computed(() => {
+  const tags = store.activeConversation?.tags ?? [];
+  return tags
+    .filter(t => typeof t === "string" && t.startsWith(CTX_PREFIX))
+    .map(t => (t as string).slice(CTX_PREFIX.length));
+});
+
+const ragScopeTitle = computed(() => store.activeConversation?.title || "");
 
 provide("aiChatBoxCollapse", {
   collapsible: props.collapsible,
@@ -272,6 +294,13 @@ async function onDrop(e: DragEvent) {
             </div>
             <MessageList />
             <ChatInput />
+            <LlamaIndexPanel
+              v-if="store.llamaIndexVisible"
+              :scope-files="ragScopeFiles"
+              :scope-title="ragScopeTitle"
+              @close="store.closeLlamaIndex()"
+              @open-file="onOpenKnowledgeFile"
+            />
             <!-- Drop overlay -->
             <div v-if="isDragOver" class="ai-chat-box__drop-overlay">
               <div class="ai-chat-box__drop-hint">
@@ -290,6 +319,13 @@ async function onDrop(e: DragEvent) {
         </div>
         <MessageList />
         <ChatInput />
+        <LlamaIndexPanel
+          v-if="store.llamaIndexVisible"
+          :scope-files="ragScopeFiles"
+          :scope-title="ragScopeTitle"
+          @close="store.closeLlamaIndex()"
+          @open-file="onOpenKnowledgeFile"
+        />
       </template>
     </template>
   </div>

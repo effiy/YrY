@@ -58,24 +58,23 @@ def _build_retriever(index: Any, top_k: int, scope: Optional[str], hybrid: bool)
 
     Hybrid uses ``QueryFusionRetriever`` with reciprocal rank fusion so
     queries with strong keywords (where BM25 excels) AND conceptual queries
-    (where vector embedding excels) both surface the right docs. When hybrid
-    is off, falls back to plain vector retrieval.
+    (where vector embedding excels) both surface the right docs.
+
+    When a scope filter is active, hybrid is disabled because BM25Retriever
+    does not support metadata filters — falling back to pure vector retrieval
+    ensures only documents matching the scope are returned.
     """
     filters = _scope_filters(scope)
-    if not hybrid:
+    # BM25 doesn't support metadata filters — fall back to vector-only when scoped
+    if not hybrid or filters is not None:
         kwargs: Dict[str, Any] = {"similarity_top_k": top_k}
         if filters is not None:
             kwargs["filters"] = filters
         return index.as_retriever(**kwargs)
-    from llama_index.core.retrievers import BM25Retriever, QueryFusionRetriever
-    bm25_kwargs: Dict[str, Any] = {"similarity_top_k": top_k}
-    if filters is not None:
-        bm25_kwargs["filters"] = filters
-    bm25 = BM25Retriever.from_defaults(index=index, **bm25_kwargs)
-    vector_kwargs: Dict[str, Any] = {"similarity_top_k": top_k}
-    if filters is not None:
-        vector_kwargs["filters"] = filters
-    vector = index.as_retriever(**vector_kwargs)
+    from llama_index.core.retrievers import QueryFusionRetriever
+    from llama_index.retrievers.bm25 import BM25Retriever
+    bm25 = BM25Retriever.from_defaults(index=index, similarity_top_k=top_k)
+    vector = index.as_retriever(similarity_top_k=top_k)
     return QueryFusionRetriever(
         retrievers=[vector, bm25],
         similarity_top_k=top_k,

@@ -69,11 +69,26 @@ export interface RagFileChatPayload {
 
 // ─── Index management ─────────────────────────────────────────────────
 
+export interface RagIndexConfig {
+  embed_model: string;
+  llm_model: string;
+  chunk_size: number;
+  chunk_overlap: number;
+  top_k: number;
+  hybrid_retrieval: boolean;
+  rerank_enabled: boolean;
+  inline_citations: boolean;
+  auto_rebuild: boolean;
+  knowledge_base_dir: string;
+}
+
 export interface RagStatusResponse {
   built: boolean;
   num_docs: number;
   last_built_at?: string;
   persist_dir?: string;
+  persist_dir_size?: number;
+  config?: RagIndexConfig;
   error?: string;
 }
 

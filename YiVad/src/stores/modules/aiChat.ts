@@ -20,20 +20,8 @@ import type { AiChatFeedbackRating, AiChatStreamingType } from "@/views/aiChat/t
 import { DEFAULT_MODEL } from "@/views/aiChat/constants";
 
 const STORAGE_ACTIVE_KEY = "aiChat.activeKey";
-const STORAGE_CONTEXT_SWITCH_KEY = "aiChat.contextSwitchEnabled";
 const MAX_DRAFT_IMAGES = 4;
 const SCROLL_THROTTLE_MS = 120;
-
-function readContextSwitchEnabled(): boolean {
-  try {
-    const v = localStorage.getItem(STORAGE_CONTEXT_SWITCH_KEY);
-    if (v === "1" || v === "true") return true;
-    if (v === "0" || v === "false") return false;
-  } catch {
-    /* ignore */
-  }
-  return true;
-}
 
 function newKey(): string {
   return `aichat_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -85,14 +73,25 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   const contextEditorVisible = ref(false);
   const contextEditorDraft = ref("");
   const tagManagerVisible = ref(false);
-  const contextSwitchEnabled = ref(readContextSwitchEnabled());
-  const ragEnabled = ref(false);
+  // RAG is auto-enabled when the active conversation has ctx:-tagged context files.
+  // No manual toggle — the "Knowledge" button is removed; RAG is implicit when
+  // context files exist and the chat stream picks the right backend automatically.
+  const ragActive = computed(() => {
+    const tags = activeConversation.value?.tags ?? [];
+    return tags.some(t => typeof t === "string" && t.startsWith("ctx:"));
+  });
+
+  // Backward-compat aliases
+  const knowledgeMode = computed(() => ragActive.value);
+  const contextSwitchEnabled = computed(() => ragActive.value);
+  const ragEnabled = computed(() => ragActive.value);
   // Transient per-message system prompt — set by callers (e.g. story's
   // file-preview chat passes the file content as context) and consumed by
   // runStream on the next send. Not persisted: file content changes between
   // previews, so storing it on the session would go stale.
   const systemPrompt = ref("");
   const weChatVisible = ref(false);
+  const llamaIndexVisible = ref(false);
   const batchMode = ref(false);
   const selectedKeys = ref<Set<string>>(new Set());
 
@@ -414,6 +413,18 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     weChatVisible.value = false;
   }
 
+  function openLlamaIndex() {
+    llamaIndexVisible.value = true;
+  }
+
+  function closeLlamaIndex() {
+    llamaIndexVisible.value = false;
+  }
+
+  function toggleLlamaIndex() {
+    llamaIndexVisible.value = !llamaIndexVisible.value;
+  }
+
   async function addTag(name: string) {
     const trimmed = name.trim();
     const s = activeConversation.value;
@@ -431,14 +442,8 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     await updateSessionMeta(s.key, { tags: next });
   }
 
-  function setContextSwitchEnabled(v: boolean) {
-    contextSwitchEnabled.value = !!v;
-    try {
-      localStorage.setItem(STORAGE_CONTEXT_SWITCH_KEY, v ? "1" : "0");
-    } catch {
-      /* ignore */
-    }
-  }
+  // RAG is auto — no user toggle. setContextSwitchEnabled kept for backward compat as no-op.
+  function setContextSwitchEnabled(_v: boolean) { /* no-op: RAG auto-detected from conversation ctx: files */ }
 
   function setSystemPrompt(text: string) {
     systemPrompt.value = (text || "").trim();
@@ -534,7 +539,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
       .filter(m => m.type === "user" || (m.type === "pet" && !!m.message))
       .map(m => ({ type: m.type, message: m.message, timestamp: m.timestamp }));
 
-    const contextText = contextSwitchEnabled.value ? (session.pageContent || "").trim() : "";
+    const contextText = ragActive.value ? (session.pageContent || "").trim() : "";
     if (contextText) {
       aiMessages.unshift({
         type: "user",
@@ -608,13 +613,31 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     };
 
     let abort: () => void;
-    if (ragEnabled.value) {
-      // RAG mode — route to YiAi's llama_index stream with no scope (full KB).
+    if (ragActive.value) {
+      // RAG mode — scope to the conversation's ctx:-tagged files.
+      const ctxPaths = (session.tags ?? [])
+        .filter(t => typeof t === "string" && t.startsWith("ctx:"))
+        .map(t => (t as string).slice(4));
+      let scope: string | undefined;
+      if (ctxPaths.length === 1) {
+        scope = ctxPaths[0];
+      } else if (ctxPaths.length > 1) {
+        // Find common directory prefix across all ctx paths
+        const parts = ctxPaths.map(p => p.split("/"));
+        const minLen = Math.min(...parts.map(p => p.length));
+        const common: string[] = [];
+        for (let i = 0; i < minLen; i++) {
+          if (parts.every(p => p[i] === parts[0][i])) common.push(parts[0][i]);
+          else break;
+        }
+        scope = common.join("/") || undefined;
+      }
+
       const ragMessages = aiMessages
         .filter(m => (m.message ?? "").trim().length > 0)
         .map(m => ({ role: m.type === "user" ? ("user" as const) : ("assistant" as const), content: m.message }));
       const handlers: RagStreamHandlers = { onChunk, onSources, onDone, onError };
-      abort = streamRagChat({ messages: ragMessages }, handlers).abort;
+      abort = streamRagChat({ messages: ragMessages, scope }, handlers).abort;
     } else {
       const result = streamChat(
         {
@@ -894,6 +917,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     contextEditorVisible,
     contextEditorDraft,
     tagManagerVisible,
+    knowledgeMode,
     contextSwitchEnabled,
     ragEnabled,
     weChatVisible,
@@ -926,6 +950,10 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     closeTagManager,
     openWeChat,
     closeWeChat,
+    llamaIndexVisible,
+    openLlamaIndex,
+    closeLlamaIndex,
+    toggleLlamaIndex,
     addTag,
     removeTag,
     setContextSwitchEnabled,

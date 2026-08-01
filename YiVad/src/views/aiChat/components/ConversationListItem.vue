@@ -1,6 +1,6 @@
 <script setup lang="ts" name="aiChatConversationListItem">
 import { computed } from "vue";
-import { Edit, Delete, Star, StarFilled, Document } from "@element-plus/icons-vue";
+import { Edit, Delete, Star, StarFilled, Document, DataAnalysis } from "@element-plus/icons-vue";
 import type { SessionDocument } from "@/api/interface/yiweb";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 
@@ -17,6 +17,7 @@ const emit = defineEmits<{
   (e: "delete", key: string, title: string): void;
   (e: "toggle-favorite", key: string): void;
   (e: "edit-context", key: string): void;
+  (e: "open-rag", key: string): void;
 }>();
 
 const store = useAiChatStore();
@@ -88,11 +89,24 @@ const metaText = computed(() => {
         </el-button>
         <el-button
           text
-          :icon="Document"
           size="small"
-          title="Edit context"
+          :title="`Edit context (${ctxCount} files)`"
           @click="emit('edit-context', conversation.key)"
-        />
+        >
+          <el-icon><Document /></el-icon>
+          <span v-if="ctxCount > 0" class="cs-ctx-count">{{ ctxCount }}</span>
+        </el-button>
+        <el-button
+          v-if="ctxCount > 0"
+          text
+          size="small"
+          :icon="DataAnalysis"
+          :type="store.ragActive && active ? 'primary' : ''"
+          :title="`RAG search ${ctxCount} context file(s)`"
+          @click="emit('open-rag', conversation.key)"
+        >
+          <span class="cs-rag-count">{{ ctxCount }}</span>
+        </el-button>
         <el-button
           text
           :icon="Edit"
@@ -181,5 +195,12 @@ const metaText = computed(() => {
 }
 .cs-item-actions .is-fav {
   color: var(--el-color-warning);
+}
+.cs-rag-count,
+.cs-ctx-count {
+  margin-left: 2px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--el-color-primary);
 }
 </style>

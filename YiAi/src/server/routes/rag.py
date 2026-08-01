@@ -10,6 +10,7 @@ Four flat POST routes mirroring ``knowledge.py``'s style:
 """
 import json
 import logging
+import asyncio
 from typing import Any, AsyncIterator
 
 from fastapi import APIRouter
@@ -21,6 +22,7 @@ from domain.rag import (
     rag_file_query,
     rag_file_chat_stream,
     rag_status,
+    rag_categories,
     rebuild_index_async,
     resolve_safe,
 )
@@ -60,13 +62,23 @@ async def _stream_async(gen: AsyncIterator[Any]):
 
 @router.post("/rag-query", operation_id="rag_query")
 async def rag_query_route(request: RagQueryRequest):
-    sources = rag_query(request.question, top_k=request.top_k, scope=request.scope)
-    return success(data={"sources": sources})
+    try:
+        sources = await asyncio.to_thread(rag_query, request.question, top_k=request.top_k, scope=request.scope)
+        return success(data={"sources": sources})
+    except Exception as e:
+        logger.exception(f"RAG query failed: {e}")
+        return success(data={"sources": [], "error": str(e)})
 
 
 @router.post("/rag-status", operation_id="rag_status")
 async def rag_status_route():
     return success(data=rag_status())
+
+
+@router.post("/rag-categories", operation_id="rag_categories")
+async def rag_categories_route():
+    data = await asyncio.to_thread(rag_categories)
+    return success(data=data)
 
 
 @router.post("/rag-build", operation_id="rag_build")

@@ -12,6 +12,7 @@ from domain.rag.indexer import (
     refresh_index_for_changes,
     refresh_index_async,
     rag_status,
+    rag_categories,
     build_file_index,
 )
 from domain.rag.engine import (
@@ -32,6 +33,7 @@ __all__ = [
     "refresh_index_for_changes",
     "refresh_index_async",
     "rag_status",
+    "rag_categories",
     "build_file_index",
     "rag_query",
     "rag_chat_stream",

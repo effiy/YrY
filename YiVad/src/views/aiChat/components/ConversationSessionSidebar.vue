@@ -309,6 +309,13 @@ function onNewSession() {
   mode.value = "context";
 }
 
+async function onOpenRag(key: string) {
+  if (store.activeConversation?.key !== key) {
+    await store.selectConversation(key);
+  }
+  store.openLlamaIndex();
+}
+
 async function onEditContext(key: string) {
   const session = store.conversations.find(c => c.key === key);
   if (!session) return;
@@ -477,6 +484,7 @@ function onContextDrop(e: DragEvent) {
             @delete="onDelete"
             @toggle-favorite="onToggleFavorite"
             @edit-context="onEditContext"
+            @open-rag="onOpenRag"
           />
         </template>
       </el-scrollbar>

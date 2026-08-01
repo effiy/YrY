@@ -59,6 +59,17 @@ export function ragBuild(): Promise<RagBuildResponse> {
   return postJson<RagBuildResponse>("/rag-build", {});
 }
 
+/** Knowledge base metadata for filter dropdowns — categories + tag counts. */
+export interface RagCategories {
+  categories: Array<{ name: string; file_count: number }>;
+  tags: Record<string, number>;
+  total_files: number;
+}
+
+export function ragCategories(): Promise<RagCategories> {
+  return postJson<RagCategories>("/rag-categories", {});
+}
+
 function extractDelta(parsed: any): string {
   if (!parsed || typeof parsed !== "object") return "";
   return parsed?.data?.message ?? parsed?.message?.content ?? parsed?.choices?.[0]?.delta?.content ?? parsed?.content ?? "";

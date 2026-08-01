@@ -1,5 +1,5 @@
 <script setup lang="ts" name="aiChatInput">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { Promotion } from "@element-plus/icons-vue";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { useAiChatShortcuts } from "@/hooks/useAiChatShortcuts";
@@ -8,6 +8,12 @@ import DraftImageList from "./DraftImageList.vue";
 
 const store = useAiChatStore();
 const imageInput = ref<HTMLInputElement | null>(null);
+
+const CTX_PREFIX = "ctx:";
+const contextFileCount = computed(() => {
+  const tags = store.activeConversation?.tags ?? [];
+  return tags.filter(t => typeof t === "string" && t.startsWith(CTX_PREFIX)).length;
+});
 
 const { onCompositionStart, onCompositionEnd, onKeydown, onPaste } = useAiChatShortcuts(store);
 
@@ -29,20 +35,15 @@ async function onImageChange(e: Event) {
       :faq-active="store.faqVisible"
       :sending="store.sending"
       :streaming-type="store.streamingType"
-      :can-edit-session="!!store.activeConversation"
-      :context-enabled="store.contextSwitchEnabled"
-      :rag-enabled="store.ragEnabled"
+      :rag-active="store.ragActive"
+      :context-file-count="contextFileCount"
       :can-clear="store.input.trim().length > 0 || store.draftImages.length > 0"
-      :has-active-session="!!store.activeConversation"
       @toggle-faq="store.toggleFaq()"
       @pick-image="openImagePicker"
-      @edit-session="store.openSessionEdit()"
-      @edit-context="store.openContextEditor()"
       @manage-tags="store.openTagManager()"
       @open-wechat="store.openWeChat()"
       @clear-input="store.clearInput()"
-      @toggle-context="store.setContextSwitchEnabled(!store.contextSwitchEnabled)"
-      @toggle-rag="store.ragEnabled = !store.ragEnabled"
+      @open-rag-panel="store.openLlamaIndex()"
       @stop="store.stopSending()"
     />
     <input ref="imageInput" type="file" accept="image/*" multiple class="ci-file-input" @change="onImageChange" />
