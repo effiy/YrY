@@ -103,7 +103,8 @@
           </el-select>
         </el-form-item>
         <el-form-item label="Content" prop="content">
-          <el-input v-model="form.content" type="textarea" :rows="14" placeholder="Fill the template; the original prompt is pre-loaded." :disabled="isViewMode" />
+          <el-input v-if="!isViewMode" v-model="form.content" type="textarea" :rows="14" placeholder="Fill the template; the original prompt is pre-loaded." />
+          <div v-else class="topic-detail__md" v-html="contentHtml" />
         </el-form-item>
       </el-form>
     </div>
@@ -115,6 +116,7 @@ import { ref, reactive, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ArrowRight, CirclePlus, ArrowLeft, Delete as DeleteIcon, EditPen } from "@element-plus/icons-vue";
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
+import { useMarkdown } from "@/hooks/useMarkdown";
 import {
   getTopicEntry,
   createTopicEntry,
@@ -170,6 +172,8 @@ const form = reactive({
   meta: {} as Record<string, any>
 });
 
+const { render } = useMarkdown();
+const contentHtml = computed(() => render(form.content));
 const tagOptions = computed(() => Array.from(new Set([...(entry.value?.tags ?? []), ...form.tags])));
 
 const rules: FormRules = {
@@ -316,6 +320,50 @@ onMounted(loadEntry);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+}
+.topic-detail__md {
+  min-height: 200px;
+  padding: 16px 20px;
+  background: var(--el-fill-color-lighter);
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--el-text-color-primary);
+  max-height: 600px;
+  overflow: auto;
+  :deep(h1) { font-size: 1.5em; margin: 1em 0 0.4em; }
+  :deep(h2) { font-size: 1.3em; margin: 0.9em 0 0.3em; }
+  :deep(h3) { font-size: 1.15em; margin: 0.8em 0 0.2em; }
+  :deep(p) { margin: 0.5em 0; }
+  :deep(ul), :deep(ol) { padding-left: 1.6em; margin: 0.4em 0; }
+  :deep(li) { margin: 0.15em 0; }
+  :deep(code) {
+    padding: 2px 6px;
+    background: var(--el-color-primary-light-9);
+    border-radius: 3px;
+    font-size: 0.9em;
+  }
+  :deep(pre) {
+    padding: 12px 16px;
+    background: var(--el-bg-color-page);
+    border-radius: 4px;
+    overflow: auto;
+    code { padding: 0; background: none; }
+  }
+  :deep(blockquote) {
+    margin: 0.5em 0;
+    padding: 4px 14px;
+    border-left: 3px solid var(--el-color-primary);
+    background: var(--el-bg-color);
+    color: var(--el-text-color-secondary);
+  }
+  :deep(table) {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 0.6em 0;
+    th, td { border: 1px solid var(--el-border-color); padding: 6px 10px; text-align: left; }
+    th { background: var(--el-fill-color); font-weight: 600; }
   }
 }
 </style>

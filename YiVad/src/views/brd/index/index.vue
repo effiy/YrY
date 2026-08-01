@@ -229,7 +229,6 @@ onMounted(() => {
     margin: 0;
     font-size: 13px;
     color: var(--el-text-color-secondary);
-    max-width: 720px;
   }
 }
 .brd-overview__projects {
