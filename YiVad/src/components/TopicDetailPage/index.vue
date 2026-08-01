@@ -12,9 +12,11 @@
       </div>
       <div class="topic-detail__header-right">
         <template v-if="isViewMode">
+          <el-button v-if="tree === 'brd' && !isNew" :icon="Connection" plain @click="editInAicr">Edit in aicr</el-button>
           <el-button type="primary" :icon="EditPen" @click="switchToEdit">Edit</el-button>
         </template>
         <template v-else>
+          <el-button @click="handleCancel">Cancel</el-button>
           <el-button v-if="!isNew" type="danger" :icon="DeleteIcon" @click="handleDelete">Delete</el-button>
           <el-button type="primary" :icon="CirclePlus" @click="handleSave">Save</el-button>
         </template>
@@ -114,14 +116,17 @@
 <script setup lang="ts" name="TopicDetailPage">
 import { ref, reactive, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { ArrowRight, CirclePlus, ArrowLeft, Delete as DeleteIcon, EditPen } from "@element-plus/icons-vue";
+import { ArrowRight, CirclePlus, ArrowLeft, Delete as DeleteIcon, EditPen, Connection } from "@element-plus/icons-vue";
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import { useMarkdown } from "@/hooks/useMarkdown";
+import { callService } from "@/api/modules/dataService";
+import { useAicrKnowledgeStore } from "@/stores/modules/aicr/knowledge";
 import {
   getTopicEntry,
   createTopicEntry,
   updateTopicEntry,
   deleteTopicEntry,
+  contentPathFor,
   type TopicEntryDocument,
   type TopicTree
 } from "@/api/modules/topic";
@@ -172,6 +177,7 @@ const form = reactive({
   meta: {} as Record<string, any>
 });
 
+const knowledgeStore = useAicrKnowledgeStore();
 const { render } = useMarkdown();
 const contentHtml = computed(() => render(form.content));
 const tagOptions = computed(() => Array.from(new Set([...(entry.value?.tags ?? []), ...form.tags])));
@@ -204,6 +210,35 @@ async function loadEntry() {
     ElMessage.error(e?.message || "Failed to load entry");
   } finally {
     loading.value = false;
+  }
+}
+
+async function editInAicr() {
+  if (!isViewMode.value || !entry.value) return;
+  const cpath = entry.value.contentPath || contentPathFor(props.tree, props.topic, entry.value.key);
+  try {
+    // Ensure the YiKnowledge file is current
+    if (form.content) {
+      await callService("services.knowledge.knowledge_service", "write_entry_markdown", {
+        rel_path: cpath,
+        content: form.content,
+        meta: { title: form.title, key: entry.value.key, tags: form.tags }
+      });
+    }
+    knowledgeStore.setPendingSelectPath(cpath);
+    ElMessage.success("Opening in aicr…");
+    router.push({
+      path: "/aicr",
+      query: {
+        source: "brd",
+        brdTopic: props.topic,
+        brdKey: entry.value.key,
+        brdTitle: form.title,
+        brdBreadcrumb: props.label
+      }
+    });
+  } catch (e: any) {
+    ElMessage.error(e?.message || "Failed to open in aicr");
   }
 }
 
@@ -244,6 +279,16 @@ async function handleDelete() {
   } catch (e: any) {
     ElMessage.error(e?.message || "Delete failed");
   }
+}
+
+async function handleCancel() {
+  if (isNew.value) {
+    back();
+    return;
+  }
+  // Reload original data and switch to view mode
+  await loadEntry();
+  router.replace({ query: { mode: "view" } });
 }
 
 function back() {

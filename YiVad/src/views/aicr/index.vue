@@ -50,6 +50,16 @@ const reviewOrigin = ref<{
   scenarioName?: string;
 } | null>(null);
 
+// ── BRD origin context ──
+// When the user clicks "Edit in aicr" on a BRD detail page, we route here
+// with `?source=brd&brdTopic=...&brdKey=...&brdTitle=...&brdBreadcrumb=...`.
+const brdOrigin = ref<{
+  topic: string;
+  key: string;
+  title: string;
+  breadcrumb: string;
+} | null>(null);
+
 function readOriginFromUrl(): "story" | "scenario" | null {
   // Hash-mode router: query params live in `route.query`, not
   // `window.location.search` (which is empty in hash mode).
@@ -106,6 +116,49 @@ function clearOrigin() {
   if (route.query.source || route.query._ctx) {
     router.replace({ query: {} });
   }
+}
+
+// ── BRD origin — from BRD detail "Edit in aicr" ──
+
+function readBrdOriginFromUrl(): boolean {
+  const source = (route.query.source as string | undefined) ?? null;
+  if (source !== "brd") return false;
+  const topic = (route.query.brdTopic as string | undefined) ?? "";
+  const key = (route.query.brdKey as string | undefined) ?? "";
+  const title = (route.query.brdTitle as string | undefined) ?? "BRD Entry";
+  const breadcrumb = (route.query.brdBreadcrumb as string | undefined) ?? "";
+  if (!topic || !key) return false;
+  brdOrigin.value = { topic, key, title, breadcrumb };
+  // Scope the knowledge sidebar to only the BRD content directory
+  const filterPath = `brd/${topic}/`;
+  knowledgeStore.setBrdFilterPath(filterPath);
+  // Ensure the BRD category folder is expanded
+  knowledgeStore.expandCategory("brd");
+  // Auto-select the BRD content file so the center panel renders it.
+  // On initial navigation pendingSelectPath handles this, but on browser
+  // refresh that one-shot value is lost — reconstruct the path from URL params.
+  const contentPath = `brd/${topic}/${key}.md`;
+  if (knowledgeStore.selectedPath !== contentPath) {
+    knowledgeStore.selectFile(contentPath);
+  }
+  return true;
+}
+
+function clearBrdOrigin() {
+  brdOrigin.value = null;
+  knowledgeStore.clearBrdFilterPath();
+  // Strip the origin query params so a refresh doesn't re-enter BRD mode
+  if (route.query.source === "brd") {
+    router.replace({ query: {} });
+  }
+}
+
+/** Navigate back to the BRD detail page. */
+function backToBrdDetail() {
+  if (!brdOrigin.value) return;
+  const detailPath = `/brd/${brdOrigin.value.topic}/detail/${brdOrigin.value.key}`;
+  clearBrdOrigin();
+  router.push({ path: detailPath, query: { mode: "view" } });
 }
 
 // Wire file selection → chat session load. Both FileTree variants
@@ -253,6 +306,10 @@ onMounted(async () => {
   // system prompt is in place before any message is sent.
   readOriginFromUrl();
 
+  // BRD origin (from BRD detail "Edit in aicr"). Filters the knowledge
+  // sidebar to only BRD content files for the source topic.
+  if (!brdOrigin.value) readBrdOriginFromUrl();
+
   // External pages (Knowledge detail "Ask in aicr") stage a knowledge
   // file path via `knowledgeStore.setPendingSelectPath`. Select it so
   // the KnowledgeTree highlights the file, CodeViewer renders content,
@@ -291,6 +348,8 @@ onActivated(() => {
   }
   // Story/scenario context re-application on KeepAlive re-entry.
   readOriginFromUrl();
+  // BRD origin re-application on KeepAlive re-entry.
+  if (!brdOrigin.value) readBrdOriginFromUrl();
 });
 
 onBeforeUnmount(() => {
@@ -335,6 +394,11 @@ function onGlobalKeydown(e: KeyboardEvent) {
         >
           {{ reviewOrigin.kind === "story" ? reviewOrigin.storyName : `${reviewOrigin.scenarioName} · ${reviewOrigin.storyName}` }}
         </el-tag>
+        <template v-if="brdOrigin">
+          <el-tag type="primary" size="small" effect="plain">{{ brdOrigin.breadcrumb }}</el-tag>
+          <span class="aicr-brd-title">{{ brdOrigin.title }}</span>
+          <el-button size="small" :icon="ArrowLeft" link @click="backToBrdDetail" title="Back to BRD detail" />
+        </template>
       </div>
       <div class="aicr-hdr-r">
         <el-button
@@ -478,6 +542,15 @@ function onGlobalKeydown(e: KeyboardEvent) {
 .aicr-count {
   font-size: 14px;
   color: var(--el-text-color-secondary);
+}
+.aicr-brd-title {
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--el-text-color-primary);
 }
 .aicr-hdr-r {
   display: flex;

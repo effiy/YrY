@@ -28,6 +28,9 @@ export const useAicrKnowledgeStore = defineStore("yivad-aicr-knowledge", () => {
   // One-shot: scope the tree to a specific story's knowledge files before
   // routing here. Cleared after applying.
   const pendingStoryFilter = ref<{ project: string; storyName: string } | null>(null);
+  // When set, filters the knowledge tree to files under this directory prefix.
+  // Used by BRD detail → aicr navigation to show only BRD content files.
+  const brdFilterPath = ref<string | null>(null);
 
   const flatFiles = computed<KnowledgeFileEntry[]>(() => {
     const out: KnowledgeFileEntry[] = [];
@@ -37,12 +40,17 @@ export const useAicrKnowledgeStore = defineStore("yivad-aicr-knowledge", () => {
 
   const filteredCategories = computed(() => {
     const q = searchQuery.value.trim().toLowerCase();
-    if (!q) return categories.value;
-    const matchFile = (f: KnowledgeFileEntry) =>
-      f.name.toLowerCase().includes(q) ||
-      f.path.toLowerCase().includes(q) ||
-      (f.meta?.title || "").toLowerCase().includes(q) ||
-      (f.meta?.tags || []).some(t => String(t).toLowerCase().includes(q));
+    const brdPrefix = brdFilterPath.value;
+    const matchFile = (f: KnowledgeFileEntry) => {
+      if (brdPrefix && !f.path.startsWith(brdPrefix)) return false;
+      if (!q) return true;
+      return (
+        f.name.toLowerCase().includes(q) ||
+        f.path.toLowerCase().includes(q) ||
+        (f.meta?.title || "").toLowerCase().includes(q) ||
+        (f.meta?.tags || []).some(t => String(t).toLowerCase().includes(q))
+      );
+    };
     return categories.value
       .map(c => ({ ...c, files: c.files.filter(matchFile) }))
       .filter(c => c.files.length > 0);
@@ -54,6 +62,15 @@ export const useAicrKnowledgeStore = defineStore("yivad-aicr-knowledge", () => {
 
   function setPendingStoryFilter(project: string, storyName: string) {
     pendingStoryFilter.value = { project, storyName };
+  }
+
+  /** Scope the knowledge tree to files under this directory prefix (e.g. "brd/brd-documents/"). */
+  function setBrdFilterPath(path: string | null) {
+    brdFilterPath.value = path;
+  }
+
+  function clearBrdFilterPath() {
+    brdFilterPath.value = null;
   }
 
   function consumePendingSelectPath(): string | null {
@@ -173,8 +190,11 @@ export const useAicrKnowledgeStore = defineStore("yivad-aicr-knowledge", () => {
     searchQuery,
     pendingSelectPath,
     pendingStoryFilter,
+    brdFilterPath,
     setPendingSelectPath,
     setPendingStoryFilter,
+    setBrdFilterPath,
+    clearBrdFilterPath,
     consumePendingSelectPath,
     consumePendingStoryFilter,
     toggleCategory,

@@ -4,6 +4,7 @@ import screenfull from "screenfull";
 import { useAicrFileTreeStore } from "@/stores/modules/aicr/fileTree";
 import { useAicrKnowledgeStore } from "@/stores/modules/aicr/knowledge";
 import { writeFile } from "@/api/modules/fileService";
+import { useMarkdown } from "@/hooks/useMarkdown";
 
 const fileTreeStore = useAicrFileTreeStore();
 const knowledgeStore = useAicrKnowledgeStore();
@@ -55,6 +56,11 @@ const contentLines = computed(() => {
   const c = currentContent.value;
   return c ? c.split("\n") : [];
 });
+
+// View mode: "preview" (markdown) | "code" (line-numbered source)
+const viewMode = ref<"preview" | "code">("preview");
+const { render } = useMarkdown();
+const previewHtml = computed(() => render(currentContent.value));
 
 // Edit mode
 const editMode = ref(false);
@@ -144,6 +150,10 @@ defineExpose({ setHighlight, selectedKey: () => selectedPath.value });
           <el-button v-if="!editMode" size="small" @click="toggleFullscreen" title="Fullscreen">
             <el-icon><FullScreen /></el-icon>
           </el-button>
+          <el-button-group v-if="!editMode" size="small">
+            <el-button :type="viewMode === 'preview' ? 'primary' : 'default'" @click="viewMode = 'preview'">Preview</el-button>
+            <el-button :type="viewMode === 'code' ? 'primary' : 'default'" @click="viewMode = 'code'">Code</el-button>
+          </el-button-group>
           <el-button v-if="!editMode" size="small" type="primary" @click="enterEdit">Edit</el-button>
           <template v-else>
             <el-button size="small" :disabled="saving" @click="cancelEdit">Cancel</el-button>
@@ -177,7 +187,9 @@ defineExpose({ setHighlight, selectedKey: () => selectedPath.value });
         />
       </div>
 
-      <!-- View mode -->
+      <!-- Markdown preview mode -->
+      <div v-else-if="viewMode === 'preview'" class="cv-md" v-html="previewHtml" />
+      <!-- Code view mode -->
       <div v-else class="cv-code">
         <pre><code><span
           v-for="(line, idx) in contentLines"
@@ -271,6 +283,26 @@ defineExpose({ setHighlight, selectedKey: () => selectedPath.value });
 .cv-image {
   max-width: 100%;
   max-height: 100%;
+}
+.cv-md {
+  flex: 1;
+  padding: 24px 32px;
+  overflow: auto;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--el-text-color-primary);
+  :deep(h1) { font-size: 1.6em; margin: 1.2em 0 0.5em; border-bottom: 1px solid var(--el-border-color-lighter); padding-bottom: 0.3em; }
+  :deep(h2) { font-size: 1.35em; margin: 1.1em 0 0.4em; }
+  :deep(h3) { font-size: 1.15em; margin: 1em 0 0.3em; }
+  :deep(p) { margin: 0.6em 0; }
+  :deep(ul), :deep(ol) { padding-left: 1.8em; margin: 0.5em 0; }
+  :deep(li) { margin: 0.2em 0; }
+  :deep(code) { padding: 2px 6px; background: var(--el-color-primary-light-9); border-radius: 3px; font-size: 0.9em; }
+  :deep(pre) { padding: 14px 18px; background: var(--el-fill-color-lighter); border-radius: 6px; overflow: auto; code { padding: 0; background: none; } }
+  :deep(blockquote) { margin: 0.6em 0; padding: 6px 16px; border-left: 3px solid var(--el-color-primary); background: var(--el-fill-color-lighter); color: var(--el-text-color-secondary); }
+  :deep(table) { border-collapse: collapse; width: 100%; margin: 0.6em 0; th, td { border: 1px solid var(--el-border-color); padding: 6px 12px; text-align: left; } th { background: var(--el-fill-color); font-weight: 600; } }
+  :deep(hr) { margin: 1.2em 0; border: none; border-top: 1px solid var(--el-border-color-lighter); }
+  :deep(a) { color: var(--el-color-primary); }
 }
 .cv-code {
   flex: 1;
