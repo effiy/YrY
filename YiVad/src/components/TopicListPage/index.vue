@@ -7,7 +7,7 @@
       :pagination="true"
     >
       <template #tableHeader>
-        <el-button type="primary" :icon="CirclePlus" @click="toDetail('new')">New Entry</el-button>
+        <el-button type="primary" :icon="CirclePlus" @click="handleNewEntry">{{ newEntryLabel }}</el-button>
       </template>
 
       <template #title="scope">
@@ -97,7 +97,7 @@ function toColumnProps(mc: MetaColumn): ColumnProps<TopicEntryDocument> {
   };
 }
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   tree: TopicTree;
   topic: string;
   label: string;
@@ -106,7 +106,13 @@ const props = defineProps<{
   /** Customise which action buttons appear in the operations column and their labels.
    *  Default: [{ type: "view" }, { type: "edit" }, { type: "delete" }] */
   actions?: ActionButton[];
-}>();
+  /** Label for the "New Entry" button. Default: "New Entry". */
+  newEntryLabel?: string;
+  /** Custom handler for the "New Entry" button. When provided, overrides the default navigate-to-detail behaviour. */
+  onNewEntry?: () => void;
+}>(), {
+  newEntryLabel: "New Entry"
+});
 
 interface ResolvedAction {
   type: ActionButton["type"];
@@ -169,6 +175,15 @@ function toDetail(key: string, viewMode = false) {
     params: { id: key },
     query: viewMode ? { mode: "view" } : {}
   });
+}
+
+/** Call the custom new-entry handler if provided; otherwise navigate to the detail page. */
+function handleNewEntry() {
+  if (props.onNewEntry) {
+    props.onNewEntry();
+  } else {
+    toDetail("new");
+  }
 }
 
 async function fetchList(params: any) {

@@ -84,13 +84,75 @@
                 />
                 <!-- Textarea -->
                 <el-input
-                  v-else-if="field.type === 'textarea'"
+                  v-if="field.type === 'textarea' && !isViewMode"
                   v-model="form.meta[field.key]"
                   type="textarea"
-                  :rows="field.rows ?? 3"
+                  :autosize="{ minRows: field.rows ?? 3, maxRows: 40 }"
                   :placeholder="field.placeholder"
-                  :disabled="isViewMode"
                 />
+                <div
+                  v-else-if="field.type === 'textarea' && isViewMode"
+                  class="topic-detail__textarea-view"
+                >{{ form.meta[field.key] || "—" }}</div>
+                <!-- Array-field (key-value repeater) -->
+                <template v-else-if="field.type === 'array-field'">
+                  <!-- Edit mode: dynamic key-value rows -->
+                  <div v-if="!isViewMode" class="array-field">
+                    <div
+                      v-for="(row, idx) in getArrayRows(field.key)"
+                      :key="idx"
+                      class="array-field__row"
+                    >
+                      <el-input
+                        v-model="row.key"
+                        :placeholder="field.arrayPlaceholders?.key || $t('topicDetail.arrayFieldKeyPlaceholder')"
+                        class="array-field__key"
+                        clearable
+                      />
+                      <el-input
+                        v-model="row.value"
+                        :placeholder="field.arrayPlaceholders?.value || $t('topicDetail.arrayFieldValuePlaceholder')"
+                        class="array-field__value"
+                        clearable
+                      />
+                      <el-button
+                        :icon="DeleteIcon"
+                        circle
+                        size="small"
+                        type="danger"
+                        plain
+                        @click="removeArrayRow(field.key, idx)"
+                      />
+                    </div>
+                    <el-button
+                      :icon="CirclePlus"
+                      size="small"
+                      type="primary"
+                      plain
+                      @click="addArrayRow(field.key)"
+                    >
+                      {{ $t("topicDetail.arrayFieldAddRow") }}
+                    </el-button>
+                  </div>
+                  <!-- View mode: read-only table -->
+                  <div v-else class="array-field">
+                    <table v-if="getArrayRows(field.key).length" class="array-field__table">
+                      <thead>
+                        <tr>
+                          <th>{{ field.arrayLabels?.key || $t("topicDetail.arrayFieldKeyLabel") }}</th>
+                          <th>{{ field.arrayLabels?.value || $t("topicDetail.arrayFieldValueLabel") }}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(row, idx) in getArrayRows(field.key)" :key="idx">
+                          <td>{{ row.key }}</td>
+                          <td>{{ row.value }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <span v-else class="array-field__empty">{{ $t("topicDetail.arrayFieldEmpty") }}</span>
+                  </div>
+                </template>
               </el-form-item>
             </el-col>
           </el-row>
@@ -105,7 +167,7 @@
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('topicDetail.contentLabel')" prop="content">
-          <el-input v-if="!isViewMode" v-model="form.content" type="textarea" :rows="14" :placeholder="$t('topicDetail.contentPlaceholder')" />
+          <el-input v-if="!isViewMode" v-model="form.content" type="textarea" :autosize="{ minRows: 20, maxRows: 60 }" :placeholder="$t('topicDetail.contentPlaceholder')" />
           <div v-else class="topic-detail__md" v-html="contentHtml" />
         </el-form-item>
       </el-form>
@@ -135,7 +197,7 @@ import {
 export interface MetaField {
   key: string;
   label: string;
-  type: "input" | "select" | "date" | "number" | "textarea";
+  type: "input" | "select" | "date" | "number" | "textarea" | "array-field";
   options?: { label: string; value: string }[];
   required?: boolean;
   placeholder?: string;
@@ -144,6 +206,10 @@ export interface MetaField {
   min?: number;
   max?: number;
   rows?: number;
+  /** Labels for key/value columns in array-field (default: "Key" / "Value"). */
+  arrayLabels?: { key: string; value: string };
+  /** Placeholders for key/value inputs in array-field. */
+  arrayPlaceholders?: { key: string; value: string };
 }
 
 const props = withDefaults(defineProps<{
@@ -357,6 +423,29 @@ function back() {
   router.push({ name: `${prefix}${pascal(topicName)}` });
 }
 
+// ── Array-field helpers ──────────────────────────────────────────────────
+
+function ensureArrayField(key: string) {
+  if (!Array.isArray(form.meta[key])) {
+    form.meta[key] = [];
+  }
+}
+
+function getArrayRows(key: string): { key: string; value: string }[] {
+  ensureArrayField(key);
+  return form.meta[key];
+}
+
+function addArrayRow(key: string) {
+  ensureArrayField(key);
+  form.meta[key].push({ key: "", value: "" });
+}
+
+function removeArrayRow(key: string, idx: number) {
+  ensureArrayField(key);
+  form.meta[key].splice(idx, 1);
+}
+
 function switchToEdit() {
   router.replace({ query: {} });
 }
@@ -375,7 +464,7 @@ onMounted(loadEntry);
 .topic-detail {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 100%;
   background: var(--el-bg-color-page);
 }
 .topic-detail__header {
@@ -405,7 +494,6 @@ onMounted(loadEntry);
 .topic-detail__body {
   flex: 1;
   padding: 20px;
-  overflow: auto;
 }
 .topic-detail__tags {
   width: 100%;
@@ -424,48 +512,190 @@ onMounted(loadEntry);
     text-overflow: ellipsis;
   }
 }
-.topic-detail__md {
-  min-height: 200px;
-  padding: 16px 20px;
-  background: var(--el-fill-color-lighter);
-  border-radius: 6px;
+.topic-detail__textarea-view {
+  width: 100%;
+  min-height: 2.4em;
+  padding: 8px 12px;
   font-size: 14px;
   line-height: 1.7;
   color: var(--el-text-color-primary);
-  max-height: 600px;
-  overflow: auto;
-  :deep(h1) { font-size: 1.5em; margin: 1em 0 0.4em; }
-  :deep(h2) { font-size: 1.3em; margin: 0.9em 0 0.3em; }
-  :deep(h3) { font-size: 1.15em; margin: 0.8em 0 0.2em; }
-  :deep(p) { margin: 0.5em 0; }
-  :deep(ul), :deep(ol) { padding-left: 1.6em; margin: 0.4em 0; }
-  :deep(li) { margin: 0.15em 0; }
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: var(--el-fill-color-lighter);
+  border-radius: 4px;
+}
+.topic-detail__md {
+  padding: 32px 40px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px;
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--el-text-color-primary);
+
+  /* ── Headings ──────────────────────────────────────────────────── */
+  :deep(h1) {
+    font-size: 1.75em;
+    margin: 1.6em 0 0.6em;
+    padding-bottom: 0.4em;
+    border-bottom: 2px solid var(--el-border-color-lighter);
+    color: var(--el-text-color-primary);
+    font-weight: 700;
+  }
+  :deep(h2) {
+    font-size: 1.4em;
+    margin: 1.4em 0 0.5em;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid var(--el-border-color-lighter);
+    color: var(--el-text-color-primary);
+    font-weight: 600;
+  }
+  :deep(h3) {
+    font-size: 1.15em;
+    margin: 1.2em 0 0.4em;
+    color: var(--el-text-color-regular);
+    font-weight: 600;
+  }
+  :deep(h1:first-child),
+  :deep(h2:first-child),
+  :deep(h3:first-child) {
+    margin-top: 0;
+  }
+
+  /* ── Paragraphs & lists ─────────────────────────────────────────── */
+  :deep(p) { margin: 0.7em 0; }
+  :deep(ul), :deep(ol) { padding-left: 1.8em; margin: 0.6em 0; }
+  :deep(li) { margin: 0.25em 0; }
+  :deep(strong) { font-weight: 600; color: var(--el-text-color-primary); }
+
+  /* ── Horizontal rule (section separator) ────────────────────────── */
+  :deep(hr) {
+    margin: 2em 0;
+    border: none;
+    border-top: 1px solid var(--el-border-color-lighter);
+  }
+
+  /* ── Inline code ────────────────────────────────────────────────── */
   :deep(code) {
-    padding: 2px 6px;
+    padding: 2px 7px;
     background: var(--el-color-primary-light-9);
-    border-radius: 3px;
-    font-size: 0.9em;
-  }
-  :deep(pre) {
-    padding: 12px 16px;
-    background: var(--el-bg-color-page);
     border-radius: 4px;
-    overflow: auto;
-    code { padding: 0; background: none; }
+    font-size: 0.88em;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    color: var(--el-color-primary-dark-2);
   }
+
+  /* ── Code blocks ────────────────────────────────────────────────── */
+  :deep(pre) {
+    padding: 16px 20px;
+    background: var(--el-fill-color);
+    border: 1px solid var(--el-border-color-lighter);
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 1em 0;
+    code { padding: 0; background: none; color: var(--el-text-color-primary); font-size: 0.85em; }
+  }
+
+  /* ── Blockquote (callout) ───────────────────────────────────────── */
   :deep(blockquote) {
-    margin: 0.5em 0;
-    padding: 4px 14px;
-    border-left: 3px solid var(--el-color-primary);
-    background: var(--el-bg-color);
+    margin: 1em 0;
+    padding: 12px 18px;
+    border-left: 4px solid var(--el-color-primary);
+    background: var(--el-color-primary-light-9);
+    border-radius: 0 6px 6px 0;
     color: var(--el-text-color-secondary);
+    p { margin: 0.3em 0; }
   }
+
+  /* ── Tables ─────────────────────────────────────────────────────── */
   :deep(table) {
     border-collapse: collapse;
     width: 100%;
-    margin: 0.6em 0;
-    th, td { border: 1px solid var(--el-border-color); padding: 6px 10px; text-align: left; }
-    th { background: var(--el-fill-color); font-weight: 600; }
+    margin: 1em 0;
+    font-size: 0.93em;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--el-border-color-lighter);
+    th, td {
+      padding: 10px 14px;
+      border: 1px solid var(--el-border-color-lighter);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: var(--el-fill-color);
+      font-weight: 600;
+      color: var(--el-text-color-secondary);
+      font-size: 0.85em;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+    tbody tr:nth-child(even) {
+      background: var(--el-fill-color-lighter);
+    }
+    tbody tr:hover {
+      background: var(--el-color-primary-light-9);
+    }
   }
+
+  /* ── Links ──────────────────────────────────────────────────────── */
+  :deep(a) {
+    color: var(--el-color-primary);
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
+  }
+
+  /* ── Images ─────────────────────────────────────────────────────── */
+  :deep(img) {
+    max-width: 100%;
+    border-radius: 6px;
+    margin: 1em 0;
+  }
+}
+
+/* ── Array-field ────────────────────────────────────────────────────────── */
+.array-field {
+  width: 100%;
+}
+.array-field__row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.array-field__key {
+  flex: 2;
+}
+.array-field__value {
+  flex: 3;
+}
+.array-field__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  th, td {
+    padding: 8px 12px;
+    border: 1px solid var(--el-border-color-lighter);
+    text-align: left;
+  }
+  th {
+    background: var(--el-fill-color);
+    font-weight: 600;
+    color: var(--el-text-color-secondary);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  tbody tr:nth-child(even) {
+    background: var(--el-fill-color-lighter);
+  }
+}
+.array-field__empty {
+  display: block;
+  padding: 12px;
+  color: var(--el-text-color-placeholder);
+  font-style: italic;
+  font-size: 13px;
 }
 </style>

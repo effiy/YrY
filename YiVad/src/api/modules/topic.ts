@@ -115,7 +115,7 @@ export async function createTopicEntry(
   tree: TopicTree,
   topic: string,
   payload: { title: string; content: string; tags?: string[]; meta?: Record<string, any> }
-): Promise<YiAiEnvelope> {
+): Promise<YiAiEnvelope & { key: string }> {
   const now = Date.now();
   const key = makeKey(tree, topic);
   const isBrd = tree === "brd";
@@ -145,7 +145,8 @@ export async function createTopicEntry(
   } else {
     doc.content = payload.content;
   }
-  return createDocument(cnameFor(tree, topic), doc);
+  const res = await createDocument(cnameFor(tree, topic), doc);
+  return { ...res, key };
 }
 
 export async function updateTopicEntry(

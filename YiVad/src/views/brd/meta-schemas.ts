@@ -237,24 +237,27 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
   // ── BRD Documents (core registry) ──────────────────────────────────────
   "brd-documents": {
     metaColumns: [
-      { key: "version", label: "Version", width: 100 },
-      { key: "business_owner", label: "Business Owner", width: 160 },
-      { key: "domain", label: "Business Domain", width: 140, enum: DOMAIN_OPTIONS },
+      { key: "document_id", label: "BRD ID", width: 140 },
+      { key: "version", label: "Version", width: 80 },
+      { key: "business_owner_name", label: "Business Owner", width: 240 },
+      { key: "business_owner_title", label: "Title / Role", width: 220 },
+      { key: "business_owner_dept", label: "Department", width: 160 },
+      { key: "primary_domain", label: "Primary Domain", width: 240, enum: DOMAIN_OPTIONS },
+      { key: "secondary_domain", label: "Secondary Domain", width: 240, enum: DOMAIN_OPTIONS },
       {
         key: "priority",
         label: "Priority",
-        width: 120,
+        width: 100,
         enum: PRIORITY_OPTIONS,
         tagTypeFn: priorityTag
       },
       {
         key: "status",
         label: "Status",
-        width: 120,
+        width: 160,
         enum: STATUS_OPTIONS,
         tagTypeFn: statusTag
-      },
-      { key: "country", label: "Country / Region", width: 160, enum: COUNTRY_OPTIONS }
+      }
     ],
     metaFields: [
       { key: "document_id", label: "BRD Identifier", type: "input", placeholder: "e.g. BRD-2026-001 or BRD-EU-AFS-001", required: true, colSpan: 8 },
@@ -262,7 +265,9 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
       { key: "version", label: "Version", type: "input", placeholder: "e.g. 1.0, 2.1-draft", required: true, colSpan: 8 },
       { key: "version_date", label: "Version Date", type: "date", colSpan: 8 },
       { key: "change_summary", label: "Change Summary", type: "textarea", rows: 2, placeholder: "What changed in this version? e.g. v1.1 — Added France market scope, updated SLA targets per Q3 steering committee decision", colSpan: 24 },
-      { key: "business_owner", label: "Business Owner / Sponsor", type: "input", placeholder: "e.g. Dr. Zhang Wei — Director, After-Sales EU", required: true, colSpan: 8 },
+      { key: "business_owner_name", label: "Business Owner Name", type: "input", placeholder: "e.g. Dr. Zhang Wei", required: true, colSpan: 8 },
+      { key: "business_owner_title", label: "Business Owner Title / Role", type: "input", placeholder: "e.g. Director, After-Sales EU", required: true, colSpan: 8 },
+      { key: "business_owner_dept", label: "Business Owner Department", type: "input", placeholder: "e.g. After-Sales Operations", colSpan: 8 },
       { key: "author", label: "Author", type: "input", placeholder: "e.g. Li Ming — Business Analyst", colSpan: 8 },
       {
         key: "department",
@@ -289,13 +294,15 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
         colSpan: 8
       },
       {
-        key: "domain",
-        label: "Business Domain",
+        key: "primary_domain",
+        label: "Primary Business Domain",
         type: "select",
         options: DOMAIN_OPTIONS,
         colSpan: 8
       },
-      { key: "country", label: "Target Country / Region", type: "select", options: COUNTRY_OPTIONS, colSpan: 8 },
+      { key: "secondary_domain", label: "Secondary Business Domain", type: "select", options: DOMAIN_OPTIONS, colSpan: 8 },
+      { key: "primary_country", label: "Primary Country / Region", type: "select", options: COUNTRY_OPTIONS, colSpan: 8 },
+      { key: "secondary_country", label: "Secondary Country / Region", type: "select", options: COUNTRY_OPTIONS, colSpan: 8 },
       { key: "brand", label: "Applicable Brand(s)", type: "input", placeholder: "e.g. Brand A, Brand B, All Brands (comma-separated)", colSpan: 8 },
       { key: "expected_golive", label: "Target Go-Live Date", type: "date", colSpan: 8 },
       { key: "related_brds", label: "Related BRDs / Documents", type: "input", placeholder: "e.g. BRD-2026-003 (CRM Integration Phase 1), PRD-2026-012 (Mobile App R1)", colSpan: 8 },
@@ -309,8 +316,11 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
       { key: "current_state", label: "Current State (As-Is)", type: "textarea", rows: 4, placeholder: "Document the current process, tools, workarounds, and operational reality. What systems, spreadsheets, or manual steps are used today? Who does what, in what order? What are the known pain points, bottlenecks, and failure modes? Use concrete examples. e.g. 'Tier-2 agents must log into 3 separate systems (Zendesk, SAP Parts Master, Dealer Portal) to resolve one escalated ticket. Parts availability lookup requires manually copy-pasting VIN numbers between browser tabs — average 4.2 minutes per ticket, with 8% error rate.'", colSpan: 24 },
       { key: "business_problem", label: "Business Problem / Opportunity Statement", type: "textarea", rows: 3, placeholder: "Articulate the core problem or opportunity with quantified impact. Why does the current state need to change? What is the cost of inaction? e.g. 'Fragmented ticket resolution process costs an estimated €1.2M/year in agent productivity (120 FTE hours/week × €200/hour fully-loaded cost). Manual data entry errors cause 15–20 incorrect parts shipments per month (€350 avg cost per incident). Competitor brands achieve < 2-hour resolution times; our 8.3-hour average impacts NPS score (-12 pts vs benchmark).'", colSpan: 24 },
       { key: "proposed_solution", label: "Proposed Solution Summary", type: "textarea", rows: 4, placeholder: "High-level description of the proposed solution. What will change, and how will it address the problem? Include key design decisions, scope boundaries, and architectural approach (at business level, not technical). e.g. 'Unified After-Sales Ticketing Platform (single pane of glass) integrating Zendesk migration, SAP parts API real-time lookup, and dealer portal SSO. Phase 1 (this BRD): DE + FR markets, Tier-2 agent workflow, critical ticket routing. Phase 2: IT/ES/NL rollout, Tier-1 self-service portal, AI-assisted ticket classification.'", colSpan: 24 },
-      { key: "expected_outcomes", label: "Expected Business Outcomes", type: "textarea", rows: 3, placeholder: "Quantified expected benefits with timeline. List 3–5 measurable outcomes tied to business objectives. e.g.\n1. Average ticket resolution time: 8.3h → < 2h (within 6 months of go-live)\n2. SLA breach rate: 23% → < 5%\n3. Agent tool-switching: 3→1 system (single pane of glass)\n4. Parts data entry errors: 8% → < 1%\n5. Estimated annual savings: €1.2M (productivity + error reduction)", colSpan: 24 },
-      { key: "key_constraints", label: "Key Constraints, Assumptions & Dependencies", type: "textarea", rows: 4, placeholder: "Document constraints, assumptions, and external dependencies that shape the solution space.\n\nConstraints (hard limits):\n• Budget: [CapEx / OpEx ceiling]\n• Timeline: [Hard deadline — e.g. regulatory effective date, system EOL]\n• Technology: [Must use X, must not use Y]\n• Regulatory: [Which regulations, which specific articles]\n\nAssumptions (things we believe to be true):\n• [Assumption 1 — what happens if it proves false?]\n• [Assumption 2]\n\nExternal Dependencies:\n• [Dependency — owner team, delivery date, impact if delayed]\n• [Dependency — vendor SLA, fallback plan]", colSpan: 24 },
+      { key: "expected_outcomes", label: "Expected Business Outcomes", type: "textarea", rows: 4, placeholder: "Quantified expected benefits with timeline. List 3–5 measurable outcomes tied to business objectives. Use the table structure below for clarity.\n\n| # | Outcome | KPI | Baseline | Target | Timeline |\n|---|---------|-----|----------|--------|----------|\n| 1 | Reduce ticket resolution time | Avg resolution time (hours) | 8.3h | < 2h | 6 months post go-live |\n| 2 | Improve SLA compliance | SLA breach rate | 23% | < 5% | 3 months post go-live |\n| 3 | Unify agent workspace | Number of systems per task | 3 systems | 1 system | Day 1 |\n\nEach row should represent one measurable outcome with a clear owner, KPI, and deadline.", colSpan: 24 },
+      // ── Constraints, Assumptions & Dependencies ──────────────────────
+      { key: "constraints", label: "Hard Constraints", type: "textarea", rows: 4, placeholder: "Non-negotiable limits that shape the solution space. What MUST or MUST NOT happen?\n\nBudget:\n• CapEx: [ceiling, approval status]\n• OpEx: [annual recurring, approval status]\n\nTimeline:\n• [Hard deadline — e.g. regulatory effective date, system EOL, contractual milestone]\n\nTechnology & Architecture:\n• Must use: [existing platform, approved stack, internal framework]\n• Must not use: [blocked services, deprecated tools, restricted regions]\n\nRegulatory:\n• [Regulation name — specific articles or sections that apply]\n• [e.g. GDPR Art. 5(1)(c) — data minimisation; EU Data Act 2025 — data sharing obligations]\n\nOrganisational:\n• [Policy, governance, or compliance constraint]", colSpan: 12 },
+      { key: "assumptions", label: "Key Assumptions", type: "textarea", rows: 4, placeholder: "What do we believe to be true today? For each assumption, state what happens if it proves false.\n\n• [Assumption 1] — If false: [impact and fallback]\n  e.g. \"Backend API v2 will be production-ready by Q1 2027\" — If false: delay Phase 1 integration testing by 6–8 weeks; fallback to batch-file import already validated in staging.\n\n• [Assumption 2] — If false: [impact and fallback]\n  e.g. \"EU markets (DE + FR) share a single instance; no market-specific customisations required\" — If false: scope expands to include per-market configuration; add 3–4 weeks to UAT.\n\n• [Assumption 3] — If false: [impact and fallback]\n  e.g. \"Key SMEs available for UAT in March 2027\" — If false: UAT delayed; backup SMEs identified: [names].", colSpan: 12 },
+      { key: "dependencies", label: "External Dependencies", type: "textarea", rows: 4, placeholder: "What external deliveries, decisions, or events must occur for this initiative to succeed?\n\nFor each dependency, specify: owner team, committed delivery date, and impact if delayed.\n\n• [Dependency 1]\n  Owner: [team / vendor / individual]\n  Delivery: [YYYY-MM-DD or milestone]\n  Impact if delayed: [what slips, by how much]\n  Fallback: [alternative if available]\n\n• [Dependency 2]\n  Owner: [team / vendor / individual]\n  Delivery: [date]\n  Impact if delayed: [consequences]\n  Fallback: [alternative]\n\n• [Dependency 3]\n  Owner: [team]\n  Delivery: [date]\n  Impact if delayed: [consequences]\n  Fallback: [alternative]", colSpan: 12 },
 
       // ── Planning & Resources ───────────────────────────────────────────
       { key: "budget_info", label: "Budget Information", type: "input", placeholder: "e.g. CapEx €450K approved in 2026 budget; OpEx €120K/year recurring (licensing + maintenance)", colSpan: 8 },
@@ -324,12 +334,31 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
       { key: "estimated_effort", label: "Estimated Effort (Person-Months)", type: "input", placeholder: "e.g. 18 PM (6 dev × 3 months), or 'TBC — pending technical assessment'", colSpan: 8 },
 
       // ── Risk & Impact ─────────────────────────────────────────────────
-      { key: "risk_summary", label: "Key Risks & Mitigations (Summary)", type: "textarea", rows: 3, placeholder: "Top 3–5 risks at a glance. Detailed risk entries (with likelihood, impact, mitigation strategy, contingency plans, and trigger indicators) are maintained in the Risk Assessment register (brd-risks).\ne.g.\n1. SAP API v2 delay (Likelihood: Medium, Impact: High) → Mitigation: Fallback to batch-file import\n2. Key SME unavailability (Likelihood: Low, Impact: Medium) → Mitigation: Backup SME identified: Anna Schmidt\n3. Multi-market regulatory divergence (Likelihood: Medium, Impact: High) → Mitigation: Phase 1 limited to DE + FR", colSpan: 24 },
-      { key: "impact_assessment", label: "Change Impact Assessment", type: "textarea", rows: 3, placeholder: "Which teams, processes, systems, and user groups are affected by this change? What training, communication, or migration effort is required?\ne.g.\n• After-Sales Operations (DE + FR): ~80 Tier-2 agents need 4-hour training + 2-week hypercare\n• IT Platform Team: New integration endpoints, monitoring dashboards\n• Dealer Network: No direct impact (dealer portal unchanged in Phase 1)\n• Reporting: Existing PowerBI dashboards need 2 new data sources\n• Migration: ~50K historical tickets from Zendesk → new platform (estimated 4-week migration window)", colSpan: 24 },
+      { key: "risk_summary", label: "Key Risks & Mitigations (Summary)", type: "textarea", rows: 4, placeholder: "Top 3–5 risks at a glance.\n⚠️ Detailed risk entries (with likelihood, impact, mitigation strategy, contingency plans, trigger indicators, and review dates) are maintained in the Risk Assessment register → see brd-risks sub-topic.\n\n| # | Risk | Likelihood | Impact | Mitigation | Owner |\n|---|------|------------|--------|------------|-------|\n| 1 | SAP API v2 delayed beyond Oct 2026 | Medium | High | Fallback to batch-file import; Core Platform team committed to 2026-10-01 | [Name] |\n| 2 | Key SME on extended leave during UAT | Low | Medium | Recorded knowledge transfer; backup SME: [Name] | [Name] |\n| 3 | Multi-market regulatory divergence | Medium | High | Legal review per market before Phase 2; Phase 1 limited to DE+FR (consistent framework) | [Name] |", colSpan: 24 },
+      // ── Change Impact ────────────────────────────────────────────────
+      { key: "affected_teams", label: "Affected Teams / User Groups", type: "textarea", rows: 3, placeholder: "Which teams, departments, or user personas are affected? For each: describe the impact, number of people, and what changes for them.\n\ne.g.\n• After-Sales Operations (DE + FR): ~80 Tier-2 agents — single pane of glass replaces 3-system workflow; 4-hour training + 2-week hypercare\n• After-Sales Management: 6 regional managers — new SLA dashboard replaces manual Excel reports\n• IT Platform Team: 4 engineers — new integration endpoints to maintain, monitoring dashboards to configure", colSpan: 12 },
+      { key: "affected_systems", label: "Affected Systems / Integrations", type: "textarea", rows: 3, placeholder: "Which systems, APIs, databases, or tools are impacted? For each: describe the change and the integration owner.\n\ne.g.\n• Zendesk (DE + FR instances): Migration of ~50K historical tickets → new platform; Zendesk read-only post-migration\n• SAP ECC Parts Master: New real-time API lookup replaces manual VIN copy-paste\n• Dealer Portal: No change (Phase 1) — SSO integration deferred to Phase 2\n• PowerBI Reporting: 2 new data sources required; 5 existing dashboards need updated queries", colSpan: 12 },
+      { key: "affected_processes", label: "Affected Business Processes", type: "textarea", rows: 3, placeholder: "Which business processes change? Describe the As-Is → To-Be transition for each.\n\ne.g.\n• Ticket Intake & Triage: Manual email/phone → automated routing by brand + severity + language (Rule BR-001)\n• Tier-2 Escalation: 3-system lookup → unified screen with real-time parts + history\n• SLA Monitoring: Weekly manual Excel report → real-time dashboard with automated breach alerts\n• Parts Ordering: Manual VIN entry (8% error rate) → API lookup with validation (target <1% error rate)", colSpan: 12 },
+      { key: "training_requirements", label: "Training & Communication Needs", type: "textarea", rows: 3, placeholder: "What training, documentation, and communication is required for a successful rollout?\n\ne.g.\n• Training: 4-hour hands-on workshop for ~80 Tier-2 agents (DE + FR) — delivered in local language, 2 sessions per market\n• Quick-reference guide: 1-page cheat sheet per agent role (printed + digital)\n• Management briefing: 90-minute session for 6 regional managers — dashboard walkthrough + escalation paths\n• Communication plan: Town hall announcement (2 weeks before go-live), weekly email updates during hypercare, feedback form for first 30 days\n• Dealer network: No communication needed (Phase 1 — dealer portal unchanged)", colSpan: 12 },
+      { key: "migration_effort", label: "Data Migration & Cutover Effort", type: "textarea", rows: 3, placeholder: "What data must be migrated? What is the cutover plan?\n\ne.g.\n• Historical tickets: ~50K records from Zendesk (DE + FR) → new platform\n  - Estimated migration window: 4 weeks (incremental sync, then final cutover weekend)\n  - Validation: row counts, spot-checks on 5% sample, stakeholder sign-off per market\n• User accounts: SSO integration with existing Azure AD — no manual account migration needed\n• Cutover approach: Big-bang (both markets same weekend) with 72-hour rollback window\n• Post-migration: Zendesk retained read-only for 90 days for audit/reference", colSpan: 12 },
 
       // ── Attachments & Glossary ─────────────────────────────────────────
-      { key: "attachment_links", label: "Attachments & References", type: "textarea", rows: 3, placeholder: "List all supporting documents, diagrams, prototypes, and reference materials. Include URLs or file paths.\ne.g.\n• Business Process Flowchart (As-Is): [link to Lucidchart / attachment]\n• Business Process Flowchart (To-Be): [link]\n• Wireframes / Prototypes: [Figma link]\n• Technical Feasibility Assessment: [Confluence link]\n• Market Analysis Report: [attachment path]\n• Regulatory Assessment — GDPR Art. 5 + EU Data Act: [attachment path]", colSpan: 24 },
-      { key: "glossary_terms", label: "Glossary / Key Terms", type: "textarea", rows: 3, placeholder: "Define domain-specific acronyms, terms, and concepts used throughout this BRD. One term per line: Term = Definition.\ne.g.\nSIT = System Integration Testing\nUAT = User Acceptance Testing\nTier-2 Agent = Technical escalation support agent handling complex issues beyond first-line resolution\nVIN = Vehicle Identification Number (17-character unique identifier)\nDPIA = Data Protection Impact Assessment (GDPR requirement)\nHypercare = 2–4 week period post go-live with enhanced support and monitoring", colSpan: 24 }
+      {
+        key: "attachment_links",
+        label: "Attachments & References",
+        type: "array-field",
+        arrayLabels: { key: "Document / Link Name", value: "URL or File Path" },
+        arrayPlaceholders: { key: "e.g. As-Is Process Flowchart (DE)", value: "e.g. https://lucid.app/... or /files/brd-001/flowchart.pdf" },
+        colSpan: 24
+      },
+      {
+        key: "glossary_terms",
+        label: "Glossary / Key Terms",
+        type: "array-field",
+        arrayLabels: { key: "Term / Acronym", value: "Definition (plain language)" },
+        arrayPlaceholders: { key: "e.g. SIT", value: "System Integration Testing — end-to-end validation of all integrated modules working together" },
+        colSpan: 24
+      }
     ],
     templateContent: `# Business Requirements Document
 
@@ -476,19 +505,45 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
 
 ---
 
-## 8. Business Objectives & Success Metrics
+## 8. Change Impact Assessment
+
+### 8.1 Affected Teams / User Groups
+
+[Which teams, departments, or user personas are affected? Describe the impact, number of people, and what changes for them.]
+
+### 8.2 Affected Systems / Integrations
+
+[Which systems, APIs, databases, or tools are impacted? For each: describe the change and the integration owner.]
+
+### 8.3 Affected Business Processes
+
+[Which business processes change? Describe the As-Is → To-Be transition for each.]
+
+### 8.4 Training & Communication Needs
+
+[What training, documentation, and communication is required for a successful rollout?]
+
+### 8.5 Data Migration & Cutover Effort
+
+[What data must be migrated? What is the cutover plan? Include estimated effort, validation approach, and rollback window.]
+
+---
+
+## 9. Business Objectives & Success Metrics
+
+> The Expected Business Outcomes form field above captures outcomes in a structured table format (Outcome | KPI | Baseline | Target | Timeline). This section provides the narrative context for those metrics.
 
 | Objective ID | Objective | KPI | Baseline | Target | Measurement Method |
 |--------------|-----------|-----|----------|--------|--------------------|
 | OBJ-001 | [Objective] | [KPI] | [Current] | [Target] | [How measured, cadence, owner] |
 
-> Detailed objectives are maintained in the Business Objectives register.
+> Detailed objectives are maintained in the Business Objectives register (brd-objectives).
 
 ---
 
-## 9. Risk Assessment
+## 10. Risk Assessment
 
-> Detailed risks are maintained in the Risk Assessment register (brd-risks).
+> Detailed risks (with likelihood, impact, mitigation strategy, contingency plans, trigger indicators, and review dates) are maintained in the Risk Assessment register (brd-risks). The Key Risks & Mitigations summary form field above captures the top 3–5 risks at a glance.
 
 | Risk ID | Risk Description | Likelihood | Impact | Mitigation | Owner |
 |---------|------------------|------------|--------|------------|-------|
@@ -496,7 +551,7 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
 
 ---
 
-## 10. Milestone Plan (High-Level)
+## 11. Milestone Plan (High-Level)
 
 | Milestone | Phase | Target Date | Key Deliverables | Owner |
 |-----------|-------|-------------|------------------|-------|
@@ -509,7 +564,9 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
 
 ---
 
-## 11. Glossary
+## 12. Glossary
+
+> Key terms and acronyms are captured in the Glossary / Key Terms structured form field above as term–definition pairs.
 
 | Term | Definition |
 |------|------------|
@@ -517,7 +574,9 @@ export const brdMetaSchemas: Record<string, TopicMetaSchema> = {
 
 ---
 
-## 12. References
+## 13. References
+
+> Supporting documents and links are captured in the Attachments & References structured form field above as name–URL pairs.
 
 | Document | Link / Location | Description |
 |----------|----------------|-------------|
