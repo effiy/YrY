@@ -132,7 +132,7 @@ async function onImageChange(e: Event) {
           v-model="store.input"
           type="textarea"
           :autosize="{ minRows: 1, maxRows: 6 }"
-          :placeholder="store.sending ? 'Generating...' : 'Your question — type @ to add context files (Enter to send, Shift+Enter for newline)'"
+          :placeholder="store.sending ? 'Generating...' : store.webSearching ? 'Searching web...' : 'Your question — type @ to add context files (Enter to send, Shift+Enter for newline)'"
           :disabled="store.sending"
           resize="none"
           @compositionstart="onCompositionStart"

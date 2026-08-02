@@ -8,8 +8,10 @@ import { ref, computed, watch } from "vue";
 import { Delete, DataAnalysis, Search, FolderOpened, Folder, Document, Plus } from "@element-plus/icons-vue";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { readKnowledgeFile } from "@/api/modules/knowledgeService";
+import KnowledgePreviewDialog from "./KnowledgePreviewDialog.vue";
 
 const store = useAiChatStore();
+const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
 
 // ── Search / filter ──
 const contextSearch = ref("");
@@ -97,6 +99,12 @@ function toggleFolderCollapse(key: string) {
   if (s.has(key)) s.delete(key);
   else s.add(key);
   collapsedFolders.value = s;
+}
+
+function onFileClick(node: ContextNode) {
+  if (node.type === "file" && node.path) {
+    previewDlg.value?.open(node.path);
+  }
 }
 // Hide children of collapsed folders from display
 const visibleContexts = computed(() => {
@@ -343,6 +351,8 @@ function removeContextNode(key: string) {
     });
   }
   contextRoots.value = walk(contextRoots.value);
+  // Auto-save after removing a context file
+  onSave();
 }
 
 const isDragOver = ref(false);
@@ -383,6 +393,8 @@ function onDrop(e: DragEvent) {
       if (!item.path || !item.name) continue;
       mergeContextNode(item);
     }
+    // Auto-save after drag-and-drop
+    onSave();
   } catch {
     /* ignore */
   }
@@ -545,7 +557,12 @@ async function onSave() {
             </el-icon>
             <el-icon v-else :size="14"><Document /></el-icon>
           </span>
-          <span class="cfp-item-path" :title="item.node.path">{{ item.node.name }}</span>
+          <span
+            class="cfp-item-path"
+            :class="{ 'cfp-item-path--clickable': item.node.type === 'file' }"
+            :title="item.node.type === 'file' ? `Click to preview: ${item.node.path}` : item.node.path"
+            @click="item.node.type === 'file' ? onFileClick(item.node) : undefined"
+          >{{ item.node.name }}</span>
           <el-button
             size="small"
             text
@@ -561,21 +578,7 @@ async function onSave() {
       </div>
     </div>
 
-    <div class="cfp-footer">
-      <el-button
-        v-if="mode === 'new'"
-        size="small"
-        @click="cancelNewMode"
-      >Cancel</el-button>
-      <el-button
-        size="small"
-        type="primary"
-        :loading="saving"
-        @click="onSave"
-      >
-        {{ mode === "new" ? "Create" : "Save" }}
-      </el-button>
-    </div>
+    <KnowledgePreviewDialog ref="previewDlg" />
   </div>
 </template>
 
@@ -712,6 +715,13 @@ async function onSave() {
   white-space: nowrap;
   color: var(--el-text-color-regular);
 }
+.cfp-item-path--clickable {
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.cfp-item-path--clickable:hover {
+  color: var(--el-color-primary);
+}
 .cfp-empty {
   flex: 1;
   display: flex;
@@ -720,12 +730,5 @@ async function onSave() {
   font-size: 11px;
   color: var(--el-text-color-placeholder);
   text-align: center;
-}
-.cfp-footer {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-  padding: 8px;
-  border-top: 1px solid var(--el-border-color-lighter);
 }
 </style>

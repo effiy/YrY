@@ -25,29 +25,23 @@ interface MentionFile {
   category: string;
 }
 
-const allFiles = ref<MentionFile[]>([]);
-const loading = ref(false);
+const flatMentionFiles = computed<MentionFile[]>(() => {
+  return knowledgeStore.flatFiles.map(f => ({
+    path: f.path,
+    name: f.name,
+    category: f.category,
+  }));
+});
+
+const loaded = ref(false);
 
 watch(() => props.visible, async (v) => {
-  if (v && !allFiles.value.length) {
-    loading.value = true;
+  if (v && !loaded.value) {
     try {
-      await knowledgeStore.loadFileTree();
-      const flat: MentionFile[] = [];
-      function walk(nodes: any[]) {
-        for (const n of nodes) {
-          if (n.type === "file") {
-            flat.push({ path: n.path || n.key, name: n.name, category: n.category || "" });
-          }
-          if (n.children?.length) walk(n.children);
-        }
-      }
-      walk(knowledgeStore.fileTree);
-      allFiles.value = flat;
+      await knowledgeStore.loadAll();
+      loaded.value = true;
     } catch {
       /* ignore */
-    } finally {
-      loading.value = false;
     }
   }
 });
@@ -55,8 +49,9 @@ watch(() => props.visible, async (v) => {
 // ── Fuzzy filter ──
 const filtered = computed(() => {
   const q = props.query.toLowerCase().trim();
-  if (!q) return allFiles.value.slice(0, 20);
-  return allFiles.value
+  const files = flatMentionFiles.value;
+  if (!q) return files.slice(0, 20);
+  return files
     .filter(f => f.name.toLowerCase().includes(q) || f.path.toLowerCase().includes(q))
     .slice(0, 12);
 });
@@ -90,10 +85,12 @@ defineExpose({ onKeydown });
 
 <template>
   <div v-if="visible" class="fmd-dropdown">
-    <div v-if="loading" class="fmd-loading">Loading files...</div>
+    <template v-if="knowledgeStore.loading && !flatMentionFiles.length">
+      <div class="fmd-loading">Loading files...</div>
+    </template>
     <template v-else>
       <div v-if="!filtered.length" class="fmd-empty">
-        {{ allFiles.length ? "No matching files" : "No knowledge files available" }}
+        {{ flatMentionFiles.length ? "No matching files" : "No knowledge files available" }}
       </div>
       <div
         v-for="(f, i) in filtered"

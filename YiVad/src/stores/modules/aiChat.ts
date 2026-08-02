@@ -88,6 +88,9 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   // Results from the most recent web search (displayed in the message bubble).
   const webSearchResults = ref<WebSearchResult[]>([]);
 
+  // True while web search API call is in-flight.
+  const webSearching = ref(false);
+
   // True when the active conversation has ctx:-tagged files (can use RAG).
   const ragActive = computed(() => {
     const tags = activeConversation.value?.tags ?? [];
@@ -531,12 +534,15 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     // available for injection into the chat context.
     let searchContext = "";
     if (webSearchEnabled.value && content) {
+      webSearching.value = true;
       try {
         const res = await webSearch(content);
         webSearchResults.value = res.results ?? [];
         searchContext = formatSearchResults(webSearchResults.value);
       } catch {
         webSearchResults.value = [];
+      } finally {
+        webSearching.value = false;
       }
     } else {
       webSearchResults.value = [];
@@ -969,6 +975,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     ragEnabled,
     webSearchEnabled,
     webSearchResults,
+    webSearching,
     weChatVisible,
     batchMode,
     selectedKeys,
