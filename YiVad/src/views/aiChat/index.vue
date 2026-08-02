@@ -1,5 +1,5 @@
 <script setup lang="ts" name="aiChat">
-import { onMounted } from "vue";
+import { onMounted, provide, ref } from "vue";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { useResizable } from "@/hooks/useResizable";
 import AiChatBox from "@/components/AiChatBox/AiChatBox.vue";
@@ -8,10 +8,21 @@ import SessionEditDialog from "./components/SessionEditDialog.vue";
 import PageContextEditor from "./components/PageContextEditor.vue";
 import TagManagerDialog from "./components/TagManagerDialog.vue";
 import WeChatSettingsDialog from "./components/WeChatSettingsDialog.vue";
+import KnowledgePreviewDialog from "./components/KnowledgePreviewDialog.vue";
 
 const store = useAiChatStore();
 
 const { width: sidebarW, startResize } = useResizable(280, 200, 600, "aiChat.sidebarW");
+
+// ── Shared knowledge file preview dialog ──
+
+const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
+
+function openKnowledgePreview(path: string) {
+  previewDlg.value?.open(path);
+}
+
+provide("openKnowledgePreview", openKnowledgePreview);
 
 onMounted(() => {
   store.loadConversations();
@@ -27,6 +38,7 @@ onMounted(() => {
     <section class="ai-chat__main">
       <AiChatBox />
     </section>
+    <KnowledgePreviewDialog ref="previewDlg" />
     <SessionEditDialog />
     <PageContextEditor />
     <TagManagerDialog />

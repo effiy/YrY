@@ -4,15 +4,14 @@
   Positioned between knowledge files and chat sessions in the aiChat layout.
 -->
 <script setup lang="ts" name="aiChatContextFilesPanel">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, inject } from "vue";
 import { Delete, DataAnalysis, Search, FolderOpened, Folder, Document, Plus, FolderChecked } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { readKnowledgeFile } from "@/api/modules/knowledgeService";
-import KnowledgePreviewDialog from "./KnowledgePreviewDialog.vue";
 
 const store = useAiChatStore();
-const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
+const openPreview = inject<(path: string) => void>("openKnowledgePreview", () => {});
 
 // ── Search / filter ──
 const contextSearch = ref("");
@@ -104,7 +103,7 @@ function toggleFolderCollapse(key: string) {
 
 function onFileClick(node: ContextNode) {
   if (node.type === "file" && node.path) {
-    previewDlg.value?.open(node.path);
+    openPreview(node.path);
   }
 }
 
@@ -619,8 +618,6 @@ async function onSave() {
         {{ mode === "new" ? "No knowledge files yet. Drag files from the left panel." : "No context files. Drag files from the knowledge panel on the left." }}
       </div>
     </div>
-
-    <KnowledgePreviewDialog ref="previewDlg" />
   </div>
 </template>
 

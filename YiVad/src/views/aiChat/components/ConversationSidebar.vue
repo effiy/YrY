@@ -1,11 +1,10 @@
 <script setup lang="ts" name="aiChatConversationSidebar">
-import { computed, onMounted, ref } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 import { useAicrKnowledgeStore } from "@/stores/modules/aicr/knowledge";
 import type { KnowledgeFileEntry } from "@/api/interface/yiweb";
-import KnowledgePreviewDialog from "./KnowledgePreviewDialog.vue";
 
 const knowledgeStore = useAicrKnowledgeStore();
-const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
+const openPreview = inject<(path: string) => void>("openKnowledgePreview", () => {});
 
 // ── Tree: directory-based, mirrors aicr KnowledgeTree ──
 
@@ -81,7 +80,7 @@ onMounted(() => {
 
 function onNodeClick(data: TreeNode) {
   if (data.type === "file" && data.entry) {
-    previewDlg.value?.open(data.entry.path);
+    openPreview(data.entry.path);
   }
 }
 
@@ -190,8 +189,6 @@ function onDragStart(e: DragEvent, data: TreeNode) {
         </template>
       </el-tree>
     </el-scrollbar>
-
-    <KnowledgePreviewDialog ref="previewDlg" />
   </div>
 </template>
 
