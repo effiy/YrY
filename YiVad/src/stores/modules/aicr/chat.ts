@@ -279,17 +279,28 @@ export const useAicrChatStore = defineStore("yivad-aicr-chat", () => {
     draftImages.value = [];
   }
 
+  // Chain persisting calls — see aiChat.ts persistActive for rationale.
+  let _persistChain: Promise<void> = Promise.resolve();
+
   /** Persist the active session to the backend. Mirrors aiChat.ts persistActive. */
   async function persistActive() {
     if (!activeSession.value) return;
+    const prev = _persistChain;
+    let resolve: () => void;
+    _persistChain = new Promise(r => {
+      resolve = r;
+    });
     try {
-      await upsertSession({
-        key: activeSession.value.key,
-        messages: activeSession.value.messages,
-        updatedAt: Date.now()
-      });
-    } catch {
-      /* ignore */
+      await prev;
+      if (!activeSession.value) return;
+      const msgs = activeSession.value.messages;
+      const key = activeSession.value.key;
+      const now = Date.now();
+      await upsertSession({ key, messages: msgs, updatedAt: now });
+    } catch (e: any) {
+      console.error("[aicr] persistActive failed:", e?.message ?? e);
+    } finally {
+      resolve!();
     }
   }
 
@@ -307,7 +318,7 @@ export const useAicrChatStore = defineStore("yivad-aicr-chat", () => {
     const msgs = [...activeSession.value.messages];
     msgs.splice(idx, 1);
     activeSession.value = { ...activeSession.value, messages: msgs };
-    upsertSession({ key: activeSession.value.key, messages: msgs }).catch(() => {});
+    persistActive();
   }
 
   function abortSend() {

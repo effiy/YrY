@@ -91,10 +91,77 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   // True while web search API call is in-flight.
   const webSearching = ref(false);
 
+  // Context change history for undo support. Each entry stores the state
+  // before a change was applied so it can be restored.
+  interface ContextChangeEntry {
+    path: string;
+    previousContent: string;
+    previousPageContent: string;
+    previousTags: string[];
+    timestamp: number;
+  }
+  const contextChangeHistory = ref<ContextChangeEntry[]>([]);
+  const MAX_CHANGE_HISTORY = 50;
+
   // True when the active conversation has ctx:-tagged files (can use RAG).
   const ragActive = computed(() => {
     const tags = activeConversation.value?.tags ?? [];
     return tags.some(t => typeof t === "string" && t.startsWith("ctx:"));
+  });
+
+  /**
+   * System prompt snippet that teaches the AI how to propose context file edits.
+   * Injected when RAG is active, so the model knows it can suggest changes to
+   * the session's knowledge context via fenced code blocks.
+   */
+  const contextChangeSystemPrompt = computed(() => {
+    if (!ragActive.value) return "";
+    const hasContent = (activeConversation.value?.pageContent ?? "").trim().length > 0;
+    const files = (activeConversation.value?.tags ?? [])
+      .filter(t => typeof t === "string" && t.startsWith("ctx:"))
+      .map(t => (t as string).slice(4));
+    if (!files.length && !hasContent) return "";
+    const fileList = files.map(f => `  - ${f}`).join("\n");
+    return [
+      "",
+      "## Context file editing",
+      "",
+      "You can manage the session's context files. The user will see visual cards and can apply or reject your proposals.",
+      "",
+      "**Editing file content** — use `context:<path>`:",
+      "",
+      "```context:<path>",
+      "<the complete new markdown content for this file>",
+      "```",
+      "",
+      "**Adding a file to context** — use `context:add <path>` (tag only, no content required):",
+      "",
+      "```context:add <path>",
+      "```",
+      "",
+      "**Removing a file from context** — use `context:remove <path>`:",
+      "",
+      "```context:remove <path>",
+      "```",
+      "",
+      "**Showing a file to the user** — use `context:view <path>`:",
+      "",
+      "```context:view <path>",
+      "```",
+      "",
+      "**Actions summary:**",
+      "- **Create**: use a path not listed below with full content",
+      "- **Update**: include the COMPLETE new content for an existing file",
+      "- **Delete**: use an empty code block with `context:<path>`",
+      "- **Add to context**: use `context:add <path>` to link a file without editing it",
+      "- **Remove from context**: use `context:remove <path>` to unlink a file",
+      "- **View file**: use `context:view <path>` to show current content",
+      "",
+      "Current context files:",
+      fileList || "  (none)",
+      "",
+      "**Important:** For create/update, include COMPLETE file content, not just a diff.",
+    ].join("\n");
   });
 
   // Backward-compat aliases
@@ -413,6 +480,217 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     closeContextEditor();
   }
 
+  /**
+   * Apply a context change proposal from an AI message.
+   *
+   * The session's pageContent is built by `ContextFilesPanel.buildPageContent()`
+   * as sections joined by `\n\n---\n\n`:
+   *
+   *   ## path1.md
+   *
+   *   content for path1
+   *
+   *   ---
+   *
+   *   ## path2.md
+   *
+   *   content for path2
+   *
+   * This method splits on the separator, locates the target section by its
+   * `## <path>` header, and replaces / inserts / removes it. It also keeps
+   * `ctx:<path>` tags in sync with the sections.
+   *
+   * @param path    File path within the context (e.g. "notes/deployment.md")
+   * @param content New markdown content for the section (empty = delete)
+   */
+  async function applyContextChange(path: string, content: string) {
+    const s = activeConversation.value;
+    if (!s) return;
+    const normalized = path.trim();
+    if (!normalized) return;
+
+    const current = s.pageContent || "";
+    const header = `## ${normalized}`;
+    const SEP = "\n\n---\n\n";
+
+    // Split into sections by separator, trim whitespace, drop empties
+    const sections = current
+      .split(SEP)
+      .map(sec => sec.trim())
+      .filter(Boolean);
+
+    // Find existing section index
+    let existingIdx = -1;
+    for (let i = 0; i < sections.length; i++) {
+      if (sections[i].startsWith(header)) {
+        existingIdx = i;
+        break;
+      }
+    }
+
+    const trimmedContent = content.trim();
+
+    // Save history for undo BEFORE mutating
+    const previousPageContent = current;
+    const previousTags = [...(s.tags ?? [])];
+    const previousSectionContent = existingIdx >= 0
+      ? getContextSectionContent(normalized)
+      : "";
+    const histEntry: ContextChangeEntry = {
+      path: normalized,
+      previousContent: previousSectionContent,
+      previousPageContent,
+      previousTags,
+      timestamp: Date.now()
+    };
+    contextChangeHistory.value = [
+      histEntry,
+      ...contextChangeHistory.value
+    ].slice(0, MAX_CHANGE_HISTORY);
+
+    if (!trimmedContent) {
+      // ── Delete ──
+      if (existingIdx < 0) return;
+      sections.splice(existingIdx, 1);
+    } else if (existingIdx >= 0) {
+      // ── Update ──
+      sections[existingIdx] = `${header}\n\n${trimmedContent}`;
+    } else {
+      // ── Create ──
+      sections.push(`${header}\n\n${trimmedContent}`);
+    }
+
+    const newPageContent = sections.join(SEP);
+
+    // Sync ctx: tags — keep them aligned with the sections so RAG scope
+    // stays accurate and ContextFilesPanel rebuilds the correct tree.
+    const tags = [...(s.tags ?? [])];
+    const ctxTag = `ctx:${normalized}`;
+    if (!trimmedContent) {
+      // Delete: remove the ctx: tag
+      const tagIdx = tags.indexOf(ctxTag);
+      if (tagIdx >= 0) tags.splice(tagIdx, 1);
+    } else if (existingIdx < 0 && !tags.includes(ctxTag)) {
+      // Create: add ctx: tag if not already present
+      tags.push(ctxTag);
+    }
+    // Update: keep existing tag (no change needed)
+
+    await updateSessionMeta(s.key, { pageContent: newPageContent, tags });
+  }
+
+  /**
+   * Remove a context file section from pageContent by path.
+   * Convenience wrapper — delegates to applyContextChange with empty content.
+   */
+  async function deleteContextSection(path: string) {
+    return applyContextChange(path, "");
+  }
+
+  /**
+   * Undo a context change from history.
+   *
+   * @param path  If provided, finds and restores the most recent change for
+   *              that specific path. If omitted, restores the most recent
+   *              change regardless of path (global undo).
+   */
+  async function undoLastContextChange(path?: string) {
+    const s = activeConversation.value;
+    if (!s) return;
+    if (!contextChangeHistory.value.length) return;
+
+    let idx = -1;
+    if (path) {
+      idx = contextChangeHistory.value.findIndex(e => e.path === path);
+    } else {
+      idx = 0;
+    }
+    if (idx < 0) return;
+
+    const entry = contextChangeHistory.value[idx];
+    contextChangeHistory.value = [
+      ...contextChangeHistory.value.slice(0, idx),
+      ...contextChangeHistory.value.slice(idx + 1)
+    ];
+    await updateSessionMeta(s.key, {
+      pageContent: entry.previousPageContent,
+      tags: entry.previousTags
+    });
+  }
+
+  /**
+   * Add a context file by path — adds a `ctx:<path>` tag to the session.
+   * The file content is NOT automatically loaded into pageContent;
+   * that happens via ContextFilesPanel or a subsequent context change.
+   */
+  async function addContextFile(path: string) {
+    const s = activeConversation.value;
+    if (!s) return;
+    const normalized = path.trim();
+    if (!normalized) return;
+    const ctxTag = `ctx:${normalized}`;
+    const tags = [...(s.tags ?? [])];
+    if (tags.includes(ctxTag)) return;
+    // Save history before mutating
+    contextChangeHistory.value = [
+      { path: normalized, previousContent: "", previousPageContent: s.pageContent || "", previousTags: [...(s.tags ?? [])], timestamp: Date.now() },
+      ...contextChangeHistory.value
+    ].slice(0, MAX_CHANGE_HISTORY);
+    tags.push(ctxTag);
+    await updateSessionMeta(s.key, { tags });
+  }
+
+  /**
+   * Remove a context file by path — removes the `ctx:<path>` tag and the
+   * corresponding pageContent section (if any).
+   */
+  async function removeContextFile(path: string) {
+    const s = activeConversation.value;
+    if (!s) return;
+    const normalized = path.trim();
+    if (!normalized) return;
+    const ctxTag = `ctx:${normalized}`;
+    const tags = (s.tags ?? []).filter(t => t !== ctxTag);
+    if (tags.length === (s.tags ?? []).length && !getContextSectionContent(normalized)) {
+      return; // nothing to remove
+    }
+    // Save history before mutating (applyContextChange will add its own entry too,
+    // but we want a clean tag-only revert point)
+    contextChangeHistory.value = [
+      { path: normalized, previousContent: getContextSectionContent(normalized), previousPageContent: s.pageContent || "", previousTags: [...(s.tags ?? [])], timestamp: Date.now() },
+      ...contextChangeHistory.value
+    ].slice(0, MAX_CHANGE_HISTORY);
+    // Also remove the section from pageContent
+    await applyContextChange(normalized, "");
+    // Then update tags (applyContextChange already handles tag removal, but
+    // this ensures the tag is gone even if there was no section)
+    await updateSessionMeta(s.key, { tags });
+  }
+
+  /**
+   * Get the current content of a context file section from pageContent.
+   * Uses the same split-on-separator approach as applyContextChange so
+   * the returned content never includes separator debris.
+   * Returns empty string if the section doesn't exist.
+   */
+  function getContextSectionContent(path: string): string {
+    const s = activeConversation.value;
+    if (!s) return "";
+    const current = s.pageContent || "";
+    const header = `## ${path.trim()}`;
+    const SEP = "\n\n---\n\n";
+    const sections = current.split(SEP);
+    for (const section of sections) {
+      const trimmed = section.trim();
+      if (trimmed.startsWith(header)) {
+        // Strip the header line + any blank line after it
+        const body = trimmed.slice(header.length).trim();
+        return body;
+      }
+    }
+    return "";
+  }
+
   function openTagManager() {
     if (!activeConversation.value) return;
     tagManagerVisible.value = true;
@@ -502,21 +780,34 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     activeConversation.value = { ...activeConversation.value, messages: next };
   }
 
+  // Chain persisting calls so a fire-and-forget persist (e.g. from onDone) can't
+  // race with a later explicit persist (e.g. from deleteMessage). Each call waits
+  // for the previous one to finish, then snapshots the *latest* messages before
+  // sending its own request.
+  let _persistChain: Promise<void> = Promise.resolve();
+
   async function persistActive() {
     if (!activeConversation.value) return;
+    const prev = _persistChain;
+    let resolve: () => void;
+    _persistChain = new Promise(r => {
+      resolve = r;
+    });
     try {
-      await upsertSession({
-        key: activeConversation.value.key,
-        messages: activeConversation.value.messages,
-        updatedAt: Date.now()
-      });
+      await prev;
+      if (!activeConversation.value) return;
+      const msgs = activeConversation.value.messages;
+      const key = activeConversation.value.key;
+      const now = Date.now();
+      await upsertSession({ key, messages: msgs, updatedAt: now });
       conversations.value = conversations.value.map(c =>
-        c.key === activeConversation.value!.key
-          ? { ...c, updatedAt: Date.now(), messages: activeConversation.value!.messages }
-          : c
+        c.key === key ? { ...c, updatedAt: now, messages: msgs } : c
       );
-    } catch {
-      /* ignore */
+    } catch (e: any) {
+      console.error("[aiChat] persistActive failed:", e?.message ?? e);
+      ElMessage.error("Failed to save messages");
+    } finally {
+      resolve!();
     }
   }
 
@@ -530,23 +821,8 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     }
     if (!activeConversation.value) return;
 
-    // Web search: perform search before building messages so results are
-    // available for injection into the chat context.
-    let searchContext = "";
-    if (webSearchEnabled.value && content) {
-      webSearching.value = true;
-      try {
-        const res = await webSearch(content);
-        webSearchResults.value = res.results ?? [];
-        searchContext = formatSearchResults(webSearchResults.value);
-      } catch {
-        webSearchResults.value = [];
-      } finally {
-        webSearching.value = false;
-      }
-    } else {
-      webSearchResults.value = [];
-    }
+    // Store the query for potential web search
+    const userQuery = content;
 
     const now = Date.now();
     const images = [...draftImages.value];
@@ -554,8 +830,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
       type: "user",
       message: content,
       timestamp: now,
-      ...(images.length ? { imageDataUrls: images } : {}),
-      ...(searchContext ? { searchContext } : {})
+      ...(images.length ? { imageDataUrls: images } : {})
     };
     const petMsg: ChatMessage = { type: "pet", message: "", timestamp: now + 1 };
     const prevLen = activeConversation.value.messages?.length ?? 0;
@@ -563,7 +838,56 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     input.value = "";
     draftImages.value = [];
 
-    await runStream(prevLen, petMsg.timestamp, "send", searchContext);
+    // Start streaming immediately — web search runs in background.
+    const streamPromise = runStream(prevLen, petMsg.timestamp, "send", "");
+
+    // Fire-and-forget web search in background.
+    // Strategy: run search in parallel with AI response. When search completes:
+    //   1. Update UI with results immediately
+    //   2. Wait for main stream to finish
+    //   3. Send a follow-up message with search results as context
+    // This gives the user an immediate AI response AND web-augmented follow-up.
+    if (webSearchEnabled.value && userQuery) {
+      webSearching.value = true;
+      let pendingSearchContext = "";
+
+      webSearch(userQuery, 6).then(async res => {
+        const results = res.results ?? [];
+        webSearchResults.value = results;
+        pendingSearchContext = results.length ? formatSearchResults(results) : "";
+        webSearching.value = false;
+
+        // Update the user message with search context for display
+        if (pendingSearchContext) {
+          setActiveMessages(msgs => {
+            const idx = msgs.findIndex(m => m.timestamp === now);
+            if (idx < 0) return msgs;
+            const next = [...msgs];
+            next[idx] = { ...next[idx], searchContext: pendingSearchContext };
+            return next;
+          });
+        }
+      }).catch(() => {
+        webSearching.value = false;
+        webSearchResults.value = [];
+      }).finally(async () => {
+        // Wait for main stream to finish, then send follow-up
+        await streamPromise;
+        if (!pendingSearchContext) return;
+        await persistActive();
+        const s = activeConversation.value;
+        if (!s) return;
+        const followUpPet: ChatMessage = { type: "pet", message: "", timestamp: Date.now() + 1 };
+        const msgs = s.messages ?? [];
+        const followUpPrevLen = msgs.length;
+        setActiveMessages(m => [...m, followUpPet]);
+        await runStream(followUpPrevLen, followUpPet.timestamp, "send", pendingSearchContext);
+      });
+    } else {
+      webSearchResults.value = [];
+    }
+
+    await streamPromise;
   }
 
   /**
@@ -685,18 +1009,36 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
         scope = common.join("/") || undefined;
       }
 
-      const ragMessages = aiMessages
-        .filter(m => (m.message ?? "").trim().length > 0)
-        .map(m => ({ role: m.type === "user" ? ("user" as const) : ("assistant" as const), content: m.message }));
+      const ragMessages: Array<{ role: "user" | "assistant" | "system"; content: string }> = [];
+      // Inject context-editing instructions as a system message so the AI knows
+      // it can propose context file changes (BUG 1 fix — was only sent in non-RAG mode).
+      if (contextChangeSystemPrompt.value) {
+        ragMessages.push({ role: "system", content: contextChangeSystemPrompt.value });
+      }
+      ragMessages.push(
+        ...aiMessages
+          .filter(m => (m.message ?? "").trim().length > 0)
+          .map(m => ({ role: m.type === "user" ? ("user" as const) : ("assistant" as const), content: m.message }))
+      );
       const handlers: RagStreamHandlers = { onChunk, onSources, onDone, onError };
       abort = streamRagChat({ messages: ragMessages, scope }, handlers).abort;
     } else {
+      // Build combined system prompt: caller-provided systemPrompt (e.g. file preview)
+      // + context-editing instructions when the session has context files.
+      // + web search pending note when search is running in background.
+      const webSearchPendingNote = (webSearchEnabled.value && !searchContext)
+        ? "Note: A web search has been initiated for the user's query. Results are being fetched and will be provided to you in a follow-up message. In your current response, briefly acknowledge the query and indicate that you're checking the latest information from the web."
+        : "";
+      const sysParts = [systemPrompt.value, contextChangeSystemPrompt.value, webSearchPendingNote]
+        .map(s => s.trim())
+        .filter(Boolean);
+      const system = sysParts.length ? sysParts.join("\n\n") : undefined;
       const result = streamChat(
         {
           messages: aiMessages,
           model: DEFAULT_MODEL,
           images,
-          ...(systemPrompt.value ? { system: systemPrompt.value } : {})
+          ...(system ? { system } : {})
         },
         onChunk,
         onDone,
@@ -822,9 +1164,53 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     const insertedPet: ChatMessage = { type: "pet", message: "", timestamp: now + 1 };
     const nextMessages = [...messages];
     nextMessages.splice(i + 1, 0, insertedPet);
+    const userTimestamp = typeof userMsg.timestamp === "number" ? userMsg.timestamp : now;
     activeConversation.value = { ...s, messages: nextMessages, updatedAt: now };
     scrollTick.value++;
-    await runStream(i, insertedPet.timestamp, "resend");
+
+    // Start streaming immediately; web search runs in background
+    const streamPromise = runStream(i, insertedPet.timestamp, "resend", "");
+
+    // Fire-and-forget web search with follow-up after stream completes
+    if (webSearchEnabled.value && text) {
+      webSearching.value = true;
+      let pendingSearchContext = "";
+
+      webSearch(text, 6).then(async res => {
+        const results = res.results ?? [];
+        webSearchResults.value = results;
+        pendingSearchContext = results.length ? formatSearchResults(results) : "";
+        webSearching.value = false;
+
+        if (pendingSearchContext) {
+          setActiveMessages(msgs => {
+            const idx = msgs.findIndex(m => m.timestamp === userTimestamp);
+            if (idx < 0) return msgs;
+            const next = [...msgs];
+            next[idx] = { ...next[idx], searchContext: pendingSearchContext };
+            return next;
+          });
+        }
+      }).catch(() => {
+        webSearching.value = false;
+        webSearchResults.value = [];
+      }).finally(async () => {
+        await streamPromise;
+        if (!pendingSearchContext) return;
+        await persistActive();
+        const sess = activeConversation.value;
+        if (!sess) return;
+        const followUpPet: ChatMessage = { type: "pet", message: "", timestamp: Date.now() + 1 };
+        const msgs = sess.messages ?? [];
+        const prev = msgs.length;
+        setActiveMessages(m => [...m, followUpPet]);
+        await runStream(prev, followUpPet.timestamp, "send", pendingSearchContext);
+      });
+    } else {
+      webSearchResults.value = [];
+    }
+
+    await streamPromise;
   }
 
   /** Delete a single message from the active conversation. */
@@ -1001,6 +1387,14 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     openContextEditor,
     closeContextEditor,
     saveContextEditorContent,
+    applyContextChange,
+    deleteContextSection,
+    getContextSectionContent,
+    contextChangeHistory,
+    undoLastContextChange,
+    addContextFile,
+    removeContextFile,
+    contextChangeSystemPrompt,
     enterNewContextMode,
     exitNewContextMode,
     toggleTagManager,
