@@ -2,7 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, provide, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useAiChatStore } from "@/stores/modules/aiChat";
-import { useAicrKnowledgeStore } from "@/stores/modules/aicr/knowledge";
+import { useKnowledgeTreeStore } from "@/stores/modules/knowledgeTree";
 import { readKnowledgeFile } from "@/api/modules/knowledgeService";
 import { useResizable } from "@/hooks/useResizable";
 import MessageList from "@/views/aiChat/components/MessageList.vue";
@@ -54,7 +54,7 @@ const props = withDefaults(
 );
 
 const store = useAiChatStore();
-const knowledgeStore = useAicrKnowledgeStore();
+const knowledgeStore = useKnowledgeTreeStore();
 
 // ── Side-panel mode: resize / collapse (right/left) ──
 

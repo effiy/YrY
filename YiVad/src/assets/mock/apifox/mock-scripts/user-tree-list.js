@@ -1,9 +1,9 @@
 // Migrated from Easy-Mock: /geeker/user/tree/list
-var MockJs = require('mockjs');
+let MockJs = require('mockjs');
 
 function getBody() {
   try {
-    var b = $$.mockRequest.body.toJSON();
+    let b = $$.mockRequest.body.toJSON();
     if (b && typeof b === 'object') return b;
   } catch (e) {}
   try {
@@ -13,7 +13,7 @@ function getBody() {
   }
 }
 
-var query = getBody();
+let query = getBody();
 if (query.pageNum == null) query.pageNum = $$.mockRequest.getParam('pageNum');
 if (query.pageSize == null) query.pageSize = $$.mockRequest.getParam('pageSize');
 if (query.username == null) query.username = $$.mockRequest.getParam('username');
@@ -22,11 +22,11 @@ if (query.age == null) query.age = $$.mockRequest.getParam('age');
 if (query.idCard == null) query.idCard = $$.mockRequest.getParam('idCard');
 if (query.email == null) query.email = $$.mockRequest.getParam('email');
 if (query.status === undefined) {
-  var statusParam = $$.mockRequest.getParam('status');
+  let statusParam = $$.mockRequest.getParam('status');
   if (statusParam !== undefined && statusParam !== null && statusParam !== '') query.status = statusParam;
 }
 
-var AVATARS = [
+let AVATARS = [
   'https://i.imgtg.com/2023/01/16/QRBHS.jpg',
   'https://i.imgtg.com/2023/01/16/QRqMK.jpg',
   'https://i.imgtg.com/2023/01/16/QR57a.jpg',
@@ -62,7 +62,7 @@ function buildItem() {
   };
 }
 
-var data;
+let data;
 if (query.username || query.gender || query.age || query.idCard || query.email || query.status !== undefined) {
   data = MockJs.mock({
     'list|10': [buildItem()],

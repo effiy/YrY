@@ -722,7 +722,7 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
 |--------|---------------------------|-----------|---------------------------|
 | Platform (inference / gateway / observability) | | | |
 | Middleware (vector DB / message / cache) | | | |
-| Business (BRD / chat / aicr) | | | |
+| Business (BRD / chat / code review) | | | |
 | Infrastructure (deploy / monitoring / security) | | | |
 
 ## Milestone Alignment

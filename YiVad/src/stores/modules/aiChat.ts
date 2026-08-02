@@ -2,7 +2,7 @@
  * AI Chat store — conversation list, active session, SSE streaming via
  * `streamChat`, message persistence through the YiWeb sessions API.
  *
- * Mirrors `src/stores/modules/aicr/chat.ts` shape, extended with a
+ * Mirrors the code review chat store shape, extended with a
  * conversation sidebar and per-message feedback.
  */
 import { defineStore } from "pinia";
@@ -19,7 +19,7 @@ import type { WebSearchResult } from "@/api/modules/searchService";
 import type { SessionDocument, ChatMessage, FaqDocument } from "@/api/interface/yiweb";
 import { normalizeEntries } from "@/api/interface/yiweb";
 import type { RagSource, RagStreamHandlers } from "@/api/interface/rag";
-import type { FileNode } from "@/stores/modules/aicr/fileTree";
+import type { FileNode } from "@/api/interface/yiweb";
 import type { AiChatFeedbackRating, AiChatStreamingType } from "@/views/aiChat/types";
 import { DEFAULT_MODEL } from "@/views/aiChat/constants";
 
@@ -458,7 +458,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     if (activeConversation.value?.key === key) return;
     // Abort any in-flight stream before switching — otherwise the old stream
     // keeps running, and its onDone handler persists the wrong session while
-    // the old pet message is abandoned as empty text. Mirrors aicr/chat.ts fix.
+    // the old pet message is abandoned as empty text. Mirrors the SSE abort fix.
     if (sending.value) stopSending();
     loading.value = true;
     error.value = null;

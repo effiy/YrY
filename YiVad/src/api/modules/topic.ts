@@ -9,7 +9,7 @@
  * MongoDB, while the markdown content lives in YiKnowledge files under
  * `brd/{topic}/{key}.md`. This mirrors the bug.ts pattern — the DB doc stays
  * lean for cheap queries, and long-form markdown is searchable by
- * YiKnowledge's scanner and editable in aicr.
+ * YiKnowledge's scanner and editable in the code review panel.
  */
 import { queryDocuments, createDocument, updateDocument, deleteDocument, callService } from "./dataService";
 import { readKnowledgeFile } from "./knowledgeService";

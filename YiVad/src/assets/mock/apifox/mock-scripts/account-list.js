@@ -1,9 +1,9 @@
 // Migrated from Easy-Mock: /geeker/account/list
-var MockJs = require('mockjs');
+let MockJs = require('mockjs');
 
 function getBody() {
   try {
-    var b = $$.mockRequest.body.toJSON();
+    let b = $$.mockRequest.body.toJSON();
     if (b && typeof b === 'object') return b;
   } catch (e) {}
   try {
@@ -13,7 +13,7 @@ function getBody() {
   }
 }
 
-var query = getBody();
+let query = getBody();
 if (query.pageNum == null) query.pageNum = $$.mockRequest.getParam('pageNum');
 if (query.pageSize == null) query.pageSize = $$.mockRequest.getParam('pageSize');
 if (query.username == null) query.username = $$.mockRequest.getParam('username');
@@ -21,11 +21,11 @@ if (query.gender == null) query.gender = $$.mockRequest.getParam('gender');
 if (query.idCard == null) query.idCard = $$.mockRequest.getParam('idCard');
 if (query.email == null) query.email = $$.mockRequest.getParam('email');
 if (query.status === undefined) {
-  var statusParam = $$.mockRequest.getParam('status');
+  let statusParam = $$.mockRequest.getParam('status');
   if (statusParam !== undefined && statusParam !== null && statusParam !== '') query.status = statusParam;
 }
 
-var AVATARS = [
+let AVATARS = [
   'https://iamge-1259297738.cos.ap-chengdu.myqcloud.com/img/20220728110013.jpg',
   'https://iamge-1259297738.cos.ap-chengdu.myqcloud.com/img/20220728110015.jpg',
   'https://iamge-1259297738.cos.ap-chengdu.myqcloud.com/img/20220728110012.jpg',
@@ -46,7 +46,7 @@ function buildItem() {
   };
 }
 
-var data;
+let data;
 if (query.pageSize > 10) {
   data = MockJs.mock({
     'datalist|18': [buildItem()],

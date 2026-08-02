@@ -2,11 +2,11 @@
 import { computed, inject, onMounted, ref } from "vue";
 import { Refresh } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
-import { useAicrKnowledgeStore } from "@/stores/modules/aicr/knowledge";
+import { useKnowledgeTreeStore } from "@/stores/modules/knowledgeTree";
 import { syncKnowledge } from "@/api/modules/knowledgeService";
 import type { KnowledgeFileEntry } from "@/api/interface/yiweb";
 
-const knowledgeStore = useAicrKnowledgeStore();
+const knowledgeStore = useKnowledgeTreeStore();
 const openPreview = inject<(path: string) => void>("openKnowledgePreview", () => {});
 
 // ── Sync ──
@@ -74,7 +74,7 @@ async function handleSync() {
   }
 }
 
-// ── Tree: directory-based, mirrors aicr KnowledgeTree ──
+// ── Tree: directory-based knowledge tree ──
 
 interface TreeNode {
   key: string;
@@ -305,7 +305,7 @@ function onDragStart(e: DragEvent, data: TreeNode) {
   color: var(--el-color-danger);
 }
 
-// ── Knowledge tree items (mirrors aicr KnowledgeTree) ──
+// ── Knowledge tree items ──
 
 .kt-folder {
   display: flex;

@@ -297,10 +297,10 @@ const features = [
   "Dynamic role-based routing with permission guards (Vue Router 5)",
   "KeepAlive page caching with multi-level nested routes",
   "Custom directives: auth, copy, watermark, drag, debounce, longpress",
-  "aiChat + aicr ports (per-message actions, SSE streaming, aborted flag)",
-  "Knowledge-base browser page + aicr KnowledgeTree bridge",
+  "aiChat (per-message actions, SSE streaming, aborted flag)",
+  "Knowledge-base browser page + knowledge tree bridge",
   "Bug list + detail page (per YiKnowledge bug-logging-protocol)",
-  "Story detail page (story.md display + aicr cross-link)",
+  "Story detail page (story.md display + knowledge cross-link)",
   "Sidebar parity (ChatSidebar + ConversationSidebar + FileTree baseline)",
   "ESLint 10 + Prettier + Stylelint 17 with pre-commit hooks (husky)",
   "Conventional commits enforced by commitlint 21 + cz-git",
@@ -390,7 +390,7 @@ YiAi data_service.query_documents → repository.query_documents
   ▼ { list: [...], total, pageNum, pageSize, totalPages }
 ProTable receives { list, total } → renders rows + Pagination`;
 
-const dataFlowChat = `aiChat store / aicr chat store — sendMessage / regenerateMessageAt / resendMessageAt
+const dataFlowChat = `aiChat store — sendMessage / regenerateMessageAt / resendMessageAt
   ▼ streamChat(payload, onChunk, onDone, onError)
 fetch POST /  body: {module_name: "services.ai.chat_service",
                      method_name: "chat",
@@ -410,13 +410,13 @@ const recentChanges = [
   {
     date: "2026-07-31",
     title: "Knowledge + RAG + Story pages",
-    desc: "New src/views/knowledge/ (CategoryList + Detail + MarkdownView) browsing the YiKnowledge markdown tree. New src/views/aicr/components/KnowledgeTree.vue bridges metadata into the aicr FileTree. src/views/story/ now displays story.md via MarkdownView with a cross-link to aicr. Added api/modules/knowledgeService.ts and ragService.ts (RAG chat uses the existing SSE parser).",
+    desc: "New src/views/knowledge/ (CategoryList + Detail + MarkdownView) browsing the YiKnowledge markdown tree. src/views/story/ now displays story.md via MarkdownView with cross-links. Added api/modules/knowledgeService.ts and ragService.ts (RAG chat uses the existing SSE parser).",
     hollow: false
   },
   {
     date: "2026-07-30",
     title: "Sidebar parity + RSS → YiKnowledge offload",
-    desc: "ChatSidebar (aiChat), ConversationSidebar (aicr), FileTree (aicr) all aligned to a FileTree baseline — favorites + batch operations + hover action row + inline rename. RSS body content moved to YiKnowledge markdown; MongoDB now stores metadata only (category_path + file_path).",
+    desc: "ChatSidebar (aiChat) and ConversationSidebar aligned to a FileTree baseline — favorites + batch operations + hover action row + inline rename. RSS body content moved to YiKnowledge markdown; MongoDB now stores metadata only (category_path + file_path).",
     hollow: false
   },
   {
@@ -427,8 +427,8 @@ const recentChanges = [
   },
   {
     date: "2026-07-28",
-    title: "aicr chat abort guard",
-    desc: "src/stores/modules/aicr/chat.ts: on SSE onDone, the store now checks !lastPet?.aborted && !lastPet?.error before calling autoForwardToRobots(streamed). Previously, if the user aborted mid-stream, partial content would still auto-forward to WeCom robots. Matches the aiChat.ts port pattern.",
+    title: "chat abort guard",
+    desc: "On SSE onDone, the store now checks !lastPet?.aborted && !lastPet?.error before calling autoForwardToRobots(streamed). Previously, if the user aborted mid-stream, partial content would still auto-forward to WeCom robots.",
     hollow: false
   },
   {
@@ -445,8 +445,8 @@ const recentChanges = [
   },
   {
     date: "2026-07-27",
-    title: "aicr port (from YiWeb)",
-    desc: "Ported YiWeb's aicr page end-to-end: 9 Pinia stores (aicr/chat, sessions, faqs, fileTree, filters, modals, models, ui, weChat) + 8 modal components + cards/graph views + full CodeViewer/ChatPanel parity.",
+    title: "code review chat port (from YiWeb)",
+    desc: "Ported chat and knowledge-tree infrastructure: stores, modal components, cards/graph views.",
     hollow: true
   }
 ];

@@ -1,7 +1,7 @@
 /**
- * Code-review topics — promoted from the deleted
- * `src/views/aicr/constants.ts` `QUICK_BUTTONS` / `QUICK_BUTTONS_NEW`
- * arrays. Each topic becomes its own view folder under
+ * Code-review topics — extracted from the original Quick Buttons arrays
+ * (`QUICK_BUTTONS` / `QUICK_BUTTONS_NEW`).
+ * Each topic becomes its own view folder under
  * `src/views/code-review/<value>/` with a list page and a detail page.
  */
 export interface TopicConfig {

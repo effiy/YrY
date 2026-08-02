@@ -66,7 +66,7 @@ export async function writeFile(path: string, content: string): Promise<void> {
  * Upload an image (data URL) to OSS.
  * Returns the public URL of the uploaded image.
  */
-export async function uploadImageToOss(dataUrl: string, directory = "aicr/images"): Promise<string> {
+export async function uploadImageToOss(dataUrl: string, directory = "chat/images"): Promise<string> {
   const url = buildYiAiUrl("/upload/upload-image-to-oss");
   const filename = `img_${Date.now()}.png`;
   const resp = await fetch(url, {

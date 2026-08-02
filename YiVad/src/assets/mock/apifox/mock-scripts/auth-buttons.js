@@ -1,13 +1,13 @@
 // Migrated from Easy-Mock: /geeker/auth/buttons
 function getToken() {
-  var token = $$.mockRequest.headers.get('x-access-token');
+  let token = $$.mockRequest.headers.get('x-access-token');
   if (!token) token = $$.mockRequest.headers.get('X-Access-Token');
   if (!token) token = $$.mockRequest.getParam('x-access-token');
   return token;
 }
 
-var token = getToken();
-var data;
+let token = getToken();
+let data;
 if (token === 'bqddxxwqmfncffacvbpkuxvwvqrhln') {
   data = {
     useProTable: ['add', 'batchAdd', 'export', 'batchDelete', 'status'],

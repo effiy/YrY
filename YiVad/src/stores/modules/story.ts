@@ -86,10 +86,10 @@ export const useStoryStore = defineStore("yivad-story", () => {
   const storyMarkdown = ref<KnowledgeReadResponse | null>(null);
   const storyMarkdownLoading = ref(false);
   // The story dir name (semantic) that resolved to the loaded markdown —
-  // used by the story page to navigate to aicr's knowledge tab.
+  // used by the story page to navigate to the knowledge tab.
   const storyKnowledgeDir = ref<string | null>(null);
   // All story.md entries for the currently filtered project — used to
-  // suggest "open in aicr" even when the current story has no markdown yet.
+  // suggest "open in code review" even when the current story has no markdown yet.
   const projectKnowledgeStories = ref<KnowledgeStoryEntry[]>([]);
 
   /** Resolve a story's markdown directory by matching `meta.key` first,

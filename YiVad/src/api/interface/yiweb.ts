@@ -202,7 +202,7 @@ export interface ProjectZipUploadEntry {
 export interface FaqDocument {
   key: string;
   title: string;
-  /** Primary prompt text (YiWeb aicr field) */
+  /** Primary prompt text */
   prompt: string;
   tags: string[];
   order?: number;
@@ -409,6 +409,17 @@ export interface KnowledgeStoryEntry {
   project: string;
   /** Semantic story directory name (e.g. "ai-chat-function"). */
   storyName: string;
+}
+
+/** File tree node used by aiChat and knowledge tree sidebar views. */
+export interface FileNode {
+  key: string;
+  name: string;
+  type: "file" | "folder";
+  children?: FileNode[];
+  session?: SessionDocument;
+  size?: number;
+  updatedAt?: number;
 }
 
 export interface KnowledgeStoriesResponse {

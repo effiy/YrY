@@ -1,11 +1,11 @@
 /**
  * WeCom (WeChat) bot service.
- * Robots are stored client-side in localStorage (mirrors YiWeb aicr);
+ * Robots are stored client-side in localStorage;
  * this module only handles outbound message dispatch via the YiAi backend.
  */
 import { buildYiAiUrl, yiAiAuthHeaders } from "@/config/yiweb";
 
-const ROBOTS_KEY = "aicr_wechat_robots";
+const ROBOTS_KEY = "chat_wechat_robots";
 
 export interface WeChatRobot {
   name: string;

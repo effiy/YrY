@@ -188,7 +188,7 @@
             </div>
           </template>
           <p v-if="relatedFiles.length" class="bug-detail__related-hint">
-            File paths auto-extracted from the description, root cause, and solution. Push them to the aicr sidebar for deeper review.
+            File paths auto-extracted from the description, root cause, and solution.
           </p>
           <ul v-if="relatedFiles.length" class="bug-detail__files">
             <li v-for="f in relatedFiles" :key="f">
@@ -197,12 +197,6 @@
             </li>
           </ul>
           <el-empty v-else description="No file paths detected in this bug's content" :image-size="60" />
-          <div v-if="relatedFiles.length" class="bug-detail__files-actions">
-            <el-button type="primary" :icon="Promotion" @click="pushToAicr">
-              Send {{ relatedFiles.length }} file{{ relatedFiles.length === 1 ? "" : "s" }} to aicr
-            </el-button>
-            <el-button :icon="Link" @click="goToAicr">Open aicr page</el-button>
-          </div>
         </el-card>
 
         <!-- Retrospective (auto-generated synthesis) -->
@@ -301,15 +295,12 @@ import {
   CopyDocument,
   Document,
   EditPen,
-  Link,
   Loading,
-  Promotion,
   Refresh,
   Timer,
   Warning
 } from "@element-plus/icons-vue";
 import { useBugStore } from "@/stores/modules/bug";
-import { useAicrFileTreeStore } from "@/stores/modules/aicr/fileTree";
 import { useMarkdown } from "@/hooks/useMarkdown";
 import { updateBug, readBugContent, type BugDocument, type BugContent, type BugSeverity, type BugPriority, type BugStatus, type BugType, type BugFrequency } from "@/api/modules/bug";
 import BugDrawer from "./components/BugDrawer.vue";
@@ -317,7 +308,6 @@ import BugDrawer from "./components/BugDrawer.vue";
 const route = useRoute();
 const router = useRouter();
 const store = useBugStore();
-const aicrFileTreeStore = useAicrFileTreeStore();
 const { render: renderMarkdown } = useMarkdown();
 
 const bug = computed(() => store.selectedBug);
@@ -568,24 +558,6 @@ const retro = computed<Retrospective>(() => {
     oneLiner
   };
 });
-
-async function pushToAicr() {
-  if (relatedFiles.value.length === 0) return;
-  try {
-    await aicrFileTreeStore.ensureFilesInTree(relatedFiles.value);
-    aicrFileTreeStore.setPendingFilter(relatedFiles.value);
-    aicrFileTreeStore.setPendingSelectKey(relatedFiles.value[0]);
-    ElMessage.success(`Sent ${relatedFiles.value.length} file${relatedFiles.value.length === 1 ? "" : "s"} to aicr`);
-    await router.push("/aicr");
-  } catch (err) {
-    console.error("Push to aicr failed:", err);
-    ElMessage.error("Failed to send files to aicr");
-  }
-}
-
-async function goToAicr() {
-  await router.push("/aicr");
-}
 
 function back() {
   router.push("/code-review/bugs");

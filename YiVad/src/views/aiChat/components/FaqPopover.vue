@@ -100,7 +100,7 @@ function rowClasses({ rowIndex }: { row: FaqDocument; rowIndex: number }) {
       highlight-current-row
       :row-class-name="rowClasses"
       @keydown="onTableKeydown"
-      empty-text="No FAQs yet — create them in YiWeb aicr first"
+      empty-text="No FAQs yet — create them in the chat panel first"
       class="fp-table"
     >
       <el-table-column label="#" width="48" type="index" />

@@ -2,7 +2,7 @@
  * Knowledge base service — wraps the four YiAi knowledge endpoints.
  *
  * YiAi scans ``~/YiKnowledge`` (markdown + YAML frontmatter) and returns
- * metadata for the aicr sidebar, plus story.md content for the story detail
+ * metadata for the code review sidebar, plus story.md content for the story detail
  * drawer. All endpoints are direct REST (not the RPC envelope) to mirror
  * fileService.
  */

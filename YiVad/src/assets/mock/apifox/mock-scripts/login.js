@@ -1,14 +1,14 @@
 // Migrated from Easy-Mock: /geeker/login
 // password is MD5 of "123456": e10adc3949ba59abbe56e057f20f883e
-var MockJs = require('mockjs');
+let MockJs = require('mockjs');
 
 // Apifox Mock: prefers getParam (reads from body/query/path)
-var username = $$.mockRequest.getParam('username');
-var password = $$.mockRequest.getParam('password');
+let username = $$.mockRequest.getParam('username');
+let password = $$.mockRequest.getParam('password');
 
 // Fallback: parse from body in some environments
 if (username == null || password == null) {
-  var body = {};
+  let body = {};
   try {
     body = $$.mockRequest.body.toJSON() || {};
   } catch (e) {
@@ -22,9 +22,9 @@ if (username == null || password == null) {
   if (password == null) password = body.password;
 }
 
-var PWD = 'e10adc3949ba59abbe56e057f20f883e';
-var okAdmin = username === 'admin' && password === PWD;
-var okUser = username === 'user' && password === PWD;
+let PWD = 'e10adc3949ba59abbe56e057f20f883e';
+let okAdmin = username === 'admin' && password === PWD;
+let okUser = username === 'user' && password === PWD;
 
 if (okAdmin) {
   $$.mockResponse.setBody({

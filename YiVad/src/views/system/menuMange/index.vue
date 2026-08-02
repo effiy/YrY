@@ -301,3 +301,21 @@ const columns: ColumnProps[] = [
   { prop: "operation", label: "Operations", width: 180, fixed: "right" }
 ];
 </script>
+
+<style scoped lang="scss">
+.table-box {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 55px - 40px);
+  padding: 10px 12px;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  :deep(.table-main) {
+    flex: 1;
+    height: auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
+}
+</style>

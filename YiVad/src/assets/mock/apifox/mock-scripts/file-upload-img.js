@@ -1,5 +1,5 @@
 // Migrated from Easy-Mock: /geeker/file/upload/img
-var MockJs = require('mockjs');
+let MockJs = require('mockjs');
 $$.mockResponse.setBody({
   code: 200,
   data: MockJs.mock({

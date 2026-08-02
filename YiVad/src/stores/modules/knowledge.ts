@@ -1,6 +1,6 @@
 /**
  * Knowledge store — page-level state for the public-facing Knowledge Hub
- * and per-category list/detail pages. Independent from the aicr knowledge
+ * and per-category list/detail pages. Independent from the code review knowledge
  * store: this one caches per-category file lists so the Hub ↔ List ↔
  * Detail round trips don't trigger repeated backend scans.
  */

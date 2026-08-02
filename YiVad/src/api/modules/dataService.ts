@@ -21,7 +21,7 @@ export function callService<T = any>(module: string, method: string, params: Rec
     method_name: method,
     parameters: params
   };
-  // RPC calls are idempotent and frequently fired in parallel (e.g. aicr's
+  // RPC calls are idempotent and frequently fired in parallel (e.g.
   // loadSessions + loadFileTree + refreshTagUniverse all call getSessions with
   // identical payloads). The axios canceler would otherwise abort in-flight
   // duplicates, which breaks that pattern. Opt out at the call site.
