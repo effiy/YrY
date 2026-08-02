@@ -13,6 +13,8 @@ import { streamChat } from "@/api/modules/chatService";
 import { streamRagChat } from "@/api/modules/ragService";
 import { queryDocuments } from "@/api/modules/dataService";
 import { loadRobots, sendWeChatMessage } from "@/api/modules/weChatService";
+import { webSearch, formatSearchResults } from "@/api/modules/searchService";
+import type { WebSearchResult } from "@/api/modules/searchService";
 import type { SessionDocument, ChatMessage, FaqDocument } from "@/api/interface/yiweb";
 import type { RagSource, RagStreamHandlers } from "@/api/interface/rag";
 import type { FileNode } from "@/stores/modules/aicr/fileTree";
@@ -78,6 +80,13 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   // RAG toggle — user-controlled. When ON + conversation has ctx: files → RAG chat.
   // Persisted to localStorage so the user's preference survives page reloads.
   const ragEnabled = ref(true);
+
+  // Web search toggle — user-controlled. When ON, the user's query is sent to
+  // the /web-search endpoint and results are prepended to the chat context.
+  const webSearchEnabled = ref(false);
+
+  // Results from the most recent web search (displayed in the message bubble).
+  const webSearchResults = ref<WebSearchResult[]>([]);
 
   // True when the active conversation has ctx:-tagged files (can use RAG).
   const ragActive = computed(() => {
@@ -518,13 +527,29 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     }
     if (!activeConversation.value) return;
 
+    // Web search: perform search before building messages so results are
+    // available for injection into the chat context.
+    let searchContext = "";
+    if (webSearchEnabled.value && content) {
+      try {
+        const res = await webSearch(content);
+        webSearchResults.value = res.results ?? [];
+        searchContext = formatSearchResults(webSearchResults.value);
+      } catch {
+        webSearchResults.value = [];
+      }
+    } else {
+      webSearchResults.value = [];
+    }
+
     const now = Date.now();
     const images = [...draftImages.value];
     const userMsg: ChatMessage = {
       type: "user",
       message: content,
       timestamp: now,
-      ...(images.length ? { imageDataUrls: images } : {})
+      ...(images.length ? { imageDataUrls: images } : {}),
+      ...(searchContext ? { searchContext } : {})
     };
     const petMsg: ChatMessage = { type: "pet", message: "", timestamp: now + 1 };
     const prevLen = activeConversation.value.messages?.length ?? 0;
@@ -532,7 +557,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     input.value = "";
     draftImages.value = [];
 
-    await runStream(prevLen, petMsg.timestamp, "send");
+    await runStream(prevLen, petMsg.timestamp, "send", searchContext);
   }
 
   /**
@@ -541,7 +566,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
    * streamed chunks into the pet message identified by `petTimestamp`.
    * Mirrors YiWeb `sessionChatContextChatMethods.streaming.js`.
    */
-  async function runStream(upToIdxInclusive: number, petTimestamp: number, type: AiChatStreamingType) {
+  async function runStream(upToIdxInclusive: number, petTimestamp: number, type: AiChatStreamingType, searchContext = "") {
     if (!activeConversation.value) return;
     const session = activeConversation.value;
     const slice = (session.messages ?? []).slice(0, upToIdxInclusive + 1);
@@ -556,6 +581,16 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
         type: "user",
         message: contextText,
         timestamp: (petTimestamp || Date.now()) - 2
+      });
+    }
+
+    // Web search context: prepend as system-level context (injected as a user
+    // message so the LLM sees it as factual context, not instructions).
+    if (searchContext) {
+      aiMessages.unshift({
+        type: "user",
+        message: searchContext,
+        timestamp: (petTimestamp || Date.now()) - 3
       });
     }
 
@@ -932,6 +967,8 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     knowledgeMode,
     contextSwitchEnabled,
     ragEnabled,
+    webSearchEnabled,
+    webSearchResults,
     weChatVisible,
     batchMode,
     selectedKeys,

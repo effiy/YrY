@@ -5,11 +5,14 @@
 -->
 <script setup lang="ts" name="aiChatContextFilesPanel">
 import { ref, computed, watch } from "vue";
-import { Delete } from "@element-plus/icons-vue";
+import { Delete, DataAnalysis, Search, FolderOpened, Folder, Document, Plus } from "@element-plus/icons-vue";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { readKnowledgeFile } from "@/api/modules/knowledgeService";
 
 const store = useAiChatStore();
+
+// ── Search / filter ──
+const contextSearch = ref("");
 
 // ── Types ──
 
@@ -64,6 +67,56 @@ function flattenForDisplay(nodes: ContextNode[], depth = 0): DisplayItem[] {
 }
 
 const displayContexts = computed(() => flattenForDisplay(contextRoots.value));
+
+// ── File count ──
+const fileCount = computed(() => {
+  function count(nodes: ContextNode[]): number {
+    let n = 0;
+    for (const node of nodes) {
+      if (node.type === "file") n++;
+      if (node.children) n += count(node.children);
+    }
+    return n;
+  }
+  return count(contextRoots.value);
+});
+
+// ── Search filtering ──
+const filteredContexts = computed(() => {
+  const q = contextSearch.value.toLowerCase().trim();
+  if (!q) return displayContexts.value;
+  return displayContexts.value.filter(
+    item => item.node.name.toLowerCase().includes(q) || item.node.path.toLowerCase().includes(q)
+  );
+});
+
+// ── Collapsed folders ──
+const collapsedFolders = ref<Set<string>>(new Set());
+function toggleFolderCollapse(key: string) {
+  const s = new Set(collapsedFolders.value);
+  if (s.has(key)) s.delete(key);
+  else s.add(key);
+  collapsedFolders.value = s;
+}
+// Hide children of collapsed folders from display
+const visibleContexts = computed(() => {
+  const collapsed = new Set(collapsedFolders.value);
+  const out: typeof displayContexts.value = [];
+  let skipUntilDepth = -1;
+  for (const item of filteredContexts.value) {
+    if (skipUntilDepth >= 0) {
+      if (item.depth > skipUntilDepth) continue;
+      skipUntilDepth = -1;
+    }
+    if (item.node.type === "folder" && collapsed.has(item.node.key)) {
+      out.push(item);
+      skipUntilDepth = item.depth;
+    } else {
+      out.push(item);
+    }
+  }
+  return out;
+});
 
 // ── Parsing / building ──
 
@@ -227,6 +280,18 @@ function cancelNewMode() {
   store.exitNewContextMode();
   // Reload from active session if any
   loadFromSession();
+}
+
+// ── RAG ──
+
+const ctxCount = computed(() => {
+  const tags = store.activeConversation?.tags ?? [];
+  return tags.filter(t => typeof t === "string" && t.startsWith(CTX_PREFIX)).length;
+});
+
+function onOpenRag() {
+  store.ragEnabled = true;
+  store.openLlamaIndex();
 }
 
 // ── Watch store state ──
@@ -395,14 +460,27 @@ async function onSave() {
     <div class="cfp-header">
       <span class="cfp-title">
         {{ mode === "new" ? "New session" : "Context files" }}
+        <span v-if="fileCount" class="cfp-count">{{ fileCount }}</span>
       </span>
-      <el-button
-        v-if="mode === 'new'"
-        size="small"
-        text
-        title="Back"
-        @click="cancelNewMode"
-      >← Back</el-button>
+      <div class="cfp-header-right">
+        <el-button
+          v-if="mode === 'view' && ctxCount > 0"
+          size="small"
+          :type="store.ragActive ? 'primary' : ''"
+          :icon="DataAnalysis"
+          :title="`RAG search ${ctxCount} context file(s)`"
+          @click="onOpenRag"
+        >
+          <span class="cfp-rag-count">{{ ctxCount }}</span>
+        </el-button>
+        <el-button
+          v-if="mode === 'new'"
+          size="small"
+          text
+          title="Back"
+          @click="cancelNewMode"
+        >← Back</el-button>
+      </div>
     </div>
 
     <div class="cfp-body">
@@ -414,6 +492,17 @@ async function onSave() {
           placeholder="Session title"
           size="small"
           clearable
+        />
+      </div>
+
+      <!-- Search -->
+      <div v-if="displayContexts.length > 0" class="cfp-field">
+        <el-input
+          v-model="contextSearch"
+          placeholder="Filter files..."
+          size="small"
+          clearable
+          :prefix-icon="Search"
         />
       </div>
 
@@ -431,19 +520,31 @@ async function onSave() {
           <span>Release to add</span>
         </template>
         <template v-else>
+          <el-icon :size="18"><Plus /></el-icon>
           <span class="cfp-drop-hint">Drag knowledge files or folders here</span>
         </template>
       </div>
 
       <!-- Context tree -->
-      <div v-if="displayContexts.length" class="cfp-list">
+      <div v-if="visibleContexts.length" class="cfp-list">
         <div
-          v-for="item in displayContexts"
+          v-for="item in visibleContexts"
           :key="item.key"
           class="cfp-item"
+          :class="{ 'is-folder': item.node.type === 'folder' }"
           :style="{ paddingLeft: (item.depth * 16 + 8) + 'px' }"
         >
-          <span class="cfp-icon">{{ item.node.type === "folder" ? "📁" : "📄" }}</span>
+          <span
+            class="cfp-icon"
+            :class="{ 'cfp-icon--collapsible': item.node.type === 'folder' }"
+            @click="item.node.type === 'folder' ? toggleFolderCollapse(item.node.key) : undefined"
+          >
+            <el-icon v-if="item.node.type === 'folder'" :size="14">
+              <FolderOpened v-if="!collapsedFolders.has(item.node.key)" />
+              <Folder v-else />
+            </el-icon>
+            <el-icon v-else :size="14"><Document /></el-icon>
+          </span>
           <span class="cfp-item-path" :title="item.node.path">{{ item.node.name }}</span>
           <el-button
             size="small"
@@ -496,11 +597,39 @@ async function onSave() {
   border-bottom: 1px solid var(--el-border-color-lighter);
 }
 .cfp-title {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
   font-size: 12px;
   font-weight: 600;
   color: var(--el-text-color-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+.cfp-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 16px;
+  padding: 0 4px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--el-color-primary);
+  background: var(--el-color-primary-light-9);
+  border-radius: 8px;
+}
+.cfp-header-right {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.cfp-rag-count {
+  margin-left: 2px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--el-color-primary);
 }
 .cfp-body {
   flex: 1;
@@ -566,6 +695,14 @@ async function onSave() {
 .cfp-icon {
   flex-shrink: 0;
   font-size: 13px;
+}
+.cfp-icon--collapsible {
+  cursor: pointer;
+  color: var(--el-color-warning);
+  transition: color 0.15s;
+}
+.cfp-icon--collapsible:hover {
+  color: var(--el-color-warning-light-1);
 }
 .cfp-item-path {
   flex: 1;

@@ -23,7 +23,7 @@ from shared.config import settings
 from server.middleware import header_verification_middleware
 from shared.logging import setup_logging
 from server.errors import register_exception_handlers
-from server.routes import about, auth, files, execution, wework, maintenance, state, health, users, system, knowledge, rag
+from server.routes import about, auth, files, execution, wework, maintenance, state, health, users, system, knowledge, rag, search
 
 # Import service modules
 from domain.rss import init_rss_system, shutdown_rss_system
@@ -184,6 +184,7 @@ def create_app(
     app.include_router(health.router, tags=["Observer"])
     app.include_router(knowledge.router, tags=["Knowledge"])
     app.include_router(rag.router, tags=["RAG"])
+    app.include_router(search.router, tags=["Search"])
 
     origins = settings.get_cors_origins()
     app.add_middleware(

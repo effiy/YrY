@@ -1,7 +1,7 @@
 <script setup lang="ts" name="aiChatToolbar">
 import { inject } from "vue";
 import {
-  ChatLineSquare, Picture, PriceTag, ChatDotRound,
+  ChatLineSquare, Picture, PriceTag, ChatDotRound, Search,
   ArrowLeft, ArrowRight
 } from "@element-plus/icons-vue";
 import RequestStatusButton from "./RequestStatusButton.vue";
@@ -14,8 +14,9 @@ withDefaults(
     streamingType?: "" | "send" | "regenerate" | "resend";
     ragToggle?: boolean;
     ragAvailable?: boolean;
+    webSearchToggle?: boolean;
   }>(),
-  { faqActive: false, sending: false, streamingType: "", ragToggle: false, ragAvailable: false }
+  { faqActive: false, sending: false, streamingType: "", ragToggle: false, ragAvailable: false, webSearchToggle: false }
 );
 
 const emit = defineEmits<{
@@ -24,6 +25,7 @@ const emit = defineEmits<{
   (e: "manage-tags"): void;
   (e: "open-wechat"): void;
   (e: "toggle-rag"): void;
+  (e: "toggle-web-search"): void;
   (e: "stop"): void;
 }>();
 
@@ -55,6 +57,15 @@ const collapseCtx = inject<{ collapsible: boolean; side: "fill" | "right" | "lef
       </el-tooltip>
     </div>
     <div class="ct-right">
+      <div
+        class="ct-pill" :class="{ on: webSearchToggle }"
+        :title="webSearchToggle ? 'Web search on — answers include internet results' : 'Web search off'"
+        @click="emit('toggle-web-search')"
+      >
+        <el-icon :size="14"><Search /></el-icon>
+        <span class="ct-pill-label">Web</span>
+        <el-switch :model-value="webSearchToggle" size="small" @click.stop @update:model-value="emit('toggle-web-search')" />
+      </div>
       <div
         class="ct-pill" :class="{ on: ragToggle }"
         :title="ragToggle ? 'RAG on — answers grounded in context files' : 'RAG off — direct chat'"

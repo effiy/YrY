@@ -1,11 +1,12 @@
 <script setup lang="ts" name="aiChatMessageBubble">
 import { computed } from "vue";
 import { ElMessageBox } from "element-plus";
-import { CopyDocument, Pointer, Star, RefreshRight, Delete, Edit, Promotion } from "@element-plus/icons-vue";
+import { CopyDocument, Pointer, Star, RefreshRight, Delete, Edit, Promotion, Search } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
 import { useMarkdown } from "@/hooks/useMarkdown";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import RagSources from "@/components/RagSources.vue";
+import WebSearchResults from "./WebSearchResults.vue";
 import type { ChatMessage } from "@/api/interface/yiweb";
 
 const props = defineProps<{
@@ -26,6 +27,7 @@ const showTyping = computed(() => props.streaming && !props.message.message?.tri
 const empty = computed(() => !props.message.message?.trim());
 const showAbortedTag = computed(() => !!props.message.aborted && !props.message.error);
 const showRetryLabel = computed(() => !!(props.message.error || props.message.aborted));
+const hasWebSearch = computed(() => !!props.message.searchContext && isUser.value);
 
 async function onRegenerate() {
   if (showRetryLabel.value) await store.retryLastMessage();
@@ -74,6 +76,12 @@ async function onEdit() {
       <div v-if="empty && !showTyping" class="mb-empty" />
       <div v-else-if="showTyping" class="mb-typing">...</div>
       <div v-else class="mb-markdown" v-html="html" />
+      <!-- Web search indicator for user messages that triggered a search -->
+      <div v-if="hasWebSearch" class="mb-web-indicator">
+        <el-icon :size="12"><Search /></el-icon>
+        <span>Web search results used</span>
+      </div>
+      <WebSearchResults v-if="hasWebSearch" :results="store.webSearchResults" />
       <div v-if="props.message.error" class="mb-error-tag">Generation failed</div>
       <div v-else-if="showAbortedTag" class="mb-aborted-tag">Stopped</div>
       <RagSources
@@ -194,6 +202,17 @@ async function onEdit() {
   margin-top: 4px;
   font-size: 12px;
   color: var(--el-text-color-secondary);
+}
+.mb-web-indicator {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  margin-top: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  color: var(--el-color-success);
+  background: var(--el-color-success-light-9);
+  border-radius: 10px;
 }
 .mb-meta {
   display: flex;

@@ -1,6 +1,6 @@
 <script setup lang="ts" name="aiChatConversationListItem">
 import { computed } from "vue";
-import { Edit, Delete, Star, StarFilled, DataAnalysis } from "@element-plus/icons-vue";
+import { Edit, Delete, Star, StarFilled } from "@element-plus/icons-vue";
 import type { SessionDocument } from "@/api/interface/yiweb";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 
@@ -16,7 +16,6 @@ const emit = defineEmits<{
   (e: "rename", key: string, title: string): void;
   (e: "delete", key: string, title: string): void;
   (e: "toggle-favorite", key: string): void;
-  (e: "open-rag", key: string): void;
 }>();
 
 const store = useAiChatStore();
@@ -85,17 +84,6 @@ const metaText = computed(() => {
           @click="emit('toggle-favorite', conversation.key)"
         >
           <el-icon><component :is="isFavorite ? StarFilled : Star" /></el-icon>
-        </el-button>
-        <el-button
-          v-if="ctxCount > 0"
-          text
-          size="small"
-          :icon="DataAnalysis"
-          :type="store.ragActive && active ? 'primary' : ''"
-          :title="`RAG search ${ctxCount} context file(s)`"
-          @click="emit('open-rag', conversation.key)"
-        >
-          <span class="cs-rag-count">{{ ctxCount }}</span>
         </el-button>
         <el-button
           text
@@ -185,11 +173,5 @@ const metaText = computed(() => {
 }
 .cs-item-actions .is-fav {
   color: var(--el-color-warning);
-}
-.cs-rag-count {
-  margin-left: 2px;
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--el-color-primary);
 }
 </style>

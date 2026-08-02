@@ -93,6 +93,8 @@ export interface ChatMessage {
   aborted?: boolean;
   /** RAG citations — set by streamRagChat/streamRagFileChat when ragEnabled. */
   sources?: import("@/api/interface/rag").RagSource[];
+  /** Web search context injected alongside this user message. */
+  searchContext?: string;
 }
 
 // ── Project zip upload (client-side parse + per-file write) ──

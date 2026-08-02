@@ -71,14 +71,6 @@ async function onBulkDelete() {
 function onNewSession() {
   store.enterNewContextMode();
 }
-
-async function onOpenRag(key: string) {
-  if (store.activeConversation?.key !== key) {
-    await store.selectConversation(key);
-  }
-  store.ragEnabled = true;
-  store.openLlamaIndex();
-}
 </script>
 
 <template>
@@ -127,7 +119,6 @@ async function onOpenRag(key: string) {
           @rename="onRename"
           @delete="onDelete"
           @toggle-favorite="onToggleFavorite"
-          @open-rag="onOpenRag"
         />
       </template>
     </el-scrollbar>
