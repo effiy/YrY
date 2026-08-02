@@ -36,6 +36,11 @@ def _rel_from_abs(abs_path: str, base: str) -> str:
     return os.path.relpath(abs_path, base).replace(os.sep, "/")
 
 
+def _should_skip(filename: str) -> bool:
+    """Skip hidden files and other artifacts that don't belong in the DB."""
+    return filename.startswith(".")
+
+
 def _build_md_snapshot(base: str) -> dict[str, tuple[int, int]]:
     """Walk ``base`` and return ``{rel_path: (size_bytes, mtime_ms)}`` for .md only.
 
@@ -45,6 +50,8 @@ def _build_md_snapshot(base: str) -> dict[str, tuple[int, int]]:
     snap: dict[str, tuple[int, int]] = {}
     for dirpath, _dirs, filenames in os.walk(base):
         for fn in filenames:
+            if _should_skip(fn):
+                continue
             if not fn.lower().endswith(".md"):
                 continue
             abs_path = os.path.join(dirpath, fn)
@@ -98,6 +105,8 @@ class KnowledgeWatcherManager:
         on_disk: dict[str, str] = {}
         for dirpath, _dirs, filenames in os.walk(base):
             for fn in filenames:
+                if _should_skip(fn):
+                    continue
                 abs_path = os.path.join(dirpath, fn)
                 rel = _rel_from_abs(abs_path, base)
                 on_disk[rel] = abs_path

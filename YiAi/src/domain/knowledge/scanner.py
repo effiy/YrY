@@ -24,10 +24,9 @@ from shared.exceptions import BusinessException
 
 logger = logging.getLogger(__name__)
 
-# Top-level YiKnowledge categories (per ~/YiKnowledge/MEMORY.md). Files
-# outside these dirs are still surfaced under "__root__" so users can drop
-# loose markdown at the top level.
-_TOP_CATEGORIES = (
+# Well-known YiKnowledge categories — surfaced first in the UI for stable ordering.
+# Additional top-level directories discovered on disk are appended alphabetically.
+_WELL_KNOWN_CATEGORIES = (
     "industry",
     "lessons",
     "methodology",
@@ -38,6 +37,9 @@ _TOP_CATEGORIES = (
     "tech",
     "work",
 )
+
+# Directories that should never be surfaced as knowledge categories.
+_SKIP_DIRS = frozenset({".git", "__pycache__", "node_modules", ".DS_Store"})
 
 _FRONTMATTER_RE = re.compile(
     r"^---\s*\n(?P<yaml>.*?)\n---\s*(?P<rest>.*)$",
@@ -143,12 +145,18 @@ def _extract_meta(rel_path: str, abs_path: str) -> dict:
 
 
 def _categorize(rel_path: str) -> str:
-    top = rel_path.split("/", 1)[0]
-    if top in _TOP_CATEGORIES:
-        return top
-    if top == "static":
-        return "static"
-    return "__root__"
+    """Map a relative path to its top-level category.
+
+    Root-level files (no directory component) → ``"__root__"``.
+    Files inside a known top-level directory → that directory name.
+    """
+    parts = rel_path.split("/", 1)
+    top = parts[0]
+    # Single-segment path → root-level file
+    if len(parts) == 1:
+        return "__root__"
+    # Top-level directory — use its name as the category
+    return top
 
 
 def _normalize_meta(meta: dict) -> dict:
@@ -168,12 +176,33 @@ def _normalize_meta(meta: dict) -> dict:
     return out
 
 
+def _discover_category_dirs(base: str) -> list[str]:
+    """Return sorted top-level directory names under *base*, well-known first."""
+    try:
+        entries = sorted(os.listdir(base))
+    except OSError:
+        return []
+    dirs = [
+        e for e in entries
+        if os.path.isdir(os.path.join(base, e))
+        and not e.startswith(".")
+        and e not in _SKIP_DIRS
+    ]
+    # Well-known categories first (stable order), then any newly discovered ones
+    known = [d for d in _WELL_KNOWN_CATEGORIES if d in dirs]
+    extra = [d for d in dirs if d not in _WELL_KNOWN_CATEGORIES]
+    return known + extra
+
+
 def scan_knowledge(category: str | None = None) -> dict:
     """Walk the knowledge base and return a category → file-list map.
 
     If ``category`` is given (e.g. ``"tech"``, ``"projects"``), only that
     subtree is walked. ``category="__root__"`` returns only top-level loose
     markdown files.
+
+    Categories are discovered dynamically from top-level directories so new
+    directories (brd, notes, static, …) appear automatically.
     """
     base = _base_dir()
     if not os.path.isdir(base):
@@ -181,13 +210,17 @@ def scan_knowledge(category: str | None = None) -> dict:
         return {"categories": []}
 
     if category:
-        target = os.path.join(base, category)
-        if not os.path.isdir(target):
-            return {"categories": []}
-        roots: list[tuple[str, str]] = [(category, target)]
+        if category == "__root__":
+            roots: list[tuple[str, str]] = [("__root__", base)]
+        else:
+            target = os.path.join(base, category)
+            if not os.path.isdir(target):
+                return {"categories": []}
+            roots = [(category, target)]
     else:
-        roots = [(c, os.path.join(base, c)) for c in _TOP_CATEGORIES if os.path.isdir(os.path.join(base, c))]
-        # Plus top-level loose .md files
+        cat_dirs = _discover_category_dirs(base)
+        roots = [(c, os.path.join(base, c)) for c in cat_dirs]
+        # Plus top-level loose files
         roots.append(("__root__", base))
 
     categories: list[dict] = []
@@ -196,13 +229,13 @@ def scan_knowledge(category: str | None = None) -> dict:
         if cat == "__root__":
             for name in sorted(os.listdir(root)):
                 p = os.path.join(root, name)
-                if os.path.isfile(p) and name.lower().endswith(".md"):
+                if os.path.isfile(p) and not name.startswith("."):
                     rel = name
                     files.append(_file_meta(rel, p))
         else:
             for dirpath, _dirs, filenames in os.walk(root):
                 for fn in filenames:
-                    if not fn.lower().endswith(".md"):
+                    if fn.startswith("."):
                         continue
                     abs_path = os.path.join(dirpath, fn)
                     rel = os.path.relpath(abs_path, base).replace(os.sep, "/")
