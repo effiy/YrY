@@ -1,9 +1,11 @@
 <script setup lang="ts" name="aiChatKnowledgePreviewDialog">
 import { ref, computed, watch } from "vue";
-import { FullScreen } from "@element-plus/icons-vue";
+import { ChatDotRound } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { useMarkdown } from "@/hooks/useMarkdown";
+import { useResizable } from "@/hooks/useResizable";
 import { readKnowledgeFile, writeKnowledgeFile } from "@/api/modules/knowledgeService";
+import KnowledgeChatPanel from "./KnowledgeChatPanel.vue";
 
 const { render } = useMarkdown();
 
@@ -20,17 +22,33 @@ const rawContent = ref("");
 const editContent = ref("");
 
 const mode = ref<"preview" | "edit" | "split">("preview");
-const isFullscreen = ref(false);
+
+/** Chat panel toggle — when on, the body splits left (preview/edit) + right (chat). */
+const showChat = ref(false);
+
+/** System prompt fed to the embedded chat — the knowledge file content. */
+const chatSystemPrompt = computed(() => {
+  if (!showChat.value || !rawContent.value) return "";
+  return `You are analyzing the following knowledge file: ${currentPath.value}\n\n---\n${rawContent.value}\n---\n\nAnswer questions about this file.`;
+});
 
 const previewHtml = computed(() => render(editContent.value));
 const savedPreviewHtml = computed(() => render(rawContent.value));
+
+// ── Chat panel width (draggable) ──
+
+const {
+  width: chatWidth,
+  isResizing: isChatResizing,
+  startResize: startChatResize
+} = useResizable(480, 320, 900, "aiChat.knowledgeChatW", true);
 
 function open(path: string) {
   visible.value = true;
   currentPath.value = path;
   title.value = path.split("/").pop() || path;
   mode.value = "preview";
-  isFullscreen.value = false;
+  showChat.value = false;
   loading.value = true;
   rawContent.value = "";
   editContent.value = "";
@@ -49,7 +67,7 @@ function open(path: string) {
 function close() {
   visible.value = false;
   mode.value = "preview";
-  isFullscreen.value = false;
+  showChat.value = false;
 }
 
 // Seed the editor from saved content when switching away from preview
@@ -78,8 +96,12 @@ function cancelEdit() {
   mode.value = "preview";
 }
 
-function toggleFullscreen() {
-  isFullscreen.value = !isFullscreen.value;
+function toggleChat() {
+  showChat.value = !showChat.value;
+  // In chat mode, force preview so the LLM sees the saved content
+  if (showChat.value && mode.value !== "preview") {
+    mode.value = "preview";
+  }
 }
 
 defineExpose({ open });
@@ -91,14 +113,13 @@ defineExpose({ open });
     :title="title"
     width="91vw"
     top="4vh"
-    :fullscreen="isFullscreen"
     :close-on-click-modal="true"
     append-to-body
     @close="close"
   >
     <!-- Toolbar: mode switch + actions -->
     <div class="kpd-toolbar">
-      <el-radio-group v-model="mode" size="small">
+      <el-radio-group v-model="mode" size="small" :disabled="showChat">
         <el-radio-button value="edit">Edit</el-radio-button>
         <el-radio-button value="split">Split</el-radio-button>
         <el-radio-button value="preview">Preview</el-radio-button>
@@ -118,11 +139,12 @@ defineExpose({ open });
           @click="save"
         >Save</el-button>
         <el-button
-          :icon="FullScreen"
+          :type="showChat ? 'primary' : 'default'"
+          :icon="ChatDotRound"
           size="small"
           text
-          :title="isFullscreen ? 'Exit fullscreen' : 'Fullscreen'"
-          @click="toggleFullscreen"
+          :title="showChat ? 'Hide chat' : 'Chat about this file'"
+          @click="toggleChat"
         />
       </div>
     </div>
@@ -135,7 +157,27 @@ defineExpose({ open });
 
     <!-- Body -->
     <template v-else>
-      <div class="kpd-body" :class="`kpd-body--${mode}`">
+      <!-- Chat mode: left panel (preview) + resizer + chat panel -->
+      <div v-if="showChat" class="kpd-body kpd-body--chat" :class="{ 'is-resizing': isChatResizing }">
+        <div class="kpd-left">
+          <div class="kpd-preview" v-html="savedPreviewHtml" />
+        </div>
+        <div
+          class="kpd-resizer"
+          :class="{ 'is-active': isChatResizing }"
+          @pointerdown="startChatResize"
+        />
+        <div class="kpd-right" :style="{ width: chatWidth + 'px' }">
+          <KnowledgeChatPanel
+            :file-path="currentPath"
+            :system-prompt="chatSystemPrompt"
+            :rag-scope="currentPath"
+          />
+        </div>
+      </div>
+
+      <!-- Standard mode: no chat panel -->
+      <div v-else class="kpd-body" :class="`kpd-body--${mode}`">
         <!-- Editor pane (edit + split modes) -->
         <el-input
           v-if="mode === 'edit' || mode === 'split'"
@@ -191,6 +233,42 @@ defineExpose({ open });
   // Hide preview in edit-only mode
   &--edit .kpd-preview {
     display: none;
+  }
+}
+
+// ── Chat layout ──
+
+.kpd-body--chat {
+  gap: 0;
+
+  &.is-resizing {
+    user-select: none;
+  }
+}
+
+.kpd-left {
+  flex: 1;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.kpd-right {
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.kpd-resizer {
+  width: 4px;
+  flex-shrink: 0;
+  cursor: col-resize;
+  background: var(--el-border-color-lighter);
+  transition: background 0.15s;
+
+  &:hover,
+  &.is-active {
+    background: var(--el-color-primary-light-7);
   }
 }
 

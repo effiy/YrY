@@ -1,4 +1,8 @@
-# YiKnowledge — 个人知识库
+---
+title: Readme
+---
+
+# YiKnowledge — 个人知识库2
 
 按业务域与知识类型分类的可检索知识库。规则手册见 [MEMORY.md](./MEMORY.md)，全库导航见 [INDEX.md](./INDEX.md)。
 

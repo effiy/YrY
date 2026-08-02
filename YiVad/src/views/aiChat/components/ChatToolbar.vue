@@ -129,7 +129,7 @@ const runningTools = computed(() => {
         @click="emit('toggle-rag')"
       >
         <span class="ct-pill-label">RAG</span>
-        <el-switch :model-value="ragToggle" :disabled="!ragAvailable" size="small" @click.stop @update:model-value="emit('toggle-rag')" />
+        <el-switch :model-value="ragToggle" size="small" @click.stop @update:model-value="emit('toggle-rag')" />
       </div>
       <!-- Tool execution indicator (Pi-inspired) -->
       <div v-for="tool in runningTools" :key="tool.name" class="ct-pill on" :title="`Running: ${tool.label}`">
