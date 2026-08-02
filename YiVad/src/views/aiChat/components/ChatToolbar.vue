@@ -1,13 +1,13 @@
 <script setup lang="ts" name="aiChatToolbar">
-import { inject } from "vue";
+import { inject, ref, computed } from "vue";
 import {
   ChatLineSquare, Picture, PriceTag, ChatDotRound, Search,
-  ArrowLeft, ArrowRight
+  ArrowLeft, ArrowRight, CollectionTag, Delete
 } from "@element-plus/icons-vue";
 import RequestStatusButton from "./RequestStatusButton.vue";
 import FaqPopover from "./FaqPopover.vue";
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     faqActive?: boolean;
     sending?: boolean;
@@ -15,8 +15,10 @@ withDefaults(
     ragToggle?: boolean;
     ragAvailable?: boolean;
     webSearchToggle?: boolean;
+    /** List of ctx:-tagged file paths (without the ctx: prefix) */
+    contextFiles?: string[];
   }>(),
-  { faqActive: false, sending: false, streamingType: "", ragToggle: false, ragAvailable: false, webSearchToggle: false }
+  { faqActive: false, sending: false, streamingType: "", ragToggle: false, ragAvailable: false, webSearchToggle: false, contextFiles: () => [] }
 );
 
 const emit = defineEmits<{
@@ -27,11 +29,15 @@ const emit = defineEmits<{
   (e: "toggle-rag"): void;
   (e: "toggle-web-search"): void;
   (e: "stop"): void;
+  (e: "remove-context-file", path: string): void;
 }>();
 
 const collapseCtx = inject<{ collapsible: boolean; side: "fill" | "right" | "left"; toggle: () => void } | null>(
   "aiChatBoxCollapse", null
 );
+
+const contextPopoverVisible = ref(false);
+const contextFileCount = computed(() => (props.contextFiles ?? []).length);
 </script>
 
 <template>
@@ -57,6 +63,41 @@ const collapseCtx = inject<{ collapsible: boolean; side: "fill" | "right" | "lef
       </el-tooltip>
     </div>
     <div class="ct-right">
+      <!-- Context files pill -->
+      <el-popover
+        v-if="contextFileCount > 0"
+        v-model:visible="contextPopoverVisible"
+        placement="bottom"
+        :width="280"
+        trigger="click"
+      >
+        <template #reference>
+          <div class="ct-pill on" title="Current context files">
+            <el-icon :size="14"><CollectionTag /></el-icon>
+            <span class="ct-pill-label">Context: {{ contextFileCount }}</span>
+          </div>
+        </template>
+        <div class="ct-context-list">
+          <div
+            v-for="file in (contextFiles ?? [])"
+            :key="file"
+            class="ct-context-item"
+          >
+            <span class="ct-context-item-path">{{ file }}</span>
+            <el-button
+              size="small"
+              text
+              type="danger"
+              :icon="Delete"
+              title="Remove from context"
+              @click="emit('remove-context-file', file)"
+            />
+          </div>
+          <div v-if="(contextFiles ?? []).length === 0" class="ct-context-empty">
+            No context files loaded
+          </div>
+        </div>
+      </el-popover>
       <div
         class="ct-pill" :class="{ on: webSearchToggle }"
         :title="webSearchToggle ? 'Web search on — answers include internet results' : 'Web search off'"
@@ -85,4 +126,9 @@ const collapseCtx = inject<{ collapsible: boolean; side: "fill" | "right" | "lef
 .ct-pill { display: inline-flex; gap: 6px; align-items: center; height: 28px; padding: 0 10px; font-size: 12px; color: var(--el-text-color-placeholder); cursor: pointer; user-select: none; background: var(--el-fill-color-blank); border: 1px solid var(--el-border-color-light); border-radius: 14px; transition: all .15s; }
 .ct-pill.on { color: var(--el-color-primary); background: var(--el-color-primary-light-9); border-color: var(--el-color-primary-light-5); }
 .ct-pill-label { line-height: 1; }
+.ct-context-list { max-height: 240px; overflow-y: auto; }
+.ct-context-item { display: flex; gap: 4px; align-items: center; padding: 4px 0; font-size: 12px; font-family: "SF Mono", Menlo, monospace; }
+.ct-context-item+.ct-context-item { border-top: 1px solid var(--el-border-color-lighter); }
+.ct-context-item-path { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--el-text-color-regular); }
+.ct-context-empty { padding: 8px 0; font-size: 12px; color: var(--el-text-color-placeholder); text-align: center; }
 </style>

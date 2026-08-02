@@ -1,10 +1,10 @@
 <!--
-  FileMentionDropdown — @-triggered fuzzy file search for YiKnowledge files.
-  Appears above the chat input when the user types "@" followed by search text.
+  FileMentionDropdown — @-triggered file search scoped to the session's
+  context files (ctx:-tagged).  Appears above the chat input.
 -->
 <script setup lang="ts" name="aiChatFileMentionDropdown">
-import { ref, watch, computed } from "vue";
-import { useAicrKnowledgeStore } from "@/stores/modules/aicr/knowledge";
+import { computed, ref, watch } from "vue";
+import { useAiChatStore } from "@/stores/modules/aiChat";
 
 const props = defineProps<{
   visible: boolean;
@@ -16,44 +16,32 @@ const emit = defineEmits<{
   (e: "close"): void;
 }>();
 
-const knowledgeStore = useAicrKnowledgeStore();
+const store = useAiChatStore();
 
-// ── File list ──
+const CTX_PREFIX = "ctx:";
+
 interface MentionFile {
   path: string;
   name: string;
-  category: string;
 }
 
-const flatMentionFiles = computed<MentionFile[]>(() => {
-  return knowledgeStore.flatFiles.map(f => ({
-    path: f.path,
-    name: f.name,
-    category: f.category,
-  }));
+/** Only the current session's ctx:-tagged files — not the full knowledge base. */
+const contextFiles = computed<MentionFile[]>(() => {
+  const tags = store.activeConversation?.tags ?? [];
+  return tags
+    .filter(t => typeof t === "string" && t.startsWith(CTX_PREFIX))
+    .map(t => {
+      const path = (t as string).slice(CTX_PREFIX.length);
+      return { path, name: path.split("/").pop() || path };
+    });
 });
 
-const loaded = ref(false);
-
-watch(() => props.visible, async (v) => {
-  if (v && !loaded.value) {
-    try {
-      await knowledgeStore.loadAll();
-      loaded.value = true;
-    } catch {
-      /* ignore */
-    }
-  }
-});
-
-// ── Fuzzy filter ──
 const filtered = computed(() => {
   const q = props.query.toLowerCase().trim();
-  const files = flatMentionFiles.value;
-  if (!q) return files.slice(0, 20);
-  return files
-    .filter(f => f.name.toLowerCase().includes(q) || f.path.toLowerCase().includes(q))
-    .slice(0, 12);
+  if (!q) return contextFiles.value;
+  return contextFiles.value.filter(
+    f => f.name.toLowerCase().includes(q) || f.path.toLowerCase().includes(q)
+  );
 });
 
 const selectedIdx = ref(0);
@@ -85,26 +73,24 @@ defineExpose({ onKeydown });
 
 <template>
   <div v-if="visible" class="fmd-dropdown">
-    <template v-if="knowledgeStore.loading && !flatMentionFiles.length">
-      <div class="fmd-loading">Loading files...</div>
-    </template>
-    <template v-else>
-      <div v-if="!filtered.length" class="fmd-empty">
-        {{ flatMentionFiles.length ? "No matching files" : "No knowledge files available" }}
-      </div>
-      <div
-        v-for="(f, i) in filtered"
-        :key="f.path"
-        class="fmd-item"
-        :class="{ 'is-selected': i === selectedIdx }"
-        @click="onSelect(f)"
-        @mouseenter="selectedIdx = i"
-      >
-        <span class="fmd-icon">📄</span>
-        <span class="fmd-name">{{ f.name }}</span>
-        <span class="fmd-path">{{ f.path }}</span>
-      </div>
-    </template>
+    <div v-if="!contextFiles.length" class="fmd-empty">
+      No context files in this session. Drag files from the knowledge panel or use the context panel to add them.
+    </div>
+    <div v-else-if="!filtered.length" class="fmd-empty">
+      No matching context files
+    </div>
+    <div
+      v-for="(f, i) in filtered"
+      :key="f.path"
+      class="fmd-item"
+      :class="{ 'is-selected': i === selectedIdx }"
+      @click="onSelect(f)"
+      @mouseenter="selectedIdx = i"
+    >
+      <span class="fmd-icon">📄</span>
+      <span class="fmd-name">{{ f.name }}</span>
+      <span class="fmd-path">{{ f.path }}</span>
+    </div>
   </div>
 </template>
 
@@ -115,14 +101,13 @@ defineExpose({ onKeydown });
   left: 12px;
   right: 12px;
   z-index: 100;
-  max-height: 240px;
+  max-height: 200px;
   overflow-y: auto;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color);
   border-radius: 8px 8px 0 0;
   box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.1);
 }
-.fmd-loading,
 .fmd-empty {
   padding: 16px;
   font-size: 13px;

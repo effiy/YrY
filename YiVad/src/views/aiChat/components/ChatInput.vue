@@ -109,6 +109,7 @@ async function onImageChange(e: Event) {
       :rag-toggle="store.ragEnabled"
       :rag-available="store.ragActive"
       :web-search-toggle="store.webSearchEnabled"
+      :context-files="store.activeConversation?.tags?.filter(t => typeof t === 'string' && t.startsWith('ctx:')).map(t => (t as string).slice(4)) ?? []"
       @toggle-faq="store.toggleFaq()"
       @pick-image="openImagePicker"
       @manage-tags="store.openTagManager()"
@@ -116,6 +117,7 @@ async function onImageChange(e: Event) {
       @toggle-rag="store.ragEnabled = !store.ragEnabled"
       @toggle-web-search="store.webSearchEnabled = !store.webSearchEnabled"
       @stop="store.stopSending()"
+      @remove-context-file="p => store.removeContextFile(p)"
     />
     <input ref="imageInput" type="file" accept="image/*" multiple class="ci-file-input" @change="onImageChange" />
     <DraftImageList :images="store.draftImages" @remove="store.removeDraftImage" @clear="store.clearDraftImages" />
@@ -132,7 +134,7 @@ async function onImageChange(e: Event) {
           v-model="store.input"
           type="textarea"
           :autosize="{ minRows: 1, maxRows: 6 }"
-          :placeholder="store.sending ? 'Generating...' : store.webSearching ? 'Searching web...' : 'Your question — type @ to add context files (Enter to send, Shift+Enter for newline)'"
+          :placeholder="store.sending ? 'Generating...' : store.webSearching ? 'Searching web...' : 'Ask or edit context — type @ to add files, ask AI to update knowledge (Enter send, Shift+Enter newline)'"
           :disabled="store.sending"
           resize="none"
           @compositionstart="onCompositionStart"

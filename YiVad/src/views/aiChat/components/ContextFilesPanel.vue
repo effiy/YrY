@@ -310,6 +310,16 @@ watch(() => store.activeConversation, () => {
   }
 }, { immediate: true });
 
+// Also reload when pageContent changes externally (e.g. chat-driven edits)
+watch(
+  () => store.activeConversation?.pageContent,
+  () => {
+    if (mode.value === "view") {
+      loadFromSession();
+    }
+  }
+);
+
 watch(() => store.contextPanelNewMode, (v) => {
   if (v) enterNewMode();
 });

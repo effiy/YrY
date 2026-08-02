@@ -5,7 +5,7 @@ import RequestStatusButton from "./RequestStatusButton.vue";
 
 const uiStore = useAicrUiStore();
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     faqActive?: boolean;
     sending?: boolean;

@@ -13,8 +13,8 @@ import { streamChat } from "@/api/modules/chatService";
 import { streamRagChat } from "@/api/modules/ragService";
 import { queryDocuments } from "@/api/modules/dataService";
 import { loadRobots, sendWeChatMessage } from "@/api/modules/weChatService";
-import { webSearch, formatSearchResults } from "@/api/modules/searchService";
-import type { WebSearchResult } from "@/api/modules/searchService";
+import { webSearch, webFetch, extractUrls, formatSearchResults, formatFetchedContent } from "@/api/modules/searchService";
+import type { WebSearchResult, WebSearchResponse } from "@/api/modules/searchService";
 import type { SessionDocument, ChatMessage, FaqDocument } from "@/api/interface/yiweb";
 import type { RagSource, RagStreamHandlers } from "@/api/interface/rag";
 import type { FileNode } from "@/stores/modules/aicr/fileTree";
@@ -838,54 +838,151 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     input.value = "";
     draftImages.value = [];
 
-    // Start streaming immediately — web search runs in background.
-    const streamPromise = runStream(prevLen, petMsg.timestamp, "send", "");
+    // ── Web search / URL fetch ──
+    // When the user included URLs in their message, fetch them BEFORE
+    // streaming so the LLM sees the page content in its initial response.
+    // The DuckDuckGo search still runs in the background and arrives as a
+    // follow-up when it enriches the answer beyond the direct URL content.
+    let initialSearchContext = "";
 
-    // Fire-and-forget web search in background.
-    // Strategy: run search in parallel with AI response. When search completes:
-    //   1. Update UI with results immediately
-    //   2. Wait for main stream to finish
-    //   3. Send a follow-up message with search results as context
-    // This gives the user an immediate AI response AND web-augmented follow-up.
     if (webSearchEnabled.value && userQuery) {
-      webSearching.value = true;
-      let pendingSearchContext = "";
+      const urls = extractUrls(userQuery);
 
-      webSearch(userQuery, 6).then(async res => {
-        const results = res.results ?? [];
-        webSearchResults.value = results;
-        pendingSearchContext = results.length ? formatSearchResults(results) : "";
+      if (urls.length > 0) {
+        // ── Direct URL mode: fetch first, stream with content ─────────
+        webSearching.value = true;
+        const fetchResults = await Promise.all(
+          urls.map(u => webFetch(u).catch(() => ({ text: "", url: u, error: "fetch failed" })))
+        );
         webSearching.value = false;
 
-        // Update the user message with search context for display
-        if (pendingSearchContext) {
+        const parts: string[] = [];
+        for (const fr of fetchResults) {
+          const f = fr as { text: string; url: string; error?: string };
+          if (f.text) parts.push(formatFetchedContent(f.url, f.text));
+        }
+        initialSearchContext = parts.filter(Boolean).join("\n\n");
+
+        // Also flag the user message for UI display
+        if (initialSearchContext) {
           setActiveMessages(msgs => {
             const idx = msgs.findIndex(m => m.timestamp === now);
             if (idx < 0) return msgs;
             const next = [...msgs];
-            next[idx] = { ...next[idx], searchContext: pendingSearchContext };
+            next[idx] = { ...next[idx], searchContext: initialSearchContext };
             return next;
           });
         }
-      }).catch(() => {
-        webSearching.value = false;
-        webSearchResults.value = [];
-      }).finally(async () => {
-        // Wait for main stream to finish, then send follow-up
-        await streamPromise;
-        if (!pendingSearchContext) return;
-        await persistActive();
-        const s = activeConversation.value;
-        if (!s) return;
-        const followUpPet: ChatMessage = { type: "pet", message: "", timestamp: Date.now() + 1 };
-        const msgs = s.messages ?? [];
-        const followUpPrevLen = msgs.length;
-        setActiveMessages(m => [...m, followUpPet]);
-        await runStream(followUpPrevLen, followUpPet.timestamp, "send", pendingSearchContext);
-      });
+
+        // Kick off DuckDuckGo search in background for supplementary context.
+        // When it completes, send a follow-up if it finds anything beyond
+        // what was already in the directly-fetched URL content.
+        let pendingSearchContext = "";
+        const seenUrls = new Set(urls.map(u => u.toLowerCase()));
+
+        Promise.resolve(
+          webSearch(userQuery, 6).then(async searchRes => {
+            const results = (searchRes as WebSearchResponse).results ?? [];
+            webSearchResults.value = results;
+
+            // Fetch search result URLs not already fetched
+            const topResultUrls = results
+              .map(r => r.url)
+              .filter(u => u && !seenUrls.has(u.toLowerCase()))
+              .slice(0, 3);
+
+            const searchFetchResults = topResultUrls.length
+              ? await Promise.all(
+                topResultUrls.map(u => webFetch(u).catch(() => ({ text: "", url: u, error: "fetch failed" })))
+              )
+              : [];
+
+            const extraParts: string[] = [];
+            for (const fr of searchFetchResults) {
+              const f = fr as { text: string; url: string; error?: string };
+              if (f.text) extraParts.push(formatFetchedContent(f.url, f.text));
+            }
+            if (results.length) extraParts.push(formatSearchResults(results));
+            pendingSearchContext = extraParts.filter(Boolean).join("\n\n");
+          }).catch(() => {
+            webSearchResults.value = [];
+          })
+        ).finally(async () => {
+          await streamPromise;
+          if (!pendingSearchContext) return;
+          await persistActive();
+          const s = activeConversation.value;
+          if (!s) return;
+          const followUpPet: ChatMessage = { type: "pet", message: "", timestamp: Date.now() + 1 };
+          const msgs = s.messages ?? [];
+          const prev = msgs.length;
+          setActiveMessages(m => [...m, followUpPet]);
+          await runStream(prev, followUpPet.timestamp, "send", pendingSearchContext);
+        });
+      } else {
+        // ── No URLs in message: search in background ──────────────────
+        // Same fire-and-forget pattern — stream immediately, follow-up
+        // arrives when search completes.
+        webSearching.value = true;
+        let pendingSearchContext = "";
+
+        Promise.resolve(
+          webSearch(userQuery, 6).then(async searchRes => {
+            const results = (searchRes as WebSearchResponse).results ?? [];
+            webSearchResults.value = results;
+
+            const topResultUrls = results
+              .map(r => r.url)
+              .filter(Boolean)
+              .slice(0, 3);
+
+            const searchFetchResults = topResultUrls.length
+              ? await Promise.all(
+                topResultUrls.map(u => webFetch(u).catch(() => ({ text: "", url: u, error: "fetch failed" })))
+              )
+              : [];
+
+            const parts: string[] = [];
+            for (const fr of searchFetchResults) {
+              const f = fr as { text: string; url: string; error?: string };
+              if (f.text) parts.push(formatFetchedContent(f.url, f.text));
+            }
+            if (results.length) parts.push(formatSearchResults(results));
+            pendingSearchContext = parts.filter(Boolean).join("\n\n");
+            webSearching.value = false;
+
+            if (pendingSearchContext) {
+              setActiveMessages(msgs => {
+                const idx = msgs.findIndex(m => m.timestamp === now);
+                if (idx < 0) return msgs;
+                const next = [...msgs];
+                next[idx] = { ...next[idx], searchContext: pendingSearchContext };
+                return next;
+              });
+            }
+          }).catch(() => {
+            webSearching.value = false;
+            webSearchResults.value = [];
+          })
+        ).finally(async () => {
+          await streamPromise;
+          if (!pendingSearchContext) return;
+          await persistActive();
+          const s = activeConversation.value;
+          if (!s) return;
+          const followUpPet: ChatMessage = { type: "pet", message: "", timestamp: Date.now() + 1 };
+          const msgs = s.messages ?? [];
+          const prev = msgs.length;
+          setActiveMessages(m => [...m, followUpPet]);
+          await runStream(prev, followUpPet.timestamp, "send", pendingSearchContext);
+        });
+      }
     } else {
       webSearchResults.value = [];
     }
+
+    // Start streaming (with initialSearchContext if URLs were in the message)
+    const streamPromise = runStream(prevLen, petMsg.timestamp, "send", initialSearchContext);
 
     await streamPromise;
   }
@@ -1168,47 +1265,143 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     activeConversation.value = { ...s, messages: nextMessages, updatedAt: now };
     scrollTick.value++;
 
-    // Start streaming immediately; web search runs in background
-    const streamPromise = runStream(i, insertedPet.timestamp, "resend", "");
+    // ── Web search / URL fetch ──
+    // Same pattern as sendMessage: fetch user-provided URLs BEFORE streaming
+    // so the LLM sees page content in its initial response.
+    let initialSearchContext = "";
 
-    // Fire-and-forget web search with follow-up after stream completes
     if (webSearchEnabled.value && text) {
-      webSearching.value = true;
-      let pendingSearchContext = "";
+      const urls = extractUrls(text);
 
-      webSearch(text, 6).then(async res => {
-        const results = res.results ?? [];
-        webSearchResults.value = results;
-        pendingSearchContext = results.length ? formatSearchResults(results) : "";
+      if (urls.length > 0) {
+        // ── Direct URL mode: fetch first, stream with content ─────────
+        webSearching.value = true;
+        const fetchResults = await Promise.all(
+          urls.map(u => webFetch(u).catch(() => ({ text: "", url: u, error: "fetch failed" })))
+        );
         webSearching.value = false;
 
-        if (pendingSearchContext) {
+        const parts: string[] = [];
+        for (const fr of fetchResults) {
+          const f = fr as { text: string; url: string; error?: string };
+          if (f.text) parts.push(formatFetchedContent(f.url, f.text));
+        }
+        initialSearchContext = parts.filter(Boolean).join("\n\n");
+
+        if (initialSearchContext) {
           setActiveMessages(msgs => {
             const idx = msgs.findIndex(m => m.timestamp === userTimestamp);
             if (idx < 0) return msgs;
             const next = [...msgs];
-            next[idx] = { ...next[idx], searchContext: pendingSearchContext };
+            next[idx] = { ...next[idx], searchContext: initialSearchContext };
             return next;
           });
         }
-      }).catch(() => {
-        webSearching.value = false;
-        webSearchResults.value = [];
-      }).finally(async () => {
-        await streamPromise;
-        if (!pendingSearchContext) return;
-        await persistActive();
-        const sess = activeConversation.value;
-        if (!sess) return;
-        const followUpPet: ChatMessage = { type: "pet", message: "", timestamp: Date.now() + 1 };
-        const msgs = sess.messages ?? [];
-        const prev = msgs.length;
-        setActiveMessages(m => [...m, followUpPet]);
-        await runStream(prev, followUpPet.timestamp, "send", pendingSearchContext);
-      });
+
+        // DuckDuckGo search in background for supplementary follow-up
+        let pendingSearchContext = "";
+        const seenUrls = new Set(urls.map(u => u.toLowerCase()));
+
+        Promise.resolve(
+          webSearch(text, 6).then(async searchRes => {
+            const results = (searchRes as WebSearchResponse).results ?? [];
+            webSearchResults.value = results;
+
+            const topResultUrls = results
+              .map(r => r.url)
+              .filter(u => u && !seenUrls.has(u.toLowerCase()))
+              .slice(0, 3);
+
+            const searchFetchResults = topResultUrls.length
+              ? await Promise.all(
+                topResultUrls.map(u => webFetch(u).catch(() => ({ text: "", url: u, error: "fetch failed" })))
+              )
+              : [];
+
+            const extraParts: string[] = [];
+            for (const fr of searchFetchResults) {
+              const f = fr as { text: string; url: string; error?: string };
+              if (f.text) extraParts.push(formatFetchedContent(f.url, f.text));
+            }
+            if (results.length) extraParts.push(formatSearchResults(results));
+            pendingSearchContext = extraParts.filter(Boolean).join("\n\n");
+          }).catch(() => {
+            webSearchResults.value = [];
+          })
+        ).finally(async () => {
+          await streamPromise;
+          if (!pendingSearchContext) return;
+          await persistActive();
+          const sess = activeConversation.value;
+          if (!sess) return;
+          const followUpPet: ChatMessage = { type: "pet", message: "", timestamp: Date.now() + 1 };
+          const msgs = sess.messages ?? [];
+          const prev = msgs.length;
+          setActiveMessages(m => [...m, followUpPet]);
+          await runStream(prev, followUpPet.timestamp, "send", pendingSearchContext);
+        });
+      } else {
+        // ── No URLs in message: search in background ──────────────────
+        webSearching.value = true;
+        let pendingSearchContext = "";
+
+        Promise.resolve(
+          webSearch(text, 6).then(async searchRes => {
+            const results = (searchRes as WebSearchResponse).results ?? [];
+            webSearchResults.value = results;
+
+            const topResultUrls = results
+              .map(r => r.url)
+              .filter(Boolean)
+              .slice(0, 3);
+
+            const searchFetchResults = topResultUrls.length
+              ? await Promise.all(
+                topResultUrls.map(u => webFetch(u).catch(() => ({ text: "", url: u, error: "fetch failed" })))
+              )
+              : [];
+
+            const parts: string[] = [];
+            for (const fr of searchFetchResults) {
+              const f = fr as { text: string; url: string; error?: string };
+              if (f.text) parts.push(formatFetchedContent(f.url, f.text));
+            }
+            if (results.length) parts.push(formatSearchResults(results));
+            pendingSearchContext = parts.filter(Boolean).join("\n\n");
+            webSearching.value = false;
+
+            if (pendingSearchContext) {
+              setActiveMessages(msgs => {
+                const idx = msgs.findIndex(m => m.timestamp === userTimestamp);
+                if (idx < 0) return msgs;
+                const next = [...msgs];
+                next[idx] = { ...next[idx], searchContext: pendingSearchContext };
+                return next;
+              });
+            }
+          }).catch(() => {
+            webSearching.value = false;
+            webSearchResults.value = [];
+          })
+        ).finally(async () => {
+          await streamPromise;
+          if (!pendingSearchContext) return;
+          await persistActive();
+          const sess = activeConversation.value;
+          if (!sess) return;
+          const followUpPet: ChatMessage = { type: "pet", message: "", timestamp: Date.now() + 1 };
+          const msgs = sess.messages ?? [];
+          const prev = msgs.length;
+          setActiveMessages(m => [...m, followUpPet]);
+          await runStream(prev, followUpPet.timestamp, "send", pendingSearchContext);
+        });
+      }
     } else {
       webSearchResults.value = [];
     }
+
+    // Start streaming (with initialSearchContext if URLs were in the message)
+    const streamPromise = runStream(i, insertedPet.timestamp, "resend", initialSearchContext);
 
     await streamPromise;
   }
