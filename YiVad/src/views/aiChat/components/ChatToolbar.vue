@@ -1,7 +1,7 @@
 <script setup lang="ts" name="aiChatToolbar">
 import { inject } from "vue";
 import {
-  ChatLineSquare, Picture, PriceTag, CircleClose, ChatDotRound,
+  ChatLineSquare, Picture, PriceTag, ChatDotRound,
   ArrowLeft, ArrowRight
 } from "@element-plus/icons-vue";
 import RequestStatusButton from "./RequestStatusButton.vue";
@@ -14,9 +14,8 @@ withDefaults(
     streamingType?: "" | "send" | "regenerate" | "resend";
     ragToggle?: boolean;
     ragAvailable?: boolean;
-    canClear?: boolean;
   }>(),
-  { faqActive: false, sending: false, streamingType: "", ragToggle: false, ragAvailable: false, canClear: false }
+  { faqActive: false, sending: false, streamingType: "", ragToggle: false, ragAvailable: false }
 );
 
 const emit = defineEmits<{
@@ -24,7 +23,6 @@ const emit = defineEmits<{
   (e: "pick-image"): void;
   (e: "manage-tags"): void;
   (e: "open-wechat"): void;
-  (e: "clear-input"): void;
   (e: "toggle-rag"): void;
   (e: "stop"): void;
 }>();
@@ -57,13 +55,14 @@ const collapseCtx = inject<{ collapsible: boolean; side: "fill" | "right" | "lef
       </el-tooltip>
     </div>
     <div class="ct-right">
-      <div class="ct-pill" :class="{ on: ragToggle }" :title="ragToggle ? 'RAG on — answers grounded in context files' : 'RAG off — direct chat'">
+      <div
+        class="ct-pill" :class="{ on: ragToggle }"
+        :title="ragToggle ? 'RAG on — answers grounded in context files' : 'RAG off — direct chat'"
+        @click="emit('toggle-rag')"
+      >
         <span class="ct-pill-label">RAG</span>
-        <el-switch :model-value="ragToggle" :disabled="!ragAvailable" size="small" @update:model-value="emit('toggle-rag')" />
+        <el-switch :model-value="ragToggle" :disabled="!ragAvailable" size="small" @click.stop @update:model-value="emit('toggle-rag')" />
       </div>
-      <el-tooltip content="Clear input" placement="bottom">
-        <el-button v-show="canClear" circle size="default" :icon="CircleClose" @click="emit('clear-input')" />
-      </el-tooltip>
       <RequestStatusButton :sending="sending" :streaming-type="streamingType" @stop="emit('stop')" />
     </div>
   </div>

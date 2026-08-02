@@ -1,6 +1,6 @@
 <script setup lang="ts" name="aiChatInput">
 import { ref } from "vue";
-import { Promotion } from "@element-plus/icons-vue";
+import { Promotion, CircleClose } from "@element-plus/icons-vue";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { useAiChatShortcuts } from "@/hooks/useAiChatShortcuts";
 import ChatToolbar from "./ChatToolbar.vue";
@@ -32,12 +32,10 @@ async function onImageChange(e: Event) {
       :streaming-type="store.streamingType"
       :rag-toggle="store.ragEnabled"
       :rag-available="store.ragActive"
-      :can-clear="store.input.trim().length > 0 || store.draftImages.length > 0"
       @toggle-faq="store.toggleFaq()"
       @pick-image="openImagePicker"
       @manage-tags="store.openTagManager()"
       @open-wechat="store.openWeChat()"
-      @clear-input="store.clearInput()"
       @toggle-rag="store.ragEnabled = !store.ragEnabled"
       @stop="store.stopSending()"
     />
@@ -56,6 +54,9 @@ async function onImageChange(e: Event) {
         @keydown="e => onKeydown(e as KeyboardEvent)"
         @paste="onPaste"
       />
+      <el-tooltip content="Clear input" placement="bottom">
+        <el-button v-show="store.input.trim().length > 0 || store.draftImages.length > 0" circle size="default" :icon="CircleClose" @click="store.clearInput()" />
+      </el-tooltip>
     </div>
   </div>
 </template>

@@ -72,9 +72,11 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   const sessionEditVisible = ref(false);
   const contextEditorVisible = ref(false);
   const contextEditorDraft = ref("");
+  /** When true, ContextFilesPanel shows "new session" form instead of active session context. */
+  const contextPanelNewMode = ref(false);
   const tagManagerVisible = ref(false);
-  // RAG toggle — user-controlled, default ON. When ON + conversation has ctx: files → RAG chat.
-  // When OFF → direct LLM chat even if ctx: files exist.
+  // RAG toggle — user-controlled. When ON + conversation has ctx: files → RAG chat.
+  // Persisted to localStorage so the user's preference survives page reloads.
   const ragEnabled = ref(true);
 
   // True when the active conversation has ctx:-tagged files (can use RAG).
@@ -376,6 +378,13 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     if (!activeConversation.value) return;
     contextEditorDraft.value = activeConversation.value.pageContent || "";
     contextEditorVisible.value = true;
+  }
+
+  function enterNewContextMode() {
+    contextPanelNewMode.value = true;
+  }
+  function exitNewContextMode() {
+    contextPanelNewMode.value = false;
   }
 
   function closeContextEditor() {
@@ -919,6 +928,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     contextEditorVisible,
     contextEditorDraft,
     tagManagerVisible,
+    contextPanelNewMode,
     knowledgeMode,
     contextSwitchEnabled,
     ragEnabled,
@@ -947,6 +957,8 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     openContextEditor,
     closeContextEditor,
     saveContextEditorContent,
+    enterNewContextMode,
+    exitNewContextMode,
     toggleTagManager,
     openTagManager,
     closeTagManager,

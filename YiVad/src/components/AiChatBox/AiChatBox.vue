@@ -8,6 +8,7 @@ import { useResizable } from "@/hooks/useResizable";
 import MessageList from "@/views/aiChat/components/MessageList.vue";
 import ChatInput from "@/views/aiChat/components/ChatInput.vue";
 import ConversationSessionSidebar from "@/views/aiChat/components/ConversationSessionSidebar.vue";
+import ContextFilesPanel from "@/views/aiChat/components/ContextFilesPanel.vue";
 import LlamaIndexPanel from "@/views/aiChat/components/LlamaIndexPanel.vue";
 
 const props = withDefaults(
@@ -160,6 +161,19 @@ provide("aiChatSessionSidebar", {
   toggle: toggleSessionSidebar
 });
 
+// ── Context files panel (between session sidebar and chat area) ──
+
+const {
+  width: contextPanelW,
+  isResizing: isContextResizing,
+  startResize: startContextResize
+} = useResizable(240, 180, 480, "aiChat.contextPanelW");
+
+const contextPanelCollapsed = ref(false);
+function toggleContextPanel() {
+  contextPanelCollapsed.value = !contextPanelCollapsed.value;
+}
+
 // ── Drop zone: drag a knowledge file from the left sidebar to create a session ──
 
 const isDragOver = ref(false);
@@ -266,7 +280,7 @@ async function onDrop(e: DragEvent) {
     </button>
 
     <template v-if="showPanel">
-      <!-- Fill mode: session sidebar + chat area -->
+      <!-- Fill mode: session sidebar + context panel + chat area -->
       <template v-if="isFill">
         <div class="ai-chat-box__body">
           <!-- Session sidebar -->
@@ -279,6 +293,17 @@ async function onDrop(e: DragEvent) {
             class="ai-chat-box__session-resizer"
             :class="{ 'is-active': isSessionResizing }"
             @pointerdown="startSessionResize"
+          />
+          <!-- Context files panel -->
+          <div v-if="!contextPanelCollapsed" class="ai-chat-box__context-panel" :style="{ width: contextPanelW + 'px' }">
+            <ContextFilesPanel />
+          </div>
+          <!-- Context panel resizer -->
+          <div
+            v-if="!contextPanelCollapsed"
+            class="ai-chat-box__context-resizer"
+            :class="{ 'is-active': isContextResizing }"
+            @pointerdown="startContextResize"
           />
           <!-- Chat area with drop zone -->
           <div
@@ -382,6 +407,24 @@ async function onDrop(e: DragEvent) {
 }
 .ai-chat-box__session-resizer:hover,
 .ai-chat-box__session-resizer.is-active {
+  background: var(--el-color-primary-light-7);
+}
+
+.ai-chat-box__context-panel {
+  flex-shrink: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.ai-chat-box__context-resizer {
+  width: 4px;
+  flex-shrink: 0;
+  cursor: col-resize;
+  background: var(--el-border-color-lighter);
+  transition: background 0.15s;
+}
+.ai-chat-box__context-resizer:hover,
+.ai-chat-box__context-resizer.is-active {
   background: var(--el-color-primary-light-7);
 }
 
