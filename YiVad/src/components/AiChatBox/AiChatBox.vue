@@ -280,9 +280,20 @@ async function onDrop(e: DragEvent) {
     </button>
 
     <template v-if="showPanel">
-      <!-- Fill mode: session sidebar + context panel + chat area -->
+      <!-- Fill mode: context files panel + session sidebar + chat area -->
       <template v-if="isFill">
         <div class="ai-chat-box__body">
+          <!-- Context files panel (between knowledge files and chat sessions) -->
+          <div v-if="!contextPanelCollapsed" class="ai-chat-box__context-panel" :style="{ width: contextPanelW + 'px' }">
+            <ContextFilesPanel />
+          </div>
+          <!-- Context panel resizer -->
+          <div
+            v-if="!contextPanelCollapsed"
+            class="ai-chat-box__context-resizer"
+            :class="{ 'is-active': isContextResizing }"
+            @pointerdown="startContextResize"
+          />
           <!-- Session sidebar -->
           <div v-if="!sessionSidebarCollapsed" class="ai-chat-box__session-sidebar" :style="{ width: sessionSidebarW + 'px' }">
             <ConversationSessionSidebar />
@@ -293,17 +304,6 @@ async function onDrop(e: DragEvent) {
             class="ai-chat-box__session-resizer"
             :class="{ 'is-active': isSessionResizing }"
             @pointerdown="startSessionResize"
-          />
-          <!-- Context files panel -->
-          <div v-if="!contextPanelCollapsed" class="ai-chat-box__context-panel" :style="{ width: contextPanelW + 'px' }">
-            <ContextFilesPanel />
-          </div>
-          <!-- Context panel resizer -->
-          <div
-            v-if="!contextPanelCollapsed"
-            class="ai-chat-box__context-resizer"
-            :class="{ 'is-active': isContextResizing }"
-            @pointerdown="startContextResize"
           />
           <!-- Chat area with drop zone -->
           <div

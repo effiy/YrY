@@ -25,6 +25,8 @@ const filteredConversations = computed(() => {
 const selectedCount = computed(() => store.selectedKeys.size);
 
 async function onSelect(key: string) {
+  // If context panel is in "new" mode, cancel it and show the selected session
+  store.exitNewContextMode();
   await store.selectConversation(key);
 }
 
@@ -68,15 +70,6 @@ async function onBulkDelete() {
 /** "New session" → signals the ContextFilesPanel to enter "new" mode. */
 function onNewSession() {
   store.enterNewContextMode();
-}
-
-/** "Edit context" → select the conversation; ContextFilesPanel reacts to activeConversation. */
-async function onEditContext(key: string) {
-  if (store.activeConversation?.key !== key) {
-    await store.selectConversation(key);
-  }
-  // Ensure we're in view mode (not "new")
-  store.exitNewContextMode();
 }
 
 async function onOpenRag(key: string) {
@@ -134,7 +127,6 @@ async function onOpenRag(key: string) {
           @rename="onRename"
           @delete="onDelete"
           @toggle-favorite="onToggleFavorite"
-          @edit-context="onEditContext"
           @open-rag="onOpenRag"
         />
       </template>

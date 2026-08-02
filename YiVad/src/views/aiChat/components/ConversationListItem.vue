@@ -1,6 +1,6 @@
 <script setup lang="ts" name="aiChatConversationListItem">
 import { computed } from "vue";
-import { Edit, Delete, Star, StarFilled, Document, DataAnalysis } from "@element-plus/icons-vue";
+import { Edit, Delete, Star, StarFilled, DataAnalysis } from "@element-plus/icons-vue";
 import type { SessionDocument } from "@/api/interface/yiweb";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 
@@ -16,7 +16,6 @@ const emit = defineEmits<{
   (e: "rename", key: string, title: string): void;
   (e: "delete", key: string, title: string): void;
   (e: "toggle-favorite", key: string): void;
-  (e: "edit-context", key: string): void;
   (e: "open-rag", key: string): void;
 }>();
 
@@ -86,15 +85,6 @@ const metaText = computed(() => {
           @click="emit('toggle-favorite', conversation.key)"
         >
           <el-icon><component :is="isFavorite ? StarFilled : Star" /></el-icon>
-        </el-button>
-        <el-button
-          text
-          size="small"
-          :title="`Edit context (${ctxCount} files)`"
-          @click="emit('edit-context', conversation.key)"
-        >
-          <el-icon><Document /></el-icon>
-          <span v-if="ctxCount > 0" class="cs-ctx-count">{{ ctxCount }}</span>
         </el-button>
         <el-button
           v-if="ctxCount > 0"
@@ -196,8 +186,7 @@ const metaText = computed(() => {
 .cs-item-actions .is-fav {
   color: var(--el-color-warning);
 }
-.cs-rag-count,
-.cs-ctx-count {
+.cs-rag-count {
   margin-left: 2px;
   font-size: 10px;
   font-weight: 600;

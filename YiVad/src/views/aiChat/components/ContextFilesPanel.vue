@@ -367,6 +367,9 @@ async function onSave() {
       await store.createConversation(title, pageContent, tags);
       mode.value = "view";
       store.exitNewContextMode();
+      // After creation, load the new session's context into the panel.
+      // The watcher skipped reload because mode was "new" when it fired.
+      loadFromSession();
     } else {
       const s = store.activeConversation;
       if (!s) return;
@@ -467,7 +470,6 @@ async function onSave() {
         size="small"
         type="primary"
         :loading="saving"
-        :disabled="contextRoots.length === 0"
         @click="onSave"
       >
         {{ mode === "new" ? "Create" : "Save" }}
@@ -483,6 +485,7 @@ async function onSave() {
   height: 100%;
   overflow: hidden;
   background: var(--el-bg-color);
+  border-right: 1px solid var(--el-border-color-lighter);
 }
 .cfp-header {
   display: flex;
