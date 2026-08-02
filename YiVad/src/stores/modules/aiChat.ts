@@ -6,24 +6,36 @@
  * conversation sidebar and per-message feedback.
  */
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { ElMessage } from "element-plus";
+import { useToolRegistry } from "@/hooks/useToolRegistry";
 import { getSessions, getSession, upsertSession, deleteSession } from "@/api/modules/sessions";
 import { streamChat } from "@/api/modules/chatService";
 import { streamRagChat } from "@/api/modules/ragService";
 import { queryDocuments } from "@/api/modules/dataService";
 import { loadRobots, sendWeChatMessage } from "@/api/modules/weChatService";
-import { webSearch, webFetch, extractUrls, formatSearchResults, formatFetchedContent } from "@/api/modules/searchService";
-import type { WebSearchResult, WebSearchResponse } from "@/api/modules/searchService";
+import { webSearch, webFetch, extractUrls, formatSearchResults, formatFetchedContent, compactConversation } from "@/api/modules/searchService";
+import type { WebSearchResult } from "@/api/modules/searchService";
 import type { SessionDocument, ChatMessage, FaqDocument } from "@/api/interface/yiweb";
+import { normalizeEntries } from "@/api/interface/yiweb";
 import type { RagSource, RagStreamHandlers } from "@/api/interface/rag";
 import type { FileNode } from "@/stores/modules/aicr/fileTree";
 import type { AiChatFeedbackRating, AiChatStreamingType } from "@/views/aiChat/types";
 import { DEFAULT_MODEL } from "@/views/aiChat/constants";
 
 const STORAGE_ACTIVE_KEY = "aiChat.activeKey";
+const STORAGE_RAG_KEY = "aiChat.ragEnabled";
+const STORAGE_WEB_KEY = "aiChat.webSearchEnabled";
 const MAX_DRAFT_IMAGES = 4;
 const SCROLL_THROTTLE_MS = 120;
+
+function loadBool(key: string, fallback: boolean): boolean {
+  try { const v = localStorage.getItem(key); return v !== null ? v === "true" : fallback; }
+  catch { return fallback; }
+}
+function saveBool(key: string, value: boolean): void {
+  try { localStorage.setItem(key, String(value)); } catch { /* ignore */ }
+}
 
 function newKey(): string {
   return `aichat_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -47,8 +59,15 @@ function normalizeMessage(m: ChatMessage): ChatMessage {
 
 function normalizeSession(s: SessionDocument | null): SessionDocument | null {
   if (!s) return s;
+  // Step 1: normalize legacy {content} → {message}
   const messages = (s.messages ?? []).map(normalizeMessage);
-  return messages === s.messages ? s : { ...s, messages };
+  // Step 2: normalize to ChatEntry format (backward compat with Pi-inspired entry types)
+  // This is non-destructive: old ChatMessage objects are wrapped as entryType:"message"
+  const entries = normalizeEntries(messages as any);
+  // Store normalized entries as both messages (for backward compat) and entries (for new code)
+  const result = messages === s.messages ? s : { ...s, messages };
+  (result as any)._entries = entries;
+  return result;
 }
 
 export const useAiChatStore = defineStore("yivad-aiChat", () => {
@@ -59,8 +78,16 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   const input = ref("");
   const sending = ref(false);
   const abortController = ref<{ abort: () => void } | null>(null);
+  // Separate abort controller for tool execution (web fetch, web search).
+  // Aborted when user clicks Stop, independent of the SSE stream abort.
+  const toolAbortController = ref<AbortController | null>(null);
   const streamingTargetTimestamp = ref<number | null>(null);
   const streamingType = ref<AiChatStreamingType>("");
+
+  // ── Streaming phase (Pi-inspired: turn_start/message_start/message_end) ──
+  // Tracks the current phase of the AI interaction for richer UI feedback.
+  type StreamingPhase = "idle" | "fetching" | "thinking" | "streaming" | "done";
+  const streamingPhase = ref<StreamingPhase>("idle");
   const scrollTick = ref(0);
   const copyFeedback = ref<Record<string, string>>({});
   const feedback = ref<Record<number, AiChatFeedbackRating>>({});
@@ -77,19 +104,38 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   /** When true, ContextFilesPanel shows "new session" form instead of active session context. */
   const contextPanelNewMode = ref(false);
   const tagManagerVisible = ref(false);
-  // RAG toggle — user-controlled. When ON + conversation has ctx: files → RAG chat.
-  // Persisted to localStorage so the user's preference survives page reloads.
-  const ragEnabled = ref(true);
+  // RAG toggle — user-controlled. Persisted to localStorage.
+  const ragEnabled = ref(loadBool(STORAGE_RAG_KEY, true));
 
-  // Web search toggle — user-controlled. When ON, the user's query is sent to
-  // the /web-search endpoint and results are prepended to the chat context.
-  const webSearchEnabled = ref(false);
+  // Web search toggle — user-controlled. Persisted to localStorage.
+  const webSearchEnabled = ref(loadBool(STORAGE_WEB_KEY, false));
 
   // Results from the most recent web search (displayed in the message bubble).
   const webSearchResults = ref<WebSearchResult[]>([]);
 
   // True while web search API call is in-flight.
   const webSearching = ref(false);
+
+  // ── Tool Registry (Pi-inspired pluggable tools) ──
+  const { tools: _tools, toolEvents, activeTools, registerTool, setToolEnabled, executeTool, getToolsForSystemPrompt } = useToolRegistry();
+
+  // True when the active conversation has ctx:-tagged files (can use RAG).
+  const ragActive = computed(() => {
+    const tags = activeConversation.value?.tags ?? [];
+    return tags.some(t => typeof t === "string" && t.startsWith("ctx:"));
+  });
+
+  // Auto-sync tool enabled states with store toggles (Pi pattern: tools are
+  // reactive to session state, not separate manual toggles).
+  watch([ragEnabled, ragActive, webSearchEnabled], () => {
+    setToolEnabled("web_search", webSearchEnabled.value);
+    setToolEnabled("web_fetch", webSearchEnabled.value);
+    setToolEnabled("rag_search", ragEnabled.value && ragActive.value);
+    setToolEnabled("context_edit", ragActive.value);
+    // Persist preferences (Pi: settingsManager pattern)
+    saveBool(STORAGE_RAG_KEY, ragEnabled.value);
+    saveBool(STORAGE_WEB_KEY, webSearchEnabled.value);
+  }, { immediate: true });
 
   // Context change history for undo support. Each entry stores the state
   // before a change was applied so it can be restored.
@@ -103,30 +149,79 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   const contextChangeHistory = ref<ContextChangeEntry[]>([]);
   const MAX_CHANGE_HISTORY = 50;
 
-  // True when the active conversation has ctx:-tagged files (can use RAG).
-  const ragActive = computed(() => {
-    const tags = activeConversation.value?.tags ?? [];
-    return tags.some(t => typeof t === "string" && t.startsWith("ctx:"));
-  });
-
   /**
-   * System prompt snippet that teaches the AI how to propose context file edits.
-   * Injected when RAG is active, so the model knows it can suggest changes to
-   * the session's knowledge context via fenced code blocks.
+   * System prompt snippet that teaches the AI how to propose context file edits
+   * and save content to the knowledge base. Always provides knowledge base write
+   * instructions; context file editing instructions are included when the session
+   * has ctx:-tagged files.
    */
   const contextChangeSystemPrompt = computed(() => {
-    if (!ragActive.value) return "";
-    const hasContent = (activeConversation.value?.pageContent ?? "").trim().length > 0;
     const files = (activeConversation.value?.tags ?? [])
       .filter(t => typeof t === "string" && t.startsWith("ctx:"))
       .map(t => (t as string).slice(4));
-    if (!files.length && !hasContent) return "";
+    const hasContent = (activeConversation.value?.pageContent ?? "").trim().length > 0;
+    const hasContextFiles = files.length > 0 || hasContent;
+
+    // Always provide KB write capability
+    const kbSection = [
+      "",
+      "## CRITICAL: Saving content to the Knowledge Base",
+      "",
+      "When the user asks you to save, generate, write, or create any document, report,",
+      "note, or file in the knowledge base, you MUST wrap your content in a",
+      "`knowledge:save <path>` fenced code block. This is REQUIRED — do NOT output",
+      "the content as plain markdown.",
+      "",
+      "**Format (required):**",
+      "",
+      "```knowledge:save <path/to/file.md>",
+      "<YOUR COMPLETE CONTENT HERE — the entire document>",
+      "```",
+      "",
+      "**Trigger phrases** (any of these → MUST use knowledge:save block):",
+      '- "生成一份报告放在知识库中"',
+      '- "保存到知识库" / "写到知识库"',
+      '- "create a document/report/note"',
+      '- "write this to YiKnowledge"',
+      '- "generate a report"',
+      '- "放在知识库" / "存入知识库"',
+      "",
+      "**Examples of correct responses:**",
+      "",
+      "User: 生成一份Q3销售报告放在知识库中",
+      "Your response (the ENTIRE content inside the block will be saved):",
+      "",
+      "```knowledge:save reports/q3-sales-analysis.md",
+      "# Q3 销售数据分析报告",
+      "",
+      "## 概述",
+      "...完整报告内容...",
+      "```",
+      "",
+      "User: 写一份部署文档到知识库",
+      "Your response:",
+      "",
+      "```knowledge:save docs/deployment-guide.md",
+      "# 部署指南",
+      "...完整文档内容...",
+      "```",
+      "",
+      "**Path naming**: Use descriptive paths like `reports/q3-sales.md`,",
+      "`docs/api-guide.md`, `notes/meeting-2026-08-02.md`.",
+      "**Content**: Include the COMPLETE document inside the block. The user",
+      "will see a visual card with a \"Save to Knowledge Base\" button.",
+      "",
+    ].join("\n");
+
+    // Context file editing instructions — only when session has context files
+    if (!hasContextFiles) return kbSection;
+
     const fileList = files.map(f => `  - ${f}`).join("\n");
-    return [
+    const contextSection = [
       "",
-      "## Context file editing",
+      "## Session context file editing",
       "",
-      "You can manage the session's context files. The user will see visual cards and can apply or reject your proposals.",
+      "You can also manage the session's context files. The user will see visual cards and can apply or reject your proposals.",
       "",
       "**Editing file content** — use `context:<path>`:",
       "",
@@ -150,9 +245,8 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
       "```",
       "",
       "**Actions summary:**",
-      "- **Create**: use a path not listed below with full content",
-      "- **Update**: include the COMPLETE new content for an existing file",
-      "- **Delete**: use an empty code block with `context:<path>`",
+      "- **Create/Update session context**: use `context:<path>` with COMPLETE new content",
+      "- **Delete from context**: use an empty `context:<path>` block",
       "- **Add to context**: use `context:add <path>` to link a file without editing it",
       "- **Remove from context**: use `context:remove <path>` to unlink a file",
       "- **View file**: use `context:view <path>` to show current content",
@@ -162,6 +256,8 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
       "",
       "**Important:** For create/update, include COMPLETE file content, not just a diff.",
     ].join("\n");
+
+    return kbSection + "\n" + contextSection;
   });
 
   // Backward-compat aliases
@@ -691,6 +787,26 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     return "";
   }
 
+  /**
+   * Persist a context file section to the YiKnowledge directory.
+   * This is the bridge between session-scoped context editing and permanent
+   * knowledge base storage. Called when the user applies a `knowledge:save`
+   * proposal or clicks "Save to Knowledge Base" on a context change card.
+   *
+   * @param path     Relative path under YiKnowledge (e.g. "reports/q3-sales.md")
+   * @param content  Markdown content to write
+   * @param metadata Optional frontmatter metadata (title, tags, category, etc.)
+   */
+  async function saveContextToKnowledge(
+    path: string,
+    content: string,
+    metadata?: Record<string, unknown>
+  ) {
+    const { writeKnowledgeFile } = await import("@/api/modules/knowledgeService");
+    const result = await writeKnowledgeFile(path, content, metadata);
+    return result;
+  }
+
   function openTagManager() {
     if (!activeConversation.value) return;
     tagManagerVisible.value = true;
@@ -811,11 +927,49 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     }
   }
 
+  // ── Slash commands (Pi-inspired: registerCommand) ────────────────────
+
+  async function handleCommand(cmd: string): Promise<boolean> {
+    const parts = cmd.slice(1).trim().split(/\s+/);
+    const name = parts[0]?.toLowerCase();
+    const args = parts.slice(1).join(" ");
+
+    switch (name) {
+      case "compact":
+        await maybeCompact();
+        ElMessage.success("Conversation compacted");
+        return true;
+      case "clear":
+        if (!activeConversation.value) return true;
+        setActiveMessages(() => []);
+        await persistActive();
+        ElMessage.success("Conversation cleared");
+        return true;
+      case "retry":
+        await retryLastMessage();
+        return true;
+      case "stop":
+        if (sending.value) stopSending();
+        return true;
+      case "model":
+        ElMessage.info(`Current model: ${DEFAULT_MODEL} (switch via settings)`);
+        return true;
+      default:
+        return false; // Not a command, proceed as normal message
+    }
+  }
+
   async function sendMessage(text?: string) {
     const content = (text ?? input.value).trim();
     const hasImages = draftImages.value.length > 0;
     if (!content && !hasImages && !sending.value) return;
     if (sending.value) return;
+
+    // ── Check for slash commands ────────────────────────────────────
+    if (content.startsWith("/") && !hasImages) {
+      const handled = await handleCommand(content);
+      if (handled) { input.value = ""; return; }
+    }
     if (!activeConversation.value) {
       await createConversation();
     }
@@ -838,32 +992,36 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     input.value = "";
     draftImages.value = [];
 
-    // ── Web search / URL fetch ──
-    // When the user included URLs in their message, fetch them BEFORE
-    // streaming so the LLM sees the page content in its initial response.
-    // The DuckDuckGo search still runs in the background and arrives as a
-    // follow-up when it enriches the answer beyond the direct URL content.
+    // ── Tool execution (Pi-inspired pipeline) ──────────────────────────
+    // Pre-stream tools (e.g. web_fetch for URLs in message) run first
+    // and their output is injected into the initial AI stream context.
+    // Background tools (e.g. web_search) run in parallel and arrive as
+    // a follow-up message when they produce additional context.
     let initialSearchContext = "";
 
+    // Create a fresh AbortController for this send's tool executions.
+    // Aborted on user Stop to cancel in-flight web fetches/searches.
+    const toolSignal = new AbortController();
+    toolAbortController.value = toolSignal;
+
     if (webSearchEnabled.value && userQuery) {
+      // Tool states are auto-synced by watcher — no manual setToolEnabled needed
       const urls = extractUrls(userQuery);
 
+      // ── Execute pre-stream tools ──────────────────────────────────
       if (urls.length > 0) {
-        // ── Direct URL mode: fetch first, stream with content ─────────
+        streamingPhase.value = "fetching";
         webSearching.value = true;
-        const fetchResults = await Promise.all(
-          urls.map(u => webFetch(u).catch(() => ({ text: "", url: u, error: "fetch failed" })))
-        );
+        for (const url of urls) {
+          const result = await executeTool("web_fetch", { url }, toolSignal.signal);
+          if (result?.content) {
+            initialSearchContext = initialSearchContext
+              ? `${initialSearchContext}\n\n${result.content}`
+              : result.content;
+          }
+        }
         webSearching.value = false;
 
-        const parts: string[] = [];
-        for (const fr of fetchResults) {
-          const f = fr as { text: string; url: string; error?: string };
-          if (f.text) parts.push(formatFetchedContent(f.url, f.text));
-        }
-        initialSearchContext = parts.filter(Boolean).join("\n\n");
-
-        // Also flag the user message for UI display
         if (initialSearchContext) {
           setActiveMessages(msgs => {
             const idx = msgs.findIndex(m => m.timestamp === now);
@@ -873,118 +1031,111 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
             return next;
           });
         }
+      }
 
-        // Kick off DuckDuckGo search in background for supplementary context.
-        // When it completes, send a follow-up if it finds anything beyond
-        // what was already in the directly-fetched URL content.
-        let pendingSearchContext = "";
-        const seenUrls = new Set(urls.map(u => u.toLowerCase()));
-
-        Promise.resolve(
-          webSearch(userQuery, 6).then(async searchRes => {
-            const results = (searchRes as WebSearchResponse).results ?? [];
-            webSearchResults.value = results;
-
-            // Fetch search result URLs not already fetched
-            const topResultUrls = results
-              .map(r => r.url)
-              .filter(u => u && !seenUrls.has(u.toLowerCase()))
-              .slice(0, 3);
-
-            const searchFetchResults = topResultUrls.length
-              ? await Promise.all(
-                topResultUrls.map(u => webFetch(u).catch(() => ({ text: "", url: u, error: "fetch failed" })))
-              )
-              : [];
-
-            const extraParts: string[] = [];
-            for (const fr of searchFetchResults) {
-              const f = fr as { text: string; url: string; error?: string };
-              if (f.text) extraParts.push(formatFetchedContent(f.url, f.text));
-            }
-            if (results.length) extraParts.push(formatSearchResults(results));
-            pendingSearchContext = extraParts.filter(Boolean).join("\n\n");
-          }).catch(() => {
-            webSearchResults.value = [];
-          })
-        ).finally(async () => {
-          await streamPromise;
-          if (!pendingSearchContext) return;
-          await persistActive();
-          const s = activeConversation.value;
-          if (!s) return;
-          const followUpPet: ChatMessage = { type: "pet", message: "", timestamp: Date.now() + 1 };
-          const msgs = s.messages ?? [];
-          const prev = msgs.length;
-          setActiveMessages(m => [...m, followUpPet]);
-          await runStream(prev, followUpPet.timestamp, "send", pendingSearchContext);
-        });
-      } else {
-        // ── No URLs in message: search in background ──────────────────
-        // Same fire-and-forget pattern — stream immediately, follow-up
-        // arrives when search completes.
-        webSearching.value = true;
-        let pendingSearchContext = "";
-
-        Promise.resolve(
-          webSearch(userQuery, 6).then(async searchRes => {
-            const results = (searchRes as WebSearchResponse).results ?? [];
-            webSearchResults.value = results;
-
-            const topResultUrls = results
-              .map(r => r.url)
-              .filter(Boolean)
-              .slice(0, 3);
-
-            const searchFetchResults = topResultUrls.length
-              ? await Promise.all(
-                topResultUrls.map(u => webFetch(u).catch(() => ({ text: "", url: u, error: "fetch failed" })))
-              )
-              : [];
-
-            const parts: string[] = [];
-            for (const fr of searchFetchResults) {
-              const f = fr as { text: string; url: string; error?: string };
-              if (f.text) parts.push(formatFetchedContent(f.url, f.text));
-            }
-            if (results.length) parts.push(formatSearchResults(results));
-            pendingSearchContext = parts.filter(Boolean).join("\n\n");
-            webSearching.value = false;
-
-            if (pendingSearchContext) {
-              setActiveMessages(msgs => {
-                const idx = msgs.findIndex(m => m.timestamp === now);
-                if (idx < 0) return msgs;
-                const next = [...msgs];
-                next[idx] = { ...next[idx], searchContext: pendingSearchContext };
-                return next;
+      // ── Execute background tools (fire-and-forget) ─────────────────
+      let pendingSearchContext = "";
+      Promise.resolve(
+        executeTool("web_search", { query: userQuery, maxResults: 6 }, toolSignal.signal).then(result => {
+          webSearching.value = false;
+          if (result?.content) {
+            // Also fetch top search result URLs via web_fetch
+            const resultUrls = extractUrls(result.content);
+            if (resultUrls.length > 0) {
+              return Promise.all(
+                resultUrls.slice(0, 3).map(u =>
+                  executeTool("web_fetch", { url: u }, toolSignal.signal).then(r => r?.content ?? "")
+                )
+              ).then(extraParts => {
+                const allParts = [...extraParts.filter(Boolean), result.content];
+                pendingSearchContext = allParts.join("\n\n");
               });
             }
-          }).catch(() => {
-            webSearching.value = false;
-            webSearchResults.value = [];
-          })
-        ).finally(async () => {
-          await streamPromise;
-          if (!pendingSearchContext) return;
-          await persistActive();
-          const s = activeConversation.value;
-          if (!s) return;
-          const followUpPet: ChatMessage = { type: "pet", message: "", timestamp: Date.now() + 1 };
-          const msgs = s.messages ?? [];
-          const prev = msgs.length;
-          setActiveMessages(m => [...m, followUpPet]);
-          await runStream(prev, followUpPet.timestamp, "send", pendingSearchContext);
-        });
-      }
+            pendingSearchContext = result.content;
+          }
+        }).catch(() => {
+          webSearching.value = false;
+          webSearchResults.value = [];
+        })
+      ).finally(async () => {
+        await streamPromise;
+        if (!pendingSearchContext) return;
+        await persistActive();
+        const s = activeConversation.value;
+        if (!s) return;
+        // Inject as tool_result entry then stream follow-up
+        const followUpPet: ChatMessage = { type: "pet", message: "", timestamp: Date.now() + 1 };
+        const msgs = s.messages ?? [];
+        const prev = msgs.length;
+        setActiveMessages(m => [...m, followUpPet]);
+        await runStream(prev, followUpPet.timestamp, "send", pendingSearchContext);
+      });
     } else {
       webSearchResults.value = [];
+      // Tool states auto-synced by watcher
     }
 
     // Start streaming (with initialSearchContext if URLs were in the message)
     const streamPromise = runStream(prevLen, petMsg.timestamp, "send", initialSearchContext);
 
     await streamPromise;
+
+    // ── Auto-detect KB save intent (Pi-inspired post-processing) ─────────
+    // When the user asks to save content to the knowledge base but the AI
+    // didn't use a knowledge:save block, auto-wrap the response so the user
+    // can save it with one click via the ContextChangeCard.
+    const kbIntent = detectKBIntent(userQuery);
+    if (kbIntent) {
+      const petIdx = activeConversation.value?.messages?.findIndex(
+        m => m.timestamp === petMsg.timestamp
+      ) ?? -1;
+      if (petIdx >= 0) {
+        const petMsg2 = activeConversation.value!.messages![petIdx];
+        const petText = petMsg2.message ?? "";
+        // Only auto-wrap if the AI didn't already use knowledge:save
+        if (petText && !/```knowledge:save/.test(petText)) {
+          const wrapped = autoWrapKnowledgeBlock(petText, kbIntent.path);
+          setActiveMessages(msgs => {
+            const next = [...msgs];
+            next[petIdx] = { ...next[petIdx], message: wrapped };
+            return next;
+          });
+          await persistActive();
+        }
+      }
+    }
+  }
+
+  // ── KB intent detection ───────────────────────────────────────────────
+
+  /** Patterns that indicate the user wants to save content to the knowledge base. */
+  const KB_INTENT_RE = /(放在|保存到|存到|写入|写到|生成.*放在|创建.*放在)(知识库|knowledge|YiKnowledge)/i;
+
+  function detectKBIntent(userMessage: string): { path: string } | null {
+    if (!userMessage || !KB_INTENT_RE.test(userMessage)) return null;
+    // Extract a suggested path from the user message
+    const path = suggestKBPath(userMessage);
+    return { path };
+  }
+
+  /** Suggest a KB file path from the user's message content. */
+  function suggestKBPath(userMessage: string): string {
+    const text = userMessage.trim();
+    // Try to extract a descriptive name
+    const reportMatch = text.match(/(\w+(?:[一-鿿\w]+)*)\s*(?:报告|分析|文档|笔记|指南|说明)/);
+    if (reportMatch) {
+      const name = reportMatch[1].replace(/\s+/g, "-").toLowerCase();
+      return `reports/${name}.md`;
+    }
+    // Default: use date-based path
+    const date = new Date().toISOString().slice(0, 10);
+    return `notes/ai-generated-${date}.md`;
+  }
+
+  /** Wrap AI-generated content in a knowledge:save block. */
+  function autoWrapKnowledgeBlock(content: string, path: string): string {
+    const cleaned = content.trim();
+    return `\`\`\`knowledge:save ${path}\n${cleaned}\n\`\`\``;
   }
 
   /**
@@ -1029,8 +1180,10 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     sending.value = true;
     streamingTargetTimestamp.value = petTimestamp;
     streamingType.value = type;
+    streamingPhase.value = "thinking";
 
     const onChunk = (chunk: string) => {
+      if (streamingPhase.value === "thinking") streamingPhase.value = "streaming";
       streamed += chunk;
       setActiveMessages(msgs => {
         const idx = msgs.findIndex(m => m.timestamp === petTimestamp);
@@ -1058,6 +1211,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
       sending.value = false;
       streamingTargetTimestamp.value = null;
       streamingType.value = "";
+      streamingPhase.value = "idle";
       abortController.value = null;
       persistActive();
       const idx = activeConversation.value?.messages?.findIndex(m => m.timestamp === petTimestamp) ?? -1;
@@ -1065,11 +1219,15 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
       if (petMsg && !petMsg.aborted && !petMsg.error && streamed.trim()) {
         forwardReplyToWeCom(streamed);
       }
+
+      // ── Compaction check (Pi-inspired) ────────────────────────────
+      maybeCompact();
     };
     const onError = (err: Error) => {
       sending.value = false;
       streamingTargetTimestamp.value = null;
       streamingType.value = "";
+      streamingPhase.value = "idle";
       abortController.value = null;
       setActiveMessages(msgs => {
         const idx = msgs.findIndex(m => m.timestamp === petTimestamp);
@@ -1122,11 +1280,13 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     } else {
       // Build combined system prompt: caller-provided systemPrompt (e.g. file preview)
       // + context-editing instructions when the session has context files.
+      // + tool descriptions (Pi-inspired: tell the LLM what tools are available).
       // + web search pending note when search is running in background.
+      const toolPrompt = getToolsForSystemPrompt();
       const webSearchPendingNote = (webSearchEnabled.value && !searchContext)
         ? "Note: A web search has been initiated for the user's query. Results are being fetched and will be provided to you in a follow-up message. In your current response, briefly acknowledge the query and indicate that you're checking the latest information from the web."
         : "";
-      const sysParts = [systemPrompt.value, contextChangeSystemPrompt.value, webSearchPendingNote]
+      const sysParts = [systemPrompt.value, contextChangeSystemPrompt.value, toolPrompt, webSearchPendingNote]
         .map(s => s.trim())
         .filter(Boolean);
       const system = sysParts.length ? sysParts.join("\n\n") : undefined;
@@ -1150,7 +1310,9 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   function stopSending() {
     const targetTs = streamingTargetTimestamp.value;
     abortController.value?.abort();
+    toolAbortController.value?.abort();
     sending.value = false;
+    streamingPhase.value = "idle";
     streamingTargetTimestamp.value = null;
     streamingType.value = "";
     abortController.value = null;
@@ -1265,28 +1427,26 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     activeConversation.value = { ...s, messages: nextMessages, updatedAt: now };
     scrollTick.value++;
 
-    // ── Web search / URL fetch ──
-    // Same pattern as sendMessage: fetch user-provided URLs BEFORE streaming
-    // so the LLM sees page content in its initial response.
+    // ── Tool execution (Pi-inspired, same as sendMessage) ──────────────
+    const toolSignal = new AbortController();
+    toolAbortController.value = toolSignal;
     let initialSearchContext = "";
 
     if (webSearchEnabled.value && text) {
       const urls = extractUrls(text);
 
       if (urls.length > 0) {
-        // ── Direct URL mode: fetch first, stream with content ─────────
+        streamingPhase.value = "fetching";
         webSearching.value = true;
-        const fetchResults = await Promise.all(
-          urls.map(u => webFetch(u).catch(() => ({ text: "", url: u, error: "fetch failed" })))
-        );
-        webSearching.value = false;
-
-        const parts: string[] = [];
-        for (const fr of fetchResults) {
-          const f = fr as { text: string; url: string; error?: string };
-          if (f.text) parts.push(formatFetchedContent(f.url, f.text));
+        for (const url of urls) {
+          const result = await executeTool("web_fetch", { url }, toolSignal.signal);
+          if (result?.content) {
+            initialSearchContext = initialSearchContext
+              ? `${initialSearchContext}\n\n${result.content}`
+              : result.content;
+          }
         }
-        initialSearchContext = parts.filter(Boolean).join("\n\n");
+        webSearching.value = false;
 
         if (initialSearchContext) {
           setActiveMessages(msgs => {
@@ -1297,113 +1457,57 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
             return next;
           });
         }
-
-        // DuckDuckGo search in background for supplementary follow-up
-        let pendingSearchContext = "";
-        const seenUrls = new Set(urls.map(u => u.toLowerCase()));
-
-        Promise.resolve(
-          webSearch(text, 6).then(async searchRes => {
-            const results = (searchRes as WebSearchResponse).results ?? [];
-            webSearchResults.value = results;
-
-            const topResultUrls = results
-              .map(r => r.url)
-              .filter(u => u && !seenUrls.has(u.toLowerCase()))
-              .slice(0, 3);
-
-            const searchFetchResults = topResultUrls.length
-              ? await Promise.all(
-                topResultUrls.map(u => webFetch(u).catch(() => ({ text: "", url: u, error: "fetch failed" })))
-              )
-              : [];
-
-            const extraParts: string[] = [];
-            for (const fr of searchFetchResults) {
-              const f = fr as { text: string; url: string; error?: string };
-              if (f.text) extraParts.push(formatFetchedContent(f.url, f.text));
-            }
-            if (results.length) extraParts.push(formatSearchResults(results));
-            pendingSearchContext = extraParts.filter(Boolean).join("\n\n");
-          }).catch(() => {
-            webSearchResults.value = [];
-          })
-        ).finally(async () => {
-          await streamPromise;
-          if (!pendingSearchContext) return;
-          await persistActive();
-          const sess = activeConversation.value;
-          if (!sess) return;
-          const followUpPet: ChatMessage = { type: "pet", message: "", timestamp: Date.now() + 1 };
-          const msgs = sess.messages ?? [];
-          const prev = msgs.length;
-          setActiveMessages(m => [...m, followUpPet]);
-          await runStream(prev, followUpPet.timestamp, "send", pendingSearchContext);
-        });
-      } else {
-        // ── No URLs in message: search in background ──────────────────
-        webSearching.value = true;
-        let pendingSearchContext = "";
-
-        Promise.resolve(
-          webSearch(text, 6).then(async searchRes => {
-            const results = (searchRes as WebSearchResponse).results ?? [];
-            webSearchResults.value = results;
-
-            const topResultUrls = results
-              .map(r => r.url)
-              .filter(Boolean)
-              .slice(0, 3);
-
-            const searchFetchResults = topResultUrls.length
-              ? await Promise.all(
-                topResultUrls.map(u => webFetch(u).catch(() => ({ text: "", url: u, error: "fetch failed" })))
-              )
-              : [];
-
-            const parts: string[] = [];
-            for (const fr of searchFetchResults) {
-              const f = fr as { text: string; url: string; error?: string };
-              if (f.text) parts.push(formatFetchedContent(f.url, f.text));
-            }
-            if (results.length) parts.push(formatSearchResults(results));
-            pendingSearchContext = parts.filter(Boolean).join("\n\n");
-            webSearching.value = false;
-
-            if (pendingSearchContext) {
-              setActiveMessages(msgs => {
-                const idx = msgs.findIndex(m => m.timestamp === userTimestamp);
-                if (idx < 0) return msgs;
-                const next = [...msgs];
-                next[idx] = { ...next[idx], searchContext: pendingSearchContext };
-                return next;
-              });
-            }
-          }).catch(() => {
-            webSearching.value = false;
-            webSearchResults.value = [];
-          })
-        ).finally(async () => {
-          await streamPromise;
-          if (!pendingSearchContext) return;
-          await persistActive();
-          const sess = activeConversation.value;
-          if (!sess) return;
-          const followUpPet: ChatMessage = { type: "pet", message: "", timestamp: Date.now() + 1 };
-          const msgs = sess.messages ?? [];
-          const prev = msgs.length;
-          setActiveMessages(m => [...m, followUpPet]);
-          await runStream(prev, followUpPet.timestamp, "send", pendingSearchContext);
-        });
       }
+
+      let pendingSearchContext = "";
+      Promise.resolve(
+        executeTool("web_search", { query: text, maxResults: 6 }, toolSignal.signal).then(result => {
+          webSearching.value = false;
+          if (result?.content) pendingSearchContext = result.content;
+        }).catch(() => {
+          webSearching.value = false;
+          webSearchResults.value = [];
+        })
+      ).finally(async () => {
+        await streamPromise;
+        if (!pendingSearchContext) return;
+        await persistActive();
+        const sess = activeConversation.value;
+        if (!sess) return;
+        const followUpPet: ChatMessage = { type: "pet", message: "", timestamp: Date.now() + 1 };
+        const msgs = sess.messages ?? [];
+        const prev = msgs.length;
+        setActiveMessages(m => [...m, followUpPet]);
+        await runStream(prev, followUpPet.timestamp, "send", pendingSearchContext);
+      });
     } else {
       webSearchResults.value = [];
+      // Tool states auto-synced by watcher
     }
 
-    // Start streaming (with initialSearchContext if URLs were in the message)
     const streamPromise = runStream(i, insertedPet.timestamp, "resend", initialSearchContext);
-
     await streamPromise;
+
+    // ── Auto-detect KB save intent for resend ──────────────────────────
+    const kbIntent2 = detectKBIntent(text);
+    if (kbIntent2) {
+      const petIdx2 = activeConversation.value?.messages?.findIndex(
+        m => m.timestamp === insertedPet.timestamp
+      ) ?? -1;
+      if (petIdx2 >= 0) {
+        const petMsg2 = activeConversation.value!.messages![petIdx2];
+        const petText2 = petMsg2.message ?? "";
+        if (petText2 && !/```knowledge:save/.test(petText2)) {
+          const wrapped = autoWrapKnowledgeBlock(petText2, kbIntent2.path);
+          setActiveMessages(msgs => {
+            const next = [...msgs];
+            next[petIdx2] = { ...next[petIdx2], message: wrapped };
+            return next;
+          });
+          await persistActive();
+        }
+      }
+    }
   }
 
   /** Delete a single message from the active conversation. */
@@ -1526,6 +1630,226 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     closeFaq();
   }
 
+  // ── Tool registration ──────────────────────────────────────────────
+  // Register built-in tools. These can be overridden or augmented by
+  // extensions in the future (following Pi's extension model).
+
+  registerTool({
+    name: "web_fetch",
+    label: "Web Fetch",
+    description:
+      "Fetches and extracts clean text content from a URL. " +
+      "Use when the user provides a URL or when you need to read a web page.",
+    promptSnippet: "Fetches web page content from URLs the user provides",
+    promptGuidelines: [
+      "When the user includes a URL in their message, the page content is automatically fetched and provided to you before you respond.",
+      "Base your answer on the fetched content — cite specific details from the page.",
+      "If the fetched content is insufficient, tell the user what you could see and suggest what else to look for.",
+    ],
+    parameters: {
+      type: "object",
+      properties: {
+        url: { type: "string", description: "The URL to fetch" },
+      },
+      required: ["url"],
+    },
+    preStream: true, // Must complete before the AI responds
+    async execute(args) {
+      const url = args.url as string;
+      const result = await webFetch(url);
+      if (result.error) return { content: "", error: result.error };
+      return {
+        content: formatFetchedContent(result.url, result.text),
+        details: { url: result.url, charCount: result.text.length },
+      };
+    },
+  });
+
+  registerTool({
+    name: "web_search",
+    label: "Web Search",
+    description:
+      "Searches the web via DuckDuckGo and returns current information. " +
+      "Use for recent events, trending topics, or when you need up-to-date facts.",
+    promptSnippet: "Searches the web for current information (DuckDuckGo)",
+    promptGuidelines: [
+      "Web search runs in the background and arrives as a follow-up message. In your first response, briefly acknowledge the query and indicate you're checking.",
+      "When search results arrive, synthesize them into a clear, structured answer with source links.",
+      "If the search returns no useful results, tell the user and suggest alternative approaches.",
+    ],
+    parameters: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "Search query" },
+        maxResults: { type: "number", description: "Max results (1-15)", default: 6 },
+      },
+      required: ["query"],
+    },
+    preStream: false, // Runs in background, arrives as follow-up
+    async execute(args) {
+      const query = args.query as string;
+      const maxResults = (args.maxResults as number) ?? 6;
+      const result = await webSearch(query, maxResults);
+      if (result.error) return { content: "", error: result.error };
+      const results = result.results ?? [];
+      webSearchResults.value = results;
+      return {
+        content: formatSearchResults(results),
+        details: { query, resultCount: results.length },
+      };
+    },
+  });
+
+  registerTool({
+    name: "rag_search",
+    label: "RAG Knowledge Search",
+    description:
+      "Searches the indexed knowledge base (YiKnowledge markdown files) " +
+      "for relevant context. Automatically active when the session has " +
+      "ctx:-tagged knowledge files.",
+    parameters: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "Natural language query" },
+      },
+      required: ["query"],
+    },
+    preStream: false,
+    enabled: false,
+    async execute(_args) {
+      return { content: "", details: { mode: "streaming" } };
+    },
+  });
+
+  registerTool({
+    name: "context_edit",
+    label: "Context File Editor",
+    description:
+      "Proposes changes to the session's knowledge context files. " +
+      "Supports create, update, delete, addTag, removeTag, and view actions " +
+      "via fenced code blocks with `context:<path>` headers.",
+    promptSnippet: "Edits session context files via `context:<path>` code blocks",
+    promptGuidelines: [
+      "For file edits, use ```context:<path> blocks with the COMPLETE new content (not just a diff).",
+      "For linking files: ```context:add <path>  — for unlinking: ```context:remove <path>",
+      "For showing a file's current content: ```context:view <path>",
+      "The user must approve each change — they see visual cards with Apply/Reject buttons.",
+    ],
+    parameters: {
+      type: "object",
+      properties: {
+        path: { type: "string", description: "File path within the context" },
+        action: { type: "string", enum: ["create", "update", "delete", "addTag", "removeTag", "view"] },
+        content: { type: "string", description: "New content (for create/update)" },
+      },
+      required: ["path", "action"],
+    },
+    preStream: false,
+    enabled: true, // Always available when context files exist
+    async execute(args) {
+      const path = args.path as string;
+      const action = args.action as string;
+      const content = (args.content as string) ?? "";
+      if (action === "addTag") await addContextFile(path);
+      else if (action === "removeTag") await removeContextFile(path);
+      else await applyContextChange(path, content);
+      return {
+        content: `Context file "${path}" ${action}${action === "view" ? "" : "d"}.`,
+        details: { path, action },
+      };
+    },
+  });
+
+  registerTool({
+    name: "knowledge_write",
+    label: "Knowledge Base Writer",
+    description:
+      "Persists markdown content to the YiKnowledge directory. " +
+      "Use when the user asks to save, generate, or write content to the " +
+      "knowledge base.",
+    promptSnippet: "Saves content to YiKnowledge via `knowledge:save <path>` blocks",
+    promptGuidelines: [
+      "Use ```knowledge:save <path> blocks to persist content permanently to the knowledge base.",
+      "The user must approve — they see a visual card with Save/Reject buttons.",
+      'Examples: "生成一份报告放在知识库中" → knowledge:save reports/my-report.md',
+      "Include complete markdown content with proper structure (headings, lists, code blocks).",
+    ],
+    parameters: {
+      type: "object",
+      properties: {
+        path: { type: "string", description: "Relative path under YiKnowledge, e.g. reports/q3-sales.md" },
+        content: { type: "string", description: "Complete markdown content to write" },
+        metadata: { type: "object", description: "Optional YAML frontmatter (title, tags, category, etc.)" },
+      },
+      required: ["path", "content"],
+    },
+    preStream: false,
+    enabled: true,
+    async execute(args) {
+      const path = args.path as string;
+      const content = args.content as string;
+      const metadata = (args.metadata as Record<string, unknown>) ?? {};
+      await saveContextToKnowledge(path, content, metadata);
+      return {
+        content: `Saved "${path}" to the YiKnowledge directory.`,
+        details: { path, action: "knowledge_write" },
+      };
+    },
+  });
+
+  // Tool states are auto-managed by the watcher above — no manual init needed
+
+  // ── Compaction trigger ────────────────────────────────────────────
+  // Pi-inspired: when the conversation nears the context window limit,
+  // summarize older messages so the model can continue coherently.
+  const COMPACTION_THRESHOLD_TOKENS = 6554; // 80% of 8192
+  const CHARS_PER_TOKEN = 4;
+
+  async function maybeCompact() {
+    const s = activeConversation.value;
+    if (!s?.messages?.length) return;
+
+    const totalChars = s.messages.reduce(
+      (sum, m) => sum + (m.message?.length ?? 0), 0
+    );
+    const estimatedTokens = Math.ceil(totalChars / CHARS_PER_TOKEN);
+    if (estimatedTokens < COMPACTION_THRESHOLD_TOKENS) return;
+
+    console.warn(
+      `[aiChat] Compacting session ${s.key}: ~${estimatedTokens} tokens ` +
+      `across ${s.messages.length} messages → backend /compact`
+    );
+
+    try {
+      // Delegate to YiAi's /compact endpoint (Pi-inspired backend compaction)
+      const msgs = s.messages.map(m => ({
+        role: m.type === "user" ? "user" : "assistant",
+        content: m.message ?? "",
+      }));
+      const result = await compactConversation(msgs, 4);
+
+      if (result.error) {
+        console.warn("[aiChat] Backend compaction returned error:", result.error);
+        return;
+      }
+
+      // Convert compacted messages back to ChatMessage format
+      const compacted: ChatMessage[] = result.messages.map(m => ({
+        type: m.role === "user" ? "user" : "pet",
+        message: m.content,
+        timestamp: Date.now(),
+      }));
+
+      setActiveMessages(() => compacted);
+      await persistActive();
+      console.log(
+        `[aiChat] Compaction complete: ${result.original_count} → ${result.compacted_count} messages`
+      );
+    } catch (e) {
+      console.warn("[aiChat] Compaction failed:", e);
+    }
+  }
+
   return {
     conversations,
     activeConversation,
@@ -1535,6 +1859,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     sending,
     streamingTargetTimestamp,
     streamingType,
+    streamingPhase,
     scrollTick,
     copyFeedback,
     feedback,
@@ -1623,6 +1948,14 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     closeFaq,
     toggleFaq,
     applyFaq,
-    persistActive
+    persistActive,
+    maybeCompact,
+    saveContextToKnowledge,
+    // Tool registry (Pi-inspired)
+    toolEvents,
+    activeTools,
+    registerTool,
+    setToolEnabled,
+    getToolsForSystemPrompt,
   };
 });

@@ -5,7 +5,8 @@
 -->
 <script setup lang="ts" name="aiChatContextFilesPanel">
 import { ref, computed, watch } from "vue";
-import { Delete, DataAnalysis, Search, FolderOpened, Folder, Document, Plus } from "@element-plus/icons-vue";
+import { Delete, DataAnalysis, Search, FolderOpened, Folder, Document, Plus, FolderChecked } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { readKnowledgeFile } from "@/api/modules/knowledgeService";
 import KnowledgePreviewDialog from "./KnowledgePreviewDialog.vue";
@@ -104,6 +105,27 @@ function toggleFolderCollapse(key: string) {
 function onFileClick(node: ContextNode) {
   if (node.type === "file" && node.path) {
     previewDlg.value?.open(node.path);
+  }
+}
+
+// ── KB save tracking ──
+
+const savedToKB = ref<Set<string>>(new Set());
+const savingToKB = ref<Set<string>>(new Set());
+
+async function handleSaveFileToKB(node: ContextNode) {
+  if (!node.path || !node.content || savingToKB.value.has(node.path)) return;
+  savingToKB.value = new Set([...savingToKB.value, node.path]);
+  try {
+    await store.saveContextToKnowledge(node.path, node.content);
+    savedToKB.value = new Set([...savedToKB.value, node.path]);
+    ElMessage.success(`Saved "${node.path}" to knowledge base`);
+  } catch (e: any) {
+    ElMessage.error(e?.message || "Failed to save to knowledge base");
+  } finally {
+    const next = new Set(savingToKB.value);
+    next.delete(node.path);
+    savingToKB.value = next;
   }
 }
 // Hide children of collapsed folders from display
@@ -573,6 +595,16 @@ async function onSave() {
             :title="item.node.type === 'file' ? `Click to preview: ${item.node.path}` : item.node.path"
             @click="item.node.type === 'file' ? onFileClick(item.node) : undefined"
           >{{ item.node.name }}</span>
+          <el-button
+            v-if="item.node.type === 'file' && item.node.content"
+            size="small"
+            text
+            :type="savedToKB.has(item.node.path) ? 'success' : ''"
+            :icon="savedToKB.has(item.node.path) ? FolderChecked : FolderChecked"
+            :loading="savingToKB.has(item.node.path)"
+            :title="savedToKB.has(item.node.path) ? 'Saved to knowledge base' : 'Save to knowledge base'"
+            @click="handleSaveFileToKB(item.node)"
+          />
           <el-button
             size="small"
             text

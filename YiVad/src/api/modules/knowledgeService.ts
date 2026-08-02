@@ -60,3 +60,28 @@ export interface KnowledgeSyncResponse {
 export function syncKnowledge(): Promise<KnowledgeSyncResponse> {
   return postJson<KnowledgeSyncResponse>("/knowledge-sync", {});
 }
+
+export interface KnowledgeWriteResponse {
+  path: string;
+}
+
+/**
+ * Write a markdown file to the YiKnowledge directory.
+ * Creates a YAML frontmatter from metadata and writes the content body.
+ * Idempotent — overwrites if the file already exists.
+ *
+ * @param targetFile Relative path under YiKnowledge, e.g. "reports/q3-sales.md"
+ * @param content     Markdown body content (written after frontmatter)
+ * @param metadata    Optional YAML frontmatter key-value pairs (title, tags, category, etc.)
+ */
+export function writeKnowledgeFile(
+  targetFile: string,
+  content: string,
+  metadata?: Record<string, unknown>
+): Promise<KnowledgeWriteResponse> {
+  return postJson<KnowledgeWriteResponse>("/knowledge-write", {
+    target_file: targetFile,
+    content,
+    metadata
+  });
+}

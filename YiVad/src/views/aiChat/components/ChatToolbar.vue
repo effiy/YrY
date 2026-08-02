@@ -1,9 +1,10 @@
 <script setup lang="ts" name="aiChatToolbar">
 import { inject, ref, computed } from "vue";
 import {
-  ChatLineSquare, Picture, PriceTag, ChatDotRound, Search,
+  ChatLineSquare, Picture, PriceTag, ChatDotRound, Search, Loading,
   ArrowLeft, ArrowRight, CollectionTag, Delete
 } from "@element-plus/icons-vue";
+import { useAiChatStore } from "@/stores/modules/aiChat";
 import RequestStatusButton from "./RequestStatusButton.vue";
 import FaqPopover from "./FaqPopover.vue";
 
@@ -38,6 +39,21 @@ const collapseCtx = inject<{ collapsible: boolean; side: "fill" | "right" | "lef
 
 const contextPopoverVisible = ref(false);
 const contextFileCount = computed(() => (props.contextFiles ?? []).length);
+
+// ── Tool execution status (Pi-inspired: tool_execution_start/end events) ──
+const store = useAiChatStore();
+const runningTools = computed(() => {
+  const events = store.toolEvents ?? [];
+  const started = new Set<string>();
+  const ended = new Set<string>();
+  for (const e of events) {
+    if (e.phase === "start") started.add(e.name);
+    if (e.phase === "end") ended.add(e.name);
+  }
+  return [...started].filter(n => !ended.has(n))
+    .map(n => events.find(e => e.name === n && e.phase === "start"))
+    .filter(Boolean) as Array<{ name: string; label: string }>;
+});
 </script>
 
 <template>
@@ -100,7 +116,7 @@ const contextFileCount = computed(() => (props.contextFiles ?? []).length);
       </el-popover>
       <div
         class="ct-pill" :class="{ on: webSearchToggle }"
-        :title="webSearchToggle ? 'Web search on — answers include internet results' : 'Web search off'"
+        :title="webSearchToggle ? 'Web search on — ' + (store.activeTools.find(t => t.name === 'web_search')?.promptSnippet || 'answers include internet results') : 'Web search off — toggle to search the web'"
         @click="emit('toggle-web-search')"
       >
         <el-icon :size="14"><Search /></el-icon>
@@ -109,11 +125,16 @@ const contextFileCount = computed(() => (props.contextFiles ?? []).length);
       </div>
       <div
         class="ct-pill" :class="{ on: ragToggle }"
-        :title="ragToggle ? 'RAG on — answers grounded in context files' : 'RAG off — direct chat'"
+        :title="ragToggle ? 'RAG on — ' + (store.activeTools.find(t => t.name === 'rag_search')?.promptSnippet || 'answers grounded in context files') : 'RAG off — direct chat'"
         @click="emit('toggle-rag')"
       >
         <span class="ct-pill-label">RAG</span>
         <el-switch :model-value="ragToggle" :disabled="!ragAvailable" size="small" @click.stop @update:model-value="emit('toggle-rag')" />
+      </div>
+      <!-- Tool execution indicator (Pi-inspired) -->
+      <div v-for="tool in runningTools" :key="tool.name" class="ct-pill on" :title="`Running: ${tool.label}`">
+        <el-icon :size="14" class="ct-spin"><Loading /></el-icon>
+        <span class="ct-pill-label">{{ tool.label }}</span>
       </div>
       <RequestStatusButton :sending="sending" :streaming-type="streamingType" @stop="emit('stop')" />
     </div>
@@ -125,6 +146,8 @@ const contextFileCount = computed(() => (props.contextFiles ?? []).length);
 .ct-left, .ct-right { display: flex; gap: 6px; align-items: center; }
 .ct-pill { display: inline-flex; gap: 6px; align-items: center; height: 28px; padding: 0 10px; font-size: 12px; color: var(--el-text-color-placeholder); cursor: pointer; user-select: none; background: var(--el-fill-color-blank); border: 1px solid var(--el-border-color-light); border-radius: 14px; transition: all .15s; }
 .ct-pill.on { color: var(--el-color-primary); background: var(--el-color-primary-light-9); border-color: var(--el-color-primary-light-5); }
+.ct-spin { animation: ct-spin 1s linear infinite; }
+@keyframes ct-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 .ct-pill-label { line-height: 1; }
 .ct-context-list { max-height: 240px; overflow-y: auto; }
 .ct-context-item { display: flex; gap: 4px; align-items: center; padding: 4px 0; font-size: 12px; font-family: "SF Mono", Menlo, monospace; }

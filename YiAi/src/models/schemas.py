@@ -114,6 +114,12 @@ class KnowledgeFilesRequest(BaseModel):
     """Read metadata from the DB mirror (no disk scan)."""
     category: Optional[str] = Field(default=None, description="Filter by category (industry/lessons/.../static/__root__).")
 
+class KnowledgeWriteRequest(BaseModel):
+    """Write a markdown file with YAML frontmatter to the knowledge base."""
+    target_file: str = Field(..., description="Relative path under the knowledge base dir, e.g. reports/q3-sales.md")
+    content: str = Field(..., description="Markdown body (will be written after auto-generated frontmatter)")
+    metadata: Optional[dict] = Field(default=None, description="Optional YAML frontmatter key-value pairs (title, tags, category, etc.)")
+
 # --- RAG Schemas (llama_index) ---
 class RagQueryRequest(BaseModel):
     """One-shot retrieval over the YiKnowledge VectorStoreIndex."""

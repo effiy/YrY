@@ -97,6 +97,97 @@ export interface ChatMessage {
   searchContext?: string;
 }
 
+// ── Chat Entry Model (Pi-inspired rich session entries) ──
+
+/**
+ * Discriminated union of entry types in a chat session.
+ * Inspired by Pi's SessionEntry model: each entry carries a `type` and
+ * type-specific payload fields, enabling tool calls, file operations,
+ * and model changes to be first-class parts of the conversation history.
+ *
+ * Backward compat: old `ChatMessage` objects are normalized to `ChatEntry`
+ * on load — `{type:"user"|"pet", message}` → `{entryType:"message", role, message}`.
+ */
+export type ChatEntryType =
+  | "message"
+  | "tool_call"
+  | "tool_result"
+  | "context_edit"
+  | "model_change";
+
+export interface ChatEntry {
+  /** Entry discriminator */
+  entryType: ChatEntryType;
+  timestamp: number;
+
+  // ── message entries ──
+  /** "user" | "assistant" — who sent this message */
+  role?: "user" | "assistant";
+  /** Message text (markdown) */
+  message?: string;
+  /** Data URLs for vision-language models */
+  imageDataUrls?: string[];
+  /** RAG citation sources */
+  sources?: import("@/api/interface/rag").RagSource[];
+  /** Web search context attached to this user message */
+  searchContext?: string;
+
+  // ── tool_call / tool_result entries ──
+  /** Name of the tool being called */
+  toolName?: string;
+  /** Arguments passed to the tool (JSON-serializable) */
+  toolArgs?: Record<string, unknown>;
+  /** Result content from the tool execution */
+  toolResult?: string;
+  /** Structured metadata from tool execution */
+  toolDetails?: Record<string, unknown>;
+
+  // ── context_edit entries ──
+  /** File path that was edited */
+  filePath?: string;
+  /** Previous content (for undo) */
+  previousContent?: string;
+
+  // ── model_change entries ──
+  /** New model ID after switching */
+  modelId?: string;
+
+  // ── status flags ──
+  /** True if this entry represents an error state */
+  error?: boolean;
+  /** True if generation was aborted mid-stream */
+  aborted?: boolean;
+}
+
+/**
+ * Normalize a legacy ChatMessage or a ChatEntry into a ChatEntry.
+ * Ensures backward compatibility when loading old sessions.
+ */
+export function normalizeEntry(raw: ChatMessage | ChatEntry | Record<string, unknown>): ChatEntry {
+  // Already a ChatEntry?
+  if (raw && typeof raw === "object" && "entryType" in raw) {
+    return raw as ChatEntry;
+  }
+  // Legacy ChatMessage → ChatEntry
+  const msg = raw as ChatMessage;
+  return {
+    entryType: "message",
+    timestamp: msg.timestamp ?? 0,
+    role: msg.type === "user" ? "user" : "assistant",
+    message: msg.message ?? (msg as { content?: string }).content ?? "",
+    imageDataUrls: msg.imageDataUrls,
+    sources: msg.sources,
+    searchContext: msg.searchContext,
+    error: msg.error,
+    aborted: msg.aborted,
+  };
+}
+
+/** Convert ChatEntry[] from legacy ChatMessage[] */
+export function normalizeEntries(raw: (ChatMessage | ChatEntry)[]): ChatEntry[] {
+  return raw.map(normalizeEntry);
+}
+
 // ── Project zip upload (client-side parse + per-file write) ──
 
 export interface ProjectZipUploadEntry {

@@ -373,3 +373,29 @@ async def web_fetch_route(
     # Cache error results too, so we don't retry immediately
     _fetch_cache[cache_key] = (now, result)
     return success(data=result)
+
+
+# ── Compaction endpoint ──────────────────────────────────────────────────
+
+
+@router.post("/compact", operation_id="compact_conversation")
+async def compact_route(
+    messages: list = Body(..., embed=True),
+    keep_last: int = Body(4, embed=True),
+):
+    """Summarize older messages to keep the conversation within context limits.
+
+    Pi-inspired: ``shouldCompact()`` + ``compact_messages()`` pattern.
+    Returns the compacted message list (summary + recent messages).
+    """
+    try:
+        from services.ai.compaction import compact_messages
+
+        compacted = await compact_messages(
+            messages,
+            keep_last=keep_last,
+        )
+        return success(data={"messages": compacted, "original_count": len(messages), "compacted_count": len(compacted)})
+    except Exception as e:
+        logger.exception(f"Compaction failed: {e}")
+        return success(data={"messages": messages, "error": str(e)})

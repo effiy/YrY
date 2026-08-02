@@ -81,10 +81,34 @@ function onKeydown(e: KeyboardEvent) {
       return;
     }
   }
-  // Close mention on other navigation
-  if (mentionVisible.value && e.key !== "Shift") {
-    // Keep open for typing
+
+  // ── Keyboard shortcuts (Pi-inspired: setKeybinding) ──────────────
+  const mod = e.metaKey || e.ctrlKey;
+
+  // Escape: stop sending
+  if (e.key === "Escape" && !mentionVisible.value) {
+    if (store.sending) { store.stopSending(); e.preventDefault(); return; }
+    if (store.input.trim()) { store.clearInput(); e.preventDefault(); return; }
   }
+
+  // Ctrl+K / Cmd+K: clear conversation
+  if (mod && e.key === "k" && !store.sending) {
+    e.preventDefault();
+    if (store.activeConversation) {
+      store.input = "/clear";
+      store.sendMessage("/clear");
+      store.input = "";
+    }
+    return;
+  }
+
+  // Ctrl+L / Cmd+L: clear input
+  if (mod && e.key === "l" && !store.sending) {
+    e.preventDefault();
+    store.clearInput();
+    return;
+  }
+
   baseOnKeydown(e);
 }
 
@@ -134,7 +158,7 @@ async function onImageChange(e: Event) {
           v-model="store.input"
           type="textarea"
           :autosize="{ minRows: 1, maxRows: 6 }"
-          :placeholder="store.sending ? 'Generating...' : store.webSearching ? 'Searching web...' : 'Ask or edit context — type @ to add files, ask AI to update knowledge (Enter send, Shift+Enter newline)'"
+          :placeholder="store.input.startsWith('/') ? '/compact /clear /retry /stop /model — type a command' : store.streamingPhase === 'fetching' ? 'Fetching URL content...' : store.streamingPhase === 'thinking' ? 'AI thinking...' : store.streamingPhase === 'streaming' ? 'AI responding...' : store.webSearching ? 'Searching web...' : 'Ask anything, type @ to add files (Enter send, Shift+Enter newline)'"
           :disabled="store.sending"
           resize="none"
           @compositionstart="onCompositionStart"

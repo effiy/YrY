@@ -28,13 +28,15 @@ import { useAiChatStore } from "@/stores/modules/aiChat";
 
 export interface ContextChange {
   /** Action inferred from content and existing state */
-  action: "create" | "update" | "delete" | "addTag" | "removeTag" | "view";
+  action: "create" | "update" | "delete" | "addTag" | "removeTag" | "view" | "saveToKB";
   /** File path within the context (e.g. "notes/deploy.md") */
   path: string;
   /** The new content proposed by the AI (empty for delete/removeTag) */
   content: string;
   /** Original content of the section, if it exists (for diff display) */
   originalContent: string;
+  /** When true, the change targets the YiKnowledge directory (not session context) */
+  saveToKnowledgeBase?: boolean;
 }
 
 /**
@@ -61,11 +63,19 @@ function extractFencedBody(text: string, fenceStart: number): { body: string; en
 }
 
 /**
- * Regex to find opening ``` fences with context: info strings.
+ * Regex to find opening ``` fences with context:/knowledge: info strings.
  * Matches the START of the block. The body is extracted by extractFencedBody
  * to handle nested ``` correctly.
+ *
+ * Supported info strings:
+ *   context:<path>       — session context edit (create/update/delete)
+ *   context:add <path>   — add ctx: tag
+ *   context:remove <path>— remove ctx: tag
+ *   context:view <path>  — show current content
+ *   knowledge:save <path>— save to YiKnowledge directory (permanent)
+ *   knowledge:<path>     — alias for knowledge:save
  */
-const CONTEXT_OPEN_RE = /```(context:(?:add|remove|view)\s+[^\n]+|context:[^\s\n]+)\s*\n/g;
+const CONTEXT_OPEN_RE = /```(context:(?:add|remove|view)\s+[^\n]+|context:[^\s\n]+|knowledge:(?:save\s+)?[^\s\n]+)\s*\n/g;
 
 /**
  * Parse AI message text and extract context change proposals.
@@ -86,10 +96,12 @@ export function detectContextChanges(messageText: string): ContextChange[] {
     const infoString = (match[1] || "").trim();
     if (!infoString) continue;
 
-    // Parse the info string: "context:<path>", "context:add <path>", or "context:remove <path>"
+    // Parse the info string: "context:<path>", "context:add <path>", "context:remove <path>",
+    // "knowledge:save <path>", or "knowledge:<path>"
     let action: ContextChange["action"];
     let path: string;
     let content = "";
+    let saveToKnowledgeBase = false;
 
     if (infoString.startsWith("context:add ")) {
       action = "addTag";
@@ -102,6 +114,28 @@ export function detectContextChanges(messageText: string): ContextChange[] {
       path = infoString.slice("context:view ".length).trim();
       // view has no body — just show current content
       content = "";
+    } else if (infoString.startsWith("knowledge:save ")) {
+      // knowledge:save <path> — save to YiKnowledge directory
+      path = infoString.slice("knowledge:save ".length).trim();
+      saveToKnowledgeBase = true;
+      const fenceStart = match.index;
+      const result = extractFencedBody(messageText, fenceStart);
+      if (result) {
+        content = result.body.trim();
+        CONTEXT_OPEN_RE.lastIndex = result.end;
+      }
+      action = content ? "saveToKB" : "addTag";
+    } else if (infoString.startsWith("knowledge:")) {
+      // knowledge:<path> — alias for knowledge:save
+      path = infoString.slice("knowledge:".length).trim();
+      saveToKnowledgeBase = true;
+      const fenceStart = match.index;
+      const result = extractFencedBody(messageText, fenceStart);
+      if (result) {
+        content = result.body.trim();
+        CONTEXT_OPEN_RE.lastIndex = result.end;
+      }
+      action = content ? "saveToKB" : "addTag";
     } else if (infoString.startsWith("context:")) {
       path = infoString.slice("context:".length).trim();
       // Extract body using fence-aware parser
@@ -130,7 +164,7 @@ export function detectContextChanges(messageText: string): ContextChange[] {
       ? store.getContextSectionContent(path)
       : "";
 
-    changes.push({ action, path, content, originalContent });
+    changes.push({ action, path, content, originalContent, saveToKnowledgeBase });
   }
 
   return changes;

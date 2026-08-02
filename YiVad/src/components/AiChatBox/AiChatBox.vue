@@ -6,6 +6,7 @@ import { useAicrKnowledgeStore } from "@/stores/modules/aicr/knowledge";
 import { readKnowledgeFile } from "@/api/modules/knowledgeService";
 import { useResizable } from "@/hooks/useResizable";
 import MessageList from "@/views/aiChat/components/MessageList.vue";
+import SessionStatusBar from "@/views/aiChat/components/SessionStatusBar.vue";
 import ChatInput from "@/views/aiChat/components/ChatInput.vue";
 import ConversationSessionSidebar from "@/views/aiChat/components/ConversationSessionSidebar.vue";
 import ContextFilesPanel from "@/views/aiChat/components/ContextFilesPanel.vue";
@@ -318,6 +319,7 @@ async function onDrop(e: DragEvent) {
               <span class="ai-chat-box__title">{{ title }}</span>
             </div>
             <MessageList />
+            <SessionStatusBar />
             <ChatInput />
             <LlamaIndexPanel
               v-if="store.llamaIndexVisible"

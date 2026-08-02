@@ -207,7 +207,7 @@ class OllamaService:
 
 async def chat(params: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Structured chat interface
+    Structured chat interface — delegates to ModelRuntime (Pi-inspired).
 
     Args:
         params: Parameter dictionary
@@ -222,7 +222,8 @@ async def chat(params: Dict[str, Any]) -> Dict[str, Any]:
     Returns:
         Dict[str, Any]: Chat response (non-stream) or async generator (stream)
     """
-    service = OllamaService()
+    from services.ai.model_runtime import OllamaRuntime
+
     system_prompt = params.get("system", "You are a helpful AI assistant.")
     user_content = params.get("user", "")
     model_name = params.get("model", "qwen3.5")
@@ -236,82 +237,37 @@ async def chat(params: Dict[str, Any]) -> Dict[str, Any]:
     if has_images_param:
         model_name = "qwen3-vl"
         if use_messages:
-            # Strip the marker block off the last user turn so the VL model
-            # sees the actual question, not the prompt template scaffolding.
-            last = dict(raw_messages[-1])  # type: ignore[index]
+            last = dict(raw_messages[-1])
             if last.get("role") == "user":
                 last["content"] = _extract_user_only_text(last.get("content", ""))
-                raw_messages = list(raw_messages)  # type: ignore[assignment]
-                raw_messages[-1] = last  # type: ignore[index]
+                raw_messages = list(raw_messages)
+                raw_messages[-1] = last
         else:
             user_content = _extract_user_only_text(user_content)
 
     def _build_ollama_messages() -> List[Dict[str, Any]]:
         if use_messages:
-            ollama_messages = list(raw_messages)  # type: ignore[arg-type]
-        else:
-            ollama_messages = [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_content},
-            ]
-        if images and ollama_messages:
-            last = dict(ollama_messages[-1])
-            last["images"] = images
-            ollama_messages[-1] = last
-        return ollama_messages
+            return list(raw_messages)
+        return [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_content},
+        ]
 
-    loop = asyncio.get_running_loop()
+    runtime = OllamaRuntime()
+
     if not stream:
-        return await loop.run_in_executor(
-            None,
-            functools.partial(
-                service.generate_response,
-                model_name=model_name,
-                messages=_build_ollama_messages(),
-            )
+        return await runtime.complete(
+            messages=_build_ollama_messages(),
+            model=model_name,
+            images=images,
         )
 
-    async def gen():
-        # Queue items are either a str (normal delta), a dict with "error"
-        # (terminal error frame), or None (stream end sentinel).
-        queue: asyncio.Queue[Optional[Any]] = asyncio.Queue()
-        ollama_messages = _build_ollama_messages()
-
-        def _worker():
-            try:
-                client = service._get_client()
-                for item in client.chat(model=model_name, messages=ollama_messages, stream=True):
-                    try:
-                        delta = ""
-                        if isinstance(item, dict):
-                            delta = (item.get("message") or {}).get("content") or ""
-                        else:
-                            delta = getattr(item, "message", {}).get("content", "") or ""
-                        if delta:
-                            asyncio.run_coroutine_threadsafe(queue.put(str(delta)), loop)
-                    except Exception:
-                        continue
-            except Exception as e:
-                # Yield an explicit error frame — previously the error text
-                # was put as a regular delta, which clients would display as
-                # pet content and auto-forward to WeCom bots as if it were a
-                # model reply.
-                asyncio.run_coroutine_threadsafe(queue.put({"error": f"Request failed: {e}"}), loop)
-            finally:
-                asyncio.run_coroutine_threadsafe(queue.put(None), loop)
-
-        asyncio.create_task(asyncio.to_thread(_worker))
-
-        while True:
-            item = await queue.get()
-            if item is None:
-                break
-            if isinstance(item, dict) and "error" in item:
-                yield item
-            else:
-                yield {"data": {"message": item}}
-
-    return gen()
+    # Streaming: delegate to ModelRuntime.stream_chat()
+    return runtime.stream_chat(
+        messages=_build_ollama_messages(),
+        model=model_name,
+        images=images,
+    )
 
 
 async def list_ollama_models(params: Dict[str, Any] = None) -> Dict[str, Any]:

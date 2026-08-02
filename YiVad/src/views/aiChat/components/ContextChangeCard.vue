@@ -24,6 +24,7 @@ const props = defineProps<{
   onApply: (path: string, content: string) => Promise<void>;
   onReject: (path: string) => void;
   onUndo?: (path: string) => void;
+  onSaveToKB?: (path: string, content: string) => Promise<void>;
 }>();
 
 // ── State machine ──
@@ -35,6 +36,10 @@ const errorMsg = ref("");
 // Undo timer — show undo button for 5 seconds after applying
 const showUndo = ref(false);
 let undoTimer: ReturnType<typeof setTimeout> | null = null;
+// KB save state
+const kbSaved = ref(false);
+const savingToKB = ref(false);
+const kbError = ref("");
 // Confirmation timer for destructive ops
 let confirmTimer: ReturnType<typeof setTimeout> | null = null;
 onBeforeUnmount(() => {
@@ -52,6 +57,10 @@ const isTagAction = computed(() =>
   props.change.action === "addTag" || props.change.action === "removeTag"
 );
 
+const isKBWrite = computed(() =>
+  props.change.action === "saveToKB"
+);
+
 const isViewAction = computed(() => props.change.action === "view");
 
 const actionIcon = computed(() => {
@@ -60,6 +69,7 @@ const actionIcon = computed(() => {
   if (props.change.action === "addTag") return Link;
   if (props.change.action === "removeTag") return Remove;
   if (props.change.action === "view") return View;
+  if (props.change.action === "saveToKB") return Plus;
   return Edit;
 });
 
@@ -69,11 +79,12 @@ const actionLabel = computed(() => {
   if (props.change.action === "addTag") return "Add to context";
   if (props.change.action === "removeTag") return "Remove";
   if (props.change.action === "view") return "View";
+  if (props.change.action === "saveToKB") return "Save to KB";
   return "Update";
 });
 
 const actionColor = computed(() => {
-  if (props.change.action === "create" || props.change.action === "addTag") return "var(--el-color-success)";
+  if (props.change.action === "create" || props.change.action === "addTag" || props.change.action === "saveToKB") return "var(--el-color-success)";
   if (props.change.action === "delete" || props.change.action === "removeTag") return "var(--el-color-danger)";
   if (props.change.action === "view") return "var(--el-color-primary)";
   return "var(--el-color-warning)";
@@ -342,6 +353,20 @@ function handleUndo() {
     if (undoTimer) clearTimeout(undoTimer);
   }
 }
+
+async function handleSaveToKB() {
+  if (!props.onSaveToKB || savingToKB.value) return;
+  savingToKB.value = true;
+  kbError.value = "";
+  try {
+    await props.onSaveToKB(props.change.path, props.change.content);
+    kbSaved.value = true;
+  } catch (e: any) {
+    kbError.value = e?.message || "Failed to save to knowledge base";
+  } finally {
+    savingToKB.value = false;
+  }
+}
 </script>
 
 <template>
@@ -433,6 +458,22 @@ function handleUndo() {
     <div v-if="state === 'applied'" class="ccc-status ccc-status--ok">
       <el-icon :size="14"><CircleCheck /></el-icon>
       <span>Applied</span>
+      <el-button
+        v-if="onSaveToKB && (change.action === 'create' || change.action === 'update' || change.action === 'saveToKB') && !kbSaved"
+        size="small"
+        text
+        type="success"
+        :loading="savingToKB"
+        class="ccc-kb-btn"
+        @click="handleSaveToKB"
+      >
+        {{ savingToKB ? 'Saving...' : 'Save to KB' }}
+      </el-button>
+      <span v-if="kbSaved" class="ccc-kb-saved">
+        <el-icon :size="14"><CircleCheck /></el-icon>
+        KB ✓
+      </span>
+      <span v-if="kbError" class="ccc-kb-error">{{ kbError }}</span>
       <el-button v-if="showUndo && onUndo" size="small" text :icon="RefreshLeft" class="ccc-undo-btn" @click="handleUndo">
         Undo
       </el-button>
@@ -446,8 +487,17 @@ function handleUndo() {
       <span>{{ errorMsg }}</span>
     </div>
 
+    <!-- Actions: KB write (saveToKB) — direct save to knowledge base -->
+    <div v-if="state === 'proposed' && isKBWrite && onSaveToKB" class="ccc-actions">
+      <el-button size="small" type="success" :loading="savingToKB" @click="handleSaveToKB">
+        {{ savingToKB ? 'Saving...' : 'Save to Knowledge Base' }}
+      </el-button>
+      <el-button size="small" text @click="handleReject">
+        Dismiss
+      </el-button>
+    </div>
     <!-- Actions: normal (non-destructive, non-view) -->
-    <div v-if="state === 'proposed' && !isViewAction && !isDestructive" class="ccc-actions">
+    <div v-if="state === 'proposed' && !isViewAction && !isDestructive && !isKBWrite" class="ccc-actions">
       <el-button size="small" type="primary" @click="handleApply">
         Apply
       </el-button>
@@ -589,6 +639,20 @@ function handleUndo() {
 .ccc-undo-btn {
   margin-left: auto; padding: 2px 8px;
   font-size: 12px;
+}
+.ccc-kb-btn {
+  margin-left: 4px; padding: 2px 8px;
+  font-size: 11px;
+}
+.ccc-kb-saved {
+  display: inline-flex; gap: 3px; align-items: center;
+  margin-left: 4px;
+  font-size: 11px; font-weight: 600;
+  color: var(--el-color-success);
+}
+.ccc-kb-error {
+  margin-left: 4px;
+  font-size: 11px; color: var(--el-color-danger);
 }
 
 .ccc-actions {

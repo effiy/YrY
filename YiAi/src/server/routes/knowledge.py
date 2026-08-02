@@ -20,6 +20,7 @@ from domain.knowledge import (
     read_story_markdown,
     sync_knowledge_full,
     list_knowledge_files,
+    write_entry_markdown,
 )
 from models.schemas import (
     KnowledgeReadRequest,
@@ -27,6 +28,7 @@ from models.schemas import (
     KnowledgeStoryReadRequest,
     KnowledgeStoriesRequest,
     KnowledgeFilesRequest,
+    KnowledgeWriteRequest,
 )
 from shared.response import success
 
@@ -76,3 +78,30 @@ async def knowledge_sync_route():
 async def knowledge_files_route(request: KnowledgeFilesRequest):
     data = await list_knowledge_files(category=request.category)
     return success(data=data)
+
+
+@router.post("/knowledge-write", operation_id="knowledge_write")
+async def knowledge_write_route(request: KnowledgeWriteRequest):
+    """Write a markdown file to the YiKnowledge directory.
+
+    Uses ``write_entry_markdown`` which generates YAML frontmatter from
+    the optional ``metadata`` dict and then appends ``content`` as the
+    markdown body. Idempotent — overwrites the file if it already exists.
+    """
+    meta = request.metadata or {}
+    # Auto-set title from filename if not provided
+    if "title" not in meta:
+        filename = request.target_file.rsplit("/", 1)[-1]
+        name_part = filename.rsplit(".", 1)[0] if "." in filename else filename
+        meta["title"] = name_part.replace("-", " ").replace("_", " ").title()
+    written_path = write_entry_markdown(
+        rel_path=request.target_file,
+        content=request.content,
+        meta=meta,
+    )
+    # Best-effort: sync to MongoDB so the new file appears in scans/RAG
+    try:
+        await sync_knowledge_full()
+    except Exception:
+        pass
+    return success(data={"path": written_path})

@@ -1,7 +1,7 @@
 <script setup lang="ts" name="aiChatMessageBubble">
 import { computed, ref } from "vue";
-import { ElMessageBox } from "element-plus";
-import { CopyDocument, Pointer, Star, RefreshRight, Delete, Edit, Promotion, Search } from "@element-plus/icons-vue";
+import { ElMessageBox, ElMessage } from "element-plus";
+import { CopyDocument, RefreshRight, Delete, Edit, Promotion, Search, FolderChecked } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
 import { useMarkdown } from "@/hooks/useMarkdown";
 import { useAiChatStore } from "@/stores/modules/aiChat";
@@ -25,7 +25,6 @@ const isUser = computed(() => props.message.type === "user");
 const html = computed(() => render(props.message.message ?? ""));
 const time = computed(() => (props.message.timestamp ? dayjs(props.message.timestamp).format("MM/DD HH:mm:ss") : ""));
 const copyLabel = computed(() => store.copyFeedback[String(props.message.timestamp)] || "Copy");
-const feedbackRating = computed(() => store.feedback[props.message.timestamp] ?? null);
 const showTyping = computed(() => props.streaming && !props.message.message?.trim() && !props.message.error);
 const empty = computed(() => !props.message.message?.trim());
 const showAbortedTag = computed(() => !!props.message.aborted && !props.message.error);
@@ -49,13 +48,13 @@ const showProposingChanges = computed(() => {
 });
 
 /**
- * Markdown text with context: blocks stripped so they don't render as raw
- * code blocks alongside the ContextChangeCard.
+ * Markdown text with context: and knowledge: blocks stripped so they don't
+ * render as raw code blocks alongside the ContextChangeCard.
  * Uses the same fence-aware approach as the detector: find opening ```context:
- * and match to the NEXT ``` at line start, handling nested code blocks.
+ * or ```knowledge: and match to the NEXT ``` at line start.
  */
 function stripContextBlocks(text: string): string {
-  const OPEN_RE = /```context:[^\n]*\n/g;
+  const OPEN_RE = /```(?:context|knowledge):[^\n]*\n/g;
   let result = "";
   let lastEnd = 0;
   let match: RegExpExecArray | null;
@@ -94,12 +93,13 @@ const changeStates = ref<Record<string, "applied" | "rejected" | "error">>({});
 
 async function onApplyChange(path: string, content: string) {
   try {
-    // Find the specific change to determine action type
     const change = contextChanges.value.find(c => c.path === path);
     if (change?.action === "addTag") {
       await store.addContextFile(path);
     } else if (change?.action === "removeTag") {
       await store.removeContextFile(path);
+    } else if (change?.action === "saveToKB") {
+      await store.saveContextToKnowledge(path, content);
     } else {
       await store.applyContextChange(path, content);
     }
@@ -116,6 +116,34 @@ function onRejectChange(path: string) {
 
 function onUndoChange(path?: string) {
   store.undoLastContextChange(path);
+}
+
+async function onSaveToKB(path: string, content: string) {
+  await store.saveContextToKnowledge(path, content);
+  await store.applyContextChange(path, content);
+}
+
+async function handleManualSaveToKB() {
+  const text = props.message.message ?? "";
+  if (!text.trim()) return;
+  try {
+    const res = await ElMessageBox.prompt(
+      "Enter the file path under YiKnowledge (e.g. reports/my-report.md):",
+      "Save to Knowledge Base",
+      {
+        confirmButtonText: "Save",
+        cancelButtonText: "Cancel",
+        inputValue: `notes/ai-response-${Date.now()}.md`,
+        inputPlaceholder: "reports/my-report.md"
+      }
+    );
+    const path = (res?.value ?? "").trim();
+    if (!path) return;
+    await onSaveToKB(path, text);
+    ElMessage.success(`Saved "${path}" to knowledge base`);
+  } catch {
+    // user cancelled
+  }
 }
 
 async function applyAllChanges() {
@@ -196,6 +224,7 @@ async function onEdit() {
           :on-apply="onApplyChange"
           :on-reject="onRejectChange"
           :on-undo="onUndoChange"
+          :on-save-to-k-b="onSaveToKB"
         />
       </TransitionGroup>
       <!-- Streaming: show indicator when AI is proposing a context change -->
@@ -222,24 +251,21 @@ async function onEdit() {
     <div class="mb-meta">
       <div v-if="!isUser" class="mb-actions">
         <el-button size="small" text :icon="CopyDocument" @click="store.copyMessage(props.message)">{{ copyLabel }}</el-button>
+        <el-button size="small" text :icon="Edit" :disabled="store.sending" @click="onEdit">Edit</el-button>
+        <el-button
+          v-if="!hasContextChanges && props.message.message?.trim()"
+          size="small"
+          text
+          type="success"
+          :icon="FolderChecked"
+          :disabled="store.sending"
+          title="Save this response to the knowledge base"
+          @click="handleManualSaveToKB"
+        >Save to KB</el-button>
         <el-button size="small" text :icon="RefreshRight" :disabled="store.sending" @click="onRegenerate">{{
           showRetryLabel ? "Retry" : "Regenerate"
         }}</el-button>
         <el-button size="small" text :icon="Delete" :disabled="store.sending" @click="onDelete">Delete</el-button>
-        <el-button
-          size="small"
-          text
-          :icon="Pointer"
-          :type="feedbackRating === 'like' ? 'primary' : ''"
-          @click="store.submitFeedback(props.message.timestamp, 'like')"
-        />
-        <el-button
-          size="small"
-          text
-          :icon="Star"
-          :type="feedbackRating === 'dislike' ? 'danger' : ''"
-          @click="store.submitFeedback(props.message.timestamp, 'dislike')"
-        />
       </div>
       <div v-else class="mb-actions">
         <el-button size="small" text :icon="Edit" :disabled="store.sending" @click="onEdit">Edit</el-button>

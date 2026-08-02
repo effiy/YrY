@@ -97,3 +97,23 @@ export function formatFetchedContent(targetUrl: string, text: string): string {
     text,
   ].join("\n");
 }
+
+/**
+ * Compact a conversation via YiAi's /compact endpoint.
+ * Returns the compacted message list (summary + recent messages).
+ */
+export async function compactConversation(
+  messages: Array<{ role?: string; type?: string; message?: string; content?: string }>,
+  keepLast = 4,
+): Promise<{ messages: Array<{ role: string; content: string }>; original_count: number; compacted_count: number; error?: string }> {
+  const url = buildYiAiUrl("/compact");
+  const resp = await fetch(url, {
+    method: "POST",
+    headers: yiAiAuthHeaders(),
+    body: JSON.stringify({ messages, keep_last: keepLast }),
+  });
+  if (!resp.ok) throw new Error(`Compact failed: HTTP ${resp.status}`);
+  const data = (await resp.json()) as YiAiEnvelope<any>;
+  if (data.code !== 0) throw new Error(data.message || "Compact failed");
+  return data.data;
+}
