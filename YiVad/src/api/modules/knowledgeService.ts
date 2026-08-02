@@ -54,6 +54,7 @@ export function readKnowledgeStory(project: string, storyName: string): Promise<
 export interface KnowledgeSyncResponse {
   synced: number;
   deleted: number;
+  rag?: { status?: string; error?: string; [key: string]: unknown };
 }
 
 /** Trigger a full disk → MongoDB reconciliation for ~/YiKnowledge. */

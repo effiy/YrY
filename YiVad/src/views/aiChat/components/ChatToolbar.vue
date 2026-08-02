@@ -37,8 +37,15 @@ const collapseCtx = inject<{ collapsible: boolean; side: "fill" | "right" | "lef
   "aiChatBoxCollapse", null
 );
 
+const openKnowledgePreview = inject<(path: string) => void>("openKnowledgePreview", () => {});
+
 const contextPopoverVisible = ref(false);
 const contextFileCount = computed(() => (props.contextFiles ?? []).length);
+
+function handleFileClick(path: string) {
+  openKnowledgePreview(path);
+  contextPopoverVisible.value = false;
+}
 
 // ── Tool execution status (Pi-inspired: tool_execution_start/end events) ──
 const store = useAiChatStore();
@@ -84,7 +91,7 @@ const runningTools = computed(() => {
         v-if="contextFileCount > 0"
         v-model:visible="contextPopoverVisible"
         placement="bottom"
-        :width="280"
+        :width="420"
         trigger="click"
       >
         <template #reference>
@@ -99,7 +106,7 @@ const runningTools = computed(() => {
             :key="file"
             class="ct-context-item"
           >
-            <span class="ct-context-item-path">{{ file }}</span>
+            <span class="ct-context-item-path" title="Click to preview" @click="handleFileClick(file)">{{ file }}</span>
             <el-button
               size="small"
               text
@@ -152,6 +159,7 @@ const runningTools = computed(() => {
 .ct-context-list { max-height: 240px; overflow-y: auto; }
 .ct-context-item { display: flex; gap: 4px; align-items: center; padding: 4px 0; font-size: 12px; font-family: "SF Mono", Menlo, monospace; }
 .ct-context-item+.ct-context-item { border-top: 1px solid var(--el-border-color-lighter); }
-.ct-context-item-path { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--el-text-color-regular); }
+.ct-context-item-path { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--el-color-primary); cursor: pointer; }
+.ct-context-item-path:hover { text-decoration: underline; }
 .ct-context-empty { padding: 8px 0; font-size: 12px; color: var(--el-text-color-placeholder); text-align: center; }
 </style>

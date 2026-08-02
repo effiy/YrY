@@ -1,10 +1,78 @@
 <script setup lang="ts" name="aiChatConversationSidebar">
 import { computed, inject, onMounted, ref } from "vue";
+import { Refresh } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
 import { useAicrKnowledgeStore } from "@/stores/modules/aicr/knowledge";
+import { syncKnowledge } from "@/api/modules/knowledgeService";
 import type { KnowledgeFileEntry } from "@/api/interface/yiweb";
 
 const knowledgeStore = useAicrKnowledgeStore();
 const openPreview = inject<(path: string) => void>("openKnowledgePreview", () => {});
+
+// ── Sync ──
+
+const SYNC_TIME_KEY = "yivad:knowledge:lastSyncTime";
+
+const syncing = ref(false);
+const lastSyncTime = ref<number>(0);
+
+function loadLastSyncTime() {
+  try {
+    const raw = localStorage.getItem(SYNC_TIME_KEY);
+    if (raw) lastSyncTime.value = Number(raw);
+  } catch { /* ignore */ }
+}
+
+function saveLastSyncTime() {
+  lastSyncTime.value = Date.now();
+  try { localStorage.setItem(SYNC_TIME_KEY, String(lastSyncTime.value)); } catch { /* ignore */ }
+}
+
+loadLastSyncTime();
+
+const lastSyncLabel = computed(() => {
+  if (!lastSyncTime.value) return "Never synced";
+  const diff = Date.now() - lastSyncTime.value;
+  if (diff < 60_000) return "Just now";
+  const mins = Math.floor(diff / 60_000);
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+});
+
+async function handleSync() {
+  if (syncing.value) return;
+  syncing.value = true;
+  try {
+    const result = await syncKnowledge();
+    // Build status message
+    const parts: string[] = [];
+    if (result.synced > 0) parts.push(`${result.synced} synced`);
+    if (result.deleted > 0) parts.push(`${result.deleted} removed`);
+    if (result.rag?.status) parts.push(`RAG: ${result.rag.status}`);
+    else if (result.rag?.error) parts.push(`RAG: ${result.rag.error}`);
+
+    if (parts.length) {
+      ElMessage.success(`Sync complete — ${parts.join(", ")}`);
+    } else {
+      ElMessage.info("Sync complete — everything up to date");
+    }
+    saveLastSyncTime();
+
+    // Reload the tree; don't let a reload failure mask the sync success
+    try {
+      await knowledgeStore.loadAll();
+    } catch (e: any) {
+      ElMessage.warning(`Sync OK but tree reload failed: ${e?.message || "unknown"}`);
+    }
+  } catch (e: any) {
+    ElMessage.error(e?.message || "Sync failed — check server connection");
+  } finally {
+    syncing.value = false;
+  }
+}
 
 // ── Tree: directory-based, mirrors aicr KnowledgeTree ──
 
@@ -145,6 +213,11 @@ function onDragStart(e: DragEvent, data: TreeNode) {
   <div class="cs-sidebar">
     <div class="cs-header">
       <el-input v-model="knowledgeStore.searchQuery" placeholder="Search knowledge..." clearable size="small" />
+      <el-tooltip :content="`Sync metadata from YiKnowledge directory. Last: ${lastSyncLabel}`" placement="bottom">
+        <el-button size="small" :icon="Refresh" :loading="syncing" :disabled="syncing" @click="handleSync">
+          Sync
+        </el-button>
+      </el-tooltip>
       <span class="cs-hint" title="Drag files to the chat area to start a session">Drag → Chat</span>
     </div>
 
